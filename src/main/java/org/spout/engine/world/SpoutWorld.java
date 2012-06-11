@@ -49,15 +49,16 @@ import org.spout.api.collision.CollisionVolume;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
-import org.spout.api.entity.BlockController;
-import org.spout.api.entity.Controller;
+import org.spout.api.entity.component.controller.BlockController;
+import org.spout.api.entity.component.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.spawn.SpawnArrangement;
-import org.spout.api.entity.type.ControllerType;
+import org.spout.api.entity.component.controller.type.ControllerType;
 import org.spout.api.event.block.CuboidChangeEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.LoadOption;
+import org.spout.api.geo.InsertionPolicy;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
@@ -575,12 +576,22 @@ public final class SpoutWorld extends AsyncManager implements World {
 	public void queueDynamicUpdate(int x, int y, int z, long nextUpdate, Object hint) {
 		this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z, nextUpdate, hint);
 	}
+	
+	@Override
+	public void queueDynamicUpdate(int x, int y, int z, InsertionPolicy policy, long nextUpdate, Object hint) {
+		this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z, policy, nextUpdate, hint);
+	}
 
 	@Override
 	public void queueDynamicUpdate(int x, int y, int z, long nextUpdate) {
 		this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z, nextUpdate);
 	}
 
+	@Override
+	public void queueDynamicUpdate(int x, int y, int z, InsertionPolicy policy, long nextUpdate) {
+		this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z, policy, nextUpdate);
+	}
+	
 	@Override
 	public void queueDynamicUpdate(int x, int y, int z) {
 		this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z);

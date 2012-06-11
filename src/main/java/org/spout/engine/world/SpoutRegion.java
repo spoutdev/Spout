@@ -49,11 +49,10 @@ import java.util.logging.Level;
 
 import org.spout.api.Source;
 import org.spout.api.Spout;
-import org.spout.api.datatable.DataMap;
-import org.spout.api.entity.BlockController;
-import org.spout.api.entity.Controller;
+import org.spout.api.entity.component.controller.BlockController;
+import org.spout.api.entity.component.Controller;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.PlayerController;
+import org.spout.api.entity.component.controller.PlayerController;
 import org.spout.api.event.chunk.ChunkLoadEvent;
 import org.spout.api.event.chunk.ChunkPopulateEvent;
 import org.spout.api.event.chunk.ChunkUnloadEvent;
@@ -62,6 +61,7 @@ import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.LoadOption;
+import org.spout.api.geo.InsertionPolicy;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
@@ -69,7 +69,6 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
@@ -1025,6 +1024,8 @@ public class SpoutRegion extends Region{
 		return entity == null ? null : (BlockController) entity.getController();
 	}
 
+	int cnt = 0;
+	
 	@Override
 	public void updateBlockPhysics(int x, int y, int z, Source source) {
 		synchronized (queuedPhysicsUpdates) {
@@ -1149,10 +1150,20 @@ public class SpoutRegion extends Region{
 	public void queueDynamicUpdate(int x, int y, int z, long nextUpdate, Object hint) {
 		dynamicBlockTree.queueBlockUpdates(x, y, z, nextUpdate, hint);
 	}
+	
+	@Override
+	public void queueDynamicUpdate(int x, int y, int z, InsertionPolicy policy, long nextUpdate, Object hint) {
+		dynamicBlockTree.queueBlockUpdates(x, y, z, policy, nextUpdate, hint);
+	}
 
 	@Override
 	public void queueDynamicUpdate(int x, int y, int z, long nextUpdate) {
 		dynamicBlockTree.queueBlockUpdates(x, y, z, nextUpdate);
+	}
+	
+	@Override
+	public void queueDynamicUpdate(int x, int y, int z, InsertionPolicy policy, long nextUpdate) {
+		dynamicBlockTree.queueBlockUpdates(x, y, z, policy, nextUpdate);
 	}
 
 	@Override

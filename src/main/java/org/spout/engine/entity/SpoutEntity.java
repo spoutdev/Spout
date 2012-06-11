@@ -28,7 +28,6 @@ package org.spout.engine.entity;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -39,14 +38,11 @@ import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.Tickable;
 import org.spout.api.collision.CollisionModel;
-import org.spout.api.collision.CollisionStrategy;
-import org.spout.api.collision.CollisionVolume;
-import org.spout.api.entity.Controller;
+import org.spout.api.entity.component.Controller;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.PlayerController;
-import org.spout.api.entity.component.EntityComponent;
+import org.spout.api.entity.component.controller.PlayerController;
+import org.spout.api.entity.EntityComponent;
 import org.spout.api.event.entity.EntityControllerChangeEvent;
-import org.spout.api.event.entity.EntityMoveEvent;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -63,7 +59,6 @@ import org.spout.engine.SpoutEngine;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
-import org.spout.engine.world.SpoutWorld;
 
 public class SpoutEntity implements Entity, Tickable {
 	public static final int NOTSPAWNEDID = -1;

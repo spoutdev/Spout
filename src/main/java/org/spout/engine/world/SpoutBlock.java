@@ -28,12 +28,14 @@ package org.spout.engine.world;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.Source;
-import org.spout.api.entity.BlockController;
+import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.generator.biome.Biome;
+import org.spout.api.geo.InsertionPolicy;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.geo.cuboid.UpdateOption;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
@@ -301,11 +303,22 @@ public class SpoutBlock implements Block {
 	public Block update() {
 		return this.update(true);
 	}
-
+	
 	@Override
 	public Block update(boolean around) {
+		return update(true, around);
+	}
+	
+	@Override
+	public Block update(UpdateOption option) {
+		return update(option.updateSelf(), option.updateAround());
+	}
+
+	private Block update(boolean self, boolean around) {
 		World world = this.getWorld();
-		world.updateBlockPhysics(this.x, this.y, this.z, this.source);
+		if (self) {
+			world.updateBlockPhysics(this.x, this.y, this.z, this.source);
+		}
 		if (around) {
 			//South and North
 			world.updateBlockPhysics(this.x + 1, this.y, this.z, this.source);
@@ -326,6 +339,11 @@ public class SpoutBlock implements Block {
 	public Biome getBiomeType() {
 		return world.getBiomeType(x, y, z);
 	}
+	
+	@Override
+	public void resetDynamic() {
+		this.getRegion().resetDynamicBlock(this.x, this.y, this.z);
+	}
 
 	@Override
 	public Block dynamicUpdate() {
@@ -334,14 +352,26 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public Block dynamicUpdate(long delay) {
-		this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, delay);
+	public Block dynamicUpdate(long updateTime) {
+		this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, updateTime);
+		return this;
+	}
+	
+	@Override
+	public Block dynamicUpdate(long updateTime, InsertionPolicy policy) {
+		this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, policy, updateTime);
 		return this;
 	}
 
 	@Override
-	public Block dynamicUpdate(long delay, Object hint) {
-		this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, delay, hint);
+	public Block dynamicUpdate(long updateTime, Object hint) {
+		this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, updateTime, hint);
+		return this;
+	}
+	
+	@Override
+	public Block dynamicUpdate(long updateTime, InsertionPolicy policy, Object hint) {
+		this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, policy, updateTime, hint);
 		return this;
 	}
 }

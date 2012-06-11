@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.spout.api.entity.BlockController;
+import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.entity.Entity;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeManager;

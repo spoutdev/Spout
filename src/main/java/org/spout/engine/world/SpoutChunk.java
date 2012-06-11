@@ -44,14 +44,15 @@ import org.spout.api.Spout;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
-import org.spout.api.entity.BlockController;
+import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.PlayerController;
+import org.spout.api.entity.component.controller.PlayerController;
 import org.spout.api.event.block.BlockChangeEvent;
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGeneratorUtils;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeManager;
+import org.spout.api.geo.InsertionPolicy;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
@@ -386,10 +387,20 @@ public class SpoutChunk extends Chunk {
 	public void queueDynamicUpdate(int x, int y, int z, long nextUpdate, Object hint) {
 		parentRegion.queueDynamicUpdate(getBlockX(x), getBlockY(y), getBlockZ(z), nextUpdate, hint);
 	}
+	
+	@Override
+	public void queueDynamicUpdate(int x, int y, int z, InsertionPolicy policy, long nextUpdate, Object hint) {
+		parentRegion.queueDynamicUpdate(getBlockX(x), getBlockY(y), getBlockZ(z), policy, nextUpdate, hint);
+	}
 
 	@Override
 	public void queueDynamicUpdate(int x, int y, int z, long nextUpdate) {
 		parentRegion.queueDynamicUpdate(getBlockX(x), getBlockY(y), getBlockZ(z), nextUpdate);
+	}
+	
+	@Override
+	public void queueDynamicUpdate(int x, int y, int z, InsertionPolicy policy, long nextUpdate) {
+		parentRegion.queueDynamicUpdate(getBlockX(x), getBlockY(y), getBlockZ(z), policy, nextUpdate);
 	}
 
 	@Override

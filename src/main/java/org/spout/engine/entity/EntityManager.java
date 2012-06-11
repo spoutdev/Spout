@@ -34,8 +34,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.datatable.GenericDatatableMap;
-import org.spout.api.entity.Controller;
-import org.spout.api.entity.PlayerController;
+import org.spout.api.entity.component.Controller;
+import org.spout.api.entity.component.controller.PlayerController;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.StringMap;
