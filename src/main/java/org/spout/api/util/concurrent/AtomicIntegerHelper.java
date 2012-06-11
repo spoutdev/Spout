@@ -69,5 +69,28 @@ public class AtomicIntegerHelper {
 		}
 		return true;
 	}
+	
+	/**
+	 * Atomically sets a field of bits for an AtomicInteger.  The mask parameter indicates which
+	 * bits are part of the field.  Only these bits in expect are compared with the current value 
+	 * and updated if there is a match
+	 * @param i the AtomicInteger
+	 * @param mask the bits of the field
+	 * @param expect the expected value (only the masked bits)
+	 * @param update the updated value
+	 * @return false if the bit were successfully cleared
+	 */
+	public static boolean setField(AtomicInteger i, int mask, int expect, int update) {
+		boolean success = false;
+		while (!success) {
+			int current = i.get();
+			if ((expect & mask) != (current & mask)) {
+				return false;
+			}
+			int next = (current & (~mask)) | (update & (mask));
+			success = i.compareAndSet(current, next);
+		}
+		return true;
+	}
 
 }

@@ -61,6 +61,16 @@ public class AtomicIntegerHelperTest {
 		
 		assertEquals("Integer changed value", i.get(), 0xF9F);
 		
+		assertTrue("Unable to update field", AtomicIntegerHelper.setField(i, 0x0C0, 0xF80, 0x040));
+		
+		assertEquals("Integer not correctly updated", i.get(), 0xF5F);
+		
+		assertFalse("Successfully updated a field with the wrong expected value", AtomicIntegerHelper.setField(i, 0x060, 0x020, 0x000));
+
+		assertFalse("Successfully updated a field with the wrong expected value", AtomicIntegerHelper.setField(i, 0xF00, 0x0E0, 0x000));
+		
+		assertEquals("Integer changed value", i.get(), 0xF5F);
+		
 	}
 
 }
