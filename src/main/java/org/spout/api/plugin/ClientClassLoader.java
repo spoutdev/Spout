@@ -35,9 +35,6 @@ public class ClientClassLoader extends CommonClassLoader {
 
 	@Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
-		if (name.startsWith("net.minecraft")) {
-			throw new RestrictedClassException("Accessing net.minecraft is not allowed");
-		}
 		return findClass(name, true);
 	}
 }
