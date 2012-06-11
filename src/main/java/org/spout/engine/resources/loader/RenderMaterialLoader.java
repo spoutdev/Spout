@@ -28,8 +28,12 @@ package org.spout.engine.resources.loader;
 
 import java.awt.Color;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.yaml.snakeyaml.Yaml;
 
@@ -41,6 +45,7 @@ import org.spout.api.render.Shader;
 import org.spout.api.render.Texture;
 import org.spout.api.resource.BasicResourceLoader;
 import org.spout.api.resource.Resource;
+import org.spout.api.util.typechecker.TypeChecker;
 
 import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.engine.resources.ClientRenderMaterial;
@@ -51,78 +56,140 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 		return "material://Spout/fallbacks/generic.smt";
 	}
 
+	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
+	private static final Pattern vectorPattern = Pattern.compile("(vector[234]|color)\\((.*)\\)");
 	@Override
 	public ClientRenderMaterial getResource(InputStream stream) {
-		Yaml yaml = new Yaml();
-		Map<String, ?> resource = (Map<String, ?>) yaml.load(stream);
+		final Yaml yaml = new Yaml();
+		final Map<? extends String, ?> resourceProperties = checkerMapStringObject.check(yaml.load(stream));
 
-		if (!(resource.get("Shader") instanceof String)) {
+		final Object shaderPathObject = resourceProperties.get("Shader");
+		if (!(shaderPathObject instanceof String)) {
 			throw new IllegalStateException("Tried to load a shader but wasn't given a path");
 		}
 
-		String in = (String) resource.get("Shader");
-		Spout.log(in);
-		Shader s = (Shader) Spout.getFilesystem().getResource(in);
+		String shaderPath = (String) shaderPathObject;
+		Spout.log(shaderPath);
 
-		Map<String, Object> params = (Map<String, Object>) resource.get("MaterialParams");
-
-
-		//Loop through the params and replace
-		Set<Map.Entry<String, Object>> entrySet = params.entrySet();
-		for(Map.Entry<String, Object> entry : entrySet){
-			if(entry.getValue() instanceof String){
-				String val = (String)entry.getValue();
-				if(val.contains("://")){ //its a resource!
-					Resource r = Spout.getFilesystem().getResource(val);
-					if(r instanceof Texture && !((Texture)r).isLoaded()) ((Texture)r).load();
-					params.put(entry.getKey(), r);					
-				}
-				
-				
-				//TODO: clean this up
-				if(val.contains("(")){ //It's a Vector or a color!
-					String valueString = val.substring(val.indexOf('(')+1, val.lastIndexOf(')'));
-					System.out.println(valueString);
-					if(val.startsWith("color")){
-						String[] values = valueString.split(",");
-						if(values.length < 3) throw new IllegalArgumentException("Colors need atleast 3 components");
-						if(values.length == 3) {
-							Color col = new Color(Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]), 1.0f);
-							params.put(entry.getKey(), col);
-						}
-						if(values.length == 4) {
-							Color col = new Color(Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3]));
-							params.put(entry.getKey(), col);
-						}
-					}
-					if(val.startsWith("vector2")){
-						String[] values = valueString.split(",");
-						if(values.length < 2) throw new IllegalArgumentException("Colors need atleast 2 components");
-						Vector2 vec = new Vector2(Float.parseFloat(values[0]),Float.parseFloat(values[1]));
-						params.put(entry.getKey(), vec);
-					}
-					if(val.startsWith("vector3")){
-						String[] values = valueString.split(",");
-						if(values.length < 3) throw new IllegalArgumentException("Colors need atleast 3 components");
-						Vector3 vec = new Vector3(Float.parseFloat(values[0]),Float.parseFloat(values[1]), Float.parseFloat(values[2]));
-						params.put(entry.getKey(), vec);
-					}
-					if(val.startsWith("vector4")){
-						String[] values = valueString.split(",");
-						if(values.length < 4) throw new IllegalArgumentException("Colors need atleast 3 components");
-						Vector4 vec = new Vector4(Float.parseFloat(values[0]),Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3]));
-						params.put(entry.getKey(), vec);
-					}
-				}
-
-
-
-			}
-
+		final Resource shaderObject = Spout.getFilesystem().getResource(shaderPath);
+		if (!(shaderObject instanceof Shader)) {
+			throw new IllegalStateException("Tried to load a shader but was given the path to a different kind of resource");
 		}
 
-		ClientRenderMaterial mat = new ClientRenderMaterial(s, params);
+		final Shader shader = (Shader) shaderObject;
 
-		return mat;
+		final Map<? extends String, ?> params = checkerMapStringObject.check(resourceProperties.get("MaterialParams"));
+
+		// Better make a new HashMap, who knows whether we can even write to it...
+		final Map<String, Object> paramsNew = new HashMap<String, Object>();
+
+		// Loop through the params and replace
+		for (Entry<? extends String, ?> entry : params.entrySet()) {
+			final String key = entry.getKey();
+			final Object value = entry.getValue();
+
+			if (!(value instanceof String)) {
+				paramsNew.put(key, value);
+				continue;
+			}
+
+			final String val = (String) value;
+
+			if (val.contains("://")) {
+				// It's a resource!
+				Resource resource = Spout.getFilesystem().getResource(val);
+				if (resource instanceof Texture && !((Texture)resource).isLoaded()) {
+					((Texture)resource).load();
+				}
+
+				paramsNew.put(key, resource);
+				continue;
+			}
+
+			final Matcher matcher = vectorPattern.matcher(val);
+			if (!matcher.matches()) {
+				// It's not a Vector or a color => next
+				paramsNew.put(key, value);
+				continue;
+			}
+
+			final String type = matcher.group(1);
+			final String[] values = matcher.group(2).split(",");
+
+			System.out.println(values);
+
+			if (type.equals("color")) {
+				switch (values.length) {
+				case 0:
+				case 1:
+				case 2:
+					throw new IllegalArgumentException("Colors need at least 3 components");
+
+				case 3:
+					paramsNew.put(key, new Color(
+							Float.parseFloat(values[0]),
+							Float.parseFloat(values[1]),
+							Float.parseFloat(values[2]),
+							1.0f
+					));
+					continue;
+
+				case 4:
+					paramsNew.put(key, new Color(
+							Float.parseFloat(values[0]),
+							Float.parseFloat(values[1]),
+							Float.parseFloat(values[2]),
+							Float.parseFloat(values[3])
+					));
+					continue;
+
+				default:
+					throw new IllegalArgumentException("Colors takes at most 3 components");
+				}
+			}
+
+			if (type.equals("vector2")) {
+				if (values.length != 2) {
+					throw new IllegalArgumentException("Vector2 needs 2 components");
+				}
+
+				paramsNew.put(key, new Vector2(
+						Float.parseFloat(values[0]),
+						Float.parseFloat(values[1])
+				));
+				continue;
+			}
+
+			if (type.equals("vector3")) {
+				if (values.length != 3) {
+					throw new IllegalArgumentException("Vector3 needs 3 components");
+				}
+
+				paramsNew.put(key, new Vector3(
+						Float.parseFloat(values[0]),
+						Float.parseFloat(values[1]),
+						Float.parseFloat(values[2])
+				));
+				continue;
+			}
+
+			if (val.startsWith("vector4")) {
+				if (values.length != 4) {
+					throw new IllegalArgumentException("Vector4 needs 4 components");
+				}
+
+				paramsNew.put(key, new Vector4(
+						Float.parseFloat(values[0]),
+						Float.parseFloat(values[1]),
+						Float.parseFloat(values[2]),
+						Float.parseFloat(values[3])
+				));
+				continue;
+			}
+
+			throw new IllegalStateException("This should never happen.");
+		}
+
+		return new ClientRenderMaterial(shader, paramsNew);
 	}
 }

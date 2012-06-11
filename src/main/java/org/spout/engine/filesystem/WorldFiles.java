@@ -61,6 +61,7 @@ import org.spout.api.util.NBTMapper;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.sanitation.SafeCast;
 import org.spout.api.util.sanitation.StringSanitizer;
+import org.spout.api.util.typechecker.TypeChecker;
 
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
@@ -84,6 +85,8 @@ import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 
 public class WorldFiles {
+	private static final TypeChecker<List<? extends FloatTag>> checkerListFloatTag = TypeChecker.tList(FloatTag.class);
+	private static final TypeChecker<List<? extends CompoundTag>> checkerListCompoundTag = TypeChecker.tList(CompoundTag.class);
 	private static final byte WORLD_VERSION = 2;
 	private static final byte ENTITY_VERSION = 1;
 	private static final byte CHUNK_VERSION = 1;
@@ -204,7 +207,7 @@ public class WorldFiles {
 		long age = SafeCast.toLong(NBTMapper.toTagValue(map.get("age")), 0L);
 		world = new SpoutWorld(name, Spout.getEngine(), seed, age, generator, new UUID(msb, lsb), itemMap, extraData);
 
-		List<FloatTag> spawnPosition = (List<FloatTag>) NBTMapper.toTagValue(map.get("spawn_position"));
+		List<? extends FloatTag> spawnPosition = checkerListFloatTag.checkTag(map.get("spawn_position"));
 		Transform spawn = NBTMapper.nbtToTransform(world, spawnPosition);
 		world.setSpawnPoint(spawn);
 
@@ -362,7 +365,7 @@ public class WorldFiles {
 			CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("entities")), null, CompoundMap.class);
 			loadEntities(r, entityMap, dataForRegion.loadedEntities);
 
-			List<CompoundTag> updateList = (List<CompoundTag>) SafeCast.toGeneric(NBTMapper.toTagValue(map.get("dynamic_updates")), null, List.class);
+			List<? extends CompoundTag> updateList = checkerListCompoundTag.checkTag(map.get("dynamic_updates"), null);
 			loadDynamicUpdates(updateList, dataForRegion.loadedUpdates);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -541,19 +544,23 @@ public class WorldFiles {
 		return new CompoundTag("update", map);
 	}
 
-	private static void loadDynamicUpdates(List<CompoundTag> list, List<DynamicBlockUpdate> loadedUpdates) {
-		if (list != null) {
-			for (CompoundTag t : list) {
-				DynamicBlockUpdate update = loadDynamicUpdate(t);
-				if (update != null) {
-					loadedUpdates.add(update);
-				}
+	private static void loadDynamicUpdates(List<? extends CompoundTag> list, List<DynamicBlockUpdate> loadedUpdates) {
+		if (list == null) {
+			return;
+		}
+
+		for (CompoundTag compoundTag : list) {
+			DynamicBlockUpdate update = loadDynamicUpdate(compoundTag);
+			if (update == null) {
+				continue;
 			}
+
+			loadedUpdates.add(update);
 		}
 	}
 
-	private static DynamicBlockUpdate loadDynamicUpdate(CompoundTag t) {
-		final CompoundMap map = t.getValue();
+	private static DynamicBlockUpdate loadDynamicUpdate(CompoundTag compoundTag) {
+		final CompoundMap map = compoundTag.getValue();
 		final int packed = SafeCast.toInt(NBTMapper.toTagValue(map.get("packed")), -1);
 		if (packed < 0) {
 			return null;
