@@ -86,9 +86,9 @@ public enum ManagementTaskEnum {
 	}
 
 	private int id;
-	private Callable<? extends ManagementTask> create;
+	private Callable<? extends ManagementRunnable> create;
 
-	private ManagementTaskEnum(int id, Callable<? extends ManagementTask> create) {
+	private ManagementTaskEnum(int id, Callable<? extends ManagementRunnable> create) {
 		this.id = id;
 		this.create = create;
 	}
@@ -97,7 +97,7 @@ public enum ManagementTaskEnum {
 		return id;
 	}
 
-	public ManagementTask getInstance() {
+	public ManagementRunnable getInstance() {
 		try {
 			return create.call();
 		} catch (Exception e) {

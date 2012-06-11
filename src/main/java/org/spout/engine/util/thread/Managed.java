@@ -30,7 +30,6 @@ public abstract class Managed {
 	private final AsyncManager manager;
 
 	public Managed(AsyncManager manager) {
-		manager.addManaged(this);
 		this.manager = manager;
 	}
 

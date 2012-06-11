@@ -26,11 +26,8 @@
  */
 package org.spout.engine.util.thread.coretasks;
 
-import java.io.Serializable;
-
 import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.ManagementRunnable;
-import org.spout.engine.util.thread.ManagementTaskEnum;
 
 public class StartTickTask extends ManagementRunnable {
 	private static final long serialVersionUID = 1L;
@@ -53,13 +50,7 @@ public class StartTickTask extends ManagementRunnable {
 	}
 
 	@Override
-	public Serializable call(AsyncExecutor executor) throws InterruptedException {
+	public void run(AsyncExecutor executor) throws InterruptedException {
 		executor.getManager().startTickRun(stage, delta);
-		return null;
-	}
-
-	@Override
-	public ManagementTaskEnum getEnum() {
-		return ManagementTaskEnum.START_TICK;
 	}
 }

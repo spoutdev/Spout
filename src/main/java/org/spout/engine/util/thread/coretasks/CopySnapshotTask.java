@@ -26,24 +26,16 @@
  */
 package org.spout.engine.util.thread.coretasks;
 
-import java.io.Serializable;
-
 import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.ManagementRunnable;
-import org.spout.engine.util.thread.ManagementTaskEnum;
 
 public class CopySnapshotTask extends ManagementRunnable {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public Serializable call(AsyncExecutor executor) throws InterruptedException {
+	public void run(AsyncExecutor executor) throws InterruptedException {
 		executor.getManager().copySnapshotRun();
 		executor.haltCheck();
-		return null;
 	}
 
-	@Override
-	public ManagementTaskEnum getEnum() {
-		return ManagementTaskEnum.COPY_SNAPSHOT;
-	}
 }
