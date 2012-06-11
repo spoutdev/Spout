@@ -113,7 +113,6 @@ public enum InsertionPolicy {
 	
 	private InsertionPolicy(String policy, boolean force) {
 		this.policy = ip(policy);
-		System.out.println("Policy: " + this + " " + this.policy);
 		this.force = force;
 	}	
 	private InsertionPolicy(String policy) {
