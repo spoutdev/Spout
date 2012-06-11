@@ -27,7 +27,6 @@
 package org.spout.engine.world;
 
 import org.spout.api.Engine;
-
 import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.AsyncManager;
 
@@ -69,5 +68,25 @@ public class SpoutRegionManager extends AsyncManager {
 	@Override
 	public void preSnapshotRun() throws InterruptedException {
 		parent.preSnapshotRun();
+	}
+
+	@Override
+	public void runLocalPhysics() throws InterruptedException {
+		parent.runLocalPhysics();
+	}
+
+	@Override
+	public int runGlobalPhysics() throws InterruptedException {
+		return parent.runGlobalPhysics();
+	}
+
+	@Override
+	public void runLocalDynamicUpdates() throws InterruptedException {
+		parent.runLocalDynamicUpdates();
+	}
+
+	@Override
+	public int runGlobalDynamicUpdates() throws InterruptedException {
+		return parent.runGlobalDynamicUpdates();
 	}
 }

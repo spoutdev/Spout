@@ -62,6 +62,20 @@ public interface AsyncExecutor {
 	 * @param future the future
 	 */
 	public void waitForFuture(ManagedFuture<Serializable> future) throws InterruptedException;
+	
+	/**
+	 * This is called before global physics lists are checked, and can be
+	 * called multiple times per tick
+	 * @return false if the executor was active
+	 */
+	public boolean doLocalPhysics();
+	
+	/**
+	 * This is called before global physics lists are checked, and can be
+	 * called multiple times per tick
+	 * @return false if the executor was active
+	 */
+	public boolean doLocalDynamicUpdates();
 
 	/**
 	 * This is called as the last stage prior to the snapshot being taken.<br>

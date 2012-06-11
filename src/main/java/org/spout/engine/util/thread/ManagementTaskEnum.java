@@ -30,7 +30,9 @@ import java.util.HashSet;
 import java.util.concurrent.Callable;
 
 import org.spout.engine.util.thread.coretasks.CopySnapshotTask;
+import org.spout.engine.util.thread.coretasks.DynamicUpdatesTask;
 import org.spout.engine.util.thread.coretasks.FinalizeTask;
+import org.spout.engine.util.thread.coretasks.PhysicsTask;
 import org.spout.engine.util.thread.coretasks.PreSnapshotTask;
 import org.spout.engine.util.thread.coretasks.StartTickTask;
 
@@ -59,7 +61,19 @@ public enum ManagementTaskEnum {
 		public FinalizeTask call() {
 			return new FinalizeTask();
 		}
-	});
+	}),
+	PHYSICS(4, new Callable<PhysicsTask>() {
+		@Override
+		public PhysicsTask call() {
+			return new PhysicsTask();
+		}
+	}),
+	DYNAMIC_UPDATES(5, new Callable<DynamicUpdatesTask>() {
+		@Override
+		public DynamicUpdatesTask call() {
+			return new DynamicUpdatesTask();
+		}
+	}),;
 	private static final int maxId;
 	private static final HashSet<Integer> ids = new HashSet<Integer>();
 

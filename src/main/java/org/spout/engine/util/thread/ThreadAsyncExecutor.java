@@ -35,7 +35,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.thread.coretasks.CopySnapshotTask;
+import org.spout.engine.util.thread.coretasks.DynamicUpdatesTask;
 import org.spout.engine.util.thread.coretasks.FinalizeTask;
+import org.spout.engine.util.thread.coretasks.PhysicsTask;
 import org.spout.engine.util.thread.coretasks.PreSnapshotTask;
 import org.spout.engine.util.thread.coretasks.StartTickTask;
 import org.spout.engine.util.thread.future.ManagedFuture;
@@ -50,6 +52,8 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	private AtomicReference<Object> waitingMonitor = new AtomicReference<Object>();
 	private CopySnapshotTask copySnapshotTask = new CopySnapshotTask();
 	private StartTickTask startTickTask = new StartTickTask();
+	private DynamicUpdatesTask dynamicUpdatesTask = new DynamicUpdatesTask();
+	private PhysicsTask physicsTask = new PhysicsTask();
 	private PreSnapshotTask preSnapshotTask = new PreSnapshotTask();
 	private FinalizeTask finalizeTask = new FinalizeTask();
 	private AsyncManager manager = null;
@@ -192,7 +196,21 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 		taskQueue.add(preSnapshotTask);
 		return pulse();
 	}
-
+	
+	@Override
+	public final boolean doLocalPhysics() {
+		ThreadsafetyManager.checkMainThread();
+		taskQueue.add(physicsTask);
+		return pulse();
+	}
+	
+	@Override
+	public final boolean doLocalDynamicUpdates() {
+		ThreadsafetyManager.checkMainThread();
+		taskQueue.add(dynamicUpdatesTask);
+		return pulse();
+	}
+	
 	@Override
 	public final boolean startTick(int stage, long delta) {
 		ThreadsafetyManager.checkMainThread();

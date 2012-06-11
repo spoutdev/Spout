@@ -158,6 +158,38 @@ public abstract class AsyncManager {
 	 * @param delta the time since the last tick
 	 */
 	public abstract void startTickRun(int stage, long delta) throws InterruptedException;
+	
+	/**
+	 * This method is called to execute physics for blocks local to the Region.  
+	 * It might be called multiple times per tick
+	 * @throws InterruptedException
+	 */
+	public abstract void runLocalPhysics() throws InterruptedException;
+	
+	/**
+	 * This method is called to execute physics for blocks that might 
+	 * affects blocks outside the Region.
+	 * It might be called multiple times per tick
+	 * @throws InterruptedException
+	 * @return the number of updates (including local ones) since last call
+	 */
+	public abstract int runGlobalPhysics() throws InterruptedException;
+	
+	/**
+	 * This method is called to execute dynamic updates for blocks local to the Region.  
+	 * It might be called multiple times per tick
+	 * @throws InterruptedException
+	 */
+	public abstract void runLocalDynamicUpdates() throws InterruptedException;
+	
+	/**
+	 * This method is called to execute dynamic updates for blocks that might 
+	 * affects blocks outside the Region.
+	 * It might be called multiple times per tick
+	 * @throws InterruptedException
+	 * @return the number of updates (including local ones) since last call
+	 */
+	public abstract int runGlobalDynamicUpdates() throws InterruptedException;
 
 	/**
 	 * This method is called when the associated executor is halted and occurs

@@ -384,9 +384,87 @@ public final class SpoutScheduler implements Scheduler {
 			}
 			stage++;
 		}
+		
+		doDynamicUpdates(executors);
+		
+		doPhysics(executors);
 
 		copySnapshot(executors);
 		return true;
+	}
+	
+	private void doPhysics(List<AsyncExecutor> executors) throws InterruptedException {
+		int updates = 0;
+		int updatesThisPass = 1;
+		while (updatesThisPass > 0) {
+			
+			TickStage.setStage(TickStage.PHYSICS);
+			
+			for (AsyncExecutor e : executors) {
+				if (!e.doLocalPhysics()) {
+					throw new IllegalStateException("Attempt made to do physics while the previous operation was still active");
+				}
+			}
+			
+			boolean joined = false;
+			while (!joined) {
+				try {
+					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
+					joined = true;
+				} catch (TimeoutException e) {
+					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+						logLongDurationTick("Local Physics", executors);
+					}
+				}
+			}
+			
+			updatesThisPass = 0;
+			
+			TickStage.setStage(TickStage.GLOBAL_PHYSICS);
+
+			for (AsyncExecutor e : executors) {
+				updatesThisPass += e.getManager().runGlobalPhysics();
+			}
+			
+			updates += updatesThisPass;
+		}
+	}
+	
+	private void doDynamicUpdates(List<AsyncExecutor> executors) throws InterruptedException {
+		int updates = 0;
+		int updatesThisPass = 1;
+		while (updatesThisPass > 0) {
+			
+			TickStage.setStage(TickStage.DYNAMIC_BLOCKS);
+			
+			for (AsyncExecutor e : executors) {
+				if (!e.doLocalDynamicUpdates()) {
+					throw new IllegalStateException("Attempt made to while the previous operation was still active");
+				}
+			}
+			
+			boolean joined = false;
+			while (!joined) {
+				try {
+					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
+					joined = true;
+				} catch (TimeoutException e) {
+					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+						logLongDurationTick("Local Dynamic Blocks", executors);
+					}
+				}
+			}
+			
+			updatesThisPass = 0;
+			
+			TickStage.setStage(TickStage.GLOBAL_DYNAMIC_BLOCKS);
+
+			for (AsyncExecutor e : executors) {
+				updatesThisPass += e.getManager().runGlobalDynamicUpdates();
+			}
+			
+			updates += updatesThisPass;
+		}
 	}
 
 	private void copySnapshot(List<AsyncExecutor> executors) throws InterruptedException {
