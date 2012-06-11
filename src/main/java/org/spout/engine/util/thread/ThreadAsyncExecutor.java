@@ -201,7 +201,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 					try {
 						super.pulse();
 					} finally {
-						if (!AtomicIntegerHelper.clearBit(wakeCounter, 1)) {
+						if (!AtomicIntegerHelper.clearBit(wakeCounter, wakePulsing)) {
 							throw new IllegalStateException("Bit zero of wake counter set to 0 while pulse was being triggered");
 						}
 						success = true;
@@ -221,7 +221,9 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 			try {
 				return super.pulse();
 			} finally {
-				AtomicIntegerHelper.clearBit(wakeCounter, wakePulsing);
+				if (!AtomicIntegerHelper.clearBit(wakeCounter, wakePulsing)) {
+					throw new IllegalStateException("Bit zero of wake counter set to 0 while pulse was being triggered");
+				}
 			}
 		} else if (AtomicIntegerHelper.setField(wakeCounter, wakePending | wakePulsing, 0, wakePending)) {
 			return true;
