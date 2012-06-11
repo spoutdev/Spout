@@ -48,7 +48,7 @@ public class NBTMapper {
 	 * @param list the list of floats representing a transform.
 	 * @return the constructed transform from NBT
 	 */
-	public static Transform nbtToTransform(World world, List<FloatTag> list) {
+	public static Transform nbtToTransform(World world, List<? extends FloatTag> list) {
 		//Position
 		float px = SafeCast.toFloat(list.get(0).getValue(), 1f);
 		float py = SafeCast.toFloat(list.get(1).getValue(), 85f);
