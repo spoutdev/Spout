@@ -26,8 +26,6 @@
  */
 package org.spout.api.plugin;
 
-import org.spout.api.exception.RestrictedClassException;
-
 public class ClientClassLoader extends CommonClassLoader {
 	public ClientClassLoader(CommonPluginLoader loader, ClassLoader parent) {
 		super(loader, parent);

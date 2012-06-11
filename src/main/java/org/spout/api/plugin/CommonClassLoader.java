@@ -40,7 +40,7 @@ public class CommonClassLoader extends URLClassLoader {
 		super(new URL[0], parent);
 		this.loader = loader;
 	}
-	
+
 	@Override
 	protected void addURL(URL url) {
 		super.addURL(url);
@@ -55,16 +55,10 @@ public class CommonClassLoader extends URLClassLoader {
 		Class<?> result = classes.get(name);
 
 		if (result == null) {
-			if (checkGlobal) {
+			result = super.findClass(name);
+
+			if (result == null && checkGlobal) {
 				result = loader.getClassByName(name);
-			}
-
-			if (result == null) {
-				result = super.findClass(name);
-
-				if (result != null) {
-					loader.setClass(name, result);
-				}
 			}
 
 			classes.put(name, result);

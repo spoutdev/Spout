@@ -51,21 +51,17 @@ public class CommonPluginLoader implements PluginLoader {
 	public static final String YAML_SPOUT = "properties.yml";
 	public static final String YAML_OTHER = "plugin.yml";
 
-	protected final Engine game;
-	private final CommonClassLoader loader;
+	protected final Engine engine;
 	private final Pattern[] patterns;
 	private final CommonSecurityManager manager;
 	private final double key;
-	private final Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
 	private final Map<String, CommonClassLoader> loaders = new HashMap<String, CommonClassLoader>();
 
-	public CommonPluginLoader(final Engine game, final CommonSecurityManager manager, final double key) {
-		this.game = game;
+	public CommonPluginLoader(final Engine engine, final CommonSecurityManager manager, final double key) {
+		this.engine = engine;
 		this.manager = manager;
 		this.key = key;
 		patterns = new Pattern[] {Pattern.compile("\\.jar$")};
-
-		loader = game.getPlatform() == Platform.CLIENT ? new ClientClassLoader(this, getClass().getClassLoader()) : new CommonClassLoader(this, getClass().getClassLoader());
 	}
 
 	public Pattern[] getPatterns() {
@@ -89,7 +85,7 @@ public class CommonPluginLoader implements PluginLoader {
 				cp.setEnabled(true);
 				cp.onEnable();
 			} catch (Throwable e) {
-				game.getLogger().log(Level.SEVERE, new StringBuilder().append("An error occured when enabling '").append(paramPlugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
+				engine.getLogger().log(Level.SEVERE, new StringBuilder().append("An error occured when enabling '").append(paramPlugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
 			}
 
 			// TODO call PluginEnableEvent
@@ -113,7 +109,7 @@ public class CommonPluginLoader implements PluginLoader {
 				cp.setEnabled(false);
 				cp.onDisable();
 			} catch (Throwable t) {
-				game.getLogger().log(Level.SEVERE, new StringBuilder().append("An error occurred when disabling plugin '").append(paramPlugin.getDescription().getFullName()).append("' : ").append(t.getMessage()).toString(), t);
+				engine.getLogger().log(Level.SEVERE, new StringBuilder().append("An error occurred when disabling plugin '").append(paramPlugin.getDescription().getFullName()).append("' : ").append(t.getMessage()).toString(), t);
 			}
 
 			// TODO call PluginDisableEvent
@@ -128,6 +124,7 @@ public class CommonPluginLoader implements PluginLoader {
 	public synchronized Plugin loadPlugin(File paramFile, boolean ignoresoftdepends) throws InvalidPluginException, InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException {
 		CommonPlugin result = null;
 		PluginDescriptionFile desc = null;
+		CommonClassLoader loader;
 
 		desc = getDescription(paramFile);
 
@@ -140,6 +137,11 @@ public class CommonPluginLoader implements PluginLoader {
 		}
 
 		try {
+			if (engine.getPlatform() == Platform.CLIENT) {
+				loader = new ClientClassLoader(this, this.getClass().getClassLoader());
+			} else {
+				loader = new CommonClassLoader(this, this.getClass().getClassLoader());
+			}
 			loader.addURL(paramFile.toURI().toURL());
 			Class<?> main = Class.forName(desc.getMain(), true, loader);
 			Class<? extends CommonPlugin> plugin = main.asSubclass(CommonPlugin.class);
@@ -150,7 +152,7 @@ public class CommonPluginLoader implements PluginLoader {
 
 			result = constructor.newInstance();
 
-			result.initialize(this, game, desc, dataFolder, paramFile, loader);
+			result.initialize(this, engine, desc, dataFolder, paramFile, loader);
 
 			if (!locked) {
 				manager.unlock(key);
@@ -242,14 +244,14 @@ public class CommonPluginLoader implements PluginLoader {
 				try {
 					in.close();
 				} catch (IOException e) {
-					game.getLogger().log(Level.WARNING, "Problem closing input stream", e);
+					engine.getLogger().log(Level.WARNING, "Problem closing input stream", e);
 				}
 			}
 			if (jar != null) {
 				try {
 					jar.close();
 				} catch (IOException e) {
-					game.getLogger().log(Level.WARNING, "Problem closing jar input stream", e);
+					engine.getLogger().log(Level.WARNING, "Problem closing jar input stream", e);
 				}
 			}
 		}
@@ -257,29 +259,16 @@ public class CommonPluginLoader implements PluginLoader {
 	}
 
 	protected Class<?> getClassByName(final String name) {
-		Class<?> cached = classes.get(name);
-
-		if (cached != null) {
-			return cached;
-		}
-
 		for (String current : loaders.keySet()) {
 			CommonClassLoader loader = loaders.get(current);
-
 			try {
-				cached = loader.findClass(name, false);
-			} catch (ClassNotFoundException cnfe) {
-			}
-			if (cached != null) {
-				return cached;
+				Class<?> clazz = loader.findClass(name, false);
+				if (clazz != null) {
+					return clazz;
+				}
+			} catch (ClassNotFoundException ignored) {
 			}
 		}
 		return null;
-	}
-
-	protected void setClass(final String name, final Class<?> clazz) {
-		if (!classes.containsKey(name)) {
-			classes.put(name, clazz);
-		}
 	}
 }
