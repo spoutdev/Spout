@@ -1,3 +1,4 @@
+package org.spout.api.util.hashing;
 /*
  * This file is part of SpoutAPI.
  *
@@ -24,18 +25,58 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.util.hashing;
 
-public class NibbleTripleHashed {
+public class NibbleQuadHashed {
 	/**
-	 * Packs the first 4 most significant bits of each byte into a <code>short</code>
+	 * Packs the first 4 least significant bits of each byte into a <code>short</code>
 	 *
 	 * @param key1 a <code>byte</code> value
 	 * @param key2 a <code>byte</code> value
 	 * @param key3 a <code>byte</code> value
+	 * @param key4 a <code>byte</code> value
 	 * @return The first 4 most significant bits of each byte packed into a <code>short</code>
 	 */
-	public static final short key(int key1, int key2, int key3) {
-		return (short) ((key1 & 0xF) << 8 | (key2 & 0xF) << 4 | key3 & 0xF);
+	public static final short key(int key1, int key2, int key3, int key4) {
+		return (short) ((key1 & 0xF) << 12 | (key2 & 0xF) << 8 | (key3 & 0xF) << 4 | key4 & 0xF);
+	}
+
+	/**
+	 * Gets the first 4-bit integer value from a short key
+	 * 
+	 * @param key to get from
+	 * @return the first 4-bit integer value in the key
+	 */
+	public static byte key1(int key) {
+		return (byte) ((key >> 12) & 0xF);
+	}
+
+	/**
+	 * Gets the second 4-bit integer value from a short key
+	 * 
+	 * @param key to get from
+	 * @return the second 4-bit integer value in the key
+	 */
+	public static byte key2(int key) {
+		return (byte) ((key >> 8) & 0xF);
+	}
+
+	/**
+	 * Gets the third 4-bit integer value from a short key
+	 * 
+	 * @param key to get from
+	 * @return the third 4-bit integer value in the key
+	 */
+	public static byte key3(int key) {
+		return (byte) ((key >> 4) & 0xF);
+	}
+
+	/**
+	 * Gets the fourth 4-bit integer value from a short key
+	 * 
+	 * @param key to get from
+	 * @return the fourth 4-bit integer value in the key
+	 */
+	public static byte key4(int key) {
+		return (byte) (key & 0xF);
 	}
 }

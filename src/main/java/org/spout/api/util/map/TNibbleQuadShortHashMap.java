@@ -26,7 +26,7 @@
  */
 package org.spout.api.util.map;
 
-import org.spout.api.util.hashing.NibbleTripleHashed;
+import org.spout.api.util.hashing.NibbleQuadHashed;
 
 import gnu.trove.TShortCollection;
 import gnu.trove.iterator.TShortShortIterator;
@@ -35,37 +35,34 @@ import gnu.trove.map.hash.TShortShortHashMap;
 import gnu.trove.set.TShortSet;
 
 /**
- * A simplistic map that supports a 3 nibbles (4 bits) for keys, using a trove
+ * A simplistic map that supports a 4 nibbles (4 bits) for keys, using a trove
  * short short hashmap in the backend.
  */
-public class TNibbleTripleShortHashMap extends NibbleTripleHashed {
-	protected TShortShortMap map;
+public class TNibbleQuadShortHashMap extends NibbleQuadHashed {
+	protected final TShortShortMap map;
 
-	public TNibbleTripleShortHashMap() {
+	public TNibbleQuadShortHashMap() {
 		map = new TShortShortHashMap(100);
 	}
 
-	public TNibbleTripleShortHashMap(int capacity) {
+	public TNibbleQuadShortHashMap(int capacity) {
 		map = new TShortShortHashMap(capacity);
 	}
 
-	public TNibbleTripleShortHashMap(TShortShortMap map) {
+	public TNibbleQuadShortHashMap(TShortShortMap map) {
 		this.map = map;
 	}
 
-	public short put(byte key1, byte key2, byte key3, short value) {
-		short key = key(key1, key2, key3);
-		return map.put(key, value);
+	public short put(int key1, int key2, int key3, int key4, short value) {
+		return map.put(key(key1, key2, key3, key4), value);
 	}
 
-	public short get(byte key1, byte key2, byte key3) {
-		short key = key(key1, key2, key3);
-		return map.get(key);
+	public short get(int key1, int key2, int key3, int key4) {
+		return map.get(key(key1, key2, key3, key4));
 	}
 
-	public boolean containsKey(byte key1, byte key2, byte key3) {
-		short key = key(key1, key2, key3);
-		return map.containsKey(key);
+	public boolean containsKey(int key1, int key2, int key3, int key4) {
+		return map.containsKey(key(key1, key2, key3, key4));
 	}
 
 	public void clear() {
@@ -92,9 +89,8 @@ public class TNibbleTripleShortHashMap extends NibbleTripleHashed {
 		return map.keys();
 	}
 
-	public short remove(byte key1, byte key2, byte key3) {
-		short key = key(key1, key2, key3);
-		return map.remove(key);
+	public short remove(int key1, int key2, int key3, int key4) {
+		return map.remove(key(key1, key2, key3, key4));
 	}
 
 	public int size() {

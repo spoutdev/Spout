@@ -35,7 +35,7 @@ import gnu.trove.set.hash.TLongHashSet;
  * hashset. 1 bit is wasted.
  */
 public class TInt21HashSet {
-	protected TLongSet set;
+	protected final TLongSet set;
 
 	/**
 	 * Creates a new <code>TInt21HashSet</code> instance backend by a {@see TLongHashSet} instance with an capacity of 100 and the default load factor.

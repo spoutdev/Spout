@@ -41,7 +41,7 @@ import gnu.trove.set.TLongSet;
  *
  */
 public class TIntPairDoubleHashMap extends IntPairHashed {
-	private TLongDoubleHashMap map;
+	protected final TLongDoubleHashMap map;
 
 	public TIntPairDoubleHashMap() {
 		map = new TLongDoubleHashMap(100);
