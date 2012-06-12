@@ -101,6 +101,10 @@ public class TickStage {
 	 */
 	public final static int SNAPSHOT = 1 << 9;
 
+	public static int getStageInt() {
+		return stage;
+	}
+	
 	public static String getStage(int num) {
 		switch (num) {
 			case 1 << 0:

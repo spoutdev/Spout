@@ -30,6 +30,7 @@ import org.spout.api.Source;
 import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveWrite;
@@ -275,9 +276,10 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param x
 	 * @param y
 	 * @param z
+	 * @return the old update for that block at that time instant, or null if none
 	 */
 	@DelayedWrite
-	public abstract void queueDynamicUpdate(int x, int y, int z);
+	public abstract DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z);
 	
 	/**
 	 * Queues a dynamic material updated for the given location. This list is checked during the finalize part of the tick, and will cause the update method to be called.<br>
@@ -286,22 +288,10 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param y
 	 * @param z
 	 * @param nextUpdate the update time
+	 * @return the old update for that block at that time instant, or null if none
 	 */
 	@DelayedWrite
-	public abstract void queueDynamicUpdate(int x, int y, int z, long nextUpdate);
-	
-	/**
-	 * Queues a dynamic material updated for the given location. This list is checked during the finalize part of the tick, and will cause the update method to be called.<br>
-	 * If a replacement policy, other than REPLACE_NONE, is specified and there is already an update for that block pending, the update must replace at least one of those updates, or it won't be added
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param nextUpdate the update time
-	 * @param policy the insertion policy
-	 */
-	@DelayedWrite
-	public abstract void queueDynamicUpdate(int x, int y, int z, InsertionPolicy policy, long nextUpdate);
+	public abstract DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate);
 	
 	/**
 	 * Queues a dynamic material updated for the given location. This list is checked during the finalize part of the tick, and will cause the update method to be called.<br>
@@ -311,9 +301,10 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param z
 	 * @param nextUpdate the update time
 	 * @param hint a non-persistent hint for the update
+	 * @return the old update for that block at that time instant, or null if none
 	 */
 	@DelayedWrite
-	public abstract void queueDynamicUpdate(int x, int y, int z, long nextUpdate, Object hint);
+	public abstract DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, Object hint);
 	
 	/**
 	 * Queues a dynamic material updated for the given location. This list is checked during the finalize part of the tick, and will cause the update method to be called.<br>
@@ -322,11 +313,11 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param y
 	 * @param z
 	 * @param nextUpdate the update time
-	 * @param policy the insertion policy
+	 * @param data persistent data to be used for the update
 	 * @param hint a non-persistent hint for the update
+	 * @return the old update for that block at that time instant, or null if none
 	 */
 	@DelayedWrite
-	public abstract void queueDynamicUpdate(int x, int y, int z, InsertionPolicy policy, long nextUpdate, Object hint);
-	
+	public abstract DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, int data, Object hint);
 	
 }

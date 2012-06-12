@@ -54,38 +54,28 @@ public interface DynamicMaterial {
 	public Vector3[] maxRange();
 	
 	/**
-	 * This methods is called during the start of the FINALIZE part of the tick whenever a dynamic material is placed.<br>
+	 * This method is called during the DYNAMIC_BLOCKS or GLOBAL_DYNAMIC_BLOCKS tick stage. <br>
 	 * <br>
 	 * World updates must NOT make changes outside the Region that contains the block.<br>
-	 * <br>
-	 * Returning the current time will cause the update method to be called immediately, if possible.  
-	 * It is called during TICKSTART at the start of the next tick for updates which span multiple regions.<br>
-	 * <br>
-	 * NOTE: if you wish to pass hints for an update, then you must use the .queueUpdate() method in World/Region/Chunk/Block.
 	 * 
 	 * @param b the block
 	 * @param r the region that contains the block
 	 * @param currentTime the age of the world
-	 * @return the next update time, or less than zero for none
 	 */
-	public long onPlacement(Block b, Region r, long currentTime);
+	public void onPlacement(Block b, Region r, long currentTime);
 	
 	/**
-	 * This method is called during the start of the FINALIZE part of the tick, for Region specific updates, or during TICKSTART, for updates which span multiple regions.<br>
+	 * This method is called during the DYNAMIC_BLOCKS or GLOBAL_DYNAMIC_BLOCKS tick stage. <br>
 	 * <br>
 	 * World updates must NOT make updates outside of the cuboid defined by the maxRange method.<br>
-	 * <br>
-	 * This method is always called on the first tick after a block is flagged as dynamic, but with the last parameter set to true.<br>
-	 * <br>
-	 * NOTE: if you wish to pass hints for an update, then you must use the queueDynamicUpdate method in World/Region/Chunk/Block.
 	 * 
 	 * @param b the block
 	 * @param r the region that contains the block
 	 * @param updateTime the time the update was intended to happen
-	 * @param lastUpdateTime the last time the block was updated
+	 * @param queuedTime the time this update was queued
+	 * @param data persistent data for the update
 	 * @param hint non-persistent hint that may help with the update
-	 * @return the next time the dynamic block should be updated, or less than zero for none
 	 */
-	public long update(Block b, Region r, long updateTime, long lastUpdateTime, Object hint);
+	public void onDynamicUpdate(Block b, Region r, long updateTime, long queuedTime, int data, Object hint);
 
 }

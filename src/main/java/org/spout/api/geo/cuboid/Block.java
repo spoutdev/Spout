@@ -29,10 +29,10 @@ package org.spout.api.geo.cuboid;
 import org.spout.api.Source;
 import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.generator.biome.Biome;
-import org.spout.api.geo.InsertionPolicy;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.source.DataSource;
 import org.spout.api.material.source.MaterialSource;
@@ -354,7 +354,7 @@ public interface Block extends MaterialState {
 	public Block update(UpdateOption option);
 	
 	/**
-	 * Resets all dynamic material updates queued for this block. This list is checked during the finalize part of the tick, and will cause the onPlacement method to be called.<br>
+	 * Resets all dynamic material updates queued for this block. This list is checked during the DYNAMIC_BLOCKS part of the tick, and will cause the onPlacement method to be called.<br>
 	 */
 	public abstract void resetDynamic();
 
@@ -362,47 +362,37 @@ public interface Block extends MaterialState {
 	 * Queues a dynamic update on this block<br>
 	 * The Block Material must be dynamic for this to function.
 	 * 
-	 * @return this Block
+	 * @return the old update for that block at that time instant, or null if none
 	 */
-	public Block dynamicUpdate();
+	public DynamicUpdateEntry dynamicUpdate();
 
 	/**
 	 * Queues a dynamic update on this block<br>
 	 * The Block Material must be dynamic for this to function.
 	 * 
 	 * @param nextUpdate the time for the next update
-	 * @return this Block
+	 * @return the old update for that block at that time instant, or null if none
 	 */
-	public Block dynamicUpdate(long nextUpdate);
-	
-	/**
-	 * Queues a dynamic update on this block<br>
-	 * The Block Material must be dynamic for this to function.
-	 * 
-	 * @param nextUpdate the time for the next update
-	 * @param policy the insertion policy
-	 * @return this Block
-	 */
-	public Block dynamicUpdate(long nextUpdate, InsertionPolicy policy);
+	public DynamicUpdateEntry dynamicUpdate(long nextUpdate);
 
 	/**
 	 * Queues a dynamic update on this block<br>
 	 * The Block Material must be dynamic for this to function.
 	 * 
 	 * @param nextUpdate the time for the next update
-	 * @param hint parameter to use during the update
-	 * @return this Block
+	 * @param hint non-persistent parameter to speed up the update
+	 * @return the old update for that block at that time instant, or null if none
 	 */
-	public Block dynamicUpdate(long nextUpdate, Object hint);
+	public DynamicUpdateEntry dynamicUpdate(long nextUpdate, Object hint);
 	
 	/**
 	 * Queues a dynamic update on this block<br>
 	 * The Block Material must be dynamic for this to function.
 	 * 
 	 * @param nextUpdate the time for the next update
-	 * @param policy the insertion policy
-	 * @param hint parameter to use during the update
-	 * @return this Block
-	 */
-	public Block dynamicUpdate(long nextUpdate, InsertionPolicy policy, Object hint);
+	 * @param data persistent data to be used for the update
+	 * @param hint non-persistent parameter to speed up the update
+	 * @return the old update for that block at that time instant, or null if none
+	 **/
+	public DynamicUpdateEntry dynamicUpdate(long nextUpdate, int data, Object hint);
 }
