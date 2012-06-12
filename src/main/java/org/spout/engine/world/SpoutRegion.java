@@ -197,7 +197,17 @@ public class SpoutRegion extends Region{
 		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
 			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
 				for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
-					chunks[dx][dy][dz] = new AtomicReference<SpoutChunk>(loadopt.loadIfNeeded() ? getChunk(dx, dy, dz, loadopt) : null);
+					chunks[dx][dy][dz] = new AtomicReference<SpoutChunk>(null);
+				}
+			}
+		}
+		
+		if (loadopt.loadIfNeeded()) {
+			for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
+				for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
+					for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+						getChunk(dx, dy, dz, loadopt);
+					}
 				}
 			}
 		}
