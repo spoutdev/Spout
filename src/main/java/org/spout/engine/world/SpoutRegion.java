@@ -849,6 +849,20 @@ public class SpoutRegion extends Region{
 			}
 		}
 	}
+	
+	public void runLocalPhysics() throws InterruptedException {
+	}
+
+	public int runGlobalPhysics() throws InterruptedException {
+		return 0;
+	}
+
+	public void runLocalDynamicUpdates() throws InterruptedException {
+	}
+
+	public int runGlobalDynamicUpdates() throws InterruptedException {
+		return 0;
+	}
 
 	@Override
 	@SuppressWarnings({"rawtypes", "unchecked"})

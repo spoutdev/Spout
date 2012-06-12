@@ -28,32 +28,15 @@ package org.spout.engine.util.thread;
 
 import java.io.Serializable;
 
-import org.spout.engine.util.thread.future.ManagedFuture;
-
 /**
  * This task must support being serialized and then the deserialized object
  * being run instead
  * <p/>
  * This task does not have a return a value
  */
-public abstract class ManagementRunnable extends ManagementTask {
+public abstract class ManagementRunnable implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * A Runnable doesn't return a value, so has no associated Future
-	 */
-	@Override
-	public final ManagedFuture<Serializable> getFuture() {
-		return null;
-	}
-
-	/**
-	 * A Runnable doesn't return a value, so has no associated Future
-	 */
-	@Override
-	public final void setFuture(ManagedFuture<Serializable> future) {
-		if (future != null) {
-			future.set(null);
-		}
-	}
+	public abstract void run(AsyncExecutor executor) throws InterruptedException;
+	
 }

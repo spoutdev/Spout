@@ -26,11 +26,7 @@
  */
 package org.spout.engine.util.thread;
 
-import java.io.Serializable;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
-
-import org.spout.engine.util.thread.future.ManagedFuture;
 
 public interface AsyncExecutor {
 	/**
@@ -51,17 +47,21 @@ public interface AsyncExecutor {
 	 * Adds a task to this executor's queue
 	 * @param task the runnable to execute
 	 */
-	public Future<?> addToQueue(ManagementTask task) throws InterruptedException;
-
+	public void addToQueue(ManagementRunnable task) throws InterruptedException;
+	
 	/**
-	 * Waits until a future is done.
-	 * <p/>
-	 * This method should be called instead of waiting on the future directly.
-	 * <p/>
-	 * It will wait execute other tasks on the queue while waiting.
-	 * @param future the future
+	 * This is called before global physics lists are checked, and can be
+	 * called multiple times per tick
+	 * @return false if the executor was active
 	 */
-	public void waitForFuture(ManagedFuture<Serializable> future) throws InterruptedException;
+	public boolean doLocalPhysics();
+	
+	/**
+	 * This is called before global physics lists are checked, and can be
+	 * called multiple times per tick
+	 * @return false if the executor was active
+	 */
+	public boolean doLocalDynamicUpdates();
 
 	/**
 	 * This is called as the last stage prior to the snapshot being taken.<br>

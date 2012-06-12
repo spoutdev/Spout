@@ -806,4 +806,24 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	public MemoryLeakThread getLeakThread() {
 		return leakThread;
 	}
+	
+	// The engine doesn't do any of these
+
+	@Override
+	public void runLocalPhysics() throws InterruptedException {
+	}
+
+	@Override
+	public int runGlobalPhysics() throws InterruptedException {
+		return 0;
+	}
+
+	@Override
+	public void runLocalDynamicUpdates() throws InterruptedException {
+	}
+
+	@Override
+	public int runGlobalDynamicUpdates() throws InterruptedException {
+		return 0;
+	}
 }

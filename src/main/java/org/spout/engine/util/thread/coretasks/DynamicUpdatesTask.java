@@ -24,18 +24,16 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.util.thread;
+package org.spout.engine.util.thread.coretasks;
 
-import java.io.Serializable;
+import org.spout.engine.util.thread.AsyncExecutor;
+import org.spout.engine.util.thread.ManagementRunnable;
 
-/**
- * This is a task that returns a value
- * <p/>
- * This task must support being serialized and then the deserialized object
- * being run instead.
- * <p/>
- * Its return value must also support serialization
- */
-public abstract class ManagementCallable<T extends Serializable> extends ManagementTask {
+public class DynamicUpdatesTask extends ManagementRunnable {
 	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void run(AsyncExecutor executor) throws InterruptedException {
+		executor.getManager().runLocalDynamicUpdates();
+	}
 }

@@ -26,34 +26,36 @@
  */
 package org.spout.engine.util.thread;
 
-import java.io.Serializable;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.spout.api.util.concurrent.AtomicIntegerHelper;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.thread.coretasks.CopySnapshotTask;
+import org.spout.engine.util.thread.coretasks.DynamicUpdatesTask;
 import org.spout.engine.util.thread.coretasks.FinalizeTask;
+import org.spout.engine.util.thread.coretasks.PhysicsTask;
 import org.spout.engine.util.thread.coretasks.PreSnapshotTask;
 import org.spout.engine.util.thread.coretasks.StartTickTask;
-import org.spout.engine.util.thread.future.ManagedFuture;
 
 /**
  * This is a thread that executes tasks
  */
 public final class ThreadAsyncExecutor extends PulsableThread implements AsyncExecutor {
-	private ConcurrentLinkedQueue<ManagementTask> taskQueue = new ConcurrentLinkedQueue<ManagementTask>();
-	private AtomicBoolean wakePending = new AtomicBoolean(false);
-	private AtomicInteger wakeCounter = new AtomicInteger(0);
-	private AtomicReference<Object> waitingMonitor = new AtomicReference<Object>();
+	private ConcurrentLinkedQueue<ManagementRunnable> taskQueue = new ConcurrentLinkedQueue<ManagementRunnable>();
 	private CopySnapshotTask copySnapshotTask = new CopySnapshotTask();
 	private StartTickTask startTickTask = new StartTickTask();
+	private DynamicUpdatesTask dynamicUpdatesTask = new DynamicUpdatesTask();
+	private PhysicsTask physicsTask = new PhysicsTask();
 	private PreSnapshotTask preSnapshotTask = new PreSnapshotTask();
 	private FinalizeTask finalizeTask = new FinalizeTask();
 	private AsyncManager manager = null;
 	private AtomicReference<ExecutorState> state = new AtomicReference<ExecutorState>(ExecutorState.CREATED);
+	private AtomicInteger wakeCounter = new AtomicInteger(0);
+	private static final int wakePulsing = 1;
+	private static final int wakePending = 2;
+	private static final int wakeDelta = 4;
 
 	public ThreadAsyncExecutor(String name) {
 		super(name);
@@ -104,51 +106,12 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	}
 
 	@Override
-	public final Future<Serializable> addToQueue(ManagementTask task) throws InterruptedException {
+	public final void addToQueue(ManagementRunnable task) throws InterruptedException {
 		if (Thread.currentThread() == this) {
 			executeTask(task);
 		} else {
 			taskQueue.add(task);
 			pulse();
-		}
-
-		ManagedFuture<Serializable> future = task.getFuture();
-		if (future == null) {
-			return null;
-		}
-
-		future.setManager(manager);
-		return future;
-	}
-
-	@Override
-	public final void waitForFuture(ManagedFuture<Serializable> future) throws InterruptedException {
-		ThreadsafetyManager.checkCurrentThread(this);
-		checkFuture(future);
-
-		Object monitor = future.getMonitor();
-		waitingMonitor.set(monitor);
-
-		while (!future.isDone()) {
-			executeAllTasks();
-			synchronized (monitor) {
-				if (!taskQueue.isEmpty()) {
-					continue;
-				}
-				future.waitForMonitor();
-			}
-		}
-
-		waitingMonitor.set(null);
-	}
-
-	/**
-	 * Checks if the future is associated with this executor
-	 * @param future the future
-	 */
-	private void checkFuture(ManagedFuture<Serializable> future) {
-		if (future.getManager().getExecutor() != this) {
-			throw new IllegalArgumentException("AsyncExecutors may only wait on futures linked with the executor");
 		}
 	}
 
@@ -158,18 +121,14 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	 */
 	private final void executeAllTasks() throws InterruptedException {
 		ThreadsafetyManager.checkCurrentThread(this);
-		ManagementTask task;
+		ManagementRunnable task;
 		while ((task = taskQueue.poll()) != null) {
 			executeTask(task);
 		}
 	}
 
-	private final void executeTask(ManagementTask task) throws InterruptedException {
-		Serializable returnValue = task.call(this);
-		ManagedFuture<Serializable> future = task.getFuture();
-		if (future != null) {
-			future.set(returnValue);
-		}
+	private final void executeTask(ManagementRunnable task) throws InterruptedException {
+		task.run(this);
 	}
 
 	@Override
@@ -192,7 +151,21 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 		taskQueue.add(preSnapshotTask);
 		return pulse();
 	}
-
+	
+	@Override
+	public final boolean doLocalPhysics() {
+		ThreadsafetyManager.checkMainThread();
+		taskQueue.add(physicsTask);
+		return pulse();
+	}
+	
+	@Override
+	public final boolean doLocalDynamicUpdates() {
+		ThreadsafetyManager.checkMainThread();
+		taskQueue.add(dynamicUpdatesTask);
+		return pulse();
+	}
+	
 	@Override
 	public final boolean startTick(int stage, long delta) {
 		ThreadsafetyManager.checkMainThread();
@@ -204,7 +177,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	public final boolean isPulseFinished() {
 		try {
 			disableWake();
-			return !isPulsing() && taskQueue.isEmpty();
+			return (wakeCounter.getAndAdd(0) & wakePulsing) == 0 && !isPulsing() && taskQueue.isEmpty();
 		} finally {
 			enableWake();
 		}
@@ -212,26 +185,51 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 
 	@Override
 	public final void disableWake() {
-		wakeCounter.incrementAndGet();
+		wakeCounter.addAndGet(wakeDelta);
 	}
 
 	@Override
 	public final void enableWake() {
-		int localCounter = wakeCounter.decrementAndGet();
-		if (localCounter == 0 && wakePending.compareAndSet(true, false)) {
-			pulse();
+		boolean success = false;
+		while (!success) {
+			int current = wakeCounter.get();
+			if (current < wakeDelta) {
+				throw new IllegalStateException("Wake counter should never be negative: " + (current - wakeDelta));
+			}
+			if (current == wakePending + wakeDelta) {
+				if (wakeCounter.compareAndSet(wakePending + wakeDelta, wakePulsing)) {
+					try {
+						super.pulse();
+					} finally {
+						if (!AtomicIntegerHelper.clearBit(wakeCounter, wakePulsing)) {
+							throw new IllegalStateException("Bit zero of wake counter set to 0 while pulse was being triggered");
+						}
+						success = true;
+					}		
+				} else {
+					success = false;
+				}
+			} else {
+				success = wakeCounter.compareAndSet(current, current - wakeDelta);
+			}
 		}
 	}
 
 	@Override
 	public boolean pulse() {
-		Object monitor = waitingMonitor.get();
-		if (monitor != null) {
-			synchronized (monitor) {
-				monitor.notifyAll();
+		if (wakeCounter.compareAndSet(0, wakePulsing)) {
+			try {
+				return super.pulse();
+			} finally {
+				if (!AtomicIntegerHelper.clearBit(wakeCounter, wakePulsing)) {
+					throw new IllegalStateException("Bit zero of wake counter set to 0 while pulse was being triggered");
+				}
 			}
+		} else if (AtomicIntegerHelper.setField(wakeCounter, wakePending | wakePulsing, 0, wakePending)) {
+			return true;
+		} else {
+			return false;
 		}
-		return super.pulse();
 	}
 
 	/**

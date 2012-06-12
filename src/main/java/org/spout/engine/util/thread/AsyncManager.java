@@ -26,8 +26,6 @@
  */
 package org.spout.engine.util.thread;
 
-import java.util.WeakHashMap;
-
 import org.spout.api.Engine;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.engine.SpoutEngine;
@@ -37,8 +35,6 @@ public abstract class AsyncManager {
 	private final int maxStage;
 	private final Engine engine; // null means that this AsyncManager is the Server
 	private final AsyncExecutor executor;
-	private final WeakHashMap<Managed, Boolean> managedSet = new WeakHashMap<Managed, Boolean>();
-	private final ManagementTask[] singletonCache = new ManagementTask[ManagementTaskEnum.getMaxId()];
 
 	public AsyncManager(int maxStage, AsyncExecutor executor) {
 		this.executor = executor;
@@ -69,61 +65,6 @@ public abstract class AsyncManager {
 		}
 
 		return (Engine) this;
-	}
-
-	// TODO - these 2 methods are probably overly complex for requirements
-
-	/**
-	 * Gets a singleton task if available.
-	 * <p/>
-	 * Tasks should be returned to the cache after usage
-	 * @param taskEnum the enum of the task
-	 * @return an instance of task
-	 */
-	public ManagementTask getSingletonTask(ManagementTaskEnum taskEnum) {
-		Thread current = Thread.currentThread();
-		if (current instanceof AsyncExecutor) {
-			AsyncExecutor executor = (AsyncExecutor) current;
-			int taskId = taskEnum.getId();
-			ManagementTask[] taskCache = executor.getManager().singletonCache;
-			ManagementTask task = taskCache[taskId];
-			if (task != null) {
-				taskCache[taskId] = null;
-				return task;
-			}
-		}
-		return taskEnum.getInstance();
-	}
-
-	/**
-	 * Returns a singleton task to the cache
-	 * <p/>
-	 * Tasks should be returned to the cache after usage
-	 * @param task the enum of the taskß
-	 * @return an instance of task
-	 */
-	public void returnSingletonTask(ManagementTask task) {
-		if (!task.getFuture().isDone()) {
-			throw new IllegalArgumentException("Tasks with active futures should not be returned to the cache");
-		}
-		Thread current = Thread.currentThread();
-		if (current instanceof AsyncExecutor) {
-			AsyncExecutor executor = (AsyncExecutor) current;
-			ManagementTaskEnum e = task.getEnum();
-			int taskId = e.getId();
-			ManagementTask[] taskCache = executor.getManager().singletonCache;
-			taskCache[taskId] = task;
-		}
-	}
-
-	/**
-	 * Sets this AsyncManager as manager for a given object
-	 * @param managed the object to give responsibility for
-	 */
-	public final void addManaged(Managed managed) {
-		synchronized (managedSet) {
-			managedSet.put(managed, Boolean.TRUE);
-		}
 	}
 
 	/**
@@ -158,6 +99,38 @@ public abstract class AsyncManager {
 	 * @param delta the time since the last tick
 	 */
 	public abstract void startTickRun(int stage, long delta) throws InterruptedException;
+	
+	/**
+	 * This method is called to execute physics for blocks local to the Region.  
+	 * It might be called multiple times per tick
+	 * @throws InterruptedException
+	 */
+	public abstract void runLocalPhysics() throws InterruptedException;
+	
+	/**
+	 * This method is called to execute physics for blocks that might 
+	 * affects blocks outside the Region.
+	 * It might be called multiple times per tick
+	 * @throws InterruptedException
+	 * @return the number of updates (including local ones) since last call
+	 */
+	public abstract int runGlobalPhysics() throws InterruptedException;
+	
+	/**
+	 * This method is called to execute dynamic updates for blocks local to the Region.  
+	 * It might be called multiple times per tick
+	 * @throws InterruptedException
+	 */
+	public abstract void runLocalDynamicUpdates() throws InterruptedException;
+	
+	/**
+	 * This method is called to execute dynamic updates for blocks that might 
+	 * affects blocks outside the Region.
+	 * It might be called multiple times per tick
+	 * @throws InterruptedException
+	 * @return the number of updates (including local ones) since last call
+	 */
+	public abstract int runGlobalDynamicUpdates() throws InterruptedException;
 
 	/**
 	 * This method is called when the associated executor is halted and occurs
