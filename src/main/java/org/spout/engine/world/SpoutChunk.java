@@ -800,7 +800,7 @@ public class SpoutChunk extends Chunk {
 	}
 
 	public void setUnloaded() {
-		TickStage.checkStage(TickStage.SNAPSHOT);
+		TickStage.checkStage(TickStage.SNAPSHOT, regionThread);
 		saveState.set(SaveState.UNLOADED);
 		//Clear as much as possible to limit the damage of a potential leak
 		this.blockStore = null;
