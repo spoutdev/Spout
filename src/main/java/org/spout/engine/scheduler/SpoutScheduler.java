@@ -102,6 +102,10 @@ public final class SpoutScheduler implements Scheduler {
 	 */
 	protected static final int PULSE_EVERY = 50;
 	/**
+	 * A time that is at least 1 Pulse below the maximum time instant
+	 */
+	public static final long END_OF_THE_WORLD = Long.MAX_VALUE - PULSE_EVERY;
+	/**
 	 * Target Frames per Second for the renderer
 	 */
 	private static final int TARGET_FPS = 60;
@@ -435,10 +439,23 @@ public final class SpoutScheduler implements Scheduler {
 		int updatesThisPass = 1;
 		while (updatesThisPass > 0) {
 			
-			TickStage.setStage(TickStage.DYNAMIC_BLOCKS);
+			TickStage.setStage(TickStage.GLOBAL_DYNAMIC_BLOCKS);
+			
+			long earliestTime = END_OF_THE_WORLD;
 			
 			for (AsyncExecutor e : executors) {
-				if (!e.doLocalDynamicUpdates()) {
+				long firstTime = e.getManager().getFirstDynamicUpdateTime();
+				if (firstTime < earliestTime) {
+					earliestTime = firstTime;
+				}
+			}
+			
+			TickStage.setStage(TickStage.DYNAMIC_BLOCKS);
+			
+			long threshold = earliestTime + PULSE_EVERY - 1;
+
+			for (AsyncExecutor e : executors) {
+				if (!e.doLocalDynamicUpdates(threshold)) {
 					throw new IllegalStateException("Attempt made to while the previous operation was still active");
 				}
 			}

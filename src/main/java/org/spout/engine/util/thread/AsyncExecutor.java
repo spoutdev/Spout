@@ -58,10 +58,12 @@ public interface AsyncExecutor {
 	
 	/**
 	 * This is called before global physics lists are checked, and can be
-	 * called multiple times per tick
+	 * called multiple times per tick.  Only tasks which have an update time
+	 * less than or equal to the given time are processed
+	 * @param time the time to use for the tasks
 	 * @return false if the executor was active
 	 */
-	public boolean doLocalDynamicUpdates();
+	public boolean doLocalDynamicUpdates(long time);
 
 	/**
 	 * This is called as the last stage prior to the snapshot being taken.<br>

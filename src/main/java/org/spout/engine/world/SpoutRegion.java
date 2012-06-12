@@ -49,9 +49,9 @@ import java.util.logging.Level;
 
 import org.spout.api.Source;
 import org.spout.api.Spout;
-import org.spout.api.entity.component.controller.BlockController;
-import org.spout.api.entity.component.Controller;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.component.Controller;
+import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.entity.component.controller.PlayerController;
 import org.spout.api.event.chunk.ChunkLoadEvent;
 import org.spout.api.event.chunk.ChunkPopulateEvent;
@@ -61,7 +61,6 @@ import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.LoadOption;
-import org.spout.api.geo.InsertionPolicy;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
@@ -69,6 +68,7 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
@@ -85,7 +85,6 @@ import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.ChunkDataForRegion;
 import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.player.SpoutPlayer;
-import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.scheduler.SpoutTaskManager;
 import org.spout.engine.util.TripleInt;
 import org.spout.engine.util.thread.AsyncExecutor;
@@ -486,23 +485,6 @@ public class SpoutRegion extends Region{
 		if (empty) {
 			source.removeRegion(this);
 		}
-
-
-		if (multiRegionUpdates != null) {
-			final List<DynamicBlockUpdate> finalMultiRegionUpdates = multiRegionUpdates;
-			final DynamicBlockUpdateTree finalTree = dynamicBlockTree;
-			final long worldAge = getWorld().getAge();
-			multiRegionUpdates = null;
-
-			((SpoutScheduler)Spout.getScheduler()).scheduleCoreTask(new Runnable() {
-				@Override
-				public void run() {
-					for (DynamicBlockUpdate dm : finalMultiRegionUpdates) {
-						finalTree.updateDynamicBlock(worldAge, dm, true);
-					}
-				}
-			});
-		}
 	}
 
 	public boolean processChunkSaveUnload(int x, int y, int z) {
@@ -702,9 +684,6 @@ public class SpoutRegion extends Region{
 
 		long worldAge = getWorld().getAge();
 
-		dynamicBlockTree.commitPending(worldAge);
-		multiRegionUpdates = dynamicBlockTree.updateDynamicBlocks(worldAge);
-
 		// Compress at most 1 chunk per tick per region
 		boolean chunkCompressed = false;
 
@@ -856,12 +835,30 @@ public class SpoutRegion extends Region{
 	public int runGlobalPhysics() throws InterruptedException {
 		return 0;
 	}
+	
+	public long getFirstDynamicUpdateTime() {
+		return dynamicBlockTree.getFirstDynamicUpdateTime();
+	}
 
-	public void runLocalDynamicUpdates() throws InterruptedException {
+	public void runLocalDynamicUpdates(long time) throws InterruptedException {
+		long currentTime = getWorld().getAge();
+		if (time > currentTime) {
+			time = currentTime;
+		}
+		dynamicBlockTree.commitAsyncPending(currentTime);
+		multiRegionUpdates = dynamicBlockTree.updateDynamicBlocks(currentTime, time);
 	}
 
 	public int runGlobalDynamicUpdates() throws InterruptedException {
-		return 0;
+		int size = 0;
+		long currentTime = getWorld().getAge();
+		if (multiRegionUpdates != null) {
+			size = Math.max(multiRegionUpdates.size(), 1);
+			for (DynamicBlockUpdate update : multiRegionUpdates) {
+				dynamicBlockTree.updateDynamicBlock(currentTime, update, true);
+			}
+		}
+		return size;
 	}
 
 	@Override
@@ -1159,30 +1156,25 @@ public class SpoutRegion extends Region{
 	public void resetDynamicBlock(int x, int y, int z) {
 		dynamicBlockTree.resetBlockUpdates(x, y, z);
 	}
-
-	@Override
-	public void queueDynamicUpdate(int x, int y, int z, long nextUpdate, Object hint) {
-		dynamicBlockTree.queueBlockUpdates(x, y, z, nextUpdate, hint);
-	}
 	
 	@Override
-	public void queueDynamicUpdate(int x, int y, int z, InsertionPolicy policy, long nextUpdate, Object hint) {
-		dynamicBlockTree.queueBlockUpdates(x, y, z, policy, nextUpdate, hint);
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, int data, Object hint) {
+		return dynamicBlockTree.queueBlockUpdates(x, y, z, nextUpdate, data, hint);
 	}
 
 	@Override
-	public void queueDynamicUpdate(int x, int y, int z, long nextUpdate) {
-		dynamicBlockTree.queueBlockUpdates(x, y, z, nextUpdate);
-	}
-	
-	@Override
-	public void queueDynamicUpdate(int x, int y, int z, InsertionPolicy policy, long nextUpdate) {
-		dynamicBlockTree.queueBlockUpdates(x, y, z, policy, nextUpdate);
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, Object hint) {
+		return dynamicBlockTree.queueBlockUpdates(x, y, z, nextUpdate, hint);
 	}
 
 	@Override
-	public void queueDynamicUpdate(int x, int y, int z) {
-		dynamicBlockTree.queueBlockUpdates(x, y, z);
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate) {
+		return dynamicBlockTree.queueBlockUpdates(x, y, z, nextUpdate);
+	}
+
+	@Override
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z) {
+		return dynamicBlockTree.queueBlockUpdates(x, y, z);
 	}
 
 
@@ -1190,35 +1182,15 @@ public class SpoutRegion extends Region{
 	public List<DynamicBlockUpdate> getDynamicBlockUpdates(Chunk c) {
 		Set<DynamicBlockUpdate> updates = dynamicBlockTree.getDynamicBlockUpdates(c);
 		int size = updates == null ? 0 : updates.size();
-		if (multiRegionUpdates != null) {
-			size += multiRegionUpdates.size();
-		}
 		List<DynamicBlockUpdate> list = new ArrayList<DynamicBlockUpdate>(size);
 		if (updates != null) {
 			list.addAll(updates);
-		}
-		if (multiRegionUpdates != null) {
-			for (DynamicBlockUpdate dm : multiRegionUpdates) {
-				if (dm.isInChunk(c)) {
-					list.add(dm);
-				}
-			}
 		}
 		return list;
 	}
 
 	public boolean removeDynamicBlockUpdates(Chunk c) {
 		boolean removed = dynamicBlockTree.removeDynamicBlockUpdates(c);
-		if (multiRegionUpdates != null) {
-			Iterator<DynamicBlockUpdate> itr = multiRegionUpdates.iterator();
-			while (itr.hasNext()) {
-				DynamicBlockUpdate dm = itr.next();
-				if (dm.isInChunk(c)) {
-					removed = true;
-					itr.remove();
-				}
-			}
-		}
 		return removed;
 	}
 

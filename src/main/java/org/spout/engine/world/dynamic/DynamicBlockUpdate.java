@@ -31,9 +31,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.util.hashing.ByteTripleHashed;
 
-public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate> {
+public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate>, DynamicUpdateEntry {
 	
 	private final static AtomicInteger idCounter = new AtomicInteger(0);
 
@@ -41,24 +42,26 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate> {
 	private final int packed;
 	private final int chunkPacked;
 	private final long nextUpdate;
-	private final long lastUpdate;
+	private final long queuedTime;
+	private final int data;
 	transient final Object hint;
 
 	private DynamicBlockUpdate next;
 
-	public DynamicBlockUpdate(int packed, long nextUpdate, long lastUpdate, Object hint) {
-		this(unpackX(packed), unpackY(packed), unpackZ(packed), nextUpdate, lastUpdate, hint);
+	public DynamicBlockUpdate(int packed, long nextUpdate, long queuedTime, int data, Object hint) {
+		this(unpackX(packed), unpackY(packed), unpackZ(packed), nextUpdate, queuedTime, data, hint);
 	}
 
-	public DynamicBlockUpdate(int x, int y, int z, long nextUpdate, long lastUpdate, Object hint) {
+	public DynamicBlockUpdate(int x, int y, int z, long nextUpdate, long queuedTime, int data, Object hint) {
 		x &= Region.BLOCKS.MASK;
 		y &= Region.BLOCKS.MASK;
 		z &= Region.BLOCKS.MASK;
 		this.packed = getBlockPacked(x, y, z);
 		this.chunkPacked = ByteTripleHashed.key(x >> Chunk.BLOCKS.BITS, y >> Chunk.BLOCKS.BITS, z >> Chunk.BLOCKS.BITS);
 		this.nextUpdate = nextUpdate;
-		this.lastUpdate = lastUpdate;
+		this.queuedTime = queuedTime;
 		this.hint = hint;
+		this.data = data;
 		this.id = idCounter.getAndIncrement();
 	}
 
@@ -78,12 +81,16 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate> {
 		return nextUpdate;
 	}
 
-	public long getLastUpdate() {
-		return lastUpdate;
+	public long getQueuedTime() {
+		return queuedTime;
 	}
 
 	public int getPacked() {
 		return packed;
+	}
+	
+	public int getData() {
+		return data;
 	}
 
 	public int getChunkPacked() {
@@ -173,13 +180,18 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate> {
 		}
 
 		if (update == this) {
-			return this.next;
+			try {
+				return this.next;
+			} finally {
+				this.next = null;
+			}
 		}
 
 		DynamicBlockUpdate current = this;
 		while (current != null) {
 			if (current.next == update) {
 				current.next = update.next;
+				update.next = null;
 				break;
 			}
 			current = current.next;
@@ -194,9 +206,9 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate> {
 	@Override
 	public String toString() {
 		return "DynamicBlockUpdate{ id: + " + id + " packed: " + getPacked() + " chunkPacked: " + getChunkPacked() + 
-				" nextUpdate: " + getNextUpdate() + " lastUpdate: " + getLastUpdate() + 
+				" nextUpdate: " + getNextUpdate() + " queuedTime: " + getQueuedTime() + 
 				" pos: (" + getX() + ", " + getY() + ", " + getZ() + ")" +
-				" hint: " + hint + " }";
+				" data: " + data + " hint: " + hint + " }";
 	}
 	
 	public static int getPointPacked(Point p) {

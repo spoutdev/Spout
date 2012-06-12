@@ -44,15 +44,14 @@ import org.spout.api.Spout;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
-import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.entity.component.controller.PlayerController;
 import org.spout.api.event.block.BlockChangeEvent;
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGeneratorUtils;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeManager;
-import org.spout.api.geo.InsertionPolicy;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
@@ -60,6 +59,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicMaterial;
+import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFullState;
@@ -77,6 +77,7 @@ import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.WorldFiles;
+import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashSet;
@@ -87,7 +88,8 @@ public class SpoutChunk extends Chunk {
 	 * allowed stages. During the restricted stages, only the region thread may
 	 * modify the block store.
 	 */
-	private static final int restrictedStages = TickStage.FINALIZE;
+	private static final int restrictedStages = TickStage.PHYSICS | TickStage.DYNAMIC_BLOCKS;
+	private static final int mainThreadStages = TickStage.GLOBAL_PHYSICS | TickStage.GLOBAL_DYNAMIC_BLOCKS;
 	private static final int allowedStages = TickStage.STAGE1 | TickStage.STAGE2P | TickStage.TICKSTART;
 
 	/**
@@ -178,6 +180,7 @@ public class SpoutChunk extends Chunk {
 	 * The thread associated with the region
 	 */
 	private final Thread regionThread;
+	private final Thread mainThread;
 
 	static {
 		for (int i = 0; i < shiftCache.length; i++) {
@@ -226,6 +229,7 @@ public class SpoutChunk extends Chunk {
 		// loaded chunk
 		this.biomes = manager;
 		this.regionThread = region.getExceutionThread();
+		this.mainThread = ((SpoutScheduler)Spout.getScheduler()).getMainThread();
 
 		((SpoutEngine) world.getEngine()).getLeakThread().monitor(this);
 	}
@@ -382,30 +386,25 @@ public class SpoutChunk extends Chunk {
 	public void resetDynamicBlock(int x, int y, int z) {
 		parentRegion.resetDynamicBlock(getBlockX(x), getBlockY(y), getBlockZ(z));
 	}
-
-	@Override
-	public void queueDynamicUpdate(int x, int y, int z, long nextUpdate, Object hint) {
-		parentRegion.queueDynamicUpdate(getBlockX(x), getBlockY(y), getBlockZ(z), nextUpdate, hint);
-	}
 	
 	@Override
-	public void queueDynamicUpdate(int x, int y, int z, InsertionPolicy policy, long nextUpdate, Object hint) {
-		parentRegion.queueDynamicUpdate(getBlockX(x), getBlockY(y), getBlockZ(z), policy, nextUpdate, hint);
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, int data, Object hint) {
+		return parentRegion.queueDynamicUpdate(getBlockX(x), getBlockY(y), getBlockZ(z), nextUpdate, data, hint);
 	}
 
 	@Override
-	public void queueDynamicUpdate(int x, int y, int z, long nextUpdate) {
-		parentRegion.queueDynamicUpdate(getBlockX(x), getBlockY(y), getBlockZ(z), nextUpdate);
-	}
-	
-	@Override
-	public void queueDynamicUpdate(int x, int y, int z, InsertionPolicy policy, long nextUpdate) {
-		parentRegion.queueDynamicUpdate(getBlockX(x), getBlockY(y), getBlockZ(z), policy, nextUpdate);
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, Object hint) {
+		return parentRegion.queueDynamicUpdate(getBlockX(x), getBlockY(y), getBlockZ(z), nextUpdate, hint);
 	}
 
 	@Override
-	public void queueDynamicUpdate(int x, int y, int z) {
-		parentRegion.queueDynamicUpdate(getBlockX(x), getBlockY(y), getBlockZ(z));
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate) {
+		return parentRegion.queueDynamicUpdate(getBlockX(x), getBlockY(y), getBlockZ(z), nextUpdate);
+	}
+
+	@Override
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z) {
+		return parentRegion.queueDynamicUpdate(getBlockX(x), getBlockY(y), getBlockZ(z));
 	}
 
 	@Override
@@ -737,13 +736,10 @@ public class SpoutChunk extends Chunk {
 
 	public boolean compressIfRequired() {
 		checkChunkLoaded();
-		TickStage.checkStage(restrictedStages, regionThread);
+		TickStage.checkStage(TickStage.FINALIZE, regionThread);
 		if (!blockStore.needsCompression()) {
 			return false;
 		}
-
-		checkChunkLoaded();
-		checkBlockStoreUpdateAllowed();
 		blockStore.compress();
 		return true;
 	}
@@ -821,7 +817,11 @@ public class SpoutChunk extends Chunk {
 	}
 
 	private void checkBlockStoreUpdateAllowed() {
-		TickStage.checkStage(allowedStages, restrictedStages, regionThread);
+		if (Thread.currentThread() == mainThread) {
+			TickStage.checkStage(allowedStages, mainThreadStages, mainThread);
+		} else {
+			TickStage.checkStage(allowedStages, restrictedStages, regionThread);
+		}
 	}
 
 	@Override

@@ -819,7 +819,12 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	@Override
-	public void runLocalDynamicUpdates() throws InterruptedException {
+	public long getFirstDynamicUpdateTime() {
+		return SpoutScheduler.END_OF_THE_WORLD;
+	}
+	
+	@Override
+	public void runLocalDynamicUpdates(long time) throws InterruptedException {
 	}
 
 	@Override
