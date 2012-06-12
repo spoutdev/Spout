@@ -607,7 +607,7 @@ public class SpoutChunk extends Chunk {
 			default:
 				throw new IllegalStateException("Unknown save state: " + state);
 			}
-			saveState.compareAndSet(state, nextState);
+			success = saveState.compareAndSet(state, nextState);
 		}
 	}
 
