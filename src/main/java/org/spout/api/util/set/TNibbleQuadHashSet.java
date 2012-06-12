@@ -26,37 +26,37 @@
  */
 package org.spout.api.util.set;
 
-import org.spout.api.util.hashing.NibblePairHashed;
+import org.spout.api.util.hashing.NibbleQuadHashed;
 
-import gnu.trove.iterator.TByteIterator;
-import gnu.trove.set.TByteSet;
-import gnu.trove.set.hash.TByteHashSet;
+import gnu.trove.iterator.TShortIterator;
+import gnu.trove.set.TShortSet;
+import gnu.trove.set.hash.TShortHashSet;
 
 /**
- * A hash set that uses two 4-bit integers as key, backed by a byte trove
- * hashset.
+ * A simplistic map that supports a 4 nibbles (4 bits) for keys, using a trove
+ * short hashset in the backend.
  */
-public class TNibbleDualHashSet extends NibblePairHashed {
-	protected final TByteSet set;
+public class TNibbleQuadHashSet extends NibbleQuadHashed {
+	protected final TShortSet set;
 
-	public TNibbleDualHashSet() {
-		set = new TByteHashSet(100);
+	public TNibbleQuadHashSet() {
+		set = new TShortHashSet(100);
 	}
 
-	public TNibbleDualHashSet(int capacity) {
-		set = new TByteHashSet(capacity);
+	public TNibbleQuadHashSet(int capacity) {
+		set = new TShortHashSet(capacity);
 	}
 
-	public TNibbleDualHashSet(TByteSet set) {
+	public TNibbleQuadHashSet(TShortSet set) {
 		this.set = set;
 	}
 
-	public boolean add(int key1, int key2) {
-		return set.add(key(key1, key2));
+	public boolean add(int key1, int key2, int key3, int key4) {
+		return set.add(key(key1, key2, key3, key4));
 	}
 
-	public boolean contains(int key1, int key2) {
-		return set.contains(key(key1, key2));
+	public boolean contains(int key1, int key2, int key3, int key4) {
+		return set.contains(key(key1, key2, key3, key4));
 	}
 
 	public void clear() {
@@ -67,19 +67,19 @@ public class TNibbleDualHashSet extends NibblePairHashed {
 		return set.isEmpty();
 	}
 
-	public TByteIterator iterator() {
+	public TShortIterator iterator() {
 		return set.iterator();
 	}
 
-	public boolean remove(int key1, int key2) {
-		return set.remove(key(key1, key2));
+	public boolean remove(int key1, int key2, int key3, int key4) {
+		return set.remove(key(key1, key2, key3, key4));
 	}
 
 	public int size() {
 		return set.size();
 	}
 
-	public byte[] toArray() {
+	public short[] toArray() {
 		return set.toArray();
 	}
 }

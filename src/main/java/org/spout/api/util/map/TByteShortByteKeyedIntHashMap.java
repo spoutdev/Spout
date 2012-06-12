@@ -41,7 +41,7 @@ import gnu.trove.set.TIntSet;
  *
  */
 public class TByteShortByteKeyedIntHashMap extends ByteShortByteHashed {
-	private TIntIntHashMap map;
+	protected final TIntIntHashMap map;
 
 	public TByteShortByteKeyedIntHashMap() {
 		map = new TIntIntHashMap(100);

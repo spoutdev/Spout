@@ -38,7 +38,7 @@ import gnu.trove.set.hash.TLongHashSet;
  *
  */
 public class TIntPairHashSet extends IntPairHashed {
-	private TLongHashSet set;
+	protected final TLongHashSet set;
 
 	public TIntPairHashSet() {
 		this(100);

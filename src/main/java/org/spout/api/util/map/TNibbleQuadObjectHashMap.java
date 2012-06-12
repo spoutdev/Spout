@@ -28,7 +28,7 @@ package org.spout.api.util.map;
 
 import java.util.Collection;
 
-import org.spout.api.util.hashing.NibbleTripleHashed;
+import org.spout.api.util.hashing.NibbleQuadHashed;
 
 import gnu.trove.iterator.TShortObjectIterator;
 import gnu.trove.map.TShortObjectMap;
@@ -36,37 +36,34 @@ import gnu.trove.map.hash.TShortObjectHashMap;
 import gnu.trove.set.TShortSet;
 
 /**
- * A simplistic map that supports a 3 nibbles (4 bits) for keys, using a trove
+ * A simplistic map that supports a 4 nibbles (4 bits) for keys, using a trove
  * short object hashmap in the backend.
  */
-public class TNibbleTripleObjectHashMap<K> extends NibbleTripleHashed {
-	protected TShortObjectMap<K> map;
+public class TNibbleQuadObjectHashMap<K> extends NibbleQuadHashed {
+	protected final TShortObjectMap<K> map;
 
-	public TNibbleTripleObjectHashMap() {
+	public TNibbleQuadObjectHashMap() {
 		map = new TShortObjectHashMap<K>(100);
 	}
 
-	public TNibbleTripleObjectHashMap(int capacity) {
+	public TNibbleQuadObjectHashMap(int capacity) {
 		map = new TShortObjectHashMap<K>(capacity);
 	}
 
-	public TNibbleTripleObjectHashMap(TShortObjectMap<K> map) {
+	public TNibbleQuadObjectHashMap(TShortObjectMap<K> map) {
 		this.map = map;
 	}
 
-	public K put(byte key1, byte key2, byte key3, K value) {
-		short key = key(key1, key2, key3);
-		return map.put(key, value);
+	public K put(int key1, int key2, int key3, int key4, K value) {
+		return map.put(key(key1, key2, key3, key4), value);
 	}
 
-	public K get(byte key1, byte key2, byte key3) {
-		short key = key(key1, key2, key3);
-		return map.get(key);
+	public K get(int key1, int key2, int key3, int key4) {
+		return map.get(key(key1, key2, key3, key4));
 	}
 
-	public boolean containsKey(byte key1, byte key2, byte key3) {
-		short key = key(key1, key2, key3);
-		return map.containsKey(key);
+	public boolean containsKey(int key1, int key2, int key3, int key4) {
+		return map.containsKey(key(key1, key2, key3, key4));
 	}
 
 	public void clear() {
@@ -93,9 +90,8 @@ public class TNibbleTripleObjectHashMap<K> extends NibbleTripleHashed {
 		return map.keys();
 	}
 
-	public K remove(byte key1, byte key2, byte key3) {
-		short key = key(key1, key2, key3);
-		return map.remove(key);
+	public K remove(int key1, int key2, int key3, int key4) {
+		return map.remove(key(key1, key2, key3, key4));
 	}
 
 	public int size() {

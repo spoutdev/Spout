@@ -24,62 +24,30 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.util.set;
+package org.spout.api.util.hashing;
 
-import org.spout.api.util.hashing.NibblePairHashed;
+import static org.junit.Assert.assertEquals;
 
-import gnu.trove.iterator.TByteIterator;
-import gnu.trove.set.TByteSet;
-import gnu.trove.set.hash.TByteHashSet;
+import org.junit.Test;
 
-/**
- * A hash set that uses two 4-bit integers as key, backed by a byte trove
- * hashset.
- */
-public class TNibbleDualHashSet extends NibblePairHashed {
-	protected final TByteSet set;
+public class NibbleQuadHashedTest {
 
-	public TNibbleDualHashSet() {
-		set = new TByteHashSet(100);
+	public void testValue(int key1, int key2, int key3, int key4) {
+		short key = NibbleQuadHashed.key(key1, key2, key3, key4);
+		assertEquals(key1, NibbleQuadHashed.key1(key));
+		assertEquals(key2, NibbleQuadHashed.key2(key));
+		assertEquals(key3, NibbleQuadHashed.key3(key));
+		assertEquals(key4, NibbleQuadHashed.key4(key));
 	}
 
-	public TNibbleDualHashSet(int capacity) {
-		set = new TByteHashSet(capacity);
-	}
-
-	public TNibbleDualHashSet(TByteSet set) {
-		this.set = set;
-	}
-
-	public boolean add(int key1, int key2) {
-		return set.add(key(key1, key2));
-	}
-
-	public boolean contains(int key1, int key2) {
-		return set.contains(key(key1, key2));
-	}
-
-	public void clear() {
-		set.clear();
-	}
-
-	public boolean isEmpty() {
-		return set.isEmpty();
-	}
-
-	public TByteIterator iterator() {
-		return set.iterator();
-	}
-
-	public boolean remove(int key1, int key2) {
-		return set.remove(key(key1, key2));
-	}
-
-	public int size() {
-		return set.size();
-	}
-
-	public byte[] toArray() {
-		return set.toArray();
+	@Test
+	public void testHashes() {
+		testValue(0, 0, 0, 0);
+		testValue(15, 15, 15, 15);
+		testValue(0, 0, 15, 15);
+		testValue(15, 15, 0, 0);
+		testValue(0, 1, 2, 3);
+		testValue(12, 14, 10, 9);
+		testValue(2, 3, 7, 13);
 	}
 }

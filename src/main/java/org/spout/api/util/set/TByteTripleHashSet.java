@@ -37,7 +37,7 @@ import gnu.trove.set.hash.TIntHashSet;
  * hashset.
  */
 public class TByteTripleHashSet extends ByteTripleHashed {
-	protected TIntSet set;
+	protected final TIntSet set;
 
 	public TByteTripleHashSet() {
 		set = new TIntHashSet(100);

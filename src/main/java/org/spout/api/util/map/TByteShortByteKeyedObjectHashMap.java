@@ -42,7 +42,7 @@ import gnu.trove.set.TIntSet;
  *
  */
 public class TByteShortByteKeyedObjectHashMap<K> extends ByteShortByteHashed {
-	private TIntObjectHashMap<K> map;
+	protected final TIntObjectHashMap<K> map;
 
 	public TByteShortByteKeyedObjectHashMap() {
 		map = new TIntObjectHashMap<K>(100);
