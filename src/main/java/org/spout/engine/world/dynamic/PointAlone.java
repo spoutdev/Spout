@@ -29,7 +29,7 @@ package org.spout.engine.world.dynamic;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 
-public class PointAlone extends Point implements BlockUpdateQueueElement {
+public class PointAlone extends Point {
 
 	private static final long serialVersionUID = 1L;
 
@@ -37,14 +37,16 @@ public class PointAlone extends Point implements BlockUpdateQueueElement {
 		super(w, x, y, z);
 	}
 
-	@Override
 	public long getUpdateTime() {
 		return 0;
 	}
 
-	@Override
 	public Object getHint() {
 		return null;
+	}
+	
+	public int getData() {
+		return 0;
 	}
 	
 }

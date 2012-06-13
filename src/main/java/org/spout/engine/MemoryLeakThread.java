@@ -34,7 +34,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.spout.api.Spout;
+import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.cuboid.Region;
+import org.spout.engine.world.SpoutRegion;
 
 /**
  * Monitors references to memory intensive objects and warns if objects appear
@@ -89,10 +92,34 @@ public class MemoryLeakThread extends Thread {
 							if (chunk.getRegion() != null && chunk.getRegion().getChunk(chunk.getX(), chunk.getY(), chunk.getZ()) == chunk) {
 								Spout.getLogger().severe("Chunk is still referenced by it's region! Chunk is " + chunk.toString());
 							}
+							int rx = chunk.getX() >> Region.CHUNKS.BITS;
+							int ry = chunk.getY() >> Region.CHUNKS.BITS;
+							int rz = chunk.getZ() >> Region.CHUNKS.BITS;
+							Region r = chunk.getWorld().getRegion(rx, ry,rz, LoadOption.NO_LOAD);
+							if (r != chunk.getRegion()) {
+								Spout.getLogger().severe("Chunk's region is not referenced by the world! Chunk is " + chunk.toString() + 
+										" Chunk's region is " + chunk.getRegion() + " world's region is " + r);
+							}
+							Thread t = ((SpoutRegion)chunk.getRegion()).getExceutionThread();
+							if (r == null && t.isAlive()) {
+								Spout.getLogger().severe("Region's thread is still alive, but world returns null for get region");
+							}
 						} else if (passes > WARNING_PASSES) {
 							Spout.getLogger().warning("Chunk may be leaking memory, " + chunk.toString());
 							if (chunk.getRegion() != null && chunk.getRegion().getChunk(chunk.getX(), chunk.getY(), chunk.getZ()) == chunk) {
 								Spout.getLogger().severe("Chunk is still referenced by it's region! Chunk is " + chunk.toString());
+							}
+							int rx = chunk.getX() >> Region.CHUNKS.BITS;
+							int ry = chunk.getY() >> Region.CHUNKS.BITS;
+							int rz = chunk.getZ() >> Region.CHUNKS.BITS;
+							Region r = chunk.getWorld().getRegion(rx, ry,rz, LoadOption.NO_LOAD);
+							if (r != chunk.getRegion()) {
+								Spout.getLogger().severe("Chunk's region is not referenced by the world! Chunk is " + chunk.toString() + 
+										" Chunk's region is " + chunk.getRegion() + " world's region is " + r);
+							}
+							Thread t = ((SpoutRegion)chunk.getRegion()).getExceutionThread();
+							if (r == null && t.isAlive()) {
+								Spout.getLogger().severe("Region's thread is still alive, but world returns null for get region");
 							}
 						}
 					}
@@ -113,7 +140,7 @@ public class MemoryLeakThread extends Thread {
 			Spout.getLogger().info("Memory Leak Detection Analyzed " + analyzed + " potential leaks");
 
 			try {
-				sleep(60000);
+				sleep(10000);
 			} catch (InterruptedException ignore) { }
 		}
 	}

@@ -539,7 +539,8 @@ public class WorldFiles {
 
 		map.put(new IntTag("packed", update.getPacked()));
 		map.put(new LongTag("nextUpdate", update.getNextUpdate()));
-		map.put(new LongTag("lastUpdate", update.getLastUpdate()));
+		map.put(new LongTag("queuedTime", update.getQueuedTime()));
+		map.put(new IntTag("data", update.getData()));
 
 		return new CompoundTag("update", map);
 	}
@@ -571,7 +572,8 @@ public class WorldFiles {
 			return null;
 		}
 
-		final long lastUpdate = SafeCast.toLong(NBTMapper.toTagValue(map.get("lastUpdate")), -1L);
-		return new DynamicBlockUpdate(packed, nextUpdate, lastUpdate, null);
+		final long queuedTime = SafeCast.toLong(NBTMapper.toTagValue(map.get("queuedTime")), -1L);
+		final int data = SafeCast.toInt(NBTMapper.toTagValue(map.get("data")), 0);
+		return new DynamicBlockUpdate(packed, nextUpdate, queuedTime, data, null);
 	}
 }

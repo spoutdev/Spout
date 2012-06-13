@@ -32,8 +32,18 @@ import org.spout.engine.util.thread.ManagementRunnable;
 public class DynamicUpdatesTask extends ManagementRunnable {
 	private static final long serialVersionUID = 1L;
 
+	private long time;
+	
 	@Override
 	public void run(AsyncExecutor executor) throws InterruptedException {
-		executor.getManager().runLocalDynamicUpdates();
+		executor.getManager().runLocalDynamicUpdates(time);
+	}
+	
+	public void setTime(long time) {
+		this.time = time;
+	}
+	
+	public long getTime() {
+		return time;
 	}
 }

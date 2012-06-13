@@ -119,9 +119,10 @@ public abstract class AsyncManager {
 	/**
 	 * This method is called to execute dynamic updates for blocks local to the Region.  
 	 * It might be called multiple times per tick
+	 * @param the time to use for the updates
 	 * @throws InterruptedException
 	 */
-	public abstract void runLocalDynamicUpdates() throws InterruptedException;
+	public abstract void runLocalDynamicUpdates(long time) throws InterruptedException;
 	
 	/**
 	 * This method is called to execute dynamic updates for blocks that might 
@@ -131,6 +132,13 @@ public abstract class AsyncManager {
 	 * @return the number of updates (including local ones) since last call
 	 */
 	public abstract int runGlobalDynamicUpdates() throws InterruptedException;
+	
+	/**
+	 * This method is called to determine the earliest available dynamic update time
+	 * 
+	 * @return the earliest pending dynamic block update
+	 */
+	public abstract long getFirstDynamicUpdateTime();
 
 	/**
 	 * This method is called when the associated executor is halted and occurs

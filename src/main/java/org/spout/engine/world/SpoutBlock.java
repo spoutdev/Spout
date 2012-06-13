@@ -30,7 +30,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.Source;
 import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.generator.biome.Biome;
-import org.spout.api.geo.InsertionPolicy;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
@@ -38,6 +37,7 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.cuboid.UpdateOption;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.source.DataSource;
 import org.spout.api.material.source.MaterialSource;
@@ -346,32 +346,22 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public Block dynamicUpdate() {
-		this.getRegion().queueDynamicUpdate(this.x, this.y, this.z);
-		return this;
+	public DynamicUpdateEntry dynamicUpdate() {
+		return this.getRegion().queueDynamicUpdate(this.x, this.y, this.z);
 	}
 
 	@Override
-	public Block dynamicUpdate(long updateTime) {
-		this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, updateTime);
-		return this;
-	}
-	
-	@Override
-	public Block dynamicUpdate(long updateTime, InsertionPolicy policy) {
-		this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, policy, updateTime);
-		return this;
+	public DynamicUpdateEntry dynamicUpdate(long updateTime) {
+		return this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, updateTime);
 	}
 
 	@Override
-	public Block dynamicUpdate(long updateTime, Object hint) {
-		this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, updateTime, hint);
-		return this;
+	public DynamicUpdateEntry dynamicUpdate(long updateTime, Object hint) {
+		return this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, updateTime, hint);
 	}
 	
 	@Override
-	public Block dynamicUpdate(long updateTime, InsertionPolicy policy, Object hint) {
-		this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, policy, updateTime, hint);
-		return this;
+	public DynamicUpdateEntry dynamicUpdate(long updateTime, int data, Object hint) {
+		return this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, updateTime, data, hint);
 	}
 }
