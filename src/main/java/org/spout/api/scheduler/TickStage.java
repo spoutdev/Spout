@@ -152,7 +152,7 @@ public class TickStage {
 		return sb.toString();
 	}
 
-	private static int stage;
+	private static int stage = TICKSTART;
 
 	/**
 	 * Sets the current stage. This is not synchronised, so should only be
