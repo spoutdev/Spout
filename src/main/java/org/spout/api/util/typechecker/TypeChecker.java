@@ -42,8 +42,65 @@ public class TypeChecker<T> {
 	}
 
 
-	public static <T> TypeChecker<T> tSimple(Class<T> clazz) {
-		return new TypeChecker<T>(clazz);
+	@SuppressWarnings("unchecked") // Conversion from TypeChecker<SpecificType> to TypeChecker<T> can only be unchecked. Type checking is done with clazz == SpecificType.class beforehand.
+	public static <T> TypeChecker<T> tSimple(Class<T> type) {
+		// First, check some common cases, and return faster specialized type checkers:
+		if (type == Object.class) {
+			return (TypeChecker<T>) new TypeChecker<Object>(null) {
+				@Override
+				public Object check(Object object) {
+					return object;
+				}
+			};
+		}
+
+		if (type == String.class) {
+			return (TypeChecker<T>) new TypeChecker<String>(null) {
+				@Override
+				public String check(Object object) {
+					return (String) object;
+				}
+			};
+		}
+
+		if (type == Integer.class) {
+			return (TypeChecker<T>) new TypeChecker<Integer>(null) {
+				@Override
+				public Integer check(Object object) {
+					return (Integer) object;
+				}
+			};
+		}
+
+		if (type == Long.class) {
+			return (TypeChecker<T>) new TypeChecker<Long>(null) {
+				@Override
+				public Long check(Object object) {
+					return (Long) object;
+				}
+			};
+		}
+
+		if (type == Float.class) {
+			return (TypeChecker<T>) new TypeChecker<Float>(null) {
+				@Override
+				public Float check(Object object) {
+					return (Float) object;
+				}
+			};
+		}
+
+		if (type == Double.class) {
+			return (TypeChecker<T>) new TypeChecker<Double>(null) {
+				@Override
+				public Double check(Object object) {
+					return (Double) object;
+				}
+			};
+		}
+
+		// No specialized type checker found? just return a regular one
+		return new TypeChecker<T>(type);
 	}
 
 
