@@ -46,6 +46,10 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		lock.readLock().lock();
 		addLock(plugin);
 	}
+	
+	public void coreReadLock() {
+		lock.readLock().lock();
+	}
 
 	@Override
 	public boolean readTryLock(Plugin plugin) {
@@ -55,11 +59,20 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		}
 		return success;
 	}
+	
+	public boolean coreReadTryLock() {
+		boolean success = lock.readLock().tryLock();
+		return success;
+	}
 
 	@Override
 	public void readUnlock(Plugin plugin) {
 		lock.readLock().unlock();
 		addLock(plugin);
+	}
+	
+	public void coreReadUnlock() {
+		lock.readLock().unlock();
 	}
 
 	public boolean writeLock(int delay) {

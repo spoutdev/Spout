@@ -55,8 +55,6 @@ import org.spout.engine.util.thread.ThreadsafetyManager;
 import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
-import org.spout.engine.world.SpoutRegionManager;
-import org.spout.engine.world.SpoutWorld;
 
 /**
  * A class which handles scheduling for the engine {@link SpoutTask}s.<br>
@@ -219,6 +217,13 @@ public final class SpoutScheduler implements Scheduler {
 			}
 			
 			heavyLoad.set(false);
+			
+			asyncExecutors.copySnapshot();
+			try {
+				copySnapshotWithLock(asyncExecutors.get());
+			} catch (InterruptedException ex) {
+				Spout.getLogger().log(Level.SEVERE, "Interrupt while running final snapshot copy: {0}", ex.getMessage());
+			}
 
 			asyncExecutors.copySnapshot();
 			TickStage.setStage(TickStage.TICKSTART);
@@ -227,7 +232,7 @@ public final class SpoutScheduler implements Scheduler {
 			for (AsyncExecutor e : asyncExecutors.get()) {
 				if (!(e.getManager() instanceof SpoutServer)) {
 					if (!e.haltExecutor()) {
-						throw new IllegalStateException("Unable to halt executor for " + e.getManager());
+						throw new IllegalStateException("Unable to halt executor, " + e + " for " + e.getManager());
 					}
 				}
 			}
@@ -329,16 +334,6 @@ public final class SpoutScheduler implements Scheduler {
 		TickStage.setStage(TickStage.TICKSTART);
 		asyncExecutors.copySnapshot();
 		
-		Runnable r;
-		while ((r = coreTaskQueue.poll()) != null) {
-			try {
-				r.run();
-			} catch (Exception e) {
-				Spout.log("Exception thrown when executing core task");
-				e.printStackTrace();
-			}
-		}
-		
 		taskManager.heartbeat(delta);
 		
 		if (parallelTaskManager == null) {
@@ -389,11 +384,23 @@ public final class SpoutScheduler implements Scheduler {
 			stage++;
 		}
 		
-		doDynamicUpdates(executors);
+		lockSnapshotLock();
 		
-		doPhysics(executors);
+		try {
+			doDynamicUpdates(executors);
 
-		copySnapshot(executors);
+			doPhysics(executors);
+
+			finalizeTick(executors);
+
+			copySnapshot(executors);
+
+			TickStage.setStage(TickStage.TICKSTART);
+			
+			runCoreTasks();
+		} finally {
+			unlockSnapshotLock();
+		}
 		return true;
 	}
 	
@@ -483,8 +490,20 @@ public final class SpoutScheduler implements Scheduler {
 			updates += updatesThisPass;
 		}
 	}
-
-	private void copySnapshot(List<AsyncExecutor> executors) throws InterruptedException {
+	
+	private void runCoreTasks() {
+		Runnable r;
+		while ((r = coreTaskQueue.poll()) != null) {
+			try {
+				r.run();
+			} catch (Exception e) {
+				Spout.log("Exception thrown when executing core task");
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void finalizeTick(List<AsyncExecutor> executors) throws InterruptedException { 
 		TickStage.setStage(TickStage.FINALIZE);
 
 		for (AsyncExecutor e : executors) {
@@ -504,50 +523,57 @@ public final class SpoutScheduler implements Scheduler {
 				}
 			}
 		}
-
+	}
+	
+	private void copySnapshotWithLock(List<AsyncExecutor> executors) throws InterruptedException {
 		lockSnapshotLock();
-		TickStage.setStage(TickStage.PRESNAPSHOT);
-
 		try {
-			for (AsyncExecutor e : executors) {
-				if (!e.preSnapshot()) {
-					throw new IllegalStateException("Attempt made to enter the pre-snapshot stage for a tick while the previous operation was still active");
-				}
-			}
-
-			joined = false;
-			while (!joined) {
-				try {
-					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
-					joined = true;
-				} catch (TimeoutException e) {
-					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-						logLongDurationTick("Pre Snapshot", executors);
-					}
-				}
-			}
-
-			TickStage.setStage(TickStage.SNAPSHOT);
-
-			for (AsyncExecutor e : executors) {
-				if (!e.copySnapshot()) {
-					throw new IllegalStateException("Attempt made to copy the snapshot for a tick while the previous operation was still active");
-				}
-			}
-
-			joined = false;
-			while (!joined) {
-				try {
-					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
-					joined = true;
-				} catch (TimeoutException e) {
-					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-						logLongDurationTick("Copy Snapshot", executors);
-					}
-				}
-			}
+			copySnapshot(executors);
 		} finally {
 			unlockSnapshotLock();
+		}
+	}
+
+	private void copySnapshot(List<AsyncExecutor> executors) throws InterruptedException {
+
+		TickStage.setStage(TickStage.PRESNAPSHOT);
+
+		for (AsyncExecutor e : executors) {
+			if (!e.preSnapshot()) {
+				throw new IllegalStateException("Attempt made to enter the pre-snapshot stage for a tick while the previous operation was still active");
+			}
+		}
+
+		boolean joined = false;
+		while (!joined) {
+			try {
+				AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
+				joined = true;
+			} catch (TimeoutException e) {
+				if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+					logLongDurationTick("Pre Snapshot", executors);
+				}
+			}
+		}
+
+		TickStage.setStage(TickStage.SNAPSHOT);
+
+		for (AsyncExecutor e : executors) {
+			if (!e.copySnapshot()) {
+				throw new IllegalStateException("Attempt made to copy the snapshot for a tick while the previous operation was still active");
+			}
+		}
+
+		joined = false;
+		while (!joined) {
+			try {
+				AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
+				joined = true;
+			} catch (TimeoutException e) {
+				if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+					logLongDurationTick("Copy Snapshot", executors);
+				}
+			}
 		}
 	}
 
