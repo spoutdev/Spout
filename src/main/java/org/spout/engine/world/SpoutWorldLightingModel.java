@@ -26,35 +26,31 @@
  */
 package org.spout.engine.world;
 
+import gnu.trove.iterator.TShortIterator;
+
 import org.spout.api.Spout;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
-import org.spout.api.util.hashing.Int21TripleHashed;
-import org.spout.api.util.set.TInt21TripleHashSet;
-
-import gnu.trove.iterator.TLongIterator;
+import org.spout.api.util.hashing.NibbleQuadHashed;
 
 /**
  * This model can store a diamond-shaped model of blocks to perform lighting on.<br>
  * In addition, it also stores the lists to operate on.
  */
 public class SpoutWorldLightingModel {
-	//TODO: Maybe merge these three into one map?
-	private final TInt21TripleHashSet refresh = new TInt21TripleHashSet();
-	private final TInt21TripleHashSet lesser = new TInt21TripleHashSet();
-	private final TInt21TripleHashSet greater = new TInt21TripleHashSet();
-	private TLongIterator iter; //temporary
 	private final SpoutWorldLighting instance;
-	private long[] updates = new long[0];
-	private int updateCount = 0;
 	private final boolean sky;
 
 	//Used to debug and log statistics
 	private int changes = 0;
 	private long lastResolveTime = 0;
 	private long processTime = 0;
+	private short[] updates = new short[1000];
+	private int updateCount = 0;
+	private TShortIterator iter;
+	private SpoutChunk chunk;
 
 	public void reportChanges() {
 		if (this.changes > 1000) {
@@ -86,83 +82,95 @@ public class SpoutWorldLightingModel {
 		}
 	}
 
-	public void addRefresh(SpoutChunk chunk, int x, int y, int z) {
-		if (!chunk.getBlockMaterial(x, y, z).getOcclusion().get(BlockFaces.NESWBT)) {
-			this.addRefresh(x, y, z);
-		}
-	}
-
-	public void addRefresh(int x, int y, int z) {
-		if (this.instance.isRunning()) {
-			synchronized (refresh) {
-				refresh.add(x, y, z);
-			}
-		}
-	}
-
-	public void addLesser(int x, int y, int z) {
-		if (this.instance.isRunning()) {
-			synchronized (lesser) {
-				lesser.add(x, y, z);
-			}
-		}
-	}
-
-	public void addGreater(int x, int y, int z) {
-		if (this.instance.isRunning()) {
-			synchronized (greater) {
-				greater.add(x, y, z);
-			}
-		}
-	}
-
-	public boolean load(TInt21TripleHashSet coordinates) {
-		this.updateCount = 0;
-		synchronized (coordinates) {
-			if (coordinates.isEmpty()) {
-				return false;
-			}
-			this.updateCount = coordinates.size();
-			if (this.updateCount > this.updates.length) {
-				this.updates = new long[this.updateCount + 100];
-			}
-			iter = coordinates.iterator();
-			for (int i = 0; i < this.updateCount && iter.hasNext(); i++) {
-				this.updates[i] = iter.next();
-			}
-			coordinates.clear();
-			return true;
-		}
-	}
-
-	/*
-	 * Routines to perform lighting updates
+	/**
+	 * Checks if this model can greaten the lighting at the block specified
+	 * @param chunk the block is in
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @return True if it can greaten the lighting, False if not
 	 */
-	public boolean resolve() {
-		this.lastResolveTime = System.nanoTime();
-		long key;
-		int x = 0, y = 0, z = 0, i, j;
-		int newChanges = 0;
+	public boolean canGreater(SpoutChunk chunk, int x, int y, int z) {
+		// Block lighting can always greaten, an occluded block could be a light source
+		return !this.sky || !chunk.getBlockMaterial(x, y, z).getOcclusion().get(BlockFaces.NESWBT);
+	}
+
+	/**
+	 * Checks if this model can refresh the lighting at the block specified
+	 * @param chunk the block is in
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @return True if it can refresh the lighting, False if not
+	 */
+	public boolean canRefresh(SpoutChunk chunk, int x, int y, int z) {
+		return !chunk.getBlockMaterial(x, y, z).getOcclusion().get(BlockFaces.NESWBT);
+	}
+
+	/**
+	 * Resolves all the operations in the chunk specified
+	 * @param chunk in which the updates exist
+	 */
+	public boolean resolve(SpoutChunk chunk) {
+		int x = 0, y = 0, z = 0;
 		try {
-			//Lesser
-			for (i = 0; i < MAX_PER_TICK && this.load(greater); i++) {
-				newChanges += this.updateCount;
-				for (j = 0; j < this.updateCount; j++) {
-					key = this.updates[j];
-					x = Int21TripleHashed.key1(key);
-					y = Int21TripleHashed.key2(key);
-					z = Int21TripleHashed.key3(key);
+			// Load chunk information
+			if (this.sky) {
+				synchronized (chunk.skyLightOperations) {
+					this.updateCount = chunk.skyLightOperations.size();
+					if (this.updateCount > 0) {
+						if (this.updateCount > this.updates.length) {
+							this.updates = new short[this.updateCount + 100];
+						}
+						this.iter = chunk.skyLightOperations.iterator();
+						for (int i = 0; i < this.updateCount && this.iter.hasNext(); i++) {
+							this.updates[i] = iter.next();
+						}
+						chunk.skyLightOperations.clear();
+					} else {
+						return false;
+					}
+				}
+			} else {
+				synchronized (chunk.blockLightOperations) {
+					this.updateCount = chunk.blockLightOperations.size();
+					if (this.updateCount > 0) {
+						if (this.updateCount > this.updates.length) {
+							this.updates = new short[this.updateCount + 100];
+						}
+						this.iter = chunk.blockLightOperations.iterator();
+						for (int i = 0; i < this.updateCount && this.iter.hasNext(); i++) {
+							this.updates[i] = iter.next();
+						}
+						chunk.blockLightOperations.clear();
+					} else {
+						return false;
+					}
+				}
+			}
+			this.chunk = chunk;
+			this.lastResolveTime = System.nanoTime();
+			int i;
+			short key;
+
+			// Greater
+			for (i = 0; i < updateCount; i++) {
+				key = updates[i];
+				if (NibbleQuadHashed.key4(key) == SpoutWorldLighting.GREATER) {
+					x = NibbleQuadHashed.key1(key) + this.chunk.getBlockX();
+					y = NibbleQuadHashed.key2(key) + this.chunk.getBlockY();
+					z = NibbleQuadHashed.key3(key) + this.chunk.getBlockZ();
 					this.resolveGreater(x, y, z);
 				}
 			}
-			//Greater
-			for (i = 0; i < MAX_PER_TICK && this.load(lesser); i++) {
-				newChanges += this.updateCount;
-				for (j = 0; j < this.updateCount; j++) {
-					key = this.updates[j];
-					x = Int21TripleHashed.key1(key);
-					y = Int21TripleHashed.key2(key);
-					z = Int21TripleHashed.key3(key);
+
+			// Lesser
+			for (i = 0; i < updateCount; i++) {
+				key = updates[i];
+				if (NibbleQuadHashed.key4(key) == SpoutWorldLighting.LESSER) {
+					x = NibbleQuadHashed.key1(key) + this.chunk.getBlockX();
+					y = NibbleQuadHashed.key2(key) + this.chunk.getBlockY();
+					z = NibbleQuadHashed.key3(key) + this.chunk.getBlockZ();
 					this.resolveLesser(x + 1, y, z);
 					this.resolveLesser(x - 1, y, z);
 					this.resolveLesser(x, y + 1, z);
@@ -171,16 +179,15 @@ public class SpoutWorldLightingModel {
 					this.resolveLesser(x, y, z - 1);
 				}
 			}
-			//Refresh
-			for (i = 0; i < MAX_PER_TICK && this.load(refresh); i++) {
-				newChanges += this.updateCount;
-				for (j = 0; j < this.updateCount; j++) {
-					key = this.updates[j];
-					x = Int21TripleHashed.key1(key);
-					y = Int21TripleHashed.key2(key);
-					z = Int21TripleHashed.key3(key);
+
+			// Refresh
+			for (i = 0; i < updateCount; i++) {
+				key = updates[i];
+				if (NibbleQuadHashed.key4(key) == SpoutWorldLighting.REFRESH) {
+					x = NibbleQuadHashed.key1(key) + this.chunk.getBlockX();
+					y = NibbleQuadHashed.key2(key) + this.chunk.getBlockY();
+					z = NibbleQuadHashed.key3(key) + this.chunk.getBlockZ();
 					this.resolveRefresh(x, y, z);
-					this.changes++;
 				}
 			}
 		} catch (Throwable t) {
@@ -188,13 +195,14 @@ public class SpoutWorldLightingModel {
 			System.out.println("An exception occurred while resolving " + type + " lighting at block [" + x + "/" + y + "/" + z + "/" + this.instance.getWorld() + "]:");
 			t.printStackTrace();
 		}
-		this.changes += newChanges;
+		this.changes += updateCount;
 		this.processTime += System.nanoTime() - lastResolveTime;
-		return newChanges > 0;
+		this.chunk = null;
+		return true;
 	}
 
 	public void resolveRefresh(int x, int y, int z) {
-		if (this.loadReceive(x, y, z)) {
+		if (this.load(x, y, z)) {
 			for (Element element : this.neighbors) {
 				if (element.isEmittingToCenter()) {
 					if (element.light - center.opacity > center.light) {
@@ -206,7 +214,7 @@ public class SpoutWorldLightingModel {
 	}
 
 	public void resolveGreater(int x, int y, int z) {
-		if (this.loadSend(x, y, z)) {
+		if (this.load(x, y, z)) {
 			for (Element element : this.neighbors) {
 				if (element.isReceivingFromCenter()) {
 					if (center.light - element.opacity > element.light) {
@@ -218,16 +226,16 @@ public class SpoutWorldLightingModel {
 	}
 
 	public void resolveLesser(int x, int y, int z) {
-		if (this.loadReceive(x, y, z)) {
+		if (this.load(x, y, z)) {
 			if (center.light == 15) {
 				//direct source - don't even bother!
-				this.addGreater(x, y, z);
+				center.addOperation(SpoutWorldLighting.GREATER);
 			} else if (center.light > 0) {
 				//check if it has a surrounding source
 				for (Element element : this.neighbors) {
 					if (element.isEmittingToCenter()) {
 						if (element.light - center.opacity == center.light) {
-							this.addGreater(x, y, z);
+							center.addOperation(SpoutWorldLighting.GREATER);
 							return;
 						}
 					}
@@ -244,55 +252,31 @@ public class SpoutWorldLightingModel {
 	public final Element center;
 
 	/**
-	 * Loads the block model assuming the center block will receive light from surrounding blocks
-	 * @param x coordinate of the center block
-	 * @param y coordinate of the center block
-	 * @param z coordinate of the center block
-	 * @return True if it was successful
+	 * Removes all live information from this model
 	 */
-	public boolean loadReceive(int x, int y, int z) {
-		this.center.load(x, y, z);
-		if (this.center.material == null) {
-			return false;
+	public void cleanUp() {
+		center.cleanUp();
+		for (Element neigh: this.neighbors) {
+			neigh.cleanUp();
 		}
-
-		if (this.center.material.getOcclusion().get(BlockFaces.NESWBT)) {
-			return false;
-		}
-
-		for (Element element : this.neighbors) {
-			if (this.center.material.getOcclusion().get(element.offset)) {
-				element.material = null;
-			} else {
-				element.load(x, y, z);
-			}
-		}
-		return true;
 	}
 
 	/**
-	 * Loads the block model assuming the center block will send to surrounding blocks
+	 * Loads the block model
 	 * @param x coordinate of the center block
 	 * @param y coordinate of the center block
 	 * @param z coordinate of the center block
 	 * @return True if it was successful
 	 */
-	public boolean loadSend(int x, int y, int z) {
+	public boolean load(int x, int y, int z) {
 		this.center.load(x, y, z);
 		if (this.center.material == null) {
 			return false;
+		} else if (this.center.material.getOcclusion().get(BlockFaces.NESWBT) && !this.center.isSource()) {
+			return false; // Do not continue if the block occludes all faces and is not a source
 		}
-
-		if (this.center.isSource()) {
-			for (Element element : this.neighbors) {
-				element.load(x, y, z);
-			}
-		} else {
-			for (Element element : this.neighbors) {
-				if (!center.material.getOcclusion().get(element.offset)) {
-					element.load(x, y, z);
-				}
-			}
+		for (Element element : this.neighbors) {
+			element.load();
 		}
 		return true;
 	}
@@ -323,9 +307,15 @@ public class SpoutWorldLightingModel {
 			}
 			this.chunk.setBlockLight(this.x, this.y, this.z, this.light, this.world);
 		}
+
+		@Override
+		public void addOperation(int operation) {
+			this.chunk.addBlockLightOperation(this.x, this.y, this.z, operation);
+		}
 	}
 
 	public static class SkyElement extends Element {
+
 		public SkyElement(SpoutWorld world, BlockFace offset, Element center) {
 			super(world, offset, center);
 		}
@@ -334,13 +324,18 @@ public class SpoutWorldLightingModel {
 		public void loadLight() {
 			this.light = this.chunk.getBlockSkyLight(x, y, z);
 		}
-		
+
 		@Override
 		public void setLight(byte light) {
 			if (this.light != 15) {
 				this.light = light;
 				this.chunk.setBlockSkyLight(this.x, this.y, this.z, light, this.world);
 			}
+		}
+
+		@Override
+		public void addOperation(int operation) {
+			this.chunk.addSkyLightOperation(this.x, this.y, this.z, operation);
 		}
 	}
 
@@ -370,7 +365,7 @@ public class SpoutWorldLightingModel {
 		public boolean isSource() {
 			return false;
 		}
-
+		
 		/**
 		 * Checks if this element can send light to the center
 		 */
@@ -407,20 +402,56 @@ public class SpoutWorldLightingModel {
 			return "[" + this.x + "/" + this.y + "/" + this.z + "/" + this.material.getDisplayName() + "] = " + this.light;
 		}
 
+		/**
+		 * Adds a new operation for this block
+		 * @param operation to perform
+		 */
+		public abstract void addOperation(int operation);
+
+		/**
+		 * Loads the material, data and lighting information of this element<br>
+		 * This assumes this element is the center
+		 * @param x coordinate of the center block element
+		 * @param y coordinate of the center block element
+		 * @param z coordinate of the center block element
+		 */
 		public void load(int x, int y, int z) {
-			this.x = x + (int) this.offset.getOffset().getX();
-			this.y = y + (int) this.offset.getOffset().getY();
-			this.z = z + (int) this.offset.getOffset().getZ();
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			this.load();
+		}
+
+		/**
+		 * Loads the material, data and lighting information of this element<br>
+		 * This assumes this element is a neighbor
+		 * @param x coordinate of the center block element
+		 * @param y coordinate of the center block element
+		 * @param z coordinate of the center block element
+		 */
+		public void load() {
+			if (this.center != this) {
+				if (!this.center.isSource()) {
+					// Check if the center material occludes, and if so, stop loading
+					if (center.material.getOcclusion().get(this.offset)) {
+						this.material = null;
+						return;
+					}
+				}
+				this.x = this.center.x + (int) this.offset.getOffset().getX();
+				this.y = this.center.y + (int) this.offset.getOffset().getY();
+				this.z = this.center.z + (int) this.offset.getOffset().getZ();
+			}
 			if (center.chunk != null) {
 				if (center.chunk.isLoaded() && center.chunk.containsBlock(this.x, this.y, this.z)) {
 					this.chunk = center.chunk;
 				} else if (center.chunk.getRegion().containsBlock(this.x, this.y, this.z)) {
-					this.chunk = center.chunk.getRegion().getChunkFromBlock(this.x, this.y, this.z, LoadOption.NO_LOAD);
+					this.chunk = center.chunk.getRegion().getChunkFromBlock(this.x, this.y, this.z, LoadOption.LOAD_ONLY);
 				} else {
-					this.chunk = this.world.getChunkFromBlock(this.x, this.y, this.z, LoadOption.NO_LOAD);
-				}				
+					this.chunk = this.world.getChunkFromBlock(this.x, this.y, this.z, LoadOption.LOAD_ONLY);
+				}
 			} else {
-				this.chunk = this.world.getChunkFromBlock(this.x, this.y, this.z, LoadOption.NO_LOAD);
+				this.chunk = this.world.getChunkFromBlock(this.x, this.y, this.z, LoadOption.LOAD_ONLY);
 			}
 			if (this.chunk == null || !this.chunk.isLoaded()) {
 				this.material = null;
@@ -431,7 +462,12 @@ public class SpoutWorldLightingModel {
 				this.loadLight();
 			}
 		}
-		
+
+		public void cleanUp() {
+			this.chunk = null;
+			this.material = null;
+		}
+
 		public abstract void loadLight();
 
 		public abstract void setLight(byte light);

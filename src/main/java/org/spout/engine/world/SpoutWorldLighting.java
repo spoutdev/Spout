@@ -26,17 +26,37 @@
  */
 package org.spout.engine.world;
 
+import gnu.trove.iterator.TLongIterator;
+
 import org.spout.api.Source;
 import org.spout.api.Spout;
+import org.spout.api.geo.LoadOption;
+import org.spout.api.util.hashing.Int21TripleHashed;
+import org.spout.api.util.set.TInt21TripleHashSet;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 
 public class SpoutWorldLighting extends Thread implements Source {
 
+	/*
+	 * Some constants used in the chunk set storage
+	 */
+	public static final int GREATER = 0;
+	public static final int LESSER = 1;
+	public static final int REFRESH = 2;
+
 	public final SpoutWorldLightingModel skyLight;
 	public final SpoutWorldLightingModel blockLight;
 	private final SpoutWorld world;
 	private boolean running = false;
+
+	private final TInt21TripleHashSet dirtyChunks = new TInt21TripleHashSet();
+
+	public void addChunk(int x, int y, int z) {
+		synchronized (dirtyChunks) {
+			dirtyChunks.add(x, y, z);
+		}
+	}
 
 	public boolean isRunning() {
 		return this.running;
@@ -59,6 +79,12 @@ public class SpoutWorldLighting extends Thread implements Source {
 
 	@Override
 	public void run() {
+		long[] chunkBuffer = new long[10];
+		int chunkBufferSize = 0;
+		TLongIterator iter;
+		int i, cx, cy, cz;
+		int idleCounter = 0;
+		SpoutChunk chunk;
 		this.running = SpoutConfiguration.LIGHTING_ENABLED.getBoolean();
 		SpoutSnapshotLock lock = (SpoutSnapshotLock)Spout.getEngine().getScheduler().getSnapshotLock();
 		while (this.running) {
@@ -67,13 +93,43 @@ public class SpoutWorldLighting extends Thread implements Source {
 			// Better to do 10 calls of 2ms each, and release the lock between them, than 1 call of 20ms.
 			lock.coreReadLock();
 			try {
-				updated = this.skyLight.resolve() || this.blockLight.resolve();
+				synchronized (this.dirtyChunks) {
+					if ((chunkBufferSize = this.dirtyChunks.size()) > 0) {
+						if (chunkBufferSize > chunkBuffer.length) {
+							chunkBuffer = new long[chunkBufferSize + 100];
+						}
+						iter = this.dirtyChunks.iterator();
+						for (i = 0; i < chunkBufferSize && iter.hasNext(); i++) {
+							chunkBuffer[i] = iter.next();
+						}
+						this.dirtyChunks.clear();
+					}
+				}
+				if (updated = chunkBufferSize > 0) {
+					// Resolve all chunks
+					for (i = 0; i < chunkBufferSize; i++) {
+						cx = Int21TripleHashed.key1(chunkBuffer[i]);
+						cy = Int21TripleHashed.key2(chunkBuffer[i]);
+						cz = Int21TripleHashed.key3(chunkBuffer[i]);
+						chunk = this.world.getChunk(cx, cy, cz, LoadOption.LOAD_ONLY);
+						if (chunk != null && chunk.isLoaded() && chunk.isPopulated()) {
+							// Resolve all the operations in this chunk
+							while (this.blockLight.resolve(chunk));
+							while (this.skyLight.resolve(chunk));
+						}
+					}
+					idleCounter = 0;
+				}
 			} finally {
 				lock.coreReadUnlock();
 			}
 			if (!updated) {
-				this.skyLight.reportChanges();
-				this.blockLight.reportChanges();
+				if (idleCounter++ == 20) {
+					this.skyLight.cleanUp();
+					this.skyLight.reportChanges();
+					this.blockLight.cleanUp();
+					this.blockLight.reportChanges();
+				}
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException ex) {}
