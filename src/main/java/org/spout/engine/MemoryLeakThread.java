@@ -108,7 +108,7 @@ public class MemoryLeakThread extends Thread {
 										queuedForUnload++;
 									}
 									if (saveState == SaveState.UNLOADED) {
-										queuedForUnload++;
+										unloaded++;
 									}
 								} else {
 									passes = 1;
