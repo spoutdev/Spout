@@ -54,6 +54,13 @@ public class PositionNormalTexture {
 		this(position, Vector3.ZERO, texture);
 	}
 	
+	public float[] toArray(){
+		return new float[] { position.getX(), position.getY(), position.getZ(), 
+							normal.getX(), normal.getY(), normal.getZ(),
+							uv.getX(), uv.getY() 
+							};		
+	}
+	
 	public String toString(){
 		return StringUtil.toNamedString(this, position, normal, uv);
 	}
