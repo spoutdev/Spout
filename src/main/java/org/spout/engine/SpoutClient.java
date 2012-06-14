@@ -71,6 +71,7 @@ import org.spout.engine.filesystem.ClientFileSystem;
 import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
+import org.spout.engine.renderer.VertexBufferBatcher;
 import org.spout.engine.renderer.vertexbuffer.VertexBuffer;
 import org.spout.engine.renderer.vertexbuffer.VertexBufferImpl;
 import org.spout.engine.util.RenderModeConverter;
@@ -174,16 +175,15 @@ public class SpoutClient extends SpoutEngine implements Client {
 		
 		
 		buffer = new VertexBufferImpl();
-		float[] b = new float[] { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f };
-		buffer.setData(b, 3);
-		buffer.enableAttribute(0, 0);
-		
+		vbBatch = new VertexBufferBatcher(GL11.GL_TRIANGLES, buffer);
+	
+	
 		//graphics = new Graphics(Display.getWidth(), Display.getHeight());
 
 		//screenStack = new ScreenStack(new LoadingScreen());
 		//bunny = (BaseMesh) FileSystem.getResource("mesh://Vanilla/bunny.obj");
 	}
-	
+	VertexBufferBatcher vbBatch;
 	BaseMesh bunny;
 
 	private void createWindow(){
@@ -259,11 +259,27 @@ public class SpoutClient extends SpoutEngine implements Client {
 		double cy = 2 * Math.sin(Math.toRadians(ticks));
 
 		Matrix view = MathHelper.createLookAt(new Vector3(cx, cy, cz), Vector3.ZERO, Vector3.UP);
+		
+		vbBatch.begin(material);
+		vbBatch.addTexCoord(0, 0);
+		vbBatch.addVertex(0, 0);
+		vbBatch.addTexCoord(1, 0);
+		vbBatch.addVertex(1, 0);
+		vbBatch.addTexCoord(0, 1);
+		vbBatch.addVertex(0, 1);
 
+		vbBatch.addTexCoord(0, 1);
+		vbBatch.addVertex(0, 1);
+		vbBatch.addTexCoord(1, 1);
+		vbBatch.addVertex(1, 1);
+		vbBatch.addTexCoord(1, 0);
+		vbBatch.addVertex(1, 0);
+		
+		vbBatch.end();
+		
 		material.getShader().setUniform("View", view);
 		material.getShader().setUniform("Projection", activeCamera.getProjection());
 		buffer.drawBuffer(material);
-		
 		//renderer.getRenderer().getShader().setUniform("View", view);
 		//renderer.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
 		//renderer.begin();
