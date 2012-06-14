@@ -52,10 +52,8 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 		if (vbos != -1) {
 			GL15.glDeleteBuffers(vbos);
 		}
-
-		@SuppressWarnings("unused")
-		int size = numVerticies * 4 * SIZE_FLOAT;
-		@SuppressWarnings("unused")
+		
+		long size = numVerticies * 4 * SIZE_FLOAT;
 		int numBuffers = 1;
 		if (useColors) {
 			size += numVerticies * 4 * SIZE_FLOAT;
@@ -71,17 +69,19 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 		}
 		vbos = GL15.glGenBuffers();
 
-		int offset = 0;
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbos);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, size, GL15.GL_STATIC_DRAW);
 
+		int offset = 0;
 		FloatBuffer vBuffer = BufferUtils.createFloatBuffer(vertexBuffer.size());
 		vBuffer.clear();
 		vBuffer.put(vertexBuffer.toArray());
 		vBuffer.flip();
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vBuffer, GL15.GL_STATIC_DRAW);
+		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset, vBuffer);
 		GL11.glVertexPointer(4, GL11.GL_FLOAT, 0, offset);
 		activeMaterial.getShader().enableAttribute("vPosition", 4, GL11.GL_FLOAT, 0, offset);
 		offset += numVerticies * 4 * SIZE_FLOAT;
+		
 		if (useColors) {
 
 			vBuffer = BufferUtils.createFloatBuffer(colorBuffer.size());
@@ -101,7 +101,6 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 			vBuffer.flip();
 			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset, vBuffer);
 			GL11.glNormalPointer(GL11.GL_FLOAT, 0, offset);
-
 			activeMaterial.getShader().enableAttribute("vNormal", 4, GL11.GL_FLOAT, 0, offset);
 			offset += numVerticies * 4 * SIZE_FLOAT;
 		}

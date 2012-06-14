@@ -37,6 +37,7 @@ import org.spout.api.event.world.RegionUnloadEvent;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.scheduler.TaskManager;
+import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.map.concurrent.TSyncInt21TripleObjectHashMap;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
@@ -71,22 +72,30 @@ public class RegionSource implements Iterable<Region> {
 		((SpoutScheduler)Spout.getEngine().getScheduler()).scheduleCoreTask(new Runnable() {
 			@Override
 			public void run() {
-				int x = r.getX();
-				int y = r.getY();
-				int z = r.getZ();
-				boolean success = loadedRegions.remove(x, y, z, r);
-				if (success) {
-					r.getManager().getExecutor().haltExecutor();
-					
-					TaskManager tm = Spout.getEngine().getParallelTaskManager();
-					SpoutParallelTaskManager ptm = (SpoutParallelTaskManager)tm;
-					ptm.unRegisterRegion(r);
-					
-					TaskManager tmWorld = world.getParallelTaskManager();
-					SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager)tmWorld;
-					ptmWorld.unRegisterRegion(r);
+				if (r.isEmpty()) {
+					int x = r.getX();
+					int y = r.getY();
+					int z = r.getZ();
+					boolean success = loadedRegions.remove(x, y, z, r);
+					if (success) {
+						if (!r.getManager().getExecutor().haltExecutor()) {
+							throw new IllegalStateException("Failed to halt the region executor when removing the region");
+						}
 
-					Spout.getEventManager().callDelayedEvent(new RegionUnloadEvent(world, r));
+						TaskManager tm = Spout.getEngine().getParallelTaskManager();
+						SpoutParallelTaskManager ptm = (SpoutParallelTaskManager)tm;
+						ptm.unRegisterRegion(r);
+
+						TaskManager tmWorld = world.getParallelTaskManager();
+						SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager)tmWorld;
+						ptmWorld.unRegisterRegion(r);
+
+						Spout.getEventManager().callDelayedEvent(new RegionUnloadEvent(world, r));
+					} else {
+						Spout.getLogger().info("Tried to remove region " + r + " but region removal failed");
+					}
+				} else {
+					Spout.getLogger().info("Region was not empty when attempting to remove, active chunks returns " + r.getNumLoadedChunks());
 				}
 			}
 		});
@@ -105,6 +114,9 @@ public class RegionSource implements Iterable<Region> {
 	 */
 	@LiveRead
 	public SpoutRegion getRegion(int x, int y, int z, LoadOption loadopt) {
+		// This is a pretty expensive place to perform a check
+		// It has to check if this is the region thread and then decide which mask to use
+		//TickStage.checkStage(~(TickStage.SNAPSHOT), -1, (Thread)world.getExecutor());
 		SpoutRegion region = (SpoutRegion) loadedRegions.get(x, y, z);
 
 		if (region != null) {

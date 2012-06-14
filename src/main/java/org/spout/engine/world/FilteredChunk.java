@@ -37,7 +37,6 @@ import org.spout.api.datatable.DatatableMap;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.map.concurrent.AtomicBlockStoreImpl;
 import org.spout.engine.filesystem.WorldFiles;
@@ -89,7 +88,7 @@ public class FilteredChunk extends SpoutChunk{
 			this.blockStore = new AtomicBlockStoreImpl(BLOCKS.BITS, 10, initial);
 			
 			this.skyLight = new byte[BLOCKS.HALF_VOLUME];
-			System.arraycopy(this.getY() < 4 ? DARK : LIGHT, 0, this.skyLight, 0, this.skyLight.length);
+			System.arraycopy(this.isAboveGround() ? LIGHT : DARK, 0, this.skyLight, 0, this.skyLight.length);
 			
 			this.blockLight = new byte[BLOCKS.HALF_VOLUME];
 			System.arraycopy(DARK, 0, this.blockLight, 0, this.blockLight.length);
@@ -102,6 +101,10 @@ public class FilteredChunk extends SpoutChunk{
 		return uniform.get();
 	}
 
+	public boolean isAboveGround() {
+		return this.getY() >= 4;
+	}
+	
 	@Override
 	public boolean setBlockData(int x, int y, int z, short data, Source source) {
 		if (uniform.get()) {
@@ -117,7 +120,7 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.setBlockMaterial(x, y, z, material, data, source);
 	}
-	
+
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {
 		if (uniform.get()) {
@@ -125,7 +128,7 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.getBlockMaterial(x, y, z);
 	}
-	
+
 	@Override
 	public short getBlockData(int x, int y, int z) {
 		if (uniform.get()) {
@@ -133,7 +136,7 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.getBlockData(x, y, z);
 	}
-	
+
 	@Override
 	public boolean compareAndSetData(int x, int y, int z, int expect, short data) {
 		if (uniform.get()) {
@@ -141,7 +144,7 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.compareAndSetData(x, y, z, expect, data);
 	}
-	
+
 	@Override
 	public boolean setBlockLight(int x, int y, int z, byte light, Source source) {
 		if (uniform.get()) {
@@ -149,7 +152,7 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.setBlockLight(x, y, z, light, source);
 	}
-	
+
 	@Override
 	public boolean setBlockSkyLight(int x, int y, int z, byte light, Source source) {
 		if (uniform.get()) {
@@ -157,19 +160,19 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.setBlockSkyLight(x, y, z, light, source);
 	}
-	
+
 	@Override
 	public byte getBlockSkyLight(int x, int y, int z) {
 		if (uniform.get()) {
-			return 0xF;
+			return this.isAboveGround() ? (byte) 0xF : (byte) 0x0;
 		}
 		return super.getBlockSkyLight(x, y, z);
 	}
-	
+
 	@Override
 	public byte getBlockLight(int x, int y, int z) {
 		if (uniform.get()) {
-			return 0xF;
+			return material.get().getLightLevel((short) 0);
 		}
 		return super.getBlockLight(x, y, z);
 	}
@@ -194,7 +197,7 @@ public class FilteredChunk extends SpoutChunk{
 			super.syncSave();
 		}
 	}
-	
+
 	@Override
 	public ChunkSnapshot getSnapshot(boolean entities) {
 		if (uniform.get()) {
@@ -213,7 +216,7 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.getSnapshot(entities);
 	}
-	
+
 	@Override
 	public boolean compressIfRequired() {
 		if (uniform.get()) {

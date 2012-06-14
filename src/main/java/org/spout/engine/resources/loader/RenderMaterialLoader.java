@@ -53,7 +53,7 @@ import org.spout.engine.resources.ClientRenderMaterial;
 public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMaterial> {
 	@Override
 	public String getFallbackResourceName() {
-		return "material://Spout/fallbacks/generic.smt";
+		return "material://Spout/resources/generic.smt";
 	}
 
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);

@@ -73,6 +73,7 @@ import org.spout.api.util.cuboid.CuboidBuffer;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 import org.spout.api.util.map.concurrent.AtomicBlockStoreImpl;
+import org.spout.api.util.set.TNibbleQuadHashSet;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
@@ -153,7 +154,14 @@ public class SpoutChunk extends Chunk {
 	 * increment it as well.
 	 */
 	protected final AtomicInteger lightingCounter = new AtomicInteger(-1);
-
+	/**
+	 * Contains the pending block light operations of blocks in this chunk
+	 */
+	protected final TNibbleQuadHashSet blockLightOperations = new TNibbleQuadHashSet();
+	/**
+	 * Contains the pending sky light operations of blocks in this chunk
+	 */
+	protected final TNibbleQuadHashSet skyLightOperations = new TNibbleQuadHashSet();
 	/**
 	 * Indicates if there has been any changes since the last render snapshot
 	 */
@@ -321,7 +329,7 @@ public class SpoutChunk extends Chunk {
 			if (!this.setBlockLight(x, y, z, material.getLightLevel(data), source)) {
 				// if the light level is left unchanged, refresh lighting from
 				// neighbors
-				world.getLightingManager().blockLight.addRefresh(x, y, z);
+				addBlockLightOperation(x, y, z, SpoutWorldLighting.REFRESH);
 			}
 
 			// Update sky lighting
@@ -338,7 +346,7 @@ public class SpoutChunk extends Chunk {
 			} else {
 				byte old = this.getBlockSkyLight(x, y, z);
 				if (old == 0) {
-					world.getLightingManager().skyLight.addRefresh(this, x, y, z);
+					addSkyLightOperation(x, y, z, SpoutWorldLighting.REFRESH);
 				} else if (old < 15) {
 					this.setBlockSkyLight(x, y, z, (byte) 0, source);
 				}
@@ -355,6 +363,46 @@ public class SpoutChunk extends Chunk {
 			}
 		}
 		return true;
+	}
+
+	protected void addSkyLightOperation(int x, int y, int z, int operation) {
+		SpoutWorldLightingModel model = this.getWorld().getLightingManager().skyLight;
+		if (operation == SpoutWorldLighting.REFRESH) {
+			if (!model.canRefresh(this, x, y, z)) {
+				return;
+			}
+		} else if (operation == SpoutWorldLighting.GREATER) {
+			if (!model.canGreater(this, x, y, z)) {
+				return;
+			}
+		}
+		synchronized (this.skyLightOperations) {
+			if (this.skyLightOperations.isEmpty()) {
+				// Let the lighting manager know this chunk requires a lighting update
+				this.getWorld().getLightingManager().addChunk(this.getX(), this.getY(), this.getZ());
+			}
+			this.skyLightOperations.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, operation);
+		}
+	}
+
+	protected void addBlockLightOperation(int x, int y, int z, int operation) {
+		SpoutWorldLightingModel model = this.getWorld().getLightingManager().blockLight;
+		if (operation == SpoutWorldLighting.REFRESH) {
+			if (!model.canRefresh(this, x, y, z)) {
+				return;
+			}
+		} else if (operation == SpoutWorldLighting.GREATER) {
+			if (!model.canGreater(this, x, y, z)) {
+				return;
+			}
+		}
+		synchronized (this.blockLightOperations) {
+			if (this.blockLightOperations.isEmpty()) {
+				// Let the lighting manager know this chunk requires a lighting update
+				this.getWorld().getLightingManager().addChunk(this.getX(), this.getY(), this.getZ());
+			}
+			this.blockLightOperations.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, operation);
+		}
 	}
 
 	protected void setCuboid(CuboidBuffer buffer) {
@@ -386,7 +434,7 @@ public class SpoutChunk extends Chunk {
 	public void resetDynamicBlock(int x, int y, int z) {
 		parentRegion.resetDynamicBlock(getBlockX(x), getBlockY(y), getBlockZ(z));
 	}
-	
+
 	@Override
 	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, int data, Object hint) {
 		return parentRegion.queueDynamicUpdate(getBlockX(x), getBlockY(y), getBlockZ(z), nextUpdate, data, hint);
@@ -441,20 +489,20 @@ public class SpoutChunk extends Chunk {
 		int index = getBlockIndex(x, y, z);
 		byte oldLight;
 		if ((index & 1) == 1) {
-			index >>= 1;
+			index = index >> 1;
 			oldLight = NibblePairHashed.key1(blockLight[index]);
 			blockLight[index] = NibblePairHashed.setKey1(blockLight[index], light);
 		} else {
-			index >>= 1;
+			index = index >> 1;
 			oldLight = NibblePairHashed.key2(blockLight[index]);
 			blockLight[index] = NibblePairHashed.setKey2(blockLight[index], light);
 		}
 		if (light > oldLight) {
 			// light increased
-			getWorld().getLightingManager().blockLight.addGreater(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
+			this.addBlockLightOperation(x, y, z, SpoutWorldLighting.GREATER);
 		} else if (light < oldLight) {
 			// light decreased
-			getWorld().getLightingManager().blockLight.addLesser(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
+			this.addBlockLightOperation(x, y, z, SpoutWorldLighting.LESSER);
 		} else {
 			return false;
 		}
@@ -488,21 +536,21 @@ public class SpoutChunk extends Chunk {
 		int index = getBlockIndex(x, y, z);
 		byte oldLight;
 		if ((index & 1) == 1) {
-			index >>= 1;
+			index = index >> 1;
 			oldLight = NibblePairHashed.key1(skyLight[index]);
 			skyLight[index] = NibblePairHashed.setKey1(skyLight[index], light);
 		} else {
-			index >>= 1;
+			index = index >> 1;
 			oldLight = NibblePairHashed.key2(skyLight[index]);
 			skyLight[index] = NibblePairHashed.setKey2(skyLight[index], light);
 		}
 
 		if (light > oldLight) {
 			// light increased
-			getWorld().getLightingManager().skyLight.addGreater(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
+			this.addSkyLightOperation(x, y, z, SpoutWorldLighting.GREATER);
 		} else if (light < oldLight) {
 			// light decreased
-			getWorld().getLightingManager().skyLight.addLesser(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ());
+			this.addSkyLightOperation(x, y, z, SpoutWorldLighting.LESSER);
 		} else {
 			return false;
 		}
@@ -543,6 +591,36 @@ public class SpoutChunk extends Chunk {
 		unloadNoMark(save);
 		markForSaveUnload();
 	}
+	
+	public boolean cancelUnload() {
+		boolean success = false;
+		SaveState oldState = null;
+		while (!success) {
+			oldState = saveState.get();
+			SaveState nextState;
+			switch (oldState) {
+				case UNLOAD_SAVE:
+					nextState = SaveState.SAVE;
+					break;
+				case UNLOAD:
+					nextState = SaveState.NONE;
+					break;
+				case SAVE:
+					nextState = SaveState.SAVE;
+					break;
+				case NONE:
+					nextState = SaveState.NONE;
+					break;
+				case UNLOADED:
+					nextState = SaveState.UNLOADED;
+					break;
+				default:
+					throw new IllegalStateException("Unknown save state: " + oldState);
+			}
+			success = saveState.compareAndSet(oldState, nextState);
+		}
+		return oldState != SaveState.UNLOADED;
+	}
 
 	public void unloadNoMark(boolean save) {
 		boolean success = false;
@@ -550,26 +628,30 @@ public class SpoutChunk extends Chunk {
 			SaveState state = saveState.get();
 			SaveState nextState;
 			switch (state) {
-			case UNLOAD_SAVE:
-				nextState = SaveState.UNLOAD_SAVE;
-				break;
-			case UNLOAD:
-				nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD;
-				break;
-			case SAVE:
-				nextState = SaveState.UNLOAD_SAVE;
-				break;
-			case NONE:
-				nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD;
-				break;
-			case UNLOADED:
-				nextState = SaveState.UNLOADED;
-				break;
-			default:
-				throw new IllegalStateException("Unknown save state: " + state);
+				case UNLOAD_SAVE:
+					nextState = SaveState.UNLOAD_SAVE;
+					break;
+				case UNLOAD:
+					nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD;
+					break;
+				case SAVE:
+					nextState = SaveState.UNLOAD_SAVE;
+					break;
+				case NONE:
+					nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD;
+					break;
+				case UNLOADED:
+					nextState = SaveState.UNLOADED;
+					break;
+				default:
+					throw new IllegalStateException("Unknown save state: " + state);
 			}
 			success = saveState.compareAndSet(state, nextState);
 		}
+	}
+	
+	public SaveState getSaveState() {
+		return saveState.get();
 	}
 
 	@Override
@@ -589,23 +671,23 @@ public class SpoutChunk extends Chunk {
 			SaveState state = saveState.get();
 			SaveState nextState;
 			switch (state) {
-			case UNLOAD_SAVE:
-				nextState = SaveState.UNLOAD_SAVE;
-				break;
-			case UNLOAD:
-				nextState = SaveState.UNLOAD_SAVE;
-				break;
-			case SAVE:
-				nextState = SaveState.SAVE;
-				break;
-			case NONE:
-				nextState = SaveState.SAVE;
-				break;
-			case UNLOADED:
-				nextState = SaveState.UNLOADED;
-				break;
-			default:
-				throw new IllegalStateException("Unknown save state: " + state);
+				case UNLOAD_SAVE:
+					nextState = SaveState.UNLOAD_SAVE;
+					break;
+				case UNLOAD:
+					nextState = SaveState.UNLOAD_SAVE;
+					break;
+				case SAVE:
+					nextState = SaveState.SAVE;
+					break;
+				case NONE:
+					nextState = SaveState.SAVE;
+					break;
+				case UNLOADED:
+					nextState = SaveState.UNLOADED;
+					break;
+				default:
+					throw new IllegalStateException("Unknown save state: " + state);
 			}
 			success = saveState.compareAndSet(state, nextState);
 		}
@@ -616,11 +698,28 @@ public class SpoutChunk extends Chunk {
 		SaveState old = null;
 		while (!success) {
 			old = saveState.get();
-			if (old != SaveState.UNLOADED) {
-				success = saveState.compareAndSet(old, SaveState.NONE);
-			} else {
-				success = saveState.compareAndSet(old, SaveState.UNLOADED);
+			SaveState nextState;
+			switch (old) {
+				case UNLOAD_SAVE:
+					nextState = SaveState.UNLOAD;
+					break;
+				case UNLOAD:
+					nextState = SaveState.UNLOAD;
+					break;
+				case SAVE:
+					nextState = SaveState.NONE;
+					break;
+				case NONE:
+					nextState = SaveState.NONE;
+					break;
+				case UNLOADED:
+					nextState = SaveState.UNLOADED;
+					break;
+				default: 
+					throw new IllegalStateException("Unknown save state: " + old);
+
 			}
+			success = saveState.compareAndSet(old, nextState);
 		}
 		return old;
 	}
@@ -897,10 +996,7 @@ public class SpoutChunk extends Chunk {
 			for (y = 0; y < BLOCKS.SIZE; y++) {
 				for (z = 0; z < BLOCKS.SIZE; z++) {
 					if (!this.setBlockLight(x, y, z, this.getBlockMaterial(x, y, z).getLightLevel(this.getBlockData(x, y, z)), world)) {
-						// Bugged? This requires additional testing!
-						// world.getLightingManager().blockLight.addRefresh(this,
-						// x + this.getBlockX(), y + this.getBlockY(), z +
-						// this.getBlockZ());
+						this.addBlockLightOperation(x, y, z, SpoutWorldLighting.REFRESH);
 					}
 				}
 			}
@@ -920,13 +1016,11 @@ public class SpoutChunk extends Chunk {
 				for (y = columnY; y < maxY; y++) {
 					this.setBlockSkyLight(x, y, z, (byte) 15, world);
 				}
-				// Bugged? This requires additional testing!
-				/*
-				 * // refresh area below height for (y = columnY; y >= minY;
-				 * y--) { world.getLightingManager().skyLight.addRefresh(this, x
-				 * + this.getBlockX(), y + this.getBlockY(), z +
-				 * this.getBlockZ()); }
-				 */
+
+				// refresh area below height 
+				for (y = columnY; y >= minY; y--) {
+					this.addSkyLightOperation(x, y, z, SpoutWorldLighting.REFRESH);
+				}
 			}
 		}
 	}

@@ -59,7 +59,7 @@ public class TextureLoader extends BasicResourceLoader<Texture> {
 
 	@Override
 	public String getFallbackResourceName() {
-		return "texture://Spout/fallbacks/fallback.png";
+		return "texture://Spout/resources/fallback.png";
 	}
 	
 	

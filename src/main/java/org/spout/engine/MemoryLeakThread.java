@@ -37,6 +37,9 @@ import org.spout.api.Spout;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
+import org.spout.engine.world.SpoutChunk;
+import org.spout.engine.world.SpoutChunk.SaveState;
 import org.spout.engine.world.SpoutRegion;
 
 /**
@@ -66,81 +69,109 @@ public class MemoryLeakThread extends Thread {
 
 	@Override
 	public void run() {
+		SpoutSnapshotLock lock = (SpoutSnapshotLock)Spout.getEngine().getScheduler().getSnapshotLock();
 		while (!this.isInterrupted()) {
-			System.gc();
-			TObjectByteHashMap<WeakReference<Chunk>> recentChunkPasses = new TObjectByteHashMap<WeakReference<Chunk>>();
-			
-			int analyzed = 0;
-			Iterator<WeakReference<Chunk>> i = chunkQueue.iterator();
-			while (i.hasNext()) {
-				WeakReference<Chunk> ref = i.next();
-				Chunk chunk = ref.get();
-				if (chunk != null) {
-					if (!chunk.isLoaded() || chunk.getNumObservers() == 0) {
-						//Reference should be gc'd soon
-						byte passes;
-						if (chunkPasses.containsKey(ref)) {
-							passes = (byte) (chunkPasses.get(ref) + 1);
-							analyzed++;
+			boolean locked = lock.coreReadTryLock();
+			if (locked) {
+				try {
+					System.gc();
+					System.gc();
+					System.gc();
+					System.gc();
+					System.gc();
+					System.gc();
+					System.gc();
+					System.gc();
+					System.gc();
+					TObjectByteHashMap<WeakReference<Chunk>> recentChunkPasses = new TObjectByteHashMap<WeakReference<Chunk>>();
+
+					int analyzed = 0;
+					int unobserved = 0;
+					int queuedForUnload = 0;
+					int unloaded = 0;
+					Iterator<WeakReference<Chunk>> i = chunkQueue.iterator();
+					while (i.hasNext()) {
+						WeakReference<Chunk> ref = i.next();
+						Chunk chunk = ref.get();
+						if (chunk != null) {
+							if (!chunk.isLoaded() || chunk.getNumObservers() == 0) {
+								//Reference should be gc'd soon
+								byte passes;
+								if (chunkPasses.containsKey(ref)) {
+									passes = (byte) (chunkPasses.get(ref) + 1);
+									analyzed++;
+									if (((SpoutChunk)chunk).getNumObservers() == 0) {
+										unobserved++;
+									}
+									SaveState saveState = ((SpoutChunk)chunk).getSaveState();
+									if (saveState == SaveState.UNLOAD || saveState == SaveState.UNLOAD_SAVE) {
+										queuedForUnload++;
+									}
+									if (saveState == SaveState.UNLOADED) {
+										queuedForUnload++;
+									}
+								} else {
+									passes = 1;
+								}
+								recentChunkPasses.put(ref, passes);
+
+								if (passes > LEAK_PASSES) {
+									Spout.getLogger().severe("Chunk is leaking memory! Chunk is " + chunk.toString() + ":" + ((SpoutChunk)chunk).getSaveState());
+									if (chunk.getRegion() != null && chunk.getRegion().getChunk(chunk.getX(), chunk.getY(), chunk.getZ()) == chunk) {
+										Spout.getLogger().severe("Chunk is still referenced by it's region! Chunk is " + chunk.toString());
+									}
+									int rx = chunk.getX() >> Region.CHUNKS.BITS;
+									int ry = chunk.getY() >> Region.CHUNKS.BITS;
+									int rz = chunk.getZ() >> Region.CHUNKS.BITS;
+									Region r = chunk.getWorld().getRegion(rx, ry,rz, LoadOption.NO_LOAD);
+									if (r != chunk.getRegion()) {
+										Spout.getLogger().severe("Chunk's region is not referenced by the world! Chunk is " + chunk.toString() + 
+												" Chunk's region is " + chunk.getRegion() + " world's region is " + r);
+									}
+									Thread t = ((SpoutRegion)chunk.getRegion()).getExceutionThread();
+									if (r == null && t.isAlive()) {
+										Spout.getLogger().severe("Region's thread is still alive, but world returns null for get region");
+									}
+								} else if (passes > WARNING_PASSES) {
+									Spout.getLogger().warning("Chunk may be leaking memory, " + chunk.toString());
+									if (chunk.getRegion() != null && chunk.getRegion().getChunk(chunk.getX(), chunk.getY(), chunk.getZ()) == chunk) {
+										Spout.getLogger().severe("Chunk is still referenced by it's region! Chunk is " + chunk.toString());
+									}
+									int rx = chunk.getX() >> Region.CHUNKS.BITS;
+									int ry = chunk.getY() >> Region.CHUNKS.BITS;
+									int rz = chunk.getZ() >> Region.CHUNKS.BITS;
+									Region r = chunk.getWorld().getRegion(rx, ry,rz, LoadOption.NO_LOAD);
+									if (r != chunk.getRegion()) {
+										Spout.getLogger().severe("Chunk's region is not referenced by the world! Chunk is " + chunk.toString() + 
+												" Chunk's region is " + chunk.getRegion() + " world's region is " + r);
+									}
+									Thread t = ((SpoutRegion)chunk.getRegion()).getExceutionThread();
+									if (r == null && t.isAlive()) {
+										Spout.getLogger().severe("Region's thread is still alive, but world returns null for get region");
+									}
+								}
+							}
 						} else {
-							passes = 1;
-						}
-						recentChunkPasses.put(ref, passes);
-						
-						if (passes > LEAK_PASSES) {
-							Spout.getLogger().severe("Chunk is leaking memory! Chunk is " + chunk.toString());
-							if (chunk.getRegion() != null && chunk.getRegion().getChunk(chunk.getX(), chunk.getY(), chunk.getZ()) == chunk) {
-								Spout.getLogger().severe("Chunk is still referenced by it's region! Chunk is " + chunk.toString());
-							}
-							int rx = chunk.getX() >> Region.CHUNKS.BITS;
-							int ry = chunk.getY() >> Region.CHUNKS.BITS;
-							int rz = chunk.getZ() >> Region.CHUNKS.BITS;
-							Region r = chunk.getWorld().getRegion(rx, ry,rz, LoadOption.NO_LOAD);
-							if (r != chunk.getRegion()) {
-								Spout.getLogger().severe("Chunk's region is not referenced by the world! Chunk is " + chunk.toString() + 
-										" Chunk's region is " + chunk.getRegion() + " world's region is " + r);
-							}
-							Thread t = ((SpoutRegion)chunk.getRegion()).getExceutionThread();
-							if (r == null && t.isAlive()) {
-								Spout.getLogger().severe("Region's thread is still alive, but world returns null for get region");
-							}
-						} else if (passes > WARNING_PASSES) {
-							Spout.getLogger().warning("Chunk may be leaking memory, " + chunk.toString());
-							if (chunk.getRegion() != null && chunk.getRegion().getChunk(chunk.getX(), chunk.getY(), chunk.getZ()) == chunk) {
-								Spout.getLogger().severe("Chunk is still referenced by it's region! Chunk is " + chunk.toString());
-							}
-							int rx = chunk.getX() >> Region.CHUNKS.BITS;
-							int ry = chunk.getY() >> Region.CHUNKS.BITS;
-							int rz = chunk.getZ() >> Region.CHUNKS.BITS;
-							Region r = chunk.getWorld().getRegion(rx, ry,rz, LoadOption.NO_LOAD);
-							if (r != chunk.getRegion()) {
-								Spout.getLogger().severe("Chunk's region is not referenced by the world! Chunk is " + chunk.toString() + 
-										" Chunk's region is " + chunk.getRegion() + " world's region is " + r);
-							}
-							Thread t = ((SpoutRegion)chunk.getRegion()).getExceutionThread();
-							if (r == null && t.isAlive()) {
-								Spout.getLogger().severe("Region's thread is still alive, but world returns null for get region");
-							}
+							i.remove();
 						}
 					}
-				} else {
-					i.remove();
+
+					//Ensures that all the key/values are recent
+					chunkPasses.clear();
+					chunkPasses.putAll(recentChunkPasses);
+
+					synchronized (chunkArrivals) {
+						chunkQueue.addAll(chunkArrivals);
+						chunkArrivals.clear();
+					}
+
+					Spout.getLogger().info("Memory Leak Detection Analyzed " + analyzed + " potential leaks, " + unobserved + " Unobserved, " + queuedForUnload + " queued for unloading, " + unloaded + " unloaded");
+				} finally {
+					lock.coreReadUnlock();
 				}
 			}
-			
-			//Ensures that all the key/values are recent
-			chunkPasses.clear();
-			chunkPasses.putAll(recentChunkPasses);
-
-			synchronized (chunkArrivals) {
-				chunkQueue.addAll(chunkArrivals);
-				chunkArrivals.clear();
-			}
-			
-			Spout.getLogger().info("Memory Leak Detection Analyzed " + analyzed + " potential leaks");
-
 			try {
-				sleep(10000);
+				sleep(60000);
 			} catch (InterruptedException ignore) { }
 		}
 	}

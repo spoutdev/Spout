@@ -73,6 +73,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TaskManager;
+import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.map.TByteTripleObjectHashMap;
 import org.spout.api.util.set.TByteTripleHashSet;
@@ -241,12 +242,20 @@ public class SpoutRegion extends Region{
 	@Override
 	@LiveRead
 	public SpoutChunk getChunk(int x, int y, int z, LoadOption loadopt) {
+		// This is a pretty expensive place to perform a check
+		// It has to check if this is the region thread and then decide which mask to use
+		//TickStage.checkStage(~(TickStage.SNAPSHOT), -1, this.executionThread);
 		x &= CHUNKS.MASK;
 		y &= CHUNKS.MASK;
 		z &= CHUNKS.MASK;
 
 		final SpoutChunk chunk = chunks[x][y][z].get();
 		if (chunk != null) {
+			if (loadopt.loadIfNeeded()) {
+				if (!chunk.cancelUnload()) {
+					throw new IllegalStateException("Unloaded chunk returned by getChunk");
+				}
+			}
 			return chunk;
 		}
 
@@ -294,6 +303,11 @@ public class SpoutRegion extends Region{
 			newChunk.deregisterFromColumn(false);
 			SpoutChunk oldChunk = chunkReference.get();
 			if (oldChunk != null) {
+				if (loadopt.loadIfNeeded()) {
+					if (!oldChunk.cancelUnload()) {
+						throw new IllegalStateException("Unloaded chunk returned by getChunk");
+					}
+				}
 				return oldChunk;
 			}
 		}
@@ -338,6 +352,7 @@ public class SpoutRegion extends Region{
 	 * @return true if the region is now empty
 	 */
 	public boolean removeChunk(Chunk c) {
+		TickStage.checkStage(TickStage.SNAPSHOT, executionThread);
 		if (c.getRegion() != this) {
 			return false;
 		}
@@ -359,6 +374,9 @@ public class SpoutRegion extends Region{
 
 			occupiedChunksQueue.remove(currentChunk);
 			occupiedChunks.remove(currentChunk);
+			
+			populationQueue.remove(currentChunk);
+			populationQueueSet.remove(currentChunk);
 
 			removeDynamicBlockUpdates(currentChunk);
 
@@ -374,6 +392,20 @@ public class SpoutRegion extends Region{
 	@Override
 	public boolean hasChunk(int x, int y, int z) {
 		return chunks[x & CHUNKS.MASK][y & CHUNKS.MASK][z & CHUNKS.MASK].get() != null;
+	}
+	
+	public boolean isEmpty() {
+		TickStage.checkStage(TickStage.TICKSTART);
+		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
+			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
+				for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+					if (chunks[dx][dy][dz].get() != null) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
 	}
 
 	SpoutRegionManager getManager() {

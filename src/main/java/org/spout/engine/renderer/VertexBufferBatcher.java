@@ -85,8 +85,7 @@ public class VertexBufferBatcher extends BatchVertexRenderer {
 		
 		this.buffer.setData(verts, numVerticies);
 		
-		
-		
+	
 		
 	}
 
