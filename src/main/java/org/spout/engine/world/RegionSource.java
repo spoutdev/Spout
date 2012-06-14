@@ -116,7 +116,7 @@ public class RegionSource implements Iterable<Region> {
 	public SpoutRegion getRegion(int x, int y, int z, LoadOption loadopt) {
 		// This is a pretty expensive place to perform a check
 		// It has to check if this is the region thread and then decide which mask to use
-		//TickStage.checkStage(~(TickStage.SNAPSHOT), -1, (Thread)world.getExecutor());
+		TickStage.checkStage(~TickStage.SNAPSHOT);
 		SpoutRegion region = (SpoutRegion) loadedRegions.get(x, y, z);
 
 		if (region != null) {
