@@ -55,9 +55,9 @@ public class PositionNormalTexture {
 	}
 	
 	public float[] toArray(){
-		return new float[] { position.getX(), position.getY(), position.getZ(), 
+		return new float[] { position.getX(), position.getY(), position.getZ(), 1.0f,
 							normal.getX(), normal.getY(), normal.getZ(),
-							uv.getX(), uv.getY() 
+							uv.getX(), uv.getY()
 							};		
 	}
 	
