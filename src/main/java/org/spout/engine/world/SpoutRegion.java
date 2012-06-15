@@ -244,7 +244,9 @@ public class SpoutRegion extends Region{
 	public SpoutChunk getChunk(int x, int y, int z, LoadOption loadopt) {
 		// This is a pretty expensive place to perform a check
 		// It has to check if this is the region thread and then decide which mask to use
-		//TickStage.checkStage(~(TickStage.SNAPSHOT), -1, this.executionThread);
+		if (Thread.currentThread() != this.executionThread) {
+			TickStage.checkStage(~TickStage.SNAPSHOT);
+		}
 		x &= CHUNKS.MASK;
 		y &= CHUNKS.MASK;
 		z &= CHUNKS.MASK;
