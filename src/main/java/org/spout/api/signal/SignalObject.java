@@ -29,11 +29,13 @@ package org.spout.api.signal;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
+import org.spout.api.tickable.Tickable;
+
 /**
  * Defines a common implementation for a SignalInterface. If you need to use this as a delegate because your class already extends something else, use SignalObjectDelegate.
  *
  */
-public class SignalObject implements SignalInterface {
+public class SignalObject extends Tickable implements SignalInterface {
 	
 	private HashMap<String, Signal> signals = new HashMap<String, Signal>();
 	
@@ -108,4 +110,7 @@ public class SignalObject implements SignalInterface {
 		return false;
 	}
 
+	@Override
+	public void onTick(float dt) {
+	}
 }
