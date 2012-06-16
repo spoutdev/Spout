@@ -41,6 +41,8 @@ import java.util.regex.Pattern;
 
 import org.spout.api.Engine;
 import org.spout.api.UnsafeMethod;
+import org.spout.api.event.server.PluginDisableEvent;
+import org.spout.api.event.server.PluginEnableEvent;
 import org.spout.api.exception.InvalidDescriptionFileException;
 import org.spout.api.exception.InvalidPluginException;
 import org.spout.api.exception.UnknownDependencyException;
@@ -88,7 +90,7 @@ public class CommonPluginLoader implements PluginLoader {
 				engine.getLogger().log(Level.SEVERE, new StringBuilder().append("An error occured when enabling '").append(paramPlugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
 			}
 
-			// TODO call PluginEnableEvent
+			engine.getEventManager().callEvent(new PluginEnableEvent(cp));
 		}
 	}
 
@@ -112,7 +114,7 @@ public class CommonPluginLoader implements PluginLoader {
 				engine.getLogger().log(Level.SEVERE, new StringBuilder().append("An error occurred when disabling plugin '").append(paramPlugin.getDescription().getFullName()).append("' : ").append(t.getMessage()).toString(), t);
 			}
 
-			// TODO call PluginDisableEvent
+			engine.getEventManager().callEvent(new PluginDisableEvent(cp));
 		}
 
 	}
