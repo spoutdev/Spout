@@ -34,7 +34,7 @@ import java.util.List;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
-import org.spout.api.Tickable;
+import org.spout.api.tickable.Tickable;
 import org.spout.api.gui.KeyboardEventHandler;
 import org.spout.api.gui.MouseButton;
 import org.spout.api.gui.MouseEventHandler;
@@ -42,11 +42,9 @@ import org.spout.api.gui.Renderable;
 import org.spout.api.gui.Screen;
 import org.spout.api.keyboard.Keyboard;
 import org.spout.api.signal.Signal;
-import org.spout.api.signal.SignalInterface;
 import org.spout.api.signal.SignalSubscriberObject;
-import org.spout.api.signal.SubscriberInterface;
 
-public class ScreenStack extends SignalSubscriberObject implements Renderable, KeyboardEventHandler, MouseEventHandler, Tickable {
+public class ScreenStack extends SignalSubscriberObject implements Renderable, KeyboardEventHandler, MouseEventHandler {
 	/**
 	 * Contains all attached screens in front-to-back order, that means, the topmost screen is the first element
 	 */
@@ -255,7 +253,7 @@ public class ScreenStack extends SignalSubscriberObject implements Renderable, K
 			emit(SIGNAL_RESIZED, width, height);
 		}
 		//Invisible screens don't have to be ticked
-		for (Screen screen:visibleScreens) {
+		for (Screen screen : visibleScreens) {
 			screen.onTick(dt);
 		}
 	}

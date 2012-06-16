@@ -26,10 +26,9 @@
  */
 package org.spout.api.entity;
 
-import org.spout.api.Tickable;
-import org.spout.api.entity.Entity;
+import org.spout.api.tickable.Tickable;
 
-public abstract class EntityComponent implements Tickable {
+public abstract class EntityComponent extends Tickable {
 	private Entity parent;
 
 	/**

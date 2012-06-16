@@ -24,14 +24,25 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity.component.controller.action;
+package org.spout.api.tickable;
 
-import org.spout.api.entity.component.Controller;
-import org.spout.api.entity.Entity;
+/**
+ * Represents a {@link LogicRunnable}s priority on a {@link Tickable}
+ */
+public enum LogicPriority {
+	LOWEST(0),
+	LOW(1),
+	NORMAL(2),
+	HIGH(3),
+	HIGHEST(4);
 
-public abstract class EntityAction<T extends Controller> {
+	private final int index;
 
-	public abstract boolean shouldRun(Entity entity, T controller);
+	private LogicPriority(int index) {
+		this.index = index;
+	}
 
-	public abstract void run(Entity entity, T controller, float dt);
+	public int getIndex() {
+		return index;
+	}
 }

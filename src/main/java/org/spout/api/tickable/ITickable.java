@@ -24,9 +24,9 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api;
+package org.spout.api.tickable;
 
-public interface Tickable {
+public interface ITickable {
 	/**
 	 * Called each simulation tick.<br/>
 	 * 1       tick  = 1/20 second<br/>
@@ -34,7 +34,7 @@ public interface Tickable {
 	 * 1200    ticks = 1 minute<br/>
 	 * 72000   ticks = 1 hour<br/>
 	 * 1728000 ticks = 1 day
-	 * 
+	 *
 	 * @param dt time since the last tick in seconds
 	 */
 	public void onTick(float dt);

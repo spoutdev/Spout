@@ -26,14 +26,12 @@
  */
 package org.spout.api.gamestate;
 
-import org.spout.api.Tickable;
+import org.spout.api.tickable.Tickable;
 
 /**
  * Simple Game State interface
- *
  */
-
-public abstract class GameState implements Tickable {
+public abstract class GameState extends Tickable {
 	/**
 	 * Called when this state is going to be used.  Use this to initialize state variables. 
 	 */
