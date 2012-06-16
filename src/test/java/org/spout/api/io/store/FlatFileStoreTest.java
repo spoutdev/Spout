@@ -30,6 +30,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import org.junit.After;
 import org.junit.Test;
 import org.spout.api.io.store.simple.FlatFileStore;
 import org.spout.api.io.store.simple.SimpleStore;
@@ -69,5 +70,10 @@ public class FlatFileStoreTest {
 		for (int i = 0; i < keys.length; i++) {
 			assertTrue("Check mismatch", subject.get(keys[i]).equals(ids[i]) );
 		}
+	}
+
+	@After
+	public void cleanUp() {
+		file.deleteOnExit();
 	}
 }
