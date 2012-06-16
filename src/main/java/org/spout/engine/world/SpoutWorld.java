@@ -490,7 +490,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public Engine getGame() {
+	public Engine getEngine() {
 		return server;
 	}
 
