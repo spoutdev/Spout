@@ -29,12 +29,10 @@ package org.spout.api.plugin;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import org.spout.api.Spout;
-import org.spout.api.event.server.PluginLoggerEvent;
 
 public class PluginLogger extends Logger {
     private final String tag;
-    private Plugin plugin;
+    private final Plugin plugin;
     
     protected PluginLogger(Plugin plugin) {
         super(plugin.getClass().getCanonicalName(), null);
@@ -46,7 +44,6 @@ public class PluginLogger extends Logger {
 
     @Override
     public void log(LogRecord logRecord) {
-        Spout.getEventManager().callEvent(new PluginLoggerEvent(plugin, logRecord));
         logRecord.setMessage(tag + logRecord.getMessage());
         super.log(logRecord);
     }
