@@ -112,12 +112,12 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			if (method.isAnnotationPresent(EventHandler.class) && method.getParameterTypes().length == 1) {
 				Class<?> clazz = method.getParameterTypes()[0];
 				if (!ProtocolEvent.class.isAssignableFrom(ProtocolEvent.class)) {
-					session.getGame().getLogger().warning("Invalid protocol event handler attempted to be registered for " + owner.getName());
+					session.getEngine().getLogger().warning("Invalid protocol event handler attempted to be registered for " + owner.getName());
 					continue;
 				}
 
 				if (!Message.class.isAssignableFrom(method.getReturnType()) && !Message.class.isAssignableFrom(method.getReturnType().getComponentType())) {
-					session.getGame().getLogger().warning("Protocol event handler not returning a Message tried to be registered for " + owner.getName());
+					session.getEngine().getLogger().warning("Protocol event handler not returning a Message tried to be registered for " + owner.getName());
 				}
 
 				method.setAccessible(true);
@@ -157,7 +157,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			} catch (EventException e) {
 				if (e.getCause() != null) {
 					Throwable t = e.getCause();
-					session.getGame().getLogger().severe("Error occurred while calling protocol event"
+					session.getEngine().getLogger().severe("Error occurred while calling protocol event"
 							+ event.getClass().getSimpleName() + " for player " + owner.getName() + ": " + t.getMessage());
 					t.printStackTrace();
 				}

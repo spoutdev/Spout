@@ -91,11 +91,11 @@ public interface Plugin extends Source, Named {
 	public PluginDescriptionFile getDescription();
 
 	/**
-	 * Returns the game object
+	 * Returns the engine object
 	 *
-	 * @return game
+	 * @return engine
 	 */
-	public Engine getGame();
+	public Engine getEngine();
 
 	/**
 	 * Gets the suitable generator for the world and generator name.

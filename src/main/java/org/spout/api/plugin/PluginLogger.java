@@ -39,7 +39,7 @@ public class PluginLogger extends Logger {
     protected PluginLogger(Plugin plugin) {
         super(plugin.getClass().getCanonicalName(), null);
         setLevel(Level.ALL);
-        setParent(plugin.getGame().getLogger());
+        setParent(plugin.getEngine().getLogger());
         tag = "[" + plugin.getDescription().getName() + "] ";
         this.plugin = plugin;
     }

@@ -78,7 +78,7 @@ public final class SpoutMetaPlugin implements Plugin {
 
 	@Override
 	public Logger getLogger() {
-		return getGame().getLogger();
+		return getEngine().getLogger();
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public final class SpoutMetaPlugin implements Plugin {
 	}
 
 	@Override
-	public Engine getGame() {
+	public Engine getEngine() {
 		return game;
 	}
 

@@ -163,7 +163,7 @@ public interface Session {
 		GAME
 	}
 
-	public Engine getGame();
+	public Engine getEngine();
 	
 	/**
 	 * True if this session is open and connected.

@@ -226,7 +226,7 @@ public interface World extends Source, AreaRegionAccess {
 	 *
 	 * @return the game
 	 */
-	public Engine getGame();
+	public Engine getEngine();
 
 	/**
 	 * Gets the height of this world in blocks.

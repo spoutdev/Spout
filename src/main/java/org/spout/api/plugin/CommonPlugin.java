@@ -37,7 +37,7 @@ public abstract class CommonPlugin implements Plugin {
 	private PluginDescriptionFile description;
 	private CommonClassLoader classLoader;
 	private CommonPluginLoader pluginLoader;
-	private Engine game;
+	private Engine engine;
 	private File dataFolder;
 	private File file;
 	private boolean enabled;
@@ -77,10 +77,10 @@ public abstract class CommonPlugin implements Plugin {
 		return description;
 	}
 
-	public final void initialize(CommonPluginLoader commonsPluginLoader, Engine game, PluginDescriptionFile desc, File dataFolder, File paramFile, CommonClassLoader loader) {
+	public final void initialize(CommonPluginLoader commonsPluginLoader, Engine engine, PluginDescriptionFile desc, File dataFolder, File paramFile, CommonClassLoader loader) {
 		description = desc;
 		classLoader = loader;
-		this.game = game;
+		this.engine = engine;
 		pluginLoader = commonsPluginLoader;
 		this.dataFolder = dataFolder;
 		file = paramFile;
@@ -99,8 +99,8 @@ public abstract class CommonPlugin implements Plugin {
 		return file;
 	}
 
-	public final Engine getGame() {
-		return game;
+	public final Engine getEngine() {
+		return engine;
 	}
 
 	@UnsafeMethod
