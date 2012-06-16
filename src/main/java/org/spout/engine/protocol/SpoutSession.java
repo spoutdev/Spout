@@ -258,12 +258,12 @@ public final class SpoutSession implements Session {
 		if (player != null) {
 			PlayerLeaveEvent event;
 			if (kick) {
-				event = getGame().getEventManager().callEvent(new PlayerKickEvent(player, getDefaultLeaveMessage(), reason));
+				event = getEngine().getEventManager().callEvent(new PlayerKickEvent(player, getDefaultLeaveMessage(), reason));
 				if (event.isCancelled()) {
 					return false;
 				}
 
-				getGame().getLogger().log(Level.INFO, "Player {0} kicked: {1}", new Object[]{player.getName(), reason});
+				getEngine().getLogger().log(Level.INFO, "Player {0} kicked: {1}", new Object[]{player.getName(), reason});
 			} else {
 				event = new PlayerLeaveEvent(player, getDefaultLeaveMessage());
 			}
@@ -320,7 +320,7 @@ public final class SpoutSession implements Session {
 			isConnected = false;
 
 			if (!leaveEvent.hasBeenCalled()) {
-				getGame().getEventManager().callEvent(leaveEvent);
+				getEngine().getEventManager().callEvent(leaveEvent);
 			}
 
 			String text = leaveEvent.getMessage();
@@ -328,7 +328,7 @@ public final class SpoutSession implements Session {
 				server.broadcastMessage(text);
 			}
 
-			PlayerSaveEvent saveEvent = getGame().getEventManager().callEvent(new PlayerSaveEvent(player));
+			PlayerSaveEvent saveEvent = getEngine().getEventManager().callEvent(new PlayerSaveEvent(player));
 			if (!saveEvent.isSaved()) {
 
 			}
@@ -376,7 +376,7 @@ public final class SpoutSession implements Session {
 	}
 
 	@Override
-	public Engine getGame() {
+	public Engine getEngine() {
 		return server;
 	}
 
