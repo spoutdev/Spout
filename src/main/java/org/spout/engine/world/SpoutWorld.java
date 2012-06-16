@@ -455,7 +455,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 				//Update all entities
 				for (SpoutEntity ent : entityManager) {
 					try {
-						ent.onTick(dt);
+						ent.tick(dt);
 					} catch (Exception e) {
 						Spout.getEngine().getLogger().severe("Unhandled exception during tick for " + ent.toString());
 						e.printStackTrace();

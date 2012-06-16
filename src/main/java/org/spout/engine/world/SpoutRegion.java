@@ -598,7 +598,7 @@ public class SpoutRegion extends Region{
 						//If the entity is not important (not an observer)
 						//And the entity is not visible to players, don't tick it
 						if (visibleToPlayers || (ent.getController() != null && ent.getController().isImportant())) {
-							ent.onTick(dt);
+							ent.tick(dt);
 						}
 					} catch (Exception e) {
 						Spout.getEngine().getLogger().severe("Unhandled exception during tick for " + ent.toString());

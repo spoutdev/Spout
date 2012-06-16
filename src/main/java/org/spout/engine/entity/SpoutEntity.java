@@ -36,7 +36,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.Source;
 import org.spout.api.Spout;
-import org.spout.api.Tickable;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.entity.component.Controller;
 import org.spout.api.entity.Entity;
@@ -54,13 +53,15 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.player.Player;
+import org.spout.api.tickable.Tickable;
+
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 
-public class SpoutEntity implements Entity, Tickable {
+public class SpoutEntity extends Tickable implements Entity {
 	public static final int NOTSPAWNEDID = -1;
 	//Thread-safe
 	private final AtomicReference<EntityManager> entityManagerLive;
@@ -163,7 +164,7 @@ public class SpoutEntity implements Entity, Tickable {
 				attached = true;
 			}
 			if (!isDead() && getPosition() != null && getWorld() != null) {
-				cont.onTick(dt);
+				cont.tick(dt);
 			}
 		}
 
