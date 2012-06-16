@@ -48,7 +48,6 @@ import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 public class PluginDescriptionFile implements Datatable {
 	private static final long serialVersionUID = 1L;
-
 	private static final Yaml yaml = new Yaml(new SafeConstructor());
 	public static final List<String> RESTRICTED_NAMES = Collections.unmodifiableList(Arrays.asList(
 			"org.spout",

@@ -53,23 +53,21 @@ public class CommonPluginManager implements PluginManager {
 	private final Engine game;
 	private final CommonSecurityManager manager;
 	private final double key;
-	private File updateDir;
+	private final SpoutMetaPlugin metaPlugin;
 	private final Map<Pattern, PluginLoader> loaders = new HashMap<Pattern, PluginLoader>();
 	private final Map<String, Plugin> names = new HashMap<String, Plugin>();
 	private final List<Plugin> plugins = new ArrayList<Plugin>();
-	private final SpoutMetaPlugin metaPlugin;
+	private File updateDir;
 
-	public CommonPluginManager(final Engine game, final CommonSecurityManager manager, final double key) {
-		this.game = game;
+	public CommonPluginManager(final Engine engine, final CommonSecurityManager manager, final double key) {
+		this.game = engine;
 		this.manager = manager;
 		this.key = key;
-		
-		metaPlugin = new SpoutMetaPlugin(game);
+		this.metaPlugin = new SpoutMetaPlugin(engine);
 	}
 
 	public void registerPluginLoader(Class<? extends PluginLoader> loader) {
 		PluginLoader instance = null;
-
 		try {
 			Constructor<? extends PluginLoader> constructor = loader.getConstructor(new Class[] {Engine.class, CommonSecurityManager.class, double.class});
 
@@ -97,7 +95,7 @@ public class CommonPluginManager implements PluginManager {
 		return loadPlugin(paramFile, false);
 	}
 
-	public synchronized Plugin loadPlugin(File paramFile, boolean ignoresoftdepends) throws InvalidPluginException, InvalidDescriptionFileException, UnknownDependencyException {
+	public synchronized Plugin loadPlugin(File paramFile, boolean ignoreSoftDependencies) throws InvalidPluginException, InvalidDescriptionFileException, UnknownDependencyException {
 		boolean locked = manager.lock(key);
 		File update = null;
 
@@ -122,7 +120,7 @@ public class CommonPluginManager implements PluginManager {
 
 			if (m.find()) {
 				PluginLoader loader = loaders.get(pattern);
-				result = loader.loadPlugin(paramFile, ignoresoftdepends);
+				result = loader.loadPlugin(paramFile, ignoreSoftDependencies);
 
 				if (result != null) {
 					break;
@@ -142,7 +140,6 @@ public class CommonPluginManager implements PluginManager {
 	}
 
 	public synchronized Plugin[] loadPlugins(File paramFile) {
-
 		if (!paramFile.isDirectory()) {
 			throw new IllegalArgumentException("File parameter was not a Directory!");
 		}
@@ -219,7 +216,6 @@ public class CommonPluginManager implements PluginManager {
 			disablePlugins();
 			plugins.clear();
 			names.clear();
-			// HandlerList.unregisterAll();
 		}
 	}
 
@@ -233,7 +229,7 @@ public class CommonPluginManager implements PluginManager {
 			try {
 				plugin.getPluginLoader().enablePlugin(plugin);
 			} catch (Exception e) {
-				safelyLog(Level.SEVERE, "An error ocurred in the Plugin Loader while enabling plugin '" + plugin.getDescription().getFullName() + "': " + e.getMessage(), e);
+				safelyLog(Level.SEVERE, "An error occurred in the Plugin Loader while enabling plugin '" + plugin.getDescription().getFullName() + "': " + e.getMessage(), e);
 			}
 
 			if (!locked) {
