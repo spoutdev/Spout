@@ -34,11 +34,11 @@ import org.spout.api.generator.WorldGenerator;
 
 public final class SpoutMetaPlugin implements Plugin {
 	private PluginDescriptionFile pdf;
-	private Engine game;
+	private Engine engine;
 	
-	public SpoutMetaPlugin(Engine game) {
-		this.game = game;
-		pdf = new PluginDescriptionFile("Spout", game.getVersion(), "", Platform.BOTH);
+	public SpoutMetaPlugin(Engine engine) {
+		this.engine = engine;
+		pdf = new PluginDescriptionFile("Spout", engine.getVersion(), "", Platform.BOTH);
 	}
 	
 	@Override
@@ -88,7 +88,7 @@ public final class SpoutMetaPlugin implements Plugin {
 
 	@Override
 	public Engine getEngine() {
-		return game;
+		return engine;
 	}
 
 	@Override
@@ -98,11 +98,11 @@ public final class SpoutMetaPlugin implements Plugin {
 
 	@Override
 	public File getDataFolder() {
-		return game.getDataFolder();
+		return engine.getDataFolder();
 	}
 
 	@Override
 	public File getFile() {
-		return new File(game.getClass().getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " "));
+		return new File(engine.getClass().getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " "));
 	}
 }

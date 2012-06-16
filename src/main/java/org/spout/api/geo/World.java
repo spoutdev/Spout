@@ -222,9 +222,9 @@ public interface World extends Source, AreaRegionAccess {
 	public WorldGenerator getGenerator();
 
 	/**
-	 * Gets the game associated with this world
+	 * Gets the engine associated with this world
 	 *
-	 * @return the game
+	 * @return the engine
 	 */
 	public Engine getEngine();
 
