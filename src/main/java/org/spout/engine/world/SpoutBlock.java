@@ -34,11 +34,11 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
-import org.spout.api.geo.cuboid.UpdateOption;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.block.BlockFace;
+import org.spout.api.material.range.EffectRange;
 import org.spout.api.material.source.DataSource;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.Vector3;
@@ -206,12 +206,12 @@ public class SpoutBlock implements Block {
 	
 	@Override
 	public short setBlockDataBits(short bits) {
-		return this.getChunk().setBlockDataBits(this.x, this.y, this.z, bits);
+		return this.getChunk().setBlockDataBits(this.x, this.y, this.z, bits, this.source);
 	}
 
 	@Override
 	public short clearBlockDataBits(short bits) {
-		return this.getChunk().clearBlockDataBits(this.x, this.y, this.z, bits);
+		return this.getChunk().clearBlockDataBits(this.x, this.y, this.z, bits, this.source);
 	}
 
 	@Override
@@ -221,7 +221,7 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public int setBlockDataField(int bits, int value) {
-		return this.getChunk().setBlockDataField(this.x, this.y, this.z, bits, value);
+		return this.getChunk().setBlockDataField(this.x, this.y, this.z, bits, value, this.source);
 	}
 
 	@Override
@@ -299,39 +299,8 @@ public class SpoutBlock implements Block {
 		return getController() != null;
 	}
 
-	@Override
-	public Block update() {
-		return this.update(true);
-	}
-	
-	@Override
-	public Block update(boolean around) {
-		return update(true, around);
-	}
-	
-	@Override
-	public Block update(UpdateOption option) {
-		return update(option.updateSelf(), option.updateAround());
-	}
-
-	private Block update(boolean self, boolean around) {
-		World world = this.getWorld();
-		if (self) {
-			world.updateBlockPhysics(this.x, this.y, this.z, this.source);
-		}
-		if (around) {
-			//South and North
-			world.updateBlockPhysics(this.x + 1, this.y, this.z, this.source);
-			world.updateBlockPhysics(this.x - 1, this.y, this.z, this.source);
-
-			//West and East
-			world.updateBlockPhysics(this.x, this.y, this.z + 1, this.source);
-			world.updateBlockPhysics(this.x, this.y, this.z - 1, this.source);
-
-			//Above and Below
-			world.updateBlockPhysics(this.x, this.y + 1, this.z, this.source);
-			world.updateBlockPhysics(this.x, this.y - 1, this.z, this.source);
-		}
+	public Block queueUpdate(EffectRange range) {
+		world.queueBlockPhysics(this.x, this.y, this.z, range, this.source);
 		return this;
 	}
 

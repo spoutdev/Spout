@@ -39,6 +39,7 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.block.BlockFullState;
 import org.spout.api.util.hashing.NibblePairHashed;
 
 public class SpoutChunkSnapshot extends ChunkSnapshot {
@@ -93,6 +94,11 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	@Override
 	public short getBlockData(int x, int y, int z) {
 		return blockData[this.getBlockIndex(x, y, z)];
+	}
+	
+	@Override
+	public int getBlockFullState(int x, int y, int z) {
+		return BlockFullState.getPacked(getBlockId(x, y, z), getBlockData(x, y, z));
 	}
 
 	@Override
@@ -172,4 +178,5 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	public Biome getBiomeType(int x, int y, int z) {
 		return biomes.getBiome(x, y, z);
 	}
+
 }

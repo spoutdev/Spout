@@ -138,11 +138,11 @@ public class FilteredChunk extends SpoutChunk{
 	}
 
 	@Override
-	public boolean compareAndSetData(int x, int y, int z, int expect, short data) {
+	public boolean compareAndSetData(int x, int y, int z, int expect, short data, Source source) {
 		if (uniform.get()) {
 			initialize();
 		}
-		return super.compareAndSetData(x, y, z, expect, data);
+		return super.compareAndSetData(x, y, z, expect, data, source);
 	}
 
 	@Override
