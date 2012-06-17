@@ -100,6 +100,12 @@ public class TickStage {
 	 * All snapshots are updated to the equal to the live value.
 	 */
 	public final static int SNAPSHOT = 1 << 9;
+	
+	public final static int ALL_PHYSICS = PHYSICS | GLOBAL_PHYSICS;
+	
+	public final static int ALL_DYNAMIC = DYNAMIC_BLOCKS | GLOBAL_DYNAMIC_BLOCKS;
+	
+	public final static int ALL_PHYSICS_AND_DYNAMIC = ALL_PHYSICS | ALL_DYNAMIC;
 
 	public static int getStageInt() {
 		return stage;

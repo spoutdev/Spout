@@ -27,6 +27,8 @@
 package org.spout.api.material.block;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.Material;
 import org.spout.api.util.StringUtil;
 
 public class BlockFullState implements Cloneable {
@@ -42,7 +44,7 @@ public class BlockFullState implements Cloneable {
 		this.id = id;
 		this.data = data;
 	}
-
+	
 	public final short getId() {
 		return id;
 	}
@@ -65,6 +67,16 @@ public class BlockFullState implements Cloneable {
 	
 	public static short getData(int packed) {
 		return (short) packed;
+	}
+	
+	public static BlockMaterial getMaterial(int packed) {
+		short id = getId(packed);
+		short data = getData(packed);
+		BlockMaterial mat = BlockMaterial.get(id);
+		if (mat == null) {
+			return BlockMaterial.AIR;
+		}
+		return mat.getSubMaterial(data);
 	}
 
 	@Override

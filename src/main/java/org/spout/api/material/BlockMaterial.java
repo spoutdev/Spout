@@ -30,8 +30,8 @@ import org.spout.api.collision.BoundingBox;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionStrategy;
 import org.spout.api.collision.CollisionVolume;
-import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.entity.component.controller.type.ControllerType;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.cuboid.Block;
@@ -39,6 +39,7 @@ import org.spout.api.material.basic.BasicAir;
 import org.spout.api.material.basic.BasicSkyBox;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
+import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.MathHelper;
 import org.spout.api.util.flag.ByteFlagContainer;
 
@@ -298,11 +299,50 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Called when a block adjacent to this material is changed.
+	 * Called when a block near to this material is changed.<br>
 	 * 
 	 * @param block that got updated
+	 * @return true if the block was updated
 	 */
 	public void onUpdate(Block block) {
+	}
+	
+	/**
+	 * Returns the maximum range of effect for physics updates to this material.  
+	 * This is triggered when the material is set to this material, or when the 
+	 * data is changed.
+	 * <br>
+	 * When triggered, all blocks in this range are queued for updating.
+	 * 
+	 * @return the maximum range of updates
+	 */
+	public EffectRange getPhysicsRange(short data) {
+		return EffectRange.THIS_AND_NEIGHBORS;
+	}
+	
+	/**
+	 * Returns the maximum range of effect for physics updates to this material, when 
+	 * it is replaced by another material.  This is triggered when the material or 
+	 * sub-material (data & dataMask) is changed.
+	 * <br>
+	 * When triggered, all blocks in this range are queued for updating.
+	 * 
+	 * @param data the data the block had when destroyed
+	 * @return the maximum range of updates
+	 */
+	public EffectRange getDestroyRange(short data) {
+		return getPhysicsRange(data);
+	}
+	
+	/**
+	 * Gets the maximum distance of any physics effect.  This is used to determine if the update can be handled by 
+	 * the region thread and not to determine if any blocks should be updated.
+	 * 
+	 * @param data the data of the material
+	 * @return the maximum range of updates
+	 */
+	public EffectRange getMaximumPhysicsRange(short data) {
+		return getPhysicsRange(data);
 	}
 
 	/**
@@ -311,7 +351,7 @@ public class BlockMaterial extends Material implements Placeable {
 	 * @param block that got destroyed
 	 */
 	public void onDestroy(Block block) {
-		block.setMaterial(AIR).update();
+		block.setMaterial(AIR);
 		if (this.hasController()) {
 			block.setController(null);
 		}
@@ -392,7 +432,7 @@ public class BlockMaterial extends Material implements Placeable {
 
 	@Override
 	public boolean onPlacement(Block block, short data, BlockFace against, boolean isClickedBlock) {
-		block.setMaterial(this, data).update(true);
+		block.setMaterial(this, data);
 		return true;
 	}
 

@@ -34,6 +34,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.block.BlockFace;
+import org.spout.api.material.range.EffectRange;
 import org.spout.api.material.source.DataSource;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.material.source.MaterialState;
@@ -331,32 +332,17 @@ public interface Block extends MaterialState {
 	public boolean hasController();
 
 	/**
-	 * Performs a physics update on this block and the neighboring blocks
+	 * Queues a physics update on this block and all blocks within the given range, this method can be called from any thread
 	 * 
 	 * @return this Block
 	 */
-	public Block update();
-
-	/**
-	 * Performs a physics update on this block and/or neighboring blocks
-	 * 
-	 * @param True to update neighboring blocks, False to update only this block
-	 * @return this Block
-	 */
-	public Block update(boolean around);
+	public Block queueUpdate(EffectRange range);
 	
 	/**
-	 * Performs a physics update on this block and/or neighboring blocks
-	 * 
-	 * @param option indicates which blocks to update
-	 * @return this Block
+	 * Resets all dynamic material updates queued for this block. This list is checked during the DYNAMIC_BLOCKS part 
+	 * of the tick, and will cause the onPlacement method to be called.<br>
 	 */
-	public Block update(UpdateOption option);
-	
-	/**
-	 * Resets all dynamic material updates queued for this block. This list is checked during the DYNAMIC_BLOCKS part of the tick, and will cause the onPlacement method to be called.<br>
-	 */
-	public abstract void resetDynamic();
+	public void resetDynamic();
 
 	/**
 	 * Queues a dynamic update on this block<br>

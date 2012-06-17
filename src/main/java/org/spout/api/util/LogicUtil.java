@@ -26,6 +26,9 @@
  */
 package org.spout.api.util;
 
+// TODO -- should use the chunk based field set field system
+//         can remove deprecated once that is done
+@Deprecated
 public class LogicUtil {
 
 	/**

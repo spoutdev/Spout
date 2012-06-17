@@ -45,6 +45,18 @@ public interface AreaBlockSource {
 	public BlockMaterial getBlockMaterial(int x, int y, int z);
 
 	/**
+	 * Gets the packed BlockFullData for the block at (x, y, z).  
+	 * Handler methods are provided by the BlockFullState class.
+	 *
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @return the block's full state from the snapshot
+	 */
+	@LiveRead
+	public int getBlockFullState(int x, int y, int z);
+	
+	/**
 	 * Gets the data for the block at (x, y, z)
 	 *
 	 * @param x coordinate of the block

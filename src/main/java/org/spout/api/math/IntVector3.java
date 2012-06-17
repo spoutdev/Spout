@@ -26,6 +26,9 @@
  */
 package org.spout.api.math;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.spout.api.util.StringUtil;
 
 /**
@@ -59,6 +62,26 @@ public class IntVector3 extends IntVector2 {
 	}
 	
 	/**
+	 * Sets this vector equal to the given vector
+	 * 
+	 * @param other
+	 */
+	public void set(IntVector3 v) {
+		setX(v.getX());
+		setY(v.getY());
+		setZ(v.getZ());
+	}
+	
+	/**
+	 * Sets this vector equal to the given coordinates
+	 */
+	public void set(int x, int y, int z) {
+		setX(x);
+		setY(y);
+		setZ(z);
+	}
+	
+	/**
 	 * Adds the given vector to this vector
 	 * 
 	 * @param other
@@ -71,6 +94,22 @@ public class IntVector3 extends IntVector2 {
 	@Override
 	public String toString() {
 		return StringUtil.toString(getX(), getY(), getZ());
+	}
+	
+	public IntVector3 copy() {
+		return new IntVector3(getX(), getY(), getZ());
+	}
+	
+	public static List<IntVector3> createList(int ... coords) {
+		if (coords.length % 3 != 0) {
+			throw new IllegalArgumentException("The number of coordinates must be a multiple of three to construct a list");
+		}
+		List<IntVector3> list = new ArrayList<IntVector3>(coords.length / 3);
+		for (int i = 0; i < coords.length; i += 3) {
+			IntVector3 v = new IntVector3(coords[i], coords[i + 1], coords[i + 2]);
+			list.add(v);
+		}
+		return list;
 	}
 	
 }

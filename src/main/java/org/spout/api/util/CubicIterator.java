@@ -35,55 +35,65 @@ import org.spout.api.math.IntVector3;
  * <br>
  * The Manhattan distance from the given center to the coordinates in the sequence increases monotonically and the iterator passes through all integer coordinates.
  */
-public class OutwardIterator extends IntVector3 implements Iterator<IntVector3> {
+public class CubicIterator extends IntVector3 implements Iterator<IntVector3> {
 	
-	private final IntVector3 center;
-	private final IntVector3 step;
-	private int distance;
-	private int maxDistance;
+	private final IntVector3 bottom;
+	private final IntVector3 top;
 	private boolean hasNext;
 	private boolean first = true;
 	
-	public OutwardIterator() {
+	public CubicIterator() {
 		this(0, 0, 0);
 	}
 	
-	public OutwardIterator(int x, int y, int z) {
+	public CubicIterator(int w) {
+		this(0, 0, 0, w);
+	}
+	
+	public CubicIterator(int x, int y, int z) {
 		this(x, y, z, Integer.MAX_VALUE);
 	}
 	
-	public OutwardIterator(int x, int y, int z, int maxDistance) {
-		super(x, y, z);
-		center = new IntVector3(x, y, z);
-		step = new IntVector3(0, 0, 0);
+	public CubicIterator(int x, int y, int z, int w) {
+		this(x - w, y - w, z - w, x + w, x + w, x + w);
+	}
+	
+
+	
+	public CubicIterator(int bx, int by, int bz, int tx, int ty, int tz) {
+		super(bx, by, bz);
+		if (bx > tx || by > ty || bz > tz) {
+			throw new IllegalArgumentException("Bottom coordinates must be less than top coordinates");
+		}
+		bottom = new IntVector3(bx, by, bz);
+		top = new IntVector3(tx, ty, tz);
 		first = true;
-		distance = 0;
-		this.maxDistance = maxDistance;
 		this.hasNext = true;
 	}
 
 	/**
-	 * Resets the iterator and positions it at (x, y, z)
+	 * Resets the iterator to the cuboid from (bx, by, bz) to (tx, ty, tz)
 	 * 
-	 * @param x
-	 * @param y
-	 * @param z
+	 * @param bx
+	 * @param by
+	 * @param bz
+	 * @param tx
+	 * @param ty
+	 * @param tz
 	 */
-	public void reset(int x, int y, int z) {
-		super.setX(x);
-		super.setY(y);
-		super.setZ(z);
-		center.setX(x);
-		center.setY(y);
-		center.setZ(z);
+	public void reset(int bx, int by, int bz, int tx, int ty, int tz) {
+		if (bx > tx || by > ty || bz > tz) {
+			throw new IllegalArgumentException("Bottom coordinates must be less than top coordinates");
+		}
+		bottom.set(bx, by, bz);
+		super.set(bottom);
+		top.set(tx, ty, tz);
 		first = true;
 		hasNext = true;
-		distance = 0;
 	}
 	
-	public void reset(int x, int y, int z, int maxDistance) {
-		this.maxDistance = maxDistance;
-		reset(x, y, z);
+	public void reset(int x, int y, int z, int w) {
+		reset(x - w, y - w, z - w, x + w, y + w, z + w);
 	}
 	
 	@Override
@@ -94,68 +104,33 @@ public class OutwardIterator extends IntVector3 implements Iterator<IntVector3> 
 	@Override
 	public IntVector3 next() {
 		// First block is always the central block
+		int x = getX();
+		int y = getY();
+		int z = getZ();
+		
 		if (first) {
-			step.setX(0);
-			step.setZ(0);
 			first = false;
 		} else {
-			int dx = getX() - center.getX();
-			int dy = getY() - center.getY();
-			int dz = getZ() - center.getZ();
-			
-			// Last block was top of layer, move to start of next layer
-			if (dx == 0 && dz == 0 && dy >= 0) {
-				setY((center.getY() << 1) - getY() - 1);
-				step.setX(0);
-				step.setZ(0);
-				distance++;
-			} else if (dx == 0) {
-				// Reached end of horizontal slice
-				// Move up to next slice
-				if (dz >= 0) {
-					step.setX(1);
-					step.setZ(-1);
-
-					setY(getY() + 1);
-
-					// Bottom half of layer
-					if (dy < 0) {
-						setZ(getZ() + 1);
-					// Top half of layer
+			if (x >= top.getX()) {
+				setX(x = bottom.getX());
+				if (y >= top.getY()) {
+					setY(y = bottom.getY());
+					if (z >= top.getZ()) {
+						throw new IllegalStateException("Iterator reached end");
 					} else {
-						setZ(getZ() - 1);
-					// Reached top of layer
-						if (getZ() == center.getZ()) {
-							step.setX(0);
-							step.setZ(0);
-						}
+						setZ(++z);
 					}
-				// Change direction (50% of horizontal slice complete)
 				} else {
-					step.setX(-1);
-					step.setZ(1);
+					setY(++y);
 				}
-			} else if (dz == 0) {
-				// Change direction (25% of horizontal slice complete)
-				if (dx > 0) {
-					step.setX(-1);
-					step.setZ(-1);
-				// Change direction (75% of horizontal slice compete)
-				} else {
-					step.setX(1);
-					step.setZ(1);
-				}
-			}
-			add(step);
-			if (distance == 0 || (dx == 0 && dz == 1 && dy >= maxDistance - 1)) {
-				hasNext = false;
+			} else {
+				setX(++x);
 			}
 		}
+		if (x >= top.getX() && z >= top.getZ() && y >= top.getY()) {
+			hasNext = false;
+		}
 		return this;
-	}
-	
-	public int getDistance() {
-		return distance;
 	}
 
 	@Override

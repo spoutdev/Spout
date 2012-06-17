@@ -31,6 +31,7 @@ import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
+import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveWrite;
@@ -112,7 +113,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public boolean compareAndSetData(int x, int y, int z, int expect, short data);
+	public boolean compareAndSetData(int x, int y, int z, int expect, short data, Source source);
 	
 	/**
 	 * Sets the given bits in the data for the block at (x, y, z)<br>
@@ -126,7 +127,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @return the old data for the block
 	 */
 	@LiveWrite
-	public short setBlockDataBits(int x, int y, int z, short bits);
+	public short setBlockDataBits(int x, int y, int z, short bits, Source source);
 	
 	/**
 	 * Clears the given bits in the data for the block at (x, y, z)<br>
@@ -140,7 +141,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @return the old data for the block
 	 */
 	@LiveWrite
-	public short clearBlockDataBits(int x, int y, int z, short bits);
+	public short clearBlockDataBits(int x, int y, int z, short bits, Source source);
 	
 	/**
 	 * Gets the data field from the block at (x, y, z)<br>
@@ -174,10 +175,22 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 */
 	@LiveWrite
 	@Threadsafe
-	public int setBlockDataField(int x, int y, int z, int bits, int value);
+	public int setBlockDataField(int x, int y, int z, int bits, int value, Source source);
 	
 	/**
-	 * Forces a physics update for the block at (x, y, z)
+	 * Queues a physics update for the block at (x, y, z) and all blocks within the given range.  
+	 * This is equivalent to changing the block's material or data, and can be called from any thread.
+	 *
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @param source of this physics update
+	 */
+	public void queueBlockPhysics(int x, int y, int z, EffectRange range, Source source);
+	
+	/**
+	 * Synchronously queues a physics update for the block at (x, y, z).  This can only be called during the 
+	 * dynamic update/physics update part of the tick and from the Region thread.
 	 *
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
@@ -185,7 +198,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param source of this physics update
 	 */
 	public void updateBlockPhysics(int x, int y, int z, Source source);
-
+	
 	/**
 	 * Gets if a block is contained in this area
 	 * @param x coordinate of the block

@@ -28,30 +28,16 @@ package org.spout.api.material;
 
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Region;
-import org.spout.api.math.Vector3;
+import org.spout.api.material.range.EffectRange;
 
 public interface DynamicMaterial {
 	
 	/**
-	 * Gets the maximum range, r, for the range of effect of this dynamic block.<br>
-	 * <br>
-	 * The cuboid is defined by a Vector3 array.<br>
-	 * <br>
-	 * Assuming rh is the first element of the array, rl is the second, and x, y and z are the coordinates of the dynamic block, 
-	 * then all effects are restricted to the cuboid from<br>
-	 * <br>
-	 * (x - rl.x, y - rl.y, z - rl.z) to (x + rh.x, y + rh.y, z + rh.z),<br>
-	 * <br>
-	 * inclusive.<br>
-	 * <br>
-	 * If the array is only a single element long, then rl and rh are assumed to be equal.
-	 * <br> 
-	 * If the cuboid is not contained within a single region, then the update method will be executed by the main thread.<br>
-	 * <br>
+	 * Gets the maximum effect range associated with this dynamic material
 	 * 
-	 * @return the r vector
+	 * @return the effect range
 	 */
-	public Vector3[] maxRange();
+	public EffectRange getDynamicRange();
 	
 	/**
 	 * This method is called during the DYNAMIC_BLOCKS or GLOBAL_DYNAMIC_BLOCKS tick stage. <br>
