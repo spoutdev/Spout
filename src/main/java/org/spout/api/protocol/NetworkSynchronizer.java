@@ -66,7 +66,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		this.session = session;
 		blockViewDistance = entity.getViewDistance();
 		viewDistance = blockViewDistance >> Chunk.BLOCKS.BITS;
-		targetSize = blockViewDistance / 2;
+		targetSize = Math.max(Chunk.BLOCKS.SIZE << 2, blockViewDistance >> 2);
 	}
 
 	private final int targetSize;
@@ -358,15 +358,17 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		int cz = bz >> Chunk.BLOCKS.BITS;
 
 		Iterator<IntVector3> itr = new OutwardIterator(cx, cy, cz, viewDistance);
-		int distance = 0;
 
 		while (itr.hasNext()) {
 			IntVector3 v = itr.next();
 			Point base = new Point(world, v.getX() << Chunk.BLOCKS.BITS, v.getY() << Chunk.BLOCKS.BITS, v.getZ() << Chunk.BLOCKS.BITS);
+			boolean inTargetArea = playerChunkBase.getManhattanDistance(base) <= targetSize;
 			if (!activeChunks.contains(base)) {
-				if (distance <= targetSize) {
+				if (inTargetArea) {
 					priorityChunkSendQueue.add(base);
+					chunkSendQueue.remove(base);
 				} else {
+					priorityChunkSendQueue.remove(base);
 					chunkSendQueue.add(base);
 				}
 			}
