@@ -28,6 +28,7 @@ package org.spout.api.entity.component.controller.basic;
 
 import org.spout.api.Spout;
 import org.spout.api.entity.component.Controller;
+import org.spout.api.entity.component.controller.PlayerController;
 import org.spout.api.entity.component.controller.type.ControllerType;
 import org.spout.api.entity.component.controller.type.EmptyConstructorControllerType;
 import org.spout.api.geo.cuboid.Chunk;
@@ -41,8 +42,15 @@ public class PointObserver extends Controller {
 	public static final ControllerType TYPE = new EmptyConstructorControllerType(PointObserver.class, "Point Observer");
 	private Point currPoint;
 
-	public PointObserver() {
+	private final int viewDistance;
+	
+	public PointObserver(int viewDistance) {
 		super(TYPE);
+		this.viewDistance = viewDistance;
+	}
+	
+	public PointObserver() {
+		this(CHUNK_VIEW_DISTANCE);
 	}
 
 	@Override
@@ -65,7 +73,11 @@ public class PointObserver extends Controller {
 	public void onAttached() {
 		getParent().setCollision(null);
 		getParent().setObserver(true);
-		getParent().setViewDistance(CHUNK_VIEW_DISTANCE << Chunk.BLOCKS.BITS);
+		getParent().setViewDistance(viewDistance << Chunk.BLOCKS.BITS);
 		currPoint = getParent().getPosition();
+	}
+	
+	public boolean isImportant() {
+		return true;
 	}
 }
