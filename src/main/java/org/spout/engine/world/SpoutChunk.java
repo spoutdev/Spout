@@ -187,7 +187,7 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * Shift cache array for shifting fields
 	 */
-	private final static int[] shiftCache = new int[65536];
+	protected final static int[] shiftCache = new int[65536];
 
 	/**
 	 * The thread associated with the region
@@ -257,44 +257,7 @@ public class SpoutChunk extends Chunk {
 		if (source == null) {
 			throw new NullPointerException("Source can not be null");
 		}
-		x &= BLOCKS.MASK;
-		y &= BLOCKS.MASK;
-		z &= BLOCKS.MASK;
-
-		checkChunkLoaded();
-		checkBlockStoreUpdateAllowed();
-
-		BlockMaterial material = this.getBlockMaterial(x, y, z);
-		short newId = material.getId();
-		short newData = data;
-		int newState = BlockFullState.getPacked(newId, newData);
-		int oldState = blockStore.getAndSetBlock(x, y, z, newId, newData);
-		short oldData = BlockFullState.getData(oldState);
-		
-		if (newState != oldState) {
-			Material m = MaterialRegistry.get(oldState);
-			BlockMaterial oldMaterial = (BlockMaterial) m;
-
-			if (((oldData ^ data) & material.getDataMask()) != 0) {
-				if (material instanceof DynamicMaterial) {
-					if (oldMaterial instanceof BlockMaterial) {
-						BlockMaterial oldBlockMaterial = (BlockMaterial) oldMaterial;
-						if (!oldBlockMaterial.isCompatibleWith(material) || !material.isCompatibleWith(oldBlockMaterial)) {
-							parentRegion.resetDynamicBlock(x, y, z);
-						}
-					} else {
-						parentRegion.resetDynamicBlock(x, y, z);
-					}
-				}
-			}
-
-			queueBlockPhysics(x, y, z, oldMaterial.getDestroyRange(BlockFullState.getData(oldState)), source);
-
-			// Data component does not alter height of the world. Change this?
-			// column.notifyBlockChange(x, this.getBlockY() + y, z);
-
-
-		}
+		setBlockDataField(x, y, z, 0xFFFF, data, source);
 
 		return true;
 	}
@@ -1360,13 +1323,15 @@ public class SpoutChunk extends Chunk {
 
 	}
 	
-	private int setBlockDataFieldRaw(int bx, int by, int bz, int bits, int value, Source source) {
+	protected int setBlockDataFieldRaw(int bx, int by, int bz, int bits, int value, Source source) {
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
 
 		bx &= BLOCKS.MASK;
 		by &= BLOCKS.MASK;
 		bz &= BLOCKS.MASK;
+		
+		value &= 0xFFFF;
 
 		int shift = shiftCache[bits];
 		
