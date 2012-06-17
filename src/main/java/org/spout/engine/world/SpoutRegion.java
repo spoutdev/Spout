@@ -899,26 +899,20 @@ public class SpoutRegion extends Region{
 	
 	private boolean callOnUpdatePhysicsForRange(World world, int x, int y, int z, Source source, boolean force) {
 		//switch region block coords (0-255) to a chunk index
-		Chunk chunk = chunks[x >> Chunk.BLOCKS.BITS][y >> Chunk.BLOCKS.BITS][z >> Chunk.BLOCKS.BITS].get();
-		if (chunk != null) {
-			int packed = chunk.getBlockFullState(x, y, z);
-			BlockMaterial material = BlockFullState.getMaterial(packed);
-			if (material.hasPhysics()) {
-				short data = BlockFullState.getData(packed);
-				if (!force && !material.getMaximumPhysicsRange(data).isRegionLocal(x, y, z)) {
-					return false;
-				}
-				//switch region block coords (0-255) to world block coords
-				Block block = world.getBlock(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ(), source);
-				block.getMaterial().onUpdate(block);
-				physicsUpdates++;	
+		Chunk chunk = getChunkFromBlock(x, y, z);
+		int packed = chunk.getBlockFullState(x, y, z);
+		BlockMaterial material = BlockFullState.getMaterial(packed);
+		if (material.hasPhysics()) {
+			short data = BlockFullState.getData(packed);
+			if (!force && !material.getMaximumPhysicsRange(data).isRegionLocal(x, y, z)) {
+				return false;
 			}
-			return true;
-		} else {
-			//throw new IllegalStateException("Chunk unavailable for physics update");
-			Spout.getLogger().info("Chunk unavailable for physics");
-			return true;
+			//switch region block coords (0-255) to world block coords
+			Block block = world.getBlock(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ(), source);
+			block.getMaterial().onUpdate(block);
+			physicsUpdates++;	
 		}
+		return true;
 	}
 
 	public long getFirstDynamicUpdateTime() {
