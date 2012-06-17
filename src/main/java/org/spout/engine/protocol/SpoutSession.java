@@ -40,7 +40,7 @@ import java.util.logging.Level;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
-import org.spout.api.ChatColor;
+import org.spout.api.ChatStyle;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.datatable.DataMap;
@@ -93,7 +93,7 @@ public final class SpoutSession implements Session {
 	 */
 	private final Channel channel;
 	/**
-	 * Information about the connection required for proxying 
+	 * Information about the connection required for proxying
 	 */
 	private final AtomicReference<ConnectionInfo> channelInfo = new AtomicReference<ConnectionInfo>();
 	/**
@@ -101,7 +101,7 @@ public final class SpoutSession implements Session {
 	 */
 	private final AtomicReference<Channel> auxChannel = new AtomicReference<Channel>();
 	/**
-	 * Information about the connection required for proxying 
+	 * Information about the connection required for proxying
 	 */
 	private final AtomicReference<ConnectionInfo> auxChannelInfo = new AtomicReference<ConnectionInfo>();
 	/**
@@ -109,7 +109,7 @@ public final class SpoutSession implements Session {
 	 */
 	private final boolean proxy;
 	/**
-	 * Indicated if the session is in passthrough proxy mode 
+	 * Indicated if the session is in passthrough proxy mode
 	 */
 	private final AtomicBoolean passthrough = new AtomicBoolean(false);
 	/**
@@ -172,7 +172,7 @@ public final class SpoutSession implements Session {
 	 */
 	private final DatatableMap datatableMap;
 	private final DataMap dataMap;
-	
+
 	/**
 	 * The engine platform
 	 */
@@ -345,9 +345,9 @@ public final class SpoutSession implements Session {
 
 	public String getDefaultLeaveMessage() {
 		if (player == null) {
-			return ChatColor.CYAN + "Unknown" + ChatColor.CYAN + " has left the game";
+			return ChatStyle.CYAN + "Unknown" + ChatStyle.CYAN + " has left the game";
 		} else {
-			return ChatColor.CYAN + player.getDisplayName() + ChatColor.CYAN + " has left the game";
+			return ChatStyle.CYAN + player.getDisplayName() + ChatStyle.CYAN + " has left the game";
 		}
 	}
 
@@ -512,7 +512,7 @@ public final class SpoutSession implements Session {
 		this.synchronizer.get().setProtocol(protocol);
 		server.getLogger().info("Setting protocol to " + protocol.getName());
 	}
-	
+
 	@Override
 	public Protocol getProtocol() {
 		return this.protocol.get();
@@ -543,7 +543,7 @@ public final class SpoutSession implements Session {
 			synchronizer.setProtocol(protocol.get());
 		}
 	}
-	
+
 	@Override
 	public void bindAuxChannel(Channel c) {
 		if (!proxy) {
@@ -557,21 +557,21 @@ public final class SpoutSession implements Session {
 		}
 		System.out.println("Binding: " + c + " " + connects.get());
 	}
-	
+
 	@Override
 	public boolean isPrimary(Channel c) {
 		return c == this.channel;
 	}
-	
+
 	@Override
 	public void closeAuxChannel() {
 		closeAuxChannel(true);
 	}
-	
+
 	private void closeAuxChannel(boolean openedExpected) {
 		closeAuxChannel("Closing aux channel", openedExpected);
 	}
-	
+
 	private void closeAuxChannel(String message, boolean openedExpected) {
 		Channel c = auxChannel.getAndSet(null);
 		if (c != null) {
@@ -594,7 +594,7 @@ public final class SpoutSession implements Session {
 	public NetworkSynchronizer getNetworkSynchronizer() {
 		return synchronizer.get();
 	}
-	
+
 	private void updateConnectionInfo(boolean auxChannel, boolean upstream, ConnectionInfoMessage info) {
 		AtomicReference<ConnectionInfo> ref = auxChannel ? auxChannelInfo : channelInfo;
 		boolean success = false;
