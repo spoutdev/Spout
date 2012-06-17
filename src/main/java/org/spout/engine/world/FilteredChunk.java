@@ -166,8 +166,6 @@ public class FilteredChunk extends SpoutChunk{
 		return super.setBlockDataFieldRaw(bx, by, bz, bits, value, source);
 	}
 
-
-
 	@Override
 	public boolean compareAndSetData(int x, int y, int z, int expect, short data, Source source) {
 		if (uniform.get()) {
