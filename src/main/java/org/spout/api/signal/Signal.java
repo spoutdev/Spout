@@ -38,7 +38,7 @@ public class Signal {
 	private LinkedList<Subscription> subscriptions = new LinkedList<Subscription>();
 	private Iterator<Subscription> currentIterator = subscriptions.iterator();
 	
-	private class Subscription {
+	private static class Subscription {
 		public SignalInterface sender;
 		public Object receiver;
 		public Method method;

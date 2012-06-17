@@ -123,7 +123,7 @@ public abstract class CuboidBuffer {
 	 * Copies the data contained within the given CuboidShortBuffer to this one.
 	 * Any non-overlapping locations are ignored
 	 *
-	 * @param the source CuboidShortBuffer
+	 * @param source The CuboidShortBuffer source from which to copy the data.
 	 */
 	public void write(CuboidBuffer source) {
 		CuboidBufferCopyRun run = new CuboidBufferCopyRun(source, this);

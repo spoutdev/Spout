@@ -226,7 +226,7 @@ public class DataMap implements DefaultedMap<String, Serializable>{
 		}
 
 		public void clear() {
-			this.clear();
+			map.clear();
 		}
 	}
 	
