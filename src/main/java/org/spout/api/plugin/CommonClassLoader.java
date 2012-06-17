@@ -35,8 +35,9 @@ import java.util.Map;
 import java.util.Set;
 
 public class CommonClassLoader extends URLClassLoader {
-	private final CommonPluginLoader loader;
 	private final Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
+	private final CommonPluginLoader loader;
+	private CommonPlugin plugin;
 
 	public CommonClassLoader(final CommonPluginLoader loader, final ClassLoader parent) {
 		super(new URL[0], parent);
@@ -46,6 +47,14 @@ public class CommonClassLoader extends URLClassLoader {
 	@Override
 	protected void addURL(URL url) {
 		super.addURL(url);
+	}
+
+	protected void setPlugin(CommonPlugin plugin) {
+		this.plugin = plugin;
+	}
+
+	protected CommonPlugin getPlugin() {
+		return plugin;
 	}
 
 	@Override
@@ -60,7 +69,7 @@ public class CommonClassLoader extends URLClassLoader {
 			result = super.findClass(name);
 
 			if (result == null && checkGlobal) {
-				result = loader.getClassByName(name);
+				result = loader.getClassByName(name, this);
 			}
 
 			classes.put(name, result);

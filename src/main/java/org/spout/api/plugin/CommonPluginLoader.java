@@ -42,8 +42,10 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -80,7 +82,7 @@ public class CommonPluginLoader implements PluginLoader {
 			String name = cp.getDescription().getName();
 
 			if (!loaders.containsKey(name)) {
-				loaders.put(name, (CommonClassLoader) cp.getClassLoader());
+				loaders.put(name.toLowerCase(), (CommonClassLoader) cp.getClassLoader());
 			}
 
 			try {
@@ -104,7 +106,7 @@ public class CommonPluginLoader implements PluginLoader {
 			String name = cp.getDescription().getName();
 
 			if (!loaders.containsKey(name)) {
-				loaders.put(name, (CommonClassLoader) cp.getClassLoader());
+				loaders.put(name.toLowerCase(), (CommonClassLoader) cp.getClassLoader());
 			}
 
 			try {
@@ -162,7 +164,8 @@ public class CommonPluginLoader implements PluginLoader {
 			throw new InvalidPluginException(e);
 		}
 
-		loaders.put(desc.getName(), loader);
+		loader.setPlugin(result);
+		loaders.put(desc.getName().toLowerCase(), loader);
 
 		return result;
 	}
@@ -259,8 +262,43 @@ public class CommonPluginLoader implements PluginLoader {
 		return description;
 	}
 
-	protected Class<?> getClassByName(final String name) {
+	protected Class<?> getClassByName(final String name, final CommonClassLoader commonLoader) {
+		CommonPlugin plugin = commonLoader.getPlugin();
+		Set<String> ignore = new HashSet<String>();
+		ignore.add(plugin.getName().toLowerCase());
+
+		if (plugin.getDescription().getDepends() != null) {
+			for (String dependency : plugin.getDescription().getDepends()) {
+				dependency = dependency.toLowerCase();
+				try {
+					Class<?> clazz = loaders.get(dependency).findClass(name, false);
+					if (clazz != null) {
+						return clazz;
+					}
+				} catch (ClassNotFoundException ignored) {
+				}
+				ignore.add(dependency);
+			}
+		}
+
+		if (plugin.getDescription().getSoftDepends() != null) {
+			for (String softDependency : plugin.getDescription().getSoftDepends()) {
+				softDependency = softDependency.toLowerCase();
+				try {
+					Class<?> clazz = loaders.get(softDependency).findClass(name, false);
+					if (clazz != null) {
+						return clazz;
+					}
+				} catch (ClassNotFoundException ignored) {
+				}
+				ignore.add(softDependency);
+			}
+		}
+
 		for (String current : loaders.keySet()) {
+			if (ignore.contains(current)) {
+				continue;
+			}
 			CommonClassLoader loader = loaders.get(current);
 			try {
 				Class<?> clazz = loader.findClass(name, false);
