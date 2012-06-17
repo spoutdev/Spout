@@ -36,14 +36,20 @@ public class BitSize {
 	public final int BITS;
 	public final int AREA;
 	public final int VOLUME;
+	public final int DOUBLE_BITS;
+	public final int HALF_AREA;
 	public final int HALF_VOLUME;
+	public final int HALF_SIZE;
 
 	public BitSize(int bitCount) {
 		this.BITS = bitCount;
 		this.SIZE = 1 << bitCount;
-		this.MASK = this.SIZE - 1;
 		this.AREA = this.SIZE * this.SIZE;
 		this.VOLUME = this.AREA * this.SIZE;
+		this.HALF_SIZE = this.SIZE >> 1;
+		this.HALF_AREA = this.AREA >> 1;
 		this.HALF_VOLUME = this.VOLUME >> 1;
+		this.DOUBLE_BITS = this.BITS << 1;
+		this.MASK = this.SIZE - 1;
 	}
 }
