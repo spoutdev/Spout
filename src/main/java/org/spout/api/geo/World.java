@@ -53,7 +53,7 @@ import org.spout.api.util.thread.Threadsafe;
 /**
  * Represents a World.
  */
-public interface World extends Source, AreaRegionAccess {
+public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess {
 
 	/**
 	 * Gets the name of the world

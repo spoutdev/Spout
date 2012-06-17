@@ -33,6 +33,7 @@ import java.util.concurrent.Future;
 import org.spout.api.entity.Entity;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.AreaBlockAccess;
+import org.spout.api.geo.AreaPhysicsAccess;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
@@ -48,7 +49,7 @@ import org.spout.api.util.thread.SnapshotRead;
 /**
  * Represents a cube containing 16x16x16 Blocks
  */
-public abstract class Chunk extends Cube implements AreaBlockAccess {
+public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysicsAccess {
 
 	/**
 	 * Stores the size of the amount of blocks in this Chunk
