@@ -53,7 +53,7 @@ public class FilteredChunkTest {
 	}};
 
 	@Test
-	public void test() throws SecurityException, NoSuchMethodException {
+	public void test() throws SecurityException {
 		for (Method m : AreaBlockSource.class.getDeclaredMethods()) {
 			if (!exemptions.contains(m.getName())) {
 				if (!hasMethod(FilteredChunk.class, m.getName(), m.getParameterTypes())) {
@@ -64,7 +64,7 @@ public class FilteredChunkTest {
 		for (Method m : AreaBlockAccess.class.getDeclaredMethods()) {
 			if (!exemptions.contains(m.getName())) {
 				if (!hasMethod(FilteredChunk.class, m.getName(), m.getParameterTypes())) {
-					fail("FilteredChunk does not override " + m.getName() + " in AreaBlockSource");
+					fail("FilteredChunk does not override " + m.getName() + " in AreaBlockAccess");
 				}
 			}
 		}
