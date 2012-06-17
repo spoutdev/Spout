@@ -50,7 +50,7 @@ import org.spout.api.exception.UnknownDependencyException;
 import org.spout.api.plugin.security.CommonSecurityManager;
 
 public class CommonPluginManager implements PluginManager {
-	private final Engine game;
+	private final Engine engine;
 	private final CommonSecurityManager manager;
 	private final double key;
 	private final SpoutMetaPlugin metaPlugin;
@@ -60,7 +60,7 @@ public class CommonPluginManager implements PluginManager {
 	private File updateDir;
 
 	public CommonPluginManager(final Engine engine, final CommonSecurityManager manager, final double key) {
-		this.game = engine;
+		this.engine = engine;
 		this.manager = manager;
 		this.key = key;
 		this.metaPlugin = new SpoutMetaPlugin(engine);
@@ -71,7 +71,7 @@ public class CommonPluginManager implements PluginManager {
 		try {
 			Constructor<? extends PluginLoader> constructor = loader.getConstructor(new Class[] {Engine.class, CommonSecurityManager.class, double.class});
 
-			instance = constructor.newInstance(game, manager, key);
+			instance = constructor.newInstance(engine, manager, key);
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Error registering plugin loader!", e);
 		}
@@ -144,8 +144,8 @@ public class CommonPluginManager implements PluginManager {
 			throw new IllegalArgumentException("File parameter was not a Directory!");
 		}
 
-		if (game.getUpdateFolder() != null) {
-			updateDir = game.getUpdateFolder();
+		if (engine.getUpdateFolder() != null) {
+			updateDir = engine.getUpdateFolder();
 		}
 
 		loadMetaPlugin();
@@ -248,8 +248,8 @@ public class CommonPluginManager implements PluginManager {
 			try {
 				plugin.getPluginLoader().disablePlugin(plugin);
 				HandlerList.unregisterAll(plugin);
-				game.getServiceManager().unregisterAll(plugin);
-				game.getRootCommand().removeChildren(plugin);
+				engine.getServiceManager().unregisterAll(plugin);
+				engine.getRootCommand().removeChildren(plugin);
 			} catch (Exception e) {
 				safelyLog(Level.SEVERE, "An error occurred in the Plugin Loader while disabling plugin '" + plugin.getDescription().getFullName() + "': " + e.getMessage(), e);
 			}
@@ -266,7 +266,7 @@ public class CommonPluginManager implements PluginManager {
 			relock = true;
 			manager.unlock(key);
 		}
-		game.getLogger().log(level, message, ex);
+		engine.getLogger().log(level, message, ex);
 		if (relock) {
 			manager.lock(key);
 		}
