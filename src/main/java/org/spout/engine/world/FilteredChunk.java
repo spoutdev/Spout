@@ -37,6 +37,7 @@ import org.spout.api.datatable.DatatableMap;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.map.concurrent.AtomicBlockStoreImpl;
 import org.spout.engine.filesystem.WorldFiles;
@@ -127,6 +128,14 @@ public class FilteredChunk extends SpoutChunk{
 			return material.get();
 		}
 		return super.getBlockMaterial(x, y, z);
+	}
+	
+	@Override
+	public int getBlockFullState(int x, int y, int z) {
+		if (uniform.get()) {
+			return BlockFullState.getPacked(material.get().getId(),  material.get().getData());
+		}
+		return super.getBlockFullState(x, y, z);
 	}
 
 	@Override
