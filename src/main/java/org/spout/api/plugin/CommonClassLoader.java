@@ -28,6 +28,8 @@ package org.spout.api.plugin;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -67,7 +69,21 @@ public class CommonClassLoader extends URLClassLoader {
 		return result;
 	}
 
-	public Set<String> getClasses() {
-		return classes.keySet();
+	/**
+	 * Returns a set of cached classes' names
+	 *
+	 * @return set of class names
+	 */
+	public Set<String> getClassNames() {
+		return Collections.unmodifiableSet(classes.keySet());
+	}
+
+	/**
+	 * Returns a set of cached classes
+	 *
+	 * @return set of classes
+	 */
+	public Collection<Class<?>> getClasses() {
+		return Collections.unmodifiableCollection(classes.values());
 	}
 }
