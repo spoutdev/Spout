@@ -275,7 +275,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 				tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
 			}
 
-			if (teleported && entity != null) {
+			if (priorityChunkSendQueue.isEmpty() && teleported && entity != null) {
 				Point ep = entity.getPosition();
 				if (worldChanged) {
 					worldChanged(ep.getWorld());
