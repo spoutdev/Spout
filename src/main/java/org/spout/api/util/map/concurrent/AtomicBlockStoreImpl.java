@@ -175,12 +175,8 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 
 		checkCompressing();
 		int index = getIndex(x, y, z);
-		int spins = 0;
 		boolean interrupted = false;
 		try {
-			if (spins++ > SPINS) {
-				interrupted |= atomicWait();
-			}
 			checkCompressing();
 
 			int blockId = blockIds.get(index);
