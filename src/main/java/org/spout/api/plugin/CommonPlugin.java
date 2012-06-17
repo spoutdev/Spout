@@ -26,12 +26,14 @@
  */
 package org.spout.api.plugin;
 
-import java.io.File;
-import java.util.logging.Logger;
-
 import org.spout.api.Engine;
 import org.spout.api.UnsafeMethod;
 import org.spout.api.generator.WorldGenerator;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public abstract class CommonPlugin implements Plugin {
 	private PluginDescriptionFile description;
@@ -111,5 +113,31 @@ public abstract class CommonPlugin implements Plugin {
 
 	public String getName() {
 		return getDescription().getName();
+	}
+
+	@Override
+	@UnsafeMethod
+	public void loadLibrary(File file) {
+		if (!file.exists()) {
+			throw new IllegalArgumentException(new StringBuilder().append("Failed to load library: The file '").append(file.getName()).append("' does not exist.").toString());
+		}
+
+		boolean matches = false;
+		for (Pattern pattern : pluginLoader.getPatterns()) {
+			if (pattern.matcher(file.getName()).find()) {
+				matches = true;
+				break;
+			}
+		}
+
+		if (!matches) {
+			throw new IllegalArgumentException(new StringBuilder().append("Failed to load library: The file '").append(file.getName()).append("' is not a supported library file type.").toString());
+		}
+
+		try {
+			classLoader.addURL(file.toURI().toURL());
+		} catch (MalformedURLException e) {
+			throw new IllegalArgumentException("Failed to load library: ", e);
+		}
 	}
 }

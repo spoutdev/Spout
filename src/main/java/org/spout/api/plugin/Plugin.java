@@ -117,4 +117,11 @@ public interface Plugin extends Source, Named {
 	 * @return
 	 */
 	public File getFile();
+
+	/**
+	 * Allows plugins to load external libraries into the JVM
+	 *
+	 * @param file that is the library
+	 */
+	public void loadLibrary(File file);
 }
