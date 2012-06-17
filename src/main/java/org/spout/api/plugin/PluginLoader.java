@@ -39,33 +39,33 @@ public interface PluginLoader {
 	/**
 	 * Enables the plugin
 	 *
-	 * @param paramPlugin
+	 * @param plugin
 	 */
-	public abstract void enablePlugin(Plugin paramPlugin);
+	public abstract void enablePlugin(Plugin plugin);
 
 	/**
 	 * Disables the plugin
 	 *
-	 * @param paramPlugin
+	 * @param plugin
 	 */
-	public abstract void disablePlugin(Plugin paramPlugin);
+	public abstract void disablePlugin(Plugin plugin);
 
 	/**
 	 * Loads the file as a plugin
 	 *
-	 * @param paramFile
+	 * @param file
 	 * @return instance of the plugin
 	 * @throws InvalidPluginException
 	 * @throws InvalidPluginException
 	 * @throws UnknownDependencyException
 	 * @throws InvalidDescriptionFileException
 	 */
-	public abstract Plugin loadPlugin(File paramFile) throws InvalidPluginException, InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException;
+	public abstract Plugin loadPlugin(File file) throws InvalidPluginException, InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException;
 
 	/**
 	 * Loads the file as a plugin
 	 *
-	 * @param paramFile
+	 * @param file
 	 * @param paramBoolean ignores soft dependencies when it attempts to load
 	 *            the plugin
 	 * @return instance of the plugin
@@ -74,5 +74,5 @@ public interface PluginLoader {
 	 * @throws UnknownDependencyException
 	 * @throws InvalidDescriptionFileException
 	 */
-	public abstract Plugin loadPlugin(File paramFile, boolean paramBoolean) throws InvalidPluginException, InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException;
+	public abstract Plugin loadPlugin(File file, boolean paramBoolean) throws InvalidPluginException, InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException;
 }

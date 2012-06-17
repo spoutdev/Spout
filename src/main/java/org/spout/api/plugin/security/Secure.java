@@ -28,13 +28,6 @@ package org.spout.api.plugin.security;
 
 public interface Secure {
 	/**
-	 * Returns true if it is locked
-	 *
-	 * @return locked
-	 */
-	public boolean isLocked();
-
-	/**
 	 * Locks when given the correct key. Returns true if it was previously
 	 * locked
 	 *
@@ -49,4 +42,11 @@ public interface Secure {
 	 * @param key
 	 */
 	public void unlock(double key);
+
+	/**
+	 * Returns true if it is locked
+	 *
+	 * @return locked
+	 */
+	public boolean isLocked();
 }

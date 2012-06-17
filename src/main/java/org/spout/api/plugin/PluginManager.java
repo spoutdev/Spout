@@ -36,7 +36,7 @@ public interface PluginManager {
 	/**
 	 * Returns the the instance of a plugins when given its name
 	 *
-	 * @param The name of the plugin
+	 * @param plugin's name
 	 * @return instance of the plugin
 	 */
 	public abstract Plugin getPlugin(String plugin);
@@ -51,21 +51,21 @@ public interface PluginManager {
 	/**
 	 * Loads the file as a plugin
 	 *
-	 * @param paramFile
+	 * @param file
 	 * @return instance of the plugin
 	 * @throws InvalidPluginException
 	 * @throws InvalidDescriptionFileException
 	 * @throws UnknownDependencyException
 	 */
-	public abstract Plugin loadPlugin(File paramFile) throws InvalidPluginException, InvalidDescriptionFileException, UnknownDependencyException;
+	public abstract Plugin loadPlugin(File file) throws InvalidPluginException, InvalidDescriptionFileException, UnknownDependencyException;
 
 	/**
 	 * Loads all plugins in a directory
 	 *
-	 * @param paramFile
+	 * @param file
 	 * @return array of plugins loaded
 	 */
-	public abstract Plugin[] loadPlugins(File paramFile);
+	public abstract Plugin[] loadPlugins(File file);
 
 	/**
 	 * Disables all plugins

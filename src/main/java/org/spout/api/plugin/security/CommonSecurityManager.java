@@ -34,10 +34,6 @@ public class CommonSecurityManager extends SecurityManager implements Secure {
 		this.key = key;
 	}
 
-	public boolean isLocked() {
-		return locked;
-	}
-
 	public boolean lock(double key) {
 		boolean old = locked;
 		if (key == this.key) {
@@ -50,5 +46,9 @@ public class CommonSecurityManager extends SecurityManager implements Secure {
 		if (key == this.key) {
 			locked = false;
 		}
+	}
+
+	public boolean isLocked() {
+		return locked;
 	}
 }

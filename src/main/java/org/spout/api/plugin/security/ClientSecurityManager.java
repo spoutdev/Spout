@@ -31,5 +31,4 @@ public class ClientSecurityManager extends CommonSecurityManager {
 	public ClientSecurityManager(double key) {
 		super(key);
 	}
-
 }

@@ -36,14 +36,25 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 public abstract class CommonPlugin implements Plugin {
+	private Engine engine;
 	private PluginDescriptionFile description;
 	private CommonClassLoader classLoader;
 	private CommonPluginLoader pluginLoader;
-	private Engine engine;
 	private File dataFolder;
 	private File file;
 	private boolean enabled;
 	private Logger logger;
+
+	public final void initialize(CommonPluginLoader pluginLoader, Engine engine, PluginDescriptionFile description, File dataFolder, File file, CommonClassLoader classLoader) {
+		this.pluginLoader = pluginLoader;
+		this.engine = engine;
+		this.dataFolder = dataFolder;
+		this.description = description;
+		this.file = file;
+		this.classLoader = classLoader;
+
+		this.logger = new PluginLogger(this);
+	}
 
 	@UnsafeMethod
 	public abstract void onEnable();
@@ -59,38 +70,20 @@ public abstract class CommonPlugin implements Plugin {
 	public void onLoad() {
 	}
 
-	public final boolean isEnabled() {
-		return enabled;
-	}
-
-	public final void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public final PluginLoader getPluginLoader() {
-		return pluginLoader;
-	}
-
-	public final Logger getLogger() {
-		return logger;
+	public final Engine getEngine() {
+		return engine;
 	}
 
 	public final PluginDescriptionFile getDescription() {
 		return description;
 	}
 
-	public final void initialize(CommonPluginLoader commonsPluginLoader, Engine engine, PluginDescriptionFile desc, File dataFolder, File paramFile, CommonClassLoader loader) {
-		description = desc;
-		classLoader = loader;
-		this.engine = engine;
-		pluginLoader = commonsPluginLoader;
-		this.dataFolder = dataFolder;
-		file = paramFile;
-		logger = new PluginLogger(this);
-	}
-
 	public final ClassLoader getClassLoader() {
 		return classLoader;
+	}
+
+	public final PluginLoader getPluginLoader() {
+		return pluginLoader;
 	}
 
 	public final File getDataFolder() {
@@ -101,8 +94,16 @@ public abstract class CommonPlugin implements Plugin {
 		return file;
 	}
 
-	public final Engine getEngine() {
-		return engine;
+	public final boolean isEnabled() {
+		return enabled;
+	}
+
+	public final void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public final Logger getLogger() {
+		return logger;
 	}
 
 	@UnsafeMethod
@@ -111,13 +112,13 @@ public abstract class CommonPlugin implements Plugin {
 		return null;
 	}
 
-	public String getName() {
+	public final String getName() {
 		return getDescription().getName();
 	}
 
 	@Override
 	@UnsafeMethod
-	public void loadLibrary(File file) {
+	public final void loadLibrary(File file) {
 		if (!file.exists()) {
 			throw new IllegalArgumentException(new StringBuilder().append("Failed to load library: The file '").append(file.getName()).append("' does not exist.").toString());
 		}

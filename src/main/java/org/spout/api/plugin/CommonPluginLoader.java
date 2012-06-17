@@ -26,6 +26,16 @@
  */
 package org.spout.api.plugin;
 
+import org.spout.api.Engine;
+import org.spout.api.UnsafeMethod;
+import org.spout.api.event.server.PluginDisableEvent;
+import org.spout.api.event.server.PluginEnableEvent;
+import org.spout.api.exception.InvalidDescriptionFileException;
+import org.spout.api.exception.InvalidPluginException;
+import org.spout.api.exception.UnknownDependencyException;
+import org.spout.api.exception.UnknownSoftDependencyException;
+import org.spout.api.plugin.security.CommonSecurityManager;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,16 +48,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
-
-import org.spout.api.Engine;
-import org.spout.api.UnsafeMethod;
-import org.spout.api.event.server.PluginDisableEvent;
-import org.spout.api.event.server.PluginEnableEvent;
-import org.spout.api.exception.InvalidDescriptionFileException;
-import org.spout.api.exception.InvalidPluginException;
-import org.spout.api.exception.UnknownDependencyException;
-import org.spout.api.exception.UnknownSoftDependencyException;
-import org.spout.api.plugin.security.CommonSecurityManager;
 
 public class CommonPluginLoader implements PluginLoader {
 	public static final String YAML_SPOUT = "properties.yml";
@@ -63,7 +63,7 @@ public class CommonPluginLoader implements PluginLoader {
 		this.engine = engine;
 		this.manager = manager;
 		this.key = key;
-		patterns = new Pattern[] {Pattern.compile("\\.jar$")};
+		patterns = new Pattern[]{Pattern.compile("\\.jar$")};
 	}
 
 	public Pattern[] getPatterns() {
@@ -71,12 +71,12 @@ public class CommonPluginLoader implements PluginLoader {
 	}
 
 	@UnsafeMethod
-	public synchronized void enablePlugin(Plugin paramPlugin) {
-		if (!CommonPlugin.class.isAssignableFrom(paramPlugin.getClass())) {
+	public synchronized void enablePlugin(Plugin plugin) {
+		if (!CommonPlugin.class.isAssignableFrom(plugin.getClass())) {
 			throw new IllegalArgumentException("Cannot enable plugin with this PluginLoader as it is of the wrong type!");
 		}
-		if (!paramPlugin.isEnabled()) {
-			CommonPlugin cp = (CommonPlugin) paramPlugin;
+		if (!plugin.isEnabled()) {
+			CommonPlugin cp = (CommonPlugin) plugin;
 			String name = cp.getDescription().getName();
 
 			if (!loaders.containsKey(name)) {
@@ -87,7 +87,7 @@ public class CommonPluginLoader implements PluginLoader {
 				cp.setEnabled(true);
 				cp.onEnable();
 			} catch (Throwable e) {
-				engine.getLogger().log(Level.SEVERE, new StringBuilder().append("An error occured when enabling '").append(paramPlugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
+				engine.getLogger().log(Level.SEVERE, new StringBuilder().append("An error occured when enabling '").append(plugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
 			}
 
 			engine.getEventManager().callEvent(new PluginEnableEvent(cp));
@@ -116,7 +116,6 @@ public class CommonPluginLoader implements PluginLoader {
 
 			engine.getEventManager().callEvent(new PluginDisableEvent(cp));
 		}
-
 	}
 
 	public synchronized Plugin loadPlugin(File paramFile) throws InvalidPluginException, InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException {
@@ -169,11 +168,11 @@ public class CommonPluginLoader implements PluginLoader {
 	}
 
 	/**
-	 * @param desc Plugin description element
+	 * @param description Plugin description element
 	 * @throws UnknownSoftDependencyException
 	 */
-	protected synchronized void processSoftDependencies(PluginDescriptionFile desc) throws UnknownSoftDependencyException {
-		List<String> softdepend = desc.getSoftDepends();
+	protected synchronized void processSoftDependencies(PluginDescriptionFile description) throws UnknownSoftDependencyException {
+		List<String> softdepend = description.getSoftDepends();
 		if (softdepend == null) {
 			softdepend = new ArrayList<String>();
 		}
@@ -209,23 +208,23 @@ public class CommonPluginLoader implements PluginLoader {
 	}
 
 	/**
-	 * @param paramFile Plugin file object
+	 * @param file Plugin file object
 	 * @return The current plugin's description element.
 	 *
 	 * @throws InvalidPluginException
 	 * @throws InvalidDescriptionFileException
 	 */
-	protected synchronized PluginDescriptionFile getDescription(File paramFile) throws InvalidPluginException, InvalidDescriptionFileException {
-		if (!paramFile.exists()) {
-			throw new InvalidPluginException(new StringBuilder().append(paramFile.getName()).append(" does not exist!").toString());
+	protected synchronized PluginDescriptionFile getDescription(File file) throws InvalidPluginException, InvalidDescriptionFileException {
+		if (!file.exists()) {
+			throw new InvalidPluginException(new StringBuilder().append(file.getName()).append(" does not exist!").toString());
 		}
 
-		PluginDescriptionFile desc = null;
+		PluginDescriptionFile description = null;
 		JarFile jar = null;
 		InputStream in = null;
 		try {
 			// Spout plugin properties file
-			jar = new JarFile(paramFile);
+			jar = new JarFile(file);
 			JarEntry entry = jar.getJarEntry(YAML_SPOUT);
 
 			// Fallback plugin properties file
@@ -238,7 +237,7 @@ public class CommonPluginLoader implements PluginLoader {
 			}
 
 			in = jar.getInputStream(entry);
-			desc = new PluginDescriptionFile(in);
+			description = new PluginDescriptionFile(in);
 		} catch (IOException e) {
 			throw new InvalidPluginException(e);
 		} finally {
@@ -257,7 +256,7 @@ public class CommonPluginLoader implements PluginLoader {
 				}
 			}
 		}
-		return desc;
+		return description;
 	}
 
 	protected Class<?> getClassByName(final String name) {
