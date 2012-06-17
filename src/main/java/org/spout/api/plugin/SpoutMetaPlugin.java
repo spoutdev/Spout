@@ -105,4 +105,8 @@ public final class SpoutMetaPlugin implements Plugin {
 	public File getFile() {
 		return new File(engine.getClass().getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " "));
 	}
+
+	@Override
+	public void loadLibrary(File file) {
+	}
 }
