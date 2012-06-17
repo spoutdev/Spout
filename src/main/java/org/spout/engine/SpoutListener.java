@@ -28,7 +28,7 @@ package org.spout.engine;
 
 import java.net.InetAddress;
 
-import org.spout.api.ChatColor;
+import org.spout.api.ChatStyle;
 import org.spout.api.Spout;
 import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
@@ -73,7 +73,7 @@ public class SpoutListener implements Listener {
 					player.kick();
 				}
 			} else {
-				Spout.getEngine().getEventManager().callDelayedEvent(new PlayerJoinEvent(player, ChatColor.CYAN + player.getDisplayName() + ChatColor.CYAN + " has joined the game"));
+				Spout.getEngine().getEventManager().callDelayedEvent(new PlayerJoinEvent(player, ChatStyle.CYAN + player.getDisplayName() + ChatStyle.CYAN + " has joined the game"));
 			}
 		} else {
 			event.getSession().disconnect("Player is already online");

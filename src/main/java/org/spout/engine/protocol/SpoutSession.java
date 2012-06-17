@@ -39,7 +39,7 @@ import java.util.logging.Level;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
 
-import org.spout.api.ChatColor;
+import org.spout.api.ChatStyle;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.datatable.DataMap;
@@ -250,7 +250,7 @@ public final class SpoutSession implements Session {
 	}
 
 	public String getDefaultLeaveMessage() {
-		return ChatColor.CYAN + player.getDisplayName() + ChatColor.CYAN + " has left the game";
+		return ChatStyle.CYAN + player.getDisplayName() + ChatStyle.CYAN + " has left the game";
 	}
 
 	@Override

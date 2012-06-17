@@ -70,7 +70,7 @@ import jline.Completor;
 import jline.ConsoleOperations;
 import jline.ConsoleReader;
 import jline.NullCompletor;
-import org.spout.api.ChatColor;
+import org.spout.api.ChatStyle;
 import org.spout.api.Engine;
 import org.spout.api.command.CommandSource;
 import org.spout.api.data.ValueHolder;
@@ -213,24 +213,24 @@ public final class ConsoleManager {
 		if (!string.contains("\u00A7")) {
 			return string;
 		} else if ((!jLine || !reader.getTerminal().isANSISupported()) && jTerminal == null) {
-			return ChatColor.strip(string);
+			return ChatStyle.strip(string);
 		} else {
-			return string.replace(ChatColor.RED.toString(), "\033[1;31m")
-					.replace(ChatColor.YELLOW.toString(), "\033[1;33m")
-					.replace(ChatColor.BRIGHT_GREEN.toString(), "\033[1;32m")
-					.replace(ChatColor.CYAN.toString(), "\033[1;36m")
-					.replace(ChatColor.BLUE.toString(), "\033[1;34m")
-					.replace(ChatColor.PINK.toString(), "\033[1;35m")
-					.replace(ChatColor.BLACK.toString(), "\033[0;0m")
-					.replace(ChatColor.DARK_GRAY.toString(), "\033[1;30m")
-					.replace(ChatColor.DARK_RED.toString(), "\033[0;31m")
-					.replace(ChatColor.GOLD.toString(), "\033[0;33m")
-					.replace(ChatColor.DARK_GREEN.toString(), "\033[0;32m")
-					.replace(ChatColor.DARK_CYAN.toString(), "\033[0;36m")
-					.replace(ChatColor.DARK_BLUE.toString(), "\033[0;34m")
-					.replace(ChatColor.PURPLE.toString(), "\033[0;35m")
-					.replace(ChatColor.GRAY.toString(), "\033[0;37m")
-					.replace(ChatColor.WHITE.toString(), "\033[1;37m") + "\033[0m";
+			return string.replace(ChatStyle.RED.toString(), "\033[1;31m")
+					.replace(ChatStyle.YELLOW.toString(), "\033[1;33m")
+					.replace(ChatStyle.BRIGHT_GREEN.toString(), "\033[1;32m")
+					.replace(ChatStyle.CYAN.toString(), "\033[1;36m")
+					.replace(ChatStyle.BLUE.toString(), "\033[1;34m")
+					.replace(ChatStyle.PINK.toString(), "\033[1;35m")
+					.replace(ChatStyle.BLACK.toString(), "\033[0;0m")
+					.replace(ChatStyle.DARK_GRAY.toString(), "\033[1;30m")
+					.replace(ChatStyle.DARK_RED.toString(), "\033[0;31m")
+					.replace(ChatStyle.GOLD.toString(), "\033[0;33m")
+					.replace(ChatStyle.DARK_GREEN.toString(), "\033[0;32m")
+					.replace(ChatStyle.DARK_CYAN.toString(), "\033[0;36m")
+					.replace(ChatStyle.DARK_BLUE.toString(), "\033[0;34m")
+					.replace(ChatStyle.PURPLE.toString(), "\033[0;35m")
+					.replace(ChatStyle.GRAY.toString(), "\033[0;37m")
+					.replace(ChatStyle.WHITE.toString(), "\033[1;37m") + "\033[0m";
 		}
 	}
 
