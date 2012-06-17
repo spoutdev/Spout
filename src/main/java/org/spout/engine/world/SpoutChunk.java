@@ -851,8 +851,6 @@ public class SpoutChunk extends Chunk {
 		return lightDirty.get() || blockStore.isDirty();
 	}
 
-	int x = 0;
-
 	@Override
 	public boolean canSend() {
 		boolean canSend = this.isPopulated() && !this.isCalculatingLighting();
