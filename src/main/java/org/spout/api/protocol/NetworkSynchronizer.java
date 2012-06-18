@@ -91,6 +91,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	private volatile boolean teleported = false;
 	private volatile boolean worldChanged = false;
 	private Point lastPosition = null;
+	private Point holdingPosition = null;
 	private final LinkedHashSet<Chunk> observed = new LinkedHashSet<Chunk>();
 	private final Set<Point> chunksToObserve = new LinkedHashSet<Point>();
 	private final Map<Class<? extends ProtocolEvent>, ProtocolEventExecutor> protocolEventMapping = new HashMap<Class<? extends ProtocolEvent>, ProtocolEventExecutor>();
@@ -201,6 +202,10 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		}
 
 		lastPosition = currentPosition;
+		
+		if (!teleported) {
+			holdingPosition = currentPosition;
+		}
 
 		for (Point p : chunkFreeQueue) {
 			if (initializedChunks.contains(p)) {
@@ -346,10 +351,13 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		int bz = (int) currentPosition.getZ();
 
 		Point playerChunkBase = Chunk.pointToBase(currentPosition);
+		Point playerHoldingChunkBase = holdingPosition == null ? null : Chunk.pointToBase(holdingPosition);
 
 		for (Point p : initializedChunks) {
 			if (p.getManhattanDistance(playerChunkBase) > blockViewDistance) {
-				chunkFreeQueue.add(p);
+				if (playerHoldingChunkBase == null || p.getManhattanDistance(playerHoldingChunkBase) > targetSize) {
+					chunkFreeQueue.add(p);
+				}
 			}
 		}
 
