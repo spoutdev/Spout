@@ -55,6 +55,7 @@ import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
+import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
@@ -64,6 +65,7 @@ import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.block.BlockSnapshot;
+import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
@@ -92,6 +94,9 @@ public class SpoutChunk extends Chunk {
 	private static final int restrictedStages = TickStage.PHYSICS | TickStage.DYNAMIC_BLOCKS;
 	private static final int mainThreadStages = TickStage.GLOBAL_PHYSICS | TickStage.GLOBAL_DYNAMIC_BLOCKS;
 	private static final int allowedStages = TickStage.STAGE1 | TickStage.STAGE2P | TickStage.TICKSTART;
+	private static final int updateStages = 
+			TickStage.PHYSICS | TickStage.DYNAMIC_BLOCKS | 
+			TickStage.GLOBAL_PHYSICS | TickStage.GLOBAL_DYNAMIC_BLOCKS;
 
 	/**
 	 * Time in ms between chunk reaper unload checks
@@ -182,7 +187,7 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * Shift cache array for shifting fields
 	 */
-	private final static int[] shiftCache = new int[65536];
+	protected final static int[] shiftCache = new int[65536];
 
 	/**
 	 * The thread associated with the region
@@ -252,36 +257,7 @@ public class SpoutChunk extends Chunk {
 		if (source == null) {
 			throw new NullPointerException("Source can not be null");
 		}
-		x &= BLOCKS.MASK;
-		y &= BLOCKS.MASK;
-		z &= BLOCKS.MASK;
-
-		checkChunkLoaded();
-		checkBlockStoreUpdateAllowed();
-
-		BlockMaterial material = this.getBlockMaterial(x, y, z);
-		int oldState = blockStore.getAndSetBlock(x, y, z, material.getId(), data);
-		short oldData = BlockFullState.getData(oldState);
-
-		if (((oldData ^ data) & material.getDataMask()) != 0) {
-			Material oldMaterial = MaterialRegistry.get(oldState);
-			if (material instanceof DynamicMaterial) {
-				if (oldMaterial instanceof BlockMaterial) {
-					BlockMaterial oldBlockMaterial = (BlockMaterial) oldMaterial;
-					if (!oldBlockMaterial.isCompatibleWith(material) || !material.isCompatibleWith(oldBlockMaterial)) {
-						parentRegion.resetDynamicBlock(x, y, z);
-					}
-				} else {
-					parentRegion.resetDynamicBlock(x, y, z);
-				}
-			}
-		}
-
-		// Data component does not alter height of the world. Change this?
-		// column.notifyBlockChange(x, this.getBlockY() + y, z);
-
-		// Update block lighting
-		this.setBlockLight(x, y, z, material.getLightLevel(data), source);
+		setBlockDataField(x, y, z, 0xFFFF, data, source);
 
 		return true;
 	}
@@ -303,6 +279,7 @@ public class SpoutChunk extends Chunk {
 		checkBlockStoreUpdateAllowed();
 
 		if (event) {
+			// TODO - move to block change method?
 			Block block = new SpoutBlock(getWorld(), x, y, z, source);
 			BlockChangeEvent blockEvent = new BlockChangeEvent(block, new BlockSnapshot(block, material, data), source);
 			Spout.getEngine().getEventManager().callEvent(blockEvent);
@@ -312,9 +289,17 @@ public class SpoutChunk extends Chunk {
 			material = blockEvent.getSnapshot().getMaterial();
 			data = blockEvent.getSnapshot().getData();
 		}
+		
 
-		Material oldMaterial = MaterialRegistry.get(blockStore.getAndSetBlock(x, y, z, material.getId(), data));
-
+		short newId = material.getId();
+		short newData = data;
+		int newState = BlockFullState.getPacked(newId, newData);
+		int oldState = blockStore.getAndSetBlock(x, y, z, newId, newData);
+		short oldData = BlockFullState.getData(oldState);
+		
+		Material m = MaterialRegistry.get(oldState);
+		BlockMaterial oldMaterial = (BlockMaterial) m;
+		
 		int oldheight = column.getSurfaceHeight(x, z);
 		y += this.getBlockY();
 		column.notifyBlockChange(x, y, z);
@@ -352,15 +337,9 @@ public class SpoutChunk extends Chunk {
 				}
 			}
 		}
-		if (material instanceof DynamicMaterial) {
-			if (oldMaterial instanceof BlockMaterial) {
-				BlockMaterial oldBlockMaterial = (BlockMaterial) oldMaterial;
-				if (!oldBlockMaterial.isCompatibleWith(material) || !material.isCompatibleWith(oldBlockMaterial)) {
-					parentRegion.resetDynamicBlock(x, y, z);
-				}
-			} else {
-				parentRegion.resetDynamicBlock(x, y, z);
-			}
+		
+		if (newState != oldState) {
+			blockChanged(x, y, z, material, newData, oldMaterial, oldData, source);
 		}
 		return true;
 	}
@@ -467,6 +446,11 @@ public class SpoutChunk extends Chunk {
 		}
 
 		return mat.getSubMaterial(data);
+	}
+	
+	@Override
+	public int getBlockFullState(int x, int y, int z) {
+		return blockStore.getFullData(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK);
 	}
 
 	@Override
@@ -576,6 +560,18 @@ public class SpoutChunk extends Chunk {
 		}
 	}
 
+	@Override
+	public void queueBlockPhysics(int x, int y, int z, EffectRange range, Source source) {
+		checkChunkLoaded();
+		int rx = x & BLOCKS.MASK;
+		int ry = y & BLOCKS.MASK;
+		int rz = z & BLOCKS.MASK;
+		rx += (getX() & Region.CHUNKS.MASK) << BLOCKS.BITS;
+		ry += (getY() & Region.CHUNKS.MASK) << BLOCKS.BITS;
+		rz += (getZ() & Region.CHUNKS.MASK) << BLOCKS.BITS;
+		this.getRegion().queueBlockPhysics(rx, ry, rz, range, source);
+	}
+	
 	@Override
 	public void updateBlockPhysics(int x, int y, int z, Source source) {
 		checkChunkLoaded();
@@ -854,8 +850,6 @@ public class SpoutChunk extends Chunk {
 	public boolean isDirty() {
 		return lightDirty.get() || blockStore.isDirty();
 	}
-
-	int x = 0;
 
 	@Override
 	public boolean canSend() {
@@ -1279,57 +1273,27 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
-	public boolean compareAndSetData(int bx, int by, int bz, int expect, short data) {
+	public boolean compareAndSetData(int bx, int by, int bz, int expect, short data, Source source) {
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
-		// TODO - this should probably trigger a dynamic block reset
 		short expId = BlockFullState.getId(expect);
 		short expData = BlockFullState.getData(expect);
-		return this.blockStore.compareAndSetBlock(bx & BLOCKS.MASK, by & BLOCKS.MASK, bz & BLOCKS.MASK, expId, expData, expId, data);
+		
+		boolean success = this.blockStore.compareAndSetBlock(bx & BLOCKS.MASK, by & BLOCKS.MASK, bz & BLOCKS.MASK, expId, expData, expId, data);
+		if (success && expData != data) {
+			blockChanged(bx, by, bz, expId, data, expId, expData, source);
+		}
+		return success;
 	}
 
 	@Override
-	public short setBlockDataBits(int bx, int by, int bz, short bits) {
-		checkChunkLoaded();
-		checkBlockStoreUpdateAllowed();
-
-		bx &= BLOCKS.MASK;
-		by &= BLOCKS.MASK;
-		bz &= BLOCKS.MASK;
-
-		boolean success = false;
-		short oldData = 0;
-		while (!success) {
-			int state = this.blockStore.getFullData(bx, by, bz);
-			oldData = BlockFullState.getData(state);
-			short oldId = BlockFullState.getId(state);
-			short newData = (short) (oldData | bits);
-			// TODO - this should probably trigger a dynamic block reset
-			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
-		}
-		return oldData;
+	public short setBlockDataBits(int bx, int by, int bz, short bits, Source source) {
+		return (short) setBlockDataFieldRaw(bx, by, bz, bits & 0xFFFF, 0xFFFF, source);
 	}
 
 	@Override
-	public short clearBlockDataBits(int bx, int by, int bz, short bits) {
-		checkChunkLoaded();
-		checkBlockStoreUpdateAllowed();
-
-		bx &= BLOCKS.MASK;
-		by &= BLOCKS.MASK;
-		bz &= BLOCKS.MASK;
-
-		boolean success = false;
-		short oldData = 0;
-		while (!success) {
-			int state = this.blockStore.getFullData(bx, by, bz);
-			oldData = BlockFullState.getData(state);
-			short oldId = BlockFullState.getId(state);
-			short newData = (short) (oldData & (~bits));
-			// TODO - this should probably trigger a dynamic block reset
-			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
-		}
-		return oldData;
+	public short clearBlockDataBits(int bx, int by, int bz, short bits, Source source) {
+		return (short) setBlockDataFieldRaw(bx, by, bz, bits & 0xFFFF, 0x0000, source);
 	}
 
 	@Override
@@ -1348,28 +1312,80 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
-	public int setBlockDataField(int bx, int by, int bz, int bits, int value) {
+	public int setBlockDataField(int bx, int by, int bz, int bits, int value, Source source) {
+		int oldData = setBlockDataFieldRaw(bx, by, bz, bits, value, source);
+		
+		int shift = shiftCache[bits];
+		
+		return (oldData & bits) >> shift;
+
+	}
+	
+	protected int setBlockDataFieldRaw(int bx, int by, int bz, int bits, int value, Source source) {
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
 
 		bx &= BLOCKS.MASK;
 		by &= BLOCKS.MASK;
 		bz &= BLOCKS.MASK;
+		
+		value &= 0xFFFF;
 
 		int shift = shiftCache[bits];
+		
+		boolean updated = false;
 
 		boolean success = false;
 		short oldData = 0;
+		short oldId = 0;
+		short newData = 0;
 		while (!success) {
 			int state = this.blockStore.getFullData(bx, by, bz);
 			oldData = BlockFullState.getData(state);
-			short oldId = BlockFullState.getId(state);
-			short newData = (short) (((value << shift) & bits) | (oldData & (~bits)));
+			oldId = BlockFullState.getId(state);
+			newData = (short) (((value << shift) & bits) | (oldData & (~bits)));
 
 			// TODO - this should probably trigger a dynamic block reset
 			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
+			updated = oldData != newData;
 		}
-		return (oldData & bits) >> shift;
+		
+		if (updated) {
+			blockChanged(bx, by, bz, oldId, newData, oldId, oldData, source);
+		}
+		
+		return oldData;
+	}
+	
+	private void blockChanged(int x, int y, int z, short newId, short newData, short oldId, short oldData, Source source) {
+		BlockMaterial newMaterial = (BlockMaterial) MaterialRegistry.get(newId).getSubMaterial(newData);
+		BlockMaterial oldMaterial = (BlockMaterial) MaterialRegistry.get(oldId).getSubMaterial(oldData);
+		blockChanged(x, y, z, newMaterial, newData, oldMaterial, oldData, source);
+	}
+	
+	private void blockChanged(int x, int y, int z, BlockMaterial newMaterial, short newData, BlockMaterial oldMaterial, short oldData, Source source) {
+		if (newMaterial instanceof DynamicMaterial) {
+			if (oldMaterial instanceof BlockMaterial) {
+				BlockMaterial oldBlockMaterial = (BlockMaterial) oldMaterial;
+				if (!oldBlockMaterial.isCompatibleWith(newMaterial) || !newMaterial.isCompatibleWith(oldBlockMaterial)) {
+					parentRegion.resetDynamicBlock(x, y, z);
+				}
+			} else {
+				parentRegion.resetDynamicBlock(x, y, z);
+			}
+		}
+		EffectRange physicsRange = newMaterial.getPhysicsRange(newData);
+		queueBlockPhysics(x, y, z, physicsRange, source);
+
+		if (newMaterial != oldMaterial) {
+			EffectRange destroyRange = oldMaterial.getDestroyRange(oldData);
+			if (destroyRange != physicsRange) {
+				queueBlockPhysics(x, y, z, destroyRange, source);
+			}
+		}
+		
+		// Update block lighting
+		this.setBlockLight(x, y, z, newMaterial.getLightLevel(newData), source);
 	}
 
 	@Override

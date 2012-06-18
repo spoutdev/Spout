@@ -38,8 +38,9 @@ import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.SnapshotLock;
 
 public class SpoutSnapshotLock implements SnapshotLock {
-	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-	private ConcurrentHashMap<Plugin, LockInfo> locks = new ConcurrentHashMap<Plugin, LockInfo>();
+	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+	private final ConcurrentHashMap<Plugin, LockInfo> locks = new ConcurrentHashMap<Plugin, LockInfo>();
+	private final ConcurrentHashMap<String, Boolean> coreTasks = new ConcurrentHashMap<String, Boolean>();
 
 	@Override
 	public void readLock(Plugin plugin) {
@@ -47,8 +48,9 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		addLock(plugin);
 	}
 	
-	public void coreReadLock() {
+	public void coreReadLock(String taskName) {
 		lock.readLock().lock();
+		coreTasks.put(taskName, true);
 	}
 
 	@Override
@@ -60,19 +62,23 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		return success;
 	}
 	
-	public boolean coreReadTryLock() {
+	public boolean coreReadTryLock(String taskName) {
 		boolean success = lock.readLock().tryLock();
+		if (success) {
+			coreTasks.put(taskName, true);
+		}
 		return success;
 	}
 
 	@Override
 	public void readUnlock(Plugin plugin) {
 		lock.readLock().unlock();
-		addLock(plugin);
+		removeLock(plugin);
 	}
 	
-	public void coreReadUnlock() {
+	public void coreReadUnlock(String taskName) {
 		lock.readLock().unlock();
+		coreTasks.remove(taskName);
 	}
 
 	public boolean writeLock(int delay) {
@@ -98,6 +104,10 @@ public class SpoutSnapshotLock implements SnapshotLock {
 			}
 		}
 		return plugins;
+	}
+	
+	public Set<String> getLockingTasks() {
+		return coreTasks.keySet();
 	}
 
 	public void writeUnlock() {

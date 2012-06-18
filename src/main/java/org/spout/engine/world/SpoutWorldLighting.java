@@ -37,6 +37,8 @@ import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 
 public class SpoutWorldLighting extends Thread implements Source {
+	
+	private static String taskName = "Lighting Thread";
 
 	/*
 	 * Some constants used in the chunk set storage
@@ -91,7 +93,7 @@ public class SpoutWorldLighting extends Thread implements Source {
 			boolean updated = false;
 			// Bergerkiller, ideally, these 2 methods would have a max time of 5-10ms
 			// Better to do 10 calls of 2ms each, and release the lock between them, than 1 call of 20ms.
-			lock.coreReadLock();
+			lock.coreReadLock(taskName);
 			try {
 				synchronized (this.dirtyChunks) {
 					if ((chunkBufferSize = this.dirtyChunks.size()) > 0) {
@@ -121,7 +123,7 @@ public class SpoutWorldLighting extends Thread implements Source {
 					idleCounter = 0;
 				}
 			} finally {
-				lock.coreReadUnlock();
+				lock.coreReadUnlock(taskName);
 			}
 			if (!updated) {
 				if (idleCounter++ == 20) {

@@ -37,6 +37,8 @@ import org.spout.api.datatable.DatatableMap;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.Material;
+import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.map.concurrent.AtomicBlockStoreImpl;
 import org.spout.engine.filesystem.WorldFiles;
@@ -128,6 +130,15 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.getBlockMaterial(x, y, z);
 	}
+	
+	@Override
+	public int getBlockFullState(int x, int y, int z) {
+		if (uniform.get()) {
+			Material m = material.get();
+			return BlockFullState.getPacked(m.getId(), m.getData());
+		}
+		return super.getBlockFullState(x, y, z);
+	}
 
 	@Override
 	public short getBlockData(int x, int y, int z) {
@@ -136,13 +147,36 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.getBlockData(x, y, z);
 	}
+	
+	@Override
+	public int getBlockDataField(int bx, int by, int bz, int bits) {
+		if (uniform.get()) {
+			int shift = shiftCache[bits];
+			short data = material.get().getData();
+			return (data & bits) >> (shift);
+		}
+		return super.getBlockDataField(bx, by, bz, bits);
+	}
 
 	@Override
-	public boolean compareAndSetData(int x, int y, int z, int expect, short data) {
+	protected int setBlockDataFieldRaw(int bx, int by, int bz, int bits, int value, Source source) {
 		if (uniform.get()) {
 			initialize();
 		}
-		return super.compareAndSetData(x, y, z, expect, data);
+		return super.setBlockDataFieldRaw(bx, by, bz, bits, value, source);
+	}
+
+	@Override
+	public boolean compareAndSetData(int x, int y, int z, int expect, short data, Source source) {
+		if (uniform.get()) {
+			Material m = material.get();
+			if (m.getId() == BlockFullState.getId(expect) && m.getData() == BlockFullState.getData(expect)) {
+				initialize();
+			} else {
+				return false;
+			}
+		}
+		return super.compareAndSetData(x, y, z, expect, data, source);
 	}
 
 	@Override

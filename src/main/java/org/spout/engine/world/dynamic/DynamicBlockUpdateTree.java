@@ -45,6 +45,7 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.DynamicMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.Material;
+import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.Vector3;
 import org.spout.api.scheduler.TickStage;
 import org.spout.engine.scheduler.SpoutScheduler;
@@ -125,8 +126,7 @@ public class DynamicBlockUpdateTree {
 		} else if (Thread.currentThread() == mainThread){
 			TickStage.checkStage(globalStages);
 		} else {
-			int allowed = TickStage.DYNAMIC_BLOCKS | TickStage.GLOBAL_DYNAMIC_BLOCKS | TickStage.PHYSICS | TickStage.GLOBAL_PHYSICS;
-			throw new IllegalTickSequenceException(allowed, TickStage.getStageInt());
+			throw new IllegalTickSequenceException(TickStage.ALL_PHYSICS_AND_DYNAMIC, TickStage.getStageInt());
 		}
 	}
 	
@@ -240,38 +240,13 @@ public class DynamicBlockUpdateTree {
 		}
 
 		DynamicMaterial dm = (DynamicMaterial)m;
-		Vector3[] range = (force) ? zeroVector3Array : dm.maxRange();
-		if (range == null || range.length < 1) {
-			range = zeroVector3Array;
-		}
-		Vector3 rangeHigh = range[0];
-		Vector3 rangeLow = range.length < 2 ? range[0] : range[1];
-
-		int rhx = (int)rangeHigh.getX();
-		int rhy = (int)rangeHigh.getY();
-		int rhz = (int)rangeHigh.getZ();
-		if (rhx < 0 || rhy < 0 || rhz < 0) {
-			throw new IllegalArgumentException("Max range values must be greater or equal to 0");
-		}
-		int rlx = (int)rangeLow.getX();
-		int rly = (int)rangeLow.getY();
-		int rlz = (int)rangeLow.getZ();
-		if (rlx < 0 || rly < 0 || rlz < 0) {
-			throw new IllegalArgumentException("Max range values must be greater or equal to 0");
-		}
-		int maxx = bx + rhx;
-		int maxy = by + rhy;
-		int maxz = bz + rhz;
-		int minx = bx - rlx;
-		int miny = by - rly;
-		int minz = bz - rlz;
-		int rs = Region.BLOCKS.SIZE;
-		if (maxx >= rs || maxy >= rs || maxz >= rs || minx < 0 || miny < 0 || minz < 0) {
+		EffectRange range = dm.getDynamicRange();
+		if (!force && !range.isRegionLocal(bx, by, bz)) {
 			return false;
+		} else {
+			dm.onDynamicUpdate(b, region, update.getNextUpdate(), update.getQueuedTime(), update.getData(), update.getHint());
+			return true;
 		}
-
-		dm.onDynamicUpdate(b, region, update.getNextUpdate(), update.getQueuedTime(), update.getData(), update.getHint());
-		return true;
 	}
 	
 	public long getFirstDynamicUpdateTime() {

@@ -387,9 +387,12 @@ public final class SpoutScheduler implements Scheduler {
 		lockSnapshotLock();
 		
 		try {
-			doDynamicUpdates(executors);
+			int updates = 1;
+			while (updates > 0) {
+				updates = doDynamicUpdates(executors);
 
-			doPhysics(executors);
+				updates += doPhysics(executors);
+			}
 
 			finalizeTick(executors);
 
@@ -404,7 +407,7 @@ public final class SpoutScheduler implements Scheduler {
 		return true;
 	}
 	
-	private void doPhysics(List<AsyncExecutor> executors) throws InterruptedException {
+	private int doPhysics(List<AsyncExecutor> executors) throws InterruptedException {
 		int updates = 0;
 		int updatesThisPass = 1;
 		while (updatesThisPass > 0) {
@@ -439,9 +442,10 @@ public final class SpoutScheduler implements Scheduler {
 			
 			updates += updatesThisPass;
 		}
+		return updates;
 	}
 	
-	private void doDynamicUpdates(List<AsyncExecutor> executors) throws InterruptedException {
+	private int doDynamicUpdates(List<AsyncExecutor> executors) throws InterruptedException {
 		int updates = 0;
 		int updatesThisPass = 1;
 		while (updatesThisPass > 0) {
@@ -489,6 +493,7 @@ public final class SpoutScheduler implements Scheduler {
 			
 			updates += updatesThisPass;
 		}
+		return updates;
 	}
 	
 	private void runCoreTasks() {
@@ -594,6 +599,9 @@ public final class SpoutScheduler implements Scheduler {
 				engine.getLogger().info("Unable to lock snapshot after " + (System.currentTimeMillis() - startTime) + "ms");
 				for (Plugin p : violatingPlugins) {
 					engine.getLogger().info(p.getDescription().getName() + " has locked the snapshot lock for more than " + threshold + "ms");
+				}
+				for (String s : snapshotLock.getLockingTasks()) {
+					engine.getLogger().info("Core task " + s + " is holding the lock");
 				}
 			}
 		}

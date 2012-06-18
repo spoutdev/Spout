@@ -47,6 +47,8 @@ import org.spout.engine.world.SpoutRegion;
  * to be leaking memory
  */
 public class MemoryLeakThread extends Thread {
+	private static String taskName = "Memory Leak Thread";
+	
 	private final TObjectByteHashMap<WeakReference<Chunk>> chunkPasses = new TObjectByteHashMap<WeakReference<Chunk>>();
 	private final List<WeakReference<Chunk>> chunkQueue = new LinkedList<WeakReference<Chunk>>();
 	private final List<WeakReference<Chunk>> chunkArrivals = new LinkedList<WeakReference<Chunk>>();
@@ -71,7 +73,7 @@ public class MemoryLeakThread extends Thread {
 	public void run() {
 		SpoutSnapshotLock lock = (SpoutSnapshotLock)Spout.getEngine().getScheduler().getSnapshotLock();
 		while (!this.isInterrupted()) {
-			boolean locked = lock.coreReadTryLock();
+			boolean locked = lock.coreReadTryLock(taskName);
 			if (locked) {
 				try {
 					System.gc();
@@ -167,7 +169,7 @@ public class MemoryLeakThread extends Thread {
 
 					Spout.getLogger().info("Memory Leak Detection Analyzed " + analyzed + " potential leaks, " + unobserved + " Unobserved, " + queuedForUnload + " queued for unloading, " + unloaded + " unloaded");
 				} finally {
-					lock.coreReadUnlock();
+					lock.coreReadUnlock(taskName);
 				}
 			}
 			try {

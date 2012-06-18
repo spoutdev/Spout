@@ -67,6 +67,7 @@ import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
+import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
@@ -517,6 +518,11 @@ public final class SpoutWorld extends AsyncManager implements World {
 	public boolean setBlockData(int x, int y, int z, short data, Source source) {
 		return getChunkFromBlock(x, y, z).setBlockData(x, y, z, data, source);
 	}
+	
+	@Override
+	public int getBlockFullState(int x, int y, int z) {
+		return getChunkFromBlock(x, y, z).getBlockFullState(x, y, z);
+	}
 
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {
@@ -539,18 +545,18 @@ public final class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public boolean compareAndSetData(int x, int y, int z, int expect, short data) {
-		return getChunkFromBlock(x, y, z).compareAndSetData(x, y, z, expect, data);
+	public boolean compareAndSetData(int x, int y, int z, int expect, short data, Source source) {
+		return getChunkFromBlock(x, y, z).compareAndSetData(x, y, z, expect, data, source);
 	}
 	
 	@Override
-	public short setBlockDataBits(int x, int y, int z, short bits) {
-		return getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits);
+	public short setBlockDataBits(int x, int y, int z, short bits, Source source) {
+		return getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits, source);
 	}
 
 	@Override
-	public short clearBlockDataBits(int x, int y, int z, short bits) {
-		return getChunkFromBlock(x, y, z).clearBlockDataBits(x, y, z, bits);
+	public short clearBlockDataBits(int x, int y, int z, short bits, Source source) {
+		return getChunkFromBlock(x, y, z).clearBlockDataBits(x, y, z, bits, source);
 	}
 
 	@Override
@@ -559,13 +565,18 @@ public final class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public int setBlockDataField(int x, int y, int z, int bits, int value) {
-		return getChunkFromBlock(x, y, z).setBlockDataField(x, y, z, bits, value);
+	public int setBlockDataField(int x, int y, int z, int bits, int value, Source source) {
+		return getChunkFromBlock(x, y, z).setBlockDataField(x, y, z, bits, value, source);
 	}
 
 	@Override
 	public void updateBlockPhysics(int x, int y, int z, Source source) {
 		this.getRegionFromBlock(x, y, z).updateBlockPhysics(x, y, z, source);
+	}
+	
+	@Override
+	public void queueBlockPhysics(int x, int y, int z, EffectRange range, Source source) {
+		this.getRegionFromBlock(x, y, z).queueBlockPhysics(x, y, z, range, source);
 	}
 
 	@Override
