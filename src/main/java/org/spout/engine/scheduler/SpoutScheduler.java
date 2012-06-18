@@ -600,6 +600,9 @@ public final class SpoutScheduler implements Scheduler {
 				for (Plugin p : violatingPlugins) {
 					engine.getLogger().info(p.getDescription().getName() + " has locked the snapshot lock for more than " + threshold + "ms");
 				}
+				for (String s : snapshotLock.getLockingTasks()) {
+					engine.getLogger().info("Core task " + s + " is holding the lock");
+				}
 			}
 		}
 	}
