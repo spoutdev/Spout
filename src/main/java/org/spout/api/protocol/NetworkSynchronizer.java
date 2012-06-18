@@ -62,9 +62,13 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	public NetworkSynchronizer(Player owner, Session session, Entity entity) {
 		this.owner = owner;
 		this.entity = entity;
-		entity.setObserver(true);
+		if (entity != null) {
+			entity.setObserver(true);
+			blockViewDistance = entity.getViewDistance();
+		} else {
+			blockViewDistance = 0;
+		}
 		this.session = session;
-		blockViewDistance = entity.getViewDistance();
 		viewDistance = blockViewDistance >> Chunk.BLOCKS.BITS;
 		targetSize = Chunk.BLOCKS.DOUBLE_SIZE;
 	}
@@ -202,7 +206,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		}
 
 		lastPosition = currentPosition;
-		
+
 		if (!teleported) {
 			holdingPosition = currentPosition;
 		}
@@ -366,7 +370,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		int cz = bz >> Chunk.BLOCKS.BITS;
 
 		Iterator<IntVector3> itr = new OutwardIterator(cx, cy, cz, viewDistance);
-		
+
 		priorityChunkSendQueue.clear();
 		chunkSendQueue.clear();
 
@@ -533,5 +537,13 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	 * @param e the entity
 	 */
 	public void syncEntity(Entity e) {
+	}
+
+	public Message getChatMessage(String message) {
+		return null;
+	}
+
+	public Message getKickMessage(String message) {
+		return null;
 	}
 }

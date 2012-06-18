@@ -24,23 +24,33 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.protocol.bootstrap;
+package org.spout.api.protocol;
 
-import org.spout.api.protocol.CodecLookupService;
-import org.spout.api.protocol.HandlerLookupService;
-import org.spout.api.protocol.Message;
-import org.spout.api.protocol.Protocol;
+import org.spout.api.inventory.InventoryBase;
+import org.spout.api.inventory.ItemStack;
 
 /**
- *
- * @author zml2008
+ * An implementation of NetworkSynchronizer that doesn't do anything
+ * used for when a NetworkSynchronizer has not been set
  */
-public abstract class BootstrapProtocol extends Protocol {
-	public BootstrapProtocol(String name, CodecLookupService codecLookup, HandlerLookupService handlerLookup) {
-		super(name, codecLookup, handlerLookup);
+public class NullNetworkSynchronizer extends NetworkSynchronizer {
+	public NullNetworkSynchronizer(Session session) {
+		super(null, session, null);
 	}
 
-	public abstract String detectProtocolDefinition(Message message);
+	public void onSlotSet(InventoryBase inventory, int slot, ItemStack item) {
+	}
 
-	public abstract Protocol getDefaultProtocol();
+	public void updateAll(InventoryBase inventory, ItemStack[] slots) {
+	}
+
+	public void onDeath() {
+	}
+
+	public void finalizeTick() {
+	}
+
+	public void preSnapshot() {
+	}
+
 }

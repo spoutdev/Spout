@@ -76,15 +76,6 @@ public interface Player extends CommandSource {
 	public Entity getEntity();
 
 	/**
-	 * Sets the NetworkSynchronizer associated with this player.<br>
-	 * <br>
-	 * This can only be called once per player login.
-	 *
-	 * @param synchronizer the synchronizer
-	 */
-	public void setNetworkSynchronizer(NetworkSynchronizer synchronizer);
-
-	/**
 	 * Gets the NetworkSynchronizer associated with this player.<br>
 	 *
 	 * @return the synchronizer

@@ -101,8 +101,10 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 			server.getChannelGroup().remove(c);
 
 			Session session = (Session) ctx.getAttachment();
-			server.getSessionRegistry().remove(session);
-			session.dispose();
+			if (session != null) {
+				server.getSessionRegistry().remove(session);
+				session.dispose();
+			}
 
 			server.getLogger().log(Level.WARNING, "Exception caught, closing channel: " + c + "...", e.getCause());
 			c.close();

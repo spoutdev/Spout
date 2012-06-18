@@ -55,12 +55,6 @@ public interface Session {
 	public void setProtocol(Protocol protocol);
 
 	/**
-	 * Returns the {@link PlayerProtocol} associated with this session. Returns
-	 * bootstrap until another protocol is set.
-	 */
-	public PlayerProtocol getPlayerProtocol();
-
-	/**
 	 * Gets the state of this session.
 	 *
 	 * @return The session's state.
@@ -138,6 +132,22 @@ public interface Session {
 	 */
 	public Player getPlayer();
 
+	/**
+	 * Sets the NetworkSynchronizer associated with this player.<br>
+	 * <br>
+	 * This can only be called once per player login.
+	 *
+	 * @param synchronizer the synchronizer
+	 */
+	public void setNetworkSynchronizer(NetworkSynchronizer synchronizer);
+
+	/**
+	 * Gets the NetworkSynchronizer associated with this player.<br>
+	 *
+	 * @return the synchronizer
+	 */
+	public NetworkSynchronizer getNetworkSynchronizer();
+
 	public enum State {
 		/**
 		 * In the exchange handshake state, the server is waiting for the client
@@ -150,7 +160,7 @@ public interface Session {
 		 * client to send its identification packet.
 		 */
 		EXCHANGE_IDENTIFICATION,
-		
+
 		/**
 		 * In the exchange encryption state, the server is waiting for the
 		 * client to send its encryption response packet.
@@ -164,18 +174,18 @@ public interface Session {
 	}
 
 	public Engine getEngine();
-	
+
 	/**
 	 * True if this session is open and connected.
 	 * If the session is closed, all packets will be silently ignored.
-	 * 
+	 *
 	 * @return is connected
 	 */
 	public boolean isConnected();
-	
+
 	/**
 	 * Gets a map of data attached to this session.
-	 * 
+	 *
 	 * @return data map
 	 */
 	public DefaultedMap<String, Serializable> getDataMap();
