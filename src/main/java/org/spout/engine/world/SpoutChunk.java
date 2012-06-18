@@ -148,6 +148,11 @@ public class SpoutChunk extends Chunk {
 	protected final SpoutColumn column;
 	protected final AtomicBoolean columnRegistered = new AtomicBoolean(true);
 	protected final AtomicLong lastUnloadCheck = new AtomicLong();
+
+	/**
+	 * True if this chunk is initializing lighting, False if not
+	 */
+	protected final AtomicBoolean isInitializingLighting = new AtomicBoolean(false);
 	/**
 	 * True if this chunk should be resent due to light calculations
 	 */
@@ -979,9 +984,11 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public void initLighting() {
+		this.isInitializingLighting.set(true);
 		this.notifyLightChange();
 		SpoutWorld world = this.getWorld();
 		int x, y, z, minY, maxY, columnY;
+		// Lock operations to prevent premature handling
 		Arrays.fill(this.blockLight, (byte) 0);
 		Arrays.fill(this.skyLight, (byte) 0);
 
@@ -990,7 +997,10 @@ public class SpoutChunk extends Chunk {
 			for (y = 0; y < BLOCKS.SIZE; y++) {
 				for (z = 0; z < BLOCKS.SIZE; z++) {
 					if (!this.setBlockLight(x, y, z, this.getBlockMaterial(x, y, z).getLightLevel(this.getBlockData(x, y, z)), world)) {
-						this.addBlockLightOperation(x, y, z, SpoutWorldLighting.REFRESH);
+						// Refresh the block if at an edge to update from surrounding chunks
+						if (x == 0 || x == 15 || y == 0 || y == 15 || z == 0 || z == 15) {
+							this.addBlockLightOperation(x, y, z, SpoutWorldLighting.REFRESH);
+						}
 					}
 				}
 			}
@@ -1003,20 +1013,32 @@ public class SpoutChunk extends Chunk {
 			for (z = 0; z < BLOCKS.SIZE; z++) {
 				columnY = this.column.getSurfaceHeight(x, z) + 1;
 				if (columnY < minY) {
-					columnY = minY;
-				}
+					// everything is air - ignore refresh checks
+					for (y = 0; y < BLOCKS.SIZE; y++) {
+						this.setBlockSkyLight(x, y, z, (byte) 15, world);
+					}
+				} else {
+					// fill area above height with light
+					for (y = columnY; y < maxY; y++) {
+						this.setBlockSkyLight(x, y, z, (byte) 15, world);
+					}
 
-				// fill area above height with light
-				for (y = columnY; y < maxY; y++) {
-					this.setBlockSkyLight(x, y, z, (byte) 15, world);
-				}
-
-				// refresh area below height 
-				for (y = columnY; y >= minY; y--) {
-					this.addSkyLightOperation(x, y, z, SpoutWorldLighting.REFRESH);
+					if (x == 0 || x == 15 || z == 0 || z == 15) {
+						// refresh area below height at the edges
+						for (y = columnY; y >= minY; y--) {
+							this.addSkyLightOperation(x, y, z, SpoutWorldLighting.REFRESH);
+						}
+					} else {
+						// Refresh top and bottom blocks
+						this.addSkyLightOperation(x, 0, z, SpoutWorldLighting.REFRESH);
+						if (columnY >= maxY) {
+							this.addSkyLightOperation(x, 15, z, SpoutWorldLighting.REFRESH);
+						}
+					}
 				}
 			}
 		}
+		this.isInitializingLighting.set(false);
 	}
 
 	public boolean addEntity(SpoutEntity entity) {

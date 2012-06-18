@@ -115,9 +115,14 @@ public class SpoutWorldLighting extends Thread implements Source {
 						cz = Int21TripleHashed.key3(chunkBuffer[i]);
 						chunk = this.world.getChunk(cx, cy, cz, LoadOption.LOAD_ONLY);
 						if (chunk != null && chunk.isLoaded() && chunk.isPopulated()) {
-							// Resolve all the operations in this chunk
-							while (this.blockLight.resolve(chunk));
-							while (this.skyLight.resolve(chunk));
+							if (chunk.isInitializingLighting.get()) {
+								// Schedule the chunk for a later check-up
+								this.addChunk(cx, cy, cz);
+							} else {
+								// Resolve all the operations in this chunk
+								while (this.blockLight.resolve(chunk));
+								while (this.skyLight.resolve(chunk));
+							}
 						}
 					}
 					idleCounter = 0;
