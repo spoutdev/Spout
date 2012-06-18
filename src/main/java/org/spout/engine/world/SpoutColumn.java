@@ -123,9 +123,14 @@ public class SpoutColumn {
 			return height;
 		}
 
+		return getGeneratorHeight(x, z);
+		
+	}
+	
+	private int getGeneratorHeight(int x, int z) {
 		int[][] h = heights.get();
 		if (h == null) {
-			h = world.getGenerator().getSurfaceHeight(world, x, z);
+			h = world.getGenerator().getSurfaceHeight(world, this.x, this.z);
 			heights.set(h);
 		}
 
@@ -199,7 +204,9 @@ public class SpoutColumn {
 		int xx = (this.x << BLOCKS.BITS) + (x & BLOCKS.MASK);
 		int yy = y;
 		int zz = (this.z << BLOCKS.BITS) + (z & BLOCKS.MASK);
-		Chunk c = world.getChunkFromBlock(xx, yy, zz, LoadOption.LOAD_ONLY);
+		LoadOption opt = y < getGeneratorHeight(x, y) - Chunk.BLOCKS.DOUBLE_SIZE ?
+				LoadOption.LOAD_ONLY : LoadOption.LOAD_GEN;
+		Chunk c = world.getChunkFromBlock(xx, yy, zz, opt);
 		if (c == null) {
 			return false;
 		} else {
