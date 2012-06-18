@@ -33,14 +33,15 @@ import java.util.UUID;
 
 import org.spout.api.Engine;
 import org.spout.api.Source;
-import org.spout.api.entity.component.Controller;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.spawn.SpawnArrangement;
+import org.spout.api.entity.component.Controller;
 import org.spout.api.entity.component.controller.type.ControllerType;
+import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.map.DefaultedMap;
+import org.spout.api.material.BlockMaterial;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.TaskManager;
@@ -105,6 +106,27 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess {
 	 */
 	@LiveRead
 	public int getSurfaceHeight(int x, int z, boolean load);
+	
+	/**
+	 * Gets the BlockMaterial of the highest block in the given (x, z) column.<br>
+	 * 
+	 * @param x the block x coordinate of the column
+	 * @param z the block z coordinate of the column
+	 * @return the BlockMaterial
+	 */
+	@LiveRead
+	public BlockMaterial getTopmostBlock(int x, int z);
+	
+	/**
+	 * Gets the BlockMaterial of the highest block in the given (x, z) column.<br>
+	 * 
+	 * @param x the block x coordinate of the column
+	 * @param z the block z coordinate of the column
+	 * @param load height map is loaded if necessary
+	 * @return the BlockMaterial
+	 */
+	@LiveRead
+	public BlockMaterial getTopmostBlock(int x, int z, boolean load);
 	
 	/**
 	 * Gets the entity with the matching unique id

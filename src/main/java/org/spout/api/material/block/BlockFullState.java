@@ -61,6 +61,10 @@ public class BlockFullState implements Cloneable {
 		return id << 16 | (data & 0xFFFF);
 	}
 	
+	public static int getPacked(BlockMaterial m) {
+		return getPacked(m.getId(), m.getData());
+	}
+	
 	public static short getId(int packed) {
 		return (short) (packed >> 16);
 	}
@@ -78,7 +82,7 @@ public class BlockFullState implements Cloneable {
 		}
 		return mat.getSubMaterial(data);
 	}
-
+	
 	@Override
 	public String toString() {
 		return StringUtil.toNamedString(this, this.id, this.data);
