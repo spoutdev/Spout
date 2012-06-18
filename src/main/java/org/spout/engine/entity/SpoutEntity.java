@@ -390,7 +390,7 @@ public class SpoutEntity extends Tickable implements Entity {
 				attemptedAction = "Unknown Action";
 			}
 
-			throw new IllegalAccessError("Tried to " + attemptedAction + " from another thread {current: " + Thread.currentThread().getPriority() + " owner: " + owningThread.getName() + "}!");
+			throw new IllegalAccessError("Tried to " + attemptedAction + " from another thread {current: " + Thread.currentThread() + " owner: " + owningThread.getName() + "}!");
 		}
 		return !invalidAccess;
 	}
