@@ -27,6 +27,7 @@
 package org.spout.api.geo.cuboid;
 
 import java.io.Serializable;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Future;
 
@@ -289,6 +290,33 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 */
 	public int getBlockZ(int z) {
 		return this.blockZ + (z & BLOCKS.MASK);
+	}
+
+	/**
+	 * Gets a random Block x-coordinate using a Random
+	 * @param random to use
+	 * @return x-coordinate within the World in this Chunk
+	 */
+	public int getBlockX(Random random) {
+		return this.blockX + random.nextInt(BLOCKS.SIZE);
+	}
+
+	/**
+	 * Gets a random Block y-coordinate using a Random
+	 * @param random to use
+	 * @return y-coordinate within the World in this Chunk
+	 */
+	public int getBlockY(Random random) {
+		return this.blockY + random.nextInt(BLOCKS.SIZE);
+	}
+
+	/**
+	 * Gets a random Block z-coordinate using a Random
+	 * @param random to use
+	 * @return z-coordinate within the World in this Chunk
+	 */
+	public int getBlockZ(Random random) {
+		return this.blockZ + random.nextInt(BLOCKS.SIZE);
 	}
 
 	/**
