@@ -104,6 +104,14 @@ public class SpoutEntity extends Tickable implements Entity {
 		if (transform != null && load) {
 			setupInitialChunk(transform);
 		}
+		
+		int maxViewDistance = SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE;
+		
+		if (viewDistance < 0) {
+			viewDistance = maxViewDistance;
+		} else if (viewDistance > maxViewDistance) {
+			viewDistance = maxViewDistance;
+		}
 
 		viewDistanceLive.set(viewDistance);
 
@@ -121,7 +129,7 @@ public class SpoutEntity extends Tickable implements Entity {
 	}
 
 	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller) {
-		this(engine, transform, controller, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
+		this(engine, transform, controller, -1);
 	}
 
 	public SpoutEntity(SpoutEngine engine, Point point, Controller controller) {
