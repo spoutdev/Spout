@@ -37,10 +37,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.collision.CollisionModel;
-import org.spout.api.entity.component.Controller;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.component.controller.PlayerController;
 import org.spout.api.entity.EntityComponent;
+import org.spout.api.entity.component.Controller;
+import org.spout.api.entity.component.controller.PlayerController;
 import org.spout.api.event.entity.EntityControllerChangeEvent;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
@@ -48,13 +48,14 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.math.IntVector3;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.player.Player;
 import org.spout.api.tickable.Tickable;
-
+import org.spout.api.util.OutwardIterator;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.protocol.SpoutSession;
@@ -389,7 +390,7 @@ public class SpoutEntity extends Tickable implements Entity {
 				attemptedAction = "Unknown Action";
 			}
 
-			throw new IllegalAccessError("Tried to " + attemptedAction + " from another thread {current: " + Thread.currentThread().getPriority() + " owner: " + owningThread.getName() + "}!");
+			throw new IllegalAccessError("Tried to " + attemptedAction + " from another thread {current: " + Thread.currentThread() + " owner: " + owningThread.getName() + "}!");
 		}
 		return !invalidAccess;
 	}
@@ -596,15 +597,13 @@ public class SpoutEntity extends Tickable implements Entity {
 		int cx = chunkLive.get().getX();
 		int cy = chunkLive.get().getY();
 		int cz = chunkLive.get().getZ();
-		HashSet<SpoutChunk> observing = new HashSet<SpoutChunk>(viewDistance * viewDistance * viewDistance);
-		for (int dx = -viewDistance; dx < viewDistance; dx++) {
-			for (int dy = -viewDistance; dy < viewDistance; dy++) {
-				for (int dz = -viewDistance; dz < viewDistance; dz++) {
-					Chunk chunk = w.getChunk(cx + dx, cy + dy, cz + dz);
-					chunk.refreshObserver(this);
-					observing.add((SpoutChunk)chunk);
-				}
-			}
+		HashSet<SpoutChunk> observing = new HashSet<SpoutChunk>((viewDistance * viewDistance * viewDistance * 3) / 2);
+		OutwardIterator oi = new OutwardIterator(cx, cy, cz, viewDistance);
+		while (oi.hasNext()) {
+			IntVector3 v = oi.next();
+			Chunk chunk = w.getChunk(v.getX(), v.getY(), v.getZ());
+			chunk.refreshObserver(this);
+			observing.add((SpoutChunk)chunk);
 		}
 		observingChunks.removeAll(observing);
 		for (SpoutChunk chunk : observingChunks) {

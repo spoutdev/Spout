@@ -52,7 +52,8 @@ import org.spout.api.event.storage.PlayerSaveEvent;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageHandler;
-import org.spout.api.protocol.PlayerProtocol;
+import org.spout.api.protocol.NetworkSynchronizer;
+import org.spout.api.protocol.NullNetworkSynchronizer;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
@@ -120,7 +121,17 @@ public final class SpoutSession implements Session {
 	 * @todo Probably add to SpoutAPI
 	 */
 	private boolean isConnected = false;
-	
+
+	/**
+	 * A network synchronizer that doesn't do anything, used until a real synchronizer is set.
+	 */
+	private final NetworkSynchronizer nullSynchronizer = new NullNetworkSynchronizer(this);
+
+	/**
+	 * The NetworkSynchronizer being used for this session
+	 */
+	private final AtomicReference<NetworkSynchronizer> synchronizer = new AtomicReference<NetworkSynchronizer>(nullSynchronizer);
+
 	/**
 	 * Data map and Datatable associated with it
 	 */
@@ -138,7 +149,7 @@ public final class SpoutSession implements Session {
 		protocol = new AtomicReference<Protocol>(bootstrapProtocol);
 		this.bootstrapProtocol = bootstrapProtocol;
 		isConnected = true;
-		this.datatableMap = new GenericDatatableMap();;
+		this.datatableMap = new GenericDatatableMap();
 		this.dataMap = new DataMap(this.datatableMap);
 	}
 
@@ -269,7 +280,12 @@ public final class SpoutSession implements Session {
 			}
 			dispose(event);
 		}
-		channel.write(protocol.get().getPlayerProtocol().getKickMessage(reason)).addListener(ChannelFutureListener.CLOSE);
+		Message kickMessage = getNetworkSynchronizer().getKickMessage(reason);
+		if (kickMessage != null) {
+			channel.write(kickMessage).addListener(ChannelFutureListener.CLOSE);
+		} else {
+			channel.close();
+		}
 		return true;
 	}
 
@@ -370,12 +386,6 @@ public final class SpoutSession implements Session {
 	}
 
 	@Override
-	public PlayerProtocol getPlayerProtocol() {
-		Protocol protocol = this.protocol.get();
-		return protocol == null ? null : protocol.getPlayerProtocol();
-	}
-
-	@Override
 	public Engine getEngine() {
 		return server;
 	}
@@ -384,9 +394,23 @@ public final class SpoutSession implements Session {
 	public boolean isConnected() {
 		return channel.isOpen();
 	}
-	
+
 	@Override
 	public DefaultedMap<String, Serializable> getDataMap() {
 		return dataMap;
+	}
+
+	@Override
+	public void setNetworkSynchronizer(NetworkSynchronizer synchronizer) {
+		if (synchronizer == null && player == null) {
+			this.synchronizer.set(nullSynchronizer);
+		} else if (!this.synchronizer.compareAndSet(nullSynchronizer, synchronizer)) {
+			throw new IllegalArgumentException("Network synchronizer may only be set once for a given player login");
+		}
+	}
+
+	@Override
+	public NetworkSynchronizer getNetworkSynchronizer() {
+		return synchronizer.get();
 	}
 }

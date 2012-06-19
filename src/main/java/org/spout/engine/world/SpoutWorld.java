@@ -33,6 +33,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -143,6 +144,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 	 * A map of the loaded columns
 	 */
 	private final TSyncLongObjectHashMap<SpoutColumn> columns = new TSyncLongObjectHashMap<SpoutColumn>();
+	private final Set<SpoutColumn> columnSet = new LinkedHashSet<SpoutColumn>();
 	/**
 	 * A map of column height map files
 	 */
@@ -621,6 +623,11 @@ public final class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public void finalizeRun() throws InterruptedException {
 		entityManager.finalizeRun();
+		synchronized (columnSet) {
+			for (SpoutColumn c : columnSet) {
+				c.onFinalize();
+			}
+		}
 	}
 
 	@Override
@@ -716,12 +723,27 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 		return column.getSurfaceHeight(x, z);
 	}
-
+	
 	@Override
 	public int getSurfaceHeight(int x, int z) {
 		return getSurfaceHeight(x, z, false);
 	}
 
+	@Override
+	public BlockMaterial getTopmostBlock(int x, int z, boolean load) {
+		SpoutColumn column = getColumn(x, z, load);
+		if (column == null) {
+			return null;
+		}
+
+		return column.getTopmostBlock(x, z);
+	}
+
+	@Override
+	public BlockMaterial getTopmostBlock(int x, int z) {
+		return getTopmostBlock(x, z, false);
+	}
+	
 	/**
 	 * Removes a column corresponding to the given Column coordinates
 	 * 
@@ -730,7 +752,11 @@ public final class SpoutWorld extends AsyncManager implements World {
 	 */
 	public void removeColumn(int x, int z, SpoutColumn column) {
 		long key = IntPairHashed.key(x, z);
-		columns.remove(key, column);
+		if (columns.remove(key, column)) {
+			synchronized(columnSet) {
+				columnSet.remove(column);
+			}
+		}
 	}
 
 	/**
@@ -751,6 +777,9 @@ public final class SpoutWorld extends AsyncManager implements World {
 			column = columns.putIfAbsent(key, newColumn);
 			if (column == null) {
 				column = newColumn;
+				synchronized(columnSet) {
+					columnSet.add(column);
+				}
 			}
 		}
 		return column;
