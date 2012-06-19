@@ -27,9 +27,7 @@
 package org.spout.api.data;
 
 import org.spout.api.math.MathHelper;
-import org.spout.api.util.config.serialization.Serialization;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -139,20 +137,8 @@ public class ValueHolderBase implements ValueHolder {
 	}
 
 	public <T> T getTypedValue(Class<T> type, T def) {
-		final Object val = Serialization.deserialize(type, getValue());
+		final Object val = getValue();
 		return type.isInstance(val) ? type.cast(val) : def;
-	}
-
-	public Object getTypedValue(Type type) {
-		return getTypedValue(type, null);
-	}
-
-	public Object getTypedValue(Type type, Object def) {
-		Object val = Serialization.deserialize(type, getValue());
-		if (val == null) {
-			val = def;
-		}
-		return val;
 	}
 
 	public List<?> getList() {

@@ -30,10 +30,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.data.ValueHolderBase;
-import org.spout.api.util.config.serialization.Serialization;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -131,14 +129,6 @@ public class ConfigurationNode extends AbstractConfigurationNodeSource implement
 		return valueHolder.getTypedValue(type, def);
 	}
 
-	public Object getTypedValue(Type type) {
-		return valueHolder.getTypedValue(type);
-	}
-
-	public Object getTypedValue(Type type, Object def) {
-		return valueHolder.getTypedValue(type, def);
-	}
-
 	public List<?> getList() {
 		return valueHolder.getList();
 	}
@@ -228,16 +218,6 @@ public class ConfigurationNode extends AbstractConfigurationNodeSource implement
 		return old;
 	}
 
-	/**
-	 * Sets the
-	 * @param type
-	 * @param value
-	 * @return
-	 */
-	public Object setValue(Type type, Object value) {
-		return setValue(Serialization.serialize(type, value));
-	}
-
 	// Util methods to make sure stuff is connected properly
 
 	/**
@@ -254,13 +234,6 @@ public class ConfigurationNode extends AbstractConfigurationNodeSource implement
 		if (!isAttached()) {
 			getConfiguration().setNode(this);
 		}
-	}
-
-	public void remove() {
-		if (isAttached()) {
-			getParent().removeChild(this);
-		}
-		this.value = null;
 	}
 
 	/**
