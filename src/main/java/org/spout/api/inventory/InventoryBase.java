@@ -27,7 +27,9 @@
 package org.spout.api.inventory;
 
 import java.io.Serializable;
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.spout.api.material.source.MaterialSource;
@@ -41,6 +43,7 @@ public abstract class InventoryBase implements Serializable {
 	private static final long serialVersionUID = 0L;
 
 	private final List<InventoryViewer> viewers = new ArrayList<InventoryViewer>();
+	private final List<SoftReference<InventoryBase>> inventoryViewers = new ArrayList<SoftReference<InventoryBase>>();
 	private int currentSlot = 0;
 	private boolean notify = true;
 
@@ -88,6 +91,15 @@ public abstract class InventoryBase implements Serializable {
 		for (InventoryViewer viewer : this.getViewers()) {
 			viewer.onSlotSet(this, slot, item);
 		}
+		Iterator<SoftReference<InventoryBase>> iter = this.inventoryViewers.iterator();
+		while (iter.hasNext()) {
+			InventoryBase inv = iter.next().get();
+			if (inv == null) {
+				iter.remove();
+			} else {
+				inv.onParentUpdate(this, slot, item);
+			}
+		}
 	}
 
 	/**
@@ -98,6 +110,47 @@ public abstract class InventoryBase implements Serializable {
 		for (InventoryViewer viewer : this.getViewers()) {
 			viewer.updateAll(this, items);
 		}
+		Iterator<SoftReference<InventoryBase>> iter = this.inventoryViewers.iterator();
+		while (iter.hasNext()) {
+			InventoryBase inv = iter.next().get();
+			if (inv == null) {
+				iter.remove();
+			} else {
+				inv.onParentUpdate(this, items);
+			}
+		}
+	}
+
+	/**
+	 * Adds a new Inventory Viewer to this Inventory<br>
+	 * Should only be called from within another Inventory constructor<br>
+	 * The Inventory is stored in a Soft Reference, so no need to remove it as viewer
+	 * 
+	 * @param inventory to notify
+	 */
+	public void addInventoryViewer(InventoryBase inventory) {
+		this.inventoryViewers.add(new SoftReference<InventoryBase>(inventory));
+	}
+
+	/**
+	 * Called when one of the parent inventories of this Inventory is updated<br>
+	 * Should only be extended and used in InventoryBase extensions.
+	 * 
+	 * @param inventory that got updated
+	 * @param items that got updated (new contents)
+	 */
+	public void onParentUpdate(InventoryBase inventory, ItemStack[] items) {
+	}
+
+	/**
+	 * Called when one of the parent inventories of this Inventory is updated<br>
+	 * Should only be extended and used in InventoryBase extensions.
+	 * 
+	 * @param inventory that got updated
+	 * @param slot of the item in the Inventory
+	 * @param item that got updated
+	 */
+	public void onParentUpdate(InventoryBase inventory, int slot, ItemStack item) {
 	}
 
 	/**

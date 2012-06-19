@@ -26,27 +26,31 @@
  */
 package org.spout.api.inventory.special;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.spout.api.inventory.InventoryBase;
-import org.spout.api.inventory.InventoryViewer;
 import org.spout.api.inventory.ItemStack;
 
 /**
  * Represents a bundle of inventories treated as a whole
  */
-public class InventoryBundle extends InventoryBase implements InventoryViewer {
+public class InventoryBundle extends InventoryBase {
 
 	private static final long serialVersionUID = 1L;
 
-	private final InventoryBase[] inventories;
-	private final int size;
+	private final List<InventoryBase> inventories;	
+
+	public InventoryBundle() {
+		this.inventories = new ArrayList<InventoryBase>();
+	}
 
 	public InventoryBundle(InventoryBase... inventories) {
-		this.inventories = inventories;
-		int size = 0;
-		for (InventoryBase inventory : inventories) {
-			size += inventory.getSize();
+		this.inventories = Arrays.asList(inventories);
+		for (InventoryBase inventory : this.inventories) {
+			inventory.addInventoryViewer(this);
 		}
-		this.size = size;
 	}
 
 	@Override
@@ -89,39 +93,35 @@ public class InventoryBundle extends InventoryBase implements InventoryViewer {
 
 	@Override
 	public int getSize() {
-		return this.size;
+		int size = 0;
+		for (InventoryBase inventory : this.inventories) {
+			size += inventory.getSize();
+		}
+		return size;
+	}
+
+	/**
+	 * Adds a new Inventory to this Bundle
+	 * 
+	 * @param inventory to add
+	 * @return the input Inventory
+	 */
+	public <T extends InventoryBase> T addInventory(T inventory) {
+		this.inventories.add(inventory);
+		inventory.addInventoryViewer(this);
+		return inventory;
 	}
 
 	/**
 	 * Gets all the inventories contained by this bundle
-	 * @return an array of inventories
+	 * @return a list of inventories
 	 */
-	public InventoryBase[] getInventories() {
+	public List<InventoryBase> getInventories() {
 		return this.inventories;
 	}
 
-	/**
-	 * Notifies this bundle that it has to stop watching all contained inventories for item changes<br>
-	 * Consequently, all contained inventories lose this bundle as a viewer.
-	 */
-	public void stopWatching() {
-		for (InventoryBase inventory : this.inventories) {
-			inventory.removeViewer(this);
-		}
-	}
-
-	/**
-	 * Notifies this bundle that it has to start watching all contained inventories for item changes<br>
-	 * Consequently, all contained inventories get this bundle added as a viewer.
-	 */
-	public void startWatching() {
-		for (InventoryBase inventory : this.inventories) {
-			inventory.addViewer(this);
-		}
-	}
-
 	@Override
-	public void onSlotSet(InventoryBase inventory, int slot, ItemStack item) {
+	public void onParentUpdate(InventoryBase inventory, int slot, ItemStack item) {
 		if (this.getNotifyViewers()) {
 			for (InventoryBase inv : this.inventories) {
 				if (inv == inventory) {
@@ -135,7 +135,7 @@ public class InventoryBundle extends InventoryBase implements InventoryViewer {
 	}
 
 	@Override
-	public void updateAll(InventoryBase inventory, ItemStack[] slots) {
+	public void onParentUpdate(InventoryBase inventory, ItemStack[] slots) {
 		if (this.getNotifyViewers()) {
 			this.notifyViewers(this.getContents());
 		}
@@ -157,5 +157,26 @@ public class InventoryBundle extends InventoryBase implements InventoryViewer {
 			this.setNotifyViewers(true);
 			this.notifyViewers();
 		}
+	}
+
+	/**
+	 * Gets one of the sub-inventories contained in this bundle using a slot index<br>
+	 * An {@link IndexOutOfBoundsException} is thrown if the slot is out of range
+	 * 
+	 * @param slot that is in the Inventory
+	 * @return the Inventory at this slot
+	 */
+	public InventoryBase getInventory(int slot) {
+		for (InventoryBase inventory : this.inventories) {
+			if (slot < 0) {
+				break;
+			} else {
+				slot -= inventory.getSize();
+				if (slot < 0) {
+					return inventory;
+				}
+			}
+		}
+		throw new IndexOutOfBoundsException("Slot index is out of range");
 	}
 }

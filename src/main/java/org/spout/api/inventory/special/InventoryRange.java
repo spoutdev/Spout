@@ -27,13 +27,12 @@
 package org.spout.api.inventory.special;
 
 import org.spout.api.inventory.InventoryBase;
-import org.spout.api.inventory.InventoryViewer;
 import org.spout.api.inventory.ItemStack;
 
 /**
  * Points to a range of items in another inventory
  */
-public class InventoryRange extends InventoryBase implements InventoryViewer {
+public class InventoryRange extends InventoryBase {
 
 	private static final long serialVersionUID = 1L;
 
@@ -82,30 +81,23 @@ public class InventoryRange extends InventoryBase implements InventoryViewer {
 	}
 
 	/**
-	 * Notifies this range that it has to stop watching the referenced inventory for item changes<br>
-	 * Consequently, the watched inventory lose this bundle as a viewer.
+	 * Gets the offset index relative to this parent
+	 * 
+	 * @return the offset index of this range relative to this parent
 	 */
-	public void stopWatching() {
-		this.parent.removeViewer(this);
-	}
-
-	/**
-	 * Notifies this range that it has to start watching the referenced inventory for item changes<br>
-	 * Consequently, the watched inventory gets this bundle added as a viewer.
-	 */
-	public void startWatching() {
-		this.parent.addViewer(this);
+	public int getOffset() {
+		return this.offset;
 	}
 
 	@Override
-	public void onSlotSet(InventoryBase inventory, int slot, ItemStack item) {
+	public void onParentUpdate(InventoryBase inventory, int slot, ItemStack item) {
 		if (inventory == this.parent && this.getNotifyViewers()) {
 			this.notifyViewers(slot - this.offset, item);
 		}
 	}
 
 	@Override
-	public void updateAll(InventoryBase inventory, ItemStack[] slots) {
+	public void onParentUpdate(InventoryBase inventory, ItemStack[] slots) {
 		if (this.getNotifyViewers()) {
 			this.notifyViewers(this.getContents());
 		}
