@@ -26,6 +26,7 @@
  */
 package org.spout.api.data;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 public interface ValueHolder {
@@ -210,6 +211,26 @@ public interface ValueHolder {
 	 * @see #getValue(Object)
 	 */
 	public <T> T getTypedValue(Class<T> type, T def);
+
+	/**
+	 * Return this node's value as the given type
+	 *
+	 * @param type The type to get as and check for
+	 * @return the value as the give type, or null if the value is not present or not of the given type
+	 * @see #getTypedValue(Class, Object)
+	 * @see #getValue()
+	 */
+	public Object getTypedValue(Type type);
+
+	/**
+	 * Return this node's value as the given type
+	 *
+	 * @param type The type to get as and check for
+	 * @param def The value to use as default
+	 * @return the value as the give type, or {@code def} if the value is not present or not of the given type
+	 * @see #getValue(Object)
+	 */
+	public Object getTypedValue(Type type, Object def);
 
 	/**
 	 * Return this node's value as a list

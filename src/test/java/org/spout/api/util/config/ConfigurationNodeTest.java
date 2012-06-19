@@ -70,4 +70,14 @@ public class ConfigurationNodeTest {
 		}
 		assertEquals(vals, parent.getValues());
 	}
+
+	@Test
+	public void testRemove() {
+		ConfigurationNode toRemove = base.getNode("to-remove");
+		toRemove.setValue("test");
+		assertEquals(toRemove, base.getNode("to-remove"));
+		toRemove.remove();
+		assertFalse(base.getChildren().containsKey("to-remove"));
+		assertEquals(null, base.getNode("to-remove").getValue());
+	}
 }
