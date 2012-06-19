@@ -35,10 +35,16 @@ public class PlayerConnectEvent extends Event {
 
 	private final Session session;
 	private final String playerName;
-
+	private final int viewDistance;
+	
 	public PlayerConnectEvent(Session session, String playerName) {
+		this(session, playerName, -1);
+	}
+
+	public PlayerConnectEvent(Session session, String playerName, int viewDistance) {
 		this.session = session;
 		this.playerName = playerName;
+		this.viewDistance = viewDistance;
 	}
 
 	public Session getSession() {
@@ -47,6 +53,10 @@ public class PlayerConnectEvent extends Event {
 
 	public String getPlayerName() {
 		return playerName;
+	}
+	
+	public int getViewDistance() {
+		return viewDistance;
 	}
 
 	@Override
