@@ -270,6 +270,17 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 					chunksSent++;
 				}
 			}
+			
+			if (priorityChunkSendQueue.isEmpty() && teleported && entity != null) {
+				Point ep = entity.getPosition();
+				if (worldChanged) {
+					worldChanged(ep.getWorld());
+					worldChanged = false;
+				}
+				sendPosition(entity.getPosition(), entity.getRotation());
+				first = false;
+				teleported = false;
+			}
 
 			i = chunkSendQueue.iterator();
 			while (i.hasNext() && chunksSent < CHUNKS_PER_TICK && tickTimeRemaining) {
@@ -284,16 +295,6 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 				tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
 			}
 
-			if (priorityChunkSendQueue.isEmpty() && teleported && entity != null) {
-				Point ep = entity.getPosition();
-				if (worldChanged) {
-					worldChanged(ep.getWorld());
-					worldChanged = false;
-				}
-				sendPosition(entity.getPosition(), entity.getRotation());
-				first = false;
-				teleported = false;
-			}
 		}
 
 	}
