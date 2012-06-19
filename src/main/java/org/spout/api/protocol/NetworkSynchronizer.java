@@ -244,25 +244,18 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			}
 
 			chunkFreeQueue.clear();
-
-			for (Point p : chunkInitQueue) {
-				if (initializedChunks.add(p)) {
-					initChunk(p);
-				}
-			}
-
-			chunkInitQueue.clear();
-
+			
 			int chunksSent = 0;
-
-			boolean tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
-
+			
 			Iterator<Point> i;
 
 			i = priorityChunkSendQueue.iterator();
 			while (i.hasNext()) {
 				Point p = i.next();
 				Chunk c = p.getWorld().getChunkFromBlock(p);
+				if (initializedChunks.add(p)) {
+					initChunk(p);
+				}
 				if (c.canSend()) {
 					sendChunk(c);
 					activeChunks.add(p);
@@ -281,6 +274,16 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 				first = false;
 				teleported = false;
 			}
+
+			for (Point p : chunkInitQueue) {
+				if (initializedChunks.add(p)) {
+					initChunk(p);
+				}
+			}
+
+			chunkInitQueue.clear();
+
+			boolean tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
 
 			i = chunkSendQueue.iterator();
 			while (i.hasNext() && chunksSent < CHUNKS_PER_TICK && tickTimeRemaining) {
