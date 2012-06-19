@@ -40,7 +40,7 @@ import org.spout.api.scheduler.SnapshotLock;
 public class SpoutSnapshotLock implements SnapshotLock {
 	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	private final ConcurrentHashMap<Plugin, LockInfo> locks = new ConcurrentHashMap<Plugin, LockInfo>();
-	private final ConcurrentHashMap<String, Boolean> coreTasks = new ConcurrentHashMap<String, Boolean>();
+	private final ConcurrentHashMap<String, Integer> coreTasks = new ConcurrentHashMap<String, Integer>();
 
 	@Override
 	public void readLock(Plugin plugin) {
@@ -49,8 +49,11 @@ public class SpoutSnapshotLock implements SnapshotLock {
 	}
 	
 	public void coreReadLock(String taskName) {
+		if (taskName == null) {
+			throw new IllegalArgumentException("Taskname may not be null");
+		}
 		lock.readLock().lock();
-		coreTasks.put(taskName, true);
+		incrementCoreCounter(taskName);
 	}
 
 	@Override
@@ -63,9 +66,12 @@ public class SpoutSnapshotLock implements SnapshotLock {
 	}
 	
 	public boolean coreReadTryLock(String taskName) {
+		if (taskName == null) {
+			throw new IllegalArgumentException("Taskname may not be null");
+		}
 		boolean success = lock.readLock().tryLock();
 		if (success) {
-			coreTasks.put(taskName, true);
+			incrementCoreCounter(taskName);
 		}
 		return success;
 	}
@@ -78,7 +84,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 	
 	public void coreReadUnlock(String taskName) {
 		lock.readLock().unlock();
-		coreTasks.remove(taskName);
+		decrementCoreCounter(taskName);
 	}
 
 	public boolean writeLock(int delay) {
@@ -143,6 +149,32 @@ public class SpoutSnapshotLock implements SnapshotLock {
 
 			final LockInfo newLockInfo = new LockInfo(oldLockInfo.oldestLock, oldLockInfo.locks - 1);
 			success = locks.replace(plugin, oldLockInfo, newLockInfo);
+		}
+	}
+	
+	private void incrementCoreCounter(String taskName) {
+		boolean success = false;
+		while (!success) {
+			Integer i = coreTasks.get(taskName);
+			if (i == null) {
+				success = coreTasks.putIfAbsent(taskName, 1) == null;
+			} else {
+				success = coreTasks.replace(taskName, i, i + 1);
+			}
+		}
+	}
+	
+	private void decrementCoreCounter(String taskName) {
+		boolean success = false;
+		while (!success) {
+			Integer i = coreTasks.get(taskName);
+			if (i == null || i <= 0) {
+				throw new IllegalStateException("Attempting to unlock a core read lock which was already unlocked");
+			} else if (i.equals(1)) {
+				success = coreTasks.remove(taskName, i);
+			} else {
+				success = coreTasks.replace(taskName, i, i - 1);
+			}
 		}
 	}
 
