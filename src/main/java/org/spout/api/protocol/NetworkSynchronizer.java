@@ -59,7 +59,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	protected Entity entity;
 	protected final Session session;
 
-	public NetworkSynchronizer(Player owner, Session session, Entity entity) {
+	public NetworkSynchronizer(Player owner, Session session, Entity entity, int minimumViewRadius) {
 		this.owner = owner;
 		this.entity = entity;
 		if (entity != null) {
@@ -70,10 +70,10 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		}
 		this.session = session;
 		viewDistance = blockViewDistance >> Chunk.BLOCKS.BITS;
-		targetSize = Chunk.BLOCKS.DOUBLE_SIZE;
+		this.minimumViewRadius = minimumViewRadius * Chunk.BLOCKS.SIZE;
 	}
 
-	private final int targetSize;
+	private final int minimumViewRadius;
 	private final static int CHUNKS_PER_TICK = 200;
 
 	private final int viewDistance;
@@ -360,7 +360,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 
 		for (Point p : initializedChunks) {
 			if (p.getManhattanDistance(playerChunkBase) > blockViewDistance) {
-				if (playerHoldingChunkBase == null || p.getManhattanDistance(playerHoldingChunkBase) > targetSize) {
+				if (playerHoldingChunkBase == null || p.getManhattanDistance(playerHoldingChunkBase) > minimumViewRadius) {
 					chunkFreeQueue.add(p);
 				}
 			}
@@ -378,7 +378,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		while (itr.hasNext()) {
 			IntVector3 v = itr.next();
 			Point base = new Point(world, v.getX() << Chunk.BLOCKS.BITS, v.getY() << Chunk.BLOCKS.BITS, v.getZ() << Chunk.BLOCKS.BITS);
-			boolean inTargetArea = playerChunkBase.getMaxDistance(base) <= targetSize;
+			boolean inTargetArea = playerChunkBase.getMaxDistance(base) <= minimumViewRadius;
 			if (!activeChunks.contains(base)) {
 				if (inTargetArea) {
 					priorityChunkSendQueue.add(base);

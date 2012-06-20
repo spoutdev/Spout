@@ -35,7 +35,7 @@ import org.spout.api.inventory.ItemStack;
  */
 public class NullNetworkSynchronizer extends NetworkSynchronizer {
 	public NullNetworkSynchronizer(Session session) {
-		super(null, session, null);
+		super(null, session, null, 0);
 	}
 
 	public void onSlotSet(InventoryBase inventory, int slot, ItemStack item) {
