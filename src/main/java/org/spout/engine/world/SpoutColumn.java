@@ -163,9 +163,6 @@ public class SpoutColumn {
 		int cx = x & BLOCKS.MASK;
 		int cz = z & BLOCKS.MASK;
 		BlockMaterial m = this.topmostBlocks[cx][cz];
-		if (m == null) {
-			Spout.getLogger().info("No material for " + x + ", " + z + " when getting topmost block in SpoutColumn");
-		}
 		return m;
 	}
 	
