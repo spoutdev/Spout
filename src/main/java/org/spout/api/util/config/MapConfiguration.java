@@ -26,9 +26,7 @@
  */
 package org.spout.api.util.config;
 
-import org.spout.api.exception.ConfigurationException;
-
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -42,22 +40,24 @@ public class MapConfiguration extends MapBasedConfiguration {
 	 * instantiated with this constructor will do nothing.
 	 */
 	public MapConfiguration() {
-		this(Collections.emptyMap());
+		this(null);
 	}
 
 	public MapConfiguration(Map<?, ?> map) {
 		super();
-		this.map = map == null ? Collections.emptyMap() : map;
+		this.map = map == null ? new HashMap<Object, Object>() : map;
 	}
 
 	@Override
-	protected Map<?, ?> loadToMap() throws ConfigurationException {
+	protected Map<?, ?> loadToMap() {
 		return map;
 	}
 
 	@Override
-	protected void saveFromMap(Map<?, ?> map) throws ConfigurationException {
-		this.map = map;
+	@SuppressWarnings("unchecked")
+	protected void saveFromMap(Map<?, ?> map) {
+		this.map.clear();
+		((Map) this.map).putAll(map);
 	}
 
 	public Map<?, ?> getMap() {
