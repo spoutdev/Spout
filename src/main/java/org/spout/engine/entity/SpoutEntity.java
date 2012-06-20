@@ -90,7 +90,7 @@ public class SpoutEntity extends Tickable implements Entity {
 	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller, int viewDistance, UUID uid, boolean load) {
 		id.set(NOTSPAWNEDID);
 		this.transform.set(transform);
-		
+
 		if (uid != null) {
 			this.uid = uid;
 		} else {
@@ -104,9 +104,9 @@ public class SpoutEntity extends Tickable implements Entity {
 		if (transform != null && load) {
 			setupInitialChunk(transform);
 		}
-		
+
 		int maxViewDistance = SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE;
-		
+
 		if (viewDistance < 0) {
 			viewDistance = maxViewDistance;
 		} else if (viewDistance > maxViewDistance) {
@@ -123,7 +123,7 @@ public class SpoutEntity extends Tickable implements Entity {
 			}
 		}
 	}
-	
+
 	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller, int viewDistance) {
 		this(engine, transform, controller, viewDistance, null, true);
 	}
@@ -135,7 +135,7 @@ public class SpoutEntity extends Tickable implements Entity {
 	public SpoutEntity(SpoutEngine engine, Point point, Controller controller) {
 		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), controller);
 	}
-	
+
 	/**
 	 * Prevents stack overflow when creating an entity during chunk loading due to circle of calls
 	 */
@@ -512,12 +512,12 @@ public class SpoutEntity extends Tickable implements Entity {
 			if (controller != null && controllerLive.get() == null) {
 				//Sanity check
 				if (!isDead()) throw new IllegalStateException("ControllerLive is null, but entity is not dead!");
-				
+
 				//Kill old controller
 				controller.onDeath();
 				if (controller instanceof PlayerController) {
 					Player p = ((PlayerController) controller).getPlayer();
-					if (p != null) {
+					if (p != null && p.isOnline()) {
 						p.getNetworkSynchronizer().onDeath();
 					}
 				}
@@ -528,11 +528,11 @@ public class SpoutEntity extends Tickable implements Entity {
 				controller.onDeath();
 				if (controller instanceof PlayerController) {
 					Player p = ((PlayerController) controller).getPlayer();
-					if (p != null) {
+					if (p != null && p.isOnline()) {
 						p.getNetworkSynchronizer().onDeath();
 					}
 				}
-				
+
 				//Allocate new controller
 				if (entityManagerLive.get() != null) {
 					entityManagerLive.get().allocate(this);
@@ -555,7 +555,7 @@ public class SpoutEntity extends Tickable implements Entity {
 			}
 			if (chunkLive.get() != null) {
 				((SpoutChunk) chunkLive.get()).addEntity(this);
-				
+
 			}
 			if (chunk != null && chunk.isLoaded()) {
 				((SpoutChunk) chunk).removeEntity(this);
@@ -579,7 +579,7 @@ public class SpoutEntity extends Tickable implements Entity {
 			}
 		}
 	}
-	
+
 	private void removeObserver() {
 		//Player view distance is handled in the network synchronizer
 		if (controllerLive.get() instanceof PlayerController) {
@@ -594,7 +594,7 @@ public class SpoutEntity extends Tickable implements Entity {
 		}
 		observingChunks.clear();
 	}
-	
+
 	private void updateObserver() {
 		//Player view distance is handled in the network synchronizer
 		if (controllerLive.get() instanceof PlayerController) {
@@ -732,7 +732,7 @@ public class SpoutEntity extends Tickable implements Entity {
 	public boolean hasComponent(EntityComponent component) {
 		return components.contains(component);
 	}
-	
+
 	@Override
 	public UUID getUID() {
 		return uid;

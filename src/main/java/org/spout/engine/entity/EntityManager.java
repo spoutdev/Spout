@@ -62,7 +62,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 	 * A map of entity types to a set containing all entities of that type.
 	 */
 	private final ConcurrentHashMap<Class<? extends Controller>, SnapshotableHashSet<SpoutEntity>> groupedEntities = new ConcurrentHashMap<Class<? extends Controller>, SnapshotableHashSet<SpoutEntity>>();
-	
+
 	private final SnapshotableHashSet<PlayerController> players = new SnapshotableHashSet<PlayerController>(snapshotManager);
 	/**
 	 * The next id to check.
@@ -84,7 +84,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 
 	/**
 	 * Gets all entities with the specified type from the live map.
-	 * 
+	 *
 	 * @param type The {@link Class} for the type.
 	 * @return A set of entities with the specified type.
 	 */
@@ -94,7 +94,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 
 	/**
 	 * Gets all entities with the specified type.
-	 * 
+	 *
 	 * @param type The {@link Class} for the type.
 	 * @return A set of entities with the specified type.
 	 */
@@ -104,7 +104,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 
 	/**
 	 * Gets all entities.
-	 * 
+	 *
 	 * @return A set of entities.
 	 */
 	public Set<SpoutEntity> getAll() {
@@ -118,7 +118,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 
 	/**
 	 * Gets an entity by its id.
-	 * 
+	 *
 	 * @param id The id.
 	 * @return The entity, or {@code null} if it could not be found.
 	 */
@@ -128,17 +128,17 @@ public class EntityManager implements Iterable<SpoutEntity> {
 
 	/**
 	 * Allocates the id for an entity.
-	 * 
+	 *
 	 * @param entity The entity.
 	 * @return The id.
 	 */
 	public int allocate(SpoutEntity entity) {
 		return allocate(entity, null);
 	}
-	
+
 	/**
 	 * Allocates the id for an entity.
-	 * 
+	 *
 	 * @param entity The entity.
 	 * @param region to allocate the entity for
 	 * @return The id.
@@ -168,7 +168,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 
 	/**
 	 * Deallocates the id for an entity.
-	 * 
+	 *
 	 * @param entity The entity.
 	 */
 	public void deallocate(SpoutEntity entity) {
@@ -184,7 +184,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 
 	/**
 	 * Gets all of the player controllers managed this entity manager
-	 * 
+	 *
 	 * @return players managed by this entity manager
 	 */
 	public Set<PlayerController> getPlayers() {
@@ -212,9 +212,8 @@ public class EntityManager implements Iterable<SpoutEntity> {
 			}
 
 			Player p = ((PlayerController) controller).getPlayer();
-			NetworkSynchronizer n = ((SpoutPlayer) p).getNetworkSynchronizer();
-			if (n != null) {
-				n.finalizeTick();
+			if (p.isOnline()) {
+				p.getNetworkSynchronizer().finalizeTick();
 			}
 		}
 	}
@@ -226,9 +225,8 @@ public class EntityManager implements Iterable<SpoutEntity> {
 				controller.preSnapshot();
 				if (controller instanceof PlayerController) {
 					Player p = ((PlayerController) controller).getPlayer();
-					NetworkSynchronizer n = p.getNetworkSynchronizer();
-					if (n != null) {
-						n.preSnapshot();
+					if (p.isOnline()) {
+						p.getNetworkSynchronizer().preSnapshot();
 					}
 				}
 			}
@@ -252,10 +250,10 @@ public class EntityManager implements Iterable<SpoutEntity> {
 	public StringMap getStringMap() {
 		return entityMap;
 	}
-	
+
 	/**
 	 * The region this entity manager oversees, or null if it does not manage a region's entities
-	 * 
+	 *
 	 * @return region or null
 	 */
 	public SpoutRegion getRegion() {

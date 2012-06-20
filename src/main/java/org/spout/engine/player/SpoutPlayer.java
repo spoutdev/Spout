@@ -297,7 +297,7 @@ public class SpoutPlayer implements Player {
 	@Override
 	public NetworkSynchronizer getNetworkSynchronizer() {
 		SpoutSession session = this.session;
-		return session.getNetworkSynchronizer();
+		return session == null ? null : session.getNetworkSynchronizer();
 	}
 
 	@Override

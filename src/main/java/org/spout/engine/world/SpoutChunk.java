@@ -94,8 +94,8 @@ public class SpoutChunk extends Chunk {
 	private static final int restrictedStages = TickStage.PHYSICS | TickStage.DYNAMIC_BLOCKS;
 	private static final int mainThreadStages = TickStage.GLOBAL_PHYSICS | TickStage.GLOBAL_DYNAMIC_BLOCKS;
 	private static final int allowedStages = TickStage.STAGE1 | TickStage.STAGE2P | TickStage.TICKSTART;
-	private static final int updateStages = 
-			TickStage.PHYSICS | TickStage.DYNAMIC_BLOCKS | 
+	private static final int updateStages =
+			TickStage.PHYSICS | TickStage.DYNAMIC_BLOCKS |
 			TickStage.GLOBAL_PHYSICS | TickStage.GLOBAL_DYNAMIC_BLOCKS;
 
 	/**
@@ -294,17 +294,17 @@ public class SpoutChunk extends Chunk {
 			material = blockEvent.getSnapshot().getMaterial();
 			data = blockEvent.getSnapshot().getData();
 		}
-		
+
 
 		short newId = material.getId();
 		short newData = data;
 		int newState = BlockFullState.getPacked(newId, newData);
 		int oldState = blockStore.getAndSetBlock(x, y, z, newId, newData);
 		short oldData = BlockFullState.getData(oldState);
-		
+
 		Material m = MaterialRegistry.get(oldState);
 		BlockMaterial oldMaterial = (BlockMaterial) m;
-		
+
 		int oldheight = column.getSurfaceHeight(x, z);
 		y += this.getBlockY();
 		column.notifyBlockChange(x, y, z);
@@ -342,7 +342,7 @@ public class SpoutChunk extends Chunk {
 				}
 			}
 		}
-		
+
 		if (newState != oldState) {
 			blockChanged(x, y, z, material, newData, oldMaterial, oldData, source);
 		}
@@ -452,7 +452,7 @@ public class SpoutChunk extends Chunk {
 
 		return mat.getSubMaterial(data);
 	}
-	
+
 	@Override
 	public int getBlockFullState(int x, int y, int z) {
 		return blockStore.getFullData(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK);
@@ -576,7 +576,7 @@ public class SpoutChunk extends Chunk {
 		rz += (getZ() & Region.CHUNKS.MASK) << BLOCKS.BITS;
 		this.getRegion().queueBlockPhysics(rx, ry, rz, range, source);
 	}
-	
+
 	@Override
 	public void updateBlockPhysics(int x, int y, int z, Source source) {
 		checkChunkLoaded();
@@ -592,7 +592,7 @@ public class SpoutChunk extends Chunk {
 		unloadNoMark(save);
 		markForSaveUnload();
 	}
-	
+
 	public boolean cancelUnload() {
 		boolean success = false;
 		SaveState oldState = null;
@@ -650,7 +650,7 @@ public class SpoutChunk extends Chunk {
 			success = saveState.compareAndSet(state, nextState);
 		}
 	}
-	
+
 	public SaveState getSaveState() {
 		return saveState.get();
 	}
@@ -716,7 +716,7 @@ public class SpoutChunk extends Chunk {
 				case UNLOADED:
 					nextState = SaveState.UNLOADED;
 					break;
-				default: 
+				default:
 					throw new IllegalStateException("Unknown save state: " + old);
 
 			}
@@ -793,7 +793,7 @@ public class SpoutChunk extends Chunk {
 		int distance = (int) ((SpoutEntity) entity).getChunkLive().getBase().getDistance(getBase());
 		Integer oldDistance = observers.put(entity, distance);
 		if (oldDistance != null) {
-			// The player was already observing the chunk from distance oldDistance 
+			// The player was already observing the chunk from distance oldDistance
 			return false;
 		}
 
@@ -1147,11 +1147,11 @@ public class SpoutChunk extends Chunk {
 					int entityViewDistanceNew = e.getViewDistance();
 
 					Player player = ((PlayerController) p.getController()).getPlayer();
-					NetworkSynchronizer n = player.getNetworkSynchronizer();
 
-					if (n == null) {
+					if (!player.isOnline()) {
 						continue;
 					}
+					NetworkSynchronizer n = player.getNetworkSynchronizer();
 					if (playerDistanceOld <= entityViewDistanceOld && playerDistanceNew > entityViewDistanceNew) {
 						n.destroyEntity(e);
 					} else if (playerDistanceNew <= entityViewDistanceNew && playerDistanceOld > entityViewDistanceOld) {
@@ -1167,8 +1167,8 @@ public class SpoutChunk extends Chunk {
 			Entity p = entry.getKey();
 			if (p.getController() instanceof PlayerController) {
 				Player player = ((PlayerController) p.getController()).getPlayer();
-				NetworkSynchronizer n = player.getNetworkSynchronizer();
-				if (n != null) {
+				if (player.isOnline()) {
+					NetworkSynchronizer n = player.getNetworkSynchronizer();
 					int playerDistance = entry.getValue();
 					Entity playerEntity = p;
 					for (Entity e : entitiesSnapshot) {
@@ -1300,7 +1300,7 @@ public class SpoutChunk extends Chunk {
 		checkBlockStoreUpdateAllowed();
 		short expId = BlockFullState.getId(expect);
 		short expData = BlockFullState.getData(expect);
-		
+
 		boolean success = this.blockStore.compareAndSetBlock(bx & BLOCKS.MASK, by & BLOCKS.MASK, bz & BLOCKS.MASK, expId, expData, expId, data);
 		if (success && expData != data) {
 			blockChanged(bx, by, bz, expId, data, expId, expData, source);
@@ -1336,13 +1336,13 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public int setBlockDataField(int bx, int by, int bz, int bits, int value, Source source) {
 		int oldData = setBlockDataFieldRaw(bx, by, bz, bits, value, source);
-		
+
 		int shift = shiftCache[bits];
-		
+
 		return (oldData & bits) >> shift;
 
 	}
-	
+
 	protected int setBlockDataFieldRaw(int bx, int by, int bz, int bits, int value, Source source) {
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
@@ -1350,11 +1350,11 @@ public class SpoutChunk extends Chunk {
 		bx &= BLOCKS.MASK;
 		by &= BLOCKS.MASK;
 		bz &= BLOCKS.MASK;
-		
+
 		value &= 0xFFFF;
 
 		int shift = shiftCache[bits];
-		
+
 		boolean updated = false;
 
 		boolean success = false;
@@ -1371,20 +1371,20 @@ public class SpoutChunk extends Chunk {
 			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
 			updated = oldData != newData;
 		}
-		
+
 		if (updated) {
 			blockChanged(bx, by, bz, oldId, newData, oldId, oldData, source);
 		}
-		
+
 		return oldData;
 	}
-	
+
 	private void blockChanged(int x, int y, int z, short newId, short newData, short oldId, short oldData, Source source) {
 		BlockMaterial newMaterial = (BlockMaterial) MaterialRegistry.get(newId).getSubMaterial(newData);
 		BlockMaterial oldMaterial = (BlockMaterial) MaterialRegistry.get(oldId).getSubMaterial(oldData);
 		blockChanged(x, y, z, newMaterial, newData, oldMaterial, oldData, source);
 	}
-	
+
 	private void blockChanged(int x, int y, int z, BlockMaterial newMaterial, short newData, BlockMaterial oldMaterial, short oldData, Source source) {
 		if (newMaterial instanceof DynamicMaterial) {
 			if (oldMaterial instanceof BlockMaterial) {
@@ -1405,7 +1405,7 @@ public class SpoutChunk extends Chunk {
 				queueBlockPhysics(x, y, z, destroyRange, source);
 			}
 		}
-		
+
 		// Update block lighting
 		this.setBlockLight(x, y, z, newMaterial.getLightLevel(newData), source);
 	}
