@@ -226,7 +226,7 @@ public interface Block extends MaterialState {
 	 * @return the old data for the block
 	 */
 	@LiveWrite
-	public short setBlockDataBits(short bits);
+	public short setDataBits(short bits);
 	
 	/**
 	 * Clears the given bits in the data for the block<br>
@@ -237,7 +237,7 @@ public interface Block extends MaterialState {
 	 * @return the old data for the block
 	 */
 	@LiveWrite
-	public short clearBlockDataBits(short bits);
+	public short clearDataBits(short bits);
 	
 	/**
 	 * Gets the data field from the block<br>
@@ -250,10 +250,10 @@ public interface Block extends MaterialState {
 	 * @return the field value
 	 */
 	@Threadsafe
-	public int getBlockDataField(int bits);
+	public int getDataField(int bits);
 	
 	/**
-	 * Sets the data field from the block.  This is the reverse operation to the getBlockDataField method.<br>
+	 * Sets the data field from the block.  This is the reverse operation to the getDataField method.<br>
 	 * <br>
 	 * newData = ((value << shift) & bits) | (oldData & (~bits))<br>
 	 * <br>
@@ -265,7 +265,7 @@ public interface Block extends MaterialState {
 	 */
 	@LiveWrite
 	@Threadsafe
-	public int setBlockDataField(int bits, int value);
+	public int setDataField(int bits, int value);
 
 	/**
 	 * Gets the block light level
