@@ -34,9 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author zml2008
- */
 public class Serialization {
 	private static final Map<Type, Serializer> CACHED_SERIALIZERS = new HashMap<Type, Serializer>();
 	private static final List<Serializer> SERIALIZERS = new ArrayList<Serializer>(

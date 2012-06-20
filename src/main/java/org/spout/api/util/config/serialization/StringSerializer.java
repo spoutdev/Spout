@@ -26,9 +26,6 @@
  */
 package org.spout.api.util.config.serialization;
 
-/**
- * @author zml2008
- */
 public class StringSerializer extends Serializer {
 	@Override
 	protected Object handleDeserialize(GenericType type, Object value) {

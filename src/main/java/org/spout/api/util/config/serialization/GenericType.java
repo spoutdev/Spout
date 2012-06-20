@@ -32,7 +32,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 
 /**
- * @author zml2008
+ * A wrapper around {@link Type} to allow easier access to parameterized types.
  */
 public class GenericType {
 	private final Class mainType;

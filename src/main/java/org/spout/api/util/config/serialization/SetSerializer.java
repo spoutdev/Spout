@@ -32,9 +32,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * @author zml2008
- */
 public class SetSerializer extends Serializer {
 	@Override
 	protected Object handleDeserialize(GenericType type, Object value) {
