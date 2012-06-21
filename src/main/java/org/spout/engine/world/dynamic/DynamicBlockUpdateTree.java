@@ -78,6 +78,7 @@ public class DynamicBlockUpdateTree {
 	private final static int localStages = TickStage.DYNAMIC_BLOCKS | TickStage.PHYSICS;
 	private final static int globalStages = TickStage.GLOBAL_DYNAMIC_BLOCKS | TickStage.GLOBAL_PHYSICS;
 	private final static List<DynamicBlockUpdate> emptyList = new ArrayList<DynamicBlockUpdate>(0);
+	private int lastUpdates;
 	
 	public DynamicBlockUpdateTree(SpoutRegion region) {
 		this.region = region;
@@ -210,6 +211,14 @@ public class DynamicBlockUpdateTree {
 		processed.clear();
 	}
 	
+	public int getLastUpdates() {
+		return lastUpdates;
+	}
+	
+	public void resetLastUpdates() {
+		lastUpdates = 0;
+	}
+	
 	public List<DynamicBlockUpdate> updateDynamicBlocks(long currentTime, long thresholdTime) {
 		DynamicBlockUpdate first;
 		
@@ -256,6 +265,7 @@ public class DynamicBlockUpdateTree {
 			return false;
 		} else {
 			dm.onDynamicUpdate(b, region, update.getNextUpdate(), update.getQueuedTime(), update.getData(), update.getHint());
+			lastUpdates++;
 			return true;
 		}
 	}

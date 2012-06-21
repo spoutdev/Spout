@@ -922,8 +922,11 @@ public class SpoutRegion extends Region{
 	public long getFirstDynamicUpdateTime() {
 		return dynamicBlockTree.getFirstDynamicUpdateTime();
 	}
+	
+	int dynamicUpdates = 0;
 
 	public void runLocalDynamicUpdates(long time) throws InterruptedException {
+		dynamicBlockTree.resetLastUpdates();
 		long currentTime = getWorld().getAge();
 		if (time > currentTime) {
 			time = currentTime;
@@ -933,15 +936,14 @@ public class SpoutRegion extends Region{
 	}
 
 	public int runGlobalDynamicUpdates() throws InterruptedException {
-		int size = 0;
 		long currentTime = getWorld().getAge();
 		if (multiRegionUpdates != null) {
-			size = Math.max(multiRegionUpdates.size(), 1);
 			for (DynamicBlockUpdate update : multiRegionUpdates) {
 				dynamicBlockTree.updateDynamicBlock(currentTime, update, true);
 			}
+			return Math.max(1, dynamicBlockTree.getLastUpdates());
 		}
-		return size;
+		return dynamicBlockTree.getLastUpdates();
 	}
 
 	@Override
