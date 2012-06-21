@@ -31,5 +31,5 @@ import org.spout.api.generator.Populator;
 /**
  * Biome level abstraction layer
  */
-public interface Decorator extends Populator {
+public abstract class Decorator extends Populator {
 }
