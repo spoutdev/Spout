@@ -26,10 +26,25 @@
  */
 package org.spout.api.generator;
 
-import org.spout.api.geo.cuboid.Chunk;
 import java.util.Random;
 
-public interface Populator {
+import org.spout.api.geo.cuboid.Chunk;
+
+public abstract class Populator {
+	private boolean needsClearance;
+
+	public Populator() {
+		this(false);
+	}
+
+	public Populator(boolean needsClearance) {
+		this.needsClearance = needsClearance;
+	}
+
+	public boolean needsClearance() {
+		return needsClearance;
+	}
+
 	/**
 	 * Populates the chunk.
 	 *
@@ -46,5 +61,5 @@ public interface Populator {
 	 * @param chunk the chunk to populate
 	 * @param random The RNG for this chunk
 	 */
-	public void populate(Chunk chunk, Random random);
+	public abstract void populate(Chunk chunk, Random random);
 }
