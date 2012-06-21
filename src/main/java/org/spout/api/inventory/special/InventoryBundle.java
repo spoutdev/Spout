@@ -137,7 +137,7 @@ public class InventoryBundle extends InventoryBase {
 	@Override
 	public void onParentUpdate(InventoryBase inventory, ItemStack[] slots) {
 		if (this.getNotifyViewers()) {
-			this.notifyViewers(this.getContents());
+			this.notifyViewers();
 		}
 	}
 

@@ -60,4 +60,22 @@ public class InventoryTest {
 		assertTrue(subject.contains(testingSubMaterial));
 	}
 
+	@Test
+	public void testIterator() {
+		Inventory inventory = new Inventory(5);
+		inventory.setItem(0, new ItemStack(parentMaterial, 1));
+		inventory.setItem(1, new ItemStack(parentMaterial, 2));
+		inventory.setItem(2, new ItemStack(parentMaterial, 3));
+		inventory.setItem(3, null);
+		inventory.setItem(4, new ItemStack(parentMaterial, 5));
+		int counter = 1;
+		for (ItemStack item : inventory) {
+			if (item == null) {
+				assertEquals(counter, 4);
+			} else {
+				assertEquals(item.getAmount(), counter);
+			}
+			counter++;
+		}
+	}
 }

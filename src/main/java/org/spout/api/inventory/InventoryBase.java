@@ -33,12 +33,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.spout.api.material.source.MaterialSource;
+import org.spout.api.util.SoftReferenceIterator;
 
 /**
  * Represents a basic inventory, other inventories can extend to supply custom get and set item routines.<br>
  * It supplies the needed utility functions, current item and inventory viewer support.
  */
-public abstract class InventoryBase implements Serializable {
+public abstract class InventoryBase implements Serializable, Iterable<ItemStack> {
 
 	private static final long serialVersionUID = 0L;
 
@@ -83,6 +84,14 @@ public abstract class InventoryBase implements Serializable {
 	}
 
 	/**
+	 * Gets the iterator to traverse the inventory viewers of this Inventory
+	 * @return the Inventory viewer iterator
+	 */
+	protected Iterator<InventoryBase> getInventoryIterator() {
+		return new SoftReferenceIterator<InventoryBase>(this.inventoryViewers);
+	}
+
+	/**
 	 * Notifies all viewers of a certain change of an item
 	 * @param slot index of the item
 	 * @param item it got set to, or Null if made empty
@@ -91,14 +100,9 @@ public abstract class InventoryBase implements Serializable {
 		for (InventoryViewer viewer : this.getViewers()) {
 			viewer.onSlotSet(this, slot, item);
 		}
-		Iterator<SoftReference<InventoryBase>> iter = this.inventoryViewers.iterator();
+		Iterator<InventoryBase> iter = this.getInventoryIterator();
 		while (iter.hasNext()) {
-			InventoryBase inv = iter.next().get();
-			if (inv == null) {
-				iter.remove();
-			} else {
-				inv.onParentUpdate(this, slot, item);
-			}
+			iter.next().onParentUpdate(this, slot, item);
 		}
 	}
 
@@ -110,14 +114,9 @@ public abstract class InventoryBase implements Serializable {
 		for (InventoryViewer viewer : this.getViewers()) {
 			viewer.updateAll(this, items);
 		}
-		Iterator<SoftReference<InventoryBase>> iter = this.inventoryViewers.iterator();
+		Iterator<InventoryBase> iter = this.getInventoryIterator();
 		while (iter.hasNext()) {
-			InventoryBase inv = iter.next().get();
-			if (inv == null) {
-				iter.remove();
-			} else {
-				inv.onParentUpdate(this, items);
-			}
+			iter.next().onParentUpdate(this, items);
 		}
 	}
 
@@ -254,6 +253,11 @@ public abstract class InventoryBase implements Serializable {
 	public void setCurrentSlot(int slot) {
 		this.checkSlotRange(slot);
 		currentSlot = slot;
+	}
+
+	@Override
+	public Iterator<ItemStack> iterator() {
+		return new InventoryIterator(this);
 	}
 
 	/**
