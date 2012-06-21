@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.spout.api.inventory.special.InventoryRange;
+import org.spout.api.inventory.special.InventorySlot;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.util.SoftReferenceIterator;
 
@@ -45,7 +47,6 @@ public abstract class InventoryBase implements Serializable, Iterable<ItemStack>
 
 	private final List<InventoryViewer> viewers = new ArrayList<InventoryViewer>();
 	private final List<SoftReference<InventoryBase>> inventoryViewers = new ArrayList<SoftReference<InventoryBase>>();
-	private int currentSlot = 0;
 	private boolean notify = true;
 
 	/**
@@ -176,6 +177,25 @@ public abstract class InventoryBase implements Serializable, Iterable<ItemStack>
 	}
 
 	/**
+	 * Creates a new Inventory Slot pointing to a certain item in this Inventory
+	 * @param slot index of the item
+	 * @return Inventory Slot pointing to the item
+	 */
+	public InventorySlot createSlot(int slot) {
+		return new InventorySlot(this, slot);
+	}
+
+	/**
+	 * Creates a new Inventory Range pointing to certain items in this Inventory
+	 * @param offset slot index of the range
+	 * @param size of the range
+	 * @return Inventory Range pointing to the items
+	 */
+	public InventoryRange createRange(int offset, int size) {
+		return new InventoryRange(this, offset, size);
+	}
+
+	/**
 	 * Checks if the slot index given is contained in this inventory, 
 	 * and throws an {@link IndexOutOfBoundsException} if this is not the case.
 	 * 
@@ -185,74 +205,6 @@ public abstract class InventoryBase implements Serializable, Iterable<ItemStack>
 		if (slot < 0 || slot >= this.getSize()) {
 			throw new IndexOutOfBoundsException("Slot index is out of range");
 		}
-	}
-
-	/**
-	 * Adds a given amount to the data of the currently selected item<br><br>
-	 * 
-	 * If the data becomes negative the item is removed and False is returned<br>
-	 * Otherwise True is returned.
-	 * @param amount of data to add
-	 * @return True if the item data was successfully added
-	 */
-	public boolean addCurrentItemData(int amount) {
-		return this.addItemData(this.getCurrentSlot(), amount);
-	}
-
-	/**
-	 * Sets the item at the currently selected slot index<br>
-	 * The item is cloned before adding
-	 * 
-	 * @param item to set to
-	 */
-	public void setCurrentItem(ItemStack item) {
-		this.setItem(this.getCurrentSlot(), item);
-	}
-
-	/**
-	 * Checks if the currently selected item matches the material
-	 * @param material to compare with
-	 * @return True if the item matches the material or both are null
-	 */
-	public boolean isCurrentItem(MaterialSource material) {
-		return this.isItem(this.getCurrentSlot(), material);
-	}
-
-	/**
-	 * Adds a certain amount of the item at the currently selected slot<br>
-	 * You can add a negative amount to subtract
-	 * @param amount to add
-	 * @return True if successful, which means the item was not null and could add the amount
-	 */
-	public boolean addCurrentItemAmount(int amount) {
-		return this.addItemAmount(this.getCurrentSlot(), amount);
-	}
-
-	/**
-	 * Gets the currently selected item
-	 * 
-	 * @return the selected item, or null if the slot is empty
-	 */
-	public ItemStack getCurrentItem() {
-		return getItem(currentSlot);
-	}
-
-	/**
-	 * Gets the currently selected item slot
-	 * 
-	 * @return the item slot index
-	 */
-	public int getCurrentSlot() {
-		return currentSlot;
-	}
-
-	/**
-	 * Sets the currently selected item slot
-	 * @param slot index to set to
-	 */
-	public void setCurrentSlot(int slot) {
-		this.checkSlotRange(slot);
-		currentSlot = slot;
 	}
 
 	@Override

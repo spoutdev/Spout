@@ -27,7 +27,6 @@
 package org.spout.api.inventory;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.spout.api.material.Material;
