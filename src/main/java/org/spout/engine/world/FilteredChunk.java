@@ -56,11 +56,11 @@ public class FilteredChunk extends SpoutChunk{
 	}
 
 	public FilteredChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial, BiomeManager manager, DataMap map) {
-		this(world, region, x, y, z, false, initial, null, null, null, manager, map.getRawMap());
+		this(world, region, x, y, z, PopulationState.UNTOUCHED, initial, null, null, null, manager, map.getRawMap());
 	}
 
-	public FilteredChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, boolean populated, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, BiomeManager manager, DatatableMap extraData) {
-		super(world, region, x, y, z, populated, blocks, data, skyLight, blockLight, manager, extraData);
+	public FilteredChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, BiomeManager manager, DatatableMap extraData) {
+		super(world, region, x, y, z, popState, blocks, data, skyLight, blockLight, manager, extraData);
 
 		uniform = new AtomicBoolean(true);
 		short id = blocks[0];

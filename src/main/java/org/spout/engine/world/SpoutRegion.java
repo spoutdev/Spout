@@ -300,10 +300,6 @@ public class SpoutRegion extends Region{
 
 				Spout.getEventManager().callDelayedEvent(new ChunkLoadEvent(newChunk, generated));
 
-				if (!newChunk.isPopulated()) {
-					queueChunkForPopulation(newChunk);
-				}
-
 				return newChunk;
 			}
 

@@ -67,6 +67,7 @@ import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.world.FilteredChunk;
 import org.spout.engine.world.SpoutChunk;
+import org.spout.engine.world.SpoutChunk.PopulationState;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
@@ -272,7 +273,7 @@ public class WorldFiles {
 		chunkTags.put(new IntTag("x", c.getX()));
 		chunkTags.put(new IntTag("y", c.getY()));
 		chunkTags.put(new IntTag("z", c.getZ()));
-		chunkTags.put(new ByteTag("populated", c.isPopulated()));
+		chunkTags.put(new ByteTag("populationState", c.getPopulationState().getId()));
 		chunkTags.put(new ShortArrayTag("blocks", blocks));
 		chunkTags.put(new ShortArrayTag("data", data));
 		chunkTags.put(new ByteArrayTag("skyLight", skyLight));
@@ -323,7 +324,7 @@ public class WorldFiles {
 			int cy = r.getChunkY() + y;
 			int cz = r.getChunkZ() + z;
 
-			boolean populated = SafeCast.toGeneric(map.get("populated"), new ByteTag("", false), ByteTag.class).getBooleanValue();
+			byte populationState = SafeCast.toGeneric(map.get("populationState"), new ByteTag("", PopulationState.POPULATED.getId()), ByteTag.class).getValue();
 			short[] blocks = SafeCast.toShortArray(NBTMapper.toTagValue(map.get("blocks")), null);
 			short[] data = SafeCast.toShortArray(NBTMapper.toTagValue(map.get("data")), null);
 			byte[] skyLight = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("skyLight")), null);
@@ -360,7 +361,7 @@ public class WorldFiles {
 			DatatableMap extraDataMap = new GenericDatatableMap();
 			extraDataMap.decompress(extraData);
 
-			chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, populated, blocks, data, skyLight, blockLight, manager, extraDataMap);
+			chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), blocks, data, skyLight, blockLight, manager, extraDataMap);
 
 			CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("entities")), null, CompoundMap.class);
 			loadEntities(r, entityMap, dataForRegion.loadedEntities);
