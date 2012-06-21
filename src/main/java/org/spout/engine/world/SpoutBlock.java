@@ -218,6 +218,11 @@ public class SpoutBlock implements Block {
 	public int getDataField(int bits) {
 		return this.getChunk().getBlockDataField(this.x, this.y, this.z, bits);
 	}
+	
+	@Override
+	public boolean isDataBitSet(int bits) {
+		return this.getChunk().isBlockDataBitSet(this.x, this.y, this.z, bits);
+	}
 
 	@Override
 	public int setDataField(int bits, int value) {

@@ -1343,6 +1343,11 @@ public class SpoutChunk extends Chunk {
 
 	}
 
+	@Override
+	public boolean isBlockDataBitSet(int bx, int by, int bz, int bits) {
+		return getBlockDataField(bx, by, bz, bits) != 0;
+	}
+
 	protected int setBlockDataFieldRaw(int bx, int by, int bz, int bits, int value, Source source) {
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();

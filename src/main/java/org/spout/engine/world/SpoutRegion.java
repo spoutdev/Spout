@@ -1084,6 +1084,11 @@ public class SpoutRegion extends Region{
 	public int getBlockDataField(int x, int y, int z, int bits) {
 		return this.getChunkFromBlock(x, y, z).getBlockDataField(x, y, z, bits);
 	}
+	
+	@Override
+	public boolean isBlockDataBitSet(int x, int y, int z, int bits) {
+		return this.getChunkFromBlock(x, y, z).isBlockDataBitSet(x, y, z, bits);
+	}
 
 	@Override
 	public int setBlockDataField(int x, int y, int z, int bits, int value, Source source) {

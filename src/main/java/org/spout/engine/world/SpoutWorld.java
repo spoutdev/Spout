@@ -565,6 +565,11 @@ public final class SpoutWorld extends AsyncManager implements World {
 	public int getBlockDataField(int x, int y, int z, int bits) {
 		return getChunkFromBlock(x, y, z).getBlockDataField(x, y, z, bits);
 	}
+	
+	@Override
+	public boolean isBlockDataBitSet(int x, int y, int z, int bits) {
+		return getChunkFromBlock(x, y, z).isBlockDataBitSet(x, y, z, bits);
+	}
 
 	@Override
 	public int setBlockDataField(int x, int y, int z, int bits, int value, Source source) {

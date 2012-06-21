@@ -47,6 +47,8 @@ public class FilteredChunkTest {
 		add("getBiomeType");
 		add("getBlock");
 		add("containsBlock");
+		//Handled by getBlockDataField
+		add("isBlockDataBitSet");
 		//Handled by setBlockDataFieldRaw
 		add("setBlockDataField");
 		add("setBlockDataBits");
