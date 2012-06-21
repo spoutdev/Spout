@@ -89,7 +89,7 @@ public abstract class MaterialRegistry {
 			return id;
 		}
 	}
-	
+
 	/**
 	 * Registers the material in the material lookup service
 	 * 
