@@ -163,7 +163,7 @@ public class SpoutRegion extends Region{
 	 * The chunks that received a lighting change and need an update
 	 */
 	private final TByteTripleHashSet lightDirtyChunks = new TByteTripleHashSet();
-
+	
 	/**
 	 * A queue of chunks that need to be populated
 	 */
@@ -307,7 +307,7 @@ public class SpoutRegion extends Region{
 				return newChunk;
 			}
 
-			newChunk.deregisterFromColumn(false);
+			newChunk.setUnloadedUnchecked();
 			SpoutChunk oldChunk = chunkReference.get();
 			if (oldChunk != null) {
 				if (loadopt.loadIfNeeded()) {
@@ -712,8 +712,10 @@ public class SpoutRegion extends Region{
 		// Compress at most 1 chunk per tick per region
 		boolean chunkCompressed = false;
 
-		int reaped = 0;
-
+		int percentObserved = (100 * SpoutChunk.getObservedChunks()) / (SpoutChunk.getActiveChunks());
+		
+		int multiplier = percentObserved < 70 ? 20 : (percentObserved >= 90 ? 1 : (90 - percentObserved));
+		int maxReapCount = REAP_PER_TICK * multiplier;
 
 		compressDy++;
 		if (compressDy >= CHUNKS.SIZE) {
@@ -723,13 +725,15 @@ public class SpoutRegion extends Region{
 				compressDx = 0;
 			}
 		}
+		
+		int reaped = 0;
 
 		for (int dz = 0; dz < CHUNKS.SIZE && !chunkCompressed; dz++) {
 			Chunk chunk = chunks[compressDx][compressDy][dz].get();
 			if (chunk != null) {
 				chunkCompressed |= ((SpoutChunk) chunk).compressIfRequired();
 
-				if (reaped < REAP_PER_TICK && ((SpoutChunk) chunk).isReapable(worldAge)) {
+				if (reaped < maxReapCount && ((SpoutChunk) chunk).isReapable(worldAge)) {
 					boolean do_unload = true;
 					if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
 						ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(chunk));

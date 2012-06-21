@@ -168,6 +168,7 @@ public class MemoryLeakThread extends Thread {
 					}
 
 					Spout.getLogger().info("Memory Leak Detection Analyzed " + analyzed + " potential leaks, " + unobserved + " Unobserved, " + queuedForUnload + " queued for unloading, " + unloaded + " unloaded");
+					Spout.getLogger().info("Observed Chunks: " + SpoutChunk.getObservedChunks() + "/" + SpoutChunk.getActiveChunks());
 				} finally {
 					lock.coreReadUnlock(taskName);
 				}

@@ -86,6 +86,10 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashSet;
 
 public class SpoutChunk extends Chunk {
+	
+	private static final AtomicInteger activeChunks = new AtomicInteger(0);
+	private static final AtomicInteger observedChunks = new AtomicInteger(0);
+	private final AtomicBoolean observed = new AtomicBoolean(false);
 	/**
 	 * Multi-thread write access to the block store is only allowed during the
 	 * allowed stages. During the restricted stages, only the region thread may
@@ -250,6 +254,15 @@ public class SpoutChunk extends Chunk {
 		this.mainThread = ((SpoutScheduler)Spout.getScheduler()).getMainThread();
 
 		((SpoutEngine) world.getEngine()).getLeakThread().monitor(this);
+		activeChunks.incrementAndGet();
+	}
+	
+	public static int getActiveChunks() {
+		return activeChunks.get();
+	}
+	
+	public static int getObservedChunks() {
+		return observedChunks.get();
 	}
 
 	@Override
@@ -801,6 +814,9 @@ public class SpoutChunk extends Chunk {
 		if (!isPopulated()) {
 			parentRegion.queueChunkForPopulation(this);
 		}
+		if (observed.compareAndSet(false, true)) {
+			observedChunks.incrementAndGet();
+		}
 		return true;
 	}
 
@@ -817,6 +833,9 @@ public class SpoutChunk extends Chunk {
 
 		if (observers.isEmptyLive()) {
 			parentRegion.unloadQueue.add(this);
+			if (observed.compareAndSet(true, false)) {
+				observedChunks.decrementAndGet();
+			}
 		}
 		return true;
 	}
@@ -899,13 +918,30 @@ public class SpoutChunk extends Chunk {
 
 	public void setUnloaded() {
 		TickStage.checkStage(TickStage.SNAPSHOT, regionThread);
-		saveState.set(SaveState.UNLOADED);
+		setUnloadedRaw(true);
+	}
+	
+	/**
+	 * This method should only be used for chunks which were unnecessarily loaded
+	 */
+	public void setUnloadedUnchecked() {
+		setUnloadedRaw(false);
+	}
+	
+	private void setUnloadedRaw(boolean saveColumn) {
+		SaveState oldState = saveState.getAndSet(SaveState.UNLOADED);
 		//Clear as much as possible to limit the damage of a potential leak
 		this.blockStore = null;
 		this.blockLight = null;
 		this.skyLight = null;
 		this.dataMap.clear();
-		deregisterFromColumn();
+		if (observed.compareAndSet(true, false)) {
+			observedChunks.decrementAndGet();
+		}
+		if (oldState != SaveState.UNLOADED) {
+			deregisterFromColumn(saveColumn);
+			activeChunks.decrementAndGet();
+		}
 	}
 
 	private void checkChunkLoaded() {
