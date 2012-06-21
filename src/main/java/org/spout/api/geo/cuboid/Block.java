@@ -253,6 +253,15 @@ public interface Block extends MaterialState {
 	public int getDataField(int bits);
 	
 	/**
+	 * Gets if any of the indicated bits are set.
+	 * 
+	 * @param bits the bits to check
+	 * @return true if any of the given bits are set
+	 */
+	@Threadsafe
+	public boolean isDataBitSet(int bits);
+	
+	/**
 	 * Sets the data field from the block.  This is the reverse operation to the getDataField method.<br>
 	 * <br>
 	 * newData = ((value << shift) & bits) | (oldData & (~bits))<br>

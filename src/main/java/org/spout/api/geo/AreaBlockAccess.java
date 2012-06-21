@@ -157,6 +157,18 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	public int getBlockDataField(int x, int y, int z, int bits);
 	
 	/**
+	 * Gets if any of the indicated bits are set.
+	 * 
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @param bits the bits of the field
+	 * @return true if any of the given bits are set
+	 */
+	@Threadsafe
+	public boolean isBlockDataBitSet(int x, int y, int z, int bits);
+	
+	/**
 	 * Sets the data field from the block at (x, y, z).  This is the reverse operation to the getBlockDataField method.<br>
 	 * <br>
 	 * newData = ((value << shift) & bits) | (oldData & (~bits))<br>
