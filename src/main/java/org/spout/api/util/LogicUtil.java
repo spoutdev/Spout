@@ -32,6 +32,21 @@ package org.spout.api.util;
 public class LogicUtil {
 
 	/**
+	 * Checks if the object equals one of the other objects given
+	 * @param object to check
+	 * @param objects to use equals against
+	 * @return True if one of the objects equal the object
+	 */
+	public static boolean equalsAny(Object object, Object... objects) {
+		for (Object o : objects) {
+			if (bothNullOrEqual(o, object)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Checks if object a and b are both null or are equal
 	 * 
 	 * @param a

@@ -35,6 +35,7 @@ import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.MathHelper;
 import org.spout.api.model.Model;
+import org.spout.api.util.LogicUtil;
 
 public abstract class Material extends MaterialRegistry implements MaterialSource {
 	private final short id;
@@ -405,20 +406,20 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	public void onInteract(Entity entity, Action type) {
 	}
 
+	@Override
+	public boolean isMaterial(Material... materials) {
+		return LogicUtil.equalsAny(this, materials);
+	}
+
 	/**
 	 * Checks whether this material equals any of the materials given
 	 * @param materials to compare to
 	 * @return whether it equals one of the materials
 	 */
 	public boolean equals(Material... materials) {
-		for (Material mat : materials ) {
-			if (this.equals(mat)) {
-				return true;
-			}
-		}
-		return false;
+		return this.isMaterial(materials);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Material {" + getName() + "}";

@@ -62,7 +62,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 */
 	@LiveWrite
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Source source);
-	
+
 	/**
 	 * Sets the block light level for the block at (x, y, z) to the given light level
 	 *
@@ -75,7 +75,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 */
 	@LiveWrite
 	public boolean setBlockLight(int x, int y, int z, byte light, Source source);
-	
+
 	/**
 	 * Sets the block sky light level for the block at (x, y, z) to the given light level
 	 *
@@ -111,7 +111,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 */
 	@LiveWrite
 	public boolean compareAndSetData(int x, int y, int z, int expect, short data, Source source);
-	
+
 	/**
 	 * Sets the given bits in the data for the block at (x, y, z)<br>
 	 * <br>
@@ -125,7 +125,24 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 */
 	@LiveWrite
 	public short setBlockDataBits(int x, int y, int z, short bits, Source source);
-	
+
+	/**
+	 * Sets the given bits in the data for the block at (x, y, z)<br>
+	 * <br>
+	 * newData = oldData | (bits)
+	 * <br>or<br>
+	 * newData = oldData & ~(bits)
+	 * 
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @param bits the bits to set or clear
+	 * @param set True to set, False to clear
+	 * @return the old data for the block
+	 */
+	@LiveWrite
+	public short setBlockDataBits(int x, int y, int z, short bits, boolean set, Source source);
+
 	/**
 	 * Clears the given bits in the data for the block at (x, y, z)<br>
 	 * <br>
@@ -139,7 +156,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 */
 	@LiveWrite
 	public short clearBlockDataBits(int x, int y, int z, short bits, Source source);
-	
+
 	/**
 	 * Gets the data field from the block at (x, y, z)<br>
 	 * <br>
@@ -155,7 +172,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 */
 	@Threadsafe
 	public int getBlockDataField(int x, int y, int z, int bits);
-	
+
 	/**
 	 * Gets if any of the indicated bits are set.
 	 * 

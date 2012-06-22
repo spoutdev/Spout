@@ -28,6 +28,7 @@ package org.spout.api.material.source;
 
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
+import org.spout.api.util.LogicUtil;
 
 public class GenericMaterialState implements MaterialState {
 	private Material material;
@@ -93,6 +94,11 @@ public class GenericMaterialState implements MaterialState {
 	@Override
 	public Material getSubMaterial() {
 		return this.getMaterial().getSubMaterial(this.getData());
+	}
+
+	@Override
+	public boolean isMaterial(Material... materials) {
+		return LogicUtil.equalsAny(this.material, materials);
 	}
 }
 

@@ -29,6 +29,7 @@ package org.spout.api.inventory.special;
 import org.spout.api.inventory.Inventory;
 import org.spout.api.inventory.InventoryBase;
 import org.spout.api.inventory.ItemStack;
+import org.spout.api.material.source.MaterialSource;
 
 /**
  * Points to a single item in another Inventory<br>
@@ -80,5 +81,37 @@ public class InventorySlot extends InventoryRange {
 	 */
 	public ItemStack getItem() {
 		return this.getItem(0);
+	}
+
+	/**
+	 * Adds a given amount to the data of the item in this slot<br><br>
+	 * 
+	 * If the data becomes negative the item is removed and False is returned<br>
+	 * Otherwise True is returned.
+	 * @param amount of data to add
+	 * @return True if the item data was successfully added
+	 */
+	public boolean addItemData(int amount) {
+		return super.addItemData(0, amount);
+	}
+
+	/**
+	 * Checks if the item at this slot matches the material
+	 * @param slot of the item
+	 * @param material to compare with
+	 * @return True if the item matches the material or both are null
+	 */
+	public boolean isItem(MaterialSource material) {
+		return super.isItem(0, material);
+	}
+
+	/**
+	 * Adds a certain amount of the item in this slot<br>
+	 * You can add a negative amount to subtract
+	 * @param amount to add
+	 * @return True if successful, which means the item was not null and could add the amount
+	 */
+	public boolean addItemAmount(int amount) {
+		return super.addItemAmount(0, amount);
 	}
 }

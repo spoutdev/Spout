@@ -28,6 +28,7 @@ package org.spout.api.material.source;
 
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
+import org.spout.api.util.LogicUtil;
 import org.spout.api.util.hashing.ShortPairHashed;
 
 public class GenericMaterialSource implements MaterialSource {
@@ -74,5 +75,10 @@ public class GenericMaterialSource implements MaterialSource {
 	@Override
 	public Material getSubMaterial() {
 		return this.getMaterial().getSubMaterial(this.getData());
+	}
+
+	@Override
+	public boolean isMaterial(Material... materials) {
+		return LogicUtil.equalsAny(this.material, materials);
 	}
 }
