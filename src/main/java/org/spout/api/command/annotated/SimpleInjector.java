@@ -43,7 +43,37 @@ public class SimpleInjector implements Injector {
 
 	public Object newInstance(Class<?> clazz) {
 		try {
-			Constructor<?> ctr = clazz.getConstructor(argClasses);
+			Constructor<?> ctr = null;
+			int lowestSubclassCount = Integer.MAX_VALUE;
+			for (Constructor<?> c : clazz.getConstructors()) {
+				boolean match = true;
+				Class<?>[] args = c.getParameterTypes();
+				if (args == null || args.length != argClasses.length) {
+					continue;
+				}
+				int subclassCount = 0;
+				for (int i = 0; i < args.length; i++) {
+					if (!args[i].isAssignableFrom(argClasses[i])) {
+						match = false;
+						break;
+					} else {
+						Class<?> a = argClasses[i];
+						while (a != null && !a.equals(args[i])) {
+							subclassCount++;
+							a = a.getSuperclass();
+						}
+					}
+				}
+				if (match) {
+					if (subclassCount < lowestSubclassCount) {
+						lowestSubclassCount = subclassCount;
+						ctr = c;
+					}
+				}
+			}
+			if (ctr == null) {
+				ctr = clazz.getConstructor(argClasses);
+			}
 			return ctr.newInstance(args);
 		} catch (NoSuchMethodException e) {
 			return null;
