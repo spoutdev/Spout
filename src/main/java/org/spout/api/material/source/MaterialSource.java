@@ -43,4 +43,11 @@ public interface MaterialSource extends DataSource {
 	 * @return the sub material
 	 */
 	public Material getSubMaterial();
+
+	/**
+	 * Gets if the material contained equals one of the materials specified
+	 * @param materials to evaluate against
+	 * @return True if one of the materials equal this material
+	 */
+	public boolean isMaterial(Material... materials);
 }

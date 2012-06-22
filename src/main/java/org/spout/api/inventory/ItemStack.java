@@ -130,6 +130,11 @@ public class ItemStack implements MaterialData, Serializable, Cloneable {
 		return this.amount == 0;
 	}
 
+	@Override
+	public boolean isMaterial(Material... materials) {
+		return LogicUtil.equalsAny(this.material, materials);
+	}
+
 	/**
 	 * Gets the map containing the aux data for this stack
 	 * 

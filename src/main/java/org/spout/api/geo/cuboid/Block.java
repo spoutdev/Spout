@@ -118,6 +118,15 @@ public interface Block extends MaterialState {
 	public Block setZ(int z);
 
 	/**
+	 * Translates this block using the offset and distance given
+	 * 
+	 * @param offset BlockFace to translate
+	 * @param distance to translate
+	 * @return a new Block instance
+	 */
+	public Block translate(BlockFace offset, int distance);
+
+	/**
 	 * Translates this block using the offset given
 	 * 
 	 * @param offset BlockFace to translate
@@ -157,7 +166,7 @@ public interface Block extends MaterialState {
 	 * @return a clone of this block with the new source set
 	 */
 	public Block setSource(Source source);
-	
+
 	@Override
 	public BlockMaterial getMaterial();
 
@@ -227,7 +236,21 @@ public interface Block extends MaterialState {
 	 */
 	@LiveWrite
 	public short setDataBits(short bits);
-	
+
+	/**
+	 * Sets the given bits in the data for the block<br>
+	 * <br>
+	 * newData = oldData | (bits)
+	 * <br>or<br>
+	 * newData = oldData & ~(bits)
+	 * 
+	 * @param bits the bits to set or clear
+	 * @param set True to set the bits, False to clear
+	 * @return the old data for the block
+	 */
+	@LiveWrite
+	public short setDataBits(short bits, boolean set);
+
 	/**
 	 * Clears the given bits in the data for the block<br>
 	 * <br>
@@ -238,7 +261,7 @@ public interface Block extends MaterialState {
 	 */
 	@LiveWrite
 	public short clearDataBits(short bits);
-	
+
 	/**
 	 * Gets the data field from the block<br>
 	 * <br>
@@ -251,7 +274,7 @@ public interface Block extends MaterialState {
 	 */
 	@Threadsafe
 	public int getDataField(int bits);
-	
+
 	/**
 	 * Gets if any of the indicated bits are set.
 	 * 
@@ -260,7 +283,7 @@ public interface Block extends MaterialState {
 	 */
 	@Threadsafe
 	public boolean isDataBitSet(int bits);
-	
+
 	/**
 	 * Sets the data field from the block.  This is the reverse operation to the getDataField method.<br>
 	 * <br>
