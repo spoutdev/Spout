@@ -1345,7 +1345,7 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
-	public short setBlockDataBits(int bx, int by, int bz, short bits, boolean set, Source source) {
+	public short setBlockDataBits(int bx, int by, int bz, int bits, boolean set, Source source) {
 		if (set) {
 			return this.setBlockDataBits(bx, by, bz, bits, source);
 		} else {
@@ -1354,12 +1354,12 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
-	public short setBlockDataBits(int bx, int by, int bz, short bits, Source source) {
+	public short setBlockDataBits(int bx, int by, int bz, int bits, Source source) {
 		return (short) setBlockDataFieldRaw(bx, by, bz, bits & 0xFFFF, 0xFFFF, source);
 	}
 
 	@Override
-	public short clearBlockDataBits(int bx, int by, int bz, short bits, Source source) {
+	public short clearBlockDataBits(int bx, int by, int bz, int bits, Source source) {
 		return (short) setBlockDataFieldRaw(bx, by, bz, bits & 0xFFFF, 0x0000, source);
 	}
 
