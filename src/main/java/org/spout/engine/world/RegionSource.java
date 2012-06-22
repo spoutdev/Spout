@@ -148,9 +148,10 @@ public class RegionSource implements Iterable<Region> {
 			throw new IllegalStateException("Unable to start region executor");
 		}
 
-		int threadhold = warnThreshold.get();
-		if (regionsLoaded.getAndIncrement() > threadhold) {
-			Spout.getLogger().info("Warning: number of spout regions exceeds " + threadhold);
+		int threshold = warnThreshold.get();
+		if (regionsLoaded.getAndIncrement() > threshold) {
+			Spout.getLogger().info("Warning: number of spout regions exceeds " + threshold + " when creating (" +
+                x + ", " + y + ", " + z + ")");
 			Thread.dumpStack();
 			warnThreshold.addAndGet(10);
 		}
