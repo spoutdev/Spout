@@ -124,7 +124,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @return the old data for the block
 	 */
 	@LiveWrite
-	public short setBlockDataBits(int x, int y, int z, short bits, Source source);
+	public short setBlockDataBits(int x, int y, int z, int bits, Source source);
 
 	/**
 	 * Sets the given bits in the data for the block at (x, y, z)<br>
@@ -141,7 +141,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @return the old data for the block
 	 */
 	@LiveWrite
-	public short setBlockDataBits(int x, int y, int z, short bits, boolean set, Source source);
+	public short setBlockDataBits(int x, int y, int z, int bits, boolean set, Source source);
 
 	/**
 	 * Clears the given bits in the data for the block at (x, y, z)<br>
@@ -155,7 +155,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @return the old data for the block
 	 */
 	@LiveWrite
-	public short clearBlockDataBits(int x, int y, int z, short bits, Source source);
+	public short clearBlockDataBits(int x, int y, int z, int bits, Source source);
 
 	/**
 	 * Gets the data field from the block at (x, y, z)<br>

@@ -235,7 +235,7 @@ public interface Block extends MaterialState {
 	 * @return the old data for the block
 	 */
 	@LiveWrite
-	public short setDataBits(short bits);
+	public short setDataBits(int bits);
 
 	/**
 	 * Sets the given bits in the data for the block<br>
@@ -249,7 +249,7 @@ public interface Block extends MaterialState {
 	 * @return the old data for the block
 	 */
 	@LiveWrite
-	public short setDataBits(short bits, boolean set);
+	public short setDataBits(int bits, boolean set);
 
 	/**
 	 * Clears the given bits in the data for the block<br>
@@ -260,7 +260,7 @@ public interface Block extends MaterialState {
 	 * @return the old data for the block
 	 */
 	@LiveWrite
-	public short clearDataBits(short bits);
+	public short clearDataBits(int bits);
 
 	/**
 	 * Gets the data field from the block<br>
