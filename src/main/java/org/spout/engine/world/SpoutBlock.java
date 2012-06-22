@@ -212,17 +212,17 @@ public class SpoutBlock implements Block {
 	}
 	
 	@Override
-	public short setDataBits(short bits) {
+	public short setDataBits(int bits) {
 		return this.getChunk().setBlockDataBits(this.x, this.y, this.z, bits, this.source);
 	}
 
 	@Override
-	public short setDataBits(short bits, boolean set) {
+	public short setDataBits(int bits, boolean set) {
 		return this.getChunk().setBlockDataBits(this.x, this.y, this.z, bits, set, this.source);
 	}
 
 	@Override
-	public short clearDataBits(short bits) {
+	public short clearDataBits(int bits) {
 		return this.getChunk().clearBlockDataBits(this.x, this.y, this.z, bits, this.source);
 	}
 
