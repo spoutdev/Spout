@@ -1077,6 +1077,11 @@ public class SpoutRegion extends Region{
 	}
 
 	@Override
+	public short setBlockDataBits(int x, int y, int z, short bits, boolean set, Source source) {
+		return this.getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits, set, source);
+	}
+
+	@Override
 	public short setBlockDataBits(int x, int y, int z, short bits, Source source) {
 		return this.getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits, source);
 	}
@@ -1295,5 +1300,4 @@ public class SpoutRegion extends Region{
 	public void addSnapshotFuture(SpoutChunkSnapshotFuture future) {
 		snapshotQueue.add(future);
 	}
-
 }

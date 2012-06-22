@@ -1345,6 +1345,15 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
+	public short setBlockDataBits(int bx, int by, int bz, short bits, boolean set, Source source) {
+		if (set) {
+			return this.setBlockDataBits(bx, by, bz, bits, source);
+		} else {
+			return this.clearBlockDataBits(bx, by, bz, bits, source);
+		}
+	}
+
+	@Override
 	public short setBlockDataBits(int bx, int by, int bz, short bits, Source source) {
 		return (short) setBlockDataFieldRaw(bx, by, bz, bits & 0xFFFF, 0xFFFF, source);
 	}
@@ -1459,5 +1468,4 @@ public class SpoutChunk extends Chunk {
 	public BiomeManager getBiomeManager() {
 		return biomes;
 	}
-
 }
