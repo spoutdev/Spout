@@ -536,7 +536,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	@Override
 	public Platform getPlatform() {
-		return Platform.SERVER;
+		throw new IllegalStateException("Platform method should not be called by the raw Engine class");
 	}
 
 	@Override

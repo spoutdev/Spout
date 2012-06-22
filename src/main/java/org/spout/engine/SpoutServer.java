@@ -40,6 +40,7 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
 import org.spout.api.Server;
 import org.spout.api.Spout;
+import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
@@ -256,6 +257,11 @@ public class SpoutServer extends SpoutEngine implements Server {
 	public Session newSession(Channel channel) {
 		BootstrapProtocol protocol = getBootstrapProtocol(channel.getLocalAddress());
 		return new SpoutSession(this, channel, protocol);
+	}
+	
+	@Override
+	public Platform getPlatform() {
+		return Platform.SERVER;
 	}
 
 	@Override

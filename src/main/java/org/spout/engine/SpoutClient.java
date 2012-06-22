@@ -58,6 +58,7 @@ import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
+import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.render.BasicCamera;
 import org.spout.api.render.Camera;
@@ -455,6 +456,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 			default:
 				return new Color(150, 150, 150);
 		}
+	}
+	
+	@Override
+	public Platform getPlatform() {
+		return Platform.CLIENT;
 	}
 
 	@Override
