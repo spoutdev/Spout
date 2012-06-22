@@ -131,10 +131,15 @@ public class SpoutClient extends SpoutEngine implements Client {
 		super.init(args);
 		
 	}
-
+	
 	@Override
 	public void start() {
-		super.start();
+		start(false);
+	}
+
+	@Override
+	public void start(boolean checkWorlds) {
+		super.start(checkWorlds);
 		scheduler.startRenderThread();
 		
 	}

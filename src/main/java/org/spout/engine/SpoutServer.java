@@ -91,9 +91,12 @@ public class SpoutServer extends SpoutEngine implements Server {
 		server.start();
 	}
 
-	@Override
 	public void start() {
-		super.start();
+		start(true);
+	}
+		
+	public void start(boolean checkWorlds) {
+		super.start(checkWorlds);
 		
 		banManager = new FlatFileBanManager(this);
 

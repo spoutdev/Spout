@@ -184,8 +184,12 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		}
 		DefaultPermissions.addDefaultPermission(STANDARD_BROADCAST_PERMISSION);
 	}
-
+	
 	public void start() {
+		throw new IllegalStateException("The start method should not be called for the engine directly");
+	}
+
+	public void start(boolean checkWorlds) {
 		if (debugMode()) {
 			getLogger().warning("Spout has been started in Debug Mode!  This mode is for developers only");
 			leakThread.start();
@@ -215,19 +219,22 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		// Start loading plugins
 		loadPlugins();
 		enablePlugins();
-		//At least one plugin should have registered atleast one world
-		if (loadedWorlds.getLive().size() == 0) {
-			throw new IllegalStateException("There are no loaded worlds!  You must install a plugin that creates a world (Did you forget Vanilla?)");
-		}
+		
+		if (checkWorlds) {
+			//At least one plugin should have registered atleast one world
+			if (loadedWorlds.getLive().size() == 0) {
+				throw new IllegalStateException("There are no loaded worlds!  You must install a plugin that creates a world (Did you forget Vanilla?)");
+			}
 
-		//Pick the default world from the configuration
-		World world = this.getWorld(SpoutConfiguration.DEFAULT_WORLD.getString());
-		if (world != null) {
-			this.setDefaultWorld(world);
-		}
+			//Pick the default world from the configuration
+			World world = this.getWorld(SpoutConfiguration.DEFAULT_WORLD.getString());
+			if (world != null) {
+				this.setDefaultWorld(world);
+			}
 
-		//If we don't have a default world set, just grab one.
-		getDefaultWorld();
+			//If we don't have a default world set, just grab one.
+			getDefaultWorld();
+		}
 
 		if (bootstrapProtocols.size() == 0) {
 			getLogger().warning("No bootstrap protocols registered! Clients will not be able to connect to the server.");
