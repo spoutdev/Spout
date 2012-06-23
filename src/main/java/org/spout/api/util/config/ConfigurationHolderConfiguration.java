@@ -32,9 +32,6 @@ import org.spout.api.util.ReflectionUtils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * This is a configuration holder class that takes another Configuration and wraps some
@@ -42,12 +39,11 @@ import java.util.regex.Pattern;
  * These fields will be automatically associated with the attached configuration and have
  * their default values loaded into the configuration as needed on load
  */
-public abstract class ConfigurationHolderConfiguration implements Configuration {
-	private final Configuration base;
+public abstract class ConfigurationHolderConfiguration extends ConfigurationWrapper  {
 	private final List<ConfigurationHolder> holders = new ArrayList<ConfigurationHolder>();
 
 	public ConfigurationHolderConfiguration(Configuration base) {
-		this.base = base;
+		super(base);
 		for (Field field : ReflectionUtils.getDeclaredFieldsRecur(getClass())) {
 			field.setAccessible(true);
 
@@ -63,101 +59,9 @@ public abstract class ConfigurationHolderConfiguration implements Configuration 
 	}
 
 	public void load() throws ConfigurationException {
-		base.load();
+		super.load();
 		for (ConfigurationHolder holder : holders) {
 			holder.getValue(); // Initialize the ConfigurationHolder's value
 		}
-	}
-
-	public void save() throws ConfigurationException {
-		base.save();
-	}
-
-	public void setNode(ConfigurationNode node) {
-		base.setNode(node);
-	}
-
-	public String getPathSeparator() {
-		return base.getPathSeparator();
-	}
-
-	public void setPathSeparator(String pathSeparator) {
-		base.setPathSeparator(pathSeparator);
-	}
-
-	public Pattern getPathSeparatorPattern() {
-		return base.getPathSeparatorPattern();
-	}
-
-	public boolean doesWriteDefaults() {
-		return base.doesWriteDefaults();
-	}
-
-	public void setWritesDefaults(boolean writesDefaults) {
-		base.setWritesDefaults(writesDefaults);
-	}
-
-	public String[] splitNodePath(String path) {
-		return base.splitNodePath(path);
-	}
-
-	public String[] ensureCorrectPath(String[] rawPath) {
-		return base.ensureCorrectPath(rawPath);
-	}
-
-	public ConfigurationNode getChild(String name) {
-		return base.getChild(name);
-	}
-
-	public ConfigurationNode getChild(String name, boolean add) {
-		return base.getChild(name, add);
-	}
-
-	public ConfigurationNode addChild(ConfigurationNode node) {
-		return base.addChild(node);
-	}
-
-	public void addChildren(ConfigurationNode... nodes) {
-		base.addChildren(nodes);
-	}
-
-	public ConfigurationNode removeChild(String key) {
-		return base.removeChild(key);
-	}
-
-	public ConfigurationNode removeChild(ConfigurationNode node) {
-		return base.removeChild(node);
-	}
-
-	public Map<String, ConfigurationNode> getChildren() {
-		return base.getChildren();
-	}
-
-	public Map<String, Object> getValues() {
-		return base.getValues();
-	}
-
-	public Set<String> getKeys(boolean deep) {
-		return base.getKeys(deep);
-	}
-
-	public ConfigurationNode getNode(String path) {
-		return base.getNode(path);
-	}
-
-	public ConfigurationNode getNode(String... path) {
-		return base.getNode(path);
-	}
-
-	public boolean hasChildren() {
-		return base.hasChildren();
-	}
-
-	public Configuration getConfiguration() {
-		return base.getConfiguration();
-	}
-
-	public String[] getPathElements() {
-		return base.getPathElements();
 	}
 }

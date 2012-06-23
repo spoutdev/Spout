@@ -28,27 +28,25 @@ package org.spout.api.util.config.annotated;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.spout.api.exception.ConfigurationException;
 import org.spout.api.util.ReflectionUtils;
 import org.spout.api.util.config.Configuration;
 import org.spout.api.util.config.ConfigurationNode;
 import org.spout.api.util.config.ConfigurationNodeSource;
+import org.spout.api.util.config.ConfigurationWrapper;
 
 /**
  * The base class for annotated configurations
  * Annotated configurations are created by subclassing ConfigurationBase and having fields annotated with @Setting
  */
-public class AnnotatedConfiguration implements Configuration {
-	private final Configuration baseConfig;
+public abstract class AnnotatedConfiguration extends ConfigurationWrapper {
 	private Set<Field> fields;
 	private boolean isConfigured;
 
 	public AnnotatedConfiguration(Configuration baseConfig) {
-		this.baseConfig = baseConfig;
+		super(baseConfig);
 	}
 
 	public boolean isConfigured() {
@@ -96,101 +94,13 @@ public class AnnotatedConfiguration implements Configuration {
 	}
 
 	public void load() throws ConfigurationException {
-		baseConfig.load();
+		super.load();
 		load(this);
 
 	}
 
 	public void save() throws ConfigurationException {
 		save(this);
-		baseConfig.save();
-	}
-
-	public void setNode(ConfigurationNode node) {
-		baseConfig.setNode(node);
-	}
-
-	public String getPathSeparator() {
-		return baseConfig.getPathSeparator();
-	}
-
-	public void setPathSeparator(String pathSeparator) {
-		baseConfig.setPathSeparator(pathSeparator);
-	}
-
-	public Pattern getPathSeparatorPattern() {
-		return baseConfig.getPathSeparatorPattern();
-	}
-
-	public boolean doesWriteDefaults() {
-		return baseConfig.doesWriteDefaults();
-	}
-
-	public void setWritesDefaults(boolean writesDefaults) {
-		baseConfig.setWritesDefaults(writesDefaults);
-	}
-
-	public String[] splitNodePath(String path) {
-		return baseConfig.splitNodePath(path);
-	}
-
-	public String[] ensureCorrectPath(String[] rawPath) {
-		return baseConfig.ensureCorrectPath(rawPath);
-	}
-
-	public ConfigurationNode getChild(String name) {
-		return baseConfig.getChild(name);
-	}
-
-	public ConfigurationNode getChild(String name, boolean add) {
-		return baseConfig.getChild(name, add);
-	}
-
-	public ConfigurationNode addChild(ConfigurationNode node) {
-		return baseConfig.addChild(node);
-	}
-
-	public void addChildren(ConfigurationNode... nodes) {
-		baseConfig.addChildren(nodes);
-	}
-
-	public ConfigurationNode removeChild(String key) {
-		return baseConfig.removeChild(key);
-	}
-
-	public ConfigurationNode removeChild(ConfigurationNode node) {
-		return baseConfig.removeChild(node);
-	}
-
-	public Map<String, ConfigurationNode> getChildren() {
-		return baseConfig.getChildren();
-	}
-
-	public Map<String, Object> getValues() {
-		return baseConfig.getValues();
-	}
-
-	public Set<String> getKeys(boolean deep) {
-		return baseConfig.getKeys(deep);
-	}
-
-	public ConfigurationNode getNode(String path) {
-		return baseConfig.getNode(path);
-	}
-
-	public ConfigurationNode getNode(String... path) {
-		return baseConfig.getNode(path);
-	}
-
-	public boolean hasChildren() {
-		return baseConfig.hasChildren();
-	}
-
-	public Configuration getConfiguration() {
-		return baseConfig;
-	}
-
-	public String[] getPathElements() {
-		return baseConfig.getPathElements();
+		super.save();
 	}
 }
