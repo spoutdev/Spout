@@ -26,14 +26,12 @@
  */
 package org.spout.api.util.set.concurrent;
 
-import gnu.trove.TLongCollection;
-import gnu.trove.function.TObjectFunction;
+import gnu.trove.TIntCollection;
 import gnu.trove.impl.Constants;
-import gnu.trove.iterator.TLongIterator;
-import gnu.trove.procedure.TLongObjectProcedure;
-import gnu.trove.procedure.TLongProcedure;
-import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TLongHashSet;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.procedure.TIntProcedure;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -42,28 +40,27 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.spout.api.math.MathHelper;
-
 /**
- * This is a synchronised version of the Trove LongObjectHashSet.
+ * This is a synchronised version of the Trove IntHashSet.
  *
  * Read/write locks are used to synchronise access.
  *
  * By default, it creates 16 sub-maps and there is a separate read/write lock
  * for each submap.
  */
-public class TSyncLongHashSet implements TLongSet {
+public class TSyncIntHashSet implements TIntSet {
 	private final int setCount;
 	private final int setMask;
 	private final int hashScramble;
 	private final ReadWriteLock[] lockArray;
-	private final TLongHashSet[] setArray;
-	private final long no_entry_value;
+	private final TIntHashSet[] setArray;
+	private final int no_entry_value;
 	private final AtomicInteger totalValues = new AtomicInteger(0);
 
 	/**
 	 * Creates a synchronised map based on the Trove long object map
 	 */
-	public TSyncLongHashSet() {
+	public TSyncIntHashSet() {
 		this(16);
 	}
 
@@ -72,7 +69,7 @@ public class TSyncLongHashSet implements TLongSet {
 	 *
 	 * @param setCount the number of sub-sets
 	 */
-	public TSyncLongHashSet(int setCount) {
+	public TSyncIntHashSet(int setCount) {
 		this(setCount, 32);
 	}
 
@@ -82,7 +79,7 @@ public class TSyncLongHashSet implements TLongSet {
 	 * @param setCount the number of sub-maps
 	 * @param initialCapacity the initial capacity of the map
 	 */
-	public TSyncLongHashSet(int setCount, int initialCapacity) {
+	public TSyncIntHashSet(int setCount, int initialCapacity) {
 		this(setCount, initialCapacity, 0.5F);
 	}
 
@@ -93,8 +90,8 @@ public class TSyncLongHashSet implements TLongSet {
 	 * @param initialCapacity the initial capacity of the map
 	 * @param loadFactor the load factor for the map
 	 */
-	public TSyncLongHashSet(int setCount, int initialCapacity, float loadFactor) {
-		this(setCount, initialCapacity, loadFactor, Constants.DEFAULT_LONG_NO_ENTRY_VALUE);
+	public TSyncIntHashSet(int setCount, int initialCapacity, float loadFactor) {
+		this(setCount, initialCapacity, loadFactor, Constants.DEFAULT_INT_NO_ENTRY_VALUE);
 	}
 
 	/**
@@ -105,7 +102,7 @@ public class TSyncLongHashSet implements TLongSet {
 	 * @param loadFactor the load factor for the map
 	 * @param noEntryValue the value used to indicate a null key
 	 */
-	public TSyncLongHashSet(int setCount, int initialCapacity, float loadFactor, long noEntryValue) {
+	public TSyncIntHashSet(int setCount, int initialCapacity, float loadFactor, int noEntryValue) {
 		if (setCount > 0x100000) {
 			throw new IllegalArgumentException("Set count exceeds valid range");
 		}
@@ -113,10 +110,10 @@ public class TSyncLongHashSet implements TLongSet {
 		setMask = setCount - 1;
 		this.setCount = setCount;
 		this.hashScramble = (setCount << 8) + 1;
-		setArray = new TLongHashSet[setCount];
+		setArray = new TIntHashSet[setCount];
 		lockArray = new ReadWriteLock[setCount];
 		for (int i = 0; i < setCount; i++) {
-			setArray[i] = new TLongHashSet(initialCapacity / setCount, loadFactor, noEntryValue);
+			setArray[i] = new TIntHashSet(initialCapacity / setCount, loadFactor, noEntryValue);
 			lockArray[i] = new ReentrantReadWriteLock();
 		}
 		this.no_entry_value = noEntryValue;
@@ -141,7 +138,7 @@ public class TSyncLongHashSet implements TLongSet {
 	}
 
 	@Override
-	public boolean contains(long value) {
+	public boolean contains(int value) {
 		for (int m = 0; m < setCount; m++) {
 			if (containsValue(m, value)) {
 				return true;
@@ -150,7 +147,7 @@ public class TSyncLongHashSet implements TLongSet {
 		return false;
 	}
 
-	private boolean containsValue(int m, long value) {
+	private boolean containsValue(int m, int value) {
 		Lock lock = lockArray[m].readLock();
 		lock.lock();
 		try {
@@ -161,7 +158,7 @@ public class TSyncLongHashSet implements TLongSet {
 	}
 
 	@Override
-	public long getNoEntryValue() {
+	public int getNoEntryValue() {
 		return no_entry_value;
 	}
 
@@ -171,22 +168,22 @@ public class TSyncLongHashSet implements TLongSet {
 	}
 
 	@Override
-	public long[] toArray(long[] dest) {
+	public int[] toArray(int[] dest) {
 		for (int m = 0; m < setCount; m++) {
 			lockArray[m].readLock().lock();
 		}
 		try {
 			int localSize = totalValues.get();
-			long[] keys;
+			int[] keys;
 			if (dest == null || dest.length < localSize) {
-				keys = new long[localSize];
+				keys = new int[localSize];
 			} else {
 				keys = dest;
 			}
 			int position = 0;
 			for (int m = 0; m < setCount; m++) {
-				long[] mapKeys = setArray[m].toArray();
-				for (long mapKey : mapKeys) {
+				int[] mapKeys = setArray[m].toArray();
+				for (int mapKey : mapKeys) {
 					keys[position++] = mapKey;
 				}
 			}
@@ -202,12 +199,12 @@ public class TSyncLongHashSet implements TLongSet {
 	}
 
 	@Override
-	public long[] toArray() {
+	public int[] toArray() {
 		return toArray(null);
 	}
 
 	@Override
-	public boolean add(long entry) {
+	public boolean add(int entry) {
 		int m = setHash(entry);
 		Lock lock = lockArray[m].writeLock();
 		lock.lock();
@@ -223,7 +220,7 @@ public class TSyncLongHashSet implements TLongSet {
 	}
 
 	@Override
-	public boolean remove(long key) {
+	public boolean remove(int key) {
 		int m = setHash(key);
 		Lock lock = lockArray[m].writeLock();
 		lock.lock();
@@ -249,7 +246,7 @@ public class TSyncLongHashSet implements TLongSet {
 	}
 
 	@Override
-	public TLongIterator iterator() {
+	public TIntIterator iterator() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -259,27 +256,27 @@ public class TSyncLongHashSet implements TLongSet {
 	}
 
 	@Override
-	public boolean containsAll(TLongCollection collection) {
+	public boolean containsAll(TIntCollection collection) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public boolean containsAll(long[] array) {
+	public boolean containsAll(int[] array) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends Long> collection) {
+	public boolean addAll(Collection<? extends Integer> collection) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public boolean addAll(TLongCollection collection) {
+	public boolean addAll(TIntCollection collection) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public boolean addAll(long[] array) {
+	public boolean addAll(int[] array) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -289,12 +286,12 @@ public class TSyncLongHashSet implements TLongSet {
 	}
 
 	@Override
-	public boolean retainAll(TLongCollection collection) {
+	public boolean retainAll(TIntCollection collection) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public boolean retainAll(long[] array) {
+	public boolean retainAll(int[] array) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -304,17 +301,17 @@ public class TSyncLongHashSet implements TLongSet {
 	}
 
 	@Override
-	public boolean removeAll(TLongCollection collection) {
+	public boolean removeAll(TIntCollection collection) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public boolean removeAll(long[] array) {
+	public boolean removeAll(int[] array) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public boolean forEach(TLongProcedure procedure) {
+	public boolean forEach(TIntProcedure procedure) {
 		throw new UnsupportedOperationException();
 	}
 }

@@ -26,18 +26,17 @@
  */
 package org.spout.api.util.set.concurrent;
 
-import gnu.trove.set.TLongSet;
+import static org.junit.Assert.assertTrue;
+import gnu.trove.set.TIntSet;
 
 import java.util.HashSet;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Before;
 import org.junit.Test;
 
-public class TSyncLongHashSetTest {
+public class TSyncIntHashSetTest {
 	private final static int LENGTH = 10000;
 	private final static int THREADS = 20;
 	private final static int TEST_COUNT = 2;
@@ -47,8 +46,8 @@ public class TSyncLongHashSetTest {
 	private final static boolean PRINT_AVERAGES = false;
 	private final static boolean PRINT_ALL_TESTS = false;
 
-	public final static long[] readBuffer = new long[LENGTH];
-	public final static long[] writeBuffer = new long[LENGTH];
+	public final static int[] readBuffer = new int[LENGTH];
+	public final static int[] writeBuffer = new int[LENGTH];
 	
 	private int values;
 
@@ -56,12 +55,12 @@ public class TSyncLongHashSetTest {
 	public void setUp() {
 		Random rand = new Random();
 		
-		HashSet<Long> set = new HashSet<Long>();
+		HashSet<Integer> set = new HashSet<Integer>();
 		
 		values = 0;
 
 		for (int count = 0; count < LENGTH; count++) {
-			writeBuffer[count] = rand.nextLong();
+			writeBuffer[count] = rand.nextInt();
 			if (set.add(writeBuffer[count])) {
 				values++;
 			}
@@ -87,12 +86,12 @@ public class TSyncLongHashSetTest {
 
 			troverw += runJoin(threads, "TroveRW");
 			
-			TLongSet set = TroveReadWriteSet.set;
+			TIntSet set = TroveReadWriteSet.set;
 			
 			assertTrue("Incorrect number of entries in set, " + set.size() + ", expected " + values, set.size() == values);
 			
 			for (int i = 0; i < LENGTH; i++) {
-				long value = writeBuffer[i];
+				int value = writeBuffer[i];
 				assertTrue("Expected entry, " + value + " at index " + i + " missing", set.contains(value));
 			}
 			
@@ -127,13 +126,13 @@ public class TSyncLongHashSetTest {
 	}
 
 	public static class TroveReadWriteSet extends Thread {
-		public static TSyncLongHashSet set;
+		public static TSyncIntHashSet set;
 
 		public static AtomicInteger count = new AtomicInteger(LENGTH);
 
 		public TroveReadWriteSet(long seed) {
 			count.set(LENGTH - 1);
-			set = new TSyncLongHashSet(LENGTH / 128);
+			set = new TSyncIntHashSet(LENGTH / 128);
 		}
 
 		public void run() {
