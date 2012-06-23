@@ -28,6 +28,7 @@ package org.spout.api.util.config.annotated;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -137,11 +138,15 @@ public class AnnotatedConfigurationTest {
 		config.getNode(INT_KEY).setValue(INT_VALUE);
 		config.getNode(NESTED_STRING_KEY).setValue(NESTED_STRING_VALUE);
 		config.getNode(MAP_STRING_STRING_KEY).setValue(MAP_STRING_STRING_VALUE);
-		config.getNode(SET_INTEGER_KEY).setValue(new ArrayList<Integer>(SET_INTEGER_VALUE));
+		List<Integer> sortedIntList = new ArrayList<Integer>(SET_INTEGER_VALUE);
+		Collections.sort(sortedIntList);
+		config.getNode(SET_INTEGER_KEY).setValue(sortedIntList);
+
 		List<String> enumNames = new ArrayList<String>(SET_ENUM_VALUE.size());
 		for (TestEnum val : SET_ENUM_VALUE) {
 			enumNames.add(val.name());
 		}
+		Collections.sort(enumNames);
 		config.getNode(SET_ENUM_KEY).setValue(enumNames);
 		config.getNode(NESTED_MAP_KEY).setValue(NESTED_MAP_VALUE);
 		config.getNode(ENUM_KEY).setValue(ENUM_VALUE.name());
@@ -151,14 +156,18 @@ public class AnnotatedConfigurationTest {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testSaving() throws ConfigurationException {
 		MapConfiguration saveConfig = new MapConfiguration();
 		annotatedConfig.save(saveConfig);
 		Map<String, Object> values = config.getValues();
 		SubConfiguration subConfig = new SubConfiguration(new MapConfiguration());
 		subConfig.save();
+		Map<String, Object> saveValues = saveConfig.getValues();
+		Collections.sort((List)saveValues.get(SET_ENUM_KEY));
+		Collections.sort((List)saveValues.get(SET_INTEGER_KEY));
 		values.put(CONFIG_BASE_KEY, subConfig.getValues());
-		assertEquals(values, saveConfig.getValues());
+		assertEquals(values, saveValues);
 	}
 
 	@Test
