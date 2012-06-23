@@ -264,7 +264,7 @@ public abstract class InventoryBase implements Serializable, Iterable<ItemStack>
 	/**
 	 * Adds a given amount to the data of the item at the slot index<br><br>
 	 * 
-	 * If the data becomes negative the item is removed and False is returned<br>
+	 * If the data becomes negative or exceeds the maximum the item is removed and False is returned<br>
 	 * Otherwise True is returned.
 	 * @param slot index of the item
 	 * @param amount of data to add
@@ -274,9 +274,9 @@ public abstract class InventoryBase implements Serializable, Iterable<ItemStack>
 		ItemStack item = this.getItem(slot);
 		if (item != null) {
 			short newdata = (short) (item.getData() + amount);
-			if (newdata <= 0) {
+			if (newdata <= 0 || newdata > item.getMaxData()) {
 				this.setItem(slot, null);
-			} else if (newdata <= item.getMaxData()) {
+			} else {
 				this.setItem(slot, item.clone().setData(newdata));
 				return true;
 			}
