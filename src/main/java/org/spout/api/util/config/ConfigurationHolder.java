@@ -70,6 +70,22 @@ public class ConfigurationHolder extends ValueHolderBase implements Configuratio
 		return path;
 	}
 
+	/**
+	 * Gets the default value of this Configuration Holder
+	 * @return the default value
+	 */
+	public Object getDefaultValue() {
+		return this.def;
+	}
+
+	/**
+	 * Sets the default value for this Configuration Holder
+	 * @param def value to set to
+	 */
+	public void setDefaultValue(Object def) {
+		this.def = def;
+	}
+
 	@Override
 	public Object getValue() {
 		return getNode().getValue(this.def);

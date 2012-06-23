@@ -45,8 +45,9 @@ public class ConfigurationHolderConfigurationTest {
 	}
 
 	@Test
-	public void testConfigSet() {
+	public void testConfigSet() throws ConfigurationException {
 		TestConfig testConfig = new TestConfig(new MapConfiguration());
+		testConfig.load();
 		assertEquals(testConfig.getConfiguration(), TestConfig.TEST_ONE.getConfiguration());
 		assertEquals(testConfig.getConfiguration(), TestConfig.TEST_TWO.getConfiguration());
 	}

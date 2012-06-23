@@ -27,7 +27,6 @@
 package org.spout.api.util.config;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -129,7 +128,7 @@ public abstract class AbstractConfigurationNodeSource implements ConfigurationNo
 
 	@Override
 	public Map<String, Object> getValues() {
-		Map<String, Object> ret = new HashMap<String, Object>();
+		Map<String, Object> ret = new LinkedHashMap<String, Object>();
 		for (Map.Entry<String, ConfigurationNode> entry : getChildren().entrySet()) {
 			ret.put(entry.getKey(), entry.getValue().getValue());
 		}

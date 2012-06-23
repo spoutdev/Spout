@@ -40,7 +40,7 @@ import java.util.List;
  * their default values loaded into the configuration as needed on load
  */
 public abstract class ConfigurationHolderConfiguration extends ConfigurationWrapper  {
-	private final List<ConfigurationHolder> holders = new ArrayList<ConfigurationHolder>();
+	private final List<Field> holders = new ArrayList<Field>();
 
 	public ConfigurationHolderConfiguration(Configuration base) {
 		super(base);
@@ -48,20 +48,23 @@ public abstract class ConfigurationHolderConfiguration extends ConfigurationWrap
 			field.setAccessible(true);
 
 			if (ConfigurationHolder.class.isAssignableFrom(field.getType())) {
-				try {
-					ConfigurationHolder holder = (ConfigurationHolder) field.get(this);
-					holder.setConfiguration(getConfiguration());
-					holders.add(holder);
-				} catch (IllegalAccessException e) {
-				}
+				holders.add(field);
 			}
 		}
 	}
 
+	@Override
 	public void load() throws ConfigurationException {
 		super.load();
-		for (ConfigurationHolder holder : holders) {
-			holder.getValue(); // Initialize the ConfigurationHolder's value
+		for (Field field : this.holders) {
+			try {
+				ConfigurationHolder holder = (ConfigurationHolder) field.get(this);
+				if (holder != null) {
+					holder.setConfiguration(getConfiguration());
+					holder.getValue(); // Initialize the ConfigurationHolder's value
+				}
+			} catch (IllegalAccessException e) {
+			}
 		}
 	}
 }
