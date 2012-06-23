@@ -43,6 +43,7 @@ import org.spout.api.datatable.value.DatatableFloat;
 import org.spout.api.datatable.value.DatatableInt;
 import org.spout.api.datatable.value.DatatableSerializable;
 import org.spout.api.exception.InvalidDescriptionFileException;
+import org.spout.api.util.config.serialization.Serialization;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 
@@ -168,21 +169,7 @@ public class PluginDescriptionFile implements Datatable {
 			throw new InvalidDescriptionFileException("The field '" + key + "' is not present in the plugin.yml!");
 		}
 
-		if (!type.isInstance(value)) {
-			if (type.equals(String.class)) {
-				value = value.toString();
-			} else if (type.isEnum()) {
-				try {
-					value = Enum.valueOf(type.asSubclass(Enum.class), value.toString().toUpperCase());
-				} catch (IllegalArgumentException e) {
-					throw new InvalidDescriptionFileException(e, "Unknown input value '" + value + "' for enum type " + type.getSimpleName() + " in field '" + key + "'.");
-				}
-			}
-		}
-		if (!type.isInstance(value)) {
-			throw new InvalidDescriptionFileException("The field '" + key + "' is of the wrong type in the plugin.yml");
-		}
-		return type.cast(value);
+		return (T) Serialization.deserialize(type, value);
 	}
 
 	/**
