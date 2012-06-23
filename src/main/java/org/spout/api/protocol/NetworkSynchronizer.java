@@ -421,6 +421,9 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	 *
 	 * This is a MONITOR method, for sending network updates, no changes should
 	 * be made to the chunk
+	 * 
+	 * While always called during the startSnapshot part of the tick, it may be called from 
+	 * multiple threads
 	 *
 	 * @param c the chunk
 	 */
@@ -434,7 +437,9 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	 * This method is called during the startSnapshot stage of the tick.
 	 *
 	 * This is a MONITOR method, for sending network updates, no changes should
-	 * be made to the chunk
+	 * be made to the chunk.
+	 * 
+	 * All calls to this method are made from the thread managing the player
 	 *
 	 * @param p the base Point for the chunk
 	 */
@@ -449,6 +454,8 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	 *
 	 * This is a MONITOR method, for sending network updates, no changes should
 	 * be made to the chunk
+	 * 
+	 * All calls to this method are made from the thread managing the player
 	 *
 	 * @param p the base Point for the chunk
 	 */

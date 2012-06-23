@@ -24,68 +24,33 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.util.set;
+package org.spout.api.util.set.concurrent;
 
-import gnu.trove.iterator.TLongIterator;
-import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TLongHashSet;
-
-import org.spout.api.util.hashing.IntPairHashed;
+import org.spout.api.util.set.TIntPairHashSet;
 
 /**
- * A simplistic set that supports 2 ints for one value inside the set.
+ * A synchronized set that supports 2 integers for keys, using a trove
+ * long hashset in the backend.
  *
- * @author Afforess
+ * This map is backed by a read/write lock synchronised map.
  *
+ * @param <K> the value type
  */
-public class TIntPairHashSet extends IntPairHashed {
-	protected final TLongSet set;
-
-	public TIntPairHashSet() {
+public class TSyncIntPairHashSet extends TIntPairHashSet {
+	/**
+	 * Creates a new <code>TSyncIntPairObjectHashMap</code> instance backend by a synchronized (thread-safe) {@see TSyncLongObjectHashMap} instance with an capacity of 100 and the default load factor.
+	 */
+	public TSyncIntPairHashSet() {
 		this(100);
 	}
 
-	public TIntPairHashSet(int capacity) {
-		set = new TLongHashSet(capacity);
+	/**
+	 * Creates a new <code>TSyncIntPairObjectHashMap</code> instance backend by a synchronized (thread-safe) {@see TSyncLongObjectHashMap} instance with a prime capacity equal to or greater than <code>capacity</code> and with the default load factor.
+	 *
+	 * @param capacity an <code>int</code> value
+	 */
+	public TSyncIntPairHashSet(int capacity) {
+		super(new TSyncLongHashSet(capacity));
 	}
 
-	public TIntPairHashSet(TIntPairHashSet other) {
-		set = new TLongHashSet(other.set);
-	}
-	
-	public TIntPairHashSet(TLongSet set) {
-		this.set = set;
-	}
-
-	public boolean add(int key1, int key2) {
-		return set.add(key(key1, key2));
-	}
-
-	public boolean contains(int key1, int key2) {
-		return set.contains(key(key1, key2));
-	}
-
-	public void clear() {
-		set.clear();
-	}
-
-	public boolean isEmpty() {
-		return set.isEmpty();
-	}
-
-	public TLongIterator iterator() {
-		return set.iterator();
-	}
-
-	public void addAll(TIntPairHashSet other) {
-		set.addAll(other.set);
-	}
-
-	public boolean remove(int key1, int key2) {
-		return set.remove(key(key1, key2));
-	}
-
-	public int size() {
-		return set.size();
-	}
 }
