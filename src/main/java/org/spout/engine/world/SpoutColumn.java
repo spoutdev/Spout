@@ -100,9 +100,16 @@ public class SpoutColumn {
 				for (int zz = 0; zz < BLOCKS.SIZE; zz++) {
 					if (getDirtyFlag(xx, zz).compareAndSet(true, false)) {
 						int y = getAtomicInteger(xx, zz).get();
-						topmostBlocks[xx][zz] = world.getBlockMaterial(wx + xx, y, wz + zz);
-						if (topmostBlocks[xx][zz] == null) {
-							Spout.getLogger().info("Failed to set topmost block");
+						int wxx = wx + xx;
+						int wzz = wz + zz;
+						Chunk c = world.getChunkFromBlock(wxx, y, wzz, LoadOption.LOAD_ONLY);
+						BlockMaterial bm = null;
+						if (c != null) {
+							 bm = c.getBlockMaterial(wx + xx, y, wz + zz);	
+						}
+						topmostBlocks[xx][zz] = bm;
+						if (bm == null) {
+							Spout.getLogger().info("Failed to set topmost block, " + wxx + ", " + y + ", " + wzz);
 						}
 					}
 				}
