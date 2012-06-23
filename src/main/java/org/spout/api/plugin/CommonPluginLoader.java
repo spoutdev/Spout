@@ -26,6 +26,7 @@
  */
 package org.spout.api.plugin;
 
+import org.apache.commons.collections.map.CaseInsensitiveMap;
 import org.spout.api.Engine;
 import org.spout.api.UnsafeMethod;
 import org.spout.api.event.server.PluginDisableEvent;
@@ -59,7 +60,7 @@ public class CommonPluginLoader implements PluginLoader {
 	private final Pattern[] patterns;
 	private final CommonSecurityManager manager;
 	private final double key;
-	private final Map<String, CommonClassLoader> loaders = new HashMap<String, CommonClassLoader>();
+	private final Map<String, CommonClassLoader> loaders = new CaseInsensitiveMap();
 
 	public CommonPluginLoader(final Engine engine, final CommonSecurityManager manager, final double key) {
 		this.engine = engine;
@@ -82,7 +83,7 @@ public class CommonPluginLoader implements PluginLoader {
 			String name = cp.getDescription().getName();
 
 			if (!loaders.containsKey(name)) {
-				loaders.put(name.toLowerCase(), (CommonClassLoader) cp.getClassLoader());
+				loaders.put(name, (CommonClassLoader) cp.getClassLoader());
 			}
 
 			try {
@@ -106,7 +107,7 @@ public class CommonPluginLoader implements PluginLoader {
 			String name = cp.getDescription().getName();
 
 			if (!loaders.containsKey(name)) {
-				loaders.put(name.toLowerCase(), (CommonClassLoader) cp.getClassLoader());
+				loaders.put(name, (CommonClassLoader) cp.getClassLoader());
 			}
 
 			try {
@@ -165,7 +166,7 @@ public class CommonPluginLoader implements PluginLoader {
 		}
 
 		loader.setPlugin(result);
-		loaders.put(desc.getName().toLowerCase(), loader);
+		loaders.put(desc.getName(), loader);
 
 		return result;
 	}
@@ -265,11 +266,10 @@ public class CommonPluginLoader implements PluginLoader {
 	protected Class<?> getClassByName(final String name, final CommonClassLoader commonLoader) {
 		CommonPlugin plugin = commonLoader.getPlugin();
 		Set<String> ignore = new HashSet<String>();
-		ignore.add(plugin.getName().toLowerCase());
+		ignore.add(plugin.getName());
 
 		if (plugin.getDescription().getDepends() != null) {
 			for (String dependency : plugin.getDescription().getDepends()) {
-				dependency = dependency.toLowerCase();
 				try {
 					Class<?> clazz = loaders.get(dependency).findClass(name, false);
 					if (clazz != null) {
@@ -283,7 +283,6 @@ public class CommonPluginLoader implements PluginLoader {
 
 		if (plugin.getDescription().getSoftDepends() != null) {
 			for (String softDependency : plugin.getDescription().getSoftDepends()) {
-				softDependency = softDependency.toLowerCase();
 				try {
 					Class<?> clazz = loaders.get(softDependency).findClass(name, false);
 					if (clazz != null) {
