@@ -28,26 +28,26 @@ package org.spout.api.util.config.serialization;
 
 public class EnumSerializer extends Serializer {
 	@Override
-	protected Object handleDeserialize(GenericType type, Object value) {
-		try {
-			return Enum.valueOf(type.getMainType().asSubclass(Enum.class), value.toString().toUpperCase());
-		} catch (IllegalArgumentException e) {
-			return null;
-		}
-	}
-
-	@Override
-	public Object serialize(GenericType type, Object value) {
-		return ((Enum<?>) value).name();
-	}
-
-	@Override
-	public boolean isApplicable(GenericType target, Object value) {
+	public boolean isApplicable(GenericType target) {
 		return target.getMainType() != null && target.getMainType().isEnum();
 	}
 
 	@Override
 	protected int getParametersRequired() {
 		return 0;
+	}
+
+	@Override
+	protected Object handleDeserialize(GenericType type, Object value) {
+		try {
+			return Enum.valueOf(type.getMainType().asSubclass(Enum.class), String.valueOf(value).toUpperCase());
+		} catch (IllegalArgumentException e) {
+			return null;
+		}
+	}
+
+	@Override
+	protected Object handleSerialize(GenericType type, Object value) {
+		return ((Enum<?>) value).name();
 	}
 }

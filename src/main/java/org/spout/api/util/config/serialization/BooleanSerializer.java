@@ -27,6 +27,17 @@
 package org.spout.api.util.config.serialization;
 
 public class BooleanSerializer extends Serializer {
+
+	@Override
+	public boolean isApplicable(GenericType type) {
+		return boolean.class.isAssignableFrom(type.getMainType()) || Boolean.class.isAssignableFrom(type.getMainType());
+	}
+
+	@Override
+	protected int getParametersRequired() {
+		return 0;
+	}
+
 	@Override
 	protected Object handleDeserialize(GenericType type, Object value) {
 		if (value instanceof Boolean) {
@@ -34,15 +45,5 @@ public class BooleanSerializer extends Serializer {
 		} else {
 			return Boolean.parseBoolean(value.toString());
 		}
-	}
-
-	@Override
-	public boolean isApplicable(GenericType type, Object value) {
-		return boolean.class.isAssignableFrom(type.getMainType()) || Boolean.class.isAssignableFrom(type.getMainType());
-	}
-
-	@Override
-	protected int getParametersRequired() {
-		return 0;
 	}
 }

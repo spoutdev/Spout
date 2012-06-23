@@ -27,10 +27,14 @@
 package org.spout.api.util.config.annotated;
 
 import java.lang.reflect.Field;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 
+import org.spout.api.exception.ConfigurationException;
 import org.spout.api.util.ReflectionUtils;
+import org.spout.api.util.config.Configuration;
 import org.spout.api.util.config.ConfigurationNode;
 import org.spout.api.util.config.ConfigurationNodeSource;
 
@@ -38,54 +42,155 @@ import org.spout.api.util.config.ConfigurationNodeSource;
  * The base class for annotated configurations
  * Annotated configurations are created by subclassing ConfigurationBase and having fields annotated with @Setting
  */
-public abstract class AnnotatedConfiguration {
-	private static final Logger logger = Logger.getLogger(AnnotatedConfiguration.class.getCanonicalName());
-
+public class AnnotatedConfiguration implements Configuration {
+	private final Configuration baseConfig;
+	private Set<Field> fields;
 	private boolean isConfigured;
+
+	public AnnotatedConfiguration(Configuration baseConfig) {
+		this.baseConfig = baseConfig;
+	}
 
 	public boolean isConfigured() {
 		return isConfigured;
 	}
 
-	public void load(ConfigurationNodeSource source) {
-		if (getClass().isAnnotationPresent(SettingBase.class)) {
-			source = source.getNode(getClass().getAnnotation(SettingBase.class).value());
+	private Set<Field> getFields() {
+		if (this.fields == null) {
+			this.fields = new HashSet<Field>(ReflectionUtils.getDeclaredFieldsRecur(getClass()));
 		}
+		return this.fields;
+	}
 
-		for (Field field : ReflectionUtils.getDeclaredFieldsRecur(getClass())) {
+	public void load(ConfigurationNodeSource source) throws ConfigurationException {
+		for (Field field : getFields()) {
+			field.setAccessible(true);
 			if (!field.isAnnotationPresent(Setting.class)) continue;
 			String[] key = field.getAnnotation(Setting.class).value();
 			ConfigurationNode node = source.getNode(key);
 			final Object value = node.getTypedValue(field.getGenericType());
 			try {
-				field.setAccessible(true);
 				if (value != null) {
 					field.set(this, value);
 				} else {
 					node.setValue(field.getGenericType(), field.get(this));
 				}
 			} catch (IllegalAccessException e) {
-				logger.log(Level.SEVERE, "Error setting configuration value of field: ", e);
-				e.printStackTrace();
+				throw new ConfigurationException(e);
 			}
 		}
 		isConfigured = true;
 	}
 
-	public void save(ConfigurationNodeSource source) {
-		if (getClass().isAnnotationPresent(SettingBase.class)) {
-			source = source.getNode(getClass().getAnnotation(SettingBase.class).value());
-		}
-		for (Field field : ReflectionUtils.getDeclaredFieldsRecur(getClass())) {
+	public void save(ConfigurationNodeSource source) throws ConfigurationException {
+		for (Field field : getFields()) {
 			field.setAccessible(true);
 			if (!field.isAnnotationPresent(Setting.class)) continue;
 			String[] key = field.getAnnotation(Setting.class).value();
 			try {
 				source.getNode(key).setValue(field.getGenericType(), field.get(this));
 			} catch (IllegalAccessException e) {
-				logger.log(Level.SEVERE, "Error getting configuration value of field: ", e);
-				e.printStackTrace();
+				throw new ConfigurationException(e);
 			}
 		}
+	}
+
+	public void load() throws ConfigurationException {
+		baseConfig.load();
+		load(this);
+
+	}
+
+	public void save() throws ConfigurationException {
+		save(this);
+		baseConfig.save();
+	}
+
+	public void setNode(ConfigurationNode node) {
+		baseConfig.setNode(node);
+	}
+
+	public String getPathSeparator() {
+		return baseConfig.getPathSeparator();
+	}
+
+	public void setPathSeparator(String pathSeparator) {
+		baseConfig.setPathSeparator(pathSeparator);
+	}
+
+	public Pattern getPathSeparatorPattern() {
+		return baseConfig.getPathSeparatorPattern();
+	}
+
+	public boolean doesWriteDefaults() {
+		return baseConfig.doesWriteDefaults();
+	}
+
+	public void setWritesDefaults(boolean writesDefaults) {
+		baseConfig.setWritesDefaults(writesDefaults);
+	}
+
+	public String[] splitNodePath(String path) {
+		return baseConfig.splitNodePath(path);
+	}
+
+	public String[] ensureCorrectPath(String[] rawPath) {
+		return baseConfig.ensureCorrectPath(rawPath);
+	}
+
+	public ConfigurationNode getChild(String name) {
+		return baseConfig.getChild(name);
+	}
+
+	public ConfigurationNode getChild(String name, boolean add) {
+		return baseConfig.getChild(name, add);
+	}
+
+	public ConfigurationNode addChild(ConfigurationNode node) {
+		return baseConfig.addChild(node);
+	}
+
+	public void addChildren(ConfigurationNode... nodes) {
+		baseConfig.addChildren(nodes);
+	}
+
+	public ConfigurationNode removeChild(String key) {
+		return baseConfig.removeChild(key);
+	}
+
+	public ConfigurationNode removeChild(ConfigurationNode node) {
+		return baseConfig.removeChild(node);
+	}
+
+	public Map<String, ConfigurationNode> getChildren() {
+		return baseConfig.getChildren();
+	}
+
+	public Map<String, Object> getValues() {
+		return baseConfig.getValues();
+	}
+
+	public Set<String> getKeys(boolean deep) {
+		return baseConfig.getKeys(deep);
+	}
+
+	public ConfigurationNode getNode(String path) {
+		return baseConfig.getNode(path);
+	}
+
+	public ConfigurationNode getNode(String... path) {
+		return baseConfig.getNode(path);
+	}
+
+	public boolean hasChildren() {
+		return baseConfig.hasChildren();
+	}
+
+	public Configuration getConfiguration() {
+		return baseConfig;
+	}
+
+	public String[] getPathElements() {
+		return baseConfig.getPathElements();
 	}
 }

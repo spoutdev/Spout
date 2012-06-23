@@ -31,6 +31,21 @@ import java.util.Map;
 
 public class MapSerializer extends Serializer {
 	@Override
+	public boolean isApplicable(GenericType type) {
+		return Map.class.equals(type.getMainType());
+	}
+
+	@Override
+	protected int getParametersRequired() {
+		return 2;
+	}
+
+	@Override
+	public boolean isApplicableDeserialize(GenericType type, Object value) {
+		return super.isApplicableDeserialize(type, value) && value instanceof Map<?, ?>;
+	}
+
+	@Override
 	protected Object handleDeserialize(GenericType type, Object value) {
 		Map<?, ?> raw = (Map<?, ?>) value;
 		Map<Object, Object> values = new HashMap<Object, Object>();
@@ -42,12 +57,7 @@ public class MapSerializer extends Serializer {
 	}
 
 	@Override
-	public boolean isApplicable(GenericType type, Object value) {
-		return Map.class.equals(type.getMainType()) && value instanceof Map;
-	}
-
-	@Override
-	public Object serialize(GenericType type, Object value) {
+	protected Object handleSerialize(GenericType type, Object value) {
 		Map<?, ?> raw = (Map<?, ?>) value;
 		Map<Object, Object> values = new HashMap<Object, Object>();
 		for (Map.Entry<?, ?> entry : raw.entrySet()) {
@@ -55,10 +65,5 @@ public class MapSerializer extends Serializer {
 					Serialization.serialize(type.getGenerics()[1], entry.getValue()));
 		}
 		return values;
-	}
-
-	@Override
-	protected int getParametersRequired() {
-		return 2;
 	}
 }

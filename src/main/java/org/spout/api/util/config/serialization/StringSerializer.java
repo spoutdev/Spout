@@ -28,17 +28,17 @@ package org.spout.api.util.config.serialization;
 
 public class StringSerializer extends Serializer {
 	@Override
-	protected Object handleDeserialize(GenericType type, Object value) {
-		return value.toString();
-	}
-
-	@Override
-	public boolean isApplicable(GenericType type, Object value) {
+	public boolean isApplicable(GenericType type) {
 		return String.class.isAssignableFrom(type.getMainType());
 	}
 
 	@Override
 	public int getParametersRequired() {
 		return 0;
+	}
+
+	@Override
+	protected Object handleDeserialize(GenericType type, Object value) {
+		return value.toString();
 	}
 }

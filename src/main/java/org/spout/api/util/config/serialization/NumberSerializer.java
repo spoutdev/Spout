@@ -28,54 +28,7 @@ package org.spout.api.util.config.serialization;
 
 public class NumberSerializer extends Serializer {
 	@Override
-	protected Object handleDeserialize(GenericType type, Object rawVal) {
-		Class<?> target = type.getMainType();
-		Number value = (Number)rawVal;
-		// Wrapper classes are evil!
-		if (target.equals(Number.class)) {
-			return value;
-		} else if (target.equals(int.class) || target.equals(Integer.class)) {
-			if (value instanceof Integer) {
-				return value;
-			} else {
-				return value.intValue();
-			}
-		} else if (target.equals(byte.class) || target.equals(Byte.class)) {
-			if (value instanceof Byte) {
-				return value;
-			} else {
-				return value.byteValue();
-			}
-		} else if (target.equals(long.class) || target.equals(Long.class)) {
-			if (value instanceof Long) {
-				return value;
-			} else {
-				return value.longValue();
-			}
-		} else if (target.equals(double.class) || target.equals(Double.class)) {
-			if (value instanceof Double) {
-				return value;
-			} else {
-				return value.doubleValue();
-			}
-		} else if (target.equals(float.class) || target.equals(Float.class)) {
-			if (value instanceof Float) {
-				return value;
-			} else {
-				return value.floatValue();
-			}
-		} else if (target.equals(short.class) || target.equals(Short.class)) {
-			if (value instanceof Short) {
-				return value;
-			} else {
-				return value.shortValue();
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public boolean isApplicable(GenericType type, Object value) {
+	public boolean isApplicable(GenericType type) {
 		Class<?> target = type.getMainType();
 		return target != null && (target.isPrimitive() || Number.class.isAssignableFrom(target)) && !boolean.class.isAssignableFrom(target);
 	}
@@ -83,5 +36,51 @@ public class NumberSerializer extends Serializer {
 	@Override
 	public int getParametersRequired() {
 		return 0;
+	}
+
+	@Override
+	protected Object handleDeserialize(GenericType type, Object rawVal) {
+		Class<?> target = type.getMainType();
+		// Wrapper classes are evil!
+		if (target.equals(Number.class) && rawVal instanceof Number) {
+			return rawVal;
+		} else if (target.equals(int.class) || target.equals(Integer.class)) {
+			if (rawVal instanceof Number) {
+				return ((Number) rawVal).intValue();
+			} else {
+				return Integer.parseInt(String.valueOf(rawVal));
+			}
+		} else if (target.equals(byte.class) || target.equals(Byte.class)) {
+			if (rawVal instanceof Number) {
+				return ((Number) rawVal).byteValue();
+			} else {
+				return Byte.parseByte(String.valueOf(rawVal));
+			}
+		} else if (target.equals(long.class) || target.equals(Long.class)) {
+			if (rawVal instanceof Number) {
+				return ((Number) rawVal).longValue();
+			} else {
+				return Long.parseLong(String.valueOf(rawVal));
+			}
+		} else if (target.equals(double.class) || target.equals(Double.class)) {
+			if (rawVal instanceof Number) {
+				return ((Number) rawVal).doubleValue();
+			} else {
+				return Double.parseDouble(String.valueOf(rawVal));
+			}
+		} else if (target.equals(float.class) || target.equals(Float.class)) {
+			if (rawVal instanceof Number) {
+				return ((Number) rawVal).floatValue();
+			} else {
+				return Float.parseFloat(String.valueOf(rawVal));
+			}
+		} else if (target.equals(short.class) || target.equals(Short.class)) {
+			if (rawVal instanceof Number) {
+				return ((Number) rawVal).shortValue();
+			} else {
+				return Short.parseShort(String.valueOf(rawVal));
+			}
+		}
+		return null;
 	}
 }

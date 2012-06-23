@@ -30,39 +30,54 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.spout.api.exception.ConfigurationException;
 import org.spout.api.util.config.Configuration;
 import org.spout.api.util.config.MapConfiguration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
- * Tests for ConfigurationBase
+ * Tests for AnnotatedConfiguration
  */
-public class ConfigurationBaseTest {
+public class AnnotatedConfigurationTest {
 	public static enum TestEnum {
-		ONE, TWO;
+		ONE, TWO,
 	}
 
 	// Constants for easier accurate results
 	private static final String BOOLEAN_KEY = "boolean-setting";
 	private static final boolean BOOLEAN_VALUE = true;
+
 	private static final String INT_KEY = "int-setting";
 	private static final int INT_VALUE = 42;
+
 	private static final String[] NESTED_STRING_KEY = new String[]{"nested", "key"};
 	private static final String NESTED_STRING_VALUE = "cute asian cadvahns";
+
 	private static final String[] MAP_STRING_STRING_KEY = new String[]{"map", "string-string"};
 	private static final Map<String, String> MAP_STRING_STRING_VALUE = createMapStringString();
+
 	private static final String SET_INTEGER_KEY = "int-set";
 	private static final Set<Integer> SET_INTEGER_VALUE = new HashSet<Integer>(Arrays.asList(1, 2, 3, 4, 5));
+
+	private static final String SET_ENUM_KEY = "enum-set";
+	private static final Set<TestEnum> SET_ENUM_VALUE = new HashSet<TestEnum>(Arrays.asList(TestEnum.values()));
+
 	private static final String[] NESTED_MAP_KEY = new String[]{"map", "nested"};
 	private static final Map<String, Map<?, ?>> NESTED_MAP_VALUE = createNestedMap();
+
 	private static final String ENUM_KEY = "enum";
 	private static final TestEnum ENUM_VALUE = TestEnum.TWO;
+
+	private static final String CONFIG_BASE_KEY = "configbase";
+
 	private static final String DEFAULT_KEY = "dead";
 	private static final String DEFAULT_VALUE = "parrot";
 
@@ -72,9 +87,25 @@ public class ConfigurationBaseTest {
 		@Setting({"nested", "key"}) public String nestedStringSetting;
 		@Setting({"map", "string-string"}) public Map<String, String> mapStringStringSetting;
 		@Setting(SET_INTEGER_KEY) public Set<Integer> setIntegerSetting;
+		@Setting(SET_ENUM_KEY) public Set<TestEnum> setEnumSetting;
 		@Setting({"map", "nested"}) public Map<String, Map<String, Object>> nestedMapSetting;
 		@Setting(ENUM_KEY) public TestEnum enumSetting;
+		@Setting(CONFIG_BASE_KEY) public SubConfiguration subConfigSetting;
 		@Setting(DEFAULT_KEY) public String defaultSetting = DEFAULT_VALUE;
+
+		public LocalConfiguration(Configuration baseConfig) {
+			super(baseConfig);
+		}
+	}
+
+	private static class SubConfiguration extends AnnotatedConfiguration {
+
+		public SubConfiguration(Configuration baseConfig) {
+			super(baseConfig);
+		}
+
+		@Setting("a") public String aSetting;
+		@Setting("b") public String bSetting;
 	}
 
 	private static Map<String, String> createMapStringString() {
@@ -100,24 +131,34 @@ public class ConfigurationBaseTest {
 	protected LocalConfiguration annotatedConfig;
 
 	@Before
-	public void setUp() {
+	public void setUp() throws ConfigurationException {
 		config = new MapConfiguration();
 		config.getNode(BOOLEAN_KEY).setValue(BOOLEAN_VALUE);
 		config.getNode(INT_KEY).setValue(INT_VALUE);
 		config.getNode(NESTED_STRING_KEY).setValue(NESTED_STRING_VALUE);
 		config.getNode(MAP_STRING_STRING_KEY).setValue(MAP_STRING_STRING_VALUE);
 		config.getNode(SET_INTEGER_KEY).setValue(new ArrayList<Integer>(SET_INTEGER_VALUE));
+		List<String> enumNames = new ArrayList<String>(SET_ENUM_VALUE.size());
+		for (TestEnum val : SET_ENUM_VALUE) {
+			enumNames.add(val.name());
+		}
+		config.getNode(SET_ENUM_KEY).setValue(enumNames);
 		config.getNode(NESTED_MAP_KEY).setValue(NESTED_MAP_VALUE);
 		config.getNode(ENUM_KEY).setValue(ENUM_VALUE.name());
-		annotatedConfig = new LocalConfiguration();
-		annotatedConfig.load(config);
+		config.save();
+		annotatedConfig = new LocalConfiguration(config);
+		annotatedConfig.load();
 	}
 
 	@Test
-	public void testSaving() {
+	public void testSaving() throws ConfigurationException {
 		MapConfiguration saveConfig = new MapConfiguration();
 		annotatedConfig.save(saveConfig);
-		assertEquals(config.getValues(), saveConfig.getValues());
+		Map<String, Object> values = config.getValues();
+		SubConfiguration subConfig = new SubConfiguration(new MapConfiguration());
+		subConfig.save();
+		values.put(CONFIG_BASE_KEY, subConfig.getValues());
+		assertEquals(values, saveConfig.getValues());
 	}
 
 	@Test
@@ -158,6 +199,20 @@ public class ConfigurationBaseTest {
 	@Test
 	public void testDefaultValue() {
 		assertEquals(DEFAULT_VALUE, annotatedConfig.defaultSetting);
+	}
+
+	@Test
+	public void testSetEnumValue() {
+		assertEquals(SET_ENUM_VALUE, annotatedConfig.setEnumSetting);
+	}
+
+	@Test
+	public void testAnnotatedConfigurationValue() throws ConfigurationException {
+		assertNotNull(annotatedConfig.subConfigSetting);
+		SubConfiguration second = new SubConfiguration(new MapConfiguration());
+		second.load();
+		annotatedConfig.save();
+		assertEquals(second.getValues(), annotatedConfig.getNode(CONFIG_BASE_KEY).getValues());
 	}
 
 }

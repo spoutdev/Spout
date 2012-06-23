@@ -27,19 +27,28 @@
 package org.spout.api.util.config.serialization;
 
 public class SameSerializer extends Serializer {
-
 	@Override
-	protected Object handleDeserialize(GenericType type, Object value) {
-		return value;
+	public boolean isApplicable(GenericType type) {
+		return type.getMainType() != null;
 	}
 
 	@Override
-	public boolean isApplicable(GenericType type, Object value) {
-		return type.getMainType() != null && type.getMainType().isInstance(value);
+	public boolean isApplicableDeserialize(GenericType type, Object value) {
+		return super.isApplicableDeserialize(type, value) && type.getMainType().isInstance(value);
+	}
+
+	@Override
+	public boolean isApplicableSerialize(GenericType type, Object val) {
+		return false;
 	}
 
 	@Override
 	public int getParametersRequired() {
 		return 0;
+	}
+
+	@Override
+	protected Object handleDeserialize(GenericType type, Object value) {
+		return value;
 	}
 }

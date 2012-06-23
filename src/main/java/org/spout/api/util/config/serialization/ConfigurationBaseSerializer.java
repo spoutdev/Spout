@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.spout.api.exception.ConfigurationException;
+import org.spout.api.util.config.Configuration;
 import org.spout.api.util.config.MapConfiguration;
 import org.spout.api.util.config.annotated.AnnotatedConfiguration;
 
@@ -39,13 +40,37 @@ public class ConfigurationBaseSerializer extends Serializer {
 	private static final Map<Class<? extends AnnotatedConfiguration>,
 			Constructor<? extends AnnotatedConfiguration>> CACHED_CONSTRUCTORS =
 			new HashMap<Class<? extends AnnotatedConfiguration>, Constructor<? extends AnnotatedConfiguration>>();
+
+	public ConfigurationBaseSerializer() {
+		setAllowsNullValue(true);
+	}
+
+	@Override
+	public boolean isApplicable(GenericType type) {
+		return AnnotatedConfiguration.class.isAssignableFrom(type.getMainType()) ;
+	}
+
+	@Override
+	public boolean isApplicableDeserialize(GenericType type, Object value) {
+		return super.isApplicableDeserialize(type, value) && (value == null || value instanceof Map);
+	}
+
+	@Override
+	protected int getParametersRequired() {
+		return -1;
+	}
+
 	@Override
 	protected Object handleDeserialize(GenericType type, Object value) {
+		if (value == null) {
+			value = new HashMap<Object, Object>();
+		}
+
 		Class<? extends AnnotatedConfiguration> configClass = type.getMainType().asSubclass(AnnotatedConfiguration.class);
 		Constructor<? extends AnnotatedConfiguration> constructor = CACHED_CONSTRUCTORS.get(configClass);
 		if (constructor == null) {
 			try {
-				constructor = configClass.getDeclaredConstructor();
+				constructor = configClass.getDeclaredConstructor(Configuration.class);
 				constructor.setAccessible(true);
 			} catch (NoSuchMethodException e) {
 				return null;
@@ -53,9 +78,10 @@ public class ConfigurationBaseSerializer extends Serializer {
 			CACHED_CONSTRUCTORS.put(configClass, constructor);
 		}
 		AnnotatedConfiguration config = null;
+		MapConfiguration rawConfig = new MapConfiguration((Map<?, ?>) value);
 
 		try {
-			config = constructor.newInstance();
+			config = constructor.newInstance(rawConfig);
 		} catch (InstantiationException ignore) {
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
@@ -65,31 +91,26 @@ public class ConfigurationBaseSerializer extends Serializer {
 		}
 
 		if (config != null) {
-			config.load(new MapConfiguration((Map<?, ?>) value));
+			try {
+				config.load();
+			} catch (ConfigurationException e) {
+				e.printStackTrace();
+				return null;
+			}
 		}
 
 		return config;
 	}
 
 	@Override
-	public Object serialize(GenericType type, Object val) {
+	protected Object handleSerialize(GenericType type, Object val) {
 		MapConfiguration config = new MapConfiguration();
-		((AnnotatedConfiguration) val).save(config);
 		try {
+			((AnnotatedConfiguration) val).save(config);
 			config.save();
 		} catch (ConfigurationException e) {
 			return null;
 		}
 		return config.getMap();
-	}
-
-	@Override
-	public boolean isApplicable(GenericType type, Object value) {
-		return AnnotatedConfiguration.class.isAssignableFrom(type.getMainType()) && value instanceof Map;
-	}
-
-	@Override
-	protected int getParametersRequired() {
-		return -1;
 	}
 }

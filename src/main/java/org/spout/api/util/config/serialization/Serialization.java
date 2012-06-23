@@ -53,34 +53,32 @@ public class Serialization {
 	}
 
 	public static Object deserialize(GenericType type, Object value) {
-		if (value == null) {
-			return null;
-		}
-
-		Object ret = null;
-
+		Object ret;
 		for (Serializer serializer : SERIALIZERS) {
 			if ((ret = serializer.deserialize(type, value)) != null) {
 				CACHED_SERIALIZERS.put(type.getRawType(), serializer);
-				break;
+				return ret;
 			}
 		}
+		return null;
+	}
 
-		return ret;
+	public static Object serialize(Type type, Object obj) {
+		return serialize(new GenericType(type), obj);
 	}
 
 	public static Object serialize(GenericType type, Object obj) {
 		Serializer serializer = CACHED_SERIALIZERS.get(type.getRawType());
-		if (serializer != null) {
+		if (serializer != null && serializer.isApplicableSerialize(type, obj)) {
 			return serializer.serialize(type, obj);
-		}
-		return obj;
-	}
-
-	public static Object serialize(Type type, Object obj) {
-		Serializer serializer = CACHED_SERIALIZERS.get(type);
-		if (serializer != null) {
-			return serializer.serialize(new GenericType(type), obj);
+		} else {
+			Object ret;
+			for (Serializer ser : SERIALIZERS) {
+				if ((ret = ser.serialize(type, obj)) != null) {
+					CACHED_SERIALIZERS.put(type.getRawType(), ser);
+					return ret;
+				}
+			}
 		}
 		return obj;
 	}
