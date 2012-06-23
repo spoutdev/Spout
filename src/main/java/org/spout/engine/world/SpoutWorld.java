@@ -33,6 +33,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -143,6 +144,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 	 * A map of the loaded columns
 	 */
 	private final TSyncLongObjectHashMap<SpoutColumn> columns = new TSyncLongObjectHashMap<SpoutColumn>();
+	private final Set<SpoutColumn> columnSet = new LinkedHashSet<SpoutColumn>();
 	/**
 	 * A map of column height map files
 	 */
@@ -548,20 +550,30 @@ public final class SpoutWorld extends AsyncManager implements World {
 	public boolean compareAndSetData(int x, int y, int z, int expect, short data, Source source) {
 		return getChunkFromBlock(x, y, z).compareAndSetData(x, y, z, expect, data, source);
 	}
-	
+
 	@Override
-	public short setBlockDataBits(int x, int y, int z, short bits, Source source) {
+	public short setBlockDataBits(int x, int y, int z, int bits, boolean set, Source source) {
+		return getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits, set, source);
+	}
+
+	@Override
+	public short setBlockDataBits(int x, int y, int z, int bits, Source source) {
 		return getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits, source);
 	}
 
 	@Override
-	public short clearBlockDataBits(int x, int y, int z, short bits, Source source) {
+	public short clearBlockDataBits(int x, int y, int z, int bits, Source source) {
 		return getChunkFromBlock(x, y, z).clearBlockDataBits(x, y, z, bits, source);
 	}
 
 	@Override
 	public int getBlockDataField(int x, int y, int z, int bits) {
 		return getChunkFromBlock(x, y, z).getBlockDataField(x, y, z, bits);
+	}
+	
+	@Override
+	public boolean isBlockDataBitSet(int x, int y, int z, int bits) {
+		return getChunkFromBlock(x, y, z).isBlockDataBitSet(x, y, z, bits);
 	}
 
 	@Override
@@ -621,6 +633,11 @@ public final class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public void finalizeRun() throws InterruptedException {
 		entityManager.finalizeRun();
+		synchronized (columnSet) {
+			for (SpoutColumn c : columnSet) {
+				c.onFinalize();
+			}
+		}
 	}
 
 	@Override
@@ -716,12 +733,27 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 		return column.getSurfaceHeight(x, z);
 	}
-
+	
 	@Override
 	public int getSurfaceHeight(int x, int z) {
 		return getSurfaceHeight(x, z, false);
 	}
 
+	@Override
+	public BlockMaterial getTopmostBlock(int x, int z, boolean load) {
+		SpoutColumn column = getColumn(x, z, load);
+		if (column == null) {
+			return null;
+		}
+
+		return column.getTopmostBlock(x, z);
+	}
+
+	@Override
+	public BlockMaterial getTopmostBlock(int x, int z) {
+		return getTopmostBlock(x, z, false);
+	}
+	
 	/**
 	 * Removes a column corresponding to the given Column coordinates
 	 * 
@@ -730,7 +762,11 @@ public final class SpoutWorld extends AsyncManager implements World {
 	 */
 	public void removeColumn(int x, int z, SpoutColumn column) {
 		long key = IntPairHashed.key(x, z);
-		columns.remove(key, column);
+		if (columns.remove(key, column)) {
+			synchronized(columnSet) {
+				columnSet.remove(column);
+			}
+		}
 	}
 
 	/**
@@ -751,6 +787,9 @@ public final class SpoutWorld extends AsyncManager implements World {
 			column = columns.putIfAbsent(key, newColumn);
 			if (column == null) {
 				column = newColumn;
+				synchronized(columnSet) {
+					columnSet.add(column);
+				}
 			}
 		}
 		return column;

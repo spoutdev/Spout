@@ -37,15 +37,15 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-
 import org.spout.api.Server;
 import org.spout.api.Spout;
+import org.spout.api.event.Listener;
+import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
-
 import org.spout.engine.filesystem.ServerFileSystem;
-import org.spout.engine.filesystem.SharedFileSystem;
+import org.spout.engine.listener.SpoutListener;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.util.bans.BanManager;
 import org.spout.engine.util.bans.FlatFileBanManager;
@@ -90,13 +90,20 @@ public class SpoutServer extends SpoutEngine implements Server {
 		server.start();
 	}
 
-	@Override
 	public void start() {
-		super.start();
+		start(true);
+	}
+	
+	public void start(boolean checkWorlds) {
+		start(checkWorlds, new SpoutListener(this));
+	}
+		
+	public void start(boolean checkWorlds, Listener listener) {
+		super.start(checkWorlds);
 		
 		banManager = new FlatFileBanManager(this);
 
-		getEventManager().registerEvents(new SpoutListener(this), this);
+		getEventManager().registerEvents(listener, this);
 
 		getLogger().info("Done Loading, ready for players.");
 	}
@@ -256,6 +263,11 @@ public class SpoutServer extends SpoutEngine implements Server {
 	public Session newSession(Channel channel) {
 		BootstrapProtocol protocol = getBootstrapProtocol(channel.getLocalAddress());
 		return new SpoutSession(this, channel, protocol);
+	}
+	
+	@Override
+	public Platform getPlatform() {
+		return Platform.SERVER;
 	}
 
 	@Override

@@ -29,7 +29,7 @@ package org.spout.engine.world;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.logging.Level;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.Spout;
 import org.spout.api.event.world.RegionLoadEvent;
@@ -41,12 +41,13 @@ import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.map.concurrent.TSyncInt21TripleObjectHashMap;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
-import org.spout.engine.SpoutEngine;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 
 public class RegionSource implements Iterable<Region> {
+	private final static AtomicInteger regionsLoaded = new AtomicInteger(0);
+	private final static AtomicInteger warnThreshold = new AtomicInteger(2);
 	/**
 	 * A map of loaded regions, mapped to their x and z values.
 	 */
@@ -81,7 +82,6 @@ public class RegionSource implements Iterable<Region> {
 						if (!r.getManager().getExecutor().haltExecutor()) {
 							throw new IllegalStateException("Failed to halt the region executor when removing the region");
 						}
-
 						TaskManager tm = Spout.getEngine().getParallelTaskManager();
 						SpoutParallelTaskManager ptm = (SpoutParallelTaskManager)tm;
 						ptm.unRegisterRegion(r);
@@ -89,6 +89,10 @@ public class RegionSource implements Iterable<Region> {
 						TaskManager tmWorld = world.getParallelTaskManager();
 						SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager)tmWorld;
 						ptmWorld.unRegisterRegion(r);
+						
+						if (regionsLoaded.decrementAndGet() < 0) {
+							Spout.getLogger().info("Regions loaded dropped below zero");
+						}
 
 						Spout.getEventManager().callDelayedEvent(new RegionUnloadEvent(world, r));
 					} else {
@@ -142,6 +146,14 @@ public class RegionSource implements Iterable<Region> {
 
 		if (!region.getManager().getExecutor().startExecutor()) {
 			throw new IllegalStateException("Unable to start region executor");
+		}
+
+		int threshold = warnThreshold.get();
+		if (regionsLoaded.getAndIncrement() > threshold) {
+			Spout.getLogger().info("Warning: number of spout regions exceeds " + threshold + " when creating (" +
+                x + ", " + y + ", " + z + ")");
+			Thread.dumpStack();
+			warnThreshold.addAndGet(10);
 		}
 
 		TaskManager tm = Spout.getEngine().getParallelTaskManager();

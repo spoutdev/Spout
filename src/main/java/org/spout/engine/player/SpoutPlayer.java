@@ -44,6 +44,7 @@ import org.spout.api.player.Player;
 import org.spout.api.player.PlayerInputState;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.NetworkSynchronizer;
+import org.spout.api.protocol.Session;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;
@@ -59,8 +60,6 @@ public class SpoutPlayer implements Player {
 	private final AtomicReference<String> displayName = new AtomicReference<String>();
 	private final AtomicReference<SpoutEntity> entityLive = new AtomicReference<SpoutEntity>();
 	private Entity entity;
-	private final AtomicReference<NetworkSynchronizer> synchronizerLive = new AtomicReference<NetworkSynchronizer>();
-	private NetworkSynchronizer synchronizer;
 	private final AtomicBoolean onlineLive = new AtomicBoolean(false);
 	private boolean online;
 	private final int hashcode;
@@ -143,7 +142,6 @@ public class SpoutPlayer implements Player {
 			entity.kill();
 		}
 		sessionLive.set(null);
-		synchronizerLive.set(null);
 		return true;
 	}
 
@@ -192,7 +190,7 @@ public class SpoutPlayer implements Player {
 
 	@Override
 	public boolean sendRawMessage(String message) {
-		Message chatMessage = getSession().getPlayerProtocol().getChatMessage(message);
+		Message chatMessage = getNetworkSynchronizer().getChatMessage(message);
 		if (message == null) {
 			return false;
 		}
@@ -225,7 +223,6 @@ public class SpoutPlayer implements Player {
 		session = sessionLive.get();
 		online = onlineLive.get();
 		entity = entityLive.get();
-		synchronizer = synchronizerLive.get();
 	}
 
 	@Override
@@ -298,22 +295,9 @@ public class SpoutPlayer implements Player {
 	}
 
 	@Override
-	public void setNetworkSynchronizer(NetworkSynchronizer synchronizer) {
-		if (synchronizer == null && !onlineLive.get()) {
-			synchronizerLive.set(null);
-		} else if (!synchronizerLive.compareAndSet(null, synchronizer)) {
-			throw new IllegalArgumentException("Network synchronizer may only be set once for a given player login");
-		}
-	}
-
-	@Override
 	public NetworkSynchronizer getNetworkSynchronizer() {
-		NetworkSynchronizer s = synchronizer;
-		if (s != null) {
-			return s;
-		}
-
-		return synchronizerLive.get();
+		SpoutSession session = this.session;
+		return session == null ? null : session.getNetworkSynchronizer();
 	}
 
 	@Override

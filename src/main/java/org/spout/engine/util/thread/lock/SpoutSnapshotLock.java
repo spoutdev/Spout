@@ -38,8 +38,9 @@ import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.SnapshotLock;
 
 public class SpoutSnapshotLock implements SnapshotLock {
-	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-	private ConcurrentHashMap<Plugin, LockInfo> locks = new ConcurrentHashMap<Plugin, LockInfo>();
+	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+	private final ConcurrentHashMap<Plugin, LockInfo> locks = new ConcurrentHashMap<Plugin, LockInfo>();
+	private final ConcurrentHashMap<String, Integer> coreTasks = new ConcurrentHashMap<String, Integer>();
 
 	@Override
 	public void readLock(Plugin plugin) {
@@ -47,8 +48,12 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		addLock(plugin);
 	}
 	
-	public void coreReadLock() {
+	public void coreReadLock(String taskName) {
+		if (taskName == null) {
+			throw new IllegalArgumentException("Taskname may not be null");
+		}
 		lock.readLock().lock();
+		incrementCoreCounter(taskName);
 	}
 
 	@Override
@@ -60,19 +65,26 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		return success;
 	}
 	
-	public boolean coreReadTryLock() {
+	public boolean coreReadTryLock(String taskName) {
+		if (taskName == null) {
+			throw new IllegalArgumentException("Taskname may not be null");
+		}
 		boolean success = lock.readLock().tryLock();
+		if (success) {
+			incrementCoreCounter(taskName);
+		}
 		return success;
 	}
 
 	@Override
 	public void readUnlock(Plugin plugin) {
 		lock.readLock().unlock();
-		addLock(plugin);
+		removeLock(plugin);
 	}
 	
-	public void coreReadUnlock() {
+	public void coreReadUnlock(String taskName) {
 		lock.readLock().unlock();
+		decrementCoreCounter(taskName);
 	}
 
 	public boolean writeLock(int delay) {
@@ -98,6 +110,10 @@ public class SpoutSnapshotLock implements SnapshotLock {
 			}
 		}
 		return plugins;
+	}
+	
+	public Set<String> getLockingTasks() {
+		return coreTasks.keySet();
 	}
 
 	public void writeUnlock() {
@@ -133,6 +149,32 @@ public class SpoutSnapshotLock implements SnapshotLock {
 
 			final LockInfo newLockInfo = new LockInfo(oldLockInfo.oldestLock, oldLockInfo.locks - 1);
 			success = locks.replace(plugin, oldLockInfo, newLockInfo);
+		}
+	}
+	
+	private void incrementCoreCounter(String taskName) {
+		boolean success = false;
+		while (!success) {
+			Integer i = coreTasks.get(taskName);
+			if (i == null) {
+				success = coreTasks.putIfAbsent(taskName, 1) == null;
+			} else {
+				success = coreTasks.replace(taskName, i, i + 1);
+			}
+		}
+	}
+	
+	private void decrementCoreCounter(String taskName) {
+		boolean success = false;
+		while (!success) {
+			Integer i = coreTasks.get(taskName);
+			if (i == null || i <= 0) {
+				throw new IllegalStateException("Attempting to unlock a core read lock which was already unlocked");
+			} else if (i.equals(1)) {
+				success = coreTasks.remove(taskName, i);
+			} else {
+				success = coreTasks.replace(taskName, i, i - 1);
+			}
 		}
 	}
 

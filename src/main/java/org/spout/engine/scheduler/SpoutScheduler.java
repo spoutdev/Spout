@@ -96,6 +96,10 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
  */
 public final class SpoutScheduler implements Scheduler {
 	/**
+	 * The threshold before physics and dynamic updates are aborted
+	 */
+	private final static int UPDATE_THRESHOLD = 100000;
+	/**
 	 * The number of milliseconds between pulses.
 	 */
 	protected static final int PULSE_EVERY = 50;
@@ -119,6 +123,7 @@ public final class SpoutScheduler implements Scheduler {
 	 * A list of all AsyncManagers
 	 */
 	private final SnapshotableArrayList<AsyncExecutor> asyncExecutors = new SnapshotableArrayList<AsyncExecutor>(snapshotManager, null);
+	
 	private final AtomicLong tickStartTime = new AtomicLong();
 	private volatile boolean shutdown = false;
 	private final SpoutSnapshotLock snapshotLock = new SpoutSnapshotLock();
@@ -388,10 +393,17 @@ public final class SpoutScheduler implements Scheduler {
 		
 		try {
 			int updates = 1;
-			while (updates > 0) {
+			int totalUpdates = 0;
+			while (updates > 0 && totalUpdates < UPDATE_THRESHOLD) {
 				updates = doDynamicUpdates(executors);
 
 				updates += doPhysics(executors);
+				
+				totalUpdates += updates;
+			}
+			
+			if (totalUpdates >= UPDATE_THRESHOLD) {
+				Spout.getLogger().warning("Physics updates per tick of " + totalUpdates + " exceeded threshold " + UPDATE_THRESHOLD);
 			}
 
 			finalizeTick(executors);
@@ -437,9 +449,14 @@ public final class SpoutScheduler implements Scheduler {
 			TickStage.setStage(TickStage.GLOBAL_PHYSICS);
 
 			for (AsyncExecutor e : executors) {
-				updatesThisPass += e.getManager().runGlobalPhysics();
+				try {
+					updatesThisPass += e.getManager().runGlobalPhysics();
+				} catch (Exception ex) {
+					Spout.getLogger().log(Level.SEVERE, "Error while executing global physics: {0}", ex.getMessage());
+					ex.printStackTrace();
+				}
 			}
-			
+
 			updates += updatesThisPass;
 		}
 		return updates;
@@ -467,7 +484,7 @@ public final class SpoutScheduler implements Scheduler {
 
 			for (AsyncExecutor e : executors) {
 				if (!e.doLocalDynamicUpdates(threshold)) {
-					throw new IllegalStateException("Attempt made to while the previous operation was still active");
+					throw new IllegalStateException("Attempt made to pulse while the previous operation was still active");
 				}
 			}
 			
@@ -488,7 +505,12 @@ public final class SpoutScheduler implements Scheduler {
 			TickStage.setStage(TickStage.GLOBAL_DYNAMIC_BLOCKS);
 
 			for (AsyncExecutor e : executors) {
-				updatesThisPass += e.getManager().runGlobalDynamicUpdates();
+				try {
+					updatesThisPass += e.getManager().runGlobalDynamicUpdates();
+				} catch (Exception ex) {
+					Spout.getLogger().log(Level.SEVERE, "Error while executing global dynamic updates: {0}", ex.getMessage());
+					ex.printStackTrace();
+				}
 			}
 			
 			updates += updatesThisPass;
@@ -599,6 +621,9 @@ public final class SpoutScheduler implements Scheduler {
 				engine.getLogger().info("Unable to lock snapshot after " + (System.currentTimeMillis() - startTime) + "ms");
 				for (Plugin p : violatingPlugins) {
 					engine.getLogger().info(p.getDescription().getName() + " has locked the snapshot lock for more than " + threshold + "ms");
+				}
+				for (String s : snapshotLock.getLockingTasks()) {
+					engine.getLogger().info("Core task " + s + " is holding the lock");
 				}
 			}
 		}

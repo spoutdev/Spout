@@ -37,11 +37,13 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
+import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.material.source.DataSource;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.Vector3;
+import org.spout.api.util.LogicUtil;
 import org.spout.api.util.StringUtil;
 
 public class SpoutBlock implements Block {
@@ -132,6 +134,11 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
+	public Block translate(BlockFace offset, int distance) {
+		return this.translate(offset.getOffset().multiply(distance));
+	}
+
+	@Override
 	public Block translate(BlockFace offset) {
 		return this.translate(offset.getOffset());
 	}
@@ -205,22 +212,32 @@ public class SpoutBlock implements Block {
 	}
 	
 	@Override
-	public short setBlockDataBits(short bits) {
+	public short setDataBits(int bits) {
 		return this.getChunk().setBlockDataBits(this.x, this.y, this.z, bits, this.source);
 	}
 
 	@Override
-	public short clearBlockDataBits(short bits) {
+	public short setDataBits(int bits, boolean set) {
+		return this.getChunk().setBlockDataBits(this.x, this.y, this.z, bits, set, this.source);
+	}
+
+	@Override
+	public short clearDataBits(int bits) {
 		return this.getChunk().clearBlockDataBits(this.x, this.y, this.z, bits, this.source);
 	}
 
 	@Override
-	public int getBlockDataField(int bits) {
+	public int getDataField(int bits) {
 		return this.getChunk().getBlockDataField(this.x, this.y, this.z, bits);
+	}
+	
+	@Override
+	public boolean isDataBitSet(int bits) {
+		return this.getChunk().isBlockDataBitSet(this.x, this.y, this.z, bits);
 	}
 
 	@Override
-	public int setBlockDataField(int bits, int value) {
+	public int setDataField(int bits, int value) {
 		return this.getChunk().setBlockDataField(this.x, this.y, this.z, bits, value, this.source);
 	}
 
@@ -332,5 +349,10 @@ public class SpoutBlock implements Block {
 	@Override
 	public DynamicUpdateEntry dynamicUpdate(long updateTime, int data, Object hint) {
 		return this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, updateTime, data, hint);
+	}
+
+	@Override
+	public boolean isMaterial(Material... materials) {
+		return LogicUtil.equalsAny(this.getMaterial(), materials);
 	}
 }

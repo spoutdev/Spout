@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.spout.api.Spout;
@@ -50,6 +51,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.scheduler.TickStage;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.world.SpoutRegion;
+import org.spout.engine.world.SpoutWorld;
 
 /**
  * This class contains the dynamic block updates.  There are 3 data structures that are kept in sync.<br>
@@ -61,11 +63,13 @@ import org.spout.engine.world.SpoutRegion;
 public class DynamicBlockUpdateTree {
 	
 	private final SpoutRegion region;
+	private final SpoutWorld world;
 	
 	private TreeSet<DynamicBlockUpdate> queuedUpdates = new TreeSet<DynamicBlockUpdate>();
 	private TIntObjectHashMap<DynamicBlockUpdate> blockToUpdateMap = new TIntObjectHashMap<DynamicBlockUpdate>();
 	private TIntObjectHashMap<HashSet<DynamicBlockUpdate>> chunkToUpdateMap = new TIntObjectHashMap<HashSet<DynamicBlockUpdate>>();
 	private ConcurrentLinkedQueue<PointAlone> resetPending = new ConcurrentLinkedQueue<PointAlone>();
+	private ConcurrentHashMap<PointAlone, Boolean> resetPendingMap = new ConcurrentHashMap<PointAlone, Boolean>();
 	private ConcurrentLinkedQueue<List<DynamicBlockUpdate>> pendingLists = new ConcurrentLinkedQueue<List<DynamicBlockUpdate>>();
 	private TIntHashSet processed = new TIntHashSet();
 	private final static Vector3[] zeroVector3Array = new Vector3[] {Vector3.ZERO};
@@ -74,18 +78,23 @@ public class DynamicBlockUpdateTree {
 	private final static int localStages = TickStage.DYNAMIC_BLOCKS | TickStage.PHYSICS;
 	private final static int globalStages = TickStage.GLOBAL_DYNAMIC_BLOCKS | TickStage.GLOBAL_PHYSICS;
 	private final static List<DynamicBlockUpdate> emptyList = new ArrayList<DynamicBlockUpdate>(0);
+	private int lastUpdates;
 	
 	public DynamicBlockUpdateTree(SpoutRegion region) {
 		this.region = region;
 		this.regionThread = region.getExceutionThread();
 		this.mainThread = ((SpoutScheduler)Spout.getScheduler()).getMainThread();
+		this.world = region.getWorld();
 	}
 
 	public void resetBlockUpdates(int x, int y, int z) {
 		x &= Region.BLOCKS.MASK;
 		y &= Region.BLOCKS.MASK;
 		z &= Region.BLOCKS.MASK;
-		resetPending.add(new PointAlone(null, x, y, z));
+		PointAlone p = new PointAlone(this.world, x, y, z);
+		if (resetPendingMap.putIfAbsent(p, Boolean.TRUE) == null) {
+			resetPending.add(p);
+		}
 	}
 	
 	public DynamicUpdateEntry queueBlockUpdates(int x, int y, int z) {
@@ -173,6 +182,9 @@ public class DynamicBlockUpdateTree {
 		processed.clear();
 		PointAlone p;
 		while ((p = resetPending.poll()) != null) {
+			if (!resetPendingMap.remove(p)) {
+				throw new IllegalStateException("Dynamic block reset pending map and queue mismatch");
+			}
 			int packed = DynamicBlockUpdate.getPointPacked(p);
 			if (!processed.add(packed)) {
 				continue;
@@ -197,6 +209,14 @@ public class DynamicBlockUpdateTree {
 			}
 		}
 		processed.clear();
+	}
+	
+	public int getLastUpdates() {
+		return lastUpdates;
+	}
+	
+	public void resetLastUpdates() {
+		lastUpdates = 0;
 	}
 	
 	public List<DynamicBlockUpdate> updateDynamicBlocks(long currentTime, long thresholdTime) {
@@ -245,6 +265,7 @@ public class DynamicBlockUpdateTree {
 			return false;
 		} else {
 			dm.onDynamicUpdate(b, region, update.getNextUpdate(), update.getQueuedTime(), update.getData(), update.getHint());
+			lastUpdates++;
 			return true;
 		}
 	}

@@ -163,7 +163,7 @@ public class SpoutRegion extends Region{
 	 * The chunks that received a lighting change and need an update
 	 */
 	private final TByteTripleHashSet lightDirtyChunks = new TByteTripleHashSet();
-
+	
 	/**
 	 * A queue of chunks that need to be populated
 	 */
@@ -196,7 +196,7 @@ public class SpoutRegion extends Region{
 		} else {
 			executionThread = null;
 		}
-		
+
 		dynamicBlockTree = new DynamicBlockUpdateTree(this);
 		physicsQueue = new PhysicsQueue(this);
 
@@ -207,7 +207,7 @@ public class SpoutRegion extends Region{
 				}
 			}
 		}
-		
+
 		if (loadopt.loadIfNeeded()) {
 			for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
 				for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
@@ -307,7 +307,7 @@ public class SpoutRegion extends Region{
 				return newChunk;
 			}
 
-			newChunk.deregisterFromColumn(false);
+			newChunk.setUnloadedUnchecked();
 			SpoutChunk oldChunk = chunkReference.get();
 			if (oldChunk != null) {
 				if (loadopt.loadIfNeeded()) {
@@ -381,7 +381,7 @@ public class SpoutRegion extends Region{
 
 			occupiedChunksQueue.remove(currentChunk);
 			occupiedChunks.remove(currentChunk);
-			
+
 			populationQueue.remove(currentChunk);
 			populationQueueSet.remove(currentChunk);
 
@@ -400,7 +400,7 @@ public class SpoutRegion extends Region{
 	public boolean hasChunk(int x, int y, int z) {
 		return chunks[x & CHUNKS.MASK][y & CHUNKS.MASK][z & CHUNKS.MASK].get() != null;
 	}
-	
+
 	public boolean isEmpty() {
 		TickStage.checkStage(TickStage.TICKSTART);
 		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
@@ -712,8 +712,10 @@ public class SpoutRegion extends Region{
 		// Compress at most 1 chunk per tick per region
 		boolean chunkCompressed = false;
 
-		int reaped = 0;
-
+		int percentObserved = (100 * SpoutChunk.getObservedChunks()) / (SpoutChunk.getActiveChunks());
+		
+		int multiplier = percentObserved < 70 ? 20 : (percentObserved >= 90 ? 1 : (90 - percentObserved));
+		int maxReapCount = REAP_PER_TICK * multiplier;
 
 		compressDy++;
 		if (compressDy >= CHUNKS.SIZE) {
@@ -723,13 +725,15 @@ public class SpoutRegion extends Region{
 				compressDx = 0;
 			}
 		}
+		
+		int reaped = 0;
 
 		for (int dz = 0; dz < CHUNKS.SIZE && !chunkCompressed; dz++) {
 			Chunk chunk = chunks[compressDx][compressDy][dz].get();
 			if (chunk != null) {
 				chunkCompressed |= ((SpoutChunk) chunk).compressIfRequired();
 
-				if (reaped < REAP_PER_TICK && ((SpoutChunk) chunk).isReapable(worldAge)) {
+				if (reaped < maxReapCount && ((SpoutChunk) chunk).isReapable(worldAge)) {
 					boolean do_unload = true;
 					if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
 						ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(chunk));
@@ -755,8 +759,8 @@ public class SpoutRegion extends Region{
 
 	private void syncChunkToPlayers(SpoutChunk chunk, Entity entity) {
 		SpoutPlayer player = (SpoutPlayer) ((PlayerController) entity.getController()).getPlayer();
-		NetworkSynchronizer synchronizer = player.getNetworkSynchronizer();
-		if (synchronizer != null) {
+		if (player.isOnline()) {
+			NetworkSynchronizer synchronizer = player.getNetworkSynchronizer();
 			if (!chunk.isDirtyOverflow() && !chunk.isLightDirty()) {
 				for (int i = 0; true; i++) {
 					Vector3 block = chunk.getDirtyBlock(i);
@@ -853,15 +857,15 @@ public class SpoutRegion extends Region{
 			}
 		}
 	}
-	
+
 	int physicsUpdates = 0;
-	
+
 	public void runLocalPhysics() throws InterruptedException {
 		physicsUpdates = 0;
 		World world = getWorld();
-		
+
 		boolean updated = true;
-		
+
 		while (updated) {
 			updated = physicsQueue.commitAsyncQueue();
 			if (updated) {
@@ -884,9 +888,9 @@ public class SpoutRegion extends Region{
 
 	public int runGlobalPhysics() throws InterruptedException {
 		World world = getWorld();
-		
+
 		UpdateQueue queue = physicsQueue.getMultiRegionQueue();
-		
+
 		while (queue.hasNext()) {
 			int x = queue.getX();
 			int y = queue.getY();
@@ -896,36 +900,33 @@ public class SpoutRegion extends Region{
 		}
 		return physicsUpdates;
 	}
-	
+
 	private boolean callOnUpdatePhysicsForRange(World world, int x, int y, int z, Source source, boolean force) {
 		//switch region block coords (0-255) to a chunk index
-		Chunk chunk = chunks[x >> Chunk.BLOCKS.BITS][y >> Chunk.BLOCKS.BITS][z >> Chunk.BLOCKS.BITS].get();
-		if (chunk != null) {
-			int packed = chunk.getBlockFullState(x, y, z);
-			BlockMaterial material = BlockFullState.getMaterial(packed);
-			if (material.hasPhysics()) {
-				short data = BlockFullState.getData(packed);
-				if (!force && !material.getMaximumPhysicsRange(data).isRegionLocal(x, y, z)) {
-					return false;
-				}
-				//switch region block coords (0-255) to world block coords
-				Block block = world.getBlock(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ(), source);
-				block.getMaterial().onUpdate(block);
-				physicsUpdates++;	
+		Chunk chunk = getChunkFromBlock(x, y, z);
+		int packed = chunk.getBlockFullState(x, y, z);
+		BlockMaterial material = BlockFullState.getMaterial(packed);
+		if (material.hasPhysics()) {
+			short data = BlockFullState.getData(packed);
+			if (!force && !material.getMaximumPhysicsRange(data).isRegionLocal(x, y, z)) {
+				return false;
 			}
-			return true;
-		} else {
-			//throw new IllegalStateException("Chunk unavailable for physics update");
-			Spout.getLogger().info("Chunk unavailable for physics");
-			return true;
+			//switch region block coords (0-255) to world block coords
+			Block block = world.getBlock(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ(), source);
+			block.getMaterial().onUpdate(block);
+			physicsUpdates++;
 		}
+		return true;
 	}
 
 	public long getFirstDynamicUpdateTime() {
 		return dynamicBlockTree.getFirstDynamicUpdateTime();
 	}
+	
+	int dynamicUpdates = 0;
 
 	public void runLocalDynamicUpdates(long time) throws InterruptedException {
+		dynamicBlockTree.resetLastUpdates();
 		long currentTime = getWorld().getAge();
 		if (time > currentTime) {
 			time = currentTime;
@@ -935,15 +936,14 @@ public class SpoutRegion extends Region{
 	}
 
 	public int runGlobalDynamicUpdates() throws InterruptedException {
-		int size = 0;
 		long currentTime = getWorld().getAge();
 		if (multiRegionUpdates != null) {
-			size = Math.max(multiRegionUpdates.size(), 1);
 			for (DynamicBlockUpdate update : multiRegionUpdates) {
 				dynamicBlockTree.updateDynamicBlock(currentTime, update, true);
 			}
+			return Math.max(1, dynamicBlockTree.getLastUpdates());
 		}
-		return size;
+		return dynamicBlockTree.getLastUpdates();
 	}
 
 	@Override
@@ -1077,18 +1077,28 @@ public class SpoutRegion extends Region{
 	}
 
 	@Override
-	public short setBlockDataBits(int x, int y, int z, short bits, Source source) {
+	public short setBlockDataBits(int x, int y, int z, int bits, boolean set, Source source) {
+		return this.getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits, set, source);
+	}
+
+	@Override
+	public short setBlockDataBits(int x, int y, int z, int bits, Source source) {
 		return this.getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits, source);
 	}
 
 	@Override
-	public short clearBlockDataBits(int x, int y, int z, short bits, Source source) {
+	public short clearBlockDataBits(int x, int y, int z, int bits, Source source) {
 		return this.getChunkFromBlock(x, y, z).clearBlockDataBits(x, y, z, bits, source);
 	}
 
 	@Override
 	public int getBlockDataField(int x, int y, int z, int bits) {
 		return this.getChunkFromBlock(x, y, z).getBlockDataField(x, y, z, bits);
+	}
+	
+	@Override
+	public boolean isBlockDataBitSet(int x, int y, int z, int bits) {
+		return this.getChunkFromBlock(x, y, z).isBlockDataBitSet(x, y, z, bits);
 	}
 
 	@Override
@@ -1121,12 +1131,12 @@ public class SpoutRegion extends Region{
 	}
 
 	int cnt = 0;
-	
+
 	@Override
 	public void queueBlockPhysics(int x, int y, int z, EffectRange range, Source source) {
 		physicsQueue.queueForUpdateAsync(x, y, z, range, source);
 	}
-	
+
 	@Override
 	public void updateBlockPhysics(int x, int y, int z, Source source) {
 		physicsQueue.queueForUpdate(x, y, z, source);
@@ -1172,7 +1182,7 @@ public class SpoutRegion extends Region{
 	public Block getBlock(Vector3 position, Source source) {
 		return this.getWorld().getBlock(position, source);
 	}
-	
+
 	@Override
 	public int getBlockFullState(int x, int y, int z) {
 		return this.getChunkFromBlock(x, y, z).getBlockFullState(x, y, z);
@@ -1216,12 +1226,12 @@ public class SpoutRegion extends Region{
 
 	/**
 	 * Test if region file exists
-	 * 
+	 *
 	 * @param world world
 	 * @param x region x coordinate
 	 * @param y region y coordinate
 	 * @param z region z coordinate
-	 * 
+	 *
 	 * @return true if exists, false if doesn't exist
 	 */
 
@@ -1249,7 +1259,7 @@ public class SpoutRegion extends Region{
 	public void resetDynamicBlock(int x, int y, int z) {
 		dynamicBlockTree.resetBlockUpdates(x, y, z);
 	}
-	
+
 	@Override
 	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, int data, Object hint) {
 		return dynamicBlockTree.queueBlockUpdates(x, y, z, nextUpdate, data, hint);
@@ -1290,5 +1300,4 @@ public class SpoutRegion extends Region{
 	public void addSnapshotFuture(SpoutChunkSnapshotFuture future) {
 		snapshotQueue.add(future);
 	}
-
 }
