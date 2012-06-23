@@ -53,6 +53,13 @@ public interface Session {
 	 * @param protocol the protocol (Bootstrap until set)
 	 */
 	public void setProtocol(Protocol protocol);
+	
+	/**
+	 * Gets the protocol associated with this session.
+	 *
+	 * @return the protocol (Bootstrap until set)
+	 */
+	public Protocol getProtocol();
 
 	/**
 	 * Gets the state of this session.
