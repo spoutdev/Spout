@@ -24,7 +24,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine;
+package org.spout.engine.listener;
 
 import java.net.InetAddress;
 
@@ -42,6 +42,7 @@ import org.spout.api.event.server.BanChangeEvent.BanType;
 import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 import org.spout.api.event.storage.PlayerLoadEvent;
 import org.spout.api.player.Player;
+import org.spout.engine.SpoutServer;
 import org.spout.engine.protocol.SpoutSession;
 
 public class SpoutListener implements Listener {

@@ -384,6 +384,11 @@ public final class SpoutSession implements Session {
 
 		server.getLogger().info("Setting protocol to " + protocol.getName());
 	}
+	
+	@Override
+	public Protocol getProtocol() {
+		return this.protocol.get();
+	}
 
 	@Override
 	public Engine getEngine() {

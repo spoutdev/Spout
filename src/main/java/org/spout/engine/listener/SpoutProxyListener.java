@@ -24,42 +24,46 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine;
+package org.spout.engine.listener;
 
-import org.spout.api.Spout;
+import org.spout.api.event.EventHandler;
+import org.spout.api.event.Listener;
+import org.spout.api.event.Order;
+import org.spout.api.event.Result;
+import org.spout.api.event.player.PlayerConnectEvent;
+import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 import org.spout.api.player.Player;
-import org.spout.api.plugin.Platform;
-import org.spout.engine.listener.SpoutProxyListener;
-import org.spout.engine.player.SpoutPlayer;
+import org.spout.engine.SpoutServer;
 import org.spout.engine.protocol.SpoutSession;
 
-import com.beust.jcommander.JCommander;
+public class SpoutProxyListener implements Listener {
+	private final SpoutServer server;
 
-public class SpoutProxy extends SpoutServer {
-	
-	public static void main(String[] args) {
-		SpoutProxy proxy = new SpoutProxy();
-		Spout.setEngine(proxy);
-		Spout.getFilesystem().init();
-		new JCommander(proxy, args);
-		proxy.init(args);
-		proxy.start();
-	}
-	
-	@Override
-	public void start() {
-		super.start(false, new SpoutProxyListener(this));
+	public SpoutProxyListener(SpoutServer server) {
+		this.server = server;
 	}
 
-	@Override
-	public Platform getPlatform() {
-		return Platform.PROXY;
-	}
-	
-	@Override
-	public Player addPlayer(String playerName, SpoutSession session, int viewDistance) {
-		SpoutPlayer player = null;
+	@EventHandler(order = Order.MONITOR)
+	public void onPlayerConnect(PlayerConnectEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		//Create the player
+		final Player player = server.addPlayer(event.getPlayerName(), (SpoutSession) event.getSession(), event.getViewDistance());
 		
-		return player;
+		if (player != null) {
+			throw new IllegalStateException("Proxy connects do not have associated Player objects");
+		}
+		
+		System.out.println("Connected to proxy: " + event.getSession().getProtocol());
 	}
+
+	@EventHandler(order = Order.EARLIEST)
+	public void onGetAllWithNode(PermissionGetAllWithNodeEvent event) {
+		for (Player player : server.getOnlinePlayers()) {
+			event.getReceivers().put(player, Result.DEFAULT);
+		}
+		event.getReceivers().put(server.getConsole(), Result.DEFAULT);
+	}
+
 }
