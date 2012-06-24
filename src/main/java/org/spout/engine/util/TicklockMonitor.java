@@ -26,23 +26,24 @@
  */
 package org.spout.engine.util;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadInfo;
-import java.lang.management.ThreadMXBean;
-
 import org.spout.api.Spout;
+import org.spout.engine.scheduler.SpoutScheduler;
+import org.spout.engine.util.thread.AsyncExecutorUtils;
 
-public class DeadlockMonitor extends Thread {
+public class TicklockMonitor extends Thread {
 	
-	public DeadlockMonitor() {
-		super("Deadlock Monitor");
+	public TicklockMonitor() {
+		super("Tick Monitor");
 		setDaemon(true);
 	}
 	
 	@Override
 	public void run() {
 
+		long tickPeriod = SpoutScheduler.PULSE_EVERY;
+		long threshold = tickPeriod * 200;
 		boolean dead = false;
+		long lastUpTime = 0;
 		while (!dead && !interrupted()) {
 			try {
 				Thread.sleep(10000);
@@ -50,15 +51,16 @@ public class DeadlockMonitor extends Thread {
 				Thread.currentThread().interrupt();
 				dead = true;
 			}
-			ThreadMXBean tmx = ManagementFactory.getThreadMXBean();
-			long[] ids = tmx.findDeadlockedThreads();
-			if (ids != null) {
-				Spout.getLogger().info("Checking for deadlocks");
-				ThreadInfo[] infos = tmx.getThreadInfo(ids, true, true);
-				Spout.getLogger().severe("The following threads are deadlocked:");
-				for (ThreadInfo ti : infos) {
-					Spout.getLogger().severe(ti.toString());
-				}
+			
+			long tickTime = Spout.getEngine().getScheduler().getTickTime();
+			long upTime = Spout.getEngine().getScheduler().getUpTime();
+			
+			if (tickTime > threshold && upTime != lastUpTime) {
+				Spout.getLogger().info("Current Tick Time exceeds " + (threshold / 1000) + " seconds");
+				AsyncExecutorUtils.dumpAllStacks();
+				lastUpTime = upTime;
+			} else {
+				Spout.getLogger().info("Current tick time: " + tickTime);
 			}
 		}
 	}

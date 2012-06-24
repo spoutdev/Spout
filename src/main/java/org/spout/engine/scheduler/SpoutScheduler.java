@@ -102,7 +102,7 @@ public final class SpoutScheduler implements Scheduler {
 	/**
 	 * The number of milliseconds between pulses.
 	 */
-	protected static final int PULSE_EVERY = 50;
+	public static final int PULSE_EVERY = 50;
 	/**
 	 * A time that is at least 1 Pulse below the maximum time instant
 	 */

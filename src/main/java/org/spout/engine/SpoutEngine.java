@@ -94,9 +94,8 @@ import org.spout.api.plugin.ServiceManager;
 import org.spout.api.plugin.security.CommonSecurityManager;
 import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
-import org.spout.api.util.StringMap;
 import org.spout.api.scheduler.TaskManager;
-
+import org.spout.api.util.StringMap;
 import org.spout.engine.command.AdministrationCommands;
 import org.spout.engine.command.MessagingCommands;
 import org.spout.engine.command.TestCommands;
@@ -110,6 +109,8 @@ import org.spout.engine.protocol.SpoutSessionRegistry;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.ConsoleManager;
+import org.spout.engine.util.DeadlockMonitor;
+import org.spout.engine.util.TicklockMonitor;
 import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
@@ -183,6 +184,10 @@ public class SpoutEngine extends AsyncManager implements Engine {
 			throw new IllegalStateException("SpoutEngine's executor was already started");
 		}
 		DefaultPermissions.addDefaultPermission(STANDARD_BROADCAST_PERMISSION);
+		if (Spout.getEngine().debugMode()) {
+			new TicklockMonitor().start();
+			new DeadlockMonitor().start();
+		}
 	}
 	
 	public void start() {

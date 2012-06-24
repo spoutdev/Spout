@@ -51,17 +51,17 @@ public class AsyncExecutorUtils {
 		while (i.hasNext()) {
 			Entry<Thread, StackTraceElement[]> entry = i.next();
 			Thread thread = entry.getKey();
-			log.finest(LINE);
+			log.info(LINE);
 
-			log.finest("Current Thread: " + thread.getName());
-			log.finest("    PID: " + thread.getId() + " | Alive: " + thread.isAlive() + " | State: " + thread.getState());
-			log.finest("    Stack:");
+			log.info("Current Thread: " + thread.getName());
+			log.info("    PID: " + thread.getId() + " | Alive: " + thread.isAlive() + " | State: " + thread.getState());
+			log.info("    Stack:");
 			StackTraceElement[] stack = entry.getValue();
 			for (int line = 0; line < stack.length; line++) {
-				log.finest("        " + stack[line].toString());
+				log.info("        " + stack[line].toString());
 			}
 		}
-		log.finest(LINE);
+		log.info(LINE);
 	}
 
 	/**
