@@ -72,6 +72,7 @@ import jline.ConsoleReader;
 import jline.NullCompletor;
 import org.spout.api.ChatColor;
 import org.spout.api.Engine;
+import org.spout.api.Spout;
 import org.spout.api.command.CommandSource;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.geo.World;
@@ -425,6 +426,14 @@ public final class ConsoleManager {
 				}
 			}
 			super.flush();
+		}
+		
+		@Override
+		public synchronized void publish(LogRecord record) {
+			super.publish(record);
+			if (Spout.debugMode()) {
+				flush();
+			}
 		}
 
 		private String calculateFilename() {
