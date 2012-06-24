@@ -33,13 +33,12 @@ import org.spout.api.event.Result;
 import org.spout.api.event.player.PlayerConnectEvent;
 import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 import org.spout.api.player.Player;
-import org.spout.engine.SpoutServer;
-import org.spout.engine.protocol.SpoutSession;
+import org.spout.engine.SpoutProxy;
 
 public class SpoutProxyListener implements Listener {
-	private final SpoutServer server;
+	private final SpoutProxy server;
 
-	public SpoutProxyListener(SpoutServer server) {
+	public SpoutProxyListener(SpoutProxy server) {
 		this.server = server;
 	}
 
@@ -49,11 +48,7 @@ public class SpoutProxyListener implements Listener {
 			return;
 		}
 		//Create the player
-		final Player player = server.addPlayer(event.getPlayerName(), (SpoutSession) event.getSession(), event.getViewDistance());
-		
-		if (player != null) {
-			throw new IllegalStateException("Proxy connects do not have associated Player objects");
-		}
+		server.connect(event.getPlayerName());
 		
 		System.out.println("Connected to proxy: " + event.getSession().getProtocol());
 	}

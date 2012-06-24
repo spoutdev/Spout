@@ -26,9 +26,18 @@
  */
 package org.spout.engine;
 
+import java.net.InetSocketAddress;
+
+import org.jboss.netty.bootstrap.ClientBootstrap;
+import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.spout.api.Spout;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.Platform;
+import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.engine.listener.SpoutProxyListener;
 import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.protocol.SpoutSession;
@@ -36,6 +45,11 @@ import org.spout.engine.protocol.SpoutSession;
 import com.beust.jcommander.JCommander;
 
 public class SpoutProxy extends SpoutServer {
+	
+	/**
+	 * The {@link ServerBootstrap} used to initialize Netty.
+	 */
+	private final ClientBootstrap clientBootstrap = new ClientBootstrap();
 	
 	public static void main(String[] args) {
 		SpoutProxy proxy = new SpoutProxy();
@@ -61,5 +75,38 @@ public class SpoutProxy extends SpoutServer {
 		SpoutPlayer player = null;
 		
 		return player;
+	}
+	
+	public void connect(String playerName) {
+		String hostname = "localhost";
+		int port = 25565;
+		ChannelFuture f = clientBootstrap.connect(new InetSocketAddress(hostname, port));
+		System.out.println("Waiting for future to finish");
+		try {
+			f.await();
+		} catch (InterruptedException e) {
+			System.out.println("Interrupted");
+		}
+		System.out.println("Connect: " + f.isSuccess() + ", " + f.isDone() + ", " + f.getCause());
+		f.getCause().printStackTrace();
+	}
+	
+	@Override
+	public void init(String[] args) {
+		super.init(args);
+		ChannelFactory factory = new NioClientSocketChannelFactory(executor, executor);
+		clientBootstrap.setFactory(factory);
+
+		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this);
+		clientBootstrap.setPipelineFactory(pipelineFactory);
+		
+		clientBootstrap.setOption("tcpNoDelay", true);
+		clientBootstrap.setOption("keepAlive", true);
+	}
+	
+	@Override
+	public void stop() {
+		super.stop();
+		clientBootstrap.getFactory().releaseExternalResources();
 	}
 }
