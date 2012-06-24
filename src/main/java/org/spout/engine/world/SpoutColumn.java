@@ -108,9 +108,6 @@ public class SpoutColumn {
 							 bm = c.getBlockMaterial(wx + xx, y, wz + zz);	
 						}
 						topmostBlocks[xx][zz] = bm;
-						if (bm == null) {
-							Spout.getLogger().info("Failed to set topmost block, " + wxx + ", " + y + ", " + wzz);
-						}
 					}
 				}
 			}
