@@ -26,6 +26,32 @@
  */
 package org.spout.engine.filesystem;
 
+import org.spout.engine.resources.loader.MeshLoader;
+import org.spout.engine.resources.loader.RenderMaterialLoader;
+import org.spout.engine.resources.loader.ShaderLoader;
+import org.spout.engine.resources.loader.TextureLoader;
+
 public class ClientFileSystem extends SharedFileSystem {
+	
+	public void init(){
+		
+		if (!RESOURCE_FOLDER.exists()) {
+			RESOURCE_FOLDER.mkdirs();
+		}
+		if (!CACHE_FOLDER.exists()) {
+			CACHE_FOLDER.mkdirs();
+		}
+		
+		super.init();
+		
+		registerLoader("texture", new TextureLoader());
+		registerLoader("shader", new ShaderLoader());
+		registerLoader("mesh", new MeshLoader());
+		registerLoader("material", new RenderMaterialLoader());
+
+		//registerLoader("font", new FontLoader());
+		
+		
+	}
 
 }

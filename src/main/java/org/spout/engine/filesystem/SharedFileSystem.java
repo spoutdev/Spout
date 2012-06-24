@@ -65,22 +65,7 @@ public class SharedFileSystem implements FileSystem {
 	
 
 	public void init() {
-		if (Spout.getPlatform() == Platform.CLIENT) {
-			if (!RESOURCE_FOLDER.exists()) {
-				RESOURCE_FOLDER.mkdirs();
-			}
-			if (!CACHE_FOLDER.exists()) {
-				CACHE_FOLDER.mkdirs();
-			}
-		} else if (Spout.getPlatform() == Platform.SERVER) {
-			if (!CONFIG_DIRECTORY.exists()) {
-				CONFIG_DIRECTORY.mkdirs();
-			}
-			if (!UPDATE_DIRECTORY.exists()) {
-				UPDATE_DIRECTORY.mkdirs();
-			}
-		}
-
+		
 		if (!PLUGIN_DIRECTORY.exists()) {
 			PLUGIN_DIRECTORY.mkdirs();
 		}
@@ -95,11 +80,7 @@ public class SharedFileSystem implements FileSystem {
 				//new ZipfileResolver(),
 				new JarfileResolver()};
 
-		registerLoader("texture", new TextureLoader());
-		registerLoader("shader", new ShaderLoader());
-		registerLoader("mesh", new MeshLoader());
-		registerLoader("material", new RenderMaterialLoader());
-		//registerLoader("font", new FontLoader());
+		
 	}
 
 	

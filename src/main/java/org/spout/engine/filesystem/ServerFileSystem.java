@@ -27,5 +27,15 @@
 package org.spout.engine.filesystem;
 
 public class ServerFileSystem extends SharedFileSystem {
-
+	public void init(){
+		if (!CONFIG_DIRECTORY.exists()) {
+			CONFIG_DIRECTORY.mkdirs();
+		}
+		if (!UPDATE_DIRECTORY.exists()) {
+			UPDATE_DIRECTORY.mkdirs();
+		}
+		
+		super.init();
+		
+	}
 }

@@ -88,6 +88,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		new JCommander(server, args);
 		server.init(args);
 		server.start();
+		
 	}
 
 	public void start() {
@@ -104,6 +105,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 		banManager = new FlatFileBanManager(this);
 
 		getEventManager().registerEvents(listener, this);
+		
+		Spout.getFilesystem().postStartup();
 
 		getLogger().info("Done Loading, ready for players.");
 	}
