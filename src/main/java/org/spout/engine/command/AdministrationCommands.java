@@ -30,7 +30,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.spout.api.ChatColor;
+import org.spout.api.ChatStyle;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
@@ -91,7 +91,7 @@ public class AdministrationCommands {
 		Player player = Spout.getEngine().getPlayer(playerName, true);
 		if (player.isOnline()) {
 			player.kick(message);
-			source.sendMessage(ChatColor.BRIGHT_GREEN + "Kicked player '" + player.getName() + (!message.isEmpty() ? "' for reason '" + message + "'" : "'"));
+			source.sendMessage(ChatStyle.BRIGHT_GREEN + "Kicked player '" + player.getName() + (!message.isEmpty() ? "' for reason '" + message + "'" : "'"));
 		}
 	}
 
@@ -99,7 +99,7 @@ public class AdministrationCommands {
 	@CommandPermissions("spout.command.reload")
 	public void reload(CommandContext args, CommandSource source) throws CommandException {
 		if (args.length() == 0) {
-			source.sendMessage(ChatColor.BRIGHT_GREEN + "Reloading server...");
+			source.sendMessage(ChatStyle.BRIGHT_GREEN + "Reloading server...");
 
 			for (Plugin plugin : Spout.getEngine().getPluginManager().getPlugins()) {
 				if (plugin.getDescription().allowsReload()) {
@@ -107,7 +107,7 @@ public class AdministrationCommands {
 				}
 			}
 
-			source.sendMessage(ChatColor.BRIGHT_GREEN + "Reloaded.");
+			source.sendMessage(ChatStyle.BRIGHT_GREEN + "Reloaded.");
 		} else {
 			String pluginName = args.getString(0);
 			if (Spout.getEngine().getPluginManager().getPlugin(pluginName) == null) {
@@ -119,7 +119,7 @@ public class AdministrationCommands {
 				throw new CommandException("The plugin '" + pluginName + "' does not allow reloads.");
 			}
 			plugin.onReload();
-			source.sendMessage(ChatColor.BRIGHT_GREEN + "Reloaded '" + pluginName + "'.");
+			source.sendMessage(ChatStyle.BRIGHT_GREEN + "Reloaded '" + pluginName + "'.");
 		}
 	}
 }

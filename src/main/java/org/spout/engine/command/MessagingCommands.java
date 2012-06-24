@@ -26,7 +26,7 @@
  */
 package org.spout.engine.command;
 
-import org.spout.api.ChatColor;
+import org.spout.api.ChatStyle;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
@@ -68,10 +68,10 @@ public class MessagingCommands {
 		if (player == source) {
 			source.sendMessage("Forever alone.");
 		} else if (player != null) {
-			source.sendMessage("To " + ChatColor.BRIGHT_GREEN + player.getName() + ChatColor.WHITE + ": " + message);
-			player.sendMessage("From " + ChatColor.BRIGHT_GREEN + source.getName() + ChatColor.WHITE + ": " + message);
+			source.sendMessage("To " + ChatStyle.BRIGHT_GREEN + player.getName() + ChatStyle.WHITE + ": " + message);
+			player.sendMessage("From " + ChatStyle.BRIGHT_GREEN + source.getName() + ChatStyle.WHITE + ": " + message);
 		} else {
-			throw new CommandException(ChatColor.RED + "Player '" + playerName + "' not found.");
+			throw new CommandException(ChatStyle.RED + "Player '" + playerName + "' not found.");
 		}
 	}
 }

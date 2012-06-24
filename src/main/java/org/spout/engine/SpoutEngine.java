@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
-import org.spout.api.ChatColor;
+import org.spout.api.ChatStyle;
 import org.spout.api.Engine;
 import org.spout.api.FileSystem;
 import org.spout.api.Spout;
@@ -358,17 +358,17 @@ public class SpoutEngine extends AsyncManager implements Engine {
 			getRootCommand().execute(source, commandLine.split(" "), -1, false);
 		} catch (WrappedCommandException e) {
 			if (e.getCause() instanceof NumberFormatException) {
-				source.sendMessage(ChatColor.RED + "Number expected; string given!");
+				source.sendMessage(ChatStyle.RED + "Number expected; string given!");
 			} else {
-				source.sendMessage(ChatColor.RED + "Internal error executing command!");
-				source.sendMessage(ChatColor.RED + "Error: " + e.getMessage() + "; See console for details.");
+				source.sendMessage(ChatStyle.RED + "Internal error executing command!");
+				source.sendMessage(ChatStyle.RED + "Error: " + e.getMessage() + "; See console for details.");
 				e.printStackTrace();
 			}
 		} catch (CommandUsageException e) {
-			source.sendMessage(ChatColor.RED + e.getMessage());
-			source.sendMessage(ChatColor.RED + e.getUsage());
+			source.sendMessage(ChatStyle.RED + e.getMessage());
+			source.sendMessage(ChatStyle.RED + e.getUsage());
 		} catch (CommandException e) {
-			source.sendMessage(ChatColor.RED + e.getMessage());
+			source.sendMessage(ChatStyle.RED + e.getMessage());
 		}
 	}
 
