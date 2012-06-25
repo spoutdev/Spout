@@ -122,4 +122,24 @@ public class AdministrationCommands {
 			source.sendMessage(ChatColor.BRIGHT_GREEN + "Reloaded '" + pluginName + "'.");
 		}
 	}
+	@Command(aliases = {"plugins", "pl"}, desc = "List all plugins on the server")
+	@CommandPermissions("spout.command.plugins")
+	public void plugins(CommandContext args, CommandSource source) {
+		Plugin[] pluginList = Spout.getEngine().getPluginManager().getPlugins();
+		String pluginListString = "Plugins (" + pluginList.length + "): ";
+
+		for (int i = 0; i < pluginList.length; i++) {
+
+			if (pluginList[i].isEnabled()) {
+				pluginListString += ChatColor.BRIGHT_GREEN + pluginList[i].getName();
+			} else {
+				pluginListString += ChatColor.RED + pluginList[i].getName();
+			}
+
+			if (i != pluginList.length - 1) {
+				pluginListString += ChatColor.WHITE + ", ";
+			}
+		}
+		source.sendMessage(pluginListString);
+	}
 }
