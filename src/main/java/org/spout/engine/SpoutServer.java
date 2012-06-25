@@ -34,6 +34,7 @@ import java.util.logging.Level;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelException;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
@@ -140,7 +141,12 @@ public class SpoutServer extends SpoutEngine implements Server {
 			return false;
 		}
 		bootstrapProtocols.put(address, protocol);
-		group.add(bootstrap.bind(address));
+		try{
+            		group.add(bootstrap.bind(address));
+        	}catch(ChannelException ex){
+            		Logger.log(Level.SEVERE, "Failed to bind to address "+address+". Is there already another server running on this address?", ex);
+            		return false;
+        	}
 		logger.log(Level.INFO, "Binding to address: {0}...", address);
 		return true;
 	}
