@@ -140,7 +140,12 @@ public class SpoutServer extends SpoutEngine implements Server {
 			return false;
 		}
 		bootstrapProtocols.put(address, protocol);
-		group.add(bootstrap.bind(address));
+		try {
+			group.add(bootstrap.bind(address));
+		} catch (org.jboss.netty.channel.ChannelException e) {
+			Logger.log(Level.SEVERE, "Failed to bind to address " + address + ". Is there already another server running on this address?", ex);
+			return false;
+		}
 		logger.log(Level.INFO, "Binding to address: {0}...", address);
 		return true;
 	}
