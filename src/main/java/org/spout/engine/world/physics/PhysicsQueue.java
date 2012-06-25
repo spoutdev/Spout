@@ -31,8 +31,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.exception.IllegalTickSequenceException;
+import org.spout.api.geo.LoadOption;
+import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
-import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.range.EffectIterator;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.IntVector3;
@@ -63,6 +64,7 @@ public class PhysicsQueue {
 		boolean updated = false;
 		PhysicsUpdate update;
 		EffectIterator ei = new EffectIterator();
+		boolean info = !Spout.debugMode();
 		while ((update = asyncQueue.poll()) != null) {
 			updated = true;
 			update.getRange().initEffectIterator(ei);
@@ -80,6 +82,20 @@ public class PhysicsQueue {
 					int wx = region.getBlockX() + ox;
 					int wy = region.getBlockY() + oy;
 					int wz = region.getBlockZ() + oz;
+					if (!info) {
+						info = true;
+						int cx = region.getBlockX() + x;
+						int cy = region.getBlockY() + y;
+						int cz = region.getBlockZ() + z;
+						Spout.getLogger().info("Inter-region physics center position " + cx + ", " + cy + ", " + cz);
+						Spout.getLogger().info("Inter-region physics position of update " + wx + ", " + wy + ", " + wz);
+						Chunk c = region.getChunkFromBlock(x, y, z, LoadOption.LOAD_ONLY);
+						if (c == null) {
+							Spout.getLogger().info("Chunk was null");
+						} else {
+							Spout.getLogger().info("Material at center location is " + c.getBlockMaterial(x, y, z).getClass().getSimpleName());
+						}
+					}
 					region.getWorld().queueBlockPhysics(wx, wy, wz, EffectRange.THIS, update.getSource());
 				}
 			}
