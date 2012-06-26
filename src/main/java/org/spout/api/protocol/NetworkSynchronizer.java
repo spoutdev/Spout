@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
@@ -58,6 +59,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	protected final Player owner;
 	protected Entity entity;
 	protected final Session session;
+	protected final AtomicReference<Protocol> protocol = new AtomicReference<Protocol>(null);
 
 	public NetworkSynchronizer(Player owner, Session session, Entity entity, int minimumViewRadius) {
 		this.owner = owner;
@@ -546,12 +548,35 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	 */
 	public void syncEntity(Entity e) {
 	}
+	
+	/**
+	 * Sets the protocol associated with this network synchronizer
+	 * 
+	 * @param protocol
+	 */
+	public void setProtocol(Protocol protocol) {
+		if (protocol == null) {
+			throw new IllegalArgumentException("Protocol may not be null");
+		} else if (!this.protocol.compareAndSet(null, protocol)) {
+			throw new IllegalStateException("Protocol may not be set twice for a network synchronizer");
+		}
+	}
 
 	public Message getChatMessage(String message) {
-		return null;
+		Protocol protocol = this.protocol.get();
+		if (protocol != null) {
+			return protocol.getChatMessage(message);
+		} else {
+			return null;
+		}
 	}
 
 	public Message getKickMessage(String message) {
-		return null;
+		Protocol protocol = this.protocol.get();
+		if (protocol != null) {
+			return protocol.getKickMessage(message);
+		} else {
+			return null;
+		}
 	}
 }
