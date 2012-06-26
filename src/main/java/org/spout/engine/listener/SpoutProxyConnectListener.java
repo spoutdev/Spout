@@ -26,37 +26,40 @@
  */
 package org.spout.engine.listener;
 
-import org.spout.api.event.EventHandler;
-import org.spout.api.event.Listener;
-import org.spout.api.event.Order;
-import org.spout.api.event.Result;
-import org.spout.api.event.player.PlayerConnectEvent;
-import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
-import org.spout.api.player.Player;
-import org.spout.engine.SpoutProxy;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
+import org.spout.api.Engine;
+import org.spout.api.Spout;
+import org.spout.api.protocol.Session;
+import org.spout.engine.protocol.SpoutSession;
 
-public class SpoutProxyListener implements Listener {
-	private final SpoutProxy server;
-
-	public SpoutProxyListener(SpoutProxy server) {
-		this.server = server;
+public class SpoutProxyConnectListener implements ChannelFutureListener {
+	
+	private final Engine engine;
+	private final SpoutSession session;
+	private final String playerName;
+	
+	public SpoutProxyConnectListener(Engine engine, String playerName, Session session) {
+		this.engine = engine;
+		this.session = (SpoutSession) session;
+		this.playerName = playerName;
 	}
 
-	@EventHandler(order = Order.MONITOR)
-	public void onPlayerConnect(PlayerConnectEvent event) {
-		if (event.isCancelled()) {
-			return;
+	@Override
+	public void operationComplete(ChannelFuture future) throws Exception {
+		if (!future.isDone()) {
+			throw new IllegalStateException("Connect operation was not done when listener was triggered");
+		} else {
+			Channel c = future.getChannel();
+			if (future.isSuccess()) {
+				Spout.getLogger().info("Connect to server successful " + c.getRemoteAddress() + ", " + playerName);
+				// Need to add aux channel to SpoutSession
+			} else {
+				Spout.getLogger().info("Failed to connect to server " + c.getRemoteAddress() + ", " + playerName);
+				session.disconnect("Unable to connect to backend server");
+			}
 		}
-		//Create the player
-		server.connect(event.getPlayerName(), event.getSession());
-	}
-
-	@EventHandler(order = Order.EARLIEST)
-	public void onGetAllWithNode(PermissionGetAllWithNodeEvent event) {
-		for (Player player : server.getOnlinePlayers()) {
-			event.getReceivers().put(player, Result.DEFAULT);
-		}
-		event.getReceivers().put(server.getConsole(), Result.DEFAULT);
 	}
 
 }

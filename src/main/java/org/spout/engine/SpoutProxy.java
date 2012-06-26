@@ -31,13 +31,15 @@ import java.net.InetSocketAddress;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.spout.api.Spout;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.CommonPipelineFactory;
+import org.spout.api.protocol.Session;
+import org.spout.engine.listener.SpoutProxyConnectListener;
 import org.spout.engine.listener.SpoutProxyListener;
 import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.protocol.SpoutSession;
@@ -77,18 +79,11 @@ public class SpoutProxy extends SpoutServer {
 		return player;
 	}
 	
-	public void connect(String playerName) {
+	public void connect(String playerName, Session session) {
 		String hostname = "localhost";
 		int port = 25565;
-		ChannelFuture f = clientBootstrap.connect(new InetSocketAddress(hostname, port));
-		System.out.println("Waiting for future to finish");
-		try {
-			f.await();
-		} catch (InterruptedException e) {
-			System.out.println("Interrupted");
-		}
-		System.out.println("Connect: " + f.isSuccess() + ", " + f.isDone() + ", " + f.getCause());
-		f.getCause().printStackTrace();
+		ChannelFutureListener listener = new SpoutProxyConnectListener(this, playerName, session);
+		clientBootstrap.connect(new InetSocketAddress(hostname, port)).addListener(listener);
 	}
 	
 	@Override
