@@ -26,11 +26,11 @@
  */
 package org.spout.api.protocol;
 
-import org.jboss.netty.channel.Channels;
-import org.spout.api.Server;
-
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.Channels;
+import org.spout.api.Engine;
+import org.spout.api.plugin.Platform;
 
 /**
  * A common {@link ChannelPipelineFactory}
@@ -39,21 +39,38 @@ public final class CommonPipelineFactory implements ChannelPipelineFactory {
 	/**
 	 * The server.
 	 */
-	private final Server server;
+	private final Engine engine;
+	
+	/**
+	 * Indicates if the channel is an upstream channel
+	 */
+	private final boolean upstream;
 
 	/**
 	 * Creates a new Minecraft pipeline factory.
 	 *
-	 * @param server The server.
+	 * @param server The engine
+	 * @param direction true for connection to the server
 	 */
-	public CommonPipelineFactory(Server server) {
-		this.server = server;
+	public CommonPipelineFactory(Engine engine, boolean upstream) {
+		Platform p = engine.getPlatform();
+		if (upstream) {
+			if (p != Platform.CLIENT && p != Platform.PROXY) {
+				throw new IllegalArgumentException("Only Clients and Proxies can establish upstream connections");
+			}
+		} else {
+			if (p != Platform.SERVER && p != Platform.PROXY) {
+				throw new IllegalArgumentException("Only Servers can establish downstream connections");
+			}
+		}
+		this.engine = engine;
+		this.upstream = upstream;
 	}
 
 	public ChannelPipeline getPipeline() throws Exception {
-		CommonHandler handler = new CommonHandler(server);
-		CommonEncoder encoder = new CommonEncoder();
-		CommonDecoder decoder = new CommonDecoder(handler, encoder);
+		CommonHandler handler = new CommonHandler(engine, upstream);
+		CommonEncoder encoder = new CommonEncoder(upstream);
+		CommonDecoder decoder = new CommonDecoder(handler, encoder, upstream);
 		return Channels.pipeline(decoder, encoder, handler);
 	}
 }

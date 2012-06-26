@@ -46,18 +46,20 @@ public class CommonDecoder extends PreprocessReplayingDecoder {
 	private volatile BootstrapProtocol bootstrapProtocol;
 	private final CommonHandler handler;
 	private final CommonEncoder encoder;
+	private final boolean upstream;
 
-	public CommonDecoder(CommonHandler handler, CommonEncoder encoder) {
+	public CommonDecoder(CommonHandler handler, CommonEncoder encoder, boolean upstream) {
 		super(512);
 		this.encoder = encoder;
 		this.handler = handler;
+		this.upstream = upstream;
 	}
 
 	@Override
 	protected Object decodeProcessed(ChannelHandlerContext ctx, Channel c, ChannelBuffer buf) throws Exception {
 		if (codecLookup == null) {
 			bootstrapProtocol = Spout.getEngine().getBootstrapProtocol(c.getLocalAddress());
-			codecLookup = bootstrapProtocol.getCodecLookupService();
+			codecLookup = bootstrapProtocol.getCodecLookupService(upstream);
 		}
 
 		int opcode;
@@ -110,7 +112,7 @@ public class CommonDecoder extends PreprocessReplayingDecoder {
 	}
 	
 	private void setProtocol(Protocol protocol) {
-		codecLookup = protocol.getCodecLookupService();
+		codecLookup = protocol.getCodecLookupService(upstream);
 		encoder.setProtocol(protocol);
 		handler.setProtocol(protocol);
 		bootstrapProtocol = null;

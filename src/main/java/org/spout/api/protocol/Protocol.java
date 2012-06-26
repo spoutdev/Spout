@@ -31,13 +31,22 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Protocol {
 	private static final ConcurrentHashMap<String, Protocol> map = new ConcurrentHashMap<String, Protocol>();
 
-	private final CodecLookupService codecLookup;
-	private final HandlerLookupService handlerLookup;
+	private final CodecLookupService downstreamCodecLookup;
+	private final CodecLookupService upstreamCodecLookup;
+	private final HandlerLookupService upstreamHandlerLookup;
+	private final HandlerLookupService downstreamHandlerLookup;
 	private final String name;
 
 	public Protocol(String name, CodecLookupService codecLookup, HandlerLookupService handlerLookup) {
-		this.codecLookup = codecLookup;
-		this.handlerLookup = handlerLookup;
+		this(name, codecLookup, codecLookup, handlerLookup, handlerLookup);
+	}
+	
+	public Protocol(String name, CodecLookupService upstreamCodecLookup, CodecLookupService downstreamCodecLookup, 
+			HandlerLookupService upstreamHandlerLookup, HandlerLookupService downstreamHandlerLookup) {
+		this.upstreamCodecLookup = upstreamCodecLookup;
+		this.downstreamCodecLookup = downstreamCodecLookup;
+		this.upstreamHandlerLookup = upstreamHandlerLookup;
+		this.downstreamHandlerLookup = downstreamHandlerLookup;
 		this.name = name;
 	}
 
@@ -46,8 +55,8 @@ public class Protocol {
 	 *
 	 * @return the handler lookup service
 	 */
-	public HandlerLookupService getHandlerLookupService() {
-		return handlerLookup;
+	public HandlerLookupService getHandlerLookupService(boolean upstream) {
+		return upstream ? upstreamHandlerLookup : downstreamHandlerLookup;
 	}
 
 	/**
@@ -55,8 +64,8 @@ public class Protocol {
 	 *
 	 * @return the codec lookup service
 	 */
-	public CodecLookupService getCodecLookupService() {
-		return codecLookup;
+	public CodecLookupService getCodecLookupService(boolean upstream) {
+		return upstream ? upstreamCodecLookup : downstreamCodecLookup;
 	}
 
 	/**

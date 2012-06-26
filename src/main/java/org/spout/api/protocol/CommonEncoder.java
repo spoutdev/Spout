@@ -42,12 +42,18 @@ import org.spout.api.Spout;
 public class CommonEncoder extends PostprocessEncoder {
 	private volatile CodecLookupService codecLookup = null;
 	
+	private final boolean upstream;
+	
+	public CommonEncoder(boolean upstream) {
+		this.upstream = upstream;
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Object encode(ChannelHandlerContext ctx, Channel c, Object msg) throws Exception {
 		if (msg instanceof Message) {
 			if (codecLookup == null) {
-				codecLookup = Spout.getEngine().getBootstrapProtocol(c.getLocalAddress()).getCodecLookupService();
+				codecLookup = Spout.getEngine().getBootstrapProtocol(c.getLocalAddress()).getCodecLookupService(upstream);
 			}
 			Message message = (Message) msg;
 
@@ -72,6 +78,6 @@ public class CommonEncoder extends PostprocessEncoder {
 	}
 
 	public void setProtocol(Protocol protocol) {
-		codecLookup = protocol.getCodecLookupService();
+		codecLookup = protocol.getCodecLookupService(upstream);
 	}
 }
