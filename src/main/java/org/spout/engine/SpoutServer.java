@@ -117,7 +117,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		ChannelFactory factory = new NioServerSocketChannelFactory(executor, executor);
 		bootstrap.setFactory(factory);
 
-		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this);
+		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, false);
 		bootstrap.setPipelineFactory(pipelineFactory);
 	}
 

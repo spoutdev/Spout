@@ -97,7 +97,7 @@ public class SpoutProxy extends SpoutServer {
 		ChannelFactory factory = new NioClientSocketChannelFactory(executor, executor);
 		clientBootstrap.setFactory(factory);
 
-		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this);
+		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, true);
 		clientBootstrap.setPipelineFactory(pipelineFactory);
 		
 		clientBootstrap.setOption("tcpNoDelay", true);
