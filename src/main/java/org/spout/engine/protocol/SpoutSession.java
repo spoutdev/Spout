@@ -37,9 +37,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.channel.ChannelPipeline;
 import org.spout.api.ChatColor;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
@@ -86,9 +84,21 @@ public final class SpoutSession implements Session {
 	 */
 	private final Channel channel;
 	/**
-	 * A queue of incoming and unprocessed messages.
+	 * The aux channel for proxy connections
 	 */
-	private final Queue<Message> messageQueue = new ArrayDeque<Message>();
+	private final AtomicReference<Channel> auxChannel = new AtomicReference<Channel>();
+	/**
+	 * Indicates if the session is operating in proxy mode
+	 */
+	private final boolean proxy;
+	/**
+	 * A queue of incoming and unprocessed messages from a client
+	 */
+	private final Queue<Message> fromDownMessageQueue = new ArrayDeque<Message>();
+	/**
+	 * A queue of incoming and unprocessed messages from a server
+	 */
+	private final Queue<Message> fromUpMessageQueue = new ArrayDeque<Message>();
 	/**
 	 * A queue of outgoing messages that will be sent after the client finishes identification
 	 */
@@ -143,7 +153,7 @@ public final class SpoutSession implements Session {
 	 * @param server  The server this session belongs to.
 	 * @param channel The channel associated with this session.
 	 */
-	public SpoutSession(SpoutServer server, Channel channel, BootstrapProtocol bootstrapProtocol) {
+	public SpoutSession(SpoutServer server, Channel channel, BootstrapProtocol bootstrapProtocol, boolean proxy) {
 		this.server = server;
 		this.channel = channel;
 		protocol = new AtomicReference<Protocol>(bootstrapProtocol);
@@ -151,6 +161,7 @@ public final class SpoutSession implements Session {
 		isConnected = true;
 		this.datatableMap = new GenericDatatableMap();
 		this.dataMap = new DataMap(this.datatableMap);
+		this.proxy = proxy;
 	}
 
 	/**
@@ -204,8 +215,20 @@ public final class SpoutSession implements Session {
 			}
 		}
 
-		while ((message = messageQueue.poll()) != null) {
+		while ((message = fromDownMessageQueue.poll()) != null) {
 			MessageHandler<Message> handler = (MessageHandler<Message>) protocol.get().getHandlerLookupService(false).find(message.getClass());
+			if (handler != null) {
+				try {
+					handler.handle(this, player, message);
+				} catch (Exception e) {
+					Spout.getEngine().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + (getPlayer() != null ? getPlayer().getName() : "null"));
+					e.printStackTrace();
+					disconnect("Message handler exception for " + message.getClass().getSimpleName(), false);
+				}
+			}
+		}
+		while ((message = fromUpMessageQueue.poll()) != null) {
+			MessageHandler<Message> handler = (MessageHandler<Message>) protocol.get().getHandlerLookupService(true).find(message.getClass());
 			if (handler != null) {
 				try {
 					handler.handle(this, player, message);
@@ -223,11 +246,6 @@ public final class SpoutSession implements Session {
 		send(message, false);
 	}
 
-	/**
-	 * Sends a message to the client.
-	 * @param message The message.
-	 * @param force   if this message is used in the identification stages of communication
-	 */
 	@Override
 	public void send(Message message, boolean force) {
 		try {
@@ -330,8 +348,12 @@ public final class SpoutSession implements Session {
 	 * @param <T>     The type of message.
 	 */
 	@Override
-	public <T extends Message> void messageReceived(T message) {
-		messageQueue.add(message);
+	public <T extends Message> void messageReceived(boolean upstream, T message) {
+		if (upstream) {
+			fromUpMessageQueue.add(message);
+		} else {
+			fromDownMessageQueue.add(message);
+		}
 	}
 
 	@Override
@@ -421,6 +443,36 @@ public final class SpoutSession implements Session {
 			throw new IllegalArgumentException("Network synchronizer may only be set once for a given player login");
 		} else {
 			synchronizer.setProtocol(protocol.get());
+		}
+	}
+	
+	@Override
+	public void bindAuxChannel(Channel c) {
+		if (!proxy) {
+			throw new UnsupportedOperationException("Aux channel is only supported in proxy mode");
+		} else if (c == null) {
+			throw new IllegalArgumentException("Channel may not be null");
+		} else if (!auxChannel.compareAndSet(null, c)) {
+			throw new IllegalStateException("Aux channel may not be set without closing the previously bound channel");
+		}
+	}
+	
+	@Override
+	public void closeAuxChannel() {
+		Channel c = auxChannel.getAndSet(null);
+		if (c != null) {
+			Message kickMessage = null;
+			Protocol p = protocol.get();
+			if (p != null) {
+				kickMessage = p.getKickMessage("Closing aux channel");
+			}
+			if (kickMessage != null) {
+				c.write(kickMessage).addListener(ChannelFutureListener.CLOSE);
+			} else {
+				c.close();
+			}
+		} else {
+			throw new IllegalStateException("Attempt made to close aux channel when no aux channel was bound");
 		}
 	}
 

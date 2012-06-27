@@ -30,6 +30,7 @@ import java.net.InetSocketAddress;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipelineFactory;
@@ -97,6 +98,11 @@ public class SpoutProxy extends SpoutServer {
 		
 		clientBootstrap.setOption("tcpNoDelay", true);
 		clientBootstrap.setOption("keepAlive", true);
+	}
+	
+	@Override
+	public Session newSession(Channel channel) {
+		return newSession(channel, true);
 	}
 	
 	@Override

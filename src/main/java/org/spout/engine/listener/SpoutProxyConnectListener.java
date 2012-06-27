@@ -29,8 +29,11 @@ package org.spout.engine.listener;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
+import org.jboss.netty.channel.ChannelHandler;
+import org.jboss.netty.channel.ChannelPipeline;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
+import org.spout.api.protocol.CommonHandler;
 import org.spout.api.protocol.Session;
 import org.spout.engine.protocol.SpoutSession;
 
@@ -54,7 +57,15 @@ public class SpoutProxyConnectListener implements ChannelFutureListener {
 			Channel c = future.getChannel();
 			if (future.isSuccess()) {
 				Spout.getLogger().info("Connect to server successful " + c.getRemoteAddress() + ", " + playerName);
-				// Need to add aux channel to SpoutSession
+				session.bindAuxChannel(c);
+				ChannelPipeline pipeline = c.getPipeline();
+				if (pipeline != null) {
+					ChannelHandler h = pipeline.getLast();
+					if (h != null && h instanceof CommonHandler) {
+						((CommonHandler) h).setSession(session);
+					}
+				}
+				System.out.println(pipeline.getLast().getClass().getSimpleName());
 			} else {
 				Spout.getLogger().info("Failed to connect to server " + c.getRemoteAddress() + ", " + playerName);
 				session.disconnect("Unable to connect to backend server");
