@@ -72,29 +72,38 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 	@Override
 	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
 		if (!upstream) {
-			Channel c = e.getChannel();
-			engine.getChannelGroup().add(c);
-			
-			Server server = (Server) engine;
-			Session session = server.newSession(c);
-			server.getSessionRegistry().add(session);
-			ctx.setAttachment(session);
-			this.session = session;
-			
-			engine.getLogger().info("Channel connected: " + c + ".");
+			try {
+				Channel c = e.getChannel();
+				engine.getChannelGroup().add(c);
+
+				Server server = (Server) engine;
+				Session session = server.newSession(c);
+				server.getSessionRegistry().add(session);
+				ctx.setAttachment(session);
+				this.session = session;
+
+				engine.getLogger().info("Channel connected: " + c + ".");
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				throw new RuntimeException("Exception thrown when connecting", ex);
+			}
 		}
 	}
 
 	@Override
 	public void channelDisconnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
-		Channel c = e.getChannel();
-		engine.getChannelGroup().remove(c);
+		try {
+			Channel c = e.getChannel();
+			engine.getChannelGroup().remove(c);
 
-		Session session = (Session) ctx.getAttachment();
-		engine.getSessionRegistry().remove(session);
-		session.dispose();
-
-		engine.getLogger().info("Channel disconnected: " + c + ".");
+			Session session = (Session) ctx.getAttachment();
+			engine.getSessionRegistry().remove(session);
+			session.dispose();
+			engine.getLogger().info("Channel disconnected: " + c + ".");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw new RuntimeException("Exception thrown when disconnecting", ex);
+		}
 	}
 
 	@Override
