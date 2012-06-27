@@ -26,6 +26,7 @@
  */
 package org.spout.api.protocol;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 import org.jboss.netty.channel.Channel;
@@ -52,7 +53,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 	/**
 	 * The associated session
 	 */
-	private volatile Session session = null;
+	private AtomicReference<Session> session = new AtomicReference<Session>(null);
 	
 	/**
 	 * Indicates if it is an upstream channel pipeline
@@ -79,8 +80,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 				Server server = (Server) engine;
 				Session session = server.newSession(c);
 				server.getSessionRegistry().add(session);
-				ctx.setAttachment(session);
-				this.session = session;
+				setSession(session);
 
 				engine.getLogger().info("Channel connected: " + c + ".");
 			} catch (Exception ex) {
@@ -96,7 +96,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 			Channel c = e.getChannel();
 			engine.getChannelGroup().remove(c);
 
-			Session session = (Session) ctx.getAttachment();
+			Session session = this.session.get();
 			engine.getSessionRegistry().remove(session);
 			session.dispose();
 			engine.getLogger().info("Channel disconnected: " + c + ".");
@@ -108,8 +108,8 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
-		Session session = (Session) ctx.getAttachment();
-		session.messageReceived((Message) e.getMessage());
+		Session session = this.session.get();
+		session.messageReceived(upstream, (Message) e.getMessage());
 	}
 
 	@Override
@@ -118,7 +118,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 		if (c.isOpen()) {
 			engine.getChannelGroup().remove(c);
 
-			Session session = (Session) ctx.getAttachment();
+			Session session = this.session.get();
 			if (session != null) {
 				engine.getSessionRegistry().remove(session);
 				session.dispose();
@@ -128,8 +128,15 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 			c.close();
 		}
 	}
+	
+	public void setSession(Session session) {
+		if (!this.session.compareAndSet(null, session)) {
+			throw new IllegalStateException("Session may not be set more than once");
+		}
+	}
 
 	public void setProtocol(Protocol protocol) {
+		Session session = this.session.get();
 		if (session != null) {
 			session.setProtocol(protocol);
 		} else {

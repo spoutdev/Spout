@@ -29,6 +29,7 @@ package org.spout.api.protocol;
 import java.io.Serializable;
 import java.net.InetSocketAddress;
 
+import org.jboss.netty.channel.Channel;
 import org.spout.api.Engine;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.player.Player;
@@ -37,9 +38,10 @@ public interface Session {
 	/**
 	 * Passes a message to a session for processing.
 	 *
+	 * @param upstream true if the message was received from a server
 	 * @param message message to be processed
 	 */
-	public <T extends Message> void messageReceived(T message);
+	public <T extends Message> void messageReceived(boolean upstream, T message);
 
 	/**
 	 * Disposes of this session by destroying the associated player, if there is
@@ -77,7 +79,7 @@ public interface Session {
 
 	/**
 	 * Sends a message to the client.
-	 *
+	 * 
 	 * @param message The message.
 	 */
 	public void send(Message message);
@@ -138,6 +140,16 @@ public interface Session {
 	 * @return Player
 	 */
 	public Player getPlayer();
+	
+	/**
+	 * Sets aux Channel when operating as a proxy server.
+	 */
+	public void bindAuxChannel(Channel c);
+	
+	/**
+	 * Closes aux Channel when operating as a proxy server
+	 */
+	public void closeAuxChannel();
 
 	/**
 	 * Sets the NetworkSynchronizer associated with this player.<br>
