@@ -195,7 +195,7 @@ public class SpoutPlayer implements Player {
 			return false;
 		}
 
-		session.send(chatMessage);
+		session.send(false, chatMessage);
 		return true;
 	}
 

@@ -29,11 +29,13 @@ package org.spout.engine.listener;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
+import org.spout.api.protocol.CommonDecoder;
 import org.spout.api.protocol.CommonHandler;
+import org.spout.api.protocol.Message;
+import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.engine.protocol.SpoutSession;
 
@@ -60,12 +62,19 @@ public class SpoutProxyConnectListener implements ChannelFutureListener {
 				session.bindAuxChannel(c);
 				ChannelPipeline pipeline = c.getPipeline();
 				if (pipeline != null) {
-					ChannelHandler h = pipeline.getLast();
-					if (h != null && h instanceof CommonHandler) {
-						((CommonHandler) h).setSession(session);
+					CommonDecoder d = pipeline.get(CommonDecoder.class);
+					if (d != null) {
+						d.setSession(session);
+					}
+					Protocol protocol = session.getProtocol();
+					if (protocol != null) {
+						Message intro = protocol.getIntroductionMessage(playerName);
+						System.out.println("Writing: " + intro);
+						c.write(intro);
+						return;
 					}
 				}
-				System.out.println(pipeline.getLast().getClass().getSimpleName());
+				session.disconnect("Login failed for backend server");
 			} else {
 				Spout.getLogger().info("Failed to connect to server " + c.getRemoteAddress() + ", " + playerName);
 				session.disconnect("Unable to connect to backend server");

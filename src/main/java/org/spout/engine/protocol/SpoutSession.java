@@ -211,15 +211,15 @@ public final class SpoutSession implements Session {
 
 		if (state == State.GAME) {
 			while ((message = sendQueue.poll()) != null) {
-				send(message, true);
+				send(false, true, message);
 			}
 		}
 
 		while ((message = fromDownMessageQueue.poll()) != null) {
-			MessageHandler<Message> handler = (MessageHandler<Message>) protocol.get().getHandlerLookupService(false).find(message.getClass());
+			MessageHandler<Message> handler = (MessageHandler<Message>) protocol.get().getHandlerLookupService().find(message.getClass());
 			if (handler != null) {
 				try {
-					handler.handle(this, player, message);
+					handler.handle(false, this, player, message);
 				} catch (Exception e) {
 					Spout.getEngine().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + (getPlayer() != null ? getPlayer().getName() : "null"));
 					e.printStackTrace();
@@ -228,10 +228,10 @@ public final class SpoutSession implements Session {
 			}
 		}
 		while ((message = fromUpMessageQueue.poll()) != null) {
-			MessageHandler<Message> handler = (MessageHandler<Message>) protocol.get().getHandlerLookupService(true).find(message.getClass());
+			MessageHandler<Message> handler = (MessageHandler<Message>) protocol.get().getHandlerLookupService().find(message.getClass());
 			if (handler != null) {
 				try {
-					handler.handle(this, player, message);
+					handler.handle(true, this, player, message);
 				} catch (Exception e) {
 					Spout.getEngine().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + (getPlayer() != null ? getPlayer().getName() : "null"));
 					e.printStackTrace();
@@ -242,12 +242,12 @@ public final class SpoutSession implements Session {
 	}
 
 	@Override
-	public void send(Message message) {
-		send(message, false);
+	public void send(boolean upstream, Message message) {
+		send(upstream, false, message);
 	}
 
 	@Override
-	public void send(Message message, boolean force) {
+	public void send(boolean upstream, boolean force, Message message) {
 		try {
 			if (force || this.state == State.GAME) {
 				if (channel.isOpen()) {
@@ -262,14 +262,14 @@ public final class SpoutSession implements Session {
 	}
 
 	@Override
-	public void sendAll(Message... messages) {
-		sendAll(false, messages);
+	public void sendAll(boolean upstream, Message... messages) {
+		sendAll(upstream, false, messages);
 	}
 
 	@Override
-	public void sendAll(boolean force, Message... messages) {
+	public void sendAll(boolean upstream, boolean force, Message... messages) {
 		for (Message msg : messages) {
-			send(msg, force);
+			send(upstream, force, msg);
 		}
 	}
 
@@ -312,6 +312,7 @@ public final class SpoutSession implements Session {
 		} else {
 			channel.close();
 		}
+		closeAuxChannel(false);
 		return true;
 	}
 
@@ -409,6 +410,9 @@ public final class SpoutSession implements Session {
 	@Override
 	public void setProtocol(Protocol protocol) {
 		if (!this.protocol.compareAndSet(bootstrapProtocol, protocol)) {
+			if (this.protocol.get() == protocol) {
+				return;
+			}
 			throw new IllegalArgumentException("The protocol may only be set once per session");
 		}
 		this.synchronizer.get().setProtocol(protocol);
@@ -459,6 +463,10 @@ public final class SpoutSession implements Session {
 	
 	@Override
 	public void closeAuxChannel() {
+		closeAuxChannel(true);
+	}
+	
+	private void closeAuxChannel(boolean openedExpected) {
 		Channel c = auxChannel.getAndSet(null);
 		if (c != null) {
 			Message kickMessage = null;
@@ -471,7 +479,7 @@ public final class SpoutSession implements Session {
 			} else {
 				c.close();
 			}
-		} else {
+		} else if (openedExpected) {
 			throw new IllegalStateException("Attempt made to close aux channel when no aux channel was bound");
 		}
 	}
