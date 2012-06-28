@@ -30,6 +30,7 @@ import gnu.trove.iterator.TShortIterator;
 
 import org.spout.api.Spout;
 import org.spout.api.geo.LoadOption;
+import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
@@ -73,12 +74,11 @@ public class SpoutWorldLightingModel {
 	public SpoutWorldLightingModel(SpoutWorldLighting instance, boolean sky) {
 		this.sky = sky;
 		this.instance = instance;
-		SpoutWorld world = instance.getWorld();
-		this.center = sky ? new SkyElement(world, BlockFace.THIS, null) : new BlockElement(world, BlockFace.THIS, null);
+		this.center = sky ? new SkyElement(this, BlockFace.THIS, null) : new BlockElement(this, BlockFace.THIS, null);
 		this.neighbors = new Element[6];
 		for (int i = 0; i < this.neighbors.length; i++) {
 			BlockFace face = BlockFaces.NESWBT.get(i);
-			this.neighbors[i] = sky ? new SkyElement(world, face, this.center) : new BlockElement(world, face, this.center);
+			this.neighbors[i] = sky ? new SkyElement(this, face, this.center) : new BlockElement(this, face, this.center);
 		}
 	}
 
@@ -284,8 +284,8 @@ public class SpoutWorldLightingModel {
 	public static class BlockElement extends Element {
 		private byte blockLight;
 
-		public BlockElement(SpoutWorld world, BlockFace offset, Element center) {
-			super(world, offset, center);
+		public BlockElement(SpoutWorldLightingModel model, BlockFace offset, Element center) {
+			super(model, offset, center);
 		}
 
 		@Override
@@ -316,8 +316,8 @@ public class SpoutWorldLightingModel {
 
 	public static class SkyElement extends Element {
 
-		public SkyElement(SpoutWorld world, BlockFace offset, Element center) {
-			super(world, offset, center);
+		public SkyElement(SpoutWorldLightingModel model, BlockFace offset, Element center) {
+			super(model, offset, center);
 		}
 
 		@Override
@@ -352,10 +352,12 @@ public class SpoutWorldLightingModel {
 		public BlockFace offset;
 		public final SpoutWorld world;
 		public final Element center;
+		public final SpoutWorldLightingModel model;
 
-		public Element(SpoutWorld world, BlockFace offset, Element center) {
+		public Element(SpoutWorldLightingModel model, BlockFace offset, Element center) {
 			this.offset = offset;
-			this.world = world;
+			this.model = model;
+			this.world = this.model.instance.getWorld();
 			this.center = center == null ? this : center;;
 		}
 
@@ -365,7 +367,7 @@ public class SpoutWorldLightingModel {
 		public boolean isSource() {
 			return false;
 		}
-		
+
 		/**
 		 * Checks if this element can send light to the center
 		 */
@@ -442,17 +444,7 @@ public class SpoutWorldLightingModel {
 				this.y = this.center.y + (int) this.offset.getOffset().getY();
 				this.z = this.center.z + (int) this.offset.getOffset().getZ();
 			}
-			if (center.chunk != null) {
-				if (center.chunk.isLoaded() && center.chunk.containsBlock(this.x, this.y, this.z)) {
-					this.chunk = center.chunk;
-				} else if (center.chunk.getRegion().containsBlock(this.x, this.y, this.z)) {
-					this.chunk = center.chunk.getRegion().getChunkFromBlock(this.x, this.y, this.z, LoadOption.LOAD_ONLY);
-				} else {
-					this.chunk = this.world.getChunkFromBlock(this.x, this.y, this.z, LoadOption.LOAD_ONLY);
-				}
-			} else {
-				this.chunk = this.world.getChunkFromBlock(this.x, this.y, this.z, LoadOption.LOAD_ONLY);
-			}
+			this.chunk = this.model.instance.getChunkFromBlock(this.x, this.y, this.z);
 			if (this.chunk == null || !this.chunk.isLoaded()) {
 				this.material = null;
 			} else {
