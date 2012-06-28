@@ -49,6 +49,7 @@ import org.spout.api.event.player.PlayerKickEvent;
 import org.spout.api.event.player.PlayerLeaveEvent;
 import org.spout.api.event.storage.PlayerSaveEvent;
 import org.spout.api.map.DefaultedMap;
+import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.NetworkSynchronizer;
@@ -147,6 +148,11 @@ public final class SpoutSession implements Session {
 	 */
 	private final DatatableMap datatableMap;
 	private final DataMap dataMap;
+	
+	/**
+	 * The engine platform
+	 */
+	private final Platform platform;
 
 	/**
 	 * Creates a new session.
@@ -162,6 +168,7 @@ public final class SpoutSession implements Session {
 		this.datatableMap = new GenericDatatableMap();
 		this.dataMap = new DataMap(this.datatableMap);
 		this.proxy = proxy;
+		this.platform = server.getPlatform();
 	}
 
 	/**
@@ -249,12 +256,43 @@ public final class SpoutSession implements Session {
 	@Override
 	public void send(boolean upstream, boolean force, Message message) {
 		try {
-			if (force || this.state == State.GAME) {
-				if (channel.isOpen()) {
-					channel.write(message);
-				}
-			} else {
-				sendQueue.add(message);
+			switch (platform) {
+				case SERVER :
+					if (upstream) {
+						Spout.getLogger().warning("Attempt made to send packet to server");
+						break;
+					}
+					if (force || this.state == State.GAME) {
+						if (channel.isOpen()) {
+							channel.write(message);
+						}
+					} else {
+						sendQueue.add(message);
+					}
+
+					break;
+				case CLIENT :
+					break;
+				case PROXY :
+					if (upstream) {
+						Channel auxChannel = this.auxChannel.get();
+						if (auxChannel == null) {
+							Spout.getLogger().warning("Attempt made to send data to an unconnected channel");
+							break;
+						}
+						auxChannel.write(message);
+					} else {
+						if (force || this.state == State.GAME) {
+							if (channel.isOpen()) {
+								channel.write(message);
+							}
+						} else {
+							sendQueue.add(message);
+						}
+					}
+					break;
+				default :
+					Spout.getLogger().info("Unknown platform " + platform);
 			}
 		} catch (Exception e) {
 			disconnect("Socket Error!", false);
@@ -312,7 +350,7 @@ public final class SpoutSession implements Session {
 		} else {
 			channel.close();
 		}
-		closeAuxChannel(false);
+		closeAuxChannel(reason, false);
 		return true;
 	}
 
@@ -462,17 +500,26 @@ public final class SpoutSession implements Session {
 	}
 	
 	@Override
+	public boolean isPrimary(Channel c) {
+		return c == this.channel;
+	}
+	
+	@Override
 	public void closeAuxChannel() {
 		closeAuxChannel(true);
 	}
 	
 	private void closeAuxChannel(boolean openedExpected) {
+		closeAuxChannel("Closing aux channel", openedExpected);
+	}
+	
+	private void closeAuxChannel(String message, boolean openedExpected) {
 		Channel c = auxChannel.getAndSet(null);
 		if (c != null) {
 			Message kickMessage = null;
 			Protocol p = protocol.get();
 			if (p != null) {
-				kickMessage = p.getKickMessage("Closing aux channel");
+				kickMessage = p.getKickMessage(message);
 			}
 			if (kickMessage != null) {
 				c.write(kickMessage).addListener(ChannelFutureListener.CLOSE);

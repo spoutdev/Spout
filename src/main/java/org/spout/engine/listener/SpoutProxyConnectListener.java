@@ -69,7 +69,6 @@ public class SpoutProxyConnectListener implements ChannelFutureListener {
 					Protocol protocol = session.getProtocol();
 					if (protocol != null) {
 						Message intro = protocol.getIntroductionMessage(playerName);
-						System.out.println("Writing: " + intro);
 						c.write(intro);
 						return;
 					}
