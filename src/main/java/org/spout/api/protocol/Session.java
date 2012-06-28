@@ -80,30 +80,34 @@ public interface Session {
 	/**
 	 * Sends a message to the client.
 	 * 
+	 * @param upstream true if the message should be sent to the server
 	 * @param message The message.
 	 */
-	public void send(Message message);
+	public void send(boolean upstream, Message message);
 
 	/**
 	 * Sends a message to the client.
 	 *
-	 * @param message The message.
+	 * @param upstream true if the message should be sent to the server
 	 * @param force if this message is used in the identification stages of communication
+	 * @param message The message.
 	 */
-	public void send(Message message, boolean force);
+	public void send(boolean upstream, boolean force, Message message);
 
 	/**
 	 * Sends any amount of messages to the client
+	 * @param upstream true if the messages should be sent to the server
 	 * @param messages the messages to send to the client
 	 */
-	public void sendAll(Message... messages);
+	public void sendAll(boolean upstream, Message... messages);
 
 	/**
 	 * Sends any amount of messages to the client.
+	 * @param upstream true if the messages should be sent to the server
 	 * @param force if the messages are used in the identification stages of communication
 	 * @param messages the messages to send to the client
 	 */
-	public void sendAll(boolean force, Message... messages);
+	public void sendAll(boolean upstream, boolean force, Message... messages);
 	/**
 	 * Disconnects the player as a kick. This is equivalent to calling disconnect(reason, true)
 	 * @param reason The reason for disconnection

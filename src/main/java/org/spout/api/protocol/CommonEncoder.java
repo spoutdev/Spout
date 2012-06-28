@@ -53,7 +53,7 @@ public class CommonEncoder extends PostprocessEncoder {
 	protected Object encode(ChannelHandlerContext ctx, Channel c, Object msg) throws Exception {
 		if (msg instanceof Message) {
 			if (codecLookup == null) {
-				codecLookup = Spout.getEngine().getBootstrapProtocol(c.getLocalAddress()).getCodecLookupService(upstream);
+				codecLookup = Spout.getEngine().getBootstrapProtocol(c.getLocalAddress()).getCodecLookupService();
 			}
 			Message message = (Message) msg;
 
@@ -71,13 +71,12 @@ public class CommonEncoder extends PostprocessEncoder {
 			} else {
 				opcodeBuf.writeByte(codec.getOpcode());
 			}
-
-			return ChannelBuffers.wrappedBuffer(opcodeBuf, codec.encode(message));
+			return ChannelBuffers.wrappedBuffer(opcodeBuf, codec.encode(upstream, message));
 		}
 		return msg;
 	}
 
 	public void setProtocol(Protocol protocol) {
-		codecLookup = protocol.getCodecLookupService(upstream);
+		codecLookup = protocol.getCodecLookupService();
 	}
 }

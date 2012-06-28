@@ -132,5 +132,10 @@ public class CommonBootstrapProtocol extends BootstrapProtocol {
 	public Message getChatMessage(String message) {
 		return null;
 	}
+	
+	@Override
+	public Message getIntroductionMessage(String message) {
+		return null;
+	}
 
 }

@@ -59,7 +59,7 @@ public class CommonDecoder extends PreprocessReplayingDecoder {
 	protected Object decodeProcessed(ChannelHandlerContext ctx, Channel c, ChannelBuffer buf) throws Exception {
 		if (codecLookup == null) {
 			bootstrapProtocol = Spout.getEngine().getBootstrapProtocol(c.getLocalAddress());
-			codecLookup = bootstrapProtocol.getCodecLookupService(upstream);
+			codecLookup = bootstrapProtocol.getCodecLookupService();
 		}
 
 		int opcode;
@@ -93,7 +93,7 @@ public class CommonDecoder extends PreprocessReplayingDecoder {
 
 		previousOpcode = opcode;
 
-		Message message = codec.decode(buf);
+		Message message = codec.decode(upstream, buf);
 
 		if (bootstrapProtocol != null) {
 			String id = bootstrapProtocol.detectProtocolDefinition(message);
@@ -107,12 +107,16 @@ public class CommonDecoder extends PreprocessReplayingDecoder {
 				}
 			}
 		}
-
 		return message;
 	}
 	
+	public void setSession(Session session) {
+		handler.setSession(session);
+		setProtocol(session.getProtocol());
+	}
+	
 	private void setProtocol(Protocol protocol) {
-		codecLookup = protocol.getCodecLookupService(upstream);
+		codecLookup = protocol.getCodecLookupService();
 		encoder.setProtocol(protocol);
 		handler.setProtocol(protocol);
 		bootstrapProtocol = null;

@@ -32,7 +32,4 @@ import org.spout.api.protocol.Session;
 import org.spout.api.protocol.common.message.CustomDataMessage;
 
 public class CustomDataMessageHandler extends MessageHandler<CustomDataMessage> {
-	@Override
-	public void handle(Session session, Player player, CustomDataMessage message) {
-	}
 }

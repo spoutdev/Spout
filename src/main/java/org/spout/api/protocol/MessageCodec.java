@@ -57,7 +57,37 @@ public abstract class MessageCodec<T extends Message> {
 		return expanded;
 	}
 
-	public abstract ChannelBuffer encode(T message) throws IOException;
+	public ChannelBuffer encode(boolean upstream, T message) throws IOException {
+		return upstream ? encodeToServer(message) : encodeToClient(message);
+	}
+	
+	public ChannelBuffer encode(T message) throws IOException {
+		return null;
+	}
+	
+	public ChannelBuffer encodeToClient(T message) throws IOException {
+		return encode(message);
+	}
 
-	public abstract T decode(ChannelBuffer buffer) throws IOException;
+	public ChannelBuffer encodeToServer(T message) throws IOException {
+		return encode(message);
+	}
+	
+	public T decode(boolean upstream, ChannelBuffer buffer) throws IOException {
+		return upstream ? decodeFromServer(buffer) : decodeFromClient(buffer);
+	}
+
+	public T decode(ChannelBuffer buffer) throws IOException {
+		return null;
+	}
+	
+	public T decodeFromClient(ChannelBuffer buffer) throws IOException {
+		return decode(buffer);
+	}
+	
+	public T decodeFromServer(ChannelBuffer buffer) throws IOException {
+		return decode(buffer);
+	}
+	
+	
 }

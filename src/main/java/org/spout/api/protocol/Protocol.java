@@ -31,22 +31,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class Protocol {
 	private static final ConcurrentHashMap<String, Protocol> map = new ConcurrentHashMap<String, Protocol>();
 
-	private final CodecLookupService downstreamCodecLookup;
-	private final CodecLookupService upstreamCodecLookup;
-	private final HandlerLookupService upstreamHandlerLookup;
-	private final HandlerLookupService downstreamHandlerLookup;
+	private final CodecLookupService codecLookup;
+	private final HandlerLookupService handlerLookup;
 	private final String name;
 
 	public Protocol(String name, CodecLookupService codecLookup, HandlerLookupService handlerLookup) {
-		this(name, codecLookup, codecLookup, handlerLookup, handlerLookup);
-	}
-	
-	public Protocol(String name, CodecLookupService upstreamCodecLookup, CodecLookupService downstreamCodecLookup, 
-			HandlerLookupService upstreamHandlerLookup, HandlerLookupService downstreamHandlerLookup) {
-		this.upstreamCodecLookup = upstreamCodecLookup;
-		this.downstreamCodecLookup = downstreamCodecLookup;
-		this.upstreamHandlerLookup = upstreamHandlerLookup;
-		this.downstreamHandlerLookup = downstreamHandlerLookup;
+		this.codecLookup = codecLookup;
+		this.handlerLookup = handlerLookup;
 		this.name = name;
 	}
 
@@ -55,8 +46,8 @@ public abstract class Protocol {
 	 *
 	 * @return the handler lookup service
 	 */
-	public HandlerLookupService getHandlerLookupService(boolean upstream) {
-		return upstream ? upstreamHandlerLookup : downstreamHandlerLookup;
+	public HandlerLookupService getHandlerLookupService() {
+		return handlerLookup;
 	}
 
 	/**
@@ -64,8 +55,8 @@ public abstract class Protocol {
 	 *
 	 * @return the codec lookup service
 	 */
-	public CodecLookupService getCodecLookupService(boolean upstream) {
-		return upstream ? upstreamCodecLookup : downstreamCodecLookup;
+	public CodecLookupService getCodecLookupService() {
+		return codecLookup;
 	}
 
 	/**
@@ -92,6 +83,14 @@ public abstract class Protocol {
 	 * @return
 	 */
 	public abstract Message getChatMessage(String message);
+	
+	/**
+	 * Gets the introduction message that the client sends to the server on connect
+	 * 
+	 * @param playerName the name of the player
+	 * @return the message, or null if there is no message
+	 */
+	public abstract Message getIntroductionMessage(String playerName);
 
 	/**
 	 * Registers a Protocol for a particular id value

@@ -157,7 +157,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 				Message[] messages = executor.execute(event);
 				if (messages != null && messages.length > 0) {
 					for (Message msg : messages) {
-						session.send(msg);
+						session.send(false, msg);
 					}
 					return true;
 				}
@@ -575,6 +575,15 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 		Protocol protocol = this.protocol.get();
 		if (protocol != null) {
 			return protocol.getKickMessage(message);
+		} else {
+			return null;
+		}
+	}
+	
+	public Message getIntroductionMessage(String playerName) {
+		Protocol protocol = this.protocol.get();
+		if (protocol != null) {
+			return protocol.getIntroductionMessage(playerName);
 		} else {
 			return null;
 		}
