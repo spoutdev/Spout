@@ -34,11 +34,13 @@ import org.spout.api.geo.LoadOption;
 import org.spout.api.util.hashing.Int21TripleHashed;
 import org.spout.api.util.set.TInt21TripleHashSet;
 import org.spout.engine.SpoutConfiguration;
+import org.spout.engine.util.ChunkModel;
 import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 
 public class SpoutWorldLighting extends Thread implements Source {
 	
 	private static String taskName = "Lighting Thread";
+	private static final long MAX_CYCLE_TIME = 20; // Time to perform lighting per tick
 
 	/*
 	 * Some constants used in the chunk set storage
@@ -49,6 +51,7 @@ public class SpoutWorldLighting extends Thread implements Source {
 
 	public final SpoutWorldLightingModel skyLight;
 	public final SpoutWorldLightingModel blockLight;
+	private final ChunkModel tmpChunks;
 	private final SpoutWorld world;
 	private boolean running = false;
 
@@ -69,6 +72,7 @@ public class SpoutWorldLighting extends Thread implements Source {
 		this.world = world;
 		this.skyLight = new SpoutWorldLightingModel(this, true);
 		this.blockLight = new SpoutWorldLightingModel(this, false);
+		this.tmpChunks = new ChunkModel(world);
 	}
 
 	public void abort() {
@@ -79,6 +83,13 @@ public class SpoutWorldLighting extends Thread implements Source {
 		return this.world;
 	}
 
+	/**
+	 * Only to be used by the SpoutWorldLightingModel of this thread (is not thread safe!)
+	 */
+	protected SpoutChunk getChunkFromBlock(int bx, int by, int bz) {
+		return this.tmpChunks.getChunkFromBlock(bx, by, bz);
+	}
+
 	@Override
 	public void run() {
 		long[] chunkBuffer = new long[10];
@@ -86,49 +97,58 @@ public class SpoutWorldLighting extends Thread implements Source {
 		TLongIterator iter;
 		int i, cx, cy, cz;
 		int idleCounter = 0;
-		SpoutChunk chunk;
 		this.running = SpoutConfiguration.LIGHTING_ENABLED.getBoolean();
+		long startTime = System.currentTimeMillis();
+		boolean stop = false;
 		SpoutSnapshotLock lock = (SpoutSnapshotLock)Spout.getEngine().getScheduler().getSnapshotLock();
 		while (this.running) {
 			boolean updated = false;
-			// Bergerkiller, ideally, these 2 methods would have a max time of 5-10ms
-			// Better to do 10 calls of 2ms each, and release the lock between them, than 1 call of 20ms.
-			lock.coreReadLock(taskName);
-			try {
-				synchronized (this.dirtyChunks) {
-					if ((chunkBufferSize = this.dirtyChunks.size()) > 0) {
-						if (chunkBufferSize > chunkBuffer.length) {
-							chunkBuffer = new long[chunkBufferSize + 100];
-						}
-						iter = this.dirtyChunks.iterator();
-						for (i = 0; i < chunkBufferSize && iter.hasNext(); i++) {
-							chunkBuffer[i] = iter.next();
-						}
-						this.dirtyChunks.clear();
+			// Obtain the chunks to work with
+			synchronized (this.dirtyChunks) {
+				if ((chunkBufferSize = this.dirtyChunks.size()) > 0) {
+					if (chunkBufferSize > chunkBuffer.length) {
+						chunkBuffer = new long[chunkBufferSize + 100];
 					}
+					iter = this.dirtyChunks.iterator();
+					for (i = 0; i < chunkBufferSize && iter.hasNext(); i++) {
+						chunkBuffer[i] = iter.next();
+					}
+					this.dirtyChunks.clear();
 				}
-				if (updated = chunkBufferSize > 0) {
+			}
+			if (updated = chunkBufferSize > 0) {
+				lock.coreReadLock(taskName);
+				try {
 					// Resolve all chunks
+					startTime = System.currentTimeMillis();
+					stop = false;
+
 					for (i = 0; i < chunkBufferSize; i++) {
 						cx = Int21TripleHashed.key1(chunkBuffer[i]);
 						cy = Int21TripleHashed.key2(chunkBuffer[i]);
 						cz = Int21TripleHashed.key3(chunkBuffer[i]);
-						chunk = this.world.getChunk(cx, cy, cz, LoadOption.LOAD_ONLY);
-						if (chunk != null && chunk.isLoaded() && chunk.isPopulated()) {
-							if (chunk.isInitializingLighting.get()) {
-								// Schedule the chunk for a later check-up
-								this.addChunk(cx, cy, cz);
-							} else {
-								// Resolve all the operations in this chunk
-								while (this.blockLight.resolve(chunk));
-								while (this.skyLight.resolve(chunk));
+						if (stop) {
+							// Add chunk back for next cycle
+							this.addChunk(cx, cy, cz);
+						} else {
+							if (this.tmpChunks.load(cx, cy, cz, LoadOption.LOAD_ONLY).isLoadedAndPopulated()) {
+								if (this.tmpChunks.getCenter().isInitializingLighting.get()) {
+									// Schedule the chunk for a later check-up
+									this.addChunk(cx, cy, cz);
+								} else {
+									// Resolve all the operations in this chunk
+									while (this.blockLight.resolve(this.tmpChunks.getCenter()));
+									while (this.skyLight.resolve(this.tmpChunks.getCenter()));
+								}
 							}
+							// Stop?
+							stop = (System.currentTimeMillis() - startTime) >= MAX_CYCLE_TIME;
 						}
 					}
 					idleCounter = 0;
+				} finally {
+					lock.coreReadUnlock(taskName);
 				}
-			} finally {
-				lock.coreReadUnlock(taskName);
 			}
 			if (!updated) {
 				if (idleCounter++ == 20) {
@@ -136,6 +156,7 @@ public class SpoutWorldLighting extends Thread implements Source {
 					this.skyLight.reportChanges();
 					this.blockLight.cleanUp();
 					this.blockLight.reportChanges();
+					this.tmpChunks.cleanUp();
 				}
 				try {
 					Thread.sleep(50);
