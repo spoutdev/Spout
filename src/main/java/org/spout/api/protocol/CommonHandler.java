@@ -82,11 +82,14 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 				server.getSessionRegistry().add(session);
 				setSession(session);
 
-				engine.getLogger().info("Channel connected: " + c + ".");
+				engine.getLogger().info("Downstream channel connected: " + c + ".");
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				throw new RuntimeException("Exception thrown when connecting", ex);
 			}
+		} else {
+			Channel c= e.getChannel();
+			engine.getLogger().info("Upstream channel connected: " + c + ".");
 		}
 	}
 
@@ -97,8 +100,10 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 			engine.getChannelGroup().remove(c);
 
 			Session session = this.session.get();
-			engine.getSessionRegistry().remove(session);
-			session.dispose();
+			if (session.isPrimary(c)) {
+				engine.getSessionRegistry().remove(session);
+				session.dispose();
+			}
 			engine.getLogger().info("Channel disconnected: " + c + ".");
 		} catch (Exception ex) {
 			ex.printStackTrace();

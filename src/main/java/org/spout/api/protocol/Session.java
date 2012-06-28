@@ -154,6 +154,15 @@ public interface Session {
 	 * Closes aux Channel when operating as a proxy server
 	 */
 	public void closeAuxChannel();
+	
+	/**
+	 * Checks if a channel is the primary channel.  The primary channel never changes for a Session.  
+	 * An auxiliary channel is used for proxy mode.
+	 * 
+	 * @return the channel to test
+	 * @return true if the channel is the primary channel
+	 */
+	public boolean isPrimary(Channel c);
 
 	/**
 	 * Sets the NetworkSynchronizer associated with this player.<br>
