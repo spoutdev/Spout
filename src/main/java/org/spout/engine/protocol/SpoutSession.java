@@ -33,6 +33,7 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
@@ -57,6 +58,9 @@ import org.spout.api.protocol.NullNetworkSynchronizer;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
+import org.spout.api.protocol.proxy.ConnectionInfo;
+import org.spout.api.protocol.proxy.ConnectionInfoMessage;
+import org.spout.api.protocol.proxy.ProxyStartMessage;
 import org.spout.engine.SpoutServer;
 import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.world.SpoutWorld;
@@ -85,13 +89,25 @@ public final class SpoutSession implements Session {
 	 */
 	private final Channel channel;
 	/**
+	 * Information about the connection required for proxying 
+	 */
+	private final AtomicReference<ConnectionInfo> channelInfo = new AtomicReference<ConnectionInfo>();
+	/**
 	 * The aux channel for proxy connections
 	 */
 	private final AtomicReference<Channel> auxChannel = new AtomicReference<Channel>();
 	/**
+	 * Information about the connection required for proxying 
+	 */
+	private final AtomicReference<ConnectionInfo> auxChannelInfo = new AtomicReference<ConnectionInfo>();
+	/**
 	 * Indicates if the session is operating in proxy mode
 	 */
 	private final boolean proxy;
+	/**
+	 * Indicated if the session is in passthrough proxy mode 
+	 */
+	private final AtomicBoolean passthrough = new AtomicBoolean(false);
 	/**
 	 * A queue of incoming and unprocessed messages from a client
 	 */
@@ -274,6 +290,9 @@ public final class SpoutSession implements Session {
 				case CLIENT :
 					break;
 				case PROXY :
+					if (message instanceof ConnectionInfoMessage) {
+						updateConnectionInfo(!upstream, (ConnectionInfoMessage) message);
+					}
 					if (upstream) {
 						Channel auxChannel = this.auxChannel.get();
 						if (auxChannel == null) {
@@ -388,6 +407,18 @@ public final class SpoutSession implements Session {
 	 */
 	@Override
 	public <T extends Message> void messageReceived(boolean upstream, T message) {
+		if (this.proxy) {
+			if (message instanceof ConnectionInfoMessage) {
+				updateConnectionInfo(upstream, (ConnectionInfoMessage) message);
+			}
+			if (upstream && message instanceof ProxyStartMessage) {
+				passthrough.compareAndSet(false, true);
+			}
+			if (passthrough.get()) {
+				send(!upstream, true, message);
+				return;
+			}
+		}
 		if (upstream) {
 			fromUpMessageQueue.add(message);
 		} else {
@@ -534,5 +565,15 @@ public final class SpoutSession implements Session {
 	@Override
 	public NetworkSynchronizer getNetworkSynchronizer() {
 		return synchronizer.get();
+	}
+	
+	private void updateConnectionInfo(boolean upstream, ConnectionInfoMessage info) {
+		AtomicReference<ConnectionInfo> ref = upstream ? auxChannelInfo : channelInfo;
+		boolean success = false;
+		while (!success) {
+			ConnectionInfo oldInfo = ref.get();
+			ConnectionInfo newInfo = info.getConnectionInfo(upstream, oldInfo);
+			success = ref.compareAndSet(oldInfo, newInfo);
+		}
 	}
 }
