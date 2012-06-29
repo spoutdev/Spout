@@ -26,8 +26,10 @@
  */
 package org.spout.api.protocol.proxy;
 
-public interface ConnectionInfo {
+import org.spout.api.protocol.Message;
 
-	public String getIdentifier();
+public interface TransformableMessage {
 	
+	public Message transform(boolean upstream, int connects, ConnectionInfo info, ConnectionInfo auxChannelInfo);
+
 }
