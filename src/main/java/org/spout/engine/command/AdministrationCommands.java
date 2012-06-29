@@ -36,6 +36,7 @@ import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
+import org.spout.api.event.player.PlayerPreLoginEvent;
 import org.spout.api.exception.CommandException;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.Plugin;
@@ -129,6 +130,9 @@ public class AdministrationCommands {
 		String pluginListString = "Plugins (" + pluginList.length + "): ";
 
 		for (int i = 0; i < pluginList.length; i++) {
+			if (pluginList[i].getName().equalsIgnoreCase("Spout")) {
+				continue;
+			}
 
 			if (pluginList[i].isEnabled()) {
 				pluginListString += ChatColor.BRIGHT_GREEN + pluginList[i].getName();
@@ -141,5 +145,23 @@ public class AdministrationCommands {
 			}
 		}
 		source.sendMessage(pluginListString);
+	}
+
+	@Command(aliases = {"players", "who"}, desc = "List all online players")
+	@CommandPermissions("spout.command.players")
+	public void onPlayersCommand(CommandContext args, CommandSource source) {
+		Player[] players = Spout.getEngine().getOnlinePlayers();
+		String onlineMsg = "Online (" + (players.length <= 0 ? ChatColor.RED : ChatColor.BRIGHT_GREEN) + players.length + ChatColor.WHITE + "): ";
+		StringBuilder playerListMsg = new StringBuilder();
+		for (int i = 0; i < players.length; i ++) {
+			if (!players[i].isOnline()) {
+				continue;
+			}
+			playerListMsg.append(ChatColor.BLUE + players[i].getName() + ChatColor.WHITE);
+			if (i < players.length - 1) {
+				playerListMsg.append(", ");
+			}
+		}
+		source.sendMessage(onlineMsg + playerListMsg.toString());
 	}
 }
