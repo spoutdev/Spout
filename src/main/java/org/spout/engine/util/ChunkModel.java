@@ -26,8 +26,6 @@
  */
 package org.spout.engine.util;
 
-import java.util.Arrays;
-
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.engine.world.SpoutChunk;

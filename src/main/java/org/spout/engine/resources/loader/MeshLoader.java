@@ -112,7 +112,7 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 			}
 				
 		}
-		
+		scan.close();
 		return new BaseMesh(faces);
 		
 	}

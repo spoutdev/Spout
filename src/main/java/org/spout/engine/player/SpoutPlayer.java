@@ -44,7 +44,6 @@ import org.spout.api.player.Player;
 import org.spout.api.player.PlayerInputState;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.NetworkSynchronizer;
-import org.spout.api.protocol.Session;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;

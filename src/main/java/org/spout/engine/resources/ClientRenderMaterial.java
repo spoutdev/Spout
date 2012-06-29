@@ -52,6 +52,7 @@ public class ClientRenderMaterial extends Resource implements RenderMaterial {
 				
 	}
 	
+	@SuppressWarnings({"unused"})
 	private class RenderSettingState {
 		RenderSetting setting;
 		Object state;

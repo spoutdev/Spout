@@ -72,7 +72,8 @@ public class DynamicBlockUpdateTree {
 	private ConcurrentHashMap<PointAlone, Boolean> resetPendingMap = new ConcurrentHashMap<PointAlone, Boolean>();
 	private ConcurrentLinkedQueue<List<DynamicBlockUpdate>> pendingLists = new ConcurrentLinkedQueue<List<DynamicBlockUpdate>>();
 	private TIntHashSet processed = new TIntHashSet();
-	private final static Vector3[] zeroVector3Array = new Vector3[] {Vector3.ZERO};
+	@SuppressWarnings("unused")
+        private final static Vector3[] zeroVector3Array = new Vector3[] {Vector3.ZERO};
 	private final Thread regionThread;
 	private final Thread mainThread;
 	private final static int localStages = TickStage.DYNAMIC_BLOCKS | TickStage.PHYSICS;

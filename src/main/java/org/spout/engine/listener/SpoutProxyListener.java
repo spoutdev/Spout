@@ -43,7 +43,8 @@ public class SpoutProxyListener implements Listener {
 		this.server = server;
 	}
 
-	@EventHandler(order = Order.MONITOR)
+	@SuppressWarnings("unused")
+        @EventHandler(order = Order.MONITOR)
 	public void onPlayerConnect(PlayerConnectEvent event) {
 		if (event.isCancelled()) {
 			return;

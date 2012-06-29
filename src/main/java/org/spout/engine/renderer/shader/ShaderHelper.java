@@ -60,6 +60,8 @@ public class ShaderHelper {
 		while (scan.hasNextLine()) {
 			src.append(scan.nextLine() + "\n");
 		}
+		
+		scan.close();
 
 		return src.toString();
 	}

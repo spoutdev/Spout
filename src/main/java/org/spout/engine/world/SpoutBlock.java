@@ -46,6 +46,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.util.LogicUtil;
 import org.spout.api.util.StringUtil;
 
+@SuppressWarnings("deprecation")
 public class SpoutBlock implements Block {
 	private int x, y, z;
 	private World world;

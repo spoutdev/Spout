@@ -29,8 +29,6 @@ package org.spout.engine.world;
 import gnu.trove.iterator.TShortIterator;
 
 import org.spout.api.Spout;
-import org.spout.api.geo.LoadOption;
-import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;

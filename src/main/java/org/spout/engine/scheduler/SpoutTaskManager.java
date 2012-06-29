@@ -264,7 +264,12 @@ public class SpoutTaskManager implements TaskManager {
 					} else {
 						logger.info("Task " + task.getTaskId() + ") Owner is null");
 					}
-					thread.stop();
+					try {
+                                            thread.join();
+                                        } catch (InterruptedException e) {
+                                            // TODO Auto-generated catch block
+                                            e.printStackTrace();
+                                        }
 				}
 			}
 			try {
