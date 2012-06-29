@@ -26,8 +26,6 @@
  */
 package org.spout.engine.util;
 
-import java.util.Arrays;
-
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.engine.world.SpoutChunk;
@@ -56,6 +54,9 @@ public class ChunkModel {
 		this.cz = cz;
 		this.loadOption = loadOpt;
 		this.center = this.world.getChunk(cx, cy, cz, loadOpt);
+		if (this.center == null) {
+			return this;
+		}
 		this.centerRegion = this.center.getRegion();
 		for (int x = 0; x < 3; x++) {
 			for (int y = 0; y < 3; y++) {

@@ -38,7 +38,6 @@ import org.spout.engine.util.ChunkModel;
 import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 
 public class SpoutWorldLighting extends Thread implements Source {
-	
 	private static String taskName = "Lighting Thread";
 	private static final long MAX_CYCLE_TIME = 20; // Time to perform lighting per tick
 
@@ -132,13 +131,13 @@ public class SpoutWorldLighting extends Thread implements Source {
 							this.addChunk(cx, cy, cz);
 						} else {
 							if (this.tmpChunks.load(cx, cy, cz, LoadOption.LOAD_ONLY).isLoadedAndPopulated()) {
-								if (this.tmpChunks.getCenter().isInitializingLighting.get()) {
+								SpoutChunk center = this.tmpChunks.getCenter();
+								if (center.isInitializingLighting.get()) {
 									// Schedule the chunk for a later check-up
 									this.addChunk(cx, cy, cz);
 								} else {
-									// Resolve all the operations in this chunk
-									while (this.blockLight.resolve(this.tmpChunks.getCenter()));
-									while (this.skyLight.resolve(this.tmpChunks.getCenter()));
+									while (this.skyLight.resolve(center));
+									while (this.blockLight.resolve(center));
 								}
 							}
 							// Stop?
