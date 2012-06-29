@@ -34,6 +34,7 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
@@ -61,6 +62,9 @@ import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.api.protocol.proxy.ConnectionInfo;
 import org.spout.api.protocol.proxy.ConnectionInfoMessage;
 import org.spout.api.protocol.proxy.ProxyStartMessage;
+import org.spout.api.protocol.proxy.RedirectMessage;
+import org.spout.api.protocol.proxy.TransformableMessage;
+import org.spout.engine.SpoutProxy;
 import org.spout.engine.SpoutServer;
 import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.world.SpoutWorld;
@@ -108,6 +112,10 @@ public final class SpoutSession implements Session {
 	 * Indicated if the session is in passthrough proxy mode 
 	 */
 	private final AtomicBoolean passthrough = new AtomicBoolean(false);
+	/**
+	 * Indicates the number of times the proxy has connected to a server for this session
+	 */
+	private final AtomicInteger connects = new AtomicInteger(0);
 	/**
 	 * A queue of incoming and unprocessed messages from a client
 	 */
@@ -291,7 +299,7 @@ public final class SpoutSession implements Session {
 					break;
 				case PROXY :
 					if (message instanceof ConnectionInfoMessage) {
-						updateConnectionInfo(!upstream, (ConnectionInfoMessage) message);
+						updateConnectionInfo(upstream, !upstream, (ConnectionInfoMessage) message);
 					}
 					if (upstream) {
 						Channel auxChannel = this.auxChannel.get();
@@ -406,15 +414,32 @@ public final class SpoutSession implements Session {
 	 * @param <T>     The type of message.
 	 */
 	@Override
-	public <T extends Message> void messageReceived(boolean upstream, T message) {
+	public void messageReceived(boolean upstream, Message message) {
 		if (this.proxy) {
 			if (message instanceof ConnectionInfoMessage) {
-				updateConnectionInfo(upstream, (ConnectionInfoMessage) message);
+				updateConnectionInfo(upstream, upstream, (ConnectionInfoMessage) message);
 			}
-			if (upstream && message instanceof ProxyStartMessage) {
-				passthrough.compareAndSet(false, true);
+			if (upstream) {
+				if (message instanceof ProxyStartMessage) {
+					passthrough.compareAndSet(false, true);
+				} else if (message instanceof RedirectMessage) {
+					RedirectMessage redirect = (RedirectMessage) message;
+					if (redirect.isRedirect()) {
+						closeAuxChannel("Redirect received", true);
+						auxChannelInfo.set(null);
+						ConnectionInfo info = channelInfo.get();
+						if (info != null) {
+							passthrough.set(false);
+							((SpoutProxy) server).connect(redirect.getHostname(), redirect.getPort(), info.getIdentifier(), this);
+							return;
+						}
+					}
+				}
 			}
 			if (passthrough.get()) {
+				if (message instanceof TransformableMessage) {
+					message = ((TransformableMessage) message).transform(upstream, connects.get(), channelInfo.get(), auxChannelInfo.get());
+				}
 				send(!upstream, true, message);
 				return;
 			}
@@ -527,7 +552,10 @@ public final class SpoutSession implements Session {
 			throw new IllegalArgumentException("Channel may not be null");
 		} else if (!auxChannel.compareAndSet(null, c)) {
 			throw new IllegalStateException("Aux channel may not be set without closing the previously bound channel");
+		} else {
+			connects.incrementAndGet();
 		}
+		System.out.println("Binding: " + c + " " + connects.get());
 	}
 	
 	@Override
@@ -567,8 +595,8 @@ public final class SpoutSession implements Session {
 		return synchronizer.get();
 	}
 	
-	private void updateConnectionInfo(boolean upstream, ConnectionInfoMessage info) {
-		AtomicReference<ConnectionInfo> ref = upstream ? auxChannelInfo : channelInfo;
+	private void updateConnectionInfo(boolean auxChannel, boolean upstream, ConnectionInfoMessage info) {
+		AtomicReference<ConnectionInfo> ref = auxChannel ? auxChannelInfo : channelInfo;
 		boolean success = false;
 		while (!success) {
 			ConnectionInfo oldInfo = ref.get();

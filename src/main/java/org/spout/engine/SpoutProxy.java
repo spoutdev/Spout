@@ -98,8 +98,10 @@ public class SpoutProxy extends SpoutServer {
 	}
 	
 	public void connect(String playerName, Session session) {
-		String hostname = "localhost";
-		int port = 25565;
+		connect("localhost", 25565, playerName, session);
+	}
+	
+	public void connect(String hostname, int port, String playerName, Session session) {
 		ChannelFutureListener listener = new SpoutProxyConnectListener(this, playerName, session);
 		clientBootstrap.connect(new InetSocketAddress(hostname, port)).addListener(listener);
 	}
