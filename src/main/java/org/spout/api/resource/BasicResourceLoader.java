@@ -44,8 +44,7 @@ public abstract class BasicResourceLoader<E extends Resource> implements Resourc
 		E r = getResource(s);
 		try {
 			s.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (IOException e) {			
 			e.printStackTrace();
 		}
 		return r;

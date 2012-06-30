@@ -32,6 +32,7 @@ import org.spout.api.event.HandlerList;
 import org.spout.api.exception.InvalidDescriptionFileException;
 import org.spout.api.exception.InvalidPluginException;
 import org.spout.api.exception.UnknownDependencyException;
+import org.spout.api.meta.SpoutMetaPlugin;
 import org.spout.api.plugin.security.CommonSecurityManager;
 
 import java.io.File;

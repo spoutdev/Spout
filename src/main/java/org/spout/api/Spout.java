@@ -90,7 +90,7 @@ public final class Spout {
 	public static FileSystem getFilesystem() {
 		return instance.getFilesystem();
 	}
-
+		
 	public void multilineLog(String multiline) {
 		String[] split = multiline.split("\n");
 		for (String line : split) {

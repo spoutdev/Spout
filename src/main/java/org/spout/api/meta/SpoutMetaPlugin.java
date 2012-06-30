@@ -24,13 +24,22 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.plugin;
+package org.spout.api.meta;
 
 import java.io.File;
 import java.util.logging.Logger;
 
 import org.spout.api.Engine;
+import org.spout.api.Spout;
+import org.spout.api.command.CommandRegistrationsFactory;
+import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
+import org.spout.api.command.annotated.SimpleAnnotatedCommandExecutorFactory;
+import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.generator.WorldGenerator;
+import org.spout.api.plugin.Platform;
+import org.spout.api.plugin.Plugin;
+import org.spout.api.plugin.PluginDescriptionFile;
+import org.spout.api.plugin.PluginLoader;
 
 public final class SpoutMetaPlugin implements Plugin {
 	private PluginDescriptionFile pdf;
@@ -43,6 +52,8 @@ public final class SpoutMetaPlugin implements Plugin {
 	
 	@Override
 	public void onEnable() {
+		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this), new SimpleAnnotatedCommandExecutorFactory());
+		Spout.getEngine().getRootCommand().addSubCommands(this, MetaCommands.class, commandRegFactory);
 	}
 
 	@Override

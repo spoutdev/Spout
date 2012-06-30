@@ -541,4 +541,8 @@ public interface Engine extends Named {
 	 */
 	public FileSystem getFilesystem();
 	
+	public void setVariable(String key, String value);
+	
+	public String getVariable(String key);
+	
 }
