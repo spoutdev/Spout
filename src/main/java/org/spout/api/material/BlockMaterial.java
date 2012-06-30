@@ -301,10 +301,11 @@ public class BlockMaterial extends Material implements Placeable {
 	/**
 	 * Called when a block near to this material is changed.<br>
 	 * 
+	 * @param oldMaterial the previous material, or null if the update was not due to a material change
 	 * @param block that got updated
 	 * @return true if the block was updated
 	 */
-	public void onUpdate(Block block) {
+	public void onUpdate(BlockMaterial oldMaterial, Block block) {
 	}
 	
 	/**
