@@ -42,7 +42,9 @@ import org.spout.api.protocol.replayable.ReplayableError;
  */
 public class CommonDecoder extends PreprocessReplayingDecoder {
 	private volatile CodecLookupService codecLookup = null;
-	private int previousOpcode = -1;
+	private final int previousMask = 0x1F;
+	private int[] previousOpcodes = new int[previousMask + 1];
+	private int opcodeCounter = 0;
 	private volatile BootstrapProtocol bootstrapProtocol;
 	private final CommonHandler handler;
 	private final CommonEncoder encoder;
@@ -81,7 +83,14 @@ public class CommonDecoder extends PreprocessReplayingDecoder {
 				}
 			}
 			if (codec == null) {
-				throw new IOException("Unknown operation code: " + opcode + " (previous opcode: " + previousOpcode + ").");
+				StringBuilder sb = new StringBuilder();
+				for (int i = 0; i < previousMask; i++) {
+					if (i > 0) {
+						sb.append(", ");
+					}
+					sb.append(Integer.toHexString(previousOpcodes[(opcodeCounter + i) & previousMask]));
+				}
+				throw new IOException("Unknown operation code: " + opcode + " (previous opcodes: " + sb.toString() + ").");
 			}
 		}
 
@@ -91,7 +100,7 @@ public class CommonDecoder extends PreprocessReplayingDecoder {
 			buf.readByte();
 		}
 
-		previousOpcode = opcode;
+		previousOpcodes[(opcodeCounter++) & previousMask] = opcode;
 
 		Message message = codec.decode(upstream, buf);
 
