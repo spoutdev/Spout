@@ -879,8 +879,9 @@ public class SpoutRegion extends Region{
 				int y = queue.getY();
 				int z = queue.getZ();
 				Source source = queue.getSource();
-				if (!callOnUpdatePhysicsForRange(world, x, y, z, source, false)) {
-					physicsQueue.queueForUpdateMultiRegion(x, y, z, source);
+				BlockMaterial oldMaterial = queue.getOldMaterial();
+				if (!callOnUpdatePhysicsForRange(world, x, y, z, oldMaterial, source, false)) {
+					physicsQueue.queueForUpdateMultiRegion(x, y, z, oldMaterial, source);
 				}
 			}
 		}
@@ -896,12 +897,13 @@ public class SpoutRegion extends Region{
 			int y = queue.getY();
 			int z = queue.getZ();
 			Source source = queue.getSource();
-			callOnUpdatePhysicsForRange(world, x, y, z, source, true);
+			BlockMaterial oldMaterial = queue.getOldMaterial();
+			callOnUpdatePhysicsForRange(world, x, y, z, oldMaterial, source, true);
 		}
 		return physicsUpdates;
 	}
 
-	private boolean callOnUpdatePhysicsForRange(World world, int x, int y, int z, Source source, boolean force) {
+	private boolean callOnUpdatePhysicsForRange(World world, int x, int y, int z, BlockMaterial oldMaterial, Source source, boolean force) {
 		//switch region block coords (0-255) to a chunk index
 		Chunk chunk = getChunkFromBlock(x, y, z);
 		int packed = chunk.getBlockFullState(x, y, z);
@@ -913,7 +915,7 @@ public class SpoutRegion extends Region{
 			}
 			//switch region block coords (0-255) to world block coords
 			Block block = world.getBlock(x + this.getBlockX(), y + this.getBlockY(), z + this.getBlockZ(), source);
-			block.getMaterial().onUpdate(block);
+			block.getMaterial().onUpdate(oldMaterial, block);
 			physicsUpdates++;
 		}
 		return true;
@@ -1134,12 +1136,16 @@ public class SpoutRegion extends Region{
 
 	@Override
 	public void queueBlockPhysics(int x, int y, int z, EffectRange range, Source source) {
-		physicsQueue.queueForUpdateAsync(x, y, z, range, source);
+		queueBlockPhysics(x, y, z, range, null, source);
+	}
+	
+	public void queueBlockPhysics(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial, Source source) {
+		physicsQueue.queueForUpdateAsync(x, y, z, range, oldMaterial, source);
 	}
 
 	@Override
 	public void updateBlockPhysics(int x, int y, int z, Source source) {
-		physicsQueue.queueForUpdate(x, y, z, source);
+		physicsQueue.queueForUpdate(x, y, z, null, source);
 	}
 
 	protected void reportChunkLightDirty(int x, int y, int z) {

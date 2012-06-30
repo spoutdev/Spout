@@ -580,6 +580,10 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public void queueBlockPhysics(int x, int y, int z, EffectRange range, Source source) {
+		queueBlockPhysics(x, y, z, range, null, source);
+	}
+		
+	public void queueBlockPhysics(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial, Source source) {
 		checkChunkLoaded();
 		int rx = x & BLOCKS.MASK;
 		int ry = y & BLOCKS.MASK;
@@ -587,7 +591,7 @@ public class SpoutChunk extends Chunk {
 		rx += (getX() & Region.CHUNKS.MASK) << BLOCKS.BITS;
 		ry += (getY() & Region.CHUNKS.MASK) << BLOCKS.BITS;
 		rz += (getZ() & Region.CHUNKS.MASK) << BLOCKS.BITS;
-		this.getRegion().queueBlockPhysics(rx, ry, rz, range, source);
+		this.getRegion().queueBlockPhysics(rx, ry, rz, range, oldMaterial, source);
 	}
 
 	@Override
@@ -1447,12 +1451,12 @@ public class SpoutChunk extends Chunk {
 			}
 		}
 		EffectRange physicsRange = newMaterial.getPhysicsRange(newData);
-		queueBlockPhysics(x, y, z, physicsRange, source);
+		queueBlockPhysics(x, y, z, physicsRange, oldMaterial, source);
 
 		if (newMaterial != oldMaterial) {
 			EffectRange destroyRange = oldMaterial.getDestroyRange(oldData);
 			if (destroyRange != physicsRange) {
-				queueBlockPhysics(x, y, z, destroyRange, source);
+				queueBlockPhysics(x, y, z, destroyRange, oldMaterial, source);
 			}
 		}
 

@@ -34,6 +34,7 @@ import org.spout.api.exception.IllegalTickSequenceException;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.range.EffectIterator;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.IntVector3;
@@ -77,7 +78,7 @@ public class PhysicsQueue {
 				int oy = y + v.getY();
 				int oz = z + v.getZ();
 				if (ox >= 0 && ox < Region.BLOCKS.SIZE && oy >= 0 && oy < Region.BLOCKS.SIZE && oz >= 0 && oz < Region.BLOCKS.SIZE) {
-					queueForUpdate(ox, oy, oz, update.getSource());
+					queueForUpdate(ox, oy, oz, update.getOldMaterial(), update.getSource());
 				} else {
 					int wx = region.getBlockX() + ox;
 					int wy = region.getBlockY() + oy;
@@ -96,25 +97,25 @@ public class PhysicsQueue {
 							Spout.getLogger().info("Material at center location is " + c.getBlockMaterial(x, y, z).getClass().getSimpleName());
 						}
 					}
-					region.getWorld().queueBlockPhysics(wx, wy, wz, EffectRange.THIS, update.getSource());
+					region.getWorld().queueBlockPhysics(wx, wy, wz, EffectRange.THIS, update.getOldMaterial(), update.getSource());
 				}
 			}
 		}
 		return updated;
 	}
 	
-	public void queueForUpdateAsync(int x, int y, int z, EffectRange range, Source source) {
-		asyncQueue.add(new PhysicsUpdate(x, y, z, range, source));
+	public void queueForUpdateAsync(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial, Source source) {
+		asyncQueue.add(new PhysicsUpdate(x, y, z, range, oldMaterial, source));
 	}
 	
-	public void queueForUpdate(int x, int y, int z, Source source) {
+	public void queueForUpdate(int x, int y, int z, BlockMaterial oldMaterial, Source source) {
 		checkStages();
-		updateQueue.add(x, y, z, source);
+		updateQueue.add(x, y, z, oldMaterial, source);
 	}
 	
-	public void queueForUpdateMultiRegion(int x, int y, int z, Source source) {
+	public void queueForUpdateMultiRegion(int x, int y, int z, BlockMaterial oldMaterial, Source source) {
 		checkStages();
-		multiRegionQueue.add(x, y, z, source);
+		multiRegionQueue.add(x, y, z, oldMaterial, source);
 	}
 	
 	public UpdateQueue getUpdateQueue() {

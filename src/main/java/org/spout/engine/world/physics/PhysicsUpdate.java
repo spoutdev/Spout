@@ -27,6 +27,7 @@
 package org.spout.engine.world.physics;
 
 import org.spout.api.Source;
+import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.range.EffectRange;
 
 public class PhysicsUpdate {
@@ -36,13 +37,15 @@ public class PhysicsUpdate {
 	private final byte z;
 	private final EffectRange range;
 	private final Source source;
+	private final BlockMaterial oldMaterial;
 	
-	public PhysicsUpdate(int x, int y, int z, EffectRange range, Source source) {
+	public PhysicsUpdate(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial, Source source) {
 		this.source = source;
 		this.x = (byte)x;
 		this.y = (byte)y;
 		this.z = (byte)z;
 		this.range = range;
+		this.oldMaterial = oldMaterial;
 	}
 	
 	public int getX() {
@@ -63,6 +66,10 @@ public class PhysicsUpdate {
 	
 	public EffectRange getRange() {
 		return range;
+	}
+	
+	public BlockMaterial getOldMaterial() {
+		return oldMaterial;
 	}
 	
 }

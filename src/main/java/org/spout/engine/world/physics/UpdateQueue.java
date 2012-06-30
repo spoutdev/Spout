@@ -26,31 +26,56 @@
  */
 package org.spout.engine.world.physics;
 
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.list.array.TByteArrayList;
 
 import java.util.ArrayList;
 
 import org.spout.api.Source;
-import org.spout.api.util.map.TByteShortByteKeyedHashSet;
+import org.spout.api.material.BlockMaterial;
+import org.spout.api.util.map.TByteShortByteKeyedObjectHashMap;
 
 public class UpdateQueue {
 
-	private final TByteShortByteKeyedHashSet set = new TByteShortByteKeyedHashSet();
+	private final TByteShortByteKeyedObjectHashMap<TIntList> map = new TByteShortByteKeyedObjectHashMap<TIntList>();
 	private final TByteArrayList xArray = new TByteArrayList();
 	private final TByteArrayList yArray = new TByteArrayList();
 	private final TByteArrayList zArray = new TByteArrayList();
 	private final ArrayList<Source> sources = new ArrayList<Source>();
+	private final ArrayList<BlockMaterial> materials = new ArrayList<BlockMaterial>();
 	private int y;
 	private int z;
 	private Source source;
+	private BlockMaterial oldMaterial;
 
-	public void add(int x, int y, int z, Source source) {
-		if (set.add(x,  y & 0xFF, z)) {
-			xArray.add((byte) x);
-			yArray.add((byte) y);
-			zArray.add((byte) z);
-			sources.add(source);
+	public void add(int x, int y, int z, BlockMaterial oldMaterial, Source source) {
+		TIntList list = map.get(x, y & 0xFF, z);
+		if (list != null) {
+			TIntIterator i = list.iterator();
+			while (i.hasNext()) {
+				int index = i.next();
+				if (
+						(xArray.get(index) & 0xFF) == (x & 0xFF) && 
+						(yArray.get(index) & 0xFF) == (y & 0xFF) && 
+						(zArray.get(index) & 0xFF) == (z & 0xFF) &&
+						sources.get(index) == source &&
+						materials.get(index) == oldMaterial
+						) {
+					return;
+				}
+			}
+		} else {
+			list = new TIntArrayList();
+			map.put(x, y & 0xFF, z, list);
 		}
+		list.add(xArray.size());
+		xArray.add((byte) x);
+		yArray.add((byte) y);
+		zArray.add((byte) z);
+		sources.add(source);
+		materials.add(oldMaterial);
 	}
 
 	public boolean hasNext() {
@@ -69,7 +94,12 @@ public class UpdateQueue {
 		y = yArray.removeAt(index) & 0xFF;
 		z = zArray.removeAt(index) & 0xFF;
 		source = sources.remove(index);
-		if (!set.remove(x, y, z)) {
+		oldMaterial = materials.remove(index);
+		TIntList list = map.get(x, y & 0xFF, z);
+		if (list == null || !list.remove(index)) {
+			throw new IllegalStateException("Index was not in list, or list was null");
+		}
+		if (list.size() == 0 && map.remove(x, y & 0xFF, z) == null) {
 			throw new IllegalStateException("Removed update location was not in HashSet");
 		}
 		return x;
@@ -102,6 +132,13 @@ public class UpdateQueue {
 		return source;
 	}
 	
-	
+	/**
+	 * Gets the old material
+	 * 
+	 * @return the old material
+	 */
+	public BlockMaterial getOldMaterial() {
+		return oldMaterial;
+	}
 
 }
