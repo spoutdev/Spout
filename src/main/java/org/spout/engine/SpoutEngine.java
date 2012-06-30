@@ -166,6 +166,8 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	private StringMap engineItemMap = null;
 	private StringMap engineBiomeMap = null;
 	
+	private ConcurrentHashMap<String, String> cvars = new ConcurrentHashMap<String, String>();
+	
 	protected FileSystem filesystem;
 
 	@Parameter(names = {"-debug", "-d", "--debug", "--d" }, description="Debug Mode")
@@ -784,7 +786,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		return loadedWorlds.getLive().values();
 	}
 
-	public CommandSource getConsole() {
+	public CommandSource getCommandSource() {
 		return consoleManager.getCommandSource();
 	}
 
@@ -842,5 +844,16 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public int runGlobalDynamicUpdates() throws InterruptedException {
 		return 0;
+	}
+
+	@Override
+	public void setVariable(String key, String value) {
+		cvars.put(key, value);
+	}
+
+	@Override
+	public String getVariable(String key) {
+		return cvars.get(key);
+		
 	}
 }

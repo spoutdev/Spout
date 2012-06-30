@@ -115,7 +115,7 @@ public class SpoutListener implements Listener {
 		for (Player player : server.getOnlinePlayers()) {
 			event.getReceivers().put(player, Result.DEFAULT);
 		}
-		event.getReceivers().put(server.getConsole(), Result.DEFAULT);
+		event.getReceivers().put(server.getCommandSource(), Result.DEFAULT);
 	}
 
 }
