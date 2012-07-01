@@ -27,7 +27,6 @@
 package org.spout.engine.renderer;
 
 import java.awt.Color;
-import java.io.FileNotFoundException;
 
 import gnu.trove.list.array.TFloatArrayList;
 
@@ -40,8 +39,6 @@ import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.Renderer;
 import org.spout.api.render.Shader;
-
-import org.spout.engine.renderer.shader.EmptyShader;
 
 public abstract class BatchVertexRenderer implements Renderer {
 	public static Renderer constructNewBatch(int renderMode) {

@@ -70,9 +70,7 @@ import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.block.BlockFullState;
-import org.spout.api.material.range.EffectIterator;
 import org.spout.api.material.range.EffectRange;
-import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
@@ -149,7 +147,8 @@ public class SpoutRegion extends Region{
 
 	private final ConcurrentLinkedQueue<SpoutChunkSnapshotFuture> snapshotQueue = new ConcurrentLinkedQueue<SpoutChunkSnapshotFuture>();
 
-	private boolean isPopulatingChunks = false;
+	@SuppressWarnings("unused")
+        private boolean isPopulatingChunks = false;
 	protected Queue<Chunk> unloadQueue = new ConcurrentLinkedQueue<Chunk>();
 	public static final byte POPULATE_CHUNK_MARGIN = 1;
 	/**

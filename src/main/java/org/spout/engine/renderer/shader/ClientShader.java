@@ -27,10 +27,8 @@
 package org.spout.engine.renderer.shader;
 
 import java.awt.Color;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
-import java.util.Scanner;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;

@@ -44,7 +44,8 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 		super(renderMode);
 	}
 
-	@Override
+	@SuppressWarnings("unused")
+        @Override
 	protected void doFlush() {
 		if (activeMaterial.getShader() == null) {
 			throw new IllegalStateException("Batch must have a shader attached");

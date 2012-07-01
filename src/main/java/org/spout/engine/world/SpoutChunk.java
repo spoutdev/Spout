@@ -98,7 +98,8 @@ public class SpoutChunk extends Chunk {
 	private static final int restrictedStages = TickStage.PHYSICS | TickStage.DYNAMIC_BLOCKS;
 	private static final int mainThreadStages = TickStage.GLOBAL_PHYSICS | TickStage.GLOBAL_DYNAMIC_BLOCKS;
 	private static final int allowedStages = TickStage.STAGE1 | TickStage.STAGE2P | TickStage.TICKSTART;
-	private static final int updateStages =
+	@SuppressWarnings("unused")
+        private static final int updateStages =
 			TickStage.PHYSICS | TickStage.DYNAMIC_BLOCKS |
 			TickStage.GLOBAL_PHYSICS | TickStage.GLOBAL_DYNAMIC_BLOCKS;
 

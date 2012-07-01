@@ -40,7 +40,8 @@ import org.spout.engine.protocol.SpoutSession;
 
 public class SpoutProxyConnectListener implements ChannelFutureListener {
 	
-	private final Engine engine;
+	@SuppressWarnings("unused")
+        private final Engine engine;
 	private final SpoutSession session;
 	private final String playerName;
 	

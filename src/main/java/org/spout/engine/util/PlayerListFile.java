@@ -82,6 +82,7 @@ public final class PlayerListFile {
 						}
 					}
 				}
+				input.close();
 				Collections.sort(list);
 				save();
 			} catch (FileNotFoundException ex) {
