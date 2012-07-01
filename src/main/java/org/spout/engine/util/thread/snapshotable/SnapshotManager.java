@@ -26,10 +26,11 @@
  */
 package org.spout.engine.util.thread.snapshotable;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SnapshotManager {
-	private LinkedHashSet<Snapshotable> managed = new LinkedHashSet<Snapshotable>();
+	private List<Snapshotable> managed = new ArrayList<Snapshotable>();
 
 	public synchronized void add(Snapshotable s) {
 		synchronized (managed) {
@@ -39,8 +40,8 @@ public class SnapshotManager {
 
 	public void copyAllSnapshots() {
 		synchronized (managed) {
-			for (Snapshotable s : managed) {
-				s.copySnapshot();
+			for (int i = 0; i < managed.size(); i++) {
+				managed.get(i).copySnapshot();
 			}
 		}
 	}
