@@ -93,6 +93,7 @@ public final class ConsoleManager {
 	private JTextField jInput = null;
 	private boolean running = true;
 	private boolean jLine = false;
+	private boolean closed = false;
 
 	public ConsoleManager(Engine engine) {
 		this.engine = engine;
@@ -135,6 +136,9 @@ public final class ConsoleManager {
 
 		Completor[] list = new Completor[]{new SpoutCommandCompletor(engine), new NullCompletor()};
 		reader.addCompletor(new ArgumentCompletor(list));
+		
+		LogFlushThread flushThread = new LogFlushThread(this);
+		flushThread.start();
 	}
 
 	public ColoredCommandSource getCommandSource() {
@@ -147,11 +151,18 @@ public final class ConsoleManager {
 			jFrame.dispose();
 		}
 	}
+	
+	public void flush() {
+		fileHandler.flush();
+	}
 
 	public void closeFiles() {
-		consoleHandler.flush();
-		fileHandler.flush();
-		fileHandler.close();
+		if (!closed) {
+			consoleHandler.flush();
+			fileHandler.flush();
+			fileHandler.close();
+			closed = true;
+		}
 	}
 
 	public void setupConsole(String mode) {
@@ -232,6 +243,25 @@ public final class ConsoleManager {
 					.replace(ChatColor.PURPLE.toString(), "\033[0;35m")
 					.replace(ChatColor.GRAY.toString(), "\033[0;37m")
 					.replace(ChatColor.WHITE.toString(), "\033[1;37m") + "\033[0m";
+		}
+	}
+	
+	private class LogFlushThread extends Thread {
+		ConsoleManager manager;
+		public LogFlushThread(ConsoleManager manager) {
+			super("Log Flush Thread");
+			this.setDaemon(true);
+			this.manager = manager;
+		}
+
+		@Override
+		public void run() {
+			while(!this.isInterrupted()) {
+				manager.flush();
+				try {
+					sleep(60000);
+				} catch (InterruptedException e) { }
+			}
 		}
 	}
 
