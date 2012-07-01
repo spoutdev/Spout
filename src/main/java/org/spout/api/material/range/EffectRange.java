@@ -26,6 +26,7 @@
  */
 package org.spout.api.material.range;
 
+import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.IntVector3;
 
 
@@ -60,5 +61,21 @@ public interface EffectRange {
 	 */
 	public boolean isRegionLocal(int x, int y, int z);
 
-	
+	/**
+	 * Translates this Effect Range with the offset specified<br>
+	 * Note: the returned type does not have to be the same as this class!
+	 * 
+	 * @param offset to translate
+	 * @return a new translated EffectRange instance
+	 */
+	public EffectRange translate(BlockFace offset);
+
+	/**
+	 * Translates this Effect Range with the offset specified<br>
+	 * Note: the returned type does not have to be the same as this class!
+	 * 
+	 * @param offset to translate
+	 * @return a new translated EffectRange instance
+	 */
+	public EffectRange translate(IntVector3 offset);
 }

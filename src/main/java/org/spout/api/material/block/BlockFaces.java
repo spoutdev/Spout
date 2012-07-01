@@ -37,6 +37,16 @@ import org.spout.api.util.flag.ByteFlagMask;
 public class BlockFaces implements Iterable<BlockFace>, ByteFlagMask {
 
 	/**
+	 * The [top-bottom] faces
+	 */
+	public static final BlockFaces TB = new BlockFaces(BlockFace.TOP, BlockFace.BOTTOM);
+
+	/**
+	 * The [bottom-top] faces
+	 */
+	public static final BlockFaces BT = new BlockFaces(BlockFace.BOTTOM, BlockFace.TOP);
+
+	/**
 	 * The [north-east-south-west] faces
 	 */
 	public static final BlockFaces NESW = new BlockFaces(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST);
@@ -90,51 +100,51 @@ public class BlockFaces implements Iterable<BlockFace>, ByteFlagMask {
 	 * The [east-west-north-south] faces
 	 */
 	public static final BlockFaces EWNS = new BlockFaces(BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH);
-	
+
 	/**
 	 * The [north-east-south-west-bottom] faces
 	 */
-	public static final BlockFaces NESWB = new BlockFaces(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.BOTTOM);
+	public static final BlockFaces NESWB = NESW.append(BlockFace.BOTTOM);
 
 	/**
 	 * The [east-west-south-north-bottom] faces
 	 */
-	public static final BlockFaces EWSNB = new BlockFaces(BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH, BlockFace.NORTH, BlockFace.BOTTOM);
+	public static final BlockFaces EWSNB = EWSN.append(BlockFace.BOTTOM);
 
 	/**
 	 * The [north-east-south-west-top] faces
 	 */
-	public static final BlockFaces NESWT = new BlockFaces(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.TOP);
+	public static final BlockFaces NESWT = NESW.append(BlockFace.TOP);
 
 	/**
 	 * The [north-east-south-west-bottom-top] faces
 	 */
-	public static final BlockFaces NESWBT = new BlockFaces(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.BOTTOM, BlockFace.TOP);
+	public static final BlockFaces NESWBT = NESW.append(BT);
 
 	/**
 	 * The [bottom-top-east-west-north-south] faces
 	 */
-	public static final BlockFaces BTEWNS = new BlockFaces(BlockFace.BOTTOM, BlockFace.TOP, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH);
+	public static final BlockFaces BTEWNS = BT.append(EWNS);
 
 	/**
 	 * The [bottom-top-north-south-west-east] faces
 	 */
-	public static final BlockFaces BTNSWE = new BlockFaces(BlockFace.BOTTOM, BlockFace.TOP, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST);
+	public static final BlockFaces BTNSWE = BT.append(NSWE);
 
 	/**
 	 * The [north-south-east-west-bottom] faces
 	 */
-	public static final BlockFaces NSEWB = new BlockFaces(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.BOTTOM);
+	public static final BlockFaces NSEWB = NSEW.append(BlockFace.BOTTOM);
 
 	/**
 	 * The [north-south-west-east-bottom] faces
 	 */
-	public static final BlockFaces NSWEB = new BlockFaces(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST, BlockFace.BOTTOM);
+	public static final BlockFaces NSWEB = NSWE.append(BlockFace.BOTTOM);
 
 	/**
-	 * The [bottom-top] faces
+	 * The [north-east-south-west-bottom-this] faces
 	 */
-	public static final BlockFaces BT = new BlockFaces(BlockFace.BOTTOM, BlockFace.TOP);
+	public static final BlockFaces NESWBTHIS = NESWB.append(BlockFace.THIS);
 
 	/**
 	 * The [top-bottom-north-south-east-west-this] faces
@@ -148,7 +158,7 @@ public class BlockFaces implements Iterable<BlockFace>, ByteFlagMask {
 
 	private final byte mask;
 	private final BlockFace[] faces;
-
+	
 	public BlockFaces(BlockFace... blockfaces) {
 		this.faces = blockfaces;
 		byte mask = 0;
@@ -166,6 +176,39 @@ public class BlockFaces implements Iterable<BlockFace>, ByteFlagMask {
 	@Override
 	public Iterator<BlockFace> iterator() {
 		return Arrays.asList(this.faces).iterator();
+	}
+
+	/**
+	 * Gets the total amount of BlockFace objects contained in this constant
+	 * @return the amount of BlockFace objects
+	 */
+	public int size() {
+		return this.faces.length;
+	}
+
+	/**
+	 * Appends another array of block faces to this BlockFaces object
+	 * @param blockFaces to append
+	 * @return a new BlockFaces object with the faces appended
+	 */
+	public BlockFaces append(BlockFaces blockFaces) {
+		return this.append(blockFaces.faces);
+	}
+
+	/**
+	 * Appends another array of block faces to this BlockFaces object
+	 * @param blockFaces to append
+	 * @return a new BlockFaces object with the faces appended
+	 */
+	public BlockFaces append(BlockFace... blockFaces) {
+		BlockFace[] faces = new BlockFace[this.faces.length + blockFaces.length];
+		for (int i = 0; i < this.faces.length; i++) {
+			faces[i] = this.faces[i];
+		}
+		for (int i = 0; i < blockFaces.length; i++) {
+			faces[i + this.faces.length] = blockFaces[i];
+		}
+		return new BlockFaces(faces);
 	}
 
 	/**

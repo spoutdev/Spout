@@ -29,6 +29,8 @@ package org.spout.api.math;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.spout.api.material.block.BlockFace;
+import org.spout.api.material.block.BlockFaces;
 import org.spout.api.util.StringUtil;
 
 /**
@@ -37,6 +39,14 @@ import org.spout.api.util.StringUtil;
 public class IntVector3 extends IntVector2 {
 
 	private int z;
+
+	public IntVector3(BlockFace face) {
+		this(face.getOffset());
+	}
+
+	public IntVector3(Vector3 vector) {
+		this(vector.getFloorX(), vector.getFloorY(), vector.getFloorZ());
+	}
 
 	public IntVector3(int x, int y, int z) {
 		super(x, y);
@@ -111,5 +121,20 @@ public class IntVector3 extends IntVector2 {
 		}
 		return list;
 	}
-	
+
+	public static List<IntVector3> createList(BlockFaces blockFaces) {
+		List<IntVector3> list = new ArrayList<IntVector3>(blockFaces.size());
+		for (BlockFace face : blockFaces) {
+			list.add(new IntVector3(face));
+		}
+		return list;
+	}
+
+	public static List<IntVector3> createList(BlockFace... blockFaces) {
+		List<IntVector3> list = new ArrayList<IntVector3>(blockFaces.length);
+		for (BlockFace face : blockFaces) {
+			list.add(new IntVector3(face));
+		}
+		return list;
+	}
 }

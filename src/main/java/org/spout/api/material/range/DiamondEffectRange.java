@@ -26,7 +26,6 @@
  */
 package org.spout.api.material.range;
 
-
 public class DiamondEffectRange extends EffectRangeImpl {
 	
 	private final int range;
@@ -40,5 +39,4 @@ public class DiamondEffectRange extends EffectRangeImpl {
 	public void initEffectIterator(EffectIterator i) {
 		i.resetAsOutwardIterator(range);
  	}
-
 }

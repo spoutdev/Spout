@@ -26,9 +26,12 @@
  */
 package org.spout.api.material.range;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.IntVector3;
 
 public abstract class EffectRangeImpl implements EffectRange {
@@ -120,10 +123,10 @@ public abstract class EffectRangeImpl implements EffectRange {
 	public EffectIterator getEffectIterator() {
 		return new EffectIterator();
 	}
-	
+
 	@Override
 	public abstract void initEffectIterator(EffectIterator i);
-	
+
 	@Override
 	public boolean isRegionLocal(int x, int y, int z) {
 		x = x & Region.BLOCKS.MASK;
@@ -132,4 +135,22 @@ public abstract class EffectRangeImpl implements EffectRange {
 		return !(x + maxX > regionMax || y + maxY > regionMax || z + maxZ > regionMax || x + minX < 0 || y + minY < 0 || z + minZ < 0);
 	}
 
+	@Override
+	public EffectRange translate(BlockFace face) {
+		return this.translate(new IntVector3(face));
+	}
+
+	@Override
+	public EffectRange translate(IntVector3 offset) {
+		// Basic implementation, should be overridden if a better method is available
+		List<IntVector3> blocks = new ArrayList<IntVector3>();
+		EffectIterator iter = new EffectIterator();
+		this.initEffectIterator(iter);
+		while (iter.hasNext()) {
+			IntVector3 translated = iter.next().copy();
+			translated.add(offset);
+			blocks.add(translated);
+		}
+		return new ListEffectRange(blocks, false);
+	}
 }
