@@ -87,7 +87,7 @@ public abstract class CuboidBuffer {
 		topY = baseY + sizeY;
 		topZ = baseZ + sizeZ;
 
-		Yinc = sizeY * (Zinc = sizeZ * (Xinc = 1));
+		Yinc = sizeZ * (Zinc = sizeX * (Xinc = 1));
 	}
 
 	protected CuboidBuffer(World world, double baseX, double baseY, double baseZ, double sizeX, double sizeY, double sizeZ) {
