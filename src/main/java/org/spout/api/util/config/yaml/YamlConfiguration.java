@@ -29,6 +29,7 @@ package org.spout.api.util.config.yaml;
 import org.spout.api.exception.ConfigurationException;
 import org.spout.api.util.config.FileConfiguration;
 import org.spout.api.util.config.MapBasedConfiguration;
+import org.xml.sax.InputSource;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -41,10 +42,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,11 +65,54 @@ public class YamlConfiguration extends MapBasedConfiguration implements FileConf
 	public static final char COMMENT_CHAR = '#';
 	public static final Pattern COMMENT_REGEX = Pattern.compile(COMMENT_CHAR + " ?(.*)");
 	private final File file;
+	private final InputStream stream;
+	private final String string;
 	private final Yaml yaml;
 	private String[] header = null;
 
 	public YamlConfiguration(File file) {
 		this.file = file;
+		this.stream = null;
+		this.string = null;
+
+		DumperOptions options = new DumperOptions();
+
+		options.setIndent(4);
+		options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
+		yaml = new Yaml(new SafeConstructor(), new EmptyNullRepresenter(), options);
+	}
+
+	public YamlConfiguration(InputStream stream) {
+		this.file = null;
+		this.stream = stream;
+		this.string = null;
+
+		DumperOptions options = new DumperOptions();
+
+		options.setIndent(4);
+		options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
+		yaml = new Yaml(new SafeConstructor(), new EmptyNullRepresenter(), options);
+	}
+
+	public YamlConfiguration(String string) {
+		this.file = null;
+		this.stream = null;
+		this.string = string;
+
+		DumperOptions options = new DumperOptions();
+
+		options.setIndent(4);
+		options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
+		yaml = new Yaml(new SafeConstructor(), new EmptyNullRepresenter(), options);
+	}
+
+	public YamlConfiguration() {
+		this.file = null;
+		this.stream = null;
+		this.string = null;
 
 		DumperOptions options = new DumperOptions();
 
@@ -78,9 +124,13 @@ public class YamlConfiguration extends MapBasedConfiguration implements FileConf
 
 	@Override
 	protected Map<?, ?> loadToMap() throws ConfigurationException {
+		// Allow the usage of temporary empty YamlConfiguration objects.
+		if (file == null && stream == null && string == null) {
+			return Collections.emptyMap();
+		}
 		BufferedReader in = null;
 		try {
-			if (!file.exists()) {
+			if (file != null && !file.exists()) {
 				if (file.getParentFile() != null) {
 					file.getParentFile().mkdirs();
 				}
@@ -130,6 +180,10 @@ public class YamlConfiguration extends MapBasedConfiguration implements FileConf
 
 	@Override
 	protected void saveFromMap(Map<?, ?> map) throws ConfigurationException {
+		// Allow the usage of YamlConfiguration objects not created from a File.
+		if (file == null) {
+			return;
+		}
 		BufferedWriter writer = null;
 
 		File parent = file.getParentFile();
@@ -152,6 +206,34 @@ public class YamlConfiguration extends MapBasedConfiguration implements FileConf
 		} catch (YAMLException e) {
 			throw new ConfigurationException(e);
 		} catch (IOException e) {
+			throw new ConfigurationException(e);
+		} finally {
+			try {
+				if (writer != null) {
+					writer.flush();
+					writer.close();
+				}
+			} catch (IOException ignore) {
+			}
+		}
+	}
+	
+	public String getYamlString() throws ConfigurationException {
+		StringWriter writer = null;
+
+		try {
+			writer = new StringWriter();
+			if (getHeader() != null) {
+				for (String line : getHeader()) {
+					writer.append(COMMENT_CHAR).append(" ").append(line).append(LINE_BREAK);
+				}
+
+				writer.append(LINE_BREAK);
+			}
+
+			yaml.dump(getChildren(), writer);
+			return writer.toString();
+		} catch (YAMLException e) {
 			throw new ConfigurationException(e);
 		} finally {
 			try {
@@ -192,7 +274,13 @@ public class YamlConfiguration extends MapBasedConfiguration implements FileConf
 	}
 
 	protected Reader getReader() throws IOException {
-		return new InputStreamReader(new FileInputStream(file), "UTF-8");
+		if (file != null) {
+			return new InputStreamReader(new FileInputStream(file), "UTF-8");
+		} else if (stream != null) {
+			return new InputStreamReader(stream, "UTF-8");
+		} else {
+			return new InputStreamReader((new InputSource(new StringReader(string))).getByteStream(), "UTF-8");
+		}
 	}
 
 	protected Writer getWriter() throws IOException {
