@@ -309,7 +309,6 @@ public class DynamicBlockUpdateTree {
 	private DynamicBlockUpdate add(DynamicBlockUpdate update) {
 		int key = update.getPacked();
 		DynamicBlockUpdate oldRoot = blockToUpdateMap.get(key);
-		
 		DynamicBlockUpdate previous = null;
 		if (oldRoot != null) {
 			DynamicBlockUpdate current = oldRoot;
@@ -321,6 +320,9 @@ public class DynamicBlockUpdateTree {
 					previous = current;
 					oldRoot = blockToUpdateMap.get(key);
 					break;
+				} else {
+					// Obtain next update of this block
+					current = current.getNext();
 				}
 			}
 		}
