@@ -26,6 +26,8 @@
  */
 package org.spout.api.material.range;
 
+import org.spout.api.math.IntVector3;
+
 public class CuboidEffectRange extends EffectRangeImpl {
 
 	private final int tx;
@@ -34,7 +36,11 @@ public class CuboidEffectRange extends EffectRangeImpl {
 	private final int bx;
 	private final int by;
 	private final int bz;
-	
+
+	public CuboidEffectRange(IntVector3 bottom, IntVector3 top) {
+		this(bottom.getX(), bottom.getY(), bottom.getZ(), top.getX(), top.getY(), top.getZ());
+	}
+
 	public CuboidEffectRange(int bx, int by, int bz, int tx, int ty, int tz) {
 		super(tx, ty, tz, bx, by, bz);
 		this.tx = tx;
@@ -50,4 +56,12 @@ public class CuboidEffectRange extends EffectRangeImpl {
 		i.resetAsCubicInterator(bx, by, bz, tx, ty, tz);
 	}
 
+	@Override
+	public EffectRange translate(IntVector3 offset) {
+		IntVector3 bottom = new IntVector3(this.bx, this.by, this.bz);
+		IntVector3 top = new IntVector3(this.tx, this.ty, this.tz);
+		bottom.add(offset);
+		top.add(offset);
+		return new CuboidEffectRange(bottom, top);
+	}
 }

@@ -39,5 +39,4 @@ public class CubicEffectRange extends EffectRangeImpl {
 	public void initEffectIterator(EffectIterator i) {
 		i.resetAsCubicIterator(range);
 	}
-
 }

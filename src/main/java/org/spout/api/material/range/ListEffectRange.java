@@ -27,25 +27,33 @@
 package org.spout.api.material.range;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import org.spout.api.material.block.BlockFace;
+import org.spout.api.material.block.BlockFaces;
 import org.spout.api.math.IntVector3;
 import org.spout.api.util.map.TByteShortByteKeyedHashSet;
 
 public class ListEffectRange extends EffectRangeImpl {
-	
 	private final List<IntVector3> effectList;
-	
+
 	public ListEffectRange(EffectRange ... ranges) {
 		this(combineRanges(ranges), false);
 	}
-	
+
+	public ListEffectRange(BlockFaces blockFaces) {
+		this(IntVector3.createList(blockFaces));
+	}
+
+	public ListEffectRange(BlockFace... blockFaces) {
+		this(IntVector3.createList(blockFaces));
+	}
+
 	public ListEffectRange(List<IntVector3> effectList) {
 		this(effectList, true);
 	}
-	
-	private ListEffectRange(List<IntVector3> effectList, boolean copy) {
+
+	protected ListEffectRange(List<IntVector3> effectList, boolean copy) {
 		super(effectList);
 		if (copy) {
 			this.effectList = new ArrayList<IntVector3>(effectList.size());
@@ -61,7 +69,18 @@ public class ListEffectRange extends EffectRangeImpl {
 	public void initEffectIterator(EffectIterator i) {
 		i.resetAsList(effectList);
 	}
-	
+
+	@Override
+	public EffectRange translate(IntVector3 offset) {
+		List<IntVector3> newEffectList = new ArrayList<IntVector3>(effectList.size());
+		for (IntVector3 effect : effectList) {
+			IntVector3 translated = effect.copy();
+			translated.add(offset);
+			newEffectList.add(translated);
+		}
+		return new ListEffectRange(newEffectList, false);
+	}
+
 	private static List<IntVector3> combineRanges(EffectRange[] ranges) {
 		List<IntVector3> list = new ArrayList<IntVector3>();
 		EffectIterator i = new EffectIterator();
@@ -77,5 +96,4 @@ public class ListEffectRange extends EffectRangeImpl {
 		}
 		return list;
 	}
-
 }
