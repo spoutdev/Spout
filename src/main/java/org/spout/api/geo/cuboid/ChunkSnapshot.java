@@ -26,12 +26,15 @@
  */
 package org.spout.api.geo.cuboid;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import org.spout.api.entity.Entity;
+import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.AreaBlockSource;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.map.DefaultedMap;
 import org.spout.api.util.thread.SnapshotRead;
 
 public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
@@ -55,21 +58,21 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	}
 
 	/**
-	 * Gets the raw block ids
+	 * Gets a copy of the raw block ids
 	 * 
 	 * @return raw block ids
 	 */
 	public abstract short[] getBlockIds();
 
 	/**
-	 * Gets the raw block data.
+	 * Gets a copy of the raw block data.
 	 * 
 	 * @return block data
 	 */
 	public abstract short[] getBlockData();
 
 	/**
-	 * Gets the raw block light data. <br/><br/> 
+	 * Gets a copy of the raw block light data. <br/><br/> 
 	 * 
 	 * Light is stored in nibbles, with the first index even, the second odd.
 	 * @return raw block light data
@@ -77,7 +80,7 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	public abstract byte[] getBlockLight();
 
 	/**
-	 * Gets the raw sky light data. <br/><br/> 
+	 * Gets a copy of the raw sky light data. <br/><br/> 
 	 * 
 	 * Light is stored in nibbles, with the first index even, the second odd.
 	 * @return raw skylight data
@@ -98,4 +101,87 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	 */
 	@SnapshotRead
 	public abstract Set<Entity> getEntities();
+	
+	/**
+	 * Gets if this chunk snapshot had already been populated.
+	 *
+	 * @return if the chunk snapshot was populated.
+	 */
+	public abstract boolean isPopulated();
+	
+	/**
+	 * Gets a copy of the biome manager associated with this chunk.
+	 * 
+	 * @return biome manager
+	 */
+	@SnapshotRead
+	public abstract BiomeManager getBiomeManager();
+	
+	/**
+	 * A thread-safe copy of the map of data attached to the chunk
+	 *
+	 * @return data map
+	 */
+	public abstract DefaultedMap<String, Serializable> getDataMap();
+	
+	public enum SnapshotType {
+		/**
+		 * Loads no block data (ids, data, skylight, blocklight) in the snapshot
+		 */
+		NO_BLOCK_DATA,
+		/**
+		 * Loads only block ids, no block data, skylight, or blocklight
+		 */
+		BLOCK_IDS_ONLY,
+		/**
+		 * Loads only block ids and block data, no skylight or blocklight
+		 */
+		BLOCKS_ONLY,
+		/**
+		 * Loads only skylight and blocklight, no block ids or block data
+		 */
+		LIGHT_ONLY,
+		/**
+		 * Loads block ids, block data, skylight, and blocklight
+		 */
+		BOTH,
+	}
+	
+	public enum EntityType {
+		/**
+		 * Saves no entity information in the snapshot
+		 */
+		NO_ENTITIES,
+		/**
+		 * Saves a weak reference to entities in the snapshot.
+		 * 
+		 * This is the default setting.
+		 */
+		WEAK_ENTITIES,
+		/**
+		 * Saves a hard reference to entities in the snapshot
+		 * 
+		 * Be sure to dispose of the snapshot properly.
+		 */
+		ENTITIES,
+	}
+	
+	public enum ExtraData {
+		/**
+		 * Loads no extra data in the snapshot
+		 */
+		NO_EXTRA_DATA,
+		/**
+		 * Loads only extra biome data in the snapshot
+		 */
+		BIOME_DATA,
+		/**
+		 * Loads only extra datatable information in the snapshot
+		 */
+		DATATABLE,
+		/**
+		 * Loads both biome and datatable information in the snapshot
+		 */
+		BOTH;
+	}
 }

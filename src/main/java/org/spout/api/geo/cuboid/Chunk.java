@@ -37,6 +37,9 @@ import org.spout.api.geo.AreaBlockAccess;
 import org.spout.api.geo.AreaPhysicsAccess;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
+import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
+import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.block.BlockFace;
@@ -87,8 +90,10 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Gets a snapshot of the data for the chunk.
-	 *
+	 * <br/><br/>
 	 * This process may result in tearing if called during potential updates
+	 * <br/><br/>
+	 * This is the same as calling getSnapshot(BOTH, WEAK_ENTITIES, NO_EXTRA_DATA)
 	 *
 	 * @return the snapshot
 	 */
@@ -97,17 +102,21 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Gets a snapshot of the data for the chunk.
-	 *
+	 * <br/><br/>
 	 * This process may result in tearing if called during potential updates
-	 *
+	 * <br/><br/>
+	 * @param the type of basic snapshot information to be stored
 	 * @param entities whether to include entity data in the snapshot
+	 * @param the extra data, if any, to be stored
 	 * @return the snapshot
 	 */
 	@LiveRead
-	public abstract ChunkSnapshot getSnapshot(boolean entities);
+	public abstract ChunkSnapshot getSnapshot(SnapshotType type, EntityType entities, ExtraData data);
 	
 	/**
 	 * Gets a snapshot of the data for the chunk.  The snapshot will be taken at a stable moment in the tick.
+	 * <br/><br/>
+	 * This is the same as calling getFutureSnapshot(BOTH, WEAK_ENTITIES, NO_EXTRA_DATA)
 	 *
 	 * @return the snapshot
 	 */
@@ -117,11 +126,13 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	/**
 	 * Gets a snapshot of the data for the chunk.  The snapshot will be taken at a stable moment in the tick.
 	 *
+	 * @param the type of basic snapshot information to be stored
 	 * @param entities whether to include entity data in the snapshot
+	 * @param the extra data, if any, to be stored
 	 * @return the snapshot
 	 */
 	@LiveRead
-	public abstract Future<ChunkSnapshot> getFutureSnapshot(boolean entities);
+	public abstract Future<ChunkSnapshot> getFutureSnapshot(SnapshotType type, EntityType entites, ExtraData data);
 
 	/**
 	 * Refresh the distance between a player and the chunk, and adds the player
