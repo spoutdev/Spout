@@ -26,11 +26,15 @@
  */
 package org.spout.engine.world;
 
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.spout.api.datatable.DataMap;
+import org.spout.api.datatable.DatatableMap;
+import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.entity.Entity;
 import org.spout.api.generator.biome.Biome;
@@ -38,6 +42,7 @@ import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.util.hashing.NibblePairHashed;
@@ -47,32 +52,67 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	 * The parent region that manages this chunk
 	 */
 	private final WeakReference<Region> parentRegion;
-	
-	private final Set<WeakReference<Entity>> entities;
+
+	private final Set<Entity> entities;
+	private final Set<WeakReference<Entity>> weakEntities;
 	private final short[] blockIds;
 	private final short[] blockData;
 	private final byte[] blockLight;
 	private final byte[] skyLight;
 	private final BiomeManager biomes;
+	private final DefaultedMap<String, Serializable> dataMap;
+	private final boolean populated;
 	private boolean renderDirty = false;
 
-	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, boolean entities) {
-		super(chunk.getWorld(), chunk.getX(), chunk.getY(), chunk.getZ());
+	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, EntityType type, ExtraData data) {
+		super(chunk.getWorld(), chunk.getX() * CHUNK_SIZE, chunk.getY()  * CHUNK_SIZE, chunk.getZ()  * CHUNK_SIZE);
 		parentRegion = new WeakReference<Region>(chunk.getRegion());
-		if (entities) {
+
+		// Cache entities
+		if (type == EntityType.WEAK_ENTITIES) {
 			Set<WeakReference<Entity>> liveEntities = new HashSet<WeakReference<Entity>>();
 			for (Entity e : chunk.getLiveEntities()) {
 				liveEntities.add(new WeakReference<Entity>(e));
 			}
-			this.entities = Collections.unmodifiableSet(liveEntities);
+			this.weakEntities = Collections.unmodifiableSet(liveEntities);
+			this.entities = null;
+		} else if (type == EntityType.ENTITIES) {
+			this.weakEntities = null;
+			this.entities = Collections.unmodifiableSet(new HashSet<Entity>(chunk.getLiveEntities()));
 		} else {
-			this.entities = Collections.emptySet();
+			this.weakEntities = null;
+			this.entities = null;
 		}
+
+		// Cache blocks
 		this.blockIds = blockIds;
 		this.blockData = blockData;
 		this.blockLight = blockLight;
 		this.skyLight = skyLight;
-		this.biomes = chunk.getBiomeManager().clone();
+
+		// Cache extra data
+		if (data == ExtraData.BIOME_DATA) {
+			this.biomes = chunk.getBiomeManager().clone();
+			this.dataMap = null;
+		} else if (data == ExtraData.DATATABLE) {
+			byte[] compressed = ((DataMap) chunk.getDataMap()).getRawMap().compress();
+			DatatableMap copy = new GenericDatatableMap();
+			copy.decompress(compressed);
+			this.dataMap = new DataMap(copy);
+
+			this.biomes = null;
+		} else if (data == ExtraData.BOTH) {
+			this.biomes = chunk.getBiomeManager().clone();
+
+			byte[] compressed = ((DataMap) chunk.getDataMap()).getRawMap().compress();
+			DatatableMap copy = new GenericDatatableMap();
+			copy.decompress(compressed);
+			this.dataMap = new DataMap(copy);
+		} else {
+			this.biomes = null;
+			this.dataMap = null;
+		}
+		this.populated = chunk.isPopulated();
 		renderDirty = chunk.isDirty();
 	}
 
@@ -82,20 +122,25 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 	@Override
 	public BlockMaterial getBlockMaterial(int x, int y, int z) {
+		if (blockIds == null) {
+			throw new UnsupportedOperationException("This chunk snapshot does not contain block ids");
+		}
 		BlockMaterial mat = BlockMaterial.get(getBlockId(x, y, z));
 		return mat == null ? BlockMaterial.AIR : mat;
 	}
 
-	//TODO: Should this be hidden, or not?
 	private short getBlockId(int x, int y, int z) {
 		return blockIds[this.getBlockIndex(x, y, z)];
 	}
 
 	@Override
 	public short getBlockData(int x, int y, int z) {
+		if (blockData == null) {
+			throw new UnsupportedOperationException("This chunk snapshot does not contain block data");
+		}
 		return blockData[this.getBlockIndex(x, y, z)];
 	}
-	
+
 	@Override
 	public int getBlockFullState(int x, int y, int z) {
 		return BlockFullState.getPacked(getBlockId(x, y, z), getBlockData(x, y, z));
@@ -103,6 +148,9 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 	@Override
 	public byte getBlockSkyLight(int x, int y, int z) {
+		if (skyLight == null) {
+			throw new UnsupportedOperationException("This chunk snapshot does not contain sky light");
+		}
 		int index = getBlockIndex(x, y, z);
 		byte light = skyLight[index >> 1];
 		if ((index & 1) == 1) {
@@ -114,6 +162,9 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 	@Override
 	public byte getBlockLight(int x, int y, int z) {
+		if (blockLight == null) {
+			throw new UnsupportedOperationException("This chunk snapshot does not contain block light");
+		}
 		int index = getBlockIndex(x, y, z);
 		byte light = blockLight[index >> 1];
 		if ((index & 1) == 1) {
@@ -130,14 +181,20 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 	@Override
 	public Set<Entity> getEntities() {
-		Set<Entity> entities = new HashSet<Entity>();
-		for (WeakReference<Entity> ref : this.entities) {
-			Entity e = ref.get();
-			if (e != null) {
-				entities.add(e);
+		if (this.entities == null && this.weakEntities == null) {
+			throw new UnsupportedOperationException("This chunk snapshot does not contain block data");
+		} else if (this.weakEntities != null) {
+			Set<Entity> entities = new HashSet<Entity>();
+			for (WeakReference<Entity> ref : this.weakEntities) {
+				Entity e = ref.get();
+				if (e != null) {
+					entities.add(e);
+				}
 			}
+			return entities;
+		} else {
+			return this.entities;
 		}
-		return entities;
 	}
 
 	@Override
@@ -160,14 +217,13 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		return skyLight;
 	}
 
-	public boolean isRenderDirty(){
+	public boolean isRenderDirty() {
 		return renderDirty;
 	}
 
-	public void setRenderDirty(boolean val){
+	public void setRenderDirty(boolean val) {
 		renderDirty = false;
 	}
-
 
 	@Override
 	public BlockController getBlockController(int x, int y, int z) {
@@ -179,4 +235,18 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		return biomes.getBiome(x, y, z);
 	}
 
+	@Override
+	public boolean isPopulated() {
+		return populated;
+	}
+
+	@Override
+	public DefaultedMap<String, Serializable> getDataMap() {
+		return this.dataMap;
+	}
+
+	@Override
+	public BiomeManager getBiomeManager() {
+		return biomes;
+	}
 }

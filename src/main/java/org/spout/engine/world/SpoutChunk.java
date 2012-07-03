@@ -56,6 +56,9 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
+import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
+import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
@@ -79,7 +82,6 @@ import org.spout.api.util.set.TNibbleQuadHashSet;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
-import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
@@ -753,35 +755,59 @@ public class SpoutChunk extends Chunk {
 
 	// Saves the chunk data - this occurs directly after a snapshot update
 	public void syncSave() {
-		WorldFiles.saveChunk(this, blockStore.getBlockIdArray(), blockStore.getDataArray(), skyLight, blockLight, datatableMap, this.parentRegion.getChunkOutputStream(this));
+		WorldSavingThread.saveChunk(this);
 	}
 
 	@Override
 	public ChunkSnapshot getSnapshot() {
-		return getSnapshot(true);
+		return getSnapshot(SnapshotType.BOTH, EntityType.WEAK_ENTITIES, ExtraData.NO_EXTRA_DATA);
 	}
 
 	@Override
-	public ChunkSnapshot getSnapshot(boolean entities) {
+	public ChunkSnapshot getSnapshot(SnapshotType type, EntityType entities, ExtraData data) {
 		checkChunkLoaded();
-		byte[] blockLightCopy = new byte[blockLight.length];
-		System.arraycopy(blockLight, 0, blockLightCopy, 0, blockLight.length);
-		byte[] skyLightCopy = new byte[skyLight.length];
-		System.arraycopy(skyLight, 0, skyLightCopy, 0, skyLight.length);
-		return new SpoutChunkSnapshot(this, blockStore.getBlockIdArray(), blockStore.getDataArray(), blockLightCopy, skyLightCopy, entities);
+		byte[] blockLightCopy = null, skyLightCopy = null;
+		short[] blockIds = null, blockData = null;
+		switch(type) {
+			case NO_BLOCK_DATA: break;
+			case BLOCK_IDS_ONLY: 
+				blockIds = blockStore.getBlockIdArray();
+				break;
+			case BLOCKS_ONLY: 
+				blockIds = blockStore.getBlockIdArray();
+				blockData = blockStore.getDataArray();
+				break;
+			case LIGHT_ONLY: 
+				blockLightCopy = new byte[blockLight.length];
+				System.arraycopy(blockLight, 0, blockLightCopy, 0, blockLight.length);
+				skyLightCopy = new byte[skyLight.length];
+				System.arraycopy(skyLight, 0, skyLightCopy, 0, skyLight.length);
+				break;
+			case BOTH: 
+				blockIds = blockStore.getBlockIdArray();
+				blockData = blockStore.getDataArray();
+				
+				blockLightCopy = new byte[blockLight.length];
+				System.arraycopy(blockLight, 0, blockLightCopy, 0, blockLight.length);
+				skyLightCopy = new byte[skyLight.length];
+				System.arraycopy(skyLight, 0, skyLightCopy, 0, skyLight.length);
+				break;
+		}
+		
+		return new SpoutChunkSnapshot(this, blockIds, blockData, blockLightCopy, skyLightCopy, entities, data);
 	}
 
 	@Override
 	public Future<ChunkSnapshot> getFutureSnapshot() {
-		return getFutureSnapshot(false);
+		return getFutureSnapshot(SnapshotType.BOTH, EntityType.WEAK_ENTITIES, ExtraData.NO_EXTRA_DATA);
 	}
 
 	@Override
-	public Future<ChunkSnapshot> getFutureSnapshot(boolean entities) {
-		return getFutureSnapshot(entities, false);
+	public Future<ChunkSnapshot> getFutureSnapshot(SnapshotType type, EntityType entities, ExtraData data) {
+		return getFutureSnapshot(type, entities, data, false);
 	}
 
-	public Future<ChunkSnapshot> getFutureSnapshot(boolean entities, boolean renderSnapshot) {
+	public Future<ChunkSnapshot> getFutureSnapshot(SnapshotType type, EntityType entities, ExtraData data, boolean renderSnapshot) {
 		boolean renderDirty;
 		if (renderSnapshot) {
 			renderDirty = renderDirtyFlag.get();
@@ -793,7 +819,7 @@ public class SpoutChunk extends Chunk {
 				return null;
 			}
 		}
-		SpoutChunkSnapshotFuture future = new SpoutChunkSnapshotFuture(this, entities, renderSnapshot);
+		SpoutChunkSnapshotFuture future = new SpoutChunkSnapshotFuture(this, type, entities, data, renderSnapshot);
 		parentRegion.addSnapshotFuture(future);
 		return future;
 	}

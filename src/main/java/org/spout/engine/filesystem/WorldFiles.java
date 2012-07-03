@@ -52,6 +52,7 @@ import org.spout.api.entity.component.controller.type.ControllerType;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.generator.biome.EmptyBiomeManager;
+import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.store.simple.BinaryFileStore;
@@ -256,11 +257,12 @@ public class WorldFiles {
 		return world;
 	}
 
-	public static void saveChunk(SpoutChunk c, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, DatatableMap extraData, OutputStream dos) {
+	public static void saveChunk(SpoutWorld world, ChunkSnapshot snapshot, List<DynamicBlockUpdate> blockUpdates, OutputStream dos) {
 		CompoundMap chunkTags = new CompoundMap();
+		short[] blocks = snapshot.getBlockIds();
+		short[] data = snapshot.getBlockData();
 
 		//Switch block ids from engine material ids to world specific ids
-		SpoutWorld world = c.getWorld();
 		StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
 		StringMap itemMap = world.getItemMap();
 		for (int i = 0; i < blocks.length; i++) {
@@ -269,24 +271,24 @@ public class WorldFiles {
 
 		chunkTags.put(new ByteTag("version", CHUNK_VERSION));
 		chunkTags.put(new ByteTag("format", (byte) 0));
-		chunkTags.put(new IntTag("x", c.getX()));
-		chunkTags.put(new IntTag("y", c.getY()));
-		chunkTags.put(new IntTag("z", c.getZ()));
-		chunkTags.put(new ByteTag("populated", c.isPopulated()));
+		chunkTags.put(new IntTag("x", snapshot.getX()));
+		chunkTags.put(new IntTag("y", snapshot.getY()));
+		chunkTags.put(new IntTag("z", snapshot.getZ()));
+		chunkTags.put(new ByteTag("populated", snapshot.isPopulated()));
 		chunkTags.put(new ShortArrayTag("blocks", blocks));
 		chunkTags.put(new ShortArrayTag("data", data));
-		chunkTags.put(new ByteArrayTag("skyLight", skyLight));
-		chunkTags.put(new ByteArrayTag("blockLight", blockLight));
-		chunkTags.put(new CompoundTag("entities", saveEntities(c)));
-		chunkTags.put(saveDynamicUpdates(c));
+		chunkTags.put(new ByteArrayTag("skyLight", snapshot.getSkyLight()));
+		chunkTags.put(new ByteArrayTag("blockLight", snapshot.getBlockLight()));
+		chunkTags.put(new CompoundTag("entities", saveEntities(snapshot.getEntities())));
+		chunkTags.put(saveDynamicUpdates(blockUpdates));
 
-		byte[] biomes = c.getBiomeManager().serialize();
+		byte[] biomes = snapshot.getBiomeManager().serialize();
 		if (biomes != null) {
-			chunkTags.put(new StringTag("biomeManager", c.getBiomeManager().getClass().getCanonicalName()));
+			chunkTags.put(new StringTag("biomeManager", snapshot.getBiomeManager().getClass().getCanonicalName()));
 			chunkTags.put(new ByteArrayTag("biomes", biomes));
 		}
 
-		chunkTags.put(new ByteArrayTag("extraData", extraData.compress()));
+		chunkTags.put(new ByteArrayTag("extraData", ((DataMap)snapshot.getDataMap()).getRawMap().compress()));
 
 		CompoundTag chunkCompound = new CompoundTag("chunk", chunkTags);
 
@@ -295,7 +297,7 @@ public class WorldFiles {
 			os = new NBTOutputStream(dos, false);
 			os.writeTag(chunkCompound);
 		} catch (IOException e) {
-			Spout.getLogger().log(Level.SEVERE, "Error saving chunk " + c.toString(), e);
+			Spout.getLogger().log(Level.SEVERE, "Error saving chunk {" + snapshot.getX() + ", " + snapshot.getY() + ", " + snapshot + "}", e);
 		} finally {
 			if (os != null) {
 				try {
@@ -391,8 +393,7 @@ public class WorldFiles {
 		}
 	}
 
-	private static CompoundMap saveEntities(SpoutChunk c) {
-		Set<Entity> entities = c.getLiveEntities();
+	private static CompoundMap saveEntities(Set<Entity> entities) {
 		CompoundMap tagMap = new CompoundMap();
 
 		for (Entity e : entities) {
@@ -519,9 +520,7 @@ public class WorldFiles {
 		return tag;
 	}
 
-	private static ListTag<CompoundTag> saveDynamicUpdates(SpoutChunk c) {
-		List<DynamicBlockUpdate> updates = c.getRegion().getDynamicBlockUpdates(c);
-
+	private static ListTag<CompoundTag> saveDynamicUpdates(List<DynamicBlockUpdate> updates) {
 		List<CompoundTag> list = new ArrayList<CompoundTag>(updates.size());
 
 		for (DynamicBlockUpdate update : updates) {

@@ -68,6 +68,7 @@ public class SpoutWorldLighting extends Thread implements Source {
 
 	public SpoutWorldLighting(SpoutWorld world) {
 		super("Lighting thread for world " + world.getName());
+		setDaemon(true);
 		this.world = world;
 		this.skyLight = new SpoutWorldLightingModel(this, true);
 		this.blockLight = new SpoutWorldLightingModel(this, false);

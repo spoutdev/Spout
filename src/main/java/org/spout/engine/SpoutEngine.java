@@ -121,6 +121,7 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
+import org.spout.engine.world.WorldSavingThread;
 
 import com.beust.jcommander.Parameter;
 
@@ -251,6 +252,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		}
 
 		scheduler.startMainThread();
+		WorldSavingThread.startThread();
 		setupComplete.set(true);
 	}
 
@@ -524,7 +526,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		}
 
 		for (SpoutWorld world : this.getLiveWorlds()) {
-			world.unload(true);
+			world.unload(true, true);
 		}
 
 		getPluginManager().clearPlugins();
@@ -533,7 +535,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		group.close();
 		bootstrapProtocols.clear();
 		executor.shutdown();
-
+		WorldSavingThread.finish();
 	}
 
 	@Override
@@ -722,7 +724,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 					throw new IllegalStateException("Executor was already halted when halting was attempted");
 				}
 				getEventManager().callDelayedEvent(new WorldUnloadEvent(world));
-				w.unload(save);
+				w.unload(save, false);
 			}
 			//Note: Worlds should not allow being saved twice and/or throw exceptions if accessed after unloading
 			//      Also, should blank out as much internal world data as possible, in case plugins retain references to unloaded worlds

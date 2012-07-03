@@ -27,24 +27,31 @@
 package org.spout.engine.world;
 
 import org.spout.api.geo.cuboid.ChunkSnapshot;
+import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
+import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
+import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
 import org.spout.api.util.future.SimpleFuture;
 
 public class SpoutChunkSnapshotFuture extends SimpleFuture<ChunkSnapshot> implements Runnable {
 	
 	private final SpoutChunk chunk;
-	private final boolean entities;
+	private final SnapshotType type;
+	private final EntityType entities;
+	private final ExtraData data;
 	private final boolean renderSnapshot;
 	
-	public SpoutChunkSnapshotFuture(SpoutChunk chunk, boolean entities, boolean renderSnapshot) {
+	public SpoutChunkSnapshotFuture(SpoutChunk chunk, SnapshotType type, EntityType entities, ExtraData data, boolean renderSnapshot) {
 		this.chunk = chunk;
+		this.type = type;
 		this.entities = entities;
+		this.data = data;
 		this.renderSnapshot = renderSnapshot;
 	}
 
 	@Override
 	public void run() {
 		try {
-			ChunkSnapshot snapshot = chunk.getSnapshot(entities);
+			ChunkSnapshot snapshot = chunk.getSnapshot(type, entities, data);
 			if (renderSnapshot) {
 				chunk.setRenderClean();
 			}

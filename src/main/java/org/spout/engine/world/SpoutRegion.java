@@ -64,15 +64,14 @@ import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.block.BlockFullState;
-import org.spout.api.material.range.EffectIterator;
 import org.spout.api.material.range.EffectRange;
-import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
@@ -450,9 +449,13 @@ public class SpoutRegion extends Region{
 		}
 		markForSaveUnload();
 	}
-
+	
 	@Override
 	public void unload(boolean save) {
+		unload(save, false);
+	}
+
+	public void unload(boolean save, boolean force) {
 		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
 			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
 				for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
@@ -462,6 +465,10 @@ public class SpoutRegion extends Region{
 					}
 				}
 			}
+		}
+		if (force) {
+			//Only should occur if the server is shutting down
+			copySnapshotRun();
 		}
 		markForSaveUnload();
 	}
@@ -1044,13 +1051,13 @@ public class SpoutRegion extends Region{
 	}
 
 	/**
-	 * Gets the DataOutputStream corresponding to a given Chunk.<br>
+	 * Gets the DataOutputStream corresponding to a given Chunk Snapshot.<br>
 	 * <br>
 	 * WARNING: This block will be locked until the stream is closed
-	 * @param c the chunk
+	 * @param c the chunk snapshot
 	 * @return the DataOutputStream
 	 */
-	public OutputStream getChunkOutputStream(Chunk c) {
+	public OutputStream getChunkOutputStream(ChunkSnapshot c) {
 		int key = getChunkKey(c.getX(), c.getY(), c.getZ());
 		return chunkStore.getBlockOutputStream(key);
 	}
