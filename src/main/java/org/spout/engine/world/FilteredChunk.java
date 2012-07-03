@@ -232,7 +232,7 @@ public class FilteredChunk extends SpoutChunk{
 	
 	@Override
 	public void syncSave() {
-		if (this.chunkModified.get()) {
+		if (this.chunkModified.compareAndSet(true, false)) {
 			super.syncSave();
 		} else {
 			//System.out.println("Cancelling save of " + toString() + " no modifications");

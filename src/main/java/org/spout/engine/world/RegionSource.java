@@ -47,7 +47,7 @@ import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 
 public class RegionSource implements Iterable<Region> {
 	private final static AtomicInteger regionsLoaded = new AtomicInteger(0);
-	private final static AtomicInteger warnThreshold = new AtomicInteger(2);
+	private final static AtomicInteger warnThreshold = new AtomicInteger(Integer.MAX_VALUE);
 	/**
 	 * A map of loaded regions, mapped to their x and z values.
 	 */
