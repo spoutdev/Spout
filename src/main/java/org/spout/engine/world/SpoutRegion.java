@@ -734,7 +734,10 @@ public class SpoutRegion extends Region{
 			// Compress at most 1 chunk per tick per region
 			boolean chunkCompressed = false;
 	
-			int percentObserved = (100 * SpoutChunk.getObservedChunks()) / (SpoutChunk.getActiveChunks());
+			int percentObserved = 0;
+			if(SpoutChunk.getActiveChunks() != 0) {
+				percentObserved = (100 * SpoutChunk.getObservedChunks()) / (SpoutChunk.getActiveChunks());
+			}
 			
 			int multiplier = percentObserved < 70 ? 20 : (percentObserved >= 90 ? 1 : (90 - percentObserved));
 			int maxReapCount = REAP_PER_TICK * multiplier;
