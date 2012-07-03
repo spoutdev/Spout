@@ -79,6 +79,15 @@ public abstract class EconomyService {
 	 */
 	public abstract boolean deposit(String name, double amount);
 
+
+	/**
+	 * Checks if the account exists in the economy service.
+	 * 
+	 * @param name of the account
+	 * @return if the account exists
+	 */
+	public abstract boolean exists(String name);
+
 	/**
 	 * This is a copied-method that assumes the player's name is their account name and
 	 * Checks if the given account has at least as much as the amount specified.
@@ -127,4 +136,41 @@ public abstract class EconomyService {
 	public boolean deposit(Player player, double amount) {
 		return deposit(player.getName(), amount);
 	}
+
+	/**
+	 * This is a copied-method that assumes the player's name is their account name and
+	 * Checks if the account exists in the economy service.
+	 * 
+	 * @param player of the account to check existence of.
+	 * @return true if the account exists, otherwise false
+	 */
+	public boolean exists(Player player) {
+		return exists(player.getName());
+	}
+
+	/**
+	 * Returns the name of the currency in singular form.
+	 * 
+	 * @return name of the currency (singular)
+	 */
+	public abstract String getCurrencyNameSingular();
+
+
+	/**
+	 * Returns the name of the currency in plural form.
+	 * 
+	 * @return name of the currency (plural)
+	 */
+	public abstract String getCurrencyNamePlural();
+
+
+	/**
+	 * Some economy services round off after a specific number of digits.
+	 * This function returns the number of digits the service keeps
+	 * or -1 if no rounding occurs.
+	 * An economy may return 0 if it is using integers for storing data.
+	 * 
+	 * @return number of digits after the decimal point kept
+	 */
+	public abstract int numSignificantDigits();
 }
