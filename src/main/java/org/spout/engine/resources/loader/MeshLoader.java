@@ -33,7 +33,7 @@ import java.util.Scanner;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.ModelFace;
-import org.spout.api.model.PositionNormalTexture;
+import org.spout.api.model.Vertex;
 import org.spout.api.resource.BasicResourceLoader;
 import org.spout.engine.mesh.BaseMesh;
 
@@ -68,24 +68,24 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 				String[] sp = s.split(" ");
 				
 				if(sp[1].contains("//")){
-					ArrayList<PositionNormalTexture> ar = new ArrayList<PositionNormalTexture>();
+					ArrayList<Vertex> ar = new ArrayList<Vertex>();
 					for(int i = 1; i <= 3; i++){
 						String[] sn = sp[i].split("//");
 						int pos = Integer.parseInt(sn[0]);
 						int norm = Integer.parseInt(sn[1]);
-						ar.add(new PositionNormalTexture(verticies.get(pos - 1), normals.get(norm -1)));
+						ar.add(new Vertex(verticies.get(pos - 1), normals.get(norm -1)));
 											
 					}
 					faces.add(new ModelFace(ar.get(0), ar.get(1), ar.get(2)));
 					ar.clear();
 					
 				} else if(sp[1].contains("/")){
-					ArrayList<PositionNormalTexture> ar = new ArrayList<PositionNormalTexture>();
+					ArrayList<Vertex> ar = new ArrayList<Vertex>();
 					for(int i = 1; i <= 3; i++){
 						String[] sn = sp[i].split("/");
 						int pos = Integer.parseInt(sn[0]);
 						int uv = Integer.parseInt(sn[1]);
-						ar.add(new PositionNormalTexture(verticies.get(pos - 1), uvs.get(uv -1)));
+						ar.add(new Vertex(verticies.get(pos - 1), uvs.get(uv -1)));
 											
 					}
 					faces.add(new ModelFace(ar.get(0), ar.get(1), ar.get(2)));
@@ -97,9 +97,9 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 					int face2 = Integer.parseInt(sp[2]) - 1;
 					int face3 = Integer.parseInt(sp[3]) - 1;
 					
-					PositionNormalTexture p = new PositionNormalTexture(verticies.get(face1));
-					PositionNormalTexture p2 = new PositionNormalTexture(verticies.get(face2));
-					PositionNormalTexture p3 = new PositionNormalTexture(verticies.get(face3));
+					Vertex p = new Vertex(verticies.get(face1));
+					Vertex p2 = new Vertex(verticies.get(face2));
+					Vertex p3 = new Vertex(verticies.get(face3));
 					
 					faces.add(new ModelFace(p, p2, p3));
 					

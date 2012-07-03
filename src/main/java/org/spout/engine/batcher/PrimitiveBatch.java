@@ -32,7 +32,7 @@ import org.lwjgl.opengl.GL11;
 
 import org.spout.api.math.Vector3;
 import org.spout.api.model.ModelFace;
-import org.spout.api.model.PositionNormalTexture;
+import org.spout.api.model.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
 
@@ -101,7 +101,7 @@ public class PrimitiveBatch {
 	
 	public void addMesh(BaseMesh mesh){
 		for(ModelFace face : mesh){
-			for(PositionNormalTexture vert : face){
+			for(Vertex vert : face){
 				//renderer.addTexCoord(vert.uv);
 				//renderer.addNormal(vert.normal);
 				renderer.addColor(Color.red);

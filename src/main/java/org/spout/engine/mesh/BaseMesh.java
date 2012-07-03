@@ -31,7 +31,7 @@ import java.util.Iterator;
 
 import org.spout.api.model.Mesh;
 import org.spout.api.model.ModelFace;
-import org.spout.api.model.PositionNormalTexture;
+import org.spout.api.model.Vertex;
 import org.spout.api.render.RenderEffect;
 import org.spout.api.render.Renderer;
 import org.spout.api.resource.Resource;
@@ -80,7 +80,7 @@ public class BaseMesh extends Resource implements Mesh, Iterable<ModelFace> {
 
 	protected void batch(Renderer batcher) {
 		for (ModelFace face : faces) {
-			for(PositionNormalTexture vert : face){
+			for(Vertex vert : face){
 				//batcher.addTexCoord(vert.uv);
 				//batcher.addNormal(vert.normal);
 				batcher.addVertex(vert.position);
