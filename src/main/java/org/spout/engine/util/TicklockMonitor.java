@@ -60,7 +60,7 @@ public class TicklockMonitor extends Thread {
 				AsyncExecutorUtils.dumpAllStacks();
 				lastUpTime = upTime;
 			} else {
-				Spout.getLogger().info("Current tick time: " + tickTime);
+				//Spout.getLogger().info("Current tick time: " + tickTime);
 			}
 		}
 	}
