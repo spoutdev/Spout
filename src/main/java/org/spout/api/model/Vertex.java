@@ -26,43 +26,60 @@
  */
 package org.spout.api.model;
 
+import java.awt.Color;
+
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.StringUtil;
 
-public class PositionNormalTexture {
+public class Vertex {
+	public static final int SIZE_FLOAT = 4;
 	
 	public Vector3 position;
+	public Color color;
 	public Vector3 normal;
-	public Vector2 uv;
+	public Vector2 texCoord0;
+	public Vector2 texCoord1;
 	
-	public PositionNormalTexture(Vector3 position, Vector3 normal, Vector2 texture) {
+	public Vertex(Vector3 position, Vector3 normal, Vector2 texture) {
 		this.position = position;
 		this.normal = normal;
-		this.uv = texture;
+		this.texCoord0 = texture;
 	}
 	
-	public PositionNormalTexture(Vector3 position, Vector3 normal){
+	public Vertex(Vector3 position, Vector3 normal){
 		this(position, normal, Vector2.ZERO);
 	}
 	
-	public PositionNormalTexture(Vector3 position) {
+	public Vertex(Vector3 position) {
 		this(position, Vector3.ZERO, Vector2.ZERO);
 	}
 	
-	public PositionNormalTexture(Vector3 position, Vector2 texture){
+	public Vertex(Vector3 position, Vector2 texture){
 		this(position, Vector3.ZERO, texture);
 	}
 	
 	public float[] toArray(){
 		return new float[] { position.getX(), position.getY(), position.getZ(), 1.0f,
+							color.getRed() / 255.0f, color.getBlue() / 255.0f, color.getGreen() / 255.0f, color.getAlpha() / 255.0f,
 							normal.getX(), normal.getY(), normal.getZ(),
-							uv.getX(), uv.getY()
+							texCoord0.getX(), texCoord0.getY(),
+							texCoord1.getX(), texCoord1.getY()
 							};		
 	}
 	
+	public int getStride(){
+		int stride = 0;
+		stride += SIZE_FLOAT * 4; //number of floats in a vector4
+		stride += SIZE_FLOAT * 4; //number of floats in a Color
+		stride += SIZE_FLOAT * 3; //number of floats in a normal
+		stride += SIZE_FLOAT * 2; //number of floats in a texcoord
+		stride += SIZE_FLOAT * 2; //number of floats in a texcoord
+		return stride;
+	}
+	
 	public String toString(){
-		return StringUtil.toNamedString(this, position, normal, uv);
+		return StringUtil.toNamedString(this, position, normal, texCoord0);
 	}
 	
 }

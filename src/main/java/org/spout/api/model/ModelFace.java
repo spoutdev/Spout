@@ -38,13 +38,13 @@ import org.apache.commons.collections.iterators.ArrayIterator;
  * Represents a Triangle for a model face
  * 
  */
-public class ModelFace implements Iterable<PositionNormalTexture> {
+public class ModelFace implements Iterable<Vertex> {
 	
-	PositionNormalTexture[] verts = new PositionNormalTexture[3];
+	Vertex[] verts = new Vertex[3];
 	
 	
 	
-	public ModelFace(PositionNormalTexture v1, PositionNormalTexture v2, PositionNormalTexture v3 ) {
+	public ModelFace(Vertex v1, Vertex v2, Vertex v3 ) {
 		verts[0] = v1;
 		verts[1] = v2;
 		verts[2] = v3;
@@ -69,7 +69,7 @@ public class ModelFace implements Iterable<PositionNormalTexture> {
 	}
 	
 	Vector2[] getUVs() {
-		return new Vector2[] { verts[0].uv, verts[1].uv, verts[2].uv };
+		return new Vector2[] { verts[0].texCoord0, verts[1].texCoord0, verts[2].texCoord0 };
 	}
 	
 	public String toString(){
@@ -78,7 +78,7 @@ public class ModelFace implements Iterable<PositionNormalTexture> {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public Iterator<PositionNormalTexture> iterator() {
+	public Iterator<Vertex> iterator() {
 		return new ArrayIterator(verts);
 	}
 }
