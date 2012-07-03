@@ -79,7 +79,9 @@ public class WorldSavingThread extends Thread{
 		Runnable task;
 		do {
 			task = queue.poll();
-			task.run();
+			if (task != null) {
+				task.run();
+			}
 		} while(task != null);
 	}
 	
