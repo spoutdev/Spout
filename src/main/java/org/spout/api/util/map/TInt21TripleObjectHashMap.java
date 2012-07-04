@@ -27,9 +27,6 @@
 package org.spout.api.util.map;
 
 import java.util.Collection;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.spout.api.util.hashing.Int21TripleHashed;
 
 import gnu.trove.iterator.TLongObjectIterator;
@@ -42,8 +39,6 @@ import gnu.trove.set.TLongSet;
  * long Object hashmap in the backend. 1 bit is wasted.
  */
 public class TInt21TripleObjectHashMap<K> extends Int21TripleHashed {
-	private final AtomicLong lastIndex = new AtomicLong(Integer.MAX_VALUE);
-	private final AtomicReference<K> lastValue = new AtomicReference<K>(null);
 	protected TLongObjectMap<K> map;
 
 	/**
@@ -110,14 +105,7 @@ public class TInt21TripleObjectHashMap<K> extends Int21TripleHashed {
 	 */
 	public K get(int x, int y, int z) {
 		long key = key(x, y, z);
-		if (lastIndex.getAndSet(key) == key) {
-			return lastValue.get();
-		} else {
-			K last = map.get(key);
-			lastValue.set(last);
-			return last;
-		}
-		
+		return map.get(key);
 	}
 
 	/**
