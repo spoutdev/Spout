@@ -51,7 +51,12 @@ public class PreCommandEvent extends Event implements Cancellable {
 	}
 
 	public String getCommand() {
-		return message.substring(0, message.indexOf(" "));
+		int spaceIndex = message.indexOf(" ");
+		if (spaceIndex == -1) {
+			return message;
+		} else {
+			return message.substring(0, spaceIndex);
+		}
 	}
 
 	public String getMessage() {
