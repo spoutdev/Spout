@@ -114,7 +114,7 @@ public interface Player extends CommandSource {
 	 *
 	 * @param reason the message to send to the player.
 	 */
-	public void kick(String reason);
+	public void kick(Object... reason);
 
 	/**
 	 * Gets the current input state of the player

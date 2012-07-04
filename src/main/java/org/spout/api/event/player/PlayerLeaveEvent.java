@@ -26,6 +26,8 @@
  */
 package org.spout.api.event.player;
 
+import java.util.List;
+
 import org.spout.api.event.HandlerList;
 import org.spout.api.player.Player;
 
@@ -35,9 +37,9 @@ import org.spout.api.player.Player;
 public class PlayerLeaveEvent extends PlayerEvent {
 	private static HandlerList handlers = new HandlerList();
 
-	private String message;
+	private Object[] message;
 
-	public PlayerLeaveEvent(Player p, String message) {
+	public PlayerLeaveEvent(Player p, Object... message) {
 		super(p);
 		this.message = message;
 	}
@@ -47,7 +49,7 @@ public class PlayerLeaveEvent extends PlayerEvent {
 	 *
 	 * @return
 	 */
-	public String getMessage() {
+	public Object[] getMessage() {
 		return message;
 	}
 
@@ -56,7 +58,10 @@ public class PlayerLeaveEvent extends PlayerEvent {
 	 *
 	 * @param message
 	 */
-	public void setMessage(String message) {
+	public void setMessage(Object... message) {
+		if (message.length == 1 && message[0] instanceof List<?>) {
+			message = ((List<?>) message[0]).toArray();
+		}
 		this.message = message;
 	}
 

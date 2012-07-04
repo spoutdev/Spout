@@ -24,44 +24,17 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api;
-
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Ignore;
-import org.junit.Test;
-import org.spout.api.chat.style.ChatStyle;
+package org.spout.api.chat.style;
 
 /**
- * Tests for ChatStyle
+ * @author zml2008
  */
-@Ignore
-public class ChatStyleTest {
-	/*@Test
-	public void testFromCode() {
-		for (ChatStyle style : ChatStyle.getValues()) {
-			assertEquals("Color failed: " + style.getName(), style, ChatStyle.get(style.getCode()));
-		}
+public class ResetChatStyle extends ChatStyle {
+	public ResetChatStyle() {
+		super("Reset");
 	}
 
-	@Test
-	public void testFromChar() {
-		for (ChatStyle style : ChatStyle.getValues()) {
-			assertEquals("Color failed: " + style.getName(), style, ChatStyle.get(style.getChar()));
-		}
-	}*/
-
-	@Test
-	public void testStripStyle() {
-		StringBuilder builder = new StringBuilder();
-		for (ChatStyle color : ChatStyle.getValues()) {
-			builder.append(color);
-		}
-		assertEquals(ChatStyle.strip(builder.toString()), "");
-	}
-
-	@Test
-	public void testStripStyle2() {
-		assertEquals(ChatStyle.strip(ChatStyle.stringify(ChatStyle.GOLD, "This ", ChatStyle.BLUE, "is a " , ChatStyle.BRIGHT_GREEN, "colored ", ChatStyle.WHITE, "string.")), "This is a colored string.");
+	public boolean conflictsWith(ChatStyle other) {
+		return true;
 	}
 }

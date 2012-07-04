@@ -246,9 +246,9 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			}
 
 			chunkFreeQueue.clear();
-			
+
 			int chunksSent = 0;
-			
+
 			for (Point p : chunkInitQueue) {
 				if (initializedChunks.add(p)) {
 					initChunk(p);
@@ -256,7 +256,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			}
 
 			chunkInitQueue.clear();
-			
+
 			Iterator<Point> i;
 
 			i = priorityChunkSendQueue.iterator();
@@ -270,7 +270,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 					chunksSent++;
 				}
 			}
-			
+
 			if (priorityChunkSendQueue.isEmpty() && teleported && entity != null) {
 				Point ep = entity.getPosition();
 				if (worldChanged) {
@@ -423,8 +423,8 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	 *
 	 * This is a MONITOR method, for sending network updates, no changes should
 	 * be made to the chunk
-	 * 
-	 * While always called during the startSnapshot part of the tick, it may be called from 
+	 *
+	 * While always called during the startSnapshot part of the tick, it may be called from
 	 * multiple threads
 	 *
 	 * @param c the chunk
@@ -440,7 +440,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	 *
 	 * This is a MONITOR method, for sending network updates, no changes should
 	 * be made to the chunk.
-	 * 
+	 *
 	 * All calls to this method are made from the thread managing the player
 	 *
 	 * @param p the base Point for the chunk
@@ -456,7 +456,7 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	 *
 	 * This is a MONITOR method, for sending network updates, no changes should
 	 * be made to the chunk
-	 * 
+	 *
 	 * All calls to this method are made from the thread managing the player
 	 *
 	 * @param p the base Point for the chunk
@@ -548,10 +548,10 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 	 */
 	public void syncEntity(Entity e) {
 	}
-	
+
 	/**
 	 * Sets the protocol associated with this network synchronizer
-	 * 
+	 *
 	 * @param protocol
 	 */
 	public void setProtocol(Protocol protocol) {
@@ -559,33 +559,6 @@ public abstract class NetworkSynchronizer implements InventoryViewer {
 			throw new IllegalArgumentException("Protocol may not be null");
 		} else if (!this.protocol.compareAndSet(null, protocol)) {
 			throw new IllegalStateException("Protocol may not be set twice for a network synchronizer");
-		}
-	}
-
-	public Message getChatMessage(String message) {
-		Protocol protocol = this.protocol.get();
-		if (protocol != null) {
-			return protocol.getChatMessage(message);
-		} else {
-			return null;
-		}
-	}
-
-	public Message getKickMessage(String message) {
-		Protocol protocol = this.protocol.get();
-		if (protocol != null) {
-			return protocol.getKickMessage(message);
-		} else {
-			return null;
-		}
-	}
-	
-	public Message getIntroductionMessage(String playerName) {
-		Protocol protocol = this.protocol.get();
-		if (protocol != null) {
-			return protocol.getIntroductionMessage(playerName);
-		} else {
-			return null;
 		}
 	}
 }

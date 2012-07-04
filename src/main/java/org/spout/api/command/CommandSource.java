@@ -37,7 +37,7 @@ public interface CommandSource extends PermissionsSubject, DataSubject, Source {
 	 * @param message the message to send
 	 * @return whether the message was sent correctly
 	 */
-	public boolean sendMessage(String message);
+	public boolean sendMessage(Object... message);
 
 	/**
 	 * Sends a message to the client without any processing by the server,
@@ -46,5 +46,5 @@ public interface CommandSource extends PermissionsSubject, DataSubject, Source {
 	 * @param message The message to send
 	 * @return whether the message was sent correctly
 	 */
-	public boolean sendRawMessage(String message);
+	public boolean sendRawMessage(Object... message);
 }

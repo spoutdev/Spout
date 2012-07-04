@@ -1,0 +1,156 @@
+/*
+ * This file is part of SpoutAPI.
+ *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
+ *
+ * SpoutAPI is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the SpoutDev License Version 1.
+ *
+ * SpoutAPI is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the SpoutDev License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
+ * including the MIT license.
+ */
+package org.spout.api.chat.style;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+
+import org.spout.api.chat.style.fallback.DefaultStyleHandler;
+
+/**
+ * A style of chat for the client to implement.
+ * FontRenderer. Names are from <a href="http://wiki.vg/Chat">http://wiki.vg/Chat</a>
+ */
+public abstract class ChatStyle {
+	private static final Map<String, ChatStyle> BY_NAME = new HashMap<String, ChatStyle>();
+	private static final Set<ChatStyle> VALUES = new HashSet<ChatStyle>();
+
+	public static final ChatStyle BLACK = new ColorChatStyle("Black");
+	public static final ChatStyle DARK_BLUE = new ColorChatStyle("Dark Blue");
+	public static final ChatStyle DARK_GREEN = new ColorChatStyle("Dark Green");
+	public static final ChatStyle DARK_CYAN = new ColorChatStyle("Dark Cyan");
+	public static final ChatStyle DARK_RED = new ColorChatStyle("Dark Red");
+	public static final ChatStyle PURPLE = new ColorChatStyle("Purple");
+	public static final ChatStyle GOLD = new ColorChatStyle("Gold");
+	public static final ChatStyle GRAY = new ColorChatStyle("Gray");
+	public static final ChatStyle DARK_GRAY = new ColorChatStyle("Dark Gray");
+	public static final ChatStyle BLUE = new ColorChatStyle("Blue");
+	public static final ChatStyle BRIGHT_GREEN = new ColorChatStyle("Bright Green");
+	public static final ChatStyle CYAN = new ColorChatStyle("Cyan");
+	public static final ChatStyle RED = new ColorChatStyle("Red");
+	public static final ChatStyle PINK = new ColorChatStyle("Pink");
+	public static final ChatStyle YELLOW = new ColorChatStyle("Yellow");
+	public static final ChatStyle WHITE = new ColorChatStyle("White");
+	public static final ChatStyle CONCEAL = new FormatChatStyle("Conceal");
+	public static final ChatStyle BOLD = new FormatChatStyle("Bold");
+	public static final ChatStyle STRIKE_THROUGH = new FormatChatStyle("Strikethrough");
+	public static final ChatStyle UNDERLINE = new FormatChatStyle("Underline");
+	public static final ChatStyle ITALIC = new FormatChatStyle("Italic");
+	public static final ChatStyle RESET = new ResetChatStyle();
+
+	public static Set<ChatStyle> getValues() {
+		return VALUES;
+	}
+
+	public static ChatStyle byName(String name) {
+		if (name == null) {
+			return null;
+		}
+		return BY_NAME.get(name.toLowerCase().replace(' ', '_'));
+	}
+
+	public static String strip(String str) {
+		for (StyleHandler handler : StyleHandler.getAll()) {
+			str = handler.stripStyle(str);
+		}
+		return str;
+	}
+
+	public static String strip(int handlerId, String str) {
+		return StyleHandler.get(handlerId).stripStyle(str);
+	}
+
+	public static String stringify(Object... vals) {
+		return stringify(DefaultStyleHandler.ID, vals);
+	}
+
+	/**
+	 * Start from end of array, append strings as they appear. If a chatcolor appears, apply it to existing text.
+	 * If this existing text has already been formatted, check for conflicts
+	 * If no conflicts, append existing text to the area to be formatted
+	 * @param handlerId The handlerId to use to get the {@link StyleFormatter StyleFormatters} for ChatStyles
+	 * @param vals The values to convert to a string
+	 * @return The formatted string.
+	 */
+	//
+	public static String stringify(int handlerId, Object... vals) {
+		if (vals.length == 1 && vals[0] instanceof List<?>) {
+			vals = ((List<?>) vals[0]).toArray();
+		}
+
+		StringBuilder finalBuilder = new StringBuilder();
+		StringBuilder singleBuilder = new StringBuilder();
+		StyleHandler handler = StyleHandler.get(handlerId);
+		ChatStyle previousStyle = null;
+
+		for (int i = vals.length - 1; i >= 0; --i) {
+			if (vals[i] instanceof ChatStyle) {
+				ChatStyle style = (ChatStyle) vals[i];
+				if (previousStyle != null) {
+					if (previousStyle.conflictsWith(style)) {
+						finalBuilder.insert(0, handler.getFormatter(style).format(singleBuilder.toString()));
+					} else {
+						// oh god teh ugliness
+						String formatted = handler.getFormatter(style).format(finalBuilder.toString());
+						finalBuilder.delete(0, finalBuilder.length());
+						finalBuilder.append(formatted);
+						finalBuilder.insert(0, handler.getFormatter(style).format(singleBuilder.toString()));
+					}
+				} else {
+					finalBuilder.insert(0, handler.getFormatter(style).format(singleBuilder.toString()));
+				}
+				previousStyle = style;
+				singleBuilder.delete(0, singleBuilder.length());
+			} else {
+				singleBuilder.insert(0, String.valueOf(vals[i]));
+			}
+		}
+
+		if (singleBuilder.length() > 0) {
+			finalBuilder.insert(0, singleBuilder);
+		}
+		return finalBuilder.toString();
+	}
+
+	private final String name;
+
+	public ChatStyle(String name) {
+		this.name = name;
+		VALUES.add(this);
+		BY_NAME.put(name.toLowerCase().replace(' ', '_'), this);
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public abstract boolean conflictsWith(ChatStyle other);
+}

@@ -67,26 +67,26 @@ public abstract class Protocol {
 	public String getName() {
 		return name;
 	}
-	
+
 	/**
 	 * Gets a message for kicking a player
-	 * 
+	 *
 	 * @param message
 	 * @return
 	 */
-	public abstract Message getKickMessage(String message);
-	
+	public abstract Message getKickMessage(Object... message);
+
 	/**
-	 * Gets a chat message for a given string 
-	 * 
+	 * Gets a chat message for a given string
+	 *
 	 * @param message
 	 * @return
 	 */
-	public abstract Message getChatMessage(String message);
-	
+	public abstract Message getChatMessage(Object... message);
+
 	/**
 	 * Gets the introduction message that the client sends to the server on connect
-	 * 
+	 *
 	 * @param playerName the name of the player
 	 * @return the message, or null if there is no message
 	 */

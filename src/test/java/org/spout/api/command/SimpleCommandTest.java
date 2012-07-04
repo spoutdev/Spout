@@ -29,6 +29,7 @@ package org.spout.api.command;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.exception.CommandException;
 import org.spout.api.exception.MissingCommandException;
@@ -54,14 +55,13 @@ public class SimpleCommandTest implements CommandSource {
 	}
 
 	@Override
-	public boolean sendMessage(String message) {
-		System.out.println(message);
-		return true;
+	public boolean sendMessage(Object... message) {
+		return sendRawMessage(message);
 	}
 
 	@Override
-	public boolean sendRawMessage(String message) {
-		System.out.println(message);
+	public boolean sendRawMessage(Object... message) {
+		System.out.println(ChatStyle.stringify(message));
 		return true;
 	}
 

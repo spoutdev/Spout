@@ -138,10 +138,23 @@ public interface Engine extends Named {
 	 * Broadcasts the given message to all players
 	 *
 	 * The implementation of broadcast is identical to iterating over
-	 * {@link #getOnlinePlayers()} and invoking {@link Player#sendMessage(String)} for
+	 * {@link #getOnlinePlayers()} and invoking {@link Player#sendMessage(Object...)} for
 	 * each player.
 	 *
 	 * @param message to send
+	 */
+	public void broadcastMessage(Object... message);
+
+	/**
+	 * Broadcasts the given single-string message to all players.
+	 * Should be implemented as <code>broadcastMessage(new Object[] {message})</code>
+	 * This method is purely a workaround for the way Java chooses which method to call
+	 * in ambiguous situations, which would result in calls with a single string intended for
+	 * {@link #broadcastMessage(Object...)} having their string argument passed to
+	 * {@link #broadcastMessage(String, Object...)} as the permission
+	 *
+ 	 * @see #broadcastMessage(Object...)
+	 * @param message The single-string message
 	 */
 	public void broadcastMessage(String message);
 
@@ -158,12 +171,12 @@ public interface Engine extends Named {
 	 * Broadcasts the given message to all players
 	 *
 	 * The implementation of broadcast is identical to calling a {@link org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent}
-	 * event, iterating over each element in getReceivers, invoking {@link CommandSource#sendMessage(String)} for
+	 * event, iterating over each element in getReceivers, invoking {@link CommandSource#sendMessage(Object...)} for
 	 * each CommandSource.
 	 *
 	 * @param message to send
 	 */
-	public void broadcastMessage(String message, String permission);
+	public void broadcastMessage(String permission, Object... message);
 
 	/**
 	 * Gets singleton instance of the plugin manager, used to interact with
@@ -213,14 +226,14 @@ public interface Engine extends Named {
 	 * @return {@link File} of the data folder.
 	 */
 	public File getDataFolder();
-	
+
 	/**
 	 * Gets the {@link Entity} with the matching unique id
 	 * <br/> <br/>
 	 * Performs a search on each world and then searches each world respectively
 	 * for the entity, stopping when it is found, or after all the worlds have
 	 * been searched upon failure.
-	 * 
+	 *
 	 * @param uid to search and match
 	 * @return {@link entity} that matched the uid, or null if none was found
 	 */
@@ -407,14 +420,14 @@ public interface Engine extends Named {
 	 * data is saved, and all threads are ended cleanly.
 	 * <br/>
 	 * If any players are connected, will kick them with the given reason.
-	 * 
+	 *
 	 * @param reason for stopping the game instance
 	 */
 	public void stop(String reason);
 
 	/**
 	 * Gets the world folders which match the world name.
-	 * 
+	 *
 	 * @param name to match the world folders with
 	 * @return the world folders that match the world name
 	 */
@@ -424,7 +437,7 @@ public interface Engine extends Named {
 	 * Gets all the individual world folders where world data is stored. <br/>
 	 * <br/>
 	 * This includes offline worlds.
-	 * 
+	 *
 	 * @return a list of available world folders
 	 */
 	public List<File> getWorldFolders();
@@ -502,14 +515,14 @@ public interface Engine extends Named {
 	 * This task manager does not support async tasks.
 	 * <br/>
 	 * If the Runnable for the task is a ParallelRunnable, then a new instance of the Runnable will be created for each region.
-	 * 
+	 *
 	 * @return the parallel {@link TaskManager} for the engine
 	 */
 	public TaskManager getParallelTaskManager();
 
 	/**
 	 * Returns the bootstrap protocol for {@code address}
-	 * 
+	 *
 	 * @param address The address
 	 * @return The protocol
 	 */
@@ -533,7 +546,7 @@ public interface Engine extends Named {
 	 * Returns true if the game is running in debug mode <br/>
 	 * <br/>
 	 * To start debug mode, start Spout with -debug
-	 * 
+	 *
 	 * @return true if server is started with the -debug flag, false if not
 	 */
 	public boolean debugMode();
@@ -580,20 +593,20 @@ public interface Engine extends Named {
 	 * @return An array of all command names currently registered on the server.
 	 */
 	public String[] getAllCommands();
-	
+
 	/**
 	 * Gets an abstract representation of the engine Filesystem.
-	 * 
-	 * The Filesystem handles the loading of all resources. 
-	 * 
-	 * On the client, loading a resource will load the resource from the harddrive.  
+	 *
+	 * The Filesystem handles the loading of all resources.
+	 *
+	 * On the client, loading a resource will load the resource from the harddrive.
 	 * On the server, it will notify all clients to load the resource, as well as provide a representation of that resource.
-	 * 
+	 *
 	 */
 	public FileSystem getFilesystem();
-	
+
 	public void setVariable(String key, String value);
-	
+
 	public String getVariable(String key);
-	
+
 }

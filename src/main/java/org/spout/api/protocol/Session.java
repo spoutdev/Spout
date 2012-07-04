@@ -55,7 +55,7 @@ public interface Session {
 	 * @param protocol the protocol (Bootstrap until set)
 	 */
 	public void setProtocol(Protocol protocol);
-	
+
 	/**
 	 * Gets the protocol associated with this session.
 	 *
@@ -79,7 +79,7 @@ public interface Session {
 
 	/**
 	 * Sends a message to the client.
-	 * 
+	 *
 	 * @param upstream true if the message should be sent to the server
 	 * @param message The message.
 	 */
@@ -113,7 +113,7 @@ public interface Session {
 	 * @param reason The reason for disconnection
 	 * @return Whether the player was actually disconnected
 	 */
-	public boolean disconnect(String reason);
+	public boolean disconnect(Object... reason);
 
 	/**
 	 * Disconnects the session with the specified reason. When the kick packet has been delivered,
@@ -124,7 +124,7 @@ public interface Session {
 	 *             Disconnects are only cancellable when the disconnection is a kick
 	 * @return Whether the player was actually disconnected. This can be false if the kick event is cancelled or errors occur
 	 */
-	public boolean disconnect(String reason, boolean kick);
+	public boolean disconnect(boolean kick, Object... reason);
 	/**
 	 * Returns the address of this session.
 	 *
@@ -144,21 +144,21 @@ public interface Session {
 	 * @return Player
 	 */
 	public Player getPlayer();
-	
+
 	/**
 	 * Sets aux Channel when operating as a proxy server.
 	 */
 	public void bindAuxChannel(Channel c);
-	
+
 	/**
 	 * Closes aux Channel when operating as a proxy server
 	 */
 	public void closeAuxChannel();
-	
+
 	/**
-	 * Checks if a channel is the primary channel.  The primary channel never changes for a Session.  
+	 * Checks if a channel is the primary channel.  The primary channel never changes for a Session.
 	 * An auxiliary channel is used for proxy mode.
-	 * 
+	 *
 	 * @return the channel to test
 	 * @return true if the channel is the primary channel
 	 */

@@ -24,44 +24,24 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api;
+package org.spout.api.chat.style.fallback;
 
-import static org.junit.Assert.assertEquals;
+import java.util.Random;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.spout.api.chat.style.ChatStyle;
+import org.spout.api.chat.style.StyleFormatter;
 
 /**
- * Tests for ChatStyle
+ * Replaces every character in the provided string with one of {@link #CONCEAL_CHARS}
  */
-@Ignore
-public class ChatStyleTest {
-	/*@Test
-	public void testFromCode() {
-		for (ChatStyle style : ChatStyle.getValues()) {
-			assertEquals("Color failed: " + style.getName(), style, ChatStyle.get(style.getCode()));
-		}
-	}
+public class ConcealStyleFormatter implements StyleFormatter {
+	public static final String CONCEAL_CHARS = "#*%!$";
+	private static final Random RANDOM = new Random();
 
-	@Test
-	public void testFromChar() {
-		for (ChatStyle style : ChatStyle.getValues()) {
-			assertEquals("Color failed: " + style.getName(), style, ChatStyle.get(style.getChar()));
+	public String format(String text) {
+		StringBuilder builder = new StringBuilder(text.length());
+		for (int i = 0; i < text.length(); ++i) {
+			builder.append(CONCEAL_CHARS.charAt(RANDOM.nextInt(CONCEAL_CHARS.length())));
 		}
-	}*/
-
-	@Test
-	public void testStripStyle() {
-		StringBuilder builder = new StringBuilder();
-		for (ChatStyle color : ChatStyle.getValues()) {
-			builder.append(color);
-		}
-		assertEquals(ChatStyle.strip(builder.toString()), "");
-	}
-
-	@Test
-	public void testStripStyle2() {
-		assertEquals(ChatStyle.strip(ChatStyle.stringify(ChatStyle.GOLD, "This ", ChatStyle.BLUE, "is a " , ChatStyle.BRIGHT_GREEN, "colored ", ChatStyle.WHITE, "string.")), "This is a colored string.");
+		return builder.toString();
 	}
 }
