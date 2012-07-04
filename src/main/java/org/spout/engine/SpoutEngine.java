@@ -866,6 +866,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		@Override
 		public void run() {
 			Profiler.log();
+			
 		}
 	}
 }
