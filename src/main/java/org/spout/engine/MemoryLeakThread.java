@@ -119,7 +119,7 @@ public class MemoryLeakThread extends Thread {
 
 								if (passes > LEAK_PASSES) {
 									Spout.getLogger().severe("Chunk is leaking memory! Chunk is " + chunk.toString() + ":" + ((SpoutChunk)chunk).getSaveState());
-									if (chunk.getRegion() != null && chunk.getRegion().getChunk(chunk.getX(), chunk.getY(), chunk.getZ()) == chunk) {
+									if (chunk.getRegion() != null && chunk.getRegion().getChunk(chunk.getX(), chunk.getY(), chunk.getZ(), LoadOption.NO_LOAD) == chunk) {
 										Spout.getLogger().severe("Chunk is still referenced by it's region! Chunk is " + chunk.toString());
 									}
 									int rx = chunk.getX() >> Region.CHUNKS.BITS;
@@ -136,7 +136,7 @@ public class MemoryLeakThread extends Thread {
 									}
 								} else if (passes > WARNING_PASSES) {
 									Spout.getLogger().warning("Chunk may be leaking memory, " + chunk.toString());
-									if (chunk.getRegion() != null && chunk.getRegion().getChunk(chunk.getX(), chunk.getY(), chunk.getZ()) == chunk) {
+									if (chunk.getRegion() != null && chunk.getRegion().getChunk(chunk.getX(), chunk.getY(), chunk.getZ(), LoadOption.NO_LOAD) == chunk) {
 										Spout.getLogger().severe("Chunk is still referenced by it's region! Chunk is " + chunk.toString());
 									}
 									int rx = chunk.getX() >> Region.CHUNKS.BITS;

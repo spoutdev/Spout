@@ -633,7 +633,7 @@ public class SpoutRegion extends Region{
 								x = TByteTripleHashSet.key1(key);
 								y = TByteTripleHashSet.key2(key);
 								z = TByteTripleHashSet.key3(key);
-								SpoutChunk chunk = this.getChunk(x, y, z);
+								SpoutChunk chunk = this.getChunk(x, y, z, LoadOption.NO_LOAD);
 								if (chunk == null || !chunk.isLoaded()) {
 									iter.remove();
 									continue;

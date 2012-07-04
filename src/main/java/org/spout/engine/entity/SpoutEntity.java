@@ -614,7 +614,7 @@ public class SpoutEntity extends Tickable implements Entity {
 		OutwardIterator oi = new OutwardIterator(cx, cy, cz, viewDistance);
 		while (oi.hasNext()) {
 			IntVector3 v = oi.next();
-			Chunk chunk = w.getChunk(v.getX(), v.getY(), v.getZ());
+			Chunk chunk = w.getChunk(v.getX(), v.getY(), v.getZ(), LoadOption.LOAD_GEN);
 			chunk.refreshObserver(this);
 			observing.add((SpoutChunk)chunk);
 		}
