@@ -77,7 +77,7 @@ public abstract class MaterialRegistry {
 	protected static int register(Material material) {
 		if (material.isSubMaterial()) {
 			material.getParentMaterial().registerSubMaterial(material);
-			nameLookup.put(material.getName().toLowerCase(), material);
+			nameLookup.put(formatName(material.getName()), material);
 			return material.getParentMaterial().getId();
 		} else {
 			int id = materialRegistry.register(material.getName());
@@ -85,7 +85,7 @@ public abstract class MaterialRegistry {
 				throw new IllegalArgumentException(materialLookup[id].get() + " is already mapped to id: " + material.getId() + "!");
 			}
 
-			nameLookup.put(material.getName().toLowerCase(), material);
+			nameLookup.put(formatName(material.getName()), material);
 			return id;
 		}
 	}
@@ -101,7 +101,7 @@ public abstract class MaterialRegistry {
 			throw new IllegalArgumentException(materialLookup[id].get() + " is already mapped to id: " + material.getId() + "!");
 		}
 
-		nameLookup.put(material.getName().toLowerCase(), material);
+		nameLookup.put(formatName(material.getName()), material);
 		return id;
 	}
 
@@ -169,7 +169,11 @@ public abstract class MaterialRegistry {
 	 * @return material, or null if none found
 	 */
 	public static Material get(String name) {
-		return nameLookup.get(name.toLowerCase());
+		return nameLookup.get(formatName(name));
+	}
+	
+	private static String formatName(String matName) {
+		return matName.trim().replaceAll(" ", "_").toLowerCase();
 	}
 
 	/**
