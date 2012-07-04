@@ -80,6 +80,7 @@ public class SimpleCommand implements Command {
 		while (children.containsKey(primaryName)) {
 			primaryName = owner.getName() + ":" + primaryName;
 		}
+		primaryName = primaryName.toLowerCase();
 		children.put(primaryName, sub);
 		sub.parent = this;
 		if (wasLocked) {
@@ -278,6 +279,7 @@ public class SimpleCommand implements Command {
 	}
 
 	public Command getChild(String name, boolean fuzzyLookup) {
+		name = name.toLowerCase();
 		Command command = children.get(name);
 		if (command != null) {
 			return command;
@@ -289,7 +291,7 @@ public class SimpleCommand implements Command {
 
 		int minDistance = -1;
 		for (Map.Entry<String, Command> entry : children.entrySet()) {
-			int distance = StringUtil.getLevenshteinDistance(name, entry.getKey());
+			int distance = StringUtil.getLevenshteinDistance(name, entry.getKey().toLowerCase());
 			if (minDistance < 0 || distance < minDistance) {
 				command = entry.getValue();
 				minDistance = distance;
