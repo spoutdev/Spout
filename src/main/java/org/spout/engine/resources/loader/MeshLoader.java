@@ -120,7 +120,7 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 	
 	@Override
 	public String getFallbackResourceName() {
-		return "mesh://Spout/resources/fallback.obj";
+		return "mesh://Spoutresources/fallbacks/fallback.obj";
 	}
 
 	@Override
