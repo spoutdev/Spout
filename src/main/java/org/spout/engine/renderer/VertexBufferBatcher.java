@@ -64,21 +64,21 @@ public class VertexBufferBatcher extends BatchVertexRenderer {
 		FloatBuffer verts = BufferUtils.createFloatBuffer(size);
 		verts.put(vertexBuffer.toArray());
 		int offset = 0;
-		buffer.enableAttribute(VERTEX_LOCATION, offset);
+		buffer.enableAttribute("vPosition", VERTEX_LOCATION, offset);
 		if(useColors){
 			verts.put(colorBuffer.toArray());
 			offset += this.numVerticies * SIZE_FLOAT * 4;
-			buffer.enableAttribute(COLOR_LOCATION, offset);
+			buffer.enableAttribute("vColor", COLOR_LOCATION, offset);
 		}
 		if(useNormals){
 			verts.put(normalBuffer.toArray());
 			offset += this.numVerticies * SIZE_FLOAT * 4;
-			buffer.enableAttribute(NORMAL_LOCATION, offset);
+			buffer.enableAttribute("vNormal", NORMAL_LOCATION, offset);
 		}
 		if(useTextures){
 			verts.put(uvBuffer.toArray());
 			offset += this.numVerticies * SIZE_FLOAT * 2;
-			buffer.enableAttribute(TEXCOORD0_LOCATION, offset);
+			buffer.enableAttribute("vTexcoord", TEXCOORD0_LOCATION, offset);
 		}
 		
 		verts.flip();

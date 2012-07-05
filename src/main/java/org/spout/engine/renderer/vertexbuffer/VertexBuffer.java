@@ -49,7 +49,7 @@ public abstract class VertexBuffer {
 	 * @param location
 	 * @param offset
 	 */
-	public abstract void enableAttribute(int location, int offset);
+	public abstract void enableAttribute(String name, int location, int offset);
 	/**
 	 * Binds the buffer to be drawn
 	 * 

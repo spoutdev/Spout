@@ -26,8 +26,6 @@
  */
 package org.spout.engine.renderer.vertexbuffer;
 
-import gnu.trove.list.array.TIntArrayList;
-
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
@@ -37,98 +35,78 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.spout.api.render.RenderMaterial;
 
-public class VertexBufferImpl extends VertexBuffer {
-	
-	
+public class VertexBufferImpl extends VertexBuffer {	
 	static final int NULL = 0;
-	
-	static TIntArrayList registeredBuffers = new TIntArrayList();
-	static int genBuffer(){
-		int buffer = GL15.glGenBuffers();
-		registeredBuffers.add(buffer);
 		
-		return buffer;
-	}
-	
-	
-	int buffer;
+	int buffer = -1;
 	int verts;
 	
-	
-	
 	private class VertexAttribute {
+		public String name;
 		public int offset;
 		public int location;
 		
 	}
 	
-	
 	ArrayList<VertexAttribute> attributes = new ArrayList<VertexAttribute>();
-	
-	
-	
-	
+		
 	@Override
 	public void setData(FloatBuffer data, int verticies) {
-		
-		buffer = VertexBufferImpl.genBuffer();
+		if(buffer == -1){
+			buffer = GL15.glGenBuffers();
+			
+		}
+		else
+		{
+			GL15.glDeleteBuffers(buffer);
+			buffer = GL15.glGenBuffers();			
+		}
 		this.verts = verticies;
 		
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, buffer);
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, data, GL15.GL_STATIC_DRAW);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, NULL);
-		
-		attributes.clear();
+				
 	}
 	
 	public void setData(float[] data, int verticies){
+		
 		FloatBuffer buff = BufferUtils.createFloatBuffer(data.length);
 		buff.put(data);
 		buff.flip();
 		
-		setData(buff, verticies);
-		
-		
+		setData(buff, verticies);		
 	}
 
 	@Override
-	public void enableAttribute(int location, int offset) {
+	public void enableAttribute(String name, int location, int offset) {
 		VertexAttribute a = new VertexAttribute();
+		a.name = name;
 		a.location = location;
 		a.offset = offset;
 		attributes.add(a);
-				
-
 	}
 
 
 	@Override
 	void bindBuffer() {
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, buffer);
-		
-
-		for(VertexAttribute a : attributes){
-			GL20.glEnableVertexAttribArray(a.location);
-			GL20.glVertexAttribPointer(a.location, 4, GL11.GL_FLOAT, false, 0, a.offset);
-		}
-		
-		
 	}
 
 
 	@Override
 	public void drawBuffer(RenderMaterial material) {
-		material.assign();
-		
 		bindBuffer();
-		
+		for(VertexAttribute a : attributes){
+			material.getShader().enableAttribute(a.name, 4, GL11.GL_FLOAT, 0, a.offset);
+		}
+		material.assign();
 		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, verts);
 		
 		for(VertexAttribute a : attributes){
 			GL20.glDisableVertexAttribArray(a.location);
 		}
-		GL20.glUseProgram(0);
-		
+		GL20.glUseProgram(0);		
 	}
 
 }

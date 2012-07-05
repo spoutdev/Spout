@@ -39,7 +39,7 @@ public class FakeVertexBuffer extends VertexBuffer {
 	}
 
 	@Override
-	public void enableAttribute(int location, int offset) {
+	public void enableAttribute(String name, int location, int offset) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -295,27 +295,27 @@ public class SpoutClient extends SpoutEngine implements Client {
 		//renderer.end();
 		
 		//renderer.draw();
-/*
+
 	
 		textureTest.begin(material);
-		textureTest.getShader().setUniform("View", activeCamera.getView());
+		textureTest.getShader().setUniform("View", view);
 		textureTest.getShader().setUniform("Projection", activeCamera.getProjection());
 		textureTest.addTexCoord(0, 0);
-		textureTest.addVertex(0, 0);
+		textureTest.addVertex(4, 4);
 		textureTest.addTexCoord(1, 0);
-		textureTest.addVertex(1, 0);
+		textureTest.addVertex(5, 4);
 		textureTest.addTexCoord(0, 1);
-		textureTest.addVertex(0, 1);
+		textureTest.addVertex(4, 5);
 
 		textureTest.addTexCoord(0, 1);
-		textureTest.addVertex(0, 1);
+		textureTest.addVertex(4, 5);
 		textureTest.addTexCoord(1, 1);
-		textureTest.addVertex(1, 1);
+		textureTest.addVertex(5, 5);
 		textureTest.addTexCoord(1, 0);
-		textureTest.addVertex(1, 0);
+		textureTest.addVertex(5, 4);
 		textureTest.end();
 		textureTest.render();
-		*/
+		
 		/*
 		Object[] worlds = this.getLiveWorlds().toArray();
 		SpoutWorld world = (SpoutWorld)worlds[0];
