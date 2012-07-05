@@ -1,7 +1,7 @@
 GL30:
-    Vertex: file://Spout/fallbacks/fallback.330.vert
-    Fragment: file://Spout/fallbacks/fallback.330.frag
+    Vertex: file://Spout/resources/fallbacks/fallback.330.vert
+    Fragment: file://Spout/resources/fallbacks/fallback.330.frag
 GL20:
-    Vertex: file://Spout/fallbacks/fallback.120.vert
-    Fragment: file://Spout/fallbacks/fallback.120.frag
+    Vertex: file://Spout/resources/fallbacks/fallback.120.vert
+    Fragment: file://Spout/resources/fallbacks/fallback.120.frag
     
