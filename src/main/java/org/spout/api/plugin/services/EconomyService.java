@@ -28,7 +28,6 @@ package org.spout.api.plugin.services;
 
 import org.spout.api.Spout;
 import org.spout.api.player.Player;
-import org.spout.api.plugin.ServiceProvider;
 
 /**
  * The economy service is a basic service that can be extended and registered as a service provider.
@@ -38,8 +37,10 @@ import org.spout.api.plugin.ServiceProvider;
  * <code>getServiceManager().register(EconomyService.class, myEconomyInstance, myPlugin, ServicePriority)</code>
  * 
  * For plugins that wish to get the current economy provider, they will need to:
- * <code>getServiceManager().getRegistration(EconomyService.class).getProvider();</code>
- * <code>getRegistration(EconomyService.class)</code> CAN return null, if there is no current registration.
+ * {@link EconomyService#getEconomy()}</code> this method can possibly return null, if an economy service
+ * has not been registered yet with the ServiceManager.  
+ * 
+ * Another option is to hook the {@link ServiceRegisterEvent}
  *
  */
 public abstract class EconomyService {
