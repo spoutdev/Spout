@@ -260,6 +260,28 @@ public interface Engine extends Named {
 	 * Searches for an actively loaded world that exactly matches the given
 	 * name. <br/>
 	 * <br/>
+	 * If searching for the exact name, this method will iterate and check for
+	 * exact matches. <br/>
+	 * <br/>
+	 * Otherwise, this method will iterate over over all worlds and find the closest match
+	 * to the given name, by comparing the length of other player names that
+	 * start with the given parameter. <br/>
+	 * <br/>
+	 *
+	 * Worlds are added to the list immediately, but removed at the end of a tick.
+	 *
+	 * @param name of the world to search for
+	 * @param exact Whether to use exact lookup
+	 * @return world if found, else null
+	 */
+	@LiveRead
+	@SnapshotRead
+	public World getWorld(String name, boolean exact);
+
+	/**
+	 * Searches for an actively loaded world that exactly matches the given
+	 * name. <br/>
+	 * <br/>
 	 * The implementation is identical to iterating over {@link #getWorlds()}
 	 * and checking for a world that matches {@link World#getName()}. <br/>
 	 * <br/>
@@ -272,6 +294,23 @@ public interface Engine extends Named {
 	@LiveRead
 	@SnapshotRead
 	public World getWorld(String name);
+
+	/**
+	 * Searches for actively loaded worlds that matches the given
+	 * name. <br/>
+	 * <br/>
+	 * The implementation is identical to iterating over {@link #getWorlds()}
+	 * and checking for a world that matches {@link World#getName()} <br/>
+	 * <br/>
+	 *
+	 * Worlds are added to the list immediately, but removed at the end of a tick.
+	 *
+	 * @param name of the world to search for, or part of it
+	 * @return a collection of worlds that matched the name
+	 */
+	@LiveRead
+	@SnapshotRead
+	public Collection<World> matchWorld(String name);
 
 	/**
 	 * Searches for an actively loaded world has the given {@link UUID}. <br/>
@@ -372,6 +411,23 @@ public interface Engine extends Named {
 	 * @param reason for stopping the game instance
 	 */
 	public void stop(String reason);
+
+	/**
+	 * Gets the world folders which match the world name.
+	 * 
+	 * @param name to match the world folders with
+	 * @return the world folders that match the world name
+	 */
+	public Collection<File> matchWorldFolder(String worldName);
+
+	/**
+	 * Gets all the individual world folders where world data is stored. <br/>
+	 * <br/>
+	 * This includes offline worlds.
+	 * 
+	 * @return a list of available world folders
+	 */
+	public List<File> getWorldFolders();
 
 	/**
 	 * Gets the folder that contains the world save data. <br/>
@@ -510,13 +566,6 @@ public interface Engine extends Named {
 	 */
 	@SnapshotRead
 	public World getDefaultWorld();
-
-	/**
-	 * Gets the server's configuration directory
-	 *
-	 * @return {@link File} of the configuration directory
-	 */
-	public File getConfigDirectory();
 
 	/**
 	 * Gets the name of the server's log file
