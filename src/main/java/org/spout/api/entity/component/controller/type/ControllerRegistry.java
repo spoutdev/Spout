@@ -32,33 +32,40 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.spout.api.entity.component.Controller;
-import org.spout.api.entity.component.controller.type.ControllerType;
+import org.spout.api.io.store.simple.MemoryStore;
+import org.spout.api.util.StringMap;
 
 /**
  * Handles lookup of entity controller types.
  */
 public class ControllerRegistry {
-	private final static Map<String, ControllerType> nameLookup = new HashMap<String, ControllerType>();
-	private static final Map<Class<? extends Controller>, ControllerType> classLookup = new HashMap<Class<? extends Controller>, ControllerType>();
+	private static final StringMap ID_LOOKUP = new StringMap(null, new MemoryStore<Integer>(), 0, Integer.MAX_VALUE);
+	private static final Map<String, ControllerType> NAME_LOOKUP = new HashMap<String, ControllerType>();
+	private static final Map<Class<? extends Controller>, ControllerType> CLASS_LOOKUP = new HashMap<Class<? extends Controller>, ControllerType>();
 
 	public static void register(ControllerType type) {
-		synchronized (classLookup) {
-			if (!classLookup.containsKey(type.getControllerClass())) {
-				classLookup.put(type.getControllerClass(), type);
-				nameLookup.put(type.getName().toLowerCase(), type);
+		synchronized (CLASS_LOOKUP) {
+			if (!CLASS_LOOKUP.containsKey(type.getControllerClass())) {
+				CLASS_LOOKUP.put(type.getControllerClass(), type);
+				NAME_LOOKUP.put(type.getName().toLowerCase(), type);
+				type.setId(ID_LOOKUP.register(type.getName().toLowerCase()));
 			}
 		}
 	}
 
+	public static ControllerType get(int id) {
+		return NAME_LOOKUP.get(ID_LOOKUP.getString(id));
+	}
+
 	public static ControllerType get(String name) {
-		return nameLookup.get(name.toLowerCase());
+		return NAME_LOOKUP.get(name.toLowerCase());
 	}
 
 	public static ControllerType get(Class<? extends Controller> type) {
-		return classLookup.get(type);
+		return CLASS_LOOKUP.get(type);
 	}
 
 	public static Collection<ControllerType> getAll() {
-		return Collections.unmodifiableCollection(classLookup.values());
+		return Collections.unmodifiableCollection(CLASS_LOOKUP.values());
 	}
 }

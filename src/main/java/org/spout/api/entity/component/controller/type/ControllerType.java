@@ -36,9 +36,12 @@ import org.spout.api.util.StringMap;
  * A certain type of Controller
  */
 public abstract class ControllerType {
+	public static final int UNREGISTERED_ID = -1;
 	private static final StringMap protocolMap = new StringMap(null, new MemoryStore<Integer>(), 0, 256);
 
 	private final String name;
+	private int id = UNREGISTERED_ID;
+
 	private final Class<? extends Controller> controllerClass;
 	private final EntityProtocolStore protocolStore = new EntityProtocolStore();
 
@@ -54,6 +57,14 @@ public abstract class ControllerType {
 	 */
 	public String getName() {
 		return name;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	void setId(int id) {
+		this.id = id;
 	}
 
 	/**

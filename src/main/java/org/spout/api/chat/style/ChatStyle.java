@@ -31,15 +31,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
 import org.spout.api.chat.style.fallback.DefaultStyleHandler;
+import org.spout.api.io.store.simple.MemoryStore;
+import org.spout.api.util.StringMap;
 
 /**
  * A style of chat for the client to implement.
  * FontRenderer. Names are from <a href="http://wiki.vg/Chat">http://wiki.vg/Chat</a>
  */
 public abstract class ChatStyle {
+	private static final StringMap ID_LOOKUP = new StringMap(null, new MemoryStore<Integer>(), 0, Integer.MAX_VALUE);
 	private static final Map<String, ChatStyle> BY_NAME = new HashMap<String, ChatStyle>();
 	private static final Set<ChatStyle> VALUES = new HashSet<ChatStyle>();
 
@@ -70,6 +72,10 @@ public abstract class ChatStyle {
 		return VALUES;
 	}
 
+	public static ChatStyle byId(int id) {
+		return byName(ID_LOOKUP.getString(id));
+	}
+
 	public static ChatStyle byName(String name) {
 		if (name == null) {
 			return null;
@@ -96,6 +102,7 @@ public abstract class ChatStyle {
 	 * Start from end of array, append strings as they appear. If a chatcolor appears, apply it to existing text.
 	 * If this existing text has already been formatted, check for conflicts
 	 * If no conflicts, append existing text to the area to be formatted
+	 *
 	 * @param handlerId The handlerId to use to get the {@link StyleFormatter StyleFormatters} for ChatStyles
 	 * @param vals The values to convert to a string
 	 * @return The formatted string.
@@ -141,15 +148,23 @@ public abstract class ChatStyle {
 	}
 
 	private final String name;
+	private final String lookupName;
+	private final int id;
 
 	public ChatStyle(String name) {
 		this.name = name;
+		this.lookupName = name.toLowerCase().replace(' ', '_');
 		VALUES.add(this);
-		BY_NAME.put(name.toLowerCase().replace(' ', '_'), this);
+		BY_NAME.put(lookupName, this);
+		id = ID_LOOKUP.register(lookupName);
 	}
 
 	public String getName() {
 		return name;
+	}
+
+	public int getId() {
+		return id;
 	}
 
 	public abstract boolean conflictsWith(ChatStyle other);
