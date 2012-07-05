@@ -26,7 +26,9 @@
  */
 package org.spout.api.plugin.services;
 
+import org.spout.api.Spout;
 import org.spout.api.player.Player;
+import org.spout.api.plugin.ServiceProvider;
 
 /**
  * The economy service is a basic service that can be extended and registered as a service provider.
@@ -42,6 +44,28 @@ import org.spout.api.player.Player;
  */
 public abstract class EconomyService {
 
+	/**
+	 * Checks if an EconomyService has been registered in the ServiceManager.
+	 * 
+	 * @return true if an EconomyService has been registered
+	 */
+	public static boolean isEconomyEnabled() {
+		return Spout.getEngine().getServiceManager().getRegistration(EconomyService.class) != null;
+	}
+	
+	/**
+	 * Gets the highest priority EconomyService registered in the Spout Services API.
+	 * If there is currently no EconomyService registered null will be returned instead.
+	 * 
+	 * @return EconomyService 
+	 */
+	public static EconomyService getEconomy() {
+		if (!isEconomyEnabled()) {
+			return null;
+		}
+		return Spout.getEngine().getServiceManager().getRegistration(EconomyService.class).getProvider();
+	}
+	
 	/**
 	 * Checks if the given account has at least as much as the amount specified.
 	 * 
