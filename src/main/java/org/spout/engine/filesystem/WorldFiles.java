@@ -52,7 +52,6 @@ import org.spout.api.entity.component.controller.type.ControllerType;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.generator.biome.EmptyBiomeManager;
-import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.store.simple.BinaryFileStore;
@@ -68,6 +67,8 @@ import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.world.FilteredChunk;
 import org.spout.engine.world.SpoutChunk;
+import org.spout.engine.world.SpoutChunk.PopulationState;
+import org.spout.engine.world.SpoutChunkSnapshot;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
@@ -257,7 +258,7 @@ public class WorldFiles {
 		return world;
 	}
 
-	public static void saveChunk(SpoutWorld world, ChunkSnapshot snapshot, List<DynamicBlockUpdate> blockUpdates, OutputStream dos) {
+	public static void saveChunk(SpoutWorld world, SpoutChunkSnapshot snapshot, List<DynamicBlockUpdate> blockUpdates, OutputStream dos) {
 		CompoundMap chunkTags = new CompoundMap();
 		short[] blocks = snapshot.getBlockIds();
 		short[] data = snapshot.getBlockData();
@@ -274,7 +275,7 @@ public class WorldFiles {
 		chunkTags.put(new IntTag("x", snapshot.getX()));
 		chunkTags.put(new IntTag("y", snapshot.getY()));
 		chunkTags.put(new IntTag("z", snapshot.getZ()));
-		chunkTags.put(new ByteTag("populated", snapshot.isPopulated()));
+		chunkTags.put(new ByteTag("populationState", snapshot.getPopulationState().getId()));
 		chunkTags.put(new ShortArrayTag("blocks", blocks));
 		chunkTags.put(new ShortArrayTag("data", data));
 		chunkTags.put(new ByteArrayTag("skyLight", snapshot.getSkyLight()));
@@ -325,7 +326,7 @@ public class WorldFiles {
 			int cy = r.getChunkY() + y;
 			int cz = r.getChunkZ() + z;
 
-			boolean populated = SafeCast.toGeneric(map.get("populated"), new ByteTag("", false), ByteTag.class).getBooleanValue();
+			byte populationState = SafeCast.toGeneric(map.get("populationState"), new ByteTag("", PopulationState.POPULATED.getId()), ByteTag.class).getValue();
 			short[] blocks = SafeCast.toShortArray(NBTMapper.toTagValue(map.get("blocks")), null);
 			short[] data = SafeCast.toShortArray(NBTMapper.toTagValue(map.get("data")), null);
 			byte[] skyLight = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("skyLight")), null);
@@ -362,7 +363,7 @@ public class WorldFiles {
 			DatatableMap extraDataMap = new GenericDatatableMap();
 			extraDataMap.decompress(extraData);
 
-			chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, populated, blocks, data, skyLight, blockLight, manager, extraDataMap);
+			chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), blocks, data, skyLight, blockLight, manager, extraDataMap);
 
 			CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("entities")), null, CompoundMap.class);
 			loadEntities(r, entityMap, dataForRegion.loadedEntities);

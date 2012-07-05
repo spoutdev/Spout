@@ -87,11 +87,11 @@ public class WorldSavingThread extends Thread{
 	
 	private class ChunkSaveTask implements Runnable {
 		SpoutRegion region;
-		ChunkSnapshot snapshot;
+		SpoutChunkSnapshot snapshot;
 		List<DynamicBlockUpdate> blockUpdates;
 		ChunkSaveTask(SpoutChunk chunk) {
 			this.region = chunk.getRegion();
-			this.snapshot = chunk.getSnapshot(SnapshotType.BOTH, EntityType.ENTITIES, ExtraData.BOTH);
+			this.snapshot = (SpoutChunkSnapshot) chunk.getSnapshot(SnapshotType.BOTH, EntityType.ENTITIES, ExtraData.BOTH);
 			this.blockUpdates = chunk.getRegion().getDynamicBlockUpdates(chunk);
 		}
 		
