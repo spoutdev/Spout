@@ -44,8 +44,8 @@ public class FlatFileBanManager implements BanManager {
 	private final PlayerListFile bannedIps;
 
 	public FlatFileBanManager(SpoutServer server) {
-		bannedIps = new PlayerListFile(new File(server.getConfigDirectory(), "banned-ips.txt"));
-		bannedNames = new PlayerListFile(new File(server.getConfigDirectory(), "banned-names.txt"));
+		bannedIps = new PlayerListFile(new File(server.getConfigFolder(), "banned-ips.txt"));
+		bannedNames = new PlayerListFile(new File(server.getConfigFolder(), "banned-names.txt"));
 	}
 
 	@Override
