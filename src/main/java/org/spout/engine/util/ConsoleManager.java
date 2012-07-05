@@ -70,12 +70,15 @@ import jline.Completor;
 import jline.ConsoleOperations;
 import jline.ConsoleReader;
 import jline.NullCompletor;
-import org.spout.api.ChatStyle;
+import org.fusesource.jansi.Ansi;
+import org.fusesource.jansi.AnsiConsole;
+import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandSource;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.geo.World;
+import org.spout.engine.chat.style.JansiStyleHandler;
 
 /**
  * A meta-class to handle all logging and input-related console improvements.
@@ -136,7 +139,7 @@ public final class ConsoleManager {
 
 		Completor[] list = new Completor[]{new SpoutCommandCompletor(engine), new NullCompletor()};
 		reader.addCompletor(new ArgumentCompletor(list));
-		
+
 		LogFlushThread flushThread = new LogFlushThread(this);
 		flushThread.start();
 	}
@@ -151,7 +154,7 @@ public final class ConsoleManager {
 			jFrame.dispose();
 		}
 	}
-	
+
 	public void flush() {
 		fileHandler.flush();
 	}
@@ -221,31 +224,6 @@ public final class ConsoleManager {
 		}
 	}
 
-	public String colorize(String string) {
-		if (!string.contains("\u00A7")) {
-			return string;
-		} else if ((!jLine || !reader.getTerminal().isANSISupported()) && jTerminal == null) {
-			return ChatStyle.strip(string);
-		} else {
-			return string.replace(ChatStyle.RED.toString(), "\033[1;31m")
-					.replace(ChatStyle.YELLOW.toString(), "\033[1;33m")
-					.replace(ChatStyle.BRIGHT_GREEN.toString(), "\033[1;32m")
-					.replace(ChatStyle.CYAN.toString(), "\033[1;36m")
-					.replace(ChatStyle.BLUE.toString(), "\033[1;34m")
-					.replace(ChatStyle.PINK.toString(), "\033[1;35m")
-					.replace(ChatStyle.BLACK.toString(), "\033[0;0m")
-					.replace(ChatStyle.DARK_GRAY.toString(), "\033[1;30m")
-					.replace(ChatStyle.DARK_RED.toString(), "\033[0;31m")
-					.replace(ChatStyle.GOLD.toString(), "\033[0;33m")
-					.replace(ChatStyle.DARK_GREEN.toString(), "\033[0;32m")
-					.replace(ChatStyle.DARK_CYAN.toString(), "\033[0;36m")
-					.replace(ChatStyle.DARK_BLUE.toString(), "\033[0;34m")
-					.replace(ChatStyle.PURPLE.toString(), "\033[0;35m")
-					.replace(ChatStyle.GRAY.toString(), "\033[0;37m")
-					.replace(ChatStyle.WHITE.toString(), "\033[1;37m") + "\033[0m";
-		}
-	}
-	
 	private class LogFlushThread extends Thread {
 		ConsoleManager manager;
 		public LogFlushThread(ConsoleManager manager) {
@@ -266,11 +244,11 @@ public final class ConsoleManager {
 	}
 
 	private class ConsoleCommandThread extends Thread {
-		
+
 		public ConsoleCommandThread() {
 			super("Console Manager");
 		}
-		
+
 		@Override
 		public void run() {
 			String command;
@@ -321,6 +299,14 @@ public final class ConsoleManager {
 		}
 	}
 
+	private String stringify(Object... message) {
+		if (Ansi.isEnabled()) {
+			return Ansi.ansi().a(ChatStyle.stringify(JansiStyleHandler.ID, message)).reset().toString();
+		} else {
+			return ChatStyle.stringify(message);
+		}
+	}
+
 	// TODO - convert to command source
 	public class ColoredCommandSource implements CommandSource {
 		@Override
@@ -329,14 +315,14 @@ public final class ConsoleManager {
 		}
 
 		@Override
-		public boolean sendMessage(String text) {
-			engine.getLogger().info(text);
+		public boolean sendMessage(Object... text) {
+			engine.getLogger().info(stringify(text));
 			return true;
 		}
 
 		@Override
-		public boolean sendRawMessage(String text) {
-			engine.getLogger().info(text);
+		public boolean sendRawMessage(Object... text) {
+			engine.getLogger().info(stringify(text));
 			return true;
 		}
 
@@ -457,7 +443,7 @@ public final class ConsoleManager {
 			}
 			super.flush();
 		}
-		
+
 		@Override
 		public synchronized void publish(LogRecord record) {
 			super.publish(record);
@@ -486,7 +472,7 @@ public final class ConsoleManager {
 			builder.append(" [");
 			builder.append(record.getLevel().getLocalizedName().toUpperCase());
 			builder.append("] ");
-			builder.append(colorize(formatMessage(record)));
+			builder.append(formatMessage(record));
 			builder.append('\n');
 
 			if (record.getThrown() != null) {

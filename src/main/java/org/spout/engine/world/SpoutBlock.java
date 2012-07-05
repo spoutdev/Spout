@@ -169,7 +169,7 @@ public class SpoutBlock implements Block {
 			return false;
 		}
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder().append(getWorld()).append(getX()).append(getY()).append(getZ()).toHashCode();
@@ -210,7 +210,7 @@ public class SpoutBlock implements Block {
 	public short getData() {
 		return this.getChunk().getBlockData(this.x, this.y, this.z);
 	}
-	
+
 	@Override
 	public short setDataBits(int bits) {
 		return this.getChunk().setBlockDataBits(this.x, this.y, this.z, bits, this.source);
@@ -230,7 +230,7 @@ public class SpoutBlock implements Block {
 	public int getDataField(int bits) {
 		return this.getChunk().getBlockDataField(this.x, this.y, this.z, bits);
 	}
-	
+
 	@Override
 	public boolean isDataBitSet(int bits) {
 		return this.getChunk().isBlockDataBitSet(this.x, this.y, this.z, bits);
@@ -325,7 +325,7 @@ public class SpoutBlock implements Block {
 	public Biome getBiomeType() {
 		return world.getBiomeType(x, y, z);
 	}
-	
+
 	@Override
 	public void resetDynamic() {
 		this.getRegion().resetDynamicBlock(this.x, this.y, this.z);
@@ -345,7 +345,7 @@ public class SpoutBlock implements Block {
 	public DynamicUpdateEntry dynamicUpdate(long updateTime, Object hint) {
 		return this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, updateTime, hint);
 	}
-	
+
 	@Override
 	public DynamicUpdateEntry dynamicUpdate(long updateTime, int data, Object hint) {
 		return this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, updateTime, data, hint);
@@ -353,6 +353,6 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public boolean isMaterial(Material... materials) {
-		return LogicUtil.equalsAny(this.getMaterial(), materials);
+		return LogicUtil.equalsAny(this.getMaterial(), (Object[]) materials);
 	}
 }

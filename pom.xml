@@ -104,6 +104,11 @@
 			<version>4.10</version>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
+            <version>1.9</version>
+        </dependency>
 	</dependencies>
 
 	<!-- Build settings -->

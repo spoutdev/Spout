@@ -26,20 +26,49 @@
  */
 package org.spout.engine.command;
 
-import org.spout.api.Spout;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
-import org.spout.api.exception.CommandException;
 
-import org.spout.engine.SpoutServer;
-import org.spout.engine.world.SpoutWorld;
+import org.spout.api.exception.CommandException;
+import org.spout.api.geo.World;
+import org.spout.engine.SpoutEngine;
 
 public class TestCommands {
+	private final SpoutEngine engine;
+	public TestCommands(SpoutEngine engine) {
+		this.engine = engine;
+	}
+
 	@Command(aliases = {"dbg"}, desc = "Debug Output")
 	public void debugOutput(CommandContext args, CommandSource source) {
-		SpoutServer server = (SpoutServer) Spout.getEngine();
-		SpoutWorld world = (SpoutWorld) server.getWorld("world");
-		Spout.getLogger().info("World Entity size: " + world.getAll().size());
+		World world = engine.getDefaultWorld();
+		source.sendMessage("World Entity count: ", world.getAll().size());
+	}
+
+
+	private static final Pattern STYLE_PATTERN = Pattern.compile("(?:\\{\\{([^\\}]+)\\}\\})?([^\\{]*)");
+	@Command(aliases = "testmsg", desc = "Test extracting chat styles from a message and printing them")
+	public void testMsg(CommandContext args, CommandSource source) throws CommandException {
+		List<Object> elements = new ArrayList<Object>();
+		Matcher matcher = STYLE_PATTERN.matcher(args.getJoinedString(0));
+		while (matcher.find()) {
+			if (matcher.group(1) != null) {
+				ChatStyle style = ChatStyle.byName(matcher.group(1));
+				if (style == null) {
+					throw new CommandException("Unknown ChatStyle: " + matcher.group(1));
+				}
+				elements.add(style);
+			}
+			elements.add(matcher.group(2));
+		}
+
+		source.sendMessage(elements);
 	}
 }

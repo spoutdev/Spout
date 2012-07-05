@@ -28,7 +28,7 @@ package org.spout.engine.listener;
 
 import java.net.InetAddress;
 
-import org.spout.api.ChatStyle;
+import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.Spout;
 import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;

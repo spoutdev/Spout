@@ -27,6 +27,9 @@
 package org.spout.engine.player;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -44,14 +47,12 @@ import org.spout.api.player.Player;
 import org.spout.api.player.PlayerInputState;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.NetworkSynchronizer;
-import org.spout.api.protocol.Session;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;
 
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.protocol.SpoutSession;
-import org.spout.engine.util.TextWrapper;
 
 public class SpoutPlayer implements Player {
 	private final AtomicReference<SpoutSession> sessionLive = new AtomicReference<SpoutSession>();
@@ -178,19 +179,17 @@ public class SpoutPlayer implements Player {
 	}
 
 	@Override
-	public boolean sendMessage(String message) {
+	public boolean sendMessage(Object... message) {
 		boolean success = false;
 		if (getEntity() != null) {
-			for (String line : TextWrapper.wrapText(message)) {
-				success |= sendRawMessage(line);
-			}
+			sendRawMessage(message);
 		}
 		return success;
 	}
 
 	@Override
-	public boolean sendRawMessage(String message) {
-		Message chatMessage = getNetworkSynchronizer().getChatMessage(message);
+	public boolean sendRawMessage(Object... message) {
+		Message chatMessage = getSession().getProtocol().getChatMessage(message);
 		if (message == null) {
 			return false;
 		}
@@ -287,7 +286,7 @@ public class SpoutPlayer implements Player {
 	}
 
 	@Override
-	public void kick(String reason) {
+	public void kick(Object... reason) {
 		if (reason == null) {
 			throw new IllegalArgumentException("reason cannot be null");
 		}

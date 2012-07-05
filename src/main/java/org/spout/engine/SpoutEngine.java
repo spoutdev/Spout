@@ -51,7 +51,7 @@ import java.util.logging.Logger;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
-import org.spout.api.ChatStyle;
+import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.Engine;
 import org.spout.api.FileSystem;
 import org.spout.api.Spout;
@@ -160,10 +160,10 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
 	protected final ConcurrentMap<SocketAddress, BootstrapProtocol> bootstrapProtocols = new ConcurrentHashMap<SocketAddress, BootstrapProtocol>();
 	protected final ChannelGroup group = new DefaultChannelGroup();
-	
+
 	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
 	private final MemoryLeakThread leakThread = new MemoryLeakThread();
-	
+
 	protected SpoutConfiguration config = new SpoutConfiguration();
 	private File worldFolder = new File(".");
 	private SnapshotableLinkedHashMap<String, SpoutWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutWorld>(snapshotManager);
@@ -172,9 +172,9 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	private String logFile;
 	private StringMap engineItemMap = null;
 	private StringMap engineBiomeMap = null;
-	
+
 	private ConcurrentHashMap<String, String> cvars = new ConcurrentHashMap<String, String>();
-	
+
 	protected FileSystem filesystem;
 
 	@Parameter(names = {"-debug", "-d", "--debug", "--d" }, description="Debug Mode")
@@ -198,7 +198,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 			new DeadlockMonitor().start();
 		}
 	}
-	
+
 	public void start() {
 		throw new IllegalStateException("The start method should not be called for the engine directly");
 	}
@@ -222,7 +222,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		try {
 			config.load();
 		} catch (ConfigurationException e) {
-			getLogger().log(Level.SEVERE, "Error loading config: {0}", e);
+			getLogger().log(Level.SEVERE, "Error loading config: " + e.getMessage(), e);
 		}
 		consoleManager.setupConsole(SpoutConfiguration.CONSOLE_TYPE.getString());
 
@@ -234,7 +234,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		// Start loading plugins
 		loadPlugins();
 		enablePlugins();
-		
+
 		if (checkWorlds) {
 			//At least one plugin should have registered atleast one world
 			if (loadedWorlds.getLive().size() == 0) {
@@ -335,12 +335,16 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	@Override
-	public void broadcastMessage(String message) {
-		broadcastMessage(message, STANDARD_BROADCAST_PERMISSION);
+	public void broadcastMessage(Object... message) {
+		broadcastMessage(STANDARD_BROADCAST_PERMISSION, message);
+	}
+
+	public void broadcastMessage(String msg) {
+		broadcastMessage(new Object[] {msg});
 	}
 
 	@Override
-	public void broadcastMessage(String message, String permission) {
+	public void broadcastMessage(String permission, Object... message) {
 		for (PermissionsSubject player : getAllWithNode(permission)) {
 			if (player instanceof CommandSource) {
 				((CommandSource) player).sendMessage(message);
@@ -374,17 +378,17 @@ public class SpoutEngine extends AsyncManager implements Engine {
 			getRootCommand().execute(source, commandLine.split(" "), -1, false);
 		} catch (WrappedCommandException e) {
 			if (e.getCause() instanceof NumberFormatException) {
-				source.sendMessage(ChatStyle.RED + "Number expected; string given!");
+				source.sendMessage(ChatStyle.RED, "Number expected; string given!");
 			} else {
-				source.sendMessage(ChatStyle.RED + "Internal error executing command!");
-				source.sendMessage(ChatStyle.RED + "Error: " + e.getMessage() + "; See console for details.");
+				source.sendMessage(ChatStyle.RED, "Internal error executing command!");
+				source.sendMessage(ChatStyle.RED, "Error: ", e.getMessage(), "; See console for details.");
 				e.printStackTrace();
 			}
 		} catch (CommandUsageException e) {
-			source.sendMessage(ChatStyle.RED + e.getMessage());
-			source.sendMessage(ChatStyle.RED + e.getUsage());
+			source.sendMessage(ChatStyle.RED, e.getMessage());
+			source.sendMessage(ChatStyle.RED, e.getUsage());
 		} catch (CommandException e) {
-			source.sendMessage(ChatStyle.RED + e.getMessage());
+			source.sendMessage(ChatStyle.RED, e.getMessage());
 		}
 	}
 
@@ -838,11 +842,11 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	public FileSystem getFilesystem() {
 		return filesystem;
 	}
-	
+
 	public MemoryLeakThread getLeakThread() {
 		return leakThread;
 	}
-	
+
 	// The engine doesn't do any of these
 
 	@Override
@@ -858,7 +862,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	public long getFirstDynamicUpdateTime() {
 		return SpoutScheduler.END_OF_THE_WORLD;
 	}
-	
+
 	@Override
 	public void runLocalDynamicUpdates(long time) throws InterruptedException {
 	}
@@ -876,9 +880,9 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public String getVariable(String key) {
 		return cvars.get(key);
-		
+
 	}
-	
+
 	private class ProfileTask implements Runnable {
 		@Override
 		public void run() {

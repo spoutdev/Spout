@@ -40,7 +40,7 @@ import java.util.logging.Level;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
-import org.spout.api.ChatStyle;
+import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.datatable.DataMap;
@@ -254,7 +254,7 @@ public final class SpoutSession implements Session {
 				} catch (Exception e) {
 					Spout.getEngine().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + (getPlayer() != null ? getPlayer().getName() : "null"));
 					e.printStackTrace();
-					disconnect("Message handler exception for " + message.getClass().getSimpleName(), false);
+					disconnect(false, "Message handler exception for ", message.getClass().getSimpleName());
 				}
 			}
 		}
@@ -266,7 +266,7 @@ public final class SpoutSession implements Session {
 				} catch (Exception e) {
 					Spout.getEngine().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + (getPlayer() != null ? getPlayer().getName() : "null"));
 					e.printStackTrace();
-					disconnect("Message handler exception for " + message.getClass().getSimpleName(), false);
+					disconnect(false, "Message handler exception for", message.getClass().getSimpleName());
 				}
 			}
 		}
@@ -322,7 +322,7 @@ public final class SpoutSession implements Session {
 					Spout.getLogger().info("Unknown platform " + platform);
 			}
 		} catch (Exception e) {
-			disconnect("Socket Error!", false);
+			disconnect(false, "Socket Error!");
 		}
 	}
 
@@ -339,20 +339,20 @@ public final class SpoutSession implements Session {
 	}
 
 	@Override
-	public boolean disconnect(String reason) {
-		return disconnect(reason, true);
+	public boolean disconnect(Object... reason) {
+		return disconnect(true, reason);
 	}
 
-	public String getDefaultLeaveMessage() {
+	public Object[] getDefaultLeaveMessage() {
 		if (player == null) {
-			return ChatStyle.CYAN + "Unknown" + ChatStyle.CYAN + " has left the game";
+			return new Object[] {ChatStyle.CYAN, "Unknown", ChatStyle.CYAN , " has left the game"};
 		} else {
-			return ChatStyle.CYAN + player.getDisplayName() + ChatStyle.CYAN + " has left the game";
+			return new Object[] {ChatStyle.CYAN, player.getDisplayName(), ChatStyle.CYAN, " has left the game"};
 		}
 	}
 
 	@Override
-	public boolean disconnect(String reason, boolean kick) {
+	public boolean disconnect(boolean kick, Object... reason) {
 		if (player != null) {
 			PlayerLeaveEvent event;
 			if (kick) {
@@ -360,6 +360,7 @@ public final class SpoutSession implements Session {
 				if (event.isCancelled()) {
 					return false;
 				}
+				reason = ((PlayerKickEvent) event).getKickReason();
 
 				getEngine().getLogger().log(Level.INFO, "Player {0} kicked: {1}", new Object[]{player.getName(), reason});
 			} else {
@@ -377,7 +378,7 @@ public final class SpoutSession implements Session {
 		} else {
 			channel.close();
 		}
-		closeAuxChannel(reason, false);
+		closeAuxChannel(false, reason);
 		return true;
 	}
 
@@ -411,7 +412,6 @@ public final class SpoutSession implements Session {
 	/**
 	 * Adds a message to the unprocessed queue.
 	 * @param message The message.
-	 * @param <T>     The type of message.
 	 */
 	@Override
 	public void messageReceived(boolean upstream, Message message) {
@@ -425,7 +425,7 @@ public final class SpoutSession implements Session {
 				} else if (message instanceof RedirectMessage) {
 					RedirectMessage redirect = (RedirectMessage) message;
 					if (redirect.isRedirect()) {
-						closeAuxChannel("Redirect received", true);
+						closeAuxChannel(true, "Redirect received");
 						auxChannelInfo.set(null);
 						ConnectionInfo info = channelInfo.get();
 						if (info != null) {
@@ -464,8 +464,8 @@ public final class SpoutSession implements Session {
 				getEngine().getEventManager().callEvent(leaveEvent);
 			}
 
-			String text = leaveEvent.getMessage();
-			if (text != null && text.length() > 0) {
+			Object[] text = leaveEvent.getMessage();
+			if (text != null && text.length > 0) {
 				server.broadcastMessage(text);
 			}
 
@@ -569,10 +569,10 @@ public final class SpoutSession implements Session {
 	}
 
 	private void closeAuxChannel(boolean openedExpected) {
-		closeAuxChannel("Closing aux channel", openedExpected);
+		closeAuxChannel(openedExpected, "Closing aux channel");
 	}
 
-	private void closeAuxChannel(String message, boolean openedExpected) {
+	private void closeAuxChannel(boolean openedExpected, Object... message) {
 		Channel c = auxChannel.getAndSet(null);
 		if (c != null) {
 			Message kickMessage = null;
