@@ -26,9 +26,122 @@
  */
 package org.spout.api.util;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import gnu.trove.list.array.TIntArrayList;
 
 public class StringUtil {
+
+	/**
+	 * Tests if this string starts with the specified prefix, ignoring case
+	 * 
+	 * @param input the input
+	 * @param prefix the prefix
+	 * @return True if the input starts with the prefix when ignoring case, False if not
+	 */
+	public static boolean startsWithIgnoreCase(String input, String prefix) {
+		if (input == null || prefix == null || prefix.length() > input.length()) {
+			return false;
+		} else {
+			for (int i = 0; i < prefix.length(); i++) {
+				if (!equalsIgnoreCase(prefix.charAt(i), input.charAt(i))) {
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+
+	/**
+	 * Gets whether two characters equal each other, while ignoring case.
+	 * 
+	 * @param input1 to use
+	 * @param input2 to use
+	 * @return True if input1 and input2 equal when ignoring case, False if not
+	 */
+	public static boolean equalsIgnoreCase(char input1, char input2) {
+		return Character.toLowerCase(input1) == Character.toLowerCase(input2);
+	}
+
+	/**
+	 * Matches a value using a name and the value .toString() method
+	 * 
+	 * @param values to look into
+	 * @param name to match against
+	 * @return a collection of values that matched
+	 */
+	public static <T> Collection<T> matchToString(Collection<T> values, String name) {
+		List<T> result = new ArrayList<T>();
+		for (T value : values) {
+			if (value == null) {
+				continue;
+			}
+			if (startsWithIgnoreCase(value.toString(), name)) {
+				result.add(value);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Matches a named class using a name
+	 * 
+	 * @param values to look into
+	 * @param name to match against
+	 * @return a collection of values that matched
+	 */
+	public static <T extends Named> Collection<T> matchName(Collection<T> values, String name) {
+		List<T> result = new ArrayList<T>();
+		for (T value : values) {
+			if (value == null) {
+				continue;
+			}
+			if (startsWithIgnoreCase(value.getName(), name)) {
+				result.add(value);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Matches a file name using a name
+	 * 
+	 * @param values to look into
+	 * @param name to match against
+	 * @return a collection of values that matched
+	 */
+	public static Collection<File> matchFile(Collection<File> values, String name) {
+		List<File> result = new ArrayList<File>();
+		for (File value : values) {
+			if (value == null) {
+				continue;
+			}
+			if (startsWithIgnoreCase(value.getName(), name)) {
+				result.add(value);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Gets the named object with the shortest name from the values specified
+	 * @param values to look into
+	 * @return the shortest value, or null if there are no values
+	 */
+	public static <T extends Named> T getShortest(Collection<T> values) {
+		int shortestMatch = Integer.MAX_VALUE;
+		T shortest = null;
+		for (T value : values) {
+			if (value.getName().length() < shortestMatch) {
+				shortestMatch = value.getName().length();
+				shortest = value;
+			}
+		}
+		return shortest;
+	}
 
 	/**
 	 * Wraps all components in between brackets delimited by ','-signs

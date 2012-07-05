@@ -27,7 +27,6 @@
 package org.spout.api.util;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 import org.junit.Test;
 

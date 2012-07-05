@@ -45,6 +45,7 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.TaskManager;
+import org.spout.api.util.Named;
 import org.spout.api.util.cuboid.CuboidBuffer;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.LiveWrite;
@@ -54,7 +55,7 @@ import org.spout.api.util.thread.Threadsafe;
 /**
  * Represents a World.
  */
-public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess {
+public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Named {
 
 	/**
 	 * Gets the name of the world
@@ -62,6 +63,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess {
 	 * @return the name of the world
 	 */
 	@SnapshotRead
+	@Override
 	public String getName();
 
 	/**

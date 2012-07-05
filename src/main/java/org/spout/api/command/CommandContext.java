@@ -27,10 +27,14 @@
 package org.spout.api.command;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.spout.api.Spout;
 import org.spout.api.exception.CommandException;
+import org.spout.api.geo.World;
+import org.spout.api.player.Player;
 
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
@@ -185,6 +189,26 @@ public class CommandContext {
 		} catch (NumberFormatException e) {
 			return false;
 		}
+	}
+
+	public World getWorld(int index) {
+		return Spout.getEngine().getWorld(parsedArgs.get(index));
+	}
+
+	public World getWorld(int index, boolean exact) {
+		return Spout.getEngine().getWorld(parsedArgs.get(index), exact);
+	}
+
+	public Player getPlayer(int index, boolean exact) {
+		return Spout.getEngine().getPlayer(parsedArgs.get(index), true);
+	}
+
+	public Collection<World> matchWorld(int index) {
+		return Spout.getEngine().matchWorld(parsedArgs.get(index));
+	}
+
+	public Collection<Player> matchPlayer(int index) {
+		return Spout.getEngine().matchPlayer(parsedArgs.get(index));
 	}
 
 	public double getDouble(int index) throws NumberFormatException {
