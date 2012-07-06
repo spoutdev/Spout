@@ -27,11 +27,13 @@
 package org.spout.engine;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +48,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.spout.api.ChatColor;
@@ -98,6 +101,7 @@ import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.Profiler;
 import org.spout.api.util.StringMap;
+import org.spout.api.util.StringUtil;
 import org.spout.engine.command.AdministrationCommands;
 import org.spout.engine.command.MessagingCommands;
 import org.spout.engine.command.TestCommands;
@@ -414,41 +418,43 @@ public class SpoutEngine extends AsyncManager implements Engine {
 					return player;
 				}
 			}
+			return null;
 		} else {
-			int shortestMatch = Integer.MAX_VALUE;
-			Player shortestPlayer = null;
-			for (Player player : onlinePlayers.getValues()) {
-				if (player.getName().toLowerCase().startsWith(name)) {
-					if (player.getName().length() < shortestMatch) {
-						shortestMatch = player.getName().length();
-						shortestPlayer = player;
-					}
-				}
-			}
-			return shortestPlayer;
+			return StringUtil.getShortest(StringUtil.matchName(onlinePlayers.getValues(), name));
 		}
-		return null;
 	}
 
 	@Override
 	public Collection<Player> matchPlayer(String name) {
-		List<Player> result = new ArrayList<Player>();
-		for (Player player : getOnlinePlayers()) {
-			if (player.getName().startsWith(name)) {
-				result.add(player);
-			}
-		}
-		return result;
+		return StringUtil.matchName(Arrays.<Player>asList(getOnlinePlayers()), name);
+	}
+
+	@Override
+	public Collection<World> matchWorld(String name) {
+		return StringUtil.matchName(getWorlds(), name);
+	}
+
+	@Override
+	public Collection<File> matchWorldFolder(String worldName) {
+		return StringUtil.matchFile(getWorldFolders(), worldName);
 	}
 
 	@Override
 	public World getWorld(String name) {
-		World world = loadedWorlds.get().get(name);
-		if (world != null) {
-			return world;
-		}
+		return getWorld(name, true);
+	}
 
-		return loadedWorlds.getLive().get(name);
+	@Override
+	public World getWorld(String name, boolean exact) {
+		if (exact) {
+			World world = loadedWorlds.get().get(name);
+			if (world != null) {
+				return world;
+			}
+			return loadedWorlds.getLive().get(name);
+		} else {
+			return StringUtil.getShortest(StringUtil.matchName(loadedWorlds.getValues(), name));
+		}
 	}
 
 	@Override
@@ -536,6 +542,22 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		bootstrapProtocols.clear();
 		executor.shutdown();
 		WorldSavingThread.finish();
+	}
+
+	@Override
+	public List<File> getWorldFolders() {
+		File[] folders = this.getWorldFolder().listFiles((FilenameFilter) DirectoryFileFilter.INSTANCE);
+		if (folders == null || folders.length == 0) {
+			return new ArrayList<File>();
+		}
+		List<File> worlds = new ArrayList<File>(folders.length);
+		// Are they really world folders?
+		for (File world : folders) {
+			if (new File(world, "world.dat").exists()) {
+				worlds.add(world);
+			}
+		}
+		return worlds;
 	}
 
 	@Override
@@ -687,11 +709,6 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 		final World first = loadedWorlds.values().iterator().next();
 		return first;
-	}
-
-	@Override
-	public File getConfigDirectory() {
-		return configDirectory;
 	}
 
 	@Override
@@ -869,4 +886,5 @@ public class SpoutEngine extends AsyncManager implements Engine {
 			
 		}
 	}
+
 }
