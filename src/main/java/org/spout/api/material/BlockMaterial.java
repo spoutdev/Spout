@@ -26,6 +26,7 @@
  */
 package org.spout.api.material;
 
+import org.spout.api.Spout;
 import org.spout.api.collision.BoundingBox;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionStrategy;
@@ -34,6 +35,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.entity.component.controller.type.ControllerType;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
+import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.basic.BasicAir;
 import org.spout.api.material.basic.BasicSkyBox;
@@ -108,6 +110,7 @@ public class BlockMaterial extends Material implements Placeable {
 	private byte opacity = 0xF;
 	private final CollisionModel collision = new CollisionModel(new BoundingBox(0F, 0F, 0F, 1F, 1F, 1F));
 	private ControllerType controller = null;
+	private boolean randomTick;
 
 	/**
 	 * Sets the block controller associated with this material<br>
@@ -465,5 +468,63 @@ public class BlockMaterial extends Material implements Placeable {
 	 */
 	public boolean isCompatibleWith(BlockMaterial m) {
 		return (m.getId() == getId() && ((m.getData() ^ getData()) & getDataMask()) == 0);
+	}
+	/**
+	 * True if this material should recieve random tick updates.
+	 * <br/><br/>
+	 * Random tick updates are infrequent, and random updates that occur 
+	 * to any block whose material supports them. They should be used
+	 * when calculated dynamic updates would be too frequent and harm performance
+	 * and cause excessive memory usage, or when updates should not be 
+	 * saved to be resumed.
+	 * <br/><br/>
+	 * <b>Note:</b> Random tick updates may be delayed if the engine falls behind,
+	 * materials should not rely on tick updates happening regularly.
+	 * 
+	 * @return
+	 */
+	public boolean hasRandomTicks() {
+		return randomTick;
+	}
+
+	/**
+	 * Enables this material to receive random tick updates.
+	 * <br/><br/>
+	 * Random tick updates are infrequent, and random updates that occur 
+	 * to any block whose material supports them. They should be used
+	 * when calculated dynamic updates would be too frequent and harm performance
+	 * and cause excessive memory usage, or when updates should not be 
+	 * saved to be resumed.
+	 * <br/><br/>
+	 * <b>Note:</b> Random tick updates may be delayed if the engine falls behind,
+	 * materials should not rely on tick updates happening regularly.
+	 * <br/><br/>
+	 * <b>Warning:</b> Developers must override {@code onRandomTick()}
+	 * in order for random ticks to work properly.
+	 * @param randomTick
+	 */
+	public BlockMaterial setRandomTick(boolean randomTick) {
+		this.randomTick = randomTick;
+		return this;
+	}
+
+	/**
+	 * Called when a random tick update occurs to this material. 
+	 * <br/><br/>
+	 * Random tick updates are infrequent, and random updates that occur 
+	 * to any block whose material supports them. They should be used
+	 * when calculated dynamic updates would be too frequent and harm performance
+	 * and cause excessive memory usage, or when updates should not be 
+	 * saved to be resumed.
+	 * <br/><br/>
+	 * <b>Note:</b> Random tick updates may be delayed if the engine falls behind,
+	 * materials should not rely on tick updates happening regularly.
+	 * @param world
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public void onRandomTick(World world, int x, int y, int z) {
+		Spout.getLogger().warning("Method 'onRandomTick' not overriden in [" + getClass().getSimpleName() + "]!");
 	}
 }
