@@ -30,6 +30,10 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * Indicates that the constructor executes potentionally unsafe addon code and should be sandboxed before calling.
+ *
+ */
 @Documented
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface UnsafeConstructor {

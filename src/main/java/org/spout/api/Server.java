@@ -79,10 +79,6 @@ public interface Server extends Engine {
 	 */
 	public void unWhitelist(String player);
 
-
-
-
-
 	/**
 	 * True if this server does not check if players are flying or not.
 	 *

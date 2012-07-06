@@ -49,7 +49,7 @@ public interface Client extends Engine {
 	 * Gets the location of the texture pack directory. This directory is used
 	 * when users select a texture pack from the menu.
 	 *
-	 * @return texture pack directory
+	 * @return {@link File} of the texture pack directory
 	 */
 	public File getResourcePackFolder();
 
@@ -57,7 +57,7 @@ public interface Client extends Engine {
 	 * Gets the location of the achievement and statistic folder for the local
 	 * player.
 	 *
-	 * @return statistic folder
+	 * @return {@link File} of the statistic folder
 	 */
 	public File getStatsFolder();
 
@@ -69,7 +69,7 @@ public interface Client extends Engine {
 	public Entity getActivePlayer();
 
 	/**
-	 * Gets the active world, if a world is loaded.
+	 * Gets the currently active world, if a world is loaded.
 	 *
 	 * @return active world.
 	 */
@@ -96,14 +96,14 @@ public interface Client extends Engine {
 	public PluginStore getPluginStore();
 
 	/**
-	 * Gets the current render mode that the client is running in
+	 * Gets the current {@link RenderMode} that the client is running in.
 	 *
 	 * @return render mode
 	 */
 	public RenderMode getRenderMode();
 
 	/**
-	 * Gets the screen stack
+	 * Gets the {@link ScreenStack}
 	 *
 	 * @return screen stack
 	 */

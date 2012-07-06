@@ -64,6 +64,12 @@ public enum ChatColor {
 		}
 	}
 
+	/**
+	 * Attempts to find the chat color by the integer value given.
+	 * 
+	 * @param code of the chatcolor
+	 * @return the ChatColor, or null if none was found.
+	 */
 	public static ChatColor byCode(int code) {
 		if (code < 0) {
 			return null;
@@ -76,6 +82,12 @@ public enum ChatColor {
 		return codeLookup[code];
 	}
 
+	/**
+	 * Attempts to find the chat color by matching the name.
+	 * 
+	 * @param name of the ChatColor
+	 * @return the ChatColor, or null if none was matched.
+	 */
 	public static ChatColor byName(String name) {
 		if (name == null) {
 			return null;
