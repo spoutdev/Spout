@@ -500,7 +500,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 			File itemMapFile = new File(new File(SharedFileSystem.WORLDS_DIRECTORY, name), "materials.dat");
 			BinaryFileStore itemStore = new BinaryFileStore(itemMapFile);
-			StringMap itemMap = new StringMap(engineItemMap, itemStore, 0, Short.MAX_VALUE);
+			StringMap itemMap = new StringMap(engineItemMap, itemStore, 0, Short.MAX_VALUE, name + "ItemMap");
 
 			world = new SpoutWorld(name, this, random.nextLong(), 0L, generator, UUID.randomUUID(), itemMap, null);
 			WorldFiles.saveWorldData(world);
@@ -887,7 +887,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		@Override
 		public void run() {
 			Profiler.log();
-			
+
 		}
 	}
 

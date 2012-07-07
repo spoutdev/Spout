@@ -147,7 +147,7 @@ public class WorldFiles {
 				CompoundMap map = dataTag.getValue();
 
 				byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), WORLD_VERSION);
-				switch (version) {                                                          
+				switch (version) {
 					case 1:
 						world = loadVersionOne(name, generator, global, map);
 						break;
@@ -187,7 +187,7 @@ public class WorldFiles {
 		if (itemMapFile.exists()) {
 			itemStore.load();
 		}
-		StringMap itemMap = new StringMap(global, itemStore, 0, Short.MAX_VALUE);
+		StringMap itemMap = new StringMap(global, itemStore, 0, Short.MAX_VALUE, name + "ItemMap");
 
 		String generatorName = generator.getName();
 
@@ -233,7 +233,7 @@ public class WorldFiles {
 		if (itemMapFile.exists()) {
 			itemStore.load();
 		}
-		StringMap itemMap = new StringMap(global, itemStore, 0, Short.MAX_VALUE);
+		StringMap itemMap = new StringMap(global, itemStore, 0, Short.MAX_VALUE, name + "ItemMap");
 
 		String generatorName = generator.getName();
 
@@ -352,7 +352,7 @@ public class WorldFiles {
 				manager = new EmptyBiomeManager(cx, cy, cz);
 			}
 
-			//Convert world block ids to engine material ids 
+			//Convert world block ids to engine material ids
 			SpoutWorld world = r.getWorld();
 			StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
 			StringMap itemMap = world.getItemMap();

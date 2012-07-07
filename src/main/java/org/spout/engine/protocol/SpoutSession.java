@@ -296,6 +296,18 @@ public final class SpoutSession implements Session {
 
 					break;
 				case CLIENT :
+					if (!upstream) {
+						Spout.getLogger().warning("Attempt made to send packet to client");
+						break;
+					}
+					if (force || this.state == State.GAME) {
+						if (channel.isOpen()) {
+							channel.write(message);
+						}
+					} else {
+						sendQueue.add(message);
+					}
+
 					break;
 				case PROXY :
 					if (message instanceof ConnectionInfoMessage) {
