@@ -46,6 +46,7 @@ import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.util.hashing.NibblePairHashed;
+import org.spout.engine.world.SpoutChunk.PopulationState;
 
 public class SpoutChunkSnapshot extends ChunkSnapshot {
 	/**
@@ -61,7 +62,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	private final byte[] skyLight;
 	private final BiomeManager biomes;
 	private final DefaultedMap<String, Serializable> dataMap;
-	private final boolean populated;
+	private final PopulationState populationState;
 	private boolean renderDirty = false;
 
 	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, EntityType type, ExtraData data) {
@@ -112,7 +113,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 			this.biomes = null;
 			this.dataMap = null;
 		}
-		this.populated = chunk.isPopulated();
+		this.populationState = chunk.getPopulationState();
 		renderDirty = chunk.isDirty();
 	}
 
@@ -237,7 +238,11 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 	@Override
 	public boolean isPopulated() {
-		return populated;
+		return populationState == PopulationState.POPULATED;
+	}
+	
+	public PopulationState getPopulationState() {
+		return populationState;
 	}
 
 	@Override
