@@ -76,6 +76,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TaskManager;
+import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.Profiler;
@@ -299,6 +300,8 @@ public class SpoutRegion extends Region{
 				occupiedChunksQueue.add(newChunk);
 
 				Spout.getEventManager().callDelayedEvent(new ChunkLoadEvent(newChunk, generated));
+
+				getTaskManager().scheduleSyncDelayedTask(Spout.getEngine(), new RandomUpdateTask(newChunk), RandomUpdateTask.TICK_DELAY, TaskPriority.LOWEST);
 
 				return newChunk;
 			}
@@ -1340,4 +1343,6 @@ public class SpoutRegion extends Region{
 	public void addSnapshotFuture(SpoutChunkSnapshotFuture future) {
 		snapshotQueue.add(future);
 	}
+	
+	
 }
