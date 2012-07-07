@@ -32,7 +32,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.util.flag.ByteFlagMask;
 
 /**
- * Indicates the face of a Block
+ * Indicates the facing of a Block
  */
 public enum BlockFace implements ByteFlagMask {
 	TOP(0x1, 0, 1, 0),
@@ -60,14 +60,29 @@ public enum BlockFace implements ByteFlagMask {
 		this.mask = (byte) mask;
 	}
 
+	/**
+	 * Represents the rotation of the BlockFace in the world as a Quaternion.
+	 * 
+	 * @return the direction of the blockface.
+	 */
 	public Quaternion getDirection() {
 		return this.direction;
 	}
 
+	/**
+	 * Represents the directional offset of this Blockface as a Vector3.
+	 * 
+	 * @return the offset of this directional.
+	 */
 	public Vector3 getOffset() {
 		return this.offset;
 	}
 
+	/**
+	 * Gets the opposite BlockFace.  If this BlockFace has no opposite the method will return itself.
+	 * 
+	 * @return the opposite BlockFace, or this if it has no opposite.
+	 */
 	public BlockFace getOpposite() {
 		return this.opposite;
 	}

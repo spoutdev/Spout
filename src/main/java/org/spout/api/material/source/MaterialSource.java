@@ -28,6 +28,9 @@ package org.spout.api.material.source;
 
 import org.spout.api.material.Material;
 
+/**
+ * Represents a {@link DataSource} which also contains and stores {@link Material} data.
+ */
 public interface MaterialSource extends DataSource {
 
 	/**

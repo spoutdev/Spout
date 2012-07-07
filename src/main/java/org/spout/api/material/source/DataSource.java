@@ -26,6 +26,9 @@
  */
 package org.spout.api.material.source;
 
+/**
+ * Represents an object that can contain data.
+ */
 public interface DataSource {
 	
 	/**

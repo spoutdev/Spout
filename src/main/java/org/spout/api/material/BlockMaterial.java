@@ -45,6 +45,9 @@ import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.MathHelper;
 import org.spout.api.util.flag.ByteFlagContainer;
 
+/**
+ * Defines the specific characteristics of a Block
+ */
 public class BlockMaterial extends Material implements Placeable {
 
 	public static final BlockMaterial AIR = new BasicAir();
@@ -74,7 +77,7 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Gets the block at the given id, or null if none found
+	 * Gets the block with the given id, or null if none found
 	 * 
 	 * @param id to get
 	 * @return block, or null if none found

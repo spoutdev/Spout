@@ -30,6 +30,10 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.range.EffectRange;
 
+/**
+ * Represents a material that can trigger updates in the future, updates will be queued through restarts of the server appropriately.
+ *
+ */
 public interface DynamicMaterial {
 	
 	/**

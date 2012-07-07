@@ -31,12 +31,29 @@ package org.spout.api.material;
  */
 public interface DynamicUpdateEntry {
 	
+	/**
+	 * 
+	 * @return x value where the update is occurring.
+	 */
 	public int getX();
 
+	/**
+	 * 
+	 * @return y value where the update is occurring.
+	 */
 	public int getY();
 
+	/**
+	 * 
+	 * @return z value where the update is occurring.
+	 */
 	public int getZ();
 
+	/**
+	 * The time when the next update will occur, represented as a long.
+	 * 
+	 * @return time of the next update
+	 */
 	public long getNextUpdate();
 
 	public long getQueuedTime();

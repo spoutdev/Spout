@@ -26,6 +26,9 @@
  */
 package org.spout.api.material;
 
+/**
+ * Defines the characteristics of Blocks or Items.
+ */
 import java.util.Arrays;
 
 import org.spout.api.entity.Entity;
