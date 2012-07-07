@@ -38,5 +38,13 @@ public interface Recipe {
 	
 	public List<Material> getIngredients();
 	
+	/**
+	 * Gets the size of the set of materials, disregarding data.
+	 * I.e. if a recipe only contained Oak Planks and Pine Planks, this would return 1.
+	 * 
+	 * @return
+	 */
 	public int getNumOfMaterials();
+	
+	public boolean getIncludeData();
 }
