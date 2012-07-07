@@ -34,10 +34,10 @@ import org.spout.api.player.Player;
  */
 public class PlayerJoinEvent extends PlayerEvent {
 	private static HandlerList handlers = new HandlerList();
-	
-	private String message;
 
-	public PlayerJoinEvent(Player p, String joinMessage) {
+	private Object[] message;
+
+	public PlayerJoinEvent(Player p, Object... joinMessage) {
 		super(p);
 		this.message = joinMessage;
 	}
@@ -45,11 +45,11 @@ public class PlayerJoinEvent extends PlayerEvent {
 	/**
 	 * @return the message that will be broadcast when a player joins, or null for no message
 	 */
-	public String getMessage() {
+	public Object[] getMessage() {
 		return message;
 	}
-	
-	public void setMessage(String message) {
+
+	public void setMessage(Object... message) {
 		this.message = message;
 	}
 

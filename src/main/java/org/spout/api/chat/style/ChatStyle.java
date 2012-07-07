@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.spout.api.chat.style.fallback.DefaultStyleHandler;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.util.StringMap;
@@ -109,10 +110,7 @@ public abstract class ChatStyle {
 	 */
 	//
 	public static String stringify(int handlerId, Object... vals) {
-		if (vals.length == 1 && vals[0] instanceof List<?>) {
-			vals = ((List<?>) vals[0]).toArray();
-		}
-
+		vals = clean(vals);
 		StringBuilder finalBuilder = new StringBuilder();
 		StringBuilder singleBuilder = new StringBuilder();
 		StyleHandler handler = StyleHandler.get(handlerId);
@@ -145,6 +143,43 @@ public abstract class ChatStyle {
 			finalBuilder.insert(0, singleBuilder);
 		}
 		return finalBuilder.toString();
+	}
+
+	/**
+	 * Clean an object array so its elements are all expanded to be used with {@link #stringify(int, Object...)}
+	 * @param vals The values
+	 * @return The output array. Not necessarily the input array.
+	 */
+	public static Object[] clean(Object[] vals) {
+		if (vals.length == 1 && vals[0] instanceof List<?>) {
+			vals = ((List<?>) vals[0]).toArray();
+		}
+
+		for (int i = 0; i < vals.length; ++i) {
+			if (vals[i] == null) {
+				continue;
+			}
+
+			if (vals[i] instanceof List<?>) {
+				List<?> addList = (List<?>) vals[i];
+				vals[i] = addList.toArray();
+			}
+
+			if (vals[i].getClass().isArray() && Object.class.isAssignableFrom(vals[i].getClass().getComponentType())) {
+				Object[] arr = (Object[]) vals[i];
+				if (arr.length == 0) {
+					vals[i] = "";
+					continue;
+				}
+
+				Object[] newVals = new Object[vals.length + arr.length - 1];
+				System.arraycopy(vals, 0, newVals, 0, i);
+				System.arraycopy(arr, 0, newVals, i, arr.length);
+				System.arraycopy(vals, i + 1, newVals, i + arr.length, vals.length - i - 1);
+				vals = newVals;
+			}
+		}
+		return vals;
 	}
 
 	private final String name;
