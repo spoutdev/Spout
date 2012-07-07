@@ -26,6 +26,10 @@
  */
 package org.spout.api.collision;
 
+/**
+ * Represents the amount of volume an object takes up in the {@link World} for purposes of providing collision detection.
+ * A bounding box is made of 2 {@link Vector3}s which represent it's minimum x,y,z and maximum x,y,z.
+ */
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.math.Vector3;
 
@@ -37,7 +41,7 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 		this.min = new Vector3(min);
 		this.max = new Vector3(max);
 	}
-	
+
 	public BoundingBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
 		this.min = new Vector3(minX, minY, minZ);
 		this.max = new Vector3(maxX, maxY, maxZ);
@@ -51,7 +55,7 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 	public BoundingBox() {
 		this(Vector3.ZERO, Vector3.ONE);
 	}
-	
+
 	/**
 	 * Constructs a copy of the bounding box
 	 * 
@@ -60,7 +64,7 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 	public BoundingBox(BoundingBox box) {
 		this(box.min, box.max);
 	}
-	
+
 	/**
 	 * Gets the minimum edge vector for this bounding box.
 	 * 
@@ -69,7 +73,7 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 	public Vector3 getMin() {
 		return min;
 	}
-	
+
 	/**
 	 * Gets the maximum edge vector for this bounding box.
 	 * 
@@ -78,7 +82,7 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 	public Vector3 getMax() {
 		return max;
 	}
-	
+
 	/**
 	 * Gets the size vector for this bounding box.
 	 * 
@@ -102,6 +106,7 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 
 	/**
 	 * Scales this bounding box
+	 * Multiplies both the minimum and maximum vectors by the given {@link Vector3} 
 	 * 
 	 * @param scale
 	 * @return this bounding box
@@ -114,6 +119,7 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 
 	/**
 	 * Scales this bounding box
+	 * Multiplies both the minimum and maximum vectors by the given x, y and z.
 	 * 
 	 * @param scaleX
 	 * @param scaleY
@@ -142,7 +148,7 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 		max = new Vector3(maxX, maxY, maxZ);
 		return this;
 	}
-	
+
 	/**
 	 * Sets the location of the bounding box edges
 	 * 
@@ -155,7 +161,7 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 		this.max = max;
 		return this;
 	}
-	
+
 	/**
 	 * Sets this bounding box to the same maximum and minimum edges as the given bounding box
 	 * 
@@ -281,22 +287,52 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 		return new BoundingBox(this);
 	}
 
+	/**
+	 * Checks if the bounding boxes intersect at all.
+	 * 
+	 * @param bounding box to check
+	 * @return true if the bounding boxes collide, false if they do not.
+	 */
 	public boolean intersects(BoundingBox b) {
 		return CollisionHelper.checkCollision(this, b);
 	}
 
+	/**
+	 * Checks if this bounding box intersects with the given {@link BoundingSphere}.
+	 * 
+	 * @param the bounding sphere
+	 * @return true if they collide, false if they do not.
+	 */
 	public boolean intersects(BoundingSphere b) {
 		return CollisionHelper.checkCollision(this, b);
 	}
 
+	/**
+	 * Checks if the given {@link Segment} collides with this bounding box.
+	 * 
+	 * @param the segment
+	 * @return true if they collide, false if they do not.
+	 */
 	public boolean intersects(Segment b) {
 		return CollisionHelper.checkCollision(this, b);
 	}
 
+	/**
+	 * Checks if the given {@link Plane} collides with this bounding box.
+	 * 
+	 * @param the plane
+	 * @return true if they collide, false if they do not.
+	 */
 	public boolean intersects(Plane b) {
 		return CollisionHelper.checkCollision(this, b);
 	}
 
+	/**
+	 * Checks if the given {@link CollisionVolume} collides with this bounding box
+	 * 
+	 * @param the CollisionVolume
+	 * @return true if they collide, false if they do not.
+	 */
 	public boolean intersects(CollisionVolume other) {
 		if (other instanceof BoundingBox) {
 			return intersects((BoundingBox) other);
@@ -316,7 +352,14 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 
 		return false;
 	}
-
+	
+	/**
+	 * Checks if the given {@link CollisionVolume} is wholly contained within this bounding box.
+	 * This will always return false for any {@link Plane}, or {@link Ray}.
+	 * 
+	 * @param the CollisionVolume to check
+	 * @return true if it is contained, false if it is not.
+	 */
 	public boolean contains(CollisionVolume other) {
 		if (other instanceof BoundingBox) {
 			return containsBoundingBox((BoundingBox) other);
@@ -341,30 +384,78 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 		return false;
 	}
 
+	/**
+	 * Checks if this bounding box wholly contains the given BoundingBox.
+	 * 
+	 * @param boundingbox to check
+	 * @return true if it is contained, otherwise false.
+	 */
 	public boolean containsBoundingBox(BoundingBox b) {
 		return CollisionHelper.contains(b, this);
 	}
 
+	/**
+	 * Checks if this bounding box wholly contains the given {@link BoundingSphere}
+	 * 
+	 * @param boundingsphere to check
+	 * @return true if it is contained, otherwise false.
+	 */
 	public boolean containsBoundingSphere(BoundingSphere b) {
 		return CollisionHelper.contains(this, b);
 	}
 
+	/**
+	 * Checks if this BoundingBox contains the given {@link Plane}.
+	 * 
+	 * Will always return false, boxes can not wholly contain a plane as they are finite.
+	 * 
+	 * @param the plane.
+	 * @return false
+	 */
 	public boolean containsPlane(Plane b) {
 		return CollisionHelper.contains(this, b);
 	}
 
+	/**
+	 * Checks if this BoundingBox contains the given {@link Ray}.
+	 * 
+	 * Will always return false, boxes can not wholly contain a ray as they are finite.
+	 * 
+	 * @param the ray.
+	 * @return false
+	 */
 	public boolean containsRay(Ray b) {
 		return CollisionHelper.contains(this, b);
 	}
 
+	/**
+	 * Checks if this BoundingBox wholly contains the given {@link Segment}.
+	 * 
+	 * @param the segment to check
+	 * @return true if it is contained in the boundingbox, otherwise false.
+	 */
 	public boolean containsSegment(Segment b) {
 		return CollisionHelper.contains(this, b);
 	}
 
+	/**
+	 * Checks if this BoundingBox wholly contains the given {@link Vector3}
+	 * 
+	 * @param the Vector3 to check
+	 * @return true if it is contained in the boundingbox, otherwise false
+	 */
 	public boolean containsPoint(Vector3 b) {
 		return CollisionHelper.contains(this, b);
 	}
 
+	/**
+	 * Gets a {@link Vector3} representation of the collision point between this
+	 * and another BoundingBox. <br/>
+	 * This will return null for any {@link CollisionVolume} passed in that is not also a {@link BoundingBox}.
+	 * 
+	 * @param CollisionVolume to check
+	 * @return Vector3 where the BoundingBoxes collide, or null if they do not collide.
+	 */
 	public Vector3 resolve(CollisionVolume other) {
 		if (other instanceof BoundingBox) {
 			return CollisionHelper.getCollision(this, (BoundingBox)other);

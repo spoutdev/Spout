@@ -26,7 +26,9 @@
  */
 package org.spout.api.material.source;
 
-
+/**
+ * Represents a {@link MaterialSource} that supports mutability of the data.
+ */
 public interface MaterialData extends MaterialSource {
 
 	/**

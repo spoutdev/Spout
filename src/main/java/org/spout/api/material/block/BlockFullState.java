@@ -31,6 +31,9 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
 import org.spout.api.util.StringUtil;
 
+/**
+ * Represents a {@link Block}'s ID and Data values, but contains no location-specific information.
+ */
 public class BlockFullState implements Cloneable {
 	private final short id;
 	private final short data;
@@ -45,34 +48,89 @@ public class BlockFullState implements Cloneable {
 		this.data = data;
 	}
 	
+	/**
+	 * Id of the Block
+	 * 
+	 * @return id
+	 */
 	public final short getId() {
 		return id;
 	}
 
+	/**
+	 * Data value of the Block
+	 * 
+	 * @return data
+	 */
 	public final short getData() {
 		return data;
 	}
 	
+	/**
+	 * Returns an Integer representation of the merged ID and data for this BlockFullState.<br/>
+	 * The id will be contained in the upper 16-bits. The data will be contained in the lower 16-bits.<br/>
+	 *  
+	 * @param id
+	 * @param data
+	 * @return integer representation of ID and Data.
+	 */
 	public int getPacked() {
 		return getPacked(id, data);
 	}
 	
+	/**
+	 * Returns an Integer representation of the merged ID and data.<br/>
+	 * The id will be contained in the upper 16-bits. The data will be contained in the lower 16-bits.<br/>
+	 *  
+	 * @param id to pack.
+	 * @param data to pack.
+	 * @return integer representation of ID and Data.
+	 */
 	public static int getPacked(short id, short data) {
 		return id << 16 | (data & 0xFFFF);
 	}
 	
+	/**
+	 * Returns an Integer representation of the ID and Data from a {@link BlockMaterial}.<br/>
+	 * The id will be contained in the upper 16-bits. The data will be contained in the lower 16-bits.<br/>
+	 * 
+	 * @param m
+	 * @return
+	 */
 	public static int getPacked(BlockMaterial m) {
 		return getPacked(m.getId(), m.getData());
 	}
 	
+	/**
+	 * Unpacks the ID of a Material or Block from a packed integer.<br/>
+	 * The integer being passed in must have the ID of the Material or Block contained in the upper 16-bits.<br/>
+	 * 
+	 * @param packed integer
+	 * @return id of the material or block
+	 */
 	public static short getId(int packed) {
 		return (short) (packed >> 16);
 	}
 	
+	/**
+	 * Unpacks the Data of a material or block from a packed integer.<br/>
+	 * The integer being passed in must have the data of the Material or Block contained in the lower 16-bits.<br/>
+	 * 
+	 * @param packed integer
+	 * @return data of the material or block.
+	 */
 	public static short getData(int packed) {
 		return (short) packed;
 	}
 	
+	/**
+	 * Looks up the BlockMaterial from a packed integer.<br/>
+	 * If the material does not exist in the {@link BlockMaterialRegistry} then {@link BasicAir} will be returned.
+	 * If the material does exist, and it contains data, the Sub-Material will be returned.
+	 * 
+	 * @param packed
+	 * @return the material found.
+	 */
 	public static BlockMaterial getMaterial(int packed) {
 		short id = getId(packed);
 		short data = getData(packed);

@@ -30,12 +30,12 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.block.BlockFace;
 
 /**
- * An interface defining a material that can be placed
+ * An interface defining a {@link Material} that can be placed
  */
 public interface Placeable {
 
 	/**
-	 * Called when this block is about to be placed (before {@link onPlacement}), 
+	 * Called when this block is about to be placed (before {@link #onPlacement(Block, short, BlockFace, boolean)}), 
 	 * checking if placement is allowed or not.
 	 * 
 	 * @param block to place

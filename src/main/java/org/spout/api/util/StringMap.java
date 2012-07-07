@@ -46,7 +46,6 @@ import org.spout.api.protocol.builtin.message.StringMapMessage;
  *
  * Conversions to and from parent/child maps are cached
  */
-
 public class StringMap {
 	private static final StringMap STRING_MAP_REGISTRATION = new StringMap(StringMapMessage.STRINGMAP_REGISTRATION_MAP); // This is a special case
 	private static final ConcurrentMap<String, WeakReference<StringMap>> REGISTERED_MAPS = new ConcurrentHashMap<String, WeakReference<StringMap>>();
