@@ -373,8 +373,7 @@ public final class SpoutSession implements Session {
 					return false;
 				}
 				reason = ((PlayerKickEvent) event).getKickReason();
-
-				getEngine().getLogger().log(Level.INFO, "Player {0} kicked: {1}", new Object[]{player.getName(), reason});
+				server.getCommandSource().sendMessage("Player ", player.getName(), " kicked: ", reason);
 			} else {
 				event = new PlayerLeaveEvent(player, getDefaultLeaveMessage());
 			}

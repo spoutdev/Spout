@@ -73,7 +73,7 @@ public class SpoutListener implements Listener {
 					player.kick();
 				}
 			} else {
-				Spout.getEngine().getEventManager().callDelayedEvent(new PlayerJoinEvent(player, ChatStyle.CYAN + player.getDisplayName() + ChatStyle.CYAN + " has joined the game"));
+				Spout.getEngine().getEventManager().callDelayedEvent(new PlayerJoinEvent(player, ChatStyle.CYAN, player.getDisplayName(), ChatStyle.CYAN, " has joined the game"));
 			}
 		} else {
 			event.getSession().disconnect("Player is already online");
