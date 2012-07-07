@@ -136,13 +136,15 @@ public enum Profiler {
 		if (Spout.debugMode()) {
 			TObjectLongHashMap<String> totals = new TObjectLongHashMap<String>();
 			for (Entry<Thread, Profile> entry : INSTANCE.threadMap.entrySet()) {
-				TObjectLongIterator<String> i = entry.getValue().totalTime.iterator();
-				i.advance();
-				while(i.hasNext()) {
-					totals.adjustOrPutValue(i.key(), i.value(), i.value());
+				if (entry.getValue().totalTime.size() > 0) {
+					TObjectLongIterator<String> i = entry.getValue().totalTime.iterator();
 					i.advance();
+					while(i.hasNext()) {
+						totals.adjustOrPutValue(i.key(), i.value(), i.value());
+						i.advance();
+					}
+					entry.getValue().totalTime.clear();
 				}
-				entry.getValue().totalTime.clear();
 			}
 			Spout.getLogger().info("-------------- Time Passed: " + (System.currentTimeMillis() - INSTANCE.time.getAndSet(System.currentTimeMillis())) + " ms --------------");
 			ArrayList<String> keys = new ArrayList<String>(totals.keySet());
