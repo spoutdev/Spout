@@ -26,13 +26,38 @@
  */
 package org.spout.api.generator.biome;
 
-import org.spout.api.generator.WorldGeneratorObjectPopulator;
+import java.util.Random;
+import org.spout.api.generator.WorldGeneratorObject;
+import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Chunk;
 
 /**
  * @author zml2008
  */
-public class WorldGeneratorObjectDecorator extends WorldGeneratorObjectPopulator implements Decorator {
+public class WorldGeneratorObjectDecorator extends Decorator {
+	private final int probability;
+	private final WGOFactory factory;
+
 	public WorldGeneratorObjectDecorator(int probability, WGOFactory factory) {
-		super(probability, factory);
+		this.probability = probability;
+		this.factory = factory;
+	}
+
+	@Override
+	public void populate(Chunk chunk, Random random) {
+		if (random.nextInt(probability) == 0) {
+			final World world = chunk.getWorld();
+			final int worldX = chunk.getBlockX() + random.nextInt(16);
+			final int worldY = chunk.getBlockY() + random.nextInt(16);
+			final int worldZ = chunk.getBlockZ() + random.nextInt(16);
+			WorldGeneratorObject dungeon = factory.createObject(random);
+			if (dungeon.canPlaceObject(world, worldX, worldY, worldZ)) {
+				dungeon.placeObject(world, worldX, worldY, worldZ);
+			}
+		}
+	}
+
+	public interface WGOFactory {
+		WorldGeneratorObject createObject(Random random);
 	}
 }
