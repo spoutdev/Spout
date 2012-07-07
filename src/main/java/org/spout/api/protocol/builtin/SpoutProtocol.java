@@ -1,6 +1,7 @@
 /*
- * This file is part of SpoutAPI (http://www.spout.org/).
+ * This file is part of SpoutAPI.
  *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
  * SpoutAPI is licensed under the SpoutDev License Version 1.
  *
  * SpoutAPI is free software: you can redistribute it and/or modify
@@ -28,7 +29,8 @@ package org.spout.api.protocol.builtin;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.entity.component.controller.type.ControllerType;
-import org.spout.api.protocol.HandlerLookupService;
+import org.spout.api.map.DefaultedKey;
+import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.builtin.message.CommandMessage;
@@ -39,10 +41,11 @@ import org.spout.api.protocol.builtin.message.LoginMessage;
  */
 public class SpoutProtocol extends Protocol {
 	public static final int ENTITY_PROTOCOL_ID = ControllerType.getProtocolId(SpoutProtocol.class.getName());
+	public static final DefaultedKey<Integer> PLAYER_ENTITY_ID = new DefaultedKeyImpl<Integer>("playerEntityId", -1);
 	public static final int PROTOCOL_VERSION = 0;
 
-	public SpoutProtocol(HandlerLookupService handlerLookup) {
-		super("Spout", new SpoutCodecLookupService(), handlerLookup);
+	public SpoutProtocol() {
+		super("Spout", new SpoutCodecLookupService(), new SpoutHandlerLookupService());
 	}
 
 	public Message getKickMessage(Object... message) {

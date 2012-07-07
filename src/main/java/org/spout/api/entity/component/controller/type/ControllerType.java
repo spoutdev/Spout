@@ -37,7 +37,7 @@ import org.spout.api.util.StringMap;
  */
 public abstract class ControllerType {
 	public static final int UNREGISTERED_ID = -1;
-	private static final StringMap protocolMap = new StringMap(null, new MemoryStore<Integer>(), 0, 256);
+	private static final StringMap protocolMap = new StringMap(null, new MemoryStore<Integer>(), 0, 256, "controllerTypeProtocols");
 
 	private final String name;
 	private int id = UNREGISTERED_ID;

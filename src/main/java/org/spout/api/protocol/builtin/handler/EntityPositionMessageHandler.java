@@ -24,35 +24,23 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.protocol.builtin.codec;
+package org.spout.api.protocol.builtin.handler;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.spout.api.geo.discrete.Transform;
-import org.spout.api.protocol.MessageCodec;
-import org.spout.api.protocol.builtin.ChannelBufferUtils;
+import org.spout.api.entity.Entity;
+import org.spout.api.player.Player;
+import org.spout.api.protocol.MessageHandler;
+import org.spout.api.protocol.Session;
 import org.spout.api.protocol.builtin.message.EntityPositionMessage;
 
 /**
  * @author zml2008
  */
-public class EntityPositionCodec extends MessageCodec<EntityPositionMessage> {
-	public EntityPositionCodec() {
-		super(EntityPositionMessage.class, 0x07, true);
-	}
-
+public class EntityPositionMessageHandler extends MessageHandler<EntityPositionMessage> {
 	@Override
-	public ChannelBuffer encode(EntityPositionMessage message) {
-		ChannelBuffer buffer = ChannelBuffers.buffer(4 + ChannelBufferUtils.TRANSFORM_SIZE);
-		buffer.writeInt(message.getEntityId());
-		ChannelBufferUtils.writeTransform(buffer, message.getTransform());
-		return buffer;
-	}
-
-	@Override
-	public EntityPositionMessage decode(ChannelBuffer buffer) {
-		final int entityId = buffer.readInt();
-		final Transform transform = ChannelBufferUtils.readTransform(buffer);
-		return new EntityPositionMessage(entityId, transform);
+	public void handleClient(Session session, Player player, EntityPositionMessage message) {
+		Entity entity = player.getEntity().getWorld().getEntity(message.getEntityId());
+		if (entity != null) {
+			entity.setTransform(message.getTransform());
+		}
 	}
 }

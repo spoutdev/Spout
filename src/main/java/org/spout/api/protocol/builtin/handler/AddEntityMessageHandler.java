@@ -24,35 +24,26 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.protocol.builtin.codec;
+package org.spout.api.protocol.builtin.handler;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.spout.api.geo.discrete.Transform;
-import org.spout.api.protocol.MessageCodec;
-import org.spout.api.protocol.builtin.ChannelBufferUtils;
-import org.spout.api.protocol.builtin.message.EntityPositionMessage;
+import org.spout.api.entity.Entity;
+import org.spout.api.entity.component.Controller;
+import org.spout.api.player.Player;
+import org.spout.api.protocol.MessageHandler;
+import org.spout.api.protocol.Session;
+import org.spout.api.protocol.builtin.message.AddEntityMessage;
 
-/**
- * @author zml2008
- */
-public class EntityPositionCodec extends MessageCodec<EntityPositionMessage> {
-	public EntityPositionCodec() {
-		super(EntityPositionMessage.class, 0x07, true);
-	}
-
+public class AddEntityMessageHandler extends MessageHandler<AddEntityMessage> {
 	@Override
-	public ChannelBuffer encode(EntityPositionMessage message) {
-		ChannelBuffer buffer = ChannelBuffers.buffer(4 + ChannelBufferUtils.TRANSFORM_SIZE);
-		buffer.writeInt(message.getEntityId());
-		ChannelBufferUtils.writeTransform(buffer, message.getTransform());
-		return buffer;
-	}
+	public void handleClient(Session session, Player player, AddEntityMessage message) {
+		Controller controller = message.getType().createController();
+		if (controller == null) {
+			throw new IllegalArgumentException("Error spawning entity, controller of type " + message.getType().getName() + " is null!");
+		}
+		Entity newEntity = player.getEntity().getWorld().createEntity(message.getPosition().getPosition(), controller);
+		newEntity.setTransform(message.getPosition());
+		//newEntity.setId(message.getEntityId()); // TODO: Allow providing an entity ID to use
+		player.getEntity().getWorld().spawnEntity(newEntity);
 
-	@Override
-	public EntityPositionMessage decode(ChannelBuffer buffer) {
-		final int entityId = buffer.readInt();
-		final Transform transform = ChannelBufferUtils.readTransform(buffer);
-		return new EntityPositionMessage(entityId, transform);
 	}
 }

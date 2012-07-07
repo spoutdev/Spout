@@ -26,11 +26,17 @@
  */
 package org.spout.api.util;
 
+import java.lang.ref.WeakReference;
 import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.io.store.simple.SimpleStore;
+import org.spout.api.protocol.builtin.message.StringMapMessage;
 
 /**
  * Represents a map for mapping Strings to unique ids.
@@ -42,6 +48,8 @@ import org.spout.api.io.store.simple.SimpleStore;
  */
 
 public class StringMap {
+	private static final StringMap STRING_MAP_REGISTRATION = new StringMap(StringMapMessage.STRINGMAP_REGISTRATION_MAP); // This is a special case
+	private static final ConcurrentMap<String, WeakReference<StringMap>> REGISTERED_MAPS = new ConcurrentHashMap<String, WeakReference<StringMap>>();
 	private final StringMap parent;
 	private final SimpleStore<Integer> store;
 
@@ -52,6 +60,37 @@ public class StringMap {
 	private final int maxId;
 	private AtomicInteger nextId;
 
+	private final int id;
+
+	public static StringMap get(int id) {
+		if (id == StringMapMessage.STRINGMAP_REGISTRATION_MAP) {
+			return STRING_MAP_REGISTRATION;
+		}
+		String name = STRING_MAP_REGISTRATION.getString(id);
+		if (name != null) {
+			WeakReference<StringMap> ref =  REGISTERED_MAPS.get(name);
+			if (ref != null) {
+				StringMap map = ref.get();
+				if (map == null) {
+					REGISTERED_MAPS.remove(name);
+				}
+				return map;
+			}
+		}
+		return null;
+	}
+
+	private StringMap(int id) {
+		this.id = id;
+		this.parent = null;
+		this.store = new MemoryStore<Integer>();
+		this.minId = 0;
+		this.maxId = Integer.MAX_VALUE;
+		this.thisToParentMap = null;
+		this.parentToThisMap = null;
+		nextId = new AtomicInteger(minId);
+	}
+
 	/**
 	 * @param parent the parent of this map
 	 * @param store the store to store ids
@@ -59,23 +98,34 @@ public class StringMap {
 	 * @param minId the lowest valid id for dynamic allocation (ids below this are assumed to be reserved)
 	 * @param maxId the highest valid id + 1
 	 */
-	public StringMap(StringMap parent, SimpleStore<Integer> store, int minId, int maxId) {
+	public StringMap(StringMap parent, SimpleStore<Integer> store, int minId, int maxId, String name) {
 		this.parent = parent;
 		this.store = store;
-		thisToParentMap = new AtomicIntegerArray(maxId);
-		parentToThisMap = new AtomicIntegerArray(maxId);
-		for (int i = 0; i < maxId; i++) {
-			thisToParentMap.set(i, 0);
-			parentToThisMap.set(i, 0);
+		if (this.parent != null) {
+			thisToParentMap = new AtomicIntegerArray(maxId);
+			parentToThisMap = new AtomicIntegerArray(maxId);
+			for (int i = 0; i < maxId; i++) {
+				thisToParentMap.set(i, 0);
+				parentToThisMap.set(i, 0);
+			}
+		} else {
+			thisToParentMap = null;
+			parentToThisMap = null;
 		}
 		this.minId = minId;
 		this.maxId = maxId;
 		nextId = new AtomicInteger(minId);
+		this.id = STRING_MAP_REGISTRATION.register(name);
+		REGISTERED_MAPS.put(name, new WeakReference<StringMap>(this));
 	}
-	
+
+	public int getId() {
+		return id;
+	}
+
 	/**
 	 * Converts an id local to this map to the id local to the parent map
-	 * 
+	 *
 	 * @param localId to convert
 	 * @return the foreign id, or 0 on failure
 	 */
@@ -94,6 +144,9 @@ public class StringMap {
 	 * @return returns the foreign id, or 0 on failure
 	 */
 	public int convertTo(StringMap other, int localId) {
+		if (other == null) {
+			throw new IllegalStateException("Other map is null");
+		}
 		int foreignId = 0;
 
 		if (other == this) {
@@ -185,18 +238,18 @@ public class StringMap {
 
 		throw new IllegalStateException("StringMap id space exhausted");
 	}
-	
+
 	/**
 	 * Registers a key/id pair with the map.  If the id is already in use the method will fail.<br>
 	 * <br>
 	 * The id must be lower than the min id for the map to prevent clashing with the dynamically allocated ids
-	 * 
+	 *
 	 * @param key the key to be added
 	 * @param id the desired id to be matched to the key
 	 * @return true if the key/id pair was successfully registered
 	 * @exception IllegalArgumentException if the id >= minId
 	 */
-	
+
 	public boolean register(String key, int id) {
 		if (id >= this.minId) {
 			throw new IllegalArgumentException("Hardcoded ids must be below the minimum id value");
@@ -204,10 +257,10 @@ public class StringMap {
 
 		return store.setIfAbsent(key, id);
 	}
-	
+
 	/**
 	 * Gets the String corresponding to a given int.
-	 * 
+	 *
 	 * @param value
 	 * @return the String or null if no match
 	 */
@@ -223,7 +276,7 @@ public class StringMap {
 	public boolean save() {
 		return store.save();
 	}
-	
+
 	/**
 	 * Returns a collection of all keys for all key, value pairs within the
 	 * Store
@@ -232,5 +285,34 @@ public class StringMap {
 	 */
 	public Collection<String> getKeys() {
 		return store.getKeys();
+	}
+
+	public void handleUpdate(StringMapMessage message) {
+		switch (message.getAction()) {
+			case SET:
+				clear();
+			case ADD:
+				for (Pair<Integer, String> pair : message.getElements()) {
+					store.set(pair.getValue(), pair.getKey());
+				}
+				break;
+			case REMOVE:
+				for (Pair<Integer, String> pair : message.getElements()) {
+					store.remove(pair.getValue());
+				}
+				break;
+		}
+	}
+
+	public void clear() {
+		while (!this.nextId.compareAndSet(minId, minId)) {
+			if (this.parent != null) {
+				for (int i = 0; i < maxId; i++) {
+					thisToParentMap.set(i, 0);
+					parentToThisMap.set(i, 0);
+				}
+			}
+			store.clear();
+		}
 	}
 }

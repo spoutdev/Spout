@@ -47,7 +47,7 @@ import org.spout.api.util.StringMap;
 import org.spout.api.util.VarInt;
 
 public class GenericDatatableMap implements DatatableMap {
-	private static final StringMap ROOT_STRING_MAP = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE);
+	private static final StringMap ROOT_STRING_MAP = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE, GenericDatatableMap.class.getName());
 	private final StringMap stringmap;
 	TSynchronizedIntObjectMap<DatatableObject> map = new TSynchronizedIntObjectMap<DatatableObject>(new TIntObjectHashMap<DatatableObject>());
 
@@ -79,7 +79,7 @@ public class GenericDatatableMap implements DatatableMap {
 
 		setRaw(key, value);
 	}
-	
+
 	private void setRaw(int key, DatatableObject value) {
 		value.setKey(key);
 		map.put(key, value);
@@ -100,17 +100,17 @@ public class GenericDatatableMap implements DatatableMap {
 	public byte[] compress() {
 		final ByteArrayOutputStream stringOutput = new ByteArrayOutputStream();
 		final ByteArrayOutputStream objectOutput = new ByteArrayOutputStream();
-		
+
 		GDMCompressProcedure procedure = new GDMCompressProcedure(this, stringOutput, objectOutput);
-		
+
 		boolean success = map.forEachEntry(procedure);
-		
+
 		if (!success) {
 			throw new IllegalStateException("Unable to compress GenericDatatableMap");
 		}
-		
+
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		
+
 		try {
 			VarInt.writeInt(out, procedure.strings);
 			VarInt.writeInt(out, procedure.objects);
@@ -122,7 +122,7 @@ public class GenericDatatableMap implements DatatableMap {
 		}
 		return out.toByteArray();
 	}
-	
+
 	public void decompress(byte[] compressedData, boolean wipe) {
 		if (wipe) {
 			map.clear();
@@ -167,7 +167,7 @@ public class GenericDatatableMap implements DatatableMap {
 		VarInt.writeInt(out, compressed.length);
 		out.write(compressed);
 	}
-	
+
 	public void input(InputStream in) throws IOException {
 		input(in, true);
 	}
@@ -184,7 +184,7 @@ public class GenericDatatableMap implements DatatableMap {
 		}
 		decompress(compressed, wipe);
 	}
-	
+
 	public static DatatableMap readMap(InputStream in) throws IOException {
 		GenericDatatableMap map = new GenericDatatableMap();
 		map.input(in);
@@ -196,7 +196,7 @@ public class GenericDatatableMap implements DatatableMap {
 		int intKey = getIntKey(key);
 		return map.containsKey(intKey);
 	}
-	
+
 	@Override
 	public boolean contains(int key) {
 		return map.containsKey(key);
@@ -261,5 +261,5 @@ public class GenericDatatableMap implements DatatableMap {
 	public Collection<DatatableObject> values() {
 		return map.valueCollection();
 	}
-	
+
 }

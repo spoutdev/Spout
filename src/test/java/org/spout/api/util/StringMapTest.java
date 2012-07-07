@@ -72,11 +72,11 @@ public class StringMapTest {
 		world2File.delete();
 
 		serverStore = new MemoryStore<Integer>();
-		serverMap = new StringMap(null, serverStore, minValue, maxValue);
+		serverMap = new StringMap(null, serverStore, minValue, maxValue, "serverMap");
 
 		readWorldFiles();
 	}
-	
+
 	@After
 	public void cleanUp() {
 		world1File.delete();
@@ -221,11 +221,11 @@ public class StringMapTest {
 	private void readWorldFiles() {
 		world1Store = new FlatFileStore<Integer>(world1File, Integer.class);
 		world1Store.load();
-		world1Map = new StringMap(serverMap, world1Store, minValue, maxValue);
+		world1Map = new StringMap(serverMap, world1Store, minValue, maxValue, "world1");
 
 		world2Store = new FlatFileStore<Integer>(world2File, Integer.class);
 		world2Store.load();
-		world2Map = new StringMap(serverMap, world2Store, minValue, maxValue);
+		world2Map = new StringMap(serverMap, world2Store, minValue, maxValue, "world2");
 	}
 
 	private void fillServerMap() {

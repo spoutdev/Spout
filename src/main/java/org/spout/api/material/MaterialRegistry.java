@@ -44,14 +44,14 @@ public abstract class MaterialRegistry {
 	private final static AtomicReference<Material>[] materialLookup = new AtomicReference[MAX_SIZE];
 	private static boolean setup = false;
 	private final static BinaryFileStore store = new BinaryFileStore();
-	private final static StringMap materialRegistry = new StringMap(null, store, 1, Short.MAX_VALUE);;
+	private final static StringMap materialRegistry = new StringMap(null, store, 1, Short.MAX_VALUE, Material.class.getName());
 
 	static {
 		for (int i = 0; i < materialLookup.length; i++) {
 			materialLookup[i] = new AtomicReference<Material>();
 		}
 	}
-	
+
 	/**
 	 * Sets up the material registry for it's first use. May not be called more than once.
 	 */
@@ -71,7 +71,7 @@ public abstract class MaterialRegistry {
 
 	/**
 	 * Registers the material in the material lookup service
-	 * 
+	 *
 	 * @param material to register
 	 */
 	protected static int register(Material material) {
@@ -92,7 +92,7 @@ public abstract class MaterialRegistry {
 
 	/**
 	 * Registers the material in the material lookup service
-	 * 
+	 *
 	 * @param material to register
 	 */
 	protected static int register(Material material, int id) {
@@ -117,19 +117,19 @@ public abstract class MaterialRegistry {
 		}
 		return materialLookup[id].get();
 	}
-	
+
 	/**
 	 * Gets the material for the given BlockFullState
-	 * 
+	 *
 	 * @param state the full state of the block
 	 */
 	public static Material get(BlockFullState state) {
 		return get(state.getPacked());
 	}
-		
+
 	/**
 	 * Gets the material for the given packed full state
-	 * 
+	 *
 	 * @param state the full state of the block
 	 */
 	public static Material get(int packedState) {
@@ -171,14 +171,14 @@ public abstract class MaterialRegistry {
 	public static Material get(String name) {
 		return nameLookup.get(formatName(name));
 	}
-	
+
 	private static String formatName(String matName) {
 		return matName.trim().replaceAll(" ", "_").toLowerCase();
 	}
 
 	/**
 	 * Gets the minimum data mask required to account for all sub-materials of the material
-	 * 
+	 *
 	 * @param m the material
 	 * @return the minimum data mask
 	 */

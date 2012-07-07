@@ -39,7 +39,7 @@ import org.spout.api.util.StringMap;
  * Handles lookup of entity controller types.
  */
 public class ControllerRegistry {
-	private static final StringMap ID_LOOKUP = new StringMap(null, new MemoryStore<Integer>(), 0, Integer.MAX_VALUE);
+	private static final StringMap ID_LOOKUP = new StringMap(null, new MemoryStore<Integer>(), 0, Integer.MAX_VALUE, ControllerType.class.getName());
 	private static final Map<String, ControllerType> NAME_LOOKUP = new HashMap<String, ControllerType>();
 	private static final Map<Class<? extends Controller>, ControllerType> CLASS_LOOKUP = new HashMap<Class<? extends Controller>, ControllerType>();
 

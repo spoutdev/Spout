@@ -39,7 +39,7 @@ public final class BiomeRegistry {
 	private final static AtomicReference<Biome>[] biomes = new AtomicReference[MAX_BIOMES];
 	private static boolean setup = false;
 	private final static BinaryFileStore store = new BinaryFileStore();
-	private final static StringMap biomeRegistry = new StringMap(null, store, 1, MAX_BIOMES);
+	private final static StringMap biomeRegistry = new StringMap(null, store, 1, MAX_BIOMES, Biome.class.getName());
 
 	static {
 		for (int i = 0; i < biomes.length; i++) {

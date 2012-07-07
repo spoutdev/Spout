@@ -41,7 +41,7 @@ import org.spout.api.util.StringMap;
  * FontRenderer. Names are from <a href="http://wiki.vg/Chat">http://wiki.vg/Chat</a>
  */
 public abstract class ChatStyle {
-	private static final StringMap ID_LOOKUP = new StringMap(null, new MemoryStore<Integer>(), 0, Integer.MAX_VALUE);
+	private static final StringMap ID_LOOKUP = new StringMap(null, new MemoryStore<Integer>(), 0, Integer.MAX_VALUE, ChatStyle.class.getName());
 	private static final Map<String, ChatStyle> BY_NAME = new HashMap<String, ChatStyle>();
 	private static final Set<ChatStyle> VALUES = new HashSet<ChatStyle>();
 
