@@ -29,26 +29,32 @@ package org.spout.api.inventory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-
 import java.util.List;
 import java.util.Map.Entry;
+
 import org.spout.api.material.Material;
 import org.spout.api.plugin.Plugin;
 
 @SuppressWarnings("unchecked")
 public class RecipeBuilder{
-	public Plugin plugin; // RecipeBuilderODO null check? Is it needed?
-	public ItemStack result;
+	public Plugin plugin = null;
+	public ItemStack result = null;
 	public HashMap<Character, Material> ingredientsMap = new HashMap<Character, Material>();
 	public List<List<Character>> rows = new ArrayList<List<Character>>();
 	public List<Material> ingredients = new ArrayList<Material>();
 	public boolean includeData = false;
 
-	public ShapedRecipe buildShapedRecipe() {
+	public ShapedRecipe buildShapedRecipe() throws IllegalStateException {
+		if (result == null) {
+			throw new IllegalStateException("Result must be set.");
+		}
+		if (rows.isEmpty()) {
+			throw new IllegalStateException("Must add rows.");
+		}
 		ArrayList<Material> nullCheck = new ArrayList<Material>(ingredientsMap.values());
 		nullCheck.removeAll(Collections.singletonList(null));
 		if (nullCheck.isEmpty()) { // Make sure there is at least one ingredient
-			return null;
+			throw new IllegalStateException("Must specify the ingredients.");
 		}
 		if (!includeData) {
 			for (Entry<Character, Material> entry : ingredientsMap.entrySet()) {
@@ -62,10 +68,13 @@ public class RecipeBuilder{
 	}
 	
 	public ShapelessRecipe buildShapelessRecipe() {
+		if (result == null) {
+			throw new IllegalStateException("Result must be set.");
+		}
 		ArrayList<Material> nullCheck = new ArrayList<Material>(ingredients);
 		nullCheck.removeAll(Collections.singletonList(null));
 		if (nullCheck.isEmpty()) {
-			return null;
+			throw new IllegalStateException("Mus add materials.");
 		}
 		if (!includeData) {
 			for (int i = 0; i < ingredients.size(); i++) {
@@ -78,7 +87,7 @@ public class RecipeBuilder{
 		}
 		return new ShapelessRecipe(this);
 	}
-    
+
 	public RecipeBuilder addPlugin(Plugin plugin) {
 		this.plugin = plugin;
 		return this;
@@ -158,7 +167,7 @@ public class RecipeBuilder{
 	
 	public RecipeBuilder removeRow(int rowNumber) {
 		if (rows.size() < rowNumber) {
-		    return this;
+			return this;
 		}
 		rows.remove(rowNumber);
 		return this;
@@ -166,7 +175,7 @@ public class RecipeBuilder{
 	
 	public RecipeBuilder replaceRow(int rowNumber, List<Character> newRow) {
 		if (rows.size() < rowNumber || newRow == null) {
-		    return this;
+			return this;
 		}
 		rows.remove(rowNumber);
 		rows.add(rowNumber, newRow);
@@ -175,7 +184,7 @@ public class RecipeBuilder{
 	
 	public RecipeBuilder replaceRow(int rowNumber, String str) {
 		if (rows.size() < rowNumber || str == null) {
-		    return this;
+			return this;
 		}
 		rows.remove(rowNumber);
 		char[] chars = str.toCharArray();

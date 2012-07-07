@@ -43,13 +43,6 @@ public class ShapelessRecipe implements Recipe {
 	private final List<Material> ingredients;
 	private final boolean includeData;
 
-	public ShapelessRecipe(Plugin plugin, ItemStack result, List<Material> ingredients, boolean includeData) {
-		this.plugin = plugin;
-		this.result = result;
-		this.ingredients = ingredients;
-		this.includeData = includeData;
-	}
-
 	public ShapelessRecipe(RecipeBuilder builder) {
 		this.plugin = builder.plugin;
 		this.result = builder.result;
