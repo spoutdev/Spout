@@ -130,7 +130,7 @@ public class AdministrationCommands {
 	public void plugins(CommandContext args, CommandSource source) {
 		Plugin[] pluginList = Spout.getEngine().getPluginManager().getPlugins();
 		List<Object> pluginListString = new ArrayList<Object>(pluginList.length * 3 + 3);
-		pluginListString.addAll(Arrays.asList("Plugins (", pluginList.length, "): "));
+		pluginListString.addAll(Arrays.<Object>asList("Plugins (", pluginList.length, "): "));
 
 		for (int i = 0; i < pluginList.length; i++) {
 			if (pluginList[i].getName().equalsIgnoreCase("Spout")) {

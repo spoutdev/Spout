@@ -42,6 +42,7 @@ import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.material.source.DataSource;
 import org.spout.api.material.source.MaterialSource;
+import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.LogicUtil;
 import org.spout.api.util.StringUtil;
@@ -280,18 +281,10 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public byte getLight() {
-		return this.getChunk().getBlockLight(this.x, this.y, this.z);
-	}
-
-	@Override
-	public Block setLight(byte level) {
-		this.getChunk().setBlockLight(this.x, this.y, this.z, level, this.source);
-		return this;
-	}
-
-	@Override
-	public byte getSkyLight() {
-		return this.getChunk().getBlockSkyLight(this.x, this.y, this.z);
+		byte sky = this.getSkyLight();
+		byte block = this.getBlockLight();
+		//TODO: Use world time to find out correct sky light?
+		return MathHelper.max(sky, block);
 	}
 
 	@Override
@@ -301,14 +294,30 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public BlockController getController() {
-		return getRegion().getBlockController(x, y, z);
+	public Block setBlockLight(byte level) {
+		this.getChunk().setBlockLight(this.x, this.y, this.z, level, this.source);
+		return this;
 	}
 
 	@Override
-	public Block setController(BlockController controller) {
-		getRegion().setBlockController(x, y, z, controller);
-		return this;
+	public byte getBlockLight() {
+		return this.getChunk().getBlockLight(this.x, this.y, this.z);
+	}
+
+	@Override
+	public byte getSkyLight() {
+		return this.getChunk().getBlockSkyLight(this.x, this.y, this.z);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T extends BlockController> T getController() {
+		BlockMaterial material = this.getMaterial();
+		if (material.hasController()) {
+			return (T) material.getController(this);
+		} else {
+			return null;
+		}
 	}
 
 	@Override

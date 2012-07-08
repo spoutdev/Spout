@@ -26,8 +26,6 @@
  */
 package org.spout.engine.renderer.shader;
 
-import java.io.FileNotFoundException;
-
 /**
  * Empty Shader for 1.1 only.  Do not use this for 3.0 ever.
  * @author RoyAwesome

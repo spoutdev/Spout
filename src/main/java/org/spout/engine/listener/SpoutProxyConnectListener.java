@@ -50,6 +50,15 @@ public class SpoutProxyConnectListener implements ChannelFutureListener {
 		this.playerName = playerName;
 	}
 
+	/**
+	 * Gets the Engine that of this listener
+	 * 
+	 * @return the Engine
+	 */
+	public Engine getEngine() {
+		return this.engine;
+	}
+
 	@Override
 	public void operationComplete(ChannelFuture future) throws Exception {
 		if (!future.isDone()) {
