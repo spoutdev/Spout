@@ -26,9 +26,6 @@
  */
 package org.spout.api.util;
 
-// TODO -- should use the chunk based field set field system
-//         can remove deprecated once that is done
-@Deprecated
 public class LogicUtil {
 
 	/**
@@ -37,8 +34,8 @@ public class LogicUtil {
 	 * @param objects to use equals against
 	 * @return True if one of the objects equal the object
 	 */
-	public static boolean equalsAny(Object object, Object... objects) {
-		for (Object o : objects) {
+	public static <A, B> boolean equalsAny(A object, B... objects) {
+		for (B o : objects) {
 			if (bothNullOrEqual(o, object)) {
 				return true;
 			}

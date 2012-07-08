@@ -300,27 +300,44 @@ public interface Block extends MaterialState {
 	public int setDataField(int bits, int value);
 
 	/**
-	 * Gets the block light level
-	 *
-	 * @return the block light level
-	 * @throws NullPointerException
+	 * Gets the current light level of the block<br>
+	 * This is both sky and block light
+	 * 
+	 * @return the light level
 	 */
 	public byte getLight();
 
 	/**
-	 * Sets the block light level to the given light level
+	 * Sets the sky light level to the given light level<br><br>
+	 * <b>Note: For persistence, alter block material light levels instead</b>
+	 * 
+	 * @param light level to set to
+	 * @return this Block
+	 * @throws NullPointerException
+	 */
+	public Block setSkyLight(byte level);
+
+	/**
+	 * Sets the block light level to the given light level<br><br>
+	 * <b>Note: For persistence, alter block material light levels instead</b>
 	 *
 	 * @param light level to set to
 	 * @return this Block
 	 * @throws NullPointerException
 	 */
-	public Block setLight(byte level);
+	public Block setBlockLight(byte level);
+
+	/**
+	 * Gets the block light level
+	 *
+	 * @return the block light level
+	 */
+	public byte getBlockLight();
 
 	/**
 	 * Gets the sky light level
 	 *
 	 * @return the sky light level
-	 * @throws NullPointerException
 	 */
 	public byte getSkyLight();
 
@@ -333,28 +350,11 @@ public interface Block extends MaterialState {
 	public Biome getBiomeType();
 
 	/**
-	 * Sets the sky light level to the given light level
-	 *
-	 * @param light level to set to
-	 * @return this Block
-	 * @throws NullPointerException
-	 */
-	public Block setSkyLight(byte level);
-
-	/**
 	 * Gets a controller associated with the block, or null if it has none.
 	 *
 	 * @return block controller
 	 */
-	public BlockController getController();
-
-	/**
-	 * Sets the entity associated with the block.
-	 *
-	 * @param controller to set to, or null to clear it
-	 * @return this Block
-	 */
-	public Block setController(BlockController controller);
+	public <T extends BlockController> T getController();
 
 	/**
 	 * Whether or not the block is associated with a block controller

@@ -32,7 +32,6 @@ import java.util.Random;
 
 import org.junit.Test;
 import org.spout.api.material.block.BlockFullState;
-import org.spout.api.math.MathHelper;
 
 public class AtomicSliceStoreTest {
 	private final static int MAX_SIZE = 16*16;

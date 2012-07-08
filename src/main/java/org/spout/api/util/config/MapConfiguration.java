@@ -54,7 +54,7 @@ public class MapConfiguration extends MapBasedConfiguration {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void saveFromMap(Map<?, ?> map) {
 		this.map.clear();
 		((Map) this.map).putAll(map);

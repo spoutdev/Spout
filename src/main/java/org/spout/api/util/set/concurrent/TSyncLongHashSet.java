@@ -27,10 +27,8 @@
 package org.spout.api.util.set.concurrent;
 
 import gnu.trove.TLongCollection;
-import gnu.trove.function.TObjectFunction;
 import gnu.trove.impl.Constants;
 import gnu.trove.iterator.TLongIterator;
-import gnu.trove.procedure.TLongObjectProcedure;
 import gnu.trove.procedure.TLongProcedure;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;

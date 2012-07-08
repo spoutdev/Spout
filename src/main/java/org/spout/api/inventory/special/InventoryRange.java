@@ -44,6 +44,7 @@ public class InventoryRange extends InventoryBase {
 		this.size = size;
 		this.parent = parent;
 		this.offset = offset;
+		this.parent.addInventoryViewer(this);
 	}
 
 	@Override
@@ -92,7 +93,10 @@ public class InventoryRange extends InventoryBase {
 	@Override
 	public void onParentUpdate(InventoryBase inventory, int slot, ItemStack item) {
 		if (inventory == this.parent && this.getNotifyViewers()) {
-			this.notifyViewers(slot - this.offset, item);
+			slot -= this.offset;
+			if (slot >= 0 && slot < this.getSize()) {
+				this.notifyViewers(slot, item);
+			}
 		}
 	}
 

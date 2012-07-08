@@ -35,7 +35,7 @@ import java.lang.reflect.WildcardType;
  * A wrapper around {@link Type} to allow easier access to parameterized types.
  */
 public class GenericType {
-	private final Class mainType;
+	private final Class<?> mainType;
 	private final GenericType[] neededGenerics;
 	private final GenericType arrayType;
 	private final Type rawType;
@@ -79,11 +79,11 @@ public class GenericType {
 		return arrayType;
 	}
 
-	private static Class getMainType(Type type) {
+	private static Class<?> getMainType(Type type) {
 		if (type instanceof Class) {
-			return (Class) type;
+			return (Class<?>) type;
 		} else if (type instanceof WildcardType) {
-			return (Class) ((WildcardType) type).getUpperBounds()[0];
+			return (Class<?>) ((WildcardType) type).getUpperBounds()[0];
 		} else {
 			throw new IllegalArgumentException("Unknown main class type: " + type.getClass());
 		}

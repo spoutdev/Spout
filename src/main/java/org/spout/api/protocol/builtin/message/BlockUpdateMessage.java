@@ -42,7 +42,7 @@ public class BlockUpdateMessage extends Message {
 		this.z = block.getZ();
 		this.type = block.getMaterial().getId();
 		this.data = block.getData();
-		this.blockLight = block.getLight();
+		this.blockLight = block.getBlockLight();
 		this.skyLight = block.getSkyLight();
 	}
 

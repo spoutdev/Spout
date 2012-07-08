@@ -36,7 +36,6 @@ import org.spout.api.gui.Layout;
 import org.spout.api.gui.MouseButton;
 import org.spout.api.gui.MouseEventHandler;
 import org.spout.api.gui.Widget;
-import org.spout.api.tickable.Tickable;
 
 public abstract class AbstractLayout implements Layout {
 	private Container parent = null;

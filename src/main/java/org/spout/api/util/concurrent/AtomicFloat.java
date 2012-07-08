@@ -26,7 +26,6 @@
  */
 package org.spout.api.util.concurrent;
 
-import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**

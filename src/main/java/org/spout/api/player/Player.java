@@ -27,11 +27,8 @@
 package org.spout.api.player;
 
 import java.net.InetAddress;
-import org.spout.api.Source;
 import org.spout.api.command.CommandSource;
-import org.spout.api.data.DataSubject;
 import org.spout.api.entity.Entity;
-import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.Session;
 import org.spout.api.util.thread.Threadsafe;
