@@ -40,6 +40,6 @@ public class BlockUpdateMessageHandler extends MessageHandler<BlockUpdateMessage
 	public void handleClient(Session session, Player player, BlockUpdateMessage message) {
 		player.getEntity().getWorld().getBlock(message.getX(), message.getY(), message.getZ())
 		.setMaterial(Material.get(message.getType()), message.getData())
-		.setLight(message.getBlockLight()).setSkyLight(message.getSkyLight());
+		.setBlockLight(message.getBlockLight()).setSkyLight(message.getSkyLight());
 	}
 }

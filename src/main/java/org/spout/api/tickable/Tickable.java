@@ -55,7 +55,7 @@ public class Tickable implements ITickable {
 			LogicRunnable<Tickable> process = activeProcesses.get(i);
 			if (process != null && process.shouldRun(dt)) {
 				process.run();
-				if (process instanceof TimedLogicRunnable && !((TimedLogicRunnable) process).loops()) {
+				if (process instanceof TimedLogicRunnable && !((TimedLogicRunnable<?>) process).loops()) {
 					unregisterProcess(process);
 				}
 			}

@@ -51,7 +51,7 @@ public class SetSerializer extends Serializer {
 	@Override
 	protected Object handleDeserialize(GenericType type, Object value) {
 		Set<Object> values = new HashSet<Object>();
-		Collection raw = (Collection) value;
+		Collection<?> raw = (Collection<?>) value;
 		for (Object obj : raw) {
 			values.add(Serialization.deserialize(type.getGenerics()[0], obj));
 		}
@@ -61,7 +61,7 @@ public class SetSerializer extends Serializer {
 	@Override
 	protected Object handleSerialize(GenericType type, Object value) {
 		List<Object> values = new ArrayList<Object>();
-		Collection raw = (Collection) value;
+		Collection<?> raw = (Collection<?>) value;
 		for (Object obj : raw) {
 			values.add(Serialization.serialize(type.getGenerics()[0], obj));
 		}

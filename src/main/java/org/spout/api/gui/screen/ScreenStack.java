@@ -34,7 +34,6 @@ import java.util.List;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
-import org.spout.api.tickable.Tickable;
 import org.spout.api.gui.KeyboardEventHandler;
 import org.spout.api.gui.MouseButton;
 import org.spout.api.gui.MouseEventHandler;

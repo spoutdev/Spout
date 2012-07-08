@@ -99,7 +99,7 @@ public class AnnotatedConfigurationTest {
 		}
 	}
 
-	private static class SubConfiguration extends AnnotatedConfiguration {
+	public static class SubConfiguration extends AnnotatedConfiguration {
 
 		public SubConfiguration(Configuration baseConfig) {
 			super(baseConfig);
@@ -156,7 +156,7 @@ public class AnnotatedConfigurationTest {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void testSaving() throws ConfigurationException {
 		MapConfiguration saveConfig = new MapConfiguration();
 		annotatedConfig.save(saveConfig);
@@ -164,8 +164,8 @@ public class AnnotatedConfigurationTest {
 		SubConfiguration subConfig = new SubConfiguration(new MapConfiguration());
 		subConfig.save();
 		Map<String, Object> saveValues = saveConfig.getValues();
-		Collections.sort((List)saveValues.get(SET_ENUM_KEY));
-		Collections.sort((List)saveValues.get(SET_INTEGER_KEY));
+		Collections.sort((List) saveValues.get(SET_ENUM_KEY));
+		Collections.sort((List) saveValues.get(SET_INTEGER_KEY));
 		values.put(CONFIG_BASE_KEY, subConfig.getValues());
 		assertEquals(values, saveValues);
 	}

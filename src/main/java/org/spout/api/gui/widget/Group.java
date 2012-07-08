@@ -26,7 +26,6 @@
  */
 package org.spout.api.gui.widget;
 
-import org.spout.api.gui.Container;
 import org.spout.api.gui.TextProperties;
 import org.spout.api.gui.WidgetType;
 

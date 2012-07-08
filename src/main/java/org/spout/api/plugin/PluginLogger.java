@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 public class PluginLogger extends Logger {
     private final String tag;
     private final Plugin plugin;
-    
+
     protected PluginLogger(Plugin plugin) {
         super(plugin.getClass().getCanonicalName(), null);
         setLevel(Level.ALL);
@@ -46,5 +46,14 @@ public class PluginLogger extends Logger {
     public void log(LogRecord logRecord) {
         logRecord.setMessage(tag + logRecord.getMessage());
         super.log(logRecord);
+    }
+
+    /**
+     * Gets the Plugin associated with this Logger
+     * 
+     * @return the Plugin
+     */
+    public Plugin getPlugin() {
+    	return this.plugin;
     }
 }

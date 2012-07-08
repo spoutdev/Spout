@@ -26,7 +26,6 @@
  */
 package org.spout.api.material;
 
-import org.spout.api.Spout;
 import org.spout.api.collision.BoundingBox;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionStrategy;
@@ -35,7 +34,6 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.entity.component.controller.type.ControllerType;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
-import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.basic.BasicAir;
 import org.spout.api.material.basic.BasicSkyBox;
@@ -113,7 +111,6 @@ public class BlockMaterial extends Material implements Placeable {
 	private byte opacity = 0xF;
 	private final CollisionModel collision = new CollisionModel(new BoundingBox(0F, 0F, 0F, 1F, 1F, 1F));
 	private ControllerType controller = null;
-	private boolean randomTick;
 
 	/**
 	 * Sets the block controller associated with this material<br>
@@ -159,7 +156,7 @@ public class BlockMaterial extends Material implements Placeable {
 		if (this.controller == null) {
 			throw new IllegalStateException("Can not obtain the block controller because no controller type is set for this material.");
 		}
-		BlockController controller = block.getController();
+		BlockController controller = block.getRegion().getBlockController(block.getX(), block.getY(), block.getZ());
 		if (controller != null) {
 			Class<?> clazz = this.controller.getControllerClass();
 			if (clazz.isAssignableFrom(controller.getClass())) {
@@ -172,7 +169,7 @@ public class BlockMaterial extends Material implements Placeable {
 		}
 
 		controller = (BlockController) this.controller.createController();
-		block.setController(controller);
+		block.getRegion().setBlockController(block.getX(), block.getY(), block.getZ(), controller);
 		return controller;
 	}
 
@@ -360,7 +357,7 @@ public class BlockMaterial extends Material implements Placeable {
 	public void onDestroy(Block block) {
 		block.setMaterial(AIR);
 		if (this.hasController()) {
-			block.setController(null);
+			block.getRegion().setBlockController(block.getX(), block.getY(), block.getZ(), null);
 		}
 	}
 

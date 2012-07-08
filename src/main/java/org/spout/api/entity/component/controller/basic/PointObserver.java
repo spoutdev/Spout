@@ -28,7 +28,6 @@ package org.spout.api.entity.component.controller.basic;
 
 import org.spout.api.Spout;
 import org.spout.api.entity.component.Controller;
-import org.spout.api.entity.component.controller.PlayerController;
 import org.spout.api.entity.component.controller.type.ControllerType;
 import org.spout.api.entity.component.controller.type.EmptyConstructorControllerType;
 import org.spout.api.geo.cuboid.Chunk;

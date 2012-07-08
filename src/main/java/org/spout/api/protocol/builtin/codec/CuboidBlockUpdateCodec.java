@@ -28,7 +28,6 @@ package org.spout.api.protocol.builtin.codec;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.builtin.message.CuboidBlockUpdateMessage;
 

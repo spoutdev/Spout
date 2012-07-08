@@ -38,6 +38,7 @@ public class EnumSerializer extends Serializer {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	protected Object handleDeserialize(GenericType type, Object value) {
 		try {
 			return Enum.valueOf(type.getMainType().asSubclass(Enum.class), String.valueOf(value).toUpperCase());
