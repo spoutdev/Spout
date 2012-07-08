@@ -36,7 +36,6 @@ import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.spout.api.Spout;
-import org.spout.api.geo.World;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.CommonPipelineFactory;
@@ -45,7 +44,6 @@ import org.spout.engine.listener.SpoutProxyConnectListener;
 import org.spout.engine.listener.SpoutProxyListener;
 import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.protocol.SpoutSession;
-import org.spout.engine.world.SpoutWorld;
 
 import com.beust.jcommander.JCommander;
 

@@ -150,7 +150,6 @@ public class SpoutRegion extends Region{
 
 	private final ConcurrentLinkedQueue<SpoutChunkSnapshotFuture> snapshotQueue = new ConcurrentLinkedQueue<SpoutChunkSnapshotFuture>();
 
-	private boolean isPopulatingChunks = false;
 	protected Queue<Chunk> unloadQueue = new ConcurrentLinkedQueue<Chunk>();
 	public static final byte POPULATE_CHUNK_MARGIN = 1;
 	/**

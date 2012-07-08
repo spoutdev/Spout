@@ -37,10 +37,8 @@ import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.component.Controller;
 import org.spout.api.entity.component.controller.PlayerController;
 import org.spout.api.player.Player;
-import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.StringMap;
 
-import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashSet;
