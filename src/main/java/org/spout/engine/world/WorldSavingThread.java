@@ -29,7 +29,6 @@ package org.spout.engine.world;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;

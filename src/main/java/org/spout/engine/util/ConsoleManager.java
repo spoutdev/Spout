@@ -71,7 +71,6 @@ import jline.ConsoleOperations;
 import jline.ConsoleReader;
 import jline.NullCompletor;
 import org.fusesource.jansi.Ansi;
-import org.fusesource.jansi.AnsiConsole;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
