@@ -87,7 +87,7 @@ public abstract class MaterialRegistry {
 	protected static int register(Material material) {
 		if (material.isSubMaterial()) {
 			material.getParentMaterial().registerSubMaterial(material);
-			nameLookup.put(formatName(material.getName()), material);
+			nameLookup.put(formatName(material.getDisplayName()), material);
 			return material.getParentMaterial().getId();
 		} else {
 			int id = materialRegistry.register(material.getName());
@@ -95,7 +95,7 @@ public abstract class MaterialRegistry {
 				throw new IllegalArgumentException(materialLookup[id].get() + " is already mapped to id: " + material.getId() + "!");
 			}
 
-			nameLookup.put(formatName(material.getName()), material);
+			nameLookup.put(formatName(material.getDisplayName()), material);
 			return id;
 		}
 	}

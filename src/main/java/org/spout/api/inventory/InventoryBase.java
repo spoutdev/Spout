@@ -404,6 +404,39 @@ public abstract class InventoryBase implements Serializable, Iterable<ItemStack>
 	}
 
 	/**
+	 * Checks if item fits into inventory fully.
+	 * 
+	 * @param item to add
+	 * @param stackItem whether to stack the item to other items
+	 * @param toEmptySlot whether to add the item to empty slots
+	 * @return True if item can fully fit, false if it can't
+	 */
+	public boolean canItemFit(ItemStack item, boolean stackItem, boolean toEmptySlot) {
+		if (stackItem && toEmptySlot) {
+			return this.canItemFit(item, true, false) || this.canItemFit(item, false, true);
+		}
+		ItemStack content;
+		for (int i = 0; i < this.getSize(); ++i) {
+			content = this.getItem(i);
+			if (stackItem) {
+				if (content == null || !content.equalsIgnoreSize(item)) {
+					continue;
+				}
+				content.stack(item);
+			} else if (toEmptySlot) {
+				if (content != null && !content.isEmpty()) {
+					continue;
+				}
+				return true;
+			}
+			if (item.isEmpty()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Gets the size of this Inventory
 	 * 
 	 * @return the size of this Inventory

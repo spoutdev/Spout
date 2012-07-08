@@ -26,13 +26,14 @@
  */
 package org.spout.api.inventory;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
 import java.util.Set;
+
 import org.spout.api.material.Material;
 
 /**
@@ -108,21 +109,76 @@ public class RecipeTree {
 		}
 	}
     
-	public ShapedRecipe matchShapedRecipe(List<List<Material>> materials) {
+	public ShapedRecipe matchShapedRecipe(List<List<Material>> materials, boolean includingData) {
+		// Trim rows
+		// Above
+		while (!materials.isEmpty()) {
+			List<Material> clone = new ArrayList<Material>(materials.get(0));
+			clone.removeAll(Collections.singletonList(null));
+			if (clone.isEmpty()) {
+				materials.remove(0);
+			}
+			else {
+				break;
+			}
+		}
+		// Below
+		for (int i = materials.size() - 1; i >= 0; i--) {
+			List<Material> clone = new ArrayList<Material>(materials.get(i));
+			clone.removeAll(Collections.singletonList(null));
+			if (clone.isEmpty()) {
+				materials.remove(i);
+			}
+			else {
+				break;
+			}
+		}
+		
+		// Get column trim
+		int maxColoumnStart = -1;
+		int minColoumnEnd = 0;
+		outer:
+		for (List<Material> list : materials) {
+			int currentSize = 0;
+			int currentStart = -1;
+			for (int i = 0; i < list.size(); i++) {
+				if (list.get(i) != null) {
+					if (currentStart == -1) {
+						currentStart = i;
+					}
+					currentSize = i;
+				}
+			}
+			if (currentStart != -1) {
+ 				if (maxColoumnStart == -1) {
+					maxColoumnStart = currentStart;
+				} else {
+					maxColoumnStart = Math.min(maxColoumnStart, currentStart);
+				}
+			}
+			minColoumnEnd = Math.max(minColoumnEnd, currentSize);
+		}
+		if (maxColoumnStart == -1) return null;
+
 		RecipeNode current = root;
 		for (List<Material> list : materials) {
-			for (Material m : list) {
+			for (int i = maxColoumnStart; i <= minColoumnEnd; i++) {
+				Material m = list.get(i);
 				current = current.getOrAddChild(m);
 			}
 			current = current.getNextRow();
 		}
-		return current.getParent().getRecipe();
+		ShapedRecipe recipe = current.getParent().getRecipe();
+		if (recipe == null || (recipe.getIncludeData() && !includingData)) return null;
+		return recipe;
 	}
 	
 	public boolean addRecipe(ShapedRecipe recipe) {
 		RecipeNode current = root;
+		outer:
 		for (List<Material> list : recipe.getRowsAsMaterials()) {
-			for (Material m : list) {
+			for (int i = 0; i < list.size(); i++) {
+				Material m = list.get(i);
 				current = current.getOrAddChild(m);
 			}
 			current = current.getNextRow();

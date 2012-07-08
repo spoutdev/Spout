@@ -27,41 +27,71 @@
 package org.spout.api.inventory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import java.util.List;
+import java.util.Map.Entry;
 import org.spout.api.material.Material;
 import org.spout.api.plugin.Plugin;
 
 @SuppressWarnings("unchecked")
-public class RecipeBuilder<T extends RecipeBuilder<?>>{
-	public Plugin plugin; // TODO null check? Is it needed?
+public class RecipeBuilder{
+	public Plugin plugin; // RecipeBuilderODO null check? Is it needed?
 	public ItemStack result;
 	public HashMap<Character, Material> ingredientsMap = new HashMap<Character, Material>();
 	public List<List<Character>> rows = new ArrayList<List<Character>>();
 	public List<Material> ingredients = new ArrayList<Material>();
+	public boolean includeData = false;
 
 	public ShapedRecipe buildShapedRecipe() {
+		ArrayList<Material> nullCheck = new ArrayList<Material>(ingredientsMap.values());
+		nullCheck.removeAll(Collections.singletonList(null));
+		if (nullCheck.isEmpty()) { // Make sure there is at least one ingredient
+			return null;
+		}
+		if (!includeData) {
+			for (Entry<Character, Material> entry : ingredientsMap.entrySet()) {
+				Material mat = entry.getValue();
+				if (mat != null && mat.isSubMaterial()) {
+					entry.setValue(mat.getParentMaterial());
+				}
+			}
+		}
 		return new ShapedRecipe(this);
 	}
 	
 	public ShapelessRecipe buildShapelessRecipe() {
+		ArrayList<Material> nullCheck = new ArrayList<Material>(ingredients);
+		nullCheck.removeAll(Collections.singletonList(null));
+		if (nullCheck.isEmpty()) {
+			return null;
+		}
+		if (!includeData) {
+			for (int i = 0; i < ingredients.size(); i++) {
+				Material mat = ingredients.get(i);
+				if (mat != null && mat.isSubMaterial()) {
+					ingredients.remove(i);
+					ingredients.add(i, mat.getParentMaterial());
+				}
+			}
+		}
 		return new ShapelessRecipe(this);
 	}
     
-	public T addPlugin(Plugin plugin) {
+	public RecipeBuilder addPlugin(Plugin plugin) {
 		this.plugin = plugin;
-		return (T) this;
+		return this;
 	}
 	
-	public T setResult(ItemStack result) {
+	public RecipeBuilder setResult(ItemStack result) {
 		this.result = result;
-		return (T) this;
+		return this;
 	}
 	
-	public T setResult(Material material, int amount) {
+	public RecipeBuilder setResult(Material material, int amount) {
 		setResult(new ItemStack(material, amount));
-		return (T) this;
+		return this;
 	}
 	
 	/**
@@ -70,12 +100,12 @@ public class RecipeBuilder<T extends RecipeBuilder<?>>{
 	 * @param ingredient material to use
 	 * @return this
 	 */
-	public T addIngredient(Character symbol, Material ingredient) {
+	public RecipeBuilder addIngredient(Character symbol, Material ingredient) {
 		if (ingredient == null) {
-			return (T)this;
+			return this;
 		}
 		ingredientsMap.put(symbol, ingredient);
-		return (T) this;
+		return this;
 	}
 	
 	/**
@@ -84,12 +114,12 @@ public class RecipeBuilder<T extends RecipeBuilder<?>>{
 	 * @param ingredient ingredient to add
 	 * @return this
 	 */
-	public T addIngredient(Material ingredient) {
+	public RecipeBuilder addIngredient(Material ingredient) {
 		if (ingredient == null) {
-			return (T)this;
+			return this;
 		}
 		ingredients.add(ingredient);
-		return (T)this;
+		return this;
 	}
 	
 	/**
@@ -99,22 +129,22 @@ public class RecipeBuilder<T extends RecipeBuilder<?>>{
 	 * @param amount amount to add
 	 * @return this
 	 */
-	public T addIngredient(Material ingredient, int amount) {
+	public RecipeBuilder addIngredient(Material ingredient, int amount) {
 		if (ingredient == null) {
-			return (T) this;
+			return this;
 		}
 		for (int i = 0; i < amount; i++) {
 			ingredients.add(ingredient);
 		}
-		return (T) this;
+		return this;
 	}
 	
-	public T addRow(List<Character> row) {
+	public RecipeBuilder addRow(List<Character> row) {
 		rows.add(row);
-		return (T) this;
+		return this;
 	}
 	
-	public T addRow(String str) {
+	public RecipeBuilder addRow(String str) {
 		char[] chars = str.toCharArray();
 		ArrayList<Character> row = new ArrayList<Character>();
 		for (char c : chars) {
@@ -123,29 +153,29 @@ public class RecipeBuilder<T extends RecipeBuilder<?>>{
 		if (!row.isEmpty()) {
 			addRow(row);
 		}
-		return (T) this;
+		return this;
 	}
 	
-	public T removeRow(int rowNumber) {
+	public RecipeBuilder removeRow(int rowNumber) {
 		if (rows.size() < rowNumber) {
-		    return (T) this;
+		    return this;
 		}
 		rows.remove(rowNumber);
-		return (T) this;
+		return this;
 	}
 	
-	public T replaceRow(int rowNumber, List<Character> newRow) {
+	public RecipeBuilder replaceRow(int rowNumber, List<Character> newRow) {
 		if (rows.size() < rowNumber || newRow == null) {
-		    return (T) this;
+		    return this;
 		}
 		rows.remove(rowNumber);
 		rows.add(rowNumber, newRow);
-		return (T) this;
+		return this;
 	}
 	
-	public T replaceRow(int rowNumber, String str) {
+	public RecipeBuilder replaceRow(int rowNumber, String str) {
 		if (rows.size() < rowNumber || str == null) {
-		    return (T) this;
+		    return this;
 		}
 		rows.remove(rowNumber);
 		char[] chars = str.toCharArray();
@@ -156,10 +186,10 @@ public class RecipeBuilder<T extends RecipeBuilder<?>>{
 		if (!row.isEmpty()) {
 			rows.add(rowNumber, row);
 		}
-		return (T) this;
+		return this;
 	}
 	
-	public T clone(Recipe recipe) {
+	public RecipeBuilder clone(Recipe recipe) {
 		plugin = recipe.getPlugin();
 		result = recipe.getResult();
 		ingredients = recipe.getIngredients();
@@ -170,6 +200,11 @@ public class RecipeBuilder<T extends RecipeBuilder<?>>{
 		} else if (recipe instanceof ShapelessRecipe) {
 			// if needed
 		}
-		return (T) this;
+		return this;
+	}
+
+	public RecipeBuilder setIncludeData(boolean includeData) {
+		this.includeData = includeData;
+		return this;
 	}
 }

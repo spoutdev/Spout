@@ -31,8 +31,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-
 import java.util.Set;
+
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.spout.api.material.Material;
@@ -43,19 +43,27 @@ public class ShapedRecipe implements Recipe {
 	private final ItemStack result;
 	private final HashMap<Character, Material> ingredientsMap;
 	private final List<List<Character>> rows;
+	private final boolean includeData;
 
-	public ShapedRecipe(Plugin plugin, ItemStack result, HashMap<Character, Material> ingredients, List<List<Character>> rows) {
+	public ShapedRecipe(Plugin plugin, ItemStack result, HashMap<Character, Material> ingredients, List<List<Character>> rows, boolean includeData) {
 		this.plugin = plugin;
 		this.result = result;
 		this.ingredientsMap = ingredients;
 		this.rows = rows;
+		this.includeData = includeData;
 	}
 
-	public ShapedRecipe(RecipeBuilder<?> builder) {
+	public ShapedRecipe(RecipeBuilder builder) {
 		this.plugin = builder.plugin;
 		this.result = builder.result;
 		this.ingredientsMap = builder.ingredientsMap;
 		this.rows = builder.rows;
+		this.includeData = builder.includeData;
+	}
+	
+	@Override
+	public boolean getIncludeData() {
+		return includeData;
 	}
 	
 	@Override
@@ -79,7 +87,14 @@ public class ShapedRecipe implements Recipe {
 	
 	@Override
 	public int getNumOfMaterials() {
-		Set<Material> set = new HashSet<Material>(ingredientsMap.values());
+		Set<Material> set = new HashSet<Material>();
+		for (Material m : ingredientsMap.values()) {
+			if (m.isSubMaterial()) {
+				m = m.getParentMaterial();
+			}
+			set.add(m);
+		}
+		set.removeAll(Collections.singletonList(null));
 		return set.size();
 	}
     
