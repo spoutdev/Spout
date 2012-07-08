@@ -48,8 +48,8 @@ public class SpoutWorldLighting extends Thread implements Source {
 	public static final int LESSER = 1;
 	public static final int REFRESH = 2;
 
-	public final SpoutWorldLightingModel skyLight;
-	public final SpoutWorldLightingModel blockLight;
+	private SpoutWorldLightingModel skyLight;
+	private SpoutWorldLightingModel blockLight;
 	private final ChunkModel tmpChunks;
 	private final SpoutWorld world;
 	private boolean running = false;
@@ -60,6 +60,42 @@ public class SpoutWorldLighting extends Thread implements Source {
 		synchronized (dirtyChunks) {
 			dirtyChunks.add(x, y, z);
 		}
+	}
+
+	/**
+	 * Gets the model to calculate sky light
+	 * 
+	 * @return sky light model
+	 */
+	public SpoutWorldLightingModel getSkyModel() {
+		return this.skyLight;
+	}
+
+	/**
+	 * Gets the model to calculate block light
+	 * 
+	 * @return block light model
+	 */
+	public SpoutWorldLightingModel getBlockModel() {
+		return this.blockLight;
+	}
+
+	/**
+	 * Sets the model to calculate sky light
+	 * 
+	 * @param model to set to
+	 */
+	public void setSkyModel(SpoutWorldLightingModel model) {
+		this.skyLight = model;
+	}
+
+	/**
+	 * Sets the model to calculate block light
+	 * 
+	 * @param model to set to
+	 */
+	public void setBlockModel(SpoutWorldLightingModel model) {
+		this.blockLight = model;
 	}
 
 	public boolean isRunning() {
@@ -137,12 +173,18 @@ public class SpoutWorldLighting extends Thread implements Source {
 									// Schedule the chunk for a later check-up
 									this.addChunk(cx, cy, cz);
 								} else {
-									while (this.skyLight.resolve(center));
-									while (this.blockLight.resolve(center));
+									while (!stop && this.skyLight.resolve(center)) {
+										if (stop = (System.currentTimeMillis() - startTime) >= MAX_CYCLE_TIME) {
+											this.addChunk(cx, cy, cz);
+										}
+									}
+									while (!stop && this.blockLight.resolve(center)) {
+										if (stop = (System.currentTimeMillis() - startTime) >= MAX_CYCLE_TIME) {
+											this.addChunk(cx, cy, cz);
+										}
+									}
 								}
 							}
-							// Stop?
-							stop = (System.currentTimeMillis() - startTime) >= MAX_CYCLE_TIME;
 						}
 					}
 					idleCounter = 0;

@@ -359,7 +359,7 @@ public class SpoutChunk extends Chunk {
 	}
 
 	protected void addSkyLightOperation(int x, int y, int z, int operation) {
-		SpoutWorldLightingModel model = this.getWorld().getLightingManager().skyLight;
+		SpoutWorldLightingModel model = this.getWorld().getLightingManager().getSkyModel();
 		if (operation == SpoutWorldLighting.REFRESH) {
 			if (!model.canRefresh(this, x, y, z)) {
 				return;
@@ -379,7 +379,7 @@ public class SpoutChunk extends Chunk {
 	}
 
 	protected void addBlockLightOperation(int x, int y, int z, int operation) {
-		SpoutWorldLightingModel model = this.getWorld().getLightingManager().blockLight;
+		SpoutWorldLightingModel model = this.getWorld().getLightingManager().getBlockModel();
 		if (operation == SpoutWorldLighting.REFRESH) {
 			if (!model.canRefresh(this, x, y, z)) {
 				return;
