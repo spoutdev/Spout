@@ -949,8 +949,13 @@ public final class SpoutWorld extends AsyncManager implements World {
 	public DefaultedMap<String, Serializable> getDataMap() {
 		return dataMap;
 	}
-	
-	public StringMap getItemMap() {
+
+    @Override
+    public Serializable get(Object key) {
+        return dataMap.get(key);
+    }
+
+    public StringMap getItemMap() {
 		return itemMap;
 	}
 
@@ -1071,9 +1076,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Gets the absolute closest player from the specified point within a specified range.
-	 * 
-	 * @param entity to search from
-	 * @param entity to ignore while searching
+	 *
 	 * @param range to search
 	 * @return nearest player
 	 */
