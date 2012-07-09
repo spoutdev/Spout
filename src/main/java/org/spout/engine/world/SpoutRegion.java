@@ -739,8 +739,8 @@ public class SpoutRegion extends Region{
 				SpoutChunk chunk = chunks[reapX][reapY][reapZ].get();
 				if (chunk != null) {
 					chunk.compressIfRequired();
-					boolean doUnload = true;
-					if (chunk.isReapable(worldAge)) {
+					boolean doUnload;
+					if (doUnload = chunk.isReapable(worldAge)) {
 						if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
 							ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(chunk));
 							if (event.isCancelled()) {
