@@ -164,7 +164,12 @@ public final class SpoutWorld extends AsyncManager implements World {
 	protected final SpoutParallelTaskManager parallelTaskManager;
 	
 	private final SpoutTaskManager taskManager;
-	
+
+	/**
+	 * The sky light level the sky emits
+	 */
+	private byte skyLightLevel = 15;
+
 	/**
 	 * Hashcode cache
 	 */
@@ -512,6 +517,16 @@ public final class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
+	public byte getSkyLight() {
+		return this.skyLightLevel;
+	}
+
+	@Override
+	public void setSkyLight(byte newLight) {
+		this.skyLightLevel = newLight;
+	}
+
+	@Override
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Source source) {
 		return this.getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z, material, data, source);
 	}
@@ -539,6 +554,11 @@ public final class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public byte getBlockSkyLight(int x, int y, int z) {
 		return getChunkFromBlock(x, y, z).getBlockSkyLight(x, y, z);
+	}
+
+	@Override
+	public byte getBlockSkyLightRaw(int x, int y, int z) {
+		return getChunkFromBlock(x, y, z).getBlockSkyLightRaw(x, y, z);
 	}
 
 	@Override
@@ -1148,5 +1168,4 @@ public final class SpoutWorld extends AsyncManager implements World {
 	public int runGlobalDynamicUpdates() throws InterruptedException {
 		return 0;
 	}
-
 }

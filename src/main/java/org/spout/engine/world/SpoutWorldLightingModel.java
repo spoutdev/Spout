@@ -341,7 +341,7 @@ public class SpoutWorldLightingModel {
 
 		@Override
 		public void loadLight() {
-			this.light = this.chunk.getBlockSkyLight(x, y, z);
+			this.light = this.chunk.getBlockSkyLightRaw(x, y, z);
 		}
 
 		@Override

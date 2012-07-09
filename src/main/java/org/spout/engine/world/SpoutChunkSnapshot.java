@@ -54,6 +54,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	 */
 	private final WeakReference<Region> parentRegion;
 
+	private final byte worldSkyLightLoss;
 	private final Set<Entity> entities;
 	private final Set<WeakReference<Entity>> weakEntities;
 	private final short[] blockIds;
@@ -84,6 +85,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 			this.weakEntities = null;
 			this.entities = null;
 		}
+		this.worldSkyLightLoss = (byte) (15 - chunk.getWorld().getSkyLight());
 
 		// Cache blocks
 		this.blockIds = blockIds;
@@ -149,6 +151,16 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 	@Override
 	public byte getBlockSkyLight(int x, int y, int z) {
+		byte level = this.getBlockSkyLightRaw(x, y, z);
+		if (level > this.worldSkyLightLoss) {
+			return (byte) (level - this.worldSkyLightLoss);
+		} else {
+			return 0;
+		}
+	}
+
+	@Override
+	public byte getBlockSkyLightRaw(int x, int y, int z) {
 		if (skyLight == null) {
 			throw new UnsupportedOperationException("This chunk snapshot does not contain sky light");
 		}
