@@ -304,6 +304,13 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 */
 	public DefaultedMap<String, Serializable> getDataMap();
 
+    /**
+     * Gets a value from the data map by providing a key. Data will persist across restarts.
+     * @param key The key to lookup a value from the map
+     * @return the data stored for this key or null if no data found.
+     */
+    public Serializable get(Object key);
+
 	/**
 	 * Gets the task manager responsible for parallel region tasks.<br>
 	 * <br>
