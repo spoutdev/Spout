@@ -121,7 +121,9 @@ public abstract class EffectRangeImpl implements EffectRange {
 
 	@Override
 	public EffectIterator getEffectIterator() {
-		return new EffectIterator();
+		EffectIterator iter = new EffectIterator();
+		this.initEffectIterator(iter);
+		return iter;
 	}
 
 	@Override

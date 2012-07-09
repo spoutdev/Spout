@@ -260,6 +260,22 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	public int getHeight();
 
 	/**
+	 * Gets the light level the sky emits<br>
+	 * Block sky light levels are affected by this
+	 * 
+	 * @return the sky light, a level from 0 to 15
+	 */
+	public byte getSkyLight();
+
+	/**
+	 * Sets the light level the sky emits<br>
+	 * Block sky light levels are affected by this
+	 * 
+	 * @param newLight level from 0 to 15 for the sky light
+	 */
+	public void setSkyLight(byte newLight);
+
+	/**
 	 * Gets all entities with the specified type.
 	 *
 	 * @param type The {@link Class} for the type.

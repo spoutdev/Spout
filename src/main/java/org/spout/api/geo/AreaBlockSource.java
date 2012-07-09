@@ -68,26 +68,40 @@ public interface AreaBlockSource {
 	public short getBlockData(int x, int y, int z);
 
 	/**
-	 * Gets the block light value for the block at (x, y, z)
+	 * Gets the block light level for the block at (x, y, z)
 	 *
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
-	 * @return the block's block light value
+	 * @return the block's block light level
 	 */
 	@LiveRead
 	public byte getBlockLight(int x, int y, int z);
 
 	/**
-	 * Gets the sky light value for the block at (x, y, z)
+	 * Gets the sky light level for the block at (x, y, z)<br>
+	 * The returned value is affected by the world sky light that is emitted
 	 *
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
-	 * @return the block's sky light value
+	 * @return the block's sky light level
 	 */
 	@LiveRead
 	public byte getBlockSkyLight(int x, int y, int z);
+
+	/**
+	 * Gets the sky light level for the block at (x, y, z)<br>
+	 * The returned value is <b>not</b> affected by the world sky light that is emitted<br>
+	 * It is the light level that is actually stored
+	 *
+	 * @param x coordinate of the block
+	 * @param y coordinate of the block
+	 * @param z coordinate of the block
+	 * @return the block's sky light level
+	 */
+	@LiveRead
+	public byte getBlockSkyLightRaw(int x, int y, int z);
 
 	/**
 	 * Gets the {@link BlockController} for the block at (x, y, z)
