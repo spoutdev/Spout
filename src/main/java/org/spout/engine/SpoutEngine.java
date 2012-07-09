@@ -209,6 +209,8 @@ public class SpoutEngine extends AsyncManager implements Engine {
 			leakThread.start();
 			scheduler.scheduleSyncRepeatingTask(this, new ProfileTask(), 60 * 1000, 60 * 1000, TaskPriority.NORMAL);
 		}
+		
+		scheduler.scheduleSyncRepeatingTask(this, new SessionTask(sessions), 50, 50, TaskPriority.CRITICAL);
 
 		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this), new SimpleAnnotatedCommandExecutorFactory());
 
@@ -675,7 +677,6 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	public void startTickRun(int stage, long delta) throws InterruptedException {
 		switch (stage) {
 			case 0:
-				sessions.pulse();
 				engineItemMap.save();
 				engineBiomeMap.save();
 				break;
@@ -880,15 +881,24 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public String getVariable(String key) {
 		return cvars.get(key);
-
 	}
 
 	private class ProfileTask implements Runnable {
 		@Override
 		public void run() {
 			Profiler.log();
-
 		}
 	}
 
+	private class SessionTask implements Runnable {
+		final SpoutSessionRegistry registry;
+		SessionTask(SpoutSessionRegistry registry) {
+			this.registry = registry;
+		}
+
+		@Override
+		public void run() {
+			registry.pulse();
+		}
+	}
 }

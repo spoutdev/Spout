@@ -29,7 +29,6 @@ package org.spout.engine.protocol;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.spout.api.player.Player;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.SessionRegistry;
 
@@ -44,14 +43,11 @@ public final class SpoutSessionRegistry implements SessionRegistry {
 	private final ConcurrentMap<SpoutSession, Boolean> sessions = new ConcurrentHashMap<SpoutSession, Boolean>();
 
 	/**
-	 * Pulses all the sessions not managed by a player.
+	 * Pulses all the sessions
 	 */
 	public void pulse() {
 		for (SpoutSession session : sessions.keySet()) {
-			Player player = session.getPlayer();
-			if (player == null || player.getEntity() == null || player.getEntity().isDead()) {
-				session.pulse();
-			}
+			session.pulse();
 		}
 	}
 

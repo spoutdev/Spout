@@ -116,7 +116,7 @@ public class SpoutRegion extends Region{
 	 * The maximum number of chunks that will be reaped by the chunk reaper each
 	 * tick.
 	 */
-	private static final int REAP_PER_TICK = 1;
+	private static final int REAP_PER_TICK = 3;
 	/**
 	 * The segment size to use for chunk storage. The actual size is
 	 * 2^(SEGMENT_SIZE)
@@ -720,67 +720,44 @@ public class SpoutRegion extends Region{
 	public void haltRun() {
 	}
 
-	private int compressDx = 0;
-	private int compressDy = 0;
-
+	private int reapX = 0, reapY = 0, reapZ = 0;
 	public void finalizeRun() {
 		Profiler.start("finalizeRun");
 		try {
 			Profiler.start("compression");
 			long worldAge = getWorld().getAge();
-	
-			// Compress at most 1 chunk per tick per region
-			boolean chunkCompressed = false;
-	
-			int percentObserved = 0;
-			if(SpoutChunk.getActiveChunks() != 0) {
-				percentObserved = (100 * SpoutChunk.getObservedChunks()) / (SpoutChunk.getActiveChunks());
-			}
-			
-			int multiplier = percentObserved < 70 ? 20 : (percentObserved >= 90 ? 1 : (90 - percentObserved));
-			int maxReapCount = REAP_PER_TICK * multiplier;
-	
-			compressDy++;
-			if (compressDy >= CHUNKS.SIZE) {
-				compressDy = 0;
-				compressDx++;
-				if (compressDx >= CHUNKS.SIZE) {
-					compressDx = 0;
-				}
-			}
-			
-			int reaped = 0;
-	
-			for (int dz = 0; dz < CHUNKS.SIZE && !chunkCompressed; dz++) {
-				Chunk chunk = chunks[compressDx][compressDy][dz].get();
-				if (chunk != null) {
-					chunkCompressed |= ((SpoutChunk) chunk).compressIfRequired();
-	
-					if (reaped < maxReapCount && ((SpoutChunk) chunk).isReapable(worldAge)) {
-						boolean do_unload = true;
-						if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
-							ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(chunk));
-							if (event.isCancelled()) {
-								do_unload = false;
-							}
-						}
-						if (do_unload) {
-							((SpoutChunk) chunk).unload(true);
-							reaped++;
-						}
-					} else {
-						if (!chunk.isPopulated()) {
-							queueChunkForPopulation(chunk);
+			for (int reap = 0; reap < REAP_PER_TICK; reap++) {
+				if (++reapX >= CHUNKS.SIZE) {
+					reapX = 0;
+					if (++reapY >= CHUNKS.SIZE) {
+						reapY = 0;
+						if (++reapZ >= CHUNKS.SIZE) {
+							reapZ = 0;
 						}
 					}
 				}
+				SpoutChunk chunk = chunks[reapX][reapY][reapZ].get();
+				if (chunk != null) {
+					chunk.compressIfRequired();
+					boolean doUnload = true;
+					if (chunk.isReapable(worldAge)) {
+						if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
+							ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(chunk));
+							if (event.isCancelled()) {
+								doUnload = false;
+							}
+						}
+					}
+					if (doUnload) {
+						chunk.unload(true);
+					} else if (!chunk.isPopulated()) {
+						queueChunkForPopulation(chunk);
+					}
+				}
 			}
-			
 			Profiler.startAndStop("entitymanager");
-	
 			//Note: This must occur after any chunks are reaped, because reaping chunks may kill entities, which need to be finalized
 			entityManager.finalizeRun();
-			
 			Profiler.stop();
 		} finally {
 			Profiler.stop();
@@ -1321,7 +1298,6 @@ public class SpoutRegion extends Region{
 	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z) {
 		return dynamicBlockTree.queueBlockUpdates(x, y, z);
 	}
-
 
 	// TODO - save needs to call this method
 	public List<DynamicBlockUpdate> getDynamicBlockUpdates(Chunk c) {

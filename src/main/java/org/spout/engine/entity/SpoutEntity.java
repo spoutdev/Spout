@@ -59,7 +59,6 @@ import org.spout.api.util.OutwardIterator;
 import org.spout.api.util.Profiler;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
-import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 
@@ -149,13 +148,6 @@ public class SpoutEntity extends Tickable implements Entity {
 	public void onTick(float dt) {
 		Profiler.start("tick entity session");
 		Controller cont = controllerLive.get();
-		//Pulse all player messages here, so they can interact with the entities position safely
-		if (cont instanceof PlayerController) {
-			Player player = ((PlayerController)cont).getPlayer();
-			if (player != null && player.getSession() != null) {
-				((SpoutSession) player.getSession()).pulse();
-			}
-		}
 
 		//Tick the controller
 		Profiler.startAndStop("tick entity controller");

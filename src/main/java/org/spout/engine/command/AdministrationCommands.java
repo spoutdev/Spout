@@ -125,6 +125,7 @@ public class AdministrationCommands {
 			source.sendMessage(ChatStyle.BRIGHT_GREEN, "Reloaded '", pluginName, "'.");
 		}
 	}
+	@SuppressWarnings("unchecked")
 	@Command(aliases = {"plugins", "pl"}, desc = "List all plugins on the server")
 	@CommandPermissions("spout.command.plugins")
 	public void plugins(CommandContext args, CommandSource source) {
