@@ -42,6 +42,7 @@ import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.material.source.DataSource;
 import org.spout.api.material.source.MaterialSource;
+import org.spout.api.math.IntVector3;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.LogicUtil;
@@ -150,6 +151,11 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
+	public Block translate(IntVector3 offset) {
+		return this.translate(offset.getX(), offset.getY(), offset.getZ());
+	}
+
+	@Override
 	public Block translate(int dx, int dy, int dz) {
 		SpoutBlock sb = this.clone();
 		sb.x += dx;
@@ -157,6 +163,19 @@ public class SpoutBlock implements Block {
 		sb.z += dz;
 		sb.chunk = null;
 		return sb;
+	}
+
+	@Override
+	public Block getSurface() {
+		int height = this.world.getSurfaceHeight(this.x, this.z, true);
+		if (height == this.y) {
+			return this;
+		} else {
+			SpoutBlock sb = this.clone();
+			sb.y = height;
+			sb.chunk = null;
+			return sb;
+		}
 	}
 
 	@Override
@@ -179,6 +198,11 @@ public class SpoutBlock implements Block {
 	@Override
 	public SpoutBlock clone() {
 		return new SpoutBlock(this);
+	}
+
+	@Override
+	public boolean isAtSurface() {
+		return this.y >= this.world.getSurfaceHeight(this.x, this.z, true);
 	}
 
 	@Override
@@ -281,10 +305,7 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public byte getLight() {
-		byte sky = this.getSkyLight();
-		byte block = this.getBlockLight();
-		//TODO: Use world time to find out correct sky light?
-		return MathHelper.max(sky, block);
+		return MathHelper.max(this.getSkyLight(), this.getBlockLight());
 	}
 
 	@Override
@@ -307,6 +328,11 @@ public class SpoutBlock implements Block {
 	@Override
 	public byte getSkyLight() {
 		return this.getChunk().getBlockSkyLight(this.x, this.y, this.z);
+	}
+
+	@Override
+	public byte getSkyLightRaw() {
+		return this.getChunk().getBlockSkyLightRaw(this.x, this.y, this.z);
 	}
 
 	@Override

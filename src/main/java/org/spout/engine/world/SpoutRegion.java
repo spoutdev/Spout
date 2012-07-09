@@ -1228,6 +1228,11 @@ public class SpoutRegion extends Region{
 	}
 
 	@Override
+	public byte getBlockSkyLightRaw(int x, int y, int z) {
+		return getChunkFromBlock(x, y, z).getBlockSkyLightRaw(x, y, z);
+	}
+
+	@Override
 	public boolean compareAndSetData(int x, int y, int z, int expect, short data, Source source) {
 		return this.getChunkFromBlock(x, y, z).compareAndSetData(x, y, z, expect, data, source);
 	}

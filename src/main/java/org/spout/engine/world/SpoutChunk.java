@@ -558,6 +558,12 @@ public class SpoutChunk extends Chunk {
 
 	@Override
 	public byte getBlockSkyLight(int x, int y, int z) {
+		int light = this.getBlockSkyLightRaw(x, y, z) - (15 - this.getWorld().getSkyLight());
+		return light < 0 ? (byte)0 : (byte) light;
+	}
+
+	@Override
+	public byte getBlockSkyLightRaw(int x, int y, int z) {
 		checkChunkLoaded();
 		int index = getBlockIndex(x, y, z);
 		byte light = skyLight[index >> 1];

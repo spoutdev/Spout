@@ -210,9 +210,17 @@ public class FilteredChunk extends SpoutChunk{
 	@Override
 	public byte getBlockSkyLight(int x, int y, int z) {
 		if (uniform.get()) {
-			return this.isAboveGround() ? (byte) 0xF : (byte) 0x0;
+			return this.isAboveGround() ? getWorld().getSkyLight() : (byte) 0x0;
 		}
 		return super.getBlockSkyLight(x, y, z);
+	}
+
+	@Override
+	public byte getBlockSkyLightRaw(int x, int y, int z) {
+		if (uniform.get()) {
+			return this.isAboveGround() ? (byte) 0xF : (byte) 0x0;
+		}
+		return super.getBlockSkyLightRaw(x, y, z);
 	}
 
 	@Override
