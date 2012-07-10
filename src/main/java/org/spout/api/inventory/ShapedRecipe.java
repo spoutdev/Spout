@@ -45,14 +45,6 @@ public class ShapedRecipe implements Recipe {
 	private final List<List<Character>> rows;
 	private final boolean includeData;
 
-	public ShapedRecipe(Plugin plugin, ItemStack result, HashMap<Character, Material> ingredients, List<List<Character>> rows, boolean includeData) {
-		this.plugin = plugin;
-		this.result = result;
-		this.ingredientsMap = ingredients;
-		this.rows = rows;
-		this.includeData = includeData;
-	}
-
 	public ShapedRecipe(RecipeBuilder builder) {
 		this.plugin = builder.plugin;
 		this.result = builder.result;
@@ -102,7 +94,6 @@ public class ShapedRecipe implements Recipe {
 		return ingredientsMap;
 	}
 
- 
 	public List<List<Character>> getRows() {
 		return Collections.unmodifiableList(rows);
 	}
