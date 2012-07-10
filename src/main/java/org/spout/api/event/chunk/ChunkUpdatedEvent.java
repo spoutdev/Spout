@@ -33,7 +33,7 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.math.Vector3;
 
 /**
- * Called when block data in chunk has been updated
+ * Called when {@link Block} data in {@link Chunk} has been updated.
  */
 public class ChunkUpdatedEvent extends ChunkEvent{
 	private static HandlerList handlers = new HandlerList();
@@ -46,7 +46,8 @@ public class ChunkUpdatedEvent extends ChunkEvent{
 	}
 
 	/**
-	 * Test if whole chunk invalidated (or, equivalently, too many updates to be listed)
+	 * Test if whole chunk was invalidated, or too many updates occurred to be listed.
+	 * 
 	 * @return true if whole chunk invalidated, false if one or more blocks
 	 */
 	public boolean isWholeChunkUpdate() {
@@ -54,9 +55,9 @@ public class ChunkUpdatedEvent extends ChunkEvent{
 	}
 	
 	/**
-	 * Get number of blocks updated
+	 * Get number of blocks updated.
 	 * 
-	 * @return number of blocks, or -1 if whole chunk invalidated (or, equivalently, too many blocks)
+	 * @return number of blocks, or -1 if whole chunk was invalidated
 	 */
 	public int getBlockUpdateCount() {
 		if (blocks == null) {
@@ -67,8 +68,8 @@ public class ChunkUpdatedEvent extends ChunkEvent{
 	}
 	/**
 	 * Get chunk-relative coordinates of Nth updated block
-	 * @param n index of block update
 	 * 
+	 * @param n index of block update
 	 * @return chunk-relative coordinates of updated block, or null if bad index or whole chunk update
 	 */
 	public Vector3 getBlockUpdate(int n) {

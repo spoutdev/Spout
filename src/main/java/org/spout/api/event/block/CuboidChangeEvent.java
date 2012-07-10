@@ -33,7 +33,8 @@ import org.spout.api.plugin.Plugin;
 import org.spout.api.util.cuboid.CuboidBuffer;
 
 /**
- * Called when a cuboid region is changed
+ * Called when a cuboid region is changed.<br/>
+ * Implements {@link Cancellable}, which allows this event's outcome to be cancelled.
  */
 public class CuboidChangeEvent extends Event implements Cancellable {
 	private static HandlerList handlers = new HandlerList();

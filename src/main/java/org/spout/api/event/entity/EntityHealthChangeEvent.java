@@ -32,7 +32,8 @@ import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
 
 /**
- * Called when an entity has a health change.
+ * Called when an entity has a health change.<br/>
+ * Implements {@link Cancellable}. Canceling this prevents the Entity's health from changing.
  */
 public class EntityHealthChangeEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();

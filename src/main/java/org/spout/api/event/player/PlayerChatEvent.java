@@ -32,6 +32,7 @@ import org.spout.api.player.Player;
 
 /**
  * Called when a player speaks in chat.
+ * Implements {@link Cancellable}. Canceling this event will prevent the message from being sent to other players.
  */
 public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
@@ -45,7 +46,7 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	}
 
 	/**
-	 * Gets the message that the player sent.
+	 * Gets the message that the player will send.
 	 *
 	 * @return The message of the player.
 	 */
@@ -63,7 +64,7 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	}
 
 	/**
-	 * Gets the format that will be broadcasted.
+	 * Gets the message format that will parse out the message text for broadcasting.
 	 *
 	 * @return The message format
 	 */
@@ -72,11 +73,12 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	}
 
 	/**
-	 * Sets the message's format to {@code format} Verification is performed to
-	 * make sure that the string has at least two string formatting positions.
+	 * Sets the message's format to {@code format}. <br/>
+	 * Verification is performed to make sure that the string has at least two string formatting positions.<br/>
+	 * If verification of the format fails the format will not change.
 	 *
 	 * @param format The format to set.
-	 * @return Whether the format was valid.
+	 * @return true if the format was valid, otherwise false.
 	 */
 	public boolean setFormat(String format) {
 		try {

@@ -50,6 +50,10 @@ import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
 import org.spout.api.player.Player;
 
+/**
+ * Called when a player changes their currently active held item.
+ *
+ */
 public class PlayerHeldItemChangeEvent extends PlayerEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 

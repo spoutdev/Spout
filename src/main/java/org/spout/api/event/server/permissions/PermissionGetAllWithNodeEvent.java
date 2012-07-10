@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This event is called to gather the PermissionsSubjects with the given permission set.
+ * This event is called to gather the PermissionsSubjects with the given permission set.</br>
  * Plugins responsible for managing PermissionsSubjects should add them to the list of subjects.
  */
 public class PermissionGetAllWithNodeEvent extends NodeBasedEvent {

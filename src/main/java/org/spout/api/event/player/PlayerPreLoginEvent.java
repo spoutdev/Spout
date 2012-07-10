@@ -32,7 +32,8 @@ import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;
 
 /**
- * Stores details for players attempting to log in
+ * Called when a player is attempting to log in.
+ * This is called prior to both the {@link PlayerLoginEvent} and the {@link PlayerJoinEvent}
  */
 public class PlayerPreLoginEvent extends Event {
 	private static HandlerList handlers = new HandlerList();
@@ -42,7 +43,7 @@ public class PlayerPreLoginEvent extends Event {
 	private InetAddress address;
 
 	/**
-	 * Gets the player's name.
+	 * Gets the player's name that is attempting to login.
 	 *
 	 * @return the player's name
 	 */

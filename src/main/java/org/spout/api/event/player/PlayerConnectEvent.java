@@ -30,6 +30,10 @@ import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;
 import org.spout.api.protocol.Session;
 
+/**
+ * Called when a player is connects to the server.
+ *
+ */
 public class PlayerConnectEvent extends Event {
 	private static HandlerList handlers = new HandlerList();
 

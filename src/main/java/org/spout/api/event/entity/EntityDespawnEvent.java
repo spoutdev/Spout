@@ -31,7 +31,8 @@ import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
 
 /**
- * Called when an entity is about to be destroyed.
+ * Called when an {@link Entity} is about to be destroyed.
+ * Implements {@link Cancellable}. Canceling this prevents the entity from being despawned in the world.
  */
 public class EntityDespawnEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();

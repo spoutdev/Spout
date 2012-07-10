@@ -30,6 +30,10 @@ import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;
 import org.spout.api.plugin.ServiceProvider;
 
+/**
+ * Represents an event that deals with {@link ServiceProvider}s
+ *
+ */
 public class ServiceEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();
 	private final ServiceProvider<?> provider;
@@ -38,6 +42,11 @@ public class ServiceEvent extends Event {
 		this.provider = provider;
 	}
 
+	/**
+	 * The service provider this event is handling
+	 * 
+	 * @return service provider
+	 */
 	public ServiceProvider<?> getProvider() {
 		return provider;
 	}

@@ -31,7 +31,8 @@ import org.spout.api.event.HandlerList;
 import org.spout.api.geo.cuboid.Chunk;
 
 /**
- * Called when a chunk is unloaded from the server
+ * Called when a {@link Chunk} is unloaded from the server.<br/>
+ * Implements {@link Cancellable}.  Cancelling the unload of a chunk will result in the chunk staying in memory.
  */
 public class ChunkUnloadEvent extends ChunkEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();

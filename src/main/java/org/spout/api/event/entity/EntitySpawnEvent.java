@@ -32,7 +32,8 @@ import org.spout.api.event.HandlerList;
 import org.spout.api.geo.discrete.Point;
 
 /**
- * Called when an entity spawns into the world.
+ * Called when an {@link Entity} spawns into the world.
+ * Implements {@link Cancellable}. Canceling this event will prevent the entity from spawning in the world.
  */
 public class EntitySpawnEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();

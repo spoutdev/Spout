@@ -33,7 +33,7 @@ import org.spout.api.geo.World;
 import org.spout.api.permissions.PermissionsSubject;
 
 /**
- * This event is called when PermissionSubject.hasPermission() is called.
+ * This event is called when {@link PermissionSubject#hasPermission()} is called.
  */
 public class PermissionNodeEvent extends NodeBasedEvent {
 	private static final HandlerList handlers = new HandlerList();
@@ -47,22 +47,47 @@ public class PermissionNodeEvent extends NodeBasedEvent {
 		this.subject = subject;
 	}
 
+	/**
+	 * The subject being checked for permission.
+	 * 
+	 * @return subject
+	 */
 	public PermissionsSubject getSubject() {
 		return subject;
 	}
 
+	/**
+	 * The result of the check.
+	 * 
+	 * @return result
+	 */
 	public Result getResult() {
 		return result;
 	}
 
+	/**
+	 * Sets the result of the check to the given result.
+	 * 
+	 * @param result
+	 */
 	public void setResult(Result result) {
 		this.result = result;
 	}
 
+	/**
+	 * The world this permission check is being done on, or null if global.
+	 * 
+	 * @return the world, or null if global.
+	 */
 	public World getWorld() {
 		return world;
 	}
 
+	/**
+	 * The name of the world this permission check is being done on, or null if global.
+	 * 
+	 * @return name of the world, or null if global.
+	 */
 	public String getWorldName() {
 		return world == null ? null : world.getName();
 	}

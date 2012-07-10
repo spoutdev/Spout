@@ -33,7 +33,8 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.block.BlockSnapshot;
 
 /**
- * Called when a block changes its state.
+ * Called when a block changes its state.<br/>
+ * Implements {@link Cancellable}, which allows this event's outcome to be cancelled.
  */
 public class BlockChangeEvent extends BlockEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();

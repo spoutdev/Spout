@@ -32,7 +32,7 @@ import org.spout.api.geo.World;
 import org.spout.api.permissions.PermissionsSubject;
 
 /**
- * This event is called when PermissionSubject.isInGroup() is called.
+ * This event is called when {@link PermissionSubject#isInGroup()} is called.
  */
 public class PermissionGroupEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();
@@ -47,26 +47,56 @@ public class PermissionGroupEvent extends Event {
 		this.group = group;
 	}
 
+	/**
+	 * The group that the subject is being tested for.
+	 * 
+	 * @return name of the group.
+	 */
 	public String getGroup() {
 		return group;
 	}
 
+	/**
+	 * The current result of the check, true if the subject is in the group.<br/>
+	 * default: false
+	 * @return true if in the group, otherwise false.
+	 */
 	public boolean getResult() {
 		return result;
 	}
 
+	/**
+	 * Sets the result of this permission check.
+	 * 
+	 * @param result to set.
+	 */
 	public void setResult(boolean result) {
 		this.result = result;
 	}
 
+	/**
+	 * The subject being checked by the event.
+	 * 
+	 * @return subject
+	 */
 	public PermissionsSubject getSubject() {
 		return subject;
 	}
 
+	/**
+	 * The world this is being checked for, or false if it's a global check.
+	 * 
+	 * @return world being checked, or null if global.
+	 */
 	public World getWorld() {
 		return world;
 	}
 
+	/**
+	 * name of the world being checked, or null if this is a global check.
+	 * 
+	 * @return name of the world, or null if global.
+	 */
 	public String getWorldName() {
 		return world == null ? null : world.getName();
 	}

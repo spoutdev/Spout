@@ -33,6 +33,7 @@ import org.spout.api.geo.discrete.Point;
 
 /**
  * Holds information for entity movement events
+ * Implements {@link Cancellable}, which allows this event's normal outcome to be prevented..
  */
 public class EntityMoveEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
@@ -48,7 +49,7 @@ public class EntityMoveEvent extends EntityEvent implements Cancellable {
 	}
 
 	/**
-	 * Gets the Point this entity moved from.
+	 * Gets the location this entity moved from.
 	 *
 	 * @return Point the entity moved from.
 	 */
@@ -57,16 +58,16 @@ public class EntityMoveEvent extends EntityEvent implements Cancellable {
 	}
 
 	/**
-	 * Sets the Point to mark as where the entity moved from.
+	 * Sets the location to mark where the entity moved from.
 	 *
-	 * @param from New Point to mark as the entity's previous Point.
+	 * @param sets a new point to mark the entity's previous Point.
 	 */
 	public void setFrom(Point from) {
 		this.from = from;
 	}
 
 	/**
-	 * Gets the Point this entity moved to.
+	 * Gets the location this entity moved to.
 	 *
 	 * @return Point the entity moved to.
 	 */
@@ -75,7 +76,7 @@ public class EntityMoveEvent extends EntityEvent implements Cancellable {
 	}
 
 	/**
-	 * Sets the Point that this entity will move to.
+	 * Sets the location that this entity will move to.
 	 *
 	 * @param to New Point this entity will move to.
 	 */
