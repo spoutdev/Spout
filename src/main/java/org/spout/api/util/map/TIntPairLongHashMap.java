@@ -37,8 +37,6 @@ import gnu.trove.set.TLongSet;
  * A simplistic map that supports a pair of integers for keys, using a trove
  * long long hashmap in the backend.
  *
- * @author Afforess
- *
  */
 public class TIntPairLongHashMap extends IntPairHashed {
 	protected final TLongLongHashMap map;

@@ -32,44 +32,43 @@ import org.spout.api.util.Named;
 /**
  * Interface for classes that can have permissions attached to them.
  *
- * @author yetanotherx
  */
 public interface PermissionsSubject extends Named {
 	/**
-	 * Gets whether or not the Player has a given permission
+	 * Gets whether or not the {@link Named} has a given permission
 	 *
-	 * @param node
-	 * @return
+	 * @param node to check
+	 * @return true if the Named has the permission, otherwise false.
 	 */
 	public boolean hasPermission(String node);
 
 	/**
-	 * Gets whether or not the Player has a given permission in a World
+	 * Gets whether or not the {@link Named} has a given permission in a {@link World}
 	 *
-	 * @param node
-	 * @return
+	 * @param node to check
+	 * @return true if the Named has permission in the given world, otherwise false.
 	 */
 	public boolean hasPermission(World world, String node);
 
 	/**
-	 * Gets whether or not the Player is in a given group
+	 * Gets whether or not the {@link Named} is in a given group
 	 *
-	 * @param group
-	 * @return
+	 * @param group name
+	 * @return true if the Named is in the group, otherwise false.
 	 */
 	public boolean isInGroup(String group);
 
 	/**
-	 * Gets the groups this player is in
+	 * Gets the groups this {@link Named} is in.
 	 *
-	 * @return
+	 * @return array of group names.
 	 */
 	public String[] getGroups();
 
 	/**
-	 * Returns whether or not this subject is a group itself
+	 * Returns whether or not this Named is a group itself
 	 *
-	 * @return
+	 * @return true if this is a group.
 	 */
 	public boolean isGroup();
 }

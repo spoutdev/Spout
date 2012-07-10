@@ -37,6 +37,10 @@ import org.spout.api.entity.component.controller.type.ControllerType;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.map.DefaultedMap;
 
+/**
+ * Represents an attachment to an Entity that controls the entity and it's data.
+ *
+ */
 public abstract class Controller extends EntityComponent {
 	private final ControllerType type;
 	private final DatatableMap datatableMap = new GenericDatatableMap();
@@ -47,8 +51,8 @@ public abstract class Controller extends EntityComponent {
 	}
 
 	/**
-	 * Called when this controller is detached from the entity (normally due to the entity dieing or being removed from the world).
-	 * Occurs before the Pre-Snapshot of the tick.
+	 * Called when this controller is detached from the entity (normally due to the entity dying or being removed from the world).<br/>
+	 * Occurs before the Pre-Snapshot of the tick.<br/>
 	 */
 	public void onDeath() {
 	}

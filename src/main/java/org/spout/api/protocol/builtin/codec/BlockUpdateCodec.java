@@ -33,7 +33,7 @@ import org.spout.api.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.api.util.hashing.NibblePairHashed;
 
 /**
- * @author zml2008
+ *
  */
 public class BlockUpdateCodec extends MessageCodec<BlockUpdateMessage> {
 	public BlockUpdateCodec() {

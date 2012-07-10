@@ -79,16 +79,18 @@ public abstract class Event {
 	}
 
 	/**
-	 * Returning true will prevent calling any even Order slots.
+	 * Returning true will prevent calling any even {@link Order}ed slots.
 	 *
 	 * @see Order
-	 * @return false if the event is propogating; events which do not implement
-	 *         Cancellable should never return true here
+	 * @return false if the event is propogating; events which do not implement Cancellable should never return true here.
 	 */
 	public boolean isCancelled() {
 		return cancelled;
 	}
 
+	/**
+	 * @return true if the event has already been called by the {@link EventManager}, otherwise false.
+	 */
 	public boolean hasBeenCalled() {
 		return beenCalled;
 	}

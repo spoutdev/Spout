@@ -33,7 +33,7 @@ import org.spout.api.protocol.Session;
 import org.spout.api.protocol.builtin.message.EntityDatatableMessage;
 
 /**
- * @author zml2008
+ * 
  */
 public class EntityDatatableMessageHandler extends MessageHandler<EntityDatatableMessage> {
 	@Override

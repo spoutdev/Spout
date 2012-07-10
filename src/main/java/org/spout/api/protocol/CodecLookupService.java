@@ -34,7 +34,6 @@ import java.util.Map;
 /**
  * A class used to lookup message codecs.
  *
- * @author Graham Edgecombe
  */
 public abstract class CodecLookupService {
 	/**

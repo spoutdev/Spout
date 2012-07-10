@@ -29,7 +29,7 @@ package org.spout.api.entity.component.controller.type;
 import org.spout.api.entity.component.Controller;
 
 /**
- * @author zml2008
+ *
  */
 public class UncreatableControllerType extends ControllerType {
 	public UncreatableControllerType(Class<? extends Controller> controllerClass, String name) {

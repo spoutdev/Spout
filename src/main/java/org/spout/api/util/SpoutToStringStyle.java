@@ -30,7 +30,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * A {@link ToStringStyle} that makes the output of tostringBuilder match what SpoutAPI uses.
- * @author zml2008
  */
 public class SpoutToStringStyle extends ToStringStyle {
 	private static final long serialVersionUID = 1L;

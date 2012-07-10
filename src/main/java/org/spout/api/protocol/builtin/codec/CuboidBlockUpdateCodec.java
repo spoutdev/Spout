@@ -32,7 +32,7 @@ import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.builtin.message.CuboidBlockUpdateMessage;
 
 /**
- * @author zml2008
+ *
  */
 public class CuboidBlockUpdateCodec extends MessageCodec<CuboidBlockUpdateMessage> {
 	public CuboidBlockUpdateCodec() {

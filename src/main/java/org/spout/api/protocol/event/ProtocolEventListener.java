@@ -27,8 +27,7 @@
 package org.spout.api.protocol.event;
 
 /**
- *
- * @author zml2008
+ * Represents a Protocol listener.
  */
 public interface ProtocolEventListener {
 }

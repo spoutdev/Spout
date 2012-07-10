@@ -33,7 +33,7 @@ import org.spout.api.protocol.Session;
 import org.spout.api.protocol.builtin.message.EntityPositionMessage;
 
 /**
- * @author zml2008
+ * 
  */
 public class EntityPositionMessageHandler extends MessageHandler<EntityPositionMessage> {
 	@Override

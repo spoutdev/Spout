@@ -27,13 +27,19 @@
 package org.spout.api.chat.style;
 
 /**
- * @author zml2008
+ * A ChatStyle that represents Formatting, can be paired with other FormatChatStyles, or {@link ColorChatStyle}s.
  */
 public class FormatChatStyle extends ChatStyle {
 	public FormatChatStyle(String name) {
 		super(name);
 	}
 
+	/**
+	 * Checks if this Format style conflicts with any {@link ChatStyle}.<br/>
+	 * Always returns false.  FormatChatStyles never conflict with other ChatStyles.</br>
+	 * 
+	 * @return false
+	 */
 	public boolean conflictsWith(ChatStyle other) {
 		return false;
 	}

@@ -34,7 +34,7 @@ import org.spout.api.geo.World;
 import org.spout.api.util.SpoutToStringStyle;
 
 /**
- * @author zml2008
+ *
  */
 public class WorldChangeMessage extends DatatableMessage {
 	private final UUID worldUuid;

@@ -35,8 +35,6 @@ import org.spout.api.util.hashing.ByteShortByteHashed;
  * A simplistic set that supports (byte, short, byte) keys, using a trove int
  * int hashset in the backend.
  *
- * @author Afforess
- *
  */
 public class TByteShortByteKeyedHashSet extends ByteShortByteHashed {
 	protected final TIntHashSet set;

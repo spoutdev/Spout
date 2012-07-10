@@ -37,8 +37,6 @@ import gnu.trove.set.TIntSet;
  * A simplistic map that supports (byte, short, byte) keys, using a trove int
  * float hashmap in the backend.
  *
- * @author Afforess
- *
  */
 public class TByteShortByteKeyedFloatHashMap extends ByteShortByteHashed {
 	protected final TIntFloatHashMap map;

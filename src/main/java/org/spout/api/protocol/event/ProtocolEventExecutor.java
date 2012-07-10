@@ -30,8 +30,7 @@ import org.spout.api.exception.EventException;
 import org.spout.api.protocol.Message;
 
 /**
- *
- * @author zml2008
+ * 
  */
 public interface ProtocolEventExecutor {
 	public Message[] execute(ProtocolEvent event) throws EventException;

@@ -29,7 +29,7 @@ package org.spout.api.entity.component.controller;
 import org.spout.api.player.Player;
 
 /**
- * Represents a Controller that is controlled by a player.
+ * Represents a {@link Component} that is player controlled.
  * 
  * An entity is a Player if entity.getController() instanceof PlayerController == true
  */
@@ -37,7 +37,7 @@ public interface PlayerController {
 
 	/**
 	 * Gets the player that this controller represents
-	 * @return
+	 * @return the player
 	 */
 	public Player getPlayer();
 

@@ -37,7 +37,7 @@ import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.util.StringMap;
 
 /**
- * A style of chat for the client to implement.
+ * A style of chat for the client to implement.<br/>
  * FontRenderer. Names are from <a href="http://wiki.vg/Chat">http://wiki.vg/Chat</a>
  */
 public abstract class ChatStyle {
@@ -72,10 +72,22 @@ public abstract class ChatStyle {
 		return VALUES;
 	}
 
+	/**
+	 * Looks up a ChatStyle by it's ID.
+	 * 
+	 * @param id
+	 * @return the ChatStyle, or null if not found.
+	 */
 	public static ChatStyle byId(int id) {
 		return byName(ID_LOOKUP.getString(id));
 	}
 
+	/**
+	 * Looks up a ChatStyle by it's name.
+	 * 
+	 * @param name
+	 * @return the ChatStyle, or null if not found.
+	 */
 	public static ChatStyle byName(String name) {
 		if (name == null) {
 			return null;
@@ -83,6 +95,12 @@ public abstract class ChatStyle {
 		return BY_NAME.get(name.toLowerCase().replace(' ', '_'));
 	}
 
+	/**
+	 * Removes all ChatStyle's from the given string.
+	 * 
+	 * @param str to strip.
+	 * @return String with all ChatSyle's removed.
+	 */
 	public static String strip(String str) {
 		for (StyleHandler handler : StyleHandler.getAll()) {
 			str = handler.stripStyle(str);

@@ -31,7 +31,7 @@ import org.spout.api.datatable.DatatableMap;
 import org.spout.api.util.SpoutToStringStyle;
 
 /**
- * @author zml2008
+ * 
  */
 public class EntityDatatableMessage extends DatatableMessage {
 	private final int entityId;

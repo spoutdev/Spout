@@ -59,6 +59,10 @@ public abstract class ControllerType {
 		return name;
 	}
 
+	/**
+	 * 
+	 * @return id of the controller.
+	 */
 	public int getId() {
 		return id;
 	}

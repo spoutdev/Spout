@@ -35,7 +35,6 @@ import org.spout.api.util.hashing.IntPairHashed;
 /**
  * A simplistic set that supports 2 ints for one value inside the set.
  *
- * @author Afforess
  *
  */
 public class TIntPairHashSet extends IntPairHashed {

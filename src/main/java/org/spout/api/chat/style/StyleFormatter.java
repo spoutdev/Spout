@@ -27,7 +27,7 @@
 package org.spout.api.chat.style;
 
 /**
- * Instances of this class
+ * Represents a formatter that will automatically insert {@link ChatStyle}'s into a String.
  */
 public interface StyleFormatter {
 	public String format(String text);
