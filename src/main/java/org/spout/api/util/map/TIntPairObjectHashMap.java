@@ -39,8 +39,6 @@ import org.spout.api.util.hashing.IntPairHashed;
  * A simplistic map that supports a pair of integers for keys, using a trove
  * long object hashmap in the backend.
  *
- * @author Afforess
- *
  */
 public class TIntPairObjectHashMap<K> extends IntPairHashed {
 	protected TLongObjectMap<K> map;

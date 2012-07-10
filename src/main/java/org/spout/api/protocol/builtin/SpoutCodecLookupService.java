@@ -42,7 +42,7 @@ import org.spout.api.protocol.builtin.codec.StringMapCodec;
 import org.spout.api.protocol.builtin.codec.WorldChangeCodec;
 
 /**
- * @author zml2008
+ * 
  */
 public class SpoutCodecLookupService extends CodecLookupService {
 	public SpoutCodecLookupService() {

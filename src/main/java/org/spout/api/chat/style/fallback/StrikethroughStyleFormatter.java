@@ -29,7 +29,7 @@ package org.spout.api.chat.style.fallback;
 import org.spout.api.chat.style.StyleFormatter;
 
 /**
- * Applies the unicode strikethrough character to a string
+ * Applies the unicode strike-through character to a string
  */
 public class StrikethroughStyleFormatter implements StyleFormatter {
 	private static final String STRIKETHROUGH_CHAR = "\u0336";

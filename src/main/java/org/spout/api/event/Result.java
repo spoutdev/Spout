@@ -26,6 +26,9 @@
  */
 package org.spout.api.event;
 
+/**
+ * Represents an event's result.
+ */
 public enum Result {
 	/**
 	 * Deny the event. Depending on the event, the action indicated by the event
@@ -51,6 +54,13 @@ public enum Result {
 		this.result = result;
 	}
 
+	/**
+	 * True if the event is allowed, and is taking normal operation.
+	 * False if the event is denied.
+	 * Null if neither allowed, nor denied. The server will continue to proceed with it's normal handling.
+	 * 
+	 * @return the event's resolution.
+	 */
 	public Boolean getResult() {
 		return result;
 	}

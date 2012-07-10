@@ -32,7 +32,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 
 /**
- * @author zml2008
+ *
  */
 public class WorldGeneratorObjectDecorator extends Decorator {
 	private final int probability;

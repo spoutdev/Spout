@@ -37,10 +37,8 @@ import org.spout.api.event.server.permissions.PermissionNodeEvent;
 import org.spout.api.geo.World;
 
 /**
- * Represents a user group as a permissions subject. This allows for checking
- * group inheritance, group permissions, etc.
+ * Represents a user group as a permissions subject. This allows for checking group inheritance, group permissions, etc.
  *
- * @author yetanotherx
  */
 public class PermissionsGroup implements PermissionsSubject, DataSubject {
 	private EventManager manager;

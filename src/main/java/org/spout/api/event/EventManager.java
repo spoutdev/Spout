@@ -26,6 +26,10 @@
  */
 package org.spout.api.event;
 
+/**
+ * Manages event registration through {@link Listener}s and {@link EventExecutor}s,  It also handles calling of events, and delayed events.
+ *
+ */
 public interface EventManager {
 	/**
 	 * Calls an event with the given details

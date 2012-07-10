@@ -29,11 +29,10 @@ package org.spout.api.util.config.commented;
 import org.spout.api.util.config.Configuration;
 
 /**
- * A configuration that accepts comments. All ConfigurationNodes passed to this configuration
- * must be CommentedConfigurationNodes, and the node getters for this configuration all
- * return CommentedConfigurationNodes for convenience.
+ * A configuration that accepts comments. <br/>
+ * All ConfigurationNodes passed to this configuration must be CommentedConfigurationNode.<br/>
+ * The node getters for this configuration all return CommentedConfigurationNodes for convenience.<br/>
  *
- * @author zml2008
  */
 public interface CommentedConfiguration extends Configuration {
 	public CommentedConfigurationNode createConfigurationNode(String[] path, Object value);

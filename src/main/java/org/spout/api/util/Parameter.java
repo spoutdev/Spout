@@ -29,9 +29,8 @@ package org.spout.api.util;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
- * Represents a single parameter - this is used for things like mob metadata.
+ * Represents a single parameter - this is used for things like mob metadata.<br/>
  *
- * @author Graham Edgecombe
  * @param <T> The type of value this parameter contains.
  */
 public class Parameter<T> {

@@ -38,7 +38,7 @@ import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.builtin.message.ChunkDataMessage;
 
 /**
- * @author zml2008
+ *
  */
 public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 	public ChunkDataCodec() {

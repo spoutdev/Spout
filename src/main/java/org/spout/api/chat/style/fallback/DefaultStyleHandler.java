@@ -31,8 +31,7 @@ import org.spout.api.chat.style.StyleFormatter;
 import org.spout.api.chat.style.StyleHandler;
 
 /**
- * An implementation of StyleHandler with basic style handlers that use plaintext
- * to apply some formatting attributes, for places where no better implementation exists.
+ * An implementation of StyleHandler with basic style handlers that use plain-text to apply some formatting attributes, for places where no better implementation exists.
  */
 public class DefaultStyleHandler extends StyleHandler {
 	public static final DefaultStyleHandler INSTANCE = new DefaultStyleHandler();

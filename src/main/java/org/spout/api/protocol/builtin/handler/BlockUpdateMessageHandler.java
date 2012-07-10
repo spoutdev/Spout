@@ -33,7 +33,7 @@ import org.spout.api.protocol.Session;
 import org.spout.api.protocol.builtin.message.BlockUpdateMessage;
 
 /**
- * @author zml2008
+ *
  */
 public class BlockUpdateMessageHandler extends MessageHandler<BlockUpdateMessage> {
 	@Override

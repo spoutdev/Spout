@@ -34,7 +34,7 @@ import java.util.ListIterator;
 import java.util.Map.Entry;
 
 /**
- * A list of event handlers, stored per-event. Based on lahwran's fevents.
+ * A list of event handlers, stored per-event.
  */
 public class HandlerList {
 	/**
@@ -44,21 +44,23 @@ public class HandlerList {
 	private ListenerRegistration[] handlers = null;
 
 	/**
-	 * Dynamic handler lists. These are changed using register() and
-	 * unregister() and are automatically baked to the handlers array any time
-	 * they have changed.
+	 * Returns the Dynamic handler lists. <br/>
+	 * These are changed using register() and unregister()<br/>
+	 * Changes automatically baked to the handlers array any time they have changed..
+	 * 
+	 * @return map of Registered handlers
 	 */
 	private final EnumMap<Order, List<ListenerRegistration>> handlerSlots;
 
 	/**
 	 * List of all HandlerLists which have been created, for use in bakeAll()
+	 * 
+	 * @return the list of all Handlers.
 	 */
 	private static final ArrayList<HandlerList> ALL_LISTS = new ArrayList<HandlerList>();
 
 	/**
-	 * Bake all handler lists. Best used just after all normal event
-	 * registration is complete, ie just after all plugins are loaded if you're
-	 * using fevents in a plugin system.
+	 * Bake all handler lists. Best used just after all normal event registration is complete.
 	 */
 	public static void bakeAll() {
 		for (HandlerList h : ALL_LISTS) {
@@ -156,6 +158,10 @@ public class HandlerList {
 		return handlers;
 	}
 
+	/**
+	 * Gets an array of all currently ListenerRegistration, if the handlers list is currently null, it will attempt to bake new listeners prior to returning.
+	 * @return array of ListenerRegistrations
+	 */
 	public ListenerRegistration[] getRegisteredListeners() {
 		ListenerRegistration[] handlers = this.handlers;
 		if (handlers == null) {

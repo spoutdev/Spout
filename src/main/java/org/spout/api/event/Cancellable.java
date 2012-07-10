@@ -27,11 +27,11 @@
 package org.spout.api.event;
 
 /**
- * Interface for events that can be cancelled.
+ * Interface for events that can be cancelled, to prevent them from propagating to downstream handlers.
  */
 public interface Cancellable {
 	/**
-	 * If an event stops propogating (ie, is cancelled) partway through an even
+	 * If an event stops propagating (ie, is cancelled) partway through an even
 	 * slot, that slot will not cease execution, but future even slots will not
 	 * be called.
 	 *

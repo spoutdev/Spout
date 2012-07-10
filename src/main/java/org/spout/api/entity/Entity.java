@@ -114,18 +114,17 @@ public interface Entity extends Source {
 	public boolean isSpawned();
 
 	/**
-	 * Gets the chunk the entity resides in, or null if unspawned.
+	 * Gets the {@link Chunk} this entity resides in, or null if unspawned.
 	 * 
-	 * @return chunk
+	 * @return chunk the entity is in, or null if unspawned.
 	 */
 	@SnapshotRead
 	public Chunk getChunk();
 
 	/**
-	 * Gets the region the entity is associated and managed with, or null if
-	 * unspawned.
+	 * Gets the region the entity is associated and managed with, or null if unspawned.
 	 * 
-	 * @return region
+	 * @return region the entity is in.
 	 */
 	@SnapshotRead
 	public Region getRegion();
@@ -144,10 +143,9 @@ public interface Entity extends Source {
 	public void finalizeRun();
 
 	/**
-	 * Kills the entity. This takes effect at the next snapshot.
-	 * 
-	 * If the entity's position is set before the next snapshot, the entity
-	 * won't be removed.
+	 * Kills the entity. This takes effect at the next snapshot.<br/>
+	 * <br/>
+	 * If the entity's position is set before the next snapshot, the entity won't be removed.</br>
 	 * 
 	 * @return true if the entity was alive
 	 */
@@ -164,18 +162,17 @@ public interface Entity extends Source {
 	public boolean isDead();
 
 	/**
-	 * Sets the maximum distance at which the entity can be seen.<br>
-	 * <br>
-	 * The actual view distance used by the server may not be exactly the value
-	 * that is set.
+	 * Sets the maximum distance at which the entity can be seen.<br/>
+	 * <br/>
+	 * The actual view distance used by the server may not be exactly the value that is set.<br/>
 	 * 
-	 * @param distance the distance in blocks at which the entity can be seen
+	 * @param distance in blocks at which the entity can be seen
 	 */
 	@LiveWrite
 	public void setViewDistance(int distance);
 
 	/**
-	 * Gets the maximum distance at which the entity can be seen.<br>
+	 * Gets the maximum distance at which the entity can be seen.<br/>
 	 * 
 	 * @return the distance in blocks at which the entity can be seen
 	 */
@@ -183,10 +180,8 @@ public interface Entity extends Source {
 	public int getViewDistance();
 
 	/**
-	 * Sets whether or not the entity is an observer
-	 * 
-	 * An entity that is an observer is an entity that keeps chunks loaded in
-	 * memory
+	 * Sets whether or not the entity is an observer.<br/>
+	 * An observer is any entity that is allowed to keep chunks from being unloaded.</br>
 	 * 
 	 * @param obs True if the entity should be an observer, false if not
 	 */
@@ -194,21 +189,20 @@ public interface Entity extends Source {
 	public void setObserver(boolean obs);
 
 	/**
-	 * Tells whether or not the entity is an Observer.
+	 * Checks whether or not the entity is currently observing the region it is in.<br/>
+	 * If this value does not match {@link #isObserverLive()} the entity will be changing it's observer status on the next update.<br/>
+	 * An observer is any entity that is allowed to keep chunks from being unloaded.<br/>
 	 * 
-	 * an entity that is an observer will keep chunks loaded in memory.
-	 * 
-	 * @return true if the entity is an observer, false if not
+	 * @return true if the entity is currently an observer, false if not
 	 */
 	@SnapshotRead
 	public boolean isObserver();
 
 	/**
-	 * Tells whether or not the entity is an Observer.
+	 * Checks whether or not the entity is observing. This is used to update the status of the entity.
+	 * If isObserverLive() not equal to isObserver(), then the entity will be changing it's observer status on the next update.
 	 * 
-	 * an entity that is an observer will keep chunks loaded in memory.
-	 * 
-	 * @return true if the entity is an observer, false if not
+	 * @return true if the entity will be an observer, false if not
 	 */
 	@LiveRead
 	public boolean isObserverLive();
@@ -222,77 +216,75 @@ public interface Entity extends Source {
 	public Transform getTransform();
 
 	/**
-	 * Gets a {@link Transform} representing the last tick's position, scale and
-	 * rotation of the entity.
+	 * Gets a {@link Transform} representing the last tick's position, scale and rotation of the entity.
 	 * 
-	 * @return
+	 * @return transform of the entity.
 	 */
 	public Transform getLastTransform();
 
 	/**
-	 * Gets the position, scale and rotation of the entity from the given a
-	 * {@link Transform}.
+	 * Gets the position, scale and rotation of the entity from the given {@link Transform}.
 	 */
 	public void setTransform(Transform transform);
 
 	/**
 	 * Gets the current position of the entity
 	 * 
-	 * @return
+	 * @return position of the entity in the world.
 	 */
 	public Point getPosition();
 
 	/**
 	 * Gets the current rotation of the entity
 	 * 
-	 * @return
+	 * @return rotation of the entity in the world.
 	 */
 	public Quaternion getRotation();
 
 	/**
 	 * Gets the current Scale of the entity
 	 * 
-	 * @return
+	 * @return scale of the entity in the world.
 	 */
 	public Vector3 getScale();
 
 	/**
-	 * Sets the position of the entity. This must be called in the same thread
-	 * as the entity lives.
+	 * Sets the position of the entity. <br/>
+	 * This must be called in the same thread as the entity lives.<br/>
 	 * 
 	 * @param position
 	 */
 	public void setPosition(Point position);
 
 	/**
-	 * Sets the rotation of the entity. This must be called in the same thread
-	 * as the entity lives.
+	 * Sets the rotation of the entity. <br/>
+	 * This must be called in the same thread as the entity lives.<br/>
 	 * 
 	 * @param rotation
 	 */
 	public void setRotation(Quaternion rotation);
 
 	/**
-	 * Sets the scale of the entity. This must be called in the same thread as
-	 * the entity lives.
+	 * Sets the scale of the entity. <br/>
+	 * This must be called in the same thread asthe entity lives.<br/>
 	 * 
 	 * @param scale
 	 */
 	public void setScale(Vector3 scale);
 
 	/**
-	 * Moves the entity by the provided vector
+	 * Moves the entity by the provided vector<br/>
 	 * 
-	 * @param amount
+	 * @param amount to move the entity
 	 */
 	public void translate(Vector3 amount);
 
 	/**
 	 * Moves the entity by the provided vector
 	 * 
-	 * @param x
-	 * @param y
-	 * @param z
+	 * @param x offset
+	 * @param y offset
+	 * @param z offset
 	 */
 	public void translate(float x, float y, float z);
 
@@ -350,29 +342,57 @@ public interface Entity extends Source {
 	 */
 	public void yaw(float ang);
 
+	/**
+	 * Gets the entities current pitch, or vertical angle.
+	 * 
+	 * @return pitch of the entity
+	 */
 	public float getPitch();
 
+	/**
+	 * Gets the entities current yaw, or horizontal angle.
+	 * 
+	 * @return yaw of the entity.
+	 */
 	public float getYaw();
 
+	/**
+	 * Gets the entities current roll as a float.
+	 * 
+	 * @return roll of the entity
+	 */
 	public float getRoll();
 
+	/**
+	 * Sets the pitch of the entity.
+	 * 
+	 * @param ang
+	 */
 	public void setPitch(float ang);
 
+	/**
+	 * Sets the roll of the entity.
+	 * 
+	 * @param ang
+	 */
 	public void setRoll(float ang);
 
+	/**
+	 * sets the yaw of the entity.
+	 * 
+	 * @param ang
+	 */
 	public void setYaw(float ang);
 
 	/**
-	 * Attaches a component to this entity. If it's already attached, it will
-	 * fail silently
+	 * Attaches a component to this entity. If it's already attached, it will fail silently.
 	 * 
 	 * @param component
 	 */
 	public void attachComponent(EntityComponent component);
 
 	/**
-	 * removes a component from an entity. Fails silently if component doesnt
-	 * exist
+	 * Removes a component from an entity. Fails silently if component does not exist.
 	 * 
 	 * @param component
 	 */

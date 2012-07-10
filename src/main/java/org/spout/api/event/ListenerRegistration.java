@@ -27,7 +27,7 @@
 package org.spout.api.event;
 
 /**
- * @author lahwran
+ * Represents an {@link EventExecutor}'s registration. 
  */
 public class ListenerRegistration {
 	private final EventExecutor executor;

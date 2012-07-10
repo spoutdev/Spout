@@ -27,38 +27,35 @@
 package org.spout.api.event;
 
 /**
- * Order of event listener calls.
+ * Order of an event listener may be registered at.
  * <p/>
- * Odd-numbered slots are called even when events are marked "not propogating".
- * If an event stops propogating partway through an even slot, that slot will
- * not cease execution, but future even slots will not be called.
+ * Odd-numbered (IGNORE_CANCELLED) slots are called even when events are marked "not propagating".<br/>
+ * If an event stops propagating part way through an even slot, that slot will not cease execution, 
+ * but future even slots will not be called.
  *
- * @author lahwran
  */
 public enum Order {
 	/**
-	 * Called before all other handlers. Should be used for high-priority event
-	 * canceling.
+	 * Called before all other handlers. Should be used for high-priority event canceling.
 	 */
 	EARLIEST(0, false),
 
 	/**
-	 * Called after "Earliest" handlers and before "Early" handlers. Is called
-	 * even when event has been canceled. Should generally be used to uncancel
-	 * events canceled in Earliest.
+	 * Called after "Earliest" handlers and before "Early" handlers.<br/>
+	 * Is called even when event has been canceled.<br/>
+	 * Should generally be used to uncancel events canceled in Earliest.<br/>
 	 */
 	EARLY_IGNORE_CANCELLED(1, true),
 
 	/**
-	 * Called after "Earliest" handlers. Should generally be used for low
-	 * priority event canceling.
+	 * Called after "Earliest" handlers. Should generally be used for low priority event canceling.
 	 */
 	EARLY(2, false),
 
 	/**
-	 * Called after "Early" handlers and before "Default" handlers. Is called
-	 * even when event has been canceled. This is for general-purpose always-run
-	 * events.
+	 * Called after "Early" handlers and before "Default" handlers.<br/>
+	 * Is called even when event has been canceled. <br/>
+	 * This is for general-purpose always-run events.<br/>
 	 */
 	DEFAULT_IGNORE_CANCELLED(3, true),
 	/**
@@ -67,8 +64,8 @@ public enum Order {
 	DEFAULT(4, false),
 
 	/**
-	 * Called after "Default" handlers and before "Late" handlers. Is called
-	 * even when event has been canceled.
+	 * Called after "Default" handlers and before "Late" handlers.<br/>
+	 * Is called even when event has been canceled.<br/>
 	 */
 	LATE_IGNORE_CANCELLED(5, true),
 
@@ -78,8 +75,8 @@ public enum Order {
 	LATE(6, false),
 
 	/**
-	 * Called after "Late" handlers and before "Latest" handlers. Is called even
-	 * when event has been canceled.
+	 * Called after "Late" handlers and before "Latest" handlers. <br/>
+	 * Is called even when event has been canceled.<br/>
 	 */
 	LATEST_IGNORE_CANCELLED(7, true),
 
@@ -89,9 +86,9 @@ public enum Order {
 	LATEST(8, false),
 
 	/**
-	 * Called after "Latest" handlers. No changes to the event should be made in
-	 * this order slot (though it is not enforced). Is called even when event
-	 * has been cancelled.
+	 * Called after "Latest" handlers. <br/>
+	 * No changes to the event should be made in this order slot (though it is not enforced).<br/> 
+	 * This is called even when event has been cancelled.</br>
 	 */
 	MONITOR(9, true);
 

@@ -34,7 +34,6 @@ import java.io.Writer;
 /**
  * A subclass of IniConfiguration that loads from a String
  *
- * @author zml2008
  */
 public class StringLoadingIniConfiguration extends IniConfiguration {
 	private String value;

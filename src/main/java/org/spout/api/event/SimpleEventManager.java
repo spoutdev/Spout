@@ -41,6 +41,10 @@ import org.spout.api.Spout;
 import org.spout.api.exception.EventException;
 import org.spout.api.exception.IllegalPluginAccessException;
 
+/**
+ * A simple implementation of the {@link EventManager} that handles all {@link Event}s for the server.
+ *
+ */
 public class SimpleEventManager implements EventManager {
 	public <T extends Event> void callDelayedEvent(final T event) {
 		Spout.getEngine().getScheduler().scheduleSyncDelayedTask(null, new Runnable() {

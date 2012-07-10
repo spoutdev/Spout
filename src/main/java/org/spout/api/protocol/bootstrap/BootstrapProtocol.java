@@ -33,7 +33,7 @@ import org.spout.api.protocol.Protocol;
 
 /**
  *
- * @author zml2008
+ *
  */
 public abstract class BootstrapProtocol extends Protocol {
 	public BootstrapProtocol(String name, CodecLookupService codecLookup, HandlerLookupService handlerLookup) {

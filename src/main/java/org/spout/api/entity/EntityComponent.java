@@ -28,19 +28,23 @@ package org.spout.api.entity;
 
 import org.spout.api.tickable.Tickable;
 
+/**
+ * Represents an attachment to an entity that can respond to Ticks.
+ *
+ */
 public abstract class EntityComponent extends Tickable {
 	private Entity parent;
 
 	/**
-	 * Called when this controller is attached to an entity.
-	 * @param e entity this controller will be attached to.
+	 * Attaches this component to an entity.
+	 * @param e entity this component will be attached to.
 	 */
 	public final void attachToEntity(Entity e) {
 		this.parent = e;
 	}
 
 	/**
-	 * Gets the parent Entity associated with this controller.
+	 * Gets the parent Entity associated with this component.
 	 *
 	 * @return parent Entity
 	 */

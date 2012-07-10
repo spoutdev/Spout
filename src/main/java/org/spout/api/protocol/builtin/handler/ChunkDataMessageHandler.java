@@ -33,7 +33,7 @@ import org.spout.api.protocol.Session;
 import org.spout.api.protocol.builtin.message.ChunkDataMessage;
 
 /**
- * @author zml2008
+ * 
  */
 public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 	@Override

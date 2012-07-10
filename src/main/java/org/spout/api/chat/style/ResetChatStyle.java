@@ -27,7 +27,7 @@
 package org.spout.api.chat.style;
 
 /**
- * @author zml2008
+ * Represents a ChatStyle that resets the current ChatStyle at it's position in the String.
  */
 public class ResetChatStyle extends ChatStyle {
 	public ResetChatStyle() {

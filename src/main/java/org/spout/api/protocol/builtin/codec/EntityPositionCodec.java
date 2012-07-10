@@ -34,7 +34,7 @@ import org.spout.api.protocol.builtin.ChannelBufferUtils;
 import org.spout.api.protocol.builtin.message.EntityPositionMessage;
 
 /**
- * @author zml2008
+ *
  */
 public class EntityPositionCodec extends MessageCodec<EntityPositionMessage> {
 	public EntityPositionCodec() {

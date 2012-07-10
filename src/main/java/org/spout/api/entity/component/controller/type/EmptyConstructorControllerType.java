@@ -33,7 +33,6 @@ import org.spout.api.entity.component.Controller;
 
 /**
  *
- * @author zml2008
  */
 public class EmptyConstructorControllerType extends ControllerType {
 	private Constructor<? extends Controller> constructor;
