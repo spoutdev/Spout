@@ -32,16 +32,21 @@ import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;
 
 /**
- * Called when a player is attempting to log in.
- * This is called prior to both the {@link PlayerLoginEvent} and the {@link PlayerJoinEvent}
+ * Called when a player is attempting to log in.<br/>
+ * This is called prior to both the {@link PlayerLoginEvent} and the {@link PlayerJoinEvent}.
  */
 public class PlayerPreLoginEvent extends Event {
 	private static HandlerList handlers = new HandlerList();
 
-	private String name;
+	private final String name;
 
-	private InetAddress address;
+	private final InetAddress address;
 
+	public PlayerPreLoginEvent(String n, InetAddress a) {
+		this.name = n;
+		this.address = a;
+	}
+	
 	/**
 	 * Gets the player's name that is attempting to login.
 	 *
@@ -52,30 +57,12 @@ public class PlayerPreLoginEvent extends Event {
 	}
 
 	/**
-	 * Sets the player's name.
-	 *
-	 * @param name The name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	/**
 	 * Gets the player IP address.
 	 *
 	 * @return The IP address
 	 */
 	public InetAddress getAddress() {
 		return address;
-	}
-
-	/**
-	 * Sets the player IP address.
-	 *
-	 * @param ipAddress The IP Address to set.
-	 */
-	public void setAddress(InetAddress ipAddress) {
-		address = ipAddress;
 	}
 
 	@Override

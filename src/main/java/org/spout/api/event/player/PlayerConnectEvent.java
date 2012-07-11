@@ -31,8 +31,7 @@ import org.spout.api.event.HandlerList;
 import org.spout.api.protocol.Session;
 
 /**
- * Called when a player is connects to the server.
- *
+ * Called when a player connects to the server.
  */
 public class PlayerConnectEvent extends Event {
 	private static HandlerList handlers = new HandlerList();
@@ -51,14 +50,26 @@ public class PlayerConnectEvent extends Event {
 		this.viewDistance = viewDistance;
 	}
 
+	/**
+	 * The player's session
+	 * @return the session
+	 */
 	public Session getSession() {
 		return session;
 	}
 
+	/**
+	 * @return the name of the player
+	 */
 	public String getPlayerName() {
 		return playerName;
 	}
 	
+	/**
+	 * How many {@link Chunk}s the player can see into the distance.
+	 * 
+	 * @return how far the player can view.
+	 */
 	public int getViewDistance() {
 		return viewDistance;
 	}

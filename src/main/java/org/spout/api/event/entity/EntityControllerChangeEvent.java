@@ -37,7 +37,7 @@ import org.spout.api.event.HandlerList;
 public class EntityControllerChangeEvent extends EntityEvent {
 	private static HandlerList handlers = new HandlerList();
 
-	private Source source;
+	private final Source source;
 
 	private Controller newController;
 
@@ -50,19 +50,10 @@ public class EntityControllerChangeEvent extends EntityEvent {
 	/**
 	 * Gets the source of this event.
 	 *
-	 * @return An Source that is the source of the event.
+	 * @return the source of the event.
 	 */
 	public Source getSource() {
 		return source;
-	}
-
-	/**
-	 * Sets the source of this event.
-	 *
-	 * @param source The source of this event.
-	 */
-	public void setSource(Source source) {
-		this.source = source;
 	}
 
 	/**
@@ -75,11 +66,11 @@ public class EntityControllerChangeEvent extends EntityEvent {
 	}
 
 	/**
-	 * Sets the new controller of the entity.
+	 * Sets the controller of the entity.
 	 *
 	 * @param newController The new controller of the entity.
 	 */
-	public void setNetController(Controller newController) {
+	public void setNewController(Controller newController) {
 		this.newController = newController;
 	}
 

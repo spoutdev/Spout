@@ -40,7 +40,7 @@ public class EntityHealthChangeEvent extends EntityEvent implements Cancellable 
 
 	private int change;
 
-	private Source source;
+	private final Source source;
 
 	public EntityHealthChangeEvent(Entity e, Source source, int change) {
 		super(e);
@@ -55,15 +55,6 @@ public class EntityHealthChangeEvent extends EntityEvent implements Cancellable 
 	 */
 	public Source getSource() {
 		return source;
-	}
-
-	/**
-	 * Sets the source that caused this event.
-	 *
-	 * @param source The new source of this event.
-	 */
-	public void setSource(Source source) {
-		this.source = source;
 	}
 
 	/**
