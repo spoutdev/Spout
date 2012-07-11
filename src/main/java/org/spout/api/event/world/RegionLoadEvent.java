@@ -30,6 +30,10 @@ import org.spout.api.event.HandlerList;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
 
+/**
+ * Called when a {@link Region} is loaded into memory.
+ *
+ */
 public class RegionLoadEvent extends WorldEvent{
 	private static HandlerList handlers = new HandlerList();
 	private final Region region;

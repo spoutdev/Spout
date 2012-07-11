@@ -30,7 +30,7 @@ import org.spout.api.event.HandlerList;
 import org.spout.api.geo.cuboid.Chunk;
 
 /**
- * Called when a chunk is populated
+ * Called when a {@link Chunk} is populated.
  */
 public class ChunkPopulateEvent extends ChunkEvent{
 	private static HandlerList handlers = new HandlerList();

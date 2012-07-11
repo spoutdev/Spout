@@ -32,7 +32,7 @@ import org.spout.api.geo.World;
 import org.spout.api.permissions.PermissionsSubject;
 
 /**
- * This event is called when PermissionSubject.getGroups() is called.
+ * This event is called when {@link PermissionSubject#getGroups()} is called.
  */
 public class PermissionGetGroupsEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();
@@ -45,22 +45,47 @@ public class PermissionGetGroupsEvent extends Event {
 		this.subject = subject;
 	}
 
+	/**
+	 * Returns the array of all groups on the given world if set, otherwise globally.
+	 * 
+	 * @return array of group names
+	 */
 	public String[] getGroups() {
 		return groups;
 	}
 
+	/**
+	 * Sets the list of group names.
+	 * 
+	 * @param groups
+	 */
 	public void setGroups(String[] groups) {
 		this.groups = groups;
 	}
 
+	/**
+	 * The subject that is being checked.
+	 * 
+	 * @return subject
+	 */
 	public PermissionsSubject getSubject() {
 		return subject;
 	}
 
+	/**
+	 * The world groups are being checked for, or null if this is a global check.
+	 * 
+	 * @return world, or null if global.
+	 */
 	public World getWorld() {
 		return world;
 	}
 
+	/**
+	 * The name of the world being checked, or null if this is a global check.
+	 * 
+	 * @return world name
+	 */
 	public String getWorldName() {
 		return world == null ? null : world.getName();
 	}

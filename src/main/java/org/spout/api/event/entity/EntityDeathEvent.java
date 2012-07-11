@@ -35,7 +35,8 @@ import org.spout.api.event.HandlerList;
 import org.spout.api.inventory.ItemStack;
 
 /**
- * Called when an entity is dieing.
+ * Called when an {@link Entity} is dying.
+ * Implements {@link Cancellable}. Canceling this prevents the entity from dying or being removed from the world.
  */
 public class EntityDeathEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
@@ -48,9 +49,9 @@ public class EntityDeathEvent extends EntityEvent implements Cancellable {
 	}
 
 	/**
-	 * Gets the drops to drop.
+	 * Gets a {@link List} of {@link ItemStack} to drop.
 	 *
-	 * @return The drops to drop.
+	 * @return The list of items to drop.
 	 */
 	public List<ItemStack> getDrops() {
 		return drops;

@@ -60,7 +60,7 @@ public class PlayerSaveEvent extends Event {
 	}
 
 	/**
-	 * Sets the saved state of this event. 
+	 * Sets the saved state of this event. <br/>
 	 * 
 	 * If the data is not reported saved after it has been called, it will be saved by the default save handler.
 	 * 

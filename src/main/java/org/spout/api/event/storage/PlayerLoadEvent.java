@@ -60,7 +60,7 @@ public class PlayerLoadEvent extends Event {
 	}
 
 	/**
-	 * Sets the loaded state of this event. 
+	 * Sets the loaded state of this event.<br/>
 	 * 
 	 * If the data is not reported loaded after it has been called, it will be loaded by the default save handler.
 	 * 

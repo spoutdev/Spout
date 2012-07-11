@@ -49,7 +49,7 @@ public class PlayerBanKickEvent extends PlayerEvent {
 	/**
 	 * Gets the type of ban that changed
 	 *
-	 * @return ban type
+	 * @return bantype
 	 */
 	public BanType getBanType() {
 		return type;

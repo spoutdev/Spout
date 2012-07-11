@@ -33,7 +33,7 @@ import org.spout.api.event.HandlerList;
 import org.spout.api.event.server.NodeBasedEvent;
 
 /**
- * This event is called when DataSubject.getData*() is called.
+ * This event is called when {@link DataSubject#getData(String)} is called.
  */
 public class RetrieveDataEvent extends NodeBasedEvent {
 	private final DataSubject subject;

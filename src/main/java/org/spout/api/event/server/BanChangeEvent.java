@@ -30,7 +30,7 @@ import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;
 
 /**
- * Called when a player/ip is banned/unbanned
+ * Called when a player or ip is banned or unbanned
  */
 public class BanChangeEvent extends Event {
 	private static HandlerList handlers = new HandlerList();
@@ -73,9 +73,9 @@ public class BanChangeEvent extends Event {
 	}
 
 	/**
-	 * Gets the ip/player the change was done to
+	 * Gets the ip or player the change was done to
 	 *
-	 * @return ban type
+	 * @return name
 	 */
 	public String getChanged() {
 		return changed;

@@ -30,7 +30,7 @@ import org.spout.api.event.HandlerList;
 import org.spout.api.geo.World;
 
 /**
- * Called when a world is loaded into the server
+ * Called when a {@link World} is loaded into the server
  */
 public class WorldLoadEvent extends WorldEvent {
 	private static final HandlerList handlers = new HandlerList();

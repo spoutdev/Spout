@@ -29,6 +29,10 @@ package org.spout.api.event.server;
 import org.spout.api.event.HandlerList;
 import org.spout.api.plugin.Plugin;
 
+/**
+ * Called when a plugin is disabled through the {@link PluginManager}
+ *
+ */
 public class PluginDisableEvent  extends PluginEvent {
 	private static final HandlerList handlers = new HandlerList();
 

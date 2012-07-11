@@ -30,7 +30,8 @@ import org.spout.api.event.HandlerList;
 import org.spout.api.player.Player;
 
 /**
- * Stores details for players attempting to log in
+ * Called when a player is attempting to log in.<br/>
+ * This is called after the {@link PlayerPreLoginEvent} but before the {@link PlayerJoinEvent}
  */
 public class PlayerLoginEvent extends PlayerEvent {
 	private static HandlerList handlers = new HandlerList();

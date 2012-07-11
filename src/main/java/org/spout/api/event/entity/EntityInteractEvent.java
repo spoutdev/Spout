@@ -31,7 +31,8 @@ import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
 
 /**
- * Called when an entity interacts with an entity.
+ * Called when one {@link Entity} interacts with another {@link Entity}.
+ * Implements {@link Cancellable}, which allows this event's normal outcome to be prevented.
  */
 public class EntityInteractEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();

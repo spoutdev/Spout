@@ -32,7 +32,8 @@ import org.spout.api.event.HandlerList;
 import org.spout.api.geo.World;
 
 /**
- * Called when an entity changes its world.
+ * Called when an {@link Entity} changes its {@link World}.
+ * Implements {@link Cancellable}.  Cancelling this will prevent the entity from changing worlds.
  */
 public class EntityChangedWorldEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
@@ -64,18 +65,18 @@ public class EntityChangedWorldEvent extends EntityEvent implements Cancellable 
 	}
 
 	/**
-	 * Gets the world that the entity changed to.
+	 * Gets the world that the entity will be moved to.
 	 *
-	 * @return The world the entity changed to.
+	 * @return The world the entity will be moved to.
 	 */
 	public World getTarget() {
 		return target;
 	}
 
 	/**
-	 * Sets the world that the entity changed to.
+	 * Sets the world that the entity will be moved to.
 	 *
-	 * @param The world the entity changed to.
+	 * @param The world the entity will be moved to.
 	 */
 	public void setTarget(World target) {
 		this.target = target;

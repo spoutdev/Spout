@@ -30,6 +30,10 @@ import org.spout.api.Source;
 import org.spout.api.event.Event;
 import org.spout.api.geo.cuboid.Block;
 
+/**
+ * Designates an event that occurs on a {@link Block} from a {@link Source}
+ *
+ */
 public abstract class BlockEvent extends Event {
 	private final Block block;
 	private final Source source;

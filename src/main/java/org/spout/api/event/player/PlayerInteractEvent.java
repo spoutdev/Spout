@@ -32,6 +32,11 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.player.Player;
 
+/**
+ * Called when a player interacts with the game world, or an item.
+ * Implements {@link Cancellable}.  If this is canceled the interaction will not happen.
+ *
+ */
 public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
 
@@ -51,18 +56,38 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
 		this.isAir = isAir;
 	}
 
+	/**
+	 * Item that the player is currently holding.
+	 * 
+	 * @return item held.
+	 */
 	public ItemStack getHeldItem() {
 		return heldItem;
 	}
 
+	/**
+	 * The location that the Player is interacting with.<br/>
+	 * 
+	 * @return point the inteaction is happening at.
+	 */
 	public Point getInteractedPoint() {
 		return interactedPoint;
 	}
 
+	/**
+	 * The action the player is performing.
+	 * 
+	 * @return action being performed.
+	 */
 	public Action getAction() {
 		return action;
 	}
 
+	/**
+	 * Checks if the block being interacted with is an air block.
+	 * 
+	 * @return true, if the block being interacted with is air.
+	 */
 	public boolean isAir() {
 		return isAir;
 	}

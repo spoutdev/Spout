@@ -32,9 +32,8 @@ import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;
 
 /**
- * This event is called before a command goes through the full command handling
- * process. This can be used for command blocking, and really shouldn't be
- * useful anywhere else, since we support dynamic command registration.
+ * This event is called before a command goes through the full command handling process.</br>
+ * This can be used for command blocking, or detecting anything the player is typing as a command that may not be registered yet.</br>
  */
 public class PreCommandEvent extends Event implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
@@ -50,6 +49,11 @@ public class PreCommandEvent extends Event implements Cancellable {
 		return source;
 	}
 
+	/**
+	 * Gets the first component of the command.
+	 * 
+	 * @return the command
+	 */
 	public String getCommand() {
 		int spaceIndex = message.indexOf(" ");
 		if (spaceIndex == -1) {
@@ -59,10 +63,20 @@ public class PreCommandEvent extends Event implements Cancellable {
 		}
 	}
 
+	/**
+	 * Gets the full command message issued to the server.
+	 * 
+	 * @return message sent.
+	 */
 	public String getMessage() {
 		return message;
 	}
 
+	/**
+	 * sets the command message that was sent to the server.
+	 * 
+	 * @param message
+	 */
 	public void setMessage(String message) {
 		this.message = message;
 	}

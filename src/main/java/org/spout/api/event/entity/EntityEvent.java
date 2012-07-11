@@ -30,7 +30,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.event.Event;
 
 /**
- * Represents an entity-related event.
+ * Represents an {@link Entity} related event.
  */
 public abstract class EntityEvent extends Event {
 	private final Entity entity;

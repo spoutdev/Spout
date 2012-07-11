@@ -29,6 +29,10 @@ package org.spout.api.event.chunk;
 import org.spout.api.event.Event;
 import org.spout.api.geo.cuboid.Chunk;
 
+/**
+ * Designates an event that occurs on a {@link Chunk}
+ *
+ */
 public abstract class ChunkEvent extends Event {
 	protected ChunkEvent(Chunk chunk) {
 		this.chunk = chunk;
