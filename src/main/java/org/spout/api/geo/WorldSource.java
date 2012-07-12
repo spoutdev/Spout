@@ -24,80 +24,14 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.math;
+package org.spout.api.geo;
 
-import org.spout.api.util.StringUtil;
+public interface WorldSource {
 
-/**
- * A 2-dimensional vector represented by int-precision x,y coordinates
- */
-public class IntVector2 {
-	
-	private int x;
-	private int y;
-	
-	public IntVector2(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
-	
 	/**
-	 * Sets the X coordinate
+	 * Gets the World
 	 * 
-	 * @param x
+	 * @return the World
 	 */
-	public void setX(int x) {
-		this.x = x;
-	}
-	
-	/**
-	 * Sets the Y coordinate
-	 * 
-	 * @param y
-	 */
-	public void setY(int y) {
-		this.y = y;
-	}
-	
-	/**
-	 * Gets the X coordinate
-	 *
-	 * @return The X coordinate
-	 */
-	public int getX() {
-		return x;
-	}
-	
-	/**
-	 * Gets the Y coordinate
-	 *
-	 * @return The Y coordinate
-	 */
-	public int getY() {
-		return y;
-	}
-	
-	/**
-	 * Gets whether all of the axis in this IntVector are zero
-	 * 
-	 * @return True if all axis are zero
-	 */
-	public boolean isZero() {
-		return this.x == 0 && this.y == 0;
-	}
-	
-	/**
-	 * Adds the given vector to this vector
-	 * 
-	 * @param other
-	 */
-	public void add(IntVector2 other) {
-		x += other.x;
-		y += other.y;
-	}
-	
-	@Override
-	public String toString() {
-		return StringUtil.toString(getX(), getY());
-	}
+	public World getWorld();
 }

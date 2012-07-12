@@ -91,6 +91,11 @@ public class IntVector3 extends IntVector2 {
 		setZ(z);
 	}
 	
+	@Override
+	public boolean isZero() {
+		return super.isZero() && this.z == 0;
+	}
+	
 	/**
 	 * Adds the given vector to this vector
 	 * 

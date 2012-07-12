@@ -120,7 +120,7 @@ public abstract class EffectRangeImpl implements EffectRange {
 	}
 
 	@Override
-	public EffectIterator getEffectIterator() {
+	public EffectIterator iterator() {
 		EffectIterator iter = new EffectIterator();
 		this.initEffectIterator(iter);
 		return iter;
