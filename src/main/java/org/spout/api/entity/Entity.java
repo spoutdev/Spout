@@ -32,6 +32,7 @@ import org.spout.api.Source;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.entity.component.Controller;
 import org.spout.api.geo.World;
+import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
@@ -47,7 +48,7 @@ import org.spout.api.util.thread.SnapshotRead;
 /**
  * Represents an entity, which may or may not be spawned into the world.
  */
-public interface Entity extends Source {
+public interface Entity extends Source, WorldSource {
 
 	public int getId();
 
@@ -135,6 +136,7 @@ public interface Entity extends Source {
 	 * @return world
 	 */
 	@SnapshotRead
+	@Override
 	public World getWorld();
 
 	/**

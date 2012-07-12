@@ -30,6 +30,7 @@ import org.spout.api.Source;
 import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.World;
+import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
@@ -43,7 +44,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.util.thread.LiveWrite;
 import org.spout.api.util.thread.Threadsafe;
 
-public interface Block extends MaterialState {
+public interface Block extends MaterialState, WorldSource {
 
 	/**
 	 * Gets the {@link Point} position of this block in the world
@@ -71,6 +72,7 @@ public interface Block extends MaterialState {
 	 * 
 	 * @return the World
 	 */
+	@Override
 	public World getWorld();
 
 	/**

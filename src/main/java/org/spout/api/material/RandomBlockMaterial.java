@@ -26,7 +26,7 @@
  */
 package org.spout.api.material;
 
-import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Block;
 
 /**
  * Represents that this block material should receive random tick updates.
@@ -43,10 +43,7 @@ public interface RandomBlockMaterial {
 	 * <br/><br/>
 	 * <b>Note:</b> Random tick updates may be delayed if the engine falls behind,
 	 * materials should not rely on tick updates happening regularly.
-	 * @param world
-	 * @param x
-	 * @param y
-	 * @param z
+	 * @param block where the random tick fired
 	 */
-	public void onRandomTick(World world, int x, int y, int z);
+	public void onRandomTick(Block block);
 }

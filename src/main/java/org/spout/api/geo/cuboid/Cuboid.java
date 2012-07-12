@@ -28,13 +28,14 @@ package org.spout.api.geo.cuboid;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.geo.World;
+import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Vector3;
 
 /**
  * Represents a Cuboid shaped volume that is located somewhere in a world.
  */
-public class Cuboid {
+public class Cuboid implements WorldSource {
 	protected final Point base;
 	protected final Vector3 size;
 	private final int x;
@@ -80,6 +81,7 @@ public class Cuboid {
 		return z;
 	}
 
+	@Override
 	public World getWorld() {
 		return base.getWorld();
 	}
