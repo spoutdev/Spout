@@ -40,6 +40,7 @@ import java.util.logging.Level;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
@@ -382,7 +383,7 @@ public final class SpoutSession implements Session {
 		Protocol protocol = getProtocol();
 		Message kickMessage = null;
 		if (protocol != null) {
-			kickMessage = protocol.getKickMessage(reason);
+			kickMessage = protocol.getKickMessage(new ChatArguments(reason));
 		}
 		if (kickMessage != null) {
 			channel.write(kickMessage).addListener(ChannelFutureListener.CLOSE);
@@ -589,7 +590,7 @@ public final class SpoutSession implements Session {
 			Message kickMessage = null;
 			Protocol p = protocol.get();
 			if (p != null) {
-				kickMessage = p.getKickMessage(message);
+				kickMessage = p.getKickMessage(new ChatArguments(message));
 			}
 			if (kickMessage != null) {
 				c.write(kickMessage).addListener(ChannelFutureListener.CLOSE);

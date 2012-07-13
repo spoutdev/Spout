@@ -29,6 +29,7 @@ package org.spout.engine.chat.style;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 import org.fusesource.jansi.AnsiString;
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.chat.style.StyleHandler;
 
@@ -68,5 +69,9 @@ public class JansiStyleHandler extends StyleHandler {
 
 	public String stripStyle(String formatted) {
 		return new AnsiString(formatted).getPlain().toString();
+	}
+
+	public ChatArguments extractArguments(String str) {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 }

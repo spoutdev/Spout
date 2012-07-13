@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.Spout;
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.Result;
@@ -179,13 +180,25 @@ public class SpoutPlayer implements Player {
 	public boolean sendMessage(Object... message) {
 		boolean success = false;
 		if (getEntity() != null) {
-			sendRawMessage(message);
+			success = sendRawMessage(message);
+		}
+		return success;
+	}
+
+	public boolean sendMessage(ChatArguments message) {
+		boolean success = false;
+		if (getEntity() != null) {
+			success = sendRawMessage(message);
 		}
 		return success;
 	}
 
 	@Override
 	public boolean sendRawMessage(Object... message) {
+		return sendRawMessage(new ChatArguments(message));
+	}
+
+	public boolean sendRawMessage(ChatArguments message) {
 		Message chatMessage = getSession().getProtocol().getChatMessage(message);
 		if (message == null) {
 			return false;

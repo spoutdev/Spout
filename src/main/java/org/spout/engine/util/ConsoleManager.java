@@ -71,6 +71,7 @@ import jline.ConsoleOperations;
 import jline.ConsoleReader;
 import jline.NullCompletor;
 import org.fusesource.jansi.Ansi;
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
@@ -298,11 +299,11 @@ public final class ConsoleManager {
 		}
 	}
 
-	private String stringify(Object... message) {
+	private String stringify(ChatArguments message) {
 		if (Ansi.isEnabled()) {
-			return Ansi.ansi().a(ChatStyle.stringify(JansiStyleHandler.ID, message)).reset().toString();
+			return Ansi.ansi().a(message.asString(JansiStyleHandler.ID)).reset().toString();
 		} else {
-			return ChatStyle.stringify(message);
+			return message.asString();
 		}
 	}
 
@@ -315,13 +316,21 @@ public final class ConsoleManager {
 
 		@Override
 		public boolean sendMessage(Object... text) {
-			engine.getLogger().info(stringify(text));
+			return sendMessage(new ChatArguments(text));
+		}
+
+		public boolean sendMessage(ChatArguments message) {
+			engine.getLogger().info(stringify(message));
 			return true;
 		}
 
 		@Override
 		public boolean sendRawMessage(Object... text) {
-			engine.getLogger().info(stringify(text));
+			return sendRawMessage(new ChatArguments(text));
+		}
+
+		public boolean sendRawMessage(ChatArguments message) {
+			engine.getLogger().info(stringify(message));
 			return true;
 		}
 

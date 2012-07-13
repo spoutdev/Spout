@@ -26,13 +26,12 @@
  */
 package org.spout.engine.command;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandContext;
@@ -130,20 +129,19 @@ public class AdministrationCommands {
 	@CommandPermissions("spout.command.plugins")
 	public void plugins(CommandContext args, CommandSource source) {
 		Plugin[] pluginList = Spout.getEngine().getPluginManager().getPlugins();
-		List<Object> pluginListString = new ArrayList<Object>(pluginList.length * 3 + 3);
-		pluginListString.addAll(Arrays.<Object>asList("Plugins (", pluginList.length, "): "));
+		ChatArguments pluginListString = new ChatArguments();
+		pluginListString.append(Arrays.<Object>asList("Plugins (", pluginList.length, "): "));
 
 		for (int i = 0; i < pluginList.length; i++) {
 			if (pluginList[i].getName().equalsIgnoreCase("Spout")) {
 				continue;
 			}
 
-			pluginListString.add(pluginList[i].isEnabled() ? ChatStyle.BRIGHT_GREEN : ChatStyle.RED);
-			pluginListString.add(pluginList[i].getName());
+			pluginListString.append(pluginList[i].isEnabled() ? ChatStyle.BRIGHT_GREEN : ChatStyle.RED)
+			.append(pluginList[i].getName());
 
 			if (i != pluginList.length - 1) {
-				pluginListString.add(ChatStyle.RESET);
-				pluginListString.add(", ");
+				pluginListString.append(ChatStyle.RESET).append(", ");
 			}
 		}
 		source.sendMessage(pluginListString);
@@ -153,16 +151,14 @@ public class AdministrationCommands {
 	@CommandPermissions("spout.command.players")
 	public void onPlayersCommand(CommandContext args, CommandSource source) {
 		Player[] players = Spout.getEngine().getOnlinePlayers();
-		List<Object> onlineMsg = new ArrayList<Object>(Arrays.asList("Online (", (players.length <= 0 ? ChatStyle.RED : ChatStyle.BRIGHT_GREEN), players.length, ChatStyle.RESET, "): "));
+		ChatArguments onlineMsg = new ChatArguments(Arrays.asList("Online (", (players.length <= 0 ? ChatStyle.RED : ChatStyle.BRIGHT_GREEN), players.length, ChatStyle.RESET, "): "));
 		for (int i = 0; i < players.length; i ++) {
 			if (!players[i].isOnline()) {
 				continue;
 			}
-			onlineMsg.add(ChatStyle.BLUE);
-			onlineMsg.add(players[i].getName());
-			onlineMsg.add(ChatStyle.RESET);
+			onlineMsg.append(ChatStyle.BLUE).append(players[i].getName()).append(ChatStyle.RESET);
 			if (i < players.length - 1) {
-				onlineMsg.add(", ");
+				onlineMsg.append(", ");
 			}
 		}
 		source.sendMessage(onlineMsg);

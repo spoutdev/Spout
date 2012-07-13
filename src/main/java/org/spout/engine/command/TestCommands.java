@@ -26,12 +26,7 @@
  */
 package org.spout.engine.command;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.spout.api.chat.style.ChatStyle;
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
@@ -53,22 +48,8 @@ public class TestCommands {
 	}
 
 
-	private static final Pattern STYLE_PATTERN = Pattern.compile("(?:\\{\\{([^\\}]+)\\}\\})?([^\\{]*)");
 	@Command(aliases = "testmsg", desc = "Test extracting chat styles from a message and printing them")
 	public void testMsg(CommandContext args, CommandSource source) throws CommandException {
-		List<Object> elements = new ArrayList<Object>();
-		Matcher matcher = STYLE_PATTERN.matcher(args.getJoinedString(0));
-		while (matcher.find()) {
-			if (matcher.group(1) != null) {
-				ChatStyle style = ChatStyle.byName(matcher.group(1));
-				if (style == null) {
-					throw new CommandException("Unknown ChatStyle: " + matcher.group(1));
-				}
-				elements.add(style);
-			}
-			elements.add(matcher.group(2));
-		}
-
-		source.sendMessage(elements);
+		source.sendMessage(ChatArguments.fromString(args.getJoinedString(0)));
 	}
 }
