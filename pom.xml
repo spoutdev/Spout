@@ -58,6 +58,13 @@
 			<id>spout-repo</id>
 			<url>http://repo.spout.org</url>
 		</repository>
+		<repository>
+			<id>teleal-repo</id>
+			<url>http://teleal.org/m2</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
@@ -104,11 +111,16 @@
 			<version>4.10</version>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
-            <groupId>org.fusesource.jansi</groupId>
-            <artifactId>jansi</artifactId>
-            <version>1.9</version>
-        </dependency>
+		<dependency>
+			<groupId>org.fusesource.jansi</groupId>
+			<artifactId>jansi</artifactId>
+			<version>1.9</version>
+		</dependency>
+		<dependency>
+			<groupId>org.teleal.cling</groupId>
+			<artifactId>cling-support</artifactId>
+			<version>1.0.5</version>
+		</dependency>
 	</dependencies>
 
 	<!-- Build settings -->
