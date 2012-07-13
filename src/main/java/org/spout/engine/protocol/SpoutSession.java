@@ -65,8 +65,8 @@ import org.spout.api.protocol.proxy.ConnectionInfoMessage;
 import org.spout.api.protocol.proxy.ProxyStartMessage;
 import org.spout.api.protocol.proxy.RedirectMessage;
 import org.spout.api.protocol.proxy.TransformableMessage;
+import org.spout.engine.SpoutEngine;
 import org.spout.engine.SpoutProxy;
-import org.spout.engine.SpoutServer;
 import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.world.SpoutWorld;
 
@@ -84,7 +84,7 @@ public final class SpoutSession implements Session {
 	/**
 	 * The server this session belongs to.
 	 */
-	private final SpoutServer server;
+	private final SpoutEngine engine;
 	/**
 	 * The Random for this session
 	 */
@@ -181,11 +181,11 @@ public final class SpoutSession implements Session {
 
 	/**
 	 * Creates a new session.
-	 * @param server  The server this session belongs to.
+	 * @param engine  The server this session belongs to.
 	 * @param channel The channel associated with this session.
 	 */
-	public SpoutSession(SpoutServer server, Channel channel, BootstrapProtocol bootstrapProtocol, boolean proxy) {
-		this.server = server;
+	public SpoutSession(SpoutEngine engine, Channel channel, BootstrapProtocol bootstrapProtocol, boolean proxy) {
+		this.engine = engine;
 		this.channel = channel;
 		protocol = new AtomicReference<Protocol>(bootstrapProtocol);
 		this.bootstrapProtocol = bootstrapProtocol;
@@ -193,7 +193,7 @@ public final class SpoutSession implements Session {
 		this.datatableMap = new GenericDatatableMap();
 		this.dataMap = new DataMap(this.datatableMap);
 		this.proxy = proxy;
-		this.platform = server.getPlatform();
+		this.platform = engine.getPlatform();
 	}
 
 	/**
@@ -280,6 +280,10 @@ public final class SpoutSession implements Session {
 
 	@Override
 	public void send(boolean upstream, boolean force, Message message) {
+		if (message == null) {
+			return;
+		}
+
 		try {
 			switch (platform) {
 				case SERVER :
@@ -374,7 +378,7 @@ public final class SpoutSession implements Session {
 					return false;
 				}
 				reason = ((PlayerKickEvent) event).getKickReason();
-				server.getCommandSource().sendMessage("Player ", player.getName(), " kicked: ", reason);
+				engine.getCommandSource().sendMessage("Player ", player.getName(), " kicked: ", reason);
 			} else {
 				event = new PlayerLeaveEvent(player, getDefaultLeaveMessage());
 			}
@@ -392,14 +396,6 @@ public final class SpoutSession implements Session {
 		}
 		closeAuxChannel(false, reason);
 		return true;
-	}
-
-	/**
-	 * Gets the server associated with this session.
-	 * @return The server.
-	 */
-	public SpoutServer getServer() {
-		return server;
 	}
 
 	/**
@@ -442,7 +438,7 @@ public final class SpoutSession implements Session {
 						ConnectionInfo info = channelInfo.get();
 						if (info != null) {
 							passthrough.set(false);
-							((SpoutProxy) server).connect(redirect.getHostname(), redirect.getPort(), info.getIdentifier(), this);
+							((SpoutProxy) engine).connect(redirect.getHostname(), redirect.getPort(), info.getIdentifier(), this);
 							return;
 						}
 					}
@@ -478,7 +474,7 @@ public final class SpoutSession implements Session {
 
 			Object[] text = leaveEvent.getMessage();
 			if (text != null && text.length > 0) {
-				server.broadcastMessage(text);
+				engine.broadcastMessage(text);
 			}
 
 			PlayerSaveEvent saveEvent = getEngine().getEventManager().callEvent(new PlayerSaveEvent(player));
@@ -522,7 +518,7 @@ public final class SpoutSession implements Session {
 			throw new IllegalArgumentException("The protocol may only be set once per session");
 		}
 		this.synchronizer.get().setProtocol(protocol);
-		server.getLogger().info("Setting protocol to " + protocol.getName());
+		engine.getLogger().info("Setting protocol to " + protocol.getName());
 	}
 
 	@Override
@@ -532,7 +528,7 @@ public final class SpoutSession implements Session {
 
 	@Override
 	public Engine getEngine() {
-		return server;
+		return engine;
 	}
 
 	@Override
