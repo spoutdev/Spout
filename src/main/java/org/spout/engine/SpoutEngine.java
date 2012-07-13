@@ -127,8 +127,6 @@ import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
 
-import com.beust.jcommander.Parameter;
-
 public class SpoutEngine extends AsyncManager implements Engine {
 	public static final Logger logger = Logger.getLogger("Spout");
 
@@ -176,9 +174,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	private ConcurrentHashMap<String, String> cvars = new ConcurrentHashMap<String, String>();
 
 	protected FileSystem filesystem;
-
-	@Parameter(names = {"-debug", "-d", "--debug", "--d" }, description="Debug Mode")
-	private boolean debugMode = false;
+	private Arguments arguments;
 
 	public SpoutEngine() {
 		super(1, new ThreadAsyncExecutor("Engine bootstrap thread"));
@@ -186,8 +182,8 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		consoleManager = new ConsoleManager(this);
 	}
 
-	public void init(String[] args) {
-
+	public void init(Arguments args) {
+		this.arguments = args;
 		registerWithScheduler(scheduler);
 		if (!getExecutor().startExecutor()) {
 			throw new IllegalStateException("SpoutEngine's executor was already started");
@@ -209,7 +205,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 			leakThread.start();
 			scheduler.scheduleSyncRepeatingTask(this, new ProfileTask(), 60 * 1000, 60 * 1000, TaskPriority.NORMAL);
 		}
-		
+
 		scheduler.scheduleSyncRepeatingTask(this, new SessionTask(sessions), 50, 50, TaskPriority.CRITICAL);
 
 		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this), new SimpleAnnotatedCommandExecutorFactory());
@@ -217,7 +213,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		// Register commands
 		getRootCommand().addSubCommands(this, AdministrationCommands.class, commandRegFactory);
 		getRootCommand().addSubCommands(this, MessagingCommands.class, commandRegFactory);
-		if (debugMode) {
+		if (arguments.debug) {
 			getRootCommand().addSubCommands(this, TestCommands.class, commandRegFactory);
 		}
 
@@ -281,6 +277,10 @@ public class SpoutEngine extends AsyncManager implements Engine {
 				ex.printStackTrace();
 			}
 		}
+	}
+
+	public Arguments getArguments() {
+		return arguments;
 	}
 
 	private void enablePlugins() {
@@ -644,7 +644,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	@Override
 	public boolean debugMode() {
-		return debugMode;
+		return arguments.debug;
 	}
 
 	@Override

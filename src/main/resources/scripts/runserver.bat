@@ -1,3 +1,3 @@
 @echo off
 
-java -jar spout*.jar -debug
+java -jar spout*.jar --debug

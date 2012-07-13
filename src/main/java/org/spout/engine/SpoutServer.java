@@ -50,8 +50,6 @@ import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.util.bans.BanManager;
 import org.spout.engine.util.bans.FlatFileBanManager;
 
-import com.beust.jcommander.JCommander;
-
 public class SpoutServer extends SpoutEngine implements Server {
 	private final String name = "Spout Server";
 
@@ -81,38 +79,28 @@ public class SpoutServer extends SpoutEngine implements Server {
 		this.filesystem = new ServerFileSystem();
 	}
 
-	public static void main(String[] args) {
-		SpoutServer server = new SpoutServer();
-		Spout.setEngine(server);
-		Spout.getFilesystem().init();
-		new JCommander(server, args);
-		server.init(args);
-		server.start();
-		
-	}
-
 	public void start() {
 		start(true);
 	}
-	
+
 	public void start(boolean checkWorlds) {
 		start(checkWorlds, new SpoutListener(this));
 	}
-		
+
 	public void start(boolean checkWorlds, Listener listener) {
 		super.start(checkWorlds);
-		
+
 		banManager = new FlatFileBanManager(this);
 
 		getEventManager().registerEvents(listener, this);
-		
+
 		Spout.getFilesystem().postStartup();
 
 		getLogger().info("Done Loading, ready for players.");
 	}
 
 	@Override
-	public void init(String[] args) {
+	public void init(Arguments args) {
 		super.init(args);
 		ChannelFactory factory = new NioServerSocketChannelFactory(executor, executor);
 		bootstrap.setFactory(factory);
@@ -271,12 +259,12 @@ public class SpoutServer extends SpoutEngine implements Server {
 	public Session newSession(Channel channel) {
 		return newSession(channel, false);
 	}
-	
+
 	protected Session newSession(Channel channel, boolean proxy) {
 		BootstrapProtocol protocol = getBootstrapProtocol(channel.getLocalAddress());
 		return new SpoutSession(this, channel, protocol, proxy);
 	}
-	
+
 	@Override
 	public Platform getPlatform() {
 		return Platform.SERVER;

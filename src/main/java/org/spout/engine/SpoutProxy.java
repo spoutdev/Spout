@@ -35,7 +35,6 @@ import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-import org.spout.api.Spout;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.CommonPipelineFactory;
@@ -45,24 +44,13 @@ import org.spout.engine.listener.SpoutProxyListener;
 import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.protocol.SpoutSession;
 
-import com.beust.jcommander.JCommander;
-
 public class SpoutProxy extends SpoutServer {
-	
+
 	/**
 	 * The {@link ServerBootstrap} used to initialize Netty.
 	 */
 	private final ClientBootstrap clientBootstrap = new ClientBootstrap();
-	
-	public static void main(String[] args) {
-		SpoutProxy proxy = new SpoutProxy();
-		Spout.setEngine(proxy);
-		Spout.getFilesystem().init();
-		new JCommander(proxy, args);
-		proxy.init(args);
-		proxy.start();
-	}
-	
+
 	@Override
 	public void start() {
 		super.start(false, new SpoutProxyListener(this));
@@ -72,12 +60,12 @@ public class SpoutProxy extends SpoutServer {
 	public Platform getPlatform() {
 		return Platform.PROXY;
 	}
-	
+
 	@Override
 	public Player addPlayer(String playerName, SpoutSession session, int viewDistance) {
-		
+
 		SpoutPlayer player = null;
-		
+
 		while (true) {
 			player = onlinePlayers.getLive().get(playerName);
 
@@ -94,34 +82,34 @@ public class SpoutProxy extends SpoutServer {
 		session.setPlayer(player);
 		return player;
 	}
-	
+
 	public void connect(String playerName, Session session) {
 		connect("localhost", 25565, playerName, session);
 	}
-	
+
 	public void connect(String hostname, int port, String playerName, Session session) {
 		ChannelFutureListener listener = new SpoutProxyConnectListener(this, playerName, session);
 		clientBootstrap.connect(new InetSocketAddress(hostname, port)).addListener(listener);
 	}
-	
+
 	@Override
-	public void init(String[] args) {
+	public void init(Arguments args) {
 		super.init(args);
 		ChannelFactory factory = new NioClientSocketChannelFactory(executor, executor);
 		clientBootstrap.setFactory(factory);
 
 		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, true);
 		clientBootstrap.setPipelineFactory(pipelineFactory);
-		
+
 		clientBootstrap.setOption("tcpNoDelay", true);
 		clientBootstrap.setOption("keepAlive", true);
 	}
-	
+
 	@Override
 	public Session newSession(Channel channel) {
 		return newSession(channel, true);
 	}
-	
+
 	@Override
 	public void stop() {
 		super.stop();

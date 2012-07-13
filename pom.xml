@@ -215,7 +215,7 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Main-Class>org.spout.engine.SpoutServer</Main-Class>
+							<Main-Class>org.spout.engine.Arguments</Main-Class>
 							<Implementation-Title>${project.name}</Implementation-Title>
 							<Implementation-Version>${releaseVersion} b${buildNumber}</Implementation-Version>
 							<Implementation-Vendor>${project.organization.name}</Implementation-Vendor>

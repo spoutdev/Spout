@@ -1,3 +1,3 @@
 #/bin/sh
 
-java -jar spout.*.jar -debug
+java -jar spout.*.jar --debug
