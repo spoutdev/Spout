@@ -26,6 +26,7 @@
  */
 package org.spout.api.protocol.bootstrap;
 
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.protocol.CodecLookupService;
 import org.spout.api.protocol.HandlerLookupService;
 import org.spout.api.protocol.Message;
@@ -43,4 +44,16 @@ public abstract class BootstrapProtocol extends Protocol {
 	public abstract String detectProtocolDefinition(Message message);
 
 	public abstract Protocol getDefaultProtocol();
+
+	public Message getKickMessage(ChatArguments message) {
+		return getDefaultProtocol().getKickMessage(message);
+	}
+
+	public Message getChatMessage(ChatArguments message) {
+		return getDefaultProtocol().getChatMessage(message);
+	}
+
+	public Message getIntroductionMessage(String playerName) {
+		return getDefaultProtocol().getIntroductionMessage(playerName);
+	}
 }

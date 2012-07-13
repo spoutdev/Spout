@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.fallback.DefaultStyleHandler;
 
 /**
@@ -82,4 +83,6 @@ public abstract class StyleHandler {
 	}
 
 	public abstract String stripStyle(String formatted);
+
+	public abstract ChatArguments extractArguments(String str);
 }

@@ -29,7 +29,7 @@ package org.spout.api.command;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.spout.api.chat.style.ChatStyle;
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.exception.CommandException;
 import org.spout.api.exception.MissingCommandException;
@@ -58,9 +58,17 @@ public class SimpleCommandTest implements CommandSource {
 		return sendRawMessage(message);
 	}
 
+	public boolean sendMessage(ChatArguments message) {
+		return sendRawMessage(message);
+	}
+
 	@Override
 	public boolean sendRawMessage(Object... message) {
-		System.out.println(ChatStyle.stringify(message));
+		return sendRawMessage(new ChatArguments(message));
+	}
+
+	public boolean sendRawMessage(ChatArguments message) {
+		System.out.println(message.asString());
 		return true;
 	}
 

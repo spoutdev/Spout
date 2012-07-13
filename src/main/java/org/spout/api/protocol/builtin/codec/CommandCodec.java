@@ -26,6 +26,8 @@
  */
 package org.spout.api.protocol.builtin.codec;
 
+import java.util.List;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.protocol.MessageCodec;
@@ -48,7 +50,7 @@ public class CommandCodec extends MessageCodec<CommandMessage> {
 	@Override
 	public CommandMessage decode(ChannelBuffer buffer) {
 		final int command = buffer.readInt();
-		final Object[] arguments = ChannelBufferUtils.readCommandArguments(buffer);
+		final List<Object> arguments = ChannelBufferUtils.readCommandArguments(buffer);
 		return new CommandMessage(command, arguments);
 	}
 }

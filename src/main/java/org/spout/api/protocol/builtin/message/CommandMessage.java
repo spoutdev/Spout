@@ -26,21 +26,23 @@
  */
 package org.spout.api.protocol.builtin.message;
 
+import java.util.List;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
 public class CommandMessage extends Message {
 	private final int command;
-	private final Object[] arguments;
+	private final List<Object> arguments;
 
-	public CommandMessage(String command, Object... arguments) {
+	public CommandMessage(String command, List<Object> arguments) {
 		this.command = 0; // TODO: Command StringMap
 		this.arguments = arguments;
 
 	}
 
-	public CommandMessage(int command, Object... arguments) {
+	public CommandMessage(int command, List<Object> arguments) {
 		this.command = command;
 		this.arguments = arguments;
 	}
@@ -49,7 +51,7 @@ public class CommandMessage extends Message {
 		return command;
 	}
 
-	public Object[] getArguments() {
+	public List<Object> getArguments() {
 		return arguments;
 	}
 

@@ -30,6 +30,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
 
 /**
@@ -62,6 +63,6 @@ public class ChatStyleTest {
 
 	@Test
 	public void testStripStyle2() {
-		assertEquals(ChatStyle.strip(ChatStyle.stringify(ChatStyle.GOLD, "This ", ChatStyle.BLUE, "is a " , ChatStyle.BRIGHT_GREEN, "colored ", ChatStyle.WHITE, "string.")), "This is a colored string.");
+		assertEquals(ChatStyle.strip(new ChatArguments(ChatStyle.GOLD, "This ", ChatStyle.BLUE, "is a " , ChatStyle.BRIGHT_GREEN, "colored ", ChatStyle.WHITE, "string.").asString()), "This is a colored string.");
 	}
 }

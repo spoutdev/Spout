@@ -27,6 +27,8 @@
 package org.spout.api.protocol.builtin;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -141,23 +143,24 @@ public class ChannelBufferUtils {
 
 	private static final byte ARGUMENT_TYPE_STYLE = 0x0, ARGUMENT_TYPE_STRING = 0x1;
 
-	public static Object[] readCommandArguments(ChannelBuffer buffer) {
-		Object[] arguments = new Object[buffer.readShort()];
-		for (int i = 0; i < arguments.length; ++i) {
+	public static List<Object> readCommandArguments(ChannelBuffer buffer) {
+		final int length = buffer.readShort();
+		List<Object> arguments = new ArrayList<Object>(length);
+		for (int i = 0; i < length; ++i) {
 			switch (buffer.readByte()) {
 				case ARGUMENT_TYPE_STYLE:
 					short id = buffer.readShort();
-					arguments[i] = ChatStyle.byId(id);
+					arguments.add(ChatStyle.byId(id));
 					break;
 				case ARGUMENT_TYPE_STRING:
-					arguments[i] = readString(buffer);
+					arguments.add(readString(buffer));
 			}
 		}
 		return arguments;
 	}
 
-	public static void writeCommandArguments(ChannelBuffer buffer, Object[] arguments) {
-		buffer.writeShort(arguments.length);
+	public static void writeCommandArguments(ChannelBuffer buffer, List<Object> arguments) {
+		buffer.writeShort(arguments.size());
 		for (Object obj : arguments) {
 			if (obj instanceof ChatStyle) {
 				buffer.writeByte(ARGUMENT_TYPE_STYLE);

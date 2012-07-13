@@ -30,6 +30,7 @@ import java.io.UnsupportedEncodingException;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.spout.api.Spout;
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.protocol.CodecLookupService;
 import org.spout.api.protocol.HandlerLookupService;
 import org.spout.api.protocol.Message;
@@ -123,13 +124,13 @@ public class CommonBootstrapProtocol extends BootstrapProtocol {
 
 
 	@Override
-	public Message getKickMessage(Object... message) {
+	public Message getKickMessage(ChatArguments message) {
 		return null;
 	}
 
 
 	@Override
-	public Message getChatMessage(Object... message) {
+	public Message getChatMessage(ChatArguments message) {
 		return null;
 	}
 

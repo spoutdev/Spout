@@ -28,6 +28,8 @@ package org.spout.api.protocol;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.spout.api.chat.ChatArguments;
+
 public abstract class Protocol {
 	private static final ConcurrentHashMap<String, Protocol> map = new ConcurrentHashMap<String, Protocol>();
 
@@ -69,20 +71,20 @@ public abstract class Protocol {
 	}
 
 	/**
-	 * Gets a message for kicking a player
+	 * Gets a packet for kicking a player
 	 *
 	 * @param message
 	 * @return
 	 */
-	public abstract Message getKickMessage(Object... message);
+	public abstract Message getKickMessage(ChatArguments message);
 
 	/**
-	 * Gets a chat message for a given string
+	 * Gets a chat packet for a given {@link ChatArguments}
 	 *
 	 * @param message
 	 * @return
 	 */
-	public abstract Message getChatMessage(Object... message);
+	public abstract Message getChatMessage(ChatArguments message);
 
 	/**
 	 * Gets the introduction message that the client sends to the server on connect

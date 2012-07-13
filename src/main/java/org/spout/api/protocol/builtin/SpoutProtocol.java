@@ -28,6 +28,7 @@ package org.spout.api.protocol.builtin;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.component.controller.type.ControllerType;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
@@ -48,15 +49,15 @@ public class SpoutProtocol extends Protocol {
 		super("Spout", new SpoutCodecLookupService(), new SpoutHandlerLookupService());
 	}
 
-	public Message getKickMessage(Object... message) {
-		return new CommandMessage("kick", message);
+	public Message getKickMessage(ChatArguments message) {
+		return new CommandMessage("kick", message.getArguments());
 	}
 
-	public Message getChatMessage(Object... message) {
+	public Message getChatMessage(ChatArguments message) {
 		if (Spout.getEngine() instanceof Client) {
-			return new CommandMessage("say", message);
+			return new CommandMessage("say", message.getArguments());
 		} else {
-			return new CommandMessage("broadcast", message);
+			return new CommandMessage("broadcast", message.getArguments());
 		}
 	}
 

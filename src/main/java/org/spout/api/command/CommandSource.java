@@ -27,6 +27,7 @@
 package org.spout.api.command;
 
 import org.spout.api.Source;
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.data.DataSubject;
 import org.spout.api.permissions.PermissionsSubject;
 
@@ -40,6 +41,14 @@ public interface CommandSource extends PermissionsSubject, DataSubject, Source {
 	public boolean sendMessage(Object... message);
 
 	/**
+	 * Sends a text message to the source of the command.
+	 *
+	 * @param message the message to send
+	 * @return whether the message was sent correctly
+	 */
+	public boolean sendMessage(ChatArguments message);
+
+	/**
 	 * Sends a message to the client without any processing by the server,
 	 * except to prevent exploits.
 	 *
@@ -47,4 +56,13 @@ public interface CommandSource extends PermissionsSubject, DataSubject, Source {
 	 * @return whether the message was sent correctly
 	 */
 	public boolean sendRawMessage(Object... message);
+
+	/**
+	 * Sends a message to the client without any processing by the server,
+	 * except to prevent exploits.
+	 *
+	 * @param message The message to send
+	 * @return whether the message was sent correctly
+	 */
+	public boolean sendRawMessage(ChatArguments message);
 }
