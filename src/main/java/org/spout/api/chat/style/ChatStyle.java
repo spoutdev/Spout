@@ -31,8 +31,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.spout.api.chat.ChatArguments;
-import org.spout.api.chat.style.fallback.DefaultStyleHandler;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.util.StringMap;
 

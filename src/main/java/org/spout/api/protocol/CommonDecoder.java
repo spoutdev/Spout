@@ -33,7 +33,6 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 import org.spout.api.Spout;
-import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.api.protocol.replayable.ReplayableError;
 
 /**
@@ -41,47 +40,33 @@ import org.spout.api.protocol.replayable.ReplayableError;
  * Common {@link org.spout.api.protocol.Message}s.
  */
 public class CommonDecoder extends PreprocessReplayingDecoder {
-	private volatile CodecLookupService codecLookup = null;
 	private final int previousMask = 0x1F;
 	private int[] previousOpcodes = new int[previousMask + 1];
 	private int opcodeCounter = 0;
-	private volatile BootstrapProtocol bootstrapProtocol;
-	private final CommonHandler handler;
-	private final CommonEncoder encoder;
+	private volatile Protocol protocol;
 	private final boolean upstream;
 
-	public CommonDecoder(CommonHandler handler, CommonEncoder encoder, boolean upstream) {
+	public CommonDecoder(boolean upstream) {
 		super(512);
-		this.encoder = encoder;
-		this.handler = handler;
 		this.upstream = upstream;
 	}
 
 	@Override
 	protected Object decodeProcessed(ChannelHandlerContext ctx, Channel c, ChannelBuffer buf) throws Exception {
-		if (codecLookup == null) {
-			bootstrapProtocol = Spout.getEngine().getBootstrapProtocol(c.getLocalAddress());
-			codecLookup = bootstrapProtocol.getCodecLookupService();
+		if (protocol == null) {
+			protocol = Spout.getEngine().getProtocol(c.getLocalAddress());
 		}
 
 		int opcode;
-		
+
 		try {
 			opcode = buf.getUnsignedShort(buf.readerIndex());
-		}
-		catch (ReplayableError e) {
+		} catch (ReplayableError e) {
 			opcode = buf.getUnsignedByte(buf.readerIndex()) << 8;
 		}
-		
-		MessageCodec<?> codec = codecLookup.find(opcode);
+
+		MessageCodec<?> codec = protocol.getCodecLookupService().find(opcode);
 		if (codec == null) {
-			if (bootstrapProtocol != null) {
-				Protocol protocol = bootstrapProtocol.getDefaultProtocol();
-				if (protocol != null) {
-					setProtocol(protocol);
-					codec = codecLookup.find(opcode);
-				}
-			}
 			if (codec == null) {
 				StringBuilder sb = new StringBuilder();
 				for (int i = 0; i < previousMask; i++) {
@@ -102,32 +87,10 @@ public class CommonDecoder extends PreprocessReplayingDecoder {
 
 		previousOpcodes[(opcodeCounter++) & previousMask] = opcode;
 
-		Message message = codec.decode(upstream, buf);
-
-		if (bootstrapProtocol != null) {
-			String id = bootstrapProtocol.detectProtocolDefinition(message);
-			if (id != null) {
-				Protocol protocol = Protocol.getProtocol(id);
-
-				if (protocol != null) {
-					setProtocol(protocol);
-				} else {
-					throw new IllegalStateException("No protocol associated with an id of " + id);
-				}
-			}
-		}
-		return message;
+		return codec.decode(upstream, buf);
 	}
-	
-	public void setSession(Session session) {
-		handler.setSession(session);
-		setProtocol(session.getProtocol());
-	}
-	
-	private void setProtocol(Protocol protocol) {
-		codecLookup = protocol.getCodecLookupService();
-		encoder.setProtocol(protocol);
-		handler.setProtocol(protocol);
-		bootstrapProtocol = null;
+
+	void setProtocol(Protocol proto) {
+		this.protocol = proto;
 	}
 }

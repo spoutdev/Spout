@@ -34,5 +34,9 @@ public enum Platform {
 	SERVER,
 	CLIENT,
 	PROXY,
-	BOTH
+	/**
+	 * Use {@link #ALL} instead
+	 */
+	@Deprecated BOTH,
+	ALL
 }

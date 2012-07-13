@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.spout.api.chat.ChatArguments;
+import org.spout.api.chat.ChatSection;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.exception.CommandException;
 import org.spout.api.exception.MissingCommandException;
@@ -50,12 +51,20 @@ public class SimpleCommandTest implements CommandSource {
 
 	@Test(expected = MissingCommandException.class)
 	public void testUnknownSubCommand() throws CommandException {
-		testCommand.execute(this, new String[] {"test1", "hellothere"}, -1, false);
+		testCommand.execute(this, "test1", new ChatArguments("hellothere").toSections(ChatSection.SplitType.WORD), -1, false);
 	}
 
 	@Override
 	public boolean sendMessage(Object... message) {
 		return sendRawMessage(message);
+	}
+
+	public void sendCommand(String command, ChatArguments arguments) {
+		processCommand(command, arguments);
+	}
+
+	public void processCommand(String command, ChatArguments arguments) {
+		return;
 	}
 
 	public boolean sendMessage(ChatArguments message) {

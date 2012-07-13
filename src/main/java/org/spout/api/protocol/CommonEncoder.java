@@ -40,27 +40,27 @@ import org.spout.api.Spout;
  * {@link ChannelBuffer}s.
  */
 public class CommonEncoder extends PostprocessEncoder {
-	private volatile CodecLookupService codecLookup = null;
-	
+	private volatile Protocol protocol = null;
+
 	private final boolean upstream;
-	
+
 	public CommonEncoder(boolean upstream) {
 		this.upstream = upstream;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Object encode(ChannelHandlerContext ctx, Channel c, Object msg) throws Exception {
 		if (msg instanceof Message) {
-			if (codecLookup == null) {
-				codecLookup = Spout.getEngine().getBootstrapProtocol(c.getLocalAddress()).getCodecLookupService();
+			if (protocol == null) {
+				protocol = Spout.getEngine().getProtocol(c.getLocalAddress());
 			}
 			Message message = (Message) msg;
 
 			Class<? extends Message> clazz = message.getClass();
 			MessageCodec<Message> codec;
 
-			codec = (MessageCodec<Message>) codecLookup.find(clazz);
+			codec = (MessageCodec<Message>) protocol.getCodecLookupService().find(clazz);
 			if (codec == null) {
 				throw new IOException("Unknown message type: " + clazz + ".");
 			}
@@ -76,7 +76,7 @@ public class CommonEncoder extends PostprocessEncoder {
 		return msg;
 	}
 
-	public void setProtocol(Protocol protocol) {
-		codecLookup = protocol.getCodecLookupService();
+	void setProtocol(Protocol protocol) {
+		this.protocol = protocol;
 	}
 }

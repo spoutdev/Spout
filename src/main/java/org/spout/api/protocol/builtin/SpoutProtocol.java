@@ -26,9 +26,9 @@
  */
 package org.spout.api.protocol.builtin;
 
-import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
+import org.spout.api.command.Command;
 import org.spout.api.entity.component.controller.type.ControllerType;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
@@ -42,23 +42,26 @@ import org.spout.api.protocol.builtin.message.LoginMessage;
  */
 public class SpoutProtocol extends Protocol {
 	public static final int ENTITY_PROTOCOL_ID = ControllerType.getProtocolId(SpoutProtocol.class.getName());
+	public static final SpoutProtocol INSTANCE = new SpoutProtocol();
 	public static final DefaultedKey<Integer> PLAYER_ENTITY_ID = new DefaultedKeyImpl<Integer>("playerEntityId", -1);
 	public static final int PROTOCOL_VERSION = 0;
 
-	public SpoutProtocol() {
+	private SpoutProtocol() {
 		super("Spout", new SpoutCodecLookupService(), new SpoutHandlerLookupService());
+		registerProtocol(getName(), this);
 	}
 
 	public Message getKickMessage(ChatArguments message) {
-		return new CommandMessage("kick", message.getArguments());
+		Command cmd = Spout.getEngine().getRootCommand().getChild("kick");
+		if (cmd != null) {
+			return getCommandMessage(cmd, message);
+		} else {
+			return null;
+		}
 	}
 
-	public Message getChatMessage(ChatArguments message) {
-		if (Spout.getEngine() instanceof Client) {
-			return new CommandMessage("say", message.getArguments());
-		} else {
-			return new CommandMessage("broadcast", message.getArguments());
-		}
+	public Message getCommandMessage(Command command, ChatArguments message) {
+		return new CommandMessage(command, message.getArguments());
 	}
 
 	public Message getIntroductionMessage(String playerName) {

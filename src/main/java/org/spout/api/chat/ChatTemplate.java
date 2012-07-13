@@ -24,36 +24,19 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.protocol.bootstrap;
-
-import org.spout.api.chat.ChatArguments;
-import org.spout.api.protocol.CodecLookupService;
-import org.spout.api.protocol.HandlerLookupService;
-import org.spout.api.protocol.Message;
-import org.spout.api.protocol.Protocol;
+package org.spout.api.chat;
 
 /**
- *
- *
+ * A storage class for a source ChatArguments to prevent users from modifying the original ChatArguments and its placeholders
  */
-public abstract class BootstrapProtocol extends Protocol {
-	public BootstrapProtocol(String name, CodecLookupService codecLookup, HandlerLookupService handlerLookup) {
-		super(name, codecLookup, handlerLookup);
+public class ChatTemplate {
+	private final ChatArguments source;
+
+	public ChatTemplate(ChatArguments source) {
+		this.source = source;
 	}
 
-	public abstract String detectProtocolDefinition(Message message);
-
-	public abstract Protocol getDefaultProtocol();
-
-	public Message getKickMessage(ChatArguments message) {
-		return getDefaultProtocol().getKickMessage(message);
-	}
-
-	public Message getChatMessage(ChatArguments message) {
-		return getDefaultProtocol().getChatMessage(message);
-	}
-
-	public Message getIntroductionMessage(String playerName) {
-		return getDefaultProtocol().getIntroductionMessage(playerName);
+	public ChatArguments getArguments() {
+		return new ChatArguments(source.getArguments());
 	}
 }

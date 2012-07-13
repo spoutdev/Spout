@@ -52,20 +52,26 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 	 * The associated session
 	 */
 	private AtomicReference<Session> session = new AtomicReference<Session>(null);
-	
+
 	/**
 	 * Indicates if it is an upstream channel pipeline
 	 */
 	private final boolean upstream;
 
+	private final CommonDecoder decoder;
+	private final CommonEncoder encoder;
+
 	/**
 	 * Creates a new network event handler.
 	 *
-	 * @param server The server.
+	 * @param engine The engine.
+	 * @param upstream If the connections are going to the server
 	 */
-	public CommonHandler(Engine engine, boolean upstream) {
+	public CommonHandler(Engine engine, CommonEncoder encoder, CommonDecoder decoder, boolean upstream) {
 		this.engine = engine;
 		this.upstream = upstream;
+		this.encoder = encoder;
+		this.decoder = decoder;
 	}
 
 	@Override
@@ -131,19 +137,12 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 			c.close();
 		}
 	}
-	
+
 	public void setSession(Session session) {
 		if (!this.session.compareAndSet(null, session)) {
 			throw new IllegalStateException("Session may not be set more than once");
 		}
-	}
-
-	public void setProtocol(Protocol protocol) {
-		Session session = this.session.get();
-		if (session != null) {
-			session.setProtocol(protocol);
-		} else {
-			throw new IllegalStateException("The protocol cannot be set before the channel is associated with a session");
-		}
+		decoder.setProtocol(session.getProtocol());
+		encoder.setProtocol(session.getProtocol());
 	}
 }

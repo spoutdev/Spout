@@ -44,12 +44,12 @@ import org.spout.api.plugin.PluginLoader;
 public final class SpoutMetaPlugin implements Plugin {
 	private PluginDescriptionFile pdf;
 	private Engine engine;
-	
+
 	public SpoutMetaPlugin(Engine engine) {
 		this.engine = engine;
-		pdf = new PluginDescriptionFile("Spout", engine.getVersion(), "", Platform.BOTH);
+		pdf = new PluginDescriptionFile("Spout", engine.getVersion(), "", Platform.ALL);
 	}
-	
+
 	@Override
 	public void onEnable() {
 		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this), new SimpleAnnotatedCommandExecutorFactory());

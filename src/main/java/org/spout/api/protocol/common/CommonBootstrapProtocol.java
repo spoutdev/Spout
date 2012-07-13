@@ -31,15 +31,14 @@ import java.io.UnsupportedEncodingException;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
+import org.spout.api.command.Command;
 import org.spout.api.protocol.CodecLookupService;
 import org.spout.api.protocol.HandlerLookupService;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.Protocol;
-import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.api.protocol.common.message.CustomDataMessage;
 
-public class CommonBootstrapProtocol extends BootstrapProtocol {
-
+public class CommonBootstrapProtocol extends Protocol {
 	private final Protocol defaultProtocol;
 
 	public CommonBootstrapProtocol(Protocol defaultProtocol) {
@@ -56,15 +55,6 @@ public class CommonBootstrapProtocol extends BootstrapProtocol {
 		this.defaultProtocol = defaultProtocol;
 	}
 
-	@Override
-	public String detectProtocolDefinition(Message message) {
-		if (!(message instanceof CustomDataMessage)) {
-			return null;
-		}
-
-		return detectProtocolDefinition((CustomDataMessage)message);
-	}
-
 	private String detectProtocolDefinition(CustomDataMessage message) {
 		if (message.getType().equals("AutoProto:HShake")) {
 			try {
@@ -73,11 +63,6 @@ public class CommonBootstrapProtocol extends BootstrapProtocol {
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public Protocol getDefaultProtocol() {
-		return defaultProtocol;
 	}
 
 	/**
@@ -130,7 +115,7 @@ public class CommonBootstrapProtocol extends BootstrapProtocol {
 
 
 	@Override
-	public Message getChatMessage(ChatArguments message) {
+	public Message getCommandMessage(Command cmd, ChatArguments message) {
 		return null;
 	}
 

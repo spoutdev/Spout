@@ -28,6 +28,7 @@ package org.spout.api.command;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,11 +36,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import org.spout.api.Engine;
+import org.spout.api.Spout;
+import org.spout.api.chat.ChatArguments;
+import org.spout.api.chat.ChatSection;
+import org.spout.api.chat.style.ChatStyle;
+import org.spout.api.event.server.PreCommandEvent;
 import org.spout.api.exception.CommandException;
 import org.spout.api.exception.CommandUsageException;
 import org.spout.api.exception.MissingCommandException;
 import org.spout.api.exception.WrappedCommandException;
-import org.spout.api.util.MiscCompatibilityUtils;
+import org.spout.api.plugin.Platform;
 import org.spout.api.util.Named;
 import org.spout.api.util.StringUtil;
 
@@ -51,8 +62,9 @@ public class SimpleCommand implements Command {
 	protected Command parent;
 	private final Named owner;
 	private boolean locked;
+	private int id = -1;
 	protected List<String> aliases = new ArrayList<String>();
-	protected CommandExecutor executor;
+	protected Map<Platform, CommandExecutor> executors = new HashMap<Platform, CommandExecutor>();
 	protected RawCommandExecutor rawExecutor;
 	protected String help;
 	protected String usage;
@@ -67,7 +79,7 @@ public class SimpleCommand implements Command {
 		this.owner = owner;
 	}
 
-	public Command addSubCommand(Named owner, String primaryName) {
+	public SimpleCommand addSubCommand(Named owner, String primaryName) {
 		boolean wasLocked = false;
 		if (isLocked()) {
 			if (unlock(owner)) {
@@ -100,6 +112,14 @@ public class SimpleCommand implements Command {
 		}
 		lock(owner);
 		return parent;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	void setId(int id) {
+		this.id = id;
 	}
 
 	public Command addAlias(String... names) {
@@ -137,8 +157,12 @@ public class SimpleCommand implements Command {
 	}
 
 	public Command setExecutor(CommandExecutor executor) {
+		return setExecutor(Platform.ALL, executor);
+	}
+
+	public Command setExecutor(Platform platform, CommandExecutor executor) {
 		if (!isLocked()) {
-			this.executor = executor;
+			this.executors.put(platform, executor);
 		}
 		return this;
 	}
@@ -158,47 +182,68 @@ public class SimpleCommand implements Command {
 		return this;
 	}
 
-	public void execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException {
+	public CommandExecutor getActiveExecutor() {
+		final Engine engine = Spout.getEngine();
+		final Platform platform;
+		if (engine == null) {
+			platform = Platform.ALL;
+		} else {
+			platform = engine.getPlatform();
+		}
+		CommandExecutor exec = executors.get(platform);
+		if (exec == null) {
+			exec = executors.get(Platform.ALL);
+		}
+		return exec;
+	}
+
+	public void execute(CommandSource source, String name, List<ChatSection> args, int baseIndex, boolean fuzzyLookup) throws CommandException {
 		if (rawExecutor != null) {
-			rawExecutor.execute(this, source, args, baseIndex, fuzzyLookup);
+			rawExecutor.execute(this, source, name, args, baseIndex, fuzzyLookup);
 			return;
 		}
 
-		if (args.length > baseIndex && children.size() > 0) {
+		if (args.size() > baseIndex && children.size() > 0) {
 			Command sub = null;
-			if (args.length > baseIndex + 1) {
-				sub = getChild(args[baseIndex + 1], fuzzyLookup);
+			if (args.size() > baseIndex) {
+				sub = getChild(args.get(baseIndex).getPlainString(), fuzzyLookup);
 			}
 
 			if (sub == null) {
-				throw getMissingChildException(getUsage(args, baseIndex));
+				throw getMissingChildException(getUsage(name, args, baseIndex));
 			}
-			sub.execute(source, args, ++baseIndex, fuzzyLookup);
+			sub.execute(source, name, args, ++baseIndex, fuzzyLookup);
 			return;
 		}
 
-		if (executor == null || baseIndex >= args.length) {
-			throw new MissingCommandException("No command found!", getUsage(args, baseIndex));
+		CommandExecutor executor = getActiveExecutor();
+		if (executor == null || baseIndex > args.size()) {
+			throw new MissingCommandException("No command found!", getUsage(name, args, baseIndex));
 		}
 
 		if (!hasPermission(source)) {
 			throw new CommandException("You do not have the required permissions!");
 		}
-		final String[] originalArgs = args;
-		args = MiscCompatibilityUtils.arrayCopyOfRange(originalArgs, baseIndex, args.length);
+		final List<ChatSection> originalArgs = args;
+		args = new ArrayList<ChatSection>(originalArgs.size() - baseIndex);
+		for (int i = 0; i < originalArgs.size(); ++i) {
+			if (i >= baseIndex) {
+				args.add(originalArgs.get(i));
+			}
+		}
 
-		CommandContext context = new CommandContext(args, valueFlags);
+		CommandContext context = new CommandContext(name, args, valueFlags);
 		for (char flag : context.getFlags().toArray()) {
 			if (!flags.contains(flag)) {
-				throw new CommandUsageException("Unknown flag:" + flag, getUsage(originalArgs, baseIndex));
+				throw new CommandUsageException("Unknown flag:" + flag, getUsage(name, originalArgs, baseIndex));
 			}
 		}
 
 		if (context.length() < minArgLength) {
-			throw new CommandUsageException("Not enough arguments", getUsage(originalArgs, baseIndex));
+			throw new CommandUsageException("Not enough arguments", getUsage(name, originalArgs, baseIndex));
 		}
 		if (maxArgLength >= 0 && context.length() > maxArgLength) {
-			throw new CommandUsageException("Too many arguments", getUsage(originalArgs, baseIndex));
+			throw new CommandUsageException("Too many arguments", getUsage(name, originalArgs, baseIndex));
 		}
 
 		try {
@@ -208,6 +253,31 @@ public class SimpleCommand implements Command {
 		} catch (Throwable t) {
 			throw new WrappedCommandException(t);
 		}
+	}
+
+	public boolean process(CommandSource source, String name, ChatArguments args, boolean fuzzyLookup) {
+		try {
+			PreCommandEvent event = Spout.getEventManager().callEvent(new PreCommandEvent(source, name, args));
+			if (event.isCancelled()) {
+				return false;
+			}
+			execute(source, name, args.toSections(ChatSection.SplitType.WORD), 0, fuzzyLookup);
+			return true;
+		} catch (WrappedCommandException e) {
+			if (e.getCause() instanceof NumberFormatException) {
+				source.sendMessage(ChatStyle.RED, "Number expected; string given!");
+			} else {
+				source.sendMessage(ChatStyle.RED, "Internal error executing command!");
+				source.sendMessage(ChatStyle.RED, "Error: ", e.getMessage(), "; See console for details.");
+				e.printStackTrace();
+			}
+		} catch (CommandUsageException e) {
+			source.sendMessage(ChatStyle.RED, e.getMessage());
+			source.sendMessage(ChatStyle.RED, e.getUsage());
+		} catch (CommandException e) {
+			source.sendMessage(ChatStyle.RED, e.getMessage());
+		}
+		return false;
 	}
 
 	public CommandException getMissingChildException(String usage) {
@@ -235,14 +305,14 @@ public class SimpleCommand implements Command {
 	}
 
 	public String getUsage() {
-		return getUsage(new String[] {getPreferredName()}, 0);
+		return getUsage(getPreferredName(), Collections.<ChatSection>emptyList(), 0);
 	}
 
-	public String getUsage(String[] input, int baseIndex) {
-		StringBuilder usage = new StringBuilder("/");
-		for (int i = 0; i <= baseIndex && i < input.length; ++i) { // Add the arguments preceding the command
-			usage.append(input[i]);
-			if (i <= baseIndex - 1 && i < input.length - 1) {
+	public String getUsage(String name, List<ChatSection> args, int baseIndex) {
+		ChatArguments usage = new ChatArguments("/", name);
+		for (int i = 0; i <= baseIndex && i < args.size(); ++i) { // Add the arguments preceding the command
+			usage.append(args.get(i));
+			if (i <= baseIndex - 1 && i < args.size() - 1) {
 				usage.append(" ");
 			}
 		}
@@ -271,11 +341,11 @@ public class SimpleCommand implements Command {
 				usage.append(this.usage); // Then manually specified usage
 			}
 		}
-		return usage.toString();
+		return usage.asString();
 	}
 
 	public Command getChild(String name) {
-		return getChild(name,  false);
+		return getChild(name, false);
 	}
 
 	public Command getChild(String name, boolean fuzzyLookup) {

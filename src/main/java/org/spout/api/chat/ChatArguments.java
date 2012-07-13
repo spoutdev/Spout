@@ -30,8 +30,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.procedure.TIntObjectProcedure;
+import org.apache.commons.lang3.ObjectUtils;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.chat.style.StyleHandler;
 import org.spout.api.chat.style.fallback.DefaultStyleHandler;
@@ -39,8 +47,12 @@ import org.spout.api.chat.style.fallback.DefaultStyleHandler;
 /**
  * A class to hold the arguments in a chat message
  */
-public class ChatArguments {
-	private final List<Object> elements = new ArrayList<Object>();
+public class ChatArguments implements Cloneable, ChatSection {
+	private final ReentrantLock lock = new ReentrantLock();
+	private final ArrayList<Object> elements = new ArrayList<Object>();
+	private final Map<Placeholder, Value> placeholders = new HashMap<Placeholder, Value>();
+	private StringBuilder plainStringBuilder = new StringBuilder();
+	private String plainString = "";
 
 	public ChatArguments(Collection<?> elements) {
 		append(elements);
@@ -50,19 +62,46 @@ public class ChatArguments {
 		append(elements);
 	}
 
+	public ChatArguments(ChatSection... words) {
+		append(words);
+	}
+
 	public List<Object> getArguments() {
 		return Collections.unmodifiableList(elements);
 	}
 
 	public ChatArguments append(Collection<?> elements) {
-		for (Object o : elements) {
-			append(o);
+		lock.lock();
+		try {
+			this.elements.ensureCapacity(this.elements.size() + elements.size());
+			for (Object o : elements) {
+				append(o);
+			}
+		} finally {
+			lock.unlock();
 		}
 		return this;
 	}
 
 	public ChatArguments append(Object[] objects) {
 		return append(Arrays.asList(objects));
+	}
+
+	public ChatArguments append(final ChatSection section) {
+		final AtomicInteger previousIndex = new AtomicInteger();
+		section.getActiveStyles().forEachEntry(new TIntObjectProcedure<List<ChatStyle>>() {
+			public boolean execute(int i, List<ChatStyle> chatStyles) {
+				append(chatStyles);
+				if (i != -1) {
+					append(section.getPlainString().substring(previousIndex.getAndSet(i), i));
+				}
+				return true;
+			}
+		});
+		if (previousIndex.get() < section.length()) {
+			append(section.getPlainString().substring(previousIndex.get(), section.getPlainString().length()));
+		}
+		return this;
 	}
 
 	public ChatArguments append(int[] elements) {
@@ -115,16 +154,228 @@ public class ChatArguments {
 	}
 
 	public ChatArguments append(Object o) {
-		if (o instanceof Collection<?>) {
-			append((Collection<?>) o);
-		} else if (o.getClass().isArray() && Object.class.isAssignableFrom(o.getClass().getComponentType())) {
-			append((Object[]) o);
-		} else {
-			elements.add(o);
+		lock.lock();
+		try {
+			if (o instanceof Collection<?>) {
+				append((Collection<?>) o);
+			} else if (o.getClass().isArray() && Object.class.isAssignableFrom(o.getClass().getComponentType())) {
+				append((Object[]) o);
+			} else if (o instanceof Placeholder) {
+				elements.add(o);
+				Value value = new Value();
+				value.index = elements.size() - 1;
+				placeholders.put(((Placeholder) o), value);
+				plainStringBuilder.append("{").append(((Placeholder) o).getName()).append('}');
+				plainString = plainStringBuilder.toString();
+			} else if (o instanceof ChatArguments) {
+				append(((ChatArguments) o).getExpandedPlaceholders());
+			} else if (o instanceof ChatSection) {
+				append((ChatSection) o);
+			} else {
+				elements.add(o);
+				plainStringBuilder.append(o);
+				plainString = plainStringBuilder.toString();
+			}
+		} finally {
+			lock.unlock();
 		}
 		return this;
 	}
 
+	private void buildPlainString(List<Object> vals) {
+		StringBuilder builder = new StringBuilder();
+		for (Object o : vals) {
+			if (o instanceof ChatStyle) {
+			} else if (o instanceof Placeholder) {
+				Value v = placeholders.get(o);
+				if (v != null && v.value != null) {
+					builder.append(v.value.getPlainString());
+				}
+			} else {
+				builder.append(o);
+			}
+		}
+		plainStringBuilder = builder;
+		plainString = builder.toString();
+	}
+
+	public TIntObjectMap<List<ChatStyle>> getActiveStyles() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public String getPlainString() {
+		return plainString;
+	}
+
+	public SplitType getSplitType() {
+		return SplitType.ALL;
+	}
+
+	public ChatArguments toChatArguments() {
+		return this;
+	}
+
+	public ChatSection subSection(int startIndex, int endIndex) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public int length() {
+		return getPlainString().length();
+	}
+
+	public ChatArguments setPlaceHolder(Placeholder placeHolder, ChatArguments value) {
+		if (!placeholders.containsKey(placeHolder)) {
+			throw new IllegalArgumentException("Placeholder " + placeHolder.getName() + " is not present in these arguments!");
+		}
+		placeholders.get(placeHolder).value = value;
+		buildPlainString(elements);
+		return this;
+	}
+
+	public boolean hasPlaceholder(Placeholder placeholder) {
+		return placeholders.containsKey(placeholder);
+	}
+
+	/**
+	 * Expands all the placeholders in {@link #getArguments()} to their values
+	 *
+	 * @return A {@link List List&lt;Object>} with all the placeholders in these arguments replaced with their correct values
+	 */
+	public List<Object> getExpandedPlaceholders() throws MissingPlaceholderException {
+		lock.lock();
+		try {
+			if (placeholders.size() == 0) {
+				return new ArrayList<Object>(elements);
+			}
+
+			List<Object> newList = new ArrayList<Object>(elements.size());
+			for (Object obj : elements) {
+				if (obj instanceof Placeholder) {
+					ChatArguments value = placeholders.get(obj).value;
+					if (value == null) {
+						throw new MissingPlaceholderException("No value for " + ((Placeholder) obj).getName());
+					}
+					newList.addAll(value.getExpandedPlaceholders());
+				} else {
+					newList.add(obj);
+				}
+			}
+			return newList;
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	/**
+	 * Splits this ChatArguments instance into sections
+	 *
+	 * @param type How these arguments are to be split into sections
+	 * @return The split sections
+	 */
+	public List<ChatSection> toSections(SplitType type) {
+		List<ChatSection> sections = new ArrayList<ChatSection>();
+		StringBuilder currentWord = new StringBuilder();
+		TIntObjectHashMap<List<ChatStyle>> map;
+		switch (type) {
+			case WORD:
+				map = new TIntObjectHashMap<List<ChatStyle>>();
+				int curIndex = 0;
+				for (Object obj : getExpandedPlaceholders()) {
+					if (obj instanceof ChatStyle) {
+						ChatStyle style = (ChatStyle) obj;
+						List<ChatStyle> list = map.get(curIndex);
+						if (list == null) {
+							list = new ArrayList<ChatStyle>();
+							map.put(curIndex, list);
+						}
+						ChatSectionUtils.removeConflicting(list, style);
+						list.add(style);
+					} else {
+						String val = String.valueOf(obj);
+						for (int i = 0; i < val.length(); ++i) {
+							int codePoint = val.codePointAt(i);
+							if (Character.isWhitespace(codePoint)) {
+								curIndex = 0;
+								sections.add(new ChatSectionImpl(type, map, currentWord.toString()));
+								currentWord = new StringBuilder();
+								if (map.size() > 0) {
+									final List<ChatStyle> previousStyles = map.containsKey(-1) ? new ArrayList<ChatStyle>(map.get(-1)) : new ArrayList<ChatStyle>();
+
+									map.forEachEntry(new TIntObjectProcedure<List<ChatStyle>>() {
+										public boolean execute(int i, List<ChatStyle> chatStyles) {
+											if (i != -1) {
+												for (ChatStyle style : chatStyles) {
+													ChatSectionUtils.removeConflicting(previousStyles, style);
+													previousStyles.add(style);
+												}
+											}
+											return true;
+										}
+									});
+									map.clear();
+									map.put(-1, previousStyles);
+								}
+							} else {
+								currentWord.append(val.substring(i, i + 1));
+								curIndex++;
+							}
+						}
+					}
+				}
+
+				if (currentWord.length() > 0) {
+					sections.add(new ChatSectionImpl(type, map, currentWord.toString()));
+				}
+				break;
+
+			case STYLE_CHANGE:
+				StringBuilder curSection = new StringBuilder();
+				List<ChatStyle> activeStyles = new ArrayList<ChatStyle>(3);
+				for (Object obj : getExpandedPlaceholders()) {
+					if (obj instanceof ChatStyle) {
+						ChatStyle style = (ChatStyle) obj;
+						ChatSectionUtils.removeConflicting(activeStyles, style);
+						activeStyles.add(style);
+
+						map = new TIntObjectHashMap<List<ChatStyle>>();
+						map.put(-1, new ArrayList<ChatStyle>(activeStyles));
+						sections.add(new ChatSectionImpl(type, map, curSection.toString()));
+						curSection = new StringBuilder();
+					} else {
+						curSection.append(obj);
+					}
+				}
+				break;
+
+			case ALL:
+				curIndex = 0;
+				map = new TIntObjectHashMap<List<ChatStyle>>();
+				for (Object obj : getExpandedPlaceholders()) {
+					if (obj instanceof ChatStyle) {
+						ChatStyle style = (ChatStyle) obj;
+						List<ChatStyle> list = map.get(curIndex);
+						if (list == null) {
+							list = new ArrayList<ChatStyle>();
+							map.put(curIndex, list);
+						}
+						ChatSectionUtils.removeConflicting(list, style);
+						list.add(style);
+					}
+				}
+				return Collections.<ChatSection>singletonList(new ChatSectionImpl(type, map, getPlainString()));
+
+			default:
+				throw new IllegalArgumentException("Unknown SplitOption " + type + "!");
+		}
+		return sections;
+	}
+
+	/**
+	 * Represents these ChatArguments as a string using {@link DefaultStyleHandler}
+	 *
+	 * @see #asString(int)
+	 * @return These ChatArguments as a string
+	 */
 	public String asString() {
 		return asString(DefaultStyleHandler.ID);
 	}
@@ -142,9 +393,10 @@ public class ChatArguments {
 		StringBuilder singleBuilder = new StringBuilder();
 		StyleHandler handler = StyleHandler.get(handlerId);
 		ChatStyle previousStyle = null;
+		List<Object> values = getExpandedPlaceholders();
 
-		for (int i = elements.size() - 1; i >= 0; --i) {
-			Object element = elements.get(i);
+		for (int i = values.size() - 1; i >= 0; --i) {
+			Object element = values.get(i);
 			if (element instanceof ChatStyle) {
 				ChatStyle style = (ChatStyle) element;
 				if (previousStyle != null) {
@@ -163,7 +415,7 @@ public class ChatArguments {
 				previousStyle = style;
 				singleBuilder.delete(0, singleBuilder.length());
 			} else {
-				singleBuilder.insert(0, String.valueOf(element));
+				singleBuilder.insert(0, handler.escapeString(String.valueOf(element)));
 			}
 		}
 
@@ -173,10 +425,27 @@ public class ChatArguments {
 		return finalBuilder.toString();
 	}
 
+	/**
+	 * Create an instance of ChatArguments by extracting arguments from a string in
+	 * the format specified by the given style handler.
+	 *
+	 * @see #fromString(String, int)
+	 * @param str The string to extract styles from
+	 * @return The new ChatArguments instance
+	 */
 	public static ChatArguments fromString(String str) {
 		return fromString(str, DefaultStyleHandler.ID);
 	}
 
+	/**
+	 * Create an instance of ChatArguments by extracting arguments from a string in
+	 * the format specified by the given style handler. This method currently just delegates to the StyleHandler,
+	 *
+	 * @see  StyleHandler#extractArguments(String)
+	 * @param str The string to extract styles from
+	 * @param handlerId The ID of the {@link StyleHandler} to use to extract style information
+	 * @return The new ChatArguments instance
+	 */
 	public static ChatArguments fromString(String str, int handlerId) {
 		return StyleHandler.get(handlerId).extractArguments(str);
 	}

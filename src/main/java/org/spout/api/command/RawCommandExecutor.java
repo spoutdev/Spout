@@ -26,6 +26,9 @@
  */
 package org.spout.api.command;
 
+import java.util.List;
+
+import org.spout.api.chat.ChatSection;
 import org.spout.api.exception.CommandException;
 
 public interface RawCommandExecutor {
@@ -37,11 +40,12 @@ public interface RawCommandExecutor {
 	 *
 	 * @param command The command being executed
 	 * @param source the {@link CommandSource} that sent this command.
+	 * @param name The alias used to execute this command
 	 * @param args the command arguments
 	 * @param baseIndex the arguments that have already been processed by
 	 * @param fuzzyLookup Whether to use levenschtein distance while looking up
 	 *            commands.
 	 * @throws CommandException when an issue occurred with the command
 	 */
-	public void execute(Command command, CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException;
+	public void execute(Command command, CommandSource source, String name, List<ChatSection> args, int baseIndex, boolean fuzzyLookup) throws CommandException;
 }

@@ -24,21 +24,15 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.command.annotated;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.spout.api.chat;
 
 /**
- * Command methods that require a specific permissions node should be annotated
- * with this.
+ * Thrown when a placeholder for {{@link ChatArguments}} does not have its value set
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface CommandPermissions {
-	public String[] value();
+public class MissingPlaceholderException extends RuntimeException {
+	private static final long serialVersionUID = -3562869247879474180L;
 
-	public boolean requireAll() default false;
+	public MissingPlaceholderException(String message) {
+		super(message);
+	}
 }

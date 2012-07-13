@@ -29,7 +29,10 @@ package org.spout.api.command;
 import java.util.List;
 import java.util.Set;
 
+import org.spout.api.chat.ChatArguments;
+import org.spout.api.chat.ChatSection;
 import org.spout.api.exception.CommandException;
+import org.spout.api.plugin.Platform;
 import org.spout.api.util.Named;
 
 /**
@@ -87,13 +90,25 @@ public interface Command {
 	 * processed by super commands.
 	 *
 	 * @param source the {@link CommandSource} that sent this command.
+	 * @param name The alias used to look this command up
 	 * @param args the command arguments
 	 * @param baseIndex the arguments that have already been processed by
 	 * @param fuzzyLookup Whether to use levenschtein distance while looking up
 	 *            commands.
-	 * @throws org.spout.api.exception.CommandException when an issue occurred with the command
+	 * @throws org.spout.api.exception.CommandException when invalid arguments were passed to the command or an error occurred
 	 */
-	public void execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException;
+	public void execute(CommandSource source, String name, List<ChatSection> args, int baseIndex, boolean fuzzyLookup) throws CommandException;
+
+	/**
+	 * Executes a command with the provided arguments
+	 * @param source The {@link CommandSource} that executed this command
+	 * @param name The alias used to look this command up
+	 * @param args The arguments provided
+	 * @param fuzzyLookup Whether to use levenschtein distance while looking up
+	 *            commands.
+	 * @return Whether execution was successful.
+	 */
+	public boolean process(CommandSource source, String name, ChatArguments args, boolean fuzzyLookup);
 
 	/**
 	 * Adds an alias to the active Command.
@@ -142,6 +157,17 @@ public interface Command {
 	public Command setExecutor(CommandExecutor executor);
 
 	/**
+	 * Sets the Executor for the active Command for the specified platform.
+	 *
+	 * If this is called more than once for a Command, subsequent calls will
+	 * overwrite previous calls.
+	 *
+	 * @param executor the help string
+	 * @return the active Command
+	 */
+	public Command setExecutor(Platform platform, CommandExecutor executor);
+
+	/**
 	 * Adds flags to this Command's list of allowed flags. Flags are given in
 	 * the format of a String containing the allowed flag characters, where
 	 * value flag characters are followed by a :.
@@ -167,11 +193,12 @@ public interface Command {
 	/**
 	 * Gets the usage message for the command.
 	 *
-	 * @param input The raw input that was given
+	 * @param name The name used to execute this command
+	 * @param args The arguments passed to this command
 	 * @param baseIndex The index where command arguments begin in input
 	 * @return the command's usage message
 	 */
-	public String getUsage(String[] input, int baseIndex);
+	public String getUsage(String name, List<ChatSection> args, int baseIndex);
 
 	/**
 	 * Gets the command's preferred name
@@ -230,6 +257,13 @@ public interface Command {
 	 * @return the active Command
 	 */
 	public Command removeAlias(String name);
+
+	/**
+	 * Return the int id of the command
+	 *
+	 * @return The command's id
+	 */
+	public int getId();
 
 	/**
 	 * Locks the command to prevent it from being modified by other owners.

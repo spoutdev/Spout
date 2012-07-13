@@ -26,6 +26,9 @@
  */
 package org.spout.api.event.player;
 
+import org.spout.api.chat.ChatArguments;
+import org.spout.api.chat.ChatTemplate;
+import org.spout.api.chat.Placeholder;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
 import org.spout.api.player.Player;
@@ -35,12 +38,13 @@ import org.spout.api.player.Player;
  * Implements {@link Cancellable}. Canceling this event will prevent the message from being sent to other players.
  */
 public class PlayerChatEvent extends PlayerEvent implements Cancellable {
-	private static HandlerList handlers = new HandlerList();
+	public static final Placeholder NAME = new Placeholder("name"), MESSAGE = new Placeholder("message");
+	private static final HandlerList HANDLERS = new HandlerList();
 
-	private String message;
-	private String format = "<%1$s> %2$s";
+	private ChatArguments message;
+	private ChatTemplate format = new ChatTemplate(new ChatArguments("<", NAME, "> ", MESSAGE));
 
-	public PlayerChatEvent(Player p, String message) {
+	public PlayerChatEvent(Player p, ChatArguments message) {
 		super(p);
 		this.message = message;
 	}
@@ -50,7 +54,7 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	 *
 	 * @return The message of the player.
 	 */
-	public String getMessage() {
+	public ChatArguments getMessage() {
 		return message;
 	}
 
@@ -59,7 +63,7 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	 *
 	 * @param message The message to set
 	 */
-	public void setMessage(String message) {
+	public void setMessage(ChatArguments message) {
 		this.message = message;
 	}
 
@@ -68,25 +72,25 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	 *
 	 * @return The message format
 	 */
-	public String getFormat() {
+	public ChatTemplate getFormat() {
 		return format;
 	}
 
 	/**
 	 * Sets the message's format to {@code format}. <br/>
-	 * Verification is performed to make sure that the string has at least two string formatting positions.<br/>
+	 * Verification is performed to make sure that the ChatArguments has both the
+	 * {@link #NAME name} and {@link #MESSAGE message} placeholders <br/>
+	 *
 	 * If verification of the format fails the format will not change.
 	 *
 	 * @param format The format to set.
 	 * @return true if the format was valid, otherwise false.
 	 */
-	public boolean setFormat(String format) {
-		try {
-			String.format(format, getPlayer().getDisplayName(), message);
-		} catch (Throwable t) {
+	public boolean setFormat(ChatArguments format) {
+		if (!(format.hasPlaceholder(NAME) && format.hasPlaceholder(MESSAGE))) {
 			return false;
 		}
-		this.format = format;
+		this.format = new ChatTemplate(format);
 		return true;
 	}
 
@@ -97,10 +101,10 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 
 	@Override
 	public HandlerList getHandlers() {
-		return handlers;
+		return HANDLERS;
 	}
 
 	public static HandlerList getHandlerList() {
-		return handlers;
+		return HANDLERS;
 	}
 }

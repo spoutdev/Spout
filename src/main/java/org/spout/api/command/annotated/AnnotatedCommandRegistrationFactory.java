@@ -26,10 +26,14 @@
  */
 package org.spout.api.command.annotated;
 
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import org.spout.api.command.CommandRegistrationsFactory;
+import org.spout.api.plugin.Platform;
 import org.spout.api.util.Named;
 
 public class AnnotatedCommandRegistrationFactory implements CommandRegistrationsFactory<Class<?>> {
@@ -41,6 +45,18 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 
 	private final AnnotatedCommandExecutorFactory executorFactory;
 
+	public AnnotatedCommandRegistrationFactory() {
+		this(null, new SimpleAnnotatedCommandExecutorFactory());
+	}
+
+	public AnnotatedCommandRegistrationFactory(Injector injector) {
+		this(injector, new SimpleAnnotatedCommandExecutorFactory());
+	}
+
+	public AnnotatedCommandRegistrationFactory(AnnotatedCommandExecutorFactory executorFactory) {
+		this(null, executorFactory);
+	}
+
 	public AnnotatedCommandRegistrationFactory(Injector injector, AnnotatedCommandExecutorFactory executorFactory) {
 		this.injector = injector;
 		this.executorFactory = executorFactory;
@@ -51,26 +67,41 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 		if (injector != null) {
 			instance = injector.newInstance(commands);
 		}
+
+		boolean success = methodRegistration(owner, commands, instance, parent);
+		success &= nestedClassRegistration(owner, commands, instance, parent);
+		return success;
+	}
+
+	private org.spout.api.command.Command createCommand(Named owner, org.spout.api.command.Command parent, AnnotatedElement obj) {
+		if (!obj.isAnnotationPresent(Command.class)) {
+			return null;
+		}
+
+		Command command = obj.getAnnotation(Command.class);
+		if (command.aliases().length < 1) {
+			throw new IllegalArgumentException("Command must have at least one alias");
+		}
+		org.spout.api.command.Command child = parent.addSubCommand(owner, command.aliases()[0]).addAlias(command.aliases()).addFlags(command.flags()).setUsage(command.usage()).setHelp(command.desc()).setArgBounds(command.min(), command.max());
+
+		if (obj.isAnnotationPresent(CommandPermissions.class)) {
+			CommandPermissions perms = obj.getAnnotation(CommandPermissions.class);
+			child.setPermissions(perms.requireAll(), perms.value());
+		}
+		return child;
+	}
+
+	private boolean methodRegistration(Named owner, Class<?> commands, Object instance, org.spout.api.command.Command parent) {
 		boolean success = true;
-		for (Method method : commands.getMethods()) {
+		for (Method method : commands.getDeclaredMethods()) {
 			// Basic checks
+			method.setAccessible(true);
 			if (!Modifier.isStatic(method.getModifiers()) && instance == null) {
 				continue;
 			}
-			if (!method.isAnnotationPresent(Command.class)) {
+			org.spout.api.command.Command child = createCommand(owner, parent, method);
+			if (child == null) {
 				continue;
-			}
-
-			Command command = method.getAnnotation(Command.class);
-			if (command.aliases().length < 1) {
-				success = false;
-				continue;
-			}
-			org.spout.api.command.Command child = parent.addSubCommand(owner, command.aliases()[0]).addAlias(command.aliases()).addFlags(command.flags()).setUsage(command.usage()).setHelp(command.desc()).setArgBounds(command.min(), command.max());
-
-			if (method.isAnnotationPresent(CommandPermissions.class)) {
-				CommandPermissions perms = method.getAnnotation(CommandPermissions.class);
-				child.setPermissions(perms.requireAll(), perms.value());
 			}
 
 			if (method.isAnnotationPresent(NestedCommand.class)) {
@@ -83,5 +114,66 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 			child.closeSubCommand();
 		}
 		return success;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> Constructor<T> getClosestConstructor(Class<T> clazz, Class<?>... args) {
+		constructors: for (Constructor constructor : clazz.getDeclaredConstructors()) {
+			Class<?>[] classes = constructor.getParameterTypes();
+			if (classes.length != args.length) {
+				continue;
+			}
+
+			for (int i = 0; i < args.length; ++i) {
+				if (!args[i].isAssignableFrom(classes[i])) {
+					continue constructors;
+				}
+			}
+			return constructor;
+		}
+		return null;
+	}
+
+	private boolean nestedClassRegistration(Named owner, Class<?> commands, Object instance, org.spout.api.command.Command parent) {
+		boolean success = true, anyRegistered = false;
+		for (Class<?> clazz : commands.getDeclaredClasses()) {
+			Object subInstance = null;
+			if (!Modifier.isStatic(clazz.getModifiers())) {
+				try {
+					Constructor<?> constr = getClosestConstructor(clazz, commands);
+					if (constr == null) {
+						continue;
+					}
+
+					constr.setAccessible(true);
+					subInstance = constr.newInstance(instance);
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+					continue;
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+					continue;
+				} catch (IllegalAccessException ignore) {
+				}
+			}
+
+			org.spout.api.command.Command child = createCommand(owner, parent, clazz);
+			if (child == null) {
+				continue;
+			}
+			anyRegistered = true;
+
+			if (!nestedClassRegistration(owner, clazz, subInstance, child)) {
+				for (Method method : clazz.getDeclaredMethods()) {
+					if (!method.isAnnotationPresent(Executor.class)) {
+						continue;
+					}
+
+					Platform platform = method.getAnnotation(Executor.class).value();
+					child.setExecutor(platform, executorFactory.getAnnotatedCommandExecutor(subInstance, method));
+				}
+			}
+		}
+		return success && anyRegistered;
 	}
 }

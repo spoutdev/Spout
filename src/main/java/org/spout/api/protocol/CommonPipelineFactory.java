@@ -40,7 +40,7 @@ public final class CommonPipelineFactory implements ChannelPipelineFactory {
 	 * The server.
 	 */
 	private final Engine engine;
-	
+
 	/**
 	 * Indicates if the channel is an upstream channel
 	 */
@@ -49,8 +49,8 @@ public final class CommonPipelineFactory implements ChannelPipelineFactory {
 	/**
 	 * Creates a new Minecraft pipeline factory.
 	 *
-	 * @param server The engine
-	 * @param direction true for connection to the server
+	 * @param engine The engine
+	 * @param upstream true for connection to the server
 	 */
 	public CommonPipelineFactory(Engine engine, boolean upstream) {
 		Platform p = engine.getPlatform();
@@ -68,9 +68,9 @@ public final class CommonPipelineFactory implements ChannelPipelineFactory {
 	}
 
 	public ChannelPipeline getPipeline() throws Exception {
-		CommonHandler handler = new CommonHandler(engine, upstream);
 		CommonEncoder encoder = new CommonEncoder(upstream);
-		CommonDecoder decoder = new CommonDecoder(handler, encoder, upstream);
+		CommonDecoder decoder = new CommonDecoder(upstream);
+		CommonHandler handler = new CommonHandler(engine, encoder, decoder, upstream);
 		return Channels.pipeline(decoder, encoder, handler);
 	}
 }

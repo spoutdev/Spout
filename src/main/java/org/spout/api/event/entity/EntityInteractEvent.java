@@ -71,4 +71,8 @@ public class EntityInteractEvent extends EntityEvent implements Cancellable {
 	public HandlerList getHandlers() {
 		return handlers;
 	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 }

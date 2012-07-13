@@ -38,6 +38,7 @@ import org.jboss.netty.channel.group.ChannelGroup;
 
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
+import org.spout.api.command.RootCommand;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.EventManager;
 import org.spout.api.generator.WorldGenerator;
@@ -48,8 +49,8 @@ import org.spout.api.player.Player;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.PluginManager;
 import org.spout.api.plugin.ServiceManager;
+import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.SessionRegistry;
-import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.Named;
@@ -192,16 +193,6 @@ public interface Engine extends Named {
 	 * @return logger
 	 */
 	public Logger getLogger();
-
-	/**
-	 * Sends a command from the given command source. The command will be
-	 * handled as if the sender has sent it itself.
-	 *
-	 * @param source that is responsible for the command
-	 * @param commandLine text
-	 * @return true if dispatched
-	 */
-	public void processCommand(CommandSource source, String commandLine);
 
 	/**
 	 * Gets the update folder. The update folder is used to safely update
@@ -458,7 +449,7 @@ public interface Engine extends Named {
 	 *
 	 * @return the {@link Engine}'s root {@link Command}
 	 */
-	public Command getRootCommand();
+	public RootCommand getRootCommand();
 
 	/**
 	 * Returns the game's {@link EventManager} Event listener registration and
@@ -526,7 +517,7 @@ public interface Engine extends Named {
 	 * @param address The address
 	 * @return The protocol
 	 */
-	public BootstrapProtocol getBootstrapProtocol(SocketAddress address);
+	public Protocol getProtocol(SocketAddress address);
 
 	/**
 	 * Gets the service manager

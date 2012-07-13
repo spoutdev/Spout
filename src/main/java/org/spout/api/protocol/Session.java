@@ -54,16 +54,9 @@ public interface Session {
 	public void dispose();
 
 	/**
-	 * Sets the protocol associated with this session.
-	 *
-	 * @param protocol the protocol (Bootstrap until set)
-	 */
-	public void setProtocol(Protocol protocol);
-
-	/**
 	 * Gets the protocol associated with this session.
 	 *
-	 * @return the protocol (Bootstrap until set)
+	 * @return the protocol
 	 */
 	public Protocol getProtocol();
 

@@ -24,42 +24,69 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.protocol.builtin.message;
-
-import java.util.List;
+package org.spout.api.chat;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.spout.api.command.Command;
-import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class CommandMessage extends Message {
-	private final int command;
-	private final List<Object> arguments;
+/**
+ * A placeholder for a value in ChatArguments
+ */
+public class Placeholder {
+	private final String name;
 
-	public CommandMessage(Command command, List<Object> arguments) {
-		this.command = command.getId();
-		this.arguments = arguments;
+	public Placeholder(String name) {
+		this.name = name;
 	}
 
-	public CommandMessage(int command, List<Object> arguments) {
-		this.command = command;
-		this.arguments = arguments;
+	public String getName() {
+		return name;
 	}
 
-	public int getCommand() {
-		return command;
+	@Override
+	public int hashCode() {
+		return this.name.hashCode() + 7;
 	}
 
-	public List<Object> getArguments() {
-		return arguments;
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {return false;}
+		if (getClass() != obj.getClass()) {return false;}
+		return ((Placeholder) obj).name.equals(this.name);
 	}
 
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
-				.append("command", command)
-				.append("arguments", arguments)
+				.append("name", name)
 				.toString();
+	}
+}
+
+/**
+ * The value of a {@link Placeholder}, for internal use only
+ */
+class Value {
+	public ChatArguments value;
+	public int index;
+
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Value other = (Value) o;
+
+		if (index != other.index) return false;
+		if (value != null ? !value.equals(other.value) : other.value != null) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public int hashCode() {
+		int result = value != null ? value.hashCode() : 0;
+		result = 31 * result + index;
+		return result;
 	}
 }

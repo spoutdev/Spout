@@ -24,21 +24,13 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.command.annotated;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.spout.api.chat.style.html;
 
 /**
- * Command methods that require a specific permissions node should be annotated
- * with this.
+ * @author zml2008
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface CommandPermissions {
-	public String[] value();
-
-	public boolean requireAll() default false;
+public class ColorHTMLStyleFormatter extends HTMLStyleFormatter {
+	public ColorHTMLStyleFormatter(String color) {
+		super("span", "style", "color: " + color);
+	}
 }

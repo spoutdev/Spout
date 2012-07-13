@@ -31,14 +31,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Command methods that require a specific permissions node should be annotated
- * with this.
- */
-@Target({ElementType.METHOD, ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface CommandPermissions {
-	public String[] value();
+import org.spout.api.plugin.Platform;
 
-	public boolean requireAll() default false;
+/**
+ * Designates a method as being able to have a CommandExecutor
+ */
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Executor {
+	/**
+	 * The Platform this executor is to be used for
+	 * @return The platform
+	 */
+	public Platform value() default Platform.ALL;
 }

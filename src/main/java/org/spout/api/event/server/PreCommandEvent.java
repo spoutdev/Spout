@@ -26,6 +26,8 @@
  */
 package org.spout.api.event.server;
 
+import org.spout.api.chat.ChatArguments;
+import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.Event;
@@ -37,11 +39,13 @@ import org.spout.api.event.HandlerList;
  */
 public class PreCommandEvent extends Event implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
-	private String message;
+	private String command;
+	private ChatArguments message;
 	private CommandSource source;
 
-	public PreCommandEvent(CommandSource source, String message) {
+	public PreCommandEvent(CommandSource source, String command, ChatArguments message) {
 		this.source = source;
+		this.command = command;
 		this.message = message;
 	}
 
@@ -51,33 +55,32 @@ public class PreCommandEvent extends Event implements Cancellable {
 
 	/**
 	 * Gets the first component of the command.
-	 * 
+	 *
 	 * @return the command
 	 */
 	public String getCommand() {
-		int spaceIndex = message.indexOf(" ");
-		if (spaceIndex == -1) {
-			return message;
-		} else {
-			return message.substring(0, spaceIndex);
-		}
+		return command;
+	}
+
+	public void setCommand(String command) {
+		this.command = command;
 	}
 
 	/**
 	 * Gets the full command message issued to the server.
-	 * 
+	 *
 	 * @return message sent.
 	 */
-	public String getMessage() {
+	public ChatArguments getArguments() {
 		return message;
 	}
 
 	/**
-	 * sets the command message that was sent to the server.
-	 * 
+	 * Sets the command message that was sent to the server.
+	 *
 	 * @param message
 	 */
-	public void setMessage(String message) {
+	public void setArguments(ChatArguments message) {
 		this.message = message;
 	}
 

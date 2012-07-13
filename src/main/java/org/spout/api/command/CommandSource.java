@@ -41,6 +41,22 @@ public interface CommandSource extends PermissionsSubject, DataSubject, Source {
 	public boolean sendMessage(Object... message);
 
 	/**
+	 * Send a command to the other side (if server, send to client, and vice versa)
+	 *
+	 * @param command The command to send
+	 * @param arguments The arguments to send with the command
+	 */
+	public void sendCommand(String command, ChatArguments arguments);
+
+	/**
+	 * Handle a command locally
+	 *
+	 * @param command The command to handle
+	 * @param arguments The command's arguments
+	 */
+	public void processCommand(String command, ChatArguments arguments);
+
+	/**
 	 * Sends a text message to the source of the command.
 	 *
 	 * @param message the message to send

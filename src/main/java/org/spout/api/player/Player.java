@@ -59,13 +59,6 @@ public interface Player extends CommandSource {
 	public void setDisplayName(String name);
 
 	/**
-	 * Sends a message as if the player had typed it into their chat gui.
-	 *
-	 * @param message the message to send
-	 */
-	public void chat(String message);
-
-	/**
 	 * Gets the entity corresponding to the player
 	 *
 	 * @return the entity, or null if the player is offline

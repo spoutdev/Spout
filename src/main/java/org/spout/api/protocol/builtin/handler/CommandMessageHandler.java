@@ -26,6 +26,7 @@
  */
 package org.spout.api.protocol.builtin.handler;
 
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
@@ -34,7 +35,7 @@ import org.spout.api.protocol.builtin.message.CommandMessage;
 public class CommandMessageHandler extends MessageHandler<CommandMessage> {
 	@Override
 	public void handle(boolean upstream, Session session, Player player, CommandMessage message) {
-		/*String command = session.getEngine().getRootCommand().getCommandName(message.getCommand());
-		player.executeCommand(command, message.getArguments());*/
+		String command = session.getEngine().getRootCommand().getChildName(message.getCommand());
+		player.processCommand(command, new ChatArguments(message.getArguments()));
 	}
 }

@@ -31,8 +31,8 @@ import java.util.Collection;
 
 import org.jboss.netty.channel.Channel;
 
+import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
-import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 
 /**
  * Represents the server-specific implementation of Minecraft.
@@ -93,36 +93,37 @@ public interface Server extends Engine {
 	 * Binds the server to a certain address
 	 *
 	 * @param address The address to bind to.
-	 * @param bootstrapProtocol The bootstrap protocol to use for connections to
+	 * @param protocol The protocol to use for connections to
 	 *            this binding
 	 * @return true if successful
 	 */
-	public boolean bind(SocketAddress address, BootstrapProtocol bootstrapProtocol);
+	public boolean bind(SocketAddress address, Protocol Protocol);
+
 	/**
 	 * Bans the specified player
 	 *
-	 * @param Player to ban
+	 * @param player Player to ban
 	 */
 	public void banPlayer(String player);
 
 	/**
 	 * Unbans the specified player
 	 *
-	 * @param Player to ban
+	 * @param player Player to ban
 	 */
 	public void unbanPlayer(String player);
 
 	/**
 	 * Bans the specified IP
 	 *
-	 * @param Player to ban
+	 * @param address Player to ban
 	 */
 	public void banIp(String address);
 
 	/**
 	 * Unbans the specified IP
 	 *
-	 * @param Player to ban
+	 * @param address Player to ban
 	 */
 	public void unbanIp(String address);
 
@@ -143,8 +144,8 @@ public interface Server extends Engine {
 	/**
 	 * Returns true if the player or address is banned.
 	 *
-	 * @param Player name to check
-	 * @param Address to check
+	 * @param player Player name to check
+	 * @param address Address to check
 	 * @return If either is banned
 	 */
 	public boolean isBanned(String player, String address);
@@ -152,7 +153,7 @@ public interface Server extends Engine {
 	/**
 	 * Returns true if the address is banned.
 	 *
-	 * @param Address to check
+	 * @param address Address to check
 	 * @return If the address is banned
 	 */
 	public boolean isIpBanned(String address);
@@ -160,7 +161,7 @@ public interface Server extends Engine {
 	/**
 	 * Returns true if the player is banned.
 	 *
-	 * @param Player name to check
+	 * @param player Player name to check
 	 * @return If the player is banned
 	 */
 	public boolean isPlayerBanned(String player);

@@ -28,10 +28,12 @@ package org.spout.api.command;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.spout.api.Spout;
+import org.spout.api.chat.ChatArguments;
+import org.spout.api.chat.ChatSection;
 import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
 import org.spout.api.player.Player;
@@ -49,66 +51,63 @@ import gnu.trove.set.hash.TCharHashSet;
  */
 public class CommandContext {
 	protected final String command;
-	protected final List<String> parsedArgs;
+	protected final List<ChatSection> parsedArgs;
 	protected final TIntList originalArgIndices;
-	protected final String[] originalArgs;
+	protected final List<ChatSection> originalArgs;
 	protected final TCharSet booleanFlags = new TCharHashSet();
-	protected final TCharObjectMap<String> valueFlags = new TCharObjectHashMap<String>();
+	protected final TCharObjectMap<ChatSection> valueFlags = new TCharObjectHashMap<ChatSection>();
 
-	public CommandContext(String[] args) throws CommandException {
-		this(args, null);
+	public CommandContext(String command, List<ChatSection> args) throws CommandException {
+		this(command, args, null);
 	}
 
 	/**
+	 * @param command The command name used
 	 * @param args An array with arguments. Empty strings outside quotes will be
 	 *            removed.
 	 * @param valueFlags A set containing all value flags. Pass null to disable
 	 *            value flag parsing.
 	 * @throws CommandException This is thrown if flag fails for some reason.
 	 */
-	public CommandContext(String[] args, TCharSet valueFlags) throws CommandException {
+	public CommandContext(String command, List<ChatSection> args, TCharSet valueFlags) throws CommandException {
 		if (valueFlags == null) {
 			valueFlags = new TCharHashSet();
 		}
 
 		originalArgs = args;
-		command = args[0];
+		this.command = command;
 
 		// Eliminate empty args and combine multiword args first
-		TIntList argIndexList = new TIntArrayList(args.length);
-		List<String> argList = new ArrayList<String>(args.length);
-		for (int i = 1; i < args.length; ++i) {
-			String arg = args[i];
-			if (StringUtils.isEmpty(arg)) {
-				continue;
-			}
-
+		TIntList argIndexList = new TIntArrayList(args.size());
+		List<ChatSection> argList = new ArrayList<ChatSection>(args.size());
+		for (int i = 0; i < args.size(); ++i) {
+			ChatSection arg = args.get(i);
 			argIndexList.add(i);
 
-			switch (arg.charAt(0)) {
+			switch (arg.getPlainString().charAt(0)) {
 				case '\'':
 				case '"':
-					final StringBuilder build = new StringBuilder();
-					final char quotedChar = arg.charAt(0);
+					final ChatArguments build = new ChatArguments();
+					final char quotedChar = arg.getPlainString().charAt(0);
 
 					int endIndex;
-					for (endIndex = i; endIndex < args.length; ++endIndex) {
-						final String arg2 = args[endIndex];
-						if (arg2.charAt(arg2.length() - 1) == quotedChar) {
+					for (endIndex = i; endIndex < args.size(); ++endIndex) {
+						final ChatSection arg2 = args.get(endIndex);
+						if (arg2.getPlainString().charAt(arg2.length() - 1) == quotedChar) {
 							if (endIndex != i) {
 								build.append(' ');
 							}
-							build.append(arg2.substring(endIndex == i ? 1 : 0, arg2.length() - 1));
+							build.append(arg2.subSection(endIndex == i ? 1 : 0, arg2.length() - 2));
 							break;
 						} else if (endIndex == i) {
-							build.append(arg2.substring(1));
+							build.append(arg2.subSection(1, arg2.length() - 1));
 						} else {
 							build.append(' ').append(arg2);
 						}
 					}
 
-					if (endIndex < args.length) {
-						arg = build.toString();
+					if (endIndex < args.size()) {
+						arg = build.toSections(ChatSection.SplitType.ALL).get(0);
 						i = endIndex;
 					}
 					// else raise exception about hanging quotes?
@@ -119,21 +118,22 @@ public class CommandContext {
 		// Then flags
 
 		originalArgIndices = new TIntArrayList(argIndexList.size());
-		parsedArgs = new ArrayList<String>(argList.size());
+		parsedArgs = new ArrayList<ChatSection>(argList.size());
 
 		for (int nextArg = 0; nextArg < argList.size();) {
 			// Fetch argument
-			String arg = argList.get(nextArg++);
+			ChatSection arg = argList.get(nextArg++);
+			String plainArg = arg.getPlainString();
 
 			// Not a flag?
-			if (arg.charAt(0) != '-' || arg.length() == 1 || !arg.matches("^-[a-zA-Z]+$")) {
+			if (plainArg.charAt(0) != '-' || plainArg.length() == 1 || !plainArg.matches("^-[a-zA-Z]+$")) {
 				originalArgIndices.add(argIndexList.get(nextArg - 1));
 				parsedArgs.add(arg);
 				continue;
 			}
 
 			// Handle flag parsing terminator --
-			if (arg.equals("--")) {
+			if (arg.getPlainString().equals("--")) {
 				while (nextArg < argList.size()) {
 					originalArgIndices.add(argIndexList.get(nextArg));
 					parsedArgs.add(argList.get(nextArg++));
@@ -142,8 +142,8 @@ public class CommandContext {
 			}
 
 			// Go through the flag characters
-			for (int i = 1; i < arg.length(); ++i) {
-				char flagName = arg.charAt(i);
+			for (int i = 1; i < arg.getPlainString().length(); ++i) {
+				char flagName = arg.getPlainString().charAt(i);
 
 				if (valueFlags.contains(flagName)) {
 					if (this.valueFlags.containsKey(flagName)) {
@@ -172,19 +172,19 @@ public class CommandContext {
 	}
 
 	public int getInteger(int index) throws NumberFormatException {
-		return Integer.parseInt(parsedArgs.get(index));
+		return Integer.parseInt(getString(index));
 	}
 
 	public int getInteger(int index, int def) throws NumberFormatException {
-		return index < parsedArgs.size() ? Integer.parseInt(parsedArgs.get(index)) : def;
+		return index < parsedArgs.size() ? Integer.parseInt(parsedArgs.get(index).getPlainString()) : def;
 	}
-	
+
 	public boolean isInteger(int index) {
 		if (index >= parsedArgs.size()) {
 			return false;
 		}
 		try {
-			Integer.parseInt(parsedArgs.get(index));
+			Integer.parseInt(parsedArgs.get(index).getPlainString());
 			return true;
 		} catch (NumberFormatException e) {
 			return false;
@@ -192,31 +192,31 @@ public class CommandContext {
 	}
 
 	public World getWorld(int index) {
-		return Spout.getEngine().getWorld(parsedArgs.get(index));
+		return Spout.getEngine().getWorld(getString(index));
 	}
 
 	public World getWorld(int index, boolean exact) {
-		return Spout.getEngine().getWorld(parsedArgs.get(index), exact);
+		return Spout.getEngine().getWorld(getString(index), exact);
 	}
 
 	public Player getPlayer(int index, boolean exact) {
-		return Spout.getEngine().getPlayer(parsedArgs.get(index), true);
+		return Spout.getEngine().getPlayer(getString(index), exact);
 	}
 
 	public Collection<World> matchWorld(int index) {
-		return Spout.getEngine().matchWorld(parsedArgs.get(index));
+		return Spout.getEngine().matchWorld(getString(index));
 	}
 
 	public Collection<Player> matchPlayer(int index) {
-		return Spout.getEngine().matchPlayer(parsedArgs.get(index));
+		return Spout.getEngine().matchPlayer(getString(index));
 	}
 
 	public double getDouble(int index) throws NumberFormatException {
-		return Double.parseDouble(parsedArgs.get(index));
+		return Double.parseDouble(getString(index));
 	}
 
 	public double getDouble(int index, double def) throws NumberFormatException {
-		return index < parsedArgs.size() ? Double.parseDouble(parsedArgs.get(index)) : def;
+		return index < parsedArgs.size() ? Double.parseDouble(parsedArgs.get(index).getPlainString()) : def;
 	}
 
 	public boolean isDouble(int index) {
@@ -224,19 +224,27 @@ public class CommandContext {
 			return false;
 		}
 		try {
-			Double.parseDouble(parsedArgs.get(index));
+			Double.parseDouble(parsedArgs.get(index).getPlainString());
 			return true;
 		} catch (NumberFormatException e) {
 			return false;
 		}
 	}
 
-	public String getString(int index) throws NumberFormatException {
+	public ChatSection get(int index) {
 		return parsedArgs.get(index);
 	}
 
-	public String getString(int index, String def) throws NumberFormatException {
+	public ChatSection get(int index, ChatSection def) {
 		return index < parsedArgs.size() ? parsedArgs.get(index) : def;
+	}
+
+	public String getString(int index) {
+		return parsedArgs.get(index).getPlainString();
+	}
+
+	public String getString(int index, String def) {
+		return index < parsedArgs.size() ? parsedArgs.get(index).getPlainString() : def;
 	}
 
 	public boolean hasFlag(char ch) {
@@ -247,16 +255,16 @@ public class CommandContext {
 		return booleanFlags;
 	}
 
-	public TCharObjectMap<String> getValueFlags() {
+	public TCharObjectMap<ChatSection> getValueFlags() {
 		return valueFlags;
 	}
 
-	public String getFlag(char ch) {
+	public ChatSection getFlag(char ch) {
 		return valueFlags.get(ch);
 	}
 
-	public String getFlag(char ch, String def) {
-		final String value = valueFlags.get(ch);
+	public ChatSection getFlag(char ch, ChatSection def) {
+		final ChatSection value = valueFlags.get(ch);
 		if (value == null) {
 			return def;
 		}
@@ -264,22 +272,36 @@ public class CommandContext {
 		return value;
 	}
 
-	public int getFlagInteger(char ch) throws NumberFormatException {
-		return Integer.parseInt(valueFlags.get(ch));
+	public String getFlagString(char ch) {
+		ChatSection sect = valueFlags.get(ch);
+		return sect == null ? null : sect.getPlainString();
 	}
 
-	public int getFlagInteger(char ch, int def) throws NumberFormatException {
-		final String value = valueFlags.get(ch);
+	public String getFlagString(char ch, String def) {
+		final ChatSection value = valueFlags.get(ch);
 		if (value == null) {
 			return def;
 		}
 
-		return Integer.parseInt(value);
+		return value.getPlainString();
+	}
+
+	public int getFlagInteger(char ch) throws NumberFormatException {
+		return Integer.parseInt(getFlagString(ch));
+	}
+
+	public int getFlagInteger(char ch, int def) throws NumberFormatException {
+		final ChatSection value = valueFlags.get(ch);
+		if (value == null) {
+			return def;
+		}
+
+		return Integer.parseInt(value.getPlainString());
 	}
 
 	public boolean isFlagInteger(char ch) {
 		try {
-			Integer.parseInt(valueFlags.get(ch));
+			Integer.parseInt(getFlagString(ch));
 			return true;
 		} catch (NumberFormatException e) {
 			return false;
@@ -287,37 +309,37 @@ public class CommandContext {
 	}
 
 	public double getFlagDouble(char ch) throws NumberFormatException {
-		return Double.parseDouble(valueFlags.get(ch));
+		return Double.parseDouble(getFlagString(ch));
 	}
 
 	public double getFlagDouble(char ch, double def) throws NumberFormatException {
-		final String value = valueFlags.get(ch);
+		final ChatSection value = valueFlags.get(ch);
 		if (value == null) {
 			return def;
 		}
 
-		return Double.parseDouble(value);
+		return Double.parseDouble(value.getPlainString());
 	}
 
 	public boolean isFlagDouble(char ch) {
 		try {
-			Double.parseDouble(valueFlags.get(ch));
+			Double.parseDouble(getFlagString(ch));
 			return true;
 		} catch (NumberFormatException e) {
 			return false;
 		}
 	}
 
-	public String getJoinedString(int initialIndex) {
+	public ChatArguments getJoinedString(int initialIndex) {
 		initialIndex = originalArgIndices.get(initialIndex);
-		StringBuilder buffer = new StringBuilder(originalArgs[initialIndex]);
-		for (int i = initialIndex + 1; i < originalArgs.length; ++i) {
-			buffer.append(" ").append(originalArgs[i]);
+		ChatArguments args = new ChatArguments(originalArgs.get(initialIndex));
+		for (int i = initialIndex + 1; i < originalArgs.size(); ++i) {
+			args.append(" ").append(originalArgs.get(i));
 		}
-		return buffer.toString();
+		return args;
 	}
 
-	public String[] getRawArgs() {
-		return originalArgs;
+	public List<ChatSection> getRawArgs() {
+		return Collections.unmodifiableList(originalArgs);
 	}
 }

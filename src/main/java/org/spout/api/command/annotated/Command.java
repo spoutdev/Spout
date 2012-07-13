@@ -34,7 +34,7 @@ import java.lang.annotation.Target;
 /**
  * This allows for annotation-based command registration.
  */
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Command {
 	public String[] aliases();
