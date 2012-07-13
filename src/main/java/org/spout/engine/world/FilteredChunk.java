@@ -113,15 +113,6 @@ public class FilteredChunk extends SpoutChunk{
 	public boolean isAboveGround() {
 		return this.getY() >= 4;
 	}
-	
-	@Override
-	public boolean setBlockData(int x, int y, int z, short data, Source source) {
-		if (uniform.get()) {
-			initialize();
-		}
-		chunkModified.set(true);
-		return super.setBlockData(x, y, z, data, source);
-	}
 
 	@Override
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Source source) {
@@ -173,6 +164,15 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		chunkModified.set(true);
 		return super.setBlockDataFieldRaw(bx, by, bz, bits, value, source);
+	}
+
+	@Override
+	protected int addBlockDataFieldRaw(int bx, int by, int bz, int bits, int value, Source source) {
+		if (uniform.get()) {
+			initialize();
+		}
+		chunkModified.set(true);
+		return super.addBlockDataFieldRaw(bx, by, bz, bits, value, source);
 	}
 
 	@Override

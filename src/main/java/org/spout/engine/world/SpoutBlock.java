@@ -232,6 +232,12 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
+	public SpoutBlock addData(int data) {
+		this.getChunk().addBlockData(this.x, this.y, this.z, (short) data, this.source);
+		return this;
+	}
+
+	@Override
 	public short getData() {
 		return this.getChunk().getBlockData(this.x, this.y, this.z);
 	}
@@ -264,6 +270,11 @@ public class SpoutBlock implements Block {
 	@Override
 	public int setDataField(int bits, int value) {
 		return this.getChunk().setBlockDataField(this.x, this.y, this.z, bits, value, this.source);
+	}
+
+	@Override
+	public int addDataField(int bits, int value) {
+		return this.getChunk().addBlockDataField(this.x, this.y, this.z, bits, value, this.source);
 	}
 
 	@Override
