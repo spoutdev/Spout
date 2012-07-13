@@ -254,7 +254,7 @@ public final class SpoutSession implements Session {
 				} catch (Exception e) {
 					Spout.getEngine().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + (getPlayer() != null ? getPlayer().getName() : "null"));
 					e.printStackTrace();
-					disconnect(false, "Message handler exception for ", message.getClass().getSimpleName());
+					disconnect(false, new Object[] {"Message handler exception for ", message.getClass().getSimpleName()});
 				}
 			}
 		}
@@ -266,7 +266,7 @@ public final class SpoutSession implements Session {
 				} catch (Exception e) {
 					Spout.getEngine().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + (getPlayer() != null ? getPlayer().getName() : "null"));
 					e.printStackTrace();
-					disconnect(false, "Message handler exception for", message.getClass().getSimpleName());
+					disconnect(false, new Object[] {"Message handler exception for", message.getClass().getSimpleName()});
 				}
 			}
 		}
@@ -334,7 +334,7 @@ public final class SpoutSession implements Session {
 					Spout.getLogger().info("Unknown platform " + platform);
 			}
 		} catch (Exception e) {
-			disconnect(false, "Socket Error!");
+			disconnect(false, new Object[] {"Socket Error!"});
 		}
 	}
 
