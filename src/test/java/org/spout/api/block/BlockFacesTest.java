@@ -62,4 +62,13 @@ public class BlockFacesTest {
 		assertEquals(BlockFaces.NESW.get(6, BlockFace.THIS), BlockFace.THIS);
 		assertEquals(BlockFaces.NESW.get(6, null), null);
 	}
+
+	@Test
+	public void testNext() {
+		assertEquals(BlockFaces.NESW.next(BlockFace.NORTH, 2), BlockFace.SOUTH);
+		assertEquals(BlockFaces.NESW.next(BlockFace.NORTH, -2), BlockFace.SOUTH);
+		assertEquals(BlockFaces.NESW.next(BlockFace.WEST, -8), BlockFace.WEST);
+		assertEquals(BlockFaces.NESW.next(BlockFace.WEST, -1), BlockFace.SOUTH);
+		assertEquals(BlockFaces.NESW.next(BlockFace.WEST, 1), BlockFace.NORTH);
+	}
 }

@@ -28,6 +28,7 @@ package org.spout.api.material.block;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Random;
 
 import org.spout.api.util.flag.ByteFlagMask;
 
@@ -239,6 +240,53 @@ public class BlockFaces implements Iterable<BlockFace>, ByteFlagMask {
 			}
 		}
 		return def;
+	}
+
+	/**
+	 * Gets the previous BlockFace in this circular BlockFaces constant<br>
+	 * This function calls next using a negative offset
+	 * 
+	 * @see BlockFaces.next(BlockFace from, int offset);
+	 * @param from the BlockFace to count
+	 * @param offset index in this range
+	 * @return the face at the offset
+	 */
+	public BlockFace previous(BlockFace from, int offset) {
+		return this.next(from, -offset);
+	}
+
+	/**
+	 * Gets the next BlockFace in this circular BlockFaces constant<br><br>
+	 * 
+	 * <b>For example:</b><br>
+	 * BlockFaces.NESW.next(BlockFace.EAST, 2) == BlockFace.WEST<br>
+	 * BlockFaces.NESW.next(BlockFace.WEST, 1) == BlockFace.NORTH<br>
+	 * BlockFaces.NESW.next(BlockFace.SOUTH, -3) == BlockFace.WEST<br>
+	 * 
+	 * @param from the BlockFace to count
+	 * @param offset index in this range
+	 * @return the face at the offset
+	 */
+	public BlockFace next(BlockFace from, int offset) {
+		int index = this.indexOf(from, -1);
+		if (index == -1) {
+			throw new IllegalArgumentException("This BlockFaces constant does not contain the face specified");
+		}
+		index = (index + offset) % this.faces.length;
+		if (index < 0) {
+			index += this.faces.length;
+		}
+		return this.faces[index];
+	}
+
+	/**
+	 * Gets a random BlockFace from this BlockFaces constant
+	 * 
+	 * @param random to use
+	 * @return a random BlockFace
+	 */
+	public BlockFace random(Random random) {
+		return this.faces[random.nextInt(this.faces.length)];
 	}
 
 	/**

@@ -214,6 +214,15 @@ public interface Block extends MaterialState, WorldSource {
 	public Block setData(int data);
 
 	/**
+	 * Adds the value to the data of this block
+	 * 
+	 * @param data to add
+	 * @return this Block
+	 * @throws NullPointerException
+	 */
+	public Block addData(int data);
+
+	/**
 	 * Sets the material of this block
 	 *
 	 * @param material to set to
@@ -304,7 +313,7 @@ public interface Block extends MaterialState, WorldSource {
 	public boolean isDataBitSet(int bits);
 
 	/**
-	 * Sets the data field from the block.  This is the reverse operation to the getDataField method.<br>
+	 * Sets the data field for the block.  This is the reverse operation to the getDataField method.<br>
 	 * <br>
 	 * newData = ((value << shift) & bits) | (oldData & (~bits))<br>
 	 * <br>
@@ -317,6 +326,21 @@ public interface Block extends MaterialState, WorldSource {
 	@LiveWrite
 	@Threadsafe
 	public int setDataField(int bits, int value);
+
+	/**
+	 * Adds a value to the data field for the block.  This is the reverse operation to the getBlockDataField method.<br>
+	 * <br>
+	 * newData = (((oldData + (value << shift)) & bits) | (oldData & ~bits))<br>
+	 * <br>
+	 * The shift value used shifts the least significant non-zero bit of bits to the LSB position
+	 * 
+	 * @param bits the bits of the field
+	 * @param value to add to the value of the field
+	 * @return the old value of the field
+	 */
+	@LiveWrite
+	@Threadsafe
+	public int addDataField(int bits, int value);
 
 	/**
 	 * Gets the current light level of the block<br>
