@@ -1077,6 +1077,11 @@ public class SpoutRegion extends Region{
 	}
 
 	@Override
+	public boolean addBlockData(int x, int y, int z, short data, Source source) {
+		return this.getChunkFromBlock(x, y, z).addBlockData(x, y, z, data, source);
+	}
+
+	@Override
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Source source) {
 		return this.getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z, material, data, source);
 	}
@@ -1119,6 +1124,11 @@ public class SpoutRegion extends Region{
 	@Override
 	public int setBlockDataField(int x, int y, int z, int bits, int value, Source source) {
 		return this.getChunkFromBlock(x, y, z).setBlockDataField(x, y, z, bits, value, source);
+	}
+
+	@Override
+	public int addBlockDataField(int x, int y, int z, int bits, int value, Source source) {
+		return this.getChunkFromBlock(x, y, z).addBlockDataField(x, y, z, bits, value, source);
 	}
 
 	@Override
@@ -1323,6 +1333,4 @@ public class SpoutRegion extends Region{
 	public void addSnapshotFuture(SpoutChunkSnapshotFuture future) {
 		snapshotQueue.add(future);
 	}
-	
-	
 }
