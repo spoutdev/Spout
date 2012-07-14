@@ -277,6 +277,16 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
+	public boolean addBlockData(int x, int y, int z, short data, Source source) {
+		if (source == null) {
+			throw new NullPointerException("Source can not be null");
+		}
+		addBlockDataField(x, y, z, 0xFFFF, data, source);
+
+		return true;
+	}
+
+	@Override
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Source source) {
 		if (source == null) {
 			throw new NullPointerException("Source can not be null");
@@ -1517,7 +1527,15 @@ public class SpoutChunk extends Chunk {
 		int shift = shiftCache[bits];
 
 		return (oldData & bits) >> shift;
+	}
 
+	@Override
+	public int addBlockDataField(int bx, int by, int bz, int bits, int value, Source source) {
+		int oldData = addBlockDataFieldRaw(bx, by, bz, bits, value, source);
+		
+		int shift = shiftCache[bits];
+
+		return (oldData & bits) >> shift;
 	}
 
 	@Override
@@ -1533,9 +1551,9 @@ public class SpoutChunk extends Chunk {
 		by &= BLOCKS.MASK;
 		bz &= BLOCKS.MASK;
 
-		value &= 0xFFFF;
-
 		int shift = shiftCache[bits];
+
+		value &= 0xFFFF;
 
 		boolean updated = false;
 
@@ -1547,7 +1565,43 @@ public class SpoutChunk extends Chunk {
 			int state = this.blockStore.getFullData(bx, by, bz);
 			oldData = BlockFullState.getData(state);
 			oldId = BlockFullState.getId(state);
-			newData = (short) (((value << shift) & bits) | (oldData & (~bits)));
+			newData = (short) (((value << shift) & bits) | (oldData & ~bits));
+
+			// TODO - this should probably trigger a dynamic block reset
+			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
+			updated = oldData != newData;
+		}
+
+		if (updated) {
+			blockChanged(bx, by, bz, oldId, newData, oldId, oldData, source);
+		}
+
+		return oldData;
+	}
+
+	protected int addBlockDataFieldRaw(int bx, int by, int bz, int bits, int value, Source source) {
+		checkChunkLoaded();
+		checkBlockStoreUpdateAllowed();
+
+		bx &= BLOCKS.MASK;
+		by &= BLOCKS.MASK;
+		bz &= BLOCKS.MASK;
+
+		int shift = shiftCache[bits];
+
+		value &= 0xFFFF;
+
+		boolean updated = false;
+
+		boolean success = false;
+		short oldData = 0;
+		short oldId = 0;
+		short newData = 0;
+		while (!success) {
+			int state = this.blockStore.getFullData(bx, by, bz);
+			oldData = BlockFullState.getData(state);
+			oldId = BlockFullState.getId(state);
+			newData = (short) (((oldData + (value << shift)) & bits) | (oldData & ~bits));
 
 			// TODO - this should probably trigger a dynamic block reset
 			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
