@@ -70,7 +70,29 @@ public class BAAWrapper {
 			}
 		}
 	}
-	
+
+	/**
+	 * Checks if the InputStream exists at the given index.
+	 * 
+	 * @param i the block index
+	 * @return true if the input stream exists
+	 */
+	public boolean inputStreamExists(int i) {
+		while (true) {
+			ByteArrayArray baa = getByteArrayArray();
+			if (baa == null) {
+				return false;
+			}
+			try {
+				return baa.exists(i);
+			} catch (BAAClosedException e) {
+				continue;
+			} catch (IOException e) {
+				return false;
+			}
+		}
+	}
+
 	/**
 	 * Gets the DataOutputStream corresponding to a given block.<br>
 	 * <br>

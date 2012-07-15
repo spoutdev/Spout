@@ -90,4 +90,13 @@ public interface ByteArrayArray {
 	 */
 	public boolean isClosed();
 
+	/**
+	 * Checks if any data exists at the block index.
+	 * 
+	 * @param i the block index
+	 * @return true if it exists
+	 * @throws IOException
+	 */
+	boolean exists(int i) throws IOException;
+
 }

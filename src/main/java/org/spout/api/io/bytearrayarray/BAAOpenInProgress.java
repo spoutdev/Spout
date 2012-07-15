@@ -70,4 +70,9 @@ public final class BAAOpenInProgress implements ByteArrayArray {
 		return false;
 	}
 
+	@Override
+	public boolean exists(int i) throws IOException {
+		return false;
+	}
+
 }

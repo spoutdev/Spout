@@ -159,6 +159,27 @@ public class SimpleRegionFile implements ByteArrayArray {
 		
 	}
 
+
+	@Override
+	public boolean exists(int i) throws IOException {
+		if (i < 0 || i > entries) {
+			throw new SRFException("Read block index out of range");
+		}
+		refreshAccess();
+		Lock lock = blockLock[i].readLock();
+		lock.lock();
+		try {
+			if (this.isClosed()) {
+				throw new SRFClosedException("File closed");
+			}
+
+			return blockActualLength[i].get() == 0;
+
+		} finally {
+			lock.unlock();
+		}
+	}
+
 	@Override
 	public InputStream getInputStream(int i) throws IOException {
 		if (i < 0 || i > entries) {
