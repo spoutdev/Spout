@@ -38,7 +38,8 @@ import org.spout.api.geo.World;
 public class EntityChangedWorldEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 
-	private World previous, target;
+	private final World previous;
+	private World target;
 
 	public EntityChangedWorldEvent(Entity e, World previous, World target) {
 		super(e);
@@ -53,15 +54,6 @@ public class EntityChangedWorldEvent extends EntityEvent implements Cancellable 
 	 */
 	public World getPrevious() {
 		return previous;
-	}
-
-	/**
-	 * Sets the world that the entity came from
-	 *
-	 * @param The world the entity came from.
-	 */
-	public void setPrevious(World previous) {
-		this.previous = previous;
 	}
 
 	/**

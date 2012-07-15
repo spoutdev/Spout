@@ -34,6 +34,10 @@ import org.spout.api.Engine;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.player.Player;
 
+/**
+ * Represents a connection to the server.<br/>
+ * Controls the state, protocol and channels of a connection to the server.
+ */
 public interface Session {
 	/**
 	 * Passes a message to a session for processing.
