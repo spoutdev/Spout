@@ -511,9 +511,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	@Override
-	public void stop() {
+	public void stop(String message) {
 		Display.destroy();
-		super.stop();
+		super.stop(message);
 	}
-
 }

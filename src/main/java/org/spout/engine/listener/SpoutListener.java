@@ -57,6 +57,7 @@ public class SpoutListener implements Listener {
 		if (event.isCancelled()) {
 			return;
 		}
+		long start = System.currentTimeMillis();
 		//Create the player
 		final Player player = server.addPlayer(event.getPlayerName(), (SpoutSession) event.getSession(), event.getViewDistance());
 
@@ -73,11 +74,14 @@ public class SpoutListener implements Listener {
 					player.kick();
 				}
 			} else {
-				Spout.getEngine().getEventManager().callDelayedEvent(new PlayerJoinEvent(player, ChatStyle.CYAN, player.getDisplayName(), ChatStyle.CYAN, " has joined the game"));
+				long joinStart = System.currentTimeMillis();
+				Spout.getEngine().getEventManager().callEvent(new PlayerJoinEvent(player, ChatStyle.CYAN, player.getDisplayName(), ChatStyle.CYAN, " has joined the game"));
+				System.out.println("Player Join Event took " + (System.currentTimeMillis() - joinStart) + " ms");
 			}
 		} else {
 			event.getSession().disconnect("Player is already online");
 		}
+		System.out.println("Spout Engine Player Connect Event took " + (System.currentTimeMillis() - start) + " ms");
 	}
 
 	@EventHandler(order = Order.EARLIEST)

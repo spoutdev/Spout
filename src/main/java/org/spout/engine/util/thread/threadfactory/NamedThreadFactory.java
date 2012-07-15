@@ -31,14 +31,22 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class NamedThreadFactory implements ThreadFactory {
 	private final String namePrefix;
+	private final boolean daemon;
 	private static final AtomicInteger idCounter = new AtomicInteger();
 
 	public NamedThreadFactory(String namePrefix) {
+		this(namePrefix, false);
+	}
+
+	public NamedThreadFactory(String namePrefix, boolean daemon) {
 		this.namePrefix = namePrefix;
+		this.daemon = daemon;
 	}
 
 	@Override
 	public Thread newThread(Runnable runnable) {
-		return new Thread(runnable, "Executor{" + namePrefix + "-" + idCounter.getAndIncrement() + "}");
+		Thread thread = new Thread(runnable, "Executor{" + namePrefix + "-" + idCounter.getAndIncrement() + "}");
+		thread.setDaemon(daemon);
+		return thread;
 	}
 }

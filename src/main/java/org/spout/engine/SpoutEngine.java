@@ -42,8 +42,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -122,7 +120,6 @@ import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLinkedHashMap;
 import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
-import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
@@ -151,8 +148,6 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	private volatile int maxPlayers = 20;
 	private volatile String[] allAddresses;
 
-	//The network executor service - Netty dispatches events to this thread
-	protected final ExecutorService executor = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutEngine"));
 	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
 	protected final SpoutScheduler scheduler = new SpoutScheduler(this);
 	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
@@ -526,7 +521,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	@Override
-	public void stop() {
+	public final void stop() {
 		stop("Spout shutting down");
 	}
 
@@ -546,7 +541,6 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		scheduler.stop(5000);
 		group.close();
 		bootstrapProtocols.clear();
-		executor.shutdown();
 		WorldSavingThread.finish();
 	}
 

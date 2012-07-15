@@ -30,13 +30,14 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.event.Listener;
@@ -46,9 +47,11 @@ import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.engine.filesystem.ServerFileSystem;
 import org.spout.engine.listener.SpoutListener;
+import org.spout.engine.protocol.SpoutNioServerSocketChannel;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.util.bans.BanManager;
 import org.spout.engine.util.bans.FlatFileBanManager;
+import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 
 public class SpoutServer extends SpoutEngine implements Server {
 	private final String name = "Spout Server";
@@ -74,7 +77,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 	 * The {@link ServerBootstrap} used to initialize Netty.
 	 */
 	private final ServerBootstrap bootstrap = new ServerBootstrap();
-
 	public SpoutServer() {
 		this.filesystem = new ServerFileSystem();
 	}
@@ -102,16 +104,21 @@ public class SpoutServer extends SpoutEngine implements Server {
 	@Override
 	public void init(Arguments args) {
 		super.init(args);
-		ChannelFactory factory = new NioServerSocketChannelFactory(executor, executor);
+		//Note: All threads are daemons, cleanup of the executors is handled by bootstrap.getFactory().releaseExternalResources(); in stop(...).
+		ExecutorService executorBoss = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Boss", true));
+		ExecutorService executorWorker = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Worker", true));
+		ChannelFactory factory = new SpoutNioServerSocketChannel(executorBoss, executorWorker);
 		bootstrap.setFactory(factory);
+		bootstrap.setOption("tcpNoDelay", true);
+		bootstrap.setOption("keepAlive", true);
 
 		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, false);
 		bootstrap.setPipelineFactory(pipelineFactory);
 	}
 
 	@Override
-	public void stop() {
-		super.stop();
+	public void stop(String message) {
+		super.stop(message);
 		bootstrap.getFactory().releaseExternalResources();
 	}
 
@@ -137,6 +144,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		logger.log(Level.INFO, "Binding to address: {0}...", address);
 		return true;
 	}
+
 
 	@Override
 	public int getMaxPlayers() {

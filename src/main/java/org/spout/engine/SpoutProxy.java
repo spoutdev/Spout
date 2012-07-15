@@ -27,6 +27,8 @@
 package org.spout.engine;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.bootstrap.ServerBootstrap;
@@ -34,7 +36,6 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.CommonPipelineFactory;
@@ -42,7 +43,9 @@ import org.spout.api.protocol.Session;
 import org.spout.engine.listener.SpoutProxyConnectListener;
 import org.spout.engine.listener.SpoutProxyListener;
 import org.spout.engine.player.SpoutPlayer;
+import org.spout.engine.protocol.SpoutNioServerSocketChannel;
 import org.spout.engine.protocol.SpoutSession;
+import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 
 public class SpoutProxy extends SpoutServer {
 
@@ -95,7 +98,10 @@ public class SpoutProxy extends SpoutServer {
 	@Override
 	public void init(Arguments args) {
 		super.init(args);
-		ChannelFactory factory = new NioClientSocketChannelFactory(executor, executor);
+		//Note: All threads are daemons, cleanup of the executors is handled by clientBootstrap.getFactory().releaseExternalResources(); in stop(...).
+		ExecutorService executorBoss = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Boss", true));
+		ExecutorService executorWorker = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Worker", true));
+		ChannelFactory factory = new SpoutNioServerSocketChannel(executorBoss, executorWorker);
 		clientBootstrap.setFactory(factory);
 
 		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, true);
@@ -111,8 +117,8 @@ public class SpoutProxy extends SpoutServer {
 	}
 
 	@Override
-	public void stop() {
-		super.stop();
+	public void stop(String message) {
+		super.stop(message);
 		clientBootstrap.getFactory().releaseExternalResources();
 	}
 }
