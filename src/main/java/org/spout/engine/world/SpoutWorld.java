@@ -162,7 +162,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 	 * The parallel task manager.  This is used for submitting tasks to all regions in the world.
 	 */
 	protected final SpoutParallelTaskManager parallelTaskManager;
-	
+
 	private final SpoutTaskManager taskManager;
 
 	/**
@@ -174,13 +174,13 @@ public final class SpoutWorld extends AsyncManager implements World {
 	 * Hashcode cache
 	 */
 	private final int hashcode;
-	
+
 	/**
 	 * Data map and Datatable associated with it
 	 */
 	private final DatatableMap datatableMap;
 	private final DataMap dataMap;
-	
+
 	/**
 	 * String item map, used to convert local id's to the server id
 	 */
@@ -206,11 +206,11 @@ public final class SpoutWorld extends AsyncManager implements World {
 		worldDirectory.mkdirs();
 
 		heightMapBAAs = new TSyncIntPairObjectHashMap<BAAWrapper>();
-		
+
 		if (extraData != null) {
 			this.datatableMap = extraData;
 		} else {
-			this.datatableMap = new GenericDatatableMap();;
+			this.datatableMap = new GenericDatatableMap();
 		}
 		this.dataMap = new DataMap(this.datatableMap);
 
@@ -220,7 +220,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 		this.lightingManager.start();
 
 		parallelTaskManager = new SpoutParallelTaskManager(server.getScheduler(), this);
-		
+
 		AsyncExecutor e = getExecutor();
 		Thread t;
 		if (e instanceof Thread) {
@@ -388,7 +388,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 		spawnEntity(e);
 		return e;
 	}
-	
+
 	@Override
 	public Entity[] createAndSpawnEntity(Point[] points, Controller[] controllers) {
 		if (points.length != controllers.length) {
@@ -400,7 +400,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 		}
 		return entities;
 	}
-	
+
 	@Override
 	public Entity[] createAndSpawnEntity(Point[] points, ControllerType[] types) {
 		Entity[] entities = new Entity[points.length];
@@ -409,7 +409,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 		}
 		return entities;
 	}
-	
+
 	@Override
 	public Entity[] createAndSpawnEntity(Point[] points, ControllerType type) {
 		Entity[] entities = new Entity[points.length];
@@ -418,7 +418,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 		}
 		return entities;
 	}
-	
+
 	@Override
 	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement) {
 		ControllerType[] types = arrangement.getControllerTypes();
@@ -580,7 +580,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 	public int getBlockDataField(int x, int y, int z, int bits) {
 		return getChunkFromBlock(x, y, z).getBlockDataField(x, y, z, bits);
 	}
-	
+
 	@Override
 	public boolean isBlockDataBitSet(int x, int y, int z, int bits) {
 		return getChunkFromBlock(x, y, z).isBlockDataBitSet(x, y, z, bits);
@@ -600,12 +600,12 @@ public final class SpoutWorld extends AsyncManager implements World {
 	public void updateBlockPhysics(int x, int y, int z, Source source) {
 		this.getRegionFromBlock(x, y, z).updateBlockPhysics(x, y, z, source);
 	}
-	
+
 	@Override
 	public void queueBlockPhysics(int x, int y, int z, EffectRange range, Source source) {
 		queueBlockPhysics(x, y, z, range, null, source);
 	}
-	
+
 	public void queueBlockPhysics(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial, Source source) {
 		this.getRegionFromBlock(x, y, z).queueBlockPhysics(x, y, z, range, oldMaterial, source);
 	}
@@ -614,7 +614,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 	public void resetDynamicBlock(int x, int y, int z) {
 		this.getRegionFromBlock(x, y, z).resetDynamicBlock(x, y, z);
 	}
-	
+
 	@Override
 	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, int data, Object hint) {
 		return this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z, nextUpdate, data, hint);
@@ -629,12 +629,12 @@ public final class SpoutWorld extends AsyncManager implements World {
 	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate) {
 		return this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z, nextUpdate);
 	}
-	
+
 	@Override
 	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z) {
 		return this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z);
 	}
-	
+
 	@Override
 	public Transform getSpawnPoint() {
 		return spawnLocation.copy();
@@ -742,7 +742,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 		//TODO: colliding entities
 		return colliding;
 	}
-	
+
 	@Override
 	public int getSurfaceHeight(int x, int z, boolean load) {
 		SpoutColumn column = getColumn(x, z, load);
@@ -752,7 +752,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 		return column.getSurfaceHeight(x, z);
 	}
-	
+
 	@Override
 	public int getSurfaceHeight(int x, int z) {
 		return getSurfaceHeight(x, z, false);
@@ -772,10 +772,10 @@ public final class SpoutWorld extends AsyncManager implements World {
 	public BlockMaterial getTopmostBlock(int x, int z) {
 		return getTopmostBlock(x, z, false);
 	}
-	
+
 	/**
 	 * Removes a column corresponding to the given Column coordinates
-	 * 
+	 *
 	 * @param x the x coordinate
 	 * @param z the z coordinate
 	 */
@@ -790,7 +790,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Gets the column corresponding to the given Block coordinates
-	 * 
+	 *
 	 * @param x the x block coordinate
 	 * @param z the z block coordinate
 	 * @param create true to create the column if it doesn't exist
@@ -857,7 +857,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 		return baa.getBlockOutputStream(key);
 	}
-	
+
 	@Override
 	public Entity getEntity(UUID uid) {
 		for (Region region : regions) {
@@ -874,7 +874,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 	public String toString() {
 		return toString(this.name, this.uid, this.getAge());
 	}
-	
+
 	private static String toString(String name, UUID uid, long age) {
 		return "SpoutWorld{ " + name + " UUID: " + uid + " Age: " + age + "}";
 	}
@@ -986,7 +986,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Gets a set of nearby players to the point, inside of the range
-	 * 
+	 *
 	 * @param position of the center
 	 * @param range to look for
 	 * @return A set of nearby Players
@@ -999,7 +999,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Gets a set of nearby players to the entity, inside of the range
-	 * 
+	 *
 	 * @param entity marking the center and which is ignored
 	 * @param range to look for
 	 * @return A set of nearby Players
@@ -1013,7 +1013,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 	/**
 	 * Gets a set of nearby players to the point, inside of the range.
 	 * The search will ignore the specified entity.
-	 * 
+	 *
 	 * @param position of the center
 	 * @param ignore Entity to ignore
 	 * @param range to look for
@@ -1039,7 +1039,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Finds all the players inside of the regions inside the range area
-	 * 
+	 *
 	 * @param position to search from
 	 * @param range to search for regions
 	 * @return nearby region's players
@@ -1103,7 +1103,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Gets the absolute closest player from the specified point within a specified range.
-	 * 
+	 *
 	 * @param entity to search from
 	 * @param range to search
 	 * @return nearest player
@@ -1125,7 +1125,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 		if (event.isCancelled()) {
 			return false;
 		}
-		
+
 		Chunk start = getChunkFromBlock(buffer.getBase());
 		Chunk end = getChunkFromBlock(buffer.getBase().add(buffer.getSize()));
 		for (int dx = start.getX(); dx < end.getX(); dx++) {
@@ -1140,7 +1140,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 	}
 
 	// Worlds don't do any of these
-	
+
 	@Override
 	public void runLocalPhysics() throws InterruptedException {
 	}
@@ -1154,7 +1154,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 	public long getFirstDynamicUpdateTime() {
 		return SpoutScheduler.END_OF_THE_WORLD;
 	}
-	
+
 	@Override
 	public void runLocalDynamicUpdates(long time) throws InterruptedException {
 	}
