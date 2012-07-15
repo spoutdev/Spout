@@ -198,10 +198,11 @@ public class DynamicBlockUpdateTree {
 				continue;
 			}
 
-			Block b =  c.getBlock(bx, by, bz);
-			Material m = b.getMaterial();
+			Material m = c.getBlockMaterial(bx, by, bz);
 			
 			if (m instanceof DynamicMaterial) {
+				Block b = c.getBlock(bx, by, bz, c.getWorld());
+				
 				DynamicMaterial dm = (DynamicMaterial)m;
 				dm.onPlacement(b, region, currentTime);
 			}
@@ -250,8 +251,8 @@ public class DynamicBlockUpdateTree {
 			return true;
 		}
 		
-		Block b =  c.getBlock(bx, by, bz);
-		Material m = b.getMaterial();
+		
+		Material m = c.getBlockMaterial(bx, by, bz);
 		
 		if (!(m instanceof DynamicMaterial)) {
 			return true;
@@ -262,6 +263,7 @@ public class DynamicBlockUpdateTree {
 		if (!force && !range.isRegionLocal(bx, by, bz)) {
 			return false;
 		} else {
+			Block b =  c.getBlock(bx, by, bz, c.getWorld());
 			dm.onDynamicUpdate(b, region, update.getNextUpdate(), update.getQueuedTime(), update.getData(), update.getHint());
 			lastUpdates++;
 			return true;

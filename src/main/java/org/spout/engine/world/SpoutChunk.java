@@ -1443,23 +1443,8 @@ public class SpoutChunk extends Chunk {
 	}
 
 	@Override
-	public Block getBlock(int x, int y, int z) {
-		return this.getBlock(x, y, z, this.getWorld());
-	}
-
-	@Override
 	public Block getBlock(float x, float y, float z, Source source) {
 		return getBlock(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z), source);
-	}
-
-	@Override
-	public Block getBlock(float x, float y, float z) {
-		return getBlock(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z), this.getWorld());
-	}
-
-	@Override
-	public Block getBlock(Vector3 position) {
-		return getBlock(position, this.getWorld());
 	}
 
 	@Override

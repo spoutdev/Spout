@@ -57,7 +57,7 @@ public class RandomUpdateTask implements Runnable{
 					BlockMaterial material = chunk.getBlockMaterial(randomX, randomY, randomZ);
 					if (material instanceof RandomBlockMaterial) {
 						try {
-							((RandomBlockMaterial) material).onRandomTick(chunk.getBlock(randomX, randomY, randomZ));
+							((RandomBlockMaterial) material).onRandomTick(chunk.getBlock(randomX, randomY, randomZ, chunk.getWorld()));
 						} catch (Exception e) {
 							Spout.getLogger().log(Level.SEVERE, "Exception ticking random block material [" + material.getClass().getSimpleName() + "]", e);
 						}

@@ -245,28 +245,13 @@ public final class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public SpoutBlock getBlock(int x, int y, int z) {
-		return this.getBlock(x, y, z, null);
-	}
-
-	@Override
 	public SpoutBlock getBlock(int x, int y, int z, Source source) {
 		return new SpoutBlock(this, x, y, z, source);
 	}
 
 	@Override
-	public SpoutBlock getBlock(float x, float y, float z) {
-		return this.getBlock(x, y, z, this);
-	}
-
-	@Override
 	public SpoutBlock getBlock(float x, float y, float z, Source source) {
 		return this.getBlock(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z), source);
-	}
-
-	@Override
-	public SpoutBlock getBlock(Vector3 position) {
-		return this.getBlock(position, this);
 	}
 
 	@Override

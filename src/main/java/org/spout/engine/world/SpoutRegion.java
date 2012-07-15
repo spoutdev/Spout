@@ -1183,28 +1183,13 @@ public class SpoutRegion extends Region{
 	}
 
 	@Override
-	public Block getBlock(int x, int y, int z) {
-		return this.getWorld().getBlock(x, y, z);
-	}
-
-	@Override
 	public Block getBlock(int x, int y, int z, Source source) {
 		return this.getWorld().getBlock(x, y, z, source);
 	}
 
 	@Override
-	public Block getBlock(float x, float y, float z) {
-		return this.getWorld().getBlock(x, y, z);
-	}
-
-	@Override
 	public Block getBlock(float x, float y, float z, Source source) {
 		return this.getWorld().getBlock(x, y, z, source);
-	}
-
-	@Override
-	public Block getBlock(Vector3 position) {
-		return this.getWorld().getBlock(position);
 	}
 
 	@Override
