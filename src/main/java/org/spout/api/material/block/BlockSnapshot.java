@@ -26,6 +26,7 @@
  */
 package org.spout.api.material.block;
 
+import org.spout.api.Source;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
@@ -90,10 +91,11 @@ public class BlockSnapshot extends GenericMaterialSource {
 	/**
 	 * Gets which block corresponding to the snapshot
 	 *
+	 * @param the source
 	 * @return the block
 	 */
-	public Block getBlock() {
-		return this.world.getBlock(this.x, this.y, this.z);
+	public Block getBlock(Source source) {
+		return this.world.getBlock(this.x, this.y, this.z, source);
 	}
 
 	/**

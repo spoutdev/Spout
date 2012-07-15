@@ -56,6 +56,6 @@ public abstract class BlockController extends Controller {
 	 * @return the block
 	 */
 	public Block getBlock() {
-		return this.getParent().getWorld().getBlock(this.getParent().getPosition());
+		return this.getParent().getWorld().getBlock(this.getParent().getPosition(), this.getParent());
 	}
 }

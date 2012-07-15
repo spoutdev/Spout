@@ -110,7 +110,7 @@ public class BlockIterator implements Iterator<Block> {
 
 	@Override
 	public Block next() {
-		final Block requested = world.getBlock(position.round());
+		final Block requested = world.getBlock(position.round(), world);
 		//translate position to precisely end up at a new block
 		//TODO: Make this more efficient (it needs a calculation to get to the border of the current block)
 		//This requires some sort of distance calculation using a 1x1x1 bounding box

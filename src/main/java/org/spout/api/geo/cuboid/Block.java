@@ -97,30 +97,6 @@ public interface Block extends MaterialState, WorldSource {
 	public int getZ();
 
 	/**
-	 * Sets the x-coordinate of this block
-	 * 
-	 * @param x coordinate to set to
-	 * @return a new Block instance
-	 */
-	public Block setX(int x);
-
-	/**
-	 * Sets the y-coordinate of this block
-	 * 
-	 * @param y coordinate to set to
-	 * @return a new Block instance
-	 */
-	public Block setY(int y);
-
-	/**
-	 * Sets the z-coordinate of this block
-	 * 
-	 * @param z coordinate to set to
-	 * @return a new Block instance
-	 */
-	public Block setZ(int z);
-
-	/**
 	 * Translates this block using the offset and distance given
 	 * 
 	 * @param offset BlockFace to translate
@@ -178,20 +154,8 @@ public interface Block extends MaterialState, WorldSource {
 	 */
 	public Source getSource();
 
-	/**
-	 * Sets the source this block represents
-	 * 
-	 * @param source to set to
-	 * @return a clone of this block with the new source set
-	 */
-	public Block setSource(Source source);
-
 	@Override
 	public BlockMaterial getMaterial();
-
-	@Override
-	@Deprecated
-	public BlockMaterial getSubMaterial();
 
 	/**
 	 * Sets the data of this block

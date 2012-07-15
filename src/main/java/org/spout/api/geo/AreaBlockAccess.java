@@ -248,34 +248,12 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
-	 * 
-	 * @return the Block
-	 */
-	@Threadsafe
-	public Block getBlock(int x, int y, int z);
-	
-	/**
-	 * Gets a {@link Block} representing the block at (x, y, z)
-	 * @param x coordinate of the block
-	 * @param y coordinate of the block
-	 * @param z coordinate of the block
 	 * @param source the block should represent
 	 * 
 	 * @return the Block
 	 */
 	@Threadsafe
 	public Block getBlock(int x, int y, int z, Source source);
-
-	/**
-	 * Gets a {@link Block} representing the block at (x, y, z)
-	 * @param x coordinate of the block
-	 * @param y coordinate of the block
-	 * @param z coordinate of the block
-	 * 
-	 * @return the Block
-	 */
-	@Threadsafe
-	public Block getBlock(float x, float y, float z);
 
 	/**
 	 * Gets a {@link Block} representing the block at (x, y, z)
@@ -292,20 +270,10 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	/**
 	 * Gets a {@link Block} representing the block at the position given
 	 * @param position of the block
-	 * 
-	 * @return the Block
-	 */
-	@Threadsafe
-	public Block getBlock(Vector3 position);
-
-	/**
-	 * Gets a {@link Block} representing the block at the position given
-	 * @param position of the block
 	 * @param source the block should represent
 	 * 
 	 * @return the Block
 	 */
 	@Threadsafe
 	public Block getBlock(Vector3 position, Source source);
-
 }
