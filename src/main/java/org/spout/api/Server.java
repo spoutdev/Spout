@@ -186,4 +186,55 @@ public interface Server extends Engine {
 	 * @return the session
 	 */
 	public Session newSession(Channel channel);
+
+	/**
+	 * Maps a port for both TCP and UDP communication for Universal Plug and Play enabled InternetGatewayDevices
+	 *
+	 * @param port the port to be mapped
+	 * @return the session
+	 */
+	public void mapUPnPPort(int port);
+
+	/**
+	 * Maps a port for both TCP and UDP communication for Universal Plug and Play enabled InternetGatewayDevices
+	 *
+	 * @param port the port to be mapped
+	 * @param description the description for this mapping
+	 * @return the session
+	 */
+	public void mapUPnPPort(int port, String description);
+
+	/**
+	 * Maps a port for TCP communication for Universal Plug and Play enabled InternetGatewayDevices
+	 *
+	 * @param port the port to be mapped
+	 * @return the session
+	 */
+	public void mapTCPPort(int port);
+
+	/**
+	 * Maps a port for TCP communication for Universal Plug and Play enabled InternetGatewayDevices
+	 *
+	 * @param port the port to be mapped
+	 * @param description the description for this mapping
+	 * @return the session
+	 */
+	public void mapTCPPort(int port, String description);
+
+	/**
+	 * Maps a port for TCP communication for Universal Plug and Play enabled InternetGatewayDevices
+	 *
+	 * @param port the port to be mapped
+	 * @return the session
+	 */
+	public void mapUDPPort(int port);
+
+	/**
+	 * Maps a port for TCP communication for Universal Plug and Play enabled InternetGatewayDevices
+	 *
+	 * @param port the port to be mapped
+	 * @param description the description for this mapping
+	 * @return the session
+	 */
+	public void mapUDPPort(int port, String description);
 }
