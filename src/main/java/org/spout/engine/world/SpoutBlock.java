@@ -149,7 +149,7 @@ public class SpoutBlock implements Block {
 		if (height == this.y) {
 			return this;
 		} else {
-			return new SpoutBlock(getWorld(), this.x, height, this.y, source);
+			return new SpoutBlock(getWorld(), this.x, height, this.z, source);
 		}
 	}
 
