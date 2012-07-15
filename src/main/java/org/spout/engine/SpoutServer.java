@@ -26,7 +26,9 @@
  */
 package org.spout.engine;
 
+import java.net.InetAddress;
 import java.net.SocketAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -53,6 +55,12 @@ import org.spout.engine.util.bans.BanManager;
 import org.spout.engine.util.bans.FlatFileBanManager;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 
+import org.teleal.cling.UpnpService;
+import org.teleal.cling.UpnpServiceImpl;
+import org.teleal.cling.controlpoint.ControlPoint;
+import org.teleal.cling.support.igd.PortMappingListener;
+import org.teleal.cling.support.model.PortMapping;
+
 public class SpoutServer extends SpoutEngine implements Server {
 	private final String name = "Spout Server";
 
@@ -77,14 +85,22 @@ public class SpoutServer extends SpoutEngine implements Server {
 	 * The {@link ServerBootstrap} used to initialize Netty.
 	 */
 	private final ServerBootstrap bootstrap = new ServerBootstrap();
+
+	/**
+	 * The UPnP service
+	 */
+	private UpnpService upnpService;
+
 	public SpoutServer() {
 		this.filesystem = new ServerFileSystem();
 	}
 
+	@Override
 	public void start() {
 		start(true);
 	}
 
+	@Override
 	public void start(boolean checkWorlds) {
 		start(checkWorlds, new SpoutListener(this));
 	}
@@ -119,6 +135,9 @@ public class SpoutServer extends SpoutEngine implements Server {
 	@Override
 	public void stop(String message) {
 		super.stop(message);
+		if (upnpService != null) {
+			upnpService.shutdown();
+		}
 		bootstrap.getFactory().releaseExternalResources();
 	}
 
@@ -281,5 +300,68 @@ public class SpoutServer extends SpoutEngine implements Server {
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	private UpnpService getUPnPService() {
+		if (upnpService == null) {
+			upnpService = new UpnpServiceImpl();
+		}
+
+		return upnpService;
+	}
+
+	private PortMapping createPortMapping(int port, PortMapping.Protocol protocol, String description) {
+		try {
+			return new PortMapping(port, InetAddress.getLocalHost().getHostAddress(), protocol, description);
+		} catch (UnknownHostException e) {
+			Error error = new Error("Error while trying to retrieve the localhost while creating a PortMapping object.", e);
+			getLogger().severe(e.getMessage());
+			throw error;
+		}
+	}
+
+	@Override
+	public void mapUPnPPort(int port) {
+		mapUPnPPort(port, null);
+	}
+
+	@Override
+	public void mapUPnPPort(int port, String description) {
+		PortMapping[] desiredMapping = { createPortMapping(port, PortMapping.Protocol.TCP, description), createPortMapping(port, PortMapping.Protocol.UDP, description) };
+		PortMappingListener listener = new PortMappingListener(desiredMapping);
+
+		ControlPoint controlPoint = getUPnPService().getControlPoint();
+		controlPoint.getRegistry().addListener(listener);
+		controlPoint.search();
+	}
+
+	@Override
+	public void mapTCPPort(int port) {
+		mapTCPPort(port, null);
+	}
+
+	@Override
+	public void mapTCPPort(int port, String description) {
+		PortMapping desiredMapping = createPortMapping(port, PortMapping.Protocol.TCP, description);
+		PortMappingListener listener = new PortMappingListener(desiredMapping);
+
+		ControlPoint controlPoint = getUPnPService().getControlPoint();
+		controlPoint.getRegistry().addListener(listener);
+		controlPoint.search();
+	}
+
+	@Override
+	public void mapUDPPort(int port) {
+		mapUDPPort(port, null);
+	}
+
+	@Override
+	public void mapUDPPort(int port, String description) {
+		PortMapping desiredMapping = createPortMapping(port, PortMapping.Protocol.UDP, description);
+		PortMappingListener listener = new PortMappingListener(desiredMapping);
+
+		ControlPoint controlPoint = getUPnPService().getControlPoint();
+		controlPoint.getRegistry().addListener(listener);
+		controlPoint.search();
 	}
 }
