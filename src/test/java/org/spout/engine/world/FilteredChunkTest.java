@@ -50,9 +50,13 @@ public class FilteredChunkTest {
 		//Handled by getBlockDataField
 		add("isBlockDataBitSet");
 		//Handled by setBlockDataFieldRaw
+		add("setBlockData");
 		add("setBlockDataField");
 		add("setBlockDataBits");
 		add("clearBlockDataBits");
+		//Handled by addBlockDataFieldRaw
+		add("addBlockData");
+		add("addBlockDataField");
 	}};
 
 	@Test
