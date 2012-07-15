@@ -43,8 +43,12 @@ public class SpoutNioServerSocketChannel extends NioServerSocketChannelFactory{
 	 public ServerSocketChannel newChannel(ChannelPipeline pipeline) {
 		ServerSocketChannel channel = super.newChannel(pipeline);
 		channel.getConfig().setPerformancePreferences(0, 2, 1);
-		((SocketChannelConfig)channel.getConfig()).setTrafficClass(24);
-		((SocketChannelConfig)channel.getConfig()).setTcpNoDelay(true);
+		if (channel.getConfig() instanceof SocketChannelConfig) {
+			((SocketChannelConfig)channel.getConfig()).setTrafficClass(24);
+			((SocketChannelConfig)channel.getConfig()).setTcpNoDelay(true);
+		} else {
+			//TODO: fix
+		}
 		return channel;
     }
 
