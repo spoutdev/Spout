@@ -76,6 +76,10 @@ public final class BiomeMap {
 		return new HashSet<Biome>(map.getValues());
 	}
 
+	public BiomeSelector getSelector() {
+		return selector;
+	}
+
 	public int indexOf(Biome biome) {
 		if(map.reverseGet(biome) == null) {
 			return -1;

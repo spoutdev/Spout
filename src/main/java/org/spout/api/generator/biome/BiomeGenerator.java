@@ -29,9 +29,10 @@ package org.spout.api.generator.biome;
 import java.util.ArrayList;
 import java.util.Set;
 
+import com.google.common.collect.Lists;
+
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGenerator;
-import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 
@@ -39,19 +40,12 @@ import org.spout.api.util.cuboid.CuboidShortBuffer;
  * Abstract Biome Generator.
  */
 public abstract class BiomeGenerator implements WorldGenerator {
-	private World world = null;
 	private final BiomeMap biomes = new BiomeMap();
 	private final ArrayList<Populator> populators = new ArrayList<Populator>();
 
 	public BiomeGenerator() {
-		populators.add(new BiomePopulator(biomes));
 		registerBiomes();
 	}
-
-	public World getWorld() {
-		return world;
-	}
-
 	/**
 	 * Called during biome generator's construction phase
 	 */
@@ -59,6 +53,10 @@ public abstract class BiomeGenerator implements WorldGenerator {
 
 	protected void setSelector(BiomeSelector selector) {
 		biomes.setSelector(selector);
+	}
+	
+	public BiomeSelector getSelector() {
+		return biomes.getSelector();
 	}
 
 	/**
@@ -92,8 +90,8 @@ public abstract class BiomeGenerator implements WorldGenerator {
 		return populators.toArray(new Populator[populators.size()]);
 	}
 
-	public void addPopulator(Populator populator) {
-		populators.add(populator);
+	public void addPopulators(Populator... p) {
+		populators.addAll(Lists.newArrayList(p));
 	}
 
 	public Biome getBiome(int x, int y, int z, long seed) {
@@ -106,6 +104,10 @@ public abstract class BiomeGenerator implements WorldGenerator {
 
 	public Set<Biome> getBiomes() {
 		return biomes.getBiomes();
+	}
+
+	public BiomeMap getBiomeMap() {
+		return biomes;
 	}
 
 	public int indexOf(Biome biome) {
