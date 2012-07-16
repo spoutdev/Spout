@@ -29,7 +29,7 @@ package org.spout.api;
 import java.io.File;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
-import org.spout.api.gui.screen.ScreenStack;
+import org.spout.api.keyboard.Input;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMode;
@@ -102,10 +102,6 @@ public interface Client extends Engine {
 	 */
 	public RenderMode getRenderMode();
 
-	/**
-	 * Gets the {@link ScreenStack}
-	 *
-	 * @return screen stack
-	 */
-	public ScreenStack getScreenStack();
+	
+	public Input getInput();
 }
