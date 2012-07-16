@@ -26,7 +26,32 @@
  */
 package org.spout.api.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 public class LogicUtil {
+
+	/**
+	 * Removes duplicate values by using the objects' equals function<br>
+	 * Note that this function does not use a Set, because no hashcode is used.
+	 * 
+	 * @param input collection
+	 * @return the input collection
+	 */
+	public static <T extends Collection<?>> T removeDuplicates(T input) {
+		List<Object> unique = new ArrayList<Object>();
+		for (Iterator<?> iter = input.iterator(); iter.hasNext();) {
+			Object next = iter.next();
+			if (unique.contains(next)) {
+				iter.remove();
+			} else {
+				unique.add(next);
+			}
+		}
+		return input;
+	}
 
 	/**
 	 * Checks if the object equals one of the other objects given

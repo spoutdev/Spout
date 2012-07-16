@@ -32,6 +32,7 @@ import java.util.List;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
 import org.spout.api.math.IntVector3;
+import org.spout.api.util.LogicUtil;
 import org.spout.api.util.map.TByteShortByteKeyedHashSet;
 
 public class ListEffectRange extends EffectRangeImpl {
@@ -60,6 +61,7 @@ public class ListEffectRange extends EffectRangeImpl {
 			for (IntVector3 v : effectList) {
 				this.effectList.add(v.copy());
 			}
+			LogicUtil.removeDuplicates(this.effectList);
 		} else {
 			this.effectList = effectList;
 		}

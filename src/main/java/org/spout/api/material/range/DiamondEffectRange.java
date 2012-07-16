@@ -28,15 +28,20 @@ package org.spout.api.material.range;
 
 public class DiamondEffectRange extends EffectRangeImpl {
 	
-	private final int range;
+	private final int startRange, endRange;
 
-	protected DiamondEffectRange(int range) {
-		super(range);
-		this.range = range;
+	public DiamondEffectRange(int range) {
+		this(0, range);
+	}
+
+	public DiamondEffectRange(int startRange, int endRange) {
+		super(endRange);
+		this.startRange = startRange;
+		this.endRange = endRange;
 	}
 
 	@Override
 	public void initEffectIterator(EffectIterator i) {
-		i.resetAsOutwardIterator(range);
+		i.resetAsOutwardIterator(this.startRange, this.endRange);
  	}
 }

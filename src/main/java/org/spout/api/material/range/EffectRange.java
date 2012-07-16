@@ -30,12 +30,12 @@ import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.IntVector3;
 
 public interface EffectRange extends Iterable<IntVector3> {
-	
 	public static EffectRange THIS = new CubicEffectRange(0);
-	public static EffectRange THIS_AND_BELOW = new ListEffectRange(IntVector3.createList(0, 0, 0, 0, -1, 0));
-	public static EffectRange THIS_AND_ABOVE = new ListEffectRange(IntVector3.createList(0, 0, 0, 0, 1, 0));
+	public static EffectRange THIS_AND_BELOW = new CuboidEffectRange(0, -1, 0, 0, 0, 0);
+	public static EffectRange THIS_AND_ABOVE = new CuboidEffectRange(0, 0, 0, 0, 1, 0);
 	public static EffectRange THIS_AND_NEIGHBORS = new DiamondEffectRange(1);
-	
+	public static EffectRange NEIGHBORS = new DiamondEffectRange(1, 1);
+
 	/**
 	 * Gets an iterator to iterate over all blocks in the effect range.
 	 * 

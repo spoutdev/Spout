@@ -27,6 +27,7 @@
 package org.spout.api.util;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import org.spout.api.math.IntVector3;
 
@@ -40,7 +41,7 @@ public class OutwardIterator extends IntVector3 implements Iterator<IntVector3> 
 	private final IntVector3 center;
 	private final IntVector3 step;
 	private int distance;
-	private int maxDistance;
+	private int endDistance;
 	private boolean hasNext;
 	private boolean first = true;
 	
@@ -58,7 +59,7 @@ public class OutwardIterator extends IntVector3 implements Iterator<IntVector3> 
 		step = new IntVector3(0, 0, 0);
 		first = true;
 		distance = 0;
-		this.maxDistance = maxDistance;
+		this.endDistance = maxDistance;
 		this.hasNext = true;
 	}
 
@@ -80,12 +81,23 @@ public class OutwardIterator extends IntVector3 implements Iterator<IntVector3> 
 		hasNext = true;
 		distance = 0;
 	}
-	
-	public void reset(int x, int y, int z, int maxDistance) {
-		this.maxDistance = maxDistance;
+
+	public void reset(int x, int y, int z, int startDistance, int endDistance) {
+		this.endDistance = endDistance;
 		reset(x, y, z);
+		if (startDistance > endDistance) {
+			this.hasNext = false;
+		} else if (startDistance > 0) {
+			// reset to start at distance
+			super.setY(y + startDistance - 1);
+			first = false;
+		}
 	}
-	
+
+	public void reset(int x, int y, int z, int endDistance) {
+		reset(x, y, z, 0, endDistance);
+	}
+
 	@Override
 	public boolean hasNext() {
 		return hasNext;
@@ -93,11 +105,17 @@ public class OutwardIterator extends IntVector3 implements Iterator<IntVector3> 
 
 	@Override
 	public IntVector3 next() {
+		if (!this.hasNext) {
+			throw new NoSuchElementException("The Outward Iterator ran out of elements");
+		}
 		// First block is always the central block
 		if (first) {
 			step.setX(0);
 			step.setZ(0);
 			first = false;
+			if (this.endDistance <= 0) {
+				this.hasNext = false;
+			}
 		} else {
 			int dx = getX() - center.getX();
 			int dy = getY() - center.getY();
@@ -147,7 +165,7 @@ public class OutwardIterator extends IntVector3 implements Iterator<IntVector3> 
 				}
 			}
 			add(step);
-			if (distance == 0 || (dx == 0 && dz == 1 && dy >= maxDistance - 1)) {
+			if (distance == 0 || (dx == 0 && dz == 1 && dy >= endDistance - 1)) {
 				hasNext = false;
 			}
 		}
@@ -162,5 +180,4 @@ public class OutwardIterator extends IntVector3 implements Iterator<IntVector3> 
 	public void remove() {
 		throw new UnsupportedOperationException("This operation is not supported");
 	}
-
 }
