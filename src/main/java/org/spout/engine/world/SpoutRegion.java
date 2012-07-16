@@ -266,25 +266,24 @@ public class SpoutRegion extends Region{
 			return chunk;
 		}
 
-		if (!loadopt.loadIfNeeded()) {
-			return null;
-		}
+		SpoutChunk newChunk = null;
+		boolean generated = false;
 
 		final AtomicReference<SpoutChunk> chunkReference = chunks[x][y][z];
 
-
 		final ChunkDataForRegion dataForRegion = new ChunkDataForRegion();
 
-		SpoutChunk newChunk = WorldFiles.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z), dataForRegion);
+		if(loadopt.loadIfNeeded() && this.inputStreamExists(x, y, z)) {
+			newChunk = WorldFiles.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z), dataForRegion);
+		}
 
-		boolean generated = false;
-
-		if (newChunk == null) {
-			if (!loadopt.generateIfNeeded()) {
-				return null;
-			}
+		if(loadopt.generateIfNeeded() && newChunk == null) {
 			newChunk = generateChunk(x, y, z);
 			generated = true;
+		}
+
+		if(newChunk == null) {
+			return null;
 		}
 
 		while (true) {
@@ -1036,8 +1035,12 @@ public class SpoutRegion extends Region{
 	 * @return the DataOutputStream
 	 */
 	public OutputStream getChunkOutputStream(ChunkSnapshot c) {
-		int key = getChunkKey(c.getX(), c.getY(), c.getZ());
-		return chunkStore.getBlockOutputStream(key);
+		return chunkStore.getBlockOutputStream(getChunkKey(c.getX(), c.getY(), c.getZ()));
+	}
+
+
+	public boolean inputStreamExists(int x, int y, int z) {
+		return chunkStore.inputStreamExists(getChunkKey(x, y, z));
 	}
 
 	/**
@@ -1048,8 +1051,7 @@ public class SpoutRegion extends Region{
 	 * @return the DataInputStream
 	 */
 	public InputStream getChunkInputStream(int x, int y, int z) {
-		int key = getChunkKey(x, y, z);
-		return chunkStore.getBlockInputStream(key);
+		return chunkStore.getBlockInputStream(getChunkKey(x, y, z));
 	}
 
 	private int getChunkKey(int chunkX, int chunkY, int chunkZ) {
