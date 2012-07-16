@@ -1607,6 +1607,7 @@ public class SpoutChunk extends Chunk {
 	}
 
 	private void blockChanged(int x, int y, int z, BlockMaterial newMaterial, short newData, BlockMaterial oldMaterial, short oldData, Source source) {
+		// Handle onPlacement for dynamic materials
 		if (newMaterial instanceof DynamicMaterial) {
 			if (oldMaterial instanceof BlockMaterial) {
 				BlockMaterial oldBlockMaterial = (BlockMaterial) oldMaterial;
@@ -1617,13 +1618,16 @@ public class SpoutChunk extends Chunk {
 				parentRegion.resetDynamicBlock(x, y, z);
 			}
 		}
-		EffectRange physicsRange = newMaterial.getPhysicsRange(newData);
-		queueBlockPhysics(x, y, z, physicsRange, oldMaterial, source);
 
-		if (newMaterial != oldMaterial) {
-			EffectRange destroyRange = oldMaterial.getDestroyRange(oldData);
-			if (destroyRange != physicsRange) {
-				queueBlockPhysics(x, y, z, destroyRange, oldMaterial, source);
+		// Only do physics when not populating
+		if (this.isPopulated()) {
+			EffectRange physicsRange = newMaterial.getPhysicsRange(newData);
+			queueBlockPhysics(x, y, z, physicsRange, oldMaterial, source);
+			if (newMaterial != oldMaterial) {
+				EffectRange destroyRange = oldMaterial.getDestroyRange(oldData);
+				if (destroyRange != physicsRange) {
+					queueBlockPhysics(x, y, z, destroyRange, oldMaterial, source);
+				}
 			}
 		}
 
