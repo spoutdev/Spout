@@ -49,10 +49,14 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.PixelFormat;
 import org.spout.api.Client;
 import org.spout.api.Spout;
+import org.spout.api.command.CommandRegistrationsFactory;
+import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
+import org.spout.api.command.annotated.SimpleAnnotatedCommandExecutorFactory;
+import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
-import org.spout.api.gui.screen.ScreenStack;
+import org.spout.api.keyboard.Input;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
@@ -67,7 +71,10 @@ import org.spout.api.render.RenderMode;
 import org.spout.api.render.Texture;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
 import org.spout.engine.batcher.PrimitiveBatch;
+import org.spout.engine.command.InputCommands;
 import org.spout.engine.filesystem.ClientFileSystem;
+import org.spout.engine.input.SpoutInput;
+
 import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.VertexBufferBatcher;
@@ -83,11 +90,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private final Vector2 resolution = new Vector2(854, 480);
 	private final float aspectRatio = resolution.getX() / resolution.getY();
 
-	private ScreenStack screenStack;
 
 	TInt21TripleObjectHashMap<PrimitiveBatch> chunkRenderers = new TInt21TripleObjectHashMap<PrimitiveBatch>();
 
 	RenderMaterial material;
+	
+	private Input inputManager = new SpoutInput();
 
 	public SpoutClient() {
 		this.filesystem = new ClientFileSystem();
@@ -114,6 +122,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 	@Override
 	public void start() {
 		start(false);
+		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this), new SimpleAnnotatedCommandExecutorFactory());
+
+		// Register commands
+		getRootCommand().addSubCommands(this, InputCommands.class, commandRegFactory);
 	}
 
 	@Override
@@ -448,9 +460,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return name;
 	}
 
+
 	@Override
-	public ScreenStack getScreenStack() {
-		return screenStack;
+	public Input getInput(){
+		return inputManager;
 	}
 
 	private static void unpackLwjgl() {

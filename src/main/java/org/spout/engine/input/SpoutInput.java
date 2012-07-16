@@ -3,11 +3,12 @@ package org.spout.engine.input;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.spout.api.Spout;
+import org.spout.api.keyboard.Input;
 import org.spout.engine.SpoutEngine;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 
-public class SpoutInput {
+public class SpoutInput implements Input {
 	
 	TIntObjectHashMap<String> keyCommands = new TIntObjectHashMap<String>();
 	TIntObjectHashMap<String> mouseCommands = new TIntObjectHashMap<String>();
@@ -34,6 +35,9 @@ public class SpoutInput {
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see org.spout.engine.input.Input#bind(java.lang.String, java.lang.String)
+	 */
 	public void bind(String key, String command){		
 		if(key.startsWith("KEY")){
 			int k = Keyboard.getKeyIndex(key);
