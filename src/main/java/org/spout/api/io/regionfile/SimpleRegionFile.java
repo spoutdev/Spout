@@ -173,7 +173,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 				throw new SRFClosedException("File closed");
 			}
 
-			return blockActualLength[i].get() == 0;
+			return blockActualLength[i].get() != 0;
 
 		} finally {
 			lock.unlock();
