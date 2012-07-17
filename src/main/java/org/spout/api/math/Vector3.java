@@ -586,6 +586,26 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 */
 	public Vector3 transform(Quaternion transformation) {
 		return MathHelper.transform(this, transformation);
+	}	
+
+	/**
+	 * Gets the Vector3 composed of the smallest components of the two vectors.
+	 * 
+	 * @param other The other Vector3 to compare this Vector3 with.
+	 * @return
+	 */
+	public Vector3 min(Vector3 other) {
+		return MathHelper.min(this, other);
+	}
+
+	/**
+	 * Gets the Vector3 composed of the largest components of the two vectors.
+	 * 
+	 * @param other The other Vector3 to compare this Vector3 with.
+	 * @return
+	 */
+	public Vector3 max(Vector3 other) {
+		return MathHelper.max(this, other);
 	}
 
 	/**
