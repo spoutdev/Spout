@@ -47,7 +47,13 @@ public class EffectIterator implements Iterator<IntVector3> {
 		ci.reset(0, 0, 0, 0);
 		oi.reset(0, 0, 0);
 	}
-	
+
+	protected void resetAsOutwardIterator(int startRange, int endRange) {
+		oi.reset(0, 0, 0, startRange, endRange);
+		itr = oi;
+		offsetList = null;
+	}
+
 	protected void resetAsOutwardIterator(int range) {
 		oi.reset(0, 0, 0, range);
 		itr = oi;
