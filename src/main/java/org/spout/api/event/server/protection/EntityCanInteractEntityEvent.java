@@ -24,17 +24,46 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.geo;
+package org.spout.api.event.server.protection;
+
+import org.spout.api.entity.Entity;
+import org.spout.api.event.Cancellable;
+import org.spout.api.event.HandlerList;
+import org.spout.api.event.entity.EntityEvent;
 
 /**
- * Represents an object that can be contained within a {@link World}
+ * This {@link EntityEvent} is designed to be fired by plugins that wish to check if an entity can interact with the given other entity.
+ * Protection plugins should utilize this event to let other plugins know about where an entity can or can't interact with a specific entity.
  */
-public interface WorldSource {
+public class EntityCanInteractEntityEvent extends EntityEvent implements Cancellable {
+
+	private static HandlerList handlers = new HandlerList();
+
+	private final Entity interactedEntity;
+
+	public EntityCanInteractEntityEvent(Entity actor, Entity interacted) {
+		super(actor);
+		this.interactedEntity = interacted;
+	}
 
 	/**
-	 * Gets the World
-	 * 
-	 * @return the World
+	 * @return entity being interacted with
 	 */
-	public World getWorld();
+	public Entity getInteractedEntity() {
+		return interactedEntity;
+	}
+
+	@Override
+	public void setCancelled(boolean cancelled) {
+		super.setCancelled(cancelled);
+	}
+
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public HandlerList getHandlerList() {
+		return handlers;
+	}
 }
