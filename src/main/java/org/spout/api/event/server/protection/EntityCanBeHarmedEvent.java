@@ -24,17 +24,48 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.geo;
+package org.spout.api.event.server.protection;
+
+import org.spout.api.Source;
+import org.spout.api.entity.Entity;
+import org.spout.api.event.Cancellable;
+import org.spout.api.event.HandlerList;
+import org.spout.api.event.entity.EntityEvent;
 
 /**
- * Represents an object that can be contained within a {@link World}
+ * This {@link EntityEvent} is designed to be fired by plugins that wish to check if an entity can be damaged by the given {@link Source}.
+ * Protection plugins should utilize this event to prevent entities from being allowed to take damage from specific sources.
  */
-public interface WorldSource {
+public class EntityCanBeHarmedEvent extends EntityEvent implements Cancellable {
+
+	private static HandlerList handlers = new HandlerList();
+
+	private final Source source;
+
+	public EntityCanBeHarmedEvent(Entity defender, Source source) {
+		super(defender);
+		this.source = source;
+	}
 
 	/**
-	 * Gets the World
-	 * 
-	 * @return the World
+	 * Source that is attempting to harm the Entity.
+	 * @return the source
 	 */
-	public World getWorld();
+	public Source getSource() {
+		return source;
+	}
+
+	@Override
+	public void setCancelled(boolean cancelled) {
+		super.setCancelled(cancelled);
+	}
+
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public HandlerList getHandlerList() {
+		return handlers;
+	}
 }
