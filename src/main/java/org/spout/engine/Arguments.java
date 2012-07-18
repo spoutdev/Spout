@@ -28,9 +28,11 @@ package org.spout.engine;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+
 import org.spout.api.Spout;
 import org.spout.api.plugin.Platform;
 import org.spout.api.render.RenderMode;
+
 import org.spout.engine.util.argument.PlatformConverter;
 import org.spout.engine.util.argument.RenderModeConverter;
 
@@ -40,11 +42,9 @@ import org.spout.engine.util.argument.RenderModeConverter;
 public class Arguments {
 	@Parameter(names = {"--platform", "-platform", "--p", "-p"}, converter = PlatformConverter.class)
 	public Platform platform = Platform.SERVER;
-
-	@Parameter(names = {"--debug", "-debug", "--d", "-d"}, description="Debug Mode")
+	@Parameter(names = {"--debug", "-debug", "--d", "-d"}, description = "Debug Mode")
 	public boolean debug = false;
-
-	@Parameter(names = {"--rendermode", "-rendermode", "--r", "-r"}, converter = RenderModeConverter.class, description = "Render Version.  Versions: GL11, GL20, GL30, GLES20" )
+	@Parameter(names = {"--rendermode", "-rendermode", "--r", "-r"}, converter = RenderModeConverter.class, description = "Render Version.  Versions: GL11, GL20, GL30, GLES20")
 	RenderMode renderMode = RenderMode.GL30;
 
 	public static void main(String[] args) {

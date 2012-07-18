@@ -49,10 +49,11 @@ import java.util.logging.Logger;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
-import org.spout.api.chat.style.ChatStyle;
+
 import org.spout.api.Engine;
 import org.spout.api.FileSystem;
 import org.spout.api.Spout;
+import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
@@ -100,6 +101,7 @@ import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.Profiler;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.StringUtil;
+
 import org.spout.engine.command.AdministrationCommands;
 import org.spout.engine.command.MessagingCommands;
 import org.spout.engine.command.TestCommands;
@@ -126,7 +128,6 @@ import org.spout.engine.world.WorldSavingThread;
 
 public class SpoutEngine extends AsyncManager implements Engine {
 	public static final Logger logger = Logger.getLogger("Spout");
-
 	private final String name = "Spout Engine";
 	private final File pluginDirectory = SharedFileSystem.PLUGIN_DIRECTORY;
 	private final File configDirectory = SharedFileSystem.CONFIG_DIRECTORY;
@@ -144,19 +145,15 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> onlinePlayers = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
 	private final RootCommand rootCommand = new RootCommand(this);
 	private final WorldGenerator defaultGenerator = new EmptyWorldGenerator();
-
 	private volatile int maxPlayers = 20;
 	private volatile String[] allAddresses;
-
 	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
 	protected final SpoutScheduler scheduler = new SpoutScheduler(this);
 	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
 	protected final ConcurrentMap<SocketAddress, BootstrapProtocol> bootstrapProtocols = new ConcurrentHashMap<SocketAddress, BootstrapProtocol>();
 	protected final ChannelGroup group = new DefaultChannelGroup();
-
 	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
 	private final MemoryLeakThread leakThread = new MemoryLeakThread();
-
 	protected SpoutConfiguration config = new SpoutConfiguration();
 	private File worldFolder = new File(".");
 	private SnapshotableLinkedHashMap<String, SpoutWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutWorld>(snapshotManager);
@@ -165,9 +162,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	private String logFile;
 	private StringMap engineItemMap = null;
 	private StringMap engineBiomeMap = null;
-
 	private ConcurrentHashMap<String, String> cvars = new ConcurrentHashMap<String, String>();
-
 	protected FileSystem filesystem;
 	private Arguments arguments;
 
@@ -337,7 +332,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	public void broadcastMessage(String msg) {
-		broadcastMessage(new Object[] {msg});
+		broadcastMessage(new Object[]{msg});
 	}
 
 	@Override
@@ -492,7 +487,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		}
 
 		SpoutWorld world = WorldFiles.loadWorldFromData(name, generator, engineItemMap);
-		if(world == null) {
+		if (world == null) {
 			Spout.getLogger().info("Generating new world named [" + name + "]");
 
 			File itemMapFile = new File(new File(SharedFileSystem.WORLDS_DIRECTORY, name), "materials.dat");
@@ -813,7 +808,6 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	/**
 	 * Gets the item map used across all worlds on the engine
-	 *
 	 * @return engine map
 	 */
 	public StringMap getEngineItemMap() {
@@ -822,7 +816,6 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	/**
 	 * Gets the biome map used accorss all worlds on the engine
-	 *
 	 * @return biome map
 	 */
 	public StringMap getBiomeMap() {
@@ -886,6 +879,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	private class SessionTask implements Runnable {
 		final SpoutSessionRegistry registry;
+
 		SessionTask(SpoutSessionRegistry registry) {
 			this.registry = registry;
 		}

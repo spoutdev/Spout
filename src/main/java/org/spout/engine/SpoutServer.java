@@ -40,6 +40,12 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.teleal.cling.UpnpService;
+import org.teleal.cling.UpnpServiceImpl;
+import org.teleal.cling.controlpoint.ControlPoint;
+import org.teleal.cling.support.igd.PortMappingListener;
+import org.teleal.cling.support.model.PortMapping;
+
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.event.Listener;
@@ -47,6 +53,7 @@ import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.bootstrap.BootstrapProtocol;
+
 import org.spout.engine.filesystem.ServerFileSystem;
 import org.spout.engine.listener.SpoutListener;
 import org.spout.engine.protocol.SpoutNioServerSocketChannel;
@@ -55,15 +62,8 @@ import org.spout.engine.util.bans.BanManager;
 import org.spout.engine.util.bans.FlatFileBanManager;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 
-import org.teleal.cling.UpnpService;
-import org.teleal.cling.UpnpServiceImpl;
-import org.teleal.cling.controlpoint.ControlPoint;
-import org.teleal.cling.support.igd.PortMappingListener;
-import org.teleal.cling.support.model.PortMapping;
-
 public class SpoutServer extends SpoutEngine implements Server {
 	private final String name = "Spout Server";
-
 	private volatile int maxPlayers = 20;
 	/**
 	 * If the server has a whitelist or not.
@@ -85,7 +85,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 	 * The {@link ServerBootstrap} used to initialize Netty.
 	 */
 	private final ServerBootstrap bootstrap = new ServerBootstrap();
-
 	/**
 	 * The UPnP service
 	 */
@@ -107,7 +106,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	public void start(boolean checkWorlds, Listener listener) {
 		getLogger().info("Spout is starting in server-only mode.");
-		getLogger().info("Current version is " + Spout.getEngine().getVersion() + " (Implementing SpoutAPI " + Spout.getAPIVersion() + ")");
+		getLogger().info("Current version is " + Spout.getEngine().getVersion() + " (Implementing SpoutAPI " + Spout.getAPIVersion() + ").");
 		getLogger().info("This software is currently in alpha status so components may");
 		getLogger().info("have bugs or not work at all. Please report any issues to");
 		getLogger().info("http://issues.spout.org");
@@ -169,7 +168,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 		logger.log(Level.INFO, "Binding to address: {0}...", address);
 		return true;
 	}
-
 
 	@Override
 	public int getMaxPlayers() {
@@ -333,7 +331,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	@Override
 	public void mapUPnPPort(int port, String description) {
-		PortMapping[] desiredMapping = { createPortMapping(port, PortMapping.Protocol.TCP, description), createPortMapping(port, PortMapping.Protocol.UDP, description) };
+		PortMapping[] desiredMapping = {createPortMapping(port, PortMapping.Protocol.TCP, description), createPortMapping(port, PortMapping.Protocol.UDP, description)};
 		PortMappingListener listener = new PortMappingListener(desiredMapping);
 
 		ControlPoint controlPoint = getUPnPService().getControlPoint();

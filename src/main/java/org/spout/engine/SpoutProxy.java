@@ -42,6 +42,7 @@ import org.spout.api.player.Player;
 import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.Session;
+
 import org.spout.engine.listener.SpoutProxyConnectListener;
 import org.spout.engine.listener.SpoutProxyListener;
 import org.spout.engine.player.SpoutPlayer;
@@ -50,7 +51,6 @@ import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 
 public class SpoutProxy extends SpoutServer {
-
 	/**
 	 * The {@link ServerBootstrap} used to initialize Netty.
 	 */
@@ -59,7 +59,7 @@ public class SpoutProxy extends SpoutServer {
 	@Override
 	public void start() {
 		getLogger().info("Spout is starting in proxy-only mode.");
-		getLogger().info("Current version is " + Spout.getEngine().getVersion() + " (Implementing SpoutAPI " + Spout.getAPIVersion() + ")");
+		getLogger().info("Current version is " + Spout.getEngine().getVersion() + " (Implementing SpoutAPI " + Spout.getAPIVersion() + ").");
 		getLogger().info("This software is currently in alpha status so components may");
 		getLogger().info("have bugs or not work at all. Please report any issues to");
 		getLogger().info("http://issues.spout.org");
