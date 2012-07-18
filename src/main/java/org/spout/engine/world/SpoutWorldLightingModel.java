@@ -89,7 +89,8 @@ public class SpoutWorldLightingModel {
 	 */
 	public boolean canGreater(SpoutChunk chunk, int x, int y, int z) {
 		// Block lighting can always greaten, an occluded block could be a light source
-		return !this.sky || !chunk.getBlockMaterial(x, y, z).getOcclusion().get(BlockFaces.NESWBT);
+		int fullState = chunk.getBlockFullState(x, y, z);
+		return !this.sky || !BlockFullState.getMaterial(fullState).getOcclusion(BlockFullState.getData(fullState)).get(BlockFaces.NESWBT);
 	}
 
 	/**
@@ -101,7 +102,8 @@ public class SpoutWorldLightingModel {
 	 * @return True if it can refresh the lighting, False if not
 	 */
 	public boolean canRefresh(SpoutChunk chunk, int x, int y, int z) {
-		return !chunk.getBlockMaterial(x, y, z).getOcclusion().get(BlockFaces.NESWBT);
+		int fullState = chunk.getBlockFullState(x, y, z);
+		return !BlockFullState.getMaterial(fullState).getOcclusion(BlockFullState.getData(fullState)).get(BlockFaces.NESWBT);
 	}
 
 	/**
@@ -460,7 +462,7 @@ public class SpoutWorldLightingModel {
 				this.material = BlockFullState.getMaterial(this.fullState);
 				this.data = BlockFullState.getData(this.fullState);
 				this.opacity = (byte) (this.material.getOpacity() + 1);
-				this.occlusion = this.material.getOcclusion();
+				this.occlusion = this.material.getOcclusion(this.data);
 				this.loadLight();
 			}
 		}
