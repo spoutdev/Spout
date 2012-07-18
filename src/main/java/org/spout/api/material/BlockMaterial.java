@@ -266,7 +266,8 @@ public class BlockMaterial extends Material implements Placeable {
 	 * @return this Block Material
 	 */
 	public BlockMaterial setOpaque() {
-		return this.setOpacity(15).setOcclusion(BlockFaces.NESWBT);
+		this.occlusion.set(BlockFaces.NESWBT);
+		return this.setOpacity(15);
 	}
 
 	/**
@@ -276,7 +277,8 @@ public class BlockMaterial extends Material implements Placeable {
 	 * @return this Block Material
 	 */
 	public BlockMaterial setTransparent() {
-		return this.setOpacity(0).setOcclusion(BlockFaces.NONE);
+		this.occlusion.set(BlockFaces.NONE);
+		return this.setOpacity(0);
 	}
 
 	/**
@@ -400,21 +402,39 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Gets the occluded faces of this Block Material<br>
+	 * Gets the occluded faces of this Block Material for the data value specified<br>
 	 * Occluded faces do not let light though and require rendering behind it at those faces
+	 * 
+	 * @param data value of the material
 	 * @return the occluded faces
 	 */
-	public ByteFlagContainer getOcclusion() {
+	public ByteFlagContainer getOcclusion(short data) {
 		return this.occlusion;
 	}
 
 	/**
-	 * Sets the occludes faces of this Block Material
+	 * Sets the occludes faces of this Block Material<br>
+	 * Occluded faces do not let light though and require rendering behind it at those faces
+	 * 
+	 * @param data of this Block Material
 	 * @param faces to make this Block Material occlude
 	 * @return this Block Material
 	 */
-	public BlockMaterial setOcclusion(BlockFaces faces) {
-		this.occlusion.set(faces);
+	public BlockMaterial setOcclusion(short data, BlockFaces faces) {
+		this.getOcclusion(data).set(faces);
+		return this;
+	}
+
+	/**
+	 * Sets the occludes face of this Block Material<br>
+	 * Occluded faces do not let light though and require rendering behind it at those faces
+	 * 
+	 * @param data of this Block Material
+	 * @param face to make this Block Material occlude
+	 * @return this Block Material
+	 */
+	public BlockMaterial setOcclusion(short data, BlockFace face) {
+		this.getOcclusion(data).set(face);
 		return this;
 	}
 
