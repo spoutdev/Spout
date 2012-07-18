@@ -36,6 +36,8 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+
+import org.spout.api.Spout;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.CommonPipelineFactory;
@@ -56,6 +58,12 @@ public class SpoutProxy extends SpoutServer {
 
 	@Override
 	public void start() {
+		getLogger().info("Spout is starting in proxy-only mode.");
+		getLogger().info("Current version is " + Spout.getEngine().getVersion() + " (Implementing SpoutAPI " + Spout.getAPIVersion() + ")");
+		getLogger().info("This software is currently in alpha status so components may");
+		getLogger().info("have bugs or not work at all. Please report any issues to");
+		getLogger().info("http://issues.spout.org");
+
 		super.start(false, new SpoutProxyListener(this));
 	}
 

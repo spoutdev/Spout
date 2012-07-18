@@ -106,6 +106,12 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	public void start(boolean checkWorlds, Listener listener) {
+		getLogger().info("Spout is starting in server-only mode.");
+		getLogger().info("Current version is " + Spout.getEngine().getVersion() + " (Implementing SpoutAPI " + Spout.getAPIVersion() + ")");
+		getLogger().info("This software is currently in alpha status so components may");
+		getLogger().info("have bugs or not work at all. Please report any issues to");
+		getLogger().info("http://issues.spout.org");
+
 		super.start(checkWorlds);
 
 		banManager = new FlatFileBanManager(this);

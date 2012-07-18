@@ -196,7 +196,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	public void start(boolean checkWorlds) {
 		if (debugMode()) {
-			getLogger().warning("Spout has been started in Debug Mode!  This mode is for developers only");
+			getLogger().warning("Debug Mode has been toggled on!  This mode is intended for developers only");
 			leakThread.start();
 			scheduler.scheduleSyncRepeatingTask(this, new ProfileTask(), 60 * 1000, 60 * 1000, TaskPriority.NORMAL);
 		}
