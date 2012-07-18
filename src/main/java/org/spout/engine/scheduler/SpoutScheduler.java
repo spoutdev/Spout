@@ -618,12 +618,20 @@ public final class SpoutScheduler implements Scheduler {
 			if (!success) {
 				delay *= 1.5;
 				List<Plugin> violatingPlugins = snapshotLock.getLockingPlugins(threshold);
-				engine.getLogger().info("Unable to lock snapshot after " + (System.currentTimeMillis() - startTime) + "ms");
+				long stallTime = System.currentTimeMillis() - startTime;
+				engine.getLogger().info("Unable to lock snapshot after " + stallTime + "ms");
 				for (Plugin p : violatingPlugins) {
 					engine.getLogger().info(p.getDescription().getName() + " has locked the snapshot lock for more than " + threshold + "ms");
 				}
 				for (String s : snapshotLock.getLockingTasks()) {
 					engine.getLogger().info("Core task " + s + " is holding the lock");
+				}
+				if (stallTime > 2000) {
+					engine.getLogger().info("--- Stack dump of core Threads holding lock ---");
+					for (Thread t : snapshotLock.getCoreLockingThreads()) {
+						AsyncExecutorUtils.dumpStackTrace(t);
+					}
+					engine.getLogger().info("-----------------------------------------------");
 				}
 			}
 		}

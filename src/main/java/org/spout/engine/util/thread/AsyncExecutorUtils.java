@@ -34,12 +34,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
 import org.spout.api.Spout;
 
 public class AsyncExecutorUtils {
 	private static final String LINE = "------------------------------";
+	private static final AtomicReference<AsyncExecutor> waitingExecutor = new AtomicReference<AsyncExecutor>();
 
 	/**
 	 * Logs all threads, the thread details, and active stack traces
@@ -80,6 +82,28 @@ public class AsyncExecutorUtils {
 			}
 		}
 	}
+	
+	/**
+	 * Dumps the stack for the given Thread
+	 * 
+	 * @param t the thread
+	 */
+	public static void dumpStackTrace(Thread t) {
+		StackTraceElement[] stackTrace = t.getStackTrace();
+		Spout.getEngine().getLogger().info("Stack trace for Thread " + t.getName());
+		for (StackTraceElement e : stackTrace) {
+			Spout.getEngine().getLogger().info("\tat " + e);
+		}
+	}
+	
+	/**
+	 * Gets the current executor that pulseJoinAll is waiting on, or null of none
+	 * 
+	 * @return the executor, or null if none
+	 */
+	public static AsyncExecutor getWaitingExecutor() {
+		return waitingExecutor.get();
+	}
 
 	/**
 	 * Waits for a list of ManagedThreads to complete a pulse
@@ -109,7 +133,9 @@ public class AsyncExecutorUtils {
 					}
 					if (!e.isPulseFinished()) {
 						done = false;
+						waitingExecutor.set(e);
 						e.pulseJoin(endTime - currentTime);
+						waitingExecutor.set(null);
 					}
 				}
 			}

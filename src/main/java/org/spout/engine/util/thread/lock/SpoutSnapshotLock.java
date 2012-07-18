@@ -41,8 +41,9 @@ public class SpoutSnapshotLock implements SnapshotLock {
 	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	private final ConcurrentHashMap<Plugin, LockInfo> locks = new ConcurrentHashMap<Plugin, LockInfo>();
 	private final ConcurrentHashMap<String, Integer> coreTasks = new ConcurrentHashMap<String, Integer>();
+	private final ConcurrentHashMap<Thread, Integer> coreLockingThreads = new ConcurrentHashMap<Thread, Integer>();
 
-	@Override
+ 	@Override
 	public void readLock(Plugin plugin) {
 		lock.readLock().lock();
 		addLock(plugin);
@@ -115,6 +116,10 @@ public class SpoutSnapshotLock implements SnapshotLock {
 	public Set<String> getLockingTasks() {
 		return coreTasks.keySet();
 	}
+	
+	public Set<Thread> getCoreLockingThreads() {
+		return coreLockingThreads.keySet();
+	}
 
 	public void writeUnlock() {
 		lock.writeLock().unlock();
@@ -162,6 +167,17 @@ public class SpoutSnapshotLock implements SnapshotLock {
 				success = coreTasks.replace(taskName, i, i + 1);
 			}
 		}
+		
+		success = false;
+		while (!success) {
+			Thread t = Thread.currentThread();
+			Integer i = coreLockingThreads.get(t);
+			if (i == null) {
+				success = coreLockingThreads.putIfAbsent(t, 1) == null;
+			} else {
+				success = coreLockingThreads.replace(t, i, i + 1);
+			}
+		}
 	}
 	
 	private void decrementCoreCounter(String taskName) {
@@ -174,6 +190,19 @@ public class SpoutSnapshotLock implements SnapshotLock {
 				success = coreTasks.remove(taskName, i);
 			} else {
 				success = coreTasks.replace(taskName, i, i - 1);
+			}
+		}
+		
+		success = false;
+		while (!success) {
+			Thread t = Thread.currentThread();
+			Integer i = coreLockingThreads.get(t);
+			if (i == null || i <= 0) {
+				throw new IllegalStateException("Attempting to unlock a core read lock which was already unlocked");
+			} else if (i.equals(1)) {
+				success = coreLockingThreads.remove(t, i);
+			} else {
+				success = coreLockingThreads.replace(t, i, i - 1);
 			}
 		}
 	}

@@ -28,6 +28,7 @@ package org.spout.engine.util;
 
 import org.spout.api.Spout;
 import org.spout.engine.scheduler.SpoutScheduler;
+import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
 
 public class TicklockMonitor extends Thread {
@@ -58,6 +59,15 @@ public class TicklockMonitor extends Thread {
 			if (tickTime > threshold && upTime != lastUpTime) {
 				Spout.getLogger().info("Current Tick Time exceeds " + (threshold / 1000) + " seconds");
 				AsyncExecutorUtils.dumpAllStacks();
+				AsyncExecutor e = AsyncExecutorUtils.getWaitingExecutor();
+				if (e != null && e instanceof Thread) {
+					Thread t = (Thread)e;
+					Spout.getLogger().info("pulseJoinAll is waiting on " + t.getName());
+					AsyncExecutorUtils.dumpStackTrace(t);
+					if (!t.isAlive()) {
+						Spout.getLogger().info("Thread is dead");
+					}
+				}
 				lastUpTime = upTime;
 			} else {
 				//Spout.getLogger().info("Current tick time: " + tickTime);
