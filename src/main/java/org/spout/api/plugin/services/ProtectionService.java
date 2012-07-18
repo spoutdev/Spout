@@ -41,7 +41,7 @@ import org.spout.api.plugin.ServiceProvider;
  * To implement your own ProtectionService, create a new class which extends ProtectionService and overrides
  * the abstract methods.
  * To register your ProtectionService you will need to do something similar to:
- * <code>getServiceManager().register(ProtectionService.class, myEconomyInstance, myPlugin, ServicePriority)</code>
+ * <code>getServiceManager().register(ProtectionService.class, myProtectionServiceInstance, myPlugin, ServicePriority)</code>
  * 
  * The static methods provided are intended for direct usage by any plugins.  Plugins should NOT be getting the
  * protection services directly as it may result in incomplete data from the server.
