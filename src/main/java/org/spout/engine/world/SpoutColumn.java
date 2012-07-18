@@ -256,16 +256,18 @@ public class SpoutColumn {
 		if (c == null) {
 			return false;
 		} else {
-			return isAir(world.getBlockMaterial(xx, yy, zz));
+			return isAir(world.getBlockFullState(xx, yy, zz));
 		}
 	}
 
 	private boolean isAir(Chunk c, int x, int y, int z) {
-		return isAir(c.getBlockMaterial(x, y, z));
+		return isAir(c.getBlockFullState(x, y, z));
 	}
 
-	private boolean isAir(BlockMaterial material) {
-		return material.isTransparent() && !material.getOcclusion().getAny(BlockFaces.BT);
+	private boolean isAir(int fullData) {
+		BlockMaterial material = BlockFullState.getMaterial(fullData);
+		short data = BlockFullState.getData(fullData);
+		return material.isTransparent() && !material.getOcclusion(data).getAny(BlockFaces.BT);
 	}
 
 	private AtomicInteger getAtomicInteger(int x, int z) {
