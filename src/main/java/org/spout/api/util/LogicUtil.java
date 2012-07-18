@@ -32,7 +32,6 @@ import java.util.Iterator;
 import java.util.List;
 
 public class LogicUtil {
-
 	/**
 	 * Removes duplicate values by using the objects' equals function<br>
 	 * Note that this function does not use a Set, because no hashcode is used.

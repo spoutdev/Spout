@@ -44,6 +44,13 @@ public class ByteFlagContainer {
 		this.flag = flag.getMask();
 	}
 
+	public ByteFlagContainer(ByteFlagMask... flags) {
+		this.flag = 0;
+		for (ByteFlagMask flag : flags) {
+			this.flag |= flag.getMask();
+		}
+	}
+
 	/**
 	 * Checks if a bit in this flag is set
 	 */
