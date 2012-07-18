@@ -178,7 +178,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	public final boolean isPulseFinished() {
 		try {
 			disableWake();
-			return (wakeCounter.getAndAdd(0) & wakePulsing) == 0 && !isPulsing() && taskQueue.isEmpty();
+			return (wakeCounter.getAndAdd(0) & wakePulsing) == 0 && !isPulsing() && taskQueue.isEmpty() || !isAlive();
 		} finally {
 			enableWake();
 		}

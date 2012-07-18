@@ -27,16 +27,18 @@
 package org.spout.engine.util.thread;
 
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.spout.api.Spout;
 
 /**
  * A Thread object that can be pulsed
  */
 public abstract class PulsableThread extends Thread {
 	private static final Logger logger = Logger.getLogger(PulsableThread.class.getCanonicalName());
-	private final AtomicBoolean pulsing = new AtomicBoolean(false);
+	private final AtomicReference<PulseState> pulsing = new AtomicReference<PulseState>(PulseState.WAITING);
 
 	public PulsableThread(String name) {
 		super(name);
@@ -47,9 +49,14 @@ public abstract class PulsableThread extends Thread {
 	 * @return false if the thread was already pulsing
 	 */
 	public boolean pulse() {
-		boolean success = pulsing.compareAndSet(false, true);
+		boolean success = pulsing.compareAndSet(PulseState.WAITING, PulseState.PULSING);
 		if (!success) {
-			return false;
+			if (pulsing.get() == PulseState.DEAD) {
+				Spout.getLogger().info("Attempting to pulse a dead executor: " + getName());
+				return true;
+			} else {
+				return false;
+			}
 		}
 		synchronized (pulsing) {
 			pulsing.notifyAll();
@@ -63,7 +70,7 @@ public abstract class PulsableThread extends Thread {
 	 */
 	public void pulseJoin() throws InterruptedException {
 		synchronized (pulsing) {
-			while (pulsing.get()) {
+			while (pulsing.get().isPulsing()) {
 				pulsing.wait();
 			}
 		}
@@ -83,7 +90,7 @@ public abstract class PulsableThread extends Thread {
 		long currentTime = System.currentTimeMillis();
 		long endTime = currentTime + millis;
 		synchronized (pulsing) {
-			while (currentTime < endTime && pulsing.get()) {
+			while (currentTime < endTime && pulsing.get().isPulsing()) {
 				pulsing.wait(endTime - currentTime);
 				currentTime = System.currentTimeMillis();
 			}
@@ -98,7 +105,7 @@ public abstract class PulsableThread extends Thread {
 	 * @return true if the thread is pulsing
 	 */
 	public boolean isPulsing() {
-		return pulsing.get();
+		return pulsing.get().isPulsing();
 	}
 
 	/**
@@ -122,7 +129,7 @@ public abstract class PulsableThread extends Thread {
 		try {
 			while (!isInterrupted()) {
 				synchronized (pulsing) {
-					while (!pulsing.get()) {
+					while (!pulsing.get().isPulsing()) {
 						pulsing.wait();
 					}
 				}
@@ -136,12 +143,28 @@ public abstract class PulsableThread extends Thread {
 					t.printStackTrace();
 				} finally {
 					synchronized (pulsing) {
-						pulsing.set(false);
+						pulsing.set(PulseState.WAITING);
 						pulsing.notifyAll();
 					}
 				}
 			}
 		} catch (InterruptedException ie) {
+		}
+		synchronized (pulsing) {
+			PulseState oldState = pulsing.getAndSet(PulseState.DEAD);
+			if (oldState == PulseState.PULSING) {
+				pulsing.notifyAll();
+			}
+		}
+	}
+	
+	private static enum PulseState {
+		PULSING,
+		WAITING,
+		DEAD;
+		
+		public boolean isPulsing() {
+			return this == PULSING;
 		}
 	}
 }
