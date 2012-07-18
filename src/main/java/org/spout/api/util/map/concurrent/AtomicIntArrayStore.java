@@ -487,7 +487,7 @@ public final class AtomicIntArrayStore {
 		} finally {
 			waiting.decrementAndGet();
 		}
-		return true;
+		return false;
 	}
 
 	/**

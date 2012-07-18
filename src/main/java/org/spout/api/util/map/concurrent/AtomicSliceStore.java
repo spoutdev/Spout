@@ -674,7 +674,7 @@ public final class AtomicSliceStore implements AtomicBlockStore {
 		} finally {
 			waiting.decrementAndGet();
 		}
-		return true;
+		return false;
 	}
 
 	/**

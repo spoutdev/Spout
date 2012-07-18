@@ -29,6 +29,7 @@ package org.spout.api.util.map.concurrent;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.spout.api.Spout;
 import org.spout.api.datatable.DatatableSequenceNumber;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.source.MaterialSource;
@@ -716,7 +717,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 		} finally {
 			waiting.decrementAndGet();
 		}
-		return true;
+		return false;
 	}
 
 	/**
