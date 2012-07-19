@@ -40,28 +40,38 @@ import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.exception.CommandException;
 import org.spout.api.player.Player;
+import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 
+import org.spout.engine.SpoutEngine;
 import org.spout.engine.SpoutServer;
 
-/**
- * Commands related to server administration
- */
 public class AdministrationCommands {
-	private final SpoutServer server;
+	private final SpoutEngine engine;
 
-	public AdministrationCommands(SpoutServer server) {
-		this.server = server;
+	public AdministrationCommands(SpoutEngine engine) {
+		this.engine = engine;
 	}
 
 	@Command(aliases = "stop", usage = "[message]", desc = "Stop the server!", max = -1)
 	@CommandPermissions("spout.command.stop")
 	public void stop(CommandContext args, CommandSource source) {
-		String message = "Server shutting down";
+		String message = "Engine halting";
+		switch (Spout.getPlatform()) {
+			case CLIENT:
+				message = "Client halting";
+				break;
+			case PROXY:
+				message = "Proxy halting";
+				break;
+			case SERVER:
+				message = "Server halting";
+				break;
+		}
 		if (args.length() > 0) {
 			message = args.getJoinedString(0);
 		}
-		server.stop(message);
+		engine.stop(message);
 	}
 
 	@Command(desc = "Writes the stack trace of all active threads to the logs", max = -1, aliases = {""})
@@ -69,21 +79,25 @@ public class AdministrationCommands {
 	public void dumpstack(CommandContext args, CommandSource source) {
 		Map<Thread, StackTraceElement[]> dump = Thread.getAllStackTraces();
 		Iterator<Entry<Thread, StackTraceElement[]>> i = dump.entrySet().iterator();
-		server.getLogger().info("[--------------Thread Stack Dump--------------]");
+		engine.getLogger().info("[--------------Thread Stack Dump--------------]");
 		while (i.hasNext()) {
 			Entry<Thread, StackTraceElement[]> e = i.next();
-			server.getLogger().info("Thread: " + e.getKey().getName());
+			engine.getLogger().info("Thread: " + e.getKey().getName());
 			for (StackTraceElement element : e.getValue()) {
-				server.getLogger().info("    " + element.toString());
+				engine.getLogger().info("    " + element.toString());
 			}
-			server.getLogger().info("");
+			engine.getLogger().info("");
 		}
-		server.getLogger().info("[---------------End Stack Dump---------------]");
+		engine.getLogger().info("[---------------End Stack Dump---------------]");
 	}
 
 	@Command(aliases = "kick", usage = "<player> [message]", desc = "Kick a player", min = 1, max = -1)
 	@CommandPermissions("spout.command.kick")
 	public void kick(CommandContext args, CommandSource source) {
+		if (Spout.getPlatform() != Platform.SERVER) {
+			source.sendMessage(ChatStyle.RED, "Kick is available only in server-mode.");
+			return;
+		}
 		String playerName = args.getString(0);
 		String message = "You have been kicked from the server.";
 		if (args.length() >= 2) {
@@ -97,11 +111,11 @@ public class AdministrationCommands {
 		}
 	}
 
-	@Command(aliases = "reload", usage = "[plugin]", desc = "Reload server and/or plugins", max = 1)
+	@Command(aliases = "reload", usage = "[plugin]", desc = "Reload engine and/or plugins", max = 1)
 	@CommandPermissions("spout.command.reload")
 	public void reload(CommandContext args, CommandSource source) throws CommandException {
 		if (args.length() == 0) {
-			source.sendMessage(ChatStyle.BRIGHT_GREEN, "Reloading server...");
+			source.sendMessage(ChatStyle.BRIGHT_GREEN, "Reloading engine...");
 
 			for (Plugin plugin : Spout.getEngine().getPluginManager().getPlugins()) {
 				if (plugin.getDescription().allowsReload()) {
@@ -125,7 +139,7 @@ public class AdministrationCommands {
 		}
 	}
 	@SuppressWarnings("unchecked")
-	@Command(aliases = {"plugins", "pl"}, desc = "List all plugins on the server")
+	@Command(aliases = {"plugins", "pl"}, desc = "List all plugins on the engine")
 	@CommandPermissions("spout.command.plugins")
 	public void plugins(CommandContext args, CommandSource source) {
 		Plugin[] pluginList = Spout.getEngine().getPluginManager().getPlugins();

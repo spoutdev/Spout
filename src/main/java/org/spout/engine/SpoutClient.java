@@ -85,13 +85,20 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 
 public class SpoutClient extends SpoutEngine implements Client {
+	private final Input inputManager = new SpoutInput();
 	private final String name = "Spout Client";
-	private Camera activeCamera;
-	private final Vector2 resolution = new Vector2(854, 480);
+	private final Vector2 resolution = new Vector2(640, 480);
+	private final boolean[] sides = {true, true, true, true, true, true};
 	private final float aspectRatio = resolution.getX() / resolution.getY();
-	TInt21TripleObjectHashMap<PrimitiveBatch> chunkRenderers = new TInt21TripleObjectHashMap<PrimitiveBatch>();
-	RenderMaterial material;
-	private Input inputManager = new SpoutInput();
+	private BatchVertexRenderer textureTest;
+	private Camera activeCamera;
+	private PrimitiveBatch renderer;
+	private RenderMaterial material;
+	private Texture texture;
+	private TInt21TripleObjectHashMap<PrimitiveBatch> chunkRenderers = new TInt21TripleObjectHashMap<PrimitiveBatch>();
+	private VertexBufferBatcher vbBatch;
+	private VertexBufferImpl buffer;
+	private long ticks = 0;
 
 	public SpoutClient() {
 		this.filesystem = new ClientFileSystem();
@@ -118,10 +125,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 	@Override
 	public void start() {
 		start(false);
-		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this), new SimpleAnnotatedCommandExecutorFactory());
-
-		// Register commands
-		getRootCommand().addSubCommands(this, InputCommands.class, commandRegFactory);
 	}
 
 	@Override
@@ -134,20 +137,126 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		super.start(checkWorlds);
 		scheduler.startRenderThread();
+		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this), new SimpleAnnotatedCommandExecutorFactory());
+
+		// Register commands
+		getRootCommand().addSubCommands(this, InputCommands.class, commandRegFactory);
 	}
 
-	VertexBufferImpl buffer;
+	@Override
+	public File getTemporaryCache() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public File getStatsFolder() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Entity getActivePlayer() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public World getWorld() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Camera getActiveCamera() {
+		return activeCamera;
+	}
+
+	@Override
+	public void setActiveCamera(Camera activeCamera) {
+		this.activeCamera = activeCamera;
+	}
+
+	@Override
+	public PluginStore getPluginStore() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public File getResourcePackFolder() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Platform getPlatform() {
+		return Platform.CLIENT;
+	}
+
+	@Override
+	public RenderMode getRenderMode() {
+		return getArguments().renderMode;
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public Input getInput() {
+		return inputManager;
+	}
+
+	@Override
+	public void stop(String message) {
+		Display.destroy();
+		super.stop(message);
+	}
+
+	private void buildChunk(SpoutChunkSnapshot snap) {
+		boolean firstSeen = !chunkRenderers.containsKey(snap.getX(), snap.getY(), snap.getZ());
+		/*if(!firstSeen && !snap.isRenderDirty()){
+			Spout.log("Got a chunk that isn't dirty or i've seen it before");
+			return;
+		}*/
+
+		if (firstSeen) {
+			PrimitiveBatch b = new PrimitiveBatch();
+			//b.getRenderer().setShader(shader);
+			chunkRenderers.put(snap.getX(), snap.getY(), snap.getZ(), b);
+			Spout.log("Got a new chunk at " + snap.toString());
+		}
+
+		PrimitiveBatch batch = chunkRenderers.get(snap.getX(), snap.getY(), snap.getZ());
+
+		for (int x = 0; x < ChunkSnapshot.CHUNK_SIZE; x++) {
+			for (int y = 0; y < ChunkSnapshot.CHUNK_SIZE; y++) {
+				for (int z = 0; z < ChunkSnapshot.CHUNK_SIZE; z++) {
+					BlockMaterial m = snap.getBlockMaterial(x, y, z);
+
+					Color col = getColor(m);
+					if (m.isSolid()) {
+						batch.addCube(new Vector3(x, y, z), Vector3.ONE, col, sides);
+					}
+				}
+			}
+		}
+		batch.end();
+		snap.setRenderDirty(false); //Rendered this snapshot
+	}
 
 	public void initRenderer() {
 		createWindow();
 
-		System.out.println("SpoutClient Information");
-		System.out.println("Operating System: " + System.getProperty("os.name"));
-		System.out.println("Renderer Mode: " + this.getRenderMode().toString());
-		System.out.println("OpenGL Information");
-		System.out.println("Vendor: " + GL11.glGetString(GL11.GL_VENDOR));
-		System.out.println("OpenGL Version: " + GL11.glGetString(GL11.GL_VERSION));
-		System.out.println("GLSL Version: " + GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
+		getLogger().info("SpoutClient Information");
+		getLogger().info("Operating System: " + System.getProperty("os.name"));
+		getLogger().info("Renderer Mode: " + this.getRenderMode().toString());
+		getLogger().info("OpenGL Information");
+		getLogger().info("Vendor: " + GL11.glGetString(GL11.GL_VENDOR));
+		getLogger().info("OpenGL Version: " + GL11.glGetString(GL11.GL_VERSION));
+		getLogger().info("GLSL Version: " + GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
 		String extensions = "Extensions Supported: ";
 		if (getArguments().renderMode == RenderMode.GL30) {
 			for (int i = 0; i < GL11.glGetInteger(GL30.GL_NUM_EXTENSIONS); i++) {
@@ -156,7 +265,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		} else {
 			extensions += GL11.glGetString(GL11.GL_EXTENSIONS);
 		}
-		System.out.println(extensions);
+		getLogger().info(extensions);
 
 		Spout.getFilesystem().postStartup();
 
@@ -164,9 +273,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		renderer = new PrimitiveBatch();
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		Spout.log("Loading Texture");
+		getLogger().info("Loading Texture");
 		textureTest = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
-		Spout.log("Loading Material");
+		getLogger().info("Loading Material");
 		material = (RenderMaterial) Spout.getFilesystem().getResource("material://Vanilla/resources/materials/terrain.smt");
 
 		buffer = new VertexBufferImpl();
@@ -177,9 +286,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		//screenStack = new ScreenStack(new LoadingScreen());
 		//bunny = (BaseMesh) FileSystem.getResource("mesh://Vanilla/bunny.obj");
 	}
-
-	VertexBufferBatcher vbBatch;
-	BaseMesh bunny;
 
 	private void createWindow() {
 		try {
@@ -202,13 +308,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 			Display.setTitle("Spout Client");
 		} catch (LWJGLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	private void createMacWindow() throws LWJGLException {
-
 		String[] ver = System.getProperty("os.version").split("\\.");
 
 		if (getRenderMode() == RenderMode.GL30) {
@@ -222,13 +326,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 			Display.create();
 		}
 	}
-
-	Texture texture;
-	PrimitiveBatch renderer;
-	final boolean[] sides = {true, true, true, true, true, true};
-	long ticks = 0;
-	BatchVertexRenderer textureTest;
-	//Graphics graphics;
 
 	public void render(float dt) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -309,9 +406,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	}
 
-	@SuppressWarnings("unused")
 	private void renderVisibleChunks(SpoutWorld world) {
-
 		for (int x = -1; x < 1; x++) {
 			for (int y = 0; y < 5; y++) {
 				for (int z = -1; z < 1; z++) {
@@ -321,84 +416,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 				}
 			}
 		}
-	}
-
-	private void buildChunk(SpoutChunkSnapshot snap) {
-		boolean firstSeen = !chunkRenderers.containsKey(snap.getX(), snap.getY(), snap.getZ());
-		/*if(!firstSeen && !snap.isRenderDirty()){
-			Spout.log("Got a chunk that isn't dirty or i've seen it before");
-			return;
-		}*/
-
-		if (firstSeen) {
-			PrimitiveBatch b = new PrimitiveBatch();
-			//b.getRenderer().setShader(shader);
-			chunkRenderers.put(snap.getX(), snap.getY(), snap.getZ(), b);
-			Spout.log("Got a new chunk at " + snap.toString());
-		}
-
-		PrimitiveBatch batch = chunkRenderers.get(snap.getX(), snap.getY(), snap.getZ());
-		//batch.begin();
-		for (int x = 0; x < ChunkSnapshot.CHUNK_SIZE; x++) {
-			for (int y = 0; y < ChunkSnapshot.CHUNK_SIZE; y++) {
-				for (int z = 0; z < ChunkSnapshot.CHUNK_SIZE; z++) {
-					BlockMaterial m = snap.getBlockMaterial(x, y, z);
-
-					Color col = getColor(m);
-					if (m.isSolid()) {
-						batch.addCube(new Vector3(x, y, z), Vector3.ONE, col, sides);
-					}
-				}
-			}
-		}
-		batch.end();
-		snap.setRenderDirty(false); //Rendered this snapshot
-	}
-
-	@Override
-	public File getTemporaryCache() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public File getStatsFolder() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Entity getActivePlayer() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public World getWorld() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Camera getActiveCamera() {
-		return activeCamera;
-	}
-
-	@Override
-	public void setActiveCamera(Camera activeCamera) {
-		this.activeCamera = activeCamera;
-	}
-
-	@Override
-	public PluginStore getPluginStore() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public File getResourcePackFolder() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	private Color getColor(BlockMaterial m) {
@@ -437,29 +454,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 	}
 
-	@Override
-	public Platform getPlatform() {
-		return Platform.CLIENT;
-	}
-
-	@Override
-	public RenderMode getRenderMode() {
-		return getArguments().renderMode;
-	}
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	public Input getInput() {
-		return inputManager;
-	}
-
 	private static void unpackLwjgl() {
-		String[] files = null;
-		String osPath = "";
+		String[] files;
+		String osPath;
 
 		if (SystemUtils.IS_OS_WINDOWS) {
 			files = new String[]{
@@ -512,11 +509,5 @@ public class SpoutClient extends SpoutEngine implements Client {
 		String nativePath = cacheDir.getAbsolutePath();
 		System.setProperty("org.lwjgl.librarypath", nativePath);
 		System.setProperty("net.java.games.input.librarypath", nativePath);
-	}
-
-	@Override
-	public void stop(String message) {
-		Display.destroy();
-		super.stop(message);
 	}
 }

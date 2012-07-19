@@ -127,7 +127,7 @@ import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
 
 public class SpoutEngine extends AsyncManager implements Engine {
-	public static final Logger logger = Logger.getLogger("Spout");
+	private static final Logger logger = Logger.getLogger("Spout");
 	private final String name = "Spout Engine";
 	private final File pluginDirectory = SharedFileSystem.PLUGIN_DIRECTORY;
 	private final File configDirectory = SharedFileSystem.CONFIG_DIRECTORY;

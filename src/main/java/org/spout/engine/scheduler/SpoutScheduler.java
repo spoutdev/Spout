@@ -264,7 +264,7 @@ public final class SpoutScheduler implements Scheduler {
 			try {
 				copySnapshot(asyncExecutors.get());
 			} catch (InterruptedException ex) {
-				SpoutServer.logger.log(Level.SEVERE, "Error while shutting down engine: {0}", ex.getMessage());
+				engine.getLogger().log(Level.SEVERE, "Error while shutting down engine: {0}", ex.getMessage());
 			}
 		}
 	}
