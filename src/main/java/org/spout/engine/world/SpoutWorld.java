@@ -58,6 +58,7 @@ import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.event.block.CuboidChangeEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
+import org.spout.api.generator.biome.BiomeGenerator;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -343,7 +344,14 @@ public final class SpoutWorld extends AsyncManager implements World {
 		if (y < 0 || y > getHeight()) {
 			return null;
 		}
-		return getChunkFromBlock(x, y, z).getBiomeType(x, y, z);
+		if (!(generator instanceof BiomeGenerator)) {
+			return null;
+		}
+		final SpoutChunk chunk = getChunkFromBlock(x, y, z, LoadOption.LOAD_ONLY);
+		if (chunk == null) {
+			return ((BiomeGenerator) generator).getBiome(x, y, z, seed);
+		}
+		return chunk.getBiomeType(x, y, z);
 	}
 
 	@Override
