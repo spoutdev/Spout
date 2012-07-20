@@ -195,7 +195,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public Vector3 add(float x, float y, float z) {
-		return add(new Vector3(x, y, z));
+		return new Vector3(this.x + x, this.y + y, this.z + z);
 	}
 
 	/**
@@ -207,7 +207,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public Vector3 add(double x, double y, double z) {
-		return add(new Vector3(x, y, z));
+		return new Vector3(this.x + x, this.y + y, this.z + z);
 	}
 
 	/**
@@ -219,7 +219,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public Vector3 add(int x, int y, int z) {
-		return add(new Vector3(x, y, z));
+		return new Vector3(this.x + x, this.y + y, this.z + z);
 	}
 
 	/**
@@ -241,7 +241,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public Vector3 subtract(float x, float y, float z) {
-		return subtract(new Vector3(x, y, z));
+		return add(-x, -y, -z);
 	}
 
 	/**
@@ -253,7 +253,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public Vector3 subtract(double x, double y, double z) {
-		return subtract(new Vector3(x, y, z));
+		return add(-x, -y, -z);
 	}
 
 	/**
@@ -265,7 +265,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public Vector3 subtract(int x, int y, int z) {
-		return subtract(new Vector3(x, y, z));
+		return add(-x, -y, -z);
 	}
 
 	/**
