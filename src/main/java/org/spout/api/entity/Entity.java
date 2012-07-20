@@ -192,7 +192,7 @@ public interface Entity extends Source, WorldSource {
 
 	/**
 	 * Checks whether or not the entity is currently observing the region it is in.<br/>
-	 * If this value does not match {@link #isObserverLive()} the entity will be changing it's observer status on the next update.<br/>
+	 * If this value does not match {@link #isObserverLive()} the entity will be changing its observer status on the next update.<br/>
 	 * An observer is any entity that is allowed to keep chunks from being unloaded.<br/>
 	 * 
 	 * @return true if the entity is currently an observer, false if not
@@ -202,7 +202,7 @@ public interface Entity extends Source, WorldSource {
 
 	/**
 	 * Checks whether or not the entity is observing. This is used to update the status of the entity.
-	 * If isObserverLive() not equal to isObserver(), then the entity will be changing it's observer status on the next update.
+	 * If isObserverLive() not equal to isObserver(), then the entity will be changing its observer status on the next update.
 	 * 
 	 * @return true if the entity will be an observer, false if not
 	 */

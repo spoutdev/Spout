@@ -57,7 +57,7 @@ public abstract class MaterialRegistry {
 	}
 
 	/**
-	 * Sets up the material registry for it's first use. May not be called more than once.<br/>
+	 * Sets up the material registry for its first use. May not be called more than once.<br/>
 	 * This attempts to load the materials.dat file from the 'worlds' directory into memory.<br/>
 	 * 
 	 * Can throw an {@link IllegalStateException} if the material registry has already been setup.
@@ -176,7 +176,7 @@ public abstract class MaterialRegistry {
 	}
 
 	/**
-	 * Gets the associated material with it's name. Case-insensitive.
+	 * Gets the associated material with its name. Case-insensitive.
 	 *
 	 * @param name to lookup
 	 * @return material, or null if none found
