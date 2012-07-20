@@ -50,10 +50,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	private final byte[] dirtyY;
 	private final byte[] dirtyZ;
 	private final AtomicInteger dirtyBlocks = new AtomicInteger(0);
-	private final AtomicInteger[] waiting;
 	private final int SPINS = 10;
-	private final int WAIT_COUNT = 32;
-	private final int WAIT_MASK = WAIT_COUNT - 1;
 
 	public AtomicBlockStoreImpl(int shift) {
 		this(shift, 10);
@@ -81,10 +78,6 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 		dirtyX = new byte[dirtySize];
 		dirtyY = new byte[dirtySize];
 		dirtyZ = new byte[dirtySize];
-		waiting = new AtomicInteger[WAIT_COUNT];
-		for (int i = 0; i < WAIT_COUNT; i++) {
-			waiting[i] = new AtomicInteger(0);
-		}
 		if (blocks != null) {
 			int x = 0;
 			int z = 0;
@@ -710,7 +703,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @return true if interrupted during the wait
 	 */
 	private final boolean atomicWait(int index) {
-		AtomicInteger i = getWaiting(index);
+		AtomicInteger i = auxStore.getWaiting(index);
 		i.incrementAndGet();
 		try {
 			short blockId = blockIds.get(index);
@@ -735,15 +728,12 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * Notifies all waiting threads
 	 */
 	private final void atomicNotify(int index) {
-		AtomicInteger i = getWaiting(index);
+		AtomicInteger i = auxStore.getWaiting(index);
 		if (!i.compareAndSet(0, 0)) {
 			synchronized (i) {
 				i.notifyAll();
 			}
 		}
 	}
-	
-	private final AtomicInteger getWaiting(int index) {
-		return waiting[index & WAIT_MASK];
-	}
+
 }

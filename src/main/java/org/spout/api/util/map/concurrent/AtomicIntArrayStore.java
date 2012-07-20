@@ -496,7 +496,7 @@ public final class AtomicIntArrayStore {
 	 * @return true if interrupted during the wait
 	 */
 	private final boolean atomicWait(int index) {
-		AtomicInteger i = getWaiting(index);
+		AtomicInteger i = getWaitingInternal(index);
 		i.incrementAndGet();
 		try {
 			synchronized (i) {
@@ -519,7 +519,7 @@ public final class AtomicIntArrayStore {
 	 * Notifies all waiting threads
 	 */
 	private final void atomicNotify(int index) {
-		AtomicInteger i = getWaiting(index);
+		AtomicInteger i = getWaitingInternal(index);
 		if (!i.compareAndSet(0, 0)) {
 			synchronized (i) {
 				i.notifyAll();
@@ -527,7 +527,17 @@ public final class AtomicIntArrayStore {
 		}
 	}
 	
-	private final AtomicInteger getWaiting(int index) {
+	/**
+	 * Gets the waiting counter for the given index
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public final AtomicInteger getWaiting(int index) {
+		return getWaitingInternal(toInternal(index));
+	}
+	
+	private final AtomicInteger getWaitingInternal(int index) {
 		return waiting[index & WAIT_MASK];
 	}
 }
