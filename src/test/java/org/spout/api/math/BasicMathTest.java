@@ -27,6 +27,7 @@
 package org.spout.api.math;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import static org.spout.api.math.MathHelper.*;
 import static org.spout.api.math.TestUtils.eps;
@@ -34,6 +35,9 @@ import static org.spout.api.math.TestUtils.eps;
 import org.junit.Test;
 
 public final class BasicMathTest {
+	
+	private static final double fastError = 0.0015;
+	
 	@Test
 	public void testMean() {
 		int[] intTestValues = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
@@ -66,5 +70,35 @@ public final class BasicMathTest {
 		assertEquals(59, floor(59.987f));
 		assertEquals(0, floor(0.9));
 		assertEquals(0, floor(0.9f));
+	}
+	
+	@Test
+	public void testFastSin() {
+		double maxError = 0;
+		
+		for (double x = -3.15; x < 3.15; x += 0.25) {
+			double slow = Math.sin(x);
+			double fast = MathHelper.sin(x);
+			double error = Math.abs(fast - slow);
+			if (error > maxError) {
+				maxError = error;
+			}
+		}
+		assertTrue("Fast sin error outside range " + maxError + " >= " + fastError, maxError < fastError);
+	}
+	
+	@Test
+	public void testFastCos() {
+		double maxError = 0;
+		
+		for (double x = -3.15; x < 3.15; x += 0.25) {
+			double slow = Math.sin(x);
+			double fast = MathHelper.sin(x);
+			double error = Math.abs(fast - slow);
+			if (error > maxError) {
+				maxError = error;
+			}
+		}
+		assertTrue("Fast cos error outside range " + maxError + " >= " + fastError, maxError < fastError);
 	}
 }

@@ -312,10 +312,22 @@ public class MathHelper {
 	}
 
 	//Fast Math Implementation
+	/**
+	 * Fast implementation of cos(x).  If -PI <= x <= PI, then the maximum error is 0.0015
+	 * 
+	 * @param x in radians
+	 * @return sin(x)
+	 */
 	public final static double cos(final double x) {
 		return sin(x + (x > HALF_PI ? -THREE_PI_HALVES : HALF_PI));
 	}
 
+	/**
+	 * Fast implementation of sin(x).  If -PI <= x <= PI, then the maximum error is 0.0015
+	 * 
+	 * @param x in radians
+	 * @return sin(x)
+	 */
 	public final static double sin(double x) {
 		x = sin_a * x * Math.abs(x) + sin_b * x;
 		return sin_p * (x * Math.abs(x) - x) + x;
