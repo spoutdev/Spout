@@ -38,7 +38,7 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.map.DefaultedMap;
 
 /**
- * Represents an attachment to an Entity that controls the entity and it's data.
+ * Represents an attachment to an Entity that controls the entity and its data.
  *
  */
 public abstract class Controller extends EntityComponent {
@@ -111,7 +111,7 @@ public abstract class Controller extends EntityComponent {
 	}
 	
 	/**
-	 * Called immediately <i>before</i> a controller and it's parent entity are
+	 * Called immediately <i>before</i> a controller and its parent entity are
 	 * serialized. This method is intended as the last chance to store serializable
 	 * information inside of the controller data map (see: {@link #data()})
 	 * <br/><br/>
@@ -134,7 +134,7 @@ public abstract class Controller extends EntityComponent {
 	public abstract void onAttached();
 	
 	/**
-	 * True if this controller and it's parent entity should be saved.
+	 * True if this controller and its parent entity should be saved.
 	 * 
 	 * @return save
 	 */

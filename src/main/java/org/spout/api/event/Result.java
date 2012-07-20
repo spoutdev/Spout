@@ -57,7 +57,7 @@ public enum Result {
 	/**
 	 * True if the event is allowed, and is taking normal operation.
 	 * False if the event is denied.
-	 * Null if neither allowed, nor denied. The server will continue to proceed with it's normal handling.
+	 * Null if neither allowed, nor denied. The server will continue to proceed with its normal handling.
 	 * 
 	 * @return the event's resolution.
 	 */

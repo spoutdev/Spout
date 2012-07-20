@@ -28,7 +28,7 @@ package org.spout.api.collision;
 
 /**
  * Represents the amount of volume an object takes up in the {@link World} for purposes of providing collision detection.
- * A bounding box is made of 2 {@link Vector3}s which represent it's minimum x,y,z and maximum x,y,z.
+ * A bounding box is made of 2 {@link Vector3}s which represent its minimum x,y,z and maximum x,y,z.
  */
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.math.Vector3;

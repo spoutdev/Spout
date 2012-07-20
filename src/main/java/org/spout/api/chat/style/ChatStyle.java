@@ -73,7 +73,7 @@ public abstract class ChatStyle {
 	}
 
 	/**
-	 * Looks up a ChatStyle by it's ID.
+	 * Looks up a ChatStyle by its ID.
 	 *
 	 * @param id
 	 * @return the ChatStyle, or null if not found.
@@ -83,7 +83,7 @@ public abstract class ChatStyle {
 	}
 
 	/**
-	 * Looks up a ChatStyle by it's name.
+	 * Looks up a ChatStyle by its name.
 	 *
 	 * @param name
 	 * @return the ChatStyle, or null if not found.
@@ -96,10 +96,10 @@ public abstract class ChatStyle {
 	}
 
 	/**
-	 * Removes all ChatStyle's from the given string.
+	 * Removes all ChatStyles from the given string.
 	 *
 	 * @param str to strip.
-	 * @return String with all ChatSyle's removed.
+	 * @return String with all ChatStyles removed.
 	 */
 	public static String strip(String str) {
 		for (StyleHandler handler : StyleHandler.getAll()) {

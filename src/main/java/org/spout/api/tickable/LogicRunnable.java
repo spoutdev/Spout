@@ -60,14 +60,14 @@ public abstract class LogicRunnable<T extends Tickable> implements Runnable, Com
 	public abstract boolean shouldRun(float dt);
 
 	/**
-	 * Registers the process to it's assigned {@link Tickable}
+	 * Registers the process to its assigned {@link Tickable}
 	 */
 	public void register() {
 		parent.registerProcess(this);
 	}
 
 	/**
-	 * Unregisters the process to it's assigned {@link Tickable}
+	 * Unregisters the process to its assigned {@link Tickable}
 	 */
 	public void unregister() {
 		parent.unregisterProcess(this);
