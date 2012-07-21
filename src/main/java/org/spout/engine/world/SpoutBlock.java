@@ -339,6 +339,11 @@ public class SpoutBlock implements Block {
 	public void resetDynamic() {
 		this.getRegion().resetDynamicBlock(this.x, this.y, this.z);
 	}
+	
+	@Override
+	public void syncResetDynamic() {
+		this.getRegion().syncResetDynamicBlock(this.x, this.y, this.z);
+	}
 
 	@Override
 	public DynamicUpdateEntry dynamicUpdate() {
