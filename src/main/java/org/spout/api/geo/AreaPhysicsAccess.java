@@ -44,6 +44,17 @@ public interface AreaPhysicsAccess {
 	public void resetDynamicBlock(int x, int y, int z);
 	
 	/**
+	 * Immediately resets all dynamic material updates for the given location.  This does not trigger the onPlacement() call
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @return the old update for that block at that time instant, or null if none
+	 */
+	@DelayedWrite
+	public void syncResetDynamicBlock(int x, int y, int z);
+	
+	/**
 	 * Queues a dynamic material updated for the given location. This list is checked during the finalize part of the tick, and will cause the update method to be called.<br>
 	 * 
 	 * @param x

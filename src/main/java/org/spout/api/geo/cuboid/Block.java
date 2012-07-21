@@ -41,6 +41,7 @@ import org.spout.api.material.source.MaterialSource;
 import org.spout.api.material.source.MaterialState;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
+import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveWrite;
 import org.spout.api.util.thread.Threadsafe;
 
@@ -401,6 +402,12 @@ public interface Block extends MaterialState, WorldSource {
 	 * of the tick, and will cause the onPlacement method to be called.<br>
 	 */
 	public void resetDynamic();
+	
+	/**
+	 * Immediately resets all dynamic material updates for this block.  This does not trigger the onPlacement() call
+	 */
+	@DelayedWrite
+	public void syncResetDynamic();
 
 	/**
 	 * Queues a dynamic update on this block<br>
