@@ -1109,7 +1109,7 @@ public class MathHelper {
 	 * @param ammount
 	 * @return
 	 */
-	public static Matrix multiply(float ammount) {
+	public static Matrix scale(float ammount) {
 		Matrix res = createIdentity();
 		res.set(0, 0, ammount);
 		res.set(1, 1, ammount);
@@ -1124,7 +1124,7 @@ public class MathHelper {
 	 * @param ammount
 	 * @return
 	 */
-	public static Matrix multiply(Vector3 ammount) {
+	public static Matrix scale(Vector3 ammount) {
 		Matrix res = createIdentity();
 		res.set(0, 0, ammount.getX());
 		res.set(1, 1, ammount.getY());
@@ -1208,6 +1208,8 @@ public class MathHelper {
 
 		return res;
 	}
+	
+	
 
 	/**
 	 * Calculates and returns a new Vector3 transformed by the transformation

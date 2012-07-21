@@ -176,7 +176,7 @@ public class MatrixTest {
 	@Test
 	public void testScaleDouble() {
 		double[][] id = { {5, 0, 0, 0}, {0, 5, 0, 0}, {0, 0, 5, 0}, {0, 0, 0, 1}};
-		Matrix m = MathHelper.multiply(5.0f);
+		Matrix m = MathHelper.scale(5.0f);
 		compareMatrixToArray(m, id);
 	}
 
@@ -184,7 +184,7 @@ public class MatrixTest {
 	public void testScaleVector3() {
 		Vector3 s = new Vector3(-1, 5, 3);
 		double[][] id = { {-1, 0, 0, 0}, {0, 5, 0, 0}, {0, 0, 3, 0}, {0, 0, 0, 1}};
-		Matrix m = MathHelper.multiply(s);
+		Matrix m = MathHelper.scale(s);
 		compareMatrixToArray(m, id);
 	}
 
