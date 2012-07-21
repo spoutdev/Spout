@@ -11,10 +11,11 @@ out vec2 uvcoord;
 
 uniform mat4 Projection;
 uniform mat4 View;
+uniform mat4 Model;
 		
 void main()
 {
-	gl_Position = Projection * View * vPosition;
+	gl_Position = Projection * View * Model * vPosition;
 	
 	uvcoord = vTexCoord;
 	color = vColor;
