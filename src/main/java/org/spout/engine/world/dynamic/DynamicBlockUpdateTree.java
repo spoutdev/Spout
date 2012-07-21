@@ -95,6 +95,36 @@ public class DynamicBlockUpdateTree {
 		}
 	}
 	
+	public void syncResetBlockUpdates(int x, int y, int z) {
+		checkStages();
+		syncResetBlockUpdates(x, y, z, world.getAge(), false);
+	}
+	
+	private boolean syncResetBlockUpdates(int x, int y, int z, long currentTime, boolean triggerPlacement) {
+		x &= Region.BLOCKS.MASK;
+		y &= Region.BLOCKS.MASK;
+		z &= Region.BLOCKS.MASK;
+		
+		removeAll(DynamicBlockUpdate.getBlockPacked(x, y, z));
+
+		Chunk c = region.getChunkFromBlock(x, y, z, LoadOption.NO_LOAD);
+		if (c == null) {
+			return false;
+		}
+
+		if (triggerPlacement) {
+			Material m = c.getBlockMaterial(x, y, z);
+
+			if (m instanceof DynamicMaterial) {
+				Block b = c.getBlock(x, y, z, c.getWorld());
+
+				DynamicMaterial dm = (DynamicMaterial)m;
+				dm.onPlacement(b, region, currentTime);
+			}
+		}
+		return true;
+	}
+	
 	public DynamicUpdateEntry queueBlockUpdates(int x, int y, int z) {
 		checkStages();
 		x &= Region.BLOCKS.MASK;
@@ -187,25 +217,11 @@ public class DynamicBlockUpdateTree {
 			if (!processed.add(packed)) {
 				continue;
 			}
-			int bx = p.getBlockX() & Region.BLOCKS.MASK;
-			int by = p.getBlockY() & Region.BLOCKS.MASK;
-			int bz = p.getBlockZ() & Region.BLOCKS.MASK;
+			int bx = p.getBlockX();
+			int by = p.getBlockY();
+			int bz = p.getBlockZ();
 			
-			removeAll(DynamicBlockUpdate.getBlockPacked(bx, by, bz));
-
-			Chunk c = region.getChunkFromBlock(bx, by, bz, LoadOption.NO_LOAD);
-			if (c == null) {
-				continue;
-			}
-
-			Material m = c.getBlockMaterial(bx, by, bz);
-			
-			if (m instanceof DynamicMaterial) {
-				Block b = c.getBlock(bx, by, bz, c.getWorld());
-				
-				DynamicMaterial dm = (DynamicMaterial)m;
-				dm.onPlacement(b, region, currentTime);
-			}
+			syncResetBlockUpdates(bx, by, bz, currentTime, true);
 		}
 		processed.clear();
 	}

@@ -614,6 +614,11 @@ public final class SpoutWorld extends AsyncManager implements World {
 	public void resetDynamicBlock(int x, int y, int z) {
 		this.getRegionFromBlock(x, y, z).resetDynamicBlock(x, y, z);
 	}
+	
+	@Override
+	public void syncResetDynamicBlock(int x, int y, int z) {
+		this.getRegionFromBlock(x, y, z).syncResetDynamicBlock(x, y, z);
+	}
 
 	@Override
 	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, int data, Object hint) {
