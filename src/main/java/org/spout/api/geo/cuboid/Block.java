@@ -38,14 +38,14 @@ import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.material.source.DataSource;
 import org.spout.api.material.source.MaterialSource;
-import org.spout.api.material.source.MaterialState;
+import org.spout.api.material.source.MaterialAccess;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveWrite;
 import org.spout.api.util.thread.Threadsafe;
 
-public interface Block extends MaterialState, WorldSource {
+public interface Block extends MaterialAccess, WorldSource {
 
 	/**
 	 * Gets the {@link Point} position of this block in the world

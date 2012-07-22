@@ -32,20 +32,12 @@ import org.spout.api.material.Material;
  * Represents a {@link DataSource} which also contains and stores {@link Material} data.
  */
 public interface MaterialSource extends DataSource {
-
 	/**
 	 * Gets the material
 	 * 
 	 * @return the material
 	 */
 	public Material getMaterial();
-	
-	/**
-	 * Gets the sub material using this material and this data
-	 * 
-	 * @return the sub material
-	 */
-	public Material getSubMaterial();
 
 	/**
 	 * Gets if the material contained equals one of the materials specified

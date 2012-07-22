@@ -104,6 +104,6 @@ public class BlockSnapshot extends GenericMaterialSource {
 	 * @return the material
 	 */
 	public BlockMaterial getMaterial() {
-		return super.getMaterial();
+		return (BlockMaterial) super.getMaterial();
 	}
 }

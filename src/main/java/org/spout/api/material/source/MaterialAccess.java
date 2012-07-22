@@ -26,46 +26,42 @@
  */
 package org.spout.api.material.source;
 
-import org.spout.api.material.Material;
-import org.spout.api.util.LogicUtil;
+/**
+ * Represents a {@link DataSource} and a {@link MaterialSource} which can also set the Material and Data
+ */
+public interface MaterialAccess extends MaterialSource {
+	/**
+	 * Sets the material
+	 * 
+	 * @param material to set to
+	 */
+	public MaterialAccess setMaterial(MaterialSource material);
 
-public class GenericMaterialData implements MaterialData {
-	private final Material material;
-	private short data;
+	/**
+	 * Sets the material and data
+	 * @param material to set to
+	 * @param data value to set to
+	 */
+	public MaterialAccess setMaterial(MaterialSource material, int data);
 
-	public GenericMaterialData(Material material, short data) {
-		this.material = material;
-		this.data = data;
-	}
+	/**
+	 * Sets the material and data
+	 * @param material to set to
+	 * @param datasource of the data to set to
+	 */
+	public MaterialAccess setMaterial(MaterialSource material, DataSource datasource);
 
-	@Override
-	public Material getMaterial() {
-		return this.material;
-	}
+	/**
+	 * Sets the data value
+	 * 
+	 * @param data value
+	 */
+	public MaterialAccess setData(int data);
 
-	@Override
-	public short getData() {
-		return this.data;
-	}
-
-	@Override
-	public GenericMaterialData setData(int data) {
-		this.data = (short) data;
-		return this;
-	}
-
-	@Override
-	public GenericMaterialData setData(DataSource datasource) {
-		return this.setData(datasource.getData());
-	}
-
-	@Override
-	public Material getSubMaterial() {
-		return this.getMaterial().getSubMaterial(this.getData());
-	}
-
-	@Override
-	public boolean isMaterial(Material... materials) {
-		return LogicUtil.equalsAny(this.material, materials);
-	}
+	/**
+	 * Sets the data value
+	 * 
+	 * @param datasource to get the data from
+	 */
+	public MaterialAccess setData(DataSource datasource);
 }
