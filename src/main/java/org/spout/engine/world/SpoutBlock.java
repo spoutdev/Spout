@@ -253,11 +253,6 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public BlockMaterial getSubMaterial() {
-		return this.getMaterial().getSubMaterial(this.getData());
-	}
-
-	@Override
 	public Region getRegion() {
 		return this.getChunk().getRegion();
 	}
