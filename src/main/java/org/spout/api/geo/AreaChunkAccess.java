@@ -56,7 +56,7 @@ public interface AreaChunkAccess extends AreaBlockAccess {
 	 */
 	@LiveRead
 	public Chunk getChunk(int x, int y, int z, LoadOption loadopt);
-
+	
 	/**
 	 * Gets if a chunk is contained in this area
 	 * @param x coordinate of the chunk

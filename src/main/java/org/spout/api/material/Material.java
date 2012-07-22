@@ -414,15 +414,6 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		return LogicUtil.equalsAny(this, materials);
 	}
 
-	/**
-	 * Checks whether this material equals any of the materials given
-	 * @param materials to compare to
-	 * @return whether it equals one of the materials
-	 */
-	public boolean equals(Material... materials) {
-		return this.isMaterial(materials);
-	}
-
 	@Override
 	public String toString() {
 		return "Material {" + getName() + "}";
