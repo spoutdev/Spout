@@ -276,7 +276,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		Spout.getFilesystem().postStartup();
 
-		activeCamera = new BasicCamera(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(new Vector3(0, 0, -2), Vector3.ZERO, Vector3.UP));
+		activeCamera = new BasicCamera(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(new Vector3(0, 10, -5), Vector3.ZERO, Vector3.UP));
+		
 		renderer = new PrimitiveBatch();
 
 		
@@ -294,6 +295,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 		
 		
 		loc = new Transform(new Point(null, 0, 0, 0), Quaternion.IDENTITY, Vector3.ONE);
+		
+		renderer.begin(material);		
+		renderer.addMesh(cube);
+		renderer.end();
+
 	}
 
 	private void createWindow() {
@@ -346,17 +352,14 @@ public class SpoutClient extends SpoutEngine implements Client {
 		double cz = 2 * Math.cos(Math.toRadians(ticks));
 		double cy = 2 * Math.sin(Math.toRadians(ticks));
 		
-		loc = new Transform(new Point(null, (float)cx, (float)cy, (float)cz), Quaternion.IDENTITY, Vector3.ONE);
+		loc.setRotation(MathHelper.rotation((float)Math.toDegrees(cx), (float)Math.toDegrees(cy), (float)Math.toDegrees(cz)));
+		loc.setScale(new Vector3((float)(cx + 2.1), (float)(cx + 2.1), (float)(cz * 2.1)));
 
 		Matrix view = MathHelper.createLookAt(new Vector3(cx, cy, cz), Vector3.ZERO, Vector3.UP);
 
 		material.getShader().setUniform("View", activeCamera.getView());
 		material.getShader().setUniform("Projection", activeCamera.getProjection());
 		material.getShader().setUniform("Model", loc.toMatrix());
-		renderer.begin(material);		
-		renderer.addMesh(cube);
-		//((BatchVertexRenderer)renderer.getRenderer()).dumpBuffers();
-		renderer.end();
 
 		renderer.draw();
 
