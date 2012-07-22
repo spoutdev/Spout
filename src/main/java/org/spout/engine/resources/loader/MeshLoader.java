@@ -81,11 +81,11 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 					
 				} else if(sp[1].contains("/")){
 					ArrayList<Vertex> ar = new ArrayList<Vertex>();
-					for(int i = 1; i <= 3; i++){
+					for(int i = 1; i <= 2; i++){
 						String[] sn = sp[i].split("/");
 						int pos = Integer.parseInt(sn[0]);
 						int uv = Integer.parseInt(sn[1]);
-						ar.add(new Vertex(verticies.get(pos - 1), uvs.get(uv -1)));
+						ar.add(new Vertex(verticies.get(pos - 1), uvs.get(uv - 1)));
 											
 					}
 					faces.add(new ModelFace(ar.get(0), ar.get(1), ar.get(2)));

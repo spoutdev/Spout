@@ -53,12 +53,16 @@ import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
+import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.keyboard.Input;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
+import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
+import org.spout.api.model.Mesh;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.render.BasicCamera;
@@ -100,6 +104,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private VertexBufferImpl buffer;
 	private long ticks = 0;
 
+	private BaseMesh cube;
+	private Transform loc;
+	
 	public SpoutClient() {
 		this.filesystem = new ClientFileSystem();
 	}
@@ -272,19 +279,21 @@ public class SpoutClient extends SpoutEngine implements Client {
 		activeCamera = new BasicCamera(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(new Vector3(0, 0, -2), Vector3.ZERO, Vector3.UP));
 		renderer = new PrimitiveBatch();
 
+		
+		
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		getLogger().info("Loading Texture");
 		textureTest = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 		getLogger().info("Loading Material");
-		material = (RenderMaterial) Spout.getFilesystem().getResource("material://Vanilla/resources/materials/terrain.smt");
+		material = (RenderMaterial) Spout.getFilesystem().getResource("material://Spout/resources/resources/materials/BasicMaterial.smt");
 
 		buffer = new VertexBufferImpl();
 		vbBatch = new VertexBufferBatcher(GL11.GL_TRIANGLES, buffer);
 
-		//graphics = new Graphics(Display.getWidth(), Display.getHeight());
-
-		//screenStack = new ScreenStack(new LoadingScreen());
-		//bunny = (BaseMesh) FileSystem.getResource("mesh://Vanilla/bunny.obj");
+		cube = (BaseMesh) Spout.getFilesystem().getResource("mesh://Spout/resources/resources/models/cube.obj");
+		
+		
+		loc = new Transform(new Point(null, 0, 0, 0), Quaternion.IDENTITY, Vector3.ONE);
 	}
 
 	private void createWindow() {
@@ -336,73 +345,22 @@ public class SpoutClient extends SpoutEngine implements Client {
 		double cx = 2 * Math.sin(Math.toRadians(ticks));
 		double cz = 2 * Math.cos(Math.toRadians(ticks));
 		double cy = 2 * Math.sin(Math.toRadians(ticks));
+		
+		loc = new Transform(new Point(null, (float)cx, (float)cy, (float)cz), Quaternion.IDENTITY, Vector3.ONE);
 
 		Matrix view = MathHelper.createLookAt(new Vector3(cx, cy, cz), Vector3.ZERO, Vector3.UP);
 
-		vbBatch.begin(material);
-		vbBatch.addTexCoord(0, 0);
-		vbBatch.addVertex(0, 0);
-		vbBatch.addTexCoord(1, 0);
-		vbBatch.addVertex(1, 0);
-		vbBatch.addTexCoord(0, 1);
-		vbBatch.addVertex(0, 1);
-
-		vbBatch.addTexCoord(0, 1);
-		vbBatch.addVertex(0, 1);
-		vbBatch.addTexCoord(1, 1);
-		vbBatch.addVertex(1, 1);
-		vbBatch.addTexCoord(1, 0);
-		vbBatch.addVertex(1, 0);
-
-		vbBatch.end();
-
-		material.getShader().setUniform("View", view);
+		material.getShader().setUniform("View", activeCamera.getView());
 		material.getShader().setUniform("Projection", activeCamera.getProjection());
-		buffer.drawBuffer(material);
-		//renderer.getRenderer().getShader().setUniform("View", view);
-		//renderer.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
-		//renderer.begin();
-		//renderer.addCube(Vector3.ZERO,Vector3.ONE, Color.RED, sides);
-		//renderer.addMesh(bunny);
+		material.getShader().setUniform("Model", loc.toMatrix());
+		renderer.begin(material);		
+		renderer.addMesh(cube);
 		//((BatchVertexRenderer)renderer.getRenderer()).dumpBuffers();
-		//renderer.end();
+		renderer.end();
 
-		//renderer.draw();
+		renderer.draw();
 
-		textureTest.begin(material);
-		textureTest.getShader().setUniform("View", view);
-		textureTest.getShader().setUniform("Projection", activeCamera.getProjection());
-		textureTest.addTexCoord(0, 0);
-		textureTest.addVertex(4, 4);
-		textureTest.addTexCoord(1, 0);
-		textureTest.addVertex(5, 4);
-		textureTest.addTexCoord(0, 1);
-		textureTest.addVertex(4, 5);
-
-		textureTest.addTexCoord(0, 1);
-		textureTest.addVertex(4, 5);
-		textureTest.addTexCoord(1, 1);
-		textureTest.addVertex(5, 5);
-		textureTest.addTexCoord(1, 0);
-		textureTest.addVertex(5, 4);
-		textureTest.end();
-		textureTest.render();
-
-		/*
-		Object[] worlds = this.getLiveWorlds().toArray();
-		SpoutWorld world = (SpoutWorld)worlds[0];
-		renderVisibleChunks(world);
-
-
-
-		for(Object b : chunkRenderers.values()){
-			PrimitiveBatch batch = (PrimitiveBatch)b;
-			batch.getRenderer().getShader().setUniform("View", view);
-			batch.getRenderer().getShader().setUniform("Projection", activeCamera.getProjection());
-			Spout.log("Drawing: " + batch.getRenderer().getVertexCount() + " Verticies");
-			batch.draw();
-		}
-	*/
+		
 
 	}
 
