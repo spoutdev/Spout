@@ -46,6 +46,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	private final String name;
 	private final boolean isSubMaterial;
 	private final Material parent;
+	private final Material root;
 	private Model model;
 	private String displayName;
 	private int maxStackSize = 64;
@@ -68,6 +69,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.data = 0;
 		this.id = (short) MaterialRegistry.register(this);
 		this.dataMask = 0;
+		this.root = this;
 	}
 	
 	/**
@@ -84,10 +86,11 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.data = 0;
 		this.id = (short) MaterialRegistry.register(this);
 		this.dataMask = dataMask;
+		this.root = this;
 	}
 
 	/**
-	 * Creates and registers a material
+	 * Creates and registers a sub material
 	 * 
 	 * @param name of the material
 	 * @param data
@@ -101,8 +104,9 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.data = (short) data;
 		this.id = (short) MaterialRegistry.register(this);
 		this.dataMask = parent.getDataMask();
+		this.root = parent.getRoot();
 	}
-	
+
 	/**
 	 * Creates a material with a reserved id
 	 * 
@@ -117,8 +121,9 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.data = 0;
 		this.id = (short) MaterialRegistry.register(this, id);
 		this.dataMask = 0;
+		this.root = this;
 	}
-	
+
 	/**
 	 * Creates a material with a reserved id
 	 * 
@@ -133,6 +138,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.data = 0;
 		this.id = (short) MaterialRegistry.register(this, id);
 		this.dataMask = dataMask;
+		this.root = this;
 	}
 
 	public final short getId() {
@@ -224,11 +230,6 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		}
 		return this;
 	}
-	
-	@Override
-	public Material getSubMaterial() {
-		return this; //no way around it unfortunately
-	}
 
 	/**
 	 * Registers the sub material for this material
@@ -272,6 +273,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	}
 
 	@Override
+	@Deprecated
 	public Material getMaterial() {
 		return this;
 	}
@@ -284,14 +286,14 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	public Material getParentMaterial() {
 		return this.parent;
 	}
-	
+
 	/**
 	 * Gets the root parent of this sub materia;
 	 * 
 	 * @return the material root
 	 */
 	public Material getRoot() {
-		return this.parent == this ? this : this.parent.getRoot();
+		return this.root;
 	}
 
 	/**
@@ -411,7 +413,27 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 
 	@Override
 	public boolean isMaterial(Material... materials) {
-		return LogicUtil.equalsAny(this, materials);
+		if (LogicUtil.equalsAny(this, materials)) {
+			return true;
+		}
+		if (this.getRoot() != this && LogicUtil.equalsAny(this.getRoot(), materials)) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (other == null) {
+			return false;
+		} else if (other instanceof Material) {
+			return other == this;
+		} else if (other instanceof MaterialSource) {
+			MaterialSource bs = (MaterialSource) other;
+			return this == bs.getMaterial() && bs.getData() == this.getData();
+		} else {
+			return false;
+		}
 	}
 
 	@Override

@@ -26,58 +26,52 @@
  */
 package org.spout.api.material.source;
 
-import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
-import org.spout.api.util.LogicUtil;
 
-public class GenericMaterialState implements MaterialState {
-	private Material material;
-	private short data;
-
-	public GenericMaterialState() {
-		this.material = BlockMaterial.AIR;
-		this.data = 0;
+public class GenericMaterialAccess extends GenericMaterialSource implements MaterialAccess {
+	public GenericMaterialAccess() {
 	}
 
-	public GenericMaterialState(MaterialSource material) {
+	public GenericMaterialAccess(MaterialSource material) {
 		this(material.getMaterial(), material.getData());
 	}
 
-	public GenericMaterialState(MaterialSource material, DataSource datasource) {
+	public GenericMaterialAccess(MaterialSource material, DataSource datasource) {
 		this(material, datasource.getData());
 	}
 
-	public GenericMaterialState(MaterialSource material, int data) {
-		this.setMaterial(material);
-		this.setData(data);
+	public GenericMaterialAccess(MaterialSource material, int data) {
+		super(material, data);
 	}
 
 	@Override
-	public GenericMaterialState setMaterial(MaterialSource material, DataSource datasource) {
+	public GenericMaterialAccess setMaterial(MaterialSource material, DataSource datasource) {
 		return this.setMaterial(material, datasource.getData());
 	}
 
 	@Override
-	public GenericMaterialState setMaterial(MaterialSource material, int data) {
-		this.setMaterial(material);
-		this.setData(data);
+	public GenericMaterialAccess setMaterial(MaterialSource material, int data) {
+		this.data = (short) data;
+		this.material = material.getMaterial().getSubMaterial(this.data);
 		return this;
 	}
 
 	@Override
-	public GenericMaterialState setData(DataSource datasource) {
+	public GenericMaterialAccess setData(DataSource datasource) {
 		return this.setData(datasource.getData());
 	}
 
 	@Override
-	public GenericMaterialState setMaterial(MaterialSource material) {
+	public GenericMaterialAccess setMaterial(MaterialSource material) {
 		this.material = material.getMaterial();
+		this.data = material.getData();
 		return this;
 	}
-	
+
 	@Override
-	public GenericMaterialState setData(int data) {
+	public GenericMaterialAccess setData(int data) {
 		this.data = (short) data;
+		this.material = this.material.getRoot().getSubMaterial(this.data);
 		return this;
 	}
 
@@ -92,13 +86,31 @@ public class GenericMaterialState implements MaterialState {
 	}
 
 	@Override
-	public Material getSubMaterial() {
-		return this.getMaterial().getSubMaterial(this.getData());
+	public boolean equals(Object other) {
+		if (other == null) {
+			return false;
+		} else if (other == this) {
+			return true;
+		} else if (other instanceof MaterialSource) {
+			MaterialSource bs = (MaterialSource) other;
+			return bs.getMaterial() == this.getMaterial() && bs.getData() == this.getData();
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	public boolean isMaterial(Material... materials) {
-		return LogicUtil.equalsAny(this.material, materials);
+		if (this.material == null) {
+			for (Material material : materials) {
+				if (material == null) {
+					return true;
+				}
+			}
+			return false;
+		} else {
+			return this.material.isMaterial(materials);
+		}
 	}
 }
 

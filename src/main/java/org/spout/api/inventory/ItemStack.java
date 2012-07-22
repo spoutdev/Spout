@@ -36,7 +36,8 @@ import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.source.DataSource;
-import org.spout.api.material.source.MaterialData;
+import org.spout.api.material.source.GenericMaterialAccess;
+import org.spout.api.material.source.MaterialSource;
 import org.spout.api.util.LogicUtil;
 import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
@@ -46,13 +47,11 @@ import org.spout.nbt.stream.NBTOutputStream;
 /**
  * Represents a stack of items
  */
-public class ItemStack implements MaterialData, Serializable, Cloneable {
+public class ItemStack extends GenericMaterialAccess implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 
 	// Do NOT allow material to be changed
-	private Material material;
 	private int amount;
-	private short data;
 	private CompoundMap nbtData = null;
 	private DataMap auxData;
 
@@ -68,17 +67,16 @@ public class ItemStack implements MaterialData, Serializable, Cloneable {
 	 * Creates a new ItemStack from the specified Material and data of the
 	 * specified amount
 	 */
-	public ItemStack(Material material, short data, int amount) {
+	public ItemStack(Material material, int data, int amount) {
 		this(material, data, amount, null);
 	}
-	
+
 	/**
 	 * Creates a new ItemStack from the specified Material and data of the
 	 * specified amount, with the specified aux data
 	 */
-	public ItemStack(Material material, short data, int amount, DataMap auxData) {
-		this.material = material;
-		this.setData(data);
+	public ItemStack(Material material, int data, int amount, DataMap auxData) {
+		super(material, data);
 		this.amount = amount;
 		if (auxData != null) {
 			this.auxData = auxData;
@@ -94,12 +92,7 @@ public class ItemStack implements MaterialData, Serializable, Cloneable {
 	 */
 	@Override
 	public Material getMaterial() {
-		return material;
-	}
-	
-	@Override
-	public Material getSubMaterial() {
-		return this.getMaterial().getSubMaterial(this.getData());
+		return super.getMaterial();
 	}
 
 	/**
@@ -132,7 +125,31 @@ public class ItemStack implements MaterialData, Serializable, Cloneable {
 
 	@Override
 	public boolean isMaterial(Material... materials) {
-		return LogicUtil.equalsAny(this.material, materials);
+		if (this.material == null) {
+			for (Material material : materials) {
+				if (material == null) {
+					return true;
+				}
+			}
+			return false;
+		} else {
+			return this.material.isMaterial(materials);
+		}
+	}
+
+	@Override
+	public ItemStack setMaterial(MaterialSource material) {
+		return (ItemStack) super.setMaterial(material);
+	}
+
+	@Override
+	public ItemStack setMaterial(MaterialSource material, DataSource datasource) {
+		return (ItemStack) super.setMaterial(material, datasource);
+	}
+
+	@Override
+	public ItemStack setMaterial(MaterialSource material, int data) {
+		return (ItemStack) super.setMaterial(material, data);
 	}
 
 	/**
@@ -208,10 +225,8 @@ public class ItemStack implements MaterialData, Serializable, Cloneable {
 
 	@Override
 	public ItemStack setData(int data) {
-		if (((data ^ material.getData()) & material.getDataMask()) != 0) {
-			throw new IllegalArgumentException("Data value passed to item stack would cause a sub-material change.  This may be caused by an incorrectly set dataMask setting");
-		}
 		this.data = (short) data;
+		this.material = this.material.getRoot().getSubMaterial(this.data);
 		return this;
 	}
 
@@ -289,7 +304,7 @@ public class ItemStack implements MaterialData, Serializable, Cloneable {
 		item.setAmount(0);
 		return true;
 	}
-	
+
 	/**
 	 * Gets the maximum size this {@link ItemStack} can be using the material it has
 	 * 
@@ -299,7 +314,7 @@ public class ItemStack implements MaterialData, Serializable, Cloneable {
 		if (!auxData.isEmpty() || (nbtData != null && !nbtData.isEmpty())) {
 			return 1;
 		}
-		return this.getSubMaterial().getMaxStackSize();
+		return this.getMaterial().getMaxStackSize();
 	}
 
 	/**
@@ -308,7 +323,7 @@ public class ItemStack implements MaterialData, Serializable, Cloneable {
 	 * @return the max data
 	 */
 	public short getMaxData() {
-		return this.getSubMaterial().getMaxData();
+		return this.getMaterial().getMaxData();
 	}
 	
 	//Custom serialization logic because material & auxData can not be made serializable

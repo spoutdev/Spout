@@ -28,20 +28,29 @@ package org.spout.api.material.source;
 
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
-import org.spout.api.util.LogicUtil;
 import org.spout.api.util.hashing.ShortPairHashed;
 
 public class GenericMaterialSource implements MaterialSource {
-	private final BlockMaterial material;
-	private final short data;
+	protected Material material;
+	protected short data;
 
-	public GenericMaterialSource(BlockMaterial material, short data) {
-		this.material = material;
-		this.data = data;
+	public GenericMaterialSource() {
+		this.material = BlockMaterial.AIR;
+		this.data = (short) 0;
+	}
+
+	public GenericMaterialSource(MaterialSource material) {
+		this.material = material.getMaterial();
+		this.data = material.getData();
+	}
+
+	public GenericMaterialSource(MaterialSource material, int data) {
+		this.data = (short) data;
+		this.material = material == null ? null : material.getMaterial().getSubMaterial(this.data);
 	}
 
 	@Override
-	public BlockMaterial getMaterial() {
+	public Material getMaterial() {
 		return this.material;
 	}
 
@@ -62,7 +71,9 @@ public class GenericMaterialSource implements MaterialSource {
 
 	@Override
 	public boolean equals(Object other) {
-		if (other == this) {
+		if (other == null) {
+			return false;
+		} else if (other == this) {
 			return true;
 		} else if (other instanceof MaterialSource) {
 			MaterialSource bs = (MaterialSource) other;
@@ -73,12 +84,16 @@ public class GenericMaterialSource implements MaterialSource {
 	}
 
 	@Override
-	public Material getSubMaterial() {
-		return this.getMaterial().getSubMaterial(this.getData());
-	}
-
-	@Override
 	public boolean isMaterial(Material... materials) {
-		return LogicUtil.equalsAny(this.material, materials);
+		if (this.material == null) {
+			for (Material material : materials) {
+				if (material == null) {
+					return true;
+				}
+			}
+			return false;
+		} else {
+			return this.material.isMaterial(materials);
+		}
 	}
 }

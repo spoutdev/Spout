@@ -61,7 +61,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 */
 	@LiveWrite
 	public boolean addBlockData(int x, int y, int z, short data, Source source);
-	
+
 	/**
 	 * Sets the material and data for the block at (x, y, z) to the given material and data.
 	 *
@@ -197,7 +197,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 */
 	@Threadsafe
 	public boolean isBlockDataBitSet(int x, int y, int z, int bits);
-	
+
 	/**
 	 * Sets the data field for the block at (x, y, z).  This is the reverse operation to the getBlockDataField method.<br>
 	 * <br>

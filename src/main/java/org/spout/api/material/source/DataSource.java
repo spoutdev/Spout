@@ -37,5 +37,4 @@ public interface DataSource {
 	 * @return the data value
 	 */
 	public short getData();
-
 }
