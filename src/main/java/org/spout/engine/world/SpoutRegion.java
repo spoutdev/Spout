@@ -564,11 +564,11 @@ public class SpoutRegion extends Region{
 	}
 
 	public void addEntity(Entity e) {
-		this.entityManager.allocate((SpoutEntity) e, this);
+		this.entityManager.addEntity((SpoutEntity) e, this);
 	}
 
 	public void removeEntity(Entity e) {
-		this.entityManager.deallocate((SpoutEntity) e);
+		this.entityManager.removeEntity((SpoutEntity) e);
 	}
 
 	public void startTickRun(int stage, long delta) {

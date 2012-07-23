@@ -150,7 +150,6 @@ public class EntityManager implements Iterable<SpoutEntity> {
 	 * Allocates the id for an entity.
 	 *
 	 * @param entity The entity.
-	 * @param region to allocate the entity for
 	 * @return The id.
 	 */
 	public int allocate(SpoutEntity entity, SpoutRegion region) {
@@ -159,7 +158,6 @@ public class EntityManager implements Iterable<SpoutEntity> {
 			return -1; //TODO correct?
 		}
 		int currentId = entity.getId();
-		SpoutRegion entityRegion = region == null ? ((SpoutRegion) entity.getRegion()) : region;
 		if (currentId == SpoutEntity.NOTSPAWNEDID) {
 			currentId = nextId.getAndIncrement();
 			if (currentId == -2) {
@@ -168,21 +166,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 			entity.setId(currentId);
 		}
 		entities.put(currentId, entity);
-		entity.setOwningThread(entityRegion.getExceutionThread());
-
-		if (entity.getController() != null) {
-			getRawAll(entity.getController().getClass()).add(entity);
-			Controller c = entity.getController();
-			if (c instanceof PlayerController) {
-				players.add((PlayerController) c);
-			} else if (c instanceof BlockController) {
-				Point pos = entity.getPosition();
-				Entity old = blockEntities.put(pos, entity);
-				if (old != null) {
-					old.kill();
-				}
-			}
-		}
+		entity.setOwningThread(region.getExceutionThread());
 		return currentId;
 	}
 
@@ -197,6 +181,27 @@ public class EntityManager implements Iterable<SpoutEntity> {
 			return;
 		}
 		entities.remove(entity.getId());
+	}
+
+	public void addEntity(SpoutEntity entity, SpoutRegion region) {
+		allocate(entity, region);
+		if (entity.getController() != null) {
+			getRawAll(entity.getController().getClass()).add(entity);
+			Controller c = entity.getController();
+			if (c instanceof PlayerController) {
+				players.add((PlayerController) c);
+			} else if (c instanceof BlockController) {
+				Point pos = entity.getPosition();
+				Entity old = blockEntities.put(pos, entity);
+				if (old != null) {
+					old.kill();
+				}
+			}
+		}
+	}
+
+	public void removeEntity(SpoutEntity entity) {
+		deallocate(entity);
 		Controller controller = entity.getController();
 		if (controller != null) {
 			getRawAll(entity.getController().getClass()).remove(entity);
