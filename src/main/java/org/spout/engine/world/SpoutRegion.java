@@ -169,7 +169,6 @@ public class SpoutRegion extends Region{
 	 */
 	final Queue<Chunk> populationQueue = new ConcurrentLinkedQueue<Chunk>();
 	final Set<Chunk> populationQueueSet = Collections.newSetFromMap(new ConcurrentHashMap<Chunk, Boolean>());
-	private final Map<Vector3, Entity> blockEntities = new HashMap<Vector3, Entity>();
 
 	private final SpoutTaskManager taskManager;
 
@@ -565,25 +564,11 @@ public class SpoutRegion extends Region{
 	}
 
 	public void addEntity(Entity e) {
-		Controller controller = e.getController();
-		if (controller instanceof BlockController) {
-			Point pos = e.getPosition();
-			Vector3 vpos = new Vector3(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ());
-			Entity old = blockEntities.put(vpos, e);
-			if (old != null) {
-				old.kill();
-			}
-		}
-		this.allocate((SpoutEntity) e);
+		this.entityManager.allocate((SpoutEntity) e, this);
 	}
 
 	public void removeEntity(Entity e) {
-		Vector3 pos = e.getPosition().floor();
-		Entity be = blockEntities.get(pos);
-		if (be == e) {
-			blockEntities.remove(pos);
-		}
-		this.deallocate((SpoutEntity)e);
+		this.entityManager.deallocate((SpoutEntity) e);
 	}
 
 	public void startTickRun(int stage, long delta) {
@@ -977,23 +962,6 @@ public class SpoutRegion extends Region{
 		return entityManager.getEntity(id);
 	}
 
-	/**
-	 * Allocates the id for an entity.
-	 * @param entity The entity.
-	 * @return The id.
-	 */
-	public int allocate(SpoutEntity entity) {
-		return entityManager.allocate(entity, this);
-	}
-
-	/**
-	 * Deallocates the id for an entity.
-	 * @param entity The entity.
-	 */
-	public void deallocate(SpoutEntity entity) {
-		entityManager.deallocate(entity);
-	}
-
 	public EntityManager getEntityManager() {
 		return entityManager;
 	}
@@ -1136,7 +1104,7 @@ public class SpoutRegion extends Region{
 	@Override
 	public void setBlockController(int x, int y, int z, BlockController controller) {
 		Vector3 pos = new Vector3(x, y, z);
-		Entity entity = blockEntities.get(pos);
+		Entity entity = this.entityManager.getBlockEntities().get(pos);
 		if (entity != null) {
 			if (controller != null) {
 				//hotswap
@@ -1153,11 +1121,9 @@ public class SpoutRegion extends Region{
 
 	@Override
 	public BlockController getBlockController(int x, int y, int z) {
-		Entity entity = blockEntities.get(new Vector3(x, y, z));
+		Entity entity = this.entityManager.getBlockEntities().get(new Vector3(x, y, z));
 		return entity == null ? null : (BlockController) entity.getController();
 	}
-
-	int cnt = 0;
 
 	@Override
 	public void queueBlockPhysics(int x, int y, int z, EffectRange range, Source source) {
