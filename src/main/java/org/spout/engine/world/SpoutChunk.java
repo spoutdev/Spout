@@ -40,6 +40,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
+import org.relaxng.datatype.Datatype;
 import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.datatable.DataMap;
@@ -53,6 +54,7 @@ import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGeneratorUtils;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeManager;
+import org.spout.api.geo.AreaBlockSource;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
@@ -368,14 +370,20 @@ public class SpoutChunk extends Chunk {
 		return true;
 	}
 
+	/**
+	 * This is always 'this', it is changed to a snapshot of the chunk in initLighting()
+	 * Do NOT set this to something else or use it elsewhere but in initLighting()
+	 */
+	protected AreaBlockSource lightBlockSource = this;
+
 	protected void addSkyLightOperation(int x, int y, int z, int operation) {
 		SpoutWorldLightingModel model = this.getWorld().getLightingManager().getSkyModel();
 		if (operation == SpoutWorldLighting.REFRESH) {
-			if (!model.canRefresh(this, x, y, z)) {
+			if (!model.canRefresh(this.lightBlockSource, x, y, z)) {
 				return;
 			}
 		} else if (operation == SpoutWorldLighting.GREATER) {
-			if (!model.canGreater(this, x, y, z)) {
+			if (!model.canGreater(this.lightBlockSource, x, y, z)) {
 				return;
 			}
 		}
@@ -391,11 +399,11 @@ public class SpoutChunk extends Chunk {
 	protected void addBlockLightOperation(int x, int y, int z, int operation) {
 		SpoutWorldLightingModel model = this.getWorld().getLightingManager().getBlockModel();
 		if (operation == SpoutWorldLighting.REFRESH) {
-			if (!model.canRefresh(this, x, y, z)) {
+			if (!model.canRefresh(this.lightBlockSource, x, y, z)) {
 				return;
 			}
 		} else if (operation == SpoutWorldLighting.GREATER) {
-			if (!model.canGreater(this, x, y, z)) {
+			if (!model.canGreater(this.lightBlockSource, x, y, z)) {
 				return;
 			}
 		}
@@ -1176,10 +1184,11 @@ public class SpoutChunk extends Chunk {
 		Arrays.fill(this.skyLight, (byte) 0);
 
 		// Initialize block lighting
+		this.lightBlockSource = this.getSnapshot(SnapshotType.BLOCKS_ONLY, EntityType.NO_ENTITIES, ExtraData.NO_EXTRA_DATA);
 		for (x = 0; x < BLOCKS.SIZE; x++) {
 			for (y = 0; y < BLOCKS.SIZE; y++) {
 				for (z = 0; z < BLOCKS.SIZE; z++) {
-					if (!this.setBlockLight(x, y, z, this.getBlockMaterial(x, y, z).getLightLevel(this.getBlockData(x, y, z)), world)) {
+					if (!this.setBlockLight(x, y, z, this.lightBlockSource.getBlockMaterial(x, y, z).getLightLevel(this.lightBlockSource.getBlockData(x, y, z)), world)) {
 						// Refresh the block if at an edge to update from surrounding chunks
 						if (x == 0 || x == 15 || y == 0 || y == 15 || z == 0 || z == 15) {
 							this.addBlockLightOperation(x, y, z, SpoutWorldLighting.REFRESH);
@@ -1222,6 +1231,7 @@ public class SpoutChunk extends Chunk {
 			}
 		}
 		this.isInitializingLighting.set(false);
+		this.lightBlockSource = this; // stop using the snapshot from now on
 	}
 
 	public boolean addEntity(SpoutEntity entity) {
