@@ -29,6 +29,7 @@ package org.spout.engine.world;
 import gnu.trove.iterator.TShortIterator;
 
 import org.spout.api.Spout;
+import org.spout.api.geo.AreaBlockSource;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
@@ -87,7 +88,7 @@ public class SpoutWorldLightingModel {
 	 * @param z coordinate of the block
 	 * @return True if it can greaten the lighting, False if not
 	 */
-	public boolean canGreater(SpoutChunk chunk, int x, int y, int z) {
+	public boolean canGreater(AreaBlockSource chunk, int x, int y, int z) {
 		// Block lighting can always greaten, an occluded block could be a light source
 		int fullState = chunk.getBlockFullState(x, y, z);
 		return !this.sky || !BlockFullState.getMaterial(fullState).getOcclusion(BlockFullState.getData(fullState)).get(BlockFaces.NESWBT);
@@ -101,7 +102,7 @@ public class SpoutWorldLightingModel {
 	 * @param z coordinate of the block
 	 * @return True if it can refresh the lighting, False if not
 	 */
-	public boolean canRefresh(SpoutChunk chunk, int x, int y, int z) {
+	public boolean canRefresh(AreaBlockSource chunk, int x, int y, int z) {
 		int fullState = chunk.getBlockFullState(x, y, z);
 		return !BlockFullState.getMaterial(fullState).getOcclusion(BlockFullState.getData(fullState)).get(BlockFaces.NESWBT);
 	}
