@@ -73,25 +73,23 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 		this.shift = shift;
 		this.doubleShift = shift << 1;
 		int size = side * side * side;
-		blockIds = new AtomicShortArray(size);
-		auxStore = new AtomicIntArrayStore(size);
+		blockIds = new AtomicShortArray(size, blocks);
+		auxStore = new AtomicIntArrayStore(size); //TODO: Optimization!
 		dirtyX = new byte[dirtySize];
 		dirtyY = new byte[dirtySize];
 		dirtyZ = new byte[dirtySize];
-		if (blocks != null) {
+		if (blocks != null && data != null) {
 			int x = 0;
 			int z = 0;
 			int y = 0;
 			int max = (1 << shift) - 1;
 
 			for (int i = 0; i < Math.min(blocks.length, size); i++) {
-				short d = 0;
-				if (data != null) {
-					d = data[i];
+				short d = data[i];
+				if (d != 0) {
+					this.setBlock(x, y, z, blocks[i], d);
 				}
-				
-				this.setBlock(x, y, z, blocks[i], d);
-				
+
 				if (x < max) {
 					x++;
 				} else {

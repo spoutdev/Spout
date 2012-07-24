@@ -30,6 +30,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
+import org.spout.api.util.hashing.ShortPairHashed;
+
 public class AtomicShortArray implements Serializable {
 	private static final long serialVersionUID = 12344553523475L;
 	private final int length;
@@ -48,12 +50,32 @@ public class AtomicShortArray implements Serializable {
 	}
 
 	/**
-	 * Creates an atomic short array that is equal to a given array
+	 * Creates an atomic short array of a given length that is equal to a given array
 	 *
-	 * @param initial the initial array
+	 * @param length the length of the array
+	 * @param initial the initial array, is allowed to be null
 	 */
-	public AtomicShortArray(short[] initial) {
-		this(initial.length);
+	public AtomicShortArray(int length, short[] initial) {
+		this.length = length;
+		backingArraySize = (length & 1) + (length >> 1);
+		if (initial == null) {
+			backingArray = new AtomicIntegerArray(backingArraySize);
+			return;
+		}
+		// Store the initial data in the backing array
+		int[] data = new int[backingArraySize];
+		int initIndex = 0;
+		for (int i = 0; i < this.backingArraySize; i++) {
+			if (initIndex + 1 < initial.length) {
+				// both elements available for squashing
+				data[i] = ShortPairHashed.key(initial[initIndex], initial[initIndex + 1]);
+			} else {
+				// first element is last element
+				data[i] = ShortPairHashed.key(initial[initIndex], (short) 0);
+			}
+			initIndex += 2;
+		}
+		backingArray = new AtomicIntegerArray(data);
 	}
 
 	/**
@@ -73,7 +95,7 @@ public class AtomicShortArray implements Serializable {
 	 */
 	public final short get(int index) {
 		int packed = getPacked(index);
-		return unpack(packed, index);
+		return isEven(index) ? ShortPairHashed.key1(packed) : ShortPairHashed.key2(packed);
 	}
 
 	/**
@@ -93,15 +115,15 @@ public class AtomicShortArray implements Serializable {
 		while (!success) {
 			int oldPacked = backingArray.get(backingIndex);
 			if (evenIndex) {
-				oldValue = unpackEven(oldPacked);
+				oldValue = ShortPairHashed.key1(oldPacked);
 				even = value;
-				odd = unpackOdd(oldPacked);
+				odd = ShortPairHashed.key2(oldPacked);
 			} else {
-				oldValue = unpackOdd(oldPacked);
-				even = unpackEven(oldPacked);
+				oldValue = ShortPairHashed.key2(oldPacked);
+				even = ShortPairHashed.key1(oldPacked);
 				odd = value;
 			}
-			int newPacked = pack(even, odd);
+			int newPacked = ShortPairHashed.key(even, odd);
 			success = backingArray.compareAndSet(backingIndex, oldPacked, newPacked);
 		}
 		return oldValue;
@@ -118,7 +140,7 @@ public class AtomicShortArray implements Serializable {
 		if ((index & 1) != 0) {
 			throw new IllegalArgumentException("When setting 2 elements at once, the index must be even");
 		}
-		backingArray.set(index >> 1, pack(even, odd));
+		backingArray.set(index >> 1, ShortPairHashed.key(even, odd));
 	}
 
 	/**
@@ -140,18 +162,18 @@ public class AtomicShortArray implements Serializable {
 		while (!success) {
 			int oldPacked = backingArray.get(backingIndex);
 			if (evenIndex) {
-				oldValue = unpackEven(oldPacked);
+				oldValue = ShortPairHashed.key1(oldPacked);
 				even = newValue;
-				odd = unpackOdd(oldPacked);
+				odd = ShortPairHashed.key2(oldPacked);
 			} else {
-				oldValue = unpackOdd(oldPacked);
-				even = unpackEven(oldPacked);
+				oldValue = ShortPairHashed.key2(oldPacked);
+				even = ShortPairHashed.key1(oldPacked);
 				odd = newValue;
 			}
 			if (oldValue != expected) {
 				return false;
 			}
-			int newPacked = pack(even, odd);
+			int newPacked = ShortPairHashed.key(even, odd);
 			success = backingArray.compareAndSet(backingIndex, oldPacked, newPacked);
 		}
 		return true;
@@ -185,9 +207,9 @@ public class AtomicShortArray implements Serializable {
 		}
 		for (int i = 0; i < length; i += 2) {
 			int packed = getPacked(i);
-			array[i] = unpack(packed, i);
+			array[i] = ShortPairHashed.key1(packed);
 			if (i + 1 < length) {
-				array[i + 1] = unpack(packed, i + 1);
+				array[i + 1] = ShortPairHashed.key2(packed);
 			}
 		}
 		return array;
@@ -321,28 +343,7 @@ public class AtomicShortArray implements Serializable {
 		return backingArray.get(index >> 1);
 	}
 
-	private int pack(short even, short odd) {
-		return even << 16 | odd & 0xFFFF;
-	}
-
-	private short unpack(int packed, int index) {
-		boolean even = (index & 1) == 0;
-		if (even) {
-			return (short) (packed >> 16);
-		} else {
-			return (short) packed;
-		}
-	}
-
-	private short unpackEven(int packed) {
-		return (short) (packed >> 16);
-	}
-
-	private short unpackOdd(int packed) {
-		return (short) packed;
-	}
-
-	private boolean isEven(int index) {
+	private static boolean isEven(int index) {
 		return (index & 1) == 0;
 	}
 }

@@ -26,6 +26,7 @@
  */
 package org.spout.api.util.map.concurrent;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Random;
@@ -70,6 +71,33 @@ public class AtomicShortArrayTest {
 		int temp = array[i1];
 		array[i1] = array[i2];
 		array[i2] = temp;
+	}
+
+	private void testContents(AtomicShortArray array, short[] data) {
+		Random rand = new Random();
+		for (int i = 0; i < data.length; i++) {
+			assertEquals(data[i], array.get(i));
+			short rval = (short) rand.nextInt(Short.MAX_VALUE);
+			array.set(i, rval);
+			assertEquals(rval, array.get(i));
+		}
+	}
+
+	@Test
+	public void testInitialConstr() {
+		// length = 7
+		short[] data = new short[] {0, Short.MAX_VALUE, Short.MIN_VALUE, 12, 66, -23, -661};
+		AtomicShortArray array = new AtomicShortArray(data.length, data);
+		testContents(array, data);
+		// length = 8
+		data = new short[] {0, Short.MAX_VALUE, Short.MIN_VALUE, 12, 66, -23, -661, 55};
+		array = new AtomicShortArray(data.length, data);
+		testContents(array, data);
+		// null check
+		array = new AtomicShortArray(1, null);
+		array.set(0, (short) 12);
+		assertEquals(array.get(0), (short) 12);
+		array = null;
 	}
 
 	@Test
