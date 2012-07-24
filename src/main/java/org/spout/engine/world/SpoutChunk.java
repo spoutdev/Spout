@@ -40,7 +40,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
-import org.relaxng.datatype.Datatype;
 import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.datatable.DataMap;
