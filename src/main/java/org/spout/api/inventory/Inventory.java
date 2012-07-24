@@ -71,12 +71,14 @@ public class Inventory extends InventoryBase {
 		if (this.getNotifyViewers()) {
 			this.notifyViewers(slot, item);
 		}
+		this.onSlotChanged(slot, item);
 	}
 
 	@Override
 	public void setContents(ItemStack[] contents) {
 		for (int i = 0; i < this.contents.length; i++) {
 			this.contents[i] = contents[i];
+			this.onSlotChanged(i, contents[i]);
 		}
 		if (this.getNotifyViewers()) {
 			this.notifyViewers();

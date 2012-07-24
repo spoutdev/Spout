@@ -112,12 +112,14 @@ public abstract class InventoryBase implements Serializable, Iterable<ItemStack>
 	 * @param items of this inventory to notify
 	 */
 	public void notifyViewers(ItemStack[] items) {
-		for (InventoryViewer viewer : this.getViewers()) {
-			viewer.updateAll(this, items);
-		}
-		Iterator<InventoryBase> iter = this.getInventoryIterator();
-		while (iter.hasNext()) {
-			iter.next().onParentUpdate(this, items);
+		for (int i = 0; i < items.length; i++) {
+			for (InventoryViewer viewer : this.getViewers()) {
+				viewer.onSlotSet(this, i, items[i]);
+			}
+			Iterator<InventoryBase> iter = this.getInventoryIterator();
+			while (iter.hasNext()) {
+				iter.next().onParentUpdate(this, i, items[i]);
+			}
 		}
 	}
 
@@ -134,24 +136,13 @@ public abstract class InventoryBase implements Serializable, Iterable<ItemStack>
 
 	/**
 	 * Called when one of the parent inventories of this Inventory is updated<br>
-	 * Should only be extended and used in InventoryBase extensions.
-	 * 
-	 * @param inventory that got updated
-	 * @param items that got updated (new contents)
-	 */
-	public void onParentUpdate(InventoryBase inventory, ItemStack[] items) {
-	}
-
-	/**
-	 * Called when one of the parent inventories of this Inventory is updated<br>
-	 * Should only be extended and used in InventoryBase extensions.
+	 * Should only be overridden and used in InventoryBase extensions.
 	 * 
 	 * @param inventory that got updated
 	 * @param slot of the item in the Inventory
 	 * @param item that got updated
 	 */
-	public void onParentUpdate(InventoryBase inventory, int slot, ItemStack item) {
-	}
+	public void onParentUpdate(InventoryBase inventory, int slot, ItemStack item) {}
 
 	/**
 	 * Notifies all viewers of all the current items in this inventory
@@ -514,4 +505,13 @@ public abstract class InventoryBase implements Serializable, Iterable<ItemStack>
 		}
 		return this.getItemAmount(item) >= item.getAmount();
 	}
+
+	/**
+	 * Called whenever one Item changed in this Inventory<br>
+	 * This is called after the contents have already changed
+	 * 
+	 * @param slot of the item
+	 * @param item to set to
+	 */
+	public void onSlotChanged(int slot, ItemStack item) {}
 }

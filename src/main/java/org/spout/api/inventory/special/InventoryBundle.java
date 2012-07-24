@@ -125,19 +125,15 @@ public class InventoryBundle extends InventoryBase {
 		if (this.getNotifyViewers()) {
 			for (InventoryBase inv : this.inventories) {
 				if (inv == inventory) {
-					this.notifyViewers(slot, item);
+					this.onSlotChanged(slot, item);
+					if (this.getNotifyViewers()) {
+						this.notifyViewers(slot, item);
+					}
 					return;
 				}
 
 				slot += inv.getSize();
 			}
-		}
-	}
-
-	@Override
-	public void onParentUpdate(InventoryBase inventory, ItemStack[] slots) {
-		if (this.getNotifyViewers()) {
-			this.notifyViewers();
 		}
 	}
 
@@ -152,6 +148,9 @@ public class InventoryBundle extends InventoryBase {
 			System.arraycopy(contents, index, current, 0, current.length);
 			index += current.length;
 			inventory.setContents(current);
+		}
+		for (int i = 0; i < contents.length; i++) {
+			this.onSlotChanged(i, contents[i]);
 		}
 		if (old) {
 			this.setNotifyViewers(true);
