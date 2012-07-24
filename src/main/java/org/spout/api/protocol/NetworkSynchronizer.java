@@ -44,7 +44,6 @@ import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.inventory.InventoryViewer;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Quaternion;
@@ -55,7 +54,7 @@ import org.spout.api.protocol.event.ProtocolEventListener;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.OutwardIterator;
 
-public abstract class NetworkSynchronizer implements InventoryViewer {
+public abstract class NetworkSynchronizer {
 	protected final Player owner;
 	protected Entity entity;
 	protected final Session session;

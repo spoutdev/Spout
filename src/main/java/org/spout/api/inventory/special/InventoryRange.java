@@ -95,15 +95,11 @@ public class InventoryRange extends InventoryBase {
 		if (inventory == this.parent && this.getNotifyViewers()) {
 			slot -= this.offset;
 			if (slot >= 0 && slot < this.getSize()) {
-				this.notifyViewers(slot, item);
+				this.onSlotChanged(slot, item);
+				if (this.getNotifyViewers()) {
+					this.notifyViewers(slot, item);
+				}
 			}
-		}
-	}
-
-	@Override
-	public void onParentUpdate(InventoryBase inventory, ItemStack[] slots) {
-		if (this.getNotifyViewers()) {
-			this.notifyViewers(this.getContents());
 		}
 	}
 

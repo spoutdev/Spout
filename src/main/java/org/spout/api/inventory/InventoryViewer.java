@@ -38,11 +38,4 @@ public interface InventoryViewer {
 	 * @param item The {@link ItemStack} which the slot has changed to.
 	 */
 	public void onSlotSet(InventoryBase inventory, int slot, ItemStack item);
-
-	/**
-	 * Inform the viewer that all items have been changed
-	 * @param inventory The inventory which contains the slots
-	 * @param slots The ItemStacks in the slots which have changed.
-	 */
-	public void updateAll(InventoryBase inventory, ItemStack[] slots);
 }
