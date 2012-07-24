@@ -53,9 +53,9 @@ public abstract class EconomyService {
 	public static boolean isEconomyEnabled() {
 		return Spout.getEngine().getServiceManager().getRegistration(EconomyService.class) != null;
 	}
-	
+
 	/**
-	 * Gets the highest priority EconomyService registered in the Spout Services API.
+	 * Gets the highest priority EconomyService registered in the Spout Services API.<br/>
 	 * If there is currently no EconomyService registered null will be returned instead.
 	 * 
 	 * @return EconomyService 
@@ -66,7 +66,7 @@ public abstract class EconomyService {
 		}
 		return Spout.getEngine().getServiceManager().getRegistration(EconomyService.class).getProvider();
 	}
-	
+
 	/**
 	 * Checks if the given account has at least as much as the amount specified.
 	 * 
@@ -85,8 +85,7 @@ public abstract class EconomyService {
 	public abstract double get(String name);
 
 	/**
-	 * Withdraws the given amount from the account name specified, this operation should fail
-	 * if the account would drop below 0.
+	 * Withdraws the given amount from the account name specified, this operation should fail if the account would drop below 0.
 	 * 
 	 * @param name of the account to withdraw from
 	 * @param amount to withdraw from the account
@@ -95,8 +94,7 @@ public abstract class EconomyService {
 	public abstract boolean withdraw(String name, double amount);
 
 	/**
-	 * Deposits the given amount into the account specific, this operation should only fail
-	 * if the economy implementation has maximum values for accounts.
+	 * Deposits the given amount into the account specific, this operation should only fail if the economy implementation has maximum values for accounts.
 	 * 
 	 * @param name of the account to deposit into
 	 * @param amount to deposit into the account
@@ -114,7 +112,7 @@ public abstract class EconomyService {
 	public abstract boolean exists(String name);
 
 	/**
-	 * This is a copied-method that assumes the player's name is their account name and
+	 * This is a copied-method that assumes the player's name is their account name and<br/>
 	 * Checks if the given account has at least as much as the amount specified.
 	 * 
 	 * @param player of the account to check
@@ -126,7 +124,7 @@ public abstract class EconomyService {
 	}
 
 	/**
-	 * This is a copied-method that assumes the player's name is their account name and
+	 * This is a copied-method that assumes the player's name is their account name and<br/>
 	 * Returns the balance of the given account name.
 	 * 
 	 * @param player of the account to check
@@ -137,9 +135,8 @@ public abstract class EconomyService {
 	}
 
 	/**
-	 * This is a copied-method that assumes the player's name is their account name and
-	 * Withdraws the given amount from the account name specified, this operation should fail
-	 * if the account would drop below 0.
+	 * This is a copied-method that assumes the player's name is their account name and<br/>
+	 * Withdraws the given amount from the account name specified, this operation should fail if the account would drop below 0.
 	 * 
 	 * @param player of the account to withdraw from
 	 * @param amount to withdraw from the account
@@ -150,9 +147,8 @@ public abstract class EconomyService {
 	}
 
 	/**
-	 * This is a copied-method that assumes the player's name is their account name and
-	 * Deposits the given amount into the account specific, this operation should only fail
-	 * if the economy implementation has maximum values for accounts.
+	 * This is a copied-method that assumes the player's name is their account name and<br/>
+	 * Deposits the given amount into the account specific, this operation should only fail if the economy implementation has maximum values for accounts.
 	 * 
 	 * @param player of the account to deposit into
 	 * @param amount to deposit into the account
@@ -163,7 +159,7 @@ public abstract class EconomyService {
 	}
 
 	/**
-	 * This is a copied-method that assumes the player's name is their account name and
+	 * This is a copied-method that assumes the player's name is their account name and<br/>
 	 * Checks if the account exists in the economy service.
 	 * 
 	 * @param player of the account to check existence of.
@@ -188,11 +184,35 @@ public abstract class EconomyService {
 	 */
 	public abstract String getCurrencyNamePlural();
 
+	/**
+	 * Returns the currency symbol used by this economy plugin, or null if none is used.<br/>
+	 * For instance, if a plugin uses dollars this would be '$'.<br/>
+	 * Some economies may not have a currency symbol, or the server may not use it, resulting in null or a blank string.
+	 * 
+	 * @return the currency symbol
+	 */
+	public abstract String getCurrencySymbol();
 
 	/**
-	 * Some economy services round off after a specific number of digits.
-	 * This function returns the number of digits the service keeps
-	 * or -1 if no rounding occurs.
+	 * Returns a string formatted with the given currency names.
+	 * 
+	 * @param amount to format
+	 * @return formatted string
+	 */
+	public abstract String format(double amount);
+
+	/**
+	 * Returns a short-format of the amount, often for use in displaying on signs, or in character-limited areas.<br/>
+	 * Most economy services will opt to use the currency symbol in this display.
+	 * 
+	 * @param amount to format
+	 * @return formatted string
+	 */
+	public abstract String formatShort(double amount);
+	
+	/**
+	 * Some economy services round off after a specific number of digits.<br/>
+	 * This function returns the number of digits the service keeps or -1 if no rounding occurs.<br/>
 	 * An economy may return 0 if it is using integers for storing data.
 	 * 
 	 * @return number of digits after the decimal point kept
