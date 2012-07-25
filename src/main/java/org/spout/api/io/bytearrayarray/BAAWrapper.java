@@ -83,6 +83,9 @@ public class BAAWrapper {
 			if (baa == null) {
 				return false;
 			}
+			if (baa == BAAOpenInProgress.getInstance()) {
+				continue;
+			}
 			try {
 				return baa.exists(i);
 			} catch (BAAClosedException e) {
