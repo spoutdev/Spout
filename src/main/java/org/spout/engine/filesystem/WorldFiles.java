@@ -365,7 +365,7 @@ public class WorldFiles {
 
 			chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), blocks, data, skyLight, blockLight, manager, extraDataMap);
 
-			CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("entities")), null, CompoundMap.class);
+			CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("entities")), (CompoundMap) null, CompoundMap.class);
 			loadEntities(r, entityMap, dataForRegion.loadedEntities);
 
 			List<? extends CompoundTag> updateList = checkerListCompoundTag.checkTag(map.get("dynamic_updates"), null);
