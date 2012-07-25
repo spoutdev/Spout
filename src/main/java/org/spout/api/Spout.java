@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 import org.spout.api.event.EventManager;
 import org.spout.api.plugin.Platform;
 import org.spout.api.scheduler.Scheduler;
+import org.spout.api.plugin.PluginManager;
 
 /**
  * Represents the Spout core, to get singleton {@link Engine} instance
@@ -88,7 +89,16 @@ public final class Spout {
 	public static EventManager getEventManager() {
 		return instance.getEventManager();
 	}
-
+	
+	/**
+	 * Returns the game's {@link PluginManager}
+	 * 
+	 * @return Our PluginManager instance
+	 */
+	 public static PluginManager getPluginManager() {
+	 	return instance.getPluginManager();
+	 }
+	
 	/**
 	 * Returns the {@link Platform} that the game is currently running on.
 	 *
