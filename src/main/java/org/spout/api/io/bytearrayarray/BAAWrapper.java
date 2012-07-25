@@ -83,7 +83,7 @@ public class BAAWrapper {
 			if (baa == null) {
 				return false;
 			}
-			if (baa == BAAOpenInProgress.getInstance()) {
+			if (baa == openInProgress) {
 				continue;
 			}
 			try {
