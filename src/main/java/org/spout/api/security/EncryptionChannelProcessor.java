@@ -44,12 +44,10 @@ public class EncryptionChannelProcessor extends CommonChannelProcessor {
 
 	@Override
 	protected void write(byte[] buf, int length) {
-		System.out.println("Writing: " + length);
 		if (stored > 0) {
 			throw new IllegalStateException("Stored data must be completely read before writing more data");
 		}
 		stored = cipher.processBytes(buf, 0, length, processed, 0);
-		System.out.println("Stored: " + stored);
 		position = 0;
 	}
 
