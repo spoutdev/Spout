@@ -49,6 +49,7 @@ import org.teleal.cling.support.model.PortMapping;
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.event.Listener;
+import org.spout.api.event.server.ServerStartEvent;
 import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.Session;
@@ -119,6 +120,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 		Spout.getFilesystem().postStartup();
 
+		getEventManager().callEvent(new ServerStartEvent());
+		
 		getLogger().info("Done Loading, ready for players.");
 	}
 
