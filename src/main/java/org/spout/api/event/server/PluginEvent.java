@@ -31,7 +31,6 @@ import org.spout.api.plugin.Plugin;
 
 /**
  * Represents an event that deals with a {@link Plugin}
- *
  */
 public abstract class PluginEvent extends Event {
 	public final Plugin plugin;
