@@ -159,7 +159,7 @@ public class SimpleCommand implements Command {
 	}
 
 	public void execute(CommandSource source, String[] args, int baseIndex, boolean fuzzyLookup) throws CommandException {
-		if (rawExecutor != null && rawExecutor != this) {
+		if (rawExecutor != null) {
 			rawExecutor.execute(this, source, args, baseIndex, fuzzyLookup);
 			return;
 		}

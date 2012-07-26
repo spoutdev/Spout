@@ -92,13 +92,15 @@ public class SimpleAttributeStore implements AttributeStore {
 
 	@Override
 	public String getStylesheet() {
-		String stylesheet = "";
+		StringBuffer stylesheet = new StringBuffer();
 		for (Attribute attr : attachedAttributes.values()) {
-			stylesheet += attr.getName() + ": "
-					+ toCSSString(attr.getValue().getValue())
-					+ attr.getUnit().getText()[0] + ";\n";
+
+			stylesheet.append(attr.getName()).append( ": ");
+			stylesheet.append(toCSSString(attr.getValue().getValue()));
+			stylesheet.append(attr.getUnit().getText()[0]);
+			stylesheet.append(";\n");
 		}
-		return stylesheet;
+		return stylesheet.toString();
 	}
 
 	public static Object fromCSSString(String attribute) {
