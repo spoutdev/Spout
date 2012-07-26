@@ -65,6 +65,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.event.EventManager;
 import org.spout.api.event.SimpleEventManager;
 import org.spout.api.event.server.PreCommandEvent;
+import org.spout.api.event.server.ServerStopEvent;
 import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 import org.spout.api.event.world.WorldLoadEvent;
 import org.spout.api.event.world.WorldUnloadEvent;
@@ -522,9 +523,11 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 	@Override
 	public void stop(String message) {
+	    ServerStopEvent stopEvent = new ServerStopEvent(message);
+	    getEventManager().callEvent(stopEvent);
 		setupComplete.set(false);
 		for (SpoutPlayer player : getOnlinePlayers()) {
-			player.kick(message);
+			player.kick(stopEvent.getMessage());
 		}
 
 		for (SpoutWorld world : this.getLiveWorlds()) {
