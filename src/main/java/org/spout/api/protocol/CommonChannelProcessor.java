@@ -70,7 +70,6 @@ public abstract class CommonChannelProcessor implements ChannelProcessor {
 					ChannelBuffer newBuffer = getNewBufferInstance(ctx, nextSize);
 					nextSize *= 2;
 					if (consumedBuffers == null) {
-						System.out.println("Creating arraylist");
 						consumedBuffers = new ArrayList<ChannelBuffer>(16);
 					}
 					consumedBuffers.add(channelBuffer);
