@@ -103,6 +103,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private VertexBufferBatcher vbBatch;
 	private VertexBufferImpl buffer;
 	private long ticks = 0;
+	
+	// Handle stopping
+	private volatile boolean rendering = true;
+	private String stopMessage = null;
 
 	private BaseMesh cube;
 	private Transform loc;
@@ -215,11 +219,22 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public Input getInput() {
 		return inputManager;
 	}
-
+	
 	@Override
 	public void stop(String message) {
-		Display.destroy();
-		super.stop(message);
+		rendering = false;
+		stopMessage = message;
+	}
+
+	public boolean isRendering() {
+		return rendering;
+	}
+
+	public void stopEngine() {
+		if (rendering) {
+			throw new IllegalStateException("Client is still rendering!");
+		}
+		super.stop(stopMessage);
 	}
 
 	private void buildChunk(SpoutChunkSnapshot snap) {
