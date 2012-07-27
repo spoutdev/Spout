@@ -57,9 +57,9 @@ public class SpoutBlock implements Block {
 	private final WeakReference<World> world;
 	private final Source source;
 	private final AtomicReference<WeakReference<Chunk>> chunk;
-	
+
 	public SpoutBlock(World world, int x, int y, int z, Source source) {
-		this(world, x, y, z, world.getChunkFromBlock(x, y, z, LoadOption.LOAD_GEN), source);
+		this(world, x, y, z, null, source);
 	}
 
 	protected SpoutBlock(World world, int x, int y, int z, Chunk chunk, Source source) {
@@ -71,9 +71,12 @@ public class SpoutBlock implements Block {
 		this.z = z;
 		this.world = new WeakReference<World>(world);
 		this.source = source;
+		if (chunk != null && !chunk.containsBlock(this.x, this.y, this.z)) {
+			chunk = null; // chunk does not contain this Block, invalidate
+		}
 		this.chunk = new AtomicReference<WeakReference<Chunk>>(new WeakReference<Chunk>(chunk));
 	}
-	
+
 	private final Chunk loadChunk() {
 		return getWorld().getChunkFromBlock(x, y, z, LoadOption.LOAD_GEN);
 	}
@@ -140,7 +143,7 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public Block translate(int dx, int dy, int dz) {
-		return new SpoutBlock(getWorld(), this.x + dx, this.y + dy, this.z + dz, source);
+		return new SpoutBlock(getWorld(), this.x + dx, this.y + dy, this.z + dz, this.chunk.get().get(), this.source);
 	}
 
 	@Override
