@@ -159,9 +159,9 @@ public final class SpoutScheduler implements Scheduler {
 			int rate = (int) ((1f / TARGET_FPS) * 1000);
 			long lastTick = System.currentTimeMillis();
 			while (!shutdown) {
-				if(Display.isCloseRequested()){
+				if(Display.isCloseRequested() || !c.isRendering()) {
 					c.stop();
-					break;	
+					break;
 				}
 				long startTime = System.currentTimeMillis();
 				long delta = startTime - lastTick;
@@ -178,7 +178,8 @@ public final class SpoutScheduler implements Scheduler {
 				}
 				
 			}
-			
+			Display.destroy();
+			c.stopEngine();
 		}
 	}
 

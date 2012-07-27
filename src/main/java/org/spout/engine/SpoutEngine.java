@@ -117,6 +117,7 @@ import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.ConsoleManager;
 import org.spout.engine.util.DeadlockMonitor;
+import org.spout.engine.util.StackTrace;
 import org.spout.engine.util.TicklockMonitor;
 import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
