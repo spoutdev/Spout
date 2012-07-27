@@ -26,36 +26,40 @@
  */
 package org.spout.api.render;
 
-
 import java.awt.image.BufferedImage;
 
 import org.spout.api.ClientOnly;
 import org.spout.api.resource.Resource;
 
 public abstract class Texture extends Resource {
-	
+
 	protected BufferedImage image;
-	
+
 	public Texture(BufferedImage baseImage) {
 		this.image = baseImage;
 	}
-	
+
 	public int getHeight() {
 		return image.getHeight();
 	}
+
 	public int getWidth() {
 		return image.getWidth();
 	}
-	
+
+	public BufferedImage getImage() {
+		return image;
+	}
+
 	public abstract Texture subTexture(int x, int y, int w, int h);
-	
+
 	@ClientOnly
 	public abstract void load();
-	
+
 	@ClientOnly
 	public abstract void bind();
-	
+
 	@ClientOnly
 	public abstract boolean isLoaded();
-	
+
 }
