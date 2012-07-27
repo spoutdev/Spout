@@ -426,6 +426,30 @@ public class MathHelper {
 			return x;
 		}
 	}
+	
+	/**
+	 * Rounds an integer up to the next power of 2.
+	 *
+	 * @param x
+	 * @return the lowest power of 2 greater or equal to x
+	 */
+	public static long roundUpPow2(long x) {
+		if (x <= 0) {
+			return 1;
+		} else if (x > 0x4000000000000000L) {
+			throw new IllegalArgumentException("Rounding " + x + " to the next highest power of two would exceed the int range");
+		} else {
+			x--;
+			x |= x >> 1;
+			x |= x >> 2;
+			x |= x >> 4;
+			x |= x >> 8;
+			x |= x >> 16;
+			x |= x >> 32;
+			x++;
+			return x;
+		}
+	}
 
 	/**
 	 * Casts a value to a float. May return null.
