@@ -64,7 +64,7 @@ import org.spout.api.Spout;
 public class SecurityHandler {
 	
 	public static final boolean DECRYPT_MODE = false;
-	public static final boolean ENCRYPT_MODE = false;
+	public static final boolean ENCRYPT_MODE = true;
 	
 
 	private static final ConcurrentHashMap<String, AsymmetricCipherKeyPair > serverKeys = new ConcurrentHashMap<String, AsymmetricCipherKeyPair >();
