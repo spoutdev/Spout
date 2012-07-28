@@ -32,6 +32,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
+import org.spout.api.chat.ChatSection;
+import org.spout.api.chat.style.ChatStyle;
+import org.spout.api.command.Command;
+import org.spout.api.command.RootCommand;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.Result;
@@ -158,31 +162,33 @@ public class SpoutPlayer implements Player {
 	}
 
 	@Override
-	public void chat(final String message) {
-		if (message.startsWith("/")) {
-			Spout.getEngine().processCommand(this, message.substring(1));
-		} else {
-			PlayerChatEvent event = Spout.getEngine().getEventManager().callEvent(new PlayerChatEvent(this, message));
-			if (event.isCancelled()) {
-				return;
-			}
-			String formattedMessage;
-			try {
-				formattedMessage = String.format(event.getFormat(), getDisplayName(), event.getMessage());
-			} catch (Throwable t) {
-				return;
-			}
-			Spout.getEngine().broadcastMessage(formattedMessage);
-		}
-	}
-
-	@Override
 	public boolean sendMessage(Object... message) {
 		boolean success = false;
 		if (getEntity() != null) {
 			success = sendRawMessage(message);
 		}
 		return success;
+	}
+
+	public void sendCommand(String commandName, ChatArguments arguments) {
+		Command command = Spout.getEngine().getRootCommand().getChild(commandName);
+		Message cmdMessage = getSession().getProtocol().getCommandMessage(command, arguments);
+		if (cmdMessage == null) {
+			return;
+		}
+
+		session.send(false, cmdMessage);
+	}
+
+	public void processCommand(String command, ChatArguments arguments) {
+		final RootCommand rootCmd = Spout.getEngine().getRootCommand();
+		Command cmd = rootCmd.getChild(command);
+		if (cmd == null) {
+			sendMessage(rootCmd.getMissingChildException(rootCmd.getUsage(command,
+					arguments.toSections(ChatSection.SplitType.WORD), -1)).getMessage());
+		}  else {
+			cmd.process(this, command, arguments, false);
+		}
 	}
 
 	public boolean sendMessage(ChatArguments message) {
@@ -199,12 +205,7 @@ public class SpoutPlayer implements Player {
 	}
 
 	public boolean sendRawMessage(ChatArguments message) {
-		Message chatMessage = getSession().getProtocol().getChatMessage(message);
-		if (message == null) {
-			return false;
-		}
-
-		session.send(false, chatMessage);
+		sendCommand("say", message);
 		return true;
 	}
 

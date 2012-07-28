@@ -24,32 +24,63 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.protocol;
+package org.spout.engine.chat.console;
 
-import java.util.concurrent.Executor;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.socket.ServerSocketChannel;
-import org.jboss.netty.channel.socket.SocketChannelConfig;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.spout.api.chat.ChatArguments;
 
-public class SpoutNioServerSocketChannel extends NioServerSocketChannelFactory{
+/**
+ * A wrapper console that allows accessing multiple consoles at once
+ */
+public class MultiConsole implements Console {
+	private final List<Console> consoles = new ArrayList<Console>();
 
-	public SpoutNioServerSocketChannel(Executor boss, Executor worker) {
-		super(boss, worker);
+	public MultiConsole() {
+
 	}
 
-	@Override
-	 public ServerSocketChannel newChannel(ChannelPipeline pipeline) {
-		ServerSocketChannel channel = super.newChannel(pipeline);
-		channel.getConfig().setPerformancePreferences(0, 2, 1);
-		if (channel.getConfig() instanceof SocketChannelConfig) {
-			((SocketChannelConfig)channel.getConfig()).setTrafficClass(24);
-			((SocketChannelConfig)channel.getConfig()).setTcpNoDelay(true);
-		} else {
-			//TODO: fix
-		}
-		return channel;
-    }
+	public MultiConsole(Console... consoles) {
+		this.consoles.addAll(Arrays.asList(consoles));
+	}
 
+	public List<Console> getConsoles() {
+		return Collections.unmodifiableList(consoles);
+	}
+
+	public boolean removeConsole(Console console) {
+		return consoles.remove(console);
+	}
+
+	public void addConsole(Console console) {
+		consoles.add(console);
+	}
+
+	public void init() {
+		for (Console console : consoles) {
+			console.init();
+		}
+	}
+
+	public void close() {
+		for (Console console : consoles) {
+			console.close();
+		}
+	}
+
+	public void setDateFormat(DateFormat format) {
+		for (Console console : consoles) {
+			console.setDateFormat(format);
+		}
+	}
+
+	public void addMessage(ChatArguments message) {
+		for (Console console : consoles) {
+			console.addMessage(message);
+		}
+	}
 }

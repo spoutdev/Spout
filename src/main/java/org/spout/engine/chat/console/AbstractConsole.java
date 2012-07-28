@@ -24,32 +24,32 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.protocol;
+package org.spout.engine.chat.console;
 
-import java.util.concurrent.Executor;
+import java.io.IOException;
+import java.io.Writer;
+import java.text.DateFormat;
+import java.util.Date;
 
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.socket.ServerSocketChannel;
-import org.jboss.netty.channel.socket.SocketChannelConfig;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-
-public class SpoutNioServerSocketChannel extends NioServerSocketChannelFactory{
-
-	public SpoutNioServerSocketChannel(Executor boss, Executor worker) {
-		super(boss, worker);
+/**
+ * @author zml2008
+ */
+public abstract class AbstractConsole implements Console {
+	private DateFormat dateFormat;
+	public void setDateFormat(DateFormat format) {
+		this.dateFormat = format;
 	}
 
-	@Override
-	 public ServerSocketChannel newChannel(ChannelPipeline pipeline) {
-		ServerSocketChannel channel = super.newChannel(pipeline);
-		channel.getConfig().setPerformancePreferences(0, 2, 1);
-		if (channel.getConfig() instanceof SocketChannelConfig) {
-			((SocketChannelConfig)channel.getConfig()).setTrafficClass(24);
-			((SocketChannelConfig)channel.getConfig()).setTcpNoDelay(true);
-		} else {
-			//TODO: fix
-		}
-		return channel;
-    }
+	public DateFormat getDateFormat() {
+		return dateFormat;
+	}
 
+	protected void appendDateFormat(Writer writer) throws IOException {
+		DateFormat dateFormat = getDateFormat();
+		if (dateFormat != null) {
+			writer.write("[");
+			writer.write(dateFormat.format(new Date()));
+			writer.write("] ");
+		}
+	}
 }

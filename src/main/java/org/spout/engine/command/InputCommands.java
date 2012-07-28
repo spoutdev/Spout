@@ -31,13 +31,23 @@ import org.spout.api.Spout;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
+import org.spout.api.command.annotated.Executor;
 import org.spout.api.exception.CommandException;
-
+import org.spout.api.plugin.Platform;
+import org.spout.engine.SpoutEngine;
 
 public class InputCommands {
-	
+	private final SpoutEngine engine;
+
+	public InputCommands(SpoutEngine engine) {
+		this.engine = engine;
+	}
+
 	@Command(aliases = {"bind"}, usage = "bind <key> <command>", desc = "Binds a command to a key", min = 2)
-	public void bind(CommandContext args, CommandSource source) throws CommandException {
-		((Client)Spout.getEngine()).getInput().bind(args.getString(0), args.getJoinedString(1));
+	public class BindCommand {
+		@Executor(Platform.CLIENT)
+		public void bind(CommandContext args, CommandSource source) throws CommandException {
+			((Client) engine).getInput().bind(args.getString(0), args.getJoinedString(1).getPlainString());
+		}
 	}
 }

@@ -28,6 +28,7 @@ package org.spout.engine.world;
 
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
@@ -45,27 +46,30 @@ public class WorldSavingThread extends Thread{
 		super("World Saving Thread");
 		this.setDaemon(true);
 	}
-	
+
 	public static void startThread() {
 		if (instance == null) {
 			instance = new WorldSavingThread();
 			instance.start();
 		}
 	}
-	
+
 	public static void saveChunk(SpoutChunk chunk) {
-		ChunkSaveTask task = instance.new ChunkSaveTask(chunk);
+		ChunkSaveTask task = new ChunkSaveTask(chunk);
 		instance.queue.add(task);
 	}
-	
+
 	public static void finish() {
-		instance.interrupt();
-		instance.processRemaining();
+		WorldSavingThread localInstance = instance;
+		if (localInstance != null) {
+			localInstance.interrupt();
+			localInstance.processRemaining();
+		}
 	}
-	
+
 	@Override
 	public void run() {
-		while(!this.isInterrupted()) {
+		while (!this.isInterrupted()) {
 			Runnable task;
 			try {
 				task = queue.take();
@@ -73,7 +77,7 @@ public class WorldSavingThread extends Thread{
 			} catch (InterruptedException ignore) { }
 		}
 	}
-	
+
 	public void processRemaining() {
 		Runnable task;
 		do {
@@ -81,10 +85,10 @@ public class WorldSavingThread extends Thread{
 			if (task != null) {
 				task.run();
 			}
-		} while(task != null);
+		} while (task != null);
 	}
-	
-	private class ChunkSaveTask implements Runnable {
+
+	private static class ChunkSaveTask implements Runnable {
 		SpoutRegion region;
 		SpoutChunkSnapshot snapshot;
 		List<DynamicBlockUpdate> blockUpdates;
@@ -93,7 +97,7 @@ public class WorldSavingThread extends Thread{
 			this.snapshot = (SpoutChunkSnapshot) chunk.getSnapshot(SnapshotType.BOTH, EntityType.ENTITIES, ExtraData.BOTH);
 			this.blockUpdates = chunk.getRegion().getDynamicBlockUpdates(chunk);
 		}
-		
+
 		@Override
 		public void run() {
 			WorldFiles.saveChunk(region.getWorld(), snapshot, blockUpdates, region.getChunkOutputStream(snapshot));

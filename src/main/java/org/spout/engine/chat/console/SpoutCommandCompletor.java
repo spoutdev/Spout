@@ -24,7 +24,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.util;
+package org.spout.engine.chat.console;
 
 import jline.Completor;
 import org.spout.api.Engine;
@@ -44,9 +44,8 @@ public class SpoutCommandCompletor implements Completor {
 		this.engine = engine;
 	}
 	@Override
-	public int complete(String buffer, int cursor, @SuppressWarnings("rawtypes") List rawCandidates) {
-		@SuppressWarnings("unchecked")
-		List<String> candidates = rawCandidates;
+	@SuppressWarnings("unchecked")
+	public int complete(String buffer, int cursor, @SuppressWarnings("rawtypes") List candidates) {
 		String start = (buffer == null) ? "" : buffer;
 		TreeSet<String> all = new TreeSet<String>();
 		all.addAll(engine.getRootCommand().getChildNames());

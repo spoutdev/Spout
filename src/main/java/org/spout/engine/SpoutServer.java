@@ -40,6 +40,7 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.spout.api.protocol.Protocol;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
 import org.teleal.cling.controlpoint.ControlPoint;
@@ -53,7 +54,6 @@ import org.spout.api.event.server.ServerStartEvent;
 import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.Session;
-import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 
 import org.spout.engine.filesystem.ServerFileSystem;
 import org.spout.engine.listener.SpoutListener;
@@ -114,6 +114,10 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 		super.start(checkWorlds);
 
+		if (boundProtocols.size() == 0) {
+			getLogger().warning("No bootstrap protocols registered! Clients will not be able to connect to the server.");
+		}
+
 		banManager = new FlatFileBanManager(this);
 
 		getEventManager().registerEvents(listener, this);
@@ -147,6 +151,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 			upnpService.shutdown();
 		}
 		bootstrap.getFactory().releaseExternalResources();
+		boundProtocols.clear();
 	}
 
 	/**
@@ -154,14 +159,14 @@ public class SpoutServer extends SpoutEngine implements Server {
 	 * @param address The addresss.
 	 */
 	@Override
-	public boolean bind(SocketAddress address, BootstrapProtocol protocol) {
+	public boolean bind(SocketAddress address, Protocol protocol) {
 		if (protocol == null) {
 			throw new IllegalArgumentException("Protocol cannot be null");
 		}
-		if (bootstrapProtocols.containsKey(address)) {
+		if (boundProtocols.containsKey(address)) {
 			return false;
 		}
-		bootstrapProtocols.put(address, protocol);
+		boundProtocols.put(address, protocol);
 		try {
 			group.add(bootstrap.bind(address));
 		} catch (org.jboss.netty.channel.ChannelException ex) {
@@ -295,7 +300,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	protected Session newSession(Channel channel, boolean proxy) {
-		BootstrapProtocol protocol = getBootstrapProtocol(channel.getLocalAddress());
+		Protocol protocol = getProtocol(channel.getLocalAddress());
 		return new SpoutSession(this, channel, protocol, proxy);
 	}
 

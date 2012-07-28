@@ -50,6 +50,6 @@ public class TestCommands {
 
 	@Command(aliases = "testmsg", desc = "Test extracting chat styles from a message and printing them")
 	public void testMsg(CommandContext args, CommandSource source) throws CommandException {
-		source.sendMessage(ChatArguments.fromString(args.getJoinedString(0)));
+		source.sendMessage(args.getJoinedString(0));
 	}
 }

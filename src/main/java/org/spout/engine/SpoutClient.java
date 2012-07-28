@@ -29,12 +29,21 @@ package org.spout.engine;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.URISyntaxException;
 import java.security.CodeSource;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.jboss.netty.bootstrap.ClientBootstrap;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
@@ -50,6 +59,8 @@ import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleAnnotatedCommandExecutorFactory;
 import org.spout.api.command.annotated.SimpleInjector;
+
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
@@ -65,6 +76,9 @@ import org.spout.api.math.Vector3;
 import org.spout.api.model.Mesh;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.PluginStore;
+import org.spout.api.protocol.CommonPipelineFactory;
+import org.spout.api.protocol.Protocol;
+import org.spout.api.protocol.builtin.SpoutProtocol;
 import org.spout.api.render.BasicCamera;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
@@ -77,9 +91,12 @@ import org.spout.engine.command.InputCommands;
 import org.spout.engine.filesystem.ClientFileSystem;
 import org.spout.engine.input.SpoutInput;
 import org.spout.engine.mesh.BaseMesh;
+import org.spout.engine.protocol.SpoutNioServerSocketChannel;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.VertexBufferBatcher;
 import org.spout.engine.renderer.vertexbuffer.VertexBufferImpl;
+import org.spout.engine.util.MacOSXUtils;
+import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutChunkSnapshot;
 import org.spout.engine.world.SpoutWorld;
@@ -103,14 +120,15 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private VertexBufferBatcher vbBatch;
 	private VertexBufferImpl buffer;
 	private long ticks = 0;
-	
+
 	// Handle stopping
 	private volatile boolean rendering = true;
 	private String stopMessage = null;
+	private final ClientBootstrap bootstrap = new ClientBootstrap();
 
 	private BaseMesh cube;
 	private Transform loc;
-	
+
 	public SpoutClient() {
 		this.filesystem = new ClientFileSystem();
 	}
@@ -129,6 +147,13 @@ public class SpoutClient extends SpoutEngine implements Client {
 		if (inJar) {
 			unpackLwjgl();
 		}
+		ExecutorService executorBoss = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Boss", true));
+		ExecutorService executorWorker = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Worker", true));
+		ChannelFactory factory = new SpoutNioServerSocketChannel(executorBoss, executorWorker);
+		bootstrap.setFactory(factory);
+
+		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, true);
+		bootstrap.setPipelineFactory(pipelineFactory);
 
 		super.init(args);
 	}
@@ -148,7 +173,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		super.start(checkWorlds);
 		scheduler.startRenderThread();
-		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this), new SimpleAnnotatedCommandExecutorFactory());
+		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this));
 
 		// Register commands
 		getRootCommand().addSubCommands(this, InputCommands.class, commandRegFactory);
@@ -219,7 +244,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public Input getInput() {
 		return inputManager;
 	}
-	
+
 	@Override
 	public void stop(String message) {
 		rendering = false;
@@ -269,6 +294,21 @@ public class SpoutClient extends SpoutEngine implements Client {
 		snap.setRenderDirty(false); //Rendered this snapshot
 	}
 
+	public ClientBootstrap getBootstrap() {
+		return bootstrap;
+	}
+
+	public void connect(SocketAddress addr) {
+		connect(addr, SpoutProtocol.INSTANCE);
+	}
+
+	public void connect(SocketAddress addr, Protocol protocol) {
+		ChannelFuture future = getBootstrap().connect(addr);
+		Channel channel = future.getChannel();
+		channel.write(protocol.getIntroductionMessage("Player"));
+		getCommandSource().sendCommand("kick", new ChatArguments());
+	}
+
 	public void initRenderer() {
 		createWindow();
 
@@ -292,11 +332,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 		Spout.getFilesystem().postStartup();
 
 		activeCamera = new BasicCamera(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(new Vector3(0, 10, -5), Vector3.ZERO, Vector3.UP));
-		
+
 		renderer = new PrimitiveBatch();
 
-		
-		
+
+
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		getLogger().info("Loading Texture");
 		textureTest = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
@@ -307,21 +347,20 @@ public class SpoutClient extends SpoutEngine implements Client {
 		vbBatch = new VertexBufferBatcher(GL11.GL_TRIANGLES, buffer);
 
 		cube = (BaseMesh) Spout.getFilesystem().getResource("mesh://Spout/resources/resources/models/cube.obj");
-		
-		
+
+
 		loc = new Transform(new Point(null, 0, 0, 0), Quaternion.IDENTITY, Vector3.ONE);
-		
-		renderer.begin(material);		
+
+		renderer.begin(material);
 		renderer.addMesh(cube);
 		renderer.end();
-
 	}
 
 	private void createWindow() {
 		try {
 			Display.setDisplayMode(new DisplayMode((int) resolution.getX(), (int) resolution.getY()));
 
-			if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+			if (MacOSXUtils.isMac()) {
 				createMacWindow();
 			} else {
 				if (getRenderMode() == RenderMode.GL11) {
@@ -343,10 +382,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	private void createMacWindow() throws LWJGLException {
-		String[] ver = System.getProperty("os.version").split("\\.");
-
 		if (getRenderMode() == RenderMode.GL30) {
-			if (Integer.parseInt(ver[1]) >= 7) {
+			if (MacOSXUtils.getOSXVersion() >= 7) {
 				ContextAttribs ca = new ContextAttribs(3, 2).withProfileCore(true);
 				Display.create(new PixelFormat(8, 24, 0), ca);
 			} else {
@@ -366,7 +403,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		double cx = 2 * Math.sin(Math.toRadians(ticks));
 		double cz = 2 * Math.cos(Math.toRadians(ticks));
 		double cy = 2 * Math.sin(Math.toRadians(ticks));
-		
+
 		loc.setRotation(MathHelper.rotation((float)Math.toDegrees(cx), (float)Math.toDegrees(cy), (float)Math.toDegrees(cz)));
 		loc.setScale(new Vector3((float)(cx + 2.1), (float)(cx + 2.1), (float)(cz * 2.1)));
 
@@ -377,9 +414,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		material.getShader().setUniform("Model", loc.toMatrix());
 
 		renderer.draw();
-
-		
-
 	}
 
 	private void renderVisibleChunks(SpoutWorld world) {

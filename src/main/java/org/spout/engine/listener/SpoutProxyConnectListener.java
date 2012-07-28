@@ -33,17 +33,18 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.protocol.CommonDecoder;
+import org.spout.api.protocol.CommonHandler;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.engine.protocol.SpoutSession;
 
 public class SpoutProxyConnectListener implements ChannelFutureListener {
-	
+
 	private final Engine engine;
 	private final SpoutSession session;
 	private final String playerName;
-	
+
 	public SpoutProxyConnectListener(Engine engine, String playerName, Session session) {
 		this.engine = engine;
 		this.session = (SpoutSession) session;
@@ -52,7 +53,7 @@ public class SpoutProxyConnectListener implements ChannelFutureListener {
 
 	/**
 	 * Gets the Engine that of this listener
-	 * 
+	 *
 	 * @return the Engine
 	 */
 	public Engine getEngine() {
@@ -70,7 +71,7 @@ public class SpoutProxyConnectListener implements ChannelFutureListener {
 				session.bindAuxChannel(c);
 				ChannelPipeline pipeline = c.getPipeline();
 				if (pipeline != null) {
-					CommonDecoder d = pipeline.get(CommonDecoder.class);
+					CommonHandler d = pipeline.get(CommonHandler.class);
 					if (d != null) {
 						d.setSession(session);
 					}

@@ -26,36 +26,59 @@
  */
 package org.spout.engine.command;
 
+import org.spout.api.Spout;
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
+import org.spout.api.command.annotated.Executor;
+import org.spout.api.event.player.PlayerChatEvent;
 import org.spout.api.exception.CommandException;
 import org.spout.api.player.Player;
 
-import org.spout.engine.SpoutServer;
+import org.spout.api.plugin.Platform;
+import org.spout.engine.SpoutEngine;
 
 /**
- * @author zml2008
+ * Commands relating to messaging
  */
 public class MessagingCommands {
-	private final SpoutServer server;
+	private final SpoutEngine engine;
 
-	public MessagingCommands(SpoutServer server) {
-		this.server = server;
+	public MessagingCommands(SpoutEngine engine) {
+		this.engine = engine;
 	}
 
 	@Command(aliases = {"say", "chat"}, usage = "[message]", desc = "Say something!", min = 1, max = -1)
 	@CommandPermissions("spout.command.say")
-	public void say(CommandContext args, CommandSource source) {
-		String message = args.getJoinedString(0);
-		if (!message.isEmpty()) {
-			if (source instanceof Player) {
-				((Player) source).chat(message);
-			} else {
-				server.broadcastMessage("<" + source.getName() + "> " + message);
+	public class SayCommand {
+		@Executor(Platform.SERVER)
+		public void server(CommandContext args, CommandSource source) {
+			ChatArguments message = args.getJoinedString(0);
+			if (!message.getPlainString().isEmpty()) {
+				if (source instanceof Player) {
+					Player player = (Player) source;
+					PlayerChatEvent event = Spout.getEngine().getEventManager().callEvent(new PlayerChatEvent(player, message));
+					if (event.isCancelled()) {
+						return;
+					}
+
+					ChatArguments template = event.getFormat().getArguments();
+					template.setPlaceHolder(PlayerChatEvent.NAME, new ChatArguments(player.getDisplayName()));
+					template.setPlaceHolder(PlayerChatEvent.MESSAGE, event.getMessage());
+
+					engine.broadcastMessage(template);
+				} else {
+					engine.broadcastMessage(new Object[] {"<", source.getName(), "> ", message});
+				}
 			}
+		}
+
+		@Executor(Platform.CLIENT)
+		public void client(CommandContext args, CommandSource source) {
+			engine.getCommandSource().sendMessage(args.getJoinedString(0));
 		}
 	}
 
@@ -63,8 +86,8 @@ public class MessagingCommands {
 	@CommandPermissions("spout.command.tell")
 	public void tell(CommandContext args, CommandSource source) throws CommandException {
 		String playerName = args.getString(0);
-		String message = args.getJoinedString(1);
-		Player player = server.getPlayer(playerName, false);
+		ChatArguments message = args.getJoinedString(1);
+		Player player = engine.getPlayer(playerName, false);
 		if (player == source) {
 			source.sendMessage("Forever alone.");
 		} else if (player != null) {

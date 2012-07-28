@@ -69,7 +69,7 @@ public class AdministrationCommands {
 				break;
 		}
 		if (args.length() > 0) {
-			message = args.getJoinedString(0);
+			message = args.getJoinedString(0).getPlainString();
 		}
 		engine.stop(message);
 	}
@@ -99,15 +99,21 @@ public class AdministrationCommands {
 			return;
 		}
 		String playerName = args.getString(0);
-		String message = "You have been kicked from the server.";
+		ChatArguments message;
 		if (args.length() >= 2) {
 			message = args.getJoinedString(1);
+		} else {
+			message = new ChatArguments("You have been kicked from the server.");
 		}
 
 		Player player = Spout.getEngine().getPlayer(playerName, true);
 		if (player.isOnline()) {
 			player.kick(message);
-			source.sendMessage(ChatStyle.BRIGHT_GREEN, "Kicked player '", player.getName(), (!message.isEmpty() ? "' for reason '" + message + "'" : "'"));
+			ChatArguments retMsg = new ChatArguments(ChatStyle.BRIGHT_GREEN, "Kicked player '", player.getEntity(), "'");
+			if (!message.getPlainString().isEmpty()) {
+				retMsg.append(" for reason '").append(message).append("'");
+			}
+			source.sendMessage(retMsg);
 		}
 	}
 

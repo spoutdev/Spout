@@ -24,32 +24,39 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.protocol;
+package org.spout.engine.chat.console;
 
-import java.util.concurrent.Executor;
+import java.io.Closeable;
+import java.text.DateFormat;
 
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.socket.ServerSocketChannel;
-import org.jboss.netty.channel.socket.SocketChannelConfig;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.spout.api.chat.ChatArguments;
 
-public class SpoutNioServerSocketChannel extends NioServerSocketChannelFactory{
+/**
+ * A parent class for various types of consoles.
+ */
+public interface Console extends Closeable {
+	/**
+	 * Initialize settings needed for this console.
+	 */
+	public void init();
 
-	public SpoutNioServerSocketChannel(Executor boss, Executor worker) {
-		super(boss, worker);
-	}
+	/**
+	 * Clean up any resources used by the console
+	 */
+	public void close();
 
-	@Override
-	 public ServerSocketChannel newChannel(ChannelPipeline pipeline) {
-		ServerSocketChannel channel = super.newChannel(pipeline);
-		channel.getConfig().setPerformancePreferences(0, 2, 1);
-		if (channel.getConfig() instanceof SocketChannelConfig) {
-			((SocketChannelConfig)channel.getConfig()).setTrafficClass(24);
-			((SocketChannelConfig)channel.getConfig()).setTcpNoDelay(true);
-		} else {
-			//TODO: fix
-		}
-		return channel;
-    }
+	/**
+	 * Set the date format to be used when printing the date of log messages.
+	 * If {@code format} is null, no date will be printed.
+	 *
+	 * @param format The log message date format.
+	 */
+	public void setDateFormat(DateFormat format);
 
+	/**
+	 * Add a message to the console
+	 *
+	 * @param message the message to add
+	 */
+	public void addMessage(ChatArguments message);
 }

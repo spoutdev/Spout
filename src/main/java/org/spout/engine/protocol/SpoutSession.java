@@ -59,7 +59,6 @@ import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.NullNetworkSynchronizer;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
-import org.spout.api.protocol.bootstrap.BootstrapProtocol;
 import org.spout.api.protocol.proxy.ConnectionInfo;
 import org.spout.api.protocol.proxy.ConnectionInfoMessage;
 import org.spout.api.protocol.proxy.ProxyStartMessage;
@@ -151,7 +150,6 @@ public final class SpoutSession implements Session {
 	 */
 	//private BlockPlacementMessage previousPlacement;
 
-	private final BootstrapProtocol bootstrapProtocol;
 	/**
 	 * Stores if this is Connected
 	 * @todo Probably add to SpoutAPI
@@ -184,11 +182,10 @@ public final class SpoutSession implements Session {
 	 * @param engine  The server this session belongs to.
 	 * @param channel The channel associated with this session.
 	 */
-	public SpoutSession(SpoutEngine engine, Channel channel, BootstrapProtocol bootstrapProtocol, boolean proxy) {
+	public SpoutSession(SpoutEngine engine, Channel channel, Protocol bootstrapProtocol, boolean proxy) {
 		this.engine = engine;
 		this.channel = channel;
 		protocol = new AtomicReference<Protocol>(bootstrapProtocol);
-		this.bootstrapProtocol = bootstrapProtocol;
 		isConnected = true;
 		this.datatableMap = new GenericDatatableMap();
 		this.dataMap = new DataMap(this.datatableMap);
@@ -510,18 +507,6 @@ public final class SpoutSession implements Session {
 	}*/
 
 	@Override
-	public void setProtocol(Protocol protocol) {
-		if (!this.protocol.compareAndSet(bootstrapProtocol, protocol)) {
-			if (this.protocol.get() == protocol) {
-				return;
-			}
-			throw new IllegalArgumentException("The protocol may only be set once per session");
-		}
-		this.synchronizer.get().setProtocol(protocol);
-		engine.getLogger().info("Setting protocol to " + protocol.getName());
-	}
-
-	@Override
 	public Protocol getProtocol() {
 		return this.protocol.get();
 	}
@@ -547,8 +532,9 @@ public final class SpoutSession implements Session {
 			this.synchronizer.set(nullSynchronizer);
 		} else if (!this.synchronizer.compareAndSet(nullSynchronizer, synchronizer)) {
 			throw new IllegalArgumentException("Network synchronizer may only be set once for a given player login");
-		} else {
+		} else if (synchronizer != null) {
 			synchronizer.setProtocol(protocol.get());
+			this.synchronizer.set(synchronizer);
 		}
 	}
 
