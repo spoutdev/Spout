@@ -58,6 +58,7 @@ public final class AtomicIntArrayStore {
 	private final int MAX_FAIL_THRESHOLD = 256;
 	private final int WAIT_COUNT = 32;
 	private final int WAIT_MASK = WAIT_COUNT - 1;
+	private final int INITIAL_MIN_SIZE = 16; // the initial size to resize to
 
 	private final int maxLength;
 	private final AtomicInteger length = new AtomicInteger(0);
@@ -379,12 +380,18 @@ public final class AtomicIntArrayStore {
 		int lockedIndexes = length.get();
 		try {
 			// Calculate new length
-			int newLength = length.get() << 1;
+			final int oldLength = length.get();
+			final int newLength;
+			if (oldLength < INITIAL_MIN_SIZE) {
+				newLength = INITIAL_MIN_SIZE;
+			} else {
+				newLength = oldLength << 1;
+			}
 			if (newLength > maxLength || !needsResize()) {
 				return;
 			}
 
-			//
+			// Initialize the new length arrays
 			int[] newIntArray = new int[newLength];
 			boolean[] newEmptyArray = new boolean[newLength];
 			AtomicIntegerArray newSeqArray = new AtomicIntegerArray(newLength);
@@ -405,8 +412,6 @@ public final class AtomicIntArrayStore {
 			intArray.set(newIntArray);
 			emptyArray.set(newEmptyArray);
 			seqArray.set(newSeqArray);
-
-			int oldLength = length.get();
 
 			// Update the length, the array already has been lengthened, so this is safe
 			length.set(newLength);
