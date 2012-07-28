@@ -37,13 +37,14 @@ import org.spout.api.scheduler.Task;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.Named;
+import org.spout.api.util.list.concurrent.LongPrioritized;
 import org.spout.engine.scheduler.parallel.ParallelTaskInfo;
 import org.spout.engine.world.SpoutRegion;
 
 /**
  * Represents a task which is executed periodically.
  */
-public class SpoutTask implements Task {
+public class SpoutTask implements Task, LongPrioritized {
 	/**
 	 * The next task ID pending.
 	 */
@@ -305,6 +306,11 @@ public class SpoutTask implements Task {
 	
 	public void setParallelInfo(ParallelTaskInfo info) {
 		this.parallelInfo = info;
+	}
+
+	@Override
+	public long getPriority() {
+		return nextCallTime.get();
 	}
 
 }

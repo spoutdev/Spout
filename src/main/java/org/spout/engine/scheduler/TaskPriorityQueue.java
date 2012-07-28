@@ -26,31 +26,26 @@
  */
 package org.spout.engine.scheduler;
 
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.concurrent.PriorityBlockingQueue;
+import java.util.List;
+import java.util.Queue;
 
-public class TaskPriorityQueue extends PriorityBlockingQueue<SpoutTask> {
+import org.spout.api.util.list.concurrent.ConcurrentLongPriorityQueue;
+import org.spout.api.util.list.concurrent.RedirectableConcurrentLinkedQueue;
+
+public class TaskPriorityQueue extends ConcurrentLongPriorityQueue<SpoutTask> {
 
 	private static final long serialVersionUID = 1L;
 	
 	private final Thread taskThread;
 
-	public TaskPriorityQueue() {
-		this(Thread.currentThread());
+	public TaskPriorityQueue(long resolution) {
+		this(Thread.currentThread(), resolution);
 	}
 	
-	public TaskPriorityQueue(Thread t) {
-		super(20, new Comparator<SpoutTask>() {
-			@Override
-			public int compare(SpoutTask task1, SpoutTask task2) {
-				long diff = task1.getNextCallTime() - task2.getNextCallTime();
-				return diff < 0 ? -1 :
-					   diff > 0 ? +1 :
-						           0;
-			}
-			
-		});
+	public TaskPriorityQueue(Thread t, long resolution) {
+		super(resolution);
 		taskThread = t;
 	}
 	
@@ -62,46 +57,12 @@ public class TaskPriorityQueue extends PriorityBlockingQueue<SpoutTask> {
 	 * @param currentTime the current time
 	 * @return the first pending task, or null if no task is pending
 	 */
-	public SpoutTask getPendingTask(long currentTime) {
+	public Queue<SpoutTask> getPendingTask(long currentTime) {
 		if (Thread.currentThread() != taskThread) {
 			throw new IllegalStateException("getPendingTask() may only be called from the thread that created the TaskPriorityQueue");
 		}
-
-		SpoutTask task = peek();
-		if (task == null) {
-			return null;
-		}
-
-		if (task.getNextCallTime() > currentTime) {
-			return null;
-		}
-
-		task = poll();
-		if (task.getNextCallTime() > currentTime) {
-			add(task);
-			return null;
-		}
-
-		return task;
-	}
-	
-	/**
-	 * Indicates if there are any pending tasks on the queue.  A task is considered pending if its next call time is less than or equal to the given current time.<br>
-	 * 
-	 * @param currentTime the current time
-	 * @return true if there are any pending tasks
-	 */
-	public boolean hasPendingTasks(long currentTime) {
-		SpoutTask task = peek();
-		if (task == null) {
-			return false;
-		}
-
-		if (task.getNextCallTime() > currentTime) {
-			return false;
-		}
-
-		return true;
+		
+		return super.poll(currentTime);
 	}
 	
 	@Override
@@ -111,18 +72,9 @@ public class TaskPriorityQueue extends PriorityBlockingQueue<SpoutTask> {
 		}
 		return super.add(task);
 	}
-	
+
 	@Override
-	public SpoutTask poll() {
-		SpoutTask task = super.poll();
-		if (task != null) {
-			task.unlockNextCallTime();
-		}
-		return task;
-	}
-	
-	@Override
-	public boolean remove(Object task) {
+	public boolean remove(SpoutTask task) {
 		if (!super.remove(task)) {
 			return false;
 		}
@@ -135,17 +87,11 @@ public class TaskPriorityQueue extends PriorityBlockingQueue<SpoutTask> {
 	}
 	
 	@Override
-	public void clear() {
-		throw new UnsupportedOperationException("Not supported");
-	}
-	
-	@Override
 	public String toString() {
-		Iterator<SpoutTask> i = iterator();
+		Iterator<RedirectableConcurrentLinkedQueue<SpoutTask>> iq = queueMap.values().iterator();
 		StringBuilder sb = new StringBuilder("{");
 		boolean first = true;
-		while (i.hasNext()) {
-			SpoutTask t = i.next();
+		for (SpoutTask t : getTasks()) {
 			if (first) {
 				first = false;
 			} else {
@@ -154,6 +100,19 @@ public class TaskPriorityQueue extends PriorityBlockingQueue<SpoutTask> {
 			sb.append("{" + t.getTaskId() + ":" + t.getNextCallTime() + "}");
 		}
 		return sb.append("}").toString();
+	}
+	
+	public List<SpoutTask> getTasks() {
+		List<SpoutTask> list = new ArrayList<SpoutTask>();
+		Iterator<RedirectableConcurrentLinkedQueue<SpoutTask>> iq = queueMap.values().iterator();
+		while (iq.hasNext()) {
+			Iterator<SpoutTask> i = iq.next().iterator();
+			while (i.hasNext()) {
+				SpoutTask t = i.next();
+				list.add(t);
+			}
+		}
+		return list;
 	}
 }
 

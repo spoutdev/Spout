@@ -27,7 +27,9 @@
 package org.spout.engine.scheduler;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
@@ -70,7 +72,7 @@ public class SpoutTaskManager implements TaskManager {
 	}
 	
 	public SpoutTaskManager(Scheduler scheduler, boolean mainThread, Thread t, long age) {
-		this.taskQueue = new TaskPriorityQueue(t);
+		this.taskQueue = new TaskPriorityQueue(t, SpoutScheduler.PULSE_EVERY / 4);
 		this.mainThread = mainThread;
 		this.alive = new AtomicBoolean(true);
 		this.upTime = new AtomicLong(age);
@@ -125,17 +127,34 @@ public class SpoutTaskManager implements TaskManager {
 	
 	public void heartbeat(long delta) {
 		long upTime = this.upTime.addAndGet(delta);
-		while ((taskQueue.hasPendingTasks(upTime))) {
-			SpoutTask currentTask = taskQueue.getPendingTask(upTime);
-			if (!currentTask.isAlive()) {
-				continue;
-			} else if (currentTask.isSync()) {
-				currentTask.pulse();
-				repeatSchedule(currentTask);
-			} else {
-				SpoutWorker worker = new SpoutWorker(currentTask, this);
-				addWorker(worker, currentTask);
-				worker.start();
+		
+		Queue<SpoutTask> q;
+		
+		while ((q = taskQueue.poll(upTime)) != null) {
+			boolean checkRequired = !taskQueue.isFullyBelowThreshold(q, upTime);
+			Iterator<SpoutTask> itr = q.iterator();
+			while (itr.hasNext()) {
+				SpoutTask currentTask = itr.next();
+				if (checkRequired && currentTask.getPriority() > upTime) {
+					continue;
+				}
+				
+				itr.remove();
+				currentTask.unlockNextCallTime();
+
+				if (!currentTask.isAlive()) {
+					continue;
+				} else if (currentTask.isSync()) {
+					currentTask.pulse();
+					repeatSchedule(currentTask);
+				} else {
+					SpoutWorker worker = new SpoutWorker(currentTask, this);
+					addWorker(worker, currentTask);
+					worker.start();
+				}
+			}
+			if (taskQueue.complete(q, upTime)) {
+				break;
 			}
 		}
 	}
@@ -220,7 +239,12 @@ public class SpoutTaskManager implements TaskManager {
 
 	@Override
 	public List<Task> getPendingTasks() {
-		return new ArrayList<Task>(taskQueue);
+		List<SpoutTask> tasks = taskQueue.getTasks();
+		List<Task> list = new ArrayList<Task>(tasks.size());
+		for (SpoutTask t : tasks) {
+			list.add(t);
+		}
+		return list;
 	}
 	
 	public boolean shutdown() {
