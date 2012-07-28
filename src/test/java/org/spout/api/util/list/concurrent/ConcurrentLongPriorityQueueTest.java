@@ -29,16 +29,18 @@ package org.spout.api.util.list.concurrent;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
+import java.util.Queue;
 import java.util.Random;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 
 import org.junit.Test;
 
 public class ConcurrentLongPriorityQueueTest {
 	
-	private static int LENGTH = 16384;
+	private static int LENGTH = 4096;
 	private static int COPIES = 256;
 	private static int BINSIZE = 4;
+	private static int REPEATS = 100;
 
 	long max = Long.MIN_VALUE;
 	
@@ -46,7 +48,7 @@ public class ConcurrentLongPriorityQueueTest {
 	int outputIndex;
 	
 	@Test
-	public void test() {
+	public void testFunctionality() {
 		
 		LongWithPriority[] sorted = new LongWithPriority[LENGTH];
 		
@@ -82,8 +84,90 @@ public class ConcurrentLongPriorityQueueTest {
 		
 	}
 	
+	@Test
+	public void testSpeed() {
+		
+		LongWithPriority[] sorted = new LongWithPriority[LENGTH];
+		
+		for (int i = 0; i < LENGTH; i++) {
+			sorted[i] = new LongWithPriority(i / COPIES);
+		}
+		
+		LongWithPriority[] shuffled = shuffle(sorted);
+		LongWithPriority[] output = new LongWithPriority[shuffled.length];
+		
+		ConcurrentLongPriorityQueue<LongWithPriority> lpq = new ConcurrentLongPriorityQueue<LongWithPriority>(BINSIZE);
+		
+		PriorityBlockingQueue<LongWithPriority> pbq = new PriorityBlockingQueue<LongWithPriority>();
+		
+		Queue<LongWithPriority> q;
+		
+		long iteratorTime = 0;
+		long pollTime = 0;
+		long completeTime = 0;
+		long addTime = 0;
+		long startLPQ = System.nanoTime();
+		for(int r = 0; r < REPEATS; r++) {
+			addTime -= System.nanoTime();
+			for (int i = 0; i < shuffled.length; i++) {
+				lpq.add(shuffled[i]);
+			}
+			addTime += System.nanoTime();
+			int i = 0;
+			pollTime -= System.nanoTime();
+			while ((q = lpq.poll(Long.MAX_VALUE)) != null) {
+				pollTime += System.nanoTime();
+				iteratorTime -= System.nanoTime();
+				boolean checkRequired = !lpq.isFullyBelowThreshold(q, Long.MAX_VALUE);
+				Iterator<LongWithPriority> itr = q.iterator();
+				while (itr.hasNext()) {
+					LongWithPriority l = itr.next();
+					l.getPriority();
+					output[i++] = l;
+					itr.remove();
+				}
+				iteratorTime += System.nanoTime();
+				completeTime -= System.nanoTime();
+				lpq.complete(q, Long.MAX_VALUE);
+				completeTime += System.nanoTime();
+				pollTime -= System.nanoTime();
+			}
+			pollTime += System.nanoTime();
+		}
+		long endLPQ = System.nanoTime();
+		
+		System.out.println("LPQ time: " + ((endLPQ - startLPQ) / REPEATS));
+		System.out.println("LPQ add time: " + ((addTime) / REPEATS));
+		System.out.println("LPQ iterator time: " + ((iteratorTime) / REPEATS));
+		System.out.println("LPQ poll time: " + ((pollTime) / REPEATS));
+		System.out.println("LPQ complete time: " + ((completeTime) / REPEATS));
+		
+		addTime = 0;
+		
+		long startPBQ = System.nanoTime();
+		for(int r = 0; r < REPEATS; r++) {
+			addTime -= System.nanoTime();
+			for (int i = 0; i < shuffled.length; i++) {
+				pbq.add(shuffled[i]);
+			}
+			addTime += System.nanoTime();
+			LongWithPriority l;
+			int i = 0;
+			while ((l = pbq.poll()) != null) {
+				output[i++] = l;
+			}
+		}
+		long endPBQ = System.nanoTime();
+		
+		System.out.println("BPQ time: " + ((endPBQ - startPBQ) / REPEATS));
+		System.out.println("BPQ add time: " + ((addTime) / REPEATS));
+		
+	}
+	
+	
+	
 	private void readFromQueue(ConcurrentLongPriorityQueue<LongWithPriority> lpq, long threshold) {
-		ConcurrentLinkedQueue<LongWithPriority> q;
+		Queue<LongWithPriority> q;
 
 		while ((q = lpq.poll(threshold)) != null) {
 			System.out.println("Reading queue: " + ((LongPrioritized) q).getPriority());
@@ -133,7 +217,7 @@ public class ConcurrentLongPriorityQueueTest {
 		return a;
 	}
 	
-	private class LongWithPriority implements LongPrioritized {
+	private class LongWithPriority implements LongPrioritized, Comparable<LongWithPriority> {
 
 		private final long priority;
 		
@@ -144,6 +228,12 @@ public class ConcurrentLongPriorityQueueTest {
 		@Override
 		public long getPriority() {
 			return priority;
+		}
+
+		@Override
+		public int compareTo(LongWithPriority o) {
+			return (o.priority < priority) ? 1 : 
+				o.priority > priority ? -1 : 0;
 		}
 		
 	}

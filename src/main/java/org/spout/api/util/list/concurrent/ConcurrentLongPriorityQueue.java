@@ -27,6 +27,7 @@
 package org.spout.api.util.list.concurrent;
 
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListMap;
 
@@ -77,7 +78,7 @@ public class ConcurrentLongPriorityQueue<T extends LongPrioritized> {
 	 * @param threshold
 	 * @return
 	 */
-	public ConcurrentLinkedQueue<T> poll(long threshold) {
+	public Queue<T> poll(long threshold) {
 		Entry<Long, RedirectableConcurrentLinkedQueue<T>> first = queueMap.firstEntry();
 		if (first == null || first.getKey() > threshold) {
 			return null;
@@ -93,7 +94,7 @@ public class ConcurrentLongPriorityQueue<T extends LongPrioritized> {
 	 * @param threshold
 	 * @return true if the threshold was covered by this sub-queue, so no further calls to poll() are required
 	 */
-	public boolean complete(ConcurrentLinkedQueue<T> queue, long threshold) {
+	public boolean complete(Queue<T> queue, long threshold) {
 		RedirectableConcurrentLinkedQueue<T> q = (RedirectableConcurrentLinkedQueue<T>) queue;
 		boolean empty = q.isEmpty();
 		if (empty) {
@@ -111,7 +112,7 @@ public class ConcurrentLongPriorityQueue<T extends LongPrioritized> {
 	 * @param threshold
 	 * @return
 	 */
-	public boolean isFullyBelowThreshold(ConcurrentLinkedQueue<T> queue, long threshold) {
+	public boolean isFullyBelowThreshold(Queue<T> queue, long threshold) {
 		RedirectableConcurrentLinkedQueue<T> q = (RedirectableConcurrentLinkedQueue<T>) queue;
 		return q.getPriority() + keyStep <= threshold;
 	}
