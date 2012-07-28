@@ -37,7 +37,7 @@ public class ConcurrentLongPriorityQueue<T extends LongPrioritized> {
 	
 	private final long keyMask;
 	private final long keyStep;
-	private final ConcurrentSkipListMap<Long, RedirectableConcurrentLinkedQueue<T>> queueMap = new ConcurrentSkipListMap<Long, RedirectableConcurrentLinkedQueue<T>>();
+	protected final ConcurrentSkipListMap<Long, RedirectableConcurrentLinkedQueue<T>> queueMap = new ConcurrentSkipListMap<Long, RedirectableConcurrentLinkedQueue<T>>();
 
 	public ConcurrentLongPriorityQueue(long resolution) {
 		if (resolution < 1) {
@@ -56,7 +56,7 @@ public class ConcurrentLongPriorityQueue<T extends LongPrioritized> {
 	 * 
 	 * @param o
 	 */
-	public void add(T o) {
+	public boolean add(T o) {
 		Long key = getKey(o.getPriority());
 		RedirectableConcurrentLinkedQueue<T> queue = queueMap.get(key);
 		if (queue == null) {
@@ -67,6 +67,21 @@ public class ConcurrentLongPriorityQueue<T extends LongPrioritized> {
 			}
 		}
 		queue.add(o);
+		return true;
+	}
+	
+	/**
+	 * Removes a prioritized element from the queue
+	 * 
+	 * @param o
+	 */
+	public boolean remove(T o) {
+		Long key = getKey(o.getPriority());
+		RedirectableConcurrentLinkedQueue<T> queue = queueMap.get(key);
+		if (queue == null) {
+			return false;
+		}
+		return queue.remove(o);
 	}
 	
 	/**
