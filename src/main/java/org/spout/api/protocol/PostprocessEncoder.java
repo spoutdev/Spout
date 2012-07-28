@@ -65,13 +65,17 @@ public abstract class PostprocessEncoder extends OneToOneEncoder implements Proc
 				ctx.sendDownstream(evt);
 			} else if (encodedMessage != null) {
 				if (encodedMessage instanceof ChannelBuffer) {
-					encodedMessage = processor.write(ctx, (ChannelBuffer)encodedMessage);
+					synchronized (this) {
+						encodedMessage = processor.write(ctx, (ChannelBuffer)encodedMessage);
+						write(ctx, e.getFuture(), encodedMessage, e.getRemoteAddress());
+					}
+				} else {
+					write(ctx, e.getFuture(), encodedMessage, e.getRemoteAddress());
 				}
-				write(ctx, e.getFuture(), encodedMessage, e.getRemoteAddress());
 			}
 			checkForSetupMessage(originalMessage);
 		}
-    }
+	}
 	
 	private void checkForSetupMessage(Object e) {
 		if (e instanceof ProcessorSetupMessage) {
