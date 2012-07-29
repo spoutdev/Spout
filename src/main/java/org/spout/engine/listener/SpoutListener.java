@@ -74,6 +74,7 @@ public class SpoutListener implements Listener {
 					player.kick();
 				}
 			} else {
+				event.getSession().getProtocol().initializeSession(event.getSession());
 				long joinStart = System.currentTimeMillis();
 				Spout.getEngine().getEventManager().callEvent(new PlayerJoinEvent(player, ChatStyle.CYAN, player.getDisplayName(), ChatStyle.CYAN, " has joined the game"));
 				System.out.println("Player Join Event took " + (System.currentTimeMillis() - joinStart) + " ms");
