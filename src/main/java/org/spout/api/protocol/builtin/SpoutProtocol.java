@@ -26,6 +26,8 @@
  */
 package org.spout.api.protocol.builtin;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.command.Command;
@@ -33,6 +35,7 @@ import org.spout.api.entity.component.controller.type.ControllerType;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.protocol.Message;
+import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.builtin.message.CommandMessage;
 import org.spout.api.protocol.builtin.message.LoginMessage;
@@ -49,6 +52,25 @@ public class SpoutProtocol extends Protocol {
 	private SpoutProtocol() {
 		super("Spout", new SpoutCodecLookupService(), new SpoutHandlerLookupService());
 		registerProtocol(getName(), this);
+	}
+
+	public MessageCodec<?> readHeader(ChannelBuffer buf) {
+		int id = buf.readUnsignedShort();
+		int length = buf.readInt();
+		MessageCodec<?> codec = getCodecLookupService().find(id);
+		if (codec == null) {
+			buf.skipBytes(length);
+			return null;
+		} else {
+			return codec;
+		}
+	}
+
+	public ChannelBuffer writeHeader(MessageCodec<?> codec, ChannelBuffer data) {
+		ChannelBuffer buf = ChannelBuffers.buffer(6);
+		buf.writeShort(codec.getOpcode());
+		buf.writeInt(data.writerIndex());
+		return buf;
 	}
 
 	public Message getKickMessage(ChatArguments message) {

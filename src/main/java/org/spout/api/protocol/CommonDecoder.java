@@ -33,7 +33,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 import org.spout.api.Spout;
-import org.spout.api.protocol.replayable.ReplayableError;
+import org.spout.api.exception.UnknownPacketException;
 
 /**
  * A {@link ReplayingDecoder} which decodes {@link ChannelBuffer}s into
@@ -57,36 +57,25 @@ public class CommonDecoder extends PreprocessReplayingDecoder {
 			protocol = Spout.getEngine().getProtocol(c.getLocalAddress());
 		}
 
-		int opcode;
-
+		MessageCodec<?> codec;
 		try {
-			opcode = buf.getUnsignedShort(buf.readerIndex());
-		} catch (ReplayableError e) {
-			opcode = buf.getUnsignedByte(buf.readerIndex()) << 8;
-		}
-
-		MessageCodec<?> codec = protocol.getCodecLookupService().find(opcode);
-		if (codec == null) {
-			if (codec == null) {
-				StringBuilder sb = new StringBuilder();
-				for (int i = 0; i < previousMask; i++) {
-					if (i > 0) {
-						sb.append(", ");
-					}
-					sb.append(Integer.toHexString(previousOpcodes[(opcodeCounter + i) & previousMask]));
+			codec = protocol.readHeader(buf);
+		} catch (UnknownPacketException e) {
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < previousMask; i++) {
+				if (i > 0) {
+					sb.append(", ");
 				}
-				throw new IOException("Unknown operation code: " + opcode + " (previous opcodes: " + sb.toString() + ").");
+				sb.append(Integer.toHexString(previousOpcodes[(opcodeCounter + i) & previousMask]));
 			}
+			throw new IOException("Unknown operation code: " + e.getOpcode() + " (previous opcodes: " + sb.toString() + ").");
 		}
 
-		if (codec.isExpanded()) {
-			buf.readShort();
-		} else {
-			buf.readByte();
+		if (codec == null) {
+			return buf;
 		}
 
-		previousOpcodes[(opcodeCounter++) & previousMask] = opcode;
-
+		previousOpcodes[(opcodeCounter++) & previousMask] = codec.getOpcode();
 		return codec.decode(upstream, buf);
 	}
 

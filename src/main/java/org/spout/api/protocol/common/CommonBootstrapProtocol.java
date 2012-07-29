@@ -29,14 +29,18 @@ package org.spout.api.protocol.common;
 import java.io.UnsupportedEncodingException;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.command.Command;
+import org.spout.api.exception.UnknownPacketException;
 import org.spout.api.protocol.CodecLookupService;
 import org.spout.api.protocol.HandlerLookupService;
 import org.spout.api.protocol.Message;
+import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.common.message.CustomDataMessage;
+import org.spout.api.protocol.replayable.ReplayableError;
 
 public class CommonBootstrapProtocol extends Protocol {
 	private final Protocol defaultProtocol;
@@ -107,6 +111,31 @@ public class CommonBootstrapProtocol extends Protocol {
 		}
 	}
 
+	public MessageCodec<?> readHeader(ChannelBuffer buf) throws UnknownPacketException {
+		int opcode;
+
+		try {
+			opcode = buf.getUnsignedShort(buf.readerIndex());
+		} catch (ReplayableError e) {
+			opcode = buf.getUnsignedByte(buf.readerIndex()) << 8;
+		}
+
+		MessageCodec<?> codec = getCodecLookupService().find(opcode);
+		if (codec == null) {
+			throw new UnknownPacketException(opcode);
+		}
+		return codec;
+	}
+
+	public ChannelBuffer writeHeader(MessageCodec<?> codec, ChannelBuffer data) {
+		ChannelBuffer opcodeBuf = ChannelBuffers.buffer(codec.isExpanded() ? 2 : 1);
+		if (codec.isExpanded()) {
+			opcodeBuf.writeShort(codec.getOpcode());
+		} else {
+			opcodeBuf.writeByte(codec.getOpcode());
+		}
+		return opcodeBuf;
+	}
 
 	@Override
 	public Message getKickMessage(ChatArguments message) {

@@ -65,13 +65,9 @@ public class CommonEncoder extends PostprocessEncoder {
 				throw new IOException("Unknown message type: " + clazz + ".");
 			}
 
-			ChannelBuffer opcodeBuf = ChannelBuffers.buffer(codec.isExpanded() ? 2 : 1);
-			if (codec.isExpanded()) {
-				opcodeBuf.writeShort(codec.getOpcode());
-			} else {
-				opcodeBuf.writeByte(codec.getOpcode());
-			}
-			return ChannelBuffers.wrappedBuffer(opcodeBuf, codec.encode(upstream, message));
+			ChannelBuffer messageBuf = codec.encode(upstream, message);
+			ChannelBuffer headerBuf = protocol.writeHeader(codec, messageBuf);
+			return ChannelBuffers.wrappedBuffer(headerBuf, messageBuf);
 		}
 		return msg;
 	}

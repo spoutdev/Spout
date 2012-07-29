@@ -28,8 +28,10 @@ package org.spout.api.protocol;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.command.Command;
+import org.spout.api.exception.UnknownPacketException;
 
 public abstract class Protocol {
 	private static final ConcurrentHashMap<String, Protocol> map = new ConcurrentHashMap<String, Protocol>();
@@ -72,10 +74,29 @@ public abstract class Protocol {
 	}
 
 	/**
+	 * Read a packet header from the buffer. If a codec is not available and packet length is known, skip ahead in the buffer and return null.
+	 * If packet length is not known, throw a {@link org.spout.api.exception.UnknownPacketException}
+	 *
+	 * @param buf The buffer to read from
+	 * @return The correct codec
+	 * @throws UnknownPacketException when the opcode does not have an associated codec and the packet length is unknown
+	 */
+	public abstract MessageCodec<?> readHeader(ChannelBuffer buf) throws UnknownPacketException;
+
+	/**
+	 * Writes a packet header to a new buffer.
+	 *
+	 * @param codec The codec the message was written with
+	 * @param data The data from the encoded message
+	 * @return The buffer with the packet header
+	 */
+	public abstract ChannelBuffer writeHeader(MessageCodec<?> codec, ChannelBuffer data);
+
+	/**
 	 * Gets a packet for kicking a player
 	 *
-	 * @param message
-	 * @return
+	 * @param message The kick reason
+	 * @return The kick message
 	 */
 	public abstract Message getKickMessage(ChatArguments message);
 
