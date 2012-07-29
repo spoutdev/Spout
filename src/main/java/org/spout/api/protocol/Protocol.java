@@ -117,6 +117,15 @@ public abstract class Protocol {
 	public abstract Message getIntroductionMessage(String playerName);
 
 	/**
+	 * Set up the initial data for the given session.
+	 * This method is called in between {@link org.spout.api.event.player.PlayerLoginEvent}
+	 * and {@link org.spout.api.event.player.PlayerJoinEvent}. Game plugins should have set
+	 *
+	 * @param session The session to set data for
+	 */
+	public abstract void initializeSession(Session session);
+
+	/**
 	 * Registers a Protocol for a particular id value
 	 *
 	 * @param id the id of the protocol

@@ -37,6 +37,7 @@ import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.Protocol;
+import org.spout.api.protocol.Session;
 import org.spout.api.protocol.builtin.message.CommandMessage;
 import org.spout.api.protocol.builtin.message.LoginMessage;
 
@@ -88,5 +89,9 @@ public class SpoutProtocol extends Protocol {
 
 	public Message getIntroductionMessage(String playerName) {
 		return new LoginMessage(playerName, PROTOCOL_VERSION);
+	}
+
+	public void initializeSession(Session session) {
+		session.setNetworkSynchronizer(new SpoutNetworkSynchronizer(session));
 	}
 }

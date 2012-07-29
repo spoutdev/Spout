@@ -34,7 +34,6 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
-import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.builtin.message.AddEntityMessage;
@@ -49,8 +48,8 @@ import org.spout.api.protocol.builtin.message.WorldChangeMessage;
  * @author zml2008
  */
 public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
-	public SpoutNetworkSynchronizer(Player owner, Session session, Entity entity, int minimumViewRadius) {
-		super(owner, session, entity, minimumViewRadius);
+	public SpoutNetworkSynchronizer(Session session) {
+		super(session.getPlayer(), session, session.getPlayer().getEntity(), 3);
 	}
 
 	public void sendChunk(Chunk c) {
@@ -71,7 +70,7 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 	}
 
 	public void updateBlock(Chunk chunk, int x, int y, int z, BlockMaterial material, short data) {
-		session.send(false, new BlockUpdateMessage(x, y, z, material.getId(), data, (byte) 0xF, (byte) 0xF));
+		session.send(false, new BlockUpdateMessage(chunk.getBlock(x, y, z, getOwner())));
 	}
 
 	public void spawnEntity(Entity e) {
