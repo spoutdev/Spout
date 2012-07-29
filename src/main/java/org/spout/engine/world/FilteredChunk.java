@@ -119,8 +119,11 @@ public class FilteredChunk extends SpoutChunk{
 		if (uniform.get()) {
 			initialize();
 		}
-		chunkModified.set(true);
-		return super.setBlockMaterial(x, y, z, material, data, source);
+		boolean changed = super.setBlockMaterial(x, y, z, material, data, source);
+		if (changed) {
+			chunkModified.set(true);
+		}
+		return changed;
 	}
 
 	@Override
@@ -195,8 +198,11 @@ public class FilteredChunk extends SpoutChunk{
 		if (uniform.get()) {
 			return false;
 		}
-		chunkModified.set(true);
-		return super.setBlockLight(x, y, z, light, source);
+		boolean changed = super.setBlockLight(x, y, z, light, source);
+		if (changed) {
+			chunkModified.set(true);
+		}
+		return changed;
 	}
 
 	@Override
@@ -204,8 +210,11 @@ public class FilteredChunk extends SpoutChunk{
 		if (uniform.get()) {
 			return false;
 		}
-		chunkModified.set(true);
-		return super.setBlockSkyLight(x, y, z, light, source);
+		boolean changed = super.setBlockSkyLight(x, y, z, light, source);
+		if (changed) {
+			chunkModified.set(true);
+		}
+		return changed;
 	}
 
 	@Override

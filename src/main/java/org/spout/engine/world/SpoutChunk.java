@@ -365,8 +365,9 @@ public class SpoutChunk extends Chunk {
 
 		if (newState != oldState) {
 			blockChanged(x, y, z, material, newData, oldMaterial, oldData, source);
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	/**
