@@ -381,14 +381,14 @@ public final class AtomicIntArrayStore {
 		try {
 			// Calculate new length
 			final int oldLength = length.get();
+			final int oldLengthDoubled = oldLength << 1;
 			final int newLength;
-			if (oldLength < INITIAL_MIN_SIZE) {
+			if (oldLength >= maxLength || !needsResize()) {
+				return;
+			} else if (oldLengthDoubled < INITIAL_MIN_SIZE) {
 				newLength = INITIAL_MIN_SIZE;
 			} else {
-				newLength = oldLength << 1;
-			}
-			if (newLength > maxLength || !needsResize()) {
-				return;
+				newLength = oldLengthDoubled;
 			}
 
 			// Initialize the new length arrays
