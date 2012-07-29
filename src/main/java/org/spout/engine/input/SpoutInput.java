@@ -36,8 +36,12 @@ import org.spout.engine.SpoutEngine;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 public class SpoutInput implements Input {
+	private static final int KEY_SCROLLUP = 0xdada;
+	private static final int KEY_SCROLLDOWN = 0xfee1bad;
+
 	TIntObjectHashMap<String> keyCommands = new TIntObjectHashMap<String>();
 	TIntObjectHashMap<String> mouseCommands = new TIntObjectHashMap<String>();
+	private boolean redirected = false;
 
 	public SpoutInput() {
 		bind("KEY_W", "+Forward");
@@ -45,7 +49,8 @@ public class SpoutInput implements Input {
 
 	public void doKeypress(int key, boolean pressed) {
 		String cmd = keyCommands.get(key);
-		if (cmd == null) return;
+		if (cmd == null)
+			return;
 
 		if (cmd.startsWith("+") && !pressed) {
 			cmd = cmd.replaceFirst("\\+", "-");
@@ -53,21 +58,90 @@ public class SpoutInput implements Input {
 		((SpoutEngine) Spout.getEngine()).getCommandSource().sendCommand(cmd, new ChatArguments());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.spout.engine.input.Input#bind(java.lang.String, java.lang.String)
+	public void doMousepress(int button, boolean pressed) {
+		String cmd = mouseCommands.get(button);
+		if (cmd == null)
+			return;
+
+		if (cmd.startsWith("+") && !pressed) {
+			cmd = cmd.replaceFirst("\\+", "-");
+		}
+		((SpoutEngine) Spout.getEngine()).getCommandSource().sendCommand(cmd, new ChatArguments());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.spout.engine.input.Input#bind(java.lang.String,
+	 * java.lang.String)
 	 */
 	public void bind(String key, String command) {
-		if(key.startsWith("KEY")){
-			int k = Keyboard.getKeyIndex(key);
+		if (key.startsWith("KEY")) {
+			int k = getKey(key);
 			keyCommands.put(k, command);
 		}
-		if(key.startsWith("MOUSE")){
+
+		if (key.startsWith("MOUSE")) {
 			int k = Mouse.getButtonIndex(key);
 			mouseCommands.put(k, command);
 		}
+
+		if (key.startsWith("AXIS")) {
+
+		}
+	}
+
+	private int getKey(String name) {
+		if (name.contains("SCROLLUP")) {
+			return KEY_SCROLLUP;
+		}
+
+		if (name.contains("SCROLLDOWN")) {
+			return KEY_SCROLLDOWN;
+		}
+
+		return Keyboard.getKeyIndex(name);
 	}
 
 	public void pollInput() {
+		if (redirected) {
+			return;
+		}
 
+		// Handle keyboard
+		while (Keyboard.next()) {
+			doKeypress(Keyboard.getEventKey(), Keyboard.getEventKeyState());
+		}
+
+		// Handle mouse
+		while (Mouse.next()) {
+			// Handle buttons
+			int button = Mouse.getEventButton();
+			if (button != -1) {
+				doMousepress(button, Mouse.getEventButtonState());
+				continue;
+			}
+
+			// Handle scrolls
+			int scroll = Mouse.getEventDWheel();
+			if (scroll < 0) {
+				doKeypress(KEY_SCROLLUP, true);
+			} else if (scroll > 0) {
+				doKeypress(KEY_SCROLLDOWN, true);
+			}
+
+			// Handle movement
+			// TODO
+		}
+	}
+
+	@Override
+	public boolean isRedirected() {
+		return redirected;
+	}
+
+	@Override
+	public void setRedirected(boolean redirect) {
+		redirected = redirect;
 	}
 }
