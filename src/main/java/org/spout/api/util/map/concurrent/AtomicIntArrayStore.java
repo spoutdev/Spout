@@ -482,7 +482,7 @@ public final class AtomicIntArrayStore {
 
 	/**
 	 * Indicates if the array needs resizing. An array is considered to need
-	 * resizing if it is more than 50% full.
+	 * resizing if it is at least 75% full.
 	 *
 	 * Once an array has a length of the maximum length, it is never considered
 	 * in need to resizing.
@@ -493,6 +493,15 @@ public final class AtomicIntArrayStore {
 		int lengthThreshold = length.get();
 		lengthThreshold -= lengthThreshold >> 2;
 		return length.get() < maxLength && entries.get() >= lengthThreshold;
+	}
+	
+	/**
+	 * Returns true if the array size is above minimum
+	 * 
+	 * @return
+	 */
+	public final boolean isAboveMinimumSize() {
+		return length.get() > this.INITIAL_MIN_SIZE;
 	}
 
 	/**

@@ -490,7 +490,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	public final boolean needsCompression() {
 		int entries = auxStore.getEntries();
 		int size = auxStore.getSize();
-		return size > 1 && (entries << 3) / 3 < size;
+		return auxStore.isAboveMinimumSize() && (entries << 3) / 3 < size;
 	}
 
 	/**

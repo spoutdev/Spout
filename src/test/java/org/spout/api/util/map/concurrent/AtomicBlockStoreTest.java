@@ -230,7 +230,9 @@ public class AtomicBlockStoreTest {
 		double loadFactor = store.getEntries() / (double)store.getSize();
 		System.out.println("Load factor test: " + store.getEntries() + "/" + store.getSize() + " (0.37 < " + loadFactor + " < 0.76)");
 		System.out.println();
-		// Technically the range is 0.375 to 0.75, but this covers rounding error
-		assertTrue("Load factor out of range after compression " + loadFactor, loadFactor > 0.37 && loadFactor < 0.76);
+		if (store.getEntries() >= 16) {
+			// Technically the range is 0.375 to 0.75, but this covers rounding error
+			assertTrue("Load factor out of range after compression " + loadFactor, loadFactor > 0.37 && loadFactor < 0.76);
+		}
 	}
 }
