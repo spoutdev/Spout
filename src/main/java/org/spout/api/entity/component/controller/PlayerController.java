@@ -40,11 +40,4 @@ public interface PlayerController {
 	 * @return the player
 	 */
 	public Player getPlayer();
-
-	/**
-	 * If this player needs to replenish supplies after use
-	 * 
-	 * @return true if it has infinite resources
-	 */
-	public boolean hasInfiniteResources();
 }
