@@ -194,9 +194,10 @@ public abstract class NetworkSynchronizer {
 		// TODO teleport smoothing
 		Point currentPosition = entity.getPosition();
 		if (currentPosition != null) {
-			if (currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.BLOCKS.SIZE >> 1) {
+			if (worldChanged || currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.BLOCKS.SIZE >> 1) {
 				checkChunkUpdates(currentPosition);
 				lastChunkCheck = currentPosition;
+				worldChanged = false;
 			}
 
 			if (first || lastPosition == null || lastPosition.getWorld() != currentPosition.getWorld()) {
@@ -212,19 +213,21 @@ public abstract class NetworkSynchronizer {
 			holdingPosition = currentPosition;
 		}
 
-		for (Point p : chunkFreeQueue) {
-			if (initializedChunks.contains(p)) {
-				removeObserver(p);
+		if (!worldChanged) {
+			for (Point p : chunkFreeQueue) {
+				if (initializedChunks.contains(p)) {
+					removeObserver(p);
+				}
 			}
-		}
 
-		for (Point p : chunkInitQueue) {
-			if (!initializedChunks.contains(p)) {
-				addObserver(p);
+			for (Point p : chunkInitQueue) {
+				if (!initializedChunks.contains(p)) {
+					addObserver(p);
+				}
 			}
-		}
 
-		checkObserverUpdateQueue();
+			checkObserverUpdateQueue();
+		}
 
 	}
 
@@ -236,66 +239,66 @@ public abstract class NetworkSynchronizer {
 				freeChunk(p);
 			}
 		} else {
-
-			for (Point p : chunkFreeQueue) {
-				if (initializedChunks.remove(p)) {
-					freeChunk(p);
-					activeChunks.remove(p);
-				}
-			}
-
-			chunkFreeQueue.clear();
-
-			int chunksSent = 0;
-
-			for (Point p : chunkInitQueue) {
-				if (initializedChunks.add(p)) {
-					initChunk(p);
-				}
-			}
-
-			chunkInitQueue.clear();
-
-			Iterator<Point> i;
-
-			i = priorityChunkSendQueue.iterator();
-			while (i.hasNext()) {
-				Point p = i.next();
-				Chunk c = p.getWorld().getChunkFromBlock(p);
-				if (c.canSend()) {
-					sendChunk(c);
-					activeChunks.add(p);
-					i.remove();
-					chunksSent++;
-				}
-			}
-
-			if (priorityChunkSendQueue.isEmpty() && teleported && entity != null) {
+			if (worldChanged && entity != null) {
+				first = false;
 				Point ep = entity.getPosition();
 				if (worldChanged) {
 					worldChanged(ep.getWorld());
-					worldChanged = false;
 				}
-				sendPosition(entity.getPosition(), entity.getRotation());
-				first = false;
-				teleported = false;
-			}
-
-			boolean tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
-
-			i = chunkSendQueue.iterator();
-			while (i.hasNext() && chunksSent < CHUNKS_PER_TICK && tickTimeRemaining) {
-				Point p = i.next();
-				Chunk c = p.getWorld().getChunkFromBlock(p);
-				if (c.canSend()) {
-					sendChunk(c);
-					activeChunks.add(p);
-					i.remove();
-					chunksSent++;
+			} else if (!worldChanged) {
+				for (Point p : chunkFreeQueue) {
+					if (initializedChunks.remove(p)) {
+						freeChunk(p);
+						activeChunks.remove(p);
+					}
 				}
-				tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
-			}
 
+				chunkFreeQueue.clear();
+
+				int chunksSent = 0;
+
+				for (Point p : chunkInitQueue) {
+					if (initializedChunks.add(p)) {
+						initChunk(p);
+					}
+				}
+
+				chunkInitQueue.clear();
+
+				Iterator<Point> i;
+
+				i = priorityChunkSendQueue.iterator();
+				while (i.hasNext()) {
+					Point p = i.next();
+					Chunk c = p.getWorld().getChunkFromBlock(p);
+					if (c.canSend()) {
+						sendChunk(c);
+						activeChunks.add(p);
+						i.remove();
+						chunksSent++;
+					}
+				}
+
+				if (priorityChunkSendQueue.isEmpty() && teleported && entity != null) {
+					sendPosition(entity.getPosition(), entity.getRotation());
+					teleported = false;
+				}
+
+				boolean tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
+
+				i = chunkSendQueue.iterator();
+				while (i.hasNext() && chunksSent < CHUNKS_PER_TICK && tickTimeRemaining) {
+					Point p = i.next();
+					Chunk c = p.getWorld().getChunkFromBlock(p);
+					if (c.canSend()) {
+						sendChunk(c);
+						activeChunks.add(p);
+						i.remove();
+						chunksSent++;
+					}
+					tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
+				}
+			}
 		}
 
 	}
