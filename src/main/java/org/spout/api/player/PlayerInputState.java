@@ -33,6 +33,15 @@ import org.spout.api.math.MathHelper;
  *
  */
 public class PlayerInputState {
+	static final int FORWARD = 0x01;
+	static final int BACKWARD = 0x02;
+	static final int LEFT = 0x04;
+	static final int RIGHT  = 0x08;
+	static final int JUMP = 0x10;
+	static final int CROUCH = 0x20;
+	static final int MWHEELUP = 0x40;
+	static final int MWHEELDOWN = 0x80;
+	
 	
 	static final int NUM_AXIS = 6;
 	
@@ -41,6 +50,30 @@ public class PlayerInputState {
 	
 	
 	float[] axis = new float[NUM_AXIS];
+	
+	
+	static int userCommands;
+	static byte mouse_dx;
+	static byte mouse_dy;
+	
+	
+	public PlayerInputState(boolean forward, boolean backward, boolean left, boolean right, boolean jump, boolean crouch, boolean mwheelup, boolean mwheeldown, byte mdx, byte mdy){
+		userCommands = 0;
+		userCommands |= (forward ? FORWARD : 0);
+		userCommands |= (backward? BACKWARD : 0);
+		userCommands |= (left ? LEFT : 0);
+		userCommands |= (right ? RIGHT : 0);
+		userCommands |= (jump ? JUMP : 0);
+		userCommands |= (crouch ? CROUCH : 0);
+		userCommands |= (mwheelup ? MWHEELUP : 0);
+		userCommands |= (mwheeldown ? MWHEELDOWN : 0);
+		mouse_dx = mdx;
+		mouse_dy = mdy;
+		
+	}
+	
+	
+	
 	/**
 	 * Gets the current depression of the forward buttons.
 	 * 1.0 reprensents full force forward
