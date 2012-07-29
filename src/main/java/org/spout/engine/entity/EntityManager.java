@@ -36,7 +36,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.spout.api.Spout;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.component.Controller;
@@ -44,7 +43,6 @@ import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.entity.component.controller.PlayerController;
 import org.spout.api.event.entity.EntityDespawnEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
-import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 import org.spout.api.util.StringMap;
@@ -78,7 +76,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 	private final static AtomicInteger nextId = new AtomicInteger(1);
 	private final StringMap entityMap = GenericDatatableMap.getStringMap();
 
-	private final Map<Point, Entity> blockEntities = new HashMap<Point, Entity>();
+	private final Map<Vector3, Entity> blockEntities = new HashMap<Vector3, Entity>();
 
 	private SnapshotableHashSet<SpoutEntity> getRawAll(Class<? extends Controller> type) {
 		SnapshotableHashSet<SpoutEntity> set = groupedEntities.get(type);
@@ -191,7 +189,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 			if (c instanceof PlayerController) {
 				players.add((PlayerController) c);
 			} else if (c instanceof BlockController) {
-				Point pos = entity.getPosition();
+				Vector3 pos = entity.getPosition().floor();
 				Entity old = blockEntities.put(pos, entity);
 				if (old != null) {
 					old.kill();
@@ -295,7 +293,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 		return null;
 	}
 
-	public Map<Point, Entity> getBlockEntities() {
+	public Map<Vector3, Entity> getBlockEntities() {
 		return Collections.unmodifiableMap(blockEntities);
 	}
 }
