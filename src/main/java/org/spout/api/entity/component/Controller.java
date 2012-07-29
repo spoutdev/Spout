@@ -34,6 +34,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntityComponent;
 import org.spout.api.entity.component.controller.PlayerController;
 import org.spout.api.entity.component.controller.type.ControllerType;
+import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.map.DefaultedMap;
 
@@ -87,6 +88,15 @@ public abstract class Controller extends EntityComponent {
 
 	public void onCollide(Block other) {
 
+	}
+
+	/**
+	 * Is called when an Entity interacts with this Controller
+	 * 
+	 * @param entity that interacted
+	 * @param type of interaction
+	 */
+	public void onInteract(Entity entity, Action type) {
 	}
 
 	/**
