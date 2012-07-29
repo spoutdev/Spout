@@ -119,6 +119,7 @@ public class FilteredChunk extends SpoutChunk{
 		if (uniform.get()) {
 			initialize();
 		}
+		chunkModified.set(true);
 		return super.setBlockMaterial(x, y, z, material, data, source);
 	}
 
