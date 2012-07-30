@@ -27,6 +27,7 @@
 package org.spout.engine.player;
 
 import java.net.InetAddress;
+import java.util.PriorityQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -66,6 +67,7 @@ public class SpoutPlayer implements Player {
 	private final AtomicBoolean onlineLive = new AtomicBoolean(false);
 	private boolean online;
 	private final int hashcode;
+	private PriorityQueue<PlayerInputState> inputQueue = new PriorityQueue<PlayerInputState>();
 	
 	public SpoutPlayer(String name) {
 		this.name = name;
@@ -311,7 +313,13 @@ public class SpoutPlayer implements Player {
 
 	@Override
 	public PlayerInputState input() {
-		return null;
+		return inputQueue.poll();
+	}
+
+	@Override
+	public void processInput(PlayerInputState state) {
+		inputQueue.add(state);
+		
 	}
 
 }
