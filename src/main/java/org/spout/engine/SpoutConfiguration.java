@@ -35,7 +35,6 @@ import org.spout.api.util.config.ConfigurationHolderConfiguration;
 import org.spout.api.util.config.yaml.YamlConfiguration;
 
 public class SpoutConfiguration extends ConfigurationHolderConfiguration {
-	public static final ConfigurationHolder ADDRESS = new ConfigurationHolder("0.0.0.0:25565", "address");
 	public static final ConfigurationHolder ALLOW_FLIGHT = new ConfigurationHolder(false, "allow-flight");
 	public static final ConfigurationHolder BANLIST = new ConfigurationHolder(Arrays.asList("Satan"), "banlist");
 	public static final ConfigurationHolder CONSOLE_TYPE = new ConfigurationHolder("jline", "console");

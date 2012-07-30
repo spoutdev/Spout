@@ -34,8 +34,8 @@ public class ServerFileSystem extends SharedFileSystem {
 		if (!UPDATE_DIRECTORY.exists()) {
 			UPDATE_DIRECTORY.mkdirs();
 		}
-		
+
 		super.init();
-		
+
 	}
 }

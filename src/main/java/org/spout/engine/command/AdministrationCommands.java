@@ -44,7 +44,6 @@ import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 
 import org.spout.engine.SpoutEngine;
-import org.spout.engine.SpoutServer;
 
 public class AdministrationCommands {
 	private final SpoutEngine engine;

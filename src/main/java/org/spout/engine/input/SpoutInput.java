@@ -26,8 +26,11 @@
  */
 package org.spout.engine.input;
 
-import org.lwjgl.input.Keyboard;
+import java.util.EnumMap;
+
 import org.lwjgl.input.Mouse;
+import org.spout.api.keyboard.KeyEvent;
+import org.spout.api.keyboard.Keyboard;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.keyboard.Input;
@@ -39,68 +42,66 @@ public class SpoutInput implements Input {
 	private static final int KEY_SCROLLUP = 0xdada;
 	private static final int KEY_SCROLLDOWN = 0xfee1bad;
 
-	TIntObjectHashMap<String> keyCommands = new TIntObjectHashMap<String>();
+	EnumMap<Keyboard, String> keyCommands = new EnumMap<Keyboard, String>(Keyboard.class);
 	TIntObjectHashMap<String> mouseCommands = new TIntObjectHashMap<String>();
 	private boolean redirected = false;
 
 	public SpoutInput() {
-		bind("KEY_W", "+Forward");
+		bind(Keyboard.KEY_W, "+Forward");
 	}
 
-	public void doKeypress(int key, boolean pressed) {
+	public void doKeypress(Keyboard key, boolean pressed) {
 		String cmd = keyCommands.get(key);
-		if (cmd == null)
-			return;
-
-		if (cmd.startsWith("+") && !pressed) {
-			cmd = cmd.replaceFirst("\\+", "-");
-		}
-		((SpoutEngine) Spout.getEngine()).getCommandSource().sendCommand(cmd, new ChatArguments());
+		doCommand(cmd, pressed);
 	}
 
 	public void doMousepress(int button, boolean pressed) {
 		String cmd = mouseCommands.get(button);
-		if (cmd == null)
+		doCommand(cmd,  pressed);
+	}
+
+	private void doCommand(String command, boolean pressed) {
+		if (command == null)
 			return;
 
-		if (cmd.startsWith("+") && !pressed) {
-			cmd = cmd.replaceFirst("\\+", "-");
+		if (command.startsWith("+") && !pressed) {
+			command = command.replaceFirst("\\+", "-");
 		}
-		((SpoutEngine) Spout.getEngine()).getCommandSource().sendCommand(cmd, new ChatArguments());
+		((SpoutEngine) Spout.getEngine()).getCommandSource().sendCommand(command, new ChatArguments());
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
+	 * @see org.spout.engine.input.Input#bind(org.spout.keyboard.Keyboard,
+	 * java.lang.String)
+	 */
+	public void bind(Keyboard key, String command) {
+		keyCommands.put(key, command);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
 	 * @see org.spout.engine.input.Input#bind(java.lang.String,
 	 * java.lang.String)
 	 */
 	public void bind(String key, String command) {
-		if (key.startsWith("KEY")) {
-			int k = getKey(key);
-			keyCommands.put(k, command);
-		}
-
-		if (key.startsWith("MOUSE")) {
+		key = key.toUpperCase();
+		if (key.startsWith("KEY_")) {
+			String name = key.substring(4);
+			if (name.equals("SCROLLDOWN")) {
+				mouseCommands.put(KEY_SCROLLDOWN, command);
+			} else if (name.equals("SCROLLUP")) {
+				mouseCommands.put(KEY_SCROLLUP, command);
+			} else {
+				bind(Keyboard.valueOf(key), command);
+			}
+		} else if (key.startsWith("MOUSE")) {
 			int k = Mouse.getButtonIndex(key);
 			mouseCommands.put(k, command);
+		} else if (key.startsWith("AXIS")) {
 		}
-
-		if (key.startsWith("AXIS")) {
-
-		}
-	}
-
-	private int getKey(String name) {
-		if (name.contains("SCROLLUP")) {
-			return KEY_SCROLLUP;
-		}
-
-		if (name.contains("SCROLLDOWN")) {
-			return KEY_SCROLLDOWN;
-		}
-
-		return Keyboard.getKeyIndex(name);
 	}
 
 	public void pollInput() {
@@ -108,9 +109,10 @@ public class SpoutInput implements Input {
 			return;
 		}
 
+		KeyEvent event;
 		// Handle keyboard
-		while (Keyboard.next()) {
-			doKeypress(Keyboard.getEventKey(), Keyboard.getEventKeyState());
+		while ((event = Keyboard.nextEvent()) != null) {
+			doKeypress(event.getKey(), event.isPressed());
 		}
 
 		// Handle mouse
@@ -125,9 +127,9 @@ public class SpoutInput implements Input {
 			// Handle scrolls
 			int scroll = Mouse.getEventDWheel();
 			if (scroll < 0) {
-				doKeypress(KEY_SCROLLUP, true);
+				doMousepress(KEY_SCROLLUP, true);
 			} else if (scroll > 0) {
-				doKeypress(KEY_SCROLLDOWN, true);
+				doMousepress(KEY_SCROLLDOWN, true);
 			}
 
 			// Handle movement

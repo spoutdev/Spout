@@ -29,12 +29,12 @@ package org.spout.engine;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.URISyntaxException;
 import java.security.CodeSource;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
@@ -43,7 +43,9 @@ import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
@@ -56,13 +58,11 @@ import org.lwjgl.opengl.PixelFormat;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandRegistrationsFactory;
+import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
-import org.spout.api.command.annotated.SimpleAnnotatedCommandExecutorFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 
 import org.spout.api.chat.ChatArguments;
-import org.spout.api.entity.Entity;
-import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
@@ -74,10 +74,13 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Mesh;
+import org.spout.api.player.Player;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.protocol.CommonPipelineFactory;
+import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
+import org.spout.api.protocol.Session;
 import org.spout.api.protocol.builtin.SpoutProtocol;
 import org.spout.api.render.BasicCamera;
 import org.spout.api.render.Camera;
@@ -88,11 +91,13 @@ import org.spout.api.util.map.TInt21TripleObjectHashMap;
 
 import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.command.InputCommands;
+import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.ClientFileSystem;
 import org.spout.engine.input.SpoutInput;
+import org.spout.engine.listener.SpoutListener;
 import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.player.SpoutPlayer;
-import org.spout.engine.protocol.SpoutNioServerSocketChannel;
+import org.spout.engine.protocol.SpoutClientSession;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.VertexBufferBatcher;
 import org.spout.engine.renderer.vertexbuffer.VertexBufferImpl;
@@ -120,6 +125,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private TInt21TripleObjectHashMap<PrimitiveBatch> chunkRenderers = new TInt21TripleObjectHashMap<PrimitiveBatch>();
 	private VertexBufferBatcher vbBatch;
 	private VertexBufferImpl buffer;
+	private final AtomicReference<SpoutPlayer> activePlayer = new AtomicReference<SpoutPlayer>();
+	private final AtomicReference<SpoutWorld> activeWorld = new AtomicReference<SpoutWorld>();
+	private PortBinding activeAddress;
 	private long ticks = 0;
 
 	// Handle stopping
@@ -150,14 +158,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 		ExecutorService executorBoss = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Boss", true));
 		ExecutorService executorWorker = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Worker", true));
-		ChannelFactory factory = new SpoutNioServerSocketChannel(executorBoss, executorWorker);
+		ChannelFactory factory = new NioClientSocketChannelFactory(executorBoss, executorWorker);
 		bootstrap.setFactory(factory);
 
 		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, true);
 		bootstrap.setPipelineFactory(pipelineFactory);
 
-		SpoutPlayer localPlayer = new SpoutPlayer("Local");
-		
 		super.init(args);
 	}
 
@@ -168,14 +174,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public void start(boolean checkWorlds) {
-		getLogger().info("Spout is starting in client-only mode.");
-		getLogger().info("Current version is " + Spout.getEngine().getVersion() + " (Implementing SpoutAPI " + Spout.getAPIVersion() + ").");
-		getLogger().info("This software is currently in alpha status so components may");
-		getLogger().info("have bugs or not work at all. Please report any issues to");
-		getLogger().info("http://issues.spout.org");
-
 		super.start(checkWorlds);
 		scheduler.startRenderThread();
+		//getEventManager().registerEvents(new SpoutListener(this), this);
 		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this));
 
 		// Register commands
@@ -183,27 +184,18 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	@Override
-	public File getTemporaryCache() {
-		// TODO Auto-generated method stub
-		return null;
+	public SpoutPlayer getActivePlayer() {
+		return activePlayer.get();
 	}
 
 	@Override
-	public File getStatsFolder() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Entity getActivePlayer() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public World getWorld() {
-		// TODO Auto-generated method stub
-		return null;
+	public CommandSource getCommandSource() {
+		Player activePlayer = this.activePlayer.get();
+		if (activePlayer != null) {
+			return activePlayer;
+		} else {
+			return super.getCommandSource();
+		}
 	}
 
 	@Override
@@ -218,12 +210,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public PluginStore getPluginStore() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public File getResourcePackFolder() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -246,6 +232,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 	@Override
 	public Input getInput() {
 		return inputManager;
+	}
+
+	public PortBinding getAddress() {
+		return activeAddress;
 	}
 
 	@Override
@@ -297,19 +287,40 @@ public class SpoutClient extends SpoutEngine implements Client {
 		snap.setRenderDirty(false); //Rendered this snapshot
 	}
 
+	public Player setPlayer(String name, int entityId, SpoutClientSession session) {
+		SpoutEntity entity = new SpoutEntity(this, (Transform) null, null);
+		entity.setId(entityId);
+		SpoutPlayer player = new SpoutPlayer(name, entity, session);
+		if (activePlayer.compareAndSet(null, player)) {
+
+		}
+
+		return activePlayer.get();
+	}
+
 	public ClientBootstrap getBootstrap() {
 		return bootstrap;
 	}
 
-	public void connect(SocketAddress addr) {
-		connect(addr, SpoutProtocol.INSTANCE);
+	public SpoutClientSession newSession(Channel channel) {
+		Protocol protocol = getProtocol(channel.getLocalAddress());
+		return new SpoutClientSession(this, channel, protocol, false);
 	}
 
-	public void connect(SocketAddress addr, Protocol protocol) {
-		ChannelFuture future = getBootstrap().connect(addr);
-		Channel channel = future.getChannel();
-		channel.write(protocol.getIntroductionMessage("Player"));
-		getCommandSource().sendCommand("kick", new ChatArguments());
+	public void connect(final PortBinding binding) {
+		this.activeAddress = binding;
+		getBootstrap().connect(binding.getAddress()).addListener(new ChannelFutureListener() {
+			public void operationComplete(ChannelFuture channelFuture) throws Exception {
+				if (channelFuture.isSuccess()) {
+					channelFuture.getChannel().write(binding.getProtocol().getIntroductionMessage("Player"));
+				} else {
+					activeAddress = null;
+					getLogger().log(Level.WARNING, "Could not connect to " + binding, channelFuture.getCause());
+				}
+			}
+		});
+
+		//getCommandSource().sendCommand("disconnect", new ChatArguments());
 	}
 
 	public void initRenderer() {

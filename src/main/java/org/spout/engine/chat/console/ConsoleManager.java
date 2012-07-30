@@ -77,7 +77,8 @@ public final class ConsoleManager {
 		}
 		console.init();
 		logger.addHandler(handler);
-		if (!Spout.debugMode()) {
+		if (Spout.debugMode()) {
+			//new Exception().printStackTrace(new PrintWriter(new LoggerOutputStream(Level.INFO)));
 			//System.setOut(new PrintStream(new LoggerOutputStream(Level.INFO), true));
 			//System.setErr(new PrintStream(new LoggerOutputStream(Level.SEVERE), true));
 		}

@@ -73,7 +73,7 @@ import org.spout.engine.world.SpoutWorld;
  * A single connection to the server, which may or may not be associated with a
  * player.
  */
-public final class SpoutSession implements Session {
+public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	/**
 	 * The number of ticks which are elapsed before a client is disconnected due
 	 * to a timeout.
@@ -83,7 +83,7 @@ public final class SpoutSession implements Session {
 	/**
 	 * The server this session belongs to.
 	 */
-	private final SpoutEngine engine;
+	private final T engine;
 	/**
 	 * The Random for this session
 	 */
@@ -182,7 +182,7 @@ public final class SpoutSession implements Session {
 	 * @param engine  The server this session belongs to.
 	 * @param channel The channel associated with this session.
 	 */
-	public SpoutSession(SpoutEngine engine, Channel channel, Protocol bootstrapProtocol, boolean proxy) {
+	public SpoutSession(T engine, Channel channel, Protocol bootstrapProtocol, boolean proxy) {
 		this.engine = engine;
 		this.channel = channel;
 		protocol = new AtomicReference<Protocol>(bootstrapProtocol);
@@ -512,7 +512,7 @@ public final class SpoutSession implements Session {
 	}
 
 	@Override
-	public Engine getEngine() {
+	public T getEngine() {
 		return engine;
 	}
 

@@ -91,6 +91,7 @@ import org.spout.api.plugin.ServiceManager;
 import org.spout.api.plugin.security.CommonSecurityManager;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.SessionRegistry;
+import org.spout.api.protocol.builtin.SpoutProtocol;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.Profiler;
@@ -101,8 +102,8 @@ import org.spout.engine.chat.console.Console;
 import org.spout.engine.chat.console.FileConsole;
 import org.spout.engine.chat.console.JLineConsole;
 import org.spout.engine.chat.console.MultiConsole;
-import org.spout.engine.chat.console.SwingConsole;
 import org.spout.engine.command.AdministrationCommands;
+import org.spout.engine.command.ConnectionCommands;
 import org.spout.engine.command.MessagingCommands;
 import org.spout.engine.command.TestCommands;
 import org.spout.engine.entity.EntityManager;
@@ -116,7 +117,6 @@ import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.chat.console.ConsoleManager;
 import org.spout.engine.util.DeadlockMonitor;
-import org.spout.engine.util.StackTrace;
 import org.spout.engine.util.TicklockMonitor;
 import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
@@ -148,7 +148,6 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	private final RootCommand rootCommand = new RootCommand(this);
 	private final WorldGenerator defaultGenerator = new EmptyWorldGenerator();
 	private volatile int maxPlayers = 20;
-	private volatile String[] allAddresses;
 	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
 	protected final SpoutScheduler scheduler = new SpoutScheduler(this);
 	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
@@ -204,6 +203,12 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	public void start(boolean checkWorlds) {
+		getLogger().info("Spout is starting in " + getPlatform().name().toLowerCase() + "-only mode.");
+		getLogger().info("Current version is " + Spout.getEngine().getVersion() + " (Implementing SpoutAPI " + Spout.getAPIVersion() + ").");
+		getLogger().info("This software is currently in alpha status so components may");
+		getLogger().info("have bugs or not work at all. Please report any issues to");
+		getLogger().info("http://issues.spout.org");
+
 		if (debugMode()) {
 			getLogger().warning("Debug Mode has been toggled on!  This mode is intended for developers only");
 			leakThread.start();
@@ -217,9 +222,11 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		// Register commands
 		getRootCommand().addSubCommands(this, AdministrationCommands.class, commandRegFactory);
 		getRootCommand().addSubCommands(this, MessagingCommands.class, commandRegFactory);
+		getRootCommand().addSubCommands(this, ConnectionCommands.class, commandRegFactory);
 		if (arguments.debug) {
 			getRootCommand().addSubCommands(this, TestCommands.class, commandRegFactory);
 		}
+		Protocol.registerProtocol(new SpoutProtocol());
 
 		//Setup the Material Registry
 		engineItemMap = MaterialRegistry.setupRegistry();
@@ -228,6 +235,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 		// Start loading plugins
 		loadPlugins();
+		postPluginLoad();
 		enablePlugins();
 
 		if (checkWorlds) {
@@ -250,6 +258,11 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		WorldSavingThread.startThread();
 		setupComplete.set(true);
 	}
+
+	/**
+	 * This method is called after {@link #loadPlugins()} but before {@link #enablePlugins()}
+	 */
+	protected void postPluginLoad() {}
 
 	public void loadPlugins() {
 		pluginManager.registerPluginLoader(CommonPluginLoader.class);
@@ -317,16 +330,6 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public int getMaxPlayers() {
 		return maxPlayers;
-	}
-
-	@Override
-	public String getAddress() {
-		return SpoutConfiguration.ADDRESS.getString();
-	}
-
-	@Override
-	public String[] getAllAddresses() {
-		return allAddresses;
 	}
 
 	@Override
@@ -700,12 +703,6 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public String getLogFile() {
 		return logFile;
-	}
-
-	@Override
-	public String[] getAllCommands() {
-		Set<String> result = getRootCommand().getChildNames();
-		return result.toArray(new String[result.size()]);
 	}
 
 	@Override

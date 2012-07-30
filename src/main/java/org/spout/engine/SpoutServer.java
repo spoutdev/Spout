@@ -31,16 +31,29 @@ import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
+import org.apache.commons.lang3.Validate;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.spout.api.exception.ConfigurationException;
+import org.spout.api.protocol.CommonPipelineFactory;
+import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
+import org.spout.api.protocol.builtin.SpoutProtocol;
+import org.spout.engine.chat.console.JLineConsole;
+import org.spout.engine.protocol.PortBindingImpl;
+import org.spout.engine.protocol.PortBindings;
+import org.spout.engine.protocol.SpoutNioServerSocketChannel;
+import org.spout.engine.protocol.SpoutServerSession;
+import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
 import org.teleal.cling.controlpoint.ControlPoint;
@@ -52,16 +65,12 @@ import org.spout.api.Spout;
 import org.spout.api.event.Listener;
 import org.spout.api.event.server.ServerStartEvent;
 import org.spout.api.plugin.Platform;
-import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.Session;
 
 import org.spout.engine.filesystem.ServerFileSystem;
 import org.spout.engine.listener.SpoutListener;
-import org.spout.engine.protocol.SpoutNioServerSocketChannel;
-import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.util.bans.BanManager;
 import org.spout.engine.util.bans.FlatFileBanManager;
-import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 
 public class SpoutServer extends SpoutEngine implements Server {
 	private final String name = "Spout Server";
@@ -86,6 +95,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	 * The {@link ServerBootstrap} used to initialize Netty.
 	 */
 	private final ServerBootstrap bootstrap = new ServerBootstrap();
+
 	/**
 	 * The UPnP service
 	 */
@@ -106,27 +116,30 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	public void start(boolean checkWorlds, Listener listener) {
-		getLogger().info("Spout is starting in server-only mode.");
-		getLogger().info("Current version is " + Spout.getEngine().getVersion() + " (Implementing SpoutAPI " + Spout.getAPIVersion() + ").");
-		getLogger().info("This software is currently in alpha status so components may");
-		getLogger().info("have bugs or not work at all. Please report any issues to");
-		getLogger().info("http://issues.spout.org");
-
 		super.start(checkWorlds);
-
-		if (boundProtocols.size() == 0) {
-			getLogger().warning("No bootstrap protocols registered! Clients will not be able to connect to the server.");
-		}
 
 		banManager = new FlatFileBanManager(this);
 
 		getEventManager().registerEvents(listener, this);
-
-		Spout.getFilesystem().postStartup();
-
+		getFilesystem().postStartup();
 		getEventManager().callEvent(new ServerStartEvent());
-		
 		getLogger().info("Done Loading, ready for players.");
+	}
+
+	@Override
+	protected void postPluginLoad() {
+		PortBindings portBindings = new PortBindings(this, config);
+		try {
+			portBindings.load(config);
+			portBindings.bindAll();
+			portBindings.save();
+		} catch (ConfigurationException e) {
+			getLogger().log(Level.SEVERE, "Error loading port bindings: " + e.getMessage(), e);
+		}
+
+		if (boundProtocols.size() == 0) {
+			getLogger().warning("No port bindings registered! Clients will not be able to connect to the server.");
+		}
 	}
 
 	@Override
@@ -154,26 +167,25 @@ public class SpoutServer extends SpoutEngine implements Server {
 		boundProtocols.clear();
 	}
 
-	/**
-	 * Binds this server to the specified address.
-	 * @param address The addresss.
-	 */
 	@Override
-	public boolean bind(SocketAddress address, Protocol protocol) {
-		if (protocol == null) {
+	public boolean bind(PortBinding binding) {
+		Validate.notNull(binding);
+		if (binding.getProtocol() == null) {
 			throw new IllegalArgumentException("Protocol cannot be null");
 		}
-		if (boundProtocols.containsKey(address)) {
+
+		if (boundProtocols.containsKey(binding.getAddress())) {
 			return false;
 		}
-		boundProtocols.put(address, protocol);
+		boundProtocols.put(binding.getAddress(), binding.getProtocol());
 		try {
-			group.add(bootstrap.bind(address));
+			group.add(bootstrap.bind(binding.getAddress()));
 		} catch (org.jboss.netty.channel.ChannelException ex) {
-			getLogger().log(Level.SEVERE, "Failed to bind to address " + address + ". Is there already another server running on this address?", ex);
+			getLogger().log(Level.SEVERE, "Failed to bind to address " + binding.getAddress() + ". Is there already another server running on this address?", ex);
 			return false;
 		}
-		getLogger().log(Level.INFO, "Binding to address: {0}...", address);
+
+		getLogger().log(Level.INFO, "Binding to address: {0}...", binding.getAddress());
 		return true;
 	}
 
@@ -191,6 +203,14 @@ public class SpoutServer extends SpoutEngine implements Server {
 	@Override
 	public boolean allowFlight() {
 		return allowFlight;
+	}
+
+	public List<PortBinding> getBoundAddresses() {
+		List<PortBinding> bindings = new ArrayList<PortBinding>();
+		for (Map.Entry<SocketAddress, Protocol> entry : boundProtocols.entrySet()) {
+			bindings.add(new PortBindingImpl(entry.getValue(), entry.getKey()));
+		}
+		return Collections.unmodifiableList(bindings);
 	}
 
 	@Override
@@ -301,7 +321,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	protected Session newSession(Channel channel, boolean proxy) {
 		Protocol protocol = getProtocol(channel.getLocalAddress());
-		return new SpoutSession(this, channel, protocol, proxy);
+		return new SpoutServerSession(this, channel, protocol, proxy);
 	}
 
 	@Override

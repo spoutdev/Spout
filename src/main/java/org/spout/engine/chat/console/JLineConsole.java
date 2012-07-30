@@ -40,6 +40,7 @@ import jline.ConsoleOperations;
 import jline.ConsoleReader;
 import jline.NullCompletor;
 import org.fusesource.jansi.Ansi;
+import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.chat.style.JansiStyleHandler;
@@ -171,7 +172,7 @@ public class JLineConsole extends AbstractConsole {
 
 		@Override
 		public void run() {
-			engine.getCommandSource().processCommand(command, arguments);
+			engine.getCommandSource().sendCommand(command, arguments);
 		}
 	}
 }
