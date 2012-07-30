@@ -53,7 +53,8 @@ public interface MessageField {
 	public int getLength(ChannelBuffer buffer);
 	
 	/**
-	 * Gets the length of the field and moves the read pointer to the start of the next field
+	 * Gets the length of the field and moves the read pointer to the start of the next field.
+	 * This method will throw an out of bounds exception if the entire field is not present
 	 * 
 	 * @param buffer
 	 * @return the length of the field
