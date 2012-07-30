@@ -40,6 +40,8 @@ import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.builtin.message.CommandMessage;
 import org.spout.api.protocol.builtin.message.LoginMessage;
+import org.spout.api.protocol.builtin.message.StringMapMessage;
+import org.spout.api.util.StringMap;
 
 /**
  * The protocol used in SpoutClient
@@ -93,5 +95,9 @@ public class SpoutProtocol extends Protocol {
 
 	public void initializeSession(Session session) {
 		session.setNetworkSynchronizer(new SpoutNetworkSynchronizer(session));
+
+		for (StringMap map : StringMap.getAll()) {
+			session.send(false, new StringMapMessage(map.getId(), StringMapMessage.Action.SET, map.getItems()));
+		}
 	}
 }

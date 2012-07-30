@@ -187,14 +187,6 @@ public interface Server extends Engine {
 	public String getIpBanMessage(String address);
 
 	/**
-	 * Creates a new Session
-	 *
-	 * @param channel the associated channel
-	 * @return the session
-	 */
-	public Session newSession(Channel channel);
-
-	/**
 	 * Maps a port for both TCP and UDP communication for Universal Plug and Play enabled InternetGatewayDevices
 	 *
 	 * @param port the port to be mapped

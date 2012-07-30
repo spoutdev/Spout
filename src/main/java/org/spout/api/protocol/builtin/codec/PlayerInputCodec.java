@@ -32,12 +32,6 @@ import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.builtin.message.PlayerInputMessage;
 
 public class PlayerInputCodec extends MessageCodec<PlayerInputMessage> {
-	public static final byte FORWARD_BIT = 1 << 0,
-			BACK_BIT = 1 << 1,
-			LEFT_BIT = 1 << 2,
-			RIGHT_BIT = 1 << 3,
-			MOUSEWHEEL_UP_BIT = 1 << 4,
-			MOUSEWHEEL_DOWN_BIT = 1 << 5;
 
 	public PlayerInputCodec() {
 		super(PlayerInputMessage.class, 0x0C, true);
@@ -45,33 +39,9 @@ public class PlayerInputCodec extends MessageCodec<PlayerInputMessage> {
 
 	@Override
 	public ChannelBuffer encode(PlayerInputMessage message) {
-		ChannelBuffer buffer = ChannelBuffers.buffer(5);
-		byte actions = 0;
-		if (message.isFwd()) {
-			actions |= FORWARD_BIT;
-		}
+		ChannelBuffer buffer = ChannelBuffers.buffer(6);
 
-		if (message.isBack()) {
-			actions |= BACK_BIT;
-		}
-
-		if (message.isLeft()) {
-			actions |= LEFT_BIT;
-		}
-
-		if (message.isRight()) {
-			actions |= RIGHT_BIT;
-		}
-
-		if (message.isMouseWheelUp()) {
-			actions |= MOUSEWHEEL_UP_BIT;
-		}
-
-		if (message.isMouseWheelDown()) {
-			actions |= MOUSEWHEEL_DOWN_BIT;
-		}
-
-		buffer.writeByte(actions);
+		buffer.writeShort(message.getInputFlags());
 		buffer.writeShort(message.getMouseDx());
 		buffer.writeShort(message.getMouseDy());
 		return buffer;
@@ -79,15 +49,9 @@ public class PlayerInputCodec extends MessageCodec<PlayerInputMessage> {
 
 	@Override
 	public PlayerInputMessage decode(ChannelBuffer buffer) {
-		final byte actions = buffer.readByte();
-		boolean forward = (actions & FORWARD_BIT) != 0;
-		boolean back = (actions & BACK_BIT) != 0;
-		boolean left = (actions & LEFT_BIT) != 0;
-		boolean right = (actions & RIGHT_BIT) != 0;
-		boolean mouseWheelUp = (actions & MOUSEWHEEL_UP_BIT) != 0;
-		boolean mouseWheelDown = (actions & MOUSEWHEEL_DOWN_BIT) != 0;
+		final short inputFlags = buffer.readShort();
 		final short mouseDx = buffer.readShort();
 		final short mouseDy = buffer.readShort();
-		return new PlayerInputMessage(forward, back, left, right, mouseWheelUp, mouseWheelDown, mouseDx, mouseDy);
+		return new PlayerInputMessage(inputFlags, mouseDx, mouseDy);
 	}
 }

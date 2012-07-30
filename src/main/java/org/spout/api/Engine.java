@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.group.ChannelGroup;
 
 import org.spout.api.command.Command;
@@ -50,6 +51,7 @@ import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.PluginManager;
 import org.spout.api.plugin.ServiceManager;
 import org.spout.api.protocol.Protocol;
+import org.spout.api.protocol.Session;
 import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.api.scheduler.TaskManager;
@@ -185,6 +187,14 @@ public interface Engine extends Named {
 	 * @return {@link File} of the data folder.
 	 */
 	public File getDataFolder();
+
+	/**
+	 * Creates a new Session
+	 *
+	 * @param channel the associated channel
+	 * @return the session
+	 */
+	public Session newSession(Channel channel);
 
 	/**
 	 * Gets the {@link Entity} with the matching unique id

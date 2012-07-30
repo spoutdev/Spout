@@ -24,42 +24,38 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.protocol.builtin.message;
+package org.spout.api.event.player;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.spout.api.protocol.Message;
-import org.spout.api.util.SpoutToStringStyle;
+import org.spout.api.event.Event;
+import org.spout.api.event.HandlerList;
+import org.spout.api.protocol.Session;
 
-public class PlayerInputMessage extends Message {
-	private final short inputFlags;
-	private final short mouseDx, mouseDy;
+/**
+ * Called by the client when a connection has been successfully established
+ */
+public class ClientPlayerConnectedEvent extends Event {
+	private static final HandlerList handlers = new HandlerList();
+	private final Session session;
+	private final int serverPlayerId;
 
-	public PlayerInputMessage(short inputFlags, short mouseDx, short mouseDy) {
-		this.inputFlags = inputFlags;
-
-		this.mouseDx = mouseDx;
-		this.mouseDy = mouseDy;
+	public ClientPlayerConnectedEvent(Session session, int serverPlayerId) {
+		this.session = session;
+		this.serverPlayerId = serverPlayerId;
 	}
 
-
-	public short getInputFlags() {
-		return inputFlags;
+	public Session getSession() {
+		return session;
 	}
 
-	public short getMouseDx() {
-		return mouseDx;
+	public int getServerPlayerId() {
+		return serverPlayerId;
 	}
 
-	public short getMouseDy() {
-		return mouseDy;
+	public HandlerList getHandlers() {
+		return handlers;
 	}
 
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
-				.append("inputFlags", inputFlags)
-				.append("mouseDx", mouseDx)
-				.append("mouseDy", mouseDy)
-				.toString();
+	public static HandlerList getHandlerList() {
+		return handlers;
 	}
 }

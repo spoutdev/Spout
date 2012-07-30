@@ -37,19 +37,26 @@ import org.spout.api.util.SpoutToStringStyle;
  *
  */
 public class WorldChangeMessage extends DatatableMessage {
+	private final String worldName;
 	private final UUID worldUuid;
 	public WorldChangeMessage(World world, DatatableMap data) {
 		super(data);
+		this.worldName = world.getName();
 		this.worldUuid = world.getUID();
 	}
 
-	public WorldChangeMessage(UUID worldUuid, byte[] compressedData) {
+	public WorldChangeMessage(String worldName, UUID worldUuid, byte[] compressedData) {
 		super(compressedData);
+		this.worldName = worldName;
 		this.worldUuid = worldUuid;
 	}
 
 	public UUID getWorldUUID() {
 		return worldUuid;
+	}
+
+	public String getWorldName() {
+		return worldName;
 	}
 
 	@Override

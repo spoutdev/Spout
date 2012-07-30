@@ -35,18 +35,7 @@ import org.spout.api.protocol.builtin.message.PlayerInputMessage;
 public class PlayerInputMessageHandler extends MessageHandler<PlayerInputMessage> {
 	@Override
 	public void handleServer(Session session, Player player, PlayerInputMessage message) {
-		short userCommand = 0;
-		
-		userCommand |= message.isFwd() ? PlayerInputState.FORWARD : 0;
-		userCommand |= message.isBack() ? PlayerInputState.BACKWARD : 0;
-	    userCommand |= message.isLeft()  ? PlayerInputState.LEFT : 0;
-	    userCommand |= message.isRight() ? PlayerInputState.RIGHT : 0;
-	    
-	    //TODO: Handle the rest of the input commands
-	    
-	    PlayerInputState inputState = new PlayerInputState(userCommand, (byte)message.getMouseDx(), (byte)message.getMouseDy() );
-	    
-	    player.processInput(inputState);
-		
+	    PlayerInputState inputState = new PlayerInputState(message.getInputFlags(), (byte)message.getMouseDx(), (byte)message.getMouseDy() );
+		player.processInput(inputState);
 	}
 }

@@ -33,11 +33,12 @@ import org.spout.api.protocol.Session;
 import org.spout.api.protocol.builtin.message.EntityPositionMessage;
 
 /**
- * 
+ *
  */
 public class EntityPositionMessageHandler extends MessageHandler<EntityPositionMessage> {
 	@Override
 	public void handleClient(Session session, Player player, EntityPositionMessage message) {
+
 		Entity entity = player.getEntity().getWorld().getEntity(message.getEntityId());
 		if (entity != null) {
 			entity.setTransform(message.getTransform());
