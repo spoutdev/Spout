@@ -49,4 +49,11 @@ public interface Camera {
 	 * Update the view matrix.  
 	 */
 	public void updateView();
+	
+	/**
+	 * Gets the view frustum of this Camera.
+	 * 
+	 * @return
+	 */
+	public ViewFrustum getFrustum();
 }

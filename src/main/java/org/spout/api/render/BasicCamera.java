@@ -32,6 +32,7 @@ public class BasicCamera implements Camera {
 	
 	private Matrix projection;
 	private Matrix view;
+	private ViewFrustum frustum = new ViewFrustum();
 	
 	public BasicCamera(Matrix proj, Matrix view) {
 		this.projection = proj;
@@ -50,7 +51,12 @@ public class BasicCamera implements Camera {
 
 	@Override
 	public void updateView() {
-		//This function...It does nothing!
+		frustum.update(projection, view);
+	}
+
+	@Override
+	public ViewFrustum getFrustum() {
+		return frustum;
 	}
 
 }
