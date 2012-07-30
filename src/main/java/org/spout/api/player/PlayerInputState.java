@@ -26,8 +26,6 @@
  */
 package org.spout.api.player;
 
-import org.spout.api.math.MathHelper;
-
 /**
  *  Represents the current player input state
  *
@@ -39,8 +37,8 @@ public class PlayerInputState {
 	public static final int RIGHT  = 0x08;
 	public static final int JUMP = 0x10;
 	public static final int CROUCH = 0x20;
-	public static final int MWHEELUP = 0x40;
-	public static final int MWHEELDOWN = 0x80;
+	public static final int SELECTUP = 0x40;
+	public static final int SELECTDOWN = 0x80;
 	public static final int FIRE1 = 0x0100;
 	public static final int FIRE2 = 0x0200;
 	public static final int INTERACT = 0400;
@@ -52,7 +50,7 @@ public class PlayerInputState {
 	byte mouse_dy;
 	
 	
-	public PlayerInputState(boolean forward, boolean backward, boolean left, boolean right, boolean jump, boolean crouch, boolean mwheelup, boolean mwheeldown, boolean fire1, boolean fire2, boolean interact, byte mdx, byte mdy){
+	public PlayerInputState(boolean forward, boolean backward, boolean left, boolean right, boolean jump, boolean crouch, boolean selectUp, boolean selectDown, boolean fire1, boolean fire2, boolean interact, byte mdx, byte mdy){
 		userCommands = 0;
 		userCommands |= (forward ? FORWARD : 0);
 		userCommands |= (backward? BACKWARD : 0);
@@ -60,8 +58,8 @@ public class PlayerInputState {
 		userCommands |= (right ? RIGHT : 0);
 		userCommands |= (jump ? JUMP : 0);
 		userCommands |= (crouch ? CROUCH : 0);
-		userCommands |= (mwheelup ? MWHEELUP : 0);
-		userCommands |= (mwheeldown ? MWHEELDOWN : 0);
+		userCommands |= (selectUp ? SELECTUP : 0);
+		userCommands |= (selectDown ? SELECTDOWN : 0);
 		userCommands |= (fire1 ? FIRE1 : 0);
 		userCommands |= (fire2 ? FIRE2 : 0);
 		userCommands |= (interact ? INTERACT : 0);
@@ -76,10 +74,48 @@ public class PlayerInputState {
 		this.mouse_dy = mdy;
 	}
 
-	public boolean getForward(){
-		return (userCommands | FORWARD) == 1;
+	public boolean getForward() {
+		return (userCommands & FORWARD) == 1;
 	}
 	
-		
-
+	public boolean getBackward() {
+		return (userCommands & BACKWARD) == 1;		
+	}
+	
+	public boolean getRight() {
+		return (userCommands & RIGHT) == 1;		
+	}
+	
+	public boolean getLeft() {
+		return (userCommands & LEFT) == 1;		
+	}
+	
+	public boolean getJump() {
+		return (userCommands & JUMP) == 1;		
+	}
+	
+	public boolean getCrouch() {
+		return (userCommands & CROUCH) == 1;		
+	}
+	
+	public boolean getSelectUp() {
+		return (userCommands & SELECTUP) == 1;		
+	}
+	
+	public boolean getSelectDown() {
+		return (userCommands & SELECTDOWN) == 1;		
+	}
+	
+	public boolean getFire1() {
+		return (userCommands & FIRE1) == 1;		
+	}
+	
+	public boolean getFire2() {
+		return (userCommands & FIRE2) == 1;		
+	}
+	
+	public boolean getInteract() {
+		return (userCommands & INTERACT) == 1;		
+	}
+	
 }
