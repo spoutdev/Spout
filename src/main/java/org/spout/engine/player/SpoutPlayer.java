@@ -66,8 +66,7 @@ public class SpoutPlayer implements Player {
 	private final AtomicBoolean onlineLive = new AtomicBoolean(false);
 	private boolean online;
 	private final int hashcode;
-	private final PlayerInputState inputState = new PlayerInputState();
-
+	
 	public SpoutPlayer(String name) {
 		this.name = name;
 		displayName.set(name);
@@ -312,7 +311,7 @@ public class SpoutPlayer implements Player {
 
 	@Override
 	public PlayerInputState input() {
-		return inputState;
+		return null;
 	}
 
 }

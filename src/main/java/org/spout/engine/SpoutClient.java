@@ -91,6 +91,7 @@ import org.spout.engine.command.InputCommands;
 import org.spout.engine.filesystem.ClientFileSystem;
 import org.spout.engine.input.SpoutInput;
 import org.spout.engine.mesh.BaseMesh;
+import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.protocol.SpoutNioServerSocketChannel;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.VertexBufferBatcher;
@@ -155,6 +156,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, true);
 		bootstrap.setPipelineFactory(pipelineFactory);
 
+		SpoutPlayer localPlayer = new SpoutPlayer("Local");
+		
 		super.init(args);
 	}
 
