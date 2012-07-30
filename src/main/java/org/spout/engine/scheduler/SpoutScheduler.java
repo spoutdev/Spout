@@ -133,6 +133,7 @@ public final class SpoutScheduler implements Scheduler {
 	private SpoutParallelTaskManager parallelTaskManager = null;
 	private final AtomicBoolean heavyLoad = new AtomicBoolean(false);
 	private final ConcurrentLinkedQueue<Runnable> coreTaskQueue = new ConcurrentLinkedQueue<Runnable>();
+	private final ConcurrentLinkedQueue<Runnable> finalTaskQueue = new ConcurrentLinkedQueue<Runnable>();
 
 	/**
 	 * Creates a new task scheduler.
@@ -267,6 +268,8 @@ public final class SpoutScheduler implements Scheduler {
 			} catch (InterruptedException ex) {
 				engine.getLogger().log(Level.SEVERE, "Error while shutting down engine: {0}", ex.getMessage());
 			}
+			
+			runFinalTasks();
 		}
 	}
 
@@ -330,6 +333,21 @@ public final class SpoutScheduler implements Scheduler {
 			taskManager.shutdown(timeout);
 		} else {
 			taskManager.shutdown(1L);
+		}
+	}
+	
+	public void submitFinalTask(Runnable task) {
+		finalTaskQueue.add(task);
+		if (!mainThread.isAlive()) {
+			runFinalTasks();
+			Spout.getLogger().warning("Attempting to submit final task after main thread had shutdown");
+		}
+	}
+	
+	public void runFinalTasks() {
+		Runnable r;
+		while ((r = finalTaskQueue.poll()) != null) {
+			r.run();
 		}
 	}
 

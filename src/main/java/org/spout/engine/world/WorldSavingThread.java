@@ -28,8 +28,9 @@ package org.spout.engine.world;
 
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.spout.api.Spout;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
@@ -42,9 +43,9 @@ import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 public class WorldSavingThread extends Thread{
 	private static WorldSavingThread instance = null;
 	private final LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>();
+	private final AtomicBoolean shutdown = new AtomicBoolean(false);
 	public WorldSavingThread() {
 		super("World Saving Thread");
-		this.setDaemon(true);
 	}
 
 	public static void startThread() {
@@ -56,11 +57,17 @@ public class WorldSavingThread extends Thread{
 
 	public static void saveChunk(SpoutChunk chunk) {
 		ChunkSaveTask task = new ChunkSaveTask(chunk);
-		instance.queue.add(task);
+		if (instance.shutdown.get()) {
+			Spout.getLogger().warning("Attempt to queue chunks for saving after world thread shutdown");
+			task.run();
+		} else {
+			instance.queue.add(task);
+		}
 	}
 
 	public static void finish() {
 		WorldSavingThread localInstance = instance;
+		localInstance.shutdown.set(true);
 		if (localInstance != null) {
 			localInstance.interrupt();
 			localInstance.processRemaining();
@@ -74,13 +81,24 @@ public class WorldSavingThread extends Thread{
 			try {
 				task = queue.take();
 				task.run();
-			} catch (InterruptedException ignore) { }
+			} catch (InterruptedException ignore) {
+				break;
+			}
 		}
 	}
 
 	public void processRemaining() {
+		int stepMax = queue.size() / 10;
+		int step = stepMax;
+		int i = 0;
 		Runnable task;
 		do {
+			step--;
+			if (step <= 0) {
+				i += 10;
+				Spout.getLogger().info("Saved " + i + "% of queued chunks");
+				step = stepMax;
+			}
 			task = queue.poll();
 			if (task != null) {
 				task.run();

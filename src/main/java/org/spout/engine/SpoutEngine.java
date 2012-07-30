@@ -519,9 +519,15 @@ public class SpoutEngine extends AsyncManager implements Engine {
 		}
 
 		getPluginManager().clearPlugins();
-		scheduler.stop(5000);
-		group.close();
-		WorldSavingThread.finish();
+		Runnable finalTask = new Runnable() {
+			@Override
+			public void run() {
+				group.close();
+				WorldSavingThread.finish();
+			}
+		};
+		scheduler.submitFinalTask(finalTask);
+		scheduler.stop(1);
 	}
 
 	@Override
