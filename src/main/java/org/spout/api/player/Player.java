@@ -111,4 +111,6 @@ public interface Player extends CommandSource {
 	 * @return current input state
 	 */
 	public PlayerInputState input();
+	
+	public void processInput(PlayerInputState state);
 }

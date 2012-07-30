@@ -42,9 +42,11 @@ public class PlayerInputMessageHandler extends MessageHandler<PlayerInputMessage
 	    userCommand |= message.isLeft()  ? PlayerInputState.LEFT : 0;
 	    userCommand |= message.isRight() ? PlayerInputState.RIGHT : 0;
 	    
+	    //TODO: Handle the rest of the input commands
+	    
 	    PlayerInputState inputState = new PlayerInputState(userCommand, (byte)message.getMouseDx(), (byte)message.getMouseDy() );
-	    //Todo, give this state to the player
-	    //player.pushInputMessage(inputState);
+	    
+	    player.processInput(inputState);
 		
 	}
 }
