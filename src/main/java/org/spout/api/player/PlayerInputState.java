@@ -33,31 +33,26 @@ import org.spout.api.math.MathHelper;
  *
  */
 public class PlayerInputState {
-	static final int FORWARD = 0x01;
-	static final int BACKWARD = 0x02;
-	static final int LEFT = 0x04;
-	static final int RIGHT  = 0x08;
-	static final int JUMP = 0x10;
-	static final int CROUCH = 0x20;
-	static final int MWHEELUP = 0x40;
-	static final int MWHEELDOWN = 0x80;
+	public static final int FORWARD = 0x01;
+	public static final int BACKWARD = 0x02;
+	public static final int LEFT = 0x04;
+	public static final int RIGHT  = 0x08;
+	public static final int JUMP = 0x10;
+	public static final int CROUCH = 0x20;
+	public static final int MWHEELUP = 0x40;
+	public static final int MWHEELDOWN = 0x80;
+	public static final int FIRE1 = 0x0100;
+	public static final int FIRE2 = 0x0200;
+	public static final int INTERACT = 0400;
 	
 	
-	static final int NUM_AXIS = 6;
-	
-	static final float MAX_AXIS = 1.f;
-	static final float MIN_AXIS = -1.f;
-	
-	
-	float[] axis = new float[NUM_AXIS];
+			
+	short userCommands = 0;
+	byte mouse_dx;
+	byte mouse_dy;
 	
 	
-	static int userCommands;
-	static byte mouse_dx;
-	static byte mouse_dy;
-	
-	
-	public PlayerInputState(boolean forward, boolean backward, boolean left, boolean right, boolean jump, boolean crouch, boolean mwheelup, boolean mwheeldown, byte mdx, byte mdy){
+	public PlayerInputState(boolean forward, boolean backward, boolean left, boolean right, boolean jump, boolean crouch, boolean mwheelup, boolean mwheeldown, boolean fire1, boolean fire2, boolean interact, byte mdx, byte mdy){
 		userCommands = 0;
 		userCommands |= (forward ? FORWARD : 0);
 		userCommands |= (backward? BACKWARD : 0);
@@ -67,65 +62,24 @@ public class PlayerInputState {
 		userCommands |= (crouch ? CROUCH : 0);
 		userCommands |= (mwheelup ? MWHEELUP : 0);
 		userCommands |= (mwheeldown ? MWHEELDOWN : 0);
+		userCommands |= (fire1 ? FIRE1 : 0);
+		userCommands |= (fire2 ? FIRE2 : 0);
+		userCommands |= (interact ? INTERACT : 0);
 		mouse_dx = mdx;
 		mouse_dy = mdy;
 		
 	}
 	
-	
-	
-	/**
-	 * Gets the current depression of the forward buttons.
-	 * 1.0 reprensents full force forward
-	 * -1.0 represents full force backward
-	 * @return
-	 */
-	public float getForward() {
-		return axis[0];
+	public PlayerInputState(short userCommands, byte mdx, byte mdy){
+		this.userCommands = userCommands;
+		this.mouse_dx = mdx;
+		this.mouse_dy = mdy;
+	}
+
+	public boolean getForward(){
+		return (userCommands | FORWARD) == 1;
 	}
 	
-	public float getHorizantal() {
-		return axis[1];
-	}
-	
-	public float getJump() {
-		return axis[2];
-	}
-	
-	public float getLookX() {
-		return axis[3];
-	}
-	
-	public float getLookY() {
-		return axis[4];
-	}
-	
-	public float getSprint() {
-		return axis[5];
-	}
-	
-	public void setForward(float value) {
-		axis[0] = (float)MathHelper.clamp(value, MAX_AXIS, MIN_AXIS);
-	}
-	
-	public void setHorizantal(float value) {
-		axis[1] = (float)MathHelper.clamp(value, MAX_AXIS, MIN_AXIS);
-	}
-	
-	public void setJump(float value) {
-		axis[2] = (float)MathHelper.clamp(value, MAX_AXIS, MIN_AXIS);
-	}
-	
-	public void setLookX(float value) {
-		axis[3] = (float)MathHelper.clamp(value, MAX_AXIS, MIN_AXIS);
-	}
-	
-	public void setLookY(float value) {
-		axis[4] = (float)MathHelper.clamp(value, MAX_AXIS, MIN_AXIS);
-	}
-	
-	public void setSprint(float value) {
-		axis[5] = (float)MathHelper.clamp(value, MAX_AXIS, MIN_AXIS);
-	}
+		
 
 }

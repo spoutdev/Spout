@@ -42,6 +42,7 @@ public class PlayerInputMessage extends Message {
 		this.right = right;
 		this.mouseWheelUp = mouseWheelUp;
 		this.mouseWheelDown = mouseWheelDown;
+		
 		this.mouseDx = mouseDx;
 		this.mouseDy = mouseDy;
 	}

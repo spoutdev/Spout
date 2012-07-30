@@ -35,24 +35,16 @@ import org.spout.api.protocol.builtin.message.PlayerInputMessage;
 public class PlayerInputMessageHandler extends MessageHandler<PlayerInputMessage> {
 	@Override
 	public void handleServer(Session session, Player player, PlayerInputMessage message) {
-		PlayerInputState input = player.input();
-		if (message.isFwd()) {
-			input.setForward(1);
-		} else if (message.isBack()) {
-			input.setForward(-1);
-		} else {
-			input.setForward(0);
-		}
-
-		if (message.isLeft()) {
-			input.setHorizantal(1);
-		} else if (message.isRight()) {
-			input.setHorizantal(-1);
-		} else {
-			input.setHorizantal(0);
-		}
-
-		input.setLookX(message.getMouseDx());
-		input.setLookY(message.getMouseDy());
+		short userCommand = 0;
+		
+		userCommand |= message.isFwd() ? PlayerInputState.FORWARD : 0;
+		userCommand |= message.isBack() ? PlayerInputState.BACKWARD : 0;
+	    userCommand |= message.isLeft()  ? PlayerInputState.LEFT : 0;
+	    userCommand |= message.isRight() ? PlayerInputState.RIGHT : 0;
+	    
+	    PlayerInputState inputState = new PlayerInputState(userCommand, (byte)message.getMouseDx(), (byte)message.getMouseDy() );
+	    //Todo, give this state to the player
+	    //player.pushInputMessage(inputState);
+		
 	}
 }
