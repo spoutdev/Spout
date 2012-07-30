@@ -88,22 +88,18 @@ public class WorldSavingThread extends Thread{
 	}
 
 	public void processRemaining() {
-		int stepMax = queue.size() / 10;
-		int step = stepMax;
-		int i = 0;
+		int toSave = queue.size();
+		int saved = 0;
+		int lastTenth = 0;
 		Runnable task;
-		do {
-			step--;
-			if (step <= 0) {
-				i += 10;
-				Spout.getLogger().info("Saved " + i + "% of queued chunks");
-				step = stepMax;
+		while ((task = queue.poll()) != null) {
+			task.run();
+			int tenth = ((++saved) * 10) / toSave;
+			if (tenth != lastTenth) {
+				lastTenth = tenth;
+				Spout.getLogger().info("Saved " + tenth + "0% of queued chunks");
 			}
-			task = queue.poll();
-			if (task != null) {
-				task.run();
-			}
-		} while (task != null);
+		}
 	}
 
 	private static class ChunkSaveTask implements Runnable {
