@@ -26,21 +26,69 @@
  */
 package org.spout.engine.protocol;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.jboss.netty.channel.Channel;
+import org.spout.api.chat.ChatArguments;
+import org.spout.api.geo.World;
+import org.spout.api.protocol.Message;
+import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 import org.spout.engine.SpoutClient;
+import org.spout.engine.player.SpoutPlayer;
+import org.spout.engine.world.SpoutWorld;
 
 /**
- * @author zml2008
+ * Handle client-specific session tasks
  */
 public class SpoutClientSession extends SpoutSession<SpoutClient> {
+	private final AtomicReference<SpoutWorld> activeWorld = new AtomicReference<SpoutWorld>();
 	/**
 	 * Creates a new session.
 	 *
 	 * @param engine The server this session belongs to.
 	 * @param channel The channel associated with this session.
 	 */
-	public SpoutClientSession(SpoutClient engine, Channel channel, Protocol bootstrapProtocol, boolean proxy) {
-		super(engine, channel, bootstrapProtocol, proxy);
+	public SpoutClientSession(SpoutClient engine, Channel channel, Protocol bootstrapProtocol) {
+		super(engine, channel, bootstrapProtocol);
+	}
+
+	@Override
+	public void send(boolean upstream, boolean force, Message message) {
+		if (!upstream) {
+			getEngine().getLogger().warning("Attempt made to send packet to client");
+		}
+		super.send(upstream, force, message);
+	}
+
+	public void dispose() {
+		activeWorld.set(null);
+		SpoutPlayer player;
+		if ((player = this.player.getAndSet(null)) != null) {
+			player.disconnect();
+		}
+		getEngine().disconnected();
+		channel.getCloseFuture().awaitUninterruptibly();
+	}
+
+	public World getActiveWorld() {
+		return activeWorld.get();
+	}
+
+	public boolean disconnect(Object... reason) {
+		return disconnect(true, reason);
+	}
+
+	public boolean disconnect(boolean kick, Object... reason) {
+		SpoutPlayer player = getPlayer();
+		if (player != null) {
+			player.sendCommand("disconnect", new ChatArguments(reason));
+			return true;
+		}
+		return false;
+	}
+
+	public PortBinding getActiveAddress() {
+		return new PortBindingImpl(getProtocol(), channel.getRemoteAddress());
 	}
 }

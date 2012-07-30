@@ -36,6 +36,7 @@ import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.command.annotated.Executor;
 import org.spout.api.event.player.PlayerChatEvent;
 import org.spout.api.exception.CommandException;
+import org.spout.api.permissions.DefaultPermissions;
 import org.spout.api.player.Player;
 
 import org.spout.api.plugin.Platform;
@@ -54,12 +55,19 @@ public class MessagingCommands {
 	@Command(aliases = {"say", "chat"}, usage = "[message]", desc = "Say something!", min = 1, max = -1)
 	@CommandPermissions("spout.command.say")
 	public class SayCommand {
+		public SayCommand() {
+			DefaultPermissions.addDefaultPermission("spout.chat.send");
+			DefaultPermissions.addDefaultPermission("spout.chat.receive.*");
+		}
 		@Executor(Platform.SERVER)
-		public void server(CommandContext args, CommandSource source) {
+		public void server(CommandContext args, CommandSource source) throws CommandException {
 			ChatArguments message = args.getJoinedString(0);
 			if (!message.getPlainString().isEmpty()) {
 				if (source instanceof Player) {
 					Player player = (Player) source;
+					if (!player.hasPermission("spout.chat.send")) {
+						throw new CommandException("You do not have permission to send chat messages");
+					}
 					PlayerChatEvent event = Spout.getEngine().getEventManager().callEvent(new PlayerChatEvent(player, message));
 					if (event.isCancelled()) {
 						return;
@@ -69,9 +77,9 @@ public class MessagingCommands {
 					template.setPlaceHolder(PlayerChatEvent.NAME, new ChatArguments(player.getDisplayName()));
 					template.setPlaceHolder(PlayerChatEvent.MESSAGE, event.getMessage());
 
-					engine.broadcastMessage(template);
+					engine.broadcastMessage("spout.chat.receive." + player.getName(), template);
 				} else {
-					engine.broadcastMessage(new Object[] {"<", source.getName(), "> ", message});
+					engine.broadcastMessage("spout.chat.receive.console", "<", source.getName(), "> ", message);
 				}
 			}
 		}

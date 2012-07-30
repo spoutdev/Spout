@@ -2,15 +2,15 @@
 Shader: shader://Spout/resources/resources/shaders/guiShader.ssf
 
 RenderState:
-    # Whether or not to use the Depth Buffer for rendering this material.  Defaults to True. 
+    # Whether or not to use the Depth Buffer for rendering this material.  Defaults to True.
     Depth: true
-    # View and projection matricies.  Used to override the rendering mode to a static matrix.  
+    # View and projection matricies.  Used to override the rendering mode to a static matrix.
     # null matrix uses Main Camera
     # Defaults to null.
     Projection: null
     View: null
-    
-# Parameters for the Shader.  
+
+# Parameters for the Shader.
 # Accepted Types:
 # - int
 # - float/double
@@ -29,9 +29,8 @@ RenderState:
 #   - texture://PLUGIN/path/to/texture
 #   - supported extensions: gif, png, jpg, bmp
 
-# Names match up to the name in the shader.  
+# Names match up to the name in the shader.
 
 MaterialParams:
     Diffuse: texture://Spout/fallbacks/fallback.png
     Color: color(1,1,1,1)
-    

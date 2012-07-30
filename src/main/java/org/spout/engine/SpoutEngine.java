@@ -127,7 +127,7 @@ import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
 
-public class SpoutEngine extends AsyncManager implements Engine {
+public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private static final SpoutPlayer[] EMPTY_PLAYER_ARRAY = new SpoutPlayer[0];
 	private static final Logger logger = Logger.getLogger("Spout");
 	private final String name = "Spout Engine";
@@ -192,15 +192,13 @@ public class SpoutEngine extends AsyncManager implements Engine {
 
 		DefaultPermissions.addDefaultPermission(STANDARD_BROADCAST_PERMISSION);
 
-		if (Spout.getEngine().debugMode()) {
+		if (debugMode()) {
 			new TicklockMonitor().start();
 			new DeadlockMonitor().start();
 		}
 	}
 
-	public void start() {
-		throw new IllegalStateException("The start method should not be called for the engine directly");
-	}
+	public abstract void start();
 
 	public void start(boolean checkWorlds) {
 		getLogger().info("Spout is starting in " + getPlatform().name().toLowerCase() + "-only mode.");
@@ -324,7 +322,7 @@ public class SpoutEngine extends AsyncManager implements Engine {
 				onlinePlayers.add(player);
 			}
 		}
-		return onlinePlayers.toArray(EMPTY_PLAYER_ARRAY);
+		return onlinePlayers.toArray(new SpoutPlayer[onlinePlayers.size()]);
 	}
 
 	@Override
@@ -562,11 +560,6 @@ public class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public EventManager getEventManager() {
 		return eventManager;
-	}
-
-	@Override
-	public Platform getPlatform() {
-		throw new IllegalStateException("Platform method should not be called by the raw Engine class");
 	}
 
 	@Override

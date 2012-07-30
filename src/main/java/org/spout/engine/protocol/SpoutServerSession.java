@@ -27,14 +27,111 @@
 package org.spout.engine.protocol;
 
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFutureListener;
+import org.spout.api.chat.ChatArguments;
+import org.spout.api.chat.style.ChatStyle;
+import org.spout.api.entity.Entity;
+import org.spout.api.event.player.PlayerKickEvent;
+import org.spout.api.event.player.PlayerLeaveEvent;
+import org.spout.api.event.storage.PlayerSaveEvent;
+import org.spout.api.protocol.Message;
 import org.spout.api.protocol.Protocol;
 import org.spout.engine.SpoutServer;
+import org.spout.engine.player.SpoutPlayer;
+import org.spout.engine.world.SpoutWorld;
 
 /**
  * SpoutSession for servers
  */
-public class SpoutServerSession extends SpoutSession<SpoutServer> {
-	public SpoutServerSession(SpoutServer engine, Channel channel, Protocol bootstrapProtocol, boolean proxy) {
-		super(engine, channel, bootstrapProtocol, proxy);
+public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
+
+	public SpoutServerSession(T engine, Channel channel, Protocol bootstrapProtocol) {
+		super(engine, channel, bootstrapProtocol);
+	}
+
+	@Override
+	public void send(boolean upstream, boolean force, Message message) {
+		if (upstream) {
+			getEngine().getLogger().warning("Attempt made to send packet to server");
+			return;
+		}
+		super.send(upstream, force, message);
+	}
+
+	@Override
+	public boolean disconnect(Object... reason) {
+		return disconnect(true, reason);
+	}
+
+	public Object[] getDefaultLeaveMessage() {
+		if (getPlayer() == null) {
+			return new Object[] {ChatStyle.CYAN, "Unknown", ChatStyle.CYAN , " has left the game"};
+		} else {
+			return new Object[] {ChatStyle.CYAN, getPlayer().getDisplayName(), ChatStyle.CYAN, " has left the game"};
+		}
+	}
+
+	@Override
+	public boolean disconnect(boolean kick, Object... reason) {
+		if (getPlayer() != null) {
+			PlayerLeaveEvent event;
+			if (kick) {
+				event = getEngine().getEventManager().callEvent(new PlayerKickEvent(getPlayer(), getDefaultLeaveMessage(), reason));
+				if (event.isCancelled()) {
+					return false;
+				}
+				reason = ((PlayerKickEvent) event).getKickReason();
+				getEngine().getCommandSource().sendMessage("Player ", getPlayer().getName(), " kicked: ", reason);
+			} else {
+				event = new PlayerLeaveEvent(getPlayer(), getDefaultLeaveMessage());
+			}
+			dispose(event);
+		}
+		Protocol protocol = getProtocol();
+		Message kickMessage = null;
+		if (protocol != null) {
+			kickMessage = protocol.getKickMessage(new ChatArguments(reason));
+		}
+		if (kickMessage != null) {
+			channel.write(kickMessage).addListener(ChannelFutureListener.CLOSE);
+		} else {
+			channel.close();
+		}
+		return true;
+	}
+
+	@Override
+	public void dispose() {
+		dispose(new PlayerLeaveEvent(getPlayer(), getDefaultLeaveMessage()));
+	}
+
+	public void dispose(PlayerLeaveEvent leaveEvent) {
+		SpoutPlayer player;
+		if ((player = this.player.getAndSet(null)) != null) {
+			if (!leaveEvent.hasBeenCalled()) {
+				getEngine().getEventManager().callEvent(leaveEvent);
+			}
+
+			Object[] text = leaveEvent.getMessage();
+			if (text != null && text.length > 0) {
+				getEngine().broadcastMessage(text);
+			}
+
+			PlayerSaveEvent saveEvent = getEngine().getEventManager().callEvent(new PlayerSaveEvent(player));
+			if (!saveEvent.isSaved()) {
+
+			}
+
+			//If its null or can't be get, just ignore it
+			//If disconnect fails, we just ignore it for now.
+			try {
+				final Entity entity = player.getEntity();
+				if (entity != null) {
+					((SpoutWorld) entity.getWorld()).removePlayer(player);
+				}
+				player.disconnect();
+			} catch (Exception ignore) {
+			}
+		}
 	}
 }

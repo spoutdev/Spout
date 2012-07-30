@@ -316,12 +316,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	@Override
 	public Session newSession(Channel channel) {
-		return newSession(channel, false);
-	}
-
-	protected Session newSession(Channel channel, boolean proxy) {
 		Protocol protocol = getProtocol(channel.getLocalAddress());
-		return new SpoutServerSession(this, channel, protocol, proxy);
+		return new SpoutServerSession<SpoutServer>(this, channel, protocol);
 	}
 
 	@Override

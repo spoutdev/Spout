@@ -29,9 +29,9 @@ package org.spout.engine;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
-import java.net.SocketAddress;
 import java.net.URISyntaxException;
 import java.security.CodeSource;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
@@ -42,8 +42,6 @@ import org.apache.commons.lang3.SystemUtils;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.lwjgl.LWJGLException;
@@ -62,10 +60,12 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 
-import org.spout.api.chat.ChatArguments;
+import org.spout.api.datatable.DatatableMap;
+import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.keyboard.Input;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.MathHelper;
@@ -80,21 +80,20 @@ import org.spout.api.plugin.PluginStore;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
-import org.spout.api.protocol.Session;
-import org.spout.api.protocol.builtin.SpoutProtocol;
 import org.spout.api.render.BasicCamera;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.Texture;
+import org.spout.api.util.StringMap;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
 
 import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.command.InputCommands;
-import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.ClientFileSystem;
 import org.spout.engine.input.SpoutInput;
-import org.spout.engine.listener.SpoutListener;
+import org.spout.engine.listener.SpoutClientConnectListener;
+import org.spout.engine.listener.SpoutClientListener;
 import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.protocol.SpoutClientSession;
@@ -125,9 +124,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private TInt21TripleObjectHashMap<PrimitiveBatch> chunkRenderers = new TInt21TripleObjectHashMap<PrimitiveBatch>();
 	private VertexBufferBatcher vbBatch;
 	private VertexBufferImpl buffer;
-	private final AtomicReference<SpoutPlayer> activePlayer = new AtomicReference<SpoutPlayer>();
-	private final AtomicReference<SpoutWorld> activeWorld = new AtomicReference<SpoutWorld>();
-	private PortBinding activeAddress;
+	private final AtomicReference<SpoutClientSession> session = new AtomicReference<SpoutClientSession>();
+	private SpoutPlayer activePlayer;
 	private long ticks = 0;
 
 	// Handle stopping
@@ -163,7 +161,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, true);
 		bootstrap.setPipelineFactory(pipelineFactory);
-
 		super.init(args);
 	}
 
@@ -176,22 +173,22 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public void start(boolean checkWorlds) {
 		super.start(checkWorlds);
 		scheduler.startRenderThread();
-		//getEventManager().registerEvents(new SpoutListener(this), this);
+		getEventManager().registerEvents(new SpoutClientListener(this), this);
 		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this));
 
 		// Register commands
 		getRootCommand().addSubCommands(this, InputCommands.class, commandRegFactory);
+		activePlayer = new SpoutPlayer("Spouty");
 	}
 
 	@Override
 	public SpoutPlayer getActivePlayer() {
-		return activePlayer.get();
+		return activePlayer;
 	}
 
 	@Override
 	public CommandSource getCommandSource() {
-		Player activePlayer = this.activePlayer.get();
-		if (activePlayer != null) {
+		if (session.get() != null) {
 			return activePlayer;
 		} else {
 			return super.getCommandSource();
@@ -234,8 +231,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return inputManager;
 	}
 
+	@Override
 	public PortBinding getAddress() {
-		return activeAddress;
+		return session.get().getActiveAddress();
 	}
 
 	@Override
@@ -287,40 +285,33 @@ public class SpoutClient extends SpoutEngine implements Client {
 		snap.setRenderDirty(false); //Rendered this snapshot
 	}
 
-	public Player setPlayer(String name, int entityId, SpoutClientSession session) {
-		SpoutEntity entity = new SpoutEntity(this, (Transform) null, null);
-		entity.setId(entityId);
-		SpoutPlayer player = new SpoutPlayer(name, entity, session);
-		if (activePlayer.compareAndSet(null, player)) {
+	public SpoutWorld updateWorld(String name, UUID uuid, byte[] datatable) {
+		DatatableMap map = new GenericDatatableMap();
+		map.decompress(datatable);
 
-		}
-
-		return activePlayer.get();
+		return new SpoutWorld(name, this, 0, 0, null, uuid, new StringMap(getEngineItemMap(), new MemoryStore<Integer>(), 0, Short.MAX_VALUE, name + "ItemMap"), map);
 	}
 
 	public ClientBootstrap getBootstrap() {
 		return bootstrap;
 	}
 
+	@Override
 	public SpoutClientSession newSession(Channel channel) {
 		Protocol protocol = getProtocol(channel.getLocalAddress());
-		return new SpoutClientSession(this, channel, protocol, false);
+		return new SpoutClientSession(this, channel, protocol);
 	}
 
 	public void connect(final PortBinding binding) {
-		this.activeAddress = binding;
-		getBootstrap().connect(binding.getAddress()).addListener(new ChannelFutureListener() {
-			public void operationComplete(ChannelFuture channelFuture) throws Exception {
-				if (channelFuture.isSuccess()) {
-					channelFuture.getChannel().write(binding.getProtocol().getIntroductionMessage("Player"));
-				} else {
-					activeAddress = null;
-					getLogger().log(Level.WARNING, "Could not connect to " + binding, channelFuture.getCause());
-				}
-			}
-		});
+		getBootstrap().connect(binding.getAddress()).addListener(new SpoutClientConnectListener(this, binding));
+	}
 
-		//getCommandSource().sendCommand("disconnect", new ChatArguments());
+	public void disconnected() {
+		this.session.set(null);
+	}
+
+	public void setSession(SpoutClientSession session) {
+		this.session.set(session);
 	}
 
 	public void initRenderer() {
