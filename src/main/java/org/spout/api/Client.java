@@ -30,7 +30,9 @@ import java.io.File;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.keyboard.Input;
+import org.spout.api.player.Player;
 import org.spout.api.plugin.PluginStore;
+import org.spout.api.protocol.PortBinding;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMode;
 
@@ -39,41 +41,11 @@ import org.spout.api.render.RenderMode;
  */
 public interface Client extends Engine {
 	/**
-	 * Gets the location of the temporary general cache (used for non-texture and non-audio files). This cache is purged when the game shuts down.
-	 *
-	 * @return temporary cache.
-	 */
-	public File getTemporaryCache();
-
-	/**
-	 * Gets the location of the texture pack directory. This directory is used
-	 * when users select a texture pack from the menu.
-	 *
-	 * @return {@link File} of the texture pack directory
-	 */
-	public File getResourcePackFolder();
-
-	/**
-	 * Gets the location of the achievement and statistic folder for the local
-	 * player.
-	 *
-	 * @return {@link File} of the statistic folder
-	 */
-	public File getStatsFolder();
-
-	/**
 	 * Gets the active player, connected to the local machine.
 	 *
 	 * @return active player
 	 */
-	public Entity getActivePlayer();
-
-	/**
-	 * Gets the currently active world, if a world is loaded.
-	 *
-	 * @return active world.
-	 */
-	public World getWorld();
+	public Player getActivePlayer();
 
 	/**
 	 * The Camera object is the viewport into the scene
@@ -102,6 +74,18 @@ public interface Client extends Engine {
 	 */
 	public RenderMode getRenderMode();
 
-	
+	/**
+	 * Gets the input manager for the client. Keybindings are registered here.
+	 *
+	 * @return The client's input manager
+	 */
 	public Input getInput();
+
+	/**
+	 * Returns the current IP address the client is connected to.
+	 * If the client is not connected to a server, this returns null.
+	 *
+	 * @return address
+	 */
+	public PortBinding getAddress();
 }

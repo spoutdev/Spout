@@ -40,16 +40,16 @@ import org.jboss.netty.buffer.ChannelBufferFactory;
 import org.jboss.netty.buffer.ChannelBufferIndexFinder;
 
 public class ReplayableChannelBuffer implements ChannelBuffer {
-	
+
 	private final static Error ERROR_INSTANCE = new ReplayableError("");
 
 	private ChannelBuffer buffer;
-	
+
 	public ChannelBuffer setBuffer(ChannelBuffer buffer) {
 		this.buffer = buffer;
 		return this;
 	}
-	
+
 	@Override
 	public ChannelBufferFactory factory() {
 		return buffer.factory();
@@ -475,9 +475,6 @@ public class ReplayableChannelBuffer implements ChannelBuffer {
 
 	@Override
 	public void readBytes(byte[] dst) {
-		if (dst.length == 0) {
-			throw new IllegalStateException("Shouldn't be reading length zero buffers");
-		}
 		checkAvail(dst.length);
 		try {
 			buffer.readBytes(dst);
@@ -770,21 +767,21 @@ public class ReplayableChannelBuffer implements ChannelBuffer {
 	private void unsupported() {
 		throw new UnsupportedOperationException("This method is not supported for a replayable channel buffer");
 	}
-	
+
 	private void indexRangeCheck(int index) {
 		checkAvail(index, 0);
 	}
-	
+
 	private void checkAvail(int length) {
 		if (buffer.readableBytes() < length) {
 			throw ERROR_INSTANCE;
 		}
 	}
-	
+
 	private void checkAvail(int index, int length) {
 		if (index + length > buffer.writerIndex()) {
 			throw ERROR_INSTANCE;
 		}
 	}
-	
+
 }

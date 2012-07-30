@@ -39,6 +39,7 @@ import org.spout.api.protocol.HandlerLookupService;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.Protocol;
+import org.spout.api.protocol.Session;
 import org.spout.api.protocol.common.message.CustomDataMessage;
 import org.spout.api.protocol.replayable.ReplayableError;
 
@@ -55,7 +56,7 @@ public class CommonBootstrapProtocol extends Protocol {
 	}
 
 	public CommonBootstrapProtocol(String name, CodecLookupService codecLookup, HandlerLookupService handlerLookup, Protocol defaultProtocol) {
-		super(name, codecLookup, handlerLookup);
+		super(name, -1, codecLookup, handlerLookup);
 		this.defaultProtocol = defaultProtocol;
 	}
 
@@ -151,6 +152,9 @@ public class CommonBootstrapProtocol extends Protocol {
 	@Override
 	public Message getIntroductionMessage(String playerName) {
 		return null;
+	}
+
+	public void initializeSession(Session session) {
 	}
 
 }

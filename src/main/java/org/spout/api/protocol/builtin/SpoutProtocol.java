@@ -49,10 +49,10 @@ public class SpoutProtocol extends Protocol {
 	public static final SpoutProtocol INSTANCE = new SpoutProtocol();
 	public static final DefaultedKey<Integer> PLAYER_ENTITY_ID = new DefaultedKeyImpl<Integer>("playerEntityId", -1);
 	public static final int PROTOCOL_VERSION = 0;
+	public static final int DEFAULT_PORT = 13756;
 
-	private SpoutProtocol() {
-		super("Spout", new SpoutCodecLookupService(), new SpoutHandlerLookupService());
-		registerProtocol(getName(), this);
+	public SpoutProtocol() {
+		super("Spout", DEFAULT_PORT, new SpoutCodecLookupService(), new SpoutHandlerLookupService());
 	}
 
 	public MessageCodec<?> readHeader(ChannelBuffer buf) {

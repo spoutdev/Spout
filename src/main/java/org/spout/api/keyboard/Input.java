@@ -32,21 +32,29 @@ package org.spout.api.keyboard;
 public interface Input {
 	/**
 	 * Returns true if the input is redirected from this.
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isRedirected();
 
 	/**
 	 * Sets if the input should be redirected.
-	 * 
+	 *
 	 * @param redirect
 	 */
 	public void setRedirected(boolean redirect);
 
 	/**
 	 * Binds an input action to a command.
-	 * 
+	 *
+	 * @param key
+	 * @param command
+	 */
+	public void bind(Keyboard key, String command);
+
+	/**
+	 * Binds an input action to a command.
+	 *
 	 * @param key
 	 * @param command
 	 */

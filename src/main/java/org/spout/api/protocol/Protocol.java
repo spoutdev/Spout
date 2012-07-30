@@ -26,6 +26,8 @@
  */
 package org.spout.api.protocol;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -39,10 +41,12 @@ public abstract class Protocol {
 	private final CodecLookupService codecLookup;
 	private final HandlerLookupService handlerLookup;
 	private final String name;
+	private final int defaultPort;
 
-	public Protocol(String name, CodecLookupService codecLookup, HandlerLookupService handlerLookup) {
+	public Protocol(String name, int defaultPort, CodecLookupService codecLookup, HandlerLookupService handlerLookup) {
 		this.codecLookup = codecLookup;
 		this.handlerLookup = handlerLookup;
+		this.defaultPort = defaultPort;
 		this.name = name;
 	}
 
@@ -71,6 +75,16 @@ public abstract class Protocol {
 	 */
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * The default port is the port used when autogenerating default bindings for this
+	 * protocol and in the client when no port is given.
+	 *
+	 * @return The default port
+	 */
+	public int getDefaultPort() {
+		return defaultPort;
 	}
 
 	/**
@@ -136,6 +150,15 @@ public abstract class Protocol {
 	}
 
 	/**
+	 * Registers a Protocol under its name
+	 *
+	 * @param protocol the Protocol
+	 */
+	public static void registerProtocol(Protocol protocol) {
+		map.put(protocol.getName(), protocol);
+	}
+
+	/**
 	 * Gets the Protocol associated with a particular id
 	 *
 	 * @param id the id
@@ -143,5 +166,15 @@ public abstract class Protocol {
 	 */
 	public static Protocol getProtocol(String id) {
 		return map.get(id);
+	}
+
+	/**
+	 * Returns all protocols currently registered.
+	 * The returned collection is unmodifiable.
+	 *
+	 * @return All registered protocols
+	 */
+	public static Collection<Protocol> getProtocols() {
+		return Collections.unmodifiableCollection(map.values());
 	}
 }

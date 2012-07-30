@@ -32,6 +32,7 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
+import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.exception.UnknownPacketException;
 
@@ -54,7 +55,11 @@ public class CommonDecoder extends PreprocessReplayingDecoder {
 	@Override
 	protected Object decodeProcessed(ChannelHandlerContext ctx, Channel c, ChannelBuffer buf) throws Exception {
 		if (protocol == null) {
-			protocol = Spout.getEngine().getProtocol(c.getLocalAddress());
+			if (Spout.getEngine() instanceof Client) {
+				protocol = ((Client) Spout.getEngine()).getAddress().getProtocol();
+			} else {
+				protocol = Spout.getEngine().getProtocol(c.getLocalAddress());
+			}
 		}
 
 		MessageCodec<?> codec;

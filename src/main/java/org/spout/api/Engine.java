@@ -104,38 +104,6 @@ public interface Engine extends Named {
 	public int getMaxPlayers();
 
 	/**
-	 * Returns the current IP address.
-	 *
-	 * If this game is a server, this is the address being listened on.
-	 *
-	 * If this game is a client, and connected to a server, this is the address
-	 * connected to.
-	 *
-	 * If neither, this is null.
-	 *
-	 * Address may be in "x.x.x.x:port", "x.x.x.x", or null format.
-	 *
-	 * @return address
-	 */
-	public String getAddress();
-
-	/**
-	 * Returns all IP addresses in use.
-	 *
-	 * If this game is a server, this is the addresses being listened on.
-	 *
-	 * If this game is a client, and connected to a server, this is the address
-	 * connected to.
-	 *
-	 * If neither, this is null.
-	 *
-	 * Address may be in "x.x.x.x:port", "x.x.x.x", or null format.
-	 *
-	 * @return address
-	 */
-	public String[] getAllAddresses();
-
-	/**
 	 * Broadcasts the given message to all players
 	 *
 	 * The implementation of broadcast is identical to iterating over
@@ -577,13 +545,6 @@ public interface Engine extends Named {
 	 * @return the log filename
 	 */
 	public String getLogFile();
-
-	/**
-	 * Gets an array of available commands from the command map.
-	 *
-	 * @return An array of all command names currently registered on the server.
-	 */
-	public String[] getAllCommands();
 
 	/**
 	 * Gets an abstract representation of the engine Filesystem.

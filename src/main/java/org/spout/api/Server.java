@@ -26,12 +26,12 @@
  */
 package org.spout.api;
 
-import java.net.SocketAddress;
 import java.util.Collection;
+import java.util.List;
 
 import org.jboss.netty.channel.Channel;
 
-import org.spout.api.protocol.Protocol;
+import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Session;
 
 /**
@@ -90,14 +90,20 @@ public interface Server extends Engine {
 	public boolean allowFlight();
 
 	/**
+	 * Returns all IP addresses being listened to.
+	 * The returned collection is unmodifiable.
+	 *
+	 * @return address
+	 */
+	public List<PortBinding> getBoundAddresses();
+
+	/**
 	 * Binds the server to a certain address
 	 *
-	 * @param address The address to bind to.
-	 * @param protocol The protocol to use for connections to
-	 *            this binding
+	 * @param binding The address and protocol to bind to.
 	 * @return true if successful
 	 */
-	public boolean bind(SocketAddress address, Protocol Protocol);
+	public boolean bind(PortBinding binding);
 
 	/**
 	 * Bans the specified player

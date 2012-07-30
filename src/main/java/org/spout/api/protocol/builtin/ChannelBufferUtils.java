@@ -44,7 +44,7 @@ import org.spout.api.math.Vector3;
  * Various utility methods to help with writing objects to a ChannelBuffer
  */
 public class ChannelBufferUtils {
-	public static final Charset UTF_8_CHARSET = Charset.forName("UFT-8");
+	public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");
 
 	private ChannelBufferUtils() {
 	}

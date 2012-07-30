@@ -92,7 +92,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 				throw new RuntimeException("Exception thrown when connecting", ex);
 			}
 		} else {
-			Channel c= e.getChannel();
+			Channel c = e.getChannel();
 			engine.getLogger().info("Upstream channel connected: " + c + ".");
 		}
 	}

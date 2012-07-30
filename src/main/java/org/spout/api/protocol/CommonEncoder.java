@@ -33,6 +33,7 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
+import org.spout.api.Client;
 import org.spout.api.Spout;
 
 /**
@@ -53,7 +54,11 @@ public class CommonEncoder extends PostprocessEncoder {
 	protected Object encode(ChannelHandlerContext ctx, Channel c, Object msg) throws Exception {
 		if (msg instanceof Message) {
 			if (protocol == null) {
-				protocol = Spout.getEngine().getProtocol(c.getLocalAddress());
+				if (Spout.getEngine() instanceof Client) {
+					protocol = ((Client) Spout.getEngine()).getAddress().getProtocol();
+				} else {
+					protocol = Spout.getEngine().getProtocol(c.getLocalAddress());
+				}
 			}
 			Message message = (Message) msg;
 

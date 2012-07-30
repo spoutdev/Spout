@@ -24,23 +24,16 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.exception;
+package org.spout.api.protocol;
 
-import java.io.IOException;
+import java.net.SocketAddress;
 
 /**
- * Thrown when a {@link org.spout.api.protocol.MessageCodec} cannot be found for a given opcode
- *
+ * Represents a bound address that the server is connected to.
  */
-public class UnknownPacketException extends IOException {
-	private final int opcode;
+public interface PortBinding {
+	public Protocol getProtocol();
 
-	public UnknownPacketException(int opcode) {
-		super("Unknown opcode: " + opcode);
-		this.opcode = opcode;
-	}
+	public SocketAddress getAddress();
 
-	public int getOpcode() {
-		return opcode;
-	}
 }
