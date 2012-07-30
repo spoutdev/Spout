@@ -231,11 +231,35 @@ public class Transform implements Serializable{
 		return position.equals(t.position) && rotation.equals(t.rotation) && scale.equals(t.scale) && ObjectUtils.equals(parent, t.parent);
 	}
 
+	/**
+	 * Returns the 4x4 matrix that represents this transform object
+	 * @return
+	 */
 	public Matrix toMatrix(){
 		Matrix translate = MathHelper.translate(position);
 		Matrix rotate = MathHelper.rotate(rotation);
 		Matrix scale = MathHelper.scale(this.scale);
 		
 		return scale.multiply(rotate).multiply(translate);
+	}
+	/**
+	 * Returns a unit vector that points in the forward direction of this transform
+	 * @return
+	 */
+	public Vector3 forwardVector() {
+		return MathHelper.transform(Vector3.FORWARD, rotation);
+	}
+	/**
+	 * Returns a unit vector that points right in relation to this transform
+	 */
+	public Vector3 rightVector() {
+		return MathHelper.transform(Vector3.RIGHT, rotation);
+	}
+	/**
+	 * Returns a unit vector that points up in relation to this transform
+	 * @return
+	 */
+	public Vector3 upVector() {
+		return MathHelper.transform(Vector3.UP, rotation);
 	}
 }
