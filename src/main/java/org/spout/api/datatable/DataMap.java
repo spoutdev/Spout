@@ -103,6 +103,9 @@ public class DataMap implements DefaultedMap<String, Serializable>{
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Serializable> T get(Object key, T defaultValue) {
+		if (key instanceof DefaultedKey) {
+			return get((DefaultedKey<T>)key);
+		}
 		if (!(key instanceof String)) {
 			return defaultValue;
 		}
