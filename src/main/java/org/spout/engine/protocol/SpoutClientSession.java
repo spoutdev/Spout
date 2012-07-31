@@ -68,7 +68,6 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> {
 			player.disconnect();
 		}
 		getEngine().disconnected();
-		channel.getCloseFuture().awaitUninterruptibly();
 	}
 
 	public World getActiveWorld() {

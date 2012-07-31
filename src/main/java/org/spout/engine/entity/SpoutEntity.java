@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.Source;
-import org.spout.api.Spout;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntityComponent;
@@ -75,6 +74,7 @@ public class SpoutEntity extends Tickable implements Entity {
 	private final AtomicInteger viewDistanceLive = new AtomicInteger();
 	private final Transform transform = new Transform();
 	private final Set<SpoutChunk> observingChunks = new HashSet<SpoutChunk>();
+	private final SpoutEngine engine;
 	private final UUID uid;
 	private boolean justSpawned = true;
 	private boolean observer = false;
@@ -91,6 +91,7 @@ public class SpoutEntity extends Tickable implements Entity {
 	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller, int viewDistance, UUID uid, boolean load) {
 		id.set(NOTSPAWNEDID);
 		this.transform.set(transform);
+		this.engine = engine;
 
 		if (uid != null) {
 			this.uid = uid;
@@ -155,7 +156,7 @@ public class SpoutEntity extends Tickable implements Entity {
 		if (cont != null) {
 			//Sanity check
 			if (cont.getParent() != this) {
-				if (Spout.debugMode()) {
+				if (engine.debugMode()) {
 					throw new IllegalStateException("Controller parent does not match entity");
 				}
 
@@ -164,7 +165,7 @@ public class SpoutEntity extends Tickable implements Entity {
 			//If this is the first tick, we need to attach the controller
 			//Controller is attached here instead of inside of the constructor
 			//because the constructor can not access getChunk if the entity is being deserialized
-			if (!attached) {
+			if (!attached && !isDead() && getPosition() != null && getWorld() != null) {
 				cont.onAttached();
 				attached = true;
 			}
@@ -389,9 +390,9 @@ public class SpoutEntity extends Tickable implements Entity {
 
 	private boolean activeThreadIsValid(String attemptedAction) {
 		Thread current = Thread.currentThread();
-		boolean invalidAccess = !(this.owningThread == current || Spout.getEngine().getMainThread() == current);
+		boolean invalidAccess = !(this.owningThread == current || engine.getMainThread() == current);
 
-		if (invalidAccess && Spout.getEngine().debugMode()) {
+		if (invalidAccess && engine.debugMode()) {
 			if (attemptedAction == null) {
 				attemptedAction = "Unknown Action";
 			}
@@ -421,7 +422,7 @@ public class SpoutEntity extends Tickable implements Entity {
 
 	@Override
 	public void setController(Controller controller, Source source) {
-		EntityControllerChangeEvent event = Spout.getEventManager().callEvent(new EntityControllerChangeEvent(this, source, controller));
+		EntityControllerChangeEvent event = engine.getEventManager().callEvent(new EntityControllerChangeEvent(this, source, controller));
 		Controller newController = event.getNewController();
 		controllerLive.set(controller);
 		if (newController != null) {
@@ -735,12 +736,12 @@ public class SpoutEntity extends Tickable implements Entity {
 	public UUID getUID() {
 		return uid;
 	}
-	
+
 	public Matrix getModelMatrix()
 	{
 		Matrix trans = MathHelper.translate(transform.getPosition());
 		Matrix rot = MathHelper.rotate(transform.getRotation());
-		
-		return rot.multiply(trans);	
+
+		return rot.multiply(trans);
 	}
 }
