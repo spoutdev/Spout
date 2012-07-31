@@ -49,7 +49,7 @@ public class VarInt {
 		writeInt(buf, data.length());
 
 		for (int i = 0; i < data.length(); i++) {
-			writeInt(buf, data.charAt(i) & 0xFF);
+			writeInt(buf, data.charAt(i) & 0xFFFF);
 		}
 	}
 
