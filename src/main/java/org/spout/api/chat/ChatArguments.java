@@ -87,6 +87,10 @@ public class ChatArguments implements Cloneable, ChatSection {
 		return append(Arrays.asList(objects));
 	}
 
+	public ChatArguments append(final ChatArguments args) {
+		return append(args.getArguments());
+	}
+
 	public ChatArguments append(final ChatSection section) {
 		final AtomicInteger previousIndex = new AtomicInteger();
 		section.getActiveStyles().forEachEntry(new TIntObjectProcedure<List<ChatStyle>>() {
@@ -200,7 +204,23 @@ public class ChatArguments implements Cloneable, ChatSection {
 	}
 
 	public TIntObjectMap<List<ChatStyle>> getActiveStyles() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		int curIndex = 0;
+		TIntObjectMap<List<ChatStyle>> map = new TIntObjectHashMap<List<ChatStyle>>();
+		for (Object obj : getExpandedPlaceholders()) {
+			if (obj instanceof ChatStyle) {
+				ChatStyle style = (ChatStyle) obj;
+				List<ChatStyle> list = map.get(curIndex);
+				if (list == null) {
+					list = new ArrayList<ChatStyle>();
+					map.put(curIndex, list);
+				}
+				ChatSectionUtils.removeConflicting(list, style);
+				list.add(style);
+			} else {
+				curIndex +=  String.valueOf(obj).length();
+			}
+		}
+		return map;
 	}
 
 	public String getPlainString() {
@@ -216,7 +236,7 @@ public class ChatArguments implements Cloneable, ChatSection {
 	}
 
 	public ChatSection subSection(int startIndex, int endIndex) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		return new ChatSectionImpl(getSplitType(), getActiveStyles(), getPlainString()).subSection(startIndex, endIndex);
 	}
 
 	public int length() {
@@ -348,21 +368,7 @@ public class ChatArguments implements Cloneable, ChatSection {
 				break;
 
 			case ALL:
-				curIndex = 0;
-				map = new TIntObjectHashMap<List<ChatStyle>>();
-				for (Object obj : getExpandedPlaceholders()) {
-					if (obj instanceof ChatStyle) {
-						ChatStyle style = (ChatStyle) obj;
-						List<ChatStyle> list = map.get(curIndex);
-						if (list == null) {
-							list = new ArrayList<ChatStyle>();
-							map.put(curIndex, list);
-						}
-						ChatSectionUtils.removeConflicting(list, style);
-						list.add(style);
-					}
-				}
-				return Collections.<ChatSection>singletonList(new ChatSectionImpl(type, map, getPlainString()));
+				return Collections.<ChatSection>singletonList(new ChatSectionImpl(getSplitType(), getActiveStyles(), getPlainString()));
 
 			default:
 				throw new IllegalArgumentException("Unknown SplitOption " + type + "!");

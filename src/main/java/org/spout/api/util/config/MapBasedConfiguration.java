@@ -28,7 +28,6 @@ package org.spout.api.util.config;
 
 import org.spout.api.exception.ConfigurationException;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -60,7 +59,7 @@ public abstract class MapBasedConfiguration extends AbstractConfiguration {
 	}
 
 	protected void saveFromNodes(Map<String, ConfigurationNode> nodes) throws ConfigurationException {
-		Map<String, Object> ret = new HashMap<String, Object>();
+		Map<String, Object> ret = new LinkedHashMap<String, Object>();
 		for (Map.Entry<String, ConfigurationNode> entry : getChildren().entrySet()) {
 			ret.put(entry.getKey(), entry.getValue().getValue());
 		}
