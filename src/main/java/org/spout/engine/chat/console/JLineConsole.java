@@ -40,7 +40,7 @@ import jline.ConsoleOperations;
 import jline.ConsoleReader;
 import jline.NullCompletor;
 import org.fusesource.jansi.Ansi;
-import org.spout.api.Spout;
+import org.fusesource.jansi.AnsiConsole;
 import org.spout.api.chat.ChatArguments;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.chat.style.JansiStyleHandler;
@@ -60,7 +60,7 @@ public class JLineConsole extends AbstractConsole {
 
 		try {
 			reader = new ConsoleReader();
-			writer = new OutputStreamWriter(new FileOutputStream(FileDescriptor.out));
+			writer = new OutputStreamWriter(AnsiConsole.out);
 		} catch (IOException e) {
 			throw new ExceptionInInitializerError(e);
 		}
@@ -96,7 +96,7 @@ public class JLineConsole extends AbstractConsole {
 	public void close() {
 		running = false;
 		try {
-			reader.printString(ConsoleOperations.RESET_LINE + "");
+			reader.killLine();
 			reader.flushConsole();
 		} catch (IOException e) {
 		}
@@ -108,7 +108,11 @@ public class JLineConsole extends AbstractConsole {
 			reader.flushConsole();
 			synchronized (writer) {
 				appendDateFormat(writer);
-				writer.write(stringify(message) + '\n');
+				for (String line : stringify(message).split("\n")) {
+					if (line.trim().length() > 0) {
+						writer.write(line.replaceAll("[\r\n]", "") + '\n');
+					}
+				}
 				writer.flush();
 			}
 

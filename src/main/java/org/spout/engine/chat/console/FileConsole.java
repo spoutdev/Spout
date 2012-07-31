@@ -113,8 +113,10 @@ public class FileConsole extends AbstractConsole {
 		writerLock.lock();
 		try {
 			appendDateFormat(writer);
-			writer.write(message.asString());
-			writer.write('\n');
+			for (String line : message.asString().split("\n")) {
+				writer.write(line);
+				writer.write('\n');
+			}
 		} catch (IOException e) {
 			return;
 		} finally {

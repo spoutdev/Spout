@@ -215,7 +215,7 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 					}
 
 					try {
-						document.insertBeforeEnd(bodyElement, "<div>" + msg + "</div>");
+						document.insertBeforeEnd(bodyElement, "<div>" + msg.replace("\n", "<br\\>") + "</div>");
 						scrollToBottom();
 					} catch (BadLocationException ignore) {
 					} catch (IOException ignore) {
