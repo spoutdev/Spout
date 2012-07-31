@@ -117,13 +117,22 @@ public abstract class NetworkSynchronizer {
 		for (final Method method : listener.getClass().getDeclaredMethods()) {
 			if (method.isAnnotationPresent(EventHandler.class) && method.getParameterTypes().length == 1) {
 				Class<?> clazz = method.getParameterTypes()[0];
-				if (!ProtocolEvent.class.isAssignableFrom(ProtocolEvent.class)) {
+				if (!ProtocolEvent.class.isAssignableFrom(clazz)) {
 					session.getEngine().getLogger().warning("Invalid protocol event handler attempted to be registered for " + owner.getName());
 					continue;
 				}
 
-				if (!Message.class.isAssignableFrom(method.getReturnType()) && !Message.class.isAssignableFrom(method.getReturnType().getComponentType())) {
+				Class<?> returnType = method.getReturnType();
+				if (returnType == null || returnType.equals(void.class)) {
 					session.getEngine().getLogger().warning("Protocol event handler not returning a Message tried to be registered for " + owner.getName());
+					session.getEngine().getLogger().warning("Please change the return type from 'void' to Message");
+					continue;
+				} else if (!Message.class.isAssignableFrom(returnType)) {
+					Class<?> compType = returnType.getComponentType();
+					if (compType == null || !Message.class.isAssignableFrom(compType)) {
+						session.getEngine().getLogger().warning("Protocol event handler not returning a Message tried to be registered for " + owner.getName());
+						continue;
+					}
 				}
 
 				method.setAccessible(true);
@@ -132,8 +141,10 @@ public abstract class NetworkSynchronizer {
 					public Message[] execute(ProtocolEvent event) throws EventException {
 						try {
 							Object obj = method.invoke(listener, event);
-							if (obj.getClass().isArray()) {
-								return (Message[])obj;
+							if (obj == null) {
+								return null;
+							} else if (obj.getClass().isArray()) {
+								return (Message[]) obj;
 							} else if (Message.class.isAssignableFrom(obj.getClass())) {
 								return new Message[] {(Message) obj};
 							}
