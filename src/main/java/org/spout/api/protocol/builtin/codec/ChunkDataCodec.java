@@ -46,7 +46,7 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 	}
 
 	@Override
-	public ChannelBuffer encode(ChunkDataMessage message) {
+	public ChannelBuffer encode(ChunkDataMessage message) throws IOException {
 		final ChannelBuffer buffer;
 		if (message.isUnload()) {
 			buffer = ChannelBuffers.buffer(13);
@@ -55,7 +55,7 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			buffer.writeInt(message.getY());
 			buffer.writeInt(message.getZ());
 		} else {
-			int size = 14;
+			int size = 18;
 			int dataSize = Chunk.BLOCKS.VOLUME * 2 + Chunk.BLOCKS.VOLUME * 2 + Chunk.BLOCKS.HALF_VOLUME + Chunk.BLOCKS.HALF_VOLUME;
 			if (message.getBiomeData() != null) {
 				dataSize += Chunk.BLOCKS.AREA;
@@ -72,9 +72,9 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 				uncompressedData[index++] = (byte) s;
 				uncompressedData[index++] = (byte) (s >> 8);
 			}
-			System.arraycopy(message.getBlockLight(), 0, uncompressedData, index, message.getBlockIds().length);
+			System.arraycopy(message.getBlockLight(), 0, uncompressedData, index, message.getBlockLight().length);
 			index += message.getBlockLight().length;
-			System.arraycopy(message.getSkyLight(), 0, uncompressedData, index, message.getBlockIds().length);
+			System.arraycopy(message.getSkyLight(), 0, uncompressedData, index, message.getSkyLight().length);
 			index += message.getSkyLight().length;
 			if (message.getBiomeData() != null) {
 				System.arraycopy(message.getBiomeData(), 0, uncompressedData, index, message.getBiomeData().length);
@@ -85,10 +85,17 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			deflater.setInput(uncompressedData);
 			deflater.finish();
 			int compressedSize = deflater.deflate(compressedData);
-			size += compressedSize;
-			deflater.end();
+			try {
+				if (compressedSize == 0) {
+					throw new IOException("Not all data compressed!");
+				}
+			} finally {
+				size += compressedSize;
+				deflater.end();
+			}
+			//System.out.println("Size: " + size + ", UncompressedData: " + uncompressedData.length + ", CompressedData: " + compressedSize);
 
-			buffer = ChannelBuffers.buffer(size);
+			buffer = ChannelBuffers.dynamicBuffer(size);
 			buffer.writeByte(0); // not unload
 			buffer.writeInt(message.getX());
 			buffer.writeInt(message.getY());
