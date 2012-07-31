@@ -104,9 +104,9 @@ public class JLineConsole extends AbstractConsole {
 
 	public void addMessage(ChatArguments message) {
 		try {
-			reader.printString(ConsoleOperations.RESET_LINE + "");
-			reader.flushConsole();
 			synchronized (writer) {
+				reader.printString(ConsoleOperations.RESET_LINE + "");
+				reader.flushConsole();
 				appendDateFormat(writer);
 				for (String line : stringify(message).split("\n")) {
 					if (line.trim().length() > 0) {
@@ -114,14 +114,14 @@ public class JLineConsole extends AbstractConsole {
 					}
 				}
 				writer.flush();
-			}
 
-			try {
-				reader.drawLine();
-			} catch (Throwable ex) {
-				reader.getCursorBuffer().clearBuffer();
+				try {
+					reader.drawLine();
+				} catch (Throwable ex) {
+					reader.getCursorBuffer().clearBuffer();
+				}
+				reader.flushConsole();
 			}
-			reader.flushConsole();
 		} catch (IOException e) {
 			engine.getLogger().severe("I/O exception flushing console output");
 			e.printStackTrace();
@@ -131,7 +131,7 @@ public class JLineConsole extends AbstractConsole {
 	private class ConsoleCommandThread extends Thread {
 
 		public ConsoleCommandThread() {
-			super("Console Manager");
+			super("ConsoleCommandThread");
 		}
 
 		@Override

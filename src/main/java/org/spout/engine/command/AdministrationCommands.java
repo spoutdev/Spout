@@ -92,7 +92,7 @@ public class AdministrationCommands {
 
 	@Command(aliases = "kick", usage = "<player> [message]", desc = "Kick a player", min = 1, max = -1)
 	@CommandPermissions("spout.command.kick")
-	public void kick(CommandContext args, CommandSource source) {
+	public void kick(CommandContext args, CommandSource source) throws CommandException {
 		if (Spout.getPlatform() != Platform.SERVER) {
 			source.sendMessage(ChatStyle.RED, "Kick is available only in server-mode.");
 			return;
@@ -106,6 +106,10 @@ public class AdministrationCommands {
 		}
 
 		Player player = Spout.getEngine().getPlayer(playerName, true);
+		if (player == null) {
+			throw new CommandException("Unknown player: " + player);
+		}
+
 		if (player.isOnline()) {
 			player.kick(message);
 			ChatArguments retMsg = new ChatArguments(ChatStyle.BRIGHT_GREEN, "Kicked player '", player.getEntity(), "'");
@@ -143,7 +147,7 @@ public class AdministrationCommands {
 			source.sendMessage(ChatStyle.BRIGHT_GREEN, "Reloaded '", pluginName, "'.");
 		}
 	}
-	@SuppressWarnings("unchecked")
+
 	@Command(aliases = {"plugins", "pl"}, desc = "List all plugins on the engine")
 	@CommandPermissions("spout.command.plugins")
 	public void plugins(CommandContext args, CommandSource source) {

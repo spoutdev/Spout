@@ -55,7 +55,7 @@ public class FileConsole extends AbstractConsole {
 	public FileConsole(SpoutEngine engine) {
 		this.engine = engine;
 		this.fileNameFormat = engine.getLogFile();
-		setDateFormat(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss"));
+		setDateFormat(new SimpleDateFormat("HH:mm:ss"));
 		date = new SimpleDateFormat("yyyy-MM-dd");
 		logFileName = calculateFilename();
 
