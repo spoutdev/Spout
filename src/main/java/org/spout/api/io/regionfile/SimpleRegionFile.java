@@ -101,7 +101,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 		refreshAccess();
 		
 		try {
-			this.file = new CachedRandomAccessFile(this.filePath, "rwd");
+			this.file = new CachedRandomAccessFile(this.filePath, "rw");
 		} catch (FileNotFoundException e) {
 			this.closed.set(true);
 			throw new SRFException("Unable to open region file " + this.filePath, e);
