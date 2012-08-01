@@ -50,30 +50,47 @@ public class ChunkMesh extends BaseMesh {
 	 */
 	private static final List<BlockFace> renderableFaces = Lists.newArrayList(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.TOP, BlockFace.BOTTOM);
 
-	private final ChunkSnapshotModel chunkModel;
+	private final SpoutChunk chunk;
+	private ChunkSnapshotModel chunkModel;
 	private ChunkSnapshot center;
 
 	/**
 	 * Private constructor.
 	 */
-	private ChunkMesh(ChunkSnapshotModel chunkModel) {
-		this.chunkModel = chunkModel;
-		center = chunkModel.getCenter();
+	private ChunkMesh(SpoutChunk chunk) {
+		this.chunk = chunk;
 	}
 
-	public static ChunkMesh generateFromChunk(SpoutChunk chunk) {
-		ChunkSnapshotModel model = new ChunkSnapshotModel(chunk.getWorld());
-		model.load(chunk.getX(), chunk.getY(), chunk.getZ());
-		ChunkMesh mesh = new ChunkMesh(model);
+	/**
+	 * Updates the mesh.
+	 */
+	public void update() {
+		chunkModel = new ChunkSnapshotModel(chunk.getWorld());
+		chunkModel.load(chunk.getX(), chunk.getY(), chunk.getZ());
+		center = chunkModel.getCenter();
 
 		for (int x = chunk.getBlockX(); x < chunk.getBlockX() + Chunk.BLOCKS.SIZE; x++) {
 			for (int y = chunk.getBlockY(); y < chunk.getBlockY() + Chunk.BLOCKS.SIZE; y++) {
 				for (int z = chunk.getBlockZ(); z < chunk.getBlockZ() + Chunk.BLOCKS.SIZE; z++) {
-					mesh.generateBlockVertices(x, y, z);
+					generateBlockVertices(x, y, z);
 				}
 			}
 		}
 
+		// Free memory
+		chunkModel = null;
+		center = null;
+	}
+
+	/**
+	 * Generates a ChunkMesh of the given chunk.
+	 * 
+	 * @param chunk
+	 * @return
+	 */
+	public static ChunkMesh generateFromChunk(SpoutChunk chunk) {
+		ChunkMesh mesh = new ChunkMesh(chunk);
+		mesh.update();
 		return mesh;
 	}
 
@@ -85,7 +102,7 @@ public class ChunkMesh extends BaseMesh {
 	 * @param z
 	 */
 	private void generateBlockVertices(int x, int y, int z) {
-		BlockMaterial material = center.getBlockMaterial(x, y, z);
+		BlockMaterial material = center.getBlockMaterial(x - center.getX(), y - center.getY(), z - center.getZ());
 
 		if (material.isTransparent()) {
 			return;
@@ -100,11 +117,7 @@ public class ChunkMesh extends BaseMesh {
 			int z1 = facePos.getFloorZ();
 			BlockMaterial neighbor = chunkModel.getChunkFromBlock(x1, y1, z1).getBlockMaterial(x1, y1, z1);
 
-			if (neighbor.isTransparent()) {
-				shouldRender[face.ordinal()] = true;
-			} else {
-				shouldRender[face.ordinal()] = false;
-			}
+			shouldRender[face.ordinal()] = neighbor.isTransparent();
 		}
 
 		for (BlockFace face : renderableFaces) {
