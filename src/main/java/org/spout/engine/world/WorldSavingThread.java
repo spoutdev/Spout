@@ -37,6 +37,7 @@ import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.util.hashing.ArrayHash;
 import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 
@@ -78,7 +79,6 @@ public class WorldSavingThread extends Thread{
 	
 	public static void staticJoin() {
 		try {
-			WorldSavingThread localInstance = instance;
 			instance.join();
 		} catch (InterruptedException ie) {
 			Spout.getLogger().info("Main thread interruped while waiting for world save thread to end");

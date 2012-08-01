@@ -59,6 +59,7 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.NBTMapper;
 import org.spout.api.util.StringMap;
+import org.spout.api.util.hashing.ArrayHash;
 import org.spout.api.util.sanitation.SafeCast;
 import org.spout.api.util.sanitation.StringSanitizer;
 import org.spout.api.util.typechecker.TypeChecker;
@@ -132,6 +133,8 @@ public class WorldFiles {
 				}
 			}
 		}
+		
+		world.getItemMap().save();
 	}
 
 	public static SpoutWorld loadWorldFromData(String name, WorldGenerator generator, StringMap global) {
@@ -307,6 +310,8 @@ public class WorldFiles {
 				}
 			}
 		}
+		
+		world.getItemMap().save();
 	}
 
 	public static SpoutChunk loadChunk(SpoutRegion r, int x, int y, int z, InputStream dis, ChunkDataForRegion dataForRegion) {
