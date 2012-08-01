@@ -26,9 +26,10 @@
  */
 package org.spout.engine.renderer;
 
-import java.awt.Color;
-
+import gnu.trove.iterator.TFloatIterator;
 import gnu.trove.list.array.TFloatArrayList;
+
+import java.awt.Color;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;

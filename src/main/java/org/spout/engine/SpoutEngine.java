@@ -416,14 +416,14 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	@Override
-	public World getWorld(String name) {
+	public SpoutWorld getWorld(String name) {
 		return getWorld(name, true);
 	}
 
 	@Override
-	public World getWorld(String name, boolean exact) {
+	public SpoutWorld getWorld(String name, boolean exact) {
 		if (exact) {
-			World world = loadedWorlds.get().get(name);
+			SpoutWorld world = loadedWorlds.get().get(name);
 			if (world != null) {
 				return world;
 			}
