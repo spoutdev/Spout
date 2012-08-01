@@ -27,7 +27,6 @@
 package org.spout.api.protocol.builtin.handler;
 
 import org.spout.api.entity.Entity;
-import org.spout.api.player.Player;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.builtin.message.EntityPositionMessage;
@@ -37,9 +36,12 @@ import org.spout.api.protocol.builtin.message.EntityPositionMessage;
  */
 public class EntityPositionMessageHandler extends MessageHandler<EntityPositionMessage> {
 	@Override
-	public void handleClient(Session session, Player player, EntityPositionMessage message) {
+	public void handleClient(Session session, EntityPositionMessage message) {
+		if(!session.hasPlayer()) {
+			return;
+		}
 
-		Entity entity = player.getEntity().getWorld().getEntity(message.getEntityId());
+		Entity entity = session.getPlayer().getWorld().getEntity(message.getEntityId());
 		if (entity != null) {
 			entity.setTransform(message.getTransform());
 		}

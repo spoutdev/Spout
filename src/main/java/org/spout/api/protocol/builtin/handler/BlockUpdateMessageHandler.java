@@ -37,8 +37,13 @@ import org.spout.api.protocol.builtin.message.BlockUpdateMessage;
  */
 public class BlockUpdateMessageHandler extends MessageHandler<BlockUpdateMessage> {
 	@Override
-	public void handleClient(Session session, Player player, BlockUpdateMessage message) {
-		player.getEntity().getWorld().getBlock(message.getX(), message.getY(), message.getZ(), player)
+	public void handleClient(Session session, BlockUpdateMessage message) {
+		if(!session.hasPlayer()) {
+			return;
+		}
+
+		Player player = session.getPlayer();
+		player.getWorld().getBlock(message.getX(), message.getY(), message.getZ(), player)
 		.setMaterial(Material.get(message.getType()), message.getData())
 		.setBlockLight(message.getBlockLight()).setSkyLight(message.getSkyLight());
 	}

@@ -35,15 +35,20 @@ import org.spout.api.protocol.builtin.message.AddEntityMessage;
 
 public class AddEntityMessageHandler extends MessageHandler<AddEntityMessage> {
 	@Override
-	public void handleClient(Session session, Player player, AddEntityMessage message) {
+	public void handleClient(Session session, AddEntityMessage message) {
+		if(!session.hasPlayer()) {
+			return;
+		}
+
+		Player player = session.getPlayer();
 		Controller controller = message.getType().createController();
 		if (controller == null) {
 			throw new IllegalArgumentException("Error spawning entity, controller of type " + message.getType().getName() + " is null!");
 		}
-		Entity newEntity = player.getEntity().getWorld().createEntity(message.getPosition().getPosition(), controller);
+		Entity newEntity = player.getWorld().createEntity(message.getPosition().getPosition(), controller);
 		newEntity.setTransform(message.getPosition());
 		//newEntity.setId(message.getEntityId()); // TODO: Allow providing an entity ID to use
-		player.getEntity().getWorld().spawnEntity(newEntity);
+		player.getWorld().spawnEntity(newEntity);
 
 	}
 }

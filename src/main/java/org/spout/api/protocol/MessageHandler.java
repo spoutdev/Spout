@@ -26,8 +26,6 @@
  */
 package org.spout.api.protocol;
 
-import org.spout.api.player.Player;
-
 public abstract class MessageHandler<T extends Message> {
 	
 	/**
@@ -41,11 +39,11 @@ public abstract class MessageHandler<T extends Message> {
 	 * @param player the player
 	 * @param message the message that was received
 	 */
-	public void handle(boolean upstream, Session session, Player player, T message) {
+	public void handle(boolean upstream, Session session, T message) {
 		if (upstream) {
-			handleClient(session, player, message);
+			handleClient(session, message);
 		} else {
-			handleServer(session, player, message);
+			handleServer(session, message);
 		}
 	}
 	
@@ -59,7 +57,7 @@ public abstract class MessageHandler<T extends Message> {
 	 * @param player the player
 	 * @param message the message that was received
 	 */
-	public void handleServer(Session session, Player player, T message) {
+	public void handleServer(Session session, T message) {
 	}
 
 	/**
@@ -72,6 +70,6 @@ public abstract class MessageHandler<T extends Message> {
 	 * @param player the player
 	 * @param message the message that was received
 	 */
-	public void handleClient(Session session, Player player, T message) {
+	public void handleClient(Session session, T message) {
 	}
 }

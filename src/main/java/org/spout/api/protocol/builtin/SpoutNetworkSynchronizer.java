@@ -42,14 +42,10 @@ import org.spout.api.protocol.Message;
 import org.spout.api.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.api.protocol.builtin.message.ChunkDataMessage;
 import org.spout.api.protocol.builtin.message.EntityPositionMessage;
-import org.spout.api.protocol.builtin.message.WorldChangeMessage;
 
-/**
- * @author zml2008
- */
 public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 	public SpoutNetworkSynchronizer(Session session) {
-		super(session.getPlayer(), session, session.getPlayer().getEntity(), 3);
+		super(session.getPlayer(), session, session.getPlayer(), 3);
 	}
 
 	public void sendChunk(Chunk c) {

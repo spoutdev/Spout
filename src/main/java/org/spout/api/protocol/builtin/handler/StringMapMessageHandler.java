@@ -26,7 +26,6 @@
  */
 package org.spout.api.protocol.builtin.handler;
 
-import org.spout.api.player.Player;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.builtin.message.StringMapMessage;
@@ -34,7 +33,7 @@ import org.spout.api.util.StringMap;
 
 public class StringMapMessageHandler extends MessageHandler<StringMapMessage> {
 	@Override
-	public void handleClient(Session session, Player player, StringMapMessage message) {
+	public void handleClient(Session session, StringMapMessage message) {
 		StringMap map = StringMap.get(message.getMap());
 		if (map != null) {
 			map.handleUpdate(message);

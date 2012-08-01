@@ -27,7 +27,6 @@
 package org.spout.api.protocol.builtin.handler;
 
 import org.spout.api.entity.Entity;
-import org.spout.api.player.Player;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.builtin.message.EntityDatatableMessage;
@@ -37,8 +36,12 @@ import org.spout.api.protocol.builtin.message.EntityDatatableMessage;
  */
 public class EntityDatatableMessageHandler extends MessageHandler<EntityDatatableMessage> {
 	@Override
-	public void handleClient(Session session, Player player, EntityDatatableMessage message) {
-		Entity entity = player.getEntity().getWorld().getEntity(message.getEntityId());
+	public void handleClient(Session session, EntityDatatableMessage message) {
+		if(!session.hasPlayer()) {
+			return;
+		}
+
+		Entity entity = session.getPlayer().getWorld().getEntity(message.getEntityId());
 		// TODO: Give datatable access to packet
 		//entity.getController().data().decompress(message.getCompressedData());
 	}

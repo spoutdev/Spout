@@ -34,7 +34,12 @@ import org.spout.api.protocol.builtin.message.CommandMessage;
 
 public class CommandMessageHandler extends MessageHandler<CommandMessage> {
 	@Override
-	public void handle(boolean upstream, Session session, Player player, CommandMessage message) {
+	public void handle(boolean upstream, Session session, CommandMessage message) {
+		if(!session.hasPlayer()) {
+			return;
+		}
+		
+		Player player = session.getPlayer();
 		String command = session.getEngine().getRootCommand().getChildName(message.getCommand());
 		player.processCommand(command, new ChatArguments(message.getArguments()));
 	}

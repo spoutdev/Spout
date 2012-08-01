@@ -137,6 +137,13 @@ public interface Session {
 	public String getSessionId();
 
 	/**
+	 * Checks if this session has a player connected to it.
+	 * 
+	 * @return true if this session has a player.
+	 */
+	public boolean hasPlayer();
+
+	/**
 	 * Gets the player associated with this session.
 	 * @return Player
 	 */

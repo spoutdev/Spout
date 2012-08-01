@@ -28,7 +28,6 @@ package org.spout.api.protocol.builtin.handler;
 
 import org.spout.api.event.player.ClientPlayerConnectedEvent;
 import org.spout.api.event.player.PlayerConnectEvent;
-import org.spout.api.player.Player;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.builtin.SpoutProtocol;
@@ -37,14 +36,17 @@ import org.spout.api.protocol.builtin.message.LoginMessage;
 public class LoginMessageHandler extends MessageHandler<LoginMessage> {
 
 	@Override
-	public void handleServer(Session session, Player player, LoginMessage message) {
+	public void handleServer(Session session, LoginMessage message) {
+		if(!session.hasPlayer()) {
+			return;
+		}
 		session.getEngine().getEventManager().callEvent(new PlayerConnectEvent(session, message.getPlayerName()));
 		session.setState(Session.State.GAME);
-		session.send(false, new LoginMessage("", session.getPlayer().getEntity().getId()));
+		session.send(false, new LoginMessage("", session.getPlayer().getId()));
 	}
 
 	@Override
-	public void handleClient(Session session, Player player, LoginMessage message) {
+	public void handleClient(Session session, LoginMessage message) {
 		session.getDataMap().put(SpoutProtocol.PLAYER_ENTITY_ID, message.getProtocolVersion());
 		session.setState(Session.State.GAME);
 		session.getEngine().getEventManager().callEvent(new ClientPlayerConnectedEvent(session, message.getProtocolVersion()));

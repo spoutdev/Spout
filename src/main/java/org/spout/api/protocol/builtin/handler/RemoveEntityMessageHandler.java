@@ -27,15 +27,18 @@
 package org.spout.api.protocol.builtin.handler;
 
 import org.spout.api.entity.Entity;
-import org.spout.api.player.Player;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.builtin.message.RemoveEntityMessage;
 
 public class RemoveEntityMessageHandler extends MessageHandler<RemoveEntityMessage> {
 	@Override
-	public void handleClient(Session session, Player player, RemoveEntityMessage message) {
-		Entity entity = player.getEntity().getWorld().getEntity(message.getEntityId());
+	public void handleClient(Session session, RemoveEntityMessage message) {
+		if(!session.hasPlayer()) {
+			return;
+		}
+
+		Entity entity = session.getPlayer().getWorld().getEntity(message.getEntityId());
 		if (entity != null) {
 			entity.kill();
 		}
