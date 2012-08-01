@@ -760,14 +760,14 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 			player = onlinePlayers.getLive().get(playerName);
 
 			if (player != null) {
-				if (!player.connect(session, newEntity)) {
+				if (!player.connect(session)) {
 					return null;
 				}
 
 				break;
 			}
 
-			player = new SpoutPlayer(playerName, newEntity, session);
+			player = new SpoutPlayer(playerName, null, session, this);
 			if (onlinePlayers.putIfAbsent(playerName, player) == null) {
 				break;
 			}

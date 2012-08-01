@@ -1288,7 +1288,7 @@ public class SpoutChunk extends Chunk {
 
 					NetworkSynchronizer n = player.getNetworkSynchronizer();
 					for (Entity e : entitiesSnapshot) {
-						if (player.getEntity().equals(e)) {
+						if (player.equals(e)) {
 							continue;
 						}
 						int entityViewDistanceOld = ((SpoutEntity) e).getPrevViewDistance();

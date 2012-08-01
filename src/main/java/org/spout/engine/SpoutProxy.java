@@ -37,6 +37,7 @@ import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 
+import org.spout.api.Spout;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.CommonPipelineFactory;
@@ -79,7 +80,7 @@ public class SpoutProxy extends SpoutServer {
 				break;
 			}
 
-			player = new SpoutPlayer(playerName, null, session);
+			player = new SpoutPlayer(playerName, null, session, (SpoutEngine) Spout.getEngine());
 			if (onlinePlayers.putIfAbsent(playerName, player) == null) {
 				break;
 			}

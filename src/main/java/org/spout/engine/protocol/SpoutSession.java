@@ -157,6 +157,11 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		this.state = state;
 	}
 
+	@Override
+	public boolean hasPlayer() {
+		return getPlayer() == null ? false : true;
+	}
+
 	/**
 	 * Gets the player associated with this session.
 	 * @return The player, or {@code null} if no player is associated with it.
@@ -192,7 +197,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 			MessageHandler<Message> handler = (MessageHandler<Message>) protocol.get().getHandlerLookupService().find(message.getClass());
 			if (handler != null) {
 				try {
-					handler.handle(false, this, player.get(), message);
+					handler.handle(false, this, message);
 				} catch (Exception e) {
 					Spout.getEngine().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + (getPlayer() != null ? getPlayer().getName() : "null"));
 					e.printStackTrace();
@@ -204,7 +209,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 			MessageHandler<Message> handler = (MessageHandler<Message>) protocol.get().getHandlerLookupService().find(message.getClass());
 			if (handler != null) {
 				try {
-					handler.handle(true, this, player.get(), message);
+					handler.handle(true, this, message);
 				} catch (Exception e) {
 					Spout.getEngine().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + (getPlayer() != null ? getPlayer().getName() : "null"));
 					e.printStackTrace();

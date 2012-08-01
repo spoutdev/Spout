@@ -112,7 +112,7 @@ public class AdministrationCommands {
 
 		if (player.isOnline()) {
 			player.kick(message);
-			ChatArguments retMsg = new ChatArguments(ChatStyle.BRIGHT_GREEN, "Kicked player '", player.getEntity(), "'");
+			ChatArguments retMsg = new ChatArguments(ChatStyle.BRIGHT_GREEN, "Kicked player '", player, "'");
 			if (!message.getPlainString().isEmpty()) {
 				retMsg.append(" for reason '").append(message).append("'");
 			}

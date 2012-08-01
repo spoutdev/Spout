@@ -48,6 +48,6 @@ public class SpoutClientListener implements Listener {
 	public void onClientPlayerConnected(ClientPlayerConnectedEvent event) {
 		SpoutEntity entity = new SpoutEntity(client, (Transform) null, null);
 		entity.setId(event.getServerPlayerId());
-		client.getActivePlayer().connect((SpoutSession<?>) event.getSession(), entity);
+		client.getActivePlayer().connect((SpoutSession<?>) event.getSession());
 	}
 }

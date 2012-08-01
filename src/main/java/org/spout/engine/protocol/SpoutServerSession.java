@@ -125,7 +125,7 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 			//If its null or can't be get, just ignore it
 			//If disconnect fails, we just ignore it for now.
 			try {
-				final Entity entity = player.getEntity();
+				final Entity entity = player;
 				if (entity != null) {
 					((SpoutWorld) entity.getWorld()).removePlayer(player);
 				}
