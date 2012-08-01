@@ -446,10 +446,6 @@ public class SpoutRegion extends Region{
 	
 	@Override
 	public void unload(boolean save) {
-		unload(save, false);
-	}
-
-	public void unload(boolean save, boolean force) {
 		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
 			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
 				for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
@@ -459,10 +455,6 @@ public class SpoutRegion extends Region{
 					}
 				}
 			}
-		}
-		if (force) {
-			//Only should occur if the server is shutting down
-			copySnapshotRun();
 		}
 		markForSaveUnload();
 	}

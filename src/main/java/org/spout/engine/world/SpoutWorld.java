@@ -897,7 +897,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 		return worldDirectory;
 	}
 
-	public void unload(boolean save, boolean force) {
+	public void unload(boolean save) {
 		this.getLightingManager().abort();
 		if (save) {
 			WorldFiles.saveWorldData(this);
@@ -906,7 +906,7 @@ public final class SpoutWorld extends AsyncManager implements World {
 		final int total = Math.max(1, regions.size());
 		int progress = 0;
 		for (Region r : regions) {
-			((SpoutRegion)r).unload(save, force);
+			((SpoutRegion)r).unload(save);
 			progress++;
 			if (save && progress % 4 == 0) {
 				Spout.getLogger().info("Saving world [" + getName() + "], " + (int)(progress * 100F / total) + "% Complete");

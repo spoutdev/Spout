@@ -134,6 +134,7 @@ public final class SpoutScheduler implements Scheduler {
 	private final AtomicBoolean heavyLoad = new AtomicBoolean(false);
 	private final ConcurrentLinkedQueue<Runnable> coreTaskQueue = new ConcurrentLinkedQueue<Runnable>();
 	private final ConcurrentLinkedQueue<Runnable> finalTaskQueue = new ConcurrentLinkedQueue<Runnable>();
+	private final ConcurrentLinkedQueue<Runnable> lastTickTaskQueue = new ConcurrentLinkedQueue<Runnable>();
 
 	/**
 	 * Creates a new task scheduler.
@@ -224,6 +225,15 @@ public final class SpoutScheduler implements Scheduler {
 			}
 			
 			heavyLoad.set(false);
+			
+			asyncExecutors.copySnapshot();
+			try {
+				copySnapshotWithLock(asyncExecutors.get());
+			} catch (InterruptedException ex) {
+				Spout.getLogger().log(Level.SEVERE, "Interrupt while running final snapshot copy: {0}", ex.getMessage());
+			}
+			
+			runLastTickTasks();
 			
 			asyncExecutors.copySnapshot();
 			try {
@@ -344,9 +354,24 @@ public final class SpoutScheduler implements Scheduler {
 		}
 	}
 	
+	public void submitLastTickTask(Runnable task) {
+		lastTickTaskQueue.add(task);
+		if (!mainThread.isAlive()) {
+			runLastTickTasks();
+			Spout.getLogger().warning("Attempting to submit last tick task after main thread had shutdown");
+		}
+	}
+	
 	public void runFinalTasks() {
 		Runnable r;
 		while ((r = finalTaskQueue.poll()) != null) {
+			r.run();
+		}
+	}
+	
+	public void runLastTickTasks() {
+		Runnable r;
+		while ((r = lastTickTaskQueue.poll()) != null) {
 			r.run();
 		}
 	}

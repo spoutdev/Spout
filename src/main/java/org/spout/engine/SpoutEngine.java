@@ -502,31 +502,42 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 	private final AtomicBoolean stopping = new AtomicBoolean();
 	@Override
-	public void stop(String message) {
+	public void stop(final String message) {
+		final SpoutEngine engine = this;
+		
 		if (!stopping.compareAndSet(false, true)) {
 			return;
 		}
 
-		ServerStopEvent stopEvent = new ServerStopEvent(message);
-		getEventManager().callEvent(stopEvent);
-
-		setupComplete.set(false);
-		for (SpoutPlayer player : getOnlinePlayers()) {
-			player.kick(stopEvent.getMessage());
-		}
-
-		for (SpoutWorld world : this.getLiveWorlds()) {
-			world.unload(true, true);
-		}
-
 		getPluginManager().clearPlugins();
+		
+		Runnable lastTickTask = new Runnable() {
+			public void run() {
+				ServerStopEvent stopEvent = new ServerStopEvent(message);
+				getEventManager().callEvent(stopEvent);
+
+				setupComplete.set(false);
+				for (SpoutPlayer player : getOnlinePlayers()) {
+					player.kick(stopEvent.getMessage());
+				}
+
+				for (SpoutWorld world : engine.getLiveWorlds()) {
+					world.unload(true);
+				}
+			}
+		};
+		
+		
 		Runnable finalTask = new Runnable() {
 			@Override
 			public void run() {
+				
+				
 				group.close();
 				WorldSavingThread.finish();
 			}
 		};
+		scheduler.submitLastTickTask(lastTickTask);
 		scheduler.submitFinalTask(finalTask);
 		scheduler.stop(1);
 	}
@@ -717,7 +728,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 					throw new IllegalStateException("Executor was already halted when halting was attempted");
 				}
 				getEventManager().callDelayedEvent(new WorldUnloadEvent(world));
-				w.unload(save, false);
+				w.unload(save);
 			}
 			//Note: Worlds should not allow being saved twice and/or throw exceptions if accessed after unloading
 			//      Also, should blank out as much internal world data as possible, in case plugins retain references to unloaded worlds
