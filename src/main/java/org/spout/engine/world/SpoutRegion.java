@@ -536,6 +536,8 @@ public class SpoutRegion extends Region{
 		if (empty) {
 			source.removeRegion(this);
 		}
+		
+		chunkStore.timeoutCheck();
 	}
 
 	public boolean processChunkSaveUnload(int x, int y, int z) {
