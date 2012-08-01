@@ -52,8 +52,6 @@ public class BaseMesh extends Resource implements Mesh, Iterable<ModelFace> {
 		this.faces = faces;
 	}
 	
-	
-	
 	public void addRenderEffect(RenderEffect effect) {
 		effects.add(effect);
 	}
@@ -81,9 +79,10 @@ public class BaseMesh extends Resource implements Mesh, Iterable<ModelFace> {
 	protected void batch(Renderer batcher) {
 		for (ModelFace face : faces) {
 			for(Vertex vert : face){
-				//batcher.addTexCoord(vert.uv);
-				//batcher.addNormal(vert.normal);
+				batcher.addTexCoord(vert.texCoord0);
+				batcher.addNormal(vert.normal);
 				batcher.addVertex(vert.position);
+				batcher.addColor(vert.color);
 			}
 		}
 	}

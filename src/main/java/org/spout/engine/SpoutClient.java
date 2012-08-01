@@ -95,6 +95,7 @@ import org.spout.engine.input.SpoutInput;
 import org.spout.engine.listener.SpoutClientConnectListener;
 import org.spout.engine.listener.SpoutClientListener;
 import org.spout.engine.mesh.BaseMesh;
+import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.protocol.SpoutClientSession;
 import org.spout.engine.renderer.BatchVertexRenderer;
@@ -114,7 +115,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private final Input inputManager = new SpoutInput();
 	private final String name = "Spout Client";
 	private final Vector2 resolution = new Vector2(640, 480);
-	private final boolean[] sides = {true, true, true, true, true, true};
+	private final boolean[] sides = { true, true, true, true, true, true };
 	private final float aspectRatio = resolution.getX() / resolution.getY();
 	private BatchVertexRenderer textureTest;
 	private Camera activeCamera;
@@ -255,14 +256,15 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	private void buildChunk(SpoutChunkSnapshot snap) {
 		boolean firstSeen = !chunkRenderers.containsKey(snap.getX(), snap.getY(), snap.getZ());
-		/*if(!firstSeen && !snap.isRenderDirty()){
-			Spout.log("Got a chunk that isn't dirty or i've seen it before");
-			return;
-		}*/
+		/*
+		 * if(!firstSeen && !snap.isRenderDirty()){
+		 * Spout.log("Got a chunk that isn't dirty or i've seen it before");
+		 * return; }
+		 */
 
 		if (firstSeen) {
 			PrimitiveBatch b = new PrimitiveBatch();
-			//b.getRenderer().setShader(shader);
+			// b.getRenderer().setShader(shader);
 			chunkRenderers.put(snap.getX(), snap.getY(), snap.getZ(), b);
 			Spout.log("Got a new chunk at " + snap.toString());
 		}
@@ -282,7 +284,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			}
 		}
 		batch.end();
-		snap.setRenderDirty(false); //Rendered this snapshot
+		snap.setRenderDirty(false); // Rendered this snapshot
 	}
 
 	public SpoutWorld updateWorld(String name, UUID uuid, byte[] datatable) {
@@ -336,11 +338,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		Spout.getFilesystem().postStartup();
 
-		activeCamera = new BasicCamera(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(new Vector3(0, 10, -5), Vector3.ZERO, Vector3.UP));
+		activeCamera = new BasicCamera(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(new Vector3(0, 90, 50), Vector3.ZERO, Vector3.UP));
 
 		renderer = new PrimitiveBatch();
-
-
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		getLogger().info("Loading Texture");
@@ -353,11 +353,21 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		cube = (BaseMesh) Spout.getFilesystem().getResource("mesh://Spout/resources/resources/models/cube.obj");
 
-
 		loc = new Transform(new Point(null, 0, 0, 0), Quaternion.IDENTITY, Vector3.ONE);
 
 		renderer.begin(material);
-		renderer.addMesh(cube);
+//		renderer.addMesh(cube);
+
+		for (int x = -1; x < 1; x++) {
+			for (int y = 0; y < 8; y++) {
+				for (int z = -1; z < 1; z++) {
+					SpoutChunk chunk = this.getWorld("world").getChunk(x, y, z);
+					ChunkMesh mesh = ChunkMesh.generateFromChunk(chunk);
+					renderer.addMesh(mesh);
+					System.out.println(mesh);
+				}
+			}
+		}
 		renderer.end();
 	}
 
@@ -386,6 +396,18 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 	}
 
+	public void render(float dt) {
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		GL11.glClearColor(1, 1, 1, 0);
+
+		material.getShader().setUniform("View", activeCamera.getView());
+		material.getShader().setUniform("Projection", activeCamera.getProjection());
+		material.getShader().setUniform("Model", loc.toMatrix());
+
+		renderer.draw();
+	}
+
 	private void createMacWindow() throws LWJGLException {
 		if (getRenderMode() == RenderMode.GL30) {
 			if (MacOSXUtils.getOSXVersion() >= 7) {
@@ -397,28 +419,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		} else {
 			Display.create();
 		}
-	}
-
-	public void render(float dt) {
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		GL11.glClearColor(1, 1, 1, 0);
-
-		ticks++;
-
-		double cx = 2 * Math.sin(Math.toRadians(ticks));
-		double cz = 2 * Math.cos(Math.toRadians(ticks));
-		double cy = 2 * Math.sin(Math.toRadians(ticks));
-
-		loc.setRotation(MathHelper.rotation((float)Math.toDegrees(cx), (float)Math.toDegrees(cy), (float)Math.toDegrees(cz)));
-		loc.setScale(new Vector3((float)(cx + 2.1), (float)(cx + 2.1), (float)(cz * 2.1)));
-
-		Matrix view = MathHelper.createLookAt(new Vector3(cx, cy, cz), Vector3.ZERO, Vector3.UP);
-
-		material.getShader().setUniform("View", activeCamera.getView());
-		material.getShader().setUniform("Projection", activeCamera.getProjection());
-		material.getShader().setUniform("Model", loc.toMatrix());
-
-		renderer.draw();
 	}
 
 	private void renderVisibleChunks(SpoutWorld world) {
@@ -438,34 +438,34 @@ public class SpoutClient extends SpoutEngine implements Client {
 			return new Color(0, 0, 0);
 		}
 		switch (m.getId()) {
-			case 78:
-				return new Color(255, 255, 255);
-			case 24:
-			case 12:
-				return new Color(210, 210, 150);
-			case 10:
-				return new Color(200, 50, 50);
-			case 9:
-			case 8:
-				return new Color(150, 150, 200);
-			case 7:
-				return new Color(50, 50, 50);
-			case 4:
-				return new Color(100, 100, 100);
-			case 17:
-			case 3:
-				return new Color(110, 75, 35);
-			case 18:
-			case 2:
-				return new Color(55, 140, 55);
-			case 21:
-			case 16:
-			case 15:
-			case 14:
-			case 13:
-			case 1:
-			default:
-				return new Color(150, 150, 150);
+		case 78:
+			return new Color(255, 255, 255);
+		case 24:
+		case 12:
+			return new Color(210, 210, 150);
+		case 10:
+			return new Color(200, 50, 50);
+		case 9:
+		case 8:
+			return new Color(150, 150, 200);
+		case 7:
+			return new Color(50, 50, 50);
+		case 4:
+			return new Color(100, 100, 100);
+		case 17:
+		case 3:
+			return new Color(110, 75, 35);
+		case 18:
+		case 2:
+			return new Color(55, 140, 55);
+		case 21:
+		case 16:
+		case 15:
+		case 14:
+		case 13:
+		case 1:
+		default:
+			return new Color(150, 150, 150);
 		}
 	}
 
@@ -474,34 +474,13 @@ public class SpoutClient extends SpoutEngine implements Client {
 		String osPath;
 
 		if (SystemUtils.IS_OS_WINDOWS) {
-			files = new String[]{
-					"jinput-dx8_64.dll",
-					"jinput-dx8.dll",
-					"jinput-raw_64.dll",
-					"jinput-raw.dll",
-					"jinput-wintab.dll",
-					"lwjgl.dll",
-					"lwjgl64.dll",
-					"OpenAL32.dll",
-					"OpenAL64.dll"
-			};
+			files = new String[] { "jinput-dx8_64.dll", "jinput-dx8.dll", "jinput-raw_64.dll", "jinput-raw.dll", "jinput-wintab.dll", "lwjgl.dll", "lwjgl64.dll", "OpenAL32.dll", "OpenAL64.dll" };
 			osPath = "windows/";
 		} else if (SystemUtils.IS_OS_MAC) {
-			files = new String[]{
-					"libjinput-osx.jnilib",
-					"liblwjgl.jnilib",
-					"openal.dylib",
-			};
+			files = new String[] { "libjinput-osx.jnilib", "liblwjgl.jnilib", "openal.dylib", };
 			osPath = "mac/";
 		} else if (SystemUtils.IS_OS_LINUX) {
-			files = new String[]{
-					"liblwjgl.so",
-					"liblwjgl64.so",
-					"libopenal.so",
-					"libopenal64.so",
-					"libjinput-linux.so",
-					"libjinput-linux64.so"
-			};
+			files = new String[] { "liblwjgl.so", "liblwjgl64.so", "libopenal.so", "libopenal64.so", "libjinput-linux.so", "libjinput-linux64.so" };
 			osPath = "linux/";
 		} else {
 			Spout.getEngine().getLogger().log(Level.SEVERE, "Error loading natives of operating system type: " + SystemUtils.OS_NAME);

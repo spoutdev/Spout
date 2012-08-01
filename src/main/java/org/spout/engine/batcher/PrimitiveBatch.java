@@ -104,7 +104,7 @@ public class PrimitiveBatch {
 			for(Vertex vert : face){
 				renderer.addTexCoord(vert.texCoord0);
 				renderer.addNormal(vert.normal);
-				renderer.addColor(Color.red);
+				renderer.addColor(vert.color);
 				renderer.addVertex(vert.position);
 			}
 		}
