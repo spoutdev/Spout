@@ -51,10 +51,9 @@ public class SpoutClientConnectListener implements ChannelFutureListener {
 	public void operationComplete(ChannelFuture channelFuture) throws Exception {
 		Channel channel = channelFuture.getChannel();
 		if (channelFuture.isSuccess()) {
-			SpoutClientSession session = new SpoutClientSession(client, channel, binding.getProtocol());
-			client.setSession(session);
 			CommonHandler handler = channel.getPipeline().get(CommonHandler.class);
-			handler.setSession(session);
+			SpoutClientSession session = (SpoutClientSession) handler.getSession();
+			client.setSession(session);
 			session.send(true, true, binding.getProtocol().getIntroductionMessage(client.getActivePlayer().getName()));
 		} else {
 			client.getLogger().log(Level.WARNING, "Could not connect to " + binding, channelFuture.getCause());
