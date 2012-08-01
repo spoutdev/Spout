@@ -70,6 +70,24 @@ public class BAAWrapper {
 			}
 		}
 	}
+	
+	/**
+	 * This method should be called periodically in order to see if the ByteArrayArray has timed out.  It always returns immediately.<br>
+	 * <br>
+	 * It will only close the array if no block OutputStreams are open and the last access occurred more than the timeout previously
+	 * 
+	 * @return true if the file is closed, or not opened
+	 */
+	public boolean attemptClose() {
+		ByteArrayArray baa = baaRef.get();
+		if (baa != null) {
+			try {
+				return baa.attemptClose();
+			} catch (IOException ioe) {
+			}
+		}
+		return true;
+	}
 
 	/**
 	 * Checks if the InputStream exists at the given index.

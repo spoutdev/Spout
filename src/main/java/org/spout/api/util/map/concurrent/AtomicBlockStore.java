@@ -256,8 +256,10 @@ public interface AtomicBlockStore {
 
 	/**
 	 * Resets the dirty arrays
+	 * 
+	 * @return true if there were dirty blocks
 	 */
-	public void resetDirtyArrays();
+	public boolean resetDirtyArrays();
 
 	/**
 	 * Gets the position of the dirty block at a given index.<br>

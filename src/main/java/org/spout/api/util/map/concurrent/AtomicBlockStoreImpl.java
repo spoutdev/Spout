@@ -642,8 +642,8 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	/**
 	 * Resets the dirty arrays
 	 */
-	public void resetDirtyArrays() {
-		dirtyBlocks.set(0);
+	public boolean resetDirtyArrays() {
+		return dirtyBlocks.getAndSet(0) > 0;
 	}
 
 	/**

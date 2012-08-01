@@ -211,6 +211,9 @@ public class SimpleRegionFile implements ByteArrayArray {
 			int actualLength = blockActualLength[i].get();
 			byte[] result = new byte[actualLength];
 			synchronized (fileSyncObject) {
+				if (file == null) {
+					this.file = new CachedRandomAccessFile(this.filePath, "rw");
+				}
 				file.seek(start);
 				file.readFully(result);
 			}
@@ -248,6 +251,9 @@ public class SimpleRegionFile implements ByteArrayArray {
 		refreshAccess();
 		int start = reserveBlockSegments(i, length);
 		synchronized(fileSyncObject) {
+			if (file == null) {
+				this.file = new CachedRandomAccessFile(this.filePath, "rw");
+			}
 			this.writeFAT(i, start, length);
 			file.seek(start << segmentSize);
 			file.write(buf, 0, length);
@@ -266,12 +272,14 @@ public class SimpleRegionFile implements ByteArrayArray {
 		}
 		if (syncCheck()) {
 			synchronized (fileSyncObject) {
-				file.close();
-				try {
-					this.file = new CachedRandomAccessFile(this.filePath, "rw");
-				} catch (FileNotFoundException e) {
-					this.closed.set(true);
-					throw new SRFException("Unable to refresh open region file " + this.filePath, e);
+				if (file != null) {
+					file.close();
+					try {
+						this.file = new CachedRandomAccessFile(this.filePath, "rw");
+					} catch (FileNotFoundException e) {
+						this.closed.set(true);
+						throw new SRFException("Unable to refresh open region file " + this.filePath, e);
+					}
 				}
 			}
 		}
@@ -305,7 +313,10 @@ public class SimpleRegionFile implements ByteArrayArray {
 
 		synchronized(fileSyncObject) {
 			try {
-				file.close();
+				if (file != null) {
+					file.close();
+					file = null;
+				}
 			} finally {
 				Boolean old = openMap.remove(filePath.getCanonicalPath().toLowerCase());
 				if (old == null) {
@@ -479,6 +490,9 @@ public class SimpleRegionFile implements ByteArrayArray {
 	private void writeFAT(int i, int start, int actualLength) throws IOException {
 		int FATEntryPosition = getFATOffset() + (i << 3);
 		synchronized(fileSyncObject) {
+			if (file == null) {
+				this.file = new CachedRandomAccessFile(this.filePath, "rw");
+			}
 			file.seek(FATEntryPosition);
 			file.writeInt(start);
 			file.writeInt(actualLength);
