@@ -1002,6 +1002,10 @@ public class SpoutRegion extends Region{
 	public boolean inputStreamExists(int x, int y, int z) {
 		return chunkStore.inputStreamExists(getChunkKey(x, y, z));
 	}
+	
+	public boolean attemptClose() {
+		return chunkStore.attemptClose();
+	}
 
 	/**
 	 * Gets the DataInputStream corresponding to a given Chunk.<br>

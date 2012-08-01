@@ -26,7 +26,9 @@
  */
 package org.spout.engine.world;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -34,6 +36,7 @@ import org.spout.api.Spout;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
+import org.spout.api.geo.cuboid.Region;
 import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 
@@ -42,7 +45,7 @@ import org.spout.engine.world.dynamic.DynamicBlockUpdate;
  */
 public class WorldSavingThread extends Thread{
 	private static WorldSavingThread instance = null;
-	private final LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>();
+	private final LinkedBlockingQueue<Callable<SpoutRegion>> queue = new LinkedBlockingQueue<Callable<SpoutRegion>>();
 	private final AtomicBoolean shutdown = new AtomicBoolean(false);
 	public WorldSavingThread() {
 		super("World Saving Thread");
@@ -59,7 +62,7 @@ public class WorldSavingThread extends Thread{
 		ChunkSaveTask task = new ChunkSaveTask(chunk);
 		if (instance.shutdown.get()) {
 			Spout.getLogger().warning("Attempt to queue chunks for saving after world thread shutdown");
-			task.run();
+			task.call();
 		} else {
 			instance.queue.add(task);
 		}
@@ -70,51 +73,111 @@ public class WorldSavingThread extends Thread{
 		localInstance.shutdown.set(true);
 		if (localInstance != null) {
 			localInstance.interrupt();
-			localInstance.processRemaining();
+		}
+	}
+	
+	public static void staticJoin() {
+		try {
+			WorldSavingThread localInstance = instance;
+			instance.join();
+		} catch (InterruptedException ie) {
+			Spout.getLogger().info("Main thread interruped while waiting for world save thread to end");
 		}
 	}
 
 	@Override
 	public void run() {
 		while (!this.isInterrupted()) {
-			Runnable task;
+			Callable<SpoutRegion> task;
 			try {
 				task = queue.take();
-				task.run();
+				task.call();
 			} catch (InterruptedException ignore) {
 				break;
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
+		processRemaining();
 	}
 
-	public void processRemaining() {
+	private void processRemaining() {
 		int toSave = queue.size();
 		int saved = 0;
 		int lastTenth = 0;
-		Runnable task;
+		HashSet<RegionContainer> regions = new HashSet<RegionContainer>();
+		Callable<SpoutRegion> task;
 		while ((task = queue.poll()) != null) {
-			task.run();
+			SpoutRegion r = null;
+			try {
+				r = task.call();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (r != null) {
+				regions.add(new RegionContainer(r));
+			}
 			int tenth = ((++saved) * 10) / toSave;
 			if (tenth != lastTenth) {
 				lastTenth = tenth;
 				Spout.getLogger().info("Saved " + tenth + "0% of queued chunks");
 			}
 		}
+		for (RegionContainer c : regions) {
+			SpoutRegion r = c.getRegion();
+			
+			if (!r.attemptClose()) {
+				Spout.getLogger().info("Closing failed for region " + r.getWorld().getName() + ", " + r.getBase().toBlockString());
+			}
+		}
+	}
+	
+	private static class RegionContainer {
+		private final SpoutRegion region;
+		
+		public RegionContainer(SpoutRegion r) {
+			this.region = r;
+		}
+		
+		@Override
+		public int hashCode() {
+			int hash = region.getBlockX();
+			hash += (hash << 5) + region.getBlockY();
+			hash += (hash << 5) + region.getBlockZ();
+			return hash;
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			if (!(o instanceof RegionContainer)) {
+				return false;
+			} else {
+				return ((RegionContainer) o).region == region;
+			}
+		}
+		
+		public SpoutRegion getRegion() {
+			return region;
+		}
 	}
 
-	private static class ChunkSaveTask implements Runnable {
-		SpoutRegion region;
-		SpoutChunkSnapshot snapshot;
-		List<DynamicBlockUpdate> blockUpdates;
+	private static class ChunkSaveTask implements Callable<SpoutRegion> {
+		final SpoutRegion region;
+		final SpoutChunkSnapshot snapshot;
+		final List<DynamicBlockUpdate> blockUpdates;
+		final SpoutChunk chunk;
 		ChunkSaveTask(SpoutChunk chunk) {
 			this.region = chunk.getRegion();
 			this.snapshot = (SpoutChunkSnapshot) chunk.getSnapshot(SnapshotType.BOTH, EntityType.ENTITIES, ExtraData.BOTH);
 			this.blockUpdates = chunk.getRegion().getDynamicBlockUpdates(chunk);
+			this.chunk = chunk;
 		}
 
 		@Override
-		public void run() {
+		public SpoutRegion call() {
 			WorldFiles.saveChunk(region.getWorld(), snapshot, blockUpdates, region.getChunkOutputStream(snapshot));
+			chunk.saveComplete();
+			return region;
 		}
 	}
 

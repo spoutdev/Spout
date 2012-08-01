@@ -160,11 +160,16 @@ public class SpoutServer extends SpoutEngine implements Server {
 	@Override
 	public void stop(String message) {
 		super.stop(message);
-		if (upnpService != null) {
-			upnpService.shutdown();
-		}
-		bootstrap.getFactory().releaseExternalResources();
-		boundProtocols.clear();
+		Runnable finalTask = new Runnable() {
+			public void run() {
+				if (upnpService != null) {
+					upnpService.shutdown();
+				}
+				bootstrap.getFactory().releaseExternalResources();
+				boundProtocols.clear();
+			}
+		};
+		scheduler.submitFinalTask(finalTask);
 	}
 
 	@Override

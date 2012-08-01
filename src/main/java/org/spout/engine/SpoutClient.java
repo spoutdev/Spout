@@ -241,6 +241,13 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public void stop(String message) {
 		rendering = false;
 		stopMessage = message;
+		Runnable finalTask = new Runnable() {
+			public void run() {
+				bootstrap.getFactory().releaseExternalResources();
+				boundProtocols.clear();
+			}
+		};
+		scheduler.submitFinalTask(finalTask);
 	}
 
 	public boolean isRendering() {

@@ -531,10 +531,9 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		Runnable finalTask = new Runnable() {
 			@Override
 			public void run() {
-				
-				
 				group.close();
 				WorldSavingThread.finish();
+				WorldSavingThread.staticJoin();
 			}
 		};
 		scheduler.submitLastTickTask(lastTickTask);

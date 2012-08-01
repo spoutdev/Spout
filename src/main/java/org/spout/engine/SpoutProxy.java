@@ -124,6 +124,11 @@ public class SpoutProxy extends SpoutServer {
 	@Override
 	public void stop(String message) {
 		super.stop(message);
-		clientBootstrap.getFactory().releaseExternalResources();
+		Runnable finalTask = new Runnable() {
+			public void run() {
+				clientBootstrap.getFactory().releaseExternalResources();
+			}
+		};
+		scheduler.submitFinalTask(finalTask);
 	}
 }

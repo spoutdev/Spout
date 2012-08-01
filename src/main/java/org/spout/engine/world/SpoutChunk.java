@@ -648,6 +648,9 @@ public class SpoutChunk extends Chunk {
 				case UNLOAD:
 					nextState = SaveState.NONE;
 					break;
+				case POST_SAVED:
+					nextState = SaveState.NONE;
+					break;
 				case SAVE:
 					nextState = SaveState.SAVE;
 					break;
@@ -656,6 +659,9 @@ public class SpoutChunk extends Chunk {
 					break;
 				case UNLOADED:
 					nextState = SaveState.UNLOADED;
+					break;
+				case SAVING: 
+					nextState = SaveState.NONE;
 					break;
 				default:
 					throw new IllegalStateException("Unknown save state: " + oldState);
@@ -677,6 +683,9 @@ public class SpoutChunk extends Chunk {
 				case UNLOAD:
 					nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD;
 					break;
+				case POST_SAVED:
+					nextState = save ? SaveState.UNLOAD_SAVE : SaveState.POST_SAVED;
+					break;
 				case SAVE:
 					nextState = SaveState.UNLOAD_SAVE;
 					break;
@@ -685,6 +694,9 @@ public class SpoutChunk extends Chunk {
 					break;
 				case UNLOADED:
 					nextState = SaveState.UNLOADED;
+					break;
+				case SAVING:
+					nextState = SaveState.SAVING;
 					break;
 				default:
 					throw new IllegalStateException("Unknown save state: " + state);
@@ -720,6 +732,9 @@ public class SpoutChunk extends Chunk {
 				case UNLOAD:
 					nextState = SaveState.UNLOAD_SAVE;
 					break;
+				case POST_SAVED:
+					nextState = SaveState.UNLOAD_SAVE;
+					break;
 				case SAVE:
 					nextState = SaveState.SAVE;
 					break;
@@ -729,11 +744,18 @@ public class SpoutChunk extends Chunk {
 				case UNLOADED:
 					nextState = SaveState.UNLOADED;
 					break;
+				case SAVING:
+					nextState = SaveState.SAVING;
+					break;
 				default:
 					throw new IllegalStateException("Unknown save state: " + state);
 			}
 			success = saveState.compareAndSet(state, nextState);
 		}
+	}
+	
+	public void saveComplete() {
+		saveState.compareAndSet(SaveState.SAVING, SaveState.POST_SAVED);
 	}
 
 	public SaveState getAndResetSaveState() {
@@ -744,10 +766,13 @@ public class SpoutChunk extends Chunk {
 			SaveState nextState;
 			switch (old) {
 				case UNLOAD_SAVE:
-					nextState = SaveState.UNLOAD;
+					nextState = SaveState.SAVING;
 					break;
 				case UNLOAD:
 					nextState = SaveState.UNLOAD;
+					break;
+				case POST_SAVED:
+					nextState = SaveState.POST_SAVED;
 					break;
 				case SAVE:
 					nextState = SaveState.NONE;
@@ -757,6 +782,9 @@ public class SpoutChunk extends Chunk {
 					break;
 				case UNLOADED:
 					nextState = SaveState.UNLOADED;
+					break;
+				case SAVING:
+					nextState = SaveState.SAVING;
 					break;
 				default:
 					throw new IllegalStateException("Unknown save state: " + old);
@@ -929,7 +957,13 @@ public class SpoutChunk extends Chunk {
 	}
 
 	public boolean isDirty() {
-		return lightDirty.get() || blockStore.isDirty();
+		if (lightDirty.get() || blockStore.isDirty()) {
+			saveState.compareAndSet(SaveState.SAVING, SaveState.NONE);
+			saveState.compareAndSet(SaveState.POST_SAVED, SaveState.NONE);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -965,7 +999,10 @@ public class SpoutChunk extends Chunk {
 	}
 
 	public void resetDirtyArrays() {
-		blockStore.resetDirtyArrays();
+		if (blockStore.resetDirtyArrays()) {
+			saveState.compareAndSet(SaveState.SAVING, SaveState.NONE);
+			saveState.compareAndSet(SaveState.POST_SAVED, SaveState.NONE);
+		}
 	}
 
 	@Override
@@ -1021,14 +1058,18 @@ public class SpoutChunk extends Chunk {
 	}
 
 	public static enum SaveState {
-		UNLOAD_SAVE, UNLOAD, SAVE, NONE, UNLOADED;
+		UNLOAD_SAVE, UNLOAD, SAVE, NONE, SAVING, POST_SAVED, UNLOADED;
 
 		public boolean isSave() {
 			return this == SAVE || this == UNLOAD_SAVE;
 		}
 
 		public boolean isUnload() {
-			return this == UNLOAD_SAVE || this == UNLOAD;
+			return this == UNLOAD || this == POST_SAVED;
+		}
+		
+		public boolean isPostUnload() {
+			return this == SAVING;
 		}
 	}
 
