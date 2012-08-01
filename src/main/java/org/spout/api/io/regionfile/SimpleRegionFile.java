@@ -34,6 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -46,12 +47,15 @@ import org.spout.api.io.bytearrayarray.ByteArrayArray;
 
 public class SimpleRegionFile implements ByteArrayArray {
 	
+	private static ConcurrentHashMap<String, Boolean> openMap = new ConcurrentHashMap<String, Boolean>();
+	
 	private static final int VERSION = 1;
-	private static final int TIMEOUT = 120000; // timeout delay
+	private static final int DEFAULT_TIMEOUT = 120000; // timeout delay
 	public static final int FILE_CLOSED = -1;
 
 	private final File filePath;
-	private final CachedRandomAccessFile file;
+	private final Object fileSyncObject = new Object();
+	private CachedRandomAccessFile file;
 	@SuppressWarnings("unused")
 	private final int version;
 	private final int timeout;
@@ -64,6 +68,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 	
 	private final AtomicBoolean closed;
 	private final AtomicLong lastAccess;
+	private final AtomicLong lastSync;
 	
 	private final AtomicReference<AtomicBoolean[]> inuse;
 	private final int segmentSize;
@@ -79,7 +84,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 	 * @throws IOException on error
 	 */
 	public SimpleRegionFile(File filePath, int desiredSegmentSize, int entries) throws IOException {
-		this(filePath, desiredSegmentSize, entries, TIMEOUT);
+		this(filePath, desiredSegmentSize, entries, DEFAULT_TIMEOUT);
 	}
 	
 	/**
@@ -98,6 +103,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 		
 		this.timeout = timeout;
 		this.lastAccess = new AtomicLong(0);
+		this.lastSync = new AtomicLong(System.currentTimeMillis());
 		refreshAccess();
 		
 		try {
@@ -157,6 +163,11 @@ public class SimpleRegionFile implements ByteArrayArray {
 			}
 		}
 		
+		Boolean old = openMap.putIfAbsent(filePath.getCanonicalPath().toLowerCase(), Boolean.TRUE);
+		
+		if (old != null) {
+			throw new SRFException("Attempt made to open a second region file with the same filename");
+		}
 	}
 
 
@@ -199,7 +210,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 			int start = blockSegmentStart[i].get() << segmentSize;
 			int actualLength = blockActualLength[i].get();
 			byte[] result = new byte[actualLength];
-			synchronized (file) {
+			synchronized (fileSyncObject) {
 				file.seek(start);
 				file.readFully(result);
 			}
@@ -236,7 +247,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 	void write(int i, byte[] buf, int length) throws IOException {
 		refreshAccess();
 		int start = reserveBlockSegments(i, length);
-		synchronized(file) {
+		synchronized(fileSyncObject) {
 			this.writeFAT(i, start, length);
 			file.seek(start << segmentSize);
 			file.write(buf, 0, length);
@@ -253,6 +264,30 @@ public class SimpleRegionFile implements ByteArrayArray {
 		if (isTimedOut()) {
 			attemptClose();
 		}
+		if (syncCheck()) {
+			synchronized (fileSyncObject) {
+				file.close();
+				try {
+					this.file = new CachedRandomAccessFile(this.filePath, "rw");
+				} catch (FileNotFoundException e) {
+					this.closed.set(true);
+					throw new SRFException("Unable to refresh open region file " + this.filePath, e);
+				}
+			}
+		}
+	}
+	
+	private boolean syncCheck() {
+		boolean success = false;
+		while (!success) {
+			long last = lastSync.get();
+			long currentTime = System.currentTimeMillis();
+			if (currentTime < last + this.timeout) {
+				return false;
+			}
+			success = lastSync.compareAndSet(last, currentTime);
+		}
+		return true;
 	}
 	
 	@Override
@@ -268,8 +303,15 @@ public class SimpleRegionFile implements ByteArrayArray {
 			return false;
 		}
 
-		synchronized(file) {
-			file.close();
+		synchronized(fileSyncObject) {
+			try {
+				file.close();
+			} finally {
+				Boolean old = openMap.remove(filePath.getCanonicalPath().toLowerCase());
+				if (old == null) {
+					throw new SRFException("Filename was not in the open file list when closing");
+				}
+			}
 		}
 		return true;
 	}
@@ -436,7 +478,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 	
 	private void writeFAT(int i, int start, int actualLength) throws IOException {
 		int FATEntryPosition = getFATOffset() + (i << 3);
-		synchronized(file) {
+		synchronized(fileSyncObject) {
 			file.seek(FATEntryPosition);
 			file.writeInt(start);
 			file.writeInt(actualLength);
