@@ -361,7 +361,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		for (int x = -1; x < 1; x++) {
 			for (int y = 0; y < 8; y++) {
 				for (int z = -1; z < 1; z++) {
-					SpoutChunk chunk = this.getWorld("world").getChunk(x, y, z);
+					SpoutChunk chunk = getWorld(getDefaultWorld().getName()).getChunk(x, y, z);
 					ChunkMesh mesh = ChunkMesh.generateFromChunk(chunk);
 					renderer.addMesh(mesh);
 					System.out.println(mesh);

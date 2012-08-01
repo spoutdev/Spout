@@ -68,7 +68,7 @@ public class MacOSXUtils {
 				e.printStackTrace();
 			}
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			//e.printStackTrace(); TODO This will cause an exception on Windows, should this do something else zml2008?
 		}
 		fullScreenUtilities_setWindowCanFullScreenMethod = m;
 	}
