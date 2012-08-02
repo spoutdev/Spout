@@ -31,6 +31,8 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Cuboid;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.math.MathHelper;
+import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
 import org.spout.engine.mesh.ChunkMesh;
@@ -51,6 +53,8 @@ public class ChunkMeshBatch extends Cuboid {
 	private PrimitiveBatch renderer = new PrimitiveBatch();
 	private ChunkMesh[] meshes = new ChunkMesh[MESH_COUNT];
 	private boolean hasVertices = false;
+	
+	private Matrix modelMat = MathHelper.createIdentity();
 
 	public ChunkMeshBatch(RenderMaterial material, World world, int baseX, int baseY, int baseZ) {
 		super(new Point(world, baseX, baseY, baseZ), SIZE);
@@ -106,5 +110,9 @@ public class ChunkMeshBatch extends Cuboid {
 		if (hasVertices) {
 			renderer.draw();
 		}
+	}
+	
+	public Matrix getTransform(){
+		return modelMat;
 	}
 }

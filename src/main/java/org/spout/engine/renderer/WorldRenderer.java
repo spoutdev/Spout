@@ -65,8 +65,7 @@ public class WorldRenderer {
 	public void render() {
 		material.getShader().setUniform("View", client.getActiveCamera().getView());
 		material.getShader().setUniform("Projection", client.getActiveCamera().getProjection());
-		material.getShader().setUniform("Model", client.getActiveCamera().getView());
-
+		
 		renderChunks();
 	}
 
@@ -75,6 +74,8 @@ public class WorldRenderer {
 		while (it.hasNext()) {
 			it.advance();
 			ChunkMeshBatch renderer = it.value();
+			material.getShader().setUniform("Model", renderer.getTransform());
+
 			// It's hard to look right
 			// at the world baby
 			// But here's my frustrum
