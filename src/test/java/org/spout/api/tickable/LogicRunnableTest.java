@@ -40,7 +40,7 @@ public class LogicRunnableTest {
 
 		// Create a list for sorting
 		List<TestRunnable> runnables = new ArrayList<TestRunnable>(2);
-		Tickable parent = new Tickable();
+		BasicTickable parent = new BasicTickable();
 
 		// Put everything in backwards
 		TestRunnable lowest = new TestRunnable(parent, LogicPriority.LOWEST);
@@ -67,8 +67,8 @@ public class LogicRunnableTest {
 		assertEquals(lowest, runnables.get(4));
 	}
 
-	private class TestRunnable extends LogicRunnable<Tickable> {
-		public TestRunnable(Tickable parent, LogicPriority priority) {
+	private class TestRunnable extends LogicRunnable<BasicTickable> {
+		public TestRunnable(BasicTickable parent, LogicPriority priority) {
 			super(parent, priority);
 		}
 

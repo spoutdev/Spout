@@ -27,7 +27,7 @@
 package org.spout.api.tickable;
 
 /**
- * Represents a {@link LogicRunnable}s priority on a {@link Tickable}
+ * Represents a {@link LogicRunnable}s priority on a {@link BasicTickable}
  */
 public enum LogicPriority {
 	LOWEST(0),

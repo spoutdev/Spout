@@ -28,7 +28,7 @@ package org.spout.api.tickable;
 
 /**
  * Represents a timed {@link LogicRunnable}.
- * This process easily allows looping of a continuous task or one timed task on the {@link Tickable}.
+ * This process easily allows looping of a continuous task or one timed task on the {@link BasicTickable}.
  * @param <T>
  */
 public abstract class TimedLogicRunnable<T extends Tickable> extends LogicRunnable<T> {
@@ -36,7 +36,7 @@ public abstract class TimedLogicRunnable<T extends Tickable> extends LogicRunnab
 	private boolean loop;
 
 	/**
-	 * Constructs a new TimedLogicRunnable. Initializes the process to be registered to a {@link Tickable}.
+	 * Constructs a new TimedLogicRunnable. Initializes the process to be registered to a {@link BasicTickable}.
 	 * @param parent the tickable the process belongs to
 	 * @param delay the delay, in seconds, until {@link TimedLogicRunnable#run()} is called.
 	 * @param loop whether or not the process should start over again once completed.
@@ -48,7 +48,7 @@ public abstract class TimedLogicRunnable<T extends Tickable> extends LogicRunnab
 	}
 
 	/**
-	 * Constructs a new TimedLogicRunnable. Initializes the process to be registered to a {@link Tickable}.
+	 * Constructs a new TimedLogicRunnable. Initializes the process to be registered to a {@link BasicTickable}.
 	 * @param parent the tickable the process belongs to
 	 * @param delay the delay, in seconds, until {@link TimedLogicRunnable#run()} is called.
 	 */

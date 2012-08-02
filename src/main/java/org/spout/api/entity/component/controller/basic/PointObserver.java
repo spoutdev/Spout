@@ -27,7 +27,7 @@
 package org.spout.api.entity.component.controller.basic;
 
 import org.spout.api.Spout;
-import org.spout.api.entity.component.Controller;
+import org.spout.api.entity.component.controller.BasicController;
 import org.spout.api.entity.component.controller.type.ControllerType;
 import org.spout.api.entity.component.controller.type.EmptyConstructorControllerType;
 import org.spout.api.geo.cuboid.Chunk;
@@ -36,7 +36,7 @@ import org.spout.api.geo.discrete.Point;
 /**
  * Controller that observes chunks around a point. It will always keep these chunks in memory.
  */
-public class PointObserver extends Controller {
+public class PointObserver extends BasicController {
 	public static final int CHUNK_VIEW_DISTANCE = 4;
 	public static final ControllerType TYPE = new EmptyConstructorControllerType(PointObserver.class, "Point Observer");
 	private Point currPoint;

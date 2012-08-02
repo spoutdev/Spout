@@ -27,7 +27,7 @@
 package org.spout.api.tickable;
 
 /**
- * Represents a process for the a main {@link Tickable}
+ * Represents a process for the a main {@link BasicTickable}
  * @param <T>
  */
 public abstract class LogicRunnable<T extends Tickable> implements Runnable, Comparable<LogicRunnable<T>> {
@@ -35,8 +35,8 @@ public abstract class LogicRunnable<T extends Tickable> implements Runnable, Com
 	protected final T parent;
 
 	/**
-	 * Constructs a new process to be registered to a {@link Tickable}.
-	 * @param parent the {@link Tickable} the process belongs to.
+	 * Constructs a new process to be registered to a {@link BasicTickable}.
+	 * @param parent the {@link BasicTickable} the process belongs to.
 	 * @param priority the {@link LogicPriority} of the runnable
 	 */
 	public LogicRunnable(T parent, LogicPriority priority) {
@@ -45,8 +45,8 @@ public abstract class LogicRunnable<T extends Tickable> implements Runnable, Com
 	}
 
 	/**
-	 * Constructs a new process to be registered to a {@link Tickable} at {@link LogicPriority#NORMAL}.
-	 * @param parent the {@link Tickable} the process belongs to.
+	 * Constructs a new process to be registered to a {@link BasicTickable} at {@link LogicPriority#NORMAL}.
+	 * @param parent the {@link BasicTickable} the process belongs to.
 	 */
 	public LogicRunnable(T parent) {
 		this(parent, LogicPriority.NORMAL);
@@ -60,14 +60,14 @@ public abstract class LogicRunnable<T extends Tickable> implements Runnable, Com
 	public abstract boolean shouldRun(float dt);
 
 	/**
-	 * Registers the process to its assigned {@link Tickable}
+	 * Registers the process to its assigned {@link BasicTickable}
 	 */
 	public void register() {
 		parent.registerProcess(this);
 	}
 
 	/**
-	 * Unregisters the process to its assigned {@link Tickable}
+	 * Unregisters the process to its assigned {@link BasicTickable}
 	 */
 	public void unregister() {
 		parent.unregisterProcess(this);
@@ -87,7 +87,7 @@ public abstract class LogicRunnable<T extends Tickable> implements Runnable, Com
 
 	/**
 	 * Gets the parent of the process.
-	 * @return parent the {@link Tickable}
+	 * @return parent the {@link BasicTickable}
 	 */
 	public T getParent() {
 		return parent;

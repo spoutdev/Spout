@@ -28,9 +28,9 @@ package org.spout.api.gamestate;
 
 import java.util.Stack;
 
-import org.spout.api.tickable.Tickable;
+import org.spout.api.tickable.BasicTickable;
 
-public class GameStateManager extends Tickable {
+public class GameStateManager extends BasicTickable {
 	private Stack<GameState> states = new Stack<GameState>();
 	
 	public void pushState(GameState state) {

@@ -24,18 +24,45 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.tickable;
+package org.spout.api.entity.component;
 
-public interface ITickable {
+import org.spout.api.entity.Entity;
+import org.spout.api.entity.EntityComponent;
+import org.spout.api.tickable.BasicTickable;
+
+public abstract class BasicEntityComponent extends BasicTickable implements EntityComponent {
+	private Entity parent;
+
 	/**
-	 * Called each simulation tick.<br/>
-	 * 1       tick  = 1/20 second<br/>
-	 * 20      ticks = 1 second<br/>
-	 * 1200    ticks = 1 minute<br/>
-	 * 72000   ticks = 1 hour<br/>
-	 * 1728000 ticks = 1 day
-	 *
-	 * @param dt time since the last tick in seconds
+	 * Called when this controller is attached to an entity.
+	 * @param e entity this controller will be attached to.
 	 */
-	public void onTick(float dt);
+	@Override
+	public void attachToEntity(Entity e) {
+		this.parent = e;
+	}
+
+	/**
+	 * Gets the parent Entity associated with this controller.
+	 *
+	 * @return parent Entity
+	 */
+	@Override
+	public Entity getParent() {
+		return this.parent;
+	}
+
+	/**
+	 * Called when this component is attached to an entity.
+	 */
+	@Override
+	public abstract void onAttached();
+
+	/** 
+	 * Called when this component is detached from an entity.
+	 */
+	@Override
+	public void onDetached() {
+		
+	}
 }

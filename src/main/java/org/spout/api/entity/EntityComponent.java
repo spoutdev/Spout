@@ -32,25 +32,20 @@ import org.spout.api.tickable.Tickable;
  * Represents an attachment to an entity that can respond to Ticks.
  *
  */
-public abstract class EntityComponent extends Tickable {
-	private Entity parent;
+public interface EntityComponent extends Tickable {
 
 	/**
 	 * Attaches this component to an entity.
 	 * @param e entity this component will be attached to.
 	 */
-	public final void attachToEntity(Entity e) {
-		this.parent = e;
-	}
+	public void attachToEntity(Entity e);
 
 	/**
 	 * Gets the parent Entity associated with this component.
 	 *
 	 * @return parent Entity
 	 */
-	public final Entity getParent() {
-		return this.parent;
-	}
+	public Entity getParent();
 
 	/**
 	 * Called when this component is attached to an entity.
@@ -60,7 +55,5 @@ public abstract class EntityComponent extends Tickable {
 	/** 
 	 * Called when this component is detached from an entity.
 	 */
-	public void onDetached() {
-		
-	}
+	public void onDetached();
 }

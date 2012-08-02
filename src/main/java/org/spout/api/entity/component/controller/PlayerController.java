@@ -26,6 +26,7 @@
  */
 package org.spout.api.entity.component.controller;
 
+import org.spout.api.entity.component.Controller;
 import org.spout.api.player.Player;
 
 /**
@@ -33,11 +34,8 @@ import org.spout.api.player.Player;
  * 
  * An entity is a Player if entity.getController() instanceof PlayerController == true
  */
-public interface PlayerController {
+public interface PlayerController extends Controller {
 
-	/**
-	 * Gets the player that this controller represents
-	 * @return the player
-	 */
-	public Player getPlayer();
+	@Override
+	public Player getParent();
 }

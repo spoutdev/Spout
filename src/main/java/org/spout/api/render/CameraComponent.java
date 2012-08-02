@@ -26,11 +26,11 @@
  */
 package org.spout.api.render;
 
-import org.spout.api.entity.EntityComponent;
+import org.spout.api.entity.component.BasicEntityComponent;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 
-public class CameraComponent extends EntityComponent implements Camera {
+public class CameraComponent extends BasicEntityComponent implements Camera {
 
 	Matrix projection;
 	Matrix view;

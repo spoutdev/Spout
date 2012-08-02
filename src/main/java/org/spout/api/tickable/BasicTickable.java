@@ -32,18 +32,11 @@ import java.util.List;
 
 import org.spout.api.UnsafeMethod;
 
-public interface Tickable {
+public class BasicTickable implements Tickable {
 	/**
-	 * Called each simulation tick.<br/>
-	 * 1       tick  = 1/20 second<br/>
-	 * 20      ticks = 1 second<br/>
-	 * 1200    ticks = 1 minute<br/>
-	 * 72000   ticks = 1 hour<br/>
-	 * 1728000 ticks = 1 day
-	 *
-	 * @param dt time since the last tick in seconds
+	 * A set of active processes to have {@link LogicRunnable#shouldRun(float)} called every tick.
 	 */
-	public void onTick(float dt);
+	protected final List<LogicRunnable<BasicTickable>> activeProcesses = new ArrayList<LogicRunnable<BasicTickable>>();
 
 	/**
 	 * Called each simulation tick.<br/>
@@ -56,19 +49,43 @@ public interface Tickable {
 	 * 
 	 * @param dt time since the last tick in seconds
 	 */
-	public void tick(float dt);
+	public final void tick(float dt) {
+		Collections.sort(activeProcesses);
+		for (int i = 0; i < activeProcesses.size(); i++) {
+			LogicRunnable<BasicTickable> process = activeProcesses.get(i);
+			if (process != null && process.shouldRun(dt)) {
+				process.run();
+				if (process instanceof TimedLogicRunnable && !((TimedLogicRunnable<?>) process).loops()) {
+					unregisterProcess(process);
+				}
+			}
+		}
+		onTick(dt);
+	}
 
 	/**
 	 * Registers a new process for the Tickable.
 	 * Calls {@link LogicRunnable#onRegistration()}
 	 * @param process
 	 */
-	public void registerProcess(LogicRunnable<?> process);
+	@SuppressWarnings("unchecked")
+	public void registerProcess(LogicRunnable<?> process) {
+		activeProcesses.add((LogicRunnable<BasicTickable>) process);
+		process.onRegistration();
+	}
 
 	/**
 	 * Unregisters a process for the Tickable.
 	 * Calls {@link LogicRunnable#onUnregistration()}
 	 * @param process
 	 */
-	public void unregisterProcess(LogicRunnable<?> process);
+	public void unregisterProcess(LogicRunnable<?> process) {
+		activeProcesses.remove(process);
+		process.onUnregistration();
+	}
+
+	@Override
+	@UnsafeMethod
+	public void onTick(float dt) {
+	}
 }
