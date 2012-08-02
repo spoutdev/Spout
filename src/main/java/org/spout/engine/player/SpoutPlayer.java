@@ -55,6 +55,7 @@ import org.spout.api.util.thread.Threadsafe;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.protocol.SpoutSession;
+import org.spout.engine.world.SpoutWorld;
 
 public class SpoutPlayer extends SpoutEntity implements Player {
 	private final AtomicReference<SpoutSession> sessionLive = new AtomicReference<SpoutSession>();
@@ -66,12 +67,12 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	private final int hashcode;
 	private PriorityQueue<PlayerInputState> inputQueue = new PriorityQueue<PlayerInputState>();
 
-	public SpoutPlayer(String name, Transform transform, SpoutSession session, SpoutEngine engine) {
-		super(engine, transform, null);
+	public SpoutPlayer(String name, Transform transform, SpoutSession session, SpoutEngine engine, int viewDistance) {
+		super(engine, transform, null, viewDistance);
 		this.name = name;
 		displayName.set(name);
 		hashcode = name.hashCode();
-		connect(session);
+		connect(session, null);
 	}
 
 	@Override
@@ -128,15 +129,33 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		return true;
 	}
 
+	@Override
+	public boolean kill()  {
+		boolean success = super.kill();
+		if (success) {
+			((SpoutWorld) getWorld()).removePlayer(this);
+		}
+		return success;
+	}
+
 	@DelayedWrite
-	public boolean connect(SpoutSession session) {
+	public boolean connect(SpoutSession session, Transform newPosition) {
 		if (!onlineLive.compareAndSet(false, true)) {
 			// player was already online
 			return false;
 		}
 
+		if (newPosition != null) {
+			setTransform(newPosition);
+		}
+		final Transform transform = getTransform();
+		if (transform != null && isDead()) {
+			setupInitialChunk(transform);
+		}
+
 		sessionLive.set(session);
 		copyToSnapshot();
+		justSpawned = true;
 		return true;
 	}
 
@@ -201,6 +220,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	}
 
 	public void copyToSnapshot() {
+		super.copyToSnapshot();
 		session = sessionLive.get();
 		online = onlineLive.get();
 	}
@@ -270,7 +290,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	public void processInput(PlayerInputState state) {
 		inputQueue.add(state);
-		
+
 	}
 
 }

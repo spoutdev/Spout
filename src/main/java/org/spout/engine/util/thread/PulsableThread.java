@@ -140,7 +140,6 @@ public abstract class PulsableThread extends Thread {
 					throw ie;
 				} catch (Throwable t) {
 					logger.log(Level.SEVERE, "Error while pulsing thread " + getName() + ":  " + t.getMessage(), t);
-					t.printStackTrace();
 				} finally {
 					synchronized (pulsing) {
 						pulsing.set(PulseState.WAITING);
@@ -157,12 +156,12 @@ public abstract class PulsableThread extends Thread {
 			}
 		}
 	}
-	
+
 	private static enum PulseState {
 		PULSING,
 		WAITING,
 		DEAD;
-		
+
 		public boolean isPulsing() {
 			return this == PULSING;
 		}
