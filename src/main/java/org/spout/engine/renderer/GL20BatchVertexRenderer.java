@@ -53,18 +53,18 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 			GL15.glDeleteBuffers(vbos);
 		}
 		
-		long size = numVerticies * 4 * SIZE_FLOAT;
+		long size = numVertices * 4 * SIZE_FLOAT;
 		int numBuffers = 1;
 		if (useColors) {
-			size += numVerticies * 4 * SIZE_FLOAT;
+			size += numVertices * 4 * SIZE_FLOAT;
 			numBuffers++;
 		}
 		if (useNormals) {
-			size += numVerticies * 4 * SIZE_FLOAT;
+			size += numVertices * 4 * SIZE_FLOAT;
 			numBuffers++;
 		}
 		if (useTextures) {
-			size += numVerticies * 2 * SIZE_FLOAT;
+			size += numVertices * 2 * SIZE_FLOAT;
 			numBuffers++;
 		}
 		vbos = GL15.glGenBuffers();
@@ -80,7 +80,7 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset, vBuffer);
 		GL11.glVertexPointer(4, GL11.GL_FLOAT, 0, offset);
 		activeMaterial.getShader().enableAttribute("vPosition", 4, GL11.GL_FLOAT, 0, offset);
-		offset += numVerticies * 4 * SIZE_FLOAT;
+		offset += numVertices * 4 * SIZE_FLOAT;
 		
 		if (useColors) {
 
@@ -91,7 +91,7 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset, vBuffer);
 			GL11.glColorPointer(4, GL11.GL_FLOAT, 0, offset);
 			activeMaterial.getShader().enableAttribute("vColor", 4, GL11.GL_FLOAT, 0, offset);
-			offset += numVerticies * 4 * SIZE_FLOAT;
+			offset += numVertices * 4 * SIZE_FLOAT;
 		}
 		if (useNormals) {
 
@@ -102,7 +102,7 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset, vBuffer);
 			GL11.glNormalPointer(GL11.GL_FLOAT, 0, offset);
 			activeMaterial.getShader().enableAttribute("vNormal", 4, GL11.GL_FLOAT, 0, offset);
-			offset += numVerticies * 4 * SIZE_FLOAT;
+			offset += numVertices * 4 * SIZE_FLOAT;
 		}
 		if (useTextures) {
 
@@ -113,7 +113,7 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset, vBuffer);
 			GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, offset);
 			activeMaterial.getShader().enableAttribute("vTexCoord", 2, GL11.GL_FLOAT, 0, offset);
-			offset += numVerticies * 2 * SIZE_FLOAT;
+			offset += numVertices * 2 * SIZE_FLOAT;
 		}
 
 		activeMaterial.assign();
@@ -127,6 +127,6 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbos);
 
 		activeMaterial.assign();
-		GL11.glDrawArrays(renderMode, 0, numVerticies);
+		GL11.glDrawArrays(renderMode, 0, numVertices);
 	}
 }
