@@ -59,7 +59,7 @@ public class SpoutListener implements Listener {
 		}
 		long start = System.currentTimeMillis();
 		//Create the player
-		final Player player = server.addPlayer(event.getPlayerName(), (SpoutSession) event.getSession(), event.getViewDistance());
+		final Player player = server.addPlayer(event.getPlayerName(), (SpoutSession<?>) event.getSession(), event.getViewDistance());
 
 		if (player != null) {
 			PlayerLoadEvent loadEvent = Spout.getEngine().getEventManager().callEvent(new PlayerLoadEvent(player));

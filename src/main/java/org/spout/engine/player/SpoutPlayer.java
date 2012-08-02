@@ -57,8 +57,8 @@ import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.protocol.SpoutSession;
 
 public class SpoutPlayer extends SpoutEntity implements Player {
-	private final AtomicReference<SpoutSession> sessionLive = new AtomicReference<SpoutSession>();
-	private SpoutSession session;
+	private final AtomicReference<SpoutSession<?>> sessionLive = new AtomicReference<SpoutSession<?>>();
+	private SpoutSession<?> session;
 	private final String name;
 	private final AtomicReference<String> displayName = new AtomicReference<String>();
 	private final AtomicBoolean onlineLive = new AtomicBoolean(false);
@@ -66,7 +66,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	private final int hashcode;
 	private PriorityQueue<PlayerInputState> inputQueue = new PriorityQueue<PlayerInputState>();
 
-	public SpoutPlayer(String name, Transform transform, SpoutSession session, SpoutEngine engine) {
+	public SpoutPlayer(String name, Transform transform, SpoutSession<?> session, SpoutEngine engine) {
 		super(engine, transform, null);
 		this.name = name;
 		displayName.set(name);
@@ -94,7 +94,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	@SnapshotRead
-	public SpoutSession getSession() {
+	public SpoutSession<?> getSession() {
 		return session;
 	}
 
@@ -129,7 +129,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	}
 
 	@DelayedWrite
-	public boolean connect(SpoutSession session) {
+	public boolean connect(SpoutSession<?> session) {
 		if (!onlineLive.compareAndSet(false, true)) {
 			// player was already online
 			return false;
@@ -258,7 +258,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public NetworkSynchronizer getNetworkSynchronizer() {
-		SpoutSession session = this.session;
+		SpoutSession<?> session = this.session;
 		return session == null ? null : session.getNetworkSynchronizer();
 	}
 

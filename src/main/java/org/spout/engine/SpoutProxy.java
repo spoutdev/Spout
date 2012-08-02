@@ -69,7 +69,7 @@ public class SpoutProxy extends SpoutServer {
 	}
 
 	@Override
-	public Player addPlayer(String playerName, SpoutSession session, int viewDistance) {
+	public Player addPlayer(String playerName, SpoutSession<?> session, int viewDistance) {
 
 		SpoutPlayer player;
 

@@ -40,13 +40,13 @@ public final class SpoutSessionRegistry implements SessionRegistry {
 	/**
 	 * A list of the sessions.
 	 */
-	private final ConcurrentMap<SpoutSession, Boolean> sessions = new ConcurrentHashMap<SpoutSession, Boolean>();
+	private final ConcurrentMap<SpoutSession<?>, Boolean> sessions = new ConcurrentHashMap<SpoutSession<?>, Boolean>();
 
 	/**
 	 * Pulses all the sessions
 	 */
 	public void pulse() {
-		for (SpoutSession session : sessions.keySet()) {
+		for (SpoutSession<?> session : sessions.keySet()) {
 			session.pulse();
 		}
 	}
@@ -58,7 +58,7 @@ public final class SpoutSessionRegistry implements SessionRegistry {
 	@Override
 	public void add(Session session) {
 		if (session instanceof SpoutSession) {
-			sessions.put((SpoutSession) session, true);
+			sessions.put((SpoutSession<?>) session, true);
 		} else if (session != null) {
 			throw new IllegalArgumentException("This session registry can only handle SpoutSessions: ");
 		}

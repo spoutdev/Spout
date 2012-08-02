@@ -42,12 +42,12 @@ import org.spout.engine.protocol.SpoutSession;
 public class SpoutProxyConnectListener implements ChannelFutureListener {
 
 	private final Engine engine;
-	private final SpoutSession session;
+	private final SpoutSession<?> session;
 	private final String playerName;
 
 	public SpoutProxyConnectListener(Engine engine, String playerName, Session session) {
 		this.engine = engine;
-		this.session = (SpoutSession) session;
+		this.session = (SpoutSession<?>) session;
 		this.playerName = playerName;
 	}
 

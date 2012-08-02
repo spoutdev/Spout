@@ -48,7 +48,7 @@ public class SpoutProxyListener implements Listener {
 		if (event.isCancelled()) {
 			return;
 		}
-		server.addPlayer(event.getPlayerName(), (SpoutSession) event.getSession(), event.getViewDistance());
+		server.addPlayer(event.getPlayerName(), (SpoutSession<?>) event.getSession(), event.getViewDistance());
 		//Create the player
 		server.connect(event.getPlayerName(), event.getSession());
 	}
