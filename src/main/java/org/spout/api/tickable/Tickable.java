@@ -26,12 +26,6 @@
  */
 package org.spout.api.tickable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.spout.api.UnsafeMethod;
-
 public interface Tickable {
 	/**
 	 * Called each simulation tick.<br/>

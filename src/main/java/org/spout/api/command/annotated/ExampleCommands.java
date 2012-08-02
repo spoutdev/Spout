@@ -37,6 +37,7 @@ import org.spout.api.plugin.Platform;
 /**
  * An example of the modified commands setup
  */
+@SuppressWarnings("unused")
 public class ExampleCommands {
 	static {
 		// how to register - don't put this in a static init block like I have here

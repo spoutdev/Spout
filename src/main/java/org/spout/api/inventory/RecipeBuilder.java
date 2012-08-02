@@ -35,8 +35,7 @@ import java.util.Map.Entry;
 import org.spout.api.material.Material;
 import org.spout.api.plugin.Plugin;
 
-@SuppressWarnings("unchecked")
-public class RecipeBuilder{
+public class RecipeBuilder {
 	public Plugin plugin = null;
 	public ItemStack result = null;
 	public HashMap<Character, Material> ingredientsMap = new HashMap<Character, Material>();

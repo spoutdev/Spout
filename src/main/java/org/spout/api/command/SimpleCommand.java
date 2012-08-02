@@ -36,10 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
