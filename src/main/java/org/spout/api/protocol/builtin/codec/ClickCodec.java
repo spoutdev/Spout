@@ -33,7 +33,7 @@ import org.spout.api.protocol.builtin.message.ClickMessage;
 
 public class ClickCodec extends MessageCodec<ClickMessage> {
 	public ClickCodec() {
-		super(ClickMessage.class, 0x0B, true);
+		super(ClickMessage.class, 0x0B);
 	}
 
 	@Override

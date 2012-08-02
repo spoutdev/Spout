@@ -33,7 +33,7 @@ import org.spout.api.protocol.builtin.message.EntityDatatableMessage;
 
 public class EntityDatatableCodec extends MessageCodec<EntityDatatableMessage> {
 	public EntityDatatableCodec() {
-		super(EntityDatatableMessage.class, 0x06, true);
+		super(EntityDatatableMessage.class, 0x06);
 	}
 
 	@Override

@@ -42,7 +42,7 @@ import org.spout.api.protocol.builtin.message.ChunkDataMessage;
  */
 public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 	public ChunkDataCodec() {
-		super(ChunkDataMessage.class, 0x08, true);
+		super(ChunkDataMessage.class, 0x08);
 	}
 
 	@Override

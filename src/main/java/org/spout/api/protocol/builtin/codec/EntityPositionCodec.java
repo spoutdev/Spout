@@ -38,7 +38,7 @@ import org.spout.api.protocol.builtin.message.EntityPositionMessage;
  */
 public class EntityPositionCodec extends MessageCodec<EntityPositionMessage> {
 	public EntityPositionCodec() {
-		super(EntityPositionMessage.class, 0x07, true);
+		super(EntityPositionMessage.class, 0x07);
 	}
 
 	@Override

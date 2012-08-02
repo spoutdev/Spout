@@ -26,23 +26,23 @@
  */
 package org.spout.api.protocol;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.spout.api.util.StringMap;
 
 /**
  * A class used to lookup message codecs.
  *
  */
 public abstract class CodecLookupService {
-	/**
-	 * A table which maps opcodes to codecs. This is generally used to map
-	 * incoming packets to a codec.
-	 */
-	protected final MessageCodec<?>[] opcodeTable = new MessageCodec<?>[256];
+	protected final MessageCodec<?>[] opcodeTable = new MessageCodec<?>[65536];
 
-	protected final MessageCodec<?>[] expandedOpcodeTable = new MessageCodec<?>[65536];
+	private int nextId = 0;
 
 	/**
 	 * A table which maps messages to codecs. This is generally used to map
@@ -60,42 +60,70 @@ public abstract class CodecLookupService {
 	 * @throws IllegalAccessException if the codec could not be instantiated due
 	 *             to an access violation.
 	 */
-	protected <T extends Message, C extends MessageCodec<T>> void bind(Class<C> clazz) throws InstantiationException, IllegalAccessException {
-		MessageCodec<T> codec = clazz.newInstance();
-
-		if (codec.isExpanded()) {
-			expandedOpcodeTable[codec.getOpcode()] = codec;
-		} else {
-			opcodeTable[codec.getOpcode()] = codec;
-		}
-		classTable.put(codec.getType(), codec);
+	protected <T extends Message, C extends MessageCodec<T>> void bind(Class<C> clazz) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+		bind(clazz, null);
 	}
 
 	/**
-	 * Finds a codec by short opcode.
+	 * Binds a codec by adding entries for it to the tables.
 	 *
-	 * @param opcode The opcode.
-	 * @return The codec, or {@code null} if it could not be found.
+	 * @param clazz The codec's class.
+	 * @param dynamicPacketMap The StringMap used to register dynamically allocated packet ids in
+	 * @param <T> The type of message.
+	 * @param <C> The type of codec.
+	 * @throws InstantiationException if the codec could not be instantiated.
+	 * @throws IllegalAccessException if the codec could not be instantiated due
+	 *             to an access violation.
 	 */
-	private MessageCodec<?> findNotchian(int opcode) {
-		if (opcode < 0) {
-			return null;
+	protected <T extends Message, C extends MessageCodec<T>> C bind(Class<C> clazz, StringMap dynamicPacketMap) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+		boolean dynamicId = false;
+		Constructor<C> constructor;
+		try {
+			constructor = clazz.getConstructor();
+		} catch (NoSuchMethodException e) {
+			if (dynamicPacketMap != null) {
+				try {
+					constructor = clazz.getConstructor(int.class);
+					dynamicId = true;
+				} catch (NoSuchMethodException e1) {
+					throw (InstantiationException) new InstantiationException().initCause(e1);
+				}
+			} else {
+				throw new InstantiationException("Packet is dynamic and no dynamic constructor string map was provided!");
+			}
 		}
 
-		if (opcode >= opcodeTable.length) {
-			return null;
+		C codec;
+		if (dynamicId) {
+			int id;
+			if (dynamicPacketMap.getKeys().contains(clazz.getName())) {
+				id = dynamicPacketMap.register(clazz.getName());
+			} else {
+				id = getNextId();
+				dynamicPacketMap.register(clazz.getName(), id);
+			}
+			codec = constructor.newInstance(id);
+			codec.setDynamic(true);
+		} else {
+			codec = constructor.newInstance();
+			nextId = nextId > codec.getOpcode() ? nextId : codec.getOpcode() + 1;
 		}
 
-		return opcodeTable[opcode];
+		opcodeTable[codec.getOpcode()] = codec;
+		classTable.put(codec.getType(), codec);
+		return codec;
+	}
+
+	private int getNextId() {
+		while (opcodeTable[nextId] != null) {
+			nextId++;
+		}
+		return nextId;
 	}
 
 	public MessageCodec<?> find(int opcode) {
-		MessageCodec<?> codec = findNotchian(opcode >> 8);
-
-		if (codec != null) {
-			return codec;
-		} else if (opcode > -1 && opcode < expandedOpcodeTable.length) {
-			return expandedOpcodeTable[opcode];
+		if (opcode > -1 && opcode < opcodeTable.length) {
+			return opcodeTable[opcode];
 		}
 		return null;
 	}
@@ -117,7 +145,7 @@ public abstract class CodecLookupService {
 	}
 
 	/**
-	 * Default private constructor to prevent insantiation.
+	 * Default private constructor to prevent instantiation.
 	 */
 	protected CodecLookupService() {
 	}

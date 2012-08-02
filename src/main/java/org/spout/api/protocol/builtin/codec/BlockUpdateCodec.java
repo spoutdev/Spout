@@ -37,7 +37,7 @@ import org.spout.api.util.hashing.NibblePairHashed;
  */
 public class BlockUpdateCodec extends MessageCodec<BlockUpdateMessage> {
 	public BlockUpdateCodec() {
-		super(BlockUpdateMessage.class, 0x09, true);
+		super(BlockUpdateMessage.class, 0x09);
 	}
 
 	@Override

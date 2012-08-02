@@ -41,23 +41,24 @@ import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.common.message.CustomDataMessage;
-import org.spout.api.protocol.replayable.ReplayableError;
 
 public class CommonBootstrapProtocol extends Protocol {
 	private final Protocol defaultProtocol;
+	private final boolean expandedOpcodes;
 
-	public CommonBootstrapProtocol(Protocol defaultProtocol) {
-		this("CommonBootstrap", defaultProtocol);
+	public CommonBootstrapProtocol(Protocol defaultProtocol, boolean expandedOpcodes) {
+		this("CommonBootstrap", defaultProtocol, expandedOpcodes);
 	}
 
 
-	public CommonBootstrapProtocol(String name, Protocol defaultProtocol) {
-		this(name, new CommonBootstrapCodecLookupService(), new CommonBootstrapHandlerLookupService(), defaultProtocol);
+	public CommonBootstrapProtocol(String name, Protocol defaultProtocol, boolean expandedOpcodes) {
+		this(name, new CommonBootstrapCodecLookupService(), new CommonBootstrapHandlerLookupService(), defaultProtocol, expandedOpcodes);
 	}
 
-	public CommonBootstrapProtocol(String name, CodecLookupService codecLookup, HandlerLookupService handlerLookup, Protocol defaultProtocol) {
+	public CommonBootstrapProtocol(String name, CodecLookupService codecLookup, HandlerLookupService handlerLookup, Protocol defaultProtocol, boolean expandedOpcodes) {
 		super(name, -1, codecLookup, handlerLookup);
 		this.defaultProtocol = defaultProtocol;
+		this.expandedOpcodes = expandedOpcodes;
 	}
 
 	private String detectProtocolDefinition(CustomDataMessage message) {
@@ -113,13 +114,7 @@ public class CommonBootstrapProtocol extends Protocol {
 	}
 
 	public MessageCodec<?> readHeader(ChannelBuffer buf) throws UnknownPacketException {
-		int opcode;
-
-		try {
-			opcode = buf.getUnsignedShort(buf.readerIndex());
-		} catch (ReplayableError e) {
-			opcode = buf.getUnsignedByte(buf.readerIndex()) << 8;
-		}
+		int opcode = expandedOpcodes ? buf.readUnsignedShort() : buf.readUnsignedByte();
 
 		MessageCodec<?> codec = getCodecLookupService().find(opcode);
 		if (codec == null) {
@@ -129,8 +124,8 @@ public class CommonBootstrapProtocol extends Protocol {
 	}
 
 	public ChannelBuffer writeHeader(MessageCodec<?> codec, ChannelBuffer data) {
-		ChannelBuffer opcodeBuf = ChannelBuffers.buffer(codec.isExpanded() ? 2 : 1);
-		if (codec.isExpanded()) {
+		ChannelBuffer opcodeBuf = ChannelBuffers.buffer(expandedOpcodes? 2 : 1);
+		if (expandedOpcodes) {
 			opcodeBuf.writeShort(codec.getOpcode());
 		} else {
 			opcodeBuf.writeByte(codec.getOpcode());
@@ -140,21 +135,24 @@ public class CommonBootstrapProtocol extends Protocol {
 
 	@Override
 	public Message getKickMessage(ChatArguments message) {
-		return null;
+		return defaultProtocol == null ? null : defaultProtocol.getKickMessage(message);
 	}
 
 
 	@Override
 	public Message getCommandMessage(Command cmd, ChatArguments message) {
-		return null;
+		return defaultProtocol == null ? null : defaultProtocol.getCommandMessage(cmd, message);
 	}
 
 	@Override
 	public Message getIntroductionMessage(String playerName) {
-		return null;
+		return defaultProtocol == null ? null : defaultProtocol.getIntroductionMessage(playerName);
 	}
 
 	public void initializeSession(Session session) {
+		if (defaultProtocol != null) {
+			defaultProtocol.initializeSession(session);
+		}
 	}
 
 }

@@ -26,14 +26,24 @@
  */
 package org.spout.api.protocol.common.message;
 
+import java.io.IOError;
+import java.io.IOException;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.protocol.Message;
+import org.spout.api.protocol.MessageCodec;
+import org.spout.api.protocol.Protocol;
+import org.spout.api.protocol.dynamicid.DynamicWrapperMessage;
+import org.spout.api.util.Named;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class CustomDataMessage extends Message {
+public class CustomDataMessage extends Message implements DynamicWrapperMessage {
 	private final byte[] data;
 	private final String type;
 
@@ -52,12 +62,18 @@ public class CustomDataMessage extends Message {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE).append("data", data).append("type", type).toString();
+		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
+				.append("data", data)
+				.append("type", type)
+				.toString();
 	}
-	
+
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(61, 33).append(data).append(type).toHashCode();
+		return new HashCodeBuilder(61, 33)
+				.append(data)
+				.append(type)
+				.toHashCode();
 	}
 
 	@Override
@@ -70,6 +86,27 @@ public class CustomDataMessage extends Message {
 		}
 
 		final CustomDataMessage other = (CustomDataMessage) obj;
-		return new EqualsBuilder().append(this.data, other.data).append(this.type, other.type).isEquals();
+		return new EqualsBuilder()
+				.append(this.data, other.data)
+				.append(this.type, other.type)
+				.isEquals();
+	}
+
+	public Message unwrap(boolean upstream, Protocol activeProtocol) throws IOException {
+		ChannelBuffer dataBuf = ChannelBuffers.wrappedBuffer(getData());
+		MessageCodec<?> codec = null;
+		for (Pair<Integer, String> item : activeProtocol.getDynamicallyRegisteredPackets()) {
+			 codec = activeProtocol.getCodecLookupService().find(item.getLeft());
+			if (codec instanceof Named && ((Named) codec).getName().equalsIgnoreCase(getType())) {
+				break;
+			} else if (getType().equalsIgnoreCase("Spout-" + codec.getOpcode())) {
+				break;
+			}
+		}
+		if (codec != null) {
+			return codec.decode(upstream, dataBuf);
+		} else {
+			return null;
+		}
 	}
 }

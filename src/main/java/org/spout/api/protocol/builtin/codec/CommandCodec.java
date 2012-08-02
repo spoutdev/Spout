@@ -36,7 +36,7 @@ import org.spout.api.protocol.builtin.message.CommandMessage;
 
 public class CommandCodec extends MessageCodec<CommandMessage> {
 	public CommandCodec() {
-		super(CommandMessage.class, 0x03, true);
+		super(CommandMessage.class, 0x03);
 	}
 
 	@Override

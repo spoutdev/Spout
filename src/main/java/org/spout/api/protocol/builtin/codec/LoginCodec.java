@@ -34,7 +34,7 @@ import org.spout.api.protocol.builtin.message.LoginMessage;
 
 public class LoginCodec extends MessageCodec<LoginMessage> {
 	public LoginCodec() {
-		super(LoginMessage.class, 0x00, true);
+		super(LoginMessage.class, 0x00);
 	}
 
 	@Override

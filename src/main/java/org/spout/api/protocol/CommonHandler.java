@@ -35,8 +35,8 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.spout.api.Client;
 import org.spout.api.Engine;
-import org.spout.api.Server;
 
 /**
  * A {@link SimpleChannelUpstreamHandler} which processes incoming network events.
@@ -76,15 +76,19 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 
 	@Override
 	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
+		Channel c = e.getChannel();
+
+		/*if (Spout.debugMode()) {
+			ctx.getPipeline().addBefore("2", "messagePrinter", new MessagePrintingHandler());
+		}*/
+
 		if (!upstream) {
 			try {
-				Channel c = e.getChannel();
 				engine.getChannelGroup().add(c);
-
-				Server server = (Server) engine;
-				Session session = server.newSession(c);
-				server.getSessionRegistry().add(session);
+				Session session = engine.newSession(c);
+				engine.getSessionRegistry().add(session);
 				setSession(session);
+				ctx.setAttachment(session);
 
 				engine.getLogger().info("Downstream channel connected: " + c + ".");
 			} catch (Exception ex) {
@@ -92,7 +96,13 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 				throw new RuntimeException("Exception thrown when connecting", ex);
 			}
 		} else {
-			Channel c = e.getChannel();
+			if (engine instanceof Client) {
+				engine.getChannelGroup().add(c);
+				Session session = engine.newSession(c);
+				engine.getSessionRegistry().add(session);
+				setSession(session);
+				ctx.setAttachment(session);
+			}
 			engine.getLogger().info("Upstream channel connected: " + c + ".");
 		}
 	}
@@ -136,6 +146,9 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 			engine.getLogger().log(Level.WARNING, "Exception caught, closing channel: " + c + "...", e.getCause());
 			c.close();
 		}
+	}
+	public Session getSession() {
+		return this.session.get();
 	}
 
 	public void setSession(Session session) {

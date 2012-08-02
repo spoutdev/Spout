@@ -32,17 +32,12 @@ import org.jboss.netty.buffer.ChannelBuffer;
 
 public abstract class MessageCodec<T extends Message> {
 	private final Class<T> clazz;
-	private final int opcode;
-	private final boolean expanded;
+	private int opcode;
+	private boolean dynamic;
 
 	public MessageCodec(Class<T> clazz, int opcode) {
-		this(clazz, opcode, false);
-	}
-
-	public MessageCodec(Class<T> clazz, int opcode, boolean expanded) {
 		this.clazz = clazz;
 		this.opcode = opcode;
-		this.expanded = expanded;
 	}
 
 	public final Class<T> getType() {
@@ -53,18 +48,26 @@ public abstract class MessageCodec<T extends Message> {
 		return opcode;
 	}
 
-	public boolean isExpanded() {
-		return expanded;
+	void setOpcode(int opcode) {
+		this.opcode = opcode;
+	}
+
+	public boolean isDynamic() {
+		return dynamic;
+	}
+
+	void setDynamic(boolean dynamic) {
+		this.dynamic = dynamic;
 	}
 
 	public ChannelBuffer encode(boolean upstream, T message) throws IOException {
 		return upstream ? encodeToServer(message) : encodeToClient(message);
 	}
-	
+
 	public ChannelBuffer encode(T message) throws IOException {
 		return null;
 	}
-	
+
 	public ChannelBuffer encodeToClient(T message) throws IOException {
 		return encode(message);
 	}
@@ -72,7 +75,7 @@ public abstract class MessageCodec<T extends Message> {
 	public ChannelBuffer encodeToServer(T message) throws IOException {
 		return encode(message);
 	}
-	
+
 	public T decode(boolean upstream, ChannelBuffer buffer) throws IOException {
 		return upstream ? decodeFromServer(buffer) : decodeFromClient(buffer);
 	}
@@ -80,14 +83,14 @@ public abstract class MessageCodec<T extends Message> {
 	public T decode(ChannelBuffer buffer) throws IOException {
 		return null;
 	}
-	
+
 	public T decodeFromClient(ChannelBuffer buffer) throws IOException {
 		return decode(buffer);
 	}
-	
+
 	public T decodeFromServer(ChannelBuffer buffer) throws IOException {
 		return decode(buffer);
 	}
-	
-	
+
+
 }

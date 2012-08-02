@@ -36,7 +36,7 @@ import org.spout.api.protocol.builtin.message.AddEntityMessage;
 
 public class AddEntityCodec extends MessageCodec<AddEntityMessage> {
 	public AddEntityCodec() {
-		super(AddEntityMessage.class, 0x04, true);
+		super(AddEntityMessage.class, 0x04);
 	}
 
 	@Override

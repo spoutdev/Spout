@@ -31,6 +31,8 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 import org.spout.api.Engine;
 import org.spout.api.plugin.Platform;
+import org.spout.api.protocol.dynamicid.DynamicMessageDecoder;
+import org.spout.api.protocol.dynamicid.DynamicMessageEncoder;
 
 /**
  * A common {@link ChannelPipelineFactory}
@@ -71,6 +73,8 @@ public final class CommonPipelineFactory implements ChannelPipelineFactory {
 		CommonEncoder encoder = new CommonEncoder(upstream);
 		CommonDecoder decoder = new CommonDecoder(upstream);
 		CommonHandler handler = new CommonHandler(engine, encoder, decoder, upstream);
-		return Channels.pipeline(decoder, encoder, handler);
+		DynamicMessageDecoder dynamicDecoder = new DynamicMessageDecoder();
+		DynamicMessageEncoder dynamicEncoder = new DynamicMessageEncoder();
+		return Channels.pipeline(decoder, encoder, dynamicDecoder, dynamicEncoder, handler);
 	}
 }

@@ -26,18 +26,29 @@
  */
 package org.spout.api.protocol;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.command.Command;
 import org.spout.api.exception.UnknownPacketException;
+import org.spout.api.io.store.simple.MemoryStore;
+import org.spout.api.util.StringMap;
 
 public abstract class Protocol {
 	private static final ConcurrentHashMap<String, Protocol> map = new ConcurrentHashMap<String, Protocol>();
 
+	private final StringMap dynamicPacketLookup;
 	private final CodecLookupService codecLookup;
 	private final HandlerLookupService handlerLookup;
 	private final String name;
@@ -48,6 +59,7 @@ public abstract class Protocol {
 		this.handlerLookup = handlerLookup;
 		this.defaultPort = defaultPort;
 		this.name = name;
+		this.dynamicPacketLookup = new StringMap(null, new MemoryStore<Integer>(), Integer.MAX_VALUE, Integer.MAX_VALUE, this.name + "ProtocolDynamicPackets");
 	}
 
 	/**
@@ -85,6 +97,47 @@ public abstract class Protocol {
 	 */
 	public int getDefaultPort() {
 		return defaultPort;
+	}
+
+	/**
+	 * Register a custom packet with this protocol
+	 *
+	 * @param codecClazz The packet's codec
+	 * @param <T> The type of Message this codec handles
+	 * @param <C> The codec's type
+	 * @return The instantiated codec
+	 */
+	public <T extends Message, C extends MessageCodec<T>> C registerPacket(Class<C> codecClazz, MessageHandler<T> handler) {
+		try {
+			C codec = getCodecLookupService().bind(codecClazz, dynamicPacketLookup);
+			if (handler != null) {
+				getHandlerLookupService().bind(codec.getType(), handler);
+			}
+			return codec;
+		} catch (InstantiationException e) {
+			Spout.getLogger().log(Level.SEVERE, "Error registering codec " + codecClazz + ": ", e);
+			return null;
+		} catch (IllegalAccessException e) {
+			Spout.getLogger().log(Level.SEVERE, "Error registering codec " + codecClazz + ": ", e);
+			return null;
+		} catch (InvocationTargetException e) {
+			Spout.getLogger().log(Level.SEVERE, "Error registering codec " + codecClazz + ": ", e);
+			return null;
+		}
+	}
+
+	public List<Pair<Integer, String>> getDynamicallyRegisteredPackets() {
+		return dynamicPacketLookup.getItems();
+	}
+
+	/**
+	 * Allows applying a wrapper to messages with dynamically allocated id's, in case this protocol needs to provide special treatment for them.
+	 *
+	 * @param dynamicMessage The message with a dynamically-allocated codec
+	 * @return The new message
+	 */
+	public <T extends Message> Message getWrappedMessage(boolean upstream, T dynamicMessage) throws IOException {
+		return dynamicMessage;
 	}
 
 	/**

@@ -39,7 +39,7 @@ import org.spout.api.protocol.builtin.message.StringMapMessage;
 
 public class StringMapCodec extends MessageCodec<StringMapMessage> {
 	public StringMapCodec() {
-		super(StringMapMessage.class, 0x01, true);
+		super(StringMapMessage.class, 0x01);
 	}
 
 	@Override

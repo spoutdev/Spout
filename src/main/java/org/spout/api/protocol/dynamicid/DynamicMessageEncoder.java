@@ -24,37 +24,32 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.protocol.builtin.codec;
+package org.spout.api.protocol.dynamicid;
 
-import java.util.UUID;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
+import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageCodec;
-import org.spout.api.protocol.builtin.ChannelBufferUtils;
-import org.spout.api.protocol.builtin.message.WorldChangeMessage;
+import org.spout.api.protocol.Protocol;
+import org.spout.api.protocol.Session;
 
-public class WorldChangeCodec extends MessageCodec<WorldChangeMessage> {
-	public WorldChangeCodec() {
-		super(WorldChangeMessage.class, 0x02);
-	}
-
-	@Override
-	public ChannelBuffer encode(WorldChangeMessage message) {
-		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
-		ChannelBufferUtils.writeString(buffer, message.getWorldName());
-		ChannelBufferUtils.writeUUID(buffer, message.getWorldUUID());
-		buffer.writeInt(message.getCompressedData().length);
-		buffer.writeBytes(message.getCompressedData());
-		return buffer;
-	}
-
-	@Override
-	public WorldChangeMessage decode(ChannelBuffer buffer) {
-		final String worldName = ChannelBufferUtils.readString(buffer);
-		final UUID worldUUID = ChannelBufferUtils.readUUID(buffer);
-		final byte[] compressedData = new byte[buffer.readInt()];
-		buffer.readBytes(compressedData);
-		return new WorldChangeMessage(worldName, worldUUID, compressedData);
+/**
+ * Process dynamically registered messages before sending them to give extra usefulness
+ */
+public class DynamicMessageEncoder extends OneToOneEncoder {
+	protected Object encode(ChannelHandlerContext ctx, Channel channel, Object o) throws Exception {
+		if (o instanceof Message) {
+			Session session = (Session) ctx.getAttachment();
+			if (session != null) {
+				Protocol protocol = session.getProtocol();
+				MessageCodec<?> codec = protocol.getCodecLookupService().find(((Message) o).getClass());
+				if (codec != null && codec.isDynamic()) {
+					return protocol.getWrappedMessage(false, (Message) o);
+				}
+			}
+		}
+		return o;
 	}
 }

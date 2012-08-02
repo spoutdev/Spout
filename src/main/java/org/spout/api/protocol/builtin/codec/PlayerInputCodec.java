@@ -34,7 +34,7 @@ import org.spout.api.protocol.builtin.message.PlayerInputMessage;
 public class PlayerInputCodec extends MessageCodec<PlayerInputMessage> {
 
 	public PlayerInputCodec() {
-		super(PlayerInputMessage.class, 0x0C, true);
+		super(PlayerInputMessage.class, 0x0C);
 	}
 
 	@Override
