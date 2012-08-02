@@ -339,6 +339,7 @@ public final class SpoutScheduler implements Scheduler {
 			}
 		} catch (InterruptedException e) {
 			engine.getLogger().info("Main thread interrupted when shutting down");
+			Thread.dumpStack();
 		}
 		if (timeout > 0) {
 			taskManager.shutdown(timeout);
@@ -352,6 +353,7 @@ public final class SpoutScheduler implements Scheduler {
 		if (!mainThread.isAlive()) {
 			runFinalTasks();
 			Spout.getLogger().warning("Attempting to submit final task after main thread had shutdown");
+			Thread.dumpStack();
 		}
 	}
 	
@@ -360,6 +362,7 @@ public final class SpoutScheduler implements Scheduler {
 		if (!mainThread.isAlive()) {
 			runLastTickTasks();
 			Spout.getLogger().warning("Attempting to submit last tick task after main thread had shutdown");
+			Thread.dumpStack();
 		}
 	}
 	
