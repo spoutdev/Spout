@@ -241,12 +241,13 @@ public abstract class Region extends Cube implements AreaChunkAccess, AreaPhysic
 	private class ChunkIterator implements Iterator<Chunk> {
 		private Chunk next;
 		public ChunkIterator() {
+loop:
 			for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
 				for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
 					for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
 						next = getChunk(dx, dy, dz, LoadOption.NO_LOAD);
 						if (next != null) {
-							break;
+							break loop;
 						}
 					}
 				}
@@ -262,12 +263,15 @@ public abstract class Region extends Cube implements AreaChunkAccess, AreaPhysic
 		public Chunk next() {
 			Chunk current = next;
 			next = null;
-			for (int dx = current.getX(); dx < CHUNKS.SIZE; dx++) {
-				for (int dy = current.getY(); dy < CHUNKS.SIZE; dy++) {
-					for (int dz = current.getZ(); dz < CHUNKS.SIZE; dz++) {
+			final int cx = current.getX() & CHUNKS.MASK;
+			final int cy = current.getY() & CHUNKS.MASK;
+			final int cz = current.getZ() & CHUNKS.MASK;
+			for (int dx = cx; dx < CHUNKS.SIZE; dx++) {
+				for (int dy = cy; dy < CHUNKS.SIZE; dy++) {
+					for (int dz = cz; dz < CHUNKS.SIZE; dz++) {
 						next = getChunk(dx, dy, dz, LoadOption.NO_LOAD);
-						if (next != null) {
-							break;
+						if (next != null && next != current) {
+							return current;
 						}
 					}
 				}
