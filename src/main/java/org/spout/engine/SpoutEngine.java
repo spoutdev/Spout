@@ -760,11 +760,8 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	// Players should use weak map?
-	public Player addPlayer(String playerName, SpoutSession session, int viewDistance) {
-		SpoutPlayer player = null;
-
-		// The new player needs a corresponding entity
-		SpoutEntity newEntity = new SpoutEntity(this, getDefaultWorld().getSpawnPoint(), null, viewDistance);
+	public Player addPlayer(String playerName, SpoutSession<?> session, int viewDistance) {
+		SpoutPlayer player;
 
 		while (true) {
 			player = onlinePlayers.getLive().get(playerName);
@@ -777,14 +774,14 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 				break;
 			}
 
-			player = new SpoutPlayer(playerName, null, session, this);
+			player = new SpoutPlayer(playerName, getDefaultWorld().getSpawnPoint(), session, this);
 			if (onlinePlayers.putIfAbsent(playerName, player) == null) {
 				break;
 			}
 		}
 
-		World world = newEntity.getWorld();
-		world.spawnEntity(newEntity);
+		World world = player.getWorld();
+		world.spawnEntity(player);
 		session.setPlayer(player);
 		((SpoutWorld) world).addPlayer(player);
 		return player;
