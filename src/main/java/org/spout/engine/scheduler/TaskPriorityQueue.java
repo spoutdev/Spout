@@ -68,27 +68,27 @@ public class TaskPriorityQueue extends ConcurrentLongPriorityQueue<SpoutTask> {
 	@Override
 	public boolean add(SpoutTask task) {
 		if (task != null) {
-			task.lockNextCallTime();
+			if (!task.setQueued()) {
+				throw new UnsupportedOperationException("Task was dead when adding to the queue");
+			}
 		}
 		return super.add(task);
 	}
 
 	@Override
 	public boolean remove(SpoutTask task) {
+		task.remove();
 		if (!super.remove(task)) {
 			return false;
 		}
 
-		if (task instanceof SpoutTask) {
-			((SpoutTask)task).unlockNextCallTime();
-		}
+		task.setUnqueued();
 
 		return true;
 	}
 	
 	@Override
 	public String toString() {
-		Iterator<RedirectableConcurrentLinkedQueue<SpoutTask>> iq = queueMap.values().iterator();
 		StringBuilder sb = new StringBuilder("{");
 		boolean first = true;
 		for (SpoutTask t : getTasks()) {

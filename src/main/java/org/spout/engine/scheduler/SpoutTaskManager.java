@@ -140,7 +140,7 @@ public class SpoutTaskManager implements TaskManager {
 				}
 				
 				itr.remove();
-				currentTask.unlockNextCallTime();
+				currentTask.setUnqueued();
 
 				if (!currentTask.isAlive()) {
 					continue;

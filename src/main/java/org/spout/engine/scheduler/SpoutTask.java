@@ -29,6 +29,7 @@ package org.spout.engine.scheduler;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.scheduler.ParallelRunnable;
@@ -81,11 +82,7 @@ public class SpoutTask implements Task, LongPrioritized {
 	 * Indicates the next scheduled time for the task to be called
 	 */
 	private final AtomicLong nextCallTime;
-	private final AtomicBoolean nextCallTimeLock = new AtomicBoolean(false);
-	/**
-	 * A flag which indicates if this task is alive.
-	 */
-	private final AtomicBoolean alive;
+	private final AtomicReference<QueueState> queueState = new AtomicReference<QueueState>(QueueState.UNQUEUED);
 	/**
 	 * A flag indicating if the task is actually executing
 	 */
@@ -119,7 +116,6 @@ public class SpoutTask implements Task, LongPrioritized {
 	public SpoutTask(TaskManager manager, Scheduler scheduler, Object owner, Runnable task, boolean sync, long delay, long period, TaskPriority priority) {
 		this.taskId = nextTaskId.getAndIncrement();
 		this.nextCallTime = new AtomicLong(manager.getUpTime() + delay);
-		this.alive = new AtomicBoolean(true);
 		this.executing = new AtomicBoolean(false);
 		this.owner = owner;
 		this.task = task;
@@ -171,7 +167,7 @@ public class SpoutTask implements Task, LongPrioritized {
 	
 	@Override
 	public boolean isAlive() {
-		return alive.get();
+		return !queueState.get().isDead();
 	}
 	
 	public long getNextCallTime() {
@@ -186,7 +182,7 @@ public class SpoutTask implements Task, LongPrioritized {
 	 * Stops this task.
 	 */
 	public void stop() {
-		alive.set(false);
+		remove();
 	}
 
 	/**
@@ -195,7 +191,7 @@ public class SpoutTask implements Task, LongPrioritized {
 	 * @return The task successfully executed.
 	 */
 	boolean pulse() {
-		if (!alive.get()) {
+		if (queueState.get().isDead()) {
 			return false;
 		}
 
@@ -216,7 +212,7 @@ public class SpoutTask implements Task, LongPrioritized {
 			updateCallTime();
 
 			if (period <= 0) {
-				alive.set(false);
+				queueState.set(QueueState.DEAD);
 			}
 		} finally {
 			executing.set(false);
@@ -225,16 +221,50 @@ public class SpoutTask implements Task, LongPrioritized {
 		return true;
 	}
 	
-	public void lockNextCallTime() {
-		if (!nextCallTimeLock.compareAndSet(false, true)) {
-			throw new IllegalStateException("Task added in the queue twice without being removed");
-		}
+	public void remove() {
+		queueState.set(QueueState.DEAD);
 	}
 	
-	public void unlockNextCallTime() {
-		if (!nextCallTimeLock.compareAndSet(true, false)) {
-			throw new IllegalStateException("Task removed from the queue before being added");
+	public boolean setQueued() {
+		if (!queueState.compareAndSet(QueueState.UNQUEUED, QueueState.QUEUED)) {
+			boolean success = false;
+			while (!success) {
+				QueueState oldState = queueState.get();
+				switch (oldState) {
+					case DEAD: 
+						return false;
+					case QUEUED: 
+						throw new IllegalStateException("Task added in the queue twice without being removed");
+					case UNQUEUED:
+						success = queueState.compareAndSet(QueueState.UNQUEUED, QueueState.QUEUED); 
+						break;
+					default:
+						throw new IllegalStateException("Unknown queue state " + oldState);
+				}
+			}
 		}
+		return true;
+	}
+	
+	public boolean setUnqueued() {
+		if (!queueState.compareAndSet(QueueState.QUEUED, QueueState.UNQUEUED)) {
+			boolean success = false;
+			while (!success) {
+				QueueState oldState = queueState.get();
+				switch (oldState) {
+					case DEAD: 
+						return false;
+					case UNQUEUED: 
+						throw new IllegalStateException("Task set as unqueued before being set as queued");
+					case QUEUED:
+						success = queueState.compareAndSet(QueueState.QUEUED, QueueState.UNQUEUED); 
+						break;
+					default:
+						throw new IllegalStateException("Unknown queue state " + oldState);
+				}
+			}
+		}
+		return true;
 	}
 
 	@Override
@@ -283,16 +313,20 @@ public class SpoutTask implements Task, LongPrioritized {
 		updateCallTime(period);
 	}
 	
-	private void updateCallTime(long offset) {
-		if (nextCallTimeLock.compareAndSet(false, true)) {
+	private boolean updateCallTime(long offset) {
+		boolean success = setQueued();
+		if (!success) {
+			return false;
+		}
+		try {
 			long now = manager.getUpTime();
 			if (nextCallTime.addAndGet(offset) <= now) {
 				nextCallTime.set(now + 1);
-			}			
-			nextCallTimeLock.set(false);
-		} else {
-			throw new IllegalStateException("Attempt made to modify next call time when the task was in the queue.");
+			}		
+		} finally {
+			setUnqueued();
 		}
+		return true;
 	}
 
 	@Override
@@ -311,6 +345,22 @@ public class SpoutTask implements Task, LongPrioritized {
 	@Override
 	public long getPriority() {
 		return nextCallTime.get();
+	}
+	
+	private static enum QueueState {
+		QUEUED, UNQUEUED, DEAD;
+		
+		public boolean isDead() {
+			return this == DEAD;
+		}
+		
+		public boolean isQueued() {
+			return this == QUEUED;
+		}
+		
+		public boolean isUnQueued() {
+			return this == UNQUEUED;
+		}
 	}
 
 }
