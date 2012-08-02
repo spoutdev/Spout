@@ -50,16 +50,16 @@ public class VertexBufferBatcher extends BatchVertexRenderer {
 	@Override
 	protected void doFlush() {
 		//Calculate the size
-		int size = numVerticies * 4 * SIZE_FLOAT;
+		int size = numVertices * 4 * SIZE_FLOAT;
 		
 		if (useColors) {
-			size += numVerticies * 4 * SIZE_FLOAT;			
+			size += numVertices * 4 * SIZE_FLOAT;			
 		}
 		if (useNormals) {
-			size += numVerticies * 4 * SIZE_FLOAT;			
+			size += numVertices * 4 * SIZE_FLOAT;			
 		}
 		if (useTextures) {
-			size += numVerticies * 2 * SIZE_FLOAT;			
+			size += numVertices * 2 * SIZE_FLOAT;			
 		}
 		FloatBuffer verts = BufferUtils.createFloatBuffer(size);
 		verts.put(vertexBuffer.toArray());
@@ -67,23 +67,23 @@ public class VertexBufferBatcher extends BatchVertexRenderer {
 		buffer.enableAttribute("vPosition", VERTEX_LOCATION, offset);
 		if(useColors){
 			verts.put(colorBuffer.toArray());
-			offset += this.numVerticies * SIZE_FLOAT * 4;
+			offset += this.numVertices * SIZE_FLOAT * 4;
 			buffer.enableAttribute("vColor", COLOR_LOCATION, offset);
 		}
 		if(useNormals){
 			verts.put(normalBuffer.toArray());
-			offset += this.numVerticies * SIZE_FLOAT * 4;
+			offset += this.numVertices * SIZE_FLOAT * 4;
 			buffer.enableAttribute("vNormal", NORMAL_LOCATION, offset);
 		}
 		if(useTextures){
 			verts.put(uvBuffer.toArray());
-			offset += this.numVerticies * SIZE_FLOAT * 2;
+			offset += this.numVertices * SIZE_FLOAT * 2;
 			buffer.enableAttribute("vTexcoord", TEXCOORD0_LOCATION, offset);
 		}
 		
 		verts.flip();
 		
-		this.buffer.setData(verts, numVerticies);
+		this.buffer.setData(verts, numVertices);
 		
 	
 		

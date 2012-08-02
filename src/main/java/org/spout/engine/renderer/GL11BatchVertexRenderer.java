@@ -49,7 +49,7 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 		((BasicShader) activeMaterial.getShader()).assign(true);
 		GL11.glPushMatrix();
 		GL11.glBegin(renderMode);
-		for (int i = 0; i < numVerticies; i += 1) {
+		for (int i = 0; i < numVertices; i += 1) {
 			int index = i * 4;
 			if (useColors) {
 				GL11.glColor3f(colorBuffer.get(index), colorBuffer.get(index + 1), colorBuffer.get(index + 2));
