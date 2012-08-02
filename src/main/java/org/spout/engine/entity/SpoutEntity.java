@@ -76,7 +76,7 @@ public class SpoutEntity extends BasicTickable implements Entity {
 	private final Set<SpoutChunk> observingChunks = new HashSet<SpoutChunk>();
 	private final SpoutEngine engine;
 	private final UUID uid;
-	private boolean justSpawned = true;
+	protected boolean justSpawned = true;
 	private boolean observer = false;
 	private boolean attached = false;
 	private int viewDistance;

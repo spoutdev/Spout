@@ -161,7 +161,7 @@ public class SharedFileSystem implements FileSystem {
 	
 	public Resource getResource(URI path) {
 		if (!LOADED_RESOURCES.containsKey(path)) {
-			Spout.getLogger().warning("Late Precache of resource: " + path.toString());
+			if(Spout.debugMode()) Spout.getLogger().warning("Late Precache of resource: " + path.toString());
 			try	{
 				loadResource(path);
 			} catch(ResourceNotFoundException e){

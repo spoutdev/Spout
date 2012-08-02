@@ -58,15 +58,15 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 		}
 
 		GL30.glBindVertexArray(vao);
-		int size = numVerticies * 4 * SIZE_FLOAT;
+		int size = numVertices * 4 * SIZE_FLOAT;
 		if (useColors) {
-			size += numVerticies * 4 * SIZE_FLOAT;
+			size += numVertices * 4 * SIZE_FLOAT;
 		}
 		if (useNormals) {
-			size += numVerticies * 4 * SIZE_FLOAT;
+			size += numVertices * 4 * SIZE_FLOAT;
 		}
 		if (useTextures) {
-			size += numVerticies * 2 * SIZE_FLOAT;
+			size += numVertices * 2 * SIZE_FLOAT;
 		}
 
 		vbos = GL15.glGenBuffers();
@@ -82,7 +82,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 		//GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vBuffer, GL15.GL_STATIC_DRAW);
 		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset, vBuffer);
 		activeMaterial.getShader().enableAttribute("vPosition", 4, GL11.GL_FLOAT, 0, offset);
-		offset += numVerticies * 4 * SIZE_FLOAT;
+		offset += numVertices * 4 * SIZE_FLOAT;
 		if (useColors) {
 
 			vBuffer = BufferUtils.createFloatBuffer(colorBuffer.size());
@@ -92,7 +92,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset, vBuffer);
 
 			activeMaterial.getShader().enableAttribute("vColor", 4, GL11.GL_FLOAT, 0, offset);
-			offset += numVerticies * 4 * SIZE_FLOAT;
+			offset += numVertices * 4 * SIZE_FLOAT;
 		}
 		if (useNormals) {
 
@@ -103,7 +103,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset, vBuffer);
 
 			activeMaterial.getShader().enableAttribute("vNormal", 4, GL11.GL_FLOAT, 0, offset);
-			offset += numVerticies * 4 * SIZE_FLOAT;
+			offset += numVertices * 4 * SIZE_FLOAT;
 		}
 		if (useTextures) {
 
@@ -114,7 +114,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset, vBuffer);
 
 			activeMaterial.getShader().enableAttribute("vTexCoord", 2, GL11.GL_FLOAT, 0, offset);
-			offset += numVerticies * 2 * SIZE_FLOAT;
+			offset += numVertices * 2 * SIZE_FLOAT;
 		}
 
 		activeMaterial.assign();
@@ -129,6 +129,6 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbos);
 
 		activeMaterial.assign();
-		GL11.glDrawArrays(renderMode, 0, numVerticies);
+		GL11.glDrawArrays(renderMode, 0, numVertices);
 	}
 }

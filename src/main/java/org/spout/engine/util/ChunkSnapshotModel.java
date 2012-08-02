@@ -26,20 +26,22 @@
  */
 package org.spout.engine.util;
 
+import org.spout.api.Spout;
+import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
-import org.spout.engine.world.SpoutWorld;
+import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 
 /**
  * Stores 9 chunk snapshots (1 middle chunk and 8 neighbours) for quick access
  */
 public class ChunkSnapshotModel {
-	private final SpoutWorld world;
+	private final World world;
 	private int cx, cy, cz;
 	private ChunkSnapshot[][][] chunks = new ChunkSnapshot[3][3][3];
 	private ChunkSnapshot center;
 
-	public ChunkSnapshotModel(SpoutWorld world) {
+	public ChunkSnapshotModel(World world) {
 		this.world = world;
 	}
 
@@ -47,24 +49,28 @@ public class ChunkSnapshotModel {
 		this.cx = cx;
 		this.cy = cy;
 		this.cz = cz;
-		this.center = this.world.getChunk(cx, cy, cz).getSnapshot();
-		if (this.center == null) {
-			return this;
-		}
-		// set center
-		this.chunks[1][1][1] = this.center;
-		for (int x = 0; x < 3; x++) {
-			for (int y = 0; y < 3; y++) {
-				for (int z = 0; z < 3; z++) {
-					this.chunks[x][y][z] = this.world.getChunk(cx + x - 1, cy + y - 1, cz + z - 1).getSnapshot();
+
+		SpoutSnapshotLock lock = (SpoutSnapshotLock) Spout.getEngine().getScheduler().getSnapshotLock();
+		lock.coreReadLock("Load snapshots");
+		try {
+			for (int x = 0; x < 3; x++) {
+				for (int y = 0; y < 3; y++) {
+					for (int z = 0; z < 3; z++) {
+						this.chunks[x][y][z] = this.world.getChunk(cx + x - 1, cy + y - 1, cz + z - 1).getSnapshot();
+					}
 				}
 			}
+		} finally {
+			lock.coreReadUnlock("Load snapshots");
 		}
+
+		this.center = this.chunks[1][1][1];
 		return this;
 	}
 
 	/**
 	 * Gets the current center chunk of this model
+	 * 
 	 * @return
 	 */
 	public ChunkSnapshot getCenter() {
@@ -87,10 +93,15 @@ public class ChunkSnapshotModel {
 
 	/**
 	 * Gets the chunk at world chunk coordinates<br>
-	 * Note: Coordinates must be within this model, or index out of bounds will be thrown.
-	 * @param cx coordinate of the chunk
-	 * @param cy coordinate of the chunk
-	 * @param cz coordinate of the chunk
+	 * Note: Coordinates must be within this model, or index out of bounds will
+	 * be thrown.
+	 * 
+	 * @param cx
+	 *            coordinate of the chunk
+	 * @param cy
+	 *            coordinate of the chunk
+	 * @param cz
+	 *            coordinate of the chunk
 	 * @return The chunk, or null if not available
 	 */
 	public ChunkSnapshot getChunk(int cx, int cy, int cz) {
@@ -99,10 +110,15 @@ public class ChunkSnapshotModel {
 
 	/**
 	 * Gets the chunk at world block coordinates<br>
-	 * Note: Coordinates must be within this model, or index out of bounds will be thrown.
-	 * @param bx coordinate of the block
-	 * @param by coordinate of the block
-	 * @param bz coordinate of the block
+	 * Note: Coordinates must be within this model, or index out of bounds will
+	 * be thrown.
+	 * 
+	 * @param bx
+	 *            coordinate of the block
+	 * @param by
+	 *            coordinate of the block
+	 * @param bz
+	 *            coordinate of the block
 	 * @return The chunk, or null if not available
 	 */
 	public ChunkSnapshot getChunkFromBlock(int bx, int by, int bz) {

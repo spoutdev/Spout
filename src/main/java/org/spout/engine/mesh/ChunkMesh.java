@@ -33,6 +33,7 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
+import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.ModelFace;
 import org.spout.api.model.Vertex;
@@ -50,30 +51,47 @@ public class ChunkMesh extends BaseMesh {
 	 */
 	private static final List<BlockFace> renderableFaces = Lists.newArrayList(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.TOP, BlockFace.BOTTOM);
 
-	private final ChunkSnapshotModel chunkModel;
+	private final Chunk chunk;
+	private ChunkSnapshotModel chunkModel;
 	private ChunkSnapshot center;
 
 	/**
 	 * Private constructor.
 	 */
-	private ChunkMesh(ChunkSnapshotModel chunkModel) {
-		this.chunkModel = chunkModel;
-		center = chunkModel.getCenter();
+	private ChunkMesh(Chunk chunk) {
+		this.chunk = chunk;
 	}
 
-	public static ChunkMesh generateFromChunk(SpoutChunk chunk) {
-		ChunkSnapshotModel model = new ChunkSnapshotModel(chunk.getWorld());
-		model.load(chunk.getX(), chunk.getY(), chunk.getZ());
-		ChunkMesh mesh = new ChunkMesh(model);
+	/**
+	 * Updates the mesh.
+	 */
+	public void update() {
+		chunkModel = new ChunkSnapshotModel(chunk.getWorld());
+		chunkModel.load(chunk.getX(), chunk.getY(), chunk.getZ());
+		center = chunkModel.getCenter();
 
 		for (int x = chunk.getBlockX(); x < chunk.getBlockX() + Chunk.BLOCKS.SIZE; x++) {
 			for (int y = chunk.getBlockY(); y < chunk.getBlockY() + Chunk.BLOCKS.SIZE; y++) {
 				for (int z = chunk.getBlockZ(); z < chunk.getBlockZ() + Chunk.BLOCKS.SIZE; z++) {
-					mesh.generateBlockVertices(x, y, z);
+					generateBlockVertices(x, y, z);
 				}
 			}
 		}
 
+		// Free memory
+		chunkModel = null;
+		center = null;
+	}
+
+	/**
+	 * Generates a ChunkMesh of the given chunk.
+	 * 
+	 * @param chunk
+	 * @return
+	 */
+	public static ChunkMesh generateFromChunk(Chunk chunk) {
+		ChunkMesh mesh = new ChunkMesh(chunk);
+		mesh.update();
 		return mesh;
 	}
 
@@ -100,15 +118,12 @@ public class ChunkMesh extends BaseMesh {
 			int z1 = facePos.getFloorZ();
 			BlockMaterial neighbor = chunkModel.getChunkFromBlock(x1, y1, z1).getBlockMaterial(x1, y1, z1);
 
-			if (neighbor.isTransparent()) {
-				shouldRender[face.ordinal()] = true;
-			} else {
-				shouldRender[face.ordinal()] = false;
-			}
+			shouldRender[face.ordinal()] = neighbor.isTransparent();
 		}
 
 		for (BlockFace face : renderableFaces) {
 			if (shouldRender[face.ordinal()]) {
+				// System.out.println(material + " " + face + " " + position);
 				// Create a face -- temporary until we get some real models
 				appendModelFaces(material, face, position);
 			}
@@ -122,70 +137,72 @@ public class ChunkMesh extends BaseMesh {
 	 * @param base
 	 */
 	private void appendModelFaces(BlockMaterial m, BlockFace face, Vector3 base) {
-		Vector3 a = null;
-		Vector3 b = null;
-		Vector3 c = null;
-		Vector3 d = null;
+		Vector3 p1 = null;
+		Vector3 p2 = null;
+		Vector3 p3 = null;
+		Vector3 p4 = null;
 
 		switch (face) {
 		case TOP:
-			a = base.add(0, 1, 0);
-			b = base.add(0, 1, 1);
-			c = base.add(1, 1, 0);
-			d = base.add(1, 1, 1);
+			p1 = base.add(0, 1, 0);
+			p2 = base.add(0, 1, 1);
+			p3 = base.add(1, 1, 0);
+			p4 = base.add(1, 1, 1);
 			break;
 		case BOTTOM:
-			a = base.add(0, 0, 0);
-			b = base.add(0, 0, 1);
-			c = base.add(1, 0, 0);
-			d = base.add(1, 0, 1);
+			p1 = base.add(0, 0, 0);
+			p2 = base.add(0, 0, 1);
+			p3 = base.add(1, 0, 0);
+			p4 = base.add(1, 0, 1);
 			break;
 		case NORTH:
-			a = base.add(0, 0, 0);
-			b = base.add(0, 0, 1);
-			c = base.add(0, 1, 0);
-			d = base.add(0, 1, 1);
+			p1 = base.add(0, 0, 0);
+			p2 = base.add(0, 0, 1);
+			p3 = base.add(0, 1, 0);
+			p4 = base.add(0, 1, 1);
 			break;
 		case SOUTH:
-			a = base.add(1, 0, 0);
-			b = base.add(1, 0, 1);
-			c = base.add(1, 1, 0);
-			d = base.add(1, 1, 1);
+			p1 = base.add(1, 0, 0);
+			p2 = base.add(1, 0, 1);
+			p3 = base.add(1, 1, 0);
+			p4 = base.add(1, 1, 1);
 			break;
 		case WEST:
-			a = base.add(0, 0, 1);
-			b = base.add(1, 0, 1);
-			c = base.add(0, 1, 1);
-			d = base.add(1, 1, 1);
+			p1 = base.add(0, 0, 1);
+			p2 = base.add(1, 0, 1);
+			p3 = base.add(0, 1, 1);
+			p4 = base.add(1, 1, 1);
 			break;
 		case EAST:
-			a = base.add(0, 0, 0);
-			b = base.add(1, 0, 0);
-			c = base.add(0, 1, 0);
-			d = base.add(1, 1, 0);
+			p1 = base.add(0, 0, 0);
+			p2 = base.add(1, 0, 0);
+			p3 = base.add(0, 1, 0);
+			p4 = base.add(1, 1, 0);
 			break;
 		}
+		
+		Vector2 uv1 = Vector2.ZERO;
+		Vector2 uv2 = new Vector2(0, 1);
+		Vector2 uv3 = new Vector2(1, 0);
+		Vector2 uv4 = Vector2.ONE;
 
 		Color color = getColor(m); // Temporary testing color
-		Vertex v1 = new Vertex(a, face.getOffset());
+		Vertex v1 = new Vertex(p1, face.getOffset(), uv1);
 		v1.color = color;
 
-		Vertex v2 = new Vertex(b, face.getOffset());
+		Vertex v2 = new Vertex(p2, face.getOffset(), uv2);
 		v2.color = color;
 
-		Vertex v3 = new Vertex(c, face.getOffset());
+		Vertex v3 = new Vertex(p3, face.getOffset(), uv3);
 		v3.color = color;
 
-		Vertex v4 = new Vertex(d, face.getOffset());
+		Vertex v4 = new Vertex(p4, face.getOffset(), uv4);
 		v4.color = color;
 
 		ModelFace f1 = new ModelFace(v1, v2, v3);
 		ModelFace f2 = new ModelFace(v2, v3, v4);
 		faces.add(f1);
 		faces.add(f2);
-
-		// System.out.println("appending face " + face + " for block at " + base
-		// + " with color " + color);
 	}
 
 	private Color getColor(BlockMaterial m) {
@@ -222,6 +239,24 @@ public class ChunkMesh extends BaseMesh {
 		default:
 			return new Color(150, 150, 150);
 		}
+	}
+
+	/**
+	 * Checks if the chunk mesh has any vertices.
+	 * 
+	 * @return
+	 */
+	public boolean hasVertices() {
+		return faces.size() > 0;
+	}
+
+	/**
+	 * Counts the number of faces in the mesh.
+	 * 
+	 * @return
+	 */
+	public int countFaces() {
+		return faces.size();
 	}
 
 	@Override

@@ -504,13 +504,13 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public void stop(final String message) {
 		final SpoutEngine engine = this;
-		
+
 		if (!stopping.compareAndSet(false, true)) {
 			return;
 		}
 
 		getPluginManager().clearPlugins();
-		
+
 		Runnable lastTickTask = new Runnable() {
 			public void run() {
 				ServerStopEvent stopEvent = new ServerStopEvent(message);
@@ -526,8 +526,8 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 				}
 			}
 		};
-		
-		
+
+
 		Runnable finalTask = new Runnable() {
 			@Override
 			public void run() {
@@ -767,14 +767,14 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 			player = onlinePlayers.getLive().get(playerName);
 
 			if (player != null) {
-				if (!player.connect(session)) {
+				if (!player.connect(session, getDefaultWorld().getSpawnPoint())) {
 					return null;
 				}
 
 				break;
 			}
 
-			player = new SpoutPlayer(playerName, getDefaultWorld().getSpawnPoint(), session, this);
+			player = new SpoutPlayer(playerName, getDefaultWorld().getSpawnPoint(), session, this, viewDistance);
 			if (onlinePlayers.putIfAbsent(playerName, player) == null) {
 				break;
 			}

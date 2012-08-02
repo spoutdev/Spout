@@ -67,7 +67,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	TFloatArrayList colorBuffer = new TFloatArrayList();
 	TFloatArrayList normalBuffer = new TFloatArrayList();
 	TFloatArrayList uvBuffer = new TFloatArrayList();
-	int numVerticies = 0;
+	int numVertices = 0;
 	boolean useColors = false;
 	boolean useNormals = false;
 	boolean useTextures = false;
@@ -79,7 +79,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 
 	
 	public int getVertexCount(){
-		return numVerticies;
+		return numVertices;
 	}
 	
 	/* (non-Javadoc)
@@ -97,7 +97,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 		normalBuffer.clear();
 		uvBuffer.clear();
 
-		numVerticies = 0;
+		numVertices = 0;
 		
 		this.activeMaterial = material;
 	}
@@ -125,7 +125,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 			if (colorBuffer.size() % 4 != 0) {
 				throw new IllegalStateException("Color Size Mismatch (How did this happen?)");
 			}
-			if (colorBuffer.size() / 4 != numVerticies) {
+			if (colorBuffer.size() / 4 != numVertices) {
 				throw new IllegalStateException("Color Buffer size does not match numVerticies");
 			}
 		}
@@ -133,7 +133,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 			if (normalBuffer.size() % 4 != 0) {
 				throw new IllegalStateException("Normal Size Mismatch (How did this happen?)");
 			}
-			if (normalBuffer.size() / 4 != numVerticies) {
+			if (normalBuffer.size() / 4 != numVertices) {
 				throw new IllegalStateException("Normal Buffer size does not match numVerticies");
 			}
 		}
@@ -141,11 +141,11 @@ public abstract class BatchVertexRenderer implements Renderer {
 			if (uvBuffer.size() % 2 != 0) {
 				throw new IllegalStateException("UV size Mismatch (How did this happen?)");
 			}
-			if (uvBuffer.size() / 2 != numVerticies) {
+			if (uvBuffer.size() / 2 != numVertices) {
 				throw new IllegalStateException("UV Buffer size does not match numVerticies");
 			}
 		}
-		if(numVerticies <= 0) return;
+		if(numVertices <= 0) return;
 		//Call the overriden flush
 		doFlush();
 
@@ -175,7 +175,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	@Override
 	public final void render() {
 		checkRender();
-		if(numVerticies <= 0) return;
+		if(numVertices <= 0) return;
 		doRender();
 	}
 
@@ -199,7 +199,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 		vertexBuffer.add(z);
 		vertexBuffer.add(w);
 
-		numVerticies++;
+		numVertices++;
 	}
 
 	/* (non-Javadoc)
@@ -365,8 +365,8 @@ public abstract class BatchVertexRenderer implements Renderer {
 	}
 
 	public void dumpBuffers() {
-		System.out.println("BatchVertexRenderer Debug Ouput: Verts: " + numVerticies + " Using {colors, normal, textures} {" + useColors + ", " + useNormals + ", " + useTextures + "}");
-		for (int i = 0; i < numVerticies; i++) {
+		System.out.println("BatchVertexRenderer Debug Ouput: Verts: " + numVertices + " Using {colors, normal, textures} {" + useColors + ", " + useNormals + ", " + useTextures + "}");
+		for (int i = 0; i < numVertices; i++) {
 			int index = i * 4;
 
 			if (useColors) {
