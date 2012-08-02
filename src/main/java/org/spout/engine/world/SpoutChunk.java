@@ -1325,7 +1325,7 @@ public class SpoutChunk extends Chunk {
 				}
 				// Player Network sync
 				if (p.getController() instanceof PlayerController) {
-					Player player = ((PlayerController) p.getController()).getPlayer();
+					Player player = ((PlayerController) p.getController()).getParent();
 
 					NetworkSynchronizer n = player.getNetworkSynchronizer();
 					for (Entity e : entitiesSnapshot) {
@@ -1380,7 +1380,7 @@ public class SpoutChunk extends Chunk {
 					int entityViewDistanceOld = ((SpoutEntity) e).getPrevViewDistance();
 					int entityViewDistanceNew = e.getViewDistance();
 
-					Player player = ((PlayerController) p.getController()).getPlayer();
+					Player player = ((PlayerController) p.getController()).getParent();
 
 					if (!player.isOnline()) {
 						continue;
@@ -1400,7 +1400,7 @@ public class SpoutChunk extends Chunk {
 		for (Map.Entry<Entity, Integer> entry : observerLive.entrySet()) {
 			Entity p = entry.getKey();
 			if (p.getController() instanceof PlayerController) {
-				Player player = ((PlayerController) p.getController()).getPlayer();
+				Player player = ((PlayerController) p.getController()).getParent();
 				if (player.isOnline()) {
 					NetworkSynchronizer n = player.getNetworkSynchronizer();
 					int playerDistance = entry.getValue();

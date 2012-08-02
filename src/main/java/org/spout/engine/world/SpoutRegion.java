@@ -587,7 +587,7 @@ public class SpoutRegion extends Region{
 							//Try and determine if we should tick this entity
 							//If the entity is not important (not an observer)
 							//And the entity is not visible to players, don't tick it
-							if (visibleToPlayers || (ent.getController() != null && ent.getController().isImportant())) {
+							if (visibleToPlayers || (ent.getController() != null && isImportant(ent.getController()))) {
 								ent.tick(dt);
 							}
 						} catch (Exception e) {
@@ -667,7 +667,7 @@ public class SpoutRegion extends Region{
 						//Try and determine if we should resolve collisions for this entity
 						//If the entity is not important (not an observer)
 						//And the entity is not visible to players, don't resolve it
-						if (visibleToPlayers || (ent.getController() != null && ent.getController().isImportant())) {
+						if (visibleToPlayers || (ent.getController() != null && isImportant(ent.getController()))) {
 							if (ent.preResolve()) {
 								resolvers.add(ent);
 							}
@@ -741,7 +741,7 @@ public class SpoutRegion extends Region{
 	}
 
 	private void syncChunkToPlayers(SpoutChunk chunk, Entity entity) {
-		SpoutPlayer player = (SpoutPlayer) ((PlayerController) entity.getController()).getPlayer();
+		SpoutPlayer player = (SpoutPlayer) ((PlayerController) entity.getController()).getParent();
 		if (player.isOnline()) {
 			NetworkSynchronizer synchronizer = player.getNetworkSynchronizer();
 			if (!chunk.isDirtyOverflow() && !chunk.isLightDirty()) {
@@ -1200,8 +1200,8 @@ public class SpoutRegion extends Region{
 	public Set<Player> getPlayers() {
 		HashSet<Player> players = new HashSet<Player>();
 		for (PlayerController player : this.entityManager.getPlayers()) {
-			if (player.getPlayer() != null) {
-				players.add(player.getPlayer());
+			if (player.getParent() != null) {
+				players.add(player.getParent());
 			}
 		}
 		return players;
@@ -1286,5 +1286,12 @@ public class SpoutRegion extends Region{
 
 	public void addSnapshotFuture(SpoutChunkSnapshotFuture future) {
 		snapshotQueue.add(future);
+	}
+
+	private boolean isImportant(Controller controller) {
+		if (controller.getParent() != null) {
+			return controller.getParent().isObserver() || controller.isImportant();
+		}
+		return controller instanceof PlayerController;
 	}
 }

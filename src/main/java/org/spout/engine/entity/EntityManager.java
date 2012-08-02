@@ -244,7 +244,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 				continue;
 			}
 
-			Player p = ((PlayerController) controller).getPlayer();
+			Player p = ((PlayerController) controller).getParent();
 			if (p.isOnline()) {
 				p.getNetworkSynchronizer().finalizeTick();
 			}
@@ -257,7 +257,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 			if (controller != null) {
 				controller.preSnapshot();
 				if (controller instanceof PlayerController) {
-					Player p = ((PlayerController) controller).getPlayer();
+					Player p = ((PlayerController) controller).getParent();
 					if (p.isOnline()) {
 						p.getNetworkSynchronizer().preSnapshot();
 					}
