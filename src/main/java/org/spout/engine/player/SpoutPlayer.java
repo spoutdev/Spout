@@ -67,6 +67,13 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	private final int hashcode;
 	private PriorityQueue<PlayerInputState> inputQueue = new PriorityQueue<PlayerInputState>();
 
+	public SpoutPlayer(String name, SpoutEngine engine) {
+		super(engine, (Transform) null, null);
+		this.name = name;
+		displayName.set(name);
+		hashcode = name.hashCode();
+	}
+
 	public SpoutPlayer(String name, Transform transform, SpoutSession session, SpoutEngine engine, int viewDistance) {
 		super(engine, transform, null, viewDistance);
 		this.name = name;

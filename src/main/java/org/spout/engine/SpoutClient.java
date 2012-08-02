@@ -179,7 +179,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		// Register commands
 		getRootCommand().addSubCommands(this, InputCommands.class, commandRegFactory);
-//		activePlayer = new SpoutPlayer("Spouty");
+		activePlayer = new SpoutPlayer("Spouty", this);
 	}
 
 	@Override
