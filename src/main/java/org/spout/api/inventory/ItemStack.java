@@ -210,6 +210,9 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 	}
 
 	public boolean equalsIgnoreSize(ItemStack other) {
+		if (other == null) {
+			return false;
+		}
 		return material.equals(other.material) && data == other.data && auxData.equals(other.auxData) && LogicUtil.bothNullOrEqual(nbtData, other.nbtData);
 	}
 
