@@ -233,6 +233,7 @@ public final class SpoutScheduler implements Scheduler {
 				Spout.getLogger().log(Level.SEVERE, "Interrupt while running final snapshot copy: {0}", ex.getMessage());
 			}
 			
+			TickStage.setStage(TickStage.TICKSTART);
 			runLastTickTasks();
 			
 			asyncExecutors.copySnapshot();
@@ -255,7 +256,7 @@ public final class SpoutScheduler implements Scheduler {
 			}
 
 			try {
-				copySnapshot(asyncExecutors.get());
+				copySnapshotWithLock(asyncExecutors.get());
 			} catch (InterruptedException ex) {
 				Spout.getLogger().log(Level.SEVERE, "Error while halting all executors: {0}", ex.getMessage());
 			}
@@ -274,7 +275,7 @@ public final class SpoutScheduler implements Scheduler {
 			}
 
 			try {
-				copySnapshot(asyncExecutors.get());
+				copySnapshotWithLock(asyncExecutors.get());
 			} catch (InterruptedException ex) {
 				engine.getLogger().log(Level.SEVERE, "Error while shutting down engine: {0}", ex.getMessage());
 			}
