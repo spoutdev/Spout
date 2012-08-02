@@ -80,7 +80,7 @@ public class SpoutProxy extends SpoutServer {
 				break;
 			}
 
-			player = new SpoutPlayer(playerName, null, session, (SpoutEngine) Spout.getEngine());
+			player = new SpoutPlayer(playerName, null, session, (SpoutEngine) Spout.getEngine(), -1);
 			if (onlinePlayers.putIfAbsent(playerName, player) == null) {
 				break;
 			}
