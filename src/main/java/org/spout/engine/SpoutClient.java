@@ -280,6 +280,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		getLogger().info("Vendor: " + GL11.glGetString(GL11.GL_VENDOR));
 		getLogger().info("OpenGL Version: " + GL11.glGetString(GL11.GL_VERSION));
 		getLogger().info("GLSL Version: " + GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
+		getLogger().info("Max Textures: " + GL11.glGetString(GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS));
 		String extensions = "Extensions Supported: ";
 		if (getArguments().renderMode == RenderMode.GL30) {
 			for (int i = 0; i < GL11.glGetInteger(GL30.GL_NUM_EXTENSIONS); i++) {
