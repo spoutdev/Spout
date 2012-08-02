@@ -53,7 +53,6 @@ public class MessagingCommands {
 	}
 
 	@Command(aliases = {"say", "chat"}, usage = "[message]", desc = "Say something!", min = 1, max = -1)
-	@CommandPermissions("spout.command.say")
 	public class SayCommand {
 		public SayCommand() {
 			DefaultPermissions.addDefaultPermission("spout.chat.send");
