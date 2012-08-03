@@ -32,7 +32,7 @@ import java.text.DateFormat;
 import java.util.Date;
 
 /**
- * @author zml2008
+ * Abstract Console with implementation for the date format
  */
 public abstract class AbstractConsole implements Console {
 	private DateFormat dateFormat;

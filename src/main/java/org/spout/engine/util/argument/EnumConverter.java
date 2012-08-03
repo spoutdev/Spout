@@ -29,7 +29,7 @@ package org.spout.engine.util.argument;
 import com.beust.jcommander.IStringConverter;
 
 /**
- * @author zml2008
+ * Converts an enum field name to an enum type
  */
 public class EnumConverter<T extends Enum<T>> implements IStringConverter<T> {
 	private final Class<T> enumClass;

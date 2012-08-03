@@ -28,9 +28,6 @@ package org.spout.engine.chat.style;
 
 import org.fusesource.jansi.Ansi;
 
-/**
- * @author zml2008
- */
 public class ResetJansiFormatter extends JansiStyleFormatter {
 	public void format(Ansi ansi, String text) {
 		ansi.reset().a(text);

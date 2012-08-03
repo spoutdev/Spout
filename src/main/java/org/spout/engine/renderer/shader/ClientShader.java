@@ -59,35 +59,34 @@ import org.spout.engine.renderer.shader.variables.Vec4ShaderVariable;
 
 /**
  * Represents a Shader Object in OpenGL
- * @author RoyAwesome
  */
 public class ClientShader extends Resource implements Shader {
 	int program;
-	
+
 	HashMap<String, ShaderVariable> variables = new HashMap<String, ShaderVariable>();
 	HashMap<String, TextureSamplerShaderVariable> textures = new HashMap<String, TextureSamplerShaderVariable>();
-	
+
 	int maxTextures;
-	
+
 	public static boolean validateShader = true;
 
 	public static final ClientShader BASIC = new BasicShader();
-	
+
 	public ClientShader(){
-		
+
 	}
-	
+
 	public ClientShader(String vshaderSource, String fshaderSource, boolean override){
 		doCompileShader(vshaderSource, fshaderSource);
 	}
-	
-	
+
+
 	public ClientShader(String vertexShader, String fragmentShader) {
 
 		System.out.println("Compiling " + vertexShader + " and " + fragmentShader);
-		
-		
-	
+
+
+
 		//Compile the vertex shader
 		String vshader;
 		if (vertexShader == null) {
@@ -100,7 +99,7 @@ public class ClientShader extends Resource implements Shader {
 				vshader = fallbackVertexShader;
 			}
 		}
-		
+
 		String fshader;
 		if (fragmentShader == null) {
 			fshader = fallbackFragmentShader;
@@ -114,23 +113,23 @@ public class ClientShader extends Resource implements Shader {
 		}
 
 		doCompileShader(vshader, fshader);
-	
+
 	}
 
-	
+
 	private void doCompileShader(String vsource, String fsource){
 		if (((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
 			return;
 		}
-	
-		
+
+
 		//Create a new Shader object on the GPU
 		program = GL20.glCreateProgram();
-		
+
 		int vShader = ShaderHelper.compileShader(vsource, GL20.GL_VERTEX_SHADER);
 		GL20.glAttachShader(program, vShader);
-		
-		
+
+
 		int fShader = ShaderHelper.compileShader(fsource, GL20.GL_FRAGMENT_SHADER);
 		GL20.glAttachShader(program, fShader);
 
@@ -165,15 +164,15 @@ public class ClientShader extends Resource implements Shader {
 		}
 		System.out.println("Compiled Shader with id: " + program);
 	}
-	
-	
-	
+
+
+
 	@Override
 	public void setUniform(String name, int value) {
 		variables.put(name, new IntShaderVariable(program, name, value));
 	}
 
-	
+
 	@Override
 	public void setUniform(String name, float value) {
 		variables.put(name, new FloatShaderVariable(program, name, value));
@@ -184,19 +183,19 @@ public class ClientShader extends Resource implements Shader {
 		variables.put(name, new Vec2ShaderVariable(program, name, value));
 	}
 
-	
+
 	@Override
 	public void setUniform(String name, Vector3 value) {
 		variables.put(name, new Vec3ShaderVariable(program, name, value));
 	}
 
-	
+
 	@Override
 	public void setUniform(String name, Vector4 value) {
 		variables.put(name, new Vec4ShaderVariable(program, name, value));
 	}
 
-	
+
 	@Override
 	public void setUniform(String name, Matrix value) {
 		if (value.getDimension() == 2) {
@@ -213,10 +212,10 @@ public class ClientShader extends Resource implements Shader {
 		variables.put(name, new ColorShaderVariable(program, name, value));
 	}
 
-	
+
 	@Override
-	public void setUniform(String name, Texture value) {	
-		textures.put(name, new TextureSamplerShaderVariable(program, name, value));		
+	public void setUniform(String name, Texture value) {
+		textures.put(name, new TextureSamplerShaderVariable(program, name, value));
 	}
 
 
