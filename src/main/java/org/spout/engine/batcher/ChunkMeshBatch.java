@@ -53,7 +53,7 @@ public class ChunkMeshBatch extends Cuboid {
 	private PrimitiveBatch renderer = new PrimitiveBatch();
 	private ChunkMesh[] meshes = new ChunkMesh[MESH_COUNT];
 	private boolean hasVertices = false;
-	
+
 	private Matrix modelMat = MathHelper.createIdentity();
 
 	public ChunkMeshBatch(RenderMaterial material, World world, int baseX, int baseY, int baseZ) {
@@ -111,8 +111,33 @@ public class ChunkMeshBatch extends Cuboid {
 			renderer.draw();
 		}
 	}
-	
-	public Matrix getTransform(){
+
+	public Matrix getTransform() {
 		return modelMat;
+	}
+
+	@Override
+	public String toString() {
+		return "ChunkMeshBatch [base=" + base + ", size=" + size + "]";
+	}
+
+	/**
+	 * Gets the coordinates of the given chunk's batcher.
+	 * 
+	 * @param chunkCoords
+	 * @return
+	 */
+	public static Vector3 getBatchCoordinates(Vector3 chunkCoords) {
+		return new Vector3(Math.floor(chunkCoords.getX() / (float) SIZE_X), Math.floor(chunkCoords.getY() / (float) SIZE_Y), Math.floor(chunkCoords.getZ() / (float) SIZE_Z));
+	}
+
+	/**
+	 * Gets the coordinates of the given batcher's chunk.
+	 * 
+	 * @param batchCoords
+	 * @return
+	 */
+	public static Vector3 getChunkCoordinates(Vector3 batchCoords) {
+		return new Vector3(batchCoords.getX() * SIZE_X, batchCoords.getY() * SIZE_Y, batchCoords.getZ() * SIZE_Z);
 	}
 }
