@@ -142,6 +142,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, true);
 		bootstrap.setPipelineFactory(pipelineFactory);
 		super.init(args);
+		
+		scheduler.startRenderThread();
+		
 	}
 
 	@Override
@@ -152,8 +155,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	@Override
 	public void start(boolean checkWorlds) {
 		super.start(checkWorlds);
-		scheduler.startRenderThread();
-		getEventManager().registerEvents(new SpoutClientListener(this), this);
+			getEventManager().registerEvents(new SpoutClientListener(this), this);
 		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this));
 
 		// Register commands
