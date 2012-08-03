@@ -28,8 +28,8 @@ package org.spout.engine.listener;
 
 import java.net.InetAddress;
 
-import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.Spout;
+import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
 import org.spout.api.event.Order;
@@ -42,6 +42,7 @@ import org.spout.api.event.server.BanChangeEvent.BanType;
 import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 import org.spout.api.event.storage.PlayerLoadEvent;
 import org.spout.api.player.Player;
+
 import org.spout.engine.SpoutServer;
 import org.spout.engine.protocol.SpoutSession;
 
@@ -57,15 +58,11 @@ public class SpoutListener implements Listener {
 		if (event.isCancelled()) {
 			return;
 		}
-		long start = System.currentTimeMillis();
 		//Create the player
 		final Player player = server.addPlayer(event.getPlayerName(), (SpoutSession<?>) event.getSession(), event.getViewDistance());
 
 		if (player != null) {
-			PlayerLoadEvent loadEvent = Spout.getEngine().getEventManager().callEvent(new PlayerLoadEvent(player));
-			if (!loadEvent.isLoaded()) {
-
-			}
+			Spout.getEngine().getEventManager().callEvent(new PlayerLoadEvent(player));
 			PlayerLoginEvent loginEvent = Spout.getEngine().getEventManager().callEvent(new PlayerLoginEvent(player));
 			if (!loginEvent.isAllowed()) {
 				if (loginEvent.getMessage() != null) {
@@ -75,14 +72,11 @@ public class SpoutListener implements Listener {
 				}
 			} else {
 				event.getSession().getProtocol().initializeSession(event.getSession());
-				long joinStart = System.currentTimeMillis();
 				Spout.getEngine().getEventManager().callEvent(new PlayerJoinEvent(player, ChatStyle.CYAN, player.getDisplayName(), ChatStyle.CYAN, " has joined the game"));
-				System.out.println("Player Join Event took " + (System.currentTimeMillis() - joinStart) + " ms");
 			}
 		} else {
 			event.getSession().disconnect("Player is already online");
 		}
-		System.out.println("Spout Engine Player Connect Event took " + (System.currentTimeMillis() - start) + " ms");
 	}
 
 	@EventHandler(order = Order.EARLIEST)
@@ -122,5 +116,4 @@ public class SpoutListener implements Listener {
 		}
 		event.getReceivers().put(server.getCommandSource(), Result.DEFAULT);
 	}
-
 }

@@ -33,6 +33,7 @@ import org.spout.api.event.Result;
 import org.spout.api.event.player.PlayerConnectEvent;
 import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 import org.spout.api.player.Player;
+
 import org.spout.engine.SpoutProxy;
 import org.spout.engine.protocol.SpoutSession;
 
@@ -60,5 +61,4 @@ public class SpoutProxyListener implements Listener {
 		}
 		event.getReceivers().put(server.getCommandSource(), Result.DEFAULT);
 	}
-
 }

@@ -29,9 +29,8 @@ package org.spout.engine.listener;
 import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
 import org.spout.api.event.player.ClientPlayerConnectedEvent;
-import org.spout.api.geo.discrete.Transform;
+
 import org.spout.engine.SpoutClient;
-import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.protocol.SpoutSession;
 
 /**

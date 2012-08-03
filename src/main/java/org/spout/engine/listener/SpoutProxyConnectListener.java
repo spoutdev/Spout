@@ -30,17 +30,17 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipeline;
+
 import org.spout.api.Engine;
 import org.spout.api.Spout;
-import org.spout.api.protocol.CommonDecoder;
 import org.spout.api.protocol.CommonHandler;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
+
 import org.spout.engine.protocol.SpoutSession;
 
 public class SpoutProxyConnectListener implements ChannelFutureListener {
-
 	private final Engine engine;
 	private final SpoutSession<?> session;
 	private final String playerName;
@@ -53,7 +53,6 @@ public class SpoutProxyConnectListener implements ChannelFutureListener {
 
 	/**
 	 * Gets the Engine that of this listener
-	 *
 	 * @return the Engine
 	 */
 	public Engine getEngine() {
@@ -89,5 +88,4 @@ public class SpoutProxyConnectListener implements ChannelFutureListener {
 			}
 		}
 	}
-
 }
