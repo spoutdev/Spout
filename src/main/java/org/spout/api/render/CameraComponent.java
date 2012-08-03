@@ -55,7 +55,7 @@ public class CameraComponent extends BasicEntityComponent implements Camera {
 	@Override
 	public void onTick(float dt) {
 		updateView();
-
+		frustum.update(projection, view);
 	}
 
 	@Override
