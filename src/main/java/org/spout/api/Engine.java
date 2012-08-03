@@ -381,8 +381,10 @@ public interface Engine extends Named {
 	 * data is saved, and all threads are ended cleanly.<br/>
 	 * <br/>
 	 * Players will be sent a default disconnect message.
+	 * 
+	 * @return true for for the first stop
 	 */
-	public void stop();
+	public boolean stop();
 
 	/**
 	 * Ends this game instance safely. All worlds, players, and configuration
@@ -391,8 +393,9 @@ public interface Engine extends Named {
 	 * If any players are connected, will kick them with the given reason.
 	 *
 	 * @param reason for stopping the game instance
+	 * @return true for for the first stop
 	 */
-	public void stop(String reason);
+	public boolean stop(String reason);
 
 	/**
 	 * Gets the world folders which match the world name.
