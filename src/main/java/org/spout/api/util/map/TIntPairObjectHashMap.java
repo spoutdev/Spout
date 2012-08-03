@@ -103,7 +103,8 @@ public class TIntPairObjectHashMap<K> extends IntPairHashed {
 		return map.valueCollection();
 	}
 
+	@SuppressWarnings("unchecked")
 	public K[] values() {
-		return map.values();
+		return (K[]) map.values();
 	}
 }

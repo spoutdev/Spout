@@ -236,8 +236,9 @@ public class TInt21TripleObjectHashMap<K> extends Int21TripleHashed {
 	 *
 	 * @return the values of the map as an array of <code>long</code> values.
 	 */
+	@SuppressWarnings("unchecked")
 	public K[] values() {
-		return map.values();
+		return (K[]) map.values();
 	}
 
 	/**

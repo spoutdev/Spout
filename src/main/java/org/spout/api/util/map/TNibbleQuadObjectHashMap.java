@@ -102,7 +102,8 @@ public class TNibbleQuadObjectHashMap<K> extends NibbleQuadHashed {
 		return map.valueCollection();
 	}
 
+	@SuppressWarnings("unchecked")
 	public K[] values() {
-		return map.values();
+		return (K[]) map.values();
 	}
 }

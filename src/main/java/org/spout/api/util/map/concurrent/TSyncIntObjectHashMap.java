@@ -375,7 +375,7 @@ public class TSyncIntObjectHashMap<V> implements TSyncIntObjectMap<V> {
 			}
 			int position = 0;
 			for (int m = 0; m < mapCount; m++) {
-				V[] mapValues = mapArray[m].values();
+				V[] mapValues = (V[]) mapArray[m].values();
 				for (V mapValue : mapValues) {
 					values[position++] = mapValue;
 				}
