@@ -28,7 +28,6 @@ package org.spout.engine.renderer;
 
 import gnu.trove.iterator.TLongObjectIterator;
 
-import org.lwjgl.opengl.GL11;
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.render.RenderMaterial;
@@ -65,7 +64,7 @@ public class WorldRenderer {
 	public void render() {
 		material.getShader().setUniform("View", client.getActiveCamera().getView());
 		material.getShader().setUniform("Projection", client.getActiveCamera().getProjection());
-		
+
 		renderChunks();
 	}
 
