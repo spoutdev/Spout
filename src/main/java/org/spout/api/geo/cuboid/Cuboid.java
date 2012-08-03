@@ -116,6 +116,11 @@ public class Cuboid implements WorldSource {
 		return vertices;
 	}
 
+	public boolean contains(Vector3 vec) {
+		Vector3 max = base.add(size);
+		return (base.getX() <= vec.getX() && vec.getX() < max.getX()) && (base.getY() <= vec.getY() && vec.getY() < max.getY()) && (base.getZ() <= vec.getZ() && vec.getZ() < max.getZ());
+	}
+
 	@Override
 	public int hashCode() {
 		if (!hashed) {
