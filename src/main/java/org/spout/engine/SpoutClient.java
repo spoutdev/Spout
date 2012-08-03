@@ -293,9 +293,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		Spout.getFilesystem().postStartup();
 
-		activeCamera = new BasicCamera(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(new Vector3(0, 50, 100), Vector3.ZERO, Vector3.UP));
-		activeCamera.getFrustum().update(activeCamera.getProjection(), activeCamera.getView());
-
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		loc = new Transform(new Point(null, 0, 0, 0), Quaternion.IDENTITY, Vector3.ONE);
 
