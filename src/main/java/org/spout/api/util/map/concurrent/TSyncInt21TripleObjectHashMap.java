@@ -26,6 +26,8 @@
  */
 package org.spout.api.util.map.concurrent;
 
+import gnu.trove.map.TLongObjectMap;
+
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
 
 /**
@@ -36,7 +38,7 @@ import org.spout.api.util.map.TInt21TripleObjectHashMap;
  *
  * @param <K> the value type
  */
-public class TSyncInt21TripleObjectHashMap<K> extends TInt21TripleObjectHashMap<K> {
+public class TSyncInt21TripleObjectHashMap<K> extends TInt21TripleObjectHashMap<K> implements TripleIntObjectMap<K> {
 	/**
 	 * Creates a new <code>TSyncInt21TripleObjectHashMap</code> instance backend by a synchronized (thread-safe) {@see TSyncLongObjectHashMap} instance with an capacity of 100 and the default load factor.
 	 */
@@ -59,6 +61,14 @@ public class TSyncInt21TripleObjectHashMap<K> extends TInt21TripleObjectHashMap<
 	 * @param map
 	 */
 	public TSyncInt21TripleObjectHashMap(TSyncLongObjectMap<K> map) {
+		if (map == null) {
+			throw new IllegalArgumentException("The backend can not be null.");
+		}
+
+		this.map = map;
+	}
+	
+	protected TSyncInt21TripleObjectHashMap(TLongObjectMap<K> map) {
 		if (map == null) {
 			throw new IllegalArgumentException("The backend can not be null.");
 		}

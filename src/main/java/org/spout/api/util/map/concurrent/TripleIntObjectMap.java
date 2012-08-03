@@ -26,7 +26,7 @@
  */
 package org.spout.api.util.map.concurrent;
 
-public interface Atomic3DObjectMap<T> {
+public interface TripleIntObjectMap<T> {
 	
 	/**
 	 * Gets the value for the given (x, y, z) key, or null if none

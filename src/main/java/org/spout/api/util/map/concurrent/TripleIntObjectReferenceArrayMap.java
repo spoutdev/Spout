@@ -40,11 +40,11 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
  * <br>
  * The length of the internal arrays are determined by the bits parameter.<br>
  * <br>
- * If bits was set to 4, then each coordinate would provide 4 bits to array index.
+ * If bits is set to 4, then each coordinate provides 4 bits for the array index.
  * That gives a total array length of 16 * 16 * 16 = 4096.<br>
  * <br>
- * An object with a random key would probably require new arrays to be created for
- * the entire depth of the tree.<br>
+ * Inserting a new object with a random key would probably require new arrays to 
+ * be created for the entire depth of the tree.<br>
  * <br>
  * A given depth can be guaranteed by keeping ensuring that all elements are within
  * a cube that has an edge of 2 ^ (depth * bits) or smaller.  Increasing the bits 
@@ -52,12 +52,15 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
  * used per array.<br>
  * <br>
  * The map is thread-safe.  Map update operations can not be carried out by more
- * than one thread at the same time.  However, read operations are concurrent.
+ * than one thread at the same time.  However, read operations are concurrent.<br>
+ * <br>
+ * The map is optimised for use where all the coordinates occur in a small number of
+ * contiguous cuboids.
  * 
  * @param <T> the value type
  */
 
-public class Atomic3DObjectReferenceArrayMap<T> implements Atomic3DObjectMap<T> {
+public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T> {
 	
 	private final int bits;
 	private final int doubleBits;
@@ -70,11 +73,11 @@ public class Atomic3DObjectReferenceArrayMap<T> implements Atomic3DObjectMap<T> 
 	
 	private int removed = 0;
 	
-	public Atomic3DObjectReferenceArrayMap(int bits) {
+	public TripleIntObjectReferenceArrayMap(int bits) {
 		this(bits, 1);
 	}
 	
-	private Atomic3DObjectReferenceArrayMap(int bits, int depth) {
+	private TripleIntObjectReferenceArrayMap(int bits, int depth) {
 		this.bits = bits;
 		this.doubleBits = bits << 1;
 		int width = 1 << bits;
@@ -193,7 +196,7 @@ public class Atomic3DObjectReferenceArrayMap<T> implements Atomic3DObjectMap<T> 
 		}
 		
 		// Map must be resized if we hit a leaf node (collision) or the map was already at max depth
-		if (keyDepth > depth || prevEntry instanceof Atomic3DObjectReferenceArrayMap.LeafEntry) {
+		if (keyDepth > depth || prevEntry instanceof TripleIntObjectReferenceArrayMap.LeafEntry) {
 			resizeMap();
 			return getOrCreateEntry(x, y, z);
 		} else if (keyDepth > depth) {
@@ -223,9 +226,9 @@ public class Atomic3DObjectReferenceArrayMap<T> implements Atomic3DObjectMap<T> 
 	}
 	
 	private synchronized void resizeMap() {
-		Atomic3DObjectReferenceArrayMap.Entry<T> oldRoot = this.root.get();
+		TripleIntObjectReferenceArrayMap.Entry<T> oldRoot = this.root.get();
 		int newDepth = oldRoot.getDepth() + 1;
-		Atomic3DObjectReferenceArrayMap<T> temp = new Atomic3DObjectReferenceArrayMap<T>(bits, newDepth);
+		TripleIntObjectReferenceArrayMap<T> temp = new TripleIntObjectReferenceArrayMap<T>(bits, newDepth);
 		
 		for (LeafEntry le : leafEntries) {
 			T value = le.getValue();
