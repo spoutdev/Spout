@@ -26,6 +26,8 @@
  */
 package org.spout.api.util.map.concurrent;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
@@ -70,6 +72,7 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 	private final AtomicReference<Entry<T>> root;
 	private final LinkedHashSet<T> values;
 	private final LinkedHashSet<LeafEntry> leafEntries;
+	private final AtomicReference<Collection<T>> valuesSnapshot = new AtomicReference<Collection<T>>(null);
 	
 	private int removed = 0;
 	
@@ -105,6 +108,7 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 		if (entry != null) {
 			T value = entry.remove();
 			if (value != null) {
+				valuesSnapshot.set(null);
 				removed++;
 				if (!values.remove(value)) {
 					throw new IllegalStateException("Item removed from map was not in item set");
@@ -122,6 +126,7 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 		if (entry != null) {
 			boolean b = entry.remove(value);
 			if (b) {
+				valuesSnapshot.set(null);
 				removed++;
 				if (!values.remove(value)) {
 					throw new IllegalStateException("Item removed from map was not in item set");
@@ -141,6 +146,7 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 		Entry<T> entry = getOrCreateEntry(x, y, z);
 		if (entry != null) {
 			T old = entry.put(value);
+			valuesSnapshot.set(null);
 			if (!values.add(value)) {
 				throw new IllegalStateException("Failed to add item to the value set, items may only be added once to the map");
 			}
@@ -164,6 +170,7 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 		if (entry != null) {
 			T old = entry.putIfAbsent(value);
 			if (old == null) {
+				valuesSnapshot.set(null);
 				if (!values.add(value)) {
 					throw new IllegalStateException("Failed to add item to the value set, items may only be added once to the map");
 				}
@@ -171,6 +178,23 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 			return old;
 		} else {
 			throw new IllegalStateException("Unable to create entry for put");
+		}
+	}
+	
+	@Override
+	public Collection<T> valueCollection() {
+		Collection<T> newValues = this.valuesSnapshot.get();
+		if (newValues != null) {
+			return newValues;
+		}
+		synchronized (this) {
+			newValues = this.valuesSnapshot.get();
+			if (newValues != null) {
+				return newValues;
+			}
+			newValues = Collections.unmodifiableCollection(new LinkedHashSet<T>(this.values));
+			this.valuesSnapshot.set(newValues);
+			return newValues;
 		}
 	}
 	
@@ -457,5 +481,5 @@ public class TripleIntObjectReferenceArrayMap<T> implements TripleIntObjectMap<T
 		z &= bitMask;
 		return ((x & bitMask) << doubleBits) | ((y & bitMask) << bits) | (z & bitMask);
 	}
-	
+
 }

@@ -31,6 +31,8 @@ import gnu.trove.TCollections;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Random;
 
 import org.junit.Test;
@@ -92,6 +94,27 @@ public class TripleIntObjectReferenceArrayMapTest {
 			}
 		}
 		
+		LinkedHashSet<FakeObject> valuesCopy = new LinkedHashSet<FakeObject>(map.valueCollection());
+		
+		for (int x = -halfEdgeX; x < halfEdgeX; x++) {
+			for (int y = -halfEdgeY; y < halfEdgeY; y++) {
+				for (int z = -halfEdgeZ; z < halfEdgeZ; z++) {
+					FakeObject m = map.get(x, y, z);
+					assertTrue("Values collection did not contain element for, " + x + ", " + y + ", " + z, valuesCopy.contains(m) );
+				}
+			}
+		}
+		
+		FakeObject removed = map.remove(1, -1, 2);
+		
+		valuesCopy = new LinkedHashSet<FakeObject>(map.valueCollection());
+		
+		assertTrue("Values collection did contained element for, " + 1 + ", " + 2 + ", " + 3 + " after its removal", !valuesCopy.contains(removed) );
+		
+		int expectedSize = EDGEX * EDGEY * EDGEZ - 1;
+		assertTrue("Value copy is not the correct size " + expectedSize + ", got " + valuesCopy.size(), valuesCopy.size() == expectedSize);
+		assertTrue("Re-inserting value into empty slot in map did not return null", map.put(1, 2, 3, removed) == null);
+		
 		boolean thrown = false;
 		try {
 			FakeObject f = objects[0];
@@ -123,7 +146,7 @@ public class TripleIntObjectReferenceArrayMapTest {
 			FakeObject oldPut = map.put(x, y, z, newObject);
 			assertTrue("put did not return null when inserting into an unfilled location", oldPut == null);
 
-			FakeObject newPut = new FakeObject(x, y, z);
+			FakeObject newPut = new FakeObject(x, y, z, 1);
 			oldPut = map.put(x, y, z, newPut);
 			assertTrue("put did not return old object", oldPut == newObject);
 			
@@ -325,21 +348,33 @@ public class TripleIntObjectReferenceArrayMapTest {
 			// TODO Auto-generated method stub
 			return null;
 		}
+
+		@Override
+		public Collection<FakeObject> valueCollection() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 		
 	}
 	
 	public static class FakeObject {
 		
-		private int x;
-		private int y;
-		private int z;
+		private final int x;
+		private final int y;
+		private final int z;
+		private final int hash2;
 		
 		public FakeObject(int x, int y, int z) {
+			this(x, y, z, 0);
+		}
+		
+		public FakeObject(int x, int y, int z, int hash2) {
 			this.x = x;
 			this.y = y;
 			this.z = z;
+			this.hash2 = hash2;
 		}
-		
+
 		public boolean test(int x, int y, int z) {
 			return this.x == x && this.y == y && this.z == z;
 		}
@@ -354,6 +389,26 @@ public class TripleIntObjectReferenceArrayMapTest {
 		
 		public int getZ() {
 			return z;
+		}
+		
+		@Override
+		public int hashCode() {
+			int hash = x;
+			hash += hash << 5 + y;
+			hash += hash << 5 + z;
+			return hash;
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			if (o == this) {
+				return true;
+			} else if (!(o instanceof FakeObject)) {
+				return false;
+			} else {
+				FakeObject other = (FakeObject) o;
+				return x == other.x && y == other.y && z == other.z && hash2 == other.hash2;
+			}
 		}
 		
 	}

@@ -26,6 +26,8 @@
  */
 package org.spout.api.util.map.concurrent;
 
+import java.util.Collection;
+
 public interface TripleIntObjectMap<T> {
 	
 	/**
@@ -79,5 +81,12 @@ public interface TripleIntObjectMap<T> {
 	 * @return the current value, or null on success
 	 */
 	public T putIfAbsent(int x, int y, int z, T value);
+	
+	/**
+	 * Returns a collection containing all the values in the Map
+	 * 
+	 * @return
+	 */
+	public Collection<T> valueCollection();
 
 }
