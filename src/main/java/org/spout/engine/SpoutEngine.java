@@ -496,17 +496,28 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	@Override
-	public final void stop() {
-		stop("Spout shutting down");
+	public boolean stop() {
+		return stop("Spout shutting down");
 	}
 
 	private final AtomicBoolean stopping = new AtomicBoolean();
 	@Override
-	public void stop(final String message) {
+	public boolean stop(final String message) {
+		return stop(message, true);
+	}
+	
+	/**
+	 * Used to allow subclasses submit final tasks before stopping the scheduler
+	 * 
+	 * @param message
+	 * @param stopScheduler
+	 * @return
+	 */
+	protected boolean stop(final String message, boolean stopScheduler) {
 		final SpoutEngine engine = this;
-
+		
 		if (!stopping.compareAndSet(false, true)) {
-			return;
+			return false;
 		}
 
 		getPluginManager().clearPlugins();
@@ -539,6 +550,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		scheduler.submitLastTickTask(lastTickTask);
 		scheduler.submitFinalTask(finalTask);
 		scheduler.stop(1);
+		return true;
 	}
 
 	@Override

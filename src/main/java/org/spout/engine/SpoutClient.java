@@ -220,7 +220,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	@Override
-	public void stop(String message) {
+	public boolean stop(String message) {
+		if (!super.stop(message, false)) {
+			return false;
+		}
 		rendering = false;
 		stopMessage = message;
 		Runnable finalTask = new Runnable() {
@@ -230,6 +233,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 			}
 		};
 		scheduler.submitFinalTask(finalTask);
+		scheduler.stop(1);
+		return true;
 	}
 
 	public boolean isRendering() {

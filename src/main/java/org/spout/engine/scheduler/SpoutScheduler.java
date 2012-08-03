@@ -352,7 +352,7 @@ public final class SpoutScheduler implements Scheduler {
 		finalTaskQueue.add(task);
 		if (!mainThread.isAlive()) {
 			runFinalTasks();
-			Spout.getLogger().warning("Attempting to submit final task after main thread had shutdown");
+			Spout.getLogger().info("Attempting to submit final task after main thread had shutdown");
 			Thread.dumpStack();
 		}
 	}
@@ -361,7 +361,7 @@ public final class SpoutScheduler implements Scheduler {
 		lastTickTaskQueue.add(task);
 		if (!mainThread.isAlive()) {
 			runLastTickTasks();
-			Spout.getLogger().warning("Attempting to submit last tick task after main thread had shutdown");
+			Spout.getLogger().info("Attempting to submit last tick task after main thread had shutdown");
 			Thread.dumpStack();
 		}
 	}

@@ -158,8 +158,10 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	@Override
-	public void stop(String message) {
-		super.stop(message);
+	public boolean stop(String message) {
+		if (!super.stop(message, false)) {
+			return false;
+		}
 		Runnable finalTask = new Runnable() {
 			public void run() {
 				if (upnpService != null) {
@@ -170,6 +172,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 			}
 		};
 		scheduler.submitFinalTask(finalTask);
+		scheduler.stop(1);
+		return true;
 	}
 
 	@Override
