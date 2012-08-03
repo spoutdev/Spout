@@ -38,7 +38,8 @@ import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TickStage;
-import org.spout.api.util.map.concurrent.TSyncInt21TripleObjectHashMap;
+import org.spout.api.util.map.concurrent.TripleIntObjectMap;
+import org.spout.api.util.map.concurrent.TripleIntObjectReferenceArrayMap;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
@@ -46,12 +47,14 @@ import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 
 public class RegionSource implements Iterable<Region> {
+	private final static int REGION_MAP_BITS = 5;
+	
 	private final static AtomicInteger regionsLoaded = new AtomicInteger(0);
 	private final static AtomicInteger warnThreshold = new AtomicInteger(Integer.MAX_VALUE);
 	/**
 	 * A map of loaded regions, mapped to their x and z values.
 	 */
-	private final TSyncInt21TripleObjectHashMap<Region> loadedRegions;
+	private final TripleIntObjectMap<Region> loadedRegions;
 	/**
 	 * World associated with this region source
 	 */
@@ -59,7 +62,7 @@ public class RegionSource implements Iterable<Region> {
 
 	public RegionSource(SpoutWorld world, SnapshotManager snapshotManager) {
 		this.world = world;
-		loadedRegions = new TSyncInt21TripleObjectHashMap<Region>();
+		loadedRegions = new TripleIntObjectReferenceArrayMap<Region>(REGION_MAP_BITS);
 	}
 
 	@DelayedWrite
