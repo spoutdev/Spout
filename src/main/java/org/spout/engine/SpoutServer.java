@@ -48,7 +48,8 @@ import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.builtin.SpoutProtocol;
-import org.spout.engine.chat.console.JLineConsole;
+
+import org.spout.engine.listener.SpoutServerListener;
 import org.spout.engine.protocol.PortBindingImpl;
 import org.spout.engine.protocol.PortBindings;
 import org.spout.engine.protocol.SpoutNioServerSocketChannel;
@@ -68,7 +69,6 @@ import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.Session;
 
 import org.spout.engine.filesystem.ServerFileSystem;
-import org.spout.engine.listener.SpoutListener;
 import org.spout.engine.util.bans.BanManager;
 import org.spout.engine.util.bans.FlatFileBanManager;
 
@@ -112,7 +112,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	@Override
 	public void start(boolean checkWorlds) {
-		start(checkWorlds, new SpoutListener(this));
+		start(checkWorlds, new SpoutServerListener(this));
 	}
 
 	public void start(boolean checkWorlds, Listener listener) {

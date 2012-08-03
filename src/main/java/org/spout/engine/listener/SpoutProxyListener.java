@@ -38,10 +38,10 @@ import org.spout.engine.SpoutProxy;
 import org.spout.engine.protocol.SpoutSession;
 
 public class SpoutProxyListener implements Listener {
-	private final SpoutProxy server;
+	private final SpoutProxy proxy;
 
-	public SpoutProxyListener(SpoutProxy server) {
-		this.server = server;
+	public SpoutProxyListener(SpoutProxy proxy) {
+		this.proxy = proxy;
 	}
 
 	@EventHandler(order = Order.MONITOR)
@@ -49,16 +49,16 @@ public class SpoutProxyListener implements Listener {
 		if (event.isCancelled()) {
 			return;
 		}
-		server.addPlayer(event.getPlayerName(), (SpoutSession<?>) event.getSession(), event.getViewDistance());
+		proxy.addPlayer(event.getPlayerName(), (SpoutSession<?>) event.getSession(), event.getViewDistance());
 		//Create the player
-		server.connect(event.getPlayerName(), event.getSession());
+		proxy.connect(event.getPlayerName(), event.getSession());
 	}
 
 	@EventHandler(order = Order.EARLIEST)
 	public void onGetAllWithNode(PermissionGetAllWithNodeEvent event) {
-		for (Player player : server.getOnlinePlayers()) {
+		for (Player player : proxy.getOnlinePlayers()) {
 			event.getReceivers().put(player, Result.DEFAULT);
 		}
-		event.getReceivers().put(server.getCommandSource(), Result.DEFAULT);
+		event.getReceivers().put(proxy.getCommandSource(), Result.DEFAULT);
 	}
 }

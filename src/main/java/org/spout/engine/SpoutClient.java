@@ -85,7 +85,7 @@ import org.spout.api.util.StringMap;
 import org.spout.engine.command.InputCommands;
 import org.spout.engine.filesystem.ClientFileSystem;
 import org.spout.engine.input.SpoutInput;
-import org.spout.engine.listener.SpoutClientConnectListener;
+import org.spout.engine.listener.channel.SpoutClientConnectListener;
 import org.spout.engine.listener.SpoutClientListener;
 import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.player.SpoutPlayer;

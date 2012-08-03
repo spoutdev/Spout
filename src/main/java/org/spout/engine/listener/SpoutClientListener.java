@@ -33,9 +33,6 @@ import org.spout.api.event.player.ClientPlayerConnectedEvent;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.protocol.SpoutSession;
 
-/**
- * Listener for SpoutClient events
- */
 public class SpoutClientListener implements Listener {
 	private final SpoutClient client;
 
