@@ -26,6 +26,7 @@
  */
 package org.spout.engine.world;
 
+import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -36,9 +37,9 @@ import org.spout.api.Spout;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
-import org.spout.api.geo.cuboid.Region;
-import org.spout.api.util.hashing.ArrayHash;
+import org.spout.api.scheduler.SnapshotLock;
 import org.spout.engine.filesystem.WorldFiles;
+import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 
 /**
@@ -166,6 +167,7 @@ public class WorldSavingThread extends Thread{
 		final SpoutChunkSnapshot snapshot;
 		final List<DynamicBlockUpdate> blockUpdates;
 		final SpoutChunk chunk;
+		static final String taskName = "World saving thread";
 		ChunkSaveTask(SpoutChunk chunk) {
 			this.region = chunk.getRegion();
 			this.snapshot = (SpoutChunkSnapshot) chunk.getSnapshot(SnapshotType.BOTH, EntityType.ENTITIES, ExtraData.BOTH);
@@ -175,9 +177,25 @@ public class WorldSavingThread extends Thread{
 
 		@Override
 		public SpoutRegion call() {
-			WorldFiles.saveChunk(region.getWorld(), snapshot, blockUpdates, region.getChunkOutputStream(snapshot));
-			chunk.saveComplete();
-			return region;
+			SpoutSnapshotLock lock = (SpoutSnapshotLock) Spout.getEngine().getScheduler().getSnapshotLock();
+			lock.coreReadLock(taskName);
+			try {
+				SpoutRegion r = region;
+				OutputStream out = r.getChunkOutputStream(snapshot);
+				if (out == null) {
+					r = region.getWorld().getRegion(region.getX(), region.getY(), region.getZ());
+					out = r.getChunkOutputStream(snapshot);
+					if (out == null) {
+						Spout.getLogger().info("World saving thread unable to open region, " + region);
+						return region;
+					}
+				}
+				WorldFiles.saveChunk(region.getWorld(), snapshot, blockUpdates, out);
+				chunk.saveComplete();
+				return r;
+			} finally {
+				lock.coreReadUnlock(taskName);
+			}
 		}
 	}
 
