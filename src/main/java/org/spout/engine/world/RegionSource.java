@@ -77,29 +77,33 @@ public class RegionSource implements Iterable<Region> {
 			@Override
 			public void run() {
 				if (r.isEmpty()) {
-					int x = r.getX();
-					int y = r.getY();
-					int z = r.getZ();
-					boolean success = loadedRegions.remove(x, y, z, r);
-					if (success) {
-						if (!r.getManager().getExecutor().haltExecutor()) {
-							throw new IllegalStateException("Failed to halt the region executor when removing the region");
-						}
-						TaskManager tm = Spout.getEngine().getParallelTaskManager();
-						SpoutParallelTaskManager ptm = (SpoutParallelTaskManager)tm;
-						ptm.unRegisterRegion(r);
+					if (r.attemptClose()) {
+						int x = r.getX();
+						int y = r.getY();
+						int z = r.getZ();
+						boolean success = loadedRegions.remove(x, y, z, r);
+						if (success) {
+							if (!r.getManager().getExecutor().haltExecutor()) {
+								throw new IllegalStateException("Failed to halt the region executor when removing the region");
+							}
+							TaskManager tm = Spout.getEngine().getParallelTaskManager();
+							SpoutParallelTaskManager ptm = (SpoutParallelTaskManager)tm;
+							ptm.unRegisterRegion(r);
 
-						TaskManager tmWorld = world.getParallelTaskManager();
-						SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager)tmWorld;
-						ptmWorld.unRegisterRegion(r);
-						
-						if (regionsLoaded.decrementAndGet() < 0) {
-							Spout.getLogger().info("Regions loaded dropped below zero");
-						}
+							TaskManager tmWorld = world.getParallelTaskManager();
+							SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager)tmWorld;
+							ptmWorld.unRegisterRegion(r);
 
-						Spout.getEventManager().callDelayedEvent(new RegionUnloadEvent(world, r));
+							if (regionsLoaded.decrementAndGet() < 0) {
+								Spout.getLogger().info("Regions loaded dropped below zero");
+							}
+
+							Spout.getEventManager().callDelayedEvent(new RegionUnloadEvent(world, r));
+						} else {
+							Spout.getLogger().info("Tried to remove region " + r + " but region removal failed");
+						}
 					} else {
-						Spout.getLogger().info("Tried to remove region " + r + " but region removal failed");
+						Spout.getLogger().info("Unable to close region file, streams must be open");
 					}
 				} else {
 					Spout.getLogger().info("Region was not empty when attempting to remove, active chunks returns " + r.getNumLoadedChunks());
