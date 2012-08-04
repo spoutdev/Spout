@@ -48,7 +48,7 @@ import org.spout.api.util.thread.SnapshotRead;
 /**
  * Represents an entity, which may or may not be spawned into the world.
  */
-public interface Entity extends Source, WorldSource {
+public interface Entity extends Source, WorldSource, ComponentBase {
 
 	public int getId();
 
@@ -385,25 +385,4 @@ public interface Entity extends Source, WorldSource {
 	 * @param ang
 	 */
 	public void setYaw(float ang);
-
-	/**
-	 * Attaches a component to this entity. If it's already attached, it will fail silently.
-	 * 
-	 * @param component
-	 */
-	public void attachComponent(EntityComponent component);
-
-	/**
-	 * Removes a component from an entity. Fails silently if component does not exist.
-	 * 
-	 * @param component
-	 */
-	public void removeComponent(EntityComponent component);
-
-	/**
-	 * True if component is attached. False if not
-	 * 
-	 * @param component
-	 */
-	public boolean hasComponent(EntityComponent component);
 }
