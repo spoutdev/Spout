@@ -205,7 +205,10 @@ public abstract class NetworkSynchronizer {
 		// TODO teleport smoothing
 		Point currentPosition = entity.getPosition();
 		if (currentPosition != null) {
-			if (worldChanged || currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.BLOCKS.SIZE >> 1) {
+			if (worldChanged || 
+					(!currentPosition.equals(lastChunkCheck) &&
+					currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.BLOCKS.SIZE >> 1))
+			{
 				checkChunkUpdates(currentPosition);
 				lastChunkCheck = currentPosition;
 				worldChanged = false;

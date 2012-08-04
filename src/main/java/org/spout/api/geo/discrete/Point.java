@@ -302,9 +302,22 @@ public class Point extends Vector3 implements WorldSource {
 		} else {
 			Point point = (Point) obj;
 
-			return point.world.equals(world) && point.x == x && point.y == y && point.z == z;
+			boolean worldEqual = point.world == world || (point.world != null && point.world.equals(world));
+			
+			return worldEqual && point.x == x && point.y == y && point.z == z;
 		}
 
+	}
+	
+	public boolean equals(Point point) {
+
+		if (point == this) {
+			return true;
+		} else {
+			boolean worldEqual = point.world == world || (point.world != null && point.world.equals(world));
+			
+			return worldEqual && point.x == x && point.y == y && point.z == z;
+		}
 	}
 
 	@Override
