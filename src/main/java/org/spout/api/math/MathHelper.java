@@ -1232,8 +1232,6 @@ public class MathHelper {
 
 		return res;
 	}
-	
-	
 
 	/**
 	 * Calculates and returns a new Vector3 transformed by the transformation
