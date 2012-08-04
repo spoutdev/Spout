@@ -26,7 +26,6 @@
  */
 package org.spout.engine.entity;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -37,7 +36,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.spout.api.Source;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.EntityComponent;
+import org.spout.api.entity.component.ComponentEntityBase;
 import org.spout.api.entity.component.Controller;
 import org.spout.api.entity.component.controller.PlayerController;
 import org.spout.api.event.entity.EntityControllerChangeEvent;
@@ -54,7 +53,6 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.player.Player;
-import org.spout.api.tickable.BasicTickable;
 import org.spout.api.util.OutwardIterator;
 import org.spout.api.util.Profiler;
 import org.spout.engine.SpoutConfiguration;
@@ -62,13 +60,12 @@ import org.spout.engine.SpoutEngine;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 
-public class SpoutEntity extends BasicTickable implements Entity {
+public class SpoutEntity extends ComponentEntityBase implements Entity {
 	public static final int NOTSPAWNEDID = -1;
 	//Thread-safe
 	private final AtomicReference<EntityManager> entityManagerLive;
 	private final AtomicReference<Controller> controllerLive;
 	private final AtomicReference<Chunk> chunkLive;
-	private final ArrayList<AtomicReference<EntityComponent>> components = new ArrayList<AtomicReference<EntityComponent>>();
 	private final AtomicBoolean observerLive = new AtomicBoolean(false);
 	private final AtomicInteger id = new AtomicInteger();
 	private final AtomicInteger viewDistanceLive = new AtomicInteger();
@@ -150,7 +147,9 @@ public class SpoutEntity extends BasicTickable implements Entity {
 	public void onTick(float dt) {
 		Profiler.start("tick entity session");
 		Controller cont = controllerLive.get();
-
+		
+		super.onTick(dt);
+			
 		//Tick the controller
 		Profiler.startAndStop("tick entity controller");
 		if (cont != null) {
@@ -711,25 +710,6 @@ public class SpoutEntity extends BasicTickable implements Entity {
 	@Override
 	public String toString() {
 		return "SpoutEntity - ID: " + this.getId() + " Controller: " + getController() + " Position: " + getPosition();
-	}
-
-	@Override
-	public void attachComponent(EntityComponent component) {
-		component.attachToEntity(this);
-		component.onAttached();
-		components.add(new AtomicReference<EntityComponent>(component));
-	}
-
-	@Override
-	public void removeComponent(EntityComponent component) {
-		if (components.remove(component)) {
-			component.onDetached();
-		}
-	}
-
-	@Override
-	public boolean hasComponent(EntityComponent component) {
-		return components.contains(component);
 	}
 
 	@Override
