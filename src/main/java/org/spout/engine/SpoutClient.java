@@ -306,7 +306,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		loc = new Transform(new Point(null, 0, 0, 0), Quaternion.IDENTITY, Vector3.ONE);
 
-		GL11.glClearColor(1, 1, 1, 0);
+		GL11.glClearColor((135.f/255.0f), 206.f/255.f, 250.f/255.f, 0);
 
 		worldRenderer = new WorldRenderer(this);
 		worldRenderer.setup();
