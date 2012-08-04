@@ -1,0 +1,7 @@
+GL30:
+    Vertex: file://Spout/resources/resources/shaders/skyShader.330.vert
+    Fragment: file://Spout/resources/resources/shaders/skyShader.330.frag
+GL20:
+    Vertex: file://Spout/resources/resources/shaders/skyShader.120.vert
+    Fragment: file://Spout/resources/resources/shaders/skyShader.120.frag
+    
