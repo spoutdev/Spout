@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.spout.api.Spout;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.component.Controller;
@@ -152,6 +153,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 	 */
 	public int allocate(SpoutEntity entity, SpoutRegion region) {
 		EntitySpawnEvent event = new EntitySpawnEvent(entity, entity.getPosition());
+		Spout.getEngine().getEventManager().callEvent(event);
 		if (event.isCancelled()) {
 			return -1; //TODO correct?
 		}
@@ -175,10 +177,15 @@ public class EntityManager implements Iterable<SpoutEntity> {
 	 */
 	public void deallocate(SpoutEntity entity) {
 		EntityDespawnEvent event = new EntityDespawnEvent(entity);
+		Spout.getEngine().getEventManager().callEvent(event);
 		if (event.isCancelled()) {
 			return;
 		}
 		entities.remove(entity.getId());
+		//Players are never removed (offline concept), instead set their ID back to -1 to be reallocated.
+		if (entity instanceof Player) {
+			entity.setId(SpoutEntity.NOTSPAWNEDID);
+		}
 	}
 
 	public void addEntity(SpoutEntity entity, SpoutRegion region) {

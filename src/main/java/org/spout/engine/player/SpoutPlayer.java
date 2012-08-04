@@ -131,7 +131,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			// player was already offline
 			return false;
 		}
-
 		sessionLive.set(null);
 		return true;
 	}
@@ -156,7 +155,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			setTransform(newPosition);
 		}
 		final Transform transform = getTransform();
-		if (transform != null && isDead()) {
+		if (transform != null && !this.isSpawned()) {
 			setupInitialChunk(transform);
 		}
 

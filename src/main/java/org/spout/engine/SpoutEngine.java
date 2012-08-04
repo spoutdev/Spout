@@ -782,7 +782,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 				if (!player.connect(session, getDefaultWorld().getSpawnPoint())) {
 					return null;
 				}
-
 				break;
 			}
 
