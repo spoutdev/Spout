@@ -26,6 +26,8 @@
  */
 package org.spout.api.protocol.builtin;
 
+import java.util.Collection;
+
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.component.controller.type.ControllerType;
 import org.spout.api.geo.World;
@@ -36,9 +38,9 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.EntityProtocol;
+import org.spout.api.protocol.Message;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.Session;
-import org.spout.api.protocol.Message;
 import org.spout.api.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.api.protocol.builtin.message.ChunkDataMessage;
 import org.spout.api.protocol.builtin.message.EntityPositionMessage;
@@ -48,8 +50,9 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 		super(session.getPlayer(), session, session.getPlayer(), 3);
 	}
 
-	public void sendChunk(Chunk c) {
+	public Collection<Chunk> sendChunk(Chunk c) {
 		session.send(false, new ChunkDataMessage(c.getSnapshot()));
+		return null;
 	}
 
 

@@ -28,6 +28,7 @@ package org.spout.api.protocol;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -244,6 +245,8 @@ public abstract class NetworkSynchronizer {
 		}
 
 	}
+	
+	private int chunksSent = 0;
 
 	public void preSnapshot() {
 
@@ -269,7 +272,7 @@ public abstract class NetworkSynchronizer {
 
 				chunkFreeQueue.clear();
 
-				int chunksSent = 0;
+				chunksSent = 0;
 
 				for (Point p : chunkInitQueue) {
 					if (initializedChunks.add(p)) {
@@ -285,12 +288,7 @@ public abstract class NetworkSynchronizer {
 				while (i.hasNext()) {
 					Point p = i.next();
 					Chunk c = p.getWorld().getChunkFromBlock(p);
-					if (c.canSend()) {
-						sendChunk(c);
-						activeChunks.add(p);
-						i.remove();
-						chunksSent++;
-					}
+					i = attemptSendChunk(i, priorityChunkSendQueue, c);
 				}
 
 				if (priorityChunkSendQueue.isEmpty() && teleported && entity != null) {
@@ -304,17 +302,35 @@ public abstract class NetworkSynchronizer {
 				while (i.hasNext() && chunksSent < CHUNKS_PER_TICK && tickTimeRemaining) {
 					Point p = i.next();
 					Chunk c = p.getWorld().getChunkFromBlock(p);
-					if (c.canSend()) {
-						sendChunk(c);
-						activeChunks.add(p);
-						i.remove();
-						chunksSent++;
-					}
+					i = attemptSendChunk(i, chunkSendQueue, c);
 					tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
 				}
 			}
 		}
 
+	}
+	
+	private Iterator<Point> attemptSendChunk(Iterator<Point> i, Iterable<Point> queue, Chunk c) {
+		if (c.canSend()) {
+			Collection<Chunk> sent = sendChunk(c);
+			activeChunks.add(c.getBase());
+			i.remove();
+			if (sent != null) {
+				boolean updated = false;
+				for (Chunk s : sent) {
+					Point base = s.getBase();
+					if (priorityChunkSendQueue.remove(base) || chunkSendQueue.remove(base)) {
+						updated = true;
+						activeChunks.add(base);
+					}
+				}
+				if (updated) {
+					i = queue.iterator();
+				}
+			}
+			chunksSent++;
+		}
+		return i;
 	}
 
 	private void checkObserverUpdateQueue() {
@@ -444,9 +460,10 @@ public abstract class NetworkSynchronizer {
 	 * multiple threads
 	 *
 	 * @param c the chunk
+	 * @return the chunks that were sent, or null if only the given chunk was sent
 	 */
-	public void sendChunk(Chunk c) {
-		//TODO: Implement Spout Protocol
+	public Collection<Chunk> sendChunk(Chunk c) {
+		return null;
 	}
 
 	/**
