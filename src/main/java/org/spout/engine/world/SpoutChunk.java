@@ -755,7 +755,12 @@ public class SpoutChunk extends Chunk {
 	}
 	
 	public void saveComplete() {
-		saveState.compareAndSet(SaveState.SAVING, SaveState.POST_SAVED);
+		if (!observers.isEmptyLive() || observed.get()) {
+			resetPostSaving();
+		} else {
+			saveState.compareAndSet(SaveState.SAVING, SaveState.POST_SAVED);
+		}
+		parentRegion.markForSaveUnload(this);
 	}
 
 	public SaveState getAndResetSaveState() {
@@ -890,7 +895,7 @@ public class SpoutChunk extends Chunk {
 			// The player was already observing the chunk from distance oldDistance 
 			return false;
 		}
-
+		resetPostSaving();
 		parentRegion.unloadQueue.remove(this);
 		if (!isPopulated()) {
 			parentRegion.queueChunkForPopulation(this);
@@ -958,8 +963,6 @@ public class SpoutChunk extends Chunk {
 
 	public boolean isDirty() {
 		if (lightDirty.get() || blockStore.isDirty()) {
-			saveState.compareAndSet(SaveState.SAVING, SaveState.NONE);
-			saveState.compareAndSet(SaveState.POST_SAVED, SaveState.NONE);
 			return true;
 		} else {
 			return false;
@@ -999,12 +1002,14 @@ public class SpoutChunk extends Chunk {
 	}
 
 	public void resetDirtyArrays() {
-		if (blockStore.resetDirtyArrays()) {
-			saveState.compareAndSet(SaveState.SAVING, SaveState.NONE);
-			saveState.compareAndSet(SaveState.POST_SAVED, SaveState.NONE);
-		}
+		blockStore.resetDirtyArrays();
 	}
 
+	private void resetPostSaving() {
+		saveState.compareAndSet(SaveState.SAVING, SaveState.NONE);
+		saveState.compareAndSet(SaveState.POST_SAVED, SaveState.NONE);
+	}
+	
 	@Override
 	public boolean isLoaded() {
 		return saveState.get() != SaveState.UNLOADED;
