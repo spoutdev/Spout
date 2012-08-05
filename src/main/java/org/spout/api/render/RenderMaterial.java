@@ -27,10 +27,30 @@
 package org.spout.api.render;
 
 public interface RenderMaterial {
-	
+	/**
+	 * Returns a material param or null if that doesn't exist
+	 * @param name
+	 * @return
+	 */
 	public Object getValue(String name);
 	
+	/**
+	 * Returns the shader specified in the material
+	 * @return
+	 */
 	public Shader getShader();
-	
+	/**
+	 * Assigns the current shader and prepairs the material for rendering
+	 */
 	public void assign();
+	
+	/**
+	 * Called right before rendering
+	 */
+	public void preRender();
+	
+	/**
+	 * Called right after rendering
+	 */
+	public void postRender();
 }
