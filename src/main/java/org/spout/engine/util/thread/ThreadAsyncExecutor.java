@@ -153,16 +153,18 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	}
 	
 	@Override
-	public final boolean doLocalPhysics() {
+	public final boolean doPhysics(int sequence) {
 		ThreadsafetyManager.checkMainThread();
+		physicsTask.setSequence(sequence);
 		taskQueue.add(physicsTask);
 		return pulse();
 	}
 	
 	@Override
-	public final boolean doLocalDynamicUpdates(long time) {
+	public final boolean doDynamicUpdates(long time, int sequence) {
 		ThreadsafetyManager.checkMainThread();
 		dynamicUpdatesTask.setTime(time);
+		dynamicUpdatesTask.setSequence(sequence);
 		taskQueue.add(dynamicUpdatesTask);
 		return pulse();
 	}

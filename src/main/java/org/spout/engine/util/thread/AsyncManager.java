@@ -103,35 +103,21 @@ public abstract class AsyncManager {
 	/**
 	 * This method is called to execute physics for blocks local to the Region.  
 	 * It might be called multiple times per tick
+	 * @param sequence -1 for local, 0 - 7 for which sequence
 	 * @throws InterruptedException
 	 */
-	public abstract void runLocalPhysics() throws InterruptedException;
+	public abstract void runPhysics(int sequence) throws InterruptedException;
 	
 	/**
-	 * This method is called to execute physics for blocks that might 
-	 * affects blocks outside the Region.
-	 * It might be called multiple times per tick
-	 * @throws InterruptedException
-	 * @return the number of updates (including local ones) since last call
-	 */
-	public abstract int runGlobalPhysics() throws InterruptedException;
-	
-	/**
-	 * This method is called to execute dynamic updates for blocks local to the Region.  
-	 * It might be called multiple times per tick
-	 * @param the time to use for the updates
+	 * This method is called to execute dynamic updates for blocks in the Region.  
+	 * It might be called multiple times per tick, the sequence number indicates
+	 * which lists to check
+	 * 
+	 * @param sequence -1 for local, 0 - 7 for which sequence
+	 * @param time the time to use for the updates
 	 * @throws InterruptedException
 	 */
-	public abstract void runLocalDynamicUpdates(long time) throws InterruptedException;
-	
-	/**
-	 * This method is called to execute dynamic updates for blocks that might 
-	 * affects blocks outside the Region.
-	 * It might be called multiple times per tick
-	 * @throws InterruptedException
-	 * @return the number of updates (including local ones) since last call
-	 */
-	public abstract int runGlobalDynamicUpdates() throws InterruptedException;
+	public abstract void runDynamicUpdates(long time, int sequence) throws InterruptedException;
 	
 	/**
 	 * This method is called to determine the earliest available dynamic update time

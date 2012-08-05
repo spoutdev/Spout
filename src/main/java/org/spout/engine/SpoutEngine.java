@@ -842,12 +842,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	// The engine doesn't do any of these
 
 	@Override
-	public void runLocalPhysics() throws InterruptedException {
-	}
-
-	@Override
-	public int runGlobalPhysics() throws InterruptedException {
-		return 0;
+	public void runPhysics(int sequence) throws InterruptedException {
 	}
 
 	@Override
@@ -856,12 +851,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	@Override
-	public void runLocalDynamicUpdates(long time) throws InterruptedException {
-	}
-
-	@Override
-	public int runGlobalDynamicUpdates() throws InterruptedException {
-		return 0;
+	public void runDynamicUpdates(long time, int sequence) throws InterruptedException {
 	}
 
 	@Override

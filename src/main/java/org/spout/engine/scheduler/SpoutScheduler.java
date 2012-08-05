@@ -32,6 +32,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 
@@ -123,6 +124,10 @@ public final class SpoutScheduler implements Scheduler {
 	 * A list of all AsyncManagers
 	 */
 	private final SnapshotableArrayList<AsyncExecutor> asyncExecutors = new SnapshotableArrayList<AsyncExecutor>(snapshotManager, null);
+	/**
+	 * Update count for physics and dynamic updates
+	 */
+	private final AtomicInteger updates = new AtomicInteger(0);
 	
 	private final AtomicLong tickStartTime = new AtomicLong();
 	private volatile boolean shutdown = false;
@@ -440,14 +445,14 @@ public final class SpoutScheduler implements Scheduler {
 		lockSnapshotLock();
 		
 		try {
-			int updates = 1;
-			int totalUpdates = 0;
-			while (updates > 0 && totalUpdates < UPDATE_THRESHOLD) {
-				updates = doDynamicUpdates(executors);
-
-				updates += doPhysics(executors);
+			int totalUpdates = -1;
+			updates.set(1);
+			while (updates.get() > 0 && totalUpdates < UPDATE_THRESHOLD) {
+				totalUpdates += updates.getAndSet(0);
 				
-				totalUpdates += updates;
+				doDynamicUpdates(executors);
+				
+				doPhysics(executors);
 			}
 			
 			if (totalUpdates >= UPDATE_THRESHOLD) {
@@ -467,103 +472,89 @@ public final class SpoutScheduler implements Scheduler {
 		return true;
 	}
 	
-	private int doPhysics(List<AsyncExecutor> executors) throws InterruptedException {
-		int updates = 0;
-		int updatesThisPass = 1;
-		while (updatesThisPass > 0) {
-			
-			TickStage.setStage(TickStage.PHYSICS);
-			
-			for (AsyncExecutor e : executors) {
-				if (!e.doLocalPhysics()) {
-					throw new IllegalStateException("Attempt made to do physics while the previous operation was still active");
+	private void doPhysics(List<AsyncExecutor> executors) throws InterruptedException {
+		int passStartUpdates = updates.get() - 1;
+		int startUpdates = updates.get();
+		while (passStartUpdates < updates.get() && updates.get() < startUpdates + UPDATE_THRESHOLD) {
+			passStartUpdates = updates.get();
+			for (int sequence = -1; sequence < 8 && updates.get() < startUpdates + UPDATE_THRESHOLD; sequence++) {
+				if (sequence == -1) {
+					TickStage.setStage(TickStage.PHYSICS);
+				} else {
+					TickStage.setStage(TickStage.GLOBAL_PHYSICS);
 				}
-			}
-			
-			boolean joined = false;
-			while (!joined) {
-				try {
-					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
-					joined = true;
-				} catch (TimeoutException e) {
-					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-						logLongDurationTick("Local Physics", executors);
+
+				for (AsyncExecutor e : executors) {
+					if (!e.doPhysics(sequence)) {
+						throw new IllegalStateException("Attempt made to do physics while the previous operation was still active");
 					}
 				}
-			}
-			
-			updatesThisPass = 0;
-			
-			TickStage.setStage(TickStage.GLOBAL_PHYSICS);
 
-			for (AsyncExecutor e : executors) {
-				try {
-					updatesThisPass += e.getManager().runGlobalPhysics();
-				} catch (Exception ex) {
-					Spout.getLogger().log(Level.SEVERE, "Error while executing global physics: {0}", ex.getMessage());
-					ex.printStackTrace();
+				boolean joined = false;
+				while (!joined) {
+					try {
+						AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
+						joined = true;
+					} catch (TimeoutException e) {
+						if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+							logLongDurationTick("Local Physics", executors);
+						}
+					}
 				}
-			}
 
-			updates += updatesThisPass;
+			}
 		}
-		return updates;
 	}
 	
-	private int doDynamicUpdates(List<AsyncExecutor> executors) throws InterruptedException {
-		int updates = 0;
-		int updatesThisPass = 1;
-		while (updatesThisPass > 0) {
-			
-			TickStage.setStage(TickStage.GLOBAL_DYNAMIC_BLOCKS);
-			
-			long earliestTime = END_OF_THE_WORLD;
-			
-			for (AsyncExecutor e : executors) {
-				long firstTime = e.getManager().getFirstDynamicUpdateTime();
-				if (firstTime < earliestTime) {
-					earliestTime = firstTime;
-				}
-			}
-			
-			TickStage.setStage(TickStage.DYNAMIC_BLOCKS);
-			
-			long threshold = earliestTime + PULSE_EVERY - 1;
+	private void doDynamicUpdates(List<AsyncExecutor> executors) throws InterruptedException {
+		int passStartUpdates = updates.get() - 1;
+		int startUpdates = updates.get();
+		
+		TickStage.setStage(TickStage.GLOBAL_DYNAMIC_BLOCKS);
+		
+		long earliestTime = END_OF_THE_WORLD;
 
-			for (AsyncExecutor e : executors) {
-				if (!e.doLocalDynamicUpdates(threshold)) {
-					throw new IllegalStateException("Attempt made to pulse while the previous operation was still active");
-				}
+		for (AsyncExecutor e : executors) {
+			long firstTime = e.getManager().getFirstDynamicUpdateTime();
+			if (firstTime < earliestTime) {
+				earliestTime = firstTime;
 			}
+		}
+		
+		while (passStartUpdates < updates.get() && updates.get() < startUpdates + UPDATE_THRESHOLD) {
+			passStartUpdates = updates.get();
 			
-			boolean joined = false;
-			while (!joined) {
-				try {
-					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
-					joined = true;
-				} catch (TimeoutException e) {
-					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-						logLongDurationTick("Local Dynamic Blocks", executors);
+			for (int sequence = -1; sequence < 27 && updates.get() < startUpdates + UPDATE_THRESHOLD; sequence++) {
+				if (sequence == -1) {
+					TickStage.setStage(TickStage.DYNAMIC_BLOCKS);
+				} else {
+					TickStage.setStage(TickStage.GLOBAL_DYNAMIC_BLOCKS);
+				}			
+				long threshold = earliestTime + PULSE_EVERY - 1;
+
+				for (AsyncExecutor e : executors) {
+					if (!e.doDynamicUpdates(threshold, sequence)) {
+						throw new IllegalStateException("Attempt made to pulse while the previous operation was still active");
+					}
+				}
+
+				boolean joined = false;
+				while (!joined) {
+					try {
+						AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
+						joined = true;
+					} catch (TimeoutException e) {
+						if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+							logLongDurationTick("Local Dynamic Blocks", executors);
+						}
 					}
 				}
 			}
-			
-			updatesThisPass = 0;
-			
-			TickStage.setStage(TickStage.GLOBAL_DYNAMIC_BLOCKS);
-
-			for (AsyncExecutor e : executors) {
-				try {
-					updatesThisPass += e.getManager().runGlobalDynamicUpdates();
-				} catch (Exception ex) {
-					Spout.getLogger().log(Level.SEVERE, "Error while executing global dynamic updates: {0}", ex.getMessage());
-					ex.printStackTrace();
-				}
-			}
-			
-			updates += updatesThisPass;
 		}
-		return updates;
+	}
+	
+	public void addUpdates(int inc) {
+		updates.addAndGet(inc);
 	}
 	
 	private void runCoreTasks() {

@@ -158,13 +158,10 @@ public class DynamicBlockUpdateTree {
 	}
 	
 	private void checkStages() {
-		if (Thread.currentThread() == this.regionThread) {
-			TickStage.checkStage(localStages);
-		} else if (Thread.currentThread() == mainThread){
-			TickStage.checkStage(globalStages);
-		} else {
-			throw new IllegalTickSequenceException(TickStage.ALL_PHYSICS_AND_DYNAMIC, TickStage.getStageInt());
-		}
+		// Note: This is a weaker check that before
+		//       Access is open during the global update stages, but access should be 
+		//       restricted to neighbour in the sequence
+		TickStage.checkStage(globalStages, localStages, regionThread);
 	}
 	
 	public void addDynamicBlockUpdates(List<DynamicBlockUpdate> list) {

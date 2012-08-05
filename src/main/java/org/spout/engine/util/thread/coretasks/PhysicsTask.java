@@ -31,9 +31,19 @@ import org.spout.engine.util.thread.ManagementRunnable;
 
 public class PhysicsTask extends ManagementRunnable {
 	private static final long serialVersionUID = 1L;
+	
+	private int sequence;
 
 	@Override
 	public void run(AsyncExecutor executor) throws InterruptedException {
-		executor.getManager().runLocalPhysics();
+		executor.getManager().runPhysics(sequence);
+	}
+	
+	public void setSequence(int sequence) {
+		this.sequence = sequence;
+	}
+	
+	public int getSequence() {
+		return sequence;
 	}
 }

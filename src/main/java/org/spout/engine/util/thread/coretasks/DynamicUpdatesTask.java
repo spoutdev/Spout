@@ -33,10 +33,11 @@ public class DynamicUpdatesTask extends ManagementRunnable {
 	private static final long serialVersionUID = 1L;
 
 	private long time;
+	private int sequence;
 	
 	@Override
 	public void run(AsyncExecutor executor) throws InterruptedException {
-		executor.getManager().runLocalDynamicUpdates(time);
+		executor.getManager().runDynamicUpdates(time, sequence);
 	}
 	
 	public void setTime(long time) {
@@ -45,5 +46,13 @@ public class DynamicUpdatesTask extends ManagementRunnable {
 	
 	public long getTime() {
 		return time;
+	}
+	
+	public void setSequence(int sequence) {
+		this.sequence = sequence;
+	}
+	
+	public int getSequence() {
+		return sequence;
 	}
 }
