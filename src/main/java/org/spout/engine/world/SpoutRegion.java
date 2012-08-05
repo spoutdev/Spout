@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -863,6 +864,7 @@ public class SpoutRegion extends Region{
 	int physicsUpdates = 0;
 
 	public void runPhysics(int sequence) throws InterruptedException {
+		scheduler.addUpdates(physicsUpdates);
 		physicsUpdates = 0;
 		if (sequence == -1) {
 			runLocalPhysics();
@@ -896,7 +898,6 @@ public class SpoutRegion extends Region{
 			}
 		}
 		
-		scheduler.addUpdates(physicsUpdates);
 	}
 
 	public void runGlobalPhysics() throws InterruptedException {
@@ -912,7 +913,6 @@ public class SpoutRegion extends Region{
 			BlockMaterial oldMaterial = queue.getOldMaterial();
 			callOnUpdatePhysicsForRange(world, x, y, z, oldMaterial, source, true);
 		}
-		scheduler.addUpdates(physicsUpdates);
 	}
 
 	private boolean callOnUpdatePhysicsForRange(World world, int x, int y, int z, BlockMaterial oldMaterial, Source source, boolean force) {
@@ -934,6 +934,7 @@ public class SpoutRegion extends Region{
 	}
 	
 	public void runDynamicUpdates(long time, int sequence) throws InterruptedException {
+		scheduler.addUpdates(dynamicBlockTree.getLastUpdates());
 		dynamicBlockTree.resetLastUpdates();
 		
 		if (sequence == -1) {
@@ -941,8 +942,6 @@ public class SpoutRegion extends Region{
 		} else if (sequence == this.updateSequence) {
 			runGlobalDynamicUpdates();
 		}
-		
-		scheduler.addUpdates(dynamicBlockTree.getLastUpdates());
 	}
 
 	public long getFirstDynamicUpdateTime() {
@@ -961,10 +960,13 @@ public class SpoutRegion extends Region{
 	public void runGlobalDynamicUpdates() throws InterruptedException {
 		long currentTime = getWorld().getAge();
 		if (multiRegionUpdates != null) {
+			boolean updated = false;
 			for (DynamicBlockUpdate update : multiRegionUpdates) {
-				dynamicBlockTree.updateDynamicBlock(currentTime, update, true);
+				updated |= dynamicBlockTree.updateDynamicBlock(currentTime, update, true).isUpdated();
 			}
-			scheduler.addUpdates(1);
+			if (updated) {
+				scheduler.addUpdates(1);
+			}
 		}
 	}
 

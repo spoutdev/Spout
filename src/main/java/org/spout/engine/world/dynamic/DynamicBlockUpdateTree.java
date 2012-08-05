@@ -32,13 +32,13 @@ import gnu.trove.set.hash.TIntHashSet;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.spout.api.Spout;
-import org.spout.api.exception.IllegalTickSequenceException;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
@@ -237,7 +237,7 @@ public class DynamicBlockUpdateTree {
 		ArrayList<DynamicBlockUpdate> multiRegionUpdates = null;
 		
 		while ((first = getNextUpdate(thresholdTime)) != null) {
-			if (!updateDynamicBlock(currentTime, first, false)) {
+			if (!updateDynamicBlock(currentTime, first, false).isLocal()) {
 				if (multiRegionUpdates == null) {
 					multiRegionUpdates = new ArrayList<DynamicBlockUpdate>();
 				}
@@ -250,8 +250,8 @@ public class DynamicBlockUpdateTree {
 			return multiRegionUpdates;
 		}
 	}
-	
-	public boolean updateDynamicBlock(long currentTime, DynamicBlockUpdate update, boolean force) {
+
+	public UpdateResult updateDynamicBlock(long currentTime, DynamicBlockUpdate update, boolean force) {
 		checkStages();
 		int bx = update.getX();
 		int by = update.getY();
@@ -260,26 +260,25 @@ public class DynamicBlockUpdateTree {
 		Chunk c = region.getChunkFromBlock(bx, by, bz, LoadOption.NO_LOAD);
 
 		if (c == null) {
-			// TODO - this shouldn't happen - maybe a warning
-			return true;
+			return UpdateResult.NOT_DYNAMIC;
 		}
 		
 		
 		Material m = c.getBlockMaterial(bx, by, bz);
 		
 		if (!(m instanceof DynamicMaterial)) {
-			return true;
+			return UpdateResult.NOT_DYNAMIC;
 		}
 
 		DynamicMaterial dm = (DynamicMaterial)m;
 		EffectRange range = dm.getDynamicRange();
 		if (!force && !range.isRegionLocal(bx, by, bz)) {
-			return false;
+			return UpdateResult.NON_LOCAL;
 		} else {
 			Block b =  c.getBlock(bx, by, bz, c.getWorld());
 			dm.onDynamicUpdate(b, region, update.getNextUpdate(), update.getQueuedTime(), update.getData(), update.getHint());
 			lastUpdates++;
-			return true;
+			return UpdateResult.DONE;
 		}
 	}
 	
@@ -449,5 +448,17 @@ public class DynamicBlockUpdateTree {
 			current = current.getNext();
 		}
 		return oldRoot;
+	}
+	
+	public static enum UpdateResult {
+		NON_LOCAL, DONE, NOT_DYNAMIC;
+		
+		public boolean isLocal() {
+			return this != NON_LOCAL;
+		}
+		
+		public boolean isUpdated() {
+			return this == DONE;
+		}
 	}
 }
