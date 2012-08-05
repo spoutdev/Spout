@@ -121,7 +121,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	@Override
-	public void init(Arguments args) {
+	public void init(SpoutApplication args) {
 		boolean inJar = false;
 
 		try {

@@ -143,7 +143,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	@Override
-	public void init(Arguments args) {
+	public void init(SpoutApplication args) {
 		super.init(args);
 		//Note: All threads are daemons, cleanup of the executors is handled by bootstrap.getFactory().releaseExternalResources(); in stop(...).
 		ExecutorService executorBoss = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Boss", true));

@@ -165,7 +165,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private ConcurrentHashMap<String, String> cvars = new ConcurrentHashMap<String, String>();
 	protected FileSystem filesystem;
 	private Console console;
-	private Arguments arguments;
+	private SpoutApplication arguments;
 
 	public SpoutEngine() {
 		super(1, new ThreadAsyncExecutor("Engine bootstrap thread"));
@@ -173,7 +173,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		consoleManager = new ConsoleManager(this);
 	}
 
-	public void init(Arguments args) {
+	public void init(SpoutApplication args) {
 		this.arguments = args;
 		try {
 			config.load();
@@ -283,7 +283,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		}
 	}
 
-	public Arguments getArguments() {
+	public SpoutApplication getArguments() {
 		return arguments;
 	}
 

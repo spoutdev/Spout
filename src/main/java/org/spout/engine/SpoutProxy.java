@@ -100,7 +100,7 @@ public class SpoutProxy extends SpoutServer {
 	}
 
 	@Override
-	public void init(Arguments args) {
+	public void init(SpoutApplication args) {
 		super.init(args);
 		//Note: All threads are daemons, cleanup of the executors is handled by clientBootstrap.getFactory().releaseExternalResources(); in stop(...).
 		ExecutorService executorBoss = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Boss", true));

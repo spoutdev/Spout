@@ -77,7 +77,13 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 		}
 
 		final Shader shader = (Shader) shaderObject;
-
+		boolean depthTesting = true;
+		if(resourceProperties.containsKey("RenderState"))
+		{
+			final Map<? extends String, ?> renderState = checkerMapStringObject.check(resourceProperties.get("RenderState"));
+			Object s = renderState.get("Depth");
+			if(s instanceof Boolean) depthTesting = (Boolean)s;
+		}
 		final Map<? extends String, ?> params = checkerMapStringObject.check(resourceProperties.get("MaterialParams"));
 
 		// Better make a new HashMap, who knows whether we can even write to it...
@@ -190,6 +196,7 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 			throw new IllegalStateException("This should never happen.");
 		}
 
-		return new ClientRenderMaterial(shader, paramsNew);
+		//TODO: Parse matricies 
+		return new ClientRenderMaterial(shader, paramsNew, null, null, depthTesting);
 	}
 }
