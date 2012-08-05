@@ -310,8 +310,6 @@ public class SpoutRegion extends Region{
 
 				Spout.getEventManager().callDelayedEvent(new ChunkLoadEvent(newChunk, generated));
 
-				getTaskManager().scheduleSyncDelayedTask(Spout.getEngine(), new RandomUpdateTask(newChunk), RandomUpdateTask.TICK_DELAY, TaskPriority.LOWEST);
-
 				return newChunk;
 			}
 
