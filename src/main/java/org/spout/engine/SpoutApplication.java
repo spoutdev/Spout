@@ -39,7 +39,7 @@ import org.spout.engine.util.argument.RenderModeConverter;
 /**
  * A main class for launching various platforms
  */
-public class Arguments {
+public class SpoutApplication {
 	@Parameter(names = {"--platform", "-platform", "--p", "-p"}, converter = PlatformConverter.class)
 	public Platform platform = Platform.SERVER;
 	@Parameter(names = {"--debug", "-debug", "--d", "-d"}, description = "Debug Mode")
@@ -49,7 +49,7 @@ public class Arguments {
 
 	public static void main(String[] args) {
 		try {
-			Arguments main = new Arguments();
+			SpoutApplication main = new SpoutApplication();
 			JCommander commands = new JCommander(main);
 			commands.parse(args);
 	
