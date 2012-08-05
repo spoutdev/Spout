@@ -189,6 +189,26 @@ public final class SpoutScheduler implements Scheduler {
 			c.stopEngine();
 		}
 	}
+	
+	private long medianFreeTime = 0;
+	private int medianCounter = 0;
+	
+	private void medianCheck(long tickTime) {
+		if (Spout.debugMode()) {
+			long timeScaled = tickTime * 10;
+
+			if (timeScaled > medianFreeTime) {
+				medianFreeTime++;
+			} else if (timeScaled < medianFreeTime) {
+				medianFreeTime--;
+			}
+			
+			if (medianCounter++ > 100) {
+				medianCounter = 0;
+				Spout.getLogger().info("Median tick time monitor, " + (medianFreeTime / 10.0));
+			}
+		}
+	}
 
 	private class MainThread extends Thread {
 		public MainThread() {
@@ -216,7 +236,9 @@ public final class SpoutScheduler implements Scheduler {
 				}
 				long finishTime = System.currentTimeMillis();
 				long freeTime = targetPeriod - (finishTime - startTime);
-
+				
+				medianCheck(finishTime - startTime);
+				
 				if (freeTime > 0) {
 					heavyLoad.set(false);
 					try {
