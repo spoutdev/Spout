@@ -1374,4 +1374,8 @@ public class MathHelper {
 		}
 		return ret;
 	}
+	
+	public static int mod(int x, int div) {
+		return x < 0 ? (x % div) + div : x % div;
+	}
 }
