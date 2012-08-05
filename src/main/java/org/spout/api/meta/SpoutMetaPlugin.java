@@ -36,6 +36,7 @@ import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleAnnotatedCommandExecutorFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.generator.WorldGenerator;
+import org.spout.api.lang.PluginDictionary;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginDescriptionFile;
@@ -44,10 +45,12 @@ import org.spout.api.plugin.PluginLoader;
 public final class SpoutMetaPlugin implements Plugin {
 	private PluginDescriptionFile pdf;
 	private Engine engine;
+	private PluginDictionary dictionary; // TODO extend this dictionary to load translation from a different location
 
 	public SpoutMetaPlugin(Engine engine) {
 		this.engine = engine;
 		pdf = new PluginDescriptionFile("Spout", engine.getVersion(), "", Platform.ALL);
+		dictionary = new PluginDictionary(this);
 	}
 
 	@Override
@@ -119,5 +122,10 @@ public final class SpoutMetaPlugin implements Plugin {
 
 	@Override
 	public void loadLibrary(File file) {
+	}
+
+	@Override
+	public PluginDictionary getDictionary() {
+		return dictionary;
 	}
 }

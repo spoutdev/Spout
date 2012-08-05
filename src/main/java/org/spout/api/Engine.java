@@ -573,5 +573,11 @@ public interface Engine extends Named {
 	public void setVariable(String key, String value);
 
 	public String getVariable(String key);
-
+	
+	/**
+	 * Gets the command source that prints to the console<br/>
+	 * Can be used to print colored text to the console
+	 * @return the console command source
+	 */
+	public CommandSource getCommandSource();
 }

@@ -26,6 +26,7 @@
  */
 package org.spout.api.command;
 
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,6 +36,7 @@ import org.spout.api.data.ValueHolder;
 import org.spout.api.exception.CommandException;
 import org.spout.api.exception.MissingCommandException;
 import org.spout.api.geo.World;
+import org.spout.api.lang.Locale;
 
 public class SimpleCommandTest implements CommandSource {
 	private SimpleCommand testCommand;
@@ -109,5 +111,10 @@ public class SimpleCommandTest implements CommandSource {
 	@Override
 	public ValueHolder getData(String node) {
 		return null;
+	}
+
+	@Override
+	public Locale getPreferredLocale() {
+		return Locale.ENGLISH_US;
 	}
 }

@@ -1,7 +1,36 @@
+/*
+ * This file is part of SpoutAPI.
+ *
+ * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
+ * SpoutAPI is licensed under the SpoutDev License Version 1.
+ *
+ * SpoutAPI is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the SpoutDev License Version 1.
+ *
+ * SpoutAPI is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the SpoutDev License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
+ * including the MIT license.
+ */
 package org.spout.api.lang;
 
 import org.spout.api.Spout;
 import org.spout.api.command.CommandSource;
+import org.spout.api.plugin.CommonClassLoader;
+import org.spout.api.plugin.CommonPlugin;
+import org.spout.api.plugin.Plugin;
 
 /**
  * Provides helper methods for translation
@@ -31,6 +60,9 @@ import org.spout.api.command.CommandSource;
 // TODO: file format, ChatStyle integration, tool for translation, %n as a placeholder for numbers
 public class Translation {
 	
+	
+	private static String foundClass = null;
+	private static final String LANG_PACKAGE = "org.spout.api.lang";
 	/**
 	 * Returns the translation of source into the receivers preferred language
 	 * @param source the string to translate
@@ -39,8 +71,9 @@ public class Translation {
 	 * @return the translation
 	 */
 	public static String tr(String source, CommandSource receiver, Object ...args) {
-		
-		return source;
+		Plugin plugin = getPluginForStacktrace();
+		PluginDictionary pldict = plugin.getDictionary();
+		return pldict.tr(source, receiver, foundClass, args);
 	}
 	
 	/**
@@ -61,8 +94,33 @@ public class Translation {
 	 * @param args any object given will be inserted into the target string for each %0, %1 asf
 	 */
 	public static void broadcast(String source, CommandSource receivers[], Object ...args) {
+		Plugin plugin = getPluginForStacktrace();
+		PluginDictionary pldict = plugin.getDictionary();
 		for (CommandSource receiver:receivers) {
-			receiver.sendMessage(tr(source, receiver, args));
+			receiver.sendMessage(pldict.tr(source, receiver, foundClass, args));
 		}
+	}
+	
+	private static Plugin getPluginForStacktrace() {
+		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+		boolean canSeePlugin = false;
+		for (int i = 0; i < trace.length; i++) {
+			String clazz = trace[i].getClassName();
+			foundClass = clazz;
+			if (clazz.startsWith(LANG_PACKAGE)) {
+				// Skip all classes in the org.spout.api.lang package
+				canSeePlugin = true;
+				continue;
+			}
+			if (canSeePlugin) {
+				CommonPlugin plugin = CommonClassLoader.getPlugin(clazz);
+				if (plugin != null) {
+					return plugin;
+				} else {
+					return Spout.getPluginManager().getPlugin("Spout");	
+				}
+			}
+		}
+		return Spout.getPluginManager().getPlugin("Spout");	
 	}
 }
