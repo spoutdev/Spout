@@ -26,8 +26,9 @@
  */
 package org.spout.api.util.concurrent;
 
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import com.google.common.base.Objects;
 
 /**
  * Implements an AtomicFloat class
