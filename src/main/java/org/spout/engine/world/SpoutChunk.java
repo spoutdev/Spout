@@ -101,8 +101,7 @@ public class SpoutChunk extends Chunk {
 	 * modify the block store.
 	 */
 	private static final int restrictedStages = TickStage.PHYSICS | TickStage.DYNAMIC_BLOCKS;
-	private static final int mainThreadStages = TickStage.GLOBAL_PHYSICS | TickStage.GLOBAL_DYNAMIC_BLOCKS;
-	private static final int allowedStages = TickStage.STAGE1 | TickStage.STAGE2P | TickStage.TICKSTART;
+	private static final int allowedStages = TickStage.STAGE1 | TickStage.STAGE2P | TickStage.TICKSTART | TickStage.GLOBAL_PHYSICS | TickStage.GLOBAL_DYNAMIC_BLOCKS;;
 	private static final int updateStages =
 			TickStage.PHYSICS | TickStage.DYNAMIC_BLOCKS
 			| TickStage.GLOBAL_PHYSICS | TickStage.GLOBAL_DYNAMIC_BLOCKS;
@@ -1050,11 +1049,7 @@ public class SpoutChunk extends Chunk {
 	}
 
 	private void checkBlockStoreUpdateAllowed() {
-		if (Thread.currentThread() == mainThread) {
-			TickStage.checkStage(allowedStages, mainThreadStages, mainThread);
-		} else {
-			TickStage.checkStage(allowedStages, restrictedStages, regionThread);
-		}
+		TickStage.checkStage(allowedStages, restrictedStages, regionThread);
 	}
 
 	@Override
