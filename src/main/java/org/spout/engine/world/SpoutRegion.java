@@ -236,9 +236,9 @@ public class SpoutRegion extends Region{
 			throw new IllegalStateException("AsyncExecutor should be instance of Thread");
 		}
 		taskManager = new SpoutTaskManager(world.getEngine().getScheduler(), false, t, world.getAge());
-		int xx = MathHelper.mod(getBlockX(), 3);
-		int yy = MathHelper.mod(getBlockY(), 3);
-		int zz = MathHelper.mod(getBlockZ(), 3);
+		int xx = MathHelper.mod(getX(), 3);
+		int yy = MathHelper.mod(getY(), 3);
+		int zz = MathHelper.mod(getZ(), 3);
 		updateSequence = (xx * 9) + (yy * 3) + zz;
 		scheduler = (SpoutScheduler) (Spout.getEngine().getScheduler());
 	}
