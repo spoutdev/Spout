@@ -48,28 +48,33 @@ public class Arguments {
 	RenderMode renderMode = RenderMode.GL30;
 
 	public static void main(String[] args) {
-		Arguments main = new Arguments();
-		JCommander commands = new JCommander(main);
-		commands.parse(args);
-
-		SpoutEngine engine;
-		switch (main.platform) {
-			case CLIENT:
-				engine = new SpoutClient();
-				break;
-			case SERVER:
-				engine = new SpoutServer();
-				break;
-			case PROXY:
-				engine = new SpoutProxy();
-				break;
-			default:
-				throw new IllegalArgumentException("Unknown platform: " + main.platform);
+		try {
+			Arguments main = new Arguments();
+			JCommander commands = new JCommander(main);
+			commands.parse(args);
+	
+			SpoutEngine engine;
+			switch (main.platform) {
+				case CLIENT:
+					engine = new SpoutClient();
+					break;
+				case SERVER:
+					engine = new SpoutServer();
+					break;
+				case PROXY:
+					engine = new SpoutProxy();
+					break;
+				default:
+					throw new IllegalArgumentException("Unknown platform: " + main.platform);
+			}
+	
+			Spout.setEngine(engine);
+			Spout.getFilesystem().init();
+			engine.init(main);
+			engine.start();
+		} catch (Throwable t) {
+			t.printStackTrace();
+			Runtime.getRuntime().halt(1);
 		}
-
-		Spout.setEngine(engine);
-		Spout.getFilesystem().init();
-		engine.init(main);
-		engine.start();
 	}
 }
