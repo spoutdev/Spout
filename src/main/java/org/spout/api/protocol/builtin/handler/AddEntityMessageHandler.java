@@ -26,11 +26,13 @@
  */
 package org.spout.api.protocol.builtin.handler;
 
+import org.spout.api.Client;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.component.Controller;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
+import org.spout.api.protocol.builtin.SpoutProtocol;
 import org.spout.api.protocol.builtin.message.AddEntityMessage;
 
 public class AddEntityMessageHandler extends MessageHandler<AddEntityMessage> {
@@ -41,14 +43,20 @@ public class AddEntityMessageHandler extends MessageHandler<AddEntityMessage> {
 		}
 
 		Player player = session.getPlayer();
+		Entity newEntity;
+		if (message.getEntityId() == session.getDataMap().get(SpoutProtocol.PLAYER_ENTITY_ID)) {
+			newEntity = player;
+		} else {
+			newEntity = session.getEngine().getDefaultWorld().createEntity(message.getTransform().getPosition(), null);
+		}
 		Controller controller = message.getType().createController();
 		if (controller == null) {
 			throw new IllegalArgumentException("Error spawning entity, controller of type " + message.getType().getName() + " is null!");
 		}
-		Entity newEntity = player.getWorld().createEntity(message.getPosition().getPosition(), controller);
-		newEntity.setTransform(message.getPosition());
+		newEntity.setController(controller);
+		newEntity.setTransform(message.getTransform());
 		//newEntity.setId(message.getEntityId()); // TODO: Allow providing an entity ID to use
-		player.getWorld().spawnEntity(newEntity);
+		((Client) session.getEngine()).getDefaultWorld().spawnEntity(newEntity);
 
 	}
 }

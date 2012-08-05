@@ -26,10 +26,13 @@
  */
 package org.spout.api.protocol.builtin.codec;
 
+import java.util.UUID;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.entity.component.controller.type.ControllerRegistry;
-import org.spout.api.geo.discrete.Transform;
+import org.spout.api.math.Quaternion;
+import org.spout.api.math.Vector3;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.builtin.ChannelBufferUtils;
 import org.spout.api.protocol.builtin.message.AddEntityMessage;
@@ -41,10 +44,13 @@ public class AddEntityCodec extends MessageCodec<AddEntityMessage> {
 
 	@Override
 	public ChannelBuffer encode(AddEntityMessage message) {
-		ChannelBuffer buffer = ChannelBuffers.buffer(8 + ChannelBufferUtils.TRANSFORM_SIZE);
+		ChannelBuffer buffer = ChannelBuffers.buffer(8 + ChannelBufferUtils.UUID_SIZE + ChannelBufferUtils.VECTOR3_SIZE * 2 + ChannelBufferUtils.QUATERNINON_SIZE);
 		buffer.writeInt(message.getEntityId());
 		buffer.writeInt(message.getType().getId());
-		ChannelBufferUtils.writeTransform(buffer, message.getPosition());
+		ChannelBufferUtils.writeUUID(buffer, message.getWorldUid());
+		ChannelBufferUtils.writeVector3(buffer, message.getPosition());
+		ChannelBufferUtils.writeQuaternion(buffer, message.getRotation());
+		ChannelBufferUtils.writeVector3(buffer, message.getScale());
 		return buffer;
 	}
 
@@ -52,7 +58,10 @@ public class AddEntityCodec extends MessageCodec<AddEntityMessage> {
 	public AddEntityMessage decode(ChannelBuffer buffer) {
 		final int entityId = buffer.readInt();
 		final int controllerTypeId = buffer.readInt();
-		final Transform position = ChannelBufferUtils.readTransform(buffer);
-		return new AddEntityMessage(entityId, ControllerRegistry.get(controllerTypeId), position);
+		final UUID worldUid = ChannelBufferUtils.readUUID(buffer);
+		final Vector3 position = ChannelBufferUtils.readVector3(buffer);
+		final Quaternion rotation = ChannelBufferUtils.readQuaternion(buffer);
+		final Vector3 scale = ChannelBufferUtils.readVector3(buffer);
+		return new AddEntityMessage(entityId, ControllerRegistry.get(controllerTypeId), worldUid, position, rotation, scale);
 	}
 }

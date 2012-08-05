@@ -26,21 +26,41 @@
  */
 package org.spout.api.protocol.builtin.message;
 
+import java.util.UUID;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.spout.api.Spout;
 import org.spout.api.entity.component.controller.type.ControllerType;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.math.Quaternion;
+import org.spout.api.math.Vector3;
 import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
 public class AddEntityMessage extends Message {
 	private final int entityId;
 	private final ControllerType type;
-	private final Transform position;
+	private final UUID worldUid;
+	private final Vector3 pos, scale;
+	private final Quaternion rotation;
 
-	public AddEntityMessage(int entityId, ControllerType type, Transform position) {
+	public AddEntityMessage(int entityId, ControllerType type, Transform transform) {
 		this.entityId = entityId;
 		this.type = type;
-		this.position = position;
+		this.worldUid = transform.getPosition().getWorld().getUID();
+		this.pos = transform.getPosition();
+		this.rotation = transform.getRotation();
+		this.scale = transform.getScale();
+	}
+
+	public AddEntityMessage(int entityId, ControllerType type, UUID worldUid, Vector3 pos, Quaternion rotation, Vector3 scale) {
+		this.entityId = entityId;
+		this.type = type;
+		this.worldUid = worldUid;
+		this.pos = pos;
+		this.rotation = rotation;
+		this.scale = scale;
 	}
 
 	public int getEntityId() {
@@ -51,8 +71,24 @@ public class AddEntityMessage extends Message {
 		return type;
 	}
 
-	public Transform getPosition() {
-		return position;
+	public UUID getWorldUid() {
+		return worldUid;
+	}
+
+	public Vector3 getPosition() {
+		return pos;
+	}
+
+	public Quaternion getRotation() {
+		return rotation;
+	}
+
+	public Vector3 getScale() {
+		return scale;
+	}
+
+	public Transform getTransform() {
+		return new Transform(new Point(pos, Spout.getEngine().getWorld(worldUid)), rotation, scale);
 	}
 
 	@Override
@@ -60,7 +96,10 @@ public class AddEntityMessage extends Message {
 		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
 				.append("entityId", entityId)
 				.append("type", type)
-				.append("position", position)
+				.append("worldUid", worldUid)
+				.append("pos", pos)
+				.append("scale", scale)
+				.append("rotation", rotation)
 				.toString();
 	}
 }

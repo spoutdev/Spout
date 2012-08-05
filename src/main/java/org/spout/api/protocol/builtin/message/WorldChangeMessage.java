@@ -63,6 +63,7 @@ public class WorldChangeMessage extends DatatableMessage {
 	public String toString() {
 		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
 				.appendSuper(super.toString())
+				.append("worldName", worldName)
 				.append("worldUuid", worldUuid)
 				.toString();
 	}

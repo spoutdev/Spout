@@ -69,6 +69,7 @@ public class MemoryStore<T> implements SimpleStore<T> {
 
 	public synchronized boolean clear() {
 		map.clear();
+		reverseMap.clear();
 		return true;
 	}
 

@@ -118,11 +118,11 @@ public class ChunkDataMessage extends Message {
 				.append("x", x)
 				.append("y", y)
 				.append("z", z)
-				.append("blockIds", blockIds)
-				.append("blockData", blockData)
-				.append("blockLight", blockLight)
-				.append("skyLight", skyLight)
-				.append("biomeData", biomeData)
+				.append("blockIds", blockIds, false)
+				.append("blockData", blockData, false)
+				.append("blockLight", blockLight, false)
+				.append("skyLight", skyLight, false)
+				.append("biomeData", biomeData, false)
 				.toString();
 	}
 }

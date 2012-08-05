@@ -27,6 +27,8 @@
 package org.spout.api;
 
 import java.io.File;
+import java.util.UUID;
+
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.keyboard.Input;
@@ -88,4 +90,14 @@ public interface Client extends Engine {
 	 * @return address
 	 */
 	public PortBinding getAddress();
+
+	/**
+	 * This method is called to notify the client that its world needs to change
+	 *
+	 * @param name The name of the new world
+	 * @param uuid The world's uuid
+	 * @param datatable The world's datatable data
+	 * @return The new world
+	 */
+	public World worldChanged(String name, UUID uuid, byte[] datatable);
 }

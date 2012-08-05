@@ -27,7 +27,9 @@
 package org.spout.api.protocol.builtin;
 
 import java.util.Collection;
+import java.util.Queue;
 
+import org.spout.api.datatable.DataMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.component.controller.type.ControllerType;
 import org.spout.api.geo.World;
@@ -44,6 +46,7 @@ import org.spout.api.protocol.Session;
 import org.spout.api.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.api.protocol.builtin.message.ChunkDataMessage;
 import org.spout.api.protocol.builtin.message.EntityPositionMessage;
+import org.spout.api.protocol.builtin.message.WorldChangeMessage;
 
 public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 	public SpoutNetworkSynchronizer(Session session) {
@@ -65,7 +68,7 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 	}
 
 	protected void worldChanged(World world) {
-		//session.send(false, new WorldChangeMessage(world, world.getDataMap()));
+		session.send(false, new WorldChangeMessage(world, ((DataMap) world.getDataMap()).getRawMap()));
 	}
 
 	public void updateBlock(Chunk chunk, int x, int y, int z, BlockMaterial material, short data) {

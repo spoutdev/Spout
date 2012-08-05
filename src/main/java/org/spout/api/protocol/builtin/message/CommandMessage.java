@@ -59,7 +59,7 @@ public class CommandMessage extends Message {
 	public String toString() {
 		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
 				.append("command", command)
-				.append("arguments", arguments)
+				.append("arguments", arguments, true)
 				.toString();
 	}
 }

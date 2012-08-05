@@ -38,6 +38,8 @@ public class SpoutToStringStyle extends ToStringStyle {
 	private SpoutToStringStyle() {
 		super();
 		setUseShortClassName(true);
+		setArrayContentDetail(false);
+		//setDefaultFullDetail(false);
 		setUseIdentityHashCode(false);
 		setContentStart("{");
 		setContentEnd("}");

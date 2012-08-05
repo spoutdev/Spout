@@ -38,9 +38,11 @@ public class CommandMessageHandler extends MessageHandler<CommandMessage> {
 		if(!session.hasPlayer()) {
 			return;
 		}
-		
 		Player player = session.getPlayer();
 		String command = session.getEngine().getRootCommand().getChildName(message.getCommand());
+		if (command == null) {
+			player.sendMessage("Unknown command id: ", message.getCommand());
+		}
 		player.processCommand(command, new ChatArguments(message.getArguments()));
 	}
 }

@@ -77,7 +77,7 @@ public class SpoutProtocol extends Protocol {
 	}
 
 	public Message getKickMessage(ChatArguments message) {
-		Command cmd = Spout.getEngine().getRootCommand().getChild("kick");
+		Command cmd = Spout.getEngine().getRootCommand().getChild("disonnect");
 		if (cmd != null) {
 			return getCommandMessage(cmd, message);
 		} else {
@@ -96,6 +96,7 @@ public class SpoutProtocol extends Protocol {
 	public void initializeSession(Session session) {
 		session.setNetworkSynchronizer(new SpoutNetworkSynchronizer(session));
 
+		session.send(false, new StringMapMessage(StringMapMessage.STRINGMAP_REGISTRATION_MAP, StringMapMessage.Action.SET, StringMap.get(StringMapMessage.STRINGMAP_REGISTRATION_MAP).getItems()));
 		for (StringMap map : StringMap.getAll()) {
 			session.send(false, new StringMapMessage(map.getId(), StringMapMessage.Action.SET, map.getItems()));
 		}

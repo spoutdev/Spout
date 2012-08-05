@@ -109,9 +109,9 @@ public class StringMap {
 	/**
 	 * @param parent the parent of this map
 	 * @param store the store to store ids
-	 * @param updateTask the task to call on update
 	 * @param minId the lowest valid id for dynamic allocation (ids below this are assumed to be reserved)
 	 * @param maxId the highest valid id + 1
+	 * @param name The name of this StringMap
 	 */
 	public StringMap(StringMap parent, SimpleStore<Integer> store, int minId, int maxId, String name) {
 		this.parent = parent;
@@ -328,7 +328,7 @@ public class StringMap {
 	}
 
 	public void clear() {
-		while (!this.nextId.compareAndSet(minId, minId)) {
+		while (this.nextId.getAndSet(minId) != minId) {
 			if (this.parent != null) {
 				for (int i = 0; i < maxId; i++) {
 					thisToParentMap.set(i, 0);
