@@ -102,6 +102,12 @@ public abstract class NetworkSynchronizer {
 	private final Set<Point> chunksToObserve = new LinkedHashSet<Point>();
 	private final Map<Class<? extends ProtocolEvent>, ProtocolEventExecutor> protocolEventMapping = new HashMap<Class<? extends ProtocolEvent>, ProtocolEventExecutor>();
 
+	public void setRespawned() {
+		first = true;
+		worldChanged = true;
+		teleported = true;
+	}
+
 	public void setPositionDirty() {
 		teleported = true;
 	}
