@@ -176,6 +176,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	public final void render() {
 		checkRender();
 		if(numVertices <= 0) return;
+		//this.activeMaterial
 		doRender();
 	}
 

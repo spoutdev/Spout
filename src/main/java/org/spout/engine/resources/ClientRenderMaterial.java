@@ -27,12 +27,13 @@
 package org.spout.engine.resources;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
+import org.lwjgl.opengl.GL11;
 import org.spout.api.Client;
 import org.spout.api.Spout;
+import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
@@ -41,29 +42,26 @@ import org.spout.api.render.Shader;
 import org.spout.api.resource.Resource;
 
 public class ClientRenderMaterial extends Resource implements RenderMaterial {
+	
 	Shader shader;
 	Map<String, Object> materialParameters;
-	
-	
-	enum RenderSetting {
-		DEPTH,
-		PROJECTION,
-		VIEW,
-				
-	}
-	
-	private class RenderSettingState {
-		RenderSetting setting;
-		Object state;
-	
-	}
-	ArrayList<RenderSettingState> states = new ArrayList<RenderSettingState>();
+
+	boolean depthTesting;
+	Matrix view;
+	Matrix projection;
 	
 	
 	
 	public ClientRenderMaterial(Shader s, Map<String, Object> params){
+		this(s, params, null, null, true);
+	}
+	
+	public ClientRenderMaterial(Shader s, Map<String, Object> params, Matrix projection, Matrix view, boolean depth){
 		this.shader = s;
 		this.materialParameters = params;
+		this.projection = projection;
+		this.view = view;
+		this.depthTesting = depth;
 	}
 	
 	public void assign(){
@@ -86,6 +84,8 @@ public class ClientRenderMaterial extends Resource implements RenderMaterial {
 				shader.setUniform(entry.getKey(), (Vector4)entry.getValue());
 			} else if( entry.getValue() instanceof Color){
 				shader.setUniform(entry.getKey(), (Color)entry.getValue());
+			} else if( entry.getValue() instanceof Matrix) {
+				shader.setUniform(entry.getKey(), (Matrix)entry.getValue());
 			}
 		}
 		//TODO: make view and projection dependent on Material params
@@ -106,5 +106,16 @@ public class ClientRenderMaterial extends Resource implements RenderMaterial {
 		return shader;
 	}
 	
+	public void preRender() {
+		if(!depthTesting){
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+		}
+		
+	}
 	
+	public void postRender() {
+		if(!depthTesting){
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
+		}
+	}
 }
