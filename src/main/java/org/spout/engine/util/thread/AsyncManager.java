@@ -120,6 +120,15 @@ public abstract class AsyncManager {
 	public abstract void runDynamicUpdates(long time, int sequence) throws InterruptedException;
 	
 	/**
+	 * Gets the sequence number associated with this manager
+	 * 
+	 * @return the sequence number, of -1 for none
+	 */
+	public int getSequence() {
+		return -1;
+	}
+	
+	/**
 	 * This method is called to determine the earliest available dynamic update time
 	 * 
 	 * @return the earliest pending dynamic block update

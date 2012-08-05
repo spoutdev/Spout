@@ -84,4 +84,9 @@ public class SpoutRegionManager extends AsyncManager {
 	public void runDynamicUpdates(long time, int sequence) throws InterruptedException {
 		parent.runDynamicUpdates(time, sequence);
 	}
+	
+	@Override
+	public int getSequence() {
+		return parent.getSequence();
+	}
 }

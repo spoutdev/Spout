@@ -969,6 +969,10 @@ public class SpoutRegion extends Region{
 			}
 		}
 	}
+	
+	public int getSequence() {
+		return updateSequence;
+	}
 
 	@Override
 	@SuppressWarnings({"rawtypes", "unchecked"})
