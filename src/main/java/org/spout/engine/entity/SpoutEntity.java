@@ -503,7 +503,7 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 
 		//Could be 1 of 3 scenarios:
 		//    1.) Entity is dead (ControllerLive == null)
-		//    2.) Entity is swapping controllers (ControllerLive != Controller, niether is null)
+		//    2.) Entity is swapping controllers (ControllerLive != Controller, neither is null)
 		//    3.) Entity has just spawned and has never executed copy snapshot, Controller == null, ControllerLive != null
 		if (controller != controllerLive.get()) {
 			//1.) Entity is dead
