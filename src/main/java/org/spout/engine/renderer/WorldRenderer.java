@@ -78,12 +78,25 @@ public class WorldRenderer {
 
 	/**
 	 * Updates the list of chunks around the player.
-	 * 
+	 *
 	 * @param force
 	 *            Forces the update
 	 * @return True if the list was changed
 	 */
 	public boolean updateNearbyChunkMeshes(boolean force) {
+		if (world == null) {
+			world = client.getDefaultWorld();
+			if (world != null) System.out.println("World updated to " + world.getName() + "-" + world.getUID());
+		}
+
+		if (world == null) {
+			try {
+				Thread.sleep(5);
+			} catch (InterruptedException e) {
+			}
+			return false;
+		}
+
 		int chunkViewDistance = client.getActivePlayer().getViewDistance() / 16;
 
 		Point currentPos = client.getActivePlayer().getTransform().getPosition();
@@ -118,7 +131,7 @@ public class WorldRenderer {
 						ChunkMeshBatch batch = new ChunkMeshBatch(material, world, chunkCoords.getFloorX(), chunkCoords.getFloorY(), chunkCoords.getFloorZ());
 						addChunkMeshBatch(batch);
 						batch.update();
-						
+
 						System.out.println(batch);
 					}
 				}

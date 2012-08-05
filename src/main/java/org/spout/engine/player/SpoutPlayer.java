@@ -155,7 +155,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			setTransform(newPosition);
 		}
 		final Transform transform = getTransform();
-		if (transform != null && !this.isSpawned()) {
+		if (newPosition != null && transform != null && !this.isSpawned()) {
 			setupInitialChunk(transform);
 		}
 

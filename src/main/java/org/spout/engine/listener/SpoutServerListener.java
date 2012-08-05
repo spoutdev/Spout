@@ -63,6 +63,7 @@ public class SpoutServerListener implements Listener {
 
 		if (player != null) {
 			Spout.getEngine().getEventManager().callEvent(new PlayerLoadEvent(player));
+			event.getSession().getProtocol().initializeSession(event.getSession());
 			PlayerLoginEvent loginEvent = Spout.getEngine().getEventManager().callEvent(new PlayerLoginEvent(player));
 			if (!loginEvent.isAllowed()) {
 				if (loginEvent.getMessage() != null) {
@@ -71,7 +72,6 @@ public class SpoutServerListener implements Listener {
 					player.kick();
 				}
 			} else {
-				event.getSession().getProtocol().initializeSession(event.getSession());
 				Spout.getEngine().getEventManager().callEvent(new PlayerJoinEvent(player, ChatStyle.CYAN, player.getDisplayName(), ChatStyle.CYAN, " has joined the game"));
 			}
 		} else {

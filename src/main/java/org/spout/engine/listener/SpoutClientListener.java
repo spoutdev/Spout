@@ -31,7 +31,6 @@ import org.spout.api.event.Listener;
 import org.spout.api.event.player.ClientPlayerConnectedEvent;
 
 import org.spout.engine.SpoutClient;
-import org.spout.engine.protocol.SpoutSession;
 
 public class SpoutClientListener implements Listener {
 	private final SpoutClient client;
@@ -43,6 +42,5 @@ public class SpoutClientListener implements Listener {
 	@EventHandler
 	public void onClientPlayerConnected(ClientPlayerConnectedEvent event) {
 		client.getActivePlayer().setId(event.getServerPlayerId());
-		client.getActivePlayer().connect((SpoutSession<?>) event.getSession(), null);
 	}
 }

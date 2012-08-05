@@ -48,7 +48,7 @@ import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 
 public class RegionSource implements Iterable<Region> {
 	private final static int REGION_MAP_BITS = 5;
-	
+
 	private final static AtomicInteger regionsLoaded = new AtomicInteger(0);
 	private final static AtomicInteger warnThreshold = new AtomicInteger(Integer.MAX_VALUE);
 	/**
@@ -58,9 +58,9 @@ public class RegionSource implements Iterable<Region> {
 	/**
 	 * World associated with this region source
 	 */
-	private final SpoutWorld world;
+	private final SpoutAbstractWorld world;
 
-	public RegionSource(SpoutWorld world, SnapshotManager snapshotManager) {
+	public RegionSource(SpoutAbstractWorld world, SnapshotManager snapshotManager) {
 		this.world = world;
 		loadedRegions = new TripleIntObjectReferenceArrayMap<Region>(REGION_MAP_BITS);
 	}
@@ -73,7 +73,7 @@ public class RegionSource implements Iterable<Region> {
 
 		// removeRegion is called during snapshot copy on the Region thread (when the last chunk is removed)
 		// Needs re-syncing to a safe moment
-		((SpoutScheduler)Spout.getEngine().getScheduler()).scheduleCoreTask(new Runnable() {
+		(world.getEngine().getScheduler()).scheduleCoreTask(new Runnable() {
 			@Override
 			public void run() {
 				if (r.isEmpty()) {

@@ -133,7 +133,7 @@ public class WorldFiles {
 				}
 			}
 		}
-		
+
 		world.getItemMap().save();
 	}
 
@@ -210,7 +210,7 @@ public class WorldFiles {
 		}
 
 		long age = SafeCast.toLong(NBTMapper.toTagValue(map.get("age")), 0L);
-		world = new SpoutWorld(name, Spout.getEngine(), seed, age, generator, new UUID(msb, lsb), itemMap, extraData);
+		world = new SpoutWorld(name, (SpoutEngine) Spout.getEngine(), seed, age, generator, new UUID(msb, lsb), itemMap, extraData);
 
 		List<? extends FloatTag> spawnPosition = checkerListFloatTag.checkTag(map.get("spawn_position"));
 		Transform spawn = NBTMapper.nbtToTransform(world, spawnPosition);
@@ -256,7 +256,7 @@ public class WorldFiles {
 		}
 
 		long age = SafeCast.toLong(NBTMapper.toTagValue(map.get("age")), 0L);
-		world = new SpoutWorld(name, Spout.getEngine(), seed, age, generator, new UUID(msb, lsb), itemMap, extraData);
+		world = new SpoutWorld(name, (SpoutEngine) Spout.getEngine(), seed, age, generator, new UUID(msb, lsb), itemMap, extraData);
 
 		return world;
 	}
@@ -310,7 +310,7 @@ public class WorldFiles {
 				}
 			}
 		}
-		
+
 		world.getItemMap().save();
 	}
 

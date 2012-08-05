@@ -37,6 +37,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 import org.jboss.netty.channel.Channel;
+import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
@@ -159,7 +160,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 	@Override
 	public boolean hasPlayer() {
-		return getPlayer() == null ? false : true;
+		return getPlayer() != null;
 	}
 
 	/**
