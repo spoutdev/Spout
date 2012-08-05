@@ -62,6 +62,7 @@ public class SpoutClientPlayer extends SpoutPlayer {
 		Command command = Spout.getEngine().getRootCommand().getChild(commandName);
 		if (command == null) {
 			sendMessage(ChatStyle.RED, "Unknown command: ", commandName);
+			return;
 		}
 		Message cmdMessage = getSession().getProtocol().getCommandMessage(command, arguments);
 		if (cmdMessage == null) {
