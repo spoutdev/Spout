@@ -31,8 +31,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
@@ -43,6 +41,7 @@ import org.spout.api.chat.ChatArguments;
 import org.spout.api.command.Command;
 import org.spout.api.exception.UnknownPacketException;
 import org.spout.api.io.store.simple.MemoryStore;
+import org.spout.api.player.Player;
 import org.spout.api.util.StringMap;
 
 public abstract class Protocol {
@@ -191,6 +190,14 @@ public abstract class Protocol {
 	 * @param session The session to set data for
 	 */
 	public abstract void initializeSession(Session session);
+	
+	/**
+	 * Sets the player controller for the given entity.  The method is called while the player 
+	 * is being spawned by the server in response to a {@link org.spout.api.event.player.PlayerConnectEvent}
+	 * 
+	 * @param player
+	 */
+	public abstract void setPlayerController(Player player);
 
 	/**
 	 * Registers a Protocol for a particular id value

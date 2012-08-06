@@ -34,6 +34,7 @@ import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.command.Command;
 import org.spout.api.exception.UnknownPacketException;
+import org.spout.api.player.Player;
 import org.spout.api.protocol.CodecLookupService;
 import org.spout.api.protocol.HandlerLookupService;
 import org.spout.api.protocol.Message;
@@ -152,6 +153,14 @@ public class CommonBootstrapProtocol extends Protocol {
 	public void initializeSession(Session session) {
 		if (defaultProtocol != null) {
 			defaultProtocol.initializeSession(session);
+		}
+	}
+
+
+	@Override
+	public void setPlayerController(Player player) {
+		if (defaultProtocol != null) {
+			defaultProtocol.setPlayerController(player);
 		}
 	}
 

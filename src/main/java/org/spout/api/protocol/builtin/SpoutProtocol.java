@@ -34,6 +34,7 @@ import org.spout.api.command.Command;
 import org.spout.api.entity.component.controller.type.ControllerType;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
+import org.spout.api.player.Player;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.Protocol;
@@ -100,5 +101,9 @@ public class SpoutProtocol extends Protocol {
 		for (StringMap map : StringMap.getAll()) {
 			session.send(false, new StringMapMessage(map.getId(), StringMapMessage.Action.SET, map.getItems()));
 		}
+	}
+
+	@Override
+	public void setPlayerController(Player player) {
 	}
 }
