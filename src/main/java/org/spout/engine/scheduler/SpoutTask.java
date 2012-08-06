@@ -177,6 +177,10 @@ public class SpoutTask implements Task, LongPrioritized {
 	protected long getPeriod() {
 		return this.period;
 	}
+	
+	protected long getDelay() {
+		return this.delay;
+	}
 
 	/**
 	 * Stops this task.

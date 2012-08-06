@@ -49,6 +49,7 @@ public class SpoutWorker implements Worker, Runnable {
 				taskManager.repeatSchedule(task);
 			}
 		}, name);
+		thread.setDaemon(true);
 		this.taskManager = taskManager;
 	}
 	
