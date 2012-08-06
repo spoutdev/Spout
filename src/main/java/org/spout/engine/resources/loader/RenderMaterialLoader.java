@@ -199,4 +199,12 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 		//TODO: Parse matricies 
 		return new ClientRenderMaterial(shader, paramsNew, null, null, depthTesting);
 	}
+	@Override
+	public String getProtocol() {
+		return "material";
+	}
+	@Override
+	public String[] getExtensions() {
+		return new String[] { "smt" };
+	}
 }

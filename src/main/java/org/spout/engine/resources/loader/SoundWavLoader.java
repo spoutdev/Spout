@@ -26,8 +26,11 @@
  */
 package org.spout.engine.resources.loader;
 
+import java.io.BufferedInputStream;
 import java.io.InputStream;
+import java.nio.IntBuffer;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.util.WaveData;
 import org.spout.engine.audio.SpoutSoundManager;
@@ -38,18 +41,29 @@ public class SoundWavLoader extends BasicResourceLoader<ClientSound> {
 
 	@Override
 	public String getFallbackResourceName() {
-		return "sound_wav://Spout/resources/fallbacks/silence.wav";
+		return "sound://Spout/resources/fallbacks/silence.wav";
 	}
 
 	@Override
 	public ClientSound getResource(InputStream stream) {
-		int buffer = AL10.alGenBuffers();
+		IntBuffer buffer = BufferUtils.createIntBuffer(1);
+		AL10.alGenBuffers(buffer);
 		SpoutSoundManager.checkErrors();
 
-		WaveData waveFile = WaveData.create(stream);
-		AL10.alBufferData(buffer, waveFile.format, waveFile.data, waveFile.samplerate);
+		WaveData waveFile = WaveData.create(new BufferedInputStream(stream));
+		AL10.alBufferData(buffer.get(0), waveFile.format, waveFile.data, waveFile.samplerate);
 		waveFile.dispose();
 
-		return new ClientSound(buffer);
+		return new ClientSound(buffer.get(0));
+	}
+
+	@Override
+	public String getProtocol() {
+		return "sound";
+	}
+
+	@Override
+	public String[] getExtensions() {
+		return new String[] { "wav" };
 	}
 }

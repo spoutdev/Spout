@@ -38,11 +38,12 @@ import org.spout.api.resource.BasicResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
 import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.engine.renderer.shader.ClientShader;
+import org.spout.engine.util.StackTrace;
 import org.yaml.snakeyaml.Yaml;
-
 
 public class ShaderLoader extends BasicResourceLoader<ClientShader> {
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
+
 	@Override
 	public ClientShader getResource(InputStream stream) {
 		final Client client = (Client) Spout.getEngine();
@@ -50,8 +51,8 @@ public class ShaderLoader extends BasicResourceLoader<ClientShader> {
 		if (client.getRenderMode() == RenderMode.GL11) {
 			return ClientShader.BASIC;
 		}
-	
-		//Get the paths for the Vertex and Fragment shaders
+
+		// Get the paths for the Vertex and Fragment shaders
 		Yaml yaml = new Yaml();
 
 		Map<? extends String, ?> resource = checkerMapStringObject.check(yaml.load(stream));
@@ -71,13 +72,12 @@ public class ShaderLoader extends BasicResourceLoader<ClientShader> {
 		String vertSrc = readShaderSource(Spout.getFilesystem().getResourceStream(vertShader));
 
 		shader = new ClientShader(vertSrc, fragSrc, true);
-		
-		//TODO: Read Values in the shader to file
-		
+		// TODO: Read Values in the shader to file
+
 		return shader;
 	}
 
-	private String readShaderSource(InputStream stream){
+	private String readShaderSource(InputStream stream) {
 		Scanner scan = new Scanner(stream);
 
 		StringBuilder src = new StringBuilder();
@@ -98,5 +98,15 @@ public class ShaderLoader extends BasicResourceLoader<ClientShader> {
 	public String getFallbackResourceName() {
 		return "shader://Spout/resources/fallbacks/fallback.ssf";
 	}
-	
+
+	@Override
+	public String getProtocol() {
+		return "shader";
+	}
+
+	@Override
+	public String[] getExtensions() {
+		return new String[] { "ssf" };
+	}
+
 }
