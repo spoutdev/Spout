@@ -31,6 +31,11 @@ package org.spout.api.audio;
  */
 public interface SoundManager {
 	/**
+	 * Initializes the sound manager.
+	 */
+	public void init();
+	
+	/**
 	 * Creates a new SoundSource.
 	 * 
 	 * @return

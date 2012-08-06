@@ -26,10 +26,9 @@
  */
 package org.spout.api;
 
-import java.io.File;
 import java.util.UUID;
 
-import org.spout.api.entity.Entity;
+import org.spout.api.audio.SoundManager;
 import org.spout.api.geo.World;
 import org.spout.api.keyboard.Input;
 import org.spout.api.player.Player;
@@ -75,6 +74,13 @@ public interface Client extends Engine {
 	 * @return render mode
 	 */
 	public RenderMode getRenderMode();
+
+	/**
+	 * Gets the sound manager for the client. Used to create sound sources.
+	 * 
+	 * @return The client's sound manager.
+	 */
+	public SoundManager getSoundManager();
 
 	/**
 	 * Gets the input manager for the client. Keybindings are registered here.

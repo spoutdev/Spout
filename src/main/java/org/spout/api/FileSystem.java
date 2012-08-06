@@ -41,7 +41,6 @@ import org.spout.api.resource.ResourceNotFoundException;
  *
  */
 public interface FileSystem {
-
 	/**
 	 * Initializes this implementation of the FileSystem.
 	 * 
@@ -52,14 +51,17 @@ public interface FileSystem {
 	public abstract void postStartup();
 
 	/**
-	 * Attempts to load the given path as an {@link InputStream}.  If the file can not be found
-	 * the system will attempt to find the file in the '/fallbacks/' directory of the jar.
+	 * Attempts to load the given path as an {@link InputStream}. If the file
+	 * can not be found the system will attempt to find the file in the
+	 * '/fallbacks/' directory of the jar.
 	 * 
-	 * If an invalid path or resource is passed in, this method will throw an {@link InvalidArgumentException}
+	 * If an invalid path or resource is passed in, this method will throw an
+	 * {@link InvalidArgumentException}
 	 * 
 	 * @param path to the resource
 	 * @return {@link InputStream} of the given path.
-	 * @throws ResourceNotFoundException - if the path to the resource is invalid, or does not exist.
+	 * @throws ResourceNotFoundException - if the path to the resource is
+	 *             invalid, or does not exist.
 	 */
 	public abstract InputStream getResourceStream(URI path) throws ResourceNotFoundException;
 
@@ -73,7 +75,12 @@ public interface FileSystem {
 	 */
 	public abstract InputStream getResourceStream(String path);
 
-	public abstract void registerLoader(String protocol, ResourceLoader<? extends Resource> loader);
+	/**
+	 * Registers the given resource loader.
+	 * 
+	 * @param loader The loader to register.
+	 */
+	public abstract void registerLoader(ResourceLoader<? extends Resource> loader);
 	
 	/**
 	 * Attempts to load the given path as a resource into the FileSystem.
@@ -101,8 +108,8 @@ public interface FileSystem {
 	public abstract Resource getResource(URI path);
 
 	/**
-	 * Gets the loaded resource from the FileSystem. If the resource has not yet been cached
-	 * it will attempt to invoke {{@link #loadResource(String)}.
+	 * Gets the loaded resource from the FileSystem. If the resource has not yet
+	 * been cached it will attempt to invoke {{@link #loadResource(String)}.
 	 * 
 	 * @param path to the resource.
 	 * @return {@link Resource}
