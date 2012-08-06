@@ -49,6 +49,7 @@ import org.spout.api.exception.InvalidControllerException;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.lang.Locale;
 import org.spout.api.player.Player;
 import org.spout.api.player.PlayerInputState;
 import org.spout.api.protocol.Message;
@@ -72,6 +73,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	private boolean online;
 	private final int hashcode;
 	private PriorityQueue<PlayerInputState> inputQueue = new PriorityQueue<PlayerInputState>();
+	private Locale preferredLocale = Locale.ENGLISH_US;
 
 	public SpoutPlayer(String name, SpoutEngine engine) {
 		this(name, null, null, engine, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
@@ -308,5 +310,9 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			throw new InvalidControllerException(controller.getType() + " is not a valid controller for a Player entity!");
 		}
 		super.setController(controller,  source);
+	}
+	
+	public Locale getPreferredLocale() {
+		return preferredLocale;
 	}
 }
