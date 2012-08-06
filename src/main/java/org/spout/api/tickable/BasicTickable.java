@@ -69,9 +69,10 @@ public class BasicTickable implements Tickable {
 	 * @param process
 	 */
 	@SuppressWarnings("unchecked")
-	public void registerProcess(LogicRunnable<?> process) {
+	public <T extends LogicRunnable<?>> T registerProcess(T process) {
 		activeProcesses.add((LogicRunnable<BasicTickable>) process);
 		process.onRegistration();
+		return process;
 	}
 
 	/**
@@ -79,9 +80,10 @@ public class BasicTickable implements Tickable {
 	 * Calls {@link LogicRunnable#onUnregistration()}
 	 * @param process
 	 */
-	public void unregisterProcess(LogicRunnable<?> process) {
+	public <T extends LogicRunnable<?>> T unregisterProcess(T process) {
 		activeProcesses.remove(process);
 		process.onUnregistration();
+		return process;
 	}
 
 	@Override

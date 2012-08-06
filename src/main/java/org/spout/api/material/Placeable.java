@@ -28,6 +28,7 @@ package org.spout.api.material;
 
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.block.BlockFace;
+import org.spout.api.math.Vector3;
 
 /**
  * An interface defining a {@link Material} that can be placed
@@ -44,7 +45,13 @@ public interface Placeable {
 	 * @param isClickedBlock whether the block is to be placed at the clicked block
 	 * @return true if placement is allowed
 	 */
-	public boolean canPlace(Block block, short data, BlockFace against, boolean isClickedBlock);
+	public boolean canPlace(Block block, short data, BlockFace against, Vector3 clickedPos, boolean isClickedBlock);
+
+	/**
+	 * See the other canPlace function, this function calls that one.<br>
+	 * It is not allowed to override this function, if you could.
+	 */
+	public boolean canPlace(Block block, short data);
 
 	/**
 	 * Called when this block is placed, handles the actual placement.
@@ -52,8 +59,15 @@ public interface Placeable {
 	 * @param block to affect
 	 * @param data block data to use during placement
 	 * @param against face against the block is placed
+	 * @param clickedPos relative position the block was clicked to place this block
 	 * @param isClickedBlock whether the block is being placed at the clicked block
 	 * @return true if placement is handled
 	 */
-	public boolean onPlacement(Block block, short data, BlockFace against, boolean isClickedBlock);
+	public boolean onPlacement(Block block, short data, BlockFace against, Vector3 clickedPos, boolean isClickedBlock);
+
+	/**
+	 * See the other onPlacement function, this function calls that one.<br>
+	 * It is not allowed to override this function, if you could.
+	 */
+	public boolean onPlacement(Block block, short data);
 }

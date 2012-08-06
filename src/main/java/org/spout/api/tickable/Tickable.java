@@ -56,13 +56,15 @@ public interface Tickable {
 	 * Registers a new process for the Tickable.
 	 * Calls {@link LogicRunnable#onRegistration()}
 	 * @param process
+	 * @return the process
 	 */
-	public void registerProcess(LogicRunnable<?> process);
+	public <T extends LogicRunnable<?>> T registerProcess(T process);
 
 	/**
 	 * Unregisters a process for the Tickable.
 	 * Calls {@link LogicRunnable#onUnregistration()}
 	 * @param process
+	 * @return the process
 	 */
-	public void unregisterProcess(LogicRunnable<?> process);
+	public <T extends LogicRunnable<?>> T unregisterProcess(T process);
 }
