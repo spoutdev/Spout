@@ -26,11 +26,13 @@
  */
 package org.spout.engine.audio;
 
+import static org.spout.engine.audio.SpoutSoundManager.checkErrors;
+
 import java.nio.FloatBuffer;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
-import org.lwjgl.openal.OpenALException;
 import org.spout.api.audio.Sound;
 import org.spout.api.audio.SoundSource;
 import org.spout.api.audio.SoundSourceState;
@@ -54,6 +56,10 @@ public class SpoutSoundSource implements SoundSource {
 	}
 
 	public void setSound(Sound sound) {
+		if (sound == null) {
+			throw new IllegalArgumentException("Sound cannot be null!");
+		}
+
 		if (!(sound instanceof ClientSound)) {
 			throw new IllegalArgumentException("Sound is not a ClientSound!");
 		}
@@ -226,7 +232,7 @@ public class SpoutSoundSource implements SoundSource {
 	}
 
 	private Vector3 getVector3(int property) {
-		FloatBuffer buffer = FloatBuffer.allocate(0);
+		FloatBuffer buffer = BufferUtils.createFloatBuffer(3);
 		AL10.alGetSource(sourceId, property, buffer);
 		return new Vector3(buffer.get(0), buffer.get(1), buffer.get(2));
 	}
@@ -234,12 +240,5 @@ public class SpoutSoundSource implements SoundSource {
 	private void setVector3(int property, Vector3 value) {
 		AL10.alSource3f(sourceId, property, value.getX(), value.getY(), value.getZ());
 		checkErrors();
-	}
-
-	private void checkErrors() {
-		int error = AL10.alGetError();
-		if (error != AL10.AL_NO_ERROR) {
-			throw new OpenALException(error);
-		}
 	}
 }
