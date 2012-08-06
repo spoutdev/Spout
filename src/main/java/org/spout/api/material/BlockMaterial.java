@@ -41,6 +41,7 @@ import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.MathHelper;
+import org.spout.api.math.Vector3;
 import org.spout.api.util.flag.ByteFlagContainer;
 
 /**
@@ -450,14 +451,24 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	@Override
-	public boolean canPlace(Block block, short data, BlockFace against, boolean isClickedBlock) {
+	public boolean canPlace(Block block, short data, BlockFace against, Vector3 clickedPos, boolean isClickedBlock) {
 		return true;
 	}
 
 	@Override
-	public boolean onPlacement(Block block, short data, BlockFace against, boolean isClickedBlock) {
+	public boolean onPlacement(Block block, short data, BlockFace against, Vector3 clickedPos, boolean isClickedBlock) {
 		block.setMaterial(this, data);
 		return true;
+	}
+
+	@Override
+	public final boolean canPlace(Block block, short data) {
+		return this.canPlace(block, data, BlockFace.BOTTOM, Vector3.UNIT_Y, false);
+	}
+
+	@Override
+	public final boolean onPlacement(Block block, short data) {
+		return this.onPlacement(block, data, BlockFace.BOTTOM, Vector3.UNIT_Y, false);
 	}
 
 	/**
@@ -489,4 +500,5 @@ public class BlockMaterial extends Material implements Placeable {
 	public boolean isCompatibleWith(BlockMaterial m) {
 		return (m.getId() == getId() && ((m.getData() ^ getData()) & getDataMask()) == 0);
 	}
+
 }
