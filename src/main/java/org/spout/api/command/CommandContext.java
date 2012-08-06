@@ -73,7 +73,6 @@ public class CommandContext {
 		if (valueFlags == null) {
 			valueFlags = new TCharHashSet();
 		}
-
 		originalArgs = args;
 		this.command = command;
 

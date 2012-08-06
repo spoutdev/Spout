@@ -27,8 +27,10 @@
 package org.spout.api.chat;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Map;
 
 import gnu.trove.TCollections;
 import gnu.trove.map.TIntObjectMap;
@@ -46,17 +48,17 @@ import org.spout.api.util.SpoutToStringStyle;
  */
 public class ChatSectionImpl implements ChatSection {
 	private final SplitType type;
-	private final TIntObjectMap<List<ChatStyle>> activeStyles;
+	private final Map<Integer, List<ChatStyle>> activeStyles;
 	private final String wordValue;
 
-	public ChatSectionImpl(SplitType type, TIntObjectMap<List<ChatStyle>> activeStyles, String wordValue) {
+	public ChatSectionImpl(SplitType type, Map<Integer, List<ChatStyle>> activeStyles, String wordValue) {
 		this.type = type;
-		this.activeStyles = TCollections.unmodifiableMap(activeStyles);
+		this.activeStyles = Collections.unmodifiableMap(activeStyles);
 		this.wordValue = wordValue;
 	}
 
-	public TIntObjectMap<List<ChatStyle>> getActiveStyles() {
-		return TCollections.unmodifiableMap(activeStyles);
+	public Map<Integer, List<ChatStyle>> getActiveStyles() {
+		return activeStyles;
 	}
 
 	public String getPlainString() {
@@ -77,24 +79,23 @@ public class ChatSectionImpl implements ChatSection {
 		} else if (endIndex >= length()) {
 			throw new IndexOutOfBoundsException("Index: " + endIndex + ", Length: " + length());
 		}
-		final TIntObjectMap<List<ChatStyle>> styles = new TIntObjectHashMap<List<ChatStyle>>();
+		final Map<Integer, List<ChatStyle>> styles = new LinkedHashMap<Integer, List<ChatStyle>>();
 		String modifiedString = getPlainString().substring(startIndex, endIndex + 1);
-		this.activeStyles.forEachEntry(new TIntObjectProcedure<List<ChatStyle>>() {
-			public boolean execute(int i, List<ChatStyle> chatStyles) {
-				if (i == -1) {
-					styles.put(i, new ArrayList<ChatStyle>());
-				} else if (i < startIndex) {
-					List<ChatStyle> styleList = ChatSectionUtils.getOrCreateList(styles, -1);
-					for (ChatStyle style : chatStyles) {
-						ChatSectionUtils.removeConflicting(styleList, style);
-						styleList.add(style);
-					}
-				} else if (i <= endIndex) {
-					styles.put(i - startIndex, new ArrayList<ChatStyle>(chatStyles));
+		int i;
+		for (Map.Entry<Integer, List<ChatStyle>> entry : this.activeStyles.entrySet()) {
+			i = entry.getKey();
+			if (i == -1) {
+				styles.put(i, new ArrayList<ChatStyle>());
+			} else if (i < startIndex) {
+				List<ChatStyle> styleList = ChatSectionUtils.getOrCreateList(styles, -1);
+				for (ChatStyle style : entry.getValue()) {
+					ChatSectionUtils.removeConflicting(styleList, style);
+					styleList.add(style);
 				}
-				return true;
+			} else if (i <= endIndex) {
+				styles.put(i - startIndex, new ArrayList<ChatStyle>(entry.getValue()));
 			}
-		});
+		}
 
 		return new ChatSectionImpl(type, styles, modifiedString);
 	}

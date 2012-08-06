@@ -28,10 +28,17 @@ package org.spout.api.chat;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.procedure.TIntObjectProcedure;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.spout.api.chat.style.ChatStyle;
 
 /**
@@ -64,7 +71,7 @@ public class ChatSectionUtils {
 	 * @param <T> The type of list values
 	 * @return The requested list
 	 */
-	public static <T> List<T> getOrCreateList(TIntObjectMap<List<T>> map, int key) {
+	public static <K, T> List<T> getOrCreateList(Map<K, List<T>> map, K key) {
 		List<T> list = map.get(key);
 		if (list == null) {
 			list = new ArrayList<T>();

@@ -27,8 +27,8 @@
 package org.spout.api.chat;
 
 import java.util.List;
+import java.util.Map;
 
-import gnu.trove.map.TIntObjectMap;
 import org.spout.api.chat.style.ChatStyle;
 
 /**
@@ -39,7 +39,7 @@ public interface ChatSection {
 	 * The styles affecting this word.
 	 * @return The styles affecting this word
 	 */
-	TIntObjectMap<List<ChatStyle>> getActiveStyles();
+	Map<Integer, List<ChatStyle>> getActiveStyles();
 
 	/**
 	 * The string that this word is.

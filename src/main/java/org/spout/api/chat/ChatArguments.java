@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -39,7 +40,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.procedure.TIntObjectProcedure;
-import org.apache.commons.lang3.ObjectUtils;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.chat.style.StyleHandler;
 import org.spout.api.chat.style.fallback.DefaultStyleHandler;
@@ -93,15 +93,14 @@ public class ChatArguments implements Cloneable, ChatSection {
 
 	public ChatArguments append(final ChatSection section) {
 		final AtomicInteger previousIndex = new AtomicInteger();
-		section.getActiveStyles().forEachEntry(new TIntObjectProcedure<List<ChatStyle>>() {
-			public boolean execute(int i, List<ChatStyle> chatStyles) {
-				append(chatStyles);
-				if (i != -1) {
-					append(section.getPlainString().substring(previousIndex.getAndSet(i), i));
-				}
-				return true;
+		int i;
+		for (Map.Entry<Integer, List<ChatStyle>> entry : section.getActiveStyles().entrySet()) {
+			i = entry.getKey();
+			if (entry.getKey() != -1) {
+				append(section.getPlainString().substring(previousIndex.getAndSet(i), i));
 			}
-		});
+			append(entry.getValue());
+		}
 		if (previousIndex.get() < section.length()) {
 			append(section.getPlainString().substring(previousIndex.get(), section.getPlainString().length()));
 		}
@@ -203,9 +202,9 @@ public class ChatArguments implements Cloneable, ChatSection {
 		plainString = builder.toString();
 	}
 
-	public TIntObjectMap<List<ChatStyle>> getActiveStyles() {
+	public Map<Integer, List<ChatStyle>> getActiveStyles() {
 		int curIndex = 0;
-		TIntObjectMap<List<ChatStyle>> map = new TIntObjectHashMap<List<ChatStyle>>();
+		LinkedHashMap<Integer, List<ChatStyle>> map = new LinkedHashMap<Integer, List<ChatStyle>>();
 		for (Object obj : getExpandedPlaceholders()) {
 			if (obj instanceof ChatStyle) {
 				ChatStyle style = (ChatStyle) obj;
@@ -295,10 +294,10 @@ public class ChatArguments implements Cloneable, ChatSection {
 	public List<ChatSection> toSections(SplitType type) {
 		List<ChatSection> sections = new ArrayList<ChatSection>();
 		StringBuilder currentWord = new StringBuilder();
-		TIntObjectHashMap<List<ChatStyle>> map;
+		LinkedHashMap<Integer, List<ChatStyle>> map;
 		switch (type) {
 			case WORD:
-				map = new TIntObjectHashMap<List<ChatStyle>>();
+				map = new LinkedHashMap<Integer, List<ChatStyle>>();
 				int curIndex = 0;
 				for (Object obj : getExpandedPlaceholders()) {
 					if (obj instanceof ChatStyle) {
@@ -315,23 +314,29 @@ public class ChatArguments implements Cloneable, ChatSection {
 						for (int i = 0; i < val.length(); ++i) {
 							int codePoint = val.codePointAt(i);
 							if (Character.isWhitespace(codePoint)) {
+								/*if (map.containsKey(curIndex)) {
+									List<ChatStyle> current = map.remove(curIndex);
+									List<ChatStyle> prev = map.get(curIndex - 1);
+									if (prev == null) {
+										prev = new ArrayList<ChatStyle>();
+										map.put(curIndex - 1, prev);
+									}
+									prev.addAll(current);
+								}*/
+								sections.add(new ChatSectionImpl(type, new LinkedHashMap<Integer, List<ChatStyle>>(map), currentWord.toString()));
 								curIndex = 0;
-								sections.add(new ChatSectionImpl(type, map, currentWord.toString()));
 								currentWord = new StringBuilder();
 								if (map.size() > 0) {
 									final List<ChatStyle> previousStyles = map.containsKey(-1) ? new ArrayList<ChatStyle>(map.get(-1)) : new ArrayList<ChatStyle>();
 
-									map.forEachEntry(new TIntObjectProcedure<List<ChatStyle>>() {
-										public boolean execute(int i, List<ChatStyle> chatStyles) {
-											if (i != -1) {
-												for (ChatStyle style : chatStyles) {
-													ChatSectionUtils.removeConflicting(previousStyles, style);
-													previousStyles.add(style);
-												}
+									for (Map.Entry<Integer, List<ChatStyle>> entry : map.entrySet()) {
+										if (entry.getKey() != -1) {
+											for (ChatStyle style : entry.getValue()) {
+												ChatSectionUtils.removeConflicting(previousStyles, style);
+												previousStyles.add(style);
 											}
-											return true;
 										}
-									});
+									}
 									map.clear();
 									map.put(-1, previousStyles);
 								}
@@ -357,7 +362,7 @@ public class ChatArguments implements Cloneable, ChatSection {
 						ChatSectionUtils.removeConflicting(activeStyles, style);
 						activeStyles.add(style);
 
-						map = new TIntObjectHashMap<List<ChatStyle>>();
+						map = new LinkedHashMap<Integer, List<ChatStyle>>();
 						map.put(-1, new ArrayList<ChatStyle>(activeStyles));
 						sections.add(new ChatSectionImpl(type, map, curSection.toString()));
 						curSection = new StringBuilder();
