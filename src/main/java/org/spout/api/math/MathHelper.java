@@ -28,6 +28,8 @@ package org.spout.api.math;
 
 import java.awt.Color;
 
+import javolution.context.StackContext;
+
 /**
  * Class containing various mathematical functions
  */
@@ -690,11 +692,16 @@ public class MathHelper {
 	}
 
 	public static Quaternion rotation(float pitch, float yaw, float roll) {
-		final Quaternion qpitch = new Quaternion(pitch, Vector3.RIGHT);
-		final Quaternion qyaw = new Quaternion(yaw, Vector3.UP);
-		final Quaternion qroll = new Quaternion(roll, Vector3.FORWARD);
-
-		return qyaw.multiply(qpitch).multiply(qroll);
+		StackContext.enter(); 
+		try {
+			final Quaternion qpitch = new Quaternion(pitch, Vector3.RIGHT);
+			final Quaternion qyaw = new Quaternion(yaw, Vector3.UP);
+			final Quaternion qroll = new Quaternion(roll, Vector3.FORWARD);
+			
+			return StackContext.outerCopy(qyaw.multiply(qpitch).multiply(qroll));
+		} finally {
+			StackContext.exit();
+		}
 	}
 
 	/**

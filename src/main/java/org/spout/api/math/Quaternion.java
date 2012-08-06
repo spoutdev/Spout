@@ -28,12 +28,14 @@ package org.spout.api.math;
 
 import java.io.Serializable;
 
+import javolution.lang.ValueType;
+
 import org.spout.api.util.StringUtil;
 
 /**
  * Represents a rotation around a unit 4d circle.
  */
-public class Quaternion implements Serializable{
+public class Quaternion implements Serializable, ValueType{
 	private static final long serialVersionUID = 1L;
 
 	protected final float x, y, z, w;
@@ -244,5 +246,10 @@ public class Quaternion implements Serializable{
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + StringUtil.toString(this.x, this.y, this.z, this.w);
+	}
+
+	@Override
+	public Object copy() {
+		return new Quaternion(this);
 	}
 }
