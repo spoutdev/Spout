@@ -42,37 +42,50 @@ import org.spout.api.util.ban.BanManager;
  * Implementation of BanManager that uses PlayerListFiles.
  */
 public class FlatFileBanManager implements BanManager {
-	private final BanList players = new BanList(new File("config/banned_players.txt"));
-	private final BanList ips = new BanList(new File("config/banned_ips.txt"));
+	private final BanList players;
+	private final BanList ips;
+	private final BanList whitelistedNames;
 	private ChatArguments banMessage = new ChatArguments(ChatStyle.RED, "You are banned from this server!");
 	private ChatArguments ipBanMessage = new ChatArguments(ChatStyle.RED, "You are banned from this server!");
+
+	public FlatFileBanManager(SpoutServer server) {
+		bannedIps = new PlayerListFile(new File(server.getConfigFolder(), "banned_ips.txt"));
+		whitelistedNames = new PlayerListFile(new File(server.getConfigFolder(), "whitelisted_players.txt"));
+		bannedNames = new PlayerListFile(new File(server.getConfigFolder(), "banned_players.txt"));
+	}
 
 	@Override
 	public void load() {
 		players.load();
+		whitelistedNames.load();
 		ips.load();
 	}
-
+	// Todo make save, needs to use matches
 	@Override
 	public boolean isBanned(String player) {
 		return players.contains(player);
 	}
 
 	@Override
-	public void setBanned(String player, boolean banned) {
-		BanChangeEvent event = Spout.getEventManager().callEvent(new BanChangeEvent(BanType.PLAYER, player, banned));
-		banned = event.isBanned();
-		player = event.getChanged();
-		if (banned) {
-			players.add(player);
-		} else {
-			players.remove(player);
+	public boolean setBanned(String player, boolean banned) {
+		BanChangeEvent event = Spout.getEventManager().callEvent(new BanChangeEvent(BanChangeEvent.BanType.PLAYER, player, banned));
+
+		boolean alreadyBanned = !(isBanned(player) == event.isBanned());
+
+		if (!event.isCancelled()) {
+			if (banned) {
+				players.add(player);
+			} else {
+				players.remove(player);
+			}
 		}
+
+		return alreadyBanned;
 	}
 
 	@Override
-	public Set<String> getBannedPlayers() {
-		return Collections.unmodifiableSet(new HashSet<String>(players.getContents()));
+	public Set<String> getBans() {
+		return new HashSet<String>(bannedNames.getContents());
 	}
 
 	@Override
@@ -91,15 +104,20 @@ public class FlatFileBanManager implements BanManager {
 	}
 
 	@Override
-	public void setIpBanned(String address, boolean banned) {
-		BanChangeEvent event = Spout.getEventManager().callEvent(new BanChangeEvent(BanType.IP, address, banned));
-		address = event.getChanged();
-		banned = event.isBanned();
-		if (banned) {
-			ips.add(address);
-		} else {
-			ips.remove(address);
+	public boolean setIpBanned(String address, boolean banned) {
+		BanChangeEvent event = Spout.getEventManager().callEvent(new BanChangeEvent(BanChangeEvent.BanType.IP, address, banned));
+
+		boolean alreadyBanned = !(isIpBanned(address) == event.isBanned());
+
+		if (!event.isCancelled()) {
+			if (banned) {
+				ips.add(address);
+			} else {
+				ips.remove(address);
+			}
 		}
+
+		return alreadyBanned;
 	}
 
 	@Override
@@ -115,5 +133,60 @@ public class FlatFileBanManager implements BanManager {
 	@Override
 	public void setIpBanMessage(Object... message) {
 		ipBanMessage = new ChatArguments(message);
+	}
+
+	/**
+	 * Return if a name is NOT whitelisted
+	 * @param player
+	 * @return
+	 */
+	@Override
+	public boolean isWhitelisted(String player) {
+		Boolean isWhitelisted = true;
+		if (SpoutConfiguration.USE_WHITELIST.getBoolean() && !whitelistedNames.contains(player))
+			isWhitelisted = false;
+		return isWhitelisted;
+	}
+
+	/**
+	 * Returns the not whitelist message for the provided name
+	 * @param player
+	 * @return
+	 */
+	@Override
+	public String getNotWhitelistedMessage(String player) {
+		return "You are not on the whitelist of this server";
+	}
+
+	@Override
+	public boolean setWhitelisted(String player, boolean whitelisted) {
+		BanChangeEvent event = Spout.getEventManager().callEvent(new BanChangeEvent(BanChangeEvent.BanType.WHITELIST, player, whitelisted));
+
+		boolean alreadyWhitelisted = !(isWhitelisted(player) == event.isBanned());
+
+		if (!event.isCancelled()) {
+			if (whitelisted) {
+				whitelistedNames.add(player);
+			} else {
+				whitelistedNames.remove(player);
+			}
+		}
+
+		return alreadyWhitelisted;
+	}
+
+	@Override
+	public Set<String> getWhitelist() {
+		return new HashSet<String>(whitelistedNames.getContents());
+	}
+
+	/**
+	 * Save the ban manager
+	 */
+	@Override
+	public void save() {
+		bannedIps.save();
+		bannedNames.save();
+		whitelistedNames.save();
 	}
 }

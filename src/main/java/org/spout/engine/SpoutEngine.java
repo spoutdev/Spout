@@ -100,7 +100,7 @@ import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.StringUtil;
 
-import org.spout.api.chat.console.Console;
+import org.spout.engine.chat.console.Console;
 import org.spout.engine.chat.console.ConsoleManager;
 import org.spout.engine.chat.console.FileConsole;
 import org.spout.engine.chat.console.JLineConsole;
@@ -150,7 +150,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> onlinePlayers = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
 	private final SyncedRootCommand rootCommand = new SyncedRootCommand(this);
 	private final WorldGenerator defaultGenerator = new EmptyWorldGenerator();
-	private volatile int maxPlayers = 20;
 	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
 	protected final SpoutScheduler scheduler = new SpoutScheduler(this);
 	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
@@ -327,11 +326,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 			}
 		}
 		return onlinePlayers.toArray(new SpoutPlayer[onlinePlayers.size()]);
-	}
-
-	@Override
-	public int getMaxPlayers() {
-		return maxPlayers;
 	}
 
 	@Override

@@ -80,8 +80,7 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 				if (event.isCancelled()) {
 					return false;
 				}
-				List<Object> args = ((PlayerKickEvent) event).getKickReason().getArguments();
-				reason = args.toArray(new Object[args.size()]);
+				reason = ((PlayerKickEvent) event).getKickReason();
 				getEngine().getCommandSource().sendMessage("Player ", getPlayer().getName(), " kicked: ", reason);
 			} else {
 				event = new PlayerLeaveEvent(getPlayer(), getDefaultLeaveMessage());
