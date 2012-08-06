@@ -793,6 +793,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		}
 
 		World world = player.getWorld();
+		player.getSession().getProtocol().setPlayerController(player);
 		world.spawnEntity(player);
 		session.setPlayer(player);
 		((SpoutWorld) world).addPlayer(player);
