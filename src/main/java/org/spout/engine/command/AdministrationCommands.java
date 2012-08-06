@@ -40,6 +40,7 @@ import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
+import org.spout.api.meta.SpoutMetaPlugin;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 
@@ -153,10 +154,10 @@ public class AdministrationCommands {
 	public void plugins(CommandContext args, CommandSource source) {
 		Plugin[] pluginList = Spout.getEngine().getPluginManager().getPlugins();
 		ChatArguments pluginListString = new ChatArguments();
-		pluginListString.append(Arrays.<Object>asList("Plugins (", pluginList.length, "): "));
+		pluginListString.append(Arrays.<Object>asList("Plugins (", pluginList.length - 1, "): "));
 
 		for (int i = 0; i < pluginList.length; i++) {
-			if (pluginList[i].getName().equalsIgnoreCase("Spout")) {
+			if (pluginList[i] instanceof SpoutMetaPlugin) {
 				continue;
 			}
 
