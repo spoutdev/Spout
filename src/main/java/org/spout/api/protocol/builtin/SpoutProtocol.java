@@ -77,7 +77,7 @@ public class SpoutProtocol extends Protocol {
 	}
 
 	public Message getKickMessage(ChatArguments message) {
-		Command cmd = Spout.getEngine().getRootCommand().getChild("disonnect");
+		Command cmd = Spout.getEngine().getRootCommand().getChild("disconnect");
 		if (cmd != null) {
 			return getCommandMessage(cmd, message);
 		} else {
