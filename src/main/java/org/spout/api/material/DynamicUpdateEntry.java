@@ -56,8 +56,10 @@ public interface DynamicUpdateEntry {
 	 */
 	public long getNextUpdate();
 
-	public long getQueuedTime();
-	
+	/**
+	 * The data value given when the update was queued
+	 * @return
+	 */
 	public int getData();
 
 }

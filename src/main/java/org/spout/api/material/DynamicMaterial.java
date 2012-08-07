@@ -62,10 +62,8 @@ public interface DynamicMaterial {
 	 * @param b the block
 	 * @param r the region that contains the block
 	 * @param updateTime the time the update was intended to happen
-	 * @param queuedTime the time this update was queued
 	 * @param data persistent data for the update
-	 * @param hint non-persistent hint that may help with the update
 	 */
-	public void onDynamicUpdate(Block b, Region r, long updateTime, long queuedTime, int data, Object hint);
+	public void onDynamicUpdate(Block b, Region r, long updateTime, int data);
 
 }

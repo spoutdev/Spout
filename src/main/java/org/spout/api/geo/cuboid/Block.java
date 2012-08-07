@@ -425,16 +425,6 @@ public interface Block extends MaterialAccess, WorldSource {
 	 * @return the old update for that block at that time instant, or null if none
 	 */
 	public DynamicUpdateEntry dynamicUpdate(long nextUpdate);
-
-	/**
-	 * Queues a dynamic update on this block<br>
-	 * The Block Material must be dynamic for this to function.
-	 * 
-	 * @param nextUpdate the time for the next update
-	 * @param hint non-persistent parameter to speed up the update
-	 * @return the old update for that block at that time instant, or null if none
-	 */
-	public DynamicUpdateEntry dynamicUpdate(long nextUpdate, Object hint);
 	
 	/**
 	 * Queues a dynamic update on this block<br>
@@ -442,8 +432,7 @@ public interface Block extends MaterialAccess, WorldSource {
 	 * 
 	 * @param nextUpdate the time for the next update
 	 * @param data persistent data to be used for the update
-	 * @param hint non-persistent parameter to speed up the update
 	 * @return the old update for that block at that time instant, or null if none
 	 **/
-	public DynamicUpdateEntry dynamicUpdate(long nextUpdate, int data, Object hint);
+	public DynamicUpdateEntry dynamicUpdate(long nextUpdate, int data);
 }

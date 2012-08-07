@@ -84,26 +84,11 @@ public interface AreaPhysicsAccess {
 	 * @param y
 	 * @param z
 	 * @param nextUpdate the update time
-	 * @param hint a non-persistent hint for the update
-	 * @return the old update for that block at that time instant, or null if none
-	 */
-	@DelayedWrite
-	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, Object hint);
-	
-	/**
-	 * Queues a dynamic material updated for the given location. This list is checked during the finalize part of the tick, and will cause the update method to be called.<br>
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param nextUpdate the update time
 	 * @param data persistent data to be used for the update
-	 * @param hint a non-persistent hint for the update
 	 * @return the old update for that block at that time instant, or null if none
 	 */
 	@DelayedWrite
-	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, int data, Object hint);
-	
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, int data);
 	
 	/**
 	 * Queues a physics update for the block at (x, y, z) and all blocks within the given range.  
