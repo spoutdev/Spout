@@ -26,17 +26,24 @@
  */
 package org.spout.engine.resources.loader;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.imageio.ImageIO;
 
 import org.spout.api.render.Texture;
 import org.spout.api.resource.BasicResourceLoader;
-
 import org.spout.engine.resources.ClientTexture;
 
 public class TextureLoader extends BasicResourceLoader<Texture> {
+	/**
+	 * An array of strings of the supported extensions in this TextureLoader.
+	 */
+	public static final String[] EXTENSIONS = unique(ImageIO.getReaderFormatNames());
+
 	@Override
 	public Texture getResource(InputStream stream) {
 		Texture t = null;
@@ -61,6 +68,24 @@ public class TextureLoader extends BasicResourceLoader<Texture> {
 	public String getFallbackResourceName() {
 		return "texture://Spout/resources/fallbacks/fallback.png";
 	}
-	
-	
+
+	@Override
+	public String getProtocol() {
+		return "texture";
+	}
+
+	@Override
+	public String[] getExtensions() {
+		return EXTENSIONS;
+	}
+
+	public static String[] unique(String[] strings) {
+		Set<String> set = new HashSet<String>();
+		for (int i = 0; i < strings.length; i++) {
+			String name = strings[i].toLowerCase();
+			set.add(name);
+		}
+		return (String[]) set.toArray(new String[0]);
+	}
+
 }

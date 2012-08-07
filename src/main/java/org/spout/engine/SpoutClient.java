@@ -30,12 +30,10 @@ import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.CodeSource;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
@@ -61,20 +59,14 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.PixelFormat;
 import org.spout.api.Client;
 import org.spout.api.Spout;
+import org.spout.api.audio.SoundManager;
 import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
-import org.spout.api.datatable.DatatableMap;
-import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.geo.World;
-import org.spout.api.geo.discrete.Point;
-import org.spout.api.geo.discrete.Transform;
-import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.keyboard.Input;
-import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.MathHelper;
-import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.plugin.Platform;
@@ -86,13 +78,12 @@ import org.spout.api.protocol.Session;
 import org.spout.api.render.BasicCamera;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMode;
-import org.spout.api.util.StringMap;
+import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.command.InputCommands;
 import org.spout.engine.filesystem.ClientFileSystem;
 import org.spout.engine.input.SpoutInput;
-import org.spout.engine.listener.channel.SpoutClientConnectListener;
 import org.spout.engine.listener.SpoutClientListener;
-import org.spout.engine.mesh.BaseMesh;
+import org.spout.engine.listener.channel.SpoutClientConnectListener;
 import org.spout.engine.player.SpoutClientPlayer;
 import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.protocol.SpoutClientSession;
@@ -100,9 +91,9 @@ import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.util.MacOSXUtils;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutClientWorld;
-import org.spout.engine.world.SpoutWorld;
 
 public class SpoutClient extends SpoutEngine implements Client {
+	private final SoundManager soundManager = new SpoutSoundManager();
 	private final Input inputManager = new SpoutInput();
 	private final String name = "Spout Client";
 	private final Vector2 resolution = new Vector2(640, 480);
@@ -121,9 +112,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private volatile boolean rendering = true;
 	private String stopMessage = null;
 	private final ClientBootstrap bootstrap = new ClientBootstrap();
-
-	private BaseMesh cube;
-	private Transform loc;
 
 	public SpoutClient() {
 		this.filesystem = new ClientFileSystem();
@@ -215,6 +203,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public SoundManager getSoundManager() {
+		return soundManager;
 	}
 
 	@Override
@@ -353,14 +346,13 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 		getLogger().info(extensions);
 
+		soundManager.init();
 		Spout.getFilesystem().postStartup();
 
 		activeCamera = new BasicCamera(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(new Vector3(0, 50, 100), Vector3.ZERO, Vector3.UP));
 		activeCamera.getFrustum().update(activeCamera.getProjection(), activeCamera.getView());
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		loc = new Transform(new Point(null, 0, 0, 0), Quaternion.IDENTITY, Vector3.ONE);
-
 		GL11.glClearColor((135.f/255.0f), 206.f/255.f, 250.f/255.f, 0);
 
 		worldRenderer = new WorldRenderer(this);
@@ -408,42 +400,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 			}
 		} else {
 			Display.create();
-		}
-	}
-
-	private Color getColor(BlockMaterial m) {
-		if (!m.isSolid()) {
-			return new Color(0, 0, 0);
-		}
-		switch (m.getId()) {
-		case 78:
-			return new Color(255, 255, 255);
-		case 24:
-		case 12:
-			return new Color(210, 210, 150);
-		case 10:
-			return new Color(200, 50, 50);
-		case 9:
-		case 8:
-			return new Color(150, 150, 200);
-		case 7:
-			return new Color(50, 50, 50);
-		case 4:
-			return new Color(100, 100, 100);
-		case 17:
-		case 3:
-			return new Color(110, 75, 35);
-		case 18:
-		case 2:
-			return new Color(55, 140, 55);
-		case 21:
-		case 16:
-		case 15:
-		case 14:
-		case 13:
-		case 1:
-		default:
-			return new Color(150, 150, 150);
 		}
 	}
 

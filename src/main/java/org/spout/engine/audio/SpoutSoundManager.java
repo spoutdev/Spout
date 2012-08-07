@@ -26,13 +26,28 @@
  */
 package org.spout.engine.audio;
 
+import java.util.logging.Level;
+
+import org.lwjgl.LWJGLException;
+import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.OpenALException;
+import org.spout.api.Spout;
 import org.spout.api.audio.Sound;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.audio.SoundSource;
 
 public class SpoutSoundManager implements SoundManager {
+	@Override
+	public void init() {
+		try {
+			AL.create();
+		} catch (LWJGLException le) {
+			Spout.getLogger().log(Level.SEVERE, "Could not initialize OpenAL!", le);
+			return;
+		}
+		checkErrors();
+	}
 
 	@Override
 	public SoundSource createSource(Sound sound) {

@@ -46,4 +46,16 @@ public class FontLoader extends BasicResourceLoader<ClientFont>{
 		return null;
 	}
 
+	@Override
+	public String getProtocol() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String[] getExtensions() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
