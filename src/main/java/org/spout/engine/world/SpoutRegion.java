@@ -1283,13 +1283,8 @@ public class SpoutRegion extends Region{
 	}
 
 	@Override
-	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, int data, Object hint) {
-		return dynamicBlockTree.queueBlockUpdates(x, y, z, nextUpdate, data, hint);
-	}
-
-	@Override
-	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, Object hint) {
-		return dynamicBlockTree.queueBlockUpdates(x, y, z, nextUpdate, hint);
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, int data) {
+		return dynamicBlockTree.queueBlockUpdates(x, y, z, nextUpdate, data);
 	}
 
 	@Override

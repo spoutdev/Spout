@@ -130,7 +130,7 @@ public class DynamicBlockUpdateTree {
 		x &= Region.BLOCKS.MASK;
 		y &= Region.BLOCKS.MASK;
 		z &= Region.BLOCKS.MASK;
-		return add(new DynamicBlockUpdate(x, y, z, 0, region.getWorld().getAge(), 0, null));
+		return add(new DynamicBlockUpdate(x, y, z, 0, 0));
 	}
 	
 	public DynamicUpdateEntry queueBlockUpdates(int x, int y, int z, long updateTime) {
@@ -138,23 +138,15 @@ public class DynamicBlockUpdateTree {
 		x &= Region.BLOCKS.MASK;
 		y &= Region.BLOCKS.MASK;
 		z &= Region.BLOCKS.MASK;
-		return add(new DynamicBlockUpdate(x, y, z, updateTime, region.getWorld().getAge(), 0, null));
+		return add(new DynamicBlockUpdate(x, y, z, updateTime, 0));
 	}
 	
-	public DynamicUpdateEntry queueBlockUpdates(int x, int y, int z, long updateTime, Object hint) {
+	public DynamicUpdateEntry queueBlockUpdates(int x, int y, int z, long updateTime, int data) {
 		checkStages();
 		x &= Region.BLOCKS.MASK;
 		y &= Region.BLOCKS.MASK;
 		z &= Region.BLOCKS.MASK;
-		return add(new DynamicBlockUpdate(x, y, z, updateTime, region.getWorld().getAge(), 0, hint));
-	}
-	
-	public DynamicUpdateEntry queueBlockUpdates(int x, int y, int z, long updateTime, int data, Object hint) {
-		checkStages();
-		x &= Region.BLOCKS.MASK;
-		y &= Region.BLOCKS.MASK;
-		z &= Region.BLOCKS.MASK;
-		return add(new DynamicBlockUpdate(x, y, z, updateTime, region.getWorld().getAge(), data, hint));
+		return add(new DynamicBlockUpdate(x, y, z, updateTime, data));
 	}
 	
 	private void checkStages() {
@@ -276,7 +268,7 @@ public class DynamicBlockUpdateTree {
 			return UpdateResult.NON_LOCAL;
 		} else {
 			Block b =  c.getBlock(bx, by, bz, c.getWorld());
-			dm.onDynamicUpdate(b, region, update.getNextUpdate(), update.getQueuedTime(), update.getData(), update.getHint());
+			dm.onDynamicUpdate(b, region, update.getNextUpdate(), update.getData());
 			lastUpdates++;
 			return UpdateResult.DONE;
 		}

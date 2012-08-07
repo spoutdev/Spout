@@ -26,7 +26,9 @@
  */
 package org.spout.engine.util.packed;
 
-public class PackedCoords {
+import org.spout.api.util.hashing.SignedTenBitTripleHashed;
+
+public class PackedCoords extends SignedTenBitTripleHashed {
 	
 	private final static int mask = 0xFFDFFBFF;
 
@@ -40,23 +42,26 @@ public class PackedCoords {
 	 * @return
 	 */
 	public static int getPackedCoords(int x, int y, int z) {
-		return ((x & 0x3FF) << 22) | ((y & 0x3FF) << 11) | ((z & 0x3FF) << 0);
+		return SignedTenBitTripleHashed.key(x, y, z);
 	}
 	
 	public static int getX(int bx, int packed) {
-		return (packed >> 22) + bx;
+		return SignedTenBitTripleHashed.key1(packed) + bx;
 	}
 	
 	public static int getY(int by, int packed) {
-		return ((packed << 11) >> 22) + by;
+		return SignedTenBitTripleHashed.key2(packed) + by;
 	}
 	
 	public static int getZ(int bz, int packed) {
-		return ((packed << 22) >> 22) + bz;
+		return SignedTenBitTripleHashed.key3(packed) + bz;
 	}
 	
 	/**
-	 * Adds the given x, y, z coordinate to this packed coordinate
+	 * Adds the given x, y, z coordinate to this packed coordinate.<br>
+	 * <br>
+	 * Warning: this method will overflow if the resulting coordinate is outside 
+	 * the allowed range
 	 * 
 	 * @param packed
 	 * @param x
@@ -65,8 +70,7 @@ public class PackedCoords {
 	 * @return
 	 */
 	public static int translate(int packed, int x, int y, int z) {
-		int offset = ((x & 0x3FF) << 22) | ((y & 0x3FF) << 11) | ((z & 0x3FF) << 0);
-		return (packed + offset) & mask;
+		return SignedTenBitTripleHashed.add(packed, x, y, z);
 	}
 	
 }

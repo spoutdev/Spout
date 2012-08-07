@@ -32,7 +32,7 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.DynamicUpdateEntry;
-import org.spout.api.util.hashing.ByteTripleHashed;
+import org.spout.api.util.hashing.SignedTenBitTripleHashed;
 
 public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate>, DynamicUpdateEntry {
 	
@@ -40,49 +40,39 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate>, Dynam
 
 	private final int id;
 	private final int packed;
-	private final int chunkPacked;
 	private final long nextUpdate;
-	private final long queuedTime;
 	private final int data;
-	transient final Object hint;
 
 	private DynamicBlockUpdate next;
 
-	public DynamicBlockUpdate(int packed, long nextUpdate, long queuedTime, int data, Object hint) {
-		this(unpackX(packed), unpackY(packed), unpackZ(packed), nextUpdate, queuedTime, data, hint);
+	public DynamicBlockUpdate(int packed, long nextUpdate, int data) {
+		this(unpackX(packed), unpackY(packed), unpackZ(packed), nextUpdate, data);
 	}
 
-	public DynamicBlockUpdate(int x, int y, int z, long nextUpdate, long queuedTime, int data, Object hint) {
+	public DynamicBlockUpdate(int x, int y, int z, long nextUpdate, int data) {
 		x &= Region.BLOCKS.MASK;
 		y &= Region.BLOCKS.MASK;
 		z &= Region.BLOCKS.MASK;
 		this.packed = getBlockPacked(x, y, z);
-		this.chunkPacked = ByteTripleHashed.key(x >> Chunk.BLOCKS.BITS, y >> Chunk.BLOCKS.BITS, z >> Chunk.BLOCKS.BITS);
 		this.nextUpdate = nextUpdate;
-		this.queuedTime = queuedTime;
-		this.hint = hint;
 		this.data = data;
 		this.id = idCounter.getAndIncrement();
 	}
 
 	public int getX() {
-		return ByteTripleHashed.key1(packed) & 0xFF;
+		return SignedTenBitTripleHashed.key1(packed) & 0xFF;
 	}
 
 	public int getY() {
-		return ByteTripleHashed.key2(packed) & 0xFF;
+		return SignedTenBitTripleHashed.key2(packed) & 0xFF;
 	}
 
 	public int getZ() {
-		return ByteTripleHashed.key3(packed) & 0xFF;
+		return SignedTenBitTripleHashed.key3(packed) & 0xFF;
 	}
 
 	public long getNextUpdate() {
 		return nextUpdate;
-	}
-
-	public long getQueuedTime() {
-		return queuedTime;
 	}
 
 	public int getPacked() {
@@ -94,11 +84,7 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate>, Dynam
 	}
 
 	public int getChunkPacked() {
-		return chunkPacked;
-	}
-	
-	public Object getHint() {
-		return hint;
+		return SignedTenBitTripleHashed.positiveRightShift(packed, 4);
 	}
 
 	public boolean isInChunk(Chunk c) {
@@ -206,9 +192,9 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate>, Dynam
 	@Override
 	public String toString() {
 		return "DynamicBlockUpdate{ id: + " + id + " packed: " + getPacked() + " chunkPacked: " + getChunkPacked() + 
-				" nextUpdate: " + getNextUpdate() + " queuedTime: " + getQueuedTime() + 
+				" nextUpdate: " + getNextUpdate() + 
 				" pos: (" + getX() + ", " + getY() + ", " + getZ() + ")" +
-				" data: " + data + " hint: " + hint + " }";
+				" data: " + data + "}";
 	}
 	
 	public static int getPointPacked(Point p) {
@@ -216,22 +202,22 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate>, Dynam
 	}
 		
 	public static int getBlockPacked(int x, int y, int z) {
-		return ByteTripleHashed.key(x & Region.BLOCKS.MASK, y & Region.BLOCKS.MASK, z & Region.BLOCKS.MASK);
+		return SignedTenBitTripleHashed.key(x & Region.BLOCKS.MASK, y & Region.BLOCKS.MASK, z & Region.BLOCKS.MASK);
 	}
 
 	public static int getChunkPacked(Chunk c) {
-		return ByteTripleHashed.key(c.getX() & Chunk.BLOCKS.MASK, c.getY() & Chunk.BLOCKS.MASK, c.getZ() & Chunk.BLOCKS.MASK);
+		return SignedTenBitTripleHashed.key(c.getX() & Chunk.BLOCKS.MASK, c.getY() & Chunk.BLOCKS.MASK, c.getZ() & Chunk.BLOCKS.MASK);
 	}
 
 	public static int unpackX(int packed) {
-		return ByteTripleHashed.key1(packed);
+		return SignedTenBitTripleHashed.key1(packed);
 	}
 
 	public static int unpackY(int packed) {
-		return ByteTripleHashed.key2(packed);
+		return SignedTenBitTripleHashed.key2(packed);
 	}
 
 	public static int unpackZ(int packed) {
-		return ByteTripleHashed.key3(packed);
+		return SignedTenBitTripleHashed.key3(packed);
 	}
 }
