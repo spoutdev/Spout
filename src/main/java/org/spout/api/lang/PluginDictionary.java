@@ -195,13 +195,18 @@ public class PluginDictionary {
 			}
 		}
 
+		use = replacePlaceholders(use, args);
+		return use;
+	}
+
+	protected String replacePlaceholders(String source, Object... args) {
 		// Replace placeholders
 		int i = 0;
 		for (Object arg : args) {
-			use = use.replaceAll("%" + i, arg.toString());
+			source = source.replaceAll("%" + i, arg.toString());
 			i++;
 		}
-		return use;
+		return source;
 	}
 
 	public Plugin getPlugin() {
@@ -232,5 +237,21 @@ public class PluginDictionary {
 			}
 		}
 		return NO_ID;
+	}
+
+	public void broadcast(String source, CommandSource[] receivers, String clazz, Object[] args) {
+		int key = getKey(source, clazz);
+		for (CommandSource receiver:receivers) {
+			String use = source;
+			LanguageDictionary dict = getDictionary(receiver.getPreferredLocale());
+			if (dict != null) {
+				String translation = dict.getTranslation(key);
+				if (translation != null) {
+					use = translation;
+				}
+			}
+			use = replacePlaceholders(use, args);
+			receiver.sendMessage(use);
+		}
 	}
 }

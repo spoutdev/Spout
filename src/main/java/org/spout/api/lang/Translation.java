@@ -96,9 +96,7 @@ public class Translation {
 	public static void broadcast(String source, CommandSource receivers[], Object ...args) {
 		Plugin plugin = getPluginForStacktrace();
 		PluginDictionary pldict = plugin.getDictionary();
-		for (CommandSource receiver:receivers) {
-			receiver.sendMessage(pldict.tr(source, receiver, foundClass, args));
-		}
+		pldict.broadcast(source, receivers, foundClass, args);
 	}
 	
 	private static Plugin getPluginForStacktrace() {
