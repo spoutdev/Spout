@@ -59,6 +59,7 @@ public class PluginDictionary {
 		load();
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void load() {
 		Yaml yaml = new Yaml();
 		
@@ -124,6 +125,7 @@ public class PluginDictionary {
 		} catch (IOException e) {}
 		}
 	
+	@SuppressWarnings("unchecked")
 	private void loadLanguage(InputStream in) {
 //		System.out.println("Loading lang file");
 		Yaml yaml = new Yaml();
