@@ -45,12 +45,12 @@ public class ClientFileSystem extends SharedFileSystem {
 		
 		super.init();
 		
-		registerLoader("texture", new TextureLoader());
-		registerLoader("shader", new ShaderLoader());
-		registerLoader("mesh", new MeshLoader());
-		registerLoader("material", new RenderMaterialLoader());
+		registerLoader(new TextureLoader());
+		registerLoader(new ShaderLoader());
+		registerLoader(new MeshLoader());
+		registerLoader(new RenderMaterialLoader());
 
-		registerLoader("sound_wav", new SoundWavLoader());
+		registerLoader(new SoundWavLoader());
 		//registerLoader("font", new FontLoader());
 		
 		

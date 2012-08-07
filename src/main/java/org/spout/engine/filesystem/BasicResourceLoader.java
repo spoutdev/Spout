@@ -35,20 +35,19 @@ import org.spout.api.resource.Resource;
 import org.spout.api.resource.ResourceLoader;
 import org.spout.api.resource.ResourceNotFoundException;
 
+/**
+ * A basic resource loader.
+ * 
+ * @param <E>
+ */
 public abstract class BasicResourceLoader<E extends Resource> implements ResourceLoader<E> {
-	public abstract String getFallbackResourceName();
-	
 	@Override
-	public abstract E getResource(InputStream stream);
-
-	@Override
-	public E getResource(URI resource) throws ResourceNotFoundException{
+	public E getResource(URI resource) throws ResourceNotFoundException {
 		InputStream s = Spout.getFilesystem().getResourceStream(resource);
 		E r = getResource(s);
 		try {
 			s.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return r;
