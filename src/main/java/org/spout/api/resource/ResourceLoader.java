@@ -29,13 +29,49 @@ package org.spout.api.resource;
 import java.io.InputStream;
 import java.net.URI;
 
+/**
+ * An interface to load resources.
+ * 
+ * @param <E>
+ */
 public interface ResourceLoader<E extends Resource> {
+	/**
+	 * Loads a resource from the given input stream.
+	 * 
+	 * @param stream
+	 * @return
+	 */
 	public E getResource(InputStream stream);
+
+	/**
+	 * Gets the resource that corresponds with the given URI.
+	 * 
+	 * @param resource
+	 * @return
+	 */
 	public E getResource(URI resource);
-	
+
 	/**
 	 * Returns the fallback name for this resource.
+	 * 
 	 * @return
 	 */
 	public String getFallbackResourceName();
+
+	/**
+	 * Returns the protocol that this loader should load. For example,
+	 * <code>sound://</code> would have the protocol <code>sound</code>.
+	 * 
+	 * @return
+	 */
+	public String getProtocol();
+
+	/**
+	 * Returns the file extensions that resources loaded with this loader should
+	 * have. This excludes the preceding period; for example, a file named
+	 * "sound.wav" has the extension "wav".
+	 * 
+	 * @return
+	 */
+	public String[] getExtensions();
 }
