@@ -94,7 +94,7 @@ public class PluginDescriptionFile implements Datatable {
 	private void load(Map<?, ?> map) throws InvalidDescriptionFileException {
 		name = getEntry("name", String.class, map);
 		if (!name.matches("^[A-Za-z0-9 _.-]+$")) {
-			throw new InvalidDescriptionFileException("The field 'name' in plugin.yml contains invalid characters.");
+			throw new InvalidDescriptionFileException("The field 'name' in properties.yml contains invalid characters.");
 		}
 		if (name.toLowerCase().contains("spout")) {
 			throw new InvalidDescriptionFileException("The plugin '" + name + "' has Spout in the name. This is not allowed.");
@@ -166,7 +166,7 @@ public class PluginDescriptionFile implements Datatable {
 	private <T> T getEntry(Object key, Class<T> type, Map<?, ?> values) throws InvalidDescriptionFileException {
 		Object value = values.get(key);
 		if (value == null) {
-			throw new InvalidDescriptionFileException("The field '" + key + "' is not present in the plugin.yml!");
+			throw new InvalidDescriptionFileException("The field '" + key + "' is not present in the properties.yml!");
 		}
 
 		return (T) Serialization.deserialize(type, value);
