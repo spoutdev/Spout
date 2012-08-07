@@ -45,6 +45,7 @@ public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder WORLDS = new ConfigurationHolder("default", "worlds");
 	public static final ConfigurationHolder LIVE_LIGHTING = new ConfigurationHolder(false, "live-lighting");
 	public static final ConfigurationHolder LIGHTING_ENABLED = new ConfigurationHolder(true, "lighting-enabled");
+	public static final ConfigurationHolder DEFAULT_LANGUAGE = new ConfigurationHolder("EN_US", "default-language");
 
 	public SpoutConfiguration() {
 		super(new YamlConfiguration(new File("config", "spout.yml")));

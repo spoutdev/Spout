@@ -73,7 +73,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	private boolean online;
 	private final int hashcode;
 	private PriorityQueue<PlayerInputState> inputQueue = new PriorityQueue<PlayerInputState>();
-	private Locale preferredLocale = Locale.ENGLISH_US;
+	private Locale preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
 
 	public SpoutPlayer(String name, SpoutEngine engine) {
 		this(name, null, null, engine, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);

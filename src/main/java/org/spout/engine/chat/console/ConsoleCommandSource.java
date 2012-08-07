@@ -34,6 +34,7 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.geo.World;
 import org.spout.api.lang.Locale;
+import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 
 /**
@@ -41,6 +42,7 @@ import org.spout.engine.SpoutEngine;
  */
 public class ConsoleCommandSource implements CommandSource {
 	private final SpoutEngine engine;
+	private Locale preferredLocale = null;
 
 	public ConsoleCommandSource(SpoutEngine engine) {
 		this.engine = engine;
@@ -115,6 +117,9 @@ public class ConsoleCommandSource implements CommandSource {
 
 	@Override
 	public Locale getPreferredLocale() {
-		return Locale.ENGLISH_US;
+		if (preferredLocale == null) {
+			preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
+		}
+		return preferredLocale;
 	}
 }
