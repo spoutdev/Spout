@@ -26,18 +26,22 @@
  */
 package org.spout.api.lang;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map.Entry;
 
 public class Locale {
 	private String fullName;
 	private String code;
-	private static final HashMap<String, Locale> byCode = new HashMap<String, Locale>(5);
+	private static final LinkedHashMap<String, Locale> byCode = new LinkedHashMap<String, Locale>(5);
 	
 	public static final Locale ENGLISH_US = new Locale("English (USA)", "EN_US");
 	public static final Locale ENGLISH_UK = new Locale("English (United Kingdom)", "EN_UK");
 	public static final Locale GERMAN_DE = new Locale("Deutsch (Deutschland)", "DE_DE");
 	public static final Locale GERMAN_SW = new Locale("Deutsch (Schweiz)", "DE_SW");
 	public static final Locale GERMAN_AT = new Locale("Deutsch (Österreich)", "DE_AT");
+	public static final Locale FRENCH_FR = new Locale("Français (France)", "FR_FR");
 	
 	
 	public Locale(String fullName, String code) {
@@ -46,10 +50,16 @@ public class Locale {
 		byCode.put(code, this);
 	}
 
+	/**
+	 * @return the full name of the language in the target language
+	 */
 	public String getFullName() {
 		return fullName;
 	}
 	
+	/**
+	 * @return the language code, i.e. "EN_US" (language_country)
+	 */
 	public String getCode() {
 		return code;
 	}
@@ -87,5 +97,13 @@ public class Locale {
 			byCode.put(code, l);
 			return l;
 		}
+	}
+	
+	public List<Locale> getLocales() {
+		ArrayList<Locale> locales = new ArrayList<Locale>(byCode.size());
+		for (Entry<String, Locale> l : byCode.entrySet()) {
+			locales.add(l.getValue());
+		}
+		return locales;
 	}
 }
