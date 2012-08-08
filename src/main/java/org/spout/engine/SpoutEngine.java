@@ -185,7 +185,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 		console = new MultiConsole(new FileConsole(this), new JLineConsole(this));
 		consoleManager.setupConsole(console);
-		
+
 		CMD = consoleManager.getCommandSource();
 
 		registerWithScheduler(scheduler);
