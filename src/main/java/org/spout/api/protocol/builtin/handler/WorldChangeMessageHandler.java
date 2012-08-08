@@ -34,6 +34,8 @@ import org.spout.api.protocol.builtin.message.WorldChangeMessage;
 public class WorldChangeMessageHandler extends MessageHandler<WorldChangeMessage> {
 	@Override
 	public void handleClient(Session session, WorldChangeMessage message) {
+		System.out.println("World changed to: " + message.getWorldName());
 		((Client) session.getEngine()).worldChanged(message.getWorldName(), message.getWorldUUID(), message.getCompressedData());
 	}
 }
+

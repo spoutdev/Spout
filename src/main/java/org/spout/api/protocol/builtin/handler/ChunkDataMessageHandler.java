@@ -26,14 +26,14 @@
  */
 package org.spout.api.protocol.builtin.handler;
 
-import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.Client;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.builtin.message.ChunkDataMessage;
 
 /**
- * 
+ *
  */
 public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 	@Override
@@ -43,7 +43,7 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 		}
 
 		Player player = session.getPlayer();
-		Chunk chunk = player.getWorld().getChunk(message.getX(), message.getY(), message.getZ());
+		((Client) session.getEngine()).getDefaultWorld();
 		// TODO: Set chunk data from packet
 		//chunk.load(message.getBlockIds(), message.getBlockData(), message.getBlockLight(), message.getSkyLight(), message.getBiomeData());
 	}

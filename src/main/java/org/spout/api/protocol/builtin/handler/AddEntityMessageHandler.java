@@ -41,6 +41,7 @@ public class AddEntityMessageHandler extends MessageHandler<AddEntityMessage> {
 		if(!session.hasPlayer()) {
 			return;
 		}
+		System.out.println("Ading entity with id " + message.getEntityId() + " of type " + message.getType().getName());
 
 		Player player = session.getPlayer();
 		Entity newEntity;
