@@ -114,13 +114,7 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 
 		viewDistanceLive.set(viewDistance);
 
-		controllerLive.set(controller);
-		if (controller != null) {
-			controller.attachToEntity(this);
-			if (controller instanceof PlayerController) {
-				setObserver(true);
-			}
-		}
+		setController(controller);
 	}
 
 	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller, int viewDistance) {
@@ -146,30 +140,14 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 	@Override
 	public void onTick(float dt) {
 		Profiler.start("tick entity session");
-		Controller cont = controllerLive.get();
 		
 		super.onTick(dt);
 			
 		//Tick the controller
 		Profiler.startAndStop("tick entity controller");
-		if (cont != null) {
-			//Sanity check
-			if (cont.getParent() != this) {
-				if (engine.debugMode()) {
-					throw new IllegalStateException("Controller parent does not match entity");
-				}
-
-				cont.attachToEntity(this);
-			}
-			//If this is the first tick, we need to attach the controller
-			//Controller is attached here instead of inside of the constructor
-			//because the constructor can not access getChunk if the entity is being deserialized
-			if (!attached && !isDead() && getPosition() != null && getWorld() != null) {
-				cont.onAttached();
-				attached = true;
-			}
+		if (controller != null) {
 			if (!isDead() && getPosition() != null && getWorld() != null) {
-				cont.tick(dt);
+				controller.tick(dt);
 			}
 		}
 
@@ -430,6 +408,7 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 				setObserver(true);
 			}
 			controller.onAttached();
+			attached = true;
 		}
 	}
 
