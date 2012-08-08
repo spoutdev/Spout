@@ -299,9 +299,13 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 		if (activeThreadIsValid()) {
 			transform.setPosition(position);
 		} else {
-			Transform t = lastTransform.copy();
-			t.setPosition(position);
-			transformLive.set(t);
+			boolean success = false;
+			while (!success) {
+				Transform current = transformLive.get();
+				Transform next = (current == null ? lastTransform : current).copy();
+				next.setPosition(position);
+				success = transformLive.compareAndSet(current, next);
+			}
 		}
 	}
 
@@ -310,9 +314,13 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 		if (activeThreadIsValid()) {
 			transform.setRotation(rotation);
 		} else {
-			Transform t = lastTransform.copy();
-			t.setRotation(rotation);
-			transformLive.set(t);
+			boolean success = false;
+			while (!success) {
+				Transform current = transformLive.get();
+				Transform next = (current == null ? lastTransform : current).copy();
+				next.setRotation(rotation);
+				success = transformLive.compareAndSet(current, next);
+			}
 		}
 	}
 
@@ -321,9 +329,13 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 		if (activeThreadIsValid()) {
 			transform.setScale(scale);
 		} else {
-			Transform t = lastTransform.copy();
-			t.setScale(scale);
-			transformLive.set(t);
+			boolean success = false;
+			while (!success) {
+				Transform current = transformLive.get();
+				Transform next = (current == null ? lastTransform : current).copy();
+				next.setScale(scale);
+				success = transformLive.compareAndSet(current, next);
+			}
 		}
 	}
 
