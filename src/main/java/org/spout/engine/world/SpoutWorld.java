@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -41,7 +42,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.spout.api.Engine;
 import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.collision.BoundingBox;
@@ -167,6 +167,12 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 	 * String item map, used to convert local id's to the server id
 	 */
 	private final StringMap itemMap;
+	
+	/**
+	 * A WeakReference to this world
+	 */
+	private final WeakReference<World> selfReference;
+	public static final WeakReference<World> NULL_WEAK_REFERENCE = new WeakReference<World>(null);
 
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid, StringMap itemMap, DatatableMap extraData) {
@@ -208,6 +214,7 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 		this.age = new SnapshotableLong(snapshotManager, age);
 		taskManager = new SpoutTaskManager(getEngine().getScheduler(), false, t, age);
 		spawnLocation.set(new Transform(new Point(this, 1, 100, 1), Quaternion.IDENTITY, Vector3.ONE));
+		selfReference = new WeakReference<World>(this);
 	}
 
 	@Override
@@ -725,5 +732,9 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 
 	@Override
 	public void runDynamicUpdates(long time, int sequence) throws InterruptedException {
+	}
+	
+	public WeakReference<World> getWeakReference() {
+		return selfReference;
 	}
 }

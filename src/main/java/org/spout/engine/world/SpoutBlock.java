@@ -69,12 +69,20 @@ public class SpoutBlock implements Block {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.world = new WeakReference<World>(world);
+		if (world != null) {
+			this.world = ((SpoutWorld) world).getWeakReference();
+		} else {
+			this.world = SpoutWorld.NULL_WEAK_REFERENCE;
+		}
 		this.source = source;
 		if (chunk != null && !chunk.containsBlock(this.x, this.y, this.z)) {
 			chunk = null; // chunk does not contain this Block, invalidate
 		}
-		this.chunk = new AtomicReference<WeakReference<Chunk>>(new WeakReference<Chunk>(chunk));
+		if (chunk != null) {
+			this.chunk = new AtomicReference<WeakReference<Chunk>>(((SpoutChunk) chunk).getWeakReference());
+		} else {
+			this.chunk = new AtomicReference<WeakReference<Chunk>>(SpoutChunk.NULL_WEAK_REFERENCE);
+		}
 	}
 
 	private final Chunk loadChunk() {
@@ -91,7 +99,11 @@ public class SpoutBlock implements Block {
 		WeakReference<Chunk> chunkRef = this.chunk.get();
 		if (chunkRef.get() == null || !chunkRef.get().isLoaded()) {
 			Chunk chunk = loadChunk();
-			this.chunk.set(new WeakReference<Chunk>(chunk));
+			if (chunk == null) {
+				this.chunk.set(SpoutChunk.NULL_WEAK_REFERENCE);
+			} else {
+				this.chunk.set(((SpoutChunk) chunk).getWeakReference());
+			}
 			return chunk;
 		}
 		return chunkRef.get();

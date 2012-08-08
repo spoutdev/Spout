@@ -27,8 +27,9 @@
 package org.spout.engine.world;
 
 import java.io.Serializable;
-import java.util.Arrays;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -58,10 +59,10 @@ import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
-import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
+import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
@@ -200,6 +201,12 @@ public class SpoutChunk extends Chunk {
 	private final Thread regionThread;
 	private final Thread mainThread;
 
+	/**
+	 * A WeakReference to this chunk
+	 */
+	private final WeakReference<Chunk> selfReference;
+	public static final WeakReference<Chunk> NULL_WEAK_REFERENCE = new WeakReference<Chunk>(null);
+
 	static {
 		for (int i = 0; i < shiftCache.length; i++) {
 			int shift = 0;
@@ -251,6 +258,7 @@ public class SpoutChunk extends Chunk {
 
 		((SpoutEngine) world.getEngine()).getLeakThread().monitor(this);
 		activeChunks.incrementAndGet();
+		selfReference = new WeakReference<Chunk>(this);
 	}
 	
 	public static int getActiveChunks() {
@@ -1693,5 +1701,9 @@ public class SpoutChunk extends Chunk {
 
 	public BiomeManager getBiomeManager() {
 		return biomes;
+	}
+	
+	public WeakReference<Chunk> getWeakReference() {
+		return selfReference;
 	}
 }

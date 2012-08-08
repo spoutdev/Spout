@@ -31,6 +31,7 @@ import gnu.trove.iterator.TIntIterator;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -38,7 +39,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Queue;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -76,7 +76,6 @@ import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TaskManager;
-import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.Profiler;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
@@ -174,7 +173,7 @@ public class SpoutRegion extends Region{
 	 */
 	final Queue<Chunk> populationQueue = new ConcurrentLinkedQueue<Chunk>();
 	final Set<Chunk> populationQueueSet = Collections.newSetFromMap(new ConcurrentHashMap<Chunk, Boolean>());
-
+	
 	private final SpoutTaskManager taskManager;
 
 	private final Thread executionThread;
