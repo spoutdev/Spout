@@ -282,9 +282,10 @@ public class SpoutRegion extends Region{
 
 		final AtomicReference<SpoutChunk> chunkReference = chunks[x][y][z];
 
-		final ChunkDataForRegion dataForRegion = new ChunkDataForRegion();
+		ChunkDataForRegion dataForRegion = null;
 
 		if(loadopt.loadIfNeeded() && this.inputStreamExists(x, y, z)) {
+			dataForRegion = new ChunkDataForRegion();
 			newChunk = WorldFiles.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z), dataForRegion);
 		}
 
@@ -296,17 +297,19 @@ public class SpoutRegion extends Region{
 		if(newChunk == null) {
 			return null;
 		}
-
+		
 		while (true) {
 			if (chunkReference.compareAndSet(null, newChunk)) {
 				newChunk.notifyColumn();
 				numberActiveChunks.incrementAndGet();
-				for (SpoutEntity entity : dataForRegion.loadedEntities) {
-					entity.setupInitialChunk(entity.getTransform());
-					addEntity(entity);
+				if (dataForRegion != null) {
+					for (SpoutEntity entity : dataForRegion.loadedEntities) {
+						entity.setupInitialChunk(entity.getTransform());
+						addEntity(entity);
+					}
+					dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);
+					occupiedChunksQueue.add(newChunk);
 				}
-				dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);
-				occupiedChunksQueue.add(newChunk);
 
 				Spout.getEventManager().callDelayedEvent(new ChunkLoadEvent(newChunk, generated));
 
