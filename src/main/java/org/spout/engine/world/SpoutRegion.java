@@ -307,8 +307,8 @@ public class SpoutRegion extends Region{
 						addEntity(entity);
 					}
 					dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);
-					occupiedChunksQueue.add(newChunk);
 				}
+				occupiedChunksQueue.add(newChunk);
 
 				Spout.getEventManager().callDelayedEvent(new ChunkLoadEvent(newChunk, generated));
 
