@@ -37,12 +37,11 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.procedure.TIntObjectProcedure;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.chat.style.StyleHandler;
 import org.spout.api.chat.style.fallback.DefaultStyleHandler;
+import org.spout.api.util.SpoutToStringStyle;
 
 /**
  * A class to hold the arguments in a chat message
@@ -174,10 +173,15 @@ public class ChatArguments implements Cloneable, ChatSection {
 				append(((ChatArguments) o).getExpandedPlaceholders());
 			} else if (o instanceof ChatSection) {
 				append((ChatSection) o);
-			} else {
+			} else if (o instanceof ChatStyle) {
 				elements.add(o);
-				plainStringBuilder.append(o);
-				plainString = plainStringBuilder.toString();
+			} else {
+				String oStr = String.valueOf(o);
+				if (oStr.length() > 0) {
+					elements.add(oStr);
+					plainStringBuilder.append(oStr);
+					plainString = plainStringBuilder.toString();
+				}
 			}
 		} finally {
 			lock.unlock();
@@ -216,7 +220,7 @@ public class ChatArguments implements Cloneable, ChatSection {
 				ChatSectionUtils.removeConflicting(list, style);
 				list.add(style);
 			} else {
-				curIndex +=  String.valueOf(obj).length();
+				curIndex += String.valueOf(obj).length();
 			}
 		}
 		return map;
@@ -243,11 +247,16 @@ public class ChatArguments implements Cloneable, ChatSection {
 	}
 
 	public ChatArguments setPlaceHolder(Placeholder placeHolder, ChatArguments value) {
-		if (!placeholders.containsKey(placeHolder)) {
-			throw new IllegalArgumentException("Placeholder " + placeHolder.getName() + " is not present in these arguments!");
+		lock.lock();
+		try {
+			if (!placeholders.containsKey(placeHolder)) {
+				throw new IllegalArgumentException("Placeholder " + placeHolder.getName() + " is not present in these arguments!");
+			}
+			placeholders.get(placeHolder).value = value;
+			buildPlainString(elements);
+		} finally {
+			lock.unlock();
 		}
-		placeholders.get(placeHolder).value = value;
-		buildPlainString(elements);
 		return this;
 	}
 
@@ -314,15 +323,6 @@ public class ChatArguments implements Cloneable, ChatSection {
 						for (int i = 0; i < val.length(); ++i) {
 							int codePoint = val.codePointAt(i);
 							if (Character.isWhitespace(codePoint)) {
-								/*if (map.containsKey(curIndex)) {
-									List<ChatStyle> current = map.remove(curIndex);
-									List<ChatStyle> prev = map.get(curIndex - 1);
-									if (prev == null) {
-										prev = new ArrayList<ChatStyle>();
-										map.put(curIndex - 1, prev);
-									}
-									prev.addAll(current);
-								}*/
 								sections.add(new ChatSectionImpl(type, new LinkedHashMap<Integer, List<ChatStyle>>(map), currentWord.toString()));
 								curIndex = 0;
 								currentWord = new StringBuilder();
@@ -384,8 +384,8 @@ public class ChatArguments implements Cloneable, ChatSection {
 	/**
 	 * Represents these ChatArguments as a string using {@link DefaultStyleHandler}
 	 *
-	 * @see #asString(int)
 	 * @return These ChatArguments as a string
+	 * @see #asString(int)
 	 */
 	public String asString() {
 		return asString(DefaultStyleHandler.ID);
@@ -440,9 +440,9 @@ public class ChatArguments implements Cloneable, ChatSection {
 	 * Create an instance of ChatArguments by extracting arguments from a string in
 	 * the format specified by the given style handler.
 	 *
-	 * @see #fromString(String, int)
 	 * @param str The string to extract styles from
 	 * @return The new ChatArguments instance
+	 * @see #fromString(String, int)
 	 */
 	public static ChatArguments fromString(String str) {
 		return fromString(str, DefaultStyleHandler.ID);
@@ -452,12 +452,21 @@ public class ChatArguments implements Cloneable, ChatSection {
 	 * Create an instance of ChatArguments by extracting arguments from a string in
 	 * the format specified by the given style handler. This method currently just delegates to the StyleHandler,
 	 *
-	 * @see  StyleHandler#extractArguments(String)
 	 * @param str The string to extract styles from
 	 * @param handlerId The ID of the {@link StyleHandler} to use to extract style information
 	 * @return The new ChatArguments instance
+	 * @see StyleHandler#extractArguments(String)
 	 */
 	public static ChatArguments fromString(String str, int handlerId) {
 		return StyleHandler.get(handlerId).extractArguments(str);
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
+				.append("elements", elements)
+				.append("placeholders", placeholders)
+				.append("plainString", plainString)
+				.toString();
 	}
 }

@@ -31,7 +31,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.io.store.simple.MemoryStore;
+import org.spout.api.util.SpoutToStringStyle;
 import org.spout.api.util.StringMap;
 
 /**
@@ -131,4 +133,11 @@ public abstract class ChatStyle {
 	}
 
 	public abstract boolean conflictsWith(ChatStyle other);
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
+				.append("name", name)
+				.toString();
+	}
 }
