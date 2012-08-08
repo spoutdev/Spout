@@ -28,8 +28,8 @@ package org.spout.api.protocol.proxy;
 
 import org.spout.api.protocol.Message;
 
-public interface TransformableMessage {
-	
+public interface TransformableMessage extends Message {
+
 	public Message transform(boolean upstream, int connects, ConnectionInfo info, ConnectionInfo auxChannelInfo);
 
 }

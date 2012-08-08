@@ -28,21 +28,21 @@ package org.spout.api.protocol.builder;
 
 import org.spout.api.protocol.Message;
 
-public abstract class GenericMessage extends Message implements MessageField {
-	
+public abstract class GenericMessage implements Message, MessageField {
+
 	private final Object fieldValues;
-	
+
 	public GenericMessage(Object value) {
 		this.fieldValues = value;
 	}
 
 	/**
 	 * Gets the field root for this message.  This should be a static final unchanging array.
-	 * 
+	 *
 	 * @return
 	 */
 	public abstract MessageField getFieldRoot();
-	
+
 	@SuppressWarnings("unchecked")
 	public <T> T get(FieldRef<T> ref) {
 		int[] index = ref.getIndex();
@@ -56,5 +56,5 @@ public abstract class GenericMessage extends Message implements MessageField {
 			return (T) temp;
 		}
 	}
-	
+
 }

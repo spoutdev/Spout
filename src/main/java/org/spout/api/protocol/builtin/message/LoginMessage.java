@@ -26,11 +26,13 @@
  */
 package org.spout.api.protocol.builtin.message;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class LoginMessage extends Message {
+public class LoginMessage implements Message {
 	private final String playerName;
 	private final int protoVersion;
 
@@ -53,5 +55,26 @@ public class LoginMessage extends Message {
 				.append("playerName", playerName)
 				.append("protoVersion", protoVersion)
 				.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(95, 45)
+				.append(playerName)
+				.append(protoVersion)
+				.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof LoginMessage) {
+			final LoginMessage other = (LoginMessage) obj;
+			return new EqualsBuilder()
+					.append(playerName, other.playerName)
+					.append(protoVersion, other.protoVersion)
+					.isEquals();
+		} else {
+			return false;
+		}
 	}
 }

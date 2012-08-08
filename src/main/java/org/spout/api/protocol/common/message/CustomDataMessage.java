@@ -26,7 +26,6 @@
  */
 package org.spout.api.protocol.common.message;
 
-import java.io.IOError;
 import java.io.IOException;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -43,7 +42,7 @@ import org.spout.api.protocol.dynamicid.DynamicWrapperMessage;
 import org.spout.api.util.Named;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class CustomDataMessage extends Message implements DynamicWrapperMessage {
+public class CustomDataMessage implements DynamicWrapperMessage {
 	private final byte[] data;
 	private final String type;
 

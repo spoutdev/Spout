@@ -26,11 +26,13 @@
  */
 package org.spout.api.protocol.proxy;
 
-public interface ConnectionInfoMessage {
-	
+import org.spout.api.protocol.Message;
+
+public interface ConnectionInfoMessage extends Message {
+
 	/**
 	 * Gets updated ConnectionInfo for the connection, based on this Message
-	 * 
+	 *
 	 * @param upstream true if the message is from a server
 	 * @param info the previous ConnectionInfo for this connection, or null if none
 	 * @return the updated ConnectionInfo

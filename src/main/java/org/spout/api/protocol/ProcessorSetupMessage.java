@@ -26,26 +26,26 @@
  */
 package org.spout.api.protocol;
 
-public interface ProcessorSetupMessage {
+public interface ProcessorSetupMessage extends Message {
 
 	/**
-	 * Gets the processor to use to process messages subsequent to 
+	 * Gets the processor to use to process messages subsequent to
 	 * this one
-	 * 
+	 *
 	 * @return the new ChannelProcessor or null for none
 	 */
 	public ChannelProcessor getProcessor();
-	
+
 	/**
 	 * Gets if the channel should process any more packets pending processor setup
-	 * 
+	 *
 	 * @return true if the channel should be locked after receiving this message
 	 */
 	public boolean isChannelLocking();
-	
+
 	/**
 	 * Sets the processor handler associated with this packet
-	 * 
+	 *
 	 * @param handler the handler
 	 */
 	public void setProcessorHandler(ProcessorHandler handler);

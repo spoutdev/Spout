@@ -26,11 +26,13 @@
  */
 package org.spout.api.protocol.builtin.message;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class RemoveEntityMessage extends Message {
+public class RemoveEntityMessage implements Message {
 	private final int entityId;
 
 	public RemoveEntityMessage(int entityId) {
@@ -46,5 +48,24 @@ public class RemoveEntityMessage extends Message {
 		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
 				.append("entityId", entityId)
 				.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(61, 29)
+				.append(entityId)
+				.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof RemoveEntityMessage) {
+			final RemoveEntityMessage other = (RemoveEntityMessage) obj;
+			return new EqualsBuilder()
+					.append(entityId, other.entityId)
+					.isEquals();
+		} else {
+			return false;
+		}
 	}
 }

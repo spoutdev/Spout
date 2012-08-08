@@ -26,6 +26,8 @@
  */
 package org.spout.api.protocol.proxy;
 
-public interface ProxyStartMessage {
+import org.spout.api.protocol.Message;
+
+public interface ProxyStartMessage extends Message {
 
 }

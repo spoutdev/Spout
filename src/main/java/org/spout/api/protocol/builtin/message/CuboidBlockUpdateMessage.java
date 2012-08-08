@@ -26,12 +26,14 @@
  */
 package org.spout.api.protocol.builtin.message;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class CuboidBlockUpdateMessage extends Message {
+public class CuboidBlockUpdateMessage implements Message {
 	private final int minX, minY, minZ;
 	private final int maxX, maxY, maxZ;
 	// These fields aren't sent across the network - just for reference
@@ -148,5 +150,48 @@ public class CuboidBlockUpdateMessage extends Message {
 				.append("blockLight", blockLight)
 				.append("skyLight", skyLight)
 				.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(39, 67)
+				.append(minX)
+				.append(minY)
+				.append(minZ)
+				.append(maxX)
+				.append(maxY)
+				.append(maxZ)
+				.append(sizeX)
+				.append(sizeY)
+				.append(sizeZ)
+				.append(blockTypes)
+				.append(blockData)
+				.append(blockLight)
+				.append(skyLight)
+				.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof CuboidBlockUpdateMessage) {
+			final CuboidBlockUpdateMessage other = (CuboidBlockUpdateMessage) obj;
+			return new EqualsBuilder()
+					.append(minX, other.minX)
+					.append(minY, other.minY)
+					.append(minZ, other.minZ)
+					.append(maxX, other.maxX)
+					.append(maxY, other.maxY)
+					.append(maxZ, other.maxZ)
+					.append(sizeX, other.sizeX)
+					.append(sizeY, other.sizeY)
+					.append(sizeZ, other.sizeZ)
+					.append(blockTypes, other.blockTypes)
+					.append(blockData, other.blockData)
+					.append(blockLight, other.blockLight)
+					.append(skyLight, other.skyLight)
+					.isEquals();
+		} else {
+			return false;
+		}
 	}
 }

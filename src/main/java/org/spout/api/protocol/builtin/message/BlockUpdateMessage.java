@@ -26,12 +26,14 @@
  */
 package org.spout.api.protocol.builtin.message;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class BlockUpdateMessage extends Message {
+public class BlockUpdateMessage implements Message {
 	private final int x, y, z;
 	private final short type, data;
 	private final byte blockLight, skyLight;
@@ -95,5 +97,36 @@ public class BlockUpdateMessage extends Message {
 				.append("blockLight", blockLight)
 				.append("skyLight", skyLight)
 				.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(45, 95)
+				.append(x)
+				.append(y)
+				.append(z)
+				.append(type)
+				.append(data)
+				.append(blockLight)
+				.append(skyLight)
+				.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof BlockUpdateMessage) {
+			final BlockUpdateMessage other = (BlockUpdateMessage) obj;
+			return new EqualsBuilder()
+					.append(x, other.x)
+					.append(y, other.y)
+					.append(z, other.z)
+					.append(type, other.type)
+					.append(data, other.data)
+					.append(blockLight, other.blockLight)
+					.append(skyLight, other.skyLight)
+					.isEquals();
+		} else {
+			return false;
+		}
 	}
 }

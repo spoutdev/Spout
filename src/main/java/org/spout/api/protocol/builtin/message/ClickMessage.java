@@ -26,11 +26,13 @@
  */
 package org.spout.api.protocol.builtin.message;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class ClickMessage extends Message {
+public class ClickMessage implements Message {
 	public enum Action {
 		LEFT, RIGHT, CENTER,
 	}
@@ -57,5 +59,24 @@ public class ClickMessage extends Message {
 		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
 				.append("clickType", clickType)
 				.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(87, 53)
+				.append(clickType)
+				.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ClickMessage) {
+			final ClickMessage other = (ClickMessage) obj;
+			return new EqualsBuilder()
+					.append(clickType, other.clickType)
+					.isEquals();
+		} else {
+			return false;
+		}
 	}
 }

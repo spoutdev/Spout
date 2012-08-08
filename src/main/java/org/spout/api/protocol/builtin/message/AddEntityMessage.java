@@ -28,6 +28,8 @@ package org.spout.api.protocol.builtin.message;
 
 import java.util.UUID;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.Spout;
 import org.spout.api.entity.component.controller.type.ControllerType;
@@ -38,10 +40,11 @@ import org.spout.api.math.Vector3;
 import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class AddEntityMessage extends Message {
+public class AddEntityMessage implements Message {
 	private final int entityId;
 	private final ControllerType type;
 	private final UUID worldUid;
+
 	private final Vector3 pos, scale;
 	private final Quaternion rotation;
 
@@ -101,5 +104,34 @@ public class AddEntityMessage extends Message {
 				.append("scale", scale)
 				.append("rotation", rotation)
 				.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(65, 29)
+				.append(entityId)
+				.append(type)
+				.append(worldUid)
+				.append(pos)
+				.append(scale)
+				.append(rotation)
+				.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof AddEntityMessage) {
+			final AddEntityMessage other = (AddEntityMessage) obj;
+			return new EqualsBuilder()
+					.append(entityId, other.entityId)
+					.append(type, other.type)
+					.append(worldUid, other.worldUid)
+					.append(pos, other.pos)
+					.append(scale, other.scale)
+					.append(rotation, other.rotation)
+					.isEquals();
+		} else {
+			return false;
+		}
 	}
 }

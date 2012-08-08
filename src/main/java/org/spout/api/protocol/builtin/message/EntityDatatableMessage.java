@@ -26,13 +26,12 @@
  */
 package org.spout.api.protocol.builtin.message;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.util.SpoutToStringStyle;
 
-/**
- * 
- */
 public class EntityDatatableMessage extends DatatableMessage {
 	private final int entityId;
 
@@ -56,5 +55,26 @@ public class EntityDatatableMessage extends DatatableMessage {
 				.appendSuper(super.toString())
 				.append("entityId", entityId)
 				.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(3, 7)
+				.append(getCompressedData())
+				.append(entityId)
+				.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof EntityDatatableMessage) {
+			final EntityDatatableMessage other = (EntityDatatableMessage) obj;
+			return new EqualsBuilder()
+					.append(getCompressedData(), other.getCompressedData())
+					.append(entityId, other.entityId)
+					.isEquals();
+		} else {
+			return false;
+		}
 	}
 }

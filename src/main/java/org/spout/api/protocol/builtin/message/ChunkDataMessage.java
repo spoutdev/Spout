@@ -27,12 +27,14 @@
 package org.spout.api.protocol.builtin.message;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class ChunkDataMessage extends Message {
+public class ChunkDataMessage implements Message {
 	private final boolean unload;
 	private final int x, y, z;
 	private final short[] blockIds, blockData;
@@ -124,5 +126,40 @@ public class ChunkDataMessage extends Message {
 				.append("skyLight", skyLight, false)
 				.append("biomeData", biomeData, false)
 				.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(47, 91)
+				.append(unload)
+				.append(x)
+				.append(y)
+				.append(z)
+				.append(blockIds)
+				.append(blockData)
+				.append(blockLight)
+				.append(skyLight)
+				.append(biomeData)
+				.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ChunkDataMessage) {
+			final ChunkDataMessage other = (ChunkDataMessage) obj;
+			return new EqualsBuilder()
+					.append(unload, other.unload)
+					.append(x, other.x)
+					.append(y, other.y)
+					.append(z, other.z)
+					.append(blockIds, other.blockIds)
+					.append(blockData, other.blockData)
+					.append(blockLight, other.blockLight)
+					.append(skyLight, other.skyLight)
+					.append(biomeData, other.biomeData)
+					.isEquals();
+		} else {
+			return false;
+		}
 	}
 }

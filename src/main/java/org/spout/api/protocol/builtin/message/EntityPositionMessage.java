@@ -28,6 +28,8 @@ package org.spout.api.protocol.builtin.message;
 
 import java.util.UUID;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.Spout;
 import org.spout.api.geo.discrete.Point;
@@ -37,7 +39,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class EntityPositionMessage extends Message {
+public class EntityPositionMessage implements Message {
 	private final int entityId;
 	private final UUID worldUid;
 	private final Vector3 pos;
@@ -93,5 +95,32 @@ public class EntityPositionMessage extends Message {
 				.append("rotation", rotation)
 				.append("scale", scale)
 				.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(37, 59)
+				.append(entityId)
+				.append(worldUid)
+				.append(pos)
+				.append(rotation)
+				.append(scale)
+				.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof EntityPositionMessage) {
+			final EntityPositionMessage other = (EntityPositionMessage) obj;
+			return new EqualsBuilder()
+					.append(entityId, other.entityId)
+					.append(worldUid, other.worldUid)
+					.append(pos, other.pos)
+					.append(rotation, other.rotation)
+					.append(scale, other.scale)
+					.isEquals();
+		} else {
+			return false;
+		}
 	}
 }

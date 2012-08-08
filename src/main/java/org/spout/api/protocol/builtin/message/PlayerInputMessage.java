@@ -26,11 +26,13 @@
  */
 package org.spout.api.protocol.builtin.message;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class PlayerInputMessage extends Message {
+public class PlayerInputMessage implements Message {
 	private final short inputFlags;
 	private final short mouseDx, mouseDy;
 
@@ -61,5 +63,28 @@ public class PlayerInputMessage extends Message {
 				.append("mouseDx", mouseDx)
 				.append("mouseDy", mouseDy)
 				.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(5, 9)
+				.append(inputFlags)
+				.append(mouseDx)
+				.append(mouseDy)
+				.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof PlayerInputMessage) {
+			final PlayerInputMessage other = (PlayerInputMessage) obj;
+			return new EqualsBuilder()
+					.append(inputFlags, other.inputFlags)
+					.append(mouseDx, other.mouseDx)
+					.append(mouseDy, other.mouseDy)
+					.isEquals();
+		} else {
+			return false;
+		}
 	}
 }

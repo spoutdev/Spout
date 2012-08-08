@@ -26,25 +26,27 @@
  */
 package org.spout.api.protocol.proxy;
 
-public interface RedirectMessage {
-	
+import org.spout.api.protocol.Message;
+
+public interface RedirectMessage extends Message {
+
 	/**
 	 * Gets if the message has embedded redirect information
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isRedirect();
-	
+
 	/**
 	 * Gets the hostname for reconnecting
-	 * 
+	 *
 	 * @return
 	 */
 	public String getHostname();
-	
+
 	/**
 	 * Gets the port for reconnecting
-	 * 
+	 *
 	 * @return
 	 */
 	public int getPort();

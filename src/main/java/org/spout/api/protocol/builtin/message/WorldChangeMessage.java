@@ -28,6 +28,8 @@ package org.spout.api.protocol.builtin.message;
 
 import java.util.UUID;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.geo.World;
@@ -66,5 +68,28 @@ public class WorldChangeMessage extends DatatableMessage {
 				.append("worldName", worldName)
 				.append("worldUuid", worldUuid)
 				.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(85, 87)
+				.append(getCompressedData())
+				.append(worldName)
+				.append(worldUuid)
+				.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof WorldChangeMessage) {
+			final WorldChangeMessage other = (WorldChangeMessage) obj;
+			return new EqualsBuilder()
+					.append(getCompressedData(), other.getCompressedData())
+					.append(worldName, other.worldName)
+					.append(worldUuid, other.worldUuid)
+					.isEquals();
+		} else {
+			return false;
+		}
 	}
 }

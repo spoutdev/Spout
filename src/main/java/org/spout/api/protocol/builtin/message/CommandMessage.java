@@ -28,12 +28,14 @@ package org.spout.api.protocol.builtin.message;
 
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.command.Command;
 import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class CommandMessage extends Message {
+public class CommandMessage implements Message {
 	private final int command;
 	private final List<Object> arguments;
 
@@ -61,5 +63,26 @@ public class CommandMessage extends Message {
 				.append("command", command)
 				.append("arguments", arguments, true)
 				.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(95, 27)
+				.append(command)
+				.append(arguments)
+				.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof CommandMessage) {
+			final CommandMessage other = (CommandMessage) obj;
+			return new EqualsBuilder()
+					.append(command, other.command)
+					.append(arguments, other.arguments)
+					.isEquals();
+		} else {
+			return false;
+		}
 	}
 }

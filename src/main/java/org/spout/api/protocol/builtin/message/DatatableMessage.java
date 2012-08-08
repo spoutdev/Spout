@@ -26,12 +26,14 @@
  */
 package org.spout.api.protocol.builtin.message;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
-public abstract class DatatableMessage extends Message {
+public abstract class DatatableMessage implements Message {
 	private final byte[] compressedData;
 
 	public DatatableMessage(DatatableMap data) {
@@ -55,5 +57,24 @@ public abstract class DatatableMessage extends Message {
 		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
 				.append("compressedData", compressedData)
 				.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(27, 59)
+				.append(compressedData)
+				.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof DatatableMessage) {
+			final DatatableMessage other = (DatatableMessage) obj;
+			return new EqualsBuilder()
+					.append(compressedData, other.compressedData)
+					.isEquals();
+		} else {
+			return false;
+		}
 	}
 }

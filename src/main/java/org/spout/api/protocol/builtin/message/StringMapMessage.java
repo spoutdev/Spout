@@ -29,12 +29,14 @@ package org.spout.api.protocol.builtin.message;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class StringMapMessage extends Message {
+public class StringMapMessage implements Message {
 	public enum Action {
 		ADD, SET, REMOVE,
 	}
@@ -82,5 +84,28 @@ public class StringMapMessage extends Message {
 				.append("action", action)
 				.append("elements", elements)
 				.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(97, 73)
+				.append(map)
+				.append(action)
+				.append(elements)
+				.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof StringMapMessage) {
+			final StringMapMessage other = (StringMapMessage) obj;
+			return new EqualsBuilder()
+					.append(map, other.map)
+					.append(action, other.action)
+					.append(elements, other.elements)
+					.isEquals();
+		} else {
+			return false;
+		}
 	}
 }

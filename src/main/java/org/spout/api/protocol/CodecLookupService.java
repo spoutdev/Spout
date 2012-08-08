@@ -100,10 +100,10 @@ public abstract class CodecLookupService {
 				id = dynamicPacketMap.register(clazz.getName());
 			} else {
 				id = getNextId();
-				dynamicPacketMap.register(clazz.getName(), id);
 			}
 			codec = constructor.newInstance(id);
 			codec.setDynamic(true);
+			dynamicPacketMap.register(clazz.getName(), id);
 		} else {
 			codec = constructor.newInstance();
 			nextId = nextId > codec.getOpcode() ? nextId : codec.getOpcode() + 1;
