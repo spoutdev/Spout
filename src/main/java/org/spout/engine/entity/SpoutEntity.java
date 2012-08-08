@@ -83,7 +83,7 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 	private EntityManager entityManager;
 	private Model model;
 	private Thread owningThread;
-	private Transform lastTransform = new Transform();
+	private final Transform lastTransform = new Transform();
 
 	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller, int viewDistance, UUID uid, boolean load) {
 		id.set(NOTSPAWNEDID);
@@ -144,10 +144,6 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 		
 		super.onTick(dt);
 		
-		if(!lastTransform.equals(transformLive.get())) {
-			transform.set(transformLive.get());
-		}
-
 		//Tick the controller
 		Profiler.startAndStop("tick entity controller");
 		if (controller != null) {
@@ -249,7 +245,7 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 		if (activeThreadIsValid()) {
 			this.transform.set(transform);
 		} else {
-			this.transformLive.set(transform);
+			this.transformLive.set(transform.copy());
 		}
 	}
 
@@ -303,7 +299,9 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 		if (activeThreadIsValid()) {
 			transform.setPosition(position);
 		} else {
-			transformLive.get().setPosition(position);
+			Transform t = lastTransform.copy();
+			t.setPosition(position);
+			transformLive.set(t);
 		}
 	}
 
@@ -312,7 +310,9 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 		if (activeThreadIsValid()) {
 			transform.setRotation(rotation);
 		} else {
-			transformLive.get().setRotation(rotation);
+			Transform t = lastTransform.copy();
+			t.setRotation(rotation);
+			transformLive.set(t);
 		}
 	}
 
@@ -321,7 +321,9 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 		if (activeThreadIsValid()) {
 			transform.setScale(scale);
 		} else {
-			transformLive.get().setScale(scale);
+			Transform t = lastTransform.copy();
+			t.setScale(scale);
+			transformLive.set(t);
 		}
 	}
 
@@ -462,6 +464,12 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 
 	@Override
 	public void finalizeRun() {
+		
+		Transform t = transformLive.getAndSet(null);
+		if(t != null) {
+			transform.set(t);
+		}
+		
 		//Moving from one region to another
 		if (entityManager != null) {
 			if (entityManager != entityManagerLive.get()) {
@@ -605,7 +613,7 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 		entityManager = entityManagerLive.get();
 		controller = controllerLive.get();
 		viewDistance = viewDistanceLive.get();
-		lastTransform = transform.copy();
+		lastTransform.set(transform);
 		justSpawned = false;
 	}
 
