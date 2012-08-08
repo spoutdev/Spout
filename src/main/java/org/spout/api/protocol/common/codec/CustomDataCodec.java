@@ -46,14 +46,11 @@ public class CustomDataCodec extends MessageCodec<CustomDataMessage> {
 		int length = buffer.readUnsignedShort();
 		byte[] data = new byte[length];
 		buffer.readBytes(data);
-		CustomDataMessage msg = new CustomDataMessage(type, data);
-		System.out.println(msg);
-		return msg;
+		return new CustomDataMessage(type, data);
 	}
 
 	@Override
 	public ChannelBuffer encode(CustomDataMessage message) throws IOException {
-		System.out.println(message);
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		CommonBootstrapProtocol.writeString(buffer, message.getType());
 		buffer.writeShort(message.getData().length);

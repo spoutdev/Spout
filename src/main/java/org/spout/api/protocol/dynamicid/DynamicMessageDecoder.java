@@ -30,6 +30,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
 
+import org.spout.api.protocol.CommonHandler;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
@@ -40,7 +41,7 @@ import org.spout.api.protocol.Session;
 public class DynamicMessageDecoder extends OneToOneDecoder {
 	protected Object decode(ChannelHandlerContext ctx, Channel channel, Object message) throws Exception {
 		if (message instanceof Message) {
-			Session session = (Session) ctx.getAttachment();
+			Session session = ctx.getPipeline().get(CommonHandler.class).getSession();
 			if (session != null) {
 				Protocol protocol = session.getProtocol();
 				while (message instanceof DynamicWrapperMessage) {

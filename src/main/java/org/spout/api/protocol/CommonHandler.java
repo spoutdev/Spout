@@ -139,6 +139,10 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 		}
 	}
 
+	public Session getSession() {
+		return this.session.get();
+	}
+
 	public void setSession(Session session) {
 		if (!this.session.compareAndSet(null, session)) {
 			throw new IllegalStateException("Session may not be set more than once");

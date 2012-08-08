@@ -30,6 +30,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
+import org.spout.api.protocol.CommonHandler;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.Protocol;
@@ -41,7 +42,7 @@ import org.spout.api.protocol.Session;
 public class DynamicMessageEncoder extends OneToOneEncoder {
 	protected Object encode(ChannelHandlerContext ctx, Channel channel, Object o) throws Exception {
 		if (o instanceof Message) {
-			Session session = (Session) ctx.getAttachment();
+			Session session = ctx.getPipeline().get(CommonHandler.class).getSession();
 			if (session != null) {
 				Protocol protocol = session.getProtocol();
 				MessageCodec<?> codec = protocol.getCodecLookupService().find(((Message) o).getClass());

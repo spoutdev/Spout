@@ -96,10 +96,12 @@ public class CustomDataMessage extends Message implements DynamicWrapperMessage 
 		ChannelBuffer dataBuf = ChannelBuffers.wrappedBuffer(getData());
 		MessageCodec<?> codec = null;
 		for (Pair<Integer, String> item : activeProtocol.getDynamicallyRegisteredPackets()) {
-			 codec = activeProtocol.getCodecLookupService().find(item.getLeft());
-			if (codec instanceof Named && ((Named) codec).getName().equalsIgnoreCase(getType())) {
+			 MessageCodec<?> tempCodec = activeProtocol.getCodecLookupService().find(item.getLeft());
+			if (tempCodec instanceof Named && ((Named) tempCodec).getName().equalsIgnoreCase(getType())) {
+				codec = tempCodec;
 				break;
-			} else if (getType().equalsIgnoreCase("Spout-" + codec.getOpcode())) {
+			} else if (getType().equalsIgnoreCase("Spout-" + tempCodec.getOpcode())) {
+				codec = tempCodec;
 				break;
 			}
 		}
