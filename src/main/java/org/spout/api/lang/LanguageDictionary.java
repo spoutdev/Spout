@@ -26,11 +26,18 @@
  */
 package org.spout.api.lang;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.DumperOptions.FlowStyle;
+import org.yaml.snakeyaml.nodes.Tag;
 
 public class LanguageDictionary {
 	private Locale locale;
-	TIntObjectHashMap<String> translations = new TIntObjectHashMap<String>();
+	HashMap<Integer, String> translations = new HashMap<Integer, String>();
 	
 	public LanguageDictionary(Locale locale) {
 		this.locale = locale;
@@ -46,5 +53,18 @@ public class LanguageDictionary {
 	
 	public Locale getLocale() {
 		return locale;
+	}
+
+	public void save(FileWriter fileWriter) {
+		Yaml yaml = new Yaml();
+		LinkedHashMap<String, Object> dump = new LinkedHashMap<String, Object>();
+		dump.put("locale", locale.getCode());
+		dump.put("strings", translations);
+		String toWrite = yaml.dumpAs(dump, Tag.MAP, FlowStyle.BLOCK);
+		try {
+			fileWriter.write(toWrite);
+			fileWriter.close();
+		} catch (IOException e) {
+		}
 	}
 }

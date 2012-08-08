@@ -32,9 +32,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Writer;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -45,22 +51,31 @@ import java.util.regex.Pattern;
 import org.spout.api.command.CommandSource;
 import org.spout.api.plugin.Plugin;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.DumperOptions.FlowStyle;
+import org.yaml.snakeyaml.nodes.Tag;
 
 public class PluginDictionary {
-	private static final int NO_ID = -1;
+	public static final int NO_ID = -1;
 	private static final Pattern LANG_FILE_FILTER = Pattern.compile("lang-[a-zA-Z_]{2,5}.yml");
 	private Plugin plugin;
 	private TIntObjectHashMap<LanguageDictionary> languageDictionaries = new TIntObjectHashMap<LanguageDictionary>();
 	private int nextId = 0;
+	//              Classname  ->   Source->key
 	private HashMap<String, HashMap<String, Integer>> classes = new HashMap<String, HashMap<String,Integer>>(10);
+	private LinkedList<Integer> idList = new LinkedList<Integer>();
+	private LanguageDictionary codedLanguage = new LanguageDictionary(null);
 
+	protected PluginDictionary() {
+		plugin = null;
+	}
+	
 	public PluginDictionary(Plugin plugin) {
 		this.plugin = plugin;
 		load();
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void load() {
+	protected void load() {
 		Yaml yaml = new Yaml();
 		
 		// Load keymap
@@ -90,12 +105,41 @@ public class PluginDictionary {
 			e.printStackTrace();
 		}
 		
+		loadLanguages();
+	}
+	
+	public void save(Writer writer) {
+		Yaml yaml = new Yaml();
+		LinkedHashMap<String, Object> dump = new LinkedHashMap<String, Object>();
+		dump.put("nextId", nextId);
+		LinkedHashMap<Integer, LinkedHashMap<String, String>> ids = new LinkedHashMap<Integer, LinkedHashMap<String,String>>();
+		for (Entry<String, HashMap<String, Integer>> e1 : classes.entrySet()) {
+			for (Entry<String, Integer> e2 : e1.getValue().entrySet()) {
+				String clazz = e1.getKey();
+				String source = e2.getKey();
+				int key = e2.getValue();
+				LinkedHashMap<String, String> v = new LinkedHashMap<String, String>(2);
+				v.put("class", clazz);
+				v.put("string", source);
+				ids.put(key, v);
+			}
+		}
+		dump.put("ids", ids);
+		
+		String toWrite = yaml.dumpAs(dump, Tag.MAP, FlowStyle.BLOCK);
+		try {
+			writer.write(toWrite);
+			writer.close();
+		} catch (IOException e) {}
+	}
+
+	protected void loadLanguages() {
 		// Search for other languages
 		try {
 			Set<String> loaded = new HashSet<String>();
 			
 			// Look in plugins datadir first
-			File langDir = new File(plugin.getDataFolder(), "lang");
+			File langDir = getLangDirectory();
 			if (langDir.exists() && langDir.isDirectory()) {
 				File[] files = langDir.listFiles();
 				for (File file:files) {
@@ -106,24 +150,30 @@ public class PluginDictionary {
 				}
 			}
 			
-			// Then look in plugins jar
-			JarFile jar = new JarFile(plugin.getFile());
-			if (jar.getEntry("lang/") == null) { // Skip plugins without language files
-				return;
-			}
-			Enumeration<JarEntry> entries = jar.entries();
-			while (entries.hasMoreElements()) {
-				JarEntry entry = entries.nextElement();
-				if (entry.getName().startsWith("lang/")) {
-					String file = entry.getName().replaceFirst("lang/", "");
-					if (LANG_FILE_FILTER.matcher(file).matches() && !loaded.contains(file)) {
-						loadLanguage(jar.getInputStream(entry));
-						loaded.add(file);
+			if (plugin != null) {
+				// Then look in plugins jar
+				JarFile jar = new JarFile(plugin.getFile());
+				if (jar.getEntry("lang/") == null) { // Skip plugins without language files
+					return;
+				}
+				Enumeration<JarEntry> entries = jar.entries();
+				while (entries.hasMoreElements()) {
+					JarEntry entry = entries.nextElement();
+					if (entry.getName().startsWith("lang/")) {
+						String file = entry.getName().replaceFirst("lang/", "");
+						if (LANG_FILE_FILTER.matcher(file).matches() && !loaded.contains(file)) {
+							loadLanguage(jar.getInputStream(entry));
+							loaded.add(file);
+						}
 					}
 				}
 			}
 		} catch (IOException e) {}
-		}
+	}
+	
+	protected File getLangDirectory() {
+		return new File(plugin.getDataFolder(), "lang");
+	}
 	
 	@SuppressWarnings("unchecked")
 	private void loadLanguage(InputStream in) {
@@ -138,7 +188,7 @@ public class PluginDictionary {
 			return;
 		}
 		LanguageDictionary dict = new LanguageDictionary(locale);
-		languageDictionaries.put(locale.hashCode(), dict);
+		setDictionary(locale, dict);
 		if (dump.containsKey("strings")) {
 			Map<Integer, String> strings = (Map<Integer, String>) dump.get("strings");
 			for (Entry<Integer, String> e : strings.entrySet()) {
@@ -149,11 +199,10 @@ public class PluginDictionary {
 
 	protected InputStream openLangResource(String filename) {
 		try {
-			File dataDir = plugin.getDataFolder();
-			File inDataDir = new File(dataDir, "lang/"+filename);
+			File inDataDir = new File(getLangDirectory(), filename);
 			if (inDataDir.exists()) {
 				return new FileInputStream(inDataDir);
-			} else {
+			} else if(plugin != null) {
 				JarFile jar = new JarFile(plugin.getFile());
 				JarEntry keyMap = jar.getJarEntry("lang/"+filename);
 				if (keyMap != null) {
@@ -219,13 +268,15 @@ public class PluginDictionary {
 		return languageDictionaries.get(locale.hashCode());
 	}
 	
-	private void setKey(String source, String clazz, int id) {
+	public void setKey(String source, String clazz, int id) {
 		HashMap<String, Integer> idmap = classes.get(clazz);
 		if (idmap == null) {
 			idmap = new HashMap<String, Integer>();
 			classes.put(clazz, idmap);
 		}
 		idmap.put(source, id);
+		idList.add(id);
+		codedLanguage.setTranslation(id, source);
 	}
 
 	public int getKey(String source, String clazz) {
@@ -255,5 +306,21 @@ public class PluginDictionary {
 			use = replacePlaceholders(use, args);
 			receiver.sendMessage(use);
 		}
+	}
+	
+	public int getNextKey() {
+		return nextId++;
+	}
+	
+	public List<Integer> getIdList() {
+		return Collections.unmodifiableList(idList);
+	}
+
+	public void setDictionary(Locale locale, LanguageDictionary dictionary) {
+		languageDictionaries.put(locale.hashCode(), dictionary);
+	}
+	
+	public String getCodedSource(int id) {
+		return codedLanguage.getTranslation(id);
 	}
 }
