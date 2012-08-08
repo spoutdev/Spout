@@ -66,6 +66,7 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 	private final AtomicReference<EntityManager> entityManagerLive;
 	private final AtomicReference<Controller> controllerLive;
 	private final AtomicReference<Chunk> chunkLive;
+	private final AtomicReference<Transform> transformLive;
 	private final AtomicBoolean observerLive = new AtomicBoolean(false);
 	private final AtomicInteger id = new AtomicInteger();
 	private final AtomicInteger viewDistanceLive = new AtomicInteger();
@@ -75,7 +76,6 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 	private final UUID uid;
 	protected boolean justSpawned = true;
 	private boolean observer = false;
-	private boolean attached = false;
 	private int viewDistance;
 	private Chunk chunk;
 	private CollisionModel collision;
@@ -83,7 +83,7 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 	private EntityManager entityManager;
 	private Model model;
 	private Thread owningThread;
-	private Transform lastTransform = transform;
+	private Transform lastTransform = new Transform();
 
 	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller, int viewDistance, UUID uid, boolean load) {
 		id.set(NOTSPAWNEDID);
@@ -99,6 +99,7 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 		chunkLive = new AtomicReference<Chunk>();
 		entityManagerLive = new AtomicReference<EntityManager>();
 		controllerLive = new AtomicReference<Controller>();
+		transformLive = new AtomicReference<Transform>();
 
 		if (transform != null && load) {
 			setupInitialChunk(transform);
@@ -142,7 +143,11 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 		Profiler.start("tick entity session");
 		
 		super.onTick(dt);
-			
+		
+		if(!lastTransform.equals(transformLive.get())) {
+			transform.set(transformLive.get());
+		}
+
 		//Tick the controller
 		Profiler.startAndStop("tick entity controller");
 		if (controller != null) {
@@ -227,8 +232,6 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 //				}
 //			}
 //		}
-
-		lastTransform = transform.copy();
 	}
 
 	@Override
@@ -243,8 +246,10 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 
 	@Override
 	public void setTransform(Transform transform) {
-		if (activeThreadIsValid("set transform")) {
+		if (activeThreadIsValid()) {
 			this.transform.set(transform);
+		} else {
+			this.transformLive.set(transform);
 		}
 	}
 
@@ -295,22 +300,28 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 
 	@Override
 	public void setPosition(Point position) {
-		if (activeThreadIsValid("set position")) {
+		if (activeThreadIsValid()) {
 			transform.setPosition(position);
+		} else {
+			transformLive.get().setPosition(position);
 		}
 	}
 
 	@Override
 	public void setRotation(Quaternion rotation) {
-		if (activeThreadIsValid("set rotation")) {
+		if (activeThreadIsValid()) {
 			transform.setRotation(rotation);
+		} else {
+			transformLive.get().setRotation(rotation);
 		}
 	}
 
 	@Override
 	public void setScale(Vector3 scale) {
-		if (activeThreadIsValid("set scale")) {
+		if (activeThreadIsValid()) {
 			transform.setScale(scale);
+		} else {
+			transformLive.get().setScale(scale);
 		}
 	}
 
@@ -346,37 +357,27 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 
 	@Override
 	public void setPitch(float pitch) {
-		setAxisAngles(pitch, getYaw(), getRoll(), "set pitch");
+		setAxisAngles(pitch, getYaw(), getRoll());
 	}
 
 	@Override
 	public void setRoll(float roll) {
-		setAxisAngles(getPitch(), getYaw(), roll, "set roll");
+		setAxisAngles(getPitch(), getYaw(), roll);
 	}
 
 	@Override
 	public void setYaw(float yaw) {
-		setAxisAngles(getPitch(), yaw, getRoll(), "set yaw");
+		setAxisAngles(getPitch(), yaw, getRoll());
 	}
 
-	private void setAxisAngles(float pitch, float yaw, float roll, String errorMessage) {
-		if (activeThreadIsValid(errorMessage)) {
-			setRotation(MathHelper.rotation(pitch, yaw, roll));
-		}
+	private void setAxisAngles(float pitch, float yaw, float roll) {
+		setRotation(MathHelper.rotation(pitch, yaw, roll));
 	}
 
-	private boolean activeThreadIsValid(String attemptedAction) {
+	private boolean activeThreadIsValid() {
 		Thread current = Thread.currentThread();
-		boolean invalidAccess = !(this.owningThread == current || engine.getMainThread() == current);
 
-		if (invalidAccess && engine.debugMode()) {
-			if (attemptedAction == null) {
-				attemptedAction = "Unknown Action";
-			}
-
-			throw new IllegalAccessError("Tried to " + attemptedAction + " from another thread {current: " + Thread.currentThread() + " owner: " + owningThread.getName() + "}!");
-		}
-		return !invalidAccess;
+		return this.owningThread == current || engine.getMainThread() == current;
 	}
 
 	@Override
@@ -408,7 +409,6 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 				setObserver(true);
 			}
 			controller.onAttached();
-			attached = true;
 		}
 	}
 
@@ -605,6 +605,7 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 		entityManager = entityManagerLive.get();
 		controller = controllerLive.get();
 		viewDistance = viewDistanceLive.get();
+		lastTransform = transform.copy();
 		justSpawned = false;
 	}
 
