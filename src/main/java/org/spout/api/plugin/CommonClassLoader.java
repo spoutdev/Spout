@@ -38,6 +38,7 @@ public class CommonClassLoader extends URLClassLoader {
 	private final Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
 	private final CommonPluginLoader loader;
 	private CommonPlugin plugin;
+	private static HashMap<String, CommonPlugin> pluginsForClassNames = new HashMap<String, CommonPlugin>(500);
 
 	public CommonClassLoader(final CommonPluginLoader loader, final ClassLoader parent) {
 		super(new URL[0], parent);
@@ -51,6 +52,7 @@ public class CommonClassLoader extends URLClassLoader {
 
 	protected void setPlugin(CommonPlugin plugin) {
 		this.plugin = plugin;
+		pluginsForClassNames.put(plugin.getClass().getName(), plugin);
 	}
 
 	protected CommonPlugin getPlugin() {
@@ -77,6 +79,7 @@ public class CommonClassLoader extends URLClassLoader {
 
 			if (result != null) {
 				classes.put(name, result);
+				pluginsForClassNames.put(name, plugin);
 			} else {
 				throw new ClassNotFoundException(name);
 			}
@@ -101,5 +104,9 @@ public class CommonClassLoader extends URLClassLoader {
 	 */
 	public Collection<Class<?>> getClasses() {
 		return Collections.unmodifiableCollection(classes.values());
+	}
+	
+	public static CommonPlugin getPlugin(String className) {
+		return pluginsForClassNames.get(className);
 	}
 }

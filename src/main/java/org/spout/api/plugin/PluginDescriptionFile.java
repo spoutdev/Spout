@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.spout.api.datatable.Datatable;
@@ -69,6 +70,7 @@ public class PluginDescriptionFile implements Datatable {
 	private List<String> softdepends;
 	private String fullname;
 	private final GenericDatatableMap datatableMap = new GenericDatatableMap();
+	private Locale codedLocale = Locale.ENGLISH;
 
 	public PluginDescriptionFile(String name, String version, String main, Platform platform) {
 		this.name = name;
@@ -143,6 +145,15 @@ public class PluginDescriptionFile implements Datatable {
 
 		if (map.containsKey("website")) {
 			website = getEntry("website", String.class, map);
+		}
+		
+		if (map.containsKey("codedlocale")) {
+			Locale[] locales = Locale.getAvailableLocales();
+			for (Locale l:locales) {
+				if (l.getLanguage().equals((new Locale((String) map.get("codedlocale"))).getLanguage())) {
+					codedLocale = l;
+				}
+			}
 		}
 
 		if (map.containsKey("data")) {
@@ -291,6 +302,16 @@ public class PluginDescriptionFile implements Datatable {
 	 */
 	public String getFullName() {
 		return fullname;
+	}
+	
+	/**
+	 * Returns the locale the strings in the plugin are coded in.
+	 * Will be read from the plugins properties.yml from the field "codedlocale"
+	 * 
+	 * @return the locale the plugin is coded in
+	 */
+	public Locale getCodedLocale() {
+		return codedLocale;
 	}
 
 	public void setData(String key, int value) {
