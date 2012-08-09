@@ -33,6 +33,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import sun.tools.tree.ThisExpression;
+
 import org.spout.api.Source;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.entity.Entity;
@@ -62,7 +64,7 @@ import org.spout.engine.world.SpoutRegion;
 
 public class SpoutEntity extends ComponentEntityBase implements Entity {
 	public static final int NOTSPAWNEDID = -1;
-	//Thread-safe
+	//Live
 	private final AtomicReference<EntityManager> entityManagerLive;
 	private final AtomicReference<Controller> controllerLive;
 	private final AtomicReference<Chunk> chunkLive;
@@ -71,19 +73,21 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 	private final AtomicInteger id = new AtomicInteger();
 	private final AtomicInteger viewDistanceLive = new AtomicInteger();
 	private final Transform transform = new Transform();
+	//Snapshot
+	private final Transform lastTransform = new Transform();
+	private Chunk chunk;
+	private Controller controller;
+	private EntityManager entityManager;
+	private boolean observer = false;
+	private int viewDistance;
+	//Other
 	private final Set<SpoutChunk> observingChunks = new HashSet<SpoutChunk>();
 	private final SpoutEngine engine;
 	private final UUID uid;
-	protected boolean justSpawned = true;
-	private boolean observer = false;
-	private int viewDistance;
-	private Chunk chunk;
 	private CollisionModel collision;
-	private Controller controller;
-	private EntityManager entityManager;
 	private Model model;
 	private Thread owningThread;
-	private final Transform lastTransform = new Transform();
+	protected boolean justSpawned = true;
 
 	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller, int viewDistance, UUID uid, boolean load) {
 		id.set(NOTSPAWNEDID);
@@ -113,8 +117,7 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 			viewDistance = maxViewDistance;
 		}
 
-		viewDistanceLive.set(viewDistance);
-
+		setViewDistance(viewDistance);
 		setController(controller);
 	}
 
@@ -130,104 +133,23 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), controller);
 	}
 
-	/**
-	 * Prevents stack overflow when creating an entity during chunk loading due to circle of calls
-	 */
-	public void setupInitialChunk(Transform transform) {
-		chunkLive.set(transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition()));
-		entityManagerLive.set(((SpoutRegion) chunkLive.get().getRegion()).getEntityManager());
-	}
-
 	@Override
 	public void onTick(float dt) {
 		Profiler.start("tick entity session");
 		
 		super.onTick(dt);
-		
-		//Tick the controller
-		Profiler.startAndStop("tick entity controller");
+
 		if (controller != null) {
 			if (!isDead() && getPosition() != null && getWorld() != null) {
+				Profiler.startAndStop("tick entity controller");
 				controller.tick(dt);
+				Profiler.startAndStop("tick entity chunk");
+				//TODO Fix, this isn't right
+				chunkLive.set(getWorld().getChunkFromBlock(transform.getPosition(), LoadOption.NO_LOAD));
+				entityManagerLive.set(((SpoutRegion)getRegion()).getEntityManager());
 			}
 		}
-
-		/**
-		 * Copy over live chunk and entity manager values if this entity is valid. Transform copying is handled in
-		 * resolve (Tick Stage 2Pre).
-		 */
-		Profiler.startAndStop("tick entity chunk");
-		if (!isDead() && getPosition() != null && getWorld() != null) {
-			//Note: if the chunk is null, this effectively kills the entity (since dead: {chunkLive.get() == null})
-			chunkLive.set(getWorld().getChunkFromBlock(transform.getPosition(), LoadOption.NO_LOAD));
-			entityManagerLive.set(((SpoutRegion)getRegion()).getEntityManager());
-		}
 		Profiler.stop();
-	}
-
-	/**
-	 * Called right before resolving collisions. This is necessary to make sure all entities
-	 * get their collisions set.
-	 *
-	 * @return
-	 */
-	public boolean preResolve() {
-		//Do not perform collisions if position or world or controller is null
-		if (getPosition() == null || getWorld() == null || controllerLive.get() == null) {
-			return false;
-		}
-
-		//This will let SpoutRegion know it should call resolve for this entity.
-		return true;
-	}
-
-	/**
-	 * Called when the stage 1 is finished, collisions need to be resolved and
-	 * move events fired.
-	 */
-	public void resolve() {
-//		Point to = null;
-//
-//		//Handle Player collisions elsewhere
-//		if (collision != null && !(controllerLive.get() instanceof PlayerController)) {
-//			//Move the collision volume to the new position
-//			collision.setPosition(getPosition());
-//
-//			List<CollisionVolume> colliding = ((SpoutWorld) getPosition().getWorld()).getCollidingObject(collision);
-//			for (CollisionVolume box : colliding) {
-//				Vector3 resolved = collision.resolve(box);
-//				if (resolved != null) {
-//					if (collision.getStrategy() == CollisionStrategy.SOLID && box.getStrategy() == CollisionStrategy.SOLID) {
-//						Vector3 offset = getPosition().subtract(lastTransform.getPosition());
-//						resolved = resolved.subtract(getPosition());
-//						Spout.log("Controller: " + controllerLive.get().toString());
-//						Spout.log("Pre-Collision position: " + getPosition().toString());
-//						to = lastTransform.getPosition().add(getPosition().add(MathHelper.add(resolved, offset)));
-//						Spout.log("Adjusted Collision position: " + to.toString());
-//					}
-//					//Controller modify the result of collisions "after the fact" but before entity move events are fired.
-//					controllerLive.get().onCollide(getWorld().getBlock(box.getPosition()));
-//				}
-//			}
-//		}
-//		//Handle throwing proper EntityMoveEvent
-//		if (!lastTransform.getPosition().equals(transform.getPosition())) {
-//			EntityMoveEvent event;
-//			//Check for collision offset
-//			if (to != null && !lastTransform.getPosition().equals(to)) {
-//				event = new EntityMoveEvent(this, lastTransform.getPosition(), to);
-//				Spout.getEngine().getEventManager().callEvent(event);
-//				if (!event.isCancelled()) {
-//					setPosition(to);
-//				}
-//			} else {
-//				event = new EntityMoveEvent(this, lastTransform.getPosition(), transform.getPosition());
-//				Spout.getEngine().getEventManager().callEvent(event);
-//				if (event.isCancelled()) {
-//					setPosition(lastTransform.getPosition());
-//				}
-//			}
-//		}
 	}
 
 	@Override
@@ -416,12 +338,9 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 	public void setController(Controller controller, Source source) {
 		EntityControllerChangeEvent event = engine.getEventManager().callEvent(new EntityControllerChangeEvent(this, source, controller));
 		Controller newController = event.getNewController();
-		controllerLive.set(controller);
 		if (newController != null) {
+			controllerLive.set(newController);
 			controller.attachToEntity(this);
-			if (controller instanceof PlayerController) {
-				setObserver(true);
-			}
 			controller.onAttached();
 		}
 	}
@@ -594,7 +513,7 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 
 	private void updateObserver() {
 		//Player view distance is handled in the network synchronizer
-		if (controllerLive.get() instanceof PlayerController) {
+		if (this instanceof Player) {
 			return;
 		}
 		final int viewDistance = getViewDistance() >> Chunk.BLOCKS.BITS;
@@ -723,5 +642,13 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 		Matrix rot = MathHelper.rotate(transform.getRotation());
 
 		return rot.multiply(trans);
+	}
+
+	/**
+	 * Prevents stack overflow when creating an entity during chunk loading due to circle of calls
+	 */
+	public void setupInitialChunk(Transform transform) {
+		chunkLive.set(transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition()));
+		entityManagerLive.set(((SpoutRegion) chunkLive.get().getRegion()).getEntityManager());
 	}
 }

@@ -31,18 +31,23 @@ import java.util.PriorityQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.ChatSection;
 import org.spout.api.command.Command;
 import org.spout.api.command.RootCommand;
 import org.spout.api.data.ValueHolder;
+import org.spout.api.entity.component.Controller;
+import org.spout.api.entity.component.controller.PlayerController;
 import org.spout.api.event.Result;
 import org.spout.api.event.server.data.RetrieveDataEvent;
 import org.spout.api.event.server.permissions.PermissionGetGroupsEvent;
 import org.spout.api.event.server.permissions.PermissionGroupEvent;
 import org.spout.api.event.server.permissions.PermissionNodeEvent;
+import org.spout.api.exception.InvalidControllerException;
 import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.player.Player;
 import org.spout.api.player.PlayerInputState;
@@ -52,6 +57,7 @@ import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;
 
+import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.protocol.SpoutSession;
@@ -68,10 +74,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	private PriorityQueue<PlayerInputState> inputQueue = new PriorityQueue<PlayerInputState>();
 
 	public SpoutPlayer(String name, SpoutEngine engine) {
-		super(engine, (Transform) null, null);
-		this.name = name;
-		displayName.set(name);
-		hashcode = name.hashCode();
+		this(name, null, null, engine, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 	}
 
 	public SpoutPlayer(String name, Transform transform, SpoutSession<?> session, SpoutEngine engine, int viewDistance) {
@@ -299,4 +302,11 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	}
 
+	@Override
+	public void setController(Controller controller, Source source) {
+		if (!(controller instanceof PlayerController)) {
+			throw new InvalidControllerException(controller.getType() + " is not a valid controller for a Player entity!");
+		}
+		super.setController(controller,  source);
+	}
 }
