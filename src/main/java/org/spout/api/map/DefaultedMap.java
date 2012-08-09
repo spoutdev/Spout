@@ -38,27 +38,27 @@ public interface DefaultedMap<K, V> extends Map<K, V> {
 	/**
 	 * Returns the value to which the specified key is mapped,
 	 * or the default value if this map contains no mapping for the key.
-	 * 
+	 *
 	 * @param key the key whose associated value is to be returned
 	 * @param defaultValue to be returned if the key is not found
 	 * @return the value the key is mapped to or the default value
 	 */
 	public <T extends V> T get(Object key, T defaultValue);
-	
+
 	/**
 	 * Returns the value to which the String for the specified key is mapped,
-	 * or the default value given by the key, if this map contains no mapping 
+	 * or the default value given by the key, if this map contains no mapping
 	 * for the key.<br>
-	 * 
-	 * @param key the key whose associated value is to be returned 
+	 *
+	 * @param key the key whose associated value is to be returned
 	 * @return the value the key is mapped to or the default value
 	 */
 	public <T extends Serializable> T get(DefaultedKey<T> key);
-	
+
 	/**
 	 * Associates the specified value with the String for the given key and returns
 	 * the previous value, or null if there was no previous mapping
-	 *  
+	 *
 	 * @param key the key whose associated value is to be returned
 	 * @param value the value the key is to be mapped
 	 * @return the previous value, or null if none
