@@ -59,6 +59,7 @@ public class CommonPluginLoader implements PluginLoader {
 	private final Pattern[] patterns;
 	private final CommonSecurityManager manager;
 	private final double key;
+	@SuppressWarnings("unchecked")
 	private final Map<String, CommonClassLoader> loaders = new CaseInsensitiveMap();
 
 	public CommonPluginLoader(final Engine engine, final CommonSecurityManager manager, final double key) {
@@ -89,7 +90,7 @@ public class CommonPluginLoader implements PluginLoader {
 				cp.setEnabled(true);
 				cp.onEnable();
 			} catch (Throwable e) {
-				engine.getLogger().log(Level.SEVERE, new StringBuilder().append("An error occured when enabling '").append(plugin.getDescription().getFullName()).append("': ").append(e.getMessage()).toString(), e);
+				engine.getLogger().log(Level.SEVERE, "An error occured when enabling '" + plugin.getDescription().getFullName() + "': " + e.getMessage(), e);
 			}
 
 			engine.getEventManager().callEvent(new PluginEnableEvent(cp));
@@ -113,20 +114,20 @@ public class CommonPluginLoader implements PluginLoader {
 				cp.setEnabled(false);
 				cp.onDisable();
 			} catch (Throwable t) {
-				engine.getLogger().log(Level.SEVERE, new StringBuilder().append("An error occurred when disabling plugin '").append(paramPlugin.getDescription().getFullName()).append("' : ").append(t.getMessage()).toString(), t);
+				engine.getLogger().log(Level.SEVERE, "An error occurred when disabling plugin '" + paramPlugin.getDescription().getFullName() + "' : " + t.getMessage(), t);
 			}
 
 			engine.getEventManager().callEvent(new PluginDisableEvent(cp));
 		}
 	}
 
-	public synchronized Plugin loadPlugin(File paramFile) throws InvalidPluginException, InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException {
+	public synchronized Plugin loadPlugin(File paramFile) throws InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException {
 		return loadPlugin(paramFile, false);
 	}
 
-	public synchronized Plugin loadPlugin(File paramFile, boolean ignoresoftdepends) throws InvalidPluginException, InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException {
-		CommonPlugin result = null;
-		PluginDescriptionFile desc = null;
+	public synchronized Plugin loadPlugin(File paramFile, boolean ignoresoftdepends) throws InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException {
+		CommonPlugin result;
+		PluginDescriptionFile desc;
 		CommonClassLoader loader;
 
 		desc = getDescription(paramFile);
@@ -219,7 +220,7 @@ public class CommonPluginLoader implements PluginLoader {
 	 */
 	protected synchronized PluginDescriptionFile getDescription(File file) throws InvalidPluginException, InvalidDescriptionFileException {
 		if (!file.exists()) {
-			throw new InvalidPluginException(new StringBuilder().append(file.getName()).append(" does not exist!").toString());
+			throw new InvalidPluginException(file.getName() + " does not exist!");
 		}
 
 		PluginDescriptionFile description = null;

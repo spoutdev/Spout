@@ -138,7 +138,7 @@ public interface Session {
 
 	/**
 	 * Checks if this session has a player connected to it.
-	 * 
+	 *
 	 * @return true if this session has a player.
 	 */
 	public boolean hasPlayer();
