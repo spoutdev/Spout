@@ -26,8 +26,6 @@
  */
 package org.spout.api.entity;
 
-import org.spout.api.tickable.Tickable;
-
 /**
  * Represents an attachment to an entity that can respond to Ticks.
  */

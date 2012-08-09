@@ -36,9 +36,9 @@ import org.spout.api.gui.Layout;
 import org.spout.api.gui.MouseButton;
 import org.spout.api.gui.MouseEventHandler;
 import org.spout.api.gui.Widget;
-import org.spout.api.tickable.BasicTickable;
+import org.spout.api.tickable.Tickable;
 
-public abstract class AbstractLayout extends BasicTickable implements Layout {
+public abstract class AbstractLayout implements Layout, Tickable {
 	private Container parent = null;
 	protected LinkedList<Widget> attachedWidgets = new LinkedList<Widget>();
 
@@ -149,5 +149,10 @@ public abstract class AbstractLayout extends BasicTickable implements Layout {
 		for (Widget widget : attachedWidgets) {
 			widget.onTick(dt);
 		}
+	}
+
+	@Override
+	public boolean canTick() {
+		return true;
 	}
 }

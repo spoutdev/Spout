@@ -39,6 +39,7 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
+import org.spout.api.tickable.Tickable;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.LiveWrite;
@@ -47,7 +48,7 @@ import org.spout.api.util.thread.SnapshotRead;
 /**
  * Represents an entity, which may or may not be spawned into the world.
  */
-public interface Entity extends Source, WorldSource, ComponentHolder {
+public interface Entity extends ComponentHolder, Source, Tickable, WorldSource {
 	public int getId();
 
 	/**

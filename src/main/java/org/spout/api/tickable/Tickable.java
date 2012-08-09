@@ -34,8 +34,13 @@ public interface Tickable {
 	 * 1200    ticks = 1 minute<br/>
 	 * 72000   ticks = 1 hour<br/>
 	 * 1728000 ticks = 1 day
-	 *
 	 * @param dt time since the last tick in seconds
 	 */
 	public void onTick(float dt);
+
+	/**
+	 * Whether or not this tickable can perform a tick
+	 * @return true if it can tick, false if not
+	 */
+	public boolean canTick();
 }

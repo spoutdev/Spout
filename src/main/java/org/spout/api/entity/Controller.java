@@ -44,7 +44,6 @@ public abstract class Controller implements Tickable {
 
 	protected Controller(ControllerType type) {
 		this.type = type;
-		this.parent = parent;
 	}
 
 	/**
@@ -67,6 +66,11 @@ public abstract class Controller implements Tickable {
 	@Override
 	public void onTick(float dt) {
 
+	}
+
+	@Override
+	public boolean canTick() {
+		return true;
 	}
 
 	/**

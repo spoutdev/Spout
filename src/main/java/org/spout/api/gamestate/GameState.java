@@ -26,12 +26,12 @@
  */
 package org.spout.api.gamestate;
 
-import org.spout.api.tickable.BasicTickable;
+import org.spout.api.tickable.Tickable;
 
 /**
  * Simple Game State interface
  */
-public abstract class GameState extends BasicTickable {
+public abstract class GameState implements Tickable {
 	/**
 	 * Called when this state is going to be used.  Use this to initialize state variables. 
 	 */
@@ -61,5 +61,9 @@ public abstract class GameState extends BasicTickable {
 	 * Called when the player unpauses this state	
 	 */
 	public void onUnPause() { }
+
+	public void tick(float dt) {
+
+	}
 	
 }

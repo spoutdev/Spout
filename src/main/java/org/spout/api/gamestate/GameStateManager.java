@@ -28,9 +28,9 @@ package org.spout.api.gamestate;
 
 import java.util.Stack;
 
-import org.spout.api.tickable.BasicTickable;
+import org.spout.api.tickable.Tickable;
 
-public class GameStateManager extends BasicTickable {
+public class GameStateManager implements Tickable {
 	private Stack<GameState> states = new Stack<GameState>();
 	
 	public void pushState(GameState state) {
@@ -55,7 +55,12 @@ public class GameStateManager extends BasicTickable {
 	public void onTick(float dt) {
 		if (states.peek() != null) states.peek().tick(dt); //tick the current state
 	}
-	
+
+	@Override
+	public boolean canTick() {
+		return true;
+	}
+
 	public void onRender(float dt) {
 		if (states.peek() != null) states.peek().tick(dt);
 	}

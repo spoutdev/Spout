@@ -24,30 +24,24 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity.component;
+package org.spout.api.tickable;
 
-import org.spout.api.entity.Component;
-import org.spout.api.entity.Entity;
-import org.spout.api.tickable.BasicTickable;
+/**
+ * Represents a {@link org.spout.api.entity.BasicComponent}s priority
+ */
+public enum TickPriority {
+	LOWEST(0),
+	LOW(1),
+	NORMAL(2),
+	HIGH(3),
+	HIGHEST(4);
+	private final int index;
 
-public class BasicComponent implements Component {
-	private Entity parent;
-
-	@Override
-	public void attachToEntity(Entity parent) {
-		this.parent = parent;
+	private TickPriority(int index) {
+		this.index = index;
 	}
 
-	@Override
-	public Entity getParent() {
-		return parent;
-	}
-
-	@Override
-	public void onAttached() {
-	}
-
-	@Override
-	public void onDetached() {
+	public int getIndex() {
+		return index;
 	}
 }
