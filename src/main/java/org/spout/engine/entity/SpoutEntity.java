@@ -33,8 +33,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import sun.tools.tree.ThisExpression;
-
 import org.spout.api.Source;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.entity.Entity;
