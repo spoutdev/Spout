@@ -30,38 +30,24 @@ import org.spout.api.entity.Component;
 import org.spout.api.entity.Entity;
 import org.spout.api.tickable.BasicTickable;
 
-public abstract class BasicEntityComponent extends BasicTickable implements Component {
+public class BasicComponent implements Component {
 	private Entity parent;
 
-	/**
-	 * Called when this controller is attached to an entity.
-	 * @param e entity this controller will be attached to.
-	 */
 	@Override
-	public void attachToEntity(Entity e) {
-		this.parent = e;
+	public void attachToEntity(Entity parent) {
+		this.parent = parent;
 	}
 
-	/**
-	 * Gets the parent Entity associated with this controller.
-	 * @return parent Entity
-	 */
 	@Override
 	public Entity getParent() {
-		return this.parent;
+		return parent;
 	}
 
-	/**
-	 * Called when this component is attached to an entity.
-	 */
 	@Override
-	public abstract void onAttached();
+	public void onAttached() {
+	}
 
-	/**
-	 * Called when this component is detached from an entity.
-	 */
 	@Override
 	public void onDetached() {
-
 	}
 }

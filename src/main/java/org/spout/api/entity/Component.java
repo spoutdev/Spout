@@ -31,12 +31,12 @@ import org.spout.api.tickable.Tickable;
 /**
  * Represents an attachment to an entity that can respond to Ticks.
  */
-public interface Component extends Tickable {
+public interface Component {
 	/**
 	 * Attaches this component to an entity.
-	 * @param e entity this component will be attached to.
+	 * @param parent entity this component will be attached to.
 	 */
-	public void attachToEntity(Entity e);
+	public void attachToEntity(Entity parent);
 
 	/**
 	 * Gets the parent Entity associated with this component.
