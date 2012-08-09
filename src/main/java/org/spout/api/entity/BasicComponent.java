@@ -42,12 +42,16 @@ public class BasicComponent<T extends ComponentHolder> implements Component<T> {
 		this(priority, false, 0, 0);
 	}
 
+	public BasicComponent(boolean runOnce) {
+		this(TickPriority.NORMAL, runOnce, 0, 0);
+	}
+
 	public BasicComponent(TickPriority priority, boolean runOnce) {
 		this(priority, runOnce, 0, 0);
 	}
 
-	public BasicComponent(boolean runOnce) {
-		this(TickPriority.NORMAL, runOnce, 0, 0);
+	public BasicComponent(TickPriority priority, float delay, float maxDelay) {
+		this(priority, false, delay, maxDelay);
 	}
 
 	public BasicComponent(TickPriority priority, boolean runOnce, float delay, float maxDelay) {
