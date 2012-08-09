@@ -214,7 +214,7 @@ public abstract class Controller implements ComponentHolder, Tickable {
 	}
 
 	@Override
-	public Component<? extends ComponentHolder> getComponent(Class<? extends Component> aClass) {
+	public Component<? extends Controller> getComponent(Class<? extends Component> aClass) {
 		return components.get(aClass);
 	}
 
