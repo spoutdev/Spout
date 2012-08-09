@@ -50,7 +50,7 @@ import org.spout.api.protocol.NullNetworkSynchronizer;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.engine.SpoutEngine;
-import org.spout.engine.player.SpoutPlayer;
+import org.spout.engine.entity.SpoutPlayer;
 
 /**
  * A single connection to the server, which may or may not be associated with a

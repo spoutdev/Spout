@@ -24,7 +24,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.player;
+package org.spout.engine.entity;
 
 import java.net.InetAddress;
 import java.util.PriorityQueue;
@@ -60,7 +60,6 @@ import org.spout.api.util.thread.Threadsafe;
 
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
-import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutWorld;
 
@@ -306,13 +305,26 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void setController(Controller controller, Source source) {
+		if (controller == null) {
+			return;
+		}
 		if (!(controller instanceof PlayerController)) {
 			throw new InvalidControllerException(controller.getType() + " is not a valid controller for a Player entity!");
 		}
 		super.setController(controller,  source);
 	}
-	
+
 	public Locale getPreferredLocale() {
 		return preferredLocale;
+	}
+
+	@Override
+	protected void removeObserver() {
+		getNetworkSynchronizer().onDeath();
+	}
+	
+	@Override
+	protected void updateObserver() {
+		return;
 	}
 }

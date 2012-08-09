@@ -37,7 +37,7 @@ import org.spout.api.event.storage.PlayerSaveEvent;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.Protocol;
 import org.spout.engine.SpoutServer;
-import org.spout.engine.player.SpoutPlayer;
+import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.world.SpoutWorld;
 
 /**

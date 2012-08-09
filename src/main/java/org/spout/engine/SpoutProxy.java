@@ -44,9 +44,9 @@ import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 
+import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.listener.channel.SpoutProxyConnectListener;
 import org.spout.engine.listener.SpoutProxyListener;
-import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.protocol.SpoutNioServerSocketChannel;
 import org.spout.engine.protocol.SpoutProxySession;
 import org.spout.engine.protocol.SpoutSession;

@@ -38,7 +38,6 @@ import org.spout.api.collision.CollisionModel;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.component.ComponentEntityBase;
 import org.spout.api.entity.component.Controller;
-import org.spout.api.entity.component.controller.PlayerController;
 import org.spout.api.event.entity.EntityControllerChangeEvent;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
@@ -52,7 +51,6 @@ import org.spout.api.math.Matrix;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
-import org.spout.api.player.Player;
 import org.spout.api.util.OutwardIterator;
 import org.spout.api.util.Profiler;
 import org.spout.engine.SpoutConfiguration;
@@ -429,23 +427,11 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 
 				//Kill old controller
 				controller.onDeath();
-				if (controller instanceof PlayerController) {
-					Player p = ((PlayerController) controller).getParent();
-					if (p != null && p.isOnline()) {
-						p.getNetworkSynchronizer().onDeath();
-					}
-				}
 			}
 			//2.) Entity is changing controllers
 			else if (controller != null && controllerLive.get() != null) {
 				//Kill old controller
 				controller.onDeath();
-				if (controller instanceof PlayerController) {
-					Player p = ((PlayerController) controller).getParent();
-					if (p != null && p.isOnline()) {
-						p.getNetworkSynchronizer().onDeath();
-					}
-				}
 
 				//Allocate new controller
 				if (entityManagerLive.get() != null) {
@@ -494,13 +480,7 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 		}
 	}
 
-	private void removeObserver() {
-		//Player view distance is handled in the network synchronizer
-		if (controllerLive.get() instanceof PlayerController) {
-			Player p = ((PlayerController)controllerLive.get()).getParent();
-			p.getNetworkSynchronizer().onDeath();
-			return;
-		}
+	protected void removeObserver() {
 		for (SpoutChunk chunk : observingChunks) {
 			if (chunk.isLoaded()) {
 				chunk.removeObserver(this);
@@ -509,11 +489,7 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 		observingChunks.clear();
 	}
 
-	private void updateObserver() {
-		//Player view distance is handled in the network synchronizer
-		if (this instanceof Player) {
-			return;
-		}
+	protected void updateObserver() {
 		final int viewDistance = getViewDistance() >> Chunk.BLOCKS.BITS;
 		World w = getWorld();
 		int cx = chunkLive.get().getX();
