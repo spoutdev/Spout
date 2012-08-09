@@ -28,8 +28,8 @@ package org.spout.api.entity;
 
 import org.spout.api.tickable.TickPriority;
 
-public class BasicComponent implements Component {
-	private Entity parent;
+public class BasicComponent<T extends Controller> implements Component<T> {
+	private T parent;
 	private TickPriority priority;
 	private boolean runOnce;
 	private float delay, maxDelay;
@@ -58,12 +58,12 @@ public class BasicComponent implements Component {
 	}
 
 	@Override
-	public void attachToEntity(Entity parent) {
+	public void attachToController(T parent) {
 		this.parent = parent;
 	}
 
 	@Override
-	public Entity getParent() {
+	public T getParent() {
 		return parent;
 	}
 
@@ -137,7 +137,7 @@ public class BasicComponent implements Component {
 	}
 
 	@Override
-	public int compareTo(Component o) {
-		return o.getPriority().getIndex() - priority.getIndex();
+	public int compareTo(Component<T> component) {
+		return component.getPriority().getIndex() - this.priority.getIndex();
 	}
 }

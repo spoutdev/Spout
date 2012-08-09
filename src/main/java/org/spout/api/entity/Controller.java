@@ -36,7 +36,7 @@ import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.tickable.Tickable;
 
-public abstract class Controller implements Tickable {
+public abstract class Controller implements ComponentHolder, Tickable {
 	private final ControllerType type;
 	private final DatatableMap datatableMap = new GenericDatatableMap();
 	private final DataMap dataMap = new DataMap(datatableMap);
