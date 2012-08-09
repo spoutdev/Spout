@@ -28,45 +28,65 @@ package org.spout.api.entity.component;
 
 import java.io.Serializable;
 
+import org.spout.api.datatable.DataMap;
+import org.spout.api.datatable.DatatableMap;
+import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.Component;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.component.controller.type.ControllerType;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.map.DefaultedMap;
+import org.spout.api.tickable.Tickable;
 
-public interface Controller extends Component {
+public abstract class Controller implements Tickable {
+	private final ControllerType type;
+	private final DatatableMap datatableMap = new GenericDatatableMap();
+	private final DataMap dataMap = new DataMap(datatableMap);
+
+	protected Controller(ControllerType type) {
+		this.type = type;
+	}
+
+	/**
+	 * Called when this controller is attached to an entity.
+	 * <br/><br/>
+	 * If this controller was serialized and deserialized, any serializable
+	 * information stored in {@link #getDataMap()} will be available.
+	 */
+	public abstract void onAttached();
+
+	/**
+	 * Called each simulation tick.<br/>
+	 * 1       tick  = 1/20 second<br/>
+	 * 20      ticks = 1 second<br/>
+	 * 1200    ticks = 1 minute<br/>
+	 * 72000   ticks = 1 hour<br/>
+	 * 1728000 ticks = 1 day
+	 *
+	 * @param dt time since the last tick in seconds
+	 */
+	@Override
+	public void onTick(float dt) {
+
+	}
 
 	/**
 	 * Called when this controller is detached from the entity (normally due to the entity dieing or being removed from the world).
 	 * Occurs before the Pre-Snapshot of the tick.
 	 */
-	public void onDeath();
+	public void onDeath() {
 
-	/**
-	 * Called when this controller is being synced with the client. Occurs before Pre-Snapshot of the tick.
-	 */
-	public void onSync();
-
-	/**
-	 * TODO: These methods should be given the appropriate annotation that makes it clear they shouldn't be used by plugins.
-	 */
-	/**
-	 * Called just before a snapshot update. This is intended purely as a monitor based step.
-	 * NO updates should be made to the entity at this stage. It can be used to send packets for network update.
-	 */
-	public void preSnapshot();
+	}
 
 	/**
 	 * Called just before the pre-snapshot stage.
 	 * This stage can make changes but they should be checked to make sure they
 	 * are non-conflicting.
 	 */
-	public void finalizeTick();
+	public void finalizeTick() {
 
-	public void onCollide(Entity other);
-
-	public void onCollide(Block other);
+	}
 
 	/**
 	 * Is called when an Entity interacts with this Controller
@@ -74,14 +94,18 @@ public interface Controller extends Component {
 	 * @param entity that interacted
 	 * @param type of interaction
 	 */
-	public void onInteract(Entity entity, Action type);
+	public void onInteract(Entity entity, Action type) {
+
+	}
 
 	/**
 	 * Returns the type of controller
 	 * 
 	 * @return controller type
 	 */
-	public ControllerType getType();
+	public ControllerType getType() {
+		return type;
+	}
 	
 	/**
 	 * Gets a map of persistent string mapped serializable values attached to this controller.
@@ -91,34 +115,32 @@ public interface Controller extends Component {
 	 * 
 	 * @return thread-safe persistent storage map
 	 */
-	public DefaultedMap<String, Serializable> data();
+	public final DefaultedMap<String, Serializable> getDataMap() {
+		return dataMap;
+	}
 	
 	/**
 	 * Called immediately <i>before</i> a controller and it's parent entity are
 	 * serialized. This method is intended as the last chance to store serializable
-	 * information inside of the controller data map (see: {@link #data()})
+	 * information inside of the controller data map (see: {@link #getDataMap()})
 	 * <br/><br/>
 	 * <b>Note:</b> This will never occur is {@link #isSavable()} is false. <br/>
 	 * <b>Note:</b> onSave occurs during Copy Snapshot. During this stage
 	 * all live values are copied to their stable snapshot. Data
 	 * is unstable so no reads are permitted during this stage.
 	 */
-	public void onSave();
-	
-	/**
-	 * Called when this controller is attached to an entity.
-	 * <br/><br/>
-	 * If this controller was serialized and deserialized, any serializable
-	 * information stored in {@link #data()} will be available.
-	 */
-	public void onAttached();
+	public void onSave() {
+
+	}
 	
 	/**
 	 * True if this controller and it's parent entity should be saved.
 	 * 
 	 * @return save
 	 */
-	public boolean isSavable();
+	public boolean isSavable() {
+		return true;
+	}
 
 	/**
 	 * Is important is a hint to the entity manager that this controller should be
@@ -138,5 +160,7 @@ public interface Controller extends Component {
 	 * to be important. Players are also always considered important.
 	 * @return important
 	 */
-	public boolean isImportant();
+	public boolean isImportant() {
+		return false;
+	}
 }
