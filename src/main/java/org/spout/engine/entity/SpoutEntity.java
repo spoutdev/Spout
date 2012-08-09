@@ -65,8 +65,6 @@ import org.spout.engine.world.SpoutRegion;
 
 public class SpoutEntity implements Entity {
 	public static final int NOTSPAWNEDID = -1;
-	//Components
-	private final HashMap<Class<? extends Component>, Component> components = new HashMap<Class<? extends Component>, Component>();
 	//Live
 	private final AtomicReference<EntityManager> entityManagerLive;
 	private final AtomicReference<Controller> controllerLive;
@@ -148,8 +146,6 @@ public class SpoutEntity implements Entity {
 				//TODO Fix, this isn't right
 				chunkLive.set(getWorld().getChunkFromBlock(transform.getPosition(), LoadOption.NO_LOAD));
 				entityManagerLive.set(((SpoutRegion)getRegion()).getEntityManager());
-				//Tick components
-				tickComponents(dt);
 			}
 		}
 		Profiler.stop();
@@ -643,60 +639,5 @@ public class SpoutEntity implements Entity {
 	public void setupInitialChunk(Transform transform) {
 		chunkLive.set(transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition()));
 		entityManagerLive.set(((SpoutRegion) chunkLive.get().getRegion()).getEntityManager());
-	}
-
-	@Override
-	public Component addComponent(Class<? extends Component> aClass) {
-		if (hasComponent(aClass)) {
-			return getComponent(aClass);
-		}
-
-		try {
-			Component ec = aClass.newInstance();
-			components.put(aClass, ec);
-			ec.attachToEntity(this);
-			ec.onAttached();
-			return ec;
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		throw new RuntimeException("Cannot Create Component!");
-	}
-
-	@Override
-	public boolean removeComponent(Class<? extends Component> aClass) {
-		if (!hasComponent(aClass)) {
-			return false;
-		}
-		getComponent(aClass).onDetached();
-		components.remove(aClass);
-		return true;
-	}
-
-	@Override
-	public Component getComponent(Class<? extends Component> aClass) {
-		return components.get(aClass);
-	}
-
-	@Override
-	public boolean hasComponent(Class<? extends Component> aClass) {
-		return components.containsKey(aClass);
-	}
-
-	private final void tickComponents(float dt) {
-
-		ArrayList<Component> coms = new ArrayList<Component>(components.values());
-		Collections.sort(coms);
-
-		for (Component component : coms) {
-			if (component.canTick()) {
-				component.tick(dt);
-			}
-			if (component.runOnce()) {
-				removeComponent(component.getClass());
-			}
-		}
 	}
 }
