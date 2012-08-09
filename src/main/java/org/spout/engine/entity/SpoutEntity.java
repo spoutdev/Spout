@@ -43,8 +43,6 @@ import org.spout.api.collision.CollisionModel;
 import org.spout.api.entity.Component;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.Player;
-import org.spout.api.entity.controller.PlayerController;
 import org.spout.api.event.entity.EntityControllerChangeEvent;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
@@ -448,23 +446,11 @@ public class SpoutEntity implements Entity {
 
 				//Kill old controller
 				controller.onDeath();
-				if (controller instanceof PlayerController) {
-					Player p = (Player) controller.getParent();
-					if (p != null && p.isOnline()) {
-						p.getNetworkSynchronizer().onDeath();
-					}
-				}
 			}
 			//2.) Entity is changing controllers
 			else if (controller != null && controllerLive.get() != null) {
 				//Kill old controller
 				controller.onDeath();
-				if (controller instanceof PlayerController) {
-					Player p = (Player) controller.getParent();
-					if (p != null && p.isOnline()) {
-						p.getNetworkSynchronizer().onDeath();
-					}
-				}
 
 				//Allocate new controller
 				if (entityManagerLive.get() != null) {
@@ -515,14 +501,7 @@ public class SpoutEntity implements Entity {
 		}
 	}
 
-	private void removeObserver() {
-		//Player view distance is handled in the network synchronizer
-		Controller c = controllerLive.get();
-		if (c instanceof PlayerController) {
-			Player p = (Player) c.getParent();
-			p.getNetworkSynchronizer().onDeath();
-			return;
-		}
+	protected void removeObserver() {
 		for (SpoutChunk chunk : observingChunks) {
 			if (chunk.isLoaded()) {
 				chunk.removeObserver(this);
@@ -531,11 +510,7 @@ public class SpoutEntity implements Entity {
 		observingChunks.clear();
 	}
 
-	private void updateObserver() {
-		//Player view distance is handled in the network synchronizer
-		if (this instanceof Player) {
-			return;
-		}
+	protected void updateObserver() {
 		final int viewDistance = getViewDistance() >> Chunk.BLOCKS.BITS;
 		World w = getWorld();
 		int cx = chunkLive.get().getX();

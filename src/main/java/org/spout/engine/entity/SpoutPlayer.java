@@ -51,6 +51,7 @@ import org.spout.api.exception.InvalidControllerException;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.lang.Locale;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.thread.DelayedWrite;
@@ -71,6 +72,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	private boolean online;
 	private final int hashcode;
 	private PriorityQueue<PlayerInputState> inputQueue = new PriorityQueue<PlayerInputState>();
+	private Locale preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
 
 	public SpoutPlayer(String name, SpoutEngine engine) {
 		this(name, null, null, engine, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
@@ -303,9 +305,26 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void setController(Controller controller, Source source) {
+		if (controller == null) {
+			return;
+		}
 		if (!(controller instanceof PlayerController)) {
 			throw new InvalidControllerException(controller.getType() + " is not a valid controller for a Player entity!");
 		}
 		super.setController(controller,  source);
+	}
+
+	public Locale getPreferredLocale() {
+		return preferredLocale;
+	}
+
+	@Override
+	protected void removeObserver() {
+		getNetworkSynchronizer().onDeath();
+	}
+	
+	@Override
+	protected void updateObserver() {
+		return;
 	}
 }

@@ -60,6 +60,7 @@ import org.teleal.cling.UpnpServiceImpl;
 import org.teleal.cling.controlpoint.ControlPoint;
 import org.teleal.cling.support.igd.PortMappingListener;
 import org.teleal.cling.support.model.PortMapping;
+import org.teleal.cling.transport.spi.InitializationException;
 
 import org.spout.api.Server;
 import org.spout.api.Spout;
@@ -341,7 +342,11 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	private UpnpService getUPnPService() {
 		if (upnpService == null) {
-			upnpService = new UpnpServiceImpl();
+			try {
+				upnpService = new UpnpServiceImpl();
+			} catch (InitializationException e) {
+				getLogger().log(Level.SEVERE, "Could not enable UPNP Service: "+e.getMessage());
+			}
 		}
 
 		return upnpService;
@@ -364,12 +369,15 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	@Override
 	public void mapUPnPPort(int port, String description) {
-		PortMapping[] desiredMapping = {createPortMapping(port, PortMapping.Protocol.TCP, description), createPortMapping(port, PortMapping.Protocol.UDP, description)};
-		PortMappingListener listener = new PortMappingListener(desiredMapping);
+		UpnpService upnpService = getUPnPService();
+		if (upnpService != null) {
+			PortMapping[] desiredMapping = {createPortMapping(port, PortMapping.Protocol.TCP, description), createPortMapping(port, PortMapping.Protocol.UDP, description)};
+			PortMappingListener listener = new PortMappingListener(desiredMapping);
 
-		ControlPoint controlPoint = getUPnPService().getControlPoint();
-		controlPoint.getRegistry().addListener(listener);
-		controlPoint.search();
+			ControlPoint controlPoint = upnpService.getControlPoint();
+			controlPoint.getRegistry().addListener(listener);
+			controlPoint.search();
+		}
 	}
 
 	@Override
