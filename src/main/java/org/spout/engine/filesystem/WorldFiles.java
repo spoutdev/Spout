@@ -28,6 +28,7 @@ package org.spout.engine.filesystem;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -39,14 +40,15 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 import org.spout.api.Spout;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
-import org.spout.api.entity.component.Controller;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.component.Controller;
 import org.spout.api.entity.component.controller.type.ControllerRegistry;
 import org.spout.api.entity.component.controller.type.ControllerType;
 import org.spout.api.generator.WorldGenerator;
@@ -55,23 +57,26 @@ import org.spout.api.generator.biome.EmptyBiomeManager;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.store.simple.BinaryFileStore;
+import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.Material;
+import org.spout.api.material.MaterialRegistry;
+import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.NBTMapper;
 import org.spout.api.util.StringMap;
-import org.spout.api.util.hashing.ArrayHash;
 import org.spout.api.util.hashing.ByteTripleHashed;
 import org.spout.api.util.hashing.SignedTenBitTripleHashed;
 import org.spout.api.util.sanitation.SafeCast;
 import org.spout.api.util.sanitation.StringSanitizer;
 import org.spout.api.util.typechecker.TypeChecker;
-
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.world.FilteredChunk;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutChunk.PopulationState;
 import org.spout.engine.world.SpoutChunkSnapshot;
+import org.spout.engine.world.SpoutColumn;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
@@ -95,6 +100,7 @@ public class WorldFiles {
 	private static final byte WORLD_VERSION = 2;
 	private static final byte ENTITY_VERSION = 1;
 	private static final byte CHUNK_VERSION = 1;
+	private static final int COLUMN_VERSION = 4;
 
 	public static void saveWorldData(SpoutWorld world) {
 		File worldData = new File(world.getDirectory(), "world.dat");
@@ -589,4 +595,114 @@ public class WorldFiles {
 		final int data = SafeCast.toInt(NBTMapper.toTagValue(map.get("data")), 0);
 		return new DynamicBlockUpdate(packed, nextUpdate, data);
 	}
+	
+	public static void readColumn(InputStream in, SpoutColumn column, AtomicInteger lowestY, BlockMaterial[][] topmostBlocks) {
+		if (in == null) {
+			//The inputstream is null because no height map data exists
+			for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
+				for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
+					column.getAtomicInteger(x, z).set(Integer.MIN_VALUE);
+					topmostBlocks[x][z] = null;
+					column.setDirty(x, z);
+				}
+			}
+			lowestY.set(Integer.MAX_VALUE);
+			return;
+		}
+
+		DataInputStream dataStream = new DataInputStream(in);
+		try {
+			for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
+				for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
+					column.getAtomicInteger(x, z).set(dataStream.readInt());
+				}
+			}
+			int version;
+			try {
+				version = dataStream.readInt();
+			} catch (EOFException eof) {
+				version = 1;
+			}
+			if (version > 1) {
+				lowestY.set(dataStream.readInt());
+			} else {
+				lowestY.set(Integer.MAX_VALUE);
+			}
+			if (version > 2) {
+				StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
+				StringMap itemMap;
+				if (version == 3) {
+					itemMap = global;
+				} else {
+					itemMap = column.getWorld().getItemMap();
+				}
+				boolean warning = false;
+				for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
+					for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
+						if (!dataStream.readBoolean()) {
+							continue;
+						}
+						int blockState = dataStream.readInt();
+						short blockId = BlockFullState.getId(blockState);
+						short blockData = BlockFullState.getData(blockState);
+						blockId = (short) itemMap.convertTo(global, blockId);
+						blockState = BlockFullState.getPacked(blockId, blockData);
+						BlockMaterial m;
+						try {
+							m = (BlockMaterial) MaterialRegistry.get(blockState);
+						} catch (ClassCastException e) {
+							m = null;
+							if (!warning) {
+								Spout.getLogger().severe("Error reading column topmost block information, block was not a valid BlockMaterial");
+								warning = false;
+							}
+						}
+						if (m == null) {
+							column.setDirty(x, z);
+						}
+						topmostBlocks[x][z] = m;
+					}
+				}
+			}
+		} catch (IOException e) {
+			Spout.getLogger().severe("Error reading column height-map for column" + column.getX() + ", " + column.getZ());
+		}
+	}
+	
+	public static void writeColumn(OutputStream out, SpoutColumn column, AtomicInteger lowestY, BlockMaterial[][] topmostBlocks) {
+		DataOutputStream dataStream = new DataOutputStream(out);
+		try {
+			for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
+				for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
+					dataStream.writeInt(column.getAtomicInteger(x, z).get());
+				}
+			}
+			dataStream.writeInt(COLUMN_VERSION);
+			dataStream.writeInt(lowestY.get());
+			StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
+			StringMap itemMap;
+			itemMap = column.getWorld().getItemMap();
+			for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
+				for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
+					Material m = topmostBlocks[x][z];
+					if (m == null) {
+						dataStream.writeBoolean(false);
+						continue;
+					} else {
+						dataStream.writeBoolean(true);
+					}
+					short blockId = m.getId();
+					short blockData = m.getData();
+					blockId = (short) global.convertTo(itemMap, blockId);
+					dataStream.writeInt(BlockFullState.getPacked(blockId, blockData));
+				}
+			}
+			dataStream.flush();
+		} catch (IOException e) {
+			Spout.getLogger().severe("Error writing column height-map for column" + column.getX() + ", " + column.getZ());
+		}
+
+	}
+	
+	
 }

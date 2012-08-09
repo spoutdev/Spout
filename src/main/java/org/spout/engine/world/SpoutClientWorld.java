@@ -42,7 +42,6 @@ import org.spout.api.entity.component.Controller;
 import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
-import org.spout.api.generator.biome.BiomeGenerator;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
@@ -53,6 +52,7 @@ import org.spout.api.material.range.EffectRange;
 import org.spout.api.player.Player;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.TaskManager;
+import org.spout.api.util.StringMap;
 import org.spout.api.util.cuboid.CuboidBuffer;
 import org.spout.api.util.hashing.IntPairHashed;
 import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
@@ -84,8 +84,8 @@ public class SpoutClientWorld extends SpoutAbstractWorld {
 	 */
 	private final EntityManager entityManager;
 
-	public SpoutClientWorld(String name, UUID uid, SpoutEngine engine, byte[] datatable) {
-		super(name, uid, engine, -1, new ThreadAsyncExecutor("SpoutClientWorld-" + name));
+	public SpoutClientWorld(String name, UUID uid, SpoutEngine engine, byte[] datatable, StringMap itemMap) {
+		super(name, uid, engine, -1, new ThreadAsyncExecutor("SpoutClientWorld-" + name), itemMap);
 
 		this.datatableMap = new GenericDatatableMap();
 		this.datatableMap.decompress(datatable);

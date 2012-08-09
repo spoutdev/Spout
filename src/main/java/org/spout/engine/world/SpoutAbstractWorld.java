@@ -46,6 +46,7 @@ import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.player.Player;
+import org.spout.api.util.StringMap;
 import org.spout.api.util.sanitation.StringSanitizer;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.Threadsafe;
@@ -69,8 +70,12 @@ public abstract class SpoutAbstractWorld extends AsyncManager implements World {
 	 * The world's UUID.
 	 */
 	private final UUID uid;
+	/**
+	 * String item map, used to convert local id's to the server id
+	 */
+	private final StringMap itemMap;
 
-	public SpoutAbstractWorld(String name, UUID uid, SpoutEngine engine, int maxStage, AsyncExecutor executor) {
+	public SpoutAbstractWorld(String name, UUID uid, SpoutEngine engine, int maxStage, AsyncExecutor executor, StringMap itemMap) {
 		super(maxStage, executor, engine);
 		this.engine = engine;
 		if (!StringSanitizer.isAlphaNumericUnderscore(name)) {
@@ -79,6 +84,7 @@ public abstract class SpoutAbstractWorld extends AsyncManager implements World {
 		}
 		this.name = name;
 		this.uid = uid;
+		this.itemMap = itemMap;
 	}
 
 	public String getName() {
@@ -493,4 +499,10 @@ public abstract class SpoutAbstractWorld extends AsyncManager implements World {
 	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z) {
 		return this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z);
 	}
+	
+
+    public StringMap getItemMap() {
+		return itemMap;
+	}
+	
 }

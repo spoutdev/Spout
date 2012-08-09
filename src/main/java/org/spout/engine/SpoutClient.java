@@ -285,7 +285,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] datatable) {
-		SpoutClientWorld world = new SpoutClientWorld(name, uuid, this, datatable);
+		SpoutClientWorld world = new SpoutClientWorld(name, uuid, this, datatable, getEngineItemMap());
 		SpoutClientWorld oldWorld = activeWorld.getAndSet(world);
 		try {
 			if (oldWorld != null) {

@@ -164,11 +164,6 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 	private final DataMap dataMap;
 
 	/**
-	 * String item map, used to convert local id's to the server id
-	 */
-	private final StringMap itemMap;
-	
-	/**
 	 * A WeakReference to this world
 	 */
 	private final WeakReference<World> selfReference;
@@ -176,11 +171,10 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid, StringMap itemMap, DatatableMap extraData) {
-		super(name, uid, engine, 1, new ThreadAsyncExecutor(toString(name, uid, age)));
+		super(name, uid, engine, (int) 1, new ThreadAsyncExecutor(toString(name, uid, age)), itemMap);
 		this.seed = seed;
 
 		this.generator = generator;
-		this.itemMap = itemMap;
 		entityManager = new EntityManager();
 		regions = new RegionSource(this, snapshotManager);
 
@@ -679,10 +673,6 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
     public Serializable get(Object key) {
         return dataMap.get(key);
     }
-
-    public StringMap getItemMap() {
-		return itemMap;
-	}
 
 	@Override
 	public TaskManager getParallelTaskManager() {
