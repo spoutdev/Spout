@@ -34,17 +34,18 @@ import org.spout.api.tickable.BasicTickable;
 
 /**
  * Base Class for all Component Based tickable objects
- * 
- * A Component Based object is any object that contains a set of Components. 
- *
+ * <p/>
+ * A Component Based object is any object that contains a set of Components.
  */
 public class ComponentEntityBase extends BasicTickable implements ComponentHolder {
 	private final HashMap<Class<? extends Component>, Component> components = new HashMap<Class<? extends Component>, Component>();
 
 	@Override
 	public Component addComponent(Class<? extends Component> component) {
-		if(hasComponent(component)) return getComponent(component);
-		
+		if (hasComponent(component)) {
+			return getComponent(component);
+		}
+
 		try {
 			Component ec = component.newInstance();
 			components.put(component, ec);
@@ -56,12 +57,14 @@ public class ComponentEntityBase extends BasicTickable implements ComponentHolde
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		throw new RuntimeException("Cannot Create Component!");			
+		throw new RuntimeException("Cannot Create Component!");
 	}
 
 	@Override
 	public boolean removeComponent(Class<? extends Component> component) {
-		if(!hasComponent(component)) return false;
+		if (!hasComponent(component)) {
+			return false;
+		}
 		components.remove(component);
 		return true;
 	}
@@ -75,6 +78,4 @@ public class ComponentEntityBase extends BasicTickable implements ComponentHolde
 	public boolean hasComponent(Class<? extends Component> component) {
 		return components.containsKey(component);
 	}
-	
-	
 }

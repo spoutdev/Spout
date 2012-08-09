@@ -24,18 +24,15 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity.component;
+package org.spout.api.entity;
 
 import java.io.Serializable;
 
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
-import org.spout.api.entity.Component;
-import org.spout.api.entity.Entity;
-import org.spout.api.entity.component.controller.type.ControllerType;
+import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
-import org.spout.api.geo.cuboid.Block;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.tickable.Tickable;
 
@@ -43,9 +40,9 @@ public abstract class Controller implements Tickable {
 	private final ControllerType type;
 	private final DatatableMap datatableMap = new GenericDatatableMap();
 	private final DataMap dataMap = new DataMap(datatableMap);
-	private final Entity parent;
+	private Entity parent;
 
-	protected Controller(ControllerType type, Entity parent) {
+	protected Controller(ControllerType type) {
 		this.type = type;
 		this.parent = parent;
 	}
@@ -65,7 +62,6 @@ public abstract class Controller implements Tickable {
 	 * 1200    ticks = 1 minute<br/>
 	 * 72000   ticks = 1 hour<br/>
 	 * 1728000 ticks = 1 day
-	 *
 	 * @param dt time since the last tick in seconds
 	 */
 	@Override
@@ -92,7 +88,6 @@ public abstract class Controller implements Tickable {
 
 	/**
 	 * Is called when an Entity interacts with this Controller
-	 * 
 	 * @param entity that interacted
 	 * @param type of interaction
 	 */
@@ -102,25 +97,23 @@ public abstract class Controller implements Tickable {
 
 	/**
 	 * Returns the type of controller
-	 * 
 	 * @return controller type
 	 */
 	public ControllerType getType() {
 		return type;
 	}
-	
+
 	/**
 	 * Gets a map of persistent string mapped serializable values attached to this controller.
 	 * This map can be used to store any data relevant to the entity.
 	 * <br/> <br/>
 	 * This map is thread-safe, and will be saved between restarts if the entity {@link #isSavable()}.
-	 * 
 	 * @return thread-safe persistent storage map
 	 */
 	public final DefaultedMap<String, Serializable> getDataMap() {
 		return dataMap;
 	}
-	
+
 	/**
 	 * Called immediately <i>before</i> a controller and it's parent entity are
 	 * serialized. This method is intended as the last chance to store serializable
@@ -134,10 +127,9 @@ public abstract class Controller implements Tickable {
 	public void onSave() {
 
 	}
-	
+
 	/**
 	 * True if this controller and it's parent entity should be saved.
-	 * 
 	 * @return save
 	 */
 	public boolean isSavable() {
@@ -151,13 +143,13 @@ public abstract class Controller implements Tickable {
 	 * ticked less frequently, and may have more lax collisions. This allows regions
 	 * to optimize and only tick and collide entities that seem critical to players,
 	 * the regions near players, and the game logic of the world.
-	 * <p>
-	 * Important controllers are exempt from these optimizations and will be ticked 
+	 * <p/>
+	 * Important controllers are exempt from these optimizations and will be ticked
 	 * on schedule and treated as if it were a player or observer. This will make the
 	 * controller more expensive in terms of performance, and importance should not be
-	 * given to non-players and non-observers lightly. In general, there should be 
-	 * very few cases where importance needs to be adjusted manually. 
-	 * <p>
+	 * given to non-players and non-observers lightly. In general, there should be
+	 * very few cases where importance needs to be adjusted manually.
+	 * <p/>
 	 * <b>Note:</b> If a controller is an observer, it is always considered
 	 * to be important. Players are also always considered important.
 	 * @return important
@@ -172,5 +164,13 @@ public abstract class Controller implements Tickable {
 	 */
 	public Entity getParent() {
 		return parent;
+	}
+
+	/**
+	 * Attaches to the entity and sets the parent as that entity.
+	 * @param parent The Entity this controller controls
+	 */
+	public void attachToEntity(Entity parent) {
+		this.parent = parent;
 	}
 }

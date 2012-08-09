@@ -27,11 +27,10 @@
 package org.spout.api.protocol.builtin;
 
 import java.util.Collection;
-import java.util.Queue;
 
 import org.spout.api.datatable.DataMap;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.component.controller.type.ControllerType;
+import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;

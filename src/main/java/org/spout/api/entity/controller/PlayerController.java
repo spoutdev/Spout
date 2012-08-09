@@ -24,25 +24,36 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity.component.controller.type;
+package org.spout.api.entity.controller;
 
-import org.spout.api.entity.component.Controller;
+import org.spout.api.entity.Controller;
+import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
+import org.spout.api.entity.controller.type.ControllerType;
 
 /**
- *
+ * Represents a {@link Controller} that is player controlled.
  */
-public class UncreatableControllerType extends ControllerType {
-	public UncreatableControllerType(Class<? extends Controller> controllerClass, String name) {
-		super(controllerClass, name);
+public abstract class PlayerController extends Controller {
+	protected PlayerController(ControllerType type) {
+		super(type);
 	}
 
 	@Override
-	public boolean canCreateController() {
+	public boolean isSavable() {
 		return false;
 	}
 
 	@Override
-	public Controller createController() {
-		return null;
+	public boolean isImportant() {
+		return true;
+	}
+
+	@Override
+	public void attachToEntity(Entity parent) {
+		if (!(parent instanceof Player)) {
+			throw new IllegalStateException("Trying to set a non Player entity as the parent of a PlayerController!");
+		}
+		super.attachToEntity(parent);
 	}
 }

@@ -31,7 +31,7 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.command.Command;
-import org.spout.api.entity.component.controller.type.ControllerType;
+import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.entity.Player;

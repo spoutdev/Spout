@@ -24,37 +24,25 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity.component.controller;
+package org.spout.api.entity.controller.type;
 
-import org.spout.api.entity.component.controller.type.ControllerType;
-import org.spout.api.geo.cuboid.Block;
-import org.spout.api.material.BlockMaterial;
+import org.spout.api.entity.Controller;
 
 /**
- * Represents the controller for a block.
+ *
  */
-public abstract class BlockController extends BasicController {
-	protected final BlockMaterial blockMaterial;
-
-	public BlockController(ControllerType type, BlockMaterial blockMaterial) {
-		super(type);
-		this.blockMaterial = blockMaterial;
+public class UncreatableControllerType extends ControllerType {
+	public UncreatableControllerType(Class<? extends Controller> controllerClass, String name) {
+		super(controllerClass, name);
 	}
 
-	/**
-	 * Returns the BlockMaterial associated with the controller
-	 *
-	 * @return block material
-	 */
-	public BlockMaterial getMaterial() {
-		return blockMaterial;
+	@Override
+	public boolean canCreateController() {
+		return false;
 	}
 
-	/**
-	 * Gets the block of this block controller
-	 * @return the block
-	 */
-	public Block getBlock() {
-		return this.getParent().getWorld().getBlock(this.getParent().getPosition(), this.getParent());
+	@Override
+	public Controller createController() {
+		return null;
 	}
 }

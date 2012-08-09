@@ -30,7 +30,6 @@ import java.util.UUID;
 
 import org.spout.api.Source;
 import org.spout.api.collision.CollisionModel;
-import org.spout.api.entity.component.Controller;
 import org.spout.api.geo.World;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
@@ -49,12 +48,10 @@ import org.spout.api.util.thread.SnapshotRead;
  * Represents an entity, which may or may not be spawned into the world.
  */
 public interface Entity extends Source, WorldSource, ComponentHolder {
-
 	public int getId();
 
 	/**
 	 * Gets the controller for the entity
-	 * 
 	 * @return the controller
 	 */
 	@SnapshotRead
@@ -62,7 +59,6 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 
 	/**
 	 * Sets the controller for the entity
-	 * 
 	 * @param controller
 	 */
 	@DelayedWrite
@@ -70,7 +66,6 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 
 	/**
 	 * Sets the controller for the entity
-	 * 
 	 * @param controller
 	 */
 	@DelayedWrite
@@ -84,12 +79,11 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 	public void setCollision(CollisionModel model);
 
 	public CollisionModel getCollision();
-	
+
 	/**
-	 * Gets the entity's persistent unique id. 
-	 * 
+	 * Gets the entity's persistent unique id.
+	 * <p/>
 	 * Can be used to look up the entity, and persists between starts.
-	 * 
 	 * @return persistent uid
 	 */
 	public UUID getUID();
@@ -101,7 +95,6 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 
 	/**
 	 * Returns true if this entity's controller is the provided controller
-	 * 
 	 * @param clazz
 	 * @return true if this entity's controller is the provided controller
 	 */
@@ -109,14 +102,12 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 
 	/**
 	 * Returns true if this entity is spawned and being Simulated in the world
-	 * 
 	 * @return spawned
 	 */
 	public boolean isSpawned();
 
 	/**
 	 * Gets the {@link Chunk} this entity resides in, or null if unspawned.
-	 * 
 	 * @return chunk the entity is in, or null if unspawned.
 	 */
 	@SnapshotRead
@@ -124,7 +115,6 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 
 	/**
 	 * Gets the region the entity is associated and managed with, or null if unspawned.
-	 * 
 	 * @return region the entity is in.
 	 */
 	@SnapshotRead
@@ -132,7 +122,6 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 
 	/**
 	 * Gets the world the entity is associated with, or null if unspawned.
-	 * 
 	 * @return world
 	 */
 	@SnapshotRead
@@ -148,7 +137,6 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 	 * Kills the entity. This takes effect at the next snapshot.<br/>
 	 * <br/>
 	 * If the entity's position is set before the next snapshot, the entity won't be removed.</br>
-	 * 
 	 * @return true if the entity was alive
 	 */
 	@DelayedWrite
@@ -157,7 +145,6 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 
 	/**
 	 * True if the entity is dead.
-	 * 
 	 * @return dead
 	 */
 	@SnapshotRead
@@ -167,7 +154,6 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 	 * Sets the maximum distance at which the entity can be seen.<br/>
 	 * <br/>
 	 * The actual view distance used by the server may not be exactly the value that is set.<br/>
-	 * 
 	 * @param distance in blocks at which the entity can be seen
 	 */
 	@LiveWrite
@@ -175,7 +161,6 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 
 	/**
 	 * Gets the maximum distance at which the entity can be seen.<br/>
-	 * 
 	 * @return the distance in blocks at which the entity can be seen
 	 */
 	@LiveRead
@@ -184,7 +169,6 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 	/**
 	 * Sets whether or not the entity is an observer.<br/>
 	 * An observer is any entity that is allowed to keep chunks from being unloaded.</br>
-	 * 
 	 * @param obs True if the entity should be an observer, false if not
 	 */
 	@DelayedWrite
@@ -194,7 +178,6 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 	 * Checks whether or not the entity is currently observing the region it is in.<br/>
 	 * If this value does not match {@link #isObserverLive()} the entity will be changing its observer status on the next update.<br/>
 	 * An observer is any entity that is allowed to keep chunks from being unloaded.<br/>
-	 * 
 	 * @return true if the entity is currently an observer, false if not
 	 */
 	@SnapshotRead
@@ -203,7 +186,6 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 	/**
 	 * Checks whether or not the entity is observing. This is used to update the status of the entity.
 	 * If isObserverLive() not equal to isObserver(), then the entity will be changing its observer status on the next update.
-	 * 
 	 * @return true if the entity will be an observer, false if not
 	 */
 	@LiveRead
@@ -212,14 +194,12 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 	/**
 	 * Gets a {@link Transform} representing the current position, scale and
 	 * rotation of the entity.
-	 * 
 	 * @return
 	 */
 	public Transform getTransform();
 
 	/**
 	 * Gets a {@link Transform} representing the last tick's position, scale and rotation of the entity.
-	 * 
 	 * @return transform of the entity.
 	 */
 	public Transform getLastTransform();
@@ -231,21 +211,18 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 
 	/**
 	 * Gets the current position of the entity
-	 * 
 	 * @return position of the entity in the world.
 	 */
 	public Point getPosition();
 
 	/**
 	 * Gets the current rotation of the entity
-	 * 
 	 * @return rotation of the entity in the world.
 	 */
 	public Quaternion getRotation();
 
 	/**
 	 * Gets the current Scale of the entity
-	 * 
 	 * @return scale of the entity in the world.
 	 */
 	public Vector3 getScale();
@@ -253,7 +230,6 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 	/**
 	 * Sets the position of the entity. <br/>
 	 * This must be called in the same thread as the entity lives.<br/>
-	 * 
 	 * @param position
 	 */
 	public void setPosition(Point position);
@@ -261,7 +237,6 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 	/**
 	 * Sets the rotation of the entity. <br/>
 	 * This must be called in the same thread as the entity lives.<br/>
-	 * 
 	 * @param rotation
 	 */
 	public void setRotation(Quaternion rotation);
@@ -269,21 +244,18 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 	/**
 	 * Sets the scale of the entity. <br/>
 	 * This must be called in the same thread asthe entity lives.<br/>
-	 * 
 	 * @param scale
 	 */
 	public void setScale(Vector3 scale);
 
 	/**
 	 * Moves the entity by the provided vector<br/>
-	 * 
 	 * @param amount to move the entity
 	 */
 	public void translate(Vector3 amount);
 
 	/**
 	 * Moves the entity by the provided vector
-	 * 
 	 * @param x offset
 	 * @param y offset
 	 * @param z offset
@@ -292,7 +264,6 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 
 	/**
 	 * Rotates the entity about the provided axis by the provided angle
-	 * 
 	 * @param ang
 	 * @param x
 	 * @param y
@@ -302,21 +273,18 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 
 	/**
 	 * Rotates the entity by the provided rotation
-	 * 
 	 * @param rot
 	 */
 	public void rotate(Quaternion rot);
 
 	/**
 	 * Scales the entity by the provided amount
-	 * 
 	 * @param amount
 	 */
 	public void scale(Vector3 amount);
 
 	/**
 	 * Scales the entity by the provided amount
-	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -325,63 +293,54 @@ public interface Entity extends Source, WorldSource, ComponentHolder {
 
 	/**
 	 * Rolls the entity by the provided amount
-	 * 
 	 * @param ang
 	 */
 	public void roll(float ang);
 
 	/**
 	 * pitches the entity by the provided amount
-	 * 
 	 * @param ang
 	 */
 	public void pitch(float ang);
 
 	/**
 	 * yaws the entity by the provided amount
-	 * 
 	 * @param ang
 	 */
 	public void yaw(float ang);
 
 	/**
 	 * Gets the entities current pitch, or vertical angle.
-	 * 
 	 * @return pitch of the entity
 	 */
 	public float getPitch();
 
 	/**
 	 * Gets the entities current yaw, or horizontal angle.
-	 * 
 	 * @return yaw of the entity.
 	 */
 	public float getYaw();
 
 	/**
 	 * Gets the entities current roll as a float.
-	 * 
 	 * @return roll of the entity
 	 */
 	public float getRoll();
 
 	/**
 	 * Sets the pitch of the entity.
-	 * 
 	 * @param ang
 	 */
 	public void setPitch(float ang);
 
 	/**
 	 * Sets the roll of the entity.
-	 * 
 	 * @param ang
 	 */
 	public void setRoll(float ang);
 
 	/**
 	 * sets the yaw of the entity.
-	 * 
 	 * @param ang
 	 */
 	public void setYaw(float ang);

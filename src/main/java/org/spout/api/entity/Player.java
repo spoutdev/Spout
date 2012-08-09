@@ -27,6 +27,7 @@
 package org.spout.api.entity;
 
 import java.net.InetAddress;
+
 import org.spout.api.command.CommandSource;
 import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.protocol.NetworkSynchronizer;
@@ -36,7 +37,6 @@ import org.spout.api.util.thread.Threadsafe;
 public interface Player extends CommandSource, Entity {
 	/**
 	 * Gets the player's name. This method is thread-safe.
-	 *
 	 * @return the player's name
 	 */
 	@Threadsafe
@@ -44,7 +44,6 @@ public interface Player extends CommandSource, Entity {
 
 	/**
 	 * Gets the player's display name. This method is thread-safe.
-	 *
 	 * @return the player's display name
 	 */
 	@Threadsafe
@@ -52,7 +51,6 @@ public interface Player extends CommandSource, Entity {
 
 	/**
 	 * Sets the player's display name. This method is thread-safe.
-	 *
 	 * @param name the new player's display name
 	 */
 	@Threadsafe
@@ -60,21 +58,18 @@ public interface Player extends CommandSource, Entity {
 
 	/**
 	 * Gets the NetworkSynchronizer associated with this player.<br>
-	 *
 	 * @return the synchronizer
 	 */
 	public NetworkSynchronizer getNetworkSynchronizer();
 
 	/**
 	 * Gets the session associated with the Player.
-	 *
 	 * @return the session, or null if the player is offline
 	 */
 	public Session getSession();
 
 	/**
 	 * Gets if the player is online
-	 *
 	 * @return true if online
 	 */
 	public boolean isOnline();
@@ -82,7 +77,6 @@ public interface Player extends CommandSource, Entity {
 	/**
 	 * Gets the sessions address This is equivalent to
 	 * getSession().getAddress().getAddress();
-	 *
 	 * @return The session's address
 	 */
 	public InetAddress getAddress();
@@ -94,7 +88,6 @@ public interface Player extends CommandSource, Entity {
 
 	/**
 	 * Kicks the player for the given reason.
-	 *
 	 * @param reason the message to send to the player.
 	 */
 	public void kick(Object... reason);
@@ -104,6 +97,6 @@ public interface Player extends CommandSource, Entity {
 	 * @return current input state
 	 */
 	public PlayerInputState input();
-	
+
 	public void processInput(PlayerInputState state);
 }

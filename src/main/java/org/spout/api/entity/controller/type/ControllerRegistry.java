@@ -24,14 +24,14 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity.component.controller.type;
+package org.spout.api.entity.controller.type;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.spout.api.entity.component.Controller;
+import org.spout.api.entity.Controller;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.util.StringMap;
 

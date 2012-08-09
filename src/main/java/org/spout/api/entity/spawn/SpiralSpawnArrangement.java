@@ -26,26 +26,25 @@
  */
 package org.spout.api.entity.spawn;
 
-import org.spout.api.entity.component.controller.type.ControllerType;
+import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 
 public class SpiralSpawnArrangement extends GenericSpawnArrangement {
-
 	private final float scaleRadius;
 	private final float scaleCircumference;
 
 	public SpiralSpawnArrangement(Point center, ControllerType type, int number, float scale) {
 		this(center, type, number, scale, 1.0F);
 	}
-	
+
 	public SpiralSpawnArrangement(Point center, ControllerType type, int number, float scaleRadius, float scaleCircumference) {
 		super(center, type, number);
 		this.scaleRadius = scaleRadius;
 		this.scaleCircumference = scaleCircumference;
 	}
-	
+
 	public SpiralSpawnArrangement(Point center, ControllerType[] types, float scale) {
 		this(center, types, scale, scale);
 	}
@@ -55,28 +54,27 @@ public class SpiralSpawnArrangement extends GenericSpawnArrangement {
 		this.scaleRadius = scaleRadius;
 		this.scaleCircumference = scaleCircumference;
 	}
-	
+
 	public Point[] generatePoints(Point center, int number) {
-		
+
 		float angle = 0;
 		float distance = 1;
-		
+
 		Point[] points = new Point[number];
-		
+
 		points[0] = center;
-		
+
 		for (int i = 1; i < number; i++) {
-			distance = (float)Math.sqrt(i);
-			
+			distance = (float) Math.sqrt(i);
+
 			Vector3 offset = Point.FORWARD.transform(MathHelper.rotateY(angle));
 			offset = offset.multiply(distance).multiply(scaleRadius);
-			
+
 			points[i] = center.add(offset);
-			
+
 			angle += scaleCircumference * 360.0 / (Math.PI * distance);
 		}
-		
+
 		return points;
 	}
-
 }

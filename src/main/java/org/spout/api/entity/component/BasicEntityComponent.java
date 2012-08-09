@@ -44,7 +44,6 @@ public abstract class BasicEntityComponent extends BasicTickable implements Comp
 
 	/**
 	 * Gets the parent Entity associated with this controller.
-	 *
 	 * @return parent Entity
 	 */
 	@Override
@@ -58,11 +57,11 @@ public abstract class BasicEntityComponent extends BasicTickable implements Comp
 	@Override
 	public abstract void onAttached();
 
-	/** 
+	/**
 	 * Called when this component is detached from an entity.
 	 */
 	@Override
 	public void onDetached() {
-		
+
 	}
 }

@@ -28,13 +28,12 @@ package org.spout.api.entity.spawn;
 
 import java.util.ArrayList;
 
-import org.spout.api.entity.component.controller.type.ControllerType;
+import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.geo.discrete.Point;
 
 public class DiscSpawnArrangement extends GenericSpawnArrangement {
-
 	private final float scale;
-	
+
 	public DiscSpawnArrangement(Point center, ControllerType type, int number, float scale) {
 		super(center, type, number);
 		this.scale = scale;
@@ -44,11 +43,11 @@ public class DiscSpawnArrangement extends GenericSpawnArrangement {
 		super(center, types);
 		this.scale = scale;
 	}
-	
+
 	public Point[] generatePoints(Point center, int number) {
-		
+
 		ArrayList<Integer> shells = new ArrayList<Integer>();
-		
+
 		int remaining = number;
 		int shell = 0;
 		while (remaining > 0) {
@@ -69,7 +68,7 @@ public class DiscSpawnArrangement extends GenericSpawnArrangement {
 			remaining -= toAdd;
 			shell++;
 		}
-		
+
 		if (shells.size() > 1) {
 			int lastIndex = shells.size() - 1;
 			int last = shells.get(lastIndex);
@@ -78,8 +77,9 @@ public class DiscSpawnArrangement extends GenericSpawnArrangement {
 				if (last >= secondLast - 2 && last > 2) {
 					shells.set(lastIndex, secondLast);
 					shells.set(lastIndex - 1, last);
-				} else
+				} else {
 					shells.set(lastIndex, 0);
+				}
 				int i = lastIndex - 1;
 				while (last > 0) {
 					shells.set(i, shells.get(i) + 1);
@@ -90,17 +90,16 @@ public class DiscSpawnArrangement extends GenericSpawnArrangement {
 		}
 
 		Point[] points = new Point[number];
-		
+
 		int i = 0;
-		
+
 		for (int j = 0; j < shells.size(); j++) {
-			Point[] shellPoints = new CircleSpawnArrangement(center, null, shells.get(j), j * scale, (j & 1) ==0).getArrangement();
+			Point[] shellPoints = new CircleSpawnArrangement(center, null, shells.get(j), j * scale, (j & 1) == 0).getArrangement();
 			for (Point p : shellPoints) {
 				points[i++] = p;
 			}
 		}
-		
+
 		return points;
 	}
-
 }

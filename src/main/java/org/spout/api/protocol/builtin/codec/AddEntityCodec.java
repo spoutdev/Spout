@@ -30,7 +30,7 @@ import java.util.UUID;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-import org.spout.api.entity.component.controller.type.ControllerRegistry;
+import org.spout.api.entity.controller.type.ControllerRegistry;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.MessageCodec;

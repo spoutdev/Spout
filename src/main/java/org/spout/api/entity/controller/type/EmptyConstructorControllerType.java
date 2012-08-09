@@ -24,12 +24,12 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity.component.controller.type;
+package org.spout.api.entity.controller.type;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import org.spout.api.entity.component.Controller;
+import org.spout.api.entity.Controller;
 
 /**
  *

@@ -24,29 +24,29 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity.component.controller.basic;
+package org.spout.api.entity.controller.basic;
 
 import org.spout.api.Spout;
-import org.spout.api.entity.component.controller.type.ControllerType;
-import org.spout.api.entity.component.controller.type.EmptyConstructorControllerType;
+import org.spout.api.entity.Controller;
+import org.spout.api.entity.controller.type.ControllerType;
+import org.spout.api.entity.controller.type.EmptyConstructorControllerType;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 
 /**
  * Controller that observes chunks around a point. It will always keep these chunks in memory.
  */
-public class PointObserver extends BasicController {
+public class PointObserver extends Controller {
 	public static final int CHUNK_VIEW_DISTANCE = 4;
 	public static final ControllerType TYPE = new EmptyConstructorControllerType(PointObserver.class, "Point Observer");
 	private Point currPoint;
-
 	private final int viewDistance;
-	
+
 	public PointObserver(int viewDistance) {
 		super(TYPE);
 		this.viewDistance = viewDistance;
 	}
-	
+
 	public PointObserver() {
 		this(CHUNK_VIEW_DISTANCE);
 	}
@@ -74,7 +74,7 @@ public class PointObserver extends BasicController {
 		getParent().setViewDistance(viewDistance << Chunk.BLOCKS.BITS);
 		currPoint = getParent().getPosition();
 	}
-	
+
 	public boolean isImportant() {
 		return true;
 	}

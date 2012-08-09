@@ -26,28 +26,24 @@
  */
 package org.spout.api.entity.spawn;
 
-import org.spout.api.entity.component.controller.type.ControllerType;
+import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.geo.discrete.Point;
 
 /**
  * Represents an arrangement for spawning entities
  */
 public interface SpawnArrangement {
-
 	/**
-	 * Gets the controller types to spawn. If this array is of length one, 
+	 * Gets the controller types to spawn. If this array is of length one,
 	 * then that controller should be used for all entities.
-	 * 
 	 * @return the controller
 	 */
 	public ControllerType[] getControllerTypes();
 
 	/**
-	 * Gets the Points to spawn entities at. The getController method 
+	 * Gets the Points to spawn entities at. The getController method
 	 * is called to determine which entity for a given index.
-	 * 
 	 * @return the spawn points in an array
 	 */
 	public Point[] getArrangement();
-
 }

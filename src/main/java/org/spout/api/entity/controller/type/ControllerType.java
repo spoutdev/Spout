@@ -24,9 +24,9 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity.component.controller.type;
+package org.spout.api.entity.controller.type;
 
-import org.spout.api.entity.component.Controller;
+import org.spout.api.entity.Controller;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.EntityProtocolStore;
@@ -38,10 +38,8 @@ import org.spout.api.util.StringMap;
 public abstract class ControllerType {
 	public static final int UNREGISTERED_ID = -1;
 	private static final StringMap protocolMap = new StringMap(null, new MemoryStore<Integer>(), 0, 256, "controllerTypeProtocols");
-
 	private final String name;
 	private int id = UNREGISTERED_ID;
-
 	private final Class<? extends Controller> controllerClass;
 	private final EntityProtocolStore protocolStore = new EntityProtocolStore();
 
@@ -60,7 +58,6 @@ public abstract class ControllerType {
 	}
 
 	/**
-	 * 
 	 * @return id of the controller.
 	 */
 	public int getId() {
@@ -90,7 +87,6 @@ public abstract class ControllerType {
 
 	/**
 	 * Returns the {@link EntityProtocol} for the given protocol id for this type of controller
-	 *
 	 * @param protocolId The protocol id (retrieved using {@link #getProtocolId(String)})
 	 * @return The entity protocol for the specified id.
 	 */
@@ -100,7 +96,6 @@ public abstract class ControllerType {
 
 	/**
 	 * Registers {@code protocol} with this ControllerType's EntityProtocolStore
-	 *
 	 * @param protocolId The protocol id (retrieved using {@link #getProtocolId(String)})
 	 * @param protocol The protocol to set
 	 */
@@ -109,7 +104,6 @@ public abstract class ControllerType {
 	}
 
 	/**
-	 *
 	 * @param protocolName The name of the protocol class to get an id for
 	 * @return The id for the specified protocol class
 	 */

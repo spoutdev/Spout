@@ -29,32 +29,31 @@ package org.spout.api.entity.spawn;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.spout.api.entity.component.controller.type.ControllerType;
+import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.geo.discrete.Point;
 
 public abstract class GenericSpawnArrangement implements SpawnArrangement {
-
 	private final ControllerType[] types;
 	private final AtomicReference<Point[]> points;
 	private final Point center;
 	private final int number;
 
 	public GenericSpawnArrangement(Point center, ControllerType controller, int number) {
-		this.types = new ControllerType[] { controller };
+		this.types = new ControllerType[]{controller};
 		this.points = new AtomicReference<Point[]>(null);
 		this.center = center;
 		this.number = number;
 	}
-	
+
 	public GenericSpawnArrangement(Point center, ControllerType[] controllers) {
 		this.types = Arrays.copyOf(controllers, controllers.length);
 		this.points = new AtomicReference<Point[]>(null);
 		this.center = center;
 		this.number = controllers.length;
 	}
-	
+
 	protected abstract Point[] generatePoints(Point center, int number);
-	
+
 	@Override
 	public ControllerType[] getControllerTypes() {
 		return types;
@@ -72,5 +71,4 @@ public abstract class GenericSpawnArrangement implements SpawnArrangement {
 		}
 		return p;
 	}
-
 }

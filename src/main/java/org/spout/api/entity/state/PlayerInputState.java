@@ -27,14 +27,13 @@
 package org.spout.api.entity.state;
 
 /**
- *  Represents the current player input state
- *
+ * Represents the current player input state
  */
 public class PlayerInputState {
 	public static final int FORWARD = 0x01;
 	public static final int BACKWARD = 0x02;
 	public static final int LEFT = 0x04;
-	public static final int RIGHT  = 0x08;
+	public static final int RIGHT = 0x08;
 	public static final int JUMP = 0x10;
 	public static final int CROUCH = 0x20;
 	public static final int SELECTUP = 0x40;
@@ -42,18 +41,14 @@ public class PlayerInputState {
 	public static final int FIRE1 = 0x0100;
 	public static final int FIRE2 = 0x0200;
 	public static final int INTERACT = 0400;
-	
-	
-			
 	short userCommands = 0;
 	byte mouse_dx;
 	byte mouse_dy;
-	
-	
-	public PlayerInputState(boolean forward, boolean backward, boolean left, boolean right, boolean jump, boolean crouch, boolean selectUp, boolean selectDown, boolean fire1, boolean fire2, boolean interact, byte mdx, byte mdy){
+
+	public PlayerInputState(boolean forward, boolean backward, boolean left, boolean right, boolean jump, boolean crouch, boolean selectUp, boolean selectDown, boolean fire1, boolean fire2, boolean interact, byte mdx, byte mdy) {
 		userCommands = 0;
 		userCommands |= (forward ? FORWARD : 0);
-		userCommands |= (backward? BACKWARD : 0);
+		userCommands |= (backward ? BACKWARD : 0);
 		userCommands |= (left ? LEFT : 0);
 		userCommands |= (right ? RIGHT : 0);
 		userCommands |= (jump ? JUMP : 0);
@@ -65,10 +60,9 @@ public class PlayerInputState {
 		userCommands |= (interact ? INTERACT : 0);
 		mouse_dx = mdx;
 		mouse_dy = mdy;
-		
 	}
-	
-	public PlayerInputState(short userCommands, byte mdx, byte mdy){
+
+	public PlayerInputState(short userCommands, byte mdx, byte mdy) {
 		this.userCommands = userCommands;
 		this.mouse_dx = mdx;
 		this.mouse_dy = mdy;
@@ -77,45 +71,44 @@ public class PlayerInputState {
 	public boolean getForward() {
 		return (userCommands & FORWARD) == 1;
 	}
-	
+
 	public boolean getBackward() {
-		return (userCommands & BACKWARD) == 1;		
+		return (userCommands & BACKWARD) == 1;
 	}
-	
+
 	public boolean getRight() {
-		return (userCommands & RIGHT) == 1;		
+		return (userCommands & RIGHT) == 1;
 	}
-	
+
 	public boolean getLeft() {
-		return (userCommands & LEFT) == 1;		
+		return (userCommands & LEFT) == 1;
 	}
-	
+
 	public boolean getJump() {
-		return (userCommands & JUMP) == 1;		
+		return (userCommands & JUMP) == 1;
 	}
-	
+
 	public boolean getCrouch() {
-		return (userCommands & CROUCH) == 1;		
+		return (userCommands & CROUCH) == 1;
 	}
-	
+
 	public boolean getSelectUp() {
-		return (userCommands & SELECTUP) == 1;		
+		return (userCommands & SELECTUP) == 1;
 	}
-	
+
 	public boolean getSelectDown() {
-		return (userCommands & SELECTDOWN) == 1;		
+		return (userCommands & SELECTDOWN) == 1;
 	}
-	
+
 	public boolean getFire1() {
-		return (userCommands & FIRE1) == 1;		
+		return (userCommands & FIRE1) == 1;
 	}
-	
+
 	public boolean getFire2() {
-		return (userCommands & FIRE2) == 1;		
+		return (userCommands & FIRE2) == 1;
 	}
-	
+
 	public boolean getInteract() {
-		return (userCommands & INTERACT) == 1;		
+		return (userCommands & INTERACT) == 1;
 	}
-	
 }

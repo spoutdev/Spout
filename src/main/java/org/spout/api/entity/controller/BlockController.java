@@ -24,28 +24,37 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity.component.controller;
+package org.spout.api.entity.controller;
 
-import org.spout.api.entity.Entity;
-import org.spout.api.entity.component.Controller;
-import org.spout.api.entity.Player;
-import org.spout.api.entity.component.controller.type.ControllerType;
+import org.spout.api.entity.Controller;
+import org.spout.api.entity.controller.type.ControllerType;
+import org.spout.api.geo.cuboid.Block;
+import org.spout.api.material.BlockMaterial;
 
 /**
- * Represents a {@link Controller} that is player controlled.
+ * Represents the controller for a block.
  */
-public abstract class PlayerController extends Controller {
-	protected PlayerController(ControllerType type, Player parent) {
-		super(type, parent);
+public abstract class BlockController extends Controller {
+	protected final BlockMaterial blockMaterial;
+
+	public BlockController(ControllerType type, BlockMaterial blockMaterial) {
+		super(type);
+		this.blockMaterial = blockMaterial;
 	}
 
-	@Override
-	public boolean isSavable() {
-		return false;
+	/**
+	 * Returns the BlockMaterial associated with the controller
+	 * @return block material
+	 */
+	public BlockMaterial getMaterial() {
+		return blockMaterial;
 	}
 
-	@Override
-	public boolean isImportant() {
-		return true;
+	/**
+	 * Gets the block of this block controller
+	 * @return the block
+	 */
+	public Block getBlock() {
+		return this.getParent().getWorld().getBlock(this.getParent().getPosition(), this.getParent());
 	}
 }

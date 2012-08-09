@@ -28,7 +28,7 @@ package org.spout.api.protocol.builtin.handler;
 
 import org.spout.api.Client;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.component.Controller;
+import org.spout.api.entity.Controller;
 import org.spout.api.entity.Player;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;

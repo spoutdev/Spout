@@ -27,7 +27,7 @@
 package org.spout.api.geo.cuboid;
 
 import org.spout.api.Source;
-import org.spout.api.entity.component.controller.BlockController;
+import org.spout.api.entity.controller.BlockController;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.World;
 import org.spout.api.geo.WorldSource;
