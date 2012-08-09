@@ -27,6 +27,7 @@
 package org.spout.engine.world.physics;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.spout.api.Source;
 import org.spout.api.Spout;
@@ -52,6 +53,7 @@ public class PhysicsQueue {
 	private final SpoutChunk chunk;
 	private final Thread regionThread;
 	private final Thread mainThread;
+	private final AtomicBoolean active = new AtomicBoolean(false);
 	
 	private final ConcurrentLinkedQueue<PhysicsUpdate> asyncQueue = new ConcurrentLinkedQueue<PhysicsUpdate>();
 	private final UpdateQueue updateQueue = new UpdateQueue();
@@ -93,16 +95,29 @@ public class PhysicsQueue {
 	
 	public void queueForUpdateAsync(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial, Source source) {
 		asyncQueue.add(new PhysicsUpdate(x, y, z, range, oldMaterial, source));
+		if (active.compareAndSet(false, true)) {
+			region.setPhysicsActive(chunk);
+		}
 	}
 	
 	public void queueForUpdate(int x, int y, int z, BlockMaterial oldMaterial, Source source) {
 		checkStages();
 		updateQueue.add(x, y, z, oldMaterial, source);
+		if (active.compareAndSet(false, true)) {
+			region.setPhysicsActive(chunk);
+		}
 	}
 	
 	public void queueForUpdateMultiRegion(int x, int y, int z, BlockMaterial oldMaterial, Source source) {
 		checkStages();
 		multiRegionQueue.add(x, y, z, oldMaterial, source);
+		if (active.compareAndSet(false, true)) {
+			region.setPhysicsActive(chunk);
+		}
+	}
+	
+	public void setInactive() {
+		active.set(false);
 	}
 	
 	public UpdateQueue getUpdateQueue() {

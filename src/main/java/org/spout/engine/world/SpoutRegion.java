@@ -31,7 +31,6 @@ import gnu.trove.iterator.TIntIterator;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -40,6 +39,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -69,7 +69,6 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
-import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
@@ -97,8 +96,6 @@ import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 import org.spout.engine.world.dynamic.DynamicBlockUpdateTree;
-import org.spout.engine.world.physics.PhysicsQueue;
-import org.spout.engine.world.physics.UpdateQueue;
 
 public class SpoutRegion extends Region{
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
@@ -175,7 +172,9 @@ public class SpoutRegion extends Region{
 
 	private final LinkedHashSet<SpoutChunk> occupiedChunks = new LinkedHashSet<SpoutChunk>();
 	private final ConcurrentLinkedQueue<SpoutChunk> occupiedChunksQueue = new ConcurrentLinkedQueue<SpoutChunk>();
-
+	private final ArrayBlockingQueue<SpoutChunk> localPhysicsChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
+	private final ArrayBlockingQueue<SpoutChunk> globalPhysicsChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
+	
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 
@@ -843,29 +842,19 @@ public class SpoutRegion extends Region{
 
 		while (updated) {
 			updated = false;
-			for (int cx = 0; cx < CHUNKS.SIZE; cx++) {
-				for (int cy = 0; cy < CHUNKS.SIZE; cy++) {
-					for (int cz = 0; cz < CHUNKS.SIZE; cz++) {
-						SpoutChunk c = getChunkRaw(cx, cy, cz, LoadOption.NO_LOAD);
-						if (c != null) {
-							updated |= c.runLocalPhysics();
-						}
-					}
-				}
+			SpoutChunk c;
+			while ((c = this.localPhysicsChunks.poll()) != null) {
+				c.setInactivePhysics();
+				updated |= c.runLocalPhysics();
 			}
 		}
 	}
 
 	public void runGlobalPhysics() throws InterruptedException {
-		for (int cx = 0; cx < CHUNKS.SIZE; cx++) {
-			for (int cy = 0; cy < CHUNKS.SIZE; cy++) {
-				for (int cz = 0; cz < CHUNKS.SIZE; cz++) {
-					SpoutChunk c = getChunkRaw(cx, cy, cz, LoadOption.NO_LOAD);
-					if (c != null) {
-						c.runGlobalPhysics();
-					}
-				}
-			}
+		SpoutChunk c;
+		while ((c = this.globalPhysicsChunks.poll()) != null) {
+			c.setInactivePhysics();
+			c.runGlobalPhysics();
 		}
 	}
 
@@ -1271,5 +1260,14 @@ public class SpoutRegion extends Region{
 			return controller.getParent().isObserver() || controller.isImportant();
 		}
 		return controller instanceof PlayerController;
+	}
+	
+	public void setPhysicsActive(SpoutChunk chunk) {
+		try {
+			localPhysicsChunks.add(chunk);
+			globalPhysicsChunks.add(chunk);
+		} catch (IllegalStateException ise) {
+			throw new IllegalStateException("Physics chunk queue exceeded capacity", ise);
+		}
 	}
 }
