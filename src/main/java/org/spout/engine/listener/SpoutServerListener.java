@@ -30,6 +30,7 @@ import java.net.InetAddress;
 
 import org.spout.api.Spout;
 import org.spout.api.chat.style.ChatStyle;
+import org.spout.api.entity.Player;
 import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
 import org.spout.api.event.Order;
@@ -41,7 +42,6 @@ import org.spout.api.event.player.PlayerLoginEvent;
 import org.spout.api.event.server.BanChangeEvent.BanType;
 import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 import org.spout.api.event.storage.PlayerLoadEvent;
-import org.spout.api.player.Player;
 
 import org.spout.engine.SpoutServer;
 import org.spout.engine.protocol.SpoutSession;

@@ -30,8 +30,9 @@ import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.spout.api.Source;
-import org.spout.api.entity.component.controller.BlockController;
+import org.spout.api.entity.controller.BlockController;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
@@ -349,7 +350,7 @@ public class SpoutBlock implements Block {
 	public void resetDynamic() {
 		this.getRegion().resetDynamicBlock(this.x, this.y, this.z);
 	}
-	
+
 	@Override
 	public void syncResetDynamic() {
 		this.getRegion().syncResetDynamicBlock(this.x, this.y, this.z);

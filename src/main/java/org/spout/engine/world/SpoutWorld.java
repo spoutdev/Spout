@@ -42,6 +42,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.collision.BoundingBox;
@@ -50,9 +51,10 @@ import org.spout.api.collision.CollisionVolume;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
+import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.component.Controller;
-import org.spout.api.entity.component.controller.BlockController;
+import org.spout.api.entity.Player;
+import org.spout.api.entity.controller.BlockController;
 import org.spout.api.event.block.CuboidChangeEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
@@ -70,7 +72,6 @@ import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
-import org.spout.api.player.Player;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.StringMap;
@@ -79,6 +80,7 @@ import org.spout.api.util.hashing.IntPairHashed;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.map.concurrent.TSyncIntPairObjectHashMap;
 import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
+
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
@@ -139,35 +141,28 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 	 * The async thread which handles the calculation of block and sky lighting in the world
 	 */
 	private final SpoutWorldLighting lightingManager;
-
 	/**
 	 * The parallel task manager.  This is used for submitting tasks to all regions in the world.
 	 */
 	protected final SpoutParallelTaskManager parallelTaskManager;
-
 	private final SpoutTaskManager taskManager;
-
 	/**
 	 * The sky light level the sky emits
 	 */
 	private byte skyLightLevel = 15;
-
 	/**
 	 * Hashcode cache
 	 */
 	private final int hashcode;
-
 	/**
 	 * Data map and Datatable associated with it
 	 */
 	private final DatatableMap datatableMap;
 	private final DataMap dataMap;
-
 	/**
 	 * String item map, used to convert local id's to the server id
 	 */
 	private final StringMap itemMap;
-	
 	/**
 	 * A WeakReference to this world
 	 */
@@ -206,7 +201,7 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 		AsyncExecutor e = getExecutor();
 		Thread t;
 		if (e instanceof Thread) {
-			t = (Thread)e;
+			t = (Thread) e;
 		} else {
 			throw new IllegalStateException("AsyncExecutor should be instance of Thread");
 		}
@@ -271,7 +266,7 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 
 	@Override
 	public Entity createEntity(Point point, Controller controller) {
-		return new SpoutEntity((SpoutEngine) getEngine(), point, controller);
+		return new SpoutEntity(getEngine(), point, controller);
 	}
 
 	/**
@@ -337,6 +332,7 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 	public long getSeed() {
 		return seed;
 	}
+
 	/**
 	 * Gets the lighting manager that calculates the light for this world
 	 * @return world lighting manager
@@ -485,14 +481,13 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 
 	/**
 	 * Removes a column corresponding to the given Column coordinates
-	 *
 	 * @param x the x coordinate
 	 * @param z the z coordinate
 	 */
 	public void removeColumn(int x, int z, SpoutColumn column) {
 		long key = IntPairHashed.key(x, z);
 		if (columns.remove(key, column)) {
-			synchronized(columnSet) {
+			synchronized (columnSet) {
 				columnSet.remove(column);
 			}
 		}
@@ -500,7 +495,6 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 
 	/**
 	 * Gets the column corresponding to the given Block coordinates
-	 *
 	 * @param x the x block coordinate
 	 * @param z the z block coordinate
 	 * @param create true to create the column if it doesn't exist
@@ -516,7 +510,7 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 			column = columns.putIfAbsent(key, newColumn);
 			if (column == null) {
 				column = newColumn;
-				synchronized(columnSet) {
+				synchronized (columnSet) {
 					columnSet.add(column);
 				}
 			}
@@ -571,7 +565,7 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 	@Override
 	public Entity getEntity(UUID uid) {
 		for (Region region : regions) {
-			for (Entity e :region.getAll()) {
+			for (Entity e : region.getAll()) {
 				if (e.getUID().equals(uid)) {
 					return e;
 				}
@@ -603,10 +597,10 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 		final int total = Math.max(1, regions.size());
 		int progress = 0;
 		for (Region r : regions) {
-			((SpoutRegion)r).unload(save);
+			((SpoutRegion) r).unload(save);
 			progress++;
 			if (save && progress % 4 == 0) {
-				Spout.getLogger().info("Saving world [" + getName() + "], " + (int)(progress * 100F / total) + "% Complete");
+				Spout.getLogger().info("Saving world [" + getName() + "], " + (int) (progress * 100F / total) + "% Complete");
 			}
 		}
 	}
@@ -675,12 +669,12 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 		return dataMap;
 	}
 
-    @Override
-    public Serializable get(Object key) {
-        return dataMap.get(key);
-    }
+	@Override
+	public Serializable get(Object key) {
+		return dataMap.get(key);
+	}
 
-    public StringMap getItemMap() {
+	public StringMap getItemMap() {
 		return itemMap;
 	}
 
@@ -712,7 +706,7 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 			for (int dy = start.getY(); dy < end.getY(); dy++) {
 				for (int dz = start.getZ(); dz < end.getZ(); dz++) {
 					Chunk chunk = getChunk(dx, dy, dz);
-					((SpoutChunk)chunk).setCuboid(buffer);
+					((SpoutChunk) chunk).setCuboid(buffer);
 				}
 			}
 		}
@@ -733,7 +727,7 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 	@Override
 	public void runDynamicUpdates(long time, int sequence) throws InterruptedException {
 	}
-	
+
 	public WeakReference<World> getWeakReference() {
 		return selfReference;
 	}

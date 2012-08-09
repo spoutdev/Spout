@@ -35,7 +35,7 @@ import org.spout.api.protocol.Message;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 import org.spout.engine.SpoutClient;
-import org.spout.engine.player.SpoutPlayer;
+import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.world.SpoutWorld;
 
 /**

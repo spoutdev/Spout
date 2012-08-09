@@ -31,15 +31,15 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
-import org.spout.api.Spout;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
+import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
-import org.spout.api.player.Player;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 
@@ -161,7 +161,7 @@ public class AdministrationCommands {
 			}
 
 			pluginListString.append(pluginList[i].isEnabled() ? ChatStyle.BRIGHT_GREEN : ChatStyle.RED)
-			.append(pluginList[i].getName());
+					.append(pluginList[i].getName());
 
 			if (i != pluginList.length - 1) {
 				pluginListString.append(ChatStyle.RESET).append(", ");
@@ -175,7 +175,7 @@ public class AdministrationCommands {
 	public void onPlayersCommand(CommandContext args, CommandSource source) {
 		Player[] players = Spout.getEngine().getOnlinePlayers();
 		ChatArguments onlineMsg = new ChatArguments(Arrays.asList("Online (", (players.length <= 0 ? ChatStyle.RED : ChatStyle.BRIGHT_GREEN), players.length, ChatStyle.RESET, "): "));
-		for (int i = 0; i < players.length; i ++) {
+		for (int i = 0; i < players.length; i++) {
 			if (!players[i].isOnline()) {
 				continue;
 			}

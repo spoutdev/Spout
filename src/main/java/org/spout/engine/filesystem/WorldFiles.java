@@ -45,10 +45,10 @@ import org.spout.api.Spout;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
-import org.spout.api.entity.component.Controller;
+import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.component.controller.type.ControllerRegistry;
-import org.spout.api.entity.component.controller.type.ControllerType;
+import org.spout.api.entity.controller.type.ControllerRegistry;
+import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.generator.biome.EmptyBiomeManager;
@@ -59,7 +59,6 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.NBTMapper;
 import org.spout.api.util.StringMap;
-import org.spout.api.util.hashing.ArrayHash;
 import org.spout.api.util.hashing.ByteTripleHashed;
 import org.spout.api.util.hashing.SignedTenBitTripleHashed;
 import org.spout.api.util.sanitation.SafeCast;
@@ -294,7 +293,7 @@ public class WorldFiles {
 			chunkTags.put(new ByteArrayTag("biomes", biomes));
 		}
 
-		chunkTags.put(new ByteArrayTag("extraData", ((DataMap)snapshot.getDataMap()).getRawMap().compress()));
+		chunkTags.put(new ByteArrayTag("extraData", ((DataMap) snapshot.getDataMap()).getRawMap().compress()));
 
 		CompoundTag chunkCompound = new CompoundTag("chunk", chunkTags);
 
@@ -458,7 +457,7 @@ public class WorldFiles {
 
 				if (controllerDataExists) {
 					byte[] data = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("controller_data")), new byte[0]);
-					DatatableMap dataMap = ((DataMap) controller.data()).getRawMap();
+					DatatableMap dataMap = ((DataMap) controller.getDataMap()).getRawMap();
 					dataMap.decompress(data);
 				}
 			} catch (Exception error) {
@@ -512,7 +511,7 @@ public class WorldFiles {
 			//Call onSave
 			e.getController().onSave();
 			//Serialize data
-			DatatableMap dataMap = ((DataMap) e.getController().data()).getRawMap();
+			DatatableMap dataMap = ((DataMap) e.getController().getDataMap()).getRawMap();
 			if (!dataMap.isEmpty()) {
 				map.put(new ByteTag("controller_data_exists", true));
 				map.put(new ByteArrayTag("controller_data", dataMap.compress()));

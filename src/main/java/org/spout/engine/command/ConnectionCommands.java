@@ -33,10 +33,11 @@ import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.Executor;
+import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
-import org.spout.api.player.Player;
 import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.Protocol;
+
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.protocol.PortBindingImpl;
@@ -63,9 +64,10 @@ public class ConnectionCommands {
 			}
 
 			if (source instanceof Player) {
-				((Player) source).getSession().disconnect(false, new Object[] {message});
+				((Player) source).getSession().disconnect(false, new Object[]{message});
 			}
 		}
+
 		@Executor(Platform.CLIENT)
 		public void executeClient(CommandContext args, CommandSource source) throws CommandException {
 			if (source instanceof Player) {

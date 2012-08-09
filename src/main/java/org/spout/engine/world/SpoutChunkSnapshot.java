@@ -35,8 +35,8 @@ import java.util.Set;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
-import org.spout.api.entity.component.controller.BlockController;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.controller.BlockController;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.cuboid.Chunk;
@@ -46,6 +46,7 @@ import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.util.hashing.NibblePairHashed;
+
 import org.spout.engine.world.SpoutChunk.PopulationState;
 
 public class SpoutChunkSnapshot extends ChunkSnapshot {
@@ -53,7 +54,6 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	 * The parent region that manages this chunk
 	 */
 	private final WeakReference<Region> parentRegion;
-
 	private final byte worldSkyLightLoss;
 	private final Set<Entity> entities;
 	private final Set<WeakReference<Entity>> weakEntities;
@@ -67,7 +67,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	private boolean renderDirty = false;
 
 	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, EntityType type, ExtraData data) {
-		super(chunk.getWorld(), chunk.getX() * CHUNK_SIZE, chunk.getY()  * CHUNK_SIZE, chunk.getZ()  * CHUNK_SIZE);
+		super(chunk.getWorld(), chunk.getX() * CHUNK_SIZE, chunk.getY() * CHUNK_SIZE, chunk.getZ() * CHUNK_SIZE);
 		parentRegion = new WeakReference<Region>(chunk.getRegion());
 
 		// Cache entities
@@ -252,7 +252,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	public boolean isPopulated() {
 		return populationState == PopulationState.POPULATED;
 	}
-	
+
 	public PopulationState getPopulationState() {
 		return populationState;
 	}

@@ -30,15 +30,13 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
-import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerKickEvent;
 import org.spout.api.event.player.PlayerLeaveEvent;
 import org.spout.api.event.storage.PlayerSaveEvent;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.Protocol;
 import org.spout.engine.SpoutServer;
-import org.spout.engine.player.SpoutPlayer;
-import org.spout.engine.world.SpoutWorld;
+import org.spout.engine.entity.SpoutPlayer;
 
 /**
  * SpoutSession for servers

@@ -60,6 +60,7 @@ import org.spout.api.command.RootCommand;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
 import org.spout.api.event.EventManager;
 import org.spout.api.event.SimpleEventManager;
 import org.spout.api.event.server.ServerStopEvent;
@@ -80,11 +81,9 @@ import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.permissions.DefaultPermissions;
 import org.spout.api.permissions.PermissionsSubject;
-import org.spout.api.player.Player;
 import org.spout.api.plugin.CommonPluginLoader;
 import org.spout.api.plugin.CommonPluginManager;
 import org.spout.api.plugin.CommonServiceManager;
-import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginManager;
 import org.spout.api.plugin.ServiceManager;
@@ -99,6 +98,7 @@ import org.spout.api.util.StringMap;
 import org.spout.api.util.StringUtil;
 
 import org.spout.engine.chat.console.Console;
+import org.spout.engine.chat.console.ConsoleManager;
 import org.spout.engine.chat.console.FileConsole;
 import org.spout.engine.chat.console.JLineConsole;
 import org.spout.engine.chat.console.MultiConsole;
@@ -107,15 +107,13 @@ import org.spout.engine.command.ConnectionCommands;
 import org.spout.engine.command.MessagingCommands;
 import org.spout.engine.command.TestCommands;
 import org.spout.engine.entity.EntityManager;
-import org.spout.engine.entity.SpoutEntity;
+import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.engine.filesystem.WorldFiles;
-import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.protocol.SpoutSessionRegistry;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
-import org.spout.engine.chat.console.ConsoleManager;
 import org.spout.engine.util.DeadlockMonitor;
 import org.spout.engine.util.TicklockMonitor;
 import org.spout.engine.util.thread.AsyncManager;
@@ -261,7 +259,8 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	/**
 	 * This method is called after {@link #loadPlugins()} but before {@link #enablePlugins()}
 	 */
-	protected void postPluginLoad() {}
+	protected void postPluginLoad() {
+	}
 
 	public void loadPlugins() {
 		pluginManager.registerPluginLoader(CommonPluginLoader.class);
@@ -502,21 +501,21 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	private final AtomicBoolean stopping = new AtomicBoolean();
+
 	@Override
 	public boolean stop(final String message) {
 		return stop(message, true);
 	}
-	
+
 	/**
 	 * Used to allow subclasses submit final tasks before stopping the scheduler
-	 * 
 	 * @param message
 	 * @param stopScheduler
 	 * @return
 	 */
 	protected boolean stop(final String message, boolean stopScheduler) {
 		final SpoutEngine engine = this;
-		
+
 		if (!stopping.compareAndSet(false, true)) {
 			return false;
 		}
@@ -538,7 +537,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 				}
 			}
 		};
-
 
 		Runnable finalTask = new Runnable() {
 			@Override

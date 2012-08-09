@@ -37,12 +37,12 @@ import org.spout.api.Source;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
+import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.component.Controller;
-import org.spout.api.entity.component.controller.BlockController;
+import org.spout.api.entity.Player;
+import org.spout.api.entity.controller.BlockController;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
-import org.spout.api.generator.biome.BiomeGenerator;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
@@ -50,12 +50,12 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.range.EffectRange;
-import org.spout.api.player.Player;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.cuboid.CuboidBuffer;
 import org.spout.api.util.hashing.IntPairHashed;
 import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
+
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
@@ -70,15 +70,12 @@ public class SpoutClientWorld extends SpoutAbstractWorld {
 	 */
 	private final TSyncLongObjectHashMap<SpoutColumn> columns = new TSyncLongObjectHashMap<SpoutColumn>();
 	private final Set<SpoutColumn> columnSet = new LinkedHashSet<SpoutColumn>();
-
 	/**
 	 * Data map and Datatable associated with it
 	 */
 	private final DatatableMap datatableMap;
 	private final DataMap dataMap;
-
 	private final RegionSource regions;
-
 	/**
 	 * Holds all of the entities to be simulated
 	 */
@@ -96,14 +93,13 @@ public class SpoutClientWorld extends SpoutAbstractWorld {
 
 	/**
 	 * Removes a column corresponding to the given Column coordinates
-	 *
 	 * @param x the x coordinate
 	 * @param z the z coordinate
 	 */
 	public void removeColumn(int x, int z, SpoutColumn column) {
 		long key = IntPairHashed.key(x, z);
 		if (columns.remove(key, column)) {
-			synchronized(columnSet) {
+			synchronized (columnSet) {
 				columnSet.remove(column);
 			}
 		}
@@ -111,7 +107,6 @@ public class SpoutClientWorld extends SpoutAbstractWorld {
 
 	/**
 	 * Gets the column corresponding to the given Block coordinates
-	 *
 	 * @param x the x block coordinate
 	 * @param z the z block coordinate
 	 * @param create true to create the column if it doesn't exist
@@ -127,7 +122,7 @@ public class SpoutClientWorld extends SpoutAbstractWorld {
 			column = columns.putIfAbsent(key, newColumn);
 			if (column == null) {
 				column = newColumn;
-				synchronized(columnSet) {
+				synchronized (columnSet) {
 					columnSet.add(column);
 				}
 			}
@@ -263,14 +258,14 @@ public class SpoutClientWorld extends SpoutAbstractWorld {
 	}
 
 	public Entity getEntity(UUID uid) {
-			for (Region region : regions) {
-				for (Entity e :region.getAll()) {
-					if (e.getUID().equals(uid)) {
-						return e;
-					}
+		for (Region region : regions) {
+			for (Entity e : region.getAll()) {
+				if (e.getUID().equals(uid)) {
+					return e;
 				}
 			}
-			return null;
+		}
+		return null;
 	}
 
 	public Entity createEntity(Point point, Controller controller) {

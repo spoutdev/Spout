@@ -34,12 +34,12 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.command.annotated.Executor;
+import org.spout.api.entity.Player;
 import org.spout.api.event.player.PlayerChatEvent;
 import org.spout.api.exception.CommandException;
 import org.spout.api.permissions.DefaultPermissions;
-import org.spout.api.player.Player;
-
 import org.spout.api.plugin.Platform;
+
 import org.spout.engine.SpoutEngine;
 
 /**
@@ -58,6 +58,7 @@ public class MessagingCommands {
 			DefaultPermissions.addDefaultPermission("spout.chat.send");
 			DefaultPermissions.addDefaultPermission("spout.chat.receive.*");
 		}
+
 		@Executor(Platform.SERVER)
 		public void server(CommandContext args, CommandSource source) throws CommandException {
 			ChatArguments message = args.getJoinedString(0);

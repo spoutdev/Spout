@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 import org.jboss.netty.channel.Channel;
-import org.spout.api.Client;
+
 import org.spout.api.Spout;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
@@ -50,7 +50,7 @@ import org.spout.api.protocol.NullNetworkSynchronizer;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.engine.SpoutEngine;
-import org.spout.engine.player.SpoutPlayer;
+import org.spout.engine.entity.SpoutPlayer;
 
 /**
  * A single connection to the server, which may or may not be associated with a

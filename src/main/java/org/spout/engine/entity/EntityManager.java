@@ -38,14 +38,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.Spout;
 import org.spout.api.datatable.GenericDatatableMap;
+import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.component.Controller;
-import org.spout.api.entity.component.controller.BlockController;
-import org.spout.api.entity.component.controller.PlayerController;
+import org.spout.api.entity.Player;
+import org.spout.api.entity.controller.BlockController;
+import org.spout.api.entity.controller.PlayerController;
 import org.spout.api.event.entity.EntityDespawnEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.math.Vector3;
-import org.spout.api.player.Player;
 import org.spout.api.util.StringMap;
 
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
@@ -251,7 +251,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 				continue;
 			}
 
-			Player p = ((PlayerController) controller).getParent();
+			Player p = (Player) controller.getParent();
 			if (p.isOnline()) {
 				p.getNetworkSynchronizer().finalizeTick();
 			}
@@ -262,9 +262,8 @@ public class EntityManager implements Iterable<SpoutEntity> {
 		for (SpoutEntity e : entities.get().values()) {
 			Controller controller = e.getController();
 			if (controller != null) {
-				controller.preSnapshot();
 				if (controller instanceof PlayerController) {
-					Player p = ((PlayerController) controller).getParent();
+					Player p = (Player) controller.getParent();
 					if (p.isOnline()) {
 						p.getNetworkSynchronizer().preSnapshot();
 					}

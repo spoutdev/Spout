@@ -26,7 +26,12 @@
  */
 package org.spout.engine.entity;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,10 +40,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.Source;
 import org.spout.api.collision.CollisionModel;
+import org.spout.api.entity.Component;
+import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.component.ComponentEntityBase;
-import org.spout.api.entity.component.Controller;
-import org.spout.api.entity.component.controller.PlayerController;
+import org.spout.api.entity.Player;
+import org.spout.api.entity.controller.PlayerController;
 import org.spout.api.event.entity.EntityControllerChangeEvent;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
@@ -52,7 +58,6 @@ import org.spout.api.math.Matrix;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
-import org.spout.api.player.Player;
 import org.spout.api.util.OutwardIterator;
 import org.spout.api.util.Profiler;
 import org.spout.engine.SpoutConfiguration;
@@ -60,8 +65,10 @@ import org.spout.engine.SpoutEngine;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 
-public class SpoutEntity extends ComponentEntityBase implements Entity {
+public class SpoutEntity implements Entity {
 	public static final int NOTSPAWNEDID = -1;
+	//Components
+	private final HashMap<Class<? extends Component>, Component> components = new HashMap<Class<? extends Component>, Component>();
 	//Live
 	private final AtomicReference<EntityManager> entityManagerLive;
 	private final AtomicReference<Controller> controllerLive;
@@ -134,22 +141,32 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 	@Override
 	public void onTick(float dt) {
 		Profiler.start("tick entity session");
-		
-		super.onTick(dt);
 
 		if (controller != null) {
 			if (!isDead() && getPosition() != null && getWorld() != null) {
 				Profiler.startAndStop("tick entity controller");
-				controller.tick(dt);
+				controller.onTick(dt);
 				Profiler.startAndStop("tick entity chunk");
 				//TODO Fix, this isn't right
 				chunkLive.set(getWorld().getChunkFromBlock(transform.getPosition(), LoadOption.NO_LOAD));
 				entityManagerLive.set(((SpoutRegion)getRegion()).getEntityManager());
+				//Tick components
+				tickComponents(dt);
 			}
 		}
 		Profiler.stop();
 	}
 
+	@Override
+	public boolean canTick() {
+		return true;
+	}
+
+	public void tick(float dt) {
+		if (canTick()) {
+			onTick(dt);
+		}
+	}
 	@Override
 	public Transform getTransform() {
 		return transform.copy();
@@ -425,12 +442,14 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 			//1.) Entity is dead
 			if (controller != null && controllerLive.get() == null) {
 				//Sanity check
-				if (!isDead()) throw new IllegalStateException("ControllerLive is null, but entity is not dead!");
+				if (!isDead()) {
+					throw new IllegalStateException("ControllerLive is null, but entity is not dead!");
+				}
 
 				//Kill old controller
 				controller.onDeath();
 				if (controller instanceof PlayerController) {
-					Player p = ((PlayerController) controller).getParent();
+					Player p = (Player) controller.getParent();
 					if (p != null && p.isOnline()) {
 						p.getNetworkSynchronizer().onDeath();
 					}
@@ -441,7 +460,7 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 				//Kill old controller
 				controller.onDeath();
 				if (controller instanceof PlayerController) {
-					Player p = ((PlayerController) controller).getParent();
+					Player p = (Player) controller.getParent();
 					if (p != null && p.isOnline()) {
 						p.getNetworkSynchronizer().onDeath();
 					}
@@ -455,7 +474,9 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 			//3.) Entity was just spawned, has not copied snapshots yet
 			else if (controller == null && controllerLive.get() != null) {
 				//Sanity check
-				if (!this.justSpawned()) throw new IllegalStateException("Controller is null, ControllerLive is not-null, and the entity did not just spawn.");
+				if (!this.justSpawned()) {
+					throw new IllegalStateException("Controller is null, ControllerLive is not-null, and the entity did not just spawn.");
+				}
 			}
 		}
 
@@ -496,8 +517,9 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 
 	private void removeObserver() {
 		//Player view distance is handled in the network synchronizer
-		if (controllerLive.get() instanceof PlayerController) {
-			Player p = ((PlayerController)controllerLive.get()).getParent();
+		Controller c = controllerLive.get();
+		if (c instanceof PlayerController) {
+			Player p = (Player) c.getParent();
 			p.getNetworkSynchronizer().onDeath();
 			return;
 		}
@@ -582,9 +604,7 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 
 	@Override
 	public void onSync() {
-		//Forward to controller for now, but we may want to do some sync logic here for the entity.
-		controller.onSync();
-		//TODO - this might not be needed, if it is, it needs to send to the network synchronizer for players
+		//TODO Needed?
 	}
 
 	public boolean justSpawned() {
@@ -648,5 +668,60 @@ public class SpoutEntity extends ComponentEntityBase implements Entity {
 	public void setupInitialChunk(Transform transform) {
 		chunkLive.set(transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition()));
 		entityManagerLive.set(((SpoutRegion) chunkLive.get().getRegion()).getEntityManager());
+	}
+
+	@Override
+	public Component addComponent(Class<? extends Component> aClass) {
+		if (hasComponent(aClass)) {
+			return getComponent(aClass);
+		}
+
+		try {
+			Component ec = aClass.newInstance();
+			components.put(aClass, ec);
+			ec.attachToEntity(this);
+			ec.onAttached();
+			return ec;
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		throw new RuntimeException("Cannot Create Component!");
+	}
+
+	@Override
+	public boolean removeComponent(Class<? extends Component> aClass) {
+		if (!hasComponent(aClass)) {
+			return false;
+		}
+		getComponent(aClass).onDetached();
+		components.remove(aClass);
+		return true;
+	}
+
+	@Override
+	public Component getComponent(Class<? extends Component> aClass) {
+		return components.get(aClass);
+	}
+
+	@Override
+	public boolean hasComponent(Class<? extends Component> aClass) {
+		return components.containsKey(aClass);
+	}
+
+	private final void tickComponents(float dt) {
+
+		ArrayList<Component> coms = new ArrayList<Component>(components.values());
+		Collections.sort(coms);
+
+		for (Component component : coms) {
+			if (component.canTick()) {
+				component.tick(dt);
+			}
+			if (component.runOnce()) {
+				removeComponent(component.getClass());
+			}
+		}
 	}
 }

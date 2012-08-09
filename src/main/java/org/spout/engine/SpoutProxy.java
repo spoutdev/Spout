@@ -38,15 +38,15 @@ import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 
 import org.spout.api.Spout;
-import org.spout.api.player.Player;
+import org.spout.api.entity.Player;
 import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 
-import org.spout.engine.listener.channel.SpoutProxyConnectListener;
+import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.listener.SpoutProxyListener;
-import org.spout.engine.player.SpoutPlayer;
+import org.spout.engine.listener.channel.SpoutProxyConnectListener;
 import org.spout.engine.protocol.SpoutNioServerSocketChannel;
 import org.spout.engine.protocol.SpoutProxySession;
 import org.spout.engine.protocol.SpoutSession;

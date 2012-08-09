@@ -26,13 +26,13 @@
  */
 package org.spout.engine.listener;
 
+import org.spout.api.entity.Player;
 import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
 import org.spout.api.event.Order;
 import org.spout.api.event.Result;
 import org.spout.api.event.player.PlayerConnectEvent;
 import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
-import org.spout.api.player.Player;
 
 import org.spout.engine.SpoutProxy;
 import org.spout.engine.protocol.SpoutSession;

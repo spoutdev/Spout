@@ -47,8 +47,9 @@ import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.component.controller.BlockController;
-import org.spout.api.entity.component.controller.PlayerController;
+import org.spout.api.entity.Player;
+import org.spout.api.entity.controller.BlockController;
+import org.spout.api.entity.controller.PlayerController;
 import org.spout.api.event.block.BlockChangeEvent;
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGeneratorUtils;
@@ -75,7 +76,6 @@ import org.spout.api.material.block.BlockSnapshot;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
-import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.CuboidBuffer;
@@ -83,6 +83,7 @@ import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 import org.spout.api.util.map.concurrent.AtomicBlockStoreImpl;
 import org.spout.api.util.set.TNibbleQuadHashSet;
+
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
@@ -92,7 +93,6 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashSet;
 
 public class SpoutChunk extends Chunk {
-	
 	private static final AtomicInteger activeChunks = new AtomicInteger(0);
 	private static final AtomicInteger observedChunks = new AtomicInteger(0);
 	private final AtomicBoolean observed = new AtomicBoolean(false);
@@ -102,10 +102,11 @@ public class SpoutChunk extends Chunk {
 	 * modify the block store.
 	 */
 	private static final int restrictedStages = TickStage.PHYSICS | TickStage.DYNAMIC_BLOCKS;
-	private static final int allowedStages = TickStage.STAGE1 | TickStage.STAGE2P | TickStage.TICKSTART | TickStage.GLOBAL_PHYSICS | TickStage.GLOBAL_DYNAMIC_BLOCKS;;
+	private static final int allowedStages = TickStage.STAGE1 | TickStage.STAGE2P | TickStage.TICKSTART | TickStage.GLOBAL_PHYSICS | TickStage.GLOBAL_DYNAMIC_BLOCKS;
+	;
 	private static final int updateStages =
 			TickStage.PHYSICS | TickStage.DYNAMIC_BLOCKS
-			| TickStage.GLOBAL_PHYSICS | TickStage.GLOBAL_DYNAMIC_BLOCKS;
+					| TickStage.GLOBAL_PHYSICS | TickStage.GLOBAL_DYNAMIC_BLOCKS;
 	/**
 	 * Time in ms between chunk reaper unload checks
 	 */
@@ -200,7 +201,6 @@ public class SpoutChunk extends Chunk {
 	 */
 	private final Thread regionThread;
 	private final Thread mainThread;
-
 	/**
 	 * A WeakReference to this chunk
 	 */
@@ -260,11 +260,11 @@ public class SpoutChunk extends Chunk {
 		activeChunks.incrementAndGet();
 		selfReference = new WeakReference<Chunk>(this);
 	}
-	
+
 	public static int getActiveChunks() {
 		return activeChunks.get();
 	}
-	
+
 	public static int getObservedChunks() {
 		return observedChunks.get();
 	}
@@ -321,7 +321,6 @@ public class SpoutChunk extends Chunk {
 			material = blockEvent.getSnapshot().getMaterial();
 			data = blockEvent.getSnapshot().getData();
 		}
-
 
 		short newId = material.getId();
 		short newData = data;
@@ -452,7 +451,7 @@ public class SpoutChunk extends Chunk {
 	public void resetDynamicBlock(int x, int y, int z) {
 		parentRegion.resetDynamicBlock(getBlockX(x), getBlockY(y), getBlockZ(z));
 	}
-	
+
 	@Override
 	public void syncResetDynamicBlock(int x, int y, int z) {
 		parentRegion.syncResetDynamicBlock(getBlockX(x), getBlockY(y), getBlockZ(z));
@@ -584,7 +583,7 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public byte getBlockSkyLight(int x, int y, int z) {
 		int light = this.getBlockSkyLightRaw(x, y, z) - (15 - this.getWorld().getSkyLight());
-		return light < 0 ? (byte)0 : (byte) light;
+		return light < 0 ? (byte) 0 : (byte) light;
 	}
 
 	@Override
@@ -609,7 +608,7 @@ public class SpoutChunk extends Chunk {
 	public void queueBlockPhysics(int x, int y, int z, EffectRange range, Source source) {
 		queueBlockPhysics(x, y, z, range, null, source);
 	}
-		
+
 	public void queueBlockPhysics(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial, Source source) {
 		checkChunkLoaded();
 		int rx = x & BLOCKS.MASK;
@@ -662,7 +661,7 @@ public class SpoutChunk extends Chunk {
 				case UNLOADED:
 					nextState = SaveState.UNLOADED;
 					break;
-				case SAVING: 
+				case SAVING:
 					nextState = SaveState.NONE;
 					break;
 				default:
@@ -755,7 +754,7 @@ public class SpoutChunk extends Chunk {
 			success = saveState.compareAndSet(state, nextState);
 		}
 	}
-	
+
 	public void saveComplete() {
 		if (!observers.isEmptyLive() || observed.get()) {
 			resetPostSaving();
@@ -795,7 +794,6 @@ public class SpoutChunk extends Chunk {
 					break;
 				default:
 					throw new IllegalStateException("Unknown save state: " + old);
-
 			}
 			success = saveState.compareAndSet(old, nextState);
 		}
@@ -826,32 +824,33 @@ public class SpoutChunk extends Chunk {
 		checkChunkLoaded();
 		byte[] blockLightCopy = null, skyLightCopy = null;
 		short[] blockIds = null, blockData = null;
-		switch(type) {
-			case NO_BLOCK_DATA: break;
-			case BLOCK_IDS_ONLY: 
+		switch (type) {
+			case NO_BLOCK_DATA:
+				break;
+			case BLOCK_IDS_ONLY:
 				blockIds = blockStore.getBlockIdArray();
 				break;
-			case BLOCKS_ONLY: 
+			case BLOCKS_ONLY:
 				blockIds = blockStore.getBlockIdArray();
 				blockData = blockStore.getDataArray();
 				break;
-			case LIGHT_ONLY: 
+			case LIGHT_ONLY:
 				blockLightCopy = new byte[blockLight.length];
 				System.arraycopy(blockLight, 0, blockLightCopy, 0, blockLight.length);
 				skyLightCopy = new byte[skyLight.length];
 				System.arraycopy(skyLight, 0, skyLightCopy, 0, skyLight.length);
 				break;
-			case BOTH: 
+			case BOTH:
 				blockIds = blockStore.getBlockIdArray();
 				blockData = blockStore.getDataArray();
-				
+
 				blockLightCopy = new byte[blockLight.length];
 				System.arraycopy(blockLight, 0, blockLightCopy, 0, blockLight.length);
 				skyLightCopy = new byte[skyLight.length];
 				System.arraycopy(skyLight, 0, skyLightCopy, 0, skyLight.length);
 				break;
 		}
-		
+
 		return new SpoutChunkSnapshot(this, blockIds, blockData, blockLightCopy, skyLightCopy, entities, data);
 	}
 
@@ -1011,7 +1010,7 @@ public class SpoutChunk extends Chunk {
 		saveState.compareAndSet(SaveState.SAVING, SaveState.NONE);
 		saveState.compareAndSet(SaveState.POST_SAVED, SaveState.NONE);
 	}
-	
+
 	@Override
 	public boolean isLoaded() {
 		return saveState.get() != SaveState.UNLOADED;
@@ -1021,14 +1020,14 @@ public class SpoutChunk extends Chunk {
 		TickStage.checkStage(TickStage.SNAPSHOT, regionThread);
 		setUnloadedRaw(true);
 	}
-	
+
 	/**
 	 * This method should only be used for chunks which were unnecessarily loaded
 	 */
 	public void setUnloadedUnchecked() {
 		setUnloadedRaw(false);
 	}
-	
+
 	private void setUnloadedRaw(boolean saveColumn) {
 		SaveState oldState = saveState.getAndSet(SaveState.UNLOADED);
 		//Clear as much as possible to limit the damage of a potential leak
@@ -1070,7 +1069,7 @@ public class SpoutChunk extends Chunk {
 		public boolean isUnload() {
 			return this == UNLOAD || this == POST_SAVED;
 		}
-		
+
 		public boolean isPostUnload() {
 			return this == SAVING;
 		}
@@ -1328,7 +1327,7 @@ public class SpoutChunk extends Chunk {
 				}
 				// Player Network sync
 				if (p.getController() instanceof PlayerController) {
-					Player player = ((PlayerController) p.getController()).getParent();
+					Player player = (Player) p.getController().getParent();
 
 					NetworkSynchronizer n = player.getNetworkSynchronizer();
 					for (Entity e : entitiesSnapshot) {
@@ -1383,7 +1382,7 @@ public class SpoutChunk extends Chunk {
 					int entityViewDistanceOld = ((SpoutEntity) e).getPrevViewDistance();
 					int entityViewDistanceNew = e.getViewDistance();
 
-					Player player = ((PlayerController) p.getController()).getParent();
+					Player player = (Player) p.getController().getParent();
 
 					if (!player.isOnline()) {
 						continue;
@@ -1403,7 +1402,7 @@ public class SpoutChunk extends Chunk {
 		for (Map.Entry<Entity, Integer> entry : observerLive.entrySet()) {
 			Entity p = entry.getKey();
 			if (p.getController() instanceof PlayerController) {
-				Player player = ((PlayerController) p.getController()).getParent();
+				Player player = (Player) p.getController().getParent();
 				if (player.isOnline()) {
 					NetworkSynchronizer n = player.getNetworkSynchronizer();
 					int playerDistance = entry.getValue();
@@ -1576,7 +1575,7 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public int addBlockDataField(int bx, int by, int bz, int bits, int value, Source source) {
 		int oldData = addBlockDataFieldRaw(bx, by, bz, bits, value, source);
-		
+
 		int shift = shiftCache[bits];
 
 		return (oldData & bits) >> shift;
@@ -1702,7 +1701,7 @@ public class SpoutChunk extends Chunk {
 	public BiomeManager getBiomeManager() {
 		return biomes;
 	}
-	
+
 	public WeakReference<Chunk> getWeakReference() {
 		return selfReference;
 	}

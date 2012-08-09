@@ -26,12 +26,9 @@
  */
 package org.spout.engine.world;
 
-import gnu.trove.iterator.TIntIterator;
-
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -46,12 +43,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
+import gnu.trove.iterator.TIntIterator;
+
 import org.spout.api.Source;
 import org.spout.api.Spout;
+import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.component.Controller;
-import org.spout.api.entity.component.controller.BlockController;
-import org.spout.api.entity.component.controller.PlayerController;
+import org.spout.api.entity.Player;
+import org.spout.api.entity.controller.BlockController;
+import org.spout.api.entity.controller.PlayerController;
 import org.spout.api.event.chunk.ChunkLoadEvent;
 import org.spout.api.event.chunk.ChunkPopulateEvent;
 import org.spout.api.event.chunk.ChunkUnloadEvent;
@@ -73,7 +73,6 @@ import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
-import org.spout.api.player.Player;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TickStage;
@@ -82,13 +81,14 @@ import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.set.TByteTripleHashSet;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
+
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.RegionEntityManager;
 import org.spout.engine.entity.SpoutEntity;
+import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ChunkDataForRegion;
 import org.spout.engine.filesystem.WorldFiles;
-import org.spout.engine.player.SpoutPlayer;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.scheduler.SpoutTaskManager;
 import org.spout.engine.util.TripleInt;
@@ -100,7 +100,7 @@ import org.spout.engine.world.dynamic.DynamicBlockUpdateTree;
 import org.spout.engine.world.physics.PhysicsQueue;
 import org.spout.engine.world.physics.UpdateQueue;
 
-public class SpoutRegion extends Region{
+public class SpoutRegion extends Region {
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
 	// Can't extend AsyncManager and Region
 	private final SpoutRegionManager manager;
@@ -147,9 +147,7 @@ public class SpoutRegion extends Region{
 	 * Reference to the persistent ByteArrayArray that stores chunk data
 	 */
 	private final BAAWrapper chunkStore;
-
 	private final ConcurrentLinkedQueue<SpoutChunkSnapshotFuture> snapshotQueue = new ConcurrentLinkedQueue<SpoutChunkSnapshotFuture>();
-
 	protected Queue<Chunk> unloadQueue = new ConcurrentLinkedQueue<Chunk>();
 	public static final byte POPULATE_CHUNK_MARGIN = 1;
 	/**
@@ -167,22 +165,16 @@ public class SpoutRegion extends Region{
 	 * The chunks that received a lighting change and need an update
 	 */
 	private final TByteTripleHashSet lightDirtyChunks = new TByteTripleHashSet();
-
 	/**
 	 * A queue of chunks that need to be populated
 	 */
 	final Queue<Chunk> populationQueue = new ConcurrentLinkedQueue<Chunk>();
 	final Set<Chunk> populationQueueSet = Collections.newSetFromMap(new ConcurrentHashMap<Chunk, Boolean>());
-	
 	private final SpoutTaskManager taskManager;
-
 	private final Thread executionThread;
-
 	private final SpoutScheduler scheduler;
-
 	private final LinkedHashSet<SpoutChunk> occupiedChunks = new LinkedHashSet<SpoutChunk>();
 	private final ConcurrentLinkedQueue<SpoutChunk> occupiedChunksQueue = new ConcurrentLinkedQueue<SpoutChunk>();
-
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 
@@ -231,7 +223,7 @@ public class SpoutRegion extends Region{
 		Thread t;
 		AsyncExecutor e = manager.getExecutor();
 		if (e instanceof Thread) {
-			t = (Thread)e;
+			t = (Thread) e;
 		} else {
 			throw new IllegalStateException("AsyncExecutor should be instance of Thread");
 		}
@@ -283,20 +275,20 @@ public class SpoutRegion extends Region{
 
 		ChunkDataForRegion dataForRegion = null;
 
-		if(loadopt.loadIfNeeded() && this.inputStreamExists(x, y, z)) {
+		if (loadopt.loadIfNeeded() && this.inputStreamExists(x, y, z)) {
 			dataForRegion = new ChunkDataForRegion();
 			newChunk = WorldFiles.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z), dataForRegion);
 		}
 
-		if(loadopt.generateIfNeeded() && newChunk == null) {
+		if (loadopt.generateIfNeeded() && newChunk == null) {
 			newChunk = generateChunk(x, y, z);
 			generated = true;
 		}
 
-		if(newChunk == null) {
+		if (newChunk == null) {
 			return null;
 		}
-		
+
 		while (true) {
 			if (chunkReference.compareAndSet(null, newChunk)) {
 				newChunk.notifyColumn();
@@ -684,6 +676,7 @@ public class SpoutRegion extends Region{
 	}
 
 	private int reapX = 0, reapY = 0, reapZ = 0;
+
 	public void finalizeRun() {
 		Profiler.start("finalizeRun");
 		try {
@@ -728,7 +721,7 @@ public class SpoutRegion extends Region{
 	}
 
 	private void syncChunkToPlayers(SpoutChunk chunk, Entity entity) {
-		SpoutPlayer player = (SpoutPlayer) ((PlayerController) entity.getController()).getParent();
+		SpoutPlayer player = (SpoutPlayer) entity.getController().getParent();
 		if (player.isOnline()) {
 			NetworkSynchronizer synchronizer = player.getNetworkSynchronizer();
 			if (!chunk.isDirtyOverflow() && !chunk.isLightDirty()) {
@@ -756,18 +749,16 @@ public class SpoutRegion extends Region{
 			return;
 		}
 		ChunkUpdatedEvent evt;
-		if (chunk.isDirtyOverflow()) {	/* If overflow, notify for whole chunk */
+		if (chunk.isDirtyOverflow()) {    /* If overflow, notify for whole chunk */
 			evt = new ChunkUpdatedEvent(chunk, null);
-		}
-		else {
+		} else {
 			ArrayList<Vector3> lst = new ArrayList<Vector3>();
 			boolean done = false;
 			for (int i = 0; !done; i++) {
 				Vector3 v = chunk.getDirtyBlock(i);
 				if (v != null) {
 					lst.add(v);
-				}
-				else {
+				} else {
 					done = true;
 				}
 			}
@@ -811,7 +802,6 @@ public class SpoutRegion extends Region{
 				while ((snapshotFuture = snapshotQueue.poll()) != null) {
 					snapshotFuture.run();
 				}
-
 			}
 			Iterator<SpoutChunk> itr = occupiedChunks.iterator();
 			int cx, cy, cz;
@@ -828,8 +818,7 @@ public class SpoutRegion extends Region{
 					itr.remove();
 				}
 			}
-		}
-		finally {
+		} finally {
 			Profiler.stop();
 		}
 	}
@@ -941,7 +930,7 @@ public class SpoutRegion extends Region{
 			}
 		}
 	}
-	
+
 	public int getSequence() {
 		return updateSequence;
 	}
@@ -1007,7 +996,6 @@ public class SpoutRegion extends Region{
 		return chunkStore.getBlockOutputStream(getChunkKey(c.getX(), c.getY(), c.getZ()));
 	}
 
-
 	public boolean inputStreamExists(int x, int y, int z) {
 		return chunkStore.inputStreamExists(getChunkKey(x, y, z));
 	}
@@ -1039,7 +1027,6 @@ public class SpoutRegion extends Region{
 
 		return key;
 	}
-
 
 	@Override
 	public boolean hasChunkAtBlock(int x, int y, int z) {
@@ -1210,7 +1197,7 @@ public class SpoutRegion extends Region{
 		HashSet<Player> players = new HashSet<Player>();
 		for (PlayerController player : this.entityManager.getPlayers()) {
 			if (player.getParent() != null) {
-				players.add(player.getParent());
+				players.add((Player) player.getParent());
 			}
 		}
 		return players;
@@ -1218,15 +1205,12 @@ public class SpoutRegion extends Region{
 
 	/**
 	 * Test if region file exists
-	 *
 	 * @param world world
 	 * @param x region x coordinate
 	 * @param y region y coordinate
 	 * @param z region z coordinate
-	 *
 	 * @return true if exists, false if doesn't exist
 	 */
-
 	public static boolean regionFileExists(World world, int x, int y, int z) {
 		File worldDirectory = world.getDirectory();
 		File regionDirectory = new File(worldDirectory, "region");

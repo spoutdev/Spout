@@ -32,9 +32,10 @@ import java.util.UUID;
 
 import org.spout.api.Source;
 import org.spout.api.Spout;
+import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.component.Controller;
-import org.spout.api.entity.component.controller.type.ControllerType;
+import org.spout.api.entity.Player;
+import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
@@ -45,10 +46,10 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
-import org.spout.api.player.Player;
 import org.spout.api.util.sanitation.StringSanitizer;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.Threadsafe;
+
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.AsyncManager;
@@ -193,7 +194,6 @@ public abstract class SpoutAbstractWorld extends AsyncManager implements World {
 
 	/**
 	 * Gets a set of nearby players to the point, inside of the range
-	 *
 	 * @param position of the center
 	 * @param range to look for
 	 * @return A set of nearby Players
@@ -206,7 +206,6 @@ public abstract class SpoutAbstractWorld extends AsyncManager implements World {
 
 	/**
 	 * Gets a set of nearby players to the entity, inside of the range
-	 *
 	 * @param entity marking the center and which is ignored
 	 * @param range to look for
 	 * @return A set of nearby Players
@@ -220,7 +219,6 @@ public abstract class SpoutAbstractWorld extends AsyncManager implements World {
 	/**
 	 * Gets a set of nearby players to the point, inside of the range.
 	 * The search will ignore the specified entity.
-	 *
 	 * @param position of the center
 	 * @param ignore Entity to ignore
 	 * @param range to look for
@@ -246,7 +244,6 @@ public abstract class SpoutAbstractWorld extends AsyncManager implements World {
 
 	/**
 	 * Finds all the players inside of the regions inside the range area
-	 *
 	 * @param position to search from
 	 * @param range to search for regions
 	 * @return nearby region's players
@@ -298,7 +295,6 @@ public abstract class SpoutAbstractWorld extends AsyncManager implements World {
 
 	/**
 	 * Gets the absolute closest player from the specified point within a specified range.
-	 *
 	 * @param range to search
 	 * @return nearest player
 	 */
@@ -310,7 +306,6 @@ public abstract class SpoutAbstractWorld extends AsyncManager implements World {
 
 	/**
 	 * Gets the absolute closest player from the specified point within a specified range.
-	 *
 	 * @param entity to search from
 	 * @param range to search
 	 * @return nearest player
