@@ -32,7 +32,7 @@ import org.spout.api.tickable.Tickable;
 /**
  * Represents an attachment to a controller that can respond to Ticks.
  */
-public interface Component<T extends Controller> extends Tickable, Comparable<Component<T>> {
+public interface Component<T extends ComponentHolder> extends Tickable, Comparable<Component<T>> {
 	/**
 	 * Attaches this component to a controller
 	 * @param parent controller this component will be attached to.
