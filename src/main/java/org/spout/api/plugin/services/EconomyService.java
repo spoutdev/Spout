@@ -27,7 +27,7 @@
 package org.spout.api.plugin.services;
 
 import org.spout.api.Spout;
-import org.spout.api.player.Player;
+import org.spout.api.entity.Player;
 
 /**
  * The economy service is a basic service that can be extended and registered as a service provider.

@@ -27,7 +27,7 @@
 package org.spout.api.event.player;
 
 import org.spout.api.event.HandlerList;
-import org.spout.api.player.Player;
+import org.spout.api.entity.Player;
 
 /**
  * Called when a player joins the server, this event can be disallowed to prevent the Player from logging in.<br/>

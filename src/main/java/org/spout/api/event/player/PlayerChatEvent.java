@@ -31,7 +31,7 @@ import org.spout.api.chat.ChatTemplate;
 import org.spout.api.chat.Placeholder;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
-import org.spout.api.player.Player;
+import org.spout.api.entity.Player;
 
 /**
  * Called when a player speaks in chat.

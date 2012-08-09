@@ -28,7 +28,7 @@ package org.spout.api.event.storage;
 
 import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;
-import org.spout.api.player.Player;
+import org.spout.api.entity.Player;
 
 /**
  * Called when data about a player needs to be loaded, usually right after a player session begins.

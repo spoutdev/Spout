@@ -36,7 +36,7 @@ import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.ChatSection;
 import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
-import org.spout.api.player.Player;
+import org.spout.api.entity.Player;
 
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;

@@ -27,7 +27,7 @@
 package org.spout.api.entity.component.controller;
 
 import org.spout.api.entity.component.Controller;
-import org.spout.api.player.Player;
+import org.spout.api.entity.Player;
 
 /**
  * Represents a {@link Component} that is player controlled.

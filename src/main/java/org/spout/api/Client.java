@@ -31,7 +31,7 @@ import java.util.UUID;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.geo.World;
 import org.spout.api.keyboard.Input;
-import org.spout.api.player.Player;
+import org.spout.api.entity.Player;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.render.Camera;

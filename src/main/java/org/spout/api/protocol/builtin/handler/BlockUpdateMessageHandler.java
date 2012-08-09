@@ -27,7 +27,7 @@
 package org.spout.api.protocol.builtin.handler;
 
 import org.spout.api.material.Material;
-import org.spout.api.player.Player;
+import org.spout.api.entity.Player;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.builtin.message.BlockUpdateMessage;

@@ -28,8 +28,8 @@ package org.spout.api.entity.component;
 
 import java.util.HashMap;
 
-import org.spout.api.entity.ComponentBase;
-import org.spout.api.entity.EntityComponent;
+import org.spout.api.entity.Component;
+import org.spout.api.entity.ComponentHolder;
 import org.spout.api.tickable.BasicTickable;
 
 /**
@@ -38,15 +38,15 @@ import org.spout.api.tickable.BasicTickable;
  * A Component Based object is any object that contains a set of Components. 
  *
  */
-public class ComponentEntityBase extends BasicTickable implements ComponentBase {
-	private final HashMap<Class<? extends EntityComponent >, EntityComponent> components = new HashMap<Class<? extends EntityComponent>, EntityComponent>();
+public class ComponentEntityBase extends BasicTickable implements ComponentHolder {
+	private final HashMap<Class<? extends Component>, Component> components = new HashMap<Class<? extends Component>, Component>();
 
 	@Override
-	public EntityComponent addComponent(Class<? extends EntityComponent> component) {
+	public Component addComponent(Class<? extends Component> component) {
 		if(hasComponent(component)) return getComponent(component);
 		
 		try {
-			EntityComponent ec = component.newInstance();
+			Component ec = component.newInstance();
 			components.put(component, ec);
 			return ec;
 		} catch (InstantiationException e) {
@@ -60,19 +60,19 @@ public class ComponentEntityBase extends BasicTickable implements ComponentBase 
 	}
 
 	@Override
-	public boolean removeComponent(Class<? extends EntityComponent> component) {
+	public boolean removeComponent(Class<? extends Component> component) {
 		if(!hasComponent(component)) return false;
 		components.remove(component);
 		return true;
 	}
 
 	@Override
-	public EntityComponent getComponent(Class<? extends EntityComponent> component) {
+	public Component getComponent(Class<? extends Component> component) {
 		return components.get(component);
 	}
 
 	@Override
-	public boolean hasComponent(Class<? extends EntityComponent> component) {
+	public boolean hasComponent(Class<? extends Component> component) {
 		return components.containsKey(component);
 	}
 	

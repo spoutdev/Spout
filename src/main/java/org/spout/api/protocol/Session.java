@@ -32,7 +32,7 @@ import java.net.InetSocketAddress;
 import org.jboss.netty.channel.Channel;
 import org.spout.api.Engine;
 import org.spout.api.map.DefaultedMap;
-import org.spout.api.player.Player;
+import org.spout.api.entity.Player;
 
 /**
  * Represents a connection to the server.<br/>

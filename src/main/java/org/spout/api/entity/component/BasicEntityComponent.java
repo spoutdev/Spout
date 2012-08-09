@@ -26,11 +26,11 @@
  */
 package org.spout.api.entity.component;
 
+import org.spout.api.entity.Component;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.EntityComponent;
 import org.spout.api.tickable.BasicTickable;
 
-public abstract class BasicEntityComponent extends BasicTickable implements EntityComponent {
+public abstract class BasicEntityComponent extends BasicTickable implements Component {
 	private Entity parent;
 
 	/**

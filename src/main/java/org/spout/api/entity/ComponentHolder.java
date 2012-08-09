@@ -26,34 +26,36 @@
  */
 package org.spout.api.entity;
 
-import org.spout.api.tickable.Tickable;
-
-/**
- * Represents an attachment to an entity that can respond to Ticks.
- *
- */
-public interface EntityComponent extends Tickable {
-
+public interface ComponentHolder {
+	
 	/**
-	 * Attaches this component to an entity.
-	 * @param e entity this component will be attached to.
+	 * Adds a new Component to the Entity.  If the entity already contains a component of that type, then a new component is not 
+	 * constructed, and the one already attached is returned
+	 * 
+	 * @param component Type of component to add
+	 * @return The component created, or the one already attached
 	 */
-	public void attachToEntity(Entity e);
-
+	public Component addComponent(Class<? extends Component> component);
+	
 	/**
-	 * Gets the parent Entity associated with this component.
-	 *
-	 * @return parent Entity
+	 * Removes a component from the list
+	 * @param component Type of component to remove
+	 * @return True if a component is removed, false if not.  False is also returned if the component doesn't exist.
 	 */
-	public Entity getParent();
-
+	public boolean removeComponent(Class<? extends Component> component);
+	
 	/**
-	 * Called when this component is attached to an entity.
+	 * Returns an instance of the component attached to the object
+	 * @param component the type of component to get
+	 * @return The component instance, or NULL if it doesn't exist
 	 */
-	public abstract void onAttached();
-
-	/** 
-	 * Called when this component is detached from an entity.
+	public Component getComponent(Class<? extends Component> component);
+	
+	/**
+	 * Returns True if the type provided is attached or false if not.
+	 * @param component
+	 * @return
 	 */
-	public void onDetached();
+	public boolean hasComponent(Class<? extends Component> component);
+	
 }

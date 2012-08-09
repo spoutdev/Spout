@@ -27,14 +27,15 @@
 package org.spout.api.entity.component;
 
 import java.io.Serializable;
+
+import org.spout.api.entity.Component;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.EntityComponent;
 import org.spout.api.entity.component.controller.type.ControllerType;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.map.DefaultedMap;
 
-public interface Controller extends EntityComponent {
+public interface Controller extends Component {
 
 	/**
 	 * Called when this controller is detached from the entity (normally due to the entity dieing or being removed from the world).

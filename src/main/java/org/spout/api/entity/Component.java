@@ -24,59 +24,35 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.event.storage;
+package org.spout.api.entity;
 
-import org.spout.api.event.Event;
-import org.spout.api.event.HandlerList;
-import org.spout.api.entity.Player;
+import org.spout.api.tickable.Tickable;
 
 /**
- * Called when data about a player needs to be saved, usually right after a player session terminates.
+ * Represents an attachment to an entity that can respond to Ticks.
  */
-public class PlayerSaveEvent extends Event {
-	private static HandlerList handlers = new HandlerList();
-	private boolean saved = false;
-	private Player player;
-	public PlayerSaveEvent(Player player) {
-		this.player = player;
-	}
+public interface Component extends Tickable {
 
 	/**
-	 * Gets the player whose data is being saved.
-	 * 
-	 * @return player
+	 * Attaches this component to an entity.
+	 * @param e entity this component will be attached to.
 	 */
-	public Player getPlayer() {
-		return player;
-	}
+	public void attachToEntity(Entity e);
 
 	/**
-	 * True if a plugin has already saved this data.
-	 * 
-	 * @return saved
+	 * Gets the parent Entity associated with this component.
+	 *
+	 * @return parent Entity
 	 */
-	public boolean isSaved() {
-		return saved;
-	}
+	public Entity getParent();
 
 	/**
-	 * Sets the saved state of this event. <br/>
-	 * 
-	 * If the data is not reported saved after it has been called, it will be saved by the default save handler.
-	 * 
-	 * @param save
+	 * Called when this component is attached to an entity.
 	 */
-	public void setSaved(boolean save) {
-		saved = save;
-	}
+	public abstract void onAttached();
 
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
-	}
-
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
-
+	/** 
+	 * Called when this component is detached from an entity.
+	 */
+	public void onDetached();
 }

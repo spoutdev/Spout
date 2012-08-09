@@ -27,7 +27,7 @@
 package org.spout.api.event.player;
 
 import org.spout.api.event.Event;
-import org.spout.api.player.Player;
+import org.spout.api.entity.Player;
 
 /**
  * Represents a player-related event.

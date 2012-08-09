@@ -48,7 +48,7 @@ import org.spout.api.util.thread.SnapshotRead;
 /**
  * Represents an entity, which may or may not be spawned into the world.
  */
-public interface Entity extends Source, WorldSource, ComponentBase {
+public interface Entity extends Source, WorldSource, ComponentHolder {
 
 	public int getId();
 

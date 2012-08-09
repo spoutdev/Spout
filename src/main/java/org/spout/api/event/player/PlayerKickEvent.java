@@ -29,7 +29,7 @@ package org.spout.api.event.player;
 import java.util.List;
 
 import org.spout.api.event.Cancellable;
-import org.spout.api.player.Player;
+import org.spout.api.entity.Player;
 
 /**
  * Called when a player gets kicked from the server
