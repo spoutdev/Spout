@@ -26,16 +26,26 @@
  */
 package org.spout.api.entity.component.controller;
 
+import org.spout.api.entity.Entity;
 import org.spout.api.entity.component.Controller;
 import org.spout.api.entity.Player;
+import org.spout.api.entity.component.controller.type.ControllerType;
 
 /**
- * Represents a {@link Component} that is player controlled.
- * 
- * An entity is a Player if entity.getController() instanceof PlayerController == true
+ * Represents a {@link Controller} that is player controlled.
  */
-public interface PlayerController extends Controller {
+public abstract class PlayerController extends Controller {
+	protected PlayerController(ControllerType type, Player parent) {
+		super(type, parent);
+	}
 
 	@Override
-	public Player getParent();
+	public boolean isSavable() {
+		return false;
+	}
+
+	@Override
+	public boolean isImportant() {
+		return true;
+	}
 }

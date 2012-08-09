@@ -43,9 +43,11 @@ public abstract class Controller implements Tickable {
 	private final ControllerType type;
 	private final DatatableMap datatableMap = new GenericDatatableMap();
 	private final DataMap dataMap = new DataMap(datatableMap);
+	private final Entity parent;
 
-	protected Controller(ControllerType type) {
+	protected Controller(ControllerType type, Entity parent) {
 		this.type = type;
+		this.parent = parent;
 	}
 
 	/**
@@ -162,5 +164,13 @@ public abstract class Controller implements Tickable {
 	 */
 	public boolean isImportant() {
 		return false;
+	}
+
+	/**
+	 * Gets the entity this controller is attached to.
+	 * @return The entity this controller is attached to
+	 */
+	public Entity getParent() {
+		return parent;
 	}
 }
