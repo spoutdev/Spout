@@ -386,6 +386,11 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		return dataDirectory;
 	}
 
+        @Override
+	public File getPluginFolder() {
+		return pluginDirectory;
+	}
+
 	@Override
 	public Player getPlayer(String name, boolean exact) {
 		name = name.toLowerCase();
@@ -506,17 +511,17 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	public boolean stop(final String message) {
 		return stop(message, true);
 	}
-	
+
 	/**
 	 * Used to allow subclasses submit final tasks before stopping the scheduler
-	 * 
+	 *
 	 * @param message
 	 * @param stopScheduler
 	 * @return
 	 */
 	protected boolean stop(final String message, boolean stopScheduler) {
 		final SpoutEngine engine = this;
-		
+
 		if (!stopping.compareAndSet(false, true)) {
 			return false;
 		}
