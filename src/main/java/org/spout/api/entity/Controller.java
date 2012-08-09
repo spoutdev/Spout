@@ -27,6 +27,9 @@
 package org.spout.api.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
@@ -37,6 +40,8 @@ import org.spout.api.map.DefaultedMap;
 import org.spout.api.tickable.Tickable;
 
 public abstract class Controller implements ComponentHolder, Tickable {
+	//Components
+	private final HashMap<Class<? extends Component>, Component> components = new HashMap<Class<? extends Component>, Component>();
 	private final ControllerType type;
 	private final DatatableMap datatableMap = new GenericDatatableMap();
 	private final DataMap dataMap = new DataMap(datatableMap);
@@ -65,7 +70,7 @@ public abstract class Controller implements ComponentHolder, Tickable {
 	 */
 	@Override
 	public void onTick(float dt) {
-
+		tickComponents(dt);
 	}
 
 	@Override
@@ -176,5 +181,59 @@ public abstract class Controller implements ComponentHolder, Tickable {
 	 */
 	public void attachToEntity(Entity parent) {
 		this.parent = parent;
+	}
+
+	@Override
+	public Component addComponent(Class<? extends Component> aClass) {
+		if (hasComponent(aClass)) {
+			return getComponent(aClass);
+		}
+
+		try {
+			Component ec = aClass.newInstance();
+			components.put(aClass, ec);
+			ec.attachToController(this);
+			ec.onAttached();
+			return ec;
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		throw new RuntimeException("Cannot Create Component!");
+	}
+
+	@Override
+	public boolean removeComponent(Class<? extends Component> aClass) {
+		if (!hasComponent(aClass)) {
+			return false;
+		}
+		getComponent(aClass).onDetached();
+		components.remove(aClass);
+		return true;
+	}
+
+	@Override
+	public Component getComponent(Class<? extends Component> aClass) {
+		return components.get(aClass);
+	}
+
+	@Override
+	public boolean hasComponent(Class<? extends Component> aClass) {
+		return components.containsKey(aClass);
+	}
+
+	private final void tickComponents(float dt) {
+		ArrayList<Component> coms = new ArrayList<Component>(components.values());
+		Collections.sort(coms);
+
+		for (Component component : coms) {
+			if (component.canTick()) {
+				component.tick(dt);
+			}
+			if (component.runOnce()) {
+				removeComponent(component.getClass());
+			}
+		}
 	}
 }

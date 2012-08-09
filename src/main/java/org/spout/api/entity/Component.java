@@ -34,8 +34,8 @@ import org.spout.api.tickable.Tickable;
  */
 public interface Component<T extends Controller> extends Tickable, Comparable<Component<T>> {
 	/**
-	 * Attaches this component to an entity.
-	 * @param parent entity this component will be attached to.
+	 * Attaches this component to a controller
+	 * @param parent controller this component will be attached to.
 	 */
 	public void attachToController(T parent);
 
@@ -46,30 +46,66 @@ public interface Component<T extends Controller> extends Tickable, Comparable<Co
 	public T getParent();
 
 	/**
-	 * Called when this component is attached to an entity.
+	 * Called when this component is attached to a controller
 	 */
 	public abstract void onAttached();
 
 	/**
-	 * Called when this component is detached from an entity.
+	 * Called when this component is detached from a controller
 	 */
 	public void onDetached();
 
+	/**
+	 * Gets the priority this component will be ticked by.
+	 * @return the priority the component will be ticked by
+	 */
 	public TickPriority getPriority();
 
+	/**
+	 * Sets the priority the component will be ticked by.
+	 * @param priority the priority the component will be ticked by
+	 */
 	public void setPriority(TickPriority priority);
 
+	/**
+	 * Returns if this component will run once and remove itself.
+	 * @return true if the component runs once, false if not
+	 */
 	public boolean runOnce();
 
+	/**
+	 * Sets whether this component will run once or not.
+	 * @param runOnce true to run once, false to repeat
+	 */
 	public void setRunOnce(boolean runOnce);
 
+	/**
+	 * Gets the delay before this component is ticked.
+	 * @return the delay
+	 */
 	public float getDelay();
 
+	/**
+	 * Sets the delay before this component is ticked.
+	 * @param delay the delay before the component is ticked
+	 */
 	public void setDelay(float delay);
 
+	/**
+	 * Gets the max delay this component can delay before ticking
+	 * @return the max delay
+	 */
 	public float getMaxDelay();
 
-	public void setMaxDelay(float delay);
+	/**
+	 * Sets the max delay this component can delay before ticking
+	 * @param maxDelay the max delay this component can delay
+	 */
+	public void setMaxDelay(float maxDelay);
 
+	/**
+	 * Ticks this component
+	 * @param dt time since the last tick (delta time)
+	 */
 	public void tick(float dt);
 }
