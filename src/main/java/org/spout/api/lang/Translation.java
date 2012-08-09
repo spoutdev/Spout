@@ -26,10 +26,14 @@
  */
 package org.spout.api.lang;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.spout.api.Spout;
 import org.spout.api.command.CommandSource;
 import org.spout.api.plugin.CommonClassLoader;
 import org.spout.api.plugin.CommonPlugin;
+import org.spout.api.plugin.CommonPluginManager;
 import org.spout.api.plugin.Plugin;
 
 /**
@@ -72,6 +76,9 @@ public class Translation {
 	 */
 	public static String tr(String source, CommandSource receiver, Object ...args) {
 		Plugin plugin = getPluginForStacktrace();
+		if (plugin == null) {
+			return source;
+		}
 		PluginDictionary pldict = plugin.getDictionary();
 		return pldict.tr(source, receiver, foundClass, args);
 	}
@@ -115,10 +122,43 @@ public class Translation {
 				if (plugin != null) {
 					return plugin;
 				} else {
-					return Spout.getPluginManager().getPlugin("Spout");	
+					return ((CommonPluginManager) Spout.getPluginManager()).getMetaPlugin();
 				}
 			}
 		}
-		return Spout.getPluginManager().getPlugin("Spout");	
+		return ((CommonPluginManager) Spout.getPluginManager()).getMetaPlugin();
+	}
+	
+	/**
+	 * Logs the given message to the console and the logfile
+	 * The message will be translated for the console, but not the logfile (message should be in english)
+	 * @param message the message to log
+	 * @param args any object given will be inserted into the target string for each %0, %1 asf
+	 */
+	public static void log(String message, Object ...args) {
+		log(message, Level.INFO, args);
+	}
+	
+	/**
+	 * Logs the given message to the console and the logfile
+	 * The message will be translated for the console, but not the logfile (message should be in english)
+	 * @param logLevel the logLevel to log this with
+	 * @param message the message to log
+	 * @param args any object given will be inserted into the target string for each %0, %1 asf
+	 */
+	public static void log(String message, Level logLevel, Object ...args) {
+		Spout.getLogger().log(logLevel, tr(message, Spout.getEngine().getCommandSource(), args)); // TODO split this into file and console
+	}
+	
+	/**
+	 * Logs the given message to the console and the logfile
+	 * The message will be translated for the console, but not the logfile (message should be in english)
+	 * @param logLevel the logLevel to log this with
+	 * @param message the message to log
+	 * @param args any object given will be inserted into the target string for each %0, %1 asf
+	 * @param t an exception to print
+	 */
+	public static void log(String message, Level logLevel, Throwable t, Object ...args) {
+		Spout.getLogger().log(logLevel, tr(message, Spout.getEngine().getCommandSource(), args), t); // TODO split this into file and console
 	}
 }

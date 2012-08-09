@@ -152,14 +152,14 @@ public class PluginDictionary {
 			if (plugin != null) {
 				// Then look in plugins jar
 				JarFile jar = new JarFile(plugin.getFile());
-				if (jar.getEntry("lang/") == null) { // Skip plugins without language files
+				if (jar.getEntry(getJarBasePath()) == null) { // Skip plugins without language files
 					return;
 				}
 				Enumeration<JarEntry> entries = jar.entries();
 				while (entries.hasMoreElements()) {
 					JarEntry entry = entries.nextElement();
-					if (entry.getName().startsWith("lang/")) {
-						String file = entry.getName().replaceFirst("lang/", "");
+					if (entry.getName().startsWith(getJarBasePath())) {
+						String file = entry.getName().replaceFirst(getJarBasePath(), "");
 						if (LANG_FILE_FILTER.matcher(file).matches() && !loaded.contains(file)) {
 							loadLanguage(jar.getInputStream(entry));
 							loaded.add(file);
@@ -203,7 +203,7 @@ public class PluginDictionary {
 				return new FileInputStream(inDataDir);
 			} else if(plugin != null) {
 				JarFile jar = new JarFile(plugin.getFile());
-				JarEntry keyMap = jar.getJarEntry("lang/"+filename);
+				JarEntry keyMap = jar.getJarEntry(getJarBasePath()+filename);
 				if (keyMap != null) {
 					return jar.getInputStream(keyMap);
 				}
@@ -212,6 +212,10 @@ public class PluginDictionary {
 		} catch (IOException e) {
 			return null;
 		}
+	}
+	
+	protected String getJarBasePath() {
+		return "lang/";
 	}
 
 	/**

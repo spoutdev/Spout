@@ -275,4 +275,8 @@ public class CommonPluginManager implements PluginManager {
 		plugins.add(metaPlugin);
 		names.put("Spout", metaPlugin);
 	}
+	
+	public SpoutMetaPlugin getMetaPlugin() {
+		return metaPlugin;
+	}
 }

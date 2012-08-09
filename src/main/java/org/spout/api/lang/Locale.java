@@ -43,7 +43,12 @@ public class Locale {
 	public static final Locale GERMAN_AT = new Locale("Deutsch (Österreich)", "DE_AT");
 	public static final Locale FRENCH_FR = new Locale("Français (France)", "FR_FR");
 	
-	
+	/**
+	 * Instead of using the constructor to create a locale,
+	 * use {@link Locale.getByCode} so it returns already available instances for that language.
+	 * @param fullName
+	 * @param code
+	 */
 	public Locale(String fullName, String code) {
 		this.fullName = fullName;
 		this.code = code;
