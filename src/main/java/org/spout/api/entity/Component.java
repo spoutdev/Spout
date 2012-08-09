@@ -26,10 +26,13 @@
  */
 package org.spout.api.entity;
 
+import org.spout.api.tickable.TickPriority;
+import org.spout.api.tickable.Tickable;
+
 /**
  * Represents an attachment to an entity that can respond to Ticks.
  */
-public interface Component {
+public interface Component extends Tickable, Comparable<Component> {
 	/**
 	 * Attaches this component to an entity.
 	 * @param parent entity this component will be attached to.
@@ -51,4 +54,22 @@ public interface Component {
 	 * Called when this component is detached from an entity.
 	 */
 	public void onDetached();
+
+	public TickPriority getPriority();
+
+	public void setPriority(TickPriority priority);
+
+	public boolean runOnce();
+
+	public void setRunOnce(boolean runOnce);
+
+	public float getDelay();
+
+	public void setDelay(float delay);
+
+	public float getMaxDelay();
+
+	public void setMaxDelay(float delay);
+
+	public void tick(float dt);
 }

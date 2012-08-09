@@ -27,9 +27,8 @@
 package org.spout.api.entity;
 
 import org.spout.api.tickable.TickPriority;
-import org.spout.api.tickable.Tickable;
 
-public class BasicComponent implements Component, Tickable {
+public class BasicComponent implements Component {
 	private Entity parent;
 	private TickPriority priority;
 	private boolean runOnce;
@@ -81,6 +80,52 @@ public class BasicComponent implements Component, Tickable {
 
 	}
 
+	@Override
+	public boolean canTick() {
+		return delay > 0 && delay > maxDelay;
+	}
+
+	@Override
+	public TickPriority getPriority() {
+		return priority;
+	}
+
+	@Override
+	public void setPriority(TickPriority priority) {
+		this.priority = priority;
+	}
+
+	@Override
+	public boolean runOnce() {
+		return runOnce;
+	}
+
+	@Override
+	public void setRunOnce(boolean runOnce) {
+		this.runOnce = runOnce;
+	}
+
+	@Override
+	public float getDelay() {
+		return delay;
+	}
+
+	@Override
+	public void setDelay(float delay) {
+		this.delay = delay;
+	}
+
+	@Override
+	public float getMaxDelay() {
+		return maxDelay;
+	}
+
+	@Override
+	public void setMaxDelay(float maxDelay) {
+		this.maxDelay = maxDelay;
+	}
+
+	@Override
 	public final void tick(float dt) {
 		delay -= dt;
 		if (canTick()) {
@@ -91,39 +136,8 @@ public class BasicComponent implements Component, Tickable {
 		}
 	}
 
-	public boolean canTick() {
-		return delay > 0 && delay > maxDelay;
-	}
-
-	public TickPriority getPriority() {
-		return priority;
-	}
-
-	public void setPriority(TickPriority priority) {
-		this.priority = priority;
-	}
-
-	public boolean runOnce() {
-		return runOnce;
-	}
-
-	public void setRunOnce(boolean runOnce) {
-		this.runOnce = runOnce;
-	}
-
-	public float getDelay() {
-		return delay;
-	}
-
-	public void setDelay(float delay) {
-		this.delay = delay;
-	}
-
-	public float getMaxDelay() {
-		return maxDelay;
-	}
-
-	public void setMaxDelay(float maxDelay) {
-		this.maxDelay = maxDelay;
+	@Override
+	public int compareTo(Component o) {
+		return o.getPriority().getIndex() - priority.getIndex();
 	}
 }
