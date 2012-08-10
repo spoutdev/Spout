@@ -30,10 +30,10 @@ public interface ComponentHolder {
 	/**
 	 * Adds a new Component to the Entity.  If the entity already contains a component of that type, then a new component is not
 	 * constructed, and the one already attached is returned
-	 * @param component Type of component to add
+	 * @param componentClass Type of component to add
 	 * @return The component created, or the one already attached
 	 */
-	public Component addComponent(Class<? extends Component> component);
+	public <T extends Component> T addComponent(Class<T> componentClass);
 
 	/**
 	 * Removes a component from the list
@@ -47,7 +47,7 @@ public interface ComponentHolder {
 	 * @param component the type of component to get
 	 * @return The component instance, or NULL if it doesn't exist
 	 */
-	public Component getComponent(Class<? extends Component> component);
+	public <T extends Component> T getComponent(Class<T> component);
 
 	/**
 	 * Returns True if the type provided is attached or false if not.

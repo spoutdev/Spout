@@ -104,7 +104,7 @@ public abstract class BasicController implements Controller {
 	}
 
 	@Override
-	public Component addComponent(Class<? extends Component> aClass) {
+	public <T extends Component> T addComponent(Class<T> aClass) {
 		if (hasComponent(aClass)) {
 			return getComponent(aClass);
 		}
