@@ -31,15 +31,12 @@ import org.apache.commons.lang3.Validate;
 import org.spout.api.Engine;
 import org.spout.api.UnsafeMethod;
 import org.spout.api.generator.WorldGenerator;
-import org.spout.api.lang.LanguageDictionary;
 import org.spout.api.lang.PluginDictionary;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.util.HashMap;
-import java.util.Locale;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;

@@ -27,7 +27,6 @@
 package org.spout.api.event.server;
 
 import org.spout.api.chat.ChatArguments;
-import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.Event;

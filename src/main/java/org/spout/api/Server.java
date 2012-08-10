@@ -29,10 +29,7 @@ package org.spout.api;
 import java.util.Collection;
 import java.util.List;
 
-import org.jboss.netty.channel.Channel;
-
 import org.spout.api.protocol.PortBinding;
-import org.spout.api.protocol.Session;
 
 /**
  * Represents the server-specific implementation of Minecraft.
