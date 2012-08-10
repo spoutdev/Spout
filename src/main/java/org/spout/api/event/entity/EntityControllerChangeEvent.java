@@ -57,18 +57,18 @@ public class EntityControllerChangeEvent extends EntityEvent {
 	}
 
 	/**
-	 * Gets the new controller of the entity.
+	 * Gets the new entity of the entity.
 	 *
-	 * @return The new controller.
+	 * @return The new entity.
 	 */
 	public Controller getNewController() {
 		return newController;
 	}
 
 	/**
-	 * Sets the controller of the entity.
+	 * Sets the entity of the entity.
 	 *
-	 * @param newController The new controller of the entity.
+	 * @param newController The new entity of the entity.
 	 */
 	public void setNewController(Controller newController) {
 		this.newController = newController;

@@ -50,15 +50,15 @@ public abstract class ControllerType {
 	}
 
 	/**
-	 * Return a name used to look this controller up.
-	 * @return The controller type's name
+	 * Return a name used to look this entity up.
+	 * @return The entity type's name
 	 */
 	public String getName() {
 		return name;
 	}
 
 	/**
-	 * @return id of the controller.
+	 * @return id of the entity.
 	 */
 	public int getId() {
 		return id;
@@ -70,7 +70,7 @@ public abstract class ControllerType {
 
 	/**
 	 * The class this ControllerType represents
-	 * @return the controller class
+	 * @return the entity class
 	 */
 	public Class<? extends Controller> getControllerClass() {
 		return controllerClass;
@@ -81,12 +81,12 @@ public abstract class ControllerType {
 	/**
 	 * Attempts to create a Controller with default settings. Returns null if specific parameters are required.
 	 * If {@link #canCreateController()} return false, this method always returns null.
-	 * @return The instantiated controller, which can be used in {@link org.spout.api.geo.World#createAndSpawnEntity(org.spout.api.geo.discrete.Point, Controller)}
+	 * @return The instantiated entity, which can be used in {@link org.spout.api.geo.World#createAndSpawnEntity(org.spout.api.geo.discrete.Point, Controller)}
 	 */
 	public abstract Controller createController();
 
 	/**
-	 * Returns the {@link EntityProtocol} for the given protocol id for this type of controller
+	 * Returns the {@link EntityProtocol} for the given protocol id for this type of entity
 	 * @param protocolId The protocol id (retrieved using {@link #getProtocolId(String)})
 	 * @return The entity protocol for the specified id.
 	 */

@@ -52,21 +52,21 @@ public interface Entity extends Source, Tickable, WorldSource {
 	public int getId();
 
 	/**
-	 * Gets the controller for the entity
-	 * @return the controller
+	 * Gets the entity for the entity
+	 * @return the entity
 	 */
 	@SnapshotRead
 	public Controller getController();
 
 	/**
-	 * Sets the controller for the entity
+	 * Sets the entity for the entity
 	 * @param controller
 	 */
 	@DelayedWrite
 	public void setController(Controller controller, Source source);
 
 	/**
-	 * Sets the controller for the entity
+	 * Sets the entity for the entity
 	 * @param controller
 	 */
 	@DelayedWrite
@@ -95,9 +95,9 @@ public interface Entity extends Source, Tickable, WorldSource {
 	public void onSync();
 
 	/**
-	 * Returns true if this entity's controller is the provided controller
+	 * Returns true if this entity's entity is the provided entity
 	 * @param clazz
-	 * @return true if this entity's controller is the provided controller
+	 * @return true if this entity's entity is the provided entity
 	 */
 	public boolean is(Class<? extends Controller> clazz);
 

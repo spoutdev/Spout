@@ -149,7 +149,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * {@link #spawnEntity(Entity)} to simulate the Entity in the world
 	 *
 	 * @param point The point to spawn the Entity
-	 * @param controller The controller that will be attached to the Entity
+	 * @param controller The entity that will be attached to the Entity
 	 * @return The created entity
 	 */
 	public Entity createEntity(Point point, Controller controller);
@@ -167,7 +167,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * {@link #spawnEntity(Entity)} together.
 	 *
 	 * @param point The point to spawn the Entity
-	 * @param controller The controller that will be attached to the Entity
+	 * @param controller The entity that will be attached to the Entity
 	 * @return The Entity that has been created and spawned
 	 */
 	public Entity createAndSpawnEntity(Point point, Controller controller);
@@ -177,7 +177,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * {@link #createAndSpawnEntity(point, controller)} for each element in the array.
 	 *
 	 * @param points The points to use for spawning the entities
-	 * @param type The type of controller that will be attached to the Entity
+	 * @param type The type of entity that will be attached to the Entity
 	 * @return The Entities that has been created and spawned
 	 */
 	public Entity[] createAndSpawnEntity(Point[] points, ControllerType type);
@@ -185,7 +185,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	/**
 	 * Creates and Spawns entities at the given points.  This is the same as calling
 	 * {@link #createAndSpawnEntity(point, controller)} for each point with the 
-	 * corresponding element from the controller array. The two arrays must be the same length.
+	 * corresponding element from the entity array. The two arrays must be the same length.
 	 *
 	 * @param points The points to use for spawning the entities
 	 * @param controllers The controllers that will be attached to the Entity
@@ -196,21 +196,21 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	/**
 	 * Creates and Spawns entities at the given points.  This is the same as calling
 	 * {@link #createAndSpawnEntity(point, controller)} using type.createController() 
-	 * as the controller for each point. The two arrays must be the same length.
+	 * as the entity for each point. The two arrays must be the same length.
 	 *
 	 * @param points The points to use for spawning the entities
-	 * @param types The controller types that will be attached to the Entity
+	 * @param types The entity types that will be attached to the Entity
 	 * @return The Entities that has been created and spawned
 	 */
 	public Entity[] createAndSpawnEntity(Point[] points, ControllerType[] types);
 	
 	/**
 	 * Creates and Spawns entities for the given arrangement.  This is the same as calling
-	 * {@link #createAndSpawnEntity(point, controller)} for each Point, controller pair in
+	 * {@link #createAndSpawnEntity(point, controller)} for each Point, entity pair in
 	 * the arrangement
 	 *
 	 * @param points The points to use for spawning the entities
-	 * @param controller The controller that will be attached to the Entity
+	 * @param controller The entity that will be attached to the Entity
 	 * @return The Entities that has been created and spawned
 	 */
 	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement);

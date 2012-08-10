@@ -114,8 +114,8 @@ public class BlockMaterial extends Material implements Placeable {
 	private ControllerType controller = null;
 
 	/**
-	 * Sets the block controller associated with this material<br>
-	 * Future calls to getController will return an instance of this block controller.
+	 * Sets the block entity associated with this material<br>
+	 * Future calls to getController will return an instance of this block entity.
 	 * 
 	 * @param controller type to set to
 	 * @return This block material
@@ -127,15 +127,15 @@ public class BlockMaterial extends Material implements Placeable {
 
 	/**
 	 * Gets whether this Block Material has a Block Controller associated with it.
-	 * @return True if it has a block controller
+	 * @return True if it has a block entity
 	 */
 	public boolean hasController() {
 		return this.controller != null;
 	}
 
 	/**
-	 * Gets the block controller associated with this material from a block<br>
-	 * If the block controller set is null or does not match, a new instance is created and set on the block and returned
+	 * Gets the block entity associated with this material from a block<br>
+	 * If the block entity set is null or does not match, a new instance is created and set on the block and returned
 	 * 
 	 * @param block to get the Block Controller of
 	 * @return The Block Controller
@@ -145,12 +145,12 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Gets the block controller associated with this material from a block<br>
-	 * If the block controller set is null or does not match, null is returned<br>
-	 * If forced is set True, the controller is forcibly replaced with the one set in this material and is returned
+	 * Gets the block entity associated with this material from a block<br>
+	 * If the block entity set is null or does not match, null is returned<br>
+	 * If forced is set True, the entity is forcibly replaced with the one set in this material and is returned
 	 * 
 	 * @param block to get the Block Controller of
-	 * @param forced whether to force-convert the controller if not found or invalid
+	 * @param forced whether to force-convert the entity if not found or invalid
 	 * @return The Block Controller
 	 */
 	public BlockController getController(Block block, boolean forced) {

@@ -36,7 +36,7 @@ import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.util.StringMap;
 
 /**
- * Handles lookup of entity controller types.
+ * Handles lookup of entity entity types.
  */
 public class ControllerRegistry {
 	private static final StringMap ID_LOOKUP = new StringMap(null, new MemoryStore<Integer>(), 0, Integer.MAX_VALUE, ControllerType.class.getName());

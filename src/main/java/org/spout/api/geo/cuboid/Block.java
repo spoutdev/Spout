@@ -369,16 +369,16 @@ public interface Block extends MaterialAccess, WorldSource {
 	public Biome getBiomeType();
 
 	/**
-	 * Gets a controller associated with the block, or null if it has none.
+	 * Gets a entity associated with the block, or null if it has none.
 	 *
-	 * @return block controller
+	 * @return block entity
 	 */
 	public <T extends BlockController> T getController();
 
 	/**
-	 * Whether or not the block is associated with a block controller
+	 * Whether or not the block is associated with a block entity
 	 *
-	 * @return true if has a controller
+	 * @return true if has a entity
 	 */
 	public boolean hasController();
 

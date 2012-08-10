@@ -32,7 +32,7 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
 
 /**
- * Represents the controller for a block.
+ * Represents the entity for a block.
  */
 public abstract class BlockController extends Controller {
 	protected final BlockMaterial blockMaterial;
@@ -43,7 +43,7 @@ public abstract class BlockController extends Controller {
 	}
 
 	/**
-	 * Returns the BlockMaterial associated with the controller
+	 * Returns the BlockMaterial associated with the entity
 	 * @return block material
 	 */
 	public BlockMaterial getMaterial() {
@@ -51,7 +51,7 @@ public abstract class BlockController extends Controller {
 	}
 
 	/**
-	 * Gets the block of this block controller
+	 * Gets the block of this block entity
 	 * @return the block
 	 */
 	public Block getBlock() {

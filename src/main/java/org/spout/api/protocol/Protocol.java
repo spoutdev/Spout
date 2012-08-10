@@ -192,7 +192,7 @@ public abstract class Protocol {
 	public abstract void initializeSession(Session session);
 	
 	/**
-	 * Sets the player controller for the given entity.  The method is called while the player 
+	 * Sets the player entity for the given entity.  The method is called while the player
 	 * is being spawned by the server in response to a {@link org.spout.api.event.player.PlayerConnectEvent}
 	 * 
 	 * @param player

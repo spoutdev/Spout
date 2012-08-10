@@ -30,28 +30,28 @@ import org.spout.api.tickable.TickPriority;
 import org.spout.api.tickable.Tickable;
 
 /**
- * Represents an attachment to a controller that can respond to Ticks.
+ * Represents an attachment to a entity that can respond to Ticks.
  */
 public interface Component<T extends ComponentHolder> extends Tickable, Comparable<Component<T>> {
 	/**
-	 * Attaches this component to a controller
-	 * @param parent controller this component will be attached to.
+	 * Attaches this component to a entity
+	 * @param parent entity this component will be attached to.
 	 */
 	public void attachToController(T parent);
 
 	/**
-	 * Gets the parent controller associated with this component.
-	 * @return the parent controller
+	 * Gets the parent entity associated with this component.
+	 * @return the parent entity
 	 */
 	public T getParent();
 
 	/**
-	 * Called when this component is attached to a controller
+	 * Called when this component is attached to a entity
 	 */
 	public abstract void onAttached();
 
 	/**
-	 * Called when this component is detached from a controller
+	 * Called when this component is detached from a entity
 	 */
 	public void onDetached();
 

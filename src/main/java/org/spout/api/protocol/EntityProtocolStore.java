@@ -32,7 +32,7 @@ import org.spout.api.util.concurrent.OptimisticReadWriteLock;
 
 /**
  * A store for storing EntityProtocols with fast array based lookup. Each entity
- * controller type will have a protocol store which contains methods for
+ * entity type will have a protocol store which contains methods for
  * creating the relevant network messages.
  */
 public class EntityProtocolStore {

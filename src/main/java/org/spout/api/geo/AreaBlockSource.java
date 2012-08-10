@@ -109,7 +109,7 @@ public interface AreaBlockSource {
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
-	 * @return the block controller
+	 * @return the block entity
 	 */
 	@SnapshotRead
 	public BlockController getBlockController(int x, int y, int z);

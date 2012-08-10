@@ -52,9 +52,9 @@ public abstract class Controller implements ComponentHolder, Tickable {
 	}
 
 	/**
-	 * Called when this controller is attached to an entity.
+	 * Called when this entity is attached to an entity.
 	 * <br/><br/>
-	 * If this controller was serialized and deserialized, any serializable
+	 * If this entity was serialized and deserialized, any serializable
 	 * information stored in {@link #getDataMap()} will be available.
 	 */
 	public abstract void onAttached();
@@ -79,7 +79,7 @@ public abstract class Controller implements ComponentHolder, Tickable {
 	}
 
 	/**
-	 * Called when this controller is detached from the entity (normally due to the entity dieing or being removed from the world).
+	 * Called when this entity is detached from the entity (normally due to the entity dieing or being removed from the world).
 	 * Occurs before the Pre-Snapshot of the tick.
 	 */
 	public void onDeath() {
@@ -105,15 +105,15 @@ public abstract class Controller implements ComponentHolder, Tickable {
 	}
 
 	/**
-	 * Returns the type of controller
-	 * @return controller type
+	 * Returns the type of entity
+	 * @return entity type
 	 */
 	public ControllerType getType() {
 		return type;
 	}
 
 	/**
-	 * Gets a map of persistent string mapped serializable values attached to this controller.
+	 * Gets a map of persistent string mapped serializable values attached to this entity.
 	 * This map can be used to store any data relevant to the entity.
 	 * <br/> <br/>
 	 * This map is thread-safe, and will be saved between restarts if the entity {@link #isSavable()}.
@@ -124,9 +124,9 @@ public abstract class Controller implements ComponentHolder, Tickable {
 	}
 
 	/**
-	 * Called immediately <i>before</i> a controller and it's parent entity are
+	 * Called immediately <i>before</i> a entity and it's parent entity are
 	 * serialized. This method is intended as the last chance to store serializable
-	 * information inside of the controller data map (see: {@link #getDataMap()})
+	 * information inside of the entity data map (see: {@link #getDataMap()})
 	 * <br/><br/>
 	 * <b>Note:</b> This will never occur is {@link #isSavable()} is false. <br/>
 	 * <b>Note:</b> onSave occurs during Copy Snapshot. During this stage
@@ -138,7 +138,7 @@ public abstract class Controller implements ComponentHolder, Tickable {
 	}
 
 	/**
-	 * True if this controller and it's parent entity should be saved.
+	 * True if this entity and it's parent entity should be saved.
 	 * @return save
 	 */
 	public boolean isSavable() {
@@ -146,7 +146,7 @@ public abstract class Controller implements ComponentHolder, Tickable {
 	}
 
 	/**
-	 * Is important is a hint to the entity manager that this controller should be
+	 * Is important is a hint to the entity manager that this entity should be
 	 * considered important in regards to ticks and collisions. When unimportant
 	 * entities are far away from players or present in empty worlds, they will be
 	 * ticked less frequently, and may have more lax collisions. This allows regions
@@ -155,11 +155,11 @@ public abstract class Controller implements ComponentHolder, Tickable {
 	 * <p/>
 	 * Important controllers are exempt from these optimizations and will be ticked
 	 * on schedule and treated as if it were a player or observer. This will make the
-	 * controller more expensive in terms of performance, and importance should not be
+	 * entity more expensive in terms of performance, and importance should not be
 	 * given to non-players and non-observers lightly. In general, there should be
 	 * very few cases where importance needs to be adjusted manually.
 	 * <p/>
-	 * <b>Note:</b> If a controller is an observer, it is always considered
+	 * <b>Note:</b> If a entity is an observer, it is always considered
 	 * to be important. Players are also always considered important.
 	 * @return important
 	 */
@@ -168,8 +168,8 @@ public abstract class Controller implements ComponentHolder, Tickable {
 	}
 
 	/**
-	 * Gets the entity this controller is attached to.
-	 * @return The entity this controller is attached to
+	 * Gets the entity this entity is attached to.
+	 * @return The entity this entity is attached to
 	 */
 	public Entity getParent() {
 		return parent;
@@ -177,7 +177,7 @@ public abstract class Controller implements ComponentHolder, Tickable {
 
 	/**
 	 * Attaches to the entity and sets the parent as that entity.
-	 * @param parent The Entity this controller controls
+	 * @param parent The Entity this entity controls
 	 */
 	public void attachToEntity(Entity parent) {
 		this.parent = parent;
