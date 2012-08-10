@@ -27,8 +27,12 @@
 package org.spout.api.meta;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.Validate;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandRegistrationsFactory;
@@ -55,7 +59,7 @@ public final class SpoutMetaPlugin implements Plugin {
 
 	@Override
 	public void onEnable() {
-		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this), new SimpleAnnotatedCommandExecutorFactory());
+		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this));
 		Spout.getEngine().getRootCommand().addSubCommands(this, MetaCommands.class, commandRegFactory);
 	}
 
@@ -118,6 +122,20 @@ public final class SpoutMetaPlugin implements Plugin {
 	@Override
 	public File getFile() {
 		return new File(engine.getClass().getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " "));
+	}
+
+	public InputStream getResource(String path) {
+		Validate.notNull(path);
+		return engine.getClass().getClassLoader().getResourceAsStream("/" + path);
+	}
+
+	public void extractResource(String path, File destination) throws IOException {
+		Validate.notNull(destination);
+		InputStream stream = getResource(path);
+		if (stream == null) {
+			throw new IOException("No resource found at path " + path);
+		}
+		FileUtils.copyInputStreamToFile(stream, destination);
 	}
 
 	@Override
