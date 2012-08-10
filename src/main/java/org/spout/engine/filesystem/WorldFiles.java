@@ -107,8 +107,9 @@ public class WorldFiles {
 
 		String generatorName = world.getGenerator().getName();
 		if (!StringSanitizer.isAlphaNumericUnderscore(generatorName)) {
+			String oldName = generatorName;
 			generatorName = Long.toHexString(System.currentTimeMillis());
-			Spout.getEngine().getLogger().severe("Generator name " + generatorName + " is not valid, using " + generatorName + " instead");
+			Spout.getEngine().getLogger().severe("Generator name " + oldName + " is not valid, using " + generatorName + " instead");
 		}
 
 		//Save the world item map
