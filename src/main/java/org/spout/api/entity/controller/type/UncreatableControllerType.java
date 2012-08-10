@@ -27,12 +27,13 @@
 package org.spout.api.entity.controller.type;
 
 import org.spout.api.entity.BasicController;
+import org.spout.api.entity.Controller;
 
 /**
  *
  */
 public class UncreatableControllerType extends ControllerType {
-	public UncreatableControllerType(Class<? extends BasicController> controllerClass, String name) {
+	public UncreatableControllerType(Class<? extends Controller> controllerClass, String name) {
 		super(controllerClass, name);
 	}
 
@@ -42,7 +43,7 @@ public class UncreatableControllerType extends ControllerType {
 	}
 
 	@Override
-	public BasicController createController() {
+	public Controller createController() {
 		return null;
 	}
 }

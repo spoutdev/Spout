@@ -30,14 +30,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import org.spout.api.entity.BasicController;
+import org.spout.api.entity.Controller;
 
-/**
- *
- */
 public class EmptyConstructorControllerType extends ControllerType {
-	private Constructor<? extends BasicController> constructor;
+	private Constructor<? extends Controller> constructor;
 
-	public EmptyConstructorControllerType(Class<? extends BasicController> controllerClass, String name) {
+	public EmptyConstructorControllerType(Class<? extends Controller> controllerClass, String name) {
 		super(controllerClass, name);
 		try {
 			constructor = controllerClass.getDeclaredConstructor();
@@ -53,7 +51,7 @@ public class EmptyConstructorControllerType extends ControllerType {
 	}
 
 	@Override
-	public BasicController createController() {
+	public Controller createController() {
 		if (constructor == null) {
 			return null;
 		}

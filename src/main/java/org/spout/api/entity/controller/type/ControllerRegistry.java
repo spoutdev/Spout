@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.spout.api.entity.BasicController;
+import org.spout.api.entity.Controller;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.util.StringMap;
 
@@ -41,7 +42,7 @@ import org.spout.api.util.StringMap;
 public class ControllerRegistry {
 	private static final StringMap ID_LOOKUP = new StringMap(null, new MemoryStore<Integer>(), 0, Integer.MAX_VALUE, ControllerType.class.getName());
 	private static final Map<String, ControllerType> NAME_LOOKUP = new HashMap<String, ControllerType>();
-	private static final Map<Class<? extends BasicController>, ControllerType> CLASS_LOOKUP = new HashMap<Class<? extends BasicController>, ControllerType>();
+	private static final Map<Class<? extends Controller>, ControllerType> CLASS_LOOKUP = new HashMap<Class<? extends Controller>, ControllerType>();
 
 	public static void register(ControllerType type) {
 		synchronized (CLASS_LOOKUP) {
@@ -61,7 +62,7 @@ public class ControllerRegistry {
 		return NAME_LOOKUP.get(name.toLowerCase());
 	}
 
-	public static ControllerType get(Class<? extends BasicController> type) {
+	public static ControllerType get(Class<? extends Controller> type) {
 		return CLASS_LOOKUP.get(type);
 	}
 
