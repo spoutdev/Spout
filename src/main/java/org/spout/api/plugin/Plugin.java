@@ -29,12 +29,10 @@ package org.spout.api.plugin;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Locale;
 import java.util.logging.Logger;
 import org.spout.api.Engine;
 import org.spout.api.Source;
 import org.spout.api.generator.WorldGenerator;
-import org.spout.api.lang.LanguageDictionary;
 import org.spout.api.lang.PluginDictionary;
 import org.spout.api.util.Named;
 

@@ -28,7 +28,6 @@ package org.spout.api.util.list.concurrent;
 
 import java.util.Map.Entry;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.spout.api.math.MathHelper;
