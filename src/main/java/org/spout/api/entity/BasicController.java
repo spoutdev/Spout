@@ -104,23 +104,15 @@ public abstract class BasicController implements Controller {
 	}
 
 	@Override
-	public <T extends Component> T addComponent(Class<T> aClass) {
-		if (hasComponent(aClass)) {
-			return getComponent(aClass);
+	public <T extends Component> T addComponent(T component) {
+		Class<? extends Component> clazz = component.getClass();
+		if (hasComponent(clazz)) {
+			return (T) getComponent(clazz);
 		}
-
-		try {
-			Component ec = aClass.newInstance();
-			components.put(aClass, ec);
-			ec.attachToController(this);
-			ec.onAttached();
-			return (T) ec;
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		throw new RuntimeException("Cannot Create Component!");
+		components.put(clazz, component);
+		component.attachToController(this);
+		component.onAttached();
+		return component;
 	}
 
 	@Override
