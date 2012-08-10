@@ -26,9 +26,11 @@
  */
 package org.spout.engine.world.physics;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.Source;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.range.EffectRange;
+import org.spout.api.util.SpoutToStringStyle;
 
 public class PhysicsUpdate {
 
@@ -70,6 +72,18 @@ public class PhysicsUpdate {
 	
 	public BlockMaterial getOldMaterial() {
 		return oldMaterial;
+	}
+	
+	public String toString() {
+		 return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
+         .append("x", x)
+         .append("y", y)
+         .append("z", z)
+         .append("range", range.getClass().getName())
+		 .append("old-material", oldMaterial.getClass().getName())
+		 .append("source", source.getClass().getName())
+         .toString();
+
 	}
 	
 }
