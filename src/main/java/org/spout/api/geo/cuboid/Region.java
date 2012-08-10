@@ -29,7 +29,7 @@ package org.spout.api.geo.cuboid;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.spout.api.entity.Controller;
+import org.spout.api.entity.BasicController;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.AreaChunkAccess;
 import org.spout.api.geo.AreaPhysicsAccess;
@@ -208,7 +208,7 @@ public abstract class Region extends Cube implements AreaChunkAccess, AreaPhysic
 	 * @return A set of entities with the specified type.
 	 */
 	@SnapshotRead
-	public abstract Set<Entity> getAll(Class<? extends Controller> type);
+	public abstract Set<Entity> getAll(Class<? extends BasicController> type);
 
 	/**
 	 * Gets all entities.

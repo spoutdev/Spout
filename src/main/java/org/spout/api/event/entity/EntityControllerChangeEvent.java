@@ -27,21 +27,21 @@
 package org.spout.api.event.entity;
 
 import org.spout.api.Source;
-import org.spout.api.entity.Controller;
+import org.spout.api.entity.BasicController;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.HandlerList;
 
 /**
- * Called when an entity's {@link Controller} is changing.
+ * Called when an entity's {@link org.spout.api.entity.BasicController} is changing.
  */
 public class EntityControllerChangeEvent extends EntityEvent {
 	private static HandlerList handlers = new HandlerList();
 
 	private final Source source;
 
-	private Controller newController;
+	private BasicController newController;
 
-	public EntityControllerChangeEvent(Entity e, Source source, Controller newController) {
+	public EntityControllerChangeEvent(Entity e, Source source, BasicController newController) {
 		super(e);
 		this.source = source;
 		this.newController = newController;
@@ -61,7 +61,7 @@ public class EntityControllerChangeEvent extends EntityEvent {
 	 *
 	 * @return The new entity.
 	 */
-	public Controller getNewController() {
+	public BasicController getNewController() {
 		return newController;
 	}
 
@@ -70,7 +70,7 @@ public class EntityControllerChangeEvent extends EntityEvent {
 	 *
 	 * @param newController The new entity of the entity.
 	 */
-	public void setNewController(Controller newController) {
+	public void setNewController(BasicController newController) {
 		this.newController = newController;
 	}
 

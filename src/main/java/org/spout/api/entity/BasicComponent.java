@@ -28,7 +28,7 @@ package org.spout.api.entity;
 
 import org.spout.api.tickable.TickPriority;
 
-public class BasicComponent<T extends ComponentHolder> implements Component<T> {
+public class BasicComponent<T extends Controller> implements Component<T> {
 	private T parent;
 	private TickPriority priority;
 	private boolean runOnce;

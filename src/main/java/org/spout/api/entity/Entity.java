@@ -56,21 +56,21 @@ public interface Entity extends Source, Tickable, WorldSource {
 	 * @return the entity
 	 */
 	@SnapshotRead
-	public Controller getController();
+	public BasicController getController();
 
 	/**
 	 * Sets the entity for the entity
 	 * @param controller
 	 */
 	@DelayedWrite
-	public void setController(Controller controller, Source source);
+	public void setController(BasicController controller, Source source);
 
 	/**
 	 * Sets the entity for the entity
 	 * @param controller
 	 */
 	@DelayedWrite
-	public void setController(Controller controller);
+	public void setController(BasicController controller);
 
 	// TODO - add thread timing annotations
 	public void setModel(Model model);
@@ -99,7 +99,7 @@ public interface Entity extends Source, Tickable, WorldSource {
 	 * @param clazz
 	 * @return true if this entity's entity is the provided entity
 	 */
-	public boolean is(Class<? extends Controller> clazz);
+	public boolean is(Class<? extends BasicController> clazz);
 
 	/**
 	 * Returns true if this entity is spawned and being Simulated in the world

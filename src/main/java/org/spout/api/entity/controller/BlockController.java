@@ -26,7 +26,7 @@
  */
 package org.spout.api.entity.controller;
 
-import org.spout.api.entity.Controller;
+import org.spout.api.entity.BasicController;
 import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
@@ -34,7 +34,7 @@ import org.spout.api.material.BlockMaterial;
 /**
  * Represents the entity for a block.
  */
-public abstract class BlockController extends Controller {
+public abstract class BlockController extends BasicController {
 	protected final BlockMaterial blockMaterial;
 
 	public BlockController(ControllerType type, BlockMaterial blockMaterial) {

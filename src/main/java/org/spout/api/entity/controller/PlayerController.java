@@ -26,15 +26,15 @@
  */
 package org.spout.api.entity.controller;
 
-import org.spout.api.entity.Controller;
+import org.spout.api.entity.BasicController;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.controller.type.ControllerType;
 
 /**
- * Represents a {@link Controller} that is player controlled.
+ * Represents a {@link org.spout.api.entity.BasicController} that is player controlled.
  */
-public abstract class PlayerController extends Controller {
+public abstract class PlayerController extends BasicController {
 	protected PlayerController(ControllerType type) {
 		super(type);
 	}

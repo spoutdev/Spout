@@ -26,7 +26,7 @@
  */
 package org.spout.api.entity.controller.type;
 
-import org.spout.api.entity.Controller;
+import org.spout.api.entity.BasicController;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.EntityProtocolStore;
@@ -40,10 +40,10 @@ public abstract class ControllerType {
 	private static final StringMap protocolMap = new StringMap(null, new MemoryStore<Integer>(), 0, 256, "controllerTypeProtocols");
 	private final String name;
 	private int id = UNREGISTERED_ID;
-	private final Class<? extends Controller> controllerClass;
+	private final Class<? extends BasicController> controllerClass;
 	private final EntityProtocolStore protocolStore = new EntityProtocolStore();
 
-	protected ControllerType(Class<? extends Controller> controllerClass, String name) {
+	protected ControllerType(Class<? extends BasicController> controllerClass, String name) {
 		this.controllerClass = controllerClass;
 		this.name = name;
 		ControllerRegistry.register(this);
@@ -72,7 +72,7 @@ public abstract class ControllerType {
 	 * The class this ControllerType represents
 	 * @return the entity class
 	 */
-	public Class<? extends Controller> getControllerClass() {
+	public Class<? extends BasicController> getControllerClass() {
 		return controllerClass;
 	}
 
@@ -81,9 +81,9 @@ public abstract class ControllerType {
 	/**
 	 * Attempts to create a Controller with default settings. Returns null if specific parameters are required.
 	 * If {@link #canCreateController()} return false, this method always returns null.
-	 * @return The instantiated entity, which can be used in {@link org.spout.api.geo.World#createAndSpawnEntity(org.spout.api.geo.discrete.Point, Controller)}
+	 * @return The instantiated entity, which can be used in {@link org.spout.api.geo.World#createAndSpawnEntity(org.spout.api.geo.discrete.Point, org.spout.api.entity.BasicController)}
 	 */
-	public abstract Controller createController();
+	public abstract BasicController createController();
 
 	/**
 	 * Returns the {@link EntityProtocol} for the given protocol id for this type of entity

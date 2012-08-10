@@ -33,8 +33,8 @@ import java.util.UUID;
 
 import org.spout.api.Engine;
 import org.spout.api.Source;
+import org.spout.api.entity.BasicController;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.Controller;
 import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.generator.WorldGenerator;
@@ -152,7 +152,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @param controller The entity that will be attached to the Entity
 	 * @return The created entity
 	 */
-	public Entity createEntity(Point point, Controller controller);
+	public Entity createEntity(Point point, BasicController controller);
 
 	/**
 	 * Add a created entity to the world for simulation and syncing to clients
@@ -163,14 +163,14 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 
 	/**
 	 * Creates and Spawns an entity at the given point and with the given
-	 * Controller This is the same as {@link #createEntity(Point, Controller)} and
+	 * Controller This is the same as {@link #createEntity(Point, org.spout.api.entity.BasicController)} and
 	 * {@link #spawnEntity(Entity)} together.
 	 *
 	 * @param point The point to spawn the Entity
 	 * @param controller The entity that will be attached to the Entity
 	 * @return The Entity that has been created and spawned
 	 */
-	public Entity createAndSpawnEntity(Point point, Controller controller);
+	public Entity createAndSpawnEntity(Point point, BasicController controller);
 	
 	/**
 	 * Creates and Spawns entities at the given points.  This is the same as calling
@@ -191,7 +191,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @param controllers The controllers that will be attached to the Entity
 	 * @return The Entities that has been created and spawned
 	 */
-	public Entity[] createAndSpawnEntity(Point[] points, Controller[] controller);
+	public Entity[] createAndSpawnEntity(Point[] points, BasicController[] controller);
 	
 	/**
 	 * Creates and Spawns entities at the given points.  This is the same as calling
@@ -282,7 +282,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @return A collection of entities with the specified type.
 	 */
 	@SnapshotRead
-	public Set<Entity> getAll(Class<? extends Controller> type);
+	public Set<Entity> getAll(Class<? extends BasicController> type);
 
 	/**
 	 * Gets all entities.
