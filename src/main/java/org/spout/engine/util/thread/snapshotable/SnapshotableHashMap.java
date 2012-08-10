@@ -28,8 +28,8 @@ package org.spout.engine.util.thread.snapshotable;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,7 +45,7 @@ import org.spout.api.util.thread.SnapshotRead;
  * A snapshotable class for HashMaps
  */
 public class SnapshotableHashMap<K, V> implements Snapshotable {
-	private final Map<K, V> snapshot = new HashMap<K, V>();
+	private final Map<K, V> snapshot = new LinkedHashMap<K, V>();
 	private final Map<K, V> unmodifySnapshot = Collections.unmodifiableMap(snapshot);
 	private final ConcurrentMap<K, V> live = new ConcurrentHashMap<K, V>();
 	private final Map<K, V> unmodifyLive = Collections.unmodifiableMap(live);

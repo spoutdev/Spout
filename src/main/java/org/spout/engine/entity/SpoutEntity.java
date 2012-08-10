@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.Source;
 import org.spout.api.collision.CollisionModel;
-import org.spout.api.entity.BasicController;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.entity.EntityControllerChangeEvent;
