@@ -34,7 +34,9 @@ import java.util.UUID;
 import org.spout.api.Engine;
 import org.spout.api.Source;
 import org.spout.api.entity.BasicController;
+import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
 import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.generator.WorldGenerator;
@@ -42,7 +44,6 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.entity.Player;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.Named;
@@ -56,10 +57,8 @@ import org.spout.api.util.thread.Threadsafe;
  * Represents a World.
  */
 public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Named {
-
 	/**
 	 * Gets the name of the world
-	 *
 	 * @return the name of the world
 	 */
 	@SnapshotRead
@@ -69,7 +68,6 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	/**
 	 * Gets the age of the world in ms. This count cannot be modified, and
 	 * increments on every tick
-	 *
 	 * @return the world's age in ms
 	 */
 	@SnapshotRead
@@ -78,7 +76,6 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	/**
 	 * Gets the UID representing the world. With extremely high probability the
 	 * UID is unique to each world.
-	 *
 	 * @return the name of the world
 	 */
 	@SnapshotRead
@@ -88,19 +85,17 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * Gets the height of the highest block in the given (x, z) column.<br>
 	 * <br>
 	 * Blocks which are completely transparent are ignored.
-	 * 
 	 * @param x the block x coordinate of the column
 	 * @param z the block z coordinate of the column
 	 * @return the highest of the highest block
 	 */
 	@LiveRead
 	public int getSurfaceHeight(int x, int z);
-	
+
 	/**
 	 * Gets the height of the highest block in the given (x, z) column.<br>
 	 * <br>
 	 * Blocks which are completely transparent are ignored.
-	 * 
 	 * @param x the block x coordinate of the column
 	 * @param z the block z coordinate of the column
 	 * @param load height map is loaded if necessary
@@ -108,20 +103,18 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 */
 	@LiveRead
 	public int getSurfaceHeight(int x, int z, boolean load);
-	
+
 	/**
 	 * Gets the BlockMaterial of the highest block in the given (x, z) column.<br>
-	 * 
 	 * @param x the block x coordinate of the column
 	 * @param z the block z coordinate of the column
 	 * @return the BlockMaterial
 	 */
 	@LiveRead
 	public BlockMaterial getTopmostBlock(int x, int z);
-	
+
 	/**
 	 * Gets the BlockMaterial of the highest block in the given (x, z) column.<br>
-	 * 
 	 * @param x the block x coordinate of the column
 	 * @param z the block z coordinate of the column
 	 * @param load height map is loaded if necessary
@@ -129,13 +122,12 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 */
 	@LiveRead
 	public BlockMaterial getTopmostBlock(int x, int z, boolean load);
-	
+
 	/**
 	 * Gets the entity with the matching unique id
 	 * <br/> <br/>
 	 * Performs a search on each region for the entity, stopping when it
 	 * is found, or after all the worlds have been searched upon failure.
-	 * 
 	 * @param uid to search and match
 	 * @return entity that matched the uid, or null if none was found
 	 */
@@ -144,19 +136,17 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 
 	/**
 	 * Create a new Entity for initialization
-	 *
+	 * <p/>
 	 * This does not add the Entity to the server. You must call
 	 * {@link #spawnEntity(Entity)} to simulate the Entity in the world
-	 *
 	 * @param point The point to spawn the Entity
 	 * @param controller The entity that will be attached to the Entity
 	 * @return The created entity
 	 */
-	public Entity createEntity(Point point, BasicController controller);
+	public Entity createEntity(Point point, Controller controller);
 
 	/**
 	 * Add a created entity to the world for simulation and syncing to clients
-	 *
 	 * @param e The entity to spawn
 	 */
 	public void spawnEntity(Entity e);
@@ -165,50 +155,45 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * Creates and Spawns an entity at the given point and with the given
 	 * Controller This is the same as {@link #createEntity(Point, org.spout.api.entity.BasicController)} and
 	 * {@link #spawnEntity(Entity)} together.
-	 *
 	 * @param point The point to spawn the Entity
 	 * @param controller The entity that will be attached to the Entity
 	 * @return The Entity that has been created and spawned
 	 */
-	public Entity createAndSpawnEntity(Point point, BasicController controller);
-	
+	public Entity createAndSpawnEntity(Point point, Controller controller);
+
 	/**
 	 * Creates and Spawns entities at the given points.  This is the same as calling
 	 * {@link #createAndSpawnEntity(point, controller)} for each element in the array.
-	 *
 	 * @param points The points to use for spawning the entities
 	 * @param type The type of entity that will be attached to the Entity
 	 * @return The Entities that has been created and spawned
 	 */
 	public Entity[] createAndSpawnEntity(Point[] points, ControllerType type);
-	
+
 	/**
 	 * Creates and Spawns entities at the given points.  This is the same as calling
-	 * {@link #createAndSpawnEntity(point, controller)} for each point with the 
+	 * {@link #createAndSpawnEntity(point, controller)} for each point with the
 	 * corresponding element from the entity array. The two arrays must be the same length.
-	 *
 	 * @param points The points to use for spawning the entities
 	 * @param controllers The controllers that will be attached to the Entity
 	 * @return The Entities that has been created and spawned
 	 */
-	public Entity[] createAndSpawnEntity(Point[] points, BasicController[] controller);
-	
+	public Entity[] createAndSpawnEntity(Point[] points, Controller[] controllers);
+
 	/**
 	 * Creates and Spawns entities at the given points.  This is the same as calling
-	 * {@link #createAndSpawnEntity(point, controller)} using type.createController() 
+	 * {@link #createAndSpawnEntity(point, controller)} using type.createController()
 	 * as the entity for each point. The two arrays must be the same length.
-	 *
 	 * @param points The points to use for spawning the entities
 	 * @param types The entity types that will be attached to the Entity
 	 * @return The Entities that has been created and spawned
 	 */
 	public Entity[] createAndSpawnEntity(Point[] points, ControllerType[] types);
-	
+
 	/**
 	 * Creates and Spawns entities for the given arrangement.  This is the same as calling
 	 * {@link #createAndSpawnEntity(point, controller)} for each Point, entity pair in
 	 * the arrangement
-	 *
 	 * @param points The points to use for spawning the entities
 	 * @param controller The entity that will be attached to the Entity
 	 * @return The Entities that has been created and spawned
@@ -217,21 +202,18 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 
 	/**
 	 * Gets the world's spawn point
-	 *
 	 * @return the spawn point
 	 */
 	public Transform getSpawnPoint();
 
 	/**
 	 * Sets the world's spawn point
-	 *
 	 * @param transform the Transform of the spawn point
 	 */
 	public void setSpawnPoint(Transform transform);
 
 	/**
 	 * Gets the world's seed. This value is immutable and set at world creation
-	 *
 	 * @return the seed
 	 */
 	@Threadsafe
@@ -240,21 +222,18 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	/**
 	 * Gets the {@link WorldGenerator} responsible for generating new chunks for
 	 * this world
-	 *
 	 * @return generator
 	 */
 	public WorldGenerator getGenerator();
 
 	/**
 	 * Gets the engine associated with this world
-	 *
 	 * @return the engine
 	 */
 	public Engine getEngine();
 
 	/**
 	 * Gets the height of this world in blocks.
-	 *
 	 * @return The height of this world in blocks
 	 */
 	public int getHeight();
@@ -262,7 +241,6 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	/**
 	 * Gets the light level the sky emits<br>
 	 * Block sky light levels are affected by this
-	 * 
 	 * @return the sky light, a level from 0 to 15
 	 */
 	public byte getSkyLight();
@@ -270,14 +248,12 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	/**
 	 * Sets the light level the sky emits<br>
 	 * Block sky light levels are affected by this
-	 * 
 	 * @param newLight level from 0 to 15 for the sky light
 	 */
 	public void setSkyLight(byte newLight);
 
 	/**
 	 * Gets all entities with the specified type.
-	 *
 	 * @param type The {@link Class} for the type.
 	 * @return A collection of entities with the specified type.
 	 */
@@ -286,7 +262,6 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 
 	/**
 	 * Gets all entities.
-	 *
 	 * @return A collection of entities.
 	 */
 	@SnapshotRead
@@ -294,7 +269,6 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 
 	/**
 	 * Gets an entity by its id.
-	 *
 	 * @param id The id.
 	 * @return The entity, or {@code null} if it could not be found.
 	 */
@@ -303,7 +277,6 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 
 	/**
 	 * Gets a set of all players on active on this world
-	 *
 	 * @return all players on this world
 	 */
 	public Set<Player> getPlayers();
@@ -312,20 +285,19 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * Gets the directory where world data is stored
 	 */
 	public File getDirectory();
-	
+
 	/**
 	 * Gets a map of data attached to this world. Data will persist across restarts.
-	 * 
 	 * @return data map
 	 */
 	public DefaultedMap<String, Serializable> getDataMap();
 
-    /**
-     * Gets a value from the data map by providing a key. Data will persist across restarts.
-     * @param key The key to lookup a value from the map
-     * @return the data stored for this key or null if no data found.
-     */
-    public Serializable get(Object key);
+	/**
+	 * Gets a value from the data map by providing a key. Data will persist across restarts.
+	 * @param key The key to lookup a value from the map
+	 * @return the data stored for this key or null if no data found.
+	 */
+	public Serializable get(Object key);
 
 	/**
 	 * Gets the task manager responsible for parallel region tasks.<br>
@@ -333,7 +305,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * All tasks are submitted to all loaded regions at the start of the next tick.<br>
 	 * <br>
 	 * Repeating tasks are also submitted to all new regions when they are created.<br>
-	 * Repeated tasks are NOT guaranteed to happen in the same tick for all regions, 
+	 * Repeated tasks are NOT guaranteed to happen in the same tick for all regions,
 	 * as each task is submitted individually to each region.<br>
 	 * <br>
 	 * This task manager does not support async tasks.
@@ -342,15 +314,14 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @return the parallel task manager for the engine
 	 */
 	public TaskManager getParallelTaskManager();
-	
+
 	/**
 	 * Gets the TaskManager associated with this world
 	 */
 	public abstract TaskManager getTaskManager();
-	
+
 	/**
 	 * Gets a set of nearby players to the point, inside of the range
-	 * 
 	 * @param position of the center
 	 * @param range to look for
 	 * @return A set of nearby Players
@@ -361,7 +332,6 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 
 	/**
 	 * Gets a set of nearby players to the entity, inside of the range
-	 * 
 	 * @param entity marking the center and which is ignored
 	 * @param range to look for
 	 * @return A set of nearby Players
@@ -373,7 +343,6 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	/**
 	 * Gets a set of nearby players to the point, inside of the range.
 	 * The search will ignore the specified entity.
-	 * 
 	 * @param position of the center
 	 * @param ignore Entity to ignore
 	 * @param range to look for
@@ -386,7 +355,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	/**
 	 * Gets the absolute closest player from the specified point within a specified range.
 	 * @param position to search from
-	 * @param entity to ignore while searching
+	 * @param ignore to ignore while searching
 	 * @param range to search
 	 * @return nearest player
 	 */
@@ -396,9 +365,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 
 	/**
 	 * Gets the absolute closest player from the specified point within a specified range.
-	 * 
-	 * @param entity to search from
-	 * @param entity to ignore while searching
+	 * @param position center of search
 	 * @param range to search
 	 * @return nearest player
 	 */
@@ -408,7 +375,6 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 
 	/**
 	 * Gets the absolute closest player from the specified point within a specified range.
-	 * 
 	 * @param entity to search from
 	 * @param range to search
 	 * @return nearest player
@@ -416,10 +382,9 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	@LiveRead
 	@Threadsafe
 	public Player getNearestPlayer(Entity entity, int range);
-	
+
 	/**
 	 * Sets the cuboid area to the values inside of the cuboid buffer.
-	 * 
 	 * @param buffer
 	 * @param plugin that is setting the cuboid area
 	 * @return false if the set fails
