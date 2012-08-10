@@ -40,7 +40,6 @@ import org.spout.api.inventory.ItemStack;
  */
 public class EntityDeathEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
-
 	private final LinkedList<ItemStack> drops;
 
 	public EntityDeathEvent(Entity e) {
@@ -50,7 +49,6 @@ public class EntityDeathEvent extends EntityEvent implements Cancellable {
 
 	/**
 	 * Gets a {@link List} of {@link ItemStack} to drop.
-	 *
 	 * @return The list of items to drop.
 	 */
 	public List<ItemStack> getDrops() {

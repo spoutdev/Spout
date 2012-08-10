@@ -37,7 +37,6 @@ import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.map.DefaultedMap;
-import org.spout.api.tickable.Tickable;
 
 public abstract class BasicController implements Controller {
 	//Components

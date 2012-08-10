@@ -37,9 +37,7 @@ import org.spout.api.geo.discrete.Point;
  */
 public class EntityMoveEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
-
 	private final Point from;
-
 	private Point to;
 
 	public EntityMoveEvent(Entity e, Point from, Point to) {
@@ -50,7 +48,6 @@ public class EntityMoveEvent extends EntityEvent implements Cancellable {
 
 	/**
 	 * Gets the location this entity moved from.
-	 *
 	 * @return Point the entity moved from.
 	 */
 	public Point getFrom() {
@@ -59,7 +56,6 @@ public class EntityMoveEvent extends EntityEvent implements Cancellable {
 
 	/**
 	 * Gets the location this entity moved to.
-	 *
 	 * @return Point the entity moved to.
 	 */
 	public Point getTo() {
@@ -68,7 +64,6 @@ public class EntityMoveEvent extends EntityEvent implements Cancellable {
 
 	/**
 	 * Sets the location that this entity will move to.
-	 *
 	 * @param to New Point this entity will move to.
 	 */
 	public void setTo(Point to) {

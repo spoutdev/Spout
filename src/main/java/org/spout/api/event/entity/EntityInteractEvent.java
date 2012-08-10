@@ -36,7 +36,6 @@ import org.spout.api.event.HandlerList;
  */
 public class EntityInteractEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
-
 	private Entity interacted;
 
 	public EntityInteractEvent(Entity e, Entity interacted) {
@@ -46,7 +45,6 @@ public class EntityInteractEvent extends EntityEvent implements Cancellable {
 
 	/**
 	 * Get the entity being interacted with.
-	 *
 	 * @return The entity interacted with.
 	 */
 	public Entity getInteractedWith() {
@@ -55,7 +53,6 @@ public class EntityInteractEvent extends EntityEvent implements Cancellable {
 
 	/**
 	 * Set the entity being interacted with.
-	 *
 	 * @param e The entity that will be interacted with.
 	 */
 	public void setInteractedWith(Entity e) {

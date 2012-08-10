@@ -37,9 +37,7 @@ import org.spout.api.event.HandlerList;
  */
 public class EntityHealthChangeEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
-
 	private int change;
-
 	private final Source source;
 
 	public EntityHealthChangeEvent(Entity e, Source source, int change) {
@@ -50,7 +48,6 @@ public class EntityHealthChangeEvent extends EntityEvent implements Cancellable 
 
 	/**
 	 * Gets the source that caused the event.
-	 *
 	 * @return The source that caused this event.
 	 */
 	public Source getSource() {
@@ -59,7 +56,6 @@ public class EntityHealthChangeEvent extends EntityEvent implements Cancellable 
 
 	/**
 	 * Gets the change in health.
-	 *
 	 * @return The amount of change.
 	 */
 	public int getChange() {
@@ -68,7 +64,6 @@ public class EntityHealthChangeEvent extends EntityEvent implements Cancellable 
 
 	/**
 	 * Sets the change in health.
-	 *
 	 * @param damage The amount of change.
 	 */
 	public void setChange(int change) {

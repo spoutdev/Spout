@@ -29,7 +29,6 @@ package org.spout.api.entity.controller.type;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import org.spout.api.entity.BasicController;
 import org.spout.api.entity.Controller;
 
 public class EmptyConstructorControllerType extends ControllerType {

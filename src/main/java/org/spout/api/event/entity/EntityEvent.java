@@ -41,11 +41,9 @@ public abstract class EntityEvent extends Event {
 
 	/**
 	 * Gets the entity associated with this event.
-	 *
 	 * @return The entity associated with the event.
 	 */
 	public Entity getEntity() {
 		return entity;
 	}
-
 }
