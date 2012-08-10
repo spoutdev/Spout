@@ -24,14 +24,18 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.util.config;
+package org.spout.api.util.config.migration;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
-import java.util.regex.Matcher;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.Validate;
 import org.spout.api.exception.ConfigurationException;
+import org.spout.api.util.config.Configuration;
+import org.spout.api.util.config.ConfigurationNode;
+import org.spout.api.util.config.FileConfiguration;
 
 /**
  * A simple migrator for configurations that moves values from one key to another.
@@ -41,6 +45,7 @@ public abstract class ConfigurationMigrator {
     private final Configuration configuration;
 
     protected ConfigurationMigrator(Configuration configuration) {
+		Validate.notNull(configuration);
         this.configuration = configuration;
     }
 
@@ -48,69 +53,6 @@ public abstract class ConfigurationMigrator {
 
 	public Configuration getConfiguration() {
 		return configuration;
-	}
-
-	/**
-	 * This implementation of MigrationAction converts configuration keys based on predefined
-	 * stringpath patterns where % is replaced by the old key. The stringpath pattern is split by the configuration's path separator
-	 *
-	 * @see org.spout.api.util.config.Configuration#getPathSeparator()
-	 */
-	public final class NewJoinedKey implements MigrationAction {
-		private final String newKeyPattern;
-
-		public NewJoinedKey(String newKeyPattern) {
-			this.newKeyPattern = newKeyPattern;
-		}
-
-		public String[] convertKey(String[] key) {
-			String oldKey = StringUtils.join(key, getConfiguration().getPathSeparator());
-			return configuration.getPathSeparatorPattern().split(newKeyPattern.replaceAll("%", Matcher.quoteReplacement(oldKey)));
-		}
-
-		public Object convertValue(Object value) {
-			return value;
-		}
-	}
-
-	/**
-	 * This implementation of MigrationAction changes the key of a configuration value to a predefined new key
-	 */
-	public static final class NewKey implements MigrationAction {
-		private final String[] newKey;
-
-		public NewKey(String... key) {
-			this.newKey = key;
-		}
-
-		public String[] convertKey(String[] key) {
-			return newKey;
-		}
-
-		public Object convertValue(Object value) {
-			return value;
-		}
-	}
-
-	/**
-	 * Represents the two sides of migrating an existing configuration key:
-	 * Converting the key and converting the value
-	 */
-	public static interface MigrationAction {
-		/**
-		 * This method converts the old configuration key to its migrated value.
-		 *
-		 * @param key The existing configuration key
-		 * @return The key modified to its new value
-		 */
-		public String[] convertKey(String[] key);
-		/**
-		 * This method converts the old configuration value to its migrated value.
-		 *
-		 * @param value The existing configuration value
-		 * @return The value modified to its new value
-		 */
-		public Object convertValue(Object value);
 	}
 
 	/**
@@ -123,21 +65,24 @@ public abstract class ConfigurationMigrator {
 	/**
 	 * Perform migration of the configuration this object was constructed with
 	 * If migration was not necessary ({@link #shouldMigrate()} returned false), the method invocation will be considered successful.
-	 * If {@link #configuration} is a {@link FileConfiguration}, the file the configuration vas previously stored in will be
+	 * If {@link #configuration} is a {@link org.spout.api.util.config.FileConfiguration}, the file the configuration vas previously stored in will be
 	 * moved to (file name).old as a backup of the data before migration
 	 *
-	 * @return Null if successful, an error message if an error occurred.
+	 * @throws MigrationException if the configuration could not be successfully migrated
 	 */
-    public String migrate() {
+    public void migrate() throws MigrationException {
         if (!shouldMigrate()) {
-            return null;
+            return;
         }
 
 		if (configuration instanceof FileConfiguration) {
+
 			File oldFile = ((FileConfiguration) configuration).getFile();
-        	if (!oldFile.renameTo(new File(oldFile.getAbsolutePath() + ".old"))) {
-            	return "Unable to rename backup old configuration file!";
-        	}
+			try {
+				FileUtils.moveFile(oldFile, new File(oldFile.getAbsolutePath() + ".old"));
+			} catch (IOException e) {
+				throw new MigrationException(e);
+			}
 		}
 
         for (Map.Entry<String[], MigrationAction> entry : getMigrationActions().entrySet()) {
@@ -154,9 +99,8 @@ public abstract class ConfigurationMigrator {
         try {
 			configuration.save();
 		} catch (ConfigurationException e) {
-			return e.getMessage();
+			throw new MigrationException(e);
 		}
-		return null;
     }
 
 }
