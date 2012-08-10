@@ -174,6 +174,7 @@ public class SpoutRegion extends Region{
 	private final ConcurrentLinkedQueue<SpoutChunk> occupiedChunksQueue = new ConcurrentLinkedQueue<SpoutChunk>();
 	private final ArrayBlockingQueue<SpoutChunk> localPhysicsChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final ArrayBlockingQueue<SpoutChunk> globalPhysicsChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
+	private final ArrayBlockingQueue<SpoutChunk> dirtyChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
 	
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
@@ -775,31 +776,26 @@ public class SpoutRegion extends Region{
 		Profiler.start("finalizeRun");
 		try {
 			entityManager.preSnapshotRun();
-
-			for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
-				for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
-					for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
-						Chunk chunk = chunks[dx][dy][dz].get();
-						if (chunk == null) {
+			
+			SpoutChunk spoutChunk;
+			while ((spoutChunk = dirtyChunks.poll()) != null) {
+				spoutChunk.setNotDirtyQueued();
+				if (!spoutChunk.isLoaded()) {
+					continue;
+				}
+				if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
+					spoutChunk.setRenderDirty();
+					for (Entity entity : spoutChunk.getObserversLive()) {
+						//chunk.refreshObserver(entity);
+						if (!(entity.getController() instanceof PlayerController)) {
 							continue;
 						}
-						SpoutChunk spoutChunk = (SpoutChunk) chunk;
-
-						if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
-							spoutChunk.setRenderDirty();
-							for (Entity entity : spoutChunk.getObserversLive()) {
-								//chunk.refreshObserver(entity);
-								if (!(entity.getController() instanceof PlayerController)) {
-									continue;
-								}
-								syncChunkToPlayers(spoutChunk, entity);
-							}
-							processChunkUpdatedEvent(spoutChunk);
-
-							spoutChunk.resetDirtyArrays();
-							spoutChunk.setLightDirty(false);
-						}
+						syncChunkToPlayers(spoutChunk, entity);
 					}
+					processChunkUpdatedEvent(spoutChunk);
+
+					spoutChunk.resetDirtyArrays();
+					spoutChunk.setLightDirty(false);
 				}
 			}
 			
@@ -827,6 +823,10 @@ public class SpoutRegion extends Region{
 		finally {
 			Profiler.stop();
 		}
+	}
+	
+	public void queueDirty(SpoutChunk chunk) {
+		dirtyChunks.add(chunk);
 	}
 
 	public void runPhysics(int sequence) throws InterruptedException {

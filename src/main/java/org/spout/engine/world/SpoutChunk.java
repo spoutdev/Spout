@@ -217,6 +217,11 @@ public class SpoutChunk extends Chunk {
 	 */
 	private final WeakReference<Chunk> selfReference;
 	public static final WeakReference<Chunk> NULL_WEAK_REFERENCE = new WeakReference<Chunk>(null);
+	
+	/**
+	 * Indicates that the chunk has been added to the dirty queue
+	 */
+	private AtomicBoolean dirtyQueued = new AtomicBoolean(false);
 
 	static {
 		for (int i = 0; i < shiftCache.length; i++) {
@@ -1690,6 +1695,9 @@ public class SpoutChunk extends Chunk {
 	}
 
 	private void blockChanged(int x, int y, int z, BlockMaterial newMaterial, short newData, BlockMaterial oldMaterial, short oldData, Source source) {
+		// Add chunk to regions's dirty queue
+		queueDirty();
+		
 		// Handle onPlacement for dynamic materials
 		if (newMaterial instanceof DynamicMaterial) {
 			if (oldMaterial instanceof BlockMaterial) {
@@ -1729,6 +1737,16 @@ public class SpoutChunk extends Chunk {
 	
 	public WeakReference<Chunk> getWeakReference() {
 		return selfReference;
+	}
+	
+	public void setNotDirtyQueued() {
+		dirtyQueued.set(false);
+	}
+	
+	private void queueDirty() {
+		if (dirtyQueued.compareAndSet(false, true)) {
+			parentRegion.queueDirty(this);
+		}
 	}
 	
 	public void setInactivePhysics(boolean local) {
