@@ -26,12 +26,7 @@
  */
 package org.spout.engine.entity;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -40,7 +35,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.Source;
 import org.spout.api.collision.CollisionModel;
-import org.spout.api.entity.Component;
+import org.spout.api.entity.BasicController;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.entity.EntityControllerChangeEvent;
