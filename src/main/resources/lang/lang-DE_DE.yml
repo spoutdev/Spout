@@ -1,0 +1,13 @@
+locale: DE_DE
+strings:
+  0: Spout startet im %0-Modus.
+  1: Version %0 (implementiert SpoutAPI %1)
+  2: Diese Software ist im Moment im Alpha-Status, einige Komponenten können
+  3: Fehler enthalten oder gar nicht funktionieren. Bitte melde alle Probleme auf
+  4: http://issues.spout.org
+  5: Generiere eine neue Welt mit Namen [%0]
+  6: Spout fährt herunter
+  7: "Server hätlt an"
+  8: "Fehler beim Laden der Konfiguration: %0"
+  9: "Der Debug-Modus ist angeschaltet! Dieser Modus ist nur für Entwickler vorgesehen"
+  10: "Fehler beim Laden von %0: %1"

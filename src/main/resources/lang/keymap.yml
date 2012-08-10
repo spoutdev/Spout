@@ -1,0 +1,35 @@
+nextId: 11
+ids:
+  1:
+    class: org.spout.engine.SpoutEngine
+    string: Current version is %0 (Implementing SpoutAPI %1).
+  10:
+    class: org.spout.engine.SpoutEngine
+    string: 'Error loading %0: %1'
+  2:
+    class: org.spout.engine.SpoutEngine
+    string: This software is currently in alpha status so components may
+  9:
+    class: org.spout.engine.SpoutEngine
+    string: Debug Mode has been toggled on!  This mode is intended for developers only
+  0:
+    class: org.spout.engine.SpoutEngine
+    string: Spout is starting in %0-only mode.
+  3:
+    class: org.spout.engine.SpoutEngine
+    string: have bugs or not work at all. Please report any issues to
+  8:
+    class: org.spout.engine.SpoutEngine
+    string: 'Error loading config: %0'
+  4:
+    class: org.spout.engine.SpoutEngine
+    string: http://issues.spout.org
+  6:
+    class: org.spout.engine.SpoutEngine
+    string: Spout shutting down
+  7:
+    class: org.spout.engine.SpoutEngine
+    string: Server halting
+  5:
+    class: org.spout.engine.SpoutEngine
+    string: Generating new world named [%0]

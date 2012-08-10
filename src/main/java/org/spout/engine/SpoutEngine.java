@@ -26,6 +26,8 @@
  */
 package org.spout.engine;
 
+import static org.spout.api.lang.Translation.tr;
+import static org.spout.api.lang.Translation.log;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.Inet4Address;
@@ -127,6 +129,7 @@ import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
 
 public abstract class SpoutEngine extends AsyncManager implements Engine {
+	private static CommandSource CMD;
 	private static final SpoutPlayer[] EMPTY_PLAYER_ARRAY = new SpoutPlayer[0];
 	private static final Logger logger = Logger.getLogger("Spout");
 	private final String name = "Spout Engine";
@@ -177,11 +180,13 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		try {
 			config.load();
 		} catch (ConfigurationException e) {
-			getLogger().log(Level.SEVERE, "Error loading config: " + e.getMessage(), e);
+			log("Error loading config: %0", Level.SEVERE, e.getMessage(), e);
 		}
 
 		console = new MultiConsole(new FileConsole(this), new JLineConsole(this));
 		consoleManager.setupConsole(console);
+		
+		CMD = consoleManager.getCommandSource();
 
 		registerWithScheduler(scheduler);
 
@@ -200,14 +205,14 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	public abstract void start();
 
 	public void start(boolean checkWorlds) {
-		getLogger().info("Spout is starting in " + getPlatform().name().toLowerCase() + "-only mode.");
-		getLogger().info("Current version is " + Spout.getEngine().getVersion() + " (Implementing SpoutAPI " + Spout.getAPIVersion() + ").");
-		getLogger().info("This software is currently in alpha status so components may");
-		getLogger().info("have bugs or not work at all. Please report any issues to");
-		getLogger().info("http://issues.spout.org");
+		log("Spout is starting in %0-only mode.", getPlatform().name().toLowerCase());
+		log("Current version is %0 (Implementing SpoutAPI %1).", Spout.getEngine().getVersion(), Spout.getAPIVersion());
+		log("This software is currently in alpha status so components may");
+		log("have bugs or not work at all. Please report any issues to");
+		log("http://issues.spout.org");
 
 		if (debugMode()) {
-			getLogger().warning("Debug Mode has been toggled on!  This mode is intended for developers only");
+			log("Debug Mode has been toggled on!  This mode is intended for developers only", Level.WARNING);
 			leakThread.start();
 			scheduler.scheduleSyncRepeatingTask(this, new ProfileTask(), 60 * 1000, 60 * 1000, TaskPriority.NORMAL);
 		}
@@ -277,8 +282,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 				//Technically unsafe.  This should call the security manager
 				plugin.onLoad();
 			} catch (Exception ex) {
-				logger.log(Level.SEVERE, "Error loading {0}: {1}", new Object[]{plugin.getDescription().getName(), ex.getMessage()});
-				ex.printStackTrace();
+				log("Error loading %0: %1", Level.SEVERE, plugin.getDescription().getName(), ex.getMessage(), ex);
 			}
 		}
 	}
@@ -468,7 +472,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 		SpoutWorld world = WorldFiles.loadWorldFromData(name, generator, engineItemMap);
 		if (world == null) {
-			Spout.getLogger().info("Generating new world named [" + name + "]");
+			log("Generating new world named [%0]", name);
 
 			File itemMapFile = new File(new File(SharedFileSystem.WORLDS_DIRECTORY, name), "materials.dat");
 			BinaryFileStore itemStore = new BinaryFileStore(itemMapFile);
@@ -497,7 +501,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 	@Override
 	public boolean stop() {
-		return stop("Spout shutting down");
+		return stop(tr("Spout shutting down", CMD)); // TODO distribute the message differently
 	}
 
 	private final AtomicBoolean stopping = new AtomicBoolean();
@@ -683,7 +687,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 	@Override
 	public void haltRun() throws InterruptedException {
-		logger.info("Server halting");
+		log("Server halting");
 		console.close();
 	}
 
