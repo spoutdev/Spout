@@ -1731,8 +1731,8 @@ public class SpoutChunk extends Chunk {
 		return selfReference;
 	}
 	
-	public void setInactivePhysics() {
-		physicsQueue.setInactive();
+	public void setInactivePhysics(boolean local) {
+		physicsQueue.setInactive(local);
 	}
 	
 	int physicsUpdates = 0;

@@ -844,7 +844,7 @@ public class SpoutRegion extends Region{
 			updated = false;
 			SpoutChunk c;
 			while ((c = this.localPhysicsChunks.poll()) != null) {
-				c.setInactivePhysics();
+				c.setInactivePhysics(true);
 				updated |= c.runLocalPhysics();
 			}
 		}
@@ -853,7 +853,7 @@ public class SpoutRegion extends Region{
 	public void runGlobalPhysics() throws InterruptedException {
 		SpoutChunk c;
 		while ((c = this.globalPhysicsChunks.poll()) != null) {
-			c.setInactivePhysics();
+			c.setInactivePhysics(false);
 			c.runGlobalPhysics();
 		}
 	}
@@ -1261,11 +1261,14 @@ public class SpoutRegion extends Region{
 		}
 		return controller instanceof PlayerController;
 	}
-	
-	public void setPhysicsActive(SpoutChunk chunk) {
+
+	public void setPhysicsActive(SpoutChunk chunk, boolean local) {
 		try {
-			localPhysicsChunks.add(chunk);
-			globalPhysicsChunks.add(chunk);
+			if (local) {
+				localPhysicsChunks.add(chunk);
+			} else {
+				globalPhysicsChunks.add(chunk);
+			}
 		} catch (IllegalStateException ise) {
 			throw new IllegalStateException("Physics chunk queue exceeded capacity", ise);
 		}

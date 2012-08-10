@@ -53,7 +53,8 @@ public class PhysicsQueue {
 	private final SpoutChunk chunk;
 	private final Thread regionThread;
 	private final Thread mainThread;
-	private final AtomicBoolean active = new AtomicBoolean(false);
+	private final AtomicBoolean localActive = new AtomicBoolean(false);
+	private final AtomicBoolean globalActive = new AtomicBoolean(false);
 	
 	private final ConcurrentLinkedQueue<PhysicsUpdate> asyncQueue = new ConcurrentLinkedQueue<PhysicsUpdate>();
 	private final UpdateQueue updateQueue = new UpdateQueue();
@@ -95,29 +96,36 @@ public class PhysicsQueue {
 	
 	public void queueForUpdateAsync(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial, Source source) {
 		asyncQueue.add(new PhysicsUpdate(x, y, z, range, oldMaterial, source));
-		if (active.compareAndSet(false, true)) {
-			region.setPhysicsActive(chunk);
-		}
+		registerActive();
 	}
 	
 	public void queueForUpdate(int x, int y, int z, BlockMaterial oldMaterial, Source source) {
 		checkStages();
 		updateQueue.add(x, y, z, oldMaterial, source);
-		if (active.compareAndSet(false, true)) {
-			region.setPhysicsActive(chunk);
-		}
+		registerActive();
 	}
 	
 	public void queueForUpdateMultiRegion(int x, int y, int z, BlockMaterial oldMaterial, Source source) {
 		checkStages();
 		multiRegionQueue.add(x, y, z, oldMaterial, source);
-		if (active.compareAndSet(false, true)) {
-			region.setPhysicsActive(chunk);
+		registerActive();
+	}
+	
+	public void setInactive(boolean local) {
+		if (local) {
+			localActive.set(false);
+		} else {
+			globalActive.set(false);
 		}
 	}
 	
-	public void setInactive() {
-		active.set(false);
+	public void registerActive() {
+		if (localActive.compareAndSet(false, true)) {
+			region.setPhysicsActive(chunk, true);
+		}
+		if (globalActive.compareAndSet(false, true)) {
+			region.setPhysicsActive(chunk, false);
+		}
 	}
 	
 	public UpdateQueue getUpdateQueue() {
