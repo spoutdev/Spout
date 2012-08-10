@@ -27,6 +27,8 @@
 package org.spout.api.plugin;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Locale;
 import java.util.logging.Logger;
 import org.spout.api.Engine;
@@ -122,12 +124,29 @@ public interface Plugin extends Source, Named {
 	public File getFile();
 
 	/**
+	 * Returns a resource from the plugin's archive
+	 *
+	 * @param path The path of the resource to get
+	 * @return The resource's input stream, or null if none could be found or the implementation does not support this method
+	 */
+	public InputStream getResource(String path);
+
+	/**
+	 * Extracts a resource returned by {@link #getResource(String)} to the given path
+	 *
+	 * @param path The path to get the resource at
+	 * @param destination The destination file
+	 * @throws IOException When the resource could not be found or the copying failed
+	 */
+	public void extractResource(String path, File destination) throws IOException;
+
+	/**
 	 * Allows plugins to load external libraries into the JVM
 	 *
 	 * @param file that is the library
 	 */
 	public void loadLibrary(File file);
-	
+
 	/**
 	 * @return the plugins dictionary
 	 */

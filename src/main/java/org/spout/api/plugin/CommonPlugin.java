@@ -26,6 +26,8 @@
  */
 package org.spout.api.plugin;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.Validate;
 import org.spout.api.Engine;
 import org.spout.api.UnsafeMethod;
 import org.spout.api.generator.WorldGenerator;
@@ -33,9 +35,13 @@ import org.spout.api.lang.LanguageDictionary;
 import org.spout.api.lang.PluginDictionary;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -49,7 +55,7 @@ public abstract class CommonPlugin implements Plugin {
 	private boolean enabled;
 	private Logger logger;
 	private PluginDictionary dictionary;
-	
+
 	public final void initialize(CommonPluginLoader pluginLoader, Engine engine, PluginDescriptionFile description, File dataFolder, File file, CommonClassLoader classLoader) {
 		this.pluginLoader = pluginLoader;
 		this.engine = engine;
@@ -59,7 +65,7 @@ public abstract class CommonPlugin implements Plugin {
 		this.classLoader = classLoader;
 
 		this.logger = new PluginLogger(this);
-		
+
 		this.dictionary = new PluginDictionary(this);
 	}
 
@@ -99,6 +105,31 @@ public abstract class CommonPlugin implements Plugin {
 
 	public final File getFile() {
 		return file;
+	}
+
+	public InputStream getResource(String path) {
+		Validate.notNull(path);
+		JarFile jar;
+		try {
+			jar = new JarFile(getFile());
+		} catch (IOException e) {
+			return null;
+		}
+		JarEntry entry = jar.getJarEntry(path);
+		try {
+			return entry == null ? null : jar.getInputStream(entry);
+		} catch (IOException e) {
+			return null;
+		}
+	}
+
+	public void extractResource(String path, File destination) throws IOException {
+		Validate.notNull(destination);
+		InputStream stream = getResource(path);
+		if (stream == null) {
+			throw new IOException("Unknown resource: " + path);
+		}
+		FileUtils.copyInputStreamToFile(stream, destination);
 	}
 
 	public final boolean isEnabled() {
@@ -148,7 +179,7 @@ public abstract class CommonPlugin implements Plugin {
 			throw new IllegalArgumentException("Failed to load library: ", e);
 		}
 	}
-	
+
 	@Override
 	public PluginDictionary getDictionary() {
 		return dictionary;
