@@ -440,15 +440,15 @@ public class SpoutEntity implements Entity {
 					throw new IllegalStateException("ControllerLive is null, but entity is not dead!");
 				}
 
-				//Kill old controller
+				//Kill old entity
 				controller.onDeath();
 			}
 			//2.) Entity is changing controllers
 			else if (controller != null && controllerLive.get() != null) {
-				//Kill old controller
+				//Kill old entity
 				controller.onDeath();
 
-				//Allocate new controller
+				//Allocate new entity
 				if (entityManagerLive.get() != null) {
 					entityManagerLive.get().allocate(this);
 				}

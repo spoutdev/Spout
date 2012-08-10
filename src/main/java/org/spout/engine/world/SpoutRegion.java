@@ -1106,7 +1106,7 @@ public class SpoutRegion extends Region {
 				entity.kill();
 			}
 		} else if (controller != null) {
-			//spawn new entity with controller
+			//spawn new entity with entity
 			this.getWorld().createAndSpawnEntity(new Point(pos, getWorld()), controller);
 		}
 	}

@@ -450,7 +450,7 @@ public class WorldFiles {
 			int view = SafeCast.toInt(NBTMapper.toTagValue(map.get("view")), 0);
 			boolean observer = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("observer")), new ByteTag("", (byte) 0), ByteTag.class).getBooleanValue();
 
-			//Setup controller
+			//Setup entity
 			Controller controller = type.createController();
 			try {
 				boolean controllerDataExists = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("controller_data_exists")), new ByteTag("", (byte) 0), ByteTag.class).getBooleanValue();
@@ -506,7 +506,7 @@ public class WorldFiles {
 		map.put(new IntTag("view", e.getViewDistance()));
 		map.put(new ByteTag("observer", e.isObserverLive()));
 
-		//Write controller
+		//Write entity
 		try {
 			//Call onSave
 			e.getController().onSave();
