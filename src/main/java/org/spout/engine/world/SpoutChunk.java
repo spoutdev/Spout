@@ -222,6 +222,8 @@ public class SpoutChunk extends Chunk {
 	 * Indicates that the chunk has been added to the dirty queue
 	 */
 	private AtomicBoolean dirtyQueued = new AtomicBoolean(false);
+	
+	private AtomicBoolean populationQueued = new AtomicBoolean(false);
 
 	static {
 		for (int i = 0; i < shiftCache.length; i++) {
@@ -929,7 +931,9 @@ public class SpoutChunk extends Chunk {
 		resetPostSaving();
 		parentRegion.unloadQueue.remove(this);
 		if (!isPopulated()) {
-			parentRegion.queueChunkForPopulation(this);
+			if (populationQueued.compareAndSet(false, true)) {
+				parentRegion.queueChunkForPopulation(this);
+			}
 		}
 		if (observed.compareAndSet(false, true)) {
 			observedChunks.incrementAndGet();
@@ -1004,7 +1008,9 @@ public class SpoutChunk extends Chunk {
 	public boolean canSend() {
 		boolean canSend = isPopulated() && !this.isCalculatingLighting();
 		if (!canSend && !isPopulated() && isObserved()) {
-			parentRegion.queueChunkForPopulation(this);
+			if (populationQueued.compareAndSet(false, true)) {
+				parentRegion.queueChunkForPopulation(this);
+			}
 		}
 		return canSend;
 	}
@@ -1244,6 +1250,16 @@ public class SpoutChunk extends Chunk {
 
 	public void setPopulationState(PopulationState state) {
 		populationState.set(state);
+	}
+	
+	public void queueForPopulation() {
+		if (populationQueued.compareAndSet(false, true)) {
+			parentRegion.queueChunkForPopulation(this);
+		}
+	}
+	
+	public void setNotQueuedForPopulation() {
+		populationQueued.set(false);
 	}
 
 	@Override

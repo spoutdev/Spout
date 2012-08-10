@@ -161,8 +161,7 @@ public class SpoutRegion extends Region{
 	/**
 	 * A queue of chunks that need to be populated
 	 */
-	final Queue<Chunk> populationQueue = new ConcurrentLinkedQueue<Chunk>();
-	final Set<Chunk> populationQueueSet = Collections.newSetFromMap(new ConcurrentHashMap<Chunk, Boolean>());
+	final ArrayBlockingQueue<SpoutChunk> populationQueue = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
 	
 	private final SpoutTaskManager taskManager;
 
@@ -387,7 +386,8 @@ public class SpoutRegion extends Region{
 			occupiedChunks.remove(currentChunk);
 
 			populationQueue.remove(currentChunk);
-			populationQueueSet.remove(currentChunk);
+			
+			dirtyChunks.remove(currentChunk);
 
 			removeDynamicBlockUpdates(currentChunk);
 
@@ -504,6 +504,10 @@ public class SpoutRegion extends Region{
 		while (itr.hasNext()) {
 			// NOTE : This is only called for chunks with contain entities.
 			SpoutChunk c = itr.next();
+			if (!c.isLoaded()) {
+				itr.remove();
+				continue;
+			}
 			if (c.copySnapshotRun()) {
 				itr.remove();
 			}
@@ -559,10 +563,8 @@ public class SpoutRegion extends Region{
 		return empty;
 	}
 
-	protected void queueChunkForPopulation(Chunk c) {
-		if (populationQueueSet.add(c)) {
-			populationQueue.add(c);
-		}
+	public void queueChunkForPopulation(SpoutChunk c) {
+		populationQueue.add(c);
 	}
 
 	public void addEntity(Entity e) {
@@ -617,7 +619,7 @@ public class SpoutRegion extends Region{
 								x = TByteTripleHashSet.key1(key);
 								y = TByteTripleHashSet.key2(key);
 								z = TByteTripleHashSet.key3(key);
-								SpoutChunk chunk = this.getChunk(x, y, z, LoadOption.NO_LOAD);
+								SpoutChunk chunk = this.getChunkRaw(x, y, z, LoadOption.NO_LOAD);
 								if (chunk == null || !chunk.isLoaded()) {
 									iter.remove();
 									continue;
@@ -635,11 +637,11 @@ public class SpoutRegion extends Region{
 
 					Profiler.startAndStop("chunk population");
 					for (int i = 0; i < POPULATE_PER_TICK; i++) {
-						Chunk toPopulate = populationQueue.poll();
+						SpoutChunk toPopulate = populationQueue.poll();
 						if (toPopulate == null) {
 							break;
 						}
-						populationQueueSet.remove(toPopulate);
+						toPopulate.setNotQueuedForPopulation();
 						if (toPopulate.isLoaded()) {
 							toPopulate.populate();
 						} else {
@@ -710,7 +712,7 @@ public class SpoutRegion extends Region{
 					if (doUnload) {
 						chunk.unload(true);
 					} else if (!chunk.isPopulated()) {
-						queueChunkForPopulation(chunk);
+						chunk.queueForPopulation();
 					}
 				}
 			}
