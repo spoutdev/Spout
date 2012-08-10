@@ -801,13 +801,13 @@ public class SpoutRegion extends Region{
 						}
 					}
 				}
-
-				SpoutChunkSnapshotFuture snapshotFuture;
-				while ((snapshotFuture = snapshotQueue.poll()) != null) {
-					snapshotFuture.run();
-				}
-
 			}
+			
+			SpoutChunkSnapshotFuture snapshotFuture;
+			while ((snapshotFuture = snapshotQueue.poll()) != null) {
+				snapshotFuture.run();
+			}
+			
 			Iterator<SpoutChunk> itr = occupiedChunks.iterator();
 			int cx, cy, cz;
 			while (itr.hasNext()) {
