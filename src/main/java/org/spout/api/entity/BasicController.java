@@ -41,7 +41,7 @@ import org.spout.api.tickable.Tickable;
 
 public abstract class BasicController implements Controller {
 	//Components
-	private final HashMap<Class<? extends Component>, Component<? extends BasicController>> components = new HashMap<Class<? extends Component>, Component<? extends BasicController>>();
+	private final HashMap<Class<? extends Component>, Component<? extends Controller>> components = new HashMap<Class<? extends Component>, Component<? extends Controller>>();
 	private final ControllerType type;
 	private final DatatableMap datatableMap = new GenericDatatableMap();
 	private final DataMap dataMap = new DataMap(datatableMap);
@@ -114,7 +114,7 @@ public abstract class BasicController implements Controller {
 			components.put(aClass, ec);
 			ec.attachToController(this);
 			ec.onAttached();
-			return ec;
+			return (T) ec;
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -134,8 +134,8 @@ public abstract class BasicController implements Controller {
 	}
 
 	@Override
-	public Component<? extends BasicController> getComponent(Class<? extends Component> aClass) {
-		return components.get(aClass);
+	public <T extends Component> T getComponent(Class<T> aClass) {
+		return (T) components.get(aClass);
 	}
 
 	@Override
