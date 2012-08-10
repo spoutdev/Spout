@@ -28,7 +28,7 @@ package org.spout.api.protocol.builtin.handler;
 
 import org.spout.api.Client;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.BasicController;
+import org.spout.api.entity.Controller;
 import org.spout.api.entity.Player;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
@@ -50,7 +50,7 @@ public class AddEntityMessageHandler extends MessageHandler<AddEntityMessage> {
 		} else {
 			newEntity = session.getEngine().getDefaultWorld().createEntity(message.getTransform().getPosition(), null);
 		}
-		BasicController controller = message.getType().createController();
+		Controller controller = message.getType().createController();
 		if (controller == null) {
 			throw new IllegalArgumentException("Error spawning entity, controller of type " + message.getType().getName() + " is null!");
 		}

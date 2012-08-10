@@ -33,7 +33,7 @@ import java.util.UUID;
 
 import org.spout.api.Engine;
 import org.spout.api.Source;
-import org.spout.api.entity.BasicController;
+import org.spout.api.entity.Controller;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
@@ -153,7 +153,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 
 	/**
 	 * Creates and Spawns an entity at the given point and with the given
-	 * Controller This is the same as {@link #createEntity(Point, org.spout.api.entity.BasicController)} and
+	 * Controller This is the same as {@link #createEntity(Point, org.spout.api.entity.Controller)} and
 	 * {@link #spawnEntity(Entity)} together.
 	 * @param point The point to spawn the Entity
 	 * @param controller The entity that will be attached to the Entity
@@ -258,7 +258,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @return A collection of entities with the specified type.
 	 */
 	@SnapshotRead
-	public Set<Entity> getAll(Class<? extends BasicController> type);
+	public Set<Entity> getAll(Class<? extends Controller> type);
 
 	/**
 	 * Gets all entities.
