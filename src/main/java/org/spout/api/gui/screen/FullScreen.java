@@ -30,7 +30,6 @@ import java.awt.Color;
 import java.awt.Rectangle;
 
 import org.lwjgl.opengl.Display;
-import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.gui.GenericScreen;
 import org.spout.api.gui.ScreenType;

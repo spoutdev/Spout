@@ -30,6 +30,9 @@ package org.spout.api.util.config.migration;
  * This exception is thrown when an error occurs while migrating the config
  */
 public class MigrationException extends Exception {
+
+	private static final long serialVersionUID = 3201476285205550742L;
+
 	public MigrationException(String message) {
 		super(message);
 	}

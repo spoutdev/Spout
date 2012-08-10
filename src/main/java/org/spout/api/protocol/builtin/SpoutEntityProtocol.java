@@ -34,7 +34,6 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.builtin.message.AddEntityMessage;
-import org.spout.api.protocol.builtin.message.EntityDatatableMessage;
 import org.spout.api.protocol.builtin.message.EntityPositionMessage;
 import org.spout.api.protocol.builtin.message.RemoveEntityMessage;
 

@@ -347,6 +347,7 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 			out.writeBoolean(true);
 			NBTOutputStream os = new NBTOutputStream(out, false);
 			os.writeTag(new CompoundTag("nbtData", nbtData));
+			os.close();
 		} else {
 			out.writeBoolean(false);
 		}
@@ -373,6 +374,7 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 			NBTInputStream is = new NBTInputStream(in, false);
 			CompoundTag tag = (CompoundTag) is.readTag();
 			nbtData = tag.getValue();
+			is.close();
 		}
 		
 		if (material == null) throw new ClassNotFoundException("No material matching {" + matId + ", " + matData + "} was found!");
