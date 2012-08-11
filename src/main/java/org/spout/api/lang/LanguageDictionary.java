@@ -30,6 +30,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
@@ -37,18 +38,29 @@ import org.yaml.snakeyaml.nodes.Tag;
 
 public class LanguageDictionary {
 	private Locale locale;
-	HashMap<Integer, String> translations = new HashMap<Integer, String>();
+	HashMap<Integer, Object> translations = new HashMap<Integer, Object>();
 	
 	public LanguageDictionary(Locale locale) {
 		this.locale = locale;
 	}
 	
-	public void setTranslation(int id, String translation) {
-		translations.put(id, translation);
+	public void setTranslation(int id, Object object) {
+		translations.put(id, object);
 	}
 	
 	public String getTranslation(int id) {
-		return translations.get(id);
+		return getTranslation(id, 0);
+	}
+	
+	public String getTranslation(int id, Number number) {
+		Object tr = translations.get(id);
+		if (tr instanceof String) {
+			return (String) tr;
+		} else if (tr instanceof LocaleNumberHandler) {
+			return ((LocaleNumberHandler) tr).getString(number);
+		} else {
+			return null;
+		}
 	}
 	
 	public Locale getLocale() {
@@ -59,7 +71,15 @@ public class LanguageDictionary {
 		Yaml yaml = new Yaml();
 		LinkedHashMap<String, Object> dump = new LinkedHashMap<String, Object>();
 		dump.put("locale", locale.getCode());
-		dump.put("strings", translations);
+		LinkedHashMap<Integer, Object> tr = new LinkedHashMap<Integer, Object>();
+		for (Entry<Integer, Object> e:translations.entrySet()) {
+			if (e.getValue() instanceof String) {
+				tr.put(e.getKey(), e.getValue());
+			} else if (e.getValue() instanceof LocaleNumberHandler) {
+				tr.put(e.getKey(), ((LocaleNumberHandler) e.getValue()).save());
+			}
+		}
+		dump.put("strings", tr);
 		String toWrite = yaml.dumpAs(dump, Tag.MAP, FlowStyle.BLOCK);
 		try {
 			fileWriter.write(toWrite);

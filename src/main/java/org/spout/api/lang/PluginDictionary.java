@@ -33,6 +33,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -189,9 +190,22 @@ public class PluginDictionary {
 		LanguageDictionary dict = new LanguageDictionary(locale);
 		setDictionary(locale, dict);
 		if (dump.containsKey("strings")) {
-			Map<Integer, String> strings = (Map<Integer, String>) dump.get("strings");
-			for (Entry<Integer, String> e : strings.entrySet()) {
-				dict.setTranslation(e.getKey(), e.getValue());
+			Map<Integer, Object> strings = (Map<Integer, Object>) dump.get("strings");
+			for (Entry<Integer, Object> e : strings.entrySet()) {
+				if (e.getValue() instanceof String) {
+					dict.setTranslation(e.getKey(), e.getValue());
+				} else {
+					try {
+						LocaleNumberHandler handler = locale.getNumberHandler().newInstance();
+						handler.init(e.getValue());
+						dict.setTranslation(e.getKey(), handler);
+					} catch (IllegalArgumentException e1) {
+					} catch (SecurityException e1) {
+					} catch (InstantiationException e1) {
+					} catch (IllegalAccessException e1) {
+					}
+					
+				}
 			}
 		}
 	}
@@ -239,10 +253,14 @@ public class PluginDictionary {
 
 		// Search for translation
 		LanguageDictionary dict = getDictionary(preferred);
+		Number num = 0;
+		if (args.length >= 1 && args[0] instanceof Number) {
+			num = (Number) args[0];
+		}
 		if (dict != null) {
 			int key = getKey(source, foundClass);
 			if (key != NO_ID) {
-				String translation = dict.getTranslation(key);
+				String translation = dict.getTranslation(key, num);
 				if (translation != null) {
 					use = translation;
 				}

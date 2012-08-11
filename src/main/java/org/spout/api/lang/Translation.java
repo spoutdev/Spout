@@ -61,7 +61,7 @@ import org.spout.api.plugin.Plugin;
  * 
  */
 
-// TODO: ChatStyle integration, %n as a placeholder for numbers
+// TODO: ChatStyle integration
 public class Translation {
 	
 	
