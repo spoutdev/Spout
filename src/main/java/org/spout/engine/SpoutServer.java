@@ -26,6 +26,7 @@
  */
 package org.spout.engine;
 
+import static org.spout.api.lang.Translation.log;
 import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
@@ -124,7 +125,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		getEventManager().registerEvents(listener, this);
 		getFilesystem().postStartup();
 		getEventManager().callEvent(new ServerStartEvent());
-		getLogger().info("Done Loading, ready for players.");
+		log("Done Loading, ready for players.");
 	}
 
 	@Override
@@ -135,11 +136,11 @@ public class SpoutServer extends SpoutEngine implements Server {
 			portBindings.bindAll();
 			portBindings.save();
 		} catch (ConfigurationException e) {
-			getLogger().log(Level.SEVERE, "Error loading port bindings: " + e.getMessage(), e);
+			log("Error loading port bindings: %0", Level.SEVERE, e);
 		}
 
 		if (boundProtocols.size() == 0) {
-			getLogger().warning("No port bindings registered! Clients will not be able to connect to the server.");
+			log("No port bindings registered! Clients will not be able to connect to the server.", Level.WARNING);
 		}
 	}
 
@@ -191,11 +192,11 @@ public class SpoutServer extends SpoutEngine implements Server {
 		try {
 			group.add(bootstrap.bind(binding.getAddress()));
 		} catch (org.jboss.netty.channel.ChannelException ex) {
-			getLogger().log(Level.SEVERE, "Failed to bind to address " + binding.getAddress() + ". Is there already another server running on this address?", ex);
+			log("Failed to bind to address %0. Is there already another server running on this address?", Level.SEVERE, binding.getAddress(), ex);
 			return false;
 		}
 
-		getLogger().log(Level.INFO, "Binding to address: {0}...", binding.getAddress());
+		log("Binding to address: %0...", binding.getAddress());
 		return true;
 	}
 
@@ -345,7 +346,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 			try {
 				upnpService = new UpnpServiceImpl();
 			} catch (InitializationException e) {
-				getLogger().log(Level.SEVERE, "Could not enable UPNP Service: "+e.getMessage());
+				log("Could not enable UPnP Service: %0", Level.SEVERE, e.getMessage());
 			}
 		}
 

@@ -1,13 +1,20 @@
 locale: DE_DE
 strings:
-  0: Spout startet im %0-Modus.
-  1: Version %0 (implementiert SpoutAPI %1)
-  2: Diese Software ist im Moment im Alpha-Status, einige Komponenten können
-  3: Fehler enthalten oder gar nicht funktionieren. Bitte melde alle Probleme auf
-  4: http://issues.spout.org
-  5: Generiere eine neue Welt mit Namen [%0]
-  6: Spout fährt herunter
-  7: "Server hätlt an"
-  8: "Fehler beim Laden der Konfiguration: %0"
-  9: "Der Debug-Modus ist angeschaltet! Dieser Modus ist nur für Entwickler vorgesehen"
-  10: "Fehler beim Laden von %0: %1"
+  0: 'Fehler beim Laden der Konfiguration: %0'
+  1: Spout startet im %0-Modus.
+  2: Version %0 (implementiert SpoutAPI %1).
+  3: Diese Software ist im Alpha-Status, sodass einige Komponenten
+  4: fehlerhaft sein können oder gar nicht funktionieren. Bitte melde alle Fehler auf
+  5: http://issues.spout.org
+  6: Debug-Modus aktiviert! Dieser Modus ist nur für Entwickler vorgesehen
+  7: 'Fehler beim Laden von %0: %1'
+  8: Generiere eine neue Welt mit Namen [%0]
+  9: Spout fährt herunter
+  10: Server hält an
+  11: Fertig geladen, bereit für Spieler.
+  12: 'Fehler beim Laden der port-bindings: %0'
+  13: Keine port-bindings registriert! Clients werden sich nicht zum Server verbinden können.
+  14: 'Fehler beim Binden auf die Adresse %0. Läuft bereits ein anderer Server an dieser Adresse?'
+  15: 'Binde zu Adresse: %0...'
+  17: hello
+  16: 'Konnte den UPnP-Service nicht aktivieren: %0'
