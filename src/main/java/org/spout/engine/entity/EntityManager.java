@@ -260,6 +260,10 @@ public class EntityManager implements Iterable<SpoutEntity> {
 
 	public void preSnapshotRun() {
 		for (SpoutEntity e : entities.get().values()) {
+			if (e.isDead()) {
+				removeEntity(e);
+				continue;
+			}
 			Controller controller = e.getController();
 			if (controller != null) {
 				if (controller instanceof PlayerController) {
