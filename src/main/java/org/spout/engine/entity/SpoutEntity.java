@@ -135,7 +135,7 @@ public class SpoutEntity implements Entity {
 		if (controller != null) {
 			if (!isDead() && getPosition() != null && getWorld() != null) {
 				Profiler.startAndStop("tick entity controller");
-				controller.onTick(dt);
+				controller.tick(dt);
 				Profiler.startAndStop("tick entity chunk");
 				//TODO Fix, this isn't right
 				chunkLive.set(getWorld().getChunkFromBlock(transform.getPosition(), LoadOption.NO_LOAD));
