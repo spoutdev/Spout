@@ -455,8 +455,14 @@ public class SpoutEntity implements Entity {
 				}
 			}
 		}
+		
+		Chunk c = chunkLive.get();
+		if (c != null && !c.isLoaded()) {
+			chunkLive.set(null);
+			c = null;
+		}
 
-		if (chunkLive.get() != chunk) {
+		if (c != chunk) {
 			if (observer) {
 				if (!isDead()) {
 					updateObserver();
@@ -464,14 +470,14 @@ public class SpoutEntity implements Entity {
 					removeObserver();
 				}
 			}
-			if (chunkLive.get() != null) {
-				((SpoutChunk) chunkLive.get()).addEntity(this);
+			if (c != null) {
+				((SpoutChunk) c).addEntity(this);
 
 			}
 			if (chunk != null && chunk.isLoaded()) {
 				((SpoutChunk) chunk).removeEntity(this);
 			}
-			if (chunkLive.get() == null) {
+			if (c == null) {
 				if (chunk != null && chunk.isLoaded()) {
 					((SpoutChunk) chunk).removeEntity(this);
 				}

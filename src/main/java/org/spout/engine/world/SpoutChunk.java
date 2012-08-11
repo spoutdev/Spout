@@ -1067,6 +1067,11 @@ public class SpoutChunk extends Chunk {
 
 	private void setUnloadedRaw(boolean saveColumn) {
 		SaveState oldState = saveState.getAndSet(SaveState.UNLOADED);
+		for (SpoutEntity e : parentRegion.getEntityManager()) {
+			if (this == e.getChunk()) {
+				e.kill();
+			}
+		}
 		//Clear as much as possible to limit the damage of a potential leak
 		this.blockStore = null;
 		this.blockLight = null;
@@ -1079,6 +1084,7 @@ public class SpoutChunk extends Chunk {
 			deregisterFromColumn(saveColumn);
 			activeChunks.decrementAndGet();
 		}
+		
 	}
 
 	private void checkChunkLoaded() {
