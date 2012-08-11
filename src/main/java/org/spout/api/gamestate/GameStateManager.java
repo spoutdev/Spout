@@ -57,6 +57,13 @@ public class GameStateManager implements Tickable {
 	}
 
 	@Override
+	public void tick(float dt) {
+		if(canTick()) {
+			onTick(dt);
+		}
+	}
+
+	@Override
 	public boolean canTick() {
 		return true;
 	}

@@ -53,8 +53,15 @@ public abstract class BasicController implements Controller {
 	public abstract void onAttached();
 
 	@Override
+	public final void tick(float dt) {
+		if(canTick()) {
+			onTick(dt);
+			tickComponents(dt);
+		}
+	}
+
+	@Override
 	public void onTick(float dt) {
-		tickComponents(dt);
 	}
 
 	@Override
