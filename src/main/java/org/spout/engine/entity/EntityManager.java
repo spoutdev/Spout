@@ -54,6 +54,7 @@ import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashSet;
+import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 
 /**
@@ -96,7 +97,11 @@ public class EntityManager implements Iterable<SpoutEntity> {
 	 * @return A set of entities with the specified type.
 	 */
 	public List<SpoutEntity> getAll(Class<? extends Controller> type) {
-		return groupedEntities.get(type).get();
+		SnapshotableArrayList<SpoutEntity> entities = groupedEntities.get(type);
+		if (entities == null) {
+			return null;
+		}
+		return entities.get();
 	}
 
 	/**
@@ -105,7 +110,11 @@ public class EntityManager implements Iterable<SpoutEntity> {
 	 * @return A set of entities.
 	 */
 	public List<SpoutEntity> getAll() {
-		return new ArrayList<SpoutEntity>(entities.get().values());
+		Collection<SpoutEntity> all = entities.get().values();
+		if (all == null) {
+			return null;
+		}
+		return new ArrayList<SpoutEntity>(all);
 	}
 
 	/**
@@ -155,6 +164,14 @@ public class EntityManager implements Iterable<SpoutEntity> {
 	 */
 	public void deallocate(SpoutEntity entity) {
 		entities.remove(entity.getId());
+		SpoutChunk chunkLive = (SpoutChunk) entity.getChunkLive();
+		if (chunkLive != null && chunkLive.isLoaded()) {
+			chunkLive.removeEntity(entity);
+		}
+		SpoutChunk chunk = (SpoutChunk) entity.getChunk();
+		if (chunk != null && chunk.isLoaded()) {
+			chunk.removeEntity(entity);
+		}
 		//Players are never removed (offline concept), instead set their ID back to -1 to be reallocated.
 		if (entity instanceof Player) {
 			entity.setId(SpoutEntity.NOTSPAWNEDID);
@@ -210,6 +227,10 @@ public class EntityManager implements Iterable<SpoutEntity> {
 	public void finalizeRun() {
 		// Entity removal and additions happen here
 		for (SpoutEntity e : entities.get().values()) {
+			if (e.isDead()) {
+				removeEntity(e);
+				continue;
+			}
 			e.finalizeRun();
 			Controller controller = e.getController();
 			if (controller == null) {
@@ -231,10 +252,6 @@ public class EntityManager implements Iterable<SpoutEntity> {
 
 	public void preSnapshotRun() {
 		for (SpoutEntity e : entities.get().values()) {
-			if (e.isDead()) {
-				removeEntity(e);
-				continue;
-			}
 			Controller controller = e.getController();
 			if (controller != null) {
 				if (controller instanceof PlayerController) {

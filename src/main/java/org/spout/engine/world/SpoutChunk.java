@@ -99,6 +99,7 @@ public class SpoutChunk extends Chunk {
 	private static final AtomicInteger activeChunks = new AtomicInteger(0);
 	private static final AtomicInteger observedChunks = new AtomicInteger(0);
 	private final AtomicBoolean observed = new AtomicBoolean(false);
+
 	/**
 	 * Multi-thread write access to the block store is only allowed during the
 	 * allowed stages. During the restricted stages, only the region thread may

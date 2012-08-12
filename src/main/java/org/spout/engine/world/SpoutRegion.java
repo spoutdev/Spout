@@ -895,13 +895,20 @@ public class SpoutRegion extends Region {
 
 	@Override
 	public List<Entity> getAll(Class<? extends Controller> type) {
-		return new ArrayList<Entity>(entityManager.getAll(type));
+		List<SpoutEntity> entities = entityManager.getAll(type);
+		if (entities == null) {
+			return new ArrayList<Entity>();
+		}
+		return new ArrayList<Entity>(entities);
 	}
 
 	@Override
-	@SuppressWarnings({"rawtypes", "unchecked"})
 	public List<Entity> getAll() {
-		return new ArrayList<Entity>(entityManager.getAll());
+		List<SpoutEntity> entities = entityManager.getAll();
+		if (entities == null) {
+			return new ArrayList<Entity>();
+		}
+		return new ArrayList<Entity>(entities);
 	}
 
 	@Override
