@@ -198,15 +198,7 @@ public class SpoutRegion extends Region {
 			}
 		}
 
-		if (loadopt.loadIfNeeded()) {
-			for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
-				for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
-					for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
-						getChunk(dx, dy, dz, loadopt);
-					}
-				}
-			}
-		}
+		load(loadopt);
 
 		File worldDirectory = world.getDirectory();
 		File regionDirectory = new File(worldDirectory, "region");
@@ -226,6 +218,18 @@ public class SpoutRegion extends Region {
 		int zz = MathHelper.mod(getZ(), 3);
 		updateSequence = (xx * 9) + (yy * 3) + zz;
 		scheduler = (SpoutScheduler) (Spout.getEngine().getScheduler());
+	}
+
+	public void load(LoadOption option) {
+		if (option.loadIfNeeded()){
+			for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
+				for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
+					for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+						getChunk(dx, dy, dz, option);
+					}
+				}
+			}
+		}
 	}
 
 	@Override

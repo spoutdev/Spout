@@ -57,6 +57,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.controller.BlockController;
 import org.spout.api.event.block.CuboidChangeEvent;
+import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeGenerator;
@@ -269,7 +270,19 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 		if (e.isSpawned()) {
 			throw new IllegalArgumentException("Cannot spawn an entity that is already spawned!");
 		}
-		((SpoutRegion) e.getRegion()).addEntity(e);
+		SpoutRegion region = (SpoutRegion) e.getRegion();
+		if (region == null) {
+			throw new IllegalStateException("Cannot spawn an entity that has a null region!");
+		}
+		if (region.getEntityManager().isSpawnable((SpoutEntity) e)) {
+			EntitySpawnEvent event = Spout.getEventManager().callEvent(new EntitySpawnEvent(e, e.getPosition()));
+			if (event.isCancelled()) {
+				return;
+			}
+			region.addEntity(e);
+		} else {
+			throw new IllegalStateException("Cannot spawn an entity that already has an id!");
+		}
 	}
 
 	@Override

@@ -146,9 +146,16 @@ public abstract class SpoutAbstractWorld extends AsyncManager implements World {
 
 	@Override
 	public Entity createAndSpawnEntity(Point point, Controller controller) {
+		SpoutRegion region = getRegionFromBlock(point, LoadOption.NO_LOAD);
+		if (region == null) {
+			if (!(controller.getParent() instanceof Player)) {
+				throw new IllegalStateException("Cannot spawn a non-player entity in a region that isn't loaded!");
+			}
+			//Load and generate for players
+		   region.load(LoadOption.LOAD_GEN);
+		}
 		Entity e = createEntity(point, controller);
-		//initialize region if needed
-		this.getRegionFromBlock(point);
+		//initialize region if needed (only for players)
 		spawnEntity(e);
 		return e;
 	}

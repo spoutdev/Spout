@@ -181,7 +181,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 	public void addEntity(SpoutEntity entity, SpoutRegion region) {
 		allocate(entity, region);
 		Controller c = entity.getController();
-		if (c != null) {
+		if (c != null && !(entity instanceof Player)) {
 			if (entity instanceof Player) {
 				players.add((SpoutPlayer) entity);
 			} else if (c instanceof BlockController) {
@@ -192,6 +192,13 @@ public class EntityManager implements Iterable<SpoutEntity> {
 				}
 			}
 		}
+	}
+
+	public boolean isSpawnable(SpoutEntity entity) {
+		if (entity.getId() == SpoutEntity.NOTSPAWNEDID) {
+			return true;
+		}
+		return false;
 	}
 
 	public void removeEntity(SpoutEntity entity) {
@@ -225,7 +232,6 @@ public class EntityManager implements Iterable<SpoutEntity> {
 	}
 
 	public void finalizeRun() {
-		// Entity removal and additions happen here
 		for (SpoutEntity e : entities.get().values()) {
 			if (e.isDead()) {
 				removeEntity(e);
@@ -239,23 +245,20 @@ public class EntityManager implements Iterable<SpoutEntity> {
 
 			controller.finalizeTick();
 
-			if (!(controller instanceof PlayerController)) {
-				continue;
-			}
-
-			Player p = (Player) controller.getParent();
-			if (p.isOnline()) {
-				p.getNetworkSynchronizer().finalizeTick();
+			if (e instanceof Player) {
+				Player p = (Player) e;
+				if (p.isOnline()) {
+					p.getNetworkSynchronizer().finalizeTick();
+				}
 			}
 		}
 	}
 
 	public void preSnapshotRun() {
 		for (SpoutEntity e : entities.get().values()) {
-			Controller controller = e.getController();
-			if (controller != null) {
-				if (controller instanceof PlayerController) {
-					Player p = (Player) controller.getParent();
+			if (e.getController() != null) {
+				if (e instanceof Player) {
+					Player p = (Player) e;
 					if (p.isOnline()) {
 						p.getNetworkSynchronizer().preSnapshot();
 					}
