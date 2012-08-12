@@ -24,53 +24,14 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.gamestate;
+package org.spout.api.tickable;
 
-import java.util.Stack;
-
-import org.spout.api.tickable.Tickable;
-
-public class GameStateManager implements Tickable {
-	private Stack<GameState> states = new Stack<GameState>();
-	
-	public void pushState(GameState state) {
-		if (states.peek() != null) states.peek().onPause(); //Pause the current state
-		
-		states.push(state); //Push the state onto the top of the stack
-		
-		state.initialize();
-		
-		state.loadResources();
-		
-	}
-	
-	public GameState popState() {
-		GameState head = states.pop(); //remove the current state from the stack
-		head.unloadResources();
-		if (states.peek() != null) states.peek().onUnPause(); //unpause the previous state
-		return head;
-	}
+public abstract class BasicTickable implements Tickable {
 
 	@Override
-	public void onTick(float dt) {
-		if (states.peek() != null) states.peek().tick(dt); //tick the current state
-	}
-
-	@Override
-	public void tick(float dt) {
+	public final void tick(float dt) {
 		if(canTick()) {
-			onTick(dt);
+			tick(dt);
 		}
 	}
-
-	@Override
-	public boolean canTick() {
-		return true;
-	}
-
-	public void onRender(float dt) {
-		if (states.peek() != null) states.peek().tick(dt);
-	}
-	
-	
 }

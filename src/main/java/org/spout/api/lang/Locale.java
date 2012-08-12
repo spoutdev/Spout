@@ -35,19 +35,26 @@ public class Locale {
 	private String fullName;
 	private String code;
 	private static final LinkedHashMap<String, Locale> byCode = new LinkedHashMap<String, Locale>(5);
+	private Class<? extends LocaleNumberHandler> numberHandler;
 	
-	public static final Locale ENGLISH_US = new Locale("English (USA)", "EN_US");
-	public static final Locale ENGLISH_UK = new Locale("English (United Kingdom)", "EN_UK");
-	public static final Locale GERMAN_DE = new Locale("Deutsch (Deutschland)", "DE_DE");
-	public static final Locale GERMAN_SW = new Locale("Deutsch (Schweiz)", "DE_SW");
-	public static final Locale GERMAN_AT = new Locale("Deutsch (Österreich)", "DE_AT");
-	public static final Locale FRENCH_FR = new Locale("Français (France)", "FR_FR");
+	public static final Locale ENGLISH_US = new Locale("English (USA)", "EN_US", DefaultNumberHandler.class);
+	public static final Locale ENGLISH_UK = new Locale("English (United Kingdom)", "EN_UK", DefaultNumberHandler.class);
+	public static final Locale GERMAN_DE = new Locale("Deutsch (Deutschland)", "DE_DE", DefaultNumberHandler.class);
+	public static final Locale GERMAN_SW = new Locale("Deutsch (Schweiz)", "DE_SW", DefaultNumberHandler.class);
+	public static final Locale GERMAN_AT = new Locale("Deutsch (Österreich)", "DE_AT", DefaultNumberHandler.class);
+	public static final Locale FRENCH_FR = new Locale("Français (France)", "FR_FR", DefaultNumberHandler.class);
 	
-	
-	public Locale(String fullName, String code) {
+	/**
+	 * Instead of using the constructor to create a locale,
+	 * use {@link Locale.getByCode} so it returns already available instances for that language.
+	 * @param fullName
+	 * @param code
+	 */
+	public Locale(String fullName, String code, Class<? extends LocaleNumberHandler> numberHandler) {
 		this.fullName = fullName;
 		this.code = code;
 		byCode.put(code, this);
+		this.numberHandler = numberHandler;
 	}
 
 	/**
@@ -93,7 +100,7 @@ public class Locale {
 		if (byCode.containsKey(code)) {
 			return byCode.get(code);
 		} else {
-			Locale l = new Locale("Unknown", code);
+			Locale l = new Locale("Unknown", code, DefaultNumberHandler.class);
 			byCode.put(code, l);
 			return l;
 		}
@@ -105,5 +112,9 @@ public class Locale {
 			locales.add(l.getValue());
 		}
 		return locales;
+	}
+	
+	public Class<? extends LocaleNumberHandler> getNumberHandler() {
+		return numberHandler;
 	}
 }

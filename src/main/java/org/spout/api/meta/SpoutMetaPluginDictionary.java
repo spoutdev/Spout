@@ -24,53 +24,25 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.gamestate;
+package org.spout.api.meta;
 
-import java.util.Stack;
+import java.io.File;
 
-import org.spout.api.tickable.Tickable;
+import org.spout.api.lang.PluginDictionary;
+import org.spout.api.plugin.Plugin;
 
-public class GameStateManager implements Tickable {
-	private Stack<GameState> states = new Stack<GameState>();
-	
-	public void pushState(GameState state) {
-		if (states.peek() != null) states.peek().onPause(); //Pause the current state
-		
-		states.push(state); //Push the state onto the top of the stack
-		
-		state.initialize();
-		
-		state.loadResources();
-		
+public class SpoutMetaPluginDictionary extends PluginDictionary {
+	public SpoutMetaPluginDictionary(Plugin plugin) {
+		super(plugin);
 	}
 	
-	public GameState popState() {
-		GameState head = states.pop(); //remove the current state from the stack
-		head.unloadResources();
-		if (states.peek() != null) states.peek().onUnPause(); //unpause the previous state
-		return head;
-	}
-
 	@Override
-	public void onTick(float dt) {
-		if (states.peek() != null) states.peek().tick(dt); //tick the current state
-	}
-
-	@Override
-	public void tick(float dt) {
-		if(canTick()) {
-			onTick(dt);
-		}
-	}
-
-	@Override
-	public boolean canTick() {
-		return true;
-	}
-
-	public void onRender(float dt) {
-		if (states.peek() != null) states.peek().tick(dt);
+	protected File getLangDirectory() {
+		return new File("config/lang/");
 	}
 	
-	
+	@Override
+	protected String getJarBasePath() {
+		return "resources/lang/";
+	}
 }

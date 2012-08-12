@@ -24,53 +24,38 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.gamestate;
+package org.spout.api.lang;
 
-import java.util.Stack;
+import java.math.BigInteger;
 
-import org.spout.api.tickable.Tickable;
-
-public class GameStateManager implements Tickable {
-	private Stack<GameState> states = new Stack<GameState>();
+public abstract class LocaleNumberHandler {
+	/**
+	 * Initializes the object from the given yaml
+	 * @param locale
+	 * @param yaml
+	 */
+	public abstract void init(Object yaml);
 	
-	public void pushState(GameState state) {
-		if (states.peek() != null) states.peek().onPause(); //Pause the current state
-		
-		states.push(state); //Push the state onto the top of the stack
-		
-		state.initialize();
-		
-		state.loadResources();
-		
-	}
+	/**
+	 * Initializes the object with the placeholder
+	 * All alternatives should have the placeholder
+	 * @param placeholder the placeholder to set to all alternative strings
+	 */
+	public abstract void init(String placeholder);
 	
-	public GameState popState() {
-		GameState head = states.pop(); //remove the current state from the stack
-		head.unloadResources();
-		if (states.peek() != null) states.peek().onUnPause(); //unpause the previous state
-		return head;
-	}
-
-	@Override
-	public void onTick(float dt) {
-		if (states.peek() != null) states.peek().tick(dt); //tick the current state
-	}
-
-	@Override
-	public void tick(float dt) {
-		if(canTick()) {
-			onTick(dt);
-		}
-	}
-
-	@Override
-	public boolean canTick() {
-		return true;
-	}
-
-	public void onRender(float dt) {
-		if (states.peek() != null) states.peek().tick(dt);
-	}
+	/**
+	 * Dumps the contents to an object that SnakeYAML can dump
+	 * @return
+	 */
+	public abstract Object save();
 	
+	/**
+	 * @param number
+	 * @return the string corresponding to the given number (i.e. plural, singular, etc)
+	 */
+	public abstract String getString(Number number);
 	
+	public static boolean isDiscreteNumber(Number num) {
+		return num instanceof Integer || num instanceof Byte || num instanceof Short || num instanceof Long || num instanceof BigInteger;
+	}
 }

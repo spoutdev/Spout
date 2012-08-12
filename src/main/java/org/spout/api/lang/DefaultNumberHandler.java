@@ -24,53 +24,55 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.gamestate;
+package org.spout.api.lang;
 
-import java.util.Stack;
+import java.util.LinkedHashMap;
 
-import org.spout.api.tickable.Tickable;
-
-public class GameStateManager implements Tickable {
-	private Stack<GameState> states = new Stack<GameState>();
+/**
+ * Implements LocaleNumberHandler for the most languages<br/>
+ * <strong>Behaviour</strong><br/>
+ * Returns the base string for singular when number == 1, else returns the plural
+ */
+public class DefaultNumberHandler extends LocaleNumberHandler {
+	private String singular, plural;
 	
-	public void pushState(GameState state) {
-		if (states.peek() != null) states.peek().onPause(); //Pause the current state
-		
-		states.push(state); //Push the state onto the top of the stack
-		
-		state.initialize();
-		
-		state.loadResources();
+	public DefaultNumberHandler() {
 		
 	}
 	
-	public GameState popState() {
-		GameState head = states.pop(); //remove the current state from the stack
-		head.unloadResources();
-		if (states.peek() != null) states.peek().onUnPause(); //unpause the previous state
-		return head;
-	}
-
+	@SuppressWarnings("unchecked")
 	@Override
-	public void onTick(float dt) {
-		if (states.peek() != null) states.peek().tick(dt); //tick the current state
-	}
-
-	@Override
-	public void tick(float dt) {
-		if(canTick()) {
-			onTick(dt);
+	public void init(Object yaml) {
+		if (yaml instanceof LinkedHashMap<?, ?>) {
+			LinkedHashMap<String, String> map = (LinkedHashMap<String, String>) yaml;
+			singular = map.get("singular");
+			plural = map.get("plural");
+		} else {
+			throw new IllegalArgumentException("The YAML for this key must contain a map with the 2 keys 'singular' and 'plural'");
 		}
 	}
 
 	@Override
-	public boolean canTick() {
-		return true;
+	public String getString(Number number) {
+		String use = plural;
+		if (isDiscreteNumber(number)) {
+			if (number.intValue() == 1) {
+				use = singular;
+			}
+		}
+		return use.replaceAll("%n", number.toString());
 	}
 
-	public void onRender(float dt) {
-		if (states.peek() != null) states.peek().tick(dt);
+	@Override
+	public Object save() {
+		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
+		map.put("singular", singular);
+		map.put("plural", plural);
+		return map;
 	}
-	
-	
+
+	@Override
+	public void init(String placeholder) {
+		singular = plural = placeholder;
+	}
 }

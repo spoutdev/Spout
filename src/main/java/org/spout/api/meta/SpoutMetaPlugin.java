@@ -53,7 +53,7 @@ public final class SpoutMetaPlugin implements Plugin {
 	public SpoutMetaPlugin(Engine engine) {
 		this.engine = engine;
 		pdf = new PluginDescriptionFile("Spout", engine.getVersion(), "", Platform.ALL);
-		dictionary = new PluginDictionary(this);
+		dictionary = new SpoutMetaPluginDictionary(this);
 	}
 
 	@Override
