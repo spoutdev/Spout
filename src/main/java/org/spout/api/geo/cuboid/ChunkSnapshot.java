@@ -27,6 +27,7 @@
 package org.spout.api.geo.cuboid;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 import org.spout.api.entity.Entity;
@@ -100,7 +101,7 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	 * @return the entities
 	 */
 	@SnapshotRead
-	public abstract Set<Entity> getEntities();
+	public abstract List<Entity> getEntities();
 	
 	/**
 	 * Gets if this chunk snapshot had already been populated.

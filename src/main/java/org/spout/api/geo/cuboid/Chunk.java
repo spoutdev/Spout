@@ -27,6 +27,7 @@
 package org.spout.api.geo.cuboid;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Future;
@@ -215,7 +216,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 * @return the entities
 	 */
 	@SnapshotRead
-	public abstract Set<Entity> getEntities();
+	public abstract List<Entity> getEntities();
 
 	/**
 	 * Gets the entities currently in the chunk
@@ -223,7 +224,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 * @return the entities
 	 */
 	@LiveRead
-	public abstract Set<Entity> getLiveEntities();
+	public abstract List<Entity> getLiveEntities();
 	
 	
 	/**
