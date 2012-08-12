@@ -408,7 +408,7 @@ public class WorldFiles {
 		}
 	}
 
-	private static CompoundMap saveEntities(Set<Entity> entities) {
+	private static CompoundMap saveEntities(List<Entity> entities) {
 		CompoundMap tagMap = new CompoundMap();
 
 		for (Entity e : entities) {
