@@ -215,7 +215,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 	 * @return players managed by this entity manager
 	 */
 	public List<Player> getPlayers() {
-		return (List<Player>) players.get();
+		return new ArrayList<Player>(players.get());
 	}
 
 	@Override

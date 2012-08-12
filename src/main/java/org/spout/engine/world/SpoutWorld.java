@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -78,6 +79,7 @@ import org.spout.api.util.StringMap;
 import org.spout.api.util.cuboid.CuboidBuffer;
 import org.spout.api.util.hashing.IntPairHashed;
 import org.spout.api.util.hashing.NibblePairHashed;
+import org.spout.api.util.list.concurrent.ConcurrentList;
 import org.spout.api.util.map.concurrent.TSyncIntPairObjectHashMap;
 import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
 
@@ -117,13 +119,9 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 	 */
 	private final WorldGenerator generator;
 	/**
-	 * Holds all of the entities to be simulated
-	 */
-	private final EntityManager entityManager;
-	/**
 	 * A set of all players currently connected to this world
 	 */
-	private final Set<Player> players = Collections.newSetFromMap(new ConcurrentHashMap<Player, Boolean>());
+	private final List<Player> players = new ConcurrentList<Player>();
 	/**
 	 * A map of the loaded columns
 	 */
@@ -171,7 +169,6 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 		this.seed = seed;
 
 		this.generator = generator;
-		entityManager = new EntityManager();
 		regions = new RegionSource(this, snapshotManager);
 
 		worldDirectory = new File(SharedFileSystem.WORLDS_DIRECTORY, name);
@@ -277,7 +274,6 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 
 	@Override
 	public void copySnapshotRun() throws InterruptedException {
-		entityManager.copyAllSnapshots();
 		snapshotManager.copyAllSnapshots();
 	}
 
@@ -290,20 +286,10 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 			case 0: {
 				parallelTaskManager.heartbeat(delta);
 				taskManager.heartbeat(delta);
-				float dt = delta / 1000.f;
-				//Update all entities
-				for (SpoutEntity ent : entityManager) {
-					try {
-						ent.tick(dt);
-					} catch (Exception e) {
-						Spout.getEngine().getLogger().severe("Unhandled exception during tick for " + ent.toString());
-						e.printStackTrace();
-					}
-				}
 				break;
 			}
 			default: {
-				throw new IllegalStateException("Number of states exceeded limit for SpoutRegion");
+				throw new IllegalStateException("Number of states exceeded limit for SpoutWorld");
 			}
 		}
 	}
@@ -376,13 +362,8 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 		spawnLocation.set(transform);
 	}
 
-	public EntityManager getEntityManager() {
-		return entityManager;
-	}
-
 	@Override
 	public void finalizeRun() throws InterruptedException {
-		entityManager.finalizeRun();
 		synchronized (columnSet) {
 			for (SpoutColumn c : columnSet) {
 				c.onFinalize();
@@ -392,7 +373,7 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 
 	@Override
 	public void preSnapshotRun() throws InterruptedException {
-		entityManager.preSnapshotRun();
+
 	}
 
 	@Override
@@ -401,8 +382,8 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 	}
 
 	@Override
-	public HashSet<Entity> getAll() {
-		HashSet<Entity> entities = new HashSet<Entity>(entityManager.getAll());
+	public List<Entity> getAll() {
+		ArrayList<Entity> entities = new ArrayList<Entity>();
 		for (Region region : regions) {
 			entities.addAll(region.getAll());
 		}
@@ -410,8 +391,8 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 	}
 
 	@Override
-	public HashSet<Entity> getAll(Class<? extends Controller> type) {
-		HashSet<Entity> entities = new HashSet<Entity>(entityManager.getAll(type));
+	public List<Entity> getAll(Class<? extends Controller> type) {
+		ArrayList<Entity> entities = new ArrayList<Entity>();
 		for (Region region : regions) {
 			entities.addAll(region.getAll(type));
 		}
@@ -420,15 +401,13 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 
 	@Override
 	public Entity getEntity(int id) {
-		Entity entity = entityManager.getEntity(id);
-		if (entity == null) {
-			for (Region region : regions) {
-				if ((entity = region.getEntity(id)) != null) {
-					break;
-				}
+		for (Region region : regions) {
+			Entity entity = region.getEntity(id);
+			if (entity != null) {
+				return entity;
 			}
 		}
-		return entity;
+		return null;
 	}
 
 	public void addPlayer(Player player) {
@@ -440,8 +419,8 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 	}
 
 	@Override
-	public Set<Player> getPlayers() {
-		return Collections.unmodifiableSet(players);
+	public List<Player> getPlayers() {
+		return Collections.unmodifiableList(players);
 	}
 
 	public List<CollisionVolume> getCollidingObject(CollisionModel model) {

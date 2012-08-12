@@ -755,14 +755,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		return ((SpoutRegion) region).getEntityManager();
 	}
 
-	public EntityManager getExpectedEntityManager(World world) {
-		return ((SpoutWorld) world).getEntityManager();
-	}
-
-	public EntityManager getEntityManager() {
-		return entityManager;
-	}
-
 	@Override
 	public Entity getEntity(UUID uid) {
 		for (World w : loadedWorlds.get().values()) {
