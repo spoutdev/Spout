@@ -29,12 +29,12 @@ package org.spout.api.material.block;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
-import org.spout.api.util.flag.ByteFlagMask;
+import org.spout.api.util.bytebit.ByteBitMask;
 
 /**
  * Indicates the facing of a Block
  */
-public enum BlockFace implements ByteFlagMask {
+public enum BlockFace implements ByteBitMask {
 	TOP(0x1, 0, 1, 0),
 	BOTTOM(0x2, 0, -1, 0, TOP),
 	NORTH(0x4, -1, 0, 0),

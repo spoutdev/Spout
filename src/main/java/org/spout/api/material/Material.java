@@ -30,15 +30,19 @@ package org.spout.api.material;
  * Defines the characteristics of Blocks or Items.
  */
 import java.util.Arrays;
+import java.util.Set;
 
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.cuboid.Block;
+import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.MathHelper;
 import org.spout.api.model.Model;
 import org.spout.api.util.LogicUtil;
+import org.spout.api.util.flag.Flag;
+import org.spout.api.util.flag.FlagSingle;
 
 public abstract class Material extends MaterialRegistry implements MaterialSource {
 	private final short id;
@@ -55,6 +59,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	private Material[] submaterialsContiguous = null;
 	private volatile boolean submaterialsDirty = true;
 	private final short dataMask;
+	private final FlagSingle useFlag = new FlagSingle();
 
 	/**
 	 * Creates and registers a material
@@ -373,6 +378,26 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 */
 	public final void setMaxData(short newValue) {
 		this.maxData = newValue;
+	}
+
+	/**
+	 * Gets the Flag associated when using this Material
+	 * 
+	 * @return Material use flag
+	 */
+	public Flag getUseFlag() {
+		return this.useFlag;
+	}
+
+	/**
+	 * Gets all the flags associated with this Material as an Item<br>
+	 * The flags are added to the input collection
+	 * 
+	 * @param item stack of this Material
+	 * @param flags to add to
+	 */
+	public void getItemFlags(ItemStack item, Set<Flag> flags) {
+		flags.add(this.getUseFlag());
 	}
 
 	/**
