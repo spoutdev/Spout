@@ -181,7 +181,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 	public void addEntity(SpoutEntity entity, SpoutRegion region) {
 		allocate(entity, region);
 		Controller c = entity.getController();
-		if (c != null && !(entity instanceof Player)) {
+		if (c != null) {
 			if (entity instanceof Player) {
 				players.add((SpoutPlayer) entity);
 			} else if (c instanceof BlockController) {
