@@ -32,14 +32,16 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.spout.api.util.thread.DelayedWrite;
+import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
 
 /**
  * A snapshotable object for ArrayLists
  */
 public class SnapshotableArrayList<T> implements Snapshotable {
-	private ConcurrentLinkedQueue<SnapshotUpdate<T>> pendingUpdates = new ConcurrentLinkedQueue<SnapshotUpdate<T>>();
-	private ArrayList<T> snapshot;
+	private final ConcurrentLinkedQueue<T> dirty = new ConcurrentLinkedQueue<T>();
+	private final ArrayList<T> snapshot;
+	private final ArrayList<T> live = new ArrayList<T>();
 
 	public SnapshotableArrayList(SnapshotManager manager) {
 		snapshot = new ArrayList<T>();
@@ -47,53 +49,56 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 	}
 
 	public SnapshotableArrayList(SnapshotManager manager, ArrayList<T> initial) {
-		snapshot = new ArrayList<T>();
 		if (initial != null) {
-			for (T o : initial) {
-				add(o);
-			}
+			snapshot = new ArrayList<T>(initial);
+		} else {
+			snapshot = new ArrayList<T>();
 		}
+
 		manager.add(this);
 	}
 
 	/**
 	 * Adds an object to the list
+	 *
 	 * @param object
 	 */
 	@DelayedWrite
 	public void add(T object) {
-		pendingUpdates.add(new SnapshotUpdate<T>(object, true));
+		boolean success = live.add(object);
+
+		if (success) {
+			dirty.add(object);
+		}
 	}
 
 	/**
 	 * Removes an object from the list
+	 *
 	 * @param object
 	 */
 	@DelayedWrite
 	public void remove(T object) {
-		pendingUpdates.add(new SnapshotUpdate<T>(object, false));
-	}
+		boolean success = live.remove(object);
 
-	/**
-	 * Adds an object to the list at a particular index
-	 * @param object
-	 */
-	@DelayedWrite
-	public void add(int index, T object) {
-		pendingUpdates.add(new SnapshotUpdate<T>(object, index, true));
+		if (success) {
+			dirty.add(object);
+		}
 	}
 
 	/**
 	 * Removes the object from the list at a particular index
+	 *
 	 * @param index
 	 */
 	@DelayedWrite
 	public void remove(int index) {
-		pendingUpdates.add(new SnapshotUpdate<T>(index, false));
+		dirty.add(live.remove(index));
 	}
 
 	/**
 	 * Gets the snapshot value
+	 *
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
@@ -102,29 +107,38 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 	}
 
 	/**
+	 * Gets the live value
+	 *
+	 * @return the live value
+	 */
+	@LiveRead
+	public List<T> getLive() {
+		return Collections.unmodifiableList(live);
+	}
+
+	/**
+	 * Gets the dirty object list
+	 *
+	 * @return the dirty list
+	 */
+	@LiveRead
+	public List<T> getDirtyList() {
+		return Collections.unmodifiableList(new ArrayList<T>(dirty));
+	}
+
+	/**
 	 * Copies the next values to the snapshot
 	 */
 	@Override
 	public void copySnapshot() {
-		SnapshotUpdate<T> update;
-		while ((update = pendingUpdates.poll()) != null) {
-			processUpdate(update);
+		for (T o : dirty) {
+			if (live.contains(o)) {
+				snapshot.add(o);
+			} else {
+				snapshot.remove(o);
+			}
 		}
-	}
 
-	private void processUpdate(SnapshotUpdate<T> update) {
-		if (update.isIndexed()) {
-			if (update.isAdd()) {
-				snapshot.add(update.getIndex(), update.getObject());
-			} else {
-				snapshot.remove(update.getIndex());
-			}
-		} else {
-			if (update.isAdd()) {
-				snapshot.add(update.getObject());
-			} else {
-				snapshot.remove(update.getObject());
-			}
-		}
+		dirty.clear();
 	}
 }

@@ -90,8 +90,8 @@ import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
+import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
-import org.spout.engine.util.thread.snapshotable.SnapshotableHashSet;
 import org.spout.engine.world.physics.PhysicsQueue;
 import org.spout.engine.world.physics.UpdateQueue;
 
@@ -142,8 +142,7 @@ public class SpoutChunk extends Chunk {
 	/**
 	 * A set of entities contained in the chunk
 	 */
-	// Hash set should return "dirty" list
-	protected final SnapshotableHashSet<Entity> entities = new SnapshotableHashSet<Entity>(snapshotManager);
+	protected final SnapshotableArrayList<Entity> entities = new SnapshotableArrayList<Entity>(snapshotManager);
 	/**
 	 * Stores a short value of the sky light
 	 * <p/>
@@ -1324,27 +1323,27 @@ public class SpoutChunk extends Chunk {
 		this.lightBlockSource = this; // stop using the snapshot from now on
 	}
 
-	public boolean addEntity(SpoutEntity entity) {
+	public void addEntity(SpoutEntity entity) {
 		checkChunkLoaded();
 		TickStage.checkStage(TickStage.FINALIZE);
 		parentRegion.unSkipChunk(this);
-		return entities.add(entity);
+		entities.add(entity);
 	}
 
-	public boolean removeEntity(SpoutEntity entity) {
+	public void removeEntity(SpoutEntity entity) {
 		checkChunkLoaded();
 		TickStage.checkStage(TickStage.FINALIZE);
 		parentRegion.unSkipChunk(this);
-		return entities.remove(entity);
+		entities.remove(entity);
 	}
 
 	@Override
-	public Set<Entity> getEntities() {
+	public List<Entity> getEntities() {
 		return entities.get();
 	}
 
 	@Override
-	public Set<Entity> getLiveEntities() {
+	public List<Entity> getLiveEntities() {
 		return entities.getLive();
 	}
 
@@ -1355,8 +1354,7 @@ public class SpoutChunk extends Chunk {
 		Map<Entity, Integer> observerSnapshot = observers.get();
 		Map<Entity, Integer> observerLive = observers.getLive();
 
-		Set<Entity> entitiesSnapshot = entities.get();
-		entities.getLive();
+		List<Entity> entitiesSnapshot = entities.get();
 
 		// Changed means entered/left the chunk
 		List<Entity> changedEntities = entities.getDirtyList();
@@ -1373,8 +1371,8 @@ public class SpoutChunk extends Chunk {
 					playerDistanceNew = Integer.MAX_VALUE;
 				}
 				// Player Network sync
-				if (p.getController() instanceof PlayerController) {
-					Player player = (Player) p.getController().getParent();
+				if (p instanceof Player) {
+					Player player = (Player) p;
 
 					NetworkSynchronizer n = player.getNetworkSynchronizer();
 					for (Entity e : entitiesSnapshot) {

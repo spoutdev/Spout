@@ -179,7 +179,6 @@ public class EntityManager implements Iterable<SpoutEntity> {
 		allocate(entity, region);
 		Controller c = entity.getController();
 		if (c != null) {
-			getRawAll(entity.getController().getClass()).add(entity);
 			if (entity instanceof Player) {
 				players.add((SpoutPlayer) entity);
 			} else if (c instanceof BlockController) {
@@ -196,7 +195,6 @@ public class EntityManager implements Iterable<SpoutEntity> {
 		deallocate(entity);
 		Controller c = entity.getController();
 		if (c != null) {
-			getRawAll(entity.getController().getClass()).remove(entity);
 			if (entity instanceof Player) {
 				players.remove((SpoutPlayer) entity);
 			} else if (c instanceof BlockController) {

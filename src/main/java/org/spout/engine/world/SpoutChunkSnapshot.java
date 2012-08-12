@@ -28,8 +28,10 @@ package org.spout.engine.world;
 
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.spout.api.datatable.DataMap;
@@ -55,8 +57,8 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	 */
 	private final WeakReference<Region> parentRegion;
 	private final byte worldSkyLightLoss;
-	private final Set<Entity> entities;
-	private final Set<WeakReference<Entity>> weakEntities;
+	private final List<Entity> entities;
+	private final List<WeakReference<Entity>> weakEntities;
 	private final short[] blockIds;
 	private final short[] blockData;
 	private final byte[] blockLight;
@@ -72,15 +74,15 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 		// Cache entities
 		if (type == EntityType.WEAK_ENTITIES) {
-			Set<WeakReference<Entity>> liveEntities = new HashSet<WeakReference<Entity>>();
+			ArrayList<WeakReference<Entity>> liveEntities = new ArrayList<WeakReference<Entity>>();
 			for (Entity e : chunk.getLiveEntities()) {
 				liveEntities.add(new WeakReference<Entity>(e));
 			}
-			this.weakEntities = Collections.unmodifiableSet(liveEntities);
+			this.weakEntities = Collections.unmodifiableList(liveEntities);
 			this.entities = null;
 		} else if (type == EntityType.ENTITIES) {
 			this.weakEntities = null;
-			this.entities = Collections.unmodifiableSet(new HashSet<Entity>(chunk.getLiveEntities()));
+			this.entities = Collections.unmodifiableList(new ArrayList<Entity>(chunk.getLiveEntities()));
 		} else {
 			this.weakEntities = null;
 			this.entities = null;
@@ -193,11 +195,11 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	}
 
 	@Override
-	public Set<Entity> getEntities() {
+	public List<Entity> getEntities() {
 		if (this.entities == null && this.weakEntities == null) {
 			throw new UnsupportedOperationException("This chunk snapshot does not contain block data");
 		} else if (this.weakEntities != null) {
-			Set<Entity> entities = new HashSet<Entity>();
+			ArrayList<Entity> entities = new ArrayList<Entity>();
 			for (WeakReference<Entity> ref : this.weakEntities) {
 				Entity e = ref.get();
 				if (e != null) {

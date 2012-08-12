@@ -121,16 +121,7 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 	 */
 	public List<T> getDirtyList() {
 		TickStage.checkStage(TickStage.PRESNAPSHOT);
-		if (!dirtyListGenerated) {
-			for (T o : dirty) {
-				if (dirtyListTemp.add(o)) {
-					dirtyList.add(o);
-				}
-			}
-			dirtyListTemp.clear();
-			dirtyListGenerated = true;
-		}
-		return unmodifyDirty;
+		return Collections.unmodifiableList(new ArrayList<T>(dirty));
 	}
 
 	/**
