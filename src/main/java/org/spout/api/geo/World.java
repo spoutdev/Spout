@@ -28,6 +28,7 @@ package org.spout.api.geo;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -258,14 +259,14 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @return A collection of entities with the specified type.
 	 */
 	@SnapshotRead
-	public Set<Entity> getAll(Class<? extends Controller> type);
+	public List<Entity> getAll(Class<? extends Controller> type);
 
 	/**
 	 * Gets all entities.
 	 * @return A collection of entities.
 	 */
 	@SnapshotRead
-	public Set<Entity> getAll();
+	public List<Entity> getAll();
 
 	/**
 	 * Gets an entity by its id.
@@ -279,7 +280,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * Gets a set of all players on active on this world
 	 * @return all players on this world
 	 */
-	public Set<Player> getPlayers();
+	public List<Player> getPlayers();
 
 	/**
 	 * Gets the directory where world data is stored
@@ -328,7 +329,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 */
 	@LiveRead
 	@Threadsafe
-	public Set<Player> getNearbyPlayers(Point position, int range);
+	public List<Player> getNearbyPlayers(Point position, int range);
 
 	/**
 	 * Gets a set of nearby players to the entity, inside of the range
@@ -338,7 +339,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 */
 	@LiveRead
 	@Threadsafe
-	public Set<Player> getNearbyPlayers(Entity entity, int range);
+	public List<Player> getNearbyPlayers(Entity entity, int range);
 
 	/**
 	 * Gets a set of nearby players to the point, inside of the range.
@@ -350,7 +351,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 */
 	@LiveRead
 	@Threadsafe
-	public Set<Player> getNearbyPlayers(Point position, Entity ignore, int range);
+	public List<Player> getNearbyPlayers(Point position, Entity ignore, int range);
 
 	/**
 	 * Gets the absolute closest player from the specified point within a specified range.

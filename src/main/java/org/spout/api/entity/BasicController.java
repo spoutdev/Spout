@@ -54,7 +54,7 @@ public abstract class BasicController implements Controller {
 
 	@Override
 	public void onTick(float dt) {
-		tickComponents(dt);
+
 	}
 
 	@Override

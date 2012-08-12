@@ -27,6 +27,7 @@
 package org.spout.api.geo.cuboid;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.spout.api.entity.Controller;
@@ -208,14 +209,14 @@ public abstract class Region extends Cube implements AreaChunkAccess, AreaPhysic
 	 * @return A set of entities with the specified type.
 	 */
 	@SnapshotRead
-	public abstract Set<Entity> getAll(Class<? extends Controller> type);
+	public abstract List<Entity> getAll(Class<? extends Controller> type);
 
 	/**
 	 * Gets all entities.
 	 * @return A collection of entities.
 	 */
 	@SnapshotRead
-	public abstract Set<Entity> getAll();
+	public abstract List<Entity> getAll();
 
 	/**
 	 * Gets an entity by its id.
@@ -226,7 +227,7 @@ public abstract class Region extends Cube implements AreaChunkAccess, AreaPhysic
 	public abstract Entity getEntity(int id);
 
 	@LiveRead
-	public abstract Set<Player> getPlayers();
+	public abstract List<Player> getPlayers();
 
 	/**
 	 * Gets the TaskManager associated with this region
