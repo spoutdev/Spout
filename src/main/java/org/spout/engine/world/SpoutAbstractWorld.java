@@ -26,7 +26,9 @@
  */
 package org.spout.engine.world;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -203,7 +205,7 @@ public abstract class SpoutAbstractWorld extends AsyncManager implements World {
 	 */
 	@LiveRead
 	@Threadsafe
-	public Set<Player> getNearbyPlayers(Point position, int range) {
+	public List<Player> getNearbyPlayers(Point position, int range) {
 		return getNearbyPlayers(position, null, range);
 	}
 
@@ -215,7 +217,7 @@ public abstract class SpoutAbstractWorld extends AsyncManager implements World {
 	 */
 	@LiveRead
 	@Threadsafe
-	public Set<Player> getNearbyPlayers(Entity entity, int range) {
+	public List<Player> getNearbyPlayers(Entity entity, int range) {
 		return getNearbyPlayers(entity.getPosition(), entity, range);
 	}
 
@@ -229,8 +231,8 @@ public abstract class SpoutAbstractWorld extends AsyncManager implements World {
 	 */
 	@LiveRead
 	@Threadsafe
-	public Set<Player> getNearbyPlayers(Point position, Entity ignore, int range) {
-		Set<Player> foundPlayers = new HashSet<Player>();
+	public List<Player> getNearbyPlayers(Point position, Entity ignore, int range) {
+		ArrayList<Player> foundPlayers = new ArrayList<Player>();
 		final int RANGE_SQUARED = range * range;
 
 		for (Player plr : getPlayersNearRegion(position, range)) {
@@ -251,10 +253,10 @@ public abstract class SpoutAbstractWorld extends AsyncManager implements World {
 	 * @param range to search for regions
 	 * @return nearby region's players
 	 */
-	private Set<Player> getPlayersNearRegion(Point position, int range) {
+	private List<Player> getPlayersNearRegion(Point position, int range) {
 		Region center = this.getRegionFromBlock(position, LoadOption.NO_LOAD);
 
-		HashSet<Player> players = new HashSet<Player>();
+		ArrayList<Player> players = new ArrayList<Player>();
 		if (center != null) {
 			final int regions = (range + Region.BLOCKS.SIZE - 1) / Region.BLOCKS.SIZE; //round up 1 region size
 			for (int dx = -regions; dx < regions; dx++) {

@@ -894,15 +894,14 @@ public class SpoutRegion extends Region {
 	}
 
 	@Override
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	public Set<Entity> getAll(Class<? extends Controller> type) {
-		return (Set) entityManager.getAll(type);
+	public List<Entity> getAll(Class<? extends Controller> type) {
+		return (List<Entity>) entityManager.getAll(type);
 	}
 
 	@Override
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public Set<Entity> getAll() {
-		return (Set) entityManager.getAll();
+	public List<Entity> getAll() {
+		return (List<Entity>) entityManager.getAll();
 	}
 
 	@Override
@@ -1161,14 +1160,8 @@ public class SpoutRegion extends Region {
 	}
 
 	@Override
-	public Set<Player> getPlayers() {
-		HashSet<Player> players = new HashSet<Player>();
-		for (PlayerController player : this.entityManager.getPlayers()) {
-			if (player.getParent() != null) {
-				players.add((Player) player.getParent());
-			}
-		}
-		return players;
+	public List<Player> getPlayers() {
+		return entityManager.getPlayers();
 	}
 
 	/**

@@ -28,8 +28,10 @@ package org.spout.engine.world;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -308,8 +310,8 @@ public class SpoutClientWorld extends SpoutAbstractWorld {
 	}
 
 	@Override
-	public HashSet<Entity> getAll() {
-		HashSet<Entity> entities = new HashSet<Entity>(entityManager.getAll());
+	public List<Entity> getAll() {
+		ArrayList<Entity> entities = new ArrayList<Entity>();
 		for (Region region : regions) {
 			entities.addAll(region.getAll());
 		}
@@ -317,8 +319,8 @@ public class SpoutClientWorld extends SpoutAbstractWorld {
 	}
 
 	@Override
-	public HashSet<Entity> getAll(Class<? extends Controller> type) {
-		HashSet<Entity> entities = new HashSet<Entity>(entityManager.getAll(type));
+	public List<Entity> getAll(Class<? extends Controller> type) {
+		ArrayList<Entity> entities = new ArrayList<Entity>();
 		for (Region region : regions) {
 			entities.addAll(region.getAll(type));
 		}
@@ -329,21 +331,15 @@ public class SpoutClientWorld extends SpoutAbstractWorld {
 	public Entity getEntity(int id) {
 		Entity entity = entityManager.getEntity(id);
 		if (entity == null) {
-			for (Region region : regions) {
-				if ((entity = region.getEntity(id)) != null) {
-					break;
-				}
-			}
+			return null;
 		}
 		return entity;
 	}
 
-	public Set<Player> getPlayers() {
-		Set<Player> players = new HashSet<Player>();
-		for (Entity entity : getAll()) {
-			if (entity instanceof Player) {
-				players.add((Player) entity);
-			}
+	public List<Player> getPlayers() {
+		ArrayList<Player> players = new ArrayList<Player>();
+		for (Region region : regions) {
+			players.addAll(region.getPlayers());
 		}
 		return players;
 	}

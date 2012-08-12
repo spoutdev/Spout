@@ -41,6 +41,11 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 	private ConcurrentLinkedQueue<SnapshotUpdate<T>> pendingUpdates = new ConcurrentLinkedQueue<SnapshotUpdate<T>>();
 	private ArrayList<T> snapshot;
 
+	public SnapshotableArrayList(SnapshotManager manager) {
+		snapshot = new ArrayList<T>();
+		manager.add(this);
+	}
+
 	public SnapshotableArrayList(SnapshotManager manager, ArrayList<T> initial) {
 		snapshot = new ArrayList<T>();
 		if (initial != null) {
@@ -53,7 +58,7 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 
 	/**
 	 * Adds an object to the list
-	 * @param next
+	 * @param object
 	 */
 	@DelayedWrite
 	public void add(T object) {
@@ -62,7 +67,7 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 
 	/**
 	 * Removes an object from the list
-	 * @param next
+	 * @param object
 	 */
 	@DelayedWrite
 	public void remove(T object) {
@@ -71,7 +76,7 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 
 	/**
 	 * Adds an object to the list at a particular index
-	 * @param next
+	 * @param object
 	 */
 	@DelayedWrite
 	public void add(int index, T object) {
@@ -80,7 +85,7 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 
 	/**
 	 * Removes the object from the list at a particular index
-	 * @param next
+	 * @param index
 	 */
 	@DelayedWrite
 	public void remove(int index) {
