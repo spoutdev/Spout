@@ -89,19 +89,6 @@ public class EntityManager implements Iterable<SpoutEntity> {
 	 */
 	private final Map<Vector3, Entity> blockEntities = new HashMap<Vector3, Entity>();
 
-	private SnapshotableArrayList<SpoutEntity> getRawAll(Class<? extends Controller> type) {
-		SnapshotableArrayList<SpoutEntity> list = groupedEntities.get(type);
-		SnapshotableArrayList<SpoutEntity> live;
-		if (list == null) {
-			list = new SnapshotableArrayList<SpoutEntity>(snapshotManager);
-			live = groupedEntities.putIfAbsent(type, list);
-			if (live != null) {
-				return live;
-			}
-		}
-		return list;
-	}
-
 	/**
 	 * Gets all entities with the specified type.
 	 *
@@ -109,7 +96,7 @@ public class EntityManager implements Iterable<SpoutEntity> {
 	 * @return A set of entities with the specified type.
 	 */
 	public List<SpoutEntity> getAll(Class<? extends Controller> type) {
-		return getRawAll(type).get();
+		return groupedEntities.get(type).get();
 	}
 
 	/**
