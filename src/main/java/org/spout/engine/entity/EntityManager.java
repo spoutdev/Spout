@@ -91,14 +91,13 @@ public class EntityManager implements Iterable<SpoutEntity> {
 
 	private SnapshotableArrayList<SpoutEntity> getRawAll(Class<? extends Controller> type) {
 		SnapshotableArrayList<SpoutEntity> list = groupedEntities.get(type);
-		SnapshotableArrayList<SpoutEntity> live = null;
-		if (list != null) {
-			live = groupedEntities.putIfAbsent(type, list);
-		} else {
+		SnapshotableArrayList<SpoutEntity> live;
+		if (list == null) {
 			list = new SnapshotableArrayList<SpoutEntity>(snapshotManager);
-		}
-		if (live != null) {
-			return live;
+			live = groupedEntities.putIfAbsent(type, list);
+			if (live != null) {
+				return live;
+			}
 		}
 		return list;
 	}
