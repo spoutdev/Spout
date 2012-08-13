@@ -48,13 +48,13 @@ import org.spout.api.exception.ConfigurationException;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
-import org.spout.api.protocol.builtin.SpoutProtocol;
 
 import org.spout.engine.listener.SpoutServerListener;
 import org.spout.engine.protocol.PortBindingImpl;
 import org.spout.engine.protocol.PortBindings;
 import org.spout.engine.protocol.SpoutNioServerSocketChannel;
 import org.spout.engine.protocol.SpoutServerSession;
+import org.spout.engine.protocol.builtin.SpoutProtocol;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
