@@ -930,6 +930,22 @@ public class MathHelper {
 	public static Vector3 round(Vector3 o) {
 		return new Vector3(Math.round(o.x), Math.round(o.y), Math.round(o.z));
 	}
+	
+	/**
+	 * Rounds all fields of the vector to the nearest integer value.
+	 * 
+	 * @param o Matrix to use
+	 * @return
+	 */
+	public static Matrix round(Matrix o) {
+		Matrix ret = new Matrix(o);
+		for (int x = 0; x < o.dimension; x ++) {
+			for (int y = 0; y < o.dimension; y ++) {
+				ret.set(x, y, Math.round(o.get(x, y)));
+			}
+		}
+		return ret;
+	}
 
 	/**
 	 * Sets the X, Y, and Z values of the given Vector3 to their absolute value.
