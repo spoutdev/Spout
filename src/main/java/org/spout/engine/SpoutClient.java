@@ -31,6 +31,7 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.spout.api.lang.Translation.tr;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -78,8 +79,10 @@ import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.render.BasicCamera;
 import org.spout.api.render.Camera;
+import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
 import org.spout.engine.audio.SpoutSoundManager;
+import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.command.InputCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
@@ -350,7 +353,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		soundManager.init();
 		Spout.getFilesystem().postStartup();
 
-		activeCamera = new BasicCamera(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(new Vector3(0, 50, 100), Vector3.ZERO, Vector3.UP));
+		activeCamera = new BasicCamera(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(new Vector3(0, 1, 10), Vector3.ZERO, Vector3.UP));
 		activeCamera.getFrustum().update(activeCamera.getProjection(), activeCamera.getView());
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -358,12 +361,22 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		worldRenderer = new WorldRenderer(this);
 		worldRenderer.setup();
+		renderer = new PrimitiveBatch();
+		mat = (RenderMaterial)this.getFilesystem().getResource("material://Spout/resources/resources/materials/BasicMaterial.smt");
 	}
-
+	
+	PrimitiveBatch renderer;
+	RenderMaterial mat;
+	
 	public void render(float dt) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		worldRenderer.render();
+		renderer.begin(mat);
+		renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.green, sides);
+		renderer.end();
+		
+		renderer.draw();
+		
+		//worldRenderer.render();
 	}
 
 	private void createWindow() {

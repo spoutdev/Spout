@@ -26,17 +26,27 @@
  */
 package org.spout.engine.renderer;
 
+import gnu.trove.map.hash.TIntObjectHashMap;
+
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+import org.spout.engine.renderer.vertexbuffer.VertexBufferImpl;
 
 public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 	final int SIZE_FLOAT = 4;
 	int vao;
 	int vbos = -1;
+	
+	TIntObjectHashMap<VertexBufferImpl > vertexBuffers = new TIntObjectHashMap<VertexBufferImpl>();
+	
+	
+	
 
 	/**
 	 * Batch Renderer using OpenGL 3.0 mode.
@@ -46,78 +56,70 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 		super(renderMode);
 		vao = GL30.glGenVertexArrays();
 		GL30.glBindVertexArray(vao);
+		
+		vertexBuffers.put(0, new VertexBufferImpl("vPosition", 4, 0));
 	}
 
+	
+	
+	
 	@Override
 	protected void doFlush() {
 		if (activeMaterial.getShader() == null) {
 			throw new IllegalStateException("Batch must have a shader attached");
 		}
-		if (vbos != -1) {
-			GL15.glDeleteBuffers(vbos);
-		}
-
+		
 		GL30.glBindVertexArray(vao);
-		int size = numVertices * 4 * SIZE_FLOAT;
-		if (useColors) {
-			size += numVertices * 4 * SIZE_FLOAT;
-		}
-		if (useNormals) {
-			size += numVertices * 4 * SIZE_FLOAT;
-		}
-		if (useTextures) {
-			size += numVertices * 2 * SIZE_FLOAT;
-		}
-
-		vbos = GL15.glGenBuffers();
-
-		int offset = 0;
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbos);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, size, GL15.GL_STATIC_DRAW);
-
+	
+		
 		FloatBuffer vBuffer = BufferUtils.createFloatBuffer(vertexBuffer.size());
 		vBuffer.clear();
 		vBuffer.put(vertexBuffer.toArray());
 		vBuffer.flip();
-		//GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vBuffer, GL15.GL_STATIC_DRAW);
-		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset, vBuffer);
-		activeMaterial.getShader().enableAttribute("vPosition", 4, GL11.GL_FLOAT, 0, offset);
-		offset += numVertices * 4 * SIZE_FLOAT;
+		
+		vertexBuffers.get(0).flush(vBuffer);
+		
+		
 		if (useColors) {
-
-			vBuffer = BufferUtils.createFloatBuffer(colorBuffer.size());
+			if(vertexBuffers.get(1) == null) {
+				vertexBuffers.put(1, new VertexBufferImpl("vColor", 4, 1));
+			}
+			
 			vBuffer.clear();
 			vBuffer.put(colorBuffer.toArray());
 			vBuffer.flip();
-			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset, vBuffer);
-
-			activeMaterial.getShader().enableAttribute("vColor", 4, GL11.GL_FLOAT, 0, offset);
-			offset += numVertices * 4 * SIZE_FLOAT;
+			
+			vertexBuffers.get(1).flush(vBuffer);
+			
+			
 		}
 		if (useNormals) {
-
-			vBuffer = BufferUtils.createFloatBuffer(normalBuffer.size());
+		
+			if(vertexBuffers.get(2) == null) {
+				vertexBuffers.put(2, new VertexBufferImpl("vNormal", 4, 2));
+			}
+			
 			vBuffer.clear();
 			vBuffer.put(normalBuffer.toArray());
 			vBuffer.flip();
-			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset, vBuffer);
-
-			activeMaterial.getShader().enableAttribute("vNormal", 4, GL11.GL_FLOAT, 0, offset);
-			offset += numVertices * 4 * SIZE_FLOAT;
+			
+			vertexBuffers.get(2).flush(vBuffer);
 		}
 		if (useTextures) {
-
+			
+			if(vertexBuffers.get(3) == null) {
+				vertexBuffers.put(3, new VertexBufferImpl("vTexCoord0", 2, 3));
+			}
+			
 			vBuffer = BufferUtils.createFloatBuffer(uvBuffer.size());
 			vBuffer.clear();
 			vBuffer.put(uvBuffer.toArray());
 			vBuffer.flip();
-			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, offset, vBuffer);
-
-			activeMaterial.getShader().enableAttribute("vTexCoord", 2, GL11.GL_FLOAT, 0, offset);
-			offset += numVertices * 2 * SIZE_FLOAT;
+			
+			vertexBuffers.get(3).flush(vBuffer);
 		}
 
-		activeMaterial.assign();
+		
 	}
 
 	/**
@@ -125,10 +127,24 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 	 */
 	@Override
 	public void doRender() {
+		if(numVertices == 0) throw new IllegalStateException("Cannot render 0 verticies");
+		
 		GL30.glBindVertexArray(vao);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbos);
-
+		
+		
 		activeMaterial.assign();
+		
+		for(VertexBufferImpl vb : vertexBuffers.valueCollection()){
+			vb.bind();
+			activeMaterial.getShader().enableAttribute(vb.getName(), vb.getElements(), GL11.GL_FLOAT, 0, 0);			
+		}
+		
 		GL11.glDrawArrays(renderMode, 0, numVertices);
+		
+		for(VertexBufferImpl vb : vertexBuffers.valueCollection()){			
+			GL20.glDisableVertexAttribArray(vb.getLayout());		
+		}
+		
+		
 	}
 }
