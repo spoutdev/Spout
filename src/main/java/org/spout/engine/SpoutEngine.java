@@ -671,7 +671,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		entityManager.copyAllSnapshots();
 		snapshotManager.copyAllSnapshots();
 		for (Player player : onlinePlayers.get().values()) {
-			((SpoutPlayer) player).copyToSnapshot();
+			((SpoutPlayer) player).copySnapshot();
 		}
 	}
 

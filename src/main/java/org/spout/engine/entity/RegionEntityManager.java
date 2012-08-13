@@ -64,24 +64,72 @@ public final class RegionEntityManager extends EntityManager {
 	 * Syncs all entities/observers in this region
 	 */
 	public void syncEntities() {
-		Collection<SpoutEntity> snapshots = getRegion().getEntityManager().getAll();
-		if (!snapshots.isEmpty()) {
-			for (Player player : getRegion().getPlayers()) {
-				if (!player.isOnline()) {
+		/*
+		 * The list of entities that have live values.
+		 */
+		Collection<SpoutEntity> lives = getRegion().getEntityManager().getAllLive();
+		if (lives.isEmpty()) {
+			return;
+		}
+		for (Player player : getRegion().getPlayers()) {
+			/*
+			 * Offline players have no network synchronizer, skip them
+			 */
+			if (!player.isOnline()) {
+				continue;
+			}
+			Integer playerViewDistance = player.getViewDistance();
+			NetworkSynchronizer net = player.getNetworkSynchronizer();
+			for (SpoutEntity live : lives) {
+				if (live.equals(player)) {
 					continue;
 				}
-				Integer playerNewViewDistance = player.getViewDistance();
-				Integer playerOldViewDistance = ((SpoutPlayer) player).getPrevViewDistance();
-				NetworkSynchronizer net = player.getNetworkSynchronizer();
-				for (Entity snapshot : getRegion().getEntityManager().getAll()) {
-					if (snapshot.equals(player)) {
-						continue;
+				/*
+				 * We have four scenarios when sync'ing entities to a NetworkSynchronizer
+				 * - Spawning the entity if in range and is new.
+				 * - Destroying the entity if out of range and isn't new.
+				 * - Syncing the entity if in range and has changed.
+				 * - Destroy/spawn an entity if isn't new and changed controllers.
+				 */
+				/*
+				 * The list of entities that have snapshot values.
+				 */
+				Collection<SpoutEntity> snapshots = getRegion().getEntityManager().getAll();
+				/*
+				 * The list of entities that have dirty values.
+				 */
+				Collection<SpoutEntity> dirties = getRegion().getEntityManager().getDirtyAll();
+				/*
+				 * If the live entities' position is in range of the player's view distance + position
+				 */
+				if (MathHelper.distance(player.getPosition(), live.getPosition()) <= playerViewDistance) {
+					/*
+					 * If the entity has just spawned, spawn it to the synchronizer!
+					 */
+					if (live.justSpawned()) {
+						net.spawnEntity(live);
+						/*
+						 * If the entity is in the dirty list and snapshots list then it changed this tick, so sync it!
+ 						 */
+					} else if (snapshots.contains(live) && dirties.contains(live)) {
+						/*
+						 * The entity is in a snapshot and a dirty list for updates but swapped controllers. Destroy and spawn it!
+						 */
+						if (!live.getController().equals(live.getPrevController())) {
+							net.destroyEntity(live);
+							net.spawnEntity(live);
+						} else {
+							/*
+							 * Controller change didn't occur, so sync it!
+							 */
+							net.syncEntity(live);
+						}
 					}
-					if (playerOldViewDistance > playerNewViewDistance && MathHelper.distance(player.getPosition(), snapshot.getPosition()) <= playerOldViewDistance) {
-						net.spawnEntity(snapshot);
-					} else if (playerNewViewDistance > playerOldViewDistance) {
-						net.destroyEntity(snapshot);
-					}
+					/*
+					 * The entity is out of range, destroy it!
+					 */
+				} else {
+					net.destroyEntity(live);
 				}
 			}
 		}

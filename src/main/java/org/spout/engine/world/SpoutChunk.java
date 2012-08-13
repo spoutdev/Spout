@@ -882,7 +882,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	public boolean refreshObserver(Entity entity) {
 		TickStage.checkStage(TickStage.FINALIZE);
 		SpoutEntity spoutEntity = ((SpoutEntity) entity);
-		if (!spoutEntity.isObserver()) {
+		if (!spoutEntity.isObserverLive()) {
 			throw new IllegalArgumentException("Cannot add an entity that isn't marked as an observer!");
 		}
 
@@ -901,7 +901,12 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 				parentRegion.queueChunkForPopulation(this);
 			}
 		}
-		numberOfObservers.getAndIncrement();
+		/**
+		 * If Snapshot was false, live is true then the observer count increased
+		 */
+		if (spoutEntity.isObserver() != spoutEntity.isObserverLive()) {
+			numberOfObservers.getAndIncrement();
+		}
 		return true;
 	}
 
@@ -918,13 +923,15 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 		if (!isObserved()) {
 			parentRegion.unloadQueue.add(this);
+			numberOfObservers.getAndSet(0);
+		} else {
+			numberOfObservers.getAndDecrement();
 		}
-		numberOfObservers.getAndDecrement();
 		return true;
 	}
 
 	public boolean isObserved() {
-		return !observed.get();
+		return numberOfObservers.get() > 0;
 	}
 
 	@Override

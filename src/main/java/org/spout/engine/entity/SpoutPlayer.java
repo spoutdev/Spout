@@ -164,7 +164,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		}
 
 		sessionLive.set(session);
-		copyToSnapshot();
+		copySnapshot();
 		justSpawned = true;
 		return true;
 	}
@@ -229,8 +229,9 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		return hashcode;
 	}
 
-	public void copyToSnapshot() {
-		super.copyToSnapshot();
+	@Override
+	public void copySnapshot() {
+		super.copySnapshot();
 		session = sessionLive.get();
 		online = onlineLive.get();
 	}

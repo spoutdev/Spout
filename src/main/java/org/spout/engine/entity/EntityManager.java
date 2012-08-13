@@ -284,14 +284,6 @@ public class EntityManager {
 	}
 
 	/**
-	 * Gets the string map associated with this entity manager
-	 * @return
-	 */
-	public StringMap getStringMap() {
-		return entityMap;
-	}
-
-	/**
 	 * The region this entity manager oversees, or null if it does not manage a region's entities
 	 *
 	 * @return region or null
