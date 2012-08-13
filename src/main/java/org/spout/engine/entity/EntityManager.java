@@ -83,9 +83,6 @@ public class EntityManager {
 	 */
 	private final Map<Vector3, Entity> blockEntities = new HashMap<Vector3, Entity>();
 
-	private final SnapshotableHashMap<SpoutChunk, SnapshotableArrayList<SpoutEntity>> observersPerChunk = new SnapshotableHashMap<SpoutChunk, SnapshotableArrayList<SpoutEntity>>(snapshotManager);
-	private final SnapshotableHashMap<SpoutChunk, SnapshotableArrayList<SpoutEntity>> entitiesPerChunk = new SnapshotableHashMap<SpoutChunk, SnapshotableArrayList<SpoutEntity>>(snapshotManager);
-
 	/**
 	 * Gets all entities with the specified type.
 	 *
@@ -299,46 +296,5 @@ public class EntityManager {
 
 	public Map<Vector3, Entity> getBlockEntities() {
 		return Collections.unmodifiableMap(blockEntities);
-	}
-
-	/**
-	 * Grabs all observers in this region (from each chunk)
-	 * @return
-	 */
-	public SnapshotableArrayList<SpoutEntity> getObservers() {
-		Collection<SnapshotableArrayList<SpoutEntity>> observerEntities = observersPerChunk.get().values();
-		SnapshotableArrayList<SpoutEntity> observers = new SnapshotableArrayList<SpoutEntity>(snapshotManager);
-		if (observerEntities == null) {
-			return observers;
-		}
-		for (SnapshotableArrayList<SpoutEntity> chunkObservers : observerEntities) {
-			if (chunkObservers == null) {
-				continue;
-			}
-			observers.addAll(chunkObservers.get());
-		}
-		return observers;
-	}
-
-	public SnapshotableArrayList<SpoutEntity> getObserversFor(SpoutChunk chunk) {
-		if (chunk == null || !chunk.isLoaded()) {
-			throw new IllegalAccessError("Trying to access either an unloaded chunk or null chunk!");
-		}
-		SnapshotableArrayList<SpoutEntity> entities = observersPerChunk.get().get(chunk);
-		if (entities == null) {
-			return new SnapshotableArrayList<SpoutEntity>(snapshotManager);
-		}
-		return entities;
-	}
-
-	public SnapshotableArrayList<SpoutEntity> getEntitiesFor(SpoutChunk chunk) {
-		if (chunk == null || !chunk.isLoaded()) {
-			throw new IllegalAccessError("Trying to access either an unloaded chunk or null chunk!");
-		}
-		SnapshotableArrayList<SpoutEntity> chunkEntities = entitiesPerChunk.get().get(chunk);
-		if (chunkEntities == null) {
-			return new SnapshotableArrayList<SpoutEntity>(snapshotManager);
-		}
-		return chunkEntities;
 	}
 }

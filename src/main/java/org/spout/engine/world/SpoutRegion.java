@@ -810,7 +810,7 @@ public class SpoutRegion extends Region {
 				cz = c.getZ() & CHUNKS.MASK;
 
 				if (c == getChunk(cx, cy, cz, LoadOption.NO_LOAD)) {
-					c.syncEntities();
+					entityManager.syncEntitiesFor(c);
 				} else {
 					itr.remove();
 				}
