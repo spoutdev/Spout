@@ -901,6 +901,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 				parentRegion.queueChunkForPopulation(this);
 			}
 		}
+		numberOfObservers.getAndIncrement();
 		return true;
 	}
 
@@ -918,6 +919,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		if (!isObserved()) {
 			parentRegion.unloadQueue.add(this);
 		}
+		numberOfObservers.getAndDecrement();
 		return true;
 	}
 
