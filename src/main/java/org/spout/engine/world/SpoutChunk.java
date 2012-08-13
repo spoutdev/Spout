@@ -30,6 +30,7 @@ import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -90,16 +91,16 @@ import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
+import org.spout.engine.util.thread.snapshotable.Snapshotable;
 import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
 import org.spout.engine.world.physics.PhysicsQueue;
 import org.spout.engine.world.physics.UpdateQueue;
 
-public class SpoutChunk extends Chunk {
-	private static final AtomicInteger activeChunks = new AtomicInteger(0);
-	private static final AtomicInteger observedChunks = new AtomicInteger(0);
+public class SpoutChunk extends Chunk implements Snapshotable {
+	public static final WeakReference<Chunk> NULL_WEAK_REFERENCE = new WeakReference<Chunk>(null);
 	private final AtomicBoolean observed = new AtomicBoolean(false);
-
+	private final AtomicInteger numberOfObservers = new AtomicInteger(0);
 	/**
 	 * Multi-thread write access to the block store is only allowed during the
 	 * allowed stages. During the restricted stages, only the region thread may
@@ -108,9 +109,6 @@ public class SpoutChunk extends Chunk {
 	private static final int restrictedStages = TickStage.PHYSICS | TickStage.DYNAMIC_BLOCKS;
 	private static final int allowedStages = TickStage.STAGE1 | TickStage.STAGE2P | TickStage.TICKSTART | TickStage.GLOBAL_PHYSICS | TickStage.GLOBAL_DYNAMIC_BLOCKS;
 	;
-	private static final int updateStages =
-			TickStage.PHYSICS | TickStage.DYNAMIC_BLOCKS
-					| TickStage.GLOBAL_PHYSICS | TickStage.GLOBAL_DYNAMIC_BLOCKS;
 	/**
 	 * Time in ms between chunk reaper unload checks
 	 */
@@ -132,18 +130,6 @@ public class SpoutChunk extends Chunk {
 	 * Holds if the chunk is populated
 	 */
 	private final AtomicReference<PopulationState> populationState;
-	/**
-	 * Snapshot Manager
-	 */
-	protected final SnapshotManager snapshotManager = new SnapshotManager();
-	/**
-	 * A set of all entities who are observing this chunk
-	 */
-	protected final SnapshotableHashMap<Entity, Integer> observers = new SnapshotableHashMap<Entity, Integer>(snapshotManager);
-	/**
-	 * A set of entities contained in the chunk
-	 */
-	protected final SnapshotableArrayList<Entity> entities = new SnapshotableArrayList<Entity>(snapshotManager);
 	/**
 	 * Stores a short value of the sky light
 	 * <p/>
@@ -203,7 +189,6 @@ public class SpoutChunk extends Chunk {
 	 * The thread associated with the region
 	 */
 	private final Thread regionThread;
-	private final Thread mainThread;
 
 	/**
 	 * A set of all blocks in this chunk that need a physics update in the next
@@ -218,7 +203,6 @@ public class SpoutChunk extends Chunk {
 	 * A WeakReference to this chunk
 	 */
 	private final WeakReference<Chunk> selfReference;
-	public static final WeakReference<Chunk> NULL_WEAK_REFERENCE = new WeakReference<Chunk>(null);
 	
 	/**
 	 * Indicates that the chunk has been added to the dirty queue
@@ -262,7 +246,6 @@ public class SpoutChunk extends Chunk {
 			this.datatableMap = extraData;
 		} else {
 			this.datatableMap = new GenericDatatableMap();
-			;
 		}
 		this.dataMap = new DataMap(this.datatableMap);
 		
@@ -276,20 +259,10 @@ public class SpoutChunk extends Chunk {
 		// loaded chunk
 		this.biomes = manager;
 		this.regionThread = region.getExceutionThread();
-		this.mainThread = ((SpoutScheduler) Spout.getScheduler()).getMainThread();
 
-		((SpoutEngine) world.getEngine()).getLeakThread().monitor(this);
-		activeChunks.incrementAndGet();
+		world.getEngine().getLeakThread().monitor(this);
 		selfReference = new WeakReference<Chunk>(this);
 		this.scheduler = (SpoutScheduler) Spout.getScheduler();
-	}
-
-	public static int getActiveChunks() {
-		return activeChunks.get();
-	}
-
-	public static int getObservedChunks() {
-		return observedChunks.get();
 	}
 
 	@Override
@@ -789,7 +762,7 @@ public class SpoutChunk extends Chunk {
 	}
 
 	public void saveComplete() {
-		if (!observers.isEmptyLive() || observed.get()) {
+		if (observed.get()) {
 			resetPostSaving();
 		} else {
 			saveState.compareAndSet(SaveState.SAVING, SaveState.POST_SAVED);
@@ -831,15 +804,6 @@ public class SpoutChunk extends Chunk {
 			success = saveState.compareAndSet(old, nextState);
 		}
 		return old;
-	}
-
-	/**
-	 * @return true if the chunk can be skipped
-	 */
-	public boolean copySnapshotRun() {
-		// NOTE : This is only called for chunks with contain entities.
-		snapshotManager.copyAllSnapshots();
-		return entities.get().isEmpty();
 	}
 
 	// Saves the chunk data - this occurs directly after a snapshot update
@@ -917,14 +881,15 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public boolean refreshObserver(Entity entity) {
 		TickStage.checkStage(TickStage.FINALIZE);
-		if (!entity.isObserver()) {
+		SpoutEntity spoutEntity = ((SpoutEntity) entity);
+		if (!spoutEntity.isObserver()) {
 			throw new IllegalArgumentException("Cannot add an entity that isn't marked as an observer!");
 		}
 
 		checkChunkLoaded();
 		parentRegion.unSkipChunk(this);
-		int distance = (int) ((SpoutEntity) entity).getChunkLive().getBase().getDistance(getBase());
-		Integer oldDistance = observers.put(entity, distance);
+		int distance = (int) (spoutEntity.getChunkLive().getBase().getDistance(getBase()));
+		Integer oldDistance = spoutEntity.getPrevViewDistance();
 		if (oldDistance != null) {
 			// The player was already observing the chunk from distance oldDistance 
 			return false;
@@ -936,9 +901,6 @@ public class SpoutChunk extends Chunk {
 				parentRegion.queueChunkForPopulation(this);
 			}
 		}
-		if (observed.compareAndSet(false, true)) {
-			observedChunks.incrementAndGet();
-		}
 		return true;
 	}
 
@@ -948,35 +910,24 @@ public class SpoutChunk extends Chunk {
 		parentRegion.unSkipChunk(this);
 		TickStage.checkStage(TickStage.FINALIZE);
 
-		Integer oldDistance = observers.remove(entity);
+		Integer oldDistance = ((SpoutEntity) entity).getPrevViewDistance();
 		if (oldDistance == null) {
 			return false;
 		}
 
 		if (!isObserved()) {
 			parentRegion.unloadQueue.add(this);
-			if (observed.compareAndSet(true, false)) {
-				observedChunks.decrementAndGet();
-			}
 		}
 		return true;
 	}
 
 	public boolean isObserved() {
-		return !observers.isEmptyLive();
-	}
-
-	public Set<Entity> getObserversLive() {
-		return observers.getLive().keySet();
-	}
-
-	public Set<Entity> getObservers() {
-		return observers.get().keySet();
+		return !observed.get();
 	}
 
 	@Override
 	public int getNumObservers() {
-		return observers.getLive().size();
+		return numberOfObservers.get();
 	}
 
 	public boolean compressIfRequired() {
@@ -1072,12 +1023,8 @@ public class SpoutChunk extends Chunk {
 		this.blockLight = null;
 		this.skyLight = null;
 		this.dataMap.clear();
-		if (observed.compareAndSet(true, false)) {
-			observedChunks.decrementAndGet();
-		}
 		if (oldState != SaveState.UNLOADED) {
 			deregisterFromColumn(saveColumn);
-			activeChunks.decrementAndGet();
 		}
 	}
 
@@ -1094,6 +1041,10 @@ public class SpoutChunk extends Chunk {
 	@Override
 	public Biome getBiomeType(int x, int y, int z) {
 		return biomes.getBiome(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK);
+	}
+
+	@Override
+	public void copySnapshot() {
 	}
 
 	public static enum SaveState {
@@ -1328,161 +1279,38 @@ public class SpoutChunk extends Chunk {
 		checkChunkLoaded();
 		TickStage.checkStage(TickStage.FINALIZE);
 		parentRegion.unSkipChunk(this);
-		entities.add(entity);
+		parentRegion.addEntity(entity);
 	}
 
 	public void removeEntity(SpoutEntity entity) {
 		checkChunkLoaded();
 		TickStage.checkStage(TickStage.FINALIZE);
 		parentRegion.unSkipChunk(this);
-		entities.remove(entity);
+		parentRegion.removeEntity(entity);
 	}
 
 	@Override
 	public List<Entity> getEntities() {
-		return entities.get();
+		ArrayList<Entity> entities = new ArrayList<Entity>();
+		for (Entity e : parentRegion.getAll()) {
+			if (e.getChunk() == this) {
+				entities.add(e);
+			}
+		}
+		return Collections.unmodifiableList(entities);
 	}
 
 	@Override
 	public List<Entity> getLiveEntities() {
-		return entities.getLive();
+		ArrayList<Entity> entities = new ArrayList<Entity>();
+		for (Entity e : parentRegion.getEntityManager().getAllLive()) {
+			if (((SpoutEntity) e).getChunkLive() == this) {
+				entities.add(e);
+			}
+		}
+		return entities;
 	}
 
-	// Handles network updates for all entities that were
-	// - in the chunk at the last snapshot
-	// - were not in a chunk at the last snapshot and are now in this chunk
-	public void syncEntities() {
-		Map<Entity, Integer> observerSnapshot = observers.get();
-		Map<Entity, Integer> observerLive = observers.getLive();
-
-		List<Entity> entitiesSnapshot = entities.get();
-
-		// Changed means entered/left the chunk
-		List<Entity> changedEntities = entities.getDirtyList();
-		List<Entity> changedObservers = observers.getDirtyList();
-
-		if (entitiesSnapshot.size() > 0) {
-			for (Entity p : changedObservers) {
-				Integer playerDistanceOld = observerSnapshot.get(p);
-				if (playerDistanceOld == null) {
-					playerDistanceOld = Integer.MAX_VALUE;
-				}
-				Integer playerDistanceNew = observerLive.get(p);
-				if (playerDistanceNew == null) {
-					playerDistanceNew = Integer.MAX_VALUE;
-				}
-				// Player Network sync
-				if (p instanceof Player) {
-					Player player = (Player) p;
-
-					NetworkSynchronizer n = player.getNetworkSynchronizer();
-					for (Entity e : entitiesSnapshot) {
-						if (player.equals(e)) {
-							continue;
-						}
-						int entityViewDistanceOld = ((SpoutEntity) e).getPrevViewDistance();
-						int entityViewDistanceNew = e.getViewDistance();
-
-						if (playerDistanceOld <= entityViewDistanceOld && playerDistanceNew > entityViewDistanceNew) {
-							n.destroyEntity(e);
-						} else if (playerDistanceNew <= entityViewDistanceNew && playerDistanceOld > entityViewDistanceOld) {
-							n.spawnEntity(e);
-						}
-					}
-				}
-			}
-		}
-
-		for (Entity e : changedEntities) {
-			SpoutChunk oldChunk = (SpoutChunk) e.getChunk();
-			if (((SpoutEntity) e).justSpawned()) {
-				oldChunk = null;
-			}
-			SpoutChunk newChunk = (SpoutChunk) ((SpoutEntity) e).getChunkLive();
-			if (!(oldChunk != null && oldChunk.equals(this)) && !((SpoutEntity) e).justSpawned()) {
-				continue;
-			}
-			for (Entity p : observerLive.keySet()) {
-				if (p == null || p.equals(e)) {
-					continue;
-				}
-				if (p.getController() instanceof PlayerController) {
-					Integer playerDistanceOld;
-					if (oldChunk == null) {
-						playerDistanceOld = Integer.MAX_VALUE;
-					} else {
-						playerDistanceOld = oldChunk.observers.getLive().get(p);
-						if (playerDistanceOld == null) {
-							playerDistanceOld = Integer.MAX_VALUE;
-						}
-					}
-					Integer playerDistanceNew;
-					if (newChunk == null) {
-						playerDistanceNew = Integer.MAX_VALUE;
-					} else {
-						playerDistanceNew = newChunk.observers.getLive().get(p);
-						if (playerDistanceNew == null) {
-							playerDistanceNew = Integer.MAX_VALUE;
-						}
-					}
-					int entityViewDistanceOld = ((SpoutEntity) e).getPrevViewDistance();
-					int entityViewDistanceNew = e.getViewDistance();
-
-					Player player = (Player) p.getController().getParent();
-
-					if (!player.isOnline()) {
-						continue;
-					}
-					NetworkSynchronizer n = player.getNetworkSynchronizer();
-					if (playerDistanceOld <= entityViewDistanceOld && playerDistanceNew > entityViewDistanceNew) {
-						n.destroyEntity(e);
-					} else if (playerDistanceNew <= entityViewDistanceNew && playerDistanceOld > entityViewDistanceOld) {
-						n.spawnEntity(e);
-					}
-				}
-			}
-		}
-
-		// Update all entities that are in the chunk
-		// TODO - should have sorting based on view distance
-		for (Map.Entry<Entity, Integer> entry : observerLive.entrySet()) {
-			Entity p = entry.getKey();
-			if (p.getController() instanceof PlayerController) {
-				Player player = (Player) p.getController().getParent();
-				if (player.isOnline()) {
-					NetworkSynchronizer n = player.getNetworkSynchronizer();
-					int playerDistance = entry.getValue();
-					Entity playerEntity = p;
-					for (Entity e : entitiesSnapshot) {
-						if (playerEntity != e) {
-							if (playerDistance <= e.getViewDistance()) {
-								if (((SpoutEntity) e).getPrevController() != e.getController()) {
-									n.destroyEntity(e);
-									n.spawnEntity(e);
-								}
-								n.syncEntity(e);
-							}
-						}
-					}
-					for (Entity e : changedEntities) {
-						if (entitiesSnapshot.contains(e)) {
-							continue;
-						} else if (((SpoutEntity) e).justSpawned()) {
-							if (playerEntity != e) {
-								if (playerDistance <= e.getViewDistance()) {
-									if (((SpoutEntity) e).getPrevController() != e.getController()) {
-										n.destroyEntity(e);
-										n.spawnEntity(e);
-									}
-									n.syncEntity(e);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
 
 	public void deregisterFromColumn() {
 		deregisterFromColumn(true);

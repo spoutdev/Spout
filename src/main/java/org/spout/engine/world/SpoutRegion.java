@@ -31,14 +31,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -506,7 +504,7 @@ public class SpoutRegion extends Region {
 				itr.remove();
 				continue;
 			}
-			if (c.copySnapshotRun()) {
+			if (c.copySnapshot()) {
 				itr.remove();
 			}
 		}
@@ -592,7 +590,7 @@ public class SpoutRegion extends Region {
 					float dt = delta / 1000.f;
 					Profiler.start("tick entities");
 					//Update all entities
-					for (SpoutEntity ent : entityManager) {
+					for (SpoutEntity ent : entityManager.getAll()) {
 						try {
 							//Try and determine if we should tick this entity
 							//If the entity is not important (not an observer)
@@ -785,7 +783,6 @@ public class SpoutRegion extends Region {
 				if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
 					spoutChunk.setRenderDirty();
 					for (Entity entity : spoutChunk.getObserversLive()) {
-						//chunk.refreshObserver(entity);
 						if (!(entity.getController() instanceof PlayerController)) {
 							continue;
 						}
@@ -899,20 +896,12 @@ public class SpoutRegion extends Region {
 
 	@Override
 	public List<Entity> getAll(Class<? extends Controller> type) {
-		List<SpoutEntity> entities = entityManager.getAll(type);
-		if (entities == null) {
-			return new ArrayList<Entity>();
-		}
-		return new ArrayList<Entity>(entities);
+		return Collections.unmodifiableList(new ArrayList<Entity>(entityManager.getAll(type)));
 	}
 
 	@Override
 	public List<Entity> getAll() {
-		List<SpoutEntity> entities = entityManager.getAll();
-		if (entities == null) {
-			return new ArrayList<Entity>();
-		}
-		return new ArrayList<Entity>(entities);
+		return Collections.unmodifiableList(new ArrayList<Entity>(entityManager.getAll()));
 	}
 
 	@Override

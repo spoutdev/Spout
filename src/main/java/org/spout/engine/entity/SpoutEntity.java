@@ -54,10 +54,11 @@ import org.spout.api.util.OutwardIterator;
 import org.spout.api.util.Profiler;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
+import org.spout.engine.util.thread.snapshotable.Snapshotable;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 
-public class SpoutEntity implements Entity {
+public class SpoutEntity implements Entity, Snapshotable {
 	public static final int NOTSPAWNEDID = -1;
 	//Live
 	private final AtomicReference<EntityManager> entityManagerLive;
@@ -524,15 +525,6 @@ public class SpoutEntity implements Entity {
 		observingChunks.addAll(observing);
 	}
 
-	public void copyToSnapshot() {
-		chunk = chunkLive.get();
-		entityManager = entityManagerLive.get();
-		controller = controllerLive.get();
-		viewDistance = viewDistanceLive.get();
-		lastTransform.set(transform);
-		justSpawned = false;
-	}
-
 	@Override
 	public Chunk getChunk() {
 		return chunk;
@@ -633,5 +625,15 @@ public class SpoutEntity implements Entity {
 	public void setupInitialChunk(Transform transform) {
 		chunkLive.set(transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition()));
 		entityManagerLive.set(((SpoutRegion) chunkLive.get().getRegion()).getEntityManager());
+	}
+
+	@Override
+	public void copySnapshot() {
+		chunk = chunkLive.get();
+		entityManager = entityManagerLive.get();
+		controller = controllerLive.get();
+		viewDistance = viewDistanceLive.get();
+		lastTransform.set(transform);
+		justSpawned = false;
 	}
 }
