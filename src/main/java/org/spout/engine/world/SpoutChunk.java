@@ -888,10 +888,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 		checkChunkLoaded();
 		parentRegion.unSkipChunk(this);
-		int distance = (int) (spoutEntity.getChunkLive().getBase().getDistance(getBase()));
-		Integer oldDistance = spoutEntity.getPrevViewDistance();
-		if (oldDistance != null) {
-			// The player was already observing the chunk from distance oldDistance 
+		if (spoutEntity.getObservedChunks().contains(this)) {
 			return false;
 		}
 		resetPostSaving();
@@ -923,7 +920,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 		if (!isObserved()) {
 			parentRegion.unloadQueue.add(this);
-			numberOfObservers.getAndSet(0);
 		} else {
 			numberOfObservers.getAndDecrement();
 		}

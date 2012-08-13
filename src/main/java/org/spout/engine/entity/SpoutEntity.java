@@ -636,4 +636,8 @@ public class SpoutEntity implements Entity, Snapshotable {
 		lastTransform.set(transform);
 		justSpawned = false;
 	}
+
+	public Set<SpoutChunk> getObservedChunks() {
+		return observingChunks;
+	}
 }
