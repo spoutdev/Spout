@@ -24,29 +24,29 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.util.flag;
+package org.spout.api.util.bytebit;
 
 import org.spout.api.util.LogicUtil;
 
-public class ByteFlagContainer {
+public class ByteBitSet {
 
 	private byte flag;
 
-	public ByteFlagContainer() {
+	public ByteBitSet() {
 		this.flag = 0;
 	}
 
-	public ByteFlagContainer(int flag) {
+	public ByteBitSet(int flag) {
 		this.flag = (byte) flag;
 	}
 
-	public ByteFlagContainer(ByteFlagMask flag) {
+	public ByteBitSet(ByteBitMask flag) {
 		this.flag = flag.getMask();
 	}
 
-	public ByteFlagContainer(ByteFlagMask... flags) {
+	public ByteBitSet(ByteBitMask... flags) {
 		this.flag = 0;
-		for (ByteFlagMask flag : flags) {
+		for (ByteBitMask flag : flags) {
 			this.flag |= flag.getMask();
 		}
 	}
@@ -73,7 +73,7 @@ public class ByteFlagContainer {
 	 * @param mask to use
 	 * @return True if all of the bits in the mask are set, False if not
 	 */
-	public boolean get(ByteFlagMask mask) {
+	public boolean get(ByteBitMask mask) {
 		return LogicUtil.getBit(this.flag, mask.getMask());
 	}
 
@@ -84,7 +84,7 @@ public class ByteFlagContainer {
 	 * @param mask containing the bit flags
 	 * @return True if one of the bits in the mask are set, False if not
 	 */
-	public boolean getAny(ByteFlagMask mask) {
+	public boolean getAny(ByteBitMask mask) {
 		return (this.flag & mask.getMask()) != 0;
 	}
 
@@ -92,7 +92,7 @@ public class ByteFlagContainer {
 	 * Sets the current flag
 	 * @param flag to set to
 	 */
-	public void set(ByteFlagMask mask) {
+	public void set(ByteBitMask mask) {
 		this.flag = mask.getMask();
 	}
 
@@ -109,7 +109,7 @@ public class ByteFlagContainer {
 	 * @param mask to use
 	 * @param value to set the bit to
 	 */
-	public void set(ByteFlagMask mask, boolean value) {
+	public void set(ByteBitMask mask, boolean value) {
 		this.flag = LogicUtil.setBit(this.flag, mask.getMask(), value);
 	}
 }

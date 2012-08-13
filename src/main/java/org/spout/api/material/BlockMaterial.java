@@ -26,6 +26,9 @@
  */
 package org.spout.api.material;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.spout.api.collision.BoundingBox;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionStrategy;
@@ -42,7 +45,8 @@ import org.spout.api.material.block.BlockFaces;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
-import org.spout.api.util.flag.ByteFlagContainer;
+import org.spout.api.util.bytebit.ByteBitSet;
+import org.spout.api.util.flag.Flag;
 
 /**
  * Defines the specific characteristics of a Block
@@ -106,7 +110,7 @@ public class BlockMaterial extends Material implements Placeable {
 		return (BlockMaterial) mat;
 	}
 
-	private ByteFlagContainer occlusion = new ByteFlagContainer(BlockFaces.NESWBT);
+	private ByteBitSet occlusion = new ByteBitSet(BlockFaces.NESWBT);
 	private float hardness = 0F;
 	private float friction = 0F;
 	private byte opacity = 0xF;
@@ -353,7 +357,32 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Called when this block has been destroyed.
+	 * Performs the block destroy procedure without initial flags
+	 * 
+	 * @param block to destroy
+	 * @return True if destroying was successful
+	 */
+	public boolean destroy(Block block) {
+		return this.destroy(block, new HashSet<Flag>());
+	}
+
+	/**
+	 * Performs the block destroy procedure
+	 * 
+	 * @param block to destroy
+	 * @param flags to initially use for destruction
+	 * @return True if destroying was successful
+	 */
+	public boolean destroy(Block block, Set<Flag> flags) {
+		this.getBlockFlags(block, flags);
+		this.onDestroy(block);
+		this.onPostDestroy(block, flags);
+		return true;
+	}
+
+	/**
+	 * Called when this block has to be destroyed.<br>
+	 * This function performs the actual destruction of the block.
 	 * 
 	 * @param block that got destroyed
 	 */
@@ -362,6 +391,26 @@ public class BlockMaterial extends Material implements Placeable {
 		if (this.hasController()) {
 			block.getRegion().setBlockController(block.getX(), block.getY(), block.getZ(), null);
 		}
+	}
+
+	/**
+	 * Called after this block has been destroyed.<br>
+	 * This function performs possible post-destroy operations, such as effects.
+	 * 
+	 * @param block of the material that got destroyed
+	 * @param flags describing the destroy situation
+	 */
+	public void onPostDestroy(Block block, Set<Flag> flags) {
+	}
+
+	/**
+	 * Gets all the flags associated with this Material as a Block<br>
+	 * The flags are added to the input collection
+	 * 
+	 * @param block of this Material
+	 * @param flags to add to
+	 */
+	public void getBlockFlags(Block block, Set<Flag> flags) {
 	}
 
 	/**
@@ -409,7 +458,7 @@ public class BlockMaterial extends Material implements Placeable {
 	 * @param data value of the material
 	 * @return the occluded faces
 	 */
-	public ByteFlagContainer getOcclusion(short data) {
+	public ByteBitSet getOcclusion(short data) {
 		return this.occlusion;
 	}
 

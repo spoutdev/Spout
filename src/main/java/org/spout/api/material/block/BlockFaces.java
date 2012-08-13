@@ -30,12 +30,12 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
 
-import org.spout.api.util.flag.ByteFlagMask;
+import org.spout.api.util.bytebit.ByteBitMask;
 
 /**
  * Contains several BlockFace array constants and functions to operate on them
  */
-public class BlockFaces implements Iterable<BlockFace>, ByteFlagMask {
+public class BlockFaces implements Iterable<BlockFace>, ByteBitMask {
 
 	/**
 	 * The [top-bottom] faces

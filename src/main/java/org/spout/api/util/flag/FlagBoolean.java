@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Vanilla.
  *
- * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
- * SpoutAPI is licensed under the SpoutDev License Version 1.
+ * Copyright (c) 2011-2012, VanillaDev <http://www.spout.org/>
+ * Vanilla is licensed under the SpoutDev License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify
+ * Vanilla is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the SpoutDev License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful,
+ * Vanilla is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
@@ -26,12 +26,20 @@
  */
 package org.spout.api.util.flag;
 
-public interface ByteFlagMask {
-	
-	/**
-	 * Gets the bit byte mask for this object
-	 * @return the bit mask
-	 */
-	public byte getMask();
+import java.util.Set;
 
+/**
+ * A type of Flag that always evaluates True or False, no matter what input
+ */
+public class FlagBoolean implements Flag {
+	private final boolean state;
+
+	public FlagBoolean(boolean state) {
+		this.state = state;
+	}
+
+	@Override
+	public boolean evaluate(Set<Flag> flags) {
+		return this.state;
+	}
 }
