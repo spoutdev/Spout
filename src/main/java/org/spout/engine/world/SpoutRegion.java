@@ -782,10 +782,7 @@ public class SpoutRegion extends Region {
 				}
 				if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
 					spoutChunk.setRenderDirty();
-					for (Entity entity : entityManager.getObserversFor(spoutChunk, true)) {
-						if (!(entity instanceof Player)) {
-							continue;
-						}
+					for (Entity entity : entityManager.getPlayers()) {
 						syncChunkToPlayers(spoutChunk, entity);
 					}
 					processChunkUpdatedEvent(spoutChunk);
@@ -810,7 +807,7 @@ public class SpoutRegion extends Region {
 				cz = c.getZ() & CHUNKS.MASK;
 
 				if (c == getChunk(cx, cy, cz, LoadOption.NO_LOAD)) {
-					entityManager.syncEntitiesFor(c);
+					//entityManager.syncEntitiesFor(c);
 				} else {
 					itr.remove();
 				}

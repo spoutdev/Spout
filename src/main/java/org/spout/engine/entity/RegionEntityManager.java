@@ -26,16 +26,13 @@
  */
 package org.spout.engine.entity;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
 
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
-import org.spout.api.entity.controller.PlayerController;
+import org.spout.api.math.MathHelper;
 import org.spout.api.protocol.NetworkSynchronizer;
 
-import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
-import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 
 public final class RegionEntityManager extends EntityManager {
@@ -63,7 +60,30 @@ public final class RegionEntityManager extends EntityManager {
 		return region;
 	}
 
-	public void syncEntitiesFor() {
-
+	/**
+	 * Syncs all entities/observers in this region
+	 */
+	public void syncEntities() {
+		Collection<SpoutEntity> snapshots = getRegion().getEntityManager().getAll();
+		if (!snapshots.isEmpty()) {
+			for (Player player : getRegion().getPlayers()) {
+				if (!player.isOnline()) {
+					continue;
+				}
+				Integer playerNewViewDistance = player.getViewDistance();
+				Integer playerOldViewDistance = ((SpoutPlayer) player).getPrevViewDistance();
+				NetworkSynchronizer net = player.getNetworkSynchronizer();
+				for (Entity snapshot : getRegion().getEntityManager().getAll()) {
+					if (snapshot.equals(player)) {
+						continue;
+					}
+					if (playerOldViewDistance > playerNewViewDistance && MathHelper.distance(player.getPosition(), snapshot.getPosition()) <= playerOldViewDistance) {
+						net.spawnEntity(snapshot);
+					} else if (playerNewViewDistance > playerOldViewDistance) {
+						net.destroyEntity(snapshot);
+					}
+				}
+			}
+		}
 	}
 }

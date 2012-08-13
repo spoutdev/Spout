@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -102,22 +101,29 @@ public class EntityManager {
 	 *
 	 * @return A set of entities.
 	 */
-	public List<SpoutEntity> getAll() {
+	public Collection<SpoutEntity> getAll() {
 		Collection<SpoutEntity> all = entities.get().values();
 		if (all == null) {
 			return Collections.emptyList();
 		}
-		return Collections.unmodifiableList(new ArrayList<SpoutEntity>(all));
+		return all;
 	}
 
-	public List<SpoutEntity> getAllLive() {
+	public Collection<SpoutEntity> getAllLive() {
 		Collection<SpoutEntity> all = entities.getLive().values();
 		if (all == null) {
 			return Collections.emptyList();
 		}
-		return Collections.unmodifiableList(new ArrayList<SpoutEntity>(all));
+		return all;
 	}
 
+	public List<SpoutEntity> getDirtyAll() {
+		List<SpoutEntity> all = entities.getDirtyValueList();
+		if (all == null) {
+			return Collections.emptyList();
+		}
+		return all;
+	}
 	/**
 	 * Gets an entity by its id.
 	 *

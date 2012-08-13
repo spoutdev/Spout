@@ -28,7 +28,6 @@ package org.spout.engine.util.thread.snapshotable;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,11 +48,8 @@ public class SnapshotableHashMap<K, V> implements Snapshotable {
 	private final Map<K, V> unmodifySnapshot = Collections.unmodifiableMap(snapshot);
 	private final ConcurrentMap<K, V> live = new ConcurrentHashMap<K, V>();
 	private final Map<K, V> unmodifyLive = Collections.unmodifiableMap(live);
-	private final ConcurrentLinkedQueue<K> dirty = new ConcurrentLinkedQueue<K>();
-	private final ArrayList<K> dirtyList = new ArrayList<K>();
-	private final HashSet<K> dirtyListTemp = new HashSet<K>();
-	private final List<K> unmodifyDirty = Collections.unmodifiableList(dirtyList);
-	private boolean dirtyListGenerated = false;
+	private final ConcurrentLinkedQueue<K> dirtyKeys = new ConcurrentLinkedQueue<K>();
+	private final ConcurrentLinkedQueue<V> dirtyValues = new ConcurrentLinkedQueue<V>();
 
 	public SnapshotableHashMap(SnapshotManager manager) {
 		manager.add(this);
@@ -69,7 +65,8 @@ public class SnapshotableHashMap<K, V> implements Snapshotable {
 	@LiveRead
 	public V put(K key, V value) {
 		V oldValue = live.put(key, value);
-		dirty.add(key);
+		dirtyKeys.add(key);
+		dirtyValues.add(value);
 		return oldValue;
 	}
 
@@ -84,7 +81,8 @@ public class SnapshotableHashMap<K, V> implements Snapshotable {
 	public V putIfAbsent(K key, V value) {
 		V oldValue = live.putIfAbsent(key, value);
 		if (oldValue == null) {
-			dirty.add(key);
+			dirtyKeys.add(key);
+			dirtyValues.add(value);
 		}
 		return oldValue;
 	}
@@ -99,7 +97,8 @@ public class SnapshotableHashMap<K, V> implements Snapshotable {
 	public V remove(K key) {
 		V oldValue = live.remove(key);
 		if (oldValue != null) {
-			dirty.add(key);
+			dirtyKeys.add(key);
+			dirtyValues.add(oldValue);
 		}
 		return oldValue;
 	}
@@ -115,7 +114,8 @@ public class SnapshotableHashMap<K, V> implements Snapshotable {
 	public boolean remove(K key, V value) {
 		boolean success = live.remove(key, value);
 		if (success) {
-			dirty.add(key);
+			dirtyKeys.add(key);
+			dirtyValues.add(value);
 		}
 		return success;
 	}
@@ -145,26 +145,22 @@ public class SnapshotableHashMap<K, V> implements Snapshotable {
 	 * only remains valid during that stage.
 	 * @return the list of elements that have been updated
 	 */
-	public List<K> getDirtyList() {
+	public List<K> getDirtyKeyList() {
 		TickStage.checkStage(TickStage.PRESNAPSHOT);
-		if (!dirtyListGenerated) {
-			for (K o : dirty) {
-				if (dirtyListTemp.add(o)) {
-					dirtyList.add(o);
-				}
-			}
-			dirtyListTemp.clear();
-			dirtyListGenerated = true;
-		}
-		return unmodifyDirty;
+		return Collections.unmodifiableList(new ArrayList<K>(dirtyKeys));
 	}
 
 	/**
-	 * Tests if the set is empty
-	 * @return true if the set is empty
+	 * Creates a list of values that have been changed since the last snapshot
+	 * copy.<br>
+	 * <br>
+	 * This method may only be called during the pre-snapshot stage and the list
+	 * only remains valid during that stage.
+	 * @return the list of elements that have been updated
 	 */
-	public boolean isEmptyLive() {
-		return live.isEmpty();
+	public List<V> getDirtyValueList() {
+		TickStage.checkStage(TickStage.PRESNAPSHOT);
+		return Collections.unmodifiableList(new ArrayList<V>(dirtyValues));
 	}
 
 	/**
@@ -172,7 +168,7 @@ public class SnapshotableHashMap<K, V> implements Snapshotable {
 	 */
 	@Override
 	public void copySnapshot() {
-		for (K key : dirty) {
+		for (K key : dirtyKeys) {
 			V value = live.get(key);
 			if (value == null) {
 				snapshot.remove(key);
@@ -180,8 +176,7 @@ public class SnapshotableHashMap<K, V> implements Snapshotable {
 				snapshot.put(key, value);
 			}
 		}
-		dirty.clear();
-		dirtyList.clear();
-		dirtyListGenerated = false;
+		dirtyKeys.clear();
+		dirtyValues.clear();
 	}
 }
