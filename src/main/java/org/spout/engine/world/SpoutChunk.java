@@ -1313,11 +1313,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		return entities;
 	}
 
-
-	public void deregisterFromColumn() {
-		deregisterFromColumn(true);
-	}
-
 	public void deregisterFromColumn(boolean save) {
 		if (columnRegistered.compareAndSet(true, false)) {
 			column.deregisterChunk(save);

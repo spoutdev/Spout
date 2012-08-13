@@ -41,9 +41,7 @@ import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.controller.BlockController;
-import org.spout.api.entity.controller.PlayerController;
 import org.spout.api.math.Vector3;
-import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.StringMap;
 
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
@@ -84,6 +82,9 @@ public class EntityManager {
 	 * The map of entities to Vector3s(BlockControllers)
 	 */
 	private final Map<Vector3, Entity> blockEntities = new HashMap<Vector3, Entity>();
+
+	private final SnapshotableHashMap<SpoutChunk, SnapshotableArrayList<SpoutEntity>> observersPerChunk = new SnapshotableHashMap<SpoutChunk, SnapshotableArrayList<SpoutEntity>>(snapshotManager);
+	private final SnapshotableHashMap<SpoutChunk, SnapshotableArrayList<SpoutEntity>> entitiesPerChunk = new SnapshotableHashMap<SpoutChunk, SnapshotableArrayList<SpoutEntity>>(snapshotManager);
 
 	/**
 	 * Gets all entities with the specified type.
@@ -300,136 +301,44 @@ public class EntityManager {
 		return Collections.unmodifiableMap(blockEntities);
 	}
 
-	public void syncEntities() {
-		Map<Entity, Integer> observerSnapshot = observers.get();
-		Map<Entity, Integer> observerLive = observers.getLive();
-
-		List<Entity> entitiesSnapshot = entities.get();
-
-		// Changed means entered/left the chunk
-		List<Entity> changedEntities = entities.getDirtyList();
-		List<Entity> changedObservers = observers.getDirtyList();
-
-		if (entitiesSnapshot.size() > 0) {
-			for (Entity p : changedObservers) {
-				Integer playerDistanceOld = observerSnapshot.get(p);
-				if (playerDistanceOld == null) {
-					playerDistanceOld = Integer.MAX_VALUE;
-				}
-				Integer playerDistanceNew = observerLive.get(p);
-				if (playerDistanceNew == null) {
-					playerDistanceNew = Integer.MAX_VALUE;
-				}
-				// Player Network sync
-				if (p instanceof Player) {
-					Player player = (Player) p;
-
-					NetworkSynchronizer n = player.getNetworkSynchronizer();
-					for (Entity e : entitiesSnapshot) {
-						if (player.equals(e)) {
-							continue;
-						}
-						int entityViewDistanceOld = ((SpoutEntity) e).getPrevViewDistance();
-						int entityViewDistanceNew = e.getViewDistance();
-
-						if (playerDistanceOld <= entityViewDistanceOld && playerDistanceNew > entityViewDistanceNew) {
-							n.destroyEntity(e);
-						} else if (playerDistanceNew <= entityViewDistanceNew && playerDistanceOld > entityViewDistanceOld) {
-							n.spawnEntity(e);
-						}
-					}
-				}
-			}
+	/**
+	 * Grabs all observers in this region (from each chunk)
+	 * @return
+	 */
+	public SnapshotableArrayList<SpoutEntity> getObservers() {
+		Collection<SnapshotableArrayList<SpoutEntity>> observerEntities = observersPerChunk.get().values();
+		SnapshotableArrayList<SpoutEntity> observers = new SnapshotableArrayList<SpoutEntity>(snapshotManager);
+		if (observerEntities == null) {
+			return observers;
 		}
-
-		for (Entity e : changedEntities) {
-			SpoutChunk oldChunk = (SpoutChunk) e.getChunk();
-			if (((SpoutEntity) e).justSpawned()) {
-				oldChunk = null;
-			}
-			SpoutChunk newChunk = (SpoutChunk) ((SpoutEntity) e).getChunkLive();
-			if (!(oldChunk != null && oldChunk.equals(this)) && !((SpoutEntity) e).justSpawned()) {
+		for (SnapshotableArrayList<SpoutEntity> chunkObservers : observerEntities) {
+			if (chunkObservers == null) {
 				continue;
 			}
-			for (Entity p : observerLive.keySet()) {
-				if (p == null || p.equals(e)) {
-					continue;
-				}
-				if (p.getController() instanceof PlayerController) {
-					Integer playerDistanceOld;
-					if (oldChunk == null) {
-						playerDistanceOld = Integer.MAX_VALUE;
-					} else {
-						playerDistanceOld = oldChunk.observers.getLive().get(p);
-						if (playerDistanceOld == null) {
-							playerDistanceOld = Integer.MAX_VALUE;
-						}
-					}
-					Integer playerDistanceNew;
-					if (newChunk == null) {
-						playerDistanceNew = Integer.MAX_VALUE;
-					} else {
-						playerDistanceNew = newChunk.observers.getLive().get(p);
-						if (playerDistanceNew == null) {
-							playerDistanceNew = Integer.MAX_VALUE;
-						}
-					}
-					int entityViewDistanceOld = ((SpoutEntity) e).getPrevViewDistance();
-					int entityViewDistanceNew = e.getViewDistance();
-
-					Player player = (Player) p.getController().getParent();
-
-					if (!player.isOnline()) {
-						continue;
-					}
-					NetworkSynchronizer n = player.getNetworkSynchronizer();
-					if (playerDistanceOld <= entityViewDistanceOld && playerDistanceNew > entityViewDistanceNew) {
-						n.destroyEntity(e);
-					} else if (playerDistanceNew <= entityViewDistanceNew && playerDistanceOld > entityViewDistanceOld) {
-						n.spawnEntity(e);
-					}
-				}
-			}
+			observers.addAll(chunkObservers.get());
 		}
+		return observers;
+	}
 
-		// Update all entities that are in the chunk
-		// TODO - should have sorting based on view distance
-		for (Map.Entry<Entity, Integer> entry : observerLive.entrySet()) {
-			Entity p = entry.getKey();
-			if (p.getController() instanceof PlayerController) {
-				Player player = (Player) p.getController().getParent();
-				if (player.isOnline()) {
-					NetworkSynchronizer n = player.getNetworkSynchronizer();
-					int playerDistance = entry.getValue();
-					Entity playerEntity = p;
-					for (Entity e : entitiesSnapshot) {
-						if (playerEntity != e) {
-							if (playerDistance <= e.getViewDistance()) {
-								if (((SpoutEntity) e).getPrevController() != e.getController()) {
-									n.destroyEntity(e);
-									n.spawnEntity(e);
-								}
-								n.syncEntity(e);
-							}
-						}
-					}
-					for (Entity e : changedEntities) {
-						if (entitiesSnapshot.contains(e)) {
-							continue;
-						} else if (((SpoutEntity) e).justSpawned()) {
-							if (playerEntity != e) {
-								if (playerDistance <= e.getViewDistance()) {
-									if (((SpoutEntity) e).getPrevController() != e.getController()) {
-										n.destroyEntity(e);
-										n.spawnEntity(e);
-									}
-									n.syncEntity(e);
-								}
-							}
-						}
-					}
-				}
-			}
+	public SnapshotableArrayList<SpoutEntity> getObserversFor(SpoutChunk chunk) {
+		if (chunk == null || !chunk.isLoaded()) {
+			throw new IllegalAccessError("Trying to access either an unloaded chunk or null chunk!");
 		}
+		SnapshotableArrayList<SpoutEntity> entities = observersPerChunk.get().get(chunk);
+		if (entities == null) {
+			return new SnapshotableArrayList<SpoutEntity>(snapshotManager);
+		}
+		return entities;
+	}
+
+	public SnapshotableArrayList<SpoutEntity> getEntitiesFor(SpoutChunk chunk) {
+		if (chunk == null || !chunk.isLoaded()) {
+			throw new IllegalAccessError("Trying to access either an unloaded chunk or null chunk!");
+		}
+		SnapshotableArrayList<SpoutEntity> chunkEntities = entitiesPerChunk.get().get(chunk);
+		if (chunkEntities == null) {
+			return new SnapshotableArrayList<SpoutEntity>(snapshotManager);
+		}
+		return chunkEntities;
 	}
 }

@@ -27,6 +27,7 @@
 package org.spout.engine.util.thread.snapshotable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -69,6 +70,17 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 
 		if (success) {
 			dirty.add(object);
+		}
+	}
+
+	@DelayedWrite
+	public void addAll(Collection<T> values) {
+		for (T object : values) {
+			boolean success = live.add(object);
+
+			if (success) {
+				dirty.add(object);
+			}
 		}
 	}
 

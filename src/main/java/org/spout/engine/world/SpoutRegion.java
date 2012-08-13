@@ -782,8 +782,8 @@ public class SpoutRegion extends Region {
 				}
 				if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
 					spoutChunk.setRenderDirty();
-					for (Entity entity : spoutChunk.getObserversLive()) {
-						if (!(entity.getController() instanceof PlayerController)) {
+					for (Entity entity : entityManager.getObserversFor(spoutChunk, true)) {
+						if (!(entity instanceof Player)) {
 							continue;
 						}
 						syncChunkToPlayers(spoutChunk, entity);
