@@ -35,78 +35,52 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.spout.api.render.RenderMaterial;
 
-public class VertexBufferImpl extends VertexBuffer {	
-	static final int NULL = 0;
-		
-	int buffer = -1;
-	int verts;
+public class VertexBufferImpl {	
+	int usage = GL15.GL_STATIC_DRAW;
 	
-	private class VertexAttribute {
-		public String name;
-		public int offset;
-		public int location;
+	String elementName;
+	int type;
+	
+	int vboId = -1;
+	
+	int size;
+	
+	int elements;
+	int layout;
+	
+	public VertexBufferImpl(String name, int elements, int layout){
+		elementName = name;
+		this.elements = elements;
+		this.layout = layout;
+	}
+	
+	public void flush(FloatBuffer buffer){
+		if(vboId == -1) vboId = GL15.glGenBuffers();
+		
+		
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, usage);				
 		
 	}
 	
-	ArrayList<VertexAttribute> attributes = new ArrayList<VertexAttribute>();
-		
-	@Override
-	public void setData(FloatBuffer data, int verticies) {
-		if(buffer == -1){
-			buffer = GL15.glGenBuffers();
-			
-		}
-		else
-		{
-			GL15.glDeleteBuffers(buffer);
-			buffer = GL15.glGenBuffers();			
-		}
-		this.verts = verticies;
-		
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, buffer);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, data, GL15.GL_STATIC_DRAW);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, NULL);
+	public void bind(){
+		if(vboId == -1) throw new IllegalStateException("Cannot bind a vertex buffer without data!");
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
 				
 	}
+	 
 	
-	public void setData(float[] data, int verticies){
-		
-		FloatBuffer buff = BufferUtils.createFloatBuffer(data.length);
-		buff.put(data);
-		buff.flip();
-		
-		setData(buff, verticies);		
+	
+	public String getName(){
+		return elementName;		
 	}
-
-	@Override
-	public void enableAttribute(String name, int location, int offset) {
-		VertexAttribute a = new VertexAttribute();
-		a.name = name;
-		a.location = location;
-		a.offset = offset;
-		attributes.add(a);
+	
+	public int getElements() {
+		return elements;
 	}
-
-
-	@Override
-	void bindBuffer() {
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, buffer);
+	
+	public int getLayout() {
+		return layout;
 	}
-
-
-	@Override
-	public void drawBuffer(RenderMaterial material) {
-		bindBuffer();
-		for(VertexAttribute a : attributes){
-			material.getShader().enableAttribute(a.name, 4, GL11.GL_FLOAT, 0, a.offset);
-		}
-		material.assign();
-		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, verts);
-		
-		for(VertexAttribute a : attributes){
-			GL20.glDisableVertexAttribArray(a.location);
-		}
-		GL20.glUseProgram(0);		
-	}
-
+	
 }

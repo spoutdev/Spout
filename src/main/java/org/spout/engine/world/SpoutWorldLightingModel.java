@@ -35,7 +35,7 @@ import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.util.NanoStopWatch;
-import org.spout.api.util.flag.ByteFlagContainer;
+import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.api.util.hashing.NibbleQuadHashed;
 
 /**
@@ -372,7 +372,7 @@ public class SpoutWorldLightingModel {
 		public short data;
 		public byte light;
 		public byte opacity;
-		public ByteFlagContainer occlusion;
+		public ByteBitSet occlusion;
 		public BlockFace offset;
 		public final SpoutWorld world;
 		public final Element center;
