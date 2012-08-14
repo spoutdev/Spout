@@ -370,6 +370,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 		worldRenderer.render();
 	}
 
+	public WorldRenderer getWorldRenderer() {
+		return worldRenderer;
+	}
+
 	private void createWindow() {
 		try {
 			Display.setDisplayMode(new DisplayMode((int) resolution.getX(), (int) resolution.getY()));
