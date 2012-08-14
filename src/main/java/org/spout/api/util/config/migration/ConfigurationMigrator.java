@@ -49,6 +49,12 @@ public abstract class ConfigurationMigrator {
         this.configuration = configuration;
     }
 
+	/**
+	 * Put together a collection of all keys to be migrated and their associated actions.
+	 * This can be put in a static HashMap, or generated on each invocation
+	 *
+	 * @return The map of configuration keys to their associated actions
+	 */
     protected abstract Map<String[], MigrationAction> getMigrationActions();
 
 	public Configuration getConfiguration() {

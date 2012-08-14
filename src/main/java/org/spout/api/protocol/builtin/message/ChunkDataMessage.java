@@ -40,6 +40,7 @@ public class ChunkDataMessage implements Message {
 	private final short[] blockIds, blockData;
 	private final byte[] blockLight, skyLight;
 	private final byte[] biomeData;
+	private final String biomeManagerClass;
 
 	public ChunkDataMessage(int x, int y, int z) {
 		this.unload = true;
@@ -51,6 +52,7 @@ public class ChunkDataMessage implements Message {
 		this.blockLight = ArrayUtils.EMPTY_BYTE_ARRAY;
 		this.skyLight = ArrayUtils.EMPTY_BYTE_ARRAY;
 		this.biomeData = null;
+		this.biomeManagerClass = null;
 	}
 
 	public ChunkDataMessage(ChunkSnapshot snapshot) {
@@ -63,9 +65,10 @@ public class ChunkDataMessage implements Message {
 		this.blockLight = snapshot.getBlockLight();
 		this.skyLight = snapshot.getSkyLight();
 		this.biomeData = snapshot.getBiomeManager() != null ? snapshot.getBiomeManager().serialize() : null;
+		this.biomeManagerClass = snapshot.getBiomeManager() != null ? snapshot.getBiomeManager().getClass().getCanonicalName() : null;
 	}
 
-	public ChunkDataMessage(int x, int y, int z, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, byte[] biomeData) {
+	public ChunkDataMessage(int x, int y, int z, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, byte[] biomeData, String biomeManagerClass) {
 		this.unload = false;
 		this.x = x;
 		this.y = y;
@@ -75,6 +78,7 @@ public class ChunkDataMessage implements Message {
 		this.blockLight = blockLight;
 		this.skyLight = skyLight;
 		this.biomeData = biomeData;
+		this.biomeManagerClass = biomeManagerClass;
 	}
 
 	public boolean isUnload() {
@@ -113,6 +117,10 @@ public class ChunkDataMessage implements Message {
 		return biomeData;
 	}
 
+	public String getBiomeManagerClass() {
+		return biomeManagerClass;
+	}
+
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
@@ -125,6 +133,7 @@ public class ChunkDataMessage implements Message {
 				.append("blockLight", blockLight, false)
 				.append("skyLight", skyLight, false)
 				.append("biomeData", biomeData, false)
+				.append("biomeManagerClass", biomeManagerClass)
 				.toString();
 	}
 
@@ -140,6 +149,7 @@ public class ChunkDataMessage implements Message {
 				.append(blockLight)
 				.append(skyLight)
 				.append(biomeData)
+				.append(biomeManagerClass)
 				.toHashCode();
 	}
 
@@ -157,6 +167,7 @@ public class ChunkDataMessage implements Message {
 					.append(blockLight, other.blockLight)
 					.append(skyLight, other.skyLight)
 					.append(biomeData, other.biomeData)
+					.append(biomeManagerClass, other.biomeManagerClass)
 					.isEquals();
 		} else {
 			return false;
