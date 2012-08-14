@@ -70,12 +70,92 @@ public interface MessageField {
 	public abstract Object read(ChannelBuffer buffer);
 	
 	/**
+	 * Reads a long field from the buffer and moves the read pointer to the start of the next field
+	 * 
+	 * @param buffer
+	 * @return
+	 */
+	public long readLong(ChannelBuffer buffer);
+	
+	/**
+	 * Reads am int field from the buffer and moves the read pointer to the start of the next field
+	 * 
+	 * @param buffer
+	 * @return
+	 */
+	public int readInt(ChannelBuffer buffer);
+	
+	/**
+	 * Reads a short field from the buffer and moves the read pointer to the start of the next field
+	 * 
+	 * @param buffer
+	 * @return
+	 */
+	public short readShort(ChannelBuffer buffer);
+	
+	/**
+	 * Reads a byte field from the buffer and moves the read pointer to the start of the next field
+	 * 
+	 * @param buffer
+	 * @return
+	 */
+	public byte readByte(ChannelBuffer buffer);
+	
+	/**
+	 * Reads am unsigned byte field from the buffer and moves the read pointer to the start of the next field
+	 * 
+	 * @param buffer
+	 * @return
+	 */
+	public short readUnsignedByte(ChannelBuffer buffer);
+	
+	/**
 	 * Writes a field to the buffer
 	 * 
 	 * @param buffer
 	 * @param value
 	 */
 	public abstract void write(ChannelBuffer buffer, Object value);
+	
+	/**
+	 * Writes a long field to the buffer
+	 * 
+	 * @param buffer
+	 * @param value
+	 */
+	public abstract void writeLong(ChannelBuffer buffer, long value);
+	
+	/**
+	 * Writes an int field to the buffer
+	 * 
+	 * @param buffer
+	 * @param value
+	 */
+	public abstract void writeInt(ChannelBuffer buffer, int value);
+	
+	/**
+	 * Writes a short field to the buffer
+	 * 
+	 * @param buffer
+	 * @param value
+	 */
+	public abstract void writeShort(ChannelBuffer buffer, short value);
+	
+	/**
+	 * Writes a byte field to the buffer
+	 * 
+	 * @param buffer
+	 * @param value
+	 */
+	public abstract void writeByte(ChannelBuffer buffer, byte value);
+	
+	/**
+	 * Writes an unsigned byte field to the buffer
+	 * 
+	 * @param buffer
+	 * @param value
+	 */
+	public abstract void writeUnsignedByte(ChannelBuffer buffer, short value);
 	
 	/**
 	 * Reads an object from the source buffer and writes it to the target buffer doing minimal decoding

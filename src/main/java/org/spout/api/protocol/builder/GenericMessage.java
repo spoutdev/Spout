@@ -26,35 +26,113 @@
  */
 package org.spout.api.protocol.builder;
 
+import java.io.IOException;
+
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.protocol.Message;
+import org.spout.api.protocol.MessageCodec;
 
-public abstract class GenericMessage implements Message, MessageField {
+public abstract class GenericMessage<T extends Message> extends MessageCodec<T> implements Message {
+	
+	protected ChannelBuffer buffer;
 
-	private final Object fieldValues;
-
-	public GenericMessage(Object value) {
-		this.fieldValues = value;
+	public GenericMessage(Class<T> clazz, int opcode) {
+		super(clazz, opcode);
 	}
 
+	private static final long serialVersionUID = 1L;
+	
 	/**
 	 * Gets the field root for this message.  This should be a static final unchanging array.
 	 *
 	 * @return
 	 */
-	public abstract MessageField getFieldRoot();
-
+	public abstract CompoundMessageField getFieldRoot();
+	
+	public CompoundMessageField getToClientFieldRoot() {
+		return getFieldRoot();
+	}
+	
+	public CompoundMessageField getToServerFieldRoot() {
+		return getFieldRoot();
+	}
+	
+	/**
+	 * Gets the field loop up table for the message
+	 *
+	 * @return
+	 */
+	public abstract int[] getFieldLoopup();
+	
 	@SuppressWarnings("unchecked")
 	public <T> T get(FieldRef<T> ref) {
-		int[] index = ref.getIndex();
-		if (index.length == 0) {
-			return (T) fieldValues;
-		} else {
-			Object temp = fieldValues;
-			for (int i = 0; i < index.length; i++) {
-				temp = ((Object[]) temp)[index[i]];
-			}
-			return (T) temp;
-		}
+		setupBuffer(ref);
+		
+		CompoundMessageField f = getFieldRoot();
+		
+		return (T) f.read(this.buffer);	
+	}
+	
+	public long getLong(FieldRef<Long> ref) {
+		setupBuffer(ref);
+		
+		CompoundMessageField f = getFieldRoot();
+		
+		return f.readLong(this.buffer);
+	}
+	
+	public int getInt(FieldRef<Integer> ref) {
+		setupBuffer(ref);
+		
+		CompoundMessageField f = getFieldRoot();
+		
+		return f.readInt(this.buffer);
+	}
+	
+	public short getShort(FieldRef<Integer> ref) {
+		setupBuffer(ref);
+		
+		CompoundMessageField f = getFieldRoot();
+		
+		return f.readShort(this.buffer);
+	}
+	
+	public byte getByte(FieldRef<Byte> ref) {
+		setupBuffer(ref);
+		
+		CompoundMessageField f = getFieldRoot();
+		
+		return f.readByte(this.buffer);
+	}
+	
+	public short getUnsignedByte(FieldRef<Short> ref) {
+		setupBuffer(ref);
+		
+		CompoundMessageField f = getFieldRoot();
+		
+		return f.readUnsignedByte(this.buffer);
+	}
+	
+	private void setupBuffer(FieldRef<?> ref) {
+		int index = ref.getIndex();
+		this.buffer.readerIndex(getFieldLoopup()[index]);
+	}
+	
+	public ChannelBuffer encode(boolean upstream, T message) throws IOException {
+		return this.buffer;
+	}
+
+	@SuppressWarnings("unchecked")
+	public T decode(boolean upstream, ChannelBuffer b) throws IOException {
+		CompoundMessageField root = upstream ? getToClientFieldRoot() : getToServerFieldRoot();
+		int start = b.readerIndex();
+		int fieldCount = root.getSubFieldCount();
+		int[] indexArray = new int[fieldCount];
+		int length = root.skip(b, indexArray);
+		this.buffer = ChannelBuffers.buffer(length);
+		b.getBytes(start, this.buffer, 0, length);
+		return (T) this;
 	}
 
 }

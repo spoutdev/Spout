@@ -77,6 +77,16 @@ public class CompoundMessageField extends MessageFieldImpl {
 		return length;
 	}
 	
+	public int skip(ChannelBuffer buffer, int[] indexArray) {
+		int length = 0;
+		int j = 0;
+		for (int i = 0; i < fields.length; i++) {
+			indexArray[j++] = length;
+			length += fields[i].skip(buffer);
+		}
+		return length;
+	}
+	
 	@Override
 	public int getLength(ChannelBuffer buffer) {
 		int startPosition = buffer.readerIndex();
@@ -111,6 +121,10 @@ public class CompoundMessageField extends MessageFieldImpl {
 		for (int i = 0; i < fieldsCompressed.length; i++) {
 			fields[i].transfer(sourceBuffer, targetBuffer);
 		}
+	}
+	
+	public int getSubFieldCount() {
+		return fields.length;
 	}
 	
 	public static MessageField[] compressFields(MessageField[] fields) {

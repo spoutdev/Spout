@@ -26,6 +26,8 @@
  */
 package org.spout.api.protocol.builder;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+
 
 public abstract class MessageFieldImpl implements MessageField {
 
@@ -33,5 +35,50 @@ public abstract class MessageFieldImpl implements MessageField {
 	public int getFixedLength() {
 		return -1;
 	}
+	
+	@Override
+	public long readLong(ChannelBuffer buffer) {
+		throw new UnsupportedOperationException("This field does not support long read");
+	}
+	
+	@Override
+	public int readInt(ChannelBuffer buffer) {
+		throw new UnsupportedOperationException("This field does not support int read");
+	}
 
+	@Override
+	public short readShort(ChannelBuffer buffer) {
+		throw new UnsupportedOperationException("This field does not support short read");
+	}
+	
+	@Override
+	public byte readByte(ChannelBuffer buffer) {
+		throw new UnsupportedOperationException("This field does not support byte read");
+	}
+	
+	@Override
+	public short readUnsignedByte(ChannelBuffer buffer) {
+		throw new UnsupportedOperationException("This field does not support unsigned byte read");
+	}
+	
+	public void writeLong(ChannelBuffer buffer, long value) {
+		throw new UnsupportedOperationException("This field does not support long write");
+	}
+
+	public void writeInt(ChannelBuffer buffer, int value) {
+		throw new UnsupportedOperationException("This field does not support int write");
+	}
+
+	public void writeShort(ChannelBuffer buffer, short value) {
+		throw new UnsupportedOperationException("This field does not support short write");
+	}
+	
+	public void writeByte(ChannelBuffer buffer, byte value) {
+		throw new UnsupportedOperationException("This field does not support byte write");
+	}
+	
+	public void writeUnsignedByte(ChannelBuffer buffer, short value) {
+		throw new UnsupportedOperationException("This field does not support unsigned byte write");
+	}
+	
 }
