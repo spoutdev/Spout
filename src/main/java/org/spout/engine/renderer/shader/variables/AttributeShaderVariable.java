@@ -44,7 +44,6 @@ public class AttributeShaderVariable extends ShaderVariable {
 
 	@Override
 	public void assign() {
-		GL20.glEnableVertexAttribArray(location);
-		GL20.glVertexAttribPointer(location, size, type, false, 0, offset);
+	
 	}
 }

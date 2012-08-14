@@ -136,7 +136,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 		
 		for(VertexBufferImpl vb : vertexBuffers.valueCollection()){
 			vb.bind();
-			activeMaterial.getShader().enableAttribute(vb.getName(), vb.getElements(), GL11.GL_FLOAT, 0, 0);			
+			activeMaterial.getShader().enableAttribute(vb.getName(), vb.getElements(), GL11.GL_FLOAT, 0, 0, vb.getLayout());			
 		}
 		
 		GL11.glDrawArrays(renderMode, 0, numVertices);

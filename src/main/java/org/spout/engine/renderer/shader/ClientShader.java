@@ -220,8 +220,9 @@ public class ClientShader extends Resource implements Shader {
 
 
 	@Override
-	public void enableAttribute(String name, int size, int type, int stride, long offset) {
-		variables.put(name, new AttributeShaderVariable(program, name, size, type, stride, offset));
+	public void enableAttribute(String name, int size, int type, int stride, long offset, int layout) {
+		GL20.glEnableVertexAttribArray(layout);
+		GL20.glVertexAttribPointer(GL20.glGetAttribLocation(program, name), size, type, false, 0, offset);
 	}
 
 	@Override
