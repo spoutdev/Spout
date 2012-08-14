@@ -93,7 +93,7 @@ public class ChunkMeshBatch extends Cuboid {
 			return;
 		}
 
-		renderer.begin(material);
+		renderer.begin();
 		for (ChunkMesh mesh : meshes) {
 			if (mesh.hasVertices()) {
 				renderer.addMesh(mesh);
@@ -106,9 +106,9 @@ public class ChunkMeshBatch extends Cuboid {
 		return hasVertices;
 	}
 
-	public void render() {
+	public void render(RenderMaterial material) {
 		if (hasVertices) {
-			renderer.draw();
+			renderer.draw(material);
 		}
 	}
 

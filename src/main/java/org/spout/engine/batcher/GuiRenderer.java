@@ -58,7 +58,7 @@ public class GuiRenderer {
 	public static void renderString(String s, float x, float y, Font font, Color color){
 		
 		
-		renderer.begin(null);
+		renderer.begin();
 		float lx = x;
 		float height = font.getCharHeight();
 		for(char c : s.toCharArray()){

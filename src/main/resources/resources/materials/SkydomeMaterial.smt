@@ -2,14 +2,14 @@
 Shader: shader://Spout/resources/shaders/skyShader.ssf
 
 RenderState:
-	# Whether or not to use the Depth Buffer for rendering this material.  Defaults to True. 
+    # Whether or not to use the Depth Buffer for rendering this material.  Defaults to True. 
     Depth: true
     # View and projection matricies.  Used to override the rendering mode to a static matrix.  
     # null matrix uses Main Camera
     # Defaults to null.
     Projection: null
     View: null
-    Depth: false
+    Depth: true
     
 # Parameters for the Shader.  
 # Accepted Types:

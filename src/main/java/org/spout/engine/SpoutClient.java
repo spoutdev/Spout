@@ -360,23 +360,14 @@ public class SpoutClient extends SpoutEngine implements Client {
 		GL11.glClearColor((135.f/255.0f), 206.f/255.f, 250.f/255.f, 0);
 
 		worldRenderer = new WorldRenderer(this);
-		worldRenderer.setup();
-		renderer = new PrimitiveBatch();
-		mat = (RenderMaterial)this.getFilesystem().getResource("material://Spout/resources/resources/materials/BasicMaterial.smt");
+		worldRenderer.setup();		
 	}
 	
-	PrimitiveBatch renderer;
-	RenderMaterial mat;
 	
 	public void render(float dt) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		renderer.begin(mat);
-		renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.green, sides);
-		renderer.end();
 		
-		renderer.draw();
-		
-		//worldRenderer.render();
+		worldRenderer.render();
 	}
 
 	private void createWindow() {

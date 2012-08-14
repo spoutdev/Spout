@@ -52,9 +52,8 @@ public class PrimitiveBatch {
 		return renderer;
 	}
 
-	public void begin(RenderMaterial material) {
-		renderer.enableColors();
-		renderer.begin(material);
+	public void begin() {
+		renderer.begin();
 	}
 
 	public void addCube(Vector3 location, Vector3 scale, Color c, boolean[] sides) {
@@ -120,7 +119,7 @@ public class PrimitiveBatch {
 		renderer.end();
 	}
 
-	public void draw() {
-		renderer.render();
+	public void draw(RenderMaterial material) {
+		renderer.render(material);
 	}
 }
