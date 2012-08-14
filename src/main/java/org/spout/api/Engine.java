@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.group.ChannelGroup;
 
+import org.spout.api.chat.console.MultiConsole;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.RootCommand;
@@ -381,7 +382,7 @@ public interface Engine extends Named {
 	 * data is saved, and all threads are ended cleanly.<br/>
 	 * <br/>
 	 * Players will be sent a default disconnect message.
-	 * 
+	 *
 	 * @return true for for the first stop
 	 */
 	public boolean stop();
@@ -573,11 +574,20 @@ public interface Engine extends Named {
 	public void setVariable(String key, String value);
 
 	public String getVariable(String key);
-	
+
 	/**
 	 * Gets the command source that prints to the console<br/>
 	 * Can be used to print colored text to the console
+	 *
 	 * @return the console command source
 	 */
 	public CommandSource getCommandSource();
+
+	/**
+	 * Gets the console collection that the engine is currently using.
+	 * This can be used to modify console output and print raw text to the console
+	 *
+	 * @return The engine's console collection
+	 */
+	public MultiConsole getConsoles();
 }
