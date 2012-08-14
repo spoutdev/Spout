@@ -54,7 +54,7 @@ public class SpoutClientPlayer extends SpoutPlayer {
 		if (session == null) {
 			return false;
 		}
-		session.getEngine().getConsole().addMessage(message);
+		session.getEngine().getConsoles().addMessage(message);
 		return true;
 	}
 

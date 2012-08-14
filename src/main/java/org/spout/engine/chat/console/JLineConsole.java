@@ -52,7 +52,6 @@ public class JLineConsole extends AbstractConsole {
 	private final SpoutEngine engine;
 	private final ConsoleReader reader;
 	private final OutputStreamWriter writer;
-	private volatile boolean running;
 
 	public JLineConsole(SpoutEngine engine) {
 		this.engine = engine;
@@ -82,19 +81,13 @@ public class JLineConsole extends AbstractConsole {
 		}
 	}
 
-	public void init() {
-		if (running) {
-			close();
-		}
-
-		running = true;
+	protected void initImpl() {
 		ConsoleCommandThread commandThread = new ConsoleCommandThread();
 		commandThread.setDaemon(true);
 		commandThread.start();
 	}
 
-	public void close() {
-		running = false;
+	protected void closeImpl() {
 		try {
 			reader.killLine();
 			reader.flushConsole();
@@ -137,7 +130,7 @@ public class JLineConsole extends AbstractConsole {
 		@Override
 		public void run() {
 			String command;
-			while (running) {
+			while (isInitialized()) {
 				try {
 					command = reader.readLine(">", null);
 

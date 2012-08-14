@@ -41,6 +41,7 @@ import java.util.logging.SimpleFormatter;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.Engine;
 import org.spout.api.chat.ChatTemplate;
+import org.spout.api.chat.console.Console;
 import org.spout.api.chat.Placeholder;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.engine.SpoutEngine;

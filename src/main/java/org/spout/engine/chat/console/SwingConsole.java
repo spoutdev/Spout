@@ -56,6 +56,7 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 import org.spout.api.chat.ChatArguments;
+import org.spout.api.chat.console.Console;
 import org.spout.api.chat.style.html.HTMLStyleHandler;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.util.MacOSXUtils;
@@ -75,7 +76,7 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 	private final JEditorPane output;
 	private final Element bodyElement;
 	private final HTMLDocument document;
-	private final MessageAdderThread thread;
+	private MessageAdderThread thread;
 	private JFrame frame;
 
 	private static final String HTML_PREFIX = "<html>" +
@@ -127,7 +128,6 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 		scroll.setAutoscrolls(true);
 		add(scroll, BorderLayout.CENTER);
 		cmdInput.grabFocus();
-		thread = new MessageAdderThread();
 	}
 
 
@@ -136,7 +136,7 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 			close();
 		}
 
-		thread.start();
+		(thread = new MessageAdderThread()).start();
 
 		frame = new JFrame();
 		frame.setTitle("Spout");
@@ -146,6 +146,10 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 		frame.setSize(new Dimension(800, 400));
 		frame.setVisible(true);
 		MacOSXUtils.FullScreenUtilities_setWindowCanFullScreen(frame, true); // I have had issues getting this to do anything so far, if it works have fun
+	}
+
+	public boolean isInitialized() {
+		return frame != null;
 	}
 
 	public void close() {
@@ -188,9 +192,10 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 		return null;
 	}
 
+	private static final AtomicInteger threadCounter = new AtomicInteger();
 	private class MessageAdderThread extends Thread {
 		public MessageAdderThread() {
-			super("SwingConsole message adder");
+			super("SwingConsole message adder-" + threadCounter.getAndIncrement());
 		}
 
 		private final AtomicInteger recordCount = new AtomicInteger(0);

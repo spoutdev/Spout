@@ -81,7 +81,7 @@ public class ConsoleCommandSource implements CommandSource {
 	}
 
 	public boolean sendRawMessage(ChatArguments message) {
-		engine.getConsole().addMessage(message);
+		engine.getConsoles().addMessage(message);
 		return true;
 	}
 

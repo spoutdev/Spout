@@ -49,6 +49,7 @@ public class FileConsole extends AbstractConsole {
 	private final String fileNameFormat;
 	private String logFileName;
 	private File logFile;
+	private LogFlushThread logFlush;
 	private final ReentrantLock writerLock = new ReentrantLock();
 	private OutputStreamWriter writer;
 
@@ -63,26 +64,28 @@ public class FileConsole extends AbstractConsole {
 		if (logFile.getParentFile() != null) {
 			logFile.getParentFile().mkdirs();
 		}
-
-		try {
-			writer = new OutputStreamWriter(new FileOutputStream(logFile, true));
-		} catch (FileNotFoundException ex) {
-			throw new ExceptionInInitializerError(ex);
-		}
 	}
 	private String calculateFilename() {
 		return fileNameFormat.replace("%D", date.format(new Date()));
 	}
 
-	public void init() {
-		new LogFlushThread().start();
+	protected void initImpl() {
+		logFlush = new LogFlushThread();
+		logFlush.start();
+		try {
+			writer = new OutputStreamWriter(new FileOutputStream(logFile, true));
+		} catch (FileNotFoundException ex) {
+			engine.getLogger().log(Level.SEVERE, "Unable to open {0} for writing: {1}", new Object[]{logFileName, ex.getMessage()});
+			ex.printStackTrace();
+		}
 	}
 
-	public void close() {
+	protected void closeImpl() {
 		try {
 			writer.close();
 		} catch (IOException ignore) {
 		}
+		logFlush.interrupt();
 	}
 
 	protected void flush() {
@@ -92,12 +95,13 @@ public class FileConsole extends AbstractConsole {
 				logFileName = calculateFilename();
 				logFile = new File(logFileName);
 				engine.getLogger().log(Level.INFO, "Log rotating to {0}...", logFileName);
-				close();
 				try {
+					writer.close();
 					writer = new OutputStreamWriter(new FileOutputStream(logFile, true));
 				} catch (FileNotFoundException ex) {
 					engine.getLogger().log(Level.SEVERE, "Unable to open {0} for writing: {1}", new Object[]{logFileName, ex.getMessage()});
 					ex.printStackTrace();
+				} catch (IOException ignore) {
 				}
 			}
 			try {
@@ -112,6 +116,9 @@ public class FileConsole extends AbstractConsole {
 	public void addMessage(ChatArguments message) {
 		writerLock.lock();
 		try {
+			if (writer == null) {
+				return;
+			}
 			appendDateFormat(writer);
 			for (String line : message.asString().split("\n")) {
 				writer.write(line);
