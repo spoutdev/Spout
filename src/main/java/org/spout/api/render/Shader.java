@@ -51,7 +51,7 @@ public interface Shader {
 
 	public abstract void setUniform(String name, Texture value);
 
-	public abstract void enableAttribute(String name, int size, int type, int stride, long offset);
+	public abstract void enableAttribute(String name, int size, int type, int stride, long offset, int layout);
 
 	public abstract void assign();
 
