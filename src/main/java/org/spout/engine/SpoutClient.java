@@ -66,6 +66,7 @@ import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
+import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.geo.World;
 import org.spout.api.keyboard.Input;
 import org.spout.api.math.MathHelper;
@@ -289,13 +290,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] datatable) {
-		SpoutClientWorld world = new SpoutClientWorld(name, uuid, this, datatable, getEngineItemMap());
+		GenericDatatableMap map = new GenericDatatableMap();
+		map.decompress(datatable);
+		SpoutClientWorld world = new SpoutClientWorld(name, uuid, this, map, getEngineItemMap());
 		SpoutClientWorld oldWorld = activeWorld.getAndSet(world);
-		try {
-			if (oldWorld != null) {
-				oldWorld.haltRun();
-			}
-		} catch (InterruptedException e) {
+		if (oldWorld != null) {
+			oldWorld.unload(false);
 		}
 		return world;
 	}

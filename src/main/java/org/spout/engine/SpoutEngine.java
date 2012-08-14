@@ -123,7 +123,6 @@ import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLinkedHashMap;
 import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
-import org.spout.engine.world.SpoutAbstractWorld;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
@@ -420,12 +419,12 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	@Override
-	public SpoutAbstractWorld getWorld(String name) {
+	public SpoutWorld getWorld(String name) {
 		return getWorld(name, true);
 	}
 
 	@Override
-	public SpoutAbstractWorld getWorld(String name, boolean exact) {
+	public SpoutWorld getWorld(String name, boolean exact) {
 		if (exact) {
 			SpoutWorld world = loadedWorlds.get().get(name);
 			if (world != null) {
@@ -438,7 +437,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	@Override
-	public World getWorld(UUID uid) {
+	public SpoutWorld getWorld(UUID uid) {
 		for (SpoutWorld world : loadedWorlds.getValues()) {
 			if (world.getUID().equals(uid)) {
 				return world;
