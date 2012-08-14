@@ -36,9 +36,9 @@ public interface Renderer {
 
 	/**
 	 * Begins batching calls
-	 * @param material RenderMaterial to render with
+	 * 
 	 */
-	public abstract void begin(RenderMaterial material);
+	public abstract void begin();
 
 	/**
 	 * Ends batching and flushes cache to the GPU
@@ -47,8 +47,9 @@ public interface Renderer {
 
 	/**
 	 * Renders the batch.
+	 * @param material RenderMaterial to render with
 	 */
-	public abstract void render();
+	public abstract void render(RenderMaterial material);
 
 	public abstract void addVertex(float x, float y, float z, float w);
 
@@ -80,8 +81,6 @@ public interface Renderer {
 
 	public abstract void addTexCoord(Vector2 uv);
 		
-	public abstract Shader getShader();
-
 	public abstract void enableColors();
 
 	public abstract void enableNormals();
