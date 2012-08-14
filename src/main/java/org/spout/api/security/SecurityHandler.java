@@ -224,14 +224,8 @@ public class SecurityHandler {
 			return pair;
 		}
 
-		SecureRandom secureRandom;
-		try {
-			secureRandom = SecureRandom.getInstance(RNGAlgorithm, RNGProvider);
-		} catch (NoSuchProviderException e) {
-			Spout.getLogger().info("Unable to find algorithm to for random number generator");
-			return null;
-		} catch (NoSuchAlgorithmException e) {
-			Spout.getLogger().info("Unable to find algorithm to generate random number generator for key pair creation");
+		SecureRandom secureRandom = getSecureRandom(RNGAlgorithm, RNGProvider);
+		if (secureRandom == null) {
 			return null;
 		}
 
@@ -251,5 +245,28 @@ public class SecurityHandler {
 		}
 
 		return newPair;
+	}
+	
+	private SecureRandom getSecureRandom(String RNGAlgorithm, String RNGProvider) {
+		try {
+			if (RNGProvider != null) {
+				return SecureRandom.getInstance(RNGAlgorithm, RNGProvider);
+			} else {
+				return SecureRandom.getInstance(RNGAlgorithm);
+			}
+		} catch (NoSuchProviderException e) {
+			//Fallback to any provider for the algorithm
+			if (RNGProvider != null) {
+				return getSecureRandom(RNGAlgorithm, null);
+			}
+			Spout.getLogger().severe("Unable to find provider to for random number generator (" + RNGAlgorithm + ", " + RNGProvider + ")");
+			return null;
+		} catch (NoSuchAlgorithmException e) {
+			if (RNGProvider != null) {
+				return getSecureRandom(RNGAlgorithm, null);
+			}
+			Spout.getLogger().severe("Unable to find algorithm to generate random number generator for key pair creation (" + RNGAlgorithm + ", " + RNGProvider + ")");
+			return null;
+		}
 	}
 }
