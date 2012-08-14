@@ -34,9 +34,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.Source;
+import org.spout.api.Spout;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
 import org.spout.api.event.entity.EntityControllerChangeEvent;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
@@ -137,6 +139,9 @@ public class SpoutEntity implements Entity, Snapshotable {
 			if (!isDead() && getPosition() != null && getWorld() != null) {
 				Profiler.startAndStop("tick entity controller");
 				controller.tick(dt);
+				if (this instanceof Player) {
+					Spout.log("Player is ticking!");
+				}
 				Profiler.startAndStop("tick entity chunk");
 				//TODO Fix, this isn't right
 				chunkLive.set(getWorld().getChunkFromBlock(transform.getPosition(), LoadOption.NO_LOAD));

@@ -762,7 +762,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	public void saveComplete() {
-		if (observed.get()) {
+		if (observed.get() || getRegion().getEntityManager().getAllLive().isEmpty()) {
 			resetPostSaving();
 		} else {
 			saveState.compareAndSet(SaveState.SAVING, SaveState.POST_SAVED);
@@ -888,13 +888,11 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 		checkChunkLoaded();
 		parentRegion.unSkipChunk(this);
-		if (spoutEntity.getObservedChunks().contains(this)) {
-			return false;
-		}
-		resetPostSaving();
 		parentRegion.unloadQueue.remove(this);
 		if (!isPopulated()) {
+			resetPostSaving();
 			if (populationQueued.compareAndSet(false, true)) {
+				Spout.log("Queing chunk for population");
 				parentRegion.queueChunkForPopulation(this);
 			}
 		}
