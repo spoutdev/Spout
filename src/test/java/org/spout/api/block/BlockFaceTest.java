@@ -42,4 +42,11 @@ public class BlockFaceTest {
 		assertEquals(BlockFace.fromYaw(87f), BlockFace.SOUTH);
 		assertEquals(BlockFace.fromYaw(180f), BlockFace.EAST);
 	}
+	
+	@Test
+	public void testFaceFromOffset() {
+		for (BlockFace face:BlockFace.values()) {
+			assertEquals(face, BlockFace.fromOffset(face.getOffset()));
+		}
+	}
 }

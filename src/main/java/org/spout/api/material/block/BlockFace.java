@@ -26,6 +26,10 @@
  */
 package org.spout.api.material.block;
 
+import gnu.trove.map.hash.TIntObjectHashMap;
+
+import net.phys2d.math.MathUtil;
+
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
@@ -47,7 +51,14 @@ public enum BlockFace implements ByteBitMask {
 	private Vector3 offset;
 	private Quaternion direction;
 	private BlockFace opposite = this;
+	private static TIntObjectHashMap<BlockFace> offsetMap = new TIntObjectHashMap<BlockFace>(7);
 
+	static {
+		for (BlockFace face:values()) {
+			offsetMap.put(getOffsetHash(face.getOffset()), face);
+		}
+	}
+	
 	private BlockFace(int mask, int dx, int dy, int dz, BlockFace opposite) {
 		this(mask, dx, dy, dz);
 		this.opposite = opposite;
@@ -56,8 +67,16 @@ public enum BlockFace implements ByteBitMask {
 
 	private BlockFace(int mask, int dx, int dy, int dz) {
 		this.offset = new Vector3(dx, dy, dz);
-		this.direction = new Quaternion(0f, this.offset);
+		this.direction = new Quaternion(0, this.offset);
 		this.mask = (byte) mask;
+	}
+	
+	private static int getOffsetHash(Vector3 offset) {
+		int x = offset.getFloorX();
+		int y = offset.getFloorY();
+		int z = offset.getFloorZ();
+		x += 1; y += 1; z += 1;
+		return x | y << 2 | z << 4;
 	}
 
 	/**
@@ -110,5 +129,10 @@ public enum BlockFace implements ByteBitMask {
 		} else {
 			return BlockFace.EAST;
 		}
+	}
+	
+	public static BlockFace fromOffset(Vector3 offset) {
+		offset = MathHelper.round(MathHelper.normalize(offset));
+		return offsetMap.get(getOffsetHash(offset));
 	}
 }
