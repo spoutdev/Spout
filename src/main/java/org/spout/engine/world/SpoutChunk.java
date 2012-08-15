@@ -1277,20 +1277,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		this.lightBlockSource = this; // stop using the snapshot from now on
 	}
 
-	public void addEntity(SpoutEntity entity) {
-		checkChunkLoaded();
-		TickStage.checkStage(TickStage.FINALIZE);
-		parentRegion.unSkipChunk(this);
-		parentRegion.addEntity(entity);
-	}
-
-	public void removeEntity(SpoutEntity entity) {
-		checkChunkLoaded();
-		TickStage.checkStage(TickStage.FINALIZE);
-		parentRegion.unSkipChunk(this);
-		parentRegion.removeEntity(entity);
-	}
-
 	@Override
 	public List<Entity> getEntities() {
 		ArrayList<Entity> entities = new ArrayList<Entity>();

@@ -470,21 +470,6 @@ public class SpoutEntity implements Entity, Snapshotable {
 					removeObserver();
 				}
 			}
-			if (chunkLive.get() != null) {
-				((SpoutChunk) chunkLive.get()).addEntity(this);
-
-			}
-			if (chunk != null && chunk.isLoaded()) {
-				((SpoutChunk) chunk).removeEntity(this);
-			}
-			if (chunkLive.get() == null) {
-				if (chunk != null && chunk.isLoaded()) {
-					((SpoutChunk) chunk).removeEntity(this);
-				}
-				if (entityManagerLive.get() != null) {
-					entityManagerLive.get().deallocate(this);
-				}
-			}
 		}
 
 		if (observerLive.get() != observer) {

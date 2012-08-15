@@ -171,14 +171,7 @@ public class EntityManager {
 	 */
 	public void deallocate(SpoutEntity entity) {
 		entities.remove(entity.getId());
-		SpoutChunk chunkLive = (SpoutChunk) entity.getChunkLive();
-		if (chunkLive != null && chunkLive.isLoaded()) {
-			chunkLive.removeEntity(entity);
-		}
-		SpoutChunk chunk = (SpoutChunk) entity.getChunk();
-		if (chunk != null && chunk.isLoaded()) {
-			chunk.removeEntity(entity);
-		}
+
 		//Players are never removed (offline concept), instead set their ID back to -1 to be reallocated.
 		if (entity instanceof Player) {
 			entity.setId(SpoutEntity.NOTSPAWNEDID);
