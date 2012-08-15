@@ -28,7 +28,6 @@ package org.spout.engine.chat.console;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -39,7 +38,6 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.Engine;
 import org.spout.api.chat.ChatTemplate;
@@ -78,15 +76,8 @@ public final class ConsoleManager {
 		}
 		console.init();
 		logger.addHandler(handler);
-		//if (Spout.debugMode()) {
-			//System.setOut(new PrintStream(new LoggerOutputStream(Level.INFO), true));
-			System.setErr(new PrintStream(new LoggerOutputStream(Level.SEVERE), true));
-		/*} else {
-			System.setErr(new PrintStream(new OutputStream() {
-				public void write(int i) throws IOException {
-				}
-			}));
-		}*/
+		System.setOut(new PrintStream(new LoggerOutputStream(Level.INFO), true));
+		System.setErr(new PrintStream(new LoggerOutputStream(Level.SEVERE), true));
 	}
 
 	private static class ServerShutdownThread extends Thread {

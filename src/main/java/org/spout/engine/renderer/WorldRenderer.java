@@ -191,6 +191,32 @@ public class WorldRenderer {
 		chunkRenderers.remove(batch);
 		chunkRenderersByPosition.remove(batch.getX(), batch.getY(), batch.getZ());
 	}
+	
+	/**
+	 * Gets the chunk mesh batch corresponding with the given chunk.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	private ChunkMeshBatch getChunkMeshBatchByChunkPosition(int x, int y, int z) {
+		return chunkRenderersByPosition.get(x, y, z);
+	}
+	
+	/**
+	 * Updates the ChunkMeshBatch at the given chunk position.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public void updateChunk(int x, int y, int z) {
+		ChunkMeshBatch batch = getChunkMeshBatchByChunkPosition(x, y, z);
+		if (batch == null) {
+			return; // Don't call if this chunk isn't in sight...
+		}
+		batch.update();
+	}
 
 	private void renderChunks() {
 		for (ChunkMeshBatch renderer : chunkRenderers) {
@@ -201,7 +227,7 @@ public class WorldRenderer {
 			// But here's my frustrum
 			// so cull me maybe?
 			if (client.getActiveCamera().getFrustum().intersects(renderer)) {
-				renderer.render();
+				renderer.render(material);
 			}
 		}
 	}

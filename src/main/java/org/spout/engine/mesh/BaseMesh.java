@@ -99,19 +99,8 @@ public class BaseMesh extends Resource implements Mesh, Iterable<ModelFace> {
 		}
 	}
 
-	protected void render(Renderer batcher) {
-		batcher.render();
-	}
 
-	public void draw(Renderer batcher) {
-		this.preBatch(batcher);
-		this.batch(batcher);
-		this.postBatch(batcher);
 
-		this.preRender(batcher);
-		this.render(batcher);
-		this.postRender(batcher);
-	}
 
 	@Override
 	public Iterator<ModelFace> iterator() {

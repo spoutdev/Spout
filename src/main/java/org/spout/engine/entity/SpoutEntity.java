@@ -404,12 +404,12 @@ public class SpoutEntity implements Entity, Snapshotable {
 
 	@Override
 	public void finalizeRun() {
-		
+
 		Transform t = transformLive.getAndSet(null);
 		if(t != null) {
 			transform.set(t);
 		}
-		
+
 		//Moving from one region to another
 		if (entityManager != null) {
 			if (entityManager != entityManagerLive.get()) {

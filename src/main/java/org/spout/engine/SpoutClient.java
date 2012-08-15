@@ -66,6 +66,7 @@ import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
+import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.geo.World;
 import org.spout.api.keyboard.Input;
 import org.spout.api.math.MathHelper;
@@ -289,13 +290,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] datatable) {
-		SpoutClientWorld world = new SpoutClientWorld(name, uuid, this, datatable, getEngineItemMap());
+		GenericDatatableMap map = new GenericDatatableMap();
+		map.decompress(datatable);
+		SpoutClientWorld world = new SpoutClientWorld(name, uuid, this, map, getEngineItemMap());
 		SpoutClientWorld oldWorld = activeWorld.getAndSet(world);
-		try {
-			if (oldWorld != null) {
-				oldWorld.haltRun();
-			}
-		} catch (InterruptedException e) {
+		if (oldWorld != null) {
+			oldWorld.unload(false);
 		}
 		return world;
 	}
@@ -360,23 +360,18 @@ public class SpoutClient extends SpoutEngine implements Client {
 		GL11.glClearColor((135.f/255.0f), 206.f/255.f, 250.f/255.f, 0);
 
 		worldRenderer = new WorldRenderer(this);
-		worldRenderer.setup();
-		renderer = new PrimitiveBatch();
-		mat = (RenderMaterial)this.getFilesystem().getResource("material://Spout/resources/resources/materials/BasicMaterial.smt");
+		worldRenderer.setup();		
 	}
 	
-	PrimitiveBatch renderer;
-	RenderMaterial mat;
 	
 	public void render(float dt) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		renderer.begin(mat);
-		renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.green, sides);
-		renderer.end();
 		
-		renderer.draw();
-		
-		//worldRenderer.render();
+		worldRenderer.render();
+	}
+
+	public WorldRenderer getWorldRenderer() {
+		return worldRenderer;
 	}
 
 	private void createWindow() {

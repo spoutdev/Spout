@@ -36,6 +36,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+import org.spout.api.render.RenderMaterial;
 import org.spout.engine.renderer.vertexbuffer.VertexBufferImpl;
 
 public class GL30BatchVertexRenderer extends BatchVertexRenderer {
@@ -65,10 +66,6 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 	
 	@Override
 	protected void doFlush() {
-		if (activeMaterial.getShader() == null) {
-			throw new IllegalStateException("Batch must have a shader attached");
-		}
-		
 		GL30.glBindVertexArray(vao);
 	
 		
@@ -126,20 +123,23 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 	 * Draws this batch
 	 */
 	@Override
-	public void doRender() {
+	public void doRender(RenderMaterial material) {
 		if(numVertices == 0) throw new IllegalStateException("Cannot render 0 verticies");
 		
 		GL30.glBindVertexArray(vao);
 		
 		
-		activeMaterial.assign();
+		material.assign();
 		
 		for(VertexBufferImpl vb : vertexBuffers.valueCollection()){
 			vb.bind();
-			activeMaterial.getShader().enableAttribute(vb.getName(), vb.getElements(), GL11.GL_FLOAT, 0, 0);			
+			GL20.glEnableVertexAttribArray(vb.getLayout());
+			GL20.glVertexAttribPointer(vb.getLayout(), vb.getElements(), GL11.GL_FLOAT, false, 0, 0);
+			//activeMaterial.getShader().enableAttribute(vb.getName(), vb.getElements(), GL11.GL_FLOAT, 0, 0, vb.getLayout());			
 		}
-		
+	
 		GL11.glDrawArrays(renderMode, 0, numVertices);
+	
 		
 		for(VertexBufferImpl vb : vertexBuffers.valueCollection()){			
 			GL20.glDisableVertexAttribArray(vb.getLayout());		

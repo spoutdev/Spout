@@ -71,8 +71,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	boolean useColors = false;
 	boolean useNormals = false;
 	boolean useTextures = false;
-	RenderMaterial activeMaterial = null;
-
+	
 	public BatchVertexRenderer(int mode) {
 		renderMode = mode;
 	}
@@ -86,7 +85,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 		 * @see org.spout.client.renderer.Renderer#begin()
 		 */
 	@Override
-	public void begin(RenderMaterial material) {
+	public void begin() {
 		if (batching) {
 			throw new IllegalStateException("Already Batching!");
 		}
@@ -99,7 +98,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 
 		numVertices = 0;
 		
-		this.activeMaterial = material;
+		
 	}
 
 	/* (non-Javadoc)
@@ -167,18 +166,18 @@ public abstract class BatchVertexRenderer implements Renderer {
 	 * The act of drawing.  The Batch will check if it's possible to render
 	 * as well as setup for rendering.  If it's possible to render, it will call doRender()
 	 */
-	protected abstract void doRender();
+	protected abstract void doRender(RenderMaterial materail);
 
 	/* (non-Javadoc)
 		 * @see org.spout.client.renderer.Renderer#render()
 		 */
 	@Override
-	public final void render() {
+	public final void render(RenderMaterial material) {
 		checkRender();
-		if(numVertices <= 0) return;
-		this.activeMaterial.preRender();
-		doRender();
-		this.activeMaterial.postRender();
+		if(numVertices <= 0) throw new IllegalStateException("Cannot render 0 verticies");
+		material.preRender();
+		doRender(material);
+		material.postRender();
 	}
 
 	protected void checkRender() {
@@ -336,11 +335,6 @@ public abstract class BatchVertexRenderer implements Renderer {
 		addTexCoord(uv.getX(), uv.getY());
 	}
 
-
-	@Override
-	public Shader getShader() {
-		return activeMaterial.getShader();
-	}
 
 	/* (non-Javadoc)
 		 * @see org.spout.client.renderer.Renderer#enableColors()

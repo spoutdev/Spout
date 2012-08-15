@@ -55,7 +55,7 @@ public class SpoutColumn {
 	 */
 	public static BitSize BLOCKS = Chunk.BLOCKS;
 
-	private final SpoutAbstractWorld world;
+	private final SpoutWorld world;
 	private final int x;
 	private final int z;
 	private final AtomicInteger activeChunks = new AtomicInteger(0);
@@ -67,7 +67,7 @@ public class SpoutColumn {
 	private final BlockMaterial[][] topmostBlocks;
 	private final Thread worldThread;
 
-	public SpoutColumn(SpoutAbstractWorld world, int x, int z) {
+	public SpoutColumn(SpoutWorld world, int x, int z) {
 		this.world = world;
 		this.x = x;
 		this.z = z;
@@ -82,12 +82,12 @@ public class SpoutColumn {
 				dirtyArray[xx][zz] = new AtomicBoolean(false);
 			}
 		}
-		
+
 		lowestY.set(Integer.MAX_VALUE);
 
 		WorldFiles.readColumn(((SpoutWorld) world).getHeightMapInputStream(x, z), this, this.lowestY, topmostBlocks);
 	}
-	
+
 	public void onFinalize() {
 		TickStage.checkStage(TickStage.FINALIZE, worldThread);
 		if (dirty.compareAndSet(true, false)) {
@@ -102,7 +102,7 @@ public class SpoutColumn {
 						Chunk c = world.getChunkFromBlock(wxx, y, wzz, LoadOption.LOAD_ONLY);
 						BlockMaterial bm = null;
 						if (c != null) {
-							 bm = c.getBlockMaterial(wx + xx, y, wz + zz);	
+							 bm = c.getBlockMaterial(wx + xx, y, wz + zz);
 						}
 						topmostBlocks[xx][zz] = bm;
 					}
@@ -156,9 +156,9 @@ public class SpoutColumn {
 		}
 
 		return getGeneratorHeight(x, z);
-		
+
 	}
-	
+
 	public BlockMaterial getTopmostBlock(int x, int z) {
 		TickStage.checkStage(TickStage.SNAPSHOT | TickStage.PRESNAPSHOT);
 		int cx = x & BLOCKS.MASK;
@@ -166,7 +166,7 @@ public class SpoutColumn {
 		BlockMaterial m = this.topmostBlocks[cx][cz];
 		return m;
 	}
-	
+
 	private int getGeneratorHeight(int x, int z) {
 		int[][] h = heights.get();
 		if (h == null) {
@@ -212,18 +212,18 @@ public class SpoutColumn {
 		//System.out.println("Notify block change:       " + x + ", " + y + ", " + z);
 		AtomicInteger v = getAtomicInteger(x, z);
 		notifyBlockChange(v, x, y, z);
-		//System.out.println("Notify block change ended: " + x + ", " + y + ", " + z);	
+		//System.out.println("Notify block change ended: " + x + ", " + y + ", " + z);
 	}
-	
+
 	public int getX() {
 		return x;
 	}
-	
+
 	public int getZ() {
 		return z;
 	}
-	
-	public SpoutAbstractWorld getWorld() {
+
+	public SpoutWorld getWorld() {
 		return world;
 	}
 
@@ -282,11 +282,11 @@ public class SpoutColumn {
 	public AtomicInteger getAtomicInteger(int x, int z) {
 		return heightMap[x & BLOCKS.MASK][z & BLOCKS.MASK];
 	}
-	
+
 	private AtomicBoolean getDirtyFlag(int x, int z) {
 		return dirtyArray[x & BLOCKS.MASK][z & BLOCKS.MASK];
 	}
-	
+
 	public void setDirty(int x, int z) {
 		getDirtyFlag(x, z).set(true);
 		dirty.set(true);

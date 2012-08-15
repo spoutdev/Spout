@@ -26,6 +26,8 @@
  */
 package org.spout.engine.renderer;
 
+import org.spout.api.render.RenderMaterial;
+
 public class GLES20BatchVertexRenderer extends BatchVertexRenderer {
 	public GLES20BatchVertexRenderer(int mode) {
 		super(mode);
@@ -37,7 +39,7 @@ public class GLES20BatchVertexRenderer extends BatchVertexRenderer {
 	}
 
 	@Override
-	protected void doRender() {
+	protected void doRender(RenderMaterial material) {
 
 	}
 }

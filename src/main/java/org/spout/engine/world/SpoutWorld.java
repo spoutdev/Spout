@@ -56,6 +56,8 @@ import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.controller.BlockController;
+import org.spout.api.entity.controller.type.ControllerType;
+import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.event.block.CuboidChangeEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.generator.WorldGenerator;
@@ -70,6 +72,7 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
@@ -84,6 +87,9 @@ import org.spout.api.util.list.concurrent.ConcurrentList;
 import org.spout.api.util.map.concurrent.TSyncIntPairObjectHashMap;
 import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
 
+import org.spout.api.util.sanitation.StringSanitizer;
+import org.spout.api.util.thread.LiveRead;
+import org.spout.api.util.thread.Threadsafe;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
@@ -93,12 +99,29 @@ import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.scheduler.SpoutTaskManager;
 import org.spout.engine.util.thread.AsyncExecutor;
+import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLong;
 
-public final class SpoutWorld extends SpoutAbstractWorld implements World {
+public class SpoutWorld extends AsyncManager implements World {
 	private SnapshotManager snapshotManager = new SnapshotManager();
+	/**
+	 * The server of this world.
+	 */
+	private final SpoutEngine engine;
+	/**
+	 * The name of this world.
+	 */
+	private final String name;
+	/**
+	 * The world's UUID.
+	 */
+	private final UUID uid;
+	/**
+	 * String item map, used to convert local id's to the server id
+	 */
+	private final StringMap itemMap;
 	/**
 	 * The region source
 	 */
@@ -166,7 +189,15 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid, StringMap itemMap, DatatableMap extraData) {
-		super(name, uid, engine, (int) 1, new ThreadAsyncExecutor(toString(name, uid, age)), itemMap);
+		super(1, new ThreadAsyncExecutor(toString(name, uid, age)), engine);
+		this.engine = engine;
+		if (!StringSanitizer.isAlphaNumericUnderscore(name)) {
+			name = Long.toHexString(System.currentTimeMillis());
+			Spout.getEngine().getLogger().severe("World name " + name + " is not valid, using " + name + " instead");
+		}
+		this.name = name;
+		this.uid = uid;
+		this.itemMap = itemMap;
 		this.seed = seed;
 
 		this.generator = generator;
@@ -205,9 +236,32 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 		selfReference = new WeakReference<World>(this);
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public UUID getUID() {
+		return uid;
+	}
+
 	@Override
 	public long getAge() {
 		return age.get();
+	}
+
+	@Override
+	public SpoutBlock getBlock(int x, int y, int z, Source source) {
+		return new SpoutBlock(this, x, y, z, source);
+	}
+
+	@Override
+	public SpoutBlock getBlock(float x, float y, float z, Source source) {
+		return this.getBlock(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z), source);
+	}
+
+	@Override
+	public SpoutBlock getBlock(Vector3 position, Source source) {
+		return this.getBlock(position.getX(), position.getY(), position.getZ(), source);
 	}
 
 	@Override
@@ -239,6 +293,180 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 		return chunk.getBiomeType(x, y, z);
 	}
 
+	public SpoutRegion getRegion(int x, int y, int z) {
+		return getRegion(x, y, z, LoadOption.LOAD_GEN);
+	}
+
+	@Override
+	public SpoutRegion getRegionFromChunk(int x, int y, int z) {
+		return getRegionFromChunk(x, y, z, LoadOption.LOAD_GEN);
+	}
+
+	@Override
+	public SpoutRegion getRegionFromChunk(int x, int y, int z, LoadOption loadopt) {
+		return getRegion(x >> Region.CHUNKS.BITS, y >> Region.CHUNKS.BITS, z >> Region.CHUNKS.BITS, loadopt);
+	}
+
+	@Override
+	public SpoutRegion getRegionFromBlock(Vector3 position) {
+		return getRegionFromBlock(position, LoadOption.LOAD_GEN);
+	}
+
+	@Override
+	public SpoutRegion getRegionFromBlock(Vector3 position, LoadOption loadopt) {
+		return this.getRegionFromBlock(position.getFloorX(), position.getFloorY(), position.getFloorZ(), loadopt);
+	}
+
+	@Override
+	public SpoutRegion getRegionFromBlock(int x, int y, int z) {
+		return getRegionFromBlock(x, y, z, LoadOption.LOAD_GEN);
+	}
+
+	@Override
+	public SpoutRegion getRegionFromBlock(int x, int y, int z, LoadOption loadopt) {
+		return getRegion(x >> Region.BLOCKS.BITS, y >> Region.BLOCKS.BITS, z >> Region.BLOCKS.BITS, loadopt);
+	}
+
+	@Override
+	public SpoutChunk getChunk(int x, int y, int z) {
+		return this.getChunk(x, y, z, LoadOption.LOAD_GEN);
+	}
+
+	@Override
+	public SpoutChunk getChunkFromBlock(int x, int y, int z) {
+		return this.getChunkFromBlock(x, y, z, LoadOption.LOAD_GEN);
+	}
+
+	@Override
+	public SpoutChunk getChunkFromBlock(int x, int y, int z, LoadOption loadopt) {
+		return this.getChunk(x >> Chunk.BLOCKS.BITS, y >> Chunk.BLOCKS.BITS, z >> Chunk.BLOCKS.BITS, loadopt);
+	}
+
+	@Override
+	public SpoutChunk getChunkFromBlock(Vector3 position) {
+		return this.getChunkFromBlock(position, LoadOption.LOAD_GEN);
+	}
+
+	@Override
+	public SpoutChunk getChunkFromBlock(Vector3 position, LoadOption loadopt) {
+		return this.getChunkFromBlock(position.getFloorX(), position.getFloorY(), position.getFloorZ(), loadopt);
+	}
+
+	@Override
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Source source) {
+		return this.getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z, material, data, source);
+	}
+
+	@Override
+	public boolean setBlockData(int x, int y, int z, short data, Source source) {
+		return getChunkFromBlock(x, y, z).setBlockData(x, y, z, data, source);
+	}
+
+	@Override
+	public boolean addBlockData(int x, int y, int z, short data, Source source) {
+		return getChunkFromBlock(x, y, z).addBlockData(x, y, z, data, source);
+	}
+
+	@Override
+	public int getBlockFullState(int x, int y, int z) {
+		return getChunkFromBlock(x, y, z).getBlockFullState(x, y, z);
+	}
+
+	@Override
+	public BlockMaterial getBlockMaterial(int x, int y, int z) {
+		return getChunkFromBlock(x, y, z).getBlockMaterial(x, y, z);
+	}
+
+	@Override
+	public short getBlockData(int x, int y, int z) {
+		return getChunkFromBlock(x, y, z).getBlockData(x, y, z);
+	}
+
+	@Override
+	public byte getBlockSkyLight(int x, int y, int z) {
+		return getChunkFromBlock(x, y, z).getBlockSkyLight(x, y, z);
+	}
+
+	@Override
+	public byte getBlockSkyLightRaw(int x, int y, int z) {
+		return getChunkFromBlock(x, y, z).getBlockSkyLightRaw(x, y, z);
+	}
+
+	@Override
+	public byte getBlockLight(int x, int y, int z) {
+		return getChunkFromBlock(x, y, z).getBlockLight(x, y, z);
+	}
+
+	@Override
+	public boolean compareAndSetData(int x, int y, int z, int expect, short data, Source source) {
+		return getChunkFromBlock(x, y, z).compareAndSetData(x, y, z, expect, data, source);
+	}
+
+	@Override
+	public short setBlockDataBits(int x, int y, int z, int bits, boolean set, Source source) {
+		return getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits, set, source);
+	}
+
+	@Override
+	public short setBlockDataBits(int x, int y, int z, int bits, Source source) {
+		return getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits, source);
+	}
+
+	@Override
+	public short clearBlockDataBits(int x, int y, int z, int bits, Source source) {
+		return getChunkFromBlock(x, y, z).clearBlockDataBits(x, y, z, bits, source);
+	}
+
+	@Override
+	public int getBlockDataField(int x, int y, int z, int bits) {
+		return getChunkFromBlock(x, y, z).getBlockDataField(x, y, z, bits);
+	}
+
+	@Override
+	public boolean isBlockDataBitSet(int x, int y, int z, int bits) {
+		return getChunkFromBlock(x, y, z).isBlockDataBitSet(x, y, z, bits);
+	}
+
+	@Override
+	public int setBlockDataField(int x, int y, int z, int bits, int value, Source source) {
+		return getChunkFromBlock(x, y, z).setBlockDataField(x, y, z, bits, value, source);
+	}
+
+	@Override
+	public int addBlockDataField(int x, int y, int z, int bits, int value, Source source) {
+		return getChunkFromBlock(x, y, z).addBlockDataField(x, y, z, bits, value, source);
+	}
+
+	@Override
+	public void resetDynamicBlock(int x, int y, int z) {
+		this.getRegionFromBlock(x, y, z).resetDynamicBlock(x, y, z);
+	}
+
+	@Override
+	public void syncResetDynamicBlock(int x, int y, int z) {
+		this.getRegionFromBlock(x, y, z).syncResetDynamicBlock(x, y, z);
+	}
+
+	@Override
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, int data) {
+		return this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z, nextUpdate, data);
+	}
+
+	@Override
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate) {
+		return this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z, nextUpdate);
+	}
+
+	@Override
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z) {
+		return this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z);
+	}
+
+
+	public StringMap getItemMap() {
+		return itemMap;
+	}
+
 	@Override
 	public int hashCode() {
 		return hashcode;
@@ -255,6 +483,36 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 
 			return world.getUID().equals(getUID());
 		}
+	}
+
+	@Override
+	public int getSurfaceHeight(int x, int z, boolean load) {
+		SpoutColumn column = getColumn(x, z, load);
+		if (column == null) {
+			return Integer.MIN_VALUE;
+		}
+
+		return column.getSurfaceHeight(x, z);
+	}
+
+	@Override
+	public int getSurfaceHeight(int x, int z) {
+		return getSurfaceHeight(x, z, false);
+	}
+
+	@Override
+	public BlockMaterial getTopmostBlock(int x, int z, boolean load) {
+		SpoutColumn column = getColumn(x, z, load);
+		if (column == null) {
+			return null;
+		}
+
+		return column.getTopmostBlock(x, z);
+	}
+
+	@Override
+	public BlockMaterial getTopmostBlock(int x, int z) {
+		return getTopmostBlock(x, z, false);
 	}
 
 	@Override
@@ -283,6 +541,62 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 		} else {
 			throw new IllegalStateException("Cannot spawn an entity that already has an id!");
 		}
+	}
+
+	@Override
+	public Entity createAndSpawnEntity(Point point, Controller controller) {
+		SpoutRegion region = getRegionFromBlock(point, LoadOption.NO_LOAD);
+		if (region == null) {
+			if (!(controller.getParent() instanceof Player)) {
+				throw new IllegalStateException("Cannot spawn a non-player entity in a region that isn't loaded!");
+			}
+			//Load and generate for players
+			region.load(LoadOption.LOAD_GEN); // TODO: De-lawl this
+		}
+		Entity e = createEntity(point, controller);
+		//initialize region if needed (only for players)
+		spawnEntity(e);
+		return e;
+	}
+
+	@Override
+	public Entity[] createAndSpawnEntity(Point[] points, Controller[] controllers) {
+		if (points.length != controllers.length) {
+			throw new IllegalArgumentException("Point and controller array must be of equal length");
+		}
+		Entity[] entities = new Entity[points.length];
+		for (int i = 0; i < points.length; i++) {
+			entities[i] = createAndSpawnEntity(points[i], controllers[i]);
+		}
+		return entities;
+	}
+
+	@Override
+	public Entity[] createAndSpawnEntity(Point[] points, ControllerType[] types) {
+		Entity[] entities = new Entity[points.length];
+		for (int i = 0; i < points.length; i++) {
+			entities[i] = createAndSpawnEntity(points[i], types[i].createController());
+		}
+		return entities;
+	}
+
+	@Override
+	public Entity[] createAndSpawnEntity(Point[] points, ControllerType type) {
+		Entity[] entities = new Entity[points.length];
+		for (int i = 0; i < points.length; i++) {
+			entities[i] = createAndSpawnEntity(points[i], type.createController());
+		}
+		return entities;
+	}
+
+	@Override
+	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement) {
+		ControllerType[] types = arrangement.getControllerTypes();
+		if (types.length == 1) {
+			return createAndSpawnEntity(arrangement.getArrangement(), types[0]);
+		}
+
+		return createAndSpawnEntity(arrangement.getArrangement(), types);
 	}
 
 	@Override
@@ -325,6 +639,10 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 	@Override
 	public long getSeed() {
 		return seed;
+	}
+
+	public SpoutEngine getEngine() {
+		return engine;
 	}
 
 	/**
@@ -434,6 +752,130 @@ public final class SpoutWorld extends SpoutAbstractWorld implements World {
 	@Override
 	public List<Player> getPlayers() {
 		return Collections.unmodifiableList(players);
+	}
+
+	/**
+	 * Gets a set of nearby players to the point, inside of the range
+	 * @param position of the center
+	 * @param range to look for
+	 * @return A set of nearby Players
+	 */
+	@LiveRead
+	@Threadsafe
+	public List<Player> getNearbyPlayers(Point position, int range) {
+		return getNearbyPlayers(position, null, range);
+	}
+
+	/**
+	 * Gets a set of nearby players to the entity, inside of the range
+	 * @param entity marking the center and which is ignored
+	 * @param range to look for
+	 * @return A set of nearby Players
+	 */
+	@LiveRead
+	@Threadsafe
+	public List<Player> getNearbyPlayers(Entity entity, int range) {
+		return getNearbyPlayers(entity.getPosition(), entity, range);
+	}
+
+	/**
+	 * Gets a set of nearby players to the point, inside of the range.
+	 * The search will ignore the specified entity.
+	 * @param position of the center
+	 * @param ignore Entity to ignore
+	 * @param range to look for
+	 * @return A set of nearby Players
+	 */
+	@LiveRead
+	@Threadsafe
+	public List<Player> getNearbyPlayers(Point position, Entity ignore, int range) {
+		ArrayList<Player> foundPlayers = new ArrayList<Player>();
+		final int RANGE_SQUARED = range * range;
+
+		for (Player plr : getPlayersNearRegion(position, range)) {
+			if (plr != ignore && plr != null) {
+				double distance = MathHelper.distanceSquared(position, plr.getPosition());
+				if (distance < RANGE_SQUARED) {
+					foundPlayers.add(plr);
+				}
+			}
+		}
+
+		return foundPlayers;
+	}
+
+	/**
+	 * Finds all the players inside of the regions inside the range area
+	 * @param position to search from
+	 * @param range to search for regions
+	 * @return nearby region's players
+	 */
+	private List<Player> getPlayersNearRegion(Point position, int range) {
+		Region center = this.getRegionFromBlock(position, LoadOption.NO_LOAD);
+
+		ArrayList<Player> players = new ArrayList<Player>();
+		if (center != null) {
+			final int regions = (range + Region.BLOCKS.SIZE - 1) / Region.BLOCKS.SIZE; //round up 1 region size
+			for (int dx = -regions; dx < regions; dx++) {
+				for (int dy = -regions; dy < regions; dy++) {
+					for (int dz = -regions; dz < regions; dz++) {
+						Region region = this.getRegion(center.getX() + dx, center.getY() + dy, center.getZ() + dz, LoadOption.NO_LOAD);
+						if (region != null) {
+							players.addAll(region.getPlayers());
+						}
+					}
+				}
+			}
+		}
+		return players;
+	}
+
+	/**
+	 * Gets the absolute closest player from the specified point within a specified range.
+	 * @param position to search from
+	 * @param ignore to ignore while searching
+	 * @param range to search
+	 * @return nearest player
+	 */
+	@LiveRead
+	@Threadsafe
+	public Player getNearestPlayer(Point position, Entity ignore, int range) {
+		Player best = null;
+		double bestDistance = range * range;
+
+		for (Player plr : getPlayersNearRegion(position, range)) {
+			if (plr != ignore && plr != null) {
+				double distance = MathHelper.distanceSquared(position, plr.getPosition());
+				if (distance < bestDistance) {
+					bestDistance = distance;
+					best = plr;
+				}
+			}
+		}
+		return best;
+	}
+
+	/**
+	 * Gets the absolute closest player from the specified point within a specified range.
+	 * @param range to search
+	 * @return nearest player
+	 */
+	@LiveRead
+	@Threadsafe
+	public Player getNearestPlayer(Point position, int range) {
+		return getNearestPlayer(position, null, range);
+	}
+
+	/**
+	 * Gets the absolute closest player from the specified point within a specified range.
+	 * @param entity to search from
+	 * @param range to search
+	 * @return nearest player
+	 */
+	@LiveRead
+	@Threadsafe
+	public Player getNearestPlayer(Entity entity, int range) {
+		return getNearestPlayer(entity.getPosition(), entity, range);
 	}
 
 	public List<CollisionVolume> getCollidingObject(CollisionModel model) {

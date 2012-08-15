@@ -26,15 +26,16 @@
  */
 package org.spout.engine.protocol.builtin.handler;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.spout.api.Client;
 import org.spout.api.entity.Player;
+import org.spout.api.generator.biome.BiomeManager;
+import org.spout.api.geo.ClientWorld;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.builtin.message.ChunkDataMessage;
 
-/**
- *
- */
 public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 	@Override
 	public void handleClient(Session session, ChunkDataMessage message) {
@@ -42,9 +43,30 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 			return;
 		}
 
-		Player player = session.getPlayer();
-		((Client) session.getEngine()).getDefaultWorld();
-		// TODO: Set chunk data from packet
-		//chunk.load(message.getBlockIds(), message.getBlockData(), message.getBlockLight(), message.getSkyLight(), message.getBiomeData());
+		ClientWorld world = (ClientWorld) ((Client) session.getEngine()).getDefaultWorld();
+		Class<? extends BiomeManager> managerClass;
+		try {
+			Class<?> testClass = Class.forName(message.getBiomeManagerClass());
+			if (!BiomeManager.class.isAssignableFrom(testClass)) {
+				throw new IllegalArgumentException("Biome manager class "+ testClass + " is not a BiomeManager");
+			}
+			managerClass = testClass.asSubclass(BiomeManager.class);
+		} catch (ClassNotFoundException e) {
+			throw new IllegalArgumentException("Unknown biome manager class: " + message.getBiomeManagerClass());
+		}
+		BiomeManager manager;
+		try {
+			manager = managerClass.getConstructor(int.class, int.class, int.class).newInstance(message.getX(), message.getY(), message.getZ());
+		} catch (InstantiationException e) {
+			throw new RuntimeException(e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		} catch (InvocationTargetException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchMethodException e) {
+			throw new RuntimeException(e);
+		}
+		manager.deserialize(message.getBiomeData());
+		world.addChunk(message.getX(), message.getY(), message.getZ(), message.getBlockIds(), message.getBlockData(), message.getBlockLight(), message.getSkyLight(), manager);
 	}
 }

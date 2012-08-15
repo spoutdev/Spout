@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -44,8 +45,10 @@ import java.util.logging.Level;
 
 import gnu.trove.iterator.TIntIterator;
 
+import org.spout.api.Client;
 import org.spout.api.Source;
 import org.spout.api.Spout;
+import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
@@ -80,6 +83,7 @@ import org.spout.api.util.set.TByteTripleHashSet;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
 
+import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.RegionEntityManager;
@@ -170,11 +174,11 @@ public class SpoutRegion extends Region {
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 
-	public SpoutRegion(SpoutAbstractWorld world, float x, float y, float z, RegionSource source) {
+	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
 		this(world, x, y, z, source, LoadOption.NO_LOAD);
 	}
 
-	public SpoutRegion(SpoutAbstractWorld world, float x, float y, float z, RegionSource source, LoadOption loadopt) {
+	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source, LoadOption loadopt) {
 		super(world, x * Region.BLOCKS.SIZE, y * Region.BLOCKS.SIZE, z * Region.BLOCKS.SIZE);
 		this.source = source;
 		manager = new SpoutRegionManager(this, 2, new ThreadAsyncExecutor(this.toString() + " Thread"), world.getEngine());
@@ -251,7 +255,7 @@ public class SpoutRegion extends Region {
 		}
 		return getChunkRaw(x, y, z, loadopt);
 	}
-		
+
 	private SpoutChunk getChunkRaw(int x, int y, int z, LoadOption loadopt) {
 		x &= CHUNKS.MASK;
 		y &= CHUNKS.MASK;
@@ -382,7 +386,7 @@ public class SpoutRegion extends Region {
 			occupiedChunks.remove(currentChunk);
 
 			populationQueue.remove(currentChunk);
-			
+
 			dirtyChunks.remove(currentChunk);
 
 			removeDynamicBlockUpdates(currentChunk);
@@ -773,7 +777,7 @@ public class SpoutRegion extends Region {
 		Profiler.start("finalizeRun");
 		try {
 			entityManager.preSnapshotRun();
-			
+
 			SpoutChunk spoutChunk;
 			while ((spoutChunk = dirtyChunks.poll()) != null) {
 				spoutChunk.setNotDirtyQueued();
@@ -791,12 +795,12 @@ public class SpoutRegion extends Region {
 					spoutChunk.setLightDirty(false);
 				}
 			}
-			
+
 			SpoutChunkSnapshotFuture snapshotFuture;
 			while ((snapshotFuture = snapshotQueue.poll()) != null) {
 				snapshotFuture.run();
 			}
-			
+
 			Iterator<SpoutChunk> itr = occupiedChunks.iterator();
 			int cx, cy, cz;
 			entityManager.syncEntities();
@@ -815,7 +819,7 @@ public class SpoutRegion extends Region {
 			Profiler.stop();
 		}
 	}
-	
+
 	public void queueDirty(SpoutChunk chunk) {
 		dirtyChunks.add(chunk);
 	}
@@ -1250,5 +1254,18 @@ public class SpoutRegion extends Region {
 		} catch (IllegalStateException ise) {
 			throw new IllegalStateException("Physics chunk queue exceeded capacity", ise);
 		}
+	}
+
+	public void addChunk(int x, int y, int z, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, BiomeManager biomes) {
+		x &= BLOCKS.MASK;
+		y &= BLOCKS.MASK;
+		z &= BLOCKS.MASK;
+		SpoutChunk chunk = chunks[x >> Region.CHUNKS.BITS][y >> Region.CHUNKS.BITS][z >> Region.CHUNKS.BITS].get();
+		if (chunk != null) {
+			chunk.unload(false);
+		}
+		SpoutChunk newChunk = new SpoutChunk(getWorld(), this, getBlockX() | x, getBlockY() | y, getBlockZ() | z, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, skyLight, blockLight, biomes, new GenericDatatableMap());
+		chunks[x >> Region.CHUNKS.BITS][y >> Region.CHUNKS.BITS][z >> Region.CHUNKS.BITS].set(newChunk);
+		((SpoutClient) getWorld().getEngine()).getWorldRenderer().updateChunk(getChunkX() | x, getChunkY() | y, getChunkZ() | z);
 	}
 }

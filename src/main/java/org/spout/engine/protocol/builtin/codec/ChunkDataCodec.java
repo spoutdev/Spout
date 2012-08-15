@@ -35,6 +35,7 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.protocol.MessageCodec;
+import org.spout.api.protocol.builtin.ChannelBufferUtils;
 import org.spout.api.protocol.builtin.message.ChunkDataMessage;
 
 /**
@@ -93,7 +94,6 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 				size += compressedSize;
 				deflater.end();
 			}
-			//System.out.println("Size: " + size + ", UncompressedData: " + uncompressedData.length + ", CompressedData: " + compressedSize);
 
 			buffer = ChannelBuffers.dynamicBuffer(size);
 			buffer.writeByte(0); // not unload
@@ -101,6 +101,9 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			buffer.writeInt(message.getY());
 			buffer.writeInt(message.getZ());
 			buffer.writeByte(message.getBiomeData() != null ? 1 : 0); // hasBiomes
+			if (message.getBiomeManagerClass() != null) {
+				ChannelBufferUtils.writeString(buffer, message.getBiomeManagerClass());
+			}
 			buffer.writeInt(compressedSize);
 			buffer.writeBytes(compressedData, 0, compressedSize);
 		}
@@ -121,11 +124,11 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			if (hasBiomes) {
 				uncompressedSize += Chunk.BLOCKS.AREA;
 			}
+			final String biomeManagerClass = hasBiomes ? null : ChannelBufferUtils.readString(buffer);
 
-			byte[] uncompressedData = new byte[uncompressedSize];
-			byte[] compressedData = new byte[buffer.readInt()];
+			final byte[] uncompressedData = new byte[uncompressedSize];
+			final byte[] compressedData = new byte[buffer.readInt()];
 			buffer.readBytes(compressedData);
-
 			Inflater inflater = new Inflater();
 			inflater.setInput(compressedData);
 			try {
@@ -156,7 +159,7 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 				System.arraycopy(uncompressedData, index, biomeData, 0, biomeData.length);
 			}
 
-			return new ChunkDataMessage(x, y, z, blockIds, blockData, blockLight, skyLight, biomeData);
+			return new ChunkDataMessage(x, y, z, blockIds, blockData, blockLight, skyLight, biomeData, biomeManagerClass);
 		}
 	}
 }

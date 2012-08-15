@@ -192,23 +192,23 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 	/**
 	 * A set of all blocks in this chunk that need a physics update in the next
-	 * tick. The coordinates in this set are relative to the <b>Region</b> containing the 
+	 * tick. The coordinates in this set are relative to the <b>Region</b> containing the
 	 * chunk.
 	 */
 	private final PhysicsQueue physicsQueue;
-	
+
 	private final SpoutScheduler scheduler;
 
 	/**
 	 * A WeakReference to this chunk
 	 */
 	private final WeakReference<Chunk> selfReference;
-	
+
 	/**
 	 * Indicates that the chunk has been added to the dirty queue
 	 */
 	private AtomicBoolean dirtyQueued = new AtomicBoolean(false);
-	
+
 	private AtomicBoolean populationQueued = new AtomicBoolean(false);
 
 	static {
@@ -248,7 +248,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			this.datatableMap = new GenericDatatableMap();
 		}
 		this.dataMap = new DataMap(this.datatableMap);
-		
+
 		physicsQueue = new PhysicsQueue(this);
 
 		column = world.getColumn(this.getBlockX(), this.getBlockZ(), true);
@@ -620,7 +620,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	public void updateBlockPhysics(int x, int y, int z, Source source) {
 		updateBlockPhysics(x, y, z, null, source);
 	}
-		
+
 	public void updateBlockPhysics(int x, int y, int z, BlockMaterial oldMaterial, Source source) {
 		checkChunkLoaded();
 		int rx = x & BLOCKS.MASK;
@@ -892,7 +892,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		if (!isPopulated()) {
 			resetPostSaving();
 			if (populationQueued.compareAndSet(false, true)) {
-				Spout.log("Queing chunk for population");
 				parentRegion.queueChunkForPopulation(this);
 			}
 		}
@@ -1206,13 +1205,13 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	public void setPopulationState(PopulationState state) {
 		populationState.set(state);
 	}
-	
+
 	public void queueForPopulation() {
 		if (populationQueued.compareAndSet(false, true)) {
 			parentRegion.queueChunkForPopulation(this);
 		}
 	}
-	
+
 	public void setNotQueuedForPopulation() {
 		populationQueued.set(false);
 	}
@@ -1539,7 +1538,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	private void blockChanged(int x, int y, int z, BlockMaterial newMaterial, short newData, BlockMaterial oldMaterial, short oldData, Source source) {
 		// Add chunk to regions's dirty queue
 		queueDirty();
-		
+
 		// Handle onPlacement for dynamic materials
 		if (newMaterial instanceof DynamicMaterial) {
 			if (oldMaterial instanceof BlockMaterial) {
@@ -1580,28 +1579,28 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	public WeakReference<Chunk> getWeakReference() {
 		return selfReference;
 	}
-	
+
 	public void setNotDirtyQueued() {
 		dirtyQueued.set(false);
 	}
-	
+
 	private void queueDirty() {
 		if (dirtyQueued.compareAndSet(false, true)) {
 			parentRegion.queueDirty(this);
 		}
 	}
-	
+
 	public void setInactivePhysics(boolean local) {
 		physicsQueue.setInactive(local);
 	}
-	
+
 	int physicsUpdates = 0;
-	
+
 	public boolean runLocalPhysics() {
 		scheduler.addUpdates(physicsUpdates);
 		physicsUpdates = 0;
 		SpoutWorld world = getWorld();
-		
+
 		boolean updated = false;
 		updated |= physicsQueue.commitAsyncQueue();
 		if (updated) {
@@ -1622,7 +1621,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		}
 		return updated;
 	}
-	
+
 	public void runGlobalPhysics() {
 		scheduler.addUpdates(physicsUpdates);
 		physicsUpdates = 0;
@@ -1639,7 +1638,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			callOnUpdatePhysicsForRange(world, x, y, z, oldMaterial, source, true);
 		}
 	}
-	
+
 	private boolean callOnUpdatePhysicsForRange(World world, int x, int y, int z, BlockMaterial oldMaterial, Source source, boolean force) {
 		int packed = getBlockFullState(x, y, z);
 		BlockMaterial material = BlockFullState.getMaterial(packed);
@@ -1656,5 +1655,5 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		}
 		return true;
 	}
-	
+
 }

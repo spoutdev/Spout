@@ -58,9 +58,9 @@ public class RegionSource implements Iterable<Region> {
 	/**
 	 * World associated with this region source
 	 */
-	private final SpoutAbstractWorld world;
+	private final SpoutWorld world;
 
-	public RegionSource(SpoutAbstractWorld world, SnapshotManager snapshotManager) {
+	public RegionSource(SpoutWorld world, SnapshotManager snapshotManager) {
 		this.world = world;
 		loadedRegions = new TripleIntObjectReferenceArrayMap<Region>(REGION_MAP_BITS);
 	}
