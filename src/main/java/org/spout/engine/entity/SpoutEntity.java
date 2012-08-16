@@ -53,7 +53,6 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.util.OutwardIterator;
-import org.spout.api.util.Profiler;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.util.thread.snapshotable.Snapshotable;
@@ -133,22 +132,14 @@ public class SpoutEntity implements Entity, Snapshotable {
 
 	@Override
 	public void onTick(float dt) {
-		Profiler.start("tick entity session");
-
 		if (controller != null) {
 			if (!isDead() && getPosition() != null && getWorld() != null) {
-				Profiler.startAndStop("tick entity controller");
 				controller.tick(dt);
-				if (this instanceof Player) {
-					Spout.log("Player is ticking!");
-				}
-				Profiler.startAndStop("tick entity chunk");
 				//TODO Fix, this isn't right
 				chunkLive.set(getWorld().getChunkFromBlock(transform.getPosition(), LoadOption.NO_LOAD));
 				entityManagerLive.set(((SpoutRegion)getRegion()).getEntityManager());
 			}
 		}
-		Profiler.stop();
 	}
 
 	@Override

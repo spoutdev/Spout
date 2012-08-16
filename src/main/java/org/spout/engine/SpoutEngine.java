@@ -94,7 +94,6 @@ import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TaskPriority;
-import org.spout.api.util.Profiler;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.StringUtil;
 
@@ -213,7 +212,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		if (debugMode()) {
 			log("Debug Mode has been toggled on!  This mode is intended for developers only", Level.WARNING);
 			leakThread.start();
-			scheduler.scheduleSyncRepeatingTask(this, new ProfileTask(), 60 * 1000, 60 * 1000, TaskPriority.NORMAL);
 		}
 
 		scheduler.scheduleSyncRepeatingTask(this, new SessionTask(sessions), 50, 50, TaskPriority.CRITICAL);
@@ -857,13 +855,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public String getVariable(String key) {
 		return cvars.get(key);
-	}
-
-	private class ProfileTask implements Runnable {
-		@Override
-		public void run() {
-			Profiler.log();
-		}
 	}
 
 	private class SessionTask implements Runnable {

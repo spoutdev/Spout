@@ -32,9 +32,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -48,9 +48,7 @@ import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.Player;
 import org.spout.api.entity.controller.BlockController;
-import org.spout.api.entity.controller.PlayerController;
 import org.spout.api.event.block.BlockChangeEvent;
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGeneratorUtils;
@@ -78,7 +76,6 @@ import org.spout.api.material.block.BlockSnapshot;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
-import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.CuboidBuffer;
 import org.spout.api.util.hashing.NibblePairHashed;
@@ -87,20 +84,18 @@ import org.spout.api.util.map.concurrent.AtomicBlockStoreImpl;
 import org.spout.api.util.set.TNibbleQuadHashSet;
 
 import org.spout.engine.SpoutConfiguration;
-import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.scheduler.SpoutScheduler;
-import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.Snapshotable;
-import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
-import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
 import org.spout.engine.world.physics.PhysicsQueue;
 import org.spout.engine.world.physics.UpdateQueue;
 
+import com.google.common.collect.Sets;
+
 public class SpoutChunk extends Chunk implements Snapshotable {
 	public static final WeakReference<Chunk> NULL_WEAK_REFERENCE = new WeakReference<Chunk>(null);
-	private final AtomicBoolean observed = new AtomicBoolean(false);
-	private final AtomicInteger numberOfObservers = new AtomicInteger(0);
+
+	private final Set<SpoutEntity> observers = Sets.newSetFromMap(new ConcurrentHashMap<SpoutEntity, Boolean>());
 	/**
 	 * Multi-thread write access to the block store is only allowed during the
 	 * allowed stages. During the restricted stages, only the region thread may
@@ -762,7 +757,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	public void saveComplete() {
-		if (observed.get() || getRegion().getEntityManager().getAllLive().isEmpty()) {
+		if (isObserved() || getRegion().getEntityManager().getAllLive().isEmpty()) {
 			resetPostSaving();
 		} else {
 			saveState.compareAndSet(SaveState.SAVING, SaveState.POST_SAVED);
@@ -895,12 +890,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 				parentRegion.queueChunkForPopulation(this);
 			}
 		}
-		/**
-		 * If Snapshot was false, live is true then the observer count increased
-		 */
-		if (spoutEntity.isObserver() != spoutEntity.isObserverLive()) {
-			numberOfObservers.getAndIncrement();
-		}
+		observers.add((SpoutEntity) entity);
 		return true;
 	}
 
@@ -915,21 +905,20 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			return false;
 		}
 
-		if (!isObserved()) {
+		observers.remove((SpoutEntity) entity);
+		if (isObserved()) {
 			parentRegion.unloadQueue.add(this);
-		} else {
-			numberOfObservers.getAndDecrement();
 		}
 		return true;
 	}
 
 	public boolean isObserved() {
-		return numberOfObservers.get() > 0;
+		return getNumObservers() > 0;
 	}
 
 	@Override
 	public int getNumObservers() {
-		return numberOfObservers.get();
+		return observers.size();
 	}
 
 	public boolean compressIfRequired() {

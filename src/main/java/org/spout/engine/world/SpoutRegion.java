@@ -30,7 +30,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -45,7 +44,6 @@ import java.util.logging.Level;
 
 import gnu.trove.iterator.TIntIterator;
 
-import org.spout.api.Client;
 import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.datatable.GenericDatatableMap;
@@ -77,7 +75,6 @@ import org.spout.api.math.Vector3;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TickStage;
-import org.spout.api.util.Profiler;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.set.TByteTripleHashSet;
 import org.spout.api.util.thread.DelayedWrite;
@@ -588,84 +585,74 @@ public class SpoutRegion extends Region {
 		}
 		switch (stage) {
 			case 0: {
-				Profiler.start("startTickRun stage 1");
-				try {
-					taskManager.heartbeat(delta);
-					float dt = delta / 1000.f;
-					Profiler.start("tick entities");
-					//Update all entities
-					for (SpoutEntity ent : entityManager.getAll()) {
-						try {
-							//Try and determine if we should tick this entity
-							//If the entity is not important (not an observer)
-							//And the entity is not visible to players, don't tick it
-							if (visibleToPlayers || (ent.getController() != null && isImportant(ent.getController()))) {
-								ent.tick(dt);
-							}
-						} catch (Exception e) {
-							Spout.getEngine().getLogger().severe("Unhandled exception during tick for " + ent.toString());
-							e.printStackTrace();
+				taskManager.heartbeat(delta);
+				float dt = delta / 1000.f;
+				//Update all entities
+				for (SpoutEntity ent : entityManager.getAll()) {
+					try {
+						//Try and determine if we should tick this entity
+						//If the entity is not important (not an observer)
+						//And the entity is not visible to players, don't tick it
+						if (visibleToPlayers || (ent.getController() != null && isImportant(ent.getController()))) {
+							ent.tick(dt);
 						}
+					} catch (Exception e) {
+						Spout.getEngine().getLogger().severe("Unhandled exception during tick for " + ent.toString());
+						e.printStackTrace();
 					}
-					Profiler.startAndStop("lighting refresh");
-					//for those chunks that had lighting updated - refresh
-					synchronized (lightDirtyChunks) {
-						if (!lightDirtyChunks.isEmpty()) {
-							int key;
-							int x, y, z;
-							TIntIterator iter = lightDirtyChunks.iterator();
-							while (iter.hasNext()) {
-								key = iter.next();
-								x = TByteTripleHashSet.key1(key);
-								y = TByteTripleHashSet.key2(key);
-								z = TByteTripleHashSet.key3(key);
-								SpoutChunk chunk = this.getChunkRaw(x, y, z, LoadOption.NO_LOAD);
-								if (chunk == null || !chunk.isLoaded()) {
-									iter.remove();
-									continue;
+				}
+				//for those chunks that had lighting updated - refresh
+				synchronized (lightDirtyChunks) {
+					if (!lightDirtyChunks.isEmpty()) {
+						int key;
+						int x, y, z;
+						TIntIterator iter = lightDirtyChunks.iterator();
+						while (iter.hasNext()) {
+							key = iter.next();
+							x = TByteTripleHashSet.key1(key);
+							y = TByteTripleHashSet.key2(key);
+							z = TByteTripleHashSet.key3(key);
+							SpoutChunk chunk = this.getChunkRaw(x, y, z, LoadOption.NO_LOAD);
+							if (chunk == null || !chunk.isLoaded()) {
+								iter.remove();
+								continue;
+							}
+							if (chunk.lightingCounter.incrementAndGet() > LIGHT_SEND_TICK_DELAY) {
+								chunk.lightingCounter.set(-1);
+								if (SpoutConfiguration.LIVE_LIGHTING.getBoolean()) {
+									chunk.setLightDirty(true);
 								}
-								if (chunk.lightingCounter.incrementAndGet() > LIGHT_SEND_TICK_DELAY) {
-									chunk.lightingCounter.set(-1);
-									if (SpoutConfiguration.LIVE_LIGHTING.getBoolean()) {
-										chunk.setLightDirty(true);
-									}
-									iter.remove();
-								}
+								iter.remove();
 							}
 						}
 					}
+				}
 
-					Profiler.startAndStop("chunk population");
-					for (int i = 0; i < POPULATE_PER_TICK; i++) {
-						SpoutChunk toPopulate = populationQueue.poll();
-						if (toPopulate == null) {
-							break;
-						}
-						toPopulate.setNotQueuedForPopulation();
-						if (toPopulate.isLoaded()) {
-							toPopulate.populate();
-						} else {
-							i--;
+				for (int i = 0; i < POPULATE_PER_TICK; i++) {
+					SpoutChunk toPopulate = populationQueue.poll();
+					if (toPopulate == null) {
+						break;
+					}
+					toPopulate.setNotQueuedForPopulation();
+					if (toPopulate.isLoaded()) {
+						toPopulate.populate();
+					} else {
+						i--;
+					}
+				}
+
+				Chunk toUnload = unloadQueue.poll();
+				if (toUnload != null) {
+					boolean do_unload = true;
+					if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
+						ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(toUnload));
+						if (event.isCancelled()) {
+							do_unload = false;
 						}
 					}
-
-					Profiler.startAndStop("chunk unload");
-					Chunk toUnload = unloadQueue.poll();
-					if (toUnload != null) {
-						boolean do_unload = true;
-						if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
-							ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(toUnload));
-							if (event.isCancelled()) {
-								do_unload = false;
-							}
-						}
-						if (do_unload) {
-							toUnload.unload(true);
-						}
+					if (do_unload) {
+						toUnload.unload(true);
 					}
-					Profiler.stop();
-				} finally {
-					Profiler.stop();
 				}
 				break;
 			}
@@ -684,46 +671,38 @@ public class SpoutRegion extends Region {
 	private int reapX = 0, reapY = 0, reapZ = 0;
 
 	public void finalizeRun() {
-		Profiler.start("finalizeRun");
-		try {
-			Profiler.start("compression");
-			long worldAge = getWorld().getAge();
-			for (int reap = 0; reap < REAP_PER_TICK; reap++) {
-				if (++reapX >= CHUNKS.SIZE) {
-					reapX = 0;
-					if (++reapY >= CHUNKS.SIZE) {
-						reapY = 0;
-						if (++reapZ >= CHUNKS.SIZE) {
-							reapZ = 0;
-						}
-					}
-				}
-				SpoutChunk chunk = chunks[reapX][reapY][reapZ].get();
-				if (chunk != null) {
-					chunk.compressIfRequired();
-					boolean doUnload;
-					if (doUnload = chunk.isReapable(worldAge)) {
-						if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
-							ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(chunk));
-							if (event.isCancelled()) {
-								doUnload = false;
-							}
-						}
-					}
-					if (doUnload) {
-						chunk.unload(true);
-					} else if (!chunk.isPopulated()) {
-						chunk.queueForPopulation();
+		long worldAge = getWorld().getAge();
+		for (int reap = 0; reap < REAP_PER_TICK; reap++) {
+			if (++reapX >= CHUNKS.SIZE) {
+				reapX = 0;
+				if (++reapY >= CHUNKS.SIZE) {
+					reapY = 0;
+					if (++reapZ >= CHUNKS.SIZE) {
+						reapZ = 0;
 					}
 				}
 			}
-			Profiler.startAndStop("entitymanager");
-			//Note: This must occur after any chunks are reaped, because reaping chunks may kill entities, which need to be finalized
-			entityManager.finalizeRun();
-			Profiler.stop();
-		} finally {
-			Profiler.stop();
+			SpoutChunk chunk = chunks[reapX][reapY][reapZ].get();
+			if (chunk != null) {
+				chunk.compressIfRequired();
+				boolean doUnload;
+				if (doUnload = chunk.isReapable(worldAge)) {
+					if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
+						ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(chunk));
+						if (event.isCancelled()) {
+							doUnload = false;
+						}
+					}
+				}
+				if (doUnload) {
+					chunk.unload(true);
+				} else if (!chunk.isPopulated()) {
+					chunk.queueForPopulation();
+				}
+			}
 		}
+		//Note: This must occur after any chunks are reaped, because reaping chunks may kill entities, which need to be finalized
+		entityManager.finalizeRun();
 	}
 
 	private void syncChunkToPlayers(SpoutChunk chunk, Entity entity) {
@@ -774,49 +753,44 @@ public class SpoutRegion extends Region {
 	}
 
 	public void preSnapshotRun() {
-		Profiler.start("finalizeRun");
-		try {
-			entityManager.preSnapshotRun();
+		entityManager.preSnapshotRun();
 
-			SpoutChunk spoutChunk;
-			while ((spoutChunk = dirtyChunks.poll()) != null) {
-				spoutChunk.setNotDirtyQueued();
-				if (!spoutChunk.isLoaded()) {
-					continue;
-				}
-				if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
-					spoutChunk.setRenderDirty();
-					for (Entity entity : getPlayers()) {
-						syncChunkToPlayers(spoutChunk, entity);
-					}
-					processChunkUpdatedEvent(spoutChunk);
-
-					spoutChunk.resetDirtyArrays();
-					spoutChunk.setLightDirty(false);
-				}
+		SpoutChunk spoutChunk;
+		while ((spoutChunk = dirtyChunks.poll()) != null) {
+			spoutChunk.setNotDirtyQueued();
+			if (!spoutChunk.isLoaded()) {
+				continue;
 			}
-
-			SpoutChunkSnapshotFuture snapshotFuture;
-			while ((snapshotFuture = snapshotQueue.poll()) != null) {
-				snapshotFuture.run();
-			}
-
-			Iterator<SpoutChunk> itr = occupiedChunks.iterator();
-			int cx, cy, cz;
-			entityManager.syncEntities();
-			while (itr.hasNext()) {
-				SpoutChunk c = itr.next();
-
-				cx = c.getX() & CHUNKS.MASK;
-				cy = c.getY() & CHUNKS.MASK;
-				cz = c.getZ() & CHUNKS.MASK;
-
-				if (c != getChunk(cx, cy, cz, LoadOption.NO_LOAD)) {
-					itr.remove();
+			if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
+				spoutChunk.setRenderDirty();
+				for (Entity entity : getPlayers()) {
+					syncChunkToPlayers(spoutChunk, entity);
 				}
+				processChunkUpdatedEvent(spoutChunk);
+
+				spoutChunk.resetDirtyArrays();
+				spoutChunk.setLightDirty(false);
 			}
-		} finally {
-			Profiler.stop();
+		}
+
+		SpoutChunkSnapshotFuture snapshotFuture;
+		while ((snapshotFuture = snapshotQueue.poll()) != null) {
+			snapshotFuture.run();
+		}
+
+		Iterator<SpoutChunk> itr = occupiedChunks.iterator();
+		int cx, cy, cz;
+		entityManager.syncEntities();
+		while (itr.hasNext()) {
+			SpoutChunk c = itr.next();
+
+			cx = c.getX() & CHUNKS.MASK;
+			cy = c.getY() & CHUNKS.MASK;
+			cz = c.getZ() & CHUNKS.MASK;
+
+			if (c != getChunk(cx, cy, cz, LoadOption.NO_LOAD)) {
+				itr.remove();
+			}
 		}
 	}
 
