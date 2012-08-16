@@ -60,7 +60,7 @@ public abstract class Biome {
 		}
 	}
 	
-	protected final int getId() {
+	public final int getId() {
 		return id;
 	}
 
