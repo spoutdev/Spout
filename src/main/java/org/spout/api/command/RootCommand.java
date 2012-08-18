@@ -30,9 +30,12 @@ import java.util.List;
 
 import org.spout.api.Engine;
 import org.spout.api.chat.ChatSection;
+import org.spout.api.chat.completion.CompletionRequest;
+import org.spout.api.chat.completion.CompletionResponse;
 import org.spout.api.exception.CommandException;
 import org.spout.api.exception.SpoutRuntimeException;
 import org.spout.api.io.store.simple.MemoryStore;
+import org.spout.api.plugin.Platform;
 import org.spout.api.util.Named;
 import org.spout.api.util.StringMap;
 
@@ -84,5 +87,10 @@ public class RootCommand extends SimpleCommand {
 	@Override
 	public CommandException getMissingChildException(String usage) {
 		return new CommandException(usage);
+	}
+
+	@Override
+	public CompletionResponse getCompletion(CompletionRequest input) {
+		return getCompletion(input, -1);
 	}
 }

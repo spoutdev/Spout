@@ -47,7 +47,7 @@ public abstract class AnnotatedCommandExecutor implements CommandExecutor {
 		this.method = method;
 	}
 
-	public boolean processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
+	public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
 		try {
 			List<Object> commandArgs = new ArrayList<Object>(4);
 			commandArgs.add(args);
@@ -68,7 +68,6 @@ public abstract class AnnotatedCommandExecutor implements CommandExecutor {
 
 			throw new WrappedCommandException(cause);
 		}
-		return true;
 	}
 
 	public abstract List<Object> getAdditionalArgs(CommandSource source, Command command);

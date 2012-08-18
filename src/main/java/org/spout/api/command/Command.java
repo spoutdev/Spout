@@ -31,6 +31,9 @@ import java.util.Set;
 
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.ChatSection;
+import org.spout.api.chat.completion.CompletionRequest;
+import org.spout.api.chat.completion.CompletionResponse;
+import org.spout.api.chat.completion.Completor;
 import org.spout.api.exception.CommandException;
 import org.spout.api.plugin.Platform;
 import org.spout.api.util.Named;
@@ -46,7 +49,7 @@ import org.spout.api.util.Named;
  * Game.getCommandRoot().sub(&quot;preferredname&quot;).alias(&quot;alias1&quot;, &quot;alias2&quot;).help(&quot;This is the main command for MyPlugin&quot;).executor(myExecutor).sub(&quot;subcommand&quot;).help(&quot;This is a sub command of main command&quot;).executor(myExecutor).closeSub().closeSub();
  * </pre>
  */
-public interface Command {
+public interface Command extends Completor {
 	/**
 	 * Creates a command and adds it as a sub-command to the active Command.
 	 *
@@ -364,4 +367,12 @@ public interface Command {
 	 * @return Whether {@code source} can use this command
 	 */
 	public boolean hasPermission(CommandSource source);
+
+	/**
+	 * Get the completions for a specified command.
+	 * @param request The requset for completion
+	 * @param baseIndex The base arg index
+	 * @return The responses to complete. If this is a client and a request to the server is needed, return null
+	 */
+	public CompletionResponse getCompletion(CompletionRequest request, int baseIndex);
 }
