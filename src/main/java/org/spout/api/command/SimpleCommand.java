@@ -29,6 +29,7 @@ package org.spout.api.command;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,10 +37,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Iterators;
+import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.ChatSection;
+import org.spout.api.chat.completion.CompletionRequest;
+import org.spout.api.chat.completion.CompletionResponse;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.event.server.PreCommandEvent;
 import org.spout.api.exception.CommandException;
@@ -561,5 +570,47 @@ public class SimpleCommand implements Command {
 		}
 		maxArgLength = max;
 		return this;
+	}
+
+	@Override
+	public CompletionResponse getCompletion(CompletionRequest input) {
+		return getCompletion(input, 0);
+	}
+
+	public CompletionResponse getCompletion(CompletionRequest input, int baseIndex) {
+		if (children.size() > 0 && baseIndex < input.getSections().size() - 1) {
+			Command child = getChild(input.getSections().get(baseIndex + 1).getPlainString());
+			if (child != null) {
+				return child.getCompletion(input, baseIndex + 1);
+			} else {
+				return new CompletionResponse(true, input, getMatchingChildren(input.getSections().get(baseIndex + 1).getPlainString()));
+			}
+		}
+		// TODO: Return completion responses for the usage (could be done in CommandExecutor - Typed arguments would be nice for this)
+		return null;
+	}
+
+	public List<ChatArguments> getMatchingChildren(final String plainString) {
+		if (Spout.getEngine() instanceof Client) {
+			return null;
+		}
+		List<ChatArguments> responses = new ArrayList<ChatArguments>();
+		List<String> names = new ArrayList<String>();
+
+		names.addAll(
+				Collections2.filter(children.keySet(), new Predicate<String>() {
+					public boolean apply(@Nullable String s) {
+						return s != null
+								&& !s.equalsIgnoreCase(plainString)
+								&& s.toLowerCase().startsWith(plainString.toLowerCase());
+					}
+				}));
+
+		Collections.sort(names, new Comparator<String>() {
+			public int compare(String a, String b) {
+				return StringUtil.getLevenshteinDistance(plainString, b) - StringUtil.getLevenshteinDistance(plainString,  a);
+			}
+		});
+		return responses;
 	}
 }

@@ -26,89 +26,144 @@
  */
 package org.spout.api.entity.state;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Represents the current player input state
  */
 public class PlayerInputState {
-	public static final int FORWARD = 0x01;
-	public static final int BACKWARD = 0x02;
-	public static final int LEFT = 0x04;
-	public static final int RIGHT = 0x08;
-	public static final int JUMP = 0x10;
-	public static final int CROUCH = 0x20;
-	public static final int SELECTUP = 0x40;
-	public static final int SELECTDOWN = 0x80;
-	public static final int FIRE1 = 0x0100;
-	public static final int FIRE2 = 0x0200;
-	public static final int INTERACT = 0400;
-	short userCommands = 0;
-	byte mouse_dx;
-	byte mouse_dy;
+	private static final AtomicInteger FLAG_COUNTER = new AtomicInteger(0);
+	public static enum Flags {
+		FORWARD,
+		BACKWARD,
+		LEFT,
+		RIGHT,
+		JUMP,
+		CROUCH,
+		SELECT_UP,
+		SELECT_DOWN,
+		FIRE_1,
+		FIRE_2,
+		INTERACT;
+
+		private final short bitValue;
+
+		private Flags() {
+			int shifts = FLAG_COUNTER.getAndIncrement();
+			if (shifts >= 16) {
+				throw new IllegalStateException("Input flag" + name() + " exceeded bit count of short!");
+			}
+			this.bitValue = (short) (1 << shifts);
+
+		}
+
+		public short getBitFlag() {
+			return bitValue;
+		}
+
+		public boolean has(short bitfield) {
+			return (bitfield & bitValue) != 0;
+		}
+	}
+
+	private final short userCommands;
+	private final byte mouseDx;
+	private final byte mouseDy;
+
 
 	public PlayerInputState(boolean forward, boolean backward, boolean left, boolean right, boolean jump, boolean crouch, boolean selectUp, boolean selectDown, boolean fire1, boolean fire2, boolean interact, byte mdx, byte mdy) {
-		userCommands = 0;
-		userCommands |= (forward ? FORWARD : 0);
-		userCommands |= (backward ? BACKWARD : 0);
-		userCommands |= (left ? LEFT : 0);
-		userCommands |= (right ? RIGHT : 0);
-		userCommands |= (jump ? JUMP : 0);
-		userCommands |= (crouch ? CROUCH : 0);
-		userCommands |= (selectUp ? SELECTUP : 0);
-		userCommands |= (selectDown ? SELECTDOWN : 0);
-		userCommands |= (fire1 ? FIRE1 : 0);
-		userCommands |= (fire2 ? FIRE2 : 0);
-		userCommands |= (interact ? INTERACT : 0);
-		mouse_dx = mdx;
-		mouse_dy = mdy;
+		short userCommands = 0;
+		userCommands |= (forward ? Flags.FORWARD.getBitFlag() : 0);
+		userCommands |= (backward ? Flags.BACKWARD.getBitFlag() : 0);
+		userCommands |= (left ? Flags.LEFT.getBitFlag() : 0);
+		userCommands |= (right ? Flags.RIGHT.getBitFlag() : 0);
+		userCommands |= (jump ? Flags.JUMP.getBitFlag() : 0);
+		userCommands |= (crouch ? Flags.CROUCH.getBitFlag() : 0);
+		userCommands |= (selectUp ? Flags.SELECT_UP.getBitFlag() : 0);
+		userCommands |= (selectDown ? Flags.SELECT_DOWN.getBitFlag() : 0);
+		userCommands |= (fire1 ? Flags.FIRE_1.getBitFlag() : 0);
+		userCommands |= (fire2 ? Flags.FIRE_2.getBitFlag() : 0);
+		userCommands |= (interact ? Flags.INTERACT.getBitFlag() : 0);
+		this.userCommands = userCommands;
+		this.mouseDx = mdx;
+		this.mouseDy = mdy;
 	}
 
 	public PlayerInputState(short userCommands, byte mdx, byte mdy) {
 		this.userCommands = userCommands;
-		this.mouse_dx = mdx;
-		this.mouse_dy = mdy;
+		this.mouseDx = mdx;
+		this.mouseDy = mdy;
 	}
 
 	public boolean getForward() {
-		return (userCommands & FORWARD) == 1;
+		return Flags.FORWARD.has(userCommands);
 	}
 
 	public boolean getBackward() {
-		return (userCommands & BACKWARD) == 1;
+		return Flags.BACKWARD.has(userCommands);
 	}
 
 	public boolean getRight() {
-		return (userCommands & RIGHT) == 1;
+		return Flags.RIGHT.has(userCommands);
 	}
 
 	public boolean getLeft() {
-		return (userCommands & LEFT) == 1;
+		return Flags.LEFT.has(userCommands);
 	}
 
 	public boolean getJump() {
-		return (userCommands & JUMP) == 1;
+		return Flags.JUMP.has(userCommands);
 	}
 
 	public boolean getCrouch() {
-		return (userCommands & CROUCH) == 1;
+		return Flags.CROUCH.has(userCommands);
 	}
 
 	public boolean getSelectUp() {
-		return (userCommands & SELECTUP) == 1;
+		return Flags.SELECT_UP.has(userCommands);
 	}
 
 	public boolean getSelectDown() {
-		return (userCommands & SELECTDOWN) == 1;
+		return Flags.SELECT_DOWN.has(userCommands);
 	}
 
 	public boolean getFire1() {
-		return (userCommands & FIRE1) == 1;
+		return Flags.FIRE_1.has(userCommands);
 	}
 
 	public boolean getFire2() {
-		return (userCommands & FIRE2) == 1;
+		return Flags.FIRE_2.has(userCommands);
 	}
 
 	public boolean getInteract() {
-		return (userCommands & INTERACT) == 1;
+		return Flags.INTERACT.has(userCommands);
+	}
+
+	public byte getMouseDx() {
+		return mouseDx;
+	}
+
+	public byte getMouseDy() {
+		return mouseDy;
+	}
+
+	public PlayerInputState withAddedFlag(Flags flag) {
+		return new PlayerInputState((short) (userCommands | flag.getBitFlag()), mouseDx, mouseDy);
+	}
+
+	public PlayerInputState withRemovedFlag(Flags flag) {
+		return new PlayerInputState((short) (userCommands & ~flag.getBitFlag()), mouseDx, mouseDy);
+	}
+
+	public PlayerInputState withMouseDx(byte mouseDx) {
+		return new PlayerInputState(userCommands, mouseDx, mouseDy);
+	}
+
+	public PlayerInputState withMouseDy(byte mouseDy) {
+		return new PlayerInputState(userCommands, mouseDx, mouseDy);
+	}
+
+	public PlayerInputState withMouseCoords(byte mouseDx, byte mouseDy) {
+		return new PlayerInputState(userCommands, mouseDx, mouseDy);
 	}
 }
