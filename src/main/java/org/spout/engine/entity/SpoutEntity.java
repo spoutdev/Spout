@@ -66,6 +66,7 @@ public class SpoutEntity implements Entity, Snapshotable {
 	private final AtomicReference<Controller> controllerLive;
 	private final AtomicReference<Chunk> chunkLive;
 	private final AtomicReference<Transform> transformLive;
+	private final AtomicBoolean deadLive = new AtomicBoolean(false);
 	private final AtomicBoolean observerLive = new AtomicBoolean(false);
 	private final AtomicInteger id = new AtomicInteger();
 	private final AtomicInteger viewDistanceLive = new AtomicInteger();
@@ -353,12 +354,13 @@ public class SpoutEntity implements Entity, Snapshotable {
 	@Override
 	public boolean kill() {
 		chunkLive.set(null);
+		deadLive.set(true);
 		return true;
 	}
 
 	@Override
 	public boolean isDead() {
-		return id.get() != NOTSPAWNEDID && (chunkLive.get() == null || entityManagerLive.get() == null);
+		return id.get() != NOTSPAWNEDID && (deadLive.get() || chunkLive.get() == null || entityManagerLive.get() == null);
 	}
 
 	// TODO - needs to be made thread safe
