@@ -26,27 +26,52 @@
  */
 package org.spout.engine.command;
 
-import org.spout.api.Client;
+import org.spout.api.Engine;
+import org.spout.api.command.Command;
 import org.spout.api.command.CommandContext;
+import org.spout.api.command.CommandExecutor;
 import org.spout.api.command.CommandSource;
-import org.spout.api.command.annotated.Command;
-import org.spout.api.command.annotated.Executor;
+import org.spout.api.entity.Player;
+import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.exception.CommandException;
 import org.spout.api.plugin.Platform;
-import org.spout.engine.SpoutEngine;
 
+/**
+ * Class to create the input command structure that modifies {@link org.spout.api.entity.state.PlayerInputState}
+ */
 public class InputCommands {
-	private final SpoutEngine engine;
-
-	public InputCommands(SpoutEngine engine) {
-		this.engine = engine;
+	public static void setupInputCommands(Engine engine, Command parent) {
+		for (PlayerInputState.Flags flag : PlayerInputState.Flags.values()) {
+			parent.addSubCommand(engine, "+" + flag.name())
+					.setArgBounds(0, 0)
+					.setHelp("Adds the " + flag.name() + " flag to the calling player's input state")
+					.setExecutor(Platform.CLIENT, new InputFlagHandler(flag, true));
+			parent.addSubCommand(engine, "-" + flag.name())
+					.setArgBounds(0, 0)
+					.setHelp("Removes the " + flag.name() + " flag from the calling player's input state")
+					.setExecutor(Platform.CLIENT, new InputFlagHandler(flag, false));
+		}
 	}
 
-	@Command(aliases = {"bind"}, usage = "bind <key> <command>", desc = "Binds a command to a key", min = 2)
-	public class BindCommand {
-		@Executor(Platform.CLIENT)
-		public void bind(CommandContext args, CommandSource source) throws CommandException {
-			((Client) engine).getInput().bind(args.getString(0), args.getJoinedString(1).getPlainString());
+	public static class InputFlagHandler implements CommandExecutor {
+		private final PlayerInputState.Flags flag;
+		private final boolean add;
+
+		public InputFlagHandler(PlayerInputState.Flags flag, boolean add) {
+			this.flag = flag;
+			this.add  = add;
+		}
+
+		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
+			if (!(source instanceof Player)) {
+				throw new CommandException("Source must be a player!");
+			}
+			Player player = (Player) source;
+			if (add) {
+				player.processInput(player.input().withAddedFlag(flag));
+			} else {
+				player.processInput(player.input().withRemovedFlag(flag));
+			}
 		}
 	}
 }

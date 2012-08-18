@@ -29,9 +29,7 @@ package org.spout.engine;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
-import static org.spout.api.lang.Translation.tr;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -80,11 +78,9 @@ import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.render.BasicCamera;
 import org.spout.api.render.Camera;
-import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
 import org.spout.engine.audio.SpoutSoundManager;
-import org.spout.engine.batcher.PrimitiveBatch;
-import org.spout.engine.command.InputCommands;
+import org.spout.engine.command.InputManagementCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ClientFileSystem;
@@ -161,7 +157,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this));
 
 		// Register commands
-		getRootCommand().addSubCommands(this, InputCommands.class, commandRegFactory);
+		getRootCommand().addSubCommands(this, InputManagementCommands.class, commandRegFactory);
 		activePlayer = new SpoutClientPlayer("Spouty", this);
 	}
 
@@ -360,13 +356,13 @@ public class SpoutClient extends SpoutEngine implements Client {
 		GL11.glClearColor((135.f/255.0f), 206.f/255.f, 250.f/255.f, 0);
 
 		worldRenderer = new WorldRenderer(this);
-		worldRenderer.setup();		
+		worldRenderer.setup();
 	}
-	
-	
+
+
 	public void render(float dt) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
+
 		worldRenderer.render();
 	}
 
