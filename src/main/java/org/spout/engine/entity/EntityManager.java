@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.spout.api.Spout;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
@@ -56,7 +57,7 @@ public class EntityManager {
 	/**
 	 * The snapshot manager
 	 */
-	private final SnapshotManager snapshotManager = new SnapshotManager();
+	protected final SnapshotManager snapshotManager = new SnapshotManager();
 	/**
 	 * A map of all the entity ids to the corresponding entities.
 	 */
@@ -65,10 +66,6 @@ public class EntityManager {
 	 * A map of entity types to a set containing all entities of that type.
 	 */
 	private final ConcurrentHashMap<Class<? extends Controller>, SnapshotableArrayList<SpoutEntity>> groupedEntities = new ConcurrentHashMap<Class<? extends Controller>, SnapshotableArrayList<SpoutEntity>>();
-	/**
-	 * A list containing all the players in this entity manager.
-	 */
-	private final SnapshotableArrayList<SpoutPlayer> players = new SnapshotableArrayList<SpoutPlayer>(snapshotManager);
 	/**
 	 * The next id to check.
 	 */
@@ -117,13 +114,6 @@ public class EntityManager {
 		return all;
 	}
 
-	public List<SpoutEntity> getDirtyAll() {
-		List<SpoutEntity> all = entities.getDirtyValueList();
-		if (all == null) {
-			return Collections.emptyList();
-		}
-		return all;
-	}
 	/**
 	 * Gets an entity by its id.
 	 *
@@ -182,9 +172,7 @@ public class EntityManager {
 		allocate(entity, region);
 		Controller c = entity.getController();
 		if (c != null) {
-			if (entity instanceof Player) {
-				players.add((SpoutPlayer) entity);
-			} else if (c instanceof BlockController) {
+			if (c instanceof BlockController) {
 				Vector3 pos = entity.getPosition().floor();
 				Entity old = blockEntities.put(pos, entity);
 				if (old != null) {
@@ -205,9 +193,7 @@ public class EntityManager {
 		deallocate(entity);
 		Controller c = entity.getController();
 		if (c != null) {
-			if (entity instanceof Player) {
-				players.remove((SpoutPlayer) entity);
-			} else if (c instanceof BlockController) {
+			if (c instanceof BlockController) {
 				Vector3 pos = entity.getPosition().floor();
 				Entity be = blockEntities.get(pos);
 				if (be == entity) {
@@ -215,19 +201,6 @@ public class EntityManager {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Gets all of the player controllers managed this entity manager
-	 *
-	 * @return players managed by this entity manager
-	 */
-	public List<Player> getPlayers() {
-		List<SpoutPlayer> thePlayers = players.get();
-		if (thePlayers == null) {
-			return Collections.emptyList();
-		}
-		return Collections.unmodifiableList(new ArrayList<Player>(thePlayers));
 	}
 
 	public void finalizeRun() {
