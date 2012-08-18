@@ -30,12 +30,37 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.spout.api.chat.console.Console;
 
 /**
  * Abstract Console with implementation for the date format
  */
 public abstract class AbstractConsole implements Console {
 	private DateFormat dateFormat;
+	private final AtomicBoolean initialized = new AtomicBoolean();
+
+	public boolean isInitialized() {
+		return initialized.get();
+	}
+
+	public final void init() {
+		if (initialized.compareAndSet(false, true)) {
+			initImpl();
+		}
+	}
+
+	protected abstract void initImpl();
+
+	public final void close() {
+		if (initialized.compareAndSet(true, false)) {
+			closeImpl();
+		}
+	}
+
+	protected abstract void closeImpl();
+
 	public void setDateFormat(DateFormat format) {
 		this.dateFormat = format;
 	}

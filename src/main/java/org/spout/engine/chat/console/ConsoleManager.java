@@ -41,6 +41,7 @@ import java.util.logging.SimpleFormatter;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.Engine;
 import org.spout.api.chat.ChatTemplate;
+import org.spout.api.chat.console.Console;
 import org.spout.api.chat.Placeholder;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.engine.SpoutEngine;
@@ -77,7 +78,7 @@ public final class ConsoleManager {
 		console.init();
 		logger.addHandler(handler);
 		System.setOut(new PrintStream(new LoggerOutputStream(Level.INFO), true));
-		System.setErr(new PrintStream(new LoggerOutputStream(Level.SEVERE), true));
+		System.setErr(new PrintStream(new LoggerOutputStream(Level.INFO), true));
 	}
 
 	private static class ServerShutdownThread extends Thread {

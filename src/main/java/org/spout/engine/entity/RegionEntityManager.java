@@ -64,10 +64,14 @@ public final class RegionEntityManager extends EntityManager {
 	 */
 	public void syncEntities() {
 		/*
+		 * The list of entities that have snapshot values.
+		 */
+		Collection<SpoutEntity> snapshots = getRegion().getEntityManager().getAll();
+		/*
 		 * The list of entities that have live values.
 		 */
 		Collection<SpoutEntity> lives = getRegion().getEntityManager().getAllLive();
-		if (lives.isEmpty()) {
+		if (snapshots.isEmpty() || lives.isEmpty()) {
 			return;
 		}
 		for (Player player : getRegion().getPlayers()) {
@@ -79,8 +83,8 @@ public final class RegionEntityManager extends EntityManager {
 			}
 			Integer playerViewDistance = player.getViewDistance();
 			NetworkSynchronizer net = player.getNetworkSynchronizer();
-			for (SpoutEntity live : lives) {
-				if (live.equals(player)) {
+			for (SpoutEntity snapshot : snapshots) {
+				if (snapshot.equals(player)) {
 					continue;
 				}
 				/*
@@ -91,40 +95,36 @@ public final class RegionEntityManager extends EntityManager {
 				 * - Destroy/spawn an entity if isn't new and changed controllers.
 				 */
 				/*
-				 * The list of entities that have snapshot values.
-				 */
-				Collection<SpoutEntity> snapshots = getRegion().getEntityManager().getAll();
-				/*
 				 * If the live entities' position is in range of the player's view distance + position
 				 */
-				if (MathHelper.distance(player.getPosition(), live.getPosition()) <= playerViewDistance) {
+				if (!snapshot.isDead() && MathHelper.distance(player.getPosition(), snapshot.getPosition()) <= playerViewDistance) {
 					/*
 					 * If the entity has just spawned, spawn it to the synchronizer!
 					 */
-					if (live.justSpawned()) {
-						net.spawnEntity(live);
+					if (snapshot.justSpawned()) {
+						net.spawnEntity(snapshot);
 						/*
 						 * If the entity is in the dirty list and snapshots list then it changed this tick, so sync it!
  						 */
-					} else if (snapshots.contains(live)) {
+					} else if (lives.contains(snapshot)) {
 						/*
 						 * The entity is in a snapshot and a dirty list for updates but swapped controllers. Destroy and spawn it!
 						 */
-						if (!live.getController().equals(live.getPrevController())) {
-							net.destroyEntity(live);
-							net.spawnEntity(live);
+						if (!snapshot.getController().equals(snapshot.getPrevController())) {
+							net.destroyEntity(snapshot);
+							net.spawnEntity(snapshot);
 						} else {
 							/*
 							 * Controller change didn't occur, so sync it!
 							 */
-							net.syncEntity(live);
+							net.syncEntity(snapshot);
 						}
 					}
 					/*
-					 * The entity is out of range, destroy it!
+					 * The entity is out of range or is dead, destroy it!
 					 */
 				} else {
-					net.destroyEntity(live);
+					net.destroyEntity(snapshot);
 				}
 			}
 		}

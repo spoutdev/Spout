@@ -24,63 +24,29 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.chat.console;
+package org.spout.engine.command;
 
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import org.spout.api.Client;
+import org.spout.api.command.CommandContext;
+import org.spout.api.command.CommandSource;
+import org.spout.api.command.annotated.Command;
+import org.spout.api.command.annotated.Executor;
+import org.spout.api.exception.CommandException;
+import org.spout.api.plugin.Platform;
+import org.spout.engine.SpoutEngine;
 
-import org.spout.api.chat.ChatArguments;
+public class InputManagementCommands {
+	private final SpoutEngine engine;
 
-/**
- * A wrapper console that allows accessing multiple consoles at once
- */
-public class MultiConsole implements Console {
-	private final List<Console> consoles = new ArrayList<Console>();
-
-	public MultiConsole() {
-
+	public InputManagementCommands(SpoutEngine engine) {
+		this.engine = engine;
 	}
 
-	public MultiConsole(Console... consoles) {
-		this.consoles.addAll(Arrays.asList(consoles));
-	}
-
-	public List<Console> getConsoles() {
-		return Collections.unmodifiableList(consoles);
-	}
-
-	public boolean removeConsole(Console console) {
-		return consoles.remove(console);
-	}
-
-	public void addConsole(Console console) {
-		consoles.add(console);
-	}
-
-	public void init() {
-		for (Console console : consoles) {
-			console.init();
-		}
-	}
-
-	public void close() {
-		for (Console console : consoles) {
-			console.close();
-		}
-	}
-
-	public void setDateFormat(DateFormat format) {
-		for (Console console : consoles) {
-			console.setDateFormat(format);
-		}
-	}
-
-	public void addMessage(ChatArguments message) {
-		for (Console console : consoles) {
-			console.addMessage(message);
+	@Command(aliases = {"bind"}, usage = "bind <key> <command>", desc = "Binds a command to a key", min = 2)
+	public class BindCommand {
+		@Executor(Platform.CLIENT)
+		public void bind(CommandContext args, CommandSource source) throws CommandException {
+			((Client) engine).getInput().bind(args.getString(0), args.getJoinedString(1).getPlainString());
 		}
 	}
 }

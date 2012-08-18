@@ -97,11 +97,11 @@ import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.StringUtil;
 
-import org.spout.engine.chat.console.Console;
+import org.spout.api.chat.console.Console;
 import org.spout.engine.chat.console.ConsoleManager;
 import org.spout.engine.chat.console.FileConsole;
 import org.spout.engine.chat.console.JLineConsole;
-import org.spout.engine.chat.console.MultiConsole;
+import org.spout.api.chat.console.MultiConsole;
 import org.spout.engine.command.AdministrationCommands;
 import org.spout.engine.command.ConnectionCommands;
 import org.spout.engine.command.MessagingCommands;
@@ -127,7 +127,6 @@ import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
 
 public abstract class SpoutEngine extends AsyncManager implements Engine {
-	private static CommandSource CMD;
 	private static final SpoutPlayer[] EMPTY_PLAYER_ARRAY = new SpoutPlayer[0];
 	private static final Logger logger = Logger.getLogger("Spout");
 	private final String name = "Spout Engine";
@@ -164,7 +163,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private StringMap engineBiomeMap = null;
 	private ConcurrentHashMap<String, String> cvars = new ConcurrentHashMap<String, String>();
 	protected FileSystem filesystem;
-	private Console console;
+	private MultiConsole console;
 	private SpoutApplication arguments;
 
 	public SpoutEngine() {
@@ -183,8 +182,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 		console = new MultiConsole(new FileConsole(this), new JLineConsole(this));
 		consoleManager.setupConsole(console);
-
-		CMD = consoleManager.getCommandSource();
 
 		registerWithScheduler(scheduler);
 
@@ -498,7 +495,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 	@Override
 	public boolean stop() {
-		return stop(tr("Spout shutting down", CMD)); // TODO distribute the message differently
+		return stop(tr("Spout shutting down", getCommandSource())); // TODO distribute the message differently
 	}
 
 	private final AtomicBoolean stopping = new AtomicBoolean();
@@ -828,7 +825,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		return leakThread;
 	}
 
-	public Console getConsole() {
+	public MultiConsole getConsoles() {
 		return console;
 	}
 

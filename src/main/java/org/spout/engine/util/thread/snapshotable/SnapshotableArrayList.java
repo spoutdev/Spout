@@ -41,12 +41,11 @@ import org.spout.api.util.thread.SnapshotRead;
  */
 public class SnapshotableArrayList<T> implements Snapshotable {
 	private final ConcurrentLinkedQueue<T> dirty = new ConcurrentLinkedQueue<T>();
-	private final ArrayList<T> snapshot;
-	private final ArrayList<T> live = new ArrayList<T>();
+	private final List<T> snapshot;
+	private final List<T> live;
 
 	public SnapshotableArrayList(SnapshotManager manager) {
-		snapshot = new ArrayList<T>();
-		manager.add(this);
+		this(manager, null);
 	}
 
 	public SnapshotableArrayList(SnapshotManager manager, ArrayList<T> initial) {
@@ -55,7 +54,7 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 		} else {
 			snapshot = new ArrayList<T>();
 		}
-
+		live = Collections.synchronizedList(new ArrayList<T>(snapshot));
 		manager.add(this);
 	}
 
@@ -143,14 +142,14 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 	 */
 	@Override
 	public void copySnapshot() {
-		for (T o : dirty) {
-			if (live.contains(o)) {
-				snapshot.add(o);
-			} else {
-				snapshot.remove(o);
+		if (dirty.size() > 0) {
+			snapshot.clear();
+			synchronized (live) {
+				for (T o : live) {
+					snapshot.add(o);
+				}
 			}
 		}
-
 		dirty.clear();
 	}
 }
