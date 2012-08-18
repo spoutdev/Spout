@@ -28,7 +28,6 @@ package org.spout.engine.entity;
 
 import java.util.Collection;
 
-import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.math.MathHelper;
 import org.spout.api.protocol.NetworkSynchronizer;
@@ -96,10 +95,6 @@ public final class RegionEntityManager extends EntityManager {
 				 */
 				Collection<SpoutEntity> snapshots = getRegion().getEntityManager().getAll();
 				/*
-				 * The list of entities that have dirty values.
-				 */
-				Collection<SpoutEntity> dirties = getRegion().getEntityManager().getDirtyAll();
-				/*
 				 * If the live entities' position is in range of the player's view distance + position
 				 */
 				if (MathHelper.distance(player.getPosition(), live.getPosition()) <= playerViewDistance) {
@@ -111,7 +106,7 @@ public final class RegionEntityManager extends EntityManager {
 						/*
 						 * If the entity is in the dirty list and snapshots list then it changed this tick, so sync it!
  						 */
-					} else if (snapshots.contains(live) && dirties.contains(live)) {
+					} else if (snapshots.contains(live)) {
 						/*
 						 * The entity is in a snapshot and a dirty list for updates but swapped controllers. Destroy and spawn it!
 						 */
