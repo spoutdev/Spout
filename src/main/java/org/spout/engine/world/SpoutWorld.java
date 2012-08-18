@@ -218,7 +218,6 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.hashcode = new HashCodeBuilder(27, 971).append(uid).toHashCode();
 
 		this.lightingManager = new SpoutWorldLighting(this);
-		this.lightingManager.start();
 
 		parallelTaskManager = new SpoutParallelTaskManager(engine.getScheduler(), this);
 
@@ -606,13 +605,14 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public void startTickRun(int stage, long delta) throws InterruptedException {
-		if (stage == 0) {
-			age.set(age.get() + delta);
-		}
 		switch (stage) {
 			case 0: {
+				age.set(age.get() + delta);
 				parallelTaskManager.heartbeat(delta);
 				taskManager.heartbeat(delta);
+
+				//TODO: Put this in another stage!
+				lightingManager.heartbeat();
 				break;
 			}
 			default: {

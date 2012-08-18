@@ -29,16 +29,13 @@ package org.spout.engine.world;
 import gnu.trove.iterator.TLongIterator;
 
 import org.spout.api.Source;
-import org.spout.api.Spout;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.util.hashing.Int21TripleHashed;
 import org.spout.api.util.set.TInt21TripleHashSet;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.util.ChunkModel;
-import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 
-public class SpoutWorldLighting extends Thread implements Source {
-	private static String taskName = "Lighting Thread";
+public class SpoutWorldLighting implements Source {
 	private static final long MAX_CYCLE_TIME = 20; // Time to perform lighting per tick
 
 	/*
@@ -52,7 +49,10 @@ public class SpoutWorldLighting extends Thread implements Source {
 	private SpoutWorldLightingModel blockLight;
 	private final ChunkModel tmpChunks;
 	private final SpoutWorld world;
-	private boolean running = false;
+	private boolean running = SpoutConfiguration.LIGHTING_ENABLED.getBoolean();
+	private long[] chunkBuffer = new long[10];
+	private int chunkBufferSize = 0;
+	private int idleCounter = 0;
 
 	private final TInt21TripleHashSet dirtyChunks = new TInt21TripleHashSet();
 
@@ -103,8 +103,6 @@ public class SpoutWorldLighting extends Thread implements Source {
 	}
 
 	public SpoutWorldLighting(SpoutWorld world) {
-		super("Lighting thread for world " + world.getName());
-		setDaemon(true);
 		this.world = world;
 		this.skyLight = new SpoutWorldLightingModel(this, true);
 		this.blockLight = new SpoutWorldLightingModel(this, false);
@@ -126,84 +124,74 @@ public class SpoutWorldLighting extends Thread implements Source {
 		return this.tmpChunks.getChunkFromBlock(bx, by, bz);
 	}
 
-	@Override
-	public void run() {
-		long[] chunkBuffer = new long[10];
-		int chunkBufferSize = 0;
+	public void heartbeat() {
+		if (!this.running) {
+			return;
+		}
+		boolean updated = false;
+		boolean stop = false;
+		long startTime = System.currentTimeMillis();
 		TLongIterator iter;
 		int i, cx, cy, cz;
-		int idleCounter = 0;
-		this.running = SpoutConfiguration.LIGHTING_ENABLED.getBoolean();
-		long startTime = System.currentTimeMillis();
-		boolean stop = false;
-		SpoutSnapshotLock lock = (SpoutSnapshotLock)Spout.getEngine().getScheduler().getSnapshotLock();
-		while (this.running) {
-			boolean updated = false;
-			// Obtain the chunks to work with
-			synchronized (this.dirtyChunks) {
-				if ((chunkBufferSize = this.dirtyChunks.size()) > 0) {
-					if (chunkBufferSize > chunkBuffer.length) {
-						chunkBuffer = new long[chunkBufferSize + 100];
-					}
-					iter = this.dirtyChunks.iterator();
-					for (i = 0; i < chunkBufferSize && iter.hasNext(); i++) {
-						chunkBuffer[i] = iter.next();
-					}
-					this.dirtyChunks.clear();
+		// Obtain the chunks to work with
+		synchronized (this.dirtyChunks) {
+			if ((chunkBufferSize = this.dirtyChunks.size()) > 0) {
+				if (chunkBufferSize > chunkBuffer.length) {
+					chunkBuffer = new long[chunkBufferSize + 100];
 				}
+				iter = this.dirtyChunks.iterator();
+				for (i = 0; i < chunkBufferSize && iter.hasNext(); i++) {
+					chunkBuffer[i] = iter.next();
+				}
+				this.dirtyChunks.clear();
 			}
-			if (updated = chunkBufferSize > 0) {
-				lock.coreReadLock(taskName);
-				try {
-					// Resolve all chunks
-					startTime = System.currentTimeMillis();
-					stop = false;
+		}
+		if (updated = chunkBufferSize > 0) {
+			// Resolve all chunks
+			startTime = System.currentTimeMillis();
+			stop = false;
 
-					for (i = 0; i < chunkBufferSize; i++) {
-						cx = Int21TripleHashed.key1(chunkBuffer[i]);
-						cy = Int21TripleHashed.key2(chunkBuffer[i]);
-						cz = Int21TripleHashed.key3(chunkBuffer[i]);
-						if (stop) {
-							// Add chunk back for next cycle
+			for (i = 0; i < chunkBufferSize; i++) {
+				cx = Int21TripleHashed.key1(chunkBuffer[i]);
+				cy = Int21TripleHashed.key2(chunkBuffer[i]);
+				cz = Int21TripleHashed.key3(chunkBuffer[i]);
+				if (stop) {
+					// Add chunk back for next cycle
+					this.addChunk(cx, cy, cz);
+				} else {
+					if (this.tmpChunks.load(cx, cy, cz, LoadOption.LOAD_ONLY).isLoadedAndPopulated()) {
+						SpoutChunk center = this.tmpChunks.getCenter();
+						if (center.isInitializingLighting.get()) {
+							// Schedule the chunk for a later check-up
 							this.addChunk(cx, cy, cz);
 						} else {
-							if (this.tmpChunks.load(cx, cy, cz, LoadOption.LOAD_ONLY).isLoadedAndPopulated()) {
-								SpoutChunk center = this.tmpChunks.getCenter();
-								if (center.isInitializingLighting.get()) {
-									// Schedule the chunk for a later check-up
+							while (!stop && this.skyLight.resolve(center)) {
+								if (stop = (System.currentTimeMillis() - startTime) >= MAX_CYCLE_TIME) {
 									this.addChunk(cx, cy, cz);
-								} else {
-									while (!stop && this.skyLight.resolve(center)) {
-										if (stop = (System.currentTimeMillis() - startTime) >= MAX_CYCLE_TIME) {
-											this.addChunk(cx, cy, cz);
-										}
-									}
-									while (!stop && this.blockLight.resolve(center)) {
-										if (stop = (System.currentTimeMillis() - startTime) >= MAX_CYCLE_TIME) {
-											this.addChunk(cx, cy, cz);
-										}
-									}
+								}
+							}
+							while (!stop && this.blockLight.resolve(center)) {
+								if (stop = (System.currentTimeMillis() - startTime) >= MAX_CYCLE_TIME) {
+									this.addChunk(cx, cy, cz);
 								}
 							}
 						}
 					}
-					idleCounter = 0;
-				} finally {
-					lock.coreReadUnlock(taskName);
 				}
 			}
-			if (!updated) {
-				if (idleCounter++ == 20) {
-					this.skyLight.cleanUp();
-					this.skyLight.reportChanges();
-					this.blockLight.cleanUp();
-					this.blockLight.reportChanges();
-					this.tmpChunks.cleanUp();
-				}
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException ex) {}
+			idleCounter = 0;
+		}
+		if (!updated) {
+			if (idleCounter++ == 20) {
+				this.skyLight.cleanUp();
+				this.skyLight.reportChanges();
+				this.blockLight.cleanUp();
+				this.blockLight.reportChanges();
+				this.tmpChunks.cleanUp();
 			}
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException ex) {}
 		}
 	}
 }
