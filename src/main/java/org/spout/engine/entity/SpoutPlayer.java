@@ -83,7 +83,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		this.name = name;
 		displayName.set(name);
 		hashcode = name.hashCode();
-		connect(session, null);
+		connect(session, transform);
 	}
 
 	@Override
