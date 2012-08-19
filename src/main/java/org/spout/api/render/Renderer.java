@@ -50,7 +50,7 @@ public interface Renderer {
 	 * @param material RenderMaterial to render with
 	 */
 	public abstract void render(RenderMaterial material);
-
+	
 	public abstract void addVertex(float x, float y, float z, float w);
 
 	public abstract void addVertex(float x, float y, float z);
@@ -80,13 +80,7 @@ public interface Renderer {
 	public abstract void addTexCoord(float u, float v);
 
 	public abstract void addTexCoord(Vector2 uv);
-		
-	public abstract void enableColors();
 
-	public abstract void enableNormals();
-
-	public abstract void enableTextures();
-	
 	public abstract int getVertexCount();
 
 }
