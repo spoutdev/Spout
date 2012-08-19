@@ -499,7 +499,7 @@ public final class SpoutScheduler implements Scheduler {
 		int startUpdates = updates.get();
 		while (passStartUpdates < updates.get() && updates.get() < startUpdates + UPDATE_THRESHOLD) {
 			passStartUpdates = updates.get();
-			for (int sequence = -1; sequence < 8 && updates.get() < startUpdates + UPDATE_THRESHOLD; sequence++) {
+			for (int sequence = -1; sequence < 27 && updates.get() < startUpdates + UPDATE_THRESHOLD; sequence++) {
 				if (sequence == -1) {
 					TickStage.setStage(TickStage.PHYSICS);
 				} else {
