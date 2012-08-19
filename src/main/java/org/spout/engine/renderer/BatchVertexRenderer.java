@@ -81,9 +81,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 		return numVertices;
 	}
 	
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#begin()
-		 */
+	
 	@Override
 	public void begin() {
 		if (batching) {
@@ -91,19 +89,12 @@ public abstract class BatchVertexRenderer implements Renderer {
 		}
 		batching = true;
 		flushed = false;
-		vertexBuffer.clear();
-		colorBuffer.clear();
-		normalBuffer.clear();
-		uvBuffer.clear();
+		
 
-		numVertices = 0;
-		
-		
+		numVertices = 0;		
 	}
 
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#end()
-		 */
+	
 	@Override
 	public void end() {
 		if (!batching) {
@@ -113,9 +104,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 		flush();
 	}
 
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#flush()
-		 */
+	
 	public final void flush() {
 		if (vertexBuffer.size() % 4 != 0) {
 			throw new IllegalStateException("Vertex Size Mismatch (How did this happen?)");
@@ -144,7 +133,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 				throw new IllegalStateException("UV Buffer size does not match numVerticies");
 			}
 		}
-		if(numVertices <= 0) return;
+		if(numVertices <= 0) throw new IllegalStateException("Must have more than 0 verticies!");
 		//Call the overriden flush
 		doFlush();
 
@@ -168,9 +157,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	 */
 	protected abstract void doRender(RenderMaterial materail);
 
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#render()
-		 */
+
 	@Override
 	public final void render(RenderMaterial material) {
 		checkRender();
@@ -190,9 +177,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 		
 	}
 
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#addVertex(float, float, float, float)
-		 */
+	
 	@Override
 	public void addVertex(float x, float y, float z, float w) {
 		vertexBuffer.add(x);
@@ -203,62 +188,42 @@ public abstract class BatchVertexRenderer implements Renderer {
 		numVertices++;
 	}
 
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#addVertex(float, float, float)
-		 */
 	@Override
 	public void addVertex(float x, float y, float z) {
 		addVertex(x, y, z, 1.0f);
 	}
 
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#addVertex(float, float)
-		 */
+	
 	@Override
 	public void addVertex(float x, float y) {
 		addVertex(x, y, 0.0f, 1.0f);
 	}
 
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#addVertex(org.spout.api.math.Vector3)
-		 */
+	
 	@Override
 	public void addVertex(Vector3 vertex) {
 		addVertex(vertex.getX(), vertex.getY(), vertex.getZ());
 	}
 
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#AddVertex(org.spout.api.math.Vector2)
-		 */
+	
 	@Override
 	public void addVertex(Vector2 vertex) {
 		addVertex(vertex.getX(), vertex.getY());
 	}
 
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#AddVertex(org.spout.api.math.Vector4)
-		 */
 	@Override
 	public void addVertex(Vector4 vertex) {
 		addVertex(vertex.getX(), vertex.getY(), vertex.getZ(), vertex.getZ());
 	}
 
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#addColor(float, float, float)
-		 */
 	@Override
 	public void addColor(float r, float g, float b) {
 		addColor(r, g, b, 1.0f);
 	}
 
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#addColor(float, float, float, float)
-		 */
+	
 	@Override
 	public void addColor(float r, float g, float b, float a) {
-		if (!useColors) {
-			this.enableColors();
-		}
 		colorBuffer.add(r);
 		colorBuffer.add(g);
 		colorBuffer.add(b);
@@ -269,96 +234,53 @@ public abstract class BatchVertexRenderer implements Renderer {
 		addColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
 	}
 
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#addColor(org.spout.api.util.Color)
-		 */
+	
 	@Override
 	public void addColor(Color color) {
 		addColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 	}
 
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#addNormal(float, float, float, float)
-		 */
+	
 	@Override
 	public void addNormal(float x, float y, float z, float w) {
-		if (!useNormals) {
-			this.enableNormals();
-		}
+		
 		normalBuffer.add(x);
 		normalBuffer.add(y);
 		normalBuffer.add(z);
 		normalBuffer.add(w);
 	}
 
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#addNormal(float, float, float)
-		 */
+	
 	@Override
 	public void addNormal(float x, float y, float z) {
 		addNormal(x, y, z, 1.0f);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.spout.client.renderer.Renderer#addNormal(org.spout.api.math.Vector3)
-	 */
+
 	@Override
 	public void addNormal(Vector3 vertex) {
 		addNormal(vertex.getX(), vertex.getY(), vertex.getZ());
 	}
 
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#addNormal(org.spout.api.math.Vector4)
-		 */
+	
 	@Override
 	public void addNormal(Vector4 vertex) {
 		addNormal(vertex.getX(), vertex.getY(), vertex.getZ(), vertex.getZ());
 	}
 
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#addTexCoord(float, float)
-		 */
+	
 	@Override
 	public void addTexCoord(float u, float v) {
-		if (!this.useTextures) {
-			this.enableTextures();
-		}
+		
 		uvBuffer.add(u);
 		uvBuffer.add(v);
 	}
 
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#addTexCoord(org.spout.api.math.Vector2)
-		 */
-	@Override
+@Override
 	public void addTexCoord(Vector2 uv) {
 		addTexCoord(uv.getX(), uv.getY());
 	}
 
-
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#enableColors()
-		 */
-	@Override
-	public void enableColors() {
-		useColors = true;
-	}
-
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#enableNormals()
-		 */
-	@Override
-	public void enableNormals() {
-		useNormals = true;
-	}
-
-	/* (non-Javadoc)
-		 * @see org.spout.client.renderer.Renderer#enableTextures()
-		 */
-	@Override
-	public void enableTextures() {
-		useTextures = true;
-	}
 
 	public void dumpBuffers() {
 		System.out.println("BatchVertexRenderer Debug Ouput: Verts: " + numVertices + " Using {colors, normal, textures} {" + useColors + ", " + useNormals + ", " + useTextures + "}");
