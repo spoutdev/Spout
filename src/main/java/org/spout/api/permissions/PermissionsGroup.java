@@ -35,12 +35,13 @@ import org.spout.api.event.server.permissions.PermissionGetGroupsEvent;
 import org.spout.api.event.server.permissions.PermissionGroupEvent;
 import org.spout.api.event.server.permissions.PermissionNodeEvent;
 import org.spout.api.geo.World;
+import org.spout.api.util.Named;
 
 /**
  * Represents a user group as a permissions subject. This allows for checking group inheritance, group permissions, etc.
  *
  */
-public class PermissionsGroup implements PermissionsSubject, DataSubject {
+public class PermissionsGroup implements PermissionsSubject, DataSubject, Named {
 	private EventManager manager;
 	private String name;
 
