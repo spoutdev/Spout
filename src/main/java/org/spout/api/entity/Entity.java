@@ -39,6 +39,9 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
+import org.spout.api.protocol.Message;
+import org.spout.api.protocol.Protocol;
+import org.spout.api.protocol.SendMode;
 import org.spout.api.tickable.Tickable;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
@@ -345,4 +348,13 @@ public interface Entity extends Source, Tickable, WorldSource {
 	 * @param ang
 	 */
 	public void setYaw(float ang);
+
+	/**
+	 * Sends all the Messages to all observing players of this Entity that have the specified protocol
+	 * 
+	 * @param sendMode to use
+	 * @param protocol the messages are meant for
+	 * @param messages to send
+	 */
+	public void sendMessage(SendMode sendMode, Protocol protocol, Message... messages);
 }
