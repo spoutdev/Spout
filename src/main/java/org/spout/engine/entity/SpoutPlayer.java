@@ -54,6 +54,8 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.lang.Locale;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.NetworkSynchronizer;
+import org.spout.api.protocol.Protocol;
+import org.spout.api.protocol.SendMode;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;
@@ -327,5 +329,12 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	protected void updateObserver() {
 		return;
+	}
+
+	@Override
+	public void sendMessage(SendMode sendMode, Protocol protocol, Message... messages) {
+		if (sendMode.canSendToSelf() && this.getSession().getProtocol().equals(protocol)) {
+			getSession().sendAll(false, messages);
+		}
 	}
 }
