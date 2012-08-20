@@ -34,7 +34,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.Source;
-import org.spout.api.Spout;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
@@ -52,6 +51,9 @@ import org.spout.api.math.Matrix;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
+import org.spout.api.protocol.Message;
+import org.spout.api.protocol.Protocol;
+import org.spout.api.protocol.SendMode;
 import org.spout.api.util.OutwardIterator;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
@@ -622,5 +624,17 @@ public class SpoutEntity implements Entity, Snapshotable {
 
 	public Set<SpoutChunk> getObservedChunks() {
 		return observingChunks;
+	}
+
+	@Override
+	public void sendMessage(SendMode sendMode, Protocol protocol, Message... messages) {
+		if (sendMode.canSendToObservers()) {
+			final int view = SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE;
+			for (Player player : getWorld().getNearbyPlayers(getPosition(), this, view)) {
+				if (player.getSession().getProtocol().equals(protocol)) {
+					player.getSession().sendAll(false, messages);
+				}
+			}
+		}
 	}
 }
