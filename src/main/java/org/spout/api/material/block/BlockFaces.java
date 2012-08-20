@@ -361,7 +361,7 @@ public class BlockFaces implements Iterable<BlockFace>, ByteBitMask {
 		return (byte) (x | y << 2 | z << 4);
 	}
 	
-	public static BlockFaces getByOffset(Vector3 offset) {
+	public static BlockFaces fromOffset(Vector3 offset) {
 		return offsetHash.get(getOffsetHash(offset));
 	}
 }
