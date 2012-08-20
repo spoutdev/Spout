@@ -77,6 +77,7 @@ import org.spout.api.generator.biome.BiomeRegistry;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.inventory.CommonRecipeManager;
 import org.spout.api.inventory.RecipeManager;
 import org.spout.api.io.store.simple.BinaryFileStore;
@@ -380,6 +381,13 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 	@Override
 	public File getDataFolder() {
+		if (!dataDirectory.exists()) {
+			dataDirectory.mkdirs();			
+		}
+		File playerDirectory = new File(dataDirectory.toString() + File.separator + "players");
+		if (!playerDirectory.exists()) {
+			playerDirectory.mkdirs();
+		}
 		return dataDirectory;
 	}
 
@@ -763,28 +771,22 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	// Players should use weak map?
 	public Player addPlayer(String playerName, SpoutSession<?> session, int viewDistance) {
 		SpoutPlayer player;
-
-		while (true) {
-			player = onlinePlayers.getLive().get(playerName);
-
-			if (player != null) {
-				if (!player.connect(session, getDefaultWorld().getSpawnPoint())) {
-					return null;
-				}
-				break;
+		try {
+			player = WorldFiles.loadPlayerData(playerName, session);
+			player.setDisplayName(playerName);
+			player.connect(session, player.getTransform());
 			}
-
-			player = new SpoutPlayer(playerName, getDefaultWorld().getSpawnPoint(), session, this, viewDistance);
-			if (onlinePlayers.putIfAbsent(playerName, player) == null) {
-				break;
+			catch (Exception e) {
+			//generate a player at default spawn, since we don't have a player .dat file
+			player = new SpoutPlayer(playerName, getDefaultWorld().getSpawnPoint(), session, this, viewDistance);	
 			}
-		}
-
 		World world = player.getWorld();
 		player.getSession().getProtocol().setPlayerController(player);
 		world.spawnEntity(player);
 		session.setPlayer(player);
-		((SpoutWorld) world).addPlayer(player);
+		onlinePlayers.remove(playerName);
+		onlinePlayers.putIfAbsent(playerName, player);
+
 		return player;
 	}
 

@@ -62,6 +62,7 @@ import org.spout.api.util.thread.Threadsafe;
 
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
+import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutWorld;
 
@@ -138,6 +139,8 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			return false;
 		}
 		sessionLive.set(null);
+		//save player data on disconnect, probably should do this periodically as well...
+		WorldFiles.savePlayerData(this);
 		return true;
 	}
 
@@ -330,7 +333,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	protected void updateObserver() {
 		return;
 	}
-
 	@Override
 	public void sendMessage(SendMode sendMode, Protocol protocol, Message... messages) {
 		if (sendMode.canSendToSelf() && this.getSession().getProtocol().equals(protocol)) {
