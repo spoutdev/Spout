@@ -55,6 +55,7 @@ import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.generator.biome.EmptyBiomeManager;
+import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
@@ -532,10 +533,16 @@ public class WorldFiles {
 				}
 			} catch (Exception error) {
 				Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to load the controller for the type: " + type.getName(), error);
+				return null;
 			}
 
 			//Setup entity
-			Region r = w.getRegion(Math.round(pX), Math.round(pY), Math.round(pZ));
+			Region r = w.getRegion(Math.round(pX), Math.round(pY), Math.round(pZ), LoadOption.NO_LOAD);
+			if (r == null) {
+				// TODO - this should never happen - entities should be located in the chunk that was just loaded
+				Spout.getLogger().info("Attempted to load entity to unloaded region");
+				return null;
+			}
 			Transform t = new Transform(new Point(r != null ? r.getWorld() : null, pX, pY, pZ), new Quaternion(qX, qY, qZ, qW, false), new Vector3(sX, sY, sZ));
 			if (!(controller instanceof PlayerController)) {
 			SpoutEntity e = new SpoutEntity((SpoutEngine) Spout.getEngine(), t, controller, view, uid, false);
