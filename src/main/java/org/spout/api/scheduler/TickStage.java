@@ -79,34 +79,48 @@ public class TickStage {
 	 * This is for minor changes prior to the snapshot process.
 	 */
 	public final static int GLOBAL_DYNAMIC_BLOCKS = 1 << 6;
+	
+	/**
+	 * This is the final stage before entering the pre-snapshot stage.<br>
+	 * <br>
+	 * This is for minor changes prior to the snapshot process.
+	 */
+	public final static int LIGHTING = 1 << 7;
+	
+	/**
+	 * This is the final stage before entering the pre-snapshot stage.<br>
+	 * <br>
+	 * This is for minor changes prior to the snapshot process.
+	 */
+	public final static int GLOBAL_LIGHTING = 1 << 8;
 
 	/**
 	 * This is the final stage before entering the pre-snapshot stage.<br>
 	 * <br>
 	 * This is for minor changes prior to the snapshot process.
 	 */
-	public final static int FINALIZE = 1 << 7;
+	public final static int FINALIZE = 1 << 9;
 
 	/**
 	 * This stage occurs before the snapshot stage.<br>
 	 * <br>
 	 * This is a MONITOR ONLY stage, no changes should be made during the stage.
 	 */
-	public final static int PRESNAPSHOT = 1 << 8;
+	public final static int PRESNAPSHOT = 1 << 10;
 
 	/**
 	 * This is the snapshot copy stage.<br>
 	 * <br>
 	 * All snapshots are updated to the equal to the live value.
 	 */
-	public final static int SNAPSHOT = 1 << 9;
+	public final static int SNAPSHOT = 1 << 11;
 	
 	public final static int ALL_PHYSICS = PHYSICS | GLOBAL_PHYSICS;
 	
 	public final static int ALL_DYNAMIC = DYNAMIC_BLOCKS | GLOBAL_DYNAMIC_BLOCKS;
 	
 	public final static int ALL_PHYSICS_AND_DYNAMIC = ALL_PHYSICS | ALL_DYNAMIC;
-
+	
 	public static int getStageInt() {
 		return stage;
 	}
