@@ -477,6 +477,13 @@ public final class SpoutScheduler implements Scheduler {
 				doPhysics(executors);
 			}
 			
+			updates.set(1);
+			while (updates.get() > 0 && totalUpdates < UPDATE_THRESHOLD) {
+				totalUpdates += updates.getAndSet(0);
+				
+				doLighting(executors);
+			}
+			
 			if (totalUpdates >= UPDATE_THRESHOLD) {
 				Spout.getLogger().warning("Physics updates per tick of " + totalUpdates + " exceeded threshold " + UPDATE_THRESHOLD);
 			}
@@ -571,6 +578,40 @@ public final class SpoutScheduler implements Scheduler {
 						}
 					}
 				}
+			}
+		}
+	}
+	
+	private void doLighting(List<AsyncExecutor> executors) throws InterruptedException {
+		int passStartUpdates = updates.get() - 1;
+		int startUpdates = updates.get();
+		while (passStartUpdates < updates.get() && updates.get() < startUpdates + UPDATE_THRESHOLD) {
+			passStartUpdates = updates.get();
+			for (int sequence = -1; sequence < 27 && updates.get() < startUpdates + UPDATE_THRESHOLD; sequence++) {
+				if (sequence == -1) {
+					TickStage.setStage(TickStage.LIGHTING);
+				} else {
+					TickStage.setStage(TickStage.GLOBAL_LIGHTING);
+				}
+
+				for (AsyncExecutor e : executors) {
+					if (!e.doLighting(sequence)) {
+						throw new IllegalStateException("Attempt made to do lighting while the previous operation was still active");
+					}
+				}
+
+				boolean joined = false;
+				while (!joined) {
+					try {
+						AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
+						joined = true;
+					} catch (TimeoutException e) {
+						if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+							logLongDurationTick("Lighting", executors);
+						}
+					}
+				}
+
 			}
 		}
 	}

@@ -103,7 +103,7 @@ public abstract class AsyncManager {
 	/**
 	 * This method is called to execute physics for blocks local to the Region.  
 	 * It might be called multiple times per tick
-	 * @param sequence -1 for local, 0 - 7 for which sequence
+	 * @param sequence -1 for local, 0 - 26 for which sequence
 	 * @throws InterruptedException
 	 */
 	public abstract void runPhysics(int sequence) throws InterruptedException;
@@ -113,12 +113,20 @@ public abstract class AsyncManager {
 	 * It might be called multiple times per tick, the sequence number indicates
 	 * which lists to check
 	 * 
-	 * @param sequence -1 for local, 0 - 7 for which sequence
+	 * @param sequence -1 for local, 0 - 26 for which sequence
 	 * @param time the time to use for the updates
 	 * @throws InterruptedException
 	 */
 	public abstract void runDynamicUpdates(long time, int sequence) throws InterruptedException;
 	
+	/**
+	 * This method is called to update lighting. 
+	 * It might be called multiple times per tick
+	 * @param sequence -1 for local, 0 - 26 for which sequence
+	 * @throws InterruptedException
+	 */
+	public abstract void runLighting(int sequence) throws InterruptedException;
+
 	/**
 	 * Gets the sequence number associated with this manager
 	 * 

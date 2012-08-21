@@ -51,10 +51,8 @@ public interface AsyncExecutor {
 	
 	/**
 	 * This method is called to perform physics and is called multiple times per tick.  
-	 * The .getSequenceNumber() method of the scheduler should be checked to determine 
-	 * which type of physics
 	 * 
-	 * @param sequence -1 for local, 0 - 7 for which sequence
+	 * @param sequence -1 for local, 0 - 26 for which sequence
 	 * @return false if the executor was active
 	 */
 	public boolean doPhysics(int sequence);
@@ -62,14 +60,20 @@ public interface AsyncExecutor {
 	/**
 	 * This method is called to perform dynamic updates and is called multiple times per tick, 
 	 * once physics has settled down.
-	 * The .getSequenceNumber() method of the scheduler should be checked to determine 
-	 * which type of dynamic updates to perform
 	 * 
 	 * @param time the world time
-	 * @param sequence -1 for local, 0 - 7 for which sequence
+	 * @param sequence -1 for local, 0 - 26 for which sequence
 	 * @return false if the executor was active
 	 */
 	public boolean doDynamicUpdates(long time, int sequence);
+	
+	/**
+	 * This method is called to perform lighting and is called multiple times per tick.  
+	 * 
+	 * @param sequence -1 for local, 0 - 26 for which sequence
+	 * @return false if the executor was active
+	 */
+	public boolean doLighting(int sequence);
 
 	/**
 	 * This is called as the last stage prior to the snapshot being taken.<br>

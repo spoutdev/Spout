@@ -74,6 +74,11 @@ public class SpoutRegionManager extends AsyncManager {
 	public void runPhysics(int sequence) throws InterruptedException {
 		parent.runPhysics(sequence);
 	}
+	
+	@Override
+	public void runLighting(int sequence) throws InterruptedException {
+		parent.runLighting(sequence);
+	}
 
 	@Override
 	public long getFirstDynamicUpdateTime() {

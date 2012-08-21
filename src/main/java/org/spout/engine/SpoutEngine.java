@@ -845,6 +845,10 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public void runDynamicUpdates(long time, int sequence) throws InterruptedException {
 	}
+	
+	@Override
+	public void runLighting(int sequence) throws InterruptedException {
+	}
 
 	@Override
 	public void setVariable(String key, String value) {

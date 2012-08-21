@@ -1143,6 +1143,10 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public void runPhysics(int sequence) throws InterruptedException {
 	}
+	
+	@Override
+	public void runLighting(int sequence) throws InterruptedException {
+	}
 
 	@Override
 	public long getFirstDynamicUpdateTime() {

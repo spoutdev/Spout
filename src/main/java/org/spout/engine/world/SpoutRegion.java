@@ -865,6 +865,26 @@ public class SpoutRegion extends Region {
 			}
 		}
 	}
+	
+	int lightingUpdates = 0;
+	
+	public void runLighting(int sequence) throws InterruptedException {
+		if (sequence == -1) {
+			runLocalLighting();
+		} else if (sequence == this.updateSequence) {
+			runGlobalLighting();
+		}
+	}
+
+	public void runLocalLighting() throws InterruptedException {
+		scheduler.addUpdates(lightingUpdates);
+		lightingUpdates = 0;
+	}
+
+	public void runGlobalLighting() throws InterruptedException {
+		scheduler.addUpdates(lightingUpdates);
+		lightingUpdates = 0;
+	}
 
 	public int getSequence() {
 		return updateSequence;

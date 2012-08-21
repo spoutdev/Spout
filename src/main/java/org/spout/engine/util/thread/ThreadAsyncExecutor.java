@@ -35,6 +35,7 @@ import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.thread.coretasks.CopySnapshotTask;
 import org.spout.engine.util.thread.coretasks.DynamicUpdatesTask;
 import org.spout.engine.util.thread.coretasks.FinalizeTask;
+import org.spout.engine.util.thread.coretasks.LightingTask;
 import org.spout.engine.util.thread.coretasks.PhysicsTask;
 import org.spout.engine.util.thread.coretasks.PreSnapshotTask;
 import org.spout.engine.util.thread.coretasks.StartTickTask;
@@ -48,6 +49,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	private final StartTickTask startTickTask = new StartTickTask();
 	private final DynamicUpdatesTask dynamicUpdatesTask = new DynamicUpdatesTask();
 	private final PhysicsTask physicsTask = new PhysicsTask();
+	private final LightingTask lightingTask = new LightingTask();
 	private final PreSnapshotTask preSnapshotTask = new PreSnapshotTask();
 	private final FinalizeTask finalizeTask = new FinalizeTask();
 	private AsyncManager manager = null;
@@ -177,6 +179,18 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 			dynamicUpdatesTask.setTime(time);
 			dynamicUpdatesTask.setSequence(sequence);
 			taskQueue.add(dynamicUpdatesTask);
+			return pulse();
+		} else {
+			return true;
+		}
+	}
+	
+	@Override
+	public final boolean doLighting(int sequence) {
+		if (sequence == -1 || sequence == this.sequence) {
+			ThreadsafetyManager.checkMainThread();
+			lightingTask.setSequence(sequence);
+			taskQueue.add(lightingTask);
 			return pulse();
 		} else {
 			return true;
