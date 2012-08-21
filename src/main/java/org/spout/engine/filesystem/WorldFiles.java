@@ -38,7 +38,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -49,11 +48,15 @@ import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
+import org.spout.api.entity.controller.PlayerController;
 import org.spout.api.entity.controller.type.ControllerRegistry;
 import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.generator.biome.EmptyBiomeManager;
+import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.store.simple.BinaryFileStore;
@@ -72,6 +75,8 @@ import org.spout.api.util.sanitation.StringSanitizer;
 import org.spout.api.util.typechecker.TypeChecker;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
+import org.spout.engine.entity.SpoutPlayer;
+import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.FilteredChunk;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutChunk.PopulationState;
@@ -101,7 +106,61 @@ public class WorldFiles {
 	private static final byte ENTITY_VERSION = 1;
 	private static final byte CHUNK_VERSION = 1;
 	private static final int COLUMN_VERSION = 4;
-
+	
+	public static void savePlayerData(List<SpoutPlayer> Players) {
+	for (SpoutPlayer player : Players) {
+		savePlayerData(player);
+		}
+	}
+	
+	public static void savePlayerData(SpoutPlayer player) {
+		File playerSave = new File(Spout.getEngine().getDataFolder().toString() + File.separator + "players" + File.separator + player.getName() + ".dat");
+		if (!playerSave.exists()) {
+			try {
+					playerSave.createNewFile();
+			} 
+		catch (IOException e) {
+			Spout.getLogger().log(Level.SEVERE, "Error creating player data for " + player.getName(), e);
+			}
+		}
+	    CompoundTag playerTag = saveEntity(player);
+        NBTOutputStream os = null;
+        try {
+          os = new NBTOutputStream(new DataOutputStream(new FileOutputStream(playerSave)), false);
+          os.writeTag(playerTag);
+        } catch (IOException e) {
+          Spout.getLogger().log(Level.SEVERE, "Error saving player data for " + player.getName(), e);
+        } finally {
+          if (os != null)
+            try {
+              os.close();
+            }
+            catch (IOException ignore) {
+            }
+        }
+      }
+	
+	public static SpoutPlayer loadPlayerData(String name, SpoutSession<?> playerSession) {
+			File playerData = new File(Spout.getEngine().getDataFolder().toString() + File.separator + "players" + File.separator + name + ".dat");
+			SpoutPlayer player = null;
+			if (playerData.exists()) {
+				NBTInputStream is = null;
+				try {
+					is = new NBTInputStream(new DataInputStream(new FileInputStream(playerData)), false);
+					CompoundTag dataTag = (CompoundTag) is.readTag();
+					World world = Spout.getEngine().getWorld(dataTag.getName());
+					player = (SpoutPlayer)loadEntity(world, dataTag, name, playerSession);
+					is.close();
+				}
+				catch (Exception e) {
+					Spout.getLogger().log(Level.SEVERE, "Error loading player data for " + name, e);
+				}
+				return player;
+			}
+			// should never make it here, if it does it's null anyhow...
+			return null;
+	}
+	
 	public static void saveWorldData(SpoutWorld world) {
 		File worldData = new File(world.getDirectory(), "world.dat");
 
@@ -422,6 +481,9 @@ public class WorldFiles {
 	}
 
 	private static SpoutEntity loadEntity(SpoutRegion r, CompoundTag tag) {
+		return loadEntity(r.getWorld(), tag, null, null); 
+	}
+	private static SpoutEntity loadEntity(World w, CompoundTag tag, String Name, SpoutSession<?> playerSession) {
 		CompoundMap map = tag.getValue();
 
 		@SuppressWarnings("unused")
@@ -473,11 +535,17 @@ public class WorldFiles {
 			}
 
 			//Setup entity
+			Region r = w.getRegion(Math.round(pX), Math.round(pY), Math.round(pZ));
 			Transform t = new Transform(new Point(r != null ? r.getWorld() : null, pX, pY, pZ), new Quaternion(qX, qY, qZ, qW, false), new Vector3(sX, sY, sZ));
+			if (!(controller instanceof PlayerController)) {
 			SpoutEntity e = new SpoutEntity((SpoutEngine) Spout.getEngine(), t, controller, view, uid, false);
 			e.setObserver(observer);
-
 			return e;
+			}
+			else {
+			SpoutPlayer e = new SpoutPlayer(Name, t, playerSession, (SpoutEngine) Spout.getEngine(), view);
+			return e;
+			}
 		} else {
 			Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to create controller for the type: " + type.getName());
 		}
@@ -485,12 +553,11 @@ public class WorldFiles {
 		return null;
 	}
 
-	private static Tag saveEntity(SpoutEntity e) {
-		if (!e.getController().isSavable() || e.isDead()) {
+	private static CompoundTag saveEntity(SpoutEntity e) {
+		if (((!e.getController().isSavable() || (e.isDead()))) && (!(e instanceof SpoutPlayer))) {
 			return null;
 		}
 		CompoundMap map = new CompoundMap();
-
 		map.put(new ByteTag("version", ENTITY_VERSION));
 		map.put(new StringTag("controller", e.getController().getType().getName()));
 
@@ -529,9 +596,13 @@ public class WorldFiles {
 		} catch (Exception error) {
 			Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to write the controller information for the type: " + e.getController().getType(), error);
 		}
-
-		CompoundTag tag = new CompoundTag("entity_" + e.getId(), map);
-
+		CompoundTag tag = null;
+		if (e instanceof Player) {
+			tag = new CompoundTag(((SpoutPlayer)e).getWorld().getName(), map);
+		}
+		else {
+		tag = new CompoundTag("entity_" + e.getId(), map);
+		}
 		return tag;
 	}
 
