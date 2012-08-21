@@ -178,7 +178,13 @@ public class SpoutRegion extends Region {
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source, LoadOption loadopt) {
 		super(world, x * Region.BLOCKS.SIZE, y * Region.BLOCKS.SIZE, z * Region.BLOCKS.SIZE);
 		this.source = source;
-		manager = new SpoutRegionManager(this, 2, new ThreadAsyncExecutor(this.toString() + " Thread"), world.getEngine());
+		
+		int xx = MathHelper.mod(getX(), 3);
+		int yy = MathHelper.mod(getY(), 3);
+		int zz = MathHelper.mod(getZ(), 3);
+		updateSequence = (xx * 9) + (yy * 3) + zz;
+		
+		manager = new SpoutRegionManager(this, 2, new ThreadAsyncExecutor(this.toString() + " Thread", updateSequence), world.getEngine());
 
 		AsyncExecutor ae = manager.getExecutor();
 		if (ae instanceof Thread) {
@@ -212,10 +218,6 @@ public class SpoutRegion extends Region {
 			throw new IllegalStateException("AsyncExecutor should be instance of Thread");
 		}
 		taskManager = new SpoutTaskManager(world.getEngine().getScheduler(), false, t, world.getAge());
-		int xx = MathHelper.mod(getX(), 3);
-		int yy = MathHelper.mod(getY(), 3);
-		int zz = MathHelper.mod(getZ(), 3);
-		updateSequence = (xx * 9) + (yy * 3) + zz;
 		scheduler = (SpoutScheduler) (Spout.getEngine().getScheduler());
 	}
 
