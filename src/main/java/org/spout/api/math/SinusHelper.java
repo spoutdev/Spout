@@ -32,23 +32,23 @@ import java.util.Random;
  * A class designed for Sinus operations using a table lookup system
  */
 public class SinusHelper {
-	private static final BitSize SCALE = new BitSize(16); // used to compute the size and mask to use
-	private static final float[] SIN_TABLE = new float[SCALE.SIZE];
-	private static float CONVERSION_FACTOR = (float) (SCALE.SIZE / MathHelper.TWO_PI);
-	private static final int COS_OFFSET = SCALE.SIZE / 4;
+	private static final BitSize SIN_SCALE = new BitSize(16); // used to compute the size and mask to use for sin
+	private static final float[] SIN_TABLE = new float[SIN_SCALE.SIZE];
+	private static float SIN_CONVERSION_FACTOR = (float) (SIN_SCALE.SIZE / MathHelper.TWO_PI);
+	private static final int COS_OFFSET = SIN_SCALE.SIZE / 4;
 
 	static {
-		for (int i = 0; i < SCALE.SIZE; i++) {
-			SIN_TABLE[i] = (float) Math.sin((i * MathHelper.TWO_PI) / SCALE.SIZE);
+		for (int i = 0; i < SIN_SCALE.SIZE; i++) {
+			SIN_TABLE[i] = (float) Math.sin((i * MathHelper.TWO_PI) / SIN_SCALE.SIZE);
 		}
 	}
 
 	private static float sinRaw(int idx) {
-		return SIN_TABLE[idx & SCALE.MASK];
+		return SIN_TABLE[idx & SIN_SCALE.MASK];
 	}
 
 	private static float cosRaw(int idx) {
-		return SIN_TABLE[(idx + COS_OFFSET) & SCALE.MASK];
+		return SIN_TABLE[(idx + COS_OFFSET) & SIN_SCALE.MASK];
 	}
 
 	private static Vector3 get3DAxisRaw(int yawIdx, int pitchIdx) {
@@ -67,7 +67,7 @@ public class SinusHelper {
 	 * @return the 3D axis of a random direction
 	 */
 	public static Vector3 getRandom3DAxis(Random random) {
-		return get3DAxisRaw(random.nextInt(SCALE.SIZE), random.nextInt(SCALE.SIZE));
+		return get3DAxisRaw(random.nextInt(SIN_SCALE.SIZE), random.nextInt(SIN_SCALE.SIZE));
 	}
 
 	/**
@@ -78,7 +78,7 @@ public class SinusHelper {
 	 * @return the 3D axis
 	 */
 	public static Vector3 get3DAxis(float yaw, float pitch) {
-		return get3DAxisRaw(MathHelper.floor(yaw * CONVERSION_FACTOR), MathHelper.floor(pitch * CONVERSION_FACTOR));	
+		return get3DAxisRaw(MathHelper.floor(yaw * SIN_CONVERSION_FACTOR), MathHelper.floor(pitch * SIN_CONVERSION_FACTOR));	
 	}
 
 	/**
@@ -88,7 +88,7 @@ public class SinusHelper {
 	 * @return the 2D axis of a random angle
 	 */
 	public static Vector2 getRandom2DAxis(Random random) {
-		return get2DAxisRaw(random.nextInt(SCALE.SIZE));
+		return get2DAxisRaw(random.nextInt(SIN_SCALE.SIZE));
 	}
 
 	/**
@@ -98,20 +98,61 @@ public class SinusHelper {
 	 * @return the 2D axis
 	 */
 	public static Vector2 get2DAxis(float angle) {
-		return get2DAxisRaw(MathHelper.floor(angle * CONVERSION_FACTOR));
+		return get2DAxisRaw(MathHelper.floor(angle * SIN_CONVERSION_FACTOR));
 	}
 
 	/**
-	 * Tangent calculations using a table.<br><br>
+	 * Tangent calculations using a table.<br>
+	 * <i>sin(angle) / cos(angle)</i><br><br>
+	 * 
+	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal place
+	 * 
+	 * @param angle in radians
+	 * @return the tangent of the angle
+	 */
+	public static float tan(float angle) {
+		int idx = MathHelper.floor(angle * SIN_CONVERSION_FACTOR);
+		return sinRaw(idx) / cosRaw(idx);
+	}
+
+	/**
+	 * Cotangent calculations using a table.<br>
+	 * <i>cos(angle) / sin(angle)</i><br><br>
+	 * 
+	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal place
+	 * 
+	 * @param angle in radians
+	 * @return the cotangent of the angle
+	 */
+	public static float cot(float angle) {
+		int idx = MathHelper.floor(angle * SIN_CONVERSION_FACTOR);
+		return cosRaw(idx) / sinRaw(idx);
+	}
+
+	/**
+	 * Secant calculations using a table:<br>
+	 * <i>1 / cos(angle)</i><br><br>
 	 * 
 	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal place
 	 * 
 	 * @param angle the angle in radians
-	 * @return the sinus of the angle
+	 * @return the secant of the angle
 	 */
-	public static float tan(float angle) {
-		int idx = MathHelper.floor(angle * CONVERSION_FACTOR);
-		return sinRaw(idx) / cosRaw(idx);
+	public static float sec(float angle) {
+		return 1.0f / cos(angle);
+	}
+
+	/**
+	 * Cosecant calculations using a table.<br>
+	 * <i>1 / sin(angle)</i><br><br>
+	 * 
+	 * <b>No interpolation is performed:</b> Accuracy is up to the 5th decimal place
+	 * 
+	 * @param angle the angle in radians
+	 * @return the cosecant of the angle
+	 */
+	public static float cosec(float angle) {
+		return 1.0f / sin(angle);
 	}
 
 	/**
@@ -124,7 +165,7 @@ public class SinusHelper {
 	 * @return the sinus of the angle
 	 */
 	public static float sin(float angle) {
-		return sinRaw(MathHelper.floor(angle * CONVERSION_FACTOR));
+		return sinRaw(MathHelper.floor(angle * SIN_CONVERSION_FACTOR));
 	}
 
 	/**
@@ -137,6 +178,6 @@ public class SinusHelper {
 	 * @return the cosinus of the angle
 	 */
 	public static float cos(float angle) {
-		return cosRaw(MathHelper.floor(angle * CONVERSION_FACTOR));
+		return cosRaw(MathHelper.floor(angle * SIN_CONVERSION_FACTOR));
 	}
 }
