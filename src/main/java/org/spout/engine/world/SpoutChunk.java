@@ -1517,8 +1517,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		// Handle onPlacement for dynamic materials
 		if (newMaterial instanceof DynamicMaterial) {
 			if (oldMaterial instanceof BlockMaterial) {
-				BlockMaterial oldBlockMaterial = (BlockMaterial) oldMaterial;
-				if (!oldBlockMaterial.isCompatibleWith(newMaterial) || !newMaterial.isCompatibleWith(oldBlockMaterial)) {
+				if (!oldMaterial.isCompatibleWith(newMaterial) || !newMaterial.isCompatibleWith(oldMaterial)) {
 					parentRegion.resetDynamicBlock(x, y, z);
 				}
 			} else {
