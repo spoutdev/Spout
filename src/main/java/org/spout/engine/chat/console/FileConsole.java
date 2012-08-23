@@ -70,14 +70,14 @@ public class FileConsole extends AbstractConsole {
 	}
 
 	protected void initImpl() {
-		logFlush = new LogFlushThread();
-		logFlush.start();
 		try {
 			writer = new OutputStreamWriter(new FileOutputStream(logFile, true));
 		} catch (FileNotFoundException ex) {
 			engine.getLogger().log(Level.SEVERE, "Unable to open {0} for writing: {1}", new Object[]{logFileName, ex.getMessage()});
 			ex.printStackTrace();
 		}
+		logFlush = new LogFlushThread();
+		logFlush.start();
 	}
 
 	protected void closeImpl() {
