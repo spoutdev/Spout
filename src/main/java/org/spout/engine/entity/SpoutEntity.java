@@ -139,8 +139,10 @@ public class SpoutEntity implements Entity, Snapshotable {
 			if (!isDead() && getPosition() != null && getWorld() != null) {
 				controller.tick(dt);
 				//TODO Fix, this isn't right
-				chunkLive.set(getWorld().getChunkFromBlock(transform.getPosition(), LoadOption.NO_LOAD));
-				entityManagerLive.set(((SpoutRegion)getRegion()).getEntityManager());
+				if (!transform.equals(lastTransform)) {
+					chunkLive.set(getWorld().getChunkFromBlock(transform.getPosition(), LoadOption.NO_LOAD));
+					entityManagerLive.set(((SpoutRegion)getRegion()).getEntityManager());
+				}
 			}
 		}
 	}
@@ -155,6 +157,7 @@ public class SpoutEntity implements Entity, Snapshotable {
 			onTick(dt);
 		}
 	}
+
 	@Override
 	public Transform getTransform() {
 		return transform.copy();
