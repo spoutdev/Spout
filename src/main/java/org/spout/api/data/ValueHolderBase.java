@@ -233,4 +233,14 @@ public class ValueHolderBase implements ValueHolder {
 		}
 		return ret;
 	}
+
+	public static class NullHolder extends ValueHolderBase {
+		public Object getValue() {
+			return null;
+		}
+
+		public Object getValue(Object def) {
+			return def;
+		}
+	}
 }
