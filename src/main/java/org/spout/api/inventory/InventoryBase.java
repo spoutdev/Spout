@@ -26,6 +26,9 @@
  */
 package org.spout.api.inventory;
 
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.io.Serializable;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
@@ -34,6 +37,8 @@ import java.util.List;
 
 import org.spout.api.inventory.special.InventoryRange;
 import org.spout.api.inventory.special.InventorySlot;
+import org.spout.api.inventory.transfer.TransferMode;
+import org.spout.api.inventory.transfer.TransferModes;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.util.SoftReferenceIterator;
 
@@ -41,13 +46,13 @@ import org.spout.api.util.SoftReferenceIterator;
  * Represents a basic inventory, other inventories can extend to supply custom get and set item routines.<br>
  * It supplies the needed utility functions, current item and inventory viewer support.
  */
-public abstract class InventoryBase implements Serializable, Iterable<ItemStack> {
-
+public abstract class InventoryBase implements Serializable, Iterable<ItemStack>, Cloneable {
 	private static final long serialVersionUID = 0L;
 
 	private final List<InventoryViewer> viewers = new ArrayList<InventoryViewer>();
 	private final List<SoftReference<InventoryBase>> inventoryViewers = new ArrayList<SoftReference<InventoryBase>>();
-	private boolean notify = true;
+	private boolean ignore = false;
+	private final TIntHashSet dirtySlots = new TIntHashSet();
 
 	/**
 	 * Adds a single {@link InventoryViewer} to this Inventory<br>
@@ -93,34 +98,43 @@ public abstract class InventoryBase implements Serializable, Iterable<ItemStack>
 	}
 
 	/**
-	 * Notifies all viewers of a certain change of an item
+	 * Notifies all viewers and itself of a certain change of an item
+	 * 
 	 * @param slot index of the item
-	 * @param item it got set to, or Null if made empty
 	 */
-	public void notifyViewers(int slot, ItemStack item) {
+	protected void notifyItemChange(int slot) {
+		if (ignore) {
+			dirtySlots.add(slot);
+			return;
+		}
+		ItemStack item = this.getItem(slot); //TODO: Item is not immutable, viewers can alter it!!!
+		this.onSlotChanged(slot, item);
 		for (InventoryViewer viewer : this.getViewers()) {
 			viewer.onSlotSet(this, slot, item);
 		}
 		Iterator<InventoryBase> iter = this.getInventoryIterator();
 		while (iter.hasNext()) {
-			iter.next().onParentUpdate(this, slot, item);
+			iter.next().onParentSlotSet(this, slot, item);
 		}
 	}
 
 	/**
-	 * Notifies all viewers of items in this inventory
-	 * @param items of this inventory to notify
+	 * Removes an Inventory viewer from this Inventory<br>
+	 * Should only be called by another Inventory when it removes a child Inventory
+	 * 
+	 * @param inventory to remove
+	 * @return True if removed, False if not
 	 */
-	public void notifyViewers(ItemStack[] items) {
-		for (int i = 0; i < items.length; i++) {
-			for (InventoryViewer viewer : this.getViewers()) {
-				viewer.onSlotSet(this, i, items[i]);
-			}
-			Iterator<InventoryBase> iter = this.getInventoryIterator();
-			while (iter.hasNext()) {
-				iter.next().onParentUpdate(this, i, items[i]);
+	public boolean removeInventoryViewer(InventoryBase inventory) {
+		Iterator<InventoryBase> iter = this.getInventoryIterator();
+		boolean found = false;
+		while (iter.hasNext()) {
+			if (iter.next() == inventory) {
+				iter.remove();
+				found = true;
 			}
 		}
+		return found;
 	}
 
 	/**
@@ -135,36 +149,33 @@ public abstract class InventoryBase implements Serializable, Iterable<ItemStack>
 	}
 
 	/**
-	 * Called when one of the parent inventories of this Inventory is updated<br>
+	 * Called when one of the parent inventories of this Inventory changes an Item<br>
 	 * Should only be overridden and used in InventoryBase extensions.
 	 * 
 	 * @param inventory that got updated
 	 * @param slot of the item in the Inventory
 	 * @param item that got updated
 	 */
-	public void onParentUpdate(InventoryBase inventory, int slot, ItemStack item) {}
+	protected void onParentSlotSet(InventoryBase inventory, int slot, ItemStack item) {}
 
 	/**
-	 * Notifies all viewers of all the current items in this inventory
+	 * Sets whether item changes are ignored<br>
+	 * When ignored, (Inventory) viewers are not notified of item changes and onSlotSet is suppressed<br>
+	 * When the ignore state goes from True to False, all pending item changes are flushed<br><br>
+	 * 
+	 * This method is used to delay item changes, to make sure all changes happen after all items have changed
+	 * 
+	 * @param ignore state to set to
+	 * @return the old ignore state
 	 */
-	public void notifyViewers() {
-		this.notifyViewers(this.getContents());
-	}
-
-	/**
-	 * Gets whether this inventory sends notifications to viewers when items are set
-	 * @return True if it sends notifications, False if not
-	 */
-	public boolean getNotifyViewers() {
-		return this.notify;
-	}
-
-	/**
-	 * Sets whether this inventory sends notifications to viewers when items are set
-	 * @param notify
-	 */
-	public void setNotifyViewers(boolean notify) {
-		this.notify = notify;
+	protected boolean setIgnoreChanges(boolean ignore) {
+		boolean old = this.ignore;
+		this.ignore = ignore;
+		if (!this.ignore && !this.dirtySlots.isEmpty()) {
+			for (TIntIterator iter = this.dirtySlots.iterator(); iter.hasNext(); this.notifyItemChange(iter.next()));
+			this.dirtySlots.clear();
+		}
+		return old;
 	}
 
 	/**
@@ -178,6 +189,7 @@ public abstract class InventoryBase implements Serializable, Iterable<ItemStack>
 
 	/**
 	 * Creates a new Inventory Range pointing to certain items in this Inventory
+	 * 
 	 * @param offset slot index of the range
 	 * @param size of the range
 	 * @return Inventory Range pointing to the items
@@ -187,12 +199,33 @@ public abstract class InventoryBase implements Serializable, Iterable<ItemStack>
 	}
 
 	/**
+	 * Gets a reversed range pointing to the items in this Inventory
+	 * 
+	 * @return reversed range
+	 */
+	public InventoryRange reverse() {
+		return new InventoryRange(this, 0, this.getSize(), true);
+	}
+
+	/**
+	 * Creates a new Inventory Range pointing to certain items in this Inventory
+	 * 
+	 * @param offset slot index of the range
+	 * @param size of the range
+	 * @param reversed state, True to reverse the range, False to keep the same order
+	 * @return Inventory Range pointing to the items
+	 */
+	public InventoryRange createRange(int offset, int size, boolean reversed) {
+		return new InventoryRange(this, offset, size, reversed);
+	}
+	
+	/**
 	 * Checks if the slot index given is contained in this inventory, 
 	 * and throws an {@link IndexOutOfBoundsException} if this is not the case.
 	 * 
 	 * @param slot index to check
 	 */
-	public void checkSlotRange(int slot) {
+	protected void checkSlotRange(int slot) {
 		if (slot < 0 || slot >= this.getSize()) {
 			throw new IndexOutOfBoundsException("Slot index is out of range");
 		}
@@ -204,35 +237,33 @@ public abstract class InventoryBase implements Serializable, Iterable<ItemStack>
 	}
 
 	/**
-	 * Gets the contents of this Inventory<br>
-	 * Note that the items still reference back into this Inventory
+	 * Gets the contents of this Inventory
 	 * 
-	 * @return the contents
+	 * @return the (cloned) contents
 	 */
-	public abstract ItemStack[] getContents();
+	public ItemStack[] getContents() {
+		ItemStack[] cloned = new ItemStack[this.getSize()];
+		for (int i = 0; i < cloned.length; i++) {
+			cloned[i] = this.getItem(i);
+		}
+		return cloned;
+	}
 
 	/**
 	 * Sets the contents of this inventory<br>
-	 * Note that the contents still reference back to the items
+	 * The contents will not reference back after setting
 	 * 
-	 * @param contents to put in
+	 * @param contents to put in (will be cloned)
 	 */
-	public abstract void setContents(ItemStack[] contents);
-
-	/**
-	 * Gets the contents of this Inventory<br>
-	 * The Item Stacks no longer reference back in this Inventory
-	 * 
-	 * @return the cloned contents
-	 */
-	public ItemStack[] getClonedContents() {
-		ItemStack[] cloned = new ItemStack[this.getSize()];
-		ItemStack content;
-		for (int i = 0; i < cloned.length; i++) {
-			content = this.getItem(i);
-			cloned[i] = content == null ? null : content.clone();
+	public void setContents(ItemStack[] contents) {
+		if (this.getSize() != contents.length) {
+			throw new IllegalArgumentException("The contents length is not equal to the size of the Inventory");
 		}
-		return cloned;
+		boolean oldi = this.setIgnoreChanges(true);
+		for (int i = 0; i < contents.length; i++) {
+			this.setItem(i, contents[i]);
+		}
+		this.setIgnoreChanges(oldi);
 	}
 
 	/**
@@ -249,6 +280,7 @@ public abstract class InventoryBase implements Serializable, Iterable<ItemStack>
 	 * 
 	 * @param slot index to set at
 	 * @param item to set to
+	 * @return True if this resulted in an Item change, False if not
 	 */
 	public abstract void setItem(int slot, ItemStack item);
 
@@ -313,118 +345,199 @@ public abstract class InventoryBase implements Serializable, Iterable<ItemStack>
 	}
 
 	/**
-	 * Adds an item to this Inventory<br>
-	 * The input item amount will get affected<br>
-	 * If True is returned, the input item amount is 0, else it is the amount that didn't get added.<br><br>
+	 * Adds an item to this Inventory<br><br>
+	 * Uses the default <b>merge</b> and <b>fill</b> operation
 	 * 
-	 * It will try to stack the item first, then it will fill empty slots<br>
+	 * @param item to add
+	 * @return the remainder of the item after adding the item, null when fully transferred
+	 */
+	public ItemStack addItem(ItemStack item) {
+		return addItem(item, TransferModes.DEFAULT_TRANSFER_MODES);
+	}
+
+	/**
+	 * Adds an item to this Inventory
+	 * 
+	 * @param item to add
+	 * @param transferModes to use
+	 * @return the remainder of the item after adding the item, null when fully transferred
+	 */
+	public ItemStack addItem(ItemStack item, TransferMode... transferModes) {
+		for (TransferMode mode : transferModes) {
+			if (item == null || item.isEmpty()) {
+				break;
+			}
+			item = mode.transfer(item, this);
+		}
+		return item;
+	}
+
+	/**
+	 * Adds an item to this Inventory<br><br>
+	 * <b>The item is fully added, if this is not possible, the operation is cancelled</b><br><br>
+	 * Uses the default <b>merge</b> and <b>fill</b> operation
 	 * 
 	 * @param item to add
 	 * @return True if the addition was successful, False if not
 	 */
-	public boolean addItem(ItemStack item) {
-		return this.addItem(item, false);
+	public boolean addItemFully(ItemStack item) {
+		return addItemFully(item, TransferModes.DEFAULT_TRANSFER_MODES);
 	}
 
 	/**
-	 * Adds an item to this Inventory<br>
-	 * The input item amount will get affected<br>
-	 * If True is returned, the input item amount is 0, else it is the amount that didn't get added.
+	 * Adds an item to this Inventory<br><br>
+	 * <b>The item is fully added, if this is not possible, the operation is cancelled</b>
 	 * 
 	 * @param item to add
-	 * @param toFirstOpenSlot whether to add the item to the first available slot it finds
+	 * @param transferModes to use (if left empty, the default merging mode is used)
 	 * @return True if the addition was successful, False if not
 	 */
-	public boolean addItem(ItemStack item, boolean toFirstOpenSlot) {
-		if (!toFirstOpenSlot) {
-			return this.addItem(item, true, true);
+	public boolean addItemFully(ItemStack item, TransferMode... transferModes) {
+		InventoryBase source = this.clone();
+		if (source.addItem(item, transferModes) != null) {
+			this.setContents(source.getContents());
+			return true;
+		} else {
+			return false;
 		}
-
-		ItemStack content;
-		for (int i = 0; i < this.getSize(); ++i) {
-			content = this.getItem(i);
-			if (content == null || content.isEmpty()) {
-				this.setItem(i, item.limitStackSize());
-			} else if (content.equalsIgnoreSize(item)) {
-				content.stack(item);
-				this.setItem(i, content);
-			} else {
-				continue;
-			}
-			if (item.isEmpty()) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**
-	 * Adds the item to this Inventory<br>
-	 * The input item amount will get affected<br>
-	 * If True is returned, the input item amount is 0, else it is the amount that didn't get added.
+	 * Performs all of the transfer operations between this Inventory and the target Inventory specified<br>
+	 * Items are removed from this Inventory<br><br>
 	 * 
-	 * @param item to add
-	 * @param stackItem whether to stack the item to other items
-	 * @param toEmptySlot whether to add the item to empty slots
-	 * @return True if the addition was successful, False if not
+	 * Uses the default <b>merge</b> and <b>fill</b> operation
+	 * 
+	 * @param target inventory
+	 * @return True if all items were transferred, False if not
 	 */
-	public boolean addItem(ItemStack item, boolean stackItem, boolean toEmptySlot) {
-		if (stackItem && toEmptySlot) {
-			return this.addItem(item, true, false) || this.addItem(item, false, true);
-		}
-		ItemStack content;
-		for (int i = 0; i < this.getSize(); ++i) {
-			content = this.getItem(i);
-			if (stackItem) {
-				if (content == null || !content.equalsIgnoreSize(item)) {
-					continue;
-				}
-				content.stack(item);
-				this.setItem(i, content);
-			} else if (toEmptySlot) {
-				if (content != null && !content.isEmpty()) {
-					continue;
-				}
-				this.setItem(i, item.limitStackSize());
-			}
-			if (item.isEmpty()) {
-				return true;
-			}
-		}
-		return false;
+	public boolean transfer(InventoryBase target) {
+		return transfer(target, TransferModes.DEFAULT_TRANSFER_MODES);
 	}
 
 	/**
-	 * Checks if item fits into inventory fully.
+	 * Performs all of the transfer operations between this Inventory and the target Inventory specified<br>
+	 * Items are removed from this Inventory
 	 * 
-	 * @param item to add
-	 * @param stackItem whether to stack the item to other items
-	 * @param toEmptySlot whether to add the item to empty slots
-	 * @return True if item can fully fit, false if it can't
+	 * @param target inventory
+	 * @param transferModes to use
+	 * @return True if all items were transferred, False if not
 	 */
-	public boolean canItemFit(ItemStack item, boolean stackItem, boolean toEmptySlot) {
-		if (stackItem && toEmptySlot) {
-			return this.canItemFit(item, true, false) || this.canItemFit(item, false, true);
+	public boolean transfer(InventoryBase target, TransferMode... transferModes) {
+		return transfer(target, true, transferModes);
+	}
+
+	/**
+	 * Performs all of the transfer operations between this Inventory and the target Inventory specified<br><br>
+	 * 
+	 * Uses the default <b>merge</b> and <b>fill</b> operation
+	 * 
+	 * @param target inventory
+	 * @param remove True to remove items from this Inventory, False to keep them
+	 * @return True if all items were transferred, False if not
+	 */
+	public boolean transfer(InventoryBase target, boolean remove) {
+		return transfer(target, remove, TransferModes.DEFAULT_TRANSFER_MODES);
+	}
+
+	/**
+	 * Performs all of the transfer operations between this Inventory and the target Inventory specified
+	 * 
+	 * @param target inventory
+	 * @param remove True to remove items from this Inventory, False to keep them
+	 * @param transferModes to use
+	 * @return True if all items were transferred, False if not
+	 */
+	public boolean transfer(InventoryBase target, boolean remove, TransferMode... transferModes) {
+		if (transferModes.length == 0) {
+			transferModes = TransferModes.DEFAULT_TRANSFER_MODES;
 		}
-		ItemStack content;
-		for (int i = 0; i < this.getSize(); ++i) {
-			content = this.getItem(i);
-			if (stackItem) {
-				if (content == null || !content.equalsIgnoreSize(item)) {
+		ItemStack[] sourceItems = this.getContents();
+		for (TransferMode mode : transferModes) {
+			for (int i = 0; i < sourceItems.length; i++) {
+				if (sourceItems[i] == null || sourceItems[i].isEmpty()) {
 					continue;
 				}
-				content.stack(item);
-			} else if (toEmptySlot) {
-				if (content != null && !content.isEmpty()) {
-					continue;
-				}
-				return true;
-			}
-			if (item.isEmpty()) {
-				return true;
+				sourceItems[i] = mode.transfer(sourceItems[i], target);
 			}
 		}
-		return false;
+		if (remove) {
+			this.setContents(sourceItems);
+		}
+		for (ItemStack item : sourceItems) {
+			if (item != null && !item.isEmpty()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Performs all of the transfer operations between this Inventory and the target Inventory specified<br>
+	 * Items are removed from this Inventory<br><br>
+	 * 
+	 * <b>All items are transferred, if one item fails, the entire operation is cancelled</b><br><br>
+	 * 
+	 * Uses the default <b>merge</b> and <b>fill</b> operation
+	 * 
+	 * @param target inventory
+	 * @return True if all items were transferred, False if not
+	 */
+	public boolean transferFully(InventoryBase target) {
+		return transferFully(target, TransferModes.DEFAULT_TRANSFER_MODES);
+	}
+
+	/**
+	 * Performs all of the transfer operations between this Inventory and the target Inventory specified<br>
+	 * Items are removed from this Inventory<br><br>
+	 * 
+	 * <b>All items are transferred, if one item fails, the entire operation is cancelled</b>
+	 * 
+	 * @param target inventory
+	 * @param transferModes to use
+	 * @return True if all items were transferred, False if not
+	 */
+	public boolean transferFully(InventoryBase target, TransferMode... transferModes) {
+		return transferFully(target, true, transferModes);
+	}
+
+	/**
+	 * Performs all of the transfer operations between this Inventory and the target Inventory specified<br><br>
+	 * 
+	 * <b>All items are transferred, if one item fails, the entire operation is cancelled</b><br><br>
+	 * 
+	 * Uses the default <b>merge</b> and <b>fill</b> operation
+	 * 
+	 * @param target inventory
+	 * @param remove True to remove items from this Inventory, False to keep them
+	 * @return True if all items were transferred, False if not
+	 */
+	public boolean transferFully(InventoryBase target, boolean remove) {
+		return transferFully(target, remove, TransferModes.DEFAULT_TRANSFER_MODES);
+	}
+
+	/**
+	 * Performs all of the transfer operations between this Inventory and the target Inventory specified<br><br>
+	 * 
+	 * <b>All items are transferred, if one item fails, the entire operation is cancelled</b>
+	 * 
+	 * @param target inventory
+	 * @param remove True to remove items from this Inventory, False to keep them
+	 * @param transferModes to use
+	 * @return True if all items were transferred, False if not
+	 */
+	public boolean transferFully(InventoryBase target, boolean remove, TransferMode... transferModes) {
+		InventoryBase cloneTarget = target.clone();
+		InventoryBase cloneSource = this.clone();
+		if (cloneSource.transfer(cloneTarget, transferModes)) {
+			this.setContents(cloneSource.getContents());
+			if (remove) {
+				target.setContents(cloneTarget.getContents());
+			}
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -514,4 +627,26 @@ public abstract class InventoryBase implements Serializable, Iterable<ItemStack>
 	 * @param item to set to
 	 */
 	public void onSlotChanged(int slot, ItemStack item) {}
+
+	/**
+	 * Tests if this Inventory has (non-null and non-empty) items
+	 * 
+	 * @return True if this Inventory is empty, False if not
+	 */
+	public boolean isEmpty() {
+		for (ItemStack item : this) {
+			if (item != null && !item.isEmpty()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Gets a clone Inventory containing the cloned contents of this Inventory
+	 */
+	@Override
+	public Inventory clone() {
+		return new Inventory(this.getContents());
+	}
 }

@@ -49,8 +49,8 @@ public class InventoryTest {
 
 	@Before
 	public void setUp() {
-		subject.addItem(testing, true);
-		subject.addItem(testingSubMaterial, true);
+		subject.addItem(testing);
+		subject.addItem(testingSubMaterial);
 	}
 
 	@Test

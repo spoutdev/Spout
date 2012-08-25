@@ -24,46 +24,25 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.inventory;
+package org.spout.api.inventory.transfer;
 
-import org.spout.api.util.LogicUtil;
+public class TransferModes {
+	/**
+	 * Performs a merge and fill at the same time, filling and merging with the first item slot it can find
+	 */
+	public static final TransferMode MERGE_AND_FILL = new MergedStackTransferMode(true, true);
+	/**
+	 * Performs a merge-only operation on the first item slot it can find
+	 */
+	public static final TransferMode MERGE = new MergedStackTransferMode(true, false);
+	/**
+	 * Performs a fill-only operation on the first item slot it can find
+	 */
+	public static final TransferMode FILL = new MergedStackTransferMode(false, true);
 
-/**
- * Represents an inventory, usually owned by an entity. In a grid-style
- * inventory, slot ordering starts in the lower-left corner at zero, going
- * left-to-right for each row.
- */
-public class Inventory extends InventoryBase {
-	private static final long serialVersionUID = 0L;
-	private final ItemStack[] contents;
-
-	public Inventory(int size) {
-		this(new ItemStack[size]);
-	}
-
-	public Inventory(ItemStack... contents) {
-		this.contents = contents;
-	}
-
-	@Override
-	public int getSize() {
-		return contents.length;
-	}
-
-	@Override
-	public ItemStack getItem(int slot) {
-		this.checkSlotRange(slot);
-		return ItemStack.cloneSpecial(contents[slot]);
-	}
-
-	@Override
-	public void setItem(int slot, ItemStack item) {
-		this.checkSlotRange(slot);
-		item = ItemStack.cloneSpecial(item);
-		if (LogicUtil.bothNullOrEqual(item, contents[slot])) {
-			return;
-		}
-		contents[slot] = item;
-		this.notifyItemChange(slot);
-	}
+	/**
+	 * An array of transfer modes used by default if no transfer modes are specified<br><br>
+	 * <b>By default it first merges the item, and then fills it</b>
+	 */
+	public static final TransferMode[] DEFAULT_TRANSFER_MODES = new TransferMode[] {MERGE, FILL};
 }

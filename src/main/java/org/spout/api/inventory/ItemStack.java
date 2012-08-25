@@ -188,6 +188,16 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 		return this;
 	}
 
+	/**
+	 * If the item is null or empty, null is returned, otherwise the item is cloned
+	 * 
+	 * @param item to clone
+	 * @return null, or the cloned item
+	 */
+	public static ItemStack cloneSpecial(ItemStack item) {
+		return item == null || item.isEmpty() ? null : item.clone();
+	}
+
 	@Override
 	public ItemStack clone() {
 		ItemStack newStack = new ItemStack(material, data, amount, auxData);

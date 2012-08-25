@@ -28,6 +28,8 @@ package org.spout.api.inventory.special;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.spout.api.inventory.InventoryBase;
@@ -41,6 +43,7 @@ public class InventoryBundle extends InventoryBase {
 	private static final long serialVersionUID = 1L;
 
 	private final List<InventoryBase> inventories;	
+	private int size = 0;
 
 	public InventoryBundle() {
 		this.inventories = new ArrayList<InventoryBase>();
@@ -50,6 +53,7 @@ public class InventoryBundle extends InventoryBase {
 		this.inventories = Arrays.asList(inventories);
 		for (InventoryBase inventory : this.inventories) {
 			inventory.addInventoryViewer(this);
+			this.size += inventory.getSize();
 		}
 	}
 
@@ -93,13 +97,29 @@ public class InventoryBundle extends InventoryBase {
 
 	@Override
 	public int getSize() {
-		int size = 0;
-		for (InventoryBase inventory : this.inventories) {
-			size += inventory.getSize();
-		}
-		return size;
+		return this.size;
 	}
 
+	/**
+	 * Removes an Inventory from this Bundle
+	 * 
+	 * @param inventory to remove
+	 * @return True if removed, False if not
+	 */
+	public boolean removeInventory(InventoryBase inventory) {
+		Iterator<InventoryBase> iter = this.inventories.iterator();
+		boolean found = false;
+		while (iter.hasNext()) {
+			if (iter.next() == inventory) {
+				iter.remove();
+				this.size -= inventory.getSize();
+				inventory.removeInventoryViewer(this);
+				found = true;
+			}
+		}
+		return found;
+	}
+	
 	/**
 	 * Adds a new Inventory to this Bundle
 	 * 
@@ -108,6 +128,7 @@ public class InventoryBundle extends InventoryBase {
 	 */
 	public <T extends InventoryBase> T addInventory(T inventory) {
 		this.inventories.add(inventory);
+		this.size += inventory.getSize();
 		inventory.addInventoryViewer(this);
 		return inventory;
 	}
@@ -117,44 +138,17 @@ public class InventoryBundle extends InventoryBase {
 	 * @return a list of inventories
 	 */
 	public List<InventoryBase> getInventories() {
-		return this.inventories;
+		return Collections.unmodifiableList(this.inventories);
 	}
 
 	@Override
-	public void onParentUpdate(InventoryBase inventory, int slot, ItemStack item) {
-		if (this.getNotifyViewers()) {
-			for (InventoryBase inv : this.inventories) {
-				if (inv == inventory) {
-					this.onSlotChanged(slot, item);
-					if (this.getNotifyViewers()) {
-						this.notifyViewers(slot, item);
-					}
-					return;
-				}
-
-				slot += inv.getSize();
+	public void onParentSlotSet(InventoryBase inventory, int slot, ItemStack item) {
+		for (InventoryBase inv : this.inventories) {
+			if (inv == inventory) {
+				this.notifyItemChange(slot);
+				return;
 			}
-		}
-	}
-
-	@Override
-	public void setContents(ItemStack[] contents) {
-		boolean old = this.getNotifyViewers();
-		this.setNotifyViewers(false);
-		ItemStack[] current;
-		int index = 0;
-		for (InventoryBase inventory : this.inventories) {
-			current = new ItemStack[inventory.getSize()];
-			System.arraycopy(contents, index, current, 0, current.length);
-			index += current.length;
-			inventory.setContents(current);
-		}
-		for (int i = 0; i < contents.length; i++) {
-			this.onSlotChanged(i, contents[i]);
-		}
-		if (old) {
-			this.setNotifyViewers(true);
-			this.notifyViewers();
+			slot += inv.getSize();
 		}
 	}
 
