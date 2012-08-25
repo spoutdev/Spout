@@ -24,46 +24,42 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.inventory;
+package org.spout.api.inventory.transfer;
 
-import org.spout.api.util.LogicUtil;
+import org.spout.api.inventory.InventoryBase;
+import org.spout.api.inventory.ItemStack;
 
-/**
- * Represents an inventory, usually owned by an entity. In a grid-style
- * inventory, slot ordering starts in the lower-left corner at zero, going
- * left-to-right for each row.
- */
-public class Inventory extends InventoryBase {
-	private static final long serialVersionUID = 0L;
-	private final ItemStack[] contents;
+public class MergedStackTransferMode implements TransferMode {
+	private final boolean stack, fill;
 
-	public Inventory(int size) {
-		this(new ItemStack[size]);
-	}
-
-	public Inventory(ItemStack... contents) {
-		this.contents = contents;
+	public MergedStackTransferMode(boolean stack, boolean fill) {
+		this.stack = stack;
+		this.fill = fill;
 	}
 
 	@Override
-	public int getSize() {
-		return contents.length;
-	}
-
-	@Override
-	public ItemStack getItem(int slot) {
-		this.checkSlotRange(slot);
-		return ItemStack.cloneSpecial(contents[slot]);
-	}
-
-	@Override
-	public void setItem(int slot, ItemStack item) {
-		this.checkSlotRange(slot);
-		item = ItemStack.cloneSpecial(item);
-		if (LogicUtil.bothNullOrEqual(item, contents[slot])) {
-			return;
+	public ItemStack transfer(ItemStack item, InventoryBase target) {
+		ItemStack content;
+		for (int i = 0; i < target.getSize(); ++i) {
+			content = target.getItem(i);
+			if (this.stack) {
+				if (content == null || !content.equalsIgnoreSize(item)) {
+					continue;
+				}
+				content.stack(item);
+				target.setItem(i, content);
+			}
+			if (this.fill) {
+				if (content != null && !content.isEmpty()) {
+					continue;
+				}
+				target.setItem(i, item.limitStackSize());
+			}
+			if (item.isEmpty()) {
+				item = null;
+				break;
+			}
 		}
-		contents[slot] = item;
-		this.notifyItemChange(slot);
+		return item;
 	}
 }

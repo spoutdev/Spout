@@ -24,46 +24,22 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.inventory;
+package org.spout.api.inventory.transfer;
 
-import org.spout.api.util.LogicUtil;
+import org.spout.api.inventory.InventoryBase;
+import org.spout.api.inventory.ItemStack;
 
 /**
- * Represents an inventory, usually owned by an entity. In a grid-style
- * inventory, slot ordering starts in the lower-left corner at zero, going
- * left-to-right for each row.
+ * An algorithm to transfer all the contents from one Inventory to the other
  */
-public class Inventory extends InventoryBase {
-	private static final long serialVersionUID = 0L;
-	private final ItemStack[] contents;
+public interface TransferMode {
 
-	public Inventory(int size) {
-		this(new ItemStack[size]);
-	}
-
-	public Inventory(ItemStack... contents) {
-		this.contents = contents;
-	}
-
-	@Override
-	public int getSize() {
-		return contents.length;
-	}
-
-	@Override
-	public ItemStack getItem(int slot) {
-		this.checkSlotRange(slot);
-		return ItemStack.cloneSpecial(contents[slot]);
-	}
-
-	@Override
-	public void setItem(int slot, ItemStack item) {
-		this.checkSlotRange(slot);
-		item = ItemStack.cloneSpecial(item);
-		if (LogicUtil.bothNullOrEqual(item, contents[slot])) {
-			return;
-		}
-		contents[slot] = item;
-		this.notifyItemChange(slot);
-	}
+	/**
+	 * Transfers the item to the target inventory specified
+	 * 
+	 * @param item to add (can not be null or empty)
+	 * @param target inventory
+	 * @return the remainder of the item, or null if fully transferred
+	 */
+	public ItemStack transfer(ItemStack item, InventoryBase target);
 }

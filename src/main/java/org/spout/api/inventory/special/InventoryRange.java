@@ -39,25 +39,34 @@ public class InventoryRange extends InventoryBase {
 	private final int size;
 	private final int offset;
 	private final InventoryBase parent;
+	private final boolean reversed;
 
 	public InventoryRange(InventoryBase parent, int offset, int size) {
+		this(parent, offset, size, false);
+	}
+	
+	public InventoryRange(InventoryBase parent, int offset, int size, boolean reversed) {
 		this.size = size;
 		this.parent = parent;
 		this.offset = offset;
 		this.parent.addInventoryViewer(this);
+		this.reversed = reversed;
 	}
 
-	@Override
-	public ItemStack[] getContents() {
-		ItemStack[] contents = new ItemStack[this.getSize()];
-		for (int i = 0; i < contents.length; i++) {
-			contents[i] = this.getItem(i);
-		}
-		return contents;
+	/**
+	 * Gets if this Inventory Range uses a reversed item lookup
+	 * 
+	 * @return True if reversed, False if not
+	 */
+	public boolean isReversed() {
+		return this.reversed;
 	}
 
 	@Override
 	public ItemStack getItem(int slot) {
+		if (reversed) {
+			slot = size - slot;
+		}
 		if (slot < 0 || slot >= this.getSize()) {
 			throw new IllegalArgumentException("Slot is out of range");
 		}
@@ -70,6 +79,9 @@ public class InventoryRange extends InventoryBase {
 
 	@Override
 	public void setItem(int slot, ItemStack item) {
+		if (reversed) {
+			slot = size - slot;
+		}
 		if (slot < 0 || slot >= this.getSize()) {
 			throw new IllegalArgumentException("Slot is out of range");
 		}
@@ -91,22 +103,12 @@ public class InventoryRange extends InventoryBase {
 	}
 
 	@Override
-	public void onParentUpdate(InventoryBase inventory, int slot, ItemStack item) {
-		if (inventory == this.parent && this.getNotifyViewers()) {
+	public void onParentSlotSet(InventoryBase inventory, int slot, ItemStack item) {
+		if (inventory == this.parent) {
 			slot -= this.offset;
 			if (slot >= 0 && slot < this.getSize()) {
-				this.onSlotChanged(slot, item);
-				if (this.getNotifyViewers()) {
-					this.notifyViewers(slot, item);
-				}
+				this.notifyItemChange(slot);
 			}
-		}
-	}
-
-	@Override
-	public void setContents(ItemStack[] contents) {
-		for (int i = 0; i < this.getSize(); i++) {
-			this.setItem(i, contents[i]);
 		}
 	}
 }
