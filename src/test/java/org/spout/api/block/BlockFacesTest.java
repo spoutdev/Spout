@@ -29,6 +29,7 @@ package org.spout.api.block;
 import org.junit.Assert;
 import org.junit.Test;
 
+import org.spout.api.Spout;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
 

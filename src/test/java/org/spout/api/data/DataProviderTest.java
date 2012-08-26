@@ -26,28 +26,22 @@
  */
 package org.spout.api.data;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 import org.spout.api.event.server.data.RetrieveDataEvent;
 
-public class DataSubjectTest implements DataSubject {
-	private final RetrieveDataEvent event = new RetrieveDataEvent(this, "foo.bar");
+import static org.junit.Assert.*;
+
+public class DataProviderTest extends DataProvider implements DataSubject {
+	private final String node = "foo.bar";
+	private final RetrieveDataEvent event = new RetrieveDataEvent(this, node);
 
 	@Test
-	public void testDataSubject() {
-		String node = "foo.bar";
-		event.setResult(20);
-		assertEquals(getData(node).getInt(), 20);
-		event.setResult(20L);
-		assertEquals(getData(node).getLong(), 20L);
-		event.setResult(20.0d);
-		assertEquals(getData(node).getDouble(), 20.0, 0d);
-		event.setResult(true);
-		assertEquals(getData(node).getBoolean(), true);
-		event.setResult("baz");
-		assertEquals(getData(node).getString(), "baz");
+	public void testDatabase() {
+		String expected = "baz";
+		add(this, node, expected);
+		sendData(event);
+		assertEquals(event.getResult().getString(), expected);
 	}
 
 	@Override
