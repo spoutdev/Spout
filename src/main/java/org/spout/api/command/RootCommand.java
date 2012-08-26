@@ -28,22 +28,18 @@ package org.spout.api.command;
 
 import java.util.List;
 
-import org.spout.api.Engine;
 import org.spout.api.chat.ChatSection;
 import org.spout.api.chat.completion.CompletionRequest;
 import org.spout.api.chat.completion.CompletionResponse;
 import org.spout.api.exception.CommandException;
 import org.spout.api.exception.SpoutRuntimeException;
-import org.spout.api.io.store.simple.MemoryStore;
-import org.spout.api.plugin.Platform;
 import org.spout.api.util.Named;
-import org.spout.api.util.StringMap;
 
 public class RootCommand extends SimpleCommand {
-	private static final StringMap COMMAND_REGISTRATION = new StringMap(null, new MemoryStore<Integer>(), 0, Integer.MAX_VALUE, "commands");
 
-	public RootCommand(Engine owner) {
-		super(owner, "root");
+
+	public RootCommand(Named owner) {
+		super(owner, "root" + owner.getName());
 	}
 
 	@Override
@@ -63,25 +59,6 @@ public class RootCommand extends SimpleCommand {
 	@Override
 	public boolean isLocked() {
 		return false;
-	}
-
-	public String getChildName(int id) {
-		return COMMAND_REGISTRATION.getString(id);
-	}
-
-	public Command getChild(int id) {
-		final String name = getChildName(id);
-		if (name == null) {
-			return null;
-		}
-		return getChild(name);
-	}
-
-	@Override
-	public SimpleCommand addSubCommand(Named owner, String name) {
-		SimpleCommand cmd = super.addSubCommand(owner, name);
-		cmd.setId(COMMAND_REGISTRATION.register(cmd.getPreferredName()));
-		return cmd;
 	}
 
 	@Override

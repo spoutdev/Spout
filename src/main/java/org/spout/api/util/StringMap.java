@@ -284,6 +284,15 @@ public class StringMap {
 	}
 
 	/**
+	 * Gets the int corresponding to a given String
+	 * @param key The key
+	 * @return The int or null if no match
+	 */
+	public Integer getInteger(String key) {
+		return store.get(key);
+	}
+
+	/**
 	 * Saves the map to the persistence system
 	 *
 	 * @return returns true if the map saves correctly
@@ -293,7 +302,7 @@ public class StringMap {
 	}
 
 	/**
-	 * Returns a collection of all keys for all key, value pairs within the
+	 * Returns a collection of all keys for all (key, value) pairs within the
 	 * Store
 	 *
 	 * @return returns a Collection containing all the keys

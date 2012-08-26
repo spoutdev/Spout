@@ -37,10 +37,11 @@ import java.util.logging.Logger;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.group.ChannelGroup;
 
+import org.spout.api.chat.completion.CompletionManager;
 import org.spout.api.chat.console.MultiConsole;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
-import org.spout.api.command.RootCommand;
+import org.spout.api.command.SyncedRootCommand;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.EventManager;
 import org.spout.api.generator.WorldGenerator;
@@ -205,7 +206,7 @@ public interface Engine extends Named {
 	 * been searched upon failure.
 	 *
 	 * @param uid to search and match
-	 * @return {@link entity} that matched the uid, or null if none was found
+	 * @return {@link Entity} that matched the uid, or null if none was found
 	 */
 	@SnapshotRead
 	public Entity getEntity(UUID uid);
@@ -401,7 +402,7 @@ public interface Engine extends Named {
 	/**
 	 * Gets the world folders which match the world name.
 	 *
-	 * @param name to match the world folders with
+	 * @param worldName to match the world folders with
 	 * @return the world folders that match the world name
 	 */
 	public Collection<File> matchWorldFolder(String worldName);
@@ -431,7 +432,7 @@ public interface Engine extends Named {
 	 *
 	 * @return the {@link Engine}'s root {@link Command}
 	 */
-	public RootCommand getRootCommand();
+	public SyncedRootCommand getRootCommand();
 
 	/**
 	 * Returns the game's {@link EventManager} Event listener registration and
@@ -590,4 +591,11 @@ public interface Engine extends Named {
 	 * @return The engine's console collection
 	 */
 	public MultiConsole getConsoles();
+
+	/**
+	 * Get the manager responsible for completions
+	 *
+	 * @return The completion manager
+	 */
+	public CompletionManager getCompletionManager();
 }

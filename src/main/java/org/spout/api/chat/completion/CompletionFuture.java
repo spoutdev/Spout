@@ -30,13 +30,31 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.apache.commons.lang3.Validate;
+import org.spout.api.event.object.Eventable;
+import org.spout.api.event.object.EventableBase;
+import org.spout.api.event.object.EventableListener;
+import org.spout.api.event.object.ObjectEvent;
 
 /**
  * Represents a completion that is in process which may need to be sent over the network for a response
  */
-public class CompletionFuture implements Future<CompletionResponse> {
+public class CompletionFuture extends ObjectEvent<CompletionFuture> implements Future<CompletionResponse>, Eventable<CompletionFuture, CompletionFuture> {
 	private volatile boolean cancelled;
-	protected CompletionResponse result;
+	private final Eventable<CompletionFuture, CompletionFuture> eventableBase = new EventableBase<CompletionFuture, CompletionFuture>();
+	protected final AtomicReference<CompletionResponse> result = new AtomicReference<CompletionResponse>();
+
+	public CompletionFuture() {
+		super(null);
+	}
+
+	@Override
+	public CompletionFuture getAssociatedObject() {
+		return this;
+	}
+
 	public boolean cancel(boolean mayInterruptIfRunning) {
 		if (isCancelled() || isDone() || !mayInterruptIfRunning) {
 			return false;
@@ -55,21 +73,74 @@ public class CompletionFuture implements Future<CompletionResponse> {
 
 	public CompletionResponse get() throws InterruptedException, ExecutionException {
 		if (cancelled) {
-			return result;
+			return result.get();
 		}
-		while (result == null) {
+		while (result.get() == null) {
 			wait();
 		}
-		return result;
+		return result.get();
 	}
 
 	public CompletionResponse get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
 		if (cancelled) {
-			return result;
+			return result.get();
 		}
-		while (result == null) {
-			wait(unit.toMillis(timeout));
+		timeout = unit.toMillis(timeout);
+		long startTime = System.currentTimeMillis();
+		while (result.get() == null && System.currentTimeMillis() - timeout < startTime) { // Not completely exact, but should be close enough unless the server is running stupidly slowly.
+			wait(timeout);
 		}
-		return result;
+
+		return result.get();
+	}
+
+	/**
+	 * Returns the response to this future. Will be null if the future is not yet completed.
+	 *
+	 * @return The response, or null if there is no response.
+	 */
+	public CompletionResponse getImmediately() {
+		return result.get();
+	}
+
+	/**
+	 * Complete the future with a response. This method will set the result, call
+	 * If this future already has a response, this method will do nothing.
+	 *
+	 * @param result The result to set
+	 * @return Whether the result was actually set.
+	 */
+	public boolean complete(CompletionResponse result) {
+		Validate.notNull(result);
+		if (this.result.compareAndSet(null, result)) {
+			callEvent(this);
+			unregisterAllListeners();
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Register a listener to be called on completion of this future. The result of get() is guaranteed to return immediately.
+	 *
+	 * @param listener The listener to register.
+	 */
+	public void registerListener(EventableListener<CompletionFuture> listener) {
+		eventableBase.registerListener(listener);
+	}
+
+	public void unregisterAllListeners() {
+		eventableBase.unregisterAllListeners();
+	}
+
+	public void unregisterListener(EventableListener<CompletionFuture> listener) {
+		eventableBase.unregisterListener(listener);
+	}
+
+	public void callEvent(CompletionFuture event) {
+		if (event != this) {
+			throw new IllegalArgumentException("event must be the same ChannelFuture");
+		}
+		eventableBase.callEvent(event);
 	}
 }
