@@ -56,9 +56,12 @@ import org.spout.api.Engine;
 import org.spout.api.FileSystem;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
+import org.spout.api.chat.completion.CompletionManager;
+import org.spout.api.chat.completion.CompletionManagerImpl;
 import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.RootCommand;
+import org.spout.api.command.SyncedRootCommand;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.entity.Entity;
@@ -145,7 +148,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private final ServiceManager serviceManager = CommonServiceManager.getInstance();
 	private final SnapshotManager snapshotManager = new SnapshotManager();
 	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> onlinePlayers = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
-	private final RootCommand rootCommand = new RootCommand(this);
+	private final SyncedRootCommand rootCommand = new SyncedRootCommand(this);
 	private final WorldGenerator defaultGenerator = new EmptyWorldGenerator();
 	private volatile int maxPlayers = 20;
 	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
@@ -156,6 +159,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
 	private final MemoryLeakThread leakThread = new MemoryLeakThread();
 	protected SpoutConfiguration config = new SpoutConfiguration();
+	private final CompletionManager completions = new CompletionManagerImpl();
 	private File worldFolder = new File(".");
 	private SnapshotableLinkedHashMap<String, SpoutWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutWorld>(snapshotManager);
 	private SnapshotableReference<World> defaultWorld = new SnapshotableReference<World>(snapshotManager, null);
@@ -382,7 +386,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public File getDataFolder() {
 		if (!dataDirectory.exists()) {
-			dataDirectory.mkdirs();			
+			dataDirectory.mkdirs();
 		}
 		File playerDirectory = new File(dataDirectory.toString() + File.separator + "players");
 		if (!playerDirectory.exists()) {
@@ -580,7 +584,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	@Override
-	public RootCommand getRootCommand() {
+	public SyncedRootCommand getRootCommand() {
 		return rootCommand;
 	}
 
@@ -778,7 +782,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 			}
 			catch (Exception e) {
 			//generate a player at default spawn, since we don't have a player .dat file
-			player = new SpoutPlayer(playerName, getDefaultWorld().getSpawnPoint(), session, this, viewDistance);	
+			player = new SpoutPlayer(playerName, getDefaultWorld().getSpawnPoint(), session, this, viewDistance);
 			}
 		World world = player.getWorld();
 		player.getSession().getProtocol().setPlayerController(player);
@@ -845,7 +849,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public void runDynamicUpdates(long time, int sequence) throws InterruptedException {
 	}
-	
+
 	@Override
 	public void runLighting(int sequence) throws InterruptedException {
 	}
@@ -858,6 +862,11 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public String getVariable(String key) {
 		return cvars.get(key);
+	}
+
+	@Override
+	public CompletionManager getCompletionManager() {
+		return completions;
 	}
 
 	private class SessionTask implements Runnable {
