@@ -27,8 +27,10 @@
 package org.spout.engine.protocol.builtin.handler;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
 
 import org.spout.api.Client;
+import org.spout.api.Spout;
 import org.spout.api.entity.Player;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.ClientWorld;
@@ -53,6 +55,9 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 			managerClass = testClass.asSubclass(BiomeManager.class);
 		} catch (ClassNotFoundException e) {
 			throw new IllegalArgumentException("Unknown biome manager class: " + message.getBiomeManagerClass());
+		}
+		if (Spout.debugMode()) {
+			Spout.getLogger().log(Level.INFO, "Recieved Chunk Data: {0}", message.toString());
 		}
 		BiomeManager manager;
 		try {
