@@ -39,7 +39,7 @@ public class DataProviderTest extends DataProvider implements DataSubject {
 	@Test
 	public void testDatabase() {
 		String expected = "baz";
-		add(this, node, expected);
+		set(this, node, expected);
 		sendData(event);
 		assertEquals(event.getResult().getString(), expected);
 	}
