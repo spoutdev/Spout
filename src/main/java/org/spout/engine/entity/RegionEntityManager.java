@@ -27,15 +27,10 @@
 package org.spout.engine.entity;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
-
-import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.math.MathHelper;
 import org.spout.api.protocol.NetworkSynchronizer;
@@ -93,7 +88,7 @@ public final class RegionEntityManager extends EntityManager {
 	}
 
 	public List<Player> getPlayers() {
-		Map map = players.get();
+		Map<?, ?> map = players.get();
 		if (map == null) {
 			return Collections.emptyList();
 		}
@@ -118,32 +113,28 @@ public final class RegionEntityManager extends EntityManager {
 			if (entitiesPerPlayer == null) {
 				entitiesPerPlayer = new ArrayList<SpoutEntity>();
 			}
+			boolean spawn, destroy, update;
 			for (SpoutEntity entity : getAll()) {
 				if (entity.equals(player)) {
 					continue;
 				}
 				boolean contains = entitiesPerPlayer.contains(entity);
+				spawn = destroy = update = false;
 				if (MathHelper.distance(player.getPosition(), entity.getPosition()) <= playerViewDistance) {
 					if (!contains) {
 						entitiesPerPlayer.add(entity);
-						net.spawnEntity(entity);
+						spawn = true; // Spawn
 					} else if (entity.isDead()) {
-						boolean remove = entitiesPerPlayer.remove(entity);
-						if (remove) {
-							net.destroyEntity(entity);
-						}
+						destroy = entitiesPerPlayer.remove(entity); // Destroy if not already destroyed
 					} else if (!entity.getController().equals(entity.getPrevController())) {
-						net.destroyEntity(entity);
-						net.spawnEntity(entity);
+						destroy = spawn = true; // Re-spawn
 					} else {
-						net.syncEntity(entity);
+						update = true; // Update otherwise
 					}
 				} else {
-					boolean remove = entitiesPerPlayer.remove(entity);
-					if (remove) {
-						net.destroyEntity(entity);
-					}
+					destroy = entitiesPerPlayer.remove(entity); // Destroy if not already destroyed
 				}
+				net.syncEntity(entity, spawn, destroy, update);
 			}
 			players.put(player, entitiesPerPlayer);
 		}
