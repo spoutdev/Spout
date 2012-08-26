@@ -26,12 +26,16 @@
  */
 package org.spout.api.entity.state;
 
+import java.util.EnumSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.spout.api.math.MathHelper;
 
 /**
  * Represents the current player input state
  */
 public class PlayerInputState {
+	public static final float MOUSE_SENSITIVITY = 0.05f;
 	private static final AtomicInteger FLAG_COUNTER = new AtomicInteger(0);
 	public static enum Flags {
 		FORWARD,
@@ -66,12 +70,13 @@ public class PlayerInputState {
 		}
 	}
 
+	public static final PlayerInputState DEFAULT_STATE = new PlayerInputState((short) 0, (byte) 0, (byte) 0);
 	private final short userCommands;
-	private final byte mouseDx;
-	private final byte mouseDy;
+	private final float pitch;
+	private final float yaw;
 
 
-	public PlayerInputState(boolean forward, boolean backward, boolean left, boolean right, boolean jump, boolean crouch, boolean selectUp, boolean selectDown, boolean fire1, boolean fire2, boolean interact, byte mdx, byte mdy) {
+	public PlayerInputState(boolean forward, boolean backward, boolean left, boolean right, boolean jump, boolean crouch, boolean selectUp, boolean selectDown, boolean fire1, boolean fire2, boolean interact, float pitch, float yaw) {
 		short userCommands = 0;
 		userCommands |= (forward ? Flags.FORWARD.getBitFlag() : 0);
 		userCommands |= (backward ? Flags.BACKWARD.getBitFlag() : 0);
@@ -85,14 +90,14 @@ public class PlayerInputState {
 		userCommands |= (fire2 ? Flags.FIRE_2.getBitFlag() : 0);
 		userCommands |= (interact ? Flags.INTERACT.getBitFlag() : 0);
 		this.userCommands = userCommands;
-		this.mouseDx = mdx;
-		this.mouseDy = mdy;
+		this.pitch = pitch;
+		this.yaw = yaw;
 	}
 
-	public PlayerInputState(short userCommands, byte mdx, byte mdy) {
+	public PlayerInputState(short userCommands, float pitch, float yaw) {
 		this.userCommands = userCommands;
-		this.mouseDx = mdx;
-		this.mouseDy = mdy;
+		this.pitch = pitch;
+		this.yaw = yaw;
 	}
 
 	public boolean getForward() {
@@ -139,31 +144,37 @@ public class PlayerInputState {
 		return Flags.INTERACT.has(userCommands);
 	}
 
-	public byte getMouseDx() {
-		return mouseDx;
+	public float pitch() {
+		return pitch;
 	}
 
-	public byte getMouseDy() {
-		return mouseDy;
+	public float yaw() {
+		return yaw;
 	}
 
 	public PlayerInputState withAddedFlag(Flags flag) {
-		return new PlayerInputState((short) (userCommands | flag.getBitFlag()), mouseDx, mouseDy);
+		return new PlayerInputState((short) (userCommands | flag.getBitFlag()), pitch, yaw);
 	}
 
 	public PlayerInputState withRemovedFlag(Flags flag) {
-		return new PlayerInputState((short) (userCommands & ~flag.getBitFlag()), mouseDx, mouseDy);
+		return new PlayerInputState((short) (userCommands & ~flag.getBitFlag()), pitch, yaw);
 	}
 
-	public PlayerInputState withMouseDx(byte mouseDx) {
-		return new PlayerInputState(userCommands, mouseDx, mouseDy);
+	public PlayerInputState withAddedPitch(float pitch) {
+		return new PlayerInputState(userCommands, MathHelper.wrapAngle(pitch + this.pitch), yaw);
 	}
 
-	public PlayerInputState withMouseDy(byte mouseDy) {
-		return new PlayerInputState(userCommands, mouseDx, mouseDy);
+	public PlayerInputState withAddedYaw(float yaw) {
+		return new PlayerInputState(userCommands, pitch, MathHelper.wrapAngle(yaw + this.yaw));
 	}
 
-	public PlayerInputState withMouseCoords(byte mouseDx, byte mouseDy) {
-		return new PlayerInputState(userCommands, mouseDx, mouseDy);
+	public Set<Flags> getFlagSet() {
+		Set<Flags> flags = EnumSet.noneOf(Flags.class);
+		for (Flags flag : Flags.values()) {
+			if (flag.has(userCommands)) {
+				flags.add(flag);
+			}
+		}
+		return flags;
 	}
 }
