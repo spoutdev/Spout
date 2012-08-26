@@ -26,6 +26,7 @@
  */
 package org.spout.engine;
 
+import java.awt.Color;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
@@ -50,6 +51,7 @@ import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -60,14 +62,21 @@ import org.lwjgl.opengl.PixelFormat;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.audio.SoundManager;
+import org.spout.api.command.Command;
 import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.datatable.GenericDatatableMap;
+import org.spout.api.entity.state.PlayerInputState.Flags;
+import org.spout.api.event.world.WorldLoadEvent;
+import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
-import org.spout.api.keyboard.Input;
+import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
+import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.math.MathHelper;
+import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.plugin.Platform;
@@ -78,12 +87,17 @@ import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.render.BasicCamera;
 import org.spout.api.render.Camera;
+import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
+import org.spout.api.util.StringMap;
 import org.spout.engine.audio.SpoutSoundManager;
+import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.command.InputManagementCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ClientFileSystem;
+import org.spout.engine.filesystem.SharedFileSystem;
+import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.input.SpoutInput;
 import org.spout.engine.listener.SpoutClientListener;
 import org.spout.engine.listener.channel.SpoutClientConnectListener;
@@ -92,10 +106,11 @@ import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.util.MacOSXUtils;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutClientWorld;
+import org.spout.engine.world.SpoutWorld;
 
 public class SpoutClient extends SpoutEngine implements Client {
 	private final SoundManager soundManager = new SpoutSoundManager();
-	private final Input inputManager = new SpoutInput();
+	private final SpoutInput inputManager = new SpoutInput();
 	private final String name = "Spout Client";
 	private final Vector2 resolution = new Vector2(640, 480);
 	private final boolean[] sides = { true, true, true, true, true, true };
@@ -153,12 +168,13 @@ public class SpoutClient extends SpoutEngine implements Client {
 	@Override
 	public void start(boolean checkWorlds) {
 		super.start(checkWorlds);
-			getEventManager().registerEvents(new SpoutClientListener(this), this);
+		getEventManager().registerEvents(new SpoutClientListener(this), this);
 		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this));
 
 		// Register commands
 		getRootCommand().addSubCommands(this, InputManagementCommands.class, commandRegFactory);
 		activePlayer = new SpoutClientPlayer("Spouty", this);
+		activePlayer.setRotation(new Quaternion(0f, 0f, 0f, 0f));
 	}
 
 	@Override
@@ -212,8 +228,39 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	@Override
-	public Input getInput() {
+	public SpoutInput getInput() {
 		return inputManager;
+	}
+	
+	public void doInput() {
+		inputManager.pollInput();
+		// TODO move this a plugin
+		if (activePlayer == null) {
+			return;
+		}
+		for (Flags f : activePlayer.input().getFlagSet()) {
+			switch(f) {
+				case FORWARD:
+					activePlayer.setPosition(activePlayer.getPosition().add(activePlayer.getTransform().forwardVector()));
+					break;
+				case BACKWARD:
+					activePlayer.setPosition(activePlayer.getPosition().subtract(activePlayer.getTransform().forwardVector()));
+					break;
+				case LEFT:
+					activePlayer.setPosition(activePlayer.getPosition().add(activePlayer.getTransform().rightVector()));
+					break;
+				case RIGHT:
+					activePlayer.setPosition(activePlayer.getPosition().subtract(activePlayer.getTransform().rightVector()));
+					break;
+				case CROUCH:
+				case FIRE_1:
+				case FIRE_2:
+				case INTERACT:
+				case JUMP:
+				case SELECT_DOWN:
+				case SELECT_UP:
+			}
+		}
 	}
 
 	@Override
@@ -323,10 +370,16 @@ public class SpoutClient extends SpoutEngine implements Client {
 		getSessionRegistry().add(session);
 		activePlayer.connect(session, null);
 		session.setPlayer(activePlayer);
+		onlinePlayers.putIfAbsent(activePlayer.getName(), activePlayer);
 	}
 
+	private PrimitiveBatch renderer;
+	private RenderMaterial mat;
+	
 	public void initRenderer() {
 		createWindow();
+
+		Mouse.setGrabbed(true);
 
 		getLogger().info("SpoutClient Information");
 		getLogger().info("Operating System: " + System.getProperty("os.name"));
@@ -345,25 +398,36 @@ public class SpoutClient extends SpoutEngine implements Client {
 			extensions += GL11.glGetString(GL11.GL_EXTENSIONS);
 		}
 		getLogger().info(extensions);
-
 		soundManager.init();
 		Spout.getFilesystem().postStartup();
-
-		activeCamera = new BasicCamera(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(new Vector3(0, 1, 10), Vector3.ZERO, Vector3.UP));
-		activeCamera.getFrustum().update(activeCamera.getProjection(), activeCamera.getView());
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClearColor((135.f/255.0f), 206.f/255.f, 250.f/255.f, 0);
 
-		worldRenderer = new WorldRenderer(this);
-		worldRenderer.setup();
+		//worldRenderer = new WorldRenderer(this);
+		//worldRenderer.setup();
+
+		renderer = new PrimitiveBatch();
+		mat = (RenderMaterial)this.getFilesystem().getResource("material://Spout/resources/resources/materials/BasicMaterial.smt");
+		renderer.begin();  	
+		renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.RED, sides);
+		renderer.end();
 	}
 
 
 	public void render(float dt) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		worldRenderer.render();
+		//worldRenderer.render();
+
+		Vector3 currentPlayerPos = new Vector3(activePlayer.getPosition().getBlockX(), activePlayer.getPosition().getBlockY(), activePlayer.getPosition().getBlockZ());
+		activeCamera = new BasicCamera(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(currentPlayerPos, currentPlayerPos.add(activePlayer.getTransform().forwardVector().normalize().add(5, 5, 5)), Vector3.UP));
+		activeCamera.getFrustum().update(activeCamera.getProjection(), activeCamera.getView());
+		Transform loc = new Transform(new Point(null, 0f, 0f, 0f), Quaternion.IDENTITY, Vector3.ONE);
+		mat.getShader().setUniform("View", activeCamera.getView());
+		mat.getShader().setUniform("Projection", activeCamera.getProjection());
+		mat.getShader().setUniform("Model", loc.toMatrix());
+		renderer.draw(mat);
 	}
 
 	public WorldRenderer getWorldRenderer() {

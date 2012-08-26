@@ -39,6 +39,7 @@ import java.util.logging.Level;
 import org.lwjgl.opengl.Display;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
+import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.api.scheduler.SnapshotLock;
@@ -50,6 +51,7 @@ import org.spout.api.util.thread.DelayedWrite;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.SpoutServer;
+import org.spout.engine.input.SpoutInput;
 import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
 import org.spout.engine.util.thread.ThreadsafetyManager;
@@ -413,6 +415,11 @@ public final class SpoutScheduler implements Scheduler {
 	private boolean tick(long delta) throws InterruptedException {
 		TickStage.setStage(TickStage.TICKSTART);
 		asyncExecutors.copySnapshot();
+		
+		if (Spout.getPlatform().equals(Platform.CLIENT)) {
+			
+			((SpoutClient) Spout.getEngine()).doInput();
+		}
 		
 		taskManager.heartbeat(delta);
 		

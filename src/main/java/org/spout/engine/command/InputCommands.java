@@ -26,7 +26,9 @@
  */
 package org.spout.engine.command;
 
+import java.util.logging.Level;
 import org.spout.api.Engine;
+import org.spout.api.Spout;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandExecutor;
@@ -45,12 +47,18 @@ public class InputCommands {
 			parent.addSubCommand(engine, "+" + flag.name())
 					.setArgBounds(0, 0)
 					.setHelp("Adds the " + flag.name() + " flag to the calling player's input state")
-					.setExecutor(Platform.CLIENT, new InputFlagHandler(flag, true));
+					.setExecutor(Platform.ALL, new InputFlagHandler(flag, true));
 			parent.addSubCommand(engine, "-" + flag.name())
 					.setArgBounds(0, 0)
 					.setHelp("Removes the " + flag.name() + " flag from the calling player's input state")
-					.setExecutor(Platform.CLIENT, new InputFlagHandler(flag, false));
+					.setExecutor(Platform.ALL, new InputFlagHandler(flag, false));
 		}
+		parent.addSubCommand(engine, "+dx")
+				.setHelp("Adds the x distance traveled to the calling player's input state.")
+				.setExecutor(Platform.ALL, new InputMouseHandler(true));
+		parent.addSubCommand(engine, "+dy")
+				.setHelp("Adds the y distance traveled to the calling player's input state.")
+				.setExecutor(Platform.ALL, new InputMouseHandler(false));
 	}
 
 	public static class InputFlagHandler implements CommandExecutor {
@@ -63,14 +71,48 @@ public class InputCommands {
 		}
 
 		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
-			if (!(source instanceof Player)) {
-				throw new CommandException("Source must be a player!");
+			if (Spout.getPlatform().equals(Platform.CLIENT)) {
+				if (!(source instanceof Player)) {
+					throw new CommandException("Source must be a player!");
+				}
+				Player player = (Player) source;
+				if (add) {
+					player.processInput(player.input().withAddedFlag(flag));
+				} else {
+					player.processInput(player.input().withRemovedFlag(flag));
+				}
+			} else if (Spout.getPlatform().equals(Platform.SERVER)) {
+				// TODO server handling
 			}
-			Player player = (Player) source;
-			if (add) {
-				player.processInput(player.input().withAddedFlag(flag));
-			} else {
-				player.processInput(player.input().withRemovedFlag(flag));
+		}
+	}
+
+	public static class InputMouseHandler implements CommandExecutor {
+		private final boolean x;
+
+		public InputMouseHandler(boolean x) {
+			this.x = x;
+		}
+
+		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
+			if (Spout.getPlatform().equals(Platform.CLIENT)) {
+				if (!(source instanceof Player)) {
+					throw new CommandException("Source must be a player!");
+				}
+				int d;
+				try {
+					d = args.getInteger(0);
+				} catch (NumberFormatException numberFormatException) {
+					throw new IllegalArgumentException("Cannot add a non-number to mouse distances.");
+				}
+				Player player = (Player) source;
+				if (x) {
+					player.processInput(player.input().withAddedYaw(PlayerInputState.MOUSE_SENSITIVITY * d));
+				} else {
+					player.processInput(player.input().withAddedPitch(PlayerInputState.MOUSE_SENSITIVITY * d));
+				}
+			} else if (Spout.getPlatform().equals(Platform.SERVER)) {
+				// TODO server handling
 			}
 		}
 	}

@@ -27,7 +27,6 @@
 package org.spout.engine.entity;
 
 import java.net.InetAddress;
-import java.util.PriorityQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -74,7 +73,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	private final AtomicBoolean onlineLive = new AtomicBoolean(false);
 	private boolean online;
 	private final int hashcode;
-	private PriorityQueue<PlayerInputState> inputQueue = new PriorityQueue<PlayerInputState>();
+	private PlayerInputState inputState = PlayerInputState.DEFAULT_STATE;
 	private Locale preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
 
 	public SpoutPlayer(String name, SpoutEngine engine) {
@@ -86,7 +85,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		this.name = name;
 		displayName.set(name);
 		hashcode = name.hashCode();
-		connect(session, transform);
 	}
 
 	@Override
@@ -179,6 +177,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		return sendRawMessage(message);
 	}
 
+	@Override
 	public void sendCommand(String commandName, ChatArguments arguments) {
 		Command command = Spout.getEngine().getRootCommand().getChild(commandName);
 		Message cmdMessage = getSession().getProtocol().getCommandMessage(command, arguments);
@@ -189,6 +188,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		session.send(false, cmdMessage);
 	}
 
+	@Override
 	public void processCommand(String command, ChatArguments arguments) {
 		final RootCommand rootCmd = Spout.getEngine().getRootCommand();
 		Command cmd = rootCmd.getChild(command);
@@ -200,6 +200,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		}
 	}
 
+	@Override
 	public boolean sendMessage(ChatArguments message) {
 		return sendRawMessage(message);
 	}
@@ -300,12 +301,15 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public PlayerInputState input() {
-		return inputQueue.poll();
+		return inputState;
 	}
 
 	@Override
 	public void processInput(PlayerInputState state) {
-		inputQueue.add(state);
+		if (state == null) {
+			throw new IllegalArgumentException("PlayerInputState cannot be null!");
+		}
+		inputState = state;
 
 	}
 
@@ -320,6 +324,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		super.setController(controller,  source);
 	}
 
+	@Override
 	public Locale getPreferredLocale() {
 		return preferredLocale;
 	}

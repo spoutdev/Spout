@@ -108,6 +108,7 @@ import org.spout.engine.chat.console.JLineConsole;
 import org.spout.api.chat.console.MultiConsole;
 import org.spout.engine.command.AdministrationCommands;
 import org.spout.engine.command.ConnectionCommands;
+import org.spout.engine.command.InputCommands;
 import org.spout.engine.command.MessagingCommands;
 import org.spout.engine.command.TestCommands;
 import org.spout.engine.entity.EntityManager;
@@ -224,6 +225,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		getRootCommand().addSubCommands(this, AdministrationCommands.class, commandRegFactory);
 		getRootCommand().addSubCommands(this, MessagingCommands.class, commandRegFactory);
 		getRootCommand().addSubCommands(this, ConnectionCommands.class, commandRegFactory);
+		InputCommands.setupInputCommands(this, getRootCommand());
 		if (arguments.debug) {
 			getRootCommand().addSubCommands(this, TestCommands.class, commandRegFactory);
 		}
@@ -779,11 +781,10 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 			player = WorldFiles.loadPlayerData(playerName, session);
 			player.setDisplayName(playerName);
 			player.connect(session, player.getTransform());
-			}
-			catch (Exception e) {
+		} catch (Exception e) {
 			//generate a player at default spawn, since we don't have a player .dat file
 			player = new SpoutPlayer(playerName, getDefaultWorld().getSpawnPoint(), session, this, viewDistance);
-			}
+		}
 		World world = player.getWorld();
 		player.getSession().getProtocol().setPlayerController(player);
 		world.spawnEntity(player);

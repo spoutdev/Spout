@@ -34,7 +34,6 @@ import org.spout.api.keyboard.Keyboard;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.keyboard.Input;
-import org.spout.engine.SpoutEngine;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 
@@ -48,6 +47,16 @@ public class SpoutInput implements Input {
 
 	public SpoutInput() {
 		bind(Keyboard.KEY_W, "+Forward");
+		bind(Keyboard.KEY_S, "+BackWard");
+		bind(Keyboard.KEY_A, "+Left");
+		bind(Keyboard.KEY_D, "+Right");
+		bind(Keyboard.KEY_SPACE, "+Jump");
+		bind(Keyboard.KEY_LSHIFT, "+Crouch");
+		bind("KEY_SCROLLDOWN", "+Select_Down");
+		bind("KEY_SCROLLUP", "+Select_Up");
+		bind("MOUSE_BUTTON0", "+FIRE_1");
+		bind("MOUSE_BUTTON1", "+INTERACT");
+		bind("MOUSE_BUTTON2", "+FIRE_2");
 	}
 
 	public void doKeypress(Keyboard key, boolean pressed) {
@@ -60,6 +69,16 @@ public class SpoutInput implements Input {
 		doCommand(cmd,  pressed);
 	}
 
+	public void doMouseDx(int dx) {
+		Spout.getEngine().getCommandSource().sendCommand("+dx", new ChatArguments(dx));
+		Spout.getEngine().getCommandSource().processCommand("+dx", new ChatArguments(dx));
+	}
+
+	public void doMouseDy(int dy) {
+		Spout.getEngine().getCommandSource().sendCommand("+dy", new ChatArguments(dy));
+		Spout.getEngine().getCommandSource().processCommand("+dy", new ChatArguments(dy));
+	}
+
 	private void doCommand(String command, boolean pressed) {
 		if (command == null)
 			return;
@@ -67,7 +86,8 @@ public class SpoutInput implements Input {
 		if (command.startsWith("+") && !pressed) {
 			command = command.replaceFirst("\\+", "-");
 		}
-		((SpoutEngine) Spout.getEngine()).getCommandSource().sendCommand(command, new ChatArguments());
+		Spout.getEngine().getCommandSource().sendCommand(command, new ChatArguments());
+		Spout.getEngine().getCommandSource().processCommand(command, new ChatArguments());
 	}
 
 	/*
@@ -76,6 +96,7 @@ public class SpoutInput implements Input {
 	 * @see org.spout.engine.input.Input#bind(org.spout.keyboard.Keyboard,
 	 * java.lang.String)
 	 */
+	@Override
 	public void bind(Keyboard key, String command) {
 		keyCommands.put(key, command);
 	}
@@ -86,6 +107,7 @@ public class SpoutInput implements Input {
 	 * @see org.spout.engine.input.Input#bind(java.lang.String,
 	 * java.lang.String)
 	 */
+	@Override
 	public void bind(String key, String command) {
 		key = key.toUpperCase();
 		if (key.startsWith("KEY_")) {
@@ -133,8 +155,8 @@ public class SpoutInput implements Input {
 				doMousepress(KEY_SCROLLDOWN, true);
 			}
 
-			// Handle movement
-			// TODO
+			doMouseDx(Mouse.getDX());
+			doMouseDy(Mouse.getDY());
 		}
 	}
 
