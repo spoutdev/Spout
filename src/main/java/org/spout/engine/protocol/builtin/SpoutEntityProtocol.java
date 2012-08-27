@@ -27,6 +27,7 @@
 package org.spout.engine.protocol.builtin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.spout.api.entity.Entity;
@@ -46,26 +47,27 @@ public class SpoutEntityProtocol implements EntityProtocol {
 		super();
 	}
 
-	public Message[] getSpawnMessage(Entity entity) {
-		return new Message[] {new AddEntityMessage(entity.getId(), entity.getController().getType(), entity.getTransform())};
+	@Override
+	public List<Message> getSpawnMessages(Entity entity) {
+		return Arrays.<Message>asList(new AddEntityMessage(entity.getId(), entity.getController().getType(), entity.getTransform()));
 	}
 
-	public Message[] getDestroyMessage(Entity entity) {
-		return new Message[] {new RemoveEntityMessage(entity.getId())};
+	@Override
+	public List<Message> getDestroyMessages(Entity entity) {
+		return Arrays.<Message>asList(new RemoveEntityMessage(entity.getId()));
 	}
 
-	public Message[] getUpdateMessage(Entity entity) {
-		List<Message> msgs = new ArrayList<Message>(2);
-
+	@Override
+	public List<Message> getUpdateMessages(Entity entity) {
+		List<Message> messages = new ArrayList<Message>(2);
 		/*if (entity.getController().data().isDirty()) {
 			msgs.add(new EntityDatatableMessage(entity.getId(), entity.getController().data()));
 		}*/
 
 		Transform current = entity.getTransform();
 		if (!current.equals(entity.getLastTransform())) {
-			msgs.add(new EntityPositionMessage(entity.getId(), current));
+			messages.add(new EntityPositionMessage(entity.getId(), current));
 		}
-
-		return msgs.toArray(new Message[msgs.size()]);
+		return messages;
 	}
 }
