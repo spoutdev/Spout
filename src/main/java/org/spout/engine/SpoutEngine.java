@@ -523,7 +523,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	 * Used to allow subclasses submit final tasks before stopping the scheduler
 	 * @param message
 	 * @param stopScheduler
-	 * @return
+	 * @return true if the action completed successfully, otherwise false.
 	 */
 	protected boolean stop(final String message, boolean stopScheduler) {
 		final SpoutEngine engine = this;
