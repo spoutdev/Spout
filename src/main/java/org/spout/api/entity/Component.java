@@ -26,86 +26,87 @@
  */
 package org.spout.api.entity;
 
-import org.spout.api.tickable.TickPriority;
+import org.spout.api.datatable.Datatable;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.tickable.Tickable;
 
 /**
  * Represents an attachment to a entity that can respond to Ticks.
  */
-public interface Component<T extends Controller> extends Tickable, Comparable<Component<T>> {
+public interface Component extends Tickable {
 	/**
 	 * Attaches this component to a entity
 	 * @param parent entity this component will be attached to.
 	 */
-	public void attachToController(T parent);
+	public void attachToEntity(Entity entity);
 
 	/**
 	 * Gets the parent entity associated with this component.
 	 * @return the parent entity
 	 */
-	public T getParent();
+	public Entity getParent();
 
 	/**
-	 * Called when this component is attached to a entity
+	 * Called when this component is attached to a entity.
 	 */
 	public abstract void onAttached();
 
 	/**
-	 * Called when this component is detached from a entity
+	 * Called when this component is detached from a entity..
 	 */
 	public void onDetached();
+	
+	/**
+	 * Called when the parent entity is spawned into the world.
+	 */
+	public void onSpawned();
+	
+	/**
+	 * Called when the parent entity leaves the world.
+	 */
+	public void onRemoved();
 
 	/**
-	 * Gets the priority this component will be ticked by.
-	 * @return the priority the component will be ticked by
+	 * Called when the entity changes from unobserved to observed.
 	 */
-	public TickPriority getPriority();
-
+	public void onAwake();
+	
 	/**
-	 * Sets the priority the component will be ticked by.
-	 * @param priority the priority the component will be ticked by
+	 * Called when the entity changes from observed to unobserved.
 	 */
-	public void setPriority(TickPriority priority);
-
+	public void onSleep();
+	
 	/**
-	 * Returns if this component will run once and remove itself.
-	 * @return true if the component runs once, false if not
+	 * Called when the entity is set to be synced to clients.
 	 */
-	public boolean runOnce();
-
+	public void onSync();
+	
 	/**
-	 * Sets whether this component will run once or not.
-	 * @param runOnce true to run once, false to repeat
+	 * Returns where this component can tick or not
 	 */
-	public void setRunOnce(boolean runOnce);
-
+	public boolean canTick();
+	
 	/**
-	 * Gets the delay before this component is ticked.
-	 * @return the delay
+	 * Called when this component is ticked.
+	 * @param dt time since the last tick (delta time)
 	 */
-	public float getDelay();
-
-	/**
-	 * Sets the delay before this component is ticked.
-	 * @param delay the delay before the component is ticked
-	 */
-	public void setDelay(float delay);
-
-	/**
-	 * Gets the max delay this component can delay before ticking
-	 * @return the max delay
-	 */
-	public float getMaxDelay();
-
-	/**
-	 * Sets the max delay this component can delay before ticking
-	 * @param maxDelay the max delay this component can delay
-	 */
-	public void setMaxDelay(float maxDelay);
-
+	public void onTick(float dt);
+	
 	/**
 	 * Ticks this component
 	 * @param dt time since the last tick (delta time)
 	 */
 	public void tick(float dt);
+	
+	/**
+	 * Returns the datatable component attached to the parent entity. This component always exists.
+	 * @return The datatable component
+	 */
+	public Datatable getDatatable();
+	
+	/**
+	 * Returns the transform attached to the parent entity. This component always exists.
+	 * @return The transform component
+	 */
+	public Transform getTransform();
 }
