@@ -26,6 +26,8 @@
  */
 package org.spout.api.protocol;
 
+import java.util.List;
+
 import org.spout.api.entity.Entity;
 
 /**
@@ -34,29 +36,28 @@ import org.spout.api.entity.Entity;
 public interface EntityProtocol {
 
 	/**
-	 * Gets a message to spawn the entity. The entity should spawn at the
+	 * Gets the messages to spawn the entity. The entity should spawn at the 
 	 * location at the last snapshot
 	 *
 	 * @param entity the entity
-	 * @return the spawn message
+	 * @return messages to send
 	 */
-	public Message[] getSpawnMessage(Entity entity);
+	public List<Message> getSpawnMessages(Entity entity);
 
 	/**
-	 * Gets a message to destroy the entity.
+	 * Gets the messages to destroy the entity.
 	 *
 	 * @param entity the entity
-	 * @return the destroy message
+	 * @return messages to send
 	 */
-	public Message[] getDestroyMessage(Entity entity);
+	public List<Message> getDestroyMessages(Entity entity);
 
 	/**
-	 * Gets a message to update the entity. This should move the entity from its
+	 * Gets the messages to update the entity. This should move the entity from its
 	 * snapshot position to its live position.
 	 *
 	 * @param entity the entity
-	 * @return the update message
+	 * @return messages to send
 	 */
-	public Message[] getUpdateMessage(Entity entity);
-
+	public List<Message> getUpdateMessages(Entity entity);
 }
