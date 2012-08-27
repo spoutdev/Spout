@@ -398,6 +398,14 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	@Override
+	public File getPluginFolder() {
+		if (!pluginDirectory.exists()) {
+			pluginDirectory.mkdirs();
+		}
+		return pluginDirectory;
+	}
+
+	@Override
 	public Player getPlayer(String name, boolean exact) {
 		name = name.toLowerCase();
 		if (exact) {
