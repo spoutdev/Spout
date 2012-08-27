@@ -30,6 +30,7 @@ import java.net.InetAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.spout.api.Server;
 import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
@@ -51,6 +52,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.lang.Locale;
+import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.Protocol;
@@ -282,7 +284,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void kick() {
-		kick("Kicked");
+		kick("Kicked from server.");
 	}
 
 	@Override
@@ -291,6 +293,24 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			throw new IllegalArgumentException("reason cannot be null");
 		}
 		session.disconnect(reason);
+	}
+
+	@Override
+	public void ban() {
+		ban(true);
+	}
+
+	@Override
+	public void ban(boolean kick) {
+		ban(kick, "Banned from server.");
+	}
+
+	@Override
+	public void ban(boolean kick, Object... reason) {
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new IllegalStateException("Banning is only available in server mode.");
+		}
+		((Server)Spout.getEngine()).banPlayer(this, kick, reason);
 	}
 
 	@Override

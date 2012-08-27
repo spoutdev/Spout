@@ -27,99 +27,93 @@
 package org.spout.engine.util.bans;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.spout.api.Spout;
+import org.spout.api.chat.ChatArguments;
+import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.event.server.BanChangeEvent;
-
-import org.spout.engine.SpoutServer;
-import org.spout.engine.util.PlayerListFile;
+import org.spout.api.event.server.BanChangeEvent.BanType;
+import org.spout.api.util.ban.BanManager;
 
 /**
  * Implementation of BanManager that uses PlayerListFiles.
  */
 public class FlatFileBanManager implements BanManager {
-	private final PlayerListFile bannedNames;
-	private final PlayerListFile bannedIps;
-
-	public FlatFileBanManager(SpoutServer server) {
-		bannedIps = new PlayerListFile(new File(server.getConfigFolder(), "banned-ips.txt"));
-		bannedNames = new PlayerListFile(new File(server.getConfigFolder(), "banned-names.txt"));
-	}
+	private final BanList players = new BanList(new File("config/banned_players.txt"));
+	private final BanList ips = new BanList(new File("config/banned_ips.txt"));
+	private ChatArguments banMessage = new ChatArguments(ChatStyle.RED, "You are banned from this server!");
+	private ChatArguments ipBanMessage = new ChatArguments(ChatStyle.RED, "You are banned from this server!");
 
 	@Override
 	public void load() {
-		bannedIps.load();
-		bannedNames.load();
+		players.load();
+		ips.load();
 	}
 
 	@Override
 	public boolean isBanned(String player) {
-		return bannedNames.contains(player);
+		return players.contains(player);
 	}
 
 	@Override
-	public boolean setBanned(String player, boolean banned) {
-		BanChangeEvent event = Spout.getEventManager().callEvent(new BanChangeEvent(BanChangeEvent.BanType.PLAYER, player, banned));
-
-		boolean alreadyBanned = !(isBanned(player) == event.isBanned());
-
-		if (!event.isCancelled()) {
-			if (banned) {
-				bannedNames.add(player);
-			} else {
-				bannedNames.remove(player);
-			}
+	public void setBanned(String player, boolean banned) {
+		BanChangeEvent event = Spout.getEventManager().callEvent(new BanChangeEvent(BanType.PLAYER, player, banned));
+		banned = event.isBanned();
+		player = event.getChanged();
+		if (banned) {
+			players.add(player);
+		} else {
+			players.remove(player);
 		}
-
-		return alreadyBanned;
 	}
 
 	@Override
-	public Set<String> getBans() {
-		return new HashSet<String>(bannedNames.getContents());
+	public Set<String> getBannedPlayers() {
+		return Collections.unmodifiableSet(new HashSet<String>(players.getContents()));
 	}
 
 	@Override
-	public String getBanMessage(String name) {
-		return "You are banned from this server";
+	public ChatArguments getBanMessage() {
+		return banMessage;
+	}
+
+	@Override
+	public void setBanMessage(Object... message) {
+		banMessage = new ChatArguments(message);
 	}
 
 	@Override
 	public boolean isIpBanned(String address) {
-		return bannedIps.contains(address);
+		return ips.contains(address);
 	}
 
 	@Override
-	public boolean setIpBanned(String address, boolean banned) {
-		BanChangeEvent event = Spout.getEventManager().callEvent(new BanChangeEvent(BanChangeEvent.BanType.IP, address, banned));
-
-		boolean alreadyBanned = !(isIpBanned(address) == event.isBanned());
-
-		if (!event.isCancelled()) {
-			if (banned) {
-				bannedIps.add(address);
-			} else {
-				bannedIps.remove(address);
-			}
+	public void setIpBanned(String address, boolean banned) {
+		BanChangeEvent event = Spout.getEventManager().callEvent(new BanChangeEvent(BanType.IP, address, banned));
+		address = event.getChanged();
+		banned = event.isBanned();
+		if (banned) {
+			ips.add(address);
+		} else {
+			ips.remove(address);
 		}
-
-		return alreadyBanned;
 	}
 
 	@Override
-	public Set<String> getIpBans() {
-		return new HashSet<String>(bannedIps.getContents());
+	public Set<String> getBannedIps() {
+		return Collections.unmodifiableSet(new HashSet<String>(ips.getContents()));
 	}
 
 	@Override
-	public String getIpBanMessage(String address) {
-		return "You are banned from this server";
+	public ChatArguments getIpBanMessage() {
+		return ipBanMessage;
 	}
 
 	@Override
-	public boolean isBanned(String player, String address) {
-		return isBanned(player) || isIpBanned(address);
+	public void setIpBanMessage(Object... message) {
+		ipBanMessage = new ChatArguments(message);
 	}
 }

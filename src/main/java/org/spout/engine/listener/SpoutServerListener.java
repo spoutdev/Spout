@@ -28,7 +28,6 @@ package org.spout.engine.listener;
 
 import java.net.InetAddress;
 
-import org.spout.api.Spout;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.entity.Player;
 import org.spout.api.event.EventHandler;
@@ -42,8 +41,6 @@ import org.spout.api.event.player.PlayerLoginEvent;
 import org.spout.api.event.server.BanChangeEvent.BanType;
 import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 import org.spout.api.event.storage.PlayerLoadEvent;
-import org.spout.api.geo.discrete.Transform;
-import org.spout.api.protocol.Session;
 
 import org.spout.engine.SpoutServer;
 import org.spout.engine.entity.SpoutPlayer;
@@ -89,14 +86,14 @@ public class SpoutServerListener implements Listener {
 		InetAddress address = p.getAddress();
 		if (address == null) {
 			event.disallow("Invalid IP Address!");
-		} else if (server.isPlayerBanned(p.getName())) {
-			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.PLAYER, server.getBanMessage(p.getName())));
+		} else if (server.isBanned(p.getName())) {
+			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.PLAYER, server.getBanMessage()));
 		} else if (server.isIpBanned(address.getHostAddress())) {
-			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.IP, server.getIpBanMessage(p.getAddress().getHostAddress())));
+			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.IP, server.getIpBanMessage()));
 		}
 
 		if (banEvent != null && !banEvent.isCancelled()) {
-			event.disallow(!banEvent.getMessage().equals("") ? banEvent.getMessage() : (banEvent.getBanType() == BanType.PLAYER) ? server.getBanMessage(p.getName()) : server.getIpBanMessage(p.getAddress().getHostAddress()));
+			event.disallow(!banEvent.getMessage().getPlainString().equals("") ? banEvent.getMessage() : (banEvent.getBanType() == BanType.PLAYER) ? server.getBanMessage() : server.getIpBanMessage());
 			return;
 		}
 
