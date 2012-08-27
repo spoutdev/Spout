@@ -39,13 +39,9 @@ import org.spout.api.entity.Player;
  */
 public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
-
 	private final Point interactedPoint;
-
 	private final ItemStack heldItem;
-
 	private final Action action;
-
 	private final boolean isAir;
 
 	public PlayerInteractEvent(Player p, Point interactedPoint, ItemStack heldItem, Action action, boolean isAir) {

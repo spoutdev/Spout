@@ -28,6 +28,7 @@ package org.spout.api.event.player;
 
 import java.util.List;
 
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.event.Cancellable;
 import org.spout.api.entity.Player;
 
@@ -35,11 +36,11 @@ import org.spout.api.entity.Player;
  * Called when a player gets kicked from the server
  */
 public class PlayerKickEvent extends PlayerLeaveEvent implements Cancellable {
-	private Object[] kickReason;
+	private ChatArguments kickReason;
 
 	public PlayerKickEvent(Player p, Object[] leaveMessage, Object... reason) {
 		super(p, leaveMessage);
-		kickReason = reason;
+		kickReason = new ChatArguments(reason);
 	}
 
 	@Override
@@ -57,7 +58,7 @@ public class PlayerKickEvent extends PlayerLeaveEvent implements Cancellable {
 	 *
 	 * @return string kick reason
 	 */
-	public Object[] getKickReason() {
+	public ChatArguments getKickReason() {
 		return kickReason;
 	}
 
@@ -70,6 +71,6 @@ public class PlayerKickEvent extends PlayerLeaveEvent implements Cancellable {
 		if (kickReason.length == 1 && kickReason[0] instanceof List<?>) {
 			kickReason = ((List<?>) kickReason[0]).toArray();
 		}
-		this.kickReason = kickReason;
+		this.kickReason = new ChatArguments(kickReason);
 	}
 }
