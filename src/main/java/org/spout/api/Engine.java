@@ -191,6 +191,13 @@ public interface Engine extends Named {
 	public File getDataFolder();
 
 	/**
+	 * Gets the folder which contains plugins.
+	 * 
+	 * @return {@link File} of the plugin folder.
+	 */
+	public File getPluginFolder();
+
+	/**
 	 * Creates a new Session
 	 *
 	 * @param channel the associated channel
