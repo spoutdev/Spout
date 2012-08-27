@@ -94,6 +94,26 @@ public interface Player extends CommandSource, Entity, Named {
 	public void kick(Object... reason);
 
 	/**
+	 * Bans the player without giving a reason.
+	 */
+	public void ban();
+
+	/**
+	 * Bans the player for the given reason.
+	 *
+	 * @param kick whether to kick or not
+	 */
+	public void ban(boolean kick);
+
+	/**
+	 * Bans the player for the given reason.
+	 *
+	 * @param kick whether to kick or not
+	 * @param reason for ban
+	 */
+	public void ban(boolean kick, Object... reason);
+
+	/**
 	 * Gets the current input state of the player
 	 * @return current input state
 	 */

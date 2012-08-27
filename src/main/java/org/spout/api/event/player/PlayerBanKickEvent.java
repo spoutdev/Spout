@@ -68,7 +68,7 @@ public class PlayerBanKickEvent extends PlayerEvent {
 	 *
 	 * @return the kick message
 	 */
-	public void setMessage(String message) {
+	public void setMessage(Object... message) {
 		this.message = new ChatArguments(message);
 	}
 

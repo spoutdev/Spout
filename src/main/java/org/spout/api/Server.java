@@ -29,6 +29,8 @@ package org.spout.api;
 import java.util.Collection;
 import java.util.List;
 
+import org.spout.api.chat.ChatArguments;
+import org.spout.api.entity.Player;
 import org.spout.api.protocol.PortBinding;
 
 /**
@@ -105,9 +107,50 @@ public interface Server extends Engine {
 	/**
 	 * Bans the specified player
 	 *
-	 * @param player Player to ban
+	 * @param player to ban
 	 */
 	public void banPlayer(String player);
+
+	/**
+	 * Bans the specified player
+	 *
+	 * @param player Player to ban
+	 * @param kick whether to kick the player if online
+	 */
+	public void banPlayer(String player, boolean kick);
+
+	/**
+	 * Bans the specified player
+	 *
+	 * @param player to ban
+	 * @param kick whether to kick if online
+	 * @param reason for ban
+	 */
+	public void banPlayer(String player, boolean kick, Object... reason);
+
+	/**
+	 * Bans the specified player
+	 *
+	 * @param player to ban
+	 */
+	public void banPlayer(Player player);
+
+	/**
+	 * Bans the specified player
+	 *
+	 * @param player to ban
+	 * @param kick whether to kick or not
+	 */
+	public void banPlayer(Player player, boolean kick);
+
+	/**
+	 * Bans the specified player
+	 *
+	 * @param player to ban
+	 * @param kick whether to kick if online
+	 * @param reason for ban
+	 */
+	public void banPlayer(Player player, boolean kick, Object... reason);
 
 	/**
 	 * Unbans the specified player
@@ -124,6 +167,23 @@ public interface Server extends Engine {
 	public void banIp(String address);
 
 	/**
+	 * Bans the specified IP
+	 *
+	 * @param address to ban
+	 * @param kick whether to kick all players with specified IP
+	 */
+	public void banIp(String address, boolean kick);
+
+	/**
+	 * Bans the specified IP
+	 *
+	 * @param address to ban
+	 * @param kick whether to kick all players with specified IP
+	 * @param reason for ban
+	 */
+	public void banIp(String address, boolean kick, Object... reason);
+
+	/**
 	 * Unbans the specified IP
 	 *
 	 * @param address Player to ban
@@ -135,7 +195,7 @@ public interface Server extends Engine {
 	 *
 	 * @return banned IP addresses
 	 */
-	public Collection<String> getIPBans();
+	public Collection<String> getBannedIps();
 
 	/**
 	 * Returns a collection of all banned players
@@ -145,13 +205,12 @@ public interface Server extends Engine {
 	public Collection<String> getBannedPlayers();
 
 	/**
-	 * Returns true if the player or address is banned.
+	 * Returns true if the player is banned.
 	 *
-	 * @param player Player name to check
-	 * @param address Address to check
-	 * @return If either is banned
+	 * @param player name to check
+	 * @return true if banned
 	 */
-	public boolean isBanned(String player, String address);
+	public boolean isBanned(String player);
 
 	/**
 	 * Returns true if the address is banned.
@@ -162,26 +221,32 @@ public interface Server extends Engine {
 	public boolean isIpBanned(String address);
 
 	/**
-	 * Returns true if the player is banned.
-	 *
-	 * @param player Player name to check
-	 * @return If the player is banned
-	 */
-	public boolean isPlayerBanned(String player);
-
-	/**
-	 * Gets the ban message for the player
+	 * Gets the ban message.
 	 *
 	 * @return the ban message
 	 */
-	public String getBanMessage(String player);
+	public ChatArguments getBanMessage();
 
 	/**
-	 * Gets the ban message for the IP
+	 * Sets the ban message.
+	 *
+	 * @param message to set
+	 */
+	public void setBanMessage(Object... message);
+
+	/**
+	 * Gets the ban message.
 	 *
 	 * @return the ban message
 	 */
-	public String getIpBanMessage(String address);
+	public ChatArguments getIpBanMessage();
+
+	/**
+	 * Sets the IP ban message
+	 *
+	 * @param message to set
+	 */
+	public void setIpBanMessage(Object... message);
 
 	/**
 	 * Maps a port for both TCP and UDP communication for Universal Plug and Play enabled InternetGatewayDevices
