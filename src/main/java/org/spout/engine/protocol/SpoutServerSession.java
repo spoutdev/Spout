@@ -26,6 +26,8 @@
  */
 package org.spout.engine.protocol;
 
+import java.util.List;
+
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.spout.api.chat.ChatArguments;
@@ -78,7 +80,8 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 				if (event.isCancelled()) {
 					return false;
 				}
-				reason = ((PlayerKickEvent) event).getKickReason();
+				List<Object> args = ((PlayerKickEvent) event).getKickReason().getArguments();
+				reason = args.toArray(new Object[args.size()]);
 				getEngine().getCommandSource().sendMessage("Player ", getPlayer().getName(), " kicked: ", reason);
 			} else {
 				event = new PlayerLeaveEvent(getPlayer(), getDefaultLeaveMessage());
@@ -110,8 +113,8 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 				getEngine().getEventManager().callEvent(leaveEvent);
 			}
 
-			Object[] text = leaveEvent.getMessage();
-			if (text != null && text.length > 0) {
+			ChatArguments text = leaveEvent.getMessage();
+			if (text != null && text.getArguments().size() > 0) {
 				getEngine().broadcastMessage(text);
 			}
 
