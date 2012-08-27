@@ -42,8 +42,11 @@ import org.spout.api.event.player.PlayerLoginEvent;
 import org.spout.api.event.server.BanChangeEvent.BanType;
 import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 import org.spout.api.event.storage.PlayerLoadEvent;
+import org.spout.api.geo.discrete.Transform;
+import org.spout.api.protocol.Session;
 
 import org.spout.engine.SpoutServer;
+import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.protocol.SpoutSession;
 
 public class SpoutServerListener implements Listener {
@@ -59,12 +62,12 @@ public class SpoutServerListener implements Listener {
 			return;
 		}
 		//Create the player
-		final Player player = server.addPlayer(event.getPlayerName(), (SpoutSession<?>) event.getSession(), event.getViewDistance());
+		final SpoutPlayer player = (SpoutPlayer) server.addPlayer(event.getPlayerName(), (SpoutSession<?>) event.getSession(), event.getViewDistance());
 
 		if (player != null) {
-			Spout.getEngine().getEventManager().callEvent(new PlayerLoadEvent(player));
+			server.getEventManager().callEvent(new PlayerLoadEvent(player));
 			event.getSession().getProtocol().initializeSession(event.getSession());
-			PlayerLoginEvent loginEvent = Spout.getEngine().getEventManager().callEvent(new PlayerLoginEvent(player));
+			PlayerLoginEvent loginEvent = server.getEventManager().callEvent(new PlayerLoginEvent(player));
 			if (!loginEvent.isAllowed()) {
 				if (loginEvent.getMessage() != null) {
 					player.kick(loginEvent.getMessage());
@@ -72,7 +75,7 @@ public class SpoutServerListener implements Listener {
 					player.kick();
 				}
 			} else {
-				Spout.getEngine().getEventManager().callEvent(new PlayerJoinEvent(player, ChatStyle.CYAN, player.getDisplayName(), ChatStyle.CYAN, " has joined the game"));
+				server.getEventManager().callEvent(new PlayerJoinEvent(player, ChatStyle.CYAN, player.getDisplayName(), ChatStyle.CYAN, " has joined the game"));
 			}
 		} else {
 			event.getSession().disconnect("Player is already online");

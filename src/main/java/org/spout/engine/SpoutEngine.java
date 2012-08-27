@@ -784,9 +784,10 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		} catch (Exception e) {
 			//generate a player at default spawn, since we don't have a player .dat file
 			player = new SpoutPlayer(playerName, getDefaultWorld().getSpawnPoint(), session, this, viewDistance);
+			player.connect(session, player.getTransform());
 		}
 		World world = player.getWorld();
-		player.getSession().getProtocol().setPlayerController(player);
+		session.getProtocol().setPlayerController(player);
 		world.spawnEntity(player);
 		session.setPlayer(player);
 		onlinePlayers.remove(playerName);
