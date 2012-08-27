@@ -44,6 +44,9 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+
+import org.spout.api.chat.ChatArguments;
+import org.spout.api.entity.Player;
 import org.spout.api.exception.ConfigurationException;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.PortBinding;
@@ -54,7 +57,7 @@ import org.spout.engine.protocol.PortBindingImpl;
 import org.spout.engine.protocol.PortBindings;
 import org.spout.engine.protocol.SpoutNioServerSocketChannel;
 import org.spout.engine.protocol.SpoutServerSession;
-import org.spout.engine.protocol.builtin.SpoutProtocol;
+import org.spout.engine.util.bans.FlatFileBanManager;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
@@ -64,15 +67,13 @@ import org.teleal.cling.support.model.PortMapping;
 import org.teleal.cling.transport.spi.InitializationException;
 
 import org.spout.api.Server;
-import org.spout.api.Spout;
 import org.spout.api.event.Listener;
 import org.spout.api.event.server.ServerStartEvent;
 import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.Session;
 
 import org.spout.engine.filesystem.ServerFileSystem;
-import org.spout.engine.util.bans.BanManager;
-import org.spout.engine.util.bans.FlatFileBanManager;
+import org.spout.api.util.ban.BanManager;
 
 public class SpoutServer extends SpoutEngine implements Server {
 	private final String name = "Spout Server";
@@ -120,7 +121,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	public void start(boolean checkWorlds, Listener listener) {
 		super.start(checkWorlds);
 
-		banManager = new FlatFileBanManager(this);
+		banManager = new FlatFileBanManager();
 
 		getEventManager().registerEvents(listener, this);
 		getFilesystem().postStartup();
@@ -201,6 +202,127 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	@Override
+	public void banPlayer(String player) {
+		banPlayer(player, true);
+	}
+
+	@Override
+	public void banPlayer(String player, boolean kick) {
+		banPlayer(player, kick, null);
+	}
+
+	@Override
+	public void banPlayer(String player, boolean kick, Object... reason) {
+		Player p = getPlayer(player, true);
+		if (kick && p != null) {
+			if (reason == null) {
+				p.kick();
+			} else {
+				p.kick(reason);
+			}
+		}
+		banManager.setBanned(player, true);
+	}
+
+	@Override
+	public void banPlayer(Player player) {
+		banPlayer(player, true);
+	}
+
+	@Override
+	public void banPlayer(Player player, boolean kick) {
+		banPlayer(player, kick, null);
+	}
+
+	@Override
+	public void banPlayer(Player player, boolean kick, Object... reason) {
+		if (kick) {
+			if (reason == null) {
+				player.kick();
+			} else {
+				player.kick(reason);
+			}
+		}
+		banManager.setBanned(player.getName(), true);
+	}
+
+	@Override
+	public void unbanPlayer(String player) {
+		banManager.setBanned(player, false);
+	}
+
+	@Override
+	public void banIp(String address) {
+		banIp(address, true);
+	}
+
+	@Override
+	public void banIp(String address, boolean kick) {
+		banIp(address, kick, null);
+	}
+
+	@Override
+	public void banIp(String address, boolean kick, Object... reason) {
+		if (kick) {
+			for (Player player : getOnlinePlayers()) {
+				if (player.getAddress().getHostAddress().equals(address)) {
+					if (reason == null) {
+						player.kick();
+					} else {
+						player.kick(reason);
+					}
+				}
+			}
+		}
+		banManager.setIpBanned(address, true);
+	}
+
+	@Override
+	public void unbanIp(String address) {
+		banManager.setIpBanned(address, false);
+	}
+
+	@Override
+	public Collection<String> getBannedIps() {
+		return banManager.getBannedIps();
+	}
+
+	@Override
+	public Collection<String> getBannedPlayers() {
+		return banManager.getBannedPlayers();
+	}
+
+	@Override
+	public boolean isBanned(String player) {
+		return banManager.isBanned(player);
+	}
+
+	@Override
+	public boolean isIpBanned(String address) {
+		return banManager.isIpBanned(address);
+	}
+
+	@Override
+	public ChatArguments getBanMessage() {
+		return banManager.getBanMessage();
+	}
+
+	@Override
+	public void setBanMessage(Object... message) {
+		banManager.setBanMessage(message);
+	}
+
+	@Override
+	public ChatArguments getIpBanMessage() {
+		return banManager.getIpBanMessage();
+	}
+
+	@Override
+	public void setIpBanMessage(Object... message) {
+		banManager.setIpBanMessage(message);
+	}
+
+	@Override
 	public int getMaxPlayers() {
 		return maxPlayers;
 	}
@@ -268,61 +390,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 	@Override
 	public void unWhitelist(String player) {
 		whitelistedPlayers.remove(player);
-	}
-
-	@Override
-	public Collection<String> getIPBans() {
-		return banManager.getIpBans();
-	}
-
-	@Override
-	public void banIp(String address) {
-		banManager.setIpBanned(address, true);
-	}
-
-	@Override
-	public void unbanIp(String address) {
-		banManager.setIpBanned(address, false);
-	}
-
-	@Override
-	public void banPlayer(String player) {
-		banManager.setBanned(player, true);
-	}
-
-	@Override
-	public void unbanPlayer(String player) {
-		banManager.setBanned(player, false);
-	}
-
-	@Override
-	public boolean isBanned(String player, String address) {
-		return banManager.isBanned(player, address);
-	}
-
-	@Override
-	public boolean isIpBanned(String address) {
-		return banManager.isIpBanned(address);
-	}
-
-	@Override
-	public boolean isPlayerBanned(String player) {
-		return banManager.isBanned(player);
-	}
-
-	@Override
-	public String getBanMessage(String player) {
-		return banManager.getBanMessage(player);
-	}
-
-	@Override
-	public String getIpBanMessage(String address) {
-		return banManager.getIpBanMessage(address);
-	}
-
-	@Override
-	public Collection<String> getBannedPlayers() {
-		return banManager.getBans();
 	}
 
 	@Override

@@ -26,11 +26,14 @@
  */
 package org.spout.engine.command;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
@@ -119,6 +122,67 @@ public class AdministrationCommands {
 			}
 			source.sendMessage(retMsg);
 		}
+	}
+
+	@Command(aliases = "ban", usage = "<player> [reason]", desc = "Ban a player", min = 1, max = -1)
+	@CommandPermissions("spout.command.ban")
+	public void ban(CommandContext args, CommandSource source) throws CommandException {
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new CommandException("Banning is only available in server mode.");
+		}
+
+		Server server = (Server) Spout.getEngine();
+		String player = args.getString(0);
+		if (args.length() < 2) {
+			server.banPlayer(player);
+		} else {
+			server.banPlayer(player, true, args.getJoinedString(1));
+		}
+		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Banned player '", player, "' from the server.");
+	}
+
+	@Command(aliases = "unban", usage = "<player>", desc = "Unban a player", min = 1, max = 1)
+	@CommandPermissions("spout.command.unban")
+	public void unban(CommandContext args, CommandSource source) throws CommandException {
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new CommandException("Unbanning is only available in server mode.");
+		}
+		String player = args.getString(0);
+		((Server) Spout.getEngine()).unbanPlayer(player);
+		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Unbanned player '", player, "' from the server.");
+	}
+
+	@Command(aliases = "banip", usage = "<address> [reason]", desc = "Ban an IP address", min = 1, max = -1)
+	@CommandPermissions("spout.command.banip")
+	public void banIp(CommandContext args, CommandSource source) throws CommandException {
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new CommandException("Banning is only available in server mode.");
+		}
+
+		if (source instanceof Player) {
+			System.out.println(((Player) source).getAddress().getHostAddress());
+			System.out.println("Args: " + args.length());
+		}
+
+		Server server = (Server) Spout.getEngine();
+		String address = args.getString(0);
+		if (args.length() < 2) {
+			server.banIp(address);
+		} else {
+			server.banIp(address, true, args.getJoinedString(1));
+		}
+		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Banned IP address '", address, "' from the server.");
+	}
+
+	@Command(aliases = "unbanip", usage = "<address>", desc = "Unban an IP address", min = 1, max = 1)
+	@CommandPermissions("spout.command.unbanip")
+	public void unbanIp(CommandContext args, CommandSource source) throws CommandException {
+		if (Spout.getPlatform() != Platform.SERVER) {
+			throw new CommandException("Unbanning is only available in server mode.");
+		}
+		String address = args.getString(0);
+		((Server) Spout.getEngine()).unbanIp(address);
+		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Unbanned IP address '", address, "' from the server");
 	}
 
 	@Command(aliases = "reload", usage = "[plugin]", desc = "Reload engine and/or plugins", max = 1)
