@@ -24,7 +24,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.util.bans;
+package org.spout.engine.util;
 
 import java.io.File;
 import java.util.HashSet;
@@ -32,9 +32,9 @@ import java.util.Set;
 
 import org.spout.api.Spout;
 import org.spout.api.event.server.BanChangeEvent;
+import org.spout.api.util.BanManager;
 
 import org.spout.engine.SpoutServer;
-import org.spout.engine.util.PlayerListFile;
 
 /**
  * Implementation of BanManager that uses PlayerListFiles.

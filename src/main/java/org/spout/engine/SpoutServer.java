@@ -54,7 +54,7 @@ import org.spout.engine.protocol.PortBindingImpl;
 import org.spout.engine.protocol.PortBindings;
 import org.spout.engine.protocol.SpoutNioServerSocketChannel;
 import org.spout.engine.protocol.SpoutServerSession;
-import org.spout.engine.protocol.builtin.SpoutProtocol;
+import org.spout.engine.util.FlatFileBanManager;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
@@ -64,15 +64,13 @@ import org.teleal.cling.support.model.PortMapping;
 import org.teleal.cling.transport.spi.InitializationException;
 
 import org.spout.api.Server;
-import org.spout.api.Spout;
 import org.spout.api.event.Listener;
 import org.spout.api.event.server.ServerStartEvent;
 import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.Session;
 
 import org.spout.engine.filesystem.ServerFileSystem;
-import org.spout.engine.util.bans.BanManager;
-import org.spout.engine.util.bans.FlatFileBanManager;
+import org.spout.api.util.BanManager;
 
 public class SpoutServer extends SpoutEngine implements Server {
 	private final String name = "Spout Server";
