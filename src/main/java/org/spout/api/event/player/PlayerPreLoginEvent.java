@@ -37,9 +37,7 @@ import org.spout.api.event.HandlerList;
  */
 public class PlayerPreLoginEvent extends Event {
 	private static HandlerList handlers = new HandlerList();
-
 	private final String name;
-
 	private final InetAddress address;
 
 	public PlayerPreLoginEvent(String n, InetAddress a) {

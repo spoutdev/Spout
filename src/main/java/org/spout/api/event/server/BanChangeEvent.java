@@ -34,7 +34,6 @@ import org.spout.api.event.HandlerList;
  */
 public class BanChangeEvent extends Event {
 	private static HandlerList handlers = new HandlerList();
-
 	private BanType type;
 	private String changed;
 	private boolean banned;

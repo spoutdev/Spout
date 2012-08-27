@@ -26,6 +26,7 @@
  */
 package org.spout.api.event.player;
 
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.event.HandlerList;
 import org.spout.api.entity.Player;
 
@@ -35,9 +36,7 @@ import org.spout.api.entity.Player;
  */
 public class PlayerLoginEvent extends PlayerEvent {
 	private static HandlerList handlers = new HandlerList();
-
-	private String message;
-
+	private ChatArguments message;
 	private boolean allowed = true;
 
 	public PlayerLoginEvent(Player p) {
@@ -57,7 +56,7 @@ public class PlayerLoginEvent extends PlayerEvent {
 	 *
 	 * @return Current message
 	 */
-	public String getMessage() {
+	public ChatArguments getMessage() {
 		return message;
 	}
 
@@ -66,8 +65,8 @@ public class PlayerLoginEvent extends PlayerEvent {
 	 *
 	 * @param message The message to set
 	 */
-	public void setMessage(final String message) {
-		this.message = message;
+	public void setMessage(Object... message) {
+		this.message = new ChatArguments(message);
 	}
 
 	/**
@@ -80,12 +79,11 @@ public class PlayerLoginEvent extends PlayerEvent {
 	/**
 	 * Disallows the player from logging in, with the given reason
 	 *
-	 * @param result New result for disallowing the player
 	 * @param message Kick message to display to the user
 	 */
-	public void disallow(String message) {
+	public void disallow(Object... message) {
 		allowed = false;
-		this.message = message;
+		this.message = new ChatArguments(message);
 	}
 
 	@Override

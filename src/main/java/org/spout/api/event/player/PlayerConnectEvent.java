@@ -35,7 +35,6 @@ import org.spout.api.protocol.Session;
  */
 public class PlayerConnectEvent extends Event {
 	private static HandlerList handlers = new HandlerList();
-
 	private final Session session;
 	private final String playerName;
 	private final int viewDistance;
