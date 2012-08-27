@@ -26,7 +26,9 @@
  */
 package org.spout.engine.protocol.builtin;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.spout.api.datatable.DataMap;
 import org.spout.api.entity.Entity;
@@ -84,24 +86,21 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 		return protocol;
 	}
 
-	public void spawnEntity(Entity e) {
+	@Override
+	public void syncEntity(Entity e, boolean spawn, boolean destroy, boolean update) {
 		EntityProtocol protocol = getEntityProtocol(e);
-		for (Message m : protocol.getSpawnMessage(e)) {
-			session.send(false, m);
+		List<Message> messages = new ArrayList<Message>(3);
+		if (destroy) {
+			messages.addAll(protocol.getDestroyMessages(e));
 		}
-	}
-
-	public void destroyEntity(Entity e) {
-		EntityProtocol protocol = getEntityProtocol(e);
-		for (Message m : protocol.getDestroyMessage(e)) {
-			session.send(false, m);
+		if (spawn) {
+			messages.addAll(protocol.getSpawnMessages(e));
 		}
-	}
-
-	public void syncEntity(Entity e) {
-		EntityProtocol protocol = getEntityProtocol(e);
-		for (Message m : protocol.getUpdateMessage(e)) {
-			session.send(false, m);
+		if (update) {
+			messages.addAll(protocol.getUpdateMessages(e));
+		}
+		for (Message message : messages) {
+			this.session.send(false, message);
 		}
 	}
 }
