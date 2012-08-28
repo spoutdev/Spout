@@ -268,6 +268,7 @@ public class FileUtil {
 	 * @param outFile the target filename
 	 * @return true on success
 	 */
+	@SuppressWarnings("resource")
 	public static boolean copy(File inFile, File outFile) {
 		if (!inFile.exists()) {
 			return false;

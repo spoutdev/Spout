@@ -26,8 +26,6 @@
  */
 package org.spout.api.chat.completion;
 
-import org.spout.api.plugin.Platform;
-
 /**
  * Interface for objects that can provide completions
  */

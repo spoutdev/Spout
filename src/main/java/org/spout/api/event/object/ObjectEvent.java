@@ -26,9 +26,7 @@
  */
 package org.spout.api.event.object;
 
-/**
- * @author zml2008
- */
+@SuppressWarnings("rawtypes")
 public class ObjectEvent<EventableType extends Eventable> {
 	private final EventableType associatedObject;
 

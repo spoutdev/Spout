@@ -36,7 +36,7 @@ public class BaseComponentHolder<T extends Component> implements ComponentHolder
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends Component> T addComponent(Component component) {
+	public T addComponent(Component component) {
 		Class<? extends Component> clazz = component.getClass();
 		if (hasComponent(clazz)) {
 			return (T) getComponent(clazz);
@@ -59,7 +59,7 @@ public class BaseComponentHolder<T extends Component> implements ComponentHolder
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends Component> T getComponent(Class<? extends Component> aClass) {
+	public T getComponent(Class<? extends Component> aClass) {
 		for(Class<? extends Component> c : components.keySet()){
 			if(aClass.isAssignableFrom(c)) return (T) components.get(c);
 		}
