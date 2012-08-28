@@ -46,7 +46,7 @@ import org.spout.api.util.thread.SnapshotRead;
 /**
  * Represents an entity, which may or may not be spawned into the world.
  */
-public interface Entity extends Source, Tickable, WorldSource, ComponentHolder {
+public interface Entity extends Source, Tickable, WorldSource, EntityComponentHolder {
 	/**
 	 * Gets the current ID of this entity within the current game session
 	 * @return The entities' id.
@@ -139,17 +139,4 @@ public interface Entity extends Source, Tickable, WorldSource, ComponentHolder {
 	@SnapshotRead
 	@Override
 	public World getWorld();
-
-	/**
-	 * Gets a {@link Transform} {@link EntityComponent} representing the current position, scale and
-	 * rotation of the entity.
-	 * @return
-	 */
-	public TransformComponent getTransform();
-	
-	/**
-	 * Returns the {@link Datatable} {@link EntityComponent} attached to the entity.
-	 * @return The datatable component
-	 */
-	public DatatableComponent getDatatable();
 }
