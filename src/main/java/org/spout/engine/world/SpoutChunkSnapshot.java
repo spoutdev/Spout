@@ -30,14 +30,12 @@ import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.entity.controller.BlockController;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeManager;
@@ -57,8 +55,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	 */
 	private final WeakReference<Region> parentRegion;
 	private final byte worldSkyLightLoss;
-	private final List<Entity> entities;
-	private final List<WeakReference<Entity>> weakEntities;
+	private final List<EntitySnapshot> entities;
 	private final short[] blockIds;
 	private final short[] blockData;
 	private final byte[] blockLight;
@@ -73,18 +70,13 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		parentRegion = new WeakReference<Region>(chunk.getRegion());
 
 		// Cache entities
-		if (type == EntityType.WEAK_ENTITIES) {
-			ArrayList<WeakReference<Entity>> liveEntities = new ArrayList<WeakReference<Entity>>();
+		if (type == EntityType.ENTITIES) {
+			ArrayList<EntitySnapshot> entities = new ArrayList<EntitySnapshot>();
 			for (Entity e : chunk.getLiveEntities()) {
-				liveEntities.add(new WeakReference<Entity>(e));
+				entities.add(new EntitySnapshot(e));
 			}
-			this.weakEntities = Collections.unmodifiableList(liveEntities);
-			this.entities = null;
-		} else if (type == EntityType.ENTITIES) {
-			this.weakEntities = null;
-			this.entities = Collections.unmodifiableList(new ArrayList<Entity>(chunk.getLiveEntities()));
+			this.entities = Collections.unmodifiableList(entities);
 		} else {
-			this.weakEntities = null;
 			this.entities = null;
 		}
 		this.worldSkyLightLoss = (byte) (15 - chunk.getWorld().getSkyLight());
@@ -195,18 +187,9 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	}
 
 	@Override
-	public List<Entity> getEntities() {
-		if (this.entities == null && this.weakEntities == null) {
-			throw new UnsupportedOperationException("This chunk snapshot does not contain block data");
-		} else if (this.weakEntities != null) {
-			ArrayList<Entity> entities = new ArrayList<Entity>();
-			for (WeakReference<Entity> ref : this.weakEntities) {
-				Entity e = ref.get();
-				if (e != null) {
-					entities.add(e);
-				}
-			}
-			return entities;
+	public List<EntitySnapshot> getEntities() {
+		if (this.entities == null) {
+			throw new UnsupportedOperationException("This chunk snapshot does not contain entities");
 		} else {
 			return this.entities;
 		}

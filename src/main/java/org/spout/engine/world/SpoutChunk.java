@@ -808,7 +808,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 	@Override
 	public ChunkSnapshot getSnapshot() {
-		return getSnapshot(SnapshotType.BOTH, EntityType.WEAK_ENTITIES, ExtraData.NO_EXTRA_DATA);
+		return getSnapshot(SnapshotType.BOTH, EntityType.NO_ENTITIES, ExtraData.NO_EXTRA_DATA);
 	}
 
 	@Override
@@ -848,7 +848,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 	@Override
 	public Future<ChunkSnapshot> getFutureSnapshot() {
-		return getFutureSnapshot(SnapshotType.BOTH, EntityType.WEAK_ENTITIES, ExtraData.NO_EXTRA_DATA);
+		return getFutureSnapshot(SnapshotType.BOTH, EntityType.NO_ENTITIES, ExtraData.NO_EXTRA_DATA);
 	}
 
 	@Override

@@ -47,8 +47,8 @@ import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.Controller;
-import org.spout.api.entity.Entity;
-import org.spout.api.entity.Player;
+import org.spout.api.entity.EntitySnapshot;
+import org.spout.api.entity.PlayerSnapshot;
 import org.spout.api.entity.controller.PlayerController;
 import org.spout.api.entity.controller.type.ControllerRegistry;
 import org.spout.api.entity.controller.type.ControllerType;
@@ -124,7 +124,7 @@ public class WorldFiles {
 			Spout.getLogger().log(Level.SEVERE, "Error creating player data for " + player.getName(), e);
 			}
 		}
-	    CompoundTag playerTag = saveEntity(player);
+	    CompoundTag playerTag = saveEntity(new PlayerSnapshot(player));
         NBTOutputStream os = null;
         try {
           os = new NBTOutputStream(new DataOutputStream(new FileOutputStream(playerSave)), false);
@@ -468,11 +468,11 @@ public class WorldFiles {
 		}
 	}
 
-	private static CompoundMap saveEntities(List<Entity> entities) {
+	private static CompoundMap saveEntities(List<EntitySnapshot> entities) {
 		CompoundMap tagMap = new CompoundMap();
 
-		for (Entity e : entities) {
-			Tag tag = saveEntity((SpoutEntity) e);
+		for (EntitySnapshot e : entities) {
+			Tag tag = saveEntity(e);
 			if (tag != null) {
 				tagMap.put(tag);
 			}
@@ -561,40 +561,39 @@ public class WorldFiles {
 		return null;
 	}
 
-	private static CompoundTag saveEntity(SpoutEntity e) {
-		if (((!e.getController().isSavable() || (e.isDead()))) && (!(e instanceof SpoutPlayer))) {
+	private static CompoundTag saveEntity(EntitySnapshot e) {
+		if (!e.isSavable() && (!(e instanceof PlayerSnapshot))) {
 			return null;
 		}
 		CompoundMap map = new CompoundMap();
 		map.put(new ByteTag("version", ENTITY_VERSION));
-		map.put(new StringTag("controller", e.getController().getType().getName()));
+		map.put(new StringTag("controller", e.getType().getName()));
 
 		//Write entity
-		map.put(new FloatTag("posX", e.getPosition().getX()));
-		map.put(new FloatTag("posY", e.getPosition().getY()));
-		map.put(new FloatTag("posZ", e.getPosition().getZ()));
+		Transform t = e.getTransform();
+		map.put(new FloatTag("posX",t.getPosition().getX()));
+		map.put(new FloatTag("posY", t.getPosition().getY()));
+		map.put(new FloatTag("posZ", t.getPosition().getZ()));
 
-		map.put(new FloatTag("scaleX", e.getScale().getX()));
-		map.put(new FloatTag("scaleY", e.getScale().getY()));
-		map.put(new FloatTag("scaleZ", e.getScale().getZ()));
+		map.put(new FloatTag("scaleX", t.getScale().getX()));
+		map.put(new FloatTag("scaleY", t.getScale().getY()));
+		map.put(new FloatTag("scaleZ", t.getScale().getZ()));
 
-		map.put(new FloatTag("quatX", e.getRotation().getX()));
-		map.put(new FloatTag("quatY", e.getRotation().getY()));
-		map.put(new FloatTag("quatZ", e.getRotation().getZ()));
-		map.put(new FloatTag("quatW", e.getRotation().getW()));
+		map.put(new FloatTag("quatX", t.getRotation().getX()));
+		map.put(new FloatTag("quatY", t.getRotation().getY()));
+		map.put(new FloatTag("quatZ", t.getRotation().getZ()));
+		map.put(new FloatTag("quatW", t.getRotation().getW()));
 
 		map.put(new LongTag("UUID_msb", e.getUID().getMostSignificantBits()));
 		map.put(new LongTag("UUID_lsb", e.getUID().getLeastSignificantBits()));
 
 		map.put(new IntTag("view", e.getViewDistance()));
-		map.put(new ByteTag("observer", e.isObserverLive()));
+		map.put(new ByteTag("observer", e.isObserver()));
 
 		//Write entity
 		try {
-			//Call onSave
-			e.getController().onSave();
 			//Serialize data
-			DatatableMap dataMap = ((DataMap) e.getController().getDataMap()).getRawMap();
+			DatatableMap dataMap = ((DataMap) e.getDataMap()).getRawMap();
 			if (!dataMap.isEmpty()) {
 				map.put(new ByteTag("controller_data_exists", true));
 				map.put(new ByteArrayTag("controller_data", dataMap.compress()));
@@ -602,13 +601,12 @@ public class WorldFiles {
 				map.put(new ByteTag("controller_data_exists", false));
 			}
 		} catch (Exception error) {
-			Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to write the controller information for the type: " + e.getController().getType(), error);
+			Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to write the controller information for the type: " + e.getType(), error);
 		}
 		CompoundTag tag = null;
-		if (e instanceof Player) {
-			tag = new CompoundTag(((SpoutPlayer)e).getWorld().getName(), map);
-		}
-		else {
+		if (e instanceof PlayerSnapshot) {
+			tag = new CompoundTag(e.getWorldName(), map);
+		} else {
 		tag = new CompoundTag("entity_" + e.getId(), map);
 		}
 		return tag;
