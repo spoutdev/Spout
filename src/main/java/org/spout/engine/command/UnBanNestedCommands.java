@@ -26,9 +26,6 @@
  */
 package org.spout.engine.command;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
@@ -36,11 +33,11 @@ import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
+import org.spout.api.entity.Player;
 import org.spout.api.event.EventManager;
 import org.spout.api.event.player.PlayerBanKickEvent;
 import org.spout.api.event.server.BanChangeEvent;
 import org.spout.api.exception.CommandException;
-import org.spout.api.entity.Player;
 import org.spout.api.plugin.Platform;
 
 import org.spout.engine.SpoutEngine;
@@ -49,15 +46,13 @@ import org.spout.engine.SpoutServer;
 /**
  * Commands which handle banning and kicking
  */
-public class BanNestedCommands {
+public class UnBanNestedCommands {
 
 	private final EventManager eventManager = Spout.getEventManager();
 	private final SpoutEngine engine;
 	private SpoutServer server = null;
-	private final Set<String> ILLEGAL_IPS = new HashSet<String>() {{
-		add("127.0.0.1"); add("0.0.0.0"); add("255.255.255.255"); }};
 
-	public BanNestedCommands(SpoutEngine engine) {
+	public UnBanNestedCommands(SpoutEngine engine) {
 		this.engine = engine;
 		if (Spout.getPlatform() == Platform.SERVER){
 			server = (SpoutServer) Spout.getEngine();
@@ -66,9 +61,9 @@ public class BanNestedCommands {
 
 	@Command(aliases = {"ip","-i"},  usage = "<IP|OnlinePlayer> [message]", desc = "Ban or Unban a player via his IP", min = 1, max = -1)
 	@CommandPermissions("spout.command.ban.ip")
-	public void onBanIpCommand(CommandContext args, CommandSource source) throws CommandException {
+	public void onUnBanIpCommand(CommandContext args, CommandSource source) throws CommandException {
 		if (Spout.getPlatform() != Platform.SERVER) {
-			source.sendMessage(ChatStyle.RED, "Ban IP is available only in server-mode.");
+			source.sendMessage(ChatStyle.RED, "UnBan IP is available only in server-mode.");
 			return;
 		}
 		String ip = args.getString(0);
@@ -76,7 +71,7 @@ public class BanNestedCommands {
 		if (args.length() >= 2) {
 			message = args.getJoinedString(1);
 		} else {
-			message = new ChatArguments("You have been banned from the server.");
+			message = new ChatArguments("You have been unbanned from the server.");
 		}
 		// let's check if the ip is really an ip or the player
 		Player player = Spout.getEngine().getPlayer(ip, true);
@@ -92,10 +87,6 @@ public class BanNestedCommands {
 			}
 		}  else {
 			ip = player.getAddress().getHostAddress();
-		}
-		// do some sanity check of the ip
-		if (ILLEGAL_IPS.contains(ip)){
-			throw new CommandException("Illegal IP " + ip);
 		}
 		// trigger PlayerBanKickEvent if we have a player
 		if (player != null){

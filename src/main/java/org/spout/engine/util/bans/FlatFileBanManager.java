@@ -35,35 +35,38 @@ import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.event.server.BanChangeEvent;
-import org.spout.api.event.server.BanChangeEvent.BanType;
 import org.spout.api.util.ban.BanManager;
 
+import org.spout.engine.SpoutConfiguration;
+import org.spout.engine.SpoutServer;
+
 /**
- * Implementation of BanManager that uses PlayerListFiles.
+ * Implementation of BanManager that uses BanList.
  */
 public class FlatFileBanManager implements BanManager {
-	private final BanList players;
-	private final BanList ips;
-	private final BanList whitelistedNames;
-	private ChatArguments banMessage = new ChatArguments(ChatStyle.RED, "You are banned from this server!");
-	private ChatArguments ipBanMessage = new ChatArguments(ChatStyle.RED, "You are banned from this server!");
+	private final BanList bannedPlayers;
+	private final BanList bannedIps;
+	private final BanList whitelistedPlayers;
+	private ChatArguments banMessage = new ChatArguments(ChatStyle.RED, "Your playername is banned from this server!");
+	private ChatArguments ipBanMessage = new ChatArguments(ChatStyle.RED, "You are IP banned from this server!");
+	private ChatArguments whitelistBanMessage = new ChatArguments(ChatStyle.RED, "You are not on the whitelist of this server!");
 
 	public FlatFileBanManager(SpoutServer server) {
-		bannedIps = new PlayerListFile(new File(server.getConfigFolder(), "banned_ips.txt"));
-		whitelistedNames = new PlayerListFile(new File(server.getConfigFolder(), "whitelisted_players.txt"));
-		bannedNames = new PlayerListFile(new File(server.getConfigFolder(), "banned_players.txt"));
+		bannedIps = new BanList(new File(server.getConfigFolder(), "banned_ips.txt"));
+		whitelistedPlayers = new BanList(new File(server.getConfigFolder(), "whitelisted_players.txt"));
+		bannedPlayers = new BanList(new File(server.getConfigFolder(), "banned_players.txt"));
 	}
 
 	@Override
 	public void load() {
-		players.load();
-		whitelistedNames.load();
-		ips.load();
+		bannedPlayers.load();
+		whitelistedPlayers.load();
+		bannedIps.load();
 	}
-	// Todo make save, needs to use matches
+
 	@Override
 	public boolean isBanned(String player) {
-		return players.contains(player);
+		return bannedPlayers.contains(player);
 	}
 
 	@Override
@@ -74,18 +77,22 @@ public class FlatFileBanManager implements BanManager {
 
 		if (!event.isCancelled()) {
 			if (banned) {
-				players.add(player);
+				bannedPlayers.add(player);
 			} else {
-				players.remove(player);
+				bannedPlayers.remove(player);
 			}
 		}
 
 		return alreadyBanned;
 	}
 
+	/**
+	 * Returns a string set of currently banned names
+	 * @return
+	 */
 	@Override
-	public Set<String> getBans() {
-		return new HashSet<String>(bannedNames.getContents());
+	public Set<String> getBannedPlayers() {
+		return Collections.unmodifiableSet(new HashSet<String>(bannedPlayers.getContents()));
 	}
 
 	@Override
@@ -100,7 +107,7 @@ public class FlatFileBanManager implements BanManager {
 
 	@Override
 	public boolean isIpBanned(String address) {
-		return ips.contains(address);
+		return bannedIps.contains(address);
 	}
 
 	@Override
@@ -111,9 +118,9 @@ public class FlatFileBanManager implements BanManager {
 
 		if (!event.isCancelled()) {
 			if (banned) {
-				ips.add(address);
+				bannedIps.add(address);
 			} else {
-				ips.remove(address);
+				bannedIps.remove(address);
 			}
 		}
 
@@ -122,7 +129,7 @@ public class FlatFileBanManager implements BanManager {
 
 	@Override
 	public Set<String> getBannedIps() {
-		return Collections.unmodifiableSet(new HashSet<String>(ips.getContents()));
+		return Collections.unmodifiableSet(new HashSet<String>(bannedIps.getContents()));
 	}
 
 	@Override
@@ -135,27 +142,17 @@ public class FlatFileBanManager implements BanManager {
 		ipBanMessage = new ChatArguments(message);
 	}
 
-	/**
-	 * Return if a name is NOT whitelisted
-	 * @param player
-	 * @return
-	 */
 	@Override
 	public boolean isWhitelisted(String player) {
 		Boolean isWhitelisted = true;
-		if (SpoutConfiguration.USE_WHITELIST.getBoolean() && !whitelistedNames.contains(player))
+		if (SpoutConfiguration.USE_WHITELIST.getBoolean() && !whitelistedPlayers.contains(player))
 			isWhitelisted = false;
 		return isWhitelisted;
 	}
 
-	/**
-	 * Returns the not whitelist message for the provided name
-	 * @param player
-	 * @return
-	 */
 	@Override
-	public String getNotWhitelistedMessage(String player) {
-		return "You are not on the whitelist of this server";
+	public ChatArguments getNotWhitelistedMessage() {
+		return whitelistBanMessage;
 	}
 
 	@Override
@@ -166,9 +163,9 @@ public class FlatFileBanManager implements BanManager {
 
 		if (!event.isCancelled()) {
 			if (whitelisted) {
-				whitelistedNames.add(player);
+				whitelistedPlayers.add(player);
 			} else {
-				whitelistedNames.remove(player);
+				whitelistedPlayers.remove(player);
 			}
 		}
 
@@ -177,16 +174,13 @@ public class FlatFileBanManager implements BanManager {
 
 	@Override
 	public Set<String> getWhitelist() {
-		return new HashSet<String>(whitelistedNames.getContents());
+		return Collections.unmodifiableSet(new HashSet<String>(whitelistedPlayers.getContents()));
 	}
 
-	/**
-	 * Save the ban manager
-	 */
 	@Override
 	public void save() {
 		bannedIps.save();
-		bannedNames.save();
-		whitelistedNames.save();
+		bannedPlayers.save();
+		whitelistedPlayers.save();
 	}
 }

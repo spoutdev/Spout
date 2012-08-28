@@ -26,8 +26,6 @@
  */
 package org.spout.engine;
 
-import static org.spout.api.lang.Translation.tr;
-import static org.spout.api.lang.Translation.log;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.Inet4Address;
@@ -58,6 +56,7 @@ import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.completion.CompletionManager;
 import org.spout.api.chat.completion.CompletionManagerImpl;
+import org.spout.api.chat.console.MultiConsole;
 import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.SyncedRootCommand;
@@ -79,7 +78,6 @@ import org.spout.api.generator.biome.BiomeRegistry;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.geo.discrete.Transform;
 import org.spout.api.inventory.CommonRecipeManager;
 import org.spout.api.inventory.RecipeManager;
 import org.spout.api.io.store.simple.BinaryFileStore;
@@ -100,11 +98,9 @@ import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.StringUtil;
 
-import org.spout.engine.chat.console.Console;
 import org.spout.engine.chat.console.ConsoleManager;
 import org.spout.engine.chat.console.FileConsole;
 import org.spout.engine.chat.console.JLineConsole;
-import org.spout.api.chat.console.MultiConsole;
 import org.spout.engine.command.AdministrationCommands;
 import org.spout.engine.command.ConnectionCommands;
 import org.spout.engine.command.InputCommands;
@@ -129,6 +125,9 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
+
+import static org.spout.api.lang.Translation.log;
+import static org.spout.api.lang.Translation.tr;
 
 public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private static final SpoutPlayer[] EMPTY_PLAYER_ARRAY = new SpoutPlayer[0];
@@ -786,9 +785,9 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		}
 		//TODO Olloth fix this
 		if (player == null) {
-			player = new SpoutPlayer(playerName, getDefaultWorld().getSpawnPoint(), session, this, viewDistance);			
+			player = new SpoutPlayer(playerName, getDefaultWorld().getSpawnPoint(), session, this, viewDistance);
 		}
-		player.connect(session, player.getTransform());		
+		player.connect(session, player.getTransform());
 		World world = player.getWorld();
 		session.getProtocol().setPlayerController(player);
 		world.spawnEntity(player);
@@ -815,7 +814,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	/**
-	 * Gets the biome map used accorss all worlds on the engine
+	 * Gets the biome map used across all worlds on the engine
 	 * @return biome map
 	 */
 	public StringMap getBiomeMap() {
