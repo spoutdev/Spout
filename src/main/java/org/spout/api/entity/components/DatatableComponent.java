@@ -28,10 +28,10 @@ package org.spout.api.entity.components;
 
 import java.io.Serializable;
 
+import org.spout.api.component.BaseComponent;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
-import org.spout.api.entity.BaseComponent;
 import org.spout.api.map.DefaultedKey;
 
 public final class DatatableComponent extends BaseComponent {

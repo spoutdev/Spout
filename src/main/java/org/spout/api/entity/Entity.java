@@ -29,6 +29,7 @@ package org.spout.api.entity;
 import java.util.UUID;
 
 import org.spout.api.Source;
+import org.spout.api.component.ComponentHolder;
 import org.spout.api.datatable.Datatable;
 import org.spout.api.entity.components.DatatableComponent;
 import org.spout.api.entity.components.TransformComponent;
@@ -136,14 +137,14 @@ public interface Entity extends Source, Tickable, WorldSource, ComponentHolder {
 	public World getWorld();
 
 	/**
-	 * Gets a {@link Transform} {@link Component} representing the current position, scale and
+	 * Gets a {@link Transform} {@link EntityComponent} representing the current position, scale and
 	 * rotation of the entity.
 	 * @return
 	 */
 	public TransformComponent getTransform();
 	
 	/**
-	 * Returns the {@link Datatable} {@link Component} attached to the entity.
+	 * Returns the {@link Datatable} {@link EntityComponent} attached to the entity.
 	 * @return The datatable component
 	 */
 	public DatatableComponent getDatatable();

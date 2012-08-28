@@ -24,22 +24,24 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity;
+package org.spout.api.component;
 
 import java.util.HashMap;
 
+import org.spout.api.entity.components.DatatableComponent;
+
 public class BaseComponentHolder implements ComponentHolder {
 	private final HashMap<Class<? extends Component >, Component> components = new HashMap<Class<? extends Component>, Component>();
+	private final DatatableComponent datatable = new DatatableComponent();
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends Component> T addComponent(T component) {
+	public Component addComponent(Component component) {
 		Class<? extends Component> clazz = component.getClass();
 		if (hasComponent(clazz)) {
-			return (T) getComponent(clazz);
+			return getComponent(clazz);
 		}
 		components.put(clazz, component);
-		if(this instanceof Entity) component.attachToEntity((Entity)this);
+		component.attachTo(this);
 		component.onAttached();
 		return component;
 	}
@@ -54,11 +56,10 @@ public class BaseComponentHolder implements ComponentHolder {
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends Component> T getComponent(Class<T> aClass) {
+	public Component getComponent(Class<? extends Component> aClass) {
 		for(Class<? extends Component> c : components.keySet()){
-			if(aClass.isAssignableFrom(c)) return (T)components.get(c);
+			if(aClass.isAssignableFrom(c)) return components.get(c);
 		}
 		return null;
 	}
@@ -69,5 +70,10 @@ public class BaseComponentHolder implements ComponentHolder {
 			if(aClass.isAssignableFrom(c)) return true;
 		}
 		return false;
+	}
+
+	@Override
+	public DatatableComponent getDatatable() {
+		return datatable;
 	}
 }

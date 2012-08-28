@@ -1,6 +1,6 @@
 package org.spout.api.entity.components;
 
-import org.spout.api.entity.BaseComponent;
+import org.spout.api.component.BaseComponent;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.MathHelper;

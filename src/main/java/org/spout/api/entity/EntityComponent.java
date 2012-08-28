@@ -26,46 +26,19 @@
  */
 package org.spout.api.entity;
 
-import org.spout.api.entity.components.DatatableComponent;
+import org.spout.api.component.Component;
 import org.spout.api.entity.components.TransformComponent;
-import org.spout.api.tickable.Tickable;
 
 /**
  * Represents an attachment to a entity that can respond to Ticks.
  */
-public interface Component extends Tickable {
-	/**
-	 * Attaches this component to a entity
-	 * @param parent entity this component will be attached to.
-	 */
-	public void attachToEntity(Entity parent);
+public interface EntityComponent extends Component {
 
-	/**
-	 * Gets the parent entity associated with this component.
-	 * @return the parent entity
-	 */
-	public Entity getParent();
-
-	/**
-	 * Called when this component is attached to a entity.
-	 */
-	public abstract void onAttached();
-
-	/**
-	 * Called when this component is detached from a entity..
-	 */
-	public void onDetached();
-	
 	/**
 	 * Called when the parent entity is spawned into the world.
 	 */
 	public void onSpawned();
 	
-	/**
-	 * Called when the parent entity leaves the world.
-	 */
-	public void onRemoved();
-
 	/**
 	 * Called when the entity changes from unobserved to observed.
 	 */
@@ -75,19 +48,6 @@ public interface Component extends Tickable {
 	 * Called when the entity changes from observed to unobserved.
 	 */
 	public void onUnObserved();
-	
-	/**
-	 * Called when the entity is set to be sync'd to clients.
-	 * 
-	 * Updates are NOT ALLOWED within this method.
-	 */
-	public void onSync();
-	
-	/**
-	 * Returns the datatable component attached to the parent entity. This component always exists.
-	 * @return The datatable component
-	 */
-	public DatatableComponent getDatatable();
 	
 	/**
 	 * Returns the transform component attached to the parent entity. This component always exists.

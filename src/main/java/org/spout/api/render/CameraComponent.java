@@ -26,7 +26,7 @@
  */
 package org.spout.api.render;
 
-import org.spout.api.entity.BaseComponent;
+import org.spout.api.component.BaseComponent;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 

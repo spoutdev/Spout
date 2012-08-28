@@ -24,21 +24,20 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity;
+package org.spout.api.component;
 
 import org.spout.api.entity.components.DatatableComponent;
-import org.spout.api.entity.components.TransformComponent;
 
 public abstract class BaseComponent implements Component {
-	private Entity parent;
+	private ComponentHolder parent;
 
 	@Override
-	public final void attachToEntity(Entity parent) {
-		this.parent = parent;
+	public void attachTo(ComponentHolder holder) {
+		parent = holder;
 	}
-
+	
 	@Override
-	public Entity getParent() {
+	public ComponentHolder getParent() {
 		return parent;
 	}
 	
@@ -51,19 +50,7 @@ public abstract class BaseComponent implements Component {
 	}
 
 	@Override
-	public void onSpawned() {
-	}
-
-	@Override
 	public void onRemoved() {
-	}
-
-	@Override
-	public void onObserved() {
-	}
-
-	@Override
-	public void onUnObserved() {
 	}
 
 	@Override
@@ -89,10 +76,5 @@ public abstract class BaseComponent implements Component {
 	@Override
 	public final DatatableComponent getDatatable() {
 		return getParent().getDatatable();
-	}
-	
-	@Override
-	public final TransformComponent getTransform() {
-		return getParent().getTransform();
 	}
 }
