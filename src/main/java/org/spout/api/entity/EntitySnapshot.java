@@ -46,6 +46,9 @@ public class EntitySnapshot {
 	private final boolean observer;
 	private final boolean savable;
 	public EntitySnapshot(Entity e) {
+		if (e == null) {
+			throw new IllegalArgumentException("Can not take a snapshot of a null entity");
+		}		
 		if (e.isRemoved()) {
 			throw new IllegalArgumentException("Can not take a snapshot of a removed entity");
 		}
