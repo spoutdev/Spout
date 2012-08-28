@@ -30,6 +30,7 @@ import java.util.UUID;
 
 import org.spout.api.Source;
 import org.spout.api.collision.CollisionModel;
+import org.spout.api.datatable.Datatable;
 import org.spout.api.geo.World;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
@@ -51,7 +52,7 @@ import org.spout.api.util.thread.SnapshotRead;
 /**
  * Represents an entity, which may or may not be spawned into the world.
  */
-public interface Entity extends Source, Tickable, WorldSource {
+public interface Entity extends Source, Tickable, WorldSource, ComponentHolder {
 	public int getId();
 
 	/**
@@ -138,21 +139,18 @@ public interface Entity extends Source, Tickable, WorldSource {
 	public void finalizeRun();
 
 	/**
-	 * Kills the entity. This takes effect at the next snapshot.<br/>
-	 * <br/>
-	 * If the entity's position is set before the next snapshot, the entity won't be removed.</br>
-	 * @return true if the entity was alive
+	 * Removes the entity. This takes effect at the next snapshot.
 	 */
 	@DelayedWrite
 	@LiveRead
-	public boolean kill();
+	public void remove();
 
 	/**
-	 * True if the entity is dead.
-	 * @return dead
+	 * True if the entity is removed.
+	 * @return removed
 	 */
 	@SnapshotRead
-	public boolean isDead();
+	public boolean isRemoved();
 
 	/**
 	 * Sets the maximum distance at which the entity can be seen.<br/>
@@ -196,23 +194,24 @@ public interface Entity extends Source, Tickable, WorldSource {
 	public boolean isObserverLive();
 
 	/**
-	 * Gets a {@link Transform} representing the current position, scale and
+	 * Gets a {@link Transform} {@link Component} representing the current position, scale and
 	 * rotation of the entity.
 	 * @return
 	 */
 	public Transform getTransform();
 
 	/**
-	 * Gets a {@link Transform} representing the last tick's position, scale and rotation of the entity.
+	 * Gets a {@link Transform} {@link Component} representing the last tick's position, scale and rotation of the entity.
 	 * @return transform of the entity.
 	 */
 	public Transform getLastTransform();
-
+	
 	/**
-	 * Gets the position, scale and rotation of the entity from the given {@link Transform}.
+	 * Returns the {@link Datatable} {@link Component} attached to the entity.
+	 * @return The datatable component
 	 */
-	public void setTransform(Transform transform);
-
+	public Datatable getDatatable();
+	
 	/**
 	 * Gets the current position of the entity
 	 * @return position of the entity in the world.
