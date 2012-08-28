@@ -26,10 +26,8 @@
  */
 package org.spout.api.entity;
 
-import org.spout.api.datatable.Datatable;
 import org.spout.api.entity.components.DatatableComponent;
 import org.spout.api.entity.components.TransformComponent;
-import org.spout.api.geo.discrete.Transform;
 
 public abstract class BaseComponent implements Component {
 	private Entity parent;

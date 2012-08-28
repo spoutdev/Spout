@@ -29,7 +29,6 @@ package org.spout.api.entity;
 import java.util.UUID;
 
 import org.spout.api.Source;
-import org.spout.api.collision.CollisionModel;
 import org.spout.api.datatable.Datatable;
 import org.spout.api.entity.components.DatatableComponent;
 import org.spout.api.entity.components.TransformComponent;
@@ -37,14 +36,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
-import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
-import org.spout.api.model.Model;
-import org.spout.api.protocol.Message;
-import org.spout.api.protocol.Protocol;
-import org.spout.api.protocol.SendMode;
 import org.spout.api.tickable.Tickable;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
@@ -70,32 +62,17 @@ public interface Entity extends Source, Tickable, WorldSource, ComponentHolder {
 	public UUID getUID();
 
 	/**
-	 * Returns true if this entity is spawned and being Simulated in the world
+	 * True if the entity is removed.
+	 * @return removed
+	 */
+	@SnapshotRead
+	public boolean isRemoved();
+	
+	/**
+	 * Returns true if this entity is spawned and being simulated in the world
 	 * @return spawned
 	 */
 	public boolean isSpawned();
-
-	/**
-	 * Gets the {@link Chunk} this entity resides in, or null if removed.
-	 * @return chunk the entity is in, or null if removed.
-	 */
-	@SnapshotRead
-	public Chunk getChunk();
-
-	/**
-	 * Gets the region the entity is associated and managed with, or null if removed.
-	 * @return region the entity is in.
-	 */
-	@SnapshotRead
-	public Region getRegion();
-
-	/**
-	 * Gets the world the entity is associated with, or null if removed.
-	 * @return world
-	 */
-	@SnapshotRead
-	@Override
-	public World getWorld();
 
 	/**
 	 * Removes the entity. This takes effect at the next snapshot.
@@ -103,14 +80,7 @@ public interface Entity extends Source, Tickable, WorldSource, ComponentHolder {
 	@DelayedWrite
 	@LiveRead
 	public void remove();
-
-	/**
-	 * True if the entity is removed.
-	 * @return removed
-	 */
-	@SnapshotRead
-	public boolean isRemoved();
-
+	
 	/**
 	 * Sets the maximum distance at which the entity can be seen.<br/>
 	 * <br/>
@@ -142,6 +112,28 @@ public interface Entity extends Source, Tickable, WorldSource, ComponentHolder {
 	 */
 	@SnapshotRead
 	public boolean isObserver();
+	
+	/**
+	 * Gets the {@link Chunk} this entity resides in, or null if removed.
+	 * @return chunk the entity is in, or null if removed.
+	 */
+	@SnapshotRead
+	public Chunk getChunk();
+
+	/**
+	 * Gets the region the entity is associated and managed with, or null if removed.
+	 * @return region the entity is in.
+	 */
+	@SnapshotRead
+	public Region getRegion();
+
+	/**
+	 * Gets the world the entity is associated with, or null if removed.
+	 * @return world
+	 */
+	@SnapshotRead
+	@Override
+	public World getWorld();
 
 	/**
 	 * Gets a {@link Transform} {@link Component} representing the current position, scale and
