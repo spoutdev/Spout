@@ -87,9 +87,4 @@ public interface CommandSource extends PermissionsSubject, DataSubject, Source {
 	 * @return the preferred locale of the sender
 	 */
 	public Locale getPreferredLocale();
-	
-	/**
-	 * @return the id of the style handler
-	 */
-	public int getStyleHandlerId();
 }
