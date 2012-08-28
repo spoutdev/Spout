@@ -29,8 +29,6 @@ package org.spout.engine.chat.console;
 
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
-import org.spout.api.chat.style.StyleHandler;
-import org.spout.api.chat.style.html.HTMLStyleHandler;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
 import org.spout.api.data.ValueHolder;
@@ -147,10 +145,5 @@ public class ConsoleCommandSource implements CommandSource {
 			preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
 		}
 		return preferredLocale;
-	}
-
-	@Override
-	public int getStyleHandlerId() {
-		return HTMLStyleHandler.ID;
 	}
 }
