@@ -41,6 +41,34 @@ public abstract class BaseComponent implements Component {
 	public final Entity getParent() {
 		return parent;
 	}
+	
+	@Override
+	public void onAttached() {
+	}
+
+	@Override
+	public void onDetached() {
+	}
+
+	@Override
+	public void onSpawned() {
+	}
+
+	@Override
+	public void onRemoved() {
+	}
+
+	@Override
+	public void onAwake() {
+	}
+
+	@Override
+	public void onSleep() {
+	}
+
+	@Override
+	public void onSync() {
+	}	
 
 	@Override
 	public boolean canTick() {
@@ -52,6 +80,10 @@ public abstract class BaseComponent implements Component {
 		if (canTick()) {
 			onTick(dt);
 		}
+	}
+	
+	@Override
+	public void onTick(float dt) {
 	}
 	
 	@Override
