@@ -78,18 +78,6 @@ public interface Controller extends ComponentHolder, Tickable {
 	public DefaultedMap<String, Serializable> getDataMap();
 
 	/**
-	 * Called immediately <i>before</i> a entity and it's parent entity are
-	 * serialized. This method is intended as the last chance to store serializable
-	 * information inside of the entity data map (see: {@link #getDataMap()})
-	 * <br/><br/>
-	 * <b>Note:</b> This will never occur is {@link #isSavable()} is false. <br/>
-	 * <b>Note:</b> onSave occurs during Copy Snapshot. During this stage
-	 * all live values are copied to their stable snapshot. Data
-	 * is unstable so no reads are permitted during this stage.
-	 */
-	public void onSave();
-
-	/**
 	 * True if this entity and it's parent entity should be saved.
 	 * @return save
 	 */

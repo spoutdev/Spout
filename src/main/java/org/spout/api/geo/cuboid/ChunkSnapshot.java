@@ -28,9 +28,7 @@ package org.spout.api.geo.cuboid;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
-
-import org.spout.api.entity.Entity;
+import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.AreaBlockSource;
 import org.spout.api.geo.World;
@@ -101,15 +99,15 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	 * @return the entities
 	 */
 	@SnapshotRead
-	public abstract List<Entity> getEntities();
-	
+	public abstract List<EntitySnapshot> getEntities();
+
 	/**
 	 * Gets if this chunk snapshot had already been populated.
 	 *
 	 * @return if the chunk snapshot was populated.
 	 */
 	public abstract boolean isPopulated();
-	
+
 	/**
 	 * Gets a copy of the biome manager associated with this chunk.
 	 * 
@@ -117,14 +115,14 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	 */
 	@SnapshotRead
 	public abstract BiomeManager getBiomeManager();
-	
+
 	/**
 	 * A thread-safe copy of the map of data attached to the chunk
 	 *
 	 * @return data map
 	 */
 	public abstract DefaultedMap<String, Serializable> getDataMap();
-	
+
 	public enum SnapshotType {
 		/**
 		 * Loads no block data (ids, data, skylight, blocklight) in the snapshot
@@ -147,18 +145,12 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 		 */
 		BOTH,
 	}
-	
+
 	public enum EntityType {
 		/**
 		 * Saves no entity information in the snapshot
 		 */
 		NO_ENTITIES,
-		/**
-		 * Saves a weak reference to entities in the snapshot.
-		 * 
-		 * This is the default setting.
-		 */
-		WEAK_ENTITIES,
 		/**
 		 * Saves a hard reference to entities in the snapshot
 		 * 
@@ -166,7 +158,7 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 		 */
 		ENTITIES,
 	}
-	
+
 	public enum ExtraData {
 		/**
 		 * Loads no extra data in the snapshot

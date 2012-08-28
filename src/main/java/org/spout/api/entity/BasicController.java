@@ -89,8 +89,9 @@ public abstract class BasicController implements Controller {
 		return dataMap;
 	}
 
+	@Deprecated
 	public void onSave() {
-
+		//Left here as a stub to make merging easier - it is NO LONGER CALLED AND SHOULD BE REMOVED ASAP!
 	}
 
 	public boolean isSavable() {
