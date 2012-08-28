@@ -55,27 +55,6 @@ import org.spout.api.util.thread.SnapshotRead;
 public interface Entity extends Source, Tickable, WorldSource, ComponentHolder {
 	public int getId();
 
-	/**
-	 * Gets the entity for the entity
-	 * @return the entity
-	 */
-	@SnapshotRead
-	public Controller getController();
-
-	/**
-	 * Sets the entity for the entity
-	 * @param controller
-	 */
-	@DelayedWrite
-	public void setController(Controller controller, Source source);
-
-	/**
-	 * Sets the entity for the entity
-	 * @param controller
-	 */
-	@DelayedWrite
-	public void setController(Controller controller);
-
 	// TODO - add thread timing annotations
 	public void setModel(Model model);
 
@@ -97,13 +76,6 @@ public interface Entity extends Source, Tickable, WorldSource, ComponentHolder {
 	 * Called when the entity is set to be sent to clients
 	 */
 	public void onSync();
-
-	/**
-	 * Returns true if this entity's entity is the provided entity
-	 * @param clazz
-	 * @return true if this entity's entity is the provided entity
-	 */
-	public boolean is(Class<? extends Controller> clazz);
 
 	/**
 	 * Returns true if this entity is spawned and being Simulated in the world

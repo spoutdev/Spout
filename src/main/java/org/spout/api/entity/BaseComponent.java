@@ -38,7 +38,7 @@ public abstract class BaseComponent implements Component {
 	}
 
 	@Override
-	public final Entity getParent() {
+	public Entity getParent() {
 		return parent;
 	}
 	
