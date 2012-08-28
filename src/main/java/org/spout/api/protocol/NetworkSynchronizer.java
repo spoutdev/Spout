@@ -64,12 +64,8 @@ public abstract class NetworkSynchronizer {
 	public NetworkSynchronizer(Player owner, Session session, Entity entity, int minimumViewRadius) {
 		this.owner = owner;
 		this.entity = entity;
-		if (entity != null) {
-			entity.setObserver(true);
-			blockViewDistance = entity.getViewDistance();
-		} else {
-			blockViewDistance = 0;
-		}
+		entity.setObserver(true);
+		blockViewDistance = entity.getViewDistance();
 		this.session = session;
 		viewDistance = blockViewDistance >> Chunk.BLOCKS.BITS;
 		this.minimumViewRadius = minimumViewRadius * Chunk.BLOCKS.SIZE;
@@ -92,7 +88,7 @@ public abstract class NetworkSynchronizer {
 	private final Set<Point> initializedChunks = new LinkedHashSet<Point>();
 	private final Set<Point> activeChunks = new LinkedHashSet<Point>();
 
-	private boolean death = false;
+	private boolean removed = false;
 	private boolean first = true;
 	private volatile boolean teleported = false;
 	private volatile boolean worldChanged = false;
@@ -190,10 +186,10 @@ public abstract class NetworkSynchronizer {
 		return false;
 	}
 
-	public void onDeath() {
+	public void onRemoved() {
 		TickStage.checkStage(TickStage.FINALIZE);
-		death = true;
-		entity = null;
+		removed = true;
+		entity.remove();
 		for (Point p : initializedChunks) {
 			removeObserver(p);
 		}
@@ -255,14 +251,13 @@ public abstract class NetworkSynchronizer {
 	private int chunksSent = 0;
 
 	public void preSnapshot() {
-
-		if (death) {
-			death = false;
+		if (removed) {
+			removed = false;
 			for (Point p : initializedChunks) {
 				freeChunk(p);
 			}
 		} else {
-			if (worldChanged && entity != null) {
+			if (worldChanged) {
 				first = false;
 				Point ep = entity.getTransform().getPosition();
 				if (worldChanged) {
@@ -297,8 +292,8 @@ public abstract class NetworkSynchronizer {
 					i = attemptSendChunk(i, priorityChunkSendQueue, c);
 				}
 
-				if (priorityChunkSendQueue.isEmpty() && teleported && entity != null) {
-					sendPosition(entity.getPosition(), entity.getRotation());
+				if (priorityChunkSendQueue.isEmpty() && teleported) {
+					sendPosition(entity.getTransform().getPosition(), entity.getTransform().getRotation());
 					teleported = false;
 				}
 
