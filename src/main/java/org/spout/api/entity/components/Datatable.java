@@ -38,38 +38,6 @@ public final class Datatable extends BaseComponent {
 	private final DatatableMap datatableMap = new GenericDatatableMap();
 	private final DataMap dataMap = new DataMap(datatableMap);
 	
-	@Override
-	public void onAttached() {
-	}
-
-	@Override
-	public void onDetached() {
-	}
-
-	@Override
-	public void onSpawned() {
-	}
-
-	@Override
-	public void onRemoved() {
-	}
-
-	@Override
-	public void onAwake() {
-	}
-
-	@Override
-	public void onSleep() {
-	}
-
-	@Override
-	public void onSync() {
-	}
-
-	@Override
-	public void onTick(float dt) {
-	}
-	
 	public DataMap getBaseMap() {
 		return dataMap;
 	}
