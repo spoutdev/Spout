@@ -27,7 +27,6 @@
 package org.spout.api.render;
 
 import org.spout.api.entity.BaseComponent;
-import org.spout.api.entity.controller.PlayerController;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 

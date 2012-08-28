@@ -160,7 +160,6 @@ public class GenericDatatableMap implements DatatableMap {
 		decompress(compressedData, true);
 	}
 
-	@Override
 	public void output(OutputStream out) throws IOException {
 		VarInt.writeInt(out, -1);
 		byte[] compressed = compress();
