@@ -205,12 +205,12 @@ public abstract class NetworkSynchronizer {
 	 * are non-conflicting.
 	 */
 	public void finalizeTick() {
-		if (entity == null || entity.isDead()) {
+		if (entity == null || entity.isRemoved()) {
 			return;
 		}
 
 		// TODO teleport smoothing
-		Point currentPosition = entity.getPosition();
+		Point currentPosition = entity.getTransform().getPosition();
 		if (currentPosition != null) {
 			if (worldChanged || 
 					(!currentPosition.equals(lastChunkCheck) &&
@@ -264,7 +264,7 @@ public abstract class NetworkSynchronizer {
 		} else {
 			if (worldChanged && entity != null) {
 				first = false;
-				Point ep = entity.getPosition();
+				Point ep = entity.getTransform().getPosition();
 				if (worldChanged) {
 					worldChanged(ep.getWorld());
 				}

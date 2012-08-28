@@ -29,7 +29,6 @@ package org.spout.api.entity.spawn;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.geo.discrete.Point;
 
 public abstract class GenericSpawnArrangement implements SpawnArrangement {

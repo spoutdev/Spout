@@ -167,5 +167,13 @@ public class TransformComponent extends BaseComponent {
 	
 	private void setAxisAngles(float pitch, float yaw, float roll) {
 		setRotation(MathHelper.rotation(pitch, yaw, roll));
-	}	
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public Transform copy() {
+		return wrapped.copy();
+	}
 }

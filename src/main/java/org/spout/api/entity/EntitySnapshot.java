@@ -32,7 +32,6 @@ import java.util.UUID;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
-import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.geo.discrete.Transform;
 
 public class EntitySnapshot {
@@ -43,7 +42,6 @@ public class EntitySnapshot {
 	private final String worldName;
 	private final UUID worldId;
 	private final DataMap dataMap;
-	private final ControllerType type;
 	private final int viewDistance;
 	private final boolean observer;
 	private final boolean savable;
@@ -51,14 +49,13 @@ public class EntitySnapshot {
 		if (e == null) {
 			throw new IllegalArgumentException("Can not take a snapshot of a null entity");
 		}
-		if (e.isDead()) {
+		if (e.isRemoved()) {
 			throw new IllegalArgumentException("Can not take a snapshot of a dead entity");
 		}
 		this.entity = new WeakReference<Entity>(e);
 		this.entityId = e.getId();
 		this.uniqueId = e.getUID();
-		this.location = e.getTransform();
-		this.type = e.getController().getType();
+		this.location = e.getTransform().copy();
 		this.worldName = e.getWorld().getName();
 		this.worldId = e.getWorld().getUID();
 		this.viewDistance = e.getViewDistance();
@@ -98,10 +95,6 @@ public class EntitySnapshot {
 
 	public final DataMap getDataMap() {
 		return dataMap;
-	}
-
-	public final ControllerType getType() {
-		return type;
 	}
 
 	public int getViewDistance() {

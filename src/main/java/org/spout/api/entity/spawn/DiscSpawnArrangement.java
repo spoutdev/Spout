@@ -28,7 +28,6 @@ package org.spout.api.entity.spawn;
 
 import java.util.ArrayList;
 
-import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.geo.discrete.Point;
 
 public class DiscSpawnArrangement extends GenericSpawnArrangement {

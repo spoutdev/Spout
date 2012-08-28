@@ -26,7 +26,6 @@
  */
 package org.spout.api.entity.spawn;
 
-import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.geo.discrete.Point;
 
 /**

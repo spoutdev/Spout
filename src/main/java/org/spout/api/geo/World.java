@@ -34,11 +34,8 @@ import java.util.UUID;
 
 import org.spout.api.Engine;
 import org.spout.api.Source;
-import org.spout.api.entity.Controller;
-import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
-import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.discrete.Point;

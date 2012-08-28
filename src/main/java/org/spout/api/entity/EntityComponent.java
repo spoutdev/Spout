@@ -33,12 +33,6 @@ import org.spout.api.entity.components.TransformComponent;
  * Represents an attachment to a entity that can respond to Ticks.
  */
 public interface EntityComponent extends Component {
-	@Override
-	public void attachTo(Entity holder);
-	
-	@Override
-	public Entity getHolder();
-	
 	/**
 	 * Called when the parent entity is spawned into the world.
 	 */

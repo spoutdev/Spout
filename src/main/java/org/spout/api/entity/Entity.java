@@ -29,10 +29,6 @@ package org.spout.api.entity;
 import java.util.UUID;
 
 import org.spout.api.Source;
-import org.spout.api.component.ComponentHolder;
-import org.spout.api.datatable.Datatable;
-import org.spout.api.entity.components.DatatableComponent;
-import org.spout.api.entity.components.TransformComponent;
 import org.spout.api.geo.World;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
