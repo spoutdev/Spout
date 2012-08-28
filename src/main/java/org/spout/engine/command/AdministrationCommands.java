@@ -109,7 +109,7 @@ public class AdministrationCommands {
 			message = new ChatArguments("You have been kicked from the server.");
 		}
 
-		Player player = Spout.getEngine().getPlayer(playerName, true);
+		Player player = ((Server) Spout.getEngine()).getPlayer(playerName, true);
 		if (player == null) {
 			throw new CommandException("Unknown player: " + player);
 		}
@@ -235,10 +235,14 @@ public class AdministrationCommands {
 		source.sendMessage(pluginListString);
 	}
 
-	@Command(aliases = {"players", "who"}, desc = "List all online players")
+	@Command(aliases = {"players", "who", "list"}, desc = "List all online players")
 	@CommandPermissions("spout.command.players")
-	public void onPlayersCommand(CommandContext args, CommandSource source) {
-		Player[] players = Spout.getEngine().getOnlinePlayers();
+	public void list(CommandContext args, CommandSource source) throws CommandException {
+		if (Spout.getPlatform() != Platform.SERVER || Spout.getPlatform() != Platform.PROXY) {
+			throw new CommandException("You may only list online players in server mode.");
+		}
+
+		Player[] players = ((Server) Spout.getEngine()).getOnlinePlayers();
 		ChatArguments onlineMsg = new ChatArguments(Arrays.asList("Online (", (players.length <= 0 ? ChatStyle.RED : ChatStyle.BRIGHT_GREEN), players.length, ChatStyle.RESET, "): "));
 		for (int i = 0; i < players.length; i++) {
 			if (!players[i].isOnline()) {

@@ -54,6 +54,7 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 
 import org.spout.api.Engine;
 import org.spout.api.FileSystem;
+import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.completion.CompletionManager;
@@ -89,6 +90,7 @@ import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.plugin.CommonPluginLoader;
 import org.spout.api.plugin.CommonPluginManager;
 import org.spout.api.plugin.CommonServiceManager;
+import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginManager;
 import org.spout.api.plugin.ServiceManager;
@@ -312,48 +314,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	@Override
-	public List<String> getAllPlayers() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public SpoutPlayer[] getOnlinePlayers() {
-		Map<String, SpoutPlayer> playerList = onlinePlayers.get();
-		ArrayList<SpoutPlayer> onlinePlayers = new ArrayList<SpoutPlayer>(playerList.size());
-		for (SpoutPlayer player : playerList.values()) {
-			if (player.isOnline()) {
-				onlinePlayers.add(player);
-			}
-		}
-		return onlinePlayers.toArray(new SpoutPlayer[onlinePlayers.size()]);
-	}
-
-	@Override
-	public int getMaxPlayers() {
-		return maxPlayers;
-	}
-
-	@Override
-	public void broadcastMessage(Object... message) {
-		broadcastMessage(STANDARD_BROADCAST_PERMISSION, message);
-	}
-
-	public void broadcastMessage(String msg) {
-		broadcastMessage(new Object[]{msg});
-	}
-
-	@Override
-	public void broadcastMessage(String permission, Object... message) {
-		ChatArguments args = new ChatArguments(message);
-		for (PermissionsSubject player : getAllWithNode(permission)) {
-			if (player instanceof CommandSource) {
-				((CommandSource) player).sendMessage(args);
-			}
-		}
-	}
-
-	@Override
 	public Set<PermissionsSubject> getAllWithNode(String permission) {
 		return getEventManager().callEvent(new PermissionGetAllWithNodeEvent(permission)).getAllowedReceivers();
 	}
@@ -402,26 +362,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 			pluginDirectory.mkdirs();
 		}
 		return pluginDirectory;
-	}
-
-	@Override
-	public Player getPlayer(String name, boolean exact) {
-		name = name.toLowerCase();
-		if (exact) {
-			for (Player player : onlinePlayers.getValues()) {
-				if (player.getName().equalsIgnoreCase(name)) {
-					return player;
-				}
-			}
-			return null;
-		} else {
-			return StringUtil.getShortest(StringUtil.matchName(onlinePlayers.getValues(), name));
-		}
-	}
-
-	@Override
-	public Collection<Player> matchPlayer(String name) {
-		return StringUtil.matchName(Arrays.<Player>asList(getOnlinePlayers()), name);
 	}
 
 	@Override
@@ -543,14 +483,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 		Runnable lastTickTask = new Runnable() {
 			public void run() {
-				ServerStopEvent stopEvent = new ServerStopEvent(message);
-				getEventManager().callEvent(stopEvent);
-
 				setupComplete.set(false);
-				for (SpoutPlayer player : getOnlinePlayers()) {
-					player.kick(stopEvent.getMessage());
-				}
-
 				for (SpoutWorld world : engine.getLiveWorlds()) {
 					world.unload(true);
 				}
