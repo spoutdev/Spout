@@ -82,23 +82,6 @@ public interface Component extends Tickable {
 	public void onSync();
 	
 	/**
-	 * Returns where this component can tick or not
-	 */
-	public boolean canTick();
-	
-	/**
-	 * Called when this component is ticked.
-	 * @param dt time since the last tick (delta time)
-	 */
-	public void onTick(float dt);
-	
-	/**
-	 * Ticks this component
-	 * @param dt time since the last tick (delta time)
-	 */
-	public void tick(float dt);
-	
-	/**
 	 * Returns the datatable component attached to the parent entity. This component always exists.
 	 * @return The datatable component
 	 */

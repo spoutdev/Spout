@@ -27,7 +27,7 @@
 package org.spout.api.tickable;
 
 /**
- * Represents a {@link org.spout.api.entity.BasicComponent}s priority
+ * Represents a {@link org.spout.api.entity.BaseComponent}s priority
  */
 public enum TickPriority {
 	LOWEST(0),

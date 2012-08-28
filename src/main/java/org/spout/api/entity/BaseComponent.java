@@ -24,52 +24,43 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.render;
+package org.spout.api.entity;
 
-import org.spout.api.entity.BaseComponent;
-import org.spout.api.entity.controller.PlayerController;
-import org.spout.api.math.MathHelper;
-import org.spout.api.math.Matrix;
+import org.spout.api.datatable.Datatable;
+import org.spout.api.geo.discrete.Transform;
 
-public class CameraComponent extends BaseComponent<PlayerController> implements Camera {
-
-	Matrix projection;
-	Matrix view;
-	private ViewFrustum frustum = new ViewFrustum();
+public abstract class BaseComponent implements Component {
+	private Entity parent;
 
 	@Override
-	public Matrix getProjection() {
-		return projection;
+	public final void attachToEntity(Entity parent) {
+		this.parent = parent;
 	}
 
 	@Override
-	public Matrix getView() {
-		return view;
+	public final Entity getParent() {
+		return parent;
 	}
 
 	@Override
-	public void updateView() {
-		view = MathHelper.rotate(getParent().getParent().getRotation()).multiply(MathHelper.translate(getParent().getParent().getPosition()));
-
+	public boolean canTick() {
+		return true;
 	}
 
 	@Override
-	public void onTick(float dt) {
-		updateView();
-		frustum.update(projection, view);
+	public final void tick(float dt) {
+		if (canTick()) {
+			onTick(dt);
+		}
 	}
-
+	
 	@Override
-	public void onAttached() {
-		// TODO Get FOV
-		projection = MathHelper.createPerspective(90f, 4.0f / 3.0f, .001f, 1000f);
-		updateView();
-		frustum.update(projection, view);
+	public final Datatable getDatatable() {
+		return getParent().getDatatable();
 	}
-
+	
 	@Override
-	public ViewFrustum getFrustum() {
-		return frustum;
+	public final Transform getTransform() {
+		return getParent().getTransform();
 	}
-
 }

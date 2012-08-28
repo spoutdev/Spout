@@ -24,14 +24,57 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.tickable;
+package org.spout.api.entity.components;
 
-public abstract class BasicTickable implements Tickable {
+import org.spout.api.entity.BaseComponent;
+
+public final class Datatable extends BaseComponent {
 
 	@Override
-	public final void tick(float dt) {
-		if(canTick()) {
-			onTick(dt);
-		}
+	public void onAttached() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onDetached() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSpawned() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onRemoved() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAwake() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSleep() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSync() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onTick(float dt) {
+		// TODO Auto-generated method stub
+		
 	}
 }
