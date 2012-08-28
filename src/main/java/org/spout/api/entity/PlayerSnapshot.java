@@ -24,19 +24,23 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.collision;
+package org.spout.api.entity;
 
-public enum CollisionType {
-	/**
-	 * Indicates that one object fully contains another object
-	 */
-	Contains,
-	/**
-	 * Indicates that neither object overlap
-	 */
-	Disjoint,
-	/**
-	 * Indicates that the objects partially overlap
-	 */
-	Intersect,
+import org.spout.api.util.Named;
+
+public class PlayerSnapshot extends EntitySnapshot implements Named{
+	private final String name;
+	public PlayerSnapshot(Player p) {
+		super(p);
+		name = p.getName();
+	}
+
+	@Override
+	public Player getReference() {
+		return (Player)super.getReference();
+	}
+
+	public String getName() {
+		return name;
+	}
 }

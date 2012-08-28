@@ -37,7 +37,6 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
-import org.spout.api.geo.discrete.Transform;
 import org.spout.api.tickable.Tickable;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
@@ -63,25 +62,30 @@ public interface Entity extends Source, Tickable, WorldSource, ComponentHolder {
 	public UUID getUID();
 
 	/**
-	 * True if the entity is removed.
-	 * @return removed
-	 */
-	@SnapshotRead
-	public boolean isRemoved();
-	
-	/**
-	 * Returns true if this entity is spawned and being simulated in the world
-	 * @return spawned
-	 */
-	public boolean isSpawned();
-
-	/**
 	 * Removes the entity. This takes effect at the next snapshot.
 	 */
 	@DelayedWrite
 	@LiveRead
 	public void remove();
 	
+	/**
+	 * True if the entity is removed.
+	 * @return removed
+	 */
+	@SnapshotRead
+	public boolean isRemoved();
+
+	/**
+	 * Returns true if this entity is spawned.
+	 * @return spawned
+	 */
+	public boolean isSpawned();
+
+	/**
+	 * Called just before a snapshot update.
+	 */
+	public void finalizeRun();
+
 	/**
 	 * Sets the maximum distance at which the entity can be seen.<br/>
 	 * <br/>
