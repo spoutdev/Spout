@@ -27,6 +27,8 @@
 package org.spout.api.entity;
 
 import org.spout.api.datatable.Datatable;
+import org.spout.api.entity.components.DatatableComponent;
+import org.spout.api.entity.components.TransformComponent;
 import org.spout.api.geo.discrete.Transform;
 
 public abstract class BaseComponent implements Component {
@@ -59,11 +61,11 @@ public abstract class BaseComponent implements Component {
 	}
 
 	@Override
-	public void onAwake() {
+	public void onObserved() {
 	}
 
 	@Override
-	public void onSleep() {
+	public void onUnObserved() {
 	}
 
 	@Override
@@ -87,12 +89,12 @@ public abstract class BaseComponent implements Component {
 	}
 	
 	@Override
-	public final Datatable getDatatable() {
+	public final DatatableComponent getDatatable() {
 		return getParent().getDatatable();
 	}
 	
 	@Override
-	public final Transform getTransform() {
+	public final TransformComponent getTransform() {
 		return getParent().getTransform();
 	}
 }

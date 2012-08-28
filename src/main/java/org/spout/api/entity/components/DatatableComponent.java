@@ -34,7 +34,7 @@ import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.BaseComponent;
 import org.spout.api.map.DefaultedKey;
 
-public final class Datatable extends BaseComponent {
+public final class DatatableComponent extends BaseComponent {
 	private final DatatableMap datatableMap = new GenericDatatableMap();
 	private final DataMap dataMap = new DataMap(datatableMap);
 	

@@ -27,6 +27,8 @@
 package org.spout.api.entity;
 
 import org.spout.api.datatable.Datatable;
+import org.spout.api.entity.components.DatatableComponent;
+import org.spout.api.entity.components.TransformComponent;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.tickable.Tickable;
 
@@ -69,15 +71,17 @@ public interface Component extends Tickable {
 	/**
 	 * Called when the entity changes from unobserved to observed.
 	 */
-	public void onAwake();
+	public void onObserved();
 	
 	/**
 	 * Called when the entity changes from observed to unobserved.
 	 */
-	public void onSleep();
+	public void onUnObserved();
 	
 	/**
-	 * Called when the entity is set to be synced to clients.
+	 * Called when the entity is set to be sync'd to clients.
+	 * 
+	 * Updates are NOT ALLOWED within this method.
 	 */
 	public void onSync();
 	
@@ -85,11 +89,11 @@ public interface Component extends Tickable {
 	 * Returns the datatable component attached to the parent entity. This component always exists.
 	 * @return The datatable component
 	 */
-	public Datatable getDatatable();
+	public DatatableComponent getDatatable();
 	
 	/**
-	 * Returns the transform attached to the parent entity. This component always exists.
+	 * Returns the transform component attached to the parent entity. This component always exists.
 	 * @return The transform component
 	 */
-	public Transform getTransform();
+	public TransformComponent getTransform();
 }
