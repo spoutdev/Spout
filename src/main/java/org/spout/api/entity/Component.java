@@ -38,7 +38,7 @@ public interface Component extends Tickable {
 	 * Attaches this component to a entity
 	 * @param parent entity this component will be attached to.
 	 */
-	public void attachToEntity(Entity entity);
+	public void attachToEntity(Entity parent);
 
 	/**
 	 * Gets the parent entity associated with this component.

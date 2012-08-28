@@ -26,11 +26,14 @@
  */
 package org.spout.api.entity;
 
+/**
+ * Represents the accessing portion of an entity that controls retrieving/removing components.
+ */
 public interface ComponentHolder {
 	/**
-	 * Adds a new Component to the Entity.  If the entity already contains a component of that type, then a new component is not
+	 * Adds a new component to the entity.  If the entity already contains a component of that type, then a new component is not
 	 * constructed, and the one already attached is returned
-	 * @param component the Component to be added
+	 * @param component the component to be added
 	 * @return The component created, or the one already attached
 	 */
 	public <T extends Component> T addComponent(T component);
@@ -43,16 +46,16 @@ public interface ComponentHolder {
 	public boolean removeComponent(Class<? extends Component> component);
 
 	/**
-	 * Returns an instance of the component attached to the object
+	 * Returns the first component that is assignable from the given class, or null if it doesn't exist
 	 * @param component the type of component to get
-	 * @return The component instance, or NULL if it doesn't exist
+	 * @return The component instance, or null if it doesn't exist
 	 */
 	public <T extends Component> T getComponent(Class<T> component);
 
 	/**
-	 * Returns True if the type provided is attached or false if not.
-	 * @param component
-	 * @return
+	 * Returns true if a component exists that is assignable from the given class.
+	 * @param component Type of component to check if the entity has
+	 * @return True if a component exists that is assignable from the given class, false if not
 	 */
 	public boolean hasComponent(Class<? extends Component> component);
 }
