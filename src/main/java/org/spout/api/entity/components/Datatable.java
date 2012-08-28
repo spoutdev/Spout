@@ -26,55 +26,83 @@
  */
 package org.spout.api.entity.components;
 
+import java.io.Serializable;
+
+import org.spout.api.datatable.DataMap;
+import org.spout.api.datatable.DatatableMap;
+import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.BaseComponent;
+import org.spout.api.map.DefaultedKey;
 
 public final class Datatable extends BaseComponent {
-
+	private final DatatableMap datatableMap = new GenericDatatableMap();
+	private final DataMap dataMap = new DataMap(datatableMap);
+	
 	@Override
 	public void onAttached() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void onDetached() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void onSpawned() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void onRemoved() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void onAwake() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void onSleep() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void onSync() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void onTick(float dt) {
-		// TODO Auto-generated method stub
-		
+	}
+	
+	public DataMap getBaseMap() {
+		return dataMap;
+	}
+	
+	public void put(String key, Serializable value) {
+		dataMap.put(key, value);
+	}
+	
+	public <T extends Serializable> T put (DefaultedKey<T> key, T value) {
+		return dataMap.put(key, value);
+	}
+	
+	public Serializable get (Object key) {
+		return dataMap.get(key);
+	}
+	
+	public <T extends Serializable> T get (DefaultedKey<T> key) {
+		return dataMap.get(key);
+	}
+	
+	public <T extends Serializable> T get (Object key, T defaultValue) {
+		return dataMap.get(key, defaultValue);
+	}
+	
+	public boolean containsKey(Object key) {
+		return dataMap.containsKey(key);
+	}
+	
+	public boolean containsKey(String key) {
+		return dataMap.containsKey(key);
+	}
+	
+	public boolean containsValue(Object value) {
+		return dataMap.containsValue(value);
 	}
 }
