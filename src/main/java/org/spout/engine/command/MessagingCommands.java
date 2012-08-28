@@ -26,6 +26,7 @@
  */
 package org.spout.engine.command;
 
+import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
@@ -77,9 +78,9 @@ public class MessagingCommands {
 					template.setPlaceHolder(PlayerChatEvent.NAME, new ChatArguments(player.getDisplayName()));
 					template.setPlaceHolder(PlayerChatEvent.MESSAGE, event.getMessage());
 
-					engine.broadcastMessage("spout.chat.receive." + player.getName(), template);
+					((Server) engine).broadcastMessage("spout.chat.receive." + player.getName(), template);
 				} else {
-					engine.broadcastMessage("spout.chat.receive.console", "<", source.getName(), "> ", message);
+					((Server) engine).broadcastMessage("spout.chat.receive.console", "<", source.getName(), "> ", message);
 				}
 			}
 		}
@@ -93,9 +94,13 @@ public class MessagingCommands {
 	@Command(aliases = {"tell", "msg"}, usage = "<target> <message>", desc = "Tell a message to a specific user", min = 2)
 	@CommandPermissions("spout.command.tell")
 	public void tell(CommandContext args, CommandSource source) throws CommandException {
+		if (Spout.getPlatform() != Platform.SERVER || Spout.getPlatform() != Platform.PROXY) {
+			throw new CommandException("You may only message other users in server mode.");
+		}
+
 		String playerName = args.getString(0);
 		ChatArguments message = args.getJoinedString(1);
-		Player player = engine.getPlayer(playerName, false);
+		Player player = ((Server) engine).getPlayer(playerName, false);
 		if (player == source) {
 			source.sendMessage("Forever alone.");
 		} else if (player != null) {

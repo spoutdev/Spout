@@ -26,11 +26,13 @@
  */
 package org.spout.engine;
 
+import static org.spout.api.lang.Translation.broadcast;
 import static org.spout.api.lang.Translation.log;
 import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -46,12 +48,16 @@ import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 
 import org.spout.api.chat.ChatArguments;
+import org.spout.api.command.CommandSource;
 import org.spout.api.entity.Player;
+import org.spout.api.event.server.ServerStopEvent;
 import org.spout.api.exception.ConfigurationException;
+import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 
+import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.listener.SpoutServerListener;
 import org.spout.engine.protocol.PortBindingImpl;
 import org.spout.engine.protocol.PortBindings;
@@ -73,6 +79,8 @@ import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.Session;
 
 import org.spout.engine.filesystem.ServerFileSystem;
+
+import org.spout.api.util.StringUtil;
 import org.spout.api.util.ban.BanManager;
 
 public class SpoutServer extends SpoutEngine implements Server {
@@ -161,12 +169,15 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	@Override
-	public boolean stop(String message) {
-		if (!super.stop(message, false)) {
-			return false;
-		}
+	public boolean stop(final String message) {
 		Runnable finalTask = new Runnable() {
 			public void run() {
+				for (Player player : getOnlinePlayers()) {
+					ServerStopEvent stopEvent = new ServerStopEvent(message);
+					getEventManager().callEvent(stopEvent);
+					player.kick(stopEvent.getMessage());
+				}
+
 				if (upnpService != null) {
 					upnpService.shutdown();
 				}
@@ -176,7 +187,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		};
 		scheduler.submitFinalTask(finalTask);
 		scheduler.stop(1);
-		return true;
+		return super.stop(message);
 	}
 
 	@Override
@@ -476,5 +487,58 @@ public class SpoutServer extends SpoutEngine implements Server {
 		ControlPoint controlPoint = getUPnPService().getControlPoint();
 		controlPoint.getRegistry().addListener(listener);
 		controlPoint.search();
+	}
+
+	@Override
+	public List<String> getAllPlayers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SpoutPlayer[] getOnlinePlayers() {
+		Map<String, SpoutPlayer> playerList = onlinePlayers.get();
+		ArrayList<SpoutPlayer> onlinePlayers = new ArrayList<SpoutPlayer>(playerList.size());
+		for (SpoutPlayer player : playerList.values()) {
+			if (player.isOnline()) {
+				onlinePlayers.add(player);
+			}
+		}
+		return onlinePlayers.toArray(new SpoutPlayer[onlinePlayers.size()]);
+	}
+
+	@Override
+	public void broadcastMessage(Object... message) {
+		broadcastMessage(STANDARD_BROADCAST_PERMISSION, message);
+	}
+
+	@Override
+	public void broadcastMessage(String permission, Object... message) {
+		ChatArguments args = new ChatArguments(message);
+		for (PermissionsSubject player : getAllWithNode(permission)) {
+			if (player instanceof CommandSource) {
+				((CommandSource) player).sendMessage(args);
+			}
+		}
+	}
+
+	@Override
+	public Player getPlayer(String name, boolean exact) {
+		name = name.toLowerCase();
+		if (exact) {
+			for (Player player : onlinePlayers.getValues()) {
+				if (player.getName().equalsIgnoreCase(name)) {
+					return player;
+				}
+			}
+			return null;
+		} else {
+			return StringUtil.getShortest(StringUtil.matchName(onlinePlayers.getValues(), name));
+		}
+	}
+
+	@Override
+	public Collection<Player> matchPlayer(String name) {
+		return StringUtil.matchName(Arrays.<Player>asList(getOnlinePlayers()), name);
 	}
 }
