@@ -247,15 +247,6 @@ public class SpoutRegion extends Region {
 	@Override
 	@LiveRead
 	public SpoutChunk getChunk(int x, int y, int z, LoadOption loadopt) {
-		// This is a pretty expensive place to perform a check
-		// It has to check if this is the region thread and then decide which mask to use
-		if (Thread.currentThread() != this.executionThread) {
-			TickStage.checkStage(~TickStage.SNAPSHOT);
-		}
-		return getChunkRaw(x, y, z, loadopt);
-	}
-
-	private SpoutChunk getChunkRaw(int x, int y, int z, LoadOption loadopt) {
 		x &= CHUNKS.MASK;
 		y &= CHUNKS.MASK;
 		z &= CHUNKS.MASK;
@@ -614,7 +605,7 @@ public class SpoutRegion extends Region {
 							x = TByteTripleHashSet.key1(key);
 							y = TByteTripleHashSet.key2(key);
 							z = TByteTripleHashSet.key3(key);
-							SpoutChunk chunk = this.getChunkRaw(x, y, z, LoadOption.NO_LOAD);
+							SpoutChunk chunk = this.getChunk(x, y, z, LoadOption.NO_LOAD);
 							if (chunk == null || !chunk.isLoaded()) {
 								iter.remove();
 								continue;

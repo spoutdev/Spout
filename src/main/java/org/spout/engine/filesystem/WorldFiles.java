@@ -537,21 +537,22 @@ public class WorldFiles {
 			}
 
 			//Setup entity
-			Region r = w.getRegion(Math.round(pX), Math.round(pY), Math.round(pZ), LoadOption.NO_LOAD);
+			Region r = w.getRegionFromBlock(Math.round(pX), Math.round(pY), Math.round(pZ), LoadOption.NO_LOAD);
 			if (r == null) {
 				// TODO - this should never happen - entities should be located in the chunk that was just loaded
 				Spout.getLogger().info("Attempted to load entity to unloaded region");
+				Thread.dumpStack();
 				return null;
 			}
-			Transform t = new Transform(new Point(r != null ? r.getWorld() : null, pX, pY, pZ), new Quaternion(qX, qY, qZ, qW, false), new Vector3(sX, sY, sZ));
+			Transform t = new Transform(new Point(r.getWorld(), pX, pY, pZ), new Quaternion(qX, qY, qZ, qW, false), new Vector3(sX, sY, sZ));
 			if (!(controller instanceof PlayerController)) {
-			SpoutEntity e = new SpoutEntity((SpoutEngine) Spout.getEngine(), t, controller, view, uid, false);
-			e.setObserver(observer);
-			return e;
+				SpoutEntity e = new SpoutEntity((SpoutEngine) Spout.getEngine(), t, controller, view, uid, false);
+				e.setObserver(observer);
+				return e;
 			}
 			else {
-			SpoutPlayer e = new SpoutPlayer(Name, t, playerSession, (SpoutEngine) Spout.getEngine(), view);
-			return e;
+				SpoutPlayer e = new SpoutPlayer(Name, t, playerSession, (SpoutEngine) Spout.getEngine(), view);
+				return e;
 			}
 		} else {
 			Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to create controller for the type: " + type.getName());
