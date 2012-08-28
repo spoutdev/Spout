@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -44,6 +45,18 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.spout.api.exception.ConfigurationException;
+import org.spout.api.protocol.CommonPipelineFactory;
+import org.spout.api.protocol.PortBinding;
+import org.spout.api.protocol.Protocol;
+import org.spout.api.protocol.builtin.SpoutProtocol;
+
+import org.spout.engine.listener.SpoutServerListener;
+import org.spout.engine.protocol.PortBindingImpl;
+import org.spout.engine.protocol.PortBindings;
+import org.spout.engine.protocol.SpoutNioServerSocketChannel;
+import org.spout.engine.protocol.SpoutServerSession;
+import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Player;
@@ -69,7 +82,11 @@ import org.teleal.cling.transport.spi.InitializationException;
 import org.spout.api.Server;
 import org.spout.api.event.Listener;
 import org.spout.api.event.server.ServerStartEvent;
+import org.spout.api.exception.ConfigurationException;
 import org.spout.api.plugin.Platform;
+import org.spout.api.protocol.CommonPipelineFactory;
+import org.spout.api.protocol.PortBinding;
+import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 
 import org.spout.engine.filesystem.ServerFileSystem;
@@ -77,19 +94,14 @@ import org.spout.api.util.ban.BanManager;
 
 public class SpoutServer extends SpoutEngine implements Server {
 	private final String name = "Spout Server";
-	private volatile int maxPlayers = 20;
 	/**
 	 * If the server has a whitelist or not.
 	 */
-	private volatile boolean whitelist = false;
+	private volatile boolean whitelist;
 	/**
 	 * If the server allows flight.
 	 */
-	private volatile boolean allowFlight = false;
-	/**
-	 * A list of all players who can log onto this server, if using a whitelist.
-	 */
-	private List<String> whitelistedPlayers = new ArrayList<String>();
+	private volatile boolean allowFlight;
 	/**
 	 * The server's ban manager
 	 */
@@ -106,6 +118,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	public SpoutServer() {
 		this.filesystem = new ServerFileSystem();
+		whitelist = SpoutConfiguration.USE_WHITELIST.getBoolean();
+		allowFlight = SpoutConfiguration.ALLOW_FLIGHT.getBoolean();
 	}
 
 	@Override
@@ -202,129 +216,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	@Override
-	public void banPlayer(String player) {
-		banPlayer(player, true);
-	}
-
-	@Override
-	public void banPlayer(String player, boolean kick) {
-		banPlayer(player, kick, null);
-	}
-
-	@Override
-	public void banPlayer(String player, boolean kick, Object... reason) {
-		Player p = getPlayer(player, true);
-		if (kick && p != null) {
-			if (reason == null) {
-				p.kick();
-			} else {
-				p.kick(reason);
-			}
-		}
-		banManager.setBanned(player, true);
-	}
-
-	@Override
-	public void banPlayer(Player player) {
-		banPlayer(player, true);
-	}
-
-	@Override
-	public void banPlayer(Player player, boolean kick) {
-		banPlayer(player, kick, null);
-	}
-
-	@Override
-	public void banPlayer(Player player, boolean kick, Object... reason) {
-		if (kick) {
-			if (reason == null) {
-				player.kick();
-			} else {
-				player.kick(reason);
-			}
-		}
-		banManager.setBanned(player.getName(), true);
-	}
-
-	@Override
-	public void unbanPlayer(String player) {
-		banManager.setBanned(player, false);
-	}
-
-	@Override
-	public void banIp(String address) {
-		banIp(address, true);
-	}
-
-	@Override
-	public void banIp(String address, boolean kick) {
-		banIp(address, kick, null);
-	}
-
-	@Override
-	public void banIp(String address, boolean kick, Object... reason) {
-		if (kick) {
-			for (Player player : getOnlinePlayers()) {
-				if (player.getAddress().getHostAddress().equals(address)) {
-					if (reason == null) {
-						player.kick();
-					} else {
-						player.kick(reason);
-					}
-				}
-			}
-		}
-		banManager.setIpBanned(address, true);
-	}
-
-	@Override
-	public void unbanIp(String address) {
-		banManager.setIpBanned(address, false);
-	}
-
-	@Override
-	public Collection<String> getBannedIps() {
-		return banManager.getBannedIps();
-	}
-
-	@Override
-	public Collection<String> getBannedPlayers() {
-		return banManager.getBannedPlayers();
-	}
-
-	@Override
-	public boolean isBanned(String player) {
-		return banManager.isBanned(player);
-	}
-
-	@Override
-	public boolean isIpBanned(String address) {
-		return banManager.isIpBanned(address);
-	}
-
-	@Override
-	public ChatArguments getBanMessage() {
-		return banManager.getBanMessage();
-	}
-
-	@Override
-	public void setBanMessage(Object... message) {
-		banManager.setBanMessage(message);
-	}
-
-	@Override
-	public ChatArguments getIpBanMessage() {
-		return banManager.getIpBanMessage();
-	}
-
-	@Override
-	public void setIpBanMessage(Object... message) {
-		banManager.setIpBanMessage(message);
-	}
-
-	@Override
 	public int getMaxPlayers() {
-		return maxPlayers;
+		return SpoutConfiguration.MAX_PLAYERS.getInt();
 	}
 
 	@Override
@@ -358,38 +251,77 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	@Override
 	public void updateWhitelist() {
-		List<String> whitelist = SpoutConfiguration.WHITELIST.getStringList();
-		if (whitelist != null) {
-			whitelistedPlayers = whitelist;
-		} else {
-			whitelistedPlayers = new ArrayList<String>();
-		}
+		banManager.load();
 	}
 
 	@Override
-	public String[] getWhitelistedPlayers() {
-		String[] whitelist = new String[whitelistedPlayers.size()];
-		for (int i = 0; i < whitelist.length; i++) {
-			whitelist[i] = whitelistedPlayers.get(i);
-		}
-		return whitelist;
+	public Set<String> getWhitelistedPlayers() {
+		return banManager.getWhitelist();
 	}
 
 	@Override
 	public void whitelist(String player) {
-		whitelistedPlayers.add(player);
-		List<String> whitelist = SpoutConfiguration.WHITELIST.getStringList();
-		if (whitelist == null) {
-			whitelist = whitelistedPlayers;
-		} else {
-			whitelist.add(player);
-		}
-		SpoutConfiguration.WHITELIST.setValue(whitelist);
+		banManager.setWhitelisted(player, true);
 	}
 
 	@Override
 	public void unWhitelist(String player) {
-		whitelistedPlayers.remove(player);
+		banManager.setWhitelisted(player, false);
+	}
+
+	@Override
+	public Collection<String> getIPBans() {
+		return banManager.getIpBans();
+	}
+
+	@Override
+	public void banIp(String address) {
+		banManager.setIpBanned(address, true);
+	}
+
+	@Override
+	public void unbanIp(String address) {
+		banManager.setIpBanned(address, false);
+	}
+
+	@Override
+	public void banPlayer(String player) {
+		banManager.setBanned(player, true);
+	}
+
+	@Override
+	public void unbanPlayer(String player) {
+		banManager.setBanned(player, false);
+	}
+
+	@Override
+	public boolean isBanned(String player, String address) {
+		return banManager.isBanned(player, address);
+	}
+
+	@Override
+	public boolean isIpBanned(String address) {
+		return banManager.isIpBanned(address);
+	}
+
+	@Override
+	public boolean isPlayerBanned(String player) {
+		return banManager.isBanned(player);
+	}
+
+	@Override
+	public String getBanMessage(String player) {
+		return banManager.getBanMessage(player);
+	}
+
+	@Override
+	public String getIpBanMessage(String address) {
+		return banManager.getIpBanMessage(address);
+	}
+
+	@Override
+	public Collection<String> getBannedPlayers() {
+		return banManager.getBans();
 	}
 
 	@Override
@@ -476,5 +408,13 @@ public class SpoutServer extends SpoutEngine implements Server {
 		ControlPoint controlPoint = getUPnPService().getControlPoint();
 		controlPoint.getRegistry().addListener(listener);
 		controlPoint.search();
+	}
+
+	/**
+	 * Get the BanManager
+	 * @return banManager
+	 */
+	public BanManager getBanManager(){
+		return banManager;
 	}
 }

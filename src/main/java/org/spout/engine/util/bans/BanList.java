@@ -85,7 +85,7 @@ public final class BanList {
 	/**
 	 * Saves to the file.
 	 */
-	private void save() {
+	public void save() {
 		try {
 			PrintWriter out = new PrintWriter(new FileWriter(file));
 			for (String str : list) {

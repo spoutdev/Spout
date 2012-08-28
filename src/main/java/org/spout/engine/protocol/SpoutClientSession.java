@@ -29,11 +29,13 @@ package org.spout.engine.protocol;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.jboss.netty.channel.Channel;
+
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.geo.World;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
+
 import org.spout.engine.SpoutClient;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.world.SpoutWorld;

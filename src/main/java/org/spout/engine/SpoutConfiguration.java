@@ -27,7 +27,6 @@
 package org.spout.engine;
 
 import java.io.File;
-import java.util.Arrays;
 
 import org.spout.api.exception.ConfigurationException;
 import org.spout.api.util.config.ConfigurationHolder;
@@ -36,15 +35,14 @@ import org.spout.api.util.config.yaml.YamlConfiguration;
 
 public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder ALLOW_FLIGHT = new ConfigurationHolder(false, "allow-flight");
-	public static final ConfigurationHolder BANLIST = new ConfigurationHolder(Arrays.asList("Satan"), "banlist");
 	public static final ConfigurationHolder CONSOLE_TYPE = new ConfigurationHolder("jline", "console");
 	public static final ConfigurationHolder DEFAULT_WORLD = new ConfigurationHolder("world", "default-world");
 	public static final ConfigurationHolder USE_WHITELIST = new ConfigurationHolder(false, "use-whitelist");
 	public static final ConfigurationHolder VIEW_DISTANCE = new ConfigurationHolder(10, "view-distance");
-	public static final ConfigurationHolder WHITELIST = new ConfigurationHolder(Arrays.asList("Notch", "ez", "jeb"), "whitelist");
 	public static final ConfigurationHolder WORLDS = new ConfigurationHolder("default", "worlds");
 	public static final ConfigurationHolder LIVE_LIGHTING = new ConfigurationHolder(false, "live-lighting");
 	public static final ConfigurationHolder LIGHTING_ENABLED = new ConfigurationHolder(true, "lighting-enabled");
+	public static final ConfigurationHolder MAX_PLAYERS = new ConfigurationHolder(20, "max-players");
 	public static final ConfigurationHolder DEFAULT_LANGUAGE = new ConfigurationHolder("EN_US", "default-language");
 
 	public SpoutConfiguration() {
