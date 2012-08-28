@@ -38,6 +38,78 @@ import org.spout.api.protocol.PortBinding;
  */
 public interface Server extends Engine {
 	/**
+	 * Returns all player names that have ever played on this Game, whether they are online or not.
+	 *
+	 * @return all the player names
+	 */
+	public List<String> getAllPlayers();
+
+	/**
+	 * Gets all players currently online
+	 *
+	 * @return array of all active players
+	 */
+	public Player[] getOnlinePlayers();
+
+	/**
+	 * Gets the maximum number of players this game can host, or -1 if infinite
+	 *
+	 * @return max players
+	 */
+	public int getMaxPlayers();
+
+	/**
+	 * Broadcasts the given message to all players
+	 *
+	 * The implementation of broadcast is identical to iterating over
+	 * {@link #getOnlinePlayers()} and invoking {@link Player#sendMessage(Object...)} for
+	 * each player.
+	 *
+	 * @param message to send
+	 */
+	public void broadcastMessage(Object... message);
+
+	/**
+	 * Broadcasts the given message to all players
+	 *
+	 * The implementation of broadcast is identical to calling a {@link org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent}
+	 * event, iterating over each element in getReceivers, invoking {@link org.spout.api.command.CommandSource#sendMessage(Object...)} for
+	 * each CommandSource.
+	 *
+	 * @param message to send
+	 */
+	public void broadcastMessage(String permission, Object... message);
+
+	/**
+	 * Gets the {@link Player} by the given username. <br/>
+	 * <br/>
+	 * If searching for the exact name, this method will iterate and check for
+	 * exact matches. <br/>
+	 * <br/>
+	 * Otherwise, this method will iterate over over all players and find the closest match
+	 * to the given name, by comparing the length of other player names that
+	 * start with the given parameter. <br/>
+	 * <br/>
+	 * This method is case-insensitive.
+	 *
+	 * @param name to look up
+	 * @param exact Whether to use exact lookup
+	 * @return Player if found, else null
+	 */
+	public Player getPlayer(String name, boolean exact);
+
+	/**
+	 * Matches the given username to all players that contain it in their name.
+	 *
+	 * If no matches are found, an empty collection will be returned. The return
+	 * will always be non-null.
+	 *
+	 * @param name to match
+	 * @return Collection of all possible matches
+	 */
+	public Collection<Player> matchPlayer(String name);
+
+	/**
 	 * Returns true if this server is using a whitelist.
 	 *
 	 * @return whitelist enabled

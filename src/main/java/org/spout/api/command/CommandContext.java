@@ -31,12 +31,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.spout.api.Engine;
+import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.ChatSection;
 import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
 import org.spout.api.entity.Player;
+import org.spout.api.plugin.Platform;
 
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
@@ -199,7 +202,11 @@ public class CommandContext {
 	}
 
 	public Player getPlayer(int index, boolean exact) {
-		return Spout.getEngine().getPlayer(getString(index), exact);
+		Engine engine = Spout.getEngine();
+		if (!(engine instanceof Server)) {
+			throw new IllegalStateException("You can only get players in server mode.");
+		}
+		return ((Server) engine).getPlayer(getString(index), exact);
 	}
 
 	public Collection<World> matchWorld(int index) {
@@ -207,7 +214,11 @@ public class CommandContext {
 	}
 
 	public Collection<Player> matchPlayer(int index) {
-		return Spout.getEngine().matchPlayer(getString(index));
+		Platform p = Spout.getPlatform();
+		if (p != Platform.SERVER || p != Platform.PROXY) {
+			throw new IllegalStateException("You can only match players in server mode.");
+		}
+		return ((Server) Spout.getEngine()).matchPlayer(getString(index));
 	}
 
 	public double getDouble(int index) throws NumberFormatException {
