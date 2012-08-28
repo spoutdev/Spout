@@ -31,10 +31,9 @@ import org.spout.api.entity.controller.PlayerController;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 
-public class CameraComponent extends BaseComponent<PlayerController> implements Camera {
-
-	Matrix projection;
-	Matrix view;
+public class CameraComponent extends BaseComponent implements Camera {
+	private Matrix projection;
+	private Matrix view;
 	private ViewFrustum frustum = new ViewFrustum();
 
 	@Override
@@ -49,7 +48,7 @@ public class CameraComponent extends BaseComponent<PlayerController> implements 
 
 	@Override
 	public void updateView() {
-		view = MathHelper.rotate(getParent().getParent().getRotation()).multiply(MathHelper.translate(getParent().getParent().getPosition()));
+		view = MathHelper.rotate(getParent().getRotation()).multiply(MathHelper.translate(getParent().getPosition()));
 
 	}
 
@@ -71,5 +70,4 @@ public class CameraComponent extends BaseComponent<PlayerController> implements 
 	public ViewFrustum getFrustum() {
 		return frustum;
 	}
-
 }
