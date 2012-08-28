@@ -28,7 +28,7 @@ package org.spout.api.event.player;
 
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.event.HandlerList;
-import org.spout.api.event.server.BanChangeEvent.BanType;
+import org.spout.api.util.access.BanType;
 import org.spout.api.entity.Player;
 
 /**

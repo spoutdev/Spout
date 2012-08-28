@@ -32,6 +32,7 @@ import java.util.List;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Player;
 import org.spout.api.protocol.PortBinding;
+import org.spout.api.util.access.AccessManager;
 
 /**
  * Represents the server-specific implementation of Minecraft.
@@ -110,45 +111,11 @@ public interface Server extends Engine {
 	public Collection<Player> matchPlayer(String name);
 
 	/**
-	 * Returns true if this server is using a whitelist.
+	 * Gets the {@link AccessManager} of the Server. The access manager handles who can join the server and who cannot.
 	 *
-	 * @return whitelist enabled
+	 * @return access manager
 	 */
-	public boolean isWhitelist();
-
-	/**
-	 * Sets the whitelist value of this server.
-	 *
-	 * @param whitelist value to set
-	 */
-	public void setWhitelist(boolean whitelist);
-
-	/**
-	 * Reads the whitelist file from the disk, updating the players that are
-	 * allowed to join where nessecary.
-	 */
-	public void updateWhitelist();
-
-	/**
-	 * Gets an array of all of the player names that are on the whitelist.
-	 *
-	 * @return whitelisted player names
-	 */
-	public String[] getWhitelistedPlayers();
-
-	/**
-	 * Adds the given player to the list of whitelisted players
-	 *
-	 * @param player to whitelist
-	 */
-	public void whitelist(String player);
-
-	/**
-	 * Removes the given player from the list of whitelisted players
-	 *
-	 * @param player to remove from whitelist
-	 */
-	public void unWhitelist(String player);
+	public AccessManager getAccessManager();
 
 	/**
 	 * True if this server does not check if players are flying or not.
@@ -175,150 +142,6 @@ public interface Server extends Engine {
 	 * @return true if successful
 	 */
 	public boolean bind(PortBinding binding);
-
-	/**
-	 * Bans the specified player
-	 *
-	 * @param player to ban
-	 */
-	public void banPlayer(String player);
-
-	/**
-	 * Bans the specified player
-	 *
-	 * @param player Player to ban
-	 * @param kick whether to kick the player if online
-	 */
-	public void banPlayer(String player, boolean kick);
-
-	/**
-	 * Bans the specified player
-	 *
-	 * @param player to ban
-	 * @param kick whether to kick if online
-	 * @param reason for ban
-	 */
-	public void banPlayer(String player, boolean kick, Object... reason);
-
-	/**
-	 * Bans the specified player
-	 *
-	 * @param player to ban
-	 */
-	public void banPlayer(Player player);
-
-	/**
-	 * Bans the specified player
-	 *
-	 * @param player to ban
-	 * @param kick whether to kick or not
-	 */
-	public void banPlayer(Player player, boolean kick);
-
-	/**
-	 * Bans the specified player
-	 *
-	 * @param player to ban
-	 * @param kick whether to kick if online
-	 * @param reason for ban
-	 */
-	public void banPlayer(Player player, boolean kick, Object... reason);
-
-	/**
-	 * Unbans the specified player
-	 *
-	 * @param player Player to ban
-	 */
-	public void unbanPlayer(String player);
-
-	/**
-	 * Bans the specified IP
-	 *
-	 * @param address Player to ban
-	 */
-	public void banIp(String address);
-
-	/**
-	 * Bans the specified IP
-	 *
-	 * @param address to ban
-	 * @param kick whether to kick all players with specified IP
-	 */
-	public void banIp(String address, boolean kick);
-
-	/**
-	 * Bans the specified IP
-	 *
-	 * @param address to ban
-	 * @param kick whether to kick all players with specified IP
-	 * @param reason for ban
-	 */
-	public void banIp(String address, boolean kick, Object... reason);
-
-	/**
-	 * Unbans the specified IP
-	 *
-	 * @param address Player to ban
-	 */
-	public void unbanIp(String address);
-
-	/**
-	 * Gets a collection of all banned IP's, in string format.
-	 *
-	 * @return banned IP addresses
-	 */
-	public Collection<String> getBannedIps();
-
-	/**
-	 * Returns a collection of all banned players
-	 *
-	 * @return banned players
-	 */
-	public Collection<String> getBannedPlayers();
-
-	/**
-	 * Returns true if the player is banned.
-	 *
-	 * @param player name to check
-	 * @return true if banned
-	 */
-	public boolean isBanned(String player);
-
-	/**
-	 * Returns true if the address is banned.
-	 *
-	 * @param address Address to check
-	 * @return If the address is banned
-	 */
-	public boolean isIpBanned(String address);
-
-	/**
-	 * Gets the ban message.
-	 *
-	 * @return the ban message
-	 */
-	public ChatArguments getBanMessage();
-
-	/**
-	 * Sets the ban message.
-	 *
-	 * @param message to set
-	 */
-	public void setBanMessage(Object... message);
-
-	/**
-	 * Gets the ban message.
-	 *
-	 * @return the ban message
-	 */
-	public ChatArguments getIpBanMessage();
-
-	/**
-	 * Sets the IP ban message
-	 *
-	 * @param message to set
-	 */
-	public void setIpBanMessage(Object... message);
 
 	/**
 	 * Maps a port for both TCP and UDP communication for Universal Plug and Play enabled InternetGatewayDevices

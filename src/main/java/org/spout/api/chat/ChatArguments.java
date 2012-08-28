@@ -82,7 +82,7 @@ public class ChatArguments implements Cloneable, ChatSection {
 		return this;
 	}
 
-	public ChatArguments append(Object[] objects) {
+	public ChatArguments append(Object... objects) {
 		return append(Arrays.asList(objects));
 	}
 
@@ -106,49 +106,49 @@ public class ChatArguments implements Cloneable, ChatSection {
 		return this;
 	}
 
-	public ChatArguments append(int[] elements) {
+	public ChatArguments append(int... elements) {
 		for (int i : elements) {
 			append(i);
 		}
 		return this;
 	}
 
-	public ChatArguments append(short[] elements) {
+	public ChatArguments append(short... elements) {
 		for (short i : elements) {
 			append(i);
 		}
 		return this;
 	}
 
-	public ChatArguments append(byte[] elements) {
+	public ChatArguments append(byte... elements) {
 		for (byte i : elements) {
 			append(i);
 		}
 		return this;
 	}
 
-	public ChatArguments append(long[] elements) {
+	public ChatArguments append(long... elements) {
 		for (long i : elements) {
 			append(i);
 		}
 		return this;
 	}
 
-	public ChatArguments append(boolean[] elements) {
+	public ChatArguments append(boolean... elements) {
 		for (boolean i : elements) {
 			append(i);
 		}
 		return this;
 	}
 
-	public ChatArguments append(float[] elements) {
+	public ChatArguments append(float... elements) {
 		for (float i : elements) {
 			append(i);
 		}
 		return this;
 	}
 
-	public ChatArguments append(double[] elements) {
+	public ChatArguments append(double... elements) {
 		for (double i : elements) {
 			append(i);
 		}
