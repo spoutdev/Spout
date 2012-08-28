@@ -31,7 +31,7 @@ import org.spout.api.entity.components.DatatableComponent;
 /**
  * Represents the accessing portion of an entity that controls retrieving/removing components.
  */
-public interface ComponentHolder {
+public interface ComponentHolder<T> {
 	/**
 	 * Adds a new component to the holder.  If the holder already contains a component of that type, then a new component is not
 	 * constructed, and the one already attached is returned
