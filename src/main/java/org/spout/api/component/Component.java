@@ -6,16 +6,16 @@ import org.spout.api.tickable.Tickable;
 public interface Component extends Tickable {
 	
 	/**
-	 * Sets the parent to holder
-	 * @param holder
+	 * Attaches to a component holder.
+	 * @param holder The component holder to attach to
 	 */
-	public void attachTo(ComponentHolder holder);
+	public void attachTo(ComponentHolder<?> holder);
 	
 	/**
-	 * Gets the parent entity associated with this component.
-	 * @return the parent entity
+	 * Gets the component holder holding this component.
+	 * @return the component holder
 	 */
-	public ComponentHolder getParent();
+	public ComponentHolder<?> getHolder();
 
 	/**
 	 * Called when this component is attached to a holder
