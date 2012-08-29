@@ -1,8 +1,10 @@
 package org.spout.api.component;
 
+import com.alta189.annotations.RequireDefault;
 import org.spout.api.entity.components.DatatableComponent;
 import org.spout.api.tickable.Tickable;
 
+@RequireDefault
 public interface Component extends Tickable {
 	
 	/**
