@@ -26,7 +26,9 @@
  */
 package org.spout.api.data;
 
-public interface DataSubject {
+import org.spout.api.util.Named;
+
+public interface DataSubject extends Named {
 	/**
 	 * Gets data from the given node
 	 *
