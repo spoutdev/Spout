@@ -28,7 +28,7 @@ package org.spout.api.component;
 
 import java.util.HashMap;
 
-import org.spout.api.entity.components.DatatableComponent;
+import org.spout.api.component.components.DatatableComponent;
 
 public class BaseComponentHolder<T extends Component> implements ComponentHolder<T> {
 	private final HashMap<Class<? extends Component >, Component> components = new HashMap<Class<? extends Component>, Component>();

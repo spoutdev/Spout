@@ -34,8 +34,10 @@ import java.util.UUID;
 
 import org.spout.api.Engine;
 import org.spout.api.Source;
+import org.spout.api.component.ComponentHolder;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
+import org.spout.api.entity.components.DatatableComponent;
 import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.discrete.Point;
@@ -54,7 +56,7 @@ import org.spout.api.util.thread.Threadsafe;
 /**
  * Represents a World.
  */
-public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Named {
+public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Named, ComponentHolder {
 	/**
 	 * Gets the name of the world
 	 * @return the name of the world
@@ -141,7 +143,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @param controller The entity that will be attached to the Entity
 	 * @return The created entity
 	 */
-	public Entity createEntity(Point point, Controller controller);
+	public Entity createEntity(Point point);
 
 	/**
 	 * Add a created entity to the world for simulation and syncing to clients
@@ -157,7 +159,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @param controller The entity that will be attached to the Entity
 	 * @return The Entity that has been created and spawned
 	 */
-	public Entity createAndSpawnEntity(Point point, Controller controller);
+	public Entity createAndSpawnEntity(Point point);
 
 	/**
 	 * Creates and Spawns entities at the given points.  This is the same as calling
@@ -166,27 +168,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @param type The type of entity that will be attached to the Entity
 	 * @return The Entities that has been created and spawned
 	 */
-	public Entity[] createAndSpawnEntity(Point[] points, ControllerType type);
-
-	/**
-	 * Creates and Spawns entities at the given points.  This is the same as calling
-	 * {@link #createAndSpawnEntity(point, controller)} for each point with the
-	 * corresponding element from the entity array. The two arrays must be the same length.
-	 * @param points The points to use for spawning the entities
-	 * @param controllers The controllers that will be attached to the Entity
-	 * @return The Entities that has been created and spawned
-	 */
-	public Entity[] createAndSpawnEntity(Point[] points, Controller[] controllers);
-
-	/**
-	 * Creates and Spawns entities at the given points.  This is the same as calling
-	 * {@link #createAndSpawnEntity(point, controller)} using type.createController()
-	 * as the entity for each point. The two arrays must be the same length.
-	 * @param points The points to use for spawning the entities
-	 * @param types The entity types that will be attached to the Entity
-	 * @return The Entities that has been created and spawned
-	 */
-	public Entity[] createAndSpawnEntity(Point[] points, ControllerType[] types);
+	public Entity[] createAndSpawnEntity(Point[] points);
 
 	/**
 	 * Creates and Spawns entities for the given arrangement.  This is the same as calling
@@ -256,13 +238,6 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @return A collection of entities with the specified type.
 	 */
 	@SnapshotRead
-	public List<Entity> getAll(Class<? extends Controller> type);
-
-	/**
-	 * Gets all entities.
-	 * @return A collection of entities.
-	 */
-	@SnapshotRead
 	public List<Entity> getAll();
 
 	/**
@@ -283,19 +258,11 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * Gets the directory where world data is stored
 	 */
 	public File getDirectory();
-
+	
 	/**
-	 * Gets a map of data attached to this world. Data will persist across restarts.
-	 * @return data map
+	 * Gets the datatable component that stores data for this world.
 	 */
-	public DefaultedMap<String, Serializable> getDataMap();
-
-	/**
-	 * Gets a value from the data map by providing a key. Data will persist across restarts.
-	 * @param key The key to lookup a value from the map
-	 * @return the data stored for this key or null if no data found.
-	 */
-	public Serializable get(Object key);
+	public DatatableComponent getDatatable();
 
 	/**
 	 * Gets the task manager responsible for parallel region tasks.<br>

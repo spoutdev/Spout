@@ -1,4 +1,4 @@
-package org.spout.api.entity.components;
+package org.spout.api.component.components;
 
 import org.spout.api.component.BaseComponent;
 import org.spout.api.geo.discrete.Point;

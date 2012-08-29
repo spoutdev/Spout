@@ -26,7 +26,7 @@
  */
 package org.spout.api.component;
 
-import org.spout.api.entity.components.DatatableComponent;
+import org.spout.api.component.components.DatatableComponent;
 
 public abstract class BaseComponent implements Component {
 	private ComponentHolder<?> holder;

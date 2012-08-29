@@ -1,7 +1,11 @@
 package org.spout.api.component;
 
+<<<<<<< HEAD
 import com.alta189.annotations.RequireDefault;
 import org.spout.api.entity.components.DatatableComponent;
+=======
+import org.spout.api.component.components.DatatableComponent;
+>>>>>>> Made World a component holder, added World/Block component (will replace
 import org.spout.api.tickable.Tickable;
 
 @RequireDefault
@@ -46,5 +50,4 @@ public interface Component extends Tickable {
 	 * @return The datatable component
 	 */
 	public DatatableComponent getDatatable();
-
 }
