@@ -27,7 +27,7 @@
 package org.spout.api.geo.cuboid;
 
 import org.spout.api.Source;
-import org.spout.api.entity.controller.BlockController;
+import org.spout.api.component.components.BlockComponent;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.World;
 import org.spout.api.geo.WorldSource;
@@ -369,11 +369,11 @@ public interface Block extends MaterialAccess, WorldSource {
 	public Biome getBiomeType();
 
 	/**
-	 * Gets a entity associated with the block, or null if it has none.
+	 * Gets a component associated with the block, or null if it has none.
 	 *
-	 * @return block entity
+	 * @return block component
 	 */
-	public <T extends BlockController> T getController();
+	public <T extends BlockComponent> T getComponent();
 
 	/**
 	 * Whether or not the block is associated with a block entity

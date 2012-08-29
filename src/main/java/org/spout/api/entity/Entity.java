@@ -33,6 +33,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.tickable.Tickable;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
@@ -76,6 +77,20 @@ public interface Entity extends Source, Tickable, WorldSource, EntityComponentHo
 	 * @return spawned
 	 */
 	public boolean isSpawned();
+
+	/**
+	 * Sets whether or not the entity should be saved.<br/>
+	 * @param savable True if the entity should be saved, false if not
+	 */
+	@DelayedWrite
+	public void setSavable(boolean savable);
+	
+	/**
+	 * Returns true if this entity should be saved.
+	 * @return savable
+	 */
+	@SnapshotRead
+	public boolean isSavable();
 
 	/**
 	 * Called just before a snapshot update.

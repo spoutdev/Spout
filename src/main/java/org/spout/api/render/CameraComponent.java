@@ -27,10 +27,13 @@
 package org.spout.api.render;
 
 import org.spout.api.component.BaseComponent;
+import org.spout.api.component.components.TransformComponent;
+import org.spout.api.entity.Entity;
+import org.spout.api.entity.EntityComponent;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 
-public class CameraComponent extends BaseComponent implements Camera {
+public class CameraComponent extends BaseComponent implements EntityComponent, Camera {
 	private Matrix projection;
 	private Matrix view;
 	private ViewFrustum frustum = new ViewFrustum();
@@ -47,7 +50,7 @@ public class CameraComponent extends BaseComponent implements Camera {
 
 	@Override
 	public void updateView() {
-		view = MathHelper.rotate(getParent().getRotation()).multiply(MathHelper.translate(getParent().getPosition()));
+		view = MathHelper.rotate(((Entity) getHolder()).getTransform().getRotation()).multiply(MathHelper.translate(((Entity) getHolder()).getTransform().getPosition()));
 
 	}
 
@@ -68,5 +71,25 @@ public class CameraComponent extends BaseComponent implements Camera {
 	@Override
 	public ViewFrustum getFrustum() {
 		return frustum;
+	}
+
+	@Override
+	public void onSpawned() {
+		
+	}
+
+	@Override
+	public void onObserved() {
+		
+	}
+
+	@Override
+	public void onUnObserved() {
+		
+	}
+
+	@Override
+	public TransformComponent getTransform() {
+		return null;
 	}
 }

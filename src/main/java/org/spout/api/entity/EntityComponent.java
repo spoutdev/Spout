@@ -27,7 +27,7 @@
 package org.spout.api.entity;
 
 import org.spout.api.component.Component;
-import org.spout.api.entity.components.TransformComponent;
+import org.spout.api.component.components.TransformComponent;
 
 /**
  * Represents an attachment to a entity that can respond to Ticks.

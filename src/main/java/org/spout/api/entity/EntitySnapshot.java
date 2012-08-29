@@ -59,11 +59,11 @@ public class EntitySnapshot {
 		this.worldName = e.getWorld().getName();
 		this.worldId = e.getWorld().getUID();
 		this.viewDistance = e.getViewDistance();
-		this.observer = e.isObserverLive();
-		this.savable = e.getController().isSavable();
+		this.observer = e.isObserver();
+		this.savable = e.isSavable();
 		DatatableMap deepCopy = new GenericDatatableMap();
-		if (e.getController().getDataMap().size() > 0) {
-			byte[] state = ((DataMap)e.getController().getDataMap()).getRawMap().compress();
+		if (e.getDatatable().getBaseMap().size() > 0) {
+			byte[] state = ((DataMap)e.getDatatable().getBaseMap()).getRawMap().compress();
 			deepCopy.decompress(state);
 		}
 		this.dataMap = new DataMap(deepCopy);

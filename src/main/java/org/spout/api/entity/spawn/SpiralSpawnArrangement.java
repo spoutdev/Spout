@@ -34,22 +34,12 @@ public class SpiralSpawnArrangement extends GenericSpawnArrangement {
 	private final float scaleRadius;
 	private final float scaleCircumference;
 
-	public SpiralSpawnArrangement(Point center, ControllerType type, int number, float scale) {
-		this(center, type, number, scale, 1.0F);
+	public SpiralSpawnArrangement(Point center, int number, float scale) {
+		this(center, number, scale, 1.0F);
 	}
 
-	public SpiralSpawnArrangement(Point center, ControllerType type, int number, float scaleRadius, float scaleCircumference) {
-		super(center, type, number);
-		this.scaleRadius = scaleRadius;
-		this.scaleCircumference = scaleCircumference;
-	}
-
-	public SpiralSpawnArrangement(Point center, ControllerType[] types, float scale) {
-		this(center, types, scale, scale);
-	}
-
-	public SpiralSpawnArrangement(Point center, ControllerType[] types, float scaleRadius, float scaleCircumference) {
-		super(center, types);
+	public SpiralSpawnArrangement(Point center, int number, float scaleRadius, float scaleCircumference) {
+		super(center, number);
 		this.scaleRadius = scaleRadius;
 		this.scaleCircumference = scaleCircumference;
 	}

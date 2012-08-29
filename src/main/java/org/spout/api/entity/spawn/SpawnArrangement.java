@@ -33,13 +33,6 @@ import org.spout.api.geo.discrete.Point;
  */
 public interface SpawnArrangement {
 	/**
-	 * Gets the entity types to spawn. If this array is of length one,
-	 * then that entity should be used for all entities.
-	 * @return the entity
-	 */
-	public ControllerType[] getControllerTypes();
-
-	/**
 	 * Gets the Points to spawn entities at. The getController method
 	 * is called to determine which entity for a given index.
 	 * @return the spawn points in an array

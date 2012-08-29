@@ -26,7 +26,7 @@
  */
 package org.spout.api.geo;
 
-import org.spout.api.entity.controller.BlockController;
+import org.spout.api.component.components.BlockComponent;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.util.thread.LiveRead;
@@ -104,15 +104,15 @@ public interface AreaBlockSource {
 	public byte getBlockSkyLightRaw(int x, int y, int z);
 
 	/**
-	 * Gets the {@link BlockController} for the block at (x, y, z)
+	 * Gets the {@link BlockComponent} for the block at (x, y, z)
 	 *
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
-	 * @return the block entity
+	 * @return the block component
 	 */
 	@SnapshotRead
-	public BlockController getBlockController(int x, int y, int z);
+	public BlockComponent getBlockComponent(int x, int y, int z);
 	
 	/**
 	 * Gets the biome type at the coordinates.

@@ -27,9 +27,7 @@
 package org.spout.api.geo;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import org.spout.api.Engine;
@@ -37,12 +35,12 @@ import org.spout.api.Source;
 import org.spout.api.component.ComponentHolder;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
-import org.spout.api.entity.components.DatatableComponent;
+import org.spout.api.component.components.DatatableComponent;
+import org.spout.api.component.components.WorldComponent;
 import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.TaskManager;
@@ -56,7 +54,7 @@ import org.spout.api.util.thread.Threadsafe;
 /**
  * Represents a World.
  */
-public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Named, ComponentHolder {
+public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Named, ComponentHolder<WorldComponent> {
 	/**
 	 * Gets the name of the world
 	 * @return the name of the world
