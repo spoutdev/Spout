@@ -35,7 +35,7 @@ import org.spout.api.protocol.Session;
 import org.spout.api.util.Named;
 import org.spout.api.util.thread.Threadsafe;
 
-public interface Player extends CommandSource, Entity, Named {
+public interface Player extends CommandSource, Entity {
 	/**
 	 * Gets the player's name. This method is thread-safe.
 	 * @return the player's name

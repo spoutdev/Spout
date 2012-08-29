@@ -54,4 +54,9 @@ public class DataSubjectTest implements DataSubject {
 	public ValueHolder getData(String node) {
 		return event.getResult();
 	}
+
+	@Override
+	public String getName() {
+		return "DataSubjectTest";
+	}
 }

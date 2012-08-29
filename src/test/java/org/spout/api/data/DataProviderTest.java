@@ -48,4 +48,9 @@ public class DataProviderTest extends DataProvider implements DataSubject {
 	public ValueHolder getData(String node) {
 		return event.getResult();
 	}
+
+	@Override
+	public String getName() {
+		return "DataProviderTest";
+	}
 }
