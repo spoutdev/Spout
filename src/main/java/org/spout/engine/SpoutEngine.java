@@ -35,7 +35,6 @@ import java.net.Inet6Address;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -54,9 +53,7 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 
 import org.spout.api.Engine;
 import org.spout.api.FileSystem;
-import org.spout.api.Server;
 import org.spout.api.Spout;
-import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.completion.CompletionManager;
 import org.spout.api.chat.completion.CompletionManagerImpl;
 import org.spout.api.command.CommandRegistrationsFactory;
@@ -68,7 +65,6 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.event.EventManager;
 import org.spout.api.event.SimpleEventManager;
-import org.spout.api.event.server.ServerStopEvent;
 import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 import org.spout.api.event.world.WorldLoadEvent;
 import org.spout.api.event.world.WorldUnloadEvent;
@@ -80,7 +76,6 @@ import org.spout.api.generator.biome.BiomeRegistry;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.geo.discrete.Transform;
 import org.spout.api.inventory.CommonRecipeManager;
 import org.spout.api.inventory.RecipeManager;
 import org.spout.api.io.store.simple.BinaryFileStore;
@@ -90,7 +85,6 @@ import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.plugin.CommonPluginLoader;
 import org.spout.api.plugin.CommonPluginManager;
 import org.spout.api.plugin.CommonServiceManager;
-import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginManager;
 import org.spout.api.plugin.ServiceManager;
@@ -102,7 +96,6 @@ import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.StringUtil;
 
-import org.spout.api.chat.console.Console;
 import org.spout.engine.chat.console.ConsoleManager;
 import org.spout.engine.chat.console.FileConsole;
 import org.spout.engine.chat.console.JLineConsole;
@@ -144,7 +137,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private final CommonSecurityManager securityManager = new CommonSecurityManager(0); //TODO Need to integrate this/evaluate security in the engine.
 	private final CommonPluginManager pluginManager = new CommonPluginManager(this, securityManager, 0.0);
 	private final ConsoleManager consoleManager;
-	private final EntityManager entityManager = new EntityManager();
 	private final EventManager eventManager = new SimpleEventManager();
 	private final RecipeManager recipeManager = new CommonRecipeManager();
 	private final ServiceManager serviceManager = CommonServiceManager.getInstance();
@@ -616,7 +608,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 	@Override
 	public void copySnapshotRun() throws InterruptedException {
-		entityManager.copyAllSnapshots();
 		snapshotManager.copyAllSnapshots();
 		for (Player player : onlinePlayers.get().values()) {
 			((SpoutPlayer) player).copySnapshot();

@@ -83,7 +83,6 @@ import org.spout.api.util.thread.LiveRead;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.EntityManager;
-import org.spout.engine.entity.RegionEntityManager;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ChunkDataForRegion;
@@ -139,7 +138,7 @@ public class SpoutRegion extends Region {
 	/**
 	 * Holds all of the entities to be simulated
 	 */
-	protected final RegionEntityManager entityManager = new RegionEntityManager(this);
+	protected final EntityManager entityManager = new EntityManager(this);
 	/**
 	 * Reference to the persistent ByteArrayArray that stores chunk data
 	 */
@@ -558,7 +557,7 @@ public class SpoutRegion extends Region {
 	}
 
 	public void addEntity(Entity e) {
-		this.entityManager.addEntity((SpoutEntity) e, this);
+		this.entityManager.addEntity((SpoutEntity) e);
 	}
 
 	public void removeEntity(Entity e) {

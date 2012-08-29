@@ -35,19 +35,17 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.spout.api.Spout;
-import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.controller.BlockController;
+import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
-import org.spout.api.util.StringMap;
+import org.spout.api.protocol.NetworkSynchronizer;
 
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
-import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 
 /**
@@ -70,14 +68,24 @@ public class EntityManager {
 	 * The next id to check.
 	 */
 	private final static AtomicInteger nextId = new AtomicInteger(1);
-	/**
-	 * The String map
-	 */
-	private final StringMap entityMap = GenericDatatableMap.getStringMap();
+
 	/**
 	 * The map of entities to Vector3s(BlockControllers)
 	 */
 	private final Map<Vector3, Entity> blockEntities = new HashMap<Vector3, Entity>();
+
+	private final SpoutRegion region;
+	/**
+	 * Player listings plus listings of sync'd entities per player
+	 */
+	private final SnapshotableHashMap<Player, List<SpoutEntity>> players = new SnapshotableHashMap<Player, List<SpoutEntity>>(snapshotManager);
+
+	public EntityManager(SpoutRegion region) {
+		if (region == null) {
+			throw new NullPointerException("Region can not be null!");
+		}
+		this.region = region;
+	}
 
 	/**
 	 * Gets all entities with the specified type.
@@ -131,16 +139,6 @@ public class EntityManager {
 	 * @return The id.
 	 */
 	public int allocate(SpoutEntity entity) {
-		return allocate(entity, null);
-	}
-
-	/**
-	 * Allocates the id for an entity.
-	 *
-	 * @param entity The entity.
-	 * @return The id.
-	 */
-	public int allocate(SpoutEntity entity, SpoutRegion region) {
 		int currentId = entity.getId();
 		if (currentId == SpoutEntity.NOTSPAWNEDID) {
 			currentId = nextId.getAndIncrement();
@@ -168,8 +166,8 @@ public class EntityManager {
 		}
 	}
 
-	public void addEntity(SpoutEntity entity, SpoutRegion region) {
-		allocate(entity, region);
+	public void addEntity(SpoutEntity entity) {
+		allocate(entity);
 		Controller c = entity.getController();
 		if (c != null) {
 			if (c instanceof BlockController) {
@@ -178,6 +176,11 @@ public class EntityManager {
 				if (old != null) {
 					old.kill();
 				}
+			}
+		}
+		if (entity instanceof Player) {
+			if (entity.getController() != null) {
+				players.putIfAbsent((Player) entity, new ArrayList<SpoutEntity>());
 			}
 		}
 	}
@@ -200,6 +203,9 @@ public class EntityManager {
 					blockEntities.remove(pos);
 				}
 			}
+		}
+		if (entity instanceof Player) {
+			players.remove((Player) entity);
 		}
 	}
 
@@ -250,15 +256,69 @@ public class EntityManager {
 	}
 
 	/**
-	 * The region this entity manager oversees, or null if it does not manage a region's entities
+	 * The region this entity manager oversees
 	 *
-	 * @return region or null
+	 * @return region
 	 */
 	public SpoutRegion getRegion() {
-		return null;
+		return region;
 	}
 
 	public Map<Vector3, Entity> getBlockEntities() {
 		return Collections.unmodifiableMap(blockEntities);
+	}
+
+
+	public List<Player> getPlayers() {
+		Map<?, ?> map = players.get();
+		if (map == null) {
+			return Collections.emptyList();
+		}
+		return Collections.unmodifiableList(new ArrayList<Player>(players.get().keySet()));
+	}
+
+	/**
+	 * Syncs all entities/observers in this region
+	 */
+	public void syncEntities() {
+		Map<Player, List<SpoutEntity>> toSync = players.get();
+		for (Player player : toSync.keySet()) {
+			/*
+			 * Offline players have no network synchronizer, skip them
+			 */
+			if (!player.isOnline()) {
+				continue;
+			}
+			Integer playerViewDistance = player.getViewDistance();
+			NetworkSynchronizer net = player.getNetworkSynchronizer();
+			List<SpoutEntity> entitiesPerPlayer = toSync.get(player);
+			if (entitiesPerPlayer == null) {
+				entitiesPerPlayer = new ArrayList<SpoutEntity>();
+			}
+			boolean spawn, destroy, update;
+			for (SpoutEntity entity : getAll()) {
+				if (entity.equals(player)) {
+					continue;
+				}
+				boolean contains = entitiesPerPlayer.contains(entity);
+				spawn = destroy = update = false;
+				if (MathHelper.distance(player.getPosition(), entity.getPosition()) <= playerViewDistance) {
+					if (!contains) {
+						entitiesPerPlayer.add(entity);
+						spawn = true; // Spawn
+					} else if (entity.isDead()) {
+						destroy = entitiesPerPlayer.remove(entity); // Destroy if not already destroyed
+					} else if (!entity.getController().equals(entity.getPrevController())) {
+						destroy = spawn = true; // Re-spawn
+					} else {
+						update = true; // Update otherwise
+					}
+				} else {
+					destroy = entitiesPerPlayer.remove(entity); // Destroy if not already destroyed
+				}
+				net.syncEntity(entity, spawn, destroy, update);
+			}
+			players.put(player, entitiesPerPlayer);
+		}
 	}
 }
