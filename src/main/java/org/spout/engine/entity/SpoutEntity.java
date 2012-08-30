@@ -135,7 +135,7 @@ public class SpoutEntity extends BaseComponentHolder<EntityComponent> implements
 
 	@Override
 	public boolean canTick() {
-		return isRemoved() && getTransform().getPosition() != null && getTransform().getPosition().getWorld() != null;
+		return !isRemoved() && getTransform().getPosition() != null && getTransform().getPosition().getWorld() != null;
 	}
 
 	public void tick(float dt) {
