@@ -31,23 +31,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.Server;
-import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.ChatSection;
 import org.spout.api.command.Command;
 import org.spout.api.command.RootCommand;
 import org.spout.api.data.ValueHolder;
-import org.spout.api.entity.Controller;
 import org.spout.api.entity.Player;
-import org.spout.api.entity.controller.PlayerController;
 import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.event.Result;
 import org.spout.api.event.server.data.RetrieveDataEvent;
 import org.spout.api.event.server.permissions.PermissionGetGroupsEvent;
 import org.spout.api.event.server.permissions.PermissionGroupEvent;
 import org.spout.api.event.server.permissions.PermissionNodeEvent;
-import org.spout.api.exception.InvalidControllerException;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Transform;
@@ -55,17 +51,13 @@ import org.spout.api.lang.Locale;
 import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.NetworkSynchronizer;
-import org.spout.api.protocol.Protocol;
-import org.spout.api.protocol.SendMode;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;
 
 import org.spout.engine.SpoutConfiguration;
-import org.spout.engine.SpoutEngine;
 import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.protocol.SpoutSession;
-import org.spout.engine.world.SpoutWorld;
 
 public class SpoutPlayer extends SpoutEntity implements Player {
 	private final AtomicReference<SpoutSession<?>> sessionLive = new AtomicReference<SpoutSession<?>>();
@@ -78,12 +70,12 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	private PlayerInputState inputState = PlayerInputState.DEFAULT_STATE;
 	private Locale preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
 
-	public SpoutPlayer(String name, SpoutEngine engine) {
-		this(name, null, null, engine, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
+	public SpoutPlayer(String name) {
+		this(name, null, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 	}
 
-	public SpoutPlayer(String name, Transform transform, SpoutSession<?> session, SpoutEngine engine, int viewDistance) {
-		super(engine, transform, null, viewDistance);
+	public SpoutPlayer(String name, Transform transform, int viewDistance) {
+		super(transform, viewDistance);
 		this.name = name;
 		displayName.set(name);
 		hashcode = name.hashCode();
@@ -154,7 +146,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		if (newPosition != null) {
 			getTransform().setTransform(newPosition);
 		}
-		final Transform transform = getTransform().copy();
+		final Transform transform = getTransform().getTransform().copy();
 		if (newPosition != null && transform != null && !this.isSpawned()) {
 			setupInitialChunk(transform);
 		}

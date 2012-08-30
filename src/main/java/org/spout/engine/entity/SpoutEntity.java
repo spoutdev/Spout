@@ -33,8 +33,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+<<<<<<< HEAD
 import org.spout.api.component.Component;
 import org.spout.api.component.components.DatatableComponent;
+=======
+import org.spout.api.component.BaseComponentHolder;
+>>>>>>> Entity package compiles (but SpoutEntity needs code to work).
 import org.spout.api.component.components.EntityComponent;
 import org.spout.api.component.components.NetworkComponent;
 import org.spout.api.component.components.TransformComponent;
@@ -58,16 +62,18 @@ import org.spout.engine.util.thread.snapshotable.Snapshotable;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 
-public class SpoutEntity implements Entity, Snapshotable {
+public class SpoutEntity extends BaseComponentHolder<EntityComponent> implements Entity, Snapshotable {
 	public static final int NOTSPAWNEDID = -1;
 	//Live
 	private final AtomicReference<EntityManager> entityManagerLive;
 	private final AtomicReference<Chunk> chunkLive;
-	private final AtomicBoolean deadLive = new AtomicBoolean(false);
-	private final AtomicBoolean observerLive = new AtomicBoolean(false);
+	private final AtomicBoolean observerLive = new AtomicBoolean(false);	
+	private final AtomicBoolean removeLive = new AtomicBoolean(false);
+	private final AtomicBoolean saveLive = new AtomicBoolean(true);	
 	private final AtomicInteger id = new AtomicInteger();
 	private final AtomicInteger viewDistanceLive = new AtomicInteger();
 	private final TransformComponent transform = new TransformComponent();
+	private final NetworkComponent network = new NetworkComponent();
 	//Snapshot
 	private Chunk chunk;
 	private EntityManager entityManager;
@@ -80,7 +86,6 @@ public class SpoutEntity implements Entity, Snapshotable {
 
 	public SpoutEntity(Transform transform, int viewDistance, UUID uid, boolean load) {
 		id.set(NOTSPAWNEDID);
-
 		
 		if (uid != null) {
 			this.uid = uid;
@@ -104,6 +109,8 @@ public class SpoutEntity implements Entity, Snapshotable {
 		}
 
 		setViewDistance(viewDistance);
+		addComponent(this.transform);
+		addComponent(network);
 	}
 
 	public SpoutEntity(Transform transform, int viewDistance) {
@@ -154,7 +161,6 @@ public class SpoutEntity implements Entity, Snapshotable {
 
 	@Override
 	public void finalizeRun() {
-
 		//Moving from one region to another
 		if (entityManager != null) {
 			if (entityManager != entityManagerLive.get()) {
@@ -322,6 +328,7 @@ public class SpoutEntity implements Entity, Snapshotable {
 	}
 
 	@Override
+<<<<<<< HEAD
 	public boolean removeComponent(Class<? extends Component> component) {
 		// TODO Auto-generated method stub
 		return false;
@@ -340,31 +347,34 @@ public class SpoutEntity implements Entity, Snapshotable {
 	}
 
 	@Override
+=======
+>>>>>>> Entity package compiles (but SpoutEntity needs code to work).
 	@DelayedWrite
 	public void remove() {
-		// TODO Auto-generated method stub
-		
+		removeLive.getAndSet(true);
 	}
 
 	@Override
 	@SnapshotRead
 	public boolean isRemoved() {
-		// TODO Auto-generated method stub
-		return false;
+		return removeLive.get();
 	}
 
 	@Override
 	@DelayedWrite
 	public void setSavable(boolean savable) {
-		// TODO Auto-generated method stub
-		
+		saveLive.getAndSet(savable);
 	}
 
 	@Override
 	@SnapshotRead
 	public boolean isSavable() {
-		// TODO Auto-generated method stub
-		return false;
+		return saveLive.get();
+	}
+
+	@Override
+	public NetworkComponent getNetworkComponent() {
+		return network;
 	}
 
 	@Override

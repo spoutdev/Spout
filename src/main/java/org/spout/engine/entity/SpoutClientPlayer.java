@@ -32,21 +32,18 @@ import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.Command;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.Message;
-import org.spout.engine.SpoutClient;
-import org.spout.engine.SpoutEngine;
-import org.spout.engine.protocol.SpoutClientSession;
 import org.spout.engine.protocol.SpoutSession;
 
 /**
  * A subclass of SpoutPlayer with modifications for the client
  */
 public class SpoutClientPlayer extends SpoutPlayer {
-	public SpoutClientPlayer(String name, SpoutClient engine) {
-		super(name, engine);
+	public SpoutClientPlayer(String name) {
+		super(name);
 	}
 
-	public SpoutClientPlayer(String name, Transform transform, SpoutClientSession session, SpoutEngine engine, int viewDistance) {
-		super(name, transform, session, engine, viewDistance);
+	public SpoutClientPlayer(String name, Transform transform, int viewDistance) {
+		super(name, transform, viewDistance);
 	}
 
 	public boolean sendRawMessage(ChatArguments message) {
