@@ -180,6 +180,10 @@ public class EntityManager {
 		}
 
 		if (entity instanceof Player) {
+			NetworkSynchronizer synchronizer = ((Player) entity).getNetworkSynchronizer();
+			if (synchronizer != null) {
+				synchronizer.onRemoved();
+			}
 			players.remove((Player) entity);
 		}
 	}

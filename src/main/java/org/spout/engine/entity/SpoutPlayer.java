@@ -56,7 +56,6 @@ import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;
 
 import org.spout.engine.SpoutConfiguration;
-import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.protocol.SpoutSession;
 
 public class SpoutPlayer extends SpoutEntity implements Player {
@@ -315,15 +314,5 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	public Locale getPreferredLocale() {
 		return preferredLocale;
-	}
-
-	@Override
-	protected void removeObserver() {
-		getNetworkSynchronizer().onRemoved();
-	}
-	
-	@Override
-	protected void updateObserver() {
-		return;
 	}
 }
