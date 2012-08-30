@@ -55,6 +55,10 @@ public class TransformComponent extends EntityComponent {
 		transform.set(transform);
 	}
 
+	public void setTransformLive(Transform transform) {
+		transformLive.set(transform);
+	}
+	
 	public Transform getTransformSnapshot() {
 		return transform.copy();
 	}
