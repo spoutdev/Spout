@@ -32,7 +32,6 @@ import java.util.List;
 
 import org.spout.api.datatable.DataMap;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
@@ -77,10 +76,9 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 	}
 
 	private EntityProtocol getEntityProtocol(Entity entity) {
-		ControllerType type = entity.getController().getType();
-		EntityProtocol protocol = type.getEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID);
+		EntityProtocol protocol = entity.getNetworkComponent().getEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID);
 		if (protocol == null) {
-			type.setEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID, SpoutEntityProtocol.INSTANCE);
+			entity.getNetworkComponent().setEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID, SpoutEntityProtocol.INSTANCE);
 			protocol = SpoutEntityProtocol.INSTANCE;
 		}
 		return protocol;
