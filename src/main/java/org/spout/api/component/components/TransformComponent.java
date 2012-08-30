@@ -34,12 +34,20 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 
 public class TransformComponent extends BaseComponent {
-	private Transform wrapped;
+	private final Transform wrapped;
 	
 	public TransformComponent() {
 		wrapped = new Transform();
 	}
-	
+
+	public void setTransform(Transform transform){
+		wrapped.set(transform);
+	}
+
+	public Transform getTransform() {
+		return wrapped.copy();
+	}
+
 	public Point getPosition() {
 		return wrapped.getPosition();
 	}
@@ -193,13 +201,5 @@ public class TransformComponent extends BaseComponent {
 	
 	private void setAxisAngles(float pitch, float yaw, float roll) {
 		setRotation(MathHelper.rotation(pitch, yaw, roll));
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public Transform copy() {
-		return wrapped.copy();
 	}
 }
