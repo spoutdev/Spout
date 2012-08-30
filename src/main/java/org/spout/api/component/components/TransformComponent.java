@@ -234,7 +234,7 @@ public class TransformComponent extends EntityComponent {
 		setRotation(MathHelper.rotation(pitch, yaw, roll));
 	}
 
-	protected void copySnapshot() {
+	public void copySnapshot() {
 		this.transform.set(transformLive);
 	}
 }
