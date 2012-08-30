@@ -155,7 +155,7 @@
 		<dependency>
 			<groupId>com.alta189</groupId>
 			<artifactId>processors</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
