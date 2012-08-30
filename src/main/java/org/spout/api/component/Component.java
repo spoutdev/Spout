@@ -55,6 +55,12 @@ public interface Component extends Tickable {
 	public void onDetached();
 
 	/**
+	 * Specifies whether this component can be detached from the entity.
+	 * @return True if removable, false if not
+	 */
+	public boolean isDetachable();
+	
+	/**
 	 * Called when the parent entity leaves the world.
 	 */
 	public void onRemoved();

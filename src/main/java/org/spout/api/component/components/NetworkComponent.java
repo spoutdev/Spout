@@ -41,7 +41,12 @@ public class NetworkComponent extends EntityComponent {
 
 	public NetworkComponent() {
 	}
-
+	
+	@Override
+	public boolean isDetachable() {
+		return false;
+	}
+	
 	/**
 	 * @return id of the entity.
 	 */

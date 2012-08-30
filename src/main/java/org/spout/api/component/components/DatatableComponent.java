@@ -48,6 +48,11 @@ public final class DatatableComponent extends BaseComponent {
 		this.dataMap = new DataMap(map);	
 	}
 	
+	@Override
+	public boolean isDetachable() {
+		return false;
+	}
+		
 	public DataMap getBaseMap() {
 		return dataMap;
 	}

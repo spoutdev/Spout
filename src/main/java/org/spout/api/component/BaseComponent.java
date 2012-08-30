@@ -51,6 +51,11 @@ public abstract class BaseComponent implements Component {
 	}
 
 	@Override
+	public boolean isDetachable() {
+		return true;
+	}
+	
+	@Override
 	public void onRemoved() {
 	}
 

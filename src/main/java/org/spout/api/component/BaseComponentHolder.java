@@ -28,6 +28,7 @@ package org.spout.api.component;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 
 import org.spout.api.component.components.DatatableComponent;
@@ -61,9 +62,13 @@ public class BaseComponentHolder implements ComponentHolder {
 		if (!hasComponent(aClass)) {
 			return false;
 		}
-		getComponent(aClass).onDetached();
-		components.remove(aClass);
-		return true;
+		Component component = getComponent(aClass);
+		if (component.isDetachable()) {
+			getComponent(aClass).onDetached();
+			components.remove(aClass);
+			return true;			
+		}
+		return false;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -85,7 +90,7 @@ public class BaseComponentHolder implements ComponentHolder {
 
 	@Override
 	public Collection<Component> getComponents() {
-		return new ArrayList<Component>(components.values());
+		return Collections.unmodifiableList(new ArrayList<Component>(components.values()));
 	}
 	
 	@Override

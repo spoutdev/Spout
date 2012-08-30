@@ -41,7 +41,12 @@ public class TransformComponent extends EntityComponent {
 		transform = new Transform();
 		transformLive = new Transform();
 	}
-
+	
+	@Override
+	public boolean isDetachable() {
+		return false;
+	}
+	
 	@Override
 	public void onTick(float dt) {
 		if (transform.equals(transformLive)) {

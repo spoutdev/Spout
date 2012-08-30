@@ -34,6 +34,11 @@ public class BlockComponent extends EntityComponent {
 	public BlockComponent() {
 	}
 	
+	@Override
+	public boolean isDetachable() {
+		return false;
+	}
+	
 	/**
 	 * Gets the material this component represents.
 	 */
