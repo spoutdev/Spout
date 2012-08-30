@@ -94,6 +94,7 @@ public class SpoutEntity extends BaseComponentHolder<EntityComponent> implements
 
 		if (transform != null && load) {
 			setupInitialChunk(transform);
+			getTransform().setTransform(transform);
 		}
 
 		int maxViewDistance = SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE;
@@ -135,7 +136,7 @@ public class SpoutEntity extends BaseComponentHolder<EntityComponent> implements
 
 	@Override
 	public boolean canTick() {
-		return !isRemoved() && getTransform().getPosition() != null && getTransform().getPosition().getWorld() != null;
+		return !isRemoved();
 	}
 
 	public void tick(float dt) {
