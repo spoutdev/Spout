@@ -157,7 +157,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @param controller The entity that will be attached to the Entity
 	 * @return The Entity that has been created and spawned
 	 */
-	public Entity createAndSpawnEntity(Point point);
+	public Entity createAndSpawnEntity(Point point, LoadOption option);
 
 	/**
 	 * Creates and Spawns entities at the given points.  This is the same as calling
@@ -166,7 +166,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @param type The type of entity that will be attached to the Entity
 	 * @return The Entities that has been created and spawned
 	 */
-	public Entity[] createAndSpawnEntity(Point[] points);
+	public Entity[] createAndSpawnEntity(Point[] points, LoadOption option);
 
 	/**
 	 * Creates and Spawns entities for the given arrangement.  This is the same as calling
@@ -176,7 +176,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @param controller The entity that will be attached to the Entity
 	 * @return The Entities that has been created and spawned
 	 */
-	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement);
+	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, LoadOption option);
 
 	/**
 	 * Gets the world's spawn point

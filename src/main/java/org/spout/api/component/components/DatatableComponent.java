@@ -35,8 +35,18 @@ import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.map.DefaultedKey;
 
 public final class DatatableComponent extends BaseComponent {
-	private final DatatableMap datatableMap = new GenericDatatableMap();
-	private final DataMap dataMap = new DataMap(datatableMap);
+	private final DataMap dataMap;
+	
+	public DatatableComponent() {
+		this(new GenericDatatableMap());
+	}
+	
+	public DatatableComponent(DatatableMap map) {
+		if (map == null) {
+			throw new IllegalArgumentException("Datatable map cannot be null!");
+		}
+		this.dataMap = new DataMap(map);	
+	}
 	
 	public DataMap getBaseMap() {
 		return dataMap;

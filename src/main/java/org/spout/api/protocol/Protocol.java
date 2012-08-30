@@ -41,7 +41,6 @@ import org.spout.api.chat.ChatArguments;
 import org.spout.api.command.Command;
 import org.spout.api.exception.UnknownPacketException;
 import org.spout.api.io.store.simple.MemoryStore;
-import org.spout.api.entity.Player;
 import org.spout.api.util.StringMap;
 
 public abstract class Protocol {
