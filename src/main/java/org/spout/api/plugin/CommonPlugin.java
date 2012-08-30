@@ -104,6 +104,7 @@ public abstract class CommonPlugin implements Plugin {
 		return file;
 	}
 
+	@SuppressWarnings("resource")
 	public InputStream getResource(String path) {
 		Validate.notNull(path);
 		JarFile jar;

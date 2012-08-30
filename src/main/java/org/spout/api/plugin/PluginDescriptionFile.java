@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.spout.api.datatable.Datatable;
 import org.spout.api.datatable.DatatableTuple;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.datatable.value.DatatableBool;

@@ -27,7 +27,6 @@
 package org.spout.api.component.components;
 
 import org.spout.api.component.BaseComponent;
-import org.spout.api.component.Component;
 import org.spout.api.geo.World;
 
 public class WorldComponent extends BaseComponent {

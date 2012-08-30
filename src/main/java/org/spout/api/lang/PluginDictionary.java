@@ -33,7 +33,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -133,6 +132,7 @@ public class PluginDictionary {
 		} catch (IOException e) {}
 	}
 
+	@SuppressWarnings("resource")
 	protected void loadLanguages() {
 		// Search for other languages
 		try {
@@ -210,6 +210,7 @@ public class PluginDictionary {
 		}
 	}
 
+	@SuppressWarnings("resource")
 	protected InputStream openLangResource(String filename) {
 		try {
 			File inDataDir = new File(getLangDirectory(), filename);
