@@ -43,7 +43,7 @@ public abstract class EntityType {
 		this.components = Arrays.asList(components);
 	}
 	
-	public abstract void init();
+	public abstract void init(Entity typed);
 	
 	public List<Component> getComponents() {
 		return components;
