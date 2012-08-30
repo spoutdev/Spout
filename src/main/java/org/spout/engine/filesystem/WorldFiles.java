@@ -178,7 +178,7 @@ public class WorldFiles {
 		worldTags.put(new StringTag("generator", generatorName));
 		worldTags.put(new LongTag("UUID_lsb", world.getUID().getLeastSignificantBits()));
 		worldTags.put(new LongTag("UUID_msb", world.getUID().getMostSignificantBits()));
-		worldTags.put(new ByteArrayTag("extra_data", ((DataMap) world.getDataMap()).getRawMap().compress()));
+		worldTags.put(new ByteArrayTag("extra_data", ((DataMap) world.getDatatable().getBaseMap()).getRawMap().compress()));
 		worldTags.put(new LongTag("age", world.getAge()));
 		//World version 2
 		worldTags.put(new ListTag<FloatTag>("spawn_position", FloatTag.class, NBTMapper.transformToNBT(world.getSpawnPoint())));

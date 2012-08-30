@@ -42,8 +42,8 @@ public class FilteredChunkTest {
 	 * Methods that interact with the blockstore should not be exempt!
 	 */
 	private static Set<String> exemptions = new HashSet<String>() {{
-		add("getBlockController");
-		add("setBlockController");
+		add("getBlockComponent");
+		add("setBlockComponent");
 		add("getBiomeType");
 		add("getBlock");
 		add("containsBlock");

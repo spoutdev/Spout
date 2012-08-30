@@ -128,7 +128,7 @@ public class WorldRenderer {
 				for (int y = batchMin.getFloorY(); y <= batchMax.getFloorY(); y++) {
 					for (int z = batchMin.getFloorZ(); z <= batchMax.getFloorZ(); z++) {
 						Vector3 chunkCoords = ChunkMeshBatch.getChunkCoordinates(new Vector3(x, y, z));
-						ChunkMeshBatch batch = new ChunkMeshBatch(material, world, chunkCoords.getFloorX(), chunkCoords.getFloorY(), chunkCoords.getFloorZ());
+						ChunkMeshBatch batch = new ChunkMeshBatch(world, chunkCoords.getFloorX(), chunkCoords.getFloorY(), chunkCoords.getFloorZ());
 						addChunkMeshBatch(batch);
 						batch.update();
 
@@ -165,7 +165,7 @@ public class WorldRenderer {
 						}
 
 						if (newView.contains(vec)) {
-							ChunkMeshBatch c = new ChunkMeshBatch(material, world, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
+							ChunkMeshBatch c = new ChunkMeshBatch(world, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
 							addChunkMeshBatch(c);
 							c.update();
 						}

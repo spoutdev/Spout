@@ -50,7 +50,7 @@ import org.spout.api.protocol.builtin.message.WorldChangeMessage;
 
 public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 	public SpoutNetworkSynchronizer(Session session) {
-		super(session.getPlayer(), session, session.getPlayer(), 3);
+		super(session, 3);
 	}
 
 	public Collection<Chunk> sendChunk(Chunk c) {
@@ -63,7 +63,7 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 	}
 
 	protected void sendPosition(Point p, Quaternion rot) {
-		session.send(false, new EntityPositionMessage(entity.getId(), new Transform(p, rot, Vector3.ONE)));
+		session.send(false, new EntityPositionMessage(player.getId(), new Transform(p, rot, Vector3.ONE)));
 	}
 
 	protected void worldChanged(World world) {
@@ -71,7 +71,7 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 	}
 
 	public void updateBlock(Chunk chunk, int x, int y, int z, BlockMaterial material, short data) {
-		session.send(false, new BlockUpdateMessage(chunk.getBlock(x, y, z, getOwner())));
+		session.send(false, new BlockUpdateMessage(chunk.getBlock(x, y, z, player)));
 	}
 
 	private EntityProtocol getEntityProtocol(Entity entity) {
