@@ -186,17 +186,15 @@ public class EntityManager {
 
 	public void finalizeRun() {
 		for (SpoutEntity e : entities.get().values()) {
-			if (e.isRemoved()) {
-				removeEntity(e);
-				continue;
-			}
 			e.finalizeRun();
-
 			if (e instanceof Player) {
 				Player p = (Player) e;
 				if (p.isOnline()) {
 					p.getNetworkSynchronizer().finalizeTick();
 				}
+			}			
+			if (e.isRemoved()) {
+				removeEntity(e);
 			}
 		}
 	}

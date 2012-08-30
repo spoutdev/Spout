@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.component.BaseComponentHolder;
+import org.spout.api.component.Component;
 import org.spout.api.component.components.EntityComponent;
 import org.spout.api.component.components.NetworkComponent;
 import org.spout.api.component.components.TransformComponent;
@@ -122,11 +123,19 @@ public class SpoutEntity extends BaseComponentHolder<EntityComponent> implements
 
 	@Override
 	public void onTick(float dt) {
+		for (Component component : getComponents()) {
+			component.tick(dt);
+		}
+		//If position is dirty, set chunk/manager live values
+		if (transform.isDirty()) {
+			chunkLive.set(getWorld().getChunkFromBlock(getTransform().getPosition(), LoadOption.NO_LOAD));
+			entityManagerLive.set(((SpoutRegion) getRegion()).getEntityManager());
+		}
 	}
 
 	@Override
 	public boolean canTick() {
-		return true;
+		return isRemoved() && getTransform().getPosition() != null && getTransform().getPosition().getWorld() != null;
 	}
 
 	public void tick(float dt) {
@@ -151,41 +160,28 @@ public class SpoutEntity extends BaseComponentHolder<EntityComponent> implements
 
 	@Override
 	public void finalizeRun() {
-		//Moving from one region to another
 		if (entityManager != null) {
+			//Move entity from Region A to Region B
 			if (entityManager != entityManagerLive.get()) {
-				//Deallocate entity
-				if (entityManager.getRegion() != null) {
-					entityManager.getRegion().removeEntity(this);
-				} else {
-					entityManager.deallocate(this);
+				entityManager.deallocate(this);
+				if (entityManagerLive.get() != null && !isRemoved()) {
+					//Allocate entity to Region B
+					entityManagerLive.get().allocate(this);
 				}
 			}
 		}
-		if (entityManagerLive.get() != null) {
-			if (entityManager != entityManagerLive.get()) {
-				//Allocate entity
-				entityManagerLive.get().allocate(this);
-			}
-		}
-
-		if (chunkLive.get() != chunk) {
-			if (observer) {
-				if (!isRemoved()) {
-					updateObserver();
-				} else {
-					removeObserver();
-				}
-			}
-		}
-
-		if (observerLive.get() != observer) {
-			observer = !observer;
-			if (observer) {
-				updateObserver();
-			} else {
-				removeObserver();
-			}
+		boolean isLiveObserver = observerLive.get();
+		//Entity was removed so automatically remove observer/components
+		if (isRemoved()) {
+			removeObserver();
+			//Call onRemoved for Components and remove them
+			for (Component component : getComponents()) {
+				component.onRemoved();
+				removeComponent(component.getClass());
+			}			
+		//Entity changed chunks as observer OR observer status changed so update
+		} else if ((chunkLive.get() != chunk && isLiveObserver) || isLiveObserver != observer) {
+			updateObserver();
 		}
 	}
 
@@ -233,17 +229,7 @@ public class SpoutEntity extends BaseComponentHolder<EntityComponent> implements
 
 	@Override
 	public Region getRegion() {
-		//Check here to avoid the lookup
-		if (entityManager != null && entityManager.getRegion() != null) {
-			return entityManager.getRegion();
-		}
-		//Lookup
-		World world = getWorld();
-		if (world == null) {
-			return null;
-		}
-
-		return world.getRegionFromBlock(MathHelper.floor(getTransform().getPosition().getX()), MathHelper.floor(getTransform().getPosition().getY()), MathHelper.floor(getTransform().getPosition().getZ()));
+		return entityManager.getRegion();
 	}
 
 	@Override
@@ -310,6 +296,7 @@ public class SpoutEntity extends BaseComponentHolder<EntityComponent> implements
 		chunk = chunkLive.get();
 		entityManager = entityManagerLive.get();
 		viewDistance = viewDistanceLive.get();
+		transform.setTransform(transform.getTransformLive());
 		justSpawned = false;
 	}
 

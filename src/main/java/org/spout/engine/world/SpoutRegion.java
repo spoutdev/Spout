@@ -82,7 +82,6 @@ import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
-import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ChunkDataForRegion;
 import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.scheduler.SpoutScheduler;
@@ -556,10 +555,6 @@ public class SpoutRegion extends Region {
 
 	public void addEntity(Entity e) {
 		this.entityManager.addEntity((SpoutEntity) e);
-	}
-
-	public void removeEntity(Entity e) {
-		this.entityManager.removeEntity((SpoutEntity) e);
 	}
 
 	public void startTickRun(int stage, long delta) {
