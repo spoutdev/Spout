@@ -33,12 +33,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.spout.api.Source;
-import org.spout.api.collision.CollisionModel;
-import org.spout.api.entity.Controller;
+import org.spout.api.component.Component;
+import org.spout.api.component.components.DatatableComponent;
+import org.spout.api.component.components.TransformComponent;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.Player;
-import org.spout.api.event.entity.EntityControllerChangeEvent;
+import org.spout.api.entity.EntityComponent;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -50,13 +49,10 @@ import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
-import org.spout.api.model.Model;
-import org.spout.api.protocol.Message;
-import org.spout.api.protocol.Protocol;
-import org.spout.api.protocol.SendMode;
 import org.spout.api.util.OutwardIterator;
+import org.spout.api.util.thread.DelayedWrite;
+import org.spout.api.util.thread.SnapshotRead;
 import org.spout.engine.SpoutConfiguration;
-import org.spout.engine.SpoutEngine;
 import org.spout.engine.util.thread.snapshotable.Snapshotable;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
@@ -65,35 +61,26 @@ public class SpoutEntity implements Entity, Snapshotable {
 	public static final int NOTSPAWNEDID = -1;
 	//Live
 	private final AtomicReference<EntityManager> entityManagerLive;
-	private final AtomicReference<Controller> controllerLive;
 	private final AtomicReference<Chunk> chunkLive;
-	private final AtomicReference<Transform> transformLive;
 	private final AtomicBoolean deadLive = new AtomicBoolean(false);
 	private final AtomicBoolean observerLive = new AtomicBoolean(false);
 	private final AtomicInteger id = new AtomicInteger();
 	private final AtomicInteger viewDistanceLive = new AtomicInteger();
-	private final Transform transform = new Transform();
+	private final TransformComponent transform = new TransformComponent();
 	//Snapshot
-	private final Transform lastTransform = new Transform();
 	private Chunk chunk;
-	private Controller controller;
 	private EntityManager entityManager;
 	private boolean observer = false;
 	private int viewDistance;
 	//Other
 	private final Set<SpoutChunk> observingChunks = new HashSet<SpoutChunk>();
-	private final SpoutEngine engine;
 	private final UUID uid;
-	private CollisionModel collision;
-	private Model model;
-	private Thread owningThread;
 	protected boolean justSpawned = true;
 
-	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller, int viewDistance, UUID uid, boolean load) {
+	public SpoutEntity(Transform transform, int viewDistance, UUID uid, boolean load) {
 		id.set(NOTSPAWNEDID);
-		this.transform.set(transform);
-		this.engine = engine;
 
+		
 		if (uid != null) {
 			this.uid = uid;
 		} else {
@@ -102,8 +89,6 @@ public class SpoutEntity implements Entity, Snapshotable {
 
 		chunkLive = new AtomicReference<Chunk>();
 		entityManagerLive = new AtomicReference<EntityManager>();
-		controllerLive = new AtomicReference<Controller>();
-		transformLive = new AtomicReference<Transform>();
 
 		if (transform != null && load) {
 			setupInitialChunk(transform);
@@ -118,33 +103,22 @@ public class SpoutEntity implements Entity, Snapshotable {
 		}
 
 		setViewDistance(viewDistance);
-		setController(controller);
 	}
 
-	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller, int viewDistance) {
-		this(engine, transform, controller, viewDistance, null, true);
+	public SpoutEntity(Transform transform, int viewDistance) {
+		this(transform, viewDistance, null, true);
 	}
 
-	public SpoutEntity(SpoutEngine engine, Transform transform, Controller controller) {
-		this(engine, transform, controller, -1);
+	public SpoutEntity(Transform transform) {
+		this(transform, -1);
 	}
 
-	public SpoutEntity(SpoutEngine engine, Point point, Controller controller) {
-		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE), controller);
+	public SpoutEntity(Point point) {
+		this(new Transform(point, Quaternion.IDENTITY, Vector3.ONE));
 	}
 
 	@Override
 	public void onTick(float dt) {
-		if (controller != null) {
-			if (!isDead() && getPosition() != null && getWorld() != null) {
-				controller.tick(dt);
-				//TODO Fix, this isn't right
-				if (!transform.equals(lastTransform)) {
-					chunkLive.set(getWorld().getChunkFromBlock(transform.getPosition(), LoadOption.NO_LOAD));
-					entityManagerLive.set(((SpoutRegion)getRegion()).getEntityManager());
-				}
-			}
-		}
 	}
 
 	@Override
@@ -159,167 +133,8 @@ public class SpoutEntity implements Entity, Snapshotable {
 	}
 
 	@Override
-	public Transform getTransform() {
-		return transform.copy();
-	}
-
-	@Override
-	public Transform getLastTransform() {
-		return lastTransform.copy();
-	}
-
-	@Override
-	public void setTransform(Transform transform) {
-		if (activeThreadIsValid()) {
-			this.transform.set(transform);
-		} else {
-			this.transformLive.set(transform.copy());
-		}
-	}
-
-	@Override
-	public void translate(float x, float y, float z) {
-		translate(new Vector3(x, y, z));
-	}
-
-	@Override
-	public void translate(Vector3 amount) {
-		setPosition(getPosition().add(amount));
-	}
-
-	@Override
-	public void rotate(float ang, float x, float y, float z) {
-		setRotation(getRotation().rotate(ang, x, y, z));
-	}
-
-	@Override
-	public void rotate(Quaternion rot) {
-		setRotation(getRotation().multiply(rot));
-	}
-
-	@Override
-	public void scale(float x, float y, float z) {
-		scale(new Vector3(x, y, z));
-	}
-
-	@Override
-	public void scale(Vector3 amount) {
-		setScale(getScale().multiply(amount));
-	}
-
-	@Override
-	public Point getPosition() {
-		return transform.getPosition();
-	}
-
-	@Override
-	public Quaternion getRotation() {
-		return transform.getRotation();
-	}
-
-	@Override
-	public Vector3 getScale() {
-		return transform.getScale();
-	}
-
-	@Override
-	public void setPosition(Point position) {
-		if (activeThreadIsValid()) {
-			transform.setPosition(position);
-		} else {
-			boolean success = false;
-			while (!success) {
-				Transform current = transformLive.get();
-				Transform next = (current == null ? lastTransform : current).copy();
-				next.setPosition(position);
-				success = transformLive.compareAndSet(current, next);
-			}
-		}
-	}
-
-	@Override
-	public void setRotation(Quaternion rotation) {
-		if (activeThreadIsValid()) {
-			transform.setRotation(rotation);
-		} else {
-			boolean success = false;
-			while (!success) {
-				Transform current = transformLive.get();
-				Transform next = (current == null ? lastTransform : current).copy();
-				next.setRotation(rotation);
-				success = transformLive.compareAndSet(current, next);
-			}
-		}
-	}
-
-	@Override
-	public void setScale(Vector3 scale) {
-		if (activeThreadIsValid()) {
-			transform.setScale(scale);
-		} else {
-			boolean success = false;
-			while (!success) {
-				Transform current = transformLive.get();
-				Transform next = (current == null ? lastTransform : current).copy();
-				next.setScale(scale);
-				success = transformLive.compareAndSet(current, next);
-			}
-		}
-	}
-
-	@Override
-	public void roll(float ang) {
-		setRoll(getRoll() + ang);
-	}
-
-	@Override
-	public void pitch(float ang) {
-		setPitch(getPitch() + ang);
-	}
-
-	@Override
-	public void yaw(float ang) {
-		setYaw(getYaw() + ang);
-	}
-
-	@Override
-	public float getPitch() {
-		return transform.getRotation().getPitch();
-	}
-
-	@Override
-	public float getYaw() {
-		return transform.getRotation().getYaw();
-	}
-
-	@Override
-	public float getRoll() {
-		return transform.getRotation().getRoll();
-	}
-
-	@Override
-	public void setPitch(float pitch) {
-		setAxisAngles(pitch, getYaw(), getRoll());
-	}
-
-	@Override
-	public void setRoll(float roll) {
-		setAxisAngles(getPitch(), getYaw(), roll);
-	}
-
-	@Override
-	public void setYaw(float yaw) {
-		setAxisAngles(getPitch(), yaw, getRoll());
-	}
-
-	private void setAxisAngles(float pitch, float yaw, float roll) {
-		setRotation(MathHelper.rotation(pitch, yaw, roll));
-	}
-
-	private boolean activeThreadIsValid() {
-		Thread current = Thread.currentThread();
-
-		return this.owningThread == current || engine.getMainThread() == current;
+	public TransformComponent getTransform() {
+		return transform;
 	}
 
 	@Override
@@ -332,81 +147,12 @@ public class SpoutEntity implements Entity, Snapshotable {
 	}
 
 	@Override
-	public Controller getController() {
-		return controllerLive.get();
-	}
-
-	public Controller getPrevController() {
-		return controller;
-	}
-
-	@Override
-	public void setController(Controller controller, Source source) {
-		EntityControllerChangeEvent event = engine.getEventManager().callEvent(new EntityControllerChangeEvent(this, source, controller));
-		Controller newController = event.getNewController();
-		if (newController != null) {
-			controllerLive.set(newController);
-			controller.attachToEntity(this);
-			controller.onAttached();
-		}
-	}
-
-	@Override
-	public void setController(Controller controller) {
-		setController(controller, null);
-	}
-
-	@Override
-	public boolean kill() {
-		chunkLive.set(null);
-		deadLive.set(true);
-		return true;
-	}
-
-	@Override
-	public boolean isDead() {
-		return id.get() != NOTSPAWNEDID && (deadLive.get() || chunkLive.get() == null || entityManagerLive.get() == null);
-	}
-
-	// TODO - needs to be made thread safe
-	@Override
-	public void setModel(Model model) {
-		this.model = model;
-	}
-
-	// TODO - needs to be made thread safe
-	@Override
-	public Model getModel() {
-		return model;
-	}
-
-	// TODO - needs to be made thread safe
-	@Override
-	public void setCollision(CollisionModel model) {
-		collision = model;
-		if (collision != null) {
-			collision.setPosition(this.transform.getPosition());
-		}
-	}
-
-	// TODO - needs to be made thread safe
-	@Override
-	public CollisionModel getCollision() {
-		return collision;
-	}
-
-	@Override
 	public boolean isSpawned() {
 		return id.get() != NOTSPAWNEDID;
 	}
 
 	@Override
 	public void finalizeRun() {
-
-		Transform t = transformLive.getAndSet(null);
-		if(t != null) {
-			transform.set(t);
-		}
 
 		//Moving from one region to another
 		if (entityManager != null) {
@@ -426,43 +172,9 @@ public class SpoutEntity implements Entity, Snapshotable {
 			}
 		}
 
-		//Could be 1 of 3 scenarios:
-		//    1.) Entity is dead (ControllerLive == null)
-		//    2.) Entity is swapping controllers (ControllerLive != Controller, neither is null)
-		//    3.) Entity has just spawned and has never executed copy snapshot, Controller == null, ControllerLive != null
-		if (controller != controllerLive.get()) {
-			//1.) Entity is dead
-			if (controller != null && controllerLive.get() == null) {
-				//Sanity check
-				if (!isDead()) {
-					throw new IllegalStateException("ControllerLive is null, but entity is not dead!");
-				}
-
-				//Kill old entity
-				controller.onDeath();
-			}
-			//2.) Entity is changing controllers
-			else if (controller != null && controllerLive.get() != null) {
-				//Kill old entity
-				controller.onDeath();
-
-				//Allocate new entity
-				if (entityManagerLive.get() != null) {
-					entityManagerLive.get().allocate(this);
-				}
-			}
-			//3.) Entity was just spawned, has not copied snapshots yet
-			else if (controller == null && controllerLive.get() != null) {
-				//Sanity check
-				if (!this.justSpawned()) {
-					throw new IllegalStateException("Controller is null, ControllerLive is not-null, and the entity did not just spawn.");
-				}
-			}
-		}
-
 		if (chunkLive.get() != chunk) {
 			if (observer) {
-				if (!isDead()) {
+				if (!isRemoved()) {
 					updateObserver();
 				} else {
 					removeObserver();
@@ -534,22 +246,12 @@ public class SpoutEntity implements Entity, Snapshotable {
 			return null;
 		}
 
-		return world.getRegionFromBlock(MathHelper.floor(getPosition().getX()), MathHelper.floor(getPosition().getY()), MathHelper.floor(getPosition().getZ()));
+		return world.getRegionFromBlock(MathHelper.floor(getTransform().getPosition().getX()), MathHelper.floor(getTransform().getPosition().getY()), MathHelper.floor(getTransform().getPosition().getZ()));
 	}
 
 	@Override
 	public World getWorld() {
 		return transform.getPosition().getWorld();
-	}
-
-	@Override
-	public boolean is(Class<? extends Controller> clazz) {
-		return clazz.isAssignableFrom(controllerLive.get().getClass());
-	}
-
-	@Override
-	public void onSync() {
-		//TODO Needed?
 	}
 
 	public boolean justSpawned() {
@@ -581,17 +283,8 @@ public class SpoutEntity implements Entity, Snapshotable {
 	}
 
 	@Override
-	public boolean isObserverLive() {
-		return observerLive.get();
-	}
-
-	public void setOwningThread(Thread thread) {
-		this.owningThread = thread;
-	}
-
-	@Override
 	public String toString() {
-		return "SpoutEntity - ID: " + this.getId() + " Controller: " + getController() + " Position: " + getPosition();
+		return "SpoutEntity - ID: " + this.getId() + " Position: " + getTransform().getPosition();
 	}
 
 	@Override
@@ -619,9 +312,7 @@ public class SpoutEntity implements Entity, Snapshotable {
 	public void copySnapshot() {
 		chunk = chunkLive.get();
 		entityManager = entityManagerLive.get();
-		controller = controllerLive.get();
 		viewDistance = viewDistanceLive.get();
-		lastTransform.set(transform);
 		justSpawned = false;
 	}
 
@@ -630,14 +321,60 @@ public class SpoutEntity implements Entity, Snapshotable {
 	}
 
 	@Override
-	public void sendMessage(SendMode sendMode, Protocol protocol, Message... messages) {
-		if (sendMode.canSendToObservers()) {
-			final int view = SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE;
-			for (Player player : getWorld().getNearbyPlayers(getPosition(), this, view)) {
-				if (player.getSession().getProtocol().equals(protocol)) {
-					player.getSession().sendAll(false, messages);
-				}
-			}
-		}
+	public EntityComponent addComponent(Component component) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean removeComponent(Class<? extends Component> component) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public EntityComponent getComponent(Class<? extends Component> component) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasComponent(Class<? extends Component> component) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public DatatableComponent getDatatable() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	@DelayedWrite
+	public void remove() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	@SnapshotRead
+	public boolean isRemoved() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	@DelayedWrite
+	public void setSavable(boolean savable) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	@SnapshotRead
+	public boolean isSavable() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }
