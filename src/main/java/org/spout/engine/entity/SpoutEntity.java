@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
-import org.spout.api.component.components.EntityComponent;
 import org.spout.api.component.components.NetworkComponent;
 import org.spout.api.component.components.TransformComponent;
 import org.spout.api.entity.Entity;
@@ -348,5 +347,6 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		for (Component component : type.getComponents()) {
 			addComponent(component);
 		}
+		type.init(this);
 	}	
 }
