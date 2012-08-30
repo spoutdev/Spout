@@ -380,7 +380,7 @@ public interface Block extends MaterialAccess, WorldSource {
 	 *
 	 * @return true if has a entity
 	 */
-	public boolean hasController();
+	public boolean hasComponent();
 
 	/**
 	 * Gets if this block is above or at the surface<br>
