@@ -31,7 +31,7 @@ import java.util.HashMap;
 
 import org.spout.api.component.components.DatatableComponent;
 
-public class BaseComponentHolder<T extends Component> implements ComponentHolder<T> {
+public class BaseComponentHolder implements ComponentHolder {
 	private final HashMap<Class<? extends Component>, Component> components = new HashMap<Class<? extends Component>, Component>();
 	private final DatatableComponent datatable = new DatatableComponent();
 	
@@ -41,15 +41,18 @@ public class BaseComponentHolder<T extends Component> implements ComponentHolder
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public T addComponent(Component component) {
-		Class<? extends Component> clazz = component.getClass();
-		if (hasComponent(clazz)) {
-			return (T) getComponent(clazz);
+	public <T extends Component> T addComponent(Component component) {
+		if (component.attachTo(this)) {
+			Class<? extends Component> clazz = component.getClass();
+			if (hasComponent(clazz)) {
+				return (T) getComponent(clazz);
+			}
+			components.put(clazz, component);
+			component.onAttached();
+			return (T) component;
+		} else {
+			return null;
 		}
-		components.put(clazz, component);
-		component.attachTo(this);
-		component.onAttached();
-		return (T) component;
 	}
 
 	@Override
@@ -64,7 +67,7 @@ public class BaseComponentHolder<T extends Component> implements ComponentHolder
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public T getComponent(Class<? extends Component> aClass) {
+	public <T extends Component> T getComponent(Class<? extends Component> aClass) {
 		for(Class<? extends Component> c : components.keySet()){
 			if(aClass.isAssignableFrom(c)) return (T) components.get(c);
 		}

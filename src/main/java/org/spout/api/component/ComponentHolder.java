@@ -33,14 +33,14 @@ import org.spout.api.component.components.DatatableComponent;
 /**
  * Represents the accessing portion of an entity that controls retrieving/removing components.
  */
-public interface ComponentHolder<T extends Component> {
+public interface ComponentHolder {
 	/**
 	 * Adds a new component to the holder.  If the holder already contains a component of that type, then a new component is not
 	 * constructed, and the one already attached is returned
 	 * @param component the component to be added
 	 * @return The component created, or the one already attached
 	 */
-	public T addComponent(Component component);
+	public <T extends Component> T addComponent(Component component);
 
 	/**
 	 * Removes a component from the list
@@ -54,7 +54,7 @@ public interface ComponentHolder<T extends Component> {
 	 * @param component the type of component to get
 	 * @return The component instance, or null if it doesn't exist
 	 */
-	public T getComponent(Class<? extends Component> component);
+	public <T extends Component> T getComponent(Class<? extends Component> component);
 
 	/**
 	 * Returns true if a component exists that is assignable from the given class.

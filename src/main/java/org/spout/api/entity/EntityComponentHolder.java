@@ -31,7 +31,7 @@ import org.spout.api.component.components.EntityComponent;
 import org.spout.api.component.components.NetworkComponent;
 import org.spout.api.component.components.TransformComponent;
 
-public interface EntityComponentHolder extends ComponentHolder<EntityComponent> {
+public interface EntityComponentHolder extends ComponentHolder {
 	/**
 	 * Gets a {@link Transform} {@link EntityComponent} representing the current position, scale and
 	 * rotation of the entity.

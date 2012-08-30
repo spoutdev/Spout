@@ -27,17 +27,28 @@
 package org.spout.api.component.components;
 
 import org.spout.api.component.BaseComponent;
+import org.spout.api.component.ComponentHolder;
 import org.spout.api.entity.Entity;
 
 /**
  * Represents an attachment to a entity that can respond to Ticks.
  */
 public abstract class EntityComponent extends BaseComponent {
+
 	@Override
 	public Entity getHolder() {
 		return (Entity) super.getHolder();
 	}
-	
+
+	@Override
+	public boolean attachTo(ComponentHolder holder) {
+		if (holder instanceof Entity){
+			super.attachTo(holder);
+			return true;
+		} else {
+			return false;
+		}
+	}
 	/**
 	 * Called when the parent entity is spawned into the world.
 	 */

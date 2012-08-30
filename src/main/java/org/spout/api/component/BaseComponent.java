@@ -29,15 +29,16 @@ package org.spout.api.component;
 import org.spout.api.component.components.DatatableComponent;
 
 public abstract class BaseComponent implements Component {
-	private ComponentHolder<?> holder;
+	private ComponentHolder holder;
 
 	@Override
-	public void attachTo(ComponentHolder<?> holder) {
+	public boolean attachTo(ComponentHolder holder) {
 		this.holder = holder;
+		return true;
 	}
 	
 	@Override
-	public ComponentHolder<?> getHolder() {
+	public ComponentHolder getHolder() {
 		return holder;
 	}
 	

@@ -36,13 +36,13 @@ public interface Component extends Tickable {
 	 * Attaches to a component holder.
 	 * @param holder The component holder to attach to
 	 */
-	public void attachTo(ComponentHolder<?> holder);
+	public boolean attachTo(ComponentHolder holder);
 	
 	/**
 	 * Gets the component holder holding this component.
 	 * @return the component holder
 	 */
-	public ComponentHolder<?> getHolder();
+	public ComponentHolder getHolder();
 
 	/**
 	 * Called when this component is attached to a holder
