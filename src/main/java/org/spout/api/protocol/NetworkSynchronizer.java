@@ -88,10 +88,14 @@ public abstract class NetworkSynchronizer {
 	private final Map<Class<? extends ProtocolEvent>, ProtocolEventExecutor> protocolEventMapping = new HashMap<Class<? extends ProtocolEvent>, ProtocolEventExecutor>();
 	
 	public NetworkSynchronizer(Session session, int minViewDistance) {
-		this.session = session;		
+		this.session = session;
 		player = session.getPlayer();
-		player.setObserver(true);
-		blockViewDistance = player.getViewDistance();
+		if (player == null) {
+			player.setObserver(true);
+			blockViewDistance = player.getViewDistance();
+		} else {
+			blockViewDistance = 0;
+		}
 		viewDistance = blockViewDistance >> Chunk.BLOCKS.BITS;
 		blockMinimumViewDistance = minViewDistance * Chunk.BLOCKS.SIZE;
 	}
