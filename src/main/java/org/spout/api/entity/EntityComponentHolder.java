@@ -28,6 +28,7 @@ package org.spout.api.entity;
 
 import org.spout.api.component.ComponentHolder;
 import org.spout.api.component.components.EntityComponent;
+import org.spout.api.component.components.NetworkComponent;
 import org.spout.api.component.components.TransformComponent;
 
 public interface EntityComponentHolder extends ComponentHolder<EntityComponent> {
@@ -37,4 +38,11 @@ public interface EntityComponentHolder extends ComponentHolder<EntityComponent> 
 	 * @return The transform component
 	 */
 	public TransformComponent getTransform();
+
+	/**
+	 * Gets a {@link NetworkComponent} which holds the entities protocol lookups.
+	 * 
+	 * @return The network component
+	 */
+	public NetworkComponent getNetworkComponent();
 }
