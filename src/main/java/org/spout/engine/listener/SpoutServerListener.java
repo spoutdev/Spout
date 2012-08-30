@@ -28,7 +28,9 @@ package org.spout.engine.listener;
 
 import java.net.InetAddress;
 
+import org.spout.api.Spout;
 import org.spout.api.chat.style.ChatStyle;
+import org.spout.api.component.components.WorldComponent;
 import org.spout.api.entity.Player;
 import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
@@ -41,6 +43,7 @@ import org.spout.api.event.player.PlayerLoginEvent;
 import org.spout.api.event.server.BanChangeEvent.BanType;
 import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 import org.spout.api.event.storage.PlayerLoadEvent;
+import org.spout.api.geo.World;
 
 import org.spout.engine.SpoutServer;
 import org.spout.engine.entity.SpoutPlayer;
@@ -62,8 +65,18 @@ public class SpoutServerListener implements Listener {
 		final SpoutPlayer player = (SpoutPlayer) server.addPlayer(event.getPlayerName(), (SpoutSession<?>) event.getSession(), event.getViewDistance());
 
 		if (player != null) {
+			//load players
 			server.getEventManager().callEvent(new PlayerLoadEvent(player));
+			World defaultWorld = Spout.getEngine().getDefaultWorld();
+			//Connect the player and set their transform to the default world's spawn.
+			player.connect((SpoutSession<?>) event.getSession(), defaultWorld.getSpawnPoint());
+			//Spawn the player in the world
+			defaultWorld.spawnEntity(player);
+			//Set the player to the session
+			((SpoutSession<?>) event.getSession()).setPlayer(player);
+			//Initialize the session
 			event.getSession().getProtocol().initializeSession(event.getSession());
+			//Call PlayerJoinEvent
 			PlayerLoginEvent loginEvent = server.getEventManager().callEvent(new PlayerLoginEvent(player));
 			if (!loginEvent.isAllowed()) {
 				if (loginEvent.getMessage() != null) {
