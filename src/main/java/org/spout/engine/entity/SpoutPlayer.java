@@ -132,7 +132,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		}
 		sessionLive.set(null);
 		//save player data on disconnect, probably should do this periodically as well...
-		WorldFiles.savePlayerData(this);
+//		WorldFiles.savePlayerData(this);
 		return true;
 	}
 

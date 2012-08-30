@@ -46,12 +46,8 @@ import org.spout.api.Spout;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
-import org.spout.api.entity.Controller;
 import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.entity.PlayerSnapshot;
-import org.spout.api.entity.controller.PlayerController;
-import org.spout.api.entity.controller.type.ControllerRegistry;
-import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.generator.biome.EmptyBiomeManager;
@@ -108,59 +104,59 @@ public class WorldFiles {
 	private static final byte CHUNK_VERSION = 1;
 	private static final int COLUMN_VERSION = 4;
 	
-	public static void savePlayerData(List<SpoutPlayer> Players) {
-	for (SpoutPlayer player : Players) {
-		savePlayerData(player);
-		}
-	}
-	
-	public static void savePlayerData(SpoutPlayer player) {
-		File playerSave = new File(Spout.getEngine().getDataFolder().toString() + File.separator + "players" + File.separator + player.getName() + ".dat");
-		if (!playerSave.exists()) {
-			try {
-					playerSave.createNewFile();
-			} 
-		catch (IOException e) {
-			Spout.getLogger().log(Level.SEVERE, "Error creating player data for " + player.getName(), e);
-			}
-		}
-	    CompoundTag playerTag = saveEntity(new PlayerSnapshot(player));
-        NBTOutputStream os = null;
-        try {
-          os = new NBTOutputStream(new DataOutputStream(new FileOutputStream(playerSave)), false);
-          os.writeTag(playerTag);
-        } catch (IOException e) {
-          Spout.getLogger().log(Level.SEVERE, "Error saving player data for " + player.getName(), e);
-        } finally {
-          if (os != null)
-            try {
-              os.close();
-            }
-            catch (IOException ignore) {
-            }
-        }
-      }
-	
-	public static SpoutPlayer loadPlayerData(String name, SpoutSession<?> playerSession) {
-			File playerData = new File(Spout.getEngine().getDataFolder().toString() + File.separator + "players" + File.separator + name + ".dat");
-			SpoutPlayer player = null;
-			if (playerData.exists()) {
-				NBTInputStream is = null;
-				try {
-					is = new NBTInputStream(new DataInputStream(new FileInputStream(playerData)), false);
-					CompoundTag dataTag = (CompoundTag) is.readTag();
-					World world = Spout.getEngine().getWorld(dataTag.getName());
-					player = (SpoutPlayer)loadEntity(world, dataTag, name, playerSession);
-					is.close();
-				}
-				catch (Exception e) {
-					Spout.getLogger().log(Level.SEVERE, "Error loading player data for " + name, e);
-				}
-				return player;
-			}
-			// should never make it here, if it does it's null anyhow...
-			return null;
-	}
+//	public static void savePlayerData(List<SpoutPlayer> Players) {
+//	for (SpoutPlayer player : Players) {
+//		savePlayerData(player);
+//		}
+//	}
+//	
+//	public static void savePlayerData(SpoutPlayer player) {
+//		File playerSave = new File(Spout.getEngine().getDataFolder().toString() + File.separator + "players" + File.separator + player.getName() + ".dat");
+//		if (!playerSave.exists()) {
+//			try {
+//					playerSave.createNewFile();
+//			} 
+//		catch (IOException e) {
+//			Spout.getLogger().log(Level.SEVERE, "Error creating player data for " + player.getName(), e);
+//			}
+//		}
+//	    CompoundTag playerTag = saveEntity(new PlayerSnapshot(player));
+//        NBTOutputStream os = null;
+//        try {
+//          os = new NBTOutputStream(new DataOutputStream(new FileOutputStream(playerSave)), false);
+//          os.writeTag(playerTag);
+//        } catch (IOException e) {
+//          Spout.getLogger().log(Level.SEVERE, "Error saving player data for " + player.getName(), e);
+//        } finally {
+//          if (os != null)
+//            try {
+//              os.close();
+//            }
+//            catch (IOException ignore) {
+//            }
+//        }
+//      }
+//	
+//	public static SpoutPlayer loadPlayerData(String name, SpoutSession<?> playerSession) {
+//			File playerData = new File(Spout.getEngine().getDataFolder().toString() + File.separator + "players" + File.separator + name + ".dat");
+//			SpoutPlayer player = null;
+//			if (playerData.exists()) {
+//				NBTInputStream is = null;
+//				try {
+//					is = new NBTInputStream(new DataInputStream(new FileInputStream(playerData)), false);
+//					CompoundTag dataTag = (CompoundTag) is.readTag();
+//					World world = Spout.getEngine().getWorld(dataTag.getName());
+//					player = (SpoutPlayer)loadEntity(world, dataTag, name, playerSession);
+//					is.close();
+//				}
+//				catch (Exception e) {
+//					Spout.getLogger().log(Level.SEVERE, "Error loading player data for " + name, e);
+//				}
+//				return player;
+//			}
+//			// should never make it here, if it does it's null anyhow...
+//			return null;
+//	}
 	
 	public static void saveWorldData(SpoutWorld world) {
 		File worldData = new File(world.getDirectory(), "world.dat");
@@ -352,7 +348,7 @@ public class WorldFiles {
 		chunkTags.put(new ShortArrayTag("data", data));
 		chunkTags.put(new ByteArrayTag("skyLight", snapshot.getSkyLight()));
 		chunkTags.put(new ByteArrayTag("blockLight", snapshot.getBlockLight()));
-		chunkTags.put(new CompoundTag("entities", saveEntities(snapshot.getEntities())));
+//		chunkTags.put(new CompoundTag("entities", saveEntities(snapshot.getEntities())));
 		chunkTags.put(saveDynamicUpdates(blockUpdates));
 
 		byte[] biomes = snapshot.getBiomeManager().serialize();
@@ -439,8 +435,8 @@ public class WorldFiles {
 
 			chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), blocks, data, skyLight, blockLight, manager, extraDataMap);
 
-			CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("entities")), (CompoundMap) null, CompoundMap.class);
-			loadEntities(r, entityMap, dataForRegion.loadedEntities);
+//			CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("entities")), (CompoundMap) null, CompoundMap.class);
+//			loadEntities(r, entityMap, dataForRegion.loadedEntities);
 
 			List<? extends CompoundTag> updateList = checkerListCompoundTag.checkTag(map.get("dynamic_updates"), null);
 			loadDynamicUpdates(updateList, dataForRegion.loadedUpdates);
@@ -457,161 +453,161 @@ public class WorldFiles {
 		return chunk;
 	}
 
-	private static void loadEntities(SpoutRegion r, CompoundMap map, List<SpoutEntity> loadedEntities) {
-		if (r != null && map != null) {
-			for (Tag tag : map) {
-				SpoutEntity e = loadEntity(r, (CompoundTag) tag);
-				if (e != null) {
-					loadedEntities.add(e);
-				}
-			}
-		}
-	}
-
-	private static CompoundMap saveEntities(List<EntitySnapshot> entities) {
-		CompoundMap tagMap = new CompoundMap();
-
-		for (EntitySnapshot e : entities) {
-			Tag tag = saveEntity(e);
-			if (tag != null) {
-				tagMap.put(tag);
-			}
-		}
-
-		return tagMap;
-	}
-
-	private static SpoutEntity loadEntity(SpoutRegion r, CompoundTag tag) {
-		return loadEntity(r.getWorld(), tag, null, null); 
-	}
-	
-	private static SpoutEntity loadEntity(World w, CompoundTag tag, String Name, SpoutSession<?> playerSession) {
-		CompoundMap map = tag.getValue();
-
-		@SuppressWarnings("unused")
-		byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), (byte) 0);
-		String name = SafeCast.toString(NBTMapper.toTagValue(map.get("controller")), "");
-
-		ControllerType type = ControllerRegistry.get(name);
-		if (type == null) {
-			Spout.getEngine().getLogger().log(Level.SEVERE, "No controller type found matching: " + name);
-		} else if (type.canCreateController()) {
-
-			//Read entity
-			Float pX = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posX")), Float.MAX_VALUE);
-			Float pY = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posY")), Float.MAX_VALUE);
-			Float pZ = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posZ")), Float.MAX_VALUE);
-
-			if (pX == Float.MAX_VALUE || pY == Float.MAX_VALUE || pZ == Float.MAX_VALUE) {
-				return null;
-			}
-
-			float sX = SafeCast.toFloat(NBTMapper.toTagValue(map.get("scaleX")), 1.0F);
-			float sY = SafeCast.toFloat(NBTMapper.toTagValue(map.get("scaleY")), 1.0F);
-			float sZ = SafeCast.toFloat(NBTMapper.toTagValue(map.get("scaleZ")), 1.0F);
-
-			float qX = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatX")), 0.0F);
-			float qY = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatY")), 0.0F);
-			float qZ = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatZ")), 0.0F);
-			float qW = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatW")), 1.0F);
-
-			long msb = SafeCast.toLong(NBTMapper.toTagValue(map.get("UUID_msb")), new Random().nextLong());
-			long lsb = SafeCast.toLong(NBTMapper.toTagValue(map.get("UUID_lsb")), new Random().nextLong());
-			UUID uid = new UUID(msb, lsb);
-
-			int view = SafeCast.toInt(NBTMapper.toTagValue(map.get("view")), 0);
-			boolean observer = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("observer")), new ByteTag("", (byte) 0), ByteTag.class).getBooleanValue();
-
-			//Setup entity
-			Controller controller = type.createController();
-			try {
-				boolean controllerDataExists = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("controller_data_exists")), new ByteTag("", (byte) 0), ByteTag.class).getBooleanValue();
-
-				if (controllerDataExists) {
-					byte[] data = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("controller_data")), new byte[0]);
-					DatatableMap dataMap = ((DataMap) controller.getDataMap()).getRawMap();
-					dataMap.decompress(data);
-				}
-			} catch (Exception error) {
-				Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to load the controller for the type: " + type.getName(), error);
-				return null;
-			}
-
-			//Setup entity
-			Region r = w.getRegionFromBlock(Math.round(pX), Math.round(pY), Math.round(pZ), LoadOption.NO_LOAD);
-			if (r == null) {
-				// TODO - this should never happen - entities should be located in the chunk that was just loaded
-				Spout.getLogger().info("Attempted to load entity to unloaded region");
-				Thread.dumpStack();
-				return null;
-			}
-			Transform t = new Transform(new Point(r.getWorld(), pX, pY, pZ), new Quaternion(qX, qY, qZ, qW, false), new Vector3(sX, sY, sZ));
-			if (!(controller instanceof PlayerController)) {
-				SpoutEntity e = new SpoutEntity((SpoutEngine) Spout.getEngine(), t, controller, view, uid, false);
-				e.setObserver(observer);
-				return e;
-			}
-			else {
-				SpoutPlayer e = new SpoutPlayer(Name, t, playerSession, (SpoutEngine) Spout.getEngine(), view);
-				return e;
-			}
-		} else {
-			Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to create controller for the type: " + type.getName());
-		}
-
-		return null;
-	}
-
-	private static CompoundTag saveEntity(EntitySnapshot e) {
-		if (!e.isSavable() && (!(e instanceof PlayerSnapshot))) {
-			return null;
-		}
-		CompoundMap map = new CompoundMap();
-		map.put(new ByteTag("version", ENTITY_VERSION));
-		map.put(new StringTag("controller", e.getType().getName()));
-
-		//Write entity
-		Transform t = e.getTransform();
-		map.put(new FloatTag("posX",t.getPosition().getX()));
-		map.put(new FloatTag("posY", t.getPosition().getY()));
-		map.put(new FloatTag("posZ", t.getPosition().getZ()));
-
-		map.put(new FloatTag("scaleX", t.getScale().getX()));
-		map.put(new FloatTag("scaleY", t.getScale().getY()));
-		map.put(new FloatTag("scaleZ", t.getScale().getZ()));
-
-		map.put(new FloatTag("quatX", t.getRotation().getX()));
-		map.put(new FloatTag("quatY", t.getRotation().getY()));
-		map.put(new FloatTag("quatZ", t.getRotation().getZ()));
-		map.put(new FloatTag("quatW", t.getRotation().getW()));
-
-		map.put(new LongTag("UUID_msb", e.getUID().getMostSignificantBits()));
-		map.put(new LongTag("UUID_lsb", e.getUID().getLeastSignificantBits()));
-
-		map.put(new IntTag("view", e.getViewDistance()));
-		map.put(new ByteTag("observer", e.isObserver()));
-
-		//Write entity
-		try {
-			//Serialize data
-			DatatableMap dataMap = ((DataMap) e.getDataMap()).getRawMap();
-			if (!dataMap.isEmpty()) {
-				map.put(new ByteTag("controller_data_exists", true));
-				map.put(new ByteArrayTag("controller_data", dataMap.compress()));
-			} else {
-				map.put(new ByteTag("controller_data_exists", false));
-			}
-		} catch (Exception error) {
-			Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to write the controller information for the type: " + e.getType(), error);
-		}
-		CompoundTag tag = null;
-		if (e instanceof PlayerSnapshot) {
-			tag = new CompoundTag(e.getWorldName(), map);
-		} else {
-		tag = new CompoundTag("entity_" + e.getId(), map);
-		}
-		return tag;
-	}
+//	private static void loadEntities(SpoutRegion r, CompoundMap map, List<SpoutEntity> loadedEntities) {
+//		if (r != null && map != null) {
+//			for (Tag tag : map) {
+//				SpoutEntity e = loadEntity(r, (CompoundTag) tag);
+//				if (e != null) {
+//					loadedEntities.add(e);
+//				}
+//			}
+//		}
+//	}
+//
+//	private static CompoundMap saveEntities(List<EntitySnapshot> entities) {
+//		CompoundMap tagMap = new CompoundMap();
+//
+//		for (EntitySnapshot e : entities) {
+//			Tag tag = saveEntity(e);
+//			if (tag != null) {
+//				tagMap.put(tag);
+//			}
+//		}
+//
+//		return tagMap;
+//	}
+//
+//	private static SpoutEntity loadEntity(SpoutRegion r, CompoundTag tag) {
+//		return loadEntity(r.getWorld(), tag, null, null); 
+//	}
+//	
+//	private static SpoutEntity loadEntity(World w, CompoundTag tag, String Name, SpoutSession<?> playerSession) {
+//		CompoundMap map = tag.getValue();
+//
+//		@SuppressWarnings("unused")
+//		byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), (byte) 0);
+//		String name = SafeCast.toString(NBTMapper.toTagValue(map.get("controller")), "");
+//
+//		ControllerType type = ControllerRegistry.get(name);
+//		if (type == null) {
+//			Spout.getEngine().getLogger().log(Level.SEVERE, "No controller type found matching: " + name);
+//		} else if (type.canCreateController()) {
+//
+//			//Read entity
+//			Float pX = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posX")), Float.MAX_VALUE);
+//			Float pY = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posY")), Float.MAX_VALUE);
+//			Float pZ = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posZ")), Float.MAX_VALUE);
+//
+//			if (pX == Float.MAX_VALUE || pY == Float.MAX_VALUE || pZ == Float.MAX_VALUE) {
+//				return null;
+//			}
+//
+//			float sX = SafeCast.toFloat(NBTMapper.toTagValue(map.get("scaleX")), 1.0F);
+//			float sY = SafeCast.toFloat(NBTMapper.toTagValue(map.get("scaleY")), 1.0F);
+//			float sZ = SafeCast.toFloat(NBTMapper.toTagValue(map.get("scaleZ")), 1.0F);
+//
+//			float qX = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatX")), 0.0F);
+//			float qY = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatY")), 0.0F);
+//			float qZ = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatZ")), 0.0F);
+//			float qW = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatW")), 1.0F);
+//
+//			long msb = SafeCast.toLong(NBTMapper.toTagValue(map.get("UUID_msb")), new Random().nextLong());
+//			long lsb = SafeCast.toLong(NBTMapper.toTagValue(map.get("UUID_lsb")), new Random().nextLong());
+//			UUID uid = new UUID(msb, lsb);
+//
+//			int view = SafeCast.toInt(NBTMapper.toTagValue(map.get("view")), 0);
+//			boolean observer = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("observer")), new ByteTag("", (byte) 0), ByteTag.class).getBooleanValue();
+//
+//			//Setup entity
+//			Controller controller = type.createController();
+//			try {
+//				boolean controllerDataExists = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("controller_data_exists")), new ByteTag("", (byte) 0), ByteTag.class).getBooleanValue();
+//
+//				if (controllerDataExists) {
+//					byte[] data = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("controller_data")), new byte[0]);
+//					DatatableMap dataMap = ((DataMap) controller.getDataMap()).getRawMap();
+//					dataMap.decompress(data);
+//				}
+//			} catch (Exception error) {
+//				Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to load the controller for the type: " + type.getName(), error);
+//				return null;
+//			}
+//
+//			//Setup entity
+//			Region r = w.getRegionFromBlock(Math.round(pX), Math.round(pY), Math.round(pZ), LoadOption.NO_LOAD);
+//			if (r == null) {
+//				// TODO - this should never happen - entities should be located in the chunk that was just loaded
+//				Spout.getLogger().info("Attempted to load entity to unloaded region");
+//				Thread.dumpStack();
+//				return null;
+//			}
+//			Transform t = new Transform(new Point(r.getWorld(), pX, pY, pZ), new Quaternion(qX, qY, qZ, qW, false), new Vector3(sX, sY, sZ));
+//			if (!(controller instanceof PlayerController)) {
+//				SpoutEntity e = new SpoutEntity((SpoutEngine) Spout.getEngine(), t, controller, view, uid, false);
+//				e.setObserver(observer);
+//				return e;
+//			}
+//			else {
+//				SpoutPlayer e = new SpoutPlayer(Name, t, playerSession, (SpoutEngine) Spout.getEngine(), view);
+//				return e;
+//			}
+//		} else {
+//			Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to create controller for the type: " + type.getName());
+//		}
+//
+//		return null;
+//	}
+//
+//	private static CompoundTag saveEntity(EntitySnapshot e) {
+//		if (!e.isSavable() && (!(e instanceof PlayerSnapshot))) {
+//			return null;
+//		}
+//		CompoundMap map = new CompoundMap();
+//		map.put(new ByteTag("version", ENTITY_VERSION));
+//		map.put(new StringTag("controller", e.getType().getName()));
+//
+//		//Write entity
+//		Transform t = e.getTransform();
+//		map.put(new FloatTag("posX",t.getPosition().getX()));
+//		map.put(new FloatTag("posY", t.getPosition().getY()));
+//		map.put(new FloatTag("posZ", t.getPosition().getZ()));
+//
+//		map.put(new FloatTag("scaleX", t.getScale().getX()));
+//		map.put(new FloatTag("scaleY", t.getScale().getY()));
+//		map.put(new FloatTag("scaleZ", t.getScale().getZ()));
+//
+//		map.put(new FloatTag("quatX", t.getRotation().getX()));
+//		map.put(new FloatTag("quatY", t.getRotation().getY()));
+//		map.put(new FloatTag("quatZ", t.getRotation().getZ()));
+//		map.put(new FloatTag("quatW", t.getRotation().getW()));
+//
+//		map.put(new LongTag("UUID_msb", e.getUID().getMostSignificantBits()));
+//		map.put(new LongTag("UUID_lsb", e.getUID().getLeastSignificantBits()));
+//
+//		map.put(new IntTag("view", e.getViewDistance()));
+//		map.put(new ByteTag("observer", e.isObserver()));
+//
+//		//Write entity
+//		try {
+//			//Serialize data
+//			DatatableMap dataMap = ((DataMap) e.getDataMap()).getRawMap();
+//			if (!dataMap.isEmpty()) {
+//				map.put(new ByteTag("controller_data_exists", true));
+//				map.put(new ByteArrayTag("controller_data", dataMap.compress()));
+//			} else {
+//				map.put(new ByteTag("controller_data_exists", false));
+//			}
+//		} catch (Exception error) {
+//			Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to write the controller information for the type: " + e.getType(), error);
+//		}
+//		CompoundTag tag = null;
+//		if (e instanceof PlayerSnapshot) {
+//			tag = new CompoundTag(e.getWorldName(), map);
+//		} else {
+//		tag = new CompoundTag("entity_" + e.getId(), map);
+//		}
+//		return tag;
+//	}
 
 	private static ListTag<CompoundTag> saveDynamicUpdates(List<DynamicBlockUpdate> updates) {
 		List<CompoundTag> list = new ArrayList<CompoundTag>(updates.size());
