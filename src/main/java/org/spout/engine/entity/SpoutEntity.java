@@ -33,12 +33,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-<<<<<<< HEAD
-import org.spout.api.component.Component;
-import org.spout.api.component.components.DatatableComponent;
-=======
 import org.spout.api.component.BaseComponentHolder;
->>>>>>> Entity package compiles (but SpoutEntity needs code to work).
 import org.spout.api.component.components.EntityComponent;
 import org.spout.api.component.components.NetworkComponent;
 import org.spout.api.component.components.TransformComponent;
@@ -138,11 +133,6 @@ public class SpoutEntity extends BaseComponentHolder<EntityComponent> implements
 		if (canTick()) {
 			onTick(dt);
 		}
-	}
-
-	@Override
-	public TransformComponent getTransform() {
-		return transform;
 	}
 
 	@Override
@@ -328,27 +318,6 @@ public class SpoutEntity extends BaseComponentHolder<EntityComponent> implements
 	}
 
 	@Override
-<<<<<<< HEAD
-	public boolean removeComponent(Class<? extends Component> component) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean hasComponent(Class<? extends Component> component) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public DatatableComponent getDatatable() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-=======
->>>>>>> Entity package compiles (but SpoutEntity needs code to work).
 	@DelayedWrite
 	public void remove() {
 		removeLive.getAndSet(true);
@@ -376,22 +345,9 @@ public class SpoutEntity extends BaseComponentHolder<EntityComponent> implements
 	public NetworkComponent getNetworkComponent() {
 		return network;
 	}
-
+	
 	@Override
-	public NetworkComponent getNetworkComponent() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public EntityComponent addComponent(Component component) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public EntityComponent getComponent(Class<? extends Component> component) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public TransformComponent getTransform() {
+		return transform;
+	}	
 }
