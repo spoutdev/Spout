@@ -26,6 +26,7 @@
  */
 package org.spout.api.component;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -84,7 +85,7 @@ public class BaseComponentHolder implements ComponentHolder {
 
 	@Override
 	public Collection<Component> getComponents() {
-		return components.values();
+		return new ArrayList<Component>(components.values());
 	}
 	
 	@Override

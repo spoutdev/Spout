@@ -187,7 +187,6 @@ public abstract class NetworkSynchronizer {
 	public void onRemoved() {
 		TickStage.checkStage(TickStage.FINALIZE);
 		removed = true;
-		player.remove();
 		for (Point p : initializedChunks) {
 			removeObserver(p);
 		}
