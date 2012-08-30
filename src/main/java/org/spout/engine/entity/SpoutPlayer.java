@@ -137,20 +137,17 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	}
 
 	@DelayedWrite
-	public boolean connect(SpoutSession<?> session, Transform newPosition) {
+	public boolean connect(SpoutSession<?> session, Transform newTransform) {
 		if (!onlineLive.compareAndSet(false, true)) {
 			// player was already online
 			return false;
 		}
-
-		if (newPosition != null) {
-			getTransform().setTransform(newPosition);
+		//Disallow null transforms or transforms with null worlds
+		if (newTransform == null || newTransform.getPosition().getWorld() == null) {
+			return false;
 		}
-		final Transform transform = getTransform().getTransform().copy();
-		if (newPosition != null && transform != null && !this.isSpawned()) {
-			setupInitialChunk(transform);
-		}
-
+		setupInitialChunk(newTransform);
+		getTransform().setTransform(newTransform);
 		sessionLive.set(session);
 		copySnapshot();
 		justSpawned = true;
