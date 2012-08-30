@@ -43,12 +43,12 @@ public abstract class EntityComponent extends BaseComponent {
 	@Override
 	public boolean attachTo(ComponentHolder holder) {
 		if (holder instanceof Entity){
-			super.attachTo(holder);
-			return true;
+			return super.attachTo(holder);
 		} else {
 			return false;
 		}
 	}
+
 	/**
 	 * Called when the parent entity is spawned into the world.
 	 */
