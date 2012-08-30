@@ -38,10 +38,10 @@ public class BaseComponentHolder implements ComponentHolder {
 	public BaseComponentHolder() {
 		addComponent(datatable);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends Component> T addComponent(Component component) {
+	public <T extends Component> T addComponent(T component) {
 		if (component.attachTo(this)) {
 			Class<? extends Component> clazz = component.getClass();
 			if (hasComponent(clazz)) {
@@ -67,7 +67,7 @@ public class BaseComponentHolder implements ComponentHolder {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends Component> T getComponent(Class<? extends Component> aClass) {
+	public <T extends Component> T getComponent(Class<T> aClass) {
 		for(Class<? extends Component> c : components.keySet()){
 			if(aClass.isAssignableFrom(c)) return (T) components.get(c);
 		}

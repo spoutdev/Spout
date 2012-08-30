@@ -40,7 +40,7 @@ public interface ComponentHolder {
 	 * @param component the component to be added
 	 * @return The component created, or the one already attached
 	 */
-	public <T extends Component> T addComponent(Component component);
+	public <T extends Component> T addComponent(T component);
 
 	/**
 	 * Removes a component from the list
@@ -54,7 +54,7 @@ public interface ComponentHolder {
 	 * @param component the type of component to get
 	 * @return The component instance, or null if it doesn't exist
 	 */
-	public <T extends Component> T getComponent(Class<? extends Component> component);
+	public <T extends Component> T getComponent(Class<T> component);
 
 	/**
 	 * Returns true if a component exists that is assignable from the given class.
