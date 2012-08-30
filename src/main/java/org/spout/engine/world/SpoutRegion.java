@@ -46,12 +46,10 @@ import gnu.trove.iterator.TIntIterator;
 
 import org.spout.api.Source;
 import org.spout.api.Spout;
+import org.spout.api.component.components.BlockComponent;
 import org.spout.api.datatable.GenericDatatableMap;
-import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
-import org.spout.api.entity.controller.BlockController;
-import org.spout.api.entity.controller.PlayerController;
 import org.spout.api.event.chunk.ChunkLoadEvent;
 import org.spout.api.event.chunk.ChunkPopulateEvent;
 import org.spout.api.event.chunk.ChunkUnloadEvent;
@@ -287,7 +285,7 @@ public class SpoutRegion extends Region {
 				numberActiveChunks.incrementAndGet();
 				if (dataForRegion != null) {
 					for (SpoutEntity entity : dataForRegion.loadedEntities) {
-						entity.setupInitialChunk(entity.getTransform());
+						entity.setupInitialChunk(entity.getTransform().getTransform());
 						addEntity(entity);
 					}
 					dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);
@@ -585,7 +583,7 @@ public class SpoutRegion extends Region {
 						//Try and determine if we should tick this entity
 						//If the entity is not important (not an observer)
 						//And the entity is not visible to players, don't tick it
-						if (visibleToPlayers || (ent.getController() != null && isImportant(ent.getController()))) {
+						if (visibleToPlayers) {
 							ent.tick(dt);
 						}
 					} catch (Exception e) {
@@ -697,8 +695,7 @@ public class SpoutRegion extends Region {
 		entityManager.finalizeRun();
 	}
 
-	private void syncChunkToPlayers(SpoutChunk chunk, Entity entity) {
-		SpoutPlayer player = (SpoutPlayer) entity.getController().getParent();
+	private void syncChunkToPlayers(SpoutChunk chunk, Player player) {
 		if (player.isOnline()) {
 			NetworkSynchronizer synchronizer = player.getNetworkSynchronizer();
 			if (!chunk.isDirtyOverflow() && !chunk.isLightDirty()) {
@@ -755,7 +752,7 @@ public class SpoutRegion extends Region {
 			}
 			if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
 				spoutChunk.setRenderDirty();
-				for (Entity entity : getPlayers()) {
+				for (Player entity : getPlayers()) {
 					syncChunkToPlayers(spoutChunk, entity);
 				}
 				processChunkUpdatedEvent(spoutChunk);
@@ -878,11 +875,6 @@ public class SpoutRegion extends Region {
 
 	public int getSequence() {
 		return updateSequence;
-	}
-
-	@Override
-	public List<Entity> getAll(Class<? extends Controller> type) {
-		return Collections.unmodifiableList(new ArrayList<Entity>(entityManager.getAll(type)));
 	}
 
 	@Override
@@ -1037,27 +1029,26 @@ public class SpoutRegion extends Region {
 	}
 
 	@Override
-	public void setBlockController(int x, int y, int z, BlockController controller) {
+	public void setBlockComponent(int x, int y, int z, BlockComponent component) {
 		Vector3 pos = new Vector3(x, y, z);
 		Entity entity = this.entityManager.getBlockEntities().get(pos);
 		if (entity != null) {
-			if (controller != null) {
-				//hotswap
-				entity.setController(controller);
+			if (component != null) {
+				entity.addComponent(component);
 			} else {
-				//remove old
 				entity.remove();
 			}
-		} else if (controller != null) {
-			//spawn new entity with entity
-			this.getWorld().createAndSpawnEntity(new Point(pos, getWorld()), controller);
+		} else {
+			if (component != null) {
+				this.getWorld().createAndSpawnEntity(new Point(pos, getWorld())).addComponent(component);
+			}
 		}
 	}
 
 	@Override
-	public BlockController getBlockController(int x, int y, int z) {
+	public BlockComponent getBlockComponent(int x, int y, int z) {
 		Entity entity = this.entityManager.getBlockEntities().get(new Vector3(x, y, z));
-		return entity == null ? null : (BlockController) entity.getController();
+		return (BlockComponent) (entity == null ? null : entity.getComponent(BlockComponent.class));
 	}
 
 	@Override
@@ -1221,13 +1212,6 @@ public class SpoutRegion extends Region {
 
 	public void addSnapshotFuture(SpoutChunkSnapshotFuture future) {
 		snapshotQueue.add(future);
-	}
-
-	private boolean isImportant(Controller controller) {
-		if (controller.getParent() != null) {
-			return controller.getParent().isObserver() || controller.isImportant();
-		}
-		return controller instanceof PlayerController;
 	}
 
 	public void setPhysicsActive(SpoutChunk chunk, boolean local) {
