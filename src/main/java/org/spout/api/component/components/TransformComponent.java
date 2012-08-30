@@ -35,7 +35,6 @@ import org.spout.api.math.Vector3;
 public class TransformComponent extends EntityComponent {
 	private final Transform transform;
 	private final Transform transformLive;
-	
 	private boolean isDirty;
 	
 	public TransformComponent() {

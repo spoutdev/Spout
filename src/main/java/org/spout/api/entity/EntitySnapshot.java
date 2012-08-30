@@ -45,6 +45,7 @@ public class EntitySnapshot {
 	private final int viewDistance;
 	private final boolean observer;
 	private final boolean savable;
+	
 	public EntitySnapshot(Entity e) {
 		if (e == null) {
 			throw new IllegalArgumentException("Can not take a snapshot of a null entity");
@@ -55,7 +56,7 @@ public class EntitySnapshot {
 		this.entity = new WeakReference<Entity>(e);
 		this.entityId = e.getId();
 		this.uniqueId = e.getUID();
-		this.location = e.getTransform().getTransform();
+		this.location = e.getTransform().getTransformLive();
 		this.worldName = e.getWorld().getName();
 		this.worldId = e.getWorld().getUID();
 		this.viewDistance = e.getViewDistance();
