@@ -1105,17 +1105,21 @@ public class SpoutWorld extends AsyncManager implements World {
 	public WeakReference<World> getWeakReference() {
 		return selfReference;
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	@Override
-	public WorldComponent addComponent(Component component) {
-		Class<? extends Component> clazz = component.getClass();
-		if (hasComponent(clazz)) {
-			return (WorldComponent) getComponent(clazz);
+	public <T extends Component> T addComponent(Component component) {
+		if (component.attachTo(this)) {
+			Class<? extends Component> clazz = component.getClass();
+			if (hasComponent(clazz)) {
+				return (T) getComponent(clazz);
+			}
+			components.put(clazz, component);
+			component.onAttached();
+			return (T) component;
+		} else {
+			return null;
 		}
-		components.put(clazz, component);
-		component.attachTo(this);
-		component.onAttached();
-		return (WorldComponent) component;
 	}
 
 	@Override
@@ -1128,10 +1132,11 @@ public class SpoutWorld extends AsyncManager implements World {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public WorldComponent getComponent(Class<? extends Component> aClass) {
+	public <T extends Component> T getComponent(Class<? extends Component> aClass) {
 		for(Class<? extends Component> c : components.keySet()){
-			if(aClass.isAssignableFrom(c)) return (WorldComponent) components.get(c);
+			if(aClass.isAssignableFrom(c)) return (T) components.get(c);
 		}
 		return null;
 	}

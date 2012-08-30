@@ -58,7 +58,7 @@ import org.spout.engine.util.thread.snapshotable.Snapshotable;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 
-public class SpoutEntity extends BaseComponentHolder<EntityComponent> implements Entity, Snapshotable {
+public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshotable {
 	public static final int NOTSPAWNEDID = -1;
 	//Live
 	private final AtomicReference<EntityManager> entityManagerLive;
