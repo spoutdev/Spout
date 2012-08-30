@@ -776,7 +776,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	@LiveRead
 	@Threadsafe
 	public List<Player> getNearbyPlayers(Entity entity, int range) {
-		return getNearbyPlayers(entity.getPosition(), entity, range);
+		return getNearbyPlayers(entity.getTransform().getPosition(), entity, range);
 	}
 
 	/**
@@ -795,7 +795,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 		for (Player plr : getPlayersNearRegion(position, range)) {
 			if (plr != ignore && plr != null) {
-				double distance = MathHelper.distanceSquared(position, plr.getPosition());
+				double distance = MathHelper.distanceSquared(position, plr.getTransform().getPosition());
 				if (distance < RANGE_SQUARED) {
 					foundPlayers.add(plr);
 				}
@@ -846,7 +846,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 		for (Player plr : getPlayersNearRegion(position, range)) {
 			if (plr != ignore && plr != null) {
-				double distance = MathHelper.distanceSquared(position, plr.getPosition());
+				double distance = MathHelper.distanceSquared(position, plr.getTransform().getPosition());
 				if (distance < bestDistance) {
 					bestDistance = distance;
 					best = plr;
@@ -876,7 +876,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	@LiveRead
 	@Threadsafe
 	public Player getNearestPlayer(Entity entity, int range) {
-		return getNearestPlayer(entity.getPosition(), entity, range);
+		return getNearestPlayer(entity.getTransform().getPosition(), entity, range);
 	}
 
 	public List<CollisionVolume> getCollidingObject(CollisionModel model) {

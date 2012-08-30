@@ -241,16 +241,16 @@ public class SpoutClient extends SpoutEngine implements Client {
 		for (Flags f : activePlayer.input().getFlagSet()) {
 			switch(f) {
 				case FORWARD:
-					activePlayer.setPosition(activePlayer.getPosition().add(activePlayer.getTransform().forwardVector()));
+					activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().forwardVector()));
 					break;
 				case BACKWARD:
-					activePlayer.setPosition(activePlayer.getPosition().subtract(activePlayer.getTransform().forwardVector()));
+					activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().forwardVector()));
 					break;
 				case LEFT:
-					activePlayer.setPosition(activePlayer.getPosition().add(activePlayer.getTransform().rightVector()));
+					activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().rightVector()));
 					break;
 				case RIGHT:
-					activePlayer.setPosition(activePlayer.getPosition().subtract(activePlayer.getTransform().rightVector()));
+					activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().rightVector()));
 					break;
 				case CROUCH:
 				case FIRE_1:
