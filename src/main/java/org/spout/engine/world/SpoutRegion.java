@@ -366,7 +366,7 @@ public class SpoutRegion extends Region {
 			int num = numberActiveChunks.decrementAndGet();
 
 			for (Entity e : currentChunk.getLiveEntities()) {
-				e.kill();
+				e.remove();
 			}
 
 			currentChunk.setUnloaded();
@@ -1046,7 +1046,7 @@ public class SpoutRegion extends Region {
 				entity.setController(controller);
 			} else {
 				//remove old
-				entity.kill();
+				entity.remove();
 			}
 		} else if (controller != null) {
 			//spawn new entity with entity

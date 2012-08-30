@@ -144,15 +144,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		return true;
 	}
 
-	@Override
-	public boolean kill()  {
-		boolean success = super.kill();
-		if (success) {
-			((SpoutWorld) getWorld()).removePlayer(this);
-		}
-		return success;
-	}
-
 	@DelayedWrite
 	public boolean connect(SpoutSession<?> session, Transform newPosition) {
 		if (!onlineLive.compareAndSet(false, true)) {
@@ -161,9 +152,9 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		}
 
 		if (newPosition != null) {
-			setTransform(newPosition);
+			getTransform().setTransform(newPosition);
 		}
-		final Transform transform = getTransform();
+		final Transform transform = getTransform().copy();
 		if (newPosition != null && transform != null && !this.isSpawned()) {
 			setupInitialChunk(transform);
 		}
@@ -334,34 +325,17 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	}
 
 	@Override
-	public void setController(Controller controller, Source source) {
-		if (controller == null) {
-			return;
-		}
-		if (!(controller instanceof PlayerController)) {
-			throw new InvalidControllerException(controller.getType() + " is not a valid controller for a Player entity!");
-		}
-		super.setController(controller,  source);
-	}
-
-	@Override
 	public Locale getPreferredLocale() {
 		return preferredLocale;
 	}
 
 	@Override
 	protected void removeObserver() {
-		getNetworkSynchronizer().onDeath();
+		getNetworkSynchronizer().onRemoved();
 	}
 	
 	@Override
 	protected void updateObserver() {
 		return;
-	}
-	@Override
-	public void sendMessage(SendMode sendMode, Protocol protocol, Message... messages) {
-		if (sendMode.canSendToSelf() && this.getSession().getProtocol().equals(protocol)) {
-			getSession().sendAll(false, messages);
-		}
 	}
 }

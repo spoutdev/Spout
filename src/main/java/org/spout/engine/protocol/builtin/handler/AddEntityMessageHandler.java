@@ -48,14 +48,10 @@ public class AddEntityMessageHandler extends MessageHandler<AddEntityMessage> {
 		if (message.getEntityId() == session.getDataMap().get(SpoutProtocol.PLAYER_ENTITY_ID)) {
 			newEntity = player;
 		} else {
-			newEntity = session.getEngine().getDefaultWorld().createEntity(message.getTransform().getPosition(), null);
+			newEntity = session.getEngine().getDefaultWorld().createEntity(message.getTransform().getPosition());
 		}
-		Controller controller = message.getType().createController();
-		if (controller == null) {
-			throw new IllegalArgumentException("Error spawning entity, controller of type " + message.getType().getName() + " is null!");
-		}
-		newEntity.setController(controller);
-		newEntity.setTransform(message.getTransform());
+
+		newEntity.getTransform().setTransform(message.getTransform());
 		//newEntity.setId(message.getEntityId()); // TODO: Allow providing an entity ID to use
 		((Client) session.getEngine()).getDefaultWorld().spawnEntity(newEntity);
 

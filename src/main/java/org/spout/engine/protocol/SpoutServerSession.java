@@ -126,7 +126,7 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 			//If its null or can't be get, just ignore it
 			//If disconnect fails, we just ignore it for now.
 			try {
-				player.kill();
+				player.remove();
 				player.disconnect();
 			} catch (Exception ignore) {
 			}

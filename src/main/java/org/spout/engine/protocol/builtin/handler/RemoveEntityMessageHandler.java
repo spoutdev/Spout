@@ -40,7 +40,7 @@ public class RemoveEntityMessageHandler extends MessageHandler<RemoveEntityMessa
 
 		Entity entity = session.getPlayer().getWorld().getEntity(message.getEntityId());
 		if (entity != null) {
-			entity.kill();
+			entity.remove();
 		}
 	}
 }

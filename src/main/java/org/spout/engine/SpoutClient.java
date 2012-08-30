@@ -421,7 +421,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		//worldRenderer.render();
 
 		Vector3 currentPlayerPos = new Vector3(activePlayer.getTransform().getPosition().getBlockX(), activePlayer.getTransform().getPosition().getBlockY(), activePlayer.getTransform().getPosition().getBlockZ());
-		activeCamera = new CameraComponent(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(currentPlayerPos, currentPlayerPos.add(activePlayer.getTransform().copy().forwardVector().normalize().add(5, 5, 5)), Vector3.UP));
+		activeCamera = new CameraComponent(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(currentPlayerPos, currentPlayerPos.add(activePlayer.getTransform().getTransform().forwardVector().normalize().add(5, 5, 5)), Vector3.UP));
 		activeCamera.getFrustum().update(activeCamera.getProjection(), activeCamera.getView());
 		Transform loc = new Transform(new Point(null, 0f, 0f, 0f), Quaternion.IDENTITY, Vector3.ONE);
 		mat.getShader().setUniform("View", activeCamera.getView());
