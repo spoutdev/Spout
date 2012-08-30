@@ -71,7 +71,7 @@ public abstract class EntityComponent extends BaseComponent {
 	 * Returns the transform component attached to the parent entity. This component always exists.
 	 * @return The transform component
 	 */
-	public TransformComponent getTransform() {
+	public TransformComponent getTransformComponent() {
 		return getHolder().getTransform();
 	}
 }

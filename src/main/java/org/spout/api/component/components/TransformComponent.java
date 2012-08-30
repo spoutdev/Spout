@@ -50,16 +50,12 @@ public class TransformComponent extends EntityComponent {
 			isDirty = false;
 		}
 	}
-	
-	public void setTransform(Transform transform){
-		transform.set(transform);
-	}
 
-	public void setTransformLive(Transform transform) {
+	public void setTransform(Transform transform) {
 		transformLive.set(transform);
 	}
 	
-	public Transform getTransformSnapshot() {
+	public Transform getTransform() {
 		return transform.copy();
 	}
 	
@@ -236,5 +232,9 @@ public class TransformComponent extends EntityComponent {
 	
 	private void setAxisAngles(float pitch, float yaw, float roll) {
 		setRotation(MathHelper.rotation(pitch, yaw, roll));
+	}
+
+	protected void copySnapshot() {
+		this.transform.set(transformLive);
 	}
 }
