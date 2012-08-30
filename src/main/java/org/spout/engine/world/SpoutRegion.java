@@ -1035,7 +1035,7 @@ public class SpoutRegion extends Region {
 			}
 		} else {
 			if (component != null) {
-				this.getWorld().createAndSpawnEntity(new Point(pos, getWorld()), LoadOption.NO_LOAD).addComponent(component);
+				this.getWorld().createAndSpawnEntity(new Point(pos, getWorld()), null, LoadOption.NO_LOAD).addComponent(component);
 			}
 		}
 	}

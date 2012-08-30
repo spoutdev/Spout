@@ -53,6 +53,7 @@ import org.spout.api.component.components.DatatableComponent;
 import org.spout.api.component.components.WorldComponent;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.EntityType;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.event.block.CuboidChangeEvent;
@@ -514,8 +515,10 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public Entity createEntity(Point point) {
-		return new SpoutEntity(point);
+	public Entity createEntity(Point point, EntityType type) {
+		SpoutEntity entity = new SpoutEntity(point);
+		entity.applyType(type);
+		return entity;
 	}
 
 	/**
@@ -542,25 +545,25 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public Entity createAndSpawnEntity(Point point, LoadOption option) {
+	public Entity createAndSpawnEntity(Point point, EntityType type, LoadOption option) {
 		getRegionFromBlock(point, option);
-		Entity e = createEntity(point);
+		Entity e = createEntity(point, type);
 		spawnEntity(e);
 		return e;
 	}
 
 	@Override
-	public Entity[] createAndSpawnEntity(Point[] points, LoadOption option) {
+	public Entity[] createAndSpawnEntity(Point[] points, EntityType type, LoadOption option) {
 		Entity[] entities = new Entity[points.length];
 		for (int i = 0; i < points.length; i++) {
-			entities[i] = createAndSpawnEntity(points[i], option);
+			entities[i] = createAndSpawnEntity(points[i], type, option);
 		}
 		return entities;
 	}
 
 	@Override
-	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, LoadOption option) {
-		return createAndSpawnEntity(arrangement.getArrangement(), option);
+	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, EntityType type, LoadOption option) {
+		return createAndSpawnEntity(arrangement.getArrangement(), type, option);
 	}
 
 	@Override

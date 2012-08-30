@@ -39,6 +39,7 @@ import org.spout.api.component.components.EntityComponent;
 import org.spout.api.component.components.NetworkComponent;
 import org.spout.api.component.components.TransformComponent;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.EntityType;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -337,5 +338,15 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	@Override
 	public TransformComponent getTransform() {
 		return transform;
+	}
+
+	@Override
+	public void applyType(EntityType type) {
+		if (type == null) {
+			return;
+		}
+		for (Component component : type.getComponents()) {
+			addComponent(component);
+		}
 	}	
 }

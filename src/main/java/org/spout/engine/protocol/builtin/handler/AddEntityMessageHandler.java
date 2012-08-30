@@ -47,7 +47,7 @@ public class AddEntityMessageHandler extends MessageHandler<AddEntityMessage> {
 		if (message.getEntityId() == session.getDataMap().get(SpoutProtocol.PLAYER_ENTITY_ID)) {
 			newEntity = player;
 		} else {
-			newEntity = session.getEngine().getDefaultWorld().createEntity(message.getTransform().getPosition());
+			newEntity = session.getEngine().getDefaultWorld().createEntity(message.getTransform().getPosition(), null);
 		}
 
 		newEntity.getTransform().setTransform(message.getTransform());
