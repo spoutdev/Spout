@@ -41,7 +41,7 @@ import org.spout.api.util.Named;
  * Represents a user group as a permissions subject. This allows for checking group inheritance, group permissions, etc.
  *
  */
-public class PermissionsGroup implements PermissionsSubject, DataSubject, Named {
+public class PermissionsGroup implements PermissionsSubject, DataSubject {
 	private EventManager manager;
 	private String name;
 

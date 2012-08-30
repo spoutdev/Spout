@@ -87,51 +87,6 @@ public interface Engine extends Named {
 	public String getVersion();
 
 	/**
-	 * Returns all player names that have ever played on this Game, whether they are online or not.
-	 *
-	 * @return all the player names
-	 */
-	public List<String> getAllPlayers();
-
-	/**
-	 * Gets all players currently online
-	 *
-	 * @return array of all active players
-	 */
-	public Player[] getOnlinePlayers();
-
-	/**
-	 * Gets the maximum number of players this game can host, or -1 if infinite
-	 *
-	 * @return max players
-	 */
-	public int getMaxPlayers();
-
-	/**
-	 * Broadcasts the given message to all players
-	 *
-	 * The implementation of broadcast is identical to iterating over
-	 * {@link #getOnlinePlayers()} and invoking {@link Player#sendMessage(Object...)} for
-	 * each player.
-	 *
-	 * @param message to send
-	 */
-	public void broadcastMessage(Object... message);
-
-	/**
-	 * Broadcasts the given single-string message to all players.
-	 * Should be implemented as <code>broadcastMessage(new Object[] {message})</code>
-	 * This method is purely a workaround for the way Java chooses which method to call
-	 * in ambiguous situations, which would result in calls with a single string intended for
-	 * {@link #broadcastMessage(Object...)} having their string argument passed to
-	 * {@link #broadcastMessage(String, Object...)} as the permission
-	 *
- 	 * @see #broadcastMessage(Object...)
-	 * @param message The single-string message
-	 */
-	public void broadcastMessage(String message);
-
-	/**
 	 * Returns a Set of all permissions subjects with the provided node. Plugins wishing
 	 * to modify the result of this event should listen to the {@link org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent} event.
 	 *
@@ -139,17 +94,6 @@ public interface Engine extends Named {
 	 * @return Every {@link PermissionsSubject} with the specified node
 	 */
 	public Set<PermissionsSubject> getAllWithNode(String permission);
-
-	/**
-	 * Broadcasts the given message to all players
-	 *
-	 * The implementation of broadcast is identical to calling a {@link org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent}
-	 * event, iterating over each element in getReceivers, invoking {@link CommandSource#sendMessage(Object...)} for
-	 * each CommandSource.
-	 *
-	 * @param message to send
-	 */
-	public void broadcastMessage(String permission, Object... message);
 
 	/**
 	 * Gets singleton instance of the plugin manager, used to interact with
@@ -217,35 +161,6 @@ public interface Engine extends Named {
 	 */
 	@SnapshotRead
 	public Entity getEntity(UUID uid);
-
-	/**
-	 * Gets the {@link Player} by the given username. <br/>
-	 * <br/>
-	 * If searching for the exact name, this method will iterate and check for
-	 * exact matches. <br/>
-	 * <br/>
-	 * Otherwise, this method will iterate over over all players and find the closest match
-	 * to the given name, by comparing the length of other player names that
-	 * start with the given parameter. <br/>
-	 * <br/>
-	 * This method is case-insensitive.
-	 *
-	 * @param name to look up
-	 * @param exact Whether to use exact lookup
-	 * @return Player if found, else null
-	 */
-	public Player getPlayer(String name, boolean exact);
-
-	/**
-	 * Matches the given username to all players that contain it in their name.
-	 *
-	 * If no matches are found, an empty collection will be returned. The return
-	 * will always be non-null.
-	 *
-	 * @param name to match
-	 * @return Collection of all possible matches
-	 */
-	public Collection<Player> matchPlayer(String name);
 
 	/**
 	 * Searches for an actively loaded world that exactly matches the given

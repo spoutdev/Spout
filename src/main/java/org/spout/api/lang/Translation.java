@@ -28,11 +28,13 @@ package org.spout.api.lang;
 
 import java.util.logging.Level;
 
+import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandSource;
 import org.spout.api.plugin.CommonClassLoader;
 import org.spout.api.plugin.CommonPlugin;
 import org.spout.api.plugin.CommonPluginManager;
+import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 
 /**
@@ -86,10 +88,15 @@ public class Translation {
 	 * Broadcasts the source string to all players on the server.<br/>
 	 * Will translate the source string into each players respective target language.
 	 * @param source the string to translate
+	 * @param onlinePlayers
 	 * @param args any object given will be inserted into the target string for each %0, %1 asf
 	 */
-	public static void broadcast(String source, Object ...args) {
-		broadcast(source, Spout.getEngine().getOnlinePlayers(), args);
+	public static void broadcast(String source, Server onlinePlayers, Object... args) {
+		Platform p = Spout.getPlatform();
+		if (p != Platform.SERVER || p != Platform.PROXY) {
+			throw new IllegalStateException("You can only broadcast a message in server mode.");
+		}
+		broadcast(source, ((Server) Spout.getEngine()).getOnlinePlayers(), args);
 	}
 	
 	/**
