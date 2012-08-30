@@ -26,14 +26,13 @@
  */
 package org.spout.api.component.components;
 
-import org.spout.api.component.BaseComponent;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 
-public class TransformComponent extends BaseComponent {
+public class TransformComponent extends EntityComponent {
 	private final Transform transform;
 	private final Transform transformLive;
 	
@@ -57,7 +56,7 @@ public class TransformComponent extends BaseComponent {
 		transform.set(transform);
 	}
 
-	public Transform getTransform() {
+	public Transform getTransformSnapshot() {
 		return transform.copy();
 	}
 	
@@ -74,6 +73,10 @@ public class TransformComponent extends BaseComponent {
 	}
 	
 	public void setPosition(Point position) {
+		if (position == null) {
+			getHolder().remove();
+			return;
+		}
 		transform.setPosition(position);
 	}
 	
@@ -82,6 +85,10 @@ public class TransformComponent extends BaseComponent {
 	}
 	
 	public void setRotation(Quaternion rotation) {
+		if (rotation == null) {
+			getHolder().remove();
+			return;
+		}		
 		transform.setRotation(rotation);
 	}
 	
@@ -90,6 +97,10 @@ public class TransformComponent extends BaseComponent {
 	}
 	
 	public void setScale(Vector3 scale) {
+		if (scale == null) {
+			getHolder().remove();
+			return;
+		}		
 		transform.setScale(scale);
 	}
 	
