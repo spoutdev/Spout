@@ -26,30 +26,41 @@
  */
 package org.spout.api.component.components;
 
-import org.spout.api.component.Component;
+import org.spout.api.component.BaseComponent;
+import org.spout.api.entity.Entity;
 
 /**
  * Represents an attachment to a entity that can respond to Ticks.
  */
-public interface EntityComponent extends Component {
+public abstract class EntityComponent extends BaseComponent {
+	@Override
+	public Entity getHolder() {
+		return (Entity) super.getHolder();
+	}
+	
 	/**
 	 * Called when the parent entity is spawned into the world.
 	 */
-	public void onSpawned();
+	public void onSpawned() {
+	}
 	
 	/**
 	 * Called when the entity changes from unobserved to observed.
 	 */
-	public void onObserved();
+	public void onObserved() {
+	}
 	
 	/**
 	 * Called when the entity changes from observed to unobserved.
 	 */
-	public void onUnObserved();
+	public void onUnObserved() {
+	}
 	
 	/**
 	 * Returns the transform component attached to the parent entity. This component always exists.
 	 * @return The transform component
 	 */
-	public TransformComponent getTransform();
+	public TransformComponent getTransform() {
+		return getHolder().getTransform();
+	}
 }

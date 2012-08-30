@@ -26,10 +26,18 @@
  */
 package org.spout.api.component.components;
 
+import org.spout.api.material.BlockMaterial;
 
-public interface BlockComponent extends EntityComponent {
+public class BlockComponent extends EntityComponent {
+	private BlockMaterial material;
+	
+	public BlockComponent() {
+	}
+	
 	/**
 	 * Gets the material this component represents.
 	 */
-	public void getMaterial();
+	public BlockMaterial getMaterial() {
+		return material;
+	}
 }

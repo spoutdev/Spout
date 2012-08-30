@@ -26,18 +26,24 @@
  */
 package org.spout.api.component.components;
 
-import org.spout.api.component.BaseComponent;
-import org.spout.api.entity.Entity;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.render.Camera;
 import org.spout.api.render.ViewFrustum;
 
-public class CameraComponent extends BaseComponent implements EntityComponent, Camera {
+public class CameraComponent extends EntityComponent implements Camera {
 	private Matrix projection;
 	private Matrix view;
 	private ViewFrustum frustum = new ViewFrustum();
 
+	@Override
+	public void onAttached() {
+		// TODO Get FOV
+		projection = MathHelper.createPerspective(90f, 4.0f / 3.0f, .001f, 1000f);
+		updateView();
+		frustum.update(projection, view);
+	}
+	
 	@Override
 	public Matrix getProjection() {
 		return projection;
@@ -50,8 +56,7 @@ public class CameraComponent extends BaseComponent implements EntityComponent, C
 
 	@Override
 	public void updateView() {
-		view = MathHelper.rotate(((Entity) getHolder()).getTransform().getRotation()).multiply(MathHelper.translate(((Entity) getHolder()).getTransform().getPosition()));
-
+		view = MathHelper.rotate(getHolder().getTransform().getRotation()).multiply(MathHelper.translate(getHolder().getTransform().getPosition()));
 	}
 
 	@Override
@@ -61,35 +66,7 @@ public class CameraComponent extends BaseComponent implements EntityComponent, C
 	}
 
 	@Override
-	public void onAttached() {
-		// TODO Get FOV
-		projection = MathHelper.createPerspective(90f, 4.0f / 3.0f, .001f, 1000f);
-		updateView();
-		frustum.update(projection, view);
-	}
-
-	@Override
 	public ViewFrustum getFrustum() {
 		return frustum;
-	}
-
-	@Override
-	public void onSpawned() {
-		
-	}
-
-	@Override
-	public void onObserved() {
-		
-	}
-
-	@Override
-	public void onUnObserved() {
-		
-	}
-
-	@Override
-	public TransformComponent getTransform() {
-		return null;
 	}
 }

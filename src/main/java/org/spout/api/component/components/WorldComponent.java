@@ -26,13 +26,16 @@
  */
 package org.spout.api.component.components;
 
+import org.spout.api.component.BaseComponent;
 import org.spout.api.component.Component;
 import org.spout.api.geo.World;
 
-public interface WorldComponent extends Component {
-//	@Override
-//	public void attachTo(World world);
+public class WorldComponent extends BaseComponent {
+	public WorldComponent() {
+	}
 	
 	@Override
-	public World getHolder();
+	public World getHolder() {
+		return (World) super.getHolder();
+	}
 }
