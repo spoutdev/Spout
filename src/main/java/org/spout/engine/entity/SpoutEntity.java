@@ -297,7 +297,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		chunk = chunkLive.get();
 		entityManager = entityManagerLive.get();
 		viewDistance = viewDistanceLive.get();
-		transform.setTransform(transform.getTransformLive());
+		transform.copySnapshot();
 		justSpawned = false;
 	}
 
