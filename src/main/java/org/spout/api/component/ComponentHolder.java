@@ -26,6 +26,8 @@
  */
 package org.spout.api.component;
 
+import java.util.Collection;
+
 import org.spout.api.component.components.DatatableComponent;
 
 /**
@@ -61,5 +63,15 @@ public interface ComponentHolder<T extends Component> {
 	 */
 	public boolean hasComponent(Class<? extends Component> component);
 	
+	/**
+	 * Gets all components held by this component holder.
+	 * @return The components held by this holder
+	 */
+	public Collection<Component> getComponents();
+	
+	/**
+	 * Gets the datatable component held by this component holder.
+	 * @return Gets the datatable held by this holder
+	 */
 	public DatatableComponent getDatatable();
 }

@@ -34,42 +34,63 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 
 public class TransformComponent extends BaseComponent {
-	private final Transform wrapped;
+	private final Transform transform;
+	private final Transform transformLive;
+	
+	private boolean isDirty;
 	
 	public TransformComponent() {
-		wrapped = new Transform();
+		transform = new Transform();
+		transformLive = new Transform();
 	}
 
+	@Override
+	public void onTick(float dt) {
+		if (transform.equals(transformLive)) {
+			isDirty = true;
+		} else {
+			isDirty = false;
+		}
+	}
+	
 	public void setTransform(Transform transform){
-		wrapped.set(transform);
+		transform.set(transform);
 	}
 
 	public Transform getTransform() {
-		return wrapped.copy();
+		return transform.copy();
 	}
-
+	
+	public Transform getTransformLive() {
+		return transformLive.copy();
+	}
+	
+	public boolean isDirty() {
+		return isDirty;
+	}
+	
 	public Point getPosition() {
-		return wrapped.getPosition();
+		return transform.getPosition();
 	}
 	
 	public void setPosition(Point position) {
-		wrapped.setPosition(position);
+		transform.setPosition(position);
 	}
 	
 	public Quaternion getRotation() {
-		return wrapped.getRotation();
+		return transform.getRotation();
 	}
 	
 	public void setRotation(Quaternion rotation) {
-		wrapped.setRotation(rotation);
+		transform.setRotation(rotation);
 	}
 	
 	public Vector3 getScale() {
-		return wrapped.getScale();
+		return transform.getScale();
 	}
 	
 	public void setScale(Vector3 scale) {
-		wrapped.setScale(scale);
+		transform.setScale(scale);
 	}
 	
 	/**
@@ -77,7 +98,7 @@ public class TransformComponent extends BaseComponent {
 	 * @param amount to move the entity
 	 */
 	public void translate(Vector3 amount) {
-		wrapped.getPosition().add(amount);
+		transform.getPosition().add(amount);
 	}
 
 	/**
@@ -87,7 +108,7 @@ public class TransformComponent extends BaseComponent {
 	 * @param z offset
 	 */
 	public void translate(float x, float y, float z) {
-		wrapped.setPosition(wrapped.getPosition().add(x, y, z));
+		transform.setPosition(transform.getPosition().add(x, y, z));
 	}
 
 	/**
@@ -98,7 +119,7 @@ public class TransformComponent extends BaseComponent {
 	 * @param z
 	 */
 	public void rotate(float w, float x, float y, float z) {
-		wrapped.setRotation(wrapped.getRotation().rotate(w, x, y, z));
+		transform.setRotation(transform.getRotation().rotate(w, x, y, z));
 	}
 
 	/**
@@ -106,7 +127,7 @@ public class TransformComponent extends BaseComponent {
 	 * @param rot
 	 */
 	public void rotate(Quaternion rot) {
-		wrapped.setRotation(wrapped.getRotation().multiply(rot));
+		transform.setRotation(transform.getRotation().multiply(rot));
 	}
 
 	/**
@@ -114,7 +135,7 @@ public class TransformComponent extends BaseComponent {
 	 * @param amount
 	 */
 	public void scale(Vector3 amount) {
-		wrapped.setScale(wrapped.getScale().multiply(amount));
+		transform.setScale(transform.getScale().multiply(amount));
 	}
 
 	/**
@@ -124,7 +145,7 @@ public class TransformComponent extends BaseComponent {
 	 * @param z
 	 */
 	public void scale(float x, float y, float z) {
-		wrapped.setScale(wrapped.getScale().multiply(x, y, z));
+		transform.setScale(transform.getScale().multiply(x, y, z));
 	}
 
 	/**

@@ -26,14 +26,19 @@
  */
 package org.spout.api.component;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 import org.spout.api.component.components.DatatableComponent;
 
 public class BaseComponentHolder<T extends Component> implements ComponentHolder<T> {
-	private final HashMap<Class<? extends Component >, Component> components = new HashMap<Class<? extends Component>, Component>();
+	private final HashMap<Class<? extends Component>, Component> components = new HashMap<Class<? extends Component>, Component>();
 	private final DatatableComponent datatable = new DatatableComponent();
-
+	
+	public BaseComponentHolder() {
+		addComponent(datatable);
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public T addComponent(Component component) {
@@ -74,6 +79,11 @@ public class BaseComponentHolder<T extends Component> implements ComponentHolder
 		return false;
 	}
 
+	@Override
+	public Collection<Component> getComponents() {
+		return components.values();
+	}
+	
 	@Override
 	public DatatableComponent getDatatable() {
 		return datatable;
