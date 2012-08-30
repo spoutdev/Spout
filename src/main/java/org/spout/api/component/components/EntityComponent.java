@@ -24,10 +24,9 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity;
+package org.spout.api.component.components;
 
 import org.spout.api.component.Component;
-import org.spout.api.component.components.TransformComponent;
 
 /**
  * Represents an attachment to a entity that can respond to Ticks.

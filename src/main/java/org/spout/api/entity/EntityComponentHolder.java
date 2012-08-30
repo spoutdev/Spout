@@ -27,6 +27,7 @@
 package org.spout.api.entity;
 
 import org.spout.api.component.ComponentHolder;
+import org.spout.api.component.components.EntityComponent;
 import org.spout.api.component.components.TransformComponent;
 
 public interface EntityComponentHolder extends ComponentHolder<EntityComponent> {

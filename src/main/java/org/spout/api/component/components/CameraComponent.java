@@ -24,14 +24,14 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.render;
+package org.spout.api.component.components;
 
 import org.spout.api.component.BaseComponent;
-import org.spout.api.component.components.TransformComponent;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.EntityComponent;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
+import org.spout.api.render.Camera;
+import org.spout.api.render.ViewFrustum;
 
 public class CameraComponent extends BaseComponent implements EntityComponent, Camera {
 	private Matrix projection;
