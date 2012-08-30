@@ -284,7 +284,7 @@ public class SpoutRegion extends Region {
 				numberActiveChunks.incrementAndGet();
 				if (dataForRegion != null) {
 					for (SpoutEntity entity : dataForRegion.loadedEntities) {
-						entity.setupInitialChunk(entity.getTransform().getTransform());
+						entity.setupInitialChunk(entity.getTransform().getTransformSnapshot());
 						addEntity(entity);
 					}
 					dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);
@@ -1035,7 +1035,7 @@ public class SpoutRegion extends Region {
 			}
 		} else {
 			if (component != null) {
-				this.getWorld().createAndSpawnEntity(new Point(pos, getWorld())).addComponent(component);
+				this.getWorld().createAndSpawnEntity(new Point(pos, getWorld()), LoadOption.NO_LOAD).addComponent(component);
 			}
 		}
 	}

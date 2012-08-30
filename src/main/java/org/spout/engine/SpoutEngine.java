@@ -126,7 +126,6 @@ import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
 
 public abstract class SpoutEngine extends AsyncManager implements Engine {
-	private static final SpoutPlayer[] EMPTY_PLAYER_ARRAY = new SpoutPlayer[0];
 	private static final Logger logger = Logger.getLogger("Spout");
 	private final String name = "Spout Engine";
 	private final File pluginDirectory = SharedFileSystem.PLUGIN_DIRECTORY;
@@ -144,7 +143,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> onlinePlayers = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
 	private final SyncedRootCommand rootCommand = new SyncedRootCommand(this);
 	private final WorldGenerator defaultGenerator = new EmptyWorldGenerator();
-	private volatile int maxPlayers = 20;
 	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
 	protected final SpoutScheduler scheduler = new SpoutScheduler(this);
 	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
@@ -707,23 +705,10 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 	// Players should use weak map?
 	public Player addPlayer(String playerName, SpoutSession<?> session, int viewDistance) {
-		SpoutPlayer player;
-		try {
-			player = WorldFiles.loadPlayerData(playerName, session);
-		} catch (Exception e) {
-			//generate a player at default spawn, since we don't have a player .dat file
-			player = new SpoutPlayer(playerName, getDefaultWorld().getSpawnPoint(), session, this, viewDistance);
-		}
-		//TODO Olloth fix this
-		if (player == null) {
-			player = new SpoutPlayer(playerName, getDefaultWorld().getSpawnPoint(), session, this, viewDistance);			
-		}
-		player.connect(session, player.getTransform());		
-		World world = player.getWorld();
-		session.getProtocol().setPlayerController(player);
-		world.spawnEntity(player);
+		SpoutPlayer player = new SpoutPlayer(playerName, null, viewDistance);
+		player.connect(session, getDefaultWorld().getSpawnPoint());		
+		getDefaultWorld().spawnEntity(player);
 		session.setPlayer(player);
-		onlinePlayers.remove(playerName);
 		onlinePlayers.putIfAbsent(playerName, player);
 		return player;
 	}

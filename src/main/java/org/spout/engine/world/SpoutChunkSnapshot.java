@@ -38,7 +38,6 @@ import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntitySnapshot;
-import org.spout.api.entity.controller.BlockController;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.cuboid.Chunk;

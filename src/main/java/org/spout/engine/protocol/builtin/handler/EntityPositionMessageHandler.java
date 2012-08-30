@@ -32,9 +32,6 @@ import org.spout.api.protocol.Session;
 import org.spout.api.protocol.builtin.message.EntityPositionMessage;
 import org.spout.engine.protocol.builtin.SpoutProtocol;
 
-/**
- *
- */
 public class EntityPositionMessageHandler extends MessageHandler<EntityPositionMessage> {
 	@Override
 	public void handleClient(Session session, EntityPositionMessage message) {
@@ -50,7 +47,7 @@ public class EntityPositionMessageHandler extends MessageHandler<EntityPositionM
 		}
 
 		if (entity != null) {
-			entity.setTransform(message.getTransform());
+			entity.getTransform().setTransform(message.getTransform());
 		}
 	}
 }

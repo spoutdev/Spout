@@ -58,7 +58,6 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 		return null;
 	}
 
-
 	protected void freeChunk(Point p) {
 		session.send(false, new ChunkDataMessage(p.getBlockX(), p.getBlockY(), p.getBlockZ()));
 	}
@@ -68,7 +67,7 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 	}
 
 	protected void worldChanged(World world) {
-		session.send(false, new WorldChangeMessage(world, ((DataMap) world.getDataMap()).getRawMap()));
+		session.send(false, new WorldChangeMessage(world, ((DataMap) world.getDatatable().getBaseMap()).getRawMap()));
 	}
 
 	public void updateBlock(Chunk chunk, int x, int y, int z, BlockMaterial material, short data) {

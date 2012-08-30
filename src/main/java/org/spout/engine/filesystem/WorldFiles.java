@@ -484,6 +484,7 @@ public class WorldFiles {
 	private static SpoutEntity loadEntity(SpoutRegion r, CompoundTag tag) {
 		return loadEntity(r.getWorld(), tag, null, null); 
 	}
+	
 	private static SpoutEntity loadEntity(World w, CompoundTag tag, String Name, SpoutSession<?> playerSession) {
 		CompoundMap map = tag.getValue();
 

@@ -29,18 +29,16 @@ package org.spout.engine.world;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -49,15 +47,13 @@ import org.spout.api.Spout;
 import org.spout.api.collision.BoundingBox;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionVolume;
+import org.spout.api.component.Component;
 import org.spout.api.component.components.BlockComponent;
-import org.spout.api.datatable.DataMap;
+import org.spout.api.component.components.DatatableComponent;
+import org.spout.api.component.components.WorldComponent;
 import org.spout.api.datatable.DatatableMap;
-import org.spout.api.datatable.GenericDatatableMap;
-import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
-import org.spout.api.entity.controller.BlockController;
-import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.event.block.CuboidChangeEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
@@ -71,7 +67,6 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
-import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
@@ -92,7 +87,6 @@ import org.spout.api.util.sanitation.StringSanitizer;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.Threadsafe;
 import org.spout.engine.SpoutEngine;
-import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.engine.filesystem.WorldFiles;
@@ -177,17 +171,19 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * Hashcode cache
 	 */
 	private final int hashcode;
-	/**
-	 * Data map and Datatable associated with it
-	 */
-	private final DatatableMap datatableMap;
-	private final DataMap dataMap;
+	
 	/*
 	 * A WeakReference to this world
 	 */
 	private final WeakReference<World> selfReference;
 	public static final WeakReference<World> NULL_WEAK_REFERENCE = new WeakReference<World>(null);
-
+	
+	/*
+	 * Components
+	 */
+	private final HashMap<Class<? extends Component>, Component> components = new HashMap<Class<? extends Component>, Component>();
+	private final DatatableComponent datatable;
+	
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid, StringMap itemMap, DatatableMap extraData) {
 		super(1, new ThreadAsyncExecutor(toString(name, uid, age)), engine);
@@ -208,14 +204,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		worldDirectory.mkdirs();
 
 		heightMapBAAs = new TSyncIntPairObjectHashMap<BAAWrapper>();
-
-		if (extraData != null) {
-			this.datatableMap = extraData;
-		} else {
-			this.datatableMap = new GenericDatatableMap();
-		}
-		this.dataMap = new DataMap(this.datatableMap);
-
+		
 		this.hashcode = new HashCodeBuilder(27, 971).append(uid).toHashCode();
 
 		this.lightingManager = new SpoutWorldLighting(this);
@@ -235,6 +224,14 @@ public class SpoutWorld extends AsyncManager implements World {
 		taskManager = new SpoutTaskManager(getEngine().getScheduler(), false, t, age);
 		spawnLocation.set(new Transform(new Point(this, 1, 100, 1), Quaternion.IDENTITY, Vector3.ONE));
 		selfReference = new WeakReference<World>(this);
+		//Datatables
+		if (extraData != null) {
+			datatable = new DatatableComponent(extraData);
+		} else {
+			datatable = new DatatableComponent();
+		}
+
+		addComponent(datatable);		
 	}
 
 	public String getName() {
@@ -517,8 +514,8 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public Entity createEntity(Point point, Controller controller) {
-		return new SpoutEntity(getEngine(), point, controller);
+	public Entity createEntity(Point point) {
+		return new SpoutEntity(point);
 	}
 
 	/**
@@ -545,59 +542,25 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public Entity createAndSpawnEntity(Point point, Controller controller) {
-		SpoutRegion region = getRegionFromBlock(point, LoadOption.NO_LOAD);
-		if (region == null) {
-			if (!(controller.getParent() instanceof Player)) {
-				throw new IllegalStateException("Cannot spawn a non-player entity in a region that isn't loaded!");
-			}
-			//Load and generate for players
-			region.load(LoadOption.LOAD_GEN); // TODO: De-lawl this
-		}
-		Entity e = createEntity(point, controller);
-		//initialize region if needed (only for players)
+	public Entity createAndSpawnEntity(Point point, LoadOption option) {
+		getRegionFromBlock(point, option);
+		Entity e = createEntity(point);
 		spawnEntity(e);
 		return e;
 	}
 
 	@Override
-	public Entity[] createAndSpawnEntity(Point[] points, Controller[] controllers) {
-		if (points.length != controllers.length) {
-			throw new IllegalArgumentException("Point and controller array must be of equal length");
-		}
+	public Entity[] createAndSpawnEntity(Point[] points, LoadOption option) {
 		Entity[] entities = new Entity[points.length];
 		for (int i = 0; i < points.length; i++) {
-			entities[i] = createAndSpawnEntity(points[i], controllers[i]);
+			entities[i] = createAndSpawnEntity(points[i], option);
 		}
 		return entities;
 	}
 
 	@Override
-	public Entity[] createAndSpawnEntity(Point[] points, ControllerType[] types) {
-		Entity[] entities = new Entity[points.length];
-		for (int i = 0; i < points.length; i++) {
-			entities[i] = createAndSpawnEntity(points[i], types[i].createController());
-		}
-		return entities;
-	}
-
-	@Override
-	public Entity[] createAndSpawnEntity(Point[] points, ControllerType type) {
-		Entity[] entities = new Entity[points.length];
-		for (int i = 0; i < points.length; i++) {
-			entities[i] = createAndSpawnEntity(points[i], type.createController());
-		}
-		return entities;
-	}
-
-	@Override
-	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement) {
-		ControllerType[] types = arrangement.getControllerTypes();
-		if (types.length == 1) {
-			return createAndSpawnEntity(arrangement.getArrangement(), types[0]);
-		}
-
-		return createAndSpawnEntity(arrangement.getArrangement(), types);
+	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, LoadOption option) {
+		return createAndSpawnEntity(arrangement.getArrangement(), option);
 	}
 
 	@Override
@@ -718,15 +681,6 @@ public class SpoutWorld extends AsyncManager implements World {
 		ArrayList<Entity> entities = new ArrayList<Entity>();
 		for (Region region : regions) {
 			entities.addAll(region.getAll());
-		}
-		return entities;
-	}
-
-	@Override
-	public List<Entity> getAll(Class<? extends Controller> type) {
-		ArrayList<Entity> entities = new ArrayList<Entity>();
-		for (Region region : regions) {
-			entities.addAll(region.getAll(type));
 		}
 		return entities;
 	}
@@ -1095,16 +1049,6 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public DefaultedMap<String, Serializable> getDataMap() {
-		return dataMap;
-	}
-
-	@Override
-	public Serializable get(Object key) {
-		return dataMap.get(key);
-	}
-
-	@Override
 	public TaskManager getParallelTaskManager() {
 		return parallelTaskManager;
 	}
@@ -1160,5 +1104,53 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	public WeakReference<World> getWeakReference() {
 		return selfReference;
+	}
+	
+	@Override
+	public WorldComponent addComponent(Component component) {
+		Class<? extends Component> clazz = component.getClass();
+		if (hasComponent(clazz)) {
+			return (WorldComponent) getComponent(clazz);
+		}
+		components.put(clazz, component);
+		component.attachTo(this);
+		component.onAttached();
+		return (WorldComponent) component;
+	}
+
+	@Override
+	public boolean removeComponent(Class<? extends Component> aClass) {
+		if (!hasComponent(aClass)) {
+			return false;
+		}
+		getComponent(aClass).onDetached();
+		components.remove(aClass);
+		return true;
+	}
+
+	@Override
+	public WorldComponent getComponent(Class<? extends Component> aClass) {
+		for(Class<? extends Component> c : components.keySet()){
+			if(aClass.isAssignableFrom(c)) return (WorldComponent) components.get(c);
+		}
+		return null;
+	}
+
+	@Override
+	public boolean hasComponent(Class<? extends Component> aClass) {
+		for(Class<? extends Component> c : components.keySet()){
+			if(aClass.isAssignableFrom(c)) return true;
+		}
+		return false;
+	}
+
+	@Override
+	public Collection<Component> getComponents() {
+		return components.values();
+	}
+	
+	@Override
+	public DatatableComponent getDatatable() {
+		return datatable;
 	}
 }

@@ -31,7 +31,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.spout.api.entity.Entity;
-import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.builtin.message.AddEntityMessage;
@@ -49,7 +48,7 @@ public class SpoutEntityProtocol implements EntityProtocol {
 
 	@Override
 	public List<Message> getSpawnMessages(Entity entity) {
-		return Arrays.<Message>asList(new AddEntityMessage(entity.getId(), entity.getController().getType(), entity.getTransform()));
+		return Arrays.<Message>asList(new AddEntityMessage(entity.getId(), entity.getTransform().getTransformLive()));
 	}
 
 	@Override
@@ -63,10 +62,8 @@ public class SpoutEntityProtocol implements EntityProtocol {
 		/*if (entity.getController().data().isDirty()) {
 			msgs.add(new EntityDatatableMessage(entity.getId(), entity.getController().data()));
 		}*/
-
-		Transform current = entity.getTransform();
-		if (!current.equals(entity.getLastTransform())) {
-			messages.add(new EntityPositionMessage(entity.getId(), current));
+		if (entity.getTransform().isDirty()) {
+			messages.add(new EntityPositionMessage(entity.getId(), entity.getTransform().getTransformLive()));
 		}
 		return messages;
 	}
