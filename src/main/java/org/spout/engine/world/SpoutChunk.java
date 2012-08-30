@@ -44,11 +44,11 @@ import java.util.logging.Level;
 
 import org.spout.api.Source;
 import org.spout.api.Spout;
+import org.spout.api.component.components.BlockComponent;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.controller.BlockController;
 import org.spout.api.event.block.BlockChangeEvent;
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGeneratorUtils;
@@ -877,9 +877,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	public boolean refreshObserver(Entity entity) {
 		TickStage.checkStage(TickStage.FINALIZE);
 		SpoutEntity spoutEntity = ((SpoutEntity) entity);
-		if (!spoutEntity.isObserverLive()) {
-			throw new IllegalArgumentException("Cannot add an entity that isn't marked as an observer!");
-		}
 
 		checkChunkLoaded();
 		parentRegion.unSkipChunk(this);
@@ -1337,13 +1334,13 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	@Override
-	public void setBlockController(int x, int y, int z, BlockController controller) {
-		getRegion().setBlockController(x, y, z, controller);
+	public void setBlockComponent(int x, int y, int z, BlockComponent component) {
+		getRegion().setBlockComponent(x, y, z, component);
 	}
 
 	@Override
-	public BlockController getBlockController(int x, int y, int z) {
-		return getRegion().getBlockController(x, y, z);
+	public BlockComponent getBlockComponent(int x, int y, int z) {
+		return getRegion().getBlockComponent(x, y, z);
 	}
 
 	@Override

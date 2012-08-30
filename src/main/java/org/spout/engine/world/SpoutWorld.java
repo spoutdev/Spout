@@ -49,6 +49,7 @@ import org.spout.api.Spout;
 import org.spout.api.collision.BoundingBox;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionVolume;
+import org.spout.api.component.components.BlockComponent;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
@@ -1084,13 +1085,13 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public void setBlockController(int x, int y, int z, BlockController controller) {
-		getRegionFromBlock(x, y, z).setBlockController(x, y, z, controller);
+	public void setBlockComponent(int x, int y, int z, BlockComponent component) {
+		getRegionFromBlock(x, y, z).setBlockComponent(x, y, z, component);
 	}
 
 	@Override
-	public BlockController getBlockController(int x, int y, int z) {
-		return this.getRegionFromBlock(x, y, z).getBlockController(x, y, z);
+	public BlockComponent getBlockComponent(int x, int y, int z) {
+		return this.getRegionFromBlock(x, y, z).getBlockComponent(x, y, z);
 	}
 
 	@Override

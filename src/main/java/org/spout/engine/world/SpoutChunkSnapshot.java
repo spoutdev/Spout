@@ -31,6 +31,8 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.spout.api.component.components.BlockComponent;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
@@ -224,7 +226,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	}
 
 	@Override
-	public BlockController getBlockController(int x, int y, int z) {
+	public BlockComponent getBlockComponent(int x, int y, int z) {
 		return null;
 	}
 

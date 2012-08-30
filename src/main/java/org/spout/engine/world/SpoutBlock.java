@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.spout.api.Source;
-import org.spout.api.entity.controller.BlockController;
+import org.spout.api.component.components.BlockComponent;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
@@ -320,22 +320,6 @@ public class SpoutBlock implements Block {
 		return this.getChunk().getBlockSkyLightRaw(this.x, this.y, this.z);
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T extends BlockController> T getController() {
-		BlockMaterial material = this.getMaterial();
-		if (material.hasController()) {
-			return (T) material.getController(this);
-		} else {
-			return null;
-		}
-	}
-
-	@Override
-	public boolean hasController() {
-		return getController() != null;
-	}
-
 	public Block queueUpdate(EffectRange range) {
 		getWorld().queueBlockPhysics(this.x, this.y, this.z, range, this.source);
 		return this;
@@ -374,5 +358,17 @@ public class SpoutBlock implements Block {
 	@Override
 	public boolean isMaterial(Material... materials) {
 		return LogicUtil.equalsAny(this.getMaterial(), (Object[]) materials);
+	}
+
+	@Override
+	public <T extends BlockComponent> T getComponent() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasComponent() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }
