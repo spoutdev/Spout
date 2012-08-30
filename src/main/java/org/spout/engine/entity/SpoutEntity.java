@@ -35,9 +35,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.component.Component;
 import org.spout.api.component.components.DatatableComponent;
+import org.spout.api.component.components.EntityComponent;
+import org.spout.api.component.components.NetworkComponent;
 import org.spout.api.component.components.TransformComponent;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.EntityComponent;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -321,21 +322,9 @@ public class SpoutEntity implements Entity, Snapshotable {
 	}
 
 	@Override
-	public EntityComponent addComponent(Component component) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public boolean removeComponent(Class<? extends Component> component) {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public EntityComponent getComponent(Class<? extends Component> component) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -376,5 +365,23 @@ public class SpoutEntity implements Entity, Snapshotable {
 	public boolean isSavable() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public NetworkComponent getNetworkComponent() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public EntityComponent addComponent(Component component) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public EntityComponent getComponent(Class<? extends Component> component) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
