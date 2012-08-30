@@ -35,6 +35,7 @@ import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.ChatSection;
+import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.Command;
 import org.spout.api.command.RootCommand;
 import org.spout.api.data.ValueHolder;
@@ -57,6 +58,7 @@ import org.spout.api.protocol.Message;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.SendMode;
+import org.spout.api.util.access.BanType;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;
@@ -284,13 +286,13 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void kick() {
-		kick("Kicked from server.");
+		kick(null);
 	}
 
 	@Override
 	public void kick(Object... reason) {
 		if (reason == null) {
-			throw new IllegalArgumentException("reason cannot be null");
+			reason = new Object[] {ChatStyle.RED, "Kicked from server."};
 		}
 		session.disconnect(reason);
 	}
@@ -302,7 +304,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void ban(boolean kick) {
-		ban(kick, "Banned from server.");
+		ban(kick, null);
 	}
 
 	@Override
@@ -310,7 +312,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		if (Spout.getPlatform() != Platform.SERVER) {
 			throw new IllegalStateException("Banning is only available in server mode.");
 		}
-		((Server)Spout.getEngine()).banPlayer(this, kick, reason);
+		((Server)Spout.getEngine()).getAccessManager().ban(BanType.PLAYER, name, kick, reason);
 	}
 
 	@Override
