@@ -67,6 +67,7 @@ import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
+import org.spout.api.component.components.CameraComponent;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.state.PlayerInputState.Flags;
 import org.spout.api.event.world.WorldLoadEvent;
@@ -85,7 +86,6 @@ import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
-import org.spout.api.render.CameraComponent;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
@@ -420,8 +420,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		//worldRenderer.render();
 
-		Vector3 currentPlayerPos = new Vector3(activePlayer.getPosition().getBlockX(), activePlayer.getPosition().getBlockY(), activePlayer.getPosition().getBlockZ());
-		activeCamera = new CameraComponent(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(currentPlayerPos, currentPlayerPos.add(activePlayer.getTransform().forwardVector().normalize().add(5, 5, 5)), Vector3.UP));
+		Vector3 currentPlayerPos = new Vector3(activePlayer.getTransform().getPosition().getBlockX(), activePlayer.getTransform().getPosition().getBlockY(), activePlayer.getTransform().getPosition().getBlockZ());
+		activeCamera = new CameraComponent(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(currentPlayerPos, currentPlayerPos.add(activePlayer.getTransform().copy().forwardVector().normalize().add(5, 5, 5)), Vector3.UP));
 		activeCamera.getFrustum().update(activeCamera.getProjection(), activeCamera.getView());
 		Transform loc = new Transform(new Point(null, 0f, 0f, 0f), Quaternion.IDENTITY, Vector3.ONE);
 		mat.getShader().setUniform("View", activeCamera.getView());
