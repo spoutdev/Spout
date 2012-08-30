@@ -36,6 +36,15 @@ public class CameraComponent extends EntityComponent implements Camera {
 	private Matrix view;
 	private ViewFrustum frustum = new ViewFrustum();
 
+	public CameraComponent() {
+		
+	}
+
+	public CameraComponent(Matrix createPerspective, Matrix createLookAt) {
+		projection = createPerspective;
+		view = createLookAt;
+	}
+
 	@Override
 	public void onAttached() {
 		// TODO Get FOV
