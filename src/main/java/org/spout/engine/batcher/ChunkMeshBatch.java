@@ -47,19 +47,15 @@ public class ChunkMeshBatch extends Cuboid {
 	public static final int SIZE_Z = 3;
 	public static final Vector3 SIZE = new Vector3(SIZE_X, SIZE_Y, SIZE_Z);
 	public static final int MESH_COUNT = SIZE_X * SIZE_Y * SIZE_Z;
-
-	private RenderMaterial material; // Temporary until we have our multiple
-										// render passes
 	private PrimitiveBatch renderer = new PrimitiveBatch();
 	private ChunkMesh[] meshes = new ChunkMesh[MESH_COUNT];
 	private boolean hasVertices = false;
 
 	private Matrix modelMat = MathHelper.createIdentity();
 
-	public ChunkMeshBatch(RenderMaterial material, World world, int baseX, int baseY, int baseZ) {
+	public ChunkMeshBatch(World world, int baseX, int baseY, int baseZ) {
 		super(new Point(world, baseX, baseY, baseZ), SIZE);
 
-		this.material = material;
 		int id = 0;
 		for (int i = baseX; i < baseX + SIZE_X; i++) {
 			for (int j = baseY; j < baseY + SIZE_Y; j++) {

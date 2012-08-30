@@ -26,7 +26,6 @@
  */
 package org.spout.engine.command;
 
-import org.spout.api.chat.ChatArguments;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;

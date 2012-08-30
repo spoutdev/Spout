@@ -26,7 +26,6 @@
  */
 package org.spout.engine;
 
-import static org.spout.api.lang.Translation.broadcast;
 import static org.spout.api.lang.Translation.log;
 import java.net.InetAddress;
 import java.net.SocketAddress;

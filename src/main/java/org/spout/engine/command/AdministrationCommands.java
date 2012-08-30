@@ -26,10 +26,8 @@
  */
 package org.spout.engine.command;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -70,6 +68,8 @@ public class AdministrationCommands {
 			case SERVER:
 				message = "Server halting";
 				break;
+			default:
+				message = "Engine halting";
 		}
 		if (args.length() > 0) {
 			message = args.getJoinedString(0).getPlainString();

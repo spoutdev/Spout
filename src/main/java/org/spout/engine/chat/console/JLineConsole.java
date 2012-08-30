@@ -26,8 +26,6 @@
  */
 package org.spout.engine.chat.console;
 
-import java.io.FileDescriptor;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
@@ -160,11 +158,6 @@ public class JLineConsole extends AbstractConsole {
 				command = commandLine;
 				arguments = new ChatArguments();
 			}
-		}
-
-		public CommandTask(String command, ChatArguments arguments) {
-			this.command = command;
-			this.arguments = arguments;
 		}
 
 		@Override
