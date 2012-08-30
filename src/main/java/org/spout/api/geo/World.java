@@ -34,6 +34,7 @@ import org.spout.api.Engine;
 import org.spout.api.Source;
 import org.spout.api.component.ComponentHolder;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.EntityType;
 import org.spout.api.entity.Player;
 import org.spout.api.component.components.DatatableComponent;
 import org.spout.api.component.components.WorldComponent;
@@ -138,11 +139,11 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * This does not add the Entity to the server. You must call
 	 * {@link #spawnEntity(Entity)} to simulate the Entity in the world
 	 * @param point The point to spawn the Entity
-	 * @param controller The entity that will be attached to the Entity
+	 * @param type The type to apply registered components to the Entity
 	 * @return The created entity
-	 */
-	public Entity createEntity(Point point);
-
+	 */	
+	public Entity createEntity(Point point, EntityType type);
+	
 	/**
 	 * Add a created entity to the world for simulation and syncing to clients
 	 * @param e The entity to spawn
@@ -157,26 +158,26 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @param controller The entity that will be attached to the Entity
 	 * @return The Entity that has been created and spawned
 	 */
-	public Entity createAndSpawnEntity(Point point, LoadOption option);
+	public Entity createAndSpawnEntity(Point point, EntityType type, LoadOption option);
 
 	/**
 	 * Creates and Spawns entities at the given points.  This is the same as calling
-	 * {@link #createAndSpawnEntity(point, controller)} for each element in the array.
+	 * {@link #createAndSpawnEntity(point, type)} for each element in the array.
 	 * @param points The points to use for spawning the entities
-	 * @param type The type of entity that will be attached to the Entity
+	 * @param type The EntityType to apply registered components to the entities created at the points
 	 * @return The Entities that has been created and spawned
 	 */
-	public Entity[] createAndSpawnEntity(Point[] points, LoadOption option);
+	public Entity[] createAndSpawnEntity(Point[] points, EntityType type, LoadOption option);
 
 	/**
 	 * Creates and Spawns entities for the given arrangement.  This is the same as calling
 	 * {@link #createAndSpawnEntity(point, controller)} for each Point, entity pair in
 	 * the arrangement
 	 * @param points The points to use for spawning the entities
-	 * @param controller The entity that will be attached to the Entity
+	 * @param type The EntityType to apply registered components to the arrangement
 	 * @return The Entities that has been created and spawned
 	 */
-	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, LoadOption option);
+	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, EntityType type, LoadOption option);
 
 	/**
 	 * Gets the world's spawn point

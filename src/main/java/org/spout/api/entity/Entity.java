@@ -29,7 +29,6 @@ package org.spout.api.entity;
 import java.util.UUID;
 
 import org.spout.api.Source;
-import org.spout.api.geo.World;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
@@ -129,6 +128,13 @@ public interface Entity extends Source, Tickable, WorldSource, EntityComponentHo
 	public boolean isObserver();
 	
 	/**
+	 * Applies components composed within an EntityType
+	 * @param type The EntityType to apply
+	 */
+	@LiveWrite
+	public void applyType(EntityType type);
+	
+	/**
 	 * Gets the {@link Chunk} this entity resides in, or null if removed.
 	 * @return chunk the entity is in, or null if removed.
 	 */
@@ -140,13 +146,5 @@ public interface Entity extends Source, Tickable, WorldSource, EntityComponentHo
 	 * @return region the entity is in.
 	 */
 	@SnapshotRead
-	public Region getRegion();
-
-	/**
-	 * Gets the world the entity is associated with, or null if removed.
-	 * @return world
-	 */
-	@SnapshotRead
-	@Override
-	public World getWorld();
+	public Region getRegion();	
 }
