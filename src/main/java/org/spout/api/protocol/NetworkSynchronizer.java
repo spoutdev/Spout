@@ -56,27 +56,16 @@ import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.OutwardIterator;
 
 public abstract class NetworkSynchronizer {
-	protected final Player owner;
-	protected Entity entity;
+	protected final Player player;
 	protected final Session session;
 	protected final AtomicReference<Protocol> protocol = new AtomicReference<Protocol>(null);
 
-	public NetworkSynchronizer(Player owner, Session session, Entity entity, int minimumViewRadius) {
-		this.owner = owner;
-		this.entity = entity;
-		entity.setObserver(true);
-		blockViewDistance = entity.getViewDistance();
-		this.session = session;
-		viewDistance = blockViewDistance >> Chunk.BLOCKS.BITS;
-		this.minimumViewRadius = minimumViewRadius * Chunk.BLOCKS.SIZE;
-	}
-
-	private final int minimumViewRadius;
 	private final static int CHUNKS_PER_TICK = 200;
 
 	private final int viewDistance;
 	private final int blockViewDistance;
-
+	private final int blockMinimumViewDistance;
+	
 	private Point lastChunkCheck =  Point.invalid;
 
 	// Base points used so as not to load chunks unnecessarily
@@ -97,6 +86,15 @@ public abstract class NetworkSynchronizer {
 	private final LinkedHashSet<Chunk> observed = new LinkedHashSet<Chunk>();
 	private final Set<Point> chunksToObserve = new LinkedHashSet<Point>();
 	private final Map<Class<? extends ProtocolEvent>, ProtocolEventExecutor> protocolEventMapping = new HashMap<Class<? extends ProtocolEvent>, ProtocolEventExecutor>();
+	
+	public NetworkSynchronizer(Session session, int minViewDistance) {
+		this.session = session;		
+		player = session.getPlayer();
+		player.setObserver(true);
+		blockViewDistance = player.getViewDistance();
+		viewDistance = blockViewDistance >> Chunk.BLOCKS.BITS;
+		blockMinimumViewDistance = minViewDistance * Chunk.BLOCKS.SIZE;
+	}
 
 	public void setRespawned() {
 		first = true;
@@ -108,12 +106,8 @@ public abstract class NetworkSynchronizer {
 		teleported = true;
 	}
 
-	public Entity getEntity() {
-		return entity;
-	}
-
-	public Player getOwner() {
-		return owner;
+	public Player getPlayer() {
+		return player;
 	}
 
 	protected void registerProtocolEvents(final ProtocolEventListener listener) {
@@ -121,19 +115,19 @@ public abstract class NetworkSynchronizer {
 			if (method.isAnnotationPresent(EventHandler.class) && method.getParameterTypes().length == 1) {
 				Class<?> clazz = method.getParameterTypes()[0];
 				if (!ProtocolEvent.class.isAssignableFrom(clazz)) {
-					session.getEngine().getLogger().warning("Invalid protocol event handler attempted to be registered for " + owner.getName());
+					session.getEngine().getLogger().warning("Invalid protocol event handler attempted to be registered for " + player.getName());
 					continue;
 				}
 
 				Class<?> returnType = method.getReturnType();
 				if (returnType == null || returnType.equals(void.class)) {
-					session.getEngine().getLogger().warning("Protocol event handler not returning a Message tried to be registered for " + owner.getName());
+					session.getEngine().getLogger().warning("Protocol event handler not returning a Message tried to be registered for " + player.getName());
 					session.getEngine().getLogger().warning("Please change the return type from 'void' to Message");
 					continue;
 				} else if (!Message.class.isAssignableFrom(returnType)) {
 					Class<?> compType = returnType.getComponentType();
 					if (compType == null || !Message.class.isAssignableFrom(compType)) {
-						session.getEngine().getLogger().warning("Protocol event handler not returning a Message tried to be registered for " + owner.getName());
+						session.getEngine().getLogger().warning("Protocol event handler not returning a Message tried to be registered for " + player.getName());
 						continue;
 					}
 				}
@@ -178,7 +172,7 @@ public abstract class NetworkSynchronizer {
 				if (e.getCause() != null) {
 					Throwable t = e.getCause();
 					session.getEngine().getLogger().severe("Error occurred while calling protocol event"
-							+ event.getClass().getSimpleName() + " for player " + owner.getName() + ": " + t.getMessage());
+							+ event.getClass().getSimpleName() + " for player " + player.getName() + ": " + t.getMessage());
 					t.printStackTrace();
 				}
 			}
@@ -189,7 +183,7 @@ public abstract class NetworkSynchronizer {
 	public void onRemoved() {
 		TickStage.checkStage(TickStage.FINALIZE);
 		removed = true;
-		entity.remove();
+		player.remove();
 		for (Point p : initializedChunks) {
 			removeObserver(p);
 		}
@@ -201,12 +195,12 @@ public abstract class NetworkSynchronizer {
 	 * are non-conflicting.
 	 */
 	public void finalizeTick() {
-		if (entity == null || entity.isRemoved()) {
+		if (player.isRemoved()) {
 			return;
 		}
 
 		// TODO teleport smoothing
-		Point currentPosition = entity.getTransform().getPosition();
+		Point currentPosition = player.getTransform().getPosition();
 		if (currentPosition != null) {
 			if (worldChanged || 
 					(!currentPosition.equals(lastChunkCheck) &&
@@ -259,7 +253,7 @@ public abstract class NetworkSynchronizer {
 		} else {
 			if (worldChanged) {
 				first = false;
-				Point ep = entity.getTransform().getPosition();
+				Point ep = player.getTransform().getPosition();
 				if (worldChanged) {
 					worldChanged(ep.getWorld());
 				}
@@ -293,7 +287,7 @@ public abstract class NetworkSynchronizer {
 				}
 
 				if (priorityChunkSendQueue.isEmpty() && teleported) {
-					sendPosition(entity.getTransform().getPosition(), entity.getTransform().getRotation());
+					sendPosition(player.getTransform().getPosition(), player.getTransform().getRotation());
 					teleported = false;
 				}
 
@@ -361,7 +355,7 @@ public abstract class NetworkSynchronizer {
 
 	private void addObserver(Chunk c) {
 		observed.add(c);
-		c.refreshObserver(owner);
+		c.refreshObserver(player);
 	}
 
 	private void removeObserver(Point p) {
@@ -374,7 +368,7 @@ public abstract class NetworkSynchronizer {
 
 	private void removeObserver(Chunk c) {
 		observed.remove(c);
-		c.removeObserver(owner);
+		c.removeObserver(player);
 	}
 
 	private void checkChunkUpdates(Point currentPosition) {
@@ -395,7 +389,7 @@ public abstract class NetworkSynchronizer {
 
 		for (Point p : initializedChunks) {
 			if (p.getManhattanDistance(playerChunkBase) > blockViewDistance) {
-				if (playerHoldingChunkBase == null || p.getManhattanDistance(playerHoldingChunkBase) > minimumViewRadius) {
+				if (playerHoldingChunkBase == null || p.getManhattanDistance(playerHoldingChunkBase) > blockMinimumViewDistance) {
 					chunkFreeQueue.add(p);
 				}
 			}
@@ -413,7 +407,7 @@ public abstract class NetworkSynchronizer {
 		while (itr.hasNext()) {
 			IntVector3 v = itr.next();
 			Point base = new Point(world, v.getX() << Chunk.BLOCKS.BITS, v.getY() << Chunk.BLOCKS.BITS, v.getZ() << Chunk.BLOCKS.BITS);
-			boolean inTargetArea = playerChunkBase.getMaxDistance(base) <= minimumViewRadius;
+			boolean inTargetArea = playerChunkBase.getMaxDistance(base) <= blockMinimumViewDistance;
 			if (!activeChunks.contains(base)) {
 				if (inTargetArea) {
 					priorityChunkSendQueue.add(base);
