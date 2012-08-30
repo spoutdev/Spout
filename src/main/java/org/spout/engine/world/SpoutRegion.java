@@ -284,7 +284,7 @@ public class SpoutRegion extends Region {
 				numberActiveChunks.incrementAndGet();
 				if (dataForRegion != null) {
 					for (SpoutEntity entity : dataForRegion.loadedEntities) {
-						entity.setupInitialChunk(entity.getTransform().getTransformSnapshot());
+						entity.setupInitialChunk(entity.getTransform().getTransform());
 						addEntity(entity);
 					}
 					dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);
