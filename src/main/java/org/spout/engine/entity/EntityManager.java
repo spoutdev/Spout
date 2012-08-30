@@ -32,19 +32,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.spout.api.entity.Controller;
+import org.spout.api.component.components.BlockComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
-import org.spout.api.entity.controller.BlockController;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.NetworkSynchronizer;
 
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
-import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
 import org.spout.engine.world.SpoutRegion;
 
@@ -60,10 +57,7 @@ public class EntityManager {
 	 * A map of all the entity ids to the corresponding entities.
 	 */
 	private final SnapshotableHashMap<Integer, SpoutEntity> entities = new SnapshotableHashMap<Integer, SpoutEntity>(snapshotManager);
-	/**
-	 * A map of entity types to a set containing all entities of that type.
-	 */
-	private final ConcurrentHashMap<Class<? extends Controller>, SnapshotableArrayList<SpoutEntity>> groupedEntities = new ConcurrentHashMap<Class<? extends Controller>, SnapshotableArrayList<SpoutEntity>>();
+
 	/**
 	 * The next id to check.
 	 */
@@ -85,20 +79,6 @@ public class EntityManager {
 			throw new NullPointerException("Region can not be null!");
 		}
 		this.region = region;
-	}
-
-	/**
-	 * Gets all entities with the specified type.
-	 *
-	 * @param type The {@link Class} for the type.
-	 * @return A set of entities with the specified type.
-	 */
-	public List<SpoutEntity> getAll(Class<? extends Controller> type) {
-		SnapshotableArrayList<SpoutEntity> entities = groupedEntities.get(type);
-		if (entities == null) {
-			return Collections.emptyList();
-		}
-		return Collections.unmodifiableList(entities.get());
 	}
 
 	/**
@@ -148,7 +128,6 @@ public class EntityManager {
 			entity.setId(currentId);
 		}
 		entities.put(currentId, entity);
-		entity.setOwningThread(region.getExceutionThread());
 		return currentId;
 	}
 
@@ -168,20 +147,17 @@ public class EntityManager {
 
 	public void addEntity(SpoutEntity entity) {
 		allocate(entity);
-		Controller c = entity.getController();
-		if (c != null) {
-			if (c instanceof BlockController) {
-				Vector3 pos = entity.getPosition().floor();
-				Entity old = blockEntities.put(pos, entity);
-				if (old != null) {
-					old.kill();
-				}
+		
+		if (entity.hasComponent(BlockComponent.class)) {
+			Vector3 pos = entity.getTransform().getPosition().floor();
+			Entity old = blockEntities.put(pos, entity);
+			if (old != null) {
+				old.remove();
 			}
 		}
+
 		if (entity instanceof Player) {
-			if (entity.getController() != null) {
-				players.putIfAbsent((Player) entity, new ArrayList<SpoutEntity>());
-			}
+			players.putIfAbsent((Player) entity, new ArrayList<SpoutEntity>());
 		}
 	}
 
@@ -194,16 +170,15 @@ public class EntityManager {
 
 	public void removeEntity(SpoutEntity entity) {
 		deallocate(entity);
-		Controller c = entity.getController();
-		if (c != null) {
-			if (c instanceof BlockController) {
-				Vector3 pos = entity.getPosition().floor();
-				Entity be = blockEntities.get(pos);
-				if (be == entity) {
-					blockEntities.remove(pos);
-				}
+
+		if (entity.hasComponent(BlockComponent.class)) {
+			Vector3 pos = entity.getTransform().getPosition().floor();
+			Entity be = blockEntities.get(pos);
+			if (be == entity) {
+				blockEntities.remove(pos);
 			}
 		}
+
 		if (entity instanceof Player) {
 			players.remove((Player) entity);
 		}
@@ -211,17 +186,11 @@ public class EntityManager {
 
 	public void finalizeRun() {
 		for (SpoutEntity e : entities.get().values()) {
-			if (e.isDead()) {
+			if (e.isRemoved()) {
 				removeEntity(e);
 				continue;
 			}
 			e.finalizeRun();
-			Controller controller = e.getController();
-			if (controller == null) {
-				continue;
-			}
-
-			controller.finalizeTick();
 
 			if (e instanceof Player) {
 				Player p = (Player) e;
@@ -234,12 +203,10 @@ public class EntityManager {
 
 	public void preSnapshotRun() {
 		for (SpoutEntity e : entities.get().values()) {
-			if (e.getController() != null) {
-				if (e instanceof Player) {
-					Player p = (Player) e;
-					if (p.isOnline()) {
-						p.getNetworkSynchronizer().preSnapshot();
-					}
+			if (e instanceof Player) {
+				Player p = (Player) e;
+				if (p.isOnline()) {
+					p.getNetworkSynchronizer().preSnapshot();
 				}
 			}
 		}
@@ -302,14 +269,12 @@ public class EntityManager {
 				}
 				boolean contains = entitiesPerPlayer.contains(entity);
 				spawn = destroy = update = false;
-				if (MathHelper.distance(player.getPosition(), entity.getPosition()) <= playerViewDistance) {
+				if (MathHelper.distance(player.getTransform().getPosition(), entity.getTransform().getPosition()) <= playerViewDistance) {
 					if (!contains) {
 						entitiesPerPlayer.add(entity);
 						spawn = true; // Spawn
-					} else if (entity.isDead()) {
+					} else if (entity.isRemoved()) {
 						destroy = entitiesPerPlayer.remove(entity); // Destroy if not already destroyed
-					} else if (!entity.getController().equals(entity.getPrevController())) {
-						destroy = spawn = true; // Re-spawn
 					} else {
 						update = true; // Update otherwise
 					}
