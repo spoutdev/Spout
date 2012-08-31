@@ -44,7 +44,7 @@ public final class BiomeMap {
 		map = new MemoryStoreMap<Integer, Biome>();
 	}
 
-	public Biome getBiomeRaw(int index){
+	public Biome getBiomeRaw(int index) {
 		return map.get(Math.abs(index) % map.getSize());
 	}
 
@@ -62,11 +62,11 @@ public final class BiomeMap {
 	}
 
 	public Biome getBiome(Vector3 position, long seed) {
-		return getBiome((int)position.getX(), (int)position.getY(), (int)position.getZ(), seed);
+		return getBiome((int) position.getX(), (int) position.getY(), (int) position.getZ(), seed);
 	}
 
 	public Biome getBiome(int x, int y, int z, long seed) {
-		if(selector == null) {
+		if (selector == null) {
 			throw new IllegalStateException("Biome Selector is null and cannot set a selector");
 		}
 		return selector.pickBiome(x, y, z, seed);
@@ -81,7 +81,7 @@ public final class BiomeMap {
 	}
 
 	public int indexOf(Biome biome) {
-		if(map.reverseGet(biome) == null) {
+		if (map.reverseGet(biome) == null) {
 			return -1;
 		}
 

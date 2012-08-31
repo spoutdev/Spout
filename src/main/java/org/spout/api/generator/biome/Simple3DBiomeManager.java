@@ -28,8 +28,9 @@ package org.spout.api.generator.biome;
 
 import org.spout.api.geo.cuboid.Chunk;
 
-public class Simple3DBiomeManager extends BiomeManager{
+public class Simple3DBiomeManager extends BiomeManager {
 	private byte[] biomes = new byte[Chunk.BLOCKS.VOLUME];
+
 	public Simple3DBiomeManager(int chunkX, int chunkY, int chunkZ) {
 		super(chunkX, chunkY, chunkZ);
 	}
@@ -51,7 +52,7 @@ public class Simple3DBiomeManager extends BiomeManager{
 	public void deserialize(byte[] bytes) {
 		this.biomes = bytes;
 	}
-	
+
 	@Override
 	public Simple3DBiomeManager clone() {
 		Simple3DBiomeManager manager = new Simple3DBiomeManager(getChunkX(), getChunkY(), getChunkZ());

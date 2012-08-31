@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Random;
 
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.util.cuboid.CuboidShortBuffer;
 
 /**
  * Defines an abstract biome.
@@ -52,19 +51,17 @@ public abstract class Biome {
 			b.populate(chunk, random);
 		}
 	}
-	
+
 	protected final void setId(int id) {
 		if (!registered) {
 			this.id = id;
 			registered = true;
 		}
 	}
-	
+
 	public final int getId() {
 		return id;
 	}
-
-	public abstract void generateColumn(CuboidShortBuffer blockData, int x, int chunkY, int z);
 
 	public abstract String getName();
 }

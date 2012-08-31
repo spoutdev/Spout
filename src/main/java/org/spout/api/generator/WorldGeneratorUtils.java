@@ -34,7 +34,6 @@ import org.spout.api.geo.World;
 import org.spout.api.math.MathHelper;
 
 public class WorldGeneratorUtils {
-
 	private final static int HASH_SHIFT = 19;
 	private final static long HASH_SHIFT_MASK = (1L << HASH_SHIFT) - 1;
 
@@ -209,7 +208,8 @@ public class WorldGeneratorUtils {
 	}
 
 	/**
-	 * Generates a 2D noise map using reduced sampling and bilinear interpolation.
+	 * Generates a 2D noise map using reduced sampling and bilinear
+	 * interpolation.
 	 *
 	 * @param noiseGenerator The noise generator module
 	 * @param xSize The x size of the 2D map
@@ -259,7 +259,8 @@ public class WorldGeneratorUtils {
 	}
 
 	/**
-	 * Generates a 3D noise map using reduced sampling and trilinear interpolation.
+	 * Generates a 3D noise map using reduced sampling and trilinear
+	 * interpolation.
 	 *
 	 * @param noiseGenerator The noise generator module
 	 * @param xSize The x size of the 3D map

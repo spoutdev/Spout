@@ -26,38 +26,11 @@
  */
 package org.spout.api.generator.biome;
 
-import java.util.Random;
-import org.spout.api.generator.WorldGeneratorObject;
-import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.util.cuboid.CuboidShortBuffer;
 
 /**
- *
+ * Defines an abstract biome used by the BiomeColumnGenerator.
  */
-public class WorldGeneratorObjectDecorator extends Decorator {
-	private final int probability;
-	private final WGOFactory factory;
-
-	public WorldGeneratorObjectDecorator(int probability, WGOFactory factory) {
-		this.probability = probability;
-		this.factory = factory;
-	}
-
-	@Override
-	public void populate(Chunk chunk, Random random) {
-		if (random.nextInt(probability) == 0) {
-			final World world = chunk.getWorld();
-			final int worldX = chunk.getBlockX() + random.nextInt(16);
-			final int worldY = chunk.getBlockY() + random.nextInt(16);
-			final int worldZ = chunk.getBlockZ() + random.nextInt(16);
-			WorldGeneratorObject dungeon = factory.createObject(random);
-			if (dungeon.canPlaceObject(world, worldX, worldY, worldZ)) {
-				dungeon.placeObject(world, worldX, worldY, worldZ);
-			}
-		}
-	}
-
-	public interface WGOFactory {
-		WorldGeneratorObject createObject(Random random);
-	}
+public abstract class ColumnGeneratorBiome extends Biome {
+	public abstract void generateColumn(CuboidShortBuffer blockData, int x, int chunkY, int z);
 }
