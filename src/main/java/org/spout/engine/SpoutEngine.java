@@ -35,7 +35,9 @@ import java.net.Inet6Address;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -140,7 +142,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private final RecipeManager recipeManager = new CommonRecipeManager();
 	private final ServiceManager serviceManager = CommonServiceManager.getInstance();
 	private final SnapshotManager snapshotManager = new SnapshotManager();
-	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> onlinePlayers = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
+	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> players = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
 	private final SyncedRootCommand rootCommand = new SyncedRootCommand(this);
 	private final WorldGenerator defaultGenerator = new EmptyWorldGenerator();
 	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
@@ -290,7 +292,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	public Collection<SpoutPlayer> rawGetAllOnlinePlayers() {
-		return onlinePlayers.get().values();
+		return players.get().values();
 	}
 
 	@Override
@@ -607,7 +609,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public void copySnapshotRun() throws InterruptedException {
 		snapshotManager.copyAllSnapshots();
-		for (Player player : onlinePlayers.get().values()) {
+		for (Player player : players.get().values()) {
 			((SpoutPlayer) player).copySnapshot();
 		}
 	}
@@ -702,11 +704,41 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		}
 		return null;
 	}
+	
+	@Override
+	public List<String> getAllPlayers() {
+		ArrayList<String> names = new ArrayList<String>();
+		for (Player player : players.getValues()) {
+			names.add(player.getName());
+		}
+		return Collections.unmodifiableList(names);
+	}
+	
+	@Override
+	public Player getPlayer(String name, boolean exact) {
+		name = name.toLowerCase();
+		if (exact) {
+			for (Player player : players.getValues()) {
+				if (player.getName().equalsIgnoreCase(name)) {
+					return player;
+				}
+			}
+			return null;
+		} else {
+			return StringUtil.getShortest(StringUtil.matchName(players.getValues(), name));
+		}
+	}
 
+	@Override
+	public Collection<Player> matchPlayer(String name) {
+		//TODO Can someone redo this or make it better?
+		return StringUtil.matchName(Arrays.<Player>asList(players.getValues().toArray(new Player[players.getValues().size()])), name);
+	}
+	
 	// Players should use weak map?
 	public Player addPlayer(String playerName, SpoutSession<?> session, int viewDistance) {
 		SpoutPlayer player = new SpoutPlayer(playerName, null, viewDistance);
-		onlinePlayers.putIfAbsent(playerName, player);
+		players.putIfAbsent(playerName, player);
 		return player;
 	}
 

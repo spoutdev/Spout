@@ -362,7 +362,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		getSessionRegistry().add(session);
 		activePlayer.connect(session, null);
 		session.setPlayer(activePlayer);
-		onlinePlayers.putIfAbsent(activePlayer.getName(), activePlayer);
+		players.putIfAbsent(activePlayer.getName(), activePlayer);
 	}
 
 	private PrimitiveBatch renderer;

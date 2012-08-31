@@ -320,7 +320,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	@Override
 	public SpoutPlayer[] getOnlinePlayers() {
-		Map<String, SpoutPlayer> playerList = onlinePlayers.get();
+		Map<String, SpoutPlayer> playerList = players.get();
 		ArrayList<SpoutPlayer> onlinePlayers = new ArrayList<SpoutPlayer>(playerList.size());
 		for (SpoutPlayer player : playerList.values()) {
 			if (player.isOnline()) {
@@ -349,14 +349,14 @@ public class SpoutServer extends SpoutEngine implements Server {
 	public Player getPlayer(String name, boolean exact) {
 		name = name.toLowerCase();
 		if (exact) {
-			for (Player player : onlinePlayers.getValues()) {
+			for (Player player : players.getValues()) {
 				if (player.getName().equalsIgnoreCase(name)) {
 					return player;
 				}
 			}
 			return null;
 		} else {
-			return StringUtil.getShortest(StringUtil.matchName(onlinePlayers.getValues(), name));
+			return StringUtil.getShortest(StringUtil.matchName(players.getValues(), name));
 		}
 	}
 
