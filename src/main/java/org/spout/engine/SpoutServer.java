@@ -160,6 +160,9 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	@Override
 	public boolean stop(final String message) {
+		if (!super.stop(message, false)) {
+			return false;
+		}
 		Runnable finalTask = new Runnable() {
 			public void run() {
 				for (Player player : getOnlinePlayers()) {
@@ -176,8 +179,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 			}
 		};
 		scheduler.submitFinalTask(finalTask);
-		scheduler.stop(1);
-		return super.stop(message);
+		scheduler.stop();
+		return true;
 	}
 
 	@Override
