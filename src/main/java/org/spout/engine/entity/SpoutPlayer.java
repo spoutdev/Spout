@@ -76,7 +76,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	}
 
 	public SpoutPlayer(String name, Transform transform, int viewDistance) {
-		super(transform, viewDistance);
+		super(transform);
 		this.name = name;
 		displayName.set(name);
 		hashcode = name.hashCode();

@@ -897,7 +897,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		parentRegion.unSkipChunk(this);
 		TickStage.checkStage(TickStage.FINALIZE);
 
-		Integer oldDistance = ((SpoutEntity) entity).getPrevViewDistance();
+		Integer oldDistance = null; //TODO this ((SpoutEntity) entity).getPrevViewDistance();
 		if (oldDistance == null) {
 			return false;
 		}
