@@ -537,11 +537,10 @@ public class WorldFiles {
 			}
 
 			//Setup entity
-			Region r = w.getRegionFromBlock(Math.round(pX), Math.round(pY), Math.round(pZ), LoadOption.NO_LOAD);
+			Region r = w.getRegion((int) Math.floor(pX), (int) Math.floor(pY), (int) Math.floor(pZ), LoadOption.NO_LOAD);
 			if (r == null) {
 				// TODO - this should never happen - entities should be located in the chunk that was just loaded
-				Spout.getLogger().info("Attempted to load entity to unloaded region");
-				Thread.dumpStack();
+				Spout.getLogger().info("Attempted to load entity to unloaded region for block at " + (int) Math.floor(pX) + ", " + (int) Math.floor(pY) + ", " + (int) Math.floor(pZ));
 				return null;
 			}
 			Transform t = new Transform(new Point(r.getWorld(), pX, pY, pZ), new Quaternion(qX, qY, qZ, qW, false), new Vector3(sX, sY, sZ));
