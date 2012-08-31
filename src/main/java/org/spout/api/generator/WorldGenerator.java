@@ -34,7 +34,8 @@ public interface WorldGenerator {
 	/**
 	 * Gets the block structure for a Chunk.
 	 *
-	 * The CuboidBuffer will always be exactly one Chunk in size {@link org.spout.api.geo.cuboid.Chunk#CHUNKS} cubed and Chunk aligned.
+	 * The CuboidBuffer will always be exactly one Chunk in size {@link org.spout.api.geo.cuboid.Chunk#CHUNKS}
+	 * cubed and Chunk aligned.
 	 *
 	 * Structural blocks should not contain any lighting sources and the
 	 * generator should give repeatable results.
@@ -46,19 +47,21 @@ public interface WorldGenerator {
 	 * @param chunkX coordinate
 	 * @param chunkY coordinate
 	 * @param chunkZ coordinate
+	 * @param seed the seed used to seed noise and randoms for generation
 	 */
-	public BiomeManager generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ);
-	
+	public BiomeManager generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ, long seed);
+
 	/**
-	 * Gets the surface height of the world.  This is used for initialisation purposed only, so only needs reasonable accuracy.<br>
-	 * <br>
-	 * The result value should be a 2d array of size {@link  org.spout.api.geo.cuboid.Chunk#CHUNK_SIZE} squared.<br>
-	 * <br>
-	 * This hint will improve lighting calculations for players who move into new areas.
-	 * 
+	 * Gets the surface height of the world. This is used for initialisation
+	 * purposed only, so only needs reasonable accuracy.<br> <br> The result
+	 * value should be a 2d array of size {@link  org.spout.api.geo.cuboid.Chunk#CHUNK_SIZE}
+	 * squared.<br> <br> This hint will improve lighting calculations for
+	 * players who move into new areas.
+	 *
 	 * @param chunkX coordinate
 	 * @param chunkZ coordinate
-	 * @return the surface height array for the column, or null not to provide a hint
+	 * @return the surface height array for the column, or null not to provide a
+	 * hint
 	 */
 	public int[][] getSurfaceHeight(World world, int chunkX, int chunkZ);
 
@@ -70,7 +73,8 @@ public interface WorldGenerator {
 	public Populator[] getPopulators();
 
 	/**
-	 * Gets the name of the generator.  This name should be unique to prevent two generators overwriting the same world
+	 * Gets the name of the generator. This name should be unique to prevent two
+	 * generators overwriting the same world
 	 */
 	public String getName();
 }

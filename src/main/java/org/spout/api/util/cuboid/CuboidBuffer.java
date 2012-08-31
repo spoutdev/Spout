@@ -26,8 +26,6 @@
  */
 package org.spout.api.util.cuboid;
 
-import org.spout.api.geo.World;
-import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Vector3;
 
 /**
@@ -51,30 +49,24 @@ import org.spout.api.math.Vector3;
  * TODO is this the best package to put this?
  */
 public abstract class CuboidBuffer {
-	private final World world;
-
 	private final int sizeX;
 	private final int sizeY;
 	private final int sizeZ;
-
 	private final int baseX;
 	private final int baseY;
 	private final int baseZ;
-
-	// Note: These values are not actually within the cuboid
-	//       The cuboid goes from baseX to baseX + sizeX - 1
-	//       top* = base* + size*
+	/**
+	 * Note: These values are not actually within the cuboid The cuboid goes
+	 * from baseX to baseX + sizeX - 1 top = base + size
+	 */
 	private final int topX;
 	private final int topY;
 	private final int topZ;
-
 	protected final int Xinc;
 	protected final int Yinc;
 	protected final int Zinc;
 
-	protected CuboidBuffer(World world, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
-		this.world = world;
-
+	protected CuboidBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
 		this.sizeZ = sizeZ;
@@ -90,26 +82,19 @@ public abstract class CuboidBuffer {
 		Yinc = sizeZ * (Zinc = sizeX * (Xinc = 1));
 	}
 
-	protected CuboidBuffer(World world, double baseX, double baseY, double baseZ, double sizeX, double sizeY, double sizeZ) {
-		this(world, (int) baseX, (int) baseY, (int) baseZ, (int) sizeX, (int) sizeY, (int) sizeZ);
+	protected CuboidBuffer(double baseX, double baseY, double baseZ, double sizeX, double sizeY, double sizeZ) {
+		this((int) baseX, (int) baseY, (int) baseZ, (int) sizeX, (int) sizeY, (int) sizeZ);
 	}
 
-	protected CuboidBuffer(Point base, Vector3 size) {
-		this(base.getWorld(), base.getX(), base.getY(), base.getZ(), size.getX(), size.getY(), size.getZ());
+	protected CuboidBuffer(Vector3 base, Vector3 size) {
+		this(base.getX(), base.getY(), base.getZ(), size.getX(), size.getY(), size.getZ());
 	}
 
 	/**
 	 * Gets a Point representing the base of this CuboidBuffer
 	 */
-	public Point getBase() {
-		return new Point(world, baseX, baseY, baseZ);
-	}
-
-	/**
-	 * Gets a World the CuboidBuffer is located in
-	 */
-	public World getWorld() {
-		return world;
+	public Vector3 getBase() {
+		return new Vector3(baseX, baseY, baseZ);
 	}
 
 	/**
@@ -171,24 +156,21 @@ public abstract class CuboidBuffer {
 	public abstract void copyElement(int thisIndex, int sourceIndex, int runLength);
 
 	public abstract void setSource(CuboidBuffer source);
-	
+
 	public abstract short get(int x, int y, int z);
 
 	@Override
 	public String toString() {
-		return this.getClass().getSimpleName() + "{Buffer Size=" + sizeX * sizeY * sizeZ + ", Base=(" + world.getName() + ", " + baseX + ", " + baseY + ", " + baseZ + "}, Size=(" + sizeX + ", " + sizeY + ", " + sizeZ + "), " + "Increments=(" + Xinc + ", " + Yinc + ", " + Zinc + "), Top=(" + topX + ", " + topY + ", " + topZ + ")}";
+		return this.getClass().getSimpleName() + "{Buffer Size=" + sizeX * sizeY * sizeZ + ", Base=(" + baseX + ", " + baseY + ", " + baseZ + "}, Size=(" + sizeX + ", " + sizeY + ", " + sizeZ + "), " + "Increments=(" + Xinc + ", " + Yinc + ", " + Zinc + "), Top=(" + topX + ", " + topY + ", " + topZ + ")}";
 	}
 
 	protected static class CuboidBufferCopyRun {
-
 		private int overlapBaseX;
 		private int overlapBaseY;
 		private int overlapBaseZ;
-
 		private int overlapSizeX;
 		private int overlapSizeY;
 		private int overlapSizeZ;
-
 		private int sourceIndex;
 		private int targetIndex;
 

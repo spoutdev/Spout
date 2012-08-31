@@ -123,5 +123,5 @@ public interface AreaBlockSource {
 	 * @param z coordinate of the block
 	 * @return The biome type at the location, or null if no biome exists.
 	 */
-	public Biome getBiomeType(int x, int y, int z);
+	public Biome getBiome(int x, int y, int z);
 }

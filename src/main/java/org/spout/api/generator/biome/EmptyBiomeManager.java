@@ -26,8 +26,7 @@
  */
 package org.spout.api.generator.biome;
 
-public class EmptyBiomeManager extends BiomeManager{
-
+public class EmptyBiomeManager extends BiomeManager {
 	public EmptyBiomeManager(int chunkX, int chunkY, int chunkZ) {
 		super(chunkX, chunkY, chunkZ);
 	}
@@ -44,9 +43,8 @@ public class EmptyBiomeManager extends BiomeManager{
 
 	@Override
 	public void deserialize(byte[] bytes) {
-
 	}
-	
+
 	@Override
 	public EmptyBiomeManager clone() {
 		return new EmptyBiomeManager(getChunkX(), getChunkY(), getChunkZ());

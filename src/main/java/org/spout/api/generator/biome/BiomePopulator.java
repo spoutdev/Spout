@@ -43,8 +43,7 @@ public final class BiomePopulator extends Populator {
 
 	@Override
 	public final void populate(Chunk chunk, Random random) {
-		//TODO: is using the biome in the corner of the chunk a good way to decorate it?
-		Biome biome = chunk.getBiomeType(7, 7, 7);
+		final Biome biome = chunk.getBiome(7, 7, 7);
 		if (biome != null) {
 			biome.decorate(chunk, random);
 		}
