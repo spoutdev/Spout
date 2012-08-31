@@ -94,7 +94,7 @@ public class MessagingCommands {
 	@Command(aliases = {"tell", "msg"}, usage = "<target> <message>", desc = "Tell a message to a specific user", min = 2)
 	@CommandPermissions("spout.command.tell")
 	public void tell(CommandContext args, CommandSource source) throws CommandException {
-		if (Spout.getPlatform() != Platform.SERVER || Spout.getPlatform() != Platform.PROXY) {
+		if (Spout.getPlatform() != Platform.SERVER && Spout.getPlatform() != Platform.PROXY) {
 			throw new CommandException("You may only message other users in server mode.");
 		}
 
@@ -109,5 +109,14 @@ public class MessagingCommands {
 		} else {
 			throw new CommandException("Player '" + playerName + "' not found.");
 		}
+	}
+
+	@Command(aliases = {"emote", "me", "action"}, usage = "<action>", desc = "Emote in the third person", min = 1)
+	@CommandPermissions("spout.command.emote")
+	public void emote(CommandContext args, CommandSource source) throws CommandException {
+		if (Spout.getPlatform() != Platform.SERVER && Spout.getPlatform() != Platform.PROXY) {
+			throw new CommandException("You may only message other users in server mode.");
+		}
+		((Server) Spout.getEngine()).broadcastMessage(ChatStyle.YELLOW, ChatStyle.ITALIC, source.getName(), " ", args.getJoinedString(0));
 	}
 }

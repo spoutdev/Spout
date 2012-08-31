@@ -30,7 +30,6 @@ import java.net.InetAddress;
 
 import org.spout.api.Spout;
 import org.spout.api.chat.style.ChatStyle;
-import org.spout.api.component.components.WorldComponent;
 import org.spout.api.entity.Player;
 import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
@@ -40,11 +39,11 @@ import org.spout.api.event.player.PlayerBanKickEvent;
 import org.spout.api.event.player.PlayerConnectEvent;
 import org.spout.api.event.player.PlayerJoinEvent;
 import org.spout.api.event.player.PlayerLoginEvent;
-import org.spout.api.event.server.BanChangeEvent.BanType;
+import org.spout.api.event.player.PlayerWhitelistKickEvent;
 import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 import org.spout.api.event.storage.PlayerLoadEvent;
 import org.spout.api.geo.World;
-
+import org.spout.api.util.access.BanType;
 import org.spout.engine.SpoutServer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.protocol.SpoutSession;
@@ -96,17 +95,25 @@ public class SpoutServerListener implements Listener {
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		Player p = event.getPlayer();
 		PlayerBanKickEvent banEvent = null;
+		PlayerWhitelistKickEvent whitelistEvent = null;
 		InetAddress address = p.getAddress();
 		if (address == null) {
 			event.disallow("Invalid IP Address!");
-		} else if (server.isBanned(p.getName())) {
-			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.PLAYER, server.getBanMessage()));
-		} else if (server.isIpBanned(address.getHostAddress())) {
-			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.IP, server.getIpBanMessage()));
+		} else if (server.getAccessManager().isBanned(BanType.PLAYER, p.getName())) {
+			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.PLAYER, server.getAccessManager().getBanMessage(BanType.PLAYER)));
+		} else if (server.getAccessManager().isBanned(BanType.IP, address.getHostAddress())) {
+			banEvent = server.getEventManager().callEvent(new PlayerBanKickEvent(p, BanType.IP, server.getAccessManager().getBanMessage(BanType.IP)));
+		} else if (server.getAccessManager().isWhitelistEnabled() && !server.getAccessManager().isWhitelisted(p.getName())) {
+			whitelistEvent = server.getEventManager().callEvent(new PlayerWhitelistKickEvent(p, server.getAccessManager().getWhitelistMessage()));
 		}
 
 		if (banEvent != null && !banEvent.isCancelled()) {
-			event.disallow(!banEvent.getMessage().getPlainString().equals("") ? banEvent.getMessage() : (banEvent.getBanType() == BanType.PLAYER) ? server.getBanMessage() : server.getIpBanMessage());
+			event.disallow(!banEvent.getMessage().getPlainString().equals("") ? banEvent.getMessage() : server.getAccessManager().getBanMessage(banEvent.getBanType()));
+			return;
+		}
+
+		if (whitelistEvent != null && !whitelistEvent.isCancelled()) {
+			event.disallow(!whitelistEvent.getMessage().getPlainString().equals("") ? whitelistEvent.getMessage() : server.getAccessManager().getWhitelistMessage());
 			return;
 		}
 

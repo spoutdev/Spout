@@ -67,7 +67,10 @@ public class EntityManager {
 	 * The map of entities to Vector3s(BlockControllers)
 	 */
 	private final Map<Vector3, Entity> blockEntities = new HashMap<Vector3, Entity>();
-
+	
+	/**
+	 * The region with entities this manager manages.
+	 */
 	private final SpoutRegion region;
 	/**
 	 * Player listings plus listings of sync'd entities per player
@@ -84,7 +87,7 @@ public class EntityManager {
 	/**
 	 * Gets all entities.
 	 *
-	 * @return A set of entities.
+	 * @return A collection of entities.
 	 */
 	public Collection<SpoutEntity> getAll() {
 		Collection<SpoutEntity> all = entities.get().values();
@@ -93,7 +96,11 @@ public class EntityManager {
 		}
 		return all;
 	}
-
+	
+	/**
+	 * Gets all the entities that are in a live state (not the snapshot).
+	 * @return A collection of entities 
+	 */
 	public Collection<SpoutEntity> getAllLive() {
 		Collection<SpoutEntity> all = entities.getLive().values();
 		if (all == null) {
@@ -103,6 +110,26 @@ public class EntityManager {
 	}
 
 	/**
+	 * Gets all the players currently in the engine.
+	 * @return The list of players.
+	 */
+	public List<Player> getPlayers() {
+		Map<?, ?> map = players.get();
+		if (map == null) {
+			return Collections.emptyList();
+		}
+		return Collections.unmodifiableList(new ArrayList<Player>(players.get().keySet()));
+	}
+	
+	/**
+	 * Gets the map of all entities at a vector 3. This is for BlockControllers
+	 * @return The map containing entities at a vector 3
+	 */
+	public Map<Vector3, Entity> getBlockEntities() {
+		return Collections.unmodifiableMap(blockEntities);
+	}
+	
+	/**
 	 * Gets an entity by its id.
 	 *
 	 * @param id The id.
@@ -111,7 +138,7 @@ public class EntityManager {
 	public SpoutEntity getEntity(int id) {
 		return entities.get().get(id);
 	}
-
+	
 	/**
 	 * Allocates the id for an entity.
 	 *
@@ -133,7 +160,6 @@ public class EntityManager {
 
 	/**
 	 * Deallocates the id for an entity.
-	 *
 	 * @param entity The entity.
 	 */
 	public void deallocate(SpoutEntity entity) {
@@ -144,10 +170,13 @@ public class EntityManager {
 			entity.setId(SpoutEntity.NOTSPAWNEDID);
 		}
 	}
-
+	
+	/**
+	 * Adds an entity to the manager.
+	 * @param entity The entity
+	 */
 	public void addEntity(SpoutEntity entity) {
 		allocate(entity);
-		
 		if (entity.hasComponent(BlockComponent.class)) {
 			Vector3 pos = entity.getTransform().getPosition().floor();
 			Entity old = blockEntities.put(pos, entity);
@@ -167,10 +196,13 @@ public class EntityManager {
 		}
 		return false;
 	}
-
+	
+	/**
+	 * Removes an entity from the manager.
+	 * @param entity The entity
+	 */
 	public void removeEntity(SpoutEntity entity) {
 		deallocate(entity);
-
 		if (entity.hasComponent(BlockComponent.class)) {
 			Vector3 pos = entity.getTransform().getPosition().floor();
 			Entity be = blockEntities.get(pos);
@@ -188,6 +220,9 @@ public class EntityManager {
 		}
 	}
 
+	/**
+	 * Finalizes the manager at the FINALIZERUN tick stage
+	 */
 	public void finalizeRun() {
 		for (SpoutEntity e : entities.get().values()) {
 			e.finalizeRun();
@@ -203,6 +238,9 @@ public class EntityManager {
 		}
 	}
 
+	/**
+	 * Prepares the manager for a snapshot in the PRESNAPSHOT tickstage
+	 */
 	public void preSnapshotRun() {
 		for (SpoutEntity e : entities.get().values()) {
 			if (e instanceof Player) {
@@ -213,9 +251,9 @@ public class EntityManager {
 			}
 		}
 	}
-
+	
 	/**
-	 * Updates the snapshot for all entities
+	 * Snapshots the manager and all the entities managed in the SNAPSHOT tickstage.
 	 */
 	public void copyAllSnapshots() {
 		for (SpoutEntity e : entities.get().values()) {
@@ -231,19 +269,6 @@ public class EntityManager {
 	 */
 	public SpoutRegion getRegion() {
 		return region;
-	}
-
-	public Map<Vector3, Entity> getBlockEntities() {
-		return Collections.unmodifiableMap(blockEntities);
-	}
-
-
-	public List<Player> getPlayers() {
-		Map<?, ?> map = players.get();
-		if (map == null) {
-			return Collections.emptyList();
-		}
-		return Collections.unmodifiableList(new ArrayList<Player>(players.get().keySet()));
 	}
 
 	/**
