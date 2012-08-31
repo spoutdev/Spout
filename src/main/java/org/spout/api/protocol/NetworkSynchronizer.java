@@ -91,8 +91,8 @@ public abstract class NetworkSynchronizer {
 		this.session = session;
 		player = session.getPlayer();
 		if (player != null) {
-			player.setObserver(true);
-			blockViewDistance = player.getViewDistance();
+			//TODO this
+			blockViewDistance = 0;
 		} else {
 			blockViewDistance = 0;
 		}

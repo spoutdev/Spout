@@ -42,8 +42,6 @@ public class EntitySnapshot {
 	private final String worldName;
 	private final UUID worldId;
 	private final DataMap dataMap;
-	private final int viewDistance;
-	private final boolean observer;
 	private final boolean savable;
 	
 	public EntitySnapshot(Entity e) {
@@ -59,8 +57,6 @@ public class EntitySnapshot {
 		this.location = e.getTransform().getTransformLive();
 		this.worldName = e.getWorld().getName();
 		this.worldId = e.getWorld().getUID();
-		this.viewDistance = e.getViewDistance();
-		this.observer = e.isObserver();
 		this.savable = e.isSavable();
 		DatatableMap deepCopy = new GenericDatatableMap();
 		if (e.getDatatable().getBaseMap().size() > 0) {
@@ -96,14 +92,6 @@ public class EntitySnapshot {
 
 	public final DataMap getDataMap() {
 		return dataMap;
-	}
-
-	public int getViewDistance() {
-		return viewDistance;
-	}
-
-	public boolean isObserver() {
-		return observer;
 	}
 
 	public boolean isSavable() {

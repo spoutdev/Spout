@@ -89,43 +89,6 @@ public interface Entity extends Source, Tickable, WorldSource, EntityComponentHo
 	 */
 	@SnapshotRead
 	public boolean isSavable();
-
-	/**
-	 * Called just before a snapshot update.
-	 */
-	public void finalizeRun();
-
-	/**
-	 * Sets the maximum distance at which the entity can be seen.<br/>
-	 * <br/>
-	 * The actual view distance used by the server may not be exactly the value that is set.<br/>
-	 * @param distance in blocks at which the entity can be seen
-	 */
-	@LiveWrite
-	public void setViewDistance(int distance);
-
-	/**
-	 * Gets the maximum distance at which the entity can be seen.<br/>
-	 * @return the distance in blocks at which the entity can be seen
-	 */
-	@LiveRead
-	public int getViewDistance();
-
-	/**
-	 * Sets whether or not the entity is an observer.<br/>
-	 * An observer is any entity that is allowed to keep chunks from being unloaded.</br>
-	 * @param obs True if the entity should be an observer, false if not
-	 */
-	@DelayedWrite
-	public void setObserver(boolean obs);
-
-	/**
-	 * Checks whether or not the entity is currently observing the region it is in.<br/>
-	 * An observer is any entity that is allowed to keep chunks from being unloaded.<br/>
-	 * @return true if the entity is currently an observer, false if not
-	 */
-	@SnapshotRead
-	public boolean isObserver();
 	
 	/**
 	 * Applies components composed within an EntityType
@@ -133,6 +96,12 @@ public interface Entity extends Source, Tickable, WorldSource, EntityComponentHo
 	 */
 	@LiveWrite
 	public void applyType(EntityType type);
+	
+	/**
+	 * Removes components composed within an EntityType 
+	 * @param type The EntityType to remove
+	 */
+	public void removeType(EntityType type);
 	
 	/**
 	 * Gets the {@link Chunk} this entity resides in, or null if removed.

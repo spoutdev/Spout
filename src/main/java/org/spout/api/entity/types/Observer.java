@@ -31,17 +31,12 @@ import org.spout.api.component.components.EntityComponent;
 /**
  * Component that represents the an entity that observes a radius of chunks
  */
-public class Observer extends EntityComponent {
-	public static final int CHUNK_VIEW_DISTANCE = 4;
-	
+public class Observer extends EntityComponent {	
 	public Observer() {
 	}
 	
 	@Override
 	public void onAttached() {
-		getHolder().setObserver(true);
-		getHolder().setSavable(false);
-		getHolder().setViewDistance(CHUNK_VIEW_DISTANCE);
 	}
 	
 	@Override
