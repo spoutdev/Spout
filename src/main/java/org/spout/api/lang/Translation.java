@@ -93,7 +93,7 @@ public class Translation {
 	 */
 	public static void broadcast(String source, Server onlinePlayers, Object... args) {
 		Platform p = Spout.getPlatform();
-		if (p != Platform.SERVER || p != Platform.PROXY) {
+		if (p != Platform.SERVER && p != Platform.PROXY) {
 			throw new IllegalStateException("You can only broadcast a message in server mode.");
 		}
 		broadcast(source, ((Server) Spout.getEngine()).getOnlinePlayers(), args);

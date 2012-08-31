@@ -202,11 +202,11 @@ public class CommandContext {
 	}
 
 	public Player getPlayer(int index, boolean exact) {
-		Engine engine = Spout.getEngine();
-		if (!(engine instanceof Server)) {
-			throw new IllegalStateException("You can only get players in server mode.");
+		Platform p = Spout.getPlatform();
+		if (p != Platform.SERVER && p != Platform.PROXY) {
+			throw new IllegalStateException("You can only match players in server mode.");
 		}
-		return ((Server) engine).getPlayer(getString(index), exact);
+		return ((Server) Spout.getEngine()).getPlayer(getString(index), exact);
 	}
 
 	public Collection<World> matchWorld(int index) {
@@ -215,7 +215,7 @@ public class CommandContext {
 
 	public Collection<Player> matchPlayer(int index) {
 		Platform p = Spout.getPlatform();
-		if (p != Platform.SERVER || p != Platform.PROXY) {
+		if (p != Platform.SERVER && p != Platform.PROXY) {
 			throw new IllegalStateException("You can only match players in server mode.");
 		}
 		return ((Server) Spout.getEngine()).matchPlayer(getString(index));
