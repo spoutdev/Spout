@@ -29,16 +29,12 @@ package org.spout.engine.entity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.spout.api.component.components.BlockComponent;
-import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.math.MathHelper;
-import org.spout.api.math.Vector3;
 import org.spout.api.protocol.NetworkSynchronizer;
 
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
@@ -62,11 +58,6 @@ public class EntityManager {
 	 * The next id to check.
 	 */
 	private final static AtomicInteger nextId = new AtomicInteger(1);
-
-	/**
-	 * The map of entities to Vector3s(BlockControllers)
-	 */
-	private final Map<Vector3, Entity> blockEntities = new HashMap<Vector3, Entity>();
 	
 	/**
 	 * The region with entities this manager manages.
@@ -122,14 +113,6 @@ public class EntityManager {
 	}
 	
 	/**
-	 * Gets the map of all entities at a vector 3. This is for BlockControllers
-	 * @return The map containing entities at a vector 3
-	 */
-	public Map<Vector3, Entity> getBlockEntities() {
-		return Collections.unmodifiableMap(blockEntities);
-	}
-	
-	/**
 	 * Gets an entity by its id.
 	 *
 	 * @param id The id.
@@ -177,14 +160,6 @@ public class EntityManager {
 	 */
 	public void addEntity(SpoutEntity entity) {
 		allocate(entity);
-		if (entity.hasComponent(BlockComponent.class)) {
-			Vector3 pos = entity.getTransform().getPosition().floor();
-			Entity old = blockEntities.put(pos, entity);
-			if (old != null) {
-				old.remove();
-			}
-		}
-
 		if (entity instanceof Player) {
 			players.putIfAbsent((Player) entity, new ArrayList<SpoutEntity>());
 		}
@@ -203,14 +178,6 @@ public class EntityManager {
 	 */
 	public void removeEntity(SpoutEntity entity) {
 		deallocate(entity);
-		if (entity.hasComponent(BlockComponent.class)) {
-			Vector3 pos = entity.getTransform().getPosition().floor();
-			Entity be = blockEntities.get(pos);
-			if (be == entity) {
-				blockEntities.remove(pos);
-			}
-		}
-
 		if (entity instanceof Player) {
 			NetworkSynchronizer synchronizer = ((Player) entity).getNetworkSynchronizer();
 			if (synchronizer != null) {

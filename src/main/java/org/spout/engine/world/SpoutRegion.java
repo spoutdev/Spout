@@ -1025,25 +1025,31 @@ public class SpoutRegion extends Region {
 
 	@Override
 	public void setBlockComponent(int x, int y, int z, BlockComponent component) {
-		Vector3 pos = new Vector3(x, y, z);
-		Entity entity = this.entityManager.getBlockEntities().get(pos);
-		if (entity != null) {
-			if (component != null) {
-				entity.addComponent(component);
-			} else {
-				entity.remove();
-			}
-		} else {
-			if (component != null) {
-				this.getWorld().createAndSpawnEntity(new Point(pos, getWorld()), null, LoadOption.NO_LOAD).addComponent(component);
+		Point pos = new Point(getWorld(), x, y, z);
+		Entity entity = null;
+		for (Entity e : getAll()) {
+			if (e.getTransform().getPosition().equals(pos)) {
+				entity = e;
+				break;
 			}
 		}
+		if (entity == null) {
+			entity = getWorld().createAndSpawnEntity(pos, null, LoadOption.NO_LOAD);
+		}
+		entity.addComponent(component);
 	}
 
 	@Override
 	public BlockComponent getBlockComponent(int x, int y, int z) {
-		Entity entity = this.entityManager.getBlockEntities().get(new Vector3(x, y, z));
-		return (BlockComponent) (entity == null ? null : entity.getComponent(BlockComponent.class));
+		Point pos = new Point(getWorld(), x, y, z);
+		Entity entity = null;
+		for (Entity e : getAll()) {
+			if (e.getTransform().getPosition().equals(pos)) {
+				entity = e;
+				break;
+			}
+		}
+		return entity == null ? null : entity.getComponent(BlockComponent.class);
 	}
 
 	@Override

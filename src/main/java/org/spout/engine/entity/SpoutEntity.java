@@ -26,6 +26,8 @@
  */
 package org.spout.engine.entity;
 
+import java.awt.List;
+import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -58,8 +60,8 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	private final AtomicBoolean removeLive = new AtomicBoolean(false);
 	private final AtomicBoolean saveLive = new AtomicBoolean(true);	
 	private final AtomicInteger id = new AtomicInteger();
-	private final TransformComponent transform = new TransformComponent();
-	private final NetworkComponent network = new NetworkComponent();
+	private final TransformComponent transformComponent = new TransformComponent();
+	private final NetworkComponent networkComponent = new NetworkComponent();
 	//Snapshot
 	private Chunk chunk;
 	private EntityManager entityManager;
@@ -84,8 +86,8 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 			getTransform().setTransform(transform);
 		}
 		
-		addComponent(this.transform);
-		addComponent(network);
+		addComponent(transformComponent);
+		addComponent(networkComponent);
 	}
 
 	public SpoutEntity(Transform transform) {
@@ -102,7 +104,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 			component.tick(dt);
 		}
 		//If position is dirty, set chunk/manager live values
-		if (transform.isDirty()) {
+		if (transformComponent.isDirty()) {
 			chunkLive.set(getWorld().getChunkFromBlock(getTransform().getPosition(), LoadOption.NO_LOAD));
 			entityManagerLive.set(((SpoutRegion) getRegion()).getEntityManager());
 		}
@@ -134,14 +136,13 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	}
 
 	public void finalizeRun() {
-		if (entityManager != null) {
-			//Move entity from Region A to Region B
-			if (entityManager != entityManagerLive.get()) {
-				entityManager.deallocate(this);
-				if (entityManagerLive.get() != null && !isRemoved()) {
-					//Allocate entity to Region B
-					entityManagerLive.get().allocate(this);
-				}
+		//Move entity from Region A to Region B
+		if (entityManager != entityManagerLive.get()) {
+			entityManager.removeEntity(this);
+			//Only allow non removed entities to move to new region
+			if (!isRemoved()) {
+				//Add entity to Region B
+				entityManagerLive.get().addEntity(this);
 			}
 		}
 		//Entity was removed so automatically remove components
@@ -170,7 +171,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	public World getWorld() {
-		return transform.getPosition().getWorld();
+		return transformComponent.getPosition().getWorld();
 	}
 
 	public boolean justSpawned() {
@@ -199,7 +200,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	public void copySnapshot() {
 		chunk = chunkLive.get();
 		entityManager = entityManagerLive.get();
-		transform.copySnapshot();
+		transformComponent.copySnapshot();
 		justSpawned = false;
 	}
 
@@ -229,12 +230,12 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	public NetworkComponent getNetworkComponent() {
-		return network;
+		return networkComponent;
 	}
 	
 	@Override
 	public TransformComponent getTransform() {
-		return transform;
+		return transformComponent;
 	}
 
 	@Override
@@ -250,7 +251,13 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	public void removeType(EntityType type) {
-		// TODO Auto-generated method stub
-		
+		if (type == null) {
+			return;
+		}
+		for (Component component : type.getComponents()) {
+			if (hasComponent(component.getClass())) {
+				removeComponent(component.getClass());
+			}
+		}
 	}	
 }
