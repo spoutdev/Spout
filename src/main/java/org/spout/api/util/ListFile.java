@@ -50,87 +50,116 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.util.ban;
+package org.spout.api.util;
 
-import java.util.Set;
-
-import org.spout.api.chat.ChatArguments;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Scanner;
 
 /**
- * Represents a system capable of managing player and IP bans and messages.
+ * Utility class for storing lists of player names.
  */
-public interface BanManager {
+public final class ListFile {
 	/**
-	 * Load the ban manager
+	 * The list as we currently know it.
 	 */
-	public void load();
+	private final ArrayList<String> list = new ArrayList<String>();
+	/**
+	 * The file the list is associated with.
+	 */
+	private final File file;
 
 	/**
-	 * Check if a name is banned
-	 * @param player
-	 * @return if the name is banned
+	 * Initialize the player list from the given file.
+	 * @param file The file to use for this list.
 	 */
-	public boolean isBanned(String player);
+	public ListFile(File file) {
+		this.file = file;
+		load();
+	}
 
 	/**
-	 * Set a name as banned or unbanned
-	 * @param player
-	 * @param banned
+	 * Reloads from the file.
 	 */
-	public void setBanned(String player, boolean banned);
+	public void load() {
+		synchronized (list) {
+			list.clear();
+			try {
+				Scanner input = new Scanner(file);
+				while (input.hasNextLine()) {
+					String line = input.nextLine().trim().toLowerCase();
+					if (line.length() > 0) {
+						if (!list.contains(line)) {
+							list.add(line);
+						}
+					}
+				}
+				Collections.sort(list);
+				save();
+			} catch (FileNotFoundException ex) {
+				save();
+			}
+		}
+	}
 
 	/**
-	 * Returns a string set of currently banned names
-	 * @return
+	 * Saves to the file.
 	 */
-	public Set<String> getBannedPlayers();
+	private void save() {
+		try {
+			PrintWriter out = new PrintWriter(new FileWriter(file));
+			for (String str : list) {
+				out.println(str);
+			}
+			out.flush();
+			out.close();
+		} catch (IOException ex) {
+			// Pfft.
+		}
+	}
 
 	/**
-	 * Returns the default ban message
-	 *
-	 * @return default ban message
+	 * Add a player to the list.
+	 * @param player The name to add
 	 */
-	public ChatArguments getBanMessage();
+	public void add(String player) {
+		if (!contains(player)) {
+			list.add(player.trim().toLowerCase());
+		}
+		Collections.sort(list);
+		save();
+	}
 
 	/**
-	 * Sets the default ban message
-	 *
-	 * @param message to set
+	 * Remove a player from the list.
+	 * @param player The name to remove
 	 */
-	public void setBanMessage(Object... message);
+	public void remove(String player) {
+		list.remove(player.trim());
+		save();
+	}
 
 	/**
-	 * Check if an address is banned
-	 * @param address
-	 * @return if the address is banned
+	 * Check if a player is in the list.
+	 * @param player The name to check
+	 * @return Whether this list contains the given name
 	 */
-	public boolean isIpBanned(String address);
+	public boolean contains(String player) {
+		for (String str : list) {
+			if (str.equalsIgnoreCase(player.trim())) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-	/**
-	 * Set an address as banned or unbanned
-	 * @param address
-	 * @param banned
-	 * @return if the address's banned state was changed by this operation
-	 */
-	public void setIpBanned(String address, boolean banned);
-
-	/**
-	 * Returns a string set of currently banned addresses
-	 * @return
-	 */
-	public Set<String> getBannedIps();
-
-	/**
-	 * Gets the default ban message for IP addresses
-	 *
-	 * @return default ban message
-	 */
-	public ChatArguments getIpBanMessage();
-
-	/**
-	 * Sets the default ban message for IP addresses
-	 *
-	 * @param message to set to default
-	 */
-	public void setIpBanMessage(Object... message);
+	public List<String> getContents() {
+		return list;
+	}
 }

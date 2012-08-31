@@ -24,66 +24,27 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.event.server;
+package org.spout.api.event.player;
 
-import org.spout.api.event.Event;
+import org.spout.api.chat.ChatArguments;
+import org.spout.api.entity.Player;
 import org.spout.api.event.HandlerList;
-import org.spout.api.util.access.BanType;
 
-/**
- * Called when a player or ip is banned or unbanned
- */
-public class BanChangeEvent extends Event {
+public class PlayerWhitelistKickEvent extends PlayerEvent {
 	private static HandlerList handlers = new HandlerList();
-	private BanType type;
-	private final String changed;
-	private boolean banned;
+	private ChatArguments message;
 
-	public BanChangeEvent(BanType type, String changed, boolean banned) {
-		this.type = type;
-		this.changed = changed;
-		this.banned = banned;
+	public PlayerWhitelistKickEvent(Player p, Object... message) {
+		super(p);
+		this.message = new ChatArguments(message);
 	}
 
-	/**
-	 * Gets the type of ban that changed
-	 *
-	 * @return ban type
-	 */
-	public BanType getBanType() {
-		return type;
+	public ChatArguments getMessage() {
+		return message;
 	}
 
-	/**
-	 * Gets whether the change is a ban
-	 *
-	 * @return whether the change is a ban
-	 */
-	public boolean isBanned() {
-		return banned;
-	}
-
-	/**
-	 * Sets whether the change is a ban
-	 *
-	 * @param banned whether the change is a ban
-	 */
-	public void setBanned(boolean banned) {
-		this.banned = banned;
-	}
-
-	/**
-	 * Gets the ip or player the change was done to
-	 *
-	 * @return name
-	 */
-	public String getChanged() {
-		return changed;
-	}
-
-	@Override
-	public void setCancelled(boolean cancelled) {
-		super.setCancelled(cancelled);
+	public void setMessage(Object... message) {
+		this.message = new ChatArguments(message);
 	}
 
 	@Override
