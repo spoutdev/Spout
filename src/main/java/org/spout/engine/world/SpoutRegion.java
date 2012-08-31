@@ -1036,6 +1036,9 @@ public class SpoutRegion extends Region {
 		if (entity == null) {
 			entity = getWorld().createAndSpawnEntity(pos, null, LoadOption.NO_LOAD);
 		}
+		if (entity.hasComponent(BlockComponent.class)) {
+			entity.removeComponent(BlockComponent.class);
+		}
 		entity.addComponent(component);
 	}
 
