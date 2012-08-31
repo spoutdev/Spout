@@ -44,7 +44,7 @@ public class FilteredChunkTest {
 	private static Set<String> exemptions = new HashSet<String>() {{
 		add("getBlockController");
 		add("setBlockController");
-		add("getBiomeType");
+		add("getBiome");
 		add("getBlock");
 		add("containsBlock");
 		//Handled by getBlockDataField

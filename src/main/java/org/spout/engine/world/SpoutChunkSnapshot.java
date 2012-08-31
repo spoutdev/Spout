@@ -229,7 +229,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	}
 
 	@Override
-	public Biome getBiomeType(int x, int y, int z) {
+	public Biome getBiome(int x, int y, int z) {
 		return biomes.getBiome(x, y, z);
 	}
 
