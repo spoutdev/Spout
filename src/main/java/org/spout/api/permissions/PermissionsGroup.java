@@ -79,7 +79,7 @@ public class PermissionsGroup implements PermissionsSubject, DataSubject {
 
 	@Override
 	public boolean isGroup() {
-		return false;
+		return true;
 	}
 
 	@Override
