@@ -279,7 +279,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public Biome getBiomeType(int x, int y, int z) {
+	public Biome getBiome(int x, int y, int z) {
 		if (y < 0 || y > getHeight()) {
 			return null;
 		}
@@ -290,7 +290,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		if (chunk == null) {
 			return ((BiomeGenerator) generator).getBiome(x, y, z, seed);
 		}
-		return chunk.getBiomeType(x, y, z);
+		return chunk.getBiome(x, y, z);
 	}
 
 	public SpoutRegion getRegion(int x, int y, int z) {
