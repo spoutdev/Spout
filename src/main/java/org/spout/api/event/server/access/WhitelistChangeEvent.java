@@ -24,17 +24,39 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.event.server;
+package org.spout.api.event.server.access;
 
-import org.spout.api.plugin.ServiceProvider;
+import org.spout.api.event.Event;
+import org.spout.api.event.HandlerList;
 
-/**
- * Called when a {@link ServiceProvider} is being unregistered by the {@link ServiceManager}
- *
- */
-public class ServiceUnregisterEvent extends ServiceEvent {
+public class WhitelistChangeEvent extends Event {
+	private static HandlerList handlers = new HandlerList();
+	private final String player;
+	private boolean whitelisted;
 
-	public ServiceUnregisterEvent(ServiceProvider<?> provider) {
-		super(provider);
+	public WhitelistChangeEvent(String player, boolean whitelisted) {
+		this.player = player;
+		this.whitelisted = whitelisted;
+	}
+
+	public String getPlayerName() {
+		return player;
+	}
+
+	public boolean isWhitelisted() {
+		return whitelisted;
+	}
+
+	public void setWhitelisted(boolean whitelisted) {
+		this.whitelisted = whitelisted;
+	}
+
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
 	}
 }

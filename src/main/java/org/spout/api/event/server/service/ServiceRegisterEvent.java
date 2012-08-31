@@ -24,49 +24,38 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.data;
+package org.spout.api.event.server.service;
 
-import org.junit.Test;
+import org.spout.api.plugin.ServiceManager.ServicePriority;
+import org.spout.api.plugin.ServiceProvider;
 
-import org.spout.api.event.server.RetrieveDataEvent;
-import org.spout.api.geo.World;
+/**
+ * Called when a new {@link ServiceProvider} is being registered by the {@link ServiceManager}.
+ *
+ */
+public class ServiceRegisterEvent extends ServiceEvent {
+	private ServicePriority priority;
 
-import static org.junit.Assert.*;
-
-public class DataProviderTest extends DataProvider implements DataSubject {
-	private final String node = "foo.bar";
-	private final RetrieveDataEvent event = new RetrieveDataEvent(null, this, node);
-
-	@Test
-	public void testDatabase() {
-		String expected = "baz";
-		set(this, node, expected);
-		sendData(event);
-		assertEquals(event.getResult().getString(), expected);
+	public ServiceRegisterEvent(ServiceProvider<?> provider, ServicePriority priority) {
+		super(provider);
+		this.priority = priority;
 	}
 
-	@Override
-	public ValueHolder getData(String node) {
-		return event.getResult();
+	/**
+	 * Sets the priority to register this service at.
+	 * 
+	 * @param priority
+	 */
+	public void setPriority(ServicePriority priority) {
+		this.priority = priority;
 	}
 
-	@Override
-	public ValueHolder getData(World world, String node) {
-		return event.getResult();
-	}
-
-	@Override
-	public boolean hasData(String node) {
-		return false;
-	}
-
-	@Override
-	public boolean hasData(World world, String node) {
-		return false;
-	}
-
-	@Override
-	public String getName() {
-		return "DataProviderTest";
+	/**
+	 * The priority this service is registered at.
+	 * 
+	 * @return priority
+	 */
+	public ServicePriority getPriority() {
+		return priority;
 	}
 }

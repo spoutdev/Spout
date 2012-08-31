@@ -24,19 +24,19 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.event.server;
+package org.spout.api.event.server.plugin;
 
 import org.spout.api.event.HandlerList;
 import org.spout.api.plugin.Plugin;
 
 /**
- * Called when a plugin is enabled via the {@link PluginManager}
+ * Called when a plugin is disabled through the {@link PluginManager}
  *
  */
-public class PluginEnableEvent extends PluginEvent {
+public class PluginDisableEvent  extends PluginEvent {
 	private static final HandlerList handlers = new HandlerList();
 
-	public PluginEnableEvent(Plugin plugin) {
+	public PluginDisableEvent(Plugin plugin) {
 		super(plugin);
 	}
 

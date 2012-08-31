@@ -24,38 +24,61 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.event.server;
+package org.spout.api.event.server.permissions;
 
-import org.spout.api.plugin.ServiceManager.ServicePriority;
-import org.spout.api.plugin.ServiceProvider;
+import org.spout.api.event.Event;
+import org.spout.api.event.HandlerList;
+import org.spout.api.event.Result;
+import org.spout.api.event.world.WorldEvent;
+import org.spout.api.geo.World;
+import org.spout.api.permissions.PermissionsSubject;
 
 /**
- * Called when a new {@link ServiceProvider} is being registered by the {@link ServiceManager}.
- *
+ * This event is called when {@link PermissionsSubject#isInGroup(String)} is called.
  */
-public class ServiceRegisterEvent extends ServiceEvent {
-	private ServicePriority priority;
+public class PermissionGroupsEvent extends WorldEvent {
+	private static final HandlerList handlers = new HandlerList();
+	private final PermissionsSubject subject;
+	private String[] groups;
 
-	public ServiceRegisterEvent(ServiceProvider<?> provider, ServicePriority priority) {
-		super(provider);
-		this.priority = priority;
+	public PermissionGroupsEvent(World world, PermissionsSubject subject) {
+		super(world);
+		this.subject = subject;
 	}
 
 	/**
-	 * Sets the priority to register this service at.
-	 * 
-	 * @param priority
+	 * Gets the groups of the event.
+	 *
+	 * @return all groups of the subject
 	 */
-	public void setPriority(ServicePriority priority) {
-		this.priority = priority;
+	public String[] getGroups() {
+		return groups;
 	}
 
 	/**
-	 * The priority this service is registered at.
-	 * 
-	 * @return priority
+	 * Sets the groups of the event.
+	 *
+	 * @param groups of the subject
 	 */
-	public ServicePriority getPriority() {
-		return priority;
+	public void setGroups(String... groups) {
+		this.groups = groups;
+	}
+
+	/**
+	 * The subject that is being checked.
+	 * 
+	 * @return subject
+	 */
+	public PermissionsSubject getSubject() {
+		return subject;
+	}
+
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
 	}
 }
