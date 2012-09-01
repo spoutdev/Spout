@@ -43,10 +43,8 @@ import org.spout.api.entity.Controller;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.controller.PlayerController;
 import org.spout.api.entity.state.PlayerInputState;
-import org.spout.api.event.Result;
-import org.spout.api.event.server.data.RetrieveDataEvent;
-import org.spout.api.event.server.permissions.PermissionGetGroupsEvent;
-import org.spout.api.event.server.permissions.PermissionGroupEvent;
+import org.spout.api.event.server.RetrieveDataEvent;
+import org.spout.api.event.server.permissions.PermissionGroupsEvent;
 import org.spout.api.event.server.permissions.PermissionNodeEvent;
 import org.spout.api.exception.InvalidControllerException;
 import org.spout.api.geo.World;
@@ -253,35 +251,55 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public boolean hasPermission(World world, String node) {
-		PermissionNodeEvent event = Spout.getEngine().getEventManager().callEvent(new PermissionNodeEvent(world, this, node));
-		if (event.getResult() == Result.DEFAULT) {
-			return false;
-		}
-
+		PermissionNodeEvent event = Spout.getEventManager().callEvent(new PermissionNodeEvent(world, this, node));
 		return event.getResult().getResult();
 	}
 
 	@Override
 	public boolean isInGroup(String group) {
-		PermissionGroupEvent event = Spout.getEngine().getEventManager().callEvent(new PermissionGroupEvent(getWorld(), this, group));
-		return event.getResult();
+		return isInGroup(getWorld(), group);
 	}
 
 	@Override
-	public String[] getGroups() {
-		PermissionGetGroupsEvent event = Spout.getEngine().getEventManager().callEvent(new PermissionGetGroupsEvent(getWorld(), this));
-		return event.getGroups();
-	}
-
-	@Override
-	public boolean isGroup() {
+	public boolean isInGroup(World world, String group) {
+		for (String g : getGroups(world)) {
+			if (g.equalsIgnoreCase(group)) {
+				return true;
+			}
+		}
 		return false;
 	}
 
 	@Override
+	public String[] getGroups() {
+		return getGroups(getWorld());
+	}
+
+	@Override
+	public String[] getGroups(World world) {
+		PermissionGroupsEvent event = Spout.getEventManager().callEvent(new PermissionGroupsEvent(world, this));
+		return event.getGroups();
+	}
+
+	@Override
 	public ValueHolder getData(String node) {
-		RetrieveDataEvent event = Spout.getEngine().getEventManager().callEvent(new RetrieveDataEvent(this, node));
+		return getData(getWorld(), node);
+	}
+
+	@Override
+	public ValueHolder getData(World world, String node) {
+		RetrieveDataEvent event = Spout.getEngine().getEventManager().callEvent(new RetrieveDataEvent(world, this, node));
 		return event.getResult();
+	}
+
+	@Override
+	public boolean hasData(String node) {
+		return hasData(getWorld(), node);
+	}
+
+	@Override
+	public boolean hasData(World world, String node) {
+		return getData(world, node) != null;
 	}
 
 	@Override
