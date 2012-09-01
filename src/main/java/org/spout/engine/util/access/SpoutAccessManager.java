@@ -36,9 +36,9 @@ import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.entity.Player;
-import org.spout.api.event.server.BanChangeEvent;
+import org.spout.api.event.server.access.BanChangeEvent;
 import org.spout.api.util.access.BanType;
-import org.spout.api.event.server.WhitelistChangeEvent;
+import org.spout.api.event.server.access.WhitelistChangeEvent;
 import org.spout.api.util.ListFile;
 import org.spout.api.util.access.AccessManager;
 

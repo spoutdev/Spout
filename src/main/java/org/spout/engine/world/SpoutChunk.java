@@ -414,16 +414,16 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	protected void setCuboid(CuboidBuffer buffer) {
-		Point base = buffer.getBase();
+		Vector3 base = buffer.getBase();
 		Vector3 size = buffer.getSize();
 
-		int startX = base.getBlockX() - this.getBlockX();
-		int startY = base.getBlockY() - this.getBlockY();
-		int startZ = base.getBlockZ() - this.getBlockZ();
+		int startX = base.getFloorX() - this.getBlockX();
+		int startY = base.getFloorY() - this.getBlockY();
+		int startZ = base.getFloorZ() - this.getBlockZ();
 
-		int endX = (base.getBlockX() + (int) size.getX()) - this.getBlockX();
-		int endY = (base.getBlockY() + (int) size.getY()) - this.getBlockY();
-		int endZ = (base.getBlockZ() + (int) size.getZ()) - this.getBlockZ();
+		int endX = (base.getFloorX() + (int) size.getX()) - this.getBlockX();
+		int endY = (base.getFloorY() + (int) size.getY()) - this.getBlockY();
+		int endZ = (base.getFloorZ() + (int) size.getZ()) - this.getBlockZ();
 
 		endX &= BLOCKS.MASK;
 		endY &= BLOCKS.MASK;
@@ -1027,7 +1027,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	@Override
-	public Biome getBiomeType(int x, int y, int z) {
+	public Biome getBiome(int x, int y, int z) {
 		return biomes.getBiome(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK);
 	}
 

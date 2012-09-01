@@ -333,13 +333,14 @@ public class SpoutRegion extends Region {
 		x = this.getChunkX(x);
 		y = this.getChunkY(y);
 		z = this.getChunkZ(z);
-
-		CuboidShortBuffer buffer = new CuboidShortBuffer(getWorld(), x << Chunk.BLOCKS.BITS, y << Chunk.BLOCKS.BITS, z << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
+		final SpoutWorld world = getWorld();
+		
+		CuboidShortBuffer buffer = new CuboidShortBuffer(x << Chunk.BLOCKS.BITS, y << Chunk.BLOCKS.BITS, z << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
 
 		WorldGenerator generator = getWorld().getGenerator();
-		BiomeManager manager = generator.generate(buffer, x, y, z);
+		BiomeManager manager = generator.generate(buffer, x, y, z, world.getSeed());
 
-		return new FilteredChunk(getWorld(), this, x, y, z, buffer.getRawArray(), manager, buffer.getDataMap());
+		return new FilteredChunk(world, this, x, y, z, buffer.getRawArray(), manager, buffer.getDataMap());
 	}
 
 	/**
@@ -1086,8 +1087,8 @@ public class SpoutRegion extends Region {
 	}
 
 	@Override
-	public Biome getBiomeType(int x, int y, int z) {
-		return this.getWorld().getBiomeType(x, y, z);
+	public Biome getBiome(int x, int y, int z) {
+		return this.getWorld().getBiome(x, y, z);
 	}
 
 	@Override
