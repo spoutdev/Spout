@@ -24,61 +24,20 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.event.server.data;
+package org.spout.api.event.server.plugin;
 
-import org.spout.api.data.DataSubject;
-import org.spout.api.data.DataValue;
-import org.spout.api.data.ValueHolder;
 import org.spout.api.event.HandlerList;
-import org.spout.api.event.server.NodeBasedEvent;
+import org.spout.api.plugin.Plugin;
 
 /**
- * This event is called when {@link DataSubject#getData(String)} is called.
+ * Called when a plugin is enabled via the {@link PluginManager}
+ *
  */
-public class RetrieveDataEvent extends NodeBasedEvent {
-	private final DataSubject subject;
-	private ValueHolder result;
+public class PluginEnableEvent extends PluginEvent {
 	private static final HandlerList handlers = new HandlerList();
 
-	public RetrieveDataEvent(DataSubject subject, String node) {
-		super(node);
-		this.subject = subject;
-	}
-
-	/**
-	 * Gets the subject the data is being taken from.
-	 *
-	 * @return subject of data
-	 */
-	public DataSubject getSubject() {
-		return subject;
-	}
-
-	/**
-	 * Returns the raw result of the event.
-	 *
-	 * @return object
-	 */
-	public ValueHolder getResult() {
-		return result;
-	}
-
-	/**
-	 * Sets the result of the event.
-	 *
-	 * @param result
-	 */
-	public void setResult(ValueHolder result) {
-		this.result = result;
-	}
-
-	/**
-	 * Sets the result of the event.
-	 *
-	 * @param result
-	 */
-	public void setResult(Object result) {
-		setResult(new DataValue(result));
+	public PluginEnableEvent(Plugin plugin) {
+		super(plugin);
 	}
 
 	@Override

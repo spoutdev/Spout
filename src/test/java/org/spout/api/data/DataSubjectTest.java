@@ -30,10 +30,11 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import org.spout.api.event.server.data.RetrieveDataEvent;
+import org.spout.api.event.server.RetrieveDataEvent;
+import org.spout.api.geo.World;
 
 public class DataSubjectTest implements DataSubject {
-	private final RetrieveDataEvent event = new RetrieveDataEvent(this, "foo.bar");
+	private final RetrieveDataEvent event = new RetrieveDataEvent(null, this, "foo.bar");
 
 	@Test
 	public void testDataSubject() {
@@ -53,6 +54,21 @@ public class DataSubjectTest implements DataSubject {
 	@Override
 	public ValueHolder getData(String node) {
 		return event.getResult();
+	}
+
+	@Override
+	public ValueHolder getData(World world, String node) {
+		return event.getResult();
+	}
+
+	@Override
+	public boolean hasData(String node) {
+		return false;
+	}
+
+	@Override
+	public boolean hasData(World world, String node) {
+		return false;
 	}
 
 	@Override
