@@ -264,6 +264,8 @@ public final class SpoutScheduler implements Scheduler {
 			
 			TickStage.setStage(TickStage.TICKSTART);
 			runLastTickTasks();
+			taskManager.heartbeat(PULSE_EVERY << 2);
+			taskManager.shutdown(1L);
 			
 			asyncExecutors.copySnapshot();
 			try {
@@ -348,33 +350,10 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	/**
-	 * Stops the scheduler and all tasks.
+	 * Stops the scheduler
 	 */
 	public void stop() {
-		stop(0);
-	}
-	
-	/**
-	 * Stops the scheduler and waits for all tasks to complete
-	 * 
-	 * @param timeout the time in ms, after the main thread completes, to wait for all the tasks to stop
-	 */
-	public void stop(long timeout) {
 		shutdown = true;
-		try {
-			mainThread.join(timeout);
-			if(renderThread != null){
-				renderThread.join(timeout);
-			}
-		} catch (InterruptedException e) {
-			engine.getLogger().info("Main thread interrupted when shutting down");
-			Thread.dumpStack();
-		}
-		if (timeout > 0) {
-			taskManager.shutdown(timeout);
-		} else {
-			taskManager.shutdown(1L);
-		}
 	}
 	
 	public void submitFinalTask(Runnable task) {

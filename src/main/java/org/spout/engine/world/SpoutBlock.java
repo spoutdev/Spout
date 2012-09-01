@@ -327,7 +327,7 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public Biome getBiomeType() {
-		return getWorld().getBiomeType(x, y, z);
+		return getWorld().getBiome(x, y, z);
 	}
 
 	@Override

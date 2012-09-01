@@ -457,20 +457,21 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	public boolean stop(final String message) {
 		return stop(message, true);
 	}
-
+	
 	/**
 	 * Used to allow subclasses submit final tasks before stopping the scheduler
 	 * @param message
 	 * @param stopScheduler
 	 * @return
 	 */
+	
 	protected boolean stop(final String message, boolean stopScheduler) {
 		final SpoutEngine engine = this;
 
 		if (!stopping.compareAndSet(false, true)) {
 			return false;
 		}
-
+		
 		getPluginManager().clearPlugins();
 
 		Runnable lastTickTask = new Runnable() {
@@ -492,7 +493,9 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		};
 		scheduler.submitLastTickTask(lastTickTask);
 		scheduler.submitFinalTask(finalTask);
-		scheduler.stop(1);
+		if (stopScheduler) {
+			scheduler.stop();
+		}
 		return true;
 	}
 
@@ -737,6 +740,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	
 	// Players should use weak map?
 	public Player addPlayer(String playerName, SpoutSession<?> session, int viewDistance) {
+	    //TODO: Fix me!
 		SpoutPlayer player = new SpoutPlayer(playerName, null, viewDistance);
 		players.putIfAbsent(playerName, player);
 		return player;

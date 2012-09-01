@@ -453,6 +453,7 @@ public class WorldFiles {
 		return chunk;
 	}
 
+
 //	private static void loadEntities(SpoutRegion r, CompoundMap map, List<SpoutEntity> loadedEntities) {
 //		if (r != null && map != null) {
 //			for (Tag tag : map) {
