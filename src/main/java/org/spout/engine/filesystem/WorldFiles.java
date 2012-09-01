@@ -574,7 +574,7 @@ public class WorldFiles {
 			}
 
 			//Setup entity
-			Region r = w.getRegion((int) Math.floor(pX), (int) Math.floor(pY), (int) Math.floor(pZ), LoadOption.NO_LOAD);
+			Region r = w.getRegionFromBlock((int) Math.floor(pX), (int) Math.floor(pY), (int) Math.floor(pZ), LoadOption.NO_LOAD);
 			if (r == null) {
 				// TODO - this should never happen - entities should be located in the chunk that was just loaded
 				Spout.getLogger().info("Attempted to load entity to unloaded region for block at " + (int) Math.floor(pX) + ", " + (int) Math.floor(pY) + ", " + (int) Math.floor(pZ));
