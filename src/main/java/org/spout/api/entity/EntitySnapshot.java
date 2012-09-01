@@ -29,6 +29,7 @@ package org.spout.api.entity;
 import java.lang.ref.WeakReference;
 import java.util.UUID;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
@@ -50,9 +51,6 @@ public class EntitySnapshot {
 	public EntitySnapshot(Entity e) {
 		if (e == null) {
 			throw new IllegalArgumentException("Can not take a snapshot of a null entity");
-		}
-		if (e.isDead()) {
-			throw new IllegalArgumentException("Can not take a snapshot of a dead entity");
 		}
 		this.entity = new WeakReference<Entity>(e);
 		this.entityId = e.getId();
@@ -114,5 +112,10 @@ public class EntitySnapshot {
 
 	public boolean isSavable() {
 		return savable;
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

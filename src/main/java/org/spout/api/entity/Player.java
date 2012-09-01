@@ -118,6 +118,13 @@ public interface Player extends CommandSource, Entity {
 	 * @return current input state
 	 */
 	public PlayerInputState input();
+	
+	/**
+	 * Immediately saves the players state to disk
+	 * 
+	 * @return true if successful
+	 */
+	public boolean save();
 
 	public void processInput(PlayerInputState state);
 }

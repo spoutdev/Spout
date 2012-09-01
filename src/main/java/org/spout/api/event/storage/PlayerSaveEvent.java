@@ -31,11 +31,10 @@ import org.spout.api.event.HandlerList;
 import org.spout.api.entity.Player;
 
 /**
- * Called when data about a player needs to be saved, usually right after a player session terminates.
+ * Called after the player state has been saved to disk
  */
 public class PlayerSaveEvent extends Event {
 	private static HandlerList handlers = new HandlerList();
-	private boolean saved = false;
 	private Player player;
 	public PlayerSaveEvent(Player player) {
 		this.player = player;
@@ -48,26 +47,6 @@ public class PlayerSaveEvent extends Event {
 	 */
 	public Player getPlayer() {
 		return player;
-	}
-
-	/**
-	 * True if a plugin has already saved this data.
-	 * 
-	 * @return saved
-	 */
-	public boolean isSaved() {
-		return saved;
-	}
-
-	/**
-	 * Sets the saved state of this event. <br/>
-	 * 
-	 * If the data is not reported saved after it has been called, it will be saved by the default save handler.
-	 * 
-	 * @param save
-	 */
-	public void setSaved(boolean save) {
-		saved = save;
 	}
 
 	@Override
