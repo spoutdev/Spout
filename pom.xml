@@ -13,7 +13,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<noiseVersion>dev-SNAPSHOT</noiseVersion>
-		<nbtVersion>1.0.4-SNAPSHOT</nbtVersion>
+		<nbtVersion>1.0.5-SNAPSHOT</nbtVersion>
 		<powermock.version>1.4.12</powermock.version>
 	</properties>
 

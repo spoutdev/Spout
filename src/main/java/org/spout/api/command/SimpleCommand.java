@@ -325,10 +325,8 @@ public class SimpleCommand implements Command {
 	public String getUsage(String name, List<ChatSection> args, int baseIndex) {
 		ChatArguments usage = new ChatArguments("/", name);
 		for (int i = 0; i <= baseIndex && i < args.size(); ++i) { // Add the arguments preceding the command
+			usage.append(" ");
 			usage.append(args.get(i));
-			if (i <= baseIndex - 1 && i < args.size() - 1) {
-				usage.append(" ");
-			}
 		}
 
 		usage.append(" ");

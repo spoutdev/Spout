@@ -32,7 +32,7 @@ import org.spout.api.data.DataSubject;
 import org.spout.api.lang.Locale;
 import org.spout.api.permissions.PermissionsSubject;
 
-public interface CommandSource extends PermissionsSubject, DataSubject, Source {
+public interface CommandSource extends PermissionsSubject, Source {
 	/**
 	 * Sends a text message to the source of the command.
 	 *

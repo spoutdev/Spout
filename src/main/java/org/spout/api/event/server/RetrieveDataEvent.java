@@ -26,64 +26,66 @@
  */
 package org.spout.api.event.server;
 
-import org.spout.api.event.Event;
+import org.spout.api.data.DataSubject;
+import org.spout.api.data.DataValue;
+import org.spout.api.data.ValueHolder;
 import org.spout.api.event.HandlerList;
-import org.spout.api.util.access.BanType;
+import org.spout.api.event.server.NodeBasedEvent;
+import org.spout.api.geo.World;
 
 /**
- * Called when a player or ip is banned or unbanned
+ * This event is called when {@link DataSubject#getData(String)} is called.
  */
-public class BanChangeEvent extends Event {
-	private static HandlerList handlers = new HandlerList();
-	private BanType type;
-	private final String changed;
-	private boolean banned;
+public class RetrieveDataEvent extends NodeBasedEvent {
+	private final DataSubject subject;
+	private final World world;
+	private ValueHolder result;
+	private static final HandlerList handlers = new HandlerList();
 
-	public BanChangeEvent(BanType type, String changed, boolean banned) {
-		this.type = type;
-		this.changed = changed;
-		this.banned = banned;
+	public RetrieveDataEvent(World world, DataSubject subject, String node) {
+		super(node);
+		this.world = world;
+		this.subject = subject;
+	}
+
+	public World getWorld() {
+		return world;
 	}
 
 	/**
-	 * Gets the type of ban that changed
+	 * Gets the subject the data is being taken from.
 	 *
-	 * @return ban type
+	 * @return subject of data
 	 */
-	public BanType getBanType() {
-		return type;
+	public DataSubject getSubject() {
+		return subject;
 	}
 
 	/**
-	 * Gets whether the change is a ban
+	 * Returns the raw result of the event.
 	 *
-	 * @return whether the change is a ban
+	 * @return object
 	 */
-	public boolean isBanned() {
-		return banned;
+	public ValueHolder getResult() {
+		return result;
 	}
 
 	/**
-	 * Sets whether the change is a ban
+	 * Sets the result of the event.
 	 *
-	 * @param banned whether the change is a ban
+	 * @param result
 	 */
-	public void setBanned(boolean banned) {
-		this.banned = banned;
+	public void setResult(ValueHolder result) {
+		this.result = result;
 	}
 
 	/**
-	 * Gets the ip or player the change was done to
+	 * Sets the result of the event.
 	 *
-	 * @return name
+	 * @param result
 	 */
-	public String getChanged() {
-		return changed;
-	}
-
-	@Override
-	public void setCancelled(boolean cancelled) {
-		super.setCancelled(cancelled);
+	public void setResult(Object result) {
+		setResult(new DataValue(result));
 	}
 
 	@Override

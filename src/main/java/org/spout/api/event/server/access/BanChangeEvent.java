@@ -24,26 +24,74 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.event.server;
+package org.spout.api.event.server.access;
 
 import org.spout.api.event.Event;
-import org.spout.api.plugin.Plugin;
+import org.spout.api.event.HandlerList;
+import org.spout.api.util.access.BanType;
 
 /**
- * Represents an event that deals with a {@link Plugin}
+ * Called when a player or ip is banned or unbanned
  */
-public abstract class PluginEvent extends Event {
-	public final Plugin plugin;
+public class BanChangeEvent extends Event {
+	private static HandlerList handlers = new HandlerList();
+	private BanType type;
+	private final String changed;
+	private boolean banned;
 
-	public PluginEvent(Plugin plugin) {
-		this.plugin = plugin;
+	public BanChangeEvent(BanType type, String changed, boolean banned) {
+		this.type = type;
+		this.changed = changed;
+		this.banned = banned;
 	}
 
 	/**
-	 * Returns the plugin associated with the event
-	 * @return plugin associated with the event
+	 * Gets the type of ban that changed
+	 *
+	 * @return ban type
 	 */
-	public Plugin getPlugin() {
-		return plugin;
+	public BanType getBanType() {
+		return type;
+	}
+
+	/**
+	 * Gets whether the change is a ban
+	 *
+	 * @return whether the change is a ban
+	 */
+	public boolean isBanned() {
+		return banned;
+	}
+
+	/**
+	 * Sets whether the change is a ban
+	 *
+	 * @param banned whether the change is a ban
+	 */
+	public void setBanned(boolean banned) {
+		this.banned = banned;
+	}
+
+	/**
+	 * Gets the ip or player the change was done to
+	 *
+	 * @return name
+	 */
+	public String getChanged() {
+		return changed;
+	}
+
+	@Override
+	public void setCancelled(boolean cancelled) {
+		super.setCancelled(cancelled);
+	}
+
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
 	}
 }

@@ -173,7 +173,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 *
 	 * @return The biome type at the location
 	 */
-	public abstract Biome getBiomeType(int x, int y, int z);
+	public abstract Biome getBiome(int x, int y, int z);
 
 	/**
 	 * Populates the chunk with all the Populators attached to the

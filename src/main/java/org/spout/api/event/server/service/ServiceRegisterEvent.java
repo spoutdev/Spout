@@ -24,40 +24,38 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.generator.biome;
+package org.spout.api.event.server.service;
 
-import java.util.Random;
-import org.spout.api.generator.WorldGeneratorObject;
-import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.plugin.ServiceManager.ServicePriority;
+import org.spout.api.plugin.ServiceProvider;
 
 /**
+ * Called when a new {@link ServiceProvider} is being registered by the {@link ServiceManager}.
  *
  */
-public class WorldGeneratorObjectDecorator extends Decorator {
-	private final int probability;
-	private final WGOFactory factory;
+public class ServiceRegisterEvent extends ServiceEvent {
+	private ServicePriority priority;
 
-	public WorldGeneratorObjectDecorator(int probability, WGOFactory factory) {
-		this.probability = probability;
-		this.factory = factory;
+	public ServiceRegisterEvent(ServiceProvider<?> provider, ServicePriority priority) {
+		super(provider);
+		this.priority = priority;
 	}
 
-	@Override
-	public void populate(Chunk chunk, Random random) {
-		if (random.nextInt(probability) == 0) {
-			final World world = chunk.getWorld();
-			final int worldX = chunk.getBlockX() + random.nextInt(16);
-			final int worldY = chunk.getBlockY() + random.nextInt(16);
-			final int worldZ = chunk.getBlockZ() + random.nextInt(16);
-			WorldGeneratorObject dungeon = factory.createObject(random);
-			if (dungeon.canPlaceObject(world, worldX, worldY, worldZ)) {
-				dungeon.placeObject(world, worldX, worldY, worldZ);
-			}
-		}
+	/**
+	 * Sets the priority to register this service at.
+	 * 
+	 * @param priority
+	 */
+	public void setPriority(ServicePriority priority) {
+		this.priority = priority;
 	}
 
-	public interface WGOFactory {
-		WorldGeneratorObject createObject(Random random);
+	/**
+	 * The priority this service is registered at.
+	 * 
+	 * @return priority
+	 */
+	public ServicePriority getPriority() {
+		return priority;
 	}
 }

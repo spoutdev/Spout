@@ -24,28 +24,17 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.event.server;
+package org.spout.api.event.server.service;
 
-import org.spout.api.event.HandlerList;
-import org.spout.api.plugin.Plugin;
+import org.spout.api.plugin.ServiceProvider;
 
 /**
- * Called when a plugin is disabled through the {@link PluginManager}
+ * Called when a {@link ServiceProvider} is being unregistered by the {@link ServiceManager}
  *
  */
-public class PluginDisableEvent  extends PluginEvent {
-	private static final HandlerList handlers = new HandlerList();
+public class ServiceUnregisterEvent extends ServiceEvent {
 
-	public PluginDisableEvent(Plugin plugin) {
-		super(plugin);
-	}
-
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
-	}
-
-	public static HandlerList getHandlerList() {
-		return handlers;
+	public ServiceUnregisterEvent(ServiceProvider<?> provider) {
+		super(provider);
 	}
 }

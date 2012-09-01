@@ -36,8 +36,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.spout.api.Spout;
-import org.spout.api.event.server.ServiceRegisterEvent;
-import org.spout.api.event.server.ServiceUnregisterEvent;
+import org.spout.api.event.server.service.ServiceRegisterEvent;
+import org.spout.api.event.server.service.ServiceUnregisterEvent;
 
 /**
  * A common service manager.

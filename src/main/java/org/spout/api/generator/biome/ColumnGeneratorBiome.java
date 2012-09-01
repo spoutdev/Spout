@@ -24,28 +24,13 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.event.server;
+package org.spout.api.generator.biome;
 
-import org.spout.api.event.HandlerList;
-import org.spout.api.plugin.Plugin;
+import org.spout.api.util.cuboid.CuboidShortBuffer;
 
 /**
- * Called when a plugin is enabled via the {@link PluginManager}
- *
+ * Defines an abstract biome used by the BiomeColumnGenerator.
  */
-public class PluginEnableEvent extends PluginEvent {
-	private static final HandlerList handlers = new HandlerList();
-
-	public PluginEnableEvent(Plugin plugin) {
-		super(plugin);
-	}
-
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
-	}
-
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
+public abstract class ColumnGeneratorBiome extends Biome {
+	public abstract void generateColumn(CuboidShortBuffer blockData, int x, int chunkY, int z);
 }

@@ -94,13 +94,18 @@ public class SimpleCommandTest implements CommandSource {
 	}
 
 	@Override
+	public boolean isInGroup(World world, String group) {
+		return false;
+	}
+
+	@Override
 	public String[] getGroups() {
 		return new String[0];
 	}
 
 	@Override
-	public boolean isGroup() {
-		return false;
+	public String[] getGroups(World world) {
+		return new String[0];
 	}
 
 	@Override
@@ -111,6 +116,21 @@ public class SimpleCommandTest implements CommandSource {
 	@Override
 	public ValueHolder getData(String node) {
 		return null;
+	}
+
+	@Override
+	public ValueHolder getData(World world, String node) {
+		return null;
+	}
+
+	@Override
+	public boolean hasData(String node) {
+		return false;
+	}
+
+	@Override
+	public boolean hasData(World world, String node) {
+		return false;
 	}
 
 	@Override

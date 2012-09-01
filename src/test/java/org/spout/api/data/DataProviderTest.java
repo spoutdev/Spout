@@ -28,13 +28,14 @@ package org.spout.api.data;
 
 import org.junit.Test;
 
-import org.spout.api.event.server.data.RetrieveDataEvent;
+import org.spout.api.event.server.RetrieveDataEvent;
+import org.spout.api.geo.World;
 
 import static org.junit.Assert.*;
 
 public class DataProviderTest extends DataProvider implements DataSubject {
 	private final String node = "foo.bar";
-	private final RetrieveDataEvent event = new RetrieveDataEvent(this, node);
+	private final RetrieveDataEvent event = new RetrieveDataEvent(null, this, node);
 
 	@Test
 	public void testDatabase() {
@@ -47,6 +48,21 @@ public class DataProviderTest extends DataProvider implements DataSubject {
 	@Override
 	public ValueHolder getData(String node) {
 		return event.getResult();
+	}
+
+	@Override
+	public ValueHolder getData(World world, String node) {
+		return event.getResult();
+	}
+
+	@Override
+	public boolean hasData(String node) {
+		return false;
+	}
+
+	@Override
+	public boolean hasData(World world, String node) {
+		return false;
 	}
 
 	@Override

@@ -26,6 +26,7 @@
  */
 package org.spout.api.data;
 
+import org.spout.api.geo.World;
 import org.spout.api.util.Named;
 
 public interface DataSubject extends Named {
@@ -36,4 +37,30 @@ public interface DataSubject extends Named {
 	 * @return null if the data is not set
 	 */
 	public ValueHolder getData(String node);
+
+	/**
+	 * Gets data from the given node and world
+	 *
+	 * @param world
+	 * @param node
+	 * @return null if the data is not set
+	 */
+	public ValueHolder getData(World world, String node);
+
+	/**
+	 * Whether or not the subject has the data in it's current world.
+	 *
+	 * @param node
+	 * @return true if has data
+	 */
+	public boolean hasData(String node);
+
+	/**
+	 * Whether or not the subject has the data in the specified world.
+	 *
+	 * @param world
+	 * @param node
+	 * @return true if has data
+	 */
+	public boolean hasData(World world, String node);
 }

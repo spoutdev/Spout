@@ -26,14 +26,14 @@
  */
 package org.spout.api.permissions;
 
+import org.spout.api.data.DataSubject;
 import org.spout.api.geo.World;
 import org.spout.api.util.Named;
 
 /**
  * Interface for classes that can have permissions attached to them.
- *
  */
-public interface PermissionsSubject extends Named {
+public interface PermissionsSubject extends DataSubject {
 	/**
 	 * Gets whether or not the {@link Named} has a given permission
 	 *
@@ -51,24 +51,34 @@ public interface PermissionsSubject extends Named {
 	public boolean hasPermission(World world, String node);
 
 	/**
-	 * Gets whether or not the {@link Named} is in a given group
+	 * Whether or not the subject is in the specified group.
 	 *
-	 * @param group name
-	 * @return true if the Named is in the group, otherwise false.
+	 * @param group to check
+	 * @return true if in group
 	 */
 	public boolean isInGroup(String group);
 
 	/**
-	 * Gets the groups this {@link Named} is in.
+	 * Whether or not the subject is in the specified group in the specified world.
 	 *
-	 * @return array of group names.
+	 * @param world of player
+	 * @param group to check
+	 * @return true if in group
+	 */
+	public boolean isInGroup(World world, String group);
+
+	/**
+	 * Gets all groups in the players current world.
+	 *
+	 * @return all groups
 	 */
 	public String[] getGroups();
 
 	/**
-	 * Returns whether or not this Named is a group itself
+	 * Gets all groups in the specified world.
 	 *
-	 * @return true if this is a group.
+	 * @param world to check
+	 * @return all groups from world
 	 */
-	public boolean isGroup();
+	public String[] getGroups(World world);
 }

@@ -31,7 +31,7 @@ import java.util.Map;
 
 import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
-import org.spout.api.event.server.data.RetrieveDataEvent;
+import org.spout.api.event.server.RetrieveDataEvent;
 
 /**
  * Collection of data to easily set data for {@link DataSubject}s. Must be registered as a {@link Listener}.

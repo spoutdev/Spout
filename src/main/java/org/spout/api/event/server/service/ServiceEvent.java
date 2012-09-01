@@ -24,70 +24,31 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.event.server.permissions;
+package org.spout.api.event.server.service;
 
 import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;
-import org.spout.api.geo.World;
-import org.spout.api.permissions.PermissionsSubject;
+import org.spout.api.plugin.ServiceProvider;
 
 /**
- * This event is called when {@link PermissionSubject#getGroups()} is called.
+ * Represents an event that deals with {@link ServiceProvider}s
+ *
  */
-public class PermissionGetGroupsEvent extends Event {
+public class ServiceEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();
-	private final World world;
-	private final PermissionsSubject subject;
-	private String[] groups;
+	private final ServiceProvider<?> provider;
 
-	public PermissionGetGroupsEvent(World world, PermissionsSubject subject) {
-		this.world = world;
-		this.subject = subject;
+	public ServiceEvent(final ServiceProvider<?> provider) {
+		this.provider = provider;
 	}
 
 	/**
-	 * Returns the array of all groups on the given world if set, otherwise globally.
+	 * The service provider this event is handling
 	 * 
-	 * @return array of group names
+	 * @return service provider
 	 */
-	public String[] getGroups() {
-		return groups;
-	}
-
-	/**
-	 * Sets the list of group names.
-	 * 
-	 * @param groups
-	 */
-	public void setGroups(String[] groups) {
-		this.groups = groups;
-	}
-
-	/**
-	 * The subject that is being checked.
-	 * 
-	 * @return subject
-	 */
-	public PermissionsSubject getSubject() {
-		return subject;
-	}
-
-	/**
-	 * The world groups are being checked for, or null if this is a global check.
-	 * 
-	 * @return world, or null if global.
-	 */
-	public World getWorld() {
-		return world;
-	}
-
-	/**
-	 * The name of the world being checked, or null if this is a global check.
-	 * 
-	 * @return world name
-	 */
-	public String getWorldName() {
-		return world == null ? null : world.getName();
+	public ServiceProvider<?> getProvider() {
+		return provider;
 	}
 
 	@Override
@@ -98,4 +59,5 @@ public class PermissionGetGroupsEvent extends Event {
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
+
 }
