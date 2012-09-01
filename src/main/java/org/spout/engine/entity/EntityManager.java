@@ -30,8 +30,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -81,7 +83,7 @@ public class EntityManager {
 	/**
 	 * Player listings plus listings of sync'd entities per player
 	 */
-	private final SnapshotableHashMap<Player, List<SpoutEntity>> players = new SnapshotableHashMap<Player, List<SpoutEntity>>(snapshotManager);
+	private final SnapshotableHashMap<Player, Set<SpoutEntity>> players = new SnapshotableHashMap<Player, Set<SpoutEntity>>(snapshotManager);
 
 	public EntityManager(SpoutRegion region) {
 		if (region == null) {
@@ -213,7 +215,7 @@ public class EntityManager {
 		Controller c = entity.getController();
 		if (c != null) {
 			if (entity instanceof Player) {
-				players.putIfAbsent((Player) entity, new ArrayList<SpoutEntity>());
+				players.putIfAbsent((Player) entity, new HashSet<SpoutEntity>());
 				return;
 			}
 			if (c instanceof BlockController) {
@@ -313,7 +315,8 @@ public class EntityManager {
 	 * Syncs all entities/observers in this region
 	 */
 	public void syncEntities() {
-		Map<Player, List<SpoutEntity>> toSync = players.get();
+		Map<Player, Set<SpoutEntity>> toSync = players.get();
+		Collection<SpoutEntity> allEntities = getAll();
 		for (Player player : toSync.keySet()) {
 			/*
 			 * Offline players have no network synchronizer, skip them
@@ -323,12 +326,9 @@ public class EntityManager {
 			}
 			Integer playerViewDistance = player.getViewDistance();
 			NetworkSynchronizer net = player.getNetworkSynchronizer();
-			List<SpoutEntity> entitiesPerPlayer = toSync.get(player);
-			if (entitiesPerPlayer == null) {
-				entitiesPerPlayer = new ArrayList<SpoutEntity>();
-			}
+			Set<SpoutEntity> entitiesPerPlayer = toSync.get(player);
 			boolean spawn, destroy, update;
-			for (SpoutEntity entity : getAll()) {
+			for (SpoutEntity entity : allEntities) {
 				if (entity.equals(player)) {
 					continue;
 				}
@@ -350,7 +350,6 @@ public class EntityManager {
 				}
 				net.syncEntity(entity, spawn, destroy, update);
 			}
-			players.put(player, entitiesPerPlayer);
 		}
 	}
 }

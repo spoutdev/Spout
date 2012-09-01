@@ -29,7 +29,6 @@ package org.spout.engine.entity;
 import java.net.InetAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-
 import org.spout.api.Server;
 import org.spout.api.Source;
 import org.spout.api.Spout;
@@ -46,6 +45,7 @@ import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.event.server.RetrieveDataEvent;
 import org.spout.api.event.server.permissions.PermissionGroupsEvent;
 import org.spout.api.event.server.permissions.PermissionNodeEvent;
+import org.spout.api.event.storage.PlayerSaveEvent;
 import org.spout.api.exception.InvalidControllerException;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -139,8 +139,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			return false;
 		}
 		sessionLive.set(null);
-		//save player data on disconnect, probably should do this periodically as well...
-		WorldFiles.savePlayerData(this);
 		return true;
 	}
 
@@ -151,6 +149,17 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			((SpoutWorld) getWorld()).removePlayer(this);
 		}
 		return success;
+	}
+
+	@Override
+	public boolean save() {
+		if (!isDead()) {
+			if (WorldFiles.savePlayerData(this)) {
+				Spout.getEngine().getEventManager().callDelayedEvent(new PlayerSaveEvent(this));
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@DelayedWrite

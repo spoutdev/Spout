@@ -35,13 +35,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
+import org.apache.commons.io.FileUtils;
 import org.spout.api.Spout;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
@@ -108,58 +111,92 @@ public class WorldFiles {
 	private static final byte CHUNK_VERSION = 1;
 	private static final int COLUMN_VERSION = 4;
 	
-	public static void savePlayerData(List<SpoutPlayer> Players) {
-	for (SpoutPlayer player : Players) {
-		savePlayerData(player);
+	public static boolean savePlayerData(SpoutPlayer player) {
+		File playerDir = new File(Spout.getEngine().getDataFolder().toString(), "players");
+		//Save data to temp file first
+		String fileName = player.getName() + ".dat";
+		String tempName = fileName + ".temp";
+		File playerData = new File(playerDir, tempName);
+		if (!playerData.exists()) {
+			try {
+				playerData.createNewFile();
+			} catch (Exception e) {
+				Spout.getLogger().log(Level.SEVERE, "Error creating player data for " + player.getName(), e);
+			}
+		}
+		PlayerSnapshot snapshot = new PlayerSnapshot(player);
+		CompoundTag playerTag = saveEntity(snapshot);
+		NBTOutputStream os = null;
+		try {
+			os = new NBTOutputStream(new DataOutputStream(new FileOutputStream(playerData)), false);
+			os.writeTag(playerTag);
+		} catch (IOException e) {
+			Spout.getLogger().log(Level.SEVERE, "Error saving player data for " + player.getName(), e);
+			playerData.delete();
+			return false;
+		} finally {
+			if (os != null) {
+				try {
+				  os.close();
+				} catch (IOException ignore) { }
+			}
+		}
+		try {
+			//Move the temp data to final location
+			File finalData = new File(playerDir, fileName);
+			if (finalData.exists()) {
+				finalData.delete();
+			}
+			FileUtils.moveFile(playerData, finalData);
+			return true;
+		} catch (IOException e) {
+			Spout.getLogger().log(Level.SEVERE, "Error saving player data for " + player.getName(), e);
+			playerData.delete();
+			return false;
 		}
 	}
-	
-	public static void savePlayerData(SpoutPlayer player) {
-		File playerSave = new File(Spout.getEngine().getDataFolder().toString() + File.separator + "players" + File.separator + player.getName() + ".dat");
-		if (!playerSave.exists()) {
+
+	/**
+	 * Loads player data for the player, if it exists
+	 * 
+	 * Returns null on failure or if the data could not be loaded.
+	 * If an exception is thrown or the player data is not in a valid format
+	 * it will be backed up and new player data will be created for the player
+	 * @param name
+	 * @param playerSession
+	 * @return player, or null if it could not be loaded
+	 */
+	public static SpoutPlayer loadPlayerData(String name, SpoutSession<?> playerSession) {
+		File playerDir = new File(Spout.getEngine().getDataFolder().toString(), "players");
+		String fileName = name + ".dat";
+		File playerData = new File(playerDir, fileName);
+		if (playerData.exists()) {
+			NBTInputStream is = null;
 			try {
-					playerSave.createNewFile();
-			} 
-		catch (IOException e) {
-			Spout.getLogger().log(Level.SEVERE, "Error creating player data for " + player.getName(), e);
+				is = new NBTInputStream(new DataInputStream(new FileInputStream(playerData)), false);
+				CompoundTag dataTag = (CompoundTag) is.readTag();
+				World world = Spout.getEngine().getWorld(dataTag.getName());
+				return (SpoutPlayer)loadEntity(world, dataTag, name, playerSession);
+			} catch (Exception e) {
+				Spout.getLogger().log(Level.SEVERE, "Error loading player data for " + name, e);
+				
+				//Back up the corrupt data, so new data can be saved
+				//Back up the file with a unique name, based off the current system time
+				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String time = formatter.format(new Date(System.currentTimeMillis()));
+				File backup = new File(playerDir, fileName + "_" + time + ".bak");
+				if (!playerData.renameTo(backup)) {
+					Spout.getLogger().log(Level.SEVERE, "Failed to back up corrupt player data " + name);
+				} else {
+					Spout.getLogger().log(Level.WARNING, "Successfully backed up corrupt player data for " + name);
+				}
+			} finally {
+				try {
+					is.close();
+				} catch (IOException ignore) { }
 			}
 		}
-	    CompoundTag playerTag = saveEntity(new PlayerSnapshot(player));
-        NBTOutputStream os = null;
-        try {
-          os = new NBTOutputStream(new DataOutputStream(new FileOutputStream(playerSave)), false);
-          os.writeTag(playerTag);
-        } catch (IOException e) {
-          Spout.getLogger().log(Level.SEVERE, "Error saving player data for " + player.getName(), e);
-        } finally {
-          if (os != null)
-            try {
-              os.close();
-            }
-            catch (IOException ignore) {
-            }
-        }
-      }
-	
-	public static SpoutPlayer loadPlayerData(String name, SpoutSession<?> playerSession) {
-			File playerData = new File(Spout.getEngine().getDataFolder().toString() + File.separator + "players" + File.separator + name + ".dat");
-			SpoutPlayer player = null;
-			if (playerData.exists()) {
-				NBTInputStream is = null;
-				try {
-					is = new NBTInputStream(new DataInputStream(new FileInputStream(playerData)), false);
-					CompoundTag dataTag = (CompoundTag) is.readTag();
-					World world = Spout.getEngine().getWorld(dataTag.getName());
-					player = (SpoutPlayer)loadEntity(world, dataTag, name, playerSession);
-					is.close();
-				}
-				catch (Exception e) {
-					Spout.getLogger().log(Level.SEVERE, "Error loading player data for " + name, e);
-				}
-				return player;
-			}
-			// should never make it here, if it does it's null anyhow...
-			return null;
+		return null;
 	}
 	
 	public static void saveWorldData(SpoutWorld world) {
