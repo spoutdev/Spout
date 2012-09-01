@@ -281,7 +281,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 				boundProtocols.clear();
 			}
 		};
-		scheduler.submitFinalTask(finalTask);
+		scheduler.submitFinalTask(finalTask, true);
 		scheduler.stop();
 		return true;
 	}

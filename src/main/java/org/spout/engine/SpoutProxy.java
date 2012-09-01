@@ -131,7 +131,7 @@ public class SpoutProxy extends SpoutServer {
 				clientBootstrap.getFactory().releaseExternalResources();
 			}
 		};
-		scheduler.submitFinalTask(finalTask);
+		scheduler.submitFinalTask(finalTask, true);
 		scheduler.stop();
 		return true;
 	}

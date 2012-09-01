@@ -72,6 +72,7 @@ import org.teleal.cling.support.model.PortMapping;
 import org.teleal.cling.transport.spi.InitializationException;
 
 import org.spout.api.Server;
+import org.spout.api.Spout;
 import org.spout.api.event.Listener;
 import org.spout.api.event.server.ServerStartEvent;
 import org.spout.api.plugin.Platform;
@@ -178,7 +179,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 				boundProtocols.clear();
 			}
 		};
-		scheduler.submitFinalTask(finalTask);
+		scheduler.submitFinalTask(finalTask, true);
 		scheduler.stop();
 		return true;
 	}
