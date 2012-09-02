@@ -34,6 +34,7 @@ import java.util.concurrent.Future;
 
 import org.spout.api.entity.Entity;
 import org.spout.api.generator.biome.Biome;
+import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.AreaBlockAccess;
 import org.spout.api.geo.AreaPhysicsAccess;
 import org.spout.api.geo.LoadOption;
@@ -175,6 +176,13 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 * @return The biome type at the location
 	 */
 	public abstract Biome getBiome(int x, int y, int z);
+
+	/**
+	 * Gets the biome manager for this chunk
+	 * 
+	 * @return manager
+	 */
+	public abstract BiomeManager getBiomeManager();
 
 	/**
 	 * Populates the chunk with all the Populators attached to the
