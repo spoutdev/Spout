@@ -254,8 +254,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		// loaded chunk
 		this.biomes = manager;
 		this.regionThread = region.getExceutionThread();
-
-		world.getEngine().getLeakThread().monitor(this);
 		selfReference = new WeakReference<Chunk>(this);
 		this.scheduler = (SpoutScheduler) Spout.getScheduler();
 	}

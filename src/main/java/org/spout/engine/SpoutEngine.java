@@ -151,7 +151,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	protected final ConcurrentMap<SocketAddress, Protocol> boundProtocols = new ConcurrentHashMap<SocketAddress, Protocol>();
 	protected final ChannelGroup group = new DefaultChannelGroup();
 	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
-	private final MemoryLeakThread leakThread = new MemoryLeakThread();
 	protected SpoutConfiguration config = new SpoutConfiguration();
 	private final CompletionManager completions = new CompletionManagerImpl();
 	private File worldFolder = new File(".");
@@ -207,7 +206,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 		if (debugMode()) {
 			log("Debug Mode has been toggled on!  This mode is intended for developers only", Level.WARNING);
-			leakThread.start();
 		}
 
 		scheduler.scheduleSyncRepeatingTask(this, new SessionTask(sessions), 50, 50, TaskPriority.CRITICAL);
@@ -755,10 +753,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public FileSystem getFilesystem() {
 		return filesystem;
-	}
-
-	public MemoryLeakThread getLeakThread() {
-		return leakThread;
 	}
 
 	public MultiConsole getConsoles() {
