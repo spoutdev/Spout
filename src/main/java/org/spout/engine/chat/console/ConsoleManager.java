@@ -78,7 +78,7 @@ public final class ConsoleManager {
 		console.init();
 		logger.addHandler(handler);
 		System.setOut(new PrintStream(new LoggerOutputStream(Level.INFO), true));
-		System.setErr(new PrintStream(new LoggerOutputStream(Level.INFO), true));
+		System.setErr(new PrintStream(new LoggerOutputStream(Level.SEVERE), true));
 	}
 
 	private static class ServerShutdownThread extends Thread {
