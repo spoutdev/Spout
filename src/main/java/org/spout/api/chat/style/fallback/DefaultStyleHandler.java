@@ -62,21 +62,7 @@ public class DefaultStyleHandler extends StyleHandler {
 		return formatted;
 	}
 
-	private static final Pattern STYLE_PATTERN = Pattern.compile("(?:\\{\\{([^\\}]+)\\}\\})?([^\\{]*)");
 	public ChatArguments extractArguments(String str) {
-		ChatArguments args = new ChatArguments();
-		Matcher matcher = STYLE_PATTERN.matcher(str);
-		while (matcher.find()) {
-			if (matcher.group(1) != null) {
-				ChatStyle style = ChatStyle.byName(matcher.group(1));
-				if (style == null) {
-					args.append(matcher.group(0));
-					continue;
-				}
-				args.append(style);
-			}
-			args.append(matcher.group(2));
-		}
-		return args;
+		return new ChatArguments(str);
 	}
 }

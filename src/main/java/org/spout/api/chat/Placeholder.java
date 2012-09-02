@@ -36,7 +36,7 @@ public class Placeholder {
 	private final String name;
 
 	public Placeholder(String name) {
-		this.name = name;
+		this.name = name.toUpperCase();
 	}
 
 	public String getName() {

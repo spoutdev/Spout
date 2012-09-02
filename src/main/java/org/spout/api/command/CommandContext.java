@@ -87,7 +87,7 @@ public class CommandContext {
 			if (arg.length() == 0) {
 				continue;
 			}
-			
+
 			argIndexList.add(i);
 
 			switch (arg.getPlainString().charAt(0)) {
