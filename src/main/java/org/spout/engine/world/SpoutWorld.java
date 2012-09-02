@@ -1024,6 +1024,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	public void unload(boolean save) {
 		this.getLightingManager().abort();
+		this.pregen.interrupt();
 		if (save) {
 			WorldFiles.saveWorldData(this);
 		}

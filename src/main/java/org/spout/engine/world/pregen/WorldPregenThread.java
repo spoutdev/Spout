@@ -69,6 +69,9 @@ public class WorldPregenThread extends Thread{
 							} catch (InterruptedException e) {
 								return;
 							}
+							if (this.isInterrupted()) {
+								return;
+							}
 						}
 					}
 				}
