@@ -49,7 +49,7 @@ public interface WorldGenerator {
 	 * @param chunkZ coordinate
 	 * @param seed the seed used to seed noise and randoms for generation
 	 */
-	public BiomeManager generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ, long seed);
+	public BiomeManager generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ, World world);
 
 	/**
 	 * Gets the surface height of the world. This is used for initialisation

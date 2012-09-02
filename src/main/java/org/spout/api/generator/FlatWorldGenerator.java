@@ -35,7 +35,7 @@ import org.spout.api.util.cuboid.CuboidShortBuffer;
 
 public class FlatWorldGenerator implements WorldGenerator {
 	@Override
-	public BiomeManager generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ, long seed) {
+	public BiomeManager generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ, World world) {
 		if (chunkY < 0) {
 			blockData.flood(BlockMaterial.UNBREAKABLE.getId());
 		}

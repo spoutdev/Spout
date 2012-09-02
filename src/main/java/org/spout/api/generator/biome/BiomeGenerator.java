@@ -33,6 +33,7 @@ import com.google.common.collect.Lists;
 
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGenerator;
+import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 
@@ -76,7 +77,7 @@ public abstract class BiomeGenerator implements WorldGenerator {
 	}
 
 	@Override
-	public BiomeManager generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ, long seed) {
+	public BiomeManager generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ, World world) {
 		final int x = chunkX << Chunk.BLOCKS.BITS;
 		final int z = chunkZ << Chunk.BLOCKS.BITS;
 		final Simple2DBiomeManager biomeManager = new Simple2DBiomeManager(chunkX, chunkY, chunkZ);
@@ -84,15 +85,15 @@ public abstract class BiomeGenerator implements WorldGenerator {
 		for (int dx = x; dx < x + Chunk.BLOCKS.SIZE; ++dx) {
 			for (int dz = z; dz < z + Chunk.BLOCKS.SIZE; ++dz) {
 				biomeData[(dz & Chunk.BLOCKS.MASK) << 4 | (dx & Chunk.BLOCKS.MASK)] =
-						(byte) biomes.getBiome(dx, dz, seed).getId();
+						(byte) biomes.getBiome(dx, dz, world.getSeed()).getId();
 			}
 		}
 		biomeManager.deserialize(biomeData);
-		generateTerrain(blockData, x, chunkY << Chunk.BLOCKS.BITS, z, biomeManager, seed);
+		generateTerrain(blockData, x, chunkY << Chunk.BLOCKS.BITS, z, biomeManager, world);
 		return biomeManager;
 	}
 
-	protected abstract void generateTerrain(CuboidShortBuffer blockData, int x, int y, int z, BiomeManager biomes, long seed);
+	protected abstract void generateTerrain(CuboidShortBuffer blockData, int x, int y, int z, BiomeManager biomes, World world);
 
 	@Override
 	public final Populator[] getPopulators() {

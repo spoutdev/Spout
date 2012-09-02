@@ -26,6 +26,7 @@
  */
 package org.spout.api.generator.biome;
 
+import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 
@@ -50,14 +51,14 @@ public abstract class BiomeColumnGenerator extends BiomeGenerator {
 	}
 
 	@Override
-	public BiomeManager generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ, long seed) {
+	public BiomeManager generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ, World world) {
 		final int x = chunkX << Chunk.BLOCKS.BITS;
 		final int z = chunkZ << Chunk.BLOCKS.BITS;
 		final Simple2DBiomeManager biomeManager = new Simple2DBiomeManager(chunkX, chunkY, chunkZ);
 		byte[] biomeData = new byte[Chunk.BLOCKS.AREA];
 		for (int dx = x; dx < x + Chunk.BLOCKS.SIZE; ++dx) {
 			for (int dz = z; dz < z + Chunk.BLOCKS.SIZE; ++dz) {
-				final Biome biome = biomes.getBiome(dx, dz, seed);
+				final Biome biome = biomes.getBiome(dx, dz, world.getSeed());
 				if (biome instanceof ColumnGeneratorBiome) {
 					((ColumnGeneratorBiome) biome).generateColumn(blockData, dx, chunkY, dz);
 				}
