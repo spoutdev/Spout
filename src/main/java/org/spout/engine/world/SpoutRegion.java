@@ -341,7 +341,7 @@ public class SpoutRegion extends Region {
 		CuboidShortBuffer buffer = new CuboidShortBuffer(x << Chunk.BLOCKS.BITS, y << Chunk.BLOCKS.BITS, z << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
 
 		WorldGenerator generator = getWorld().getGenerator();
-		BiomeManager manager = generator.generate(buffer, x, y, z, world.getSeed());
+		BiomeManager manager = generator.generate(buffer, x, y, z, world);
 
 		return new FilteredChunk(world, this, x, y, z, buffer.getRawArray(), manager, buffer.getDataMap());
 	}
