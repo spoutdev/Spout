@@ -84,6 +84,10 @@ public class CommandContext {
 		List<ChatSection> argList = new ArrayList<ChatSection>(args.size());
 		for (int i = 0; i < args.size(); ++i) {
 			ChatSection arg = args.get(i);
+			if (arg.length() == 0) {
+				continue;
+			}
+			
 			argIndexList.add(i);
 
 			switch (arg.getPlainString().charAt(0)) {
