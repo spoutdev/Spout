@@ -40,7 +40,7 @@ public enum Result {
 	 * Neither deny nor allow the event. The server will proceed with its normal
 	 * handling.
 	 */
-	DEFAULT(null),
+	DEFAULT(false),
 	/**
 	 * Allow / Force the event. The action indicated by the event will take
 	 * place if possible, even if the server would not normally allow the
@@ -48,9 +48,9 @@ public enum Result {
 	 */
 	ALLOW(true);
 
-	private Boolean result;
+	private boolean result;
 
-	private Result(Boolean result) {
+	private Result(boolean result) {
 		this.result = result;
 	}
 
@@ -61,7 +61,7 @@ public enum Result {
 	 * 
 	 * @return the event's resolution.
 	 */
-	public Boolean getResult() {
+	public boolean getResult() {
 		return result;
 	}
 }
