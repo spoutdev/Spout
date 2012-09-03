@@ -30,11 +30,10 @@ package org.spout.api.generator.biome;
  * Manages the biomes for a specific chunk in the world
  */
 public abstract class BiomeManager implements Cloneable {
-	private final int chunkX, chunkY, chunkZ;
+	private final int chunkX, chunkZ;
 
-	public BiomeManager(int chunkX, int chunkY, int chunkZ) {
+	public BiomeManager(int chunkX, int chunkZ) {
 		this.chunkX = chunkX;
-		this.chunkY = chunkY;
 		this.chunkZ = chunkZ;
 	}
 
@@ -45,15 +44,6 @@ public abstract class BiomeManager implements Cloneable {
 	 */
 	public final int getChunkX() {
 		return chunkX;
-	}
-
-	/**
-	 * Gets the y chunk coordinate of the chunk this biome manager oversees
-	 *
-	 * @return y chunk coordinate
-	 */
-	public final int getChunkY() {
-		return chunkY;
 	}
 
 	/**

@@ -28,8 +28,6 @@ package org.spout.api.geo.cuboid;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.AreaChunkAccess;

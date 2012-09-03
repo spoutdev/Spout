@@ -77,10 +77,16 @@ public abstract class BiomeGenerator implements WorldGenerator {
 	}
 
 	@Override
-	public BiomeManager generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ, World world) {
+	public void generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ, World world) {
 		final int x = chunkX << Chunk.BLOCKS.BITS;
 		final int z = chunkZ << Chunk.BLOCKS.BITS;
-		final Simple2DBiomeManager biomeManager = new Simple2DBiomeManager(chunkX, chunkY, chunkZ);
+		generateTerrain(blockData, x, chunkY << Chunk.BLOCKS.BITS, z, world.getBiomeManager(x, z, true), world.getSeed());
+	}
+
+	public BiomeManager generateBiomes(int chunkX, int chunkZ, World world) {
+		final int x = chunkX << Chunk.BLOCKS.BITS;
+		final int z = chunkZ << Chunk.BLOCKS.BITS;
+		final Simple2DBiomeManager biomeManager = new Simple2DBiomeManager(chunkX, chunkZ);
 		byte[] biomeData = new byte[Chunk.BLOCKS.AREA];
 		for (int dx = x; dx < x + Chunk.BLOCKS.SIZE; ++dx) {
 			for (int dz = z; dz < z + Chunk.BLOCKS.SIZE; ++dz) {
@@ -89,11 +95,10 @@ public abstract class BiomeGenerator implements WorldGenerator {
 			}
 		}
 		biomeManager.deserialize(biomeData);
-		generateTerrain(blockData, x, chunkY << Chunk.BLOCKS.BITS, z, biomeManager, world);
 		return biomeManager;
 	}
 
-	protected abstract void generateTerrain(CuboidShortBuffer blockData, int x, int y, int z, BiomeManager biomes, World world);
+	protected abstract void generateTerrain(CuboidShortBuffer blockData, int x, int y, int z, BiomeManager manager, long seed);
 
 	@Override
 	public final Populator[] getPopulators() {

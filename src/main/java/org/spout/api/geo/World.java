@@ -29,18 +29,17 @@ package org.spout.api.geo;
 import java.io.File;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import org.spout.api.Engine;
 import org.spout.api.Source;
-import org.spout.api.entity.Controller;
 import org.spout.api.entity.Controller;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.generator.WorldGenerator;
+import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.map.DefaultedMap;
@@ -123,6 +122,27 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 */
 	@LiveRead
 	public BlockMaterial getTopmostBlock(int x, int z, boolean load);
+	
+	/**
+	 * Gets the biome manager in the given (x, z) column.<br>
+	 * 
+	 * @param x the block x coordinate of the column
+	 * @param z the block z coordinate of the column
+	 * @return the biome manager
+	 */
+	@LiveRead
+	public BiomeManager getBiomeManager(int x, int z);
+
+	/**
+	 * Gets the biome manager in the given (x, z) column.<br>
+	 * 
+	 * @param x the block x coordinate of the column
+	 * @param z the block z coordinate of the column
+	 * @param load height map is loaded if necessary
+	 * @return the biome manager
+	 */
+	@LiveRead
+	public BiomeManager getBiomeManager(int x, int z, boolean load);
 
 	/**
 	 * Gets the entity with the matching unique id
