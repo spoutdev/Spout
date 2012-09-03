@@ -34,14 +34,11 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.spout.api.Source;
@@ -63,6 +60,7 @@ import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeGenerator;
+import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -91,7 +89,6 @@ import org.spout.api.util.sanitation.StringSanitizer;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.Threadsafe;
 import org.spout.engine.SpoutEngine;
-import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.engine.filesystem.WorldFiles;
@@ -291,13 +288,32 @@ public class SpoutWorld extends AsyncManager implements World {
 		if (!(generator instanceof BiomeGenerator)) {
 			return null;
 		}
-		final SpoutChunk chunk = getChunkFromBlock(x, y, z, LoadOption.LOAD_ONLY);
-		if (chunk == null) {
-			return ((BiomeGenerator) generator).getBiome(x, y, z, seed);
+		final SpoutColumn column = getColumn(x, z, true);
+		final BiomeManager manager = column.getBiomeManager();
+		if (manager != null) {
+			final Biome biome = column.getBiomeManager().getBiome(x & SpoutColumn.BLOCKS.MASK, y & SpoutColumn.BLOCKS.MASK, z  & SpoutColumn.BLOCKS.MASK);
+			if (biome != null) {
+				return biome;
+			}
 		}
-		return chunk.getBiome(x, y, z);
+		return ((BiomeGenerator) generator).getBiome(x, y, z, seed);
 	}
 
+	@Override
+	public BiomeManager getBiomeManager(int x, int z) {
+		return getBiomeManager(x, z, false);
+	}
+
+	@Override
+	public BiomeManager getBiomeManager(int x, int z, boolean load) {
+		final SpoutColumn column = getColumn(x, z, load);
+		if (column != null) {
+			return column.getBiomeManager();
+		}
+		return null;
+	}
+
+	@Override
 	public SpoutRegion getRegion(int x, int y, int z) {
 		return getRegion(x, y, z, LoadOption.LOAD_GEN);
 	}

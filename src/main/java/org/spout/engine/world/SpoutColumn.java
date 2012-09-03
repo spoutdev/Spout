@@ -26,19 +26,17 @@
  */
 package org.spout.engine.world;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.spout.api.Spout;
+import org.spout.api.generator.biome.BiomeGenerator;
+import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.LoadOption;
-import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFaces;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.BitSize;
@@ -46,10 +44,6 @@ import org.spout.api.scheduler.TickStage;
 import org.spout.engine.filesystem.WorldFiles;
 
 public class SpoutColumn {
-	/**
-	 * Number of bits on the side of a column
-	 */
-	private static int FILE_VERSION = 3;
 	/**
 	 * Stores the size of the amount of blocks in this Column
 	 */
@@ -65,6 +59,7 @@ public class SpoutColumn {
 	private final AtomicBoolean dirty = new AtomicBoolean(false);
 	private final AtomicBoolean dirtyArray[][];
 	private final BlockMaterial[][] topmostBlocks;
+	private final AtomicReference<BiomeManager> biomes = new AtomicReference<BiomeManager>();
 	private final Thread worldThread;
 
 	public SpoutColumn(SpoutWorld world, int x, int z) {
@@ -86,6 +81,13 @@ public class SpoutColumn {
 		lowestY.set(Integer.MAX_VALUE);
 
 		WorldFiles.readColumn(((SpoutWorld) world).getHeightMapInputStream(x, z), this, this.lowestY, topmostBlocks);
+		//Could not load biomes from column, so calculate them
+		if (biomes.get() == null) {
+			if (world.getGenerator() instanceof BiomeGenerator) {
+				BiomeGenerator generator = (BiomeGenerator)world.getGenerator();
+				setBiomeManager(generator.generateBiomes(x, z, world));
+			}
+		}
 	}
 
 	public void onFinalize() {
@@ -290,5 +292,16 @@ public class SpoutColumn {
 	public void setDirty(int x, int z) {
 		getDirtyFlag(x, z).set(true);
 		dirty.set(true);
+	}
+	
+	public BiomeManager getBiomeManager() {
+		return biomes.get();
+	}
+	
+	public boolean setBiomeManager(BiomeManager manager) {
+		if (biomes.compareAndSet(null, manager)) {
+			return true;
+		}
+		return false;
 	}
 }

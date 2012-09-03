@@ -57,7 +57,6 @@ import org.spout.api.entity.controller.type.ControllerRegistry;
 import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.BiomeManager;
-import org.spout.api.generator.biome.EmptyBiomeManager;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
@@ -109,7 +108,7 @@ public class WorldFiles {
 	private static final byte WORLD_VERSION = 2;
 	private static final byte ENTITY_VERSION = 1;
 	private static final byte CHUNK_VERSION = 1;
-	private static final int COLUMN_VERSION = 4;
+	private static final int COLUMN_VERSION = 5;
 	
 	public static boolean savePlayerData(SpoutPlayer player) {
 		File playerDir = new File(Spout.getEngine().getDataFolder().toString(), "players");
@@ -391,13 +390,6 @@ public class WorldFiles {
 		chunkTags.put(new ByteArrayTag("blockLight", snapshot.getBlockLight()));
 		chunkTags.put(new CompoundTag("entities", saveEntities(snapshot.getEntities())));
 		chunkTags.put(saveDynamicUpdates(blockUpdates));
-
-		byte[] biomes = snapshot.getBiomeManager().serialize();
-		if (biomes != null) {
-			chunkTags.put(new StringTag("biomeManager", snapshot.getBiomeManager().getClass().getCanonicalName()));
-			chunkTags.put(new ByteArrayTag("biomes", biomes));
-		}
-
 		chunkTags.put(new ByteArrayTag("extraData", ((DataMap) snapshot.getDataMap()).getRawMap().compress()));
 
 		CompoundTag chunkCompound = new CompoundTag("chunk", chunkTags);
@@ -444,25 +436,6 @@ public class WorldFiles {
 			byte[] blockLight = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("blockLight")), null);
 			byte[] extraData = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("extraData")), null);
 
-			BiomeManager manager = null;
-			if (map.containsKey("biomes")) {
-				try {
-					String biomeManagerClass = (String) map.get("biomeManager").getValue();
-					byte[] biomes = (byte[]) map.get("biomes").getValue();
-					@SuppressWarnings("unchecked")
-					Class<? extends BiomeManager> clazz = (Class<? extends BiomeManager>) Class.forName(biomeManagerClass);
-					Class<?>[] params = {int.class, int.class, int.class};
-					manager = clazz.getConstructor(params).newInstance(cx, cy, cz);
-					manager.deserialize(biomes);
-				} catch (Exception e) {
-					Spout.getLogger().severe("Failed to read biome data for chunk");
-					e.printStackTrace();
-				}
-			}
-			if (manager == null) {
-				manager = new EmptyBiomeManager(cx, cy, cz);
-			}
-
 			//Convert world block ids to engine material ids
 			SpoutWorld world = r.getWorld();
 			StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
@@ -474,7 +447,7 @@ public class WorldFiles {
 			DatatableMap extraDataMap = new GenericDatatableMap();
 			extraDataMap.decompress(extraData);
 
-			chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), blocks, data, skyLight, blockLight, manager, extraDataMap);
+			chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), blocks, data, skyLight, blockLight, extraDataMap);
 
 			CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("entities")), (CompoundMap) null, CompoundMap.class);
 			loadEntities(r, entityMap, dataForRegion.loadedEntities);
@@ -496,7 +469,7 @@ public class WorldFiles {
 
 	private static void loadEntities(SpoutRegion r, CompoundMap map, List<SpoutEntity> loadedEntities) {
 		if (r != null && map != null) {
-			for (Tag tag : map) {
+			for (Tag<?> tag : map) {
 				SpoutEntity e = loadEntity(r, (CompoundTag) tag);
 				if (e != null) {
 					loadedEntities.add(e);
@@ -509,7 +482,7 @@ public class WorldFiles {
 		CompoundMap tagMap = new CompoundMap();
 
 		for (EntitySnapshot e : entities) {
-			Tag tag = saveEntity(e);
+			Tag<?> tag = saveEntity(e);
 			if (tag != null) {
 				tagMap.put(tag);
 			}
@@ -778,6 +751,34 @@ public class WorldFiles {
 					}
 				}
 			}
+			BiomeManager manager = null;
+			if (version > 4) {
+				try {
+					//Biome manager is serialized with:
+					// - boolean, if a biome manager exists
+					// - String, the class name
+					// - int, the number of bytes of data to read
+					// - byte[], size of the above int in length
+					boolean exists = dataStream.readBoolean();
+					if (exists) {
+						String biomeManagerClass = dataStream.readUTF();
+						int biomeSize = dataStream.readInt();
+						byte[] biomes = new byte[biomeSize];
+						dataStream.readFully(biomes);
+						
+						//Attempt to create the biome manager class from the class name
+						@SuppressWarnings("unchecked")
+						Class<? extends BiomeManager> clazz = (Class<? extends BiomeManager>) Class.forName(biomeManagerClass);
+						Class<?>[] params = {int.class, int.class};
+						manager = clazz.getConstructor(params).newInstance(column.getX(), column.getZ());
+						manager.deserialize(biomes);
+						column.setBiomeManager(manager);
+					}
+				} catch (Exception e) {
+					Spout.getLogger().log(Level.SEVERE, "Failed to read biome data for column", e);
+				}
+			}
+			
 		} catch (IOException e) {
 			Spout.getLogger().severe("Error reading column height-map for column" + column.getX() + ", " + column.getZ());
 		}
@@ -810,6 +811,21 @@ public class WorldFiles {
 					blockId = (short) global.convertTo(itemMap, blockId);
 					dataStream.writeInt(BlockFullState.getPacked(blockId, blockData));
 				}
+			}
+			//Biome manager is serialized with:
+			// - boolean, if a biome manager exists
+			// - String, the class name
+			// - int, the number of bytes of data to read
+			// - byte[], size of the above int in length
+			BiomeManager manager = column.getBiomeManager();
+			if (manager != null) {
+				dataStream.writeBoolean(true);
+				dataStream.writeUTF(manager.getClass().getName());
+				byte[] data = manager.serialize();
+				dataStream.writeInt(data.length);
+				dataStream.write(data);
+			} else {
+				dataStream.writeBoolean(false);
 			}
 			dataStream.flush();
 		} catch (IOException e) {

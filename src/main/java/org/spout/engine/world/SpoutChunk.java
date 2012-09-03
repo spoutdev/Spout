@@ -53,7 +53,6 @@ import org.spout.api.event.block.BlockChangeEvent;
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGeneratorUtils;
 import org.spout.api.generator.biome.Biome;
-import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.AreaBlockSource;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
@@ -64,7 +63,6 @@ import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
 import org.spout.api.geo.cuboid.Region;
-import org.spout.api.geo.discrete.Point;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicMaterial;
@@ -173,10 +171,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	protected final DatatableMap datatableMap;
 	protected final DataMap dataMap;
 	/**
-	 * Manages the biomes for this chunk
-	 */
-	private final BiomeManager biomes;
-	/**
 	 * Shift cache array for shifting fields
 	 */
 	protected final static int[] shiftCache = new int[65536];
@@ -216,11 +210,11 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		}
 	}
 
-	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial, BiomeManager manager, DataMap map) {
-		this(world, region, x, y, z, PopulationState.UNTOUCHED, initial, null, null, null, manager, map.getRawMap());
+	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial, DataMap map) {
+		this(world, region, x, y, z, PopulationState.UNTOUCHED, initial, null, null, null, map.getRawMap());
 	}
 
-	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, BiomeManager manager, DatatableMap extraData) {
+	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, DatatableMap extraData) {
 		super(world, x * BLOCKS.SIZE, y * BLOCKS.SIZE, z * BLOCKS.SIZE);
 		parentRegion = region;
 		blockStore = new AtomicBlockStoreImpl(BLOCKS.BITS, 10, blocks, data);
@@ -252,7 +246,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		lastUnloadCheck.set(world.getAge());
 		blockStore.resetDirtyArrays(); // Clear false dirty state on freshly
 		// loaded chunk
-		this.biomes = manager;
 		this.regionThread = region.getExceutionThread();
 		selfReference = new WeakReference<Chunk>(this);
 		this.scheduler = (SpoutScheduler) Spout.getScheduler();
@@ -1028,11 +1021,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	@Override
-	public Biome getBiome(int x, int y, int z) {
-		return biomes.getBiome(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK);
-	}
-
-	@Override
 	public void copySnapshot() {
 	}
 
@@ -1544,10 +1532,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		return dataMap;
 	}
 
-	public BiomeManager getBiomeManager() {
-		return biomes;
-	}
-
 	public WeakReference<Chunk> getWeakReference() {
 		return selfReference;
 	}
@@ -1626,6 +1610,11 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			physicsUpdates++;
 		}
 		return true;
+	}
+
+	@Override
+	public Biome getBiome(int x, int y, int z) {
+		return getWorld().getBiome((x & BLOCKS.MASK) + this.getBlockX(), (y & BLOCKS.MASK) + this.getBlockY(), (z & BLOCKS.MASK) + this.getBlockZ());
 	}
 
 }
