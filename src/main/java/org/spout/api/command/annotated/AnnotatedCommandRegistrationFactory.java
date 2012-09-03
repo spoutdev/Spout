@@ -163,7 +163,8 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 			}
 			anyRegistered = true;
 
-			if (!nestedClassRegistration(owner, clazz, subInstance, child)) {
+			if (!nestedClassRegistration(owner, clazz, subInstance, child)
+					&& !methodRegistration(owner, clazz, subInstance, child)) {
 				for (Method method : clazz.getDeclaredMethods()) {
 					if (!method.isAnnotationPresent(Executor.class)) {
 						continue;
