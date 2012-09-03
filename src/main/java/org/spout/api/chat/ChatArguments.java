@@ -262,15 +262,6 @@ public class ChatArguments implements Cloneable, ChatSection {
 		return this;
 	}
 
-	public Placeholder getPlaceHolder(String name) {
-		for (Placeholder p : placeholders.keySet()) {
-			if (p.getName().equalsIgnoreCase(name)) {
-				return p;
-			}
-		}
-		return null;
-	}
-
 	public boolean hasPlaceholder(Placeholder placeholder) {
 		return placeholders.containsKey(placeholder);
 	}
