@@ -26,14 +26,9 @@
  */
 package org.spout.engine.entity;
 
-<<<<<<< HEAD
-import java.awt.List;
-import java.util.Collection;
-=======
-import java.util.HashSet;
 import java.util.Set;
->>>>>>> parent of 5225ab5... Update for API-Components branch.
 import java.util.UUID;
+import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -72,14 +67,9 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	private final AtomicBoolean removeLive = new AtomicBoolean(false);
 	private final AtomicBoolean saveLive = new AtomicBoolean(true);	
 	private final AtomicInteger id = new AtomicInteger();
-<<<<<<< HEAD
 	private final TransformComponent transformComponent = new TransformComponent();
 	private final NetworkComponent networkComponent = new NetworkComponent();
-=======
 	private final AtomicInteger viewDistanceLive = new AtomicInteger();
-	private final TransformComponent transform = new TransformComponent();
-	private final NetworkComponent network = new NetworkComponent();
->>>>>>> parent of 5225ab5... Update for API-Components branch.
 	//Snapshot
 	private Chunk chunk;
 	private EntityManager entityManager;
@@ -106,11 +96,6 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 			setupInitialChunk(transform);
 			getTransform().setTransform(transform);
 		}
-<<<<<<< HEAD
-		
-		addComponent(transformComponent);
-		addComponent(networkComponent);
-=======
 
 		int maxViewDistance = SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE;
 
@@ -121,9 +106,8 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		}
 
 		setViewDistance(viewDistance);
-		addComponent(this.transform);
-		addComponent(network);
->>>>>>> parent of 5225ab5... Update for API-Components branch.
+		addComponent(transformComponent);
+		addComponent(networkComponent);
 	}
 
 	public SpoutEntity(Transform transform, int viewDistance) {
@@ -291,14 +275,6 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		return uid;
 	}
 
-	public Matrix getModelMatrix()
-	{
-		Matrix trans = MathHelper.translate(transform.getPosition());
-		Matrix rot = MathHelper.rotate(transform.getRotation());
-
-		return rot.multiply(trans);
-	}
-
 	/**
 	 * Prevents stack overflow when creating an entity during chunk loading due to circle of calls
 	 */
@@ -311,12 +287,8 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	public void copySnapshot() {
 		chunk = chunkLive.get();
 		entityManager = entityManagerLive.get();
-<<<<<<< HEAD
 		transformComponent.copySnapshot();
-=======
 		viewDistance = viewDistanceLive.get();
-		transform.copySnapshot();
->>>>>>> parent of 5225ab5... Update for API-Components branch.
 		justSpawned = false;
 	}
 
@@ -367,20 +339,5 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 			addComponent(component);
 		}
 		type.init(this);
-<<<<<<< HEAD
-	}
-
-	@Override
-	public void removeType(EntityType type) {
-		if (type == null) {
-			return;
-		}
-		for (Component component : type.getComponents()) {
-			if (hasComponent(component.getClass())) {
-				removeComponent(component.getClass());
-			}
-		}
-=======
->>>>>>> parent of 5225ab5... Update for API-Components branch.
 	}	
 }
