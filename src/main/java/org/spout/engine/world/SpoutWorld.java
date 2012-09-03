@@ -100,7 +100,6 @@ import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLong;
-import org.spout.engine.world.pregen.WorldPregenThread;
 
 public class SpoutWorld extends AsyncManager implements World {
 	private SnapshotManager snapshotManager = new SnapshotManager();
@@ -184,8 +183,6 @@ public class SpoutWorld extends AsyncManager implements World {
 	 */
 	private final WeakReference<World> selfReference;
 	public static final WeakReference<World> NULL_WEAK_REFERENCE = new WeakReference<World>(null);
-	
-	private final WorldPregenThread pregen = new WorldPregenThread(this);
 
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid, StringMap itemMap, DatatableMap extraData) {
@@ -234,8 +231,6 @@ public class SpoutWorld extends AsyncManager implements World {
 		taskManager = new SpoutTaskManager(getEngine().getScheduler(), false, t, age);
 		spawnLocation.set(new Transform(new Point(this, 1, 100, 1), Quaternion.IDENTITY, Vector3.ONE));
 		selfReference = new WeakReference<World>(this);
-		
-		pregen.start();
 	}
 
 	@Override
@@ -1049,7 +1044,6 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	public void unload(boolean save) {
 		this.getLightingManager().abort();
-		this.pregen.interrupt();
 		if (save) {
 			WorldFiles.saveWorldData(this);
 		}
