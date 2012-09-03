@@ -336,6 +336,7 @@ public class SpoutBlock implements Block {
 		return getController() != null;
 	}
 
+	@Override
 	public Block queueUpdate(EffectRange range) {
 		getWorld().queueBlockPhysics(this.x, this.y, this.z, range, this.source);
 		return this;

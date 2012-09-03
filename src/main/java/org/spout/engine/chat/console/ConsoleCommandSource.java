@@ -58,10 +58,12 @@ public class ConsoleCommandSource implements CommandSource {
 		return sendMessage(new ChatArguments(text));
 	}
 
+	@Override
 	public void sendCommand(String command, ChatArguments arguments) {
 		processCommand(command, arguments);
 	}
 
+	@Override
 	public void processCommand(String commandName, ChatArguments arguments) {
 		Command command = engine.getRootCommand().getChild(commandName);
 		if (command == null) {
@@ -71,6 +73,7 @@ public class ConsoleCommandSource implements CommandSource {
 		}
 	}
 
+	@Override
 	public boolean sendMessage(ChatArguments message) {
 		return sendRawMessage(message);
 	}
@@ -80,6 +83,7 @@ public class ConsoleCommandSource implements CommandSource {
 		return sendRawMessage(new ChatArguments(text));
 	}
 
+	@Override
 	public boolean sendRawMessage(ChatArguments message) {
 		engine.getConsoles().addMessage(message);
 		return true;

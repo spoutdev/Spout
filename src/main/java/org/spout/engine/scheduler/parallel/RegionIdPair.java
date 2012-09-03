@@ -26,8 +26,6 @@
  */
 package org.spout.engine.scheduler.parallel;
 
-import java.lang.ref.ReferenceQueue;
-
 import org.spout.engine.world.SpoutRegion;
 
 public class RegionIdPair {

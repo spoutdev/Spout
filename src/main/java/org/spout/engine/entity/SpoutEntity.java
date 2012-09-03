@@ -152,6 +152,7 @@ public class SpoutEntity implements Entity, Snapshotable {
 		return true;
 	}
 
+	@Override
 	public void tick(float dt) {
 		if (canTick()) {
 			onTick(dt);

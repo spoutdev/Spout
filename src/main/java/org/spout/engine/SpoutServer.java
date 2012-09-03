@@ -72,7 +72,6 @@ import org.teleal.cling.support.model.PortMapping;
 import org.teleal.cling.transport.spi.InitializationException;
 
 import org.spout.api.Server;
-import org.spout.api.Spout;
 import org.spout.api.event.Listener;
 import org.spout.api.event.server.ServerStartEvent;
 import org.spout.api.plugin.Platform;
@@ -165,6 +164,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 			return false;
 		}
 		Runnable finalTask = new Runnable() {
+			@Override
 			public void run() {
 				for (Player player : getOnlinePlayers()) {
 					ServerStopEvent stopEvent = new ServerStopEvent(message);
@@ -222,6 +222,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		return allowFlight;
 	}
 
+	@Override
 	public List<PortBinding> getBoundAddresses() {
 		List<PortBinding> bindings = new ArrayList<PortBinding>();
 		for (Map.Entry<SocketAddress, Protocol> entry : boundProtocols.entrySet()) {

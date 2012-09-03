@@ -26,7 +26,6 @@
  */
 package org.spout.engine.command;
 
-import java.util.logging.Level;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.command.Command;
@@ -70,6 +69,7 @@ public class InputCommands {
 			this.add  = add;
 		}
 
+		@Override
 		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
 			if (Spout.getPlatform().equals(Platform.CLIENT)) {
 				if (!(source instanceof Player)) {
@@ -94,6 +94,7 @@ public class InputCommands {
 			this.x = x;
 		}
 
+		@Override
 		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
 			if (Spout.getPlatform().equals(Platform.CLIENT)) {
 				if (!(source instanceof Player)) {

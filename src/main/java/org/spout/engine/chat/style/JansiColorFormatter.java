@@ -41,6 +41,7 @@ public class JansiColorFormatter extends JansiStyleFormatter {
 		this.bright = bright;
 	}
 
+	@Override
 	public void format(Ansi ansi, String text) {
 		if (bright) {
 			ansi.fgBright(color);

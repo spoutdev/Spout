@@ -473,6 +473,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		getPluginManager().clearPlugins();
 
 		Runnable lastTickTask = new Runnable() {
+			@Override
 			public void run() {
 				setupComplete.set(false);
 				for (SpoutWorld world : engine.getLiveWorlds()) {
@@ -737,6 +738,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		return loadedWorlds.getLive().values();
 	}
 
+	@Override
 	public CommandSource getCommandSource() {
 		return consoleManager.getCommandSource();
 	}
@@ -766,6 +768,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		return filesystem;
 	}
 
+	@Override
 	public MultiConsole getConsoles() {
 		return console;
 	}

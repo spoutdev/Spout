@@ -127,6 +127,7 @@ public class SpoutProxy extends SpoutServer {
 			return false;
 		}
 		Runnable finalTask = new Runnable() {
+			@Override
 			public void run() {
 				clientBootstrap.getFactory().releaseExternalResources();
 			}

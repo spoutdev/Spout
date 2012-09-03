@@ -29,6 +29,7 @@ package org.spout.engine.chat.style;
 import org.fusesource.jansi.Ansi;
 
 public class ResetJansiFormatter extends JansiStyleFormatter {
+	@Override
 	public void format(Ansi ansi, String text) {
 		ansi.reset().a(text);
 	}

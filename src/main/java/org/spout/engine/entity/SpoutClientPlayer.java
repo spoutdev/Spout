@@ -49,6 +49,7 @@ public class SpoutClientPlayer extends SpoutPlayer {
 		super(name, transform, session, engine, viewDistance);
 	}
 
+	@Override
 	public boolean sendRawMessage(ChatArguments message) {
 		SpoutSession<?> session = getSession();
 		if (session == null) {
@@ -58,6 +59,7 @@ public class SpoutClientPlayer extends SpoutPlayer {
 		return true;
 	}
 
+	@Override
 	public void sendCommand(String commandName, ChatArguments arguments) {
 		Command command = Spout.getEngine().getRootCommand().getChild(commandName);
 		if (command == null) {

@@ -62,19 +62,15 @@ import org.lwjgl.opengl.PixelFormat;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.audio.SoundManager;
-import org.spout.api.command.Command;
 import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.state.PlayerInputState.Flags;
-import org.spout.api.event.world.WorldLoadEvent;
-import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector2;
@@ -89,15 +85,12 @@ import org.spout.api.render.BasicCamera;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
-import org.spout.api.util.StringMap;
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.command.InputManagementCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ClientFileSystem;
-import org.spout.engine.filesystem.SharedFileSystem;
-import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.input.SpoutInput;
 import org.spout.engine.listener.SpoutClientListener;
 import org.spout.engine.listener.channel.SpoutClientConnectListener;
@@ -106,7 +99,6 @@ import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.util.MacOSXUtils;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutClientWorld;
-import org.spout.engine.world.SpoutWorld;
 
 public class SpoutClient extends SpoutEngine implements Client {
 	private final SoundManager soundManager = new SpoutSoundManager();
@@ -276,6 +268,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		rendering = false;
 		stopMessage = message;
 		Runnable finalTask = new Runnable() {
+			@Override
 			public void run() {
 				bootstrap.getFactory().releaseExternalResources();
 				boundProtocols.clear();
@@ -332,6 +325,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return activeWorld.get();
 	}
 
+	@Override
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] datatable) {
 		GenericDatatableMap map = new GenericDatatableMap();
 		map.decompress(datatable);

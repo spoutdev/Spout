@@ -27,8 +27,6 @@
 package org.spout.engine;
 
 import java.io.File;
-import java.util.Arrays;
-
 import org.spout.api.exception.ConfigurationException;
 import org.spout.api.util.config.ConfigurationHolder;
 import org.spout.api.util.config.ConfigurationHolderConfiguration;

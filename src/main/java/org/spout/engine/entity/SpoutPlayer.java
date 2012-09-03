@@ -221,6 +221,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		return sendRawMessage(new ChatArguments(message));
 	}
 
+	@Override
 	public boolean sendRawMessage(ChatArguments message) {
 		sendCommand("say", message);
 		return true;

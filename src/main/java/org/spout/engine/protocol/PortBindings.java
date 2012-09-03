@@ -59,10 +59,12 @@ public class PortBindings extends AnnotatedConfiguration {
 			super(baseConfig);
 		}
 
+		@Override
 		public Protocol getProtocol() {
 			return protocol;
 		}
 
+		@Override
 		public SocketAddress getAddress() {
 			return new InetSocketAddress(address, port);
 		}

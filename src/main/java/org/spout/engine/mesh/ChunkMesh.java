@@ -38,8 +38,6 @@ import org.spout.api.math.Vector3;
 import org.spout.api.model.ModelFace;
 import org.spout.api.model.Vertex;
 import org.spout.engine.util.ChunkSnapshotModel;
-import org.spout.engine.world.SpoutChunk;
-
 import com.google.common.collect.Lists;
 
 /**

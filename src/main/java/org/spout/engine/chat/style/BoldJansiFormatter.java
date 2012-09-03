@@ -29,6 +29,7 @@ package org.spout.engine.chat.style;
 import org.fusesource.jansi.Ansi;
 
 public class BoldJansiFormatter extends JansiStyleFormatter {
+	@Override
 	public void format(Ansi ansi, String text) {
 		ansi.a(Ansi.Attribute.INTENSITY_BOLD).a(text).a(Ansi.Attribute.INTENSITY_BOLD_OFF);
 	}

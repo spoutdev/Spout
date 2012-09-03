@@ -31,7 +31,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,7 +46,6 @@ import org.spout.api.resource.BasicResourceLoader;
 import org.spout.api.resource.Resource;
 import org.spout.api.util.typechecker.TypeChecker;
 
-import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.engine.resources.ClientRenderMaterial;
 
 public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMaterial> {

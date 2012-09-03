@@ -69,6 +69,7 @@ public class FileConsole extends AbstractConsole {
 		return fileNameFormat.replace("%D", date.format(new Date()));
 	}
 
+	@Override
 	protected void initImpl() {
 		try {
 			writer = new OutputStreamWriter(new FileOutputStream(logFile, true));
@@ -80,6 +81,7 @@ public class FileConsole extends AbstractConsole {
 		logFlush.start();
 	}
 
+	@Override
 	protected void closeImpl() {
 		try {
 			writer.close();
@@ -113,6 +115,7 @@ public class FileConsole extends AbstractConsole {
 		}
 	}
 
+	@Override
 	public void addMessage(ChatArguments message) {
 		writerLock.lock();
 		try {

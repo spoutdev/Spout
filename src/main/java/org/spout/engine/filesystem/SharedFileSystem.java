@@ -62,6 +62,7 @@ public class SharedFileSystem implements FileSystem {
 	final Map<String, Map<String, ResourceLoader<?>>> loaders = new HashMap<String, Map<String, ResourceLoader<?>>>();
 	final HashMap<URI, Resource> loadedResouces = new HashMap<URI, Resource>();
 
+	@Override
 	public void init() {
 		if (!PLUGIN_DIRECTORY.exists()) {
 			PLUGIN_DIRECTORY.mkdirs();
@@ -78,6 +79,7 @@ public class SharedFileSystem implements FileSystem {
 				new JarfileResolver() };
 	}
 
+	@Override
 	public void postStartup() {
 		loadFallbacks();
 	}
@@ -90,6 +92,7 @@ public class SharedFileSystem implements FileSystem {
 		}
 	}
 
+	@Override
 	public InputStream getResourceStream(URI path) throws ResourceNotFoundException {
 
 		for (int i = 0; i < searchpaths.length; i++) {
@@ -117,6 +120,7 @@ public class SharedFileSystem implements FileSystem {
 		 */
 	}
 
+	@Override
 	public InputStream getResourceStream(String path) {
 		try {
 			return getResourceStream(new URI(path));
@@ -125,6 +129,7 @@ public class SharedFileSystem implements FileSystem {
 		}
 	}
 
+	@Override
 	public void registerLoader(ResourceLoader<? extends Resource> loader) {
 		String protocol = loader.getProtocol();
 		if (loaders.containsKey(protocol)) {
@@ -135,6 +140,7 @@ public class SharedFileSystem implements FileSystem {
 		}
 	}
 
+	@Override
 	public void loadResource(URI path) throws ResourceNotFoundException {
 		String protocol = path.getScheme();
 		if (!loaders.containsKey(protocol)) {
@@ -152,6 +158,7 @@ public class SharedFileSystem implements FileSystem {
 		loadedResouces.put(path, r);
 	}
 
+	@Override
 	public void loadResource(String path) {
 		try {
 			URI upath = new URI(path);
@@ -161,6 +168,7 @@ public class SharedFileSystem implements FileSystem {
 		}
 	}
 
+	@Override
 	public Resource getResource(URI path) {
 		if (!loadedResouces.containsKey(path)) {
 			if (Spout.debugMode())
@@ -191,6 +199,7 @@ public class SharedFileSystem implements FileSystem {
 		return loadedResouces.get(path);
 	}
 
+	@Override
 	public Resource getResource(String path) {
 		try {
 			URI upath = new URI(path);

@@ -27,13 +27,7 @@
 package org.spout.engine.renderer.vertexbuffer;
 
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
-import org.spout.api.render.RenderMaterial;
 
 public class VertexBufferImpl {	
 	int usage = GL15.GL_STATIC_DRAW;

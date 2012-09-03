@@ -127,6 +127,7 @@ public final class ConsoleManager {
 			setFormatter(new SimpleFormatter());
 		}
 
+		@Override
 		public void publish(LogRecord record) {
 			ChatArguments args = LOG_TEMPLATE.getArguments();
 			ChatArguments level = colorizeLevel(record.getLevel());
@@ -158,9 +159,11 @@ public final class ConsoleManager {
 			return new ChatArguments(color, level, ChatStyle.RESET);
 		}
 
+		@Override
 		public void flush() {
 		}
 
+		@Override
 		public void close() {
 			console.close();
 		}

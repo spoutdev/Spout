@@ -54,24 +54,29 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 		super(session.getPlayer(), session, session.getPlayer(), 3);
 	}
 
+	@Override
 	public Collection<Chunk> sendChunk(Chunk c) {
 		session.send(false, new ChunkDataMessage(c.getSnapshot()));
 		return null;
 	}
 
 
+	@Override
 	protected void freeChunk(Point p) {
 		session.send(false, new ChunkDataMessage(p.getBlockX(), p.getBlockY(), p.getBlockZ()));
 	}
 
+	@Override
 	protected void sendPosition(Point p, Quaternion rot) {
 		session.send(false, new EntityPositionMessage(entity.getId(), new Transform(p, rot, Vector3.ONE)));
 	}
 
+	@Override
 	protected void worldChanged(World world) {
 		session.send(false, new WorldChangeMessage(world, ((DataMap) world.getDataMap()).getRawMap()));
 	}
 
+	@Override
 	public void updateBlock(Chunk chunk, int x, int y, int z, BlockMaterial material, short data) {
 		session.send(false, new BlockUpdateMessage(chunk.getBlock(x, y, z, getOwner())));
 	}

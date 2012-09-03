@@ -31,7 +31,6 @@ import java.util.logging.Level;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
-import org.spout.api.entity.Player;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.ClientWorld;
 import org.spout.api.protocol.MessageHandler;

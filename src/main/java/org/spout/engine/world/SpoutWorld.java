@@ -238,10 +238,12 @@ public class SpoutWorld extends AsyncManager implements World {
 		pregen.start();
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public UUID getUID() {
 		return uid;
 	}
@@ -662,6 +664,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		return seed;
 	}
 
+	@Override
 	public SpoutEngine getEngine() {
 		return engine;
 	}
@@ -781,6 +784,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * @param range to look for
 	 * @return A set of nearby Players
 	 */
+	@Override
 	@LiveRead
 	@Threadsafe
 	public List<Player> getNearbyPlayers(Point position, int range) {
@@ -793,6 +797,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * @param range to look for
 	 * @return A set of nearby Players
 	 */
+	@Override
 	@LiveRead
 	@Threadsafe
 	public List<Player> getNearbyPlayers(Entity entity, int range) {
@@ -807,6 +812,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * @param range to look for
 	 * @return A set of nearby Players
 	 */
+	@Override
 	@LiveRead
 	@Threadsafe
 	public List<Player> getNearbyPlayers(Point position, Entity ignore, int range) {
@@ -858,6 +864,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * @param range to search
 	 * @return nearest player
 	 */
+	@Override
 	@LiveRead
 	@Threadsafe
 	public Player getNearestPlayer(Point position, Entity ignore, int range) {
@@ -881,6 +888,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * @param range to search
 	 * @return nearest player
 	 */
+	@Override
 	@LiveRead
 	@Threadsafe
 	public Player getNearestPlayer(Point position, int range) {
@@ -893,6 +901,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * @param range to search
 	 * @return nearest player
 	 */
+	@Override
 	@LiveRead
 	@Threadsafe
 	public Player getNearestPlayer(Entity entity, int range) {

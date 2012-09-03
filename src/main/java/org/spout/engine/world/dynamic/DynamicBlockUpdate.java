@@ -59,18 +59,22 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate>, Dynam
 		this.id = idCounter.getAndIncrement();
 	}
 
+	@Override
 	public int getX() {
 		return SignedTenBitTripleHashed.key1(packed) & 0xFF;
 	}
 
+	@Override
 	public int getY() {
 		return SignedTenBitTripleHashed.key2(packed) & 0xFF;
 	}
 
+	@Override
 	public int getZ() {
 		return SignedTenBitTripleHashed.key3(packed) & 0xFF;
 	}
 
+	@Override
 	public long getNextUpdate() {
 		return nextUpdate;
 	}
@@ -79,6 +83,7 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate>, Dynam
 		return packed;
 	}
 	
+	@Override
 	public int getData() {
 		return data;
 	}
