@@ -28,8 +28,6 @@ package org.spout.api.material.block;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 
-import net.phys2d.math.MathUtil;
-
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
