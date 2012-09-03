@@ -250,7 +250,7 @@ public class EntityManager {
 			if (!player.isOnline()) {
 				continue;
 			}
-			Integer playerViewDistance = 0; // TODO Observer player.getViewDistance();
+			Integer playerViewDistance = player.getViewDistance();
 			NetworkSynchronizer net = player.getNetworkSynchronizer();
 			List<SpoutEntity> entitiesPerPlayer = toSync.get(player);
 			if (entitiesPerPlayer == null) {
