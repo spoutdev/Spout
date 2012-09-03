@@ -708,17 +708,28 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 	// Players should use weak map?
 	public Player addPlayer(String playerName, SpoutSession<?> session, int viewDistance) {
-		SpoutPlayer player = WorldFiles.loadPlayerData(playerName, session);
+		SpoutPlayer player = onlinePlayers.getLive().get(playerName);
+		//Player is joining the session for the first time
 		if (player == null) {
-			//generate a player at default spawn, since we don't have a player .dat file
-			player = new SpoutPlayer(playerName, getDefaultWorld().getSpawnPoint(), session, this, viewDistance);
+			//Attempt to locate and load player data from file
+			player = WorldFiles.loadPlayerData(playerName, session);
+			//Player has no saved data, create a new object for them
+			if (player == null) {
+				player = new SpoutPlayer(playerName, getDefaultWorld().getSpawnPoint(), session, this, viewDistance);
+			}
+			onlinePlayers.put(playerName, player);
+		//Player has joined this session before, lets see if they have a session reference still and kick that session	
+		} else {
+			player.resetId();			
+			if (player.getSession() != null) {
+				player.kick("Logging in from another client!");
+			}
 		}
-		player.connect(session, player.getTransform());   
+		player.connect(session, player.getTransform());
 		session.setPlayer(player);
 		session.getProtocol().setPlayerController(player);
 		World world = player.getWorld();
 		world.spawnEntity(player);
-		onlinePlayers.put(playerName, player);
 		return player;
 	}
 
