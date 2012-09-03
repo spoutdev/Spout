@@ -92,7 +92,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 	}
 
 	private boolean methodRegistration(Named owner, Class<?> commands, Object instance, org.spout.api.command.Command parent) {
-		boolean success = true;
+		boolean success = true, anyRegistered = false;
 		for (Method method : commands.getDeclaredMethods()) {
 			// Basic checks
 			method.setAccessible(true);
@@ -103,6 +103,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 			if (child == null) {
 				continue;
 			}
+			anyRegistered = true;
 
 			if (method.isAnnotationPresent(NestedCommand.class)) {
 				for (Class<?> clazz : method.getAnnotation(NestedCommand.class).value()) {
@@ -113,7 +114,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 			}
 			child.closeSubCommand();
 		}
-		return success;
+		return success && anyRegistered;
 	}
 
 	@SuppressWarnings("unchecked")
