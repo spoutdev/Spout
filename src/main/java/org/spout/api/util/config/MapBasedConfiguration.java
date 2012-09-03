@@ -49,6 +49,7 @@ public abstract class MapBasedConfiguration extends AbstractConfiguration {
 	 */
 	protected abstract void saveFromMap(Map<?, ?> map) throws ConfigurationException;
 
+	@Override
 	protected Map<String, ConfigurationNode> loadToNodes() throws ConfigurationException {
 		Map<?, ?> items = loadToMap();
 		Map<String, ConfigurationNode> children = new LinkedHashMap<String, ConfigurationNode>();
@@ -58,6 +59,7 @@ public abstract class MapBasedConfiguration extends AbstractConfiguration {
 		return children;
 	}
 
+	@Override
 	protected void saveFromNodes(Map<String, ConfigurationNode> nodes) throws ConfigurationException {
 		Map<String, Object> ret = new LinkedHashMap<String, Object>();
 		for (Map.Entry<String, ConfigurationNode> entry : getChildren().entrySet()) {

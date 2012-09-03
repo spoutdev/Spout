@@ -48,7 +48,6 @@ import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.inventory.RecipeManager;
 import org.spout.api.permissions.PermissionsSubject;
-import org.spout.api.entity.Player;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.PluginManager;
 import org.spout.api.plugin.ServiceManager;
@@ -77,6 +76,7 @@ public interface Engine extends Named {
 	 *
 	 * @return name of the implementation
 	 */
+	@Override
 	public String getName();
 
 	/**

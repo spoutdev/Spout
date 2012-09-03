@@ -84,14 +84,17 @@ public class CommonPluginManager implements PluginManager {
 		}
 	}
 
+	@Override
 	public Plugin getPlugin(String plugin) {
 		return names.get(plugin);
 	}
 
+	@Override
 	public Plugin[] getPlugins() {
 		return plugins.toArray(new Plugin[plugins.size()]);
 	}
 
+	@Override
 	public synchronized Plugin loadPlugin(File paramFile) throws InvalidPluginException, InvalidDescriptionFileException, UnknownDependencyException {
 		return loadPlugin(paramFile, false);
 	}
@@ -140,6 +143,7 @@ public class CommonPluginManager implements PluginManager {
 		return result;
 	}
 
+	@Override
 	public synchronized Plugin[] loadPlugins(File paramFile) {
 		if (!paramFile.isDirectory()) {
 			throw new IllegalArgumentException("File parameter was not a Directory!");
@@ -201,6 +205,7 @@ public class CommonPluginManager implements PluginManager {
 		return result.toArray(new Plugin[result.size()]);
 	}
 
+	@Override
 	public void disablePlugins() {
 		for (Plugin plugin : plugins) {
 			if (plugin == metaPlugin) {
@@ -210,6 +215,7 @@ public class CommonPluginManager implements PluginManager {
 		}
 	}
 
+	@Override
 	public void clearPlugins() {
 		synchronized (this) {
 			disablePlugins();
@@ -218,6 +224,7 @@ public class CommonPluginManager implements PluginManager {
 		}
 	}
 
+	@Override
 	public void enablePlugin(Plugin plugin) {
 		if (plugin == metaPlugin) {
 			return;
@@ -237,6 +244,7 @@ public class CommonPluginManager implements PluginManager {
 		}
 	}
 
+	@Override
 	public void disablePlugin(Plugin plugin) {
 		if (plugin == metaPlugin) {
 			return;

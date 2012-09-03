@@ -34,6 +34,7 @@ public class ResetChatStyle extends ChatStyle {
 		super("Reset");
 	}
 
+	@Override
 	public boolean conflictsWith(ChatStyle other) {
 		return true;
 	}

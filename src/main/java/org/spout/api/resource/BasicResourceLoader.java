@@ -33,6 +33,7 @@ import java.net.URI;
 import org.spout.api.Spout;
 
 public abstract class BasicResourceLoader<E extends Resource> implements ResourceLoader<E> {
+	@Override
 	public abstract String getFallbackResourceName();
 	
 	@Override

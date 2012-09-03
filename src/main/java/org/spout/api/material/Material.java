@@ -156,6 +156,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * 
 	 * @return data value
 	 */
+	@Override
 	public final short getData() {
 		return this.data;
 	}

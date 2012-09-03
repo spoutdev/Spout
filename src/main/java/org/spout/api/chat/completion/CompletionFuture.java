@@ -55,6 +55,7 @@ public class CompletionFuture extends ObjectEvent<CompletionFuture> implements F
 		return this;
 	}
 
+	@Override
 	public boolean cancel(boolean mayInterruptIfRunning) {
 		if (isCancelled() || isDone() || !mayInterruptIfRunning) {
 			return false;
@@ -63,14 +64,17 @@ public class CompletionFuture extends ObjectEvent<CompletionFuture> implements F
 		return true;
 	}
 
+	@Override
 	public boolean isCancelled() {
 		return cancelled;
 	}
 
+	@Override
 	public boolean isDone() {
 		return cancelled || result != null;
 	}
 
+	@Override
 	public CompletionResponse get() throws InterruptedException, ExecutionException {
 		if (cancelled) {
 			return result.get();
@@ -81,6 +85,7 @@ public class CompletionFuture extends ObjectEvent<CompletionFuture> implements F
 		return result.get();
 	}
 
+	@Override
 	public CompletionResponse get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
 		if (cancelled) {
 			return result.get();
@@ -125,18 +130,22 @@ public class CompletionFuture extends ObjectEvent<CompletionFuture> implements F
 	 *
 	 * @param listener The listener to register.
 	 */
+	@Override
 	public void registerListener(EventableListener<CompletionFuture> listener) {
 		eventableBase.registerListener(listener);
 	}
 
+	@Override
 	public void unregisterAllListeners() {
 		eventableBase.unregisterAllListeners();
 	}
 
+	@Override
 	public void unregisterListener(EventableListener<CompletionFuture> listener) {
 		eventableBase.unregisterListener(listener);
 	}
 
+	@Override
 	public void callEvent(CompletionFuture event) {
 		if (event != this) {
 			throw new IllegalArgumentException("event must be the same ChannelFuture");

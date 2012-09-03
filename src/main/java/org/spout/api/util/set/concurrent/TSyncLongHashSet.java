@@ -236,6 +236,7 @@ public class TSyncLongHashSet implements TLongSet {
 		}
 	}
 
+	@Override
 	public int size() {
 		return totalValues.get();
 	}

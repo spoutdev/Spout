@@ -45,6 +45,7 @@ public class WrapperStyleFormatter implements StyleFormatter {
 		}
 		this.wrapper = newWrapper;
 	}
+	@Override
 	public String format(String text) {
 		return wrapper + text + wrapper;
 	}

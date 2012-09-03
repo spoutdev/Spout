@@ -26,9 +26,7 @@
  */
 package org.spout.api.event.server.permissions;
 
-import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;
-import org.spout.api.event.Result;
 import org.spout.api.event.world.WorldEvent;
 import org.spout.api.geo.World;
 import org.spout.api.permissions.PermissionsSubject;

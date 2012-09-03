@@ -228,6 +228,7 @@ public class TripleIntObjectReferenceArrayMapTest {
 			
 		}
 		
+		@Override
 		public void run() {
 			for (int i = 0; i < SPEED_LENGTH; i++) {
 				int index = i & 0x3FF;

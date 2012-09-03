@@ -67,6 +67,7 @@ public class Ray extends CollisionVolume {
 	//		return CollisionHelper.checkCollision(this, b);
 	//	}
 
+	@Override
 	public boolean intersects(CollisionVolume other) {
 		if (other instanceof BoundingBox) {
 			//return intersects((BoundingBox) other);
@@ -83,6 +84,7 @@ public class Ray extends CollisionVolume {
 		return false;
 	}
 
+	@Override
 	public boolean contains(CollisionVolume other) {
 		if (other instanceof BoundingBox) {
 			return containsBoundingBox((BoundingBox) other);
@@ -118,10 +120,12 @@ public class Ray extends CollisionVolume {
 		return CollisionHelper.contains(this, b);
 	}
 
+	@Override
 	public boolean containsPoint(Vector3 b) {
 		return CollisionHelper.contains(this, b);
 	}
 
+	@Override
 	public Vector3 resolve(CollisionVolume start) {
 		// TODO Auto-generated method stub
 		return null;

@@ -216,18 +216,22 @@ public class DataMap implements DefaultedMap<String, Serializable>{
 	}
 	
 	private final class Values extends AbstractCollection<Serializable> {
+		@Override
 		public Iterator<Serializable> iterator() {
 			return new ValueIterator();
 		}
 
+		@Override
 		public int size() {
 			return map.size();
 		}
 
+		@Override
 		public boolean contains(Object o) {
 			return containsValue(o);
 		}
 
+		@Override
 		public void clear() {
 			map.clear();
 		}

@@ -62,6 +62,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 		this.executorFactory = executorFactory;
 	}
 
+	@Override
 	public boolean create(Named owner, Class<?> commands, org.spout.api.command.Command parent) {
 		Object instance = null;
 		if (injector != null) {

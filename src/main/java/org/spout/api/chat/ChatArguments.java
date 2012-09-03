@@ -208,6 +208,7 @@ public class ChatArguments implements Cloneable, ChatSection {
 		plainString = builder.toString();
 	}
 
+	@Override
 	public Map<Integer, List<ChatStyle>> getActiveStyles() {
 		int curIndex = 0;
 		LinkedHashMap<Integer, List<ChatStyle>> map = new LinkedHashMap<Integer, List<ChatStyle>>();
@@ -228,22 +229,27 @@ public class ChatArguments implements Cloneable, ChatSection {
 		return map;
 	}
 
+	@Override
 	public String getPlainString() {
 		return plainString;
 	}
 
+	@Override
 	public SplitType getSplitType() {
 		return SplitType.ALL;
 	}
 
+	@Override
 	public ChatArguments toChatArguments() {
 		return this;
 	}
 
+	@Override
 	public ChatSection subSection(int startIndex, int endIndex) {
 		return new ChatSectionImpl(getSplitType(), getActiveStyles(), getPlainString()).subSection(startIndex, endIndex);
 	}
 
+	@Override
 	public int length() {
 		return getPlainString().length();
 	}

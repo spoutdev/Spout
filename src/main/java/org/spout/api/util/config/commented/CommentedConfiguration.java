@@ -36,6 +36,8 @@ import org.spout.api.util.config.Configuration;
  */
 public interface CommentedConfiguration extends Configuration {
 	public CommentedConfigurationNode createConfigurationNode(String[] path, Object value);
+	@Override
 	public CommentedConfigurationNode getNode(String... node);
+	@Override
 	public CommentedConfigurationNode getNode(String path);
 }

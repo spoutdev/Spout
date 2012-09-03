@@ -58,6 +58,7 @@ public class ConfigurationHolder extends ValueHolderBase implements Configuratio
 		return getConfiguration().getNode(getPathElements());
 	}
 
+	@Override
 	public Configuration getConfiguration() {
 		return configuration;
 	}
@@ -66,6 +67,7 @@ public class ConfigurationHolder extends ValueHolderBase implements Configuratio
 		this.configuration = config;
 	}
 
+	@Override
 	public String[] getPathElements() {
 		return path;
 	}
@@ -91,6 +93,7 @@ public class ConfigurationHolder extends ValueHolderBase implements Configuratio
 		return getNode().getValue(this.def);
 	}
 
+	@Override
 	public Object getValue(Object def) {
 		return getNode().getValue(this.def);
 	}
@@ -99,50 +102,62 @@ public class ConfigurationHolder extends ValueHolderBase implements Configuratio
 		return getNode().setValue(value);
 	}
 
+	@Override
 	public ConfigurationNode getChild(String name) {
 		return getNode().getChild(name);
 	}
 
+	@Override
 	public ConfigurationNode getChild(String name, boolean add) {
 		return getNode().getChild(name, add);
 	}
 
+	@Override
 	public ConfigurationNode addChild(ConfigurationNode node) {
 		return getNode().addChild(node);
 	}
 
+	@Override
 	public void addChildren(ConfigurationNode... nodes) {
 		getNode().addChildren(nodes);
 	}
 
+	@Override
 	public ConfigurationNode removeChild(String key) {
 		return getNode().removeChild(key);
 	}
 
+	@Override
 	public ConfigurationNode removeChild(ConfigurationNode node) {
 		return getNode().removeChild(node);
 	}
 
+	@Override
 	public Map<String, ConfigurationNode> getChildren() {
 		return getNode().getChildren();
 	}
 
+	@Override
 	public Map<String, Object> getValues() {
 		return getNode().getValues();
 	}
 
+	@Override
 	public Set<String> getKeys(boolean deep) {
 		return getNode().getKeys(deep);
 	}
 
+	@Override
 	public ConfigurationNode getNode(String path) {
 		return getNode().getNode(path);
 	}
 
+	@Override
 	public ConfigurationNode getNode(String... path) {
 		return getNode().getNode(path);
 	}
 
+	@Override
 	public boolean hasChildren() {
 		return getNode().hasChildren();
 	}

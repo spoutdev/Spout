@@ -314,30 +314,36 @@ public class PluginDescriptionFile implements Datatable {
 		return codedLocale;
 	}
 
+	@Override
 	public void setData(String key, int value) {
 		int ikey = datatableMap.getIntKey(key);
 		datatableMap.set(ikey, new DatatableInt(ikey, value));
 	}
 
+	@Override
 	public void setData(String key, float value) {
 		int ikey = datatableMap.getIntKey(key);
 		datatableMap.set(ikey, new DatatableFloat(ikey, value));
 	}
 
+	@Override
 	public void setData(String key, boolean value) {
 		int ikey = datatableMap.getIntKey(key);
 		datatableMap.set(ikey, new DatatableBool(ikey, value));
 	}
 
+	@Override
 	public void setData(String key, Serializable value) {
 		int ikey = datatableMap.getIntKey(key);
 		datatableMap.set(ikey, new DatatableSerializable(ikey, value));
 	}
 
+	@Override
 	public DatatableTuple getData(String key) {
 		return datatableMap.get(key);
 	}
 
+	@Override
 	public boolean hasData(String key) {
 		return datatableMap.contains(key);
 	}

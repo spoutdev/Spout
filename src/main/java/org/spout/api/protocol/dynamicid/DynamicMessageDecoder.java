@@ -39,6 +39,7 @@ import org.spout.api.protocol.Session;
  * Unwraps dynamically allocated id messages
  */
 public class DynamicMessageDecoder extends OneToOneDecoder {
+	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel channel, Object message) throws Exception {
 		if (message instanceof Message) {
 			Session session = ctx.getPipeline().get(CommonHandler.class).getSession();

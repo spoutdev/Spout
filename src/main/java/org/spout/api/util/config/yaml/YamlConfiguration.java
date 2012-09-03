@@ -268,6 +268,7 @@ public class YamlConfiguration extends MapBasedConfiguration implements FileConf
 		return header;
 	}
 
+	@Override
 	public File getFile() {
 		return file;
 	}

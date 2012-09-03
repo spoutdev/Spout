@@ -46,14 +46,17 @@ import org.spout.api.exception.IllegalPluginAccessException;
  *
  */
 public class SimpleEventManager implements EventManager {
+	@Override
 	public <T extends Event> void callDelayedEvent(final T event) {
 		Spout.getEngine().getScheduler().scheduleSyncDelayedTask(null, new Runnable() {
+			@Override
 			public void run() {
 				callEvent(event);
 			}
 		});
 	}
 
+	@Override
 	public <T extends Event> T callEvent(T event) {
 		HandlerList handlers = event.getHandlers();
 		ListenerRegistration[] listeners = handlers.getRegisteredListeners();
@@ -73,6 +76,7 @@ public class SimpleEventManager implements EventManager {
 		return event;
 	}
 
+	@Override
 	public void registerEvents(Listener listener, Object owner) {
 		for (Map.Entry<Class<? extends Event>, Set<ListenerRegistration>> entry : createRegisteredListeners(listener, owner).entrySet()) {
 			Class<? extends Event> delegatedClass = getRegistrationClass(entry.getKey());
@@ -84,6 +88,7 @@ public class SimpleEventManager implements EventManager {
 		}
 	}
 
+	@Override
 	public void registerEvent(Class<? extends Event> event, Order priority, EventExecutor executor, Object owner) {
 		getEventListeners(event).register(new ListenerRegistration(executor, priority, owner));
 	}
@@ -152,6 +157,7 @@ public class SimpleEventManager implements EventManager {
 			}
 			eventSet.add(new ListenerRegistration(new EventExecutor() {
 
+				@Override
 				public void execute(Event event) throws EventException {
 					try {
 						if (!checkClass.isAssignableFrom(event.getClass())) {

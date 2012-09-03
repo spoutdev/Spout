@@ -36,10 +36,12 @@ public final class NewKey implements MigrationAction {
 		this.newKey = key;
 	}
 
+	@Override
 	public String[] convertKey(String[] key) {
 		return newKey;
 	}
 
+	@Override
 	public Object convertValue(Object value) {
 		return value;
 	}

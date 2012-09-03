@@ -46,6 +46,7 @@ public abstract class ConfigurationWrapper implements Configuration {
 		this.config = config;
 	}
 
+	@Override
 	public Configuration getConfiguration() {
 		if (config == null) {
 			throw new IllegalArgumentException("The Configuration for a " + getClass().getSimpleName() + " is not set!");
@@ -57,94 +58,117 @@ public abstract class ConfigurationWrapper implements Configuration {
 		this.config = config;
 	}
 
+	@Override
 	public void load() throws ConfigurationException {
 		getConfiguration().load();
 	}
 
+	@Override
 	public void save() throws ConfigurationException {
 		getConfiguration().save();
 	}
 
+	@Override
 	public void setNode(ConfigurationNode node) {
 		getConfiguration().setNode(node);
 	}
 
+	@Override
 	public String getPathSeparator() {
 		return getConfiguration().getPathSeparator();
 	}
 
+	@Override
 	public void setPathSeparator(String pathSeparator) {
 		getConfiguration().setPathSeparator(pathSeparator);
 	}
 
+	@Override
 	public Pattern getPathSeparatorPattern() {
 		return getConfiguration().getPathSeparatorPattern();
 	}
 
+	@Override
 	public boolean doesWriteDefaults() {
 		return getConfiguration().doesWriteDefaults();
 	}
 
+	@Override
 	public void setWritesDefaults(boolean writesDefaults) {
 		getConfiguration().setWritesDefaults(writesDefaults);
 	}
 
+	@Override
 	public String[] splitNodePath(String path) {
 		return getConfiguration().splitNodePath(path);
 	}
 
+	@Override
 	public String[] ensureCorrectPath(String[] rawPath) {
 		return getConfiguration().ensureCorrectPath(rawPath);
 	}
 
+	@Override
 	public ConfigurationNode getChild(String name) {
 		return getConfiguration().getChild(name);
 	}
 
+	@Override
 	public ConfigurationNode getChild(String name, boolean add) {
 		return getConfiguration().getChild(name, add);
 	}
 
+	@Override
 	public ConfigurationNode addChild(ConfigurationNode node) {
 		return getConfiguration().addChild(node);
 	}
 
+	@Override
 	public void addChildren(ConfigurationNode... nodes) {
 		getConfiguration().addChildren(nodes);
 	}
 
+	@Override
 	public ConfigurationNode removeChild(String key) {
 		return getConfiguration().removeChild(key);
 	}
 
+	@Override
 	public ConfigurationNode removeChild(ConfigurationNode node) {
 		return getConfiguration().removeChild(node);
 	}
 
+	@Override
 	public Map<String, ConfigurationNode> getChildren() {
 		return getConfiguration().getChildren();
 	}
 
+	@Override
 	public Map<String, Object> getValues() {
 		return getConfiguration().getValues();
 	}
 
+	@Override
 	public Set<String> getKeys(boolean deep) {
 		return getConfiguration().getKeys(deep);
 	}
 
+	@Override
 	public ConfigurationNode getNode(String path) {
 		return getConfiguration().getNode(path);
 	}
 
+	@Override
 	public ConfigurationNode getNode(String... path) {
 		return getConfiguration().getNode(path);
 	}
 
+	@Override
 	public boolean hasChildren() {
 		return getConfiguration().hasChildren();
 	}
 
+	@Override
 	public String[] getPathElements() {
 		return getConfiguration().getPathElements();
 	}

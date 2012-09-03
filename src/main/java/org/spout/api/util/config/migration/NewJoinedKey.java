@@ -44,11 +44,13 @@ public final class NewJoinedKey implements MigrationAction {
 		this.config = config;
 	}
 
+	@Override
 	public String[] convertKey(String[] key) {
 		String oldKey = StringUtils.join(key, config.getPathSeparator());
 		return config.getPathSeparatorPattern().split(newKeyPattern.replace("%", oldKey));
 	}
 
+	@Override
 	public Object convertValue(Object value) {
 		return value;
 	}

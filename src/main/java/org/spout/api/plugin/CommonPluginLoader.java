@@ -69,10 +69,12 @@ public class CommonPluginLoader implements PluginLoader {
 		patterns = new Pattern[]{Pattern.compile("\\.jar$")};
 	}
 
+	@Override
 	public Pattern[] getPatterns() {
 		return patterns;
 	}
 
+	@Override
 	@UnsafeMethod
 	public synchronized void enablePlugin(Plugin plugin) {
 		if (!CommonPlugin.class.isAssignableFrom(plugin.getClass())) {
@@ -97,6 +99,7 @@ public class CommonPluginLoader implements PluginLoader {
 		}
 	}
 
+	@Override
 	@UnsafeMethod
 	public synchronized void disablePlugin(Plugin paramPlugin) {
 		if (!CommonPlugin.class.isAssignableFrom(paramPlugin.getClass())) {
@@ -121,10 +124,12 @@ public class CommonPluginLoader implements PluginLoader {
 		}
 	}
 
+	@Override
 	public synchronized Plugin loadPlugin(File paramFile) throws InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException {
 		return loadPlugin(paramFile, false);
 	}
 
+	@Override
 	public synchronized Plugin loadPlugin(File paramFile, boolean ignoresoftdepends) throws InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException {
 		CommonPlugin result;
 		PluginDescriptionFile desc;

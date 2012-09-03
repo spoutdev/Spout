@@ -50,6 +50,7 @@ public abstract class BasicController implements Controller {
 		this.type = type;
 	}
 
+	@Override
 	public abstract void onAttached();
 
 	@Override
@@ -69,22 +70,27 @@ public abstract class BasicController implements Controller {
 		return true;
 	}
 
+	@Override
 	public void onDeath() {
 
 	}
 
+	@Override
 	public void finalizeTick() {
 
 	}
 
+	@Override
 	public void onInteract(Entity entity, Action type) {
 
 	}
 
+	@Override
 	public ControllerType getType() {
 		return type;
 	}
 
+	@Override
 	public final DefaultedMap<String, Serializable> getDataMap() {
 		return dataMap;
 	}
@@ -94,18 +100,22 @@ public abstract class BasicController implements Controller {
 		//Left here as a stub to make merging easier - it is NO LONGER CALLED AND SHOULD BE REMOVED ASAP!
 	}
 
+	@Override
 	public boolean isSavable() {
 		return true;
 	}
 
+	@Override
 	public boolean isImportant() {
 		return false;
 	}
 
+	@Override
 	public Entity getParent() {
 		return parent;
 	}
 
+	@Override
 	public void attachToEntity(Entity parent) {
 		this.parent = parent;
 	}

@@ -235,6 +235,7 @@ public class TSyncIntHashSet implements TIntSet {
 		}
 	}
 
+	@Override
 	public int size() {
 		return totalValues.get();
 	}

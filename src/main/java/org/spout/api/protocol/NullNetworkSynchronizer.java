@@ -44,12 +44,15 @@ public class NullNetworkSynchronizer extends NetworkSynchronizer {
 	public void updateAll(InventoryBase inventory, ItemStack[] slots) {
 	}
 
+	@Override
 	public void onDeath() {
 	}
 
+	@Override
 	public void finalizeTick() {
 	}
 
+	@Override
 	public void preSnapshot() {
 	}
 

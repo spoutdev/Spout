@@ -75,6 +75,7 @@ public class PointObserver extends BasicController {
 		currPoint = getParent().getPosition();
 	}
 
+	@Override
 	public boolean isImportant() {
 		return true;
 	}

@@ -36,10 +36,12 @@ public class DataValue extends ValueHolderBase {
 		this.value = value;
 	}
 
+	@Override
 	public Object getValue() {
 		return value;
 	}
 
+	@Override
 	public Object getValue(Object def) {
 		return value == null ? def : value;
 	}

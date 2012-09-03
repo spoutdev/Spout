@@ -47,6 +47,7 @@ public abstract class AbstractConfigurationNodeSource implements ConfigurationNo
 	}
 
 
+	@Override
 	public Configuration getConfiguration() {
 		return config;
 	}
@@ -56,6 +57,7 @@ public abstract class AbstractConfigurationNodeSource implements ConfigurationNo
 		return getChild(name, false);
 	}
 
+	@Override
 	public ConfigurationNode getChild(String name, boolean add) {
 		ConfigurationNode node = children.get(name);
 		if (node == null) {

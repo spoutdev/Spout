@@ -278,6 +278,7 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 	 * @param vec to offset by
 	 * @return this bounding box
 	 */
+	@Override
 	public BoundingBox offset(Vector3 vec) {
 		return offset(vec.getX(), vec.getY(), vec.getZ());
 	}
@@ -333,6 +334,7 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 	 * @param the CollisionVolume
 	 * @return true if they collide, false if they do not.
 	 */
+	@Override
 	public boolean intersects(CollisionVolume other) {
 		if (other instanceof BoundingBox) {
 			return intersects((BoundingBox) other);
@@ -360,6 +362,7 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 	 * @param the CollisionVolume to check
 	 * @return true if it is contained, false if it is not.
 	 */
+	@Override
 	public boolean contains(CollisionVolume other) {
 		if (other instanceof BoundingBox) {
 			return containsBoundingBox((BoundingBox) other);
@@ -444,6 +447,7 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 	 * @param the Vector3 to check
 	 * @return true if it is contained in the boundingbox, otherwise false
 	 */
+	@Override
 	public boolean containsPoint(Vector3 b) {
 		return CollisionHelper.contains(this, b);
 	}
@@ -456,6 +460,7 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 	 * @param CollisionVolume to check
 	 * @return Vector3 where the BoundingBoxes collide, or null if they do not collide.
 	 */
+	@Override
 	public Vector3 resolve(CollisionVolume other) {
 		if (other instanceof BoundingBox) {
 			return CollisionHelper.getCollision(this, (BoundingBox)other);

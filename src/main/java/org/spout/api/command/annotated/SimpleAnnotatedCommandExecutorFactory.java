@@ -33,6 +33,7 @@ import java.util.List;
 import org.spout.api.command.CommandSource;
 
 public class SimpleAnnotatedCommandExecutorFactory implements AnnotatedCommandExecutorFactory {
+	@Override
 	public AnnotatedCommandExecutor getAnnotatedCommandExecutor(Object instance, Method method) {
 		return new SimpleAnnotatedCommandExecutor(instance, method);
 	}

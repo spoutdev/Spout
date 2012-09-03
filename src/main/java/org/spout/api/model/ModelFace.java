@@ -72,6 +72,7 @@ public class ModelFace implements Iterable<Vertex> {
 		return new Vector2[] { verts[0].texCoord0, verts[1].texCoord0, verts[2].texCoord0 };
 	}
 	
+	@Override
 	public String toString(){
 		return StringUtil.toNamedString(this, verts[0], verts[1], verts[2]);
 	}

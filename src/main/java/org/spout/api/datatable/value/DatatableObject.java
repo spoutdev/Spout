@@ -98,10 +98,12 @@ public abstract class DatatableObject implements DatatableTuple {
 		data.set((Serializable) value);
 	}
 	
+	@Override
 	public void setKey(int key) {
 		keyID.set(key);
 	}
 	
+	@Override
 	public int getKey() {
 		return keyID.get();
 	}
@@ -199,6 +201,7 @@ public abstract class DatatableObject implements DatatableTuple {
 	
 	public abstract void decompress(byte[] compressed);
 	
+	@Override
 	public void output(OutputStream out) throws IOException {
 		out.write(getObjectTypeId());
 		VarInt.writeInt(out, hashCode());

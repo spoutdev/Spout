@@ -107,5 +107,6 @@ public interface Component<T extends Controller> extends Tickable, Comparable<Co
 	 * Ticks this component
 	 * @param dt time since the last tick (delta time)
 	 */
+	@Override
 	public void tick(float dt);
 }

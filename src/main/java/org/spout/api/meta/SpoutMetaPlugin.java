@@ -123,11 +123,13 @@ public final class SpoutMetaPlugin implements Plugin {
 		return new File(engine.getClass().getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " "));
 	}
 
+	@Override
 	public InputStream getResource(String path) {
 		Validate.notNull(path);
 		return engine.getClass().getClassLoader().getResourceAsStream("/" + path);
 	}
 
+	@Override
 	public void extractResource(String path, File destination) throws IOException {
 		Validate.notNull(destination);
 		InputStream stream = getResource(path);

@@ -86,6 +86,7 @@ public class TSyncInt21TripleObjectHashMap<K> extends TInt21TripleObjectHashMap<
 	 * @param value the expected value
 	 * @return <code>true</code> if on success
 	 */
+	@Override
 	public boolean remove(int x, int y, int z, K value) {
 		long key = key(x, y, z);
 		return ((TSyncLongObjectHashMap<K>) map).remove(key, value);
@@ -101,6 +102,7 @@ public class TSyncInt21TripleObjectHashMap<K> extends TInt21TripleObjectHashMap<
 	 * @param value an <code>V</code> value to be associated with the specified key
 	 * @return the previous value associated with <code>key(x, y, z)</code>, or <code>null</code> if none was found.
 	 */
+	@Override
 	public K putIfAbsent(int x, int y, int z, K value) {
 		long key = key(x, y, z);
 		return ((TSyncLongObjectHashMap<K>) map).putIfAbsent(key, value);

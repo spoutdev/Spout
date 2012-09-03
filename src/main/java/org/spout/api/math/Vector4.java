@@ -576,6 +576,7 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 	/**
 	 * Compares two Vector3s
 	 */
+	@Override
 	public int compareTo(Vector4 o) {
 		return Vector4.compareTo(this, o);
 	}

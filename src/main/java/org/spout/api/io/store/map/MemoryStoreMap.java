@@ -47,43 +47,53 @@ public class MemoryStoreMap<K, V> implements SimpleStoreMap<K, V> {
 		reverseMap = new HashMap<V, K>();
 	}
 
+	@Override
 	public synchronized boolean save() {
 		return true;
 	}
 
+	@Override
 	public synchronized boolean load() {
 		return true;
 	}
 
+	@Override
 	public synchronized Collection<K> getKeys() {
 		return map.keySet();
 	}
 
+	@Override
 	public synchronized Collection<V> getValues() {
 		return map.values();
 	}
 
+	@Override
 	public synchronized Set<Entry<K, V>> getEntrySet() {
 		return map.entrySet();
 	}
 
+	@Override
 	public synchronized int getSize() {
 		return map.size();
 	}
 
+	@Override
 	public synchronized boolean clear() {
 		map.clear();
 		return true;
 	}
 
+	@Override
 	public synchronized V get(K key) {
 		return map.get(key);
 	}
 
+	@Override
 	public synchronized K reverseGet(V value) {
 		return reverseMap.get(value);
 	}
 
+	@Override
 	public synchronized V get(K key, V def) {
 		V value = get(key);
 		if (value == null) {
@@ -93,6 +103,7 @@ public class MemoryStoreMap<K, V> implements SimpleStoreMap<K, V> {
 		return value;
 	}
 
+	@Override
 	public synchronized V remove(K key) {
 		V value = map.remove(key);
 		if (value != null) {
@@ -101,6 +112,7 @@ public class MemoryStoreMap<K, V> implements SimpleStoreMap<K, V> {
 		return value;
 	}
 
+	@Override
 	public synchronized V set(K key, V value) {
 		Validate.notNull(key);
 		Validate.notNull(value);
@@ -113,6 +125,7 @@ public class MemoryStoreMap<K, V> implements SimpleStoreMap<K, V> {
 		return oldValue;
 	}
 
+	@Override
 	public synchronized boolean setIfAbsent(K key, V value) {
 		if (map.get(key) != null) {
 			return false;

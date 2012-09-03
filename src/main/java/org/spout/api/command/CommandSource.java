@@ -28,7 +28,6 @@ package org.spout.api.command;
 
 import org.spout.api.Source;
 import org.spout.api.chat.ChatArguments;
-import org.spout.api.data.DataSubject;
 import org.spout.api.lang.Locale;
 import org.spout.api.permissions.PermissionsSubject;
 

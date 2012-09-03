@@ -34,6 +34,7 @@ public class CommonSecurityManager extends SecurityManager implements Secure {
 		this.key = key;
 	}
 
+	@Override
 	public boolean lock(double key) {
 		boolean old = locked;
 		if (key == this.key) {
@@ -42,12 +43,14 @@ public class CommonSecurityManager extends SecurityManager implements Secure {
 		return old;
 	}
 
+	@Override
 	public void unlock(double key) {
 		if (key == this.key) {
 			locked = false;
 		}
 	}
 
+	@Override
 	public boolean isLocked() {
 		return locked;
 	}

@@ -40,6 +40,7 @@ public class PlayerSnapshot extends EntitySnapshot implements Named{
 		return (Player)super.getReference();
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

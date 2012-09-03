@@ -85,6 +85,7 @@ public class SimpleCommand implements Command {
 		this.owner = owner;
 	}
 
+	@Override
 	public SimpleCommand addSubCommand(Named owner, String primaryName) {
 		boolean wasLocked = false;
 		if (isLocked()) {
@@ -107,11 +108,13 @@ public class SimpleCommand implements Command {
 		return sub;
 	}
 
+	@Override
 	public <T> Command addSubCommands(Named owner, T object, CommandRegistrationsFactory<T> factory) {
 		factory.create(owner, object, this);
 		return this;
 	}
 
+	@Override
 	public Command closeSubCommand() {
 		if (parent == null) {
 			throw new UnsupportedOperationException("This command has no parent");
@@ -120,6 +123,7 @@ public class SimpleCommand implements Command {
 		return parent;
 	}
 
+	@Override
 	public int getId() {
 		return id;
 	}
@@ -128,6 +132,7 @@ public class SimpleCommand implements Command {
 		this.id = id;
 	}
 
+	@Override
 	public Command addAlias(String... names) {
 		if (!isLocked()) {
 			if (parent != null) {
@@ -148,6 +153,7 @@ public class SimpleCommand implements Command {
 		return this;
 	}
 
+	@Override
 	public Command setHelp(String help) {
 		if (!isLocked()) {
 			this.help = help;
@@ -155,6 +161,7 @@ public class SimpleCommand implements Command {
 		return this;
 	}
 
+	@Override
 	public Command setUsage(String usage) {
 		if (!isLocked()) {
 			this.usage = usage;
@@ -162,10 +169,12 @@ public class SimpleCommand implements Command {
 		return this;
 	}
 
+	@Override
 	public Command setExecutor(CommandExecutor executor) {
 		return setExecutor(Platform.ALL, executor);
 	}
 
+	@Override
 	public Command setExecutor(Platform platform, CommandExecutor executor) {
 		Validate.notNull(platform);
 		Validate.notNull(executor);
@@ -176,6 +185,7 @@ public class SimpleCommand implements Command {
 		return this;
 	}
 
+	@Override
 	public Command addFlags(String flagString) {
 		Validate.notNull(flagString);
 		if (!isLocked()) {
@@ -207,6 +217,7 @@ public class SimpleCommand implements Command {
 		return exec;
 	}
 
+	@Override
 	public void execute(CommandSource source, String name, List<ChatSection> args, int baseIndex, boolean fuzzyLookup) throws CommandException {
 		Validate.notNull(source);
 		Validate.notNull(name);
@@ -269,6 +280,7 @@ public class SimpleCommand implements Command {
 		}
 	}
 
+	@Override
 	public boolean process(CommandSource source, String name, ChatArguments args, boolean fuzzyLookup) {
 		try {
 			PreCommandEvent event = Spout.getEventManager().callEvent(new PreCommandEvent(source, name, args));
@@ -298,30 +310,37 @@ public class SimpleCommand implements Command {
 		return new MissingCommandException("Child command needed!", usage);
 	}
 
+	@Override
 	public String getPreferredName() {
 		return aliases.get(0);
 	}
 
+	@Override
 	public Set<Command> getChildCommands() {
 		return new HashSet<Command>(children.values());
 	}
 
+	@Override
 	public Set<String> getChildNames() {
 		return new HashSet<String>(children.keySet());
 	}
 
+	@Override
 	public List<String> getNames() {
 		return new ArrayList<String>(aliases);
 	}
 
+	@Override
 	public String getHelp() {
 		return help;
 	}
 
+	@Override
 	public String getUsage() {
 		return getUsage(getPreferredName(), Collections.<ChatSection>emptyList(), 0);
 	}
 
+	@Override
 	public String getUsage(String name, List<ChatSection> args, int baseIndex) {
 		ChatArguments usage = new ChatArguments("/", name);
 		for (int i = 0; i <= baseIndex && i < args.size(); ++i) { // Add the arguments preceding the command
@@ -356,6 +375,7 @@ public class SimpleCommand implements Command {
 		return usage.asString();
 	}
 
+	@Override
 	public Command getChild(String name) {
 		return getChild(name, false);
 	}
@@ -393,6 +413,7 @@ public class SimpleCommand implements Command {
 		return command;
 	}
 
+	@Override
 	public Command removeChild(Command cmd) {
 		if (isLocked()) {
 			return this;
@@ -416,6 +437,7 @@ public class SimpleCommand implements Command {
 		return this;
 	}
 
+	@Override
 	public Command removeChild(String name) {
 		if (isLocked()) {
 			return this;
@@ -453,6 +475,7 @@ public class SimpleCommand implements Command {
 		return this;
 	}
 
+	@Override
 	public Command removeAlias(String name) {
 		if (isLocked()) {
 			return this;
@@ -464,6 +487,7 @@ public class SimpleCommand implements Command {
 		return this;
 	}
 
+	@Override
 	public boolean lock(Named owner) {
 		if (owner == this.owner) {
 			locked = true;
@@ -472,6 +496,7 @@ public class SimpleCommand implements Command {
 		return false;
 	}
 
+	@Override
 	public boolean unlock(Named owner) {
 		if (owner == this.owner) {
 			locked = false;
@@ -480,6 +505,7 @@ public class SimpleCommand implements Command {
 		return false;
 	}
 
+	@Override
 	public boolean isLocked() {
 		return locked;
 	}
@@ -494,6 +520,7 @@ public class SimpleCommand implements Command {
 		return this.owner.getName();
 	}
 
+	@Override
 	public boolean updateAliases(Command child) {
 		boolean changed = false;
 		List<String> names = child.getNames();
@@ -517,10 +544,12 @@ public class SimpleCommand implements Command {
 		}
 	}
 
+	@Override
 	public boolean hasChild(String name) {
 		return children.containsKey(name);
 	}
 
+	@Override
 	public Command setParent(Command parent) {
 		if (this.parent == null) {
 			this.parent = parent;
@@ -529,6 +558,7 @@ public class SimpleCommand implements Command {
 		return this;
 	}
 
+	@Override
 	public Command setRawExecutor(RawCommandExecutor rawExecutor) {
 		if (!isLocked()) {
 			this.rawExecutor = rawExecutor;
@@ -536,12 +566,14 @@ public class SimpleCommand implements Command {
 		return this;
 	}
 
+	@Override
 	public Command setPermissions(boolean requireAll, String... permissions) {
 		requireAllPermissions = requireAll;
 		this.permissions = permissions;
 		return this;
 	}
 
+	@Override
 	public boolean hasPermission(CommandSource sender) {
 		if (permissions == null || permissions.length < 1) {
 			return true;
@@ -557,6 +589,7 @@ public class SimpleCommand implements Command {
 		return success;
 	}
 
+	@Override
 	public Command setArgBounds(int min, int max) {
 		if (min >= 0) {
 			minArgLength = min;
@@ -570,6 +603,7 @@ public class SimpleCommand implements Command {
 		return getCompletion(input, 0);
 	}
 
+	@Override
 	public CompletionResponse getCompletion(CompletionRequest input, int baseIndex) {
 		if (children.size() > 0 && baseIndex < input.getSections().size() - 1) {
 			Command child = getChild(input.getSections().get(baseIndex + 1).getPlainString());
@@ -589,6 +623,7 @@ public class SimpleCommand implements Command {
 
 		names.addAll(
 				Collections2.filter(getChildNames(), new Predicate<String>() {
+					@Override
 					public boolean apply(@Nullable String s) {
 						return s != null
 								&& !s.equalsIgnoreCase(plainString)
@@ -597,6 +632,7 @@ public class SimpleCommand implements Command {
 				}));
 
 		Collections.sort(names, new Comparator<String>() {
+			@Override
 			public int compare(String a, String b) {
 				return StringUtil.getLevenshteinDistance(plainString, b) - StringUtil.getLevenshteinDistance(plainString,  a);
 			}

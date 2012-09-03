@@ -33,6 +33,7 @@ import org.spout.api.chat.style.StyleFormatter;
  */
 public class UnderlineStyleFormatter implements StyleFormatter {
 	private static final String UNDERLINE_CHAR = "\u0332";
+	@Override
 	public String format(String text) {
 		StringBuilder builder = new StringBuilder(text.length() * 2);
 		for (int i = 0; i < text.length(); ++i) {

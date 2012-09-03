@@ -59,6 +59,7 @@ public class SimpleEventManagerTest {
 		final List<Order> calledOrders = new ArrayList<Order>();
 		for (final Order order : Order.values()) {
 			eventManager.registerEvent(TestEvent.class, order, new EventExecutor() {
+				@Override
 				public void execute(Event event) throws EventException {
 					calledOrders.add(order);
 				}

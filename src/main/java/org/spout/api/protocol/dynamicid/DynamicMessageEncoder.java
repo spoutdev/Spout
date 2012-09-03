@@ -40,6 +40,7 @@ import org.spout.api.protocol.Session;
  * Process dynamically registered messages before sending them to give extra usefulness
  */
 public class DynamicMessageEncoder extends OneToOneEncoder {
+	@Override
 	protected Object encode(ChannelHandlerContext ctx, Channel channel, Object o) throws Exception {
 		if (o instanceof Message) {
 			Session session = ctx.getPipeline().get(CommonHandler.class).getSession();

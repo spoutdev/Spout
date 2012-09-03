@@ -53,22 +53,27 @@ public class ChatSectionImpl implements ChatSection {
 		this.wordValue = wordValue;
 	}
 
+	@Override
 	public Map<Integer, List<ChatStyle>> getActiveStyles() {
 		return activeStyles;
 	}
 
+	@Override
 	public String getPlainString() {
 		return wordValue;
 	}
 
+	@Override
 	public SplitType getSplitType() {
 		return type;
 	}
 
+	@Override
 	public ChatArguments toChatArguments() {
 		return new ChatArguments(this);
 	}
 
+	@Override
 	public ChatSection subSection(final int startIndex, final int endIndex) throws IndexOutOfBoundsException {
 		if (startIndex < 0) {
 			throw new IndexOutOfBoundsException("-1 < 0");
@@ -96,6 +101,7 @@ public class ChatSectionImpl implements ChatSection {
 		return new ChatSectionImpl(type, styles, modifiedString);
 	}
 
+	@Override
 	public int length() {
 		return getPlainString().length();
 	}

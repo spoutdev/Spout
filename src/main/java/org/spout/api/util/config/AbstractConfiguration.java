@@ -63,6 +63,7 @@ public abstract class AbstractConfiguration extends AbstractConfigurationNodeSou
 	 */
 	protected abstract void saveFromNodes(Map<String, ConfigurationNode> nodes) throws ConfigurationException;
 
+	@Override
 	public void load() throws ConfigurationException {
 		// Kill the existing children
 		for (ConfigurationNode child : children.values()) {
@@ -77,10 +78,12 @@ public abstract class AbstractConfiguration extends AbstractConfigurationNodeSou
 		}
 	}
 
+	@Override
 	public void save() throws ConfigurationException {
 		saveFromNodes(getChildren());
 	}
 
+	@Override
 	public void setNode(ConfigurationNode node) {
 		String[] path = node.getPathElements();
 		if (path == null || path.length == 0) {
@@ -126,35 +129,43 @@ public abstract class AbstractConfiguration extends AbstractConfigurationNodeSou
 		parent.addChild(node);
 	}
 
+	@Override
 	public String getPathSeparator() {
 		return pathSeparator;
 	}
 
+	@Override
 	public void setPathSeparator(String pathSeparator) {
 		this.pathSeparator = pathSeparator;
 		this.pathSeparatorPattern = Pattern.compile(Pattern.quote(pathSeparator));
 	}
 
+	@Override
 	public Pattern getPathSeparatorPattern() {
 		return pathSeparatorPattern;
 	}
 
+	@Override
 	public boolean doesWriteDefaults() {
 		return writesDefaults;
 	}
 
+	@Override
 	public void setWritesDefaults(boolean writesDefaults) {
 		this.writesDefaults = writesDefaults;
 	}
 
+	@Override
 	public String[] splitNodePath(String path) {
 		return getPathSeparatorPattern().split(path);
 	}
 
+	@Override
 	public String[] ensureCorrectPath(String[] rawPath) {
 		return rawPath;
 	}
 
+	@Override
 	public String[] getPathElements() {
 		return ArrayUtils.EMPTY_STRING_ARRAY;
 	}

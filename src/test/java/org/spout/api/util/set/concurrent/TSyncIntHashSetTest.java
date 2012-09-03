@@ -135,6 +135,7 @@ public class TSyncIntHashSetTest {
 			set = new TSyncIntHashSet(LENGTH / 128);
 		}
 
+		@Override
 		public void run() {
 			int localCount = count.getAndDecrement();
 

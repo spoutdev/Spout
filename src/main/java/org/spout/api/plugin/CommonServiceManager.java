@@ -74,6 +74,7 @@ public class CommonServiceManager implements ServiceManager {
 	 * @param plugin plugin with the provider
 	 * @param priority priority of the provider
 	 */
+	@Override
 	public <T> void register(Class<T> service, T provider, Plugin plugin, ServicePriority priority) {
 
 		synchronized (providers) {
@@ -98,6 +99,7 @@ public class CommonServiceManager implements ServiceManager {
 	 *
 	 * @param plugin
 	 */
+	@Override
 	public void unregisterAll(Plugin plugin) {
 		synchronized (providers) {
 			Iterator<Map.Entry<Class<?>, List<ServiceProvider<?>>>> it = providers.entrySet().iterator();
@@ -136,6 +138,7 @@ public class CommonServiceManager implements ServiceManager {
 	 * @param service
 	 * @param provider
 	 */
+	@Override
 	public void unregister(Class<?> service, Object provider) {
 		synchronized (providers) {
 			Iterator<Map.Entry<Class<?>, List<ServiceProvider<?>>>> it = providers.entrySet().iterator();
@@ -179,6 +182,7 @@ public class CommonServiceManager implements ServiceManager {
 	 *
 	 * @param provider
 	 */
+	@Override
 	public void unregister(Object provider) {
 		synchronized (providers) {
 			Iterator<Map.Entry<Class<?>, List<ServiceProvider<?>>>> it = providers.entrySet().iterator();
@@ -219,6 +223,7 @@ public class CommonServiceManager implements ServiceManager {
 	 * @param service
 	 * @return provider or null
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T load(Class<T> service) {
 		synchronized (providers) {
@@ -241,6 +246,7 @@ public class CommonServiceManager implements ServiceManager {
 	 * @param service
 	 * @return provider registration or null
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T> ServiceProvider<T> getRegistration(Class<T> service) {
 		synchronized (providers) {
@@ -261,6 +267,7 @@ public class CommonServiceManager implements ServiceManager {
 	 * @param plugin
 	 * @return provider registration or null
 	 */
+	@Override
 	public List<ServiceProvider<?>> getRegistrations(Plugin plugin) {
 		synchronized (providers) {
 			List<ServiceProvider<?>> ret = new ArrayList<ServiceProvider<?>>();
@@ -285,6 +292,7 @@ public class CommonServiceManager implements ServiceManager {
 	 * @param service
 	 * @return list of registrations
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T> Collection<ServiceProvider<T>> getRegistrations(Class<T> service) {
 		synchronized (providers) {
@@ -310,6 +318,7 @@ public class CommonServiceManager implements ServiceManager {
 	 *
 	 * @return list of known services
 	 */
+	@Override
 	public Collection<Class<?>> getKnownServices() {
 		return Collections.unmodifiableSet(providers.keySet());
 	}
@@ -323,6 +332,7 @@ public class CommonServiceManager implements ServiceManager {
 	 * @param service service to check
 	 * @return whether there has been a registered provider
 	 */
+	@Override
 	public <T> boolean isProvidedFor(Class<T> service) {
 		return getRegistration(service) != null;
 	}

@@ -40,6 +40,7 @@ public class FormatChatStyle extends ChatStyle {
 	 * 
 	 * @return false
 	 */
+	@Override
 	public boolean conflictsWith(ChatStyle other) {
 		return false;
 	}

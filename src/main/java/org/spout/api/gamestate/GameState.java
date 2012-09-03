@@ -62,6 +62,7 @@ public abstract class GameState implements Tickable {
 	 */
 	public void onUnPause() { }
 
+	@Override
 	public void tick(float dt) {
 
 	}

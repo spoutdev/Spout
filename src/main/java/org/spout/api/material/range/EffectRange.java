@@ -41,6 +41,7 @@ public interface EffectRange extends Iterable<IntVector3> {
 	 * 
 	 * @return an effect iterator
 	 */
+	@Override
 	public EffectIterator iterator();
 
 	/**
