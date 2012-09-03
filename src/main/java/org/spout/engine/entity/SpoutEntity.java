@@ -641,7 +641,4 @@ public class SpoutEntity implements Entity, Snapshotable {
 			}
 		}
 	}
-	public void resetId() {
-		id.getAndSet(NOTSPAWNEDID);
-	}	
 }
