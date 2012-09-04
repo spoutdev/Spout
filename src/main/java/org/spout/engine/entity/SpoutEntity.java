@@ -160,7 +160,6 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		return id.get() != NOTSPAWNEDID;
 	}
 
-	@Override
 	public void finalizeRun() {
 		//Move entity from Region A to Region B
 		if (entityManager != entityManagerLive.get()) {
@@ -339,6 +338,28 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		for (Component component : type.getComponents()) {
 			addComponent(component);
 		}
-		type.init(this);
-	}	
+	}
+
+	@Override
+	public void removeType(EntityType type) {
+		if (type == null) {
+			return;
+		}
+		for (Component component : type.getComponents()) {
+			removeComponent(component.getClass());
+		}
+	}
+
+	@Override
+	public boolean hasType(EntityType type) {
+		if (type == null) {
+			return false;
+		}
+		for (Component component : type.getComponents()) {
+			if (!hasComponent(component.getClass())) {
+				return false;
+			}
+		}
+		return true;
+	}
 }
