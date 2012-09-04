@@ -36,14 +36,12 @@ import org.spout.api.component.Component;
  * 
  * This is useful in describing what makes Entity A fundamentally different than Entity B. 
  */
-public abstract class EntityType {
+public class EntityType {
 	private final List<Component> components;
 	
 	public EntityType(Component... components) {
 		this.components = Arrays.asList(components);
 	}
-	
-	public abstract void init(Entity typed);
 	
 	public List<Component> getComponents() {
 		return components;

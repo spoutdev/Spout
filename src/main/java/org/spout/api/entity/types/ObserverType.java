@@ -33,8 +33,4 @@ public class ObserverType extends EntityType {
 	public ObserverType() {
 		super(BasicComponentTypes.OBSERVER);
 	}
-	
-	@Override
-	public void init(Entity typed) {
-	}
 }

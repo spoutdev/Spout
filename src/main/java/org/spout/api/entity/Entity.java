@@ -91,11 +91,6 @@ public interface Entity extends Source, Tickable, WorldSource, EntityComponentHo
 	public boolean isSavable();
 
 	/**
-	 * Called just before a snapshot update.
-	 */
-	public void finalizeRun();
-
-	/**
 	 * Sets the maximum distance at which the entity can be seen.<br/>
 	 * <br/>
 	 * The actual view distance used by the server may not be exactly the value that is set.<br/>
@@ -133,7 +128,20 @@ public interface Entity extends Source, Tickable, WorldSource, EntityComponentHo
 	 */
 	@LiveWrite
 	public void applyType(EntityType type);
-	
+
+	/**
+	 * Removes components composed within an EntityType
+	 * @param type The EntityType to remove
+	 */
+	@LiveWrite
+	public void removeType(EntityType type);
+
+	/**
+	 * Determines if this entity has all the components composed in an EntityType
+	 * @param type The EntityType to compare
+	 */
+	public boolean hasType(EntityType type);
+
 	/**
 	 * Gets the {@link Chunk} this entity resides in, or null if removed.
 	 * @return chunk the entity is in, or null if removed.
