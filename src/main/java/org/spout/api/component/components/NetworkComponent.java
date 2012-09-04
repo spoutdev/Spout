@@ -26,18 +26,18 @@
  */
 package org.spout.api.component.components;
 
+import org.spout.api.entity.Player;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.EntityProtocolStore;
+import org.spout.api.protocol.event.ProtocolEvent;
 import org.spout.api.util.StringMap;
 
 public class NetworkComponent extends EntityComponent {
-
 	public static final int UNREGISTERED_ID = -1;
 	private static final StringMap protocolMap = new StringMap(null, new MemoryStore<Integer>(), 0, 256, "componentProtocols");
-
-	private int id = UNREGISTERED_ID;
 	private final EntityProtocolStore protocolStore = new EntityProtocolStore();
+	private int id = UNREGISTERED_ID;
 
 	public NetworkComponent() {
 	}
@@ -45,17 +45,6 @@ public class NetworkComponent extends EntityComponent {
 	@Override
 	public boolean isDetachable() {
 		return false;
-	}
-	
-	/**
-	 * @return id of the entity.
-	 */
-	public int getId() {
-		return id;
-	}
-
-	void setId(int id) {
-		this.id = id;
 	}
 
 	/**
@@ -82,5 +71,17 @@ public class NetworkComponent extends EntityComponent {
 	 */
 	public static int getProtocolId(String protocolName) {
 		return protocolMap.register(protocolName);
+	}
+
+	/**
+	 * Sends a protocol events to all players within range of this Entity
+	 * @param event to send
+	 */
+	public void callProtocolEvent(ProtocolEvent event) {
+		for (Player player : getHolder().getChunk().getObservingPlayers()) {
+			if (player.isOnline()) {
+				player.getNetworkSynchronizer().callProtocolEvent(event);
+			}
+		}
 	}
 }
