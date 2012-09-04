@@ -57,7 +57,10 @@ public interface ComponentHolder {
 	public <T extends Component> T getComponent(Class<T> component);
 
 	/**
-	 * Returns the component that is assignable from the given class, or if not found
+	 * Returns the component that is assignable from the given class, or if not found creates a new one and attaches it then
+	 * returns the newly created component.
+	 *
+	 * Note: The component returned can potentially not be attached to the entity if attachTo returns false
 	 * @param component the component class to lookup or if not found, create
 	 * @param <T> the component type
 	 * @return the component stored or created

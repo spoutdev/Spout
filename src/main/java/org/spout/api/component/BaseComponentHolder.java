@@ -49,8 +49,8 @@ public class BaseComponentHolder implements ComponentHolder {
 			if (hasComponent(clazz)) {
 				return (T) getComponent(clazz);
 			}
-			components.put(clazz, component);
 			component.onAttached();
+			components.put(clazz, component);
 			return component;
 		} else {
 			return null;
@@ -74,12 +74,7 @@ public class BaseComponentHolder implements ComponentHolder {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Component> T getComponent(Class<T> aClass) {
-		for(Class<? extends Component> c : components.keySet()){
-			if(aClass.isAssignableFrom(c)) {
-				return (T) components.get(c);
-			}
-		}
-		return null;
+		return (T) components.get(aClass);
 	}
 
 	@Override
@@ -100,10 +95,7 @@ public class BaseComponentHolder implements ComponentHolder {
 
 	@Override
 	public boolean hasComponent(Class<? extends Component> aClass) {
-		for(Class<? extends Component> c : components.keySet()){
-			if(aClass.isAssignableFrom(c)) return true;
-		}
-		return false;
+		return components.containsKey(aClass);
 	}
 
 	@Override
