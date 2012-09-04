@@ -41,7 +41,7 @@ import org.spout.api.util.StringMap;
  * FontRenderer. Names are from <a href="http://wiki.vg/Chat">http://wiki.vg/Chat</a>
  */
 public abstract class ChatStyle {
-	private static final StringMap ID_LOOKUP = new StringMap(null, new MemoryStore<Integer>(), 0, Integer.MAX_VALUE, ChatStyle.class.getName());
+	private static final StringMap ID_LOOKUP = new StringMap(null, new MemoryStore<Integer>(), 0, Integer.MAX_VALUE, ChatStyle.class.getCanonicalName());
 	private static final Map<String, ChatStyle> BY_NAME = new HashMap<String, ChatStyle>();
 	private static final Set<ChatStyle> VALUES = new HashSet<ChatStyle>();
 
@@ -92,7 +92,7 @@ public abstract class ChatStyle {
 		if (name == null) {
 			return null;
 		}
-		return BY_NAME.get(name.toLowerCase().replace(' ', '_'));
+		return BY_NAME.get(toLookupName(name));
 	}
 
 	/**
@@ -112,13 +112,17 @@ public abstract class ChatStyle {
 		return StyleHandler.get(handlerId).stripStyle(str);
 	}
 
+	private static String toLookupName(String name) {
+		return name.toUpperCase().replace(' ', '_');
+	}
+
 	private final String name;
 	private final String lookupName;
 	private final int id;
 
 	public ChatStyle(String name) {
 		this.name = name;
-		this.lookupName = name.toLowerCase().replace(' ', '_');
+		this.lookupName = toLookupName(name);
 		VALUES.add(this);
 		BY_NAME.put(lookupName, this);
 		id = ID_LOOKUP.register(lookupName);
@@ -126,6 +130,15 @@ public abstract class ChatStyle {
 
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * Returns the lookup name for this style. This is the name used for the style for lookups.
+	 *
+	 * @return The lookup name.
+	 */
+	public String getLookupName() {
+		return lookupName;
 	}
 
 	public int getId() {

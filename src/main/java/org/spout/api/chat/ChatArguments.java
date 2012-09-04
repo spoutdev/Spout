@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.chat.style.ChatStyle;
@@ -206,6 +208,7 @@ public class ChatArguments implements Cloneable, ChatSection {
 		plainString = builder.toString();
 	}
 
+	@Override
 	public Map<Integer, List<ChatStyle>> getActiveStyles() {
 		int curIndex = 0;
 		LinkedHashMap<Integer, List<ChatStyle>> map = new LinkedHashMap<Integer, List<ChatStyle>>();
@@ -226,22 +229,27 @@ public class ChatArguments implements Cloneable, ChatSection {
 		return map;
 	}
 
+	@Override
 	public String getPlainString() {
 		return plainString;
 	}
 
+	@Override
 	public SplitType getSplitType() {
 		return SplitType.ALL;
 	}
 
+	@Override
 	public ChatArguments toChatArguments() {
 		return this;
 	}
 
+	@Override
 	public ChatSection subSection(int startIndex, int endIndex) {
 		return new ChatSectionImpl(getSplitType(), getActiveStyles(), getPlainString()).subSection(startIndex, endIndex);
 	}
 
+	@Override
 	public int length() {
 		return getPlainString().length();
 	}
@@ -459,6 +467,64 @@ public class ChatArguments implements Cloneable, ChatSection {
 	 */
 	public static ChatArguments fromString(String str, int handlerId) {
 		return StyleHandler.get(handlerId).extractArguments(str);
+	}
+
+	/**
+	 * Provides a format string representation of a ChatArguments object.
+	 * In a format string, parameters surrounded with a  <pre>{{arg}}</pre> are interpreted as ChatStyles
+	 * and parameters surrounded with a <pre>{arg}</pre> are interpreted as placeholders.
+	 *
+	 * @see #fromFormatString(String)
+	 * @return The format string
+	 */
+	public String toFormatString() {
+		StringBuilder builder = new StringBuilder();
+		for (Object element : elements) {
+			if (element instanceof ChatStyle) {
+				builder.append("{{").append(((ChatStyle) element).getLookupName()).append("}}");
+			} else if (element instanceof Placeholder) {
+				builder.append('{').append(((Placeholder) element).getName()).append('}');
+			} else {
+				builder.append(element);
+			}
+		}
+		return builder.toString();
+	}
+
+	private static final Pattern STYLE_FORMAT_PATTERN = Pattern.compile("(?:\\{\\{([^\\}]+)\\}\\})?([^\\{]*)");
+	private static final Pattern PLACEHOLDER_FORMAT_PATTERN = Pattern.compile("((?:[^\\{]|\\{\\{)*)(?:\\{([^{][^}]*)\\})?");
+
+	/**
+	 * Creates a arguments object with content in a format string
+	 * {@link #toFormatString()} describes the format for format strings.
+	 *
+	 * @see #toFormatString()
+	 * @param format The format string. The format for format strings is described in {@link #toFormatString()}
+	 * @return The {@link ChatArguments} object created from the format string
+	 */
+	public static ChatArguments fromFormatString(String format) {
+		ChatArguments args = new ChatArguments();
+		Matcher matcher = PLACEHOLDER_FORMAT_PATTERN.matcher(format);
+		while (matcher.find()) {
+			if (matcher.group(1).length() > 0) {
+				Matcher matcher2 = STYLE_FORMAT_PATTERN.matcher(matcher.group(1));
+				while (matcher2.find()) {
+					if (matcher.group(1) != null) {
+						ChatStyle style = ChatStyle.byName(matcher2.group(1));
+						if (style == null) {
+							args.append(matcher2.group(0));
+							continue;
+						}
+						args.append(style);
+					}
+					args.append(matcher2.group(2));
+				}
+			}
+			if (matcher.group(2) != null) {
+				args.append(new Placeholder(matcher.group(2)));
+			}
+		}
+		return args;
 	}
 
 	@Override

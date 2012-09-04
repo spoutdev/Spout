@@ -105,15 +105,19 @@ public class TripleIntObjectReferenceArrayMapTest {
 			}
 		}
 		
-		FakeObject removed = map.remove(1, -1, 2);
+		int rx = 1;
+		int ry = -1;
+		int rz = 2;
+		
+		FakeObject removed = map.remove(rx, ry, rz);
 		
 		valuesCopy = new LinkedHashSet<FakeObject>(map.valueCollection());
 		
-		assertTrue("Values collection did contained element for, " + 1 + ", " + 2 + ", " + 3 + " after its removal", !valuesCopy.contains(removed) );
+		assertTrue("Values collection did contained element for, " + rx + ", " + ry + ", " + rz + " after its removal", !valuesCopy.contains(removed) );
 		
 		int expectedSize = EDGEX * EDGEY * EDGEZ - 1;
 		assertTrue("Value copy is not the correct size " + expectedSize + ", got " + valuesCopy.size(), valuesCopy.size() == expectedSize);
-		assertTrue("Re-inserting value into empty slot in map did not return null", map.put(1, 2, 3, removed) == null);
+		assertTrue("Re-inserting value into empty slot in map did not return null", map.put(rx, ry, rz, removed) == null);
 		
 		boolean thrown = false;
 		try {
@@ -126,8 +130,9 @@ public class TripleIntObjectReferenceArrayMapTest {
 
 		Random r = new Random();
 		
-		for (i = 0; i < (objects.length >> 4); i++) {
-			FakeObject ref = objects[r.nextInt(objects.length)];
+		for (i = 0; i < objects.length; i++) {
+			int index = r.nextInt(objects.length);
+			FakeObject ref = objects[index];
 			int x = ref.getX();
 			int y = ref.getY();
 			int z = ref.getZ();
@@ -160,6 +165,8 @@ public class TripleIntObjectReferenceArrayMapTest {
 
 			old = map.putIfAbsent(x, y, z, newObject);
 			assertTrue("putIfAbsent did not return null when adding an object", old == null);
+			
+			objects[index] = newObject;
 		}
 
 	}
@@ -228,6 +235,7 @@ public class TripleIntObjectReferenceArrayMapTest {
 			
 		}
 		
+		@Override
 		public void run() {
 			for (int i = 0; i < SPEED_LENGTH; i++) {
 				int index = i & 0x3FF;

@@ -33,6 +33,7 @@ import org.spout.api.chat.style.StyleFormatter;
  */
 public class StrikethroughStyleFormatter implements StyleFormatter {
 	private static final String STRIKETHROUGH_CHAR = "\u0336";
+	@Override
 	public String format(String text) {
 		StringBuilder builder = new StringBuilder(text.length() * 2);
 		for (int i = 0; i < text.length(); ++i) {

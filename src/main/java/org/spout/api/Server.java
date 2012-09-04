@@ -29,7 +29,6 @@ package org.spout.api;
 import java.util.Collection;
 import java.util.List;
 
-import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Player;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.util.access.AccessManager;

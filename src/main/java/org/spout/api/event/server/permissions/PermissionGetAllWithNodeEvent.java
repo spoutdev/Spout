@@ -69,6 +69,7 @@ public class PermissionGetAllWithNodeEvent extends NodeBasedEvent {
 		return Collections.unmodifiableSet(ret);
 	}
 
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}

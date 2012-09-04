@@ -124,6 +124,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @return the sequence number, or DatatableSequenceNumber.ATOMIC for a
 	 *         single short record
 	 */
+	@Override
 	public int getSequence(int x, int y, int z) {
 		checkCompressing();
 		int index = getIndex(x, y, z);
@@ -164,6 +165,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @return true if the sequence number has not changed and expected is not
 	 *         DatatableSequenceNumber.ATOMIC
 	 */
+	@Override
 	public boolean testSequence(int x, int y, int z, int expected) {
 
 		if (expected == DatatableSequenceNumber.ATOMIC) {
@@ -195,6 +197,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @param z the z coordinate
 	 * @return the block id
 	 */
+	@Override
 	public int getBlockId(int x, int y, int z) {
 		int index = getIndex(x, y, z);
 		int spins = 0;
@@ -234,6 +237,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @param z the z coordinate
 	 * @return the block data
 	 */
+	@Override
 	public int getData(int x, int y, int z) {
 		int index = getIndex(x, y, z);
 		int spins = 0;
@@ -272,6 +276,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @param z the z coordinate
 	 * @return the full state of the block
 	 */
+	@Override
 	public int getFullData(int x, int y, int z) {
 		int index = getIndex(x, y, z);
 		int spins = 0;
@@ -313,6 +318,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @param z the z coordinate
 	 * @param fullState the new state of the Block
 	 */
+	@Override
 	public void setBlock(int x, int y, int z, MaterialSource material) {
 		setBlock(x, y, z, material.getMaterial().getId(), material.getData());
 	}
@@ -328,6 +334,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @param z the z coordinate
 	 * @param fullState the new state of the Block
 	 */
+	@Override
 	public int getAndSetBlock(int x, int y, int z, MaterialSource material) {
 		return getAndSetBlock(x, y, z, material.getMaterial().getId(), material.getData());
 	}
@@ -345,6 +352,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @param data the block data
 	 * @param auxData the block auxiliary data
 	 */
+	@Override
 	public void setBlock(int x, int y, int z, short id, short data) {
 		getAndSetBlockRaw(x, y, z, id, data);
 	}
@@ -363,6 +371,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @param auxData the block auxiliary data
 	 * @return the old full state of the block
 	 */
+	@Override
 	public int getAndSetBlock(int x, int y, int z, short id, short data) {
 		return getAndSetBlockRaw(x, y, z, id, data);
 	}
@@ -422,6 +431,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @param newAuxData the new block auxiliary data
 	 * @return true if the block was set
 	 */
+	@Override
 	public boolean compareAndSetBlock(int x, int y, int z, short expectId, short expectData, short newId, short newData) {
 		int index = getIndex(x, y, z);
 		int spins = 0;
@@ -487,6 +497,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 *
 	 * @return true if compression would reduce the store size
 	 */
+	@Override
 	public final boolean needsCompression() {
 		int entries = auxStore.getEntries();
 		int size = auxStore.getSize();
@@ -501,6 +512,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 *
 	 * @return the array
 	 */
+	@Override
 	public short[] getBlockIdArray() {
 		return getBlockIdArray(null);
 	}
@@ -516,6 +528,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @param the array to place the data
 	 * @return the array
 	 */
+	@Override
 	public short[] getBlockIdArray(short[] array) {
 		int length = blockIds.length();
 		if (array == null || array.length != length) {
@@ -541,6 +554,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 *
 	 * @return the array
 	 */
+	@Override
 	public final short[] getDataArray() {
 		return getDataArray(null);
 	}
@@ -556,6 +570,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @param the array to place the data
 	 * @return the array
 	 */
+	@Override
 	public short[] getDataArray(short[] array) {
 		int length = blockIds.length();
 		if (array == null || array.length != length) {
@@ -578,6 +593,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * This method should only be called when the store is guaranteed not to be
 	 * accessed from any other thread.<br>
 	 */
+	@Override
 	public void compress() {
 		if (!compressing.compareAndSet(false, true)) {
 			throw new IllegalStateException("Compression started while compression was in progress");
@@ -625,6 +641,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 *
 	 * @return true if there was an overflow
 	 */
+	@Override
 	public boolean isDirtyOverflow() {
 		return dirtyBlocks.get() >= dirtyX.length;
 	}
@@ -635,6 +652,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 *
 	 * @return true if the store is dirty
 	 */
+	@Override
 	public boolean isDirty() {
 		return dirtyBlocks.get() > 0;
 	}
@@ -642,6 +660,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	/**
 	 * Resets the dirty arrays
 	 */
+	@Override
 	public boolean resetDirtyArrays() {
 		return dirtyBlocks.getAndSet(0) > 0;
 	}
@@ -659,6 +678,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @param block
 	 * @return
 	 */
+	@Override
 	public Vector3 getDirtyBlock(int i) {
 		if (i >= dirtyBlocks.get()) {
 			return null;
@@ -680,6 +700,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @param y the y coordinate of the dirty block
 	 * @param z the z coordinate of the dirty block
 	 */
+	@Override
 	public void markDirty(int x, int y, int z) {
 		int index = dirtyBlocks.getAndIncrement();
 		if (index < dirtyX.length) {

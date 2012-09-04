@@ -36,6 +36,7 @@ import org.spout.api.Spout;
  * A {@link SimpleChannelHandler} that prints messages that are sent and received
  */
 public class MessagePrintingHandler extends SimpleChannelHandler {
+	@Override
 	public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
 		if (e instanceof MessageEvent) {
 			Object msg = ((MessageEvent)e).getMessage();
@@ -44,6 +45,7 @@ public class MessagePrintingHandler extends SimpleChannelHandler {
 		super.handleUpstream(ctx, e);
 	}
 
+	@Override
 	public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
 		if (e instanceof MessageEvent) {
 			Object msg = ((MessageEvent)e).getMessage();

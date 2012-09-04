@@ -31,8 +31,8 @@ import org.spout.api.geo.cuboid.Chunk;
 public class Simple2DBiomeManager extends BiomeManager {
 	private byte[] biomes = new byte[Chunk.BLOCKS.AREA];
 
-	public Simple2DBiomeManager(int chunkX, int chunkY, int chunkZ) {
-		super(chunkX, chunkY, chunkZ);
+	public Simple2DBiomeManager(int chunkX, int chunkZ) {
+		super(chunkX, chunkZ);
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class Simple2DBiomeManager extends BiomeManager {
 
 	@Override
 	public Simple2DBiomeManager clone() {
-		Simple2DBiomeManager manager = new Simple2DBiomeManager(getChunkX(), getChunkY(), getChunkZ());
+		Simple2DBiomeManager manager = new Simple2DBiomeManager(getChunkX(), getChunkZ());
 		manager.deserialize(serialize());
 		return manager;
 	}

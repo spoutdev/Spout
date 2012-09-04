@@ -78,6 +78,7 @@ public class Vertex {
 		return stride;
 	}
 	
+	@Override
 	public String toString(){
 		return StringUtil.toNamedString(this, position, normal, texCoord0);
 	}

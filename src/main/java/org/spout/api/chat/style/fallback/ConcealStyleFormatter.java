@@ -37,6 +37,7 @@ public class ConcealStyleFormatter implements StyleFormatter {
 	public static final String CONCEAL_CHARS = "#*%!$";
 	private static final Random RANDOM = new Random();
 
+	@Override
 	public String format(String text) {
 		StringBuilder builder = new StringBuilder(text.length());
 		for (int i = 0; i < text.length(); ++i) {

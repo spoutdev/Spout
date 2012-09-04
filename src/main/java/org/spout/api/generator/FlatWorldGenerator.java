@@ -26,8 +26,6 @@
  */
 package org.spout.api.generator;
 
-import org.spout.api.generator.biome.BiomeManager;
-import org.spout.api.generator.biome.EmptyBiomeManager;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.material.BlockMaterial;
@@ -35,11 +33,10 @@ import org.spout.api.util.cuboid.CuboidShortBuffer;
 
 public class FlatWorldGenerator implements WorldGenerator {
 	@Override
-	public BiomeManager generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ, long seed) {
+	public void generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ, World world) {
 		if (chunkY < 0) {
 			blockData.flood(BlockMaterial.UNBREAKABLE.getId());
 		}
-		return new EmptyBiomeManager(chunkX, chunkY, chunkZ);
 	}
 
 	@Override

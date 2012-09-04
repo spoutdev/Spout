@@ -95,6 +95,7 @@ public class ServiceProvider<T> implements Comparable<ServiceProvider<?>> {
 		return priority;
 	}
 
+	@Override
 	public int compareTo(ServiceProvider<?> other) {
 		if (priority.ordinal() == other.getPriority().ordinal()) {
 			return 0;

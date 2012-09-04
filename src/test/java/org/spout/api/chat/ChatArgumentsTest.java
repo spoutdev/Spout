@@ -24,56 +24,31 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.gui.widget;
+package org.spout.api.chat;
 
-import org.spout.api.gui.TextProperties;
-import org.spout.api.gui.WidgetType;
+import org.junit.Test;
+import org.spout.api.chat.style.ChatStyle;
+
+import static org.junit.Assert.*;
 
 /**
- * Defines a container that has a border around it and a title on the top. It looks something like this:
- * <pre>
- * | Group title ------|
- * | (widgets)         |
- * |-------------------|
- * </pre>
- *
+ * Test for some ChatArguments functions
+ * Currently incomplete, may be filled out more later
  */
-public class Group extends AbstractWidgetContainer implements Label {
-	
-	private TextProperties properties = new TextProperties();
-	private String text = "";
-
-	@Override
-	public WidgetType getWidgetType() {
-		return WidgetType.GROUP;
+public class ChatArgumentsTest {
+	@Test
+	public void testToFormatString() {
+		ChatArguments testArgs = new ChatArguments("hi", ChatStyle.RED, "there", new Placeholder("HI"), ChatStyle.BOLD, " in bold");
+		String expected = "hi{{RED}}there{HI}{{BOLD}} in bold";
+		String result = testArgs.toFormatString();
+		assertEquals(expected, result);
 	}
 
-	@Override
-	public void render() {
-		super.render();
-		//TODO render the text and the border
+	@Test
+	public void testFromFormatString() {
+		String sourceString = "hi{{RED}}there{HI}{{BOLD}} in bold";
+		ChatArguments testArgs = ChatArguments.fromFormatString(sourceString);
+		String resultString = testArgs.toFormatString();
+		assertEquals(sourceString, resultString);
 	}
-
-	@Override
-	public TextProperties getTextProperties() {
-		return properties;
-	}
-
-	@Override
-	public Label setTextProperties(TextProperties p) {
-		this.properties = p;
-		return this;
-	}
-
-	@Override
-	public Label setText(String text) {
-		this.text = text;
-		return this;
-	}
-
-	@Override
-	public String getText() {
-		return text;
-	}
-
 }

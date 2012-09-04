@@ -44,6 +44,7 @@ public class SpiralSpawnArrangement extends GenericSpawnArrangement {
 		this.scaleCircumference = scaleCircumference;
 	}
 
+	@Override
 	public Point[] generatePoints(Point center, int number) {
 
 		float angle = 0;

@@ -61,14 +61,17 @@ public class SimpleCommandTest implements CommandSource {
 		return sendRawMessage(message);
 	}
 
+	@Override
 	public void sendCommand(String command, ChatArguments arguments) {
 		processCommand(command, arguments);
 	}
 
+	@Override
 	public void processCommand(String command, ChatArguments arguments) {
 		return;
 	}
 
+	@Override
 	public boolean sendMessage(ChatArguments message) {
 		return sendRawMessage(message);
 	}
@@ -78,6 +81,7 @@ public class SimpleCommandTest implements CommandSource {
 		return sendRawMessage(new ChatArguments(message));
 	}
 
+	@Override
 	public boolean sendRawMessage(ChatArguments message) {
 		System.out.println(message.asString());
 		return true;

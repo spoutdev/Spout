@@ -43,12 +43,12 @@ import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.SyncedRootCommand;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
 import org.spout.api.event.EventManager;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.inventory.RecipeManager;
 import org.spout.api.permissions.PermissionsSubject;
-import org.spout.api.entity.Player;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.PluginManager;
 import org.spout.api.plugin.ServiceManager;
@@ -77,6 +77,7 @@ public interface Engine extends Named {
 	 *
 	 * @return name of the implementation
 	 */
+	@Override
 	public String getName();
 
 	/**
@@ -529,10 +530,6 @@ public interface Engine extends Named {
 	 *
 	 */
 	public FileSystem getFilesystem();
-
-	public void setVariable(String key, String value);
-
-	public String getVariable(String key);
 
 	/**
 	 * Gets the command source that prints to the console<br/>

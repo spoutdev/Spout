@@ -129,6 +129,7 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 		this.no_entry_key = noEntryKey;
 	}
 
+	@Override
 	public void clear() {
 		for (int m = 0; m < mapCount; m++) {
 			clear(m);
@@ -146,6 +147,7 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 		}
 	}
 
+	@Override
 	public boolean containsKey(long key) {
 		int m = mapHash(key);
 		Lock lock = lockArray[m].readLock();
@@ -157,6 +159,7 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 		}
 	}
 
+	@Override
 	public boolean containsValue(Object value) {
 		for (int m = 0; m < mapCount; m++) {
 			if (containsValue(m, value)) {
@@ -176,18 +179,22 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 		}
 	}
 
+	@Override
 	public boolean forEachEntry(TLongObjectProcedure<? super V> arg0) {
 		throw new UnsupportedOperationException("This operation is not supported");
 	}
 
+	@Override
 	public boolean forEachKey(TLongProcedure arg0) {
 		throw new UnsupportedOperationException("This operation is not supported");
 	}
 
+	@Override
 	public boolean forEachValue(TObjectProcedure<? super V> arg0) {
 		throw new UnsupportedOperationException("This operation is not supported");
 	}
 
+	@Override
 	public V get(long key) {
 		int m = mapHash(key);
 		Lock lock = lockArray[m].readLock();
@@ -199,22 +206,27 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 		}
 	}
 
+	@Override
 	public long getNoEntryKey() {
 		return no_entry_key;
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return totalKeys.get() == 0;
 	}
 
+	@Override
 	public TLongObjectIterator<V> iterator() {
 		throw new UnsupportedOperationException("This operation is not supported");
 	}
 
+	@Override
 	public TLongSet keySet() {
 		throw new UnsupportedOperationException("This operation is not supported");
 	}
 
+	@Override
 	public long[] keys(long[] dest) {
 		for (int m = 0; m < mapCount; m++) {
 			lockArray[m].readLock().lock();
@@ -245,10 +257,12 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 		}
 	}
 
+	@Override
 	public long[] keys() {
 		return keys(null);
 	}
 
+	@Override
 	public V put(long key, V value) {
 		int m = mapHash(key);
 		Lock lock = lockArray[m].writeLock();
@@ -265,14 +279,17 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 	}
 
 	// TODO - these two methods could be easily implemented
+	@Override
 	public void putAll(Map<? extends Long, ? extends V> arg0) {
 		throw new UnsupportedOperationException("This operation is not supported");
 	}
 
+	@Override
 	public void putAll(TLongObjectMap<? extends V> arg0) {
 		throw new UnsupportedOperationException("This operation is not supported");
 	}
 
+	@Override
 	public V putIfAbsent(long key, V value) {
 		int m = mapHash(key);
 		Lock lock = lockArray[m].writeLock();
@@ -288,6 +305,7 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 		}
 	}
 
+	@Override
 	public V remove(long key) {
 		int m = mapHash(key);
 		Lock lock = lockArray[m].writeLock();
@@ -303,6 +321,7 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 		}
 	}
 
+	@Override
 	public boolean remove(long key, V value) {
 		if (value == null) {
 			throw new IllegalArgumentException("Cannot remove null values");
@@ -324,18 +343,22 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 		}
 	}
 
+	@Override
 	public boolean retainEntries(TLongObjectProcedure<? super V> arg0) {
 		throw new UnsupportedOperationException("This operation is not supported");
 	}
 
+	@Override
 	public int size() {
 		return totalKeys.get();
 	}
 
+	@Override
 	public void transformValues(TObjectFunction<V, V> arg0) {
 		throw new UnsupportedOperationException("This operation is not supported");
 	}
 
+	@Override
 	public Collection<V> valueCollection() {
 		HashSet<V> collection = new HashSet<V>();
 		for (int m = 0; m < mapCount; m++) {
@@ -353,10 +376,12 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 		return Collections.unmodifiableCollection(collection);
 	}
 
+	@Override
 	public V[] values() {
 		return values(null);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public V[] values(V[] dest) {
 		for (int m = 0; m < mapCount; m++) {

@@ -34,6 +34,7 @@ public class ColorChatStyle extends ChatStyle {
 		super(name);
 	}
 
+	@Override
 	public boolean conflictsWith(ChatStyle other) {
 		return other instanceof ColorChatStyle;
 	}

@@ -47,40 +47,49 @@ public class MemoryStore<T> implements SimpleStore<T> {
 		reverseMap = new HashMap<T, String>();
 	}
 
+	@Override
 	public synchronized boolean save() {
 		return true;
 	}
 
+	@Override
 	public synchronized boolean load() {
 		return true;
 	}
 
+	@Override
 	public synchronized Collection<String> getKeys() {
 		return map.keySet();
 	}
 
+	@Override
 	public synchronized Set<Entry<String, T>> getEntrySet() {
 		return map.entrySet();
 	}
 
+	@Override
 	public synchronized int getSize() {
 		return map.size();
 	}
 
+	@Override
 	public synchronized boolean clear() {
 		map.clear();
 		reverseMap.clear();
 		return true;
 	}
 
+	@Override
 	public synchronized T get(String key) {
 		return map.get(key);
 	}
 
+	@Override
 	public synchronized String reverseGet(T value) {
 		return reverseMap.get(value);
 	}
 
+	@Override
 	public synchronized T get(String key, T def) {
 		T value = get(key);
 		if (value == null) {
@@ -89,6 +98,7 @@ public class MemoryStore<T> implements SimpleStore<T> {
 		return value;
 	}
 
+	@Override
 	public synchronized T remove(String key) {
 		T value = map.remove(key);
 		if (value != null) {
@@ -97,6 +107,7 @@ public class MemoryStore<T> implements SimpleStore<T> {
 		return value;
 	}
 
+	@Override
 	public synchronized T set(String key, T value) {
 		Validate.notNull(key);
 		Validate.notNull(value);
@@ -109,6 +120,7 @@ public class MemoryStore<T> implements SimpleStore<T> {
 		return oldValue;
 	}
 
+	@Override
 	public synchronized boolean setIfAbsent(String key, T value) {
 		if (map.get(key) != null) {
 			return false;

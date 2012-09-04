@@ -34,6 +34,7 @@ import org.spout.api.chat.style.StyleFormatter;
 public class DefaultStyleFormatter implements StyleFormatter {
 	public static final DefaultStyleFormatter INSTANCE = new DefaultStyleFormatter();
 
+	@Override
 	public String format(String text) {
 		return text;
 	}

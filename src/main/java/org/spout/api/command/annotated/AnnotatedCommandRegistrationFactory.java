@@ -62,6 +62,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 		this.executorFactory = executorFactory;
 	}
 
+	@Override
 	public boolean create(Named owner, Class<?> commands, org.spout.api.command.Command parent) {
 		Object instance = null;
 		if (injector != null) {
@@ -92,7 +93,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 	}
 
 	private boolean methodRegistration(Named owner, Class<?> commands, Object instance, org.spout.api.command.Command parent) {
-		boolean success = true;
+		boolean success = true, anyRegistered = false;
 		for (Method method : commands.getDeclaredMethods()) {
 			// Basic checks
 			method.setAccessible(true);
@@ -103,6 +104,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 			if (child == null) {
 				continue;
 			}
+			anyRegistered = true;
 
 			if (method.isAnnotationPresent(NestedCommand.class)) {
 				for (Class<?> clazz : method.getAnnotation(NestedCommand.class).value()) {
@@ -113,7 +115,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 			}
 			child.closeSubCommand();
 		}
-		return success;
+		return success && anyRegistered;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -163,7 +165,8 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 			}
 			anyRegistered = true;
 
-			if (!nestedClassRegistration(owner, clazz, subInstance, child)) {
+			if (!nestedClassRegistration(owner, clazz, subInstance, child)
+					&& !methodRegistration(owner, clazz, subInstance, child)) {
 				for (Method method : clazz.getDeclaredMethods()) {
 					if (!method.isAnnotationPresent(Executor.class)) {
 						continue;

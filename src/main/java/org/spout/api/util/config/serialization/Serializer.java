@@ -87,6 +87,7 @@ public abstract class Serializer {
 
 	public static class NeededGenericsComparator implements Comparator<Serializer> {
 
+		@Override
 		public int compare(Serializer a, Serializer b) {
 			return Integer.valueOf(a.getParametersRequired()).compareTo(b.getParametersRequired());
 		}

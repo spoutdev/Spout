@@ -53,7 +53,7 @@ import org.spout.api.plugin.Plugin;
  * <h2>Translating strings in the code</h2>
  * <p>To translate strings, use Translation.tr().</p>
  * <h3>Example</h3>
- * <pre>player.sendMessage(Translation.tr("You've been teleported to %1", player, target);</pre>
+ * <pre>player.sendMessage(Translation.tr("You've been teleported to %1", player, target));</pre>
  * <p>You have to pass a CommandSource object so SpoutAPI can determine the preferred target-language.</p>
  * <p><strong>TIP: </strong> use a static import:
  * <pre>import static org.spout.api.lang.Translation.tr;

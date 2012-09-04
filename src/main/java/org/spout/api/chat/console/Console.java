@@ -78,6 +78,7 @@ public interface Console extends Closeable {
 	 * Clean up any resources used by the console
 	 * If this method has already been called and init has not been called since, this method will do nothing
 	 */
+	@Override
 	public void close();
 
 	/**

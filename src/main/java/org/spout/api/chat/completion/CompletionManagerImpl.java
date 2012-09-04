@@ -32,10 +32,12 @@ import java.util.regex.Pattern;
  * Implementation of CompletionManager
  */
 public class CompletionManagerImpl implements CompletionManager {
+	@Override
 	public void reqisterCompletor(Completor completor, Pattern regex, MatchLocation matchLocation) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
+	@Override
 	public CompletionFuture getCompletion(CompletionRequest input) {
 		return null;  //To change body of implemented methods use File | Settings | File Templates.
 	}

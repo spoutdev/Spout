@@ -39,4 +39,26 @@ public class ChatTemplate {
 	public ChatArguments getArguments() {
 		return new ChatArguments(source.getArguments());
 	}
+
+	/**
+	 * Passes through to {@link ChatArguments#fromFormatString(String)} to create a new ChatTemplate from a format string
+	 *
+	 * @see ChatArguments#fromFormatString(String)
+	 * @param formatString The format string
+	 * @return The new ChatTemplate object
+	 */
+	public static ChatTemplate fromFormatString(String formatString) {
+		return new ChatTemplate(ChatArguments.fromFormatString(formatString));
+	}
+
+	/**
+	 * Converts this ChatTemplate to a format string by using {@link ChatArguments#toFormatString()}
+	 * The toFormatString() method is called on the original ChatArguments passed in.
+	 *
+	 * @see ChatArguments#toFormatString()
+	 * @return The format string
+	 */
+	public String toFormatString() {
+		return source.toFormatString();
+	}
 }

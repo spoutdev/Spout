@@ -26,9 +26,6 @@
  */
 package org.spout.api.chat.style.fallback;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.chat.style.StyleFormatter;
@@ -58,25 +55,13 @@ public class DefaultStyleHandler extends StyleHandler {
 
 	// Since these defaults actually modify the text instead of
 	// simply applying formatting characters, not much we can do.
+	@Override
 	public String stripStyle(String formatted) {
 		return formatted;
 	}
 
-	private static final Pattern STYLE_PATTERN = Pattern.compile("(?:\\{\\{([^\\}]+)\\}\\})?([^\\{]*)");
+	@Override
 	public ChatArguments extractArguments(String str) {
-		ChatArguments args = new ChatArguments();
-		Matcher matcher = STYLE_PATTERN.matcher(str);
-		while (matcher.find()) {
-			if (matcher.group(1) != null) {
-				ChatStyle style = ChatStyle.byName(matcher.group(1));
-				if (style == null) {
-					args.append(matcher.group(0));
-					continue;
-				}
-				args.append(style);
-			}
-			args.append(matcher.group(2));
-		}
-		return args;
+		return new ChatArguments(str);
 	}
 }

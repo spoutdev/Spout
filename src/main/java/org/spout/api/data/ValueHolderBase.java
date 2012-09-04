@@ -46,19 +46,23 @@ public class ValueHolderBase implements ValueHolder {
 		this.actualValue = actualValue;
 	}
 
+	@Override
 	public boolean getBoolean() {
 		return getBoolean(false);
 	}
 
+	@Override
 	public boolean getBoolean(boolean def) {
 		final Boolean val = MathHelper.castBoolean(getValue(def));
 		return val == null ? def : val;
 	}
 
+	@Override
 	public byte getByte() {
 		return getByte((byte) 0);
 	}
 
+	@Override
 	public byte getByte(byte def) {
 		final Byte val = MathHelper.castByte(getValue(def));
 		return val == null ? def : val;
@@ -75,51 +79,62 @@ public class ValueHolderBase implements ValueHolder {
 		return val == null ? def : val;
 	}
 
+	@Override
 	public short getShort() {
 		return getShort((short) 0);
 	}
 
+	@Override
 	public short getShort(short def) {
 		final Short val = MathHelper.castShort(getValue(def));
 		return val == null ? def : val;
 	}
 
+	@Override
 	public int getInt() {
 		return getInt(0);
 	}
 
+	@Override
 	public int getInt(int def) {
 		final Integer val = MathHelper.castInt(getValue(def));
 		return val == null ? def : val;
 	}
 
+	@Override
 	public long getLong() {
 		return getLong(0);
 	}
 
+	@Override
 	public long getLong(long def) {
 		final Long val = MathHelper.castLong(getValue(def));
 		return val == null ? def : val;
 	}
 
+	@Override
 	public double getDouble() {
 		return getDouble(0);
 	}
 
+	@Override
 	public double getDouble(double def) {
 		final Double val = MathHelper.castDouble(getValue(def));
 		return val == null ? def : val;
 	}
 
+	@Override
 	public String getString() {
 		return getString(null);
 	}
 
+	@Override
 	public String getString(String def) {
 		final Object val = getValue(def);
 		return val == null ? def : val.toString();
 	}
 
+	@Override
 	public Object getValue() {
 		if (actualValue == null) {
 			throw new UnsupportedOperationException("ValueHolderBase must have a reference to another ValueHolder or override getValue");
@@ -127,6 +142,7 @@ public class ValueHolderBase implements ValueHolder {
 		return actualValue.getValue();
 	}
 
+	@Override
 	public Object getValue(Object def) {
 		if (actualValue == null) {
 			throw new UnsupportedOperationException("ValueHolderBase must have a reference to another ValueHolder or override getValue");
@@ -134,19 +150,23 @@ public class ValueHolderBase implements ValueHolder {
 		return actualValue.getValue(def);
 	}
 
+	@Override
 	public <T> T getTypedValue(Class<T> type) {
 		return getTypedValue(type, null);
 	}
 
+	@Override
 	public <T> T getTypedValue(Class<T> type, T def) {
 		final Object val = Serialization.deserialize(type, getValue());
 		return type.isInstance(val) ? type.cast(val) : def;
 	}
 
+	@Override
 	public Object getTypedValue(Type type) {
 		return getTypedValue(type, null);
 	}
 
+	@Override
 	public Object getTypedValue(Type type, Object def) {
 		Object val = Serialization.deserialize(type, getValue());
 		if (val == null) {
@@ -155,10 +175,12 @@ public class ValueHolderBase implements ValueHolder {
 		return val;
 	}
 
+	@Override
 	public List<?> getList() {
 		return getList(null);
 	}
 
+	@Override
 	public List<?> getList(List<?> def) {
 		Object val = getValue();
 		if (val instanceof List<?>) {
@@ -170,10 +192,12 @@ public class ValueHolderBase implements ValueHolder {
 		}
 	}
 
+	@Override
 	public List<String> getStringList() {
 		return getStringList(null);
 	}
 
+	@Override
 	public List<String> getStringList(List<String> def) {
 		List<?> val = getList(def);
 		List<String> ret = new ArrayList<String>();
@@ -183,10 +207,12 @@ public class ValueHolderBase implements ValueHolder {
 		return ret;
 	}
 
+	@Override
 	public List<Integer> getIntegerList() {
 		return getIntegerList(null);
 	}
 
+	@Override
 	public List<Integer> getIntegerList(List<Integer> def) {
 		List<?> val = getList(def);
 		List<Integer> ret = new ArrayList<Integer>();
@@ -200,10 +226,12 @@ public class ValueHolderBase implements ValueHolder {
 		return ret;
 	}
 
+	@Override
 	public List<Double> getDoubleList() {
 		return getDoubleList(null);
 	}
 
+	@Override
 	public List<Double> getDoubleList(List<Double> def) {
 		List<?> val = getList(def);
 		List<Double> ret = new ArrayList<Double>();
@@ -217,10 +245,12 @@ public class ValueHolderBase implements ValueHolder {
 		return ret;
 	}
 
+	@Override
 	public List<Boolean> getBooleanList() {
 		return getBooleanList(null);
 	}
 
+	@Override
 	public List<Boolean> getBooleanList(List<Boolean> def) {
 		List<?> val = getList(def);
 		List<Boolean> ret = new ArrayList<Boolean>();
@@ -235,10 +265,12 @@ public class ValueHolderBase implements ValueHolder {
 	}
 
 	public static class NullHolder extends ValueHolderBase {
+		@Override
 		public Object getValue() {
 			return null;
 		}
 
+		@Override
 		public Object getValue(Object def) {
 			return def;
 		}

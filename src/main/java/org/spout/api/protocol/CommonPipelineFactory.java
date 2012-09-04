@@ -69,6 +69,7 @@ public final class CommonPipelineFactory implements ChannelPipelineFactory {
 		this.upstream = upstream;
 	}
 
+	@Override
 	public ChannelPipeline getPipeline() throws Exception {
 		CommonEncoder encoder = new CommonEncoder(upstream);
 		CommonDecoder decoder = new CommonDecoder(upstream);

@@ -85,6 +85,7 @@ public class HTMLStyleFormatter implements StyleFormatter {
 		closeTag = "</" + tag + ">";
 	}
 
+	@Override
 	public String format(String text) {
 		return openTag + text.replace("&", "&amp;").replace("<", "&lt;") + closeTag;
 	}

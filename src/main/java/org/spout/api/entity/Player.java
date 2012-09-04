@@ -32,7 +32,6 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.Session;
-import org.spout.api.util.Named;
 import org.spout.api.util.thread.Threadsafe;
 
 public interface Player extends CommandSource, Entity {
@@ -40,6 +39,7 @@ public interface Player extends CommandSource, Entity {
 	 * Gets the player's name. This method is thread-safe.
 	 * @return the player's name
 	 */
+	@Override
 	@Threadsafe
 	public String getName();
 
@@ -118,6 +118,13 @@ public interface Player extends CommandSource, Entity {
 	 * @return current input state
 	 */
 	public PlayerInputState input();
+	
+	/**
+	 * Immediately saves the players state to disk
+	 * 
+	 * @return true if successful
+	 */
+	public boolean save();
 
 	public void processInput(PlayerInputState state);
 }

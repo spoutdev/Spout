@@ -139,6 +139,7 @@ public class TSyncIntIntHashMap implements TSyncIntIntMap {
 		this.noEntryValue = noEntryValue;
 	}
 
+	@Override
 	public void clear() {
 		for (int m = 0; m < mapCount; m++) {
 			clear(m);
@@ -156,6 +157,7 @@ public class TSyncIntIntHashMap implements TSyncIntIntMap {
 		}
 	}
 
+	@Override
 	public boolean containsKey(int key) {
 		int m = mapHash(key);
 		Lock lock = lockArray[m].readLock();
@@ -167,6 +169,7 @@ public class TSyncIntIntHashMap implements TSyncIntIntMap {
 		}
 	}
 
+	@Override
 	public boolean containsValue(int value) {
 		for (int m = 0; m < mapCount; m++) {
 			if (containsValue(m, value)) {
@@ -186,6 +189,7 @@ public class TSyncIntIntHashMap implements TSyncIntIntMap {
 		}
 	}
 
+	@Override
 	public int get(int key) {
 		int m = mapHash(key);
 		Lock lock = lockArray[m].readLock();
@@ -197,10 +201,12 @@ public class TSyncIntIntHashMap implements TSyncIntIntMap {
 		}
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return totalKeys.get() == 0;
 	}
 
+	@Override
 	public int[] keys(int[] dest) {
 		for (int m = 0; m < mapCount; m++) {
 			lockArray[m].readLock().lock();
@@ -231,10 +237,12 @@ public class TSyncIntIntHashMap implements TSyncIntIntMap {
 		}
 	}
 
+	@Override
 	public int[] keys() {
 		return keys(null);
 	}
 
+	@Override
 	public int put(int key, int value) {
 		int m = mapHash(key);
 		Lock lock = lockArray[m].writeLock();
@@ -250,6 +258,7 @@ public class TSyncIntIntHashMap implements TSyncIntIntMap {
 		}
 	}
 
+	@Override
 	public int putIfAbsent(int key, int value) {
 		int m = mapHash(key);
 		Lock lock = lockArray[m].writeLock();
@@ -265,6 +274,7 @@ public class TSyncIntIntHashMap implements TSyncIntIntMap {
 		}
 	}
 
+	@Override
 	public int remove(int key) {
 		int m = mapHash(key);
 		Lock lock = lockArray[m].writeLock();
@@ -280,6 +290,7 @@ public class TSyncIntIntHashMap implements TSyncIntIntMap {
 		}
 	}
 
+	@Override
 	public boolean remove(int key, int value) {
 		int m = mapHash(key);
 		Lock lock = lockArray[m].writeLock();
@@ -298,6 +309,7 @@ public class TSyncIntIntHashMap implements TSyncIntIntMap {
 		}
 	}
 
+	@Override
 	public int size() {
 		return totalKeys.get();
 	}

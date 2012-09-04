@@ -57,18 +57,22 @@ public class ConfigurationNode extends AbstractConfigurationNodeSource implement
 
 	// Delegated methods
 
+	@Override
 	public boolean getBoolean() {
 		return valueHolder.getBoolean();
 	}
 
+	@Override
 	public boolean getBoolean(boolean def) {
 		return valueHolder.getBoolean(def);
 	}
 
+	@Override
 	public byte getByte() {
 		return valueHolder.getByte();
 	}
 
+	@Override
 	public byte getByte(byte def) {
 		return valueHolder.getByte(def);
 	}
@@ -83,108 +87,134 @@ public class ConfigurationNode extends AbstractConfigurationNodeSource implement
 		return valueHolder.getFloat(def);
 	}
 
+	@Override
 	public short getShort() {
 		return valueHolder.getShort();
 	}
 
+	@Override
 	public short getShort(short def) {
 		return valueHolder.getShort(def);
 	}
 
+	@Override
 	public int getInt() {
 		return valueHolder.getInt();
 	}
 
+	@Override
 	public int getInt(int def) {
 		return valueHolder.getInt(def);
 	}
 
+	@Override
 	public long getLong() {
 		return valueHolder.getLong();
 	}
 
+	@Override
 	public long getLong(long def) {
 		return valueHolder.getLong(def);
 	}
 
+	@Override
 	public double getDouble() {
 		return valueHolder.getDouble();
 	}
 
+	@Override
 	public double getDouble(double def) {
 		return valueHolder.getDouble(def);
 	}
 
+	@Override
 	public String getString() {
 		return valueHolder.getString();
 	}
 
+	@Override
 	public String getString(String def) {
 		return valueHolder.getString(def);
 	}
 
+	@Override
 	public <T> T getTypedValue(Class<T> type) {
 		return valueHolder.getTypedValue(type);
 	}
 
+	@Override
 	public <T> T getTypedValue(Class<T> type, T def) {
 		return valueHolder.getTypedValue(type, def);
 	}
 
+	@Override
 	public Object getTypedValue(Type type) {
 		return valueHolder.getTypedValue(type);
 	}
 
+	@Override
 	public Object getTypedValue(Type type, Object def) {
 		return valueHolder.getTypedValue(type, def);
 	}
 
+	@Override
 	public List<?> getList() {
 		return valueHolder.getList();
 	}
 
+	@Override
 	public List<?> getList(List<?> def) {
 		return valueHolder.getList(def);
 	}
 
+	@Override
 	public List<String> getStringList() {
 		return valueHolder.getStringList();
 	}
 
+	@Override
 	public List<String> getStringList(List<String> def) {
 		return valueHolder.getStringList(def);
 	}
 
+	@Override
 	public List<Integer> getIntegerList() {
 		return valueHolder.getIntegerList();
 	}
 
+	@Override
 	public List<Integer> getIntegerList(List<Integer> def) {
 		return valueHolder.getIntegerList(def);
 	}
 
+	@Override
 	public List<Double> getDoubleList() {
 		return valueHolder.getDoubleList();
 	}
 
+	@Override
 	public List<Double> getDoubleList(List<Double> def) {
 		return valueHolder.getDoubleList(def);
 	}
 
+	@Override
 	public List<Boolean> getBooleanList() {
 		return valueHolder.getBooleanList();
 	}
 
+	@Override
 	public List<Boolean> getBooleanList(List<Boolean> def) {
 		return valueHolder.getBooleanList(def);
 	}
 
 	// Actual value access
 
+	@Override
 	public Object getValue() {
 		return getValue(null);
 	}
 
+	@Override
 	public Object getValue(Object def) {
 		if (hasChildren()) {
 			return getValues();
@@ -313,6 +343,7 @@ public class ConfigurationNode extends AbstractConfigurationNodeSource implement
 	/**
 	 * @return the elements of this node's path, unjoined
 	 */
+	@Override
 	public String[] getPathElements() {
 		return path;
 	}

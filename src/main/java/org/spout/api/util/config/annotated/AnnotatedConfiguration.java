@@ -93,12 +93,14 @@ public abstract class AnnotatedConfiguration extends ConfigurationWrapper {
 		}
 	}
 
+	@Override
 	public void load() throws ConfigurationException {
 		super.load();
 		load(this);
 
 	}
 
+	@Override
 	public void save() throws ConfigurationException {
 		save(this);
 		super.save();

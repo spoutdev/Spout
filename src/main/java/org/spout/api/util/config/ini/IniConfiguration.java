@@ -103,6 +103,7 @@ public class IniConfiguration extends AbstractConfiguration implements Commented
 		this.file = file;
 	}
 
+	@Override
 	protected Map<String, ConfigurationNode> loadToNodes() throws ConfigurationException {
 		Reader stream = null;
 		Map<String, ConfigurationNode> nodes = new LinkedHashMap<String, ConfigurationNode>();
@@ -167,6 +168,7 @@ public class IniConfiguration extends AbstractConfiguration implements Commented
 		return nodes;
 	}
 
+	@Override
 	protected void saveFromNodes(Map<String, ConfigurationNode> nodes) throws ConfigurationException {
 		Writer rawWriter = null;
 		BufferedWriter writer = null;
@@ -348,10 +350,12 @@ public class IniConfiguration extends AbstractConfiguration implements Commented
 		}
 	}
 
+	@Override
 	public CommentedConfigurationNode getNode(String path) {
 		return (CommentedConfigurationNode) super.getNode(path);
 	}
 
+	@Override
 	public CommentedConfigurationNode getNode(String... path) {
 		return (CommentedConfigurationNode) super.getNode(path);
 	}
@@ -386,6 +390,7 @@ public class IniConfiguration extends AbstractConfiguration implements Commented
 		return new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
 	}
 
+	@Override
 	public File getFile() {
 		return file;
 	}

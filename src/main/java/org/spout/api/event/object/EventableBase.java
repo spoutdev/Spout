@@ -33,18 +33,22 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class EventableBase<T extends ObjectEvent<U>, U extends Eventable<T, U>> implements Eventable<T, U> {
 	private final CopyOnWriteArrayList<EventableListener<T>> registeredListeners = new CopyOnWriteArrayList<EventableListener<T>>();
+	@Override
 	public void registerListener(EventableListener<T> listener) {
 		registeredListeners.add(listener);
 	}
 
+	@Override
 	public void unregisterAllListeners() {
 		registeredListeners.clear();
 	}
 
+	@Override
 	public void unregisterListener(EventableListener<T> listener) {
 		registeredListeners.remove(listener);
 	}
 
+	@Override
 	public void callEvent(T event) {
 		for (EventableListener<T> listener : registeredListeners) {
 			listener.onEvent(event);

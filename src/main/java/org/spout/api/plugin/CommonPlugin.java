@@ -66,24 +66,30 @@ public abstract class CommonPlugin implements Plugin {
 		this.dictionary = new PluginDictionary(this);
 	}
 
+	@Override
 	@UnsafeMethod
 	public abstract void onEnable();
 
+	@Override
 	@UnsafeMethod
 	public abstract void onDisable();
 
+	@Override
 	@UnsafeMethod
 	public void onReload() {
 	}
 
+	@Override
 	@UnsafeMethod
 	public void onLoad() {
 	}
 
+	@Override
 	public final Engine getEngine() {
 		return engine;
 	}
 
+	@Override
 	public final PluginDescriptionFile getDescription() {
 		return description;
 	}
@@ -92,19 +98,23 @@ public abstract class CommonPlugin implements Plugin {
 		return classLoader;
 	}
 
+	@Override
 	public final PluginLoader getPluginLoader() {
 		return pluginLoader;
 	}
 
+	@Override
 	public final File getDataFolder() {
 		return dataFolder;
 	}
 
+	@Override
 	public final File getFile() {
 		return file;
 	}
 
 	@SuppressWarnings("resource")
+	@Override
 	public InputStream getResource(String path) {
 		Validate.notNull(path);
 		JarFile jar;
@@ -121,6 +131,7 @@ public abstract class CommonPlugin implements Plugin {
 		}
 	}
 
+	@Override
 	public void extractResource(String path, File destination) throws IOException {
 		Validate.notNull(destination);
 		InputStream stream = getResource(path);
@@ -130,24 +141,29 @@ public abstract class CommonPlugin implements Plugin {
 		FileUtils.copyInputStreamToFile(stream, destination);
 	}
 
+	@Override
 	public final boolean isEnabled() {
 		return enabled;
 	}
 
+	@Override
 	public final void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
+	@Override
 	public final Logger getLogger() {
 		return logger;
 	}
 
+	@Override
 	@UnsafeMethod
 	public WorldGenerator getWorldGenerator(String world, String generator) {
 		getLogger().severe("Unknown generator for world '" + world + "', generator: '" + generator + "'");
 		return null;
 	}
 
+	@Override
 	public final String getName() {
 		return getDescription().getName();
 	}

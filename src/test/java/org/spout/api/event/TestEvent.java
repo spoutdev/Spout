@@ -29,6 +29,7 @@ package org.spout.api.event;
 public class TestEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();
 
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}

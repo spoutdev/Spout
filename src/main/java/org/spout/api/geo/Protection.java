@@ -59,6 +59,7 @@ public abstract class Protection implements WorldSource {
 	 * 
 	 * @return the world
 	 */
+	@Override
 	public World getWorld() {
 		return world;
 	}

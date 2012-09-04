@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.spout.api.Engine;
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
@@ -84,6 +83,10 @@ public class CommandContext {
 		List<ChatSection> argList = new ArrayList<ChatSection>(args.size());
 		for (int i = 0; i < args.size(); ++i) {
 			ChatSection arg = args.get(i);
+			if (arg.length() == 0) {
+				continue;
+			}
+
 			argIndexList.add(i);
 
 			switch (arg.getPlainString().charAt(0)) {

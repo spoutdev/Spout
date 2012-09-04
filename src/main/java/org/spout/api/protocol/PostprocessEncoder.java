@@ -93,6 +93,7 @@ public abstract class PostprocessEncoder extends OneToOneEncoder implements Proc
 		}
 	}
 	
+	@Override
 	public void setProcessor(ChannelProcessor processor) {
 		if (processor == null) {
 			throw new IllegalArgumentException("Processor may not be set to null");

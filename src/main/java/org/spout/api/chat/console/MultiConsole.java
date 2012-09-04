@@ -103,12 +103,14 @@ public class MultiConsole implements Console {
 		console.init();
 	}
 
+	@Override
 	public void init() {
 		for (Console console : consoles) {
 			console.init();
 		}
 	}
 
+	@Override
 	public boolean isInitialized() {
 		for (Console console : consoles) {
 			if (console.isInitialized()) {
@@ -118,18 +120,21 @@ public class MultiConsole implements Console {
 		return false;
 	}
 
+	@Override
 	public void close() {
 		for (Console console : consoles) {
 			console.close();
 		}
 	}
 
+	@Override
 	public void setDateFormat(DateFormat format) {
 		for (Console console : consoles) {
 			console.setDateFormat(format);
 		}
 	}
 
+	@Override
 	public void addMessage(ChatArguments message) {
 		for (Console console : consoles) {
 			console.addMessage(message);

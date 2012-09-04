@@ -119,10 +119,12 @@ public abstract class GenericMessage<T extends Message> extends MessageCodec<T> 
 		this.buffer.readerIndex(getFieldLoopup()[index]);
 	}
 	
+	@Override
 	public ChannelBuffer encode(boolean upstream, T message) throws IOException {
 		return this.buffer;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public T decode(boolean upstream, ChannelBuffer b) throws IOException {
 		CompoundMessageField root = upstream ? getToClientFieldRoot() : getToServerFieldRoot();

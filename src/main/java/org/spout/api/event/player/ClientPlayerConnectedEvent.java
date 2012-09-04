@@ -51,6 +51,7 @@ public class ClientPlayerConnectedEvent extends Event {
 		return serverPlayerId;
 	}
 
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}

@@ -37,7 +37,8 @@ public class DiscSpawnArrangement extends GenericSpawnArrangement {
 		super(center, number);
 		this.scale = scale;
 	}
-	
+
+	@Override
 	public Point[] generatePoints(Point center, int number) {
 
 		ArrayList<Integer> shells = new ArrayList<Integer>();

@@ -61,14 +61,17 @@ public class HTMLStyleHandler extends StyleHandler {
 		registerFormatter(ChatStyle.ITALIC, new HTMLStyleFormatter("span", "style", "font-style: italic;"));
 	}
 
+	@Override
 	public String stripStyle(String formatted) {
 		return formatted.replaceAll("<[^>+]>", "");
 	}
 
+	@Override
 	public String escapeString(String unformatted) {
 		return unformatted.replace("&", "&amp;").replace("<", "&lt;");
 	}
 
+	@Override
 	public ChatArguments extractArguments(String str) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}

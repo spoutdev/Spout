@@ -38,21 +38,25 @@ public class SRFDataOutputStream extends DataOutputStream {
 		super(out);
 	}
 	
+	@Override
 	public void write(byte[] b) throws IOException {
 		count += b.length;
 		super.write(b);
 	}
 	
+	@Override
 	public void write(byte[] b, int off, int len) throws IOException {
 		count += len;
 		super.write(b, off, len);
 	}
 	
+	@Override
 	public void write(int b) throws IOException {
 		count++;
 		super.write(b);
 	}
 	
+	@Override
 	public void close() throws IOException {
 		System.out.println("Output stream closed, length = " + count );
 		super.close();

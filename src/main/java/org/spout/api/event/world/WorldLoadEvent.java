@@ -39,6 +39,7 @@ public class WorldLoadEvent extends WorldEvent {
 		super(p);
 	}
 
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}

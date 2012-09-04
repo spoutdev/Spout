@@ -56,10 +56,12 @@ public class ConfigurationMigratorTest {
 			this.migrationActions = migrationActions;
 		}
 
+		@Override
 		protected Map<String[], MigrationAction> getMigrationActions() {
 			return migrationActions;
 		}
 
+		@Override
 		protected boolean shouldMigrate() {
 			return true; // Always migrate so we can test easily
 		}

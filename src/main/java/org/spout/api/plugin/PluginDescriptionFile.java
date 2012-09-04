@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.spout.api.datatable.Datatable;
 import org.spout.api.datatable.DatatableTuple;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.datatable.value.DatatableBool;
@@ -47,7 +48,7 @@ import org.spout.api.util.config.serialization.Serialization;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 
-public class PluginDescriptionFile implements Serializable {
+public class PluginDescriptionFile implements Datatable {
 	private static final long serialVersionUID = 1L;
 	private static final Yaml yaml = new Yaml(new SafeConstructor());
 	public static final List<String> RESTRICTED_NAMES = Collections.unmodifiableList(Arrays.asList(
@@ -313,30 +314,36 @@ public class PluginDescriptionFile implements Serializable {
 		return codedLocale;
 	}
 
+	@Override
 	public void setData(String key, int value) {
 		int ikey = datatableMap.getIntKey(key);
 		datatableMap.set(ikey, new DatatableInt(ikey, value));
 	}
 
+	@Override
 	public void setData(String key, float value) {
 		int ikey = datatableMap.getIntKey(key);
 		datatableMap.set(ikey, new DatatableFloat(ikey, value));
 	}
 
+	@Override
 	public void setData(String key, boolean value) {
 		int ikey = datatableMap.getIntKey(key);
 		datatableMap.set(ikey, new DatatableBool(ikey, value));
 	}
 
+	@Override
 	public void setData(String key, Serializable value) {
 		int ikey = datatableMap.getIntKey(key);
 		datatableMap.set(ikey, new DatatableSerializable(ikey, value));
 	}
 
+	@Override
 	public DatatableTuple getData(String key) {
 		return datatableMap.get(key);
 	}
 
+	@Override
 	public boolean hasData(String key) {
 		return datatableMap.contains(key);
 	}

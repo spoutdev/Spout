@@ -32,7 +32,6 @@ import java.util.Random;
 import java.util.concurrent.Future;
 
 import org.spout.api.entity.Entity;
-import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.AreaBlockAccess;
 import org.spout.api.geo.AreaPhysicsAccess;
 import org.spout.api.geo.LoadOption;
@@ -166,14 +165,6 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 * Chunks may be unloaded at the end of each tick
 	 */
 	public abstract boolean isLoaded();
-
-	/**
-	 * Gets the biome type at the coordinates,
-	 * if the world generator used uses biomes.
-	 *
-	 * @return The biome type at the location
-	 */
-	public abstract Biome getBiome(int x, int y, int z);
 
 	/**
 	 * Populates the chunk with all the Populators attached to the

@@ -453,6 +453,7 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 	/**
 	 * Compares two Vector2Polars
 	 */
+	@Override
 	public int compareTo(Vector2Polar o) {
 		return Vector2Polar.compareTo(this, o);
 	}

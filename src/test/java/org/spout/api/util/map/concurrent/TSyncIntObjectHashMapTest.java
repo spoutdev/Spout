@@ -148,6 +148,7 @@ public class TSyncIntObjectHashMapTest {
 			map = TCollections.synchronizedMap(new TIntObjectHashMap<Integer>(LENGTH / 128));
 		}
 
+		@Override
 		public void run() {
 			int localCount = count.getAndDecrement();
 
@@ -182,6 +183,7 @@ public class TSyncIntObjectHashMapTest {
 			map = new TSyncIntObjectHashMap<Integer>(LENGTH / 128);
 		}
 
+		@Override
 		public void run() {
 			int localCount = count.getAndDecrement();
 
@@ -215,6 +217,7 @@ public class TSyncIntObjectHashMapTest {
 			count.set(LENGTH - 1);
 		}
 
+		@Override
 		public void run() {
 			int localCount = count.getAndDecrement();
 
@@ -246,6 +249,7 @@ public class TSyncIntObjectHashMapTest {
 			count.set(LENGTH - 1);
 		}
 
+		@Override
 		public void run() {
 			int localCount = count.getAndDecrement();
 

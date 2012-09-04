@@ -61,22 +61,27 @@ public abstract class MessageFieldImpl implements MessageField {
 		throw new UnsupportedOperationException("This field does not support unsigned byte read");
 	}
 	
+	@Override
 	public void writeLong(ChannelBuffer buffer, long value) {
 		throw new UnsupportedOperationException("This field does not support long write");
 	}
 
+	@Override
 	public void writeInt(ChannelBuffer buffer, int value) {
 		throw new UnsupportedOperationException("This field does not support int write");
 	}
 
+	@Override
 	public void writeShort(ChannelBuffer buffer, short value) {
 		throw new UnsupportedOperationException("This field does not support short write");
 	}
 	
+	@Override
 	public void writeByte(ChannelBuffer buffer, byte value) {
 		throw new UnsupportedOperationException("This field does not support byte write");
 	}
 	
+	@Override
 	public void writeUnsignedByte(ChannelBuffer buffer, short value) {
 		throw new UnsupportedOperationException("This field does not support unsigned byte write");
 	}

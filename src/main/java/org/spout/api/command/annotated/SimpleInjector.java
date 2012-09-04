@@ -41,6 +41,7 @@ public class SimpleInjector implements Injector {
 		}
 	}
 
+	@Override
 	public Object newInstance(Class<?> clazz) {
 		try {
 			Constructor<?> ctr = null;
