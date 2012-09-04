@@ -171,10 +171,6 @@ public class SpoutRegion extends Region {
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
-		this(world, x, y, z, source, LoadOption.NO_LOAD);
-	}
-
-	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source, LoadOption loadopt) {
 		super(world, x * Region.BLOCKS.SIZE, y * Region.BLOCKS.SIZE, z * Region.BLOCKS.SIZE);
 		this.source = source;
 		
@@ -202,8 +198,6 @@ public class SpoutRegion extends Region {
 			}
 		}
 
-		load(loadopt);
-
 		File worldDirectory = world.getDirectory();
 		File regionDirectory = new File(worldDirectory, "region");
 		regionDirectory.mkdirs();
@@ -218,18 +212,6 @@ public class SpoutRegion extends Region {
 		}
 		taskManager = new SpoutTaskManager(world.getEngine().getScheduler(), false, t, world.getAge());
 		scheduler = (SpoutScheduler) (Spout.getEngine().getScheduler());
-	}
-
-	public void load(LoadOption option) {
-		if (option.loadIfNeeded()){
-			for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
-				for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
-					for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
-						getChunk(dx, dy, dz, option);
-					}
-				}
-			}
-		}
 	}
 
 	@Override

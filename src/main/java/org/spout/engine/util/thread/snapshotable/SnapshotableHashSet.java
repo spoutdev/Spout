@@ -49,9 +49,6 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 	private final Set<T> unmodifyLive = Collections.unmodifiableSet(live);
 	private final ConcurrentLinkedQueue<T> dirty = new ConcurrentLinkedQueue<T>();
 	private final ArrayList<T> dirtyList = new ArrayList<T>();
-	private final HashSet<T> dirtyListTemp = new HashSet<T>();
-	private final List<T> unmodifyDirty = Collections.unmodifiableList(dirtyList);
-	private boolean dirtyListGenerated = false;
 
 	public SnapshotableHashSet(SnapshotManager manager) {
 		this(manager, null);
@@ -146,6 +143,5 @@ public class SnapshotableHashSet<T> implements Snapshotable {
 		}
 		dirty.clear();
 		dirtyList.clear();
-		dirtyListGenerated = false;
 	}
 }

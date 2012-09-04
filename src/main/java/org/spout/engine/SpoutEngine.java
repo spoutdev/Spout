@@ -52,7 +52,6 @@ import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 
 import org.spout.api.Engine;
-import org.spout.api.FileSystem;
 import org.spout.api.Spout;
 import org.spout.api.chat.completion.CompletionManager;
 import org.spout.api.chat.completion.CompletionManagerImpl;
@@ -126,7 +125,6 @@ import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
 
 public abstract class SpoutEngine extends AsyncManager implements Engine {
-	private static final SpoutPlayer[] EMPTY_PLAYER_ARRAY = new SpoutPlayer[0];
 	private static final Logger logger = Logger.getLogger("Spout");
 	private final String name = "Spout Engine";
 	private final File pluginDirectory = SharedFileSystem.PLUGIN_DIRECTORY;
@@ -141,26 +139,23 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private final RecipeManager recipeManager = new CommonRecipeManager();
 	private final ServiceManager serviceManager = CommonServiceManager.getInstance();
 	private final SnapshotManager snapshotManager = new SnapshotManager();
-	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> onlinePlayers = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
-	private final SyncedRootCommand rootCommand = new SyncedRootCommand(this);
 	private final WorldGenerator defaultGenerator = new EmptyWorldGenerator();
-	private volatile int maxPlayers = 20;
-	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
-	protected final SpoutScheduler scheduler = new SpoutScheduler(this);
-	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
-	protected final ConcurrentMap<SocketAddress, Protocol> boundProtocols = new ConcurrentHashMap<SocketAddress, Protocol>();
-	protected final ChannelGroup group = new DefaultChannelGroup();
+	private final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
+	private final SpoutScheduler scheduler = new SpoutScheduler(this);
+	private final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
+	private final ChannelGroup group = new DefaultChannelGroup();
 	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
-	protected SpoutConfiguration config = new SpoutConfiguration();
+	private final SpoutConfiguration config = new SpoutConfiguration();
 	private final CompletionManager completions = new CompletionManagerImpl();
-	private File worldFolder = new File(".");
-	private SnapshotableLinkedHashMap<String, SpoutWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutWorld>(snapshotManager);
-	private SnapshotableReference<World> defaultWorld = new SnapshotableReference<World>(snapshotManager, null);
+	private final SyncedRootCommand rootCommand = new SyncedRootCommand(this);
+	private final File worldFolder = new File(".");
+	private final SnapshotableLinkedHashMap<String, SpoutWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutWorld>(snapshotManager);
+	private final SnapshotableReference<World> defaultWorld = new SnapshotableReference<World>(snapshotManager, null);
+	protected final ConcurrentMap<SocketAddress, Protocol> boundProtocols = new ConcurrentHashMap<SocketAddress, Protocol>();
+	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> onlinePlayers = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
 	private String logFile;
 	private StringMap engineItemMap = null;
 	private StringMap engineBiomeMap = null;
-	private ConcurrentHashMap<String, String> cvars = new ConcurrentHashMap<String, String>();
-	protected FileSystem filesystem;
 	private MultiConsole console;
 	private SpoutApplication arguments;
 
@@ -229,7 +224,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 		// Start loading plugins
 		loadPlugins();
-		postPluginLoad();
+		postPluginLoad(config);
 		enablePlugins();
 
 		if (checkWorlds) {
@@ -256,7 +251,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	/**
 	 * This method is called after {@link #loadPlugins()} but before {@link #enablePlugins()}
 	 */
-	protected void postPluginLoad() {
+	protected void postPluginLoad(SpoutConfiguration config) {
 	}
 
 	public void loadPlugins() {
@@ -753,11 +748,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	@Override
-	public FileSystem getFilesystem() {
-		return filesystem;
-	}
-
-	@Override
 	public MultiConsole getConsoles() {
 		return console;
 	}
@@ -779,16 +769,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 	@Override
 	public void runLighting(int sequence) throws InterruptedException {
-	}
-
-	@Override
-	public void setVariable(String key, String value) {
-		cvars.put(key, value);
-	}
-
-	@Override
-	public String getVariable(String key) {
-		return cvars.get(key);
 	}
 
 	@Override

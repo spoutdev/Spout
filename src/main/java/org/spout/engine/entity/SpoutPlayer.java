@@ -314,7 +314,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void kick() {
-		kick(null);
+		kick((Object[])null);
 	}
 
 	@Override
@@ -332,7 +332,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void ban(boolean kick) {
-		ban(kick, null);
+		ban(kick, (Object[])null);
 	}
 
 	@Override

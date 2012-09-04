@@ -569,7 +569,7 @@ public class SpoutWorld extends AsyncManager implements World {
 				throw new IllegalStateException("Cannot spawn a non-player entity in a region that isn't loaded!");
 			}
 			//Load and generate for players
-			region.load(LoadOption.LOAD_GEN); // TODO: De-lawl this
+			this.getChunkFromBlock(point, LoadOption.LOAD_GEN);
 		}
 		Entity e = createEntity(point, controller);
 		//initialize region if needed (only for players)
