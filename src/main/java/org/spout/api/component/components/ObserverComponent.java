@@ -24,11 +24,28 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity.types;
+package org.spout.api.component.components;
+
+import org.spout.api.component.components.EntityComponent;
 
 /**
- * Bundles a component bundle to an EntityType.
+ * Component that represents the an entity that observes a radius of chunks
  */
-public class BasicEntityTypes {
-	public static final ObserverType TYPE_OBSERVER = new ObserverType();
+public class ObserverComponent extends EntityComponent {
+	public static final int CHUNK_VIEW_DISTANCE = 4;
+	
+	public ObserverComponent() {
+	}
+	
+	@Override
+	public void onAttached() {
+		getHolder().setObserver(true);
+		getHolder().setSavable(false);
+		getHolder().setViewDistance(CHUNK_VIEW_DISTANCE);
+	}
+	
+	@Override
+	public boolean canTick() {
+		return false;
+	}
 }

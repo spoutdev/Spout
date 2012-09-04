@@ -34,10 +34,8 @@ import org.spout.api.Engine;
 import org.spout.api.Source;
 import org.spout.api.component.ComponentHolder;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.EntityType;
 import org.spout.api.entity.Player;
 import org.spout.api.component.components.DatatableComponent;
-import org.spout.api.component.components.WorldComponent;
 import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.BiomeManager;
@@ -164,7 +162,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @param type The type to apply registered components to the Entity
 	 * @return The created entity
 	 */	
-	public Entity createEntity(Point point, EntityType type);
+	public Entity createEntity(Point point, ComponentBundle type);
 	
 	/**
 	 * Add a created entity to the world for simulation and syncing to clients
@@ -180,26 +178,26 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @param controller The entity that will be attached to the Entity
 	 * @return The Entity that has been created and spawned
 	 */
-	public Entity createAndSpawnEntity(Point point, EntityType type, LoadOption option);
+	public Entity createAndSpawnEntity(Point point, ComponentBundle type, LoadOption option);
 
 	/**
 	 * Creates and Spawns entities at the given points.  This is the same as calling
 	 * {@link #createAndSpawnEntity(point, type)} for each element in the array.
 	 * @param points The points to use for spawning the entities
-	 * @param type The EntityType to apply registered components to the entities created at the points
+	 * @param type The ComponentBundle to apply registered components to the entities created at the points
 	 * @return The Entities that has been created and spawned
 	 */
-	public Entity[] createAndSpawnEntity(Point[] points, EntityType type, LoadOption option);
+	public Entity[] createAndSpawnEntity(Point[] points, ComponentBundle type, LoadOption option);
 
 	/**
 	 * Creates and Spawns entities for the given arrangement.  This is the same as calling
 	 * {@link #createAndSpawnEntity(point, controller)} for each Point, entity pair in
 	 * the arrangement
 	 * @param points The points to use for spawning the entities
-	 * @param type The EntityType to apply registered components to the arrangement
+	 * @param type The ComponentBundle to apply registered components to the arrangement
 	 * @return The Entities that has been created and spawned
 	 */
-	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, EntityType type, LoadOption option);
+	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, ComponentBundle type, LoadOption option);
 
 	/**
 	 * Gets the world's spawn point

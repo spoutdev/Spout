@@ -121,26 +121,6 @@ public interface Entity extends Source, Tickable, WorldSource, EntityComponentHo
 	 */
 	@SnapshotRead
 	public boolean isObserver();
-	
-	/**
-	 * Applies components composed within an EntityType
-	 * @param type The EntityType to apply
-	 */
-	@LiveWrite
-	public void applyType(EntityType type);
-
-	/**
-	 * Removes components composed within an EntityType
-	 * @param type The EntityType to remove
-	 */
-	@LiveWrite
-	public void removeType(EntityType type);
-
-	/**
-	 * Determines if this entity has all the components composed in an EntityType
-	 * @param type The EntityType to compare
-	 */
-	public boolean hasType(EntityType type);
 
 	/**
 	 * Gets the {@link Chunk} this entity resides in, or null if removed.
