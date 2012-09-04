@@ -337,10 +337,12 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		return c == this.channel;
 	}
 
+	@Override
 	public void bindAuxChannel(Channel c) {
 		throw new UnsupportedOperationException("bindAuxChannel() is only supported for proxies");
 	}
 
+	@Override
 	public void closeAuxChannel() {
 		throw new UnsupportedOperationException("closeAuxChannel() is only supported for proxies");
 	}

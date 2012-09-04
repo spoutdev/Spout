@@ -27,14 +27,15 @@
 package org.spout.engine.protocol;
 
 import java.util.List;
+import java.util.logging.Level;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
+import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.event.player.PlayerKickEvent;
 import org.spout.api.event.player.PlayerLeaveEvent;
-import org.spout.api.event.storage.PlayerSaveEvent;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.Protocol;
 import org.spout.engine.SpoutServer;
@@ -117,18 +118,12 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 			if (text != null && text.getArguments().size() > 0) {
 				getEngine().broadcastMessage(text);
 			}
-
-			PlayerSaveEvent saveEvent = getEngine().getEventManager().callEvent(new PlayerSaveEvent(player));
-			if (!saveEvent.isSaved()) {
-
-			}
-
-			//If its null or can't be get, just ignore it
-			//If disconnect fails, we just ignore it for now.
+			player.save();
 			try {
 				player.remove();
 				player.disconnect();
-			} catch (Exception ignore) {
+			} catch (Exception e) {
+				Spout.getLogger().log(Level.WARNING, "Did not disconnect " + player.getName() + " cleanly", e);
 			}
 		}
 	}

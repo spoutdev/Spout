@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -51,7 +52,6 @@ import org.spout.api.util.thread.DelayedWrite;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.SpoutServer;
-import org.spout.engine.input.SpoutInput;
 import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
 import org.spout.engine.util.thread.ThreadsafetyManager;
@@ -140,7 +140,7 @@ public final class SpoutScheduler implements Scheduler {
 	private SpoutParallelTaskManager parallelTaskManager = null;
 	private final AtomicBoolean heavyLoad = new AtomicBoolean(false);
 	private final ConcurrentLinkedQueue<Runnable> coreTaskQueue = new ConcurrentLinkedQueue<Runnable>();
-	private final ConcurrentLinkedQueue<Runnable> finalTaskQueue = new ConcurrentLinkedQueue<Runnable>();
+	private final LinkedBlockingDeque<Runnable> finalTaskQueue = new LinkedBlockingDeque<Runnable>();
 	private final ConcurrentLinkedQueue<Runnable> lastTickTaskQueue = new ConcurrentLinkedQueue<Runnable>();
 
 	/**
@@ -355,9 +355,17 @@ public final class SpoutScheduler implements Scheduler {
 	public void stop() {
 		shutdown = true;
 	}
-	
+
 	public void submitFinalTask(Runnable task) {
-		finalTaskQueue.add(task);
+		submitFinalTask(task, false);
+	}
+	
+	public void submitFinalTask(Runnable task, boolean addToStart) {
+		if (addToStart) {
+			finalTaskQueue.addFirst(task);
+		} else {
+			finalTaskQueue.addLast(task);
+		}
 		if (!mainThread.isAlive()) {
 			runFinalTasks();
 			Spout.getLogger().info("Attempting to submit final task after main thread had shutdown");

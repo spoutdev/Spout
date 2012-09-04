@@ -35,13 +35,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
+import org.apache.commons.io.FileUtils;
 import org.spout.api.Spout;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
@@ -50,7 +53,6 @@ import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.entity.PlayerSnapshot;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.BiomeManager;
-import org.spout.api.generator.biome.EmptyBiomeManager;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
@@ -102,8 +104,8 @@ public class WorldFiles {
 	private static final byte WORLD_VERSION = 2;
 	private static final byte ENTITY_VERSION = 1;
 	private static final byte CHUNK_VERSION = 1;
-	private static final int COLUMN_VERSION = 4;
-	
+	private static final int COLUMN_VERSION = 5;
+
 //	public static void savePlayerData(List<SpoutPlayer> Players) {
 //	for (SpoutPlayer player : Players) {
 //		savePlayerData(player);
@@ -156,8 +158,95 @@ public class WorldFiles {
 //			}
 //			// should never make it here, if it does it's null anyhow...
 //			return null;
+////	}
+//	public static boolean savePlayerData(SpoutPlayer player) {
+//		File playerDir = new File(Spout.getEngine().getDataFolder().toString(), "players");
+//		//Save data to temp file first
+//		String fileName = player.getName() + ".dat";
+//		String tempName = fileName + ".temp";
+//		File playerData = new File(playerDir, tempName);
+//		if (!playerData.exists()) {
+//			try {
+//				playerData.createNewFile();
+//			} catch (Exception e) {
+//				Spout.getLogger().log(Level.SEVERE, "Error creating player data for " + player.getName(), e);
+//			}
+//		}
+//		PlayerSnapshot snapshot = new PlayerSnapshot(player);
+//		CompoundTag playerTag = saveEntity(snapshot);
+//		NBTOutputStream os = null;
+//		try {
+//			os = new NBTOutputStream(new DataOutputStream(new FileOutputStream(playerData)), false);
+//			os.writeTag(playerTag);
+//		} catch (IOException e) {
+//			Spout.getLogger().log(Level.SEVERE, "Error saving player data for " + player.getName(), e);
+//			playerData.delete();
+//			return false;
+//		} finally {
+//			if (os != null) {
+//				try {
+//				  os.close();
+//				} catch (IOException ignore) { }
+//			}
+//		}
+//		try {
+//			//Move the temp data to final location
+//			File finalData = new File(playerDir, fileName);
+//			if (finalData.exists()) {
+//				finalData.delete();
+//			}
+//			FileUtils.moveFile(playerData, finalData);
+//			return true;
+//		} catch (IOException e) {
+//			Spout.getLogger().log(Level.SEVERE, "Error saving player data for " + player.getName(), e);
+//			playerData.delete();
+//			return false;
+//		}
 //	}
-	
+//
+//	/**
+//	 * Loads player data for the player, if it exists
+//	 * 
+//	 * Returns null on failure or if the data could not be loaded.
+//	 * If an exception is thrown or the player data is not in a valid format
+//	 * it will be backed up and new player data will be created for the player
+//	 * @param name
+//	 * @param playerSession
+//	 * @return player, or null if it could not be loaded
+//	 */
+//	public static SpoutPlayer loadPlayerData(String name, SpoutSession<?> playerSession) {
+//		File playerDir = new File(Spout.getEngine().getDataFolder().toString(), "players");
+//		String fileName = name + ".dat";
+//		File playerData = new File(playerDir, fileName);
+//		if (playerData.exists()) {
+//			NBTInputStream is = null;
+//			try {
+//				is = new NBTInputStream(new DataInputStream(new FileInputStream(playerData)), false);
+//				CompoundTag dataTag = (CompoundTag) is.readTag();
+//				World world = Spout.getEngine().getWorld(dataTag.getName());
+//				return (SpoutPlayer)loadEntity(world, dataTag, name, playerSession);
+//			} catch (Exception e) {
+//				Spout.getLogger().log(Level.SEVERE, "Error loading player data for " + name, e);
+//				
+//				//Back up the corrupt data, so new data can be saved
+//				//Back up the file with a unique name, based off the current system time
+//				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//				String time = formatter.format(new Date(System.currentTimeMillis()));
+//				File backup = new File(playerDir, fileName + "_" + time + ".bak");
+//				if (!playerData.renameTo(backup)) {
+//					Spout.getLogger().log(Level.SEVERE, "Failed to back up corrupt player data " + name);
+//				} else {
+//					Spout.getLogger().log(Level.WARNING, "Successfully backed up corrupt player data for " + name);
+//				}
+//			} finally {
+//				try {
+//					is.close();
+//				} catch (IOException ignore) { }
+//			}
+//		}
+//		return null;
+//	}
+//	
 	public static void saveWorldData(SpoutWorld world) {
 		File worldData = new File(world.getDirectory(), "world.dat");
 
@@ -350,13 +439,6 @@ public class WorldFiles {
 		chunkTags.put(new ByteArrayTag("blockLight", snapshot.getBlockLight()));
 //		chunkTags.put(new CompoundTag("entities", saveEntities(snapshot.getEntities())));
 		chunkTags.put(saveDynamicUpdates(blockUpdates));
-
-		byte[] biomes = snapshot.getBiomeManager().serialize();
-		if (biomes != null) {
-			chunkTags.put(new StringTag("biomeManager", snapshot.getBiomeManager().getClass().getCanonicalName()));
-			chunkTags.put(new ByteArrayTag("biomes", biomes));
-		}
-
 		chunkTags.put(new ByteArrayTag("extraData", ((DataMap) snapshot.getDataMap()).getRawMap().compress()));
 
 		CompoundTag chunkCompound = new CompoundTag("chunk", chunkTags);
@@ -403,25 +485,6 @@ public class WorldFiles {
 			byte[] blockLight = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("blockLight")), null);
 			byte[] extraData = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("extraData")), null);
 
-			BiomeManager manager = null;
-			if (map.containsKey("biomes")) {
-				try {
-					String biomeManagerClass = (String) map.get("biomeManager").getValue();
-					byte[] biomes = (byte[]) map.get("biomes").getValue();
-					@SuppressWarnings("unchecked")
-					Class<? extends BiomeManager> clazz = (Class<? extends BiomeManager>) Class.forName(biomeManagerClass);
-					Class<?>[] params = {int.class, int.class, int.class};
-					manager = clazz.getConstructor(params).newInstance(cx, cy, cz);
-					manager.deserialize(biomes);
-				} catch (Exception e) {
-					Spout.getLogger().severe("Failed to read biome data for chunk");
-					e.printStackTrace();
-				}
-			}
-			if (manager == null) {
-				manager = new EmptyBiomeManager(cx, cy, cz);
-			}
-
 			//Convert world block ids to engine material ids
 			SpoutWorld world = r.getWorld();
 			StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
@@ -433,7 +496,7 @@ public class WorldFiles {
 			DatatableMap extraDataMap = new GenericDatatableMap();
 			extraDataMap.decompress(extraData);
 
-			chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), blocks, data, skyLight, blockLight, manager, extraDataMap);
+			chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), blocks, data, skyLight, blockLight, extraDataMap);
 
 //			CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("entities")), (CompoundMap) null, CompoundMap.class);
 //			loadEntities(r, entityMap, dataForRegion.loadedEntities);
@@ -558,6 +621,159 @@ public class WorldFiles {
 //		return null;
 //	}
 //
+//	private static CompoundTag saveEntity(EntitySnapshot e) {
+//		if (!e.isSavable() && (!(e instanceof PlayerSnapshot))) {
+//			return null;
+//		}
+//		CompoundMap map = new CompoundMap();
+//		map.put(new ByteTag("version", ENTITY_VERSION));
+//		map.put(new StringTag("controller", e.getType().getName()));
+//
+//		//Write entity
+//		Transform t = e.getTransform();
+//		map.put(new FloatTag("posX",t.getPosition().getX()));
+//		map.put(new FloatTag("posY", t.getPosition().getY()));
+//		map.put(new FloatTag("posZ", t.getPosition().getZ()));
+//
+//		map.put(new FloatTag("scaleX", t.getScale().getX()));
+//		map.put(new FloatTag("scaleY", t.getScale().getY()));
+//		map.put(new FloatTag("scaleZ", t.getScale().getZ()));
+//
+//		map.put(new FloatTag("quatX", t.getRotation().getX()));
+//		map.put(new FloatTag("quatY", t.getRotation().getY()));
+//		map.put(new FloatTag("quatZ", t.getRotation().getZ()));
+//		map.put(new FloatTag("quatW", t.getRotation().getW()));
+//
+//		map.put(new LongTag("UUID_msb", e.getUID().getMostSignificantBits()));
+//		map.put(new LongTag("UUID_lsb", e.getUID().getLeastSignificantBits()));
+//
+//		map.put(new IntTag("view", e.getViewDistance()));
+//		map.put(new ByteTag("observer", e.isObserver()));
+//
+//		//Write entity
+//		try {
+//			//Serialize data
+//			DatatableMap dataMap = ((DataMap) e.getDataMap()).getRawMap();
+//			if (!dataMap.isEmpty()) {
+//				map.put(new ByteTag("controller_data_exists", true));
+//				map.put(new ByteArrayTag("controller_data", dataMap.compress()));
+//			} else {
+//				map.put(new ByteTag("controller_data_exists", false));
+//			}
+//		} catch (Exception error) {
+//			Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to write the controller information for the type: " + e.getType(), error);
+//		}
+//		CompoundTag tag = null;
+//		if (e instanceof PlayerSnapshot) {
+//			tag = new CompoundTag(e.getWorldName(), map);
+//		} else {
+//		tag = new CompoundTag("entity_" + e.getId(), map);
+//		}
+//		return tag;
+//	}
+//	private static void loadEntities(SpoutRegion r, CompoundMap map, List<SpoutEntity> loadedEntities) {
+//		if (r != null && map != null) {
+//			for (Tag<?> tag : map) {
+//				SpoutEntity e = loadEntity(r, (CompoundTag) tag);
+//				if (e != null) {
+//					loadedEntities.add(e);
+//				}
+//			}
+//		}
+//	}
+//
+//	private static CompoundMap saveEntities(List<EntitySnapshot> entities) {
+//		CompoundMap tagMap = new CompoundMap();
+//
+//		for (EntitySnapshot e : entities) {
+//			Tag<?> tag = saveEntity(e);
+//			if (tag != null) {
+//				tagMap.put(tag);
+//			}
+//		}
+//
+//		return tagMap;
+//	}
+//
+//	private static SpoutEntity loadEntity(SpoutRegion r, CompoundTag tag) {
+//		return loadEntity(r.getWorld(), tag, null, null); 
+//	}
+//	private static SpoutEntity loadEntity(World w, CompoundTag tag, String Name, SpoutSession<?> playerSession) {
+//		CompoundMap map = tag.getValue();
+//
+//		@SuppressWarnings("unused")
+//		byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), (byte) 0);
+//		String name = SafeCast.toString(NBTMapper.toTagValue(map.get("controller")), "");
+//
+//		ControllerType type = ControllerRegistry.get(name);
+//		if (type == null) {
+//			Spout.getEngine().getLogger().log(Level.SEVERE, "No controller type found matching: " + name);
+//		} else if (type.canCreateController()) {
+//
+//			//Read entity
+//			Float pX = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posX")), Float.MAX_VALUE);
+//			Float pY = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posY")), Float.MAX_VALUE);
+//			Float pZ = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posZ")), Float.MAX_VALUE);
+//
+//			if (pX == Float.MAX_VALUE || pY == Float.MAX_VALUE || pZ == Float.MAX_VALUE) {
+//				return null;
+//			}
+//
+//			float sX = SafeCast.toFloat(NBTMapper.toTagValue(map.get("scaleX")), 1.0F);
+//			float sY = SafeCast.toFloat(NBTMapper.toTagValue(map.get("scaleY")), 1.0F);
+//			float sZ = SafeCast.toFloat(NBTMapper.toTagValue(map.get("scaleZ")), 1.0F);
+//
+//			float qX = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatX")), 0.0F);
+//			float qY = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatY")), 0.0F);
+//			float qZ = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatZ")), 0.0F);
+//			float qW = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatW")), 1.0F);
+//
+//			long msb = SafeCast.toLong(NBTMapper.toTagValue(map.get("UUID_msb")), new Random().nextLong());
+//			long lsb = SafeCast.toLong(NBTMapper.toTagValue(map.get("UUID_lsb")), new Random().nextLong());
+//			UUID uid = new UUID(msb, lsb);
+//
+//			int view = SafeCast.toInt(NBTMapper.toTagValue(map.get("view")), 0);
+//			boolean observer = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("observer")), new ByteTag("", (byte) 0), ByteTag.class).getBooleanValue();
+//
+//			//Setup entity
+//			Controller controller = type.createController();
+//			try {
+//				boolean controllerDataExists = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("controller_data_exists")), new ByteTag("", (byte) 0), ByteTag.class).getBooleanValue();
+//
+//				if (controllerDataExists) {
+//					byte[] data = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("controller_data")), new byte[0]);
+//					DatatableMap dataMap = ((DataMap) controller.getDataMap()).getRawMap();
+//					dataMap.decompress(data);
+//				}
+//			} catch (Exception error) {
+//				Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to load the controller for the type: " + type.getName(), error);
+//				return null;
+//			}
+//
+//			//Setup entity
+//			Region r = w.getRegionFromBlock((int) Math.floor(pX), (int) Math.floor(pY), (int) Math.floor(pZ), LoadOption.NO_LOAD);
+//			if (r == null) {
+//				// TODO - this should never happen - entities should be located in the chunk that was just loaded
+//				Spout.getLogger().info("Attempted to load entity to unloaded region for block at " + (int) Math.floor(pX) + ", " + (int) Math.floor(pY) + ", " + (int) Math.floor(pZ));
+//				return null;
+//			}
+//			Transform t = new Transform(new Point(r.getWorld(), pX, pY, pZ), new Quaternion(qX, qY, qZ, qW, false), new Vector3(sX, sY, sZ));
+//			if (!(controller instanceof PlayerController)) {
+//				SpoutEntity e = new SpoutEntity((SpoutEngine) Spout.getEngine(), t, controller, view, uid, false);
+//				e.setObserver(observer);
+//				return e;
+//			}
+//			else {
+//				SpoutPlayer e = new SpoutPlayer(Name, t, playerSession, (SpoutEngine) Spout.getEngine(), view);
+//				return e;
+//			}
+//		} else {
+//			Spout.getEngine().getLogger().log(Level.SEVERE, "Unable to create controller for the type: " + type.getName());
+//		}
+//
+//		return null;
+//	}
+
 //	private static CompoundTag saveEntity(EntitySnapshot e) {
 //		if (!e.isSavable() && (!(e instanceof PlayerSnapshot))) {
 //			return null;
@@ -739,6 +955,34 @@ public class WorldFiles {
 					}
 				}
 			}
+			BiomeManager manager = null;
+			if (version > 4) {
+				try {
+					//Biome manager is serialized with:
+					// - boolean, if a biome manager exists
+					// - String, the class name
+					// - int, the number of bytes of data to read
+					// - byte[], size of the above int in length
+					boolean exists = dataStream.readBoolean();
+					if (exists) {
+						String biomeManagerClass = dataStream.readUTF();
+						int biomeSize = dataStream.readInt();
+						byte[] biomes = new byte[biomeSize];
+						dataStream.readFully(biomes);
+						
+						//Attempt to create the biome manager class from the class name
+						@SuppressWarnings("unchecked")
+						Class<? extends BiomeManager> clazz = (Class<? extends BiomeManager>) Class.forName(biomeManagerClass);
+						Class<?>[] params = {int.class, int.class};
+						manager = clazz.getConstructor(params).newInstance(column.getX(), column.getZ());
+						manager.deserialize(biomes);
+						column.setBiomeManager(manager);
+					}
+				} catch (Exception e) {
+					Spout.getLogger().log(Level.SEVERE, "Failed to read biome data for column", e);
+				}
+			}
+			
 		} catch (IOException e) {
 			Spout.getLogger().severe("Error reading column height-map for column" + column.getX() + ", " + column.getZ());
 		}
@@ -771,6 +1015,21 @@ public class WorldFiles {
 					blockId = (short) global.convertTo(itemMap, blockId);
 					dataStream.writeInt(BlockFullState.getPacked(blockId, blockData));
 				}
+			}
+			//Biome manager is serialized with:
+			// - boolean, if a biome manager exists
+			// - String, the class name
+			// - int, the number of bytes of data to read
+			// - byte[], size of the above int in length
+			BiomeManager manager = column.getBiomeManager();
+			if (manager != null) {
+				dataStream.writeBoolean(true);
+				dataStream.writeUTF(manager.getClass().getName());
+				byte[] data = manager.serialize();
+				dataStream.writeInt(data.length);
+				dataStream.write(data);
+			} else {
+				dataStream.writeBoolean(false);
 			}
 			dataStream.flush();
 		} catch (IOException e) {

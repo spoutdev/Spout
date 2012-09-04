@@ -74,6 +74,7 @@ public class PhysicsUpdate {
 		return oldMaterial;
 	}
 	
+	@Override
 	public String toString() {
 		 return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
          .append("x", x)

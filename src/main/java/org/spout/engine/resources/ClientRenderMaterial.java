@@ -64,6 +64,7 @@ public class ClientRenderMaterial extends Resource implements RenderMaterial {
 		this.depthTesting = depth;
 	}
 	
+	@Override
 	public void assign(){
 		Set<Map.Entry<String, Object>> s = materialParameters.entrySet();
 
@@ -106,6 +107,7 @@ public class ClientRenderMaterial extends Resource implements RenderMaterial {
 		return shader;
 	}
 	
+	@Override
 	public void preRender() {
 		if(!depthTesting){
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -113,6 +115,7 @@ public class ClientRenderMaterial extends Resource implements RenderMaterial {
 		
 	}
 	
+	@Override
 	public void postRender() {
 		if(!depthTesting){
 			GL11.glEnable(GL11.GL_DEPTH_TEST);

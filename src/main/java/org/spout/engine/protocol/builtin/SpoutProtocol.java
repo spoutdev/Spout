@@ -57,6 +57,7 @@ public class SpoutProtocol extends Protocol {
 		super("Spout", DEFAULT_PORT, new SpoutCodecLookupService(), new SpoutHandlerLookupService());
 	}
 
+	@Override
 	public MessageCodec<?> readHeader(ChannelBuffer buf) {
 		int id = buf.readUnsignedShort();
 		int length = buf.readInt();
@@ -69,6 +70,7 @@ public class SpoutProtocol extends Protocol {
 		}
 	}
 
+	@Override
 	public ChannelBuffer writeHeader(MessageCodec<?> codec, ChannelBuffer data) {
 		ChannelBuffer buf = ChannelBuffers.buffer(6);
 		buf.writeShort(codec.getOpcode());
@@ -76,6 +78,7 @@ public class SpoutProtocol extends Protocol {
 		return buf;
 	}
 
+	@Override
 	public Message getKickMessage(ChatArguments message) {
 		Command cmd = Spout.getEngine().getRootCommand().getChild("disconnect");
 		if (cmd != null) {
@@ -85,14 +88,17 @@ public class SpoutProtocol extends Protocol {
 		}
 	}
 
+	@Override
 	public Message getCommandMessage(Command command, ChatArguments message) {
 		return new CommandMessage(command, message.getArguments());
 	}
 
+	@Override
 	public Message getIntroductionMessage(String playerName) {
 		return new LoginMessage(playerName, PROTOCOL_VERSION);
 	}
 
+	@Override
 	public void initializeSession(Session session) {
 		session.setNetworkSynchronizer(new SpoutNetworkSynchronizer(session));
 

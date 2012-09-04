@@ -54,7 +54,6 @@ import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 
 import org.spout.api.Engine;
-import org.spout.api.FileSystem;
 import org.spout.api.Spout;
 import org.spout.api.chat.completion.CompletionManager;
 import org.spout.api.chat.completion.CompletionManagerImpl;
@@ -143,25 +142,23 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private final ServiceManager serviceManager = CommonServiceManager.getInstance();
 	private final SnapshotManager snapshotManager = new SnapshotManager();
 	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> players = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
-	private final SyncedRootCommand rootCommand = new SyncedRootCommand(this);
 	private final WorldGenerator defaultGenerator = new EmptyWorldGenerator();
 	protected final SpoutSessionRegistry sessions = new SpoutSessionRegistry();
 	protected final SpoutScheduler scheduler = new SpoutScheduler(this);
 	protected final SpoutParallelTaskManager parallelTaskManager = new SpoutParallelTaskManager(this);
-	protected final ConcurrentMap<SocketAddress, Protocol> boundProtocols = new ConcurrentHashMap<SocketAddress, Protocol>();
 	protected final ChannelGroup group = new DefaultChannelGroup();
 	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
-	private final MemoryLeakThread leakThread = new MemoryLeakThread();
-	protected SpoutConfiguration config = new SpoutConfiguration();
+	private final SpoutConfiguration config = new SpoutConfiguration();
 	private final CompletionManager completions = new CompletionManagerImpl();
-	private File worldFolder = new File(".");
-	private SnapshotableLinkedHashMap<String, SpoutWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutWorld>(snapshotManager);
-	private SnapshotableReference<World> defaultWorld = new SnapshotableReference<World>(snapshotManager, null);
+	private final SyncedRootCommand rootCommand = new SyncedRootCommand(this);
+	private final File worldFolder = new File(".");
+	private final SnapshotableLinkedHashMap<String, SpoutWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutWorld>(snapshotManager);
+	private final SnapshotableReference<World> defaultWorld = new SnapshotableReference<World>(snapshotManager, null);
+	protected final ConcurrentMap<SocketAddress, Protocol> boundProtocols = new ConcurrentHashMap<SocketAddress, Protocol>();
+	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> onlinePlayers = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
 	private String logFile;
 	private StringMap engineItemMap = null;
 	private StringMap engineBiomeMap = null;
-	private ConcurrentHashMap<String, String> cvars = new ConcurrentHashMap<String, String>();
-	protected FileSystem filesystem;
 	private MultiConsole console;
 	private SpoutApplication arguments;
 
@@ -207,7 +204,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 		if (debugMode()) {
 			log("Debug Mode has been toggled on!  This mode is intended for developers only", Level.WARNING);
-			leakThread.start();
 		}
 
 		scheduler.scheduleSyncRepeatingTask(this, new SessionTask(sessions), 50, 50, TaskPriority.CRITICAL);
@@ -231,7 +227,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 		// Start loading plugins
 		loadPlugins();
-		postPluginLoad();
+		postPluginLoad(config);
 		enablePlugins();
 
 		if (checkWorlds) {
@@ -258,7 +254,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	/**
 	 * This method is called after {@link #loadPlugins()} but before {@link #enablePlugins()}
 	 */
-	protected void postPluginLoad() {
+	protected void postPluginLoad(SpoutConfiguration config) {
 	}
 
 	public void loadPlugins() {
@@ -475,6 +471,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		getPluginManager().clearPlugins();
 
 		Runnable lastTickTask = new Runnable() {
+			@Override
 			public void run() {
 				setupComplete.set(false);
 				for (SpoutWorld world : engine.getLiveWorlds()) {
@@ -749,6 +746,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		return loadedWorlds.getLive().values();
 	}
 
+	@Override
 	public CommandSource getCommandSource() {
 		return consoleManager.getCommandSource();
 	}
@@ -774,14 +772,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	@Override
-	public FileSystem getFilesystem() {
-		return filesystem;
-	}
-
-	public MemoryLeakThread getLeakThread() {
-		return leakThread;
-	}
-
 	public MultiConsole getConsoles() {
 		return console;
 	}
@@ -803,16 +793,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 	@Override
 	public void runLighting(int sequence) throws InterruptedException {
-	}
-
-	@Override
-	public void setVariable(String key, String value) {
-		cvars.put(key, value);
-	}
-
-	@Override
-	public String getVariable(String key) {
-		return cvars.get(key);
 	}
 
 	@Override

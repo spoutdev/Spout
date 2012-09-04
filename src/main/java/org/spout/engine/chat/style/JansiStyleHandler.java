@@ -67,10 +67,12 @@ public class JansiStyleHandler extends StyleHandler {
 		registerFormatter(ChatStyle.RESET, new ResetJansiFormatter());
 	}
 
+	@Override
 	public String stripStyle(String formatted) {
 		return new AnsiString(formatted).getPlain().toString();
 	}
 
+	@Override
 	public ChatArguments extractArguments(String str) {
 		return null;  //To change body of implemented methods use File | Settings | File Templates.
 	}

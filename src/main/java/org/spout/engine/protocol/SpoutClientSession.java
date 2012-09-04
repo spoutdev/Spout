@@ -61,6 +61,7 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> {
 		super.send(upstream, force, message);
 	}
 
+	@Override
 	public void dispose() {
 		activeWorld.set(null);
 		SpoutPlayer player;
@@ -74,10 +75,12 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> {
 		return activeWorld.get();
 	}
 
+	@Override
 	public boolean disconnect(Object... reason) {
 		return disconnect(true, reason);
 	}
 
+	@Override
 	public boolean disconnect(boolean kick, Object... reason) {
 		SpoutPlayer player = getPlayer();
 		if (player != null) {

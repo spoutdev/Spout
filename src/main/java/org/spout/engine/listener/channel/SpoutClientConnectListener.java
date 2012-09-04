@@ -50,6 +50,7 @@ public class SpoutClientConnectListener implements ChannelFutureListener {
 		this.binding = binding;
 	}
 
+	@Override
 	public void operationComplete(ChannelFuture channelFuture) throws Exception {
 		Channel channel = channelFuture.getChannel();
 		if (channelFuture.isSuccess()) {

@@ -52,6 +52,7 @@ public class JLineConsole extends AbstractConsole {
 	private final OutputStreamWriter writer;
 
 	public JLineConsole(SpoutEngine engine) {
+		JansiStyleHandler.INSTANCE.getFormatters(); // Hack to get errors printing correctly
 		this.engine = engine;
 		setDateFormat(new SimpleDateFormat("E HH:mm:ss"));
 
@@ -79,12 +80,13 @@ public class JLineConsole extends AbstractConsole {
 		}
 	}
 
+	@Override
 	protected void initImpl() {
 		ConsoleCommandThread commandThread = new ConsoleCommandThread();
-		commandThread.setDaemon(true);
 		commandThread.start();
 	}
 
+	@Override
 	protected void closeImpl() {
 		try {
 			reader.killLine();
@@ -93,6 +95,7 @@ public class JLineConsole extends AbstractConsole {
 		}
 	}
 
+	@Override
 	public void addMessage(ChatArguments message) {
 		try {
 			synchronized (writer) {
@@ -123,6 +126,7 @@ public class JLineConsole extends AbstractConsole {
 
 		public ConsoleCommandThread() {
 			super("ConsoleCommandThread");
+			setDaemon(true);
 		}
 
 		@Override

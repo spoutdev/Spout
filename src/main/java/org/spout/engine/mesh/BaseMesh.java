@@ -52,14 +52,17 @@ public class BaseMesh extends Resource implements Mesh, Iterable<ModelFace> {
 		this.faces = faces;
 	}
 	
+	@Override
 	public void addRenderEffect(RenderEffect effect) {
 		effects.add(effect);
 	}
 
+	@Override
 	public void removeRenderEffect(RenderEffect effect) {
 		effects.remove(effect);
 	}
 
+	@Override
 	public RenderEffect[] getEffects() {
 		return effects.toArray(new RenderEffect[effects.size()]);
 	}

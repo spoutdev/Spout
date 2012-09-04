@@ -35,10 +35,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Logger;
-
-import org.spout.api.Spout;
-import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.api.scheduler.Task;
 import org.spout.api.scheduler.TaskManager;

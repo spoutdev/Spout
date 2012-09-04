@@ -27,10 +27,16 @@
 package org.spout.engine.chat.console;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -78,7 +84,7 @@ public final class ConsoleManager {
 		console.init();
 		logger.addHandler(handler);
 		System.setOut(new PrintStream(new LoggerOutputStream(Level.INFO), true));
-		System.setErr(new PrintStream(new LoggerOutputStream(Level.INFO), true));
+		System.setErr(new PrintStream(new LoggerOutputStream(Level.SEVERE), true));
 	}
 
 	private static class ServerShutdownThread extends Thread {
@@ -127,6 +133,7 @@ public final class ConsoleManager {
 			setFormatter(new SimpleFormatter());
 		}
 
+		@Override
 		public void publish(LogRecord record) {
 			ChatArguments args = LOG_TEMPLATE.getArguments();
 			ChatArguments level = colorizeLevel(record.getLevel());
@@ -158,9 +165,11 @@ public final class ConsoleManager {
 			return new ChatArguments(color, level, ChatStyle.RESET);
 		}
 
+		@Override
 		public void flush() {
 		}
 
+		@Override
 		public void close() {
 			console.close();
 		}

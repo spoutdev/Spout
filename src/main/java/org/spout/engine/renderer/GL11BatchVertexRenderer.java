@@ -29,7 +29,6 @@ package org.spout.engine.renderer;
 import org.lwjgl.opengl.GL11;
 
 import org.spout.api.render.RenderMaterial;
-import org.spout.engine.renderer.shader.BasicShader;
 //TODO update this to work better
 public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 	int displayList;

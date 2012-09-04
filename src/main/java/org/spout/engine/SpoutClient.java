@@ -60,6 +60,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.PixelFormat;
 import org.spout.api.Client;
+import org.spout.api.FileSystem;
 import org.spout.api.Spout;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.command.CommandRegistrationsFactory;
@@ -107,6 +108,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private final Vector2 resolution = new Vector2(640, 480);
 	private final boolean[] sides = { true, true, true, true, true, true };
 	private final float aspectRatio = resolution.getX() / resolution.getY();
+	private final FileSystem filesystem;
 
 	private Camera activeCamera;
 	private WorldRenderer worldRenderer;
@@ -148,7 +150,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		bootstrap.setPipelineFactory(pipelineFactory);
 		super.init(args);
 
-		scheduler.startRenderThread();
+		getScheduler().startRenderThread();
 
 	}
 
@@ -268,13 +270,14 @@ public class SpoutClient extends SpoutEngine implements Client {
 		rendering = false;
 		stopMessage = message;
 		Runnable finalTask = new Runnable() {
+			@Override
 			public void run() {
 				bootstrap.getFactory().releaseExternalResources();
 				boundProtocols.clear();
 			}
 		};
-		scheduler.submitFinalTask(finalTask);
-		scheduler.stop();
+		getScheduler().submitFinalTask(finalTask, true);
+		getScheduler().stop();
 		return true;
 	}
 
@@ -324,6 +327,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return activeWorld.get();
 	}
 
+	@Override
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] datatable) {
 		GenericDatatableMap map = new GenericDatatableMap();
 		map.decompress(datatable);
@@ -499,4 +503,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 		System.setProperty("org.lwjgl.librarypath", nativePath);
 		System.setProperty("net.java.games.input.librarypath", nativePath);
 	}
+
+	@Override
+	public FileSystem getFilesystem() {
+		return filesystem;
+	}
+
 }

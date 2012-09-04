@@ -98,18 +98,22 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	}
 	
 	
+	@Override
 	public float getCharTop() {
 		return charTop;
 	}
 
+	@Override
 	public float getCharHeight() {
 		return charHeight;
 	}
 
+	@Override
 	public float getSpaceWidth() {
 		return spaceWidth;
 	}
 	
+	@Override
 	public Rectangle getPixelBounds(char c){
 		return vec.getGlyphPixelBounds(asciiset.indexOf(c), DEFAULT_CONTEXT, 0, ttfFont.getSize());
 	}

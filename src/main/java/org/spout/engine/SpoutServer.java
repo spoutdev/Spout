@@ -71,6 +71,7 @@ import org.teleal.cling.support.igd.PortMappingListener;
 import org.teleal.cling.support.model.PortMapping;
 import org.teleal.cling.transport.spi.InitializationException;
 
+import org.spout.api.FileSystem;
 import org.spout.api.Server;
 import org.spout.api.event.Listener;
 import org.spout.api.event.server.ServerStartEvent;
@@ -85,6 +86,7 @@ import org.spout.api.util.access.AccessManager;
 public class SpoutServer extends SpoutEngine implements Server {
 	private final String name = "Spout Server";
 	private volatile int maxPlayers = 20;
+	private final FileSystem filesystem;
 	/**
 	 * If the server allows flight.
 	 */
@@ -125,7 +127,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	@Override
-	protected void postPluginLoad() {
+	protected void postPluginLoad(SpoutConfiguration config) {
 		PortBindings portBindings = new PortBindings(this, config);
 		try {
 			portBindings.load(config);
@@ -164,6 +166,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 			return false;
 		}
 		Runnable finalTask = new Runnable() {
+			@Override
 			public void run() {
 				for (Player player : getOnlinePlayers()) {
 					ServerStopEvent stopEvent = new ServerStopEvent(message);
@@ -178,8 +181,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 				boundProtocols.clear();
 			}
 		};
-		scheduler.submitFinalTask(finalTask);
-		scheduler.stop();
+		getScheduler().submitFinalTask(finalTask, true);
+		getScheduler().stop();
 		return true;
 	}
 
@@ -195,7 +198,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		}
 		boundProtocols.put(binding.getAddress(), binding.getProtocol());
 		try {
-			group.add(bootstrap.bind(binding.getAddress()));
+			getChannelGroup().add(bootstrap.bind(binding.getAddress()));
 		} catch (org.jboss.netty.channel.ChannelException ex) {
 			log("Failed to bind to address %0. Is there already another server running on this address?", Level.SEVERE, binding.getAddress(), ex);
 			return false;
@@ -221,6 +224,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		return allowFlight;
 	}
 
+	@Override
 	public List<PortBinding> getBoundAddresses() {
 		List<PortBinding> bindings = new ArrayList<PortBinding>();
 		for (Map.Entry<SocketAddress, Protocol> entry : boundProtocols.entrySet()) {
@@ -371,5 +375,10 @@ public class SpoutServer extends SpoutEngine implements Server {
 	@Override
 	public AccessManager getAccessManager() {
 		return accessManager;
+	}
+
+	@Override
+	public FileSystem getFilesystem() {
+		return filesystem;
 	}
 }

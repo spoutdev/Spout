@@ -131,6 +131,7 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 	}
 
 
+	@Override
 	public void init() {
 		if (frame != null) {
 			close();
@@ -148,10 +149,12 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 		MacOSXUtils.FullScreenUtilities_setWindowCanFullScreen(frame, true); // I have had issues getting this to do anything so far, if it works have fun
 	}
 
+	@Override
 	public boolean isInitialized() {
 		return frame != null;
 	}
 
+	@Override
 	public void close() {
 		if (frame != null) {
 			frame.setVisible(false);
@@ -162,6 +165,7 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 	}
 
 	private DateFormat dateFormat;
+	@Override
 	public void setDateFormat(DateFormat format) {
 		this.dateFormat = format;
 	}
@@ -231,6 +235,7 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 		}
 	}
 
+	@Override
 	public void addMessage(ChatArguments message) {
 		ChatArguments outputText = new ChatArguments();
 		if (dateFormat != null) {
@@ -247,6 +252,7 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 		output.scrollRectToVisible(visible);
 	}
 
+	@Override
 	public void keyTyped(KeyEvent keyEvent) {
 		synchronized (cmdInput) {
 			if (keyEvent.getKeyChar() == '\n') {
@@ -264,31 +270,40 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 		}
 	}
 
+	@Override
 	public void keyPressed(KeyEvent keyEvent) {
 	}
 
+	@Override
 	public void keyReleased(KeyEvent keyEvent) {
 	}
 
+	@Override
 	public void windowOpened(WindowEvent windowEvent) {
 	}
 
+	@Override
 	public void windowClosing(WindowEvent windowEvent) {
 		engine.stop();
 	}
 
+	@Override
 	public void windowClosed(WindowEvent windowEvent) {
 	}
 
+	@Override
 	public void windowIconified(WindowEvent windowEvent) {
 	}
 
+	@Override
 	public void windowDeiconified(WindowEvent windowEvent) {
 	}
 
+	@Override
 	public void windowActivated(WindowEvent windowEvent) {
 	}
 
+	@Override
 	public void windowDeactivated(WindowEvent windowEvent) {
 	}
 }

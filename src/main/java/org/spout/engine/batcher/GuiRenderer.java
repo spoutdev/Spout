@@ -46,7 +46,7 @@ public class GuiRenderer {
 		renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 		
 	}
-	
+
 	private static void TexturedQuad(float x, float y, float width, float height){
 		
 	}

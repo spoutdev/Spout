@@ -51,10 +51,12 @@ public class SpoutSoundSource implements SoundSource {
 		reset();
 	}
 
+	@Override
 	public Sound getSound() {
 		return sound;
 	}
 
+	@Override
 	public void setSound(Sound sound) {
 		if (sound == null) {
 			throw new IllegalArgumentException("Sound cannot be null!");
@@ -69,6 +71,7 @@ public class SpoutSoundSource implements SoundSource {
 		bindSound();
 	}
 
+	@Override
 	public void reset() {
 		setPitch(1f);
 		setGain(1f);
@@ -93,6 +96,7 @@ public class SpoutSoundSource implements SoundSource {
 		setInt(AL10.AL_BUFFER, cs.getBufferId());
 	}
 
+	@Override
 	public SoundSourceState getState() {
 		int state = getInt(AL10.AL_SOURCE_STATE);
 		switch (state) {

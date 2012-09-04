@@ -44,7 +44,6 @@ import org.spout.api.render.Shader;
 import org.spout.api.render.Texture;
 import org.spout.api.resource.Resource;
 
-import org.spout.engine.renderer.shader.variables.AttributeShaderVariable;
 import org.spout.engine.renderer.shader.variables.ColorShaderVariable;
 import org.spout.engine.renderer.shader.variables.FloatShaderVariable;
 import org.spout.engine.renderer.shader.variables.IntShaderVariable;

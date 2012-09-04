@@ -30,6 +30,7 @@ import org.fusesource.jansi.Ansi;
 import org.spout.api.chat.style.StyleFormatter;
 
 public abstract class JansiStyleFormatter implements StyleFormatter {
+	@Override
 	public String format(String text) {
 		Ansi ansi = Ansi.ansi(text.length());
 		format(ansi, text);

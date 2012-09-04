@@ -29,7 +29,6 @@ package org.spout.engine.entity;
 import java.net.InetAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
@@ -190,6 +189,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		return sendRawMessage(new ChatArguments(message));
 	}
 
+	@Override
 	public boolean sendRawMessage(ChatArguments message) {
 		sendCommand("say", message);
 		return true;
@@ -282,7 +282,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void kick() {
-		kick(null);
+		kick((Object[])null);
 	}
 
 	@Override
@@ -300,7 +300,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void ban(boolean kick) {
-		ban(kick, null);
+		ban(kick, (Object[])null);
 	}
 
 	@Override
@@ -334,5 +334,11 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	public Locale getPreferredLocale() {
 		return preferredLocale;
+	}
+
+	@Override
+	public boolean save() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

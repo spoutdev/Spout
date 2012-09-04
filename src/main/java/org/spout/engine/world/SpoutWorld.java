@@ -50,7 +50,6 @@ import org.spout.api.collision.CollisionVolume;
 import org.spout.api.component.Component;
 import org.spout.api.component.components.BlockComponent;
 import org.spout.api.component.components.DatatableComponent;
-import org.spout.api.component.components.WorldComponent;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntityType;
@@ -61,6 +60,7 @@ import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeGenerator;
+import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -235,10 +235,12 @@ public class SpoutWorld extends AsyncManager implements World {
 		addComponent(datatable);		
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public UUID getUID() {
 		return uid;
 	}
@@ -285,13 +287,32 @@ public class SpoutWorld extends AsyncManager implements World {
 		if (!(generator instanceof BiomeGenerator)) {
 			return null;
 		}
-		final SpoutChunk chunk = getChunkFromBlock(x, y, z, LoadOption.LOAD_ONLY);
-		if (chunk == null) {
-			return ((BiomeGenerator) generator).getBiome(x, y, z, seed);
+		final SpoutColumn column = getColumn(x, z, true);
+		final BiomeManager manager = column.getBiomeManager();
+		if (manager != null) {
+			final Biome biome = column.getBiomeManager().getBiome(x & SpoutColumn.BLOCKS.MASK, y & SpoutColumn.BLOCKS.MASK, z  & SpoutColumn.BLOCKS.MASK);
+			if (biome != null) {
+				return biome;
+			}
 		}
-		return chunk.getBiome(x, y, z);
+		return ((BiomeGenerator) generator).getBiome(x, y, z, seed);
 	}
 
+	@Override
+	public BiomeManager getBiomeManager(int x, int z) {
+		return getBiomeManager(x, z, false);
+	}
+
+	@Override
+	public BiomeManager getBiomeManager(int x, int z, boolean load) {
+		final SpoutColumn column = getColumn(x, z, load);
+		if (column != null) {
+			return column.getBiomeManager();
+		}
+		return null;
+	}
+
+	@Override
 	public SpoutRegion getRegion(int x, int y, int z) {
 		return getRegion(x, y, z, LoadOption.LOAD_GEN);
 	}
@@ -608,6 +629,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		return seed;
 	}
 
+	@Override
 	public SpoutEngine getEngine() {
 		return engine;
 	}
@@ -718,6 +740,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * @param range to look for
 	 * @return A set of nearby Players
 	 */
+	@Override
 	@LiveRead
 	@Threadsafe
 	public List<Player> getNearbyPlayers(Point position, int range) {
@@ -730,6 +753,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * @param range to look for
 	 * @return A set of nearby Players
 	 */
+	@Override
 	@LiveRead
 	@Threadsafe
 	public List<Player> getNearbyPlayers(Entity entity, int range) {
@@ -744,6 +768,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * @param range to look for
 	 * @return A set of nearby Players
 	 */
+	@Override
 	@LiveRead
 	@Threadsafe
 	public List<Player> getNearbyPlayers(Point position, Entity ignore, int range) {
@@ -795,6 +820,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * @param range to search
 	 * @return nearest player
 	 */
+	@Override
 	@LiveRead
 	@Threadsafe
 	public Player getNearestPlayer(Point position, Entity ignore, int range) {
@@ -818,6 +844,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * @param range to search
 	 * @return nearest player
 	 */
+	@Override
 	@LiveRead
 	@Threadsafe
 	public Player getNearestPlayer(Point position, int range) {
@@ -830,6 +857,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * @param range to search
 	 * @return nearest player
 	 */
+	@Override
 	@LiveRead
 	@Threadsafe
 	public Player getNearestPlayer(Entity entity, int range) {

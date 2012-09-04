@@ -45,10 +45,12 @@ public class SpoutClientWorld extends SpoutWorld implements ClientWorld {
 		super(name, engine, 0, 0, null, uid, itemMap, map);
 	}
 
+	@Override
 	public void addChunk(ChunkSnapshot c) {
 		addChunk(c.getX(), c.getY(), c.getZ(), c.getBlockIds(), c.getBlockData(), c.getBlockLight(), c.getSkyLight(), c.getBiomeManager());
 	}
 
+	@Override
 	public void addChunk(int x, int y, int z, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, BiomeManager biomes) {
 		getRegionFromBlock(x, y, z, LoadOption.LOAD_GEN).addChunk(x, y, z, blockIds, blockData, blockLight, skyLight, biomes);
 	}

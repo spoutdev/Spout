@@ -47,6 +47,7 @@ public class AttributeJansiFormatter extends JansiStyleFormatter {
 		Validate.notNull(disableAttribute, "No corresponding disable attribute for " + enableAttribute);
 	}
 
+	@Override
 	public void format(Ansi ansi, String text) {
 		ansi.a(enableAttribute).a(text).a(disableAttribute);
 	}

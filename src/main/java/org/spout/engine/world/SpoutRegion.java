@@ -168,10 +168,6 @@ public class SpoutRegion extends Region {
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
-		this(world, x, y, z, source, LoadOption.NO_LOAD);
-	}
-
-	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source, LoadOption loadopt) {
 		super(world, x * Region.BLOCKS.SIZE, y * Region.BLOCKS.SIZE, z * Region.BLOCKS.SIZE);
 		this.source = source;
 		
@@ -199,8 +195,6 @@ public class SpoutRegion extends Region {
 			}
 		}
 
-		load(loadopt);
-
 		File worldDirectory = world.getDirectory();
 		File regionDirectory = new File(worldDirectory, "region");
 		regionDirectory.mkdirs();
@@ -215,18 +209,6 @@ public class SpoutRegion extends Region {
 		}
 		taskManager = new SpoutTaskManager(world.getEngine().getScheduler(), false, t, world.getAge());
 		scheduler = (SpoutScheduler) (Spout.getEngine().getScheduler());
-	}
-
-	public void load(LoadOption option) {
-		if (option.loadIfNeeded()){
-			for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
-				for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
-					for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
-						getChunk(dx, dy, dz, option);
-					}
-				}
-			}
-		}
 	}
 
 	@Override
@@ -338,9 +320,9 @@ public class SpoutRegion extends Region {
 		CuboidShortBuffer buffer = new CuboidShortBuffer(x << Chunk.BLOCKS.BITS, y << Chunk.BLOCKS.BITS, z << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
 
 		WorldGenerator generator = getWorld().getGenerator();
-		BiomeManager manager = generator.generate(buffer, x, y, z, world.getSeed());
+		generator.generate(buffer, x, y, z, world);
 
-		return new FilteredChunk(world, this, x, y, z, buffer.getRawArray(), manager, buffer.getDataMap());
+		return new FilteredChunk(world, this, x, y, z, buffer.getRawArray(), buffer.getDataMap());
 	}
 
 	/**
@@ -1239,7 +1221,7 @@ public class SpoutRegion extends Region {
 		if (chunk != null) {
 			chunk.unload(false);
 		}
-		SpoutChunk newChunk = new SpoutChunk(getWorld(), this, getBlockX() | x, getBlockY() | y, getBlockZ() | z, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, skyLight, blockLight, biomes, new GenericDatatableMap());
+		SpoutChunk newChunk = new FilteredChunk(getWorld(), this, getBlockX() | x, getBlockY() | y, getBlockZ() | z, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, skyLight, blockLight, new GenericDatatableMap());
 		chunks[x >> Region.CHUNKS.BITS][y >> Region.CHUNKS.BITS][z >> Region.CHUNKS.BITS].set(newChunk);
 		((SpoutClient) getWorld().getEngine()).getWorldRenderer().updateChunk(getChunkX() | x, getChunkY() | y, getChunkZ() | z);
 	}

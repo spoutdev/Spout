@@ -90,7 +90,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 		// Cache extra data
 		if (data == ExtraData.BIOME_DATA) {
-			this.biomes = chunk.getBiomeManager().clone();
+			this.biomes = chunk.getWorld().getBiomeManager(chunk.getBlockX(), chunk.getBlockZ()).clone();
 			this.dataMap = null;
 		} else if (data == ExtraData.DATATABLE) {
 			byte[] compressed = ((DataMap) chunk.getDataMap()).getRawMap().compress();
@@ -100,7 +100,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 			this.biomes = null;
 		} else if (data == ExtraData.BOTH) {
-			this.biomes = chunk.getBiomeManager().clone();
+			this.biomes = chunk.getWorld().getBiomeManager(chunk.getBlockX(), chunk.getBlockZ()).clone();
 
 			byte[] compressed = ((DataMap) chunk.getDataMap()).getRawMap().compress();
 			DatatableMap copy = new GenericDatatableMap();

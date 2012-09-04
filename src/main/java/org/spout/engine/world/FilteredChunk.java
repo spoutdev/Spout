@@ -34,7 +34,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.spout.api.Source;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
-import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
@@ -61,13 +60,13 @@ public class FilteredChunk extends SpoutChunk{
 		Arrays.fill(LIGHT, (byte) 255);
 	}
 
-	public FilteredChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial, BiomeManager manager, DataMap map) {
-		this(world, region, x, y, z, PopulationState.UNTOUCHED, initial, null, null, null, manager, map.getRawMap());
+	public FilteredChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial, DataMap map) {
+		this(world, region, x, y, z, PopulationState.UNTOUCHED, initial, null, null, null, map.getRawMap());
 		chunkModified.set(true);
 	}
 
-	public FilteredChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, BiomeManager manager, DatatableMap extraData) {
-		super(world, region, x, y, z, popState, blocks, data, skyLight, blockLight, manager, extraData);
+	public FilteredChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, DatatableMap extraData) {
+		super(world, region, x, y, z, popState, blocks, data, skyLight, blockLight, extraData);
 
 		uniform = new AtomicBoolean(true);
 		short id = blocks[0];

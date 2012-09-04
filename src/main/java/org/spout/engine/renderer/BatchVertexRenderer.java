@@ -38,7 +38,6 @@ import org.spout.api.math.Vector4;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.Renderer;
-import org.spout.api.render.Shader;
 
 public abstract class BatchVertexRenderer implements Renderer {
 	public static Renderer constructNewBatch(int renderMode) {
@@ -77,6 +76,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	}
 
 	
+	@Override
 	public int getVertexCount(){
 		return numVertices;
 	}

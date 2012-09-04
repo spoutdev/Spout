@@ -36,9 +36,7 @@ import org.spout.api.Spout;
 import org.spout.api.render.RenderMode;
 import org.spout.api.resource.BasicResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
-import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.engine.renderer.shader.ClientShader;
-import org.spout.engine.util.StackTrace;
 import org.yaml.snakeyaml.Yaml;
 
 public class ShaderLoader extends BasicResourceLoader<ClientShader> {

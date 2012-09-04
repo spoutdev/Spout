@@ -41,10 +41,12 @@ public abstract class AbstractConsole implements Console {
 	private DateFormat dateFormat;
 	private final AtomicBoolean initialized = new AtomicBoolean();
 
+	@Override
 	public boolean isInitialized() {
 		return initialized.get();
 	}
 
+	@Override
 	public final void init() {
 		if (initialized.compareAndSet(false, true)) {
 			initImpl();
@@ -53,6 +55,7 @@ public abstract class AbstractConsole implements Console {
 
 	protected abstract void initImpl();
 
+	@Override
 	public final void close() {
 		if (initialized.compareAndSet(true, false)) {
 			closeImpl();
@@ -61,6 +64,7 @@ public abstract class AbstractConsole implements Console {
 
 	protected abstract void closeImpl();
 
+	@Override
 	public void setDateFormat(DateFormat format) {
 		this.dateFormat = format;
 	}

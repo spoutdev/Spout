@@ -69,6 +69,7 @@ public class InputCommands {
 			this.add  = add;
 		}
 
+		@Override
 		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
 			if (Spout.getPlatform().equals(Platform.CLIENT)) {
 				if (!(source instanceof Player)) {
@@ -93,6 +94,7 @@ public class InputCommands {
 			this.x = x;
 		}
 
+		@Override
 		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
 			if (Spout.getPlatform().equals(Platform.CLIENT)) {
 				if (!(source instanceof Player)) {

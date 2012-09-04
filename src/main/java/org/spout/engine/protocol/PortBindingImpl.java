@@ -51,10 +51,12 @@ public class PortBindingImpl implements PortBinding {
 				.append(this.address).toHashCode();
 	}
 
+	@Override
 	public Protocol getProtocol() {
 		return protocol;
 	}
 
+	@Override
 	public SocketAddress getAddress() {
 		return address;
 	}

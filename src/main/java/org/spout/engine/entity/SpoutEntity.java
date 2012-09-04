@@ -139,6 +139,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		return !isRemoved();
 	}
 
+	@Override
 	public void tick(float dt) {
 		if (canTick()) {
 			onTick(dt);
