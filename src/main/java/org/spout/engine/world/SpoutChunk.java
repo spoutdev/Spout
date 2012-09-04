@@ -49,6 +49,7 @@ import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
 import org.spout.api.event.block.BlockChangeEvent;
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGeneratorUtils;
@@ -907,6 +908,17 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	@Override
 	public int getNumObservers() {
 		return observers.size();
+	}
+
+	@Override
+	public List<Player> getObservingPlayers() {
+		ArrayList<Player> players = new ArrayList<Player>();
+		for (Entity entity : observers) {
+			if (entity instanceof Player) {
+				players.add((Player) entity);
+			}
+		}
+		return Collections.unmodifiableList(players);
 	}
 
 	public boolean compressIfRequired() {
