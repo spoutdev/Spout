@@ -329,37 +329,4 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	public TransformComponent getTransform() {
 		return transformComponent;
 	}
-
-	@Override
-	public void applyType(EntityType type) {
-		if (type == null) {
-			return;
-		}
-		for (Component component : type.getComponents()) {
-			addComponent(component);
-		}
-	}
-
-	@Override
-	public void removeType(EntityType type) {
-		if (type == null) {
-			return;
-		}
-		for (Component component : type.getComponents()) {
-			removeComponent(component.getClass());
-		}
-	}
-
-	@Override
-	public boolean hasType(EntityType type) {
-		if (type == null) {
-			return false;
-		}
-		for (Component component : type.getComponents()) {
-			if (!hasComponent(component.getClass())) {
-				return false;
-			}
-		}
-		return true;
-	}
 }
