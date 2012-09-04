@@ -50,11 +50,19 @@ public interface ComponentHolder {
 	public boolean removeComponent(Class<? extends Component> component);
 
 	/**
-	 * Returns the first component that is assignable from the given class, or null if it doesn't exist
+	 * Returns the omponent that is assignable from the given class, or null if it doesn't exist
 	 * @param component the type of component to get
 	 * @return The component instance, or null if it doesn't exist
 	 */
 	public <T extends Component> T getComponent(Class<T> component);
+
+	/**
+	 * Returns the component that is assignable from the given class, or if not found
+	 * @param component the component class to lookup or if not found, create
+	 * @param <T> the component type
+	 * @return the component stored or created
+	 */
+	public <T extends Component> T getOrCreate(Class<T> component);
 
 	/**
 	 * Returns true if a component exists that is assignable from the given class.

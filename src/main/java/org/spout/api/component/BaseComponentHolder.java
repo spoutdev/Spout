@@ -51,7 +51,7 @@ public class BaseComponentHolder implements ComponentHolder {
 			}
 			components.put(clazz, component);
 			component.onAttached();
-			return (T) component;
+			return component;
 		} else {
 			return null;
 		}
@@ -75,9 +75,27 @@ public class BaseComponentHolder implements ComponentHolder {
 	@Override
 	public <T extends Component> T getComponent(Class<T> aClass) {
 		for(Class<? extends Component> c : components.keySet()){
-			if(aClass.isAssignableFrom(c)) return (T) components.get(c);
+			if(aClass.isAssignableFrom(c)) {
+				return (T) components.get(c);
+			}
 		}
 		return null;
+	}
+
+	@Override
+	public <T extends Component> T getOrCreate(Class<T> component) {
+		T componentToGet = getComponent(component);
+		if (componentToGet == null) {
+			try {
+				componentToGet = (T) componentToGet.getClass().newInstance();
+				addComponent(componentToGet);
+			} catch (InstantiationException ie) {
+				ie.printStackTrace();
+			} catch (IllegalAccessException iae) {
+				iae.printStackTrace();
+			}
+		}
+		return componentToGet;
 	}
 
 	@Override

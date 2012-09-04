@@ -83,5 +83,4 @@ public class EntityProtocolStore {
 			lock.writeUnlock(seq);
 		}
 	}
-
 }
