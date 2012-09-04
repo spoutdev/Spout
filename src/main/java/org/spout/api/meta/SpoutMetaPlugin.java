@@ -34,10 +34,6 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.Validate;
 import org.spout.api.Engine;
-import org.spout.api.Spout;
-import org.spout.api.command.CommandRegistrationsFactory;
-import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
-import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.lang.PluginDictionary;
 import org.spout.api.plugin.Platform;
@@ -58,8 +54,6 @@ public final class SpoutMetaPlugin implements Plugin {
 
 	@Override
 	public void onEnable() {
-		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this));
-		Spout.getEngine().getRootCommand().addSubCommands(this, MetaCommands.class, commandRegFactory);
 	}
 
 	@Override
