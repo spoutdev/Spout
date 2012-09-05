@@ -35,28 +35,59 @@ public abstract class Component implements Tickable {
 	public Component() {
 	}
 
+	/**
+	 * Attaches to a component holder.
+	 * 
+	 * @param holder the componet holder to attach to
+	 * @return true if successful
+	 */
 	public boolean attachTo(ComponentHolder holder) {
 		this.holder = holder;
 		return true;
 	}
 
+	/**
+	 * Gets the component holder that is holding this component.
+	 * 
+	 * @return the component holder
+	 */
 	public ComponentHolder getHolder() {
 		return holder;
 	}
 
+	/**
+	 * Called when this component is attached to a holder.
+	 */
 	public void onAttached() {
 	}
 
+	/**
+	 * Called when this component is detached from a holder.
+	 */
 	public void onDetached() {
 	}
 
+	/**
+	 * Specifies whether or not this component can be detached,
+	 * after it has already been attached to a holder.
+	 * 
+	 * @return true if it can be detached
+	 */
 	public boolean isDetachable() {
 		return true;
 	}
 
+	/**
+	 * Called when this component is removed from a holder.
+	 */
 	public void onRemoved() {
 	}
 
+	/**
+	 * Called when the holder is set to be synchronized.
+	 * 
+	 * This method is READ ONLY. You cannot update in this method.
+	 */
 	public void onSync() {
 	}	
 
@@ -76,7 +107,13 @@ public abstract class Component implements Tickable {
 	public void onTick(float dt) {
 	}
 
+	/**
+	 * Gets the datatable component attached to the holder.
+	 * This component exists in every holder.
+	 * 
+	 * @return the datatable component
+	 */
 	public final DatatableComponent getDatatable() {
-		return getHolder().getDatatable();
+		return getHolder().getData();
 	}
 }

@@ -61,8 +61,8 @@ public class EntitySnapshot {
 		this.observer = e.isObserver();
 		this.savable = e.isSavable();
 		DatatableMap deepCopy = new GenericDatatableMap();
-		if (e.getDatatable().getBaseMap().size() > 0) {
-			byte[] state = ((DataMap)e.getDatatable().getBaseMap()).getRawMap().compress();
+		if (e.getData().getBaseMap().size() > 0) {
+			byte[] state = ((DataMap)e.getData().getBaseMap()).getRawMap().compress();
 			deepCopy.decompress(state);
 		}
 		this.dataMap = new DataMap(deepCopy);

@@ -41,50 +41,62 @@ public class BaseComponentHolder implements ComponentHolder {
 	/**
 	 * Map of class name, component
 	 */
-	private final HashMap<String, Component> components = new HashMap<String, Component>();
+	private final HashMap<Class<? extends Component>, Component> components = new HashMap<Class<? extends Component>, Component>();
 
-	private final BiMap<String, String> typeMap = HashBiMap.create();
+	/**
+	 * Bidirectional map of the super class of a component, and its actual
+	 * class. Used to mark a component as belonging to a specific super class to
+	 * map to for has/get. If no super class is picked, it will simply use the
+	 * actual class in both sides of the map.
+	 */
+	private final BiMap<Class<? extends Component>, Class<? extends Component>> typeMap = HashBiMap.create();
+
 	private final DatatableComponent datatable = new DatatableComponent();
 
 	public BaseComponentHolder() {
-		addComponent(datatable);
+		put(datatable);
 	}
 
 	@Override
-	public <T extends Component> T addComponent(T component) {
+	public <T extends Component> T put(T component) {
 		if (component == null) {
 			return null;
 		}
 
-		return addComponent(component.getClass(), component);
-	}
-
-	@Override
-	public <T extends Component> T addComponent(Class<? extends Component> type, T component) {
-		if (component == null || hasComponent(type)) {
-			return component;
-		}
-
-		String typeName;
-		if (type == null) {
-			typeName = component.getClass().getName();
-		} else {
-			typeName = type.getName();
-		}
-	
-		components.put(convert(component.getClass()), component);
-		typeMap.put(convert(component.getClass()), typeName);
-		return component;
+		return put(null, component);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends Component> T removeComponent(Class<? extends Component> type) {
-		if (!hasComponent(type)) {
+	public <T extends Component> T put(Class<? extends Component> type, T component) {
+		if (component == null) {
 			return null;
 		}
 
-		String key = findKey(type);
+		Class<? extends Component> typeClass;
+		if (type != null) {
+			typeClass = type;
+			// Check if the component actually belongs to the specified super
+			// type.
+			if (!typeClass.isAssignableFrom(component.getClass())) {
+				return component;
+			}
+		} else {
+			typeClass = component.getClass();
+		}
+
+		typeMap.put(component.getClass(), typeClass);
+		return (T) components.put(component.getClass(), component);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends Component> T remove(Class<? extends Component> type) {
+		if (!has(type)) {
+			return null;
+		}
+
+		Class<? extends Component> key = findKey(type);
 		if (key == null) {
 			return null;
 		}
@@ -95,7 +107,7 @@ public class BaseComponentHolder implements ComponentHolder {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends Component> T getComponent(Class<T> type) {
+	public <T extends Component> T get(Class<T> type) {
 		if (type == null) {
 			return null;
 		}
@@ -103,41 +115,48 @@ public class BaseComponentHolder implements ComponentHolder {
 		return (T) components.get(findKey(type));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends Component> T getOrCreate(Class<? extends Component> typeClass) {
-		// TODO Auto-generated method stub
-		return null;
+	public <T extends Component> T getOrCreate(Class<? extends Component> type) {
+		T component = (T) this.get(type);
+		if (component != null) {
+			return component;
+		} else {
+			try {
+				component = (T) type.newInstance();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+
+			return component;
+		}
 	}
 
 	@Override
-	public boolean hasComponent(Class<? extends Component> type) {
+	public boolean has(Class<? extends Component> type) {
 		if (type == null) {
 			return false;
 		}
-		return typeMap.containsKey(convert(type)) || typeMap.containsValue(convert(type));
+		return typeMap.containsKey(type) || typeMap.containsValue(type);
 	}
 
 	@Override
-	public Collection<Component> getComponents() {
+	public Collection<Component> values() {
 		return Collections.unmodifiableList(new ArrayList<Component>(components.values()));
 	}
 
 	@Override
-	public DatatableComponent getDatatable() {
+	public DatatableComponent getData() {
 		return datatable;
 	}
 
-	private String findKey(Class<? extends Component> type) {
-		String typeString = convert(type);
-		
-		if (typeMap.containsKey(typeString)) {
-			return typeString;
+	private Class<? extends Component> findKey(Class<? extends Component> type) {
+		if (typeMap.containsKey(type)) {
+			return type;
 		}
 
-		return typeMap.inverse().get(typeString);
-	}
-
-	private String convert(Class<? extends Component> clazz) {
-		return clazz.getCanonicalName();
+		return typeMap.inverse().get(type);
 	}
 }
