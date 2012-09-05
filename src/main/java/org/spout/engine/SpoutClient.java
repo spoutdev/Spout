@@ -68,6 +68,7 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.component.components.CameraComponent;
+import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.entity.state.PlayerInputState.Flags;
 import org.spout.api.geo.World;
@@ -329,9 +330,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] datatable) {
-		GenericDatatableMap map = new GenericDatatableMap();
+		SpoutClientWorld world = new SpoutClientWorld(name, uuid, this, getEngineItemMap());
+
+		DatatableMap map = world.getComponentHolder().getDatatable().getBaseMap().getRawMap();
+		map.clear();
 		map.decompress(datatable);
-		SpoutClientWorld world = new SpoutClientWorld(name, uuid, this, map, getEngineItemMap());
+
 		SpoutClientWorld oldWorld = activeWorld.getAndSet(world);
 		if (oldWorld != null) {
 			oldWorld.unload(false);

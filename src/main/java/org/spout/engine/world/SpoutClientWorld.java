@@ -41,8 +41,8 @@ import org.spout.engine.SpoutEngine;
  * A dummy world used for the client
  */
 public class SpoutClientWorld extends SpoutWorld implements ClientWorld {
-	public SpoutClientWorld(String name, UUID uid, SpoutEngine engine, DatatableMap map, StringMap itemMap) {
-		super(name, engine, 0, 0, null, uid, itemMap, map);
+	public SpoutClientWorld(String name, UUID uid, SpoutEngine engine, StringMap itemMap) {
+		super(name, engine, 0, 0, null, uid, itemMap);
 	}
 
 	@Override

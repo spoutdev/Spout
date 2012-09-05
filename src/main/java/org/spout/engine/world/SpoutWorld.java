@@ -39,6 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -47,7 +48,10 @@ import org.spout.api.Spout;
 import org.spout.api.collision.BoundingBox;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionVolume;
+import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
+import org.spout.api.component.ComponentHolder;
+import org.spout.api.component.ComponentTypes;
 import org.spout.api.component.components.BlockComponent;
 import org.spout.api.component.components.DatatableComponent;
 import org.spout.api.datatable.DatatableMap;
@@ -181,11 +185,10 @@ public class SpoutWorld extends AsyncManager implements World {
 	/*
 	 * Components
 	 */
-	private final HashMap<Class<? extends Component>, Component> components = new HashMap<Class<? extends Component>, Component>();
-	private final DatatableComponent datatable;
+	private final BaseComponentHolder componentHolder = new BaseComponentHolder();
 	
 	// TODO set up number of stages ?
-	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid, StringMap itemMap, DatatableMap extraData) {
+	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid, StringMap itemMap) {
 		super(1, new ThreadAsyncExecutor(toString(name, uid, age)), engine);
 		this.engine = engine;
 		if (!StringSanitizer.isAlphaNumericUnderscore(name)) {
@@ -224,14 +227,6 @@ public class SpoutWorld extends AsyncManager implements World {
 		taskManager = new SpoutTaskManager(getEngine().getScheduler(), false, t, age);
 		spawnLocation.set(new Transform(new Point(this, 1, 100, 1), Quaternion.IDENTITY, Vector3.ONE));
 		selfReference = new WeakReference<World>(this);
-		//Datatables
-		if (extraData != null) {
-			datatable = new DatatableComponent(extraData);
-		} else {
-			datatable = new DatatableComponent();
-		}
-
-		addComponent(datatable);		
 	}
 
 	@Override
@@ -1136,69 +1131,8 @@ public class SpoutWorld extends AsyncManager implements World {
 		return selfReference;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends Component> T addComponent(T component) {
-		if (component.attachTo(this)) {
-			Class<? extends Component> clazz = component.getClass();
-			if (hasComponent(clazz)) {
-				return (T) getComponent(clazz);
-			}
-			component.onAttached();
-			components.put(clazz, component);
-			return component;
-		} else {
-			return null;
-		}
-	}
-
-	@Override
-	public boolean removeComponent(Class<? extends Component> aClass) {
-		if (!hasComponent(aClass)) {
-			return false;
-		}
-		Component component = getComponent(aClass);
-		if (component.isDetachable()) {
-			getComponent(aClass).onDetached();
-			components.remove(aClass);
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public <T extends Component> T getComponent(Class<T> aClass) {
-		return (T) components.get(aClass);
-	}
-
-	@Override
-	public <T extends Component> T getOrCreate(Class<T> component) {
-		T componentToGet = getComponent(component);
-		if (componentToGet == null) {
-			try {
-				componentToGet = (T) componentToGet.getClass().newInstance();
-				addComponent(componentToGet);
-			} catch (InstantiationException ie) {
-				ie.printStackTrace();
-			} catch (IllegalAccessException iae) {
-				iae.printStackTrace();
-			}
-		}
-		return componentToGet;
-	}
-
-	@Override
-	public boolean hasComponent(Class<? extends Component> aClass) {
-		return components.containsKey(aClass);
-	}
-
-	@Override
-	public Collection<Component> getComponents() {
-		return Collections.unmodifiableList(new ArrayList<Component>(components.values()));
-	}
-	
-	@Override
-	public DatatableComponent getDatatable() {
-		return datatable;
+	public ComponentHolder getComponentHolder() {
+		return componentHolder;
 	}
 }

@@ -267,7 +267,7 @@ public class WorldFiles {
 		worldTags.put(new StringTag("generator", generatorName));
 		worldTags.put(new LongTag("UUID_lsb", world.getUID().getLeastSignificantBits()));
 		worldTags.put(new LongTag("UUID_msb", world.getUID().getMostSignificantBits()));
-		worldTags.put(new ByteArrayTag("extra_data", ((DataMap) world.getDatatable().getBaseMap()).getRawMap().compress()));
+		worldTags.put(new ByteArrayTag("extra_data", ((DataMap) world.getComponentHolder().getDatatable().getBaseMap()).getRawMap().compress()));
 		worldTags.put(new LongTag("age", world.getAge()));
 		//World version 2
 		worldTags.put(new ListTag<FloatTag>("spawn_position", FloatTag.class, NBTMapper.transformToNBT(world.getSpawnPoint())));
@@ -348,8 +348,6 @@ public class WorldFiles {
 
 		String generatorName = generator.getName();
 
-		GenericDatatableMap extraData = new GenericDatatableMap();
-
 		long seed = SafeCast.toLong(NBTMapper.toTagValue(map.get("seed")), new Random().nextLong());
 		String savedGeneratorName = SafeCast.toString(NBTMapper.toTagValue(map.get("generator")), "");
 
@@ -357,14 +355,17 @@ public class WorldFiles {
 		long msb = SafeCast.toLong(NBTMapper.toTagValue(map.get("UUID_msb")), new Random().nextLong());
 
 		byte[] extraDataBytes = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("extra_data")), new byte[0]);
-		extraData.decompress(extraDataBytes);
 
 		if (!savedGeneratorName.equals(generatorName)) {
 			Spout.getLogger().severe("World was saved last with the generator: " + savedGeneratorName + " but is being loaded with: " + generatorName + " MAY CAUSE WORLD CORRUPTION!");
 		}
 
 		long age = SafeCast.toLong(NBTMapper.toTagValue(map.get("age")), 0L);
-		world = new SpoutWorld(name, (SpoutEngine) Spout.getEngine(), seed, age, generator, new UUID(msb, lsb), itemMap, extraData);
+		world = new SpoutWorld(name, (SpoutEngine) Spout.getEngine(), seed, age, generator, new UUID(msb, lsb), itemMap);
+
+		DatatableMap dataMap = world.getComponentHolder().getDatatable().getBaseMap().getRawMap();
+		dataMap.clear();
+		dataMap.decompress(extraDataBytes);
 
 		List<? extends FloatTag> spawnPosition = checkerListFloatTag.checkTag(map.get("spawn_position"));
 		Transform spawn = NBTMapper.nbtToTransform(world, spawnPosition);
@@ -394,8 +395,6 @@ public class WorldFiles {
 
 		String generatorName = generator.getName();
 
-		GenericDatatableMap extraData = new GenericDatatableMap();
-
 		long seed = SafeCast.toLong(NBTMapper.toTagValue(map.get("seed")), new Random().nextLong());
 		String savedGeneratorName = SafeCast.toString(NBTMapper.toTagValue(map.get("generator")), "");
 
@@ -403,14 +402,17 @@ public class WorldFiles {
 		long msb = SafeCast.toLong(NBTMapper.toTagValue(map.get("UUID_msb")), new Random().nextLong());
 
 		byte[] extraDataBytes = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("extraData")), new byte[0]);
-		extraData.decompress(extraDataBytes);
 
 		if (!savedGeneratorName.equals(generatorName)) {
 			Spout.getEngine().getLogger().severe("World was saved last with the generator: " + savedGeneratorName + " but is being loaded with: " + generatorName + " MAY CAUSE WORLD CORRUPTION!");
 		}
 
 		long age = SafeCast.toLong(NBTMapper.toTagValue(map.get("age")), 0L);
-		world = new SpoutWorld(name, (SpoutEngine) Spout.getEngine(), seed, age, generator, new UUID(msb, lsb), itemMap, extraData);
+		world = new SpoutWorld(name, (SpoutEngine) Spout.getEngine(), seed, age, generator, new UUID(msb, lsb), itemMap);
+		
+		DatatableMap dataMap = world.getComponentHolder().getDatatable().getBaseMap().getRawMap();
+		dataMap.clear();
+		dataMap.decompress(extraDataBytes);
 
 		return world;
 	}
