@@ -59,10 +59,6 @@ public class BaseComponentHolder implements ComponentHolder {
 
 	@Override
 	public <T extends Component> T put(T component) {
-		if (component == null) {
-			return null;
-		}
-
 		return put(null, component);
 	}
 
@@ -85,6 +81,7 @@ public class BaseComponentHolder implements ComponentHolder {
 			typeClass = component.getClass();
 		}
 
+		component.onAttached();
 		typeMap.put(component.getClass(), typeClass);
 		return (T) components.put(component.getClass(), component);
 	}
@@ -102,7 +99,12 @@ public class BaseComponentHolder implements ComponentHolder {
 		}
 
 		typeMap.remove(key);
-		return (T) components.remove(key);
+		Component component = components.remove(key);
+		if (component != null) {
+			component.onDetached();
+		}
+
+		return (T) component;
 	}
 
 	@SuppressWarnings("unchecked")

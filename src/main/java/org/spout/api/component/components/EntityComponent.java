@@ -66,12 +66,4 @@ public abstract class EntityComponent extends Component {
 	 */
 	public void onUnObserved() {
 	}
-	
-	/**
-	 * Returns the transform component attached to the parent entity. This component always exists.
-	 * @return The transform component
-	 */
-	public TransformComponent getTransformComponent() {
-		return getHolder().getTransformComponent();
-	}
 }

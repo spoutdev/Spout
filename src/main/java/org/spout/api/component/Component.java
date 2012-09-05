@@ -78,12 +78,6 @@ public abstract class Component implements Tickable {
 	}
 
 	/**
-	 * Called when this component is removed from a holder.
-	 */
-	public void onRemoved() {
-	}
-
-	/**
 	 * Called when the holder is set to be synchronized.
 	 * 
 	 * This method is READ ONLY. You cannot update in this method.

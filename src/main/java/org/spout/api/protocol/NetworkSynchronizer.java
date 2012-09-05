@@ -203,7 +203,7 @@ public abstract class NetworkSynchronizer {
 		}
 
 		// TODO teleport smoothing
-		Point currentPosition = player.getTransformComponent().getPosition();
+		Point currentPosition = player.getTransform().getPosition();
 		if (currentPosition != null) {
 			if (worldChanged || 
 					(!currentPosition.equals(lastChunkCheck) &&
@@ -256,7 +256,7 @@ public abstract class NetworkSynchronizer {
 		} else {
 			if (worldChanged) {
 				first = false;
-				Point ep = player.getTransformComponent().getPosition();
+				Point ep = player.getTransform().getPosition();
 				if (worldChanged) {
 					worldChanged(ep.getWorld());
 				}
@@ -290,7 +290,7 @@ public abstract class NetworkSynchronizer {
 				}
 
 				if (priorityChunkSendQueue.isEmpty() && teleported) {
-					sendPosition(player.getTransformComponent().getPosition(), player.getTransformComponent().getRotation());
+					sendPosition(player.getTransform().getPosition(), player.getTransform().getRotation());
 					teleported = false;
 				}
 
