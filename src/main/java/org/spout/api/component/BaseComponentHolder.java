@@ -71,7 +71,6 @@ public class BaseComponentHolder implements ComponentHolder {
 		return false;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Component> T getComponent(Class<T> aClass) {
 		return (T) components.get(aClass);

@@ -37,7 +37,7 @@ public interface EntityComponentHolder extends ComponentHolder {
 	 * rotation of the entity.
 	 * @return The transform component
 	 */
-	public TransformComponent getTransform();
+	public TransformComponent getTransformComponent();
 
 	/**
 	 * Gets a {@link NetworkComponent} which holds the entities protocol lookups.

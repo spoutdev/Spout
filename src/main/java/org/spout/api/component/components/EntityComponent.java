@@ -72,6 +72,6 @@ public abstract class EntityComponent extends BaseComponent {
 	 * @return The transform component
 	 */
 	public TransformComponent getTransformComponent() {
-		return getHolder().getTransform();
+		return getHolder().getTransformComponent();
 	}
 }
