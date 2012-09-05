@@ -106,8 +106,8 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		}
 
 		setViewDistance(viewDistance);
-		addComponent(transformComponent);
-		addComponent(networkComponent);
+		put(transformComponent);
+		put(networkComponent);
 	}
 
 	public SpoutEntity(Transform transform, int viewDistance) {
@@ -124,7 +124,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	public void onTick(float dt) {
-		for (Component component : getComponents()) {
+		for (Component component : values()) {
 			component.tick(dt);
 		}
 		//If position is dirty, set chunk/manager live values
@@ -175,9 +175,9 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		if (isRemoved()) {
 			removeObserver();
 			//Call onRemoved for Components and remove them
-			for (Component component : getComponents()) {
+			for (Component component : values()) {
 				component.onRemoved();
-				removeComponent(component.getClass());
+				remove(component.getClass());
 			}			
 		//Entity changed chunks as observer OR observer status changed so update
 		} else if ((chunkLive.get() != chunk && isLiveObserver) || isLiveObserver != observer) {

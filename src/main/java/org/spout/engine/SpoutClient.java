@@ -332,7 +332,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] datatable) {
 		SpoutClientWorld world = new SpoutClientWorld(name, uuid, this, getEngineItemMap());
 
-		DatatableMap map = world.getComponentHolder().getDatatable().getBaseMap().getRawMap();
+		DatatableMap map = world.getComponentHolder().getData().getBaseMap().getRawMap();
 		map.clear();
 		map.decompress(datatable);
 

@@ -267,7 +267,7 @@ public class WorldFiles {
 		worldTags.put(new StringTag("generator", generatorName));
 		worldTags.put(new LongTag("UUID_lsb", world.getUID().getLeastSignificantBits()));
 		worldTags.put(new LongTag("UUID_msb", world.getUID().getMostSignificantBits()));
-		worldTags.put(new ByteArrayTag("extra_data", ((DataMap) world.getComponentHolder().getDatatable().getBaseMap()).getRawMap().compress()));
+		worldTags.put(new ByteArrayTag("extra_data", ((DataMap) world.getComponentHolder().getData().getBaseMap()).getRawMap().compress()));
 		worldTags.put(new LongTag("age", world.getAge()));
 		//World version 2
 		worldTags.put(new ListTag<FloatTag>("spawn_position", FloatTag.class, NBTMapper.transformToNBT(world.getSpawnPoint())));
@@ -363,7 +363,7 @@ public class WorldFiles {
 		long age = SafeCast.toLong(NBTMapper.toTagValue(map.get("age")), 0L);
 		world = new SpoutWorld(name, (SpoutEngine) Spout.getEngine(), seed, age, generator, new UUID(msb, lsb), itemMap);
 
-		DatatableMap dataMap = world.getComponentHolder().getDatatable().getBaseMap().getRawMap();
+		DatatableMap dataMap = world.getComponentHolder().getData().getBaseMap().getRawMap();
 		dataMap.clear();
 		dataMap.decompress(extraDataBytes);
 
@@ -410,7 +410,7 @@ public class WorldFiles {
 		long age = SafeCast.toLong(NBTMapper.toTagValue(map.get("age")), 0L);
 		world = new SpoutWorld(name, (SpoutEngine) Spout.getEngine(), seed, age, generator, new UUID(msb, lsb), itemMap);
 		
-		DatatableMap dataMap = world.getComponentHolder().getDatatable().getBaseMap().getRawMap();
+		DatatableMap dataMap = world.getComponentHolder().getData().getBaseMap().getRawMap();
 		dataMap.clear();
 		dataMap.decompress(extraDataBytes);
 

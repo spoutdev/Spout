@@ -1019,10 +1019,10 @@ public class SpoutRegion extends Region {
 		if (entity == null) {
 			entity = getWorld().createAndSpawnEntity(pos, null, LoadOption.NO_LOAD);
 		}
-		if (entity.hasComponent(BlockComponent.class)) {
-			entity.removeComponent(BlockComponent.class);
+		if (entity.has(BlockComponent.class)) {
+			entity.remove(BlockComponent.class);
 		}
-		entity.addComponent(component);
+		entity.put(component);
 	}
 
 	@Override
@@ -1035,7 +1035,7 @@ public class SpoutRegion extends Region {
 				break;
 			}
 		}
-		return entity == null ? null : entity.getComponent(BlockComponent.class);
+		return entity == null ? null : entity.get(BlockComponent.class);
 	}
 
 	@Override

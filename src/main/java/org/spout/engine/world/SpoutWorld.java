@@ -532,7 +532,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public Entity createEntity(Point point, Component component) {
 		SpoutEntity entity = new SpoutEntity(point);
-		entity.addComponent(component);
+		entity.put(component);
 		return entity;
 	}
 
