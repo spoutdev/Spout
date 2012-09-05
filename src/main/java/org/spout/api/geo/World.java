@@ -55,7 +55,7 @@ import org.spout.api.util.thread.Threadsafe;
 /**
  * Represents a World.
  */
-public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Named, ComponentHolder {
+public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Named {
 	/**
 	 * Gets the name of the world
 	 * @return the name of the world
@@ -276,11 +276,13 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * Gets the directory where world data is stored
 	 */
 	public File getDirectory();
-	
+
 	/**
-	 * Gets the datatable component that stores data for this world.
+	 * Gets the component holder for this world.
+	 * 
+	 * @return component holder
 	 */
-	public DatatableComponent getDatatable();
+	public ComponentHolder getComponentHolder();
 
 	/**
 	 * Gets the task manager responsible for parallel region tasks.<br>

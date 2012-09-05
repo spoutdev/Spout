@@ -26,61 +26,18 @@
  */
 package org.spout.api.component;
 
-import org.spout.api.component.components.DatatableComponent;
+import org.spout.api.geo.World;
 
-public abstract class BaseComponent implements Component {
-	private ComponentHolder holder;
-
-	@Override
-	public boolean attachTo(ComponentHolder holder) {
-		this.holder = holder;
-		return true;
-	}
+public class WorldComponentHolder extends BaseComponentHolder {
 	
-	@Override
-	public ComponentHolder getHolder() {
-		return holder;
-	}
-	
-	@Override
-	public void onAttached() {
+	private final World world;
+
+	public WorldComponentHolder(World world) {
+		super();
+		this.world = world;
 	}
 
-	@Override
-	public void onDetached() {
-	}
-
-	@Override
-	public boolean isDetachable() {
-		return true;
-	}
-	
-	@Override
-	public void onRemoved() {
-	}
-
-	@Override
-	public void onSync() {
-	}	
-
-	@Override
-	public boolean canTick() {
-		return true;
-	}
-
-	@Override
-	public final void tick(float dt) {
-		if (canTick()) {
-			onTick(dt);
-		}
-	}
-	
-	@Override
-	public void onTick(float dt) {
-	}
-	
-	@Override
-	public final DatatableComponent getDatatable() {
-		return getHolder().getDatatable();
+	public World getWorld() {
+		return world;
 	}
 }

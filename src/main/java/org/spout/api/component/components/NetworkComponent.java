@@ -37,7 +37,6 @@ public class NetworkComponent extends EntityComponent {
 	public static final int UNREGISTERED_ID = -1;
 	private static final StringMap protocolMap = new StringMap(null, new MemoryStore<Integer>(), 0, 256, "componentProtocols");
 	private final EntityProtocolStore protocolStore = new EntityProtocolStore();
-	private int id = UNREGISTERED_ID;
 
 	public NetworkComponent() {
 	}

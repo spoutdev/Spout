@@ -28,13 +28,13 @@ package org.spout.api.component.components;
 
 import java.io.Serializable;
 
-import org.spout.api.component.BaseComponent;
+import org.spout.api.component.Component;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.map.DefaultedKey;
 
-public final class DatatableComponent extends BaseComponent {
+public final class DatatableComponent extends Component {
 	private final DataMap dataMap;
 	
 	public DatatableComponent() {
@@ -45,7 +45,7 @@ public final class DatatableComponent extends BaseComponent {
 		if (map == null) {
 			throw new IllegalArgumentException("Datatable map cannot be null!");
 		}
-		this.dataMap = new DataMap(map);	
+		this.dataMap = new DataMap(map);
 	}
 	
 	@Override

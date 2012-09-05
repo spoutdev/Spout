@@ -26,14 +26,14 @@
  */
 package org.spout.api.component.components;
 
-import org.spout.api.component.BaseComponent;
+import org.spout.api.component.Component;
 import org.spout.api.component.ComponentHolder;
 import org.spout.api.entity.Entity;
 
 /**
  * Represents an attachment to a entity that can respond to Ticks.
  */
-public abstract class EntityComponent extends BaseComponent {
+public abstract class EntityComponent extends Component {
 
 	@Override
 	public Entity getHolder() {

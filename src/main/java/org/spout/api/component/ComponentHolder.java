@@ -28,52 +28,26 @@ package org.spout.api.component;
 
 import java.util.Collection;
 
+import org.spout.api.component.components.BlockComponent;
 import org.spout.api.component.components.DatatableComponent;
 
 /**
  * Represents the accessing portion of an entity that controls retrieving/removing components.
  */
 public interface ComponentHolder {
-	/**
-	 * Adds a new component to the holder.  If the holder already contains a component of that type, then a new component is not
-	 * constructed, and the one already attached is returned
-	 * @param component the component to be added
-	 * @return The component created, or the one already attached
-	 */
+
 	public <T extends Component> T addComponent(T component);
 
-	/**
-	 * Removes a component from the list
-	 * @param component Type of component to remove
-	 * @return True if a component is removed, false if not.  False is also returned if the component doesn't exist.
-	 */
-	public boolean removeComponent(Class<? extends Component> component);
+	public <T extends Component> T addComponent(Class<? extends Component> type, T component);
 
-	/**
-	 * Returns the omponent that is assignable from the given class, or null if it doesn't exist
-	 * @param component the type of component to get
-	 * @return The component instance, or null if it doesn't exist
-	 */
-	public <T extends Component> T getComponent(Class<T> component);
+	public <T extends Component> T removeComponent(Class<? extends Component> type);
 
-	/**
-	 * Returns the component that is assignable from the given class, or if not found creates a new one and attaches it then
-	 * returns the newly created component.
-	 *
-	 * Note: The component returned can potentially not be attached to the entity if attachTo returns false
-	 * @param component the component class to lookup or if not found, create
-	 * @param <T> the component type
-	 * @return the component stored or created
-	 */
-	public <T extends Component> T getOrCreate(Class<T> component);
+	public <T extends Component> T getComponent(Class<T> type);
 
-	/**
-	 * Returns true if a component exists that is assignable from the given class.
-	 * @param component Type of component to check if the entity has
-	 * @return True if a component exists that is assignable from the given class, false if not
-	 */
-	public boolean hasComponent(Class<? extends Component> component);
-	
+	public <T extends Component> T getOrCreate(Class<? extends Component> typeClass);
+
+	public boolean hasComponent(Class<? extends Component> class1);
+
 	/**
 	 * Gets all components held by this component holder.
 	 * @return The components held by this holder

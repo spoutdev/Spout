@@ -33,77 +33,111 @@ import java.util.HashMap;
 
 import org.spout.api.component.components.DatatableComponent;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+
 public class BaseComponentHolder implements ComponentHolder {
-	private final HashMap<Class<? extends Component>, Component> components = new HashMap<Class<? extends Component>, Component>();
+
+	/**
+	 * Map of class name, component
+	 */
+	private final HashMap<String, Component> components = new HashMap<String, Component>();
+
+	private final BiMap<String, String> typeMap = HashBiMap.create();
 	private final DatatableComponent datatable = new DatatableComponent();
-	
+
 	public BaseComponentHolder() {
 		addComponent(datatable);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Component> T addComponent(T component) {
-		if (component.attachTo(this)) {
-			Class<? extends Component> clazz = component.getClass();
-			if (hasComponent(clazz)) {
-				return (T) getComponent(clazz);
-			}
-			component.onAttached();
-			components.put(clazz, component);
-			return component;
-		} else {
+		if (component == null) {
 			return null;
 		}
+
+		return addComponent(component.getClass(), component);
 	}
 
 	@Override
-	public boolean removeComponent(Class<? extends Component> aClass) {
-		if (!hasComponent(aClass)) {
+	public <T extends Component> T addComponent(Class<? extends Component> type, T component) {
+		if (component == null || hasComponent(type)) {
+			return component;
+		}
+
+		String typeName;
+		if (type == null) {
+			typeName = component.getClass().getName();
+		} else {
+			typeName = type.getName();
+		}
+	
+		components.put(convert(component.getClass()), component);
+		typeMap.put(convert(component.getClass()), typeName);
+		return component;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends Component> T removeComponent(Class<? extends Component> type) {
+		if (!hasComponent(type)) {
+			return null;
+		}
+
+		String key = findKey(type);
+		if (key == null) {
+			return null;
+		}
+
+		typeMap.remove(key);
+		return (T) components.remove(key);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends Component> T getComponent(Class<T> type) {
+		if (type == null) {
+			return null;
+		}
+
+		return (T) components.get(findKey(type));
+	}
+
+	@Override
+	public <T extends Component> T getOrCreate(Class<? extends Component> typeClass) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasComponent(Class<? extends Component> type) {
+		if (type == null) {
 			return false;
 		}
-		Component component = getComponent(aClass);
-		if (component.isDetachable()) {
-			getComponent(aClass).onDetached();
-			components.remove(aClass);
-			return true;			
-		}
-		return false;
-	}
-
-	@Override
-	public <T extends Component> T getComponent(Class<T> aClass) {
-		return (T) components.get(aClass);
-	}
-
-	@Override
-	public <T extends Component> T getOrCreate(Class<T> component) {
-		T componentToGet = getComponent(component);
-		if (componentToGet == null) {
-			try {
-				componentToGet = (T) componentToGet.getClass().newInstance();
-				addComponent(componentToGet);
-			} catch (InstantiationException ie) {
-				ie.printStackTrace();
-			} catch (IllegalAccessException iae) {
-				iae.printStackTrace();
-			}
-		}
-		return componentToGet;
-	}
-
-	@Override
-	public boolean hasComponent(Class<? extends Component> aClass) {
-		return components.containsKey(aClass);
+		return typeMap.containsKey(convert(type)) || typeMap.containsValue(convert(type));
 	}
 
 	@Override
 	public Collection<Component> getComponents() {
 		return Collections.unmodifiableList(new ArrayList<Component>(components.values()));
 	}
-	
+
 	@Override
 	public DatatableComponent getDatatable() {
 		return datatable;
+	}
+
+	private String findKey(Class<? extends Component> type) {
+		String typeString = convert(type);
+		
+		if (typeMap.containsKey(typeString)) {
+			return typeString;
+		}
+
+		return typeMap.inverse().get(typeString);
+	}
+
+	private String convert(Class<? extends Component> clazz) {
+		return clazz.getCanonicalName();
 	}
 }

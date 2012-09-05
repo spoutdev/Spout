@@ -26,17 +26,17 @@
  */
 package org.spout.api.component.components;
 
-import org.spout.api.component.BaseComponent;
+import org.spout.api.component.Component;
 import org.spout.api.component.ComponentHolder;
-import org.spout.api.geo.World;
+import org.spout.api.component.WorldComponentHolder;
 
-public class WorldComponent extends BaseComponent {
+public class WorldComponent extends Component {
 	public WorldComponent() {
 	}
 
 	@Override
 	public boolean attachTo(ComponentHolder holder) {
-		if (holder instanceof World){
+		if (holder instanceof WorldComponentHolder){
 			return super.attachTo(holder);
 		} else {
 			return false;
@@ -44,7 +44,7 @@ public class WorldComponent extends BaseComponent {
 	}
 
 	@Override
-	public World getHolder() {
-		return (World) super.getHolder();
+	public WorldComponentHolder getHolder() {
+		return (WorldComponentHolder) super.getHolder();
 	}
 }

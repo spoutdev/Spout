@@ -26,55 +26,57 @@
  */
 package org.spout.api.component;
 
-import com.alta189.annotations.RequireDefault;
 import org.spout.api.component.components.DatatableComponent;
 import org.spout.api.tickable.Tickable;
 
-@RequireDefault
-public interface Component extends Tickable {
-	/**
-	 * Attaches to a component holder.
-	 * @param holder The component holder to attach to
-	 */
-	public boolean attachTo(ComponentHolder holder);
-	
-	/**
-	 * Gets the component holder holding this component.
-	 * @return the component holder
-	 */
-	public ComponentHolder getHolder();
+public abstract class Component implements Tickable {
+	private ComponentHolder holder;
 
-	/**
-	 * Called when this component is attached to a holder
-	 */
-	public void onAttached();
+	public Component() {
+	}
 
-	/**
-	 * Called when this component is detached from a holder.
-	 */
-	public void onDetached();
+	public boolean attachTo(ComponentHolder holder) {
+		this.holder = holder;
+		return true;
+	}
 
-	/**
-	 * Specifies whether this component can be detached from the entity.
-	 * @return True if removable, false if not
-	 */
-	public boolean isDetachable();
-	
-	/**
-	 * Called when the parent entity leaves the world.
-	 */
-	public void onRemoved();
+	public ComponentHolder getHolder() {
+		return holder;
+	}
 
-	/**
-	 * Called when the entity is set to be sync'd to clients.
-	 * 
-	 * Updates are NOT ALLOWED within this method.
-	 */
-	public void onSync();
+	public void onAttached() {
+	}
 
-	/**
-	 * Returns the datatable component attached to the parent entity. This component always exists.
-	 * @return The datatable component
-	 */
-	public DatatableComponent getDatatable();
+	public void onDetached() {
+	}
+
+	public boolean isDetachable() {
+		return true;
+	}
+
+	public void onRemoved() {
+	}
+
+	public void onSync() {
+	}	
+
+	@Override
+	public boolean canTick() {
+		return true;
+	}
+
+	@Override
+	public final void tick(float dt) {
+		if (canTick()) {
+			onTick(dt);
+		}
+	}
+
+	@Override
+	public void onTick(float dt) {
+	}
+
+	public final DatatableComponent getDatatable() {
+		return getHolder().getDatatable();
+	}
 }
