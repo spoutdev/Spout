@@ -110,6 +110,10 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	@SnapshotRead
 	public SpoutSession<?> getSession() {
+		SpoutSession<?> session = this.session;
+		if (session == null) {
+			throw new IllegalArgumentException("Session cannot be null!");
+		}
 		return session;
 	}
 
@@ -383,7 +387,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	protected void removeObserver() {
 		getNetworkSynchronizer().onDeath();
 	}
-	
+
 	@Override
 	protected void updateObserver() {
 		return;
