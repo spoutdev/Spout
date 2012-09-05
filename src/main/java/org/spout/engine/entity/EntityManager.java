@@ -262,7 +262,7 @@ public class EntityManager {
 				}
 				boolean contains = entitiesPerPlayer.contains(entity);
 				spawn = destroy = update = false;
-				if (MathHelper.distance(player.getTransformComponent().getPosition(), entity.getTransformComponent().getPosition()) <= playerViewDistance) {
+				if (MathHelper.distance(player.getTransform().getPosition(), entity.getTransform().getPosition()) <= playerViewDistance) {
 					if (!contains) {
 						entitiesPerPlayer.add(entity);
 						spawn = true; // Spawn

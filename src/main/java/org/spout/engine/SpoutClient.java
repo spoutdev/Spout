@@ -169,7 +169,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		// Register commands
 		getRootCommand().addSubCommands(this, InputManagementCommands.class, commandRegFactory);
 		activePlayer = new SpoutClientPlayer("Spouty");
-		activePlayer.getTransformComponent().setRotation(new Quaternion(0f, 0f, 0f, 0f));
+		activePlayer.getTransform().setRotation(new Quaternion(0f, 0f, 0f, 0f));
 	}
 
 	@Override
@@ -236,16 +236,16 @@ public class SpoutClient extends SpoutEngine implements Client {
 		for (Flags f : activePlayer.input().getFlagSet()) {
 			switch(f) {
 				case FORWARD:
-					activePlayer.getTransformComponent().setPosition(activePlayer.getTransformComponent().getPosition().add(activePlayer.getTransformComponent().getTransform().forwardVector()));
+					activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().forwardVector()));
 					break;
 				case BACKWARD:
-					activePlayer.getTransformComponent().setPosition(activePlayer.getTransformComponent().getPosition().subtract(activePlayer.getTransformComponent().getTransform().forwardVector()));
+					activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().forwardVector()));
 					break;
 				case LEFT:
-					activePlayer.getTransformComponent().setPosition(activePlayer.getTransformComponent().getPosition().add(activePlayer.getTransformComponent().getTransform().rightVector()));
+					activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().rightVector()));
 					break;
 				case RIGHT:
-					activePlayer.getTransformComponent().setPosition(activePlayer.getTransformComponent().getPosition().subtract(activePlayer.getTransformComponent().getTransform().rightVector()));
+					activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().rightVector()));
 					break;
 				case CROUCH:
 				case FIRE_1:
@@ -420,8 +420,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		//worldRenderer.render();
 
-		Vector3 currentPlayerPos = new Vector3(activePlayer.getTransformComponent().getPosition().getBlockX(), activePlayer.getTransformComponent().getPosition().getBlockY(), activePlayer.getTransformComponent().getPosition().getBlockZ());
-		activeCamera = new CameraComponent(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(currentPlayerPos, currentPlayerPos.add(activePlayer.getTransformComponent().getTransform().forwardVector().normalize().add(5, 5, 5)), Vector3.UP));
+		Vector3 currentPlayerPos = new Vector3(activePlayer.getTransform().getPosition().getBlockX(), activePlayer.getTransform().getPosition().getBlockY(), activePlayer.getTransform().getPosition().getBlockZ());
+		activeCamera = new CameraComponent(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(currentPlayerPos, currentPlayerPos.add(activePlayer.getTransform().getTransform().forwardVector().normalize().add(5, 5, 5)), Vector3.UP));
 		activeCamera.getFrustum().update(activeCamera.getProjection(), activeCamera.getView());
 		Transform loc = new Transform(new Point(null, 0f, 0f, 0f), Quaternion.IDENTITY, Vector3.ONE);
 		mat.getShader().setUniform("View", activeCamera.getView());

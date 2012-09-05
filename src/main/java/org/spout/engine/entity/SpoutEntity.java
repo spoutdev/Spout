@@ -94,7 +94,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 		if (transform != null && load) {
 			setupInitialChunk(transform);
-			getTransformComponent().setTransform(transform);
+			getTransform().setTransform(transform);
 		}
 
 		int maxViewDistance = SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE;
@@ -129,7 +129,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		}
 		//If position is dirty, set chunk/manager live values
 		if (transformComponent.isDirty()) {
-			chunkLive.set(getWorld().getChunkFromBlock(getTransformComponent().getPosition(), LoadOption.NO_LOAD));
+			chunkLive.set(getWorld().getChunkFromBlock(getTransform().getPosition(), LoadOption.NO_LOAD));
 			entityManagerLive.set(((SpoutRegion) getRegion()).getEntityManager());
 		}
 	}
@@ -176,7 +176,6 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 			removeObserver();
 			//Call onRemoved for Components and remove them
 			for (Component component : values()) {
-				component.onRemoved();
 				remove(component.getClass());
 			}			
 		//Entity changed chunks as observer OR observer status changed so update
@@ -267,7 +266,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	public String toString() {
-		return "SpoutEntity - ID: " + this.getId() + " Position: " + getTransformComponent().getPosition();
+		return "SpoutEntity - ID: " + this.getId() + " Position: " + getTransform().getPosition();
 	}
 
 	@Override
@@ -321,12 +320,12 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	}
 
 	@Override
-	public NetworkComponent getNetworkComponent() {
+	public NetworkComponent getNetwork() {
 		return networkComponent;
 	}
 	
 	@Override
-	public TransformComponent getTransformComponent() {
+	public TransformComponent getTransform() {
 		return transformComponent;
 	}
 }

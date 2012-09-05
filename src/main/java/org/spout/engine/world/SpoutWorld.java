@@ -549,7 +549,7 @@ public class SpoutWorld extends AsyncManager implements World {
 			throw new IllegalStateException("Cannot spawn an entity that has a null region!");
 		}
 		if (region.getEntityManager().isSpawnable((SpoutEntity) e)) {
-			EntitySpawnEvent event = Spout.getEventManager().callEvent(new EntitySpawnEvent(e, e.getTransformComponent().getPosition()));
+			EntitySpawnEvent event = Spout.getEventManager().callEvent(new EntitySpawnEvent(e, e.getTransform().getPosition()));
 			if (event.isCancelled()) {
 				return;
 			}
@@ -751,7 +751,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	@LiveRead
 	@Threadsafe
 	public List<Player> getNearbyPlayers(Entity entity, int range) {
-		return getNearbyPlayers(entity.getTransformComponent().getPosition(), entity, range);
+		return getNearbyPlayers(entity.getTransform().getPosition(), entity, range);
 	}
 
 	/**
@@ -771,7 +771,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 		for (Player plr : getPlayersNearRegion(position, range)) {
 			if (plr != ignore && plr != null) {
-				double distance = MathHelper.distanceSquared(position, plr.getTransformComponent().getPosition());
+				double distance = MathHelper.distanceSquared(position, plr.getTransform().getPosition());
 				if (distance < RANGE_SQUARED) {
 					foundPlayers.add(plr);
 				}
@@ -823,7 +823,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 		for (Player plr : getPlayersNearRegion(position, range)) {
 			if (plr != ignore && plr != null) {
-				double distance = MathHelper.distanceSquared(position, plr.getTransformComponent().getPosition());
+				double distance = MathHelper.distanceSquared(position, plr.getTransform().getPosition());
 				if (distance < bestDistance) {
 					bestDistance = distance;
 					best = plr;
@@ -855,7 +855,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	@LiveRead
 	@Threadsafe
 	public Player getNearestPlayer(Entity entity, int range) {
-		return getNearestPlayer(entity.getTransformComponent().getPosition(), entity, range);
+		return getNearestPlayer(entity.getTransform().getPosition(), entity, range);
 	}
 
 	public List<CollisionVolume> getCollidingObject(CollisionModel model) {

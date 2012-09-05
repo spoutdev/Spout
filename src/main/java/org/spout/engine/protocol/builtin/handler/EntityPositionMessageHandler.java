@@ -47,7 +47,7 @@ public class EntityPositionMessageHandler extends MessageHandler<EntityPositionM
 		}
 
 		if (entity != null) {
-			entity.getTransformComponent().setTransform(message.getTransform());
+			entity.getTransform().setTransform(message.getTransform());
 		}
 	}
 }

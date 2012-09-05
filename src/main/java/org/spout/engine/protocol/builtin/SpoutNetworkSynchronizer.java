@@ -80,9 +80,9 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 	}
 
 	private EntityProtocol getEntityProtocol(Entity entity) {
-		EntityProtocol protocol = entity.getNetworkComponent().getEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID);
+		EntityProtocol protocol = entity.getNetwork().getEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID);
 		if (protocol == null) {
-			entity.getNetworkComponent().setEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID, SpoutEntityProtocol.INSTANCE);
+			entity.getNetwork().setEntityProtocol(SpoutProtocol.ENTITY_PROTOCOL_ID, SpoutEntityProtocol.INSTANCE);
 			protocol = SpoutEntityProtocol.INSTANCE;
 		}
 		return protocol;

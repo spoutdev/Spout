@@ -50,7 +50,7 @@ public class AddEntityMessageHandler extends MessageHandler<AddEntityMessage> {
 			newEntity = session.getEngine().getDefaultWorld().createEntity(message.getTransform().getPosition(), null);
 		}
 
-		newEntity.getTransformComponent().setTransform(message.getTransform());
+		newEntity.getTransform().setTransform(message.getTransform());
 		//newEntity.setId(message.getEntityId()); // TODO: Allow providing an entity ID to use
 		((Client) session.getEngine()).getDefaultWorld().spawnEntity(newEntity);
 	}
