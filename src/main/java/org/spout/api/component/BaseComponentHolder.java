@@ -119,7 +119,7 @@ public class BaseComponentHolder implements ComponentHolder {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends Component> T getOrCreate(Class<? extends Component> type) {
+	public <T extends Component> T getOrCreate(Class<T> type) {
 		T component = (T) this.get(type);
 		if (component != null) {
 			return component;

@@ -104,7 +104,7 @@ public interface ComponentHolder {
 	 *            whose component is to be returned from the holder
 	 * @return the component, either pre-existing or the new one created
 	 */
-	public <T extends Component> T getOrCreate(Class<? extends Component> type);
+	public <T extends Component> T getOrCreate(Class<T> type);
 
 	/**
 	 * Returns true if the holder contains a component of the specified type.
