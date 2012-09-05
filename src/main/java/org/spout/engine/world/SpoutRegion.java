@@ -547,88 +547,122 @@ public class SpoutRegion extends Region {
 		this.entityManager.removeEntity((SpoutEntity) e);
 	}
 
-	public void startTickRun(int stage, long delta) {
-		boolean visibleToPlayers = this.entityManager.getPlayers().size() > 0;
-		if (!visibleToPlayers) {
-			//Search for players near to the center of the region
-			int bx = getBlockX();
-			int by = getBlockY();
-			int bz = getBlockZ();
-			int half = BLOCKS.SIZE / 2;
-			Point center = new Point(getWorld(), bx + half, by + half, bz + half);
-			visibleToPlayers = getWorld().getNearbyPlayers(center, BLOCKS.SIZE).size() > 0;
+	private void updateAutosave() {
+		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
+			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
+				for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+					SpoutChunk chunk = chunks[dx][dy][dz].get();
+					if (chunk != null && chunk.isLoaded()) {
+						if (chunk.getAutosaveTicks() > 1) {
+							chunk.setAutosaveTicks(chunk.getAutosaveTicks() - 1);
+						} else if (chunk.getAutosaveTicks() == 1) {
+							chunk.setAutosaveTicks(0);
+							chunk.save();
+						}
+					}
+				}
+			}
 		}
+	}
+
+	private boolean isVisibleToPlayers() {
+		if (this.entityManager.getPlayers().size() > 0) {
+			return true;
+		}
+		//Search for players near to the center of the region
+		int bx = getBlockX();
+		int by = getBlockY();
+		int bz = getBlockZ();
+		int half = BLOCKS.SIZE / 2;
+		Point center = new Point(getWorld(), bx + half, by + half, bz + half);
+		return getWorld().getNearbyPlayers(center, BLOCKS.SIZE).size() > 0;
+	}
+
+	private void updateEntities(float dt) {
+		boolean visible = isVisibleToPlayers();
+		for (SpoutEntity ent : entityManager.getAll()) {
+			try {
+				//Try and determine if we should tick this entity
+				//If the entity is not important (not an observer)
+				//And the entity is not visible to players, don't tick it
+				if (visible || (ent.getController() != null && isImportant(ent.getController()))) {
+					ent.tick(dt);
+				}
+			} catch (Exception e) {
+				Spout.getEngine().getLogger().severe("Unhandled exception during tick for " + ent.toString());
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void updateLighting() {
+		synchronized (lightDirtyChunks) {
+			if (!lightDirtyChunks.isEmpty()) {
+				int key;
+				int x, y, z;
+				TIntIterator iter = lightDirtyChunks.iterator();
+				while (iter.hasNext()) {
+					key = iter.next();
+					x = TByteTripleHashSet.key1(key);
+					y = TByteTripleHashSet.key2(key);
+					z = TByteTripleHashSet.key3(key);
+					SpoutChunk chunk = this.getChunk(x, y, z, LoadOption.NO_LOAD);
+					if (chunk == null || !chunk.isLoaded()) {
+						iter.remove();
+						continue;
+					}
+					if (chunk.lightingCounter.incrementAndGet() > LIGHT_SEND_TICK_DELAY) {
+						chunk.lightingCounter.set(-1);
+						if (SpoutConfiguration.LIVE_LIGHTING.getBoolean()) {
+							chunk.setLightDirty(true);
+						}
+						iter.remove();
+					}
+				}
+			}
+		}
+	}
+
+	private void updatePopulation() {
+		for (int i = 0; i < POPULATE_PER_TICK; i++) {
+			SpoutChunk toPopulate = populationQueue.poll();
+			if (toPopulate == null) {
+				break;
+			}
+			toPopulate.setNotQueuedForPopulation();
+			if (toPopulate.isLoaded()) {
+				toPopulate.populate();
+			} else {
+				i--;
+			}
+		}
+	}
+
+	private void unloadChunks() {
+		Chunk toUnload = unloadQueue.poll();
+		if (toUnload != null) {
+			boolean do_unload = true;
+			if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
+				ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(toUnload));
+				if (event.isCancelled()) {
+					do_unload = false;
+				}
+			}
+			if (do_unload) {
+				toUnload.unload(true);
+			}
+		}
+	}
+
+	public void startTickRun(int stage, long delta) {
 		switch (stage) {
 			case 0: {
 				taskManager.heartbeat(delta);
-				float dt = delta / 1000.f;
-				//Update all entities
-				for (SpoutEntity ent : entityManager.getAll()) {
-					try {
-						//Try and determine if we should tick this entity
-						//If the entity is not important (not an observer)
-						//And the entity is not visible to players, don't tick it
-						if (visibleToPlayers || (ent.getController() != null && isImportant(ent.getController()))) {
-							ent.tick(dt);
-						}
-					} catch (Exception e) {
-						Spout.getEngine().getLogger().severe("Unhandled exception during tick for " + ent.toString());
-						e.printStackTrace();
-					}
-				}
-				//for those chunks that had lighting updated - refresh
-				synchronized (lightDirtyChunks) {
-					if (!lightDirtyChunks.isEmpty()) {
-						int key;
-						int x, y, z;
-						TIntIterator iter = lightDirtyChunks.iterator();
-						while (iter.hasNext()) {
-							key = iter.next();
-							x = TByteTripleHashSet.key1(key);
-							y = TByteTripleHashSet.key2(key);
-							z = TByteTripleHashSet.key3(key);
-							SpoutChunk chunk = this.getChunk(x, y, z, LoadOption.NO_LOAD);
-							if (chunk == null || !chunk.isLoaded()) {
-								iter.remove();
-								continue;
-							}
-							if (chunk.lightingCounter.incrementAndGet() > LIGHT_SEND_TICK_DELAY) {
-								chunk.lightingCounter.set(-1);
-								if (SpoutConfiguration.LIVE_LIGHTING.getBoolean()) {
-									chunk.setLightDirty(true);
-								}
-								iter.remove();
-							}
-						}
-					}
-				}
-
-				for (int i = 0; i < POPULATE_PER_TICK; i++) {
-					SpoutChunk toPopulate = populationQueue.poll();
-					if (toPopulate == null) {
-						break;
-					}
-					toPopulate.setNotQueuedForPopulation();
-					if (toPopulate.isLoaded()) {
-						toPopulate.populate();
-					} else {
-						i--;
-					}
-				}
-
-				Chunk toUnload = unloadQueue.poll();
-				if (toUnload != null) {
-					boolean do_unload = true;
-					if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
-						ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(toUnload));
-						if (event.isCancelled()) {
-							do_unload = false;
-						}
-					}
-					if (do_unload) {
-						toUnload.unload(true);
-					}
-				}
+				updateAutosave();
+				updateEntities(delta / 1000F);
+				updateLighting();
+				updatePopulation();
+				unloadChunks();
 				break;
 			}
 			case 1: {

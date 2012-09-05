@@ -90,7 +90,7 @@ import org.spout.engine.world.physics.UpdateQueue;
 
 import com.google.common.collect.Sets;
 
-public class SpoutChunk extends Chunk implements Snapshotable {
+public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	public static final WeakReference<Chunk> NULL_WEAK_REFERENCE = new WeakReference<Chunk>(null);
 
 	private final Set<SpoutEntity> observers = Sets.newSetFromMap(new ConcurrentHashMap<SpoutEntity, Boolean>());
@@ -196,9 +196,11 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	/**
 	 * Indicates that the chunk has been added to the dirty queue
 	 */
-	private AtomicBoolean dirtyQueued = new AtomicBoolean(false);
+	private final AtomicBoolean dirtyQueued = new AtomicBoolean(false);
 
-	private AtomicBoolean populationQueued = new AtomicBoolean(false);
+	private final AtomicBoolean populationQueued = new AtomicBoolean(false);
+	
+	private final AtomicInteger autosaveTicks = new AtomicInteger(0);
 
 	static {
 		for (int i = 0; i < shiftCache.length; i++) {
@@ -1617,4 +1619,11 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		return getWorld().getBiome((x & BLOCKS.MASK) + this.getBlockX(), (y & BLOCKS.MASK) + this.getBlockY(), (z & BLOCKS.MASK) + this.getBlockZ());
 	}
 
+	protected void setAutosaveTicks(int ticks) {
+		autosaveTicks.set(ticks);
+	}
+
+	protected int getAutosaveTicks() {
+		return autosaveTicks.get();
+	}
 }
