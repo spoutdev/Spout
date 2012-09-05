@@ -52,7 +52,6 @@ import org.spout.api.component.components.BlockComponent;
 import org.spout.api.component.components.DatatableComponent;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.EntityType;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.event.block.CuboidChangeEvent;
@@ -536,9 +535,9 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public Entity createEntity(Point point, EntityType type) {
+	public Entity createEntity(Point point, Component component) {
 		SpoutEntity entity = new SpoutEntity(point);
-		entity.applyType(type);
+		entity.addComponent(component);
 		return entity;
 	}
 
@@ -555,7 +554,7 @@ public class SpoutWorld extends AsyncManager implements World {
 			throw new IllegalStateException("Cannot spawn an entity that has a null region!");
 		}
 		if (region.getEntityManager().isSpawnable((SpoutEntity) e)) {
-			EntitySpawnEvent event = Spout.getEventManager().callEvent(new EntitySpawnEvent(e, e.getTransform().getPosition()));
+			EntitySpawnEvent event = Spout.getEventManager().callEvent(new EntitySpawnEvent(e, e.getTransformComponent().getPosition()));
 			if (event.isCancelled()) {
 				return;
 			}
@@ -566,25 +565,25 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public Entity createAndSpawnEntity(Point point, EntityType type, LoadOption option) {
+	public Entity createAndSpawnEntity(Point point, Component component, LoadOption option) {
 		getRegionFromBlock(point, option);
-		Entity e = createEntity(point, type);
+		Entity e = createEntity(point, component);
 		spawnEntity(e);
 		return e;
 	}
 
 	@Override
-	public Entity[] createAndSpawnEntity(Point[] points, EntityType type, LoadOption option) {
+	public Entity[] createAndSpawnEntity(Point[] points, Component component, LoadOption option) {
 		Entity[] entities = new Entity[points.length];
 		for (int i = 0; i < points.length; i++) {
-			entities[i] = createAndSpawnEntity(points[i], type, option);
+			entities[i] = createAndSpawnEntity(points[i], component, option);
 		}
 		return entities;
 	}
 
 	@Override
-	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, EntityType type, LoadOption option) {
-		return createAndSpawnEntity(arrangement.getArrangement(), type, option);
+	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, Component component, LoadOption option) {
+		return createAndSpawnEntity(arrangement.getArrangement(), component, option);
 	}
 
 	@Override
@@ -757,7 +756,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	@LiveRead
 	@Threadsafe
 	public List<Player> getNearbyPlayers(Entity entity, int range) {
-		return getNearbyPlayers(entity.getTransform().getPosition(), entity, range);
+		return getNearbyPlayers(entity.getTransformComponent().getPosition(), entity, range);
 	}
 
 	/**
@@ -777,7 +776,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 		for (Player plr : getPlayersNearRegion(position, range)) {
 			if (plr != ignore && plr != null) {
-				double distance = MathHelper.distanceSquared(position, plr.getTransform().getPosition());
+				double distance = MathHelper.distanceSquared(position, plr.getTransformComponent().getPosition());
 				if (distance < RANGE_SQUARED) {
 					foundPlayers.add(plr);
 				}
@@ -829,7 +828,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 		for (Player plr : getPlayersNearRegion(position, range)) {
 			if (plr != ignore && plr != null) {
-				double distance = MathHelper.distanceSquared(position, plr.getTransform().getPosition());
+				double distance = MathHelper.distanceSquared(position, plr.getTransformComponent().getPosition());
 				if (distance < bestDistance) {
 					bestDistance = distance;
 					best = plr;
@@ -861,7 +860,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	@LiveRead
 	@Threadsafe
 	public Player getNearestPlayer(Entity entity, int range) {
-		return getNearestPlayer(entity.getTransform().getPosition(), entity, range);
+		return getNearestPlayer(entity.getTransformComponent().getPosition(), entity, range);
 	}
 
 	public List<CollisionVolume> getCollidingObject(CollisionModel model) {
@@ -1145,9 +1144,9 @@ public class SpoutWorld extends AsyncManager implements World {
 			if (hasComponent(clazz)) {
 				return (T) getComponent(clazz);
 			}
-			components.put(clazz, component);
 			component.onAttached();
-			return (T) component;
+			components.put(clazz, component);
+			return component;
 		} else {
 			return null;
 		}
@@ -1158,31 +1157,44 @@ public class SpoutWorld extends AsyncManager implements World {
 		if (!hasComponent(aClass)) {
 			return false;
 		}
-		getComponent(aClass).onDetached();
-		components.remove(aClass);
-		return true;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends Component> T getComponent(Class<T> aClass) {
-		for(Class<? extends Component> c : components.keySet()){
-			if(aClass.isAssignableFrom(c)) return (T) components.get(c);
-		}
-		return null;
-	}
-
-	@Override
-	public boolean hasComponent(Class<? extends Component> aClass) {
-		for(Class<? extends Component> c : components.keySet()){
-			if(aClass.isAssignableFrom(c)) return true;
+		Component component = getComponent(aClass);
+		if (component.isDetachable()) {
+			getComponent(aClass).onDetached();
+			components.remove(aClass);
+			return true;
 		}
 		return false;
 	}
 
 	@Override
+	public <T extends Component> T getComponent(Class<T> aClass) {
+		return (T) components.get(aClass);
+	}
+
+	@Override
+	public <T extends Component> T getOrCreate(Class<T> component) {
+		T componentToGet = getComponent(component);
+		if (componentToGet == null) {
+			try {
+				componentToGet = (T) componentToGet.getClass().newInstance();
+				addComponent(componentToGet);
+			} catch (InstantiationException ie) {
+				ie.printStackTrace();
+			} catch (IllegalAccessException iae) {
+				iae.printStackTrace();
+			}
+		}
+		return componentToGet;
+	}
+
+	@Override
+	public boolean hasComponent(Class<? extends Component> aClass) {
+		return components.containsKey(aClass);
+	}
+
+	@Override
 	public Collection<Component> getComponents() {
-		return components.values();
+		return Collections.unmodifiableList(new ArrayList<Component>(components.values()));
 	}
 	
 	@Override

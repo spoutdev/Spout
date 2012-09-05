@@ -266,7 +266,7 @@ public class SpoutRegion extends Region {
 				numberActiveChunks.incrementAndGet();
 				if (dataForRegion != null) {
 					for (SpoutEntity entity : dataForRegion.loadedEntities) {
-						entity.setupInitialChunk(entity.getTransform().getTransform());
+						entity.setupInitialChunk(entity.getTransformComponent().getTransform());
 						addEntity(entity);
 					}
 					dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);
@@ -1011,7 +1011,7 @@ public class SpoutRegion extends Region {
 		Point pos = new Point(getWorld(), x, y, z);
 		Entity entity = null;
 		for (Entity e : getAll()) {
-			if (e.getTransform().getPosition().equals(pos)) {
+			if (e.getTransformComponent().getPosition().equals(pos)) {
 				entity = e;
 				break;
 			}
@@ -1030,7 +1030,7 @@ public class SpoutRegion extends Region {
 		Point pos = new Point(getWorld(), x, y, z);
 		Entity entity = null;
 		for (Entity e : getAll()) {
-			if (e.getTransform().getPosition().equals(pos)) {
+			if (e.getTransformComponent().getPosition().equals(pos)) {
 				entity = e;
 				break;
 			}

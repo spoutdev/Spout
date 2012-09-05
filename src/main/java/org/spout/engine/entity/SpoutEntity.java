@@ -38,7 +38,6 @@ import org.spout.api.component.Component;
 import org.spout.api.component.components.NetworkComponent;
 import org.spout.api.component.components.TransformComponent;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.EntityType;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -94,7 +93,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 		if (transform != null && load) {
 			setupInitialChunk(transform);
-			getTransform().setTransform(transform);
+			getTransformComponent().setTransform(transform);
 		}
 
 		int maxViewDistance = SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE;
@@ -129,7 +128,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		}
 		//If position is dirty, set chunk/manager live values
 		if (transformComponent.isDirty()) {
-			chunkLive.set(getWorld().getChunkFromBlock(getTransform().getPosition(), LoadOption.NO_LOAD));
+			chunkLive.set(getWorld().getChunkFromBlock(getTransformComponent().getPosition(), LoadOption.NO_LOAD));
 			entityManagerLive.set(((SpoutRegion) getRegion()).getEntityManager());
 		}
 	}
@@ -267,7 +266,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	public String toString() {
-		return "SpoutEntity - ID: " + this.getId() + " Position: " + getTransform().getPosition();
+		return "SpoutEntity - ID: " + this.getId() + " Position: " + getTransformComponent().getPosition();
 	}
 
 	@Override
@@ -326,7 +325,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	}
 	
 	@Override
-	public TransformComponent getTransform() {
+	public TransformComponent getTransformComponent() {
 		return transformComponent;
 	}
 }

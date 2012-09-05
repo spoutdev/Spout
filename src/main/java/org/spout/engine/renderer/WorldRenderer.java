@@ -99,7 +99,7 @@ public class WorldRenderer {
 
 		int chunkViewDistance = client.getActivePlayer().getViewDistance() / 16;
 
-		Point currentPos = client.getActivePlayer().getTransform().getPosition();
+		Point currentPos = client.getActivePlayer().getTransformComponent().getPosition();
 
 		int currentChunkX = currentPos.getChunkX();
 		int currentChunkY = currentPos.getChunkY();

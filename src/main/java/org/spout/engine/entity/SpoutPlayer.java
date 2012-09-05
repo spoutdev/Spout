@@ -145,7 +145,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			return false;
 		}
 		setupInitialChunk(newTransform);
-		getTransform().setTransform(newTransform);
+		getTransformComponent().setTransform(newTransform);
 		sessionLive.set(session);
 		copySnapshot();
 		return true;
