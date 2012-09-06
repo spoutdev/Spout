@@ -103,7 +103,7 @@ public abstract class Component implements Tickable {
 	 * This component exists in every holder.
 	 * @return the datatable component
 	 */
-	public final DatatableComponent getDatatable() {
+	public final DatatableComponent getData() {
 		return getHolder().getData();
 	}
 }
