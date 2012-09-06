@@ -26,11 +26,11 @@
  */
 package org.spout.api.component.components;
 
+import org.spout.api.data.Data;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.MaterialRegistry;
 
 public class BlockComponent extends EntityComponent {
-	private BlockMaterial material;
-
 	public BlockComponent() {
 	}
 
@@ -40,9 +40,18 @@ public class BlockComponent extends EntityComponent {
 	}
 
 	/**
-	 * Gets the material this component represents.
+	 *
+	 * @return
 	 */
 	public BlockMaterial getMaterial() {
-		return material;
+		return (BlockMaterial) MaterialRegistry.get(getData().get(Data.HELD_MATERIAL_NAME));
+	}
+
+	/**
+	 *
+	 * @param material
+	 */
+	public void setMaterial(BlockMaterial material) {
+		getData().put(Data.HELD_MATERIAL_NAME, material.getName());
 	}
 }
