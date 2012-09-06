@@ -124,12 +124,12 @@ public class BaseComponentHolder implements ComponentHolder {
 
 	@Override
 	public <T extends Component> T getOrCreate(Class<T> type) {
-		T component = (T) this.get(type);
+		T component = this.get(type);
 		if (component != null) {
 			return component;
 		} else {
 			try {
-				component = (T) type.newInstance();
+				component = type.newInstance();
 				put(component);
 			} catch (InstantiationException e) {
 				e.printStackTrace();
