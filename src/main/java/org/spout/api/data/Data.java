@@ -40,6 +40,6 @@ import org.spout.api.math.Vector3;
 public class Data {
 	public static final DefaultedKey<ItemStack> HELD_ITEM = new DefaultedKeyImpl<ItemStack>("held_item", new ItemStack(BlockMaterial.AIR, 1));
 	public static final DefaultedKey<String> HELD_MATERIAL_NAME = new DefaultedKeyImpl<String>("held_material_name", BlockMaterial.AIR.getName());
-	public static final DefaultedKey<String> NAME = new DefaultedKeyImpl<String>("title", "");
+	public static final DefaultedKey<String> NAME = new DefaultedKeyImpl<String>("name", "");
 	public static final DefaultedKey<Vector3> VELOCITY = new DefaultedKeyImpl<Vector3>("velocity", Vector3.ZERO);
 }
