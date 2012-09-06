@@ -41,7 +41,6 @@ public interface EntityComponentHolder extends ComponentHolder {
 
 	/**
 	 * Gets a {@link NetworkComponent} which holds the entities protocol lookups.
-	 * 
 	 * @return The network component
 	 */
 	public NetworkComponent getNetwork();

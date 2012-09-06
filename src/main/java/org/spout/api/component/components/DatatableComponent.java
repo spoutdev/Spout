@@ -36,55 +36,55 @@ import org.spout.api.map.DefaultedKey;
 
 public final class DatatableComponent extends Component {
 	private final DataMap dataMap;
-	
+
 	public DatatableComponent() {
 		this(new GenericDatatableMap());
 	}
-	
+
 	public DatatableComponent(DatatableMap map) {
 		if (map == null) {
 			throw new IllegalArgumentException("Datatable map cannot be null!");
 		}
 		this.dataMap = new DataMap(map);
 	}
-	
+
 	@Override
 	public boolean isDetachable() {
 		return false;
 	}
-		
+
 	public DataMap getBaseMap() {
 		return dataMap;
 	}
-	
+
 	public void put(String key, Serializable value) {
 		dataMap.put(key, value);
 	}
-	
-	public <T extends Serializable> T put (DefaultedKey<T> key, T value) {
+
+	public <T extends Serializable> T put(DefaultedKey<T> key, T value) {
 		return dataMap.put(key, value);
 	}
-	
-	public Serializable get (Object key) {
+
+	public Serializable get(Object key) {
 		return dataMap.get(key);
 	}
-	
-	public <T extends Serializable> T get (DefaultedKey<T> key) {
+
+	public <T extends Serializable> T get(DefaultedKey<T> key) {
 		return dataMap.get(key);
 	}
-	
-	public <T extends Serializable> T get (Object key, T defaultValue) {
+
+	public <T extends Serializable> T get(Object key, T defaultValue) {
 		return dataMap.get(key, defaultValue);
 	}
-	
+
 	public boolean containsKey(Object key) {
 		return dataMap.containsKey(key);
 	}
-	
+
 	public boolean containsKey(String key) {
 		return dataMap.containsKey(key);
 	}
-	
+
 	public boolean containsValue(Object value) {
 		return dataMap.containsValue(value);
 	}

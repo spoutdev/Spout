@@ -100,14 +100,12 @@ public interface Player extends CommandSource, Entity {
 
 	/**
 	 * Bans the player for the given reason.
-	 *
 	 * @param kick whether to kick or not
 	 */
 	public void ban(boolean kick);
 
 	/**
 	 * Bans the player for the given reason.
-	 *
 	 * @param kick whether to kick or not
 	 * @param reason for ban
 	 */
@@ -118,10 +116,9 @@ public interface Player extends CommandSource, Entity {
 	 * @return current input state
 	 */
 	public PlayerInputState input();
-	
+
 	/**
 	 * Immediately saves the players state to disk
-	 * 
 	 * @return true if successful
 	 */
 	public boolean save();

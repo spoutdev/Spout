@@ -37,7 +37,7 @@ public class CameraComponent extends EntityComponent implements Camera {
 	private ViewFrustum frustum = new ViewFrustum();
 
 	public CameraComponent() {
-		
+
 	}
 
 	public CameraComponent(Matrix createPerspective, Matrix createLookAt) {
@@ -52,7 +52,7 @@ public class CameraComponent extends EntityComponent implements Camera {
 		updateView();
 		frustum.update(projection, view);
 	}
-	
+
 	@Override
 	public Matrix getProjection() {
 		return projection;

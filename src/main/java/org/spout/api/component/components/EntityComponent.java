@@ -34,7 +34,6 @@ import org.spout.api.entity.Entity;
  * Represents an attachment to a entity that can respond to Ticks.
  */
 public abstract class EntityComponent extends Component {
-
 	@Override
 	public Entity getHolder() {
 		return (Entity) super.getHolder();
@@ -42,7 +41,7 @@ public abstract class EntityComponent extends Component {
 
 	@Override
 	public boolean attachTo(ComponentHolder holder) {
-		if (holder instanceof Entity){
+		if (holder instanceof Entity) {
 			return super.attachTo(holder);
 		} else {
 			return false;
@@ -54,13 +53,13 @@ public abstract class EntityComponent extends Component {
 	 */
 	public void onSpawned() {
 	}
-	
+
 	/**
 	 * Called when the entity changes from unobserved to observed.
 	 */
 	public void onObserved() {
 	}
-	
+
 	/**
 	 * Called when the entity changes from observed to unobserved.
 	 */

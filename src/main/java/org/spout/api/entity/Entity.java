@@ -62,7 +62,7 @@ public interface Entity extends Source, Tickable, WorldSource, EntityComponentHo
 	@DelayedWrite
 	@LiveRead
 	public void remove();
-	
+
 	/**
 	 * True if the entity is removed.
 	 * @return removed
@@ -82,7 +82,7 @@ public interface Entity extends Source, Tickable, WorldSource, EntityComponentHo
 	 */
 	@DelayedWrite
 	public void setSavable(boolean savable);
-	
+
 	/**
 	 * Returns true if this entity should be saved.
 	 * @return savable
@@ -134,5 +134,5 @@ public interface Entity extends Source, Tickable, WorldSource, EntityComponentHo
 	 * @return region the entity is in.
 	 */
 	@SnapshotRead
-	public Region getRegion();	
+	public Region getRegion();
 }

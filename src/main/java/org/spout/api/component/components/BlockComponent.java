@@ -30,15 +30,15 @@ import org.spout.api.material.BlockMaterial;
 
 public class BlockComponent extends EntityComponent {
 	private BlockMaterial material;
-	
+
 	public BlockComponent() {
 	}
-	
+
 	@Override
 	public boolean isDetachable() {
 		return false;
 	}
-	
+
 	/**
 	 * Gets the material this component represents.
 	 */

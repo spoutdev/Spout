@@ -37,7 +37,6 @@ public abstract class Component implements Tickable {
 
 	/**
 	 * Attaches to a component holder.
-	 * 
 	 * @param holder the componet holder to attach to
 	 * @return true if successful
 	 */
@@ -48,7 +47,6 @@ public abstract class Component implements Tickable {
 
 	/**
 	 * Gets the component holder that is holding this component.
-	 * 
 	 * @return the component holder
 	 */
 	public ComponentHolder getHolder() {
@@ -70,7 +68,6 @@ public abstract class Component implements Tickable {
 	/**
 	 * Specifies whether or not this component can be detached,
 	 * after it has already been attached to a holder.
-	 * 
 	 * @return true if it can be detached
 	 */
 	public boolean isDetachable() {
@@ -79,11 +76,11 @@ public abstract class Component implements Tickable {
 
 	/**
 	 * Called when the holder is set to be synchronized.
-	 * 
+	 * <p/>
 	 * This method is READ ONLY. You cannot update in this method.
 	 */
 	public void onSync() {
-	}	
+	}
 
 	@Override
 	public boolean canTick() {
@@ -104,7 +101,6 @@ public abstract class Component implements Tickable {
 	/**
 	 * Gets the datatable component attached to the holder.
 	 * This component exists in every holder.
-	 * 
 	 * @return the datatable component
 	 */
 	public final DatatableComponent getDatatable() {

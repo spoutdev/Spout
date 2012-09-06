@@ -30,6 +30,7 @@ import java.lang.ref.WeakReference;
 import java.util.UUID;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
@@ -46,7 +47,7 @@ public class EntitySnapshot {
 	private final int viewDistance;
 	private final boolean observer;
 	private final boolean savable;
-	
+
 	public EntitySnapshot(Entity e) {
 		if (e.isRemoved()) {
 			throw new IllegalArgumentException("Can not take a snapshot of a removed entity");
@@ -62,7 +63,7 @@ public class EntitySnapshot {
 		this.savable = e.isSavable();
 		DatatableMap deepCopy = new GenericDatatableMap();
 		if (e.getData().getBaseMap().size() > 0) {
-			byte[] state = ((DataMap)e.getData().getBaseMap()).getRawMap().compress();
+			byte[] state = ((DataMap) e.getData().getBaseMap()).getRawMap().compress();
 			deepCopy.decompress(state);
 		}
 		this.dataMap = new DataMap(deepCopy);

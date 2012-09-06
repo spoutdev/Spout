@@ -31,18 +31,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 
-import org.spout.api.component.components.DatatableComponent;
-
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-public class BaseComponentHolder implements ComponentHolder {
+import org.spout.api.component.components.DatatableComponent;
 
+public class BaseComponentHolder implements ComponentHolder {
 	/**
 	 * Map of class name, component
 	 */
 	private final HashMap<Class<? extends Component>, Component> components = new HashMap<Class<? extends Component>, Component>();
-
 	/**
 	 * Bidirectional map of the super class of a component, and its actual
 	 * class. Used to mark a component as belonging to a specific super class to
@@ -50,7 +48,6 @@ public class BaseComponentHolder implements ComponentHolder {
 	 * actual class in both sides of the map.
 	 */
 	private final BiMap<Class<? extends Component>, Class<? extends Component>> typeMap = HashBiMap.create();
-
 	private final DatatableComponent datatable = new DatatableComponent();
 
 	public BaseComponentHolder() {

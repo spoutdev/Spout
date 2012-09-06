@@ -32,7 +32,7 @@ package org.spout.api.component.components;
 public class ModelComponent extends EntityComponent {
 	public ModelComponent() {
 	}
-	
+
 	@Override
 	public boolean canTick() {
 		return false;

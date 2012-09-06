@@ -36,7 +36,7 @@ public class WorldComponent extends Component {
 
 	@Override
 	public boolean attachTo(ComponentHolder holder) {
-		if (holder instanceof WorldComponentHolder){
+		if (holder instanceof WorldComponentHolder) {
 			return super.attachTo(holder);
 		} else {
 			return false;

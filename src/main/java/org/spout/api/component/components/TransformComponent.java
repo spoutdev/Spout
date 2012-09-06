@@ -36,17 +36,17 @@ public class TransformComponent extends EntityComponent {
 	private final Transform transform;
 	private final Transform transformLive;
 	private boolean isDirty;
-	
+
 	public TransformComponent() {
 		transform = new Transform();
 		transformLive = new Transform();
 	}
-	
+
 	@Override
 	public boolean isDetachable() {
 		return false;
 	}
-	
+
 	@Override
 	public void onTick(float dt) {
 		if (transform.equals(transformLive)) {
@@ -59,23 +59,23 @@ public class TransformComponent extends EntityComponent {
 	public void setTransform(Transform transform) {
 		transformLive.set(transform);
 	}
-	
+
 	public Transform getTransform() {
 		return transform.copy();
 	}
-	
+
 	public Transform getTransformLive() {
 		return transformLive.copy();
 	}
-	
+
 	public boolean isDirty() {
 		return isDirty;
 	}
-	
+
 	public Point getPosition() {
 		return transform.getPosition();
 	}
-	
+
 	public void setPosition(Point position) {
 		if (position == null) {
 			getHolder().remove();
@@ -83,31 +83,31 @@ public class TransformComponent extends EntityComponent {
 		}
 		transform.setPosition(position);
 	}
-	
+
 	public Quaternion getRotation() {
 		return transform.getRotation();
 	}
-	
+
 	public void setRotation(Quaternion rotation) {
 		if (rotation == null) {
 			getHolder().remove();
 			return;
-		}		
+		}
 		transform.setRotation(rotation);
 	}
-	
+
 	public Vector3 getScale() {
 		return transform.getScale();
 	}
-	
+
 	public void setScale(Vector3 scale) {
 		if (scale == null) {
 			getHolder().remove();
 			return;
-		}		
+		}
 		transform.setScale(scale);
 	}
-	
+
 	/**
 	 * Moves the entity by the provided vector<br/>
 	 * @param amount to move the entity
@@ -170,7 +170,7 @@ public class TransformComponent extends EntityComponent {
 	public void pitch(float angle) {
 		setPitch(angle);
 	}
-	
+
 	/**
 	 * Yaws the entity by the provided amount
 	 * @param angle
@@ -178,7 +178,7 @@ public class TransformComponent extends EntityComponent {
 	public void yaw(float angle) {
 		setYaw(angle);
 	}
-	
+
 	/**
 	 * Rolls the entity by the provided amount
 	 * @param angle
@@ -216,7 +216,7 @@ public class TransformComponent extends EntityComponent {
 	 * @param ang
 	 */
 	public void setPitch(float angle) {
-		setAxisAngles(getPitch(), getYaw(), angle);		
+		setAxisAngles(getPitch(), getYaw(), angle);
 	}
 
 	/**
@@ -224,7 +224,7 @@ public class TransformComponent extends EntityComponent {
 	 * @param ang
 	 */
 	public void setRoll(float angle) {
-		setAxisAngles(getPitch(), getYaw(), angle);		
+		setAxisAngles(getPitch(), getYaw(), angle);
 	}
 
 	/**
@@ -232,9 +232,9 @@ public class TransformComponent extends EntityComponent {
 	 * @param ang
 	 */
 	public void setYaw(float angle) {
-		setAxisAngles(getPitch(), angle, getRoll());		
+		setAxisAngles(getPitch(), angle, getRoll());
 	}
-	
+
 	private void setAxisAngles(float pitch, float yaw, float roll) {
 		setRotation(MathHelper.rotation(pitch, yaw, roll));
 	}

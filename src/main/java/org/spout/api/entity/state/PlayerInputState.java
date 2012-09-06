@@ -29,6 +29,7 @@ package org.spout.api.entity.state;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import org.spout.api.math.MathHelper;
 
 /**
@@ -37,6 +38,7 @@ import org.spout.api.math.MathHelper;
 public class PlayerInputState {
 	public static final float MOUSE_SENSITIVITY = 0.05f;
 	private static final AtomicInteger FLAG_COUNTER = new AtomicInteger(0);
+
 	public static enum Flags {
 		FORWARD,
 		BACKWARD,
@@ -49,7 +51,6 @@ public class PlayerInputState {
 		FIRE_1,
 		FIRE_2,
 		INTERACT;
-
 		private final short bitValue;
 
 		private Flags() {
@@ -58,7 +59,6 @@ public class PlayerInputState {
 				throw new IllegalStateException("Input flag" + name() + " exceeded bit count of short!");
 			}
 			this.bitValue = (short) (1 << shifts);
-
 		}
 
 		public short getBitFlag() {
@@ -74,7 +74,6 @@ public class PlayerInputState {
 	private final short userCommands;
 	private final float pitch;
 	private final float yaw;
-
 
 	public PlayerInputState(boolean forward, boolean backward, boolean left, boolean right, boolean jump, boolean crouch, boolean selectUp, boolean selectDown, boolean fire1, boolean fire2, boolean interact, float pitch, float yaw) {
 		short userCommands = 0;
