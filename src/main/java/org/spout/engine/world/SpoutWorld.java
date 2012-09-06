@@ -29,6 +29,7 @@ package org.spout.engine.world;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,6 +67,7 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
+import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
@@ -1129,5 +1131,10 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public ComponentHolder getComponentHolder() {
 		return componentHolder;
+	}
+
+	@Override
+	public DefaultedMap<String, Serializable> getDataMap() {
+		return componentHolder.getData();
 	}
 }
