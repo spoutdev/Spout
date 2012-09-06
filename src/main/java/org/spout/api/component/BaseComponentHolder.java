@@ -125,20 +125,10 @@ public class BaseComponentHolder implements ComponentHolder {
 	@Override
 	public <T extends Component> T getOrCreate(Class<T> type) {
 		T component = this.get(type);
-		if (component != null) {
-			return component;
-		} else {
-			try {
-				component = type.newInstance();
-				put(component);
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
-
-			return component;
+		if (component == null) {
+			component = Component.create(type);
 		}
+		return component;
 	}
 
 	@Override
