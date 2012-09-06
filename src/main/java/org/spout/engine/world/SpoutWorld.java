@@ -33,13 +33,11 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.logging.Level;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -51,10 +49,7 @@ import org.spout.api.collision.CollisionVolume;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentHolder;
-import org.spout.api.component.ComponentTypes;
 import org.spout.api.component.components.BlockComponent;
-import org.spout.api.component.components.DatatableComponent;
-import org.spout.api.datatable.DatatableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.spawn.SpawnArrangement;
