@@ -26,10 +26,18 @@
  */
 package org.spout.api.component.components;
 
+import org.spout.api.data.Data;
+import org.spout.api.math.Vector3;
+
 /**
  * A component that represents the collision object that encompasses an entity within the world.
  */
 public class CollisionComponent extends EntityComponent {
-	public CollisionComponent() {
+	public Vector3 getVelocity() {
+		return getData().get(Data.VELOCITY);
+	}
+
+	public void setVelocity(Vector3 velocity) {
+		getData().put(Data.VELOCITY, velocity);
 	}
 }

@@ -30,6 +30,7 @@ import org.spout.api.inventory.ItemStack;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.math.Vector3;
 
 /**
  * Common default data mappings one could expect each game to have. These are used instead of strings when retrieving values
@@ -37,6 +38,7 @@ import org.spout.api.material.BlockMaterial;
  * and construct keys like the below.
  */
 public class Data {
-	public static final DefaultedKey<String> TITLE = new DefaultedKeyImpl<String>("title", "");
 	public static final DefaultedKey<ItemStack> HELD_ITEM = new DefaultedKeyImpl<ItemStack>("held_item", new ItemStack(BlockMaterial.AIR, 1));
+	public static final DefaultedKey<String> NAME = new DefaultedKeyImpl<String>("title", "");
+	public static final DefaultedKey<Vector3> VELOCITY = new DefaultedKeyImpl<Vector3>("velocity", Vector3.ZERO);
 }
