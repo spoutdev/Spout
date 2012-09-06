@@ -84,7 +84,11 @@ public class BaseComponentHolder implements ComponentHolder {
 		if (component.attachTo(this)) {
 			component.onAttached();
 			typeMap.put(component.getClass(), typeClass);
-			return (T) components.put(component.getClass(), component);
+			Component returned = components.put(component.getClass(), component);
+			if (returned != null) {
+				remove(returned.getClass());
+			}
+			return (T) returned;
 		}
 
 		return null;
