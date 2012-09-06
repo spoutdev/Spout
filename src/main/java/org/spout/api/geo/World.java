@@ -27,6 +27,7 @@
 package org.spout.api.geo;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,6 +43,7 @@ import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.TaskManager;
@@ -283,6 +285,15 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @return component holder
 	 */
 	public ComponentHolder getComponentHolder();
+
+	/**
+	 * Gets the data map for this world, persisted between saves.
+	 * 
+	 * A convenience method that is identical to getComponentHolder().getData()
+	 * 
+	 * @return world data
+	 */
+	public DefaultedMap<String, Serializable> getDataMap();
 
 	/**
 	 * Gets the task manager responsible for parallel region tasks.<br>

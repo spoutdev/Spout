@@ -27,14 +27,18 @@
 package org.spout.api.component.components;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 import org.spout.api.component.Component;
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.map.DefaultedKey;
+import org.spout.api.map.DefaultedMap;
 
-public final class DatatableComponent extends Component {
+public final class DatatableComponent extends Component implements DefaultedMap<String, Serializable>{
 	private final DataMap dataMap;
 
 	public DatatableComponent() {
@@ -48,44 +52,87 @@ public final class DatatableComponent extends Component {
 		this.dataMap = new DataMap(map);
 	}
 
+	public DataMap getBaseMap() {
+		return dataMap;
+	}
+
 	@Override
 	public boolean isDetachable() {
 		return false;
 	}
 
-	public DataMap getBaseMap() {
-		return dataMap;
-	}
-
-	public void put(String key, Serializable value) {
-		dataMap.put(key, value);
-	}
-
+	@Override
 	public <T extends Serializable> T put(DefaultedKey<T> key, T value) {
 		return dataMap.put(key, value);
 	}
 
+	@Override
 	public Serializable get(Object key) {
 		return dataMap.get(key);
 	}
 
+	@Override
 	public <T extends Serializable> T get(DefaultedKey<T> key) {
 		return dataMap.get(key);
 	}
 
+	@Override
 	public <T extends Serializable> T get(Object key, T defaultValue) {
 		return dataMap.get(key, defaultValue);
 	}
 
+	@Override
 	public boolean containsKey(Object key) {
 		return dataMap.containsKey(key);
 	}
 
-	public boolean containsKey(String key) {
-		return dataMap.containsKey(key);
-	}
-
+	@Override
 	public boolean containsValue(Object value) {
 		return dataMap.containsValue(value);
+	}
+
+	@Override
+	public int size() {
+		return this.dataMap.size();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return this.dataMap.isEmpty();
+	}
+
+	@Override
+	public Serializable remove(Object key) {
+		return this.dataMap.remove(key);
+	}
+
+	@Override
+	public void putAll(Map<? extends String, ? extends Serializable> m) {
+		this.dataMap.putAll(m);
+	}
+
+	@Override
+	public void clear() {
+		this.dataMap.clear();
+	}
+
+	@Override
+	public Set<String> keySet() {
+		return this.dataMap.keySet();
+	}
+
+	@Override
+	public Collection<Serializable> values() {
+		return this.dataMap.values();
+	}
+
+	@Override
+	public Set<java.util.Map.Entry<String, Serializable>> entrySet() {
+		return this.dataMap.entrySet();
+	}
+
+	@Override
+	public Serializable put(String key, Serializable value) {
+		return this.dataMap.put(key, value);
 	}
 }
