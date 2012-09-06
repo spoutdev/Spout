@@ -117,7 +117,6 @@ public class BaseComponentHolder implements ComponentHolder {
 		return (T) components.get(findKey(type));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Component> T getOrCreate(Class<T> type) {
 		T component = (T) this.get(type);
