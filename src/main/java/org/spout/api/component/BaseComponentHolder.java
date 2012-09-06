@@ -81,9 +81,13 @@ public class BaseComponentHolder implements ComponentHolder {
 			typeClass = component.getClass();
 		}
 
-		component.onAttached();
-		typeMap.put(component.getClass(), typeClass);
-		return (T) components.put(component.getClass(), component);
+		if (component.attachTo(this)) {
+			component.onAttached();
+			typeMap.put(component.getClass(), typeClass);
+			return (T) components.put(component.getClass(), component);
+		}
+
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -125,6 +129,7 @@ public class BaseComponentHolder implements ComponentHolder {
 		} else {
 			try {
 				component = (T) type.newInstance();
+				put(component);
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
