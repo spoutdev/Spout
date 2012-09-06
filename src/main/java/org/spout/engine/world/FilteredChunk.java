@@ -105,6 +105,12 @@ public class FilteredChunk extends SpoutChunk{
 		}
 	}
 
+	private void setModified() {
+		if (chunkModified.compareAndSet(false, true)) {
+			setAutosaveTicks(20 * 60 * 5);
+		}
+	}
+
 	public boolean isUniform() {
 		return uniform.get();
 	}
@@ -120,7 +126,7 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		boolean changed = super.setBlockMaterial(x, y, z, material, data, source);
 		if (changed) {
-			chunkModified.set(true);
+			setModified();
 		}
 		return changed;
 	}
@@ -165,7 +171,7 @@ public class FilteredChunk extends SpoutChunk{
 		if (uniform.get()) {
 			initialize();
 		}
-		chunkModified.set(true);
+		setModified();
 		return super.setBlockDataFieldRaw(bx, by, bz, bits, value, source);
 	}
 
@@ -174,7 +180,7 @@ public class FilteredChunk extends SpoutChunk{
 		if (uniform.get()) {
 			initialize();
 		}
-		chunkModified.set(true);
+		setModified();
 		return super.addBlockDataFieldRaw(bx, by, bz, bits, value, source);
 	}
 
@@ -188,7 +194,7 @@ public class FilteredChunk extends SpoutChunk{
 				return false;
 			}
 		}
-		chunkModified.set(true);
+		setModified();
 		return super.compareAndSetData(x, y, z, expect, data, source);
 	}
 
@@ -199,7 +205,7 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		boolean changed = super.setBlockLight(x, y, z, light, source);
 		if (changed) {
-			chunkModified.set(true);
+			setModified();
 		}
 		return changed;
 	}
@@ -211,7 +217,7 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		boolean changed = super.setBlockSkyLight(x, y, z, light, source);
 		if (changed) {
-			chunkModified.set(true);
+			setModified();
 		}
 		return changed;
 	}
