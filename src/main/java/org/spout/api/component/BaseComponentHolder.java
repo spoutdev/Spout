@@ -52,7 +52,8 @@ public class BaseComponentHolder implements ComponentHolder {
 			return null;
 		}
 
-		T component = get(type);
+		@SuppressWarnings("unchecked")
+		T component = (T) components.get(type);
 
 		if (component == null) {
 			try {
