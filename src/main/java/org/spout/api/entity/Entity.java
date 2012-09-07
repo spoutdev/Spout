@@ -29,6 +29,7 @@ package org.spout.api.entity;
 import java.util.UUID;
 
 import org.spout.api.Source;
+import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
@@ -135,4 +136,9 @@ public interface Entity extends Source, Tickable, WorldSource, EntityComponentHo
 	 */
 	@SnapshotRead
 	public Region getRegion();
+
+	/**
+	 * Interact with this entity. Calls all EntityComponents inside the entities onInteract method.
+	 */
+	public void interact(Action action, Source source);
 }

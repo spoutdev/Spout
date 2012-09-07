@@ -26,9 +26,11 @@
  */
 package org.spout.api.component.components;
 
+import org.spout.api.Source;
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentHolder;
 import org.spout.api.entity.Entity;
+import org.spout.api.event.player.PlayerInteractEvent.Action;
 
 /**
  * Represents an attachment to a entity that can respond to Ticks.
@@ -64,5 +66,15 @@ public abstract class EntityComponent extends Component {
 	 * Called when the entity changes from observed to unobserved.
 	 */
 	public void onUnObserved() {
+	}
+
+	/**
+	 * Called when the entity is interacted with.
+	 * 
+	 * @param action being performed
+	 * @param source performing the action
+	 */
+	public void onInteract(Action action, Source source) {
+		
 	}
 }
