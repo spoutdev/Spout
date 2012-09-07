@@ -40,76 +40,44 @@ public class BaseComponentHolder implements ComponentHolder {
 	/**
 	 * Map of class name, component
 	 */
-	private final HashMap<Class<? extends Component>, Component> components = new HashMap<Class<? extends Component>, Component>();
-	/**
-	 * Bidirectional map of the super class of a component, and its actual
-	 * class. Used to mark a component as belonging to a specific super class to
-	 * map to for has/get. If no super class is picked, it will simply use the
-	 * actual class in both sides of the map.
-	 */
-	private final BiMap<Class<? extends Component>, Class<? extends Component>> typeMap = HashBiMap.create();
-	private final DatatableComponent datatable = new DatatableComponent();
+	private final BiMap<Class<? extends Component>, Component> components = HashBiMap.create();
 
 	public BaseComponentHolder() {
-		put(datatable);
+		add(DatatableComponent.class);
 	}
 
 	@Override
-	public <T extends Component> T put(T component) {
-		return put(null, component);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends Component> T put(Class<? extends Component> type, T component) {
-		if (component == null) {
+	public <T extends Component> T add(Class<T> type) {
+		if (type == null) {
 			return null;
 		}
 
-		Class<? extends Component> typeClass;
-		if (type != null) {
-			typeClass = type;
-			// Check if the component actually belongs to the specified super
-			// type.
-			if (!typeClass.isAssignableFrom(component.getClass())) {
-				return component;
+		T component = get(type);
+
+		if (component == null) {
+			try {
+				component = type.newInstance();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
 			}
-		} else {
-			typeClass = component.getClass();
 		}
 
-		if (component.attachTo(this)) {
-			component.onAttached();
-			typeMap.put(component.getClass(), typeClass);
-			Component returned = components.put(component.getClass(), component);
-			if (returned != null) {
-				remove(returned.getClass());
-			}
-			return (T) returned;
-		}
-
-		return null;
+		return component;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Component> T remove(Class<? extends Component> type) {
-		if (!has(type)) {
-			return null;
-		}
+		T component = (T) get(type);
 
-		Class<? extends Component> key = findKey(type);
-		if (key == null) {
-			return null;
-		}
-
-		typeMap.remove(key);
-		Component component = components.remove(key);
 		if (component != null) {
 			component.onDetached();
+			components.inverse().remove(component);
 		}
 
-		return (T) component;
+		return component;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -118,25 +86,22 @@ public class BaseComponentHolder implements ComponentHolder {
 		if (type == null) {
 			return null;
 		}
-
-		return (T) components.get(findKey(type));
-	}
-
-	@Override
-	public <T extends Component> T getOrCreate(Class<T> type) {
-		T component = this.get(type);
+		Component component = components.get(type);
+		
 		if (component == null) {
-			component = Component.create(type);
+			component = findComponent(type);
 		}
-		return component;
+		return (T) component;
 	}
 
 	@Override
 	public boolean has(Class<? extends Component> type) {
-		if (type == null) {
-			return false;
+		Component component = components.get(type);
+		
+		if (component == null) {
+			component = findComponent(type);
 		}
-		return typeMap.containsKey(type) || typeMap.containsValue(type);
+		return component != null;
 	}
 
 	@Override
@@ -146,14 +111,17 @@ public class BaseComponentHolder implements ComponentHolder {
 
 	@Override
 	public DatatableComponent getData() {
-		return datatable;
+		return get(DatatableComponent.class);
 	}
 
-	private Class<? extends Component> findKey(Class<? extends Component> type) {
-		if (typeMap.containsKey(type)) {
-			return type;
+	@SuppressWarnings("unchecked")
+	private <T extends Component> T findComponent(Class<T> type) {
+		for (Component component : values()) {
+			if (type.isAssignableFrom(component.getClass())) {
+				return (T) component;
+			}
 		}
 
-		return typeMap.inverse().get(type);
+		return null;
 	}
 }

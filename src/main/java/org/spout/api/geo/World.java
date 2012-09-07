@@ -165,7 +165,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @param component The component to give the Entity.
 	 * @return The created entity
 	 */	
-	public Entity createEntity(Point point, Component component);
+	public Entity createEntity(Point point, Class<? extends Component> type);
 	
 	/**
 	 * Add a created entity to the world for simulation and syncing to clients
@@ -181,7 +181,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @param component The component to give the Entity.
 	 * @return The Entity that has been created and spawned
 	 */
-	public Entity createAndSpawnEntity(Point point, Component component, LoadOption option);
+	public Entity createAndSpawnEntity(Point point, Class<? extends Component> type, LoadOption option);
 
 	/**
 	 * Creates and Spawns entities at the given points.  This is the same as calling
@@ -190,7 +190,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @param component The component to give the Entity.
 	 * @return The Entities that has been created and spawned
 	 */
-	public Entity[] createAndSpawnEntity(Point[] points, Component component, LoadOption option);
+	public Entity[] createAndSpawnEntity(Point[] points, Class<? extends Component> type, LoadOption option);
 
 	/**
 	 * Creates and Spawns entities for the given arrangement.  This is the same as calling
@@ -199,7 +199,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * @param component The component to give the Entity.
 	 * @return The Entities that has been created and spawned
 	 */
-	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, Component component, LoadOption option);
+	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, Class<? extends Component> type, LoadOption option);
 
 	/**
 	 * Gets the world's spawn point

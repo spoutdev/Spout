@@ -39,30 +39,6 @@ public abstract class Component implements Tickable {
 	}
 
 	/**
-	 * Utility method to construct a component when you only have the class
-	 *
-	 * This method will NOT attach the created component to the holder, it simply creates and
-	 * returns it.
-	 * @param type The class of the component needing to be constructed
-	 * @param <T> The class locked to the template
-	 * @throws InstantiationException If the component fails to be instantiated.
-	 * @throws IllegalAccessException If the component encounters illegal access during construction
-	 * @return The constructed component object or null if it failed.
-	 */
-	public static <T extends Component> T create(Class<T> type) {
-		T component = null;
-		try {
-			component = type.newInstance();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-
-		return component;
-	}
-
-	/**
 	 * Attaches to a component holder.
 	 * @param holder the componet holder to attach to
 	 * @return true if successful

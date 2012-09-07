@@ -35,39 +35,8 @@ import org.spout.api.component.components.DatatableComponent;
  * and removed from it.
  */
 public interface ComponentHolder {
-	/**
-	 * Puts the component into the holder. If the holder previously contained a
-	 * component of the same type, the old value will be replaced by the new
-	 * component passed.
-	 * @param component to add to the holder
-	 * @return the previous component if this holder contained one, otherwise
-	 *         null
-	 */
-	public <T extends Component> T put(T component);
 
-	/**
-	 * Puts the component into the holder. If the holder previously contained a
-	 * component of the same type, the old value will be replaced by the new
-	 * component passed.
-	 * <p/>
-	 * This method allows you to specify a class as a specific type to map the
-	 * component to. This will allow you to make has and get perform correctly
-	 * for your component.
-	 * <p/>
-	 * IE: MyComponent extends SuperComponent. holder.put(SuperComponent.class,
-	 * new MyComponent());
-	 * <p/>
-	 * holder.has(SuperComponent.class); // Will return true
-	 * holder.has(MyComponent.class); // Will return true
-	 * holder.get(MyComponent.class); // Will return the MyComponent
-	 * holder.get(SuperComponent.class); // Will return the MyComponent, cast to
-	 * SuperComponent
-	 * @param type to specify this component to map to
-	 * @param component to add to the holder
-	 * @return the previous component if this holder contained one, otherwise
-	 *         null
-	 */
-	public <T extends Component> T put(Class<? extends Component> type, T component);
+	public <T extends Component> T add(Class<T> type);
 
 	/**
 	 * Removes the component of the specified type from the holder if it is
@@ -84,15 +53,6 @@ public interface ComponentHolder {
 	 * @return the component, or null if one was not found
 	 */
 	public <T extends Component> T get(Class<T> type);
-
-	/**
-	 * Returns the component of the specified type from the holder if it is
-	 * present. Otherwise, it will instantiate a new component of the type using
-	 * reflection.
-	 * @param type whose component is to be returned from the holder
-	 * @return the component, either pre-existing or the new one created
-	 */
-	public <T extends Component> T getOrCreate(Class<T> type);
 
 	/**
 	 * Returns true if the holder contains a component of the specified type.
