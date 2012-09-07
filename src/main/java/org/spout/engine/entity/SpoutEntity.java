@@ -33,11 +33,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.spout.api.Source;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
+import org.spout.api.component.components.EntityComponent;
 import org.spout.api.component.components.NetworkComponent;
 import org.spout.api.component.components.TransformComponent;
 import org.spout.api.entity.Entity;
+import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -327,5 +330,14 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	@Override
 	public TransformComponent getTransform() {
 		return transformComponent;
+	}
+
+	@Override
+	public void interact(Action action, Source source) {
+		for (Component component : this.values()) {
+			if (component instanceof EntityComponent) {
+				((EntityComponent)component).onInteract(action, source);
+			}
+		}
 	}
 }
