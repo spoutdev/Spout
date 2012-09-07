@@ -27,6 +27,8 @@
 package org.spout.api.component.components;
 
 import org.spout.api.data.Data;
+import org.spout.api.entity.Entity;
+import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.MaterialRegistry;
 
@@ -53,5 +55,9 @@ public class BlockComponent extends EntityComponent {
 	 */
 	public void setMaterial(BlockMaterial material) {
 		getData().put(Data.HELD_MATERIAL_NAME, material.getName());
+	}
+
+	public void onInteract(Entity entity, Action type) {
+		// TODO Auto-generated method stub
 	}
 }
