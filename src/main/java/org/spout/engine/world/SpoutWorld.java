@@ -527,9 +527,9 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public Entity createEntity(Point point, Component component) {
+	public Entity createEntity(Point point, Class<? extends Component> type) {
 		SpoutEntity entity = new SpoutEntity(point);
-		entity.put(component);
+		entity.add(type);
 		return entity;
 	}
 
@@ -557,25 +557,25 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public Entity createAndSpawnEntity(Point point, Component component, LoadOption option) {
+	public Entity createAndSpawnEntity(Point point, Class<? extends Component> type, LoadOption option) {
 		getRegionFromBlock(point, option);
-		Entity e = createEntity(point, component);
+		Entity e = createEntity(point, type);
 		spawnEntity(e);
 		return e;
 	}
 
 	@Override
-	public Entity[] createAndSpawnEntity(Point[] points, Component component, LoadOption option) {
+	public Entity[] createAndSpawnEntity(Point[] points, Class<? extends Component> type, LoadOption option) {
 		Entity[] entities = new Entity[points.length];
 		for (int i = 0; i < points.length; i++) {
-			entities[i] = createAndSpawnEntity(points[i], component, option);
+			entities[i] = createAndSpawnEntity(points[i], type, option);
 		}
 		return entities;
 	}
 
 	@Override
-	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, Component component, LoadOption option) {
-		return createAndSpawnEntity(arrangement.getArrangement(), component, option);
+	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, Class<? extends Component> type, LoadOption option) {
+		return createAndSpawnEntity(arrangement.getArrangement(), type, option);
 	}
 
 	@Override

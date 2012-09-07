@@ -1060,7 +1060,7 @@ public class SpoutRegion extends Region {
 		if (entity.has(BlockComponent.class)) {
 			entity.remove(BlockComponent.class);
 		}
-		entity.put(component);
+		entity.add(component.getClass());
 	}
 
 	@Override

@@ -70,8 +70,6 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	private final AtomicBoolean removeLive = new AtomicBoolean(false);
 	private final AtomicBoolean saveLive = new AtomicBoolean(true);	
 	private final AtomicInteger id = new AtomicInteger();
-	private final TransformComponent transformComponent = new TransformComponent();
-	private final NetworkComponent networkComponent = new NetworkComponent();
 	private final AtomicInteger viewDistanceLive = new AtomicInteger();
 	//Snapshot
 	private Chunk chunk;
@@ -109,8 +107,8 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		}
 
 		setViewDistance(viewDistance);
-		put(transformComponent);
-		put(networkComponent);
+		add(TransformComponent.class);
+		add(NetworkComponent.class);
 	}
 
 	public SpoutEntity(Transform transform, int viewDistance) {
@@ -131,7 +129,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 			component.tick(dt);
 		}
 		//If position is dirty, set chunk/manager live values
-		if (transformComponent.isDirty()) {
+		if (getTransform().isDirty()) {
 			chunkLive.set(getWorld().getChunkFromBlock(getTransform().getPosition(), LoadOption.NO_LOAD));
 			entityManagerLive.set(((SpoutRegion) getRegion()).getEntityManager());
 		}
@@ -236,7 +234,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	public World getWorld() {
-		return transformComponent.getPosition().getWorld();
+		return getTransform().getPosition().getWorld();
 	}
 
 	public boolean justSpawned() {
@@ -289,7 +287,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	public void copySnapshot() {
 		chunk = chunkLive.get();
 		entityManager = entityManagerLive.get();
-		transformComponent.copySnapshot();
+		getTransform().copySnapshot();
 		viewDistance = viewDistanceLive.get();
 		justSpawned = false;
 	}
@@ -324,12 +322,12 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	public NetworkComponent getNetwork() {
-		return networkComponent;
+		return get(NetworkComponent.class);
 	}
 	
 	@Override
 	public TransformComponent getTransform() {
-		return transformComponent;
+		return get(TransformComponent.class);
 	}
 
 	@Override
