@@ -44,7 +44,7 @@ public interface ComponentHolder {
 	 * @param type whose component is to be removed from the holder
 	 * @return the removed component, or null if there was not one
 	 */
-	public <T extends Component> T remove(Class<? extends Component> type);
+	public <T extends Component> T detach(Class<? extends Component> type);
 
 	/**
 	 * Returns the component of the specified type from the holder if it is

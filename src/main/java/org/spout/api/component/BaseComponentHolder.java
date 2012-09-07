@@ -70,7 +70,7 @@ public class BaseComponentHolder implements ComponentHolder {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends Component> T remove(Class<? extends Component> type) {
+	public <T extends Component> T detach(Class<? extends Component> type) {
 		T component = (T) get(type);
 
 		if (component != null) {
