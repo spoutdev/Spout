@@ -83,6 +83,8 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	public SpoutEntity(Transform transform, int viewDistance, UUID uid, boolean load) {
 		id.set(NOTSPAWNEDID);
+		add(TransformComponent.class);
+		add(NetworkComponent.class);
 		
 		if (uid != null) {
 			this.uid = uid;
@@ -107,8 +109,6 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		}
 
 		setViewDistance(viewDistance);
-		add(TransformComponent.class);
-		add(NetworkComponent.class);
 	}
 
 	public SpoutEntity(Transform transform, int viewDistance) {
