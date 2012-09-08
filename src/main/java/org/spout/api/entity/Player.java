@@ -52,7 +52,7 @@ public interface Player extends CommandSource, Entity {
 
 	/**
 	 * Sets the player's display name. This method is thread-safe.
-	 * @param name the new player's display name
+	 * @param name the player's new display name
 	 */
 	@Threadsafe
 	public void setDisplayName(String name);
