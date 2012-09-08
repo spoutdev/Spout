@@ -31,7 +31,6 @@ import org.spout.api.tickable.Tickable;
 
 import com.alta189.annotations.RequireDefault;
 
-@RequireDefault
 public abstract class Component implements Tickable {
 	private ComponentHolder holder;
 
