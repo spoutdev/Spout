@@ -112,6 +112,11 @@ public class BaseComponentHolder implements ComponentHolder {
 	}
 
 	@Override
+	public boolean hasExact(Class<? extends Component> type) {
+		return getExact(type) != null;
+	}
+
+	@Override
 	public Collection<Component> values() {
 		return Collections.unmodifiableList(new ArrayList<Component>(components.values()));
 	}

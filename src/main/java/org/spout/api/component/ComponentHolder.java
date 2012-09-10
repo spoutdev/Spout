@@ -73,6 +73,15 @@ public interface ComponentHolder {
 	public boolean has(Class<? extends Component> type);
 
 	/**
+	 * Returns true if the holder contains a component of the specified type.
+	 * Will always return true if the specified type is used but will return false
+	 * for any child implementations of the type (think an exact match to the type).
+	 * @param type whose component is to be checked for in the holder
+	 * @return true if the component exists in the holder
+	 */
+	public boolean hasExact(Class<? extends Component> type);
+
+	/**
 	 * Gets all components held by this component holder.
 	 * @return The components held by this holder
 	 */
