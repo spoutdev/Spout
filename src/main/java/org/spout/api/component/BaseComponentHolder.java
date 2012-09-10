@@ -103,12 +103,7 @@ public class BaseComponentHolder implements ComponentHolder {
 
 	@Override
 	public boolean has(Class<? extends Component> type) {
-		Component component = components.get(type);
-		
-		if (component == null) {
-			component = findComponent(type);
-		}
-		return component != null;
+		return get(type) != null;
 	}
 
 	@Override
