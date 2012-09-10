@@ -55,14 +55,16 @@ public class BaseComponentHolder implements ComponentHolder {
 		@SuppressWarnings("unchecked")
 		T component = (T) components.get(type);
 
-		if (component == null) {
-			try {
-				component = type.newInstance();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
+		if (component != null) {
+			return component;
+		}
+
+		try {
+			component = type.newInstance();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
 		}
 
 		if (component != null) {
