@@ -47,12 +47,20 @@ public interface ComponentHolder {
 	public <T extends Component> T detach(Class<? extends Component> type);
 
 	/**
-	 * Returns the component of the specified type from the holder if it is
+	 * Returns the component of the specified type (or a child implementation) from the holder if it is
 	 * present.
 	 * @param type whose component is to be returned from the holder
 	 * @return the component, or null if one was not found
 	 */
 	public <T extends Component> T get(Class<T> type);
+
+	/**
+	 * Returns the component of the specified type (not a child implementation) from the holder if it is
+	 * present.
+	 * @param type whose component is to be returned from the holder
+	 * @return the component, or null if one was not found.
+	 */
+	public <T extends Component> T getExact(Class<T> type);
 
 	/**
 	 * Returns true if the holder contains a component of the specified type.

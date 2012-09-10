@@ -102,6 +102,11 @@ public class BaseComponentHolder implements ComponentHolder {
 	}
 
 	@Override
+	public <T extends Component> T getExact(Class<T> type) {
+		return type != null ? (T) components.get(type) : null;
+	}
+
+	@Override
 	public boolean has(Class<? extends Component> type) {
 		return get(type) != null;
 	}
