@@ -67,6 +67,7 @@ public class BaseComponentHolder implements ComponentHolder {
 
 		if (component != null) {
 			if (component.attachTo(this)) {
+				component.onAttached();
 				components.put(type, component);
 			}
 		}
