@@ -40,5 +40,5 @@ public @interface ServerOnly {
 
 	public String version() default "1.1";
 
-	public String shortDescription() default "Indicates that the function requires the use of the Spout server plugin to have any effect.";
+	public String shortDescription() default "Indicates that the function requires Spout to be in Server mode to take effect.";
 }
