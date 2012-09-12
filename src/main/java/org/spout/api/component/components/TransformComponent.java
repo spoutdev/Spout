@@ -33,14 +33,9 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 
 public class TransformComponent extends EntityComponent {
-	private final Transform transform;
-	private final Transform transformLive;
+	private final Transform transform = new Transform();
+	private final Transform transformLive = new Transform();
 	private boolean isDirty;
-
-	public TransformComponent() {
-		transform = new Transform();
-		transformLive = new Transform();
-	}
 
 	@Override
 	public boolean isDetachable() {
