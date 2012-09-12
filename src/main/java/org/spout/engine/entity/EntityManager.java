@@ -190,7 +190,7 @@ public class EntityManager {
 		for (SpoutEntity e : entities.get().values()) {
 			if (e.isRemoved()) {
 				removeEntity(e);
-				return;
+				continue;
 			}
 			e.finalizeRun();
 			if (e instanceof Player) {
