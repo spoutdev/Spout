@@ -128,6 +128,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@DelayedWrite
 	public boolean disconnect() {
+		onlineLive.set(false);
 		sessionLive.set(null);
 		this.remove();
 		//save player data on disconnect, probably should do this periodically as well...
