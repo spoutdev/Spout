@@ -267,7 +267,7 @@ public class SpoutRegion extends Region {
 				if (dataForRegion != null) {
 					for (SpoutEntity entity : dataForRegion.loadedEntities) {
 						entity.setupInitialChunk(entity.getTransform().getTransform());
-						addEntity(entity);
+						entityManager.addEntity(entity);
 					}
 					dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);
 				}
@@ -534,14 +534,6 @@ public class SpoutRegion extends Region {
 
 	public void queueChunkForPopulation(SpoutChunk c) {
 		populationQueue.add(c);
-	}
-
-	public void addEntity(Entity e) {
-		this.entityManager.addEntity((SpoutEntity) e);
-	}
-
-	public void removeEntity(Entity e) {
-		this.entityManager.removeEntity((SpoutEntity) e);
 	}
 
 	private void updateAutosave() {

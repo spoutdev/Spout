@@ -66,15 +66,6 @@ public class SpoutServerListener implements Listener {
 		if (player != null) {
 			//load players
 			server.getEventManager().callEvent(new PlayerLoadEvent(player));
-			World defaultWorld = Spout.getEngine().getDefaultWorld();
-			//Connect the player and set their transform to the default world's spawn.
-			player.connect((SpoutSession<?>) event.getSession(), defaultWorld.getSpawnPoint());
-			//Spawn the player in the world
-			defaultWorld.spawnEntity(player);
-			//Set the player to the session
-			((SpoutSession<?>) event.getSession()).setPlayer(player);
-			//Initialize the session
-			event.getSession().getProtocol().initializeSession(event.getSession());
 			//Call PlayerJoinEvent
 			PlayerLoginEvent loginEvent = server.getEventManager().callEvent(new PlayerLoginEvent(player));
 			if (!loginEvent.isAllowed()) {

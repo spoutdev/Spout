@@ -120,7 +120,6 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 			}
 			player.save();
 			try {
-				player.remove();
 				player.disconnect();
 			} catch (Exception e) {
 				Spout.getLogger().log(Level.WARNING, "Did not disconnect " + player.getName() + " cleanly", e);

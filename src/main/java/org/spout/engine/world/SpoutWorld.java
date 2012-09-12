@@ -550,7 +550,7 @@ public class SpoutWorld extends AsyncManager implements World {
 			if (event.isCancelled()) {
 				return;
 			}
-			region.addEntity(e);
+			region.getEntityManager().addEntity((SpoutEntity) e);
 		} else {
 			throw new IllegalStateException("Cannot spawn an entity that already has an id!");
 		}

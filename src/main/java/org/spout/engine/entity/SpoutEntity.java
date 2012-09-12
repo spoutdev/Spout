@@ -279,8 +279,12 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	 * Prevents stack overflow when creating an entity during chunk loading due to circle of calls
 	 */
 	public void setupInitialChunk(Transform transform) {
-		chunkLive.set(transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition()));
-		entityManagerLive.set(((SpoutRegion) chunkLive.get().getRegion()).getEntityManager());
+		Chunk chunk = transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition());
+		this.chunk = chunk;
+		chunkLive.set(chunk);
+		SpoutRegion region = (SpoutRegion) chunkLive.get().getRegion();
+		this.entityManager = region.getEntityManager();
+		entityManagerLive.set(region.getEntityManager());
 	}
 
 	@Override
@@ -292,14 +296,10 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		justSpawned = false;
 	}
 
-	public Set<SpoutChunk> getObservedChunks() {
-		return observingChunks;
-	}
-
 	@Override
 	@DelayedWrite
 	public void remove() {
-		removeLive.getAndSet(true);
+		removeLive.set(true);
 	}
 
 	@Override
@@ -311,7 +311,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	@Override
 	@DelayedWrite
 	public void setSavable(boolean savable) {
-		saveLive.getAndSet(savable);
+		saveLive.set(savable);
 	}
 
 	@Override

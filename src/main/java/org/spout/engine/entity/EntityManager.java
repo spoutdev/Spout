@@ -148,11 +148,6 @@ public class EntityManager {
 	 */
 	public void deallocate(SpoutEntity entity) {
 		entities.remove(entity.getId());
-
-		//Players are never removed (offline concept), instead set their ID back to -1 to be reallocated.
-		if (entity instanceof Player) {
-			entity.setId(SpoutEntity.NOTSPAWNEDID);
-		}
 	}
 	
 	/**
@@ -162,7 +157,7 @@ public class EntityManager {
 	public void addEntity(SpoutEntity entity) {
 		allocate(entity);
 		if (entity instanceof Player) {
-			players.putIfAbsent((Player) entity, new ArrayList<SpoutEntity>());
+			players.put((Player) entity, new ArrayList<SpoutEntity>());
 		}
 	}
 
@@ -193,15 +188,16 @@ public class EntityManager {
 	 */
 	public void finalizeRun() {
 		for (SpoutEntity e : entities.get().values()) {
+			if (e.isRemoved()) {
+				removeEntity(e);
+				return;
+			}
 			e.finalizeRun();
 			if (e instanceof Player) {
 				Player p = (Player) e;
 				if (p.isOnline()) {
 					p.getNetworkSynchronizer().finalizeTick();
 				}
-			}			
-			if (e.isRemoved()) {
-				removeEntity(e);
 			}
 		}
 	}
@@ -244,7 +240,6 @@ public class EntityManager {
 	 */
 	public void syncEntities() {
 		Map<Player, ArrayList<SpoutEntity>> toSync = players.get();
-		Collection<SpoutEntity> allEntities = getAll();
 		for (Player player : toSync.keySet()) {
 			/*
 			 * Offline players have no network synchronizer, skip them
@@ -256,7 +251,7 @@ public class EntityManager {
 			NetworkSynchronizer net = player.getNetworkSynchronizer();
 			ArrayList<SpoutEntity> entitiesPerPlayer = toSync.get(player);
 			boolean spawn, destroy, update;
-			for (SpoutEntity entity : allEntities) {
+			for (SpoutEntity entity : getAllLive()) {
 				if (entity.equals(player)) {
 					continue;
 				}
