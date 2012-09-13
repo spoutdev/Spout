@@ -27,7 +27,7 @@
 package org.spout.api.geo;
 
 import org.spout.api.Source;
-import org.spout.api.entity.controller.BlockController;
+import org.spout.api.component.components.BlockComponent;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.Vector3;
@@ -110,7 +110,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @throws NullPointerException
 	 */
 	@LiveWrite
-	public void setBlockController(int x, int y, int z, BlockController controller);
+	public void setBlockComponent(int x, int y, int z, BlockComponent component);
 
 	/**
 	 * Sets the data of the block at (x, y, z) if the expected state matches

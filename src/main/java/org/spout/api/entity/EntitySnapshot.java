@@ -30,10 +30,10 @@ import java.lang.ref.WeakReference;
 import java.util.UUID;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.DatatableMap;
 import org.spout.api.datatable.GenericDatatableMap;
-import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.geo.discrete.Transform;
 
 public class EntitySnapshot {
@@ -44,27 +44,26 @@ public class EntitySnapshot {
 	private final String worldName;
 	private final UUID worldId;
 	private final DataMap dataMap;
-	private final ControllerType type;
 	private final int viewDistance;
 	private final boolean observer;
 	private final boolean savable;
+
 	public EntitySnapshot(Entity e) {
-		if (e == null) {
-			throw new IllegalArgumentException("Can not take a snapshot of a null entity");
+		if (e.isRemoved()) {
+			throw new IllegalArgumentException("Can not take a snapshot of a removed entity");
 		}
 		this.entity = new WeakReference<Entity>(e);
 		this.entityId = e.getId();
 		this.uniqueId = e.getUID();
-		this.location = e.getTransform();
-		this.type = e.getController().getType();
+		this.location = e.getTransform().getTransformLive();
 		this.worldName = e.getWorld().getName();
 		this.worldId = e.getWorld().getUID();
 		this.viewDistance = e.getViewDistance();
-		this.observer = e.isObserverLive();
-		this.savable = e.getController().isSavable();
+		this.observer = e.isObserver();
+		this.savable = e.isSavable();
 		DatatableMap deepCopy = new GenericDatatableMap();
-		if (e.getController().getDataMap().size() > 0) {
-			byte[] state = ((DataMap)e.getController().getDataMap()).getRawMap().compress();
+		if (e.getData().getBaseMap().size() > 0) {
+			byte[] state = ((DataMap) e.getData().getBaseMap()).getRawMap().compress();
 			deepCopy.decompress(state);
 		}
 		this.dataMap = new DataMap(deepCopy);
@@ -96,10 +95,6 @@ public class EntitySnapshot {
 
 	public final DataMap getDataMap() {
 		return dataMap;
-	}
-
-	public final ControllerType getType() {
-		return type;
 	}
 
 	public int getViewDistance() {

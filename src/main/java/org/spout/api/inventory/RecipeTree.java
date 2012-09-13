@@ -109,6 +109,7 @@ public class RecipeTree {
 		}
 	}
     
+	@SuppressWarnings("unused")
 	public ShapedRecipe matchShapedRecipe(List<List<Material>> materials, boolean includingData) {
 		// Trim rows
 		// Above
@@ -173,6 +174,7 @@ public class RecipeTree {
 		return recipe;
 	}
 	
+	@SuppressWarnings("unused")
 	public boolean addRecipe(ShapedRecipe recipe) {
 		RecipeNode current = root;
 		outer:

@@ -26,7 +26,7 @@
  */
 package org.spout.api.datatable;
 
-public interface DatatableTuple extends Outputable {
+public interface DatatableTuple {
 	public void setKey(int key);
 	
 	public int getKey();

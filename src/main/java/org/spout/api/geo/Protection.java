@@ -89,7 +89,7 @@ public abstract class Protection implements WorldSource {
 	 * @return true, if the entity is contained within this Region, otherwise false.
 	 */
 	public boolean contains(Entity entity) {
-		return contains(entity.getPosition());
+		return contains(entity.getTransform().getPosition());
 	}
 
 	/**

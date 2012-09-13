@@ -200,8 +200,7 @@ public abstract class DatatableObject implements DatatableTuple {
 	public abstract byte[] compress();
 	
 	public abstract void decompress(byte[] compressed);
-	
-	@Override
+
 	public void output(OutputStream out) throws IOException {
 		out.write(getObjectTypeId());
 		VarInt.writeInt(out, hashCode());

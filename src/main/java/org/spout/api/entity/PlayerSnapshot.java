@@ -28,8 +28,9 @@ package org.spout.api.entity;
 
 import org.spout.api.util.Named;
 
-public class PlayerSnapshot extends EntitySnapshot implements Named{
+public class PlayerSnapshot extends EntitySnapshot implements Named {
 	private final String name;
+
 	public PlayerSnapshot(Player p) {
 		super(p);
 		name = p.getName();
@@ -37,7 +38,7 @@ public class PlayerSnapshot extends EntitySnapshot implements Named{
 
 	@Override
 	public Player getReference() {
-		return (Player)super.getReference();
+		return (Player) super.getReference();
 	}
 
 	@Override

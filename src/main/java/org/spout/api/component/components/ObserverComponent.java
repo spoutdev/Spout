@@ -24,45 +24,26 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity.controller.type;
+package org.spout.api.component.components;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+/**
+ * Component that represents the an entity that observes a radius of chunks
+ */
+public class ObserverComponent extends EntityComponent {
+	public static final int CHUNK_VIEW_DISTANCE = 4;
 
-import org.spout.api.entity.Controller;
-
-public class EmptyConstructorControllerType extends ControllerType {
-	private Constructor<? extends Controller> constructor;
-
-	public EmptyConstructorControllerType(Class<? extends Controller> controllerClass, String name) {
-		super(controllerClass, name);
-		try {
-			constructor = controllerClass.getDeclaredConstructor();
-			constructor.setAccessible(true);
-		} catch (NoSuchMethodException e) {
-			constructor = null;
-		}
+	public ObserverComponent() {
 	}
 
 	@Override
-	public boolean canCreateController() {
-		return constructor != null;
+	public void onAttached() {
+		getHolder().setObserver(true);
+		getHolder().setSavable(false);
+		getHolder().setViewDistance(CHUNK_VIEW_DISTANCE);
 	}
 
 	@Override
-	public Controller createController() {
-		if (constructor == null) {
-			return null;
-		}
-		try {
-			return constructor.newInstance();
-		} catch (InstantiationException e) {
-			return null;
-		} catch (IllegalAccessException e) {
-			e.printStackTrace(); // This should never happen - print the stack trace if it does
-			return null;
-		} catch (InvocationTargetException e) {
-			return null;
-		}
+	public boolean canTick() {
+		return false;
 	}
 }

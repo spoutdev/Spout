@@ -118,7 +118,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 		return success && anyRegistered;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T> Constructor<T> getClosestConstructor(Class<T> clazz, Class<?>... args) {
 		constructors: for (Constructor constructor : clazz.getDeclaredConstructors()) {
 			Class<?>[] classes = constructor.getParameterTypes();

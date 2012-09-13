@@ -24,35 +24,58 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity;
+package org.spout.api.component.components;
 
-public interface ComponentHolder {
-	/**
-	 * Adds a new Component to the Entity.  If the entity already contains a component of that type, then a new component is not
-	 * constructed, and the one already attached is returned
-	 * @param component the Component to be added
-	 * @return The component created, or the one already attached
-	 */
-	public <T extends Component> T addComponent(T component);
+import org.spout.api.math.MathHelper;
+import org.spout.api.math.Matrix;
+import org.spout.api.render.Camera;
+import org.spout.api.render.ViewFrustum;
 
-	/**
-	 * Removes a component from the list
-	 * @param component Type of component to remove
-	 * @return True if a component is removed, false if not.  False is also returned if the component doesn't exist.
-	 */
-	public boolean removeComponent(Class<? extends Component> component);
+public class CameraComponent extends EntityComponent implements Camera {
+	private Matrix projection;
+	private Matrix view;
+	private ViewFrustum frustum = new ViewFrustum();
 
-	/**
-	 * Returns an instance of the component attached to the object
-	 * @param component the type of component to get
-	 * @return The component instance, or NULL if it doesn't exist
-	 */
-	public <T extends Component> T getComponent(Class<T> component);
+	public CameraComponent() {
 
-	/**
-	 * Returns True if the type provided is attached or false if not.
-	 * @param component
-	 * @return
-	 */
-	public boolean hasComponent(Class<? extends Component> component);
+	}
+
+	public CameraComponent(Matrix createPerspective, Matrix createLookAt) {
+		projection = createPerspective;
+		view = createLookAt;
+	}
+
+	@Override
+	public void onAttached() {
+		// TODO Get FOV
+		projection = MathHelper.createPerspective(90f, 4.0f / 3.0f, .001f, 1000f);
+		updateView();
+		frustum.update(projection, view);
+	}
+
+	@Override
+	public Matrix getProjection() {
+		return projection;
+	}
+
+	@Override
+	public Matrix getView() {
+		return view;
+	}
+
+	@Override
+	public void updateView() {
+		view = MathHelper.rotate(getHolder().getTransform().getRotation()).multiply(MathHelper.translate(getHolder().getTransform().getPosition()));
+	}
+
+	@Override
+	public void onTick(float dt) {
+		updateView();
+		frustum.update(projection, view);
+	}
+
+	@Override
+	public ViewFrustum getFrustum() {
+		return frustum;
+	}
 }

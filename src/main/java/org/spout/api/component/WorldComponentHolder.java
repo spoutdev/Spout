@@ -24,36 +24,19 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity.controller;
+package org.spout.api.component;
 
-import org.spout.api.entity.BasicController;
-import org.spout.api.entity.Entity;
-import org.spout.api.entity.Player;
-import org.spout.api.entity.controller.type.ControllerType;
+import org.spout.api.geo.World;
 
-/**
- * Represents a {@link org.spout.api.entity.BasicController} that is player controlled.
- */
-public abstract class PlayerController extends BasicController {
-	protected PlayerController(ControllerType type) {
-		super(type);
+public class WorldComponentHolder extends BaseComponentHolder {
+	private final World world;
+
+	public WorldComponentHolder(World world) {
+		super();
+		this.world = world;
 	}
 
-	@Override
-	public boolean isSavable() {
-		return false;
-	}
-
-	@Override
-	public boolean isImportant() {
-		return true;
-	}
-
-	@Override
-	public void attachToEntity(Entity parent) {
-		if (!(parent instanceof Player)) {
-			throw new IllegalStateException("Trying to set a non Player entity as the parent of a PlayerController!");
-		}
-		super.attachToEntity(parent);
+	public World getWorld() {
+		return world;
 	}
 }

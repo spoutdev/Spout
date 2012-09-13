@@ -43,6 +43,7 @@ import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.SyncedRootCommand;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
 import org.spout.api.event.EventManager;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
@@ -161,7 +162,43 @@ public interface Engine extends Named {
 	 */
 	@SnapshotRead
 	public Entity getEntity(UUID uid);
+	
+	/**
+	 * Returns all player names that have ever played on this Game, whether they are online or not.
+	 *
+	 * @return all the player names
+	 */
+	public List<String> getAllPlayers();
+	
+	/**
+	 * Gets the {@link Player} by the given username. <br/>
+	 * <br/>
+	 * If searching for the exact name, this method will iterate and check for
+	 * exact matches. <br/>
+	 * <br/>
+	 * Otherwise, this method will iterate over over all players and find the closest match
+	 * to the given name, by comparing the length of other player names that
+	 * start with the given parameter. <br/>
+	 * <br/>
+	 * This method is case-insensitive.
+	 *
+	 * @param name to look up
+	 * @param exact Whether to use exact lookup
+	 * @return Player if found, else null
+	 */
+	public Player getPlayer(String name, boolean exact);
 
+	/**
+	 * Matches the given username to all players that contain it in their name.
+	 *
+	 * If no matches are found, an empty collection will be returned. The return
+	 * will always be non-null.
+	 *
+	 * @param name to match
+	 * @return Collection of all possible matches
+	 */
+	public Collection<Player> matchPlayer(String name);
+	
 	/**
 	 * Searches for an actively loaded world that exactly matches the given
 	 * name. <br/>

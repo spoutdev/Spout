@@ -33,10 +33,10 @@ import java.util.UUID;
 
 import org.spout.api.Engine;
 import org.spout.api.Source;
-import org.spout.api.entity.Controller;
+import org.spout.api.component.Component;
+import org.spout.api.component.ComponentHolder;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
-import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.BiomeManager;
@@ -161,11 +161,11 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * This does not add the Entity to the server. You must call
 	 * {@link #spawnEntity(Entity)} to simulate the Entity in the world
 	 * @param point The point to spawn the Entity
-	 * @param controller The entity that will be attached to the Entity
+	 * @param component The component to give the Entity.
 	 * @return The created entity
-	 */
-	public Entity createEntity(Point point, Controller controller);
-
+	 */	
+	public Entity createEntity(Point point, Class<? extends Component> type);
+	
 	/**
 	 * Add a created entity to the world for simulation and syncing to clients
 	 * @param e The entity to spawn
@@ -177,49 +177,28 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 * Controller This is the same as {@link #createEntity(Point, org.spout.api.entity.Controller)} and
 	 * {@link #spawnEntity(Entity)} together.
 	 * @param point The point to spawn the Entity
-	 * @param controller The entity that will be attached to the Entity
+	 * @param component The component to give the Entity.
 	 * @return The Entity that has been created and spawned
 	 */
-	public Entity createAndSpawnEntity(Point point, Controller controller);
+	public Entity createAndSpawnEntity(Point point, Class<? extends Component> type, LoadOption option);
 
 	/**
 	 * Creates and Spawns entities at the given points.  This is the same as calling
-	 * {@link #createAndSpawnEntity(point, controller)} for each element in the array.
+	 * {@link #createAndSpawnEntity(point, type)} for each element in the array.
 	 * @param points The points to use for spawning the entities
-	 * @param type The type of entity that will be attached to the Entity
+	 * @param component The component to give the Entity.
 	 * @return The Entities that has been created and spawned
 	 */
-	public Entity[] createAndSpawnEntity(Point[] points, ControllerType type);
-
-	/**
-	 * Creates and Spawns entities at the given points.  This is the same as calling
-	 * {@link #createAndSpawnEntity(point, controller)} for each point with the
-	 * corresponding element from the entity array. The two arrays must be the same length.
-	 * @param points The points to use for spawning the entities
-	 * @param controllers The controllers that will be attached to the Entity
-	 * @return The Entities that has been created and spawned
-	 */
-	public Entity[] createAndSpawnEntity(Point[] points, Controller[] controllers);
-
-	/**
-	 * Creates and Spawns entities at the given points.  This is the same as calling
-	 * {@link #createAndSpawnEntity(point, controller)} using type.createController()
-	 * as the entity for each point. The two arrays must be the same length.
-	 * @param points The points to use for spawning the entities
-	 * @param types The entity types that will be attached to the Entity
-	 * @return The Entities that has been created and spawned
-	 */
-	public Entity[] createAndSpawnEntity(Point[] points, ControllerType[] types);
+	public Entity[] createAndSpawnEntity(Point[] points, Class<? extends Component> type, LoadOption option);
 
 	/**
 	 * Creates and Spawns entities for the given arrangement.  This is the same as calling
-	 * {@link #createAndSpawnEntity(point, controller)} for each Point, entity pair in
+	 * {@link #createAndSpawnEntity(point, component)} for each Point, entity pair in
 	 * the arrangement
-	 * @param points The points to use for spawning the entities
-	 * @param controller The entity that will be attached to the Entity
+	 * @param component The component to give the Entity.
 	 * @return The Entities that has been created and spawned
 	 */
-	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement);
+	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, Class<? extends Component> type, LoadOption option);
 
 	/**
 	 * Gets the world's spawn point
@@ -275,15 +254,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 
 	/**
 	 * Gets all entities with the specified type.
-	 * @param type The {@link Class} for the type.
 	 * @return A collection of entities with the specified type.
-	 */
-	@SnapshotRead
-	public List<Entity> getAll(Class<? extends Controller> type);
-
-	/**
-	 * Gets all entities.
-	 * @return A collection of entities.
 	 */
 	@SnapshotRead
 	public List<Entity> getAll();
@@ -308,17 +279,20 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	public File getDirectory();
 
 	/**
-	 * Gets a map of data attached to this world. Data will persist across restarts.
-	 * @return data map
+	 * Gets the component holder for this world.
+	 * 
+	 * @return component holder
 	 */
-	public DefaultedMap<String, Serializable> getDataMap();
+	public ComponentHolder getComponentHolder();
 
 	/**
-	 * Gets a value from the data map by providing a key. Data will persist across restarts.
-	 * @param key The key to lookup a value from the map
-	 * @return the data stored for this key or null if no data found.
+	 * Gets the data map for this world, persisted between saves.
+	 * 
+	 * A convenience method that is identical to getComponentHolder().getData()
+	 * 
+	 * @return world data
 	 */
-	public Serializable get(Object key);
+	public DefaultedMap<String, Serializable> getDataMap();
 
 	/**
 	 * Gets the task manager responsible for parallel region tasks.<br>

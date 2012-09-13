@@ -24,39 +24,24 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.render;
+package org.spout.api.entity;
 
-import org.spout.api.math.Matrix;
+import org.spout.api.component.ComponentHolder;
+import org.spout.api.component.components.EntityComponent;
+import org.spout.api.component.components.NetworkComponent;
+import org.spout.api.component.components.TransformComponent;
 
-public class BasicCamera implements Camera {
-	
-	private Matrix projection;
-	private Matrix view;
-	private ViewFrustum frustum = new ViewFrustum();
-	
-	public BasicCamera(Matrix proj, Matrix view) {
-		this.projection = proj;
-		this.view = view;
-	}
-	
-	@Override
-	public Matrix getProjection() {
-		return projection;
-	}
+public interface EntityComponentHolder extends ComponentHolder {
+	/**
+	 * Gets a {@link Transform} {@link EntityComponent} representing the current position, scale and
+	 * rotation of the entity.
+	 * @return The transform component
+	 */
+	public TransformComponent getTransform();
 
-	@Override
-	public Matrix getView() {
-		return view;
-	}
-
-	@Override
-	public void updateView() {
-		frustum.update(projection, view);
-	}
-
-	@Override
-	public ViewFrustum getFrustum() {
-		return frustum;
-	}
-
+	/**
+	 * Gets a {@link NetworkComponent} which holds the entities protocol lookups.
+	 * @return The network component
+	 */
+	public NetworkComponent getNetwork();
 }

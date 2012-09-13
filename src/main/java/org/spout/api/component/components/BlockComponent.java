@@ -24,52 +24,40 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.render;
+package org.spout.api.component.components;
 
-import org.spout.api.entity.BasicComponent;
-import org.spout.api.entity.controller.PlayerController;
-import org.spout.api.math.MathHelper;
-import org.spout.api.math.Matrix;
+import org.spout.api.data.Data;
+import org.spout.api.entity.Entity;
+import org.spout.api.event.player.PlayerInteractEvent.Action;
+import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.MaterialRegistry;
 
-public class CameraComponent extends BasicComponent<PlayerController> implements Camera {
-
-	Matrix projection;
-	Matrix view;
-	private ViewFrustum frustum = new ViewFrustum();
-
-	@Override
-	public Matrix getProjection() {
-		return projection;
+public class BlockComponent extends EntityComponent {
+	public BlockComponent() {
 	}
 
 	@Override
-	public Matrix getView() {
-		return view;
+	public boolean isDetachable() {
+		return false;
 	}
 
-	@Override
-	public void updateView() {
-		view = MathHelper.rotate(getParent().getParent().getRotation()).multiply(MathHelper.translate(getParent().getParent().getPosition()));
-
+	/**
+	 *
+	 * @return
+	 */
+	public BlockMaterial getMaterial() {
+		return (BlockMaterial) MaterialRegistry.get(getData().get(Data.HELD_MATERIAL_NAME));
 	}
 
-	@Override
-	public void onTick(float dt) {
-		updateView();
-		frustum.update(projection, view);
+	/**
+	 *
+	 * @param material
+	 */
+	public void setMaterial(BlockMaterial material) {
+		getData().put(Data.HELD_MATERIAL_NAME, material.getName());
 	}
 
-	@Override
-	public void onAttached() {
-		// TODO Get FOV
-		projection = MathHelper.createPerspective(90f, 4.0f / 3.0f, .001f, 1000f);
-		updateView();
-		frustum.update(projection, view);
+	public void onInteract(Entity entity, Action type) {
+		// TODO Auto-generated method stub
 	}
-
-	@Override
-	public ViewFrustum getFrustum() {
-		return frustum;
-	}
-
 }

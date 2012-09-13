@@ -27,6 +27,7 @@
 package org.spout.api.lang;
 
 import java.util.logging.Level;
+
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandSource;

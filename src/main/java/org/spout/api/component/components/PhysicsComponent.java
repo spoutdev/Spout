@@ -24,11 +24,35 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.datatable;
+package org.spout.api.component.components;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import org.spout.api.data.Data;
+import org.spout.api.math.Vector3;
 
-public interface Outputable {
-	void output(OutputStream out) throws IOException;
+/**
+ * A component that represents the physics object that is a motion of the entity within the world.
+ */
+public class PhysicsComponent extends EntityComponent {
+	private Vector3 lastVelocity = Vector3.ZERO;
+
+	@Override
+	public void onTick(float dt) {
+		lastVelocity = getVelocity();
+	}
+
+	public Vector3 getVelocity() {
+		return getData().get(Data.VELOCITY);
+	}
+
+	public void setVelocity(Vector3 velocity) {
+		getData().put(Data.VELOCITY, velocity);
+	}
+
+	/**
+	 * Returns whether the velocity has changed between the last and live velocity values.
+	 * @return True if dirty, false if not
+	 */
+	public boolean isVelocityDirty() {
+		return !lastVelocity.equals(getVelocity());
+	}
 }

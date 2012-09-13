@@ -132,6 +132,7 @@ public class PluginDictionary {
 		} catch (IOException e) {}
 	}
 
+	@SuppressWarnings("resource")
 	protected void loadLanguages() {
 		// Search for other languages
 		try {
@@ -209,6 +210,7 @@ public class PluginDictionary {
 		}
 	}
 
+	@SuppressWarnings("resource")
 	protected InputStream openLangResource(String filename) {
 		try {
 			File inDataDir = new File(getLangDirectory(), filename);

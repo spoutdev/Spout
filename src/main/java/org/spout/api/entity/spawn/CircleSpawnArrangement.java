@@ -26,7 +26,6 @@
  */
 package org.spout.api.entity.spawn;
 
-import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
@@ -36,14 +35,8 @@ public class CircleSpawnArrangement extends GenericSpawnArrangement {
 	private final boolean halfRotate;
 	private final float radius;
 
-	public CircleSpawnArrangement(Point center, ControllerType type, int number, float radius, boolean halfRotate) {
-		super(center, type, number);
-		this.halfRotate = halfRotate;
-		this.radius = radius;
-	}
-
-	public CircleSpawnArrangement(Point center, ControllerType[] types, float radius, boolean halfRotate) {
-		super(center, types);
+	public CircleSpawnArrangement(Point center, int number, float radius, boolean halfRotate) {
+		super(center, number);
 		this.halfRotate = halfRotate;
 		this.radius = radius;
 	}

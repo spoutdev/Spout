@@ -24,66 +24,27 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity.controller.type;
+package org.spout.api.component.components;
 
-import org.spout.api.entity.Controller;
+import org.spout.api.entity.Player;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.EntityProtocolStore;
+import org.spout.api.protocol.event.ProtocolEvent;
 import org.spout.api.util.StringMap;
 
-/**
- * A certain type of Controller
- */
-public abstract class ControllerType {
+public class NetworkComponent extends EntityComponent {
 	public static final int UNREGISTERED_ID = -1;
-	private static final StringMap protocolMap = new StringMap(null, new MemoryStore<Integer>(), 0, 256, "controllerTypeProtocols");
-	private final String name;
-	private int id = UNREGISTERED_ID;
-	private final Class<? extends Controller> controllerClass;
+	private static final StringMap protocolMap = new StringMap(null, new MemoryStore<Integer>(), 0, 256, "componentProtocols");
 	private final EntityProtocolStore protocolStore = new EntityProtocolStore();
 
-	protected ControllerType(Class<? extends Controller> controllerClass, String name) {
-		this.controllerClass = controllerClass;
-		this.name = name;
-		ControllerRegistry.register(this);
+	public NetworkComponent() {
 	}
 
-	/**
-	 * Return a name used to look this entity up.
-	 * @return The entity type's name
-	 */
-	public String getName() {
-		return name;
+	@Override
+	public boolean isDetachable() {
+		return false;
 	}
-
-	/**
-	 * @return id of the entity.
-	 */
-	public int getId() {
-		return id;
-	}
-
-	void setId(int id) {
-		this.id = id;
-	}
-
-	/**
-	 * The class this ControllerType represents
-	 * @return the entity class
-	 */
-	public Class<? extends Controller> getControllerClass() {
-		return controllerClass;
-	}
-
-	public abstract boolean canCreateController();
-
-	/**
-	 * Attempts to create a Controller with default settings. Returns null if specific parameters are required.
-	 * If {@link #canCreateController()} return false, this method always returns null.
-	 * @return The instantiated entity, which can be used in {@link org.spout.api.geo.World#createAndSpawnEntity(org.spout.api.geo.discrete.Point, org.spout.api.entity.BasicController)}
-	 */
-	public abstract Controller createController();
 
 	/**
 	 * Returns the {@link EntityProtocol} for the given protocol id for this type of entity
@@ -109,5 +70,17 @@ public abstract class ControllerType {
 	 */
 	public static int getProtocolId(String protocolName) {
 		return protocolMap.register(protocolName);
+	}
+
+	/**
+	 * Sends a protocol events to all players within range of this Entity
+	 * @param event to send
+	 */
+	public void callProtocolEvent(ProtocolEvent event) {
+		for (Player player : getHolder().getChunk().getObservingPlayers()) {
+			if (player.isOnline()) {
+				player.getNetworkSynchronizer().callProtocolEvent(event);
+			}
+		}
 	}
 }

@@ -26,6 +26,8 @@
  */
 package org.spout.api.datatable;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Set;
 
@@ -34,7 +36,7 @@ import org.spout.api.datatable.value.DatatableObject;
 /**
  * Interface for a Datatable Map.
  */
-public interface DatatableMap extends Outputable {
+public interface DatatableMap {
 	/**
 	 * Adds the Datatable Tuple to the map, using hashCode() as the key
 	 * <br>
@@ -165,4 +167,6 @@ public interface DatatableMap extends Outputable {
 	public byte[] compress();
 
 	public void decompress(byte[] compressedData);
+	
+	public void output(OutputStream out) throws IOException;
 }

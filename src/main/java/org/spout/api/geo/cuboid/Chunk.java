@@ -32,6 +32,7 @@ import java.util.Random;
 import java.util.concurrent.Future;
 
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
 import org.spout.api.geo.AreaBlockAccess;
 import org.spout.api.geo.AreaPhysicsAccess;
 import org.spout.api.geo.LoadOption;
@@ -226,6 +227,12 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 */
 	@LiveRead
 	public abstract int getNumObservers();
+
+	/**
+	 * Gets the observing players of this chunk (done based on the player's view distance).
+	 * @return List containing the observing players
+	 */
+	public abstract List<Player> getObservingPlayers();
 
 	/**
 	 * A thread-safe map of data attached to the chunk, which will be persisted between saves.

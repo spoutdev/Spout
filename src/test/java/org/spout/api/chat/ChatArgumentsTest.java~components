@@ -24,22 +24,31 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.data;
+package org.spout.api.chat;
 
-import org.spout.api.inventory.ItemStack;
-import org.spout.api.map.DefaultedKey;
-import org.spout.api.map.DefaultedKeyImpl;
-import org.spout.api.material.BlockMaterial;
-import org.spout.api.math.Vector3;
+import org.junit.Test;
+import org.spout.api.chat.style.ChatStyle;
+
+import static org.junit.Assert.*;
 
 /**
- * Common default data mappings one could expect each game to have. These are used instead of strings when retrieving values
- * from an object that holds a datatable. IF you wish to provide your own keys for a plugin you are constructing, simply make a class
- * and construct keys like the below.
+ * Test for some ChatArguments functions
+ * Currently incomplete, may be filled out more later
  */
-public class Data {
-	public static final DefaultedKey<ItemStack> HELD_ITEM = new DefaultedKeyImpl<ItemStack>("held_item", new ItemStack(BlockMaterial.AIR, 1));
-	public static final DefaultedKey<String> HELD_MATERIAL_NAME = new DefaultedKeyImpl<String>("held_material_name", BlockMaterial.AIR.getName());
-	public static final DefaultedKey<String> NAME = new DefaultedKeyImpl<String>("name", "");
-	public static final DefaultedKey<Vector3> VELOCITY = new DefaultedKeyImpl<Vector3>("velocity", Vector3.ZERO);
+public class ChatArgumentsTest {
+	@Test
+	public void testToFormatString() {
+		ChatArguments testArgs = new ChatArguments("hi", ChatStyle.RED, "there", new Placeholder("HI"), ChatStyle.BOLD, " in bold");
+		String expected = "hi{{RED}}there{HI}{{BOLD}} in bold";
+		String result = testArgs.toFormatString();
+		assertEquals(expected, result);
+	}
+
+	@Test
+	public void testFromFormatString() {
+		String sourceString = "hi{{RED}}there{HI}{{BOLD}} in bold";
+		ChatArguments testArgs = ChatArguments.fromFormatString(sourceString);
+		String resultString = testArgs.toFormatString();
+		assertEquals(sourceString, resultString);
+	}
 }

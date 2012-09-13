@@ -28,19 +28,13 @@ package org.spout.api.entity.spawn;
 
 import java.util.ArrayList;
 
-import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.geo.discrete.Point;
 
 public class DiscSpawnArrangement extends GenericSpawnArrangement {
 	private final float scale;
 
-	public DiscSpawnArrangement(Point center, ControllerType type, int number, float scale) {
-		super(center, type, number);
-		this.scale = scale;
-	}
-
-	public DiscSpawnArrangement(Point center, ControllerType[] types, float scale) {
-		super(center, types);
+	public DiscSpawnArrangement(Point center, int number, float scale) {
+		super(center, number);
 		this.scale = scale;
 	}
 
@@ -95,7 +89,7 @@ public class DiscSpawnArrangement extends GenericSpawnArrangement {
 		int i = 0;
 
 		for (int j = 0; j < shells.size(); j++) {
-			Point[] shellPoints = new CircleSpawnArrangement(center, null, shells.get(j), j * scale, (j & 1) == 0).getArrangement();
+			Point[] shellPoints = new CircleSpawnArrangement(center, shells.get(j), j * scale, (j & 1) == 0).getArrangement();
 			for (Point p : shellPoints) {
 				points[i++] = p;
 			}

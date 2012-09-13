@@ -31,7 +31,7 @@ public abstract class BasicTickable implements Tickable {
 	@Override
 	public final void tick(float dt) {
 		if(canTick()) {
-			tick(dt);
+			onTick(dt);
 		}
 	}
 }

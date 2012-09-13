@@ -32,7 +32,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.Spout;
-import org.spout.api.entity.controller.type.ControllerType;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Quaternion;
@@ -42,24 +41,21 @@ import org.spout.api.util.SpoutToStringStyle;
 
 public class AddEntityMessage implements Message {
 	private final int entityId;
-	private final ControllerType type;
 	private final UUID worldUid;
 
 	private final Vector3 pos, scale;
 	private final Quaternion rotation;
 
-	public AddEntityMessage(int entityId, ControllerType type, Transform transform) {
+	public AddEntityMessage(int entityId, Transform transform) {
 		this.entityId = entityId;
-		this.type = type;
 		this.worldUid = transform.getPosition().getWorld().getUID();
 		this.pos = transform.getPosition();
 		this.rotation = transform.getRotation();
 		this.scale = transform.getScale();
 	}
 
-	public AddEntityMessage(int entityId, ControllerType type, UUID worldUid, Vector3 pos, Quaternion rotation, Vector3 scale) {
+	public AddEntityMessage(int entityId, UUID worldUid, Vector3 pos, Quaternion rotation, Vector3 scale) {
 		this.entityId = entityId;
-		this.type = type;
 		this.worldUid = worldUid;
 		this.pos = pos;
 		this.rotation = rotation;
@@ -68,10 +64,6 @@ public class AddEntityMessage implements Message {
 
 	public int getEntityId() {
 		return entityId;
-	}
-
-	public ControllerType getType() {
-		return type;
 	}
 
 	public UUID getWorldUid() {
@@ -98,7 +90,6 @@ public class AddEntityMessage implements Message {
 	public String toString() {
 		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
 				.append("entityId", entityId)
-				.append("type", type)
 				.append("worldUid", worldUid)
 				.append("pos", pos)
 				.append("scale", scale)
@@ -110,7 +101,6 @@ public class AddEntityMessage implements Message {
 	public int hashCode() {
 		return new HashCodeBuilder(65, 29)
 				.append(entityId)
-				.append(type)
 				.append(worldUid)
 				.append(pos)
 				.append(scale)
@@ -124,7 +114,6 @@ public class AddEntityMessage implements Message {
 			final AddEntityMessage other = (AddEntityMessage) obj;
 			return new EqualsBuilder()
 					.append(entityId, other.entityId)
-					.append(type, other.type)
 					.append(worldUid, other.worldUid)
 					.append(pos, other.pos)
 					.append(scale, other.scale)

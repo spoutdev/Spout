@@ -24,37 +24,27 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.entity.controller;
+package org.spout.api.component.components;
 
-import org.spout.api.entity.BasicController;
-import org.spout.api.entity.controller.type.ControllerType;
-import org.spout.api.geo.cuboid.Block;
-import org.spout.api.material.BlockMaterial;
+import org.spout.api.component.Component;
+import org.spout.api.component.ComponentHolder;
+import org.spout.api.component.WorldComponentHolder;
 
-/**
- * Represents the entity for a block.
- */
-public abstract class BlockController extends BasicController {
-	protected final BlockMaterial blockMaterial;
-
-	public BlockController(ControllerType type, BlockMaterial blockMaterial) {
-		super(type);
-		this.blockMaterial = blockMaterial;
+public class WorldComponent extends Component {
+	public WorldComponent() {
 	}
 
-	/**
-	 * Returns the BlockMaterial associated with the entity
-	 * @return block material
-	 */
-	public BlockMaterial getMaterial() {
-		return blockMaterial;
+	@Override
+	public boolean attachTo(ComponentHolder holder) {
+		if (holder instanceof WorldComponentHolder) {
+			return super.attachTo(holder);
+		} else {
+			return false;
+		}
 	}
 
-	/**
-	 * Gets the block of this block entity
-	 * @return the block
-	 */
-	public Block getBlock() {
-		return this.getParent().getWorld().getBlock(this.getParent().getPosition(), this.getParent());
+	@Override
+	public WorldComponentHolder getHolder() {
+		return (WorldComponentHolder) super.getHolder();
 	}
 }
