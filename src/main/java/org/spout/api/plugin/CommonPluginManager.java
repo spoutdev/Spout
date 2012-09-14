@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -90,8 +91,8 @@ public class CommonPluginManager implements PluginManager {
 	}
 
 	@Override
-	public Plugin[] getPlugins() {
-		return plugins.toArray(new Plugin[plugins.size()]);
+	public List<Plugin> getPlugins() {
+		return Collections.unmodifiableList(plugins);
 	}
 
 	@Override
@@ -144,7 +145,7 @@ public class CommonPluginManager implements PluginManager {
 	}
 
 	@Override
-	public synchronized Plugin[] loadPlugins(File paramFile) {
+	public synchronized List<Plugin> loadPlugins(File paramFile) {
 		if (!paramFile.isDirectory()) {
 			throw new IllegalArgumentException("File parameter was not a Directory!");
 		}
@@ -202,7 +203,7 @@ public class CommonPluginManager implements PluginManager {
 			}
 		}
 
-		return result.toArray(new Plugin[result.size()]);
+		return Collections.unmodifiableList(result);
 	}
 
 	@Override

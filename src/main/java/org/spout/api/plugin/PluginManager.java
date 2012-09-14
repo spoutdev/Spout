@@ -27,6 +27,9 @@
 package org.spout.api.plugin;
 
 import java.io.File;
+import java.util.List;
+
+import javax.swing.ListModel;
 
 import org.spout.api.exception.InvalidDescriptionFileException;
 import org.spout.api.exception.InvalidPluginException;
@@ -46,7 +49,7 @@ public interface PluginManager {
 	 *
 	 * @return plugins
 	 */
-	public abstract Plugin[] getPlugins();
+	public List<Plugin> getPlugins();
 
 	/**
 	 * Loads the file as a plugin
@@ -65,7 +68,7 @@ public interface PluginManager {
 	 * @param file
 	 * @return array of plugins loaded
 	 */
-	public abstract Plugin[] loadPlugins(File file);
+	public abstract List<Plugin> loadPlugins(File file);
 
 	/**
 	 * Disables all plugins
