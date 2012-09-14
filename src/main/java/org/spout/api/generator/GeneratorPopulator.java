@@ -26,36 +26,9 @@
  */
 package org.spout.api.generator;
 
-import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.material.BlockMaterial;
+import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 
-public class FlatWorldGenerator implements WorldGenerator {
-	@Override
-	public void generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ, World world) {
-		if (chunkY < 0) {
-			blockData.flood(BlockMaterial.UNBREAKABLE.getId());
-		}
-	}
-
-	@Override
-	public Populator[] getPopulators() {
-		return new Populator[0];
-	}
-	
-	@Override
-	public GeneratorPopulator[] getGeneratorPopulators() {
-		return new GeneratorPopulator[0];
-	}
-
-	@Override
-	public String getName() {
-		return "FlatWorld";
-	}
-
-	@Override
-	public int[][] getSurfaceHeight(World world, int chunkX, int chunkZ) {
-		return new int[Chunk.BLOCKS.SIZE][Chunk.BLOCKS.SIZE];
-	}
+public interface GeneratorPopulator {
+	public void populate(CuboidShortBuffer blockData, int x, int y, int z, BiomeManager biomes, long seed);
 }

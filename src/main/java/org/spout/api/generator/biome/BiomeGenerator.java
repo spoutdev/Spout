@@ -31,6 +31,7 @@ import java.util.Set;
 
 import com.google.common.collect.Lists;
 
+import org.spout.api.generator.GeneratorPopulator;
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
@@ -43,6 +44,7 @@ import org.spout.api.util.cuboid.CuboidShortBuffer;
 public abstract class BiomeGenerator implements WorldGenerator {
 	protected final BiomeMap biomes = new BiomeMap();
 	private final ArrayList<Populator> populators = new ArrayList<Populator>();
+	private final ArrayList<GeneratorPopulator> generatorPopulators = new ArrayList<GeneratorPopulator>();
 
 	public BiomeGenerator() {
 		registerBiomes();
@@ -51,7 +53,7 @@ public abstract class BiomeGenerator implements WorldGenerator {
 				return;
 			}
 		}
-		populators.add(new BiomePopulator(biomes));
+		populators.add(new BiomePopulator());
 	}
 
 	/**
@@ -79,8 +81,14 @@ public abstract class BiomeGenerator implements WorldGenerator {
 	@Override
 	public void generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ, World world) {
 		final int x = chunkX << Chunk.BLOCKS.BITS;
+		final int y = chunkY << Chunk.BLOCKS.BITS;
 		final int z = chunkZ << Chunk.BLOCKS.BITS;
-		generateTerrain(blockData, x, chunkY << Chunk.BLOCKS.BITS, z, world.getBiomeManager(x, z, true), world.getSeed());
+		final long seed = world.getSeed();
+		final BiomeManager manager = world.getBiomeManager(x, z, true);
+		generateTerrain(blockData, x, y, z, manager, seed);
+		for (GeneratorPopulator generatorPopulator : generatorPopulators) {
+			generatorPopulator.populate(blockData, x, y, z, manager, seed);
+		}
 	}
 
 	public BiomeManager generateBiomes(int chunkX, int chunkZ, World world) {
@@ -105,8 +113,17 @@ public abstract class BiomeGenerator implements WorldGenerator {
 		return populators.toArray(new Populator[populators.size()]);
 	}
 
+	@Override
+	public final GeneratorPopulator[] getGeneratorPopulators() {
+		return generatorPopulators.toArray(new GeneratorPopulator[generatorPopulators.size()]);
+	}
+
 	public void addPopulators(Populator... p) {
 		populators.addAll(Lists.newArrayList(p));
+	}
+
+	public void addGeneratorPopulators(GeneratorPopulator... p) {
+		generatorPopulators.addAll(Lists.newArrayList(p));
 	}
 
 	public Biome getBiome(int x, int y, int z, long seed) {

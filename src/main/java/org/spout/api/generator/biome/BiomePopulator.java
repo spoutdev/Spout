@@ -35,12 +35,6 @@ import org.spout.api.geo.cuboid.Chunk;
  * Provides Biome level population for BiomeGenerator
  */
 public final class BiomePopulator extends Populator {
-	final BiomeMap map;
-
-	public BiomePopulator(BiomeMap map) {
-		this.map = map;
-	}
-
 	@Override
 	public final void populate(Chunk chunk, Random random) {
 		final Biome biome = chunk.getBiome(7, 7, 7);

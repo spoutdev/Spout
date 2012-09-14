@@ -43,6 +43,11 @@ public class EmptyWorldGenerator implements WorldGenerator {
 	}
 
 	@Override
+	public GeneratorPopulator[] getGeneratorPopulators() {
+		return new GeneratorPopulator[0];
+	}
+	
+	@Override
 	public String getName() {
 		return "EmptyWorld";
 	}

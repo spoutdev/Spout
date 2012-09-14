@@ -55,13 +55,33 @@ public class WorldGeneratorUtils {
 	 * @param extraSeed the extra seed value
 	 */
 	public static long getSeed(World world, int x, int y, int z, int extraSeed) {
-		long hash = world.getSeed();
-		hash += (hash << HASH_SHIFT) + (hash >> 64 - HASH_SHIFT & HASH_SHIFT_MASK) + extraSeed;
-		hash += (hash << HASH_SHIFT) + (hash >> 64 - HASH_SHIFT & HASH_SHIFT_MASK) + x;
-		hash += (hash << HASH_SHIFT) + (hash >> 64 - HASH_SHIFT & HASH_SHIFT_MASK) + y;
-		hash += (hash << HASH_SHIFT) + (hash >> 64 - HASH_SHIFT & HASH_SHIFT_MASK) + z;
+		return getSeed(world.getSeed(), x, y, z, extraSeed);
+	}
 
-		return hash;
+	/**
+	 * Returns the particular seed a Random should use for a position
+	 *
+	 * The meaning of the x, y and z coordinates can be determined by the
+	 * generator.
+	 *
+	 * This gives consistent results for world generation.
+	 *
+	 * The extra seed allows multiple Randoms to be returned for the same
+	 * position for use by populators and different stages of generation.
+	 *
+	 * @param seed the original seed
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param extraSeed the extra seed value
+	 */
+	public static long getSeed(long seed, int x, int y, int z, int extraSeed) {
+		seed += (seed << HASH_SHIFT) + (seed >> 64 - HASH_SHIFT & HASH_SHIFT_MASK) + extraSeed;
+		seed += (seed << HASH_SHIFT) + (seed >> 64 - HASH_SHIFT & HASH_SHIFT_MASK) + x;
+		seed += (seed << HASH_SHIFT) + (seed >> 64 - HASH_SHIFT & HASH_SHIFT_MASK) + y;
+		seed += (seed << HASH_SHIFT) + (seed >> 64 - HASH_SHIFT & HASH_SHIFT_MASK) + z;
+
+		return seed;
 	}
 
 	/**
@@ -81,8 +101,28 @@ public class WorldGeneratorUtils {
 	 * @return the random
 	 */
 	public static Random getRandom(World world, int x, int y, int z, int extraSeed) {
+		return getRandom(world.getSeed(), x, y, z, extraSeed);
+	}
+
+	/**
+	 * Gets a pre-seeded random for a particular position.
+	 *
+	 * The meaning of the x, y and z coordinates can be determined by the
+	 * generator.
+	 *
+	 * The extra seed allows multiple Randoms to be returned for the same
+	 * position for use by populators and different stages of generation.
+	 *
+	 * @param seed the original seed
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param extraSeed the extra seed value
+	 * @return the random
+	 */
+	public static Random getRandom(long seed, int x, int y, int z, int extraSeed) {
 		Random rng = new Random();
-		rng.setSeed(getSeed(world, x, y, z, extraSeed));
+		rng.setSeed(getSeed(seed, x, y, z, extraSeed));
 		return rng;
 	}
 
