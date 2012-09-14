@@ -41,6 +41,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import gnu.trove.iterator.TIntIterator;
 
@@ -54,7 +55,6 @@ import org.spout.api.event.chunk.ChunkLoadEvent;
 import org.spout.api.event.chunk.ChunkPopulateEvent;
 import org.spout.api.event.chunk.ChunkUnloadEvent;
 import org.spout.api.event.chunk.ChunkUpdatedEvent;
-import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.LoadOption;
@@ -155,7 +155,7 @@ public class SpoutRegion extends Region {
 	 * A queue of chunks that need to be populated
 	 */
 	final ArrayBlockingQueue<SpoutChunk> populationQueue = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
-
+	private final AtomicBoolean[][] generatedColumns = new AtomicBoolean[CHUNKS.SIZE][CHUNKS.SIZE];
 	private final SpoutTaskManager taskManager;
 	private final Thread executionThread;
 	private final SpoutScheduler scheduler;
@@ -194,6 +194,13 @@ public class SpoutRegion extends Region {
 				}
 			}
 		}
+		
+		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
+			for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+				generatedColumns[dx][dz] = new AtomicBoolean(false);
+			}
+
+		}
 
 		File worldDirectory = world.getDirectory();
 		File regionDirectory = new File(worldDirectory, "region");
@@ -231,19 +238,11 @@ public class SpoutRegion extends Region {
 
 		final SpoutChunk chunk = chunks[x][y][z].get();
 		if (chunk != null) {
-			if (loadopt.loadIfNeeded()) {
-				if (!chunk.cancelUnload()) {
-					throw new IllegalStateException("Unloaded chunk returned by getChunk");
-				}
-			}
+			checkChunkLoaded(chunk, loadopt);
 			return chunk;
 		}
 
 		SpoutChunk newChunk = null;
-		boolean generated = false;
-
-		final AtomicReference<SpoutChunk> chunkReference = chunks[x][y][z];
-
 		ChunkDataForRegion dataForRegion = null;
 
 		if (loadopt.loadIfNeeded() && this.inputStreamExists(x, y, z)) {
@@ -252,43 +251,19 @@ public class SpoutRegion extends Region {
 		}
 
 		if (loadopt.generateIfNeeded() && newChunk == null) {
-			newChunk = generateChunk(x, y, z);
-			generated = true;
+			generateChunks(x, z, loadopt);
+			final SpoutChunk generatedChunk = chunks[x][y][z].get();
+			if (generatedChunk != null) {
+				checkChunkLoaded(generatedChunk, loadopt);
+				return generatedChunk;
+			}
 		}
 
 		if (newChunk == null) {
 			return null;
 		}
 
-		while (true) {
-			if (chunkReference.compareAndSet(null, newChunk)) {
-				newChunk.notifyColumn();
-				numberActiveChunks.incrementAndGet();
-				if (dataForRegion != null) {
-					for (SpoutEntity entity : dataForRegion.loadedEntities) {
-						entity.setupInitialChunk(entity.getTransform().getTransform());
-						entityManager.addEntity(entity);
-					}
-					dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);
-				}
-				occupiedChunksQueue.add(newChunk);
-
-				Spout.getEventManager().callDelayedEvent(new ChunkLoadEvent(newChunk, generated));
-
-				return newChunk;
-			}
-
-			newChunk.setUnloadedUnchecked();
-			SpoutChunk oldChunk = chunkReference.get();
-			if (oldChunk != null) {
-				if (loadopt.loadIfNeeded()) {
-					if (!oldChunk.cancelUnload()) {
-						throw new IllegalStateException("Unloaded chunk returned by getChunk");
-					}
-				}
-				return oldChunk;
-			}
-		}
+		return setChunk(newChunk, x, y, z, dataForRegion, false, loadopt);
 	}
 
 	@Override
@@ -311,18 +286,65 @@ public class SpoutRegion extends Region {
 		return this.getChunk(x >> Chunk.BLOCKS.BITS, y >> Chunk.BLOCKS.BITS, z >> Chunk.BLOCKS.BITS, loadopt);
 	}
 
-	private SpoutChunk generateChunk(int x, int y, int z) {
-		x = this.getChunkX(x);
-		y = this.getChunkY(y);
-		z = this.getChunkZ(z);
-		final SpoutWorld world = getWorld();
-		
-		CuboidShortBuffer buffer = new CuboidShortBuffer(x << Chunk.BLOCKS.BITS, y << Chunk.BLOCKS.BITS, z << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
+	private void generateChunks(int x, int z, LoadOption loadopt) {
+		final AtomicBoolean generated = generatedColumns[x][z];
+		synchronized (generated) {
+			if (generated.getAndSet(true)) {
+				return;
+			}
+			int cx = getChunkX(x);
+			int cy = getChunkY();
+			int cz = getChunkZ(z);
+			final SpoutWorld world = getWorld();
 
-		WorldGenerator generator = getWorld().getGenerator();
-		generator.generate(buffer, x, y, z, world);
+			final CuboidShortBuffer column = new CuboidShortBuffer(cx << Chunk.BLOCKS.BITS, cy << Chunk.BLOCKS.BITS, cz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, CHUNKS.SIZE * Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
+			getWorld().getGenerator().generate(column, cx, cy, cz, world);
 
-		return new FilteredChunk(world, this, x, y, z, buffer.getRawArray(), buffer.getDataMap());
+			final int endY = cy + CHUNKS.SIZE;
+			for (int yy = 0; cy < endY; cy++) {
+				final CuboidShortBuffer chunk = new CuboidShortBuffer(cx << Chunk.BLOCKS.BITS, cy << Chunk.BLOCKS.BITS, cz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
+				chunk.setSource(column);
+				chunk.copyElement(0, yy * Chunk.BLOCKS.VOLUME, Chunk.BLOCKS.VOLUME);
+				setChunk(new FilteredChunk(world, this, cx, cy, cz, chunk.getRawArray(), null), x, yy++, z, null, true, loadopt);
+			}
+		}
+	}
+	
+	private SpoutChunk setChunk(SpoutChunk newChunk, int x, int y, int z, ChunkDataForRegion dataForRegion, boolean generated, LoadOption loadopt) {
+		final AtomicReference<SpoutChunk> chunkReference = chunks[x][y][z];
+		while (true) {
+			if (chunkReference.compareAndSet(null, newChunk)) {
+				newChunk.notifyColumn();
+				numberActiveChunks.incrementAndGet();
+				if (dataForRegion != null) {
+					for (SpoutEntity entity : dataForRegion.loadedEntities) {
+						entity.setupInitialChunk(entity.getTransform().getTransform());
+						entityManager.addEntity(entity);
+					}
+					dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);
+				}
+				occupiedChunksQueue.add(newChunk);
+
+				Spout.getEventManager().callDelayedEvent(new ChunkLoadEvent(newChunk, generated));
+
+				return newChunk;
+			}
+
+			newChunk.setUnloadedUnchecked();
+			SpoutChunk oldChunk = chunkReference.get();
+			if (oldChunk != null) {
+				checkChunkLoaded(oldChunk, loadopt);
+				return oldChunk;
+			}
+		}
+	}
+	
+	private void checkChunkLoaded(SpoutChunk chunk, LoadOption loadopt) {
+		if (loadopt.loadIfNeeded()) {
+			if (!chunk.cancelUnload()) {
+				throw new IllegalStateException("Unloaded chunk returned by getChunk");
+			}
+		}
 	}
 
 	/**
