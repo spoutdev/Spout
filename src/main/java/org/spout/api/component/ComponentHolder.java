@@ -36,6 +36,13 @@ import org.spout.api.component.components.DatatableComponent;
  */
 public interface ComponentHolder {
 
+	/**
+	 * Adds the component of the specified type to the holder and returns it if it is not present.
+	 * 
+	 * Otherwise, it returns the component of the specified type if there was one present.
+	 * @param type whose component is to be added to the holder
+	 * @return the new component that was added, or the existing one if it had one
+	 */
 	public <T extends Component> T add(Class<T> type);
 
 	/**

@@ -29,6 +29,10 @@ package org.spout.api.entity;
 import java.util.UUID;
 
 import org.spout.api.Source;
+import org.spout.api.component.ComponentHolder;
+import org.spout.api.component.components.EntityComponent;
+import org.spout.api.component.components.NetworkComponent;
+import org.spout.api.component.components.TransformComponent;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
@@ -42,7 +46,7 @@ import org.spout.api.util.thread.SnapshotRead;
 /**
  * Represents an entity, which may or may not be spawned into the world.
  */
-public interface Entity extends Source, Tickable, WorldSource, EntityComponentHolder {
+public interface Entity extends Source, Tickable, WorldSource, ComponentHolder {
 	/**
 	 * Gets the current ID of this entity within the current game session
 	 * @return The entities' id.
@@ -141,4 +145,17 @@ public interface Entity extends Source, Tickable, WorldSource, EntityComponentHo
 	 * Interact with this entity. Calls all EntityComponents inside the entities onInteract method.
 	 */
 	public void interact(Action action, Source source);
+
+	/**
+	 * Gets a {@link Transform} {@link EntityComponent} representing the current position, scale and
+	 * rotation of the entity.
+	 * @return The transform component
+	 */
+	public TransformComponent getTransform();
+
+	/**
+	 * Gets a {@link NetworkComponent} which holds the entities protocol lookups.
+	 * @return The network component
+	 */
+	public NetworkComponent getNetwork();
 }
