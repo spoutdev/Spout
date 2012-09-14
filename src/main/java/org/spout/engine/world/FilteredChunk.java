@@ -61,7 +61,7 @@ public class FilteredChunk extends SpoutChunk{
 	}
 
 	public FilteredChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial, DataMap map) {
-		this(world, region, x, y, z, PopulationState.UNTOUCHED, initial, null, null, null, map.getRawMap());
+		this(world, region, x, y, z, PopulationState.UNTOUCHED, initial, null, null, null, map != null ? map.getRawMap() : null);
 		chunkModified.set(true);
 	}
 
