@@ -52,6 +52,7 @@ public abstract class EntityComponent extends Component {
 
 	/**
 	 * Called when the parent entity is spawned into the world.
+	 * Will only be called if the entity was not already spawned before this component was attached.
 	 */
 	public void onSpawned() {
 	}
