@@ -29,6 +29,7 @@ package org.spout.engine.command;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -309,19 +310,20 @@ public class AdministrationCommands {
 	@Command(aliases = {"plugins", "pl"}, desc = "List all plugins on the engine")
 	@CommandPermissions("spout.command.plugins")
 	public void plugins(CommandContext args, CommandSource source) {
-		Plugin[] pluginList = Spout.getEngine().getPluginManager().getPlugins();
+		List<Plugin> plugins = Spout.getEngine().getPluginManager().getPlugins();
 		ChatArguments pluginListString = new ChatArguments();
-		pluginListString.append(Arrays.<Object>asList("Plugins (", pluginList.length - 1, "): "));
+		pluginListString.append(Arrays.<Object>asList("Plugins (", plugins.size()  - 1, "): "));
 
-		for (int i = 0; i < pluginList.length; i++) {
-			if (pluginList[i] instanceof SpoutMetaPlugin) {
+		for (int i = 0; i < plugins.size(); i++) {
+			Plugin plugin = plugins.get(i);
+			if (plugin instanceof SpoutMetaPlugin) {
 				continue;
 			}
 
-			pluginListString.append(pluginList[i].isEnabled() ? ChatStyle.BRIGHT_GREEN : ChatStyle.RED)
-					.append(pluginList[i].getName());
+			pluginListString.append(plugin.isEnabled() ? ChatStyle.BRIGHT_GREEN : ChatStyle.RED)
+					.append(plugin.getName());
 
-			if (i != pluginList.length - 1) {
+			if (i != plugins.size() - 1) {
 				pluginListString.append(ChatStyle.RESET).append(", ");
 			}
 		}

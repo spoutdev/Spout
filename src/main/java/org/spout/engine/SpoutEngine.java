@@ -265,7 +265,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 			pluginDirectory.mkdirs();
 		}
 
-		Plugin[] plugins = pluginManager.loadPlugins(pluginDirectory);
+		List<Plugin> plugins = pluginManager.loadPlugins(pluginDirectory);
 
 		for (Plugin plugin : plugins) {
 			try {
