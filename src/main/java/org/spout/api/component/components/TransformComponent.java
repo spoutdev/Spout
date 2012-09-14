@@ -76,7 +76,7 @@ public class TransformComponent extends EntityComponent {
 			getHolder().remove();
 			return;
 		}
-		transform.setPosition(position);
+		transformLive.setPosition(position);
 	}
 
 	public Quaternion getRotation() {
@@ -88,7 +88,7 @@ public class TransformComponent extends EntityComponent {
 			getHolder().remove();
 			return;
 		}
-		transform.setRotation(rotation);
+		transformLive.setRotation(rotation);
 	}
 
 	public Vector3 getScale() {
@@ -100,7 +100,7 @@ public class TransformComponent extends EntityComponent {
 			getHolder().remove();
 			return;
 		}
-		transform.setScale(scale);
+		transformLive.setScale(scale);
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class TransformComponent extends EntityComponent {
 	 * @param amount to move the entity
 	 */
 	public void translate(Vector3 amount) {
-		transform.getPosition().add(amount);
+		setPosition(transformLive.getPosition().add(amount));
 	}
 
 	/**
@@ -118,7 +118,7 @@ public class TransformComponent extends EntityComponent {
 	 * @param z offset
 	 */
 	public void translate(float x, float y, float z) {
-		transform.setPosition(transform.getPosition().add(x, y, z));
+		setPosition(transformLive.getPosition().add(x, y, z));
 	}
 
 	/**
@@ -129,7 +129,7 @@ public class TransformComponent extends EntityComponent {
 	 * @param z
 	 */
 	public void rotate(float w, float x, float y, float z) {
-		transform.setRotation(transform.getRotation().rotate(w, x, y, z));
+		setRotation(transformLive.getRotation().rotate(w, x, y, z));
 	}
 
 	/**
@@ -137,7 +137,7 @@ public class TransformComponent extends EntityComponent {
 	 * @param rot
 	 */
 	public void rotate(Quaternion rot) {
-		transform.setRotation(transform.getRotation().multiply(rot));
+		setRotation(transformLive.getRotation().multiply(rot));
 	}
 
 	/**
@@ -145,7 +145,7 @@ public class TransformComponent extends EntityComponent {
 	 * @param amount
 	 */
 	public void scale(Vector3 amount) {
-		transform.setScale(transform.getScale().multiply(amount));
+		setScale(transformLive.getScale().multiply(amount));
 	}
 
 	/**
@@ -155,7 +155,7 @@ public class TransformComponent extends EntityComponent {
 	 * @param z
 	 */
 	public void scale(float x, float y, float z) {
-		transform.setScale(transform.getScale().multiply(x, y, z));
+		setScale(transformLive.getScale().multiply(x, y, z));
 	}
 
 	/**
