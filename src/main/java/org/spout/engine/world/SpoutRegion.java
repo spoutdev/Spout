@@ -288,10 +288,7 @@ public class SpoutRegion extends Region {
 
 	private void generateChunks(int x, int z, LoadOption loadopt) {
 		final AtomicBoolean generated = generatedColumns[x][z];
-		synchronized (generated) {
-			if (generated.getAndSet(true)) {
-				return;
-			}
+		if (generated.compareAndSet(false, true)) {
 			int cx = getChunkX(x);
 			int cy = getChunkY();
 			int cz = getChunkZ(z);
