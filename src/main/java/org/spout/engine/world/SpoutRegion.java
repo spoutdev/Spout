@@ -288,7 +288,10 @@ public class SpoutRegion extends Region {
 
 	private void generateChunks(int x, int z, LoadOption loadopt) {
 		final AtomicBoolean generated = generatedColumns[x][z];
-		if (generated.compareAndSet(false, true)) {
+		if (generated.get()) {
+			return;
+		}
+		synchronized(generated) {
 			int cx = getChunkX(x);
 			int cy = getChunkY();
 			int cz = getChunkZ(z);
@@ -304,7 +307,9 @@ public class SpoutRegion extends Region {
 				chunk.copyElement(0, yy * Chunk.BLOCKS.VOLUME, Chunk.BLOCKS.VOLUME);
 				setChunk(new FilteredChunk(world, this, cx, cy, cz, chunk.getRawArray(), null), x, yy++, z, null, true, loadopt);
 			}
+			generated.set(true);
 		}
+		
 	}
 	
 	private SpoutChunk setChunk(SpoutChunk newChunk, int x, int y, int z, ChunkDataForRegion dataForRegion, boolean generated, LoadOption loadopt) {
