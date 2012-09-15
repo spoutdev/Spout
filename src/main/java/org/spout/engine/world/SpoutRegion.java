@@ -292,6 +292,9 @@ public class SpoutRegion extends Region {
 			return;
 		}
 		synchronized(generated) {
+			if (generated.get()) {
+				return;
+			}
 			int cx = getChunkX(x);
 			int cy = getChunkY();
 			int cz = getChunkZ(z);
