@@ -98,6 +98,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		if (transform != null && load) {
 			setupInitialChunk(transform);
 			getTransform().setTransform(transform);
+			getTransform().copySnapshot();
 		}
 
 		int maxViewDistance = SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE;
@@ -234,7 +235,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	public World getWorld() {
-		return getTransform().getPosition().getWorld();
+		return entityManager.getRegion().getWorld();
 	}
 
 	public boolean justSpawned() {
