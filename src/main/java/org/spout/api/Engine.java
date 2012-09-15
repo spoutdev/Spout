@@ -37,6 +37,8 @@ import java.util.logging.Logger;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.group.ChannelGroup;
 
+import org.spout.api.chat.ChatChannelManager;
+import org.spout.api.chat.TextChatChannel;
 import org.spout.api.chat.completion.CompletionManager;
 import org.spout.api.chat.console.MultiConsole;
 import org.spout.api.command.Command;
@@ -162,14 +164,14 @@ public interface Engine extends Named {
 	 */
 	@SnapshotRead
 	public Entity getEntity(UUID uid);
-	
+
 	/**
 	 * Returns all player names that have ever played on this Game, whether they are online or not.
 	 *
 	 * @return all the player names
 	 */
 	public List<String> getAllPlayers();
-	
+
 	/**
 	 * Gets the {@link Player} by the given username. <br/>
 	 * <br/>
@@ -198,7 +200,7 @@ public interface Engine extends Named {
 	 * @return Collection of all possible matches
 	 */
 	public Collection<Player> matchPlayer(String name);
-	
+
 	/**
 	 * Searches for an actively loaded world that exactly matches the given
 	 * name. <br/>
@@ -553,4 +555,25 @@ public interface Engine extends Named {
 	 * @return The completion manager
 	 */
 	public CompletionManager getCompletionManager();
+
+	/**
+	 * Gets the ChatChannel which is used by default
+	 *
+	 * @return the defaultChatChannel
+	 */
+	public TextChatChannel getDefaultTextChatChannel();
+
+	/**
+	 * Gets the ChatChannel which is being used by the console
+	 *
+	 * @return the consoleChatChannel
+	 */
+	public TextChatChannel getConsoleTextChatChannel();
+
+	/**
+	 * Get the ChatChannelManager
+	 *
+	 * @return the ChatChannelManager
+	 */
+	public ChatChannelManager getChatChannelManager();
 }

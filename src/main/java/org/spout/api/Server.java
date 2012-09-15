@@ -29,6 +29,8 @@ package org.spout.api;
 import java.util.Collection;
 import java.util.List;
 
+import org.spout.api.chat.TextChatChannel;
+import org.spout.api.component.components.TextChatComponent;
 import org.spout.api.entity.Player;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.util.access.AccessManager;
@@ -79,6 +81,27 @@ public interface Server extends Engine {
 	 * @param message to send
 	 */
 	public void broadcastMessage(String permission, Object... message);
+
+	/**
+	 * Broadcasts the given message to the ChatChannel the talker is talking in.
+	 *
+	 * The implementation of broadcast will look for the ChatChannel the talker is talking in and than broadcasts the formatted message
+	 * to the listeners.
+	 *
+	 * @param talker which is talking
+	 * @param message to send
+	 */
+	public void broadcastMessage(TextChatComponent talker, Object... message);
+
+	/**
+	 * Broadcasts the given message to a certain ChatChannel
+	 *
+	 * The implementation of broadcast will broadcast the formatted message to the listeners of a specific ChatChannel.
+	 *
+	 * @param chatChannel to broadcast the message to
+	 * @param message to send
+	 */
+	public void broadcastMessage(TextChatChannel chatChannel, Object... message);
 
 	/**
 	 * Gets the {@link Player} by the given username. <br/>
