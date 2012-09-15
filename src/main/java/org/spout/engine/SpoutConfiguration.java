@@ -44,6 +44,11 @@ public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder LIVE_LIGHTING = new ConfigurationHolder(false, "live-lighting");
 	public static final ConfigurationHolder LIGHTING_ENABLED = new ConfigurationHolder(true, "lighting-enabled");
 	public static final ConfigurationHolder DEFAULT_LANGUAGE = new ConfigurationHolder("EN_US", "default-language");
+	public static final ConfigurationHolder DEFAULT_CHATCHANNEL_NAME = new ConfigurationHolder("","default-chatchannel-name");
+	public static final ConfigurationHolder DEFAULT_CHATCHANNEL_FORMAT = new ConfigurationHolder("{{GREY}}<{{player-name}}> {{message}}","default-chatchannel-format");
+	public static final ConfigurationHolder CONSOLE_CHATCHANNEL_NAME = new ConfigurationHolder("Console ","console-chatchannel-name");
+	public static final ConfigurationHolder CONSOLE_CHATCHANNEL_FORMAT = new ConfigurationHolder("{{GREY}}<{{channel-name}}> {{message}}","console-chatchannel-format");
+
 
 	public SpoutConfiguration() {
 		super(new YamlConfiguration(new File("config", "spout.yml")));

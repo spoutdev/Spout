@@ -39,6 +39,7 @@ import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.Command;
 import org.spout.api.command.RootCommand;
 import org.spout.api.component.Component;
+import org.spout.api.component.components.TextChatComponent;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.state.PlayerInputState;
@@ -57,6 +58,7 @@ import org.spout.api.util.access.BanType;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;
+
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.filesystem.WorldFiles;
@@ -88,6 +90,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		displayName.set(name);
 		hashcode = name.hashCode();
 		this.setObserver(true);
+		add(TextChatComponent.class);
 	}
 
 	@Override
@@ -343,7 +346,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		getTransform().setPosition(loc);
 		getNetworkSynchronizer().setPositionDirty();
 	}
-	
+
 	@Override
 	public void teleport(Transform transform) {
 		getTransform().setTransform(transform);

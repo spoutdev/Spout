@@ -35,6 +35,8 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.command.annotated.Executor;
+import org.spout.api.component.components.TextChatComponent;
+import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.event.player.PlayerChatEvent;
 import org.spout.api.exception.CommandException;
@@ -57,6 +59,7 @@ public class MessagingCommands {
 	public class SayCommand {
 		public SayCommand() {
 			DefaultPermissions.addDefaultPermission("spout.chat.send");
+			//Todo can we drop this completely or do we need to enhance the new method to support this on top of ChatChannels?
 			DefaultPermissions.addDefaultPermission("spout.chat.receive.*");
 		}
 
@@ -74,13 +77,9 @@ public class MessagingCommands {
 						return;
 					}
 
-					ChatArguments template = event.getFormat().getArguments();
-					template.setPlaceHolder(PlayerChatEvent.NAME, new ChatArguments(player.getDisplayName()));
-					template.setPlaceHolder(PlayerChatEvent.MESSAGE, event.getMessage());
-
-					((Server) engine).broadcastMessage("spout.chat.receive." + player.getName(), template);
+					player.get(TextChatComponent.class).talk(event.getFormat().getArguments());
 				} else {
-					((Server) engine).broadcastMessage("spout.chat.receive.console", "<", source.getName(), "> ", message);
+					((Server) engine).broadcastMessage(Spout.getEngine().getConsoleTextChatChannel(), message);
 				}
 			}
 		}
@@ -117,6 +116,10 @@ public class MessagingCommands {
 		if (Spout.getPlatform() != Platform.SERVER && Spout.getPlatform() != Platform.PROXY) {
 			throw new CommandException("You may only message other users in server mode.");
 		}
-		((Server) Spout.getEngine()).broadcastMessage(ChatStyle.YELLOW, ChatStyle.ITALIC, source.getName(), " ", args.getJoinedString(0));
+		if (source instanceof Entity){
+			((Server) Spout.getEngine()).broadcastMessage((Entity) source,ChatStyle.YELLOW, ChatStyle.ITALIC, source.getName(), " ", args.getJoinedString(0) );
+		}  else {
+			((Server) Spout.getEngine()).broadcastMessage(ChatStyle.YELLOW, ChatStyle.ITALIC, source.getName(), " ", args.getJoinedString(0));
+		}
 	}
 }
