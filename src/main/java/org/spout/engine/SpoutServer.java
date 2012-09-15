@@ -26,7 +26,6 @@
  */
 package org.spout.engine;
 
-import static org.spout.api.lang.Translation.log;
 import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
@@ -45,25 +44,6 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
-
-import org.spout.api.chat.ChatArguments;
-import org.spout.api.command.CommandSource;
-import org.spout.api.entity.Player;
-import org.spout.api.event.server.ServerStopEvent;
-import org.spout.api.exception.ConfigurationException;
-import org.spout.api.permissions.PermissionsSubject;
-import org.spout.api.protocol.CommonPipelineFactory;
-import org.spout.api.protocol.PortBinding;
-import org.spout.api.protocol.Protocol;
-
-import org.spout.engine.entity.SpoutPlayer;
-import org.spout.engine.listener.SpoutServerListener;
-import org.spout.engine.protocol.PortBindingImpl;
-import org.spout.engine.protocol.PortBindings;
-import org.spout.engine.protocol.SpoutNioServerSocketChannel;
-import org.spout.engine.protocol.SpoutServerSession;
-import org.spout.engine.util.access.SpoutAccessManager;
-import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
 import org.teleal.cling.controlpoint.ControlPoint;
@@ -73,15 +53,35 @@ import org.teleal.cling.transport.spi.InitializationException;
 
 import org.spout.api.FileSystem;
 import org.spout.api.Server;
+import org.spout.api.chat.ChatArguments;
+import org.spout.api.chat.TextChatChannel;
+import org.spout.api.command.CommandSource;
+import org.spout.api.component.components.TextChatComponent;
+import org.spout.api.entity.Player;
 import org.spout.api.event.Listener;
 import org.spout.api.event.server.ServerStartEvent;
+import org.spout.api.event.server.ServerStopEvent;
+import org.spout.api.exception.ConfigurationException;
+import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.plugin.Platform;
+import org.spout.api.protocol.CommonPipelineFactory;
+import org.spout.api.protocol.PortBinding;
+import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
-
-import org.spout.engine.filesystem.ServerFileSystem;
-
 import org.spout.api.util.StringUtil;
 import org.spout.api.util.access.AccessManager;
+
+import org.spout.engine.entity.SpoutPlayer;
+import org.spout.engine.filesystem.ServerFileSystem;
+import org.spout.engine.listener.SpoutServerListener;
+import org.spout.engine.protocol.PortBindingImpl;
+import org.spout.engine.protocol.PortBindings;
+import org.spout.engine.protocol.SpoutNioServerSocketChannel;
+import org.spout.engine.protocol.SpoutServerSession;
+import org.spout.engine.util.access.SpoutAccessManager;
+import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
+
+import static org.spout.api.lang.Translation.log;
 
 public class SpoutServer extends SpoutEngine implements Server {
 	/**
@@ -355,6 +355,16 @@ public class SpoutServer extends SpoutEngine implements Server {
 				((CommandSource) player).sendMessage(args);
 			}
 		}
+	}
+
+	@Override
+	public void broadcastMessage(TextChatComponent talker, Object... message) {
+		talker.talk(message);
+	}
+
+	@Override
+	public void broadcastMessage(TextChatChannel chatChannel, Object... message) {
+		chatChannel.broadcast(message);
 	}
 
 	@Override
