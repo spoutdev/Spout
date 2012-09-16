@@ -24,7 +24,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.inventory;
+package org.spout.api.inventory.recipe;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,7 +39,6 @@ import org.spout.api.material.Material;
 import org.spout.api.plugin.Plugin;
 
 public class CommonRecipeManager implements RecipeManager {
-
 	private final Map<Plugin, Map<Integer, RecipeTree>> registeredShapedRecipes = new ConcurrentHashMap<Plugin, Map<Integer, RecipeTree>>();
 	private final Map<Plugin, Map<Integer, Set<ShapelessRecipe>>> registeredShapelessRecipes = new ConcurrentHashMap<Plugin, Map<Integer, Set<ShapelessRecipe>>>();
 	private final Map<Integer, Set<Recipe>> allRecipes = new ConcurrentHashMap<Integer, Set<Recipe>>();
@@ -65,7 +64,7 @@ public class CommonRecipeManager implements RecipeManager {
 		failed = !allRecipes.get(recipe.getNumOfMaterials()).add(recipe) || failed;
 		return !failed;
 	}
-	
+
 	private boolean addShapedRecipe(ShapedRecipe recipe) {
 		boolean failed = false;
 		Plugin plugin = recipe.getPlugin();
@@ -81,7 +80,7 @@ public class CommonRecipeManager implements RecipeManager {
 			}
 			failed = !registeredShapedRecipes.get(plugin).get(recipe.getNumOfMaterials()).addRecipe(recipe) || failed;
 		}
-		
+
 		if (allShapedRecipes.get(recipe.getNumOfMaterials()) == null) {
 			RecipeTree recipes = new RecipeTree();
 			allShapedRecipes.put(recipe.getNumOfMaterials(), recipes);
@@ -89,7 +88,7 @@ public class CommonRecipeManager implements RecipeManager {
 		failed = !allShapedRecipes.get(recipe.getNumOfMaterials()).addRecipe(recipe) || failed;
 		return !failed;
 	}
-	
+
 	private boolean addShapelessRecipe(ShapelessRecipe recipe) {
 		boolean failed = false;
 		Plugin plugin = recipe.getPlugin();
@@ -105,7 +104,7 @@ public class CommonRecipeManager implements RecipeManager {
 			}
 			failed = !registeredShapelessRecipes.get(plugin).get(recipe.getNumOfMaterials()).add(recipe) || failed;
 		}
-		
+
 		if (allShapelessRecipes.get(recipe.getNumOfMaterials()) == null) {
 			Set<ShapelessRecipe> recipes = Collections.newSetFromMap(new ConcurrentHashMap<ShapelessRecipe, Boolean>());
 			allShapelessRecipes.put(recipe.getNumOfMaterials(), recipes);
@@ -113,7 +112,7 @@ public class CommonRecipeManager implements RecipeManager {
 		failed = !allShapelessRecipes.get(recipe.getNumOfMaterials()).add(recipe) || failed;
 		return !failed;
 	}
-	
+
 	@Override
 	public Set<Recipe> getRecipes(Plugin plugin, Material result) {
 		Set<Recipe> recipes = new HashSet<Recipe>();
@@ -132,7 +131,7 @@ public class CommonRecipeManager implements RecipeManager {
 		recipes.addAll(getShapelessRecipes(plugin));
 		return recipes;
 	}
-	
+
 	@Override
 	public Set<Recipe> getShapedRecipes(Plugin plugin) {
 		Set<Recipe> set = new HashSet<Recipe>();
@@ -143,7 +142,7 @@ public class CommonRecipeManager implements RecipeManager {
 		}
 		return set;
 	}
-	
+
 	@Override
 	public Set<Recipe> getShapelessRecipes(Plugin plugin) {
 		Set<Recipe> set = new HashSet<Recipe>();
@@ -154,12 +153,12 @@ public class CommonRecipeManager implements RecipeManager {
 		}
 		return set;
 	}
-	
+
 	@Override
 	public boolean replaceRecipe(Recipe oldRecipe, Recipe newRecipe) {
 		return removeRecipe(oldRecipe) && addRecipe(newRecipe);
 	}
-		
+
 	@Override
 	public boolean removeRecipe(Recipe recipe) {
 		if (allRecipes.get(recipe.getNumOfMaterials()) == null) {
@@ -174,7 +173,7 @@ public class CommonRecipeManager implements RecipeManager {
 		failed = !allRecipes.get(recipe.getNumOfMaterials()).remove(recipe) || failed;
 		return !failed;
 	}
-	
+
 	private boolean removeShapedRecipe(ShapedRecipe recipe) {
 		boolean failed = false;
 		Plugin plugin = recipe.getPlugin();
@@ -193,7 +192,7 @@ public class CommonRecipeManager implements RecipeManager {
 		failed = !allShapedRecipes.get(recipe.getNumOfMaterials()).removeRecipe(recipe) || failed;
 		return !failed;
 	}
-	
+
 	private boolean removeShapelessRecipe(ShapelessRecipe recipe) {
 		boolean failed = false;
 		Plugin plugin = recipe.getPlugin();
@@ -207,7 +206,7 @@ public class CommonRecipeManager implements RecipeManager {
 			if (!registeredShapelessRecipes.get(plugin).get(recipe.getNumOfMaterials()).contains(recipe)) {
 				return false;
 			}
-			failed =  !registeredShapelessRecipes.get(recipe.getPlugin()).get(recipe.getNumOfMaterials()).remove(recipe) || failed;
+			failed = !registeredShapelessRecipes.get(recipe.getPlugin()).get(recipe.getNumOfMaterials()).remove(recipe) || failed;
 		}
 		if (!allShapelessRecipes.containsKey(recipe.getNumOfMaterials())) {
 			return false;
@@ -215,16 +214,16 @@ public class CommonRecipeManager implements RecipeManager {
 		failed = !allShapelessRecipes.get(recipe.getNumOfMaterials()).remove(recipe) || failed;
 		return !failed;
 	}
-	
+
 	@Override
 	public Set<Recipe> getAllRecipes() {
 		Set<Recipe> recipes = new HashSet<Recipe>();
 		for (int i : allRecipes.keySet()) {
-		    recipes.addAll(allRecipes.get(i));
+			recipes.addAll(allRecipes.get(i));
 		}
 		return recipes;
 	}
-	
+
 	@Override
 	public ShapedRecipe matchShapedRecipe(List<List<Material>> materials) {
 		Set<Material> set = new HashSet<Material>();
@@ -257,7 +256,7 @@ public class CommonRecipeManager implements RecipeManager {
 		}
 		return recipe;
 	}
-	
+
 	@Override
 	public ShapelessRecipe matchShapelessRecipe(List<Material> materials) {
 		Set<Material> set = new HashSet<Material>();
@@ -270,7 +269,7 @@ public class CommonRecipeManager implements RecipeManager {
 		}
 		set.addAll(parentList);
 		set.removeAll(Collections.singletonList(null));
-		
+
 		ShapelessRecipe recipe = null;
 		if (!allShapelessRecipes.containsKey(set.size())) {
 			return null;
@@ -305,7 +304,7 @@ public class CommonRecipeManager implements RecipeManager {
 			}
 			parentList.add(parentRow);
 		}
-		
+
 		ShapedRecipe recipe = null;
 		if (registeredShapedRecipes.containsKey(plugin) && registeredShapedRecipes.get(plugin).containsKey(set.size())) {
 			recipe = registeredShapedRecipes.get(plugin).get(set.size()).matchShapedRecipe(materials, true);
@@ -313,11 +312,11 @@ public class CommonRecipeManager implements RecipeManager {
 				recipe = registeredShapedRecipes.get(plugin).get(set.size()).matchShapedRecipe(parentList, false);
 			}
 		}
-		
+
 		if (recipe == null) {
 			recipe = matchShapedRecipe(materials);
 		}
-		
+
 		return recipe;
 	}
 
@@ -333,7 +332,7 @@ public class CommonRecipeManager implements RecipeManager {
 		}
 		set.addAll(parentList);
 		set.removeAll(Collections.singletonList(null));
-		
+
 		ShapelessRecipe recipe = null;
 		if (registeredShapelessRecipes.containsKey(plugin) && registeredShapelessRecipes.get(plugin).containsKey(set.size())) {
 			for (ShapelessRecipe r : registeredShapelessRecipes.get(plugin).get(set.size())) {
@@ -353,7 +352,7 @@ public class CommonRecipeManager implements RecipeManager {
 		if (recipe == null) {
 			recipe = matchShapelessRecipe(materials);
 		}
-		
+
 		return recipe;
 	}
 }

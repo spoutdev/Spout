@@ -26,7 +26,7 @@
  */
 package org.spout.api.protocol;
 
-import org.spout.api.inventory.InventoryBase;
+import org.spout.api.inventory.Inventory;
 import org.spout.api.inventory.ItemStack;
 
 /**
@@ -38,10 +38,10 @@ public class NullNetworkSynchronizer extends NetworkSynchronizer {
 		super(session, 0);
 	}
 
-	public void onSlotSet(InventoryBase inventory, int slot, ItemStack item) {
+	public void onSlotSet(Inventory inventory, int slot, ItemStack item) {
 	}
 
-	public void updateAll(InventoryBase inventory, ItemStack[] slots) {
+	public void updateAll(Inventory inventory, ItemStack[] slots) {
 	}
 
 	@Override

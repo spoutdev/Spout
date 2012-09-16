@@ -24,7 +24,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.inventory;
+package org.spout.api.inventory.recipe;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.Material;
 import org.spout.api.plugin.Plugin;
 
@@ -65,7 +66,7 @@ public class RecipeBuilder {
 		}
 		return new ShapedRecipe(this);
 	}
-	
+
 	public ShapelessRecipe buildShapelessRecipe() {
 		if (result == null) {
 			throw new IllegalStateException("Result must be set.");
@@ -91,17 +92,17 @@ public class RecipeBuilder {
 		this.plugin = plugin;
 		return this;
 	}
-	
+
 	public RecipeBuilder setResult(ItemStack result) {
 		this.result = result;
 		return this;
 	}
-	
+
 	public RecipeBuilder setResult(Material material, int amount) {
 		setResult(new ItemStack(material, amount));
 		return this;
 	}
-	
+
 	/**
 	 * Should be used only in recipes that will end up being shaped.
 	 * @param symbol character to represent the material
@@ -115,10 +116,9 @@ public class RecipeBuilder {
 		ingredientsMap.put(symbol, ingredient);
 		return this;
 	}
-	
+
 	/**
 	 * Should be used only in recipes that will end up being shapeless.
-	 * 
 	 * @param ingredient ingredient to add
 	 * @return this
 	 */
@@ -129,10 +129,9 @@ public class RecipeBuilder {
 		ingredients.add(ingredient);
 		return this;
 	}
-	
+
 	/**
 	 * Should be used only in recipes that will end up being shapeless.
-	 * 
 	 * @param ingredient ingredient to add
 	 * @param amount amount to add
 	 * @return this
@@ -146,12 +145,12 @@ public class RecipeBuilder {
 		}
 		return this;
 	}
-	
+
 	public RecipeBuilder addRow(List<Character> row) {
 		rows.add(row);
 		return this;
 	}
-	
+
 	public RecipeBuilder addRow(String str) {
 		char[] chars = str.toCharArray();
 		ArrayList<Character> row = new ArrayList<Character>();
@@ -163,7 +162,7 @@ public class RecipeBuilder {
 		}
 		return this;
 	}
-	
+
 	public RecipeBuilder removeRow(int rowNumber) {
 		if (rows.size() < rowNumber) {
 			return this;
@@ -171,7 +170,7 @@ public class RecipeBuilder {
 		rows.remove(rowNumber);
 		return this;
 	}
-	
+
 	public RecipeBuilder replaceRow(int rowNumber, List<Character> newRow) {
 		if (rows.size() < rowNumber || newRow == null) {
 			return this;
@@ -180,7 +179,7 @@ public class RecipeBuilder {
 		rows.add(rowNumber, newRow);
 		return this;
 	}
-	
+
 	public RecipeBuilder replaceRow(int rowNumber, String str) {
 		if (rows.size() < rowNumber || str == null) {
 			return this;
@@ -196,7 +195,7 @@ public class RecipeBuilder {
 		}
 		return this;
 	}
-	
+
 	public RecipeBuilder clone(Recipe recipe) {
 		plugin = recipe.getPlugin();
 		result = recipe.getResult();
