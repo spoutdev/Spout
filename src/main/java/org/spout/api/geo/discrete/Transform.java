@@ -27,8 +27,6 @@
 package org.spout.api.geo.discrete;
 
 import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicReference;
-
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -46,23 +44,23 @@ public final class Transform implements Serializable {
 	private static final long serialVersionUID = 2L;
 
 	private final SpinLock lock = new SpinLock();
-	private final AtomicReference<Point> position; 
-	private final AtomicReference<Quaternion> rotation;
-	private final AtomicReference<Vector3> scale;
+	private Point position; 
+	private Quaternion rotation;
+	private Vector3 scale;
 	public Transform() {
 		this(Point.invalid, Quaternion.IDENTITY, Vector3.ONE);
 	}
 
 	public Transform(Point position, Quaternion rotation, Vector3 scale) {
-		this.position = new AtomicReference<Point>(position);
-		this.rotation = new AtomicReference<Quaternion>(rotation);
-		this.scale = new AtomicReference<Vector3>(scale);
+		this.position = position;
+		this.rotation = rotation;
+		this.scale = scale;
 	}
 
 	public Point getPosition() {
 		try {
 			lock.lock();
-			return position.get();
+			return position;
 		} finally {
 			lock.unlock();
 		}
@@ -71,7 +69,7 @@ public final class Transform implements Serializable {
 	public void setPosition(Point position) {
 		try {
 			lock.lock();
-			this.position.set(position);
+			this.position = position;
 		} finally {
 			lock.unlock();
 		}
@@ -80,7 +78,7 @@ public final class Transform implements Serializable {
 	public Quaternion getRotation() {
 		try {
 			lock.lock();
-			return rotation.get();
+			return rotation;
 		} finally {
 			lock.unlock();
 		}
@@ -89,7 +87,7 @@ public final class Transform implements Serializable {
 	public void setRotation(Quaternion rotation) {
 		try {
 			lock.lock();
-			this.rotation.set(rotation);
+			this.rotation = rotation;
 		} finally {
 			lock.unlock();
 		}
@@ -98,7 +96,7 @@ public final class Transform implements Serializable {
 	public Vector3 getScale() {
 		try {
 			lock.lock();
-			return scale.get();
+			return scale;
 		} finally {
 			lock.unlock();
 		}
@@ -107,7 +105,7 @@ public final class Transform implements Serializable {
 	public void setScale(Vector3 scale) {
 		try {
 			lock.lock();
-			this.scale.set(scale);
+			this.scale = scale;
 		} finally {
 			lock.unlock();
 		}
@@ -128,7 +126,7 @@ public final class Transform implements Serializable {
 
 		try {
 			transform.lock.lock();
-			set(transform.position.get(), transform.rotation.get(), transform.scale.get());
+			set(transform.position, transform.rotation, transform.scale);
 		} finally {
 			transform.lock.unlock();
 		}
@@ -165,9 +163,9 @@ public final class Transform implements Serializable {
 	public void set(Point p, Quaternion r, Vector3 s) {
 		try {
 			lock.lock();
-			this.position.set(p);
-			this.rotation.set(r);
-			this.scale.set(s);
+			this.position = p;
+			this.rotation = r;
+			this.scale = s;
 		} finally {
 			lock.unlock();
 		}
@@ -182,7 +180,7 @@ public final class Transform implements Serializable {
 	public Transform copy() {
 		try {
 			lock.lock();
-			return new Transform(position.get(), rotation.get(), scale.get());
+			return new Transform(position, rotation, scale);
 		} finally {
 			lock.unlock();
 		}
@@ -197,7 +195,7 @@ public final class Transform implements Serializable {
 	 */
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + StringUtil.toString(position.get(), rotation.get(), scale.get());
+		return getClass().getSimpleName() + StringUtil.toString(position, rotation, scale);
 	}
 
 	@Override
@@ -205,7 +203,7 @@ public final class Transform implements Serializable {
 		HashCodeBuilder builder = new HashCodeBuilder(41, 63);
 		try {
 			lock.lock();
-			builder.append(position.get()).append(rotation.get()).append(scale.get());
+			builder.append(position).append(rotation).append(scale);
 		} finally {
 			lock.unlock();
 		}
@@ -221,7 +219,7 @@ public final class Transform implements Serializable {
 		try {
 			lock.lock();
 			t.lock.lock();
-			return position.get().equals(t.position.get()) && rotation.get().equals(t.rotation.get()) && scale.get().equals(t.scale.get());
+			return position.equals(t.position) && rotation.equals(t.rotation) && scale.equals(t.scale);
 		} finally {
 			lock.unlock();
 			t.lock.unlock();
