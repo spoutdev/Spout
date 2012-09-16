@@ -30,6 +30,7 @@ import java.io.Serializable;
 
 import javolution.lang.ValueType;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.util.StringUtil;
 
 /**
@@ -246,6 +247,23 @@ public class Quaternion implements Serializable, ValueType{
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + StringUtil.toString(this.x, this.y, this.z, this.w);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Quaternion)) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		Quaternion q = (Quaternion)obj;
+		return this.w == q.w && this.x == q.x && this.y == q.y && this.z == q.z;
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(41, 63).append(w).append(x).append(y).append(z).toHashCode();
 	}
 
 	@Override

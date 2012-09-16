@@ -27,8 +27,10 @@
 package org.spout.api.geo.discrete;
 
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.lang3.ObjectUtils;
+import javax.annotation.concurrent.ThreadSafe;
+
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.geo.World;
 import org.spout.api.math.MathHelper;
@@ -36,68 +38,79 @@ import org.spout.api.math.Matrix;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.StringUtil;
+import org.spout.api.util.concurrent.SpinLock;
 import org.spout.api.util.thread.Threadsafe;
 
-public class Transform implements Serializable {
-	private static final long serialVersionUID = 1L;
+@ThreadSafe
+public final class Transform implements Serializable {
+	private static final long serialVersionUID = 2L;
 
-	private Point position = Point.invalid;
-	private Quaternion rotation = Quaternion.IDENTITY;
-	private Vector3 scale = Vector3.ONE;
-
-	private Transform parent;
-
+	private final SpinLock lock = new SpinLock();
+	private final AtomicReference<Point> position; 
+	private final AtomicReference<Quaternion> rotation;
+	private final AtomicReference<Vector3> scale;
 	public Transform() {
+		this(Point.invalid, Quaternion.IDENTITY, Vector3.ONE);
 	}
 
 	public Transform(Point position, Quaternion rotation, Vector3 scale) {
-		setPosition(position);
-		setRotation(rotation);
-		setScale(scale);
+		this.position = new AtomicReference<Point>(position);
+		this.rotation = new AtomicReference<Quaternion>(rotation);
+		this.scale = new AtomicReference<Vector3>(scale);
 	}
 
 	public Point getPosition() {
-		return position;
+		try {
+			lock.lock();
+			return position.get();
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	public void setPosition(Point position) {
-		this.position = position;
+		try {
+			lock.lock();
+			this.position.set(position);
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	public Quaternion getRotation() {
-		return rotation;
+		try {
+			lock.lock();
+			return rotation.get();
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	public void setRotation(Quaternion rotation) {
-		this.rotation = rotation;
+		try {
+			lock.lock();
+			this.rotation.set(rotation);
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	public Vector3 getScale() {
-		return scale;
+		try {
+			lock.lock();
+			return scale.get();
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	public void setScale(Vector3 scale) {
-		this.scale = scale;
-	}
-
-	/**
-	 * Atomically gets the parent of this Transform
-	 *
-	 * @return the parent
-	 */
-	@Threadsafe
-	public Transform getParent() {
-		return parent;
-	}
-
-	/**
-	 * Atomically Sets the parent of this transform
-	 *
-	 * @param parent
-	 */
-	@Threadsafe
-	public void setParent(Transform parent) {
-		this.parent = parent;
+		try {
+			lock.lock();
+			this.scale.set(scale);
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -108,15 +121,17 @@ public class Transform implements Serializable {
 	 * @return true if successful
 	 */
 	@Threadsafe
-	public boolean set(Transform transform) {
+	public void set(Transform transform) {
 		if (transform == null) {
-			return false;
+			throw new NullPointerException("Transform can not be a null argument!");
 		}
 
-		setPosition(transform.position);
-		setRotation(transform.rotation);
-		setScale(transform.scale);
-		return true;
+		try {
+			transform.lock.lock();
+			set(transform.position.get(), transform.rotation.get(), transform.scale.get());
+		} finally {
+			transform.lock.unlock();
+		}
 	}
 
 	/**
@@ -136,9 +151,7 @@ public class Transform implements Serializable {
 	 */
 	@Threadsafe
 	public void set(World world, float px, float py, float pz, float rx, float ry, float rz, float rw, float sx, float sy, float sz) {
-		this.position = new Point(world, px, py, pz);
-		this.rotation = new Quaternion(rx, ry, rz, rw);
-		this.scale = new Vector3(sx, sy, sz);
+		this.set(new Point(world, px, py, pz), new Quaternion(rx, ry, rz, rw), new Vector3(sx, sy, sz));
 	}
 
 	/**
@@ -150,43 +163,14 @@ public class Transform implements Serializable {
 	 */
 	@Threadsafe
 	public void set(Point p, Quaternion r, Vector3 s) {
-		setPosition(p);
-		setRotation(r);
-		setScale(s);
-	}
-
-	/**
-	 * Creates a Transform that is the sum of this transform and the given
-	 * transform
-	 *
-	 * @param t the transform
-	 * @return the new transform
-	 */
-	@Threadsafe
-	public Transform createSum(Transform t) {
-		Transform r = new Transform();
-
-		r.setPosition(position.add(t.getPosition()));
-		r.setRotation(rotation.multiply(t.getRotation()));
-		r.setScale(scale.add(t.getScale()));
-		r.setParent(parent);
-		return r;
-
-	}
-
-	/**
-	 * Creates a Transform that is a snapshot of the absolute position of this
-	 * transform
-	 *
-	 * @return the snapshot
-	 */
-	@Threadsafe
-	public Transform getAbsolutePosition() {
-		if (parent == null) {
-			return copy();
+		try {
+			lock.lock();
+			this.position.set(p);
+			this.rotation.set(r);
+			this.scale.set(s);
+		} finally {
+			lock.unlock();
 		}
-
-		return createSum(parent.getAbsolutePosition());
 	}
 
 	/**
@@ -196,30 +180,36 @@ public class Transform implements Serializable {
 	 */
 	@Threadsafe
 	public Transform copy() {
-		Transform t = new Transform();
-
-		t.setPosition(position);
-		t.setRotation(rotation);
-		t.setScale(scale);
-		t.setParent(parent);
-
-		return t;
+		try {
+			lock.lock();
+			return new Transform(position.get(), rotation.get(), scale.get());
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	/**
 	 * Gets a String representation of this transform
+	 * 
+	 * Note: unsafe, could return torn values
 	 *
 	 * @return the string
 	 */
 	@Override
-	@Threadsafe
 	public String toString() {
-		return getClass().getSimpleName() + StringUtil.toString(position, rotation, scale);
+		return getClass().getSimpleName() + StringUtil.toString(position.get(), rotation.get(), scale.get());
 	}
-	
+
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(41, 63).append(position).append(rotation).append(scale).append(parent).toHashCode();
+		HashCodeBuilder builder = new HashCodeBuilder(41, 63);
+		try {
+			lock.lock();
+			builder.append(position.get()).append(rotation.get()).append(scale.get());
+		} finally {
+			lock.unlock();
+		}
+		return builder.toHashCode();
 	}
 
 	@Override
@@ -228,7 +218,14 @@ public class Transform implements Serializable {
 			return false;
 		}
 		Transform t = (Transform) other;
-		return position.equals(t.position) && rotation.equals(t.rotation) && scale.equals(t.scale) && ObjectUtils.equals(parent, t.parent);
+		try {
+			lock.lock();
+			t.lock.lock();
+			return position.get().equals(t.position.get()) && rotation.get().equals(t.rotation.get()) && scale.get().equals(t.scale.get());
+		} finally {
+			lock.unlock();
+			t.lock.unlock();
+		}
 	}
 
 	/**
@@ -236,30 +233,32 @@ public class Transform implements Serializable {
 	 * @return
 	 */
 	public Matrix toMatrix(){
-		Matrix translate = MathHelper.translate(position);
-		Matrix rotate = MathHelper.rotate(rotation);
-		Matrix scale = MathHelper.scale(this.scale);
-		
+		Matrix translate = MathHelper.translate(getPosition());
+		Matrix rotate = MathHelper.rotate(getRotation());
+		Matrix scale = MathHelper.scale(getScale());
 		return scale.multiply(rotate).multiply(translate);
 	}
+
 	/**
 	 * Returns a unit vector that points in the forward direction of this transform
 	 * @return
 	 */
 	public Vector3 forwardVector() {
-		return MathHelper.transform(Vector3.FORWARD, rotation);
+		return MathHelper.transform(Vector3.FORWARD, getRotation());
 	}
+
 	/**
 	 * Returns a unit vector that points right in relation to this transform
 	 */
 	public Vector3 rightVector() {
-		return MathHelper.transform(Vector3.RIGHT, rotation);
+		return MathHelper.transform(Vector3.RIGHT, getRotation());
 	}
+
 	/**
 	 * Returns a unit vector that points up in relation to this transform
 	 * @return
 	 */
 	public Vector3 upVector() {
-		return MathHelper.transform(Vector3.UP, rotation);
+		return MathHelper.transform(Vector3.UP, getRotation());
 	}
 }
