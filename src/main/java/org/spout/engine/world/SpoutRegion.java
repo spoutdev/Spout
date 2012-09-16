@@ -730,7 +730,7 @@ public class SpoutRegion extends Region {
 		entityManager.finalizeRun();
 	}
 
-	private void syncChunkToPlayers(SpoutChunk chunk, Player player) {
+	private void syncChunkToPlayer(SpoutChunk chunk, Player player) {
 		if (player.isOnline()) {
 			NetworkSynchronizer synchronizer = player.getNetworkSynchronizer();
 			if (!chunk.isDirtyOverflow() && !chunk.isLightDirty()) {
@@ -787,8 +787,8 @@ public class SpoutRegion extends Region {
 			}
 			if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
 				spoutChunk.setRenderDirty();
-				for (Player entity : getPlayers()) {
-					syncChunkToPlayers(spoutChunk, entity);
+				for (Player entity : spoutChunk.getObservingPlayers()) {
+					syncChunkToPlayer(spoutChunk, entity);
 				}
 				processChunkUpdatedEvent(spoutChunk);
 
