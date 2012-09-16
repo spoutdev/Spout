@@ -73,8 +73,10 @@ public class SpinLock implements Lock {
 	private void waitLock() throws InterruptedException {
 		waiting.incrementAndGet();
 		try {
-			while (!tryLock()) {
-				waiting.wait();
+			synchronized (waiting) {
+				while (!tryLock()) {
+					waiting.wait();
+				}
 			}
 		} finally {
 			waiting.decrementAndGet();
