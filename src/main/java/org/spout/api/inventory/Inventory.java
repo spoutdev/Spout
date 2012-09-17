@@ -289,7 +289,12 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	@Override
 	public boolean removeAll(Collection<?> objects) {
 		for (Object o : objects) {
-			remove(o);
+			for (int i = 0; i < contents.length; i++) {
+				ItemStack item = contents[i];
+				if (item != null && item.equals(o)) {
+					contents[i] = null;
+				}
+			}
 		}
 		return true;
 	}
