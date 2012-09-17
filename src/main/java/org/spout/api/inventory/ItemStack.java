@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.spout.api.datatable.DataMap;
 import org.spout.api.datatable.GenericDatatableMap;
 import org.spout.api.map.DefaultedMap;
@@ -39,6 +40,7 @@ import org.spout.api.material.source.DataSource;
 import org.spout.api.material.source.GenericMaterialAccess;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.util.LogicUtil;
+
 import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
 import org.spout.nbt.stream.NBTInputStream;
@@ -49,8 +51,6 @@ import org.spout.nbt.stream.NBTOutputStream;
  */
 public class ItemStack extends GenericMaterialAccess implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
-
-	// Do NOT allow material to be changed
 	private int amount;
 	private CompoundMap nbtData = null;
 	private DataMap auxData;
@@ -87,7 +87,6 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 
 	/**
 	 * Gets the Material of the stack
-	 * 
 	 * @return the material
 	 */
 	@Override
@@ -97,7 +96,6 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 
 	/**
 	 * Gets the amount of the Material contained in the item stack
-	 * 
 	 * @return the amount
 	 */
 	public int getAmount() {
@@ -106,17 +104,15 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 
 	/**
 	 * Sets amount of the Material contained in the item stack
-	 * 
 	 * @param amount the amount
 	 */
 	public ItemStack setAmount(int amount) {
 		this.amount = amount;
 		return this;
 	}
-	
+
 	/**
 	 * Gets whether this item stack is empty
-	 * 
 	 * @return whether the amount equals zero
 	 */
 	public boolean isEmpty() {
@@ -154,16 +150,14 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 
 	/**
 	 * Gets the map containing the aux data for this stack
-	 * 
 	 * @return the aux data
 	 */
 	public DefaultedMap<String, Serializable> getAuxData() {
 		return auxData;
 	}
-	
+
 	/**
 	 * returns a copy of the map containing the aux data for this stack
-	 * 
 	 * @return the aux data
 	 */
 	public CompoundMap getNBTData() {
@@ -176,7 +170,6 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 
 	/**
 	 * Sets the aux data for this stack
-	 * 
 	 * @return the item stack
 	 */
 	public ItemStack setNBTData(CompoundMap nbtData) {
@@ -190,7 +183,6 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 
 	/**
 	 * If the item is null or empty, null is returned, otherwise the item is cloned
-	 * 
 	 * @param item to clone
 	 * @return null, or the cloned item
 	 */
@@ -204,10 +196,10 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 		newStack.setNBTData(nbtData);
 		return newStack;
 	}
-	
+
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(91,15).append(material).append(auxData).append(nbtData).append(amount).toHashCode();
+		return new HashCodeBuilder(91, 15).append(material).append(auxData).append(nbtData).append(amount).toHashCode();
 	}
 
 	@Override
@@ -247,35 +239,33 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 	public short getData() {
 		return this.data;
 	}
-	
+
 	/**
 	 * Gets this item stack limited by the maximum stacking size<br>
 	 * The amount of this item stack is set to contain the remaining amount<br>
 	 * The amount of the returned stack is set to be this amount or the maximum stacking size<br><br>
-	 * 
+	 * <p/>
 	 * For example, limiting a stack of amount 120 to a max stacking size of 64 will:
 	 * <ul>
 	 * <li>Set the amount of this item stack to 56
 	 * <li>Return an item stack with amount 64
 	 * </ul>
-	 * 
 	 * @return the limited stack
 	 */
 	public ItemStack limitStackSize() {
 		return this.limitSize(this.getMaxStackSize());
 	}
-	
+
 	/**
 	 * Gets this item stack limited by the maximum size specified<br>
 	 * The amount of this item stack is set to contain the remaining amount<br>
 	 * The amount of the returned stack is set to be this amount or the maximum amount<br><br>
-	 * 
+	 * <p/>
 	 * For example, limiting a stack of amount 5 to a max size of 2 will:
 	 * <ul>
 	 * <li>Set the amount of this item stack to 3
 	 * <li>Return an item stack with amount 2
 	 * </ul>
-	 * 
 	 * @return the limited stack
 	 */
 	public ItemStack limitSize(int maxSize) {
@@ -288,15 +278,14 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 		}
 		return stack;
 	}
-	
+
 	/**
 	 * Tries to stack an item on top of this item<br>
 	 * The item must have the same properties as this item stack<br>
 	 * The amount of this item is kept below the max stacking size<br><br>
-	 * 
+	 * <p/>
 	 * The input item amount is affected<br>
 	 * If true is returned, this amount is 0, otherwise it is the amount it didn't stack into this item
-	 * 
 	 * @param item to stack
 	 * @return True if stacking was successful, False otherwise
 	 */
@@ -320,7 +309,6 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 
 	/**
 	 * Gets the maximum size this {@link ItemStack} can be using the material it has
-	 * 
 	 * @return the max stack size
 	 */
 	public int getMaxStackSize() {
@@ -332,13 +320,12 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 
 	/**
 	 * Gets the maximum data this {@link ItemStack} can have using the material it has
-	 * 
 	 * @return the max data
 	 */
 	public short getMaxData() {
 		return this.getMaterial().getMaxData();
 	}
-	
+
 	//Custom serialization logic because material & auxData can not be made serializable
 	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
 		out.writeShort(material.getId());
@@ -352,7 +339,7 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 		} else {
 			out.writeInt(0);
 		}
-		
+
 		if (nbtData != null && !nbtData.isEmpty()) {
 			out.writeBoolean(true);
 			NBTOutputStream os = new NBTOutputStream(out, false);
@@ -362,6 +349,7 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 			out.writeBoolean(false);
 		}
 	}
+
 	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
 		short matId = in.readShort();
 		short matData = in.readShort();
@@ -378,7 +366,7 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 			map.decompress(auxData);
 			this.auxData = new DataMap(map);
 		}
-		
+
 		boolean hasNBTData = in.readBoolean();
 		if (hasNBTData) {
 			NBTInputStream is = new NBTInputStream(in, false);
@@ -386,7 +374,9 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 			nbtData = tag.getValue();
 			is.close();
 		}
-		
-		if (material == null) throw new ClassNotFoundException("No material matching {" + matId + ", " + matData + "} was found!");
+
+		if (material == null) {
+			throw new ClassNotFoundException("No material matching {" + matId + ", " + matData + "} was found!");
+		}
 	}
 }

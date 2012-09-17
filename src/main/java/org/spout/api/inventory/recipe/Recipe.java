@@ -24,10 +24,11 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.inventory;
+package org.spout.api.inventory.recipe;
 
 import java.util.List;
 
+import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.Material;
 import org.spout.api.plugin.Plugin;
 
@@ -35,16 +36,15 @@ public interface Recipe {
 	public Plugin getPlugin();
 
 	public ItemStack getResult();
-	
+
 	public List<Material> getIngredients();
-	
+
 	/**
 	 * Gets the size of the set of materials, disregarding data.
 	 * I.e. if a recipe only contained Oak Planks and Pine Planks, this would return 1.
-	 * 
 	 * @return
 	 */
 	public int getNumOfMaterials();
-	
+
 	public boolean getIncludeData();
 }

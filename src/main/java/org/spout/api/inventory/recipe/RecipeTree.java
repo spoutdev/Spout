@@ -24,7 +24,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.inventory;
+package org.spout.api.inventory.recipe;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,12 +37,11 @@ import java.util.Set;
 import org.spout.api.material.Material;
 
 /**
- * Although this can technically be used by any class, it really should only be used internally in a RecipeManager. 
- * 
+ * Although this can technically be used by any class, it really should only be used internally in a RecipeManager.
  */
 public class RecipeTree {
 	private RecipeNode root = new RecipeNode(-1, 0);
-    
+
 	private class RecipeNode {
 		private final Map<Material, RecipeNode> children;
 		private RecipeNode nextRow = null;
@@ -57,7 +56,7 @@ public class RecipeTree {
 		public RecipeNode(RecipeNode parent, int x, int y) {
 			this(parent, x, y, null);
 		}
-		
+
 		public RecipeNode(RecipeNode parent, int x, int y, ShapedRecipe recipe) {
 			this.children = new HashMap<Material, RecipeNode>();
 			this.x = x;
@@ -65,7 +64,7 @@ public class RecipeTree {
 			this.parent = parent == null ? this : parent;
 			this.recipe = recipe;
 		}
-		
+
 		public RecipeNode getOrAddChild(Material material) {
 			if (children.containsKey(material) && children.get(material) != null) {
 				return children.get(material);
@@ -73,7 +72,7 @@ public class RecipeTree {
 			children.put(material, new RecipeNode(this, x + 1, y));
 			return children.get(material);
 		}
-		
+
 		public boolean setRecipe(ShapedRecipe recipe) {
 			if (x == -1) {
 				return false;
@@ -85,7 +84,7 @@ public class RecipeTree {
 		public ShapedRecipe getRecipe() {
 			return recipe;
 		}
-		
+
 		public RecipeNode getNextRow() {
 			if (nextRow == null) {
 				nextRow = new RecipeNode(this, -1, this.y + 1);
@@ -96,7 +95,7 @@ public class RecipeTree {
 		public RecipeNode getParent() {
 			return parent;
 		}
-		
+
 		public Set<ShapedRecipe> getAllRecipes() {
 			Set<ShapedRecipe> recipes = new HashSet<ShapedRecipe>();
 			for (RecipeNode child : children.values()) {
@@ -108,7 +107,7 @@ public class RecipeTree {
 			return recipes;
 		}
 	}
-    
+
 	@SuppressWarnings("unused")
 	public ShapedRecipe matchShapedRecipe(List<List<Material>> materials, boolean includingData) {
 		// Trim rows
@@ -118,8 +117,7 @@ public class RecipeTree {
 			clone.removeAll(Collections.singletonList(null));
 			if (clone.isEmpty()) {
 				materials.remove(0);
-			}
-			else {
+			} else {
 				break;
 			}
 		}
@@ -129,12 +127,11 @@ public class RecipeTree {
 			clone.removeAll(Collections.singletonList(null));
 			if (clone.isEmpty()) {
 				materials.remove(i);
-			}
-			else {
+			} else {
 				break;
 			}
 		}
-		
+
 		// Get column trim
 		int maxColoumnStart = -1;
 		int minColoumnEnd = 0;
@@ -151,7 +148,7 @@ public class RecipeTree {
 				}
 			}
 			if (currentStart != -1) {
- 				if (maxColoumnStart == -1) {
+				if (maxColoumnStart == -1) {
 					maxColoumnStart = currentStart;
 				} else {
 					maxColoumnStart = Math.min(maxColoumnStart, currentStart);
@@ -159,7 +156,9 @@ public class RecipeTree {
 			}
 			minColoumnEnd = Math.max(minColoumnEnd, currentSize);
 		}
-		if (maxColoumnStart == -1) return null;
+		if (maxColoumnStart == -1) {
+			return null;
+		}
 
 		RecipeNode current = root;
 		for (List<Material> list : materials) {
@@ -170,10 +169,12 @@ public class RecipeTree {
 			current = current.getNextRow();
 		}
 		ShapedRecipe recipe = current.getParent().getRecipe();
-		if (recipe == null || (recipe.getIncludeData() && !includingData)) return null;
+		if (recipe == null || (recipe.getIncludeData() && !includingData)) {
+			return null;
+		}
 		return recipe;
 	}
-	
+
 	@SuppressWarnings("unused")
 	public boolean addRecipe(ShapedRecipe recipe) {
 		RecipeNode current = root;
@@ -187,11 +188,11 @@ public class RecipeTree {
 		}
 		return current.getParent().setRecipe(recipe);
 	}
-	
+
 	public Set<ShapedRecipe> getAllRecipes() {
 		return Collections.unmodifiableSet(root.getAllRecipes());
 	}
-	
+
 	public boolean removeRecipe(ShapedRecipe recipe) {
 		RecipeNode current = root;
 		for (List<Material> list : recipe.getRowsAsMaterials()) {

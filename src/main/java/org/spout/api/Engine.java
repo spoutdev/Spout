@@ -47,7 +47,7 @@ import org.spout.api.entity.Player;
 import org.spout.api.event.EventManager;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
-import org.spout.api.inventory.RecipeManager;
+import org.spout.api.inventory.recipe.RecipeManager;
 import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.PluginManager;

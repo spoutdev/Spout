@@ -24,92 +24,59 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.inventory;
+package org.spout.api.inventory.recipe;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.Material;
 import org.spout.api.plugin.Plugin;
 
-public class ShapedRecipe implements Recipe {
+public class ShapelessRecipe implements Recipe {
 	private final Plugin plugin;
 	private final ItemStack result;
-	private final HashMap<Character, Material> ingredientsMap;
-	private final List<List<Character>> rows;
+	private final List<Material> ingredients;
 	private final boolean includeData;
 
-	public ShapedRecipe(RecipeBuilder builder) {
+	public ShapelessRecipe(RecipeBuilder builder) {
 		this.plugin = builder.plugin;
 		this.result = builder.result;
-		this.ingredientsMap = builder.ingredientsMap;
-		this.rows = builder.rows;
+		this.ingredients = builder.ingredients;
 		this.includeData = builder.includeData;
 	}
-	
-	@Override
-	public boolean getIncludeData() {
-		return includeData;
-	}
-	
+
 	@Override
 	public ItemStack getResult() {
 		return result;
 	}
-	
+
+	@Override
+	public List<Material> getIngredients() {
+		return Collections.unmodifiableList(ingredients);
+	}
+
 	@Override
 	public Plugin getPlugin() {
 		return plugin;
 	}
-	
+
 	@Override
-	public List<Material> getIngredients() {
-		List<Material> list = new ArrayList<Material>();
-		for (Material m : ingredientsMap.values()) {
-			list.add(m);
-		}
-		return list;
+	public boolean getIncludeData() {
+		return includeData;
 	}
-	
+
 	@Override
 	public int getNumOfMaterials() {
-		Set<Material> set = new HashSet<Material>();
-		for (Material m : ingredientsMap.values()) {
-			if (m.isSubMaterial()) {
-				m = m.getParentMaterial();
-			}
-			set.add(m);
-		}
-		set.removeAll(Collections.singletonList(null));
+		Set<Material> set = new HashSet<Material>(ingredients);
 		return set.size();
 	}
-    
-	public HashMap<Character, Material> getIngredientsMap() {
-		return ingredientsMap;
-	}
 
-	public List<List<Character>> getRows() {
-		return Collections.unmodifiableList(rows);
-	}
-
-	public List<List<Material>> getRowsAsMaterials() {
-		List<List<Material>> materials = new ArrayList<List<Material>>();
-		for (List<Character> row : getRows()) {
-			List<Material> rowAsMaterials = new ArrayList<Material>();
-			for (Character c : row) {
-				rowAsMaterials.add(ingredientsMap.get(c));
-			}
-			materials.add(rowAsMaterials);
-		}
-		return materials;
-	}
-	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
@@ -118,18 +85,20 @@ public class ShapedRecipe implements Recipe {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final ShapedRecipe other = (ShapedRecipe) obj;
+		final ShapelessRecipe other = (ShapelessRecipe) obj;
 		if (this.plugin != other.plugin && (this.plugin == null || !this.plugin.equals(other.plugin))) {
 			return false;
 		}
 		if (this.result != other.result && (this.result == null || !this.result.equals(other.result))) {
 			return false;
 		}
-		// TODO extend this to allow different characters that map to the same material to be equal?
-		if (this.ingredientsMap != other.ingredientsMap && (this.ingredientsMap == null || !this.ingredientsMap.equals(other.ingredientsMap))) {
-			return false;
-		}
-		if (this.rows != other.rows && (this.rows == null || !this.rows.equals(other.rows))) {
+		List<Material> materials = new ArrayList<Material>();
+		List<Material> materials2 = new ArrayList<Material>();
+		materials.addAll(ingredients);
+		materials2.addAll(other.ingredients);
+		materials.removeAll(other.ingredients);
+		materials2.removeAll(ingredients);
+		if (!materials.isEmpty() || !materials2.isEmpty()) {
 			return false;
 		}
 		return true;
@@ -137,6 +106,6 @@ public class ShapedRecipe implements Recipe {
 
 	@Override
 	public int hashCode() {
-		return (new HashCodeBuilder()).append(plugin).append(result).append(ingredientsMap).append(rows).build();
+		return (new HashCodeBuilder()).append(plugin).append(result).append(ingredients).build();
 	}
 }
