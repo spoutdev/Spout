@@ -27,7 +27,7 @@
 package org.spout.api;
 
 /**
- * The source of an action. It may be a {@link Plugin}, the {@link World}, a specific {@link Player}, or a specific {@link Entity}.
+ * The source of an action. It may be a {@link Plugin}, a {@link World}, a {@link Block}, a specific {@link Player}, or a specific {@link Entity}.
  */
 public interface Source {
 }

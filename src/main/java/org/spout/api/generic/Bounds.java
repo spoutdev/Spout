@@ -26,9 +26,14 @@
  */
 package org.spout.api.generic;
 
+/**
+ * Represents a set of bounds
+ *
+ * @param <T> the type of Number to use
+ */
 public class Bounds<T extends Number> {
 	T left, right, top, bottom;
-	
+
 	/**
 	 * Inits the property with left, right, top and bottom set to 0
 	 * Has to be reimplemented by subclasses
@@ -36,6 +41,14 @@ public class Bounds<T extends Number> {
 	public Bounds() {
 	}
 
+	/**
+	 * Constructs a new Bounds object with the given values
+	 *
+	 * @param left - the value for left
+	 * @param right - the value for right
+	 * @param top - the value for top
+	 * @param bottom - the value for bottom
+	 */
 	public Bounds(T left, T right, T top, T bottom) {
 		super();
 		this.left = left;
@@ -95,35 +108,44 @@ public class Bounds<T extends Number> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		Bounds<?> other = (Bounds<?>) obj;
 		if (bottom == null) {
-			if (other.bottom != null)
+			if (other.bottom != null) {
 				return false;
-		} else if (!bottom.equals(other.bottom))
+			}
+		} else if (!bottom.equals(other.bottom)) {
 			return false;
+		}
 		if (left == null) {
-			if (other.left != null)
+			if (other.left != null) {
 				return false;
-		} else if (!left.equals(other.left))
+			}
+		} else if (!left.equals(other.left)) {
 			return false;
+		}
 		if (right == null) {
-			if (other.right != null)
+			if (other.right != null) {
 				return false;
-		} else if (!right.equals(other.right))
+			}
+		} else if (!right.equals(other.right)) {
 			return false;
+		}
 		if (top == null) {
-			if (other.top != null)
+			if (other.top != null) {
 				return false;
-		} else if (!top.equals(other.top))
+			}
+		} else if (!top.equals(other.top)){
 			return false;
+		}
 		return true;
 	}
-	
-	
 }

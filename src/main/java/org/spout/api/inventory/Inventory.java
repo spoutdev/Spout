@@ -27,7 +27,6 @@
 package org.spout.api.inventory;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -55,6 +54,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 
 	/**
 	 * Constructs a new Inventory with an initial capacity.
+	 *
 	 * @param size capacity
 	 */
 	public Inventory(int size) {
@@ -63,6 +63,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 
 	/**
 	 * Constructs a new Inventory with an initial slot to {@link ItemStack} mapping
+	 *
 	 * @param contents of the Inventory
 	 */
 	public Inventory(ItemStack... contents) {
@@ -71,6 +72,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 
 	/**
 	 * Gets the set of {@link InventoryViewer}s viewing the inventory.
+	 *
 	 * @return set of viewers
 	 */
 	public Set<InventoryViewer> getViewers() {
@@ -79,6 +81,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 
 	/**
 	 * Adds a new {@link InventoryViewer} to be updated when a slot is set.
+	 *
 	 * @param viewer to update
 	 * @return true if the set contained the viewer
 	 */
@@ -88,6 +91,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 
 	/**
 	 * Removes an {@link InventoryViewer} from the set of viewers
+	 *
 	 * @param viewer to remove
 	 * @return true if the set contained the viewer
 	 */
@@ -97,6 +101,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 
 	/**
 	 * Sets the data of an {@link ItemStack} at the specified slot to the specified data.
+	 *
 	 * @param slot to set item at
 	 * @param data to set to
 	 */
@@ -114,6 +119,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 
 	/**
 	 * Adds data of an {@link ItemStack} at the specified slot to the specified data
+	 *
 	 * @param slot to set item at
 	 * @param amount to add to current data
 	 * @return whether the data was added
@@ -129,6 +135,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 
 	/**
 	 * Sets the amount of an {@link ItemStack} at the specified slot to the specified amount
+	 *
 	 * @param slot to set item at
 	 * @param amount to set to
 	 */
@@ -146,6 +153,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 
 	/**
 	 * Adds the amount of an {@link ItemStack} at the specified slot to the specified amount
+	 *
 	 * @param slot to set item at
 	 * @param amount to add to
 	 * @return true if amount was added
@@ -161,6 +169,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 
 	/**
 	 * Before the {@link InventoryViewer}s are notified of a slot change
+	 *
 	 * @param slot that's being set
 	 * @param item that the slot is being set to
 	 */
@@ -169,6 +178,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 
 	/**
 	 * Updates the slot to the current item in the slot and notifies all viewers
+	 *
 	 * @param slot to update
 	 * @return {@link ItemStack} at the slot
 	 */
@@ -192,6 +202,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 
 	/**
 	 * Constructs a new {@link Grid} with the specified row length
+	 *
 	 * @param length of grid rows
 	 * @return new grid
 	 */

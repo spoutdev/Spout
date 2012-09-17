@@ -27,7 +27,6 @@
 package org.spout.api.util.hashing;
 
 public class ArrayHash {
-	
 	public static long hash(byte[] array) {
 		long hash = 1;
 		for (int i = 0; i < array.length; i++) {
@@ -59,5 +58,4 @@ public class ArrayHash {
 		}
 		return hash;
 	}
-
 }

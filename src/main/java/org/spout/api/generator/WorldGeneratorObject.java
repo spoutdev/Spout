@@ -28,6 +28,9 @@ package org.spout.api.generator;
 
 import org.spout.api.geo.World;
 
+/**
+ * Represents an Object for a WorldGenerator
+ */
 public abstract class WorldGeneratorObject {
 	/**
 	 * Verify if the object can be placed at the given coordinates
@@ -37,7 +40,6 @@ public abstract class WorldGeneratorObject {
 	 * @param y
 	 * @param z
 	 * @return true if the object can be placed, false if it can't
-	 *
 	 */
 	public abstract boolean canPlaceObject(World w, int x, int y, int z);
 
@@ -48,7 +50,6 @@ public abstract class WorldGeneratorObject {
 	 * @param x
 	 * @param y
 	 * @param z
-	 *
 	 */
 	public abstract void placeObject(World w, int x, int y, int z);
 }

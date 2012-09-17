@@ -29,6 +29,9 @@ package org.spout.api.generator;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 
+/**
+ * Represents a populator for a generator
+ */
 public interface GeneratorPopulator {
 	public void populate(CuboidShortBuffer blockData, int x, int y, int z, BiomeManager biomes, long seed);
 }

@@ -30,6 +30,9 @@ import java.util.Random;
 
 import org.spout.api.geo.cuboid.Chunk;
 
+/**
+ * Represents a populator for a chunk
+ */
 public abstract class Populator {
 	private boolean needsClearance;
 

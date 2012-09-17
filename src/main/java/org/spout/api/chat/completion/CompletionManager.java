@@ -34,6 +34,20 @@ import java.util.regex.Pattern;
  * Note: Completion refers to the auto-completion of user command and chats.
  */
 public interface CompletionManager {
+	/**
+	 * Gets the {@link CompletionFuture} for the given request
+	 *
+	 * @param input
+	 * @return the CompletionFuture for the request
+	 */
 	public CompletionFuture getCompletion(CompletionRequest input);
-	public void reqisterCompletor(Completor completor, Pattern regex, MatchLocation matchLocation);
+
+	/**
+	 * Registers a completer
+	 *
+	 * @param completor
+	 * @param regex
+	 * @param matchLocation
+	 */
+	public void registerCompletor(Completor completor, Pattern regex, MatchLocation matchLocation);
 }

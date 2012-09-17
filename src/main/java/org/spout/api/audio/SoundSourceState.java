@@ -53,5 +53,5 @@ public enum SoundSourceState {
 	/**
 	 * The state of the sound is unknown.
 	 */
-	UNKNOWN
+	UNKNOWN;
 }

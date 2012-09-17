@@ -36,9 +36,9 @@ public interface SoundManager {
 	public void init();
 	
 	/**
-	 * Creates a new SoundSource.
-	 * 
-	 * @return
+	 * Creates a new {@link SoundSource}
+	 *
+	 * @return the creates SoundSource
 	 */
 	public SoundSource createSource(Sound sound);
 }

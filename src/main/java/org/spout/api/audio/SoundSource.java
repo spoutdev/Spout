@@ -82,7 +82,7 @@ public interface SoundSource {
 	/**
 	 * Gets the current pitch of the SoundSource. This is a multiplier.
 	 * 
-	 * @return
+	 * @return the current pitch of the SoundSource
 	 */
 	public float getPitch();
 
@@ -97,7 +97,7 @@ public interface SoundSource {
 	/**
 	 * Gets the gain of the SoundSource.
 	 * 
-	 * @return
+	 * @return the gain of the SoundSource
 	 */
 	public float getGain();
 
@@ -111,7 +111,7 @@ public interface SoundSource {
 	/**
 	 * Gets if this sound source is looping.
 	 * 
-	 * @return
+	 * @return whether the SoundSource is looping
 	 */
 	public boolean isLooping();
 
@@ -125,7 +125,7 @@ public interface SoundSource {
 	/**
 	 * Gets the playback position of the sound source in seconds.
 	 * 
-	 * @return
+	 * @return the playback position of the SoundSource in seconds
 	 */
 	public float getPlaybackPosition();
 
@@ -140,7 +140,7 @@ public interface SoundSource {
 	/**
 	 * Gets the current position of the SoundSource.
 	 * 
-	 * @return
+	 * @return the Vector3 position of the SoundSource
 	 */
 	public Vector3 getPosition();
 
@@ -154,7 +154,7 @@ public interface SoundSource {
 	/**
 	 * Gets the velocity of the SoundSource.
 	 * 
-	 * @return
+	 * @return the Vector3 velocity of the SoundSource
 	 */
 	public Vector3 getVelocity();
 
@@ -168,7 +168,7 @@ public interface SoundSource {
 	/**
 	 * Gets the direction of the SoundSource.
 	 * 
-	 * @return
+	 * @return the Vector3 direction of the SoundSource
 	 */
 	public Vector3 getDirection();
 

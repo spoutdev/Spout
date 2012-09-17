@@ -35,7 +35,6 @@ import org.spout.api.util.thread.LiveWrite;
 import org.spout.api.util.thread.Threadsafe;
 
 public interface AreaBlockAccess extends AreaBlockSource {
-
 	/**
 	 * Sets the data for the block at (x, y, z) to the given data.
 	 *
@@ -98,6 +97,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param light level to set to
 	 * @param source of the change
 	 * @throws NullPointerException
+	 * @return whether setting was successful
 	 */
 	@LiveWrite
 	public boolean setBlockSkyLight(int x, int y, int z, byte light, Source source);
@@ -121,6 +121,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param expect is the state of the block it expects
 	 * @param data to set to if it matches
 	 * @throws NullPointerException
+	 * @return whether setting was successful
 	 */
 	@LiveWrite
 	public boolean compareAndSetData(int x, int y, int z, int expect, short data, Source source);
@@ -129,7 +130,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * Sets the given bits in the data for the block at (x, y, z)<br>
 	 * <br>
 	 * newData = oldData | (bits)
-	 * 
+	 *
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
@@ -145,7 +146,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * newData = oldData | (bits)
 	 * <br>or<br>
 	 * newData = oldData & ~(bits)
-	 * 
+	 *
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
@@ -160,7 +161,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * Clears the given bits in the data for the block at (x, y, z)<br>
 	 * <br>
 	 * newData = oldData & (~bits)
-	 * 
+	 *
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
@@ -176,7 +177,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * field = (data & bits) >> (shift)<br>
 	 * <br>
 	 * The shift value used shifts the least significant non-zero bit of bits to the LSB position
-	 * 
+	 *
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
@@ -188,7 +189,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 
 	/**
 	 * Gets if any of the indicated bits are set.
-	 * 
+	 *
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
@@ -204,7 +205,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * newData = ((value << shift) & bits) | (oldData & (~bits))<br>
 	 * <br>
 	 * The shift value used shifts the least significant non-zero bit of bits to the LSB position
-	 * 
+	 *
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
@@ -222,7 +223,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * newData = (((oldData + (value << shift)) & bits) | (oldData & ~bits))<br>
 	 * <br>
 	 * The shift value used shifts the least significant non-zero bit of bits to the LSB position
-	 * 
+	 *
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
@@ -236,6 +237,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 
 	/**
 	 * Gets if a block is contained in this area
+	 *
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
@@ -245,11 +247,11 @@ public interface AreaBlockAccess extends AreaBlockSource {
 
 	/**
 	 * Gets a {@link Block} representing the block at (x, y, z)
+	 *
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
 	 * @param source the block should represent
-	 * 
 	 * @return the Block
 	 */
 	@Threadsafe
@@ -257,11 +259,11 @@ public interface AreaBlockAccess extends AreaBlockSource {
 
 	/**
 	 * Gets a {@link Block} representing the block at (x, y, z)
+	 *
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
 	 * @param source the block should represent
-	 * 
 	 * @return the Block
 	 */
 	@Threadsafe
@@ -269,9 +271,9 @@ public interface AreaBlockAccess extends AreaBlockSource {
 
 	/**
 	 * Gets a {@link Block} representing the block at the position given
+	 *
 	 * @param position of the block
 	 * @param source the block should represent
-	 * 
 	 * @return the Block
 	 */
 	@Threadsafe

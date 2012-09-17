@@ -35,35 +35,35 @@ public abstract class Sound extends Resource {
 	/**
 	 * Gets the sampling rate (sampling frequency) of the sound.
 	 * 
-	 * @return
+	 * @return the sampling rate
 	 */
 	public abstract int getSamplingRate();
 
 	/**
 	 * Gets the bit depth of the buffer.
 	 * 
-	 * @return
+	 * @return the buffer's bit depth
 	 */
 	public abstract int getBitDepth();
 
 	/**
 	 * Gets the number of channels of the sound.
 	 * 
-	 * @return
+	 * @return the number of sound channels
 	 */
 	public abstract int getChannels();
 
 	/**
 	 * Gets the size of the buffer.
 	 * 
-	 * @return
+	 * @return the buffer size
 	 */
 	public abstract int getBufferSize();
 
 	/**
 	 * Gets the bit rate of the sample in bits per second.
 	 * 
-	 * @return
+	 * @return the bit rate in bits/second
 	 */
 	public int getBitRate() {
 		return getSamplingRate() * getBitDepth() * getChannels();
@@ -72,7 +72,7 @@ public abstract class Sound extends Resource {
 	/**
 	 * Returns the length of the sound sample in seconds.
 	 * 
-	 * @return
+	 * @return the length of the sound in seconds
 	 */
 	public float getLength() {
 		return getBufferSize() / (float) (getBitRate() / 8);

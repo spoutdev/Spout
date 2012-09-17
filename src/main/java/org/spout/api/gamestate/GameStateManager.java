@@ -30,9 +30,12 @@ import java.util.Stack;
 
 import org.spout.api.tickable.Tickable;
 
+/**
+ * Manages {@link GameState}s
+ */
 public class GameStateManager implements Tickable {
 	private Stack<GameState> states = new Stack<GameState>();
-	
+
 	public void pushState(GameState state) {
 		if (states.peek() != null) states.peek().onPause(); //Pause the current state
 		
@@ -43,7 +46,7 @@ public class GameStateManager implements Tickable {
 		state.loadResources();
 		
 	}
-	
+
 	public GameState popState() {
 		GameState head = states.pop(); //remove the current state from the stack
 		head.unloadResources();
@@ -71,6 +74,4 @@ public class GameStateManager implements Tickable {
 	public void onRender(float dt) {
 		if (states.peek() != null) states.peek().tick(dt);
 	}
-	
-	
 }

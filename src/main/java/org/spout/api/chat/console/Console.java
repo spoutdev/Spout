@@ -85,7 +85,7 @@ public interface Console extends Closeable {
 	 * Set the date format to be used when printing the date of log messages.
 	 * If {@code format} is null, no date will be printed.
 	 *
-	 * @param format The log message date format.
+	 * @param format the log message date format.
 	 */
 	public void setDateFormat(DateFormat format);
 

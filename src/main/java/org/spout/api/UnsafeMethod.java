@@ -32,7 +32,6 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Indicates that all of the methods inside of the class, and the constructor coud execute potentionally unsafe addon code and should be sandboxed before calling.
- * 
  */
 @Documented
 @Retention(value = RetentionPolicy.RUNTIME)
