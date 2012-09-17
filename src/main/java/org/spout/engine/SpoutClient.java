@@ -512,5 +512,4 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public FileSystem getFilesystem() {
 		return filesystem;
 	}
-
 }

@@ -32,11 +32,15 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.OpenALException;
+
 import org.spout.api.Spout;
 import org.spout.api.audio.Sound;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.audio.SoundSource;
 
+/**
+ * {@link SoundManager} Spout implementation
+ */
 public class SpoutSoundManager implements SoundManager {
 	@Override
 	public void init() {

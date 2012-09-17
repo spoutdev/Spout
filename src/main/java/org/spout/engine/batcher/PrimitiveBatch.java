@@ -104,9 +104,9 @@ public class PrimitiveBatch {
 	}
 
 	
-	public void addMesh(BaseMesh mesh){
-		for(ModelFace face : mesh){
-			for(Vertex vert : face){
+	public void addMesh(BaseMesh mesh) {
+		for (ModelFace face : mesh) {
+			for (Vertex vert : face) {
 				renderer.addTexCoord(vert.texCoord0);
 				renderer.addNormal(vert.normal);
 				renderer.addColor(vert.color);
