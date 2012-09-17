@@ -31,7 +31,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
-import org.spout.api.protocol.builtin.message.AddEntityMessage;
+import org.spout.engine.protocol.builtin.message.AddEntityMessage;
 import org.spout.engine.protocol.builtin.SpoutProtocol;
 
 public class AddEntityMessageHandler extends MessageHandler<AddEntityMessage> {

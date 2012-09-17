@@ -26,22 +26,27 @@
  */
 package org.spout.engine.protocol.builtin;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.command.Command;
 import org.spout.api.component.components.NetworkComponent;
+import org.spout.api.event.object.EventableListener;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
-import org.spout.api.protocol.builtin.message.CommandMessage;
-import org.spout.api.protocol.builtin.message.LoginMessage;
-import org.spout.api.protocol.builtin.message.StringMapMessage;
+import org.spout.api.util.StringMapEvent;
+import org.spout.engine.protocol.builtin.message.CommandMessage;
+import org.spout.engine.protocol.builtin.message.LoginMessage;
+import org.spout.engine.protocol.builtin.message.StringMapMessage;
 import org.spout.api.util.StringMap;
+
+import java.util.Collections;
 
 /**
  * The protocol used in SpoutClient
@@ -99,12 +104,19 @@ public class SpoutProtocol extends Protocol {
 	}
 
 	@Override
-	public void initializeSession(Session session) {
+	public void initializeSession(final Session session) {
 		session.setNetworkSynchronizer(new SpoutNetworkSynchronizer(session));
 
-		session.send(false, new StringMapMessage(StringMapMessage.STRINGMAP_REGISTRATION_MAP, StringMapMessage.Action.SET, StringMap.get(StringMapMessage.STRINGMAP_REGISTRATION_MAP).getItems()));
+		session.send(false, new StringMapMessage(StringMap.REGISTRATION_MAP, StringMapEvent.Action.SET, StringMap.get(StringMap.REGISTRATION_MAP).getItems()));
+        /*StringMap.get(StringMap.REGISTRATION_MAP).registerListener(new EventableListener<StringMapEvent>() {
+            @Override
+            public void onEvent(StringMapEvent event) {
+                session.send(false, new StringMapMessage(event.getAssociatedObject().getId(), StringMapEvent.Action.ADD, event.getModifiedElements()));
+            }
+        });*/ // Not correct - TODO Fix
+
 		for (StringMap map : StringMap.getAll()) {
-			session.send(false, new StringMapMessage(map.getId(), StringMapMessage.Action.SET, map.getItems()));
+			session.send(false, new StringMapMessage(map.getId(), StringMapEvent.Action.SET, map.getItems()));
 		}
 	}
 }

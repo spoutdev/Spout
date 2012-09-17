@@ -29,7 +29,7 @@ package org.spout.engine.protocol.builtin.handler;
 import org.spout.api.Client;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
-import org.spout.api.protocol.builtin.message.WorldChangeMessage;
+import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 
 public class WorldChangeMessageHandler extends MessageHandler<WorldChangeMessage> {
 	@Override

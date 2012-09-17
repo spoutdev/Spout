@@ -30,7 +30,7 @@ import org.spout.api.event.player.ClientPlayerConnectedEvent;
 import org.spout.api.event.player.PlayerConnectEvent;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
-import org.spout.api.protocol.builtin.message.LoginMessage;
+import org.spout.engine.protocol.builtin.message.LoginMessage;
 import org.spout.engine.protocol.builtin.SpoutProtocol;
 
 public class LoginMessageHandler extends MessageHandler<LoginMessage> {

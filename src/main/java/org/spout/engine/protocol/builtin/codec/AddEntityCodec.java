@@ -33,8 +33,8 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.MessageCodec;
-import org.spout.api.protocol.builtin.ChannelBufferUtils;
-import org.spout.api.protocol.builtin.message.AddEntityMessage;
+import org.spout.engine.protocol.builtin.ChannelBufferUtils;
+import org.spout.engine.protocol.builtin.message.AddEntityMessage;
 
 public class AddEntityCodec extends MessageCodec<AddEntityMessage> {
 	public AddEntityCodec() {

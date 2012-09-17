@@ -30,7 +30,7 @@ import org.spout.api.entity.Player;
 import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
-import org.spout.api.protocol.builtin.message.PlayerInputMessage;
+import org.spout.engine.protocol.builtin.message.PlayerInputMessage;
 
 public class PlayerInputMessageHandler extends MessageHandler<PlayerInputMessage> {
 	@Override
@@ -38,7 +38,7 @@ public class PlayerInputMessageHandler extends MessageHandler<PlayerInputMessage
 		if(!session.hasPlayer()) {
 			return;
 		}
-		
+
 		Player player = session.getPlayer();
 	    PlayerInputState inputState = new PlayerInputState(message.getInputFlags(), (byte)message.getMouseDx(), (byte)message.getMouseDy() );
 		player.processInput(inputState);

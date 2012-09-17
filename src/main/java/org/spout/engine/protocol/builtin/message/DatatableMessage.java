@@ -24,44 +24,57 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.protocol.builtin;
+package org.spout.engine.protocol.builtin.message;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.spout.api.entity.Entity;
-import org.spout.api.protocol.EntityProtocol;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.spout.api.datatable.DatatableMap;
 import org.spout.api.protocol.Message;
-import org.spout.engine.protocol.builtin.message.AddEntityMessage;
-import org.spout.engine.protocol.builtin.message.EntityPositionMessage;
-import org.spout.engine.protocol.builtin.message.RemoveEntityMessage;
+import org.spout.api.util.SpoutToStringStyle;
 
-/**
- * EntityProtocol for the SpoutClient protocol
- */
-public class SpoutEntityProtocol implements EntityProtocol {
-	public static final SpoutEntityProtocol INSTANCE = new SpoutEntityProtocol();
-	protected SpoutEntityProtocol() {
-		super();
+public abstract class DatatableMessage implements Message {
+	private final byte[] compressedData;
+
+	public DatatableMessage(DatatableMap data) {
+		this(data.compress());
+	}
+
+	public DatatableMessage(byte[] compressedData) {
+		this.compressedData = compressedData;
+	}
+
+	public byte[] getCompressedData() {
+		return compressedData;
+	}
+
+	public void decompressTo(DatatableMap data) {
+		data.decompress(compressedData);
 	}
 
 	@Override
-	public List<Message> getSpawnMessages(Entity entity) {
-		return Arrays.<Message>asList(new AddEntityMessage(entity.getId(), entity.getTransform().getTransform()));
+	public String toString() {
+		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
+				.append("compressedData", compressedData)
+				.toString();
 	}
 
 	@Override
-	public List<Message> getDestroyMessages(Entity entity) {
-		return Arrays.<Message>asList(new RemoveEntityMessage(entity.getId()));
+	public int hashCode() {
+		return new HashCodeBuilder(27, 59)
+				.append(compressedData)
+				.toHashCode();
 	}
 
 	@Override
-	public List<Message> getUpdateMessages(Entity entity) {
-		List<Message> messages = new ArrayList<Message>(2);
-		if (entity.getTransform().isDirty()) {
-			messages.add(new EntityPositionMessage(entity.getId(), entity.getTransform().getTransform()));
+	public boolean equals(Object obj) {
+		if (obj instanceof DatatableMessage) {
+			final DatatableMessage other = (DatatableMessage) obj;
+			return new EqualsBuilder()
+					.append(compressedData, other.compressedData)
+					.isEquals();
+		} else {
+			return false;
 		}
-		return messages;
 	}
 }

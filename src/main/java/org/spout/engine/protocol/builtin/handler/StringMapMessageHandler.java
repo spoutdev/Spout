@@ -28,7 +28,8 @@ package org.spout.engine.protocol.builtin.handler;
 
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
-import org.spout.api.protocol.builtin.message.StringMapMessage;
+import org.spout.api.util.StringMapEvent;
+import org.spout.engine.protocol.builtin.message.StringMapMessage;
 import org.spout.api.util.StringMap;
 
 public class StringMapMessageHandler extends MessageHandler<StringMapMessage> {
@@ -36,7 +37,7 @@ public class StringMapMessageHandler extends MessageHandler<StringMapMessage> {
 	public void handleClient(Session session, StringMapMessage message) {
 		StringMap map = StringMap.get(message.getMap());
 		if (map != null) {
-			map.handleUpdate(message);
+			map.handleUpdate(new StringMapEvent(map, message.getAction(), message.getElements()));
 		}
 	}
 }

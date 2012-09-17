@@ -29,7 +29,7 @@ package org.spout.engine.protocol.builtin.codec;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.protocol.MessageCodec;
-import org.spout.api.protocol.builtin.message.EntityDatatableMessage;
+import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
 
 public class EntityDatatableCodec extends MessageCodec<EntityDatatableMessage> {
 	public EntityDatatableCodec() {

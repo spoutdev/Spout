@@ -29,7 +29,7 @@ package org.spout.engine.protocol.builtin.codec;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.protocol.MessageCodec;
-import org.spout.api.protocol.builtin.message.ClickMessage;
+import org.spout.engine.protocol.builtin.message.ClickMessage;
 
 public class ClickCodec extends MessageCodec<ClickMessage> {
 	public ClickCodec() {

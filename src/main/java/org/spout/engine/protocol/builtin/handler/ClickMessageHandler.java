@@ -28,7 +28,7 @@ package org.spout.engine.protocol.builtin.handler;
 
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
-import org.spout.api.protocol.builtin.message.ClickMessage;
+import org.spout.engine.protocol.builtin.message.ClickMessage;
 
 public class ClickMessageHandler extends MessageHandler<ClickMessage> {
 	@Override

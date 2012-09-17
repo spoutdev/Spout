@@ -43,10 +43,10 @@ import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.Session;
-import org.spout.api.protocol.builtin.message.BlockUpdateMessage;
-import org.spout.api.protocol.builtin.message.ChunkDataMessage;
-import org.spout.api.protocol.builtin.message.EntityPositionMessage;
-import org.spout.api.protocol.builtin.message.WorldChangeMessage;
+import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
+import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
+import org.spout.engine.protocol.builtin.message.EntityPositionMessage;
+import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 
 public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 	public SpoutNetworkSynchronizer(Session session) {

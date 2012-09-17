@@ -35,7 +35,7 @@ import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.ClientWorld;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
-import org.spout.api.protocol.builtin.message.ChunkDataMessage;
+import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
 
 public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 	@Override

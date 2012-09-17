@@ -34,8 +34,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.protocol.MessageCodec;
-import org.spout.api.protocol.builtin.ChannelBufferUtils;
-import org.spout.api.protocol.builtin.message.StringMapMessage;
+import org.spout.engine.protocol.builtin.ChannelBufferUtils;
+import org.spout.engine.protocol.builtin.message.StringMapMessage;
 
 public class StringMapCodec extends MessageCodec<StringMapMessage> {
 	public StringMapCodec() {

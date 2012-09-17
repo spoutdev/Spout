@@ -29,10 +29,10 @@ package org.spout.engine.protocol.builtin.handler;
 import org.spout.api.entity.Entity;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
-import org.spout.api.protocol.builtin.message.EntityDatatableMessage;
+import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
 
 /**
- * 
+ *
  */
 public class EntityDatatableMessageHandler extends MessageHandler<EntityDatatableMessage> {
 	@Override

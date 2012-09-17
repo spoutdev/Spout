@@ -59,7 +59,7 @@ import org.spout.api.chat.completion.CompletionManager;
 import org.spout.api.chat.completion.CompletionManagerImpl;
 import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
-import org.spout.api.command.SyncedRootCommand;
+import org.spout.engine.command.SyncedRootCommand;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.entity.Entity;
@@ -453,21 +453,21 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	public boolean stop(final String message) {
 		return stop(message, true);
 	}
-	
+
 	/**
 	 * Used to allow subclasses submit final tasks before stopping the scheduler
 	 * @param message
 	 * @param stopScheduler
 	 * @return
 	 */
-	
+
 	protected boolean stop(final String message, boolean stopScheduler) {
 		final SpoutEngine engine = this;
 
 		if (!stopping.compareAndSet(false, true)) {
 			return false;
 		}
-		
+
 		getPluginManager().clearPlugins();
 
 		Runnable lastTickTask = new Runnable() {
@@ -704,7 +704,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public List<String> getAllPlayers() {
 		ArrayList<String> names = new ArrayList<String>();
@@ -713,7 +713,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		}
 		return Collections.unmodifiableList(names);
 	}
-	
+
 	@Override
 	public Player getPlayer(String name, boolean exact) {
 		name = name.toLowerCase();
@@ -734,7 +734,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		//TODO Can someone redo this or make it better?
 		return StringUtil.matchName(Arrays.<Player>asList(players.getValues().toArray(new Player[players.getValues().size()])), name);
 	}
-	
+
 	// Players should use weak map?
 	public Player addPlayer(String playerName, SpoutSession<?> session, int viewDistance) {
 		SpoutPlayer player = new SpoutPlayer(playerName, null, viewDistance);

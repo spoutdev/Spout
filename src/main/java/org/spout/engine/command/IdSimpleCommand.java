@@ -24,15 +24,25 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.protocol.builtin.handler;
+package org.spout.engine.command;
 
-import org.spout.api.protocol.MessageHandler;
-import org.spout.api.protocol.Session;
-import org.spout.engine.protocol.builtin.message.CuboidBlockUpdateMessage;
+import org.spout.api.command.SimpleCommand;
+import org.spout.api.util.Named;
 
-public class CuboidBlockUpdateMessageHandler extends MessageHandler<CuboidBlockUpdateMessage> {
-	@Override
-	public void handleClient(Session session, CuboidBlockUpdateMessage message) {
-		throw new UnsupportedOperationException("Cuboid block updates have not been implemented yet!");
-	}
+/**
+ * Variant of SimpleCommand with an id
+ */
+public class IdSimpleCommand extends SimpleCommand {
+    private int id = -1;
+    public IdSimpleCommand(Named owner, String... names) {
+        super(owner, names);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    void setId(int id) {
+        this.id = id;
+    }
 }

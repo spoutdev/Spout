@@ -30,7 +30,8 @@ import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Player;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
-import org.spout.api.protocol.builtin.message.CommandMessage;
+import org.spout.engine.protocol.builtin.message.CommandMessage;
+import org.spout.engine.SpoutEngine;
 
 public class CommandMessageHandler extends MessageHandler<CommandMessage> {
 	@Override
@@ -39,7 +40,7 @@ public class CommandMessageHandler extends MessageHandler<CommandMessage> {
 			return;
 		}
 		Player player = session.getPlayer();
-		String command = session.getEngine().getRootCommand().getChildName(message.getCommand());
+		String command = ((SpoutEngine) session.getEngine()).getRootCommand().getChildName(message.getCommand());
 		if (command == null) {
 			player.sendMessage("Unknown command id: ", message.getCommand());
 		}

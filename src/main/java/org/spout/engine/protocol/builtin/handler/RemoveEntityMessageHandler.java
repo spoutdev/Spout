@@ -29,7 +29,7 @@ package org.spout.engine.protocol.builtin.handler;
 import org.spout.api.entity.Entity;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
-import org.spout.api.protocol.builtin.message.RemoveEntityMessage;
+import org.spout.engine.protocol.builtin.message.RemoveEntityMessage;
 
 public class RemoveEntityMessageHandler extends MessageHandler<RemoveEntityMessage> {
 	@Override

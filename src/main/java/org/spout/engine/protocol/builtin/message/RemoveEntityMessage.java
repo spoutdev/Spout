@@ -24,44 +24,48 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.protocol.builtin;
+package org.spout.engine.protocol.builtin.message;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.spout.api.entity.Entity;
-import org.spout.api.protocol.EntityProtocol;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.protocol.Message;
-import org.spout.engine.protocol.builtin.message.AddEntityMessage;
-import org.spout.engine.protocol.builtin.message.EntityPositionMessage;
-import org.spout.engine.protocol.builtin.message.RemoveEntityMessage;
+import org.spout.api.util.SpoutToStringStyle;
 
-/**
- * EntityProtocol for the SpoutClient protocol
- */
-public class SpoutEntityProtocol implements EntityProtocol {
-	public static final SpoutEntityProtocol INSTANCE = new SpoutEntityProtocol();
-	protected SpoutEntityProtocol() {
-		super();
+public class RemoveEntityMessage implements Message {
+	private final int entityId;
+
+	public RemoveEntityMessage(int entityId) {
+		this.entityId = entityId;
+	}
+
+	public int getEntityId() {
+		return entityId;
 	}
 
 	@Override
-	public List<Message> getSpawnMessages(Entity entity) {
-		return Arrays.<Message>asList(new AddEntityMessage(entity.getId(), entity.getTransform().getTransform()));
+	public String toString() {
+		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
+				.append("entityId", entityId)
+				.toString();
 	}
 
 	@Override
-	public List<Message> getDestroyMessages(Entity entity) {
-		return Arrays.<Message>asList(new RemoveEntityMessage(entity.getId()));
+	public int hashCode() {
+		return new HashCodeBuilder(61, 29)
+				.append(entityId)
+				.toHashCode();
 	}
 
 	@Override
-	public List<Message> getUpdateMessages(Entity entity) {
-		List<Message> messages = new ArrayList<Message>(2);
-		if (entity.getTransform().isDirty()) {
-			messages.add(new EntityPositionMessage(entity.getId(), entity.getTransform().getTransform()));
+	public boolean equals(Object obj) {
+		if (obj instanceof RemoveEntityMessage) {
+			final RemoveEntityMessage other = (RemoveEntityMessage) obj;
+			return new EqualsBuilder()
+					.append(entityId, other.entityId)
+					.isEquals();
+		} else {
+			return false;
 		}
-		return messages;
 	}
 }

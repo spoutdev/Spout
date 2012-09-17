@@ -29,7 +29,7 @@ package org.spout.engine.protocol.builtin.codec;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.protocol.MessageCodec;
-import org.spout.api.protocol.builtin.message.RemoveEntityMessage;
+import org.spout.engine.protocol.builtin.message.RemoveEntityMessage;
 
 public class RemoveEntityCodec extends MessageCodec<RemoveEntityMessage> {
 	public RemoveEntityCodec() {
