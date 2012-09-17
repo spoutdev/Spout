@@ -26,12 +26,24 @@
  */
 package org.spout.engine.command;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import org.spout.api.Spout;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
+import org.spout.api.command.annotated.CommandPermissions;
 
 import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
+import org.spout.api.plugin.Plugin;
 import org.spout.engine.SpoutEngine;
 
 public class TestCommands {
@@ -51,4 +63,110 @@ public class TestCommands {
 	public void testMsg(CommandContext args, CommandSource source) throws CommandException {
 		source.sendMessage(args.getJoinedString(0));
 	}
+	
+    @Command(aliases = "plugins-tofile", usage = "[filename]", desc = "Creates a file containing all loaded plugins and their version", min = 0, max = 1)
+    @CommandPermissions("spout.command.pluginstofile")
+    public void getPluginDetails(CommandContext args, CommandSource source) throws CommandException {
+
+        // File and filename
+        String filename = "";
+        String standpath = "/pluginreports";
+        File file = null;
+
+        // Getting date
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        String parse = dateFormat.format(date);
+
+        // Create file with passed filename or current date and time as name
+        if (args.length() == 1) {
+            filename = args.getString(0);
+            file = new File(standpath.concat("/" + replaceInvalidCharsWin(filename)));
+        } else {
+            file = new File(standpath.concat("/" + replaceInvalidCharsWin(parse)).concat(".txt"));
+        }
+
+        // Delete the file if existent
+        if (file.exists()) {
+            file.delete();
+        }
+        
+        String linesep = System.getProperty("line.separator");
+
+        // Create a new file
+        try {
+            new File("/pluginreports").mkdirs();
+            file.createNewFile();
+        } catch (IOException e) {
+            throw new CommandException("Couldn't create report-file!" + linesep + "Please make sure to only use valid chars in the filename.");
+        }
+
+        // Content Builder
+        StringBuilder sbuild = new StringBuilder();
+        sbuild.append("# This file was created on the " + dateFormat.format(date).concat(linesep));
+        sbuild.append("# Plugin Name | Version | Authors".concat(linesep));
+
+        // Plugins to write down
+        List<Plugin> plugins = Spout.getEngine().getPluginManager().getPlugins();
+
+        // Getting plugin informations
+        for (Plugin plugin : plugins) {
+
+            // Name and Version
+            sbuild.append(plugin.getName().concat(" | "));
+            sbuild.append(plugin.getDescription().getVersion());
+
+            // Authors
+            List<String> authors = plugin.getDescription().getAuthors();
+            StringBuilder authbuilder = new StringBuilder();
+            if (authors != null && authors.size() > 0) {
+                int size = authors.size();
+                int count = 0;
+                for (String s : authors) {
+                    count++;
+                    if (count != size) {
+                        authbuilder.append(s + ", ");
+                    } else {
+                        authbuilder.append(s);
+                    }
+                }
+                sbuild.append(" | ".concat(authbuilder.toString()).concat(linesep));
+            } else {
+                sbuild.append(linesep);
+            }
+        }
+
+        BufferedWriter writer = null;
+
+        // Write to file
+        if (file != null) {
+            try {
+                writer = new BufferedWriter(new FileWriter(file));
+                writer.write(sbuild.toString());
+            } catch (IOException e) {
+                throw new CommandException("Couldn't write to report-file!");
+            } finally {
+                if (writer != null) {
+                    try {
+                        writer.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        source.sendMessage("Plugins-report successfully created! " + linesep + "Stored in: " + standpath);
+    }
+
+    /**
+     * Replaces chars which are not allowed in filenames on windows with "-".
+     */
+    private String replaceInvalidCharsWin(String s) {
+        if (System.getProperty("os.name").toLowerCase().indexOf("win") >= 0) {
+            return s.replaceAll("[\\/:*?\"<>|]", "-");
+        } else {
+            return s;
+        }
+    }
 }
