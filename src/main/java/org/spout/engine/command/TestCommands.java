@@ -70,7 +70,7 @@ public class TestCommands {
 
         // File and filename
         String filename = "";
-        String standpath = "/pluginreports";
+        String standpath = "pluginreports";
         File file = null;
 
         // Getting date
@@ -95,7 +95,7 @@ public class TestCommands {
 
         // Create a new file
         try {
-            new File("/pluginreports").mkdirs();
+            new File("pluginreports").mkdirs();
             file.createNewFile();
         } catch (IOException e) {
             throw new CommandException("Couldn't create report-file!" + linesep + "Please make sure to only use valid chars in the filename.");
