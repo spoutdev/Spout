@@ -43,8 +43,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class InventoryTest {
+	private final Material[] mats = {BlockMaterial.AIR, BlockMaterial.SOLID, BlockMaterial.UNBREAKABLE};
 	private final Random random = new Random();
-	private final Material[] mats = {new BlockMaterial("test1"), new BlockMaterial("test2"), new BlockMaterial("test3")};
 	private List<ItemStack> items = new ArrayList<ItemStack>(3);
 	private Inventory inventory = new Inventory(20);
 
@@ -57,9 +57,9 @@ public class InventoryTest {
 
 	@Before
 	public void constructItemList() {
-		items.add(new ItemStack(mats[0], random.nextInt(64) + 1));
-		items.add(new ItemStack(mats[1], random.nextInt(64) + 1));
-		items.add(new ItemStack(mats[2], random.nextInt(64) + 1));
+		items.add(new ItemStack(mats[0], getRandomSize()));
+		items.add(new ItemStack(mats[1], getRandomSize()));
+		items.add(new ItemStack(mats[2], getRandomSize()));
 	}
 
 	@Test
@@ -70,7 +70,7 @@ public class InventoryTest {
 	@Test
 	public void testContains() {
 		ItemStack item = getRandomItem();
-		int slot = random.nextInt(20);
+		int slot = getRandomSlot();
 		inventory.set(slot, item);
 		assertTrue(inventory.contains(item));
 	}
@@ -106,7 +106,7 @@ public class InventoryTest {
 	@Test
 	public void testRemove() {
 		ItemStack item = getRandomItem();
-		int slot = random.nextInt(20);
+		int slot = getRandomSlot();
 		inventory.set(slot, item);
 		inventory.remove(item);
 		assertNull(inventory.get(slot));
@@ -137,16 +137,16 @@ public class InventoryTest {
 
 	@Test
 	public void testSetData() {
-		int slot = random.nextInt(20);
-		int data = random.nextInt(slot) + 1;
+		int slot = getRandomSlot();
+		int data = getRandomSize();
 		inventory.setData(slot, data);
 		assertEquals(data, inventory.get(slot).getData());
 	}
 
 	@Test
 	public void testAddData() {
-		int slot = random.nextInt(20);
-		int data = random.nextInt(slot) + 1;
+		int slot = getRandomSlot();
+		int data = getRandomSize();
 		int oldData = inventory.get(slot).getData();
 		inventory.addData(slot, data);
 		assertEquals(oldData + data, inventory.get(slot).getData());
@@ -154,16 +154,16 @@ public class InventoryTest {
 
 	@Test
 	public void testSetAmount() {
-		int slot = random.nextInt(20);
-		int amount = random.nextInt(slot) + 1;
+		int slot = getRandomSlot();
+		int amount = getRandomSize();
 		inventory.setAmount(slot, amount);
 		assertEquals(amount, inventory.get(slot).getAmount());
 	}
 
 	@Test
 	public void testAddAmount() {
-		int slot = random.nextInt(20);
-		int amount = random.nextInt(slot) + 1;
+		int slot = getRandomSlot();
+		int amount = getRandomSize();
 		int oldAmount = inventory.get(slot).getAmount();
 		inventory.addAmount(slot, amount);
 		assertEquals(oldAmount + amount, inventory.get(slot).getAmount());
@@ -177,7 +177,7 @@ public class InventoryTest {
 
 	@Test
 	public void testGet() {
-		int slot = random.nextInt(20);
+		int slot = getRandomSlot();
 		ItemStack item = getRandomItem();
 		inventory.set(slot, item);
 		assertEquals(item, inventory.get(slot));
@@ -185,7 +185,7 @@ public class InventoryTest {
 
 	@Test
 	public void testIndexOf() {
-		int slot = random.nextInt(20);
+		int slot = getRandomSlot();
 		ItemStack item = getRandomItem();
 		inventory.set(slot, item);
 		assertEquals(slot, inventory.indexOf(item));
@@ -193,11 +193,12 @@ public class InventoryTest {
 
 	@Test
 	public void testLastIndexOf() {
-		int slot = random.nextInt(20);
+		int slot = random.nextInt(19);
+		int lastSlot = slot + 1;
 		ItemStack item = getRandomItem();
-		inventory.set(slot - 1, item);
 		inventory.set(slot, item);
-		assertEquals(slot, inventory.lastIndexOf(item));
+		inventory.set(lastSlot, item);
+		assertEquals(lastSlot, inventory.lastIndexOf(item));
 	}
 
 	@Test
@@ -209,6 +210,18 @@ public class InventoryTest {
 	}
 
 	private ItemStack getRandomItem() {
-		return new ItemStack(mats[random.nextInt(3)], random.nextInt(64) + 1);
+		return new ItemStack(mats[random.nextInt(3)], getRandomSize());
+	}
+
+	private Material getRandomMaterial() {
+		return mats[random.nextInt(3)];
+	}
+
+	private int getRandomSize() {
+		return random.nextInt(64) + 1;
+	}
+
+	private int getRandomSlot() {
+		return random.nextInt(20);
 	}
 }
