@@ -41,7 +41,7 @@ import org.spout.api.chat.completion.CompletionManager;
 import org.spout.api.chat.console.MultiConsole;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
-import org.spout.api.command.SyncedRootCommand;
+import org.spout.api.command.RootCommand;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.event.EventManager;
@@ -137,7 +137,7 @@ public interface Engine extends Named {
 
 	/**
 	 * Gets the folder which contains plugins.
-	 * 
+	 *
 	 * @return {@link File} of the plugin folder.
 	 */
 	public File getPluginFolder();
@@ -391,7 +391,7 @@ public interface Engine extends Named {
 	 *
 	 * @return the {@link Engine}'s root {@link Command}
 	 */
-	public SyncedRootCommand getRootCommand();
+	public RootCommand getRootCommand();
 
 	/**
 	 * Returns the game's {@link EventManager} Event listener registration and

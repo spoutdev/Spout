@@ -38,9 +38,9 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.spout.api.event.object.EventableBase;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.io.store.simple.SimpleStore;
-import org.spout.api.protocol.builtin.message.StringMapMessage;
 
 /**
  * Represents a map for mapping Strings to unique ids.
@@ -50,8 +50,9 @@ import org.spout.api.protocol.builtin.message.StringMapMessage;
  *
  * Conversions to and from parent/child maps are cached
  */
-public class StringMap {
-	private static final StringMap STRING_MAP_REGISTRATION = new StringMap(StringMapMessage.STRINGMAP_REGISTRATION_MAP); // This is a special case
+public class StringMap extends EventableBase<StringMapEvent, StringMap> {
+    public static final byte REGISTRATION_MAP = -1;
+	private static final StringMap STRING_MAP_REGISTRATION = new StringMap(REGISTRATION_MAP); // This is a special case
 	private static final ConcurrentMap<String, WeakReference<StringMap>> REGISTERED_MAPS = new ConcurrentHashMap<String, WeakReference<StringMap>>();
 	private final StringMap parent;
 	private final SimpleStore<Integer> store;
@@ -66,7 +67,7 @@ public class StringMap {
 	private final int id;
 
 	public static StringMap get(int id) {
-		if (id == StringMapMessage.STRINGMAP_REGISTRATION_MAP) {
+		if (id == REGISTRATION_MAP) {
 			return STRING_MAP_REGISTRATION;
 		}
 		String name = STRING_MAP_REGISTRATION.getString(id);
@@ -311,17 +312,17 @@ public class StringMap {
 		return store.getKeys();
 	}
 
-	public void handleUpdate(StringMapMessage message) {
+	public void handleUpdate(StringMapEvent message) {
 		switch (message.getAction()) {
 			case SET:
 				clear();
 			case ADD:
-				for (Pair<Integer, String> pair : message.getElements()) {
+				for (Pair<Integer, String> pair : message.getModifiedElements()) {
 					store.set(pair.getValue(), pair.getKey());
 				}
 				break;
 			case REMOVE:
-				for (Pair<Integer, String> pair : message.getElements()) {
+				for (Pair<Integer, String> pair : message.getModifiedElements()) {
 					store.remove(pair.getValue());
 				}
 				break;

@@ -66,7 +66,6 @@ public class SimpleCommand implements Command {
 	protected Command parent;
 	private final Named owner;
 	private boolean locked;
-	private int id = -1;
 	protected List<String> aliases = new ArrayList<String>();
 	protected Map<Platform, CommandExecutor> executors = new HashMap<Platform, CommandExecutor>();
 	protected RawCommandExecutor rawExecutor;
@@ -95,11 +94,12 @@ public class SimpleCommand implements Command {
 				return this;
 			}
 		}
-		SimpleCommand sub = new SimpleCommand(owner, primaryName);
+        primaryName = primaryName.toLowerCase();
+		SimpleCommand sub = createSub(owner, primaryName);
 		while (children.containsKey(primaryName)) {
-			primaryName = owner.getName() + ":" + primaryName;
+			primaryName = owner.getName().toLowerCase() + ":" + primaryName;
 		}
-		primaryName = primaryName.toLowerCase();
+
 		children.put(primaryName, sub);
 		sub.parent = this;
 		if (wasLocked) {
@@ -107,6 +107,10 @@ public class SimpleCommand implements Command {
 		}
 		return sub;
 	}
+
+    protected SimpleCommand createSub(Named owner, String... aliases) {
+        return new SimpleCommand(owner, aliases);
+    }
 
 	@Override
 	public <T> Command addSubCommands(Named owner, T object, CommandRegistrationsFactory<T> factory) {
@@ -121,15 +125,6 @@ public class SimpleCommand implements Command {
 		}
 		lock(owner);
 		return parent;
-	}
-
-	@Override
-	public int getId() {
-		return id;
-	}
-
-	void setId(int id) {
-		this.id = id;
 	}
 
 	@Override

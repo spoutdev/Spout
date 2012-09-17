@@ -262,13 +262,6 @@ public interface Command extends Completor {
 	public Command removeAlias(String name);
 
 	/**
-	 * Return the int id of the command
-	 *
-	 * @return The command's id
-	 */
-	public int getId();
-
-	/**
 	 * Locks the command to prevent it from being modified by other owners.
 	 *
 	 * @param owner The owner of this command.

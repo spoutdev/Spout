@@ -24,48 +24,36 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.protocol.builtin.message;
+package org.spout.api.util;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.spout.api.protocol.Message;
-import org.spout.api.util.SpoutToStringStyle;
+import org.apache.commons.lang3.tuple.Pair;
+import org.spout.api.event.object.ObjectEvent;
 
-public class RemoveEntityMessage implements Message {
-	private final int entityId;
+import java.util.Collections;
+import java.util.List;
 
-	public RemoveEntityMessage(int entityId) {
-		this.entityId = entityId;
-	}
+/**
+ * Event called when modifications occur on a StringMap
+ */
+public class StringMapEvent extends ObjectEvent<StringMap> {
+    public static enum Action {
+        ADD, SET, REMOVE,
+    }
 
-	public int getEntityId() {
-		return entityId;
-	}
+    private final Action action;
+    private final List<Pair<Integer, String>> modifiedElements;
 
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
-				.append("entityId", entityId)
-				.toString();
-	}
+    public StringMapEvent(StringMap map, Action action, List<Pair<Integer, String>> modifiedElements) {
+        super(map);
+        this.action = action;
+        this.modifiedElements = Collections.unmodifiableList(modifiedElements);
+    }
 
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder(61, 29)
-				.append(entityId)
-				.toHashCode();
-	}
+    public Action getAction() {
+        return action;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof RemoveEntityMessage) {
-			final RemoveEntityMessage other = (RemoveEntityMessage) obj;
-			return new EqualsBuilder()
-					.append(entityId, other.entityId)
-					.isEquals();
-		} else {
-			return false;
-		}
-	}
+    public List<Pair<Integer, String>> getModifiedElements() {
+        return modifiedElements;
+    }
 }
