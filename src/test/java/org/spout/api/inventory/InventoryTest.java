@@ -95,8 +95,8 @@ public class InventoryTest {
 
 	@Test
 	public void testAdd() {
-		ItemStack item = getRandomItem();
-		ItemStack item1 = getRandomItem();
+		ItemStack item = new ItemStack(mats[0], getRandomSize());
+		ItemStack item1 = new ItemStack(mats[1], getRandomSize());
 		inventory.set(0, item);
 		inventory.set(1, null);
 		inventory.add(item1);
@@ -106,10 +106,9 @@ public class InventoryTest {
 	@Test
 	public void testRemove() {
 		ItemStack item = getRandomItem();
-		int slot = getRandomSlot();
-		inventory.set(slot, item);
+		inventory.set(0, item);
 		inventory.remove(item);
-		assertNull(inventory.get(slot));
+		assertNull(inventory.get(0));
 	}
 
 	@Test
@@ -147,9 +146,10 @@ public class InventoryTest {
 	public void testAddData() {
 		int slot = getRandomSlot();
 		int data = getRandomSize();
-		int oldData = inventory.get(slot).getData();
+		ItemStack item = inventory.get(slot);
+		int oldData = item.getData();
 		inventory.addData(slot, data);
-		assertEquals(oldData + data, inventory.get(slot).getData());
+		assertEquals(Math.min(oldData + data, item.getMaxData()), inventory.get(slot).getData());
 	}
 
 	@Test
@@ -164,9 +164,10 @@ public class InventoryTest {
 	public void testAddAmount() {
 		int slot = getRandomSlot();
 		int amount = getRandomSize();
-		int oldAmount = inventory.get(slot).getAmount();
+		ItemStack item = inventory.get(slot);
+		int oldAmount = item.getAmount();
 		inventory.addAmount(slot, amount);
-		assertEquals(oldAmount + amount, inventory.get(slot).getAmount());
+		assertEquals(Math.min(oldAmount + amount, item.getMaxStackSize()), inventory.get(slot).getAmount());
 	}
 
 	@Test
@@ -185,20 +186,17 @@ public class InventoryTest {
 
 	@Test
 	public void testIndexOf() {
-		int slot = getRandomSlot();
 		ItemStack item = getRandomItem();
-		inventory.set(slot, item);
-		assertEquals(slot, inventory.indexOf(item));
+		inventory.set(0, item);
+		assertEquals(0, inventory.indexOf(item));
 	}
 
 	@Test
 	public void testLastIndexOf() {
-		int slot = random.nextInt(19);
-		int lastSlot = slot + 1;
 		ItemStack item = getRandomItem();
-		inventory.set(slot, item);
-		inventory.set(lastSlot, item);
-		assertEquals(lastSlot, inventory.lastIndexOf(item));
+		inventory.set(0, item);
+		inventory.set(19, item);
+		assertEquals(19, inventory.lastIndexOf(item));
 	}
 
 	@Test
@@ -210,7 +208,7 @@ public class InventoryTest {
 	}
 
 	private ItemStack getRandomItem() {
-		return new ItemStack(mats[random.nextInt(3)], getRandomSize());
+		return new ItemStack(getRandomMaterial(), getRandomSize());
 	}
 
 	private Material getRandomMaterial() {
