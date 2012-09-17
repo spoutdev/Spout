@@ -69,8 +69,8 @@ public class BaseComponentHolder implements ComponentHolder {
 
 		if (component != null) {
 			if (component.attachTo(this)) {
-				component.onAttached();
 				components.put(type, component);
+				component.onAttached();
 			}
 		}
 		return component;
@@ -82,8 +82,8 @@ public class BaseComponentHolder implements ComponentHolder {
 		T component = (T) get(type);
 
 		if (component != null) {
-			component.onDetached();
 			components.inverse().remove(component);
+			component.onDetached();
 		}
 
 		return component;
