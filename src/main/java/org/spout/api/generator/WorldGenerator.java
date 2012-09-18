@@ -27,9 +27,15 @@
 package org.spout.api.generator;
 
 import org.spout.api.geo.World;
+import org.spout.api.util.Named;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 
-public interface WorldGenerator {
+/**
+ * Represents a World generator.
+ *
+ * WorldGenerators are used to generate {@link World}s (surprise surprise)
+ */
+public interface WorldGenerator extends Named {
 	/**
 	 * Gets the block structure for a Chunk.
 	 *
@@ -82,5 +88,6 @@ public interface WorldGenerator {
 	 * Gets the name of the generator. This name should be unique to prevent two
 	 * generators overwriting the same world
 	 */
+	@Override
 	public String getName();
 }

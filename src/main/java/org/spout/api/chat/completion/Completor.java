@@ -32,6 +32,7 @@ package org.spout.api.chat.completion;
 public interface Completor {
 	/**
 	 * Requests a completion
+	 *
 	 * @param input The request data for a completion
 	 * @return The response, or null if data needs to be sent to the other side
 	 */

@@ -33,6 +33,9 @@ import net.royawesome.jlibnoise.module.Module;
 import org.spout.api.geo.World;
 import org.spout.api.math.MathHelper;
 
+/**
+ * Utilities for World generation
+ */
 public class WorldGeneratorUtils {
 	private final static int HASH_SHIFT = 19;
 	private final static long HASH_SHIFT_MASK = (1L << HASH_SHIFT) - 1;

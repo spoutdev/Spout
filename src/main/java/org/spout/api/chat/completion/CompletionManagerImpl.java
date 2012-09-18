@@ -29,16 +29,16 @@ package org.spout.api.chat.completion;
 import java.util.regex.Pattern;
 
 /**
- * Implementation of CompletionManager
+ * Implementation of {@link CompletionManager}
  */
 public class CompletionManagerImpl implements CompletionManager {
 	@Override
-	public void reqisterCompletor(Completor completor, Pattern regex, MatchLocation matchLocation) {
-		//To change body of implemented methods use File | Settings | File Templates.
+	public void registerCompletor(Completor completor, Pattern regex, MatchLocation matchLocation) {
+		//TODO
 	}
 
 	@Override
 	public CompletionFuture getCompletion(CompletionRequest input) {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+		return null;  //TODO
 	}
 }

@@ -27,11 +27,12 @@
 package org.spout.api.inventory;
 
 /**
- * Represents something which can view an inventory.
+ * Represents someone or something that can view an inventory.
  */
 public interface InventoryViewer {
 	/**
 	 * Inform the viewer that an item has changed.
+	 *
 	 * @param inventory The {@link Inventory} in which a slot has changed.
 	 * @param slot The slot number which has changed.
 	 * @param item The {@link ItemStack} which the slot has changed to.

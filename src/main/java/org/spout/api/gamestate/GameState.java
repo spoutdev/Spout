@@ -29,7 +29,7 @@ package org.spout.api.gamestate;
 import org.spout.api.tickable.Tickable;
 
 /**
- * Simple Game State interface
+ * Simple GameState interface to represent the state of a game
  */
 public abstract class GameState implements Tickable {
 	/**
@@ -40,31 +40,35 @@ public abstract class GameState implements Tickable {
 	/**
 	 * Called when this state can load resources. 
 	 */
-	public void loadResources() { }
+	public void loadResources() {
+	}
 	
 	/**
 	 * Called ever render tick on the client
+	 *
 	 * @param dt - time since last render in seconds
 	 */
 	public abstract void onRender(float dt);
+
 	/**
 	 * Called when the state is being torn down.  If there are any native resources loaded, unload them here
 	 */
-	public void unloadResources() { }
+	public void unloadResources() {
+	}
 	
 	/**
 	 * Called when the player pauses this state.
 	 */
-	public void onPause() { }
+	public void onPause() {
+	}
 	
 	/**
 	 * Called when the player unpauses this state	
 	 */
-	public void onUnPause() { }
+	public void onUnPause() {
+	}
 
 	@Override
 	public void tick(float dt) {
-
 	}
-	
 }

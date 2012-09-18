@@ -30,5 +30,5 @@ package org.spout.api.chat.completion;
  * Represents whether a regex match should be checked for in the current word or the whole line.
  */
 public enum MatchLocation {
-	WORD, LINE
+	WORD, LINE;
 }

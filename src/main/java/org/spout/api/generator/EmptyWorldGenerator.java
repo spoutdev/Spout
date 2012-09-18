@@ -31,6 +31,9 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 
+/**
+ * Generates an empty world using air blocks
+ */
 public class EmptyWorldGenerator implements WorldGenerator {
 	@Override
 	public void generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ, World world) {

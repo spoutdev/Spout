@@ -30,5 +30,11 @@ package org.spout.api.chat.completion;
  * Represents an object that can handle completion requests
  */
 public interface CompletionHandler {
+	/**
+	 * Handles a completion request
+	 *
+	 * @param request
+	 * @return the completed request
+	 */
 	public CompletionFuture complete(CompletionRequest request);
 }

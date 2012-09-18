@@ -38,7 +38,6 @@ import org.spout.api.resource.ResourceNotFoundException;
  * 
  * On the {@link Client}, loading a resource will load the resource from the hard-drive.  
  * On the {@link Server}, it will notify all clients to load the resource, as well as provide a representation of that resource.
- *
  */
 public interface FileSystem {
 	/**
@@ -48,6 +47,9 @@ public interface FileSystem {
 	 */
 	public abstract void init();
 
+	/**
+	 * Called after startup
+	 */
 	public abstract void postStartup();
 
 	/**
@@ -86,12 +88,12 @@ public interface FileSystem {
 	 * Attempts to load the given path as a resource into the FileSystem.
 	 * 
 	 * @param path to the resource being loaded.
-	 * @throws ResourceNotFoundException
+	 * @throws ResourceNotFoundException - if the resource is not found
 	 */
 	public abstract void loadResource(URI path) throws ResourceNotFoundException;
 
 	/**
-	 * Attempst to load the given path as a resource into the FileSystem.
+	 * Attempt to load the given path as a resource into the FileSystem.
 	 * this method will attempt to invoke {@link #loadResource(URI)} if the path is valid.
 	 * 
 	 * @param path to the resource being loaded.
@@ -115,5 +117,4 @@ public interface FileSystem {
 	 * @return {@link Resource}
 	 */
 	public abstract Resource getResource(String path);
-
 }
