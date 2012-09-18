@@ -84,8 +84,17 @@ import org.spout.api.util.StringUtil;
 import org.spout.api.util.access.AccessManager;
 
 public class SpoutServer extends SpoutEngine implements Server {
+	/**
+	 * The name of the server
+	 */
 	private final String name = "Spout Server";
+	/**
+	 * The maximum amount of player allowed on the server
+	 */
 	private volatile int maxPlayers = 20;
+	/**
+	 * The {@link FileSystem} for the server
+	 */
 	private final FileSystem filesystem;
 	/**
 	 * If the server allows flight.
