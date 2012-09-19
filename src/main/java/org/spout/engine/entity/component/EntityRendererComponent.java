@@ -54,14 +54,10 @@ public class EntityRendererComponent extends EntityComponent {
 	
 	public void render() {
 		if(model == null) return;
+		BaseMesh m = (BaseMesh)model.getModel().getMesh();
 		
 		if(dirty) {
-			Mesh m = model.getModel().getMesh();
-			
-			batch.begin();
-			batch.addMesh((BaseMesh)m);
-			batch.end();
-			
+			m.batch();
 			dirty = false;
 		}
 		Matrix modelMatrix = transform.getTransformation();
@@ -69,7 +65,7 @@ public class EntityRendererComponent extends EntityComponent {
 		
 		mat.getShader().setUniform("Model", modelMatrix);		
 		
-		batch.draw(mat);
+		m.render(mat);
 		
 	}
 	

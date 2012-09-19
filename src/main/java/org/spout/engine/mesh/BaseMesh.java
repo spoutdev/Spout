@@ -29,12 +29,15 @@ package org.spout.engine.mesh;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.lwjgl.opengl.GL11;
 import org.spout.api.model.Mesh;
 import org.spout.api.model.MeshFace;
 import org.spout.api.model.Vertex;
 import org.spout.api.render.RenderEffect;
+import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
 import org.spout.api.resource.Resource;
+import org.spout.engine.renderer.BatchVertexRenderer;
 
 
 public class BaseMesh extends Resource implements Mesh, Iterable<MeshFace> {
@@ -42,6 +45,8 @@ public class BaseMesh extends Resource implements Mesh, Iterable<MeshFace> {
 	ArrayList<RenderEffect> effects = new ArrayList<RenderEffect>();
 	boolean dirty = false;
 
+	Renderer renderer;
+	
 	
 	public BaseMesh(){
 		faces = new ArrayList<MeshFace>();
@@ -103,7 +108,22 @@ public class BaseMesh extends Resource implements Mesh, Iterable<MeshFace> {
 	}
 
 
-
+	public void batch(){
+		if(renderer == null) renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
+		preBatch(renderer);
+		this.batch(renderer);
+		postBatch(renderer);
+	}
+	
+	public void render(RenderMaterial material){
+		if(renderer == null) throw new IllegalStateException("Cannot render without batching first!");
+		
+		preRender(renderer);
+		renderer.render(material);
+		postRender(renderer);	
+	}
+	
+	
 
 	@Override
 	public Iterator<MeshFace> iterator() {
