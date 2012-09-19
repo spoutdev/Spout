@@ -47,7 +47,7 @@ public class EntityRendererComponent extends EntityComponent {
 	@Override
 	public void onAttached(){
 		model = getHolder().get(ModelComponent.class);
-		transform = getTransformComponent();
+		transform = getHolder().getTransform();
 		batch = new PrimitiveBatch();
 	}
 	
