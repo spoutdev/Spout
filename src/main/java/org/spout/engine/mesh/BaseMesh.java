@@ -30,25 +30,25 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.spout.api.model.Mesh;
-import org.spout.api.model.ModelFace;
+import org.spout.api.model.MeshFace;
 import org.spout.api.model.Vertex;
 import org.spout.api.render.RenderEffect;
 import org.spout.api.render.Renderer;
 import org.spout.api.resource.Resource;
 
 
-public class BaseMesh extends Resource implements Mesh, Iterable<ModelFace> {
-	ArrayList<ModelFace> faces;
+public class BaseMesh extends Resource implements Mesh, Iterable<MeshFace> {
+	ArrayList<MeshFace> faces;
 	ArrayList<RenderEffect> effects = new ArrayList<RenderEffect>();
 	boolean dirty = false;
 
 	
 	public BaseMesh(){
-		faces = new ArrayList<ModelFace>();
+		faces = new ArrayList<MeshFace>();
 		
 	}
 	
-	public BaseMesh(ArrayList<ModelFace> faces){
+	public BaseMesh(ArrayList<MeshFace> faces){
 		this.faces = faces;
 	}
 	
@@ -80,7 +80,7 @@ public class BaseMesh extends Resource implements Mesh, Iterable<ModelFace> {
 	}
 
 	protected void batch(Renderer batcher) {
-		for (ModelFace face : faces) {
+		for (MeshFace face : faces) {
 			for(Vertex vert : face){
 				batcher.addTexCoord(vert.texCoord0);
 				batcher.addNormal(vert.normal);
@@ -106,7 +106,7 @@ public class BaseMesh extends Resource implements Mesh, Iterable<ModelFace> {
 
 
 	@Override
-	public Iterator<ModelFace> iterator() {
+	public Iterator<MeshFace> iterator() {
 		return faces.iterator();
 	}
 }

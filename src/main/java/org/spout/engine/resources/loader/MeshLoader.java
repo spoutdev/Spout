@@ -32,7 +32,7 @@ import java.util.Scanner;
 
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
-import org.spout.api.model.ModelFace;
+import org.spout.api.model.MeshFace;
 import org.spout.api.model.Vertex;
 import org.spout.api.resource.BasicResourceLoader;
 import org.spout.engine.mesh.BaseMesh;
@@ -45,7 +45,7 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 		ArrayList<Vector3> verticies = new ArrayList<Vector3>();
 		ArrayList<Vector3> normals = new ArrayList<Vector3>();
 		ArrayList<Vector2> uvs = new ArrayList<Vector2>();
-		ArrayList<ModelFace> faces = new ArrayList<ModelFace>();
+		ArrayList<MeshFace> faces = new ArrayList<MeshFace>();
 
 		while (scan.hasNext()) {
 			String s = scan.nextLine();
@@ -75,7 +75,7 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 						ar.add(new Vertex(verticies.get(pos - 1), normals.get(norm - 1)));
 
 					}
-					faces.add(new ModelFace(ar.get(0), ar.get(1), ar.get(2)));
+					faces.add(new MeshFace(ar.get(0), ar.get(1), ar.get(2)));
 					ar.clear();
 
 				} else if (sp[1].contains("/")) {
@@ -87,7 +87,7 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 						ar.add(new Vertex(verticies.get(pos - 1), uvs.get(uv - 1)));
 
 					}
-					faces.add(new ModelFace(ar.get(0), ar.get(1), ar.get(2)));
+					faces.add(new MeshFace(ar.get(0), ar.get(1), ar.get(2)));
 					ar.clear();
 
 				} else {
@@ -99,7 +99,7 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 					Vertex p2 = new Vertex(verticies.get(face2));
 					Vertex p3 = new Vertex(verticies.get(face3));
 
-					faces.add(new ModelFace(p, p2, p3));
+					faces.add(new MeshFace(p, p2, p3));
 
 				}
 

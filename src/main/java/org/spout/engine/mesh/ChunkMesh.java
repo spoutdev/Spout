@@ -35,7 +35,7 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
-import org.spout.api.model.ModelFace;
+import org.spout.api.model.MeshFace;
 import org.spout.api.model.Vertex;
 import org.spout.engine.util.ChunkSnapshotModel;
 import com.google.common.collect.Lists;
@@ -197,8 +197,8 @@ public class ChunkMesh extends BaseMesh {
 		Vertex v4 = new Vertex(p4, face.getOffset(), uv4);
 		v4.color = color;
 
-		ModelFace f1 = new ModelFace(v1, v2, v3);
-		ModelFace f2 = new ModelFace(v2, v3, v4);
+		MeshFace f1 = new MeshFace(v1, v2, v3);
+		MeshFace f2 = new MeshFace(v2, v3, v4);
 		faces.add(f1);
 		faces.add(f2);
 	}

@@ -31,7 +31,7 @@ import java.awt.Color;
 import org.lwjgl.opengl.GL11;
 
 import org.spout.api.math.Vector3;
-import org.spout.api.model.ModelFace;
+import org.spout.api.model.MeshFace;
 import org.spout.api.model.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
@@ -105,7 +105,7 @@ public class PrimitiveBatch {
 
 	
 	public void addMesh(BaseMesh mesh) {
-		for (ModelFace face : mesh) {
+		for (MeshFace face : mesh) {
 			for (Vertex vert : face) {
 				renderer.addTexCoord(vert.texCoord0);
 				renderer.addNormal(vert.normal);
