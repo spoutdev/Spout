@@ -77,4 +77,12 @@ public class VertexBufferImpl {
 		return layout;
 	}
 	
+	public void dispose() {
+		if( vboId != -1 ) GL15.glDeleteBuffers(vboId);
+	}
+	
+	public void finalize() {
+		dispose();
+	}
+	
 }

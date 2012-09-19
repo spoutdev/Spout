@@ -256,4 +256,12 @@ public class ClientShader extends Resource implements Shader {
 			"uniform sampler2D texture; \n" +
 			"void main()\n{\n" +
 			"gl_FragColor =  color; \n} \n";
+	
+	private void dispose() {
+		if(program != -1 ) GL20.glDeleteProgram(program);
+	}
+	
+	public void finalize() {
+		dispose();
+	}
 }

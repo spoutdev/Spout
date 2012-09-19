@@ -130,4 +130,14 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 		}
 		
 	}
+	
+	private void dispose() {
+		for(VertexBufferImpl vb : vertexBuffers.valueCollection()){
+			vb.dispose();
+		}
+	}
+	
+	public void finalize() {
+		dispose();
+	}
 }
