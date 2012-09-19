@@ -38,13 +38,13 @@ import org.apache.commons.collections.iterators.ArrayIterator;
  * Represents a Triangle for a model face
  * 
  */
-public class ModelFace implements Iterable<Vertex> {
+public class MeshFace implements Iterable<Vertex> {
 	
 	Vertex[] verts = new Vertex[3];
 	
 	
 	
-	public ModelFace(Vertex v1, Vertex v2, Vertex v3 ) {
+	public MeshFace(Vertex v1, Vertex v2, Vertex v3 ) {
 		verts[0] = v1;
 		verts[1] = v2;
 		verts[2] = v3;

@@ -27,6 +27,8 @@
 package org.spout.api.component;
 
 import org.spout.api.component.components.DatatableComponent;
+import org.spout.api.component.components.TransformComponent;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.tickable.Tickable;
 
 import com.alta189.annotations.RequireDefault;
@@ -107,5 +109,9 @@ public abstract class Component implements Tickable {
 	 */
 	public final DatatableComponent getData() {
 		return getHolder().getData();
+	}
+	
+	public final TransformComponent getTransformComponent() {
+		return getHolder().get(TransformComponent.class);
 	}
 }

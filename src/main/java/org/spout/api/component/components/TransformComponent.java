@@ -29,6 +29,7 @@ package org.spout.api.component.components;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.MathHelper;
+import org.spout.api.math.Matrix;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 
@@ -236,5 +237,9 @@ public class TransformComponent extends EntityComponent {
 
 	public void copySnapshot() {
 		this.transform.set(transformLive);
+	}
+	
+	public Matrix getTransformation() {
+		return this.transform.toMatrix();
 	}
 }
