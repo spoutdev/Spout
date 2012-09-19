@@ -110,8 +110,5 @@ public abstract class Component implements Tickable {
 	public final DatatableComponent getData() {
 		return getHolder().getData();
 	}
-	
-	public final TransformComponent getTransformComponent() {
-		return getHolder().get(TransformComponent.class);
-	}
+		
 }
