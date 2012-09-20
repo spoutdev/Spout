@@ -27,7 +27,6 @@
 package org.spout.engine.command;
 
 import org.spout.api.Engine;
-import org.spout.api.Spout;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandExecutor;
@@ -46,18 +45,18 @@ public class InputCommands {
 			parent.addSubCommand(engine, "+" + flag.name())
 					.setArgBounds(0, 0)
 					.setHelp("Adds the " + flag.name() + " flag to the calling player's input state")
-					.setExecutor(Platform.ALL, new InputFlagHandler(flag, true));
+					.setExecutor(Platform.CLIENT, new InputFlagHandler(flag, true));
 			parent.addSubCommand(engine, "-" + flag.name())
 					.setArgBounds(0, 0)
 					.setHelp("Removes the " + flag.name() + " flag from the calling player's input state")
-					.setExecutor(Platform.ALL, new InputFlagHandler(flag, false));
+					.setExecutor(Platform.CLIENT, new InputFlagHandler(flag, false));
 		}
 		parent.addSubCommand(engine, "+dx")
 				.setHelp("Adds the x distance traveled to the calling player's input state.")
-				.setExecutor(Platform.ALL, new InputMouseHandler(true));
+				.setExecutor(Platform.CLIENT, new InputMouseHandler(true));
 		parent.addSubCommand(engine, "+dy")
 				.setHelp("Adds the y distance traveled to the calling player's input state.")
-				.setExecutor(Platform.ALL, new InputMouseHandler(false));
+				.setExecutor(Platform.CLIENT, new InputMouseHandler(false));
 	}
 
 	public static class InputFlagHandler implements CommandExecutor {
@@ -71,9 +70,8 @@ public class InputCommands {
 
 		@Override
 		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
-			if (Spout.getPlatform().equals(Platform.CLIENT)) {
 				if (!(source instanceof Player)) {
-					throw new CommandException("Source must be a player!");
+					return; //throw new CommandException("Source must be a player!"); // TODO: Fix input
 				}
 				Player player = (Player) source;
 				if (add) {
@@ -81,9 +79,6 @@ public class InputCommands {
 				} else {
 					player.processInput(player.input().withRemovedFlag(flag));
 				}
-			} else if (Spout.getPlatform().equals(Platform.SERVER)) {
-				// TODO server handling
-			}
 		}
 	}
 
@@ -96,9 +91,8 @@ public class InputCommands {
 
 		@Override
 		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
-			if (Spout.getPlatform().equals(Platform.CLIENT)) {
 				if (!(source instanceof Player)) {
-					throw new CommandException("Source must be a player!");
+					return; //throw new CommandException("Source must be a player!");
 				}
 				int d;
 				try {
@@ -112,9 +106,6 @@ public class InputCommands {
 				} else {
 					player.processInput(player.input().withAddedPitch(PlayerInputState.MOUSE_SENSITIVITY * d));
 				}
-			} else if (Spout.getPlatform().equals(Platform.SERVER)) {
-				// TODO server handling
-			}
 		}
 	}
 }

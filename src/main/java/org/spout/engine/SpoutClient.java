@@ -226,7 +226,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public SpoutInput getInput() {
 		return inputManager;
 	}
-	
+
 	public void doInput() {
 		inputManager.pollInput();
 		// TODO move this a plugin
@@ -375,7 +375,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	private PrimitiveBatch renderer;
 	private RenderMaterial mat;
-	
+
 	public void initRenderer() {
 		createWindow();
 
@@ -409,7 +409,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		renderer = new PrimitiveBatch();
 		mat = (RenderMaterial)this.getFilesystem().getResource("material://Spout/resources/resources/materials/BasicMaterial.smt");
-		renderer.begin();  	
+		renderer.begin();
 		renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.RED, sides);
 		renderer.end();
 	}

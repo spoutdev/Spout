@@ -70,12 +70,10 @@ public class SpoutInput implements Input {
 	}
 
 	public void doMouseDx(int dx) {
-		Spout.getEngine().getCommandSource().sendCommand("+dx", new ChatArguments(dx));
 		Spout.getEngine().getCommandSource().processCommand("+dx", new ChatArguments(dx));
 	}
 
 	public void doMouseDy(int dy) {
-		Spout.getEngine().getCommandSource().sendCommand("+dy", new ChatArguments(dy));
 		Spout.getEngine().getCommandSource().processCommand("+dy", new ChatArguments(dy));
 	}
 
@@ -86,7 +84,6 @@ public class SpoutInput implements Input {
 		if (command.startsWith("+") && !pressed) {
 			command = command.replaceFirst("\\+", "-");
 		}
-		Spout.getEngine().getCommandSource().sendCommand(command, new ChatArguments());
 		Spout.getEngine().getCommandSource().processCommand(command, new ChatArguments());
 	}
 

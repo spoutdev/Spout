@@ -130,7 +130,7 @@ public final class SpoutScheduler implements Scheduler {
 	 * Update count for physics and dynamic updates
 	 */
 	private final AtomicInteger updates = new AtomicInteger(0);
-	
+
 	private final AtomicLong tickStartTime = new AtomicLong();
 	private volatile boolean shutdown = false;
 	private final SpoutSnapshotLock snapshotLock = new SpoutSnapshotLock();
@@ -152,7 +152,7 @@ public final class SpoutScheduler implements Scheduler {
 
 		mainThread = new MainThread();
 		renderThread = new RenderThread();
-		
+
 		taskManager = new SpoutTaskManager(this, true, mainThread);
 	}
 
@@ -168,7 +168,7 @@ public final class SpoutScheduler implements Scheduler {
 			int rate = (int) ((1f / TARGET_FPS) * 1000);
 			long lastTick = System.currentTimeMillis();
 			while (!shutdown) {
-				if(Display.isCloseRequested() || !c.isRendering()) {
+				if (Display.isCloseRequested() || !c.isRendering()) {
 					c.stop();
 					break;
 				}
@@ -185,16 +185,16 @@ public final class SpoutScheduler implements Scheduler {
 						Spout.log("[Severe] Interrupted while sleeping!");
 					}
 				}
-				
+
 			}
 			Display.destroy();
 			c.stopEngine();
 		}
 	}
-	
+
 	private long medianFreeTime = 0;
 	private int medianCounter = 0;
-	
+
 	private void medianCheck(long tickTime) {
 		if (Spout.debugMode()) {
 			long timeScaled = tickTime * 10;
@@ -204,7 +204,7 @@ public final class SpoutScheduler implements Scheduler {
 			} else if (timeScaled < medianFreeTime) {
 				medianFreeTime--;
 			}
-			
+
 			if (medianCounter++ > 100) {
 				medianCounter = 0;
 				Spout.getLogger().info("Median tick time monitor, " + (medianFreeTime / 10.0));
@@ -238,9 +238,9 @@ public final class SpoutScheduler implements Scheduler {
 				}
 				long finishTime = System.currentTimeMillis();
 				long freeTime = targetPeriod - (finishTime - startTime);
-				
+
 				medianCheck(finishTime - startTime);
-				
+
 				if (freeTime > 0) {
 					heavyLoad.set(false);
 					try {
@@ -252,21 +252,21 @@ public final class SpoutScheduler implements Scheduler {
 					heavyLoad.set(true);
 				}
 			}
-			
+
 			heavyLoad.set(false);
-			
+
 			asyncExecutors.copySnapshot();
 			try {
 				copySnapshotWithLock(asyncExecutors.get());
 			} catch (InterruptedException ex) {
 				Spout.getLogger().log(Level.SEVERE, "Interrupt while running final snapshot copy: {0}", ex.getMessage());
 			}
-			
+
 			TickStage.setStage(TickStage.TICKSTART);
 			runLastTickTasks();
 			taskManager.heartbeat(PULSE_EVERY << 2);
 			taskManager.shutdown(1L);
-			
+
 			asyncExecutors.copySnapshot();
 			try {
 				copySnapshotWithLock(asyncExecutors.get());
@@ -310,7 +310,7 @@ public final class SpoutScheduler implements Scheduler {
 			} catch (InterruptedException ex) {
 				engine.getLogger().log(Level.SEVERE, "Error while shutting down engine: {0}", ex.getMessage());
 			}
-			
+
 			runFinalTasks();
 		}
 	}
@@ -359,7 +359,7 @@ public final class SpoutScheduler implements Scheduler {
 	public void submitFinalTask(Runnable task) {
 		submitFinalTask(task, false);
 	}
-	
+
 	public void submitFinalTask(Runnable task, boolean addToStart) {
 		if (addToStart) {
 			finalTaskQueue.addFirst(task);
@@ -372,7 +372,7 @@ public final class SpoutScheduler implements Scheduler {
 			Thread.dumpStack();
 		}
 	}
-	
+
 	public void submitLastTickTask(Runnable task) {
 		lastTickTaskQueue.add(task);
 		if (!mainThread.isAlive()) {
@@ -381,14 +381,14 @@ public final class SpoutScheduler implements Scheduler {
 			Thread.dumpStack();
 		}
 	}
-	
+
 	public void runFinalTasks() {
 		Runnable r;
 		while ((r = finalTaskQueue.poll()) != null) {
 			r.run();
 		}
 	}
-	
+
 	public void runLastTickTasks() {
 		Runnable r;
 		while ((r = lastTickTaskQueue.poll()) != null) {
@@ -402,14 +402,14 @@ public final class SpoutScheduler implements Scheduler {
 	private boolean tick(long delta) throws InterruptedException {
 		TickStage.setStage(TickStage.TICKSTART);
 		asyncExecutors.copySnapshot();
-		
+
 		if (Spout.getPlatform().equals(Platform.CLIENT)) {
-			
+
 			((SpoutClient) Spout.getEngine()).doInput();
 		}
-		
+
 		taskManager.heartbeat(delta);
-		
+
 		if (parallelTaskManager == null) {
 			parallelTaskManager = ((SpoutParallelTaskManager)engine.getParallelTaskManager());
 		}
@@ -457,27 +457,27 @@ public final class SpoutScheduler implements Scheduler {
 			}
 			stage++;
 		}
-		
+
 		lockSnapshotLock();
-		
+
 		try {
 			int totalUpdates = -1;
 			updates.set(1);
 			while (updates.get() > 0 && totalUpdates < UPDATE_THRESHOLD) {
 				totalUpdates += updates.getAndSet(0);
-				
+
 				doDynamicUpdates(executors);
-				
+
 				doPhysics(executors);
 			}
-			
+
 			updates.set(1);
 			while (updates.get() > 0 && totalUpdates < UPDATE_THRESHOLD) {
 				totalUpdates += updates.getAndSet(0);
-				
+
 				doLighting(executors);
 			}
-			
+
 			if (totalUpdates >= UPDATE_THRESHOLD) {
 				Spout.getLogger().warning("Physics updates per tick of " + totalUpdates + " exceeded threshold " + UPDATE_THRESHOLD);
 			}
@@ -487,14 +487,14 @@ public final class SpoutScheduler implements Scheduler {
 			copySnapshot(executors);
 
 			TickStage.setStage(TickStage.TICKSTART);
-			
+
 			runCoreTasks();
 		} finally {
 			unlockSnapshotLock();
 		}
 		return true;
 	}
-	
+
 	private void doPhysics(List<AsyncExecutor> executors) throws InterruptedException {
 		int passStartUpdates = updates.get() - 1;
 		int startUpdates = updates.get();
@@ -528,13 +528,13 @@ public final class SpoutScheduler implements Scheduler {
 			}
 		}
 	}
-	
+
 	private void doDynamicUpdates(List<AsyncExecutor> executors) throws InterruptedException {
 		int passStartUpdates = updates.get() - 1;
 		int startUpdates = updates.get();
-		
+
 		TickStage.setStage(TickStage.GLOBAL_DYNAMIC_BLOCKS);
-		
+
 		long earliestTime = END_OF_THE_WORLD;
 
 		for (AsyncExecutor e : executors) {
@@ -543,16 +543,16 @@ public final class SpoutScheduler implements Scheduler {
 				earliestTime = firstTime;
 			}
 		}
-		
+
 		while (passStartUpdates < updates.get() && updates.get() < startUpdates + UPDATE_THRESHOLD) {
 			passStartUpdates = updates.get();
-			
+
 			for (int sequence = -1; sequence < 27 && updates.get() < startUpdates + UPDATE_THRESHOLD; sequence++) {
 				if (sequence == -1) {
 					TickStage.setStage(TickStage.DYNAMIC_BLOCKS);
 				} else {
 					TickStage.setStage(TickStage.GLOBAL_DYNAMIC_BLOCKS);
-				}			
+				}
 				long threshold = earliestTime + PULSE_EVERY - 1;
 
 				for (AsyncExecutor e : executors) {
@@ -575,7 +575,7 @@ public final class SpoutScheduler implements Scheduler {
 			}
 		}
 	}
-	
+
 	private void doLighting(List<AsyncExecutor> executors) throws InterruptedException {
 		int passStartUpdates = updates.get() - 1;
 		int startUpdates = updates.get();
@@ -609,11 +609,11 @@ public final class SpoutScheduler implements Scheduler {
 			}
 		}
 	}
-	
+
 	public void addUpdates(int inc) {
 		updates.addAndGet(inc);
 	}
-	
+
 	private void runCoreTasks() {
 		Runnable r;
 		while ((r = coreTaskQueue.poll()) != null) {
@@ -625,8 +625,8 @@ public final class SpoutScheduler implements Scheduler {
 			}
 		}
 	}
-	
-	private void finalizeTick(List<AsyncExecutor> executors) throws InterruptedException { 
+
+	private void finalizeTick(List<AsyncExecutor> executors) throws InterruptedException {
 		TickStage.setStage(TickStage.FINALIZE);
 
 		for (AsyncExecutor e : executors) {
@@ -647,7 +647,7 @@ public final class SpoutScheduler implements Scheduler {
 			}
 		}
 	}
-	
+
 	private void copySnapshotWithLock(List<AsyncExecutor> executors) throws InterruptedException {
 		lockSnapshotLock();
 		try {
@@ -741,7 +741,7 @@ public final class SpoutScheduler implements Scheduler {
 	public int scheduleSyncDelayedTask(Object plugin, Runnable task) {
 		return taskManager.scheduleSyncDelayedTask(plugin, task);
 	}
-	
+
 	@Override
 	public int scheduleSyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
 		return taskManager.scheduleSyncDelayedTask(plugin, task, delay, priority);
@@ -801,7 +801,7 @@ public final class SpoutScheduler implements Scheduler {
 	public List<Task> getPendingTasks() {
 		return taskManager.getPendingTasks();
 	}
-	
+
 	@Override
 	public long getUpTime() {
 		return taskManager.getUpTime();
@@ -825,7 +825,7 @@ public final class SpoutScheduler implements Scheduler {
 	public long getRemainingTickTime() {
 		return PULSE_EVERY - getTickTime();
 	}
-	
+
 	@Override
 	public boolean isServerLoaded() {
 		if (heavyLoad.get()) {
@@ -839,20 +839,20 @@ public final class SpoutScheduler implements Scheduler {
 		heavyLoad.set(true);
 		return true;
 	}
-	
+
 	/**
 	 * For internal use only.  This is for tasks that must happen right at the start of the new tick.<br>
 	 * <br>
 	 * Tasks are executed in the order that they are received.<br>
 	 * <br>
 	 * It is used for region unloading and multi-region dynamic block updates
-	 * 
+	 *
 	 * @param r
 	 */
 	public void scheduleCoreTask(Runnable r) {
 		coreTaskQueue.add(r);
 	}
-	
+
 	private void logLongDurationTick(String stage, Iterable<AsyncExecutor> executors) {
 		/*
 		engine.getLogger().info("Tick stage (" + stage + ") had not completed after " + (PULSE_EVERY << 4) + "ms");
