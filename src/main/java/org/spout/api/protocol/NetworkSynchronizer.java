@@ -320,7 +320,9 @@ public abstract class NetworkSynchronizer {
 					Point base = s.getBase();
 					if (priorityChunkSendQueue.remove(base) || chunkSendQueue.remove(base)) {
 						updated = true;
-						activeChunks.add(base);
+						if (initializedChunks.contains(base)) {
+							activeChunks.add(base);
+						}
 						chunksSent++;
 					}
 				}
