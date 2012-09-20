@@ -60,7 +60,7 @@ public abstract class NetworkSynchronizer {
 	protected final Session session;
 	protected final AtomicReference<Protocol> protocol = new AtomicReference<Protocol>(null);
 
-	private final static int CHUNKS_PER_TICK = 4;
+	private final static int CHUNKS_PER_TICK = 20;
 
 	private final int viewDistance;
 	private final int blockViewDistance;
