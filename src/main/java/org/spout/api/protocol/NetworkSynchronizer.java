@@ -60,7 +60,7 @@ public abstract class NetworkSynchronizer {
 	protected final Session session;
 	protected final AtomicReference<Protocol> protocol = new AtomicReference<Protocol>(null);
 
-	private final static int CHUNKS_PER_TICK = 200;
+	private final static int CHUNKS_PER_TICK = 4;
 
 	private final int viewDistance;
 	private final int blockViewDistance;
@@ -270,7 +270,8 @@ public abstract class NetworkSynchronizer {
 
 				chunkFreeQueue.clear();
 
-				chunksSent = 0;
+				int modifiedChunksPerTick = (priorityChunkSendQueue.isEmpty() ? 4 : 1) * CHUNKS_PER_TICK;
+				chunksSent = Math.max(0, chunksSent - modifiedChunksPerTick);
 
 				for (Point p : chunkInitQueue) {
 					if (initializedChunks.add(p)) {
@@ -283,7 +284,7 @@ public abstract class NetworkSynchronizer {
 				Iterator<Point> i;
 
 				i = priorityChunkSendQueue.iterator();
-				while (i.hasNext()) {
+				while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
 					Point p = i.next();
 					Chunk c = p.getWorld().getChunkFromBlock(p);
 					i = attemptSendChunk(i, priorityChunkSendQueue, c);
@@ -320,6 +321,7 @@ public abstract class NetworkSynchronizer {
 					if (priorityChunkSendQueue.remove(base) || chunkSendQueue.remove(base)) {
 						updated = true;
 						activeChunks.add(base);
+						chunksSent++;
 					}
 				}
 				if (updated) {
