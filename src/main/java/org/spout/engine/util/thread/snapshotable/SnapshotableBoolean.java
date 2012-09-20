@@ -83,6 +83,10 @@ public class SnapshotableBoolean implements Snapshotable {
 		return next.get();
 	}
 
+	public boolean isDirty() {
+		return snapshot != next.get();
+	}
+
 	/**
 	 * Copies the next value to the snapshot value
 	 */
