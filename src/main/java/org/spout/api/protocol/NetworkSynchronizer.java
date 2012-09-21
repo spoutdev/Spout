@@ -80,6 +80,7 @@ public abstract class NetworkSynchronizer {
 	private boolean removed = false;
 	private boolean first = true;
 	private volatile boolean teleported = false;
+	private volatile boolean teleportPending = false;
 	private volatile boolean worldChanged = false;
 	private Point lastPosition = null;
 	private Point holdingPosition = null;
@@ -103,11 +104,20 @@ public abstract class NetworkSynchronizer {
 	public void setRespawned() {
 		first = true;
 		worldChanged = true;
-		teleported = true;
+		setPositionDirty();
 	}
 
 	public void setPositionDirty() {
 		teleported = true;
+		teleportPending = true;
+	}
+	
+	public boolean isTeleportPending() {
+		return teleportPending;
+	}
+	
+	public void clearTeleportPending() {
+		teleportPending = false;
 	}
 
 	public Player getPlayer() {
@@ -202,7 +212,6 @@ public abstract class NetworkSynchronizer {
 			return;
 		}
 
-		// TODO teleport smoothing
 		Point currentPosition = player.getTransform().getPosition();
 		if (currentPosition != null) {
 			if (worldChanged || 
@@ -216,14 +225,14 @@ public abstract class NetworkSynchronizer {
 
 			if (first || lastPosition == null || lastPosition.getWorld() != currentPosition.getWorld()) {
 				worldChanged = true;
-				teleported = true;
+				setPositionDirty();
 			}
 
 		}
 
 		lastPosition = currentPosition;
 
-		if (!teleported) {
+		if (!teleportPending) {
 			holdingPosition = currentPosition;
 		}
 
@@ -270,7 +279,7 @@ public abstract class NetworkSynchronizer {
 
 				chunkFreeQueue.clear();
 
-				int modifiedChunksPerTick = (priorityChunkSendQueue.isEmpty() ? 4 : 1) * CHUNKS_PER_TICK;
+				int modifiedChunksPerTick = (!priorityChunkSendQueue.isEmpty() ? 4 : 1) * CHUNKS_PER_TICK;
 				chunksSent = Math.max(0, chunksSent - modifiedChunksPerTick);
 
 				for (Point p : chunkInitQueue) {

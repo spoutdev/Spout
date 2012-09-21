@@ -30,6 +30,7 @@ import java.net.InetAddress;
 
 import org.spout.api.command.CommandSource;
 import org.spout.api.entity.state.PlayerInputState;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.Session;
 import org.spout.api.util.thread.Threadsafe;
@@ -116,6 +117,13 @@ public interface Player extends CommandSource, Entity {
 	 * @return current input state
 	 */
 	public PlayerInputState input();
+	
+	/**
+	 * Teleports the player to the given location and inform's the player's client
+	 * 
+	 * @param loc the new location
+	 */
+	public void teleport(Point loc);
 
 	/**
 	 * Immediately saves the players state to disk
