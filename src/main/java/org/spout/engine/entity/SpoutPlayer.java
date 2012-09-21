@@ -147,8 +147,8 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		if (newTransform == null || newTransform.getPosition().getWorld() == null) {
 			return false;
 		}
-		setupInitialChunk(newTransform);
 		getTransform().setTransform(newTransform);
+		setupInitialChunk(newTransform);
 		sessionLive.set(session);
 		copySnapshot();
 		return true;

@@ -65,7 +65,6 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	private final SnapshotManager snapshotManager = new SnapshotManager();
 	//Snapshotable fields
 	private final SnapshotableReference<EntityManager> entityManager = new SnapshotableReference<EntityManager>(snapshotManager, null);
-	private final SnapshotableReference<Chunk> chunk = new SnapshotableReference<Chunk>(snapshotManager, null);
 	private final SnapshotableBoolean observer = new SnapshotableBoolean(snapshotManager, false);
 	private final SnapshotableBoolean remove = new SnapshotableBoolean(snapshotManager, false);
 	private final SnapshotableBoolean save = new SnapshotableBoolean(snapshotManager, false);
@@ -89,8 +88,8 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		}
 
 		if (transform != null && load) {
-			setupInitialChunk(transform);
 			getTransform().setTransform(transform);
+			setupInitialChunk(transform);
 			getTransform().copySnapshot();
 		}
 
@@ -126,11 +125,6 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		for (Component component : values()) {
 			component.tick(dt);
 		}
-		//If position is dirty, set chunk/manager live values
-		if (getTransform().isDirty()) {
-			chunk.set(getWorld().getChunkFromBlock(getTransform().getPosition(), LoadOption.NO_LOAD));
-			entityManager.set(((SpoutRegion) getRegion()).getEntityManager());
-		}
 	}
 
 	@Override
@@ -160,25 +154,33 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	}
 
 	public void finalizeRun() {
-		//Move entity from Region A to Region B
-		if (entityManager.isDirty()) {
-			entityManager.get().removeEntity(this);
-			//Only allow non removed entities to move to new region
-			if (!isRemoved()) {
-				//Add entity to Region B
-				entityManager.getLive().addEntity(this);
-			}
-		}
-
 		//Entity was removed so automatically remove observer/components
 		if (isRemoved()) {
 			removeObserver();
 			//Call onRemoved for Components and remove them
 			for (Component component : values()) {
 				detach(component.getClass());
-			}			
+			}
+			return;
+		}
+
+		Chunk chunk = getChunk();
+		SpoutChunk chunkLive = (SpoutChunk) getChunkLive();
+
+		//Move entity from Region A to Region B
+		if (chunk.getRegion() != chunkLive.getRegion()) {
+			entityManager.get().removeEntity(this);
+			//Only allow non removed entities to move to new region
+			if (!isRemoved()) {
+				//Set the new EntityManager for the new region
+				entityManager.set(chunkLive.getRegion().getEntityManager());
+				//Add entity to Region B
+				entityManager.getLive().addEntity(this);
+			}
+		}
+
 		//Entity changed chunks as observer OR observer status changed so update
-		} else if ((chunk.isDirty() && observer.getLive()) || observer.isDirty()) {
+		if ((chunk != chunkLive && observer.getLive()) || observer.isDirty()) {
 			updateObserver();
 		}
 	}
@@ -195,9 +197,9 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	protected void updateObserver() {
 		final int viewDistance = getViewDistance() >> Chunk.BLOCKS.BITS;
 		World w = getWorld();
-		int cx = chunk.getLive().getX();
-		int cy = chunk.getLive().getY();
-		int cz = chunk.getLive().getZ();
+		int cx = getChunkLive().getX();
+		int cy = getChunkLive().getY();
+		int cz = getChunkLive().getZ();
 		HashSet<SpoutChunk> observing = new HashSet<SpoutChunk>((viewDistance * viewDistance * viewDistance * 3) / 2);
 		OutwardIterator oi = new OutwardIterator(cx, cy, cz, viewDistance);
 		while (oi.hasNext()) {
@@ -218,11 +220,11 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	public Chunk getChunk() {
-		return chunk.get();
+		return getTransform().getPosition().getChunk(LoadOption.NO_LOAD);
 	}
 
 	public Chunk getChunkLive() {
-		return chunk.getLive();
+		return getTransform().getTransformLive().getPosition().getChunk(LoadOption.NO_LOAD);
 	}
 
 	@Override
@@ -277,9 +279,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	 * Prevents stack overflow when creating an entity during chunk loading due to circle of calls
 	 */
 	public void setupInitialChunk(Transform transform) {
-		Chunk getChunk = transform.getPosition().getWorld().getChunkFromBlock(transform.getPosition());
-		chunk.set(getChunk);
-		SpoutRegion region = (SpoutRegion) getChunk.getRegion();
+		SpoutRegion region = (SpoutRegion) getChunkLive().getRegion();
 		entityManager.set(region.getEntityManager());
 	}
 
