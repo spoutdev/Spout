@@ -44,6 +44,7 @@ import org.spout.api.event.server.permissions.PermissionGroupsEvent;
 import org.spout.api.event.server.permissions.PermissionNodeEvent;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.lang.Locale;
 import org.spout.api.plugin.Platform;
@@ -342,5 +343,11 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	public boolean save() {
 		return false;
+	}
+
+	@Override
+	public void teleport(Point loc) {
+		getTransform().setPosition(loc);
+		getNetworkSynchronizer().setPositionDirty();
 	}
 }
