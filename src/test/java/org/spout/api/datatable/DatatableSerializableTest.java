@@ -24,7 +24,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.datatable.value;
+package org.spout.api.datatable;
 
 import static org.junit.Assert.assertTrue;
 
@@ -33,11 +33,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 import org.junit.Test;
+import org.spout.api.datatable.SerializableData;
 
 public class DatatableSerializableTest {
 	@Test
 	public void testDataSubject() throws UnsupportedEncodingException {
-		DatatableSerializable s1 = new DatatableSerializable(77);
+		SerializableData s1 = new SerializableData(77);
 
 		FakeObject1 f1 = new FakeObject1(21);
 
@@ -45,7 +46,7 @@ public class DatatableSerializableTest {
 
 		byte[] compressed = s1.compress();
 
-		DatatableSerializable s2 = new DatatableSerializable(77);
+		SerializableData s2 = new SerializableData(77);
 
 		s2.decompress(compressed);
 
@@ -87,21 +88,21 @@ public class DatatableSerializableTest {
 
 		assertTrue("Null object returned true for isUnknownClass", !s2.isUnknownClass());
 
-		assertTrue("Compare and set returned true when expected did not match", !s2.compareAndSet(f5, null));
+		assertTrue("Compare and set returned true when expected did not match", !s2.data.compareAndSet(f5, null));
 
-		assertTrue("Compare and set returned true when expected did not match", !s2.compareAndSet(f5, f5));
+		assertTrue("Compare and set returned true when expected did not match", !s2.data.compareAndSet(f5, f5));
 
-		assertTrue("Compare and set returned false when expected matched", s2.compareAndSet(null, f5));
+		assertTrue("Compare and set returned false when expected matched", s2.data.compareAndSet(null, f5));
 
-		assertTrue("Compare and set returned true when expected did not match", !s2.compareAndSet(null, f5));
+		assertTrue("Compare and set returned true when expected did not match", !s2.data.compareAndSet(null, f5));
 
-		assertTrue("Compare and set returned false when expected matched", s2.compareAndSet(f5, f5));
+		assertTrue("Compare and set returned false when expected matched", s2.data.compareAndSet(f5, f5));
 
-		assertTrue("Compare and set returned false when expected matched", s2.compareAndSet(f5, null));
+		assertTrue("Compare and set returned false when expected matched", s2.data.compareAndSet(f5, null));
 
 		assertTrue("Datatable has unexpected value", s2.get() == null);
 
-		assertTrue("Compare and set returned false when expected matched", s2.compareAndSet(null, f5));
+		assertTrue("Compare and set returned false when expected matched", s2.data.compareAndSet(null, f5));
 
 		assertTrue("Datatable has unexpected value", s2.get() == f5);
 	}

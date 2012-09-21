@@ -24,7 +24,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.datatable.value;
+package org.spout.api.datatable;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -35,10 +35,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.spout.api.datatable.DatatableTuple;
 import org.spout.api.util.VarInt;
 
-public abstract class DatatableObject implements DatatableTuple {
+abstract class AbstractData{
 	public static final byte PERSIST = 0x1;
 	public static final byte SYNC = 0x2;
 
@@ -47,75 +46,61 @@ public abstract class DatatableObject implements DatatableTuple {
 	protected final AtomicReference<Serializable> data;
 	protected final AtomicBoolean dirty;
 	protected final AtomicReference<byte[]> compressed;
-	
-	private static DatatableObject[] newInstanceArray = new DatatableObject[5];
 
-	public DatatableObject() {
+	private static AbstractData[] newInstanceArray = new AbstractData[5];
+
+	public AbstractData() {
 		this(0);
 	}
-	
-	public DatatableObject(int key) {
+
+	public AbstractData(int key) {
 		this(key, null);
 	}
 
-	public DatatableObject(int key, Serializable dat) {
+	public AbstractData(int key, Serializable dat) {
 		keyID = new AtomicInteger(key);
 		data = new AtomicReference<Serializable>(dat);
 		flags = new AtomicInteger((PERSIST | SYNC));
 		dirty = new AtomicBoolean(false);
 		compressed = new AtomicReference<byte[]>(null);
 	}
-	
+
 	static {
-		register(new DatatableNil(0));
-		register(new DatatableBool(0));
-		register(new DatatableInt(0));
-		register(new DatatableFloat(0));
-		register(new DatatableSerializable(0));
+		register(new NullData(0));
+		register(new BooleanData(0));
+		register(new IntegerData(0));
+		register(new FloatData(0));
+		register(new SerializableData(0));
 	}
-	
-	private static void register(DatatableObject o) {
+
+	private static void register(AbstractData o) {
 		int id = o.getObjectTypeId();
 		if (newInstanceArray[id] != null) {
-			throw new IllegalStateException("Attempt made to register " + o.getClass().getSimpleName() + 
-					" but the id is already in use by " + newInstanceArray[id].getClass().getSimpleName());
+			throw new IllegalStateException("Attempt made to register " + o.getClass().getSimpleName() + " but the id is already in use by " + newInstanceArray[id].getClass().getSimpleName());
 		}
 		newInstanceArray[id] = o;
 	}
-	
-	public static DatatableObject newInstance(int id, int key) {
+
+	public static AbstractData newInstance(int id, int key) {
 		if (id < 0 || id > newInstanceArray.length || newInstanceArray[id] == null) {
 			throw new IllegalArgumentException("Datatable object id of " + id + " has no corresponding type");
 		}
 		return newInstanceArray[id].newInstance(key);
 	}
 
-	@Override
 	public void set(Object value) {
 		if (value != null && !(value instanceof Serializable)) {
 			throw new IllegalArgumentException("Unsupported Metadata type");
 		}
 		data.set((Serializable) value);
 	}
-	
-	@Override
+
 	public void setKey(int key) {
 		keyID.set(key);
 	}
-	
-	@Override
+
 	public int getKey() {
 		return keyID.get();
-	}
-	
-	@Override
-	public boolean compareAndSet(Object expected, Object newValue) {
-		if (newValue != null && !(newValue instanceof Serializable)) {
-			throw new IllegalArgumentException("Unsupported Metadata type");
-		} else if (expected != null && !(expected instanceof Serializable)) {
-			return false;
-		}
-		return data.compareAndSet((Serializable)expected, (Serializable)newValue);
 	}
 
 	@Override
@@ -123,82 +108,47 @@ public abstract class DatatableObject implements DatatableTuple {
 		return keyID.get();
 	}
 
-	@Override
-	public void setFlags(byte flags) {
-		this.flags.set(flags);
-	}
-
-	@Override
 	public void setPersistant(boolean value) {
 		int oldValue;
 		int newValue;
-		
+
 		do {
 			oldValue = this.flags.get();
 			if (value) {
-				newValue = oldValue | DatatableObject.PERSIST;
+				newValue = oldValue | AbstractData.PERSIST;
 			} else {
-				newValue = oldValue & ~DatatableObject.PERSIST;
-			}	
+				newValue = oldValue & ~AbstractData.PERSIST;
+			}
 		} while (!this.flags.compareAndSet(oldValue, newValue));
 
 	}
 
-	@Override
 	public void setSynced(boolean value) {
 		int oldValue;
 		int newValue;
-		
+
 		do {
 			oldValue = this.flags.get();
 			if (value) {
-				newValue = oldValue | DatatableObject.SYNC;
+				newValue = oldValue | AbstractData.SYNC;
 			} else {
-				newValue = oldValue & ~DatatableObject.SYNC;
-			}	
+				newValue = oldValue & ~AbstractData.SYNC;
+			}
 		} while (!this.flags.compareAndSet(oldValue, newValue));
 	}
 
-	@Override
 	public Serializable get() {
 		return data.get();
 	}
 
-	@Override
-	public int asInt() {
-		Object data = this.data.get();
-		if (data instanceof Number) {
-			return ((Number) data).intValue();
-		}
-		return 0;
-	}
-
-	@Override
-	public float asFloat() {
-		Object data = this.data.get();
-		if (data instanceof Number) {
-			return ((Number) data).floatValue();
-		}
-		return 0;
-	}
-
-	@Override
-	public boolean asBool() {
-		Object data = this.data.get();
-		if (data instanceof Boolean) {
-			return (Boolean) data;
-		}
-		return false;
-	}
-	
 	public abstract int fixedLength();
-	
+
 	public abstract byte getObjectTypeId();
-	
-	public abstract DatatableObject newInstance(int key);
-	
+
+	public abstract AbstractData newInstance(int key);
+
 	public abstract byte[] compress();
-	
+
 	public abstract void decompress(byte[] compressed);
 
 	public void output(OutputStream out) throws IOException {
@@ -216,13 +166,13 @@ public abstract class DatatableObject implements DatatableTuple {
 		}
 	}
 
-	public static DatatableObject input(InputStream in) throws IOException {
+	public static AbstractData input(InputStream in) throws IOException {
 		int typeId = in.read();
 		if (typeId == -1) {
 			throw new EOFException("InputStream did not contain a DatatableObject");
 		}
 		int key = VarInt.readInt(in);
-		DatatableObject obj = newInstance(typeId, key);
+		AbstractData obj = newInstance(typeId, key);
 		int expectedLength = obj.fixedLength();
 		if (expectedLength == -1) {
 			expectedLength = VarInt.readInt(in);
@@ -236,5 +186,5 @@ public abstract class DatatableObject implements DatatableTuple {
 		}
 		return obj;
 	};
-	
+
 }

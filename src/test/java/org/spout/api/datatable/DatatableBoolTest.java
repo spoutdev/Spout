@@ -24,63 +24,50 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.datatable.value;
+package org.spout.api.datatable;
 
 import static org.junit.Assert.assertTrue;
 
 import java.util.Random;
 
 import org.junit.Test;
+import org.spout.api.datatable.BooleanData;
 
-public class DatatableFloatTest {
-	private static final int LENGTH = 1000;
-
+public class DatatableBoolTest {
 	private Random r = new Random();
 
 	@Test
-	public void testInt() {
-		for (int x = 0; x < LENGTH; x++) {
-			checkFloat(r.nextFloat());
-		}
+	public void testBoolean() {
+		checkBool(true);
 
-		checkFloat(0.0F);
-
-		checkFloat(1.0F);
-
-		checkFloat(-1.0F);
+		checkBool(false);
 	}
 
-	private void checkFloat(float value) {
+	private void checkBool(boolean value) {
 		int key = r.nextInt();
 
-		DatatableFloat f = new DatatableFloat(key);
+		BooleanData b = new BooleanData(key);
 
-		f.set(value);
+		b.set(value);
 
-		checkFloat(f, key, value);
+		checkBool(b, key, value);
 
-		byte[] compressed = f.compress();
+		byte[] compressed = b.compress();
 
-		assertTrue("Compressed array wrong length", compressed.length == 4);
+		assertTrue("Compressed array wrong length", compressed.length == 1);
 
 		int key2 = r.nextInt();
 
-		DatatableFloat b2 = new DatatableFloat(key2);
+		BooleanData b2 = new BooleanData(key2);
 
 		b2.decompress(compressed);
 
-		checkFloat(b2, key2, value);
+		checkBool(b2, key2, value);
 	}
 
-	private void checkFloat(DatatableFloat f, int key, float value) {
-		assertTrue("Wrong key, got " + f.hashCode() + ", expected " + key, f.hashCode() == key);
+	private void checkBool(BooleanData b, int key, boolean value) {
+		assertTrue("Wrong key, got " + b.hashCode() + ", expected " + key, b.hashCode() == key);
 
-		assertTrue("Wrong value", f.get().equals(new Float(value)));
-
-		assertTrue("Wrong value as bool", f.asBool() == (value != 0.0F));
-
-		assertTrue("Wrong value as float", f.asFloat() == value);
-
-		assertTrue("Wrong value as int", f.asInt() == (int)value);
+		assertTrue("Wrong value", b.get().equals(new Boolean(value)));
 	}
 }

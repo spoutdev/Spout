@@ -26,33 +26,36 @@
  */
 package org.spout.api.component.components;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
 import org.spout.api.component.Component;
-import org.spout.api.datatable.DataMap;
-import org.spout.api.datatable.DatatableMap;
-import org.spout.api.datatable.GenericDatatableMap;
+import org.spout.api.datatable.ManagedHashMap;
+import org.spout.api.datatable.SerializableMap;
 import org.spout.api.map.DefaultedKey;
-import org.spout.api.map.DefaultedMap;
 
-public final class DatatableComponent extends Component implements DefaultedMap<String, Serializable>{
-	private final DataMap dataMap;
+public final class DatatableComponent extends Component implements SerializableMap {
+	private final ManagedHashMap dataMap;
+
+	public DatatableComponent(byte[] data) {
+		this.dataMap = new ManagedHashMap();
+		if (data != null && data.length > 0) {
+			try {
+				this.dataMap.deserialize(data);
+			} catch (IOException e) {
+				throw new RuntimeException("Invalid DatatableComponent byte array", e);
+			}
+		}
+	}
 
 	public DatatableComponent() {
-		this(new GenericDatatableMap());
+		this(null);
 	}
 
-	public DatatableComponent(DatatableMap map) {
-		if (map == null) {
-			throw new IllegalArgumentException("Datatable map cannot be null!");
-		}
-		this.dataMap = new DataMap(map);
-	}
-
-	public DataMap getBaseMap() {
+	public ManagedHashMap getBaseMap() {
 		return dataMap;
 	}
 
@@ -134,5 +137,30 @@ public final class DatatableComponent extends Component implements DefaultedMap<
 	@Override
 	public Serializable put(String key, Serializable value) {
 		return this.dataMap.put(key, value);
+	}
+
+	@Override
+	public byte[] serialize() {
+		return dataMap.serialize();
+	}
+
+	@Override
+	public void deserialize(byte[] data) throws IOException {
+		dataMap.deserialize(data);
+	}
+
+	@Override
+	public void deserialize(byte[] data, boolean wipe) throws IOException {
+		dataMap.deserialize(data, wipe);
+	}
+
+	@Override
+	public SerializableMap deepCopy() {
+		return dataMap.deepCopy();
+	}
+
+	@Override
+	public <T> T get(String key, Class<T> clazz) {
+		return dataMap.get(key, clazz);
 	}
 }

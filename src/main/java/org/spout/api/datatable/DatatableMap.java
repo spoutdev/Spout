@@ -31,40 +31,37 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Set;
 
-import org.spout.api.datatable.value.DatatableObject;
-
 /**
  * Interface for a Datatable Map.
  */
-public interface DatatableMap {
+interface DatatableMap {
 	/**
-	 * Adds the Datatable Tuple to the map, using hashCode() as the key
-	 * <br>
+	 * Adds the Datatable Tuple to the map, using hashCode() as the key <br>
 	 * The int used must correspond to a String key.
 	 * 
 	 * @param value
 	 */
-	public void set(DatatableObject value);
+	public void set(AbstractData value);
 
 	/**
 	 * Adds the DatatableTuple to the map, using the int as the key.<br>
 	 * <br>
 	 * The given int must correspond to a String key.
-	 *
+	 * 
 	 * @param key
 	 * @param value
 	 */
-	public void set(int key, DatatableObject value);
+	public void set(int key, AbstractData value);
 
 	/**
 	 * Adds the DatatableTuple to the map, using the string key. This triggers a
 	 * string lookup and registration if necessary.
-	 *
+	 * 
 	 * @param key
 	 * @param value
 	 */
-	public void set(String key, DatatableObject value);
-	
+	public void set(String key, AbstractData value);
+
 	/**
 	 * Gets the integer key corresponding to a particular String.<br>
 	 * <br>
@@ -74,7 +71,7 @@ public interface DatatableMap {
 	 * @return the int corresponding to the String
 	 */
 	public int getIntKey(String key);
-	
+
 	/**
 	 * Gets the String key corresponding to a particular int.
 	 * 
@@ -89,16 +86,16 @@ public interface DatatableMap {
 	 * @param key
 	 * @return
 	 */
-	public DatatableObject get(String key);
-	
+	public AbstractData get(String key);
+
 	/**
 	 * Gets the DatatableTuple corresponding to the given int key
 	 * 
 	 * @param key
 	 * @return
 	 */
-	public DatatableObject get(int key);
-	
+	public AbstractData get(int key);
+
 	/**
 	 * Gets if the map contains a particular key String
 	 * 
@@ -106,7 +103,7 @@ public interface DatatableMap {
 	 * @return true if the map contains the key
 	 */
 	public boolean contains(String key);
-	
+
 	/**
 	 * Gets if the map contains a particular key int
 	 * 
@@ -114,59 +111,59 @@ public interface DatatableMap {
 	 * @return true if the int maps to a String and the map contains the key
 	 */
 	public boolean contains(int key);
-	
+
 	/**
 	 * Removes the value associated the string key.
 	 * 
 	 * @param key
 	 * @return previous value
 	 */
-	public DatatableObject remove(String key);
-	
+	public AbstractData remove(String key);
+
 	/**
 	 * Removes the value associated the int key.
 	 * 
 	 * @param key
 	 * @return previous value
 	 */
-	public DatatableObject remove(int key);
-	
+	public AbstractData remove(int key);
+
 	/**
 	 * Clears the map of all set key-value pairs.
 	 */
 	public void clear();
-	
+
 	/**
 	 * Returns the number of key-value mappings in this datatable map.
 	 * 
 	 * @return the number of key-value mappings in this map
 	 */
 	public int size();
-	
+
 	/**
 	 * Returns true if this map contains no key-value mappings.
 	 * 
 	 * @return true if this map contains key-value mappings.
 	 */
 	public boolean isEmpty();
-	
+
 	/**
 	 * Returns the set of all registered string keys in this datatable map.
 	 * 
 	 * @return key set
 	 */
 	public Set<String> keySet();
-	
+
 	/**
 	 * Returns a collection of datatable objects in this datatable map.
 	 * 
 	 * @return collection of all values
 	 */
-	public Collection<DatatableObject> values();
+	public Collection<AbstractData> values();
 
 	public byte[] compress();
 
-	public void decompress(byte[] compressedData);
-	
+	public void decompress(byte[] compressedData) throws IOException;
+
 	public void output(OutputStream out) throws IOException;
 }

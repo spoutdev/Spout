@@ -24,63 +24,65 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.datatable.value;
+package org.spout.api.datatable;
 
-import static org.junit.Assert.assertTrue;
+import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import java.util.Random;
+class BooleanData extends AbstractData {
+	private static final byte[] one = new byte[] {(byte)1};
+	private static final byte[] zero = new byte[] {(byte)0};
 
-import org.junit.Test;
+	private AtomicBoolean data = new AtomicBoolean(false);
 
-public class DatatableIntTest {
-	private static final int LENGTH = 1000;
+	public BooleanData(int key) {
+		super(key);
+	}
 
-	private Random r = new Random();
+	public BooleanData(int key, boolean value) {
+		super(key);
+		data.set(value);
+	}
 
-	@Test
-	public void testInt() {
-		for (int x = 0; x < LENGTH; x++) {
-			checkInt(r.nextInt());
+	@Override
+	public void set(Object value) {
+		throw new IllegalArgumentException("This is an boolean value, use set(string,bool)");
+	}
+
+	public void set(boolean value) {
+		data.set(value);
+	}
+
+	@Override
+	public Serializable get() {
+		return data.get();
+	}
+
+	@Override
+	public byte[] compress() {
+		return (data.get()) ? one : zero;
+	}
+
+	@Override
+	public void decompress(byte[] compressed) {
+		if (compressed.length != 1) {
+			throw new IllegalArgumentException("DatatableBools should be represented by a byte array of length 1");
 		}
-
-		checkInt(0);
-
-		checkInt(1);
-
-		checkInt(-1);
+		set(compressed[0] != 0);
 	}
 
-	private void checkInt(int value) {
-		int key = r.nextInt();
-
-		DatatableInt i = new DatatableInt(key);
-
-		i.set(value);
-
-		checkInt(i, key, value);
-
-		byte[] compressed = i.compress();
-
-		assertTrue("Compressed array wrong length", compressed.length == 4);
-
-		int key2 = r.nextInt();
-
-		DatatableInt b2 = new DatatableInt(key2);
-
-		b2.decompress(compressed);
-
-		checkInt(b2, key2, value);
+	@Override
+	public byte getObjectTypeId() {
+		return 1;
 	}
 
-	private void checkInt(DatatableInt i, int key, int value) {
-		assertTrue("Wrong key, got " + i.hashCode() + ", expected " + key, i.hashCode() == key);
+	@Override
+	public AbstractData newInstance(int key) {
+		return new BooleanData(key);
+	}
 
-		assertTrue("Wrong value", i.get().equals(new Integer(value)));
-
-		assertTrue("Wrong value as bool", i.asBool() == (value != 0));
-
-		assertTrue("Wrong value as float", i.asFloat() == value);
-
-		assertTrue("Wrong value as int", i.asInt() == value);
+	@Override
+	public int fixedLength() {
+		return 1;
 	}
 }

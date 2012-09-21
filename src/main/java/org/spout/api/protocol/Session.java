@@ -32,6 +32,7 @@ import java.net.InetSocketAddress;
 import org.jboss.netty.channel.Channel;
 import org.spout.api.Engine;
 import org.spout.api.map.DefaultedMap;
+import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Player;
 
 /**
@@ -224,5 +225,5 @@ public interface Session {
 	 *
 	 * @return data map
 	 */
-	public DefaultedMap<String, Serializable> getDataMap();
+	public SerializableMap getDataMap();
 }

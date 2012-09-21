@@ -30,8 +30,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.spout.api.datatable.DatatableSequenceNumber;
 import org.spout.api.math.MathHelper;
+import org.spout.api.util.concurrent.AtomicSequenceNumber;
 
 /**
  * Implements a store that stores {int, &lt;T&gt;} elementa.<br>
@@ -133,7 +133,7 @@ public final class AtomicIntArrayStore {
 				interrupted |= atomicWait(index);
 			}
 			int initialSequence = seqArray.get().get(index);
-			if (initialSequence == DatatableSequenceNumber.UNSTABLE) {
+			if (initialSequence == AtomicSequenceNumber.UNSTABLE) {
 				continue;
 			}
 			int value = intArray.get()[index];
@@ -188,7 +188,7 @@ public final class AtomicIntArrayStore {
 	}
 	
 	private boolean testUnstableInternal(int index) {
-		int expected = DatatableSequenceNumber.UNSTABLE;
+		int expected = AtomicSequenceNumber.UNSTABLE;
 		return seqArray.get().compareAndSet(index, expected, expected);
 	}
 
@@ -241,8 +241,8 @@ public final class AtomicIntArrayStore {
 				resizeArrays();
 			}
 			int testIndex = scan.getAndIncrement() & length.get() - 1;
-			int prevSeq = seqArray.get().getAndSet(testIndex, DatatableSequenceNumber.UNSTABLE);
-			if (prevSeq == DatatableSequenceNumber.UNSTABLE) {
+			int prevSeq = seqArray.get().getAndSet(testIndex, AtomicSequenceNumber.UNSTABLE);
+			if (prevSeq == AtomicSequenceNumber.UNSTABLE) {
 				continue;
 			}
 			try {
@@ -254,7 +254,7 @@ public final class AtomicIntArrayStore {
 				emptyArray.get()[testIndex] = false;
 				return toExternal(testIndex);
 			} finally {
-				seqArray.get().set(testIndex, DatatableSequenceNumber.get());
+				seqArray.get().set(testIndex, AtomicSequenceNumber.get());
 				atomicNotify(testIndex);
 			}
 		}
@@ -272,8 +272,8 @@ public final class AtomicIntArrayStore {
 		index = toInternal(index);
 
 		while (true) {
-			int prevSeq = seqArray.get().getAndSet(index, DatatableSequenceNumber.UNSTABLE);
-			if (prevSeq == DatatableSequenceNumber.UNSTABLE) {
+			int prevSeq = seqArray.get().getAndSet(index, AtomicSequenceNumber.UNSTABLE);
+			if (prevSeq == AtomicSequenceNumber.UNSTABLE) {
 				continue;
 			}
 			try {
@@ -286,7 +286,7 @@ public final class AtomicIntArrayStore {
 				entries.decrementAndGet();
 				return oldInt;
 			} finally {
-				seqArray.get().set(index, DatatableSequenceNumber.get());
+				seqArray.get().set(index, AtomicSequenceNumber.get());
 				atomicNotify(index);
 			}
 		}
@@ -321,8 +321,8 @@ public final class AtomicIntArrayStore {
 		int lockedIndexes = 0;
 		// Lock the first element
 		int firstSeq;
-		firstSeq = seqArray.get().getAndSet(0, DatatableSequenceNumber.UNSTABLE);
-		if (firstSeq == DatatableSequenceNumber.UNSTABLE) {
+		firstSeq = seqArray.get().getAndSet(0, AtomicSequenceNumber.UNSTABLE);
+		if (firstSeq == AtomicSequenceNumber.UNSTABLE) {
 			return false;
 		}
 		lockedIndexes++;
@@ -338,11 +338,11 @@ public final class AtomicIntArrayStore {
 					return false;
 				}
 
-				seq = seqArray.get().getAndSet(i, DatatableSequenceNumber.UNSTABLE);
-				if (seq == DatatableSequenceNumber.UNSTABLE) {
+				seq = seqArray.get().getAndSet(i, AtomicSequenceNumber.UNSTABLE);
+				if (seq == AtomicSequenceNumber.UNSTABLE) {
 					fails++;
 				}
-			} while (seq == DatatableSequenceNumber.UNSTABLE);
+			} while (seq == AtomicSequenceNumber.UNSTABLE);
 			lockedIndexes++;
 		}
 		return true;
@@ -357,7 +357,7 @@ public final class AtomicIntArrayStore {
 	
 	private void unlock(int lockedIndexes) {
 		for (int i = 0; i < lockedIndexes; i++) {
-			if (!seqArray.get().compareAndSet(i, DatatableSequenceNumber.UNSTABLE, DatatableSequenceNumber.get())) {
+			if (!seqArray.get().compareAndSet(i, AtomicSequenceNumber.UNSTABLE, AtomicSequenceNumber.get())) {
 				throw new IllegalStateException("Element " + i + " + was not locked when released by unlock");
 			}
 			atomicNotify(i);
@@ -401,12 +401,12 @@ public final class AtomicIntArrayStore {
 			for (int i = 0; i < length.get(); i++) {
 				newIntArray[i] = intArray.get()[i];
 				newEmptyArray[i] = emptyArray.get()[i];
-				newSeqArray.set(i, DatatableSequenceNumber.UNSTABLE);
+				newSeqArray.set(i, AtomicSequenceNumber.UNSTABLE);
 			}
 
 			// Set the top half of the new array to unstable and EMPTY
 			for (int i = length.get(); i < newLength; i++) {
-				newSeqArray.set(i, DatatableSequenceNumber.UNSTABLE);
+				newSeqArray.set(i, AtomicSequenceNumber.UNSTABLE);
 				newEmptyArray[i] = true;
 			}
 			intArray.set(newIntArray);
@@ -418,7 +418,7 @@ public final class AtomicIntArrayStore {
 
 			// Set the top half of the array's sequence number to 0 (from UNSTABLE)
 			for (int i = oldLength; i < newLength; i++) {
-				if (!seqArray.get().compareAndSet(i, DatatableSequenceNumber.UNSTABLE, DatatableSequenceNumber.get())) {
+				if (!seqArray.get().compareAndSet(i, AtomicSequenceNumber.UNSTABLE, AtomicSequenceNumber.get())) {
 					throw new IllegalStateException("Element " + i + " + was not locked when released during resizing");
 				}
 			}
@@ -457,7 +457,7 @@ public final class AtomicIntArrayStore {
 		for (int i = 0; i < array.length; i++) {
 			array[i] = true;
 			if (iArray != null) {
-				iArray.set(i, DatatableSequenceNumber.get());
+				iArray.set(i, AtomicSequenceNumber.get());
 			}
 		}
 	}

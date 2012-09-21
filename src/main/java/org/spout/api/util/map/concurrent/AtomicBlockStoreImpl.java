@@ -29,10 +29,10 @@ package org.spout.api.util.map.concurrent;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.spout.api.datatable.DatatableSequenceNumber;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.Vector3;
+import org.spout.api.util.concurrent.AtomicSequenceNumber;
 
 /**
  * This store stores block data for each chunk. Each block can either store a
@@ -139,11 +139,11 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 
 				int blockId = blockIds.get(index);
 				if (!auxStore.isReserved(blockId)) {
-					return DatatableSequenceNumber.ATOMIC;
+					return AtomicSequenceNumber.ATOMIC;
 				}
 
 				int sequence = auxStore.getSequence(blockId);
-				if (sequence != DatatableSequenceNumber.UNSTABLE) {
+				if (sequence != AtomicSequenceNumber.UNSTABLE) {
 					return sequence;
 				}
 			}
@@ -168,7 +168,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	@Override
 	public boolean testSequence(int x, int y, int z, int expected) {
 
-		if (expected == DatatableSequenceNumber.ATOMIC) {
+		if (expected == AtomicSequenceNumber.ATOMIC) {
 			return false;
 		}
 

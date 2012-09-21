@@ -26,14 +26,14 @@
  */
 package org.spout.api.geo.cuboid;
 
-import java.io.Serializable;
 import java.util.List;
+
+import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.AreaBlockSource;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.map.DefaultedMap;
 import org.spout.api.util.thread.SnapshotRead;
 
 public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
@@ -121,7 +121,7 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	 *
 	 * @return data map
 	 */
-	public abstract DefaultedMap<String, Serializable> getDataMap();
+	public abstract SerializableMap getDataMap();
 
 	public enum SnapshotType {
 		/**

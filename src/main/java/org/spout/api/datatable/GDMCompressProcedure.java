@@ -24,7 +24,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.datatable.procedures;
+package org.spout.api.datatable;
 
 import gnu.trove.procedure.TIntObjectProcedure;
 
@@ -32,11 +32,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashSet;
 
-import org.spout.api.datatable.GenericDatatableMap;
-import org.spout.api.datatable.value.DatatableObject;
 import org.spout.api.util.VarInt;
 
-public class GDMCompressProcedure implements TIntObjectProcedure<DatatableObject> {
+class GDMCompressProcedure implements TIntObjectProcedure<AbstractData> {
 
 	private final HashSet<String> stringKeys = new HashSet<String>();
 	private final OutputStream stringOutput;
@@ -54,7 +52,7 @@ public class GDMCompressProcedure implements TIntObjectProcedure<DatatableObject
 	}
 
 	@Override
-	public boolean execute(int a, DatatableObject b) {
+	public boolean execute(int a, AbstractData b) {
 		String stringKey = map.getStringKey(a);
 		if (stringKey != null) {
 			if (stringKeys.add(stringKey)) {

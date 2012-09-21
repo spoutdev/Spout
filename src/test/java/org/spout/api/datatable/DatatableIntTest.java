@@ -26,26 +26,56 @@
  */
 package org.spout.api.datatable;
 
-public interface DatatableTuple {
-	public void setKey(int key);
-	
-	public int getKey();
-	
-	public void set(Object value);
+import static org.junit.Assert.assertTrue;
 
-	public boolean compareAndSet(Object expected, Object newValue);
+import java.util.Random;
 
-	public void setFlags(byte flags);
+import org.junit.Test;
+import org.spout.api.datatable.IntegerData;
 
-	public void setPersistant(boolean value);
+public class DatatableIntTest {
+	private static final int LENGTH = 1000;
 
-	public void setSynced(boolean value);
+	private Random r = new Random();
 
-	public Object get();
+	@Test
+	public void testInt() {
+		for (int x = 0; x < LENGTH; x++) {
+			checkInt(r.nextInt());
+		}
 
-	public int asInt();
+		checkInt(0);
 
-	public float asFloat();
+		checkInt(1);
 
-	public boolean asBool();
+		checkInt(-1);
+	}
+
+	private void checkInt(int value) {
+		int key = r.nextInt();
+
+		IntegerData i = new IntegerData(key);
+
+		i.set(value);
+
+		checkInt(i, key, value);
+
+		byte[] compressed = i.compress();
+
+		assertTrue("Compressed array wrong length", compressed.length == 4);
+
+		int key2 = r.nextInt();
+
+		IntegerData b2 = new IntegerData(key2);
+
+		b2.decompress(compressed);
+
+		checkInt(b2, key2, value);
+	}
+
+	private void checkInt(IntegerData i, int key, int value) {
+		assertTrue("Wrong key, got " + i.hashCode() + ", expected " + key, i.hashCode() == key);
+
+		assertTrue("Wrong value", i.get().equals(new Integer(value)));
+	}
 }

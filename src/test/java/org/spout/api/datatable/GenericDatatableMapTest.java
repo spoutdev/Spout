@@ -35,10 +35,6 @@ import java.io.Serializable;
 
 import org.junit.Test;
 
-import org.spout.api.datatable.value.DatatableBool;
-import org.spout.api.datatable.value.DatatableFloat;
-import org.spout.api.datatable.value.DatatableInt;
-import org.spout.api.datatable.value.DatatableSerializable;
 
 public class GenericDatatableMapTest {
 	String intString = "Int Value";
@@ -57,7 +53,7 @@ public class GenericDatatableMapTest {
 	public void test() throws IOException {
 		DatatableMap map1 = new GenericDatatableMap();
 
-		DatatableInt i = new DatatableInt(24);
+		IntegerData i = new IntegerData(24);
 		i.set(7);
 
 		boolean exceptionThrown = false;
@@ -77,15 +73,15 @@ public class GenericDatatableMapTest {
 
 		map1.set(i);
 
-		DatatableFloat f = new DatatableFloat(0, 1.234F);
+		FloatData f = new FloatData(0, 1.234F);
 
 		map1.set(floatString, f);
 
-		DatatableBool b = new DatatableBool(0, true);
+		BooleanData b = new BooleanData(0, true);
 
 		map1.set(map1.getIntKey(boolString), b);
 
-		DatatableSerializable s = new DatatableSerializable(map1.getIntKey(serialString), serialValue);
+		SerializableData s = new SerializableData(map1.getIntKey(serialString), serialValue);
 
 		map1.set(s);
 
@@ -103,19 +99,19 @@ public class GenericDatatableMapTest {
 	}
 
 	private void checkMap(DatatableMap map) {
-		DatatableInt io = (DatatableInt)map.get(intString);
-		assertTrue("Incorrect integer value stored", io.asInt() == intValue);
+		IntegerData io = (IntegerData)map.get(intString);
+		assertTrue("Incorrect integer value stored", (Integer)io.get() == intValue);
 		assertTrue("Key mismatch between DatatableObject and map key", map.getIntKey(intString) == io.hashCode());
 
-		DatatableFloat fo = (DatatableFloat)map.get(floatString);
-		assertTrue("Incorrect float value stored", fo.asFloat() == floatValue);
+		FloatData fo = (FloatData)map.get(floatString);
+		assertTrue("Incorrect float value stored", (Float)fo.get() == floatValue);
 		assertTrue("Key mismatch between DatatableObject and map key", map.getIntKey(floatString) == fo.hashCode());
 
-		DatatableBool bo = (DatatableBool)map.get(boolString);
-		assertTrue("Incorrect bool value stored", bo.asBool() == boolValue);
+		BooleanData bo = (BooleanData)map.get(boolString);
+		assertTrue("Incorrect bool value stored", (Boolean)bo.get() == boolValue);
 		assertTrue("Key mismatch between DatatableObject and map key", map.getIntKey(boolString) == bo.hashCode());
 
-		DatatableSerializable so = (DatatableSerializable)map.get(serialString);
+		SerializableData so = (SerializableData)map.get(serialString);
 		assertTrue("Incorrect serializable value stored", so.get().equals(serialValue));
 		assertTrue("Key mismatch between DatatableObject and map key", map.getIntKey(serialString) == so.hashCode());
 	}

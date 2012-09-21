@@ -24,93 +24,63 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.datatable.value;
+package org.spout.api.datatable;
 
 import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public class DatatableInt extends DatatableObject {
-
-	private final AtomicInteger data = new AtomicInteger(0);
-
-	public DatatableInt(int key) {
-		super(key);
+class NullData extends AbstractData {
+	public NullData() {
+		this(0);
 	}
 
-	public DatatableInt(int key, int value) {
+	public NullData(int key) {
 		super(key);
-		data.set(value);
 	}
 
 	@Override
 	public void set(Object value) {
-		throw new IllegalArgumentException("This is an int value, use set(int)");
+		throw new RuntimeException("This value doesn't exist!");
 	}
 
-	public void set(int value) {
-		data.set(value);
+	@Override
+	public void setPersistant(boolean value) {
+		throw new RuntimeException("This value doesn't exist!");
+	}
+
+	@Override
+	public void setSynced(boolean value) {
+		throw new RuntimeException("This value doesn't exist!");
 	}
 
 	@Override
 	public Serializable get() {
-		return data.get();
-	}
-
-	@Override
-	public int asInt() {
-		return data.get();
-	}
-
-	@Override
-	public float asFloat() {
-		return data.get();
-	}
-
-	@Override
-	public boolean asBool() {
-		return data.get() != 0;
+		return null;
 	}
 
 	@Override
 	public byte[] compress() {
-		return compressRaw(asInt());
-	}
-
-	public static byte[] compressRaw(int x) {
-		byte[] compressed = new byte[4];
-		compressed[0] = (byte)(x >> 24);
-		compressed[1] = (byte)(x >> 16);
-		compressed[2] = (byte)(x >> 8);
-		compressed[3] = (byte)(x >> 0);
-		return compressed;
+		return null;
 	}
 
 	@Override
 	public void decompress(byte[] compressed) {
-		set(decompressRaw(compressed));
-	}
-
-	public static int decompressRaw(byte[] compressed) {
-		int x = 0;
-		x |= (compressed[0] & 0xFF) << 24;
-		x |= (compressed[1] & 0xFF) << 16;
-		x |= (compressed[2] & 0xFF) << 8;
-		x |= (compressed[3] & 0xFF) << 0;
-		return x;
+		if (compressed != null && compressed.length != 0) {
+			throw new IllegalArgumentException("DatatableNil objects can only be represented by null or zero length arrays");
+		}
 	}
 
 	@Override
 	public byte getObjectTypeId() {
-		return 3;
+		return 0;
 	}
 
 	@Override
-	public DatatableObject newInstance(int key) {
-		return new DatatableInt(key);
+	public AbstractData newInstance(int key) {
+		return new NullData(key);
 	}
 
 	@Override
 	public int fixedLength() {
-		return 4;
+		return 0;
 	}
 }

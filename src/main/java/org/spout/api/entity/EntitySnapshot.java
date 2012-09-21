@@ -31,9 +31,8 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import org.spout.api.datatable.DataMap;
-import org.spout.api.datatable.DatatableMap;
-import org.spout.api.datatable.GenericDatatableMap;
+import org.spout.api.datatable.ManagedHashMap;
+import org.spout.api.datatable.SerializableMap;
 import org.spout.api.geo.discrete.Transform;
 
 public class EntitySnapshot {
@@ -43,7 +42,7 @@ public class EntitySnapshot {
 	private final Transform location;
 	private final String worldName;
 	private final UUID worldId;
-	private final DataMap dataMap;
+	private final SerializableMap dataMap;
 	private final int viewDistance;
 	private final boolean observer;
 	private final boolean savable;
@@ -61,12 +60,11 @@ public class EntitySnapshot {
 		this.viewDistance = e.getViewDistance();
 		this.observer = e.isObserver();
 		this.savable = e.isSavable();
-		DatatableMap deepCopy = new GenericDatatableMap();
-		if (e.getData().getBaseMap().size() > 0) {
-			byte[] state = ((DataMap) e.getData().getBaseMap()).getRawMap().compress();
-			deepCopy.decompress(state);
+		if (e.getData().size() > 0) {
+			this.dataMap = e.getData().deepCopy();
+		} else {
+			this.dataMap = new ManagedHashMap();
 		}
-		this.dataMap = new DataMap(deepCopy);
 	}
 
 	public Entity getReference() {
@@ -93,7 +91,7 @@ public class EntitySnapshot {
 		return worldName;
 	}
 
-	public final DataMap getDataMap() {
+	public final SerializableMap getDataMap() {
 		return dataMap;
 	}
 

@@ -28,28 +28,20 @@ package org.spout.api.plugin;
 
 import java.io.InputStream;
 import java.io.Reader;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.spout.api.datatable.Datatable;
-import org.spout.api.datatable.DatatableTuple;
-import org.spout.api.datatable.GenericDatatableMap;
-import org.spout.api.datatable.value.DatatableBool;
-import org.spout.api.datatable.value.DatatableFloat;
-import org.spout.api.datatable.value.DatatableInt;
-import org.spout.api.datatable.value.DatatableSerializable;
 import org.spout.api.exception.InvalidDescriptionFileException;
 import org.spout.api.util.config.serialization.Serialization;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 
-public class PluginDescriptionFile implements Datatable {
-	private static final long serialVersionUID = 1L;
+public class PluginDescriptionFile {
 	private static final Yaml yaml = new Yaml(new SafeConstructor());
 	public static final List<String> RESTRICTED_NAMES = Collections.unmodifiableList(Arrays.asList(
 			"org.spout",
@@ -57,6 +49,7 @@ public class PluginDescriptionFile implements Datatable {
 			"org.spoutcraft",
 			"in.spout"));
 
+	private final HashMap<String, String> data = new HashMap<String, String>();
 	private String name;
 	private String version;
 	private String description;
@@ -69,7 +62,6 @@ public class PluginDescriptionFile implements Datatable {
 	private List<String> depends;
 	private List<String> softdepends;
 	private String fullname;
-	private final GenericDatatableMap datatableMap = new GenericDatatableMap();
 	private Locale codedLocale = Locale.ENGLISH;
 
 	public PluginDescriptionFile(String name, String version, String main, Platform platform) {
@@ -155,20 +147,12 @@ public class PluginDescriptionFile implements Datatable {
 				}
 			}
 		}
-
 		if (map.containsKey("data")) {
 			Map<?, ?> data = getEntry("data", Map.class, map);
 			for (Map.Entry<?, ?> entry : data.entrySet()) {
 				String key = entry.getKey().toString();
-				if (entry.getValue() instanceof Boolean) {
-					setData(key, ((Boolean) entry.getValue()).booleanValue());
-				} else if (entry.getValue() instanceof Float || entry.getValue() instanceof Double) {
-					setData(key, ((Number) entry.getValue()).floatValue());
-				} else if (entry.getValue() instanceof Integer) {
-					setData(key, ((Number) entry.getValue()).intValue());
-				} else if (entry.getValue() instanceof Serializable) {
-					setData(key, (Serializable) entry.getValue());
-				}
+				String value = entry.getValue().toString();
+				this.data.put(key, value);
 			}
 		}
 	}
@@ -314,37 +298,7 @@ public class PluginDescriptionFile implements Datatable {
 		return codedLocale;
 	}
 
-	@Override
-	public void setData(String key, int value) {
-		int ikey = datatableMap.getIntKey(key);
-		datatableMap.set(ikey, new DatatableInt(ikey, value));
-	}
-
-	@Override
-	public void setData(String key, float value) {
-		int ikey = datatableMap.getIntKey(key);
-		datatableMap.set(ikey, new DatatableFloat(ikey, value));
-	}
-
-	@Override
-	public void setData(String key, boolean value) {
-		int ikey = datatableMap.getIntKey(key);
-		datatableMap.set(ikey, new DatatableBool(ikey, value));
-	}
-
-	@Override
-	public void setData(String key, Serializable value) {
-		int ikey = datatableMap.getIntKey(key);
-		datatableMap.set(ikey, new DatatableSerializable(ikey, value));
-	}
-
-	@Override
-	public DatatableTuple getData(String key) {
-		return datatableMap.get(key);
-	}
-
-	@Override
-	public boolean hasData(String key) {
-		return datatableMap.contains(key);
+	public String getData(String key) {
+		return data.get(key);
 	}
 }

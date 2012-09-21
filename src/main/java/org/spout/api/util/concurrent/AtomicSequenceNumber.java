@@ -24,55 +24,36 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.datatable.value;
+package org.spout.api.util.concurrent;
 
-import static org.junit.Assert.assertTrue;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import java.util.Random;
+/**
+ * Gets a unique sequence number for atomic updates.
+ *
+ * If a record has the same sequence number before and after a read, then the read can
+ * be considered to have completed correctly.
+ */
+public class AtomicSequenceNumber {
+	private static AtomicInteger sequenceNumber = new AtomicInteger(0);
 
-import org.junit.Test;
+	/**
+	 * Sequence number that indicates the record is unstable
+	 */
+	public static final int UNSTABLE = 1;
 
-public class DatatableBoolTest {
-	private Random r = new Random();
+	/**
+	 * Sequence number that indicates that the read was atomic, and so always is
+	 * valid
+	 */
+	public static final int ATOMIC = 3;
 
-	@Test
-	public void testBoolean() {
-		checkBool(true);
-
-		checkBool(false);
-	}
-
-	private void checkBool(boolean value) {
-		int key = r.nextInt();
-
-		DatatableBool b = new DatatableBool(key);
-
-		b.set(value);
-
-		checkBool(b, key, value);
-
-		byte[] compressed = b.compress();
-
-		assertTrue("Compressed array wrong length", compressed.length == 1);
-
-		int key2 = r.nextInt();
-
-		DatatableBool b2 = new DatatableBool(key2);
-
-		b2.decompress(compressed);
-
-		checkBool(b2, key2, value);
-	}
-
-	private void checkBool(DatatableBool b, int key, boolean value) {
-		assertTrue("Wrong key, got " + b.hashCode() + ", expected " + key, b.hashCode() == key);
-
-		assertTrue("Wrong value", b.get().equals(new Boolean(value)));
-
-		assertTrue("Wrong value as bool", b.asBool() == value);
-
-		//assertTrue("Wrong value as float", b.asFloat());
-
-		assertTrue("Wrong value as int", b.asInt() == (value ? 1 : 0));
+	/**
+	 * Gets a unique sequence number.
+	 *
+	 * @return the number
+	 */
+	public static int get() {
+		return sequenceNumber.getAndAdd(2);
 	}
 }

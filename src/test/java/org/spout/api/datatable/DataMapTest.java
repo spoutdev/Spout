@@ -28,6 +28,7 @@ package org.spout.api.datatable;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
@@ -58,9 +59,8 @@ public class DataMapTest {
 	Integer defaultedPutValue = 234;
 
 	@Test
-	public void test() {
-		DatatableMap map = new GenericDatatableMap();
-		DataMap test = new DataMap(map);
+	public void test() throws IOException {
+		ManagedHashMap test = new ManagedHashMap();
 
 		assertTrue("Map returned incorrect value for isEmpty()", test.isEmpty());
 
@@ -105,11 +105,11 @@ public class DataMapTest {
 
 		testMapContents(test, true);
 
-		byte[] compressed = map.compress();
-		map = new GenericDatatableMap();
-		map.decompress(compressed);
+		byte[] compressed = test.serialize();
+		ManagedHashMap map = new ManagedHashMap();
+		map.deserialize(compressed);
 
-		test = new DataMap(map);
+		test = map;
 
 		assertTrue("Map size is incorrect", test.size() == 4);
 
@@ -135,7 +135,7 @@ public class DataMapTest {
 		assertTrue("Entry set size is incorrect", test.entrySet().size() == 0);
 	}
 
-	private void testMapContents(DataMap test, boolean matchRandom) {
+	private void testMapContents(ManagedHashMap test, boolean matchRandom) {
 		Set<String> keySet = test.keySet();
 
 		assertTrue("Key set size is incorrect", keySet.size() == 4);
@@ -175,7 +175,7 @@ public class DataMapTest {
 		}
 		
 		for (i = 0; i < keyArray.length; i++) {
-			assertTrue("Entry set error, " + keyArray[i] + " linked with " + valueArray[i] + " instead of " + test.get(keyArray[i], null), test.get(keyArray[i], null).equals(valueArray[i]));
+			assertTrue("Entry set error, " + keyArray[i] + " linked with " + valueArray[i] + " instead of " + test.get(keyArray[i], (Serializable)null), test.get(keyArray[i], (Serializable)null).equals(valueArray[i]));
 		}
 		
 	}

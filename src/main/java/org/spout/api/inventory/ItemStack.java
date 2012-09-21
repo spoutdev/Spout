@@ -31,8 +31,8 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.spout.api.datatable.DataMap;
-import org.spout.api.datatable.GenericDatatableMap;
+import org.spout.api.datatable.ManagedHashMap;
+import org.spout.api.datatable.SerializableMap;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
@@ -53,7 +53,7 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 	private static final long serialVersionUID = 1L;
 	private int amount;
 	private CompoundMap nbtData = null;
-	private DataMap auxData;
+	private SerializableMap auxData;
 
 	/**
 	 * Creates a new ItemStack from the specified Material of the specified
@@ -75,13 +75,13 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 	 * Creates a new ItemStack from the specified Material and data of the
 	 * specified amount, with the specified aux data
 	 */
-	public ItemStack(Material material, int data, int amount, DataMap auxData) {
+	public ItemStack(Material material, int data, int amount, SerializableMap auxData) {
 		super(material, data);
 		this.amount = amount;
 		if (auxData != null) {
 			this.auxData = auxData;
 		} else {
-			this.auxData = new DataMap(new GenericDatatableMap());
+			this.auxData = new ManagedHashMap();
 		}
 	}
 
@@ -332,7 +332,7 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 		out.writeShort(material.getData());
 		out.writeInt(amount);
 		out.writeShort(data);
-		byte[] auxData = this.auxData.getRawMap().compress();
+		byte[] auxData = this.auxData.serialize();
 		if (auxData != null) {
 			out.writeInt(auxData.length);
 			out.write(auxData);
@@ -362,9 +362,9 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 		int auxDataSize = in.readInt();
 		if (auxDataSize > 0) {
 			byte[] auxData = new byte[auxDataSize];
-			GenericDatatableMap map = new GenericDatatableMap();
-			map.decompress(auxData);
-			this.auxData = new DataMap(map);
+			ManagedHashMap map = new ManagedHashMap();
+			map.deserialize(auxData);
+			this.auxData = map;
 		}
 
 		boolean hasNBTData = in.readBoolean();

@@ -26,6 +26,7 @@
  */
 package org.spout.api.datatable;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.AbstractCollection;
 import java.util.AbstractSet;
@@ -37,30 +38,17 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.spout.api.datatable.value.DatatableBool;
-import org.spout.api.datatable.value.DatatableFloat;
-import org.spout.api.datatable.value.DatatableInt;
-import org.spout.api.datatable.value.DatatableObject;
-import org.spout.api.datatable.value.DatatableSerializable;
 import org.spout.api.map.DefaultedKey;
-import org.spout.api.map.DefaultedMap;
 
 /**
- * A simpler abstraction for a Datatable Map
+ * Manages a string keyed, serializable object hashmap that can be serialized easily
+ * to an array of bytes and deserialized from an array of bytes, intended for persistence
+ * and network transfers.
  */
-public class DataMap implements DefaultedMap<String, Serializable>{
-	final DatatableMap map;
-	public DataMap(DatatableMap map) {
-		this.map = map;
-	}
-	
-	/**
-	 * Returns the DatatableMap that backs this DataMap. Changes to the backing map will be reflected here as well.
-	 * 
-	 * @return backing datatable map
-	 */
-	public DatatableMap getRawMap() {
-		return map;
+public class ManagedHashMap implements SerializableMap{
+	final GenericDatatableMap map;
+	public ManagedHashMap() {
+		this.map = new GenericDatatableMap();
 	}
 
 	@Override
@@ -87,7 +75,7 @@ public class DataMap implements DefaultedMap<String, Serializable>{
 
 	@Override
 	public boolean containsValue(Object value) {
-		for (DatatableObject o : map.values()) {
+		for (AbstractData o : map.values()) {
 			if (o.get() != null && o.get().equals(value)) {
 				return true;
 			}
@@ -133,17 +121,28 @@ public class DataMap implements DefaultedMap<String, Serializable>{
 	}
 
 	@Override
+	public <T> T get(String key, Class<T> clazz) {
+		Serializable s = get((Object)key);
+		if (s != null) {
+			try {
+				return clazz.cast(s);
+			} catch (ClassCastException ignore) { }
+		}
+		return null;
+	}
+
+	@Override
 	public Serializable put(String key, Serializable value) {
 		int intKey = map.getIntKey(key);
 		Serializable old = map.get(intKey).get();
 		if (value instanceof Boolean) {
-			map.set(intKey, new DatatableBool(intKey, (Boolean)value));
+			map.set(intKey, new BooleanData(intKey, (Boolean)value));
 		} else if (value instanceof Float) {
-			map.set(intKey, new DatatableFloat(intKey, (Float)value));
+			map.set(intKey, new FloatData(intKey, (Float)value));
 		} else if (value instanceof Integer) {
-			map.set(intKey, new DatatableInt(intKey, (Integer)value));
+			map.set(intKey, new IntegerData(intKey, (Integer)value));
 		} else {
-			map.set(intKey, new DatatableSerializable(intKey, value));
+			map.set(intKey, new SerializableData(intKey, value));
 		}
 		return old;
 	}
@@ -244,7 +243,7 @@ public class DataMap implements DefaultedMap<String, Serializable>{
 		ArrayList<Serializable> list = new ArrayList<Serializable>();
 		ArrayList<Integer> keys = new ArrayList<Integer>();
 		EntryIterator() {
-			for (DatatableObject o : map.values()) {
+			for (AbstractData o : map.values()) {
 				list.add(o.get());
 				keys.add(o.getKey());
 			}
@@ -310,7 +309,7 @@ public class DataMap implements DefaultedMap<String, Serializable>{
 		@Override
 		public Serializable setValue(Serializable value) {
 			this.value = value;
-			return DataMap.this.put(key, value);
+			return ManagedHashMap.this.put(key, value);
 		}
 		
 	}
@@ -322,7 +321,7 @@ public class DataMap implements DefaultedMap<String, Serializable>{
 		ArrayList<Serializable> list = new ArrayList<Serializable>();
 		ArrayList<Integer> keys = new ArrayList<Integer>();
 		ValueIterator() {
-			for (DatatableObject o : map.values()) {
+			for (AbstractData o : map.values()) {
 				list.add(o.get());
 				keys.add(o.getKey());
 			}
@@ -397,11 +396,11 @@ public class DataMap implements DefaultedMap<String, Serializable>{
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof DataMap)) {
+		if (!(obj instanceof ManagedHashMap)) {
 			return false;
 		}
 
-		DataMap other = (DataMap)obj;
+		ManagedHashMap other = (ManagedHashMap)obj;
 		if (isEmpty() && other.isEmpty()) {
 			return true;
 		}
@@ -418,5 +417,31 @@ public class DataMap implements DefaultedMap<String, Serializable>{
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public byte[] serialize() {
+		return map.compress();
+	}
+
+	@Override
+	public void deserialize(byte[] data) throws IOException {
+		map.decompress(data);
+	}
+
+	@Override
+	public void deserialize(byte[] data, boolean wipe) throws IOException {
+		map.decompress(data, wipe);
+	}
+
+	@Override
+	public SerializableMap deepCopy() {
+		SerializableMap map = new ManagedHashMap();
+		try {
+			map.deserialize(serialize(), true);
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to create a deep copy", e);
+		}
+		return map;
 	}
 }

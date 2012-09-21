@@ -24,7 +24,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.datatable.value;
+package org.spout.api.datatable;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -33,15 +33,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import org.apache.commons.io.IOUtils;
 import org.spout.api.Spout;
 
-public class DatatableSerializable extends DatatableObject {
-	
-	public DatatableSerializable(int key) {
+public class SerializableData extends AbstractData {
+
+	public SerializableData(int key) {
 		super(key);
 	}
-	
-	public DatatableSerializable(int key, Serializable data) {
+
+	public SerializableData(int key, Serializable data) {
 		super(key, data);
 	}
 
@@ -49,7 +50,7 @@ public class DatatableSerializable extends DatatableObject {
 	public byte[] compress() {
 		Serializable value = super.get();
 		if (value instanceof ByteArrayWrapper) {
-			return ((ByteArrayWrapper)value).getArray();
+			return ((ByteArrayWrapper) value).getArray();
 		}
 
 		ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
@@ -74,7 +75,7 @@ public class DatatableSerializable extends DatatableObject {
 	public void decompress(byte[] compressed) {
 		super.set(new ByteArrayWrapper(compressed));
 	}
-	
+
 	@Override
 	public Serializable get() {
 		while (true) {
@@ -83,17 +84,16 @@ public class DatatableSerializable extends DatatableObject {
 				return super.get();
 			}
 			try {
-				ByteArrayWrapper w = (ByteArrayWrapper)s;
-				ObjectInputStream inObj = new ObjectInputStream(new ByteArrayInputStream(w.getArray()));
-				Object o;
+				ByteArrayWrapper w = (ByteArrayWrapper) s;
+				ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(w.getArray()));
+				Object result;
 				try {
-					o = inObj.readObject();
+					result = stream.readObject();
 				} finally {
-					// Overkill
-					inObj.close();
+					IOUtils.closeQuietly(stream);
 				}
-				Serializable deserialized = (Serializable)o;
-				if (super.compareAndSet(s, deserialized)) {
+				Serializable deserialized = (Serializable) result;
+				if (data.compareAndSet(s, deserialized)) {
 					return deserialized;
 				}
 			} catch (IOException e) {
@@ -105,17 +105,17 @@ public class DatatableSerializable extends DatatableObject {
 			}
 		}
 	}
-	
+
 	@Override
 	public byte getObjectTypeId() {
 		return 4;
 	}
-	
+
 	@Override
-	public DatatableObject newInstance(int key) {
-		return new DatatableSerializable(key);
+	public AbstractData newInstance(int key) {
+		return new SerializableData(key);
 	}
-	
+
 	public boolean isUnknownClass() {
 		Serializable s = super.get();
 		if (s == null) {
@@ -124,20 +124,19 @@ public class DatatableSerializable extends DatatableObject {
 
 		return s instanceof ByteArrayWrapper;
 	}
-	
+
 	private static class ByteArrayWrapper implements Serializable {
 		private static final long serialVersionUID = 1L;
-		
+
 		private final byte[] array;
-		
+
 		public ByteArrayWrapper(byte[] array) {
 			this.array = array;
 		}
-		
+
 		public byte[] getArray() {
 			return array;
 		}
-		
 	}
 
 	@Override

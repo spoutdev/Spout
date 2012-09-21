@@ -26,34 +26,59 @@
  */
 package org.spout.api.datatable;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.io.Serializable;
 
-/**
- * Gets a unique sequence number for Datatable updates.
- *
- * If a record has the same sequence number before and a read, then the read can
- * be considered to have completed correctly.
- */
-public class DatatableSequenceNumber {
-	private static AtomicInteger sequenceNumber = new AtomicInteger(0);
+import org.spout.api.util.concurrent.AtomicFloat;
 
-	/**
-	 * Sequence number that indicates the record is unstable
-	 */
-	public static final int UNSTABLE = 1;
+class FloatData extends AbstractData {
+	private AtomicFloat data = new AtomicFloat(0);
 
-	/**
-	 * Sequence number that indicates that the read was atomic, and so always is
-	 * valid
-	 */
-	public static final int ATOMIC = 3;
-
-	/**
-	 * Gets a unique sequence number.
-	 *
-	 * @return the number
-	 */
-	public static int get() {
-		return sequenceNumber.getAndAdd(2);
+	public FloatData(int key) {
+		super(key);
 	}
+
+	public FloatData(int key, float value) {
+		super(key);
+		data.set(value);
+	}
+
+	@Override
+	public void set(Object value) {
+		throw new IllegalArgumentException("This is an float value, use set(float)");
+	}
+
+	public void set(float value) {
+		data.set(value);
+	}
+
+	@Override
+	public Serializable get() {
+		return data.get();
+	}
+
+	@Override
+	public byte[] compress() {
+		return IntegerData.compressRaw(Float.floatToRawIntBits(data.get()));
+	}
+
+	@Override
+	public void decompress(byte[] compressed) {
+		set(Float.intBitsToFloat(IntegerData.decompressRaw(compressed)));
+	}
+
+	@Override
+	public byte getObjectTypeId() {
+		return 2;
+	}
+
+	@Override
+	public AbstractData newInstance(int key) {
+		return new FloatData(key);
+	}
+
+	@Override
+	public int fixedLength() {
+		return 4;
+	}
+
 }
