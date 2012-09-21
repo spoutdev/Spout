@@ -31,6 +31,7 @@ import java.lang.reflect.Field;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.Spout;
+import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
@@ -207,6 +208,10 @@ public class Point extends Vector3 implements WorldSource {
 
 	public int getChunkZ() {
 		return this.getFloorZ() >> Chunk.BLOCKS.BITS;
+	}
+
+	public Chunk getChunk(LoadOption loadopt) {
+		return world.getChunk(getChunkX(), getChunkY(), getChunkZ(), loadopt);
 	}
 
 	/**
