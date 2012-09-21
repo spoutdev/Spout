@@ -45,11 +45,7 @@ public class TransformComponent extends EntityComponent {
 
 	@Override
 	public void onTick(float dt) {
-		if (transform.equals(transformLive)) {
-			isDirty = true;
-		} else {
-			isDirty = false;
-		}
+		isDirty = !transform.equals(transformLive);
 	}
 
 	public void setTransform(Transform transform) {
