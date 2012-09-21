@@ -195,10 +195,12 @@ public abstract class NetworkSynchronizer {
 	}
 
 	public void onRemoved() {
-		TickStage.checkStage(TickStage.FINALIZE);
-		removed = true;
-		for (Point p : initializedChunks) {
-			removeObserver(p);
+		if (!player.isOnline()) {
+			TickStage.checkStage(TickStage.FINALIZE);
+			removed = true;
+			for (Point p : initializedChunks) {
+				removeObserver(p);
+			}
 		}
 	}
 
@@ -299,8 +301,8 @@ public abstract class NetworkSynchronizer {
 					i = attemptSendChunk(i, priorityChunkSendQueue, c);
 				}
 
-				if (priorityChunkSendQueue.isEmpty() && teleported) {
-					sendPosition(player.getTransform().getPosition(), player.getTransform().getRotation());
+				if (priorityChunkSendQueue.isEmpty() && teleported && player.getTransform().getTransformLive().equals(player.getTransform().getTransform())) {
+					sendPosition(player.getTransform().getTransformLive().getPosition(), player.getTransform().getTransformLive().getRotation());
 					teleported = false;
 				}
 
