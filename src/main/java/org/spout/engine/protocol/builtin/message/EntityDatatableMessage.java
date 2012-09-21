@@ -29,15 +29,14 @@ package org.spout.engine.protocol.builtin.message;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.spout.api.datatable.DatatableMap;
+import org.spout.api.datatable.SerializableMap;
 import org.spout.api.util.SpoutToStringStyle;
 
 public class EntityDatatableMessage extends DatatableMessage {
 	private final int entityId;
 
-	public EntityDatatableMessage(int entityId, DatatableMap data) {
-		super(data);
-		this.entityId = entityId;
+	public EntityDatatableMessage(int entityId, SerializableMap data) {
+		this(entityId, data.serialize());
 	}
 
 	public EntityDatatableMessage(int entityId, byte[] data) {

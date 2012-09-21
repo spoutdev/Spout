@@ -26,7 +26,6 @@
  */
 package org.spout.engine.world;
 
-import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,9 +44,8 @@ import java.util.logging.Level;
 import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.component.components.BlockComponent;
-import org.spout.api.datatable.DataMap;
-import org.spout.api.datatable.DatatableMap;
-import org.spout.api.datatable.GenericDatatableMap;
+import org.spout.api.datatable.ManagedHashMap;
+import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.event.block.BlockChangeEvent;
@@ -64,7 +62,6 @@ import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
 import org.spout.api.geo.cuboid.Region;
-import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
@@ -169,8 +166,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	/**
 	 * Data map and Datatable associated with it
 	 */
-	protected final DatatableMap datatableMap;
-	protected final DataMap dataMap;
+	protected final ManagedHashMap dataMap;
 	/**
 	 * Shift cache array for shifting fields
 	 */
@@ -213,11 +209,11 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		}
 	}
 
-	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial, DataMap map) {
-		this(world, region, x, y, z, PopulationState.UNTOUCHED, initial, null, null, null, map.getRawMap());
+	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial, ManagedHashMap map) {
+		this(world, region, x, y, z, PopulationState.UNTOUCHED, initial, null, null, null, map);
 	}
 
-	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, DatatableMap extraData) {
+	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, ManagedHashMap extraData) {
 		super(world, x * BLOCKS.SIZE, y * BLOCKS.SIZE, z * BLOCKS.SIZE);
 		parentRegion = region;
 		blockStore = new AtomicBlockStoreImpl(BLOCKS.BITS, 10, blocks, data);
@@ -235,11 +231,10 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		}
 
 		if (extraData != null) {
-			this.datatableMap = extraData;
+			this.dataMap = extraData;
 		} else {
-			this.datatableMap = new GenericDatatableMap();
+			this.dataMap = new ManagedHashMap();
 		}
-		this.dataMap = new DataMap(this.datatableMap);
 
 		physicsQueue = new PhysicsQueue(this);
 
@@ -1539,7 +1534,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	@Override
-	public DefaultedMap<String, Serializable> getDataMap() {
+	public SerializableMap getDataMap() {
 		return dataMap;
 	}
 

@@ -26,19 +26,17 @@
  */
 package org.spout.engine.protocol.builtin.message;
 
+import java.io.IOException;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.spout.api.datatable.DatatableMap;
+import org.spout.api.datatable.SerializableMap;
 import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
 public abstract class DatatableMessage implements Message {
 	private final byte[] compressedData;
-
-	public DatatableMessage(DatatableMap data) {
-		this(data.compress());
-	}
 
 	public DatatableMessage(byte[] compressedData) {
 		this.compressedData = compressedData;
@@ -48,8 +46,8 @@ public abstract class DatatableMessage implements Message {
 		return compressedData;
 	}
 
-	public void decompressTo(DatatableMap data) {
-		data.decompress(compressedData);
+	public void decompressTo(SerializableMap data) throws IOException {
+		data.deserialize(compressedData);
 	}
 
 	@Override

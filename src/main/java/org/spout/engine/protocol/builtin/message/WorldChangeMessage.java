@@ -31,20 +31,15 @@ import java.util.UUID;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.spout.api.datatable.DatatableMap;
+import org.spout.api.datatable.SerializableMap;
 import org.spout.api.geo.World;
 import org.spout.api.util.SpoutToStringStyle;
 
-/**
- *
- */
 public class WorldChangeMessage extends DatatableMessage {
 	private final String worldName;
 	private final UUID worldUuid;
-	public WorldChangeMessage(World world, DatatableMap data) {
-		super(data);
-		this.worldName = world.getName();
-		this.worldUuid = world.getUID();
+	public WorldChangeMessage(World world, SerializableMap data) {
+		this(world.getName(), world.getUID(), data.serialize());
 	}
 
 	public WorldChangeMessage(String worldName, UUID worldUuid, byte[] compressedData) {

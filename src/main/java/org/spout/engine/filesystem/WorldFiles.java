@@ -46,9 +46,8 @@ import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
 import org.spout.api.Spout;
-import org.spout.api.datatable.DataMap;
-import org.spout.api.datatable.DatatableMap;
-import org.spout.api.datatable.GenericDatatableMap;
+import org.spout.api.datatable.ManagedHashMap;
+import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.entity.PlayerSnapshot;
 import org.spout.api.generator.WorldGenerator;
@@ -267,7 +266,7 @@ public class WorldFiles {
 		worldTags.put(new StringTag("generator", generatorName));
 		worldTags.put(new LongTag("UUID_lsb", world.getUID().getLeastSignificantBits()));
 		worldTags.put(new LongTag("UUID_msb", world.getUID().getMostSignificantBits()));
-		worldTags.put(new ByteArrayTag("extra_data", world.getComponentHolder().getData().getBaseMap().getRawMap().compress()));
+		worldTags.put(new ByteArrayTag("extra_data", world.getComponentHolder().getData().serialize()));
 		worldTags.put(new LongTag("age", world.getAge()));
 		//World version 2
 		worldTags.put(new ListTag<FloatTag>("spawn_position", FloatTag.class, NBTMapper.transformToNBT(world.getSpawnPoint())));
@@ -334,8 +333,9 @@ public class WorldFiles {
 	 * @param global The global StringMap for the engine
 	 * @param map The CompoundMap of tags from NBT
 	 * @return The newly created SpoutWorld loaded from NBT
+	 * @throws IOException 
 	 */
-	private static SpoutWorld loadVersionTwo(String name, WorldGenerator generator, StringMap global, CompoundMap map) {
+	private static SpoutWorld loadVersionTwo(String name, WorldGenerator generator, StringMap global, CompoundMap map) throws IOException {
 		SpoutWorld world;
 
 		//Load the world specific item map
@@ -363,9 +363,8 @@ public class WorldFiles {
 		long age = SafeCast.toLong(NBTMapper.toTagValue(map.get("age")), 0L);
 		world = new SpoutWorld(name, (SpoutEngine) Spout.getEngine(), seed, age, generator, new UUID(msb, lsb), itemMap);
 
-		DatatableMap dataMap = world.getComponentHolder().getData().getBaseMap().getRawMap();
-		dataMap.clear();
-		dataMap.decompress(extraDataBytes);
+		SerializableMap dataMap = world.getComponentHolder().getData();
+		dataMap.deserialize(extraDataBytes);
 
 		List<? extends FloatTag> spawnPosition = checkerListFloatTag.checkTag(map.get("spawn_position"));
 		Transform spawn = NBTMapper.nbtToTransform(world, spawnPosition);
@@ -381,8 +380,9 @@ public class WorldFiles {
 	 * @param global The global StringMap for the engine
 	 * @param map The CompoundMap of tags from NBT
 	 * @return The newly created SpoutWorld loaded from NBT
+	 * @throws IOException 
 	 */
-	private static SpoutWorld loadVersionOne(String name, WorldGenerator generator, StringMap global, CompoundMap map) {
+	private static SpoutWorld loadVersionOne(String name, WorldGenerator generator, StringMap global, CompoundMap map) throws IOException {
 		SpoutWorld world;
 
 		//Load the world specific item map
@@ -410,9 +410,8 @@ public class WorldFiles {
 		long age = SafeCast.toLong(NBTMapper.toTagValue(map.get("age")), 0L);
 		world = new SpoutWorld(name, (SpoutEngine) Spout.getEngine(), seed, age, generator, new UUID(msb, lsb), itemMap);
 		
-		DatatableMap dataMap = world.getComponentHolder().getData().getBaseMap().getRawMap();
-		dataMap.clear();
-		dataMap.decompress(extraDataBytes);
+		SerializableMap dataMap = world.getComponentHolder().getData();
+		dataMap.deserialize(extraDataBytes);
 
 		return world;
 	}
@@ -441,7 +440,7 @@ public class WorldFiles {
 		chunkTags.put(new ByteArrayTag("blockLight", snapshot.getBlockLight()));
 //		chunkTags.put(new CompoundTag("entities", saveEntities(snapshot.getEntities())));
 		chunkTags.put(saveDynamicUpdates(blockUpdates));
-		chunkTags.put(new ByteArrayTag("extraData", ((DataMap) snapshot.getDataMap()).getRawMap().compress()));
+		chunkTags.put(new ByteArrayTag("extraData", snapshot.getDataMap().serialize()));
 
 		CompoundTag chunkCompound = new CompoundTag("chunk", chunkTags);
 
@@ -495,8 +494,8 @@ public class WorldFiles {
 				blocks[i] = (short) itemMap.convertTo(global, blocks[i]);
 			}
 
-			DatatableMap extraDataMap = new GenericDatatableMap();
-			extraDataMap.decompress(extraData);
+			ManagedHashMap extraDataMap = new ManagedHashMap();
+			extraDataMap.deserialize(extraData);
 
 			chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), blocks, data, skyLight, blockLight, extraDataMap);
 

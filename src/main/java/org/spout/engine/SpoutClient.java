@@ -68,8 +68,7 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.component.components.CameraComponent;
-import org.spout.api.datatable.DatatableMap;
-import org.spout.api.datatable.GenericDatatableMap;
+import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.state.PlayerInputState.Flags;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
@@ -329,12 +328,15 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	@Override
-	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] datatable) {
+	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] data) {
 		SpoutClientWorld world = new SpoutClientWorld(name, uuid, this, getEngineItemMap());
 
-		DatatableMap map = world.getComponentHolder().getData().getBaseMap().getRawMap();
-		map.clear();
-		map.decompress(datatable);
+		SerializableMap map = world.getComponentHolder().getData();
+		try {
+			map.deserialize(data);
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to deserialize data", e);
+		}
 
 		SpoutClientWorld oldWorld = activeWorld.getAndSet(world);
 		if (oldWorld != null) {

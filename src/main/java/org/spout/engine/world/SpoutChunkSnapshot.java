@@ -26,16 +26,13 @@
  */
 package org.spout.engine.world;
 
-import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.spout.api.component.components.BlockComponent;
-import org.spout.api.datatable.DataMap;
-import org.spout.api.datatable.DatatableMap;
-import org.spout.api.datatable.GenericDatatableMap;
+import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.generator.biome.Biome;
@@ -43,7 +40,6 @@ import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
-import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.util.hashing.NibblePairHashed;
@@ -62,7 +58,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	private final byte[] blockLight;
 	private final byte[] skyLight;
 	private final BiomeManager biomes;
-	private final DefaultedMap<String, Serializable> dataMap;
+	private final SerializableMap dataMap;
 	private final PopulationState populationState;
 	private boolean renderDirty = false;
 
@@ -93,19 +89,11 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 			this.biomes = chunk.getWorld().getBiomeManager(chunk.getBlockX(), chunk.getBlockZ()).clone();
 			this.dataMap = null;
 		} else if (data == ExtraData.DATATABLE) {
-			byte[] compressed = ((DataMap) chunk.getDataMap()).getRawMap().compress();
-			DatatableMap copy = new GenericDatatableMap();
-			copy.decompress(compressed);
-			this.dataMap = new DataMap(copy);
-
+			this.dataMap = chunk.getDataMap().deepCopy();
 			this.biomes = null;
 		} else if (data == ExtraData.BOTH) {
 			this.biomes = chunk.getWorld().getBiomeManager(chunk.getBlockX(), chunk.getBlockZ()).clone();
-
-			byte[] compressed = ((DataMap) chunk.getDataMap()).getRawMap().compress();
-			DatatableMap copy = new GenericDatatableMap();
-			copy.decompress(compressed);
-			this.dataMap = new DataMap(copy);
+			this.dataMap = chunk.getDataMap().deepCopy();
 		} else {
 			this.biomes = null;
 			this.dataMap = null;
@@ -244,7 +232,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	}
 
 	@Override
-	public DefaultedMap<String, Serializable> getDataMap() {
+	public SerializableMap getDataMap() {
 		return this.dataMap;
 	}
 

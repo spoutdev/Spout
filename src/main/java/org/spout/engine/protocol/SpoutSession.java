@@ -26,7 +26,6 @@
  */
 package org.spout.engine.protocol;
 
-import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayDeque;
@@ -39,10 +38,8 @@ import java.util.logging.Level;
 import org.jboss.netty.channel.Channel;
 
 import org.spout.api.Spout;
-import org.spout.api.datatable.DataMap;
-import org.spout.api.datatable.DatatableMap;
-import org.spout.api.datatable.GenericDatatableMap;
-import org.spout.api.map.DefaultedMap;
+import org.spout.api.datatable.ManagedHashMap;
+import org.spout.api.datatable.SerializableMap;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.NetworkSynchronizer;
@@ -120,11 +117,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	 */
 	private final AtomicReference<NetworkSynchronizer> synchronizer = new AtomicReference<NetworkSynchronizer>(nullSynchronizer);
 
-	/**
-	 * Data map and Datatable associated with it
-	 */
-	private final DatatableMap datatableMap;
-	private final DataMap dataMap;
+	private final ManagedHashMap dataMap;
 
 	/**
 	 * Creates a new session.
@@ -136,8 +129,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		this.channel = channel;
 		protocol = new AtomicReference<Protocol>(bootstrapProtocol);
 		isConnected = true;
-		this.datatableMap = new GenericDatatableMap();
-		this.dataMap = new DataMap(this.datatableMap);
+		this.dataMap = new ManagedHashMap();
 	}
 
 	/**
@@ -316,7 +308,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	}
 
 	@Override
-	public DefaultedMap<String, Serializable> getDataMap() {
+	public SerializableMap getDataMap() {
 		return dataMap;
 	}
 

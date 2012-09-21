@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.spout.api.datatable.DataMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -71,7 +70,7 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 
 	@Override
 	protected void worldChanged(World world) {
-		session.send(false, new WorldChangeMessage(world, ((DataMap) world.getComponentHolder().getData().getBaseMap()).getRawMap()));
+		session.send(false, new WorldChangeMessage(world, world.getComponentHolder().getData()));
 	}
 
 	@Override

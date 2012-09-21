@@ -48,7 +48,7 @@ import gnu.trove.iterator.TIntIterator;
 import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.component.components.BlockComponent;
-import org.spout.api.datatable.GenericDatatableMap;
+import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.event.chunk.ChunkLoadEvent;
@@ -1278,7 +1278,7 @@ public class SpoutRegion extends Region {
 		if (chunk != null) {
 			chunk.unload(false);
 		}
-		SpoutChunk newChunk = new FilteredChunk(getWorld(), this, getBlockX() | x, getBlockY() | y, getBlockZ() | z, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, skyLight, blockLight, new GenericDatatableMap());
+		SpoutChunk newChunk = new FilteredChunk(getWorld(), this, getBlockX() | x, getBlockY() | y, getBlockZ() | z, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, skyLight, blockLight, new ManagedHashMap());
 		chunks[x >> Region.CHUNKS.BITS][y >> Region.CHUNKS.BITS][z >> Region.CHUNKS.BITS].set(newChunk);
 		((SpoutClient) getWorld().getEngine()).getWorldRenderer().updateChunk(getChunkX() | x, getChunkY() | y, getChunkZ() | z);
 	}

@@ -28,7 +28,6 @@ package org.spout.engine.world;
 
 import java.util.UUID;
 
-import org.spout.api.datatable.DatatableMap;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.ClientWorld;
 import org.spout.api.geo.LoadOption;
