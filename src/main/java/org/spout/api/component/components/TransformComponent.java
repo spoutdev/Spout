@@ -36,7 +36,6 @@ import org.spout.api.math.Vector3;
 public class TransformComponent extends EntityComponent {
 	private final Transform transform = new Transform();
 	private final Transform transformLive = new Transform();
-	private boolean isDirty;
 
 	@Override
 	public boolean isDetachable() {
@@ -45,7 +44,6 @@ public class TransformComponent extends EntityComponent {
 
 	@Override
 	public void onTick(float dt) {
-		isDirty = !transform.equals(transformLive);
 	}
 
 	public void setTransform(Transform transform) {
@@ -61,7 +59,7 @@ public class TransformComponent extends EntityComponent {
 	}
 
 	public boolean isDirty() {
-		return isDirty;
+		return !transform.equals(transformLive);
 	}
 
 	public Point getPosition() {
