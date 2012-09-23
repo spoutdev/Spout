@@ -34,7 +34,7 @@ public class PluginLogger extends Logger {
     private final String tag;
     private final Plugin plugin;
 
-    protected PluginLogger(Plugin plugin) {
+    public PluginLogger(Plugin plugin) {
         super(plugin.getClass().getCanonicalName(), null);
         setLevel(Level.ALL);
         setParent(plugin.getEngine().getLogger());
