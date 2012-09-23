@@ -81,7 +81,7 @@ public class BaseComponentHolder implements ComponentHolder {
 	public <T extends Component> T detach(Class<? extends Component> type) {
 		T component = (T) get(type);
 
-		if (component != null) {
+		if (component != null && component.isDetachable()) {
 			components.inverse().remove(component);
 			component.onDetached();
 		}
