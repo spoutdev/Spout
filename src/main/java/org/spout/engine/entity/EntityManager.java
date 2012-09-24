@@ -175,10 +175,6 @@ public class EntityManager {
 	public void removeEntity(SpoutEntity entity) {
 		deallocate(entity);
 		if (entity instanceof Player) {
-			NetworkSynchronizer synchronizer = ((Player) entity).getNetworkSynchronizer();
-			if (synchronizer != null) {
-				synchronizer.onRemoved();
-			}
 			players.remove((Player) entity);
 		}
 	}
@@ -192,12 +188,6 @@ public class EntityManager {
 				removeEntity(e);
 			}
 			e.finalizeRun();
-			if (e instanceof Player) {
-				Player p = (Player) e;
-				if (p.isOnline()) {
-					p.getNetworkSynchronizer().finalizeTick();
-				}
-			}
 		}
 	}
 
@@ -206,12 +196,7 @@ public class EntityManager {
 	 */
 	public void preSnapshotRun() {
 		for (SpoutEntity e : entities.get().values()) {
-			if (e instanceof Player) {
-				Player p = (Player) e;
-				if (p.isOnline()) {
-					p.getNetworkSynchronizer().preSnapshot();
-				}
-			}
+			e.preSnapshotRun();
 		}
 	}
 	

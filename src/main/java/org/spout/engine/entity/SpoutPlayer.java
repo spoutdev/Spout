@@ -350,4 +350,26 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		getTransform().setPosition(loc);
 		getNetworkSynchronizer().setPositionDirty();
 	}
+
+	@Override
+	public void finalizeRun() {
+		super.finalizeRun();
+		if (this.isOnline()) {
+			this.getNetworkSynchronizer().finalizeTick();
+		}
+	}
+
+	@Override
+	public void preSnapshotRun() {
+		super.preSnapshotRun();
+		if (this.isOnline()) {
+			this.getNetworkSynchronizer().preSnapshot();
+		}
+	}
+
+	@Override
+	public void remove() {
+		super.remove();
+		getNetworkSynchronizer().onRemoved();
+	}
 }

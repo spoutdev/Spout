@@ -154,6 +154,10 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		return id.get() != NOTSPAWNEDID;
 	}
 
+	public void preSnapshotRun() {
+		//Stubbed out in case it is needed for Entities, meanwhile SpoutPlayer overrides this.
+	}
+
 	public void finalizeRun() {
 		//Entity was removed so automatically remove observer/components
 		if (isRemoved()) {
