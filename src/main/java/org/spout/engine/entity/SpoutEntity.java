@@ -66,10 +66,11 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	//Snapshotable fields
 	private final SnapshotableReference<EntityManager> entityManager = new SnapshotableReference<EntityManager>(snapshotManager, null);
 	private final SnapshotableBoolean observer = new SnapshotableBoolean(snapshotManager, false);
-	private final SnapshotableBoolean remove = new SnapshotableBoolean(snapshotManager, false);
 	private final SnapshotableBoolean save = new SnapshotableBoolean(snapshotManager, false);
 	private final SnapshotableInt id = new SnapshotableInt(snapshotManager, NOTSPAWNEDID);
 	private final SnapshotableInt viewDistance = new SnapshotableInt(snapshotManager, 10);
+
+	private volatile boolean remove = false;
 
 	//Other
 	private final Set<SpoutChunk> observingChunks = new HashSet<SpoutChunk>();
@@ -291,15 +292,13 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	}
 
 	@Override
-	@DelayedWrite
 	public void remove() {
-		remove.set(true);
+		remove = true;
 	}
 
 	@Override
-	@SnapshotRead
 	public boolean isRemoved() {
-		return remove.get();
+		return remove;
 	}
 
 	@Override
