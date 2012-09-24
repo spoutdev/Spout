@@ -51,6 +51,14 @@ public interface Renderer {
 	 */
 	public abstract void render(RenderMaterial material);
 	
+	/**
+	 * Renders the batch with a subset of the verticies in the buffer.  
+	 * @param material
+	 * @param startVert
+	 * @param endVert
+	 */
+	public abstract void render(RenderMaterial material, int startVert, int endVert);
+	
 	public abstract void addVertex(float x, float y, float z, float w);
 
 	public abstract void addVertex(float x, float y, float z);
