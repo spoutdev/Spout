@@ -30,10 +30,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.logging.Level;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import org.spout.api.Spout;
 import org.spout.api.component.components.DatatableComponent;
 
 public class BaseComponentHolder implements ComponentHolder {
@@ -47,7 +50,7 @@ public class BaseComponentHolder implements ComponentHolder {
 	}
 
 	/**
-	 * For use de-serializing a list of components all at once, 
+	 * For use de-serializing a list of components all at once,
 	 * without having to worry about dependencies
 	 */
 	protected void add(Class<? extends Component> ...components) {
@@ -88,11 +91,22 @@ public class BaseComponentHolder implements ComponentHolder {
 		}
 
 		if (component != null) {
-			if (component.attachTo(this)) {
-				components.put(type, component);
-				if (attach) {
-					component.onAttached();
+			try {
+				if (component.attachTo(this)) {
+					components.put(type, component);
+					if (attach) {
+						try {
+							component.onAttached();
+						} catch (Exception e) {
+							// Remove the component from the component map if onAttached can't be
+							// called, pass exception to next catch block.
+							components.remove(type);
+							throw e;
+						}
+					}
 				}
+			} catch (Exception e) {
+				Spout.getEngine().getLogger().log(Level.SEVERE, "Error while attaching component " + type + ": ", e);
 			}
 		}
 		return component;
@@ -101,11 +115,16 @@ public class BaseComponentHolder implements ComponentHolder {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Component> T detach(Class<? extends Component> type) {
+        Preconditions.checkNotNull(type);
 		T component = (T) get(type);
 
 		if (component != null && component.isDetachable()) {
 			components.inverse().remove(component);
-			component.onDetached();
+            try {
+			    component.onDetached();
+            } catch (Exception e) {
+                Spout.getEngine().getLogger().log(Level.SEVERE, "Error detaching component " + type + " from holder: ", e);
+            }
 		}
 
 		return component;
@@ -114,11 +133,12 @@ public class BaseComponentHolder implements ComponentHolder {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Component> T get(Class<T> type) {
+        Preconditions.checkNotNull(type);
 		if (type == null) {
 			return null;
 		}
 		Component component = components.get(type);
-		
+
 		if (component == null) {
 			component = findComponent(type);
 		}
@@ -128,6 +148,7 @@ public class BaseComponentHolder implements ComponentHolder {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Component> T getExact(Class<T> type) {
+        Preconditions.checkNotNull(type);
 		return type != null ? (T) components.get(type) : null;
 	}
 
@@ -153,6 +174,7 @@ public class BaseComponentHolder implements ComponentHolder {
 
 	@SuppressWarnings("unchecked")
 	private <T extends Component> T findComponent(Class<T> type) {
+        Preconditions.checkNotNull(type);
 		for (Component component : values()) {
 			if (type.isAssignableFrom(component.getClass())) {
 				return (T) component;
