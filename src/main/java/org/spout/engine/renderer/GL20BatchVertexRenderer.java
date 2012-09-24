@@ -110,7 +110,7 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 	 * Draws this batch
 	 */
 	@Override
-	public void doRender(RenderMaterial material) {
+	public void doRender(RenderMaterial material, int startVert, int endVert) {
 
 		
 		material.assign();
@@ -122,7 +122,7 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 			//activeMaterial.getShader().enableAttribute(vb.getName(), vb.getElements(), GL11.GL_FLOAT, 0, 0, vb.getLayout());			
 		}
 	
-		GL11.glDrawArrays(renderMode, 0, numVertices);
+		GL11.glDrawArrays(renderMode, startVert, endVert);
 	
 		
 		for(VertexBufferImpl vb : vertexBuffers.valueCollection()){			

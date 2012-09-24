@@ -39,7 +39,7 @@ public class GLES20BatchVertexRenderer extends BatchVertexRenderer {
 	}
 
 	@Override
-	protected void doRender(RenderMaterial material) {
+	protected void doRender(RenderMaterial material, int startVert, int endVert) {
 
 	}
 }

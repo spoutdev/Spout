@@ -44,7 +44,7 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 	}
 
 	@Override
-	public void doRender(RenderMaterial material) {
+	public void doRender(RenderMaterial material, int startVert, int endVert) {
 
 	
 	}

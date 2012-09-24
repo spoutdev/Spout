@@ -120,8 +120,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 	 * Draws this batch
 	 */
 	@Override
-	public void doRender(RenderMaterial material) {
-		if(numVertices == 0) throw new IllegalStateException("Cannot render 0 verticies");
+	public void doRender(RenderMaterial material, int startVert, int endVert) {
 		
 		GL30.glBindVertexArray(vao);
 		
@@ -135,7 +134,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 			//activeMaterial.getShader().enableAttribute(vb.getName(), vb.getElements(), GL11.GL_FLOAT, 0, 0, vb.getLayout());			
 		}
 	
-		GL11.glDrawArrays(renderMode, 0, numVertices);
+		GL11.glDrawArrays(renderMode, startVert, endVert);
 	
 		
 		for(VertexBufferImpl vb : vertexBuffers.valueCollection()){			
