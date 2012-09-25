@@ -46,20 +46,23 @@ public class SpinLock implements Lock {
 				return;
 			}
 		}
-		
+
 		boolean interrupted = false;
 		boolean success = false;
-		
-		while (!success) {
-			try {
-				waitLock();
-				success = true;
-			} catch (InterruptedException ie) {
-				interrupted = true;
+
+		try {
+			while (!success) {
+				try {
+					waitLock();
+					success = true;
+				} catch (InterruptedException ie) {
+					interrupted = true;
+				}
 			}
-		}
-		if (interrupted) {
-			Thread.currentThread().interrupt();
+		} finally {
+			if (interrupted) {
+				Thread.currentThread().interrupt();
+			}
 		}
 	}
 
