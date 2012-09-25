@@ -24,32 +24,6 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-/*
- * This file is part of Vanilla.
- *
- * Copyright (c) 2011-2012, VanillaDev <http://www.spout.org/>
- * Vanilla is licensed under the SpoutDev License Version 1.
- *
- * Vanilla is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition, 180 days after any changes are published, you can use the
- * software, incorporating those changes, under the terms of the MIT license,
- * as described in the SpoutDev License Version 1.
- *
- * Vanilla is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev License Version 1 along with this program.
- * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
- * including the MIT license.
- */
 package org.spout.api.inventory;
 
 import java.util.ArrayList;
@@ -66,6 +40,7 @@ import org.spout.api.material.Material;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class InventoryTest {
@@ -112,10 +87,10 @@ public class InventoryTest {
 
 	@Test
 	public void testIteratorBackwards() {
-		int index = inventory.size() - 1;
+		int index = inventory.size();
 		InventoryIterator i = inventory.listIterator(index);
 		while (i.hasPrevious()) {
-			assertEquals(inventory.get(index--), i.previous());
+			assertEquals(inventory.get(--index), i.previous());
 		}
 	}
 
@@ -139,12 +114,14 @@ public class InventoryTest {
 
 	@Test
 	public void testAddAll() {
+		inventory.clear();
 		inventory.addAll(items);
 		assertTrue(inventory.containsAll(items));
 	}
 
 	@Test
 	public void testRemoveAll() {
+		inventory.addAll(items);
 		inventory.removeAll(items);
 		for (ItemStack item : items) {
 			assertFalse(inventory.contains(item));
@@ -231,6 +208,45 @@ public class InventoryTest {
 		for (int i = 0; i < subList.size(); i++) {
 			assertEquals(inventory.get(i + 5), subList.get(i));
 		}
+	}
+
+	@Test
+	public void testGetAmount() {
+		ItemStack item = getRandomItem();
+		Material mat = item.getMaterial();
+		int amount = item.getAmount();
+		inventory.clear();
+		inventory.add(item);
+		assertEquals(amount, inventory.getAmount(mat));
+	}
+
+	@Test
+	public void testContainsMaterial() {
+		ItemStack item = getRandomItem();
+		Material mat = item.getMaterial();
+		inventory.clear();
+		inventory.add(item);
+		assertTrue(inventory.contains(mat));
+	}
+
+	@Test
+	public void testContainsMaterialAmount() {
+		ItemStack item = getRandomItem();
+		Material mat = item.getMaterial();
+		int amount = item.getAmount();
+		inventory.clear();
+		inventory.add(item);
+		assertTrue(inventory.contains(mat, amount));
+	}
+
+	@Test
+	public void testContainsExactly() {
+		ItemStack item = getRandomItem();
+		Material mat = item.getMaterial();
+		int amount = item.getAmount();
+		inventory.clear();
+		inventory.add(item);
+		assertTrue(inventory.containsExactly(mat, amount));
 	}
 
 	private ItemStack getRandomItem() {

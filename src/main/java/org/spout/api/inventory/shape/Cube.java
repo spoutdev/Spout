@@ -24,57 +24,48 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.inventory.util;
+package org.spout.api.inventory.shape;
+
+import org.spout.api.inventory.util.CubeIterator;
 
 /**
- * Represents a grid that can be iterated through in the correct order of an {@link org.spout.api.inventory.Inventory}
+ * Represents a grid that can be iterated through in the correct order of an
+ * {@link org.spout.api.inventory.Inventory}.
  */
-public class Grid implements Iterable<Integer> {
+public class Cube extends Grid {
 	/**
-	 * The length of the grid
-	 */
-	private final int length;
-	/**
-	 * The width of the grid
+	 * The width of the cube
 	 */
 	private final int width;
-
+	
 	/**
-	 * Constructs a new grid object
-	 * @param length of the grid
-	 * @param width of the grid
+	 * Constructs a new Cube
+	 * 
+	 * @param length of the faces
+	 * @param width of the faces 
+	 * @param height of the faces
 	 */
-	public Grid(int length, int width) {
-		this.length = length;
+	public Cube(int length, int height, int width) {
+		super(length, width);
 		this.width = width;
 	}
-
+	
 	/**
-	 * Gets the length of the grid
-	 * @return length
-	 */
-	public int getLength() {
-		return length;
-	}
-
-	/**
-	 * Gets the width of the grid
-	 * @return width
+	 * Returns the width of the cube 
+	 * 
+	 * @return width of the cube
 	 */
 	public int getWidth() {
 		return width;
 	}
-
-	/**
-	 * Gets the size of the grid
-	 * @return the size of the grid
-	 */
-	public int getSize() {
-		return length * width;
-	}
-
+	
 	@Override
-	public GridIterator iterator() {
-		return new GridIterator(this);
+	public int getSize() {
+		return super.getSize() * width;
 	}
+	
+	@Override
+	public CubeIterator iterator() {
+		return new CubeIterator(this);
+	}	
 }

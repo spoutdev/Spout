@@ -43,6 +43,10 @@ public class InventoryIterator implements ListIterator<ItemStack> {
 	 * The current index of the iterator
 	 */
 	private int index;
+	/**
+	 * The last {@link Operation} performed on this iterator.
+	 */
+	private Operation lastOperation = Operation.NONE;
 
 	/**
 	 * Constructs a new InventoryIterator
@@ -70,14 +74,6 @@ public class InventoryIterator implements ListIterator<ItemStack> {
 		return inventory;
 	}
 
-	/**
-	 * Gets the current position of the inventory's index
-	 * @return current index position
-	 */
-	public int getIndex() {
-		return index;
-	}
-
 	@Override
 	public boolean hasNext() {
 		return index < inventory.size();
@@ -85,6 +81,7 @@ public class InventoryIterator implements ListIterator<ItemStack> {
 
 	@Override
 	public ItemStack next() {
+		lastOperation = Operation.NEXT;
 		return inventory.get(index++);
 	}
 
@@ -95,16 +92,13 @@ public class InventoryIterator implements ListIterator<ItemStack> {
 
 	@Override
 	public ItemStack previous() {
-		return inventory.get(index--);
+		lastOperation = Operation.PREVIOUS;
+		return inventory.get(--index);
 	}
 
 	@Override
 	public int nextIndex() {
-		int size = inventory.size();
-		if (index == size - 1) {
-			return size;
-		}
-		return index + 1;
+		return index;
 	}
 
 	@Override
@@ -114,16 +108,58 @@ public class InventoryIterator implements ListIterator<ItemStack> {
 
 	@Override
 	public void remove() {
-		inventory.remove(index);
+		switch (lastOperation) {
+			case NEXT:
+				inventory.remove(index - 1);
+				break;
+			case PREVIOUS:
+				inventory.remove(index);
+				break;
+			case NONE:
+				throw new IllegalStateException("Cannot remove element before first operation.");
+		}
 	}
 
 	@Override
 	public void set(ItemStack item) {
-		inventory.set(index, item);
+		switch (lastOperation) {
+			case NEXT:
+				inventory.set(index - 1, item);
+				break;
+			case PREVIOUS:
+				inventory.set(index, item);
+				break;
+			case NONE:
+				throw new IllegalStateException("Cannot set element before first operation.");
+		}
 	}
 
 	@Override
 	public void add(ItemStack item) {
-		inventory.add(index, item);
+		switch (lastOperation) {
+			case NEXT:
+				inventory.add(index - 1, item);
+				break;
+			default:
+				inventory.add(index, item);
+		}
+	}
+
+	/**
+	 * Represents an Operation on this iterator
+	 */
+	public enum Operation {
+		/**
+		 * Signifies that {@link this#next()} was called.
+		 */
+		NEXT,
+		/**
+		 * Signifies that {@link this#previous()} was called.
+		 */
+		PREVIOUS,
+		/**
+		 * Signifies that no operation has been called on this iterator.
+		 */
+		NONE;
 	}
 }
