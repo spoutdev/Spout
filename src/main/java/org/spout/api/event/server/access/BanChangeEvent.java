@@ -47,7 +47,6 @@ public class BanChangeEvent extends Event {
 
 	/**
 	 * Gets the type of ban that changed
-	 *
 	 * @return ban type
 	 */
 	public BanType getBanType() {
@@ -56,7 +55,6 @@ public class BanChangeEvent extends Event {
 
 	/**
 	 * Gets whether the change is a ban
-	 *
 	 * @return whether the change is a ban
 	 */
 	public boolean isBanned() {
@@ -65,7 +63,6 @@ public class BanChangeEvent extends Event {
 
 	/**
 	 * Sets whether the change is a ban
-	 *
 	 * @param banned whether the change is a ban
 	 */
 	public void setBanned(boolean banned) {
@@ -74,7 +71,6 @@ public class BanChangeEvent extends Event {
 
 	/**
 	 * Gets the ip or player the change was done to
-	 *
 	 * @return name
 	 */
 	public String getChanged() {

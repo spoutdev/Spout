@@ -38,7 +38,7 @@ public class PlayerConnectEvent extends Event {
 	private final Session session;
 	private final String playerName;
 	private final int viewDistance;
-	
+
 	public PlayerConnectEvent(Session session, String playerName) {
 		this(session, playerName, -1);
 	}
@@ -63,10 +63,9 @@ public class PlayerConnectEvent extends Event {
 	public String getPlayerName() {
 		return playerName;
 	}
-	
+
 	/**
 	 * How many {@link Chunk}s the player can see into the distance.
-	 * 
 	 * @return how far the player can view.
 	 */
 	public int getViewDistance() {

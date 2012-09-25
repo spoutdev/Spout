@@ -31,7 +31,6 @@ import org.spout.api.plugin.Plugin;
 
 /**
  * Called when a plugin is enabled via the {@link PluginManager}
- *
  */
 public class PluginEnableEvent extends PluginEvent {
 	private static final HandlerList handlers = new HandlerList();

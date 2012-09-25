@@ -29,9 +29,9 @@ package org.spout.api.event.player;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.ChatTemplate;
 import org.spout.api.chat.Placeholder;
+import org.spout.api.entity.Player;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
-import org.spout.api.entity.Player;
 
 /**
  * Called when a player speaks in chat.
@@ -39,7 +39,7 @@ import org.spout.api.entity.Player;
  */
 public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	public static final Placeholder NAME = new Placeholder("name"), MESSAGE = new Placeholder("message");
-	private static final HandlerList HANDLERS = new HandlerList();
+	private static final HandlerList handlers = new HandlerList();
 	private ChatArguments message;
 	private ChatTemplate format = new ChatTemplate(new ChatArguments("<", NAME, "> ", MESSAGE));
 
@@ -50,7 +50,6 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 
 	/**
 	 * Gets the message that the player will send.
-	 *
 	 * @return The message of the player.
 	 */
 	public ChatArguments getMessage() {
@@ -59,7 +58,6 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 
 	/**
 	 * Overrides the sent message.
-	 *
 	 * @param message The message to set
 	 */
 	public void setMessage(ChatArguments message) {
@@ -68,7 +66,6 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 
 	/**
 	 * Gets the message format that will parse out the message text for broadcasting.
-	 *
 	 * @return The message format
 	 */
 	public ChatTemplate getFormat() {
@@ -79,9 +76,8 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	 * Sets the message's format to {@code format}. <br/>
 	 * Verification is performed to make sure that the ChatArguments has both the
 	 * {@link #NAME name} and {@link #MESSAGE message} placeholders <br/>
-	 *
+	 * <p/>
 	 * If verification of the format fails the format will not change.
-	 *
 	 * @param format The format to set.
 	 * @return true if the format was valid, otherwise false.
 	 */
@@ -100,10 +96,10 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 
 	@Override
 	public HandlerList getHandlers() {
-		return HANDLERS;
+		return handlers;
 	}
 
 	public static HandlerList getHandlerList() {
-		return HANDLERS;
+		return handlers;
 	}
 }

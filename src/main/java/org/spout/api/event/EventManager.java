@@ -28,12 +28,10 @@ package org.spout.api.event;
 
 /**
  * Manages event registration through {@link Listener}s and {@link EventExecutor}s,  It also handles calling of events, and delayed events.
- *
  */
 public interface EventManager {
 	/**
 	 * Calls an event with the given details
-	 *
 	 * @param event Event details
 	 * @return Called event
 	 */
@@ -41,14 +39,12 @@ public interface EventManager {
 
 	/**
 	 * Calls an event with the given details, on the next tick
-	 *
 	 * @param event Event details
 	 */
 	public <T extends Event> void callDelayedEvent(T event);
 
 	/**
 	 * Registers all the events in the given listener class
-	 *
 	 * @param listener Listener to register
 	 * @param owner Plugin to register
 	 */
@@ -56,7 +52,6 @@ public interface EventManager {
 
 	/**
 	 * Registers the specified executor to the given event class
-	 *
 	 * @param event Event type to register
 	 * @param priority Priority to register this event at
 	 * @param executor EventExecutor to register

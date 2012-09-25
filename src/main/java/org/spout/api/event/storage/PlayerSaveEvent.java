@@ -26,9 +26,9 @@
  */
 package org.spout.api.event.storage;
 
+import org.spout.api.entity.Player;
 import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;
-import org.spout.api.entity.Player;
 
 /**
  * Called after the player state has been saved to disk
@@ -36,13 +36,13 @@ import org.spout.api.entity.Player;
 public class PlayerSaveEvent extends Event {
 	private static HandlerList handlers = new HandlerList();
 	private Player player;
+
 	public PlayerSaveEvent(Player player) {
 		this.player = player;
 	}
 
 	/**
 	 * Gets the player whose data is being saved.
-	 * 
 	 * @return player
 	 */
 	public Player getPlayer() {
@@ -57,5 +57,4 @@ public class PlayerSaveEvent extends Event {
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
-
 }

@@ -35,7 +35,6 @@ import org.spout.api.util.thread.Threadsafe;
 public interface Eventable<T extends ObjectEvent<U>, U extends Eventable<T, U>> {
 	/**
 	 * Add a listener for the type of event this {@link Eventable} covers.
-	 *
 	 * @param listener The listener to register.
 	 */
 	@Threadsafe
@@ -49,7 +48,6 @@ public interface Eventable<T extends ObjectEvent<U>, U extends Eventable<T, U>> 
 
 	/**
 	 * Unregister a specific listener
-	 *
 	 * @param listener The listener to unregister
 	 */
 	@Threadsafe
@@ -57,7 +55,6 @@ public interface Eventable<T extends ObjectEvent<U>, U extends Eventable<T, U>> 
 
 	/**
 	 * Call the event with all current listeners.
-	 *
 	 * @param event The event instance to call
 	 */
 	@Threadsafe

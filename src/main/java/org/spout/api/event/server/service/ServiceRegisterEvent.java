@@ -31,7 +31,6 @@ import org.spout.api.plugin.ServiceProvider;
 
 /**
  * Called when a new {@link ServiceProvider} is being registered by the {@link ServiceManager}.
- *
  */
 public class ServiceRegisterEvent extends ServiceEvent {
 	private ServicePriority priority;
@@ -43,7 +42,6 @@ public class ServiceRegisterEvent extends ServiceEvent {
 
 	/**
 	 * Sets the priority to register this service at.
-	 * 
 	 * @param priority
 	 */
 	public void setPriority(ServicePriority priority) {
@@ -52,7 +50,6 @@ public class ServiceRegisterEvent extends ServiceEvent {
 
 	/**
 	 * The priority this service is registered at.
-	 * 
 	 * @return priority
 	 */
 	public ServicePriority getPriority() {

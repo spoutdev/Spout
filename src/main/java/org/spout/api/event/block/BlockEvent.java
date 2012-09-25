@@ -32,7 +32,6 @@ import org.spout.api.geo.cuboid.Block;
 
 /**
  * Designates an event that occurs on a {@link Block} from a {@link Source}
- *
  */
 public abstract class BlockEvent extends Event {
 	private final Block block;
@@ -45,7 +44,6 @@ public abstract class BlockEvent extends Event {
 
 	/**
 	 * Gets the block corresponding to this event
-	 *
 	 * @return the block
 	 */
 	public Block getBlock() {
@@ -54,7 +52,6 @@ public abstract class BlockEvent extends Event {
 
 	/**
 	 * Gets the source of this event
-	 *
 	 * @return the event source
 	 */
 	public Source getSource() {

@@ -36,15 +36,16 @@ import org.spout.api.geo.cuboid.Chunk;
  */
 public class ChunkUnloadEvent extends ChunkEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
+
 	public ChunkUnloadEvent(Chunk chunk) {
 		super(chunk);
 	}
-	
+
 	@Override
 	public void setCancelled(boolean cancelled) {
 		super.setCancelled(cancelled);
 	}
-		
+
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;

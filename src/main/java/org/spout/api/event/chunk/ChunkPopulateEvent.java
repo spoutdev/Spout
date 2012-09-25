@@ -32,12 +32,13 @@ import org.spout.api.geo.cuboid.Chunk;
 /**
  * Called when a {@link Chunk} is populated.
  */
-public class ChunkPopulateEvent extends ChunkEvent{
+public class ChunkPopulateEvent extends ChunkEvent {
 	private static HandlerList handlers = new HandlerList();
+
 	public ChunkPopulateEvent(Chunk chunk) {
 		super(chunk);
 	}
-		
+
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;

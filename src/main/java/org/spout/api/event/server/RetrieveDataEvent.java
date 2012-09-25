@@ -30,7 +30,6 @@ import org.spout.api.data.DataSubject;
 import org.spout.api.data.DataValue;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.event.HandlerList;
-import org.spout.api.event.server.NodeBasedEvent;
 import org.spout.api.geo.World;
 
 /**
@@ -54,7 +53,6 @@ public class RetrieveDataEvent extends NodeBasedEvent {
 
 	/**
 	 * Gets the subject the data is being taken from.
-	 *
 	 * @return subject of data
 	 */
 	public DataSubject getSubject() {
@@ -63,7 +61,6 @@ public class RetrieveDataEvent extends NodeBasedEvent {
 
 	/**
 	 * Returns the raw result of the event.
-	 *
 	 * @return object
 	 */
 	public ValueHolder getResult() {
@@ -72,7 +69,6 @@ public class RetrieveDataEvent extends NodeBasedEvent {
 
 	/**
 	 * Sets the result of the event.
-	 *
 	 * @param result
 	 */
 	public void setResult(ValueHolder result) {
@@ -81,7 +77,6 @@ public class RetrieveDataEvent extends NodeBasedEvent {
 
 	/**
 	 * Sets the result of the event.
-	 *
 	 * @param result
 	 */
 	public void setResult(Object result) {

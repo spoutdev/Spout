@@ -26,9 +26,9 @@
  */
 package org.spout.api.event.storage;
 
+import org.spout.api.entity.Player;
 import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;
-import org.spout.api.entity.Player;
 
 /**
  * Called when data about a player needs to be loaded, usually right after a player session begins.
@@ -37,13 +37,13 @@ public class PlayerLoadEvent extends Event {
 	private static HandlerList handlers = new HandlerList();
 	private boolean loaded = false;
 	private Player player;
+
 	public PlayerLoadEvent(Player player) {
 		this.player = player;
 	}
 
 	/**
 	 * Gets the player whose data is being loaded.
-	 * 
 	 * @return player
 	 */
 	public Player getPlayer() {
@@ -52,7 +52,6 @@ public class PlayerLoadEvent extends Event {
 
 	/**
 	 * True if a plugin has already loaded this data.
-	 * 
 	 * @return loaded
 	 */
 	public boolean isLoaded() {
@@ -61,9 +60,8 @@ public class PlayerLoadEvent extends Event {
 
 	/**
 	 * Sets the loaded state of this event.<br/>
-	 * 
+	 * <p/>
 	 * If the data is not reported loaded after it has been called, it will be loaded by the default save handler.
-	 * 
 	 * @param save
 	 */
 	public void setLoaded(boolean save) {
@@ -78,5 +76,4 @@ public class PlayerLoadEvent extends Event {
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
-
 }

@@ -33,9 +33,7 @@ import org.spout.api.event.HandlerList;
  * Called when the server has received the command to stop, but before it has begun the shutdown process.
  */
 public class ServerStopEvent extends Event {
-
 	private static final HandlerList handlers = new HandlerList();
-
 	private String message;
 
 	public ServerStopEvent(String message) {

@@ -27,9 +27,9 @@
 package org.spout.api.event.player;
 
 import org.spout.api.chat.ChatArguments;
+import org.spout.api.entity.Player;
 import org.spout.api.event.HandlerList;
 import org.spout.api.util.access.BanType;
-import org.spout.api.entity.Player;
 
 /**
  * Called when a player is kicked for being banned
@@ -47,7 +47,6 @@ public class PlayerBanKickEvent extends PlayerEvent {
 
 	/**
 	 * Gets the type of ban that changed
-	 *
 	 * @return bantype
 	 */
 	public BanType getBanType() {
@@ -56,7 +55,6 @@ public class PlayerBanKickEvent extends PlayerEvent {
 
 	/**
 	 * Gets the ban's kick message
-	 *
 	 * @return the kick message
 	 */
 	public ChatArguments getMessage() {
@@ -65,7 +63,6 @@ public class PlayerBanKickEvent extends PlayerEvent {
 
 	/**
 	 * Sets the ban's kick message
-	 *
 	 * @return the kick message
 	 */
 	public void setMessage(Object... message) {

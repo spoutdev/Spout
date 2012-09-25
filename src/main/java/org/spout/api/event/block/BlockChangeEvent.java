@@ -48,7 +48,6 @@ public class BlockChangeEvent extends BlockEvent implements Cancellable {
 
 	/**
 	 * Gets the new state for the block, once this event has completed
-	 *
 	 * @return final block state
 	 */
 	public BlockSnapshot getSnapshot() {
@@ -57,7 +56,6 @@ public class BlockChangeEvent extends BlockEvent implements Cancellable {
 
 	/**
 	 * Sets the final block state.
-	 *
 	 * @param newState to set
 	 */
 	public void setNewState(BlockSnapshot newState) {

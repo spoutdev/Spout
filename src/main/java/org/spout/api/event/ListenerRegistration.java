@@ -27,7 +27,7 @@
 package org.spout.api.event;
 
 /**
- * Represents an {@link EventExecutor}'s registration. 
+ * Represents an {@link EventExecutor}'s registration.
  */
 public class ListenerRegistration {
 	private final EventExecutor executor;
@@ -47,7 +47,6 @@ public class ListenerRegistration {
 
 	/**
 	 * Gets the listener for this registration
-	 *
 	 * @return Registered Listener
 	 */
 	public EventExecutor getExecutor() {
@@ -56,7 +55,6 @@ public class ListenerRegistration {
 
 	/**
 	 * Gets the {@link Object} for this registration
-	 *
 	 * @return Registered owner
 	 */
 	public Object getOwner() {
@@ -65,7 +63,6 @@ public class ListenerRegistration {
 
 	/**
 	 * Gets the order slot for this registration
-	 *
 	 * @return Registered order
 	 */
 	public Order getOrder() {

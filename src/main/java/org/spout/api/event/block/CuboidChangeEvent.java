@@ -40,25 +40,23 @@ public class CuboidChangeEvent extends Event implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 	private final CuboidBuffer buffer;
 	private final Plugin plugin;
-	
+
 	public CuboidChangeEvent(CuboidBuffer buffer, Plugin plugin) {
 		this.buffer = buffer;
 		this.plugin = plugin;
 	}
-	
+
 	/**
 	 * Gets the cubiod buffer that contains the cuboid area to be changed
 	 * and the base and size of the cuboid area to change.
-	 * 
 	 * @return cuboid
 	 */
 	public CuboidBuffer getCuboid() {
 		return buffer;
 	}
-	
+
 	/**
 	 * The plugin that is setting the cuboid area.
-	 * 
 	 * @return plugin
 	 */
 	public Plugin getPlugin() {

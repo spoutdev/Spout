@@ -54,7 +54,6 @@ public class PreCommandEvent extends Event implements Cancellable {
 
 	/**
 	 * Gets the first component of the command.
-	 *
 	 * @return the command
 	 */
 	public String getCommand() {
@@ -67,7 +66,6 @@ public class PreCommandEvent extends Event implements Cancellable {
 
 	/**
 	 * Gets the full command message issued to the server.
-	 *
 	 * @return message sent.
 	 */
 	public ChatArguments getArguments() {
@@ -76,7 +74,6 @@ public class PreCommandEvent extends Event implements Cancellable {
 
 	/**
 	 * Sets the command message that was sent to the server.
-	 *
 	 * @param message
 	 */
 	public void setArguments(ChatArguments message) {

@@ -44,10 +44,9 @@ public class PlayerPreLoginEvent extends Event {
 		this.name = n;
 		this.address = a;
 	}
-	
+
 	/**
 	 * Gets the player's name that is attempting to login.
-	 *
 	 * @return the player's name
 	 */
 	public String getName() {
@@ -56,7 +55,6 @@ public class PlayerPreLoginEvent extends Event {
 
 	/**
 	 * Gets the player IP address.
-	 *
 	 * @return The IP address
 	 */
 	public InetAddress getAddress() {

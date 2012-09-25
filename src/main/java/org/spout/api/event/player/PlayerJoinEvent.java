@@ -27,8 +27,8 @@
 package org.spout.api.event.player;
 
 import org.spout.api.chat.ChatArguments;
-import org.spout.api.event.HandlerList;
 import org.spout.api.entity.Player;
+import org.spout.api.event.HandlerList;
 
 /**
  * Called when a player joins the server, this event can be disallowed to prevent the Player from logging in.<br/>
@@ -52,7 +52,6 @@ public class PlayerJoinEvent extends PlayerEvent {
 
 	/**
 	 * Sets the message text that will be displayed when the player joins the server.
-	 * 
 	 * @param message to be set
 	 */
 	public void setMessage(Object... message) {

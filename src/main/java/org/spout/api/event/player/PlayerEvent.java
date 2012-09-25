@@ -26,14 +26,13 @@
  */
 package org.spout.api.event.player;
 
-import org.spout.api.event.Event;
 import org.spout.api.entity.Player;
+import org.spout.api.event.Event;
 
 /**
  * Represents a player-related event.
  */
 public abstract class PlayerEvent extends Event {
-	
 	private final Player player;
 
 	public PlayerEvent(Player p) {

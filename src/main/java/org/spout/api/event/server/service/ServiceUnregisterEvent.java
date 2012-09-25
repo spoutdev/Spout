@@ -30,10 +30,8 @@ import org.spout.api.plugin.ServiceProvider;
 
 /**
  * Called when a {@link ServiceProvider} is being unregistered by the {@link ServiceManager}
- *
  */
 public class ServiceUnregisterEvent extends ServiceEvent {
-
 	public ServiceUnregisterEvent(ServiceProvider<?> provider) {
 		super(provider);
 	}

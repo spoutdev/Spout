@@ -42,19 +42,15 @@ public class HandlerList {
 	 * speed.
 	 */
 	private ListenerRegistration[] handlers = null;
-
 	/**
 	 * Returns the Dynamic handler lists. <br/>
 	 * These are changed using register() and unregister()<br/>
 	 * Changes automatically baked to the handlers array any time they have changed..
-	 * 
 	 * @return map of Registered handlers
 	 */
 	private final EnumMap<Order, List<ListenerRegistration>> handlerSlots;
-
 	/**
 	 * List of all HandlerLists which have been created, for use in bakeAll()
-	 * 
 	 * @return the list of all Handlers.
 	 */
 	private static final ArrayList<HandlerList> ALL_LISTS = new ArrayList<HandlerList>();
@@ -97,7 +93,6 @@ public class HandlerList {
 
 	/**
 	 * Register a new listener in this handler list
-	 *
 	 * @param listener listener to register
 	 */
 	public void register(ListenerRegistration listener) {
@@ -116,7 +111,6 @@ public class HandlerList {
 
 	/**
 	 * Remove a listener from a specific order slot
-	 *
 	 * @param listener listener to remove
 	 */
 	public void unregister(ListenerRegistration listener) {
@@ -129,7 +123,7 @@ public class HandlerList {
 	public void unregister(Object plugin) {
 		boolean changed = false;
 		for (List<ListenerRegistration> list : handlerSlots.values()) {
-			for (ListIterator<ListenerRegistration> i = list.listIterator(); i.hasNext();) {
+			for (ListIterator<ListenerRegistration> i = list.listIterator(); i.hasNext(); ) {
 				if (i.next().getOwner().equals(plugin)) {
 					i.remove();
 					changed = true;

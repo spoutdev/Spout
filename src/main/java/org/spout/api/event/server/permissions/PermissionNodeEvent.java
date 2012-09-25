@@ -49,7 +49,6 @@ public class PermissionNodeEvent extends NodeBasedEvent {
 
 	/**
 	 * The subject being checked for permission.
-	 * 
 	 * @return subject
 	 */
 	public PermissionsSubject getSubject() {
@@ -58,7 +57,6 @@ public class PermissionNodeEvent extends NodeBasedEvent {
 
 	/**
 	 * The result of the check.
-	 * 
 	 * @return result
 	 */
 	public Result getResult() {
@@ -67,7 +65,6 @@ public class PermissionNodeEvent extends NodeBasedEvent {
 
 	/**
 	 * Sets the result of the check to the given result.
-	 * 
 	 * @param result
 	 */
 	public void setResult(Result result) {
@@ -76,7 +73,6 @@ public class PermissionNodeEvent extends NodeBasedEvent {
 
 	/**
 	 * The world this permission check is being done on, or null if global.
-	 * 
 	 * @return the world, or null if global.
 	 */
 	public World getWorld() {

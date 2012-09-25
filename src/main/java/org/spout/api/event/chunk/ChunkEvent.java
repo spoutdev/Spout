@@ -31,7 +31,6 @@ import org.spout.api.geo.cuboid.Chunk;
 
 /**
  * Designates an event that occurs on a {@link Chunk}
- *
  */
 public abstract class ChunkEvent extends Event {
 	protected ChunkEvent(Chunk chunk) {
@@ -42,7 +41,6 @@ public abstract class ChunkEvent extends Event {
 
 	/**
 	 * Gets the chunk associated with this event
-	 *
 	 * @return
 	 */
 	public Chunk getChunk() {

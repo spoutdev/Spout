@@ -32,26 +32,24 @@ import org.spout.api.geo.cuboid.Chunk;
 /**
  * Called when a {@link Chunk} is loaded into the server.
  */
-public class ChunkLoadEvent extends ChunkEvent{
+public class ChunkLoadEvent extends ChunkEvent {
 	private static HandlerList handlers = new HandlerList();
-	
 	private final boolean newChunk;
-	
+
 	public ChunkLoadEvent(Chunk chunk, boolean newChunk) {
 		super(chunk);
-		
+
 		this.newChunk = newChunk;
 	}
-	
+
 	/**
 	 * Test if newly generated chunk
-	 * 
 	 * @return true if newly generated (not yet populated), false if existing chunk loaded (may or may not be populated)
 	 */
 	public boolean isNewChunk() {
 		return newChunk;
 	}
-		
+
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;

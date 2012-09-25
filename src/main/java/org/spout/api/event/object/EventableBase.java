@@ -33,6 +33,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class EventableBase<T extends ObjectEvent<U>, U extends Eventable<T, U>> implements Eventable<T, U> {
 	private final CopyOnWriteArrayList<EventableListener<T>> registeredListeners = new CopyOnWriteArrayList<EventableListener<T>>();
+
 	@Override
 	public void registerListener(EventableListener<T> listener) {
 		registeredListeners.add(listener);

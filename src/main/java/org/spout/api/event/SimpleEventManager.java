@@ -43,7 +43,6 @@ import org.spout.api.exception.IllegalPluginAccessException;
 
 /**
  * A simple implementation of the {@link EventManager} that handles all {@link Event}s for the server.
- *
  */
 public class SimpleEventManager implements EventManager {
 	@Override
@@ -95,7 +94,6 @@ public class SimpleEventManager implements EventManager {
 
 	/**
 	 * Returns the specified event type's HandlerList
-	 *
 	 * @param type EventType to lookup
 	 * @return HandlerList The list of registered handlers for the event.
 	 */
@@ -156,7 +154,6 @@ public class SimpleEventManager implements EventManager {
 				ret.put(eventClass, eventSet);
 			}
 			eventSet.add(new ListenerRegistration(new EventExecutor() {
-
 				@Override
 				public void execute(Event event) throws EventException {
 					try {
@@ -166,7 +163,7 @@ public class SimpleEventManager implements EventManager {
 						method.invoke(listener, event);
 					} catch (InvocationTargetException e) {
 						if (e.getCause() instanceof EventException) {
-							throw (EventException)e.getCause();
+							throw (EventException) e.getCause();
 						}
 
 						throw new EventException(e.getCause());
@@ -174,7 +171,6 @@ public class SimpleEventManager implements EventManager {
 						throw new EventException(t);
 					}
 				}
-
 			}, eh.order(), plugin));
 		}
 		return ret;

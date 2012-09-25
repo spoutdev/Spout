@@ -26,16 +26,16 @@
  */
 package org.spout.api.event.server.permissions;
 
-import org.spout.api.event.HandlerList;
-import org.spout.api.event.Result;
-import org.spout.api.event.server.NodeBasedEvent;
-import org.spout.api.permissions.PermissionsSubject;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.spout.api.event.HandlerList;
+import org.spout.api.event.Result;
+import org.spout.api.event.server.NodeBasedEvent;
+import org.spout.api.permissions.PermissionsSubject;
 
 /**
  * This event is called to gather the PermissionsSubjects with the given permission set.</br>
@@ -43,7 +43,6 @@ import java.util.Set;
  */
 public class PermissionGetAllWithNodeEvent extends NodeBasedEvent {
 	private final Map<PermissionsSubject, Result> receivers = new HashMap<PermissionsSubject, Result>();
-
 	private static final HandlerList handlers = new HandlerList();
 
 	public PermissionGetAllWithNodeEvent(String node) {
@@ -52,7 +51,6 @@ public class PermissionGetAllWithNodeEvent extends NodeBasedEvent {
 
 	/**
 	 * Returns the map of receivers. This map is modified to add applicable receivers
-	 *
 	 * @return The receivers map
 	 */
 	public Map<PermissionsSubject, Result> getReceivers() {

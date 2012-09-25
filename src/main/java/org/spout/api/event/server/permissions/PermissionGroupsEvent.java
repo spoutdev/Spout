@@ -46,7 +46,6 @@ public class PermissionGroupsEvent extends WorldEvent {
 
 	/**
 	 * Gets the groups of the event.
-	 *
 	 * @return all groups of the subject
 	 */
 	public String[] getGroups() {
@@ -55,7 +54,6 @@ public class PermissionGroupsEvent extends WorldEvent {
 
 	/**
 	 * Sets the groups of the event.
-	 *
 	 * @param groups of the subject
 	 */
 	public void setGroups(String... groups) {
@@ -64,7 +62,6 @@ public class PermissionGroupsEvent extends WorldEvent {
 
 	/**
 	 * The subject that is being checked.
-	 * 
 	 * @return subject
 	 */
 	public PermissionsSubject getSubject() {
