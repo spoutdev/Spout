@@ -32,6 +32,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
+/**
+* A non-reentrant spin lock.<br>
+* <br>
+* The lock will spin 100 times before falling back to using wait/notify.
+*/
+
 public class SpinLock implements Lock {
 	
 	private static int MAX_SPINS = 100;
