@@ -36,9 +36,7 @@ import org.spout.api.event.entity.EntityEvent;
  * Protection plugins should utilize this event to let other plugins know about where an entity can or can't interact with a specific entity.
  */
 public class EntityCanInteractEntityEvent extends EntityEvent implements Cancellable {
-
 	private static HandlerList handlers = new HandlerList();
-
 	private final Entity interactedEntity;
 
 	public EntityCanInteractEntityEvent(Entity actor, Entity interacted) {
@@ -63,7 +61,7 @@ public class EntityCanInteractEntityEvent extends EntityEvent implements Cancell
 		return handlers;
 	}
 
-	public HandlerList getHandlerList() {
+	public static HandlerList getHandlerList() {
 		return handlers;
 	}
 }

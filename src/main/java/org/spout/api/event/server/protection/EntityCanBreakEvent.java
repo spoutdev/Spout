@@ -38,9 +38,7 @@ import org.spout.api.material.BlockMaterial;
  * Protection plugins should utilize this event to let other plugins know about where an entity can or can't break blocks.
  */
 public class EntityCanBreakEvent extends EntityEvent implements Cancellable {
-
 	private static HandlerList handlers = new HandlerList();
-
 	private final Block block;
 	private final BlockMaterial material;
 
@@ -74,7 +72,7 @@ public class EntityCanBreakEvent extends EntityEvent implements Cancellable {
 		return handlers;
 	}
 
-	public HandlerList getHandlerList() {
+	public static HandlerList getHandlerList() {
 		return handlers;
 	}
 }

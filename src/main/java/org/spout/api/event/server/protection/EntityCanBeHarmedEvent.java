@@ -37,9 +37,7 @@ import org.spout.api.event.entity.EntityEvent;
  * Protection plugins should utilize this event to prevent entities from being allowed to take damage from specific sources.
  */
 public class EntityCanBeHarmedEvent extends EntityEvent implements Cancellable {
-
 	private static HandlerList handlers = new HandlerList();
-
 	private final Source source;
 
 	public EntityCanBeHarmedEvent(Entity defender, Source source) {
@@ -65,7 +63,7 @@ public class EntityCanBeHarmedEvent extends EntityEvent implements Cancellable {
 		return handlers;
 	}
 
-	public HandlerList getHandlerList() {
+	public static HandlerList getHandlerList() {
 		return handlers;
 	}
 }

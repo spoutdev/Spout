@@ -38,12 +38,10 @@ import org.spout.api.material.BlockMaterial;
  * Protection plugins should utilize this event to let other plugins know about where an entity can or can't use specific blocks.
  */
 public class EntityCanInteractBlockEvent extends EntityEvent implements Cancellable {
-
 	private static HandlerList handlers = new HandlerList();
-
 	private final Block block;
 	private final BlockMaterial material;
-	
+
 	public EntityCanInteractBlockEvent(Entity entity, Block block) {
 		super(entity);
 		this.block = block;
@@ -74,7 +72,7 @@ public class EntityCanInteractBlockEvent extends EntityEvent implements Cancella
 		return handlers;
 	}
 
-	public HandlerList getHandlerList() {
+	public static HandlerList getHandlerList() {
 		return handlers;
 	}
 }

@@ -38,9 +38,7 @@ import org.spout.api.material.BlockMaterial;
  * Protection plugins should utilize this event to deny entities building in specific locations.
  */
 public class EntityCanBuildEvent extends EntityEvent implements Cancellable {
-
 	private static HandlerList handlers = new HandlerList();
-
 	private final Point point;
 	private final BlockMaterial material;
 
@@ -52,7 +50,6 @@ public class EntityCanBuildEvent extends EntityEvent implements Cancellable {
 
 	/**
 	 * The Material data for the Block that is being placed.
-	 * 
 	 * @return the material
 	 */
 	public BlockMaterial getMaterial() {
@@ -61,7 +58,6 @@ public class EntityCanBuildEvent extends EntityEvent implements Cancellable {
 
 	/**
 	 * The Point where the player is attempting to place a block.
-	 * 
 	 * @return the point
 	 */
 	public Point getPoint() {
@@ -78,7 +74,7 @@ public class EntityCanBuildEvent extends EntityEvent implements Cancellable {
 		return handlers;
 	}
 
-	public HandlerList getHandlerList() {
+	public static HandlerList getHandlerList() {
 		return handlers;
 	}
 }

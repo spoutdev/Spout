@@ -32,16 +32,13 @@ import org.spout.api.event.entity.EntityEvent;
 import org.spout.api.geo.Protection;
 
 /**
- * An event that should be fired by a plugin when a player leaves a protection.  
+ * An event that should be fired by a plugin when a player leaves a protection.
  */
-public class EntityLeaveProtection  extends EntityEvent {
-
+public class EntityLeaveProtection extends EntityEvent {
 	private static HandlerList handlers = new HandlerList();
-	
 	private final Protection protection;
-	
 	private String message;
-	
+
 	public EntityLeaveProtection(Entity entity, Protection protection, String message) {
 		super(entity);
 		this.protection = protection;
@@ -50,7 +47,6 @@ public class EntityLeaveProtection  extends EntityEvent {
 
 	/**
 	 * The message that will be sent to the entity once they leave the protection, or null if none.
-	 * 
 	 * @return the message
 	 */
 	public String getMessage() {
@@ -59,7 +55,6 @@ public class EntityLeaveProtection  extends EntityEvent {
 
 	/**
 	 * Sets the message to send to the entity when they leave the protection.
-	 * 
 	 * @param the message to send
 	 */
 	public void setMessage(String message) {
@@ -68,7 +63,6 @@ public class EntityLeaveProtection  extends EntityEvent {
 
 	/**
 	 * Gets the protection the player is leaving
-	 * 
 	 * @return the protection
 	 */
 	public Protection getProtection() {
@@ -80,7 +74,7 @@ public class EntityLeaveProtection  extends EntityEvent {
 		return handlers;
 	}
 
-	public HandlerList getHandlerList() {
+	public static HandlerList getHandlerList() {
 		return handlers;
 	}
 }
