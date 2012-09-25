@@ -202,7 +202,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	
 	@Override
 	public void addVertex(float x, float y) {
-		addVertex(x, y, 0.0f, 1.0f);
+		addVertex(x, y, 1.0f, 1.0f);
 	}
 
 	

@@ -28,7 +28,10 @@ package org.spout.engine.batcher;
 
 import java.util.ArrayList;
 
+import org.spout.api.math.MathHelper;
+
 import org.lwjgl.opengl.GL11;
+import org.spout.api.math.Matrix;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
 import org.spout.engine.renderer.BatchVertexRenderer;
@@ -42,13 +45,17 @@ public class SpriteBatch {
 	
 	Renderer renderer;
 	ArrayList<TextureRectangle> sprites = new ArrayList<TextureRectangle>();
+	Matrix view;
+	Matrix projection;
 	
 	public SpriteBatch() {
 		this.renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
+		this.projection = MathHelper.createOrthographic(1.0f, 0.0f, 0.0f, 1.0f, .1f, 1.0f);
+		this.view = MathHelper.createIdentity();
 	}
 	
 	public void begin() {
-		
+		sprites.clear();
 	}
 	
 	public void render() {
@@ -71,12 +78,18 @@ public class SpriteBatch {
 			
 		}
 		renderer.end();
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		
 		for(int i = 0; i < sprites.size(); i++) {
 			TextureRectangle rect = sprites.get(i);
-			//TODO: set up camera here for the material
-			renderer.render(rect.material, (i * 6), (i * 6) + 5);
+			
+			rect.material.getShader().setUniform("View", this.view);
+			rect.material.getShader().setUniform("Projection", this.projection);		
+			System.out.println("rendering sprite " + i);
+			renderer.render(rect.material, (i * 6), (i * 6) + 5);			
+			
 		}
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 	}
 	
 	public void draw(RenderMaterial material, float x, float y, float w, float h) {

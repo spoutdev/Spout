@@ -88,6 +88,7 @@ import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.batcher.PrimitiveBatch;
+import org.spout.engine.batcher.SpriteBatch;
 import org.spout.engine.command.InputManagementCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
@@ -123,6 +124,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private String stopMessage = null;
 	private final ClientBootstrap bootstrap = new ClientBootstrap();
 
+	
+	//Test
+	private SpriteBatch gui;
+	
 	public SpoutClient() {
 		this.filesystem = new ClientFileSystem();
 	}
@@ -414,6 +419,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		renderer.begin();
 		renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.RED, sides);
 		renderer.end();
+		
+		gui = new SpriteBatch();
 	}
 
 
@@ -430,6 +437,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 		mat.getShader().setUniform("Projection", activeCamera.getProjection());
 		mat.getShader().setUniform("Model", loc.toMatrix());
 		renderer.draw(mat);
+		
+		gui.begin();
+		gui.draw(mat, .25f, .25f, .25f, .25f);
+		gui.render();
+		
 	}
 
 	public WorldRenderer getWorldRenderer() {
