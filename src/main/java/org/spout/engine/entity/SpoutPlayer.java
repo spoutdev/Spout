@@ -350,6 +350,12 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		getTransform().setPosition(loc);
 		getNetworkSynchronizer().setPositionDirty();
 	}
+	
+	@Override
+	public void teleport(Transform transform) {
+		getTransform().setTransform(transform);
+		getNetworkSynchronizer().setPositionDirty();
+	}
 
 	@Override
 	public void finalizeRun() {
