@@ -26,81 +26,53 @@
  */
 package org.spout.api.inventory.util;
 
-import org.spout.api.inventory.shape.Grid;
-import java.util.Iterator;
+import org.spout.api.inventory.shape.Cube;
 
 /**
- * Represents an {@link Iterator} of a grid that iterates through the indexes in 
- * the correct order of an {@link org.spout.api.inventory.Inventory}
+ * Represents an {@link java.util.Iterator} of a grid that iterates through the
+ * indexes in the correct order of an {@link org.spout.api.inventory.Inventory}.
  */
-public class GridIterator implements Iterator<Integer> {
+public class CubeIterator extends GridIterator {
 	/**
-	 * The {@link Grid} to iterate through
+	 * The z coordinate of the index
 	 */
-	protected final Grid grid;
+	private int z = 0;
+	
 	/**
-	 * The current index of the grid
+	 * Constructs a new CubeIterator 
+	 * 
+	 * @param cube to iterate through 
 	 */
-	protected int index = -1;
-	/**
-	 * The current position on the x axis of the grid
-	 */
-	protected int x = -1;
-	/**
-	 * The current position on the y axis of the grid
-	 */
-	protected int y = 0;
-
-	/**
-	 * Constructs a new grid iterator
-	 * @param grid to iterate through
-	 */
-	public GridIterator(Grid grid) {
-		this.grid = grid;
+	public CubeIterator(Cube cube) {
+		super(cube);
 	}
 	
 	/**
-	 * Gets the current index of the grid
-	 * @return index
+	 * Returns the 'z' coordinate of the iterator.
+	 * 
+	 * @return z coordinate
 	 */
-	public int getIndex() {
-		return index;
+	public int getZ() {
+		return z;
 	}
-
-	/**
-	 * Gets the current position on the x axis
-	 * @return x axis position
-	 */
-	public int getX() {
-		return x;
-	}
-
-	/**
-	 * Gets the current position on the y axis
-	 * @return y axis position
-	 */
-	public int getY() {
-		return y;
-	}
-
+	
 	@Override
-	public boolean hasNext() {
-		return index < grid.getSize() - 1;
-	}
-
-	@Override
-	public Integer next() {
+	public Integer next() {	
 		if (x < grid.getLength() - 1) {
 			x++;
 		} else if (y < grid.getHeight() - 1) {
 			x = 0;
 			y++;
+		} else if (z < ((Cube) grid).getWidth() - 1) {
+			x = 0;
+			y = 0;
+			z++;
 		} else {
 			throw new IndexOutOfBoundsException("Cannot increment cursor beyond it's final index.");
 		}
 		return ++index;
 	}
-
+	
 	@Override
 	public void remove() {
 		if (x > 0) {
@@ -108,7 +80,11 @@ public class GridIterator implements Iterator<Integer> {
 		} else if (y > 0) {
 			x = grid.getLength() - 1;
 			y--;
-		} else if (x == 0 && y == 0) {
+		} else if (z > 0) {
+			x = grid.getLength() - 1;
+			y = grid.getHeight() - 1;
+			z--;
+		} else if (x == 0 && y == 0 && z == 0) {
 			x--;
 		} else {
 			throw new IndexOutOfBoundsException("Cannot decrement cursor beyond 0.");
