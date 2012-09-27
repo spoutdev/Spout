@@ -28,10 +28,10 @@ package org.spout.api.meta;
 
 import java.io.File;
 
-import org.spout.api.lang.PluginDictionary;
+import org.spout.api.lang.JavaPluginDictionary;
 import org.spout.api.plugin.Plugin;
 
-public class SpoutMetaPluginDictionary extends PluginDictionary {
+public class SpoutMetaPluginDictionary extends JavaPluginDictionary {
 	public SpoutMetaPluginDictionary(Plugin plugin) {
 		super(plugin);
 	}

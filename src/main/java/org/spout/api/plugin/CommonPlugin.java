@@ -31,6 +31,7 @@ import org.apache.commons.lang3.Validate;
 import org.spout.api.Engine;
 import org.spout.api.UnsafeMethod;
 import org.spout.api.generator.WorldGenerator;
+import org.spout.api.lang.JavaPluginDictionary;
 import org.spout.api.lang.PluginDictionary;
 
 import java.io.File;
@@ -63,7 +64,7 @@ public abstract class CommonPlugin implements Plugin {
 
 		this.logger = new PluginLogger(this);
 
-		this.dictionary = new PluginDictionary(this);
+		this.dictionary = new JavaPluginDictionary(this);
 	}
 
 	@Override
