@@ -173,7 +173,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		SpoutChunk chunkLive = (SpoutChunk) getChunkLive();
 
 		//Move entity from Region A to Region B
-		if (chunk.getRegion() != chunkLive.getRegion()) {
+		if (chunkLive != null && (chunk == null || chunk.getRegion() != chunkLive.getRegion())) {
 			entityManager.get().removeEntity(this);
 			//Only allow non removed entities to move to new region
 			if (!isRemoved()) {
