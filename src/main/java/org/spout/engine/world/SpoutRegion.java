@@ -495,11 +495,16 @@ public class SpoutRegion extends Region {
 	public void copySnapshotRun() {
 		entityManager.copyAllSnapshots();
 
+		SpoutChunk c;
+		while ((c = occupiedChunksQueue.poll()) != null) {
+			occupiedChunks.add(c);
+		}
+		
 		final Iterator<SpoutChunk> itr = occupiedChunks.iterator();
 
 		while (itr.hasNext()) {
 			// NOTE : This is only called for chunks with contain entities.
-			SpoutChunk c = itr.next();
+			c = itr.next();
 			if (!c.isLoaded()) {
 				itr.remove();
 				continue;
