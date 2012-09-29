@@ -43,6 +43,11 @@ import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
+import org.spout.api.geo.World;
+import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
+import org.spout.api.math.Quaternion;
+import org.spout.api.math.Vector3;
 import org.spout.api.meta.SpoutMetaPlugin;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
@@ -349,5 +354,54 @@ public class AdministrationCommands {
 			}
 		}
 		source.sendMessage(onlineMsg);
+	}
+
+	@Command(aliases = {"setspawn", "ss"}, desc = "Sets the spawnpoint for a world", min = 0, max = 4)
+	@CommandPermissions("spout.command.setspawn")
+	public void setspawn(CommandContext args, CommandSource source) throws CommandException {
+		//Not a player? Make sure the console is specifying world, x, y, z
+		if (!(source instanceof Player)) {
+			if (args.length() != 4) {
+				throw new CommandException("Need to specify world as well as x y z when executing from the console.");
+			}
+		}
+		Point point;
+		//Source is a player and didn't provide world, x, y, z so instead set the spawn point of their current world at their current position.
+		if (args.length() != 4) {
+			point = ((Player) source).getTransform().getPosition();
+		//Either Source is the console or the player specified world, x, y, z so set those values
+		} else {
+			if (args.getWorld(0) == null) {
+				throw new CommandException("World: " + args.getString(0) + " is not loaded/existant!");
+			}
+			point = new Point(args.getWorld(0), args.getInteger(1), args.getInteger(2), args.getInteger(3));
+		}
+		//Finally set the spawn point
+		point.getWorld().setSpawnPoint(new Transform(point, Quaternion.IDENTITY, Vector3.ONE));
+		//Notify the source
+		source.sendMessage(new ChatArguments("Set the spawnpoint of world: ", ChatStyle.PURPLE, point.getWorld().getName(), ChatStyle.WHITE, " to x: ",
+				ChatStyle.BRIGHT_GREEN, point.getBlockX(), ChatStyle.WHITE, ", y: ", ChatStyle.BRIGHT_GREEN, point.getBlockY(), ChatStyle.WHITE, ", z: ", ChatStyle.BRIGHT_GREEN, point.getBlockZ()));
+	}
+
+	@Command(aliases = {"whatisspawn", "wis"}, desc = "Tells you the spawnpoint of a world", min = 0, max = 1)
+	@CommandPermissions("spout.command.setspawn")
+	public void tellspawn(CommandContext args, CommandSource source) throws CommandException {
+		if (!(source instanceof Player)) {
+			if (args.length() != 1) {
+				throw new CommandException("Must specify a world to find out the spawnpoint from the console!");
+			}
+		}
+		Point point;
+		if (args.length() != 1) {
+			point = ((Player) source).getTransform().getPosition();
+		} else {
+			final World world = args.getWorld(0);
+			if (world == null) {
+				throw new CommandException("World: " + args.getString(0) + " is not loaded/existant!");
+			}
+			point = world.getSpawnPoint().getPosition();
+		}
+		source.sendMessage(new ChatArguments("The spawnpoint of world: ", ChatStyle.PURPLE, point.getWorld().getName(), ChatStyle.WHITE, " is x: ",
+				ChatStyle.BRIGHT_GREEN, point.getBlockX(), ChatStyle.WHITE, ", y: ", ChatStyle.BRIGHT_GREEN, point.getBlockY(), ChatStyle.WHITE, ", z: ", ChatStyle.BRIGHT_GREEN, point.getBlockZ()));
 	}
 }
