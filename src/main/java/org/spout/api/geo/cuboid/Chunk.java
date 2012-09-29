@@ -29,6 +29,7 @@ package org.spout.api.geo.cuboid;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 import org.spout.api.entity.Entity;
@@ -232,8 +233,15 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 * Gets the observing players of this chunk (done based on the player's view distance).
 	 * @return List containing the observing players
 	 */
-	public abstract List<Player> getObservingPlayers();
+	public abstract List<? extends Player> getObservingPlayers();
 
+	/**
+	 * Gets the observers of this chunk
+	 * 
+	 * @return Set containing the observing players
+	 */
+	public abstract Set<? extends Entity> getObservers();
+	
 	/**
 	 * A thread-safe map of data attached to the chunk, which will be persisted between saves.
 	 *

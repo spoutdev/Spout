@@ -194,8 +194,8 @@ public abstract class NetworkSynchronizer {
 		return false;
 	}
 
-	public void onRemoved() {
-		if (!player.isOnline()) {
+	public void onRemoved(boolean disconnect) {
+		if (disconnect) {
 			TickStage.checkStage(TickStage.FINALIZE);
 			removed = true;
 			for (Point p : initializedChunks) {
