@@ -384,7 +384,7 @@ public class AdministrationCommands {
 	}
 
 	@Command(aliases = {"whatisspawn", "wis"}, desc = "Tells you the spawnpoint of a world", min = 0, max = 1)
-	@CommandPermissions("spout.command.setspawn")
+	@CommandPermissions("spout.command.tellspawn")
 	public void tellspawn(CommandContext args, CommandSource source) throws CommandException {
 		if (!(source instanceof Player)) {
 			if (args.length() != 1) {
