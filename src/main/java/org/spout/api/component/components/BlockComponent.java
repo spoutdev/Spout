@@ -32,7 +32,7 @@ import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.MaterialRegistry;
 
-public class BlockComponent extends EntityComponent {
+public class BlockComponent<T extends BlockMaterial> extends EntityComponent {
 	public BlockComponent() {
 	}
 
@@ -42,22 +42,30 @@ public class BlockComponent extends EntityComponent {
 	}
 
 	/**
+	 * Returns the {@link BlockMaterial} associated with this component.
 	 *
-	 * @return
+	 * @return material associated with component
 	 */
-	public BlockMaterial getMaterial() {
-		return (BlockMaterial) MaterialRegistry.get(getData().get(Data.HELD_MATERIAL_NAME));
+	public T getMaterial() {
+		return (T) MaterialRegistry.get(getData().get(Data.HELD_MATERIAL_NAME));
 	}
 
 	/**
+	 * Sets the {@link BlockMaterial} associated with this component to the specified
+	 * material.
 	 *
-	 * @param material
+	 * @param material to set
 	 */
-	public void setMaterial(BlockMaterial material) {
+	public void setMaterial(T material) {
 		getData().put(Data.HELD_MATERIAL_NAME, material.getName());
 	}
 
+	/**
+	 * Called when a player interacts with this BlockMaterial
+	 *
+	 * @param entity that interacted with this component
+	 * @param type action that the entity took on this component
+	 */
 	public void onInteract(Entity entity, Action type) {
-		// TODO Auto-generated method stub
 	}
 }
