@@ -26,24 +26,25 @@
  */
 package org.spout.engine.world;
 
+import gnu.trove.iterator.TIntIterator;
+
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import gnu.trove.iterator.TIntIterator;
 
 import org.spout.api.Source;
 import org.spout.api.Spout;
@@ -77,11 +78,11 @@ import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.set.TByteTripleHashSet;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
-
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
+import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ChunkDataForRegion;
 import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.scheduler.SpoutScheduler;
@@ -92,6 +93,8 @@ import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 import org.spout.engine.world.dynamic.DynamicBlockUpdateTree;
+
+import com.google.common.collect.Sets;
 
 public class SpoutRegion extends Region {
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
@@ -159,8 +162,8 @@ public class SpoutRegion extends Region {
 	private final SpoutTaskManager taskManager;
 	private final Thread executionThread;
 	private final SpoutScheduler scheduler;
-	private final LinkedHashSet<SpoutChunk> occupiedChunks = new LinkedHashSet<SpoutChunk>();
-	private final ConcurrentLinkedQueue<SpoutChunk> occupiedChunksQueue = new ConcurrentLinkedQueue<SpoutChunk>();
+	private final LinkedHashMap<SpoutPlayer, TByteTripleHashSet> observers = new LinkedHashMap<SpoutPlayer, TByteTripleHashSet>();
+	private final ConcurrentLinkedQueue<SpoutChunk> observedChunkQueue = new ConcurrentLinkedQueue<SpoutChunk>();
 	private final ArrayBlockingQueue<SpoutChunk> localPhysicsChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final ArrayBlockingQueue<SpoutChunk> globalPhysicsChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final ArrayBlockingQueue<SpoutChunk> dirtyChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
@@ -328,8 +331,6 @@ public class SpoutRegion extends Region {
 					}
 					dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);
 				}
-				occupiedChunksQueue.add(newChunk);
-
 				Spout.getEventManager().callDelayedEvent(new ChunkLoadEvent(newChunk, generated));
 
 				return newChunk;
@@ -378,8 +379,20 @@ public class SpoutRegion extends Region {
 
 			currentChunk.setUnloaded();
 
-			occupiedChunksQueue.remove(currentChunk);
-			occupiedChunks.remove(currentChunk);
+			int cx = c.getX() & CHUNKS.MASK;
+			int cy = c.getY() & CHUNKS.MASK;
+			int cz = c.getZ() & CHUNKS.MASK;
+			
+			Iterator<Map.Entry<SpoutPlayer, TByteTripleHashSet>> itr = observers.entrySet().iterator();
+			while (itr.hasNext()) {
+				Map.Entry<SpoutPlayer, TByteTripleHashSet> entry = itr.next();
+				TByteTripleHashSet chunkSet = entry.getValue();
+				if (chunkSet.remove(cx, cy, cz)) {
+					if (chunkSet.isEmpty()) {
+						itr.remove();
+					}
+				}
+			}
 
 			populationQueue.remove(currentChunk);
 
@@ -495,25 +508,6 @@ public class SpoutRegion extends Region {
 	public void copySnapshotRun() {
 		entityManager.copyAllSnapshots();
 
-		SpoutChunk c;
-		while ((c = occupiedChunksQueue.poll()) != null) {
-			occupiedChunks.add(c);
-		}
-		
-		final Iterator<SpoutChunk> itr = occupiedChunks.iterator();
-
-		while (itr.hasNext()) {
-			// NOTE : This is only called for chunks with contain entities.
-			c = itr.next();
-			if (!c.isLoaded()) {
-				itr.remove();
-				continue;
-			}
-			if (c.getNumObservers() <= 0) {
-				itr.remove();
-			}
-		}
-
 		snapshotManager.copyAllSnapshots();
 
 		boolean empty = false;
@@ -535,6 +529,47 @@ public class SpoutRegion extends Region {
 			}
 
 			empty |= processChunkSaveUnload(chunkCoords.x, chunkCoords.y, chunkCoords.z);
+		}
+		
+		SpoutChunk c;
+		TByteTripleHashSet done = new TByteTripleHashSet();
+		while ((c = observedChunkQueue.poll()) != null) {
+			int cx = c.getX() & CHUNKS.MASK;
+			int cy = c.getY() & CHUNKS.MASK;
+			int cz = c.getZ() & CHUNKS.MASK;
+			if (!done.add(cx, cy, cz)) {
+				continue;
+			}
+			c = chunks[cx][cy][cz].get();
+			Set<SpoutEntity> chunkObservers = c == null ? Collections.<SpoutEntity>emptySet() : c.getObservers();
+			
+			Iterator<Map.Entry<SpoutPlayer, TByteTripleHashSet>> itr = observers.entrySet().iterator();
+			while (itr.hasNext()) {
+				Map.Entry<SpoutPlayer, TByteTripleHashSet> entry = itr.next();
+				TByteTripleHashSet chunkSet = entry.getValue();
+				SpoutPlayer sp = entry.getKey();
+				
+				if (chunkObservers.contains(sp)) {
+					chunkSet.add(cx, cy, cz);
+				} else {
+					if (chunkSet.remove(cx, cy, cz)) {
+						if (chunkSet.isEmpty()) {
+							itr.remove();
+						}
+					}
+				}
+			}
+			for (SpoutEntity e : chunkObservers) {
+				if (!(e instanceof Player)) {
+					continue;
+				}
+				SpoutPlayer p = (SpoutPlayer) e;
+				if (!observers.containsKey(p)) {
+					TByteTripleHashSet chunkSet = new TByteTripleHashSet();
+					chunkSet.add(cx, cy, cz);
+					observers.put(p, chunkSet);
+				}
+			}
 		}
 
 		// Updates on nulled chunks
@@ -807,20 +842,8 @@ public class SpoutRegion extends Region {
 			snapshotFuture.run();
 		}
 
-		Iterator<SpoutChunk> itr = occupiedChunks.iterator();
-		int cx, cy, cz;
 		entityManager.syncEntities();
-		while (itr.hasNext()) {
-			SpoutChunk c = itr.next();
 
-			cx = c.getX() & CHUNKS.MASK;
-			cy = c.getY() & CHUNKS.MASK;
-			cz = c.getZ() & CHUNKS.MASK;
-
-			if (c != getChunk(cx, cy, cz, LoadOption.NO_LOAD)) {
-				itr.remove();
-			}
-		}
 	}
 
 	public void queueDirty(SpoutChunk chunk) {
@@ -1210,12 +1233,8 @@ public class SpoutRegion extends Region {
 		return taskManager;
 	}
 
-	public void skipChunk(SpoutChunk chunk) {
-		occupiedChunks.remove(chunk);
-	}
-
-	public void unSkipChunk(SpoutChunk chunk) {
-		occupiedChunks.add(chunk);
+	public void markObserverDirty(SpoutChunk chunk) {
+		observedChunkQueue.add(chunk);
 	}
 
 	@Override

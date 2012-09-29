@@ -865,10 +865,9 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	@Override
 	public boolean refreshObserver(Entity entity) {
 		TickStage.checkStage(TickStage.FINALIZE);
-		SpoutEntity spoutEntity = ((SpoutEntity) entity);
 
 		checkChunkLoaded();
-		parentRegion.unSkipChunk(this);
+		parentRegion.markObserverDirty(this);
 		parentRegion.unloadQueue.remove(this);
 		if (!isPopulated()) {
 			if (populationQueued.compareAndSet(false, true)) {
@@ -883,7 +882,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	@Override
 	public boolean removeObserver(Entity entity) {
 		checkChunkLoaded();
-		parentRegion.unSkipChunk(this);
+		parentRegion.markObserverDirty(this);
 		TickStage.checkStage(TickStage.FINALIZE);
 
 		Integer oldDistance = ((SpoutEntity) entity).getPrevViewDistance();
@@ -916,6 +915,11 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 			}
 		}
 		return Collections.unmodifiableList(players);
+	}
+	
+	@Override
+	public Set<SpoutEntity> getObservers() {
+		return Collections.unmodifiableSet(observers);
 	}
 
 	public boolean compressIfRequired() {

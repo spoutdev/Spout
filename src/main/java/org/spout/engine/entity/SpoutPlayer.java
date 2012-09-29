@@ -132,7 +132,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	public boolean disconnect() {
 		onlineLive.set(false);
 		sessionLive.set(null);
-		this.remove();
 		//save player data on disconnect, probably should do this periodically as well...
 //		WorldFiles.savePlayerData(this);
 		return true;
@@ -360,6 +359,9 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	public void finalizeRun() {
 		super.finalizeRun();
+		if (this.isOnline() && !this.isOnlineLive()) {
+			this.remove(true);
+		}
 		if (this.isOnline()) {
 			this.getNetworkSynchronizer().finalizeTick();
 		}
@@ -375,7 +377,11 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void remove() {
+		remove(false);
+	}
+	
+	private void remove(boolean disconnect) {
 		super.remove();
-		getNetworkSynchronizer().onRemoved();
+		getNetworkSynchronizer().onRemoved(disconnect);
 	}
 }
