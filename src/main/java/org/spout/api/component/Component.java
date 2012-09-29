@@ -26,14 +26,23 @@
  */
 package org.spout.api.component;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.spout.api.Spout;
 import org.spout.api.component.components.DatatableComponent;
-import org.spout.api.component.components.TransformComponent;
-import org.spout.api.geo.discrete.Transform;
 import org.spout.api.tickable.Tickable;
 
-import com.alta189.annotations.RequireDefault;
-
 public abstract class Component implements Tickable {
+	
+	private static ConcurrentHashMap<Class<? extends Component>, Set<Class<? extends Component>>> dependencies = new ConcurrentHashMap<Class<? extends Component>, Set<Class<? extends Component>>>();
+	
 	private ComponentHolder holder;
 
 	public Component() {
@@ -109,6 +118,83 @@ public abstract class Component implements Tickable {
 	 */
 	public final DatatableComponent getData() {
 		return getHolder().getData();
+	}
+	
+	/**
+	 * Registers a dependency.
+	 * 
+	 * @param clazz the class that depends on the dependency
+	 * @param depend the dependency
+	 */
+	public static void addDependency(Class<? extends Component> clazz, Class<? extends Component> depend) {
+		Set<Class<? extends Component>> set = dependencies.get(depend);
+		if (set == null) {
+			set = new HashSet<Class<? extends Component>>();
+			Set<Class<? extends Component>> old = dependencies.putIfAbsent(depend, set);
+			if (old != null) {
+				set = old;
+			}
+		}
+		set.add(clazz);
+	}
+	
+	/**
+	 * Sorts a list of Components based on dependencies.
+	 * 
+	 * @param components
+	 * @return the sorted list
+	 */
+	public static List<? extends Component> dependSort(Collection<Component> components) {
+		
+		LinkedHashSet<Class<? extends Component>> pending = new LinkedHashSet<Class<? extends Component>>();
+		
+		for (Component c : components) {
+			pending.add(c.getClass());
+		}
+		
+		List<Component> sorted = new ArrayList<Component>(components.size());
+		
+		while (!pending.isEmpty()) {
+			boolean updated = false;
+			Iterator<Class<? extends Component>> itr = pending.iterator();
+			while (itr.hasNext()) {
+				boolean hit = false;
+				Class<? extends Component> componentClass = itr.next();
+				Set<Class<? extends Component>> depends = dependencies.get(componentClass);
+				if (depends != null) {
+					for (Class<? extends Component> d : depends) {
+						if (pending.contains(d)) {
+							hit = true;
+							break;
+						}
+					}
+				}
+				if (!hit) {
+					itr.remove();
+					for (Component c : components) {
+						if (componentClass.equals(c.getClass())) {
+							sorted.add(c);
+							updated = true;
+						}
+					}
+				}
+			}
+			if (!updated && !pending.isEmpty()) {
+				Spout.getLogger().info("Unable to properly sort array according to dependencies");
+				itr = pending.iterator();
+				while (itr.hasNext()) {
+					Class<? extends Component> componentClass = itr.next();
+					itr.remove();
+					for (Component c : components) {
+						if (componentClass.equals(c.getClass())) {
+							sorted.add(c);
+						}
+					}
+				}
+			}
+		}
+		
+		return sorted;
 	}
 		
 }
