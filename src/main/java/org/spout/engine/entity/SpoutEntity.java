@@ -31,6 +31,7 @@ import java.util.UUID;
 import java.util.HashSet;
 
 import org.spout.api.Source;
+import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
 import org.spout.api.component.components.EntityComponent;
@@ -163,7 +164,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		if (isRemoved()) {
 			removeObserver();
 			//Call onRemoved for Components and remove them
-			for (Component component : values()) {
+			for (Component component : Component.dependSort(values())) {
 				detach(component.getClass());
 			}
 			return;
