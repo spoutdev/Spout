@@ -133,16 +133,20 @@ public class EntityManager {
 	public void addEntity(SpoutEntity entity) {
 		int currentId = entity.getId();
 		if (currentId == SpoutEntity.NOTSPAWNEDID) {
-			currentId = nextId.getAndIncrement();
-			if (currentId == -2) {
-				throw new IllegalStateException("No new entity ids left");
-			}
-			entity.setId(currentId);
+			entity.setId(getNextId());
 		}
 		entities.put(currentId, entity);
 		if (entity instanceof Player) {
 			players.put((Player) entity, new ArrayList<SpoutEntity>());
 		}
+	}
+	
+	private static int getNextId() {
+		int id = nextId.getAndIncrement();
+		if (id == -2) {
+			throw new IllegalStateException("Entity id space exhausted");
+		}
+		return id;
 	}
 
 	public boolean isSpawnable(SpoutEntity entity) {
