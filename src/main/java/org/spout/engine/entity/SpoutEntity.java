@@ -26,12 +26,12 @@
  */
 package org.spout.engine.entity;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.HashSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.Source;
-import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
 import org.spout.api.component.components.EntityComponent;
@@ -68,7 +68,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	private final SnapshotableReference<EntityManager> entityManager = new SnapshotableReference<EntityManager>(snapshotManager, null);
 	private final SnapshotableBoolean observer = new SnapshotableBoolean(snapshotManager, false);
 	private final SnapshotableBoolean save = new SnapshotableBoolean(snapshotManager, false);
-	private final SnapshotableInt id = new SnapshotableInt(snapshotManager, NOTSPAWNEDID);
+	private final AtomicInteger id = new AtomicInteger(NOTSPAWNEDID);
 	private final SnapshotableInt viewDistance = new SnapshotableInt(snapshotManager, 10);
 
 	private volatile boolean remove = false;

@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.geo.cuboid.Chunk;
@@ -133,7 +134,8 @@ public class EntityManager {
 	public void addEntity(SpoutEntity entity) {
 		int currentId = entity.getId();
 		if (currentId == SpoutEntity.NOTSPAWNEDID) {
-			entity.setId(getNextId());
+			currentId = getNextId();
+			entity.setId(currentId);
 		}
 		entities.put(currentId, entity);
 		if (entity instanceof Player) {
@@ -217,6 +219,7 @@ public class EntityManager {
 				continue;
 			}
 			if (ent.getId() == SpoutEntity.NOTSPAWNEDID) {
+				Spout.getLogger().info("Attempt to sync entity with the not spawned id");
 				continue;
 			}
 			//Players observing the chunk this entity is in
