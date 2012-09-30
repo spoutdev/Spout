@@ -77,6 +77,10 @@ public class TransformComponent extends EntityComponent {
 	public Quaternion getRotation() {
 		return transform.getRotation();
 	}
+	
+	private Quaternion getRotationLive() {
+		return transformLive.getRotation();
+	}
 
 	public void setRotation(Quaternion rotation) {
 		if (rotation == null) {
@@ -184,6 +188,10 @@ public class TransformComponent extends EntityComponent {
 	public float getPitch() {
 		return getRotation().getPitch();
 	}
+	
+	private float getPitchLive() {
+		return getRotationLive().getPitch();
+	}
 
 	/**
 	 * Gets the entities current yaw, or horizontal angle.
@@ -191,6 +199,10 @@ public class TransformComponent extends EntityComponent {
 	 */
 	public float getYaw() {
 		return getRotation().getYaw();
+	}
+	
+	private float getYawLive() {
+		return getRotationLive().getYaw();
 	}
 
 	/**
@@ -200,13 +212,17 @@ public class TransformComponent extends EntityComponent {
 	public float getRoll() {
 		return getRotation().getRoll();
 	}
+	
+	private float getRollLive() {
+		return getRotationLive().getRoll();
+	}
 
 	/**
 	 * Sets the pitch of the entity.
 	 * @param ang
 	 */
 	public void setPitch(float angle) {
-		setAxisAngles(getPitch(), getYaw(), angle);
+		setAxisAngles(getPitchLive(), getYawLive(), angle);
 	}
 
 	/**
@@ -214,7 +230,7 @@ public class TransformComponent extends EntityComponent {
 	 * @param ang
 	 */
 	public void setRoll(float angle) {
-		setAxisAngles(getPitch(), getYaw(), angle);
+		setAxisAngles(getPitchLive(), getYawLive(), angle);
 	}
 
 	/**
@@ -222,7 +238,7 @@ public class TransformComponent extends EntityComponent {
 	 * @param ang
 	 */
 	public void setYaw(float angle) {
-		setAxisAngles(getPitch(), angle, getRoll());
+		setAxisAngles(getPitchLive(), angle, getRollLive());
 	}
 
 	private void setAxisAngles(float pitch, float yaw, float roll) {
