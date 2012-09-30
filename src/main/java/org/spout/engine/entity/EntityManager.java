@@ -227,6 +227,10 @@ public class EntityManager {
 	 */
 	public void syncEntities() {
 		for (Entity ent : getAll()) {
+			//Do not sync entities with null chunks
+			if (ent.getChunk() == null) {
+				continue;
+			}
 			//Players observing the chunk this entity is in
 			Set<? extends Entity> observers = ent.getChunk().getObservers();
 			for (Entity observer : observers) {
