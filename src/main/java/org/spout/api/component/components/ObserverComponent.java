@@ -26,6 +26,8 @@
  */
 package org.spout.api.component.components;
 
+import org.spout.api.geo.cuboid.Chunk;
+
 /**
  * Component that represents the an entity that observes a radius of chunks
  */

@@ -37,6 +37,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
+import gnu.trove.set.hash.TIntHashSet;
+
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.EventHandler;
@@ -87,7 +89,10 @@ public abstract class NetworkSynchronizer {
 	private final LinkedHashSet<Chunk> observed = new LinkedHashSet<Chunk>();
 	private final Set<Point> chunksToObserve = new LinkedHashSet<Point>();
 	private final Map<Class<? extends ProtocolEvent>, ProtocolEventExecutor> protocolEventMapping = new HashMap<Class<? extends ProtocolEvent>, ProtocolEventExecutor>();
-	
+
+	//Holds all entities that have ever been sync'd to this Synchronizer
+	private final TIntHashSet synchronizedEntities = new TIntHashSet();
+
 	public NetworkSynchronizer(Session session, int minViewDistance) {
 		this.session = session;
 		player = session.getPlayer();
@@ -210,7 +215,7 @@ public abstract class NetworkSynchronizer {
 	 * are non-conflicting.
 	 */
 	public void finalizeTick() {
-		if (player.isRemoved()) {
+		if (removed) {
 			return;
 		}
 
@@ -580,6 +585,15 @@ public abstract class NetworkSynchronizer {
 	 * @param update is True when the entity is being updated
 	 */
 	public void syncEntity(Entity e, boolean spawn, boolean destroy, boolean update) {
+		if (spawn) {
+			if (!synchronizedEntities.contains(e.getId())) {
+				synchronizedEntities.add(e.getId());
+			}
+		} else if (destroy) {
+			if (synchronizedEntities.contains(e.getId())) {
+				synchronizedEntities.remove(e.getId());
+			}
+		}
 	}
 
 	/**
@@ -593,5 +607,9 @@ public abstract class NetworkSynchronizer {
 		} else if (!this.protocol.compareAndSet(null, protocol)) {
 			throw new IllegalStateException("Protocol may not be set twice for a network synchronizer");
 		}
+	}
+
+	public boolean hasSpawned(Entity e) {
+		return synchronizedEntities.contains(e.getId());
 	}
 }
