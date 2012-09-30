@@ -32,14 +32,17 @@ import java.util.Collections;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.math.MathHelper;
 import org.spout.api.protocol.NetworkSynchronizer;
 
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
+import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 
 /**
@@ -223,37 +226,45 @@ public class EntityManager {
 	 * Syncs all entities/observers in this region
 	 */
 	public void syncEntities() {
-		Map<Player, ArrayList<SpoutEntity>> toSync = players.get();
-		for (Player player : toSync.keySet()) {
-			/*
-			 * Offline players have no network synchronizer, skip them
-			 */
-			if (!player.isOnline()) {
-				continue;
-			}
-			Integer playerViewDistance = player.getViewDistance();
-			NetworkSynchronizer net = player.getNetworkSynchronizer();
-			ArrayList<SpoutEntity> entitiesPerPlayer = toSync.get(player);
-			boolean spawn, destroy, update;
-			for (SpoutEntity entity : getAllLive()) {
-				if (entity.equals(player)) {
+		for (Entity ent : getAll()) {
+			//Players observing the chunk this entity is in
+			Set<? extends Entity> observers = ent.getChunk().getObservers();
+			for (Entity observer : observers) {
+				//Don't sync ourselves to ourselves :p
+				if (ent == observer) {
 					continue;
 				}
-				boolean contains = entitiesPerPlayer.contains(entity);
-				spawn = destroy = update = false;
-				if (MathHelper.distance(player.getTransform().getPosition(), entity.getTransform().getPosition()) <= playerViewDistance) {
-					if (!contains) {
-						entitiesPerPlayer.add(entity);
-						spawn = true; // Spawn
-					} else if (entity.isRemoved()) {
-						destroy = entitiesPerPlayer.remove(entity); // Destroy if not already destroyed
-					} else {
-						update = true; // Update otherwise
-					}
-				} else {
-					destroy = entitiesPerPlayer.remove(entity); // Destroy if not already destroyed
+				//Non-players have no synchronizer, ignore
+				if (!(observer instanceof Player)) {
+					continue;
 				}
-				net.syncEntity(entity, spawn, destroy, update);
+				Player player = (Player) observer;
+				//If the player is somehow still observing the chunk and offline, ignore
+				if (!player.isOnline()) {
+					continue;
+				}
+				//Grab the NetworkSynchronizer of the player
+				NetworkSynchronizer network = player.getNetworkSynchronizer();
+				//Grab player's view distance
+				int view = player.getViewDistance();
+				/*
+				 * Just because a player can see a chunk doesn't mean the entity is within sync-range, do the math and sync based on the result.
+				 *
+				 * Following variables hold sync status
+				 */
+				boolean spawn, sync, destroy;
+				spawn = sync = destroy = false;
+				//Entity is out of range of the player's view distance, destroy
+				if (MathHelper.distance(ent.getTransform().getPosition(), player.getTransform().getPosition()) > view) {
+					destroy = true;
+				} else {
+					if (!network.hasSpawned(ent)) {
+						spawn = true;
+					} else {
+						sync = true;
+					}
+				}
+				network.syncEntity(ent, spawn, destroy, sync);
 			}
 		}
 	}
