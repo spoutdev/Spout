@@ -99,4 +99,12 @@ public class NetworkComponent extends EntityComponent {
 		Player[] thePlayers = players.toArray(new Player[players.size()]);
 		callProtocolEvent(event, thePlayers);
 	}
+
+	/**
+	 * Sends a protocol event to players observing this holder and the holder itself
+	 * @param event to send
+	 */
+	public void callProtocolEvent(ProtocolEvent event) {
+		callProtocolEvent(event, false);
+	}
 }
