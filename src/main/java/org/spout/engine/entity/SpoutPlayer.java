@@ -357,12 +357,15 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void finalizeRun() {
+		if (!this.isOnlineLive()) {
+			remove();
+		}
 		super.finalizeRun();
 		if (this.isOnline()) {
 			this.getNetworkSynchronizer().finalizeTick();
 		}
-		if (this.isOnline() && !this.isOnlineLive()) {
-			this.remove(true);
+		if (isRemoved()) {
+			getNetworkSynchronizer().onRemoved();
 			sessionLive.set(null);
 		}
 	}
@@ -375,13 +378,4 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		}
 	}
 
-	@Override
-	public void remove() {
-		remove(false);
-	}
-	
-	private void remove(boolean disconnect) {
-		super.remove();
-		getNetworkSynchronizer().onRemoved(disconnect);
-	}
 }

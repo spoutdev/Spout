@@ -125,14 +125,12 @@ public class EntityManager {
 	public SpoutEntity getEntity(int id) {
 		return entities.get().get(id);
 	}
-	
+
 	/**
-	 * Allocates the id for an entity.
-	 *
-	 * @param entity The entity.
-	 * @return The id.
+	 * Adds an entity to the manager.
+	 * @param entity The entity
 	 */
-	public int allocate(SpoutEntity entity) {
+	public void addEntity(SpoutEntity entity) {
 		int currentId = entity.getId();
 		if (currentId == SpoutEntity.NOTSPAWNEDID) {
 			currentId = nextId.getAndIncrement();
@@ -142,23 +140,6 @@ public class EntityManager {
 			entity.setId(currentId);
 		}
 		entities.put(currentId, entity);
-		return currentId;
-	}
-
-	/**
-	 * Deallocates the id for an entity.
-	 * @param entity The entity.
-	 */
-	public void deallocate(SpoutEntity entity) {
-		entities.remove(entity.getId());
-	}
-	
-	/**
-	 * Adds an entity to the manager.
-	 * @param entity The entity
-	 */
-	public void addEntity(SpoutEntity entity) {
-		allocate(entity);
 		if (entity instanceof Player) {
 			players.put((Player) entity, new ArrayList<SpoutEntity>());
 		}
@@ -176,7 +157,7 @@ public class EntityManager {
 	 * @param entity The entity
 	 */
 	public void removeEntity(SpoutEntity entity) {
-		deallocate(entity);
+		entities.remove(entity.getId());
 		if (entity instanceof Player) {
 			players.remove((Player) entity);
 		}
@@ -187,10 +168,10 @@ public class EntityManager {
 	 */
 	public void finalizeRun() {
 		for (SpoutEntity e : entities.get().values()) {
+			e.finalizeRun();
 			if (e.isRemoved()) {
 				removeEntity(e);
 			}
-			e.finalizeRun();
 		}
 	}
 
