@@ -26,6 +26,8 @@
  */
 package org.spout.api.component.components;
 
+import java.util.List;
+
 import org.spout.api.entity.Player;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.protocol.EntityProtocol;
@@ -73,14 +75,28 @@ public class NetworkComponent extends EntityComponent {
 	}
 
 	/**
-	 * Sends a protocol events to all players within range of this Entity
+	 * Sends a protocol event to specific players.
 	 * @param event to send
 	 */
-	public void callProtocolEvent(ProtocolEvent event) {
-		for (Player player : getHolder().getChunk().getObservingPlayers()) {
-			if (player.isOnline()) {
-				player.getNetworkSynchronizer().callProtocolEvent(event);
+	public void callProtocolEvent(ProtocolEvent event, Player... players) {
+		for (Player player : players) {
+			player.getNetworkSynchronizer().callProtocolEvent(event);
+		}
+	}
+
+	/**
+	 * Sends a protocol event to players observing this holder
+	 * @param event to send
+	 * @param ignoreHolder If true, the holder will be excluded from being sent the protocol event (only valid if the holder has a NetworkSynchronier i.e. Player)
+	 */
+	public void callProtocolEvent(ProtocolEvent event, boolean ignoreHolder) {
+		List<? extends Player> players = getHolder().getChunk().getObservingPlayers();
+		if (getHolder() instanceof Player && ignoreHolder) {
+			if (players.contains(getHolder())) {
+				players.remove(getHolder());
 			}
 		}
+		Player[] thePlayers = players.toArray(new Player[players.size()]);
+		callProtocolEvent(event, thePlayers);
 	}
 }
