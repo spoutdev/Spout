@@ -29,6 +29,7 @@ package org.spout.engine.entity;
 import java.net.InetAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
@@ -54,8 +55,8 @@ import org.spout.api.util.access.BanType;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;
-
 import org.spout.engine.SpoutConfiguration;
+import org.spout.engine.SpoutEngine;
 import org.spout.engine.protocol.SpoutSession;
 
 public class SpoutPlayer extends SpoutEntity implements Player {
@@ -195,21 +196,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	public boolean sendRawMessage(ChatArguments message) {
 		sendCommand("say", message);
 		return true;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof SpoutPlayer) {
-			SpoutPlayer p = (SpoutPlayer) obj;
-			if (p.hashCode() != hashCode()) {
-				return false;
-			} else if (p == this) {
-				return true;
-			} else {
-				return name.equals(p.name);
-			}
-		}
-		return false;
 	}
 
 	@Override
@@ -366,6 +352,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		}
 		if (isRemoved()) {
 			getNetworkSynchronizer().onRemoved();
+			((SpoutEngine) Spout.getEngine()).removePlayer(this);
 			sessionLive.set(null);
 		}
 	}

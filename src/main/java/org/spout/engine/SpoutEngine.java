@@ -754,6 +754,10 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		session.getProtocol().initializeSession(session);
 		return player;
 	}
+	
+	public boolean removePlayer(SpoutPlayer player) {
+		return players.remove(player.getName(), player);
+	}
 
 	protected Collection<SpoutWorld> getLiveWorlds() {
 		return loadedWorlds.getLive().values();
