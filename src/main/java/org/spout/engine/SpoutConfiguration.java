@@ -36,6 +36,7 @@ import org.spout.api.util.config.yaml.YamlConfiguration;
 public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder ALLOW_FLIGHT = new ConfigurationHolder(false, "allow-flight");
 	public static final ConfigurationHolder CONSOLE_TYPE = new ConfigurationHolder("jline", "console");
+	public static final ConfigurationHolder MAXIMUM_PLAYERS = new ConfigurationHolder(20, "maximum-players");
 	public static final ConfigurationHolder DEFAULT_WORLD = new ConfigurationHolder("world", "default-world");
 	public static final ConfigurationHolder WHITELIST_ENABLED = new ConfigurationHolder(false, "whitelist-enabled");
 	public static final ConfigurationHolder VIEW_DISTANCE = new ConfigurationHolder(10, "view-distance");

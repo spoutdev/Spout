@@ -89,10 +89,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 	 */
 	private final String name = "Spout Server";
 	/**
-	 * The maximum amount of player allowed on the server
-	 */
-	private volatile int maxPlayers = 20;
-	/**
 	 * The {@link FileSystem} for the server
 	 */
 	private final FileSystem filesystem;
@@ -219,7 +215,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	@Override
 	public int getMaxPlayers() {
-		return maxPlayers;
+		return SpoutConfiguration.MAXIMUM_PLAYERS.getInt();
 	}
 
 	@Override
