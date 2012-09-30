@@ -841,6 +841,17 @@ public class SpoutRegion extends Region {
 		while ((snapshotFuture = snapshotQueue.poll()) != null) {
 			snapshotFuture.run();
 		}
+		
+		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
+			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
+				for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+					SpoutChunk chunk = chunks[dx][dy][dz].get();
+					if (chunk != null) {
+						chunk.updateExpiredObservers();
+					}
+				}
+			}
+		}
 
 		entityManager.syncEntities();
 

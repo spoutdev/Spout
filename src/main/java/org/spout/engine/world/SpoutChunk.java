@@ -30,10 +30,12 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -78,7 +80,6 @@ import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 import org.spout.api.util.map.concurrent.AtomicBlockStoreImpl;
 import org.spout.api.util.set.TNibbleQuadHashSet;
-
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.scheduler.SpoutScheduler;
@@ -92,6 +93,10 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	public static final WeakReference<Chunk> NULL_WEAK_REFERENCE = new WeakReference<Chunk>(null);
 
 	private final Set<SpoutEntity> observers = Sets.newSetFromMap(new ConcurrentHashMap<SpoutEntity, Boolean>());
+	private final ConcurrentLinkedQueue<SpoutEntity> expiredObserversQueue = new ConcurrentLinkedQueue<SpoutEntity>();
+	private final LinkedHashSet<SpoutEntity> expiredObservers = new LinkedHashSet<SpoutEntity>();
+	private final Set<SpoutEntity> unModifiableExpiredObservers = Collections.unmodifiableSet(expiredObservers);
+	
 	/**
 	 * Multi-thread write access to the block store is only allowed during the
 	 * allowed stages. During the restricted stages, only the region thread may
@@ -891,6 +896,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		}
 
 		observers.remove((SpoutEntity) entity);
+		expiredObserversQueue.add((SpoutEntity) entity);
 		if (!isObserved()) {
 			parentRegion.unloadQueue.add(this);
 		}
@@ -920,6 +926,24 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	@Override
 	public Set<SpoutEntity> getObservers() {
 		return Collections.unmodifiableSet(observers);
+	}
+	/**
+	 * Gets observers that have expired during the most recent tick
+	 * 
+	 * @return the expired observers
+	 */
+	public Set<SpoutEntity> getExpiredObservers() {
+		return unModifiableExpiredObservers;		
+	}
+	
+	public void updateExpiredObservers() {
+		expiredObservers.clear();
+		SpoutEntity e;
+		while ((e = expiredObserversQueue.poll()) != null) {
+			if (!observers.contains(e)) {
+				expiredObservers.add(e);
+			}
+		}
 	}
 
 	public boolean compressIfRequired() {
