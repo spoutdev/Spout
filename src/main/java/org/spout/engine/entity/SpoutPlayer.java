@@ -358,12 +358,12 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	public void finalizeRun() {
 		super.finalizeRun();
+		if (this.isOnline()) {
+			this.getNetworkSynchronizer().finalizeTick();
+		}
 		if (this.isOnline() && !this.isOnlineLive()) {
 			this.remove(true);
 			sessionLive.set(null);
-		}
-		if (this.isOnline()) {
-			this.getNetworkSynchronizer().finalizeTick();
 		}
 	}
 
