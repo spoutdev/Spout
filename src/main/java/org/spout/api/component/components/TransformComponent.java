@@ -62,6 +62,18 @@ public class TransformComponent extends EntityComponent {
 		return !transform.equals(transformLive);
 	}
 
+	public boolean isPositionDirty() {
+		return !transform.getPosition().equals(transformLive.getPosition());
+	}
+
+	public boolean isRotationDirty() {
+		return !transform.getRotation().equals(transformLive.getRotation());
+	}
+
+	public boolean isScaleDirty() {
+		return !transform.getScale().equals(transformLive.getScale());
+	}
+
 	public Point getPosition() {
 		return transform.getPosition();
 	}
