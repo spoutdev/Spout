@@ -26,7 +26,7 @@
  */
 package org.spout.api.component.components;
 
-import java.util.List;
+import java.util.Set;
 
 import org.spout.api.entity.Player;
 import org.spout.api.io.store.simple.MemoryStore;
@@ -90,7 +90,7 @@ public class NetworkComponent extends EntityComponent {
 	 * @param ignoreHolder If true, the holder will be excluded from being sent the protocol event (only valid if the holder has a NetworkSynchronier i.e. Player)
 	 */
 	public void callProtocolEvent(ProtocolEvent event, boolean ignoreHolder) {
-		List<? extends Player> players = getHolder().getChunk().getObservingPlayers();
+		Set<? extends Player> players = getHolder().getChunk().getObservingPlayers();
 		if (getHolder() instanceof Player && ignoreHolder) {
 			if (players.contains(getHolder())) {
 				players.remove(getHolder());
