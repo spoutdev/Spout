@@ -26,7 +26,6 @@
  */
 package org.spout.api.lang;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -36,23 +35,25 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
 
+import org.spout.api.Spout;
 import org.spout.api.plugin.Plugin;
 
 public class JavaPluginDictionary extends CommonPluginDictionary {
 	protected JavaPluginDictionary() {
 		plugin = null;
 	}
-	
+
 	public JavaPluginDictionary(Plugin plugin) {
 		this.plugin = plugin;
 		load();
 	}
-	
+
 	protected String getJarBasePath() {
 		return "lang/";
 	}
-	
+
 	@Override
 	@SuppressWarnings("resource")
 	protected InputStream openLangResource(String filename) {
@@ -60,9 +61,9 @@ public class JavaPluginDictionary extends CommonPluginDictionary {
 			File inDataDir = new File(getLangDirectory(), filename);
 			if (inDataDir.exists()) {
 				return new FileInputStream(inDataDir);
-			} else if(plugin != null) {
+			} else if (plugin != null) {
 				JarFile jar = new JarFile(plugin.getFile());
-				JarEntry keyMap = jar.getJarEntry(getJarBasePath()+filename);
+				JarEntry keyMap = jar.getJarEntry(getJarBasePath() + filename);
 				if (keyMap != null) {
 					return jar.getInputStream(keyMap);
 				}
@@ -72,29 +73,34 @@ public class JavaPluginDictionary extends CommonPluginDictionary {
 			return null;
 		}
 	}
-	
+
 	@SuppressWarnings("resource")
 	protected void loadLanguages() {
 		// Search for other languages
 		try {
 			Set<String> loaded = new HashSet<String>();
-			
+
 			// Look in plugins datadir first
 			File langDir = getLangDirectory();
 			if (langDir.exists() && langDir.isDirectory()) {
 				File[] files = langDir.listFiles();
-				for (File file:files) {
+				for (File file : files) {
 					if (LANG_FILE_FILTER.matcher(file.getName()).matches()) {
-						loadLanguage(new FileInputStream(file));
-						loaded.add(file.getName());
+						try {
+							loadLanguage(new FileInputStream(file), file.getAbsolutePath());
+							loaded.add(file.getName());
+						} catch (Exception e) {
+							Spout.getLogger().log(Level.SEVERE, "Error while loading a translation file for plugin " + plugin.getName(), e);
+						}
 					}
 				}
 			}
-			
+
 			if (plugin != null) {
 				// Then look in plugins jar
 				JarFile jar = new JarFile(plugin.getFile());
-				if (jar.getEntry(getJarBasePath()) == null) { // Skip plugins without language files
+				if (jar.getEntry(getJarBasePath()) == null) { 
+					// Skip plugins without language files
 					return;
 				}
 				Enumeration<JarEntry> entries = jar.entries();
@@ -103,12 +109,18 @@ public class JavaPluginDictionary extends CommonPluginDictionary {
 					if (entry.getName().startsWith(getJarBasePath())) {
 						String file = entry.getName().replaceFirst(getJarBasePath(), "");
 						if (LANG_FILE_FILTER.matcher(file).matches() && !loaded.contains(file)) {
-							loadLanguage(jar.getInputStream(entry));
-							loaded.add(file);
+							try {
+								loadLanguage(jar.getInputStream(entry), plugin.getFile().getAbsolutePath() + "/" + entry.getName());
+								loaded.add(file);
+							} catch (Exception e) {
+								Spout.getLogger().log(Level.SEVERE, "Error while loading a translation file for plugin " + plugin.getName(), e);
+							}
 						}
 					}
 				}
 			}
-		} catch (IOException e) {}
+		} catch (IOException e) {
+			Spout.getLogger().log(Level.SEVERE, "Error while loading translation files for plugin " + plugin.getName(), e);
+		}
 	}
 }

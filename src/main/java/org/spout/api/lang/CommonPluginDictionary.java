@@ -45,8 +45,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.IOUtils;
+import org.spout.api.Spout;
 import org.spout.api.command.CommandSource;
 import org.spout.api.plugin.Plugin;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
@@ -61,11 +64,11 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 
 	protected static final Pattern LANG_FILE_FILTER = Pattern.compile("lang-[a-zA-Z_]{2,5}.yml");
 	protected Plugin plugin;
-	private TIntObjectHashMap<LanguageDictionary> languageDictionaries = new TIntObjectHashMap<LanguageDictionary>();
+	private final TIntObjectHashMap<LanguageDictionary> languageDictionaries = new TIntObjectHashMap<LanguageDictionary>();
 	private int nextId = 0;
-	private HashMap<String, HashMap<String, Integer>> classes = new HashMap<String, HashMap<String,Integer>>(10);
-	private LinkedList<Integer> idList = new LinkedList<Integer>();
-	private LanguageDictionary codedLanguage = new LanguageDictionary(null);
+	private final HashMap<String, HashMap<String, Integer>> classes = new HashMap<String, HashMap<String,Integer>>(10);
+	private final LinkedList<Integer> idList = new LinkedList<Integer>();
+	private final LanguageDictionary codedLanguage = new LanguageDictionary(null);
 
 	public CommonPluginDictionary() {
 		super();
@@ -126,8 +129,11 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 		String toWrite = yaml.dumpAs(dump, Tag.MAP, FlowStyle.BLOCK);
 		try {
 			writer.write(toWrite);
-			writer.close();
-		} catch (IOException e) {}
+		} catch (IOException e) {
+			Spout.getLogger().log(Level.SEVERE, "unable to save dictionary", e);
+		} finally {
+			IOUtils.closeQuietly(writer);
+		}
 	}
 
 	
@@ -138,7 +144,7 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void loadLanguage(InputStream in) {
+	protected void loadLanguage(InputStream in, String fileName) {
 		Yaml yaml = new Yaml();
 		Map<String, Object> dump = (Map<String, Object>) yaml.load(in);
 		Locale locale = null;
@@ -146,7 +152,7 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 			locale = Locale.getByCode((String) dump.get("locale"));
 		}
 		if (locale == null) {
-			return;
+			throw new IllegalStateException("No locale was set in the file " + fileName);
 		}
 		LanguageDictionary dict = new LanguageDictionary(locale);
 		setDictionary(locale, dict);
@@ -161,9 +167,13 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 						handler.init(e.getValue());
 						dict.setTranslation(e.getKey(), handler);
 					} catch (IllegalArgumentException e1) {
+						throw new RuntimeException("Could not construct a LocaleNumberHandler, check if you used correct syntax (in file " + fileName + ")");
 					} catch (SecurityException e1) {
+						Spout.getLogger().log(Level.SEVERE, "Failed to construct LocaleNumberHandler", e1);
 					} catch (InstantiationException e1) {
+						Spout.getLogger().log(Level.SEVERE, "Failed to construct LocaleNumberHandler", e1);
 					} catch (IllegalAccessException e1) {
+						Spout.getLogger().log(Level.SEVERE, "Failed to construct LocaleNumberHandler", e1);
 					}
 					
 				}
@@ -229,27 +239,35 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 	}
 
 	public void setKey(String source, String clazz, int id) {
-		HashMap<String, Integer> idmap = classes.get(clazz);
-		if (idmap == null) {
-			idmap = new HashMap<String, Integer>();
-			classes.put(clazz, idmap);
+		synchronized (classes) {
+			HashMap<String, Integer> idmap = classes.get(clazz);
+			if (idmap == null) {
+				idmap = new HashMap<String, Integer>();
+				classes.put(clazz, idmap);
+			}
+			idmap.put(source, id);
 		}
-		idmap.put(source, id);
-		idList.add(id);
-		codedLanguage.setTranslation(id, source);
+		synchronized (idList) {
+			idList.add(id);
+		}
+		synchronized (codedLanguage) {
+			codedLanguage.setTranslation(id, source);
+		}
 	}
 
 	public int getKey(String source, String clazz) {
-		HashMap<String, Integer> idmap = classes.get(clazz);
-		if (idmap == null) {
-			return NO_ID;
-		} else {
-			Integer id = idmap.get(source);
-			if (id != null) {
-				return id;
+		synchronized (classes) {
+			HashMap<String, Integer> idmap = classes.get(clazz);			
+			if (idmap == null) {
+				return NO_ID;
+			} else {
+				Integer id = idmap.get(source);
+				if (id != null) {
+					return id;
+				}
 			}
+			return NO_ID;
 		}
-		return NO_ID;
 	}
 
 	public void broadcast(String source, CommandSource[] receivers, String clazz, Object[] args) {
@@ -273,7 +291,9 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 	}
 
 	public List<Integer> getIdList() {
-		return Collections.unmodifiableList(idList);
+		synchronized (idList) {
+			return Collections.unmodifiableList(idList);
+		}
 	}
 
 	public void setDictionary(Locale locale, LanguageDictionary dictionary) {
@@ -281,7 +301,9 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 	}
 
 	public String getCodedSource(int id) {
-		return codedLanguage.getTranslation(id);
+		synchronized (codedLanguage) {
+			return codedLanguage.getTranslation(id);
+		}
 	}
 
 }

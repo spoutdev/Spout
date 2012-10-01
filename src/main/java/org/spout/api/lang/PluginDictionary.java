@@ -51,8 +51,7 @@ public interface PluginDictionary {
 	 *            which translation is correct)
 	 * @return the translation
 	 */
-	public String tr(String source, CommandSource receiver, String foundClass,
-			Object[] args);
+	public String tr(String source, CommandSource receiver, String foundClass, Object[] args);
 
 	public Plugin getPlugin();
 
@@ -62,8 +61,7 @@ public interface PluginDictionary {
 
 	public int getKey(String source, String clazz);
 
-	public void broadcast(String source, CommandSource[] receivers,
-			String clazz, Object[] args);
+	public void broadcast(String source, CommandSource[] receivers, String clazz, Object[] args);
 
 	public int getNextKey();
 
