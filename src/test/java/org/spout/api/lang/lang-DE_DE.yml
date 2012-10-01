@@ -1,0 +1,6 @@
+locale: de_DE
+strings:
+  1: Teste %0!
+  2: 
+    singular: 'Wir haben %n Einheit'
+    plural: 'Wir haben %n Einheiten'

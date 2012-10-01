@@ -49,7 +49,7 @@ public class Locale {
 	 * @param baseLocale The base locale for the language
 	 */
 	public Locale(java.util.Locale baseLocale, Class<? extends LocaleNumberHandler> numberHandler) {
-		BY_CODE.put(baseLocale.toString(), this);
+		BY_CODE.put(baseLocale.toString().toLowerCase(), this);
 		this.baseLocale = baseLocale;
 		this.numberHandler = numberHandler;
 	}
@@ -98,9 +98,9 @@ public class Locale {
 	}
 
 	public static Locale getByCode(String code) {
-		code = code.toLowerCase();
-		if (BY_CODE.containsKey(code)) {
-			return BY_CODE.get(code);
+		String lower = code.toLowerCase();
+		if (BY_CODE.containsKey(lower)) {
+			return BY_CODE.get(lower);
 		} else {
 			Locale l = new Locale(new java.util.Locale(code), DefaultNumberHandler.class);
 			BY_CODE.put(code, l);

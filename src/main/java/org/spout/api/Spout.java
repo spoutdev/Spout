@@ -67,6 +67,9 @@ public final class Spout {
 	 * @return logger
 	 */
 	public static Logger getLogger() {
+		if (instance == null) {
+			return Logger.getLogger("");
+		}
 		return instance.getLogger();
 	}
 
