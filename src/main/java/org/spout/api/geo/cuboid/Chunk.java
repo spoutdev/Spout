@@ -233,7 +233,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 * Gets the observing players of this chunk (done based on the player's view distance).
 	 * @return List containing the observing players
 	 */
-	public abstract List<? extends Player> getObservingPlayers();
+	public abstract Set<? extends Player> getObservingPlayers();
 
 	/**
 	 * Gets the observers of this chunk
