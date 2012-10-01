@@ -34,7 +34,7 @@ public class LanguageTest {
 		
 		@Override
 		protected InputStream openLangResource(String filename) {
-			return LanguageTest.class.getResourceAsStream("org/spout/api/lang/" + filename);
+			return LanguageTest.class.getResourceAsStream("/org/spout/api/lang/" + filename);
 		}
 
 		@Override
