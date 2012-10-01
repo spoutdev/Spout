@@ -214,8 +214,6 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 					use = translation;
 				}
 			}
-		} else {
-			System.out.println("No dictionary for "+preferred.getCode() + "found");
 		}
 	
 		use = replacePlaceholders(use, args);
