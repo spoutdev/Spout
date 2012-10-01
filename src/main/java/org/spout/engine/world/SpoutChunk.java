@@ -82,6 +82,7 @@ import org.spout.api.util.map.concurrent.AtomicBlockStoreImpl;
 import org.spout.api.util.set.TNibbleQuadHashSet;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.SpoutEntity;
+import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.thread.snapshotable.Snapshotable;
 import org.spout.engine.world.physics.PhysicsQueue;
@@ -93,9 +94,12 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	public static final WeakReference<Chunk> NULL_WEAK_REFERENCE = new WeakReference<Chunk>(null);
 
 	private final Set<SpoutEntity> observers = Sets.newSetFromMap(new ConcurrentHashMap<SpoutEntity, Boolean>());
+	private final Set<SpoutEntity> unmodifiableObservers = Collections.unmodifiableSet(observers);
+	private final Set<SpoutPlayer> observingPlayers = Sets.newSetFromMap(new ConcurrentHashMap<SpoutPlayer, Boolean>());
+	private final Set<SpoutPlayer> unmodifiableObservingPlayers = Collections.unmodifiableSet(observingPlayers);
 	private final ConcurrentLinkedQueue<SpoutEntity> expiredObserversQueue = new ConcurrentLinkedQueue<SpoutEntity>();
 	private final LinkedHashSet<SpoutEntity> expiredObservers = new LinkedHashSet<SpoutEntity>();
-	private final Set<SpoutEntity> unModifiableExpiredObservers = Collections.unmodifiableSet(expiredObservers);
+	private final Set<SpoutEntity> unmodifiableExpiredObservers = Collections.unmodifiableSet(expiredObservers);
 	
 	/**
 	 * Multi-thread write access to the block store is only allowed during the
@@ -879,7 +883,9 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 				parentRegion.queueChunkForPopulation(this);
 			}
 		}
-		observers.add((SpoutEntity) entity);
+		if (observers.add((SpoutEntity) entity) && (entity instanceof SpoutPlayer)) {
+			observingPlayers.add((SpoutPlayer) entity);
+		}
 		resetPostSaving();
 		return true;
 	}
@@ -895,7 +901,9 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 			return false;
 		}
 
-		observers.remove((SpoutEntity) entity);
+		if (observers.remove((SpoutEntity) entity) && (entity instanceof SpoutPlayer)) {
+			observingPlayers.remove((SpoutPlayer) entity);
+		};
 		expiredObserversQueue.add((SpoutEntity) entity);
 		if (!isObserved()) {
 			parentRegion.unloadQueue.add(this);
@@ -913,19 +921,13 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	@Override
-	public List<Player> getObservingPlayers() {
-		ArrayList<Player> players = new ArrayList<Player>();
-		for (Entity entity : observers) {
-			if (entity instanceof Player) {
-				players.add((Player) entity);
-			}
-		}
-		return Collections.unmodifiableList(players);
+	public Set<SpoutPlayer> getObservingPlayers() {
+		return unmodifiableObservingPlayers;
 	}
 	
 	@Override
 	public Set<SpoutEntity> getObservers() {
-		return Collections.unmodifiableSet(observers);
+		return unmodifiableObservers;
 	}
 	/**
 	 * Gets observers that have expired during the most recent tick
@@ -933,7 +935,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	 * @return the expired observers
 	 */
 	public Set<SpoutEntity> getExpiredObservers() {
-		return unModifiableExpiredObservers;		
+		return unmodifiableExpiredObservers;		
 	}
 	
 	public void updateExpiredObservers() {
