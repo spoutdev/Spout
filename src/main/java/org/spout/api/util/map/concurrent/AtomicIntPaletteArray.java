@@ -27,6 +27,7 @@
 package org.spout.api.util.map.concurrent;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
@@ -223,6 +224,14 @@ public class AtomicIntPaletteArray {
 			}
 			int newWidth = roundUpWidth(lastFree);
 			resizeArray(newWidth);
+			for (Map.Entry<Integer, Integer> entry : inUseIds.entrySet()) {
+				if (!entry.getKey().equals(entry.getValue())) {
+					int value = valueArray.get(entry.getKey());
+					if (idLookup.remove(value) == null) {
+						throw new IllegalStateException("Unable to remove stale idLookup entry as it is no longer present in the map, " + value);
+					}
+				}
+			}
 			nextId.set(lastFree);
 		} finally {
 			updateLock.unlock();
