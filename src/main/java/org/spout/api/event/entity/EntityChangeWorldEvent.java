@@ -33,9 +33,8 @@ import org.spout.api.geo.World;
 
 /**
  * Called when an {@link Entity} changes its {@link World}.
- * Implements {@link Cancellable}.  Cancelling this will prevent the entity from changing worlds.
  */
-public class EntityChangeWorldEvent extends EntityEvent implements Cancellable {
+public class EntityChangeWorldEvent extends EntityEvent {
 	private static HandlerList handlers = new HandlerList();
 	private final World previous;
 	private World target;
@@ -68,11 +67,6 @@ public class EntityChangeWorldEvent extends EntityEvent implements Cancellable {
 	 */
 	public void setTarget(World target) {
 		this.target = target;
-	}
-
-	@Override
-	public void setCancelled(boolean cancelled) {
-		this.cancelled = cancelled;
 	}
 
 	@Override

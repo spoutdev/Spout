@@ -26,6 +26,8 @@
  */
 package org.spout.api.component.components;
 
+import org.spout.api.Spout;
+import org.spout.api.event.entity.EntityChangeWorldEvent;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.MathHelper;
@@ -44,6 +46,11 @@ public class TransformComponent extends EntityComponent {
 
 	@Override
 	public void onTick(float dt) {
+		if (!transform.getPosition().getWorld().equals(transformLive.getPosition().getWorld())) {
+			if (EntityChangeWorldEvent.getHandlerList().getRegisteredListeners().length > 0) {
+				Spout.getEventManager().callEvent(new EntityChangeWorldEvent(getHolder(), transform.getPosition().getWorld(), transformLive.getPosition().getWorld()));
+			}
+		}
 	}
 
 	public void setTransform(Transform transform) {
