@@ -316,6 +316,78 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	public abstract TaskManager getTaskManager();
 
 	/**
+	 * Gets a list of nearby entities of the point, inside of the range
+	 * @param position of the center
+	 * @param ignore Entity to ignore
+	 * @param range to look for
+	 * @return the list of nearby entities (or empty if none)
+	 */
+	public List<Entity> getNearbyEntities(Point position, Entity ignore, int range);
+
+	/**
+	 * Gets a set of nearby players to the point, inside of the range
+	 * @param position of the center
+	 * @param range to look for
+	 * @return A set of nearby Players
+	 */
+	@LiveRead
+	@Threadsafe
+	public List<Entity> getNearbyEntities(Point position, int range);
+
+	/**
+	 * Gets a set of nearby players to the entity, inside of the range
+	 * @param entity marking the center and which is ignored
+	 * @param range to look for
+	 * @return A set of nearby Players
+	 */
+	@LiveRead
+	@Threadsafe
+	public List<Entity> getNearbyEntities(Entity entity, int range);
+
+	/**
+	 * Gets the absolute closest player from the specified point within a specified range.
+	 * @param position to search from
+	 * @param ignore to ignore while searching
+	 * @param range to search
+	 * @return nearest player
+	 */
+	@LiveRead
+	@Threadsafe
+	public Entity getNearestEntity(Point position, Entity ignore, int range);
+
+	/**
+	 * Gets the absolute closest player from the specified point within a specified range.
+	 * @param position center of search
+	 * @param range to search
+	 * @return nearest player
+	 */
+	@LiveRead
+	@Threadsafe
+	public Entity getNearestEntity(Point position, int range);
+
+	/**
+	 * Gets the absolute closest player from the specified point within a specified range.
+	 * @param entity to search from
+	 * @param range to search
+	 * @return nearest player
+	 */
+	@LiveRead
+	@Threadsafe
+	public Entity getNearestEntity(Entity entity, int range);
+
+	/**
+	 * Gets a set of nearby players to the point, inside of the range.
+	 * The search will ignore the specified entity.
+	 * @param position of the center
+	 * @param ignore Entity to ignore
+	 * @param range to look for
+	 * @return A set of nearby Players
+	 */
+	@LiveRead
+	@Threadsafe
+	public List<Player> getNearbyPlayers(Point position, Player ignore, int range);
+
+	/**
 	 * Gets a set of nearby players to the point, inside of the range
 	 * @param position of the center
 	 * @param range to look for
@@ -336,18 +408,6 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	public List<Player> getNearbyPlayers(Entity entity, int range);
 
 	/**
-	 * Gets a set of nearby players to the point, inside of the range.
-	 * The search will ignore the specified entity.
-	 * @param position of the center
-	 * @param ignore Entity to ignore
-	 * @param range to look for
-	 * @return A set of nearby Players
-	 */
-	@LiveRead
-	@Threadsafe
-	public List<Player> getNearbyPlayers(Point position, Entity ignore, int range);
-
-	/**
 	 * Gets the absolute closest player from the specified point within a specified range.
 	 * @param position to search from
 	 * @param ignore to ignore while searching
@@ -356,7 +416,7 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 */
 	@LiveRead
 	@Threadsafe
-	public Player getNearestPlayer(Point position, Entity ignore, int range);
+	public Player getNearestPlayer(Point position, Player ignore, int range);
 
 	/**
 	 * Gets the absolute closest player from the specified point within a specified range.
