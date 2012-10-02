@@ -50,6 +50,7 @@ import org.spout.api.collision.CollisionVolume;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentHolder;
+import org.spout.api.component.WorldComponentHolder;
 import org.spout.api.component.components.BlockComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
@@ -182,7 +183,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	/*
 	 * Components
 	 */
-	private final BaseComponentHolder componentHolder = new BaseComponentHolder();
+	private final WorldComponentHolder componentHolder;
 	
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid, StringMap itemMap) {
@@ -224,6 +225,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		taskManager = new SpoutTaskManager(getEngine().getScheduler(), false, t, age);
 		spawnLocation.set(new Transform(new Point(this, 1, 100, 1), Quaternion.IDENTITY, Vector3.ONE));
 		selfReference = new WeakReference<World>(this);
+		componentHolder = new WorldComponentHolder(this);
 	}
 
 	@Override
@@ -585,13 +587,14 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public void startTickRun(int stage, long delta) throws InterruptedException {
-		if (stage == 0) {
-			age.set(age.get() + delta);
-		}
 		switch (stage) {
 			case 0: {
+				age.set(age.get() + delta);
 				parallelTaskManager.heartbeat(delta);
 				taskManager.heartbeat(delta);
+				for (Component component : componentHolder.values()) {
+					component.tick(delta);
+				}
 				break;
 			}
 			default: {
@@ -1043,6 +1046,9 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	public void unload(boolean save) {
+		for (Component component : componentHolder.values()) {
+			component.onDetached();
+		}
 		this.getLightingManager().abort();
 		if (save) {
 			WorldFiles.saveWorldData(this);
@@ -1051,7 +1057,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		final int total = Math.max(1, regions.size());
 		int progress = 0;
 		for (Region r : regions) {
-			((SpoutRegion) r).unload(save);
+			r.unload(save);
 			progress++;
 			if (save && progress % 4 == 0) {
 				Spout.getLogger().info("Saving world [" + getName() + "], " + (int) (progress * 100F / total) + "% Complete");

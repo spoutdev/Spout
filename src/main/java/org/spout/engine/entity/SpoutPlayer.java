@@ -58,6 +58,7 @@ import org.spout.api.util.thread.Threadsafe;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.protocol.SpoutSession;
+import org.spout.engine.world.SpoutWorld;
 
 public class SpoutPlayer extends SpoutEntity implements Player {
 	private final AtomicReference<SpoutSession<?>> sessionLive = new AtomicReference<SpoutSession<?>>();
@@ -131,6 +132,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@DelayedWrite
 	public boolean disconnect() {
+		((SpoutWorld) getWorld()).removePlayer(this);
 		onlineLive.set(false);
 		//save player data on disconnect, probably should do this periodically as well...
 //		WorldFiles.savePlayerData(this);

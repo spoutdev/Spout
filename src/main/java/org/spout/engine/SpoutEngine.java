@@ -748,6 +748,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		player.connect(session, getDefaultWorld().getSpawnPoint());
 		//Spawn the player in the world
 		getDefaultWorld().spawnEntity(player);
+		((SpoutWorld) getDefaultWorld()).addPlayer(player);
 		//Set the player to the session
 		session.setPlayer(player);
 		//Initialize the session

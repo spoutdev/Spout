@@ -35,6 +35,7 @@ import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
 import org.spout.api.event.Order;
 import org.spout.api.event.Result;
+import org.spout.api.event.entity.EntityChangeWorldEvent;
 import org.spout.api.event.player.PlayerBanKickEvent;
 import org.spout.api.event.player.PlayerConnectEvent;
 import org.spout.api.event.player.PlayerJoinEvent;
@@ -47,6 +48,7 @@ import org.spout.api.util.access.BanType;
 import org.spout.engine.SpoutServer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.protocol.SpoutSession;
+import org.spout.engine.world.SpoutWorld;
 
 public class SpoutServerListener implements Listener {
 	private final SpoutServer server;
@@ -126,5 +128,17 @@ public class SpoutServerListener implements Listener {
 			event.getReceivers().put(player, Result.DEFAULT);
 		}
 		event.getReceivers().put(server.getCommandSource(), Result.DEFAULT);
+	}
+
+	@EventHandler(order = Order.EARLIEST)
+	public void onEntityChangeWorld(EntityChangeWorldEvent event) {
+		if (!(event.getEntity() instanceof Player)) {
+			return;
+		}
+		if (event.getPrevious().equals(event.getTarget())) {
+			return;
+		}
+		((SpoutWorld) event.getPrevious()).removePlayer((Player) event.getEntity());
+		((SpoutWorld) event.getTarget()).addPlayer((Player) event.getEntity());
 	}
 }
