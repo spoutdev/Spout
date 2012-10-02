@@ -58,6 +58,7 @@ public class AtomicVariableWidthArray implements Serializable {
 	private final int[] valueBitmask;
 	private final int[] valueShift;
 	private final int maxValue;
+	private final int width;
 
 	private AtomicIntegerArray array;
 
@@ -100,6 +101,8 @@ public class AtomicVariableWidthArray implements Serializable {
 		this.fullWidth = width == 32;
 		
 		this.maxValue = this.fullWidth ? -1 : valueBitmask[0];
+		
+		this.width = width;
 	}
 	
 	/**
@@ -231,6 +234,15 @@ public class AtomicVariableWidthArray implements Serializable {
 	 */
 	public final int length() {
 		return length;
+	}
+	
+	/**
+	 * Gets the width of the array
+	 * 
+	 * @return the width
+	 */
+	public final int width() {
+		return width;
 	}
 	
 	/**
