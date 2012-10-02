@@ -725,6 +725,81 @@ public class SpoutWorld extends AsyncManager implements World {
 		return Collections.unmodifiableList(players);
 	}
 
+	@Override
+	public List<Entity> getNearbyEntities(Point position, Entity ignore, int range) {
+		ArrayList<Entity> foundEntities = new ArrayList<Entity>();
+		final int RANGE_SQUARED = range * range;
+
+		for (Entity entity : getEntitiesNearRegion(position, range)) {
+			if (entity != null && entity != ignore) {
+				double distance = MathHelper.distanceSquared(position, entity.getTransform().getPosition());
+				if (distance < RANGE_SQUARED) {
+					foundEntities.add(entity);
+				}
+			}
+		}
+
+		return Collections.unmodifiableList(foundEntities);
+	}
+
+	@Override
+	public List<Entity> getNearbyEntities(Point position, int range) {
+		return getNearbyEntities(position, null, range);
+	}
+
+	@Override
+	public List<Entity> getNearbyEntities(Entity entity, int range) {
+		return getNearbyEntities(entity.getTransform().getPosition(), range);
+	}
+
+	@Override
+	public Entity getNearestEntity(Point position, Entity ignore, int range) {
+		Entity best = null;
+		double bestDistance = range * range;
+
+		for (Entity entity : getEntitiesNearRegion(position, range)) {
+			if (entity != null && entity != ignore) {
+				double distance = MathHelper.distanceSquared(position, entity.getTransform().getPosition());
+				if (distance < bestDistance) {
+					bestDistance = distance;
+					best = entity;
+				}
+			}
+		}
+		return best;
+	}
+
+	@Override
+	public Entity getNearestEntity(Point position, int range) {
+		return getNearestEntity(position, null, range);
+	}
+
+	@Override
+	public Entity getNearestEntity(Entity entity, int range) {
+		return getNearestEntity(entity.getTransform().getPosition(), range);
+	}
+
+	/**
+	 * Gets a set of nearby players to the point, inside of the range.
+	 * The search will ignore the specified entity.
+	 * @param position of the center
+	 * @param ignore Entity to ignore
+	 * @param range to look for
+	 * @return A set of nearby Players
+	 */
+	@Override
+	@LiveRead
+	@Threadsafe
+	public List<Player> getNearbyPlayers(Point position, Player ignore, int range) {
+		ArrayList<Player> foundPlayers = new ArrayList<Player>();
+		for (Entity entity : getNearbyEntities(position, ignore, range)) {
+			if (entity instanceof Player) {
+				foundPlayers.add((Player) entity);
+			}
+		}
+		return Collections.unmodifiableList(foundPlayers);
+	}
+
 	/**
 	 * Gets a set of nearby players to the point, inside of the range
 	 * @param position of the center
@@ -748,60 +823,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	@LiveRead
 	@Threadsafe
 	public List<Player> getNearbyPlayers(Entity entity, int range) {
-		return getNearbyPlayers(entity.getTransform().getPosition(), entity, range);
-	}
-
-	/**
-	 * Gets a set of nearby players to the point, inside of the range.
-	 * The search will ignore the specified entity.
-	 * @param position of the center
-	 * @param ignore Entity to ignore
-	 * @param range to look for
-	 * @return A set of nearby Players
-	 */
-	@Override
-	@LiveRead
-	@Threadsafe
-	public List<Player> getNearbyPlayers(Point position, Entity ignore, int range) {
-		ArrayList<Player> foundPlayers = new ArrayList<Player>();
-		final int RANGE_SQUARED = range * range;
-
-		for (Player plr : getPlayersNearRegion(position, range)) {
-			if (plr != ignore && plr != null) {
-				double distance = MathHelper.distanceSquared(position, plr.getTransform().getPosition());
-				if (distance < RANGE_SQUARED) {
-					foundPlayers.add(plr);
-				}
-			}
-		}
-
-		return foundPlayers;
-	}
-
-	/**
-	 * Finds all the players inside of the regions inside the range area
-	 * @param position to search from
-	 * @param range to search for regions
-	 * @return nearby region's players
-	 */
-	private List<Player> getPlayersNearRegion(Point position, int range) {
-		Region center = this.getRegionFromBlock(position, LoadOption.NO_LOAD);
-
-		ArrayList<Player> players = new ArrayList<Player>();
-		if (center != null) {
-			final int regions = (range + Region.BLOCKS.SIZE - 1) / Region.BLOCKS.SIZE; //round up 1 region size
-			for (int dx = -regions; dx < regions; dx++) {
-				for (int dy = -regions; dy < regions; dy++) {
-					for (int dz = -regions; dz < regions; dz++) {
-						Region region = this.getRegion(center.getX() + dx, center.getY() + dy, center.getZ() + dz, LoadOption.NO_LOAD);
-						if (region != null) {
-							players.addAll(region.getPlayers());
-						}
-					}
-				}
-			}
-		}
-		return players;
+		return getNearbyPlayers(entity.getTransform().getPosition(), range);
 	}
 
 	/**
@@ -814,20 +836,20 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	@LiveRead
 	@Threadsafe
-	public Player getNearestPlayer(Point position, Entity ignore, int range) {
-		Player best = null;
+	public Player getNearestPlayer(Point position, Player ignore, int range) {
+		Entity best = null;
 		double bestDistance = range * range;
 
-		for (Player plr : getPlayersNearRegion(position, range)) {
-			if (plr != ignore && plr != null) {
-				double distance = MathHelper.distanceSquared(position, plr.getTransform().getPosition());
+		for (Entity entity : getEntitiesNearRegion(position, range)) {
+			if (entity != null && entity instanceof Player && entity != ignore) {
+				double distance = MathHelper.distanceSquared(position, entity.getTransform().getPosition());
 				if (distance < bestDistance) {
 					bestDistance = distance;
-					best = plr;
+					best = entity;
 				}
 			}
 		}
-		return best;
+		return (Player) best;
 	}
 
 	/**
@@ -852,7 +874,33 @@ public class SpoutWorld extends AsyncManager implements World {
 	@LiveRead
 	@Threadsafe
 	public Player getNearestPlayer(Entity entity, int range) {
-		return getNearestPlayer(entity.getTransform().getPosition(), entity, range);
+		return getNearestPlayer(entity.getTransform().getPosition(), range);
+	}
+
+	/**
+	 * Finds all the players inside of the regions inside the range area
+	 * @param position to search from
+	 * @param range to search for regions
+	 * @return nearby region's players
+	 */
+	private List<Entity> getEntitiesNearRegion(Point position, int range) {
+		Region center = this.getRegionFromBlock(position, LoadOption.NO_LOAD);
+
+		ArrayList<Entity> entities = new ArrayList<Entity>();
+		if (center != null) {
+			final int regions = (range + Region.BLOCKS.SIZE - 1) / Region.BLOCKS.SIZE; //round up 1 region size
+			for (int dx = -regions; dx < regions; dx++) {
+				for (int dy = -regions; dy < regions; dy++) {
+					for (int dz = -regions; dz < regions; dz++) {
+						Region region = this.getRegion(center.getX() + dx, center.getY() + dy, center.getZ() + dz, LoadOption.NO_LOAD);
+						if (region != null) {
+							entities.addAll(region.getAll());
+						}
+					}
+				}
+			}
+		}
+		return entities;
 	}
 
 	public List<CollisionVolume> getCollidingObject(CollisionModel model) {
