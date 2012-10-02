@@ -86,11 +86,7 @@ public class EntityManager {
 	 * @return A collection of entities.
 	 */
 	public Collection<SpoutEntity> getAll() {
-		Collection<SpoutEntity> all = entities.get().values();
-		if (all == null) {
-			return Collections.emptyList();
-		}
-		return all;
+		return entities.get().values();
 	}
 	
 	/**
@@ -98,11 +94,7 @@ public class EntityManager {
 	 * @return A collection of entities 
 	 */
 	public Collection<SpoutEntity> getAllLive() {
-		Collection<SpoutEntity> all = entities.getLive().values();
-		if (all == null) {
-			return Collections.emptyList();
-		}
-		return all;
+		return entities.getLive().values();
 	}
 
 	/**
@@ -110,11 +102,7 @@ public class EntityManager {
 	 * @return The list of players.
 	 */
 	public List<Player> getPlayers() {
-		Map<?, ?> map = players.get();
-		if (map == null) {
-			return Collections.emptyList();
-		}
-		return Collections.unmodifiableList(new ArrayList<Player>(players.get().keySet()));
+		return new ArrayList<Player>(players.get().keySet());
 	}
 	
 	/**
