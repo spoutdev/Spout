@@ -953,7 +953,7 @@ public class SpoutRegion extends Region {
 
 	@Override
 	public List<Entity> getAll() {
-		return Collections.unmodifiableList(new ArrayList<Entity>(entityManager.getAll()));
+		return new ArrayList<Entity>(entityManager.getAll());
 	}
 
 	@Override
