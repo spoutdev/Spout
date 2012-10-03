@@ -73,3 +73,30 @@ public class SimpleEventManagerTest {
 		}
 	}
 }
+
+class TestEvent extends Event {
+	private static final HandlerList handlers = new HandlerList();
+
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
+}
+
+class TestListener implements Listener {
+	private boolean hasBeenCalled = false;
+
+	@EventHandler(order = Order.DEFAULT)
+	public void onTestEvent(TestEvent event) {
+		hasBeenCalled = true;
+	}
+
+	public boolean hasBeenCalled() {
+		return hasBeenCalled;
+	}
+}
+

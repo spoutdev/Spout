@@ -26,9 +26,15 @@
  */
 package org.spout.api.util;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 
 /**
@@ -88,5 +94,76 @@ public class ReflectionUtils {
 			clazz = clazz.getSuperclass();
 		}
 		return fields;
+	}
+
+	/**
+	 * Attempts to list all the classes in the specified package as determined
+	 * by the context class loader
+	 * 
+	 * @param packageName the package name to search
+	 * @param recursive if the search should include all subdirectories
+	 * @return a list of classes that exist within that package
+	 * @throws ClassNotFoundException if the package had invalid classes, or does not exist
+	 */
+	public static List<Class<?>> getClassesForPackage(String packageName, boolean recursive) throws ClassNotFoundException {
+		ArrayList<File> directories = new ArrayList<File>();
+		try {
+			ClassLoader cld = Thread.currentThread().getContextClassLoader();
+			if (cld == null) {
+				throw new ClassNotFoundException("Can't get class loader.");
+			}
+			String path = packageName.replace('.', '/');
+			Enumeration<URL> resources = cld.getResources(path);
+			while (resources.hasMoreElements()) {
+				File file = new File(URLDecoder.decode(resources.nextElement().getPath(), "UTF-8"));
+				directories.add(file);
+				if (recursive) {
+					findDirs(directories, file);
+				}
+			}
+		} catch (NullPointerException ex) {
+			throw new ClassNotFoundException(packageName + " does not appear to be a valid package (Null pointer exception)", ex);
+		} catch (UnsupportedEncodingException encex) {
+			throw new ClassNotFoundException(packageName + " does not appear to be a valid package (Unsupported encoding)", encex);
+		} catch (IOException ioex) {
+			throw new ClassNotFoundException("IOException was thrown when trying to get all resources for " + packageName, ioex);
+		}
+
+		ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
+		for (File directory : directories) {
+			if (directory.exists()) {
+				String[] files = directory.list();
+				for (String file : files) {
+					if (file.endsWith(".class")) {
+						try {
+							String path = directory.getCanonicalPath().replaceAll("/", ".").replaceAll("\\\\", ".");
+							int start = path.indexOf(packageName);
+							path = path.substring(start, path.length());
+							classes.add(Class.forName(path + '.' + file.substring(0, file.length() - 6)));
+						} catch (IOException ex) {
+							throw new ClassNotFoundException("IOException was thrown when trying to get path for " + file);
+						}
+					}
+				}
+			} else {
+				throw new ClassNotFoundException(packageName + " (" + directory.getPath() + ") does not appear to be a valid package");
+			}
+		}
+		return classes;
+	}	
+
+	/**
+	 * Recursively builds a list of all subdirectories
+	 * 
+	 * @param dirs list to add to
+	 * @param dir to search
+	 */
+	private static void findDirs(List<File> dirs, File dir) {
+		for (File f : dir.listFiles()) {
+			if (f.isDirectory()) {
+				dirs.add(f);
+				findDirs(dirs, f);
+			}
+		}
 	}
 }
