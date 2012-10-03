@@ -26,6 +26,8 @@
  */
 package org.spout.api.util.map.concurrent;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,28 +41,54 @@ import org.spout.api.math.MathHelper;
 
 public class AtomicIntPaletteArray {
 
-	private final AtomicReference<AtomicVariableWidthArray> store = new AtomicReference<AtomicVariableWidthArray>();
-
-	private final AtomicReference<AtomicIntegerArray> values = new AtomicReference<AtomicIntegerArray>();
+	/**
+	 * This is the main store.  It includes a variable width integer array containing ids and an AtomicIntegerArray for the palette.
+	 */
+	private final AtomicReference<StoreHolder> storeHolder = new AtomicReference<StoreHolder>();
 	
-	private final AtomicInteger valuesSize = new AtomicInteger();
-	
+	/**
+	 * This map is used to get the id for a given value.  This is required when updating the array.
+	 */
 	private final ConcurrentHashMap<Integer, Integer> idLookup = new ConcurrentHashMap<Integer, Integer>();
 	
+	/**
+	 * This variables is only ever updated when the update lock is held.<br>
+	 * It stores the next free id.  However, if the array is resized or compressed, ids may become stale.
+	 */
 	private final AtomicInteger nextId = new AtomicInteger();
 	
+	/**
+	 * This variable is only ever updated when the resize lock is held.<br>
+	 * It stores the size of the palette array.
+	 */
+	private final AtomicInteger valuesSize = new AtomicInteger();
+	
+	/**
+	 * Locks<br>
+	 * A ReadWrite lock is used to managing locking<br>
+	 * When resizing the array, updates must be stopped.  The write lock is used as the resize lock.<br>
+	 * When making changes to the data stored in the array, that do not require resizing, multiple threads can access the array concurrently.  The read lock is used for the update lock.
+	 * Reads to the array are atomic and do not require any locking.
+	 * <br>
+	 */
 	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	private final Lock resizeLock = lock.writeLock();
 	private final Lock updateLock = lock.readLock();
 	
 	private final int length;
+	private final int lengthMul1p5;
 	
 	public AtomicIntPaletteArray(int length) {
 		this.length = length;
-		this.store.set(new AtomicVariableWidthArray(length, 1));
-		this.values.set(new AtomicIntegerArray(2));
-		this.valuesSize.set(this.values.get().length());
-		getNextId(0);
+		this.lengthMul1p5 = length + (length >> 1);
+		this.storeHolder.set(new StoreHolder(new AtomicVariableWidthArray(length, 1), new AtomicIntegerArray(2)));
+		updateLock.lock();
+		try {
+			this.valuesSize.set(this.storeHolder.get().getValues().length());
+			getId(0);
+		} finally {
+			updateLock.unlock();
+		}
 	}
 	
 	/**
@@ -69,7 +97,7 @@ public class AtomicIntPaletteArray {
 	 * @return the width
 	 */
 	public final int width() {
-		return store.get().width();
+		return storeHolder.get().getStore().width();
 	}
 	
 	/**
@@ -97,7 +125,8 @@ public class AtomicIntPaletteArray {
 	 * @return the element
 	 */
 	public final int get(int i) {
-		return values.get().get(store.get().get(i));
+		StoreHolder holder = storeHolder.get();
+		return holder.getValues().get(holder.getStore().get(i));
 	}
 	
 	/**
@@ -107,13 +136,13 @@ public class AtomicIntPaletteArray {
 	 * @param newValue the new value
 	 */
 	public final void set(int i, int newValue) {
-		Integer id = idLookup.get(newValue);
-		if (id == null) {
-			id = getNextId(newValue);
-		}
 		updateLock.lock();
 		try {
-			store.get().set(i, id);
+			Integer id = idLookup.get(newValue);
+			if (id == null) {
+				id = getId(newValue);
+			}
+			storeHolder.get().getStore().set(i, id);
 		} finally {
 			updateLock.unlock();
 		}
@@ -128,20 +157,22 @@ public class AtomicIntPaletteArray {
 	 * @return true on success
 	 */
 	public final boolean compareAndSet(int i, int expect, int update) {
-
-		Integer e = idLookup.get(expect);
-		if (e == null || store.get().get(i) != e) {
-			return false;
-		}
-		
-		Integer u = idLookup.get(update);
-		if (u == null) {
-			u = getNextId(update);
-		}
-		
 		updateLock.lock();
 		try {
-			return store.get().compareAndSet(i, e, u);
+			Integer e = idLookup.get(expect);
+			if (e == null || storeHolder.get().getStore().get(i) != e) {
+				return false;
+			}
+			
+			Integer u = idLookup.get(update);
+			if (u == null) {
+				u = getId(update);
+				e = idLookup.get(expect);
+				if (e == null) {
+					return false;
+				}
+			}
+			return storeHolder.get().getStore().compareAndSet(i, e, u);
 		} finally {
 			updateLock.unlock();
 		}
@@ -179,34 +210,40 @@ public class AtomicIntPaletteArray {
 	}
 	
 	public void compress() {
-		updateLock.lock();
+		resizeLock.lock();
 		try {
-			LinkedHashMap<Integer, Integer> inUseIds = new LinkedHashMap<Integer, Integer>();
+			LinkedHashMap<Integer, Integer> oldToNewId = new LinkedHashMap<Integer, Integer>();
+			HashSet<Integer> newIds = new HashSet<Integer>();
 			
-			AtomicVariableWidthArray storeArray = store.get();
+			AtomicVariableWidthArray storeArray = storeHolder.get().getStore();
 			int len2 = storeArray.length();
 			for (int i = 0; i < len2; i++) {
 				int id = storeArray.get(i);
-				inUseIds.put(id, null);
+				oldToNewId.put(id, null);
 			}
 
 			int len = valuesSize.get();
-			AtomicIntegerArray valueArray = values.get();
+			AtomicIntegerArray valueArray = storeHolder.get().getValues();
 			int lastFree = 0;
 			for (int i = 0; i < len; i++) {
-				if (!inUseIds.containsKey(i)) {
+				if (!oldToNewId.containsKey(i)) {
 					continue;
 				}
-				while (inUseIds.containsKey(lastFree) && lastFree < i) {
+				while (oldToNewId.containsKey(lastFree) && lastFree < i) {
 					lastFree++;
 				}
 				if (lastFree == i) {
-					inUseIds.put(i, i);
+					if (oldToNewId.put(i, i) != null) {
+						throw new IllegalStateException("Id " + i + " added to map twice");
+					}
+					newIds.add(i);
 					lastFree++;
 					continue;
 				}
-				inUseIds.put(i, lastFree);
-				
+				if (oldToNewId.put(i, lastFree) != null) {
+					throw new IllegalStateException("Id " + i + " added to map twice");
+				}
+				newIds.add(lastFree);
 				int value = valueArray.get(i);
 				valueArray.set(lastFree, value);
 				
@@ -216,43 +253,63 @@ public class AtomicIntPaletteArray {
 			}
 			for (int i = 0; i < len2; i++) {
 				int oldId = storeArray.get(i);
-				Integer newId = inUseIds.get(oldId);
+				Integer newId = oldToNewId.get(oldId);
 				if (newId == null) {
 					throw new IllegalStateException("No new id for " + oldId);
 				}
 				storeArray.set(i, newId);
 			}
-			int newWidth = roundUpWidth(lastFree);
-			resizeArray(newWidth);
-			for (Map.Entry<Integer, Integer> entry : inUseIds.entrySet()) {
-				if (!entry.getKey().equals(entry.getValue())) {
-					int value = valueArray.get(entry.getKey());
-					if (idLookup.remove(value) == null) {
-						throw new IllegalStateException("Unable to remove stale idLookup entry as it is no longer present in the map, " + value);
-					}
+			int maxId = lastFree;
+			int newWidth = roundUpWidth(maxId);
+			resizeArray(newWidth, true);
+			nextId.set(maxId + 1);
+			
+			Iterator<Map.Entry<Integer, Integer>> itr = idLookup.entrySet().iterator();
+			while (itr.hasNext()) {
+				Map.Entry<Integer, Integer> entry = itr.next();
+				if (!newIds.contains(entry.getValue())) {
+					itr.remove();
 				}
 			}
-			nextId.set(lastFree);
 		} finally {
-			updateLock.unlock();
+			resizeLock.unlock();
 		}
 	}
 	
-	private int getNextId(int value) {
+	/**
+	 * Gets an id for the given value.  This method will expand the internal arrays if required.  If the palette is expanded beyond 1.5 times the length of the array, it will be compressed.<br>
+	 * <br>
+	 * Note: the update lock MUST be held when calling this method
+	 * 
+	 * @param value the value to find an id for
+	 * @return the id
+	 */
+	private int getId(int value) {
 		int id = nextId.getAndIncrement();
-		if (id >= valuesSize.get()) {
-			expandMap(id);
-		}
-		updateLock.lock();
-		try {
-			idLookup.put(value, id);
-			values.get().set(id, value);
-		} finally {
+		while (id >= valuesSize.get() || id > lengthMul1p5) {
+			nextId.compareAndSet(id + 1, id);
 			updateLock.unlock();
+			try {
+				if (id > lengthMul1p5) {
+					compress();
+				} else {
+					expandMap(id);
+				}
+			} finally {
+				updateLock.lock();
+			}
+			id = nextId.getAndIncrement();
 		}
+		idLookup.put(value, id);
+		storeHolder.get().getValues().set(id, value);
 		return id;
 	}
 	
+	/**
+	 * Expands the internal arrays so that they are at least (id + 1) elements long.
+	 * 
+	 * @param id
+	 */
 	private void expandMap(int id) {
 		resizeLock.lock();
 		try {
@@ -264,35 +321,58 @@ public class AtomicIntPaletteArray {
 				return;
 			}
 			
-			resizeArray(newWidth);
+			resizeArray(newWidth, false);
 		} finally {
 			resizeLock.unlock();
 		}
 	} 
 	
-	private void resizeArray(int newWidth) {
+	/**
+	 * Resizes the array. <br>
+	 * <br>
+	 * Note: The resize lock MUST be held when calling this method
+	 * 
+	 * @param newWidth
+	 * @param force forces an update
+	 */
+	private void resizeArray(int newWidth, boolean forcePalette) {
+		boolean updateStore = newWidth != width();
+		boolean updatePalette = updateStore || forcePalette;
+		if (!updateStore && !updatePalette) {
+			return;
+		}
+		
 		int newLength = 1 << newWidth;
 		
-		AtomicVariableWidthArray oldStore = store.get();
+		AtomicVariableWidthArray oldStore = storeHolder.get().getStore();
 		
-		AtomicIntegerArray oldArray = values.get();
+		AtomicIntegerArray oldArray = storeHolder.get().getValues();
 		
-		AtomicIntegerArray newArray = new AtomicIntegerArray(newLength);
+		AtomicIntegerArray newArray;
 		
-		int len = oldArray.length();
-		int len2 = newLength;
-		for (int i = 0; i < len && i < len2; i++) {
-			newArray.set(i, oldArray.get(i));
+		if (updatePalette) {
+			newArray = new AtomicIntegerArray(newLength);
+
+			int len = Math.min(oldArray.length(), newArray.length());
+			for (int i = 0; i < len; i++) {
+				newArray.set(i, oldArray.get(i));
+			}
+		} else {
+			newArray = oldArray;
 		}
-		values.set(newArray);
 		
-		AtomicVariableWidthArray newStore = new AtomicVariableWidthArray(this.length, newWidth);
-		
-		for (int i = 0; i < this.length; i++) {
-			newStore.set(i, oldStore.get(i));
+		AtomicVariableWidthArray newStore;
+		if (updateStore) {
+			newStore = new AtomicVariableWidthArray(this.length, newWidth);
+
+			for (int i = 0; i < this.length; i++) {
+				newStore.set(i, oldStore.get(i));
+			}
+		} else {
+			newStore = oldStore;
 		}
 
-		store.set(newStore);
+		storeHolder.set(new StoreHolder(newStore, newArray));
 		
 		valuesSize.set(newLength);
 	}
@@ -321,6 +401,24 @@ public class AtomicIntPaletteArray {
 	
 	public static int roundUpWidth(int i) {
 		return roundLookup[MathHelper.roundUpPow2(i + 1)];
+	}
+	
+	private static class StoreHolder {
+		private final AtomicVariableWidthArray store;
+		private final AtomicIntegerArray values;
+		
+		public StoreHolder(AtomicVariableWidthArray store, AtomicIntegerArray values) {
+			this.store = store;
+			this.values = values;
+		}
+		
+		public AtomicVariableWidthArray getStore() {
+			return store;
+		}
+		
+		public AtomicIntegerArray getValues() {
+			return values;
+		}
 	}
 	
 }
