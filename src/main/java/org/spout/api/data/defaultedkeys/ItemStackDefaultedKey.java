@@ -24,23 +24,33 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.data;
+package org.spout.api.data.defaultedkeys;
 
-import org.spout.api.data.defaultedkeys.ItemStackDefaultedKey;
 import org.spout.api.inventory.ItemStack;
-import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
-import org.spout.api.material.BlockMaterial;
-import org.spout.api.math.Vector3;
+import org.spout.api.material.Material;
 
-/**
- * Common default data mappings one could expect each game to have. These are used instead of strings when retrieving values
- * from an object that holds a datatable. IF you wish to provide your own keys for a plugin you are constructing, simply make a class
- * and construct keys like the below.
- */
-public class Data {
-	public static final DefaultedKey<ItemStack> HELD_ITEM = new ItemStackDefaultedKey("held_item", BlockMaterial.AIR, 1);
-	public static final DefaultedKey<String> HELD_MATERIAL_NAME = new DefaultedKeyImpl<String>("held_material_name", BlockMaterial.AIR.getName());
-	public static final DefaultedKey<String> NAME = new DefaultedKeyImpl<String>("name", "");
-	public static final DefaultedKey<Vector3> VELOCITY = new DefaultedKeyImpl<Vector3>("velocity", Vector3.ZERO);
+public class ItemStackDefaultedKey extends DefaultedKeyImpl<ItemStack>{
+
+	private final Material material;
+	private final int data;
+	private final int amount;
+	
+	public ItemStackDefaultedKey(String keyString, Material material, int amount) {
+		this(keyString, material, material.getData(), amount);
+	}
+	
+	public ItemStackDefaultedKey(String keyString, Material material, int data, int amount) {
+		super(keyString, null);
+		this.material = material;
+		this.data = data;
+		this.amount = amount;
+	}
+	
+	@Override
+	public ItemStack getDefaultValue() {
+		return new ItemStack(material, data, amount);
+	}
+	
 }
+
