@@ -29,6 +29,7 @@ package org.spout.api.lang;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.command.CommandSource;
@@ -37,21 +38,27 @@ import org.spout.api.geo.World;
 
 import static org.junit.Assert.assertEquals;
 public class LanguageTest {
-	TestPluginDictionary dict = new TestPluginDictionary();
-	TestCommandSource source = new TestCommandSource();
+	TestPluginDictionary dict;
+	TestCommandSource source;
 	private static final String CLASS = "org.spout.api.lang.LanguageTest";
-	
+
+	@Before
+	public void setup() {
+		dict = new TestPluginDictionary();
+		source = new TestCommandSource();
+	}
+
 	@Test
 	public void testNumber() {
 		assertEquals("Wir haben 3 Einheiten", dict.tr("We have got %n item(s)", source, CLASS, new Integer[] {3})); // test plural
 		assertEquals("Wir haben 1 Einheit", dict.tr("We have got %n item(s)", source, CLASS, new Integer[] {1})); // test singular
 	}
-	
+
 	@Test
 	public void testLanguage() throws IOException {
 		assertEquals("Teste org.spout.api.lang!", dict.tr("Testing %0!", source, CLASS, new String[] {"org.spout.api.lang"}));
 	}
-	
+
 	public static class TestPluginDictionary extends CommonPluginDictionary {
 		
 		public TestPluginDictionary() {
