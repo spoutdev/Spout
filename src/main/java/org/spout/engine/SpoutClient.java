@@ -173,6 +173,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		// Register commands
 		getRootCommand().addSubCommands(this, InputManagementCommands.class, commandRegFactory);
 		activePlayer = new SpoutClientPlayer("Spouty");
+		activeCamera = activePlayer.add(CameraComponent.class);
+		
 		activePlayer.getTransform().setRotation(new Quaternion(0f, 0f, 0f, 0f));
 	}
 
@@ -416,9 +418,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		renderer = new PrimitiveBatch();
 		mat = (RenderMaterial)this.getFilesystem().getResource("material://Spout/resources/resources/materials/BasicMaterial.smt");
-		//renderer.begin();
-		//renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.RED, sides);
-		//renderer.end();
+		renderer.begin();
+		renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.RED, sides);
+		renderer.end();
 		
 		gui = new SpriteBatch();
 	}
@@ -429,14 +431,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		//worldRenderer.render();
 
-		/*Vector3 currentPlayerPos = new Vector3(activePlayer.getTransform().getPosition().getBlockX(), activePlayer.getTransform().getPosition().getBlockY(), activePlayer.getTransform().getPosition().getBlockZ());
-		activeCamera = new CameraComponent(MathHelper.createPerspective(75, aspectRatio, 0.001f, 1000), MathHelper.createLookAt(currentPlayerPos, currentPlayerPos.add(activePlayer.getTransform().getTransform().forwardVector().normalize().add(5, 5, 5)), Vector3.UP));
-		activeCamera.getFrustum().update(activeCamera.getProjection(), activeCamera.getView());
 		Transform loc = new Transform(new Point(null, 0f, 0f, 0f), Quaternion.IDENTITY, Vector3.ONE);
 		mat.getShader().setUniform("View", activeCamera.getView());
 		mat.getShader().setUniform("Projection", activeCamera.getProjection());
 		mat.getShader().setUniform("Model", loc.toMatrix());
-		renderer.draw(mat);*/
+		renderer.draw(mat);
 		
 		gui.begin();
 		gui.draw(mat, .25f, .25f, .25f, .25f);
