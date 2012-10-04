@@ -24,30 +24,14 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.event;
+package org.spout.api.util.map.concurrent.palette;
 
-import static org.junit.Assert.assertTrue;
+public class PaletteFullException extends Exception {
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.List;
-
-import org.junit.Test;
-import org.spout.api.util.ReflectionUtils;
-
-public class EventHandlerListTest {
-	@Test
-	public void test() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
-		List<Class<?>> classes = ReflectionUtils.getClassesForPackage("org.spout.api.event", true);
-		for (Class<?> clazz : classes) {
-			if (Event.class.isAssignableFrom(clazz) && !Modifier.isAbstract(clazz.getModifiers())) {
-				System.out.println("Verifying handlers in " + clazz.getSimpleName());
-				
-				Method m = clazz.getMethod("getHandlerList", (Class[])null);
-				HandlerList list = (HandlerList) m.invoke(null, (Object[])null);
-				assertTrue("Expected non null handler list", list != null);
-			}
-		}
+	private static final long serialVersionUID = 1L;
+	
+	public PaletteFullException(String message) {
+		super(message);
 	}
+
 }

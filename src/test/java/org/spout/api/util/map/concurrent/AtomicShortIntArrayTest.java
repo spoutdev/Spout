@@ -31,10 +31,11 @@ import static org.junit.Assert.assertTrue;
 import java.util.Random;
 
 import org.junit.Test;
+import org.spout.api.util.map.concurrent.palette.AtomicShortIntArray;
 
-public class AtomicIntPaletteArrayTest {
+public class AtomicShortIntArrayTest {
 	
-	AtomicIntPaletteArray a = new AtomicIntPaletteArray(256);
+	AtomicShortIntArray a = new AtomicShortIntArray(256);
 	int[] copy = new int[256];
 	int COUNT = 16384;
 	int THREADS = 8;
