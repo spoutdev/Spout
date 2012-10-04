@@ -230,6 +230,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	
 	@Override
 	public void addColor(float r, float g, float b, float a) {
+		useColors = true;
 		colorBuffer.add(r);
 		colorBuffer.add(g);
 		colorBuffer.add(b);
@@ -249,7 +250,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	
 	@Override
 	public void addNormal(float x, float y, float z, float w) {
-		
+		useNormals = true;
 		normalBuffer.add(x);
 		normalBuffer.add(y);
 		normalBuffer.add(z);
@@ -277,7 +278,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	
 	@Override
 	public void addTexCoord(float u, float v) {
-		
+		useTextures = true;
 		uvBuffer.add(u);
 		uvBuffer.add(v);
 	}

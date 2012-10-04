@@ -26,6 +26,7 @@
  */
 package org.spout.engine.batcher;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
 import org.spout.api.math.MathHelper;
@@ -50,7 +51,7 @@ public class SpriteBatch {
 	
 	public SpriteBatch() {
 		this.renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
-		this.projection = MathHelper.createOrthographic(1.0f, 0.0f, 0.0f, 1.0f, .1f, 1.0f);
+		this.projection = MathHelper.createOrthographic(1.0f, -1.0f, -1.0f, 1.0f, .1f, 2.0f);
 		this.view = MathHelper.createIdentity();
 	}
 	
@@ -63,17 +64,23 @@ public class SpriteBatch {
 		for(int i = 0; i < sprites.size(); i++) {
 			TextureRectangle rect = sprites.get(i);
 			renderer.addVertex(rect.x, rect.y);
+			renderer.addColor(Color.white);
 			renderer.addTexCoord(0, 0);
 			renderer.addVertex(rect.x + rect.w, rect.y);
+			renderer.addColor(Color.white);			
 			renderer.addTexCoord(1, 0);
 			renderer.addVertex(rect.x, rect.y + rect.h);
+			renderer.addColor(Color.white);			
 			renderer.addTexCoord(0, 1);
 			
 			renderer.addVertex(rect.x + rect.w, rect.y);
+			renderer.addColor(Color.white);			
 			renderer.addTexCoord(1, 0);
 			renderer.addVertex(rect.x + rect.w, rect.y + rect.h);
+			renderer.addColor(Color.white);			
 			renderer.addTexCoord(1, 1);
 			renderer.addVertex(rect.x, rect.y + rect.h);
+			renderer.addColor(Color.white);			
 			renderer.addTexCoord(0, 1);	
 			
 		}
@@ -84,8 +91,8 @@ public class SpriteBatch {
 			TextureRectangle rect = sprites.get(i);
 			
 			rect.material.getShader().setUniform("View", this.view);
-			rect.material.getShader().setUniform("Projection", this.projection);		
-			System.out.println("rendering sprite " + i);
+			rect.material.getShader().setUniform("Projection", this.projection);
+			rect.material.getShader().setUniform("Model", this.view); //View is always an identity matrix.
 			renderer.render(rect.material, (i * 6), (i * 6) + 5);			
 			
 		}

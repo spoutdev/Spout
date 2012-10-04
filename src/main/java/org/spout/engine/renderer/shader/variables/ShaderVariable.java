@@ -51,7 +51,6 @@ public abstract class ShaderVariable {
 			return;  //Shaders don't exist in OpenGL 1.1
 		}
 		this.program = program;
-		GL20.glUseProgram(program);
 		//If we are an attribute, we aren't a uniform.  Don't continue
 		if (this instanceof AttributeShaderVariable) {
 			return;

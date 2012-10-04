@@ -89,9 +89,6 @@ public class ClientRenderMaterial extends Resource implements RenderMaterial {
 				shader.setUniform(entry.getKey(), (Matrix)entry.getValue());
 			}
 		}
-		//TODO: make view and projection dependent on Material params
-		shader.setUniform("View", ((Client)Spout.getEngine()).getActiveCamera().getView());
-		shader.setUniform("Projection", ((Client)Spout.getEngine()).getActiveCamera().getProjection());
 		
 		shader.assign();
 
