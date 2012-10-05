@@ -26,6 +26,9 @@
  */
 package org.spout.engine.renderer;
 
+import java.nio.FloatBuffer;
+
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import org.spout.api.render.RenderMaterial;
@@ -40,12 +43,50 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 
 	@Override
 	protected void doFlush() {
+		GL11.glNewList(displayList, GL11.GL_COMPILE);
+		FloatBuffer vBuffer = BufferUtils.createFloatBuffer(vertexBuffer.size());
+
+		vBuffer.clear();
+		vBuffer.put(vertexBuffer.toArray());
+		vBuffer.flip();
+
+		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+		GL11.glVertexPointer(4, 0, vBuffer);
+
+		/*if (useColors) {
+			vBuffer.clear();
+			vBuffer.put(colorBuffer.toArray());
+			vBuffer.flip();
+			
+			GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+			GL11.glColorPointer(4, 0, vBuffer);
+		}*/
+
+		if (useNormals) {
+			vBuffer.clear();
+			vBuffer.put(normalBuffer.toArray());
+			vBuffer.flip();
+
+			GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
+			GL11.glNormalPointer(0, vBuffer);
+		}
 		
+		if (useTextures) {
+			vBuffer.clear();
+			vBuffer.put(uvBuffer.toArray());
+			vBuffer.flip();
+
+			GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+			GL11.glTexCoordPointer(2, 0, vBuffer);
+		}
+
+		GL11.glDrawArrays(renderMode, 0, numVertices);
+		
+		GL11.glEndList();
 	}
 
 	@Override
 	public void doRender(RenderMaterial material, int startVert, int endVert) {
-
-	
+		GL11.glCallList(displayList);
 	}
 }

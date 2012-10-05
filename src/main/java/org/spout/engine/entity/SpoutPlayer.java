@@ -345,7 +345,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void finalizeRun() {
-		if (!this.isOnlineLive()) {
+		if (Spout.getEngine().getPlatform()!=Platform.CLIENT && !this.isOnlineLive()) {
 			remove();
 		}
 		super.finalizeRun();
