@@ -29,7 +29,7 @@ package org.spout.api.component;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -46,8 +46,28 @@ public class BaseComponentHolder implements ComponentHolder {
 		add(DatatableComponent.class);
 	}
 
+	/**
+	 * For use de-serializing a list of components all at once, 
+	 * without having to worry about dependencies
+	 */
+	protected void add(Class<? extends Component> ...components) {
+		HashSet<Component> added = new HashSet<Component>();
+		for (Class<? extends Component> type : components) {
+			if (!this.components.containsKey(type)) {
+				added.add(add(type, false));
+			}
+		}
+		for (Component type : added) {
+			type.onAttached();
+		}
+	}
+
 	@Override
 	public <T extends Component> T add(Class<T> type) {
+		return add(type, true);
+	}
+
+	private <T extends Component> T add(Class<T> type, boolean attach) {
 		if (type == null) {
 			return null;
 		}
@@ -70,7 +90,9 @@ public class BaseComponentHolder implements ComponentHolder {
 		if (component != null) {
 			if (component.attachTo(this)) {
 				components.put(type, component);
-				component.onAttached();
+				if (attach) {
+					component.onAttached();
+				}
 			}
 		}
 		return component;
@@ -103,6 +125,7 @@ public class BaseComponentHolder implements ComponentHolder {
 		return (T) component;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Component> T getExact(Class<T> type) {
 		return type != null ? (T) components.get(type) : null;

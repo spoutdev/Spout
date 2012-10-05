@@ -28,7 +28,6 @@ package org.spout.api.lang;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.spout.api.chat.ChatArguments;
@@ -60,21 +59,19 @@ public class LanguageTest {
 	}
 
 	public static class TestPluginDictionary extends CommonPluginDictionary {
-		
 		public TestPluginDictionary() {
 			load();
 		}
-		
+
 		@Override
 		protected InputStream openLangResource(String filename) {
-			return getClass().getResourceAsStream(filename);
+			return LanguageTest.class.getResourceAsStream("/" + filename);
 		}
 
 		@Override
 		protected void loadLanguages() {
 			loadLanguage(openLangResource("lang-DE_DE.yml"), "lang-DE_DE.yml");
 		}
-		
 	}
 	
 	public static class TestCommandSource implements CommandSource {

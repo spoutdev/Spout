@@ -37,6 +37,11 @@ public class PlayerSnapshot extends EntitySnapshot implements Named {
 	}
 
 	@Override
+	public boolean isSavable() {
+		return true;
+	}
+
+	@Override
 	public Player getReference() {
 		return (Player) super.getReference();
 	}

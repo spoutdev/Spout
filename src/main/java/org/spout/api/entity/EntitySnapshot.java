@@ -27,10 +27,13 @@
 package org.spout.api.entity;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import org.spout.api.component.Component;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.geo.discrete.Transform;
@@ -46,6 +49,7 @@ public class EntitySnapshot {
 	private final int viewDistance;
 	private final boolean observer;
 	private final boolean savable;
+	private final List<Class<? extends Component>> components;
 
 	public EntitySnapshot(Entity e) {
 		if (e.isRemoved()) {
@@ -64,6 +68,12 @@ public class EntitySnapshot {
 			this.dataMap = e.getData().deepCopy();
 		} else {
 			this.dataMap = new ManagedHashMap();
+		}
+		components = new ArrayList<Class<? extends Component>>();
+		for (Component c : e.values()) {
+			if (c.isDetachable()) {
+				this.components.add(c.getClass());
+			}
 		}
 	}
 
@@ -105,6 +115,10 @@ public class EntitySnapshot {
 
 	public boolean isSavable() {
 		return savable;
+	}
+
+	public List<Class<? extends Component>> getComponents() {
+		return components;
 	}
 
 	@Override

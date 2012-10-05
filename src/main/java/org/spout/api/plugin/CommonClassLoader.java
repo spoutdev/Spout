@@ -31,6 +31,7 @@ import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,10 +40,12 @@ public class CommonClassLoader extends URLClassLoader {
 	private final CommonPluginLoader loader;
 	private CommonPlugin plugin;
 	private static HashMap<String, CommonPlugin> pluginsForClassNames = new HashMap<String, CommonPlugin>(500);
+	private static Set<CommonClassLoader> loaders = new HashSet<CommonClassLoader>();
 
 	public CommonClassLoader(final CommonPluginLoader loader, final ClassLoader parent) {
 		super(new URL[0], parent);
 		this.loader = loader;
+		loaders.add(this);
 	}
 
 	@Override
@@ -108,5 +111,15 @@ public class CommonClassLoader extends URLClassLoader {
 	
 	public static CommonPlugin getPlugin(String className) {
 		return pluginsForClassNames.get(className);
+	}
+	
+	public static Class<?> findPluginClass(String name) throws ClassNotFoundException {
+		for (CommonClassLoader loader : loaders) {
+			Class<?> clazz = loader.findClass(name);
+			if (clazz != null) {
+				return clazz;
+			}
+		}
+		throw new ClassNotFoundException("Class " + name + " was unable to be found");
 	}
 }

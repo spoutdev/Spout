@@ -42,7 +42,7 @@ public abstract class EntityComponent extends Component {
 	}
 
 	@Override
-	public boolean attachTo(ComponentHolder holder) {
+	public final boolean attachTo(ComponentHolder holder) {
 		if (holder instanceof Entity) {
 			return super.attachTo(holder);
 		} else {
