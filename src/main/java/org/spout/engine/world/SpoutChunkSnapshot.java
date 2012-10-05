@@ -35,6 +35,8 @@ import org.spout.api.component.components.BlockComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntitySnapshot;
+import org.spout.api.entity.Player;
+import org.spout.api.entity.PlayerSnapshot;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.cuboid.Chunk;
@@ -70,7 +72,12 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		if (type == EntityType.ENTITIES) {
 			ArrayList<EntitySnapshot> entities = new ArrayList<EntitySnapshot>();
 			for (Entity e : chunk.getLiveEntities()) {
-				entities.add(new EntitySnapshot(e));
+				if (e instanceof Player) {
+					entities.add(new PlayerSnapshot((Player) e));
+				} else {
+					entities.add(new EntitySnapshot(e));
+				}
+				
 			}
 			this.entities = Collections.unmodifiableList(entities);
 		} else {
@@ -213,7 +220,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	}
 
 	@Override
-	public BlockComponent getBlockComponent(int x, int y, int z) {
+	public BlockComponent<?> getBlockComponent(int x, int y, int z) {
 		return null;
 	}
 

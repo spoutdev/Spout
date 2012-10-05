@@ -52,6 +52,7 @@ public class PhysicsQueue {
 	private final SpoutRegion region;
 	private final SpoutChunk chunk;
 	private final Thread regionThread;
+	@SuppressWarnings("unused")
 	private final Thread mainThread;
 	private final AtomicBoolean localActive = new AtomicBoolean(false);
 	private final AtomicBoolean globalActive = new AtomicBoolean(false);

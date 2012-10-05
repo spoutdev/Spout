@@ -28,17 +28,13 @@ package org.spout.engine.entity;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
-import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.math.MathHelper;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;

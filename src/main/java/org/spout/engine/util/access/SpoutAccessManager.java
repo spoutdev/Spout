@@ -93,7 +93,7 @@ public class SpoutAccessManager implements AccessManager {
 
 	@Override
 	public void unwhitelist(String player, boolean kick) {
-		unwhitelist(player, kick, null);
+		unwhitelist(player, kick, (Object[])null);
 	}
 
 	@Override
@@ -139,7 +139,7 @@ public class SpoutAccessManager implements AccessManager {
 
 	@Override
 	public void ban(BanType type, String s, boolean kick) {
-		ban(type, s, kick, null);
+		ban(type, s, kick, (Object[])null);
 	}
 
 	@Override

@@ -361,6 +361,7 @@ public class SpoutBlock implements Block {
 		return LogicUtil.equalsAny(this.getMaterial(), (Object[]) materials);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public <T extends BlockComponent> T getComponent() {
 		// TODO Auto-generated method stub

@@ -27,6 +27,7 @@
 package org.spout.engine.entity;
 
 import java.net.InetAddress;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -37,6 +38,7 @@ import org.spout.api.chat.ChatSection;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.Command;
 import org.spout.api.command.RootCommand;
+import org.spout.api.component.Component;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.state.PlayerInputState;
@@ -57,6 +59,7 @@ import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
+import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutWorld;
 
@@ -76,7 +79,11 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	}
 
 	public SpoutPlayer(String name, Transform transform, int viewDistance) {
-		super(transform, viewDistance);
+		this(name, transform, viewDistance, null, true, (Class<? extends Component>[])null);
+	}
+
+	public SpoutPlayer(String name, Transform transform, int viewDistance, UUID uid, boolean load, Class<? extends Component> ...components) {
+		super(transform, viewDistance, uid, load, components);
 		this.name = name;
 		displayName.set(name);
 		hashcode = name.hashCode();
@@ -135,7 +142,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		((SpoutWorld) getWorld()).removePlayer(this);
 		onlineLive.set(false);
 		//save player data on disconnect, probably should do this periodically as well...
-//		WorldFiles.savePlayerData(this);
+		WorldFiles.savePlayerData(this);
 		return true;
 	}
 

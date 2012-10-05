@@ -42,6 +42,7 @@ import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.map.concurrent.AtomicBlockStoreImpl;
+import org.spout.engine.entity.SpoutEntity;
 
 public class FilteredChunk extends SpoutChunk{
 	private final AtomicBoolean uniform;
@@ -51,6 +52,8 @@ public class FilteredChunk extends SpoutChunk{
 	 * Keeps track if the chunk has been modified since it's last save
 	 */
 	private final AtomicBoolean chunkModified = new AtomicBoolean(false);
+
+	private final AtomicBoolean entitiesModified = new AtomicBoolean(false);
 
 	protected final static byte[] DARK = new byte[BLOCKS.HALF_VOLUME];
 	protected final static byte[] LIGHT = new byte[BLOCKS.HALF_VOLUME];
@@ -251,10 +254,12 @@ public class FilteredChunk extends SpoutChunk{
 			super.initLighting();
 		}
 	}
-	
+
 	@Override
 	public void syncSave() {
-		if (this.chunkModified.compareAndSet(true, false)) {
+		if (this.chunkModified.get() || entitiesModified.get() || this.hasEntities()) {
+			chunkModified.set(false);
+			entitiesModified.set(false);
 			super.syncSave();
 		} else {
 			super.saveComplete();
@@ -343,5 +348,15 @@ public class FilteredChunk extends SpoutChunk{
 		if (!uniform.get()) {
 			super.resetDirtyArrays();
 		}
+	}
+
+	@Override
+	public void onEntityEnter(SpoutEntity e) {
+		entitiesModified.compareAndSet(false, true);
+	}
+
+	@Override
+	public void onEntityLeave(SpoutEntity e) {
+		entitiesModified.compareAndSet(false, true);
 	}
 }

@@ -49,7 +49,6 @@ import org.spout.api.component.components.BlockComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.Player;
 import org.spout.api.event.block.BlockChangeEvent;
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGeneratorUtils;
@@ -1310,6 +1309,15 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		return entities;
 	}
 
+	public boolean hasEntities() {
+		for (Entity e : parentRegion.getEntityManager().getAllLive()) {
+			if (((SpoutEntity) e).getChunkLive() == this) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void deregisterFromColumn(boolean save) {
 		if (columnRegistered.compareAndSet(true, false)) {
 			column.deregisterChunk(save);
@@ -1359,12 +1367,12 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	@Override
-	public void setBlockComponent(int x, int y, int z, BlockComponent component) {
+	public void setBlockComponent(int x, int y, int z, @SuppressWarnings("rawtypes") BlockComponent component) {
 		getRegion().setBlockComponent(x, y, z, component);
 	}
 
 	@Override
-	public BlockComponent getBlockComponent(int x, int y, int z) {
+	public BlockComponent<?> getBlockComponent(int x, int y, int z) {
 		return getRegion().getBlockComponent(x, y, z);
 	}
 
@@ -1660,4 +1668,24 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	protected int getAutosaveTicks() {
 		return autosaveTicks.get();
 	}
+
+	/**
+	 * Called when an entity enters the chunk.
+	 * This method is NOT called for players.
+	 * 
+	 * This method occurs during finalizeRun
+	 * 
+	 * @param e
+	 */
+	public abstract void onEntityEnter(SpoutEntity e);
+
+	/**
+	 * Called when an entity leaves the chunk.
+	 * This method is NOT called for players.
+	 * 
+	 * This method occurs during finalizeRun
+	 * 
+	 * @param e
+	 */
+	public abstract void onEntityLeave(SpoutEntity e);
 }

@@ -30,7 +30,6 @@ import org.spout.api.component.components.EntityComponent;
 import org.spout.api.component.components.ModelComponent;
 import org.spout.api.component.components.TransformComponent;
 import org.spout.api.math.Matrix;
-import org.spout.api.model.Mesh;
 import org.spout.api.render.RenderMaterial;
 import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.mesh.BaseMesh;

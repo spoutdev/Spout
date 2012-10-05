@@ -213,7 +213,7 @@ public final class ChannelBufferUtils {
 			NBTInputStream str = null;
 			try {
 				str = new NBTInputStream(new ByteArrayInputStream(bytes));
-				Tag tag = str.readTag();
+				Tag<?> tag = str.readTag();
 				if (tag instanceof CompoundTag) {
 					return ((CompoundTag) tag).getValue();
 				}

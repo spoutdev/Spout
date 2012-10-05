@@ -30,6 +30,7 @@ import org.spout.api.util.hashing.SignedTenBitTripleHashed;
 
 public class PackedCoords extends SignedTenBitTripleHashed {
 	
+	@SuppressWarnings("unused")
 	private final static int mask = 0xFFDFFBFF;
 
 	/**

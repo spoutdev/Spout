@@ -94,8 +94,6 @@ import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 import org.spout.engine.world.dynamic.DynamicBlockUpdateTree;
 
-import com.google.common.collect.Sets;
-
 public class SpoutRegion extends Region {
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
 	// Can't extend AsyncManager and Region
@@ -259,6 +257,8 @@ public class SpoutRegion extends Region {
 			if (generatedChunk != null) {
 				checkChunkLoaded(generatedChunk, loadopt);
 				return generatedChunk;
+			} else {
+				Spout.getLogger().severe("Chunk failed to generate!");
 			}
 		}
 
@@ -1102,6 +1102,7 @@ public class SpoutRegion extends Region {
 		return this.getChunkFromBlock(x, y, z).addBlockDataField(x, y, z, bits, value, source);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void setBlockComponent(int x, int y, int z, BlockComponent component) {
 		Point pos = new Point(getWorld(), x, y, z);
@@ -1122,7 +1123,7 @@ public class SpoutRegion extends Region {
 	}
 
 	@Override
-	public BlockComponent getBlockComponent(int x, int y, int z) {
+	public BlockComponent<?> getBlockComponent(int x, int y, int z) {
 		Point pos = new Point(getWorld(), x, y, z);
 		Entity entity = null;
 		for (Entity e : getAll()) {

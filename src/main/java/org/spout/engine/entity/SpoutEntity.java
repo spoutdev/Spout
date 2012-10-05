@@ -78,7 +78,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	private final UUID uid;
 	protected boolean justSpawned = true;
 
-	public SpoutEntity(Transform transform, int viewDistance, UUID uid, boolean load) {
+	public SpoutEntity(Transform transform, int viewDistance, UUID uid, boolean load, Class<? extends Component> ...components) {
 		id.set(NOTSPAWNEDID);
 		add(TransformComponent.class);
 		add(NetworkComponent.class);
@@ -89,10 +89,13 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 			this.uid = UUID.randomUUID();
 		}
 
-		if (transform != null && load) {
+		if (transform != null) {
 			getTransform().setTransform(transform);
-			setupInitialChunk(transform);
 			getTransform().copySnapshot();
+		}
+
+		if (transform != null && load) {
+			setupInitialChunk(transform);
 		}
 
 		int maxViewDistance = SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE;
@@ -104,6 +107,10 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		}
 
 		setViewDistance(viewDistance);
+		
+		if (components != null && components.length > 0) {
+			this.add(components);
+		}
 
 		//Set all the initial snapshot values
 		//Ensures there are no null/wrong snapshot values for the first tick
@@ -111,7 +118,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	}
 
 	public SpoutEntity(Transform transform, int viewDistance) {
-		this(transform, viewDistance, null, true);
+		this(transform, viewDistance, null, true, (Class<? extends Component>[])null);
 	}
 
 	public SpoutEntity(Transform transform) {
@@ -169,9 +176,25 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 			}
 			return;
 		}
-
-		Chunk chunk = getChunk();
+		
+		SpoutChunk chunk = (SpoutChunk) getChunk();
 		SpoutChunk chunkLive = (SpoutChunk) getChunkLive();
+
+		//Track entities w/their chunks, for saving purposes
+		if (!(this instanceof SpoutPlayer)) {
+			if (chunk != chunkLive) {
+				if (chunk != null) {
+					chunk.onEntityLeave(this);
+				}
+				if (chunkLive != null) {
+					chunk.onEntityEnter(this);
+				}
+			} else if (isRemoved()) {
+				if (chunkLive != null) {
+					chunkLive.onEntityLeave(this);
+				}
+			}
+		}
 
 		//Move entity from Region A to Region B
 		if (chunkLive != null && (chunk == null || chunk.getRegion() != chunkLive.getRegion())) {
@@ -288,7 +311,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		if (isObserver()) {
 			updateObserver();
 		}
-		SpoutRegion region = (SpoutRegion) getChunkLive().getRegion();
+		SpoutRegion region = (SpoutRegion) getTransform().getTransformLive().getPosition().getChunk(LoadOption.LOAD_GEN).getRegion();
 		entityManager.set(region.getEntityManager());
 	}
 
