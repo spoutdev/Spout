@@ -167,6 +167,8 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	}
 
 	public void finalizeRun() {
+		SpoutChunk chunkLive = (SpoutChunk) getChunkLive();
+		
 		//Entity was removed so automatically remove observer/components
 		if (isRemoved()) {
 			removeObserver();
@@ -174,11 +176,14 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 			for (Component component : Component.dependSort(values())) {
 				detach(component.getClass());
 			}
+			//Track entities w/their chunks
+			if (chunkLive != null) {
+				chunkLive.onEntityLeave(this);
+			}
 			return;
 		}
 		
 		SpoutChunk chunk = (SpoutChunk) getChunk();
-		SpoutChunk chunkLive = (SpoutChunk) getChunkLive();
 
 		//Track entities w/their chunks, for saving purposes
 		if (!(this instanceof SpoutPlayer)) {
@@ -188,10 +193,6 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 				}
 				if (chunkLive != null) {
 					chunk.onEntityEnter(this);
-				}
-			} else if (isRemoved()) {
-				if (chunkLive != null) {
-					chunkLive.onEntityLeave(this);
 				}
 			}
 		}
