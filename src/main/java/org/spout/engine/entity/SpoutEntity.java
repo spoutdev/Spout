@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.spout.api.Source;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
+import org.spout.api.component.components.CameraComponent;
 import org.spout.api.component.components.EntityComponent;
 import org.spout.api.component.components.NetworkComponent;
 import org.spout.api.component.components.TransformComponent;
@@ -124,6 +125,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	public void onTick(float dt) {
+		//System.out.println("entity ticked");
 		for (Component component : values()) {
 			component.tick(dt);
 		}
