@@ -109,7 +109,11 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	
 	@Override
 	public int getAndSetBlock(int x, int y, int z, short id, short data) {
-		return store.set(getIndex(x, y, z), BlockFullState.getPacked(id, data));
+		try {
+			return store.set(getIndex(x, y, z), BlockFullState.getPacked(id, data));
+		} finally {
+			markDirty(x, y, z);
+		}
 	}
 	
 	@Override
@@ -142,7 +146,11 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	public boolean compareAndSetBlock(int x, int y, int z, short expectId, short expectData, short newId, short newData) {
 		int exp = BlockFullState.getPacked(expectId, expectData);
 		int update = BlockFullState.getPacked(newId, newData);
-		return store.compareAndSet(getIndex(x, y, z), exp, update);
+		boolean success = store.compareAndSet(getIndex(x, y, z), exp, update);
+		if (success) {
+			markDirty(x, y, z);
+		}
+		return success;
 	}
 
 	@Override
@@ -217,7 +225,6 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 		return new Vector3(dirtyX[i] & 0xFF, dirtyY[i] & 0xFF, dirtyZ[i] & 0xFF);
 	}
 
-	@Override
 	public void markDirty(int x, int y, int z) {
 		int index = incrementDirtyIndex();
 		if (index < dirtyX.length) {

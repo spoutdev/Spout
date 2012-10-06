@@ -249,17 +249,5 @@ public interface AtomicBlockStore {
 	 * @param block
 	 * @return
 	 */
-	public Vector3 getDirtyBlock(int i);
-
-	/**
-	 * Marks a block as dirty.<br>
-	 * <br>
-	 * Updates for dirty blocks will be sent at the end of the tick.<br>
-	 *
-	 * @param x the x coordinate of the dirty block
-	 * @param y the y coordinate of the dirty block
-	 * @param z the z coordinate of the dirty block
-	 */
-	public void markDirty(int x, int y, int z);
-	
+	public Vector3 getDirtyBlock(int i);	
 }

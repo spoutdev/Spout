@@ -713,8 +713,7 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @param y the y coordinate of the dirty block
 	 * @param z the z coordinate of the dirty block
 	 */
-	@Override
-	public void markDirty(int x, int y, int z) {
+	private void markDirty(int x, int y, int z) {
 		int index = dirtyBlocks.getAndIncrement();
 		if (index < dirtyX.length) {
 			dirtyX[index] = (byte) x;
