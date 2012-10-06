@@ -107,7 +107,12 @@ public class ManagedHashMap implements SerializableMap{
 		}
 
 		if (value == null) {
-			return defaultValue;
+			Serializable old = putIfAbsent(keyString, (Serializable) defaultValue);
+			if (old != null) {
+				return (T) old;
+			} else {
+				return defaultValue;
+			}
 		}
 
 		return value;
@@ -130,31 +135,38 @@ public class ManagedHashMap implements SerializableMap{
 		}
 		return null;
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends Serializable> T putIfAbsent(DefaultedKey<T> key, T value) {
+		String keyString = key.getKeyString();
+		try {
+			return (T) putIfAbsent(keyString, value);
+		} catch (ClassCastException e) {
+			return null;
+		}
+	}
 
 	@Override
 	public Serializable put(String key, Serializable value) {
 		int intKey = map.getIntKey(key);
-		Serializable old = map.get(intKey).get();
-		if (value instanceof Boolean) {
-			map.set(intKey, new BooleanData(intKey, (Boolean)value));
-		}  else if (value instanceof Double) {
-			map.set(intKey, new DoubleData(intKey, (Double)value));
-		} else if (value instanceof Float) {
-			map.set(intKey, new FloatData(intKey, (Float)value));
-		} else if (value instanceof Long) {
-			map.set(intKey, new LongData(intKey, (Long)value));
-		} else if (value instanceof Integer) {
-			map.set(intKey, new IntegerData(intKey, (Integer)value));
-		}  else if (value instanceof Short) {
-			map.set(intKey, new IntegerData(intKey, (Short)value));
-		}  else if (value instanceof Byte) {
-			map.set(intKey, new IntegerData(intKey, (Byte)value));
-		} else if (value instanceof String) {
-			map.set(intKey, new StringData(intKey, (String)value));
-		} else if (value instanceof Serializable) {
-			map.set(intKey, new SerializableData(intKey, value));
+		AbstractData data = map.getAndSet(intKey, getAbstractDataValue(intKey, value));
+		if (data == null) {
+			return null;
+		} else {
+			return data.get();
 		}
-		return old;
+	}
+	
+	@Override
+	public Serializable putIfAbsent(String key, Serializable value) {
+		int intKey = map.getIntKey(key);
+		AbstractData data = map.setIfAbsent(intKey, getAbstractDataValue(intKey, value));
+		if (data == null) {
+			return null;
+		} else {
+			return data.get();
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -453,5 +465,29 @@ public class ManagedHashMap implements SerializableMap{
 			throw new RuntimeException("Unable to create a deep copy", e);
 		}
 		return map;
+	}
+	
+	private final AbstractData getAbstractDataValue(int intKey, Serializable value) {
+		if (value instanceof Boolean) {
+			return new BooleanData(intKey, (Boolean)value);
+		}  else if (value instanceof Double) {
+			return new DoubleData(intKey, (Double)value);
+		} else if (value instanceof Float) {
+			return new FloatData(intKey, (Float)value);
+		} else if (value instanceof Long) {
+			return new LongData(intKey, (Long)value);
+		} else if (value instanceof Integer) {
+			return new IntegerData(intKey, (Integer)value);
+		}  else if (value instanceof Short) {
+			return new IntegerData(intKey, (Short)value);
+		}  else if (value instanceof Byte) {
+			return new IntegerData(intKey, (Byte)value);
+		} else if (value instanceof String) {
+			return new StringData(intKey, (String)value);
+		} else if (value instanceof Serializable) {
+			return new SerializableData(intKey, value);
+		} else {
+			return null;
+		}
 	}
 }

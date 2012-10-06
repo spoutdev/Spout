@@ -52,7 +52,7 @@ interface DatatableMap {
 	 * @param value
 	 */
 	public void set(int key, AbstractData value);
-
+	
 	/**
 	 * Adds the DatatableTuple to the map, using the string key. This triggers a
 	 * string lookup and registration if necessary.
@@ -62,6 +62,35 @@ interface DatatableMap {
 	 */
 	public void set(String key, AbstractData value);
 
+	/**
+	 * Adds the DatatableTuple to the map, using the hashcode as the key.<br>
+	 * <br>
+	 * The given int must correspond to a String key.
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	public AbstractData setIfAbsent(AbstractData value);
+	
+	/**
+	 * Adds the DatatableTuple to the map, using the int as the key.<br>
+	 * <br>
+	 * The given int must correspond to a String key.
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	public AbstractData setIfAbsent(int key, AbstractData value);
+	
+	/**
+	 * Adds the DatatableTuple to the map, using the String as the key.  This triggers a
+	 * string lookup and registration if necessary.
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	public AbstractData setIfAbsent(String key, AbstractData value);
+	
 	/**
 	 * Gets the integer key corresponding to a particular String.<br>
 	 * <br>
@@ -95,6 +124,24 @@ interface DatatableMap {
 	 * @return
 	 */
 	public AbstractData get(int key);
+	
+	/**
+	 * Gets the DatatableTuple corresponding to the given String key and updates it to the given
+	 * value.  This triggers a string lookup and registration if necessary.
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	public AbstractData getAndSet(String key, AbstractData value);
+	
+	/**
+	 * Gets the DatatableTuple corresponding to the given int key and updates it to the given
+	 * value.  This triggers a string lookup and registration if necessary.
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	public AbstractData getAndSet(int key, AbstractData value);
 
 	/**
 	 * Gets if the map contains a particular key String

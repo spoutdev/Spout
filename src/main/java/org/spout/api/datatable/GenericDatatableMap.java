@@ -64,7 +64,7 @@ class GenericDatatableMap implements DatatableMap {
 
 	@Override
 	public void set(String key, AbstractData value) {
-		setRaw(stringmap.register(key), value);
+		getAndSet(key, value);
 	}
 
 	@Override
@@ -75,12 +75,52 @@ class GenericDatatableMap implements DatatableMap {
 
 		setRaw(key, value);
 	}
-
-	private void setRaw(int key, AbstractData value) {
+	
+	
+	@Override
+	public AbstractData setIfAbsent(AbstractData value) {
+		return setIfAbsentRaw(value.hashCode(), value);
+	}
+	
+	
+	@Override
+	public AbstractData setIfAbsent(String key, AbstractData value) {
+		return setIfAbsentRaw(stringmap.register(key), value);
+	}
+	
+	
+	@Override
+	public AbstractData setIfAbsent(int key, AbstractData value) {
+		if (stringmap.getString(key) == null) {
+			throw new IllegalArgumentException("Key " + key + " does not have a matching string");
+		}
+		return setIfAbsentRaw(key, value);
+	}
+	
+	private AbstractData setIfAbsentRaw(int key, AbstractData value) {
 		value.setKey(key);
-		map.put(key, value);
+		return map.putIfAbsent(key, value);
+	}
+	
+	@Override
+	public AbstractData getAndSet(String key, AbstractData value) {
+		return setRaw(stringmap.register(key), value);
+	}
+	
+	@Override
+	public AbstractData getAndSet(int key, AbstractData value) {
+		if (stringmap.getString(key) == null) {
+			throw new IllegalArgumentException("Key " + key + " does not have a matching string");
+		}
+
+		return setRaw(key, value);
 	}
 
+	private AbstractData setRaw(int key, AbstractData value) {
+		value.setKey(key);
+		return map.put(key, value);
+	}
+	
 	@Override
 	public AbstractData get(String key) {
 		int intKey = getIntKey(key);
@@ -252,5 +292,4 @@ class GenericDatatableMap implements DatatableMap {
 	public Collection<AbstractData> values() {
 		return map.valueCollection();
 	}
-
 }

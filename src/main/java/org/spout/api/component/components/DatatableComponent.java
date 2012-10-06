@@ -68,6 +68,11 @@ public final class DatatableComponent extends Component implements SerializableM
 	public <T extends Serializable> T put(DefaultedKey<T> key, T value) {
 		return dataMap.put(key, value);
 	}
+	
+	@Override
+	public <T extends Serializable> T putIfAbsent(DefaultedKey<T> key, T value) {
+		return dataMap.putIfAbsent(key, value);
+	}
 
 	@Override
 	public Serializable get(Object key) {
@@ -136,6 +141,11 @@ public final class DatatableComponent extends Component implements SerializableM
 
 	@Override
 	public Serializable put(String key, Serializable value) {
+		return this.dataMap.put(key, value);
+	}
+	
+	@Override
+	public Serializable putIfAbsent(String key, Serializable value) {
 		return this.dataMap.put(key, value);
 	}
 

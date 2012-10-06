@@ -64,5 +64,27 @@ public interface DefaultedMap<K, V> extends Map<K, V> {
 	 * @return the previous value, or null if none
 	 */
 	public <T extends Serializable> T put(DefaultedKey<T> key, T value);
+	
+	/**
+	 * Associates the specified value with the String for the given key if there is no
+	 * value associated with that key already and returns
+	 * the previous value, or null if there was no previous mapping
+	 *
+	 * @param key the key whose associated value is to be returned
+	 * @param value the value the key is to be mapped
+	 * @return the previous value, or null if none
+	 */
+	public <T extends Serializable> T putIfAbsent(DefaultedKey<T> key, T value);
+	
+	/**
+	 * Associates the specified value with the key if there is no
+	 * value associated with that key already and returns
+	 * the previous value, or null if there was no previous mapping
+	 *
+	 * @param key the key whose associated value is to be returned
+	 * @param value the value the key is to be mapped
+	 * @return the previous value, or null if none
+	 */
+	public V putIfAbsent(K key, V value);
 
 }
