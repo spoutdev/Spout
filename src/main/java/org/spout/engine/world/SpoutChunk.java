@@ -77,7 +77,7 @@ import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.CuboidBuffer;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
-import org.spout.api.util.map.concurrent.AtomicBlockStoreImpl;
+import org.spout.api.util.map.concurrent.palette.AtomicPaletteBlockStore;
 import org.spout.api.util.set.TNibbleQuadHashSet;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.SpoutEntity;
@@ -224,7 +224,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, ManagedHashMap extraData) {
 		super(world, x * BLOCKS.SIZE, y * BLOCKS.SIZE, z * BLOCKS.SIZE);
 		parentRegion = region;
-		blockStore = new AtomicBlockStoreImpl(BLOCKS.BITS, 10, blocks, data);
+		blockStore = new AtomicPaletteBlockStore(BLOCKS.BITS, 10, blocks, data);
 		this.populationState = new AtomicReference<PopulationState>(popState);
 
 		if (skyLight == null) {
