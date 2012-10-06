@@ -45,7 +45,7 @@ public class AtomicShortIntArray {
 	/**
 	 * A reference to the store.  When the palette fills, or when the store is compressed.  A new store is created.
 	 */
-	private final AtomicReference<AtomicShortIntStableArray> store = new AtomicReference<AtomicShortIntStableArray>();
+	private final AtomicReference<AtomicShortIntBackingArray> store = new AtomicReference<AtomicShortIntBackingArray>();
 	
 	/**
 	 * Locks<br>
@@ -61,7 +61,7 @@ public class AtomicShortIntArray {
 	
 	public AtomicShortIntArray(int length) {
 		this.length = length;
-		store.set(new AtomicShortIntStablePaletteArray(length));
+		store.set(new AtomicShortIntPaletteBackingArray(length));
 	}
 	
 	/**
@@ -132,7 +132,11 @@ public class AtomicShortIntArray {
 					try {
 						return store.get().set(i, newValue);
 					} catch (PaletteFullException pfe2) {
-						store.set(new AtomicShortIntStablePaletteArray(store.get(), true));
+						if (store.get().isPaletteMaxSize()) {
+							store.set(new AtomicShortIntDirectBackingArray(store.get()));
+						} else {
+							store.set(new AtomicShortIntPaletteBackingArray(store.get(), true));
+						}		
 					}
 				} finally {
 					resizeLock.unlock();
@@ -161,8 +165,11 @@ public class AtomicShortIntArray {
 			} catch (PaletteFullException pfe) {
 				resizeLock.lock();
 				try {
-					// TODO - should check if (unique > (someConstant) * length) -> use non-palette array
-					store.set(new AtomicShortIntStablePaletteArray(store.get(), true));
+					if (store.get().isPaletteMaxSize()) {
+						store.set(new AtomicShortIntDirectBackingArray(store.get()));
+					} else {
+						store.set(new AtomicShortIntPaletteBackingArray(store.get(), true));
+					}
 				} finally {
 					resizeLock.unlock();
 				}
@@ -174,15 +181,23 @@ public class AtomicShortIntArray {
 	 * Attempts to compress the array
 	 */
 	public void compress() {
+		compress(new TIntHashSet());
+	}
+	
+	/**
+	 * Attempts to compress the array
+	 * 
+	 * @param set to use to store used ids
+	 */
+	public void compress(TIntHashSet inUseSet) {
 		resizeLock.lock();
 		try {
-			AtomicShortIntStableArray s = store.get();
-			int unique = s.getUnique();
-			// TODO - should check if (unique > (someConstant) * length) -> use non-palette array
-			if (AtomicShortIntStablePaletteArray.roundUpWidth(unique + 1) >= s.width()) {
+			AtomicShortIntBackingArray s = store.get();
+			int unique = s.getUnique(inUseSet);
+			if (AtomicShortIntPaletteBackingArray.roundUpWidth(unique - 1) >= s.width()) {
 				return;
 			}
-			store.set(new AtomicShortIntStablePaletteArray(s, length, true, false, unique));
+			store.set(new AtomicShortIntPaletteBackingArray(s, length, true, false, unique));
 		} finally {
 			resizeLock.unlock();
 		}

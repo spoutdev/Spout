@@ -35,13 +35,16 @@ import org.spout.api.util.map.concurrent.palette.AtomicShortIntArray;
 
 public class AtomicShortIntArrayTest {
 	
-	AtomicShortIntArray a = new AtomicShortIntArray(256);
-	int[] copy = new int[256];
-	int COUNT = 16384;
-	int THREADS = 8;
+	final AtomicShortIntArray a = new AtomicShortIntArray(256);
+	final int[] copy = new int[256];
+	final int COUNT = 16384;
+	final int THREADS = 8;
+	final int THREAD_REPEATS = 8;
 
 	@Test
 	public void repeatTest() {
+		
+		printTest("Repeat Test");
 		
 		for (int i = 0; i < a.length(); i++) {
 			set(i, 12345);
@@ -55,6 +58,8 @@ public class AtomicShortIntArrayTest {
 		
 		checkWidth(2);
 		
+		printPaletteUse("after 2 unique entries");
+		
 		for (int i = 0; i < a.length(); i++) {
 			check(i);
 		}
@@ -63,14 +68,14 @@ public class AtomicShortIntArrayTest {
 	@Test
 	public void rampTest() {
 		
+		printTest("Ramp Test");
+		
 		for (int i = 0; i < a.length(); i++) {
 			set(i, i);
 		}
 		
-		System.out.println("About to check palette");
-		printPaletteUse();
+		printPaletteUse("after ramp: ");
 		
-		System.out.println("About to check width");
 		checkWidth(8);
 		
 		for (int i = 0; i < a.length(); i++) {
@@ -80,6 +85,8 @@ public class AtomicShortIntArrayTest {
 	
 	@Test
 	public void randomTest() {
+		
+		printTest("Random Test");
 		
 		Random r = new Random();
 		
@@ -93,15 +100,15 @@ public class AtomicShortIntArrayTest {
 			check(i);
 		}
 		
-		printPaletteUse();
+		printPaletteUse("after setting 1024 values: ");
 		
-		checkWidth(16);
-		
-		System.out.println("Compressing");
+		checkWidth(8);
 		
 		a.compress();
 		
-		printPaletteUse();
+		checkWidth(8);
+		
+		printPaletteUse("after compression: ");
 		
 		System.out.println("Checking array");
 		
@@ -115,13 +122,13 @@ public class AtomicShortIntArrayTest {
 			set(r.nextInt(256), r.nextInt());
 		}
 		
-		checkWidth(16);
+		checkWidth(8);
 		
 		for (int i = 0; i < 256; i++) {
 			check(i);
 		}
 		
-		printPaletteUse();
+		printPaletteUse(" after 1024 random values: ");
 		
 		System.out.println("Setting 128 equal values");
 		
@@ -129,13 +136,35 @@ public class AtomicShortIntArrayTest {
 			set(i, 123);
 		}
 		
-		printPaletteUse();
+		printPaletteUse("after 128 equal values: ");
 
 		System.out.println("Compressing");
 		
 		a.compress();
 		
-		printPaletteUse();
+		checkWidth(8);
+		
+		printPaletteUse("after compression: ");
+		
+		System.out.println("Setting 246 equal values");
+		
+		for (int i = 0; i < 256; i++) {
+			if (i < 246) {
+				set(i, 321);
+			} else {
+				set(i, i);
+			}
+		}
+		
+		printPaletteUse("after 246 equal values: ");
+
+		System.out.println("Compressing");
+		
+		a.compress();
+		
+		checkWidth(4);
+		
+		printPaletteUse("after compression: ");
 		
 		System.out.println("Checking array");
 		
@@ -144,11 +173,81 @@ public class AtomicShortIntArrayTest {
 		}
 	}
 	
+	@Test
+	public void compressionTest() {
+
+		printTest("Compression Test");
+		
+		Random r = new Random();
+		
+		checkCompress(1, 1, r.nextInt());
+		
+		checkCompress(4, 2, r.nextInt());
+		
+		checkCompress(15, 4, r.nextInt());
+		
+		checkCompress(8, 4, r.nextInt());
+		
+		checkCompress(256, 8, r.nextInt());
+
+		checkCompress(16, 4, r.nextInt());
+		
+		checkCompress(9, 4, r.nextInt());
+		
+		checkCompress(64, 8, r.nextInt());
+		
+		checkCompress(17, 8, r.nextInt());
+		
+		checkCompress(8, 4, r.nextInt());
+		
+		checkCompress(4, 2, r.nextInt());
+		
+		checkCompress(128, 8, r.nextInt());
+		
+		System.out.println("Checking array");
+		
+		for (int i = 0; i < 256; i++) {
+			check(i);
+		}
+	}
+	
+	private void checkCompress(int unique, int expWidth, int base) {
+		System.out.println("Setting 256 values from a set of " + unique);
+		
+		for (int i = 0; i < 256; i++) {
+			set(i, base + (i % unique));
+		}
+		
+		printPaletteUse("before compression: ");
+
+		a.compress();
+		
+		printPaletteUse("after compression: ");
+		
+		checkWidth(expWidth);
+		
+		System.out.println("");
+	}
+	
 	Exception parallelException = null;
 	Error parallelError = null;
 	
 	@Test
 	public void parallel() {
+		
+		printTest("Parallel Test");
+		
+		for (int i = 0; i < THREAD_REPEATS; i++) {
+			parallelRun(i);
+		}
+	}
+	
+	private void parallelRun(int repeat) {
+		
+		for (int i = 0; i < 256; i++) {
+			a.set(i, 0);
+		}
+		a.compress();
 		
 		Thread[] thread = new Thread[THREADS];
 		
@@ -156,15 +255,12 @@ public class AtomicShortIntArrayTest {
 			thread[i] = new ArrayTest(i, THREADS, COUNT);
 		}
 		
-		long start = System.currentTimeMillis();
-		System.out.println("Starting threads");
+		long start = System.nanoTime();
 		
 		for (int i = 0; i < THREADS; i++) {
 			thread[i].start();
 		}
 		
-		System.out.println("Waiting for threads " + (System.currentTimeMillis() - start));
-
 		for (int i = 0; i < THREADS; i++) {
 			try {
 				thread[i].join();
@@ -173,7 +269,7 @@ public class AtomicShortIntArrayTest {
 			}
 		}
 		
-		System.out.println("Threads finished " + (System.currentTimeMillis() - start));
+		System.out.println(repeat + ") Thread runtime: " + (((System.nanoTime() - start) / 1000) / 1000.0F) + " ms");
 		
 		if (parallelException != null) {
 			throw new RuntimeException("Exception thrown by thread", parallelException);
@@ -185,8 +281,8 @@ public class AtomicShortIntArrayTest {
 		
 	}
 	
-	private void printPaletteUse() {
-		System.out.println("Palette usage: " + a.getPaletteUsage() + " / " + a.getPaletteSize());
+	private void printPaletteUse(String message) {
+		System.out.println("Palette usage " + message + " " + a.getPaletteUsage() + " / " + a.getPaletteSize());
 	}
 	
 	private void checkWidth(int exp) {
@@ -255,6 +351,12 @@ public class AtomicShortIntArrayTest {
 			}
 		}
 		
+	}
+	
+	private static void printTest(String name) {
+		System.out.println("");
+		System.out.println("<<<<  " + name + "  >>>>");
+		System.out.println("");
 	}
 	
 }

@@ -26,35 +26,33 @@
  */
 package org.spout.api.util.map.concurrent.palette;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
 import org.spout.api.math.MathHelper;
 import org.spout.api.util.map.concurrent.AtomicVariableWidthArray;
 
-public class AtomicShortIntStablePaletteArray extends AtomicShortIntStableArray {
+public class AtomicShortIntPaletteBackingArray extends AtomicShortIntBackingArray {
 	
 	private final static int CALCULATE_UNIQUE = -1;
 	
 	private final int width;
 	private final int paletteSize;
-	// TODO - the id lookup should be replaced by a "throw-away" stable hashmap class
-	private final Map<Integer, Short> idLookup = new ConcurrentHashMap<Integer, Short>();
+	private final AtomicIntShortSingleUseHashMap idLookup;
 	private final AtomicVariableWidthArray store;
 	private final AtomicIntegerArray palette;
 	private final AtomicInteger paletteCounter;
+	private final boolean maxPaletteSize;
 
-	public AtomicShortIntStablePaletteArray(int length) {
+	public AtomicShortIntPaletteBackingArray(int length) {
 		this(null, length, false, false, CALCULATE_UNIQUE);
 	}
 	
-	public AtomicShortIntStablePaletteArray(AtomicShortIntStableArray previous, boolean expand) {
-		this(previous, previous.length(), previous.shouldCompress(), expand, CALCULATE_UNIQUE);
+	public AtomicShortIntPaletteBackingArray(AtomicShortIntBackingArray previous, boolean expand) {
+		this(previous, previous.length(), false, expand, CALCULATE_UNIQUE);
 	}
 	
-	public AtomicShortIntStablePaletteArray(AtomicShortIntStableArray previous, int length, boolean compress, boolean expand, int unique) {
+	public AtomicShortIntPaletteBackingArray(AtomicShortIntBackingArray previous, int length, boolean compress, boolean expand, int unique) {
 		super(length);
 		if (previous == null) {
 			width = 1;
@@ -69,19 +67,24 @@ public class AtomicShortIntStablePaletteArray extends AtomicShortIntStableArray 
 				width = oldWidth <= 8 ? (oldWidth << 1) : (16);
 			}
 		}
-		paletteSize = Math.min(widthToPaletteSize(width), length1p5());
+		int allowedPalette = length >> 2;
+		paletteSize = Math.min(widthToPaletteSize(width), allowedPalette);
+		maxPaletteSize = paletteSize == allowedPalette;
 		store = new AtomicVariableWidthArray(length, width);
 		palette = new AtomicIntegerArray(paletteSize);
-		paletteCounter = new AtomicInteger(1);
-		idLookup.put(0, (short) 0);
-		if (previous != null) {
-			try {
-				for (int i = 0; i < length; i++) {
-					set(i, previous.get(i));
+		paletteCounter = new AtomicInteger(0);
+		idLookup = new AtomicIntShortSingleUseHashMap(paletteSize + (paletteSize >> 2));
+		try {
+			if (previous == null) { // sets id=0 to map to value=0 (so non-set elements are zero)
+				paletteCounter.incrementAndGet();
+				if (!idLookup.isEmptyValue(idLookup.putIfAbsent(0, (short) 0))) {
+					throw new IllegalStateException("Entry was not zero when putting first element into HashMap");
 				}
-			} catch (PaletteFullException pfe) {
-				throw new IllegalStateException("Unable to copy old array to new array, as palette was filled, length " + length + ", paletteSize " + paletteSize + ", unique " + unique);
+			} else {
+				copyFromPrevious(previous);
 			}
+		} catch (PaletteFullException pfe) {
+			throw new IllegalStateException("Unable to copy old array to new array, as palette was filled, length " + length + ", paletteSize " + paletteSize + ", unique " + unique);
 		}
 	}
 
@@ -101,8 +104,8 @@ public class AtomicShortIntStablePaletteArray extends AtomicShortIntStableArray 
 	}
 	
 	@Override
-	public boolean shouldCompress() {
-		return paletteSize >= length1p5() && getPaletteUsage() > length();
+	public boolean isPaletteMaxSize() {
+		return maxPaletteSize;
 	}
 
 	@Override
@@ -119,8 +122,8 @@ public class AtomicShortIntStablePaletteArray extends AtomicShortIntStableArray 
 
 	@Override
 	public boolean compareAndSet(int i, int expect, int update) throws PaletteFullException {
-		Short expId = idLookup.get(expect);
-		if (expId == null) {
+		short expId = idLookup.get(expect);
+		if (idLookup.isEmptyValue(expId)) {
 			return false;
 		}
 		int newId = getId(update);
@@ -135,15 +138,18 @@ public class AtomicShortIntStablePaletteArray extends AtomicShortIntStableArray 
 	 * @throws PaletteFullException
 	 */
 	private int getId(int value) throws PaletteFullException {
-		Short id = idLookup.get(value);
-		if (id != null) {
+		short id = idLookup.get(value);
+		if (!idLookup.isEmptyValue(id)) {
 			return id;
 		} else {
 			id = (short) paletteCounter.getAndIncrement();
 			if (id >= paletteSize) {
 				throw paletteFull;
 			}
-			idLookup.put(value, id);
+			short oldId = idLookup.putIfAbsent(value, id);
+			if (!idLookup.isEmptyValue(oldId)) {
+				id = oldId;
+			}
 			palette.set(id, value);
 			return id;
 		}
@@ -178,4 +184,5 @@ public class AtomicShortIntStablePaletteArray extends AtomicShortIntStableArray 
 	public static int widthToPaletteSize(int width) {
 		return 1 << width;
 	}
+
 }

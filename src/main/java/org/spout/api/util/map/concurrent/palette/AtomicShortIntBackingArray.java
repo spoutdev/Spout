@@ -28,7 +28,7 @@ package org.spout.api.util.map.concurrent.palette;
 
 import gnu.trove.set.hash.TIntHashSet;
 
-public abstract class AtomicShortIntStableArray {
+public abstract class AtomicShortIntBackingArray {
 	
 	/**
 	 * Exception throw if the palette is full.  The same instance is reused.
@@ -36,16 +36,14 @@ public abstract class AtomicShortIntStableArray {
 	protected final static PaletteFullException paletteFull = new PaletteFullException("Reused exception - information in stack trace is invalid");
 	
 	private final int length;
-	private final int length1p5;
 	
 	/**
 	 * Creates an AtomicShortIntArray
 	 * 
 	 * @param length the number of entries 
 	 */
-	public AtomicShortIntStableArray(int length) {
+	public AtomicShortIntBackingArray(int length) {
 		this.length = length;
-		this.length1p5 = length + (length >> 1);
 	}
 	
 	/**
@@ -62,13 +60,6 @@ public abstract class AtomicShortIntStableArray {
 	 */
 	public int length() {
 		return length;
-	}
-	
-	/**
-	 * Gets the length of the array times 1.5
-	 */
-	public int length1p5() {
-		return length1p5;
 	}
 	
 	/**
@@ -112,10 +103,7 @@ public abstract class AtomicShortIntStableArray {
 	 */
 	public abstract boolean compareAndSet(int i, int expect, int update) throws PaletteFullException;
 	
-	/**
-	 * Gets if compression is recommended
-	 */
-	public abstract boolean shouldCompress();
+	public abstract boolean isPaletteMaxSize();
 	
 	/**
 	 * Gets the number of unique entries in the array
@@ -123,13 +111,33 @@ public abstract class AtomicShortIntStableArray {
 	 * @return
 	 */
 	public int getUnique() {
-		TIntHashSet inUse = new TIntHashSet();
+		return getUnique(new TIntHashSet());
+	}
+
+	/**
+	 * Gets the number of unique entries in the array
+	 * 
+	 * @param inUseSet set to use to store used ids
+	 * @return
+	 */
+	public int getUnique(TIntHashSet inUseSet) {
+		inUseSet.clear();
 		int unique = 0;
 		for (int i = 0; i < length; i++) {
-			if (inUse.add(get(i))) {
+			if (inUseSet.add(get(i))) {
 				unique++;
 			}
 		}
 		return unique;
+	}
+	
+	protected void copyFromPrevious(AtomicShortIntBackingArray previous) throws PaletteFullException {
+		if (previous != null) {
+			for (int i = 0; i < length; i++) {
+				set(i, previous.get(i));
+			}
+		} else {
+			set(0, 0);
+		}
 	}
 }
