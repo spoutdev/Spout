@@ -292,24 +292,39 @@ public class SpoutClient extends SpoutEngine implements Client {
         boolean flyUp = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
         boolean flyDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
         
-        if (keyUp && !keyLeft && !keyRight && !keyDown) {
-        	activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().forwardVector()));
+        Point point = new Point(Point.ONE,activePlayer.getWorld());
+        
+        if (keyUp) {
+        	point = point.multiply(activePlayer.getTransform().getTransform().forwardVector());
+        	//activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().forwardVector()));
         }
-        if (keyDown && !keyUp && !keyLeft && !keyRight) {
-        	activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().forwardVector()));
+        if (keyDown) {
+        	point = point.multiply(activePlayer.getTransform().getTransform().forwardVector().multiply(-1));
+        	//activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().forwardVector()));
         }
-        if (keyLeft && !keyRight && !keyUp && !keyDown) {
-        	activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().rightVector()));
+        if (keyLeft) {
+        	point = point.multiply(activePlayer.getTransform().getTransform().rightVector());
+        	//activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().rightVector()));
         }
-        if (keyRight && !keyLeft && !keyUp && !keyDown) {
-        	activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().rightVector()));
+        if (keyRight) {
+        	point = point.multiply(activePlayer.getTransform().getTransform().rightVector().multiply(-1));
+        	//activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().rightVector()));
         }
-        /*if (flyUp && !flyDown) {
-			y += speedY * delta;
+        if (flyUp) {
+        	point = point.multiply(activePlayer.getTransform().getTransform().upVector());
+        	//activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().upVector()));
 		}
-		if (flyDown && !flyUp) {
-			y -= speedY * delta;
-		}*/
+        if (flyDown) {
+        	point = point.multiply(activePlayer.getTransform().getTransform().upVector().multiply(-1));
+        	//activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().upVector()));
+		}
+		
+		if (keyUp || keyDown || keyLeft || keyRight || flyUp || flyDown) {
+			//point = new Point(point.normalize(),activePlayer.getWorld());
+			System.out.println("Translation : "+point.getX()+"/"+point.getY()+"/"+point.getZ());
+			System.out.println("Position : "+activePlayer.getTransform().getPosition().getX()+"/"+activePlayer.getTransform().getPosition().getY()+"/"+activePlayer.getTransform().getPosition().getZ());
+			activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(point));
+		}
 		
 		/*for (Flags f : activePlayer.input().getFlagSet()) {
 			switch(f) {

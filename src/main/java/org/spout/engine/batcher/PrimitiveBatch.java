@@ -100,23 +100,23 @@ public class PrimitiveBatch {
 	}
 
 	public void addQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Color col) {
-		renderer.addTexCoord(0, 0);
+		renderer.addTexCoord(0f, 0f);
 		renderer.addColor(col);
 		renderer.addVertex(a);
-		renderer.addTexCoord(1, 0);
+		renderer.addTexCoord(1f, 0f);
 		renderer.addColor(col);
 		renderer.addVertex(b);
-		renderer.addTexCoord(1, 1);
+		renderer.addTexCoord(1f, 1f);
 		renderer.addColor(col);
 		renderer.addVertex(c);
 
-		renderer.addTexCoord(1, 1);
+		renderer.addTexCoord(1f, 1f);
 		renderer.addColor(col);
 		renderer.addVertex(c);
-		renderer.addTexCoord(0, 1);
+		renderer.addTexCoord(0f, 1f);
 		renderer.addColor(col);
 		renderer.addVertex(d);
-		renderer.addTexCoord(0, 0);
+		renderer.addTexCoord(0f, 0f);
 		renderer.addColor(col);
 		renderer.addVertex(a);
 	}
