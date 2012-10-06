@@ -137,16 +137,26 @@ public class ManagedHashMap implements SerializableMap{
 		Serializable old = map.get(intKey).get();
 		if (value instanceof Boolean) {
 			map.set(intKey, new BooleanData(intKey, (Boolean)value));
+		}  else if (value instanceof Double) {
+			map.set(intKey, new DoubleData(intKey, (Double)value));
 		} else if (value instanceof Float) {
 			map.set(intKey, new FloatData(intKey, (Float)value));
+		} else if (value instanceof Long) {
+			map.set(intKey, new LongData(intKey, (Long)value));
 		} else if (value instanceof Integer) {
 			map.set(intKey, new IntegerData(intKey, (Integer)value));
+		}  else if (value instanceof Short) {
+			map.set(intKey, new IntegerData(intKey, (Short)value));
+		}  else if (value instanceof Byte) {
+			map.set(intKey, new IntegerData(intKey, (Byte)value));
+		} else if (value instanceof String) {
+			map.set(intKey, new StringData(intKey, (String)value));
 		} else if (value instanceof Serializable) {
 			map.set(intKey, new SerializableData(intKey, value));
 		}
 		return old;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Serializable> T put(DefaultedKey<T> key, T value) {
