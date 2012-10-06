@@ -41,7 +41,7 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.Vector3;
-import org.spout.api.util.map.concurrent.AtomicBlockStoreImpl;
+import org.spout.api.util.map.concurrent.palette.AtomicPaletteBlockStore;
 import org.spout.engine.entity.SpoutEntity;
 
 public class FilteredChunk extends SpoutChunk{
@@ -95,7 +95,7 @@ public class FilteredChunk extends SpoutChunk{
 			for (int i = 0; i < initial.length; i++) {
 				initial[i] = id;
 			}
-			this.blockStore = new AtomicBlockStoreImpl(BLOCKS.BITS, 10, initial);
+			this.blockStore = new AtomicPaletteBlockStore(BLOCKS.BITS, 10, initial);
 			
 			this.skyLight = new byte[BLOCKS.HALF_VOLUME];
 			System.arraycopy(this.isAboveGround() ? LIGHT : DARK, 0, this.skyLight, 0, this.skyLight.length);
