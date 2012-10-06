@@ -148,9 +148,9 @@ public class ManagedHashMap implements SerializableMap{
 	}
 
 	@Override
-	public Serializable put(String key, Serializable value) {
+	public Serializable putIfAbsent(String key, Serializable value) {
 		int intKey = map.getIntKey(key);
-		AbstractData data = map.getAndSet(intKey, getAbstractDataValue(intKey, value));
+		AbstractData data = map.setIfAbsent(intKey, getAbstractDataValue(intKey, value));
 		if (data == null) {
 			return null;
 		} else {
@@ -159,9 +159,9 @@ public class ManagedHashMap implements SerializableMap{
 	}
 	
 	@Override
-	public Serializable putIfAbsent(String key, Serializable value) {
+	public Serializable put(String key, Serializable value) {
 		int intKey = map.getIntKey(key);
-		AbstractData data = map.setIfAbsent(intKey, getAbstractDataValue(intKey, value));
+		AbstractData data = map.getAndSet(intKey, getAbstractDataValue(intKey, value));
 		if (data == null) {
 			return null;
 		} else {

@@ -79,13 +79,27 @@ public class DataMapTest {
 		test.put(serialString, serialValue);
 		
 		DefaultedKey<Integer> defaultedKey = new DefaultedKeyImpl<Integer>(defaultedKeyString, defaultedValue);
-		
-		assertTrue("Defaulted key did not return default value", defaultedValue.equals(test.get(defaultedKey)));
-		
-		Integer oldValue = test.put(defaultedKey, defaultedPutValue);
-		
-		assertTrue("Map did not return null for old value when new key was added", oldValue == null);
 
+		Integer getValue = test.get(defaultedKey);
+		
+		assertTrue("Map did not return default value when new key was added", getValue.equals(defaultedValue));
+		
+		Integer getValue2 = test.get(defaultedKey);
+		
+		assertTrue("Map did not return default value when new key was added", getValue2.equals(defaultedValue));
+		
+		Integer putReturnValue = test.put(defaultedKey, defaultedPutValue);
+		
+		assertTrue("Defaulted key did not return default value", defaultedValue.equals(putReturnValue));
+		
+		assertTrue("Map did not return the same instance for the same key, checking both gets", getValue == getValue2);
+		
+		assertTrue("Map did not return the same instance for the same key, checking get and put", getValue == putReturnValue);
+		
+		Integer getValue3 = test.get(defaultedKey);
+
+		assertTrue("Map did not return the correct value after put", defaultedPutValue.equals(getValue3));
+		
 		Random r = new Random(RANDOM_SEED);
 		Random old = (Random)test.get(serialString);
 
