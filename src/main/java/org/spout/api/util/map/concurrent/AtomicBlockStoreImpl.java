@@ -124,7 +124,6 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @return the sequence number, or DatatableSequenceNumber.ATOMIC for a
 	 *         single short record
 	 */
-	@Override
 	public int getSequence(int x, int y, int z) {
 		checkCompressing();
 		int index = getIndex(x, y, z);
@@ -165,7 +164,6 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 * @return true if the sequence number has not changed and expected is not
 	 *         DatatableSequenceNumber.ATOMIC
 	 */
-	@Override
 	public boolean testSequence(int x, int y, int z, int expected) {
 
 		if (expected == AtomicSequenceNumber.ATOMIC) {

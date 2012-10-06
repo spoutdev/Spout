@@ -37,36 +37,6 @@ import org.spout.api.math.Vector3;
 public interface AtomicBlockStore {
 
 	/**
-	 * Gets the sequence number associated with a block location.<br>
-	 * <br>
-	 * If soft is true, this method counts as a volatile read. Otherwise, it is
-	 * both a volatile read and a volatile write.<br>
-	 * <br>
-	 * Soft reads should only be used for the first of the 2 step process for
-	 * confirming that data hasn't changed.
-	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @return the sequence number, or DatatableSequenceNumber.ATOMIC for a
-	 *         single short record
-	 */
-	public int getSequence(int x, int y, int z);
-
-	/**
-	 * Tests if a the sequence number associated with a particular block
-	 * location has not changed.
-	 *
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param z the z coordinate
-	 * @param expected the expected sequence number
-	 * @return true if the sequence number has not changed and expected is not
-	 *         DatatableSequenceNumber.ATOMIC
-	 */
-	public boolean testSequence(int x, int y, int z, int expected);
-
-	/**
 	 * Gets the block id for a block at a particular location.<br>
 	 * <br>
 	 * Block ids range from 0 to 65535.
