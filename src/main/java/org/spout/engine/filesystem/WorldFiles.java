@@ -498,16 +498,10 @@ public class WorldFiles {
 		boolean observer = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("observer")), new ByteTag("", (byte) 0), ByteTag.class).getBooleanValue();
 
 		//Setup data
-		ManagedHashMap dataMap = new ManagedHashMap();
 		boolean controllerDataExists = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("controller_data_exists")), new ByteTag("", (byte) 0), ByteTag.class).getBooleanValue();
-
+		byte[] dataMap = null;
 		if (controllerDataExists) {
-			byte[] data = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("controller_data")), new byte[0]);
-			try {
-				dataMap.deserialize(data);
-			} catch (IOException e) {
-				Spout.getLogger().log(Level.SEVERE, "Unable to deserialize entity data", e);
-			}
+			dataMap = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("controller_data")), new byte[0]);
 		}
 
 		//Setup entity
@@ -533,10 +527,10 @@ public class WorldFiles {
 
 		SpoutEntity e;
 		if (!player) {
-			e = new SpoutEntity(t, view, uid, false, types.toArray(new Class[types.size()]));
+			e = new SpoutEntity(t, view, uid, false, dataMap, types.toArray(new Class[types.size()]));
 			e.setObserver(observer);
 		} else {
-			e = new SpoutPlayer(name, t, view, uid, false, types.toArray(new Class[types.size()]));
+			e = new SpoutPlayer(name, t, view, uid, false, dataMap, types.toArray(new Class[types.size()]));
 		}
 
 		return e;

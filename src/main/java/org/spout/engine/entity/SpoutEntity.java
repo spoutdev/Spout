@@ -26,12 +26,15 @@
  */
 package org.spout.engine.entity;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 
 import org.spout.api.Source;
+import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
 import org.spout.api.component.components.CameraComponent;
@@ -79,7 +82,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	private final UUID uid;
 	protected boolean justSpawned = true;
 
-	public SpoutEntity(Transform transform, int viewDistance, UUID uid, boolean load, Class<? extends Component> ...components) {
+	public SpoutEntity(Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component> ...components) {
 		id.set(NOTSPAWNEDID);
 		add(TransformComponent.class);
 		add(NetworkComponent.class);
@@ -109,6 +112,14 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 		setViewDistance(viewDistance);
 		
+		if (dataMap != null) {
+			try {
+				this.getData().deserialize(dataMap);
+			} catch (IOException e) {
+				Spout.getLogger().log(Level.SEVERE, "Unable to deserialize entity data", e);
+			}
+		}
+		
 		if (components != null && components.length > 0) {
 			this.add(components);
 		}
@@ -119,7 +130,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	}
 
 	public SpoutEntity(Transform transform, int viewDistance) {
-		this(transform, viewDistance, null, true, (Class<? extends Component>[])null);
+		this(transform, viewDistance, null, true, null, (Class<? extends Component>[])null);
 	}
 
 	public SpoutEntity(Transform transform) {

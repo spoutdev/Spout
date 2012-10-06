@@ -79,11 +79,11 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	}
 
 	public SpoutPlayer(String name, Transform transform, int viewDistance) {
-		this(name, transform, viewDistance, null, true, (Class<? extends Component>[])null);
+		this(name, transform, viewDistance, null, true, null, (Class<? extends Component>[])null);
 	}
 
-	public SpoutPlayer(String name, Transform transform, int viewDistance, UUID uid, boolean load, Class<? extends Component> ...components) {
-		super(transform, viewDistance, uid, load, components);
+	public SpoutPlayer(String name, Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component> ...components) {
+		super(transform, viewDistance, uid, load, dataMap, components);
 		this.name = name;
 		displayName.set(name);
 		hashcode = name.hashCode();
