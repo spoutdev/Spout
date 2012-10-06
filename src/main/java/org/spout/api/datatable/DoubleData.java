@@ -68,7 +68,7 @@ class DoubleData extends AbstractData {
 
 	@Override
 	public byte getObjectTypeId() {
-		return 2;
+		return 7;
 	}
 
 	@Override

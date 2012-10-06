@@ -94,7 +94,7 @@ class LongData extends AbstractData {
 
 	@Override
 	public byte getObjectTypeId() {
-		return 3;
+		return 5;
 	}
 
 	@Override
