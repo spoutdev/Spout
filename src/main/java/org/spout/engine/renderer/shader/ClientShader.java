@@ -226,6 +226,10 @@ public class ClientShader extends Resource implements Shader {
 
 	@Override
 	public void assign() {
+		if (((Client)Spout.getEngine()).getRenderMode()==RenderMode.GL11) {
+			assign(true);
+			return;
+		}
 		GL20.glUseProgram(program);
 		for (ShaderVariable v : variables.values()) {
 			v.assign();
@@ -235,6 +239,10 @@ public class ClientShader extends Resource implements Shader {
 			v.bind(i);
 			i++;
 		}
+	}
+	
+	public void assign(boolean compatibilityMode) {
+		// Overriden by basic shader
 	}
 
 	String fallbackVertexShader = "#version 120\n" +

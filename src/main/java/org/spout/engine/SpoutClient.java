@@ -51,6 +51,7 @@ import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
@@ -68,9 +69,11 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.component.components.CameraComponent;
+import org.spout.api.component.components.TransformComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.state.PlayerInputState.Flags;
 import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.MathHelper;
@@ -124,10 +127,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private String stopMessage = null;
 	private final ClientBootstrap bootstrap = new ClientBootstrap();
 
-	
+
 	//Test
 	private SpriteBatch gui;
-	
+
 	public SpoutClient() {
 		this.filesystem = new ClientFileSystem();
 	}
@@ -161,7 +164,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public void start() {
-		start(false);
+		start(true);
 	}
 
 	@Override
@@ -172,10 +175,23 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		// Register commands
 		getRootCommand().addSubCommands(this, InputManagementCommands.class, commandRegFactory);
-		activePlayer = new SpoutClientPlayer("Spouty");
+		
+		while (super.getDefaultWorld()==null) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			// TODO : Wait until the world is fully loaded
+		}
+		
+		Transform loc = new Transform(new Point(super.getDefaultWorld(), 0f, 0f, 0f), new Quaternion(0f, 0f, 0f, 0f), Vector3.ONE);
+		activePlayer = new SpoutClientPlayer("Spouty", loc, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 		activeCamera = activePlayer.add(CameraComponent.class);
 		
-		activePlayer.getTransform().setRotation(new Quaternion(0f, 0f, 0f, 0f));
+		System.out.println("activeWorld: "+super.getDefaultWorld().getName());
+		super.getDefaultWorld().spawnEntity(activePlayer);
 	}
 
 	@Override
@@ -234,34 +250,90 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	public void doInput() {
-		inputManager.pollInput();
+		//inputManager.pollInput(); // One Mouse.getDX() to rule them all
 		// TODO move this a plugin
+		
 		if (activePlayer == null) {
 			return;
 		}
-		for (Flags f : activePlayer.input().getFlagSet()) {
-			switch(f) {
-				case FORWARD:
-					activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().forwardVector()));
-					break;
-				case BACKWARD:
-					activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().forwardVector()));
-					break;
-				case LEFT:
-					activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().rightVector()));
-					break;
-				case RIGHT:
-					activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().rightVector()));
-					break;
-				case CROUCH:
-				case FIRE_1:
-				case FIRE_2:
-				case INTERACT:
-				case JUMP:
-				case SELECT_DOWN:
-				case SELECT_UP:
-			}
+		
+		if (Mouse.isGrabbed()) {
+			Transform ts = activePlayer.getTransform().getTransform();
+			float pitch = ts.getRotation().getPitch();
+			float yaw = ts.getRotation().getYaw();
+			
+			float mouseDX = -Mouse.getDX() * 0.16f;
+			float mouseDY = Mouse.getDY() * 0.16f;
+			
+			if (yaw + mouseDX >= 360)
+				yaw += mouseDX - 360;
+			else if (yaw + mouseDX < 0)
+				yaw += mouseDX + 360;
+			else
+				yaw += mouseDX;
+
+			if (pitch + mouseDY>=-80 && pitch + mouseDY<=80)
+				pitch += mouseDY;
+			else if (pitch + mouseDY<-80)
+				pitch = -80;
+			else if (pitch + mouseDY>80)
+				pitch = 80;
+
+			//System.out.println("yaw: "+yaw+" pitch: "+pitch);
+			ts.setRotation(MathHelper.rotation(pitch, yaw, ts.getRotation().getRoll()));
+			activePlayer.getTransform().setTransform(ts);
+			//System.out.println(activePlayer.getTransform().getTransform().toMatrix().toString());
 		}
+
+		boolean keyUp = Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.KEY_Z);
+        boolean keyDown = Keyboard.isKeyDown(Keyboard.KEY_DOWN) || Keyboard.isKeyDown(Keyboard.KEY_S);
+        boolean keyLeft = Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_Q);
+        boolean keyRight = Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.KEY_D);
+        boolean flyUp = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
+        boolean flyDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
+        
+        if (keyUp && !keyLeft && !keyRight && !keyDown) {
+        	activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().forwardVector()));
+        }
+        if (keyDown && !keyUp && !keyLeft && !keyRight) {
+        	activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().forwardVector()));
+        }
+        if (keyLeft && !keyRight && !keyUp && !keyDown) {
+        	activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().rightVector()));
+        }
+        if (keyRight && !keyLeft && !keyUp && !keyDown) {
+        	activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().rightVector()));
+        }
+        /*if (flyUp && !flyDown) {
+			y += speedY * delta;
+		}
+		if (flyDown && !flyUp) {
+			y -= speedY * delta;
+		}*/
+		
+		/*for (Flags f : activePlayer.input().getFlagSet()) {
+			switch(f) {
+			case FORWARD:
+				activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().forwardVector()));
+				break;
+			case BACKWARD:
+				activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().forwardVector()));
+				break;
+			case LEFT:
+				activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().rightVector()));
+				break;
+			case RIGHT:
+				activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().rightVector()));
+				break;
+			case CROUCH:
+			case FIRE_1:
+			case FIRE_2:
+			case INTERACT:
+			case JUMP:
+			case SELECT_DOWN:
+			case SELECT_UP:
+			}
+		}*/
 	}
 
 	@Override
@@ -387,8 +459,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	public void initRenderer() {
 		createWindow();
-
-		Mouse.setGrabbed(true);
+		
+		//Mouse.setGrabbed(true);
 
 		getLogger().info("SpoutClient Information");
 		getLogger().info("Operating System: " + System.getProperty("os.name"));
@@ -419,9 +491,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		renderer = new PrimitiveBatch();
 		mat = (RenderMaterial)this.getFilesystem().getResource("material://Spout/resources/resources/materials/BasicMaterial.smt");
 		renderer.begin();
-		renderer.addCube(Vector3.ZERO, Vector3.ONE, Color.RED, sides);
+		renderer.addCube(new Vector3(-0.5,-0.5,-0.5), Vector3.ONE, Color.RED, sides);
 		renderer.end();
-		
+
 		gui = new SpriteBatch();
 	}
 
@@ -429,18 +501,26 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public void render(float dt) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		if (Mouse.isButtonDown(0)) {
+			if (!Mouse.isGrabbed())
+				Mouse.setGrabbed(true);
+		} else
+			Mouse.setGrabbed(false);
+		
 		//worldRenderer.render();
+		try {
+			//System.out.println("view "+activeCamera.getView().toString());
+			Transform loc = new Transform(new Point(null, 0f, 0f, 0f), Quaternion.IDENTITY, Vector3.ONE);
+			mat.getShader().setUniform("View", activeCamera.getView());
+			mat.getShader().setUniform("Projection", activeCamera.getProjection());
+			mat.getShader().setUniform("Model", loc.toMatrix());
+			renderer.draw(mat);
 
-		Transform loc = new Transform(new Point(null, 0f, 0f, 0f), Quaternion.IDENTITY, Vector3.ONE);
-		mat.getShader().setUniform("View", activeCamera.getView());
-		mat.getShader().setUniform("Projection", activeCamera.getProjection());
-		mat.getShader().setUniform("Model", loc.toMatrix());
-		renderer.draw(mat);
-		
-		gui.begin();
-		gui.draw(mat, .25f, .25f, .25f, .25f);
-		gui.render();
-		
+			gui.begin();
+			gui.draw(mat, .25f, .25f, .25f, .25f);
+			gui.render();
+		} catch (Exception e) {}
+
 	}
 
 	public WorldRenderer getWorldRenderer() {
