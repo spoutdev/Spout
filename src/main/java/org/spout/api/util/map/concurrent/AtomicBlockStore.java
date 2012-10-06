@@ -26,6 +26,8 @@
  */
 package org.spout.api.util.map.concurrent;
 
+import gnu.trove.set.hash.TIntHashSet;
+
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.Vector3;
 
@@ -203,11 +205,14 @@ public interface AtomicBlockStore {
 
 	/**
 	 * Compresses the store.<br>
-	 * <br>
-	 * This method should only be called when the store is guaranteed not to be
-	 * accessed from any other thread.<br>
 	 */
 	public void compress();
+	
+	/**
+	 * Compresses the store.<br>
+	 * @param set to use to store used ids
+	 */
+	public void compress(TIntHashSet inUseSet);
 
 	/**
 	 * Gets if the dirty array has overflowed since the last reset.<br>

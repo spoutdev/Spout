@@ -26,6 +26,8 @@
  */
 package org.spout.api.util.map.concurrent;
 
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -584,15 +586,28 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 		}
 		return array;
 	}
-
+	
 	/**
-	 * Compresses the auxiliary store.<br>
+	 * Compresses the store.<br>
 	 * <br>
 	 * This method should only be called when the store is guaranteed not to be
 	 * accessed from any other thread.<br>
 	 */
 	@Override
 	public void compress() {
+		compress(null);
+	}
+
+	/**
+	 * Compresses the auxiliary store.<br>
+	 * <br>
+	 * This method should only be called when the store is guaranteed not to be
+	 * accessed from any other thread.<br>
+	 * 
+	 * @param set to use to store used ids
+	 */
+	@Override
+	public void compress(TIntHashSet inUseSet) {
 		if (!compressing.compareAndSet(false, true)) {
 			throw new IllegalStateException("Compression started while compression was in progress");
 		}

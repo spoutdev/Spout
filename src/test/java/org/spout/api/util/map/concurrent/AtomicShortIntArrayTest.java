@@ -211,6 +211,31 @@ public class AtomicShortIntArrayTest {
 		}
 	}
 	
+	@Test
+	public void compareAndSet() {
+		
+		printTest("Compare and Set");
+		
+		Random r = new Random();
+		
+		for (int i = 0; i < 256; i++) {
+			set(i, i & 7);
+		}
+		
+		System.out.println("Incrementing all entries by 16");
+		
+		for (int i = 0; i < 256; i++) {
+			add(i, 16);
+		}
+		
+		System.out.println("Checking arrays");
+		
+		for (int i = 0; i < 256; i++) {
+			check(i);
+		}
+		
+	}
+	
 	private void checkCompress(int unique, int expWidth, int base) {
 		System.out.println("Setting 256 values from a set of " + unique);
 		
@@ -294,6 +319,14 @@ public class AtomicShortIntArrayTest {
 		a.set(i, value);
 		copy[i] = value;
 		check(i);
+	}
+	
+	private void add(int i, int delta) {
+		check(i);
+		int oldValue = a.get(i);
+		int newValue = oldValue + delta;
+		assertTrue("Unable to increment value " + delta + " for entry " + i, a.compareAndSet(i, oldValue, newValue));
+		copy[i] = newValue;
 	}
 	
 	private int get(int i) {

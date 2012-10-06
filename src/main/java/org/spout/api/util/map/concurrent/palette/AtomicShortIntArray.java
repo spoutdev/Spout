@@ -32,6 +32,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.spout.api.Spout;
+
 /**
  * An integer array that has a short index.  The array is atomic and is backed by a palette based lookup system.
  */
@@ -158,7 +160,7 @@ public class AtomicShortIntArray {
 			try {
 				updateLock.lock();
 				try {
-					store.get().compareAndSet(i, expect, update);
+					return store.get().compareAndSet(i, expect, update);
 				} finally {
 					updateLock.unlock();
 				}
