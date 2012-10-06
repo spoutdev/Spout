@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.logging.Level;
 
 import org.apache.commons.io.IOUtils;
 import org.spout.api.Spout;
@@ -63,7 +64,7 @@ public class SerializableData extends AbstractData {
 			objOut.close();
 		} catch (IOException e) {
 			if (Spout.debugMode()) {
-				e.printStackTrace();
+				Spout.getLogger().log(Level.SEVERE, "Unable to serialize " + value + " (type: " + (value != null ? value.getClass().getSimpleName() : "null") + ")", e);
 			}
 			return null;
 		}

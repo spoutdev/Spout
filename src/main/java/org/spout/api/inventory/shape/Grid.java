@@ -26,13 +26,16 @@
  */
 package org.spout.api.inventory.shape;
 
+import java.io.Serializable;
+
 import org.spout.api.inventory.util.GridIterator;
 
 /**
  * Represents a grid that can be iterated through in the correct order of an 
  * {@link org.spout.api.inventory.Inventory}
  */
-public class Grid implements Iterable<Integer> {
+public class Grid implements Iterable<Integer>, Serializable {
+	private static final long serialVersionUID = 1L;
 	/**
 	 * The length of the grid
 	 */

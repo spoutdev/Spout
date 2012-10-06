@@ -51,7 +51,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 * A set of {@link InventoryViewer} to send updates every time a slot is 
 	 * set.
 	 */
-	private final Set<InventoryViewer> viewers = new HashSet<InventoryViewer>();
+	private transient final Set<InventoryViewer> viewers = new HashSet<InventoryViewer>();
 	/**
 	 * An array of {@link ItemStack}s that act as a mapping between slots and 
 	 * items.

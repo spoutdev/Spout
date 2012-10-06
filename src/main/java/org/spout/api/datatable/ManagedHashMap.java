@@ -141,7 +141,7 @@ public class ManagedHashMap implements SerializableMap{
 			map.set(intKey, new FloatData(intKey, (Float)value));
 		} else if (value instanceof Integer) {
 			map.set(intKey, new IntegerData(intKey, (Integer)value));
-		} else {
+		} else if (value instanceof Serializable) {
 			map.set(intKey, new SerializableData(intKey, value));
 		}
 		return old;
