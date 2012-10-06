@@ -72,12 +72,12 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 		}
 		
 		if (useTextures) {
-			vBuffer.clear();
-			vBuffer.put(uvBuffer.toArray());
-			vBuffer.flip();
+			FloatBuffer temp = BufferUtils.createFloatBuffer(uvBuffer.size());
+			temp.put(uvBuffer.toArray());
+			temp.flip();
 
 			GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-			GL11.glTexCoordPointer(2, 0, vBuffer);
+			GL11.glTexCoordPointer(2, 0, temp);
 		}
 
 		GL11.glDrawArrays(renderMode, 0, numVertices);
@@ -89,5 +89,9 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 	public void doRender(RenderMaterial material, int startVert, int endVert) {
 		material.assign();
 		GL11.glCallList(displayList);
+	}
+	
+	public void finalize() {
+		 GL11.glDeleteLists(displayList, 1);
 	}
 }
