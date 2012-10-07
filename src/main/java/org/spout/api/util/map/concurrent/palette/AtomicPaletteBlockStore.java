@@ -74,14 +74,15 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 		dirtyX = new byte[dirtySize];
 		dirtyY = new byte[dirtySize];
 		dirtyZ = new byte[dirtySize];
-		if (blocks != null && data != null) {
+		if (blocks != null) {
 			int x = 0;
 			int z = 0;
 			int y = 0;
 			int max = (1 << shift) - 1;
 
 			for (int i = 0; i < Math.min(blocks.length, size); i++) {
-				this.setBlock(x, y, z, blocks[i], data[i]);
+				short d = data == null ? 0 : data[i];
+				this.setBlock(x, y, z, blocks[i], d);
 
 				if (x < max) {
 					x++;
