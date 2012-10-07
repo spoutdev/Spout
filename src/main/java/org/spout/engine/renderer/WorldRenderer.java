@@ -87,6 +87,7 @@ public class WorldRenderer {
 		if (world == null) {
 			world = client.getDefaultWorld();
 			if (world != null) System.out.println("World updated to " + world.getName() + "-" + world.getUID());
+			else System.out.println("World is null!");
 		}
 
 		if (world == null) {

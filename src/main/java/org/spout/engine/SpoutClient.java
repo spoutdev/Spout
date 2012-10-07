@@ -158,7 +158,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		bootstrap.setPipelineFactory(pipelineFactory);
 		super.init(args);
 
-		getScheduler().startRenderThread();
+		
 
 	}
 
@@ -192,6 +192,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		
 		System.out.println("activeWorld: "+super.getDefaultWorld().getName());
 		super.getDefaultWorld().spawnEntity(activePlayer);
+		
+		getScheduler().startRenderThread();
 	}
 
 	@Override
@@ -285,9 +287,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 			//System.out.println(activePlayer.getTransform().getTransform().toMatrix().toString());
 		}
 
-		boolean keyUp = Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.KEY_Z);
+		boolean keyUp = Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.KEY_W);
         boolean keyDown = Keyboard.isKeyDown(Keyboard.KEY_DOWN) || Keyboard.isKeyDown(Keyboard.KEY_S);
-        boolean keyLeft = Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_Q);
+        boolean keyLeft = Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_A);
         boolean keyRight = Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.KEY_D);
         boolean flyUp = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
         boolean flyDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
@@ -500,9 +502,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClearColor((135.f/255.0f), 206.f/255.f, 250.f/255.f, 0);
 
-		//worldRenderer = new WorldRenderer(this);
-		//worldRenderer.setup();
+		worldRenderer = new WorldRenderer(this);
+		worldRenderer.setup();
 
+		
 		renderer = new PrimitiveBatch();
 		mat = (RenderMaterial)this.getFilesystem().getResource("material://Spout/resources/resources/materials/BasicMaterial.smt");
 		renderer.begin();
@@ -522,7 +525,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		} else
 			Mouse.setGrabbed(false);
 		
-		//worldRenderer.render();
+		worldRenderer.render();
 		try {
 			//System.out.println("view "+activeCamera.getView().toString());
 			Transform loc = new Transform(new Point(null, 0f, 0f, 0f), Quaternion.IDENTITY, Vector3.ONE);
