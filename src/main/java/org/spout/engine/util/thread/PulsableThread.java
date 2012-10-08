@@ -54,6 +54,9 @@ public abstract class PulsableThread extends Thread {
 			if (pulsing.get() == PulseState.DEAD) {
 				Spout.getLogger().info("Attempting to pulse a dead executor: " + getName());
 				return true;
+			} else if (!isAlive()) {
+				Spout.getLogger().info("Attempting to pulse a non-started executor: " + getName());
+				return false;
 			} else {
 				return false;
 			}
