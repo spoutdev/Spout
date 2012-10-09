@@ -98,8 +98,11 @@ public class WorldRenderer {
 			return false;
 		}
 
-		int chunkViewDistance = client.getActivePlayer().getViewDistance() / 16;
-
+		// TODO: We will work with 1 chunk before trying to expand
+		int chunkViewDistance = 0;//client.getActivePlayer().getViewDistance() / 16;
+		//System.out.println("ChunkViewDistance ="+ ((int)client.getActivePlayer().getViewDistance() / 16));
+		
+		
 		Point currentPos = client.getActivePlayer().getTransform().getPosition();
 
 		int currentChunkX = currentPos.getChunkX();
