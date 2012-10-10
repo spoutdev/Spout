@@ -60,7 +60,7 @@ public class WorldRenderer {
 
 	public void setup() {
 		world = client.getDefaultWorld();
-		// World world = client.getWorld("world");
+		//world = client.getWorlds().iterator().next();
 		material = (RenderMaterial) Spout.getFilesystem().getResource("material://Spout/resources/resources/materials/BasicMaterial.smt");
 
 		updateNearbyChunkMeshes(false);
@@ -85,9 +85,10 @@ public class WorldRenderer {
 	 */
 	public boolean updateNearbyChunkMeshes(boolean force) {
 		if (world == null) {
+			
 			world = client.getDefaultWorld();
 			if (world != null) System.out.println("World updated to " + world.getName() + "-" + world.getUID());
-			else System.out.println("World is null!");
+			//else System.out.println("World is null!");
 		}
 
 		if (world == null) {

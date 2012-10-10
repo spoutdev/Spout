@@ -51,7 +51,7 @@ public class SpriteBatch {
 	
 	public SpriteBatch() {
 		this.renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
-		this.projection = MathHelper.createOrthographic(1.0f, -1.0f, -1.0f, 1.0f, .1f, 2.0f);
+		this.projection = MathHelper.createIdentity();
 		this.view = MathHelper.createIdentity();
 	}
 	
