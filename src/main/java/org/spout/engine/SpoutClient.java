@@ -97,6 +97,7 @@ import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ClientFileSystem;
 import org.spout.engine.input.SpoutInput;
+import org.spout.engine.input.SpoutInputConfiguration;
 import org.spout.engine.listener.SpoutClientListener;
 import org.spout.engine.listener.channel.SpoutClientConnectListener;
 import org.spout.engine.protocol.SpoutClientSession;
@@ -258,14 +259,15 @@ public class SpoutClient extends SpoutEngine implements Client {
 		if (activePlayer == null) {
 			return;
 		}
-
+		
+		Transform ts = activePlayer.getTransform().getTransform();
+		
 		if (Mouse.isGrabbed()) {
-			Transform ts = activePlayer.getTransform().getTransform();
 			float pitch = ts.getRotation().getPitch();
 			float yaw = ts.getRotation().getYaw();
 
-			float mouseDX = -Mouse.getDX() * 0.16f;
-			float mouseDY = Mouse.getDY() * 0.16f;
+			float mouseDX = Mouse.getDX() * 0.16f;
+			float mouseDY = -Mouse.getDY() * 0.16f;
 
 			if (yaw + mouseDX >= 360)
 				yaw += mouseDX - 360;
@@ -283,50 +285,50 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 			//System.out.println("yaw: "+yaw+" pitch: "+pitch);
 			ts.setRotation(MathHelper.rotation(pitch, yaw, ts.getRotation().getRoll()));
-			activePlayer.getTransform().setTransform(ts);
 			//System.out.println(activePlayer.getTransform().getTransform().toMatrix().toString());
 		}
+		
+		if (!Keyboard.isCreated())
+			return;
 
-		boolean keyUp = Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.KEY_W);
-        boolean keyDown = Keyboard.isKeyDown(Keyboard.KEY_DOWN) || Keyboard.isKeyDown(Keyboard.KEY_S);
-        boolean keyLeft = Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_A);
-        boolean keyRight = Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.KEY_D);
-        boolean flyUp = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
-        boolean flyDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
+		boolean keyUp = Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.FORWARD.getString()));
+        boolean keyDown = Keyboard.isKeyDown(Keyboard.KEY_DOWN) || Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.BACKWARD.getString()));
+        boolean keyLeft = Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.LEFT.getString()));
+        boolean keyRight = Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.RIGHT.getString()));
+        boolean flyUp = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.UP.getString()));
+        boolean flyDown = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.DOWN.getString()));
 
-        Point point = new Point(Point.ONE,activePlayer.getWorld());
-
+        Point point = ts.getPosition();
+        
         if (keyUp) {
-        	point = point.multiply(activePlayer.getTransform().getTransform().forwardVector());
-        	//activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().forwardVector()));
+        	point = point.subtract(ts.forwardVector());
         }
         if (keyDown) {
-        	point = point.multiply(activePlayer.getTransform().getTransform().forwardVector().multiply(-1));
-        	//activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().forwardVector()));
+        	point = point.add(ts.forwardVector());
         }
         if (keyLeft) {
-        	point = point.multiply(activePlayer.getTransform().getTransform().rightVector());
-        	//activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().rightVector()));
+        	point = point.subtract(ts.rightVector());
         }
         if (keyRight) {
-        	point = point.multiply(activePlayer.getTransform().getTransform().rightVector().multiply(-1));
-        	//activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().rightVector()));
+        	point = point.add(ts.rightVector());
         }
         if (flyUp) {
-        	point = point.multiply(activePlayer.getTransform().getTransform().upVector());
-        	//activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().upVector()));
+        	point = point.add(ts.upVector());
 		}
         if (flyDown) {
-        	point = point.multiply(activePlayer.getTransform().getTransform().upVector().multiply(-1));
-        	//activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().upVector()));
+        	point = point.subtract(ts.upVector());
 		}
 
-		if (keyUp || keyDown || keyLeft || keyRight || flyUp || flyDown) {
+        ts.setPosition(point);
+		activePlayer.getTransform().setTransform(ts);
+		
+		/*if (keyUp || keyDown || keyLeft || keyRight || flyUp || flyDown) {
 			//point = new Point(point.normalize(),activePlayer.getWorld());
 			System.out.println("Translation : "+point.getX()+"/"+point.getY()+"/"+point.getZ());
 			System.out.println("Position : "+activePlayer.getTransform().getPosition().getX()+"/"+activePlayer.getTransform().getPosition().getY()+"/"+activePlayer.getTransform().getPosition().getZ());
 			activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(point));
-		}
+		}*/
+        
 
 		/*for (Flags f : activePlayer.input().getFlagSet()) {
 			switch(f) {
@@ -418,10 +420,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return Collections.<World>singletonList(activeWorld.get());
 	}
 
-	@Override
+	/*@Override
 	public SpoutClientWorld getDefaultWorld() {
 		return activeWorld.get();
-	}
+	}*/
 
 	@Override
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] data) {

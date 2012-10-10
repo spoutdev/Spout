@@ -31,8 +31,12 @@ import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
+import org.spout.api.Spout;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Matrix;
+import org.spout.api.math.Quaternion;
 
+import org.spout.engine.SpoutClient;
 import org.spout.engine.renderer.shader.variables.Mat4ShaderVariable;
 
 public class BasicShader extends ClientShader {
@@ -60,11 +64,22 @@ public class BasicShader extends ClientShader {
 			GL11.glLoadMatrix(matrixBuffer);
 
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
-			matrixBuffer.clear();
+			/*matrixBuffer.clear();
 			matrixBuffer.put(getViewMatrix().toArray());
 			matrixBuffer.flip();
 
-			GL11.glLoadMatrix(matrixBuffer);
+			GL11.glLoadMatrix(matrixBuffer);*/
+			
+			SpoutClient client = ((SpoutClient)Spout.getEngine());
+			Quaternion r = client.getActivePlayer().getTransform().getRotation();
+			Point p = client.getActivePlayer().getTransform().getPosition();
+			
+			GL11.glLoadIdentity();
+			GL11.glRotatef(r.getPitch(), 1, 0, 0);
+			GL11.glRotatef(r.getYaw(), 0, 1, 0);
+			GL11.glRotatef(r.getRoll(), 0, 0, 1);
+			GL11.glTranslatef(-p.getX(), -p.getY(), -p.getZ());
+			
 		} else {
 			super.assign();
 		}

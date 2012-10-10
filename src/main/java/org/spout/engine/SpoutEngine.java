@@ -110,6 +110,7 @@ import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.engine.filesystem.WorldFiles;
+import org.spout.engine.input.SpoutInputConfiguration;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.protocol.SpoutSessionRegistry;
 import org.spout.engine.protocol.builtin.SpoutProtocol;
@@ -149,6 +150,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	protected final ChannelGroup group = new DefaultChannelGroup();
 	private final AtomicBoolean setupComplete = new AtomicBoolean(false);
 	private final SpoutConfiguration config = new SpoutConfiguration();
+	private final SpoutInputConfiguration inputConfig = new SpoutInputConfiguration();
 	private final CompletionManager completions = new CompletionManagerImpl();
 	private final SyncedRootCommand rootCommand = new SyncedRootCommand(this);
 	private final File worldFolder = new File(".");
@@ -172,6 +174,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		this.arguments = args;
 		try {
 			config.load();
+			inputConfig.load();
 		} catch (ConfigurationException e) {
 			log("Error loading config: %0", Level.SEVERE, e.getMessage(), e);
 		}
