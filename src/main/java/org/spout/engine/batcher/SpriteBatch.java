@@ -30,6 +30,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 import org.spout.api.math.MathHelper;
+import org.spout.api.math.Rectangle;
 
 import org.lwjgl.opengl.GL11;
 import org.spout.api.math.Matrix;
@@ -39,7 +40,8 @@ import org.spout.engine.renderer.BatchVertexRenderer;
 
 public class SpriteBatch {
 	private class TextureRectangle {
-		public float x,y,w,h;
+		public Rectangle destination;
+		public Rectangle source;
 		public RenderMaterial material;
 	}
 	
@@ -63,23 +65,23 @@ public class SpriteBatch {
 		renderer.begin();
 		for(int i = 0; i < sprites.size(); i++) {
 			TextureRectangle rect = sprites.get(i);
-			renderer.addVertex(rect.x, rect.y);
+			renderer.addVertex(rect.destination.getX(), rect.destination.getY());
 			renderer.addColor(Color.white);
 			renderer.addTexCoord(0, 0);
-			renderer.addVertex(rect.x + rect.w, rect.y);
+			renderer.addVertex(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY());
 			renderer.addColor(Color.white);			
 			renderer.addTexCoord(1, 0);
-			renderer.addVertex(rect.x, rect.y + rect.h);
+			renderer.addVertex(rect.destination.getX(), rect.destination.getY() + rect.destination.getHeight());
 			renderer.addColor(Color.white);			
 			renderer.addTexCoord(0, 1);
 			
-			renderer.addVertex(rect.x + rect.w, rect.y);
+			renderer.addVertex(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY());
 			renderer.addColor(Color.white);			
 			renderer.addTexCoord(1, 0);
-			renderer.addVertex(rect.x + rect.w, rect.y + rect.h);
+			renderer.addVertex(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY() + rect.destination.getHeight());
 			renderer.addColor(Color.white);			
 			renderer.addTexCoord(1, 1);
-			renderer.addVertex(rect.x, rect.y + rect.h);
+			renderer.addVertex(rect.destination.getX(), rect.destination.getY() + rect.destination.getHeight());
 			renderer.addColor(Color.white);			
 			renderer.addTexCoord(0, 1);	
 			
@@ -101,10 +103,8 @@ public class SpriteBatch {
 	
 	public void draw(RenderMaterial material, float x, float y, float w, float h) {
 		TextureRectangle rect = new TextureRectangle();
-		rect.x = x;
-		rect.y = y;
-		rect.w = w;
-		rect.h = h;
+		rect.destination = new Rectangle(x,y,w,h);
+		rect.source = new Rectangle(0, 0, 1, 1);
 		rect.material = material;
 		sprites.add(rect);
 	}
