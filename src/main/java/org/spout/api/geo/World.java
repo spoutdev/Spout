@@ -446,4 +446,13 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	 */
 	@LiveWrite
 	public boolean setCuboid(CuboidBuffer buffer, Plugin plugin);
+
+	/**
+	 * Unloads the world from the server. Undefined behavior will occur
+	 * if any players are currently alive on the world while it is being
+	 * unloaded.
+	 * 
+	 * @param save
+	 */
+	public void unload(boolean save);
 }
