@@ -40,7 +40,7 @@ import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
 
 public class PrimitiveBatch {
-	Renderer renderer;
+	private final Renderer renderer;
 	private final Vector3[] cubeCorners = new Vector3[]{Vector3.ZERO, Vector3.UNIT_Y, new Vector3(0, 1, 1), Vector3.UNIT_Z,
 			Vector3.UNIT_X, new Vector3(1, 1, 0), Vector3.ONE, new Vector3(1, 0, 1)};
 

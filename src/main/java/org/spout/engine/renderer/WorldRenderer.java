@@ -231,9 +231,9 @@ public class WorldRenderer {
 			// at the world baby
 			// But here's my frustrum
 			// so cull me maybe?
-			if (client.getActiveCamera().getFrustum().intersects(renderer)) {
+			//if (client.getActiveCamera().getFrustum().intersects(renderer)) {
 				renderer.render(material);
-			}
+			//}
 		}
 	}
 }

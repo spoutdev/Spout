@@ -26,9 +26,6 @@
  */
 package org.spout.engine.renderer;
 
-import java.nio.FloatBuffer;
-
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import org.spout.api.render.RenderMaterial;
@@ -44,43 +41,28 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 	@Override
 	protected void doFlush() {
 		GL11.glNewList(displayList, GL11.GL_COMPILE);
-		FloatBuffer vBuffer = BufferUtils.createFloatBuffer(vertexBuffer.size());
-
-		vBuffer.clear();
-		vBuffer.put(vertexBuffer.toArray());
-		vBuffer.flip();
-
-		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-		GL11.glVertexPointer(4, 0, vBuffer);
-
-		/*if (useColors) {
-			vBuffer.clear();
-			vBuffer.put(colorBuffer.toArray());
-			vBuffer.flip();
+		
+		GL11.glBegin(renderMode);
+		
+		for (int i=0 ; i < numVertices ; i++) {
+			int index = i*4;
 			
-			GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-			GL11.glColorPointer(4, 0, vBuffer);
-		}*/
-
-		if (useNormals) {
-			vBuffer.clear();
-			vBuffer.put(normalBuffer.toArray());
-			vBuffer.flip();
-
-			GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-			GL11.glNormalPointer(0, vBuffer);
+			if (useColors) {
+				GL11.glColor4f(colorBuffer.get(index), colorBuffer.get(index+1), colorBuffer.get(index+2), colorBuffer.get(index+3));
+			}
+			
+			if (useNormals) {
+				GL11.glNormal3f(normalBuffer.get(index), normalBuffer.get(index+1), normalBuffer.get(index+2));
+			}
+			
+			if (useTextures) {
+				GL11.glTexCoord2f(uvBuffer.get(i*2), uvBuffer.get(i*2+1));
+			}
+			
+			GL11.glVertex4f(vertexBuffer.get(index), vertexBuffer.get(index+1), vertexBuffer.get(index+2), vertexBuffer.get(index+3));
 		}
 		
-		if (useTextures) {
-			FloatBuffer temp = BufferUtils.createFloatBuffer(uvBuffer.size());
-			temp.put(uvBuffer.toArray());
-			temp.flip();
-
-			GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-			GL11.glTexCoordPointer(2, 0, temp);
-		}
-
-		GL11.glDrawArrays(renderMode, 0, numVertices);
+		GL11.glEnd();
 		
 		GL11.glEndList();
 	}
