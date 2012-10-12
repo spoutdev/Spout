@@ -656,7 +656,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 			return null;
 		}
 
-		final World first = loadedWorlds.values().iterator().next();
+		World first = loadedWorlds.values().iterator().next(); 
 		return first;
 	}
 

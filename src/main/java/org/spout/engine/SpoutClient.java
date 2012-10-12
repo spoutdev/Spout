@@ -291,10 +291,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 		if (!Keyboard.isCreated())
 			return;
 
-		boolean keyUp = Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.FORWARD.getString()));
-        boolean keyDown = Keyboard.isKeyDown(Keyboard.KEY_DOWN) || Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.BACKWARD.getString()));
-        boolean keyLeft = Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.LEFT.getString()));
-        boolean keyRight = Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.RIGHT.getString()));
+		boolean keyUp = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.FORWARD.getString()));
+        boolean keyDown = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.BACKWARD.getString()));
+        boolean keyLeft = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.LEFT.getString()));
+        boolean keyRight = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.RIGHT.getString()));
         boolean flyUp = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.UP.getString()));
         boolean flyDown = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.DOWN.getString()));
 
@@ -390,7 +390,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		super.stop(stopMessage);
 	}
 
-	@Override
+	/*@Override //Because there is a conflict when the spout engine tries to load the world
 	public SpoutClientWorld getWorld(String name, boolean exact) {
 		SpoutClientWorld world = activeWorld.get();
 		if (world == null) {
@@ -403,7 +403,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		} else {
 			return null;
 		}
-	}
+	}*/
 
 	@Override
 	public SpoutClientWorld getWorld(UUID uid) {
@@ -535,19 +535,16 @@ public class SpoutClient extends SpoutEngine implements Client {
 			Mouse.setGrabbed(false);
 
 		worldRenderer.render();
-		try {
-			//System.out.println("view "+activeCamera.getView().toString());
-			Transform loc = new Transform(new Point(null, 0f, 0f, 0f), Quaternion.IDENTITY, Vector3.ONE);
-			mat.getShader().setUniform("View", activeCamera.getView());
-			mat.getShader().setUniform("Projection", activeCamera.getProjection());
-			mat.getShader().setUniform("Model", loc.toMatrix());
-			renderer.draw(mat);
+		//System.out.println("view "+activeCamera.getView().toString());
+		Transform loc = new Transform(new Point(null, 0f, 0f, 0f), Quaternion.IDENTITY, Vector3.ONE);
+		mat.getShader().setUniform("View", activeCamera.getView());
+		mat.getShader().setUniform("Projection", activeCamera.getProjection());
+		mat.getShader().setUniform("Model", loc.toMatrix());
+		renderer.draw(mat);
 
-			gui.begin();
-			gui.draw(mat, .25f, .25f, .25f, .25f);
-			gui.render();
-		} catch (Exception e) {}
-
+		gui.begin();
+		gui.draw(mat, .25f, .25f, .25f, .25f);
+		gui.render();
 	}
 
 	public WorldRenderer getWorldRenderer() {
