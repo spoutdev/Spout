@@ -1,8 +1,8 @@
 # Valid shader descriptor.  Renderer will select the shader version depending on which mode the client is started in
-Shader: shader://Spout/resources/shaders/guiShader.ssf
+Shader: shader://Spout/resources/resources/shaders/guiShader.ssf
 
 RenderState:
-	# Whether or not to use the Depth Buffer for rendering this material.  Defaults to True. 
+    # Whether or not to use the Depth Buffer for rendering this material.  Defaults to True. 
     Depth: true
     # View and projection matricies.  Used to override the rendering mode to a static matrix.  
     # null matrix uses Main Camera
@@ -32,6 +32,6 @@ RenderState:
 # Names match up to the name in the shader.  
 
 MaterialParams:
-    Diffuse: texture://Spout/resources/materials/testui.png
+    Diffuse: texture://Spout/resources/resources/materials/testui.png
     Color: color(1,1,1,1)
     

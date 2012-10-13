@@ -95,7 +95,7 @@ public class SpriteBatch {
 			rect.material.getShader().setUniform("View", this.view);
 			rect.material.getShader().setUniform("Projection", this.projection);
 			rect.material.getShader().setUniform("Model", this.view); //View is always an identity matrix.
-			renderer.render(rect.material, (i * 6), (i * 6) + 5);			
+			renderer.render(rect.material, i*6, i*6 + 6);			
 			
 		}
 		GL11.glEnable(GL11.GL_DEPTH_TEST);

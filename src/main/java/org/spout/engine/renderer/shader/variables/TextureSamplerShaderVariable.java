@@ -42,12 +42,17 @@ public class TextureSamplerShaderVariable extends ShaderVariable {
 	int textureID;
 	int textureNumber;
 	int sampler;
+	private final ClientTexture texture;
 
 	public TextureSamplerShaderVariable(int program, String name, Texture texture) {
 		super(program, name);
 		textureID = ((ClientTexture) texture).getTextureID();
-		
+		this.texture = (ClientTexture) texture;
 
+	}
+	
+	public ClientTexture getTexture() {
+		return texture;
 	}
 
 	public void set(Texture texture) {

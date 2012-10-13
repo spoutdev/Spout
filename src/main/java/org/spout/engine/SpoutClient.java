@@ -131,6 +131,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	//Test
 	private SpriteBatch gui;
+	private RenderMaterial guiMat;
 
 	public SpoutClient() {
 		this.filesystem = new ClientFileSystem();
@@ -521,6 +522,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		renderer.addCube(new Vector3(-0.5,-0.5,-0.5), Vector3.ONE, Color.RED, sides);
 		renderer.end();
 
+		guiMat = (RenderMaterial)this.getFilesystem().getResource("material://Spout/resources/resources/materials/GUIMaterial.smt");
 		gui = new SpriteBatch();
 	}
 
@@ -543,7 +545,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		renderer.draw(mat);
 
 		gui.begin();
-		gui.draw(mat, .25f, .25f, .25f, .25f);
+		gui.draw(guiMat, .25f, .25f, .25f, .25f);
 		gui.render();
 	}
 

@@ -38,6 +38,7 @@ import org.spout.api.math.Quaternion;
 
 import org.spout.engine.SpoutClient;
 import org.spout.engine.renderer.shader.variables.Mat4ShaderVariable;
+import org.spout.engine.renderer.shader.variables.TextureSamplerShaderVariable;
 
 public class BasicShader extends ClientShader {
 	FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(4 * 4);
@@ -56,6 +57,9 @@ public class BasicShader extends ClientShader {
 		}
 
 		if (compatabilityMode) {
+			if (textures.size() > 0)
+				textures.values().iterator().next().getTexture().bind();
+			
 			GL11.glMatrixMode(GL11.GL_PROJECTION);
 			matrixBuffer.clear();
 			matrixBuffer.put(getProjectionMatrix().toArray());

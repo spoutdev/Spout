@@ -33,6 +33,10 @@ import org.spout.api.render.RenderMaterial;
 public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 	int displayList;
 
+	/**
+	 * Batch Renderer using OpenGL 1.0 mode.
+	 * @param renderMode Mode to render in
+	 */
 	public GL11BatchVertexRenderer(int mode) {
 		super(mode);
 		displayList = GL11.glGenLists(1);
