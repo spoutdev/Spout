@@ -130,6 +130,14 @@ public interface TaskManager {
 	 * @return Future Future object related to the task
 	 */
 	public <T> Future<T> callSyncMethod(Object plugin, Callable<T> task, TaskPriority priority);
+	
+	/**
+	 * True if the task is an actively scheduled task
+	 * 
+	 * @param taskId
+	 * @return actived scheduled
+	 */
+	public boolean isQueued(int taskId);
 
 	/**
 	 * Removes task from scheduler

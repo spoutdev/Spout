@@ -26,11 +26,20 @@
  */
 package org.spout.api.geo;
 
+import java.util.Collection;
+
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.thread.LiveRead;
 
 public interface AreaRegionAccess extends AreaChunkAccess {
+
+	/**
+	 * Gets an unmodifiable collection of all loaded regions
+	 * 
+	 * @return all loaded regions
+	 */
+	public Collection<Region> getRegions();
 
 	/**
 	 * Gets the {@link Region} at region coordinates (x, y, z)
