@@ -44,7 +44,7 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 	
 	
 	/**
-	 * Batch Renderer using OpenGL 3.0 mode.
+	 * Batch Renderer using OpenGL 2.0 mode.
 	 * @param renderMode Mode to render in
 	 */
 	public GL20BatchVertexRenderer(int renderMode) {

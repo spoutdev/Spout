@@ -11,5 +11,4 @@ void main()
 {
     vec4 fontsample = texture(font, uvcoord);
     gl_FragColor = fontcolor * fontsample;
-    gl_FragColor = color;
 } 
