@@ -778,6 +778,11 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	@Override
+	public boolean isQueued(int taskId) {
+		return taskManager.isQueued(taskId);
+	}
+
+	@Override
 	public void cancelTask(int taskId) {
 		taskManager.cancelTask(taskId);
 	}

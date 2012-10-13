@@ -236,5 +236,10 @@ public class SpoutParallelTaskManager implements TaskManager {
 	public long getUpTime() {
 		return upTime.get();
 	}
-	
+
+	@Override
+	public boolean isQueued(int taskId) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
 }

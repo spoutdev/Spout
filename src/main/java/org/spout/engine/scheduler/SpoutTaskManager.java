@@ -211,6 +211,10 @@ public class SpoutTaskManager implements TaskManager {
 		return activeTasks.remove(task.getTaskId(), task);
 	}
 
+	public boolean isQueued(int taskId) {
+		return activeTasks.containsKey(taskId);
+	}
+
 	@Override
 	public void cancelTask(int taskId) {
 		cancelTask(activeTasks.get(taskId));
