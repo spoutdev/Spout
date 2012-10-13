@@ -139,50 +139,69 @@ public class ChunkMesh extends BaseMesh {
 		Vector3 p2 = null;
 		Vector3 p3 = null;
 		Vector3 p4 = null;
-
+		
+		/*   1--2
+		 *  /| /|
+		 * 5--6 |   
+		 * | 0|-3    Y - Bottom < TOP
+		 * |/ |/     |
+		 * 4--7      O-- X - North < SOUTH
+		 *          /
+		 *         Z - East < WEST
+		 */
+		
+		Vector3 vertex0 = base.add(0, 0, 0);
+		Vector3 vertex1 = base.add(0, 1, 0);
+		Vector3 vertex2 = base.add(1, 1, 0);
+		Vector3 vertex3 = base.add(1, 0, 0);
+		Vector3 vertex4 = base.add(0, 0, 1);
+		Vector3 vertex5 = base.add(0, 1, 1);
+		Vector3 vertex6 = base.add(1, 1, 1);
+		Vector3 vertex7 = base.add(1, 0, 1);
+		
 		switch (face) {
 		case TOP:
-			p1 = base.add(0, 1, 0);
-			p2 = base.add(0, 1, 1);
-			p3 = base.add(1, 1, 0);
-			p4 = base.add(1, 1, 1);
+			p1 = vertex1;
+			p2 = vertex2;
+			p3 = vertex6;
+			p4 = vertex5;
 			break;
 		case BOTTOM:
-			p1 = base.add(0, 0, 0);
-			p2 = base.add(0, 0, 1);
-			p3 = base.add(1, 0, 0);
-			p4 = base.add(1, 0, 1);
+			p1 = vertex0;
+			p2 = vertex4;
+			p3 = vertex7;
+			p4 = vertex3;
 			break;
 		case NORTH:
-			p1 = base.add(0, 0, 0);
-			p2 = base.add(0, 0, 1);
-			p3 = base.add(0, 1, 0);
-			p4 = base.add(0, 1, 1);
+			p1 = vertex0;
+			p2 = vertex1;
+			p3 = vertex5;
+			p4 = vertex4;
 			break;
 		case SOUTH:
-			p1 = base.add(1, 0, 0);
-			p2 = base.add(1, 0, 1);
-			p3 = base.add(1, 1, 0);
-			p4 = base.add(1, 1, 1);
+			p1 = vertex7;
+			p2 = vertex6;
+			p3 = vertex2;
+			p4 = vertex3;
 			break;
 		case WEST:
-			p1 = base.add(0, 0, 1);
-			p2 = base.add(1, 0, 1);
-			p3 = base.add(0, 1, 1);
-			p4 = base.add(1, 1, 1);
+			p1 = vertex5;
+			p2 = vertex6;
+			p3 = vertex7;
+			p4 = vertex4;
 			break;
 		case EAST:
-			p1 = base.add(0, 0, 0);
-			p2 = base.add(1, 0, 0);
-			p3 = base.add(0, 1, 0);
-			p4 = base.add(1, 1, 0);
+			p1 = vertex0;
+			p2 = vertex3;
+			p3 = vertex2;
+			p4 = vertex1;
 			break;
 		}
 		
 		Vector2 uv1 = Vector2.ZERO;
 		Vector2 uv2 = new Vector2(0, 1);
-		Vector2 uv3 = new Vector2(1, 0);
-		Vector2 uv4 = Vector2.ONE;
+		Vector2 uv3 = Vector2.ONE;
+		Vector2 uv4 = new Vector2(1, 0);
 
 		Color color = getColor(m); // Temporary testing color
 		Vertex v1 = new Vertex(p1, face.getOffset(), uv1);
@@ -198,7 +217,7 @@ public class ChunkMesh extends BaseMesh {
 		v4.color = color;
 
 		MeshFace f1 = new MeshFace(v1, v2, v3);
-		MeshFace f2 = new MeshFace(v2, v3, v4);
+		MeshFace f2 = new MeshFace(v3, v4, v1);
 		faces.add(f1);
 		faces.add(f2);
 	}

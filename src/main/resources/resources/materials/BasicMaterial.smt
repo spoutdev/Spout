@@ -1,5 +1,5 @@
 # Valid shader descriptor.  Renderer will select the shader version depending on which mode the client is started in
-Shader: shader://Spout/resources/resources/shaders/guiShader.ssf
+Shader: shader://Spout/resources/resources/shaders/basic.ssf
 
 RenderState:
     # Whether or not to use the Depth Buffer for rendering this material.  Defaults to True.
