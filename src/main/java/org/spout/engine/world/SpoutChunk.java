@@ -1367,8 +1367,8 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	@Override
-	public void setBlockComponent(int x, int y, int z, @SuppressWarnings("rawtypes") BlockComponent component) {
-		getRegion().setBlockComponent(x, y, z, component);
+	public <T extends BlockComponent> T setBlockComponent(int x, int y, int z, @SuppressWarnings("rawtypes") Class<T> component) {
+		return getRegion().setBlockComponent(x, y, z, component);
 	}
 
 	@Override
