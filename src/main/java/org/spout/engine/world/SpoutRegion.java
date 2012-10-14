@@ -1104,7 +1104,7 @@ public class SpoutRegion extends Region {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public void setBlockComponent(int x, int y, int z, BlockComponent component) {
+	public <T extends BlockComponent> T setBlockComponent(int x, int y, int z, Class<T> component) {
 		Point pos = new Point(getWorld(), x, y, z);
 		Entity entity = null;
 		for (Entity e : getAll()) {
@@ -1119,11 +1119,12 @@ public class SpoutRegion extends Region {
 		if (entity.has(BlockComponent.class)) {
 			entity.detach(BlockComponent.class);
 		}
-		entity.add(component.getClass());
+		return entity.add(component);
 	}
 
 	@Override
-	public BlockComponent<?> getBlockComponent(int x, int y, int z) {
+	@SuppressWarnings("unchecked")
+	public <T extends BlockComponent<?>> T getBlockComponent(int x, int y, int z) {
 		Point pos = new Point(getWorld(), x, y, z);
 		Entity entity = null;
 		for (Entity e : getAll()) {
@@ -1132,7 +1133,7 @@ public class SpoutRegion extends Region {
 				break;
 			}
 		}
-		return entity == null ? null : entity.get(BlockComponent.class);
+		return (T) (entity == null ? null : entity.get(BlockComponent.class));
 	}
 
 	@Override
