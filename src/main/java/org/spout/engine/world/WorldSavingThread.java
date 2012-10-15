@@ -131,7 +131,7 @@ public class WorldSavingThread extends Thread{
 			this.rx = chunk.getRegion().getX();
 			this.ry = chunk.getRegion().getY();
 			this.rz = chunk.getRegion().getZ();
-			this.snapshot = (SpoutChunkSnapshot) chunk.getSnapshot(SnapshotType.BOTH, EntityType.ENTITIES, ExtraData.DATATABLE);
+			this.snapshot = (SpoutChunkSnapshot) chunk.getSnapshot(SnapshotType.BOTH, EntityType.BOTH, ExtraData.DATATABLE);
 			this.blockUpdates = chunk.getRegion().getDynamicBlockUpdates(chunk);
 			this.chunk = chunk;
 		}

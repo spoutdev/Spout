@@ -26,6 +26,8 @@
  */
 package org.spout.engine.filesystem;
 
+import gnu.trove.procedure.TShortObjectProcedure;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -46,6 +48,7 @@ import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
 import org.spout.api.Spout;
 import org.spout.api.component.Component;
+import org.spout.api.component.components.BlockComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.EntitySnapshot;
@@ -54,6 +57,8 @@ import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.cuboid.ChunkSnapshot.BlockComponentSnapshot;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
@@ -68,6 +73,7 @@ import org.spout.api.plugin.CommonClassLoader;
 import org.spout.api.util.NBTMapper;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.hashing.ByteTripleHashed;
+import org.spout.api.util.hashing.NibbleQuadHashed;
 import org.spout.api.util.hashing.SignedTenBitTripleHashed;
 import org.spout.api.util.sanitation.SafeCast;
 import org.spout.api.util.sanitation.StringSanitizer;
@@ -75,6 +81,7 @@ import org.spout.api.util.typechecker.TypeChecker;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutPlayer;
+import org.spout.engine.world.ChunkComponentOwner;
 import org.spout.engine.world.FilteredChunk;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutChunk.PopulationState;
@@ -92,6 +99,7 @@ import org.spout.nbt.IntTag;
 import org.spout.nbt.ListTag;
 import org.spout.nbt.LongTag;
 import org.spout.nbt.ShortArrayTag;
+import org.spout.nbt.ShortTag;
 import org.spout.nbt.StringTag;
 import org.spout.nbt.Tag;
 import org.spout.nbt.stream.NBTInputStream;
@@ -346,6 +354,7 @@ public class WorldFiles {
 		chunkTags.put(new ByteArrayTag("blockLight", snapshot.getBlockLight()));
 		chunkTags.put(new CompoundTag("entities", saveEntities(snapshot.getEntities())));
 		chunkTags.put(saveDynamicUpdates(blockUpdates));
+		chunkTags.put(saveBlockComponents(snapshot.getBlockComponents()));
 		chunkTags.put(new ByteArrayTag("extraData", snapshot.getDataMap().serialize()));
 
 		CompoundTag chunkCompound = new CompoundTag("chunk", chunkTags);
@@ -408,8 +417,36 @@ public class WorldFiles {
 			CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("entities")), (CompoundMap) null, CompoundMap.class);
 			loadEntities(r, entityMap, dataForRegion.loadedEntities);
 
-			List<? extends CompoundTag> updateList = checkerListCompoundTag.checkTag(map.get("dynamic_updates"), null);
+			List<? extends CompoundTag> updateList = checkerListCompoundTag.checkTag(map.get("dynamic_updates"));
 			loadDynamicUpdates(updateList, dataForRegion.loadedUpdates);
+			
+			List<? extends CompoundTag> componentsList = checkerListCompoundTag.checkTag(map.get("block_components"), null);
+			
+			//Load Block components
+			//This is a three-part process
+			//1.) Scan the blocks and add them to the chunk map
+			//2.) Load the datatables associated with the block components
+			//3.) Attach the components
+			for (int dx = 0; dx < Chunk.BLOCKS.SIZE; dx++) {
+				for (int dy = 0; dy < Chunk.BLOCKS.SIZE; dy++) {
+					for (int dz = 0; dz < Chunk.BLOCKS.SIZE; dz++) {
+						int index = (y << 8) + (z << 4) + x;
+						BlockMaterial bm = (BlockMaterial) MaterialRegistry.get(BlockFullState.getPacked(blocks[index], data[index]));
+						BlockComponent<?> component = bm.getBlockComponent();
+						if (component != null) {
+							short packed = NibbleQuadHashed.key(dx, dy, dz, 0);
+							//Does not need synchronized, the chunk is not yet accessible outside this thread
+							chunk.getBlockComponents().put(packed, component);
+							ChunkComponentOwner owner = new ChunkComponentOwner();
+							component.attachTo(owner);
+						}
+					}
+				}
+			}
+			//Load data associated with block components
+			loadBlockComponents(chunk, componentsList);
+			//Attach block components
+			chunk.getBlockComponents().forEachEntry(new AttachComponentProcedure());
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -421,6 +458,18 @@ public class WorldFiles {
 			}
 		}
 		return chunk;
+	}
+	
+	private static class AttachComponentProcedure implements TShortObjectProcedure<BlockComponent<?>> {
+		@Override
+		public boolean execute(short a, BlockComponent<?> b) {
+			try {
+				b.onAttached();
+			} catch (Exception e) {
+				Spout.getLogger().log(Level.SEVERE, "Unhandled exception attaching block component", e);
+			}
+			return true;
+		}
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -589,6 +638,34 @@ public class WorldFiles {
 		return tag;
 	}
 
+	private static ListTag<CompoundTag> saveBlockComponents(List<BlockComponentSnapshot> components) {
+		List<CompoundTag> list = new ArrayList<CompoundTag>(components.size());
+		
+		for (BlockComponentSnapshot snapshot : components) {
+			CompoundTag tag = saveBlockComponent(snapshot);
+			if (tag != null) {
+				list.add(tag);
+			}
+		}
+		
+		return new ListTag<CompoundTag>("block_components", CompoundTag.class, list);
+	}
+
+	private static CompoundTag saveBlockComponent(BlockComponentSnapshot snapshot) {
+		if (!snapshot.getData().isEmpty()) {
+			CompoundMap map = new CompoundMap();
+			byte[] data = snapshot.getData().serialize();
+
+			if (data != null && data.length > 0) {
+				short packed = NibbleQuadHashed.key(snapshot.getX(), snapshot.getY(), snapshot.getZ(), 0);
+				map.put(new ShortTag("packed", packed));
+				map.put(new ByteArrayTag("data", data));
+			}
+		}
+
+		return null;
+	}
+
 	private static ListTag<CompoundTag> saveDynamicUpdates(List<DynamicBlockUpdate> updates) {
 		List<CompoundTag> list = new ArrayList<CompoundTag>(updates.size());
 
@@ -602,6 +679,27 @@ public class WorldFiles {
 		return new ListTag<CompoundTag>("dynamic_updates", CompoundTag.class, list);
 	}
 
+	private static void loadBlockComponents(SpoutChunk chunk, List<? extends CompoundTag> list) {
+		if (list == null) {
+			return;
+		}
+
+		for (CompoundTag compoundTag : list) {
+			CompoundMap map = compoundTag.getValue();
+			int packed = SafeCast.toInt(NBTMapper.toTagValue(map.get("packed")), 0);
+			ByteArrayTag data = (ByteArrayTag) map.get("data");
+	
+			BlockComponent<?> component = chunk.getBlockComponents().get((short) packed);
+			if (component != null) {
+				try {
+					component.getOwner().getData().deserialize(data.getValue());
+				} catch (IOException e) {
+					Spout.getLogger().log(Level.SEVERE, "Unhandled exception deserializing block component data", e);
+				}
+			}
+		}
+	}
+	
 	private static CompoundTag saveDynamicUpdate(DynamicBlockUpdate update) {
 		CompoundMap map = new CompoundMap();
 

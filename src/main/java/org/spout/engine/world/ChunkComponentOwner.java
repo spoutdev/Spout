@@ -24,48 +24,24 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.entity.component;
+package org.spout.engine.world;
 
-import org.spout.api.component.components.EntityComponent;
-import org.spout.api.component.components.ModelComponent;
-import org.spout.api.component.components.TransformComponent;
-import org.spout.api.math.Matrix;
-import org.spout.api.render.RenderMaterial;
-import org.spout.engine.batcher.PrimitiveBatch;
-import org.spout.engine.mesh.BaseMesh;
+import java.util.Collection;
+import java.util.Collections;
 
-public class EntityRendererComponent extends EntityComponent {
-	
-	ModelComponent model;
-	TransformComponent transform;
-	
-	PrimitiveBatch batch;
-	
-	boolean dirty = true;
-	
+import org.spout.api.component.Component;
+import org.spout.api.component.ComponentOwner;
+import org.spout.api.component.components.DatatableComponent;
+
+public class ChunkComponentOwner implements ComponentOwner {
+	private final DatatableComponent data = new DatatableComponent();
 	@Override
-	public void onAttached(){
-		model = getOwner().get(ModelComponent.class);
-		transform = getOwner().getTransform();
-		batch = new PrimitiveBatch();
+	public Collection<Component> values() {
+		return Collections.emptyList();
 	}
-	
-	
-	public void render() {
-		if(model == null) return;
-		BaseMesh m = (BaseMesh)model.getModel().getMesh();
-		
-		if(dirty) {
-			m.batch();
-			dirty = false;
-		}
-		Matrix modelMatrix = transform.getTransformation();
-		RenderMaterial mat = model.getModel().getRenderMaterial();
-		
-		mat.getShader().setUniform("Model", modelMatrix);		
-		
-		m.render(mat);
-		
+
+	@Override
+	public DatatableComponent getData() {
+		return data;
 	}
-	
 }

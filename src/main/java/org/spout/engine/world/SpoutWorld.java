@@ -1114,11 +1114,6 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public void setBlockComponent(int x, int y, int z, @SuppressWarnings("rawtypes") BlockComponent component) {
-		getRegionFromBlock(x, y, z).setBlockComponent(x, y, z, component);
-	}
-
-	@Override
 	public BlockComponent<?> getBlockComponent(int x, int y, int z) {
 		return this.getRegionFromBlock(x, y, z).getBlockComponent(x, y, z);
 	}

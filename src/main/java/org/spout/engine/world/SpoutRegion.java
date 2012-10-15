@@ -621,6 +621,19 @@ public class SpoutRegion extends Region {
 		}
 	}
 
+	private void updateBlockComponents(float dt) {
+		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
+			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
+				for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+					SpoutChunk chunk = chunks[dx][dy][dz].get();
+					if (chunk != null && chunk.isLoaded()) {
+						chunk.tickBlockComponents(dt);
+					}
+				}
+			}
+		}
+	}
+
 	private boolean isVisibleToPlayers() {
 		if (this.entityManager.getPlayers().size() > 0) {
 			return true;
@@ -713,9 +726,11 @@ public class SpoutRegion extends Region {
 	public void startTickRun(int stage, long delta) {
 		switch (stage) {
 			case 0: {
+				final float dt = delta / 1000F;
 				taskManager.heartbeat(delta);
 				updateAutosave();
-				updateEntities(delta / 1000F);
+				updateBlockComponents(dt);
+				updateEntities(dt);
 				updateLighting();
 				updatePopulation();
 				unloadChunks();
@@ -1102,37 +1117,9 @@ public class SpoutRegion extends Region {
 		return this.getChunkFromBlock(x, y, z).addBlockDataField(x, y, z, bits, value, source);
 	}
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public void setBlockComponent(int x, int y, int z, BlockComponent component) {
-		Point pos = new Point(getWorld(), x, y, z);
-		Entity entity = null;
-		for (Entity e : getAll()) {
-			if (e.getTransform().getPosition().equals(pos)) {
-				entity = e;
-				break;
-			}
-		}
-		if (entity == null) {
-			entity = getWorld().createAndSpawnEntity(pos, null, LoadOption.NO_LOAD);
-		}
-		if (entity.has(BlockComponent.class)) {
-			entity.detach(BlockComponent.class);
-		}
-		entity.add(component.getClass());
-	}
-
 	@Override
 	public BlockComponent<?> getBlockComponent(int x, int y, int z) {
-		Point pos = new Point(getWorld(), x, y, z);
-		Entity entity = null;
-		for (Entity e : getAll()) {
-			if (e.getTransform().getPosition().equals(pos)) {
-				entity = e;
-				break;
-			}
-		}
-		return entity == null ? null : entity.get(BlockComponent.class);
+		return this.getChunkFromBlock(x, y, z).getBlockComponent(x, y, z);
 	}
 
 	@Override
