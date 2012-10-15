@@ -129,6 +129,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private final ClientBootstrap bootstrap = new ClientBootstrap();
 
 
+	private final boolean wireframe = false;
+	
 	//Test
 	private SpriteBatch gui;
 
@@ -266,8 +268,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 			float pitch = ts.getRotation().getPitch();
 			float yaw = ts.getRotation().getYaw();
 
-			float mouseDX = Mouse.getDX() * 0.16f;
-			float mouseDY = -Mouse.getDY() * 0.16f;
+			float mouseDX = -Mouse.getDX() * 0.16f;
+			float mouseDY = Mouse.getDY() * 0.16f;
 
 			if (yaw + mouseDX >= 360)
 				yaw += mouseDX - 360;
@@ -277,7 +279,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 				yaw += mouseDX;
 
 			if (pitch + mouseDY>=-80 && pitch + mouseDY<=80)
-				pitch -= mouseDY;
+				pitch += mouseDY;
 			else if (pitch + mouseDY<-80)
 				pitch = -80;
 			else if (pitch + mouseDY>80)
@@ -511,6 +513,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClearColor((135.f/255.0f), 206.f/255.f, 250.f/255.f, 0);
+		
+		if(wireframe) {
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+			
+		}
 
 		worldRenderer = new WorldRenderer(this);
 		worldRenderer.setup();

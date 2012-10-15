@@ -66,26 +66,31 @@ public class SpriteBatch {
 		for(int i = 0; i < sprites.size(); i++) {
 			TextureRectangle rect = sprites.get(i);
 
-			renderer.addVertex(rect.destination.getX(), rect.destination.getY());
-			renderer.addColor(Color.white);
-			renderer.addTexCoord(0, 0);
-			renderer.addVertex(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY());
-			renderer.addColor(Color.white);			
-			renderer.addTexCoord(1, 0);
 			renderer.addVertex(rect.destination.getX(), rect.destination.getY() + rect.destination.getHeight());
 			renderer.addColor(Color.white);			
 			renderer.addTexCoord(0, 1);			
 			
+			renderer.addVertex(rect.destination.getX(), rect.destination.getY());
+			renderer.addColor(Color.white);
+			renderer.addTexCoord(0, 0);
 			
 			renderer.addVertex(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY());
 			renderer.addColor(Color.white);			
 			renderer.addTexCoord(1, 0);
-			renderer.addVertex(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY() + rect.destination.getHeight());
-			renderer.addColor(Color.white);			
-			renderer.addTexCoord(1, 1);
+			
+			
 			renderer.addVertex(rect.destination.getX(), rect.destination.getY() + rect.destination.getHeight());
 			renderer.addColor(Color.white);			
 			renderer.addTexCoord(0, 1);	
+			
+			renderer.addVertex(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY());
+			renderer.addColor(Color.white);			
+			renderer.addTexCoord(1, 0);
+			
+			renderer.addVertex(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY() + rect.destination.getHeight());
+			renderer.addColor(Color.white);			
+			renderer.addTexCoord(1, 1);
+			
 			
 		}
 		renderer.end();
@@ -97,7 +102,7 @@ public class SpriteBatch {
 			rect.material.getShader().setUniform("View", this.view);
 			rect.material.getShader().setUniform("Projection", this.projection);
 			rect.material.getShader().setUniform("Model", this.view); //View is always an identity matrix.
-			renderer.render(rect.material, (i * 6), (i * 6) + 5);			
+			renderer.render(rect.material, (i * 6), 6);			
 			
 		}
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
