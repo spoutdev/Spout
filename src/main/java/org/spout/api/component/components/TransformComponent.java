@@ -48,7 +48,7 @@ public class TransformComponent extends EntityComponent {
 	public void onTick(float dt) {
 		if (!transform.getPosition().getWorld().equals(transformLive.getPosition().getWorld())) {
 			if (EntityChangeWorldEvent.getHandlerList().getRegisteredListeners().length > 0) {
-				Spout.getEventManager().callEvent(new EntityChangeWorldEvent(getHolder(), transform.getPosition().getWorld(), transformLive.getPosition().getWorld()));
+				Spout.getEventManager().callEvent(new EntityChangeWorldEvent(getOwner(), transform.getPosition().getWorld(), transformLive.getPosition().getWorld()));
 			}
 		}
 	}
@@ -87,7 +87,7 @@ public class TransformComponent extends EntityComponent {
 
 	public void setPosition(Point position) {
 		if (position == null) {
-			getHolder().remove();
+			getOwner().remove();
 			return;
 		}
 		transformLive.setPosition(position);
@@ -103,7 +103,7 @@ public class TransformComponent extends EntityComponent {
 
 	public void setRotation(Quaternion rotation) {
 		if (rotation == null) {
-			getHolder().remove();
+			getOwner().remove();
 			return;
 		}
 		transformLive.setRotation(rotation);
@@ -115,7 +115,7 @@ public class TransformComponent extends EntityComponent {
 
 	public void setScale(Vector3 scale) {
 		if (scale == null) {
-			getHolder().remove();
+			getOwner().remove();
 			return;
 		}
 		transformLive.setScale(scale);

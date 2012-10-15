@@ -26,15 +26,11 @@
  */
 package org.spout.api.component;
 
-import java.util.Collection;
-
-import org.spout.api.component.components.DatatableComponent;
-
 /**
  * Represents an abstract holder, which contains components that may be added
  * and removed from it.
  */
-public interface ComponentHolder {
+public interface ComponentHolder extends ComponentOwner{
 
 	/**
 	 * Adds the component of the specified type to the holder and returns it if it is not present.
@@ -87,16 +83,4 @@ public interface ComponentHolder {
 	 * @return true if the component exists in the holder
 	 */
 	public boolean hasExact(Class<? extends Component> type);
-
-	/**
-	 * Gets all components held by this component holder.
-	 * @return The components held by this holder
-	 */
-	public Collection<Component> values();
-
-	/**
-	 * Gets the datatable component held by this component holder.
-	 * @return Gets the datatable held by this holder
-	 */
-	public DatatableComponent getData();
 }

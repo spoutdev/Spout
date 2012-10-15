@@ -27,7 +27,7 @@
 package org.spout.api.component.components;
 
 import org.spout.api.component.Component;
-import org.spout.api.component.ComponentHolder;
+import org.spout.api.component.ComponentOwner;
 import org.spout.api.component.WorldComponentHolder;
 
 public class WorldComponent extends Component {
@@ -35,7 +35,7 @@ public class WorldComponent extends Component {
 	}
 
 	@Override
-	public boolean attachTo(ComponentHolder holder) {
+	public boolean attachTo(ComponentOwner holder) {
 		if (holder instanceof WorldComponentHolder) {
 			return super.attachTo(holder);
 		} else {
@@ -44,7 +44,7 @@ public class WorldComponent extends Component {
 	}
 
 	@Override
-	public WorldComponentHolder getHolder() {
-		return (WorldComponentHolder) super.getHolder();
+	public WorldComponentHolder getOwner() {
+		return (WorldComponentHolder) super.getOwner();
 	}
 }

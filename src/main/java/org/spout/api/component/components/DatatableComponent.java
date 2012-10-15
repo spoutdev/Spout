@@ -40,6 +40,10 @@ import org.spout.api.map.DefaultedKey;
 public final class DatatableComponent extends Component implements SerializableMap {
 	private final ManagedHashMap dataMap;
 
+	public DatatableComponent(ManagedHashMap data) {
+		this.dataMap = data;
+	}
+
 	public DatatableComponent(byte[] data) {
 		this.dataMap = new ManagedHashMap();
 		if (data != null && data.length > 0) {
@@ -52,7 +56,7 @@ public final class DatatableComponent extends Component implements SerializableM
 	}
 
 	public DatatableComponent() {
-		this(null);
+		this((byte[])null);
 	}
 
 	public ManagedHashMap getBaseMap() {

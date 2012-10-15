@@ -24,58 +24,26 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.component.components;
+package org.spout.api.component;
 
-import org.spout.api.Source;
-import org.spout.api.component.Component;
-import org.spout.api.component.ComponentOwner;
-import org.spout.api.entity.Entity;
-import org.spout.api.event.player.PlayerInteractEvent.Action;
+import java.util.Collection;
+
+import org.spout.api.component.components.DatatableComponent;
 
 /**
- * Represents an attachment to a entity that can respond to Ticks.
+ * Represents an object which may own components.
  */
-public abstract class EntityComponent extends Component {
-	@Override
-	public Entity getOwner() {
-		return (Entity) super.getOwner();
-	}
-
-	@Override
-	public final boolean attachTo(ComponentOwner holder) {
-		if (holder instanceof Entity) {
-			return super.attachTo(holder);
-		} else {
-			return false;
-		}
-	}
+public interface ComponentOwner {
 
 	/**
-	 * Called when the parent entity is spawned into the world.
-	 * Will only be called if the entity was not already spawned before this component was attached.
+	 * Gets all components held by this component owner.
+	 * @return The components held by this owner
 	 */
-	public void onSpawned() {
-	}
+	public Collection<Component> values();
 
 	/**
-	 * Called when the entity changes from unobserved to observed.
+	 * Gets the datatable component held by this component owner.
+	 * @return Gets the datatable held by this owner
 	 */
-	public void onObserved() {
-	}
-
-	/**
-	 * Called when the entity changes from observed to unobserved.
-	 */
-	public void onUnObserved() {
-	}
-
-	/**
-	 * Called when the entity is interacted with.
-	 * 
-	 * @param action being performed
-	 * @param source performing the action
-	 */
-	public void onInteract(Action action, Source source) {
-		
-	}
+	public DatatableComponent getData();
 }

@@ -66,7 +66,7 @@ public class CameraComponent extends EntityComponent implements Camera {
 
 	@Override
 	public void updateView() {		
-		view = MathHelper.translate(getHolder().getTransform().getPosition()).multiply(MathHelper.rotate(getHolder().getTransform().getRotation()));
+		view = MathHelper.translate(getOwner().getTransform().getPosition()).multiply(MathHelper.rotate(getOwner().getTransform().getRotation()));
 	}
 
 	@Override

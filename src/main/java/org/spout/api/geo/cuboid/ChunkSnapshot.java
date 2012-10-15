@@ -28,6 +28,7 @@ package org.spout.api.geo.cuboid;
 
 import java.util.List;
 
+import org.spout.api.component.components.BlockComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.generator.biome.BiomeManager;
@@ -57,7 +58,7 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	}
 
 	/**
-	 * Gets a copy of the raw block ids
+	 * Gets a copy of the raw block ids.
 	 * 
 	 * @return raw block ids
 	 */
@@ -87,18 +88,18 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	public abstract byte[] getSkyLight();
 
 	/**
-	 * Gets the region that this chunk is located in
+	 * Gets the region that this chunk is located in.
 	 *
 	 * @return
 	 */
 	public abstract Region getRegion();
 
 	/**
-	 * Gets the entities in the chunk at the last snapshot
+	 * Gets an unmodifiable list of all of the entity snapshots
+	 * associated with this chunk.
 	 *
 	 * @return the entities
 	 */
-	@SnapshotRead
 	public abstract List<EntitySnapshot> getEntities();
 
 	/**
@@ -117,13 +118,21 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	public abstract BiomeManager getBiomeManager();
 
 	/**
-	 * A thread-safe copy of the map of data attached to the chunk
+	 * A thread-safe copy of the map of data attached to the chunk.
 	 *
 	 * @return data map
 	 */
 	public abstract SerializableMap getDataMap();
 
-	public enum SnapshotType {
+	/**
+	 * Gets a unmodifiable list of all of the block component snapshots
+	 * associated with this chunk.
+	 * 
+	 * @return list of block component snapshots
+	 */
+	public abstract List<BlockComponentSnapshot> getBlockComponents();
+
+	public static enum SnapshotType {
 		/**
 		 * Loads no block data (ids, data, skylight, blocklight) in the snapshot
 		 */
@@ -146,20 +155,26 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 		BOTH,
 	}
 
-	public enum EntityType {
+	public static enum EntityType {
 		/**
 		 * Saves no entity information in the snapshot
 		 */
 		NO_ENTITIES,
 		/**
-		 * Saves a hard reference to entities in the snapshot
-		 * 
-		 * Be sure to dispose of the snapshot properly.
+		 * Saves class and datatable information regarding block components in the snapshot
+		 */
+		BLOCK_COMPONENTS,
+		/**
+		 * Saves entity snapshot information
 		 */
 		ENTITIES,
+		/**
+		 * Saves both entity and block component information in the snapshot
+		 */
+		BOTH
 	}
 
-	public enum ExtraData {
+	public static enum ExtraData {
 		/**
 		 * Loads no extra data in the snapshot
 		 */
@@ -176,5 +191,42 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 		 * Loads both biome and datatable information in the snapshot
 		 */
 		BOTH;
+	}
+
+	public static interface BlockComponentSnapshot {
+		/**
+		 * Gets the world block x-coordinate for this snapshot
+		 * 
+		 * @return x-coordinate
+		 */
+		public int getX();
+
+		/**
+		 * Gets the world block x-coordinate for this snapshot
+		 * 
+		 * @return y-coordinate
+		 */
+		public int getY();
+
+		/**
+		 * Gets the world block x-coordinate for this snapshot
+		 * 
+		 * @return z-coordinate
+		 */
+		public int getZ();
+
+		/**
+		 * Gets the block component class
+		 * 
+		 * @return block component class
+		 */
+		public Class<? extends BlockComponent<?>> getComponent();
+
+		/**
+		 * Gets a copy of the block component data
+		 * 
+		 * @return data
+		 */
+		public SerializableMap getData();
 	}
 }

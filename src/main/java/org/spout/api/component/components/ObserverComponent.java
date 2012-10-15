@@ -26,8 +26,6 @@
  */
 package org.spout.api.component.components;
 
-import org.spout.api.geo.cuboid.Chunk;
-
 /**
  * Component that represents the an entity that observes a radius of chunks
  */
@@ -39,9 +37,9 @@ public class ObserverComponent extends EntityComponent {
 
 	@Override
 	public void onAttached() {
-		getHolder().setObserver(true);
-		getHolder().setSavable(false);
-		getHolder().setViewDistance(CHUNK_VIEW_DISTANCE);
+		getOwner().setObserver(true);
+		getOwner().setSavable(false);
+		getOwner().setViewDistance(CHUNK_VIEW_DISTANCE);
 	}
 
 	@Override

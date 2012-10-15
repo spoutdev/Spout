@@ -90,10 +90,10 @@ public class NetworkComponent extends EntityComponent {
 	 * @param ignoreHolder If true, the holder will be excluded from being sent the protocol event (only valid if the holder has a NetworkSynchronier i.e. Player)
 	 */
 	public void callProtocolEvent(ProtocolEvent event, boolean ignoreHolder) {
-		Set<? extends Player> players = getHolder().getChunk().getObservingPlayers();
-		if (getHolder() instanceof Player && ignoreHolder) {
-			if (players.contains(getHolder())) {
-				players.remove(getHolder());
+		Set<? extends Player> players = getOwner().getChunk().getObservingPlayers();
+		if (getOwner() instanceof Player && ignoreHolder) {
+			if (players.contains(getOwner())) {
+				players.remove(getOwner());
 			}
 		}
 		Player[] thePlayers = players.toArray(new Player[players.size()]);

@@ -33,6 +33,7 @@ import org.spout.api.collision.BoundingBox;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionStrategy;
 import org.spout.api.collision.CollisionVolume;
+import org.spout.api.component.components.BlockComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.cuboid.Block;
@@ -483,4 +484,12 @@ public class BlockMaterial extends Material implements Placeable {
 		return (m.getId() == getId() && ((m.getData() ^ getData()) & getDataMask()) == 0);
 	}
 
+	/**
+	 * Returns a new instance of a block component for this block, or null if none exists
+	 * 
+	 * @return block component, or null
+	 */
+	public BlockComponent<? extends BlockMaterial> getBlockComponent() {
+		return null;
+	}
 }

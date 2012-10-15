@@ -43,18 +43,18 @@ public abstract class Component implements Tickable {
 	
 	private static ConcurrentHashMap<Class<? extends Component>, Set<Class<? extends Component>>> dependencies = new ConcurrentHashMap<Class<? extends Component>, Set<Class<? extends Component>>>();
 	
-	private ComponentHolder holder;
+	private ComponentOwner owner;
 
 	public Component() {
 	}
 
 	/**
-	 * Attaches to a component holder.
-	 * @param holder the componet holder to attach to
+	 * Attaches to a component owner.
+	 * @param owner the component owner to attach to
 	 * @return true if successful
 	 */
-	public boolean attachTo(ComponentHolder holder) {
-		this.holder = holder;
+	public boolean attachTo(ComponentOwner owner) {
+		this.owner = owner;
 		return true;
 	}
 
@@ -62,8 +62,8 @@ public abstract class Component implements Tickable {
 	 * Gets the component holder that is holding this component.
 	 * @return the component holder
 	 */
-	public ComponentHolder getHolder() {
-		return holder;
+	public ComponentOwner getOwner() {
+		return owner;
 	}
 
 	/**
@@ -117,9 +117,9 @@ public abstract class Component implements Tickable {
 	 * @return the datatable component
 	 */
 	public final DatatableComponent getData() {
-		return getHolder().getData();
+		return getOwner().getData();
 	}
-	
+
 	/**
 	 * Registers a dependency.
 	 * 

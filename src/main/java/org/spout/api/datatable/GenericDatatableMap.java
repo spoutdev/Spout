@@ -96,12 +96,15 @@ class GenericDatatableMap implements DatatableMap {
 		}
 		return setIfAbsentRaw(key, value);
 	}
-	
+
 	private AbstractData setIfAbsentRaw(int key, AbstractData value) {
-		value.setKey(key);
-		return map.putIfAbsent(key, value);
+		if (value != null) {
+			value.setKey(key);
+			return map.putIfAbsent(key, value);
+		}
+		return null;
 	}
-	
+
 	@Override
 	public AbstractData getAndSet(String key, AbstractData value) {
 		return setRaw(stringmap.register(key), value);
