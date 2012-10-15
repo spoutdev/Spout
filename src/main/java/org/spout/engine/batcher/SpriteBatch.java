@@ -65,6 +65,7 @@ public class SpriteBatch {
 		renderer.begin();
 		for(int i = 0; i < sprites.size(); i++) {
 			TextureRectangle rect = sprites.get(i);
+
 			renderer.addVertex(rect.destination.getX(), rect.destination.getY());
 			renderer.addColor(Color.white);
 			renderer.addTexCoord(0, 0);
@@ -73,7 +74,8 @@ public class SpriteBatch {
 			renderer.addTexCoord(1, 0);
 			renderer.addVertex(rect.destination.getX(), rect.destination.getY() + rect.destination.getHeight());
 			renderer.addColor(Color.white);			
-			renderer.addTexCoord(0, 1);
+			renderer.addTexCoord(0, 1);			
+			
 			
 			renderer.addVertex(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY());
 			renderer.addColor(Color.white);			

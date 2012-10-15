@@ -277,7 +277,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 				yaw += mouseDX;
 
 			if (pitch + mouseDY>=-80 && pitch + mouseDY<=80)
-				pitch += mouseDY;
+				pitch -= mouseDY;
 			else if (pitch + mouseDY<-80)
 				pitch = -80;
 			else if (pitch + mouseDY>80)
@@ -301,16 +301,16 @@ public class SpoutClient extends SpoutEngine implements Client {
         Point point = ts.getPosition();
         
         if (keyUp) {
-        	point = point.subtract(ts.forwardVector());
-        }
-        if (keyDown) {
         	point = point.add(ts.forwardVector());
         }
+        if (keyDown) {
+        	point = point.subtract(ts.forwardVector());
+        }
         if (keyLeft) {
-        	point = point.subtract(ts.rightVector());
+        	point = point.add(ts.rightVector());
         }
         if (keyRight) {
-        	point = point.add(ts.rightVector());
+        	point = point.subtract(ts.rightVector());
         }
         if (flyUp) {
         	point = point.add(ts.upVector());
@@ -482,6 +482,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	private PrimitiveBatch renderer;
 	private RenderMaterial mat;
+	private RenderMaterial guimaterial;
 
 	public void initRenderer() {
 		createWindow();
@@ -517,6 +518,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		renderer = new PrimitiveBatch();
 		mat = (RenderMaterial)this.getFilesystem().getResource("material://Spout/resources/resources/materials/BasicMaterial.smt");
+		guimaterial = (RenderMaterial) this.getFilesystem().getResource("material://Spout/resources/resources/materials/GUIMaterial.smt");
 		renderer.begin();
 		renderer.addCube(new Vector3(-0.5,-0.5,-0.5), Vector3.ONE, Color.RED, sides);
 		renderer.end();
@@ -535,6 +537,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			Mouse.setGrabbed(false);
 
 		worldRenderer.render();
+
 		//System.out.println("view "+activeCamera.getView().toString());
 		Transform loc = new Transform(new Point(null, 0f, 0f, 0f), Quaternion.IDENTITY, Vector3.ONE);
 		mat.getShader().setUniform("View", activeCamera.getView());
@@ -543,8 +546,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		renderer.draw(mat);
 
 		gui.begin();
-		gui.draw(mat, .25f, .25f, .25f, .25f);
+		gui.draw(guimaterial, .25f, .25f, .25f, .25f);
 		gui.render();
+
 	}
 
 	public WorldRenderer getWorldRenderer() {
