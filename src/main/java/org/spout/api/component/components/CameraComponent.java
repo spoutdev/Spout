@@ -35,6 +35,7 @@ public class CameraComponent extends EntityComponent implements Camera {
 	private Matrix projection;
 	private Matrix view;
 	private ViewFrustum frustum = new ViewFrustum();
+	private float fieldOfView = 75f;
 
 	public CameraComponent() {
 
@@ -48,7 +49,7 @@ public class CameraComponent extends EntityComponent implements Camera {
 	@Override
 	public void onAttached() {
 		// TODO Get FOV
-		projection = MathHelper.createPerspective(90f, 4.0f / 3.0f, .001f, 1000f);
+		projection = MathHelper.createPerspective(fieldOfView, 4.0f / 3.0f, .001f, 1000f);
 		updateView();
 		frustum.update(projection, view);
 	}
@@ -64,8 +65,8 @@ public class CameraComponent extends EntityComponent implements Camera {
 	}
 
 	@Override
-	public void updateView() {
-		view = MathHelper.rotate(getHolder().getTransform().getRotation()).multiply(MathHelper.translate(getHolder().getTransform().getPosition()));
+	public void updateView() {		
+		view = MathHelper.translate(getHolder().getTransform().getPosition()).multiply(MathHelper.rotate(getHolder().getTransform().getRotation()));
 	}
 
 	@Override
