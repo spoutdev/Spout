@@ -56,7 +56,6 @@ import org.spout.api.event.chunk.ChunkLoadEvent;
 import org.spout.api.event.chunk.ChunkPopulateEvent;
 import org.spout.api.event.chunk.ChunkUnloadEvent;
 import org.spout.api.event.chunk.ChunkUpdatedEvent;
-import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.LoadOption;
@@ -259,8 +258,7 @@ public class SpoutRegion extends Region {
 				checkChunkLoaded(generatedChunk, loadopt);
 				return generatedChunk;
 			} else {
-				Spout.getLogger().severe("Column of chunks failed to generate correctly, using fallback!");
-				newChunk = generateChunk(x, y, z);
+				Spout.getLogger().severe("Chunk failed to generate!");
 			}
 		}
 
@@ -291,20 +289,6 @@ public class SpoutRegion extends Region {
 		return this.getChunk(x >> Chunk.BLOCKS.BITS, y >> Chunk.BLOCKS.BITS, z >> Chunk.BLOCKS.BITS, loadopt);
 	}
 
-	private SpoutChunk generateChunk(int x, int y, int z) {
-		x = this.getChunkX(x);
-		y = this.getChunkY(y);
-		z = this.getChunkZ(z);
-		final SpoutWorld world = getWorld();
-		
-		CuboidShortBuffer buffer = new CuboidShortBuffer(x << Chunk.BLOCKS.BITS, y << Chunk.BLOCKS.BITS, z << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
-
-		WorldGenerator generator = getWorld().getGenerator();
-		generator.generate(buffer, x, y, z, world);
-
-		return new FilteredChunk(world, this, x, y, z, buffer.getRawArray(), null);
-	}
-
 	private void generateChunks(int x, int z, LoadOption loadopt) {
 		final AtomicBoolean generated = generatedColumns[x][z];
 		if (generated.get()) {
@@ -329,14 +313,9 @@ public class SpoutRegion extends Region {
 				chunk.copyElement(0, yy * Chunk.BLOCKS.VOLUME, Chunk.BLOCKS.VOLUME);
 				setChunk(new FilteredChunk(world, this, cx, cy, cz, chunk.getRawArray(), null), x, yy++, z, null, true, loadopt);
 			}
-			for (int yy = 0; cy < endY; cy++) {
-				if (chunks[x][yy][z].get() == null) {
-					Spout.getLogger().info("Null chunks after generate chunks");
-				}
-			}
 			generated.set(true);
 		}
-		return;
+		
 	}
 	
 	private SpoutChunk setChunk(SpoutChunk newChunk, int x, int y, int z, ChunkDataForRegion dataForRegion, boolean generated, LoadOption loadopt) {
