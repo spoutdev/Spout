@@ -48,6 +48,7 @@ import java.util.logging.Level;
 
 import org.spout.api.Source;
 import org.spout.api.Spout;
+import org.spout.api.component.ChunkComponentOwner;
 import org.spout.api.component.components.BlockComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
@@ -106,7 +107,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	/**
 	 * Not thread safe, synchronize on access
 	 */
-	private final TShortObjectHashMap<BlockComponent<?>> blockComponents = new TShortObjectHashMap<BlockComponent<?>>();
+	private final TShortObjectHashMap<BlockComponent> blockComponents = new TShortObjectHashMap<BlockComponent>();
 
 	/**
 	 * Multi-thread write access to the block store is only allowed during the
@@ -1383,18 +1384,21 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	 * 
 	 * @return block components
 	 */
-	public TShortObjectMap<BlockComponent<?>> getBlockComponents() {
+	public TShortObjectMap<BlockComponent> getBlockComponents() {
 		return blockComponents;
 	}
 
-	private void setBlockComponent(int x, int y, int z, @SuppressWarnings("rawtypes") BlockComponent component) {
+	private void setBlockComponent(int x, int y, int z, BlockComponent component) {
+		x &= BLOCKS.MASK;
+		y &= BLOCKS.MASK;
+		z &= BLOCKS.MASK;
 		synchronized(blockComponents) {
 			if (component != null) {
-				blockComponents.put(NibbleQuadHashed.key(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, 0), component);
-				component.attachTo(new ChunkComponentOwner());
+				blockComponents.put(NibbleQuadHashed.key(x, y, z, 0), component);
+				component.attachTo(new ChunkComponentOwner(this, x + getBlockX(), y + getBlockY(), z + getBlockZ()));
 				component.onAttached();
 			} else {
-				BlockComponent<?> c = blockComponents.remove(NibbleQuadHashed.key(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, 0));
+				BlockComponent c = blockComponents.remove(NibbleQuadHashed.key(x, y, z, 0));
 				if (c != null) {
 					c.onDetached();
 				}
@@ -1403,7 +1407,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	@Override
-	public BlockComponent<?> getBlockComponent(int x, int y, int z) {
+	public BlockComponent getBlockComponent(int x, int y, int z) {
 		synchronized(blockComponents) {
 			return blockComponents.get(NibbleQuadHashed.key(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, 0));
 		}
@@ -1411,7 +1415,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 
 	protected void tickBlockComponents(float dt) {
 		synchronized(blockComponents) {
-			for (BlockComponent<?> c : blockComponents.valueCollection()) {
+			for (BlockComponent c : blockComponents.valueCollection()) {
 				try {
 					if (c.canTick()) {
 						c.tick(dt);

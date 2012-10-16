@@ -48,6 +48,7 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.hashing.NibbleQuadHashed;
+import org.spout.api.util.thread.SnapshotRead;
 
 import org.spout.engine.world.SpoutChunk.PopulationState;
 
@@ -244,11 +245,6 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	}
 
 	@Override
-	public BlockComponent<?> getBlockComponent(int x, int y, int z) {
-		return null;
-	}
-
-	@Override
 	public Biome getBiome(int x, int y, int z) {
 		return biomes.getBiome(x, y, z);
 	}
@@ -276,18 +272,22 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	public List<BlockComponentSnapshot> getBlockComponents() {
 		return blockComponents;
 	}
-	
+
+	@Override
+	@SnapshotRead
+	public BlockComponent getBlockComponent(int x, int y, int z) {
+		throw new UnsupportedOperationException("Use getBlockComponents instead");
+	}
+
 	private static class SpoutBlockComponentSnapshot implements BlockComponentSnapshot {
 		private final int x, y, z;
-		private final Class<? extends BlockComponent<?>> clazz;
+		private final Class<? extends BlockComponent> clazz;
 		private final SerializableMap data;
-
-		@SuppressWarnings({ "rawtypes", "unchecked" })
 		private SpoutBlockComponentSnapshot(int x, int y, int z, Class<? extends BlockComponent> clazz, SerializableMap data) {
 			this.x = x;
 			this.y = y;
 			this.z = z;
-			this.clazz = (Class<? extends BlockComponent<?>>) clazz;
+			this.clazz = clazz;
 			this.data = data;
 		}
 
@@ -307,8 +307,8 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		}
 
 		@Override
-		public Class<? extends BlockComponent<?>> getComponent() {
-			return (Class<? extends BlockComponent<?>>) clazz;
+		public Class<? extends BlockComponent> getComponent() {
+			return clazz;
 		}
 
 		@Override
@@ -317,7 +317,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		}
 	}
 
-	private static class BlockSnapshotProcedure implements TShortObjectProcedure<BlockComponent<?>> {
+	private static class BlockSnapshotProcedure implements TShortObjectProcedure<BlockComponent> {
 		private final SpoutChunk chunk;
 		private final ArrayList<BlockComponentSnapshot> snapshots = new ArrayList<BlockComponentSnapshot>();
 		private BlockSnapshotProcedure(SpoutChunk chunk) {
@@ -325,7 +325,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		}
 
 		@Override
-		public boolean execute(short index, BlockComponent<?> component) {
+		public boolean execute(short index, BlockComponent component) {
 			int x = NibbleQuadHashed.key1(index) + chunk.getBlockX();
 			int y = NibbleQuadHashed.key2(index) + chunk.getBlockY();
 			int z = NibbleQuadHashed.key3(index) + chunk.getBlockZ();

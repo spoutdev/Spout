@@ -47,6 +47,7 @@ import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
 import org.spout.api.Spout;
+import org.spout.api.component.ChunkComponentOwner;
 import org.spout.api.component.Component;
 import org.spout.api.component.components.BlockComponent;
 import org.spout.api.datatable.ManagedHashMap;
@@ -81,7 +82,6 @@ import org.spout.api.util.typechecker.TypeChecker;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutPlayer;
-import org.spout.engine.world.ChunkComponentOwner;
 import org.spout.engine.world.FilteredChunk;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutChunk.PopulationState;
@@ -432,12 +432,12 @@ public class WorldFiles {
 					for (int dz = 0; dz < Chunk.BLOCKS.SIZE; dz++) {
 						int index = (y << 8) + (z << 4) + x;
 						BlockMaterial bm = (BlockMaterial) MaterialRegistry.get(BlockFullState.getPacked(blocks[index], data[index]));
-						BlockComponent<?> component = bm.getBlockComponent();
+						BlockComponent component = bm.getBlockComponent();
 						if (component != null) {
 							short packed = NibbleQuadHashed.key(dx, dy, dz, 0);
 							//Does not need synchronized, the chunk is not yet accessible outside this thread
 							chunk.getBlockComponents().put(packed, component);
-							ChunkComponentOwner owner = new ChunkComponentOwner();
+							ChunkComponentOwner owner = new ChunkComponentOwner(chunk, chunk.getBlockX() + dx, chunk.getBlockY() + dy, chunk.getBlockZ() + dz);
 							component.attachTo(owner);
 						}
 					}
@@ -460,9 +460,9 @@ public class WorldFiles {
 		return chunk;
 	}
 	
-	private static class AttachComponentProcedure implements TShortObjectProcedure<BlockComponent<?>> {
+	private static class AttachComponentProcedure implements TShortObjectProcedure<BlockComponent> {
 		@Override
-		public boolean execute(short a, BlockComponent<?> b) {
+		public boolean execute(short a, BlockComponent b) {
 			try {
 				b.onAttached();
 			} catch (Exception e) {
@@ -689,7 +689,7 @@ public class WorldFiles {
 			int packed = SafeCast.toInt(NBTMapper.toTagValue(map.get("packed")), 0);
 			ByteArrayTag data = (ByteArrayTag) map.get("data");
 	
-			BlockComponent<?> component = chunk.getBlockComponents().get((short) packed);
+			BlockComponent component = chunk.getBlockComponents().get((short) packed);
 			if (component != null) {
 				try {
 					component.getOwner().getData().deserialize(data.getValue());

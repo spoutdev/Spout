@@ -1118,7 +1118,7 @@ public class SpoutRegion extends Region {
 	}
 
 	@Override
-	public BlockComponent<?> getBlockComponent(int x, int y, int z) {
+	public BlockComponent getBlockComponent(int x, int y, int z) {
 		return this.getChunkFromBlock(x, y, z).getBlockComponent(x, y, z);
 	}
 
