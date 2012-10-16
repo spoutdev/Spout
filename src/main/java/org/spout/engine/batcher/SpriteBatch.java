@@ -68,28 +68,28 @@ public class SpriteBatch {
 
 			renderer.addVertex(rect.destination.getX(), rect.destination.getY() + rect.destination.getHeight());
 			renderer.addColor(Color.white);			
-			renderer.addTexCoord(0, 1);			
+			renderer.addTexCoord(rect.source.getX(), rect.source.getY());			
 			
 			renderer.addVertex(rect.destination.getX(), rect.destination.getY());
 			renderer.addColor(Color.white);
-			renderer.addTexCoord(0, 0);
+			renderer.addTexCoord(rect.source.getX(), rect.source.getY() + rect.source.getHeight());
 			
 			renderer.addVertex(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY());
 			renderer.addColor(Color.white);			
-			renderer.addTexCoord(1, 0);
+			renderer.addTexCoord(rect.source.getX() + rect.source.getWidth(), rect.source.getY() + rect.source.getHeight());
 			
 			
 			renderer.addVertex(rect.destination.getX(), rect.destination.getY() + rect.destination.getHeight());
 			renderer.addColor(Color.white);			
-			renderer.addTexCoord(0, 1);	
+			renderer.addTexCoord(rect.source.getX(), rect.source.getY());	
 			
 			renderer.addVertex(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY());
 			renderer.addColor(Color.white);			
-			renderer.addTexCoord(1, 0);
+			renderer.addTexCoord(rect.source.getX() + rect.source.getWidth(), rect.source.getY() + rect.source.getHeight());
 			
 			renderer.addVertex(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY() + rect.destination.getHeight());
 			renderer.addColor(Color.white);			
-			renderer.addTexCoord(1, 1);
+			renderer.addTexCoord(rect.source.getX() + rect.source.getWidth(), rect.source.getY());
 			
 			
 		}

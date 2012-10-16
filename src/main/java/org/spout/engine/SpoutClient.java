@@ -512,7 +512,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		Spout.getFilesystem().postStartup();
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glClearColor((135.f/255.0f), 206.f/255.f, 250.f/255.f, 0);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glClearColor((135.f/255.0f), 206.f/255.f, 250.f/255.f, 1);
 		
 		if(wireframe) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
@@ -553,7 +555,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		renderer.draw(mat);
 
 		gui.begin();
-		gui.draw(guimaterial, .25f, .25f, .25f, .25f);
+		gui.draw(guimaterial, .75f, 0, .25f, .5f);
 		gui.render();
 
 	}
