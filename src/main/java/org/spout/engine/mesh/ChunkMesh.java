@@ -33,6 +33,7 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
+import org.spout.api.math.Rectangle;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.MeshFace;
@@ -198,12 +199,14 @@ public class ChunkMesh extends BaseMesh {
 			break;
 		}
 		
-		Vector2 uv1 = Vector2.ZERO;
-		Vector2 uv2 = new Vector2(0, 1);
-		Vector2 uv3 = Vector2.ONE;
-		Vector2 uv4 = new Vector2(1, 0);
+		Rectangle r = m.getTextureOffset();
+		
+		Vector2 uv1 = new Vector2(r.getX(), r.getY());
+		Vector2 uv2 = new Vector2(r.getX(), r.getY()+r.getHeight());
+		Vector2 uv3 = new Vector2(r.getX()+r.getWidth(), r.getY()+r.getHeight());
+		Vector2 uv4 = new Vector2(r.getX()+r.getWidth(), r.getY());
 
-		Color color = getColor(m); // Temporary testing color
+		Color color = Color.WHITE; // Temporary testing color
 		Vertex v1 = new Vertex(p1, face.getOffset(), uv1);
 		v1.color = color;
 

@@ -56,6 +56,10 @@ public class BasicShader extends ClientShader {
 		}
 
 		if (compatabilityMode) {
+			if (textures.size() > 0) {
+				textures.values().iterator().next().getTexture().bind();
+			}
+			
 			GL11.glMatrixMode(GL11.GL_PROJECTION);
 			matrixBuffer.clear();
 			matrixBuffer.put(getProjectionMatrix().toArray());
@@ -64,22 +68,11 @@ public class BasicShader extends ClientShader {
 			GL11.glLoadMatrix(matrixBuffer);
 
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
-			/*matrixBuffer.clear();
+			matrixBuffer.clear();
 			matrixBuffer.put(getViewMatrix().toArray());
 			matrixBuffer.flip();
 
-			GL11.glLoadMatrix(matrixBuffer);*/
-			
-			SpoutClient client = ((SpoutClient)Spout.getEngine());
-			Quaternion r = client.getActivePlayer().getTransform().getRotation();
-			Point p = client.getActivePlayer().getTransform().getPosition();
-			
-			GL11.glLoadIdentity();
-			GL11.glRotatef(r.getPitch(), 1, 0, 0);
-			GL11.glRotatef(r.getYaw(), 0, 1, 0);
-			GL11.glRotatef(r.getRoll(), 0, 0, 1);
-			GL11.glTranslatef(-p.getX(), -p.getY(), -p.getZ());
-			
+			GL11.glLoadMatrix(matrixBuffer);
 		} else {
 			super.assign();
 		}
