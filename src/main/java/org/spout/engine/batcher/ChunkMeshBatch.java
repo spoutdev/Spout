@@ -36,6 +36,7 @@ import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
 import org.spout.engine.mesh.ChunkMesh;
+import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 
 /**
@@ -56,6 +57,8 @@ public class ChunkMeshBatch extends Cuboid {
 	public ChunkMeshBatch(World world, int baseX, int baseY, int baseZ) {
 		super(new Point(world, baseX, baseY, baseZ), SIZE);
 
+		modelMat = MathHelper.translate(new Vector3(baseX * SIZE_X, baseY * SIZE_Y, baseZ * SIZE_Z));
+		
 		int id = 0;
 		for (int i = baseX; i < baseX + SIZE_X; i++) {
 			for (int j = baseY; j < baseY + SIZE_Y; j++) {
@@ -108,6 +111,10 @@ public class ChunkMeshBatch extends Cuboid {
 		}
 	}
 
+	public void finalize() {
+		((BatchVertexRenderer)renderer.getRenderer()).finalize();
+	}
+
 	public Matrix getTransform() {
 		return modelMat;
 	}
@@ -136,4 +143,5 @@ public class ChunkMeshBatch extends Cuboid {
 	public static Vector3 getChunkCoordinates(Vector3 batchCoords) {
 		return new Vector3(batchCoords.getX() * SIZE_X, batchCoords.getY() * SIZE_Y, batchCoords.getZ() * SIZE_Z);
 	}
+
 }

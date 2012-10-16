@@ -73,6 +73,7 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 		GL11.glCallList(displayList);
 	}
 	
+	@Override
 	public void finalize() {
 		 GL11.glDeleteLists(displayList, 1);
 	}
