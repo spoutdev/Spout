@@ -32,5 +32,5 @@ RenderState:
 # Names match up to the name in the shader.
 
 MaterialParams:
-    Diffuse: texture://Spout/resources/fallbacks/fallback.png
+    Diffuse: texture://Spout/resources/resources/materials/terrain.png
     BlendColor: color(1,1,1,1)
