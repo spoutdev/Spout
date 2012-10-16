@@ -39,7 +39,9 @@ import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.MathHelper;
+import org.spout.api.math.Rectangle;
 import org.spout.api.model.Model;
+import org.spout.api.render.Texture;
 import org.spout.api.util.LogicUtil;
 import org.spout.api.util.flag.Flag;
 import org.spout.api.util.flag.FlagSingle;
@@ -60,6 +62,34 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	private volatile boolean submaterialsDirty = true;
 	private final short dataMask;
 	private final FlagSingle useFlag = new FlagSingle();
+	private final String texturePath;
+	private final Rectangle textureOffset;
+	
+	/**
+	 * Creates a material with a dataMask, name, texture, and offset
+	 * @param dataMask
+	 * @param name
+	 * @param texturePath
+	 * @param textureOffset
+	 */
+	public Material(short dataMask, String name, String texturePath, Rectangle textureOffset) {
+		this.isSubMaterial = false;
+		this.displayName = name;
+		this.name = getClass().getCanonicalName() + "_" + name.replace(' ', '_');
+		this.parent = this;
+		this.data = 0;
+		this.id = (short) MaterialRegistry.register(this);
+		this.dataMask = dataMask;
+		this.root = this;
+		this.texturePath = texturePath;
+		this.textureOffset = textureOffset;
+		
+	}
+	
+	public Material(String name, String texturePath, Rectangle textureOffset){
+		this((short)0, name, texturePath, textureOffset);
+	}
+	
 
 	/**
 	 * Creates and registers a material
@@ -67,14 +97,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * @param name of the material
 	 */
 	public Material(String name) {
-		this.isSubMaterial = false;
-		this.displayName = name;
-		this.name = getClass().getCanonicalName() + "_" + name.replace(' ', '_');
-		this.parent = this;
-		this.data = 0;
-		this.id = (short) MaterialRegistry.register(this);
-		this.dataMask = 0;
-		this.root = this;
+		this((short)0, name);
 	}
 	
 	/**
@@ -84,14 +107,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * @param name of the material
 	 */
 	public Material(short dataMask, String name) {
-		this.isSubMaterial = false;
-		this.displayName = name;
-		this.name = getClass().getCanonicalName() + "_" + name.replace(' ', '_');
-		this.parent = this;
-		this.data = 0;
-		this.id = (short) MaterialRegistry.register(this);
-		this.dataMask = dataMask;
-		this.root = this;
+		this(dataMask, name, "texture://Spout/resources/resources/materials/orange.32.png", new Rectangle(0, 0, 1, 1));		
 	}
 
 	/**
@@ -110,6 +126,8 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.id = (short) MaterialRegistry.register(this);
 		this.dataMask = parent.getDataMask();
 		this.root = parent.getRoot();
+		this.texturePath = parent.getTexturePath();
+		this.textureOffset = parent.getTextureOffset(); //TODO: Allow this to be defined
 	}
 
 	/**
@@ -127,6 +145,8 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.id = (short) MaterialRegistry.register(this, id);
 		this.dataMask = 0;
 		this.root = this;
+		this.texturePath = "texture://Spout/resources/resources/materials/orange.32.png";
+		this.textureOffset = new Rectangle(0, 0, 1, 1);
 	}
 
 	/**
@@ -144,6 +164,8 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.id = (short) MaterialRegistry.register(this, id);
 		this.dataMask = dataMask;
 		this.root = this;
+		this.texturePath = "texture://Spout/resources/resources/materials/orange.32.png";
+		this.textureOffset = new Rectangle(0, 0, 1, 1);
 	}
 
 	public final short getId() {
@@ -400,7 +422,15 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	public void getItemFlags(ItemStack item, Set<Flag> flags) {
 		flags.add(this.getUseFlag());
 	}
+	
+	public String getTexturePath() {
+		return this.texturePath;		
+	}
 
+	public Rectangle getTextureOffset() {
+		return this.textureOffset;
+	}
+	
 	/**
 	 * Fired when this material is being rendered in the inventory
 	 * 
@@ -436,6 +466,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 */
 	public void onInteract(Entity entity, Action type) {
 	}
+	
 
 	@Override
 	public boolean isMaterial(Material... materials) {

@@ -63,4 +63,38 @@ public class Rectangle {
 		return extents.getY();
 	}
 	
+	/**
+	 * Creates a rectangle representing the texturecoordinates from a square matrix.  
+	 * 
+	 * 
+	 * @param textureSize Side length of the individual subtexture
+	 * @param texturesX number of textures in the x direction
+	 * @param texturesY number of textures in the y direction
+	 * @param textureId the texture you want to extract the texcoords from
+	 
+	 * @return
+	 */
+	public static Rectangle coordsFromSquareAtlas(int textureSize, int texturesInX, int texturesInY, int textureId){
+		
+		//Calculate the size of the texture
+		float textureWidth = textureSize * texturesInX;
+		float textureHeight = textureSize * texturesInY;
+		
+		//Calculate the width and height of the individual texture
+		
+		float subtextureWidth = textureSize / textureWidth;
+		float subtextureHeight = textureSize / textureHeight;
+		
+		//Calculate the starting coordinates for the texture
+		float subtextureXId = textureId % texturesInX;
+		float subtextureYId = textureId / texturesInY;
+		
+		float subtextureX = subtextureXId * subtextureWidth;
+		float subtextureY = subtextureYId * subtextureHeight;
+		
+		
+		
+		return new Rectangle(subtextureX, subtextureY, subtextureWidth, subtextureHeight);
+	}
+	
 }
