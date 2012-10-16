@@ -198,12 +198,18 @@ public class ChunkMesh extends BaseMesh {
 			break;
 		}
 		
-		Vector2 uv1 = Vector2.ZERO;
-		Vector2 uv2 = new Vector2(0, 1);
-		Vector2 uv3 = Vector2.ONE;
-		Vector2 uv4 = new Vector2(1, 0);
+		int textureId = m.getId();
+		int texSize = 16;
+		float tex = 1.f/texSize;
+		float x = ((int)textureId%texSize) * tex;
+		float y = ((int)textureId/texSize) * tex;
+		
+		Vector2 uv1 = new Vector2(x,y);
+		Vector2 uv2 = new Vector2(x, y+tex);
+		Vector2 uv3 = new Vector2(x+tex, y+tex);
+		Vector2 uv4 = new Vector2(x+tex, y);
 
-		Color color = getColor(m); // Temporary testing color
+		Color color = Color.WHITE; // Temporary testing color
 		Vertex v1 = new Vertex(p1, face.getOffset(), uv1);
 		v1.color = color;
 

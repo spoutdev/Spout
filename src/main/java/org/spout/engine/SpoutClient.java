@@ -315,10 +315,10 @@ public class SpoutClient extends SpoutEngine implements Client {
         	point = point.subtract(ts.rightVector());
         }
         if (flyUp) {
-        	point = point.add(ts.upVector());
+        	point = point.subtract(ts.upVector());
 		}
         if (flyDown) {
-        	point = point.subtract(ts.upVector());
+        	point = point.add(ts.upVector());
 		}
 
         ts.setPosition(point);
