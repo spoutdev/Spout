@@ -26,40 +26,23 @@
  */
 package org.spout.api.component.components;
 
+import org.spout.api.component.ChunkComponentOwner;
 import org.spout.api.component.Component;
-import org.spout.api.data.Data;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
-import org.spout.api.material.BlockMaterial;
-import org.spout.api.material.MaterialRegistry;
 
-public class BlockComponent<T extends BlockMaterial> extends Component {
+public class BlockComponent extends Component {
 	public BlockComponent() {
 	}
 
 	@Override
-	public boolean isDetachable() {
+	public final ChunkComponentOwner getOwner() {
+		return (ChunkComponentOwner) super.getOwner();
+	}
+
+	@Override
+	public final boolean isDetachable() {
 		return false;
-	}
-
-	/**
-	 * Returns the {@link BlockMaterial} associated with this component.
-	 *
-	 * @return material associated with component
-	 */
-	@SuppressWarnings("unchecked")
-	public T getMaterial() {
-		return (T) MaterialRegistry.get(getData().get(Data.HELD_MATERIAL_NAME));
-	}
-
-	/**
-	 * Sets the {@link BlockMaterial} associated with this component to the specified
-	 * material.
-	 *
-	 * @param material to set
-	 */
-	public void setMaterial(T material) {
-		getData().put(Data.HELD_MATERIAL_NAME, material.getName());
 	}
 
 	/**

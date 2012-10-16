@@ -220,7 +220,7 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 		 * 
 		 * @return block component class
 		 */
-		public Class<? extends BlockComponent<?>> getComponent();
+		public Class<? extends BlockComponent> getComponent();
 
 		/**
 		 * Gets a copy of the block component data

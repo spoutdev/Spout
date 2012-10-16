@@ -489,7 +489,7 @@ public class BlockMaterial extends Material implements Placeable {
 	 * 
 	 * @return block component, or null
 	 */
-	public BlockComponent<? extends BlockMaterial> getBlockComponent() {
+	public BlockComponent getBlockComponent() {
 		return null;
 	}
 }

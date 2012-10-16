@@ -373,14 +373,7 @@ public interface Block extends MaterialAccess, WorldSource {
 	 *
 	 * @return block component
 	 */
-	public <T extends BlockComponent> T getComponent();
-
-	/**
-	 * Whether or not the block is associated with a block entity
-	 *
-	 * @return true if has a entity
-	 */
-	public boolean hasComponent();
+	public BlockComponent getComponent();
 
 	/**
 	 * Gets if this block is above or at the surface<br>

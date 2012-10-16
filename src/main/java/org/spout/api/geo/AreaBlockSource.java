@@ -111,7 +111,6 @@ public interface AreaBlockSource {
 	 * @param z coordinate of the block
 	 * @return the block component
 	 */
-	@SuppressWarnings("rawtypes")
 	@SnapshotRead
 	public BlockComponent getBlockComponent(int x, int y, int z);
 	
