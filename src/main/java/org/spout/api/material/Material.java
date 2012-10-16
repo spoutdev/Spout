@@ -423,11 +423,11 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		flags.add(this.getUseFlag());
 	}
 	
-	public String getTexturePath() {
+	public final String getTexturePath() {
 		return this.texturePath;		
 	}
 
-	public Rectangle getTextureOffset() {
+	public final Rectangle getTextureOffset() {
 		return this.textureOffset;
 	}
 	
