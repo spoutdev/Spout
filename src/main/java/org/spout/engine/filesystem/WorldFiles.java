@@ -421,7 +421,7 @@ public class WorldFiles {
 			loadDynamicUpdates(updateList, dataForRegion.loadedUpdates);
 			
 			List<? extends CompoundTag> componentsList = checkerListCompoundTag.checkTag(map.get("block_components"), null);
-			
+
 			//Load Block components
 			//This is a three-part process
 			//1.) Scan the blocks and add them to the chunk map
@@ -430,7 +430,7 @@ public class WorldFiles {
 			for (int dx = 0; dx < Chunk.BLOCKS.SIZE; dx++) {
 				for (int dy = 0; dy < Chunk.BLOCKS.SIZE; dy++) {
 					for (int dz = 0; dz < Chunk.BLOCKS.SIZE; dz++) {
-						int index = (y << 8) + (z << 4) + x;
+						int index = (dy << 8) + (dz << 4) + dx;
 						BlockMaterial bm = (BlockMaterial) MaterialRegistry.get(BlockFullState.getPacked(blocks[index], data[index]));
 						BlockComponent component = bm.getBlockComponent();
 						if (component != null) {
@@ -647,19 +647,20 @@ public class WorldFiles {
 				list.add(tag);
 			}
 		}
-		
 		return new ListTag<CompoundTag>("block_components", CompoundTag.class, list);
 	}
 
 	private static CompoundTag saveBlockComponent(BlockComponentSnapshot snapshot) {
 		if (!snapshot.getData().isEmpty()) {
-			CompoundMap map = new CompoundMap();
 			byte[] data = snapshot.getData().serialize();
 
 			if (data != null && data.length > 0) {
+				CompoundMap map = new CompoundMap();
 				short packed = NibbleQuadHashed.key(snapshot.getX(), snapshot.getY(), snapshot.getZ(), 0);
 				map.put(new ShortTag("packed", packed));
 				map.put(new ByteArrayTag("data", data));
+
+				return new CompoundTag("block_component_" + packed, map);
 			}
 		}
 
@@ -686,10 +687,10 @@ public class WorldFiles {
 
 		for (CompoundTag compoundTag : list) {
 			CompoundMap map = compoundTag.getValue();
-			int packed = SafeCast.toInt(NBTMapper.toTagValue(map.get("packed")), 0);
+			short packed = (Short) map.get("packed").getValue();
 			ByteArrayTag data = (ByteArrayTag) map.get("data");
 	
-			BlockComponent component = chunk.getBlockComponents().get((short) packed);
+			BlockComponent component = chunk.getBlockComponents().get(packed);
 			if (component != null) {
 				try {
 					component.getOwner().getData().deserialize(data.getValue());
