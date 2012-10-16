@@ -28,6 +28,7 @@ package org.spout.api.component.components;
 
 import org.spout.api.component.ChunkComponentOwner;
 import org.spout.api.component.Component;
+import org.spout.api.component.ComponentOwner;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 
@@ -38,6 +39,15 @@ public class BlockComponent extends Component {
 	@Override
 	public final ChunkComponentOwner getOwner() {
 		return (ChunkComponentOwner) super.getOwner();
+	}
+
+	@Override
+	public final boolean attachTo(ComponentOwner owner) {
+		if (owner instanceof ChunkComponentOwner) {
+			return super.attachTo(owner);
+		} else {
+			return false;
+		}
 	}
 
 	@Override
