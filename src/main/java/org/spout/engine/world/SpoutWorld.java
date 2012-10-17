@@ -51,6 +51,7 @@ import org.spout.api.component.Component;
 import org.spout.api.component.ComponentHolder;
 import org.spout.api.component.WorldComponentHolder;
 import org.spout.api.component.components.BlockComponent;
+import org.spout.api.component.components.EntityComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.spawn.SpawnArrangement;
@@ -552,6 +553,11 @@ public class SpoutWorld extends AsyncManager implements World {
 				return;
 			}
 			region.getEntityManager().addEntity((SpoutEntity) e);
+			for (Component component : e.values()) {
+				if (component instanceof EntityComponent) {
+					((EntityComponent) component).onSpawned();
+				}
+			}
 		} else {
 			throw new IllegalStateException("Cannot spawn an entity that already has an id!");
 		}
