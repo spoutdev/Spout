@@ -27,6 +27,7 @@
 package org.spout.api.math;
 
 import java.awt.Color;
+import java.util.Random;
 
 import javolution.context.StackContext;
 
@@ -87,6 +88,7 @@ public class MathHelper {
 	public static double length(double... values) {
 		return Math.sqrt(lengthSquared(values));
 	}
+	
 
 	/**
 	 * Gets the difference between two angles
@@ -388,6 +390,11 @@ public class MathHelper {
 		return new Color(red, green, blue, alpha);
 	}
 
+	public static Color randomColor() {
+		Random rng = new Random();
+		return new Color(rng.nextInt(255), rng.nextInt(255), rng.nextInt(255));
+	}
+	
 	public static double clamp(double value, double low, double high) {
 		if (value < low) {
 			return low;
