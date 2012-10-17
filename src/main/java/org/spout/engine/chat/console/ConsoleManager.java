@@ -27,16 +27,10 @@
 package org.spout.engine.chat.console;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FilterOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -44,11 +38,11 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import org.spout.api.chat.ChatArguments;
 import org.spout.api.Engine;
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.ChatTemplate;
-import org.spout.api.chat.console.Console;
 import org.spout.api.chat.Placeholder;
+import org.spout.api.chat.console.Console;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.engine.SpoutEngine;
 /**

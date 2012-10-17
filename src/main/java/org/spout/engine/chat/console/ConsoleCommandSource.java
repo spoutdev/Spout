@@ -69,6 +69,7 @@ public class ConsoleCommandSource implements CommandSource {
 		if (command == null) {
 			sendMessage(ChatStyle.RED, "Unknown command: " + commandName);
 		} else {
+			System.out.println("Process command : "+ commandName);
 			command.process(this, commandName, arguments, false);
 		}
 	}
