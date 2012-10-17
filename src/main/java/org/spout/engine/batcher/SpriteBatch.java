@@ -32,29 +32,37 @@ import java.util.ArrayList;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Rectangle;
 
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.spout.api.math.Matrix;
 import org.spout.api.render.RenderMaterial;
+import org.spout.api.render.RenderMode;
 import org.spout.api.render.Renderer;
 import org.spout.engine.renderer.BatchVertexRenderer;
+import org.spout.engine.resources.ClientFont;
 
 public class SpriteBatch {
-	private class TextureRectangle {
-		public Rectangle destination;
-		public Rectangle source;
-		public RenderMaterial material;
-	}
-	
-	
 	Renderer renderer;
 	ArrayList<TextureRectangle> sprites = new ArrayList<TextureRectangle>();
 	Matrix view;
 	Matrix projection;
+	float screenWidth;
+	float screenHeight;
+	float aspectRatio;
 	
-	public SpriteBatch() {
+	public static SpriteBatch createSpriteBatch(RenderMode renderMode, float screenW, float screenH) {
+		if (renderMode==RenderMode.GL11)
+			return new GL11SpriteBatch(screenW, screenH);
+		return new SpriteBatch(screenW, screenH);
+	}
+	
+	public SpriteBatch(float screenW, float screenH) {
 		this.renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 		this.projection = MathHelper.createIdentity();
 		this.view = MathHelper.createIdentity();
+		this.screenWidth = screenW;
+		this.screenHeight = screenH;
+		this.aspectRatio = screenW/screenH;
 	}
 	
 	public void begin() {
@@ -65,7 +73,7 @@ public class SpriteBatch {
 		renderer.begin();
 		for(int i = 0; i < sprites.size(); i++) {
 			TextureRectangle rect = sprites.get(i);
-
+			
 			renderer.addVertex(rect.destination.getX(), rect.destination.getY() + rect.destination.getHeight());
 			renderer.addColor(Color.white);			
 			renderer.addTexCoord(rect.source.getX(), rect.source.getY());			
@@ -108,9 +116,32 @@ public class SpriteBatch {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 	}
 	
+	public void drawText(String text, ClientFont font, float x, float y) {
+		float w = font.getWidth();
+		float h = font.getHeight();
+		
+		float xCursor = x;
+		float yCursor = y;
+		for (int i=0 ; i<text.length() ; i++) {
+			char c = text.charAt(i);
+			java.awt.Rectangle r = font.getPixelBounds(c);
+			
+			TextureRectangle rect = new TextureRectangle();
+			rect.destination = new Rectangle(xCursor, yCursor, (float)r.width/screenWidth, (float)r.height/screenHeight);
+			rect.source = new Rectangle(r.x/w, r.y/h, r.width/w, r.height/h);
+			rect.material = font.getMaterial();
+			
+			xCursor += (float)r.width/screenWidth;
+			if (c==' ')
+				xCursor += font.getSpaceWidth()/screenWidth;
+			
+			sprites.add(rect);
+		}
+	}
+	
 	public void draw(RenderMaterial material, float x, float y, float w, float h) {
 		TextureRectangle rect = new TextureRectangle();
-		rect.destination = new Rectangle(x,y,w,h);
+		rect.destination = new Rectangle(x, y, w, h*aspectRatio);
 		rect.source = new Rectangle(0, 0, 1, 1);
 		rect.material = material;
 		sprites.add(rect);

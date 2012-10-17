@@ -32,13 +32,21 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.spout.api.render.RenderMaterial;
+import org.spout.engine.renderer.shader.ClientShader;
 
 
 public class ClientFont extends ClientTexture implements org.spout.api.render.Font{
 	private  static final String asciiset;
 	private static final FontRenderContext DEFAULT_CONTEXT = new FontRenderContext(null, true, true);
+	
+	private ClientRenderMaterial material;
 	
 	static {
 		asciiset = getASCII();
@@ -47,7 +55,8 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	
 	private static final String getASCII(){
 		StringBuilder sb = new StringBuilder();
-		for(int i = 32; i < 127; i++) sb.append((char)i).append(" ");
+		for(int i = 32; i < 127; i++)
+			sb.append((char)i).append(" ");
 		return sb.toString();
 	}
 	
@@ -83,10 +92,9 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		//Create the font's bitmaptexture
 		BufferedImage image = new BufferedImage((int)bounds.getWidth(), (int)bounds.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = image.createGraphics();
-		g.setColor(Color.white);
+		g.setColor(Color.black);
 		g.drawGlyphVector(vec, 0, ttfFont.getSize());
 		g.dispose();
-		
 		
 		
 		charHeight = (float)bounds.getHeight();
@@ -97,6 +105,17 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		
 	}
 	
+	@Override
+	public void load() {
+		super.load();
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("Diffuse", this);
+		material = new ClientRenderMaterial(ClientShader.BASIC, params);
+	}
+	
+	public RenderMaterial getMaterial() {
+		return material;
+	}
 	
 	@Override
 	public float getCharTop() {
@@ -114,7 +133,7 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	}
 	
 	@Override
-	public Rectangle getPixelBounds(char c){
+	public Rectangle getPixelBounds(char c) {
 		return vec.getGlyphPixelBounds(asciiset.indexOf(c), DEFAULT_CONTEXT, 0, ttfFont.getSize());
 	}
 	

@@ -27,6 +27,8 @@
 package org.spout.engine;
 
 import java.awt.Color;
+import java.awt.Font;
+
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
@@ -102,6 +104,7 @@ import org.spout.engine.listener.SpoutClientListener;
 import org.spout.engine.listener.channel.SpoutClientConnectListener;
 import org.spout.engine.protocol.SpoutClientSession;
 import org.spout.engine.renderer.WorldRenderer;
+import org.spout.engine.resources.ClientFont;
 import org.spout.engine.util.MacOSXUtils;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutClientWorld;
@@ -133,6 +136,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	
 	//Test
 	private SpriteBatch gui;
+	private ClientFont font;
 
 	public SpoutClient() {
 		this.filesystem = new ClientFileSystem();
@@ -532,7 +536,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		renderer.addCube(new Vector3(-0.5,-0.5,-0.5), Vector3.ONE, Color.RED, sides);
 		renderer.end();
 
-		gui = new SpriteBatch();
+		gui = SpriteBatch.createSpriteBatch(getRenderMode(), resolution.getX(), resolution.getY());
+		font = new ClientFont(new Font("Comic sans ms", Font.BOLD, 30));
+		font.load();
 	}
 
 
@@ -555,7 +561,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 		renderer.draw(mat);
 
 		gui.begin();
-		gui.draw(guimaterial, .75f, 0, .25f, .5f);
+		gui.drawText("Spout client ! Logged as "+activePlayer.getDisplayName()+" in world: "+getDefaultWorld().getName(), font, -0.95f , 0.9f);
+		gui.drawText("x: "+activePlayer.getTransform().getPosition().getBlockX(), font, -0.95f , 0.8f);
+		gui.drawText("y: "+(-activePlayer.getTransform().getPosition().getBlockY()), font, -0.95f , 0.7f);
+		gui.drawText("z: "+activePlayer.getTransform().getPosition().getBlockZ(), font, -0.95f , 0.6f);
+		gui.draw(guimaterial, 0.5f, 0, 0.25f, 0.25f);
 		gui.render();
 
 	}
