@@ -107,9 +107,11 @@ public class WorldRenderer {
 		Point currentPos = client.getActivePlayer().getTransform().getPosition();
 
 		int currentChunkX = currentPos.getChunkX();
-		int currentChunkY = currentPos.getChunkY();
+		int currentChunkY = -currentPos.getChunkY();
 		int currentChunkZ = currentPos.getChunkZ();
 
+		//System.out.println("Chunk = "+currentChunkX+", "+currentChunkY+", "+currentChunkZ);
+		
 		if (currentChunkX == lastChunkX && currentChunkY == lastChunkY && currentChunkZ == lastChunkZ && !force && !firstUpdate) {
 			return false;
 		}
@@ -142,37 +144,51 @@ public class WorldRenderer {
 				}
 			}
 		} else {
-			Cube oldView = new Cube(new Point(world, lastChunkX - chunkViewDistance, lastChunkY - chunkViewDistance, lastChunkZ - chunkViewDistance), chunkViewDistance * 2);
-			Cube newView = new Cube(new Point(world, currentChunkX - chunkViewDistance, currentChunkY - chunkViewDistance, currentChunkZ - chunkViewDistance), chunkViewDistance * 2);
+			Cube oldView = new Cube(new Point(world, lastChunkX - chunkViewDistance, lastChunkY - chunkViewDistance, lastChunkZ - chunkViewDistance), chunkViewDistance * 2+1);
+			Cube newView = new Cube(new Point(world, currentChunkX - chunkViewDistance, currentChunkY - chunkViewDistance, currentChunkZ - chunkViewDistance), chunkViewDistance * 2+1);
 
 			Vector3 min = oldView.getBase().min(newView.getBase());
 			Vector3 max = oldView.getBase().add(oldView.getSize()).max(newView.getBase().add(newView.getSize()));
 
+			/*
+			 * +====+====+
+			 * !    !    !
+			 * !    !    !
+			 * +====+====+
+			 * 
+			 * 
+			 * 
+			*/
+			
 			// Shared area
 			Vector3 ignoreMin = oldView.getBase().max(newView.getBase());
 			Vector3 ignoreMax = oldView.getBase().add(oldView.getSize()).min(newView.getBase().add(newView.getSize()));
 			Cuboid ignore = new Cuboid(new Point(ignoreMin, world), ignoreMax.subtract(ignoreMin));
-
-			for (int x = min.getFloorX(); x < max.getFloorX(); x++) {
-				for (int y = min.getFloorY(); y < max.getFloorY(); y++) {
-					for (int z = min.getFloorZ(); z < max.getFloorZ(); z++) {
+			
+			for (int x = min.getFloorX(); x <= max.getFloorX(); x++) {
+				for (int y = min.getFloorY(); y <= max.getFloorY(); y++) {
+					for (int z = min.getFloorZ(); z <= max.getFloorZ(); z++) {
 						Vector3 vec = new Vector3(x, y, z);
-						if (ignore.contains(vec)) {
+						//System.out.println("vector "+ vec);
+						/*if (ignore.contains(vec)) {
 							continue;
-						}
+						}*/
 
 						Vector3 pos = ChunkMeshBatch.getChunkCoordinates(vec);
 
 						if (oldView.contains(vec)) {
 							ChunkMeshBatch c = chunkRenderersByPosition.get(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
+							
+							if (c==null)
+								continue;
 							removeChunkMeshBatch(c);
-							continue;
-						}
-
-						if (newView.contains(vec)) {
+							c.finalize();
+							System.out.println("Remove : " + c);
+						} else if (newView.contains(vec)) {
 							ChunkMeshBatch c = new ChunkMeshBatch(world, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
 							addChunkMeshBatch(c);
 							c.update();
+							System.out.println("Rended : " + c);
 						}
 					}
 				}

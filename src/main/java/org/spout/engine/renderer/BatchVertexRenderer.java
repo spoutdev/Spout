@@ -307,4 +307,6 @@ public abstract class BatchVertexRenderer implements Renderer {
 			System.out.println("Vertex : {" + vertexBuffer.get(index) + " " + vertexBuffer.get(index + 1) + " " + vertexBuffer.get(index + 2) + " " + vertexBuffer.get(index + 3) + "}");
 		}
 	}
+	
+	public void finalize() { }
 }
