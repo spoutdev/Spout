@@ -26,11 +26,14 @@
  */
 package org.spout.engine.batcher;
 
+import java.awt.Color;
+
 import org.spout.api.math.Rectangle;
 import org.spout.api.render.RenderMaterial;
 
-public class TextureRectangle { // TODO: Move it into spoutAPI
+public class TextureRectangle { 
 	public Rectangle destination;
 	public Rectangle source;
 	public RenderMaterial material;
+	public Color color;
 }

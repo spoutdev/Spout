@@ -95,7 +95,7 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		//Create the font's bitmaptexture
 		BufferedImage image = new BufferedImage((int)bounds.getWidth(), (int)bounds.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = image.createGraphics();
-		g.setColor(Color.black);
+		g.setColor(Color.white);
 		g.drawGlyphVector(vec, 0, ttfFont.getSize());
 		g.dispose();
 		
@@ -119,7 +119,7 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 			material = new ClientRenderMaterial(ClientShader.BASIC, params);			
 		} else {
 			
-			material = new ClientRenderMaterial((ClientShader)Spout.getFilesystem().getResource("shader://Spout/resources/resources/shader/FontMaterial.ssf"), params);
+			material = new ClientRenderMaterial((ClientShader)Spout.getFilesystem().getResource("shader://Spout/resources/resources/shaders/textShader.ssf"), params);
 			
 		}
 		
