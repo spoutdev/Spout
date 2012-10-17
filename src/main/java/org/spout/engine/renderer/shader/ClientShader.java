@@ -55,6 +55,7 @@ import org.spout.engine.renderer.shader.variables.TextureSamplerShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec2ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec3ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec4ShaderVariable;
+import org.spout.engine.resources.ClientFont;
 
 /**
  * Represents a Shader Object in OpenGL

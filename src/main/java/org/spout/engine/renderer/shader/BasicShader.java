@@ -35,9 +35,12 @@ import org.spout.api.Spout;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Quaternion;
+import org.spout.api.render.Texture;
 
 import org.spout.engine.SpoutClient;
 import org.spout.engine.renderer.shader.variables.Mat4ShaderVariable;
+import org.spout.engine.renderer.shader.variables.TextureSamplerShaderVariable;
+import org.spout.engine.resources.ClientFont;
 
 public class BasicShader extends ClientShader {
 	FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(4 * 4);
