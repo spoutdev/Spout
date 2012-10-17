@@ -51,12 +51,19 @@ public class InputCommands {
 					.setHelp("Removes the " + flag.name() + " flag from the calling player's input state")
 					.setExecutor(Platform.CLIENT, new InputFlagHandler(flag, false));
 		}
-		parent.addSubCommand(engine, "+dx")
+		/*//Old version
+		 * parent.addSubCommand(engine, "+dx")
 				.setHelp("Adds the x distance traveled to the calling player's input state.")
 				.setExecutor(Platform.CLIENT, new InputMouseHandler(true));
 		parent.addSubCommand(engine, "+dy")
 				.setHelp("Adds the y distance traveled to the calling player's input state.")
-				.setExecutor(Platform.CLIENT, new InputMouseHandler(false));
+				.setExecutor(Platform.CLIENT, new InputMouseHandler(false));*/
+		parent.addSubCommand(engine, "+dx")
+				.setHelp("Adds the x distance traveled to the calling player's input state.")
+				.setExecutor(Platform.CLIENT, new InputYawMouseHandler());
+		parent.addSubCommand(engine, "+dy")
+				.setHelp("Adds the y distance traveled to the calling player's input state.")
+				.setExecutor(Platform.CLIENT, new InputPitchMouseHandler());
 	}
 
 	public static class InputFlagHandler implements CommandExecutor {
@@ -71,18 +78,22 @@ public class InputCommands {
 		@Override
 		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
 				if (!(source instanceof Player)) {
-					return; //throw new CommandException("Source must be a player!"); // TODO: Fix input
+					throw new CommandException("Source must be a player!");
 				}
 				Player player = (Player) source;
 				if (add) {
+					System.out.println("addflag " + flag);
 					player.processInput(player.input().withAddedFlag(flag));
 				} else {
+					System.out.println("removeflag " + flag);
 					player.processInput(player.input().withRemovedFlag(flag));
 				}
 		}
 	}
 
-	public static class InputMouseHandler implements CommandExecutor {
+	/*
+	 * 
+	 * public static class InputMouseHandler implements CommandExecutor {
 		private final boolean x;
 
 		public InputMouseHandler(boolean x) {
@@ -92,7 +103,7 @@ public class InputCommands {
 		@Override
 		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
 				if (!(source instanceof Player)) {
-					return; //throw new CommandException("Source must be a player!");
+					throw new CommandException("Source must be a player!");
 				}
 				int d;
 				try {
@@ -102,10 +113,46 @@ public class InputCommands {
 				}
 				Player player = (Player) source;
 				if (x) {
-					player.processInput(player.input().withAddedYaw(PlayerInputState.MOUSE_SENSITIVITY * d));
+					player.processInput(player.input().withAddedYaw(PlayerInputState.MOUSE_SENSITIVITY * -d));
 				} else {
 					player.processInput(player.input().withAddedPitch(PlayerInputState.MOUSE_SENSITIVITY * d));
 				}
+		}
+	}*/
+
+	public static class InputYawMouseHandler implements CommandExecutor {
+		
+		@Override
+		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
+				if (!(source instanceof Player)) {
+					throw new CommandException("Source must be a player!");
+				}
+				int d;
+				try {
+					d = args.getInteger(0);
+				} catch (NumberFormatException numberFormatException) {
+					throw new IllegalArgumentException("Cannot add a non-number to mouse distances.");
+				}
+				Player player = (Player) source;
+				player.processInput(player.input().withAddedYaw(PlayerInputState.MOUSE_SENSITIVITY * -d));
+		}
+	}
+
+	public static class InputPitchMouseHandler implements CommandExecutor {
+		
+		@Override
+		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
+				if (!(source instanceof Player)) {
+					throw new CommandException("Source must be a player!");
+				}
+				int d;
+				try {
+					d = args.getInteger(0);
+				} catch (NumberFormatException numberFormatException) {
+					throw new IllegalArgumentException("Cannot add a non-number to mouse distances.");
+				}
+				Player player = (Player) source;
+				player.processInput(player.input().withAddedPitch(PlayerInputState.MOUSE_SENSITIVITY * d));
 		}
 	}
 }

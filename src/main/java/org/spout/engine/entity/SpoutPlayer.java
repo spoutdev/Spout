@@ -37,6 +37,7 @@ import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.ChatSection;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.Command;
+import org.spout.api.command.CommandSource;
 import org.spout.api.command.RootCommand;
 import org.spout.api.component.Component;
 import org.spout.api.data.ValueHolder;

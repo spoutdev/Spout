@@ -26,32 +26,42 @@
  */
 package org.spout.engine.input;
 
-import java.util.EnumMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.lwjgl.input.Mouse;
-import org.spout.api.keyboard.KeyEvent;
-import org.spout.api.keyboard.Keyboard;
-import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.keyboard.Input;
-
-import gnu.trove.map.hash.TIntObjectHashMap;
+import org.spout.api.keyboard.Keyboard;
+import org.spout.engine.entity.SpoutPlayer;
 
 public class SpoutInput implements Input {
 	private static final int KEY_SCROLLUP = 0xdada;
 	private static final int KEY_SCROLLDOWN = 0xfee1bad;
 
-	EnumMap<Keyboard, String> keyCommands = new EnumMap<Keyboard, String>(Keyboard.class);
+	//EnumMap<Keyboard, String> keyCommands = new EnumMap<Keyboard, String>(Keyboard.class);
+	Map<Integer, String> keyCommands = new HashMap<Integer, String>();
 	TIntObjectHashMap<String> mouseCommands = new TIntObjectHashMap<String>();
 	private boolean redirected = false;
 
 	public SpoutInput() {
+		//TODO : remove 
 		bind(Keyboard.KEY_W, "+Forward");
 		bind(Keyboard.KEY_S, "+BackWard");
 		bind(Keyboard.KEY_A, "+Left");
 		bind(Keyboard.KEY_D, "+Right");
 		bind(Keyboard.KEY_SPACE, "+Jump");
 		bind(Keyboard.KEY_LSHIFT, "+Crouch");
+		//Second version with lwjgl key OK
+		bind2(org.lwjgl.input.Keyboard.KEY_W, "+Forward");
+		bind2(org.lwjgl.input.Keyboard.KEY_S, "+BackWard");
+		bind2(org.lwjgl.input.Keyboard.KEY_A, "+Left");
+		bind2(org.lwjgl.input.Keyboard.KEY_D, "+Right");
+		bind2(org.lwjgl.input.Keyboard.KEY_SPACE, "+Jump");
+		bind2(org.lwjgl.input.Keyboard.KEY_LSHIFT, "+Crouch");
+		
 		bind("KEY_SCROLLDOWN", "+Select_Down");
 		bind("KEY_SCROLLUP", "+Select_Up");
 		bind("MOUSE_BUTTON0", "+FIRE_1");
@@ -59,32 +69,37 @@ public class SpoutInput implements Input {
 		bind("MOUSE_BUTTON2", "+FIRE_2");
 	}
 
-	public void doKeypress(Keyboard key, boolean pressed) {
+	/*public void doKeypress(Keyboard key, boolean pressed) {
 		String cmd = keyCommands.get(key);
 		doCommand(cmd, pressed);
+	}*/
+
+	private void doKeypress(SpoutPlayer player, int button, boolean pressed) {
+		String cmd = keyCommands.get(button);
+		doCommand(player,cmd, pressed);
 	}
 
-	public void doMousepress(int button, boolean pressed) {
+	public void doMousepress(SpoutPlayer player, int button, boolean pressed) {
 		String cmd = mouseCommands.get(button);
-		doCommand(cmd,  pressed);
+		doCommand(player, cmd,  pressed);
 	}
 
-	public void doMouseDx(int dx) {
-		Spout.getEngine().getCommandSource().processCommand("+dx", new ChatArguments(dx));
+	public void doMouseDx(SpoutPlayer player, int dx) {
+		player.processCommand("+dx", new ChatArguments(dx));
 	}
 
-	public void doMouseDy(int dy) {
-		Spout.getEngine().getCommandSource().processCommand("+dy", new ChatArguments(dy));
+	public void doMouseDy(SpoutPlayer player, int dy) {
+		player.processCommand("+dy", new ChatArguments(dy));
 	}
 
-	private void doCommand(String command, boolean pressed) {
+	private void doCommand(SpoutPlayer player, String command, boolean pressed) {
 		if (command == null)
 			return;
 
 		if (command.startsWith("+") && !pressed) {
 			command = command.replaceFirst("\\+", "-");
 		}
-		Spout.getEngine().getCommandSource().processCommand(command, new ChatArguments());
+		player.processCommand(command, new ChatArguments());
 	}
 
 	/*
@@ -95,6 +110,10 @@ public class SpoutInput implements Input {
 	 */
 	@Override
 	public void bind(Keyboard key, String command) {
+		//keyCommands.put(key.name(), command);
+	}
+	
+	public void bind2(int key, String command) {
 		keyCommands.put(key, command);
 	}
 
@@ -123,37 +142,50 @@ public class SpoutInput implements Input {
 		}
 	}
 
-	public void pollInput() {
+	public void pollInput(SpoutPlayer player) {
 		if (redirected) {
 			return;
 		}
 
-		KeyEvent event;
 		// Handle keyboard
+		/*KeyEvent event;
 		Keyboard.doEventCheck();
 		while ((event = Keyboard.nextEvent()) != null) {
 			doKeypress(event.getKey(), event.isPressed());
+		}*/
+
+		if(org.lwjgl.input.Keyboard.isCreated()){
+			while (org.lwjgl.input.Keyboard.next()) {
+				// Handle key
+				int button = org.lwjgl.input.Keyboard.getEventKey();
+				if (button != -1) {
+					doKeypress(player,button, org.lwjgl.input.Keyboard.getEventKeyState());
+					continue;
+				}
+			}
 		}
-
+		
 		// Handle mouse
-		while (Mouse.next()) {
-			// Handle buttons
-			int button = Mouse.getEventButton();
-			if (button != -1) {
-				doMousepress(button, Mouse.getEventButtonState());
-				continue;
-			}
+		if(Mouse.isCreated()){
+			while (Mouse.next()) {
+				// Handle buttons
+				int button = Mouse.getEventButton();
+				if (button != -1) {
+					doMousepress(player, button, Mouse.getEventButtonState());
+					continue;
+				}
 
-			// Handle scrolls
-			int scroll = Mouse.getEventDWheel();
-			if (scroll < 0) {
-				doMousepress(KEY_SCROLLUP, true);
-			} else if (scroll > 0) {
-				doMousepress(KEY_SCROLLDOWN, true);
-			}
+				// Handle scrolls
+				int scroll = Mouse.getEventDWheel();
+				if (scroll < 0) {
+					doMousepress(player, KEY_SCROLLUP, true);
+				} else if (scroll > 0) {
+					doMousepress(player, KEY_SCROLLDOWN, true);
+				}
 
-			doMouseDx(Mouse.getDX());
-			doMouseDy(Mouse.getDY());
+				doMouseDx(player, Mouse.getDX());
+				doMouseDy(player, Mouse.getDY());
+			}
 		}
 	}
 
