@@ -3,13 +3,12 @@
 varying vec4 color;
 varying vec2 uvcoord;
 uniform sampler2D tex;
-uniform sampler2D font;
+uniform sampler2D Diffuse;
 uniform vec4 fontcolor;
 
 
 void main()
 {
-    vec4 fontsample = texture(font, uvcoord);
+    vec4 fontsample = texture(Diffuse, uvcoord);
     gl_FragColor = fontcolor * fontsample;
-    gl_FragColor = color;
 } 

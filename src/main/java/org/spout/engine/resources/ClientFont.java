@@ -38,7 +38,10 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.spout.api.Spout;
 import org.spout.api.render.RenderMaterial;
+import org.spout.api.render.RenderMode;
+import org.spout.engine.SpoutClient;
 import org.spout.engine.renderer.shader.ClientShader;
 
 
@@ -109,8 +112,17 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	public void load() {
 		super.load();
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("Diffuse", this);
-		material = new ClientRenderMaterial(ClientShader.BASIC, params);
+		params.put("Diffuse", this);		
+		if(((SpoutClient)Spout.getEngine()).getRenderMode() == RenderMode.GL11)
+		{
+			
+			material = new ClientRenderMaterial(ClientShader.BASIC, params);			
+		} else {
+			
+			material = new ClientRenderMaterial((ClientShader)Spout.getFilesystem().getResource("shader://Spout/resources/resources/shader/FontMaterial.ssf"), params);
+			
+		}
+		
 	}
 	
 	public RenderMaterial getMaterial() {
