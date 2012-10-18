@@ -70,6 +70,7 @@ import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.component.components.CameraComponent;
 import org.spout.api.datatable.SerializableMap;
+import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
@@ -257,108 +258,33 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	public void doInput() {
-		//inputManager.pollInput(); // One Mouse.getDX() to rule them all
 		// TODO move this a plugin
 
 		if (activePlayer == null) {
 			return;
 		}
-
+		
+		inputManager.pollInput(activePlayer);
+		PlayerInputState inputState = activePlayer.input();
 		Transform ts = activePlayer.getTransform().getTransform();
-
-		if (Mouse.isGrabbed()) {
-			float pitch = ts.getRotation().getPitch();
-			float yaw = ts.getRotation().getYaw();
-
-			float mouseDX = -Mouse.getDX() * 0.16f;
-			float mouseDY = Mouse.getDY() * 0.16f;
-
-			if (yaw + mouseDX >= 360) {
-				yaw += mouseDX - 360;
-			} else if (yaw + mouseDX < 0) {
-				yaw += mouseDX + 360;
-			} else {
-				yaw += mouseDX;
-			}
-
-			if (pitch + mouseDY >= -80 && pitch + mouseDY <= 80) {
-				pitch += mouseDY;
-			} else if (pitch + mouseDY < -80) {
-				pitch = -80;
-			} else if (pitch + mouseDY > 80) {
-				pitch = 80;
-			}
-
-			//System.out.println("yaw: "+yaw+" pitch: "+pitch);
-			ts.setRotation(MathHelper.rotation(pitch, yaw, ts.getRotation().getRoll()));
-			//System.out.println(activePlayer.getTransform().getTransform().toMatrix().toString());
-		}
-
-		if (!Keyboard.isCreated()) {
-			return;
-		}
-
-		boolean keyUp = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.FORWARD.getString()));
-		boolean keyDown = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.BACKWARD.getString()));
-		boolean keyLeft = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.LEFT.getString()));
-		boolean keyRight = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.RIGHT.getString()));
-		boolean flyUp = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.UP.getString()));
-		boolean flyDown = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.DOWN.getString()));
-
+		ts.setRotation(MathHelper.rotation(inputState.pitch(), inputState.yaw(), ts.getRotation().getRoll()));
+		
 		Point point = ts.getPosition();
-
-		if (keyUp) {
+		if (inputState.getForward()) 
 			point = point.add(ts.forwardVector());
-		}
-		if (keyDown) {
+		if (inputState.getBackward()) 
 			point = point.subtract(ts.forwardVector());
-		}
-		if (keyLeft) {
+		if (inputState.getLeft()) 
 			point = point.add(ts.rightVector());
-		}
-		if (keyRight) {
+		if (inputState.getRight()) 
 			point = point.subtract(ts.rightVector());
-		}
-		if (flyUp) {
+		if (inputState.getJump()) 
 			point = point.subtract(ts.upVector());
-		}
-		if (flyDown) {
+		if (inputState.getCrouch()) 
 			point = point.add(ts.upVector());
-		}
-
 		ts.setPosition(point);
+		
 		activePlayer.getTransform().setTransform(ts);
-
-		/*if (keyUp || keyDown || keyLeft || keyRight || flyUp || flyDown) {
-			//point = new Point(point.normalize(),activePlayer.getWorld());
-			System.out.println("Translation : "+point.getX()+"/"+point.getY()+"/"+point.getZ());
-			System.out.println("Position : "+activePlayer.getTransform().getPosition().getX()+"/"+activePlayer.getTransform().getPosition().getY()+"/"+activePlayer.getTransform().getPosition().getZ());
-			activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(point));
-		}*/
-
-		/*for (Flags f : activePlayer.input().getFlagSet()) {
-			switch(f) {
-			case FORWARD:
-				activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().forwardVector()));
-				break;
-			case BACKWARD:
-				activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().forwardVector()));
-				break;
-			case LEFT:
-				activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().rightVector()));
-				break;
-			case RIGHT:
-				activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().rightVector()));
-				break;
-			case CROUCH:
-			case FIRE_1:
-			case FIRE_2:
-			case INTERACT:
-			case JUMP:
-			case SELECT_DOWN:
-			case SELECT_UP:
-			}
-		}*/
 	}
 
 	@Override
