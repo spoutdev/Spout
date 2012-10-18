@@ -51,7 +51,6 @@ import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
@@ -71,6 +70,7 @@ import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.component.components.CameraComponent;
 import org.spout.api.component.components.TransformComponent;
 import org.spout.api.datatable.SerializableMap;
+import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.entity.state.PlayerInputState.Flags;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -130,7 +130,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 
 	private final boolean wireframe = false;
-	
+
 	//Test
 	private SpriteBatch gui;
 
@@ -255,15 +255,44 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	public void doInput() {
-		//inputManager.pollInput(); // One Mouse.getDX() to rule them all
-		// TODO move this a plugin
-
 		if (activePlayer == null) {
 			return;
 		}
 		
+		inputManager.pollInput(activePlayer); // One Mouse.getDX() to rule them all
+
+		PlayerInputState inputState = activePlayer.input();
+
 		Transform ts = activePlayer.getTransform().getTransform();
-		
+
+		ts.setRotation(MathHelper.rotation(inputState.pitch(), inputState.yaw(), ts.getRotation().getRoll()));
+
+		Point point = ts.getPosition();
+
+		if (inputState.getForward()) {
+			point = point.add(ts.forwardVector());
+		}
+		if (inputState.getBackward()) {
+			point = point.subtract(ts.forwardVector());
+		}
+		if (inputState.getLeft()) {
+			point = point.add(ts.rightVector());
+		}
+		if (inputState.getRight()) {
+			point = point.subtract(ts.rightVector());
+		}
+		if (inputState.getJump()) {
+			point = point.subtract(ts.upVector());
+		}
+		if (inputState.getCrouch()) {
+			point = point.add(ts.upVector());
+		}
+
+		ts.setPosition(point);
+		activePlayer.getTransform().setTransform(ts);
+
+		/*Transform ts = activePlayer.getTransform().getTransform();
+
 		if (Mouse.isGrabbed()) {
 			float pitch = ts.getRotation().getPitch();
 			float yaw = ts.getRotation().getYaw();
@@ -289,7 +318,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			ts.setRotation(MathHelper.rotation(pitch, yaw, ts.getRotation().getRoll()));
 			//System.out.println(activePlayer.getTransform().getTransform().toMatrix().toString());
 		}
-		
+
 		if (!Keyboard.isCreated())
 			return;
 
@@ -301,7 +330,7 @@ public class SpoutClient extends SpoutEngine implements Client {
         boolean flyDown = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.DOWN.getString()));
 
         Point point = ts.getPosition();
-        
+
         if (keyUp) {
         	point = point.add(ts.forwardVector());
         }
@@ -322,39 +351,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 
         ts.setPosition(point);
-		activePlayer.getTransform().setTransform(ts);
-		
-		/*if (keyUp || keyDown || keyLeft || keyRight || flyUp || flyDown) {
-			//point = new Point(point.normalize(),activePlayer.getWorld());
-			System.out.println("Translation : "+point.getX()+"/"+point.getY()+"/"+point.getZ());
-			System.out.println("Position : "+activePlayer.getTransform().getPosition().getX()+"/"+activePlayer.getTransform().getPosition().getY()+"/"+activePlayer.getTransform().getPosition().getZ());
-			activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(point));
-		}*/
-        
-
-		/*for (Flags f : activePlayer.input().getFlagSet()) {
-			switch(f) {
-			case FORWARD:
-				activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().forwardVector()));
-				break;
-			case BACKWARD:
-				activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().forwardVector()));
-				break;
-			case LEFT:
-				activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(activePlayer.getTransform().getTransform().rightVector()));
-				break;
-			case RIGHT:
-				activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().subtract(activePlayer.getTransform().getTransform().rightVector()));
-				break;
-			case CROUCH:
-			case FIRE_1:
-			case FIRE_2:
-			case INTERACT:
-			case JUMP:
-			case SELECT_DOWN:
-			case SELECT_UP:
-			}
-		}*/
+		activePlayer.getTransform().setTransform(ts);*/
 	}
 
 	@Override
@@ -515,10 +512,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glClearColor((135.f/255.0f), 206.f/255.f, 250.f/255.f, 1);
-		
+
 		if(wireframe) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-			
+
 		}
 
 		worldRenderer = new WorldRenderer(this);
