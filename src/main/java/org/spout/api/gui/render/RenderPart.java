@@ -3,12 +3,14 @@ package org.spout.api.gui.render;
 import java.awt.Color;
 
 import org.spout.api.math.Rectangle;
+import org.spout.api.render.RenderMaterial;
 
 public abstract class RenderPart implements Comparable<RenderPart> {
 	Rectangle source;
 	Rectangle sprite;
 	int zIndex = 0;
 	Color color;
+	RenderMaterial material;
 	
 	public void setSource(Rectangle source) {
 		this.source = source;
@@ -47,5 +49,11 @@ public abstract class RenderPart implements Comparable<RenderPart> {
 		return arg0.getZIndex() - getZIndex();
 	}
 	
-	//TODO @RoyAwesome your render materials stuff here, I don't know how to add it
+	public RenderMaterial getRenderMaterial() {
+		return material;
+	}
+	
+	public void setRenderMaterial(RenderMaterial material) {
+		this.material = material;
+	}
 }
