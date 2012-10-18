@@ -47,7 +47,7 @@ public class FontLoader extends BasicResourceLoader<ClientFont> {
 		}
 		ClientFont fontFromResource = null;
 		try {
-			final Font raw = Font.createFont(Font.TRUETYPE_FONT, stream);
+			final Font raw = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(Font.BOLD, 30f);
 			fontFromResource = new ClientFont(raw);
 		} catch (Exception e) {
 			Spout.getLogger().severe("Exception caught when reading in a font.");

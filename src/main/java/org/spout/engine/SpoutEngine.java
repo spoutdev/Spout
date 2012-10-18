@@ -86,6 +86,7 @@ import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.plugin.CommonPluginLoader;
 import org.spout.api.plugin.CommonPluginManager;
 import org.spout.api.plugin.CommonServiceManager;
+import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginManager;
 import org.spout.api.plugin.ServiceManager;
@@ -105,6 +106,7 @@ import org.spout.engine.command.AdministrationCommands;
 import org.spout.engine.command.ConnectionCommands;
 import org.spout.engine.command.InputCommands;
 import org.spout.engine.command.MessagingCommands;
+import org.spout.engine.command.RendererCommands;
 import org.spout.engine.command.TestCommands;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutPlayer;
@@ -220,6 +222,9 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		InputCommands.setupInputCommands(this, getRootCommand());
 		if (arguments.debug) {
 			getRootCommand().addSubCommands(this, TestCommands.class, commandRegFactory);
+		}
+		if(Spout.getPlatform() == Platform.CLIENT){
+			getRootCommand().addSubCommands(this, RendererCommands.class, commandRegFactory);
 		}
 		Protocol.registerProtocol(new SpoutProtocol());
 

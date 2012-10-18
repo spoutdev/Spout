@@ -124,7 +124,7 @@ public class SpriteBatch {
 			java.awt.Rectangle r = font.getPixelBounds(c);
 
 			TextureRectangle rect = new TextureRectangle();
-			rect.destination = new Rectangle(xCursor, yCursor, (r.width / screenWidth) * size, (r.height / screenHeight) * size);
+			rect.destination = new Rectangle(xCursor, yCursor, (float)r.width/screenWidth, (float)r.height/screenHeight);
 			rect.source = new Rectangle(r.x / w, r.y / h, r.width / w, r.height / h);
 			rect.material = font.getMaterial();
 			rect.color = color;

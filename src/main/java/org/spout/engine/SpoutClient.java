@@ -33,7 +33,9 @@ import java.net.URISyntaxException;
 import java.security.CodeSource;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
@@ -88,7 +90,9 @@ import org.spout.api.render.RenderMode;
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.batcher.SpriteBatch;
+import org.spout.engine.command.ConnectionCommands;
 import org.spout.engine.command.InputManagementCommands;
+import org.spout.engine.command.RendererCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ClientFileSystem;
@@ -125,10 +129,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private volatile boolean rendering = true;
 	private String stopMessage = null;
 	private final ClientBootstrap bootstrap = new ClientBootstrap();
-	private final boolean wireframe = false;
+	private boolean wireframe = false;
 	//Test
 	private SpriteBatch gui;
 	private ClientFont font;
+	
+	private ConcurrentLinkedQueue<Runnable> renderTaskQueue = new ConcurrentLinkedQueue<Runnable>();
 
 	public SpoutClient() {
 		this.filesystem = new ClientFileSystem();
@@ -153,6 +159,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		ChannelFactory factory = new NioClientSocketChannelFactory(executorBoss, executorWorker);
 		bootstrap.setFactory(factory);
 
+		
+		
 		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, true);
 		bootstrap.setPipelineFactory(pipelineFactory);
 		super.init(args);
@@ -511,10 +519,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glClearColor((135.f / 255.0f), 206.f / 255.f, 250.f / 255.f, 1);
 
-		if (wireframe) {
-			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-		}
-
+	
 		worldRenderer = new WorldRenderer(this);
 		worldRenderer.setup();
 
@@ -531,6 +536,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	public void render(float dt) {
+		
+		while(renderTaskQueue.peek() != null) {
+			Runnable task = renderTaskQueue.poll();
+			task.run();
+		}
+		
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		if (Mouse.isButtonDown(0)) {
@@ -551,7 +562,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		renderer.draw(mat);
 
 		gui.begin();
-		gui.drawText("Spout client ! Logged as " + activePlayer.getDisplayName() + " in world: " + getDefaultWorld().getName(), font, -0.95f, 0.9f, 8f);
+		gui.drawText("Spout client ! Logged as " + activePlayer.getDisplayName() + " in world: " + getDefaultWorld().getName(), font, -0.95f, 0.9f, 10f);
 		gui.drawText("x: " + activePlayer.getTransform().getPosition().getBlockX(), font, -0.95f, 0.8f, 8f);
 		gui.drawText("y: " + (-activePlayer.getTransform().getPosition().getBlockY()), font, -0.95f, 0.7f, 8f);
 		gui.drawText("z: " + activePlayer.getTransform().getPosition().getBlockZ(), font, -0.95f, 0.6f, 8f);
@@ -640,5 +651,19 @@ public class SpoutClient extends SpoutEngine implements Client {
 	@Override
 	public FileSystem getFilesystem() {
 		return filesystem;
+	}
+	
+	public void enqueueTask(Runnable task) {
+		renderTaskQueue.add(task);
+	}
+	
+	public void toggleWireframe() {
+		if(wireframe) {			
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);	
+			wireframe = false;	
+		} else {
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);	
+			wireframe = true;
+		}
 	}
 }
