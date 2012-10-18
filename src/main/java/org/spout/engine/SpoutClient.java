@@ -566,10 +566,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 		renderer.draw(mat);
 
 		gui.begin();
+		gui.drawText("Testing text on\nmultiples lines!", font, 0, 0, 8.f, Color.blue);
 		gui.drawText("Spout client ! Logged as " + activePlayer.getDisplayName() + " in world: " + getDefaultWorld().getName(), font, -0.95f, 0.9f, 10f);
-		gui.drawText("x: " + activePlayer.getTransform().getPosition().getBlockX(), font2, -0.95f, 0.8f, 8f);
-		gui.drawText("y: " + (-activePlayer.getTransform().getPosition().getBlockY()), font, -0.95f, 0.7f, 8f);
-		gui.drawText("z: " + activePlayer.getTransform().getPosition().getBlockZ(), font2, -0.95f, 0.6f, 8f);
+		gui.drawText("x: " + activePlayer.getTransform().getPosition().getBlockX(), font, -0.95f, 0.8f, 8f, Color.green);
+		gui.drawText("y: " + (-activePlayer.getTransform().getPosition().getBlockY()), font, -0.95f, 0.7f, 8f, Color.red);
+		gui.drawText("z: " + activePlayer.getTransform().getPosition().getBlockZ(), font, -0.95f, 0.6f, 8f, Color.blue);
 		gui.draw(guimaterial, 0.5f, 0, 0.25f, 0.25f);
 		gui.render();
 	}

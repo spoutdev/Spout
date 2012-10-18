@@ -48,22 +48,33 @@ public class GL11SpriteBatch extends SpriteBatch {
 			
 			GL11.glBegin(GL11.GL_TRIANGLES);
 			
-			GL11.glTexCoord2f(rect.source.getX(), rect.source.getY());	
+			float r = (float) rect.color.getRed() / 255f;
+			float g = (float) rect.color.getGreen() / 255f;
+			float b = (float) rect.color.getBlue() / 255f;
+			float a = (float) rect.color.getAlpha() / 255f;
+			
+			GL11.glColor4f(r, g, b, a);
+			GL11.glTexCoord2f(rect.source.getX(), rect.source.getY());
 			GL11.glVertex3f(rect.destination.getX(), rect.destination.getY() + rect.destination.getHeight(), 0.f);
 			
+			GL11.glColor4f(r, g, b, a);
 			GL11.glTexCoord2f(rect.source.getX(), rect.source.getY() + rect.source.getHeight());
 			GL11.glVertex3f(rect.destination.getX(), rect.destination.getY(), 0.f);	
 
+			GL11.glColor4f(r, g, b, a);
 			GL11.glTexCoord2f(rect.source.getX() + rect.source.getWidth(), rect.source.getY() + rect.source.getHeight());
 			GL11.glVertex3f(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY(), 0.f);
 			
 			
+			GL11.glColor4f(r, g, b, a);
 			GL11.glTexCoord2f(rect.source.getX(), rect.source.getY());	
 			GL11.glVertex3f(rect.destination.getX(), rect.destination.getY() + rect.destination.getHeight(), 0.f);		
-						
+			
+			GL11.glColor4f(r, g, b, a);
 			GL11.glTexCoord2f(rect.source.getX() + rect.source.getWidth(), rect.source.getY() + rect.source.getHeight());
 			GL11.glVertex3f(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY(), 0.f);
 			
+			GL11.glColor4f(r, g, b, a);
 			GL11.glTexCoord2f(rect.source.getX() + rect.source.getWidth(), rect.source.getY());
 			GL11.glVertex3f(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY() + rect.destination.getHeight(), 0.f);		
 			
