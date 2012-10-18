@@ -27,6 +27,7 @@
 package org.spout.engine;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -488,6 +489,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private PrimitiveBatch renderer;
 	private RenderMaterial mat;
 	private RenderMaterial guimaterial;
+	private ClientFont font2;
 
 	public void initRenderer() {
 		createWindow();
@@ -532,7 +534,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		gui = SpriteBatch.createSpriteBatch(getRenderMode(), resolution.getX(), resolution.getY());
 		font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/resources/resources/fonts/ubuntu/Ubuntu-M.ttf");
+		font2 = new ClientFont(new Font("Comic sans ms", Font.BOLD, 30 ));
 		font.load();
+		font2.load();
 	}
 
 	public void render(float dt) {
@@ -563,9 +567,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		gui.begin();
 		gui.drawText("Spout client ! Logged as " + activePlayer.getDisplayName() + " in world: " + getDefaultWorld().getName(), font, -0.95f, 0.9f, 10f);
-		gui.drawText("x: " + activePlayer.getTransform().getPosition().getBlockX(), font, -0.95f, 0.8f, 8f);
+		gui.drawText("x: " + activePlayer.getTransform().getPosition().getBlockX(), font2, -0.95f, 0.8f, 8f);
 		gui.drawText("y: " + (-activePlayer.getTransform().getPosition().getBlockY()), font, -0.95f, 0.7f, 8f);
-		gui.drawText("z: " + activePlayer.getTransform().getPosition().getBlockZ(), font, -0.95f, 0.6f, 8f);
+		gui.drawText("z: " + activePlayer.getTransform().getPosition().getBlockZ(), font2, -0.95f, 0.6f, 8f);
 		gui.draw(guimaterial, 0.5f, 0, 0.25f, 0.25f);
 		gui.render();
 	}

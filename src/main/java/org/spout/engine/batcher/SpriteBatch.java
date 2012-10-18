@@ -84,15 +84,20 @@ public class SpriteBatch {
 			renderer.addTexCoord(rect.source.getX(), rect.source.getY() + rect.source.getHeight());
 
 			renderer.addVertex(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY());
-			renderer.addColor(rect.color);
+			renderer.addColor(rect.color);	
 			renderer.addTexCoord(rect.source.getX() + rect.source.getWidth(), rect.source.getY() + rect.source.getHeight());
+
 
 			renderer.addVertex(rect.destination.getX(), rect.destination.getY() + rect.destination.getHeight());
 			renderer.addColor(rect.color);	
-			renderer.addTexCoord(rect.source.getX(), rect.source.getY());
+			renderer.addTexCoord(rect.source.getX(), rect.source.getY());	
+
+			renderer.addVertex(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY());
+			renderer.addColor(rect.color);		
+			renderer.addTexCoord(rect.source.getX() + rect.source.getWidth(), rect.source.getY() + rect.source.getHeight());
 
 			renderer.addVertex(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY() + rect.destination.getHeight());
-			renderer.addColor(rect.color);
+			renderer.addColor(rect.color);	
 			renderer.addTexCoord(rect.source.getX() + rect.source.getWidth(), rect.source.getY());
 		}
 		renderer.end();
@@ -110,31 +115,33 @@ public class SpriteBatch {
 	}
 	
 	public void drawText(String text, ClientFont font, float x, float y, float size) {
-		drawText(text, font, x, y, Color.black, size);
+		drawText(text, font, x, y, Color.black);
 	}
 	
-	public void drawText(String text, ClientFont font, float x, float y, Color color, float size){
+	public void drawText(String text, ClientFont font, float x, float y, Color color) {
 		float w = font.getWidth();
 		float h = font.getHeight();
 
 		float xCursor = x;
 		float yCursor = y;
-		for (int i = 0; i < text.length(); i++) {
+		for (int i=0 ; i<text.length() ; i++) {
 			char c = text.charAt(i);
 			java.awt.Rectangle r = font.getPixelBounds(c);
 
 			TextureRectangle rect = new TextureRectangle();
 			rect.destination = new Rectangle(xCursor, yCursor, (float)r.width/screenWidth, (float)r.height/screenHeight);
-			rect.source = new Rectangle(r.x / w, r.y / h, r.width / w, r.height / h);
-			rect.material = font.getMaterial();
+			rect.source = new Rectangle(r.x/w, r.y/h, r.width/w, r.height/h);
 			rect.color = color;
-			
+			rect.material = font.getMaterial();
+
 			xCursor += (float)r.width/screenWidth;
 			if (c==' ')
 				xCursor += font.getSpaceWidth()/screenWidth;
+
 			sprites.add(rect);
 		}
 	}
+
 
 	public void draw(RenderMaterial material, float x, float y, float w, float h) {
 		draw(material, new Rectangle(0, 0, 1, 1), new Rectangle(x, y, w, h * aspectRatio),  Color.white);

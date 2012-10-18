@@ -76,23 +76,26 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		this.ttfFont = f;
 
 		//because getStringBounds(" ") returns 0
-		spaceWidth = (float) (ttfFont.getStringBounds("a a", DEFAULT_CONTEXT).getWidth() - ttfFont.getStringBounds("aa", DEFAULT_CONTEXT).getWidth());
+		spaceWidth = (float)(ttfFont.getStringBounds("a a", DEFAULT_CONTEXT).getWidth() - ttfFont.getStringBounds("aa", DEFAULT_CONTEXT).getWidth());
+
 
 		vec = ttfFont.createGlyphVector(DEFAULT_CONTEXT, asciiset);
 		Rectangle2D bounds = ttfFont.getStringBounds(asciiset, DEFAULT_CONTEXT);
 
 		//Create the font's bitmaptexture
-		BufferedImage image = new BufferedImage((int) bounds.getWidth(), (int) bounds.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		BufferedImage image = new BufferedImage((int)bounds.getWidth(), (int)bounds.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = image.createGraphics();
 		g.setColor(Color.white);
 		g.drawGlyphVector(vec, 0, ttfFont.getSize());
 		g.dispose();
 
-		charHeight = (float) bounds.getHeight();
-		charTop = (float) (ttfFont.getSize() + bounds.getY());
+
+		charHeight = (float)bounds.getHeight();
+		charTop = (float)(ttfFont.getSize() + bounds.getY());
 
 		this.image = image;
 	}
+
 
 	@Override
 	public void load() {
