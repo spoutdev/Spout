@@ -31,6 +31,7 @@ import java.util.ArrayList;
 
 import org.lwjgl.opengl.GL11;
 
+import org.spout.api.gui.render.RenderPart;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Rectangle;
@@ -113,43 +114,55 @@ public class SpriteBatch {
 		}
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 	}
-	
+
 	public void drawText(String text, ClientFont font, float x, float y, float size) {
-		drawText(text, font, x, y, Color.black);
+		drawText(text, font, x, y, size, Color.black);
 	}
-	
-	public void drawText(String text, ClientFont font, float x, float y, Color color) {
+
+	public void drawText(String text, ClientFont font, float x, float y, float size, Color color) {
 		float w = font.getWidth();
 		float h = font.getHeight();
 
 		float xCursor = x;
 		float yCursor = y;
+		
 		for (int i=0 ; i<text.length() ; i++) {
 			char c = text.charAt(i);
-			java.awt.Rectangle r = font.getPixelBounds(c);
-
-			TextureRectangle rect = new TextureRectangle();
-			rect.destination = new Rectangle(xCursor, yCursor, (float)r.width/screenWidth, (float)r.height/screenHeight);
-			rect.source = new Rectangle(r.x/w, r.y/h, r.width/w, r.height/h);
-			rect.color = color;
-			rect.material = font.getMaterial();
-
-			xCursor += (float)r.width/screenWidth;
-			if (c==' ')
+			if (c==' ') {
 				xCursor += font.getSpaceWidth()/screenWidth;
+			} else if (c=='\n') {
+				xCursor = x;
+				yCursor -= font.getCharHeight()/screenHeight;
+			} else {
+				java.awt.Rectangle r = font.getPixelBounds(c);
 
-			sprites.add(rect);
+				TextureRectangle rect = new TextureRectangle();
+				rect.destination = new Rectangle(xCursor, yCursor, (float)r.width/screenWidth, h/screenHeight);
+				rect.source = new Rectangle(r.x/w, 0f, r.width/w, 1f);
+				rect.color = color;
+				rect.material = font.getMaterial();
+
+				xCursor += (float)font.getAdvance(c)/screenWidth;
+
+				sprites.add(rect);
+			}
 		}
 	}
 
-
+	public void draw(RenderMaterial material, RenderPart renderPart) {
+		draw(material, renderPart.getSource(), renderPart.getSprite(), renderPart.getColor());
+	}
+	
 	public void draw(RenderMaterial material, float x, float y, float w, float h) {
 		draw(material, new Rectangle(0, 0, 1, 1), new Rectangle(x, y, w, h * aspectRatio),  Color.white);
 	}
-	
+
 	public void draw(RenderMaterial material, Rectangle source, Rectangle destination, Color color){
 		TextureRectangle rect = new TextureRectangle();
 		rect.destination = destination;
 		rect.source = source;
+		rect.color = color;
+		rect.material = material;
+		sprites.add(rect);
 	}
 }

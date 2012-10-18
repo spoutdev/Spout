@@ -32,6 +32,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
@@ -50,8 +51,6 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	private ClientRenderMaterial material;
 	private Font ttfFont;
 	private GlyphVector vec;
-	private float imageWidth;
-	private float imageHeight;
 	private float charTop;
 	private float charHeight;
 	private float spaceWidth = 0.0f;
@@ -83,7 +82,7 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		Rectangle2D bounds = ttfFont.getStringBounds(asciiset, DEFAULT_CONTEXT);
 
 		//Create the font's bitmaptexture
-		BufferedImage image = new BufferedImage((int)bounds.getWidth(), (int)bounds.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		BufferedImage image = new BufferedImage((int)bounds.getWidth()+2, (int)bounds.getHeight()+2, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = image.createGraphics();
 		g.setColor(Color.white);
 		g.drawGlyphVector(vec, 0, ttfFont.getSize());
@@ -127,6 +126,21 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	@Override
 	public float getSpaceWidth() {
 		return spaceWidth;
+	}
+	
+	public float getBearingX(char c) {
+		return vec.getGlyphMetrics(0).getLSB();
+	}
+	
+	public float getBearingY(char c) {
+		AffineTransform ts = vec.getGlyphTransform(asciiset.indexOf(c));
+		if (ts==null)
+			return 0;
+		return (float)ts.getTranslateY();
+	}
+	
+	public float getAdvance(char c) {
+		return vec.getGlyphMetrics(asciiset.indexOf(c)).getAdvanceX();
 	}
 
 	@Override
