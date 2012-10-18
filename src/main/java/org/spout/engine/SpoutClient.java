@@ -27,12 +27,6 @@
 package org.spout.engine;
 
 import java.awt.Color;
-import java.awt.Font;
-
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.glClear;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -62,6 +56,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.PixelFormat;
+
 import org.spout.api.Client;
 import org.spout.api.FileSystem;
 import org.spout.api.Spout;
@@ -71,9 +66,7 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.component.components.CameraComponent;
-import org.spout.api.component.components.TransformComponent;
 import org.spout.api.datatable.SerializableMap;
-import org.spout.api.entity.state.PlayerInputState.Flags;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
@@ -91,6 +84,7 @@ import org.spout.api.protocol.Session;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
+
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.batcher.SpriteBatch;
@@ -109,31 +103,29 @@ import org.spout.engine.util.MacOSXUtils;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutClientWorld;
 
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.glClear;
+
 public class SpoutClient extends SpoutEngine implements Client {
 	private final SoundManager soundManager = new SpoutSoundManager();
 	private final SpoutInput inputManager = new SpoutInput();
 	private final String name = "Spout Client";
 	private final Vector2 resolution = new Vector2(640, 480);
-	private final boolean[] sides = { true, true, true, true, true, true };
+	private final boolean[] sides = {true, true, true, true, true, true};
 	private final float aspectRatio = resolution.getX() / resolution.getY();
 	private final FileSystem filesystem;
-
 	private Camera activeCamera;
 	private WorldRenderer worldRenderer;
-
 	private final AtomicReference<SpoutClientSession> session = new AtomicReference<SpoutClientSession>();
 	private SpoutPlayer activePlayer;
 	private final AtomicReference<SpoutClientWorld> activeWorld = new AtomicReference<SpoutClientWorld>();
 	private final AtomicReference<PortBinding> potentialBinding = new AtomicReference<PortBinding>();
-
 	// Handle stopping
 	private volatile boolean rendering = true;
 	private String stopMessage = null;
 	private final ClientBootstrap bootstrap = new ClientBootstrap();
-
-
 	private final boolean wireframe = false;
-	
 	//Test
 	private SpriteBatch gui;
 	private ClientFont font;
@@ -164,9 +156,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, true);
 		bootstrap.setPipelineFactory(pipelineFactory);
 		super.init(args);
-
-
-
 	}
 
 	@Override
@@ -183,7 +172,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		// Register commands
 		getRootCommand().addSubCommands(this, InputManagementCommands.class, commandRegFactory);
 
-		while (super.getDefaultWorld()==null) {
+		while (super.getDefaultWorld() == null) {
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
@@ -197,7 +186,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		activePlayer = new SpoutClientPlayer("Spouty", loc, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 		activeCamera = activePlayer.add(CameraComponent.class);
 
-		System.out.println("activeWorld: "+super.getDefaultWorld().getName());
+		System.out.println("activeWorld: " + super.getDefaultWorld().getName());
 		super.getDefaultWorld().spawnEntity(activePlayer);
 
 		getScheduler().startRenderThread();
@@ -265,9 +254,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		if (activePlayer == null) {
 			return;
 		}
-		
+
 		Transform ts = activePlayer.getTransform().getTransform();
-		
+
 		if (Mouse.isGrabbed()) {
 			float pitch = ts.getRotation().getPitch();
 			float yaw = ts.getRotation().getYaw();
@@ -275,66 +264,68 @@ public class SpoutClient extends SpoutEngine implements Client {
 			float mouseDX = -Mouse.getDX() * 0.16f;
 			float mouseDY = Mouse.getDY() * 0.16f;
 
-			if (yaw + mouseDX >= 360)
+			if (yaw + mouseDX >= 360) {
 				yaw += mouseDX - 360;
-			else if (yaw + mouseDX < 0)
+			} else if (yaw + mouseDX < 0) {
 				yaw += mouseDX + 360;
-			else
+			} else {
 				yaw += mouseDX;
+			}
 
-			if (pitch + mouseDY>=-80 && pitch + mouseDY<=80)
+			if (pitch + mouseDY >= -80 && pitch + mouseDY <= 80) {
 				pitch += mouseDY;
-			else if (pitch + mouseDY<-80)
+			} else if (pitch + mouseDY < -80) {
 				pitch = -80;
-			else if (pitch + mouseDY>80)
+			} else if (pitch + mouseDY > 80) {
 				pitch = 80;
+			}
 
 			//System.out.println("yaw: "+yaw+" pitch: "+pitch);
 			ts.setRotation(MathHelper.rotation(pitch, yaw, ts.getRotation().getRoll()));
 			//System.out.println(activePlayer.getTransform().getTransform().toMatrix().toString());
 		}
-		
-		if (!Keyboard.isCreated())
+
+		if (!Keyboard.isCreated()) {
 			return;
+		}
 
 		boolean keyUp = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.FORWARD.getString()));
-        boolean keyDown = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.BACKWARD.getString()));
-        boolean keyLeft = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.LEFT.getString()));
-        boolean keyRight = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.RIGHT.getString()));
-        boolean flyUp = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.UP.getString()));
-        boolean flyDown = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.DOWN.getString()));
+		boolean keyDown = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.BACKWARD.getString()));
+		boolean keyLeft = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.LEFT.getString()));
+		boolean keyRight = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.RIGHT.getString()));
+		boolean flyUp = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.UP.getString()));
+		boolean flyDown = Keyboard.isKeyDown(Keyboard.getKeyIndex(SpoutInputConfiguration.DOWN.getString()));
 
-        Point point = ts.getPosition();
-        
-        if (keyUp) {
-        	point = point.add(ts.forwardVector());
-        }
-        if (keyDown) {
-        	point = point.subtract(ts.forwardVector());
-        }
-        if (keyLeft) {
-        	point = point.add(ts.rightVector());
-        }
-        if (keyRight) {
-        	point = point.subtract(ts.rightVector());
-        }
-        if (flyUp) {
-        	point = point.subtract(ts.upVector());
+		Point point = ts.getPosition();
+
+		if (keyUp) {
+			point = point.add(ts.forwardVector());
 		}
-        if (flyDown) {
-        	point = point.add(ts.upVector());
+		if (keyDown) {
+			point = point.subtract(ts.forwardVector());
+		}
+		if (keyLeft) {
+			point = point.add(ts.rightVector());
+		}
+		if (keyRight) {
+			point = point.subtract(ts.rightVector());
+		}
+		if (flyUp) {
+			point = point.subtract(ts.upVector());
+		}
+		if (flyDown) {
+			point = point.add(ts.upVector());
 		}
 
-        ts.setPosition(point);
+		ts.setPosition(point);
 		activePlayer.getTransform().setTransform(ts);
-		
+
 		/*if (keyUp || keyDown || keyLeft || keyRight || flyUp || flyDown) {
 			//point = new Point(point.normalize(),activePlayer.getWorld());
 			System.out.println("Translation : "+point.getX()+"/"+point.getY()+"/"+point.getZ());
 			System.out.println("Position : "+activePlayer.getTransform().getPosition().getX()+"/"+activePlayer.getTransform().getPosition().getY()+"/"+activePlayer.getTransform().getPosition().getZ());
 			activePlayer.getTransform().setPosition(activePlayer.getTransform().getPosition().add(point));
 		}*/
-        
 
 		/*for (Flags f : activePlayer.input().getFlagSet()) {
 			switch(f) {
@@ -518,38 +509,37 @@ public class SpoutClient extends SpoutEngine implements Client {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glClearColor((135.f/255.0f), 206.f/255.f, 250.f/255.f, 1);
-		
-		if(wireframe) {
+		GL11.glClearColor((135.f / 255.0f), 206.f / 255.f, 250.f / 255.f, 1);
+
+		if (wireframe) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-			
 		}
 
 		worldRenderer = new WorldRenderer(this);
 		worldRenderer.setup();
 
-
 		renderer = new PrimitiveBatch();
-		mat = (RenderMaterial)this.getFilesystem().getResource("material://Spout/resources/resources/materials/BasicMaterial.smt");
+		mat = (RenderMaterial) this.getFilesystem().getResource("material://Spout/resources/resources/materials/BasicMaterial.smt");
 		guimaterial = (RenderMaterial) this.getFilesystem().getResource("material://Spout/resources/resources/materials/GUIMaterial.smt");
 		renderer.begin();
-		renderer.addCube(new Vector3(-0.5,-0.5,-0.5), Vector3.ONE, Color.RED, sides);
+		renderer.addCube(new Vector3(-0.5, -0.5, -0.5), Vector3.ONE, Color.RED, sides);
 		renderer.end();
 
 		gui = SpriteBatch.createSpriteBatch(getRenderMode(), resolution.getX(), resolution.getY());
-		font = new ClientFont(new Font("Comic sans ms", Font.BOLD, 30));
+		font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/resources/resources/fonts/ubuntu/Ubuntu-M.ttf");
 		font.load();
 	}
-
 
 	public void render(float dt) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		if (Mouse.isButtonDown(0)) {
-			if (!Mouse.isGrabbed())
+			if (!Mouse.isGrabbed()) {
 				Mouse.setGrabbed(true);
-		} else
+			}
+		} else {
 			Mouse.setGrabbed(false);
+		}
 
 		worldRenderer.render();
 
@@ -561,13 +551,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 		renderer.draw(mat);
 
 		gui.begin();
-		gui.drawText("Spout client ! Logged as "+activePlayer.getDisplayName()+" in world: "+getDefaultWorld().getName(), font, -0.95f , 0.9f);
-		gui.drawText("x: "+activePlayer.getTransform().getPosition().getBlockX(), font, -0.95f , 0.8f);
-		gui.drawText("y: "+(-activePlayer.getTransform().getPosition().getBlockY()), font, -0.95f , 0.7f);
-		gui.drawText("z: "+activePlayer.getTransform().getPosition().getBlockZ(), font, -0.95f , 0.6f);
+		gui.drawText("Spout client ! Logged as " + activePlayer.getDisplayName() + " in world: " + getDefaultWorld().getName(), font, -0.95f, 0.9f, 8f);
+		gui.drawText("x: " + activePlayer.getTransform().getPosition().getBlockX(), font, -0.95f, 0.8f, 8f);
+		gui.drawText("y: " + (-activePlayer.getTransform().getPosition().getBlockY()), font, -0.95f, 0.7f, 8f);
+		gui.drawText("z: " + activePlayer.getTransform().getPosition().getBlockZ(), font, -0.95f, 0.6f, 8f);
 		gui.draw(guimaterial, 0.5f, 0, 0.25f, 0.25f);
 		gui.render();
-
 	}
 
 	public WorldRenderer getWorldRenderer() {
@@ -617,13 +606,13 @@ public class SpoutClient extends SpoutEngine implements Client {
 		String osPath;
 
 		if (SystemUtils.IS_OS_WINDOWS) {
-			files = new String[] { "jinput-dx8_64.dll", "jinput-dx8.dll", "jinput-raw_64.dll", "jinput-raw.dll", "jinput-wintab.dll", "lwjgl.dll", "lwjgl64.dll", "OpenAL32.dll", "OpenAL64.dll" };
+			files = new String[]{"jinput-dx8_64.dll", "jinput-dx8.dll", "jinput-raw_64.dll", "jinput-raw.dll", "jinput-wintab.dll", "lwjgl.dll", "lwjgl64.dll", "OpenAL32.dll", "OpenAL64.dll"};
 			osPath = "windows/";
 		} else if (SystemUtils.IS_OS_MAC) {
-			files = new String[] { "libjinput-osx.jnilib", "liblwjgl.jnilib", "openal.dylib", };
+			files = new String[]{"libjinput-osx.jnilib", "liblwjgl.jnilib", "openal.dylib",};
 			osPath = "mac/";
 		} else if (SystemUtils.IS_OS_LINUX) {
-			files = new String[] { "liblwjgl.so", "liblwjgl64.so", "libopenal.so", "libopenal64.so", "libjinput-linux.so", "libjinput-linux64.so" };
+			files = new String[]{"liblwjgl.so", "liblwjgl64.so", "libopenal.so", "libopenal64.so", "libjinput-linux.so", "libjinput-linux64.so"};
 			osPath = "linux/";
 		} else {
 			Spout.getEngine().getLogger().log(Level.SEVERE, "Error loading natives of operating system type: " + SystemUtils.OS_NAME);

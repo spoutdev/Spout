@@ -26,6 +26,7 @@
  */
 package org.spout.engine.filesystem;
 
+import org.spout.engine.resources.loader.FontLoader;
 import org.spout.engine.resources.loader.MeshLoader;
 import org.spout.engine.resources.loader.RenderMaterialLoader;
 import org.spout.engine.resources.loader.ShaderLoader;
@@ -33,28 +34,23 @@ import org.spout.engine.resources.loader.SoundWavLoader;
 import org.spout.engine.resources.loader.TextureLoader;
 
 public class ClientFileSystem extends SharedFileSystem {
-	
 	@Override
-	public void init(){
-		
+	public void init() {
 		if (!RESOURCE_FOLDER.exists()) {
 			RESOURCE_FOLDER.mkdirs();
 		}
 		if (!CACHE_FOLDER.exists()) {
 			CACHE_FOLDER.mkdirs();
 		}
-		
+
 		super.init();
-		
+
 		registerLoader(new TextureLoader());
 		registerLoader(new ShaderLoader());
 		registerLoader(new MeshLoader());
 		registerLoader(new RenderMaterialLoader());
 
 		registerLoader(new SoundWavLoader());
-		//registerLoader("font", new FontLoader());
-		
-		
+		registerLoader(new FontLoader());
 	}
-
 }

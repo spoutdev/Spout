@@ -26,36 +26,43 @@
  */
 package org.spout.engine.resources.loader;
 
-
+import java.awt.Font;
 import java.io.InputStream;
 
+import org.spout.api.Spout;
 import org.spout.api.resource.BasicResourceLoader;
+
 import org.spout.engine.resources.ClientFont;
 
-public class FontLoader extends BasicResourceLoader<ClientFont>{
-
+public class FontLoader extends BasicResourceLoader<ClientFont> {
 	@Override
-	public String getFallbackResourceName() {
-		// TODO Auto-generated method stub
-		return null;
+	public final String getFallbackResourceName() {
+		return "font://Spout:/resources/resources/fonts/ubuntu/Ubuntu-R.ttf";
 	}
 
 	@Override
 	public ClientFont getResource(InputStream stream) {
-		// TODO Auto-generated method stub
-		return null;
+		if (stream == null) {
+			throw new IllegalArgumentException("Stream passed into font loader is null!");
+		}
+		ClientFont fontFromResource = null;
+		try {
+			final Font raw = Font.createFont(Font.TRUETYPE_FONT, stream);
+			fontFromResource = new ClientFont(raw);
+		} catch (Exception e) {
+			Spout.getLogger().severe("Exception caught when reading in a font.");
+			e.printStackTrace();
+		}
+		return fontFromResource;
 	}
 
 	@Override
-	public String getProtocol() {
-		// TODO Auto-generated method stub
-		return null;
+	public final String getProtocol() {
+		return "font";
 	}
 
 	@Override
-	public String[] getExtensions() {
-		// TODO Auto-generated method stub
-		return null;
+	public final String[] getExtensions() {
+		return new String[]{"ttf"};
 	}
-
 }
