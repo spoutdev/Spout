@@ -11,10 +11,11 @@ import org.spout.api.gui.render.RenderPart;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.math.Rectangle;
 
-public class Widget extends BaseComponentHolder {
+public final class Widget extends BaseComponentHolder {
 	private List<RenderPart> renderPartCache;
 	private boolean renderCacheClean = false;
 	private Screen screen;
+	private Container container = null;
 	
 	private static DefaultedKey<Rectangle> GEOMETRY_KEY = new DefaultedKey<Rectangle>() {
 
@@ -58,12 +59,25 @@ public class Widget extends BaseComponentHolder {
 		}
 	}
 
+	/**
+	 * Sets the screen and the container to screen
+	 * @param screen
+	 */
 	public void setScreen(Screen screen) {
 		this.screen = screen;
+		this.container = screen;
 	}
 	
 	public Screen getScreen() {
 		return screen;
+	}
+	
+	public Container getContainer() {
+		return container;
+	}
+	
+	public void setContainer(Container container) {
+		this.container = container;
 	}
 	
 	public boolean hasFocus() {
@@ -91,11 +105,10 @@ public class Widget extends BaseComponentHolder {
 	}
 	
 	public Rectangle getGeometry() {
-//		return getData().get(GEOMETRY_KEY);
-		return null; //TODO need to figure out how to add non-serializeable stuff into the datamap
+		return getData().get(GEOMETRY_KEY);
 	}
 	
 	public void setGeometry(Rectangle geometry) {
-//		getData().put(GEOMETRY_KEY, geometry);
+		getData().put(GEOMETRY_KEY, geometry);
 	}
 }

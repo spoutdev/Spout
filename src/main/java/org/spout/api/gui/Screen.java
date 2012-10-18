@@ -7,7 +7,7 @@ import java.util.Set;
 import org.spout.api.gui.component.ControlComponent;
 import org.spout.api.plugin.Plugin;
 
-public class Screen {
+public class Screen implements Container {
 	private HashMap<Widget, Plugin> widgets = new LinkedHashMap<Widget, Plugin>();
 	private Widget focussedWidget = null;
 	

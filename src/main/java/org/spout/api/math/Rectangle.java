@@ -26,7 +26,11 @@
  */
 package org.spout.api.math;
 
-public class Rectangle {
+import java.io.Serializable;
+
+public class Rectangle implements Serializable {
+	private static final long serialVersionUID = 2080093328836030546L;
+	
 	final Vector2 position;
 	final Vector2 extents;
 	
