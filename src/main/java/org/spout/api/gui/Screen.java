@@ -6,8 +6,9 @@ import java.util.Set;
 
 import org.spout.api.gui.component.ControlComponent;
 import org.spout.api.plugin.Plugin;
+import org.spout.api.tickable.BasicTickable;
 
-public class Screen implements Container {
+public class Screen extends BasicTickable implements Container {
 	private HashMap<Widget, Plugin> widgets = new LinkedHashMap<Widget, Plugin>();
 	private Widget focussedWidget = null;
 	
@@ -52,5 +53,17 @@ public class Screen implements Container {
 		} else {
 			throw new IllegalStateException("Can only focus controls, add a ControlComponent to your widget!");
 		}
+	}
+
+	@Override
+	public void onTick(float dt) {
+		for (Widget w:widgets.keySet()) {
+			w.tick(dt);
+		}
+	}
+
+	@Override
+	public boolean canTick() {
+		return true;
 	}
 }

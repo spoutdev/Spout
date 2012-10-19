@@ -10,14 +10,15 @@ import org.spout.api.component.components.WidgetComponent;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.math.Rectangle;
+import org.spout.api.tickable.Tickable;
 
-public final class Widget extends BaseComponentHolder {
+public final class Widget extends BaseComponentHolder implements Tickable {
 	private List<RenderPart> renderPartCache;
 	private boolean renderCacheClean = false;
 	private Screen screen;
 	private Container container = null;
 	
-	private static DefaultedKey<Rectangle> GEOMETRY_KEY = new DefaultedKey<Rectangle>() {
+	private static DefaultedKey<Rectangle> KEY_GEOMETRY = new DefaultedKey<Rectangle>() {
 
 		@Override
 		public Rectangle getDefaultValue() {
@@ -105,10 +106,29 @@ public final class Widget extends BaseComponentHolder {
 	}
 	
 	public Rectangle getGeometry() {
-		return getData().get(GEOMETRY_KEY);
+		return getData().get(KEY_GEOMETRY);
 	}
 	
 	public void setGeometry(Rectangle geometry) {
-		getData().put(GEOMETRY_KEY, geometry);
+		getData().put(KEY_GEOMETRY, geometry);
+	}
+
+	@Override
+	public void onTick(float dt) {
+		for (Component c:values()) {
+			c.onTick(dt);
+		}
+	}
+
+	@Override
+	public boolean canTick() {
+		return true;
+	}
+
+	@Override
+	public void tick(float dt) {
+		if (canTick()) {
+			onTick(dt);
+		}
 	}
 }
