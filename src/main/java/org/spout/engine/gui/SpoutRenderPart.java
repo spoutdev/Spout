@@ -24,16 +24,16 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.batcher;
+package org.spout.engine.gui;
 
-import java.awt.Color;
-
+import org.spout.api.gui.render.RenderPart;
 import org.spout.api.math.Rectangle;
 import org.spout.api.render.RenderMaterial;
 
-public class TextureRectangle { 
-	public Rectangle destination;
-	public Rectangle source;
-	public RenderMaterial material;
-	public Color color;
+public class SpoutRenderPart extends RenderPart {
+	public SpoutRenderPart(RenderMaterial material, Rectangle source, Rectangle sprite) {
+		setSprite(sprite);
+		setSource(source);
+		setRenderMaterial(material);
+	}
 }
