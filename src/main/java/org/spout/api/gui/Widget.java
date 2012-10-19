@@ -68,7 +68,7 @@ public final class Widget extends BaseComponentHolder {
 		this.container = screen;
 	}
 	
-	public Screen getScreen() {
+	public Container getScreen() {
 		return screen;
 	}
 	

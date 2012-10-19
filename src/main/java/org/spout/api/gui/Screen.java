@@ -11,25 +11,30 @@ public class Screen implements Container {
 	private HashMap<Widget, Plugin> widgets = new LinkedHashMap<Widget, Plugin>();
 	private Widget focussedWidget = null;
 	
+	@Override
 	public Set<Widget> getWidgets() {
 		return widgets.keySet();
 	}
 	
+	@Override
 	public void attachWidget(Plugin plugin, Widget widget) {
 		widgets.put(widget, plugin);
 		widget.setScreen(this);
 	}
 	
+	@Override
 	public void removeWidget(Widget widget) {
 		widgets.remove(widget);
 	}
 	
+	@Override
 	public void removeWidgets(Widget ...widgets) {
 		for (Widget widget: widgets) {
 			removeWidget(widget);
 		}
 	}
 	
+	@Override
 	public void removeWidgets(Plugin plugin) {
 		//TODO
 	}

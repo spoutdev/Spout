@@ -9,6 +9,19 @@ import org.spout.api.gui.render.TextPart;
 import org.spout.api.map.DefaultedKey;
 
 public class LabelComponent extends WidgetComponent {
+	private static final DefaultedKey<String> KEY_TEXT = new DefaultedKey<String>() {
+		
+		@Override
+		public String getDefaultValue() {
+			return "(your text here)";
+		}
+		
+		@Override
+		public String getKeyString() {
+			return "button-text";
+		}
+		
+	};
 	
 	@Override
 	public List<RenderPart> getRenderParts() {
@@ -21,19 +34,6 @@ public class LabelComponent extends WidgetComponent {
 		return ret;
 	}
 
-	private static final DefaultedKey<String> KEY_TEXT = new DefaultedKey<String>() {
-	
-			@Override
-			public String getDefaultValue() {
-				return "(your text here)";
-			}
-	
-			@Override
-			public String getKeyString() {
-				return "button-text";
-			}
-			
-		};
 
 	public String getText() {
 		return getData().get(KEY_TEXT);
