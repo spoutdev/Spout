@@ -75,6 +75,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.gui.Screen;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector2;
@@ -132,9 +133,17 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private String stopMessage = null;
 	private final ClientBootstrap bootstrap = new ClientBootstrap();
 	private boolean wireframe = false;
-	//Test
+	// Gui
 	private SpriteBatch gui;
 	private ClientFont font;
+	private Screen mainScreen;
+	
+	private boolean showDebugInfos = true;
+	
+	// FPS counter
+	private int fps = 0;
+	private int frames = 0;
+	private long lastFrameTime = System.currentTimeMillis();
 	
 	private ConcurrentLinkedQueue<Runnable> renderTaskQueue = new ConcurrentLinkedQueue<Runnable>();
 
@@ -156,16 +165,28 @@ public class SpoutClient extends SpoutEngine implements Client {
 		if (inJar) {
 			unpackLwjgl();
 		}
+		
 		ExecutorService executorBoss = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Boss", true));
 		ExecutorService executorWorker = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Worker", true));
 		ChannelFactory factory = new NioClientSocketChannelFactory(executorBoss, executorWorker);
 		bootstrap.setFactory(factory);
 
-		
-		
 		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, true);
 		bootstrap.setPipelineFactory(pipelineFactory);
 		super.init(args);
+		
+		inputManager.bind(SpoutInputConfiguration.FORWARD.getString(), "+Forward");
+		inputManager.bind(SpoutInputConfiguration.BACKWARD.getString(), "+BackWard");
+		inputManager.bind(SpoutInputConfiguration.LEFT.getString(), "+Left");
+		inputManager.bind(SpoutInputConfiguration.RIGHT.getString(), "+Right");
+		inputManager.bind(SpoutInputConfiguration.UP.getString(), "+Jump");
+		inputManager.bind(SpoutInputConfiguration.DOWN.getString(), "+Crouch");
+		inputManager.bind("KEY_F3", "debug_infos");
+		inputManager.bind("KEY_SCROLLDOWN", "+Select_Down");
+		inputManager.bind("KEY_SCROLLUP", "+Select_Up");
+		inputManager.bind("MOUSE_BUTTON0", "+FIRE_1");
+		inputManager.bind("MOUSE_BUTTON1", "+INTERACT");
+		inputManager.bind("MOUSE_BUTTON2", "+FIRE_2");
 	}
 
 	@Override
@@ -195,6 +216,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		Transform loc = new Transform(new Point(super.getDefaultWorld(), 0f, 0f, 0f), new Quaternion(0f, 0f, 0f, 0f), Vector3.ONE);
 		activePlayer = new SpoutClientPlayer("Spouty", loc, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 		activeCamera = activePlayer.add(CameraComponent.class);
+		mainScreen = new Screen();
 
 		System.out.println("activeWorld: " + super.getDefaultWorld().getName());
 		super.getDefaultWorld().spawnEntity(activePlayer);
@@ -265,6 +287,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 		
 		inputManager.pollInput(activePlayer);
+		
 		PlayerInputState inputState = activePlayer.input();
 		Transform ts = activePlayer.getTransform().getTransform();
 		ts.setRotation(MathHelper.rotation(inputState.pitch(), inputState.yaw(), ts.getRotation().getRoll()));
@@ -492,17 +515,39 @@ public class SpoutClient extends SpoutEngine implements Client {
 		renderer.draw(mat);
 
 		gui.begin();
-		gui.drawText("Testing text on\nmultiples lines!", font, 0, 0, 8.f, Color.blue);
-		gui.drawText("Spout client ! Logged as " + activePlayer.getDisplayName() + " in world: " + getDefaultWorld().getName(), font, -0.95f, 0.9f, 10f);
-		gui.drawText("x: " + activePlayer.getTransform().getPosition().getBlockX(), font, -0.95f, 0.8f, 8f, Color.green);
-		gui.drawText("y: " + (-activePlayer.getTransform().getPosition().getBlockY()), font, -0.95f, 0.7f, 8f, Color.red);
-		gui.drawText("z: " + activePlayer.getTransform().getPosition().getBlockZ(), font, -0.95f, 0.6f, 8f, Color.blue);
+		//gui.drawText("Testing text on\nmultiples lines!", font, 0, 0, 8.f, Color.blue);
+		if (showDebugInfos) {
+			gui.drawText("Spout client ! Logged as " + activePlayer.getDisplayName() + " in world: " + getDefaultWorld().getName(), font, -0.95f, 0.9f, 10f);
+			gui.drawText("x: " + activePlayer.getTransform().getPosition().getX(), font, -0.95f, 0.8f, 8f, Color.blue);
+			gui.drawText("y: " + (-activePlayer.getTransform().getPosition().getY()), font, -0.95f, 0.7f, 8f, Color.blue);
+			gui.drawText("z: " + activePlayer.getTransform().getPosition().getZ(), font, -0.95f, 0.6f, 8f, Color.blue);
+			gui.drawText("fps: " + fps, font, -0.95f, 0.5f, 8f, Color.blue);
+		}
 		gui.draw(guimaterial, 0.5f, 0, 0.25f, 0.25f);
 		gui.render();
+		
+		if (System.currentTimeMillis()-lastFrameTime>1000) {
+			lastFrameTime = System.currentTimeMillis();
+			fps = frames;
+			frames = 0;
+		}
+		frames++;
 	}
 
+	public void toggleDebugInfos() {
+		showDebugInfos = !showDebugInfos;
+	}
+	
+	public SpoutInput getInputManager() {
+		return inputManager;
+	}
+	
 	public WorldRenderer getWorldRenderer() {
 		return worldRenderer;
+	}
+	
+	public Screen getMainScreen() {
+		return mainScreen;
 	}
 
 	private void createWindow() {

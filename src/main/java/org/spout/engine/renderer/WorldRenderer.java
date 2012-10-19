@@ -68,7 +68,7 @@ public class WorldRenderer {
 	}
 
 	public void render() {
-		updateNearbyChunkMeshes(false);
+		//updateNearbyChunkMeshes(false); // TODO: move this to another thread. Is it possible?
 
 		material.getShader().setUniform("View", client.getActiveCamera().getView());
 		material.getShader().setUniform("Projection", client.getActiveCamera().getProjection());

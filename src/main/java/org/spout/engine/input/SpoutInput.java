@@ -46,17 +46,7 @@ public class SpoutInput implements Input {
 	private boolean redirected = false;
 
 	public SpoutInput() {
-		bind2(org.lwjgl.input.Keyboard.KEY_W, "+Forward");
-		bind2(org.lwjgl.input.Keyboard.KEY_S, "+BackWard");
-		bind2(org.lwjgl.input.Keyboard.KEY_A, "+Left");
-		bind2(org.lwjgl.input.Keyboard.KEY_D, "+Right");
-		bind2(org.lwjgl.input.Keyboard.KEY_SPACE, "+Jump");
-		bind2(org.lwjgl.input.Keyboard.KEY_LSHIFT, "+Crouch");
-		bind("KEY_SCROLLDOWN", "+Select_Down");
-		bind("KEY_SCROLLUP", "+Select_Up");
-		bind("MOUSE_BUTTON0", "+FIRE_1");
-		bind("MOUSE_BUTTON1", "+INTERACT");
-		bind("MOUSE_BUTTON2", "+FIRE_2");
+		
 	}
 
 	private void doKeypress(SpoutPlayer player, int button, boolean pressed) {
@@ -81,7 +71,10 @@ public class SpoutInput implements Input {
 	private void doCommand(SpoutPlayer player,String command, boolean pressed) {
 		if (command == null)
 			return;
-
+		
+		if (!command.startsWith("+") && !pressed)
+			return;
+		
 		if (command.startsWith("+") && !pressed) {
 			command = command.replaceFirst("\\+", "-");
 		}
@@ -119,7 +112,7 @@ public class SpoutInput implements Input {
 			} else if (name.equals("SCROLLUP")) {
 				mouseCommands.put(KEY_SCROLLUP, command);
 			} else {
-				bind(Keyboard.valueOf(key), command);
+				bind2(org.lwjgl.input.Keyboard.getKeyIndex(name), command);
 			}
 		} else if (key.startsWith("MOUSE")) {
 			int k = Mouse.getButtonIndex(key);
