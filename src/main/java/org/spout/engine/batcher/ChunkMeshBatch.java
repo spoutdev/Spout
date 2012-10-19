@@ -26,6 +26,8 @@
  */
 package org.spout.engine.batcher;
 
+import java.util.concurrent.Semaphore;
+
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -35,6 +37,7 @@ import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
+import org.spout.engine.SpoutClient;
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
@@ -48,17 +51,20 @@ public class ChunkMeshBatch extends Cuboid {
 	public static final int SIZE_Z = 3;
 	public static final Vector3 SIZE = new Vector3(SIZE_X, SIZE_Y, SIZE_Z);
 	public static final int MESH_COUNT = SIZE_X * SIZE_Y * SIZE_Z;
-	
+
 	private PrimitiveBatch renderer = new PrimitiveBatch();
 	private ChunkMesh[] meshes = new ChunkMesh[MESH_COUNT];
 	private boolean hasVertices = false;
 	private Matrix modelMat = MathHelper.createIdentity();
+	private final Semaphore semaphore = new Semaphore(0);
+	public boolean generated = false;
+	boolean dirty = true;
 
 	public ChunkMeshBatch(World world, int baseX, int baseY, int baseZ) {
 		super(new Point(world, baseX, baseY, baseZ), SIZE);
 
 		modelMat = MathHelper.translate(new Vector3(baseX * SIZE_X, baseY * SIZE_Y, baseZ * SIZE_Z));
-		
+
 		int id = 0;
 		for (int i = baseX; i < baseX + SIZE_X; i++) {
 			for (int j = baseY; j < baseY + SIZE_Y; j++) {
@@ -66,11 +72,23 @@ public class ChunkMeshBatch extends Cuboid {
 					SpoutSnapshotLock lock = (SpoutSnapshotLock) Spout.getEngine().getScheduler().getSnapshotLock();
 					lock.coreReadLock("Generate mesh");
 					try {
+						Chunk chunk = world.getChunk(i, j, k);
+						meshes[id] = new ChunkMesh(chunk);
+						Spout.getEngine().getScheduler().scheduleAsyncTask(this, 
+								new ChunkMeshUpdateTask(meshes[id], this));
+						id++;
+					} finally {
+						lock.coreReadUnlock("Generate mesh");
+					}
+
+					/*SpoutSnapshotLock lock = (SpoutSnapshotLock) Spout.getEngine().getScheduler().getSnapshotLock();
+					lock.coreReadLock("Generate mesh");
+					try {
 						Chunk c = world.getChunk(i, j, k);
 						meshes[id++] = ChunkMesh.generateFromChunk(c);
 					} finally {
 						lock.coreReadUnlock("Generate mesh");
-					}
+					}*/
 				}
 			}
 		}
@@ -78,10 +96,12 @@ public class ChunkMeshBatch extends Cuboid {
 
 	public void update() {
 		for (ChunkMesh mesh : meshes) {
-			mesh.update();
+			Spout.getEngine().getScheduler().scheduleAsyncTask(this, 
+					new ChunkMeshUpdateTask(mesh, this));
+			//mesh.update();
 		}
 
-		hasVertices = false;
+		/*hasVertices = false;
 		for (ChunkMesh mesh : meshes) {
 			if (mesh.hasVertices()) {
 				hasVertices = true;
@@ -90,8 +110,10 @@ public class ChunkMeshBatch extends Cuboid {
 		}
 		if (!hasVertices) {
 			return;
-		}
+		}*/
+	}
 
+	public void updateRender() {
 		renderer.begin();
 		for (ChunkMesh mesh : meshes) {
 			if (mesh.hasVertices()) {
@@ -99,6 +121,8 @@ public class ChunkMeshBatch extends Cuboid {
 			}
 		}
 		renderer.end();
+		dirty = false;
+		generated = true;
 	}
 
 	public boolean hasVertices() {
@@ -142,6 +166,13 @@ public class ChunkMeshBatch extends Cuboid {
 	 */
 	public static Vector3 getChunkCoordinates(Vector3 batchCoords) {
 		return new Vector3(batchCoords.getX() * SIZE_X, batchCoords.getY() * SIZE_Y, batchCoords.getZ() * SIZE_Z);
+	}
+
+	public void setMesh(int id, ChunkMesh chunkMesh) {
+		meshes[id] = chunkMesh;
+		semaphore.release();
+		if(dirty && semaphore.tryAcquire(MESH_COUNT))
+			((SpoutClient)Spout.getEngine()).getRenderScheduler().add(new ChunkMeshRenderTask(this));
 	}
 
 }

@@ -597,4 +597,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 			wireframe = true;
 		}
 	}
+
+	public ConcurrentLinkedQueue<Runnable> getRenderScheduler() {
+		return renderTaskQueue;
+	}
 }

@@ -85,7 +85,7 @@ public class WorldRenderer {
 	 */
 	public boolean updateNearbyChunkMeshes(boolean force) {
 		if (world == null) {
-			
+
 			world = client.getDefaultWorld();
 			if (world != null) System.out.println("World updated to " + world.getName() + "-" + world.getUID());
 			//else System.out.println("World is null!");
@@ -102,8 +102,8 @@ public class WorldRenderer {
 		// TODO: We will work with 1 chunk before trying to expand
 		int chunkViewDistance = 0;//client.getActivePlayer().getViewDistance() / 16;
 		//System.out.println("ChunkViewDistance ="+ ((int)client.getActivePlayer().getViewDistance() / 16));
-		
-		
+
+
 		Point currentPos = client.getActivePlayer().getTransform().getPosition();
 
 		int currentChunkX = currentPos.getChunkX();
@@ -111,7 +111,7 @@ public class WorldRenderer {
 		int currentChunkZ = currentPos.getChunkZ();
 
 		//System.out.println("Chunk = "+currentChunkX+", "+currentChunkY+", "+currentChunkZ);
-		
+
 		if (currentChunkX == lastChunkX && currentChunkY == lastChunkY && currentChunkZ == lastChunkZ && !force && !firstUpdate) {
 			return false;
 		}
@@ -158,13 +158,13 @@ public class WorldRenderer {
 			 * 
 			 * 
 			 * 
-			*/
-			
+			 */
+
 			// Shared area
 			Vector3 ignoreMin = oldView.getBase().max(newView.getBase());
 			Vector3 ignoreMax = oldView.getBase().add(oldView.getSize()).min(newView.getBase().add(newView.getSize()));
 			Cuboid ignore = new Cuboid(new Point(ignoreMin, world), ignoreMax.subtract(ignoreMin));
-			
+
 			for (int x = min.getFloorX(); x <= max.getFloorX(); x++) {
 				for (int y = min.getFloorY(); y <= max.getFloorY(); y++) {
 					for (int z = min.getFloorZ(); z <= max.getFloorZ(); z++) {
@@ -178,7 +178,7 @@ public class WorldRenderer {
 
 						if (oldView.contains(vec)) {
 							ChunkMeshBatch c = chunkRenderersByPosition.get(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
-							
+
 							if (c==null)
 								continue;
 							removeChunkMeshBatch(c);
@@ -212,7 +212,7 @@ public class WorldRenderer {
 		chunkRenderers.remove(batch);
 		chunkRenderersByPosition.remove(batch.getX(), batch.getY(), batch.getZ());
 	}
-	
+
 	/**
 	 * Gets the chunk mesh batch corresponding with the given chunk.
 	 * 
@@ -223,7 +223,7 @@ public class WorldRenderer {
 	private ChunkMeshBatch getChunkMeshBatchByChunkPosition(int x, int y, int z) {
 		return chunkRenderersByPosition.get(x, y, z);
 	}
-	
+
 	/**
 	 * Updates the ChunkMeshBatch at the given chunk position.
 	 * 
@@ -241,15 +241,17 @@ public class WorldRenderer {
 
 	private void renderChunks() {
 		for (ChunkMeshBatch renderer : chunkRenderers) {
-			material.getShader().setUniform("Model", renderer.getTransform());
+			if(renderer.generated){
+				material.getShader().setUniform("Model", renderer.getTransform());
 
-			// It's hard to look right
-			// at the world baby
-			// But here's my frustrum
-			// so cull me maybe?
-			//if (client.getActiveCamera().getFrustum().intersects(renderer)) {
+				// It's hard to look right
+				// at the world baby
+				// But here's my frustrum
+				// so cull me maybe?
+				//if (client.getActiveCamera().getFrustum().intersects(renderer)) {
 				renderer.render(material);
-			//}
+				//}
+			}
 		}
 	}
 }

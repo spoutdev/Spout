@@ -57,7 +57,7 @@ public class ChunkMesh extends BaseMesh {
 	/**
 	 * Private constructor.
 	 */
-	private ChunkMesh(Chunk chunk) {
+	public ChunkMesh(Chunk chunk) {
 		this.chunk = chunk;
 	}
 
@@ -88,11 +88,11 @@ public class ChunkMesh extends BaseMesh {
 	 * @param chunk
 	 * @return
 	 */
-	public static ChunkMesh generateFromChunk(Chunk chunk) {
+	/*public static ChunkMesh generateFromChunk(Chunk chunk) {
 		ChunkMesh mesh = new ChunkMesh(chunk);
 		mesh.update();
 		return mesh;
-	}
+	}*/
 
 	/**
 	 * Generates the vertices of the given block and adds them to the ChunkMesh.
