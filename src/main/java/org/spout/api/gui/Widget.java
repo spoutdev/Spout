@@ -13,7 +13,7 @@ import org.spout.api.math.Rectangle;
 import org.spout.api.tickable.Tickable;
 
 public final class Widget extends BaseComponentHolder implements Tickable {
-	private List<RenderPart> renderPartCache;
+	private List<RenderPart> renderPartCache = new LinkedList<RenderPart>();
 	private boolean renderCacheClean = false;
 	private Screen screen;
 	private Container container = null;
