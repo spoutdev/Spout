@@ -27,6 +27,7 @@
 package org.spout.engine.command;
 
 import org.spout.api.Engine;
+import org.spout.api.Spout;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandExecutor;
@@ -35,6 +36,7 @@ import org.spout.api.entity.Player;
 import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.exception.CommandException;
 import org.spout.api.plugin.Platform;
+import org.spout.engine.SpoutClient;
 
 /**
  * Class to create the input command structure that modifies {@link org.spout.api.entity.state.PlayerInputState}
@@ -57,8 +59,25 @@ public class InputCommands {
 		parent.addSubCommand(engine, "+dy")
 		.setHelp("Adds the y distance traveled to the calling player's input state.")
 		.setExecutor(Platform.CLIENT, new InputMousePitchHandler());
+		parent.addSubCommand(engine, "debug_infos")
+		.setHelp("Toggle display of debugging infos.")
+		.setExecutor(Platform.CLIENT, new InputDebugInfosHandler());
 	}
 
+	public static class InputDebugInfosHandler implements CommandExecutor {
+		@Override
+		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
+			if (!(source instanceof Player)) {
+				throw new CommandException("Source must be a player!");
+			}
+			
+			if (Spout.getEngine() instanceof SpoutClient) {
+				((SpoutClient)Spout.getEngine()).toggleDebugInfos();
+			}
+		}
+		
+	}
+	
 	public static class InputFlagHandler implements CommandExecutor {
 		private final PlayerInputState.Flags flag;
 		private final boolean add;
