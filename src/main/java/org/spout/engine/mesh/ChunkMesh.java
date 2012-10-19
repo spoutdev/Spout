@@ -28,6 +28,7 @@ package org.spout.engine.mesh;
 
 import java.awt.Color;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
@@ -53,6 +54,7 @@ public class ChunkMesh extends BaseMesh {
 	private final Chunk chunk;
 	private ChunkSnapshotModel chunkModel;
 	private ChunkSnapshot center;
+	public Semaphore lock = new Semaphore(1);
 
 	/**
 	 * Private constructor.

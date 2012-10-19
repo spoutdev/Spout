@@ -50,6 +50,8 @@ public class ChunkMeshUpdateTask implements Runnable{
 		} finally {
 			lock.coreReadUnlock("Generate mesh");
 		}
+		mesh.lock.release();
+		batch.notifyGenerated();
 		//TODO signal to bath its done
 	}
 
