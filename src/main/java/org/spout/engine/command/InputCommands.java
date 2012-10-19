@@ -43,20 +43,20 @@ public class InputCommands {
 	public static void setupInputCommands(Engine engine, Command parent) {
 		for (PlayerInputState.Flags flag : PlayerInputState.Flags.values()) {
 			parent.addSubCommand(engine, "+" + flag.name())
-					.setArgBounds(0, 0)
-					.setHelp("Adds the " + flag.name() + " flag to the calling player's input state")
-					.setExecutor(Platform.CLIENT, new InputFlagHandler(flag, true));
+			.setArgBounds(0, 0)
+			.setHelp("Adds the " + flag.name() + " flag to the calling player's input state")
+			.setExecutor(Platform.CLIENT, new InputFlagHandler(flag, true));
 			parent.addSubCommand(engine, "-" + flag.name())
-					.setArgBounds(0, 0)
-					.setHelp("Removes the " + flag.name() + " flag from the calling player's input state")
-					.setExecutor(Platform.CLIENT, new InputFlagHandler(flag, false));
+			.setArgBounds(0, 0)
+			.setHelp("Removes the " + flag.name() + " flag from the calling player's input state")
+			.setExecutor(Platform.CLIENT, new InputFlagHandler(flag, false));
 		}
 		parent.addSubCommand(engine, "+dx")
-				.setHelp("Adds the x distance traveled to the calling player's input state.")
-				.setExecutor(Platform.CLIENT, new InputMouseHandler(true));
+		.setHelp("Adds the x distance traveled to the calling player's input state.")
+		.setExecutor(Platform.CLIENT, new InputMouseYawHandler());
 		parent.addSubCommand(engine, "+dy")
-				.setHelp("Adds the y distance traveled to the calling player's input state.")
-				.setExecutor(Platform.CLIENT, new InputMouseHandler(false));
+		.setHelp("Adds the y distance traveled to the calling player's input state.")
+		.setExecutor(Platform.CLIENT, new InputMousePitchHandler());
 	}
 
 	public static class InputFlagHandler implements CommandExecutor {
@@ -70,42 +70,52 @@ public class InputCommands {
 
 		@Override
 		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
-				if (!(source instanceof Player)) {
-					return; //throw new CommandException("Source must be a player!"); // TODO: Fix input
-				}
-				Player player = (Player) source;
-				if (add) {
-					player.processInput(player.input().withAddedFlag(flag));
-				} else {
-					player.processInput(player.input().withRemovedFlag(flag));
-				}
+			if (!(source instanceof Player)) {
+				throw new CommandException("Source must be a player!");
+			}
+			Player player = (Player) source;
+			if (add) {
+				player.processInput(player.input().withAddedFlag(flag));
+			} else {
+				player.processInput(player.input().withRemovedFlag(flag));
+			}
 		}
 	}
 
-	public static class InputMouseHandler implements CommandExecutor {
-		private final boolean x;
-
-		public InputMouseHandler(boolean x) {
-			this.x = x;
-		}
+	public static class InputMousePitchHandler implements CommandExecutor {
 
 		@Override
 		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
-				if (!(source instanceof Player)) {
-					return; //throw new CommandException("Source must be a player!");
-				}
-				int d;
-				try {
-					d = args.getInteger(0);
-				} catch (NumberFormatException numberFormatException) {
-					throw new IllegalArgumentException("Cannot add a non-number to mouse distances.");
-				}
-				Player player = (Player) source;
-				if (x) {
-					player.processInput(player.input().withAddedYaw(PlayerInputState.MOUSE_SENSITIVITY * d));
-				} else {
-					player.processInput(player.input().withAddedPitch(PlayerInputState.MOUSE_SENSITIVITY * d));
-				}
+			if (!(source instanceof Player)) {
+				throw new CommandException("Source must be a player!");
+			}
+			int d;
+			try {
+				d = args.getInteger(0);
+			} catch (NumberFormatException numberFormatException) {
+				throw new IllegalArgumentException("Cannot add a non-number to mouse distances.");
+			}
+			Player player = (Player) source;
+			player.processInput(player.input().withAddedPitch(PlayerInputState.MOUSE_SENSITIVITY * d));
+		}
+	}
+
+	public static class InputMouseYawHandler implements CommandExecutor {
+
+		@Override
+		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
+			if (!(source instanceof Player)) {
+				throw new CommandException("Source must be a player!");
+			}
+			int d;
+			try {
+				d = args.getInteger(0);
+			} catch (NumberFormatException numberFormatException) {
+				throw new IllegalArgumentException("Cannot add a non-number to mouse distances.");
+			}
+			Player player = (Player) source;
+			player.processInput(player.input().withAddedYaw(PlayerInputState.MOUSE_SENSITIVITY * -d));
+
 		}
 	}
 }
