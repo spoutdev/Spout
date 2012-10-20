@@ -172,6 +172,7 @@ public class SpoutRegion extends Region {
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 	private boolean renderQueueEnabled = false;
+	private final ConcurrentLinkedQueue<SpoutChunkSnapshotModel> renderChunkQueue = new ConcurrentLinkedQueue<SpoutChunkSnapshotModel>();
 
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
 		super(world, x * Region.BLOCKS.SIZE, y * Region.BLOCKS.SIZE, z * Region.BLOCKS.SIZE);
@@ -903,6 +904,11 @@ public class SpoutRegion extends Region {
 
 	}
 	
+	
+	public Queue<SpoutChunkSnapshotModel> getRenderChunkQueue() {
+		return this.renderChunkQueue;
+	}
+	
 	private TInt21TripleObjectHashMap<SpoutChunkSnapshot> renderSnapshotCache = new TInt21TripleObjectHashMap<SpoutChunkSnapshot>();
 	
 	private void addToRenderQueue(SpoutChunk c) {
@@ -917,7 +923,7 @@ public class SpoutRegion extends Region {
 				}
 			}
 		}
-		getWorld().addToRenderChunkQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks));
+		renderChunkQueue.add(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks));
 	}
 	
 	private ChunkSnapshot getRenderSnapshot(int cx, int cy, int cz) {

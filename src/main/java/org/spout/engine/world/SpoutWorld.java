@@ -180,11 +180,6 @@ public class SpoutWorld extends AsyncManager implements World {
 	 */
 	private final AtomicBoolean renderQueueEnabled = new AtomicBoolean(false);
 	
-	/**
-	 * A queue containing chunk snapshots of any dirty chunks
-	 */
-	private final ConcurrentLinkedQueue<SpoutChunkSnapshotModel> renderChunkQueue = new ConcurrentLinkedQueue<SpoutChunkSnapshotModel>();
-	
 	/*
 	 * A WeakReference to this world
 	 */
@@ -1180,14 +1175,6 @@ public class SpoutWorld extends AsyncManager implements World {
 	
 	public boolean isRenderQueueEnabled() {
 		return renderQueueEnabled.get();
-	}
-	
-	public Queue<SpoutChunkSnapshotModel> getRenderChunkQueue() {
-		return this.renderChunkQueue;
-	}
-	
-	public void addToRenderChunkQueue(SpoutChunkSnapshotModel chunkModel) {
-		this.renderChunkQueue.add(chunkModel);
 	}
 
 	// Worlds don't do any of these
