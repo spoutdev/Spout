@@ -842,6 +842,7 @@ public class SpoutRegion extends Region {
 		
 		SpoutWorld world = this.getWorld();
 		
+		
 		boolean worldRenderQueueEnabled = world.isRenderQueueEnabled();
 		//boolean firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
 		
@@ -863,6 +864,7 @@ public class SpoutRegion extends Region {
 
 		SpoutChunk spoutChunk;
 		while ((spoutChunk = dirtyChunks.poll()) != null) {
+			
 			spoutChunk.setNotDirtyQueued();
 			if (!spoutChunk.isLoaded()) {
 				continue;
