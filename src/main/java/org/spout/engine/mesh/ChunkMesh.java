@@ -28,7 +28,9 @@ package org.spout.engine.mesh;
 
 import java.awt.Color;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
+import org.spout.api.Spout;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.material.BlockMaterial;
@@ -38,13 +40,17 @@ import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.MeshFace;
 import org.spout.api.model.Vertex;
+import org.spout.api.scheduler.TaskPriority;
+import org.spout.engine.batcher.ChunkMeshBatch;
+import org.spout.engine.util.ChunkSnapshotFutureModel;
 import org.spout.engine.util.ChunkSnapshotModel;
+
 import com.google.common.collect.Lists;
 
 /**
  * Represents a mesh for a chunk.
  */
-public class ChunkMesh extends BaseMesh {
+public class ChunkMesh extends BaseMesh implements Runnable{
 	/**
 	 * Faces that you can render.
 	 */
@@ -52,23 +58,39 @@ public class ChunkMesh extends BaseMesh {
 
 	private final Chunk chunk;
 	private ChunkSnapshotModel chunkModel;
+	private ChunkSnapshotFutureModel chunkModelFuture;
 	private ChunkSnapshot center;
+	public Semaphore lock = new Semaphore(1);
+	private final ChunkMeshBatch batch;
 
 	/**
-	 * Private constructor.
+	 * Public constructor.
 	 */
-	private ChunkMesh(Chunk chunk) {
+	public ChunkMesh(Chunk chunk, ChunkMeshBatch batch) {
 		this.chunk = chunk;
+		this.batch = batch;
 	}
 
+	public void requestUpdate(){
+		this.chunkModelFuture = new ChunkSnapshotFutureModel(chunk.getWorld(), chunk.getX(), chunk.getY(), chunk.getZ());
+		this.chunkModelFuture.load();
+		try {
+			lock.acquire();
+			Spout.getEngine().getScheduler().scheduleAsyncTask(this, this);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Updates the mesh.
 	 */
-	public void update() {
-		chunkModel = new ChunkSnapshotModel(chunk.getWorld());
-		chunkModel.load(chunk.getX(), chunk.getY(), chunk.getZ());
+	private void update() {
+		chunkModel = chunkModelFuture.get();
 		center = chunkModel.getCenter();
-
+		//Clean previous face
+		faces.clear();
+		
 		for (int x = chunk.getBlockX(); x < chunk.getBlockX() + Chunk.BLOCKS.SIZE; x++) {
 			for (int y = chunk.getBlockY(); y < chunk.getBlockY() + Chunk.BLOCKS.SIZE; y++) {
 				for (int z = chunk.getBlockZ(); z < chunk.getBlockZ() + Chunk.BLOCKS.SIZE; z++) {
@@ -78,20 +100,9 @@ public class ChunkMesh extends BaseMesh {
 		}
 
 		// Free memory
+		chunkModelFuture = null;
 		chunkModel = null;
 		center = null;
-	}
-
-	/**
-	 * Generates a ChunkMesh of the given chunk.
-	 * 
-	 * @param chunk
-	 * @return
-	 */
-	public static ChunkMesh generateFromChunk(Chunk chunk) {
-		ChunkMesh mesh = new ChunkMesh(chunk);
-		mesh.update();
-		return mesh;
 	}
 
 	/**
@@ -282,5 +293,18 @@ public class ChunkMesh extends BaseMesh {
 	@Override
 	public String toString() {
 		return "ChunkMesh [center=" + center + "]";
+	}
+
+	@Override
+	public void run() {
+		//TODO : Handle tha better
+		if(!chunkModelFuture.isDone()){
+			Spout.getEngine().getScheduler().scheduleAsyncDelayedTask(this, this, 5, TaskPriority.CRITICAL);
+			return;
+		}
+		update();
+		batch.dirty = true;
+		this.lock.release();
+		batch.notifyGenerated();
 	}
 }
