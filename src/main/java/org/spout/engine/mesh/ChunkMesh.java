@@ -58,7 +58,7 @@ public class ChunkMesh extends BaseMesh implements Runnable{
 
 	private final Chunk chunk;
 	private ChunkSnapshotModel chunkModel;
-	private ChunkSnapshotFutureModel chunkModelFuture;
+	private ChunkSnapshotFutureModel chunkModelFuture = null;
 	private ChunkSnapshot center;
 	public Semaphore lock = new Semaphore(1);
 	private final ChunkMeshBatch batch;
@@ -72,16 +72,13 @@ public class ChunkMesh extends BaseMesh implements Runnable{
 	}
 
 	public void requestUpdate(){
-		this.chunkModelFuture = new ChunkSnapshotFutureModel(chunk.getWorld(), chunk.getX(), chunk.getY(), chunk.getZ());
-		this.chunkModelFuture.load();
-		try {
-			lock.acquire();
+		if( chunkModelFuture == null ){
+			this.chunkModelFuture = new ChunkSnapshotFutureModel(chunk.getWorld(), chunk.getX(), chunk.getY(), chunk.getZ());
+			this.chunkModelFuture.load();
 			Spout.getEngine().getScheduler().scheduleAsyncTask(this, this);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Updates the mesh.
 	 */
@@ -90,7 +87,7 @@ public class ChunkMesh extends BaseMesh implements Runnable{
 		center = chunkModel.getCenter();
 		//Clean previous face
 		faces.clear();
-		
+
 		for (int x = chunk.getBlockX(); x < chunk.getBlockX() + Chunk.BLOCKS.SIZE; x++) {
 			for (int y = chunk.getBlockY(); y < chunk.getBlockY() + Chunk.BLOCKS.SIZE; y++) {
 				for (int z = chunk.getBlockZ(); z < chunk.getBlockZ() + Chunk.BLOCKS.SIZE; z++) {
@@ -151,7 +148,7 @@ public class ChunkMesh extends BaseMesh implements Runnable{
 		Vector3 p2 = null;
 		Vector3 p3 = null;
 		Vector3 p4 = null;
-		
+
 		/*   1--2
 		 *  /| /|
 		 * 5--6 |   
@@ -161,7 +158,7 @@ public class ChunkMesh extends BaseMesh implements Runnable{
 		 *          /
 		 *         Z - East < WEST
 		 */
-		
+
 		Vector3 vertex0 = base.add(0, 0, 0);
 		Vector3 vertex1 = base.add(0, 1, 0);
 		Vector3 vertex2 = base.add(1, 1, 0);
@@ -170,7 +167,7 @@ public class ChunkMesh extends BaseMesh implements Runnable{
 		Vector3 vertex5 = base.add(0, 1, 1);
 		Vector3 vertex6 = base.add(1, 1, 1);
 		Vector3 vertex7 = base.add(1, 0, 1);
-		
+
 		switch (face) {
 		case TOP:
 			p1 = vertex1;
@@ -209,9 +206,9 @@ public class ChunkMesh extends BaseMesh implements Runnable{
 			p4 = vertex1;
 			break;
 		}
-		
+
 		Rectangle r = m.getTextureOffset();
-		
+
 		Vector2 uv1 = new Vector2(r.getX(), r.getY());
 		Vector2 uv2 = new Vector2(r.getX(), r.getY()+r.getHeight());
 		Vector2 uv3 = new Vector2(r.getX()+r.getWidth(), r.getY()+r.getHeight());
@@ -297,14 +294,21 @@ public class ChunkMesh extends BaseMesh implements Runnable{
 
 	@Override
 	public void run() {
-		//TODO : Handle tha better
-		if(!chunkModelFuture.isDone()){
-			Spout.getEngine().getScheduler().scheduleAsyncDelayedTask(this, this, 5, TaskPriority.CRITICAL);
-			return;
+		try {
+			//TODO : Handle tha better
+			if(!chunkModelFuture.isDone()){
+				Spout.getEngine().getScheduler().scheduleAsyncDelayedTask(this, this, 5, TaskPriority.CRITICAL);
+				return;
+			}
+			
+			lock.acquire();
+
+			update();
+			batch.dirty = true;
+			lock.release();
+			batch.notifyGenerated();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
-		update();
-		batch.dirty = true;
-		this.lock.release();
-		batch.notifyGenerated();
 	}
 }

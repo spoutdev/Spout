@@ -42,7 +42,7 @@ import org.spout.engine.renderer.BatchVertexRenderer;
 /**
  * Represents a group of chunk meshes to be rendered.
  */
-public class ChunkMeshBatch extends Cuboid {
+public class ChunkMeshBatch extends Cuboid implements Runnable{
 	public static final int SIZE_X = 3;
 	public static final int SIZE_Y = 1;
 	public static final int SIZE_Z = 3;
@@ -80,19 +80,19 @@ public class ChunkMeshBatch extends Cuboid {
 
 	public void notifyGenerated() {
 		if(dirty){
-			((SpoutClient)Spout.getEngine()).getRenderScheduler().add(new ChunkMeshRenderTask(this));
+			for(int i = 0 ; i < meshes.length ; i++){
+				if(!meshes[i].lock.tryAcquire()){
+					for(int j = 0 ; j < i ; j++){
+						meshes[j].lock.release();
+					}
+					return;
+				}
+			}
+			((SpoutClient)Spout.getEngine()).getRenderScheduler().add(this);
 		}
 	}
 
-	public synchronized void updateRender() {
-		for (ChunkMesh mesh : meshes) {
-			try {
-				mesh.lock.acquire();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-
+	private void updateRender() {
 		hasVertices = false;
 		for (ChunkMesh mesh : meshes) {
 			if (mesh.hasVertices()) {
@@ -159,6 +159,11 @@ public class ChunkMeshBatch extends Cuboid {
 	 */
 	public static Vector3 getChunkCoordinates(Vector3 batchCoords) {
 		return new Vector3(batchCoords.getX() * SIZE_X, batchCoords.getY() * SIZE_Y, batchCoords.getZ() * SIZE_Z);
+	}
+
+	@Override
+	public void run() {
+		updateRender();
 	}
 
 }
