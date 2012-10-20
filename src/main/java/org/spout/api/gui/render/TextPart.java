@@ -27,13 +27,13 @@
 package org.spout.api.gui.render;
 
 public final class TextPart extends RenderPart {
-	String text;
+	char character;
 	
-	public String getText() {
-		return text;
+	public char getChar() {
+		return character;
 	}
 	
-	public void setText(String text) {
-		this.text = text;
+	public void setChar(char character) {
+		this.character = character;
 	}
 }

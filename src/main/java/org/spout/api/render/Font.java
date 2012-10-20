@@ -36,6 +36,9 @@ import java.awt.Rectangle;
  */
 public interface Font {
 
+	public int getWidth();
+	
+	public int getHeight();
 	
 	public float getCharTop();
 	
@@ -45,4 +48,7 @@ public interface Font {
 	
 	public Rectangle getPixelBounds(char ch);
 	
+	public RenderMaterial getMaterial();
+	
+	public float getAdvance(char c);
 }

@@ -31,12 +31,12 @@ import java.awt.Color;
 import org.spout.api.math.Rectangle;
 import org.spout.api.render.RenderMaterial;
 
-public abstract class RenderPart implements Comparable<RenderPart> {
-	Rectangle source;
-	Rectangle sprite;
-	int zIndex = 0;
-	Color color;
-	RenderMaterial material;
+public class RenderPart implements Comparable<RenderPart> {
+	private Rectangle source;
+	private Rectangle sprite;
+	private int zIndex = 0;
+	private Color color;
+	private RenderMaterial material;
 	
 	public void setSource(Rectangle source) {
 		this.source = source;

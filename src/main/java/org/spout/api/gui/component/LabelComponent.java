@@ -26,13 +26,17 @@
  */
 package org.spout.api.gui.component;
 
+import java.awt.Color;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.spout.api.Client;
+import org.spout.api.Spout;
 import org.spout.api.component.components.WidgetComponent;
 import org.spout.api.gui.render.RenderPart;
-import org.spout.api.gui.render.TextPart;
 import org.spout.api.map.DefaultedKey;
+import org.spout.api.math.Rectangle;
+import org.spout.api.render.Font;
 
 public class LabelComponent extends WidgetComponent {
 	private static final DefaultedKey<String> KEY_TEXT = new DefaultedKey<String>() {
@@ -48,19 +52,66 @@ public class LabelComponent extends WidgetComponent {
 		}
 		
 	};
+	private Font font;
+	private Color color = Color.black;
 	
 	@Override
 	public List<RenderPart> getRenderParts() {
 		List<RenderPart> ret = new LinkedList<RenderPart>();
-		TextPart text = new TextPart();
-		text.setSource(getOwner().getGeometry());
-		text.setSprite(getOwner().getGeometry());
-		text.setText(getText());
-		ret.add(text);
+		
+		if (font==null)
+			return ret;
+		
+		float w = font.getWidth();
+		float h = font.getHeight();
+
+		float xCursor = getOwner().getGeometry().getX();
+		float yCursor = getOwner().getGeometry().getY();
+		
+		float screenWidth = ((Client)Spout.getEngine()).getResolution().getX();
+		float screenHeight = ((Client)Spout.getEngine()).getResolution().getY();
+		
+		for (int i=0 ; i<getText().length() ; i++) {
+			char c = getText().charAt(i);
+			if (c==' ') {
+				xCursor += font.getSpaceWidth()/screenWidth;
+			} else if (c=='\n') {
+				xCursor = getOwner().getGeometry().getX();
+				yCursor -= font.getCharHeight()/screenHeight;
+			} else {
+				java.awt.Rectangle r = font.getPixelBounds(c);
+
+				RenderPart part = new RenderPart();
+				part.setRenderMaterial(font.getMaterial());
+				part.setColor(color);
+				part.setSprite(new Rectangle(xCursor, yCursor, (float)r.width/screenWidth, h/screenHeight));
+				part.setSource(new Rectangle(r.x/w, 0f, r.width/w, 1f));
+				
+				xCursor += (float)font.getAdvance(c)/screenWidth;
+				
+				ret.add(part);
+			}
+		}
+		
 		return ret;
 	}
 
-
+	public void setColor(Color color) {
+		this.color = color;
+	}
+	
+	public Color getColor() {
+		return color;
+	}
+	
+	public void setFont(Font font) {
+		this.font = font;
+	}
+	
+	public Font getFont() {
+		return font;
+	}
+	
 	public String getText() {
 		return getData().get(KEY_TEXT);
 	}
