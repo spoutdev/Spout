@@ -79,13 +79,12 @@ import org.spout.api.gui.FullScreen;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.ScreenStack;
 import org.spout.api.gui.Widget;
+import org.spout.api.gui.component.LabelComponent;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
-import org.spout.api.plugin.CommonPlugin;
 import org.spout.api.plugin.Platform;
-import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.PortBinding;
@@ -104,7 +103,6 @@ import org.spout.engine.command.RendererCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ClientFileSystem;
-import org.spout.engine.gui.component.SpoutLabelComponent;
 import org.spout.engine.input.SpoutInput;
 import org.spout.engine.input.SpoutInputConfiguration;
 import org.spout.engine.listener.SpoutClientListener;
@@ -227,7 +225,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		FullScreen mainScreen = new FullScreen();
 		
 		Widget txtWidget = new Widget(); // Test widget
-		SpoutLabelComponent txt = txtWidget.add(SpoutLabelComponent.class);
+		LabelComponent txt = txtWidget.add(LabelComponent.class);
 		font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/resources/resources/fonts/ubuntu/Ubuntu-M.ttf");
 		txt.setFont(font);
 		txt.setColor(Color.blue);
