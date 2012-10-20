@@ -76,11 +76,14 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.Screen;
+import org.spout.api.gui.Widget;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
+import org.spout.api.plugin.CommonPlugin;
 import org.spout.api.plugin.Platform;
+import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.PortBinding;
@@ -99,6 +102,7 @@ import org.spout.engine.command.RendererCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ClientFileSystem;
+import org.spout.engine.gui.component.SpoutLabelComponent;
 import org.spout.engine.input.SpoutInput;
 import org.spout.engine.input.SpoutInputConfiguration;
 import org.spout.engine.listener.SpoutClientListener;
@@ -217,6 +221,16 @@ public class SpoutClient extends SpoutEngine implements Client {
 		activePlayer = new SpoutClientPlayer("Spouty", loc, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 		activeCamera = activePlayer.add(CameraComponent.class);
 		mainScreen = new Screen();
+		
+		/*Widget txtWidget = new Widget(); // Waiting for the NPE in Widgets to be corrected
+		txtWidget.add(SpoutLabelComponent.class);
+		
+		SpoutLabelComponent txt = txtWidget.get(SpoutLabelComponent.class);
+		txt.setFont(font);
+		txt.setColor(Color.blue);
+		txt.setText("Test");
+		
+		mainScreen.attachWidget(this.getPluginManager().getPlugins().iterator().next(), txtWidget);*/
 
 		System.out.println("activeWorld: " + super.getDefaultWorld().getName());
 		super.getDefaultWorld().spawnEntity(activePlayer);
@@ -523,6 +537,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 			gui.drawText("z: " + activePlayer.getTransform().getPosition().getZ(), font, -0.95f, 0.6f, 8f, Color.blue);
 			gui.drawText("fps: " + fps, font, -0.95f, 0.5f, 8f, Color.blue);
 		}
+		for (Widget w : mainScreen.getWidgets()) {
+			gui.draw(w.getRenderParts());
+		}
 		gui.draw(guimaterial, 0.5f, 0, 0.25f, 0.25f);
 		gui.render();
 		
@@ -548,6 +565,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 	
 	public Screen getMainScreen() {
 		return mainScreen;
+	}
+	
+	public Vector2 getResolution() {
+		return resolution;
 	}
 
 	private void createWindow() {
