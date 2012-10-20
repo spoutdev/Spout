@@ -67,8 +67,10 @@ public final class Widget extends BaseComponentHolder implements Tickable {
 				renderPartCache = new LinkedList<RenderPart>();
 				
 				for (Component component:values()) {
-					WidgetComponent wc = (WidgetComponent) component;
-					renderPartCache.addAll(wc.getRenderParts());
+					if (component instanceof WidgetComponent) {
+						WidgetComponent wc = (WidgetComponent) component;
+						renderPartCache.addAll(wc.getRenderParts());
+					}
 				}
 				
 				Collections.sort(renderPartCache);
@@ -115,8 +117,10 @@ public final class Widget extends BaseComponentHolder implements Tickable {
 		screen.setFocussedWidget(this);
 		
 		for (Component c:values()) {
-			WidgetComponent wc = (WidgetComponent) c;
-			wc.onFocus(reason);
+			if (c instanceof WidgetComponent) {
+				WidgetComponent wc = (WidgetComponent) c;
+				wc.onFocus(reason);
+			}
 		}
 	}
 	
