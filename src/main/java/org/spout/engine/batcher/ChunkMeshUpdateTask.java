@@ -38,6 +38,11 @@ public class ChunkMeshUpdateTask implements Runnable{
 	public ChunkMeshUpdateTask(final ChunkMesh mesh, final ChunkMeshBatch batch){
 		this.mesh = mesh;
 		this.batch = batch;
+		try {
+			mesh.lock.acquire();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -52,7 +57,6 @@ public class ChunkMeshUpdateTask implements Runnable{
 		}
 		mesh.lock.release();
 		batch.notifyGenerated();
-		//TODO signal to bath its done
 	}
 
 }

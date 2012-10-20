@@ -136,7 +136,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private SpriteBatch gui;
 	private ClientFont font;
 	
-	private ConcurrentLinkedQueue<Runnable> renderTaskQueue = new ConcurrentLinkedQueue<Runnable>();
+	public ConcurrentLinkedQueue<Runnable> renderTaskQueue = new ConcurrentLinkedQueue<Runnable>();
 
 	public SpoutClient() {
 		this.filesystem = new ClientFileSystem();

@@ -117,6 +117,8 @@ public class WorldRenderer {
 		}
 		// just add all visible chunks
 
+		final long start = System.currentTimeMillis();
+		
 		if (chunkRenderers.size() == 0 || force) {
 			chunkRenderers.clear();
 
@@ -139,7 +141,7 @@ public class WorldRenderer {
 						addChunkMeshBatch(batch);
 						batch.update();
 
-						System.out.println(batch);
+						//System.out.println(batch);
 					}
 				}
 			}
@@ -183,12 +185,12 @@ public class WorldRenderer {
 								continue;
 							removeChunkMeshBatch(c);
 							c.finalize();
-							System.out.println("Remove : " + c);
+							//System.out.println("Remove : " + c);
 						} else if (newView.contains(vec)) {
 							ChunkMeshBatch c = new ChunkMeshBatch(world, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
 							addChunkMeshBatch(c);
 							c.update();
-							System.out.println("Rended : " + c);
+							//System.out.println("Rended : " + c);
 						}
 					}
 				}
@@ -200,6 +202,8 @@ public class WorldRenderer {
 		lastChunkY = currentChunkY;
 		lastChunkZ = currentChunkZ;
 
+		System.out.println("WorldRenderer update take " + (System.currentTimeMillis() - start) + " ms");
+		
 		return true;
 	}
 
@@ -241,17 +245,15 @@ public class WorldRenderer {
 
 	private void renderChunks() {
 		for (ChunkMeshBatch renderer : chunkRenderers) {
-			if(renderer.generated){
-				material.getShader().setUniform("Model", renderer.getTransform());
+			material.getShader().setUniform("Model", renderer.getTransform());
 
-				// It's hard to look right
-				// at the world baby
-				// But here's my frustrum
-				// so cull me maybe?
-				//if (client.getActiveCamera().getFrustum().intersects(renderer)) {
-				renderer.render(material);
-				//}
-			}
+			// It's hard to look right
+			// at the world baby
+			// But here's my frustrum
+			// so cull me maybe?
+			//if (client.getActiveCamera().getFrustum().intersects(renderer)) {
+			renderer.render(material);
+			//}
 		}
 	}
 }

@@ -37,6 +37,7 @@ import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
+import org.spout.engine.SpoutClient;
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
@@ -55,8 +56,7 @@ public class ChunkMeshBatch extends Cuboid {
 	private ChunkMesh[] meshes = new ChunkMesh[MESH_COUNT];
 	private boolean hasVertices = false;
 	private Matrix modelMat = MathHelper.createIdentity();
-	//private final Semaphore semaphore = new Semaphore(MESH_COUNT);
-	public boolean generated = false;
+	
 	boolean dirty = true;
 
 	public ChunkMeshBatch(World world, int baseX, int baseY, int baseZ) {
@@ -91,13 +91,7 @@ public class ChunkMeshBatch extends Cuboid {
 
 	public void update() {
 		for (ChunkMesh mesh : meshes) {
-			try {
-				mesh.lock.acquire();
-				Spout.getEngine().getScheduler().scheduleAsyncTask(this, 
-						new ChunkMeshUpdateTask(mesh, this));
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			Spout.getEngine().getScheduler().scheduleAsyncTask(this, new ChunkMeshUpdateTask(mesh, this));
 			//mesh.update();
 		}
 
@@ -114,8 +108,10 @@ public class ChunkMeshBatch extends Cuboid {
 	}
 
 	public void notifyGenerated() {
-		if(dirty)
-			Spout.getEngine().getScheduler().scheduleAsyncTask(this,new ChunkMeshRenderTask(this));
+		if(dirty){
+			((SpoutClient)Spout.getEngine()).renderTaskQueue.add(new ChunkMeshRenderTask(this));
+
+		}
 	}
 
 	public synchronized void updateRender() {
@@ -126,7 +122,18 @@ public class ChunkMeshBatch extends Cuboid {
 				e.printStackTrace();
 			}
 		}
-		generated = false;
+		
+		hasVertices = false;
+		for (ChunkMesh mesh : meshes) {
+			if (mesh.hasVertices()) {
+				hasVertices = true;
+				continue;
+			}
+		}
+		if (!hasVertices) {
+			return;
+		}
+		
 		renderer.begin();
 		for (ChunkMesh mesh : meshes) {
 			if (mesh.hasVertices()) {
@@ -134,8 +141,8 @@ public class ChunkMeshBatch extends Cuboid {
 			}
 		}
 		renderer.end();
+		
 		dirty = false;
-		generated = true;
 		for (ChunkMesh mesh : meshes) {
 			mesh.lock.release();
 		}
@@ -145,8 +152,8 @@ public class ChunkMeshBatch extends Cuboid {
 		return hasVertices;
 	}
 
-	public synchronized void render(RenderMaterial material) {
-		if (generated) {
+	public void render(RenderMaterial material) {
+		if (hasVertices) {
 			renderer.draw(material);
 		}
 	}
