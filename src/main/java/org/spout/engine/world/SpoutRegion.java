@@ -384,6 +384,7 @@ public class SpoutRegion extends Region {
 			}
 
 			currentChunk.setUnloaded();
+			renderChunkQueue.add(new SpoutChunkSnapshotModel(currentChunk.getX(), currentChunk.getY(), currentChunk.getZ(), true));
 
 			int cx = c.getX() & CHUNKS.MASK;
 			int cy = c.getY() & CHUNKS.MASK;

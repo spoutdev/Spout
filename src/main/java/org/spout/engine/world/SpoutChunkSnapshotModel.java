@@ -38,13 +38,30 @@ public class SpoutChunkSnapshotModel {
 	private final int cx,cy,cz;
 	private final ChunkSnapshot[][][] chunks;
 	private ChunkSnapshot center;
+	private final boolean unload;
+	
+	public SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload) {
+		this(cx, cy, cz, unload, null);
+	}
 
 	public SpoutChunkSnapshotModel(int cx, int cy, int cz, ChunkSnapshot[][][] chunks) {
+		this(cx, cy, cz, false, chunks);
+	}
+	
+	private SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks) {
 		this.cx = cx;
 		this.cy = cy;
 		this.cz = cz;
 		this.chunks = chunks;
 		this.center = this.chunks[1][1][1];
+		this.unload = unload;
+	}
+	
+	/**
+	 * Gets if the chunk was unloaded.  Unload models only indicate an unload occurred and contain no data.
+	 */
+	public boolean isUnload() {
+		return unload;
 	}
 
 	/**
