@@ -211,7 +211,24 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	private final AtomicBoolean populationQueued = new AtomicBoolean(false);
 	
 	private final AtomicInteger autosaveTicks = new AtomicInteger(0);
+	
+	private final AtomicBoolean isInViewDistance = new AtomicBoolean(false);
 
+	public boolean isInViewDistance(){
+		return isInViewDistance.get();
+	}
+	
+	/**
+	 * Defined by worldrenderer
+	 * @param value
+	 */
+	public void setIsInViewDistance(boolean value){
+		isInViewDistance.set(value);
+		//TODO : Need to sync ? If worldrenderer is executed as sync task, not necessary
+		if(value)
+			queueDirty();
+	}
+	
 	static {
 		for (int i = 0; i < shiftCache.length; i++) {
 			int shift = 0;
