@@ -567,6 +567,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return mainScreen;
 	}
 	
+	@Override
 	public Vector2 getResolution() {
 		return resolution;
 	}
