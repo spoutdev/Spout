@@ -466,10 +466,14 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	public void render(float dt) {
-		
+		final long limit = 1000/ 60;
+		final long start = System.currentTimeMillis();
 		while(renderTaskQueue.peek() != null) {
 			Runnable task = renderTaskQueue.poll();
 			task.run();
+			
+			if(System.currentTimeMillis()-start >limit)
+				break;
 		}
 		
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
