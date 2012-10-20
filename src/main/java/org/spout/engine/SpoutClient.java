@@ -75,7 +75,9 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.gui.FullScreen;
 import org.spout.api.gui.Screen;
+import org.spout.api.gui.ScreenStack;
 import org.spout.api.gui.Widget;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
@@ -140,7 +142,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	// Gui
 	private SpriteBatch gui;
 	private ClientFont font;
-	private Screen mainScreen;
+	private ScreenStack screenStack;
 	
 	private boolean showDebugInfos = true;
 	
@@ -220,19 +222,20 @@ public class SpoutClient extends SpoutEngine implements Client {
 		Transform loc = new Transform(new Point(super.getDefaultWorld(), 0f, 0f, 0f), new Quaternion(0f, 0f, 0f, 0f), Vector3.ONE);
 		activePlayer = new SpoutClientPlayer("Spouty", loc, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 		activeCamera = activePlayer.add(CameraComponent.class);
-		mainScreen = new Screen();
 		
-		/*Widget txtWidget = new Widget(); // Waiting for the NPE in Widgets to be corrected
-		txtWidget.add(SpoutLabelComponent.class);
+		// Building the screenStack
+		FullScreen mainScreen = new FullScreen();
 		
-		SpoutLabelComponent txt = txtWidget.get(SpoutLabelComponent.class);
+		Widget txtWidget = new Widget(); // Test widget
+		SpoutLabelComponent txt = txtWidget.add(SpoutLabelComponent.class);
+		font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/resources/resources/fonts/ubuntu/Ubuntu-M.ttf");
 		txt.setFont(font);
 		txt.setColor(Color.blue);
 		txt.setText("Test");
 		
-		mainScreen.attachWidget(this.getPluginManager().getPlugins().iterator().next(), txtWidget);*/
-
-		System.out.println("activeWorld: " + super.getDefaultWorld().getName());
+		mainScreen.attachWidget(this.getPluginManager().getPlugins().iterator().next(), txtWidget);
+		screenStack = new ScreenStack(mainScreen);
+		
 		super.getDefaultWorld().spawnEntity(activePlayer);
 
 		getScheduler().startRenderThread();
@@ -496,7 +499,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		renderer.end();
 
 		gui = SpriteBatch.createSpriteBatch(getRenderMode(), resolution.getX(), resolution.getY());
-		font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/resources/resources/fonts/ubuntu/Ubuntu-M.ttf");
 		font2 = new ClientFont(new Font("Comic sans ms", Font.BOLD, 30 ));
 		font.load();
 		font2.load();
@@ -537,8 +539,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 			gui.drawText("z: " + activePlayer.getTransform().getPosition().getZ(), font, -0.95f, 0.6f, 8f, Color.blue);
 			gui.drawText("fps: " + fps, font, -0.95f, 0.5f, 8f, Color.blue);
 		}
-		for (Widget w : mainScreen.getWidgets()) {
-			gui.draw(w.getRenderParts());
+		for (Screen screen : screenStack.getVisibleScreens()) {
+			for (Widget widget : screen.getWidgets()) {
+				gui.draw(widget.getRenderParts());
+			}
 		}
 		gui.draw(guimaterial, 0.5f, 0, 0.25f, 0.25f);
 		gui.render();
@@ -563,8 +567,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return worldRenderer;
 	}
 	
-	public Screen getMainScreen() {
-		return mainScreen;
+	public ScreenStack getScreenStack() {
+		return screenStack;
 	}
 	
 	public Vector2 getResolution() {
