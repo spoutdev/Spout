@@ -33,7 +33,6 @@ import org.spout.api.collision.BoundingBox;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionStrategy;
 import org.spout.api.collision.CollisionVolume;
-import org.spout.api.component.components.BlockComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.cuboid.Block;
@@ -51,17 +50,16 @@ import org.spout.api.util.flag.Flag;
  * Defines the specific characteristics of a Block
  */
 public class BlockMaterial extends Material implements Placeable {
-
 	public static final BlockMaterial AIR = new BasicAir();
 	public static final BlockMaterial SOLID = new BlockMaterial("solid").setHardness(1.f);
 	public static final BlockMaterial UNBREAKABLE = new BlockMaterial("Unbreakable").setHardness(100.f);
 	public static final BlockMaterial SKYBOX = new BasicSkyBox();
 	public static final BlockMaterial ERROR = new BlockMaterial("Missing Plugin").setHardness((100.f));
-	
+
 	public BlockMaterial(String name) {
 		super(name);
 	}
-	
+
 	public BlockMaterial(short dataMask, String name) {
 		super(dataMask, name);
 	}
@@ -482,14 +480,5 @@ public class BlockMaterial extends Material implements Placeable {
 	 */
 	public boolean isCompatibleWith(BlockMaterial m) {
 		return (m.getId() == getId() && ((m.getData() ^ getData()) & getDataMask()) == 0);
-	}
-
-	/**
-	 * Returns a new instance of a block component for this block, or null if none exists
-	 * 
-	 * @return block component, or null
-	 */
-	public BlockComponent getBlockComponent() {
-		return null;
 	}
 }
