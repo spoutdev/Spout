@@ -37,6 +37,7 @@ import org.spout.api.component.Component;
 import org.spout.api.component.components.WidgetComponent;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.map.DefaultedKey;
+import org.spout.api.math.MathHelper;
 import org.spout.api.math.Rectangle;
 import org.spout.api.tickable.Tickable;
 
@@ -138,9 +139,7 @@ public final class Widget extends BaseComponentHolder implements Tickable {
 	}
 	
 	public Rectangle getTranslatedGeometry() {
-		float screenWidth = ((Client) Spout.getEngine()).getResolution().getX();
-		float screenHeight = ((Client) Spout.getEngine()).getResolution().getY();
-		return null;
+		return getGeometry().divide(((Client) Spout.getEngine()).getResolution());
 	}
 	
 	public Rectangle getGeometry() {

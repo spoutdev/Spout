@@ -74,29 +74,32 @@ public class ScreenStack extends SignalSubscriberObject implements Tickable {
 	 * @return
 	 */
 	public LinkedList<Screen> getVisibleScreens() {
-		synchronized (visibleScreens) {
-			if (visibleScreens == null) {
-				visibleScreens = new LinkedList<Screen>();
+		if (visibleScreens == null) {
+			visibleScreens = new LinkedList<Screen>();
+			
+			synchronized (screens) {
+				Iterator<Screen> iter = screens.descendingIterator();
 				
-				synchronized (screens) {
-					Iterator<Screen> iter = screens.descendingIterator();
-					
-					Screen next = null;
-					
-					while (iter.hasNext()) {
-						next = iter.next();
-						visibleScreens.addFirst(next);
-						if (next instanceof FullScreen) {
-							break;
-						}
+				Screen next = null;
+				
+				while (iter.hasNext()) {
+					next = iter.next();
+					visibleScreens.addFirst(next);
+					if (next instanceof FullScreen) {
+						break;
 					}
 				}
 			}
+		}
+		synchronized (visibleScreens) {
 			return visibleScreens;
 		}
 	}
 	
 	private void dirty() {
+		if (visibleScreens == null) {
+			return;
+		}
 		synchronized (visibleScreens) {
 			visibleScreens = null;
 		}

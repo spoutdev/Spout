@@ -67,6 +67,14 @@ public class Rectangle implements Serializable {
 		return extents.getY();
 	}
 	
+	public Rectangle multiply(Vector2 that) {
+		return new Rectangle(position.multiply(that), extents.multiply(that));
+	}
+	
+	public Rectangle divide(Vector2 by) {
+		return new Rectangle(position.divide(by), extents.divide(by));
+	}
+	
 	/**
 	 * Creates a rectangle representing the texturecoordinates from a square matrix.  
 	 * 
