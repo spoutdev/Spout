@@ -28,6 +28,7 @@ package org.spout.engine.batcher;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
@@ -39,12 +40,13 @@ import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.Renderer;
 
+import org.spout.engine.gui.SpoutRenderPart;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.resources.ClientFont;
 
 public class SpriteBatch {
 	Renderer renderer;
-	ArrayList<TextureRectangle> sprites = new ArrayList<TextureRectangle>();
+	ArrayList<RenderPart> sprites = new ArrayList<RenderPart>();
 	Matrix view;
 	Matrix projection;
 	float screenWidth;
@@ -74,43 +76,43 @@ public class SpriteBatch {
 	public void render() {
 		renderer.begin();
 		for (int i = 0; i < sprites.size(); i++) {
-			TextureRectangle rect = sprites.get(i);
+			RenderPart rect = sprites.get(i);
 
-			renderer.addVertex(rect.destination.getX(), rect.destination.getY() + rect.destination.getHeight());
-			renderer.addColor(rect.color);			
-			renderer.addTexCoord(rect.source.getX(), rect.source.getY());			
+			renderer.addVertex(rect.getSprite().getX(), rect.getSprite().getY() + rect.getSprite().getHeight());
+			renderer.addColor(rect.getColor());			
+			renderer.addTexCoord(rect.getSource().getX(), rect.getSource().getY());			
 
-			renderer.addVertex(rect.destination.getX(), rect.destination.getY());
-			renderer.addColor(rect.color);
-			renderer.addTexCoord(rect.source.getX(), rect.source.getY() + rect.source.getHeight());
+			renderer.addVertex(rect.getSprite().getX(), rect.getSprite().getY());
+			renderer.addColor(rect.getColor());
+			renderer.addTexCoord(rect.getSource().getX(), rect.getSource().getY() + rect.getSource().getHeight());
 
-			renderer.addVertex(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY());
-			renderer.addColor(rect.color);	
-			renderer.addTexCoord(rect.source.getX() + rect.source.getWidth(), rect.source.getY() + rect.source.getHeight());
+			renderer.addVertex(rect.getSprite().getX() + rect.getSprite().getWidth(), rect.getSprite().getY());
+			renderer.addColor(rect.getColor());	
+			renderer.addTexCoord(rect.getSource().getX() + rect.getSource().getWidth(), rect.getSource().getY() + rect.getSource().getHeight());
 
 
-			renderer.addVertex(rect.destination.getX(), rect.destination.getY() + rect.destination.getHeight());
-			renderer.addColor(rect.color);	
-			renderer.addTexCoord(rect.source.getX(), rect.source.getY());	
+			renderer.addVertex(rect.getSprite().getX(), rect.getSprite().getY() + rect.getSprite().getHeight());
+			renderer.addColor(rect.getColor());	
+			renderer.addTexCoord(rect.getSource().getX(), rect.getSource().getY());	
 
-			renderer.addVertex(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY());
-			renderer.addColor(rect.color);		
-			renderer.addTexCoord(rect.source.getX() + rect.source.getWidth(), rect.source.getY() + rect.source.getHeight());
+			renderer.addVertex(rect.getSprite().getX() + rect.getSprite().getWidth(), rect.getSprite().getY());
+			renderer.addColor(rect.getColor());		
+			renderer.addTexCoord(rect.getSource().getX() + rect.getSource().getWidth(), rect.getSource().getY() + rect.getSource().getHeight());
 
-			renderer.addVertex(rect.destination.getX() + rect.destination.getWidth(), rect.destination.getY() + rect.destination.getHeight());
-			renderer.addColor(rect.color);	
-			renderer.addTexCoord(rect.source.getX() + rect.source.getWidth(), rect.source.getY());
+			renderer.addVertex(rect.getSprite().getX() + rect.getSprite().getWidth(), rect.getSprite().getY() + rect.getSprite().getHeight());
+			renderer.addColor(rect.getColor());	
+			renderer.addTexCoord(rect.getSource().getX() + rect.getSource().getWidth(), rect.getSource().getY());
 		}
 		renderer.end();
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 
 		for (int i = 0; i < sprites.size(); i++) {
-			TextureRectangle rect = sprites.get(i);
+			RenderPart rect = sprites.get(i);
 
-			rect.material.getShader().setUniform("View", this.view);
-			rect.material.getShader().setUniform("Projection", this.projection);
-			rect.material.getShader().setUniform("Model", this.view); //View is always an identity matrix.
-			renderer.render(rect.material, (i * 6), 6);
+			rect.getRenderMaterial().getShader().setUniform("View", this.view);
+			rect.getRenderMaterial().getShader().setUniform("Projection", this.projection);
+			rect.getRenderMaterial().getShader().setUniform("Model", this.view); //View is always an identity matrix.
+			renderer.render(rect.getRenderMaterial(), (i * 6), 6);
 		}
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 	}
@@ -136,21 +138,23 @@ public class SpriteBatch {
 			} else {
 				java.awt.Rectangle r = font.getPixelBounds(c);
 
-				TextureRectangle rect = new TextureRectangle();
-				rect.destination = new Rectangle(xCursor, yCursor, (float)r.width/screenWidth, h/screenHeight);
-				rect.source = new Rectangle(r.x/w, 0f, r.width/w, 1f);
-				rect.color = color;
-				rect.material = font.getMaterial();
-
+				draw(font.getMaterial(),
+					 new Rectangle(r.x/w, 0f, r.width/w, 1f),
+					 new Rectangle(xCursor, yCursor, (float)r.width/screenWidth, h/screenHeight),
+					 color);
+				
 				xCursor += (float)font.getAdvance(c)/screenWidth;
-
-				sprites.add(rect);
 			}
 		}
 	}
 
-	public void draw(RenderMaterial material, RenderPart renderPart) {
-		draw(material, renderPart.getSource(), renderPart.getSprite(), renderPart.getColor());
+	public void draw(RenderPart part) {
+		sprites.add(part);
+	}
+	
+	public void draw(List<RenderPart> parts) {
+		for (RenderPart part : parts)
+			draw(part);
 	}
 	
 	public void draw(RenderMaterial material, float x, float y, float w, float h) {
@@ -158,11 +162,8 @@ public class SpriteBatch {
 	}
 
 	public void draw(RenderMaterial material, Rectangle source, Rectangle destination, Color color){
-		TextureRectangle rect = new TextureRectangle();
-		rect.destination = destination;
-		rect.source = source;
-		rect.color = color;
-		rect.material = material;
-		sprites.add(rect);
+		RenderPart part = new SpoutRenderPart(material, source, destination);
+		part.setColor(color);
+		draw(part);
 	}
 }
