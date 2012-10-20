@@ -63,6 +63,9 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
+import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
+import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
+import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
@@ -75,6 +78,7 @@ import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
+import org.spout.api.util.map.TInt21TripleObjectHashMap;
 import org.spout.api.util.set.TByteTripleHashSet;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
@@ -167,6 +171,7 @@ public class SpoutRegion extends Region {
 	private final ArrayBlockingQueue<SpoutChunk> dirtyChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
+	private boolean renderQueueEnabled = false;
 
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
 		super(world, x * Region.BLOCKS.SIZE, y * Region.BLOCKS.SIZE, z * Region.BLOCKS.SIZE);
@@ -833,6 +838,26 @@ public class SpoutRegion extends Region {
 
 	public void preSnapshotRun() {
 		entityManager.preSnapshotRun();
+		
+		SpoutWorld world = this.getWorld();
+		
+		boolean worldRenderQueueEnabled = world.isRenderQueueEnabled();
+		boolean firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
+		
+		renderQueueEnabled = worldRenderQueueEnabled;
+		
+		if (firstRenderQueueTick) {
+			for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
+				for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
+					for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+						SpoutChunk chunk = chunks[dx][dy][dz].get();
+						if (chunk != null) {
+							addToRenderQueue(chunk);
+						}
+					}
+				}
+			}
+		}
 
 		SpoutChunk spoutChunk;
 		while ((spoutChunk = dirtyChunks.poll()) != null) {
@@ -840,8 +865,12 @@ public class SpoutRegion extends Region {
 			if (!spoutChunk.isLoaded()) {
 				continue;
 			}
+			if (spoutChunk.isDirty()) {
+				if (renderQueueEnabled && !firstRenderQueueTick) {
+					addToRenderQueue(spoutChunk);
+				}
+			}
 			if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
-				spoutChunk.setRenderDirty();
 				for (Player entity : spoutChunk.getObservingPlayers()) {
 					syncChunkToPlayer(spoutChunk, entity);
 				}
@@ -857,6 +886,8 @@ public class SpoutRegion extends Region {
 			snapshotFuture.run();
 		}
 		
+		renderSnapshotCache.clear();
+		
 		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
 			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
 				for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
@@ -870,6 +901,51 @@ public class SpoutRegion extends Region {
 
 		entityManager.syncEntities();
 
+	}
+	
+	private TInt21TripleObjectHashMap<SpoutChunkSnapshot> renderSnapshotCache = new TInt21TripleObjectHashMap<SpoutChunkSnapshot>();
+	
+	private void addToRenderQueue(SpoutChunk c) {
+		int bx = c.getX() - 1;
+		int by = c.getY() - 1;
+		int bz = c.getZ() - 1;
+		ChunkSnapshot[][][] chunks = new ChunkSnapshot[3][3][3];
+		for (int x = 0; x < 3; x++) {
+			for (int y = 0; y < 3; y++) {
+				for (int z = 0; z < 3; z++) {
+					chunks[x][y][z] = getRenderSnapshot(bx + x, by + y, bz + z);
+				}
+			}
+		}
+		getWorld().addToRenderChunkQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks));
+	}
+	
+	private ChunkSnapshot getRenderSnapshot(int cx, int cy, int cz) {
+		SpoutChunkSnapshot snapshot = renderSnapshotCache.get(cx, cy, cz);
+		if (snapshot != null) {
+			return snapshot;
+		}
+		// TODO - we could do with a neighbour reference in all regions
+		//        maybe it could be a .getLocalChunk(x, y, z) method which only works
+		//        on local chunks and chunks in neighbouring regions
+		boolean xLocal = (cx >> Region.CHUNKS.BITS) == getX();
+		boolean yLocal = (cy >> Region.CHUNKS.BITS) == getY();
+		boolean zLocal = (cz >> Region.CHUNKS.BITS) == getZ();
+		SpoutChunk c;
+		if (xLocal && yLocal && zLocal) {
+			c = getChunk(cx, cy, cz, LoadOption.NO_LOAD);
+		} else {
+			c = getWorld().getChunk(cx, cy, cz, LoadOption.NO_LOAD);
+		}
+		if (c == null) {
+			return null;
+		} else {
+			snapshot = c.getSnapshot(SnapshotType.BOTH, EntityType.NO_ENTITIES, ExtraData.NO_EXTRA_DATA);
+			if (snapshot != null) {
+				renderSnapshotCache.put(cx, cy, cz, snapshot);
+			}
+			return snapshot;
+		}
 	}
 
 	public void queueDirty(SpoutChunk chunk) {

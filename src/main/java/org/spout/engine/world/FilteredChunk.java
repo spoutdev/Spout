@@ -267,7 +267,7 @@ public class FilteredChunk extends SpoutChunk{
 	}
 
 	@Override
-	public ChunkSnapshot getSnapshot(SnapshotType type, EntityType entities, ExtraData data) {
+	public SpoutChunkSnapshot getSnapshot(SnapshotType type, EntityType entities, ExtraData data) {
 		if (uniform.get()) {
 			byte[] blockLightCopy = null, skyLightCopy = null;
 			short[] blockIds = null, blockData = null;

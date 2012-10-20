@@ -177,11 +177,6 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	 */
 	protected final TNibbleQuadHashSet skyLightOperations = new TNibbleQuadHashSet();
 	/**
-	 * Indicates if there has been any changes since the last render snapshot
-	 */
-	private final AtomicBoolean renderDirtyFlag = new AtomicBoolean(true);
-	private final AtomicBoolean renderSnapshotInProgress = new AtomicBoolean(false);
-	/**
 	 * Data map and Datatable associated with it
 	 */
 	protected final ManagedHashMap dataMap;
@@ -827,7 +822,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	@Override
-	public ChunkSnapshot getSnapshot(SnapshotType type, EntityType entities, ExtraData data) {
+	public SpoutChunkSnapshot getSnapshot(SnapshotType type, EntityType entities, ExtraData data) {
 		checkChunkLoaded();
 		byte[] blockLightCopy = null, skyLightCopy = null;
 		short[] blockIds = null, blockData = null;
@@ -868,22 +863,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 
 	@Override
 	public Future<ChunkSnapshot> getFutureSnapshot(SnapshotType type, EntityType entities, ExtraData data) {
-		return getFutureSnapshot(type, entities, data, false);
-	}
-
-	public Future<ChunkSnapshot> getFutureSnapshot(SnapshotType type, EntityType entities, ExtraData data, boolean renderSnapshot) {
-		boolean renderDirty;
-		if (renderSnapshot) {
-			renderDirty = renderDirtyFlag.get();
-			if (renderDirty) {
-				if (!renderSnapshotInProgress.compareAndSet(false, true)) {
-					throw new IllegalStateException("Only one render snapshot may be in progress at one time for a given chunk");
-				}
-			} else {
-				return null;
-			}
-		}
-		SpoutChunkSnapshotFuture future = new SpoutChunkSnapshotFuture(this, type, entities, data, renderSnapshot);
+		SpoutChunkSnapshotFuture future = new SpoutChunkSnapshotFuture(this, type, entities, data);
 		parentRegion.addSnapshotFuture(future);
 		return future;
 	}
@@ -1012,17 +992,6 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 
 	protected Vector3 getDirtyBlock(int i) {
 		return blockStore.getDirtyBlock(i);
-	}
-
-	public void setRenderClean() {
-		renderDirtyFlag.set(false);
-		if (!renderSnapshotInProgress.compareAndSet(true, false)) {
-			Spout.getLogger().info("Render snapshot set to done when no snapshot was in progress");
-		}
-	}
-
-	public void setRenderDirty() {
-		renderDirtyFlag.set(true);
 	}
 
 	public void resetDirtyArrays() {

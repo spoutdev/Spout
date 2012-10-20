@@ -37,11 +37,13 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.collision.BoundingBox;
@@ -84,7 +86,6 @@ import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.list.concurrent.ConcurrentList;
 import org.spout.api.util.map.concurrent.TSyncIntPairObjectHashMap;
 import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
-
 import org.spout.api.util.sanitation.StringSanitizer;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.Threadsafe;
@@ -173,6 +174,16 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * Hashcode cache
 	 */
 	private final int hashcode;
+	
+	/**
+	 * Indicates if the snapshot queue for the renderer should be populated
+	 */
+	private final AtomicBoolean renderQueueEnabled = new AtomicBoolean(false);
+	
+	/**
+	 * A queue containing chunk snapshots of any dirty chunks
+	 */
+	private final ConcurrentLinkedQueue<SpoutChunkSnapshotModel> renderChunkQueue = new ConcurrentLinkedQueue<SpoutChunkSnapshotModel>();
 	
 	/*
 	 * A WeakReference to this world
@@ -1157,6 +1168,26 @@ public class SpoutWorld extends AsyncManager implements World {
 			}
 		}
 		return true;
+	}
+	
+	public void enableRenderQueue() {
+		this.renderQueueEnabled.set(true);
+	}
+	
+	public void disableRenderQueue() {
+		this.renderQueueEnabled.set(false);
+	}
+	
+	public boolean isRenderQueueEnabled() {
+		return renderQueueEnabled.get();
+	}
+	
+	public Queue<SpoutChunkSnapshotModel> getRenderChunkQueue() {
+		return this.renderChunkQueue;
+	}
+	
+	public void addToRenderChunkQueue(SpoutChunkSnapshotModel chunkModel) {
+		this.renderChunkQueue.add(chunkModel);
 	}
 
 	// Worlds don't do any of these

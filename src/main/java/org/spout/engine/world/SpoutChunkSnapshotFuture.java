@@ -38,23 +38,18 @@ public class SpoutChunkSnapshotFuture extends SimpleFuture<ChunkSnapshot> implem
 	private final SnapshotType type;
 	private final EntityType entities;
 	private final ExtraData data;
-	private final boolean renderSnapshot;
 	
-	public SpoutChunkSnapshotFuture(SpoutChunk chunk, SnapshotType type, EntityType entities, ExtraData data, boolean renderSnapshot) {
+	public SpoutChunkSnapshotFuture(SpoutChunk chunk, SnapshotType type, EntityType entities, ExtraData data) {
 		this.chunk = chunk;
 		this.type = type;
 		this.entities = entities;
 		this.data = data;
-		this.renderSnapshot = renderSnapshot;
 	}
 
 	@Override
 	public void run() {
 		try {
 			ChunkSnapshot snapshot = chunk.getSnapshot(type, entities, data);
-			if (renderSnapshot) {
-				chunk.setRenderClean();
-			}
 			super.setResult(snapshot);
 		} catch (Throwable t) {
 			super.setThrowable(t);
