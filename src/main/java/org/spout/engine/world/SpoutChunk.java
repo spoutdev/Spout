@@ -68,6 +68,7 @@ import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.ComplexMaterial;
 import org.spout.api.material.DynamicMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.MaterialRegistry;
@@ -329,7 +330,11 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		
 		//TODO: this is not an atomic operation, tearing possible...
 		if (material.getId() != oldMaterial.getId()) {
-			setBlockComponent(x, y, z, material.getBlockComponent());
+			if (material instanceof ComplexMaterial) {
+				setBlockComponent(x, y, z, ((ComplexMaterial)material).createBlockComponent());
+			} else {
+				setBlockComponent(x, y, z, null);
+			}
 		}
 
 		int oldheight = column.getSurfaceHeight(x, z);

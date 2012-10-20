@@ -65,6 +65,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.ComplexMaterial;
 import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFullState;
@@ -432,8 +433,8 @@ public class WorldFiles {
 					for (int dz = 0; dz < Chunk.BLOCKS.SIZE; dz++) {
 						int index = (dy << 8) + (dz << 4) + dx;
 						BlockMaterial bm = (BlockMaterial) MaterialRegistry.get(BlockFullState.getPacked(blocks[index], data[index]));
-						BlockComponent component = bm.getBlockComponent();
-						if (component != null) {
+						if (bm instanceof ComplexMaterial) {
+							BlockComponent component = ((ComplexMaterial)bm).createBlockComponent();
 							short packed = NibbleQuadHashed.key(dx, dy, dz, 0);
 							//Does not need synchronized, the chunk is not yet accessible outside this thread
 							chunk.getBlockComponents().put(packed, component);
