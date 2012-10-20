@@ -867,7 +867,7 @@ public class SpoutRegion extends Region {
 			if (!spoutChunk.isLoaded()) {
 				continue;
 			}
-			if (renderQueueEnabled && spoutChunk.isDirty() && spoutChunk.isInViewDistance()) {
+			if (renderQueueEnabled && spoutChunk.isInViewDistance()) {
 				addToRenderQueue(spoutChunk);
 			}
 			if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
