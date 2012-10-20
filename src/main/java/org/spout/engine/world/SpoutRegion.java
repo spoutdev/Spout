@@ -920,7 +920,9 @@ public class SpoutRegion extends Region {
 		for (int x = 0; x < 3; x++) {
 			for (int y = 0; y < 3; y++) {
 				for (int z = 0; z < 3; z++) {
-					chunks[x][y][z] = getRenderSnapshot(bx + x, by + y, bz + z);
+					if (x == 1 || y == 1 || z == 1) {
+						chunks[x][y][z] = getRenderSnapshot(bx + x, by + y, bz + z);
+					}
 				}
 			}
 		}
