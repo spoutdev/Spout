@@ -61,6 +61,9 @@ public class SpoutLabelComponent extends LabelComponent {
 	public List<RenderPart> getRenderParts() {
 		List<RenderPart> ret = new LinkedList<RenderPart>();
 		
+		if (font==null)
+			return ret;
+		
 		float w = font.getWidth();
 		float h = font.getHeight();
 
