@@ -31,6 +31,7 @@ import java.util.UUID;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.geo.World;
 import org.spout.api.keyboard.Input;
+import org.spout.api.math.Vector2;
 import org.spout.api.entity.Player;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.protocol.PortBinding;
@@ -106,4 +107,11 @@ public interface Client extends Engine {
 	 * @return The new world
 	 */
 	public World worldChanged(String name, UUID uuid, byte[] datatable);
+
+	/**
+	 * Returns the resolution of the window, in pixels.
+	 * 
+	 * @return the resolution of the window.
+	 */
+	Vector2 getResolution();
 }

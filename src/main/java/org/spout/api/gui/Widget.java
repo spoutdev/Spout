@@ -30,6 +30,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.spout.api.Client;
+import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
 import org.spout.api.component.components.WidgetComponent;
@@ -133,6 +135,12 @@ public final class Widget extends BaseComponentHolder implements Tickable {
 	
 	public void setFocus() {
 		setFocus(FocusReason.PROGRAMMED);
+	}
+	
+	public Rectangle getTranslatedGeometry() {
+		float screenWidth = ((Client) Spout.getEngine()).getResolution().getX();
+		float screenHeight = ((Client) Spout.getEngine()).getResolution().getY();
+		return null;
 	}
 	
 	public Rectangle getGeometry() {
