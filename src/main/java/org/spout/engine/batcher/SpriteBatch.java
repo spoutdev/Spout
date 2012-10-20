@@ -40,7 +40,6 @@ import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.Renderer;
 
-import org.spout.engine.gui.SpoutRenderPart;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.resources.ClientFont;
 
@@ -162,7 +161,10 @@ public class SpriteBatch {
 	}
 
 	public void draw(RenderMaterial material, Rectangle source, Rectangle destination, Color color){
-		RenderPart part = new SpoutRenderPart(material, source, destination);
+		RenderPart part = new RenderPart();
+		part.setRenderMaterial(material);
+		part.setSource(source);
+		part.setSprite(destination);
 		part.setColor(color);
 		draw(part);
 	}
