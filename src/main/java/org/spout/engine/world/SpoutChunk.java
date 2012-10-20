@@ -46,6 +46,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
+import org.spout.api.Engine;
 import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.component.ChunkComponentOwner;
@@ -84,6 +85,7 @@ import org.spout.api.util.hashing.NibbleQuadHashed;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 import org.spout.api.util.map.concurrent.palette.AtomicPaletteBlockStore;
 import org.spout.api.util.set.TNibbleQuadHashSet;
+import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutPlayer;
@@ -209,9 +211,22 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	private final AtomicBoolean dirtyQueued = new AtomicBoolean(false);
 
 	private final AtomicBoolean populationQueued = new AtomicBoolean(false);
-	
-	private final AtomicInteger autosaveTicks = new AtomicInteger(0);
 
+	private final AtomicInteger autosaveTicks = new AtomicInteger(0);
+	
+	private final AtomicBoolean isInViewDistance = new AtomicBoolean(false);
+
+	public boolean isInViewDistance(){
+		return isInViewDistance.get();
+	}
+	
+	private void setIsInViewDistance(boolean value){
+		isInViewDistance.set(value);
+		//TODO : Need to sync ? If worldrenderer is executed as sync task, not necessary
+		if(value)
+			queueDirty();
+	}
+	
 	static {
 		for (int i = 0; i < shiftCache.length; i++) {
 			int shift = 0;
@@ -882,6 +897,9 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		}
 		if (observers.add((SpoutEntity) entity) && (entity instanceof SpoutPlayer)) {
 			observingPlayers.add((SpoutPlayer) entity);
+			Engine engine = Spout.getEngine();
+			if(engine instanceof SpoutClient && ((SpoutClient)engine).getActivePlayer()==entity)
+					setIsInViewDistance(true);
 		}
 		resetPostSaving();
 		return true;
@@ -900,7 +918,11 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 
 		if (observers.remove((SpoutEntity) entity) && (entity instanceof SpoutPlayer)) {
 			observingPlayers.remove((SpoutPlayer) entity);
-		};
+			
+			Engine engine = Spout.getEngine();
+			if(engine instanceof SpoutClient && ((SpoutClient)engine).getActivePlayer()==entity)
+					setIsInViewDistance(false);
+		};//TODO : What is this ;
 		expiredObserversQueue.add((SpoutEntity) entity);
 		if (!isObserved()) {
 			parentRegion.unloadQueue.add(this);

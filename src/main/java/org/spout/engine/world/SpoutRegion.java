@@ -843,12 +843,14 @@ public class SpoutRegion extends Region {
 		
 		SpoutWorld world = this.getWorld();
 		
+		
 		boolean worldRenderQueueEnabled = world.isRenderQueueEnabled();
-		boolean firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
+		//boolean firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
 		
 		renderQueueEnabled = worldRenderQueueEnabled;
 		
-		if (firstRenderQueueTick) {
+		// unecessary if when chunk is marked as in viewdistance, it's put as dirty
+		/*if (firstRenderQueueTick) {
 			for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
 				for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
 					for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
@@ -859,18 +861,17 @@ public class SpoutRegion extends Region {
 					}
 				}
 			}
-		}
+		}*/
 
 		SpoutChunk spoutChunk;
 		while ((spoutChunk = dirtyChunks.poll()) != null) {
+			
 			spoutChunk.setNotDirtyQueued();
 			if (!spoutChunk.isLoaded()) {
 				continue;
 			}
-			if (spoutChunk.isDirty()) {
-				if (renderQueueEnabled && !firstRenderQueueTick) {
-					addToRenderQueue(spoutChunk);
-				}
+			if (renderQueueEnabled && spoutChunk.isInViewDistance()) {
+				addToRenderQueue(spoutChunk);
 			}
 			if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
 				for (Player entity : spoutChunk.getObservingPlayers()) {
