@@ -511,6 +511,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		doInput();
+		
 		if (Mouse.isButtonDown(0)) {
 			if (!Mouse.isGrabbed()) {
 				Mouse.setGrabbed(true);

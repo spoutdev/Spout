@@ -27,18 +27,23 @@
 package org.spout.engine.renderer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Cube;
-import org.spout.api.geo.cuboid.Cuboid;
-import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.cuboid.Region;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.batcher.ChunkMeshBatch;
+import org.spout.engine.mesh.ChunkMesh;
+import org.spout.engine.world.SpoutChunkSnapshotModel;
+import org.spout.engine.world.SpoutRegion;
+import org.spout.engine.world.SpoutWorld;
 
 public class WorldRenderer {
 	private final SpoutClient client;
@@ -47,11 +52,6 @@ public class WorldRenderer {
 	private List<ChunkMeshBatch> chunkRenderers = new ArrayList<ChunkMeshBatch>();
 	private TInt21TripleObjectHashMap<ChunkMeshBatch> chunkRenderersByPosition = new TInt21TripleObjectHashMap<ChunkMeshBatch>();
 
-	private boolean firstUpdate = true;
-	private int lastChunkX;
-	private int lastChunkY;
-	private int lastChunkZ;
-
 	private World world; // temp
 
 	public WorldRenderer(SpoutClient client) {
@@ -59,148 +59,95 @@ public class WorldRenderer {
 	}
 
 	public void setup() {
-		world = client.getDefaultWorld();
-		//world = client.getWorlds().iterator().next();
+		setupWorld();
+		
 		material = (RenderMaterial) Spout.getFilesystem().getResource("material://Spout/resources/resources/materials/BasicMaterial.smt");
 
-		updateNearbyChunkMeshes(false);
 		// GL11.glEnable(GL11.GL_CULL_FACE);
 	}
 
 	public void render() {
-		//updateNearbyChunkMeshes(false); // TODO: move this to another thread. Is it possible?
-
+		update();
+		
 		material.getShader().setUniform("View", client.getActiveCamera().getView());
 		material.getShader().setUniform("Projection", client.getActiveCamera().getProjection());
 
 		renderChunks();
 	}
 
-	/**
-	 * Updates the list of chunks around the player.
-	 *
-	 * @param force
-	 *            Forces the update
-	 * @return True if the list was changed
-	 */
-	public boolean updateNearbyChunkMeshes(boolean force) {
-		if (world == null) {
-			
-			world = client.getDefaultWorld();
-			if (world != null) System.out.println("World updated to " + world.getName() + "-" + world.getUID());
-			//else System.out.println("World is null!");
+	public void setupWorld(){
+		world = client.getDefaultWorld();
+		if( world != null )
+			((SpoutWorld)world).enableRenderQueue();
+	}
+	
+	private final ConcurrentLinkedQueue<ChunkMesh> renderChunkMeshBatchQueue = new ConcurrentLinkedQueue<ChunkMesh>();
+	private final long TIME_LIMIT = 1000L / 60L;
+	
+	public void update(){
+		if( world == null ){
+			setupWorld();
+			if( world == null )
+				return;
 		}
-
-		if (world == null) {
-			try {
-				Thread.sleep(5);
-			} catch (InterruptedException e) {
-			}
-			return false;
-		}
-
-		// TODO: We will work with 1 chunk before trying to expand
-		int chunkViewDistance = 0;//client.getActivePlayer().getViewDistance() / 16;
-		//System.out.println("ChunkViewDistance ="+ ((int)client.getActivePlayer().getViewDistance() / 16));
 		
+		final long start = System.currentTimeMillis();
 		
-		Point currentPos = client.getActivePlayer().getTransform().getPosition();
-
-		int currentChunkX = currentPos.getChunkX();
-		int currentChunkY = -currentPos.getChunkY();
-		int currentChunkZ = currentPos.getChunkZ();
-
-		//System.out.println("Chunk = "+currentChunkX+", "+currentChunkY+", "+currentChunkZ);
-		
-		if (currentChunkX == lastChunkX && currentChunkY == lastChunkY && currentChunkZ == lastChunkZ && !force && !firstUpdate) {
-			return false;
-		}
-		// just add all visible chunks
-
-		if (chunkRenderers.size() == 0 || force) {
-			chunkRenderers.clear();
-
-			int cubeMinX = currentChunkX - chunkViewDistance;
-			int cubeMinY = currentChunkY - chunkViewDistance;
-			int cubeMinZ = currentChunkZ - chunkViewDistance;
-
-			int cubeMaxX = currentChunkX + chunkViewDistance;
-			int cubeMaxY = currentChunkY + chunkViewDistance;
-			int cubeMaxZ = currentChunkZ + chunkViewDistance;
-
-			Vector3 batchMin = ChunkMeshBatch.getBatchCoordinates(new Vector3(cubeMinX, cubeMinY, cubeMinZ));
-			Vector3 batchMax = ChunkMeshBatch.getBatchCoordinates(new Vector3(cubeMaxX, cubeMaxY, cubeMaxZ));
-
-			for (int x = batchMin.getFloorX(); x <= batchMax.getFloorX(); x++) {
-				for (int y = batchMin.getFloorY(); y <= batchMax.getFloorY(); y++) {
-					for (int z = batchMin.getFloorZ(); z <= batchMax.getFloorZ(); z++) {
-						Vector3 chunkCoords = ChunkMeshBatch.getChunkCoordinates(new Vector3(x, y, z));
-						ChunkMeshBatch batch = new ChunkMeshBatch(world, chunkCoords.getFloorX(), chunkCoords.getFloorY(), chunkCoords.getFloorZ());
-						addChunkMeshBatch(batch);
-						batch.update();
-
-						System.out.println(batch);
+		//Step 1 : Generate ChunkMesh with SpoutChunkSnapshotModel
+		for(Region region : world.getRegions()){
+			SpoutChunkSnapshotModel chunkSnapshotModel;
+			while( (chunkSnapshotModel = ((SpoutRegion)region).getRenderChunkQueue().poll()) != null){
+				final SpoutChunkSnapshotModel temp = chunkSnapshotModel;
+				Spout.getEngine().getScheduler().scheduleAsyncTask(this, new Runnable() {
+					@Override
+					public void run() {
+						ChunkMesh mesh = new ChunkMesh(temp);
+						mesh.update();
+						renderChunkMeshBatchQueue.add(mesh);
 					}
-				}
-			}
-		} else {
-			Cube oldView = new Cube(new Point(world, lastChunkX - chunkViewDistance, lastChunkY - chunkViewDistance, lastChunkZ - chunkViewDistance), chunkViewDistance * 2+1);
-			Cube newView = new Cube(new Point(world, currentChunkX - chunkViewDistance, currentChunkY - chunkViewDistance, currentChunkZ - chunkViewDistance), chunkViewDistance * 2+1);
-
-			Vector3 min = oldView.getBase().min(newView.getBase());
-			Vector3 max = oldView.getBase().add(oldView.getSize()).max(newView.getBase().add(newView.getSize()));
-
-			/*
-			 * +====+====+
-			 * !    !    !
-			 * !    !    !
-			 * +====+====+
-			 * 
-			 * 
-			 * 
-			*/
-			
-			// Shared area
-			Vector3 ignoreMin = oldView.getBase().max(newView.getBase());
-			Vector3 ignoreMax = oldView.getBase().add(oldView.getSize()).min(newView.getBase().add(newView.getSize()));
-			Cuboid ignore = new Cuboid(new Point(ignoreMin, world), ignoreMax.subtract(ignoreMin));
-			
-			for (int x = min.getFloorX(); x <= max.getFloorX(); x++) {
-				for (int y = min.getFloorY(); y <= max.getFloorY(); y++) {
-					for (int z = min.getFloorZ(); z <= max.getFloorZ(); z++) {
-						Vector3 vec = new Vector3(x, y, z);
-						//System.out.println("vector "+ vec);
-						/*if (ignore.contains(vec)) {
-							continue;
-						}*/
-
-						Vector3 pos = ChunkMeshBatch.getChunkCoordinates(vec);
-
-						if (oldView.contains(vec)) {
-							ChunkMeshBatch c = chunkRenderersByPosition.get(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
-							
-							if (c==null)
-								continue;
-							removeChunkMeshBatch(c);
-							c.finalize();
-							System.out.println("Remove : " + c);
-						} else if (newView.contains(vec)) {
-							ChunkMeshBatch c = new ChunkMeshBatch(world, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
-							addChunkMeshBatch(c);
-							c.update();
-							System.out.println("Rended : " + c);
-						}
-					}
-				}
+				});
+				
+				if( System.currentTimeMillis() - start > TIME_LIMIT)
+					return;
 			}
 		}
-
-		firstUpdate = false;
-		lastChunkX = currentChunkX;
-		lastChunkY = currentChunkY;
-		lastChunkZ = currentChunkZ;
-
-		return true;
+		
+		Set<ChunkMeshBatch> modifiedBatch = new HashSet<ChunkMeshBatch>();
+		
+		//Step 2 : Add ChunkMesh to ChunkMeshBatch
+		ChunkMesh chunkMesh;
+		while( (chunkMesh = renderChunkMeshBatchQueue.poll()) != null){
+			Vector3 batchCoords = ChunkMeshBatch.getBatchCoordinates(new Vector3(chunkMesh.getX(), chunkMesh.getY(), chunkMesh.getZ()));
+			Vector3 chunkCoords = ChunkMeshBatch.getChunkCoordinates(batchCoords);
+			ChunkMeshBatch chunkMeshBatch = getChunkMeshBatchByChunkPosition(chunkCoords.getFloorX(), chunkCoords.getFloorY(), chunkCoords.getFloorZ());
+		
+			if(chunkMeshBatch==null){
+				if(!chunkMesh.hasVertices())
+					continue;
+				chunkMeshBatch = new ChunkMeshBatch(world,chunkCoords.getFloorX(), chunkCoords.getFloorY(), chunkCoords.getFloorZ());
+				addChunkMeshBatch(chunkMeshBatch);
+			}
+		
+			if(chunkMesh.hasVertices()){
+				chunkMeshBatch.addMesh(chunkMesh);
+				modifiedBatch.add(chunkMeshBatch);
+			}else{
+				chunkMeshBatch.removeMesh(chunkMesh);
+				modifiedBatch.add(chunkMeshBatch);
+			}
+			
+			if( System.currentTimeMillis() - start > TIME_LIMIT)
+				break;
+		}
+		
+		//Step 3 : Execute/Delete ChunkMeshBatch if full/empty
+		for(ChunkMeshBatch batch : modifiedBatch){
+			if(batch.isFull()){
+				batch.update();
+			}else if(batch.isEmpty()){
+				removeChunkMeshBatch(batch);
+			}
+		}
 	}
 
 	private void addChunkMeshBatch(ChunkMeshBatch batch) {
@@ -211,6 +158,7 @@ public class WorldRenderer {
 	private void removeChunkMeshBatch(ChunkMeshBatch batch) {
 		chunkRenderers.remove(batch);
 		chunkRenderersByPosition.remove(batch.getX(), batch.getY(), batch.getZ());
+		batch.finalize();
 	}
 	
 	/**
@@ -222,21 +170,6 @@ public class WorldRenderer {
 	 */
 	private ChunkMeshBatch getChunkMeshBatchByChunkPosition(int x, int y, int z) {
 		return chunkRenderersByPosition.get(x, y, z);
-	}
-	
-	/**
-	 * Updates the ChunkMeshBatch at the given chunk position.
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
-	 */
-	public void updateChunk(int x, int y, int z) {
-		ChunkMeshBatch batch = getChunkMeshBatchByChunkPosition(x, y, z);
-		if (batch == null) {
-			return; // Don't call if this chunk isn't in sight...
-		}
-		batch.update();
 	}
 
 	private void renderChunks() {

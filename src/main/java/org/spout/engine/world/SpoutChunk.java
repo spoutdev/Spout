@@ -214,7 +214,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 
 	private final AtomicInteger autosaveTicks = new AtomicInteger(0);
 	
-	private final AtomicBoolean isInViewDistance = new AtomicBoolean(false);
+	private final AtomicBoolean isInViewDistance = new AtomicBoolean(true);//TODO : Put false and do it with observer if needed
 
 	public boolean isInViewDistance(){
 		return isInViewDistance.get();
