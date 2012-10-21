@@ -38,7 +38,8 @@ import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.MeshFace;
 import org.spout.api.model.Vertex;
-import org.spout.engine.util.ChunkSnapshotModel;
+import org.spout.engine.world.SpoutChunkSnapshotModel;
+
 import com.google.common.collect.Lists;
 
 /**
@@ -50,28 +51,44 @@ public class ChunkMesh extends BaseMesh {
 	 */
 	private static final List<BlockFace> renderableFaces = Lists.newArrayList(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.TOP, BlockFace.BOTTOM);
 
-	private final Chunk chunk;
-	private ChunkSnapshotModel chunkModel;
+	private SpoutChunkSnapshotModel chunkModel;
 	private ChunkSnapshot center;
+	private final int cx,cy,cz;
 
 	/**
 	 * Private constructor.
 	 */
-	private ChunkMesh(Chunk chunk) {
-		this.chunk = chunk;
+	public ChunkMesh(SpoutChunkSnapshotModel chunkModel) {
+		this.chunkModel = chunkModel;
+		cx = chunkModel.getX();
+		cy = chunkModel.getY();
+		cz = chunkModel.getZ();
 	}
 
+	public int getX(){
+		return cx;
+	}
+
+	public int getY(){
+		return cy;
+	}
+
+	public int getZ(){
+		return cz;
+	}
+	
 	/**
 	 * Updates the mesh.
 	 */
 	public void update() {
-		chunkModel = new ChunkSnapshotModel(chunk.getWorld());
-		chunkModel.load(chunk.getX(), chunk.getY(), chunk.getZ());
+		if(chunkModel.isUnload())
+			return;
+		
 		center = chunkModel.getCenter();
-
-		for (int x = chunk.getBlockX(); x < chunk.getBlockX() + Chunk.BLOCKS.SIZE; x++) {
-			for (int y = chunk.getBlockY(); y < chunk.getBlockY() + Chunk.BLOCKS.SIZE; y++) {
-				for (int z = chunk.getBlockZ(); z < chunk.getBlockZ() + Chunk.BLOCKS.SIZE; z++) {
+		
+		for (int x = center.getBase().getBlockX(); x < center.getBase().getBlockX() + Chunk.BLOCKS.SIZE; x++) {
+			for (int y = center.getBase().getBlockY(); y < center.getBase().getBlockY() + Chunk.BLOCKS.SIZE; y++) {
+				for (int z = center.getBase().getBlockZ(); z < center.getBase().getBlockZ() + Chunk.BLOCKS.SIZE; z++) {
 					generateBlockVertices(x, y, z);
 				}
 			}
@@ -80,18 +97,6 @@ public class ChunkMesh extends BaseMesh {
 		// Free memory
 		chunkModel = null;
 		center = null;
-	}
-
-	/**
-	 * Generates a ChunkMesh of the given chunk.
-	 * 
-	 * @param chunk
-	 * @return
-	 */
-	public static ChunkMesh generateFromChunk(Chunk chunk) {
-		ChunkMesh mesh = new ChunkMesh(chunk);
-		mesh.update();
-		return mesh;
 	}
 
 	/**

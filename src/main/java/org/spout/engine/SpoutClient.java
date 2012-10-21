@@ -511,6 +511,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		doInput();
+		
 		if (Mouse.isButtonDown(0)) {
 			if (!Mouse.isGrabbed()) {
 				Mouse.setGrabbed(true);
@@ -536,6 +538,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			gui.drawText("y: " + (-activePlayer.getTransform().getPosition().getY()), font, -0.95f, 0.7f, 8f, Color.blue);
 			gui.drawText("z: " + activePlayer.getTransform().getPosition().getZ(), font, -0.95f, 0.6f, 8f, Color.blue);
 			gui.drawText("fps: " + fps, font, -0.95f, 0.5f, 8f, Color.blue);
+			gui.drawText("chunk: " + worldRenderer.getChunkRenderersSize(), font, -0.95f, 0.4f, 8f, Color.blue);
 		}
 		for (Screen screen : screenStack.getVisibleScreens()) {
 			for (Widget widget : screen.getWidgets()) {
