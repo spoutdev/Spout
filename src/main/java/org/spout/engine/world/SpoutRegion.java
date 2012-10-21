@@ -383,7 +383,9 @@ public class SpoutRegion extends Region {
 			}
 
 			currentChunk.setUnloaded();
-			renderChunkQueue.add(new SpoutChunkSnapshotModel(currentChunk.getX(), currentChunk.getY(), currentChunk.getZ(), true));
+			if (renderQueueEnabled && currentChunk.isInViewDistance()) {
+				renderChunkQueue.add(new SpoutChunkSnapshotModel(currentChunk.getX(), currentChunk.getY(), currentChunk.getZ(), true));
+			}
 
 			int cx = c.getX() & CHUNKS.MASK;
 			int cy = c.getY() & CHUNKS.MASK;
@@ -844,23 +846,21 @@ public class SpoutRegion extends Region {
 
 
 		boolean worldRenderQueueEnabled = world.isRenderQueueEnabled();
-		//boolean firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
-
+		boolean firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
 		renderQueueEnabled = worldRenderQueueEnabled;
-
-		// unecessary if when chunk is marked as in viewdistance, it's put as dirty
-		/*if (firstRenderQueueTick) {
+		
+		if (firstRenderQueueTick) {
 			for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
 				for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
 					for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
 						SpoutChunk chunk = chunks[dx][dy][dz].get();
 						if (chunk != null) {
-							addToRenderQueue(chunk);
+							addUpdateToRenderQueue(chunk);
 						}
 					}
 				}
 			}
-		}*/
+		}
 
 		SpoutChunk spoutChunk;
 		while ((spoutChunk = dirtyChunks.poll()) != null) {
@@ -869,8 +869,9 @@ public class SpoutRegion extends Region {
 			if (!spoutChunk.isLoaded()) {
 				continue;
 			}
-			if (renderQueueEnabled /*&& spoutChunk.isInViewDistance()*/) {//TODO : Decomment if needed
-				addToRenderQueue(spoutChunk);
+			
+			if ((!firstRenderQueueTick) && renderQueueEnabled) {
+				addUpdateToRenderQueue(spoutChunk);
 			}
 			if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
 				for (Player entity : spoutChunk.getObservingPlayers()) {
@@ -912,24 +913,32 @@ public class SpoutRegion extends Region {
 
 	private TInt21TripleObjectHashMap<SpoutChunkSnapshot> renderSnapshotCache = new TInt21TripleObjectHashMap<SpoutChunkSnapshot>();
 
-	private void addToRenderQueue(SpoutChunk c) {
+	private void addUpdateToRenderQueue(SpoutChunk c) {
 		int bx = c.getX() - 1;
 		int by = c.getY() - 1;
 		int bz = c.getZ() - 1;
-		ChunkSnapshot[][][] chunks = new ChunkSnapshot[3][3][3];
-		for (int x = 0; x < 3; x++) {
-			for (int y = 0; y < 3; y++) {
-				for (int z = 0; z < 3; z++) {
-					if (x == 1 || y == 1 || z == 1) {
-						ChunkSnapshot snapshot = getRenderSnapshot(bx + x, by + y, bz + z);
-						if( snapshot == null)
-							return;
-						chunks[x][y][z] = snapshot;
+		
+		if (c.isInViewDistance()) {
+			ChunkSnapshot[][][] chunks = new ChunkSnapshot[3][3][3];
+			for (int x = 0; x < 3; x++) {
+				for (int y = 0; y < 3; y++) {
+					for (int z = 0; z < 3; z++) {
+						if (x == 1 || y == 1 || z == 1) {
+							ChunkSnapshot snapshot = getRenderSnapshot(bx + x, by + y, bz + z);
+							if( snapshot == null)
+								return;
+							chunks[x][y][z] = snapshot;
+						}
 					}
 				}
 			}
+			renderChunkQueue.add(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks));
+		} else {
+			if (c.leftViewDistance()) {
+				renderChunkQueue.add(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, true));
+			}
 		}
-		renderChunkQueue.add(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks));
+		c.viewDistanceCopy();
 	}
 
 	private ChunkSnapshot getRenderSnapshot(int cx, int cy, int cz) {

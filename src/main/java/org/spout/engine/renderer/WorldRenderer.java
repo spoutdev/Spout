@@ -93,25 +93,6 @@ public class WorldRenderer {
 		
 		final long start = System.currentTimeMillis();
 		
-		//Step 1 : Generate ChunkMesh with SpoutChunkSnapshotModel
-		for(Region region : world.getRegions()){
-			SpoutChunkSnapshotModel chunkSnapshotModel;
-			while( (chunkSnapshotModel = ((SpoutRegion)region).getRenderChunkQueue().poll()) != null){
-				final SpoutChunkSnapshotModel temp = chunkSnapshotModel;
-				Spout.getEngine().getScheduler().scheduleAsyncTask(this, new Runnable() {
-					@Override
-					public void run() {
-						ChunkMesh mesh = new ChunkMesh(temp);
-						mesh.update();
-						renderChunkMeshBatchQueue.add(mesh);
-					}
-				});
-				
-				if( System.currentTimeMillis() - start > TIME_LIMIT)
-					return;
-			}
-		}
-		
 		Set<ChunkMeshBatch> modifiedBatch = new HashSet<ChunkMeshBatch>();
 		
 		//Step 2 : Add ChunkMesh to ChunkMeshBatch
@@ -146,6 +127,26 @@ public class WorldRenderer {
 				batch.update();
 			}else if(batch.isEmpty()){
 				removeChunkMeshBatch(batch);
+			}
+		}
+		
+		//Step 1 : Generate ChunkMesh with SpoutChunkSnapshotModel
+		for(Region region : world.getRegions()){
+			SpoutChunkSnapshotModel chunkSnapshotModel;
+			while( (chunkSnapshotModel = ((SpoutRegion)region).getRenderChunkQueue().poll()) != null){
+				final SpoutChunkSnapshotModel temp = chunkSnapshotModel;
+				System.out.println("Launch generate mesh");
+				Spout.getEngine().getScheduler().scheduleAsyncTask(this, new Runnable() {
+					@Override
+					public void run() {
+						ChunkMesh mesh = new ChunkMesh(temp);
+						mesh.update();
+						renderChunkMeshBatchQueue.add(mesh);
+					}
+				});
+				
+				if( System.currentTimeMillis() - start > TIME_LIMIT)
+					return;
 			}
 		}
 	}
@@ -184,5 +185,9 @@ public class WorldRenderer {
 				renderer.render(material);
 			//}
 		}
+	}
+	
+	public int getChunkRenderersSize(){
+		return chunkRenderers.size();
 	}
 }
