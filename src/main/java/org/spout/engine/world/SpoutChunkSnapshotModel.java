@@ -53,8 +53,20 @@ public class SpoutChunkSnapshotModel {
 		this.cy = cy;
 		this.cz = cz;
 		this.chunks = chunks;
-		this.center = this.chunks[1][1][1];
+		this.center = chunks != null ? chunks[1][1][1] : null;
 		this.unload = unload;
+	}
+
+	public int getX() {
+		return cx;
+	}
+
+	public int getY() {
+		return cy;
+	}
+
+	public int getZ() {
+		return cz;
 	}
 	
 	/**

@@ -214,7 +214,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	private final AtomicBoolean populationQueued = new AtomicBoolean(false);
 
 	private final AtomicInteger autosaveTicks = new AtomicInteger(0);
-	
+
 	private boolean wasInViewDistance = false;
 	private boolean isInViewDistance = false;
 	

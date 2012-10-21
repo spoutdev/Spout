@@ -26,9 +26,7 @@
  */
 package org.spout.engine.batcher;
 
-import org.spout.api.Spout;
 import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Cuboid;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.MathHelper;
@@ -37,15 +35,14 @@ import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
-import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 
 /**
  * Represents a group of chunk meshes to be rendered.
  */
 public class ChunkMeshBatch extends Cuboid {
-	public static final int SIZE_X = 3;
+	public static final int SIZE_X = 1;
 	public static final int SIZE_Y = 1;
-	public static final int SIZE_Z = 3;
+	public static final int SIZE_Z = 1;
 	public static final Vector3 SIZE = new Vector3(SIZE_X, SIZE_Y, SIZE_Z);
 	public static final int MESH_COUNT = SIZE_X * SIZE_Y * SIZE_Z;
 	
@@ -53,34 +50,13 @@ public class ChunkMeshBatch extends Cuboid {
 	private ChunkMesh[] meshes = new ChunkMesh[MESH_COUNT];
 	private boolean hasVertices = false;
 	private Matrix modelMat = MathHelper.createIdentity();
-
+	
 	public ChunkMeshBatch(World world, int baseX, int baseY, int baseZ) {
 		super(new Point(world, baseX, baseY, baseZ), SIZE);
-
 		modelMat = MathHelper.translate(new Vector3(baseX * SIZE_X, baseY * SIZE_Y, baseZ * SIZE_Z));
-		
-		int id = 0;
-		for (int i = baseX; i < baseX + SIZE_X; i++) {
-			for (int j = baseY; j < baseY + SIZE_Y; j++) {
-				for (int k = baseZ; k < baseZ + SIZE_Z; k++) {
-					SpoutSnapshotLock lock = (SpoutSnapshotLock) Spout.getEngine().getScheduler().getSnapshotLock();
-					lock.coreReadLock("Generate mesh");
-					try {
-						Chunk c = world.getChunk(i, j, k);
-						meshes[id++] = ChunkMesh.generateFromChunk(c);
-					} finally {
-						lock.coreReadUnlock("Generate mesh");
-					}
-				}
-			}
-		}
 	}
 
 	public void update() {
-		for (ChunkMesh mesh : meshes) {
-			mesh.update();
-		}
-
 		hasVertices = false;
 		for (ChunkMesh mesh : meshes) {
 			if (mesh.hasVertices()) {
@@ -142,6 +118,33 @@ public class ChunkMeshBatch extends Cuboid {
 	 */
 	public static Vector3 getChunkCoordinates(Vector3 batchCoords) {
 		return new Vector3(batchCoords.getX() * SIZE_X, batchCoords.getY() * SIZE_Y, batchCoords.getZ() * SIZE_Z);
+	}
+
+	private int getIndexFromChunkMesh(ChunkMesh chunkMesh) {
+		// TODO : Implement it if SIZE != 1
+		return 0;
+	}
+
+	public void addMesh(ChunkMesh chunkMesh) {
+		meshes[getIndexFromChunkMesh(chunkMesh)] = chunkMesh;
+	}
+
+	public void removeMesh(ChunkMesh chunkMesh) {
+		meshes[getIndexFromChunkMesh(chunkMesh)] = null;
+	}
+	
+	public boolean isFull() {
+		for(ChunkMesh mesh : meshes)
+			if(mesh == null)
+				return false;
+		return true;
+	}
+	
+	public boolean isEmpty() {
+		for(ChunkMesh mesh : meshes)
+			if(mesh != null)
+				return false;
+		return true;
 	}
 
 }
