@@ -847,8 +847,9 @@ public class SpoutRegion extends Region {
 
 		boolean worldRenderQueueEnabled = world.isRenderQueueEnabled();
 		boolean firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
+
 		renderQueueEnabled = worldRenderQueueEnabled;
-		
+
 		if (firstRenderQueueTick) {
 			for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
 				for (int dy = 0; dy < CHUNKS.SIZE; dy++) {

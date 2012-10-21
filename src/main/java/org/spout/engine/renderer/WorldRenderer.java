@@ -135,7 +135,6 @@ public class WorldRenderer {
 			SpoutChunkSnapshotModel chunkSnapshotModel;
 			while( (chunkSnapshotModel = ((SpoutRegion)region).getRenderChunkQueue().poll()) != null){
 				final SpoutChunkSnapshotModel temp = chunkSnapshotModel;
-				System.out.println("Launch generate mesh");
 				Spout.getEngine().getScheduler().scheduleAsyncTask(this, new Runnable() {
 					@Override
 					public void run() {
