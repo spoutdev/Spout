@@ -109,6 +109,7 @@ import org.spout.engine.listener.SpoutClientListener;
 import org.spout.engine.listener.channel.SpoutClientConnectListener;
 import org.spout.engine.protocol.SpoutClientSession;
 import org.spout.engine.renderer.WorldRenderer;
+import org.spout.engine.resources.ClientEntityPrefab;
 import org.spout.engine.resources.ClientFont;
 import org.spout.engine.util.MacOSXUtils;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
@@ -233,6 +234,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 		
 		mainScreen.attachWidget(this.getPluginManager().getPlugins().iterator().next(), txtWidget);
 		screenStack = new ScreenStack(mainScreen);
+		
+		// Test
+		ClientEntityPrefab entityPrefab = (ClientEntityPrefab) Spout.getFilesystem().getResource("entity://Spout/resources/fallbacks/entity.sep");
+		System.out.println("Loaded : "+entityPrefab.getName());
 		
 		super.getDefaultWorld().spawnEntity(activePlayer);
 

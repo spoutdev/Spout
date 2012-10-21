@@ -24,35 +24,33 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.filesystem;
+package org.spout.engine.resources;
 
-import org.spout.engine.resources.loader.EntityPrefabLoader;
-import org.spout.engine.resources.loader.FontLoader;
-import org.spout.engine.resources.loader.MeshLoader;
-import org.spout.engine.resources.loader.RenderMaterialLoader;
-import org.spout.engine.resources.loader.ShaderLoader;
-import org.spout.engine.resources.loader.SoundWavLoader;
-import org.spout.engine.resources.loader.TextureLoader;
+import java.util.*;
 
-public class ClientFileSystem extends SharedFileSystem {
-	@Override
-	public void init() {
-		if (!RESOURCE_FOLDER.exists()) {
-			RESOURCE_FOLDER.mkdirs();
-		}
-		if (!CACHE_FOLDER.exists()) {
-			CACHE_FOLDER.mkdirs();
-		}
+import org.spout.api.component.components.EntityComponent;
+import org.spout.api.resource.Resource;
 
-		super.init();
-
-		registerLoader(new TextureLoader());
-		registerLoader(new ShaderLoader());
-		registerLoader(new MeshLoader());
-		registerLoader(new RenderMaterialLoader());
-
-		registerLoader(new SoundWavLoader());
-		registerLoader(new FontLoader());
-		registerLoader(new EntityPrefabLoader());
+public class ClientEntityPrefab extends Resource {
+	private String name;
+	private List<Class<? extends EntityComponent>> components = new ArrayList<Class<? extends EntityComponent>>();
+	private Map<String, Object> datas = new HashMap<String, Object>();
+	
+	public ClientEntityPrefab(String name, List<Class<? extends EntityComponent>> components, Map<String, Object> datas) {
+		this.name = name;
+		this.components.addAll(components);
+		this.datas.putAll(datas);
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public List<Class<? extends EntityComponent>> getComponents() {
+		return components;
+	}
+	
+	public Map<String, Object> getDatas() {
+		return datas;
 	}
 }
