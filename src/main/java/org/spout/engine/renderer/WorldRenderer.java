@@ -109,7 +109,7 @@ public class WorldRenderer {
 				addChunkMeshBatch(chunkMeshBatch);
 			}
 		
-			if(chunkMesh.hasVertices()){
+			if(!chunkMesh.isUnloaded()){
 				chunkMeshBatch.addMesh(chunkMesh);
 				modifiedBatch.add(chunkMeshBatch);
 			}else{
