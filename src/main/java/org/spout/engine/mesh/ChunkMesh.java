@@ -54,6 +54,7 @@ public class ChunkMesh extends BaseMesh {
 	private SpoutChunkSnapshotModel chunkModel;
 	private ChunkSnapshot center;
 	private final int cx,cy,cz;
+	private boolean isUnloaded = false;
 
 	/**
 	 * Private constructor.
@@ -81,8 +82,10 @@ public class ChunkMesh extends BaseMesh {
 	 * Updates the mesh.
 	 */
 	public void update() {
-		if(chunkModel.isUnload())
+		if(chunkModel.isUnload()){
+			isUnloaded = true;
 			return;
+		}
 		
 		center = chunkModel.getCenter();
 		
@@ -287,5 +290,9 @@ public class ChunkMesh extends BaseMesh {
 	@Override
 	public String toString() {
 		return "ChunkMesh [center=" + center + "]";
+	}
+
+	public boolean isUnloaded() {
+		return isUnloaded;
 	}
 }
