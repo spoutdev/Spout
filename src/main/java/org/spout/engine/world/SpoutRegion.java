@@ -238,6 +238,10 @@ public class SpoutRegion extends Region {
 	@Override
 	@LiveRead
 	public SpoutChunk getChunk(int x, int y, int z, LoadOption loadopt) {
+		if (loadopt != LoadOption.NO_LOAD) {
+			TickStage.checkStage(~TickStage.SNAPSHOT);
+		}
+		
 		x &= CHUNKS.MASK;
 		y &= CHUNKS.MASK;
 		z &= CHUNKS.MASK;

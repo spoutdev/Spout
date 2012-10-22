@@ -311,6 +311,8 @@ public final class SpoutScheduler implements Scheduler {
 				engine.getLogger().log(Level.SEVERE, "Error while shutting down engine: {0}", ex.getMessage());
 			}
 
+			TickStage.setStage(TickStage.TICKSTART);
+
 			runFinalTasks();
 		}
 	}

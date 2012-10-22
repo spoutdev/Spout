@@ -31,11 +31,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
+
 import org.spout.api.Spout;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
 import org.spout.engine.filesystem.WorldFiles;
+import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 
 /**
@@ -57,7 +59,7 @@ public class WorldSavingThread extends Thread{
 
 	public static void saveChunk(SpoutChunk chunk) {
 		ChunkSaveTask task = new ChunkSaveTask(chunk);
-		if (instance.isInterrupted()) {
+		if (instance.isInterrupted() || !instance.isAlive()) {
 			Spout.getLogger().warning("Attempt to queue chunks for saving after world thread shutdown");
 			task.call();
 		} else {
@@ -138,15 +140,22 @@ public class WorldSavingThread extends Thread{
 
 		@Override
 		public SpoutRegion call() {
-			SpoutRegion region = chunk.getWorld().getRegion(rx, ry, rz);
-			OutputStream out = region.getChunkOutputStream(snapshot);
-			if (out != null) {
-				WorldFiles.saveChunk(region.getWorld(), snapshot, blockUpdates, out);
-				chunk.saveComplete();
-				return region;
-			} else {
-				Spout.getLogger().severe("World saving thread unable to open region " + region);
-				return null;
+			SpoutSnapshotLock lock = (SpoutSnapshotLock) Spout.getEngine().getScheduler().getSnapshotLock();
+			String taskName = "World Thread";
+			lock.coreReadLock(taskName);
+			try {
+				SpoutRegion region = chunk.getWorld().getRegion(rx, ry, rz);
+				OutputStream out = region.getChunkOutputStream(snapshot);
+				if (out != null) {
+					WorldFiles.saveChunk(region.getWorld(), snapshot, blockUpdates, out);
+					chunk.saveComplete();
+					return region;
+				} else {
+					Spout.getLogger().severe("World saving thread unable to open region " + region);
+					return null;
+				}
+			} finally {
+				lock.coreReadUnlock(taskName);
 			}
 		}
 	}
