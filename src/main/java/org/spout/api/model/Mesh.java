@@ -26,15 +26,8 @@
  */
 package org.spout.api.model;
 
-import org.spout.api.render.RenderEffect;
-
 
 public interface Mesh {
-	public void addRenderEffect(RenderEffect effect);
-	
-	public void removeRenderEffect(RenderEffect effect) ;
-	
-	public RenderEffect[] getEffects();
 	
 	
 }
