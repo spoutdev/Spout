@@ -27,8 +27,10 @@
 package org.spout.engine.mesh;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.spout.api.Spout;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.material.BlockMaterial;
@@ -38,6 +40,7 @@ import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.MeshFace;
 import org.spout.api.model.Vertex;
+import org.spout.api.render.RenderMaterial;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 
 import com.google.common.collect.Lists;
@@ -45,7 +48,7 @@ import com.google.common.collect.Lists;
 /**
  * Represents a mesh for a chunk.
  */
-public class ChunkMesh extends BaseMesh {
+public class ChunkMesh extends ComposedMesh {
 	/**
 	 * Faces that you can render.
 	 */
@@ -111,7 +114,7 @@ public class ChunkMesh extends BaseMesh {
 	 */
 	private void generateBlockVertices(int x, int y, int z) {
 		BlockMaterial material = center.getBlockMaterial(x, y, z);
-
+		
 		if (material.isTransparent()) {
 			return;
 		}
@@ -128,11 +131,31 @@ public class ChunkMesh extends BaseMesh {
 			shouldRender[face.ordinal()] = neighbor.isTransparent();
 		}
 
+		RenderMaterial renderMaterial = null;//TODO : Waiting BlockMaterial have model & material : material.getModel().getRenderMaterial();
+		//TODO : Remove fallback 
+		if(renderMaterial == null)
+			renderMaterial = (RenderMaterial) Spout.getEngine().getFilesystem().getResource("material://Spout/resources/resources/materials/BasicMaterial.smt");
+		
+		ArrayList<MeshFace> faces;
+		//if(renderMaterial.isOpaque()){
+		faces = opaqueFacesPerMaterials.get(renderMaterial);
+		if(faces == null){
+			faces = new ArrayList<MeshFace>();
+			opaqueFacesPerMaterials.put(renderMaterial, faces);
+		}
+		/*}else{
+		faces = tranparentFacesPerMaterials.get(renderMaterial);
+		if(faces == null){
+			faces = new ArrayList<MeshFace>();
+			tranparentFacesPerMaterials.put(renderMaterial, faces);
+		}
+		}*/
+		
 		for (BlockFace face : renderableFaces) {
 			if (shouldRender[face.ordinal()]) {
 				// System.out.println(material + " " + face + " " + position);
 				// Create a face -- temporary until we get some real models
-				appendModelFaces(material, face, position);
+				appendModelFaces(material, face, position, faces);
 			}
 		}
 	}
@@ -142,8 +165,9 @@ public class ChunkMesh extends BaseMesh {
 	 * 
 	 * @param face
 	 * @param base
+	 * @param faces 
 	 */
-	private void appendModelFaces(BlockMaterial m, BlockFace face, Vector3 base) {
+	private void appendModelFaces(BlockMaterial m, BlockFace face, Vector3 base, ArrayList<MeshFace> faces) {
 		Vector3 p1 = null;
 		Vector3 p2 = null;
 		Vector3 p3 = null;
@@ -275,7 +299,11 @@ public class ChunkMesh extends BaseMesh {
 	 * @return
 	 */
 	public boolean hasVertices() {
-		return faces.size() > 0;
+		for(ArrayList<MeshFace> mesh : opaqueFacesPerMaterials.values()){
+			if(!mesh.isEmpty())
+				return true;
+		}
+		return false;
 	}
 
 	/**
@@ -284,7 +312,9 @@ public class ChunkMesh extends BaseMesh {
 	 * @return
 	 */
 	public int countFaces() {
-		return faces.size();
+		//TODO : Update this
+		//return faces.size();
+		return 1;
 	}
 
 	@Override

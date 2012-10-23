@@ -27,6 +27,7 @@
 package org.spout.engine.batcher;
 
 import java.awt.Color;
+import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
@@ -37,6 +38,8 @@ import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
 
 import org.spout.engine.mesh.BaseMesh;
+import org.spout.engine.mesh.ChunkMesh;
+import org.spout.engine.mesh.ComposedMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
 
 public class PrimitiveBatch {
@@ -123,6 +126,17 @@ public class PrimitiveBatch {
 
 	
 	public void addMesh(BaseMesh mesh) {
+		for (MeshFace face : mesh) {
+			for (Vertex vert : face) {
+				renderer.addTexCoord(vert.texCoord0);
+				renderer.addNormal(vert.normal);
+				renderer.addColor(vert.color);
+				renderer.addVertex(vert.position);
+			}
+		}
+	}
+	
+	public void addMesh(List<MeshFace> mesh) {
 		for (MeshFace face : mesh) {
 			for (Vertex vert : face) {
 				renderer.addTexCoord(vert.texCoord0);
