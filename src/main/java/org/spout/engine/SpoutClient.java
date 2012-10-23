@@ -71,6 +71,7 @@ import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.component.components.CameraComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.state.PlayerInputState;
+import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
@@ -143,14 +144,14 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private SpriteBatch gui;
 	private ClientFont font;
 	private ScreenStack screenStack;
-	
+
 	private boolean showDebugInfos = true;
-	
+
 	// FPS counter
 	private int fps = 0;
 	private int frames = 0;
 	private long lastFrameTime = System.currentTimeMillis();
-	
+
 	private ConcurrentLinkedQueue<Runnable> renderTaskQueue = new ConcurrentLinkedQueue<Runnable>();
 
 	public SpoutClient() {
@@ -171,7 +172,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		if (inJar) {
 			unpackLwjgl();
 		}
-		
+
 		ExecutorService executorBoss = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Boss", true));
 		ExecutorService executorWorker = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Worker", true));
 		ChannelFactory factory = new NioClientSocketChannelFactory(executorBoss, executorWorker);
@@ -180,9 +181,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, true);
 		bootstrap.setPipelineFactory(pipelineFactory);
 		super.init(args);
-		
+
 		this.ccoverride = args.ccoverride;
-		
+
 		inputManager.bind(SpoutInputConfiguration.FORWARD.getString(), "+Forward");
 		inputManager.bind(SpoutInputConfiguration.BACKWARD.getString(), "+BackWard");
 		inputManager.bind(SpoutInputConfiguration.LEFT.getString(), "+Left");
@@ -224,24 +225,20 @@ public class SpoutClient extends SpoutEngine implements Client {
 		Transform loc = new Transform(new Point(super.getDefaultWorld(), 0f, 0f, 0f), new Quaternion(0f, 0f, 0f, 0f), Vector3.ONE);
 		activePlayer = new SpoutClientPlayer("Spouty", loc, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 		activeCamera = activePlayer.add(CameraComponent.class);
-		
+
 		// Building the screenStack
 		FullScreen mainScreen = new FullScreen();
-		
+
 		Widget txtWidget = new Widget(); // Test widget
 		LabelComponent txt = txtWidget.add(LabelComponent.class);
 		font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/resources/resources/fonts/ubuntu/Ubuntu-M.ttf");
 		txt.setFont(font);
 		txt.setColor(Color.blue);
 		txt.setText("Test");
-		
+
 		mainScreen.attachWidget(this.getPluginManager().getPlugins().iterator().next(), txtWidget);
 		screenStack = new ScreenStack(mainScreen);
-		
-		// Test
-		ClientEntityPrefab entityPrefab = (ClientEntityPrefab) Spout.getFilesystem().getResource("entity://Spout/resources/fallbacks/entity.sep");
-		System.out.println("Loaded : "+entityPrefab.getName());
-		
+
 		super.getDefaultWorld().spawnEntity(activePlayer);
 
 		getScheduler().startRenderThread();
@@ -308,13 +305,13 @@ public class SpoutClient extends SpoutEngine implements Client {
 		if (activePlayer == null) {
 			return;
 		}
-		
+
 		inputManager.pollInput(activePlayer);
-		
+
 		PlayerInputState inputState = activePlayer.input();
 		Transform ts = activePlayer.getTransform().getTransform();
 		ts.setRotation(MathHelper.rotation(inputState.pitch(), inputState.yaw(), ts.getRotation().getRoll()));
-		
+
 		Point point = ts.getPosition();
 		if (inputState.getForward()) 
 			point = point.add(ts.forwardVector());
@@ -329,7 +326,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		if (inputState.getCrouch()) 
 			point = point.add(ts.upVector());
 		ts.setPosition(point);
-		
+
 		activePlayer.getTransform().setTransform(ts);
 	}
 
@@ -493,7 +490,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glClearColor((135.f / 255.0f), 206.f / 255.f, 250.f / 255.f, 1);
 
-	
+
 		worldRenderer = new WorldRenderer(this);
 		worldRenderer.setup();
 
@@ -508,19 +505,25 @@ public class SpoutClient extends SpoutEngine implements Client {
 		font2 = new ClientFont(new Font("Comic sans ms", Font.BOLD, 30 ));
 		font.load();
 		font2.load();
+
+		// Test
+		ClientEntityPrefab zombie = (ClientEntityPrefab) Spout.getFilesystem().getResource("entity://Spout/resources/fallbacks/entity.sep");
+		System.out.println("Loaded : " + zombie.getName());
+
+		super.getDefaultWorld().spawnEntity(zombie.createEntity(new Point(super.getDefaultWorld(),0,0,0)));
 	}
 
 	public void render(float dt) {
-		
+
 		while(renderTaskQueue.peek() != null) {
 			Runnable task = renderTaskQueue.poll();
 			task.run();
 		}
-		
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		doInput();
-		
+
 		if (Mouse.isButtonDown(0)) {
 			if (!Mouse.isGrabbed()) {
 				Mouse.setGrabbed(true);
@@ -554,7 +557,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			}
 		}
 		gui.render();
-		
+
 		if (System.currentTimeMillis()-lastFrameTime>1000) {
 			lastFrameTime = System.currentTimeMillis();
 			fps = frames;
@@ -566,19 +569,19 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public void toggleDebugInfos() {
 		showDebugInfos = !showDebugInfos;
 	}
-	
+
 	public SpoutInput getInputManager() {
 		return inputManager;
 	}
-	
+
 	public WorldRenderer getWorldRenderer() {
 		return worldRenderer;
 	}
-	
+
 	public ScreenStack getScreenStack() {
 		return screenStack;
 	}
-	
+
 	@Override
 	public Vector2 getResolution() {
 		return resolution;
@@ -587,7 +590,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private void createWindow() {
 		try {
 			Display.setDisplayMode(new DisplayMode((int) resolution.getX(), (int) resolution.getY()));
-			
+
 			//Override using ContextAttribs for some videocards that don't support ARB_CREATE_CONTEXT
 			if(ccoverride){
 				Display.create(new PixelFormat(8, 24, 0));
@@ -669,11 +672,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public FileSystem getFilesystem() {
 		return filesystem;
 	}
-	
+
 	public void enqueueTask(Runnable task) {
 		renderTaskQueue.add(task);
 	}
-	
+
 	public void toggleWireframe() {
 		if(wireframe) {			
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);	
