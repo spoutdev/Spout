@@ -55,6 +55,7 @@ import org.spout.api.component.WorldComponentHolder;
 import org.spout.api.component.components.BlockComponent;
 import org.spout.api.component.components.EntityComponent;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.EntityPrefab;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.event.block.CuboidChangeEvent;
@@ -541,6 +542,14 @@ public class SpoutWorld extends AsyncManager implements World {
 		return entity;
 	}
 
+	@Override
+	public Entity createEntity(Point point, EntityPrefab prefab) {
+		SpoutEntity entity = new SpoutEntity(point);
+		for (Class<? extends EntityComponent> c : prefab.getComponents())
+			entity.add(c);
+		return entity;
+	}
+	
 	/**
 	 * Spawns an entity into the world. Fires off a cancellable EntitySpawnEvent
 	 */
@@ -569,6 +578,13 @@ public class SpoutWorld extends AsyncManager implements World {
 		}
 	}
 
+	@Override
+	public Entity createAndSpawnEntity(Point point, EntityPrefab prefab, LoadOption option) {
+		getRegionFromBlock(point, option);
+		Entity e = createEntity(point, prefab);
+		return e;
+	}
+	
 	@Override
 	public Entity createAndSpawnEntity(Point point, Class<? extends Component> type, LoadOption option) {
 		getRegionFromBlock(point, option);
