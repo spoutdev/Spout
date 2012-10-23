@@ -27,6 +27,7 @@
 package org.spout.engine.protocol.builtin.handler;
 
 import org.spout.api.Client;
+import org.spout.api.component.Component;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.protocol.MessageHandler;
@@ -47,7 +48,7 @@ public class AddEntityMessageHandler extends MessageHandler<AddEntityMessage> {
 		if (message.getEntityId() == session.getDataMap().get(SpoutProtocol.PLAYER_ENTITY_ID)) {
 			newEntity = player;
 		} else {
-			newEntity = session.getEngine().getDefaultWorld().createEntity(message.getTransform().getPosition(), null);
+			newEntity = session.getEngine().getDefaultWorld().createEntity(message.getTransform().getPosition(), (Class<? extends Component>)null);
 		}
 
 		newEntity.getTransform().setTransform(message.getTransform());
