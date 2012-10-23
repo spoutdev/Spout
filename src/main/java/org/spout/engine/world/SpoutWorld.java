@@ -543,7 +543,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public Entity createEntity(Point point, EntityPrefab prefab) {
+	public Entity createEntityWithPrefab(Point point, EntityPrefab prefab) {
 		SpoutEntity entity = new SpoutEntity(point);
 		for (Class<? extends EntityComponent> c : prefab.getComponents())
 			entity.add(c);
@@ -579,9 +579,9 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public Entity createAndSpawnEntity(Point point, EntityPrefab prefab, LoadOption option) {
+	public Entity createAndSpawnEntityWithPrefab(Point point, EntityPrefab prefab, LoadOption option) {
 		getRegionFromBlock(point, option);
-		Entity e = createEntity(point, prefab);
+		Entity e = createEntityWithPrefab(point, prefab);
 		return e;
 	}
 	
