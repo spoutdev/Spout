@@ -37,10 +37,8 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -67,6 +65,7 @@ import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
@@ -181,6 +180,11 @@ public class SpoutWorld extends AsyncManager implements World {
 	 */
 	private final AtomicBoolean renderQueueEnabled = new AtomicBoolean(false);
 	
+	/**
+	 * RegionFile manager for the world
+	 */
+	private final RegionFileManager regionFileManager;
+	
 	/*
 	 * A WeakReference to this world
 	 */
@@ -210,6 +214,8 @@ public class SpoutWorld extends AsyncManager implements World {
 
 		worldDirectory = new File(SharedFileSystem.WORLDS_DIRECTORY, name);
 		worldDirectory.mkdirs();
+		
+		regionFileManager = new RegionFileManager(worldDirectory);
 
 		heightMapBAAs = new TSyncIntPairObjectHashMap<BAAWrapper>();
 		
@@ -1018,7 +1024,7 @@ public class SpoutWorld extends AsyncManager implements World {
 			File columnDirectory = new File(worldDirectory, "col");
 			columnDirectory.mkdirs();
 			File file = new File(columnDirectory, "col" + cx + "_" + cz + ".scl");
-			baa = new BAAWrapper(file, 1024, 256, SpoutRegion.TIMEOUT);
+			baa = new BAAWrapper(file, 1024, 256, RegionFileManager.TIMEOUT);
 			BAAWrapper oldBAA = heightMapBAAs.putIfAbsent(cx, cz, baa);
 			if (oldBAA != null) {
 				baa = oldBAA;
@@ -1224,5 +1230,17 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public DefaultedMap<String, Serializable> getDataMap() {
 		return componentHolder.getData();
+	}
+	
+	public RegionFileManager getRegionFileManager() {
+		return regionFileManager;
+	}
+	
+	public BAAWrapper getRegionFile(int rx, int ry, int rz) {
+		return regionFileManager.getBAAWrapper(rx, ry, rz);
+	}
+	
+	public OutputStream getChunkOutputStream(ChunkSnapshot c) {
+		return regionFileManager.getChunkOutputStream(c);
 	}
 }

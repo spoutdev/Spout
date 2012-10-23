@@ -27,17 +27,17 @@
 package org.spout.engine.world;
 
 import java.io.OutputStream;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.spout.api.Spout;
+import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
 import org.spout.engine.filesystem.WorldFiles;
-import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 
 /**
@@ -45,7 +45,7 @@ import org.spout.engine.world.dynamic.DynamicBlockUpdate;
  */
 public class WorldSavingThread extends Thread{
 	private static WorldSavingThread instance = null;
-	private final LinkedBlockingQueue<Callable<SpoutRegion>> queue = new LinkedBlockingQueue<Callable<SpoutRegion>>();
+	private final LinkedBlockingQueue<Callable<SpoutWorld>> queue = new LinkedBlockingQueue<Callable<SpoutWorld>>();
 	public WorldSavingThread() {
 		super("World Saving Thread");
 	}
@@ -82,7 +82,7 @@ public class WorldSavingThread extends Thread{
 	@Override
 	public void run() {
 		while (!this.isInterrupted()) {
-			Callable<SpoutRegion> task;
+			Callable<SpoutWorld> task;
 			try {
 				task = queue.take();
 				task.call();
@@ -99,17 +99,12 @@ public class WorldSavingThread extends Thread{
 		int toSave = queue.size();
 		int saved = 0;
 		int lastTenth = 0;
-		HashSet<SpoutRegion> regions = new HashSet<SpoutRegion>();
-		Callable<SpoutRegion> task;
+		Callable<SpoutWorld> task;
 		while ((task = queue.poll()) != null) {
-			SpoutRegion r = null;
 			try {
-				r = task.call();
+				task.call();
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
-			if (r != null) {
-				regions.add(r);
 			}
 			int tenth = ((++saved) * 10) / toSave;
 			if (tenth != lastTenth) {
@@ -117,46 +112,36 @@ public class WorldSavingThread extends Thread{
 				Spout.getLogger().info("Saved " + tenth + "0% of queued chunks");
 			}
 		}
-		for (SpoutRegion r : regions) {
-			if (!r.attemptClose()) {
-				Spout.getLogger().warning("Closing failed for region " + r.getWorld().getName() + ", " + r.getBase().toBlockString());
-			}
+		Collection<World> worlds = Spout.getEngine().getWorlds();
+		for (World w : worlds) {
+			((SpoutWorld) w).getRegionFileManager().stopTimeoutThread();
+		}
+		for (World w : worlds) {
+			((SpoutWorld) w).getRegionFileManager().closeAll();
 		}
 	}
 
-	private static class ChunkSaveTask implements Callable<SpoutRegion> {
-		final int rx, ry, rz;
+	private static class ChunkSaveTask implements Callable<SpoutWorld> {
 		final SpoutChunkSnapshot snapshot;
 		final List<DynamicBlockUpdate> blockUpdates;
 		final SpoutChunk chunk;
 		ChunkSaveTask(SpoutChunk chunk) {
-			this.rx = chunk.getRegion().getX();
-			this.ry = chunk.getRegion().getY();
-			this.rz = chunk.getRegion().getZ();
 			this.snapshot = (SpoutChunkSnapshot) chunk.getSnapshot(SnapshotType.BOTH, EntityType.BOTH, ExtraData.DATATABLE);
 			this.blockUpdates = chunk.getRegion().getDynamicBlockUpdates(chunk);
 			this.chunk = chunk;
 		}
 
 		@Override
-		public SpoutRegion call() {
-			SpoutSnapshotLock lock = (SpoutSnapshotLock) Spout.getEngine().getScheduler().getSnapshotLock();
-			String taskName = "World Thread";
-			lock.coreReadLock(taskName);
-			try {
-				SpoutRegion region = chunk.getWorld().getRegion(rx, ry, rz);
-				OutputStream out = region.getChunkOutputStream(snapshot);
-				if (out != null) {
-					WorldFiles.saveChunk(region.getWorld(), snapshot, blockUpdates, out);
-					chunk.saveComplete();
-					return region;
-				} else {
-					Spout.getLogger().severe("World saving thread unable to open region " + region);
-					return null;
-				}
-			} finally {
-				lock.coreReadUnlock(taskName);
+		public SpoutWorld call() {
+			SpoutWorld world = chunk.getWorld();
+			OutputStream out = world.getChunkOutputStream(snapshot);
+			if (out != null) {
+				WorldFiles.saveChunk(chunk.getWorld(), snapshot, blockUpdates, out);
+				chunk.saveComplete();
+			} else {
+				Spout.getLogger().severe("World saving thread unable to open file for chunk " + chunk);
 			}
+			return world;
 		}
 	}
 }

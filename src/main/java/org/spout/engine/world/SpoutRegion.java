@@ -115,16 +115,6 @@ public class SpoutRegion extends Region {
 	 */
 	private static final int REAP_PER_TICK = 3;
 	/**
-	 * The segment size to use for chunk storage. The actual size is
-	 * 2^(SEGMENT_SIZE)
-	 */
-	private final int SEGMENT_SIZE = 8;
-	/**
-	 * The timeout for the chunk storage in ms. If the store isn't accessed
-	 * within that time, it can be automatically shutdown
-	 */
-	public static final int TIMEOUT = 30000;
-	/**
 	 * How many ticks to delay sending the entire chunk after lighting calculation has completed
 	 */
 	public static final int LIGHT_SEND_TICK_DELAY = 10;
@@ -208,11 +198,7 @@ public class SpoutRegion extends Region {
 
 		}
 
-		File worldDirectory = world.getDirectory();
-		File regionDirectory = new File(worldDirectory, "region");
-		regionDirectory.mkdirs();
-		File regionFile = new File(regionDirectory, "reg" + getX() + "_" + getY() + "_" + getZ() + ".spr");
-		this.chunkStore = new BAAWrapper(regionFile, SEGMENT_SIZE, CHUNKS.VOLUME, TIMEOUT);
+		this.chunkStore = world.getRegionFile(getX(), getY(), getZ());
 		Thread t;
 		AsyncExecutor e = manager.getExecutor();
 		if (e instanceof Thread) {
@@ -590,8 +576,6 @@ public class SpoutRegion extends Region {
 		if (empty) {
 			source.removeRegion(this);
 		}
-
-		chunkStore.timeoutCheck();
 	}
 
 	public boolean processChunkSaveUnload(int x, int y, int z) {
@@ -1101,28 +1085,6 @@ public class SpoutRegion extends Region {
 		return executionThread;
 	}
 
-	/**
-	 * This method should be called periodically in order to see if the Chunk
-	 * Store ByteArrayArray has timed out.<br>
-	 * <br>
-	 * It will only close the array if no block OutputStreams are open and the
-	 * last access occurred more than the timeout previously
-	 */
-	public void chunkStoreTimeoutCheck() {
-		chunkStore.timeoutCheck();
-	}
-
-	/**
-	 * Gets the DataOutputStream corresponding to a given Chunk Snapshot.<br>
-	 * <br>
-	 * WARNING: This block will be locked until the stream is closed
-	 * @param c the chunk snapshot
-	 * @return the DataOutputStream
-	 */
-	public OutputStream getChunkOutputStream(ChunkSnapshot c) {
-		return chunkStore.getBlockOutputStream(getChunkKey(c.getX(), c.getY(), c.getZ()));
-	}
-
 	public boolean inputStreamExists(int x, int y, int z) {
 		return chunkStore.inputStreamExists(getChunkKey(x, y, z));
 	}
@@ -1141,8 +1103,8 @@ public class SpoutRegion extends Region {
 	public InputStream getChunkInputStream(int x, int y, int z) {
 		return chunkStore.getBlockInputStream(getChunkKey(x, y, z));
 	}
-
-	private int getChunkKey(int chunkX, int chunkY, int chunkZ) {
+	
+	public static int getChunkKey(int chunkX, int chunkY, int chunkZ) {
 		chunkX &= CHUNKS.MASK;
 		chunkY &= CHUNKS.MASK;
 		chunkZ &= CHUNKS.MASK;
