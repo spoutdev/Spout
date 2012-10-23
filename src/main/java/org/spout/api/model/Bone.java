@@ -29,13 +29,10 @@ package org.spout.api.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.spout.api.render.RenderEffect;
-
 public class Bone {
 	String name;
 	HashMap<String, Bone> children = new HashMap<String, Bone>();
 	BoneTransform transform = new BoneTransform();
-	ArrayList<RenderEffect> attachedEffects = new ArrayList<RenderEffect>();
 
 	Mesh mesh;
 
@@ -93,13 +90,5 @@ public class Bone {
 			}
 		}
 		return null;
-	}
-
-	public void attachEffect(RenderEffect effect) {
-		attachedEffects.add(effect);
-	}
-
-	public void detachEffect(RenderEffect effect) {
-		attachedEffects.remove(effect);
 	}
 }
