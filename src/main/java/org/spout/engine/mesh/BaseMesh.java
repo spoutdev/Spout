@@ -33,7 +33,6 @@ import org.lwjgl.opengl.GL11;
 import org.spout.api.model.Mesh;
 import org.spout.api.model.MeshFace;
 import org.spout.api.model.Vertex;
-import org.spout.api.render.RenderEffect;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
 import org.spout.api.resource.Resource;
@@ -42,7 +41,6 @@ import org.spout.engine.renderer.BatchVertexRenderer;
 
 public class BaseMesh extends Resource implements Mesh, Iterable<MeshFace> {
 	ArrayList<MeshFace> faces;
-	ArrayList<RenderEffect> effects = new ArrayList<RenderEffect>();
 	boolean dirty = false;
 
 	Renderer renderer;
@@ -56,33 +54,6 @@ public class BaseMesh extends Resource implements Mesh, Iterable<MeshFace> {
 	public BaseMesh(ArrayList<MeshFace> faces){
 		this.faces = faces;
 	}
-	
-	@Override
-	public void addRenderEffect(RenderEffect effect) {
-		effects.add(effect);
-	}
-
-	@Override
-	public void removeRenderEffect(RenderEffect effect) {
-		effects.remove(effect);
-	}
-
-	@Override
-	public RenderEffect[] getEffects() {
-		return effects.toArray(new RenderEffect[effects.size()]);
-	}
-
-	private void preBatch(Renderer batcher) {
-		for (RenderEffect effect : effects) {
-			effect.preBatch(batcher);
-		}
-	}
-
-	private void postBatch(Renderer batcher) {
-		for (RenderEffect effect : effects) {
-			effect.postBatch(batcher);
-		}
-	}
 
 	protected void batch(Renderer batcher) {
 		for (MeshFace face : faces) {
@@ -95,32 +66,17 @@ public class BaseMesh extends Resource implements Mesh, Iterable<MeshFace> {
 		}
 	}
 
-	private void preRender(Renderer batcher) {
-		for (RenderEffect effect : effects) {
-			effect.preDraw(batcher);
-		}
-	}
-
-	private void postRender(Renderer batcher) {
-		for (RenderEffect effect : effects) {
-			effect.postDraw(batcher);
-		}
-	}
-
-
 	public void batch(){
 		if(renderer == null) renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
-		preBatch(renderer);
 		this.batch(renderer);
-		postBatch(renderer);
 	}
 	
 	public void render(RenderMaterial material){
 		if(renderer == null) throw new IllegalStateException("Cannot render without batching first!");
 		
-		preRender(renderer);
+		material.preRender();
 		renderer.render(material);
-		postRender(renderer);	
+		material.postRender();
 	}
 	
 	
