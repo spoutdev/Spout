@@ -26,12 +26,16 @@
  */
 package org.spout.engine.batcher;
 
+import java.util.ArrayList;
+import java.util.Map.Entry;
+
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Cuboid;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector3;
+import org.spout.api.model.MeshFace;
 import org.spout.api.render.RenderMaterial;
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
@@ -69,11 +73,23 @@ public class ChunkMeshBatch extends Cuboid {
 		}
 
 		renderer.begin();
-		for (ChunkMesh mesh : meshes) {
-			if (mesh.hasVertices()) {
-				renderer.addMesh(mesh);
+		
+		for (ChunkMesh chunkMesh : meshes) {
+			for(Entry<RenderMaterial, ArrayList<MeshFace>> entry : chunkMesh.getOpaqueMesh().entrySet()){
+				entry.getKey().preRender();
+				renderer.addMesh(entry.getValue());
+				entry.getKey().postRender();
 			}
 		}
+		
+		for (ChunkMesh chunkMesh : meshes) {
+			for(Entry<RenderMaterial, ArrayList<MeshFace>> entry : chunkMesh.getTransparentMesh().entrySet()){
+				entry.getKey().preRender();
+				renderer.addMesh(entry.getValue());
+				entry.getKey().postRender();
+			}
+		}
+		
 		renderer.end();
 	}
 
