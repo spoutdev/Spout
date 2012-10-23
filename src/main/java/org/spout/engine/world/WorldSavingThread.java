@@ -81,7 +81,7 @@ public class WorldSavingThread extends Thread{
 
 	@Override
 	public void run() {
-		while (!this.isInterrupted()) {
+		while (!Thread.interrupted()) {
 			Callable<SpoutWorld> task;
 			try {
 				task = queue.take();

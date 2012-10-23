@@ -29,6 +29,7 @@ package org.spout.engine.world;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.Spout;
@@ -67,6 +68,7 @@ public class RegionSource implements Iterable<Region> {
 
 	@DelayedWrite
 	public void removeRegion(final SpoutRegion r) {
+		TickStage.checkStage(TickStage.SNAPSHOT);
 		if (!r.getWorld().equals(world)) {
 			return;
 		}
@@ -99,6 +101,7 @@ public class RegionSource implements Iterable<Region> {
 							}
 
 							Spout.getEventManager().callDelayedEvent(new RegionUnloadEvent(world, r));
+							r.unlinkNeighbours();
 						} else {
 							Spout.getLogger().info("Tried to remove region " + r + " but region removal failed");
 						}
