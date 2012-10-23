@@ -47,15 +47,17 @@ public class EntityRendererComponent extends EntityComponent {
 	public void onAttached(){
 		model = getOwner().get(ModelComponent.class);
 		transform = getOwner().getTransform();
-		batch = new PrimitiveBatch();
+		//batch = new PrimitiveBatch(); // cant create the batch before the context is created
 	}
 	
 	
 	public void render() {
-		if(model == null) return;
+		if (model == null) {
+			return;
+		}
 		BaseMesh m = (BaseMesh)model.getModel().getMesh();
 		
-		if(dirty) {
+		if (dirty) {
 			m.batch();
 			dirty = false;
 		}

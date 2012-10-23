@@ -53,7 +53,7 @@ public class ModelLoader extends BasicResourceLoader<ClientModel> {
 
 	@Override
 	public String getFallbackResourceName() {
-		return "mesh://Spout/resources/fallbacks/fallback.spm";
+		return "model://Spout/resources/fallbacks/fallback.spm";
 	}
 
 	@Override

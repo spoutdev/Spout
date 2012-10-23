@@ -63,7 +63,11 @@ public class EntityPrefabLoader extends BasicResourceLoader<ClientEntityPrefab> 
 		for (String path : componentsPath) {
 			Class<?> componentClass;
 			try {
-				componentClass = CommonClassLoader.findPluginClass(path);
+				try {
+					componentClass = CommonClassLoader.findPluginClass(path);
+				} catch (ClassNotFoundException e) {
+					componentClass = Class.forName(path);
+				}
 			} catch (ClassNotFoundException e) {
 				throw new IllegalStateException("A component is missing: "+path);
 			}
