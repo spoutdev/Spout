@@ -36,6 +36,7 @@ import org.spout.api.Source;
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentHolder;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.EntityPrefab;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.generator.WorldGenerator;
@@ -167,11 +168,32 @@ public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Name
 	public Entity createEntity(Point point, Class<? extends Component> type);
 	
 	/**
+	 * Create a new Entity for initialization
+	 * <p/>
+	 * This does not add the Entity to the server. You must call
+	 * {@link #spawnEntity(Entity)} to simulate the Entity in the world
+	 * @param point The point to spawn the Entity
+	 * @param prefab The entity prefab.
+	 * @return The created entity
+	 */	
+	public Entity createEntity(Point point, EntityPrefab prefab);
+	
+	/**
 	 * Add a created entity to the world for simulation and syncing to clients
 	 * @param e The entity to spawn
 	 */
 	public void spawnEntity(Entity e);
 
+	/**
+	 * Creates and Spawns an entity at the given point and with the given
+	 * Controller This is the same as {@link #createEntity(Point, org.spout.api.entity.EntityPrefab)} and
+	 * {@link #spawnEntity(Entity)} together.
+	 * @param point The point to spawn the Entity
+	 * @param prefab The entity prefab.
+	 * @return The Entity that has been created and spawned
+	 */
+	public Entity createAndSpawnEntity(Point point, EntityPrefab prefab, LoadOption option);
+	
 	/**
 	 * Creates and Spawns an entity at the given point and with the given
 	 * Controller This is the same as {@link #createEntity(Point, org.spout.api.entity.Controller)} and
