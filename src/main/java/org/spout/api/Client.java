@@ -30,6 +30,7 @@ import java.util.UUID;
 
 import org.spout.api.audio.SoundManager;
 import org.spout.api.geo.World;
+import org.spout.api.gui.ScreenStack;
 import org.spout.api.keyboard.Input;
 import org.spout.api.math.Vector2;
 import org.spout.api.entity.Player;
@@ -113,5 +114,12 @@ public interface Client extends Engine {
 	 * 
 	 * @return the resolution of the window.
 	 */
-	Vector2 getResolution();
+	public Vector2 getResolution();
+	
+	/**
+	 * Returns the screen stack.
+	 * 
+	 * @return the screen stack.
+	 */
+	public ScreenStack getScreenStack();
 }
