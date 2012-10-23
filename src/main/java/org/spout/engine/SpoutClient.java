@@ -133,6 +133,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private SpoutPlayer activePlayer;
 	private final AtomicReference<SpoutClientWorld> activeWorld = new AtomicReference<SpoutClientWorld>();
 	private final AtomicReference<PortBinding> potentialBinding = new AtomicReference<PortBinding>();
+	private boolean ccoverride = false;
 	// Handle stopping
 	private volatile boolean rendering = true;
 	private String stopMessage = null;
@@ -179,6 +180,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, true);
 		bootstrap.setPipelineFactory(pipelineFactory);
 		super.init(args);
+		
+		this.ccoverride = args.ccoverride;
 		
 		inputManager.bind(SpoutInputConfiguration.FORWARD.getString(), "+Forward");
 		inputManager.bind(SpoutInputConfiguration.BACKWARD.getString(), "+BackWard");
@@ -550,7 +553,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 				gui.draw(widget.getRenderParts());
 			}
 		}
-		gui.draw(guimaterial, 0.5f, 0, 0.25f, 0.25f);
 		gui.render();
 		
 		if (System.currentTimeMillis()-lastFrameTime>1000) {
@@ -585,6 +587,13 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private void createWindow() {
 		try {
 			Display.setDisplayMode(new DisplayMode((int) resolution.getX(), (int) resolution.getY()));
+			
+			//Override using ContextAttribs for some videocards that don't support ARB_CREATE_CONTEXT
+			if(ccoverride){
+				Display.create(new PixelFormat(8, 24, 0));
+				Display.setTitle("Spout Client");
+				return;
+			}
 
 			if (MacOSXUtils.isMac()) {
 				createMacWindow();
