@@ -173,6 +173,7 @@ public class CommonPluginLoader implements PluginLoader {
 		    String version = e.getMessage().replaceFirst("Unsupported major.minor version ", "").split(" ")[0];
 		    Spout.getLogger().severe("Plugin " + desc.getName() + " is built for a newer Java version than your current installation, and cannot be loaded!");
 		    Spout.getLogger().severe("To run " + desc.getName() + ", you need Java version " + version + " or higher!");
+		    throw new InvalidPluginException(e);
 		}
 
 		loader.setPlugin(result);
