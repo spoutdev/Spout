@@ -1415,7 +1415,7 @@ public class SpoutRegion extends Region {
 		AtomicReference<SpoutRegion> ref = neighbours[dx][dy][dz];
 		SpoutRegion region = ref.get();
 		if (region == null) {
-			region = getWorld().getRegion(getX() + dx - 1, getY() + dy - 1, getZ() + dz - 1);
+			region = getWorld().getRegion(getX() + dx - 1, getY() + dy - 1, getZ() + dz - 1, loadopt);
 			ref.compareAndSet(null, region);
 		}
 		return region;
