@@ -27,85 +27,114 @@
 package org.spout.api.inventory.recipe;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
+import org.spout.api.inventory.Inventory;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.Material;
-import org.spout.api.plugin.Plugin;
 
-public class ShapelessRecipe implements Recipe {
-	private final Plugin plugin;
-	private final ItemStack result;
-	private final List<Material> ingredients;
-	private final boolean includeData;
+public class ShapelessRecipe extends Recipe {
+	private final List<ItemStack> ingredients = new ArrayList<ItemStack>();
 
-	public ShapelessRecipe(RecipeBuilder builder) {
-		this.plugin = builder.plugin;
-		this.result = builder.result;
-		this.ingredients = builder.ingredients;
-		this.includeData = builder.includeData;
+	public ShapelessRecipe(ItemStack result) {
+		super(result);
+	}
+
+	/**
+	 * Adds an ingredient required to craft this recipe.
+	 *
+	 * @param ingredient to add
+	 * @return true if the ingredient already was present
+	 */
+	public boolean addIngredient(ItemStack ingredient) {
+		return ingredients.add(ingredient);
+	}
+
+	/**
+	 * Adds an ingredient required to craft this recipe.
+	 *
+	 * @param material to add
+	 * @param amount of material to add
+	 * @return true if the ingredient already was present
+	 */
+	public boolean addIngredient(Material material, int amount) {
+		return addIngredient(new ItemStack(material, amount));
+	}
+
+	/**
+	 * Adds an ingredient required to craft this recipe.
+	 *
+	 * @param material
+	 * @return true if the ingredient already was present
+	 */
+	public boolean addIngredient(Material material) {
+		return addIngredient(material, 1);
+	}
+
+	/**
+	 * Adds all specified ingredients.
+	 *
+	 * @param ingredient
+	 * @return true if all ingredients were added.
+	 */
+	public boolean addIngredients(Collection<ItemStack> ingredient) {
+		return ingredients.addAll(ingredient);
+	}
+
+	/**
+	 * Removes an ingredient that is required to craft this recipe.
+	 *
+	 * @param ingredient
+	 * @return true if ingredient was present
+	 */
+	public boolean removeIngredient(ItemStack ingredient) {
+		return ingredients.remove(ingredient);
+	}
+
+	/**
+	 * Removes all occurrences of the material
+	 *
+	 * @param material
+	 */
+	public void removeIngredient(Material material) {
+		for (ItemStack item : ingredients) {
+			if (item.getMaterial() == material) {
+				ingredients.remove(item);
+			}
+		}
 	}
 
 	@Override
-	public ItemStack getResult() {
-		return result;
-	}
-
-	@Override
-	public List<Material> getIngredients() {
+	public List<ItemStack> getIngredients() {
 		return Collections.unmodifiableList(ingredients);
 	}
 
 	@Override
-	public Plugin getPlugin() {
-		return plugin;
-	}
-
-	@Override
-	public boolean getIncludeData() {
-		return includeData;
-	}
-
-	@Override
-	public int getNumOfMaterials() {
-		Set<Material> set = new HashSet<Material>(ingredients);
-		return set.size();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final ShapelessRecipe other = (ShapelessRecipe) obj;
-		if (this.plugin != other.plugin && (this.plugin == null || !this.plugin.equals(other.plugin))) {
-			return false;
-		}
-		if (this.result != other.result && (this.result == null || !this.result.equals(other.result))) {
-			return false;
-		}
-		List<Material> materials = new ArrayList<Material>();
-		List<Material> materials2 = new ArrayList<Material>();
-		materials.addAll(ingredients);
-		materials2.addAll(other.ingredients);
-		materials.removeAll(other.ingredients);
-		materials2.removeAll(ingredients);
-		if (!materials.isEmpty() || !materials2.isEmpty()) {
-			return false;
+	public boolean handle(Inventory inventory) {
+		for (ItemStack ingredient : ingredients) {
+			if (!inventory.contains(ingredient.getMaterial(), ingredient.getAmount())) {
+				return false;
+			}
 		}
 		return true;
 	}
 
 	@Override
+	public Recipe clone() {
+		ShapelessRecipe clone = new ShapelessRecipe(result);
+		clone.addIngredients(ingredients);
+		return clone;
+	}
+
+	@Override
 	public int hashCode() {
-		return (new HashCodeBuilder()).append(plugin).append(result).append(ingredients).build();
+		return ingredients.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj != null && obj instanceof ShapelessRecipe && ((ShapelessRecipe) obj).ingredients == ingredients;
 	}
 }

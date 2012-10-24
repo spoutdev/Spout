@@ -26,47 +26,24 @@
  */
 package org.spout.api.inventory.recipe;
 
-import java.io.Serializable;
-import java.util.Collection;
+import org.junit.Test;
 
 import org.spout.api.inventory.Inventory;
 import org.spout.api.inventory.ItemStack;
+import org.spout.api.material.BlockMaterial;
 
-/**
- * Represents an arrangement of {@link ItemStack} with an outcome
- */
-public abstract class Recipe implements Serializable, Cloneable {
-	protected final ItemStack result;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
-	public Recipe(ItemStack result) {
-		this.result = result;
+public class ShapelessRecipeTest {
+	@Test
+	public void testShapelessRecipe() {
+		ItemStack solid = new ItemStack(BlockMaterial.SOLID, 1);
+		ShapelessRecipe recipe = new ShapelessRecipe(solid.clone());
+		recipe.addIngredient(solid.clone().setAmount(20));
+		Inventory inventory = new Inventory(1);
+		assertFalse(recipe.handle(inventory));
+		inventory.add(solid.clone().setAmount(64));
+		assertTrue(recipe.handle(inventory));
 	}
-
-	/**
-	 * Returns the result of the Recipe if successful.
-	 *
-	 * @return result of recipe
-	 */
-	public ItemStack getResult() {
-		return result;
-	}
-
-	/**
-	 * Returns the required ingredients to meet the requirements of the recipe.
-	 *
-	 * @return collection of ingredients to craft the recipe
-	 */
-	public abstract Collection<ItemStack> getIngredients();
-
-	/**
-	 * Whether the inventory has the required ingredients in it in the proper
-	 * arrangement to craft the result.
-	 *
-	 * @param inventory to check
-	 * @return true if the inventory meets the requirements
-	 */
-	public abstract boolean handle(Inventory inventory);
-
-	@Override
-	public abstract Recipe clone();
 }
