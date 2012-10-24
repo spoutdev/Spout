@@ -30,6 +30,7 @@ import org.spout.api.component.components.EntityComponent;
 import org.spout.api.component.components.ModelComponent;
 import org.spout.api.component.components.TransformComponent;
 import org.spout.api.math.Matrix;
+import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
 import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.mesh.BaseMesh;
@@ -51,10 +52,18 @@ public class EntityRendererComponent extends EntityComponent {
 	}
 	
 	
-	public void render() {
+	public void render(Camera camera) {
 		if (model == null) {
+			System.out.println("no model component");
 			return;
 		}
+		
+		if (model.getModel() == null) {
+			System.out.println("no model");
+			model.setModel("model://Spout/resources/fallbacks/fallback.spm");
+			return;
+		}
+		
 		BaseMesh m = (BaseMesh)model.getModel().getMesh();
 		
 		if (dirty) {
@@ -64,10 +73,11 @@ public class EntityRendererComponent extends EntityComponent {
 		Matrix modelMatrix = transform.getTransformation();
 		RenderMaterial mat = model.getModel().getRenderMaterial();
 		
+		mat.getShader().setUniform("View", camera.getView());
+		mat.getShader().setUniform("Projection", camera.getProjection());
 		mat.getShader().setUniform("Model", modelMatrix);		
 		
 		m.render(mat);
-		
 	}
 	
 }

@@ -568,10 +568,15 @@ public class WorldFiles {
 		List<Class<? extends Component>> types = new ArrayList<Class<? extends Component>>(components.getValue().size());
 		for (StringTag component : components.getValue()) {
 			try {
-				Class<? extends Component> clazz = (Class<? extends Component>) CommonClassLoader.findPluginClass(component.getValue());
-				types.add(clazz);
-			} catch (ClassNotFoundException ex) {
-				Spout.getLogger().log(Level.SEVERE, "Unable to find component class " + component.getValue(), ex);
+				try {
+					Class<? extends Component> clazz = (Class<? extends Component>) CommonClassLoader.findPluginClass(component.getValue());
+					types.add(clazz);
+				} catch (ClassNotFoundException e) {
+					Class<? extends Component> clazz = (Class<? extends Component>) Class.forName(component.getValue());
+					types.add(clazz);
+				}
+			} catch (ClassNotFoundException e) {
+				Spout.getLogger().log(Level.SEVERE, "Unable to find component class " + component.getValue(), e);
 			}
 		}
 
