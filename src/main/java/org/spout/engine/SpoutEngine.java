@@ -77,8 +77,8 @@ import org.spout.api.generator.biome.BiomeRegistry;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.inventory.recipe.CommonRecipeManager;
 import org.spout.api.inventory.recipe.RecipeManager;
+import org.spout.api.inventory.recipe.SimpleRecipeManager;
 import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.permissions.DefaultPermissions;
@@ -141,7 +141,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private final CommonPluginManager pluginManager = new CommonPluginManager(this, securityManager, 0.0);
 	private final ConsoleManager consoleManager;
 	private final EventManager eventManager = new SimpleEventManager();
-	private final RecipeManager recipeManager = new CommonRecipeManager();
+	private final RecipeManager recipeManager = new SimpleRecipeManager();
 	private final ServiceManager serviceManager = CommonServiceManager.getInstance();
 	private final SnapshotManager snapshotManager = new SnapshotManager();
 	protected final SnapshotableLinkedHashMap<String, SpoutPlayer> players = new SnapshotableLinkedHashMap<String, SpoutPlayer>(snapshotManager);
