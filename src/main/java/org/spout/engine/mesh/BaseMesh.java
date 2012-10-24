@@ -58,21 +58,28 @@ public class BaseMesh extends Resource implements Mesh, Iterable<MeshFace> {
 	protected void batch(Renderer batcher) {
 		for (MeshFace face : faces) {
 			for(Vertex vert : face){
-				batcher.addTexCoord(vert.texCoord0);
-				batcher.addNormal(vert.normal);
+				if (vert.texCoord0!=null)
+					batcher.addTexCoord(vert.texCoord0);
+				if (vert.normal!=null)
+					batcher.addNormal(vert.normal);
+				if (vert.color!=null)
+					batcher.addColor(vert.color);
 				batcher.addVertex(vert.position);
-				batcher.addColor(vert.color);
 			}
 		}
 	}
 
 	public void batch(){
-		if(renderer == null) renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
+		if (renderer == null)
+			renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
+		renderer.begin();
 		this.batch(renderer);
+		renderer.end();
 	}
 	
 	public void render(RenderMaterial material){
-		if(renderer == null) throw new IllegalStateException("Cannot render without batching first!");
+		if (renderer == null)
+			throw new IllegalStateException("Cannot render without batching first!");
 		
 		material.preRender();
 		renderer.render(material);

@@ -36,8 +36,6 @@ public class ClientModel extends Resource implements Model {
 	public Mesh mesh;
 	public RenderMaterial material;
 	
-	
-	
 	public ClientModel(Mesh mesh, RenderMaterial material) {
 		this.mesh = mesh;
 		this.material = material;
