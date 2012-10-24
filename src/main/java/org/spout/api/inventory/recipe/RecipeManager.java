@@ -26,105 +26,101 @@
  */
 package org.spout.api.inventory.recipe;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.spout.api.material.Material;
+import org.spout.api.inventory.Inventory;
+import org.spout.api.inventory.ItemStack;
 import org.spout.api.plugin.Plugin;
 
 public interface RecipeManager {
 	/**
-	 * Registers a recipe to this games recipe database, then stores the recipe
-	 * in the associated plugins recipe.yml. If a recipe for that plugin of that
-	 * name already exists, it will update the database and the recipe.yml
+	 * Registers a recipe to be stored.
+	 *
+	 * @param plugin to register recipe to
 	 * @param recipe to register
-	 * @return true if successful
+	 * @return true if recipe already existed
 	 */
-	public boolean addRecipe(Recipe recipe);
+	public boolean register(Plugin plugin, Recipe recipe);
 
 	/**
-	 * Gets a set of recipe registered to this game recipe database, based on the
-	 * plugin and result of the recipe.
-	 * @param plugin that the recipe belongs to
-	 * @param result
-	 * @return the recipes if they're found, otherwise null
+	 * Registers all the specified recipes to the specified plugin.
+	 *
+	 * @param plugin to register recipes to
+	 * @param recipes to register
+	 * @return true if the set of recipes was changed
 	 */
-	public Set<Recipe> getRecipes(Plugin plugin, Material result);
+	public boolean registerAll(Plugin plugin, Set<Recipe> recipes);
 
 	/**
-	 * Replaces an old recipe with a new one.
-	 * @param oldRecipe
-	 * @param newRecipe
-	 * @return true if fully successful
+	 * Removes a recipe.
+	 *
+	 * @param plugin to remove recipe from
+	 * @param recipe to remove
+	 * @return whether the recipe existed
 	 */
-	public boolean replaceRecipe(Recipe oldRecipe, Recipe newRecipe);
+	public boolean remove(Plugin plugin, Recipe recipe);
 
 	/**
-	 * Removes a recipe from the games recipes database, then returns the
-	 * instance of it if you want to back it up.
-	 * <p/>
-	 * *WARNING* This will also remove the recipe from the plugins recipe.yml!
-	 * It returns a reference to the removed recipe if you want to back it up
-	 * for safe keeping still. *WARNING*
-	 * @param recipe what to remove
-	 * @return true if successful, false if not
+	 * Removes all recipes of the specified {@link Plugin}
+	 *
+	 * @param plugin to remove recipes
 	 */
-	public boolean removeRecipe(Recipe recipe);
+	public void removeAll(Plugin plugin);
 
 	/**
-	 * Get all the registered recipes, from all the plugins.
-	 * @return All the registered recipes.
+	 * Clears all recipes.
 	 */
-	public Set<Recipe> getAllRecipes();
+	public void clear();
 
 	/**
-	 * Gets all the recipes registered for a plugin.
-	 * @param plugin that the recipes belongs to
-	 * @return the recipes if they're found, otherwise an empty set
+	 * Returns all recipes registered to the specified {@link Plugin}
+	 *
+	 * @param plugin to get recipes from
+	 * @return recipes of plugin
 	 */
 	public Set<Recipe> getRecipes(Plugin plugin);
 
 	/**
-	 * Gets all the shaped recipes registered for a plugin.
-	 * @param plugin that the recipes belongs to
-	 * @return the recipes if they're found, otherwise an empty set
+	 * Returns all recipes of all registered {@link Plugin}s
+	 *
+	 * @return all recipes
 	 */
-	public Set<Recipe> getShapedRecipes(Plugin plugin);
+	public Set<Recipe> getAllRecipes();
 
 	/**
-	 * Gets all the shapeless recipes registered for a plugin.
-	 * @param plugin that the recipes belongs to
-	 * @return the recipes if they're found, otherwise an empty set
+	 * Returns a {@link java.util.Map} of {@link Plugin}s to their registered
+	 * {@link Recipe}s
+	 *
+	 * @return recipe map
 	 */
-	public Set<Recipe> getShapelessRecipes(Plugin plugin);
+	public Map<Plugin, Set<Recipe>> getRecipeMap();
 
 	/**
-	 * Match the materials to any ShapedRecipe
-	 * @param materials by rows
-	 * @return ShapedRecipe
+	 * Tries to craft a result from specified recipes using the specified
+	 * {@link org.spout.api.inventory.Inventory} as ingredients.
+	 *
+	 * @param recipes to check
+	 * @param inventory to test
+	 * @return result of craft, null if no result
 	 */
-	public ShapedRecipe matchShapedRecipe(List<List<Material>> materials);
+	public ItemStack handle(Set<Recipe> recipes, Inventory inventory);
 
 	/**
-	 * Match the materials to any ShapelessRecipe
-	 * @param materials
-	 * @return ShapelesRecipe
+	 * Tries to craft a result from all available recipes.
+	 *
+	 * @param inventory to test
+	 * @return result of craft
 	 */
-	public ShapelessRecipe matchShapelessRecipe(List<Material> materials);
+	public ItemStack handle(Inventory inventory);
 
 	/**
-	 * Match the materials to any ShapedRecipe for a given plugin
-	 * @param plugin
-	 * @param materials by rows
-	 * @return ShapedRecipe
+	 * Tries to craft a result from all available recipes registered to the
+	 * specified {@link Plugin}.
+	 *
+	 * @param plugin to get recipes from
+	 * @param inventory to test
+	 * @return result of craft
 	 */
-	public ShapedRecipe matchShapedRecipe(Plugin plugin, List<List<Material>> materials);
-
-	/**
-	 * Match the materials to any ShapelessRecipe for a given plugin
-	 * @param plugin
-	 * @param materials
-	 * @return ShapelesRecipe
-	 */
-	public ShapelessRecipe matchShapelessRecipe(Plugin plugin, List<Material> materials);
+	public ItemStack handle(Plugin plugin, Inventory inventory);
 }

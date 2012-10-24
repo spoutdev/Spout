@@ -26,47 +26,42 @@
  */
 package org.spout.api.inventory.recipe;
 
-import java.io.Serializable;
-import java.util.Collection;
+import org.junit.Test;
 
 import org.spout.api.inventory.Inventory;
 import org.spout.api.inventory.ItemStack;
+import org.spout.api.material.BlockMaterial;
 
-/**
- * Represents an arrangement of {@link ItemStack} with an outcome
- */
-public abstract class Recipe implements Serializable, Cloneable {
-	protected final ItemStack result;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-	public Recipe(ItemStack result) {
-		this.result = result;
+public class ShapedRecipeTest {
+	@Test
+	public void testShapedRecipe() {
+
+		final ItemStack solid = new ItemStack(BlockMaterial.SOLID, 5);
+		final ShapedRecipe recipe = new ShapedRecipe(new ItemStack(BlockMaterial.UNBREAKABLE, 1));
+
+		// Add rows
+		recipe.addRow(' ', 'X', ' ');
+		recipe.addRow('X', 'X', 'X');
+		recipe.addRow(' ', 'X', ' ');
+		recipe.setIngredient('X', solid.clone());
+
+		// Create inventory to test
+		Inventory inventory = new Inventory(9);
+
+		// Make sure we can't craft yet
+		assertFalse(recipe.handle(inventory));
+
+		// Add ingredients
+		inventory.set(1, solid.clone());
+		inventory.set(3, solid.clone());
+		inventory.set(4, solid.clone());
+		inventory.set(5, solid.clone());
+		inventory.set(7, solid.clone());
+
+		// Try to craft
+		assertTrue(recipe.handle(inventory));
 	}
-
-	/**
-	 * Returns the result of the Recipe if successful.
-	 *
-	 * @return result of recipe
-	 */
-	public ItemStack getResult() {
-		return result;
-	}
-
-	/**
-	 * Returns the required ingredients to meet the requirements of the recipe.
-	 *
-	 * @return collection of ingredients to craft the recipe
-	 */
-	public abstract Collection<ItemStack> getIngredients();
-
-	/**
-	 * Whether the inventory has the required ingredients in it in the proper
-	 * arrangement to craft the result.
-	 *
-	 * @param inventory to check
-	 * @return true if the inventory meets the requirements
-	 */
-	public abstract boolean handle(Inventory inventory);
-
-	@Override
-	public abstract Recipe clone();
 }
