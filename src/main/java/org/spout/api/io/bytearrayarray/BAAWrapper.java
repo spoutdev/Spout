@@ -165,6 +165,15 @@ public class BAAWrapper {
 			return in;
 		}
 	}
+	
+	/**
+	 * Gets the filename of the file handled by this wrapper
+	 * 
+	 * @return the filename
+	 */
+	public String getFilename() {
+		return file.getPath();
+	}
 
 	private ByteArrayArray getByteArrayArray() {
 		int count = 0;
