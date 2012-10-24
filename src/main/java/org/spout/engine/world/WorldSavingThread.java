@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
-
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
@@ -59,7 +58,7 @@ public class WorldSavingThread extends Thread{
 
 	public static void saveChunk(SpoutChunk chunk) {
 		ChunkSaveTask task = new ChunkSaveTask(chunk);
-		if (instance.isInterrupted() || !instance.isAlive()) {
+		if (instance.isInterrupted()) {
 			Spout.getLogger().warning("Attempt to queue chunks for saving after world thread shutdown");
 			task.call();
 		} else {
@@ -81,7 +80,7 @@ public class WorldSavingThread extends Thread{
 
 	@Override
 	public void run() {
-		while (!Thread.interrupted()) {
+		while (!this.isInterrupted()) {
 			Callable<SpoutWorld> task;
 			try {
 				task = queue.take();
