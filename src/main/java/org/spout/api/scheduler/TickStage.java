@@ -150,7 +150,7 @@ public class TickStage {
 			case 1 << 10:
 				return "PRESNAPSHOT";
 			case 1 << 11:
-				return "SNAPSHOT"
+				return "SNAPSHOT";
 			default:
 				return "UNKNOWN";
 		}
