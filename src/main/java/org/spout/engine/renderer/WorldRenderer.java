@@ -100,7 +100,7 @@ public class WorldRenderer {
 		while( (chunkMesh = renderChunkMeshBatchQueue.poll()) != null){
 			Vector3 batchCoords = ChunkMeshBatch.getBatchCoordinates(new Vector3(chunkMesh.getX(), chunkMesh.getY(), chunkMesh.getZ()));
 			Vector3 chunkCoords = ChunkMeshBatch.getChunkCoordinates(batchCoords);
-			ChunkMeshBatch chunkMeshBatch = getChunkMeshBatchByChunkPosition(chunkCoords.getFloorX(), chunkCoords.getFloorY(), chunkCoords.getFloorZ());
+			ChunkMeshBatch chunkMeshBatch = getChunkMeshBatchByBatchPosition(batchCoords.getFloorX(), batchCoords.getFloorY(), batchCoords.getFloorZ());
 		
 			if(chunkMeshBatch==null){
 				if(!chunkMesh.hasVertices())
@@ -168,7 +168,7 @@ public class WorldRenderer {
 	 * @param y
 	 * @param z
 	 */
-	private ChunkMeshBatch getChunkMeshBatchByChunkPosition(int x, int y, int z) {
+	private ChunkMeshBatch getChunkMeshBatchByBatchPosition(int x, int y, int z) {
 		return chunkRenderersByPosition.get(x, y, z);
 	}
 

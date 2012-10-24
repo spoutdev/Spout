@@ -137,8 +137,7 @@ public class ChunkMeshBatch extends Cuboid {
 	}
 
 	private int getIndexFromChunkMesh(ChunkMesh chunkMesh) {
-		// TODO : Implement it if SIZE != 1
-		return 0;
+		return ( chunkMesh.getX() - getBase().getFloorX() ) * SIZE_Y * SIZE_Z + ( chunkMesh.getY() - getBase().getFloorY() ) * SIZE_Z + ( chunkMesh.getZ() - getBase().getFloorZ() );
 	}
 
 	public void addMesh(ChunkMesh chunkMesh) {
