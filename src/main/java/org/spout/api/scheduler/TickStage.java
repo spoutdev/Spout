@@ -142,11 +142,15 @@ public class TickStage {
 			case 1 << 6:
 				return "GLOBAL_DYNAMIC_BLOCKS";
 			case 1 << 7:
-				return "FINALIZE";
+				return "LIGHTING";
 			case 1 << 8:
-				return "PRESNAPSHOT";
+				return "GLOBAL_LIGHTING";
 			case 1 << 9:
-				return "SNAPSHOT";
+				return "FINALIZE";
+			case 1 << 10:
+				return "PRESNAPSHOT";
+			case 1 << 11:
+				return "SNAPSHOT"
 			default:
 				return "UNKNOWN";
 		}
