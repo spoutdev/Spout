@@ -28,6 +28,7 @@ package org.spout.api.plugin;
 
 import org.apache.commons.collections.map.CaseInsensitiveMap;
 import org.spout.api.Engine;
+import org.spout.api.Spout;
 import org.spout.api.UnsafeMethod;
 import org.spout.api.event.server.plugin.PluginDisableEvent;
 import org.spout.api.event.server.plugin.PluginEnableEvent;
@@ -168,6 +169,10 @@ public class CommonPluginLoader implements PluginLoader {
 			}
 		} catch (Exception e) {
 			throw new InvalidPluginException(e);
+		} catch (UnsupportedClassVersionError e) {
+		    String version = e.getMessage().replaceFirst("Unsupported major.minor version ", "").split(" ")[0];
+		    Spout.getLogger().severe("Plugin " + desc.getName() + " is built for a newer Java version than your current installation, and cannot be loaded!");
+		    Spout.getLogger().severe("To run " + desc.getName() + ", you need Java version " + version + " or higher!");
 		}
 
 		loader.setPlugin(result);
