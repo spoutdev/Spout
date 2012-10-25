@@ -510,11 +510,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 		font2.load();
 
 		// Test
-		ClientEntityPrefab zombie = (ClientEntityPrefab) Spout.getFilesystem().getResource("entity://Spout/resources/fallbacks/entity.sep");
-		System.out.println("Loaded : " + zombie.getName());
+		ClientEntityPrefab spoutyType = (ClientEntityPrefab) Spout.getFilesystem().getResource("entity://Spout/resources/resources/entities/Spouty/spouty.sep");
 
-		Entity e = zombie.createEntity(new Point(super.getDefaultWorld(),0,0,0));
-		//e.setSavable(false); // To prevent entity duplication
+		Entity e = spoutyType.createEntity(new Point(super.getDefaultWorld(),0,0,0));
+		e.setSavable(false); // To prevent entity duplication
 		super.getDefaultWorld().spawnEntity(e);
 	}
 

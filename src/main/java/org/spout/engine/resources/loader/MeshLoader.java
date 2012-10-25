@@ -51,19 +51,19 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 			String s = scan.nextLine();
 			if (s.startsWith("#"))
 				continue; // it's a comment, skip it
-			if (s.startsWith("v")) {
+			if (s.startsWith("v ")) { // Space is important !!
 				String[] sp = s.split(" ");
 				verticies.add(new Vector3(Float.parseFloat(sp[1]), Float.parseFloat(sp[2]), Float.parseFloat(sp[3])));
 			}
-			if (s.startsWith("vn")) {
+			if (s.startsWith("vn ")) {
 				String[] sp = s.split(" ");
 				normals.add(new Vector3(Float.parseFloat(sp[1]), Float.parseFloat(sp[2]), Float.parseFloat(sp[3])));
 			}
-			if (s.startsWith("vt")) {
+			if (s.startsWith("vt ")) {
 				String[] sp = s.split(" ");
-				uvs.add(new Vector2(Float.parseFloat(sp[1]), Float.parseFloat(sp[2])));
+				uvs.add(new Vector2(Float.parseFloat(sp[1]), 1-Float.parseFloat(sp[2])));
 			}
-			if (s.startsWith("f")) {
+			if (s.startsWith("f ")) {
 				String[] sp = s.split(" ");
 
 				if (sp[1].contains("//")) {
@@ -80,11 +80,16 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 
 				} else if (sp[1].contains("/")) {
 					ArrayList<Vertex> ar = new ArrayList<Vertex>();
-					for (int i = 1; i <= 2; i++) {
+					for (int i = 1; i <= 3; i++) {
 						String[] sn = sp[i].split("/");
 						int pos = Integer.parseInt(sn[0]);
 						int uv = Integer.parseInt(sn[1]);
-						ar.add(new Vertex(verticies.get(pos - 1), uvs.get(uv - 1)));
+						if (sn.length>2) {
+							int norm = Integer.parseInt(sn[2]);
+							ar.add(new Vertex(verticies.get(pos - 1), normals.get(norm - 1), uvs.get(uv - 1)));
+						} else {
+							ar.add(new Vertex(verticies.get(pos - 1), uvs.get(uv - 1)));
+						}
 
 					}
 					faces.add(new MeshFace(ar.get(0), ar.get(1), ar.get(2)));
