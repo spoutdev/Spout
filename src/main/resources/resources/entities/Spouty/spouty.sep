@@ -1,0 +1,8 @@
+Name: "Spouty"
+Components:
+    - org.spout.engine.entity.component.EntityRendererComponent
+Data:
+    Health: 20
+    Damages: 1
+    Size: 1
+    Model: model://Spout/resources/resources/entities/Spouty/spouty.spm

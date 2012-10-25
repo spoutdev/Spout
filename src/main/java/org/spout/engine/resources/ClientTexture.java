@@ -63,7 +63,7 @@ public class ClientTexture extends Texture {
 			throw new IllegalStateException("Cannot bind an unloaded texture!");
 		}
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
-
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 	}
 
