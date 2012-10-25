@@ -224,7 +224,7 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 		// Replace placeholders
 		int i = 0;
 		for (Object arg : args) {
-			source = source.replaceAll("%" + i, arg.toString());
+			source = source.replaceAll("%" + i, (arg != null ? arg.toString() : "null"));
 			i++;
 		}
 		return source;
