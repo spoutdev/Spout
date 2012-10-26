@@ -42,8 +42,6 @@ public class MeshFace implements Iterable<Vertex> {
 	
 	Vertex[] verts = new Vertex[3];
 	
-	
-	
 	public MeshFace(Vertex v1, Vertex v2, Vertex v3 ) {
 		verts[0] = v1;
 		verts[1] = v2;

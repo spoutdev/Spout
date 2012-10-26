@@ -27,8 +27,13 @@
 package org.spout.api.gui.render;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.spout.api.math.Rectangle;
+import org.spout.api.math.Vector2;
+import org.spout.api.math.Vector3;
+import org.spout.api.model.Vertex;
 import org.spout.api.render.RenderMaterial;
 
 public class RenderPart implements Comparable<RenderPart> {
@@ -68,6 +73,29 @@ public class RenderPart implements Comparable<RenderPart> {
 	
 	public void setColor(Color color) {
 		this.color = color;
+	}
+	
+	public List<Vertex> getVertices() {
+		List<Vertex> face = new ArrayList<Vertex>();
+		Vector3 p1 = new Vector3(sprite.getX(), sprite.getY(), 0);
+		Vector3 p2 = new Vector3(sprite.getX()+sprite.getWidth(), sprite.getY(), 0);
+		Vector3 p3 = new Vector3(sprite.getX()+sprite.getWidth(), sprite.getY()-sprite.getHeight(), 0);
+		Vector3 p4 = new Vector3(sprite.getX(), sprite.getY()-sprite.getHeight(), 0);
+		
+		Vector2 t1 = new Vector2(source.getX(), source.getY());
+		Vector2 t2 = new Vector2(source.getX()+source.getWidth(), source.getY());
+		Vector2 t3 = new Vector2(source.getX()+source.getWidth(), source.getY()+source.getHeight());
+		Vector2 t4 = new Vector2(source.getX(), source.getY()+source.getHeight());
+		
+		face.add(new Vertex(p1, t1));
+		face.add(new Vertex(p2, t2));
+		face.add(new Vertex(p3, t3));
+		face.add(new Vertex(p4, t4));
+		
+		for (Vertex v : face)
+			v.color = color;
+		
+		return face;
 	}
 	
 	@Override
