@@ -151,11 +151,13 @@ public class ChunkMesh extends ComposedMesh {
 		}
 		}*/
 		
+		Vector3 model = new Vector3(x & Chunk.BLOCKS.MASK, y & Chunk.BLOCKS.MASK, z & Chunk.BLOCKS.MASK);
+		
 		for (BlockFace face : renderableFaces) {
 			if (shouldRender[face.ordinal()]) {
 				// System.out.println(material + " " + face + " " + position);
 				// Create a face -- temporary until we get some real models
-				appendModelFaces(material, face, position, faces);
+				appendModelFaces(material, face, model, faces);
 			}
 		}
 	}

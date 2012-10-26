@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Map.Entry;
 
 import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Cuboid;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.MathHelper;
@@ -57,7 +58,7 @@ public class ChunkMeshBatch extends Cuboid {
 	
 	public ChunkMeshBatch(World world, int baseX, int baseY, int baseZ) {
 		super(new Point(world, baseX, baseY, baseZ), SIZE);
-		modelMat = MathHelper.translate(new Vector3(baseX * SIZE_X, baseY * SIZE_Y, baseZ * SIZE_Z));
+		modelMat = MathHelper.translate(new Vector3(baseX * SIZE_X * Chunk.BLOCKS.SIZE, baseY * SIZE_Y * Chunk.BLOCKS.SIZE, baseZ * SIZE_Z * Chunk.BLOCKS.SIZE));
 	}
 
 	public void update() {
