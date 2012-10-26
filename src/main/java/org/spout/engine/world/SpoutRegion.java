@@ -1403,30 +1403,11 @@ public class SpoutRegion extends Region {
 		}
 	}
 	
-	/**
-	 * Gets a neighbouring region.  Only the 3x3x3 cube of regions centered on this region can be obtained by this method.
-	 * 
-	 * @param dx
-	 * @param dy
-	 * @param dz
-	 * @param loadopt
-	 * @return
-	 */
 	public SpoutRegion getLocalRegion(BlockFace face, LoadOption loadopt) {
 		Vector3 offset = face.getOffset();
 		return getLocalRegion(offset.getFloorX() + 1, offset.getFloorY() + 1, offset.getFloorZ() + 1, loadopt);
 	}
 	
-	/**
-	 * Gets a neighbouring region.  The coordinates provided range from 0 to 2, rather than -1 to +1.  
-	 * If all 3 coordinates are 1, then this region is returned.
-	 * 
-	 * @param dx
-	 * @param dy
-	 * @param dz
-	 * @param loadopt
-	 * @return
-	 */
 	public SpoutRegion getLocalRegion(int dx, int dy, int dz, LoadOption loadopt) {
 		if (loadopt != LoadOption.NO_LOAD) {
 			TickStage.checkStage(~TickStage.SNAPSHOT);
@@ -1440,56 +1421,15 @@ public class SpoutRegion extends Region {
 		return region;
 	}
 	
-	/**
-	 * Gets a chunk relative to a given chunk.  The given chunk must be in this region and the requested chunk 
-	 * must be in the 3x3x3 cube of regions centred on this region.<br>
-	 * 
-	 * @param c
-	 * @param face
-	 * @param loadopt
-	 * @return
-	 */
 	public SpoutChunk getLocalChunk(Chunk c, BlockFace face, LoadOption loadopt) {
 		Vector3 offset = face.getOffset();
 		return getLocalChunk(c, offset.getFloorX(), offset.getFloorY(), offset.getFloorZ(), loadopt);
 	}
 	
-	/**
-	 * Gets a chunk relative to a given chunk.  The given chunk must be in this region and the requested chunk 
-	 * must be in the 3x3x3 cube of regions centred on this region.<br>
-	 * <br>
-	 * (ox, oy, oz) is the offset to the desired chunk.  The coordinates of the offset can not have 
-	 * a magnitude greater than 16.
-	 * 
-	 * @param c
-	 * @param ox
-	 * @param oy
-	 * @param oz
-	 * @param loadopt
-	 * @return
-	 */
 	public SpoutChunk getLocalChunk(Chunk c, int ox, int oy, int oz, LoadOption loadopt) {
 		return getLocalChunk(c.getX(), c.getY(), c.getZ(), ox, oy, oz, loadopt);
 	}
 	
-	/**
-	 * Gets a chunk relative to given chunk coordinates.  The given chunk must be in this region and the requested chunk 
-	 * must be in the 3x3x3 cube of regions centred on this region.<br>
-	 * <br>
-	 * (x, y, z) are the coordinates of a chunk in this region.<br>
-	 * <br>
-	 * (ox, oy, oz) is the offset to the desired chunk.  The coordinates of the offset can not have 
-	 * a magnitude greater than 16.
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param ox
-	 * @param oy
-	 * @param oz
-	 * @param loadopt
-	 * @return
-	 */
 	public SpoutChunk getLocalChunk(int x, int y, int z, int ox, int oy, int oz, LoadOption loadopt) {
 		x &= CHUNKS.MASK;
 		y &= CHUNKS.MASK;
@@ -1500,19 +1440,6 @@ public class SpoutRegion extends Region {
 		return getLocalChunk(x, y, z, loadopt);
 	}
 	
-	/**
-	 * Gets a chunk in the 3x3x3 cube of regions centered on this region.<br>
-	 * <br>
-	 * The valid range for the (x, y, z) coordinates is -16 to 31.<br>
-	 * <br>
-	 * To request a chunk in this region, all three coordinates must be in the range of 0 to 15.
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param loadopt
-	 * @return
-	 */
 	public SpoutChunk getLocalChunk(int x, int y, int z, LoadOption loadopt) {
 		int dx = 1 + (x >> CHUNKS.BITS);
 		int dy = 1 + (y >> CHUNKS.BITS);
