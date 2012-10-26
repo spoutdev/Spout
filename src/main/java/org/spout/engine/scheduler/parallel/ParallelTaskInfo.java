@@ -77,7 +77,7 @@ public class ParallelTaskInfo {
 	}
 
 	public synchronized boolean remove(SpoutRegion region) {
-		TickStage.checkStage(TickStage.TICKSTART);
+		TickStage.checkStage(TickStage.SNAPSHOT);
 		if (!regions.containsKey(region)) {
 			return false;
 		}

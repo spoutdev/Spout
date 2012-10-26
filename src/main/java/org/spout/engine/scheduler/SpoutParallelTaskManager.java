@@ -184,7 +184,7 @@ public class SpoutParallelTaskManager implements TaskManager {
 	}
 	
 	public void unRegisterRegion(SpoutRegion r) {
-		TickStage.checkStage(TickStage.TICKSTART);
+		TickStage.checkStage(TickStage.SNAPSHOT);
 		deadRegions.add(r);
 	}
 

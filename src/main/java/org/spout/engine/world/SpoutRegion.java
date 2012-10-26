@@ -409,7 +409,7 @@ public class SpoutRegion extends Region {
 	}
 
 	public boolean isEmpty() {
-		TickStage.checkStage(TickStage.TICKSTART);
+		TickStage.checkStage(TickStage.SNAPSHOT);
 		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
 			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
 				for (int dz = 0; dz < CHUNKS.SIZE; dz++) {

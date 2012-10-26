@@ -240,7 +240,6 @@ public final class SpoutScheduler implements Scheduler {
 				Spout.getLogger().log(Level.SEVERE, "Interrupt while running final snapshot copy: {0}", ex.getMessage());
 			}
 
-			TickStage.setStage(TickStage.TICKSTART);
 			runLastTickTasks();
 			taskManager.heartbeat(PULSE_EVERY << 2);
 			taskManager.shutdown(1L);
@@ -253,7 +252,6 @@ public final class SpoutScheduler implements Scheduler {
 			}
 
 			asyncExecutors.copySnapshot();
-			TickStage.setStage(TickStage.TICKSTART);
 
 			// Halt all executors, except the Server
 			for (AsyncExecutor e : asyncExecutors.get()) {
@@ -464,9 +462,9 @@ public final class SpoutScheduler implements Scheduler {
 
 			copySnapshot(executors);
 
-			TickStage.setStage(TickStage.TICKSTART);
-
 			runCoreTasks();
+
+			TickStage.setStage(TickStage.TICKSTART);
 		} finally {
 			unlockSnapshotLock();
 		}
@@ -630,6 +628,8 @@ public final class SpoutScheduler implements Scheduler {
 		lockSnapshotLock();
 		try {
 			copySnapshot(executors);
+			
+			TickStage.setStage(TickStage.TICKSTART);
 		} finally {
 			unlockSnapshotLock();
 		}
