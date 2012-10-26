@@ -1,9 +1,5 @@
-Name: "Zombie"
+Name: "FallbackEntity"
 Components:
     - org.spout.engine.entity.component.EntityRendererComponent
-    - org.spout.vanilla.component.living.hostile.Zombie
 Data:
-    Health: 5
-    Damages: 1
-    Size: 16
-    Model: model://Spout/resources/fallbacks/fallback.spm
+    notnull: 1
