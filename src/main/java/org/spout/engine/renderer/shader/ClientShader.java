@@ -70,8 +70,6 @@ public class ClientShader extends Resource implements Shader {
 
 	public static boolean validateShader = true;
 
-	public static final ClientShader BASIC = new BasicShader();
-
 	public ClientShader(){
 
 	}

@@ -43,6 +43,7 @@ import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
 
 import org.spout.engine.SpoutClient;
+import org.spout.engine.renderer.shader.BasicShader;
 import org.spout.engine.renderer.shader.ClientShader;
 
 public class ClientFont extends ClientTexture implements org.spout.api.render.Font {
@@ -103,7 +104,7 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		params.put("Diffuse", this);
 		if (((SpoutClient) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
 
-			material = new ClientRenderMaterial(ClientShader.BASIC, params);
+			material = new ClientRenderMaterial(new BasicShader(), params);
 		} else {
 			material = new ClientRenderMaterial((ClientShader)Spout.getFilesystem().getResource("shader://Spout/resources/resources/shaders/textShader.ssf"), params);
 		}

@@ -55,6 +55,7 @@ public class EntityRendererComponent extends EntityComponent {
 	public void render(Camera camera) {
 		if (model == null) {
 			System.out.println("no model component");
+			model = getOwner().get(ModelComponent.class);
 			return;
 		}
 		

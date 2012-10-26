@@ -237,7 +237,7 @@ public class ChunkMesh extends ComposedMesh {
 		Vector2 uv2 = new Vector2(r.getX(), r.getY()+r.getHeight());
 		Vector2 uv3 = new Vector2(r.getX()+r.getWidth(), r.getY()+r.getHeight());
 		Vector2 uv4 = new Vector2(r.getX()+r.getWidth(), r.getY());
-
+		
 		Color color = Color.WHITE; // Temporary testing color
 		Vertex v1 = new Vertex(p1, face.getOffset(), uv1);
 		v1.color = color;
