@@ -30,7 +30,6 @@ import gnu.trove.iterator.TIntIterator;
 
 import java.io.File;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -71,6 +70,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
+import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
@@ -162,7 +162,9 @@ public class SpoutRegion extends Region {
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 	private boolean renderQueueEnabled = false;
 	private final ConcurrentLinkedQueue<SpoutChunkSnapshotModel> renderChunkQueue = new ConcurrentLinkedQueue<SpoutChunkSnapshotModel>();
+	private final AtomicReference<SpoutRegion>[][][] neighbours;
 
+	@SuppressWarnings("unchecked")
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
 		super(world, x * Region.BLOCKS.SIZE, y * Region.BLOCKS.SIZE, z * Region.BLOCKS.SIZE);
 		this.source = source;
@@ -197,6 +199,19 @@ public class SpoutRegion extends Region {
 			}
 
 		}
+		
+		neighbours = new AtomicReference[3][3][3];
+
+		final int rx = getX();
+		final int ry = getY();
+		final int rz = getZ();
+		for (int dx = 0; dx < 3; dx++) {
+			for (int dy = 0; dy < 3; dy++) {
+				for (int dz = 0; dz < 3; dz++) {
+					neighbours[dx][dy][dz] = new AtomicReference<SpoutRegion>(world.getRegion(rx + dx - 1, ry + dy - 1, rz + dz - 1, LoadOption.NO_LOAD));
+				}
+			}
+		}
 
 		this.chunkStore = world.getRegionFile(getX(), getY(), getZ());
 		Thread t;
@@ -224,6 +239,10 @@ public class SpoutRegion extends Region {
 	@Override
 	@LiveRead
 	public SpoutChunk getChunk(int x, int y, int z, LoadOption loadopt) {
+		if (loadopt != LoadOption.NO_LOAD) {
+			TickStage.checkStage(~TickStage.SNAPSHOT);
+		}
+		
 		x &= CHUNKS.MASK;
 		y &= CHUNKS.MASK;
 		z &= CHUNKS.MASK;
@@ -1353,7 +1372,156 @@ public class SpoutRegion extends Region {
 			throw new IllegalStateException("Physics chunk queue exceeded capacity", ise);
 		}
 	}
-
+	
+	public void unlinkNeighbours() {
+		TickStage.checkStage(TickStage.SNAPSHOT);
+		final int rx = getX();
+		final int ry = getY();
+		final int rz = getZ();
+		final SpoutWorld world = getWorld();
+		for (int dx = 0; dx < 3; dx++) {
+			for (int dy = 0; dy < 3; dy++) {
+				for (int dz = 0; dz < 3; dz++) {
+					SpoutRegion region = world.getRegion(rx + dx - 1, ry + dy - 1, rz + dz - 1, LoadOption.NO_LOAD);
+					if (region != null) {
+						region.unlinkNeighbour(this);
+					}
+				}
+			}
+		}
+	}
+	
+	private void unlinkNeighbour(SpoutRegion r) {
+		for (int dx = 0; dx < 3; dx++) {
+			for (int dy = 0; dy < 3; dy++) {
+				for (int dz = 0; dz < 3; dz++) {
+					neighbours[dx][dy][dz].compareAndSet(r, null);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Gets a neighbouring region.  Only the 3x3x3 cube of regions centered on this region can be obtained by this method.
+	 * 
+	 * @param dx
+	 * @param dy
+	 * @param dz
+	 * @param loadopt
+	 * @return
+	 */
+	public SpoutRegion getLocalRegion(BlockFace face, LoadOption loadopt) {
+		Vector3 offset = face.getOffset();
+		return getLocalRegion(offset.getFloorX() + 1, offset.getFloorY() + 1, offset.getFloorZ() + 1, loadopt);
+	}
+	
+	/**
+	 * Gets a neighbouring region.  The coordinates provided range from 0 to 2, rather than -1 to +1.  
+	 * If all 3 coordinates are 1, then this region is returned.
+	 * 
+	 * @param dx
+	 * @param dy
+	 * @param dz
+	 * @param loadopt
+	 * @return
+	 */
+	public SpoutRegion getLocalRegion(int dx, int dy, int dz, LoadOption loadopt) {
+		if (loadopt != LoadOption.NO_LOAD) {
+			TickStage.checkStage(~TickStage.SNAPSHOT);
+		}
+		AtomicReference<SpoutRegion> ref = neighbours[dx][dy][dz];
+		SpoutRegion region = ref.get();
+		if (region == null) {
+			region = getWorld().getRegion(getX() + dx - 1, getY() + dy - 1, getZ() + dz - 1, loadopt);
+			ref.compareAndSet(null, region);
+		}
+		return region;
+	}
+	
+	/**
+	 * Gets a chunk relative to a given chunk.  The given chunk must be in this region and the requested chunk 
+	 * must be in the 3x3x3 cube of regions centred on this region.<br>
+	 * 
+	 * @param c
+	 * @param face
+	 * @param loadopt
+	 * @return
+	 */
+	public SpoutChunk getLocalChunk(Chunk c, BlockFace face, LoadOption loadopt) {
+		Vector3 offset = face.getOffset();
+		return getLocalChunk(c, offset.getFloorX(), offset.getFloorY(), offset.getFloorZ(), loadopt);
+	}
+	
+	/**
+	 * Gets a chunk relative to a given chunk.  The given chunk must be in this region and the requested chunk 
+	 * must be in the 3x3x3 cube of regions centred on this region.<br>
+	 * <br>
+	 * (ox, oy, oz) is the offset to the desired chunk.  The coordinates of the offset can not have 
+	 * a magnitude greater than 16.
+	 * 
+	 * @param c
+	 * @param ox
+	 * @param oy
+	 * @param oz
+	 * @param loadopt
+	 * @return
+	 */
+	public SpoutChunk getLocalChunk(Chunk c, int ox, int oy, int oz, LoadOption loadopt) {
+		return getLocalChunk(c.getX(), c.getY(), c.getZ(), ox, oy, oz, loadopt);
+	}
+	
+	/**
+	 * Gets a chunk relative to given chunk coordinates.  The given chunk must be in this region and the requested chunk 
+	 * must be in the 3x3x3 cube of regions centred on this region.<br>
+	 * <br>
+	 * (x, y, z) are the coordinates of a chunk in this region.<br>
+	 * <br>
+	 * (ox, oy, oz) is the offset to the desired chunk.  The coordinates of the offset can not have 
+	 * a magnitude greater than 16.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param ox
+	 * @param oy
+	 * @param oz
+	 * @param loadopt
+	 * @return
+	 */
+	public SpoutChunk getLocalChunk(int x, int y, int z, int ox, int oy, int oz, LoadOption loadopt) {
+		x &= CHUNKS.MASK;
+		y &= CHUNKS.MASK;
+		z &= CHUNKS.MASK;
+		x += ox;
+		y += oy;
+		z += oz;
+		return getLocalChunk(x, y, z, loadopt);
+	}
+	
+	/**
+	 * Gets a chunk in the 3x3x3 cube of regions centered on this region.<br>
+	 * <br>
+	 * The valid range for the (x, y, z) coordinates is -16 to 31.<br>
+	 * <br>
+	 * To request a chunk in this region, all three coordinates must be in the range of 0 to 15.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param loadopt
+	 * @return
+	 */
+	public SpoutChunk getLocalChunk(int x, int y, int z, LoadOption loadopt) {
+		int dx = 1 + (x >> CHUNKS.BITS);
+		int dy = 1 + (y >> CHUNKS.BITS);
+		int dz = 1 + (z >> CHUNKS.BITS);
+		SpoutRegion region = getLocalRegion(dx, dy, dz, loadopt);
+		if (region == null) {
+			return null;
+		}
+		return region.getChunk(x, y, z, loadopt);
+	}
+	
 	public void addChunk(int x, int y, int z, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, BiomeManager biomes) {
 		x &= BLOCKS.MASK;
 		y &= BLOCKS.MASK;

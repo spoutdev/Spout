@@ -101,6 +101,8 @@ public class RegionSource implements Iterable<Region> {
 							}
 
 							Spout.getEventManager().callDelayedEvent(new RegionUnloadEvent(world, r));
+							
+							r.unlinkNeighbours();
 						} else {
 							Spout.getLogger().info("Tried to remove region " + r + " but region removal failed");
 						}
