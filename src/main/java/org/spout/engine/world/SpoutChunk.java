@@ -166,6 +166,10 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	 */
 	protected final AtomicBoolean lightDirty = new AtomicBoolean(false);
 	/**
+	 * True if this chunk mesh needs to be recalculated
+	 */
+	protected final AtomicBoolean renderDirty = new AtomicBoolean(false);
+	/**
 	 * If -1, there are no changes. If higher, there are changes and the number
 	 * denotes how many ticks these have been there.<br> Every time a change is
 	 * committed the value is set to 0. The region will increment it as well.
@@ -991,6 +995,28 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		}
 		blockStore.compress();
 		return true;
+	}
+
+	public void setNeighbourRenderDirty(boolean dirty) {
+		SpoutRegion parent = getRegion();
+		for (int x = -1; x < 2; x++) {
+			for (int y = -1; y < 2; y++) {
+				for (int z = -1; z < 2; z++) {
+					SpoutChunk c = parent.getLocalChunk(this, x, y, z, LoadOption.NO_LOAD);
+					if (c != null) {
+						c.setRenderDirty(dirty);
+					}
+				}
+			}
+		}
+	}
+	
+	public void setRenderDirty(boolean dirty) {
+		renderDirty.set(dirty);
+	}
+	
+	public boolean isRenderDirty() {
+		return renderDirty.get() || isDirty();
 	}
 
 	public void setLightDirty(boolean dirty) {

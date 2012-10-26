@@ -333,6 +333,7 @@ public class SpoutRegion extends Region {
 		while (true) {
 			if (chunkReference.compareAndSet(null, newChunk)) {
 				newChunk.notifyColumn();
+				newChunk.setNeighbourRenderDirty(true);
 				numberActiveChunks.incrementAndGet();
 				if (dataForRegion != null) {
 					for (SpoutEntity entity : dataForRegion.loadedEntities) {
@@ -874,7 +875,8 @@ public class SpoutRegion extends Region {
 				continue;
 			}
 			
-			if ((!firstRenderQueueTick) && renderQueueEnabled) {
+			if ((!firstRenderQueueTick) && renderQueueEnabled  && spoutChunk.isRenderDirty()) {
+				spoutChunk.setRenderDirty(false);
 				addUpdateToRenderQueue(spoutChunk);
 			}
 			if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
@@ -1531,6 +1533,6 @@ public class SpoutRegion extends Region {
 			chunk.unload(false);
 		}
 		SpoutChunk newChunk = new FilteredChunk(getWorld(), this, getBlockX() | x, getBlockY() | y, getBlockZ() | z, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, skyLight, blockLight, new ManagedHashMap());
-		chunks[x >> Region.CHUNKS.BITS][y >> Region.CHUNKS.BITS][z >> Region.CHUNKS.BITS].set(newChunk);
+		setChunk(newChunk, x, y, z, null, true, LoadOption.LOAD_GEN);
 	}
 }
