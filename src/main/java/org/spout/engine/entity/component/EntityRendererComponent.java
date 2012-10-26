@@ -45,7 +45,7 @@ public class EntityRendererComponent extends EntityComponent {
 	boolean dirty = true;
 	
 	@Override
-	public void onAttached(){
+	public void onAttached() {
 		model = getOwner().get(ModelComponent.class);
 		transform = getOwner().getTransform();
 		//batch = new PrimitiveBatch(); // cant create the batch before the context is created
@@ -54,13 +54,11 @@ public class EntityRendererComponent extends EntityComponent {
 	
 	public void render(Camera camera) {
 		if (model == null) {
-			System.out.println("no model component");
 			model = getOwner().get(ModelComponent.class);
 			return;
 		}
 		
 		if (model.getModel() == null) {
-			System.out.println("no model");
 			model.setModel("model://Spout/resources/fallbacks/fallback.spm");
 			return;
 		}
@@ -79,6 +77,11 @@ public class EntityRendererComponent extends EntityComponent {
 		mat.getShader().setUniform("Model", modelMatrix);		
 		
 		m.render(mat);
+		
+		TextModelComponent tmc = getOwner().get(TextModelComponent.class);
+		if (tmc != null) {
+			tmc.render(camera);
+		}
 	}
 	
 }

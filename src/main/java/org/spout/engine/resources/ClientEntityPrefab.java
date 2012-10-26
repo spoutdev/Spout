@@ -28,15 +28,11 @@ package org.spout.engine.resources;
 
 import java.util.*;
 
-import org.spout.api.component.Component;
 import org.spout.api.component.components.EntityComponent;
 import org.spout.api.component.components.ModelComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntityPrefab;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
 import org.spout.api.resource.Resource;
 import org.spout.engine.entity.SpoutEntity;
 

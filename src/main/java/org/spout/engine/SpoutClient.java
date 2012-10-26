@@ -105,6 +105,7 @@ import org.spout.engine.command.RendererCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.entity.component.EntityRendererComponent;
+import org.spout.engine.entity.component.TextModelComponent;
 import org.spout.engine.filesystem.ClientFileSystem;
 import org.spout.engine.input.SpoutInput;
 import org.spout.engine.input.SpoutInputConfiguration;
@@ -232,14 +233,15 @@ public class SpoutClient extends SpoutEngine implements Client {
 		// Building the screenStack
 		FullScreen mainScreen = new FullScreen();
 
-		Widget txtWidget = new Widget(); // Test widget
-		LabelComponent txt = txtWidget.add(LabelComponent.class);
 		font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/resources/resources/fonts/ubuntu/Ubuntu-M.ttf");
+		/*Widget txtWidget = new Widget(); // Test widget
+		LabelComponent txt = txtWidget.add(LabelComponent.class);
+		
 		txt.setFont(font);
 		txt.setColor(Color.blue);
 		txt.setText("Test");
 
-		mainScreen.attachWidget(this.getPluginManager().getPlugins().iterator().next(), txtWidget);
+		mainScreen.attachWidget(this.getPluginManager().getPlugins().iterator().next(), txtWidget);*/
 		screenStack = new ScreenStack(mainScreen);
 
 		super.getDefaultWorld().spawnEntity(activePlayer);
@@ -514,6 +516,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		Entity e = spoutyType.createEntity(new Point(super.getDefaultWorld(),0,0,0));
 		e.setSavable(false); // To prevent entity duplication
+		TextModelComponent tmc = e.add(TextModelComponent.class);
+		tmc.setText("Spouty");
+		tmc.setSize(0.5f);
+		tmc.setTranslation(new Vector3(0, 3f, 0));
+		tmc.setFont(font);
+		
 		super.getDefaultWorld().spawnEntity(e);
 	}
 
@@ -578,10 +586,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	public void toggleDebugInfos() {
 		showDebugInfos = !showDebugInfos;
-	}
-
-	public SpoutInput getInputManager() {
-		return inputManager;
 	}
 
 	public WorldRenderer getWorldRenderer() {
