@@ -69,16 +69,24 @@ public class BasicShader extends ClientShader {
 			matrixBuffer.flip();
 
 			GL11.glLoadMatrix(matrixBuffer);
-
+			
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
 			matrixBuffer.clear();
-			matrixBuffer.put(getViewMatrix().toArray());
+			matrixBuffer.put(getModelViewMatrix().multiply(getViewMatrix()).toArray());
 			matrixBuffer.flip();
 
 			GL11.glLoadMatrix(matrixBuffer);
 		} else {
 			super.assign();
 		}
+	}
+	
+	public void setModelViewMatrix(Matrix mat) {
+		setUniform("Model", mat);
+	}
+
+	public Matrix getModelViewMatrix() {
+		return ((Mat4ShaderVariable) variables.get("Model")).get();
 	}
 
 	public void setViewMatrix(Matrix mat) {
