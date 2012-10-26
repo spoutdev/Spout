@@ -918,6 +918,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 			Engine engine = Spout.getEngine();
 			if(engine.getPlatform() ==  Platform.CLIENT && ((SpoutClient) engine).getActivePlayer() == entity) {
 				setIsInViewDistance(true);
+				setRenderDirty(true);
 			}
 		}
 		resetPostSaving();
@@ -941,6 +942,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 			Engine engine = Spout.getEngine();
 			if(engine.getPlatform() ==  Platform.CLIENT && ((SpoutClient) engine).getActivePlayer() == entity) {
 				setIsInViewDistance(false);
+				setRenderDirty(true);
 			}
 		}
 		expiredObserversQueue.add((SpoutEntity) entity);
