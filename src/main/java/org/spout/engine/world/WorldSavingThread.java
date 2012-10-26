@@ -58,7 +58,7 @@ public class WorldSavingThread extends Thread{
 
 	public static void saveChunk(SpoutChunk chunk) {
 		ChunkSaveTask task = new ChunkSaveTask(chunk);
-		if (instance.isInterrupted()) {
+		if (instance.isInterrupted() || !instance.isAlive()) {
 			Spout.getLogger().warning("Attempt to queue chunks for saving after world thread shutdown");
 			task.call();
 		} else {
@@ -80,7 +80,7 @@ public class WorldSavingThread extends Thread{
 
 	@Override
 	public void run() {
-		while (!this.isInterrupted()) {
+		while (!Thread.interrupted()) {
 			Callable<SpoutWorld> task;
 			try {
 				task = queue.take();
