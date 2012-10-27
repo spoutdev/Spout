@@ -40,6 +40,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -74,6 +75,7 @@ import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
+import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TickStage;
@@ -82,12 +84,15 @@ import org.spout.api.util.map.TInt21TripleObjectHashMap;
 import org.spout.api.util.set.TByteTripleHashSet;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
+import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ChunkDataForRegion;
 import org.spout.engine.filesystem.WorldFiles;
+import org.spout.engine.mesh.ChunkMesh;
+import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.scheduler.SpoutTaskManager;
 import org.spout.engine.util.TripleInt;
@@ -152,6 +157,7 @@ public class SpoutRegion extends Region {
 	private final AtomicBoolean[][] generatedColumns = new AtomicBoolean[CHUNKS.SIZE][CHUNKS.SIZE];
 	private final SpoutTaskManager taskManager;
 	private final Thread executionThread;
+	private final Thread meshThread;
 	private final SpoutScheduler scheduler;
 	private final LinkedHashMap<SpoutPlayer, TByteTripleHashSet> observers = new LinkedHashMap<SpoutPlayer, TByteTripleHashSet>();
 	private final ConcurrentLinkedQueue<SpoutChunk> observedChunkQueue = new ConcurrentLinkedQueue<SpoutChunk>();
@@ -161,7 +167,7 @@ public class SpoutRegion extends Region {
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 	private boolean renderQueueEnabled = false;
-	private final ConcurrentLinkedQueue<SpoutChunkSnapshotModel> renderChunkQueue = new ConcurrentLinkedQueue<SpoutChunkSnapshotModel>();
+	private final LinkedBlockingQueue<SpoutChunkSnapshotModel> renderChunkQueue = new LinkedBlockingQueue<SpoutChunkSnapshotModel>();
 	private final AtomicReference<SpoutRegion>[][][] neighbours;
 
 	@SuppressWarnings("unchecked")
@@ -181,6 +187,12 @@ public class SpoutRegion extends Region {
 			executionThread = (Thread) ae;
 		} else {
 			executionThread = null;
+		}
+		
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			meshThread = new MeshGeneratorThread();
+		} else {
+			meshThread = null;
 		}
 
 		dynamicBlockTree = new DynamicBlockUpdateTree(this);
@@ -223,6 +235,18 @@ public class SpoutRegion extends Region {
 		}
 		taskManager = new SpoutTaskManager(world.getEngine().getScheduler(), false, t, world.getAge());
 		scheduler = (SpoutScheduler) (Spout.getEngine().getScheduler());
+	}
+	
+	public void startMeshGeneratorThread() {
+		if (meshThread != null) {
+			meshThread.start();
+		}
+	}
+	
+	public void stopMeshGeneratorThread() {
+		if (meshThread != null) {
+			meshThread.interrupt();
+		}
 	}
 
 	@Override
@@ -1462,4 +1486,46 @@ public class SpoutRegion extends Region {
 		SpoutChunk newChunk = new FilteredChunk(getWorld(), this, getBlockX() | x, getBlockY() | y, getBlockZ() | z, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, skyLight, blockLight, new ManagedHashMap());
 		setChunk(newChunk, x, y, z, null, true, LoadOption.LOAD_GEN);
 	}
+	
+	private class MeshGeneratorThread extends Thread {
+		
+		private WorldRenderer renderer = null;
+		
+		public MeshGeneratorThread() {
+			super(SpoutRegion.this.toString() + " Mesh Generation Thread");
+			this.setDaemon(true);
+		}
+
+		public void run() {
+			while (renderer == null) {
+				 renderer = ((SpoutClient) Spout.getEngine()).getWorldRenderer();
+				 if (renderer == null) {
+					 try {
+						 Thread.sleep(100);
+					 } catch (InterruptedException ie) {
+						 return;
+					 }
+				 }
+			}
+			while (!Thread.interrupted()) {
+				try {
+					handle(renderChunkQueue.take());
+				} catch (InterruptedException ie) {
+					break;
+				}
+			}
+			SpoutChunkSnapshotModel model;
+			while ((model = renderChunkQueue.poll()) != null) {
+				handle(model);
+			}
+		}
+		
+		private void handle(SpoutChunkSnapshotModel model) {
+			ChunkMesh mesh = new ChunkMesh(model);
+			mesh.update();
+			renderer.addMeshToBatchQueue(mesh);
+		}
+		
+	}
+
 }

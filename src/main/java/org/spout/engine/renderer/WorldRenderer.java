@@ -139,25 +139,10 @@ public class WorldRenderer {
 				removeChunkMeshBatch(batch);
 			}
 		}
-		
-		//Step 1 : Generate ChunkMesh with SpoutChunkSnapshotModel
-		for(Region region : world.getRegions()){
-			SpoutChunkSnapshotModel chunkSnapshotModel;
-			while( (chunkSnapshotModel = ((SpoutRegion)region).getRenderChunkQueue().poll()) != null){
-				final SpoutChunkSnapshotModel temp = chunkSnapshotModel;
-				Spout.getEngine().getScheduler().scheduleAsyncTask(this, new Runnable() {
-					@Override
-					public void run() {
-						ChunkMesh mesh = new ChunkMesh(temp);
-						mesh.update();
-						renderChunkMeshBatchQueue.add(mesh);
-					}
-				});
-				
-				if( System.currentTimeMillis() - start > TIME_LIMIT)
-					return;
-			}
-		}
+	}
+	
+	public void addMeshToBatchQueue(ChunkMesh mesh) {
+		renderChunkMeshBatchQueue.add(mesh);
 	}
 
 	private void addChunkMeshBatch(ChunkMeshBatch batch) {
