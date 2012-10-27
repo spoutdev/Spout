@@ -26,12 +26,26 @@
  */
 package org.spout.engine.mesh;
 
-import org.spout.api.math.Vector3;
+import java.util.ArrayList;
+import java.util.List;
 
-public class CubeMesh extends BaseMesh {
-	Vector3 scale = Vector3.ONE;
+import org.spout.api.material.block.BlockFace;
+import org.spout.api.model.MeshFace;
+import org.spout.api.resource.Resource;
 
-	public CubeMesh() {
-
+public class CubeMesh extends Resource {
+	private List<MeshFace>[] meshs;
+	
+	public CubeMesh(List<MeshFace>[] meshs) {
+		this.meshs = meshs;
+	}
+	
+	public List<MeshFace> getMeshFace(List<BlockFace> faces) {
+		List<MeshFace> list = new ArrayList<MeshFace>();
+		
+		for (BlockFace face : faces)
+			list.addAll(meshs[face.ordinal()]);
+		
+		return list;
 	}
 }

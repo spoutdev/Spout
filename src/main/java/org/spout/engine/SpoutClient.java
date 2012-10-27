@@ -522,6 +522,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		tmc.setTranslation(new Vector3(0, 3f, 0));
 		tmc.setFont(font);
 		
+		//e.getTransform().translate(28, 71, 0);
+		
 		super.getDefaultWorld().spawnEntity(e);
 	}
 
