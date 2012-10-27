@@ -36,6 +36,7 @@ import org.spout.api.event.world.RegionLoadEvent;
 import org.spout.api.event.world.RegionUnloadEvent;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.plugin.Platform;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.map.concurrent.TripleIntObjectMap;
@@ -87,6 +88,9 @@ public class RegionSource implements Iterable<Region> {
 						if (success) {
 							if (!r.getManager().getExecutor().haltExecutor()) {
 								throw new IllegalStateException("Failed to halt the region executor when removing the region");
+							}
+							if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
+								r.stopMeshGeneratorThread();
 							}
 							TaskManager tm = Spout.getEngine().getParallelTaskManager();
 							SpoutParallelTaskManager ptm = (SpoutParallelTaskManager)tm;
@@ -158,6 +162,10 @@ public class RegionSource implements Iterable<Region> {
 
 		if (!region.getManager().getExecutor().startExecutor()) {
 			throw new IllegalStateException("Unable to start region executor");
+		}
+		
+		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
+			region.startMeshGeneratorThread();
 		}
 
 		int threshold = warnThreshold.get();
