@@ -24,45 +24,44 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.render;
+package org.spout.api.model;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.spout.api.geo.cuboid.ChunkSnapshotModel;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector3;
-import org.spout.api.model.MeshFace;
 
-public interface RenderMaterial {
-	/**
-	 * Returns a material param or null if that doesn't exist
-	 * @param name
-	 * @return
-	 */
-	public Object getValue(String name);
+/**
+ * Represents a Triangle for a model face
+ * 
+ */
+public class OrientedMeshFace extends MeshFace {
 	
-	/**
-	 * Returns the shader specified in the material
-	 * @return
-	 */
-	public Shader getShader();
-	/**
-	 * Assigns the current shader and prepairs the material for rendering
-	 */
-	public void assign();
+	private Set<BlockFace> faces = new HashSet<BlockFace>();
 	
-	/**
-	 * Called right before rendering
-	 */
-	public void preRender();
+	public OrientedMeshFace(Vertex v1, Vertex v2, Vertex v3) {
+		super(v1,v2,v3);
+		
+		// Calculate two vectors from the three points
+		Vector3 vector1 = verts[0].position.subtract(verts[1].position);
+		Vector3 vector2 = verts[1].position.subtract(verts[2].position);
+
+		// Take the cross product of the two vectors to get
+		// the normal vector which will be stored in out
+
+		Vector3 norm = vector1.cross(vector2).normalize();
+
+		for (BlockFace b : BlockFace.values())
+			if (norm.distance(b.getOffset()) < 1)
+				faces.add(b);
+	}
 	
-	/**
-	 * Called right after rendering
-	 */
-	public void postRender();
-	
-	/**
-	 * Called to render a block
-	 */
-	public List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel, Vector3 position, List<BlockFace> faces);
+	public boolean canRender(Collection<BlockFace> shouldRender){
+		for(BlockFace face : shouldRender)
+			if(faces.contains(face))
+				return true;
+		return false;
+	}
 }
