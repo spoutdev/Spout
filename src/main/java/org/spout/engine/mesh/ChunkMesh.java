@@ -28,6 +28,8 @@ package org.spout.engine.mesh;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.spout.api.Spout;
@@ -41,6 +43,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.model.MeshFace;
 import org.spout.api.model.Vertex;
 import org.spout.api.render.RenderMaterial;
+import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 
 import com.google.common.collect.Lists;
@@ -104,7 +107,7 @@ public class ChunkMesh extends ComposedMesh {
 		chunkModel = null;
 		center = null;
 	}
-
+	
 	/**
 	 * Generates the vertices of the given block and adds them to the ChunkMesh.
 	 * 
@@ -114,12 +117,13 @@ public class ChunkMesh extends ComposedMesh {
 	 */
 	private void generateBlockVertices(int x, int y, int z) {
 		BlockMaterial material = center.getBlockMaterial(x, y, z);
-		
+
 		if (material.isTransparent()) {
 			return;
 		}
 
-		boolean[] shouldRender = new boolean[6];
+		//boolean[] shouldRender = new boolean[6];
+		List<BlockFace> shouldRender = new ArrayList<BlockFace>();
 		Vector3 position = new Vector3(x, y, z);
 		for (BlockFace face : renderableFaces) {
 			Vector3 facePos = position.add(face.getOffset());
@@ -128,20 +132,20 @@ public class ChunkMesh extends ComposedMesh {
 			int z1 = facePos.getFloorZ();
 			BlockMaterial neighbor = chunkModel.getChunkFromBlock(x1, y1, z1).getBlockMaterial(x1, y1, z1);
 
-			shouldRender[face.ordinal()] = neighbor.isTransparent();
+			//shouldRender[face.ordinal()] = neighbor.isTransparent();
+			if(neighbor.isTransparent())
+				shouldRender.add(face);
 		}
 
-		RenderMaterial renderMaterial = null;//TODO : Waiting BlockMaterial have model & material : material.getModel().getRenderMaterial();
+		//TODO : Waiting BlockMaterial have model & material : material.getModel().getRenderMaterial();
 		//TODO : Remove fallback 
-		if(renderMaterial == null)
-			renderMaterial = (RenderMaterial) Spout.getEngine().getFilesystem().getResource("material://Spout/resources/resources/materials/BasicMaterial.smt");
 		
 		ArrayList<MeshFace> faces;
 		//if(renderMaterial.isOpaque()){
-		faces = opaqueFacesPerMaterials.get(renderMaterial);
+		faces = opaqueFacesPerMaterials.get(WorldRenderer.material);
 		if(faces == null){
 			faces = new ArrayList<MeshFace>();
-			opaqueFacesPerMaterials.put(renderMaterial, faces);
+			opaqueFacesPerMaterials.put(WorldRenderer.material, faces);
 		}
 		/*}else{
 		faces = tranparentFacesPerMaterials.get(renderMaterial);
@@ -152,16 +156,50 @@ public class ChunkMesh extends ComposedMesh {
 		}*/
 		
 		Vector3 model = new Vector3(x & Chunk.BLOCKS.MASK, y & Chunk.BLOCKS.MASK, z & Chunk.BLOCKS.MASK);
+
+		CubeMesh cubeMesh = WorldRenderer.blocksMesh.get(material.getDisplayName());
+
+		if (cubeMesh == null) {
+			cubeMesh = WorldRenderer.defaultMesh;
+		}
+
+		for (MeshFace face : cubeMesh.getMeshFace(shouldRender)) {
+			Iterator<Vertex> it = face.iterator();
+			Vertex v1 = copy(it.next());
+			Vertex v2 = copy(it.next());
+			Vertex v3 = copy(it.next());
+			v1.position = v1.position.add(model);
+			v2.position = v2.position.add(model);
+			v3.position = v3.position.add(model);
+			v1.color = Color.white;
+			v2.color = Color.white;
+			v3.color = Color.white;
+			faces.add(new MeshFace(v1, v2, v3));
+		}
 		
-		for (BlockFace face : renderableFaces) {
+		
+		/*for (BlockFace face : renderableFaces) {
 			if (shouldRender[face.ordinal()]) {
 				// System.out.println(material + " " + face + " " + position);
 				// Create a face -- temporary until we get some real models
 				appendModelFaces(material, face, model, faces);
 			}
-		}
+		}*/
 	}
 
+	private Vertex copy(final Vertex vertex){
+		Vertex newv = new Vertex(new Vector3(vertex.position));
+		if(newv.color != null)
+			newv.color = new Color(vertex.color.getRGB());
+		if(newv.normal != null)
+			newv.normal =  new Vector3(vertex.normal);
+		if(newv.texCoord0 != null)
+			newv.texCoord0 =  new Vector2(vertex.texCoord0);
+		if(newv.texCoord1 != null)
+			newv.texCoord1 =  new Vector2(vertex.texCoord1);
+		return newv;
+	}
+	
 	/**
 	 * Appends ModelFaces from the block face. This will likely be temporary.
 	 * 
