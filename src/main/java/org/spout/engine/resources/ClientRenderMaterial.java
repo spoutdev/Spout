@@ -27,16 +27,25 @@
 package org.spout.engine.resources;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.lwjgl.opengl.GL11;
 import org.spout.api.Client;
 import org.spout.api.Spout;
+import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.cuboid.ChunkSnapshotModel;
+import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Matrix;
+import org.spout.api.math.Rectangle;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
+import org.spout.api.model.MeshFace;
+import org.spout.api.model.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Shader;
 import org.spout.api.resource.Resource;
@@ -117,5 +126,104 @@ public class ClientRenderMaterial extends Resource implements RenderMaterial {
 		if(!depthTesting){
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 		}
+	}
+
+	@Override
+	public List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel,
+			Vector3 position, List<BlockFace> faces) {
+		List<MeshFace> meshs = new ArrayList<MeshFace>();
+		BlockMaterial blockMaterial = chunkSnapshotModel.getCenter().getBlockMaterial(position.getFloorX(), position.getFloorY(), position.getFloorZ());
+		Vector3 p1 = null;
+		Vector3 p2 = null;
+		Vector3 p3 = null;
+		Vector3 p4 = null;
+
+		/*   1--2
+		 *  /| /|
+		 * 5--6 |   
+		 * | 0|-3    Y - Bottom < TOP
+		 * |/ |/     |
+		 * 4--7      O-- X - North < SOUTH
+		 *          /
+		 *         Z - East < WEST
+		 */
+		Vector3 model = new Vector3(position.getFloorX() & Chunk.BLOCKS.MASK, position.getFloorY() & Chunk.BLOCKS.MASK, position.getFloorZ() & Chunk.BLOCKS.MASK);
+
+		Vector3 vertex0 = model.add(0, 0, 0);
+		Vector3 vertex1 = model.add(0, 1, 0);
+		Vector3 vertex2 = model.add(1, 1, 0);
+		Vector3 vertex3 = model.add(1, 0, 0);
+		Vector3 vertex4 = model.add(0, 0, 1);
+		Vector3 vertex5 = model.add(0, 1, 1);
+		Vector3 vertex6 = model.add(1, 1, 1);
+		Vector3 vertex7 = model.add(1, 0, 1);
+
+		for(BlockFace face : faces){
+			switch (face) {
+			case TOP:
+				p1 = vertex1;
+				p2 = vertex2;
+				p3 = vertex6;
+				p4 = vertex5;
+				break;
+			case BOTTOM:
+				p1 = vertex0;
+				p2 = vertex4;
+				p3 = vertex7;
+				p4 = vertex3;
+				break;
+			case NORTH:
+				p1 = vertex0;
+				p2 = vertex1;
+				p3 = vertex5;
+				p4 = vertex4;
+				break;
+			case SOUTH:
+				p1 = vertex7;
+				p2 = vertex6;
+				p3 = vertex2;
+				p4 = vertex3;
+				break;
+			case WEST:
+				p1 = vertex5;
+				p2 = vertex6;
+				p3 = vertex7;
+				p4 = vertex4;
+				break;
+			case EAST:
+				p1 = vertex0;
+				p2 = vertex3;
+				p3 = vertex2;
+				p4 = vertex1;
+				break;
+			}
+
+			Rectangle r = new Rectangle(0, 0, 1, 1);//TODO : Replace by a getModel() to get TextMesh
+
+			Vector2 uv1 = new Vector2(r.getX(), r.getY());
+			Vector2 uv2 = new Vector2(r.getX(), r.getY()+r.getHeight());
+			Vector2 uv3 = new Vector2(r.getX()+r.getWidth(), r.getY()+r.getHeight());
+			Vector2 uv4 = new Vector2(r.getX()+r.getWidth(), r.getY());
+
+			Color color = Color.WHITE; // Temporary testing color
+			Vertex v1 = new Vertex(p1, face.getOffset(), uv1);
+			v1.color = color;
+
+			Vertex v2 = new Vertex(p2, face.getOffset(), uv2);
+			v2.color = color;
+
+			Vertex v3 = new Vertex(p3, face.getOffset(), uv3);
+			v3.color = color;
+
+			Vertex v4 = new Vertex(p4, face.getOffset(), uv4);
+			v4.color = color;
+
+			MeshFace f1 = new MeshFace(v1, v2, v3);
+			MeshFace f2 = new MeshFace(v3, v4, v1);
+			meshs.add(f1);
+			meshs.add(f2);
+		}
+
+		return meshs;
 	}
 }

@@ -28,46 +28,16 @@ package org.spout.engine.resources.loader;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Scanner;
 
-import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
-import org.spout.api.model.MeshFace;
+import org.spout.api.model.OrientedMeshFace;
 import org.spout.api.model.Vertex;
 import org.spout.api.resource.BasicResourceLoader;
 import org.spout.engine.mesh.CubeMesh;
 
 public class CubeMeshLoader extends BasicResourceLoader<CubeMesh> {
-
-	private static BlockFace getBlockFace(MeshFace face){
-		Iterator<Vertex> it = face.iterator();
-		Vertex v1 = it.next();
-		Vertex v2 = it.next();
-		Vertex v3 = it.next();
-
-		// Calculate two vectors from the three points
-		Vector3 vector1 = v1.position.subtract(v2.position);
-		Vector3 vector2 = v2.position.subtract(v3.position);
-
-		// Take the cross product of the two vectors to get
-		// the normal vector which will be stored in out
-
-		Vector3 norm = vector1.cross(vector2).normalize();
-
-		double min = 10.0;
-		BlockFace blockFace =  BlockFace.values()[0];
-		for (BlockFace b : BlockFace.values()) {
-			double dist = norm.distance(b.getOffset());
-			if (dist < min) {
-				min = dist;
-				blockFace = b;
-			}
-		}
-
-		return blockFace;
-	}
 
 	private static CubeMesh loadObj(InputStream stream) {
 		Scanner scan = new Scanner(stream);
@@ -75,12 +45,8 @@ public class CubeMeshLoader extends BasicResourceLoader<CubeMesh> {
 		ArrayList<Vector3> verticies = new ArrayList<Vector3>();
 		ArrayList<Vector3> normals = new ArrayList<Vector3>();
 		ArrayList<Vector2> uvs = new ArrayList<Vector2>();
-		@SuppressWarnings("unchecked")
-		ArrayList<MeshFace>[] faces = new ArrayList[BlockFace.values().length];
+		ArrayList<OrientedMeshFace> faces = new ArrayList<OrientedMeshFace>();
 
-		for (int i = 0; i < faces.length; i++)
-			faces[i] = new ArrayList<MeshFace>();
-		
 		while (scan.hasNext()) {
 			String s = scan.nextLine();
 			if (s.startsWith("#"))
@@ -109,10 +75,7 @@ public class CubeMeshLoader extends BasicResourceLoader<CubeMesh> {
 						ar.add(new Vertex(verticies.get(pos - 1), normals.get(norm - 1)));
 
 					}
-					MeshFace face = new MeshFace(ar.get(0), ar.get(1), ar.get(2));
-					
-					faces[getBlockFace(face).ordinal()].add(face);
-					
+					faces.add(new OrientedMeshFace(ar.get(0), ar.get(1), ar.get(2)));
 					ar.clear();
 
 				} else if (sp[1].contains("/")) {
@@ -129,10 +92,7 @@ public class CubeMeshLoader extends BasicResourceLoader<CubeMesh> {
 						}
 
 					}
-					MeshFace face = new MeshFace(ar.get(0), ar.get(1), ar.get(2));
-					
-					faces[getBlockFace(face).ordinal()].add(face);
-					
+					faces.add(new OrientedMeshFace(ar.get(0), ar.get(1), ar.get(2)));
 					ar.clear();
 
 				} else {
@@ -144,18 +104,18 @@ public class CubeMeshLoader extends BasicResourceLoader<CubeMesh> {
 					Vertex p2 = new Vertex(verticies.get(face2));
 					Vertex p3 = new Vertex(verticies.get(face3));
 
-					MeshFace face = new MeshFace(p, p2, p3);
-					
-					faces[getBlockFace(face).ordinal()].add(face);
+					faces.add(new OrientedMeshFace(p, p2, p3));
+
 				}
 
 			}
 
 		}
-		scan.close();
+
 		return new CubeMesh(faces);
+
 	}
-	
+
 	@Override
 	public String getFallbackResourceName() {
 		return "cubemesh://Spout/resources/resources/models/cube.obj";
@@ -163,7 +123,6 @@ public class CubeMeshLoader extends BasicResourceLoader<CubeMesh> {
 
 	@Override
 	public CubeMesh getResource(InputStream stream) {
-		System.out.println("Load Cube mesh");
 		return CubeMeshLoader.loadObj(stream);
 	}
 
