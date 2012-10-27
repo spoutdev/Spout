@@ -1004,9 +1004,11 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		for (int x = -1; x < 2; x++) {
 			for (int y = -1; y < 2; y++) {
 				for (int z = -1; z < 2; z++) {
-					SpoutChunk c = parent.getLocalChunk(this, x, y, z, LoadOption.NO_LOAD);
-					if (c != null) {
-						c.setRenderDirty(dirty);
+					if (x == 0 || y == 0 || z == 0) {
+						SpoutChunk c = parent.getLocalChunk(this, x, y, z, LoadOption.NO_LOAD);
+						if (c != null) {
+							c.setRenderDirty(dirty);
+						}
 					}
 				}
 			}
@@ -1015,6 +1017,9 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	
 	public void setRenderDirty(boolean dirty) {
 		renderDirty.set(dirty);
+		if (dirty) {
+			queueDirty();
+		}
 	}
 	
 	public boolean isRenderDirty() {

@@ -357,7 +357,9 @@ public class SpoutRegion extends Region {
 		while (true) {
 			if (chunkReference.compareAndSet(null, newChunk)) {
 				newChunk.notifyColumn();
-				newChunk.setNeighbourRenderDirty(true);
+				if (Spout.getEngine().getPlatform() == Platform.CLIENT) { 
+					newChunk.setNeighbourRenderDirty(true);
+				}
 				numberActiveChunks.incrementAndGet();
 				if (dataForRegion != null) {
 					for (SpoutEntity entity : dataForRegion.loadedEntities) {
@@ -900,7 +902,6 @@ public class SpoutRegion extends Region {
 			}
 			
 			if ((!firstRenderQueueTick) && renderQueueEnabled  && spoutChunk.isRenderDirty()) {
-				spoutChunk.setRenderDirty(false);
 				addUpdateToRenderQueue(spoutChunk);
 			}
 			if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
@@ -963,9 +964,11 @@ public class SpoutRegion extends Region {
 					}
 				}
 			}
+			c.setRenderDirty(false);
 			renderChunkQueue.add(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks));
 		} else {
 			if (c.leftViewDistance()) {
+				c.setRenderDirty(false);
 				renderChunkQueue.add(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, true));
 			}
 		}
