@@ -27,6 +27,7 @@
 package org.spout.engine.renderer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,17 +42,21 @@ import org.spout.api.util.map.TInt21TripleObjectHashMap;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.batcher.ChunkMeshBatch;
 import org.spout.engine.mesh.ChunkMesh;
+import org.spout.engine.mesh.CubeMesh;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 
 public class WorldRenderer {
 	private final SpoutClient client;
-	private RenderMaterial material;
+	public static RenderMaterial material;
 
 	private List<ChunkMeshBatch> chunkRenderers = new ArrayList<ChunkMeshBatch>();
 	private TInt21TripleObjectHashMap<ChunkMeshBatch> chunkRenderersByPosition = new TInt21TripleObjectHashMap<ChunkMeshBatch>();
 
+	public static HashMap<String,CubeMesh> blocksMesh = new HashMap<String, CubeMesh>();
+	public static CubeMesh defaultMesh = null;
+	
 	private World world; // temp
 
 	public WorldRenderer(SpoutClient client) {
@@ -59,11 +64,16 @@ public class WorldRenderer {
 	}
 
 	public void setup() {
-		setupWorld();
+		material = (RenderMaterial) Spout.getEngine().getFilesystem().getResource("material://Spout/resources/resources/materials/VanillaMaterial.smt");
 		
-		material = (RenderMaterial) Spout.getFilesystem().getResource("material://Spout/resources/resources/materials/BasicMaterial.smt");
+		defaultMesh = (CubeMesh) Spout.getEngine().getFilesystem().getResource("cubemesh://Spout/resources/resources/models/cube.obj");
+		blocksMesh.put("Stone",(CubeMesh) Spout.getEngine().getFilesystem().getResource("cubemesh://Spout/resources/resources/models/stone.obj"));
+		blocksMesh.put("Grass",(CubeMesh) Spout.getEngine().getFilesystem().getResource("cubemesh://Spout/resources/resources/models/grass.obj"));
+		blocksMesh.put("Dirt",(CubeMesh) Spout.getEngine().getFilesystem().getResource("cubemesh://Spout/resources/resources/models/dirt.obj"));
 
-		// GL11.glEnable(GL11.GL_CULL_FACE);
+		setupWorld();
+				
+		//Enable(GL11.GL_CULL_FACE);
 	}
 
 	public void render() {

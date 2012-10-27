@@ -128,20 +128,26 @@ public class PrimitiveBatch {
 	public void addMesh(BaseMesh mesh) {
 		for (MeshFace face : mesh) {
 			for (Vertex vert : face) {
-				renderer.addTexCoord(vert.texCoord0);
-				renderer.addNormal(vert.normal);
-				renderer.addColor(vert.color);
+				if(vert.texCoord0 != null)
+					renderer.addTexCoord(vert.texCoord0);
+				if(vert.normal != null)
+					renderer.addNormal(vert.normal);
+				if(vert.color != null)
+					renderer.addColor(vert.color);
 				renderer.addVertex(vert.position);
 			}
 		}
 	}
-	
+
 	public void addMesh(List<MeshFace> mesh) {
 		for (MeshFace face : mesh) {
 			for (Vertex vert : face) {
-				renderer.addTexCoord(vert.texCoord0);
-				renderer.addNormal(vert.normal);
-				renderer.addColor(vert.color);
+				if(vert.texCoord0 != null)
+					renderer.addTexCoord(vert.texCoord0);
+				if(vert.normal != null)
+					renderer.addNormal(vert.normal);
+				if(vert.color != null)
+					renderer.addColor(vert.color);
 				renderer.addVertex(vert.position);
 			}
 		}

@@ -26,6 +26,7 @@
  */
 package org.spout.engine.filesystem;
 
+import org.spout.engine.resources.loader.CubeMeshLoader;
 import org.spout.engine.resources.loader.EntityPrefabLoader;
 import org.spout.engine.resources.loader.FontLoader;
 import org.spout.engine.resources.loader.MeshLoader;
@@ -50,6 +51,7 @@ public class ClientFileSystem extends SharedFileSystem {
 		registerLoader(new TextureLoader());
 		registerLoader(new ShaderLoader());
 		registerLoader(new ModelLoader());
+		registerLoader(new CubeMeshLoader());
 		registerLoader(new MeshLoader());
 		registerLoader(new RenderMaterialLoader());
 

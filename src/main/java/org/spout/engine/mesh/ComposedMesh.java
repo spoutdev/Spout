@@ -61,18 +61,6 @@ public class ComposedMesh extends Resource {
 		renderersTranparent = new HashMap<RenderMaterial, Renderer>();
 	}
 
-	private void preBatch(Renderer batcher) {
-		/*for (RenderEffect effect : effects) {
-			effect.preBatch(batcher);
-		}*/
-	}
-
-	private void postBatch(Renderer batcher) {
-		/*for (RenderEffect effect : effects) {
-			effect.postBatch(batcher);
-		}*/
-	}
-
 	protected void batch(Renderer batcher,RenderMaterial renderMaterial) {
 		ArrayList<MeshFace> faces;
 		//if(renderMaterial.isOpaque()){
@@ -84,43 +72,30 @@ public class ComposedMesh extends Resource {
 		if(faces != null){
 			for (MeshFace face : faces) {
 				for(Vertex vert : face){
-					batcher.addTexCoord(vert.texCoord0);
-					batcher.addNormal(vert.normal);
+					if (vert.texCoord0!=null)
+						batcher.addTexCoord(vert.texCoord0);
+					if (vert.normal!=null)
+						batcher.addNormal(vert.normal);
+					if (vert.color!=null)
+						batcher.addColor(vert.color);
 					batcher.addVertex(vert.position);
-					batcher.addColor(vert.color);
 				}
 			}
 		}
-	}
-
-	private void preRender(Renderer batcher) {
-		/*for (RenderEffect effect : effects) {
-			effect.preDraw(batcher);
-		}*/
-	}
-
-	private void postRender(Renderer batcher) {
-		/*for (RenderEffect effect : effects) {
-			effect.postDraw(batcher);
-		}*/
 	}
 
 	public void batch(){
 
 		for(RenderMaterial material : opaqueFacesPerMaterials.keySet()){
 			Renderer renderer = renderersOpaque.get(material);
-			if(renderer == null) renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
-			preBatch(renderer);
+			if(renderer == null)renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 			this.batch(renderer, material);
-			postBatch(renderer);
 		}
 
 		for(RenderMaterial material : tranparentFacesPerMaterials.keySet()){
 			Renderer renderer = renderersTranparent.get(material);
 			if(renderer == null) renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
-			preBatch(renderer);
 			this.batch(renderer, material);
-			postBatch(renderer);
 		}
 	}
 
@@ -135,9 +110,7 @@ public class ComposedMesh extends Resource {
 
 		if(renderer == null) throw new IllegalStateException("Cannot render without batching first!");
 
-		preRender(renderer);
 		renderer.render(material);
-		postRender(renderer);	
 	}
 
 	public Map<RenderMaterial, Renderer> getOpaqueRenderer(){
