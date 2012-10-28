@@ -165,22 +165,51 @@ public final class SpoutScheduler implements Scheduler {
 		public void run() {
 			SpoutClient c = (SpoutClient) Spout.getEngine();
 			c.initRenderer();
-			int rate = (int) ((1f / TARGET_FPS) * 1000);
-			long lastTick = System.currentTimeMillis();
+			int rate = (int) ((1f / TARGET_FPS) * 1000000000);
+
+			long lastTick = System.nanoTime();
+			
+			long timeError = 0;
+			long maxError = rate >> 2; // time error total limited to 0.25 seconds 
+			
 			while (!shutdown) {
 				if (Display.isCloseRequested() || !c.isRendering()) {
 					c.stop();
 					break;
 				}
-				long startTime = System.currentTimeMillis();
-				long delta = startTime - lastTick;
-				c.render(delta / 1000f);
+				long currentTime = System.nanoTime();
+				long delta = currentTime - lastTick;
+				lastTick = currentTime;
+
+				// Calculate error in frame time
+				timeError += delta - rate;
+				if (timeError > maxError) {
+					timeError = maxError;
+				} else if (timeError < -maxError) {
+					timeError = -maxError;
+				}
+
+				c.render(delta / 1000000000f);
 
 				Display.update(true);
-				lastTick = System.currentTimeMillis();
-				if (rate - delta > 0) {
+				
+				currentTime = System.nanoTime();
+				delta = currentTime - lastTick; // Time for render
+				
+				// Round delay to the nearest ms value (from ns)
+				long delay = (rate - delta + 500000) / 1000000;
+				
+				// Adjust delay by 1ms depending on current time error
+				// Forces average to the target rate
+				if (timeError > 0) {
+					delay--;
+				} else if (timeError < 0) {
+					delay++;
+				}
+				
+				if (delay > 0) {
 					try {
-						Thread.sleep(rate - delta);
+						Thread.sleep(delay);
 					} catch (InterruptedException e) {
 						Spout.log("[Severe] Interrupted while sleeping!");
 					}
