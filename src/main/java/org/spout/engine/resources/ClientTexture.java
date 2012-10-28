@@ -52,6 +52,9 @@ public class ClientTexture extends Texture {
 
 	public int getTextureID() {
 		if (textureID == -1) {
+			load(); //TODO : Handle that better
+		}
+		if (textureID == -1) {
 			throw new IllegalStateException("Cannot use an unloaded texture");
 		}
 		return textureID;
@@ -59,6 +62,9 @@ public class ClientTexture extends Texture {
 
 	@Override
 	public void bind() {
+		if (textureID == -1) {
+			load(); //TODO : Handle that better
+		}
 		if (textureID == -1) {
 			throw new IllegalStateException("Cannot bind an unloaded texture!");
 		}

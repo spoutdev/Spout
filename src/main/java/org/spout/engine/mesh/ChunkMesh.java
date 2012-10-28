@@ -26,24 +26,15 @@
  */
 package org.spout.engine.mesh;
 
-import java.awt.Color;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
-import org.spout.api.Spout;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
-import org.spout.api.math.Rectangle;
-import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.MeshFace;
-import org.spout.api.model.OrientedMeshFace;
-import org.spout.api.model.Vertex;
-import org.spout.api.render.RenderMaterial;
 import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 
@@ -156,8 +147,12 @@ public class ChunkMesh extends ComposedMesh {
 			tranparentFacesPerMaterials.put(renderMaterial, faces);
 		}
 		}*/
-		
-		faces.addAll(WorldRenderer.material.render(chunkSnapshotModel, position, shouldRender));
+		try{
+			faces.addAll(material.getModel().getRenderMaterial().render(chunkSnapshotModel, position, shouldRender));
+		}catch (NullPointerException e) {
+			// Use fallback
+			faces.addAll(WorldRenderer.material.render(chunkSnapshotModel, position, shouldRender));
+		}
 
 		/*Vector3 model = new Vector3(x & Chunk.BLOCKS.MASK, y & Chunk.BLOCKS.MASK, z & Chunk.BLOCKS.MASK);
 
@@ -190,152 +185,6 @@ public class ChunkMesh extends ComposedMesh {
 				appendModelFaces(material, face, model, faces);
 			}
 		}*/
-	}
-
-	private Vertex copy(final Vertex vertex){
-		Vertex newv = new Vertex(new Vector3(vertex.position));
-		if(newv.color != null)
-			newv.color = new Color(vertex.color.getRGB());
-		if(newv.normal != null)
-			newv.normal =  new Vector3(vertex.normal);
-		if(newv.texCoord0 != null)
-			newv.texCoord0 =  new Vector2(vertex.texCoord0);
-		if(newv.texCoord1 != null)
-			newv.texCoord1 =  new Vector2(vertex.texCoord1);
-		return newv;
-	}
-
-	/**
-	 * Appends ModelFaces from the block face. This will likely be temporary.
-	 * 
-	 * @param face
-	 * @param base
-	 * @param faces 
-	 */
-	private void appendModelFaces(BlockMaterial m, BlockFace face, Vector3 base, ArrayList<MeshFace> faces) {
-		Vector3 p1 = null;
-		Vector3 p2 = null;
-		Vector3 p3 = null;
-		Vector3 p4 = null;
-
-		/*   1--2
-		 *  /| /|
-		 * 5--6 |   
-		 * | 0|-3    Y - Bottom < TOP
-		 * |/ |/     |
-		 * 4--7      O-- X - North < SOUTH
-		 *          /
-		 *         Z - East < WEST
-		 */
-
-		Vector3 vertex0 = base.add(0, 0, 0);
-		Vector3 vertex1 = base.add(0, 1, 0);
-		Vector3 vertex2 = base.add(1, 1, 0);
-		Vector3 vertex3 = base.add(1, 0, 0);
-		Vector3 vertex4 = base.add(0, 0, 1);
-		Vector3 vertex5 = base.add(0, 1, 1);
-		Vector3 vertex6 = base.add(1, 1, 1);
-		Vector3 vertex7 = base.add(1, 0, 1);
-
-		switch (face) {
-		case TOP:
-			p1 = vertex1;
-			p2 = vertex2;
-			p3 = vertex6;
-			p4 = vertex5;
-			break;
-		case BOTTOM:
-			p1 = vertex0;
-			p2 = vertex4;
-			p3 = vertex7;
-			p4 = vertex3;
-			break;
-		case NORTH:
-			p1 = vertex0;
-			p2 = vertex1;
-			p3 = vertex5;
-			p4 = vertex4;
-			break;
-		case SOUTH:
-			p1 = vertex7;
-			p2 = vertex6;
-			p3 = vertex2;
-			p4 = vertex3;
-			break;
-		case WEST:
-			p1 = vertex5;
-			p2 = vertex6;
-			p3 = vertex7;
-			p4 = vertex4;
-			break;
-		case EAST:
-			p1 = vertex0;
-			p2 = vertex3;
-			p3 = vertex2;
-			p4 = vertex1;
-			break;
-		}
-
-		Rectangle r = m.getTextureOffset();
-
-		Vector2 uv1 = new Vector2(r.getX(), r.getY());
-		Vector2 uv2 = new Vector2(r.getX(), r.getY()+r.getHeight());
-		Vector2 uv3 = new Vector2(r.getX()+r.getWidth(), r.getY()+r.getHeight());
-		Vector2 uv4 = new Vector2(r.getX()+r.getWidth(), r.getY());
-
-		Color color = Color.WHITE; // Temporary testing color
-		Vertex v1 = new Vertex(p1, face.getOffset(), uv1);
-		v1.color = color;
-
-		Vertex v2 = new Vertex(p2, face.getOffset(), uv2);
-		v2.color = color;
-
-		Vertex v3 = new Vertex(p3, face.getOffset(), uv3);
-		v3.color = color;
-
-		Vertex v4 = new Vertex(p4, face.getOffset(), uv4);
-		v4.color = color;
-
-		MeshFace f1 = new MeshFace(v1, v2, v3);
-		MeshFace f2 = new MeshFace(v3, v4, v1);
-		faces.add(f1);
-		faces.add(f2);
-	}
-
-	private Color getColor(BlockMaterial m) {
-		if (!m.isSolid()) {
-			return new Color(0, 0, 0);
-		}
-		switch (m.getId()) {
-		case 78:
-			return new Color(255, 255, 255);
-		case 24:
-		case 12:
-			return new Color(210, 210, 150);
-		case 10:
-			return new Color(200, 50, 50);
-		case 9:
-		case 8:
-			return new Color(150, 150, 200);
-		case 7:
-			return new Color(50, 50, 50);
-		case 4:
-			return new Color(100, 100, 100);
-		case 17:
-		case 3:
-			return new Color(110, 75, 35);
-		case 18:
-		case 2:
-			return new Color(55, 140, 55);
-		case 21:
-		case 16:
-		case 15:
-		case 14:
-		case 13:
-		case 1:
-		default:
-			return new Color(150, 150, 150);
-		}
 	}
 
 	/**

@@ -103,7 +103,7 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 				// It's a resource!
 				Resource resource = Spout.getFilesystem().getResource(val);
 				if (resource instanceof Texture && !((Texture)resource).isLoaded()) {
-					((Texture)resource).load();
+					//((Texture)resource).load();//TODO : Control if GL ready
 				}
 
 				paramsNew.put(key, resource);
