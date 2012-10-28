@@ -28,12 +28,13 @@ package org.spout.engine.world;
  */
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
+import org.spout.api.geo.cuboid.ChunkSnapshotModel;
 
 //just need to,bottom,east,west,south,north, not diagonal neigbour it's 8 snapshot useless
 /**
  * Stores 9 chunk snapshots (1 middle chunk and 8 neighbours) for quick access
  */
-public class SpoutChunkSnapshotModel {
+public class SpoutChunkSnapshotModel implements ChunkSnapshotModel{
 	
 	private final int cx,cy,cz;
 	private final ChunkSnapshot[][][] chunks;

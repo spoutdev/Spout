@@ -27,25 +27,67 @@
 package org.spout.engine.mesh;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 
-import org.spout.api.material.block.BlockFace;
+import org.lwjgl.opengl.GL11;
+import org.spout.api.model.Mesh;
 import org.spout.api.model.MeshFace;
+import org.spout.api.model.OrientedMeshFace;
+import org.spout.api.model.Vertex;
+import org.spout.api.render.RenderMaterial;
+import org.spout.api.render.Renderer;
 import org.spout.api.resource.Resource;
+import org.spout.engine.renderer.BatchVertexRenderer;
 
-public class CubeMesh extends Resource {
-	private List<MeshFace>[] meshs;
+
+public class CubeMesh extends Resource implements Mesh, Iterable<OrientedMeshFace> {
+	ArrayList<OrientedMeshFace> faces;
+	boolean dirty = false;
+
+	Renderer renderer;
 	
-	public CubeMesh(List<MeshFace>[] meshs) {
-		this.meshs = meshs;
+	
+	public CubeMesh(){
+		faces = new ArrayList<OrientedMeshFace>();
 	}
 	
-	public List<MeshFace> getMeshFace(List<BlockFace> faces) {
-		List<MeshFace> list = new ArrayList<MeshFace>();
+	public CubeMesh(ArrayList<OrientedMeshFace> faces){
+		this.faces = faces;
+	}
+
+	protected void batch(Renderer batcher) {
+		for (MeshFace face : faces) {
+			for(Vertex vert : face){
+				if (vert.texCoord0!=null)
+					batcher.addTexCoord(vert.texCoord0);
+				if (vert.normal!=null)
+					batcher.addNormal(vert.normal);
+				if (vert.color!=null)
+					batcher.addColor(vert.color);
+				batcher.addVertex(vert.position);
+			}
+		}
+	}
+
+	public void batch(){
+		if (renderer == null)
+			renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
+		renderer.begin();
+		this.batch(renderer);
+		renderer.end();
+	}
+	
+	public void render(RenderMaterial material){
+		if (renderer == null)
+			throw new IllegalStateException("Cannot render without batching first!");
 		
-		for (BlockFace face : faces)
-			list.addAll(meshs[face.ordinal()]);
-		
-		return list;
+		material.preRender();
+		renderer.render(material);
+		material.postRender();
+	}
+	
+	@Override
+	public Iterator<OrientedMeshFace> iterator() {
+		return faces.iterator();
 	}
 }
