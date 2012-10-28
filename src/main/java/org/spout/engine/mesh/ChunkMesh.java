@@ -41,6 +41,7 @@ import org.spout.api.math.Rectangle;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.MeshFace;
+import org.spout.api.model.OrientedMeshFace;
 import org.spout.api.model.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.engine.renderer.WorldRenderer;
@@ -83,7 +84,7 @@ public class ChunkMesh extends ComposedMesh {
 	public int getZ(){
 		return cz;
 	}
-	
+
 	/**
 	 * Updates the mesh.
 	 */
@@ -92,13 +93,13 @@ public class ChunkMesh extends ComposedMesh {
 			isUnloaded = true;
 			return;
 		}
-		
+
 		center = chunkModel.getCenter();
-		
+
 		for (int x = center.getBase().getBlockX(); x < center.getBase().getBlockX() + Chunk.BLOCKS.SIZE; x++) {
 			for (int y = center.getBase().getBlockY(); y < center.getBase().getBlockY() + Chunk.BLOCKS.SIZE; y++) {
 				for (int z = center.getBase().getBlockZ(); z < center.getBase().getBlockZ() + Chunk.BLOCKS.SIZE; z++) {
-					generateBlockVertices(x, y, z);
+					generateBlockVertices(chunkModel,x, y, z);
 				}
 			}
 		}
@@ -107,15 +108,16 @@ public class ChunkMesh extends ComposedMesh {
 		chunkModel = null;
 		center = null;
 	}
-	
+
 	/**
 	 * Generates the vertices of the given block and adds them to the ChunkMesh.
+	 * @param chunkSnapshotModel 
 	 * 
 	 * @param x
 	 * @param y
 	 * @param z
 	 */
-	private void generateBlockVertices(int x, int y, int z) {
+	private void generateBlockVertices(SpoutChunkSnapshotModel chunkSnapshotModel, int x, int y, int z) {
 		BlockMaterial material = center.getBlockMaterial(x, y, z);
 
 		if (material.isTransparent()) {
@@ -139,7 +141,7 @@ public class ChunkMesh extends ComposedMesh {
 
 		//TODO : Waiting BlockMaterial have model & material : material.getModel().getRenderMaterial();
 		//TODO : Remove fallback 
-		
+
 		ArrayList<MeshFace> faces;
 		//if(renderMaterial.isOpaque()){
 		faces = opaqueFacesPerMaterials.get(WorldRenderer.material);
@@ -155,29 +157,32 @@ public class ChunkMesh extends ComposedMesh {
 		}
 		}*/
 		
-		Vector3 model = new Vector3(x & Chunk.BLOCKS.MASK, y & Chunk.BLOCKS.MASK, z & Chunk.BLOCKS.MASK);
+		faces.addAll(WorldRenderer.material.render(chunkSnapshotModel, position, shouldRender));
+
+		/*Vector3 model = new Vector3(x & Chunk.BLOCKS.MASK, y & Chunk.BLOCKS.MASK, z & Chunk.BLOCKS.MASK);
 
 		CubeMesh cubeMesh = WorldRenderer.blocksMesh.get(material.getDisplayName());
 
 		if (cubeMesh == null) {
 			cubeMesh = WorldRenderer.defaultMesh;
 		}
+		
+		for (OrientedMeshFace face : cubeMesh) {
+			if(face.canRender(shouldRender)){
+				Iterator<Vertex> it = face.iterator();
+				Vertex v1 = copy(it.next());
+				Vertex v2 = copy(it.next());
+				Vertex v3 = copy(it.next());
+				v1.position = v1.position.add(model);
+				v2.position = v2.position.add(model);
+				v3.position = v3.position.add(model);
+				v1.color = Color.white;
+				v2.color = Color.white;
+				v3.color = Color.white;
+				faces.add(new MeshFace(v1, v2, v3));
+			}
+		}*/
 
-		for (MeshFace face : cubeMesh.getMeshFace(shouldRender)) {
-			Iterator<Vertex> it = face.iterator();
-			Vertex v1 = copy(it.next());
-			Vertex v2 = copy(it.next());
-			Vertex v3 = copy(it.next());
-			v1.position = v1.position.add(model);
-			v2.position = v2.position.add(model);
-			v3.position = v3.position.add(model);
-			v1.color = Color.white;
-			v2.color = Color.white;
-			v3.color = Color.white;
-			faces.add(new MeshFace(v1, v2, v3));
-		}
-		
-		
 		/*for (BlockFace face : renderableFaces) {
 			if (shouldRender[face.ordinal()]) {
 				// System.out.println(material + " " + face + " " + position);
@@ -199,7 +204,7 @@ public class ChunkMesh extends ComposedMesh {
 			newv.texCoord1 =  new Vector2(vertex.texCoord1);
 		return newv;
 	}
-	
+
 	/**
 	 * Appends ModelFaces from the block face. This will likely be temporary.
 	 * 
@@ -212,7 +217,7 @@ public class ChunkMesh extends ComposedMesh {
 		Vector3 p2 = null;
 		Vector3 p3 = null;
 		Vector3 p4 = null;
-		
+
 		/*   1--2
 		 *  /| /|
 		 * 5--6 |   
@@ -222,7 +227,7 @@ public class ChunkMesh extends ComposedMesh {
 		 *          /
 		 *         Z - East < WEST
 		 */
-		
+
 		Vector3 vertex0 = base.add(0, 0, 0);
 		Vector3 vertex1 = base.add(0, 1, 0);
 		Vector3 vertex2 = base.add(1, 1, 0);
@@ -231,7 +236,7 @@ public class ChunkMesh extends ComposedMesh {
 		Vector3 vertex5 = base.add(0, 1, 1);
 		Vector3 vertex6 = base.add(1, 1, 1);
 		Vector3 vertex7 = base.add(1, 0, 1);
-		
+
 		switch (face) {
 		case TOP:
 			p1 = vertex1;
@@ -270,14 +275,14 @@ public class ChunkMesh extends ComposedMesh {
 			p4 = vertex1;
 			break;
 		}
-		
+
 		Rectangle r = m.getTextureOffset();
-		
+
 		Vector2 uv1 = new Vector2(r.getX(), r.getY());
 		Vector2 uv2 = new Vector2(r.getX(), r.getY()+r.getHeight());
 		Vector2 uv3 = new Vector2(r.getX()+r.getWidth(), r.getY()+r.getHeight());
 		Vector2 uv4 = new Vector2(r.getX()+r.getWidth(), r.getY());
-		
+
 		Color color = Color.WHITE; // Temporary testing color
 		Vertex v1 = new Vertex(p1, face.getOffset(), uv1);
 		v1.color = color;
