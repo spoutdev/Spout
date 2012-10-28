@@ -36,7 +36,7 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 public class ShapelessRecipeTest {
-	@Test
+	/*@Test
 	public void testShapelessRecipe() {
 		ItemStack solid = new ItemStack(BlockMaterial.SOLID, 1);
 		ShapelessRecipe recipe = new ShapelessRecipe(solid.clone());
@@ -45,5 +45,5 @@ public class ShapelessRecipeTest {
 		assertFalse(recipe.handle(inventory));
 		inventory.add(solid.clone().setAmount(64));
 		assertTrue(recipe.handle(inventory));
-	}
+	}*/
 }

@@ -36,7 +36,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ShapedRecipeTest {
-	@Test
+	/*@Test
 	public void testShapedRecipe() {
 
 		final ItemStack solid = new ItemStack(BlockMaterial.SOLID, 5);
@@ -63,5 +63,5 @@ public class ShapedRecipeTest {
 
 		// Try to craft
 		assertTrue(recipe.handle(inventory));
-	}
+	}*/
 }
