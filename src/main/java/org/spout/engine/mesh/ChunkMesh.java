@@ -124,6 +124,10 @@ public class ChunkMesh extends ComposedMesh {
 			int y1 = facePos.getFloorY();
 			int z1 = facePos.getFloorZ();
 			BlockMaterial neighbor = chunkModel.getChunkFromBlock(x1, y1, z1).getBlockMaterial(x1, y1, z1);
+			
+			if (!material.isFaceRendered(face, neighbor)) {
+				continue;
+			}
 
 			//shouldRender[face.ordinal()] = neighbor.isTransparent();
 			if(!neighbor.isOpaque())
