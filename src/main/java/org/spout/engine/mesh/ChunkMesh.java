@@ -147,44 +147,13 @@ public class ChunkMesh extends ComposedMesh {
 			tranparentFacesPerMaterials.put(renderMaterial, faces);
 		}
 		}*/
+		
 		try{
 			faces.addAll(material.getModel().getRenderMaterial().render(chunkSnapshotModel, position, shouldRender));
 		}catch (NullPointerException e) {
 			// Use fallback
 			faces.addAll(WorldRenderer.material.render(chunkSnapshotModel, position, shouldRender));
 		}
-
-		/*Vector3 model = new Vector3(x & Chunk.BLOCKS.MASK, y & Chunk.BLOCKS.MASK, z & Chunk.BLOCKS.MASK);
-
-		CubeMesh cubeMesh = WorldRenderer.blocksMesh.get(material.getDisplayName());
-
-		if (cubeMesh == null) {
-			cubeMesh = WorldRenderer.defaultMesh;
-		}
-		
-		for (OrientedMeshFace face : cubeMesh) {
-			if(face.canRender(shouldRender)){
-				Iterator<Vertex> it = face.iterator();
-				Vertex v1 = copy(it.next());
-				Vertex v2 = copy(it.next());
-				Vertex v3 = copy(it.next());
-				v1.position = v1.position.add(model);
-				v2.position = v2.position.add(model);
-				v3.position = v3.position.add(model);
-				v1.color = Color.white;
-				v2.color = Color.white;
-				v3.color = Color.white;
-				faces.add(new MeshFace(v1, v2, v3));
-			}
-		}*/
-
-		/*for (BlockFace face : renderableFaces) {
-			if (shouldRender[face.ordinal()]) {
-				// System.out.println(material + " " + face + " " + position);
-				// Create a face -- temporary until we get some real models
-				appendModelFaces(material, face, model, faces);
-			}
-		}*/
 	}
 
 	/**
