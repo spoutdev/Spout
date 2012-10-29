@@ -33,18 +33,16 @@ import java.util.Map;
 import java.util.Set;
 
 import org.lwjgl.opengl.GL11;
-import org.spout.api.Client;
-import org.spout.api.Spout;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshotModel;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Matrix;
-import org.spout.api.math.Rectangle;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
 import org.spout.api.model.MeshFace;
+import org.spout.api.model.TextureMesh;
 import org.spout.api.model.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Shader;
@@ -133,10 +131,6 @@ public class ClientRenderMaterial extends Resource implements RenderMaterial {
 			Vector3 position, List<BlockFace> faces) {
 		List<MeshFace> meshs = new ArrayList<MeshFace>();
 		BlockMaterial blockMaterial = chunkSnapshotModel.getCenter().getBlockMaterial(position.getFloorX(), position.getFloorY(), position.getFloorZ());
-		Vector3 p1 = null;
-		Vector3 p2 = null;
-		Vector3 p3 = null;
-		Vector3 p4 = null;
 
 		/*   1--2
 		 *  /| /|
@@ -158,64 +152,53 @@ public class ClientRenderMaterial extends Resource implements RenderMaterial {
 		Vector3 vertex6 = model.add(1, 1, 1);
 		Vector3 vertex7 = model.add(1, 0, 1);
 
+		TextureMesh mesh = (TextureMesh) blockMaterial.getModel().getMesh();
+		
 		for(BlockFace face : faces){
+			Vertex v1 = null, v2 = null, v3 = null, v4 = null;
 			switch (face) {
 			case TOP:
-				p1 = vertex1;
-				p2 = vertex2;
-				p3 = vertex6;
-				p4 = vertex5;
+				v1 = new Vertex(vertex1, face.getOffset(), mesh.getUV(0,0));
+				v2 = new Vertex(vertex2, face.getOffset(), mesh.getUV(0,1));
+				v3 = new Vertex(vertex6, face.getOffset(), mesh.getUV(0,2));
+				v4 = new Vertex(vertex5, face.getOffset(), mesh.getUV(0,3));
 				break;
 			case BOTTOM:
-				p1 = vertex0;
-				p2 = vertex4;
-				p3 = vertex7;
-				p4 = vertex3;
+				v1 = new Vertex(vertex0, face.getOffset(), mesh.getUV(1,0));
+				v2 = new Vertex(vertex4, face.getOffset(), mesh.getUV(1,1));
+				v3 = new Vertex(vertex7, face.getOffset(), mesh.getUV(1,2));
+				v4 = new Vertex(vertex3, face.getOffset(), mesh.getUV(1,3));
 				break;
 			case NORTH:
-				p1 = vertex0;
-				p2 = vertex1;
-				p3 = vertex5;
-				p4 = vertex4;
+				v1 = new Vertex(vertex0, face.getOffset(), mesh.getUV(2,0));
+				v2 = new Vertex(vertex1, face.getOffset(), mesh.getUV(2,1));
+				v3 = new Vertex(vertex5, face.getOffset(), mesh.getUV(2,2));
+				v4 = new Vertex(vertex4, face.getOffset(), mesh.getUV(2,3));
 				break;
 			case SOUTH:
-				p1 = vertex7;
-				p2 = vertex6;
-				p3 = vertex2;
-				p4 = vertex3;
-				break;
-			case WEST:
-				p1 = vertex5;
-				p2 = vertex6;
-				p3 = vertex7;
-				p4 = vertex4;
+				v1 = new Vertex(vertex7, face.getOffset(), mesh.getUV(3,0));
+				v2 = new Vertex(vertex6, face.getOffset(), mesh.getUV(3,1));
+				v3 = new Vertex(vertex2, face.getOffset(), mesh.getUV(3,2));
+				v4 = new Vertex(vertex3, face.getOffset(), mesh.getUV(3,3));
 				break;
 			case EAST:
-				p1 = vertex0;
-				p2 = vertex3;
-				p3 = vertex2;
-				p4 = vertex1;
+				v1 = new Vertex(vertex0, face.getOffset(), mesh.getUV(4,0));
+				v2 = new Vertex(vertex3, face.getOffset(), mesh.getUV(4,1));
+				v3 = new Vertex(vertex2, face.getOffset(), mesh.getUV(4,2));
+				v4 = new Vertex(vertex1, face.getOffset(), mesh.getUV(4,3));
+				break;
+			case WEST:
+				v1 = new Vertex(vertex5, face.getOffset(), mesh.getUV(5,0));
+				v2 = new Vertex(vertex6, face.getOffset(), mesh.getUV(5,1));
+				v3 = new Vertex(vertex7, face.getOffset(), mesh.getUV(5,2));
+				v4 = new Vertex(vertex4, face.getOffset(), mesh.getUV(5,3));
 				break;
 			}
 
-			Rectangle r = new Rectangle(0, 0, 1, 1);//TODO : Replace by a getModel() to get TextMesh
-
-			Vector2 uv1 = new Vector2(r.getX(), r.getY());
-			Vector2 uv2 = new Vector2(r.getX(), r.getY()+r.getHeight());
-			Vector2 uv3 = new Vector2(r.getX()+r.getWidth(), r.getY()+r.getHeight());
-			Vector2 uv4 = new Vector2(r.getX()+r.getWidth(), r.getY());
-
 			Color color = Color.WHITE; // Temporary testing color
-			Vertex v1 = new Vertex(p1, face.getOffset(), uv1);
 			v1.color = color;
-
-			Vertex v2 = new Vertex(p2, face.getOffset(), uv2);
 			v2.color = color;
-
-			Vertex v3 = new Vertex(p3, face.getOffset(), uv3);
 			v3.color = color;
-
-			Vertex v4 = new Vertex(p4, face.getOffset(), uv4);
 			v4.color = color;
 
 			MeshFace f1 = new MeshFace(v1, v2, v3);
