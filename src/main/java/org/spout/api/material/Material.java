@@ -64,11 +64,10 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	private final FlagSingle useFlag = new FlagSingle();
 	
 	/**
-	 * Creates a material with a dataMask, name, texture, and offset
+	 * Creates a material with a dataMask, name
 	 * @param dataMask
 	 * @param name
-	 * @param texturePath
-	 * @param textureOffset
+	 * @param model
 	 */
 	public Material(short dataMask, String name, String model) {
 		this.isSubMaterial = false;
