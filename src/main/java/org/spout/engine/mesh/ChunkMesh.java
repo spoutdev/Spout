@@ -35,6 +35,7 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.MeshFace;
+import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 
@@ -114,7 +115,7 @@ public class ChunkMesh extends ComposedMesh {
 		if (material.isTransparent()) {
 			return;
 		}
-
+		
 		//boolean[] shouldRender = new boolean[6];
 		List<BlockFace> shouldRender = new ArrayList<BlockFace>();
 		Vector3 position = new Vector3(x, y, z);
@@ -129,9 +130,15 @@ public class ChunkMesh extends ComposedMesh {
 				continue;
 			}
 
-			//shouldRender[face.ordinal()] = neighbor.isTransparent();
-			if(!neighbor.isOpaque())
+			ByteBitSet occlusion = neighbor.getOcclusion(material.getData());
+
+			if (!occlusion.get(face.getOpposite())) {
 				shouldRender.add(face);
+			}
+		}
+		
+		if (shouldRender.size() <= 0) {
+			return;
 		}
 
 		//TODO : Waiting BlockMaterial have model & material : material.getModel().getRenderMaterial();
