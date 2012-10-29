@@ -421,6 +421,16 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
+	 * Gets if the a face should be rendered
+	 * 
+	 * @param face the fact to render
+	 * @param material the material of the neighbouring block
+	 */
+	public boolean isFaceRendered(BlockFace face, BlockMaterial material) {
+		return true;
+	}
+
+	/**
 	 * Sets the collision strategy to use for this block
 	 * 
 	 * @param strategy
