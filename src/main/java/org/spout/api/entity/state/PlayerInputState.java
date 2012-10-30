@@ -160,7 +160,7 @@ public class PlayerInputState {
 	}
 
 	public PlayerInputState withAddedPitch(float pitch) {
-		return new PlayerInputState(userCommands, MathHelper.wrapAngle(pitch + this.pitch), yaw);
+		return new PlayerInputState(userCommands, MathHelper.wrapAnglePitch(pitch + this.pitch), yaw);
 	}
 
 	public PlayerInputState withAddedYaw(float yaw) {

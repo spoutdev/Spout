@@ -141,6 +141,15 @@ public class Matrix implements Serializable {
 	}
 
 	/**
+	 * Transpose the matrix
+	 *
+	 * @return the transposition of this matrix 
+	 */
+	public Matrix transpose() {
+		return MathHelper.transpose(this);
+	}
+	
+	/**
 	 * Returns this matrix in a single dimension float array
 	 *
 	 * @return

@@ -130,6 +130,16 @@ public class MathHelper {
 			return angle;
 		}
 	}
+	
+	public static float wrapAnglePitch(float angle) {
+		angle = wrapAngle(angle);
+		
+		if (angle<-90)
+			return -90;
+		if (angle>90)
+			return 90;
+		return angle;
+	}
 
 	/**
 	 * Wraps a byte between 0 and 256
@@ -1506,7 +1516,7 @@ public class MathHelper {
 		}
 		return r;
 	}
-
+	
 	public static int index(int x, int y, int dim) {
 		return x * dim + y;
 	}
