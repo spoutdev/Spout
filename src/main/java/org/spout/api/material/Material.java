@@ -79,7 +79,11 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.dataMask = dataMask;
 		this.root = this;
 		if(Spout.getEngine().getPlatform() == Platform.CLIENT)
-			this.model = (Model) Spout.getEngine().getFilesystem().getResource(model);
+			if (model == null) {
+				this.model = (Model) Spout.getEngine().getFilesystem().getResource("model://Spout/resources/fallbacks/fallback.spm");
+			} else {
+				this.model = (Model) Spout.getEngine().getFilesystem().getResource(model);
+			}
 		else
 			this.model = null;
 
