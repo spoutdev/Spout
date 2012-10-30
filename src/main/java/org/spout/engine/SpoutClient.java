@@ -64,6 +64,7 @@ import org.spout.api.Client;
 import org.spout.api.FileSystem;
 import org.spout.api.Spout;
 import org.spout.api.audio.SoundManager;
+import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
@@ -238,8 +239,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		LabelComponent txt = txtWidget.add(LabelComponent.class);
 		
 		txt.setFont(font);
-		txt.setColor(Color.blue);
-		txt.setText("Test");
+		txt.setText(ChatStyle.BLUE+"Test" + ChatStyle.WHITE+ " with " + ChatStyle.RED + "colors");
 
 		mainScreen.attachWidget(this.getPluginManager().getPlugins().iterator().next(), txtWidget);*/
 		screenStack = new ScreenStack(mainScreen);
@@ -503,7 +503,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		Entity e = spoutyType.createEntity(new Point(super.getDefaultWorld(),0,0,0));
 		e.setSavable(false); // To prevent entity duplication
 		TextModelComponent tmc = e.add(TextModelComponent.class);
-		tmc.setText("Spouty");
+		tmc.setText(ChatStyle.BLUE+"Sp"+ChatStyle.WHITE+"ou"+ChatStyle.RED+"ty");
 		tmc.setSize(0.5f);
 		tmc.setTranslation(new Vector3(0, 3f, 0));
 		tmc.setFont(font);
@@ -543,12 +543,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		gui.begin();
 		if (showDebugInfos) {
-			gui.drawText("Spout client ! Logged as " + activePlayer.getDisplayName() + " in world: " + getDefaultWorld().getName(), font, -0.95f, 0.9f, 10f);
-			gui.drawText("x: " + activePlayer.getTransform().getPosition().getX(), font, -0.95f, 0.8f, 8f, Color.blue);
-			gui.drawText("y: " + activePlayer.getTransform().getPosition().getY(), font, -0.95f, 0.7f, 8f, Color.blue);
-			gui.drawText("z: " + activePlayer.getTransform().getPosition().getZ(), font, -0.95f, 0.6f, 8f, Color.blue);
-			gui.drawText("fps: " + fps, font, -0.95f, 0.5f, 8f, Color.blue);
-			gui.drawText("chunk: " + worldRenderer.getChunkRenderersSize(), font, -0.95f, 0.4f, 8f, Color.blue);
+			gui.drawText("Spout client ! Logged as "+ChatStyle.RED+ activePlayer.getDisplayName()+ChatStyle.BLACK+" in world: "+ChatStyle.RED+getDefaultWorld().getName(), font, -0.95f, 0.9f, 10f);
+			gui.drawText(ChatStyle.BLUE+"x: "+activePlayer.getTransform().getPosition().getX(), font, -0.95f, 0.8f, 8f);
+			gui.drawText(ChatStyle.BLUE+"y: "+activePlayer.getTransform().getPosition().getY(), font, -0.95f, 0.7f, 8f);
+			gui.drawText(ChatStyle.BLUE+"z: "+activePlayer.getTransform().getPosition().getZ(), font, -0.95f, 0.6f, 8f);
+			gui.drawText(ChatStyle.BLUE+"fps: "+fps, font, -0.95f, 0.5f, 8f);
+			gui.drawText(ChatStyle.BLUE+"chunk: "+worldRenderer.getChunkRenderersSize(), font, -0.95f, 0.4f, 8f);
 		}
 		for (Screen screen : screenStack.getVisibleScreens()) {
 			for (Widget widget : screen.getWidgets()) {
