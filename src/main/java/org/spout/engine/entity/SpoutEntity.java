@@ -186,7 +186,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		if (isRemoved()) {
 			removeObserver();
 			//Call onRemoved for Components and remove them
-			for (Component component : Component.dependSort(values())) {
+			for (Component component : values()) {
 				detach(component.getClass());
 			}
 			//Track entities w/their chunks
