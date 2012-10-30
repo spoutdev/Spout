@@ -30,12 +30,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
@@ -52,15 +54,12 @@ public class WorldRenderer {
 	public static RenderMaterial material;
 
 	private List<ChunkMeshBatch> chunkRenderers = new ArrayList<ChunkMeshBatch>();
-	private TInt21TripleObjectHashMap<ChunkMeshBatch> chunkRenderersByPosition = new TInt21TripleObjectHashMap<ChunkMeshBatch>();
+	private TInt21TripleObjectHashMap<Map<BlockFace,ChunkMeshBatch>> chunkRenderersByPosition = new TInt21TripleObjectHashMap<Map<BlockFace,ChunkMeshBatch>>();
 
 	public static HashMap<String,CubeMesh> blocksMesh = new HashMap<String, CubeMesh>();
 	public static CubeMesh defaultMesh = null;
 	
 	private World world; // temp
-	
-	// For debug purpose:
-	public int culledChunks = 0;
 
 	public WorldRenderer(SpoutClient client) {
 		this.client = client;
@@ -95,7 +94,7 @@ public class WorldRenderer {
 	}
 	
 	private final ConcurrentLinkedQueue<ChunkMesh> renderChunkMeshBatchQueue = new ConcurrentLinkedQueue<ChunkMesh>();
-	private final long TIME_LIMIT = 1000L / 60L;
+	private final long TIME_LIMIT = 2;
 	
 	public void update(){
 		if( world == null ){
@@ -106,42 +105,48 @@ public class WorldRenderer {
 		
 		final long start = System.currentTimeMillis();
 		
-		Set<ChunkMeshBatch> modifiedBatch = new HashSet<ChunkMeshBatch>();
-		
 		//Step 2 : Add ChunkMesh to ChunkMeshBatch
 		ChunkMesh chunkMesh;
 		while( (chunkMesh = renderChunkMeshBatchQueue.poll()) != null){
 			Vector3 batchCoords = ChunkMeshBatch.getBatchCoordinates(new Vector3(chunkMesh.getX(), chunkMesh.getY(), chunkMesh.getZ()));
 			Vector3 chunkCoords = ChunkMeshBatch.getChunkCoordinates(batchCoords);
-			ChunkMeshBatch chunkMeshBatch = getChunkMeshBatchByBatchPosition(batchCoords.getFloorX(), batchCoords.getFloorY(), batchCoords.getFloorZ());
-		
-			if(chunkMeshBatch==null){
-				if(!chunkMesh.hasVertices())
-					continue;
-				chunkMeshBatch = new ChunkMeshBatch(world,chunkCoords.getFloorX(), chunkCoords.getFloorY(), chunkCoords.getFloorZ());
-				addChunkMeshBatch(chunkMeshBatch);
-			}
-		
-			if(!chunkMesh.isUnloaded()){
-				chunkMeshBatch.addMesh(chunkMesh);
-				modifiedBatch.add(chunkMeshBatch);
-			}else{
-				chunkMeshBatch.removeMesh(chunkMesh);
-				modifiedBatch.add(chunkMeshBatch);
-			}
 			
+			for(BlockFace face : BlockFace.values()){
+				ChunkMeshBatch chunkMeshBatch = getChunkMeshBatchByBatchPosition(batchCoords.getFloorX(), batchCoords.getFloorY(), batchCoords.getFloorZ(), face);
+
+				if(chunkMeshBatch==null){
+					if(chunkMesh.isUnloaded())
+						continue;
+					chunkMeshBatch = new ChunkMeshBatch(world,chunkCoords.getFloorX(), chunkCoords.getFloorY(), chunkCoords.getFloorZ(), face);
+					
+					addChunkMeshBatch(chunkMeshBatch);
+				}
+
+				if(!chunkMesh.isUnloaded()){
+					chunkMeshBatch.addMesh(chunkMesh);
+					chunkMeshBatch.update(); // One chunk in batch only
+				}else{
+					chunkMeshBatch.removeMesh(chunkMesh);
+					removeChunkMeshBatch(chunkMeshBatch); // One chunk in batch only
+				}
+			}
+
 			if( System.currentTimeMillis() - start > TIME_LIMIT)
 				break;
 		}
 		
 		//Step 3 : Execute/Delete ChunkMeshBatch if full/empty
-		for(ChunkMeshBatch batch : modifiedBatch){
+		/*for(ChunkMeshBatch batch : modifiedBatch){
 			if(batch.isFull()){
 				batch.update();
 			}else if(batch.isEmpty()){
 				removeChunkMeshBatch(batch);
 			}
-		}
+		}*/
+
+		long time =  System.currentTimeMillis() - start;
+		if(time > 1)
+			System.out.println("WorldRender update take : " + time);
 	}
 	
 	public void addMeshToBatchQueue(ChunkMesh mesh) {
@@ -150,12 +155,22 @@ public class WorldRenderer {
 
 	private void addChunkMeshBatch(ChunkMeshBatch batch) {
 		chunkRenderers.add(batch);
-		chunkRenderersByPosition.put(batch.getX(), batch.getY(), batch.getZ(), batch);
+		Map<BlockFace, ChunkMeshBatch> map = chunkRenderersByPosition.get(batch.getX(), batch.getY(), batch.getZ());
+		if( map == null ){
+			map = new HashMap<BlockFace, ChunkMeshBatch>();
+			chunkRenderersByPosition.put(batch.getX(), batch.getY(), batch.getZ(), map);
+		}
+		map.put(batch.getFace(), batch);
 	}
 
 	private void removeChunkMeshBatch(ChunkMeshBatch batch) {
 		chunkRenderers.remove(batch);
-		chunkRenderersByPosition.remove(batch.getX(), batch.getY(), batch.getZ());
+		Map<BlockFace, ChunkMeshBatch> map = chunkRenderersByPosition.get(batch.getX(), batch.getY(), batch.getZ());
+		if( map != null ){
+			map.remove(batch.getFace());
+			if(map.isEmpty())
+				chunkRenderersByPosition.remove(batch.getX(), batch.getY(), batch.getZ());
+		}
 		batch.finalize();
 	}
 	
@@ -166,13 +181,51 @@ public class WorldRenderer {
 	 * @param y
 	 * @param z
 	 */
-	private ChunkMeshBatch getChunkMeshBatchByBatchPosition(int x, int y, int z) {
-		return chunkRenderersByPosition.get(x, y, z);
+	private ChunkMeshBatch getChunkMeshBatchByBatchPosition(int x, int y, int z, BlockFace face) {
+		Map<BlockFace, ChunkMeshBatch> map = chunkRenderersByPosition.get(x, y, z);
+		if( map == null )
+			return null;
+		return map.get(face);
 	}
 
 	private void renderChunks() {
-		culledChunks = 0;
+		final long start = System.currentTimeMillis();
+		
+		int x =client.getActivePlayer().getChunk().getX();
+				int y = client.getActivePlayer().getChunk().getY();
+				int z = client.getActivePlayer().getChunk().getZ();
+		
+		int culledChunks = 0;
 		for (ChunkMeshBatch renderer : chunkRenderers) {
+			
+			if(renderer.getY() > y && renderer.getFace() == BlockFace.TOP){
+				culledChunks++;
+				continue;
+			}
+			if(renderer.getY() < y && renderer.getFace() == BlockFace.BOTTOM){
+				culledChunks++;
+				continue;
+			}
+			
+			if(renderer.getX() > x && renderer.getFace() == BlockFace.SOUTH){
+				culledChunks++;
+				continue;
+			}
+			if(renderer.getX() < x && renderer.getFace() == BlockFace.NORTH){
+				culledChunks++;
+				continue;
+			}
+			
+			if(renderer.getZ() > z && renderer.getFace() == BlockFace.WEST){
+				culledChunks++;
+				continue;
+			}
+			if(renderer.getZ() < z && renderer.getFace() == BlockFace.EAST){
+				culledChunks++;
+				continue;
+			}
+			
+			
 			material.getShader().setUniform("Model", renderer.getTransform());
 
 			// It's hard to look right
@@ -185,6 +238,12 @@ public class WorldRenderer {
 				culledChunks++;
 			}*/
 		}
+
+		/*long time =  System.currentTimeMillis() - start;
+		if(time > 1)
+			System.out.println("WorldRender render take : " + time);
+		if( culledChunks > 0)
+			System.out.println("Culled facechunk : " + culledChunks);*/
 	}
 	
 	public int getChunkRenderersSize(){
