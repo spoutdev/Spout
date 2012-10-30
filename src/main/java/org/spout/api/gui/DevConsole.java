@@ -24,35 +24,43 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.chat.style;
+package org.spout.api.gui;
 
-import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * A ChatStyle that represents a color, and conflicts with other colors
- */
-public class ColorChatStyle extends ChatStyle {
+import org.spout.api.gui.component.LabelComponent;
+import org.spout.api.gui.render.RenderPart;
+import org.spout.api.math.Rectangle;
+import org.spout.api.render.Font;
+
+public class DevConsole {
+
+	private float scroll = 0;
+	private Font font;
+	private List<Widget> lines = new ArrayList<Widget>();
 	
-	private final char charCode;
-	private final Color color;
-	
-	public ColorChatStyle(String name, Color color, char charCode) {
-		super(name);
-		this.color = color;
-		this.charCode = charCode;
-		ChatStyle.BY_CODE.put(""+charCode, this);
-	}
-
-	@Override
-	public boolean conflictsWith(ChatStyle other) {
-		return other instanceof ColorChatStyle;
+	public DevConsole(Font font) {
+		this.font = font;
 	}
 	
-	public Color getColor() {
-		return color;
+	public void appendMessage(String msg) {
+		Widget wid = new Widget();
+		wid.setGeometry(new Rectangle(0, scroll, 0, 0));
+		LabelComponent txt = wid.add(LabelComponent.class);
+		
+		txt.setFont(font);
+		txt.setText(msg);
+		
+		scroll -= font.getCharHeight();
+		lines.add(wid);
 	}
 	
-	public String toString() {
-		return "§"+charCode;
+	public List<RenderPart> getRenderParts() {
+		List<RenderPart>ret = new ArrayList<RenderPart>();
+		for (Widget line : lines) {
+			ret.addAll(line.getRenderParts());
+		}
+		return ret;
 	}
 }
