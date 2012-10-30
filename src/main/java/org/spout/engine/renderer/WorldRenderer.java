@@ -58,6 +58,9 @@ public class WorldRenderer {
 	public static CubeMesh defaultMesh = null;
 	
 	private World world; // temp
+	
+	// For debug purpose:
+	public int culledChunks = 0;
 
 	public WorldRenderer(SpoutClient client) {
 		this.client = client;
@@ -168,6 +171,7 @@ public class WorldRenderer {
 	}
 
 	private void renderChunks() {
+		culledChunks = 0;
 		for (ChunkMeshBatch renderer : chunkRenderers) {
 			material.getShader().setUniform("Model", renderer.getTransform());
 
@@ -177,7 +181,9 @@ public class WorldRenderer {
 			// so cull me maybe?
 			//if (client.getActiveCamera().getFrustum().intersects(renderer)) {
 				renderer.render(material);
-			//}
+			/*} else {
+				culledChunks++;
+			}*/
 		}
 	}
 	
