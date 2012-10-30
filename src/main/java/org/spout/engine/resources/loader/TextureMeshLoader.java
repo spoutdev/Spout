@@ -54,16 +54,34 @@ public class TextureMeshLoader extends BasicResourceLoader<TextureMesh> {
 
 		ArrayList<Vector2[]> textures = new ArrayList<Vector2[]>();
 		ArrayList<Vector2> uvs = new ArrayList<Vector2>();
+		Vector2 scale = Vector2.ONE;
+		Vector2 size = Vector2.ONE;
+		Vector2 sizeScaled = Vector2.ONE;
 
 		while (scan.hasNext()) {
 			String s = scan.nextLine();
-			if (s.startsWith("#"))
-				continue; // it's a comment, skip it
-			if (s.startsWith("vt ")) {
+			if (s.startsWith("#")) // Comment
+				continue;
+			else if (s.startsWith("scale ")) { // Scale x y
 				String[] sp = s.split(" ");
-				uvs.add(new Vector2(Float.parseFloat(sp[1]), 1-Float.parseFloat(sp[2])));
-			}
-			if (s.startsWith("f ")) {
+				scale = new Vector2(1f / Float.parseFloat(sp[1]), 1f / Float.parseFloat(sp[2]));
+				sizeScaled = scale.multiply(size);
+			}else if (s.startsWith("size ")) { // Size x y
+				String[] sp = s.split(" ");
+				size = new Vector2(Float.parseFloat(sp[1]), Float.parseFloat(sp[2]));
+				sizeScaled = scale.multiply(size);
+			}else if (s.startsWith("rect ")) { // Rect x y
+				String[] sp = s.split(" ");
+				Vector2 base = scale.multiply(new Vector2(Integer.parseInt(sp[1]), Integer.parseInt(sp[2])));
+				textures.add(new Vector2[]{
+						base,
+						base.add(0f, sizeScaled.getY()),
+						base.add(sizeScaled.getX(), sizeScaled.getY()),
+						base.add(sizeScaled.getX(), 0f)});
+			}else if (s.startsWith("vt ")) { // Vertex texture x y
+				String[] sp = s.split(" ");
+				uvs.add(scale.multiply(new Vector2(Float.parseFloat(sp[1]), 1 - Float.parseFloat(sp[2]))));
+			}else if (s.startsWith("f ")) { // Face 1 2 3 ...
 				String[] sp = s.split(" ");
 
 				ArrayList<Vector2> ar = new ArrayList<Vector2>();
@@ -73,13 +91,12 @@ public class TextureMeshLoader extends BasicResourceLoader<TextureMesh> {
 				}
 				textures.add((Vector2[]) ar.toArray(new Vector2[0]));
 				ar.clear();
-
 			}
 
 		}
 
+		scan.close();
 		return new TextureMesh((Vector2[][]) textures.toArray(new Vector2[0][]));
-
 	}
 
 	@Override
