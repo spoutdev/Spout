@@ -210,7 +210,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public void start(boolean checkWorlds) {
+		// Building the screenStack
+		FullScreen mainScreen = new FullScreen();
+		screenStack = new ScreenStack(mainScreen);
+		
 		super.start(checkWorlds);
+		
 		getEventManager().registerEvents(new SpoutClientListener(this), this);
 		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this));
 
@@ -231,9 +236,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		activePlayer = new SpoutClientPlayer("Spouty", loc, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 		activeCamera = activePlayer.add(CameraComponent.class);
 
-		// Building the screenStack
-		FullScreen mainScreen = new FullScreen();
-
 		font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/resources/resources/fonts/ubuntu/Ubuntu-M.ttf");
 		/*Widget txtWidget = new Widget(); // Test widget
 		LabelComponent txt = txtWidget.add(LabelComponent.class);
@@ -242,7 +244,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		txt.setText(ChatStyle.BLUE+"Test" + ChatStyle.WHITE+ " with " + ChatStyle.RED + "colors");
 
 		mainScreen.attachWidget(this.getPluginManager().getPlugins().iterator().next(), txtWidget);*/
-		screenStack = new ScreenStack(mainScreen);
+		
 
 		super.getDefaultWorld().spawnEntity(activePlayer);
 
