@@ -65,4 +65,7 @@ public interface RenderMaterial {
 	 * Called to render a block
 	 */
 	public List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel, Vector3 position, List<BlockFace> faces);
+
+	List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel,
+			Vector3 position, BlockFace face);
 }
