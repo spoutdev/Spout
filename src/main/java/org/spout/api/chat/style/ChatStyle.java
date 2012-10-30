@@ -26,6 +26,7 @@
  */
 package org.spout.api.chat.style;
 
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -43,24 +44,25 @@ import org.spout.api.util.StringMap;
 public abstract class ChatStyle {
 	private static final StringMap ID_LOOKUP = new StringMap(null, new MemoryStore<Integer>(), 0, Integer.MAX_VALUE, ChatStyle.class.getCanonicalName());
 	private static final Map<String, ChatStyle> BY_NAME = new HashMap<String, ChatStyle>();
+	protected static final Map<String, ChatStyle> BY_CODE = new HashMap<String, ChatStyle>();
 	private static final Set<ChatStyle> VALUES = new HashSet<ChatStyle>();
 
-	public static final ChatStyle BLACK = new ColorChatStyle("Black");
-	public static final ChatStyle DARK_BLUE = new ColorChatStyle("Dark Blue");
-	public static final ChatStyle DARK_GREEN = new ColorChatStyle("Dark Green");
-	public static final ChatStyle DARK_CYAN = new ColorChatStyle("Dark Cyan");
-	public static final ChatStyle DARK_RED = new ColorChatStyle("Dark Red");
-	public static final ChatStyle PURPLE = new ColorChatStyle("Purple");
-	public static final ChatStyle GOLD = new ColorChatStyle("Gold");
-	public static final ChatStyle GRAY = new ColorChatStyle("Gray");
-	public static final ChatStyle DARK_GRAY = new ColorChatStyle("Dark Gray");
-	public static final ChatStyle BLUE = new ColorChatStyle("Blue");
-	public static final ChatStyle BRIGHT_GREEN = new ColorChatStyle("Bright Green");
-	public static final ChatStyle CYAN = new ColorChatStyle("Cyan");
-	public static final ChatStyle RED = new ColorChatStyle("Red");
-	public static final ChatStyle PINK = new ColorChatStyle("Pink");
-	public static final ChatStyle YELLOW = new ColorChatStyle("Yellow");
-	public static final ChatStyle WHITE = new ColorChatStyle("White");
+	public static final ChatStyle BLACK = new ColorChatStyle("Black", Color.black, '0');
+	public static final ChatStyle DARK_BLUE = new ColorChatStyle("Dark Blue", Color.blue, '1');
+	public static final ChatStyle DARK_GREEN = new ColorChatStyle("Dark Green", Color.green, '2');
+	public static final ChatStyle DARK_CYAN = new ColorChatStyle("Dark Cyan", Color.cyan, '3');
+	public static final ChatStyle DARK_RED = new ColorChatStyle("Dark Red", Color.red, '4');
+	public static final ChatStyle PURPLE = new ColorChatStyle("Purple", Color.magenta, '5');
+	public static final ChatStyle GOLD = new ColorChatStyle("Gold", Color.yellow, '6');
+	public static final ChatStyle GRAY = new ColorChatStyle("Gray", Color.gray, '7');
+	public static final ChatStyle DARK_GRAY = new ColorChatStyle("Dark Gray", Color.darkGray, '8');
+	public static final ChatStyle BLUE = new ColorChatStyle("Blue", Color.blue, '9');
+	public static final ChatStyle BRIGHT_GREEN = new ColorChatStyle("Bright Green", Color.green, 'a');
+	public static final ChatStyle CYAN = new ColorChatStyle("Cyan", Color.cyan, 'b');
+	public static final ChatStyle RED = new ColorChatStyle("Red", Color.red, 'c');
+	public static final ChatStyle PINK = new ColorChatStyle("Pink", Color.pink, 'd');
+	public static final ChatStyle YELLOW = new ColorChatStyle("Yellow", Color.yellow, 'e');
+	public static final ChatStyle WHITE = new ColorChatStyle("White", Color.white, 'f');
 	public static final ChatStyle CONCEAL = new FormatChatStyle("Conceal");
 	public static final ChatStyle BOLD = new FormatChatStyle("Bold");
 	public static final ChatStyle STRIKE_THROUGH = new FormatChatStyle("Strikethrough");
@@ -93,6 +95,15 @@ public abstract class ChatStyle {
 			return null;
 		}
 		return BY_NAME.get(toLookupName(name));
+	}
+	/**
+	 * Looks up a ChatStyle by its code.
+	 *
+	 * @param code
+	 * @return the ChatStyle, or null if not found.
+	 */
+	public static ChatStyle byCode(char code) {
+		return BY_CODE.get(""+code);
 	}
 
 	/**

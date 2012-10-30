@@ -32,6 +32,8 @@ import java.util.List;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
+import org.spout.api.chat.style.ChatStyle;
+import org.spout.api.chat.style.ColorChatStyle;
 import org.spout.api.component.components.WidgetComponent;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.map.DefaultedKey;
@@ -53,7 +55,6 @@ public class LabelComponent extends WidgetComponent {
 		
 	};
 	private Font font;
-	private Color color = Color.black;
 	
 	@Override
 	public List<RenderPart> getRenderParts() {
@@ -61,6 +62,9 @@ public class LabelComponent extends WidgetComponent {
 		
 		if (font==null)
 			return ret;
+		
+		Color color = Color.black;
+		boolean skipChar = false;
 		
 		float w = font.getWidth();
 		float h = font.getHeight();
@@ -72,12 +76,27 @@ public class LabelComponent extends WidgetComponent {
 		float screenHeight = ((Client)Spout.getEngine()).getResolution().getY();
 		
 		for (int i=0 ; i<getText().length() ; i++) {
+			if (skipChar) {
+				skipChar = false;
+				continue;
+			}
 			char c = getText().charAt(i);
 			if (c==' ') {
 				xCursor += font.getSpaceWidth()/screenWidth;
 			} else if (c=='\n') {
 				xCursor = getOwner().getGeometry().getX();
 				yCursor -= font.getCharHeight()/screenHeight;
+			} else if (c=='§') {
+				if (i+1==getText().length())
+					continue;
+				ChatStyle style = ChatStyle.byCode(getText().charAt(i+1));
+				skipChar = true;
+				if (style!=null) {
+					if (style instanceof ColorChatStyle) {
+						color = ((ColorChatStyle) style).getColor();
+					}
+					// TODO: Other chat styles
+				}
 			} else {
 				java.awt.Rectangle r = font.getPixelBounds(c);
 
@@ -94,14 +113,6 @@ public class LabelComponent extends WidgetComponent {
 		}
 		
 		return ret;
-	}
-
-	public void setColor(Color color) {
-		this.color = color;
-	}
-	
-	public Color getColor() {
-		return color;
 	}
 	
 	public void setFont(Font font) {
