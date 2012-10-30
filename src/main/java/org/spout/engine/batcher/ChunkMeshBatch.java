@@ -33,6 +33,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Cuboid;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector3;
@@ -55,18 +56,20 @@ public class ChunkMeshBatch extends Cuboid {
 	private ChunkMesh[] meshes = new ChunkMesh[MESH_COUNT];
 	private boolean hasVertices = false;
 	private Matrix modelMat = MathHelper.createIdentity();
+	private final BlockFace face;
 	
-	public ChunkMeshBatch(World world, int baseX, int baseY, int baseZ) {
+	public ChunkMeshBatch(World world, int baseX, int baseY, int baseZ, BlockFace face) {
 		super(new Point(world, baseX, baseY, baseZ), SIZE);
+		this.face = face;
 		modelMat = MathHelper.translate(new Vector3(baseX * SIZE_X * Chunk.BLOCKS.SIZE, baseY * SIZE_Y * Chunk.BLOCKS.SIZE, baseZ * SIZE_Z * Chunk.BLOCKS.SIZE));
 	}
 
 	public void update() {
 		hasVertices = false;
 		for (ChunkMesh mesh : meshes) {
-			if (mesh.hasVertices()) {
+			if (mesh.hasVertices(face)) {
 				hasVertices = true;
-				continue;
+				break;
 			}
 		}
 		if (!hasVertices) {
@@ -76,20 +79,21 @@ public class ChunkMeshBatch extends Cuboid {
 		renderer.begin();
 		
 		for (ChunkMesh chunkMesh : meshes) {
-			for(Entry<RenderMaterial, ArrayList<MeshFace>> entry : chunkMesh.getOpaqueMesh().entrySet()){
+			for(Entry<RenderMaterial, ArrayList<MeshFace>> entry : chunkMesh.getFace(face).getOpaqueMesh().entrySet()){
 				entry.getKey().preRender();
 				renderer.addMesh(entry.getValue());
 				entry.getKey().postRender();
 			}
 		}
 		
-		for (ChunkMesh chunkMesh : meshes) {
-			for(Entry<RenderMaterial, ArrayList<MeshFace>> entry : chunkMesh.getTransparentMesh().entrySet()){
+		/*for (ChunkMesh chunkMesh : meshes) {
+			for(Entry<RenderMaterial, ArrayList<MeshFace>> entry : chunkMesh.getFace(face).getTransparentMesh().entrySet()){
 				entry.getKey().preRender();
+				System.out.println("Add transparent mesh : "+entry.getValue().size());
 				renderer.addMesh(entry.getValue());
 				entry.getKey().postRender();
 			}
-		}
+		}*/
 		
 		renderer.end();
 	}
@@ -161,6 +165,10 @@ public class ChunkMeshBatch extends Cuboid {
 			if(mesh != null)
 				return false;
 		return true;
+	}
+
+	public BlockFace getFace() {
+		return face;
 	}
 
 }

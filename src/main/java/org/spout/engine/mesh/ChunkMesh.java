@@ -35,6 +35,7 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.MeshFace;
+import org.spout.api.render.RenderMaterial;
 import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
@@ -44,12 +45,14 @@ import com.google.common.collect.Lists;
 /**
  * Represents a mesh for a chunk.
  */
-public class ChunkMesh extends ComposedMesh {
+public class ChunkMesh{
 	/**
 	 * Faces that you can render.
 	 */
 	private static final List<BlockFace> renderableFaces = Lists.newArrayList(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.TOP, BlockFace.BOTTOM);
 
+	private ComposedMesh meshs[] = new ComposedMesh[BlockFace.values().length];
+	
 	private SpoutChunkSnapshotModel chunkModel;
 	private ChunkSnapshot center;
 	private final int cx,cy,cz;
@@ -63,8 +66,11 @@ public class ChunkMesh extends ComposedMesh {
 		cx = chunkModel.getX();
 		cy = chunkModel.getY();
 		cz = chunkModel.getZ();
+		
+		for(int i = 0; i < BlockFace.values().length; i++)
+			meshs[i] = new ComposedMesh();
 	}
-
+	
 	public int getX(){
 		return cx;
 	}
@@ -116,8 +122,16 @@ public class ChunkMesh extends ComposedMesh {
 			return;
 		}
 		
+		RenderMaterial renderMaterial;
+		
+		/*try{
+			renderMaterial = material.getModel().getRenderMaterial();
+		}catch (NullPointerException e) {*/
+			// Use fallback
+			renderMaterial = WorldRenderer.material;
+		//}
+		
 		//boolean[] shouldRender = new boolean[6];
-		List<BlockFace> shouldRender = new ArrayList<BlockFace>();
 		Vector3 position = new Vector3(x, y, z);
 		for (BlockFace face : renderableFaces) {
 			Vector3 facePos = position.add(face.getOffset());
@@ -133,37 +147,28 @@ public class ChunkMesh extends ComposedMesh {
 			ByteBitSet occlusion = neighbor.getOcclusion(material.getData());
 
 			if (!occlusion.get(face.getOpposite())) {
-				shouldRender.add(face);
+				
+				//TODO : Waiting BlockMaterial have model & material : material.getModel().getRenderMaterial();
+				//TODO : Remove fallback 
+
+				ArrayList<MeshFace> faces;
+				//if(renderMaterial.isOpaque()){
+				faces = meshs[face.ordinal()].getOpaqueMesh().get(renderMaterial);
+				if(faces == null){
+					faces = new ArrayList<MeshFace>();
+					meshs[face.ordinal()].getOpaqueMesh().put(renderMaterial, faces);
+				}
+				/*}else{
+				faces = tranparentFacesPerMaterials.get(renderMaterial);
+				if(faces == null){
+					faces = new ArrayList<MeshFace>();
+					tranparentFacesPerMaterials.put(renderMaterial, faces);
+				}
+				}*/
+				
+				faces.addAll(renderMaterial.render(chunkSnapshotModel, position, face));
+				
 			}
-		}
-		
-		if (shouldRender.size() <= 0) {
-			return;
-		}
-
-		//TODO : Waiting BlockMaterial have model & material : material.getModel().getRenderMaterial();
-		//TODO : Remove fallback 
-
-		ArrayList<MeshFace> faces;
-		//if(renderMaterial.isOpaque()){
-		faces = opaqueFacesPerMaterials.get(WorldRenderer.material);
-		if(faces == null){
-			faces = new ArrayList<MeshFace>();
-			opaqueFacesPerMaterials.put(WorldRenderer.material, faces);
-		}
-		/*}else{
-		faces = tranparentFacesPerMaterials.get(renderMaterial);
-		if(faces == null){
-			faces = new ArrayList<MeshFace>();
-			tranparentFacesPerMaterials.put(renderMaterial, faces);
-		}
-		}*/
-		
-		try{
-			faces.addAll(material.getModel().getRenderMaterial().render(chunkSnapshotModel, position, shouldRender));
-		}catch (NullPointerException e) {
-			// Use fallback
-			faces.addAll(WorldRenderer.material.render(chunkSnapshotModel, position, shouldRender));
 		}
 	}
 
@@ -172,8 +177,9 @@ public class ChunkMesh extends ComposedMesh {
 	 * 
 	 * @return
 	 */
-	public boolean hasVertices() {
-		for(ArrayList<MeshFace> mesh : opaqueFacesPerMaterials.values()){
+	public boolean hasVertices(BlockFace face) {
+		
+		for(ArrayList<MeshFace> mesh : meshs[face.ordinal()].getOpaqueMesh().values()){
 			if(!mesh.isEmpty())
 				return true;
 		}
@@ -198,5 +204,9 @@ public class ChunkMesh extends ComposedMesh {
 
 	public boolean isUnloaded() {
 		return isUnloaded;
+	}
+
+	public ComposedMesh getFace(BlockFace face) {
+		return meshs[face.ordinal()];
 	}
 }
