@@ -319,17 +319,17 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		Point point = ts.getPosition();
 		if (inputState.getForward()) 
-			point = point.add(ts.forwardVector());
-		if (inputState.getBackward()) 
 			point = point.subtract(ts.forwardVector());
+		if (inputState.getBackward()) 
+			point = point.add(ts.forwardVector());
 		if (inputState.getLeft()) 
-			point = point.add(ts.rightVector());
-		if (inputState.getRight()) 
 			point = point.subtract(ts.rightVector());
-		if (inputState.getJump()) 
-			point = point.subtract(ts.upVector());
-		if (inputState.getCrouch()) 
+		if (inputState.getRight()) 
+			point = point.add(ts.rightVector());
+		if (inputState.getJump())
 			point = point.add(ts.upVector());
+		if (inputState.getCrouch()) 
+			point = point.subtract(ts.upVector());
 		ts.setPosition(point);
 
 		activePlayer.getTransform().setTransform(ts);
@@ -460,11 +460,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		players.putIfAbsent(activePlayer.getName(), activePlayer);
 	}
 
-	private PrimitiveBatch renderer;
-	private RenderMaterial mat;
-	private RenderMaterial guimaterial;
-	private ClientFont font2;
-
 	public void initRenderer() {
 		createWindow();
 
@@ -499,17 +494,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		worldRenderer = new WorldRenderer(this);
 		worldRenderer.setup();
 
-		renderer = new PrimitiveBatch();
-		mat = (RenderMaterial) this.getFilesystem().getResource("material://Spout/resources/resources/materials/BasicMaterial.smt");
-		guimaterial = (RenderMaterial) this.getFilesystem().getResource("material://Spout/resources/resources/materials/GUIMaterial.smt");
-		renderer.begin();
-		renderer.addCube(new Vector3(-0.5, -0.5, -0.5), Vector3.ONE, Color.RED, sides);
-		renderer.end();
-
 		gui = SpriteBatch.createSpriteBatch(getRenderMode(), resolution.getX(), resolution.getY());
-		font2 = new ClientFont(new Font("Comic sans ms", Font.BOLD, 30 ));
 		font.load();
-		font2.load();
 
 		// Test
 		ClientEntityPrefab spoutyType = (ClientEntityPrefab) Spout.getFilesystem().getResource("entity://Spout/resources/resources/entities/Spouty/spouty.sep");
@@ -555,18 +541,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 			}
 		}
 
-		//System.out.println("view "+activeCamera.getView().toString());
-		/*Transform loc = new Transform(new Point(null, 0f, 0f, 0f), Quaternion.IDENTITY, Vector3.ONE);
-		mat.getShader().setUniform("View", activeCamera.getView());
-		mat.getShader().setUniform("Projection", activeCamera.getProjection());
-		mat.getShader().setUniform("Model", loc.toMatrix());
-		renderer.draw(mat);*/
-
 		gui.begin();
 		if (showDebugInfos) {
 			gui.drawText("Spout client ! Logged as " + activePlayer.getDisplayName() + " in world: " + getDefaultWorld().getName(), font, -0.95f, 0.9f, 10f);
 			gui.drawText("x: " + activePlayer.getTransform().getPosition().getX(), font, -0.95f, 0.8f, 8f, Color.blue);
-			gui.drawText("y: " + (-activePlayer.getTransform().getPosition().getY()), font, -0.95f, 0.7f, 8f, Color.blue);
+			gui.drawText("y: " + activePlayer.getTransform().getPosition().getY(), font, -0.95f, 0.7f, 8f, Color.blue);
 			gui.drawText("z: " + activePlayer.getTransform().getPosition().getZ(), font, -0.95f, 0.6f, 8f, Color.blue);
 			gui.drawText("fps: " + fps, font, -0.95f, 0.5f, 8f, Color.blue);
 			gui.drawText("chunk: " + worldRenderer.getChunkRenderersSize(), font, -0.95f, 0.4f, 8f, Color.blue);
