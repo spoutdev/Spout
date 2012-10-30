@@ -56,10 +56,18 @@ public class BlockMaterial extends Material implements Placeable {
 	public static final BlockMaterial SKYBOX = new BasicSkyBox();
 	public static final BlockMaterial ERROR = new BlockMaterial("Missing Plugin").setHardness((100.f));
 
+
+	public BlockMaterial(String name, String model){
+		super(name, model);
+	}
+
 	public BlockMaterial(String name) {
 		super(name);
 	}
 
+	public BlockMaterial(short dataMask, String name, String model){
+		super(dataMask, name, model);
+	}
 	public BlockMaterial(short dataMask, String name) {
 		super(dataMask, name);
 	}
