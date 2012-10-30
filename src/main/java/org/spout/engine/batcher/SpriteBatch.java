@@ -32,6 +32,8 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
+import org.spout.api.gui.Widget;
+import org.spout.api.gui.component.LabelComponent;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
@@ -117,34 +119,14 @@ public class SpriteBatch {
 	}
 
 	public void drawText(String text, ClientFont font, float x, float y, float size) {
-		drawText(text, font, x, y, size, Color.black);
-	}
-
-	public void drawText(String text, ClientFont font, float x, float y, float size, Color color) {
-		float w = font.getWidth();
-		float h = font.getHeight();
-
-		float xCursor = x;
-		float yCursor = y;
+		Widget tmp = new Widget();
+		tmp.setGeometry(new Rectangle(x, y, 0, 0));
+		LabelComponent txt = tmp.add(LabelComponent.class);
 		
-		for (int i=0 ; i<text.length() ; i++) {
-			char c = text.charAt(i);
-			if (c==' ') {
-				xCursor += font.getSpaceWidth()/screenWidth;
-			} else if (c=='\n') {
-				xCursor = x;
-				yCursor -= font.getCharHeight()/screenHeight;
-			} else {
-				java.awt.Rectangle r = font.getPixelBounds(c);
-
-				draw(font.getMaterial(),
-					 new Rectangle(r.x/w, 0f, r.width/w, 1f),
-					 new Rectangle(xCursor, yCursor, (float)r.width/screenWidth, h/screenHeight),
-					 color);
-				
-				xCursor += (float)font.getAdvance(c)/screenWidth;
-			}
-		}
+		txt.setFont(font);
+		txt.setText(text);
+		
+		draw(tmp.getRenderParts());
 	}
 
 	public void draw(RenderPart part) {
@@ -160,7 +142,7 @@ public class SpriteBatch {
 		draw(material, new Rectangle(0, 0, 1, 1), new Rectangle(x, y, w, h * aspectRatio),  Color.white);
 	}
 
-	public void draw(RenderMaterial material, Rectangle source, Rectangle destination, Color color){
+	public void draw(RenderMaterial material, Rectangle source, Rectangle destination, Color color) {
 		RenderPart part = new RenderPart();
 		part.setRenderMaterial(material);
 		part.setSource(source);

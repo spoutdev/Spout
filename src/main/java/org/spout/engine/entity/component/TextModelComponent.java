@@ -30,6 +30,8 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.spout.api.chat.style.ChatStyle;
+import org.spout.api.chat.style.ColorChatStyle;
 import org.spout.api.component.components.EntityComponent;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.render.RenderPart;
@@ -57,7 +59,6 @@ public class TextModelComponent extends EntityComponent {
 		
 	};
 	private Font font;
-	private Color color = Color.black;
 	private BaseMesh mesh;
 	private float size = 1;
 	private Vector3 translation = Vector3.ZERO;
@@ -69,6 +70,9 @@ public class TextModelComponent extends EntityComponent {
 		if (font==null)
 			return;
 		
+		Color color = Color.black;
+		boolean skipChar = false;
+		
 		float ratio = 30f/size;
 		
 		float w = font.getWidth();
@@ -78,12 +82,27 @@ public class TextModelComponent extends EntityComponent {
 		float yCursor = 0;
 		
 		for (int i=0 ; i<getText().length() ; i++) {
+			if (skipChar) {
+				skipChar = false;
+				continue;
+			}
 			char c = getText().charAt(i);
 			if (c==' ') {
 				xCursor += font.getSpaceWidth()/ratio;
 			} else if (c=='\n') {
 				xCursor = 0;
 				yCursor -= font.getCharHeight()/ratio;
+			} else if (c=='§') {
+				if (i+1==getText().length())
+					continue;
+				ChatStyle style = ChatStyle.byCode(getText().charAt(i+1));
+				skipChar = true;
+				if (style!=null) {
+					if (style instanceof ColorChatStyle) {
+						color = ((ColorChatStyle) style).getColor();
+					}
+					// TODO: Other chat styles
+				}
 			} else {
 				java.awt.Rectangle r = font.getPixelBounds(c);
 
@@ -115,15 +134,6 @@ public class TextModelComponent extends EntityComponent {
 	
 	public float getSize() {
 		return size;
-	}
-	
-	public void setColor(Color color) {
-		this.color = color;
-		dirty = true;
-	}
-	
-	public Color getColor() {
-		return color;
 	}
 	
 	public void setFont(Font font) {
