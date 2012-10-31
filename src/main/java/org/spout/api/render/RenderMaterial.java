@@ -66,6 +66,19 @@ public interface RenderMaterial {
 	 */
 	public List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel, Vector3 position, List<BlockFace> faces);
 
+	/**
+	 * Called to render a block side
+	 * @param chunkSnapshotModel
+	 * @param position
+	 * @param face
+	 * @return
+	 */
 	List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel,
 			Vector3 position, BlockFace face);
+
+	/**
+	 * Return the render pass order
+	 * @return
+	 */
+	public int getLayer();
 }
