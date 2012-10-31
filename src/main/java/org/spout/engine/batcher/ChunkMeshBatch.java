@@ -26,7 +26,6 @@
  */
 package org.spout.engine.batcher;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -58,19 +57,19 @@ public class ChunkMeshBatch extends Cuboid {
 	private boolean hasVertices = false;
 	private Matrix modelMat = MathHelper.createIdentity();
 	private final BlockFace face;
-	private final int layer;
+	private final RenderMaterial material;
 	
-	public ChunkMeshBatch(World world, int baseX, int baseY, int baseZ, BlockFace face, int layer) {
+	public ChunkMeshBatch(World world, int baseX, int baseY, int baseZ, BlockFace face, RenderMaterial material) {
 		super(new Point(world, baseX, baseY, baseZ), SIZE);
 		this.face = face;
-		this.layer = layer;
+		this.material = material;
 		modelMat = MathHelper.translate(new Vector3(baseX * SIZE_X * Chunk.BLOCKS.SIZE, baseY * SIZE_Y * Chunk.BLOCKS.SIZE, baseZ * SIZE_Z * Chunk.BLOCKS.SIZE));
 	}
 
 	public void update() {
 		hasVertices = false;
 		for (ChunkMesh mesh : meshes) {
-			if (mesh.getLayer(layer).hasVertice()) {
+			if (mesh.getRenderMaterial(material).hasVertice()) {
 				hasVertices = true;
 				break;
 			}
@@ -82,7 +81,7 @@ public class ChunkMeshBatch extends Cuboid {
 		renderer.begin();
 		
 		for (ChunkMesh chunkMesh : meshes) {
-			for(Entry<RenderMaterial, List<MeshFace>> entry : chunkMesh.getLayer(layer).getMesh().entrySet()){
+			for(Entry<RenderMaterial, List<MeshFace>> entry : chunkMesh.getRenderMaterial(material).getMesh().entrySet()){
 				entry.getKey().preRender();
 				renderer.addMesh(entry.getValue());
 				entry.getKey().postRender();
@@ -165,8 +164,8 @@ public class ChunkMeshBatch extends Cuboid {
 		return face;
 	}
 
-	public int getLayer() {
-		return layer;
+	public RenderMaterial getMaterial() {
+		return material;
 	}
 
 }
