@@ -407,12 +407,7 @@ public final class SpoutScheduler implements Scheduler {
 	private boolean tick(long delta) throws InterruptedException {
 		TickStage.setStage(TickStage.TICKSTART);
 		asyncExecutors.copySnapshot();
-
-		/*if (Spout.getPlatform().equals(Platform.CLIENT)) {
-
-			((SpoutClient) Spout.getEngine()).doInput();
-		}*/
-
+		
 		taskManager.heartbeat(delta);
 
 		if (parallelTaskManager == null) {
