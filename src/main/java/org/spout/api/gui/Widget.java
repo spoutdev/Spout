@@ -77,6 +77,8 @@ public final class Widget extends BaseComponentHolder implements Tickable {
 				}
 				
 				Collections.sort(renderPartCache);
+				
+				renderCacheClean = true;
 			}
 			return renderPartCache;
 		}
