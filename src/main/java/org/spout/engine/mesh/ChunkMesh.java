@@ -27,6 +27,7 @@
 package org.spout.engine.mesh;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
@@ -47,7 +48,7 @@ import org.spout.engine.world.SpoutChunkSnapshotModel;
  */
 public class ChunkMesh{
 	
-	private TreeMap<Integer, ComposedMesh> meshs = new TreeMap<Integer, ComposedMesh>();
+	private HashMap<RenderMaterial, ComposedMesh> meshs = new HashMap<RenderMaterial, ComposedMesh>();
 	
 	private SpoutChunkSnapshotModel chunkModel;
 	private ChunkSnapshot center;
@@ -114,11 +115,11 @@ public class ChunkMesh{
 		center = null;
 	}
 
-	private ComposedMesh getComposedMesh(int layer, boolean create){
-		ComposedMesh mesh = meshs.get(layer);
+	private ComposedMesh getComposedMesh(RenderMaterial material, boolean create){
+		ComposedMesh mesh = meshs.get(material);
 		if(mesh == null && create){
 			mesh = new ComposedMesh();
-			meshs.put(layer, mesh);
+			meshs.put(material, mesh);
 		}
 		return mesh;
 	}
@@ -162,12 +163,12 @@ public class ChunkMesh{
 		ByteBitSet occlusion = neighbor.getOcclusion(material.getData());
 
 		if (!occlusion.get(face.getOpposite())) {
-			int layer = renderMaterial.getLayer();
+			//int layer = renderMaterial.getLayer();
 
 			List<MeshFace> faces = renderMaterial.render(chunkSnapshotModel, position, face);
 			
 			if(!faces.isEmpty())
-				getComposedMesh(layer,true).getMesh(renderMaterial).addAll(faces);
+				getComposedMesh(renderMaterial,true).getMesh(renderMaterial).addAll(faces);
 		}
 	}
 
@@ -176,8 +177,8 @@ public class ChunkMesh{
 	 * 
 	 * @return
 	 */
-	public boolean hasVertices(int layer) {
-		ComposedMesh mesh = getComposedMesh(layer,false);
+	public boolean hasVertices(RenderMaterial material) {
+		ComposedMesh mesh = getComposedMesh(material,false);
 		if(mesh == null) return false;
 		return mesh.hasVertice();
 	}
@@ -191,15 +192,15 @@ public class ChunkMesh{
 		return isUnloaded;
 	}
 
-	public ComposedMesh getLayer(int layer) {
-		return meshs.get(layer);
+	public ComposedMesh getRenderMaterial(RenderMaterial material) {
+		return meshs.get(material);
 	}
 
 	public BlockFace getFace() {
 		return face;
 	}
 
-	public Set<Integer> getLayers() {
+	public Set<RenderMaterial> getRenderMaterials() {
 		return meshs.keySet();
 	}
 }

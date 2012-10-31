@@ -27,6 +27,7 @@
 package org.spout.engine.renderer;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -54,8 +55,17 @@ public class WorldRenderer {
 	private final SpoutClient client;
 	public static RenderMaterial material;
 
-	private TreeMap<Integer,List<ChunkMeshBatch>> chunkRenderers = new TreeMap<Integer,List<ChunkMeshBatch>>();
-	private TInt21TripleObjectHashMap<Map<Integer,Map<BlockFace,ChunkMeshBatch>>> chunkRenderersByPosition = new TInt21TripleObjectHashMap<Map<Integer,Map<BlockFace,ChunkMeshBatch>>>();
+	public static final Comparator<RenderMaterial> RenderMaterialLayer = new Comparator<RenderMaterial>() {
+		@Override
+		public int compare(final RenderMaterial e1, final RenderMaterial e2) {
+			if(e2.getLayer() == e1.getLayer())
+				return 1;
+			return e2.getLayer() - e1.getLayer();
+		}
+	};
+
+	private TreeMap<RenderMaterial,List<ChunkMeshBatch>> chunkRenderers = new TreeMap<RenderMaterial,List<ChunkMeshBatch>>(RenderMaterialLayer);
+	private TInt21TripleObjectHashMap<Map<RenderMaterial,Map<BlockFace,ChunkMeshBatch>>> chunkRenderersByPosition = new TInt21TripleObjectHashMap<Map<RenderMaterial,Map<BlockFace,ChunkMeshBatch>>>();
 
 	public static HashMap<String,CubeMesh> blocksMesh = new HashMap<String, CubeMesh>();
 	public static CubeMesh defaultMesh = null;
@@ -112,13 +122,13 @@ public class WorldRenderer {
 			Vector3 batchCoords = ChunkMeshBatch.getBatchCoordinates(new Vector3(chunkMesh.getX(), chunkMesh.getY(), chunkMesh.getZ()));
 			Vector3 chunkCoords = ChunkMeshBatch.getChunkCoordinates(batchCoords);
 
-			for(int layer : chunkMesh.getLayers()){
-				ChunkMeshBatch chunkMeshBatch = getChunkMeshBatchByBatchPosition(batchCoords.getFloorX(), batchCoords.getFloorY(), batchCoords.getFloorZ(), chunkMesh.getFace(), layer);
+			for(RenderMaterial material : chunkMesh.getRenderMaterials()){
+				ChunkMeshBatch chunkMeshBatch = getChunkMeshBatchByBatchPosition(batchCoords.getFloorX(), batchCoords.getFloorY(), batchCoords.getFloorZ(), chunkMesh.getFace(), material);
 
 				if(chunkMeshBatch==null){
-					if(chunkMesh.isUnloaded())
+					if(chunkMesh.isUnloaded() || !chunkMesh.hasVertices(material))
 						continue;
-					chunkMeshBatch = new ChunkMeshBatch(world,chunkCoords.getFloorX(), chunkCoords.getFloorY(), chunkCoords.getFloorZ(), chunkMesh.getFace(), layer);
+					chunkMeshBatch = new ChunkMeshBatch(world,chunkCoords.getFloorX(), chunkCoords.getFloorY(), chunkCoords.getFloorZ(), chunkMesh.getFace(), material);
 
 					addChunkMeshBatch(chunkMeshBatch);
 				}
@@ -155,39 +165,39 @@ public class WorldRenderer {
 	}
 
 	private void addChunkMeshBatch(ChunkMeshBatch batch) {
-		List<ChunkMeshBatch> list = chunkRenderers.get(batch.getLayer());
+		List<ChunkMeshBatch> list = chunkRenderers.get(batch.getMaterial());
 		if(list == null){
 			list = new ArrayList<ChunkMeshBatch>();
-			chunkRenderers.put(batch.getLayer(),list);
+			chunkRenderers.put(batch.getMaterial(),list);
 		}
 		list.add(batch);
 
-		Map<Integer, Map<BlockFace, ChunkMeshBatch>> map = chunkRenderersByPosition.get(batch.getX(), batch.getY(), batch.getZ());
+		Map<RenderMaterial, Map<BlockFace, ChunkMeshBatch>> map = chunkRenderersByPosition.get(batch.getX(), batch.getY(), batch.getZ());
 		if(map == null){
-			map = new HashMap<Integer, Map<BlockFace, ChunkMeshBatch>>();
+			map = new HashMap<RenderMaterial, Map<BlockFace, ChunkMeshBatch>>();
 			chunkRenderersByPosition.put(batch.getX(), batch.getY(), batch.getZ(), map);
 		}
-		
-		Map<BlockFace, ChunkMeshBatch> map2 = map.get(batch.getLayer());
+
+		Map<BlockFace, ChunkMeshBatch> map2 = map.get(batch.getMaterial());
 		if( map2 == null ){
 			map2 = new HashMap<BlockFace, ChunkMeshBatch>();
-			map.put(batch.getLayer(), map2);
+			map.put(batch.getMaterial(), map2);
 		}
-		
+
 		map2.put(batch.getFace(), batch);
 	}
 
 	private void removeChunkMeshBatch(ChunkMeshBatch batch) {
-		List<ChunkMeshBatch> list = chunkRenderers.get(batch.getLayer());
+		List<ChunkMeshBatch> list = chunkRenderers.get(batch.getMaterial());
 		list.remove(batch);
 		if(list.isEmpty())
-			chunkRenderers.remove(batch.getLayer());
+			chunkRenderers.remove(batch.getMaterial());
 
-		Map<Integer, Map<BlockFace, ChunkMeshBatch>> map = chunkRenderersByPosition.get(batch.getX(), batch.getY(), batch.getZ());
-		Map<BlockFace, ChunkMeshBatch> map2 = map.get(batch.getLayer());
+		Map<RenderMaterial, Map<BlockFace, ChunkMeshBatch>> map = chunkRenderersByPosition.get(batch.getX(), batch.getY(), batch.getZ());
+		Map<BlockFace, ChunkMeshBatch> map2 = map.get(batch.getMaterial());
 		map2.remove(batch.getFace());
 		if(map2.isEmpty()){
-			map.remove(batch.getLayer());
+			map.remove(batch.getMaterial());
 			if(map.isEmpty()){
 				chunkRenderersByPosition.remove(batch.getX(), batch.getY(), batch.getZ());
 
@@ -204,11 +214,11 @@ public class WorldRenderer {
 	 * @param y
 	 * @param z
 	 */
-	private ChunkMeshBatch getChunkMeshBatchByBatchPosition(int x, int y, int z, BlockFace face, int layer) {
-		Map<Integer, Map<BlockFace, ChunkMeshBatch>> map = chunkRenderersByPosition.get(x, y, z);
+	private ChunkMeshBatch getChunkMeshBatchByBatchPosition(int x, int y, int z, BlockFace face, RenderMaterial material) {
+		Map<RenderMaterial, Map<BlockFace, ChunkMeshBatch>> map = chunkRenderersByPosition.get(x, y, z);
 		if( map == null )
 			return null;
-		Map<BlockFace, ChunkMeshBatch> map2 = map.get(layer);
+		Map<BlockFace, ChunkMeshBatch> map2 = map.get(material);
 		if( map2 == null )
 			return null;
 		return map2.get(face);
