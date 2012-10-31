@@ -408,10 +408,9 @@ public final class SpoutScheduler implements Scheduler {
 		TickStage.setStage(TickStage.TICKSTART);
 		asyncExecutors.copySnapshot();
 
-		/*if (Spout.getPlatform().equals(Platform.CLIENT)) {
-
-			((SpoutClient) Spout.getEngine()).doInput();
-		}*/
+		if (Spout.getPlatform().equals(Platform.CLIENT)) {
+			((SpoutClient) Spout.getEngine()).tick(delta);
+		}
 
 		taskManager.heartbeat(delta);
 

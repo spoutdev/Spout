@@ -508,6 +508,14 @@ public class SpoutClient extends SpoutEngine implements Client {
 		super.getDefaultWorld().spawnEntity(e);
 	}
 
+	public void tick(float dt) {
+		for (Screen screen : screenStack.getVisibleScreens()) {
+			for (Widget widget : screen.getWidgets()) {
+				widget.tick(dt);
+			}
+		}
+	}
+	
 	public void render(float dt) {
 
 		while(renderTaskQueue.peek() != null) {
