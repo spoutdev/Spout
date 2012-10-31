@@ -97,6 +97,7 @@ import org.spout.api.protocol.Session;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
+import org.spout.api.scheduler.TaskPriority;
 
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.batcher.PrimitiveBatch;
@@ -201,6 +202,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		inputManager.bind("MOUSE_BUTTON0", "+FIRE_1");
 		inputManager.bind("MOUSE_BUTTON1", "+INTERACT");
 		inputManager.bind("MOUSE_BUTTON2", "+FIRE_2");
+		
 	}
 
 	@Override
@@ -214,6 +216,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		FullScreen mainScreen = new FullScreen();
 		screenStack = new ScreenStack(mainScreen);
 		
+		getScheduler().scheduleAsyncRepeatingTask(getPluginManager().getPlugin("Spout"), getScreenStack(), 50, 50, TaskPriority.NORMAL);
 		super.start(checkWorlds);
 		
 		getEventManager().registerEvents(new SpoutClientListener(this), this);
@@ -238,6 +241,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		super.getDefaultWorld().spawnEntity(activePlayer);
 
 		getScheduler().startRenderThread();
+		
 		//TODO Maybe a better way of alerting plugins the client is done?
 		if (ClientEnableEvent.getHandlerList().getRegisteredListeners().length != 0) {
 			Spout.getEventManager().callEvent(new ClientEnableEvent());
