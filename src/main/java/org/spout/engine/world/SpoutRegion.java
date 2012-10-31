@@ -373,9 +373,9 @@ public class SpoutRegion extends Region {
 				return newChunk;
 			}
 
-			newChunk.setUnloadedUnchecked();
 			SpoutChunk oldChunk = chunkReference.get();
 			if (oldChunk != null) {
+				newChunk.setUnloadedUnchecked();
 				checkChunkLoaded(oldChunk, loadopt);
 				return oldChunk;
 			}
