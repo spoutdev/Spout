@@ -35,7 +35,7 @@ public interface Tickable {
 	 * 1200    ticks = 1 minute<br/>
 	 * 72000   ticks = 1 hour<br/>
 	 * 1728000 ticks = 1 day
-	 * @param dt time since the last tick in seconds
+	 * @param dt time since the last tick in milliseconds
 	 */
 	public void onTick(float dt);
 
@@ -56,7 +56,7 @@ public interface Tickable {
 	 * 1200    ticks = 1 minute<br/>
 	 * 72000   ticks = 1 hour<br/>
 	 * 1728000 ticks = 1 day
-	 * @param dt time since the last tick in seconds
+	 * @param dt time since the last tick in milliseconds
 	 */
 	public void tick(float dt);
 }

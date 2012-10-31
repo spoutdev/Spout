@@ -114,6 +114,6 @@ public class ScreenStack extends SignalSubscriberObject implements Tickable, Run
 
 	@Override
 	public void run() {
-		tick(0.05f);
+		tick(50f);
 	}
 }
