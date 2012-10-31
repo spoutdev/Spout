@@ -60,7 +60,7 @@ public class WorldRenderer {
 		public int compare(final RenderMaterial e1, final RenderMaterial e2) {
 			if(e2.getLayer() == e1.getLayer())
 				return 1;
-			return e2.getLayer() - e1.getLayer();
+			return e1.getLayer() - e2.getLayer();
 		}
 	};
 
