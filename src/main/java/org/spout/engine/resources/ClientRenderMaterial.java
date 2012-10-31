@@ -56,19 +56,23 @@ public class ClientRenderMaterial extends Resource implements RenderMaterial {
 	boolean depthTesting;
 	Matrix view;
 	Matrix projection;
-	
-	
-	
+	int layer;
+
 	public ClientRenderMaterial(Shader s, Map<String, Object> params){
-		this(s, params, null, null, true);
+		this(s, params, null, null, true, 0);
 	}
 	
-	public ClientRenderMaterial(Shader s, Map<String, Object> params, Matrix projection, Matrix view, boolean depth){
+	public ClientRenderMaterial(Shader s, Map<String, Object> params, int layer){
+		this(s, params, null, null, true, layer);
+	}
+
+	public ClientRenderMaterial(Shader s, Map<String, Object> params, Matrix projection, Matrix view, boolean depth, int layer){
 		this.shader = s;
 		this.materialParameters = params;
 		this.projection = projection;
 		this.view = view;
 		this.depthTesting = depth;
+		this.layer = layer;
 	}
 	
 	@Override
@@ -294,5 +298,10 @@ public class ClientRenderMaterial extends Resource implements RenderMaterial {
 		meshs.add(f2);
 
 		return meshs;
+	}
+
+	@Override
+	public int getLayer() {
+		return layer;
 	}
 }
