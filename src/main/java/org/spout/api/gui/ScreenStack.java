@@ -32,7 +32,7 @@ import java.util.LinkedList;
 import org.spout.api.signal.SignalSubscriberObject;
 import org.spout.api.tickable.Tickable;
 
-public class ScreenStack extends SignalSubscriberObject implements Tickable {
+public class ScreenStack extends SignalSubscriberObject implements Tickable, Runnable {
 	LinkedList<Screen> screens = new LinkedList<Screen>();
 	LinkedList<Screen> visibleScreens = null;
 	
@@ -110,5 +110,10 @@ public class ScreenStack extends SignalSubscriberObject implements Tickable {
 		for (Screen screen:getVisibleScreens()) {
 			screen.tick(dt);
 		}
+	}
+
+	@Override
+	public void run() {
+		tick(0f);
 	}
 }
