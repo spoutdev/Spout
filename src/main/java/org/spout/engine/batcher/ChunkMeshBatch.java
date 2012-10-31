@@ -27,6 +27,7 @@
 package org.spout.engine.batcher;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.spout.api.geo.World;
@@ -57,17 +58,19 @@ public class ChunkMeshBatch extends Cuboid {
 	private boolean hasVertices = false;
 	private Matrix modelMat = MathHelper.createIdentity();
 	private final BlockFace face;
+	private final int layer;
 	
-	public ChunkMeshBatch(World world, int baseX, int baseY, int baseZ, BlockFace face) {
+	public ChunkMeshBatch(World world, int baseX, int baseY, int baseZ, BlockFace face, int layer) {
 		super(new Point(world, baseX, baseY, baseZ), SIZE);
 		this.face = face;
+		this.layer = layer;
 		modelMat = MathHelper.translate(new Vector3(baseX * SIZE_X * Chunk.BLOCKS.SIZE, baseY * SIZE_Y * Chunk.BLOCKS.SIZE, baseZ * SIZE_Z * Chunk.BLOCKS.SIZE));
 	}
 
 	public void update() {
 		hasVertices = false;
 		for (ChunkMesh mesh : meshes) {
-			if (mesh.hasVertices(face)) {
+			if (mesh.getLayer(layer).hasVertice()) {
 				hasVertices = true;
 				break;
 			}
@@ -79,21 +82,12 @@ public class ChunkMeshBatch extends Cuboid {
 		renderer.begin();
 		
 		for (ChunkMesh chunkMesh : meshes) {
-			for(Entry<RenderMaterial, ArrayList<MeshFace>> entry : chunkMesh.getFace(face).getOpaqueMesh().entrySet()){
+			for(Entry<RenderMaterial, List<MeshFace>> entry : chunkMesh.getLayer(layer).getMesh().entrySet()){
 				entry.getKey().preRender();
 				renderer.addMesh(entry.getValue());
 				entry.getKey().postRender();
 			}
 		}
-		
-		/*for (ChunkMesh chunkMesh : meshes) {
-			for(Entry<RenderMaterial, ArrayList<MeshFace>> entry : chunkMesh.getFace(face).getTransparentMesh().entrySet()){
-				entry.getKey().preRender();
-				System.out.println("Add transparent mesh : "+entry.getValue().size());
-				renderer.addMesh(entry.getValue());
-				entry.getKey().postRender();
-			}
-		}*/
 		
 		renderer.end();
 	}
@@ -169,6 +163,10 @@ public class ChunkMeshBatch extends Cuboid {
 
 	public BlockFace getFace() {
 		return face;
+	}
+
+	public int getLayer() {
+		return layer;
 	}
 
 }
