@@ -40,35 +40,23 @@ import org.spout.api.resource.Resource;
 import org.spout.engine.renderer.BatchVertexRenderer;
 
 public class ComposedMesh extends Resource {
-	private Map<RenderMaterial, ArrayList<MeshFace>> opaqueFacesPerMaterials;
-	//private Map<RenderMaterial, ArrayList<MeshFace>> tranparentFacesPerMaterials;
+	
+	/**
+	 * All RenderMaterial MUST have the same layer per ComposedMesh
+	 */
+	private Map<RenderMaterial, List<MeshFace>> facesPerMaterials;
 
-	private List<RenderMaterial> dirtyOpaque;
-	//private List<RenderMaterial> dirtyTransparent;
-
-	private Map<RenderMaterial, Renderer> renderersOpaque;
-	//private Map<RenderMaterial, Renderer> renderersTranparent;
+	private Map<RenderMaterial, Renderer> renderers;
 
 	public ComposedMesh(){
-		opaqueFacesPerMaterials = new HashMap<RenderMaterial, ArrayList<MeshFace>>();
-		//tranparentFacesPerMaterials = new HashMap<RenderMaterial, ArrayList<MeshFace>>();
+		facesPerMaterials = new HashMap<RenderMaterial, List<MeshFace>>();
 
-		dirtyOpaque = new ArrayList<RenderMaterial>();
-		//dirtyTransparent = new ArrayList<RenderMaterial>();
-
-		renderersOpaque = new HashMap<RenderMaterial, Renderer>();
-		//renderersTranparent = new HashMap<RenderMaterial, Renderer>();
+		renderers = new HashMap<RenderMaterial, Renderer>();
 	}
 
 	protected void batch(Renderer batcher,RenderMaterial renderMaterial) {
-		ArrayList<MeshFace> faces;
-		
-		//if(renderMaterial.isOpaque()){ //TODO : Add a way to konw if the texture is transparent
-			faces = opaqueFacesPerMaterials.get(renderMaterial);
-		/*}else{
-			faces = tranparentFacesPerMaterials.get(renderMaterial);
-		}*/
-		
+		List<MeshFace> faces = facesPerMaterials.get(renderMaterial);
+
 		if(faces != null){
 			for (MeshFace face : faces) {
 				for(Vertex vert : face){
@@ -85,47 +73,40 @@ public class ComposedMesh extends Resource {
 	}
 
 	public void batch(){
-
-		for(RenderMaterial material : opaqueFacesPerMaterials.keySet()){
-			Renderer renderer = renderersOpaque.get(material);
+		for(RenderMaterial material : facesPerMaterials.keySet()){
+			Renderer renderer = renderers.get(material);
 			if(renderer == null)renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 			this.batch(renderer, material);
 		}
-
-		/*for(RenderMaterial material : tranparentFacesPerMaterials.keySet()){
-			Renderer renderer = renderersTranparent.get(material);
-			if(renderer == null) renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
-			this.batch(renderer, material);
-		}*/
 	}
 
 	public void render(RenderMaterial material){
-		Renderer renderer = null;
-
-		//if(true /*renderMaterial.isOpaque()*/){ //TODO : Add a way to konw if the texture is transparent
-			renderer = renderersOpaque.get(material);
-		/*}else{
-			renderer = renderersTranparent.get(material);
-		}*/
+		Renderer renderer = renderers.get(material);
 
 		if(renderer == null) throw new IllegalStateException("Cannot render without batching first!");
 
 		renderer.render(material);
 	}
 
-	public Map<RenderMaterial, Renderer> getOpaqueRenderer(){
-		return renderersOpaque;
+	public Map<RenderMaterial, Renderer> getRenderer(){
+		return renderers;
 	}
 
-	/*public Map<RenderMaterial, Renderer> getTransparentRenderer(){
-		return renderersTranparent;
-	}*/
-
-	public Map<RenderMaterial, ArrayList<MeshFace>> getOpaqueMesh() {
-		return opaqueFacesPerMaterials;
+	public Map<RenderMaterial, List<MeshFace>> getMesh() {
+		return facesPerMaterials;
 	}
 
-	/*public Map<RenderMaterial, ArrayList<MeshFace>> getTransparentMesh() {
-		return tranparentFacesPerMaterials;
-	}*/
+	public List<MeshFace> getMesh(RenderMaterial material) {
+		List<MeshFace> faces = facesPerMaterials.get(material);
+		if(faces == null){
+			faces = new ArrayList<MeshFace>();
+			facesPerMaterials.put(material, faces);
+		}
+		return faces;
+	}
+
+	public boolean hasVertice() {
+		//Assume a material stored only if face to put in
+		return !facesPerMaterials.isEmpty();
+	}
 }

@@ -57,17 +57,23 @@ public class CubeRenderMaterial implements RenderMaterial {
 	boolean depthTesting;
 	Matrix view;
 	Matrix projection;
+	int layer;
 
 	public CubeRenderMaterial(Shader s, Map<String, Object> params){
-		this(s, params, null, null, true);
+		this(s, params, null, null, true, 0);
+	}
+	
+	public CubeRenderMaterial(Shader s, Map<String, Object> params, int layer){
+		this(s, params, null, null, true, layer);
 	}
 
-	public CubeRenderMaterial(Shader s, Map<String, Object> params, Matrix projection, Matrix view, boolean depth){
+	public CubeRenderMaterial(Shader s, Map<String, Object> params, Matrix projection, Matrix view, boolean depth, int layer){
 		this.shader = s;
 		this.materialParameters = params;
 		this.projection = projection;
 		this.view = view;
 		this.depthTesting = depth;
+		this.layer = layer;
 	}
 
 	@Override
@@ -307,5 +313,10 @@ public class CubeRenderMaterial implements RenderMaterial {
 		meshs.add(f2);
 
 		return meshs;
+	}
+
+	@Override
+	public int getLayer() {
+		return layer;
 	}
 }

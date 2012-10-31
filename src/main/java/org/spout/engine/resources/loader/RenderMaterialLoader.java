@@ -75,12 +75,15 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 		}
 
 		final Shader shader = (Shader) shaderObject;
+		int layer = 0;
 		boolean depthTesting = true;
 		if(resourceProperties.containsKey("RenderState"))
 		{
 			final Map<? extends String, ?> renderState = checkerMapStringObject.check(resourceProperties.get("RenderState"));
 			Object s = renderState.get("Depth");
 			if(s instanceof Boolean) depthTesting = (Boolean)s;
+			Object s2 = renderState.get("Layer");
+			if(s2 != null && s2 instanceof Integer) layer = (Integer)s2;
 		}
 		final Map<? extends String, ?> params = checkerMapStringObject.check(resourceProperties.get("MaterialParams"));
 
@@ -195,7 +198,7 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 		}
 
 		//TODO: Parse matricies 
-		return new ClientRenderMaterial(shader, paramsNew, null, null, depthTesting);
+		return new ClientRenderMaterial(shader, paramsNew, null, null, depthTesting, layer);
 	}
 	@Override
 	public String getProtocol() {
