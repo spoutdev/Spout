@@ -73,6 +73,7 @@ import org.spout.api.component.components.CameraComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.state.PlayerInputState;
+import org.spout.api.event.server.ClientEnableEvent;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -129,7 +130,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private final SoundManager soundManager = new SpoutSoundManager();
 	private final SpoutInput inputManager = new SpoutInput();
 	private final String name = "Spout Client";
-	private final Vector2 resolution = new Vector2(640, 480);
+	private final Vector2 resolution = new Vector2(1024, 768);
 	private final boolean[] sides = {true, true, true, true, true, true};
 	private final float aspectRatio = resolution.getX() / resolution.getY();
 	private final FileSystem filesystem;
@@ -147,9 +148,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private boolean wireframe = false;
 	// Gui
 	private SpriteBatch gui;
-	private ClientFont font;
 	private ScreenStack screenStack;
-
+   	private ClientFont font;
 	private boolean showDebugInfos = true;
 
 	// FPS counter
@@ -231,24 +231,17 @@ public class SpoutClient extends SpoutEngine implements Client {
 			}
 			// TODO : Wait until the world is fully loaded
 		}
-
-		Transform loc = new Transform(new Point(super.getDefaultWorld(), 0f, 0f, 0f), new Quaternion(0f, 0f, 0f, 0f), Vector3.ONE);
+		font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/resources/resources/fonts/ubuntu/Ubuntu-M.ttf");
+		Transform loc = new Transform(new Point(super.getDefaultWorld(), 50f, 30f, 50f), new Quaternion(0f, 0f, 0f, 0f), Vector3.ONE);
 		activePlayer = new SpoutClientPlayer("Spouty", loc, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 		activeCamera = activePlayer.add(CameraComponent.class);
-
-		font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/resources/resources/fonts/ubuntu/Ubuntu-M.ttf");
-		/*Widget txtWidget = new Widget(); // Test widget
-		LabelComponent txt = txtWidget.add(LabelComponent.class);
-		
-		txt.setFont(font);
-		txt.setText(ChatStyle.BLUE+"Test" + ChatStyle.WHITE+ " with " + ChatStyle.RED + "colors");
-
-		mainScreen.attachWidget(this.getPluginManager().getPlugins().iterator().next(), txtWidget);*/
-		
-
 		super.getDefaultWorld().spawnEntity(activePlayer);
 
 		getScheduler().startRenderThread();
+		//TODO Maybe a better way of alerting plugins the client is done?
+		if (ClientEnableEvent.getHandlerList().getRegisteredListeners().length != 0) {
+			Spout.getEventManager().callEvent(new ClientEnableEvent());
+		}
 	}
 
 	@Override
