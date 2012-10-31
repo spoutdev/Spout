@@ -116,7 +116,7 @@ public class ScreenStack extends SignalSubscriberObject implements Tickable, Run
 	@Override
 	public void run() {
 		float delta = 50f;
-		float current = (int) (System.currentTimeMillis() / 1000);
+		float current = System.currentTimeMillis();
 		if (lastTick != 0) {
 			delta = current - lastTick;
 		}
