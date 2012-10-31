@@ -33,6 +33,7 @@ import org.spout.api.signal.SignalSubscriberObject;
 import org.spout.api.tickable.Tickable;
 
 public class ScreenStack extends SignalSubscriberObject implements Tickable, Runnable {
+	private float lastTick = 0;
 	LinkedList<Screen> screens = new LinkedList<Screen>();
 	LinkedList<Screen> visibleScreens = null;
 	
@@ -114,6 +115,12 @@ public class ScreenStack extends SignalSubscriberObject implements Tickable, Run
 
 	@Override
 	public void run() {
-		tick(50f);
+		float delta = 50f;
+		float current = (int) (System.currentTimeMillis() / 1000);
+		if (lastTick != 0) {
+			delta = current - lastTick;
+		}
+		lastTick = current;
+		tick(delta);
 	}
 }
