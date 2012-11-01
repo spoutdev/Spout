@@ -40,22 +40,28 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel{
 	private final ChunkSnapshot[][][] chunks;
 	private ChunkSnapshot center;
 	private final boolean unload;
+	private final long time;
 	
-	public SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload) {
-		this(cx, cy, cz, unload, null);
+	public SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload, long time) {
+		this(cx, cy, cz, unload, null, time);
 	}
 
-	public SpoutChunkSnapshotModel(int cx, int cy, int cz, ChunkSnapshot[][][] chunks) {
-		this(cx, cy, cz, false, chunks);
+	public SpoutChunkSnapshotModel(int cx, int cy, int cz, ChunkSnapshot[][][] chunks, long time) {
+		this(cx, cy, cz, false, chunks, time);
 	}
 	
-	private SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks) {
+	private SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks, long time) {
 		this.cx = cx;
 		this.cy = cy;
 		this.cz = cz;
+		this.time = time;
 		this.chunks = chunks;
 		this.center = chunks != null ? chunks[1][1][1] : null;
 		this.unload = unload;
+	}
+	
+	public long getTime() {
+		return time;
 	}
 
 	public int getX() {
