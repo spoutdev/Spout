@@ -547,7 +547,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 			gui.drawText(ChatStyle.BLUE+"y: "+activePlayer.getTransform().getPosition().getY(), font, -0.95f, 0.7f, 8f);
 			gui.drawText(ChatStyle.BLUE+"z: "+activePlayer.getTransform().getPosition().getZ(), font, -0.95f, 0.6f, 8f);
 			gui.drawText(ChatStyle.BLUE+"fps: "+fps, font, -0.95f, 0.5f, 8f);
-			gui.drawText(ChatStyle.BLUE+"chunk: "+worldRenderer.getChunkRenderersSize(), font, -0.95f, 0.4f, 8f);
+			gui.drawText(ChatStyle.BLUE+"batch: "+worldRenderer.getChunkRenderersSize(), font, -0.95f, 0.4f, 8f);
+			gui.drawText(ChatStyle.BLUE+"ocluded: "+(int)((float)worldRenderer.getOcluded()/worldRenderer.getChunkRenderersSize() * 100) + "%", font, -0.95f, 0.3f, 8f);
+			gui.drawText(ChatStyle.BLUE+"culled: "+(int)((float)worldRenderer.getCulled()/worldRenderer.getChunkRenderersSize() * 100) + "%", font, -0.95f, 0.2f, 8f);
 		}
 		for (Screen screen : screenStack.getVisibleScreens()) {
 			for (Widget widget : screen.getWidgets()) {
