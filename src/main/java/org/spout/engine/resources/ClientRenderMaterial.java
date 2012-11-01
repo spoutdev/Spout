@@ -286,6 +286,16 @@ public class ClientRenderMaterial extends Resource implements RenderMaterial {
 			return meshs;
 		}
 
+		/*float lightD = ((15 - chunkSnapshotModel.getCenter().getBlockLight(position.getFloorX(), position.getFloorY(), position.getFloorZ())) * (1f / 15));
+		Color light = new Color(lightD * 0.5f, lightD * 0.25f, lightD * 0.25f);
+		
+		float skyLightD = ((15 - chunkSnapshotModel.getCenter().getBlockSkyLight(position.getFloorX(), position.getFloorY(), position.getFloorZ())) * (1f / 15));
+		Color skyLight = new Color(skyLightD * 0.25f, skyLightD * 0.25f, skyLightD * 0.5f);
+		
+		Color result = new Color(Math.max(light.getRed(),skyLight.getRed()),
+				Math.max(light.getGreen(),skyLight.getGreen()),
+				Math.max(light.getBlue(),skyLight.getBlue()));*/
+		
 		Color color = Color.WHITE; // Temporary testing color
 		v1.color = color;
 		v2.color = color;
