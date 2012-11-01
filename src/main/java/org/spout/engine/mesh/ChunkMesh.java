@@ -26,12 +26,9 @@
  */
 package org.spout.engine.mesh;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
@@ -56,25 +53,12 @@ public class ChunkMesh{
 	private boolean isUnloaded = false;
 	private final long time;
 
-	/**
-	 * Private constructor.
-	 */
-	private ChunkMesh(SpoutChunkSnapshotModel chunkModel) {
+	public ChunkMesh(SpoutChunkSnapshotModel chunkModel) {
 		this.chunkModel = chunkModel;
 		this.time = chunkModel.getTime();
 		cx = chunkModel.getX();
 		cy = chunkModel.getY();
 		cz = chunkModel.getZ();
-	}
-
-	public static List<ChunkMesh> getChunkMeshs(SpoutChunkSnapshotModel chunkModel){
-		List<ChunkMesh> meshs = new ArrayList<ChunkMesh>();
-		if(chunkModel.isUnload()){ // Useless to make ChunkMesh for each face
-			meshs.add(new ChunkMesh(chunkModel));
-		}else{
-			meshs.add(new ChunkMesh(chunkModel));
-		}
-		return meshs;
 	}
 
 	public int getX(){
@@ -150,7 +134,7 @@ public class ChunkMesh{
 			BlockMaterial neighbor = chunkModel.getChunkFromBlock(x1, y1, z1).getBlockMaterial(x1, y1, z1);
 
 			if (!material.isFaceRendered(face, neighbor)) {
-				return;
+				break;
 			}
 
 			ByteBitSet occlusion = neighbor.getOcclusion(material.getData());
@@ -192,8 +176,8 @@ public class ChunkMesh{
 		return meshs.get(material).get(face);
 	}
 
-	public Set<Entry<RenderMaterial, Map<BlockFace, ComposedMesh>>> getMaterialsFaces() {
-		return meshs.entrySet();
+	public HashMap<RenderMaterial, Map<BlockFace, ComposedMesh>> getMaterialsFaces() {
+		return meshs;
 	}
 
 	public long getTime() {
