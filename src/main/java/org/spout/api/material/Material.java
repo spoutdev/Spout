@@ -121,6 +121,18 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * @param parent material
 	 */
 	public Material(String name, int data, Material parent) {
+		this(name, data, parent, (String) null);
+	}
+	
+	/**
+	 * Creates and registers a sub material
+	 * 
+	 * @param name of the material
+	 * @param data
+	 * @param parent material
+	 * @param model
+	 */
+	public Material(String name, int data, Material parent, String model) {
 		this.isSubMaterial = true;
 		this.displayName = name;
 		this.name = name.replace(' ', '_');
@@ -130,7 +142,11 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.dataMask = parent.getDataMask();
 		this.root = parent.getRoot();
 		if(Spout.getEngine().getPlatform() == Platform.CLIENT)
-			this.model = (Model) Spout.getEngine().getFilesystem().getResource("model://Spout/resources/fallbacks/fallback.spm");
+			if (model == null) {
+				this.model = (Model) Spout.getEngine().getFilesystem().getResource("model://Spout/resources/fallbacks/fallback.spm");
+			} else {
+				this.model = (Model) Spout.getEngine().getFilesystem().getResource(model);
+			}
 		else
 			this.model = null;
 	}

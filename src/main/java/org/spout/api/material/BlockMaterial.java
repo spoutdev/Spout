@@ -73,7 +73,11 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	public BlockMaterial(String name, int data, Material parent) {
-		super(name, data, parent);
+		this(name, data, parent, (String) null);
+	}
+	
+	public BlockMaterial(String name, int data, Material parent, String model) {
+		super(name, data, parent, model);
 	}
 	
 	protected BlockMaterial(String name, short id) {
