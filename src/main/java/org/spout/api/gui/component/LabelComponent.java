@@ -42,56 +42,56 @@ import org.spout.api.render.Font;
 
 public class LabelComponent extends WidgetComponent {
 	private static final DefaultedKey<String> KEY_TEXT = new DefaultedKey<String>() {
-		
 		@Override
 		public String getDefaultValue() {
 			return "(your text here)";
 		}
-		
+
 		@Override
 		public String getKeyString() {
 			return "button-text";
 		}
-		
 	};
 	private Font font;
-	
+
 	@Override
 	public List<RenderPart> getRenderParts() {
 		List<RenderPart> ret = new LinkedList<RenderPart>();
-		
-		if (font==null)
+
+		if (font == null) {
 			return ret;
-		
+		}
+
 		Color color = Color.black;
 		boolean skipChar = false;
-		
+
 		float w = font.getWidth();
 		float h = font.getHeight();
 
 		float xCursor = getOwner().getGeometry().getX();
 		float yCursor = getOwner().getGeometry().getY();
-		
-		float screenWidth = ((Client)Spout.getEngine()).getResolution().getX();
-		float screenHeight = ((Client)Spout.getEngine()).getResolution().getY();
-		
-		for (int i=0 ; i<getText().length() ; i++) {
+
+		float screenWidth = ((Client) Spout.getEngine()).getResolution().getX();
+		float screenHeight = ((Client) Spout.getEngine()).getResolution().getY();
+
+		for (int i = 0; i < getText().length(); i++) {
 			if (skipChar) {
 				skipChar = false;
 				continue;
 			}
 			char c = getText().charAt(i);
-			if (c==' ') {
-				xCursor += font.getSpaceWidth()/screenWidth;
-			} else if (c=='\n') {
+			if (c == ' ') {
+				xCursor += font.getSpaceWidth() / screenWidth;
+			} else if (c == '\n') {
 				xCursor = getOwner().getGeometry().getX();
-				yCursor -= font.getCharHeight()/screenHeight;
-			} else if (c=='§') {
-				if (i+1==getText().length())
+				yCursor -= font.getCharHeight() / screenHeight;
+			} else if (c == '§') {
+				if (i + 1 == getText().length()) {
 					continue;
-				ChatStyle style = ChatStyle.byCode(getText().charAt(i+1));
+				}
+				ChatStyle style = ChatStyle.byCode(getText().charAt(i + 1));
 				skipChar = true;
-				if (style!=null) {
+				if (style != null) {
 					if (style instanceof ColorChatStyle) {
 						color = ((ColorChatStyle) style).getColor();
 					}
@@ -103,26 +103,26 @@ public class LabelComponent extends WidgetComponent {
 				RenderPart part = new RenderPart();
 				part.setRenderMaterial(font.getMaterial());
 				part.setColor(color);
-				part.setSprite(new Rectangle(xCursor, yCursor, (float)r.width/screenWidth, h/screenHeight));
-				part.setSource(new Rectangle(r.x/w, 0f, r.width/w, 1f));
-				
-				xCursor += (float)font.getAdvance(c)/screenWidth;
-				
+				part.setSprite(new Rectangle(xCursor, yCursor, (float) r.width / screenWidth, h / screenHeight));
+				part.setSource(new Rectangle(r.x / w, 0f, r.width / w, 1f));
+
+				xCursor += (float) font.getAdvance(c) / screenWidth;
+
 				ret.add(part);
 			}
 		}
-		
+
 		return ret;
 	}
-	
+
 	public void setFont(Font font) {
 		this.font = font;
 	}
-	
+
 	public Font getFont() {
 		return font;
 	}
-	
+
 	public String getText() {
 		return getData().get(KEY_TEXT);
 	}
@@ -131,5 +131,4 @@ public class LabelComponent extends WidgetComponent {
 		getData().put(KEY_TEXT, text);
 		getOwner().update();
 	}
-
 }

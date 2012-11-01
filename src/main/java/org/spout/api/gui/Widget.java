@@ -37,7 +37,6 @@ import org.spout.api.component.Component;
 import org.spout.api.component.components.WidgetComponent;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.map.DefaultedKey;
-import org.spout.api.math.MathHelper;
 import org.spout.api.math.Rectangle;
 import org.spout.api.tickable.Tickable;
 
@@ -46,9 +45,7 @@ public final class Widget extends BaseComponentHolder implements Tickable {
 	private boolean renderCacheClean = false;
 	private Screen screen;
 	private Container container = null;
-	
 	private static DefaultedKey<Rectangle> KEY_GEOMETRY = new DefaultedKey<Rectangle>() {
-
 		@Override
 		public Rectangle getDefaultValue() {
 			return new Rectangle(0, 0, 1, 1);
@@ -59,7 +56,7 @@ public final class Widget extends BaseComponentHolder implements Tickable {
 			return "geometry";
 		}
 	};
-	
+
 	/**
 	 * Returns a sorted list of render parts that consists of all render parts of the components
 	 * @return a list of render parts
@@ -68,22 +65,22 @@ public final class Widget extends BaseComponentHolder implements Tickable {
 		synchronized (renderPartCache) {
 			if (!renderCacheClean) {
 				renderPartCache = new LinkedList<RenderPart>();
-				
-				for (Component component:values()) {
+
+				for (Component component : values()) {
 					if (component instanceof WidgetComponent) {
 						WidgetComponent wc = (WidgetComponent) component;
 						renderPartCache.addAll(wc.getRenderParts());
 					}
 				}
-				
+
 				Collections.sort(renderPartCache);
-				
+
 				renderCacheClean = true;
 			}
 			return renderPartCache;
 		}
 	}
-	
+
 	/**
 	 * Invokes a render update in the next frame
 	 */
@@ -101,60 +98,60 @@ public final class Widget extends BaseComponentHolder implements Tickable {
 		this.screen = screen;
 		this.container = screen;
 	}
-	
+
 	public Container getScreen() {
 		return screen;
 	}
-	
+
 	public Container getContainer() {
 		return container;
 	}
-	
+
 	public void setContainer(Container container) {
 		this.container = container;
 	}
-	
+
 	public boolean hasFocus() {
 		return screen.getFocussedWidget() == this; // Exact instance
 	}
-	
+
 	public void setFocus(FocusReason reason) {
 		screen.setFocussedWidget(this);
-		
-		for (Component c:values()) {
+
+		for (Component c : values()) {
 			if (c instanceof WidgetComponent) {
 				WidgetComponent wc = (WidgetComponent) c;
 				wc.onFocus(reason);
 			}
 		}
 	}
-	
+
 	public void onFocusLost() {
-		for (Component c:values()) {
+		for (Component c : values()) {
 			WidgetComponent wc = (WidgetComponent) c;
 			wc.onFocusLost();
 		}
 	}
-	
+
 	public void setFocus() {
 		setFocus(FocusReason.PROGRAMMED);
 	}
-	
+
 	public Rectangle getTranslatedGeometry() {
 		return getGeometry().divide(((Client) Spout.getEngine()).getResolution());
 	}
-	
+
 	public Rectangle getGeometry() {
 		return getData().get(KEY_GEOMETRY);
 	}
-	
+
 	public void setGeometry(Rectangle geometry) {
 		getData().put(KEY_GEOMETRY, geometry);
 	}
 
 	@Override
 	public void onTick(float dt) {
-		for (Component c:values()) {
+		for (Component c : values()) {
 			c.onTick(dt);
 		}
 	}

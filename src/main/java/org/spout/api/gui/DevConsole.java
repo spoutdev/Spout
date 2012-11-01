@@ -35,29 +35,28 @@ import org.spout.api.math.Rectangle;
 import org.spout.api.render.Font;
 
 public class DevConsole {
-
 	private float scroll = 0;
 	private Font font;
 	private List<Widget> lines = new ArrayList<Widget>();
-	
+
 	public DevConsole(Font font) {
 		this.font = font;
 	}
-	
+
 	public void appendMessage(String msg) {
 		Widget wid = new Widget();
 		wid.setGeometry(new Rectangle(0, scroll, 0, 0));
 		LabelComponent txt = wid.add(LabelComponent.class);
-		
+
 		txt.setFont(font);
 		txt.setText(msg);
-		
+
 		scroll -= font.getCharHeight();
 		lines.add(wid);
 	}
-	
+
 	public List<RenderPart> getRenderParts() {
-		List<RenderPart>ret = new ArrayList<RenderPart>();
+		List<RenderPart> ret = new ArrayList<RenderPart>();
 		for (Widget line : lines) {
 			ret.addAll(line.getRenderParts());
 		}

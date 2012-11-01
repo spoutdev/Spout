@@ -35,45 +35,44 @@ import org.spout.api.gui.render.RenderPart;
 import org.spout.api.math.Rectangle;
 import org.spout.api.render.RenderMaterial;
 
-public class TexturedRectComponent extends WidgetComponent{
-
+public class TexturedRectComponent extends WidgetComponent {
 	private RenderPart rect = new RenderPart();
-	
+
 	@Override
 	public List<RenderPart> getRenderParts() {
 		List<RenderPart> parts = new ArrayList<RenderPart>();
 		parts.add(rect);
 		return parts;
 	}
-	
+
 	public void setSource(Rectangle source) {
 		rect.setSource(source);
 	}
-	
+
 	public Rectangle getSource() {
 		return rect.getSprite();
 	}
-	
+
 	public void setSprite(Rectangle sprite) {
 		rect.setSprite(sprite);
 	}
-	
+
 	public Rectangle getSprite() {
 		return rect.getSprite();
 	}
-	
+
 	public void setColor(Color color) {
 		rect.setColor(color);
 	}
-	
+
 	public Color getColor() {
 		return rect.getColor();
 	}
-	
+
 	public RenderMaterial getRenderMaterial() {
 		return rect.getRenderMaterial();
 	}
-	
+
 	public void setRenderMaterial(RenderMaterial material) {
 		rect.setRenderMaterial(material);
 	}

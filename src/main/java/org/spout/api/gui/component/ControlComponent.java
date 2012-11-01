@@ -49,12 +49,12 @@ public class ControlComponent extends WidgetComponent {
 		}
 		return ret;
 	}
-	
+
 	@Override
 	public void onFocus(FocusReason reason) {
 		getOwner().update();
 	}
-	
+
 	@Override
 	public void onFocusLost() {
 		getOwner().update();

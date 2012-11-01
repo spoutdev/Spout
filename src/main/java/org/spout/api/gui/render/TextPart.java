@@ -28,11 +28,11 @@ package org.spout.api.gui.render;
 
 public final class TextPart extends RenderPart {
 	char character;
-	
+
 	public char getChar() {
 		return character;
 	}
-	
+
 	public void setChar(char character) {
 		this.character = character;
 	}

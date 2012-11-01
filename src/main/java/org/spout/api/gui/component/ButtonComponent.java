@@ -37,21 +37,21 @@ import org.spout.api.signal.Signal;
 public class ButtonComponent extends LabelComponent {
 	public static final Signal SIGNAL_CLICKED = new Signal("clicked");
 	private boolean down = false;
-	
-	public ButtonComponent () {
+
+	public ButtonComponent() {
 		registerSignal(SIGNAL_CLICKED);
 	}
-	
+
 	@Override
 	public void onAttached() {
 		getOwner().add(ControlComponent.class);
 	}
-	
+
 	@Override
 	public List<RenderPart> getRenderParts() {
 		return super.getRenderParts(); // TODO add text, rectangle for clicked stuff
 	}
-	
+
 	@Override
 	public void onClicked(IntVector2 position, boolean mouseDown) {
 		if (mouseDown) {
@@ -62,7 +62,7 @@ public class ButtonComponent extends LabelComponent {
 			down = false;
 		}
 	}
-	
+
 	@Override
 	public void onKey(KeyEvent event) {
 		if (event.getKey() == Keyboard.KEY_SPACE) {
@@ -82,7 +82,7 @@ public class ButtonComponent extends LabelComponent {
 			getOwner().update();
 		}
 	}
-	
+
 	public boolean isDown() {
 		return down;
 	}

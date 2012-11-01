@@ -34,13 +34,17 @@ public class CheckBoxComponent extends ButtonComponent {
 	private static final DefaultedKey<Boolean> KEY_CHECKED = new DefaultedKey<Boolean>() {
 		public Boolean getDefaultValue() {
 			return false;
-		};
-		
+		}
+
+		;
+
 		public String getKeyString() {
 			return "checked";
-		};
+		}
+
+		;
 	};
-	
+
 	public CheckBoxComponent() {
 		super();
 		registerSignal(SIGNAL_CHECKED);
@@ -52,19 +56,19 @@ public class CheckBoxComponent extends ButtonComponent {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void onClicked() {
 		boolean checked = isChecked();
 		checked = !checked;
 		setChecked(checked);
-		
+
 		getOwner().update();
 	}
-	
+
 	public boolean isChecked() {
 		return getData().get(KEY_CHECKED);
 	}
-	
+
 	public void setChecked(boolean checked) {
 		getData().put(KEY_CHECKED, checked);
 		emit(SIGNAL_CHECKED, checked);

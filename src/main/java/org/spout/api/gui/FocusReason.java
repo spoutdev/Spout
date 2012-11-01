@@ -38,6 +38,5 @@ public enum FocusReason {
 	/**
 	 * Invoked when the focus was set by a plugin
 	 */
-	PROGRAMMED,
-	;
+	PROGRAMMED,;
 }

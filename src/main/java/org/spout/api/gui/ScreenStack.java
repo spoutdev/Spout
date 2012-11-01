@@ -36,26 +36,26 @@ public class ScreenStack extends SignalSubscriberObject implements Tickable, Run
 	private long lastTick = 0;
 	LinkedList<Screen> screens = new LinkedList<Screen>();
 	LinkedList<Screen> visibleScreens = null;
-	
+
 	public ScreenStack(FullScreen root) {
 		screens.add(root);
 		dirty();
 	}
-	
+
 	public void openScreen(Screen screen) {
 		synchronized (screens) {
 			screens.add(screen);
 		}
 		dirty();
 	}
-	
+
 	public void closeTopScreen() {
 		synchronized (screens) {
 			screens.removeLast();
 		}
 		dirty();
 	}
-	
+
 	public void closeScreen(Screen screen) {
 		synchronized (screens) {
 			if (screen == screens.getFirst()) {
@@ -68,7 +68,7 @@ public class ScreenStack extends SignalSubscriberObject implements Tickable, Run
 		}
 		dirty();
 	}
-	
+
 	/**
 	 * Gets an ordered list of visible screens
 	 * The first item in the list is the bottom-most fullscreen, the last item in the list is the top-most fullscreen/popupscreen.
@@ -77,12 +77,12 @@ public class ScreenStack extends SignalSubscriberObject implements Tickable, Run
 	public LinkedList<Screen> getVisibleScreens() {
 		if (visibleScreens == null) {
 			visibleScreens = new LinkedList<Screen>();
-			
+
 			synchronized (screens) {
 				Iterator<Screen> iter = screens.descendingIterator();
-				
+
 				Screen next = null;
-				
+
 				while (iter.hasNext()) {
 					next = iter.next();
 					visibleScreens.addFirst(next);
@@ -96,7 +96,7 @@ public class ScreenStack extends SignalSubscriberObject implements Tickable, Run
 			return visibleScreens;
 		}
 	}
-	
+
 	private void dirty() {
 		if (visibleScreens == null) {
 			return;
@@ -105,10 +105,10 @@ public class ScreenStack extends SignalSubscriberObject implements Tickable, Run
 			visibleScreens = null;
 		}
 	}
-	
+
 	@Override
 	public void onTick(float dt) {
-		for (Screen screen:getVisibleScreens()) {
+		for (Screen screen : getVisibleScreens()) {
 			screen.tick(dt);
 		}
 	}
