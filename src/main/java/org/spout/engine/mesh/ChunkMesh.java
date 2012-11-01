@@ -134,7 +134,7 @@ public class ChunkMesh{
 			BlockMaterial neighbor = chunkModel.getChunkFromBlock(x1, y1, z1).getBlockMaterial(x1, y1, z1);
 
 			if (!material.isFaceRendered(face, neighbor)) {
-				return;
+				break;
 			}
 
 			ByteBitSet occlusion = neighbor.getOcclusion(material.getData());

@@ -113,7 +113,7 @@ public final class SpoutScheduler implements Scheduler {
 	/**
 	 * Target Frames per Second for the renderer
 	 */
-	private static final int TARGET_FPS = 60;
+	private static final int TARGET_FPS = 180;
 	/**
 	 * The engine this scheduler is managing for.
 	 */

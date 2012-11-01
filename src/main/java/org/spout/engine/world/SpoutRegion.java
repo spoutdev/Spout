@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -178,13 +179,17 @@ public class SpoutRegion extends Region {
 		public int compare(final SpoutChunkSnapshotModel e1, final SpoutChunkSnapshotModel e2) {
 			int dist1 = e1.getX() + e1.getY() + e1.getZ();
 			int dist2 = e2.getX() + e2.getY() + e2.getZ();
+			
 			if(dist1 == dist2)
 				return 1;
+			
 			return dist1 - dist2;
 		}
 	};
 	
+	private final TInt21TripleObjectHashMap<SpoutChunkSnapshotModel> renderChunkQueued = new TInt21TripleObjectHashMap<SpoutChunkSnapshotModel>();
 	private final ConcurrentSkipListSet<SpoutChunkSnapshotModel> renderChunkQueue = new ConcurrentSkipListSet<SpoutChunkSnapshotModel>(ChunkOrdering);
+	
 	private final AtomicReference<SpoutRegion>[][][] neighbours;
 
 	@SuppressWarnings("unchecked")
@@ -414,6 +419,34 @@ public class SpoutRegion extends Region {
 		}
 	}
 
+	private void addToRenderQueue(SpoutChunkSnapshotModel model){
+		SpoutChunkSnapshotModel previous = renderChunkQueued.get(model.getX(), model.getY(), model.getZ());
+
+		if(previous != null){
+			if(previous.getTime() < model.getTime()){
+				synchronized (renderChunkQueued) {
+					renderChunkQueued.put(model.getX(), model.getY(), model.getZ(), model);
+				}
+				renderChunkQueue.remove(previous);
+				renderChunkQueue.add(model);
+			}
+		}else{
+			synchronized (renderChunkQueued) {
+				renderChunkQueued.put(model.getX(), model.getY(), model.getZ(), model);
+			}
+			renderChunkQueue.add(model);
+		}
+	}
+
+	private SpoutChunkSnapshotModel removeFromRenderQueue(){
+		SpoutChunkSnapshotModel model = renderChunkQueue.pollFirst();
+		if(model == null) return null;
+		synchronized (renderChunkQueued) {
+			renderChunkQueued.remove(model.getX(), model.getY(), model.getZ());
+		}
+		return model;
+	}
+	
 	/**
 	 * Removes a chunk from the region and indicates if the region is empty
 	 * @param c the chunk to remove
@@ -440,7 +473,7 @@ public class SpoutRegion extends Region {
 
 			currentChunk.setUnloaded();
 			if (renderQueueEnabled && currentChunk.isInViewDistance()) {
-				renderChunkQueue.add(new SpoutChunkSnapshotModel(currentChunk.getX(), currentChunk.getY(), currentChunk.getZ(), true, System.currentTimeMillis()));
+				addToRenderQueue(new SpoutChunkSnapshotModel(currentChunk.getX(), currentChunk.getY(), currentChunk.getZ(), true, System.currentTimeMillis()));
 			}
 
 			int cx = c.getX() & CHUNKS.MASK;
@@ -964,9 +997,9 @@ public class SpoutRegion extends Region {
 	}
 
 
-	public ConcurrentSkipListSet<SpoutChunkSnapshotModel> getRenderChunkQueue() {
+	/*public ConcurrentSkipListSet<SpoutChunkSnapshotModel> getRenderChunkQueue() {
 		return this.renderChunkQueue;
-	}
+	}*/
 
 	private TInt21TripleObjectHashMap<SpoutChunkSnapshot> renderSnapshotCache = new TInt21TripleObjectHashMap<SpoutChunkSnapshot>();
 
@@ -991,11 +1024,11 @@ public class SpoutRegion extends Region {
 				}
 			}
 			c.setRenderDirty(false);
-			renderChunkQueue.add(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks, time));
+			addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks, time));
 		} else {
 			if (c.leftViewDistance()) {
 				c.setRenderDirty(false);
-				renderChunkQueue.add(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, true, time));
+				addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, true, time));
 			}
 		}
 		c.viewDistanceCopy();
@@ -1539,7 +1572,7 @@ public class SpoutRegion extends Region {
 			while (!Thread.interrupted()) {
 				try {
 					SpoutChunkSnapshotModel model;
-					while( ( model = renderChunkQueue.pollFirst() ) != null){
+					while( ( model = removeFromRenderQueue() ) != null){
 						handle(model);
 					}
 					Thread.sleep(20); // Maybe we can use a semaphore or others things to pause this thread correctly.
@@ -1548,7 +1581,7 @@ public class SpoutRegion extends Region {
 				}
 			}
 			SpoutChunkSnapshotModel model;
-			while ((model = renderChunkQueue.pollFirst()) != null) {
+			while ((model = removeFromRenderQueue()) != null) {
 				handle(model);
 			}
 		}
