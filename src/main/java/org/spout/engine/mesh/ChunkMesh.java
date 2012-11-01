@@ -51,11 +51,9 @@ public class ChunkMesh{
 	private ChunkSnapshot center;
 	private final int cx,cy,cz;
 	private boolean isUnloaded = false;
-	private final long time;
 
 	public ChunkMesh(SpoutChunkSnapshotModel chunkModel) {
 		this.chunkModel = chunkModel;
-		this.time = chunkModel.getTime();
 		cx = chunkModel.getX();
 		cy = chunkModel.getY();
 		cz = chunkModel.getZ();
@@ -145,7 +143,7 @@ public class ChunkMesh{
 				if(!faces.isEmpty()){
 					ComposedMesh mesh = meshs.get(face);
 					if(mesh == null){
-						mesh = new ComposedMesh(time);
+						mesh = new ComposedMesh();
 						meshs.put(face, mesh);
 					}
 					mesh.getMesh().addAll(faces);
@@ -180,7 +178,4 @@ public class ChunkMesh{
 		return meshs;
 	}
 
-	public long getTime() {
-		return time;
-	}
 }

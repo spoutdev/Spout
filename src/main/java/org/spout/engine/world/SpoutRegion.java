@@ -33,7 +33,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -82,6 +81,7 @@ import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
+import org.spout.api.util.map.TByteTripleObjectHashMap;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
 import org.spout.api.util.set.TByteTripleHashSet;
 import org.spout.api.util.thread.DelayedWrite;
@@ -169,25 +169,56 @@ public class SpoutRegion extends Region {
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 	private boolean renderQueueEnabled = false;
-	//private final LinkedBlockingQueue<SpoutChunkSnapshotModel> renderChunkQueue = new LinkedBlockingQueue<SpoutChunkSnapshotModel>();
 	
 	public static final Comparator<SpoutChunkSnapshotModel> ChunkOrdering = new Comparator<SpoutChunkSnapshotModel>() {
 		
-		//TODO : Compare with the chunk player distance
-		
+		/**
+		 * Compares 2 SpoutChunkSnapshotModels using distance, then x, then y, then z and finally returns 0
+		 * 
+		 * @param e1
+		 * @param e2
+		 * @return
+		 */
 		@Override
 		public int compare(final SpoutChunkSnapshotModel e1, final SpoutChunkSnapshotModel e2) {
-			int dist1 = e1.getX() + e1.getY() + e1.getZ();
-			int dist2 = e2.getX() + e2.getY() + e2.getZ();
+			int d1 = e1.getDistance();
+			int d2 = e2.getDistance();
 			
-			if(dist1 == dist2)
+			if (d1 < d2) {
+				return -1;
+			} else if (d1 > d2) {
 				return 1;
-			
-			return dist1 - dist2;
+			} else {
+				int x1 = e1.getX();
+				int x2 = e2.getX();
+				if (x1 < x2) {
+					return -1;
+				} else if (x1 > x2) {
+					return 1;
+				} else {
+					int y1 = e1.getY();
+					int y2 = e2.getY();
+					if (y1 < y2) {
+						return -1;
+					} else if (y1 > y2) {
+						return 1;
+					} else {
+						int z1 = e1.getZ();
+						int z2 = e2.getZ();
+						if (z1 < z2) {
+							return -1;
+						} else if (z1 > z2) {
+							return 1;
+						} else {
+							return 0;
+						}
+					}
+				}
+			}
 		}
 	};
 	
-	private final TInt21TripleObjectHashMap<SpoutChunkSnapshotModel> renderChunkQueued = new TInt21TripleObjectHashMap<SpoutChunkSnapshotModel>();
+	private final TByteTripleObjectHashMap<SpoutChunkSnapshotModel> renderChunkQueued = new TByteTripleObjectHashMap<SpoutChunkSnapshotModel>();
 	private final ConcurrentSkipListSet<SpoutChunkSnapshotModel> renderChunkQueue = new ConcurrentSkipListSet<SpoutChunkSnapshotModel>(ChunkOrdering);
 	
 	private final AtomicReference<SpoutRegion>[][][] neighbours;
@@ -420,29 +451,37 @@ public class SpoutRegion extends Region {
 	}
 
 	private void addToRenderQueue(SpoutChunkSnapshotModel model){
-		SpoutChunkSnapshotModel previous = renderChunkQueued.get(model.getX(), model.getY(), model.getZ());
-
-		if(previous != null){
-			if(previous.getTime() < model.getTime()){
-				synchronized (renderChunkQueued) {
-					renderChunkQueued.put(model.getX(), model.getY(), model.getZ(), model);
-				}
+		SpoutChunkSnapshotModel previous;
+		synchronized (renderChunkQueued) {
+			previous = renderChunkQueued.put((byte) model.getX(), (byte) model.getY(), (byte) model.getZ(), model);
+			if(previous != null){
 				renderChunkQueue.remove(previous);
-				renderChunkQueue.add(model);
 			}
-		}else{
-			synchronized (renderChunkQueued) {
-				renderChunkQueued.put(model.getX(), model.getY(), model.getZ(), model);
-			}
-			renderChunkQueue.add(model);
+		}
+
+		renderChunkQueue.add(model);
+		
+		synchronized (renderChunkQueued) {
+			renderChunkQueued.notify();
 		}
 	}
 
-	private SpoutChunkSnapshotModel removeFromRenderQueue(){
+	private SpoutChunkSnapshotModel removeFromRenderQueue() throws InterruptedException {
 		SpoutChunkSnapshotModel model = renderChunkQueue.pollFirst();
-		if(model == null) return null;
+		if (model == null) {
+			synchronized (renderChunkQueued) {
+				while (model == null) {
+					model = renderChunkQueue.pollFirst();
+					if (model == null) {
+						renderChunkQueued.wait();
+					}
+				}
+			}
+		}
 		synchronized (renderChunkQueued) {
-			renderChunkQueued.remove(model.getX(), model.getY(), model.getZ());
+			if (renderChunkQueued.get((byte) model.getX(), (byte) model.getY(), (byte) model.getZ()) == model) {
+				renderChunkQueued.remove((byte) model.getX(), (byte) model.getY(), (byte) model.getZ());
+			}
 		}
 		return model;
 	}
@@ -473,7 +512,7 @@ public class SpoutRegion extends Region {
 
 			currentChunk.setUnloaded();
 			if (renderQueueEnabled && currentChunk.isInViewDistance()) {
-				addToRenderQueue(new SpoutChunkSnapshotModel(currentChunk.getX(), currentChunk.getY(), currentChunk.getZ(), true, System.currentTimeMillis()));
+				addToRenderQueue(new SpoutChunkSnapshotModel(currentChunk.getX(), currentChunk.getY(), currentChunk.getZ(), true));
 			}
 
 			int cx = c.getX() & CHUNKS.MASK;
@@ -938,6 +977,11 @@ public class SpoutRegion extends Region {
 		final long time = System.currentTimeMillis();
 		
 		renderQueueEnabled = worldRenderQueueEnabled;
+		
+		Point playerPosition = null;
+		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
+			playerPosition = ((SpoutClient) Spout.getEngine()).getActivePlayer().getTransform().getPosition();
+		}
 
 		if (firstRenderQueueTick) {
 			for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
@@ -945,7 +989,7 @@ public class SpoutRegion extends Region {
 					for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
 						SpoutChunk chunk = chunks[dx][dy][dz].get();
 						if (chunk != null) {
-							addUpdateToRenderQueue(chunk,time);
+							addUpdateToRenderQueue(playerPosition, chunk);
 						}
 					}
 				}
@@ -961,7 +1005,7 @@ public class SpoutRegion extends Region {
 			}
 			
 			if ((!firstRenderQueueTick) && renderQueueEnabled  && spoutChunk.isRenderDirty()) {
-				addUpdateToRenderQueue(spoutChunk,time);
+				addUpdateToRenderQueue(playerPosition, spoutChunk);
 			}
 			if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
 				for (Player entity : spoutChunk.getObservingPlayers()) {
@@ -1003,12 +1047,18 @@ public class SpoutRegion extends Region {
 
 	private TInt21TripleObjectHashMap<SpoutChunkSnapshot> renderSnapshotCache = new TInt21TripleObjectHashMap<SpoutChunkSnapshot>();
 
-	private void addUpdateToRenderQueue(SpoutChunk c, long time) {
+	private void addUpdateToRenderQueue(Point p, SpoutChunk c) {
 		int bx = c.getX() - 1;
 		int by = c.getY() - 1;
 		int bz = c.getZ() - 1;
 		
 		if (c.isInViewDistance()) {
+			int distance;
+			if (p == null) {
+				distance = 0;
+			} else {
+				distance = (int) p.getManhattanDistance(c.getBase());
+			}
 			ChunkSnapshot[][][] chunks = new ChunkSnapshot[3][3][3];
 			for (int x = 0; x < 3; x++) {
 				for (int y = 0; y < 3; y++) {
@@ -1024,11 +1074,11 @@ public class SpoutRegion extends Region {
 				}
 			}
 			c.setRenderDirty(false);
-			addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks, time));
+			addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks, distance));
 		} else {
 			if (c.leftViewDistance()) {
 				c.setRenderDirty(false);
-				addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, true, time));
+				addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, true));
 			}
 		}
 		c.viewDistanceCopy();
@@ -1574,15 +1624,24 @@ public class SpoutRegion extends Region {
 					SpoutChunkSnapshotModel model;
 					while( ( model = removeFromRenderQueue() ) != null){
 						handle(model);
+						Thread.sleep(20);
 					}
-					Thread.sleep(20); // Maybe we can use a semaphore or others things to pause this thread correctly.
 				} catch (InterruptedException ie) {
 					break;
 				}
 			}
 			SpoutChunkSnapshotModel model;
-			while ((model = removeFromRenderQueue()) != null) {
-				handle(model);
+			boolean done = false;
+			while (!done) {
+				try {
+					model = removeFromRenderQueue();
+					if (model != null) {
+						handle(model);
+					} else {
+						done = true;
+					}
+				} catch (InterruptedException e) {
+				}
 			}
 		}
 		

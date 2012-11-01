@@ -51,7 +51,6 @@ public class ChunkMeshBatch extends Cuboid {
 	private Matrix modelMat = MathHelper.createIdentity();
 	private final BlockFace face;
 	private final RenderMaterial material;
-	private long time;
 	
 	public ChunkMeshBatch(World world, int baseX, int baseY, int baseZ, BlockFace face, RenderMaterial material) {
 		super(new Point(world, baseX, baseY, baseZ), SIZE);
@@ -105,7 +104,6 @@ public class ChunkMeshBatch extends Cuboid {
 
 	public void setMesh(ComposedMesh chunkMesh) {
 		mesh = chunkMesh;
-		time = chunkMesh.getTime();
 	}
 
 	public BlockFace getFace() {
@@ -114,10 +112,6 @@ public class ChunkMeshBatch extends Cuboid {
 
 	public RenderMaterial getMaterial() {
 		return material;
-	}
-
-	public long getTime() {
-		return time;
 	}
 
 }

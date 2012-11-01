@@ -40,28 +40,28 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel{
 	private final ChunkSnapshot[][][] chunks;
 	private ChunkSnapshot center;
 	private final boolean unload;
-	private final long time;
+	private final int distance;
 	
-	public SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload, long time) {
-		this(cx, cy, cz, unload, null, time);
+	public SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload) {
+		this(cx, cy, cz, unload, null, 0);
 	}
 
-	public SpoutChunkSnapshotModel(int cx, int cy, int cz, ChunkSnapshot[][][] chunks, long time) {
-		this(cx, cy, cz, false, chunks, time);
+	public SpoutChunkSnapshotModel(int cx, int cy, int cz, ChunkSnapshot[][][] chunks) {
+		this(cx, cy, cz, chunks, 0);
 	}
 	
-	private SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks, long time) {
+	public SpoutChunkSnapshotModel(int cx, int cy, int cz, ChunkSnapshot[][][] chunks, int distance) {
+		this(cx, cy, cz, false, chunks, distance);
+	}
+
+	private SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks, int distance) {
 		this.cx = cx;
 		this.cy = cy;
 		this.cz = cz;
-		this.time = time;
 		this.chunks = chunks;
 		this.center = chunks != null ? chunks[1][1][1] : null;
 		this.unload = unload;
-	}
-	
-	public long getTime() {
-		return time;
+		this.distance = distance;
 	}
 
 	public int getX() {
@@ -74,6 +74,10 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel{
 
 	public int getZ() {
 		return cz;
+	}
+	
+	public int getDistance() {
+		return distance;
 	}
 	
 	/**

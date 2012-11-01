@@ -35,18 +35,12 @@ import org.spout.api.resource.Resource;
 public class ComposedMesh extends Resource {
 
 	private List<MeshFace> facesPerMaterials;
-	private final long time; // For bench
 
-	public ComposedMesh(long time){
+	public ComposedMesh(){
 		facesPerMaterials = new ArrayList<MeshFace>();
-		this.time = time;
 	}
 	
 	public List<MeshFace> getMesh() {
 		return facesPerMaterials;
-	}
-
-	public long getTime() {
-		return time;
 	}
 }
