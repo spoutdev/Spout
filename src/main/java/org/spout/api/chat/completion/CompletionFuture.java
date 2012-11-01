@@ -118,6 +118,7 @@ public class CompletionFuture extends ObjectEvent<CompletionFuture> implements F
 	public boolean complete(CompletionResponse result) {
 		Validate.notNull(result);
 		if (this.result.compareAndSet(null, result)) {
+			this.notifyAll();
 			callEvent(this);
 			unregisterAllListeners();
 			return true;
