@@ -92,7 +92,7 @@ import org.spout.api.util.thread.Threadsafe;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.SharedFileSystem;
-import org.spout.engine.filesystem.WorldFiles;
+import org.spout.engine.filesystem.WorldData;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.scheduler.SpoutTaskManager;
@@ -174,28 +174,28 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * Hashcode cache
 	 */
 	private final int hashcode;
-	
+
 	/**
 	 * Indicates if the snapshot queue for the renderer should be populated
 	 */
 	private final AtomicBoolean renderQueueEnabled = new AtomicBoolean(false);
-	
+
 	/**
 	 * RegionFile manager for the world
 	 */
 	private final RegionFileManager regionFileManager;
-	
+
 	/*
 	 * A WeakReference to this world
 	 */
 	private final WeakReference<World> selfReference;
 	public static final WeakReference<World> NULL_WEAK_REFERENCE = new WeakReference<World>(null);
-	
+
 	/*
 	 * Components
 	 */
 	private final WorldComponentHolder componentHolder;
-	
+
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid, StringMap itemMap) {
 		super(1, new ThreadAsyncExecutor(toString(name, uid, age)), engine);
@@ -214,11 +214,11 @@ public class SpoutWorld extends AsyncManager implements World {
 
 		worldDirectory = new File(SharedFileSystem.WORLDS_DIRECTORY, name);
 		worldDirectory.mkdirs();
-		
+
 		regionFileManager = new RegionFileManager(worldDirectory);
 
 		heightMapBAAs = new TSyncIntPairObjectHashMap<BAAWrapper>();
-		
+
 		this.hashcode = new HashCodeBuilder(27, 971).append(uid).toHashCode();
 
 		this.lightingManager = new SpoutWorldLighting(this);
@@ -555,7 +555,7 @@ public class SpoutWorld extends AsyncManager implements World {
 			entity.add(c);
 		return entity;
 	}
-	
+
 	/**
 	 * Spawns an entity into the world. Fires off a cancellable EntitySpawnEvent
 	 */
@@ -590,7 +590,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		Entity e = createEntity(point, prefab);
 		return e;
 	}
-	
+
 	@Override
 	public Entity createAndSpawnEntity(Point point, Class<? extends Component> type, LoadOption option) {
 		getRegionFromBlock(point, option);
@@ -1084,7 +1084,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		}
 		this.getLightingManager().abort();
 		if (save) {
-			WorldFiles.saveWorldData(this);
+			new WorldData(this).saveToFile();
 		}
 		Collection<Region> regions = this.regions.getRegions();
 		final int total = Math.max(1, regions.size());
@@ -1186,15 +1186,15 @@ public class SpoutWorld extends AsyncManager implements World {
 		}
 		return true;
 	}
-	
+
 	public void enableRenderQueue() {
 		this.renderQueueEnabled.set(true);
 	}
-	
+
 	public void disableRenderQueue() {
 		this.renderQueueEnabled.set(false);
 	}
-	
+
 	public boolean isRenderQueueEnabled() {
 		return renderQueueEnabled.get();
 	}
@@ -1204,7 +1204,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public void runPhysics(int sequence) throws InterruptedException {
 	}
-	
+
 	@Override
 	public void runLighting(int sequence) throws InterruptedException {
 	}
@@ -1231,15 +1231,15 @@ public class SpoutWorld extends AsyncManager implements World {
 	public DefaultedMap<String, Serializable> getDataMap() {
 		return componentHolder.getData();
 	}
-	
+
 	public RegionFileManager getRegionFileManager() {
 		return regionFileManager;
 	}
-	
+
 	public BAAWrapper getRegionFile(int rx, int ry, int rz) {
 		return regionFileManager.getBAAWrapper(rx, ry, rz);
 	}
-	
+
 	public OutputStream getChunkOutputStream(ChunkSnapshot c) {
 		return regionFileManager.getChunkOutputStream(c);
 	}

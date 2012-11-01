@@ -111,6 +111,7 @@ import org.spout.engine.command.TestCommands;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.SharedFileSystem;
+import org.spout.engine.filesystem.WorldData;
 import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.input.SpoutInputConfiguration;
 import org.spout.engine.protocol.SpoutSession;
@@ -155,7 +156,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private final SpoutInputConfiguration inputConfig = new SpoutInputConfiguration();
 	private final CompletionManager completions = new CompletionManagerImpl();
 	private final SyncedRootCommand rootCommand = new SyncedRootCommand(this);
-	private final File worldFolder = new File(".");
+	private final File worldFolder = SharedFileSystem.WORLDS_DIRECTORY;
 	private final SnapshotableLinkedHashMap<String, SpoutWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutWorld>(snapshotManager);
 	private final SnapshotableReference<World> defaultWorld = new SnapshotableReference<World>(snapshotManager, null);
 	protected final ConcurrentMap<SocketAddress, Protocol> boundProtocols = new ConcurrentHashMap<SocketAddress, Protocol>();
@@ -420,9 +421,9 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		if (generator == null) {
 			generator = defaultGenerator;
 		}
-
-		SpoutWorld world = WorldFiles.loadWorldFromData(name, generator, engineItemMap);
-		if (world == null) {
+		WorldData worldData = WorldData.loadForWorld(name);
+		SpoutWorld world;
+		if (worldData == null) {
 			log("Generating new world named [%0]", name);
 
 			File itemMapFile = new File(new File(SharedFileSystem.WORLDS_DIRECTORY, name), "materials.dat");
@@ -430,8 +431,11 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 			StringMap itemMap = new StringMap(engineItemMap, itemStore, 0, Short.MAX_VALUE, name + "ItemMap");
 
 			world = new SpoutWorld(name, this, random.nextLong(), 0L, generator, UUID.randomUUID(), itemMap);
-			WorldFiles.saveWorldData(world);
+			new WorldData(world).saveToFile();
+		} else {
+			world = worldData.toWorld(generator, engineItemMap);
 		}
+
 		World oldWorld = loadedWorlds.putIfAbsent(name, world);
 
 		if (oldWorld != null) {

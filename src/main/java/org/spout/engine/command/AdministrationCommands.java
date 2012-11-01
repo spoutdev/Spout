@@ -404,4 +404,30 @@ public class AdministrationCommands {
 		source.sendMessage(new ChatArguments("The spawnpoint of world: ", ChatStyle.PURPLE, point.getWorld().getName(), ChatStyle.WHITE, " is x: ",
 				ChatStyle.BRIGHT_GREEN, point.getBlockX(), ChatStyle.WHITE, ", y: ", ChatStyle.BRIGHT_GREEN, point.getBlockY(), ChatStyle.WHITE, ", z: ", ChatStyle.BRIGHT_GREEN, point.getBlockZ()));
 	}
+
+	@Command(aliases = {"worldinfo"}, desc = "Provides info about known worlds", usage = "[world]", min = 0, max = 1)
+	@CommandPermissions("spout.command.worldinfo")
+	public void worldInfo(CommandContext args, CommandSource source) throws CommandException {
+		if (args.length() == 0) {
+			Collection<World> worlds = engine.getWorlds();
+			ChatArguments output = new ChatArguments("Worlds (", worlds.size(), "): ");
+			for (Iterator<World> i = worlds.iterator(); i.hasNext();) {
+				output.append(i.next().getName());
+				if (i.hasNext()) {
+					output.append(", ");
+				}
+			}
+			source.sendMessage(output);
+		} else {
+			World world = engine.getWorld(args.getString(0));
+			if (world == null) {
+				throw new CommandException("Unknown world: " + world);
+			}
+			source.sendMessage("World: ", world.getName());
+			source.sendMessage("==========================");
+			source.sendMessage("Age: ", world.getAge());
+			source.sendMessage("UUID: ", world.getUID());
+			source.sendMessage("Seed: ", world.getSeed());
+		}
+	}
 }
