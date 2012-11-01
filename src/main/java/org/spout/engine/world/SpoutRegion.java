@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,7 +41,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -167,7 +168,23 @@ public class SpoutRegion extends Region {
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 	private boolean renderQueueEnabled = false;
-	private final LinkedBlockingQueue<SpoutChunkSnapshotModel> renderChunkQueue = new LinkedBlockingQueue<SpoutChunkSnapshotModel>();
+	//private final LinkedBlockingQueue<SpoutChunkSnapshotModel> renderChunkQueue = new LinkedBlockingQueue<SpoutChunkSnapshotModel>();
+	
+	public static final Comparator<SpoutChunkSnapshotModel> ChunkOrdering = new Comparator<SpoutChunkSnapshotModel>() {
+		
+		//TODO : Compare with the chunk player distance
+		
+		@Override
+		public int compare(final SpoutChunkSnapshotModel e1, final SpoutChunkSnapshotModel e2) {
+			int dist1 = e1.getX() + e1.getY() + e1.getZ();
+			int dist2 = e2.getX() + e2.getY() + e2.getZ();
+			if(dist1 == dist2)
+				return 1;
+			return dist1 - dist2;
+		}
+	};
+	
+	private final ConcurrentSkipListSet<SpoutChunkSnapshotModel> renderChunkQueue = new ConcurrentSkipListSet<SpoutChunkSnapshotModel>(ChunkOrdering);
 	private final AtomicReference<SpoutRegion>[][][] neighbours;
 
 	@SuppressWarnings("unchecked")
@@ -947,7 +964,7 @@ public class SpoutRegion extends Region {
 	}
 
 
-	public Queue<SpoutChunkSnapshotModel> getRenderChunkQueue() {
+	public ConcurrentSkipListSet<SpoutChunkSnapshotModel> getRenderChunkQueue() {
 		return this.renderChunkQueue;
 	}
 
@@ -1521,22 +1538,25 @@ public class SpoutRegion extends Region {
 			}
 			while (!Thread.interrupted()) {
 				try {
-					handle(renderChunkQueue.take());
+					SpoutChunkSnapshotModel model;
+					while( ( model = renderChunkQueue.pollFirst() ) != null){
+						handle(model);
+					}
+					Thread.sleep(20); // Maybe we can use a semaphore or others things to pause this thread correctly.
 				} catch (InterruptedException ie) {
 					break;
 				}
 			}
 			SpoutChunkSnapshotModel model;
-			while ((model = renderChunkQueue.poll()) != null) {
+			while ((model = renderChunkQueue.pollFirst()) != null) {
 				handle(model);
 			}
 		}
 		
 		private void handle(SpoutChunkSnapshotModel model) {
-			for(ChunkMesh mesh : ChunkMesh.getChunkMeshs(model)){
-				mesh.update();
-				renderer.addMeshToBatchQueue(mesh);
-			}
+			ChunkMesh mesh = new ChunkMesh(model);
+			mesh.update();
+			renderer.addMeshToBatchQueue(mesh);
 		}
 		
 	}

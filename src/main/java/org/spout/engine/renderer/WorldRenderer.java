@@ -29,6 +29,7 @@ package org.spout.engine.renderer;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -67,6 +68,7 @@ public class WorldRenderer {
 	public static CubeMesh defaultMesh = null;
 
 	private World world; // temp
+	private final BatchGeneratorTask batchGenerator = new BatchGeneratorTask();
 
 	public WorldRenderer(SpoutClient client) {
 		this.client = client;
@@ -86,12 +88,17 @@ public class WorldRenderer {
 	}
 
 	public void render() {
+		final long start = System.currentTimeMillis();
 		update();
 
 		material.getShader().setUniform("View", client.getActiveCamera().getView());
 		material.getShader().setUniform("Projection", client.getActiveCamera().getProjection());
 
 		renderChunks();
+
+		long time = System.currentTimeMillis() - start;
+		if(time > 10) // -> 1000 / 60 = 16
+			System.out.println("Worldrender take " + time);
 	}
 
 	public void setupWorld(){
@@ -101,7 +108,113 @@ public class WorldRenderer {
 	}
 
 	private final ConcurrentLinkedQueue<ChunkMesh> renderChunkMeshBatchQueue = new ConcurrentLinkedQueue<ChunkMesh>();
-	private final long TIME_LIMIT = 2;
+
+	private class BatchGeneratorTask implements Runnable {
+
+		private static final long TIME_LIMIT = 2;
+		
+		private ChunkMesh chunkMesh = null;
+		
+		private Iterator<Entry<RenderMaterial, Map<BlockFace, ComposedMesh>>> it = null;
+		
+		private Entry<RenderMaterial, Map<BlockFace, ComposedMesh>> data;
+		private RenderMaterial material;
+		private Iterator<Entry<BlockFace, ComposedMesh>> it2 = null;
+
+		public void run() {
+			final long start = System.currentTimeMillis();
+
+			//Execute previous unfinished chunkMesh
+			//if(chunkMesh != null){
+				if(it2 != null){
+					//RenderMaterial material = data.getKey();
+					while(it2.hasNext()){
+						handle(it2.next());
+
+						if( System.currentTimeMillis() - start > TIME_LIMIT)
+							return;
+					}
+					it2 = null;
+					material = null;
+					data = null;
+				}
+				
+				if(it != null){
+					while(it.hasNext()){
+						data = it.next();
+						material = data.getKey();
+						it2 = data.getValue().entrySet().iterator();
+
+						while(it2.hasNext()){
+							handle(it2.next());
+
+							if( System.currentTimeMillis() - start > TIME_LIMIT)
+								return;
+						}
+
+						it2 = null;
+						material = null;
+						data = null;
+					}
+					it = null;
+					chunkMesh = null;
+				}
+			//}
+
+			//Step 2 : Add ChunkMesh to ChunkMeshBatch
+			while( (chunkMesh = renderChunkMeshBatchQueue.poll()) != null){
+
+				it = chunkMesh.getMaterialsFaces().entrySet().iterator();
+				while(it.hasNext()){
+					data = it.next();
+					material = data.getKey();
+
+					it2 = data.getValue().entrySet().iterator();
+
+					while(it2.hasNext()){
+						handle( it2.next());
+
+						if( System.currentTimeMillis() - start > TIME_LIMIT)
+							return;
+					}
+
+					it2 = null;
+					material = null;
+					data = null;
+				}
+				it = null;
+				chunkMesh = null;
+			}
+		}
+
+
+		private void handle(Entry<BlockFace, ComposedMesh> faceMesh){
+			BlockFace face = faceMesh.getKey();
+			ComposedMesh mesh = faceMesh.getValue();
+			ChunkMeshBatch chunkMeshBatch = getChunkMeshBatchByBatchPosition(chunkMesh.getX(), chunkMesh.getY(), chunkMesh.getZ(), face, material);
+
+			if(chunkMeshBatch==null){
+				if(chunkMesh.isUnloaded())
+					return;
+				chunkMeshBatch = new ChunkMeshBatch(world,chunkMesh.getX(), chunkMesh.getY(), chunkMesh.getZ(), face, material);
+
+				addChunkMeshBatch(chunkMeshBatch);
+			}
+
+			if(!chunkMesh.isUnloaded()){
+				chunkMeshBatch.setMesh(mesh);
+				chunkMeshBatch.update(); // One chunk in batch only
+
+				/*long delay = System.currentTimeMillis() - chunkMeshBatch.getTime();
+				if(delay > 1000/20)
+					System.out.println("Time " + delay);*/
+			}else{
+				//chunkMeshBatch.removeMesh(mesh);
+				removeChunkMeshBatch(chunkMeshBatch); // One chunk in batch only
+			}
+		}
+
+	}
 
 	public void update(){
 		if( world == null ){
@@ -110,13 +223,15 @@ public class WorldRenderer {
 				return;
 		}
 
-		final long start = System.currentTimeMillis();
+		batchGenerator.run();
+
+		/*final long start = System.currentTimeMillis();*/
 
 		//Step 2 : Add ChunkMesh to ChunkMeshBatch
-		ChunkMesh chunkMesh;
+		/*ChunkMesh chunkMesh;
 		while( (chunkMesh = renderChunkMeshBatchQueue.poll()) != null){
 
-			for(Entry<RenderMaterial, Map<BlockFace, ComposedMesh>> renderFaceMesh : chunkMesh.getMaterialsFaces()){
+			for(Entry<RenderMaterial, Map<BlockFace, ComposedMesh>> renderFaceMesh : chunkMesh.getMaterialsFaces().entrySet()){
 				RenderMaterial material = renderFaceMesh.getKey();
 				for(Entry<BlockFace, ComposedMesh> faceMesh : renderFaceMesh.getValue().entrySet()){
 					BlockFace face = faceMesh.getKey();
@@ -145,9 +260,9 @@ public class WorldRenderer {
 				}
 			}
 
-			if( System.currentTimeMillis() - start > TIME_LIMIT)
+			if( System.currentTimeMillis() - start > 2)
 				break;
-		}
+		}*/
 
 		//Step 3 : Execute/Delete ChunkMeshBatch if full/empty
 		/*for(ChunkMeshBatch batch : modifiedBatch){
@@ -158,9 +273,9 @@ public class WorldRenderer {
 			}
 		}*/
 
-		long time =  System.currentTimeMillis() - start;
+		/*long time =  System.currentTimeMillis() - start;
 		if(time > 1)
-			System.out.println("WorldRender update take : " + time);
+			System.out.println("WorldRender update take : " + time);*/
 	}
 
 	public void addMeshToBatchQueue(ChunkMesh mesh) {
