@@ -27,9 +27,11 @@
 package org.spout.engine.mesh;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
@@ -39,45 +41,42 @@ import org.spout.api.math.Vector3;
 import org.spout.api.model.MeshFace;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.util.bytebit.ByteBitSet;
-import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 
 /**
  * Represents a mesh for a chunk.
  */
 public class ChunkMesh{
-	
-	private TreeMap<Integer, ComposedMesh> meshs = new TreeMap<Integer, ComposedMesh>();
-	
+
+	private HashMap<RenderMaterial, Map<BlockFace,ComposedMesh>> meshs = new HashMap<RenderMaterial, Map<BlockFace,ComposedMesh>>();
+
 	private SpoutChunkSnapshotModel chunkModel;
 	private ChunkSnapshot center;
 	private final int cx,cy,cz;
 	private boolean isUnloaded = false;
-	private final BlockFace face;
+	private final long time;
 
 	/**
 	 * Private constructor.
 	 */
-	private ChunkMesh(SpoutChunkSnapshotModel chunkModel, BlockFace face) {
+	private ChunkMesh(SpoutChunkSnapshotModel chunkModel) {
 		this.chunkModel = chunkModel;
-		this.face = face;
+		this.time = chunkModel.getTime();
 		cx = chunkModel.getX();
 		cy = chunkModel.getY();
 		cz = chunkModel.getZ();
 	}
-	
+
 	public static List<ChunkMesh> getChunkMeshs(SpoutChunkSnapshotModel chunkModel){
 		List<ChunkMesh> meshs = new ArrayList<ChunkMesh>();
 		if(chunkModel.isUnload()){ // Useless to make ChunkMesh for each face
-			meshs.add(new ChunkMesh(chunkModel, BlockFace.THIS));
+			meshs.add(new ChunkMesh(chunkModel));
 		}else{
-			for(BlockFace face : BlockFace.values()){
-				meshs.add(new ChunkMesh(chunkModel, face));
-			}
+			meshs.add(new ChunkMesh(chunkModel));
 		}
 		return meshs;
 	}
-	
+
 	public int getX(){
 		return cx;
 	}
@@ -114,15 +113,15 @@ public class ChunkMesh{
 		center = null;
 	}
 
-	private ComposedMesh getComposedMesh(int layer, boolean create){
-		ComposedMesh mesh = meshs.get(layer);
-		if(mesh == null && create){
-			mesh = new ComposedMesh();
-			meshs.put(layer, mesh);
+	private Map<BlockFace, ComposedMesh> getMaterialMap(RenderMaterial material){
+		Map<BlockFace, ComposedMesh> map = meshs.get(material);
+		if(map == null){
+			map = new HashMap<BlockFace, ComposedMesh>();
+			meshs.put(material, map);
 		}
-		return mesh;
+		return map;
 	}
-	
+
 	/**
 	 * Generates the vertices of the given block and adds them to the ChunkMesh.
 	 * @param chunkSnapshotModel 
@@ -137,37 +136,37 @@ public class ChunkMesh{
 		if (material.isTransparent()) {
 			return;
 		}
+		
+		RenderMaterial renderMaterial = material.getModel().getRenderMaterial();
 
-		//TODO : Waiting BlockMaterial have model & material : material.getModel().getRenderMaterial();
-		//TODO : Remove fallback 
-		RenderMaterial renderMaterial;
-		try{
-			renderMaterial = material.getModel().getRenderMaterial();
-		}catch (NullPointerException e) {
-			// Use fallback
-			renderMaterial = WorldRenderer.material;
-		}
+		Map<BlockFace, ComposedMesh> meshs = getMaterialMap(renderMaterial);
 
 		Vector3 position = new Vector3(x, y, z);
-		Vector3 facePos = position.add(face.getOffset());
-		int x1 = facePos.getFloorX();
-		int y1 = facePos.getFloorY();
-		int z1 = facePos.getFloorZ();
-		BlockMaterial neighbor = chunkModel.getChunkFromBlock(x1, y1, z1).getBlockMaterial(x1, y1, z1);
+		for(BlockFace face : BlockFace.values()){
+			Vector3 facePos = position.add(face.getOffset());
+			int x1 = facePos.getFloorX();
+			int y1 = facePos.getFloorY();
+			int z1 = facePos.getFloorZ();
+			BlockMaterial neighbor = chunkModel.getChunkFromBlock(x1, y1, z1).getBlockMaterial(x1, y1, z1);
 
-		if (!material.isFaceRendered(face, neighbor)) {
-			return;
-		}
+			if (!material.isFaceRendered(face, neighbor)) {
+				return;
+			}
 
-		ByteBitSet occlusion = neighbor.getOcclusion(material.getData());
+			ByteBitSet occlusion = neighbor.getOcclusion(material.getData());
 
-		if (!occlusion.get(face.getOpposite())) {
-			int layer = renderMaterial.getLayer();
+			if (!occlusion.get(face.getOpposite())) {
+				List<MeshFace> faces = renderMaterial.render(chunkSnapshotModel, position, face);
 
-			List<MeshFace> faces = renderMaterial.render(chunkSnapshotModel, position, face);
-			
-			if(!faces.isEmpty())
-				getComposedMesh(layer,true).getMesh(renderMaterial).addAll(faces);
+				if(!faces.isEmpty()){
+					ComposedMesh mesh = meshs.get(face);
+					if(mesh == null){
+						mesh = new ComposedMesh(time);
+						meshs.put(face, mesh);
+					}
+					mesh.getMesh().addAll(faces);
+				}
+			}
 		}
 	}
 
@@ -176,10 +175,8 @@ public class ChunkMesh{
 	 * 
 	 * @return
 	 */
-	public boolean hasVertices(int layer) {
-		ComposedMesh mesh = getComposedMesh(layer,false);
-		if(mesh == null) return false;
-		return mesh.hasVertice();
+	public boolean hasVertices() {
+		return !meshs.isEmpty();
 	}
 
 	@Override
@@ -191,15 +188,15 @@ public class ChunkMesh{
 		return isUnloaded;
 	}
 
-	public ComposedMesh getLayer(int layer) {
-		return meshs.get(layer);
+	public ComposedMesh getMesh(RenderMaterial material,BlockFace face) {
+		return meshs.get(material).get(face);
 	}
 
-	public BlockFace getFace() {
-		return face;
+	public Set<Entry<RenderMaterial, Map<BlockFace, ComposedMesh>>> getMaterialsFaces() {
+		return meshs.entrySet();
 	}
 
-	public Set<Integer> getLayers() {
-		return meshs.keySet();
+	public long getTime() {
+		return time;
 	}
 }

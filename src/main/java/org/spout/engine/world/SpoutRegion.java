@@ -157,7 +157,7 @@ public class SpoutRegion extends Region {
 	private final AtomicBoolean[][] generatedColumns = new AtomicBoolean[CHUNKS.SIZE][CHUNKS.SIZE];
 	private final SpoutTaskManager taskManager;
 	private final Thread executionThread;
-	private final Thread meshThread;
+	private final List<Thread> meshThread;
 	private final SpoutScheduler scheduler;
 	private final LinkedHashMap<SpoutPlayer, TByteTripleHashSet> observers = new LinkedHashMap<SpoutPlayer, TByteTripleHashSet>();
 	private final ConcurrentLinkedQueue<SpoutChunk> observedChunkQueue = new ConcurrentLinkedQueue<SpoutChunk>();
@@ -190,7 +190,10 @@ public class SpoutRegion extends Region {
 		}
 		
 		if (Spout.getPlatform() == Platform.CLIENT) {
-			meshThread = new MeshGeneratorThread();
+			meshThread = new ArrayList<Thread>();
+			for(int i = 0; i < 4; i++ ){//TODO : Make a option to choice the number of thread to make mesh
+				meshThread.add(new MeshGeneratorThread());
+			}
 		} else {
 			meshThread = null;
 		}
@@ -239,13 +242,17 @@ public class SpoutRegion extends Region {
 	
 	public void startMeshGeneratorThread() {
 		if (meshThread != null) {
-			meshThread.start();
+			for(Thread thread : meshThread){
+				thread.start();
+			}
 		}
 	}
 	
 	public void stopMeshGeneratorThread() {
 		if (meshThread != null) {
-			meshThread.interrupt();
+			for(Thread thread : meshThread){
+				thread.interrupt();
+			}
 		}
 	}
 
@@ -416,7 +423,7 @@ public class SpoutRegion extends Region {
 
 			currentChunk.setUnloaded();
 			if (renderQueueEnabled && currentChunk.isInViewDistance()) {
-				renderChunkQueue.add(new SpoutChunkSnapshotModel(currentChunk.getX(), currentChunk.getY(), currentChunk.getZ(), true));
+				renderChunkQueue.add(new SpoutChunkSnapshotModel(currentChunk.getX(), currentChunk.getY(), currentChunk.getZ(), true, System.currentTimeMillis()));
 			}
 
 			int cx = c.getX() & CHUNKS.MASK;
@@ -878,6 +885,8 @@ public class SpoutRegion extends Region {
 		boolean worldRenderQueueEnabled = world.isRenderQueueEnabled();
 		boolean firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
 
+		final long time = System.currentTimeMillis();
+		
 		renderQueueEnabled = worldRenderQueueEnabled;
 
 		if (firstRenderQueueTick) {
@@ -886,7 +895,7 @@ public class SpoutRegion extends Region {
 					for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
 						SpoutChunk chunk = chunks[dx][dy][dz].get();
 						if (chunk != null) {
-							addUpdateToRenderQueue(chunk);
+							addUpdateToRenderQueue(chunk,time);
 						}
 					}
 				}
@@ -902,7 +911,7 @@ public class SpoutRegion extends Region {
 			}
 			
 			if ((!firstRenderQueueTick) && renderQueueEnabled  && spoutChunk.isRenderDirty()) {
-				addUpdateToRenderQueue(spoutChunk);
+				addUpdateToRenderQueue(spoutChunk,time);
 			}
 			if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
 				for (Player entity : spoutChunk.getObservingPlayers()) {
@@ -944,7 +953,7 @@ public class SpoutRegion extends Region {
 
 	private TInt21TripleObjectHashMap<SpoutChunkSnapshot> renderSnapshotCache = new TInt21TripleObjectHashMap<SpoutChunkSnapshot>();
 
-	private void addUpdateToRenderQueue(SpoutChunk c) {
+	private void addUpdateToRenderQueue(SpoutChunk c, long time) {
 		int bx = c.getX() - 1;
 		int by = c.getY() - 1;
 		int bz = c.getZ() - 1;
@@ -965,11 +974,11 @@ public class SpoutRegion extends Region {
 				}
 			}
 			c.setRenderDirty(false);
-			renderChunkQueue.add(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks));
+			renderChunkQueue.add(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks, time));
 		} else {
 			if (c.leftViewDistance()) {
 				c.setRenderDirty(false);
-				renderChunkQueue.add(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, true));
+				renderChunkQueue.add(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, true, time));
 			}
 		}
 		c.viewDistanceCopy();

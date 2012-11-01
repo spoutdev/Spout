@@ -27,86 +27,26 @@
 package org.spout.engine.mesh;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.lwjgl.opengl.GL11;
 import org.spout.api.model.MeshFace;
-import org.spout.api.model.Vertex;
-import org.spout.api.render.RenderMaterial;
-import org.spout.api.render.Renderer;
 import org.spout.api.resource.Resource;
-import org.spout.engine.renderer.BatchVertexRenderer;
 
 public class ComposedMesh extends Resource {
+
+	private List<MeshFace> facesPerMaterials;
+	private final long time; // For bench
+
+	public ComposedMesh(long time){
+		facesPerMaterials = new ArrayList<MeshFace>();
+		this.time = time;
+	}
 	
-	/**
-	 * All RenderMaterial MUST have the same layer per ComposedMesh
-	 */
-	private Map<RenderMaterial, List<MeshFace>> facesPerMaterials;
-
-	private Map<RenderMaterial, Renderer> renderers;
-
-	public ComposedMesh(){
-		facesPerMaterials = new HashMap<RenderMaterial, List<MeshFace>>();
-
-		renderers = new HashMap<RenderMaterial, Renderer>();
-	}
-
-	protected void batch(Renderer batcher,RenderMaterial renderMaterial) {
-		List<MeshFace> faces = facesPerMaterials.get(renderMaterial);
-
-		if(faces != null){
-			for (MeshFace face : faces) {
-				for(Vertex vert : face){
-					if (vert.texCoord0!=null)
-						batcher.addTexCoord(vert.texCoord0);
-					if (vert.normal!=null)
-						batcher.addNormal(vert.normal);
-					if (vert.color!=null)
-						batcher.addColor(vert.color);
-					batcher.addVertex(vert.position);
-				}
-			}
-		}
-	}
-
-	public void batch(){
-		for(RenderMaterial material : facesPerMaterials.keySet()){
-			Renderer renderer = renderers.get(material);
-			if(renderer == null)renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
-			this.batch(renderer, material);
-		}
-	}
-
-	public void render(RenderMaterial material){
-		Renderer renderer = renderers.get(material);
-
-		if(renderer == null) throw new IllegalStateException("Cannot render without batching first!");
-
-		renderer.render(material);
-	}
-
-	public Map<RenderMaterial, Renderer> getRenderer(){
-		return renderers;
-	}
-
-	public Map<RenderMaterial, List<MeshFace>> getMesh() {
+	public List<MeshFace> getMesh() {
 		return facesPerMaterials;
 	}
 
-	public List<MeshFace> getMesh(RenderMaterial material) {
-		List<MeshFace> faces = facesPerMaterials.get(material);
-		if(faces == null){
-			faces = new ArrayList<MeshFace>();
-			facesPerMaterials.put(material, faces);
-		}
-		return faces;
-	}
-
-	public boolean hasVertice() {
-		//Assume a material stored only if face to put in
-		return !facesPerMaterials.isEmpty();
+	public long getTime() {
+		return time;
 	}
 }
