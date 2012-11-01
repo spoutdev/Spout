@@ -29,8 +29,10 @@ package org.spout.api.event.player;
 import org.spout.api.entity.Player;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
+import org.spout.api.event.Result;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.ItemStack;
+import org.spout.api.material.block.BlockFace;
 
 /**
  * Called when a player interacts with the game world, or an item.
@@ -42,13 +44,17 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
 	private final ItemStack heldItem;
 	private final Action action;
 	private final boolean isAir;
+	private final BlockFace clickedFace;
+	private Result itemResult = Result.DEFAULT;
+	private Result blockResult = Result.DEFAULT;
 
-	public PlayerInteractEvent(Player p, Point interactedPoint, ItemStack heldItem, Action action, boolean isAir) {
+	public PlayerInteractEvent(Player p, Point interactedPoint, ItemStack heldItem, Action action, boolean isAir, BlockFace clickedFace) {
 		super(p);
 		this.interactedPoint = interactedPoint;
 		this.heldItem = heldItem;
 		this.action = action;
 		this.isAir = isAir;
+		this.clickedFace = clickedFace;
 	}
 
 	/**
@@ -57,6 +63,42 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
 	 */
 	public ItemStack getHeldItem() {
 		return heldItem;
+	}
+
+	/**
+	 * Determines how the interaction will affect the block that is clicked
+	 * 
+	 * @return result
+	 */
+	public Result interactWithBlock() {
+		return blockResult;
+	}
+
+	/**
+	 * Sets how the interaction will affect the block that is clicked
+	 * 
+	 * @param result
+	 */
+	public void setInteractWithBlock(Result result) {
+		this.blockResult = result;
+	}
+
+	/**
+	 * Determines if the item in the hand is used
+	 * 
+	 * @return result
+	 */
+	public Result useItemInHand() {
+		return itemResult;
+	}
+
+	/**
+	 * Alters the result for the item in hand
+	 * 
+	 * @param result
+	 */
+	public void setUseItemInHand(Result result) {
+		this.itemResult = result;
 	}
 
 	/**
@@ -83,9 +125,23 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
 		return isAir;
 	}
 
+	/**
+	 * Returns the block face that was clicked, if a block was clicked,
+	 * or BlockFace.THIS if no block face was clicked (open air).
+	 * 
+	 * @return block face clicked
+	 */
+	public BlockFace getClickedFace() {
+		return clickedFace;
+	}
+
 	@Override
 	public void setCancelled(boolean cancelled) {
 		super.setCancelled(cancelled);
+		if (cancelled) {
+			setUseItemInHand(Result.DENY);
+			setInteractWithBlock(Result.DENY);
+		}
 	}
 
 	@Override
