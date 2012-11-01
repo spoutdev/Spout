@@ -38,6 +38,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.spout.api.Spout;
+import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.geo.World;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.render.RenderMaterial;
@@ -289,14 +290,18 @@ public class WorldRenderer {
 			return null;
 		return map2.get(face);
 	}
+	
+	int ocludedChunks = 0;
+	int culledChunks = 0;
 
 	private void renderChunks() {
 		int x = client.getActivePlayer().getChunk().getX();
 		int y = client.getActivePlayer().getChunk().getY();
 		int z = client.getActivePlayer().getChunk().getZ();
-
-		int ocludedChunks = 0;
-		int culledChunks = 0;
+		
+		ocludedChunks = 0;
+		culledChunks = 0;
+		
 		for(Entry<RenderMaterial, List<ChunkMeshBatch>> entry : chunkRenderers.entrySet()){
 			RenderMaterial material = entry.getKey();
 			material.getShader().setUniform("View", client.getActiveCamera().getView());
@@ -349,6 +354,17 @@ public class WorldRenderer {
 	}
 
 	public int getChunkRenderersSize(){
-		return chunkRenderers.size();
+		int i = 0;
+		for(List<ChunkMeshBatch> list : chunkRenderers.values())
+			i += list.size();
+		return i;
+	}
+
+	public int getOcluded() {
+		return ocludedChunks;
+	}
+
+	public int getCulled() {
+		return culledChunks;
 	}
 }
