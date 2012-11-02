@@ -221,6 +221,11 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 	}
 
 	protected String replacePlaceholders(String source, Object... args) {
+		//Check for null
+		if (source == null) {
+			return "null";
+		}
+
 		// Replace placeholders
 		int i = 0;
 		for (Object arg : args) {
