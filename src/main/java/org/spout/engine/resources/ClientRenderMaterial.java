@@ -46,9 +46,8 @@ import org.spout.api.model.TextureMesh;
 import org.spout.api.model.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Shader;
-import org.spout.api.resource.Resource;
 
-public class ClientRenderMaterial extends Resource implements RenderMaterial {
+public class ClientRenderMaterial extends RenderMaterial {
 	
 	Shader shader;
 	Map<String, Object> materialParameters;

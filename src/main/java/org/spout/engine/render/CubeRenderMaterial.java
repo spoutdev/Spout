@@ -49,7 +49,7 @@ import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Shader;
 import org.spout.engine.resources.ClientTexture;
 
-public class CubeRenderMaterial implements RenderMaterial {
+public class CubeRenderMaterial extends RenderMaterial {
 
 	Shader shader;
 	Map<String, Object> materialParameters;

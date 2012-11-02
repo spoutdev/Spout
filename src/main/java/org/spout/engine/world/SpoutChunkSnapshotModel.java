@@ -26,6 +26,8 @@ package org.spout.engine.world;
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.ChunkSnapshotModel;
@@ -34,13 +36,16 @@ import org.spout.api.geo.cuboid.ChunkSnapshotModel;
 /**
  * Stores 9 chunk snapshots (1 middle chunk and 8 neighbours) for quick access
  */
-public class SpoutChunkSnapshotModel implements ChunkSnapshotModel{
+public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<SpoutChunkSnapshotModel> {
+	
+	private static final AtomicInteger idCounter = new AtomicInteger(0);
 	
 	private final int cx,cy,cz;
 	private final ChunkSnapshot[][][] chunks;
 	private ChunkSnapshot center;
 	private final boolean unload;
 	private final int distance;
+	private final int id;
 	
 	public SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload) {
 		this(cx, cy, cz, unload, null, 0);
@@ -62,6 +67,7 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel{
 		this.center = chunks != null ? chunks[1][1][1] : null;
 		this.unload = unload;
 		this.distance = distance;
+		this.id = idCounter.getAndIncrement();
 	}
 
 	public int getX() {
@@ -142,6 +148,27 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel{
 	 */
 	public ChunkSnapshot getChunkFromBlock(int bx, int by, int bz) {
 		return getChunk(bx >> Chunk.BLOCKS.BITS, by >> Chunk.BLOCKS.BITS, bz >> Chunk.BLOCKS.BITS);
+	}
+	
+	@Override
+	public int compareTo(final SpoutChunkSnapshotModel o) {
+		int d1 = getDistance();
+		int d2 = o.getDistance();
+		
+		if (d1 == d2) {
+			return id - o.id;
+		} else {
+			return d1 - d2;
+		}
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		} else {
+			return id == ((SpoutChunkSnapshotModel) o).id;
+		}
 	}
 }
 

@@ -170,56 +170,8 @@ public class SpoutRegion extends Region {
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 	private boolean renderQueueEnabled = false;
 	
-	public static final Comparator<SpoutChunkSnapshotModel> ChunkOrdering = new Comparator<SpoutChunkSnapshotModel>() {
-		
-		/**
-		 * Compares 2 SpoutChunkSnapshotModels using distance, then x, then y, then z and finally returns 0
-		 * 
-		 * @param e1
-		 * @param e2
-		 * @return
-		 */
-		@Override
-		public int compare(final SpoutChunkSnapshotModel e1, final SpoutChunkSnapshotModel e2) {
-			int d1 = e1.getDistance();
-			int d2 = e2.getDistance();
-			
-			if (d1 < d2) {
-				return -1;
-			} else if (d1 > d2) {
-				return 1;
-			} else {
-				int x1 = e1.getX();
-				int x2 = e2.getX();
-				if (x1 < x2) {
-					return -1;
-				} else if (x1 > x2) {
-					return 1;
-				} else {
-					int y1 = e1.getY();
-					int y2 = e2.getY();
-					if (y1 < y2) {
-						return -1;
-					} else if (y1 > y2) {
-						return 1;
-					} else {
-						int z1 = e1.getZ();
-						int z2 = e2.getZ();
-						if (z1 < z2) {
-							return -1;
-						} else if (z1 > z2) {
-							return 1;
-						} else {
-							return 0;
-						}
-					}
-				}
-			}
-		}
-	};
-	
 	private final TByteTripleObjectHashMap<SpoutChunkSnapshotModel> renderChunkQueued = new TByteTripleObjectHashMap<SpoutChunkSnapshotModel>();
-	private final ConcurrentSkipListSet<SpoutChunkSnapshotModel> renderChunkQueue = new ConcurrentSkipListSet<SpoutChunkSnapshotModel>(ChunkOrdering);
+	private final ConcurrentSkipListSet<SpoutChunkSnapshotModel> renderChunkQueue = new ConcurrentSkipListSet<SpoutChunkSnapshotModel>();
 	
 	private final AtomicReference<SpoutRegion>[][][] neighbours;
 

@@ -53,18 +53,7 @@ import org.spout.engine.world.SpoutWorld;
 public class WorldRenderer {
 	private final SpoutClient client;
 
-	public static final Comparator<RenderMaterial> RenderMaterialLayer = new Comparator<RenderMaterial>() {
-		@Override
-		public int compare(final RenderMaterial e1, final RenderMaterial e2) {
-			if(e1.equals(e2))
-				return 0;
-			if(e2.getLayer() == e1.getLayer())
-				return 1;
-			return e1.getLayer() - e2.getLayer();
-		}
-	};
-
-	private TreeMap<RenderMaterial,List<ChunkMeshBatch>> chunkRenderers = new TreeMap<RenderMaterial,List<ChunkMeshBatch>>(RenderMaterialLayer);
+	private TreeMap<RenderMaterial,List<ChunkMeshBatch>> chunkRenderers = new TreeMap<RenderMaterial,List<ChunkMeshBatch>>();
 	private TInt21TripleObjectHashMap<Map<RenderMaterial,Map<BlockFace,ChunkMeshBatch>>> chunkRenderersByPosition = new TInt21TripleObjectHashMap<Map<RenderMaterial,Map<BlockFace,ChunkMeshBatch>>>();
 
 	public static HashMap<String,CubeMesh> blocksMesh = new HashMap<String, CubeMesh>();
