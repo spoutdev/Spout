@@ -27,44 +27,55 @@
 package org.spout.api.render;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.geo.cuboid.ChunkSnapshotModel;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.MeshFace;
+import org.spout.api.resource.Resource;
 
-public interface RenderMaterial {
+public abstract class RenderMaterial extends Resource implements Comparable<RenderMaterial> {
+	
+	private static final AtomicInteger idCounter = new AtomicInteger();
+	
+	private final int id;
+	
+	protected RenderMaterial() {
+		this.id = idCounter.getAndIncrement();
+	}
+	
 	/**
 	 * Returns a material param or null if that doesn't exist
 	 * @param name
 	 * @return
 	 */
-	public Object getValue(String name);
+	public abstract Object getValue(String name);
 	
 	/**
 	 * Returns the shader specified in the material
 	 * @return
 	 */
-	public Shader getShader();
+	public abstract Shader getShader();
 	/**
 	 * Assigns the current shader and prepairs the material for rendering
 	 */
-	public void assign();
+	public abstract void assign();
 	
 	/**
 	 * Called right before rendering
 	 */
-	public void preRender();
+	public abstract void preRender();
 	
 	/**
 	 * Called right after rendering
 	 */
-	public void postRender();
+	public abstract void postRender();
 	
 	/**
 	 * Called to render a block
 	 */
-	public List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel, Vector3 position, List<BlockFace> faces);
+	public abstract List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel, Vector3 position, List<BlockFace> faces);
 
 	/**
 	 * Called to render a block side
@@ -73,12 +84,32 @@ public interface RenderMaterial {
 	 * @param face
 	 * @return
 	 */
-	List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel,
+	public abstract List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel,
 			Vector3 position, BlockFace face);
 
 	/**
 	 * Return the render pass order
 	 * @return
 	 */
-	public int getLayer();
+	public abstract int getLayer();
+	
+	@Override
+	public final int compareTo(RenderMaterial o) {
+		if (o == this) {
+			return 0;
+		} else {
+			int l1 = getLayer();
+			int l2 = o.getLayer();
+			if (l1 != l2) {
+				return l1 - l2;
+			} else {
+				return id - o.id;
+			}
+		}
+	}
+	
+	@Override
+	public final boolean equals(Object o) {
+		return o == this;
+	}
 }
