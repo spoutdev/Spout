@@ -246,40 +246,40 @@ public class ClientRenderMaterial extends Resource implements RenderMaterial {
 		Vertex v1 = null, v2 = null, v3 = null, v4 = null;
 		switch (face) {
 		case TOP:
-			v1 = new Vertex(vertex1, face.getOffset(), mesh.getUV(0,0));
-			v2 = new Vertex(vertex2, face.getOffset(), mesh.getUV(0,1));
-			v3 = new Vertex(vertex6, face.getOffset(), mesh.getUV(0,2));
-			v4 = new Vertex(vertex5, face.getOffset(), mesh.getUV(0,3));
+			v1 = new Vertex(vertex1, face.getOffset(), mesh.getUV(0,3));
+			v2 = new Vertex(vertex2, face.getOffset(), mesh.getUV(0,2));
+			v3 = new Vertex(vertex6, face.getOffset(), mesh.getUV(0,1));
+			v4 = new Vertex(vertex5, face.getOffset(), mesh.getUV(0,0));
 			break;
 		case BOTTOM:
-			v1 = new Vertex(vertex0, face.getOffset(), mesh.getUV(1,0));
+			v1 = new Vertex(vertex0, face.getOffset(), mesh.getUV(1,2));
 			v2 = new Vertex(vertex4, face.getOffset(), mesh.getUV(1,1));
-			v3 = new Vertex(vertex7, face.getOffset(), mesh.getUV(1,2));
+			v3 = new Vertex(vertex7, face.getOffset(), mesh.getUV(1,0));
 			v4 = new Vertex(vertex3, face.getOffset(), mesh.getUV(1,3));
 			break;
 		case NORTH:
-			v1 = new Vertex(vertex0, face.getOffset(), mesh.getUV(2,0));
-			v2 = new Vertex(vertex1, face.getOffset(), mesh.getUV(2,1));
-			v3 = new Vertex(vertex5, face.getOffset(), mesh.getUV(2,2));
-			v4 = new Vertex(vertex4, face.getOffset(), mesh.getUV(2,3));
+			v1 = new Vertex(vertex0, face.getOffset(), mesh.getUV(2,1));
+			v2 = new Vertex(vertex1, face.getOffset(), mesh.getUV(2,0));
+			v3 = new Vertex(vertex5, face.getOffset(), mesh.getUV(2,3));
+			v4 = new Vertex(vertex4, face.getOffset(), mesh.getUV(2,2));
 			break;
 		case SOUTH:
-			v1 = new Vertex(vertex7, face.getOffset(), mesh.getUV(3,0));
-			v2 = new Vertex(vertex6, face.getOffset(), mesh.getUV(3,1));
-			v3 = new Vertex(vertex2, face.getOffset(), mesh.getUV(3,2));
-			v4 = new Vertex(vertex3, face.getOffset(), mesh.getUV(3,3));
+			v1 = new Vertex(vertex7, face.getOffset(), mesh.getUV(3,1));
+			v2 = new Vertex(vertex6, face.getOffset(), mesh.getUV(3,0));
+			v3 = new Vertex(vertex2, face.getOffset(), mesh.getUV(3,3));
+			v4 = new Vertex(vertex3, face.getOffset(), mesh.getUV(3,2));
 			break;
 		case EAST:
-			v1 = new Vertex(vertex0, face.getOffset(), mesh.getUV(4,0));
+			v1 = new Vertex(vertex0, face.getOffset(), mesh.getUV(4,2));
 			v2 = new Vertex(vertex3, face.getOffset(), mesh.getUV(4,1));
-			v3 = new Vertex(vertex2, face.getOffset(), mesh.getUV(4,2));
+			v3 = new Vertex(vertex2, face.getOffset(), mesh.getUV(4,0));
 			v4 = new Vertex(vertex1, face.getOffset(), mesh.getUV(4,3));
 			break;
 		case WEST:
 			v1 = new Vertex(vertex5, face.getOffset(), mesh.getUV(5,0));
-			v2 = new Vertex(vertex6, face.getOffset(), mesh.getUV(5,1));
+			v2 = new Vertex(vertex6, face.getOffset(), mesh.getUV(5,3));
 			v3 = new Vertex(vertex7, face.getOffset(), mesh.getUV(5,2));
-			v4 = new Vertex(vertex4, face.getOffset(), mesh.getUV(5,3));
+			v4 = new Vertex(vertex4, face.getOffset(), mesh.getUV(5,1));
 			break;
 		case THIS:
 		default:
