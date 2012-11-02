@@ -229,7 +229,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			// TODO : Wait until the world is fully loaded
@@ -462,8 +461,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public void initRenderer() {
 		createWindow();
 
-		//Mouse.setGrabbed(true);
-
 		getLogger().info("SpoutClient Information");
 		getLogger().info("Operating System: " + System.getProperty("os.name"));
 		getLogger().info("Renderer Mode: " + this.getRenderMode().toString());
@@ -481,7 +478,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			extensions += GL11.glGetString(GL11.GL_EXTENSIONS);
 		}
 		getLogger().info(extensions);
-		soundManager.init();
+		//soundManager.init();
 		Spout.getFilesystem().postStartup();
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -506,8 +503,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		tmc.setSize(0.5f);
 		tmc.setTranslation(new Vector3(0, 3f, 0));
 		tmc.setFont(font);
-		
-		//e.getTransform().translate(28, 71, 0);
 		
 		super.getDefaultWorld().spawnEntity(e);
 	}

@@ -205,7 +205,6 @@ public class SharedFileSystem implements FileSystem {
 			URI upath = new URI(path);
 			return getResource(upath);
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}

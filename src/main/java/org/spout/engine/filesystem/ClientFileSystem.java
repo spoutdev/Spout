@@ -57,7 +57,7 @@ public class ClientFileSystem extends SharedFileSystem {
 		registerLoader(new TextureMeshLoader());
 		registerLoader(new RenderMaterialLoader());
 
-		registerLoader(new SoundWavLoader());
+		//registerLoader(new SoundWavLoader());
 		registerLoader(new FontLoader());
 		registerLoader(new EntityPrefabLoader());
 	}
