@@ -31,6 +31,7 @@ import org.spout.api.component.Component;
 import org.spout.api.component.ComponentOwner;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
+import org.spout.api.geo.discrete.Point;
 
 public class BlockComponent extends Component {
 	public BlockComponent() {
@@ -48,6 +49,18 @@ public class BlockComponent extends Component {
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	* Gets the position of this block component
+	*
+	* @return position
+	*/
+	public Point getPosition() {
+		if (getOwner() == null) {
+			throw new IllegalStateException("Must have an attached owner!");
+		}
+		return new Point(getOwner().getChunk().getWorld(), getOwner().getX(), getOwner().getY(), getOwner().getZ());
 	}
 
 	@Override
