@@ -281,7 +281,9 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 				//Technically unsafe.  This should call the security manager
 				plugin.onLoad();
 			} catch (Exception ex) {
-				log("Error loading %0: %1", Level.SEVERE, plugin.getDescription().getName(), ex.getMessage(), ex);
+				//TODO: fix
+				//log("Error loading %0: %1", Level.SEVERE, plugin.getDescription().getName(), ex.getMessage(), ex);
+				ex.printStackTrace();
 			}
 		}
 	}
