@@ -37,6 +37,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import org.spout.api.exception.ConfigurationException;
 import org.spout.api.util.config.Configuration;
 import org.spout.api.util.config.MapConfiguration;
@@ -55,6 +56,9 @@ public class AnnotatedConfigurationTest {
 	// Constants for easier accurate results
 	private static final String BOOLEAN_KEY = "boolean-setting";
 	private static final boolean BOOLEAN_VALUE = true;
+
+	private static final String BOOLEAN_AUTO_KEY = "bool";
+	private static final boolean BOOLEAN_AUTO_KEY_VALUE = false;
 
 	private static final String INT_KEY = "int-setting";
 	private static final int INT_VALUE = 42;
@@ -82,8 +86,9 @@ public class AnnotatedConfigurationTest {
 	private static final String DEFAULT_KEY = "dead";
 	private static final String DEFAULT_VALUE = "parrot";
 
-	private static class LocalConfiguration extends AnnotatedConfiguration {
+	private static class LocalConfiguration extends AnnotatedSubclassConfiguration {
 		@Setting(BOOLEAN_KEY) public boolean booleanSetting;
+		@Setting public boolean bool;
 		@Setting(INT_KEY) public int intSetting;
 		@Setting({"nested", "key"}) public String nestedStringSetting;
 		@Setting({"map", "string-string"}) public Map<String, String> mapStringStringSetting;
@@ -99,7 +104,7 @@ public class AnnotatedConfigurationTest {
 		}
 	}
 
-	public static class SubConfiguration extends AnnotatedConfiguration {
+	public static class SubConfiguration extends AnnotatedSubclassConfiguration {
 
 		public SubConfiguration(Configuration baseConfig) {
 			super(baseConfig);
@@ -135,6 +140,7 @@ public class AnnotatedConfigurationTest {
 	public void setUp() throws ConfigurationException {
 		config = new MapConfiguration();
 		config.getNode(BOOLEAN_KEY).setValue(BOOLEAN_VALUE);
+		config.getNode(BOOLEAN_AUTO_KEY).setValue(BOOLEAN_AUTO_KEY_VALUE);
 		config.getNode(INT_KEY).setValue(INT_VALUE);
 		config.getNode(NESTED_STRING_KEY).setValue(NESTED_STRING_VALUE);
 		config.getNode(MAP_STRING_STRING_KEY).setValue(MAP_STRING_STRING_VALUE);
@@ -173,6 +179,11 @@ public class AnnotatedConfigurationTest {
 	@Test
 	public void testBooleanValue() {
 		assertEquals(BOOLEAN_VALUE, annotatedConfig.booleanSetting);
+	}
+	
+	@Test
+	public void testAutoKeyBooleanValue() {
+		assertEquals(BOOLEAN_AUTO_KEY_VALUE, annotatedConfig.bool);
 	}
 
 	@Test
