@@ -980,7 +980,12 @@ public class SpoutRegion extends Region {
 		
 		Point playerPosition = null;
 		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-			playerPosition = ((SpoutClient) Spout.getEngine()).getActivePlayer().getTransform().getPosition();
+			SpoutPlayer player = ((SpoutClient) Spout.getEngine()).getActivePlayer();
+			if (player == null) {
+				playerPosition = null;
+			} else {
+				playerPosition = player.getTransform().getPosition();
+			}
 		}
 
 		if (firstRenderQueueTick) {
