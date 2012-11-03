@@ -37,6 +37,7 @@ import org.spout.api.tickable.BasicTickable;
 public class Screen extends BasicTickable implements Container {
 	private HashMap<Widget, Plugin> widgets = new LinkedHashMap<Widget, Plugin>();
 	private Widget focussedWidget = null;
+	private boolean takesInput = true;
 
 	@Override
 	public Set<Widget> getWidgets() {
@@ -91,5 +92,16 @@ public class Screen extends BasicTickable implements Container {
 	@Override
 	public boolean canTick() {
 		return true;
+	}
+
+	/**
+	 * @returns if this screen should receive mouse and keyboard input. Default is true
+	 */
+	public boolean takesInput() {
+		return takesInput;
+	}
+
+	public void setTakesInput(boolean takesInput) {
+		this.takesInput = takesInput;
 	}
 }

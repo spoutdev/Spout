@@ -29,52 +29,37 @@ package org.spout.api.gui;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.spout.api.Client;
+import org.spout.api.Spout;
+import org.spout.api.keyboard.Input;
 import org.spout.api.signal.SignalSubscriberObject;
 import org.spout.api.tickable.Tickable;
 
 public class ScreenStack extends SignalSubscriberObject implements Tickable, Runnable {
 	private long lastTick = 0;
-	LinkedList<Screen> screens = new LinkedList<Screen>();
-	LinkedList<Screen> visibleScreens = null;
+	private LinkedList<Screen> screens = new LinkedList<Screen>();
+	private LinkedList<Screen> visibleScreens = null;
+	/**
+	 * The screen that gets input, can be null
+	 */
+	private Screen inputScreen = null;
 
 	public ScreenStack(FullScreen root) {
 		screens.add(root);
-		dirty();
+		update();
 	}
 
 	public void openScreen(Screen screen) {
 		synchronized (screens) {
 			screens.add(screen);
 		}
-		dirty();
+		update();
 	}
-
-	public void closeTopScreen() {
-		synchronized (screens) {
-			screens.removeLast();
-		}
-		dirty();
-	}
-
-	public void closeScreen(Screen screen) {
-		synchronized (screens) {
-			if (screen == screens.getFirst()) {
-				Screen second = screens.get(1);
-				if (!(second instanceof FullScreen)) {
-					throw new IllegalStateException("The lowest screen must be instance of FullScreen!");
-				}
-			}
-			screens.remove(screen);
-		}
-		dirty();
-	}
-
+	
 	/**
-	 * Gets an ordered list of visible screens
-	 * The first item in the list is the bottom-most fullscreen, the last item in the list is the top-most fullscreen/popupscreen.
-	 * @return
+	 * Updates all internal caches
 	 */
-	public LinkedList<Screen> getVisibleScreens() {
+	private void update() {
 		if (visibleScreens == null) {
 			visibleScreens = new LinkedList<Screen>();
 
@@ -92,17 +77,53 @@ public class ScreenStack extends SignalSubscriberObject implements Tickable, Run
 				}
 			}
 		}
-		synchronized (visibleScreens) {
-			return visibleScreens;
+		if (Spout.getEngine() instanceof Client) {
+			Client engine = (Client) Spout.getEngine();
+			Input input = engine.getInput();
+			Iterator<Screen> iter = getVisibleScreens().descendingIterator();
+			Screen next;
+			inputScreen = null;
+			while(iter.hasNext()) {
+				next = iter.next();
+				if (next.takesInput()) {
+					inputScreen = next;
+					break;
+				}
+			}
+			if (input != null) {
+				input.setRedirected(inputScreen != null);
+			}
 		}
 	}
 
-	private void dirty() {
-		if (visibleScreens == null) {
-			return;
+	public void closeTopScreen() {
+		synchronized (screens) {
+			screens.removeLast();
 		}
+		update();
+	}
+
+	public void closeScreen(Screen screen) {
+		synchronized (screens) {
+			if (screen == screens.getFirst()) {
+				Screen second = screens.get(1);
+				if (!(second instanceof FullScreen)) {
+					throw new IllegalStateException("The lowest screen must be instance of FullScreen!");
+				}
+			}
+			screens.remove(screen);
+		}
+		update();
+	}
+
+	/**
+	 * Gets an ordered list of visible screens
+	 * The first item in the list is the bottom-most fullscreen, the last item in the list is the top-most fullscreen/popupscreen.
+	 * @return
+	 */
+	public LinkedList<Screen> getVisibleScreens() {
 		synchronized (visibleScreens) {
-			visibleScreens = null;
+			return visibleScreens;
 		}
 	}
 
@@ -122,5 +143,13 @@ public class ScreenStack extends SignalSubscriberObject implements Tickable, Run
 		}
 		lastTick = current;
 		tick(delta);
+	}
+	
+	/**
+	 * Gets which screen takes input
+	 * @return
+	 */
+	public Screen getInputScreen() {
+		return inputScreen;
 	}
 }
