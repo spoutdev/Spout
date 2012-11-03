@@ -47,6 +47,8 @@ import org.spout.engine.renderer.shader.BasicShader;
 import org.spout.engine.renderer.shader.ClientShader;
 
 public class ClientFont extends ClientTexture implements org.spout.api.render.Font {
+	private static final long serialVersionUID = 390424588035835020L;
+	
 	private static final String asciiset;
 	private static final FontRenderContext DEFAULT_CONTEXT = new FontRenderContext(null, true, true);
 	private ClientRenderMaterial material;
