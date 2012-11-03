@@ -214,6 +214,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public void start(boolean checkWorlds) {
 		// Building the screenStack
 		FullScreen mainScreen = new FullScreen();
+		mainScreen.setTakesInput(false);
 		screenStack = new ScreenStack(mainScreen);
 		
 		getScheduler().scheduleAsyncRepeatingTask(getPluginManager().getPlugin("Spout"), getScreenStack(), 50, 50, TaskPriority.NORMAL);
