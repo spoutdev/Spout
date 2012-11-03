@@ -27,7 +27,7 @@
 package org.spout.api.protocol.event;
 
 /**
- * Interface for Protocal related Events.
+ * Interface for Protocol related Events.
  */
 public interface ProtocolEvent {
 }
