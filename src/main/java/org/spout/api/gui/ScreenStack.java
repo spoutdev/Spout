@@ -38,7 +38,7 @@ import org.spout.api.tickable.Tickable;
 public class ScreenStack extends SignalSubscriberObject implements Tickable, Runnable {
 	private long lastTick = 0;
 	private LinkedList<Screen> screens = new LinkedList<Screen>();
-	private LinkedList<Screen> visibleScreens = null;
+	private LinkedList<Screen> visibleScreens = new LinkedList<Screen>();
 	/**
 	 * The screen that gets input, can be null
 	 */
@@ -60,14 +60,14 @@ public class ScreenStack extends SignalSubscriberObject implements Tickable, Run
 	 * Updates all internal caches
 	 */
 	private void update() {
-		if (visibleScreens == null) {
-			visibleScreens = new LinkedList<Screen>();
-
+		synchronized (visibleScreens) {
+			visibleScreens.clear();
+			
 			synchronized (screens) {
 				Iterator<Screen> iter = screens.descendingIterator();
-
+				
 				Screen next = null;
-
+				
 				while (iter.hasNext()) {
 					next = iter.next();
 					visibleScreens.addFirst(next);
