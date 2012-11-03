@@ -49,20 +49,44 @@ public class LabelComponent extends WidgetComponent {
 
 		@Override
 		public String getKeyString() {
-			return "button-text";
+			return "text";
 		}
 	};
-	private Font font;
+	
+	private static final DefaultedKey<Color> KEY_COLOR = new DefaultedKey<Color>() {
+		@Override
+		public Color getDefaultValue() {
+			return Color.black;
+		}
+
+		@Override
+		public String getKeyString() {
+			return "text-color";
+		}
+	};
+	
+	private static final DefaultedKey<Font> KEY_FONT = new DefaultedKey<Font>() {
+		@Override
+		public Font getDefaultValue() {
+			return (Font) Spout.getFilesystem().getResource("font://Spout/resources/resources/fonts/ubuntu/Ubuntu-M.ttf");
+		}
+
+		@Override
+		public String getKeyString() {
+			return "font";
+		}
+	};
 
 	@Override
 	public List<RenderPart> getRenderParts() {
 		List<RenderPart> ret = new LinkedList<RenderPart>();
 
-		if (font == null) {
+		if (getFont() == null) {
 			return ret;
 		}
 
-		Color color = Color.black;
+		Color color = getColor();
+		Font font = getFont();
 		boolean skipChar = false;
 
 		float w = font.getWidth();
@@ -116,11 +140,12 @@ public class LabelComponent extends WidgetComponent {
 	}
 
 	public void setFont(Font font) {
-		this.font = font;
+		getData().put(KEY_FONT, font);
+		getOwner().update();
 	}
 
 	public Font getFont() {
-		return font;
+		return getData().get(KEY_FONT);
 	}
 
 	public String getText() {
@@ -129,6 +154,15 @@ public class LabelComponent extends WidgetComponent {
 
 	public void setText(String text) {
 		getData().put(KEY_TEXT, text);
+		getOwner().update();
+	}
+	
+	public Color getColor() {
+		return getData().get(KEY_COLOR);
+	}
+	
+	public void setColor(Color color) {
+		getData().put(KEY_COLOR, color);
 		getOwner().update();
 	}
 }

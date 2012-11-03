@@ -27,6 +27,7 @@
 package org.spout.api.render;
 
 import java.awt.Rectangle;
+import java.io.Serializable;
 
 /**
  * Font interface.  
@@ -34,7 +35,7 @@ import java.awt.Rectangle;
  * Used for drawing text on the screen.
  *
  */
-public interface Font {
+public interface Font extends Serializable {
 
 	public int getWidth();
 	

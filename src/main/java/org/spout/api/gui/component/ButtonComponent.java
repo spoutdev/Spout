@@ -61,7 +61,7 @@ public class ButtonComponent extends LabelComponent {
 		part.setSprite(geo);
 		part.setColor(isDown() ? Color.blue : Color.red);
 		part.setRenderMaterial((RenderMaterial) Spout.getFilesystem().getResource("material://Spout/resources/materials/GUIColorMaterial.smt"));
-		part.setZIndex(-1);
+		part.setZIndex(5);
 		ret.add(part);
 		
 		return ret;
