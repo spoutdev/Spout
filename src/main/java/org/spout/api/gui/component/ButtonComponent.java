@@ -26,12 +26,17 @@
  */
 package org.spout.api.gui.component;
 
+import java.awt.Color;
 import java.util.List;
 
+import org.spout.api.Spout;
+import org.spout.api.gui.render.RectanglePart;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.keyboard.KeyEvent;
 import org.spout.api.keyboard.Keyboard;
 import org.spout.api.math.IntVector2;
+import org.spout.api.math.Rectangle;
+import org.spout.api.render.RenderMaterial;
 import org.spout.api.signal.Signal;
 
 public class ButtonComponent extends LabelComponent {
@@ -49,7 +54,17 @@ public class ButtonComponent extends LabelComponent {
 
 	@Override
 	public List<RenderPart> getRenderParts() {
-		return super.getRenderParts(); // TODO add text, rectangle for clicked stuff
+		List<RenderPart> ret = super.getRenderParts();
+		RectanglePart part = new RectanglePart();
+		Rectangle geo = getOwner().getTranslatedGeometry();
+		part.setSource(geo);
+		part.setSprite(geo);
+		part.setColor(isDown() ? Color.blue : Color.red);
+		part.setRenderMaterial((RenderMaterial) Spout.getFilesystem().getResource("material://Spout/resources/materials/GUIColorMaterial.smt"));
+		part.setZIndex(-1);
+		ret.add(part);
+		
+		return ret;
 	}
 
 	@Override
