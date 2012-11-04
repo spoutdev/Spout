@@ -26,11 +26,13 @@ package org.spout.engine.world;
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.ChunkSnapshotModel;
+import org.spout.api.render.RenderMaterial;
 
 //just need to,bottom,east,west,south,north, not diagonal neigbour it's 8 snapshot useless
 /**
@@ -47,19 +49,26 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	private final int distance;
 	private final int id;
 	
-	public SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload) {
-		this(cx, cy, cz, unload, null, 0);
-	}
-
-	public SpoutChunkSnapshotModel(int cx, int cy, int cz, ChunkSnapshot[][][] chunks) {
-		this(cx, cy, cz, chunks, 0);
+	/**
+	 * Time of the SpoutChunkSnapshotModel creation
+	 * To benchmark purpose
+	 */
+	private final long time;
+	
+	/**
+	 * Set of renderMaterial to render, null -> All encountered material
+	 */
+	private Set<RenderMaterial> renderMaterials = null;
+	
+	public SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload, long time) {
+		this(cx, cy, cz, unload, null, 0, null, time);
 	}
 	
-	public SpoutChunkSnapshotModel(int cx, int cy, int cz, ChunkSnapshot[][][] chunks, int distance) {
-		this(cx, cy, cz, false, chunks, distance);
+	public SpoutChunkSnapshotModel(int cx, int cy, int cz, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, long time) {
+		this(cx, cy, cz, false, chunks, distance, renderMaterials, time);
 	}
 
-	private SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks, int distance) {
+	private SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, long time) {
 		this.cx = cx;
 		this.cy = cy;
 		this.cz = cz;
@@ -68,6 +77,8 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 		this.unload = unload;
 		this.distance = distance;
 		this.id = idCounter.getAndIncrement();
+		this.addRenderMaterials(renderMaterials);
+		this.time = time;
 	}
 
 	public int getX() {
@@ -169,6 +180,31 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 		} else {
 			return id == ((SpoutChunkSnapshotModel) o).id;
 		}
+	}
+
+	/**
+	 * Add a set of renderMaterial to render
+	 * If the set is null, the set isn't added because null -> all encountered render material
+	 * @param renderMaterials
+	 */
+	public void addRenderMaterials(Set<RenderMaterial> renderMaterials) {
+		if( this.renderMaterials != null)
+			this.renderMaterials.addAll(renderMaterials);
+	}
+
+	/**
+	 * Check if a renderMaterial should be rendered
+	 * @param renderMaterial
+	 * @return
+	 */
+	public boolean hasRenderMaterial(RenderMaterial renderMaterial) {
+		if( this.renderMaterials == null)
+			return true;
+		return renderMaterials.contains(renderMaterial);
+	}
+
+	public long getTime() {
+		return time;
 	}
 }
 
