@@ -32,27 +32,19 @@ import java.awt.Color;
  * A ChatStyle that represents a color, and conflicts with other colors
  */
 public class ColorChatStyle extends ChatStyle {
-	
-	private final char charCode;
 	private final Color color;
-	
-	public ColorChatStyle(String name, Color color, char charCode) {
+
+	public ColorChatStyle(String name, Color color) {
 		super(name);
 		this.color = color;
-		this.charCode = charCode;
-		ChatStyle.BY_CODE.put(""+charCode, this);
 	}
 
 	@Override
 	public boolean conflictsWith(ChatStyle other) {
 		return other instanceof ColorChatStyle;
 	}
-	
+
 	public Color getColor() {
 		return color;
-	}
-	
-	public String toString() {
-		return "§"+charCode;
 	}
 }

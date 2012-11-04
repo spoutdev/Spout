@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.chat.style.ColorChatStyle;
 import org.spout.api.component.components.WidgetComponent;
@@ -41,10 +42,11 @@ import org.spout.api.math.Rectangle;
 import org.spout.api.render.Font;
 
 public class LabelComponent extends WidgetComponent {
-	private static final DefaultedKey<String> KEY_TEXT = new DefaultedKey<String>() {
+	private static final DefaultedKey<ChatArguments> KEY_TEXT = new DefaultedKey<ChatArguments>() {
+		private final ChatArguments DEFAULT_VALUE = new ChatArguments("(your text here)");
 		@Override
-		public String getDefaultValue() {
-			return "(your text here)";
+		public ChatArguments getDefaultValue() {
+			return DEFAULT_VALUE;
 		}
 
 		@Override
@@ -52,7 +54,7 @@ public class LabelComponent extends WidgetComponent {
 			return "text";
 		}
 	};
-	
+
 	private static final DefaultedKey<Color> KEY_COLOR = new DefaultedKey<Color>() {
 		@Override
 		public Color getDefaultValue() {
@@ -64,7 +66,7 @@ public class LabelComponent extends WidgetComponent {
 			return "text-color";
 		}
 	};
-	
+
 	private static final DefaultedKey<Font> KEY_FONT = new DefaultedKey<Font>() {
 		@Override
 		public Font getDefaultValue() {
@@ -85,7 +87,8 @@ public class LabelComponent extends WidgetComponent {
 			return ret;
 		}
 
-		Color color = getColor();
+		// TODO: Make this work with ChatStyles
+		/*Color color = getColor();
 		Font font = getFont();
 		boolean skipChar = false;
 
@@ -134,7 +137,7 @@ public class LabelComponent extends WidgetComponent {
 
 				ret.add(part);
 			}
-		}
+		}*/
 
 		return ret;
 	}
@@ -148,19 +151,20 @@ public class LabelComponent extends WidgetComponent {
 		return getData().get(KEY_FONT);
 	}
 
-	public String getText() {
-		return getData().get(KEY_TEXT);
+	public ChatArguments getText() {
+		//return getData().get(KEY_TEXT);
+		return new ChatArguments("Not yet implemented!");
 	}
 
-	public void setText(String text) {
-		getData().put(KEY_TEXT, text);
-		getOwner().update();
+	public void setText(ChatArguments text) {
+		/*getData().put(KEY_TEXT, text);
+		getOwner().update();*/
 	}
-	
+
 	public Color getColor() {
 		return getData().get(KEY_COLOR);
 	}
-	
+
 	public void setColor(Color color) {
 		getData().put(KEY_COLOR, color);
 		getOwner().update();

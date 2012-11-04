@@ -152,10 +152,10 @@ public abstract class ChatChannel implements Named {
 			return Collections.unmodifiableSet(CHANNELS);
 		}
 
-		public static void broadcastToAllMemberChannels(CommandSource member, ChatArguments message) {
+		public static void broadcastToAllReceivedChannels(CommandSource receiving, ChatArguments message) {
 			Set<CommandSource> alreadyReceived = Sets.newHashSet();
 			for (ChatChannel channel : getAllChannels()) {
-				if (channel.isReceiver(member)) {
+				if (channel.isReceiver(receiving)) {
 					Set<CommandSource> sendTo = channel.getReceivers();
 					sendTo.removeAll(alreadyReceived);
 					if (sendTo.size() > 0) {

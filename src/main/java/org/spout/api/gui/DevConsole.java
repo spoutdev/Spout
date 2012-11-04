@@ -29,12 +29,13 @@ package org.spout.api.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.gui.component.LabelComponent;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.math.Rectangle;
 import org.spout.api.render.Font;
 
-public class DevConsole {
+public class DevConsole  {
 	private float scroll = 0;
 	private Font font;
 	private List<Widget> lines = new ArrayList<Widget>();
@@ -43,7 +44,7 @@ public class DevConsole {
 		this.font = font;
 	}
 
-	public void appendMessage(String msg) {
+	public void appendMessage(ChatArguments msg) {
 		Widget wid = new Widget();
 		wid.setGeometry(new Rectangle(0, scroll, 0, 0));
 		LabelComponent txt = wid.add(LabelComponent.class);
