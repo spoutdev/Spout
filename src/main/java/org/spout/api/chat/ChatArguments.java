@@ -26,6 +26,7 @@
  */
 package org.spout.api.chat;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,7 +49,8 @@ import org.spout.api.util.SpoutToStringStyle;
 /**
  * A class to hold the arguments in a chat message
  */
-public class ChatArguments implements Cloneable, ChatSection {
+public class ChatArguments implements Cloneable, ChatSection, Serializable {
+	private static final long serialVersionUID = 8687635504074292894L;
 	private final ReentrantLock lock = new ReentrantLock();
 	private final ArrayList<Object> elements = new ArrayList<Object>();
 	private final Map<Placeholder, Value> placeholders = new HashMap<Placeholder, Value>();
