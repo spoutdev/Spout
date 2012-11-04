@@ -51,12 +51,19 @@ public class ChunkMesh{
 	private ChunkSnapshot center;
 	private final int cx,cy,cz;
 	private boolean isUnloaded = false;
+	
+	/**
+	 * Time of the used SpoutChunkSnapshotModel generation
+	 * To benchmark purpose
+	 */
+	private final long time;
 
 	public ChunkMesh(SpoutChunkSnapshotModel chunkModel) {
 		this.chunkModel = chunkModel;
 		cx = chunkModel.getX();
 		cy = chunkModel.getY();
 		cz = chunkModel.getZ();
+		time = chunkModel.getTime();
 	}
 
 	public int getX(){
@@ -121,6 +128,10 @@ public class ChunkMesh{
 		
 		RenderMaterial renderMaterial = material.getModel().getRenderMaterial();
 
+		if( !chunkModel.hasRenderMaterial(renderMaterial) ){
+			return;
+		}
+		
 		Map<BlockFace, ComposedMesh> meshs = getMaterialMap(renderMaterial);
 
 		Vector3 position = new Vector3(x, y, z);
@@ -176,6 +187,10 @@ public class ChunkMesh{
 
 	public HashMap<RenderMaterial, Map<BlockFace, ComposedMesh>> getMaterialsFaces() {
 		return meshs;
+	}
+
+	public long getTime() {
+		return time;
 	}
 
 }
