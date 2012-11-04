@@ -463,7 +463,7 @@ public class SpoutRegion extends Region {
 
 			currentChunk.setUnloaded();
 			if (renderQueueEnabled && currentChunk.isInViewDistance()) {
-				addToRenderQueue(new SpoutChunkSnapshotModel(currentChunk.getX(), currentChunk.getY(), currentChunk.getZ(), true));
+				addToRenderQueue(new SpoutChunkSnapshotModel(currentChunk.getX(), currentChunk.getY(), currentChunk.getZ(), true, System.currentTimeMillis()));
 			}
 
 			int cx = c.getX() & CHUNKS.MASK;
@@ -924,8 +924,6 @@ public class SpoutRegion extends Region {
 
 		boolean worldRenderQueueEnabled = world.isRenderQueueEnabled();
 		boolean firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
-
-		final long time = System.currentTimeMillis();
 		
 		renderQueueEnabled = worldRenderQueueEnabled;
 		
@@ -1030,11 +1028,11 @@ public class SpoutRegion extends Region {
 				}
 			}
 			c.setRenderDirty(false);
-			addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks, distance));
+			addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks, distance, null, System.currentTimeMillis()));//TODO : Replace null by a set of render material used by outdated/updated block
 		} else {
 			if (c.leftViewDistance()) {
 				c.setRenderDirty(false);
-				addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, true));
+				addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, true, System.currentTimeMillis()));
 			}
 		}
 		c.viewDistanceCopy();
