@@ -30,8 +30,10 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.spout.api.chat.style.ChatStyle;
+import org.spout.api.Spout;
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ColorChatStyle;
+import org.spout.api.chat.style.ResetChatStyle;
 import org.spout.api.component.components.EntityComponent;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.render.RenderPart;
@@ -45,11 +47,12 @@ import org.spout.api.render.Font;
 import org.spout.engine.mesh.BaseMesh;
 
 public class TextModelComponent extends EntityComponent {
-	private static final DefaultedKey<String> KEY_TEXT = new DefaultedKey<String>() {
+	private static final DefaultedKey<ChatArguments> KEY_TEXT = new DefaultedKey<ChatArguments>() {
+		private final ChatArguments DEFAULT_VALUE = new ChatArguments("(your text here)");
 		
 		@Override
-		public String getDefaultValue() {
-			return "(your text here)";
+		public ChatArguments getDefaultValue() {
+			return DEFAULT_VALUE;
 		}
 		
 		@Override
@@ -58,7 +61,19 @@ public class TextModelComponent extends EntityComponent {
 		}
 		
 	};
-	private Font font;
+	
+	private static final DefaultedKey<Font> KEY_FONT = new DefaultedKey<Font>() {
+		@Override
+		public Font getDefaultValue() {
+			return (Font) Spout.getFilesystem().getResource("font://Spout/resources/resources/fonts/ubuntu/Ubuntu-M.ttf");
+		}
+
+		@Override
+		public String getKeyString() {
+			return "font";
+		}
+	};
+	
 	private BaseMesh mesh;
 	private float size = 1;
 	private Vector3 translation = Vector3.ZERO;
@@ -67,11 +82,8 @@ public class TextModelComponent extends EntityComponent {
 	public void updateMesh() {
 		ArrayList<MeshFace> faces = new ArrayList<MeshFace>();
 		
-		if (font==null)
-			return;
-		
+		Font font = getFont();
 		Color color = Color.black;
-		boolean skipChar = false;
 		
 		float ratio = 30f/size;
 		
@@ -81,43 +93,37 @@ public class TextModelComponent extends EntityComponent {
 		float xCursor = 0;
 		float yCursor = 0;
 		
-		for (int i=0 ; i<getText().length() ; i++) {
-			if (skipChar) {
-				skipChar = false;
-				continue;
-			}
-			char c = getText().charAt(i);
-			if (c==' ') {
-				xCursor += font.getSpaceWidth()/ratio;
-			} else if (c=='\n') {
-				xCursor = 0;
-				yCursor -= font.getCharHeight()/ratio;
-			} else if (c=='§') {
-				if (i+1==getText().length())
-					continue;
-				ChatStyle style = ChatStyle.byCode(getText().charAt(i+1));
-				skipChar = true;
-				if (style!=null) {
-					if (style instanceof ColorChatStyle) {
-						color = ((ColorChatStyle) style).getColor();
-					}
-					// TODO: Other chat styles
-				}
-			} else {
-				java.awt.Rectangle r = font.getPixelBounds(c);
+		for (Object arg : getText().getArguments()) {
+			if (arg instanceof String) {
+				String txt = (String) arg;
+				for (int i=0 ; i<txt.length() ; i++) {
+					char c = txt.charAt(i);
+					if (c==' ') {
+						xCursor += font.getSpaceWidth() / ratio;
+					} else if (c == '\n') {
+						xCursor = 0;
+						yCursor -= font.getCharHeight() / ratio;
+					} else {
+						java.awt.Rectangle r = font.getPixelBounds(c);
 
-				RenderPart part = new RenderPart();
-				part.setRenderMaterial(font.getMaterial());
-				part.setColor(color);
-				part.setSprite(new Rectangle(xCursor, yCursor, (float)r.width/ratio, h/ratio));
-				part.setSource(new Rectangle(r.x/w, 0f, r.width/w, 1f));
-				
-				xCursor += (float)font.getAdvance(c)/ratio;
-				
-				List<Vertex> v = part.getVertices();
-				
-				faces.add(new MeshFace(v.get(0), v.get(1), v.get(3)));
-				faces.add(new MeshFace(v.get(2), v.get(3), v.get(1)));
+						RenderPart part = new RenderPart();
+						part.setRenderMaterial(font.getMaterial());
+						part.setColor(color);
+						part.setSprite(new Rectangle(xCursor, yCursor, (float) r.width / ratio, h / ratio));
+						part.setSource(new Rectangle(r.x / w, 0f, r.width / w, 1f));
+
+						xCursor += (float) font.getAdvance(c) / ratio;
+
+						List<Vertex> v = part.getVertices();
+						
+						faces.add(new MeshFace(v.get(0), v.get(1), v.get(3)));
+						faces.add(new MeshFace(v.get(2), v.get(3), v.get(1)));
+					}
+				}
+			} else if (arg instanceof ColorChatStyle) {
+				color = ((ColorChatStyle) arg).getColor();
+			} else if (arg instanceof ResetChatStyle) {
+				color = Color.black;
 			}
 		}
 		
@@ -137,19 +143,19 @@ public class TextModelComponent extends EntityComponent {
 	}
 	
 	public void setFont(Font font) {
-		this.font = font;
+		getData().put(KEY_FONT, font);
 		dirty = true;
 	}
 	
 	public Font getFont() {
-		return font;
+		return getData().get(KEY_FONT);
 	}
 	
-	public String getText() {
+	public ChatArguments getText() {
 		return getData().get(KEY_TEXT);
 	}
 
-	public void setText(String text) {
+	public void setText(ChatArguments text) {
 		getData().put(KEY_TEXT, text);
 		dirty = true;
 	}
@@ -171,10 +177,10 @@ public class TextModelComponent extends EntityComponent {
 		Transform mt = getOwner().getTransform().getTransform();
 		mt.setPosition(mt.getPosition().add(translation));
 		
-		font.getMaterial().getShader().setUniform("View", camera.getView());
-		font.getMaterial().getShader().setUniform("Projection", camera.getProjection());
-		font.getMaterial().getShader().setUniform("Model", mt.toMatrix());
+		getFont().getMaterial().getShader().setUniform("View", camera.getView());
+		getFont().getMaterial().getShader().setUniform("Projection", camera.getProjection());
+		getFont().getMaterial().getShader().setUniform("Model", mt.toMatrix());
 		
-		mesh.render(font.getMaterial());
+		mesh.render(getFont().getMaterial());
 	}
 }
