@@ -54,9 +54,8 @@ import org.teleal.cling.transport.spi.InitializationException;
 import org.spout.api.FileSystem;
 import org.spout.api.Server;
 import org.spout.api.chat.ChatArguments;
-import org.spout.api.chat.TextChatChannel;
+import org.spout.api.chat.channel.ChatChannel;
 import org.spout.api.command.CommandSource;
-import org.spout.api.component.components.TextChatComponent;
 import org.spout.api.entity.Player;
 import org.spout.api.event.Listener;
 import org.spout.api.event.server.ServerStartEvent;
@@ -358,13 +357,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	@Override
-	public void broadcastMessage(TextChatComponent talker, Object... message) {
-		talker.talk(message);
-	}
-
-	@Override
-	public void broadcastMessage(TextChatChannel chatChannel, Object... message) {
-		chatChannel.broadcast(message);
+	public void broadcastMessage(ChatChannel chatChannel, Object... message) {
+		chatChannel.broadcastToReceivers(new ChatArguments(message));
 	}
 
 	@Override

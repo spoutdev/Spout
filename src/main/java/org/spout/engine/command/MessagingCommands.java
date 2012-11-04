@@ -35,7 +35,6 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.command.annotated.Executor;
-import org.spout.api.component.components.TextChatComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.event.player.PlayerChatEvent;
@@ -59,7 +58,6 @@ public class MessagingCommands {
 	public class SayCommand {
 		public SayCommand() {
 			DefaultPermissions.addDefaultPermission("spout.chat.send");
-			//Todo can we drop this completely or do we need to enhance the new method to support this on top of ChatChannels?
 			DefaultPermissions.addDefaultPermission("spout.chat.receive.*");
 		}
 
@@ -77,9 +75,13 @@ public class MessagingCommands {
 						return;
 					}
 
-					player.get(TextChatComponent.class).talk(event.getFormat().getArguments());
+					ChatArguments template = event.getFormat().getArguments();
+					template.setPlaceHolder(PlayerChatEvent.NAME, new ChatArguments(player.getDisplayName()));
+					template.setPlaceHolder(PlayerChatEvent.MESSAGE, event.getMessage());
+
+					((Server) engine).broadcastMessage("spout.chat.receive." + player.getName(), template);
 				} else {
-					((Server) engine).broadcastMessage(Spout.getEngine().getConsoleTextChatChannel(), message);
+					((Server) engine).broadcastMessage("spout.chat.receive.console", "<", source.getName(), "> ", message);
 				}
 			}
 		}
@@ -99,7 +101,7 @@ public class MessagingCommands {
 
 		String playerName = args.getString(0);
 		ChatArguments message = args.getJoinedString(1);
-		Player player = ((Server) engine).getPlayer(playerName, false);
+		Player player = engine.getPlayer(playerName, false);
 		if (player == source) {
 			source.sendMessage("Forever alone.");
 		} else if (player != null) {
@@ -116,10 +118,7 @@ public class MessagingCommands {
 		if (Spout.getPlatform() != Platform.SERVER && Spout.getPlatform() != Platform.PROXY) {
 			throw new CommandException("You may only message other users in server mode.");
 		}
-		if (source instanceof Entity){
-			((Server) Spout.getEngine()).broadcastMessage((Entity) source,ChatStyle.YELLOW, ChatStyle.ITALIC, source.getName(), " ", args.getJoinedString(0) );
-		}  else {
-			((Server) Spout.getEngine()).broadcastMessage(ChatStyle.YELLOW, ChatStyle.ITALIC, source.getName(), " ", args.getJoinedString(0));
-		}
+
+		((Server) Spout.getEngine()).broadcastMessage(ChatStyle.YELLOW, ChatStyle.ITALIC, source.getName(), " ", args.getJoinedString(0));
 	}
 }

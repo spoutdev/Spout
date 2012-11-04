@@ -39,7 +39,6 @@ import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.Command;
 import org.spout.api.command.RootCommand;
 import org.spout.api.component.Component;
-import org.spout.api.component.components.TextChatComponent;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.state.PlayerInputState;
@@ -90,7 +89,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		displayName.set(name);
 		hashcode = name.hashCode();
 		this.setObserver(true);
-		add(TextChatComponent.class);
 	}
 
 	@Override

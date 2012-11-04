@@ -53,8 +53,6 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 
 import org.spout.api.Engine;
 import org.spout.api.Spout;
-import org.spout.api.chat.ChatChannelManager;
-import org.spout.api.chat.ChatTemplate;
 import org.spout.api.chat.completion.CompletionManager;
 import org.spout.api.chat.completion.CompletionManagerImpl;
 import org.spout.api.chat.console.MultiConsole;
@@ -98,8 +96,6 @@ import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.StringUtil;
 
-import org.spout.engine.chat.SpoutChatChannelManager;
-import org.spout.engine.chat.SpoutTextChatChannel;
 import org.spout.engine.chat.console.ConsoleManager;
 import org.spout.engine.chat.console.FileConsole;
 import org.spout.engine.chat.console.JLineConsole;
@@ -171,15 +167,11 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private StringMap engineBiomeMap = null;
 	private MultiConsole console;
 	private SpoutApplication arguments;
-	private SpoutTextChatChannel defaultChatChannel;
-	private SpoutTextChatChannel consoleChatChannel;
-	private final SpoutChatChannelManager chatChannelManager;
 
 	public SpoutEngine() {
 		super(1, new ThreadAsyncExecutor("Engine bootstrap thread"));
 		logFile = "logs" + File.separator + "log-%D.txt";
 		consoleManager = new ConsoleManager(this);
-		chatChannelManager = new SpoutChatChannelManager();
 	}
 
 	public void init(SpoutApplication args) {
@@ -190,8 +182,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		} catch (ConfigurationException e) {
 			log("Error loading config: %0", Level.SEVERE, e.getMessage(), e);
 		}
-		defaultChatChannel = new SpoutTextChatChannel(this, "default", config.DEFAULT_CHATCHANNEL_NAME.getString(), ChatTemplate.fromFormatString(config.DEFAULT_CHATCHANNEL_FORMAT.getString()));
-		consoleChatChannel = new SpoutTextChatChannel(this, "console", config.CONSOLE_CHATCHANNEL_NAME.getString(), ChatTemplate.fromFormatString(config.CONSOLE_CHATCHANNEL_FORMAT.getString()));
+
 		console = new MultiConsole(new FileConsole(this), new JLineConsole(this));
 		consoleManager.setupConsole(console);
 
@@ -849,21 +840,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public CompletionManager getCompletionManager() {
 		return completions;
-	}
-
-	@Override
-	public SpoutTextChatChannel getDefaultTextChatChannel() {
-		return defaultChatChannel;
-	}
-
-	@Override
-	public SpoutTextChatChannel getConsoleTextChatChannel() {
-		return consoleChatChannel;
-	}
-
-	@Override
-	public ChatChannelManager getChatChannelManager() {
-		return chatChannelManager;
 	}
 
 	private class SessionTask implements Runnable {
