@@ -181,7 +181,7 @@ public class TransformComponent extends EntityComponent {
 	 * @param angle
 	 */
 	public void pitch(float angle) {
-		setPitch(angle);
+		setPitch(sanitizeAngle(angle));
 	}
 
 	/**
@@ -189,7 +189,7 @@ public class TransformComponent extends EntityComponent {
 	 * @param angle
 	 */
 	public void yaw(float angle) {
-		setYaw(angle);
+		setYaw(sanitizeAngle(angle));
 	}
 
 	/**
@@ -197,7 +197,17 @@ public class TransformComponent extends EntityComponent {
 	 * @param angle
 	 */
 	public void roll(float angle) {
-		setRoll(angle);
+		setRoll(sanitizeAngle(angle));
+	}
+	
+	private float sanitizeAngle(float angle) {
+		while (angle < 0) {
+			angle += 360;
+		}
+		while (angle > 360) {
+			angle -= 360;
+		}
+		return angle;
 	}
 
 	/**
