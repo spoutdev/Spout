@@ -122,9 +122,9 @@ public class SpoutInput implements Input {
 	}
 
 	public void pollInput(SpoutPlayer player) {
-		if (redirected) {
+		/*if (redirected) { // Sorry, but I like to move in my little world
 			return;
-		}
+		}*/
 
 		if(org.lwjgl.input.Keyboard.isCreated()){
 			while (org.lwjgl.input.Keyboard.next()) {
