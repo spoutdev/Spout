@@ -26,15 +26,12 @@
  */
 package org.spout.engine;
 
-import java.awt.Color;
-import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.CodeSource;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -50,7 +47,6 @@ import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
@@ -75,7 +71,6 @@ import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.event.server.ClientEnableEvent;
-import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
@@ -84,7 +79,6 @@ import org.spout.api.gui.FullScreen;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.ScreenStack;
 import org.spout.api.gui.Widget;
-import org.spout.api.gui.component.LabelComponent;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector2;
@@ -96,16 +90,12 @@ import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.render.Camera;
-import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
 import org.spout.api.scheduler.TaskPriority;
 
 import org.spout.engine.audio.SpoutSoundManager;
-import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.batcher.SpriteBatch;
-import org.spout.engine.command.ConnectionCommands;
 import org.spout.engine.command.InputManagementCommands;
-import org.spout.engine.command.RendererCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.entity.component.EntityRendererComponent;
@@ -122,7 +112,6 @@ import org.spout.engine.resources.ClientFont;
 import org.spout.engine.util.MacOSXUtils;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutClientWorld;
-import org.spout.engine.world.SpoutRegion;
 
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
@@ -501,7 +490,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		Entity e = spoutyType.createEntity(new Point(super.getDefaultWorld(),0,0,0));
 		e.setSavable(false); // To prevent entity duplication
 		TextModelComponent tmc = e.add(TextModelComponent.class);
-		tmc.setText(ChatStyle.BLUE+"Sp"+ChatStyle.WHITE+"ou"+ChatStyle.RED+"ty");
+		tmc.setText(new ChatArguments(ChatStyle.BLUE, "Sp", ChatStyle.WHITE, "ou", ChatStyle.RED, "ty"));
 		tmc.setSize(0.5f);
 		tmc.setTranslation(new Vector3(0, 3f, 0));
 		tmc.setFont(font);
