@@ -75,7 +75,7 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 
 	@Override
 	public void updateBlock(Chunk chunk, int x, int y, int z, BlockMaterial material, short data) {
-		session.send(false, new BlockUpdateMessage(chunk.getBlock(x, y, z, player)));
+		session.send(false, new BlockUpdateMessage(chunk.getBlock(x, y, z)));
 	}
 
 	private EntityProtocol getEntityProtocol(Entity entity) {

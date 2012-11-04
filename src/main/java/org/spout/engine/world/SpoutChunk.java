@@ -47,13 +47,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 import org.spout.api.Engine;
-import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.component.ChunkComponentOwner;
 import org.spout.api.component.components.BlockComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
+import org.spout.api.event.Cause;
 import org.spout.api.event.block.BlockChangeEvent;
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGeneratorUtils;
@@ -301,34 +301,25 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	@Override
-	public boolean setBlockData(int x, int y, int z, short data, Source source) {
-		if (source == null) {
-			throw new NullPointerException("Source can not be null");
-		}
-		setBlockDataField(x, y, z, 0xFFFF, data, source);
+	public boolean setBlockData(int x, int y, int z, short data, Cause<?> cause) {
+		setBlockDataField(x, y, z, 0xFFFF, data, cause);
 
 		return true;
 	}
 
 	@Override
-	public boolean addBlockData(int x, int y, int z, short data, Source source) {
-		if (source == null) {
-			throw new NullPointerException("Source can not be null");
-		}
-		addBlockDataField(x, y, z, 0xFFFF, data, source);
+	public boolean addBlockData(int x, int y, int z, short data, Cause<?> cause) {
+		addBlockDataField(x, y, z, 0xFFFF, data, cause);
 
 		return true;
 	}
 
 	@Override
-	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Source source) {
-		if (source == null) {
-			throw new NullPointerException("Source can not be null");
-		}
-		return setBlockMaterial(x, y, z, material, data, source, true);
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Cause<?> cause) {
+		return setBlockMaterial(x, y, z, material, data, cause, true);
 	}
 
-	private boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Source source, boolean event) {
+	private boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Cause<?> cause, boolean event) {
 		x &= BLOCKS.MASK;
 		y &= BLOCKS.MASK;
 		z &= BLOCKS.MASK;
@@ -338,8 +329,8 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 
 		if (event) {
 			// TODO - move to block change method?
-			Block block = new SpoutBlock(getWorld(), x, y, z, source);
-			BlockChangeEvent blockEvent = new BlockChangeEvent(block, new BlockSnapshot(block, material, data), source);
+			Block block = new SpoutBlock(getWorld(), x, y, z);
+			BlockChangeEvent blockEvent = new BlockChangeEvent(block, new BlockSnapshot(block, material, data), cause);
 			Spout.getEngine().getEventManager().callEvent(blockEvent);
 			if (blockEvent.isCancelled()) {
 				return false;
@@ -376,7 +367,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 			SpoutWorld world = this.getWorld();
 
 			// Update block lighting
-			if (!this.setBlockLight(x, y, z, material.getLightLevel(data), source)) {
+			if (!this.setBlockLight(x, y, z, material.getLightLevel(data), cause)) {
 				// if the light level is left unchanged, refresh lighting from
 				// neighbors
 				addBlockLightOperation(x, y, z, SpoutWorldLighting.REFRESH);
@@ -386,25 +377,25 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 			if (newheight > oldheight) {
 				// set sky light of blocks below to 0
 				for (y = oldheight; y < newheight; y++) {
-					world.setBlockSkyLight(x, y + 1, z, (byte) 0, source);
+					world.setBlockSkyLight(x, y + 1, z, (byte) 0, cause);
 				}
 			} else if (newheight < oldheight) {
 				// set sky light of blocks above to 15
 				for (y = newheight; y < oldheight; y++) {
-					world.setBlockSkyLight(x, y + 1, z, (byte) 15, source);
+					world.setBlockSkyLight(x, y + 1, z, (byte) 15, cause);
 				}
 			} else {
 				byte old = this.getBlockSkyLight(x, y, z);
 				if (old == 0) {
 					addSkyLightOperation(x, y, z, SpoutWorldLighting.REFRESH);
 				} else if (old < 15) {
-					this.setBlockSkyLight(x, y, z, (byte) 0, source);
+					this.setBlockSkyLight(x, y, z, (byte) 0, cause);
 				}
 			}
 		}
 
 		if (newState != oldState) {
-			blockChanged(x, y, z, material, newData, oldMaterial, oldData, source);
+			blockChanged(x, y, z, material, newData, oldMaterial, oldData, cause);
 			return true;
 		}
 		return false;
@@ -532,10 +523,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	@Override
-	public boolean setBlockLight(int x, int y, int z, byte light, Source source) {
-		if (source == null) {
-			throw new NullPointerException("Source can not be null");
-		}
+	public boolean setBlockLight(int x, int y, int z, byte light, Cause<?> cause) {
 		light &= 0xF;
 		x &= BLOCKS.MASK;
 		y &= BLOCKS.MASK;
@@ -579,10 +567,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	@Override
-	public boolean setBlockSkyLight(int x, int y, int z, byte light, Source source) {
-		if (source == null) {
-			throw new NullPointerException("Source can not be null");
-		}
+	public boolean setBlockSkyLight(int x, int y, int z, byte light, Cause<?> cause) {
 		light &= 0xF;
 		x &= BLOCKS.MASK;
 		y &= BLOCKS.MASK;
@@ -639,11 +624,11 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	@Override
-	public void queueBlockPhysics(int x, int y, int z, EffectRange range, Source source) {
-		queueBlockPhysics(x, y, z, range, null, source);
+	public void queueBlockPhysics(int x, int y, int z, EffectRange range) {
+		queueBlockPhysics(x, y, z, range, null);
 	}
 
-	public void queueBlockPhysics(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial, Source source) {
+	public void queueBlockPhysics(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial) {
 		checkChunkLoaded();
 		int rx = x & BLOCKS.MASK;
 		int ry = y & BLOCKS.MASK;
@@ -651,15 +636,15 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		rx += (getX() & Region.CHUNKS.MASK) << BLOCKS.BITS;
 		ry += (getY() & Region.CHUNKS.MASK) << BLOCKS.BITS;
 		rz += (getZ() & Region.CHUNKS.MASK) << BLOCKS.BITS;
-		physicsQueue.queueForUpdateAsync(rx, ry, rz, range, oldMaterial, source);
+		physicsQueue.queueForUpdateAsync(rx, ry, rz, range, oldMaterial);
 	}
 
 	@Override
-	public void updateBlockPhysics(int x, int y, int z, Source source) {
-		updateBlockPhysics(x, y, z, null, source);
+	public void updateBlockPhysics(int x, int y, int z) {
+		updateBlockPhysics(x, y, z, null);
 	}
 
-	public void updateBlockPhysics(int x, int y, int z, BlockMaterial oldMaterial, Source source) {
+	public void updateBlockPhysics(int x, int y, int z, BlockMaterial oldMaterial) {
 		checkChunkLoaded();
 		int rx = x & BLOCKS.MASK;
 		int ry = y & BLOCKS.MASK;
@@ -667,7 +652,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		rx += (getX() & Region.CHUNKS.MASK) << BLOCKS.BITS;
 		ry += (getY() & Region.CHUNKS.MASK) << BLOCKS.BITS;
 		rz += (getZ() & Region.CHUNKS.MASK) << BLOCKS.BITS;
-		physicsQueue.queueForUpdate(rx, ry, rz, null, source);
+		physicsQueue.queueForUpdate(rx, ry, rz, null);
 	}
 
 	private int getBlockIndex(int x, int y, int z) {
@@ -1288,7 +1273,6 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	public void initLighting() {
 		this.isInitializingLighting.set(true);
 		this.notifyLightChange();
-		SpoutWorld world = this.getWorld();
 		int x, y, z, minY, maxY, columnY;
 		// Lock operations to prevent premature handling
 		Arrays.fill(this.blockLight, (byte) 0);
@@ -1299,7 +1283,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		for (x = 0; x < BLOCKS.SIZE; x++) {
 			for (y = 0; y < BLOCKS.SIZE; y++) {
 				for (z = 0; z < BLOCKS.SIZE; z++) {
-					if (!this.setBlockLight(x, y, z, this.lightBlockSource.getBlockMaterial(x, y, z).getLightLevel(this.lightBlockSource.getBlockData(x, y, z)), world)) {
+					if (!this.setBlockLight(x, y, z, this.lightBlockSource.getBlockMaterial(x, y, z).getLightLevel(this.lightBlockSource.getBlockData(x, y, z)), null)) {
 						// Refresh the block if at an edge to update from surrounding chunks
 						if (x == 0 || x == 15 || y == 0 || y == 15 || z == 0 || z == 15) {
 							this.addBlockLightOperation(x, y, z, SpoutWorldLighting.REFRESH);
@@ -1318,12 +1302,12 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 				if (columnY < minY) {
 					// everything is air - ignore refresh checks
 					for (y = 0; y < BLOCKS.SIZE; y++) {
-						this.setBlockSkyLight(x, y, z, (byte) 15, world);
+						this.setBlockSkyLight(x, y, z, (byte) 15, null);
 					}
 				} else {
 					// fill area above height with light
 					for (y = columnY; y < maxY; y++) {
-						this.setBlockSkyLight(x, y, z, (byte) 15, world);
+						this.setBlockSkyLight(x, y, z, (byte) 15, null);
 					}
 
 					if (x == 0 || x == 15 || z == 0 || z == 15) {
@@ -1473,22 +1457,22 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	@Override
-	public Block getBlock(float x, float y, float z, Source source) {
-		return getBlock(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z), source);
+	public Block getBlock(float x, float y, float z) {
+		return getBlock(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
 	}
 
 	@Override
-	public Block getBlock(Vector3 position, Source source) {
-		return getBlock(position.getX(), position.getY(), position.getZ(), source);
+	public Block getBlock(Vector3 position) {
+		return getBlock(position.getX(), position.getY(), position.getZ());
 	}
 
 	@Override
-	public Block getBlock(int x, int y, int z, Source source) {
-		return new SpoutBlock(this.getWorld(), getBlockX(x), getBlockY(y), getBlockZ(z), this, source);
+	public Block getBlock(int x, int y, int z) {
+		return new SpoutBlock(this.getWorld(), getBlockX(x), getBlockY(y), getBlockZ(z), this);
 	}
 
 	@Override
-	public boolean compareAndSetData(int bx, int by, int bz, int expect, short data, Source source) {
+	public boolean compareAndSetData(int bx, int by, int bz, int expect, short data, Cause<?> cause) {
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
 		short expId = BlockFullState.getId(expect);
@@ -1496,28 +1480,28 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 
 		boolean success = this.blockStore.compareAndSetBlock(bx & BLOCKS.MASK, by & BLOCKS.MASK, bz & BLOCKS.MASK, expId, expData, expId, data);
 		if (success && expData != data) {
-			blockChanged(bx, by, bz, expId, data, expId, expData, source);
+			blockChanged(bx, by, bz, expId, data, expId, expData, cause);
 		}
 		return success;
 	}
 
 	@Override
-	public short setBlockDataBits(int bx, int by, int bz, int bits, boolean set, Source source) {
+	public short setBlockDataBits(int bx, int by, int bz, int bits, boolean set, Cause<?> cause) {
 		if (set) {
-			return this.setBlockDataBits(bx, by, bz, bits, source);
+			return this.setBlockDataBits(bx, by, bz, bits, cause);
 		} else {
-			return this.clearBlockDataBits(bx, by, bz, bits, source);
+			return this.clearBlockDataBits(bx, by, bz, bits, cause);
 		}
 	}
 
 	@Override
-	public short setBlockDataBits(int bx, int by, int bz, int bits, Source source) {
-		return (short) setBlockDataFieldRaw(bx, by, bz, bits & 0xFFFF, 0xFFFF, source);
+	public short setBlockDataBits(int bx, int by, int bz, int bits, Cause<?> cause) {
+		return (short) setBlockDataFieldRaw(bx, by, bz, bits & 0xFFFF, 0xFFFF, cause);
 	}
 
 	@Override
-	public short clearBlockDataBits(int bx, int by, int bz, int bits, Source source) {
-		return (short) setBlockDataFieldRaw(bx, by, bz, bits & 0xFFFF, 0x0000, source);
+	public short clearBlockDataBits(int bx, int by, int bz, int bits, Cause<?> cause) {
+		return (short) setBlockDataFieldRaw(bx, by, bz, bits & 0xFFFF, 0x0000, cause);
 	}
 
 	@Override
@@ -1536,8 +1520,8 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	@Override
-	public int setBlockDataField(int bx, int by, int bz, int bits, int value, Source source) {
-		int oldData = setBlockDataFieldRaw(bx, by, bz, bits, value, source);
+	public int setBlockDataField(int bx, int by, int bz, int bits, int value, Cause<?> cause) {
+		int oldData = setBlockDataFieldRaw(bx, by, bz, bits, value, cause);
 
 		int shift = shiftCache[bits];
 
@@ -1545,8 +1529,8 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	@Override
-	public int addBlockDataField(int bx, int by, int bz, int bits, int value, Source source) {
-		int oldData = addBlockDataFieldRaw(bx, by, bz, bits, value, source);
+	public int addBlockDataField(int bx, int by, int bz, int bits, int value, Cause<?> cause) {
+		int oldData = addBlockDataFieldRaw(bx, by, bz, bits, value, cause);
 
 		int shift = shiftCache[bits];
 
@@ -1558,7 +1542,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		return getBlockDataField(bx, by, bz, bits) != 0;
 	}
 
-	protected int setBlockDataFieldRaw(int bx, int by, int bz, int bits, int value, Source source) {
+	protected int setBlockDataFieldRaw(int bx, int by, int bz, int bits, int value, Cause<?> cause) {
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
 
@@ -1588,13 +1572,13 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		}
 
 		if (updated) {
-			blockChanged(bx, by, bz, oldId, newData, oldId, oldData, source);
+			blockChanged(bx, by, bz, oldId, newData, oldId, oldData, cause);
 		}
 
 		return oldData;
 	}
 
-	protected int addBlockDataFieldRaw(int bx, int by, int bz, int bits, int value, Source source) {
+	protected int addBlockDataFieldRaw(int bx, int by, int bz, int bits, int value, Cause<?> cause) {
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
 
@@ -1624,19 +1608,19 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		}
 
 		if (updated) {
-			blockChanged(bx, by, bz, oldId, newData, oldId, oldData, source);
+			blockChanged(bx, by, bz, oldId, newData, oldId, oldData, cause);
 		}
 
 		return oldData;
 	}
 
-	private void blockChanged(int x, int y, int z, short newId, short newData, short oldId, short oldData, Source source) {
+	private void blockChanged(int x, int y, int z, short newId, short newData, short oldId, short oldData, Cause<?> cause) {
 		BlockMaterial newMaterial = (BlockMaterial) MaterialRegistry.get(newId).getSubMaterial(newData);
 		BlockMaterial oldMaterial = (BlockMaterial) MaterialRegistry.get(oldId).getSubMaterial(oldData);
-		blockChanged(x, y, z, newMaterial, newData, oldMaterial, oldData, source);
+		blockChanged(x, y, z, newMaterial, newData, oldMaterial, oldData, cause);
 	}
 
-	private void blockChanged(int x, int y, int z, BlockMaterial newMaterial, short newData, BlockMaterial oldMaterial, short oldData, Source source) {
+	private void blockChanged(int x, int y, int z, BlockMaterial newMaterial, short newData, BlockMaterial oldMaterial, short oldData, Cause<?> cause) {
 		// Add chunk to regions's dirty queue
 		queueDirty();
 
@@ -1654,17 +1638,17 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		// Only do physics when not populating
 		if (this.isPopulated()) {
 			EffectRange physicsRange = newMaterial.getPhysicsRange(newData);
-			queueBlockPhysics(x, y, z, physicsRange, oldMaterial, source);
+			queueBlockPhysics(x, y, z, physicsRange, oldMaterial);
 			if (newMaterial != oldMaterial) {
 				EffectRange destroyRange = oldMaterial.getDestroyRange(oldData);
 				if (destroyRange != physicsRange) {
-					queueBlockPhysics(x, y, z, destroyRange, oldMaterial, source);
+					queueBlockPhysics(x, y, z, destroyRange, oldMaterial);
 				}
 			}
 		}
 
 		// Update block lighting
-		this.setBlockLight(x, y, z, newMaterial.getLightLevel(newData), source);
+		this.setBlockLight(x, y, z, newMaterial.getLightLevel(newData), cause);
 	}
 
 	@Override
@@ -1709,10 +1693,9 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 			int x = queue.getX();
 			int y = queue.getY();
 			int z = queue.getZ();
-			Source source = queue.getSource();
 			BlockMaterial oldMaterial = queue.getOldMaterial();
-			if (!callOnUpdatePhysicsForRange(world, x, y, z, oldMaterial, source, false)) {
-				physicsQueue.queueForUpdateMultiRegion(x, y, z, oldMaterial, source);
+			if (!callOnUpdatePhysicsForRange(world, x, y, z, oldMaterial, false)) {
+				physicsQueue.queueForUpdateMultiRegion(x, y, z, oldMaterial);
 			}
 		}
 		return updated;
@@ -1729,13 +1712,12 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 			int x = queue.getX();
 			int y = queue.getY();
 			int z = queue.getZ();
-			Source source = queue.getSource();
 			BlockMaterial oldMaterial = queue.getOldMaterial();
-			callOnUpdatePhysicsForRange(world, x, y, z, oldMaterial, source, true);
+			callOnUpdatePhysicsForRange(world, x, y, z, oldMaterial, true);
 		}
 	}
 
-	private boolean callOnUpdatePhysicsForRange(World world, int x, int y, int z, BlockMaterial oldMaterial, Source source, boolean force) {
+	private boolean callOnUpdatePhysicsForRange(World world, int x, int y, int z, BlockMaterial oldMaterial, boolean force) {
 		int packed = getBlockFullState(x, y, z);
 		BlockMaterial material = BlockFullState.getMaterial(packed);
 		if (material.hasPhysics()) {
@@ -1745,7 +1727,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 			}
 			//switch region block coords (0-255) to world block coords
 			SpoutRegion region = getRegion();
-			Block block = world.getBlock(x + region.getBlockX(), y + region.getBlockY(), z + region.getBlockZ(), source);
+			Block block = world.getBlock(x + region.getBlockX(), y + region.getBlockY(), z + region.getBlockZ());
 			block.getMaterial().onUpdate(oldMaterial, block);
 			physicsUpdates++;
 		}

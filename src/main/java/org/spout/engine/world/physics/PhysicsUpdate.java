@@ -27,7 +27,6 @@
 package org.spout.engine.world.physics;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.spout.api.Source;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.util.SpoutToStringStyle;
@@ -38,11 +37,9 @@ public class PhysicsUpdate {
 	private final byte y;
 	private final byte z;
 	private final EffectRange range;
-	private final Source source;
 	private final BlockMaterial oldMaterial;
 	
-	public PhysicsUpdate(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial, Source source) {
-		this.source = source;
+	public PhysicsUpdate(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial) {
 		this.x = (byte)x;
 		this.y = (byte)y;
 		this.z = (byte)z;
@@ -61,11 +58,7 @@ public class PhysicsUpdate {
 	public int getZ() {
 		return z & 0xFF;
 	}
-	
-	public Source getSource() {
-		return source;
-	}
-	
+
 	public EffectRange getRange() {
 		return range;
 	}
@@ -82,7 +75,6 @@ public class PhysicsUpdate {
          .append("z", z)
          .append("range", range.getClass().getName())
 		 .append("old-material", oldMaterial.getClass().getName())
-		 .append("source", source.getClass().getName())
          .toString();
 
 	}

@@ -42,7 +42,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.collision.BoundingBox;
 import org.spout.api.collision.CollisionModel;
@@ -56,6 +55,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntityPrefab;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.spawn.SpawnArrangement;
+import org.spout.api.event.Cause;
 import org.spout.api.event.block.CuboidChangeEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.generator.WorldGenerator;
@@ -257,18 +257,18 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public SpoutBlock getBlock(int x, int y, int z, Source source) {
-		return new SpoutBlock(this, x, y, z, source);
+	public SpoutBlock getBlock(int x, int y, int z) {
+		return new SpoutBlock(this, x, y, z);
 	}
 
 	@Override
-	public SpoutBlock getBlock(float x, float y, float z, Source source) {
-		return this.getBlock(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z), source);
+	public SpoutBlock getBlock(float x, float y, float z) {
+		return this.getBlock(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
 	}
 
 	@Override
-	public SpoutBlock getBlock(Vector3 position, Source source) {
-		return this.getBlock(position.getX(), position.getY(), position.getZ(), source);
+	public SpoutBlock getBlock(Vector3 position) {
+		return this.getBlock(position.getX(), position.getY(), position.getZ());
 	}
 
 	@Override
@@ -379,18 +379,18 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Source source) {
-		return this.getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z, material, data, source);
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Cause<?> cause) {
+		return this.getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z, material, data, cause);
 	}
 
 	@Override
-	public boolean setBlockData(int x, int y, int z, short data, Source source) {
-		return getChunkFromBlock(x, y, z).setBlockData(x, y, z, data, source);
+	public boolean setBlockData(int x, int y, int z, short data, Cause<?> cause) {
+		return getChunkFromBlock(x, y, z).setBlockData(x, y, z, data, cause);
 	}
 
 	@Override
-	public boolean addBlockData(int x, int y, int z, short data, Source source) {
-		return getChunkFromBlock(x, y, z).addBlockData(x, y, z, data, source);
+	public boolean addBlockData(int x, int y, int z, short data, Cause<?> cause) {
+		return getChunkFromBlock(x, y, z).addBlockData(x, y, z, data, cause);
 	}
 
 	@Override
@@ -424,23 +424,23 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public boolean compareAndSetData(int x, int y, int z, int expect, short data, Source source) {
-		return getChunkFromBlock(x, y, z).compareAndSetData(x, y, z, expect, data, source);
+	public boolean compareAndSetData(int x, int y, int z, int expect, short data, Cause<?> cause) {
+		return getChunkFromBlock(x, y, z).compareAndSetData(x, y, z, expect, data, cause);
 	}
 
 	@Override
-	public short setBlockDataBits(int x, int y, int z, int bits, boolean set, Source source) {
-		return getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits, set, source);
+	public short setBlockDataBits(int x, int y, int z, int bits, boolean set, Cause<?> cause) {
+		return getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits, set, cause);
 	}
 
 	@Override
-	public short setBlockDataBits(int x, int y, int z, int bits, Source source) {
-		return getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits, source);
+	public short setBlockDataBits(int x, int y, int z, int bits, Cause<?> cause) {
+		return getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits, cause);
 	}
 
 	@Override
-	public short clearBlockDataBits(int x, int y, int z, int bits, Source source) {
-		return getChunkFromBlock(x, y, z).clearBlockDataBits(x, y, z, bits, source);
+	public short clearBlockDataBits(int x, int y, int z, int bits, Cause<?> cause) {
+		return getChunkFromBlock(x, y, z).clearBlockDataBits(x, y, z, bits, cause);
 	}
 
 	@Override
@@ -454,13 +454,13 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public int setBlockDataField(int x, int y, int z, int bits, int value, Source source) {
-		return getChunkFromBlock(x, y, z).setBlockDataField(x, y, z, bits, value, source);
+	public int setBlockDataField(int x, int y, int z, int bits, int value, Cause<?> cause) {
+		return getChunkFromBlock(x, y, z).setBlockDataField(x, y, z, bits, value, cause);
 	}
 
 	@Override
-	public int addBlockDataField(int x, int y, int z, int bits, int value, Source source) {
-		return getChunkFromBlock(x, y, z).addBlockDataField(x, y, z, bits, value, source);
+	public int addBlockDataField(int x, int y, int z, int bits, int value, Cause<?> cause) {
+		return getChunkFromBlock(x, y, z).addBlockDataField(x, y, z, bits, value, cause);
 	}
 
 	@Override
@@ -686,17 +686,17 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public void updateBlockPhysics(int x, int y, int z, Source source) {
-		this.getRegionFromBlock(x, y, z).updateBlockPhysics(x, y, z, source);
+	public void updateBlockPhysics(int x, int y, int z) {
+		this.getRegionFromBlock(x, y, z).updateBlockPhysics(x, y, z);
 	}
 
 	@Override
-	public void queueBlockPhysics(int x, int y, int z, EffectRange range, Source source) {
-		queueBlockPhysics(x, y, z, range, null, source);
+	public void queueBlockPhysics(int x, int y, int z, EffectRange range) {
+		queueBlockPhysics(x, y, z, range, null);
 	}
 
-	public void queueBlockPhysics(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial, Source source) {
-		this.getRegionFromBlock(x, y, z).queueBlockPhysics(x, y, z, range, oldMaterial, source);
+	public void queueBlockPhysics(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial) {
+		this.getRegionFromBlock(x, y, z).queueBlockPhysics(x, y, z, range, oldMaterial);
 	}
 
 	@Override
@@ -1138,13 +1138,13 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public boolean setBlockLight(int x, int y, int z, byte light, Source source) {
-		return this.getChunkFromBlock(x, y, z).setBlockLight(x, y, z, light, source);
+	public boolean setBlockLight(int x, int y, int z, byte light, Cause<?> cause) {
+		return this.getChunkFromBlock(x, y, z).setBlockLight(x, y, z, light, cause);
 	}
 
 	@Override
-	public boolean setBlockSkyLight(int x, int y, int z, byte light, Source source) {
-		return this.getChunkFromBlock(x, y, z).setBlockSkyLight(x, y, z, light, source);
+	public boolean setBlockSkyLight(int x, int y, int z, byte light, Cause<?> cause) {
+		return this.getChunkFromBlock(x, y, z).setBlockSkyLight(x, y, z, light, cause);
 	}
 
 	@Override

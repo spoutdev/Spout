@@ -31,8 +31,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.spout.api.Source;
 import org.spout.api.component.components.BlockComponent;
+import org.spout.api.event.Cause;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
@@ -56,17 +56,13 @@ import org.spout.api.util.StringUtil;
 public class SpoutBlock implements Block {
 	private final int x, y, z;
 	private final WeakReference<World> world;
-	private final Source source;
 	private final AtomicReference<WeakReference<Chunk>> chunk;
 
-	public SpoutBlock(World world, int x, int y, int z, Source source) {
-		this(world, x, y, z, null, source);
+	public SpoutBlock(World world, int x, int y, int z) {
+		this(world, x, y, z, null);
 	}
 
-	protected SpoutBlock(World world, int x, int y, int z, Chunk chunk, Source source) {
-		if (source == null) {
-			throw new IllegalArgumentException("Every block must have a source");
-		}
+	protected SpoutBlock(World world, int x, int y, int z, Chunk chunk) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -75,7 +71,6 @@ public class SpoutBlock implements Block {
 		} else {
 			this.world = SpoutWorld.NULL_WEAK_REFERENCE;
 		}
-		this.source = source;
 		if (chunk != null && !chunk.containsBlock(this.x, this.y, this.z)) {
 			chunk = null; // chunk does not contain this Block, invalidate
 		}
@@ -156,7 +151,7 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public Block translate(int dx, int dy, int dz) {
-		return new SpoutBlock(getWorld(), this.x + dx, this.y + dy, this.z + dz, this.chunk.get().get(), this.source);
+		return new SpoutBlock(getWorld(), this.x + dx, this.y + dy, this.z + dz, this.chunk.get().get());
 	}
 
 	@Override
@@ -165,7 +160,7 @@ public class SpoutBlock implements Block {
 		if (height == this.y) {
 			return this;
 		} else {
-			return new SpoutBlock(getWorld(), this.x, height, this.z, source);
+			return new SpoutBlock(getWorld(), this.x, height, this.z);
 		}
 	}
 
@@ -197,13 +192,18 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public SpoutBlock setMaterial(MaterialSource material, int data) {
+	public SpoutBlock setMaterial(MaterialSource material, int data, Cause<?> cause) {
 		if (material.getMaterial() instanceof BlockMaterial) {
-			this.getChunk().setBlockMaterial(this.x, y, z, (BlockMaterial) material.getMaterial(), (short) data, this.source);
+			this.getChunk().setBlockMaterial(this.x, y, z, (BlockMaterial) material.getMaterial(), (short) data, cause);
 		} else {
 			throw new IllegalArgumentException("Can't set a block to a non-block material!");
 		}
 		return this;
+	}
+
+	@Override
+	public SpoutBlock setMaterial(MaterialSource material, int data) {
+		return setMaterial(material, data, null);
 	}
 
 	@Override
@@ -213,13 +213,18 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public SpoutBlock setData(int data) {
-		this.getChunk().setBlockData(this.x, this.y, this.z, (short) data, this.source);
+		return setData(data, null);
+	}
+
+	@Override
+	public SpoutBlock setData(int data, Cause<?> cause) {
+		this.getChunk().setBlockData(this.x, this.y, this.z, (short) data, cause);
 		return this;
 	}
 
 	@Override
 	public SpoutBlock addData(int data) {
-		this.getChunk().addBlockData(this.x, this.y, this.z, (short) data, this.source);
+		this.getChunk().addBlockData(this.x, this.y, this.z, (short) data, null);
 		return this;
 	}
 
@@ -230,17 +235,17 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public short setDataBits(int bits) {
-		return this.getChunk().setBlockDataBits(this.x, this.y, this.z, bits, this.source);
+		return this.getChunk().setBlockDataBits(this.x, this.y, this.z, bits, null);
 	}
 
 	@Override
 	public short setDataBits(int bits, boolean set) {
-		return this.getChunk().setBlockDataBits(this.x, this.y, this.z, bits, set, this.source);
+		return this.getChunk().setBlockDataBits(this.x, this.y, this.z, bits, set, null);
 	}
 
 	@Override
 	public short clearDataBits(int bits) {
-		return this.getChunk().clearBlockDataBits(this.x, this.y, this.z, bits, this.source);
+		return this.getChunk().clearBlockDataBits(this.x, this.y, this.z, bits, null);
 	}
 
 	@Override
@@ -255,17 +260,12 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public int setDataField(int bits, int value) {
-		return this.getChunk().setBlockDataField(this.x, this.y, this.z, bits, value, this.source);
+		return this.getChunk().setBlockDataField(this.x, this.y, this.z, bits, value, null);
 	}
 
 	@Override
 	public int addDataField(int bits, int value) {
-		return this.getChunk().addBlockDataField(this.x, this.y, this.z, bits, value, this.source);
-	}
-
-	@Override
-	public Source getSource() {
-		return this.source;
+		return this.getChunk().addBlockDataField(this.x, this.y, this.z, bits, value, null);
 	}
 
 	@Override
@@ -284,6 +284,11 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
+	public Block setMaterial(MaterialSource material, Cause<?> cause) {
+		return this.setMaterial(material, material.getData(), cause);
+	}
+
+	@Override
 	public Block setMaterial(MaterialSource material, DataSource data) {
 		return this.setMaterial(material, data.getData());
 	}
@@ -295,13 +300,13 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public Block setSkyLight(byte level) {
-		this.getChunk().setBlockSkyLight(this.x, this.y, this.z, level, this.source);
+		this.getChunk().setBlockSkyLight(this.x, this.y, this.z, level, null);
 		return this;
 	}
 
 	@Override
 	public Block setBlockLight(byte level) {
-		this.getChunk().setBlockLight(this.x, this.y, this.z, level, this.source);
+		this.getChunk().setBlockLight(this.x, this.y, this.z, level, null);
 		return this;
 	}
 
@@ -322,7 +327,7 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public Block queueUpdate(EffectRange range) {
-		getWorld().queueBlockPhysics(this.x, this.y, this.z, range, this.source);
+		getWorld().queueBlockPhysics(this.x, this.y, this.z, range);
 		return this;
 	}
 

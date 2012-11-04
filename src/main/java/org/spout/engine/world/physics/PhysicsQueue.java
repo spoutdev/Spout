@@ -29,8 +29,8 @@ package org.spout.engine.world.physics;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.spout.api.Source;
 import org.spout.api.Spout;
+import org.spout.api.event.Cause;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
@@ -84,31 +84,31 @@ public class PhysicsQueue {
 				int oy = y + v.getY();
 				int oz = z + v.getZ();
 				if ((ox & MASK) == (x & MASK) && (oy & MASK) == (y & MASK) && (oz & MASK) == (z & MASK)) {
-					queueForUpdate(ox, oy, oz, update.getOldMaterial(), update.getSource());
+					queueForUpdate(ox, oy, oz, update.getOldMaterial());
 				} else if (ox >= 0 && ox < Region.BLOCKS.SIZE && oy >= 0 && oy < Region.BLOCKS.SIZE && oz >= 0 && oz < Region.BLOCKS.SIZE) {
-					region.updateBlockPhysics(ox, oy, oz, update.getOldMaterial(), update.getSource());
+					region.updateBlockPhysics(ox, oy, oz, update.getOldMaterial());
 				} else {
-					region.getWorld().queueBlockPhysics(region.getBlockX() + ox, region.getBlockY() + oy, region.getBlockZ() + oz, EffectRange.THIS, update.getOldMaterial(), update.getSource());
+					region.getWorld().queueBlockPhysics(region.getBlockX() + ox, region.getBlockY() + oy, region.getBlockZ() + oz, EffectRange.THIS, update.getOldMaterial());
 				}
 			}
 		}
 		return updated;
 	}
 	
-	public void queueForUpdateAsync(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial, Source source) {
-		asyncQueue.add(new PhysicsUpdate(x, y, z, range, oldMaterial, source));
+	public void queueForUpdateAsync(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial) {
+		asyncQueue.add(new PhysicsUpdate(x, y, z, range, oldMaterial));
 		registerActive();
 	}
 	
-	public void queueForUpdate(int x, int y, int z, BlockMaterial oldMaterial, Source source) {
+	public void queueForUpdate(int x, int y, int z, BlockMaterial oldMaterial) {
 		checkStages();
-		updateQueue.add(x, y, z, oldMaterial, source);
+		updateQueue.add(x, y, z, oldMaterial);
 		registerActive();
 	}
 	
-	public void queueForUpdateMultiRegion(int x, int y, int z, BlockMaterial oldMaterial, Source source) {
+	public void queueForUpdateMultiRegion(int x, int y, int z, BlockMaterial oldMaterial) {
 		checkStages();
-		multiRegionQueue.add(x, y, z, oldMaterial, source);
+		multiRegionQueue.add(x, y, z, oldMaterial);
 		registerActive();
 	}
 	

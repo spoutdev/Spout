@@ -43,7 +43,7 @@ public class BlockUpdateMessageHandler extends MessageHandler<BlockUpdateMessage
 		}
 
 		Player player = session.getPlayer();
-		player.getWorld().getBlock(message.getX(), message.getY(), message.getZ(), player)
+		player.getWorld().getBlock(message.getX(), message.getY(), message.getZ())
 		.setMaterial(Material.get(message.getType()), message.getData())
 		.setBlockLight(message.getBlockLight()).setSkyLight(message.getSkyLight());
 	}

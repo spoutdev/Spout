@@ -28,7 +28,6 @@ package org.spout.engine.world;
 
 import gnu.trove.iterator.TLongIterator;
 
-import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.util.hashing.Int21TripleHashed;
@@ -37,7 +36,7 @@ import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.util.ChunkModel;
 import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 
-public class SpoutWorldLighting extends Thread implements Source {
+public class SpoutWorldLighting extends Thread {
 	private static String taskName = "Lighting Thread";
 	private static final long MAX_CYCLE_TIME = 20; // Time to perform lighting per tick
 

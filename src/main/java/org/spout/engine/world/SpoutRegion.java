@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -47,12 +46,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
-import org.spout.api.Source;
 import org.spout.api.Spout;
 import org.spout.api.component.components.BlockComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
+import org.spout.api.event.Cause;
 import org.spout.api.event.chunk.ChunkLoadEvent;
 import org.spout.api.event.chunk.ChunkPopulateEvent;
 import org.spout.api.event.chunk.ChunkUnloadEvent;
@@ -1233,43 +1232,43 @@ public class SpoutRegion extends Region {
 	}
 
 	@Override
-	public boolean setBlockData(int x, int y, int z, short data, Source source) {
-		return this.getChunkFromBlock(x, y, z).setBlockData(x, y, z, data, source);
+	public boolean setBlockData(int x, int y, int z, short data, Cause<?> cause) {
+		return this.getChunkFromBlock(x, y, z).setBlockData(x, y, z, data, cause);
 	}
 
 	@Override
-	public boolean addBlockData(int x, int y, int z, short data, Source source) {
-		return this.getChunkFromBlock(x, y, z).addBlockData(x, y, z, data, source);
+	public boolean addBlockData(int x, int y, int z, short data, Cause<?> cause) {
+		return this.getChunkFromBlock(x, y, z).addBlockData(x, y, z, data, cause);
 	}
 
 	@Override
-	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Source source) {
-		return this.getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z, material, data, source);
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Cause<?> cause) {
+		return this.getChunkFromBlock(x, y, z).setBlockMaterial(x, y, z, material, data, cause);
 	}
 
 	@Override
-	public boolean setBlockLight(int x, int y, int z, byte light, Source source) {
-		return this.getChunkFromBlock(x, y, z).setBlockLight(x, y, z, light, source);
+	public boolean setBlockLight(int x, int y, int z, byte light, Cause<?> cause) {
+		return this.getChunkFromBlock(x, y, z).setBlockLight(x, y, z, light, cause);
 	}
 
 	@Override
-	public boolean setBlockSkyLight(int x, int y, int z, byte light, Source source) {
-		return this.getChunkFromBlock(x, y, z).setBlockSkyLight(x, y, z, light, source);
+	public boolean setBlockSkyLight(int x, int y, int z, byte light, Cause<?> cause) {
+		return this.getChunkFromBlock(x, y, z).setBlockSkyLight(x, y, z, light, cause);
 	}
 
 	@Override
-	public short setBlockDataBits(int x, int y, int z, int bits, boolean set, Source source) {
-		return this.getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits, set, source);
+	public short setBlockDataBits(int x, int y, int z, int bits, boolean set, Cause<?> cause) {
+		return this.getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits, set, cause);
 	}
 
 	@Override
-	public short setBlockDataBits(int x, int y, int z, int bits, Source source) {
-		return this.getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits, source);
+	public short setBlockDataBits(int x, int y, int z, int bits, Cause<?> cause) {
+		return this.getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits, cause);
 	}
 
 	@Override
-	public short clearBlockDataBits(int x, int y, int z, int bits, Source source) {
-		return this.getChunkFromBlock(x, y, z).clearBlockDataBits(x, y, z, bits, source);
+	public short clearBlockDataBits(int x, int y, int z, int bits, Cause<?> cause) {
+		return this.getChunkFromBlock(x, y, z).clearBlockDataBits(x, y, z, bits, cause);
 	}
 
 	@Override
@@ -1283,13 +1282,13 @@ public class SpoutRegion extends Region {
 	}
 
 	@Override
-	public int setBlockDataField(int x, int y, int z, int bits, int value, Source source) {
-		return this.getChunkFromBlock(x, y, z).setBlockDataField(x, y, z, bits, value, source);
+	public int setBlockDataField(int x, int y, int z, int bits, int value, Cause<?> cause) {
+		return this.getChunkFromBlock(x, y, z).setBlockDataField(x, y, z, bits, value, cause);
 	}
 
 	@Override
-	public int addBlockDataField(int x, int y, int z, int bits, int value, Source source) {
-		return this.getChunkFromBlock(x, y, z).addBlockDataField(x, y, z, bits, value, source);
+	public int addBlockDataField(int x, int y, int z, int bits, int value, Cause<?> cause) {
+		return this.getChunkFromBlock(x, y, z).addBlockDataField(x, y, z, bits, value, cause);
 	}
 
 	@Override
@@ -1298,26 +1297,26 @@ public class SpoutRegion extends Region {
 	}
 
 	@Override
-	public void queueBlockPhysics(int x, int y, int z, EffectRange range, Source source) {
-		queueBlockPhysics(x, y, z, range, null, source);
+	public void queueBlockPhysics(int x, int y, int z, EffectRange range) {
+		queueBlockPhysics(x, y, z, range, null);
 	}
 
-	public void queueBlockPhysics(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial, Source source) {
+	public void queueBlockPhysics(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial) {
 		SpoutChunk c = getChunkFromBlock(x, y, z, LoadOption.NO_LOAD);
 		if (c != null) {
-			c.queueBlockPhysics(x, y, z, range, oldMaterial, source);
+			c.queueBlockPhysics(x, y, z, range, oldMaterial);
 		}
 	}
 
 	@Override
-	public void updateBlockPhysics(int x, int y, int z, Source source) {
-		updateBlockPhysics(x, y, z, null, source);
+	public void updateBlockPhysics(int x, int y, int z) {
+		updateBlockPhysics(x, y, z, null);
 	}
 
-	public void updateBlockPhysics(int x, int y, int z, BlockMaterial oldMaterial, Source source) {
+	public void updateBlockPhysics(int x, int y, int z, BlockMaterial oldMaterial) {
 		SpoutChunk c = getChunkFromBlock(x, y, z, LoadOption.NO_LOAD);
 		if (c != null) {
-			c.updateBlockPhysics(x, y, z, oldMaterial, source);
+			c.updateBlockPhysics(x, y, z, oldMaterial);
 		}
 	}
 
@@ -1333,18 +1332,18 @@ public class SpoutRegion extends Region {
 	}
 
 	@Override
-	public Block getBlock(int x, int y, int z, Source source) {
-		return this.getWorld().getBlock(x, y, z, source);
+	public Block getBlock(int x, int y, int z) {
+		return this.getWorld().getBlock(x, y, z);
 	}
 
 	@Override
-	public Block getBlock(float x, float y, float z, Source source) {
-		return this.getWorld().getBlock(x, y, z, source);
+	public Block getBlock(float x, float y, float z) {
+		return this.getWorld().getBlock(x, y, z);
 	}
 
 	@Override
-	public Block getBlock(Vector3 position, Source source) {
-		return this.getWorld().getBlock(position, source);
+	public Block getBlock(Vector3 position) {
+		return this.getWorld().getBlock(position);
 	}
 
 	@Override
@@ -1378,8 +1377,8 @@ public class SpoutRegion extends Region {
 	}
 
 	@Override
-	public boolean compareAndSetData(int x, int y, int z, int expect, short data, Source source) {
-		return this.getChunkFromBlock(x, y, z).compareAndSetData(x, y, z, expect, data, source);
+	public boolean compareAndSetData(int x, int y, int z, int expect, short data, Cause<?> cause) {
+		return this.getChunkFromBlock(x, y, z).compareAndSetData(x, y, z, expect, data, cause);
 	}
 
 	@Override

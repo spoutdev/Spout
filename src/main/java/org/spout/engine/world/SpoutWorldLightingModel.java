@@ -327,7 +327,7 @@ public class SpoutWorldLightingModel {
 			if (this.light < this.blockLight) {
 				this.light = this.blockLight;
 			}
-			this.chunk.setBlockLight(this.x, this.y, this.z, this.light, this.world);
+			this.chunk.setBlockLight(this.x, this.y, this.z, this.light, null);
 		}
 
 		@Override
@@ -351,7 +351,7 @@ public class SpoutWorldLightingModel {
 		public void setLight(byte light) {
 			if (this.light != 15) {
 				this.light = light;
-				this.chunk.setBlockSkyLight(this.x, this.y, this.z, light, this.world);
+				this.chunk.setBlockSkyLight(this.x, this.y, this.z, light, null);
 			}
 		}
 

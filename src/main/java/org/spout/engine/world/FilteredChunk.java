@@ -31,9 +31,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.spout.api.Source;
 import org.spout.api.datatable.ManagedHashMap;
-import org.spout.api.geo.cuboid.ChunkSnapshot;
+import org.spout.api.event.Cause;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
@@ -122,11 +121,11 @@ public class FilteredChunk extends SpoutChunk{
 	}
 
 	@Override
-	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Source source) {
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Cause<?> cause) {
 		if (uniform.get()) {
 			initialize();
 		}
-		boolean changed = super.setBlockMaterial(x, y, z, material, data, source);
+		boolean changed = super.setBlockMaterial(x, y, z, material, data, cause);
 		if (changed) {
 			setModified();
 		}
@@ -169,25 +168,25 @@ public class FilteredChunk extends SpoutChunk{
 	}
 
 	@Override
-	protected int setBlockDataFieldRaw(int bx, int by, int bz, int bits, int value, Source source) {
+	protected int setBlockDataFieldRaw(int bx, int by, int bz, int bits, int value, Cause<?> cause) {
 		if (uniform.get()) {
 			initialize();
 		}
 		setModified();
-		return super.setBlockDataFieldRaw(bx, by, bz, bits, value, source);
+		return super.setBlockDataFieldRaw(bx, by, bz, bits, value, cause);
 	}
 
 	@Override
-	protected int addBlockDataFieldRaw(int bx, int by, int bz, int bits, int value, Source source) {
+	protected int addBlockDataFieldRaw(int bx, int by, int bz, int bits, int value, Cause<?> cause) {
 		if (uniform.get()) {
 			initialize();
 		}
 		setModified();
-		return super.addBlockDataFieldRaw(bx, by, bz, bits, value, source);
+		return super.addBlockDataFieldRaw(bx, by, bz, bits, value, cause);
 	}
 
 	@Override
-	public boolean compareAndSetData(int x, int y, int z, int expect, short data, Source source) {
+	public boolean compareAndSetData(int x, int y, int z, int expect, short data, Cause<?> cause) {
 		if (uniform.get()) {
 			Material m = material.get();
 			if (m.getId() == BlockFullState.getId(expect) && m.getData() == BlockFullState.getData(expect)) {
@@ -197,15 +196,15 @@ public class FilteredChunk extends SpoutChunk{
 			}
 		}
 		setModified();
-		return super.compareAndSetData(x, y, z, expect, data, source);
+		return super.compareAndSetData(x, y, z, expect, data, cause);
 	}
 
 	@Override
-	public boolean setBlockLight(int x, int y, int z, byte light, Source source) {
+	public boolean setBlockLight(int x, int y, int z, byte light, Cause<?> cause) {
 		if (uniform.get()) {
 			return false;
 		}
-		boolean changed = super.setBlockLight(x, y, z, light, source);
+		boolean changed = super.setBlockLight(x, y, z, light, cause);
 		if (changed) {
 			setModified();
 		}
@@ -213,11 +212,11 @@ public class FilteredChunk extends SpoutChunk{
 	}
 
 	@Override
-	public boolean setBlockSkyLight(int x, int y, int z, byte light, Source source) {
+	public boolean setBlockSkyLight(int x, int y, int z, byte light, Cause<?> cause) {
 		if (uniform.get()) {
 			return false;
 		}
-		boolean changed = super.setBlockSkyLight(x, y, z, light, source);
+		boolean changed = super.setBlockSkyLight(x, y, z, light, cause);
 		if (changed) {
 			setModified();
 		}

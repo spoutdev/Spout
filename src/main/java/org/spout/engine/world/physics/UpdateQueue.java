@@ -33,7 +33,6 @@ import gnu.trove.list.array.TByteArrayList;
 
 import java.util.ArrayList;
 
-import org.spout.api.Source;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.util.map.TByteShortByteKeyedObjectHashMap;
 
@@ -43,14 +42,12 @@ public class UpdateQueue {
 	private final TByteArrayList xArray = new TByteArrayList();
 	private final TByteArrayList yArray = new TByteArrayList();
 	private final TByteArrayList zArray = new TByteArrayList();
-	private final ArrayList<Source> sources = new ArrayList<Source>();
 	private final ArrayList<BlockMaterial> materials = new ArrayList<BlockMaterial>();
 	private int y;
 	private int z;
-	private Source source;
 	private BlockMaterial oldMaterial;
 
-	public void add(int x, int y, int z, BlockMaterial oldMaterial, Source source) {
+	public void add(int x, int y, int z, BlockMaterial oldMaterial) {
 		TIntList list = map.get(x, y & 0xFF, z);
 		if (list != null) {
 			TIntIterator i = list.iterator();
@@ -60,7 +57,6 @@ public class UpdateQueue {
 						(xArray.get(index) & 0xFF) == (x & 0xFF) && 
 						(yArray.get(index) & 0xFF) == (y & 0xFF) && 
 						(zArray.get(index) & 0xFF) == (z & 0xFF) &&
-						sources.get(index) == source &&
 						materials.get(index) == oldMaterial
 						) {
 					return;
@@ -74,7 +70,6 @@ public class UpdateQueue {
 		xArray.add((byte) x);
 		yArray.add((byte) y);
 		zArray.add((byte) z);
-		sources.add(source);
 		materials.add(oldMaterial);
 	}
 
@@ -93,7 +88,6 @@ public class UpdateQueue {
 		x = xArray.removeAt(index) & 0xFF;
 		y = yArray.removeAt(index) & 0xFF;
 		z = zArray.removeAt(index) & 0xFF;
-		source = sources.remove(index);
 		oldMaterial = materials.remove(index);
 		TIntList list = map.get(x, y & 0xFF, z);
 		if (list == null || !list.remove(index)) {
@@ -122,16 +116,7 @@ public class UpdateQueue {
 	public int getZ() {
 		return z;
 	}
-	
-	/**
-	 * Gets the source
-	 * 
-	 * @return the source
-	 */
-	public Source getSource() {
-		return source;
-	}
-	
+
 	/**
 	 * Gets the old material
 	 * 
