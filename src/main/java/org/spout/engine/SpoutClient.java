@@ -64,6 +64,7 @@ import org.spout.api.Client;
 import org.spout.api.FileSystem;
 import org.spout.api.Spout;
 import org.spout.api.audio.SoundManager;
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
@@ -202,7 +203,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		inputManager.bind("MOUSE_BUTTON0", "+FIRE_1");
 		inputManager.bind("MOUSE_BUTTON1", "+INTERACT");
 		inputManager.bind("MOUSE_BUTTON2", "+FIRE_2");
-		
+
 	}
 
 	@Override
@@ -216,10 +217,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 		FullScreen mainScreen = new FullScreen();
 		mainScreen.setTakesInput(false);
 		screenStack = new ScreenStack(mainScreen);
-		
+
 		getScheduler().scheduleAsyncRepeatingTask(getPluginManager().getPlugin("Spout"), getScreenStack(), 50, 50, TaskPriority.NORMAL);
 		super.start(checkWorlds);
-		
+
 		getEventManager().registerEvents(new SpoutClientListener(this), this);
 		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this));
 
@@ -241,7 +242,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		super.getDefaultWorld().spawnEntity(activePlayer);
 
 		getScheduler().startRenderThread();
-		
+
 		//TODO Maybe a better way of alerting plugins the client is done?
 		if (ClientEnableEvent.getHandlerList().getRegisteredListeners().length != 0) {
 			Spout.getEventManager().callEvent(new ClientEnableEvent());
@@ -317,17 +318,17 @@ public class SpoutClient extends SpoutEngine implements Client {
 		ts.setRotation(MathHelper.rotation(inputState.pitch(), inputState.yaw(), ts.getRotation().getRoll()));
 
 		Point point = ts.getPosition();
-		if (inputState.getForward()) 
+		if (inputState.getForward())
 			point = point.subtract(ts.forwardVector());
-		if (inputState.getBackward()) 
+		if (inputState.getBackward())
 			point = point.add(ts.forwardVector());
-		if (inputState.getLeft()) 
+		if (inputState.getLeft())
 			point = point.subtract(ts.rightVector());
-		if (inputState.getRight()) 
+		if (inputState.getRight())
 			point = point.add(ts.rightVector());
 		if (inputState.getJump())
 			point = point.add(ts.upVector());
-		if (inputState.getCrouch()) 
+		if (inputState.getCrouch())
 			point = point.subtract(ts.upVector());
 		ts.setPosition(point);
 
@@ -504,7 +505,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		tmc.setSize(0.5f);
 		tmc.setTranslation(new Vector3(0, 3f, 0));
 		tmc.setFont(font);
-		
+
 		super.getDefaultWorld().spawnEntity(e);
 	}
 
@@ -538,14 +539,15 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		gui.begin();
 		if (showDebugInfos) {
-			gui.drawText("Spout client ! Logged as "+ChatStyle.RED+ activePlayer.getDisplayName()+ChatStyle.BLACK+" in world: "+ChatStyle.RED+getDefaultWorld().getName(), font, -0.95f, 0.9f, 10f);
-			gui.drawText(ChatStyle.BLUE+"x: "+activePlayer.getTransform().getPosition().getX(), font, -0.95f, 0.8f, 8f);
-			gui.drawText(ChatStyle.BLUE+"y: "+activePlayer.getTransform().getPosition().getY(), font, -0.95f, 0.7f, 8f);
-			gui.drawText(ChatStyle.BLUE+"z: "+activePlayer.getTransform().getPosition().getZ(), font, -0.95f, 0.6f, 8f);
-			gui.drawText(ChatStyle.BLUE+"fps: "+fps, font, -0.95f, 0.5f, 8f);
-			gui.drawText(ChatStyle.BLUE+"batch: "+worldRenderer.getChunkRenderersSize(), font, -0.95f, 0.4f, 8f);
-			gui.drawText(ChatStyle.BLUE+"ocluded: "+(int)((float)worldRenderer.getOcluded()/worldRenderer.getChunkRenderersSize() * 100) + "%", font, -0.95f, 0.3f, 8f);
-			gui.drawText(ChatStyle.BLUE+"culled: "+(int)((float)worldRenderer.getCulled()/worldRenderer.getChunkRenderersSize() * 100) + "%", font, -0.95f, 0.2f, 8f);
+			Point position = activePlayer.getTransform().getPosition();
+			gui.drawText(new ChatArguments("Spout client! Logged as ", ChatStyle.RED, activePlayer.getDisplayName(), ChatStyle.RESET, " in world: ", ChatStyle.RED, getDefaultWorld().getName()), font, -0.95f, 0.9f, 10f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "x: ", position.getX()), font, -0.95f, 0.8f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "y: ", position.getY()), font, -0.95f, 0.7f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "z: ", position.getZ()), font, -0.95f, 0.6f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "fps: ", fps), font, -0.95f, 0.5f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "batch: ", worldRenderer.getChunkRenderersSize()), font, -0.95f, 0.4f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "ocluded: ", (int)((float)worldRenderer.getOcluded()/worldRenderer.getChunkRenderersSize() * 100) + "%"), font, -0.95f, 0.3f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "culled: ", (int)((float)worldRenderer.getCulled()/worldRenderer.getChunkRenderersSize() * 100), "%"), font, -0.95f, 0.2f, 8f);
 		}
 		for (Screen screen : screenStack.getVisibleScreens()) {
 			for (Widget widget : screen.getWidgets()) {
@@ -670,11 +672,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	public void toggleWireframe() {
-		if(wireframe) {			
-			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);	
-			wireframe = false;	
+		if(wireframe) {
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+			wireframe = false;
 		} else {
-			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);	
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 			wireframe = true;
 		}
 	}

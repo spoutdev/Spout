@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.gui.Widget;
 import org.spout.api.gui.component.LabelComponent;
 import org.spout.api.gui.render.RenderPart;
@@ -80,28 +81,28 @@ public class SpriteBatch {
 			RenderPart rect = sprites.get(i);
 
 			renderer.addVertex(rect.getSprite().getX(), rect.getSprite().getY() + rect.getSprite().getHeight());
-			renderer.addColor(rect.getColor());			
-			renderer.addTexCoord(rect.getSource().getX(), rect.getSource().getY());			
+			renderer.addColor(rect.getColor());
+			renderer.addTexCoord(rect.getSource().getX(), rect.getSource().getY());
 
 			renderer.addVertex(rect.getSprite().getX(), rect.getSprite().getY());
 			renderer.addColor(rect.getColor());
 			renderer.addTexCoord(rect.getSource().getX(), rect.getSource().getY() + rect.getSource().getHeight());
 
 			renderer.addVertex(rect.getSprite().getX() + rect.getSprite().getWidth(), rect.getSprite().getY());
-			renderer.addColor(rect.getColor());	
+			renderer.addColor(rect.getColor());
 			renderer.addTexCoord(rect.getSource().getX() + rect.getSource().getWidth(), rect.getSource().getY() + rect.getSource().getHeight());
 
 
 			renderer.addVertex(rect.getSprite().getX(), rect.getSprite().getY() + rect.getSprite().getHeight());
-			renderer.addColor(rect.getColor());	
-			renderer.addTexCoord(rect.getSource().getX(), rect.getSource().getY());	
+			renderer.addColor(rect.getColor());
+			renderer.addTexCoord(rect.getSource().getX(), rect.getSource().getY());
 
 			renderer.addVertex(rect.getSprite().getX() + rect.getSprite().getWidth(), rect.getSprite().getY());
-			renderer.addColor(rect.getColor());		
+			renderer.addColor(rect.getColor());
 			renderer.addTexCoord(rect.getSource().getX() + rect.getSource().getWidth(), rect.getSource().getY() + rect.getSource().getHeight());
 
 			renderer.addVertex(rect.getSprite().getX() + rect.getSprite().getWidth(), rect.getSprite().getY() + rect.getSprite().getHeight());
-			renderer.addColor(rect.getColor());	
+			renderer.addColor(rect.getColor());
 			renderer.addTexCoord(rect.getSource().getX() + rect.getSource().getWidth(), rect.getSource().getY());
 		}
 		renderer.end();
@@ -118,26 +119,26 @@ public class SpriteBatch {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 	}
 
-	public void drawText(String text, ClientFont font, float x, float y, float size) {
+	public void drawText(ChatArguments text, ClientFont font, float x, float y, float size) {
 		Widget tmp = new Widget();
 		tmp.setGeometry(new Rectangle(x, y, 0, 0));
 		LabelComponent txt = tmp.add(LabelComponent.class);
-		
+
 		txt.setFont(font);
 		txt.setText(text);
-		
+
 		draw(tmp.getRenderParts());
 	}
 
 	public void draw(RenderPart part) {
 		sprites.add(part);
 	}
-	
+
 	public void draw(List<RenderPart> parts) {
 		for (RenderPart part : parts)
 			draw(part);
 	}
-	
+
 	public void draw(RenderMaterial material, float x, float y, float w, float h) {
 		draw(material, new Rectangle(0, 0, 1, 1), new Rectangle(x, y, w, h * aspectRatio),  Color.white);
 	}
