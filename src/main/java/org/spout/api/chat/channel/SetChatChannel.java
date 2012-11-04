@@ -24,15 +24,41 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.chat;
+package org.spout.api.chat.channel;
+
+import com.google.common.collect.Sets;
+import org.spout.api.command.CommandSource;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Thrown when somebody wants to remove an entity from the defaultChatChannel
+ * An implementation of {@link ChatChannel} that contains a manually modified list of receivers.
  */
-public class DefaultChannelRemovalException extends RuntimeException{
+public class SetChatChannel extends ChatChannel {
+	private final Set<CommandSource> receivers = Sets.newSetFromMap(new ConcurrentHashMap<CommandSource, Boolean>());
 
-	public DefaultChannelRemovalException(){
-		super("Removing the defaultChatChannel from Listening is not allowed");
+	public SetChatChannel(String name) {
+		super(name);
 	}
 
+	@Override
+	public Set<CommandSource> getReceivers() {
+		return Collections.unmodifiableSet(new HashSet<CommandSource>(receivers));
+	}
+
+	@Override
+	public boolean isReceiver(CommandSource source) {
+		return receivers.contains(source);
+	}
+
+	public boolean addReceiver(CommandSource source) {
+		return receivers.add(source);
+	}
+
+	public boolean removeReceiver(CommandSource source) {
+		return receivers.remove(source);
+	}
 }

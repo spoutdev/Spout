@@ -37,8 +37,8 @@ import java.util.logging.Logger;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.group.ChannelGroup;
 
-import org.spout.api.chat.ChatChannelManager;
-import org.spout.api.chat.TextChatChannel;
+import org.spout.api.chat.channel.ChatChannel;
+import org.spout.api.chat.channel.PermissionChatChannel;
 import org.spout.api.chat.completion.CompletionManager;
 import org.spout.api.chat.console.MultiConsole;
 import org.spout.api.command.Command;
@@ -73,6 +73,8 @@ public interface Engine extends Named {
 	 * this permissions with {@link org.spout.api.permissions.DefaultPermissions}
 	 */
 	public static final String STANDARD_BROADCAST_PERMISSION = "spout.broadcast.standard";
+
+	public static final ChatChannel STANDARD_BROADCAST_CHANNEL = new PermissionChatChannel("Standard Broadcasts", STANDARD_BROADCAST_PERMISSION);
 
 	/**
 	 * Gets the name of this game's implementation
@@ -555,25 +557,4 @@ public interface Engine extends Named {
 	 * @return The completion manager
 	 */
 	public CompletionManager getCompletionManager();
-
-	/**
-	 * Gets the ChatChannel which is used by default
-	 *
-	 * @return the defaultChatChannel
-	 */
-	public TextChatChannel getDefaultTextChatChannel();
-
-	/**
-	 * Gets the ChatChannel which is being used by the console
-	 *
-	 * @return the consoleChatChannel
-	 */
-	public TextChatChannel getConsoleTextChatChannel();
-
-	/**
-	 * Get the ChatChannelManager
-	 *
-	 * @return the ChatChannelManager
-	 */
-	public ChatChannelManager getChatChannelManager();
 }
