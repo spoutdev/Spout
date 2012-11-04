@@ -26,7 +26,6 @@
  */
 package org.spout.api.component.components;
 
-import org.spout.api.Source;
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentOwner;
 import org.spout.api.entity.Entity;
@@ -74,7 +73,7 @@ public abstract class EntityComponent extends Component {
 	 * @param action being performed
 	 * @param source performing the action
 	 */
-	public void onInteract(Action action, Source source) {
+	public void onInteract(Action action, Entity source) {
 		
 	}
 }

@@ -26,6 +26,7 @@
  */
 package org.spout.api.material;
 
+import org.spout.api.event.Cause;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector3;
@@ -61,13 +62,13 @@ public interface Placeable {
 	 * @param against face against the block is placed
 	 * @param clickedPos relative position the block was clicked to place this block
 	 * @param isClickedBlock whether the block is being placed at the clicked block
+	 * @param cause the cause of the placement
 	 * @return true if placement is handled
 	 */
-	public boolean onPlacement(Block block, short data, BlockFace against, Vector3 clickedPos, boolean isClickedBlock);
+	public boolean onPlacement(Block block, short data, BlockFace against, Vector3 clickedPos, boolean isClickedBlock, Cause<?> cause);
 
 	/**
-	 * See the other onPlacement function, this function calls that one.<br>
-	 * It is not allowed to override this function, if you could.
+	 * Called when the data for this block is changed.
 	 */
-	public boolean onPlacement(Block block, short data);
+	public boolean onPlacement(Block block, short data, Cause<?> cause);
 }

@@ -26,8 +26,8 @@
  */
 package org.spout.api.geo.cuboid;
 
-import org.spout.api.Source;
 import org.spout.api.component.components.BlockComponent;
+import org.spout.api.event.Cause;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.World;
 import org.spout.api.geo.WorldSource;
@@ -148,13 +148,6 @@ public interface Block extends MaterialAccess, WorldSource {
 	 */
 	public Block getSurface();
 
-	/**
-	 * Gets the source this block represents
-	 * 
-	 * @return the source
-	 */
-	public Source getSource();
-
 	@Override
 	public BlockMaterial getMaterial();
 
@@ -163,7 +156,6 @@ public interface Block extends MaterialAccess, WorldSource {
 	 *
 	 * @param data to set to
 	 * @return this Block
-	 * @throws NullPointerException
 	 */
 	@Override
 	public Block setData(DataSource data);
@@ -173,17 +165,24 @@ public interface Block extends MaterialAccess, WorldSource {
 	 *
 	 * @param data to set to
 	 * @return this Block
-	 * @throws NullPointerException
 	 */
 	@Override
 	public Block setData(int data);
+
+	/**
+	 * Sets the data of this block
+	 *
+	 * @param data to set to
+	 * @param cause of the change
+	 * @return this Block
+	 */
+	public Block setData(int data, Cause<?> cause);
 
 	/**
 	 * Adds the value to the data of this block
 	 * 
 	 * @param data to add
 	 * @return this Block
-	 * @throws NullPointerException
 	 */
 	public Block addData(int data);
 
@@ -192,10 +191,18 @@ public interface Block extends MaterialAccess, WorldSource {
 	 *
 	 * @param material to set to
 	 * @return this Block
-	 * @throws NullPointerException
 	 */
 	@Override
 	public Block setMaterial(MaterialSource material);
+	
+	/**
+	 * Sets the material of this block
+	 *
+	 * @param material to set to
+	 * @param cause of the change
+	 * @return this Block
+	 */
+	public Block setMaterial(MaterialSource material, Cause<?> cause);
 
 	/**
 	 * Sets the material and data of this block
@@ -203,7 +210,6 @@ public interface Block extends MaterialAccess, WorldSource {
 	 * @param material to set to
 	 * @param data to set to
 	 * @return this Block
-	 * @throws NullPointerException
 	 */
 	@Override
 	public Block setMaterial(MaterialSource material, DataSource data);
@@ -214,11 +220,20 @@ public interface Block extends MaterialAccess, WorldSource {
 	 * @param material to set to
 	 * @param data to set to
 	 * @return this Block
-	 * @throws NullPointerException
 	 */
 	@Override
 	public Block setMaterial(MaterialSource material, int data);
-	
+
+	/**
+	 * Sets the material and data of this block
+	 *
+	 * @param material to set to
+	 * @param data to set to
+	 * @param cause of the change
+	 * @return this Block
+	 */
+	public Block setMaterial(MaterialSource material, int data, Cause<?> cause);
+
 	/**
 	 * Sets the given bits in the data for the block<br>
 	 * <br>
@@ -322,7 +337,6 @@ public interface Block extends MaterialAccess, WorldSource {
 	 * 
 	 * @param light level to set to
 	 * @return this Block
-	 * @throws NullPointerException
 	 */
 	public Block setSkyLight(byte level);
 
@@ -332,7 +346,6 @@ public interface Block extends MaterialAccess, WorldSource {
 	 *
 	 * @param light level to set to
 	 * @return this Block
-	 * @throws NullPointerException
 	 */
 	public Block setBlockLight(byte level);
 

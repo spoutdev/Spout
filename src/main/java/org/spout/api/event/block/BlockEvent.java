@@ -26,20 +26,20 @@
  */
 package org.spout.api.event.block;
 
-import org.spout.api.Source;
 import org.spout.api.event.Event;
+import org.spout.api.event.Cause;
 import org.spout.api.geo.cuboid.Block;
 
 /**
- * Designates an event that occurs on a {@link Block} from a {@link Source}
+ * Designates an event that occurs on a {@link Block} from a {@link Cause}
  */
 public abstract class BlockEvent extends Event {
 	private final Block block;
-	private final Source source;
+	private final Cause<?> reason;
 
-	protected BlockEvent(Block block, Source source) {
+	protected BlockEvent(Block block, Cause<?> reason) {
 		this.block = block;
-		this.source = source;
+		this.reason = reason;
 	}
 
 	/**
@@ -51,10 +51,11 @@ public abstract class BlockEvent extends Event {
 	}
 
 	/**
-	 * Gets the source of this event
+	 * Gets the reason for this event
+	 * 
 	 * @return the event source
 	 */
-	public Source getSource() {
-		return source;
+	public Cause<?> getCause() {
+		return reason;
 	}
 }

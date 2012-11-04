@@ -26,7 +26,7 @@
  */
 package org.spout.api.geo;
 
-import org.spout.api.Source;
+import org.spout.api.event.Cause;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.Vector3;
@@ -41,11 +41,10 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
 	 * @param data to set to
-	 * @param source of the change
-	 * @throws NullPointerException
+	 * @param cause of the change, or null if non-specific cause
 	 */
 	@LiveWrite
-	public boolean setBlockData(int x, int y, int z, short data, Source source);
+	public boolean setBlockData(int x, int y, int z, short data, Cause<?> source);
 
 	/**
 	 * Adds a value to the data for the block at (x, y, z)
@@ -54,11 +53,10 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
 	 * @param data to add
-	 * @param source of the change
-	 * @throws NullPointerException
+	 * @param cause of the change, or null if non-specific cause
 	 */
 	@LiveWrite
-	public boolean addBlockData(int x, int y, int z, short data, Source source);
+	public boolean addBlockData(int x, int y, int z, short data, Cause<?> source);
 
 	/**
 	 * Sets the material and data for the block at (x, y, z) to the given material and data.
@@ -68,11 +66,10 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param z coordinate of the block
 	 * @param data value to set to
 	 * @param material to set to
-	 * @param source of the change
-	 * @throws NullPointerException
+	 * @param cause of the change, or null if non-specific cause
 	 */
 	@LiveWrite
-	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Source source);
+	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Cause<?> source);
 
 	/**
 	 * Sets the block light level for the block at (x, y, z) to the given light level
@@ -81,11 +78,10 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
 	 * @param light level to set to
-	 * @param source of the change
-	 * @throws NullPointerException
+	 * @param cause of the change, or null if non-specific cause
 	 */
 	@LiveWrite
-	public boolean setBlockLight(int x, int y, int z, byte light, Source source);
+	public boolean setBlockLight(int x, int y, int z, byte light, Cause<?> source);
 
 	/**
 	 * Sets the block sky light level for the block at (x, y, z) to the given light level
@@ -94,12 +90,11 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
 	 * @param light level to set to
-	 * @param source of the change
-	 * @throws NullPointerException
+	 * @param cause of the change, or null if non-specific cause
 	 * @return whether setting was successful
 	 */
 	@LiveWrite
-	public boolean setBlockSkyLight(int x, int y, int z, byte light, Source source);
+	public boolean setBlockSkyLight(int x, int y, int z, byte light, Cause<?> source);
 
 	/**
 	 * Sets the data of the block at (x, y, z) if the expected state matches
@@ -109,11 +104,11 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param z coordinate of the block
 	 * @param expect is the state of the block it expects
 	 * @param data to set to if it matches
-	 * @throws NullPointerException
+	 * @param cause of the change, or null if non-specific cause
 	 * @return whether setting was successful
 	 */
 	@LiveWrite
-	public boolean compareAndSetData(int x, int y, int z, int expect, short data, Source source);
+	public boolean compareAndSetData(int x, int y, int z, int expect, short data, Cause<?> source);
 
 	/**
 	 * Sets the given bits in the data for the block at (x, y, z)<br>
@@ -124,10 +119,11 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
 	 * @param bits the bits to set
+	 * @Param cause of the change, or null if non-specific cause
 	 * @return the old data for the block
 	 */
 	@LiveWrite
-	public short setBlockDataBits(int x, int y, int z, int bits, Source source);
+	public short setBlockDataBits(int x, int y, int z, int bits, Cause<?> source);
 
 	/**
 	 * Sets the given bits in the data for the block at (x, y, z)<br>
@@ -140,11 +136,12 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
 	 * @param bits the bits to set or clear
-	 * @param set True to set, False to clear
+	 * @param set true to set, false to clear
+	 * @Param cause of the change, or null if non-specific cause
 	 * @return the old data for the block
 	 */
 	@LiveWrite
-	public short setBlockDataBits(int x, int y, int z, int bits, boolean set, Source source);
+	public short setBlockDataBits(int x, int y, int z, int bits, boolean set, Cause<?> source);
 
 	/**
 	 * Clears the given bits in the data for the block at (x, y, z)<br>
@@ -155,10 +152,11 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
 	 * @param bits the bits to clear
+	 * @param cause of the change, or null if non-specific cause
 	 * @return the old data for the block
 	 */
 	@LiveWrite
-	public short clearBlockDataBits(int x, int y, int z, int bits, Source source);
+	public short clearBlockDataBits(int x, int y, int z, int bits, Cause<?> source);
 
 	/**
 	 * Gets the data field from the block at (x, y, z)<br>
@@ -200,11 +198,12 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param z coordinate of the block
 	 * @param bits the bits of the field
 	 * @param value the new value of the field
+	 * @param cause of the change, or null if non-specific cause
 	 * @return the old value of the field
 	 */
 	@LiveWrite
 	@Threadsafe
-	public int setBlockDataField(int x, int y, int z, int bits, int value, Source source);
+	public int setBlockDataField(int x, int y, int z, int bits, int value, Cause<?> source);
 
 	/**
 	 * Adds a value to the data field for the block at (x, y, z).  This is the reverse operation to the getBlockDataField method.<br>
@@ -218,11 +217,12 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param z coordinate of the block
 	 * @param bits the bits of the field
 	 * @param value to add to the value of the field
+	 * @Param cause of the change, or null if non-specific cause
 	 * @return the old value of the field
 	 */
 	@LiveWrite
 	@Threadsafe
-	public int addBlockDataField(int x, int y, int z, int bits, int value, Source source);
+	public int addBlockDataField(int x, int y, int z, int bits, int value, Cause<?> source);
 
 	/**
 	 * Gets if a block is contained in this area
@@ -230,7 +230,7 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
-	 * @return True if it is contained, False if not
+	 * @return true if it is contained, false if not
 	 */
 	public boolean containsBlock(int x, int y, int z);
 
@@ -240,11 +240,10 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
-	 * @param source the block should represent
 	 * @return the Block
 	 */
 	@Threadsafe
-	public Block getBlock(int x, int y, int z, Source source);
+	public Block getBlock(int x, int y, int z);
 
 	/**
 	 * Gets a {@link Block} representing the block at (x, y, z)
@@ -252,19 +251,17 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
-	 * @param source the block should represent
 	 * @return the Block
 	 */
 	@Threadsafe
-	public Block getBlock(float x, float y, float z, Source source);
+	public Block getBlock(float x, float y, float z);
 
 	/**
 	 * Gets a {@link Block} representing the block at the position given
 	 *
 	 * @param position of the block
-	 * @param source the block should represent
 	 * @return the Block
 	 */
 	@Threadsafe
-	public Block getBlock(Vector3 position, Source source);
+	public Block getBlock(Vector3 position);
 }

@@ -24,63 +24,19 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.event.entity;
+package org.spout.api.event.cause;
 
 import org.spout.api.entity.Entity;
-import org.spout.api.event.Cancellable;
-import org.spout.api.event.HandlerList;
-import org.spout.api.geo.discrete.Point;
+import org.spout.api.event.Cause;
 
-/**
- * Holds information for entity movement events
- * Implements {@link Cancellable}, which allows this event's normal outcome to be prevented..
- */
-public class EntityMoveEvent extends EntityEvent implements Cancellable {
-	private static HandlerList handlers = new HandlerList();
-	private final Point from;
-	private Point to;
-
-	public EntityMoveEvent(Entity e, Point from, Point to) {
-		super(e);
-		this.from = from;
-		this.to = to;
-	}
-
-	/**
-	 * Gets the location this entity moved from.
-	 * @return Point the entity moved from.
-	 */
-	public Point getFrom() {
-		return from;
-	}
-
-	/**
-	 * Gets the location this entity moved to.
-	 * @return Point the entity moved to.
-	 */
-	public Point getTo() {
-		return to;
-	}
-
-	/**
-	 * Sets the location that this entity will move to.
-	 * @param to New Point this entity will move to.
-	 */
-	public void setTo(Point to) {
-		this.to = to;
+public class EntityCause implements Cause<Entity>{
+	private final Entity entity;
+	public EntityCause(Entity entity) {
+		this.entity = entity;
 	}
 
 	@Override
-	public void setCancelled(boolean cancelled) {
-		super.setCancelled(cancelled);
-	}
-
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
-	}
-
-	public static HandlerList getHandlerList() {
-		return handlers;
+	public Entity getSource() {
+		return entity;
 	}
 }

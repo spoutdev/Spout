@@ -34,8 +34,11 @@ import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionStrategy;
 import org.spout.api.collision.CollisionVolume;
 import org.spout.api.entity.Entity;
+import org.spout.api.event.Cause;
+import org.spout.api.event.cause.MaterialCause;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.cuboid.Block;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.basic.BasicAir;
 import org.spout.api.material.basic.BasicSkyBox;
 import org.spout.api.material.block.BlockFace;
@@ -55,7 +58,6 @@ public class BlockMaterial extends Material implements Placeable {
 	public static final BlockMaterial UNBREAKABLE = new BlockMaterial("Unbreakable").setHardness(100.f);
 	public static final BlockMaterial SKYBOX = new BasicSkyBox();
 	public static final BlockMaterial ERROR = new BlockMaterial("Missing Plugin").setHardness((100.f));
-
 
 	public BlockMaterial(String name, String model){
 		super(name, model);
@@ -244,7 +246,7 @@ public class BlockMaterial extends Material implements Placeable {
 	public boolean isPlacementObstacle() {
 		return true;
 	}
-	
+
 	/**
 	 * True if this block requires physic updates when a neighbor block changes,
 	 * false if not.
@@ -264,7 +266,7 @@ public class BlockMaterial extends Material implements Placeable {
 	 */
 	public void onUpdate(BlockMaterial oldMaterial, Block block) {
 	}
-	
+
 	/**
 	 * Returns the maximum range of effect for physics updates to this material.  
 	 * This is triggered when the material is set to this material, or when the 
@@ -277,7 +279,7 @@ public class BlockMaterial extends Material implements Placeable {
 	public EffectRange getPhysicsRange(short data) {
 		return EffectRange.THIS_AND_NEIGHBORS;
 	}
-	
+
 	/**
 	 * Returns the maximum range of effect for physics updates to this material, when 
 	 * it is replaced by another material.  This is triggered when the material or 
@@ -291,7 +293,7 @@ public class BlockMaterial extends Material implements Placeable {
 	public EffectRange getDestroyRange(short data) {
 		return getPhysicsRange(data);
 	}
-	
+
 	/**
 	 * Gets the maximum distance of any physics effect.  This is used to determine if the update can be handled by 
 	 * the region thread and not to determine if any blocks should be updated.
@@ -307,10 +309,11 @@ public class BlockMaterial extends Material implements Placeable {
 	 * Performs the block destroy procedure without initial flags
 	 * 
 	 * @param block to destroy
+	 * @param cause of the destruction
 	 * @return True if destroying was successful
 	 */
-	public boolean destroy(Block block) {
-		return this.destroy(block, new HashSet<Flag>());
+	public boolean destroy(Block block, Cause<?> cause) {
+		return this.destroy(block, new HashSet<Flag>(), cause);
 	}
 
 	/**
@@ -320,9 +323,9 @@ public class BlockMaterial extends Material implements Placeable {
 	 * @param flags to initially use for destruction
 	 * @return True if destroying was successful
 	 */
-	public boolean destroy(Block block, Set<Flag> flags) {
+	public boolean destroy(Block block, Set<Flag> flags, Cause<?> cause) {
 		this.getBlockFlags(block, flags);
-		this.onDestroy(block);
+		this.onDestroy(block, cause);
 		this.onPostDestroy(block, flags);
 		return true;
 	}
@@ -333,8 +336,8 @@ public class BlockMaterial extends Material implements Placeable {
 	 * 
 	 * @param block that got destroyed
 	 */
-	public void onDestroy(Block block) {
-		block.setMaterial(AIR);
+	public void onDestroy(Block block, Cause<?> cause) {
+		block.setMaterial(AIR, cause);
 	}
 
 	/**
@@ -374,7 +377,7 @@ public class BlockMaterial extends Material implements Placeable {
 	public CollisionModel getCollisionModel() {
 		return this.collision;
 	}
-		
+
 	/**
 	 * True if this block has collision,
 	 * false if not.
@@ -459,8 +462,8 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	@Override
-	public boolean onPlacement(Block block, short data, BlockFace against, Vector3 clickedPos, boolean isClickedBlock) {
-		block.setMaterial(this, data);
+	public boolean onPlacement(Block block, short data, BlockFace against, Vector3 clickedPos, boolean isClickedBlock, Cause<?> cause) {
+		block.setMaterial(this, data, cause);
 		return true;
 	}
 
@@ -470,8 +473,8 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	@Override
-	public final boolean onPlacement(Block block, short data) {
-		return this.onPlacement(block, data, BlockFace.BOTTOM, Vector3.UNIT_Y, false);
+	public final boolean onPlacement(Block block, short data, Cause<?> cause) {
+		return this.onPlacement(block, data, BlockFace.BOTTOM, Vector3.UNIT_Y, false, cause);
 	}
 
 	/**
@@ -502,5 +505,29 @@ public class BlockMaterial extends Material implements Placeable {
 	 */
 	public boolean isCompatibleWith(BlockMaterial m) {
 		return (m.getId() == getId() && ((m.getData() ^ getData()) & getDataMask()) == 0);
+	}
+
+	/**
+	 * Helper method to create a MaterialCause.
+	 * 
+	 * Same as using new MaterialCause(material, block)
+	 * 
+	 * @param block location of the event
+	 * @return cause
+	 */
+	public Cause<BlockMaterial> toCause(Block block) {
+		return new MaterialCause<BlockMaterial>(this, block);
+	}
+
+	/**
+	 * Helper method to create a MaterialCause.
+	 * 
+	 * Same as using new MaterialCause(material, block)
+	 * 
+	 * @param block location of the event
+	 * @return cause
+	 */
+	public Cause<BlockMaterial> toCause(Point p) {
+		return new MaterialCause<BlockMaterial>(this, p.getWorld().getBlock(p));
 	}
 }

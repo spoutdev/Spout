@@ -26,7 +26,7 @@
  */
 package org.spout.api.geo;
 
-import org.spout.api.Source;
+import org.spout.api.event.Cause;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.util.thread.DelayedWrite;
@@ -97,9 +97,8 @@ public interface AreaPhysicsAccess {
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
-	 * @param source of this physics update
 	 */
-	public void queueBlockPhysics(int x, int y, int z, EffectRange range, Source source);
+	public void queueBlockPhysics(int x, int y, int z, EffectRange range);
 	
 	/**
 	 * Synchronously queues a physics update for the block at (x, y, z).  This can only be called during the 
@@ -108,7 +107,6 @@ public interface AreaPhysicsAccess {
 	 * @param x coordinate of the block
 	 * @param y coordinate of the block
 	 * @param z coordinate of the block
-	 * @param source of this physics update
 	 */
-	public void updateBlockPhysics(int x, int y, int z, Source source);
+	public void updateBlockPhysics(int x, int y, int z);
 }

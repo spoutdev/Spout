@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.spout.api.Engine;
-import org.spout.api.Source;
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentHolder;
 import org.spout.api.entity.Entity;
@@ -57,7 +56,7 @@ import org.spout.api.util.thread.Threadsafe;
 /**
  * Represents a World.
  */
-public interface World extends Source, AreaRegionAccess, AreaPhysicsAccess, Named {
+public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 	/**
 	 * Gets the name of the world
 	 * @return the name of the world

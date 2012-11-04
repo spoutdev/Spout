@@ -26,12 +26,11 @@
  */
 package org.spout.api.command;
 
-import org.spout.api.Source;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.lang.Locale;
 import org.spout.api.permissions.PermissionsSubject;
 
-public interface CommandSource extends PermissionsSubject, Source {
+public interface CommandSource extends PermissionsSubject{
 	/**
 	 * Sends a text message to the source of the command.
 	 *

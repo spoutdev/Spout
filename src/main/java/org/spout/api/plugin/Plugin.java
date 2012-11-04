@@ -31,12 +31,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Logger;
 import org.spout.api.Engine;
-import org.spout.api.Source;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.lang.PluginDictionary;
 import org.spout.api.util.Named;
 
-public interface Plugin extends Source, Named {
+public interface Plugin extends Named {
 	/**
 	 * Called when the plugin is enabled
 	 */

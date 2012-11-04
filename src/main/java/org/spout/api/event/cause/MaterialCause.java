@@ -24,10 +24,31 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api;
+package org.spout.api.event.cause;
 
-/**
- * The source of an action. It may be a {@link Plugin}, a {@link World}, a {@link Block}, a specific {@link Player}, or a specific {@link Entity}.
- */
-public interface Source {
+import org.spout.api.event.Cause;
+import org.spout.api.geo.cuboid.Block;
+import org.spout.api.material.Material;
+
+public class MaterialCause<T extends Material> implements Cause<T> {
+	private final T material;
+	private final Block block;
+	public MaterialCause(T material, Block block) {
+		this.material = material;
+		this.block = block;
+	}
+
+	@Override
+	public T getSource() {
+		return material;
+	}
+
+	/**
+	 * Gets the block that caused the change
+	 * 
+	 * @return block
+	 */
+	public Block getBlock() {
+		return block;
+	}
 }

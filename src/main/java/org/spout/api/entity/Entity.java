@@ -28,7 +28,6 @@ package org.spout.api.entity;
 
 import java.util.UUID;
 
-import org.spout.api.Source;
 import org.spout.api.component.ComponentHolder;
 import org.spout.api.component.components.EntityComponent;
 import org.spout.api.component.components.NetworkComponent;
@@ -46,7 +45,7 @@ import org.spout.api.util.thread.SnapshotRead;
 /**
  * Represents an entity, which may or may not be spawned into the world.
  */
-public interface Entity extends Source, Tickable, WorldSource, ComponentHolder {
+public interface Entity extends Tickable, WorldSource, ComponentHolder {
 	/**
 	 * Gets the current ID of this entity within the current game session
 	 * @return The entities' id.
@@ -142,9 +141,9 @@ public interface Entity extends Source, Tickable, WorldSource, ComponentHolder {
 	public Region getRegion();
 
 	/**
-	 * Interact with this entity. Calls all EntityComponents inside the entities onInteract method.
+	 * Interact with this entity.
 	 */
-	public void interact(Action action, Source source);
+	public void interact(Action action, Entity source);
 
 	/**
 	 * Gets a {@link Transform} {@link EntityComponent} representing the current position, scale and

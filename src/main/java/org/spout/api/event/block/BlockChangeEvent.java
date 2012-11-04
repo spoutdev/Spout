@@ -26,9 +26,9 @@
  */
 package org.spout.api.event.block;
 
-import org.spout.api.Source;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
+import org.spout.api.event.Cause;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.block.BlockSnapshot;
 
@@ -39,8 +39,8 @@ import org.spout.api.material.block.BlockSnapshot;
 public class BlockChangeEvent extends BlockEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 
-	public BlockChangeEvent(Block block, BlockSnapshot initial, Source source) {
-		super(block, source);
+	public BlockChangeEvent(Block block, BlockSnapshot initial, Cause<?> reason) {
+		super(block, reason);
 		this.snapshot = initial;
 	}
 

@@ -24,26 +24,17 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.material.basic;
+package org.spout.api.event.cause;
 
-import org.spout.api.collision.CollisionStrategy;
-import org.spout.api.event.Cause;
-import org.spout.api.geo.cuboid.Block;
-import org.spout.api.material.BlockMaterial;
+import org.spout.api.entity.Player;
 
-public class BasicSkyBox extends BlockMaterial {
-
-	public BasicSkyBox() {
-		super("Skybox");
-		this.setCollision(CollisionStrategy.NOCOLLIDE).setTransparent();
+public class PlayerCause extends EntityCause{
+	public PlayerCause(Player player) {
+		super(player);
 	}
 
 	@Override
-	public boolean isPlacementObstacle() {
-		return false;
-	}
-
-	@Override
-	public void onDestroy(Block block, Cause<?> cause) {
+	public Player getSource() {
+		return (Player)super.getSource();
 	}
 }

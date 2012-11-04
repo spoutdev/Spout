@@ -26,31 +26,32 @@
  */
 package org.spout.api.event.server.protection;
 
-import org.spout.api.Source;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.Cancellable;
+import org.spout.api.event.Cause;
 import org.spout.api.event.HandlerList;
 import org.spout.api.event.entity.EntityEvent;
 
 /**
- * This {@link EntityEvent} is designed to be fired by plugins that wish to check if an entity can be damaged by the given {@link Source}.
- * Protection plugins should utilize this event to prevent entities from being allowed to take damage from specific sources.
+ * This {@link EntityEvent} is designed to be fired by plugins that wish to check if an entity can be damaged by the given {@link Reason}.
+ * Protection plugins should utilize this event to prevent entities from being allowed to take damage from specific causes.
  */
 public class EntityCanBeHarmedEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
-	private final Source source;
+	private final Cause<?> cause;
 
-	public EntityCanBeHarmedEvent(Entity defender, Source source) {
+	public EntityCanBeHarmedEvent(Entity defender, Cause<?> cause) {
 		super(defender);
-		this.source = source;
+		this.cause = cause;
 	}
 
 	/**
-	 * Source that is attempting to harm the Entity.
-	 * @return the source
+	 * The cause of the event
+	 * 
+	 * @return the cause
 	 */
-	public Source getSource() {
-		return source;
+	public Cause<?> getSource() {
+		return cause;
 	}
 
 	@Override
