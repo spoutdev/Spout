@@ -329,7 +329,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 
 		if (event) {
 			// TODO - move to block change method?
-			Block block = new SpoutBlock(getWorld(), x, y, z);
+			Block block = getBlock(x, y, z);
 			BlockChangeEvent blockEvent = new BlockChangeEvent(block, new BlockSnapshot(block, material, data), cause);
 			Spout.getEngine().getEventManager().callEvent(blockEvent);
 			if (blockEvent.isCancelled()) {
@@ -1560,19 +1560,28 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		short oldData = 0;
 		short oldId = 0;
 		short newData = 0;
+		short newId = 0;
 		while (!success) {
 			int state = this.blockStore.getFullData(bx, by, bz);
 			oldData = BlockFullState.getData(state);
 			oldId = BlockFullState.getId(state);
 			newData = (short) (((value << shift) & bits) | (oldData & ~bits));
-
-			// TODO - this should probably trigger a dynamic block reset
-			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
-			updated = oldData != newData;
+			BlockMaterial bm = (BlockMaterial) BlockMaterial.get(state);
+			newId = bm.getId();
+			
+			Block block = getBlock(bx, by, bz);
+			BlockChangeEvent blockEvent = new BlockChangeEvent(block, new BlockSnapshot(block, bm, newData), cause);
+			Spout.getEngine().getEventManager().callEvent(blockEvent);
+			if (!blockEvent.isCancelled()) {
+				newId = blockEvent.getSnapshot().getMaterial().getId();
+				newData = blockEvent.getSnapshot().getData();
+				success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, newId, newData);
+				updated = oldData != newData || oldId != newId;
+			}
 		}
 
 		if (updated) {
-			blockChanged(bx, by, bz, oldId, newData, oldId, oldData, cause);
+			blockChanged(bx, by, bz, newId, newData, oldId, oldData, cause);
 		}
 
 		return oldData;
@@ -1596,19 +1605,28 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		short oldData = 0;
 		short oldId = 0;
 		short newData = 0;
+		short newId = 0;
 		while (!success) {
 			int state = this.blockStore.getFullData(bx, by, bz);
 			oldData = BlockFullState.getData(state);
 			oldId = BlockFullState.getId(state);
 			newData = (short) (((oldData + (value << shift)) & bits) | (oldData & ~bits));
-
-			// TODO - this should probably trigger a dynamic block reset
-			success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, oldId, newData);
-			updated = oldData != newData;
+			BlockMaterial bm = (BlockMaterial) BlockMaterial.get(state);
+			newId = bm.getId();
+			
+			Block block = getBlock(bx, by, bz);
+			BlockChangeEvent blockEvent = new BlockChangeEvent(block, new BlockSnapshot(block, bm, newData), cause);
+			Spout.getEngine().getEventManager().callEvent(blockEvent);
+			if (!blockEvent.isCancelled()) {
+				newId = blockEvent.getSnapshot().getMaterial().getId();
+				newData = blockEvent.getSnapshot().getData();
+				success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, newId, newData);
+				updated = oldData != newData || oldId != newId;
+			}
 		}
 
 		if (updated) {
-			blockChanged(bx, by, bz, oldId, newData, oldId, oldData, cause);
+			blockChanged(bx, by, bz, newId, newData, oldId, oldData, cause);
 		}
 
 		return oldData;
@@ -1626,7 +1644,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 
 		// Handle onPlacement for dynamic materials
 		if (newMaterial instanceof DynamicMaterial) {
-			if (oldMaterial instanceof BlockMaterial) {
+			if (oldMaterial instanceof DynamicMaterial) {
 				if (!oldMaterial.isCompatibleWith(newMaterial) || !newMaterial.isCompatibleWith(oldMaterial)) {
 					parentRegion.resetDynamicBlock(x, y, z);
 				}
