@@ -1018,12 +1018,15 @@ public class SpoutRegion extends Region {
 			} else {
 				distance = (int) p.getManhattanDistance(c.getBase());
 			}
+			int ox = bx - getChunkX();
+			int oy = by - getChunkY();
+			int oz = bz - getChunkZ();
 			ChunkSnapshot[][][] chunks = new ChunkSnapshot[3][3][3];
 			for (int x = 0; x < 3; x++) {
 				for (int y = 0; y < 3; y++) {
 					for (int z = 0; z < 3; z++) {
 						if (x == 1 || y == 1 || z == 1) {
-							ChunkSnapshot snapshot = getRenderSnapshot(bx + x, by + y, bz + z);
+							ChunkSnapshot snapshot = getRenderSnapshot(c, ox + x, oy + y, oz + z);
 							if (snapshot == null) {
 								return;
 							}
@@ -1059,24 +1062,16 @@ public class SpoutRegion extends Region {
 		set.add(material.getModel().getRenderMaterial());
 	}
 
-	private ChunkSnapshot getRenderSnapshot(int cx, int cy, int cz) {
+	private ChunkSnapshot getRenderSnapshot(SpoutChunk cRef, int cx, int cy, int cz) {
 		SpoutChunkSnapshot snapshot = renderSnapshotCache.get(cx, cy, cz);
 		if (snapshot != null) {
 			return snapshot;
 		}
-		// TODO - we could do with a neighbour reference in all regions
-		//        maybe it could be a .getLocalChunk(x, y, z) method which only works
-		//        on local chunks and chunks in neighbouring regions
-		boolean xLocal = (cx >> Region.CHUNKS.BITS) == getX();
-		boolean yLocal = (cy >> Region.CHUNKS.BITS) == getY();
-		boolean zLocal = (cz >> Region.CHUNKS.BITS) == getZ();
-		SpoutChunk c;
-		if (xLocal && yLocal && zLocal) {
-			c = getChunk(cx, cy, cz, LoadOption.NO_LOAD);
-		} else {
-			c = getWorld().getChunk(cx, cy, cz, LoadOption.NO_LOAD);
-		}
+
+		SpoutChunk c = getLocalChunk(cx, cy, cz, LoadOption.NO_LOAD);
+
 		if (c == null) {
+			Spout.getLogger().info("Getting " + cx + ", " + cy + ", " + cz + ": base = " + cRef.getBase().toBlockString() + " region base " + getBase().toBlockString());
 			return null;
 		} else {
 			snapshot = c.getSnapshot(SnapshotType.BOTH, EntityType.NO_ENTITIES, ExtraData.NO_EXTRA_DATA);

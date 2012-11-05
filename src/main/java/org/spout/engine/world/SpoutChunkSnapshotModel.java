@@ -188,7 +188,7 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	 * @param renderMaterials
 	 */
 	public void addRenderMaterials(Set<RenderMaterial> renderMaterials) {
-		if( this.renderMaterials != null)
+		if( this.renderMaterials != null && renderMaterials != null)
 			this.renderMaterials.addAll(renderMaterials);
 		else 
 			this.renderMaterials = null;
