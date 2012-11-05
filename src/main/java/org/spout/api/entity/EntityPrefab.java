@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.spout.api.component.components.EntityComponent;
+import org.spout.api.geo.discrete.Point;
 
 public interface EntityPrefab {
 	public String getName();
@@ -37,4 +38,6 @@ public interface EntityPrefab {
 	public List<Class<? extends EntityComponent>> getComponents();
 	
 	public Map<String, Object> getDatas();
+	
+	public Entity createEntity(Point point);
 }
