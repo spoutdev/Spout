@@ -78,7 +78,7 @@ public class EntityRendererComponent extends EntityComponent {
 		
 		m.render(mat);
 		
-		TextModelComponent tmc = getOwner().get(TextModelComponent.class);
+		ClientTextModelComponent tmc = getOwner().get(ClientTextModelComponent.class);
 		if (tmc != null) {
 			tmc.render(camera);
 		}
