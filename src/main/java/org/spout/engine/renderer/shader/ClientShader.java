@@ -44,6 +44,7 @@ import org.spout.api.render.Shader;
 import org.spout.api.render.Texture;
 import org.spout.api.resource.Resource;
 
+import org.spout.engine.SpoutClient;
 import org.spout.engine.renderer.shader.variables.ColorShaderVariable;
 import org.spout.engine.renderer.shader.variables.FloatShaderVariable;
 import org.spout.engine.renderer.shader.variables.IntShaderVariable;
@@ -61,6 +62,72 @@ import org.spout.engine.resources.ClientFont;
  * Represents a Shader Object in OpenGL
  */
 public class ClientShader extends Resource implements Shader {
+	
+	public class ShaderCompilationTask implements Runnable{
+
+		private final ClientShader shader;
+		private final String vsource,fsource;
+		
+		public ShaderCompilationTask(ClientShader shader,String vsource, String fsource){
+			this.shader = shader;
+			this.vsource = vsource;
+			this.fsource = fsource;
+		}
+		
+		@Override
+		public void run() {
+			doCompileShader(vsource,fsource);
+		}
+		
+		private void doCompileShader(String vsource, String fsource){
+			if (((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
+				return;
+			}
+
+
+			//Create a new Shader object on the GPU
+			program = GL20.glCreateProgram();
+
+			int vShader = ShaderHelper.compileShader(vsource, GL20.GL_VERTEX_SHADER);
+			GL20.glAttachShader(program, vShader);
+
+
+			int fShader = ShaderHelper.compileShader(fsource, GL20.GL_FRAGMENT_SHADER);
+			GL20.glAttachShader(program, fShader);
+
+			GL20.glLinkProgram(program);
+
+			int status = GL20.glGetProgram(program, GL20.GL_LINK_STATUS);
+			if (status != GL11.GL_TRUE) {
+				String error = GL20.glGetProgramInfoLog(program, 255);
+				throw new ShaderCompileException("Link Error: " + error);
+			}
+			if (validateShader) {
+				GL20.glValidateProgram(shader.program);
+				if (GL20.glGetProgram(program, GL20.GL_VALIDATE_STATUS) != GL11.GL_TRUE) {
+					String info = GL20.glGetProgramInfoLog(program, 255);
+					System.out.println("Validate Log: \n" + info);
+				}
+
+				System.out.println("Attached Shaders: " + GL20.glGetProgram(program, GL20.GL_ATTACHED_SHADERS));
+				int activeAttributes = GL20.glGetProgram(program, GL20.GL_ACTIVE_ATTRIBUTES);
+				System.out.println("Active Attributes: " + activeAttributes);
+				int maxAttributeLength = GL20.glGetProgram(program, GL20.GL_ACTIVE_ATTRIBUTE_MAX_LENGTH);
+				for (int i = 0; i < activeAttributes; i++) {
+					System.out.println("\t" + GL20.glGetActiveAttrib(program, i, maxAttributeLength));
+				}
+
+				int activeUniforms = GL20.glGetProgram(program, GL20.GL_ACTIVE_UNIFORMS);
+				System.out.println("Active Uniforms: " + activeUniforms);
+				int maxUniformLength = GL20.glGetProgram(program, GL20.GL_ACTIVE_UNIFORM_MAX_LENGTH);
+				for (int i = 0; i < activeUniforms; i++) {
+					System.out.println("\t" + GL20.glGetActiveUniform(program, i, maxUniformLength));
+				}
+			}
+			System.out.println("Compiled Shader with id: " + program);
+		}
+	}
+	
 	int program;
 
 	HashMap<String, ShaderVariable> variables = new HashMap<String, ShaderVariable>();
@@ -116,51 +183,7 @@ public class ClientShader extends Resource implements Shader {
 
 
 	private void doCompileShader(String vsource, String fsource){
-		if (((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
-			return;
-		}
-
-
-		//Create a new Shader object on the GPU
-		program = GL20.glCreateProgram();
-
-		int vShader = ShaderHelper.compileShader(vsource, GL20.GL_VERTEX_SHADER);
-		GL20.glAttachShader(program, vShader);
-
-
-		int fShader = ShaderHelper.compileShader(fsource, GL20.GL_FRAGMENT_SHADER);
-		GL20.glAttachShader(program, fShader);
-
-		GL20.glLinkProgram(program);
-
-		int status = GL20.glGetProgram(program, GL20.GL_LINK_STATUS);
-		if (status != GL11.GL_TRUE) {
-			String error = GL20.glGetProgramInfoLog(program, 255);
-			throw new ShaderCompileException("Link Error: " + error);
-		}
-		if (validateShader) {
-			GL20.glValidateProgram(this.program);
-			if (GL20.glGetProgram(program, GL20.GL_VALIDATE_STATUS) != GL11.GL_TRUE) {
-				String info = GL20.glGetProgramInfoLog(program, 255);
-				System.out.println("Validate Log: \n" + info);
-			}
-
-			System.out.println("Attached Shaders: " + GL20.glGetProgram(program, GL20.GL_ATTACHED_SHADERS));
-			int activeAttributes = GL20.glGetProgram(program, GL20.GL_ACTIVE_ATTRIBUTES);
-			System.out.println("Active Attributes: " + activeAttributes);
-			int maxAttributeLength = GL20.glGetProgram(program, GL20.GL_ACTIVE_ATTRIBUTE_MAX_LENGTH);
-			for (int i = 0; i < activeAttributes; i++) {
-				System.out.println("\t" + GL20.glGetActiveAttrib(program, i, maxAttributeLength));
-			}
-
-			int activeUniforms = GL20.glGetProgram(program, GL20.GL_ACTIVE_UNIFORMS);
-			System.out.println("Active Uniforms: " + activeUniforms);
-			int maxUniformLength = GL20.glGetProgram(program, GL20.GL_ACTIVE_UNIFORM_MAX_LENGTH);
-			for (int i = 0; i < activeUniforms; i++) {
-				System.out.println("\t" + GL20.glGetActiveUniform(program, i, maxUniformLength));
-			}
-		}
-		System.out.println("Compiled Shader with id: " + program);
+		((SpoutClient) Spout.getEngine()).enqueueTask(new ShaderCompilationTask(this, vsource, fsource));
 	}
 
 
