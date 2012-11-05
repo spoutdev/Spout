@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.spout.api.Spout;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.event.Cause;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
@@ -40,6 +41,7 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.Vector3;
+import org.spout.api.plugin.Platform;
 import org.spout.api.util.map.concurrent.palette.AtomicPaletteBlockStore;
 import org.spout.engine.entity.SpoutEntity;
 
@@ -94,7 +96,7 @@ public class FilteredChunk extends SpoutChunk{
 			for (int i = 0; i < initial.length; i++) {
 				initial[i] = id;
 			}
-			this.blockStore = new AtomicPaletteBlockStore(BLOCKS.BITS, 10, initial);
+			this.blockStore = new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, 10, initial);
 			
 			this.skyLight = new byte[BLOCKS.HALF_VOLUME];
 			System.arraycopy(this.isAboveGround() ? LIGHT : DARK, 0, this.skyLight, 0, this.skyLight.length);
@@ -341,6 +343,26 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.getDirtyBlock(i);
 	}
+	
+	@Override
+	public int getDirtyBlocks() {
+		if (uniform.get()) {
+			return 0;
+		}
+		return super.getDirtyBlocks();
+	}
+	
+	public int getDirtyOldState(int i) {
+		if (uniform.get()) {
+			return -1;
+		}
+		return super.getDirtyOldState(i);	}
+
+	public int getDirtyNewState(int i) {
+		if (uniform.get()) {
+			return -1;
+		}
+		return super.getDirtyNewState(i);	}
 
 	@Override
 	public void resetDirtyArrays() {

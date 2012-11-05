@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -71,12 +72,15 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
+import org.spout.api.material.Material;
+import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.NetworkSynchronizer;
+import org.spout.api.render.RenderMaterial;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
@@ -407,6 +411,7 @@ public class SpoutRegion extends Region {
 			previous = renderChunkQueued.put((byte) model.getX(), (byte) model.getY(), (byte) model.getZ(), model);
 			if(previous != null){
 				renderChunkQueue.remove(previous);
+				model.addRenderMaterials(previous.getRenderMaterials());
 			}
 		}
 
@@ -943,7 +948,7 @@ public class SpoutRegion extends Region {
 					for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
 						SpoutChunk chunk = chunks[dx][dy][dz].get();
 						if (chunk != null) {
-							addUpdateToRenderQueue(playerPosition, chunk);
+							addUpdateToRenderQueue(playerPosition, chunk, true);
 						}
 					}
 				}
@@ -959,7 +964,7 @@ public class SpoutRegion extends Region {
 			}
 			
 			if ((!firstRenderQueueTick) && renderQueueEnabled  && spoutChunk.isRenderDirty()) {
-				addUpdateToRenderQueue(playerPosition, spoutChunk);
+				addUpdateToRenderQueue(playerPosition, spoutChunk, false);
 			}
 			if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
 				for (Player entity : spoutChunk.getObservingPlayers()) {
@@ -1001,7 +1006,7 @@ public class SpoutRegion extends Region {
 
 	private TInt21TripleObjectHashMap<SpoutChunkSnapshot> renderSnapshotCache = new TInt21TripleObjectHashMap<SpoutChunkSnapshot>();
 
-	private void addUpdateToRenderQueue(Point p, SpoutChunk c) {
+	private void addUpdateToRenderQueue(Point p, SpoutChunk c, boolean force) {
 		int bx = c.getX() - 1;
 		int by = c.getY() - 1;
 		int bz = c.getZ() - 1;
@@ -1027,8 +1032,19 @@ public class SpoutRegion extends Region {
 					}
 				}
 			}
+			final HashSet<RenderMaterial> updatedRenderMaterials;
+			if (c.isDirtyOverflow() || force) {
+				updatedRenderMaterials = null;
+			} else {
+				updatedRenderMaterials = new HashSet<RenderMaterial>();
+				 int dirtyBlocks = c.getDirtyBlocks();
+				 for (int i = 0; i < dirtyBlocks; i++) {
+					 addMaterialToSet(updatedRenderMaterials, c.getDirtyOldState(i));
+					 addMaterialToSet(updatedRenderMaterials, c.getDirtyNewState(i));
+				 }
+			}
 			c.setRenderDirty(false);
-			addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks, distance, null, System.currentTimeMillis()));//TODO : Replace null by a set of render material used by outdated/updated block
+			addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks, distance, updatedRenderMaterials, System.currentTimeMillis()));
 		} else {
 			if (c.leftViewDistance()) {
 				c.setRenderDirty(false);
@@ -1036,6 +1052,11 @@ public class SpoutRegion extends Region {
 			}
 		}
 		c.viewDistanceCopy();
+	}
+	
+	private static void addMaterialToSet(Set<RenderMaterial> set, int blockState) {
+		BlockMaterial material = (BlockMaterial) MaterialRegistry.get(blockState);
+		set.add(material.getModel().getRenderMaterial());
 	}
 
 	private ChunkSnapshot getRenderSnapshot(int cx, int cy, int cz) {

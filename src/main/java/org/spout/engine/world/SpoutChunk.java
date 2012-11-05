@@ -218,7 +218,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	private final AtomicBoolean populationQueued = new AtomicBoolean(false);
 
 	private final AtomicInteger autosaveTicks = new AtomicInteger(0);
-
+	
 	private boolean wasInViewDistance = false;
 	private boolean isInViewDistance = false;
 	
@@ -262,7 +262,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, ManagedHashMap extraData) {
 		super(world, x * BLOCKS.SIZE, y * BLOCKS.SIZE, z * BLOCKS.SIZE);
 		parentRegion = region;
-		blockStore = new AtomicPaletteBlockStore(BLOCKS.BITS, 10, blocks, data);
+		blockStore = new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, 10, blocks, data);
 		this.populationState = new AtomicReference<PopulationState>(popState);
 
 		if (skyLight == null) {
@@ -1049,7 +1049,19 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	protected Vector3 getDirtyBlock(int i) {
 		return blockStore.getDirtyBlock(i);
 	}
+	
+	public int getDirtyBlocks() {
+		return blockStore.getDirtyBlocks();
+	}
+	
+	public int getDirtyOldState(int i) {
+		return blockStore.getDirtyOldState(i);
+	}
 
+	public int getDirtyNewState(int i) {
+		return blockStore.getDirtyNewState(i);
+	}
+	
 	public void resetDirtyArrays() {
 		blockStore.resetDirtyArrays();
 	}

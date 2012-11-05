@@ -77,7 +77,7 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 		this.unload = unload;
 		this.distance = distance;
 		this.id = idCounter.getAndIncrement();
-		this.addRenderMaterials(renderMaterials);
+		this.renderMaterials = renderMaterials;
 		this.time = time;
 	}
 
@@ -190,6 +190,17 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	public void addRenderMaterials(Set<RenderMaterial> renderMaterials) {
 		if( this.renderMaterials != null)
 			this.renderMaterials.addAll(renderMaterials);
+		else 
+			this.renderMaterials = null;
+	}
+	
+	/**
+	 * Returns the set of render materials updates by this model
+	 * 
+	 * @return
+	 */
+	public Set<RenderMaterial> getRenderMaterials() {
+		return this.renderMaterials;
 	}
 
 	/**
