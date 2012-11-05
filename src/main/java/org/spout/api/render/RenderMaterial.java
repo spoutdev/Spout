@@ -112,4 +112,9 @@ public abstract class RenderMaterial extends Resource implements Comparable<Rend
 	public final boolean equals(Object o) {
 		return o == this;
 	}
+	
+	@Override
+	public int hashCode() {
+		return id;
+	}
 }

@@ -34,6 +34,7 @@ import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.Vector3;
+import org.spout.api.render.RenderMaterial;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 
 public class AtomicPaletteBlockStore implements AtomicBlockStore {
@@ -42,38 +43,49 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	private final int shift;
 	private final int doubleShift;
 	private final int length;
+	private final boolean storeState;
 	private final AtomicShortIntArray store;
 	private final byte[] dirtyX;
 	private final byte[] dirtyY;
 	private final byte[] dirtyZ;
+	private final int[] newState;
+	private final int[] oldState;
 	private final AtomicInteger dirtyBlocks = new AtomicInteger(0);
 	
-	public AtomicPaletteBlockStore(int shift) {
-		this(shift, 10);
+	public AtomicPaletteBlockStore(int shift, boolean storeState) {
+		this(shift, storeState, 10);
 	}
 	
-	public AtomicPaletteBlockStore(int shift, short[] initial) {
-		this(shift, 10, initial);
+	public AtomicPaletteBlockStore(int shift, boolean storeState, short[] initial) {
+		this(shift, storeState, 10, initial);
 	}
 	
-	public AtomicPaletteBlockStore(int shift, int dirtySize) {
-		this(shift, dirtySize, null);
+	public AtomicPaletteBlockStore(int shift, boolean storeState, int dirtySize) {
+		this(shift, storeState, dirtySize, null);
 	}
 
-	public AtomicPaletteBlockStore(int shift, int dirtySize, short[] initial) {
-		this(shift, dirtySize, initial, null);
+	public AtomicPaletteBlockStore(int shift, boolean storeState, int dirtySize, short[] initial) {
+		this(shift, storeState, dirtySize, initial, null);
 	}
 	
-	public AtomicPaletteBlockStore(int shift, int dirtySize, short[] blocks, short[] data) {
+	public AtomicPaletteBlockStore(int shift, boolean storeState, int dirtySize, short[] blocks, short[] data) {
 		this.side = 1 << shift;
 		this.shift = shift;
 		this.doubleShift = shift << 1;
 		int size = side * side * side;
 		store = new AtomicShortIntArray(size);
 		this.length = size;
+		this.storeState = storeState;
 		dirtyX = new byte[dirtySize];
 		dirtyY = new byte[dirtySize];
 		dirtyZ = new byte[dirtySize];
+		if (storeState) {
+			oldState = new int[dirtySize];
+			newState = new int[dirtySize];
+		} else {
+			oldState = null;
+			newState = null;
+		}
 		if (blocks != null) {
 			int x = 0;
 			int z = 0;
@@ -110,10 +122,12 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	
 	@Override
 	public int getAndSetBlock(int x, int y, int z, short id, short data) {
+		int oldState = BlockFullState.getPacked(id, data);
+		int newState = 0;
 		try {
-			return store.set(getIndex(x, y, z), BlockFullState.getPacked(id, data));
+			return newState = store.set(getIndex(x, y, z), oldState);
 		} finally {
-			markDirty(x, y, z);
+			markDirty(x, y, z, oldState, newState);
 		}
 	}
 	
@@ -149,7 +163,7 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 		int update = BlockFullState.getPacked(newId, newData);
 		boolean success = store.compareAndSet(getIndex(x, y, z), exp, update);
 		if (success) {
-			markDirty(x, y, z);
+			markDirty(x, y, z, exp, update);
 		}
 		return success;
 	}
@@ -216,6 +230,11 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	public boolean resetDirtyArrays() {
 		return dirtyBlocks.getAndSet(0) > 0;
 	}
+	
+	@Override
+	public int getDirtyBlocks() {
+		return dirtyBlocks.get();
+	}
 
 	@Override
 	public Vector3 getDirtyBlock(int i) {
@@ -225,13 +244,35 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 
 		return new Vector3(dirtyX[i] & 0xFF, dirtyY[i] & 0xFF, dirtyZ[i] & 0xFF);
 	}
+	
+	@Override
+	public int getDirtyOldState(int i) {
+		if (oldState == null || i >= dirtyBlocks.get()) {
+			return -1;
+		}
+		
+		return oldState[i];
+	}
 
-	public void markDirty(int x, int y, int z) {
+	@Override
+	public int getDirtyNewState(int i) {
+		if (newState == null || i >= dirtyBlocks.get()) {
+			return -1;
+		}
+		
+		return newState[i];
+	}
+
+	public void markDirty(int x, int y, int z, int oldState, int newState) {
 		int index = incrementDirtyIndex();
 		if (index < dirtyX.length) {
 			dirtyX[index] = (byte) x;
 			dirtyY[index] = (byte) y;
 			dirtyZ[index] = (byte) z;
+			if (this.oldState != null) {
+				this.oldState[index] = oldState;
+				this.newState[index] = newState;
+			}
 		}
 	}
 	
@@ -252,5 +293,4 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	private final int getIndex(int x, int y, int z) {
 		return (y << doubleShift) + (z << shift) + x;
 	}
-
 }

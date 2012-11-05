@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.Vector3;
+import org.spout.api.render.RenderMaterial;
 import org.spout.api.util.concurrent.AtomicSequenceNumber;
 
 /**
@@ -658,6 +659,11 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	public boolean isDirtyOverflow() {
 		return dirtyBlocks.get() >= dirtyX.length;
 	}
+	
+	@Override
+	public int getDirtyBlocks() {
+		return dirtyBlocks.get();
+	}
 
 	/**
 	 * Gets if the store has been modified since the last reset of the dirty
@@ -765,6 +771,16 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 				i.notifyAll();
 			}
 		}
+	}
+
+	@Override
+	public int getDirtyOldState(int i) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public int getDirtyNewState(int i) {
+		throw new UnsupportedOperationException();
 	}
 
 }

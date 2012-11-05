@@ -30,6 +30,7 @@ import gnu.trove.set.hash.TIntHashSet;
 
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.Vector3;
+import org.spout.api.render.RenderMaterial;
 
 /**
  * This store stores block data for each chunk. Each block can either store a
@@ -235,6 +236,14 @@ public interface AtomicBlockStore {
 	 * @return true if there were dirty blocks
 	 */
 	public boolean resetDirtyArrays();
+	
+	/**
+	 * Gets the number of dirty blocks since the last update
+	 *
+	 * @param i
+	 * @return
+	 */
+	public int getDirtyBlocks();
 
 	/**
 	 * Gets the position of the dirty block at a given index.<br>
@@ -246,8 +255,27 @@ public interface AtomicBlockStore {
 	 * block.<br>
 	 *
 	 * @param i
-	 * @param block
 	 * @return
 	 */
-	public Vector3 getDirtyBlock(int i);	
+	public Vector3 getDirtyBlock(int i);
+	
+	/**
+	 * Gets the old state for the dirty block at a given index.<br>
+	 * <br>
+	 * If there is no block at that index, then the method return null.<br>
+	 *
+	 * @param i
+	 * @return
+	 */
+	public int getDirtyOldState(int i);
+	
+	/**
+	 * Gets the new state for the dirty block at a given index.<br>
+	 * <br>
+	 * If there is no block at that index, then the method return null.<br>
+	 *
+	 * @param i
+	 * @return
+	 */
+	public int getDirtyNewState(int i);
 }
