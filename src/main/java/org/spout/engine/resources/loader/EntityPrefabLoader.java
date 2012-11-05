@@ -44,6 +44,7 @@ public class EntityPrefabLoader extends BasicResourceLoader<ClientEntityPrefab> 
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
 	private static final TypeChecker<List<? extends String>> checkerListString =  TypeChecker.tList(String.class);
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public ClientEntityPrefab getResource(InputStream stream) {
 		final Yaml yaml = new Yaml();
