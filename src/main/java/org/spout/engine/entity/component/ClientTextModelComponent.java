@@ -30,54 +30,20 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.spout.api.Spout;
-import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ColorChatStyle;
 import org.spout.api.chat.style.ResetChatStyle;
-import org.spout.api.component.components.EntityComponent;
+import org.spout.api.component.components.TextModelComponent;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.render.RenderPart;
-import org.spout.api.map.DefaultedKey;
 import org.spout.api.math.Rectangle;
-import org.spout.api.math.Vector3;
 import org.spout.api.model.MeshFace;
 import org.spout.api.model.Vertex;
 import org.spout.api.render.Camera;
 import org.spout.api.render.Font;
 import org.spout.engine.mesh.BaseMesh;
 
-public class TextModelComponent extends EntityComponent {
-	private static final DefaultedKey<ChatArguments> KEY_TEXT = new DefaultedKey<ChatArguments>() {
-		private final ChatArguments DEFAULT_VALUE = new ChatArguments("(your text here)");
-		
-		@Override
-		public ChatArguments getDefaultValue() {
-			return DEFAULT_VALUE;
-		}
-		
-		@Override
-		public String getKeyString() {
-			return "entity-text";
-		}
-		
-	};
-	
-	private static final DefaultedKey<Font> KEY_FONT = new DefaultedKey<Font>() {
-		@Override
-		public Font getDefaultValue() {
-			return (Font) Spout.getFilesystem().getResource("font://Spout/resources/resources/fonts/ubuntu/Ubuntu-M.ttf");
-		}
-
-		@Override
-		public String getKeyString() {
-			return "font";
-		}
-	};
-	
+public class ClientTextModelComponent extends TextModelComponent {
 	private BaseMesh mesh;
-	private float size = 1;
-	private Vector3 translation = Vector3.ZERO;
-	private boolean dirty = true;
 	
 	public void updateMesh() {
 		ArrayList<MeshFace> faces = new ArrayList<MeshFace>();
@@ -132,41 +98,6 @@ public class TextModelComponent extends EntityComponent {
 		mesh = new BaseMesh(faces);
 		mesh.batch();
 	}
-
-	public void setSize(float size) {
-		this.size = size;
-		dirty = true;
-	}
-	
-	public float getSize() {
-		return size;
-	}
-	
-	public void setFont(Font font) {
-		getData().put(KEY_FONT, font);
-		dirty = true;
-	}
-	
-	public Font getFont() {
-		return getData().get(KEY_FONT);
-	}
-	
-	public ChatArguments getText() {
-		return getData().get(KEY_TEXT);
-	}
-
-	public void setText(ChatArguments text) {
-		getData().put(KEY_TEXT, text);
-		dirty = true;
-	}
-	
-	public void setTranslation(Vector3 translation) {
-		this.translation = translation;
-	}
-	
-	public Vector3 getTranslation() {
-		return translation;
-	}
 	
 	public void render(Camera camera) {
 		if (dirty) {
@@ -176,6 +107,8 @@ public class TextModelComponent extends EntityComponent {
 		
 		Transform mt = getOwner().getTransform().getTransform();
 		mt.setPosition(mt.getPosition().add(translation));
+		
+		//TODO: Implements lookCamera, basicaly its the inverse of the camera's rotation
 		
 		getFont().getMaterial().getShader().setUniform("View", camera.getView());
 		getFont().getMaterial().getShader().setUniform("Projection", camera.getProjection());

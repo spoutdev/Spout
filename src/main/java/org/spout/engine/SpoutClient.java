@@ -99,7 +99,7 @@ import org.spout.engine.command.InputManagementCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.entity.component.EntityRendererComponent;
-import org.spout.engine.entity.component.TextModelComponent;
+import org.spout.engine.entity.component.ClientTextModelComponent;
 import org.spout.engine.filesystem.ClientFileSystem;
 import org.spout.engine.input.SpoutInput;
 import org.spout.engine.input.SpoutInputConfiguration;
@@ -489,7 +489,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		Entity e = spoutyType.createEntity(new Point(super.getDefaultWorld(),0,0,0));
 		e.setSavable(false); // To prevent entity duplication
-		TextModelComponent tmc = e.add(TextModelComponent.class);
+		ClientTextModelComponent tmc = e.add(ClientTextModelComponent.class);
 		tmc.setText(new ChatArguments(ChatStyle.BLUE, "Sp", ChatStyle.WHITE, "ou", ChatStyle.RED, "ty"));
 		tmc.setSize(0.5f);
 		tmc.setTranslation(new Vector3(0, 3f, 0));
