@@ -209,9 +209,11 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	 * @return
 	 */
 	public boolean hasRenderMaterial(RenderMaterial renderMaterial) {
-		if( this.renderMaterials == null)
+		//TODO : Fix render material set and decomment that
+		/*if( this.renderMaterials == null)
 			return true;
-		return renderMaterials.contains(renderMaterial);
+		return renderMaterials.contains(renderMaterial);*/
+		return true;
 	}
 
 	public long getTime() {
