@@ -1467,7 +1467,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 			}
 		}
 	}
-
+	
 	@Override
 	public Block getBlock(float x, float y, float z) {
 		return getBlock(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
