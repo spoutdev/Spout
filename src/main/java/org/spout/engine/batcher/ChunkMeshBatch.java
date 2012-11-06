@@ -35,6 +35,7 @@ import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
+import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.mesh.ComposedMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
 
@@ -51,12 +52,17 @@ public class ChunkMeshBatch extends Cuboid {
 	private Matrix modelMat = MathHelper.createIdentity();
 	private final BlockFace face;
 	private final RenderMaterial material;
+	private final int subX,subY,subZ; // keep sub position for indexation
 	
 	public ChunkMeshBatch(World world, int baseX, int baseY, int baseZ, BlockFace face, RenderMaterial material) {
-		super(new Point(world, baseX, baseY, baseZ), SIZE);
+		super(new Point(world, baseX / ChunkMesh.SPLIT_X, baseY / ChunkMesh.SPLIT_Y, baseZ / ChunkMesh.SPLIT_Z), SIZE);
+		subX = baseX;
+		subY = baseY;
+		subZ = baseZ;
 		this.face = face;
 		this.material = material;
-		modelMat = MathHelper.translate(new Vector3(baseX * Chunk.BLOCKS.SIZE, baseY * Chunk.BLOCKS.SIZE, baseZ * Chunk.BLOCKS.SIZE));
+		//Not need of modelMat if render use world block position
+		//modelMat = MathHelper.translate(new Vector3(baseX * ChunkMesh.SUBSIZE_X, baseY * ChunkMesh.SUBSIZE_Y, baseZ * ChunkMesh.SUBSIZE_Z));
 	}
 
 	public void update() {
@@ -112,6 +118,18 @@ public class ChunkMeshBatch extends Cuboid {
 
 	public RenderMaterial getMaterial() {
 		return material;
+	}
+
+	public int getSubX() {
+		return subX;
+	}
+
+	public int getSubY() {
+		return subY;
+	}
+
+	public int getSubZ() {
+		return subZ;
 	}
 
 }
