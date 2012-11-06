@@ -35,14 +35,21 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
+import org.spout.api.component.components.HitBlockComponent;
 
+import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Block;
+import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.source.MaterialSource;
+import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 import org.spout.engine.SpoutEngine;
 
@@ -52,6 +59,18 @@ public class TestCommands {
 		this.engine = engine;
 	}
 
+	@Command(aliases = "break", desc ="Debug command to break a block")
+	public void debugBreak(CommandContext args, CommandSource source) {
+		if (Spout.getPlatform()!=Platform.CLIENT) {
+			
+		}
+		Player player = ((Client) Spout.getEngine()).getActivePlayer();
+		HitBlockComponent hbc = player.get(HitBlockComponent.class);
+		Block block = hbc.getTargetBlock();
+		source.sendMessage("Block to break: ", block.toString());
+		block.setMaterial(BlockMaterial.AIR);
+	}
+	
 	@Command(aliases = {"dbg"}, desc = "Debug Output")
 	public void debugOutput(CommandContext args, CommandSource source) {
 		World world = engine.getDefaultWorld();
