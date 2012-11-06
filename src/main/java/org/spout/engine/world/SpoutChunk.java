@@ -342,19 +342,29 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		short newId = material.getId();
 		short newData = data;
 		int newState = BlockFullState.getPacked(newId, newData);
-		int oldState = blockStore.getAndSetBlock(x, y, z, newId, newData);
-		short oldData = BlockFullState.getData(oldState);
-
-		BlockMaterial oldMaterial = (BlockMaterial) MaterialRegistry.get(oldState);
 		
-		//TODO: this is not an atomic operation, tearing possible...
-		if (material.getId() != oldMaterial.getId()) {
-			if (material instanceof ComplexMaterial) {
-				setBlockComponent(x, y, z, ((ComplexMaterial)material).createBlockComponent());
-			} else {
-				setBlockComponent(x, y, z, null);
-			}
+		int oldState;
+		BlockMaterial oldMaterial;
+		if (material instanceof ComplexMaterial) {
+			oldState = getAndSetBlockLocked(x, y, z, newId, newData);
+			oldMaterial = (BlockMaterial) MaterialRegistry.get(oldState);
+		} else {
+			boolean success = false;
+			do {
+				oldState = blockStore.getFullData(x, y, z);
+				oldMaterial = (BlockMaterial) MaterialRegistry.get(oldState);
+				if (oldMaterial instanceof ComplexMaterial) {
+					oldState = getAndSetBlockLocked(x, y, z, newId, newData);
+					success = true;
+				} else {
+					short oldId = BlockFullState.getId(oldState);
+					short oldData = BlockFullState.getData(oldState);
+					success = blockStore.compareAndSetBlock(x, y, z, oldId, oldData, newId, newData);
+				}
+			} while (!success);
 		}
+		
+		short oldData = BlockFullState.getData(oldState);
 
 		int oldheight = column.getSurfaceHeight(x, z);
 		y += this.getBlockY();
@@ -400,7 +410,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		}
 		return false;
 	}
-
+	
 	/**
 	 * This is always 'this', it is changed to a snapshot of the chunk in initLighting()
 	 * Do NOT set this to something else or use it elsewhere but in initLighting()
@@ -1428,22 +1438,27 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	public TShortObjectMap<BlockComponent> getBlockComponents() {
 		return blockComponents;
 	}
-
-	private void setBlockComponent(int x, int y, int z, BlockComponent component) {
+	
+	private int getAndSetBlockLocked(int x, int y, int z, short newId, short newData) {
 		x &= BLOCKS.MASK;
 		y &= BLOCKS.MASK;
 		z &= BLOCKS.MASK;
+		
 		synchronized(blockComponents) {
-			if (component != null) {
-				blockComponents.put(NibbleQuadHashed.key(x, y, z, 0), component);
-				component.attachTo(new ChunkComponentOwner(this, x + getBlockX(), y + getBlockY(), z + getBlockZ()));
-				component.onAttached();
-			} else {
-				BlockComponent c = blockComponents.remove(NibbleQuadHashed.key(x, y, z, 0));
-				if (c != null) {
-					c.onDetached();
+			int oldState = blockStore.getAndSetBlock(x, y, z, newId, newData);
+			short oldId = BlockFullState.getId(oldState);
+			BlockMaterial newMaterial = (BlockMaterial) MaterialRegistry.get(BlockFullState.getPacked(newId, newData));
+			if (newId != oldId) {
+				if (newMaterial instanceof ComplexMaterial) {
+					BlockComponent component = ((ComplexMaterial) newMaterial).createBlockComponent();
+					blockComponents.put(NibbleQuadHashed.key(x, y, z, 0), component);
+					component.attachTo(new ChunkComponentOwner(this, x + getBlockX(), y + getBlockY(), z + getBlockZ()));
+					component.onAttached();
+				} else {
+					blockComponents.remove(NibbleQuadHashed.key(x, y, z, 0));
 				}
 			}
+			return oldState;
 		}
 	}
 
