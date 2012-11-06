@@ -869,7 +869,7 @@ public class MathHelper {
 	 * Returns the rotation between two vectors
 	 * @param a
 	 * @param b
-	 * @return
+	 * @return the rotation Quaternion
 	 */
 	public static Quaternion rotationTo(Vector3 a, Vector3 b) {
 		if (a == b || a.equals(b)) {
@@ -878,7 +878,7 @@ public class MathHelper {
 		//Normalize the input vectors before doing math on them.
 		a = a.normalize();
 		b = b.normalize();
-		return new Quaternion((float)Math.acos(a.dot(b)), a.cross(b));
+		return new Quaternion((float)Math.toDegrees(Math.acos(a.dot(b))), a.cross(b));
 	}
 
 	/* Vector3 Helpers */

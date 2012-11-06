@@ -37,49 +37,51 @@ import org.spout.api.util.bytebit.ByteBitMask;
  * Indicates the facing of a Block
  */
 public enum BlockFace implements ByteBitMask {
-	TOP(0x1, 0, 1, 0),
-	BOTTOM(0x2, 0, -1, 0, TOP),
-	NORTH(0x4, -1, 0, 0),
-	SOUTH(0x8, 1, 0, 0, NORTH),
-	EAST(0x10, 0, 0, -1),
-	WEST(0x20, 0, 0, 1, EAST),
-	THIS(0x40, 0, 0, 0);
-	
+	TOP(0x1, 0, 1, 0, new Quaternion(-90, 1, 0, 0)),
+	BOTTOM(0x2, 0, -1, 0, new Quaternion(90, 1, 0, 0), TOP),
+	NORTH(0x4, -1, 0, 0, new Quaternion(-90, 0, 1, 0)),
+	SOUTH(0x8, 1, 0, 0, new Quaternion(90, 0, 1, 0), NORTH),
+	EAST(0x10, 0, 0, -1, new Quaternion(180, 0, 1, 0)),
+	WEST(0x20, 0, 0, 1, new Quaternion(0, 0, 1, 0), EAST),
+	THIS(0x40, 0, 0, 0, Quaternion.IDENTITY);
 	private final byte mask;
-	private Vector3 offset;
-	private Quaternion direction;
+	private final Vector3 offset;
+	private final Quaternion direction;
 	private BlockFace opposite = this;
-	private static TIntObjectHashMap<BlockFace> offsetMap = new TIntObjectHashMap<BlockFace>(7);
+	private static final TIntObjectHashMap<BlockFace> OFFSET_MAP = new TIntObjectHashMap<BlockFace>(7);
 
 	static {
-		for (BlockFace face:values()) {
-			offsetMap.put(getOffsetHash(face.getOffset()), face);
+		for (BlockFace face : values()) {
+			OFFSET_MAP.put(getOffsetHash(face.getOffset()), face);
 		}
 	}
-	
-	private BlockFace(int mask, int dx, int dy, int dz, BlockFace opposite) {
-		this(mask, dx, dy, dz);
+
+	private BlockFace(int mask, int dx, int dy, int dz, Quaternion direction, BlockFace opposite) {
+		this(mask, dx, dy, dz, direction);
 		this.opposite = opposite;
 		opposite.opposite = this;
 	}
 
-	private BlockFace(int mask, int dx, int dy, int dz) {
+	private BlockFace(int mask, int dx, int dy, int dz, Quaternion direction) {
 		this.offset = new Vector3(dx, dy, dz);
-		this.direction = new Quaternion(0, this.offset);
+		this.direction = direction;
 		this.mask = (byte) mask;
 	}
-	
+
 	private static int getOffsetHash(Vector3 offset) {
 		int x = offset.getFloorX();
 		int y = offset.getFloorY();
 		int z = offset.getFloorZ();
-		x += 1; y += 1; z += 1;
+		x += 1;
+		y += 1;
+		z += 1;
 		return x | y << 2 | z << 4;
 	}
 
 	/**
 	 * Represents the rotation of the BlockFace in the world as a Quaternion.
-	 * 
+	 * This is the rotation form the west face to this face.
+	 *
 	 * @return the direction of the blockface.
 	 */
 	public Quaternion getDirection() {
@@ -88,7 +90,7 @@ public enum BlockFace implements ByteBitMask {
 
 	/**
 	 * Represents the directional offset of this Blockface as a Vector3.
-	 * 
+	 *
 	 * @return the offset of this directional.
 	 */
 	public Vector3 getOffset() {
@@ -96,8 +98,9 @@ public enum BlockFace implements ByteBitMask {
 	}
 
 	/**
-	 * Gets the opposite BlockFace.  If this BlockFace has no opposite the method will return itself.
-	 * 
+	 * Gets the opposite BlockFace. If this BlockFace has no opposite the method
+	 * will return itself.
+	 *
 	 * @return the opposite BlockFace, or this if it has no opposite.
 	 */
 	public BlockFace getOpposite() {
@@ -110,8 +113,9 @@ public enum BlockFace implements ByteBitMask {
 	}
 
 	/**
-	 * Uses a yaw angle to get the north, east, west or south face which points into the same direction.
-	 * 
+	 * Uses a yaw angle to get the north, east, west or south face which points
+	 * into the same direction.
+	 *
 	 * @param yaw to use
 	 * @return the block face
 	 */
@@ -128,9 +132,9 @@ public enum BlockFace implements ByteBitMask {
 			return BlockFace.EAST;
 		}
 	}
-	
+
 	public static BlockFace fromOffset(Vector3 offset) {
 		offset = MathHelper.round(MathHelper.normalize(offset));
-		return offsetMap.get(getOffsetHash(offset));
+		return OFFSET_MAP.get(getOffsetHash(offset));
 	}
 }
