@@ -26,6 +26,7 @@
  */
 package org.spout.engine.mesh;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,11 +46,31 @@ import org.spout.engine.world.SpoutChunkSnapshotModel;
  */
 public class ChunkMesh{
 
+	/**
+	 * Number of piece per chunk for each dimension
+	 */
+	public final static int SPLIT_X = 2;
+	public final static int SPLIT_Y = 1;
+	public final static int SPLIT_Z = 2;
+	public final static Vector3 SPLIT = new Vector3(SPLIT_X, SPLIT_Y, SPLIT_Z);
+	
+	/**
+	 * Number of block for a sub mesh
+	 */
+	public final static int SUBSIZE_X = Chunk.BLOCKS.SIZE / SPLIT_X;
+	public final static int SUBSIZE_Y = Chunk.BLOCKS.SIZE / SPLIT_Y;
+	public final static int SUBSIZE_Z = Chunk.BLOCKS.SIZE / SPLIT_Z;
+	public final static Vector3 SUBSIZE = new Vector3(SUBSIZE_X, SUBSIZE_Y, SUBSIZE_Z);
+	
+	public Vector3 start;
+	public Vector3 end;
+	
 	private HashMap<RenderMaterial, Map<BlockFace,ComposedMesh>> meshs = new HashMap<RenderMaterial, Map<BlockFace,ComposedMesh>>();
 
 	private SpoutChunkSnapshotModel chunkModel;
 	private ChunkSnapshot center;
 	private final int cx,cy,cz;
+	private final int subX,subY,subZ;
 	private boolean isUnloaded = false;
 	
 	/**
@@ -58,14 +79,35 @@ public class ChunkMesh{
 	 */
 	private final long time;
 
-	public ChunkMesh(SpoutChunkSnapshotModel chunkModel) {
+	private ChunkMesh(SpoutChunkSnapshotModel chunkModel, int subX, int subY, int subZ) {
 		this.chunkModel = chunkModel;
+		
 		cx = chunkModel.getX();
 		cy = chunkModel.getY();
 		cz = chunkModel.getZ();
+		
+		this.subX = subX;
+		this.subY = subY;
+		this.subZ = subZ;
+		
 		time = chunkModel.getTime();
+		
+		start = new Vector3(SUBSIZE_X * subX, SUBSIZE_Y * subY, SUBSIZE_Z * subZ);
+		end = new Vector3(SUBSIZE_X * subX + SUBSIZE_X, SUBSIZE_Y * subY + SUBSIZE_Y, SUBSIZE_Z * subZ + SUBSIZE_Z);
 	}
 
+	public static List<ChunkMesh> getChunkMeshs(SpoutChunkSnapshotModel chunkModel){
+		List<ChunkMesh> list = new ArrayList<ChunkMesh>();
+		for(int i = 0; i < SPLIT_X; i++){
+			for(int j = 0; j < SPLIT_Y; j++){
+				for(int k = 0; k < SPLIT_Z; k++){
+					list.add(new ChunkMesh(chunkModel, i, j, k));
+				}
+			}
+		}
+		return list;
+	}
+	
 	public int getX(){
 		return cx;
 	}
@@ -89,9 +131,9 @@ public class ChunkMesh{
 
 		center = chunkModel.getCenter();
 
-		for (int x = center.getBase().getBlockX(); x < center.getBase().getBlockX() + Chunk.BLOCKS.SIZE; x++) {
-			for (int y = center.getBase().getBlockY(); y < center.getBase().getBlockY() + Chunk.BLOCKS.SIZE; y++) {
-				for (int z = center.getBase().getBlockZ(); z < center.getBase().getBlockZ() + Chunk.BLOCKS.SIZE; z++) {
+		for (int x = center.getBase().getBlockX() + start.getFloorX(); x < center.getBase().getBlockX() + end.getFloorX(); x++) {
+			for (int y = center.getBase().getBlockY() + start.getFloorY(); y < center.getBase().getBlockY() + end.getFloorY(); y++) {
+				for (int z = center.getBase().getBlockZ() + start.getFloorZ(); z < center.getBase().getBlockZ() + end.getFloorZ(); z++) {
 					generateBlockVertices(chunkModel,x, y, z);
 				}
 			}
@@ -191,6 +233,18 @@ public class ChunkMesh{
 
 	public long getTime() {
 		return time;
+	}
+
+	public int getSubX() {
+		return subX;
+	}
+
+	public int getSubY() {
+		return subY;
+	}
+
+	public int getSubZ() {
+		return subZ;
 	}
 
 }
