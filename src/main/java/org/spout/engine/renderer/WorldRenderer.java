@@ -62,6 +62,9 @@ public class WorldRenderer {
 	private World world; // temp
 	private final BatchGeneratorTask batchGenerator = new BatchGeneratorTask();
 
+	public long minUpdate = Long.MAX_VALUE,maxUpdate = Long.MIN_VALUE,sumUpdate = 0,countUpdate = 0;
+	public long minRender = Long.MAX_VALUE,maxRender = Long.MIN_VALUE,sumRender = 0,countRender = 0;
+	
 	public WorldRenderer(SpoutClient client) {
 		this.client = client;
 	}
@@ -78,14 +81,29 @@ public class WorldRenderer {
 	}
 
 	public void render() {
-		final long start = System.currentTimeMillis();
+		long time,start = System.currentTimeMillis();
+		
 		update();
 
-		renderChunks();
+		time = System.currentTimeMillis() - start;
+		if(minUpdate > time)
+			minUpdate = time;
+		if(maxUpdate < time)
+			maxUpdate = time;
+		sumUpdate += time;
+		countUpdate ++;
 
-		long time = System.currentTimeMillis() - start;
-		if(time > 10) // -> 1000 / 60 = 16
-			System.out.println("Worldrender take " + time);
+		start = System.currentTimeMillis();
+
+		renderChunks();
+		
+		time = System.currentTimeMillis() - start;
+		if(minRender > time)
+			minRender = time;
+		if(maxRender < time)
+			maxRender = time;
+		sumRender += time;
+		countRender ++;
 	}
 
 	public void setupWorld(){
@@ -366,5 +384,9 @@ public class WorldRenderer {
 
 	public int getCulled() {
 		return culledChunks;
+	}
+
+	public int getWaitingBatchSize() {
+		return renderChunkMeshBatchQueue.size();
 	}
 }
