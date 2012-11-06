@@ -26,9 +26,12 @@
  */
 package org.spout.engine.renderer;
 
+import java.util.List;
+
 import org.lwjgl.opengl.GL11;
 
 import org.spout.api.render.RenderMaterial;
+import org.spout.api.render.Renderer;
 //TODO update this to work better
 public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 	int displayList;
@@ -76,5 +79,19 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 	@Override
 	public void finalize() {
 		 GL11.glDeleteLists(displayList, 1);
+	}
+
+	@Override
+	public void merge(List<Renderer> renderers) {
+		numVertices = 0;
+		GL11.glNewList(displayList, GL11.GL_COMPILE);
+
+		for(Renderer render : renderers){
+			numVertices += ((GL11BatchVertexRenderer)render).numVertices;
+			GL11.glCallList(((GL11BatchVertexRenderer)render).displayList);
+		}
+
+		GL11.glEndList();
+		flushed = true;
 	}
 }

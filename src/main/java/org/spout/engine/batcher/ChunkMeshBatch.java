@@ -27,44 +27,39 @@
 package org.spout.engine.batcher;
 
 import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.geo.cuboid.Cuboid;
-import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
-import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
-import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.mesh.ComposedMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
 
 /**
  * Represents a group of chunk meshes to be rendered.
  */
-public class ChunkMeshBatch extends Cuboid {
-	
-	private final static Vector3 SIZE = Vector3.ONE;
-	
+public class ChunkMeshBatch {	
+	private int x,y,z;
 	private PrimitiveBatch renderer = new PrimitiveBatch();
 	private ComposedMesh mesh = null;
 	private boolean hasVertices = false;
 	private Matrix modelMat = MathHelper.createIdentity();
 	private final BlockFace face;
 	private final RenderMaterial material;
-	private final int subX,subY,subZ; // keep sub position for indexation
 	
-	public ChunkMeshBatch(World world, int baseX, int baseY, int baseZ, BlockFace face, RenderMaterial material) {
-		super(new Point(world, baseX / ChunkMesh.SPLIT_X, baseY / ChunkMesh.SPLIT_Y, baseZ / ChunkMesh.SPLIT_Z), SIZE);
-		subX = baseX;
-		subY = baseY;
-		subZ = baseZ;
+	public ChunkMeshBatch(int x, int y, int z, BlockFace face, RenderMaterial material) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
 		this.face = face;
 		this.material = material;
 		//Not need of modelMat if render use world block position
 		//modelMat = MathHelper.translate(new Vector3(baseX * ChunkMesh.SUBSIZE_X, baseY * ChunkMesh.SUBSIZE_Y, baseZ * ChunkMesh.SUBSIZE_Z));
 	}
 
+	public PrimitiveBatch getRenderer(){
+		return renderer;
+	}
+	
 	public void update() {
 		hasVertices = true;
 		/*hasVertices = false;
@@ -105,7 +100,7 @@ public class ChunkMeshBatch extends Cuboid {
 
 	@Override
 	public String toString() {
-		return "ChunkMeshBatch [base=" + base + ", size=" + size + "]";
+		return "ChunkMeshBatch [x=" + x + ", y=" + y +  ", z=" + z + "]";
 	}
 
 	public void setMesh(ComposedMesh chunkMesh) {
@@ -120,16 +115,16 @@ public class ChunkMeshBatch extends Cuboid {
 		return material;
 	}
 
-	public int getSubX() {
-		return subX;
+	public int getX() {
+		return x;
 	}
 
-	public int getSubY() {
-		return subY;
+	public int getY() {
+		return y;
 	}
 
-	public int getSubZ() {
-		return subZ;
+	public int getZ() {
+		return z;
 	}
 
 }
