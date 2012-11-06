@@ -29,7 +29,9 @@ package org.spout.engine.renderer;
 import gnu.trove.list.array.TFloatArrayList;
 
 import java.awt.Color;
+import java.util.List;
 
+import org.lwjgl.opengl.GL11;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.math.Vector2;
@@ -150,7 +152,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 		normalBuffer.clear();
 		uvBuffer.clear();
 	}
-
+	
 	/**
 	 * The act of drawing.  The Batch will check if it's possible to render
 	 * as well as setup for rendering.  If it's possible to render, it will call doRender()

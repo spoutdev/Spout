@@ -69,7 +69,7 @@ public class ChunkMesh{
 
 	private SpoutChunkSnapshotModel chunkModel;
 	private ChunkSnapshot center;
-	private final int cx,cy,cz;
+	private final int chunkX,chunkY,chunkZ;
 	private final int subX,subY,subZ;
 	private boolean isUnloaded = false;
 	
@@ -82,13 +82,13 @@ public class ChunkMesh{
 	private ChunkMesh(SpoutChunkSnapshotModel chunkModel, int subX, int subY, int subZ) {
 		this.chunkModel = chunkModel;
 		
-		cx = chunkModel.getX();
-		cy = chunkModel.getY();
-		cz = chunkModel.getZ();
+		chunkX = chunkModel.getX();
+		chunkY = chunkModel.getY();
+		chunkZ = chunkModel.getZ();
 		
-		this.subX = subX;
-		this.subY = subY;
-		this.subZ = subZ;
+		this.subX = chunkModel.getX() * SPLIT_X + subX;
+		this.subY = chunkModel.getY() * SPLIT_Y + subY;
+		this.subZ = chunkModel.getZ() * SPLIT_Z + subZ;
 		
 		time = chunkModel.getTime();
 		
@@ -107,17 +107,17 @@ public class ChunkMesh{
 		}
 		return list;
 	}
-	
-	public int getX(){
-		return cx;
+
+	public int getChunkX(){
+		return chunkX;
 	}
 
-	public int getY(){
-		return cy;
+	public int getChunkY(){
+		return chunkY;
 	}
 
-	public int getZ(){
-		return cz;
+	public int getChunkZ(){
+		return chunkZ;
 	}
 
 	/**

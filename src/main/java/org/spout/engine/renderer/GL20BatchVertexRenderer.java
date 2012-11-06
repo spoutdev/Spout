@@ -29,11 +29,13 @@ package org.spout.engine.renderer;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.nio.FloatBuffer;
+import java.util.List;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.spout.api.render.RenderMaterial;
+import org.spout.api.render.Renderer;
 import org.spout.engine.renderer.vertexbuffer.VertexBufferImpl;
 
 public class GL20BatchVertexRenderer extends BatchVertexRenderer {
@@ -139,5 +141,11 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 	
 	public void finalize() {
 		dispose();
+	}
+
+	@Override
+	public void merge(List<Renderer> renderers) {
+		// TODO : To implement
+		
 	}
 }
