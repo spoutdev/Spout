@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,10 +42,12 @@ import org.spout.api.Spout;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.geo.World;
 import org.spout.api.material.block.BlockFace;
+import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.batcher.ChunkMeshBatch;
+import org.spout.engine.batcher.ChunkMeshBatchAggregator;
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.mesh.ComposedMesh;
 import org.spout.engine.mesh.CubeMesh;
@@ -53,17 +56,28 @@ import org.spout.engine.world.SpoutWorld;
 public class WorldRenderer {
 	private final SpoutClient client;
 
-	private TreeMap<RenderMaterial,List<ChunkMeshBatch>> chunkRenderers = new TreeMap<RenderMaterial,List<ChunkMeshBatch>>();
-	private TInt21TripleObjectHashMap<Map<RenderMaterial,Map<BlockFace,ChunkMeshBatch>>> chunkRenderersByPosition = new TInt21TripleObjectHashMap<Map<RenderMaterial,Map<BlockFace,ChunkMeshBatch>>>();
+	public static final long TIME_LIMIT = 2;
 
+	//private TreeMap<RenderMaterial,List<ChunkMeshBatch>> chunkRenderers = new TreeMap<RenderMaterial,List<ChunkMeshBatch>>();
+	//private TInt21TripleObjectHashMap<Map<RenderMaterial,Map<BlockFace,ChunkMeshBatch>>> chunkRenderersByPosition = new TInt21TripleObjectHashMap<Map<RenderMaterial,Map<BlockFace,ChunkMeshBatch>>>();
+
+	private TreeMap<RenderMaterial,List<ChunkMeshBatchAggregator>> chunkRenderers = new TreeMap<RenderMaterial,List<ChunkMeshBatchAggregator>>();
+	
+	/**
+	 * Store ChunkMeshBatchAggregator by BlockFace, RenderMaterial and ChunkMeshBatchAggregator position
+	 */
+	private TInt21TripleObjectHashMap<Map<RenderMaterial,Map<BlockFace,ChunkMeshBatchAggregator>>> chunkRenderersByPosition = new TInt21TripleObjectHashMap<Map<RenderMaterial,Map<BlockFace,ChunkMeshBatchAggregator>>>();
+	private List<ChunkMeshBatchAggregator> dirties = new LinkedList<ChunkMeshBatchAggregator>();
+	
 	public static HashMap<String,CubeMesh> blocksMesh = new HashMap<String, CubeMesh>();
 	public static CubeMesh defaultMesh = null;
 
 	private World world; // temp
 	private final BatchGeneratorTask batchGenerator = new BatchGeneratorTask();
 
-	public long minUpdate = Long.MAX_VALUE,maxUpdate = Long.MIN_VALUE,sumUpdate = 0,countUpdate = 0;
-	public long minRender = Long.MAX_VALUE,maxRender = Long.MIN_VALUE,sumRender = 0,countRender = 0;
+	public long minUpdate = Long.MAX_VALUE,maxUpdate = Long.MIN_VALUE,sumUpdate = 0;
+	public long minRender = Long.MAX_VALUE,maxRender = Long.MIN_VALUE,sumRender = 0;
+	public long count = 0;
 	
 	public WorldRenderer(SpoutClient client) {
 		this.client = client;
@@ -81,6 +95,13 @@ public class WorldRenderer {
 	}
 
 	public void render() {
+		count ++;
+		if(count > 600){
+			count = 0;
+			sumUpdate = 0;
+			sumRender = 0;
+		}
+		
 		long time,start = System.currentTimeMillis();
 		
 		update();
@@ -91,7 +112,6 @@ public class WorldRenderer {
 		if(maxUpdate < time)
 			maxUpdate = time;
 		sumUpdate += time;
-		countUpdate ++;
 
 		start = System.currentTimeMillis();
 
@@ -103,7 +123,6 @@ public class WorldRenderer {
 		if(maxRender < time)
 			maxRender = time;
 		sumRender += time;
-		countRender ++;
 	}
 
 	public void setupWorld(){
@@ -116,8 +135,6 @@ public class WorldRenderer {
 
 	private class BatchGeneratorTask implements Runnable {
 
-		private static final long TIME_LIMIT = 2;
-
 		private ChunkMesh chunkMesh = null;
 
 		private Iterator<Entry<RenderMaterial, Map<BlockFace, ComposedMesh>>> it = null;
@@ -128,14 +145,17 @@ public class WorldRenderer {
 
 		public void run() {
 			final long start = System.currentTimeMillis();
+			
+			batch(start);
 
 			//Execute previous unfinished chunkMesh
 			//if(chunkMesh != null){
 			if(it2 != null){
+				Vector3 position = ChunkMeshBatchAggregator.getCoordFromChunkMesh(chunkMesh);
 				//RenderMaterial material = data.getKey();
 				while(it2.hasNext()){
 					Entry<BlockFace, ComposedMesh> entry = it2.next();
-					handle(entry.getKey(),entry.getValue());
+					handle(position, entry.getKey(),entry.getValue(), start);
 
 					if( System.currentTimeMillis() - start > TIME_LIMIT)
 						return;
@@ -146,6 +166,7 @@ public class WorldRenderer {
 			}
 
 			if(it != null){
+				Vector3 position = ChunkMeshBatchAggregator.getCoordFromChunkMesh(chunkMesh);
 				while(it.hasNext()){
 					data = it.next();
 					material = data.getKey();
@@ -153,7 +174,7 @@ public class WorldRenderer {
 
 					while(it2.hasNext()){
 						Entry<BlockFace, ComposedMesh> entry = it2.next();
-						handle(entry.getKey(),entry.getValue());
+						handle(position, entry.getKey(),entry.getValue(), start);
 
 						if( System.currentTimeMillis() - start > TIME_LIMIT)
 							return;
@@ -170,9 +191,10 @@ public class WorldRenderer {
 
 			//Step 2 : Add ChunkMesh to ChunkMeshBatch
 			while( (chunkMesh = renderChunkMeshBatchQueue.poll()) != null){
+				Vector3 position = ChunkMeshBatchAggregator.getCoordFromChunkMesh(chunkMesh);
 
 				if(chunkMesh.isUnloaded()){
-					cleanChunkMeshBatchByBatchPosition(chunkMesh);
+					cleanBatchAggregator(position);
 					chunkMesh = null;
 					continue;
 				}
@@ -186,7 +208,7 @@ public class WorldRenderer {
 
 					while(it2.hasNext()){
 						Entry<BlockFace, ComposedMesh> entry = it2.next();
-						handle(entry.getKey(), entry.getValue());
+						handle(position, entry.getKey(), entry.getValue(), start);
 
 						if( System.currentTimeMillis() - start > TIME_LIMIT)
 							return;
@@ -202,20 +224,30 @@ public class WorldRenderer {
 		}
 
 
-		private void handle(BlockFace face, ComposedMesh mesh){
-			ChunkMeshBatch chunkMeshBatch = getChunkMeshBatchByBatchPosition(chunkMesh, face, material);
+		private void handle(Vector3 position, BlockFace face, ComposedMesh mesh, long start){
+			ChunkMeshBatchAggregator chunkMeshBatch = getBatchAggregator(position, face, material);
 
 			if(chunkMeshBatch==null){
-				chunkMeshBatch = new ChunkMeshBatch(world,
-						chunkMesh.getX() * ChunkMesh.SPLIT_X + chunkMesh.getSubX(),
-						chunkMesh.getY() * ChunkMesh.SPLIT_Y + chunkMesh.getSubY(),
-						chunkMesh.getZ() * ChunkMesh.SPLIT_Z + chunkMesh.getSubZ(),
+				chunkMeshBatch = new ChunkMeshBatchAggregator(world,position.getFloorX(),position.getFloorY(),position.getFloorZ(),
 						face, material);
-				addChunkMeshBatch(chunkMeshBatch);
+				addBatchAggregator(chunkMeshBatch);
 			}
 
-			chunkMeshBatch.setMesh(mesh);
-			chunkMeshBatch.update(); // One chunk in batch only
+			chunkMeshBatch.setSubBatch(chunkMesh.getSubX(),chunkMesh.getSubY(),chunkMesh.getSubZ(),mesh);
+			dirties.add(chunkMeshBatch);
+			batch(start);
+		}
+		
+		private void batch(long start){
+			while(!dirties.isEmpty()){
+				ChunkMeshBatchAggregator batch = dirties.remove(0);
+				
+				if(!batch.update(start))
+					dirties.add(batch);
+				
+				if( System.currentTimeMillis() - start > TIME_LIMIT)
+					return;
+			}
 		}
 
 	}
@@ -234,23 +266,23 @@ public class WorldRenderer {
 		renderChunkMeshBatchQueue.add(mesh);
 	}
 
-	private void addChunkMeshBatch(ChunkMeshBatch batch) {
-		List<ChunkMeshBatch> list = chunkRenderers.get(batch.getMaterial());
+	private void addBatchAggregator(ChunkMeshBatchAggregator batch) {
+		List<ChunkMeshBatchAggregator> list = chunkRenderers.get(batch.getMaterial());
 		if(list == null){
-			list = new ArrayList<ChunkMeshBatch>();
+			list = new ArrayList<ChunkMeshBatchAggregator>();
 			chunkRenderers.put(batch.getMaterial(),list);
 		}
 		list.add(batch);
 
-		Map<RenderMaterial, Map<BlockFace, ChunkMeshBatch>> map = chunkRenderersByPosition.get(batch.getSubX(), batch.getSubY(), batch.getSubZ());
+		Map<RenderMaterial, Map<BlockFace, ChunkMeshBatchAggregator>> map = chunkRenderersByPosition.get(batch.getX(), batch.getY(), batch.getZ());
 		if(map == null){
-			map = new HashMap<RenderMaterial, Map<BlockFace, ChunkMeshBatch>>();
-			chunkRenderersByPosition.put(batch.getSubX(), batch.getSubY(), batch.getSubZ(), map);
+			map = new HashMap<RenderMaterial, Map<BlockFace, ChunkMeshBatchAggregator>>();
+			chunkRenderersByPosition.put(batch.getX(), batch.getY(), batch.getZ(), map);
 		}
 
-		Map<BlockFace, ChunkMeshBatch> map2 = map.get(batch.getMaterial());
+		Map<BlockFace, ChunkMeshBatchAggregator> map2 = map.get(batch.getMaterial());
 		if( map2 == null ){
-			map2 = new HashMap<BlockFace, ChunkMeshBatch>();
+			map2 = new HashMap<BlockFace, ChunkMeshBatchAggregator>();
 			map.put(batch.getMaterial(), map2);
 		}
 
@@ -263,24 +295,22 @@ public class WorldRenderer {
 	 * @param y
 	 * @param z
 	 */
-	private void cleanChunkMeshBatchByBatchPosition(ChunkMesh mesh) {
-		Map<RenderMaterial, Map<BlockFace, ChunkMeshBatch>> chunkRenderersByMaterial = chunkRenderersByPosition.remove(
-				mesh.getX() * ChunkMesh.SPLIT_X + mesh.getSubX(),
-				mesh.getY() * ChunkMesh.SPLIT_Y + mesh.getSubY(),
-				mesh.getZ() * ChunkMesh.SPLIT_Z + mesh.getSubZ());
-		
+	private void cleanBatchAggregator(Vector3 position) {
+		Map<RenderMaterial, Map<BlockFace, ChunkMeshBatchAggregator>> chunkRenderersByMaterial =
+				chunkRenderersByPosition.remove(position.getFloorX(),position.getFloorY(),position.getFloorZ());
+
 		//Can be null if the thread receive a unload model of a model wich has been send previously to load be not done
 		if(chunkRenderersByMaterial != null){
 			
-			for(Entry<RenderMaterial, Map<BlockFace, ChunkMeshBatch>> entry : chunkRenderersByMaterial.entrySet()){
+			for(Entry<RenderMaterial, Map<BlockFace, ChunkMeshBatchAggregator>> entry : chunkRenderersByMaterial.entrySet()){
 				
 				RenderMaterial material = entry.getKey();
-				Collection<ChunkMeshBatch> batchs = entry.getValue().values();
+				Collection<ChunkMeshBatchAggregator> batchs = entry.getValue().values();
 				
-				for(ChunkMeshBatch batch : batchs)
+				for(ChunkMeshBatchAggregator batch : batchs)
 					batch.finalize();
 
-				List<ChunkMeshBatch> list = chunkRenderers.get(material);
+				List<ChunkMeshBatchAggregator> list = chunkRenderers.get(material);
 
 				list.removeAll(batchs);
 				if(list.isEmpty())
@@ -288,22 +318,19 @@ public class WorldRenderer {
 			}
 		}
 	}
-
+	
 	/**
-	 * Gets the chunk mesh batch corresponding with the given chunk.
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
+	 * Gets the batch aggregator corresponding wuth the given mesh, face and material.
+	 * @param mesh
+	 * @param face
+	 * @param material
+	 * @return
 	 */
-	private ChunkMeshBatch getChunkMeshBatchByBatchPosition(ChunkMesh mesh, BlockFace face, RenderMaterial material) {
-		Map<RenderMaterial, Map<BlockFace, ChunkMeshBatch>> map = chunkRenderersByPosition.get(
-				mesh.getX() * ChunkMesh.SPLIT_X + mesh.getSubX(),
-				mesh.getY() * ChunkMesh.SPLIT_Y + mesh.getSubY(),
-				mesh.getZ() * ChunkMesh.SPLIT_Z + mesh.getSubZ());
+	private ChunkMeshBatchAggregator getBatchAggregator(Vector3 position, BlockFace face, RenderMaterial material) {
+		Map<RenderMaterial, Map<BlockFace, ChunkMeshBatchAggregator>> map = chunkRenderersByPosition.get( position.getFloorX(), position.getFloorY(), position.getFloorZ());
 		if( map == null )
 			return null;
-		Map<BlockFace, ChunkMeshBatch> map2 = map.get(material);
+		Map<BlockFace, ChunkMeshBatchAggregator> map2 = map.get(material);
 		if( map2 == null )
 			return null;
 		return map2.get(face);
@@ -311,6 +338,7 @@ public class WorldRenderer {
 	
 	int ocludedChunks = 0;
 	int culledChunks = 0;
+	int rended = 0;
 
 	private void renderChunks() {
 		int x = client.getActivePlayer().getChunk().getX();
@@ -319,14 +347,15 @@ public class WorldRenderer {
 		
 		ocludedChunks = 0;
 		culledChunks = 0;
+		rended = 0;
 		
-		for(Entry<RenderMaterial, List<ChunkMeshBatch>> entry : chunkRenderers.entrySet()){
+		for(Entry<RenderMaterial, List<ChunkMeshBatchAggregator>> entry : chunkRenderers.entrySet()){
 			RenderMaterial material = entry.getKey();
 			material.getShader().setUniform("View", client.getActiveCamera().getView());
 			material.getShader().setUniform("Projection", client.getActiveCamera().getProjection());
-			for (ChunkMeshBatch renderer : entry.getValue()) {
+			for (ChunkMeshBatchAggregator renderer : entry.getValue()) {
 
-				if(renderer.getY() > y && renderer.getFace() == BlockFace.TOP){
+				/*if(renderer.getY() > y && renderer.getFace() == BlockFace.TOP){
 					ocludedChunks++;
 					continue;
 				}
@@ -351,7 +380,7 @@ public class WorldRenderer {
 				if(renderer.getZ() < z && renderer.getFace() == BlockFace.EAST){
 					ocludedChunks++;
 					continue;
-				}
+				}*/
 
 				material.getShader().setUniform("Model", renderer.getTransform());
 
@@ -360,7 +389,7 @@ public class WorldRenderer {
 				// But here's my frustrum
 				// so cull me maybe?
 				//if (client.getActiveCamera().getFrustum().intersects(renderer)) {
-				renderer.render(material);
+				rended += renderer.render(material);
 				/*} else {
 				culledChunks++;
 			}*/
@@ -371,13 +400,6 @@ public class WorldRenderer {
 			System.out.println("Ocluded facechunk : " + ocludedChunks);*/
 	}
 
-	public int getChunkRenderersSize(){
-		int i = 0;
-		for(List<ChunkMeshBatch> list : chunkRenderers.values())
-			i += list.size();
-		return i;
-	}
-
 	public int getOcluded() {
 		return ocludedChunks;
 	}
@@ -386,7 +408,11 @@ public class WorldRenderer {
 		return culledChunks;
 	}
 
-	public int getWaitingBatchSize() {
+	public int getRended() {
+		return rended;
+	}
+
+	public int getBatchWaiting() {
 		return renderChunkMeshBatchQueue.size();
 	}
 }
