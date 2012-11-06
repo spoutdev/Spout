@@ -34,22 +34,23 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.util.SpoutToStringStyle;
 import org.spout.api.util.config.Configuration;
-import org.spout.api.util.config.annotated.AnnotatedConfiguration;
+import org.spout.api.util.config.annotated.AnnotatedSubclassConfiguration;
 import org.spout.api.util.config.annotated.Setting;
 import org.spout.engine.SpoutServer;
 
 /**
  * Handler for reading port bindings from the configuration
  */
-public class PortBindings extends AnnotatedConfiguration {
+public class PortBindings extends AnnotatedSubclassConfiguration {
 	private final SpoutServer server;
 	@Setting("addresses") private List<ConfigPortBinding> portBindings;
 
-	public static class ConfigPortBinding extends AnnotatedConfiguration implements PortBinding {
+	public static class ConfigPortBinding extends AnnotatedSubclassConfiguration implements PortBinding {
 		@Setting("protocol") private String protocolName;
 		private transient Protocol protocol;
 		@Setting("address") private String address = "0.0.0.0";
