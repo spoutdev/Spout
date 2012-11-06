@@ -229,7 +229,10 @@ public class ClientRenderMaterial extends RenderMaterial {
 		 *          /
 		 *         Z - East < WEST
 		 */
-		Vector3 model = new Vector3(position.getFloorX() & Chunk.BLOCKS.MASK, position.getFloorY() & Chunk.BLOCKS.MASK, position.getFloorZ() & Chunk.BLOCKS.MASK);
+		
+		//Not need of & Chunk.BLOCKS.MASK if model of chunkbatch is identity
+		//Vector3 model = new Vector3(position.getFloorX() & Chunk.BLOCKS.MASK, position.getFloorY() & Chunk.BLOCKS.MASK, position.getFloorZ() & Chunk.BLOCKS.MASK);
+		Vector3 model = new Vector3(position.getFloorX(), position.getFloorY(), position.getFloorZ());
 
 		Vector3 vertex0 = model.add(0, 0, 0);
 		Vector3 vertex1 = model.add(0, 1, 0);

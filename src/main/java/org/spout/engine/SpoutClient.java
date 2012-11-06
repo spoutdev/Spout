@@ -534,9 +534,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "y: ", position.getY()), font, -0.95f, 0.7f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "z: ", position.getZ()), font, -0.95f, 0.6f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "fps: ", fps), font, -0.95f, 0.5f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "batch: ", worldRenderer.getChunkRenderersSize()), font, -0.95f, 0.4f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "batch: ", worldRenderer.getChunkRenderersSize() + "/" + worldRenderer.getWaitingBatchSize()), font, -0.95f, 0.4f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "ocluded: ", (int)((float)worldRenderer.getOcluded()/worldRenderer.getChunkRenderersSize() * 100) + "%"), font, -0.95f, 0.3f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "culled: ", (int)((float)worldRenderer.getCulled()/worldRenderer.getChunkRenderersSize() * 100), "%"), font, -0.95f, 0.2f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Update: ", worldRenderer.minUpdate + " / " + worldRenderer.maxUpdate + " / " + (worldRenderer.sumUpdate / Math.max(1,worldRenderer.countUpdate))), font, -0.95f, 0.1f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Render: ", worldRenderer.minRender + " / " + worldRenderer.maxRender + " / " + (worldRenderer.sumRender / Math.max(1,worldRenderer.countRender))), font, -0.95f, 0.0f, 8f);
 		}
 		for (Screen screen : screenStack.getVisibleScreens()) {
 			for (Widget widget : screen.getWidgets()) {

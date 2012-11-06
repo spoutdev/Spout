@@ -1614,13 +1614,14 @@ public class SpoutRegion extends Region {
 				}
 			}
 		}
-		
+
 		private void handle(SpoutChunkSnapshotModel model) {
-			ChunkMesh mesh = new ChunkMesh(model);
-			mesh.update();
-			renderer.addMeshToBatchQueue(mesh);
+			for(ChunkMesh mesh : ChunkMesh.getChunkMeshs(model)){
+				mesh.update();
+				renderer.addMeshToBatchQueue(mesh);
+			}
 		}
-		
+
 	}
 
 }
