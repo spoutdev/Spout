@@ -70,9 +70,9 @@ public class HitBlockComponent extends EntityComponent {
 		float tDeltaY = Math.abs(1f / direction.getY());
 		float tDeltaZ = Math.abs(1f / direction.getZ());
 		
-		float tMaxX = Math.abs((X + stepX>0?1:0 - origin.getX()) / direction.getX());
-		float tMaxY = Math.abs((Y + stepY>0?1:0 - origin.getY()) / direction.getY());
-		float tMaxZ = Math.abs((Z + stepZ>0?1:0 - origin.getZ()) / direction.getZ());
+		float tMaxX = Math.abs((X + (stepX > 0 ? 1 : 0) - origin.getX()) / direction.getX());
+		float tMaxY = Math.abs((Y + (stepY > 0 ? 1 : 0) - origin.getY()) / direction.getY());
+		float tMaxZ = Math.abs((Z + (stepZ > 0 ? 1 : 0) - origin.getZ()) / direction.getZ());
 		
 		Block block = null;
 		BlockFace face = null;
