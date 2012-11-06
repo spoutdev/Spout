@@ -26,32 +26,12 @@
  */
 package org.spout.api.util.config.annotated;
 
-import org.spout.api.exception.ConfigurationException;
-import org.spout.api.util.config.Configuration;
-import org.spout.api.util.config.ConfigurationNodeSource;
-import org.spout.api.util.config.ConfigurationWrapper;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public abstract class AnnotatedConfiguration extends ConfigurationWrapper {
-	public AnnotatedConfiguration() {
-	}
-
-	public AnnotatedConfiguration(Configuration config) {
-		super(config);
-	}
-
-	public abstract void load(ConfigurationNodeSource source) throws ConfigurationException;
-
-	public abstract void save(ConfigurationNodeSource source) throws ConfigurationException;
-
-	@Override
-	public void load() throws ConfigurationException {
-		super.load();
-		load(this);
-	}
-
-	@Override
-	public void save() throws ConfigurationException {
-		save(this);
-		super.save();
-	}
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Save {
 }

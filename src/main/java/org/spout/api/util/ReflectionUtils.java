@@ -29,21 +29,23 @@ package org.spout.api.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Various utility methods that deal with reflection
  */
 public class ReflectionUtils {
-
 	/**
-	 * Get all the public fields in a class, as well as those in its superclasses (excluding {@link Object})
+	 * Get all the public fields in a class, as well as those in its
+	 * superclasses (excluding {@link Object}).
 	 *
 	 * @param clazz The class to get all fields in
 	 * @return The public fields in the class
@@ -53,44 +55,108 @@ public class ReflectionUtils {
 	}
 
 	/**
-	 * Get all the public fields in a class, as well as those in its superclasses
+	 * Get all the public fields in a class, as well as those in its
+	 * superclasses.
 	 *
-	 * @see Class#getFields()
 	 * @param clazz The class to get all fields in
 	 * @param includeObject Whether to include fields in {@link Object}
 	 * @return The public fields in the class
 	 */
 	public static List<Field> getFieldsRecur(Class<?> clazz, boolean includeObject) {
-		List<Field> fields = new ArrayList<Field>();
+		return getFieldsRecur(clazz, includeObject, (Class<? extends Annotation>[]) null);
+	}
+
+	/**
+	 * Get all the public fields in a class with the desired annotation, as well
+	 * as those in its superclasses (excluding {@link Object}).
+	 *
+	 * @param clazz The class to get all fields in
+	 * @param annotations if not null, only include fields with any of these
+	 * annotations
+	 * @return The public fields in the class
+	 */
+	public static List<Field> getFieldsRecur(Class<?> clazz, Class<? extends Annotation>... annotations) {
+		return getFieldsRecur(clazz, false, annotations);
+	}
+
+	/**
+	 * Get all the public fields in a class (optionally, with the desired
+	 * annotation), as well as those in its superclasses.
+	 *
+	 * @see Class#getFields()
+	 * @param clazz The class to get all fields in
+	 * @param includeObject Whether to include fields in {@link Object}
+	 * @param annotations if not null, only include fields with any of these
+	 * annotations
+	 * @return The public fields in the class
+	 */
+	public static List<Field> getFieldsRecur(Class<?> clazz, boolean includeObject, Class<? extends Annotation>... annotations) {
+		final List<Field> fields = new ArrayList<Field>();
 		while (clazz != null && (includeObject || !Object.class.equals(clazz))) {
-			fields.addAll(Arrays.asList(clazz.getFields()));
+			for (Field field : clazz.getFields()) {
+				if (annotations == null || hasAnyAnnotation(field, annotations)) {
+					fields.add(field);
+				}
+			}
 			clazz = clazz.getSuperclass();
 		}
 		return fields;
 	}
 
 	/**
-	 * Get all the fields in a class, as well as those in its superclasses (excluding {@link Object})
+	 * Get all the fields in a class, as well as those in its superclasses
+	 * (excluding {@link Object}).
 	 *
 	 * @param clazz The class to get all fields in
-	 * @return The fields in the class
+	 * @return The public fields in the class
 	 */
 	public static List<Field> getDeclaredFieldsRecur(Class<?> clazz) {
 		return getDeclaredFieldsRecur(clazz, false);
 	}
 
 	/**
-	 * Get all the fields in a class, as well as those in its superclasses
+	 * Get all the fields in a class, as well as those in its superclasses.
+	 *
+	 * @param clazz The class to get all fields in
+	 * @param includeObject Whether to include fields in {@link Object}
+	 * @return The public fields in the class
+	 */
+	public static List<Field> getDeclaredFieldsRecur(Class<?> clazz, boolean includeObject) {
+		return getDeclaredFieldsRecur(clazz, includeObject, (Class<? extends Annotation>[]) null);
+	}
+
+	/**
+	 * Get all the fields in a class with the desired annotation, as well as
+	 * those in its superclasses (excluding {@link Object}).
+	 *
+	 * @param clazz The class to get all fields in
+	 * @param annotations if not null, only include fields with any of these
+	 * annotations
+	 * @return The public fields in the class
+	 */
+	public static List<Field> getDeclaredFieldsRecur(Class<?> clazz, Class<? extends Annotation>... annotations) {
+		return getDeclaredFieldsRecur(clazz, false, annotations);
+	}
+
+	/**
+	 * Get all the fields in a class (optionally, with the desired annotation),
+	 * as well as those in its superclasses.
 	 *
 	 * @see Class#getDeclaredFields()
 	 * @param clazz The class to get all fields in
 	 * @param includeObject Whether to include fields in {@link Object}
-	 * @return The fields in the class
+	 * @param annotations if not null, only include fields with any of these
+	 * annotations
+	 * @return The public fields in the class
 	 */
-	public static List<Field> getDeclaredFieldsRecur(Class<?> clazz, boolean includeObject) {
-		List<Field> fields = new ArrayList<Field>();
+	public static List<Field> getDeclaredFieldsRecur(Class<?> clazz, boolean includeObject, Class<? extends Annotation>... annotations) {
+		final List<Field> fields = new ArrayList<Field>();
 		while (clazz != null && (includeObject || !Object.class.equals(clazz))) {
-			fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
+			for (Field field : clazz.getDeclaredFields()) {
+				if (annotations == null || hasAnyAnnotation(field, annotations)) {
+					fields.add(field);
+				}
+			}
 			clazz = clazz.getSuperclass();
 		}
 		return fields;
@@ -99,11 +165,12 @@ public class ReflectionUtils {
 	/**
 	 * Attempts to list all the classes in the specified package as determined
 	 * by the context class loader
-	 * 
+	 *
 	 * @param packageName the package name to search
 	 * @param recursive if the search should include all subdirectories
 	 * @return a list of classes that exist within that package
-	 * @throws ClassNotFoundException if the package had invalid classes, or does not exist
+	 * @throws ClassNotFoundException if the package had invalid classes, or
+	 * does not exist
 	 */
 	public static List<Class<?>> getClassesForPackage(String packageName, boolean recursive) throws ClassNotFoundException {
 		ArrayList<File> directories = new ArrayList<File>();
@@ -150,11 +217,11 @@ public class ReflectionUtils {
 			}
 		}
 		return classes;
-	}	
+	}
 
 	/**
 	 * Recursively builds a list of all subdirectories
-	 * 
+	 *
 	 * @param dirs list to add to
 	 * @param dir to search
 	 */
@@ -165,5 +232,141 @@ public class ReflectionUtils {
 				findDirs(dirs, f);
 			}
 		}
+	}
+
+	/**
+	 * Get all the public methods in a class, as well as those in its
+	 * superclasses (excluding {@link Object}).
+	 *
+	 * @param clazz The class to get all methods in
+	 * @return The public methods in the class
+	 */
+	public static List<Method> getMethodsRecur(Class<?> clazz) {
+		return getMethodsRecur(clazz, false);
+	}
+
+	/**
+	 * Get all the public methods in a class, as well as those in its
+	 * superclasses.
+	 *
+	 * @param clazz The class to get all methods in
+	 * @param includeObject Whether to include methods in {@link Object}
+	 * @return The public methods in the class
+	 */
+	public static List<Method> getMethodsRecur(Class<?> clazz, boolean includeObject) {
+		return getMethodsRecur(clazz, includeObject, (Class<? extends Annotation>[]) null);
+	}
+
+	/**
+	 * Get all the public methods in a class with the desired annotation, as
+	 * well as those in its superclasses (excluding {@link Object}).
+	 *
+	 * @param clazz The class to get all methods in
+	 * @param annotations if not null, only include methods with any of these
+	 * annotations
+	 * @return The public methods in the class
+	 */
+	public static List<Method> getMethodsRecur(Class<?> clazz, Class<? extends Annotation>... annotations) {
+		return getMethodsRecur(clazz, false, annotations);
+	}
+
+	/**
+	 * Get all the public methods in a class (optionally, with the desired
+	 * annotation), as well as those in its superclasses.
+	 *
+	 * @see Class#getMethods()
+	 * @param clazz The class to get all methods in
+	 * @param includeObject Whether to include methods in {@link Object}
+	 * @param annotations if not null, only include methods with any of these
+	 * annotations
+	 * @return The public methods in the class
+	 */
+	public static List<Method> getMethodsRecur(Class<?> clazz, boolean includeObject, Class<? extends Annotation>... annotations) {
+		final List<Method> methods = new ArrayList<Method>();
+		while (clazz != null && (includeObject || !Object.class.equals(clazz))) {
+			for (Method method : clazz.getMethods()) {
+				if (annotations == null || hasAnyAnnotation(method, annotations)) {
+					methods.add(method);
+				}
+			}
+			clazz = clazz.getSuperclass();
+		}
+		return methods;
+	}
+
+	/**
+	 * Get all the methods in a class, as well as those in its superclasses
+	 * (excluding {@link Object}).
+	 *
+	 * @param clazz The class to get all methods in
+	 * @return The public methods in the class
+	 */
+	public static List<Method> getDeclaredMethodsRecur(Class<?> clazz) {
+		return getDeclaredMethodsRecur(clazz, false);
+	}
+
+	/**
+	 * Get all the methods in a class, as well as those in its superclasses.
+	 *
+	 * @param clazz The class to get all methods in
+	 * @param includeObject Whether to include methods in {@link Object}
+	 * @return The public methods in the class
+	 */
+	public static List<Method> getDeclaredMethodsRecur(Class<?> clazz, boolean includeObject) {
+		return getDeclaredMethodsRecur(clazz, includeObject, (Class<? extends Annotation>[]) null);
+	}
+
+	/**
+	 * Get all the methods in a class with the desired annotation, as well as
+	 * those in its superclasses (excluding {@link Object}).
+	 *
+	 * @param clazz The class to get all methods in
+	 * @param annotations if not null, only include methods with any of these
+	 * annotations
+	 * @return The public methods in the class
+	 */
+	public static List<Method> getDeclaredMethodsRecur(Class<?> clazz, Class<? extends Annotation>... annotations) {
+		return getDeclaredMethodsRecur(clazz, false, annotations);
+	}
+
+	/**
+	 * Get all the methods in a class (optionally, with the desired annotation),
+	 * as well as those in its superclasses.
+	 *
+	 * @see Class#getDeclaredMethods()
+	 * @param clazz The class to get all methods in
+	 * @param includeObject Whether to include methods in {@link Object}
+	 * @param annotations if not null, only include methods with any of these
+	 * annotations
+	 * @return The public methods in the class
+	 */
+	public static List<Method> getDeclaredMethodsRecur(Class<?> clazz, boolean includeObject, Class<? extends Annotation>... annotations) {
+		final List<Method> methods = new ArrayList<Method>();
+		while (clazz != null && (includeObject || !Object.class.equals(clazz))) {
+			for (Method method : clazz.getDeclaredMethods()) {
+				if (annotations == null || hasAnyAnnotation(method, annotations)) {
+					methods.add(method);
+				}
+			}
+			clazz = clazz.getSuperclass();
+		}
+		return methods;
+	}
+
+	/**
+	 * Check if the {@link AccessibleObject} has any of the specified
+	 * annotations.
+	 *
+	 * @param object the object to check
+	 * @param annotations the annotations to look for
+	 * @return Whether or not the object has the annotations
+	 */
+	public static boolean hasAnyAnnotation(AccessibleObject object, Class<? extends Annotation>... annotations) {
+		for (Class<? extends Annotation> annotation : annotations) {
+			if (object.isAnnotationPresent(annotation)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

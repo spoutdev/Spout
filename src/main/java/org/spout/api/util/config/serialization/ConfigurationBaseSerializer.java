@@ -34,12 +34,12 @@ import java.util.Map;
 import org.spout.api.exception.ConfigurationException;
 import org.spout.api.util.config.Configuration;
 import org.spout.api.util.config.MapConfiguration;
-import org.spout.api.util.config.annotated.AnnotatedConfiguration;
+import org.spout.api.util.config.annotated.AnnotatedSubclassConfiguration;
 
 public class ConfigurationBaseSerializer extends Serializer {
-	private static final Map<Class<? extends AnnotatedConfiguration>,
-			Constructor<? extends AnnotatedConfiguration>> CACHED_CONSTRUCTORS =
-			new HashMap<Class<? extends AnnotatedConfiguration>, Constructor<? extends AnnotatedConfiguration>>();
+	private static final Map<Class<? extends AnnotatedSubclassConfiguration>,
+			Constructor<? extends AnnotatedSubclassConfiguration>> CACHED_CONSTRUCTORS =
+			new HashMap<Class<? extends AnnotatedSubclassConfiguration>, Constructor<? extends AnnotatedSubclassConfiguration>>();
 
 	public ConfigurationBaseSerializer() {
 		setAllowsNullValue(true);
@@ -47,7 +47,7 @@ public class ConfigurationBaseSerializer extends Serializer {
 
 	@Override
 	public boolean isApplicable(GenericType type) {
-		return AnnotatedConfiguration.class.isAssignableFrom(type.getMainType()) ;
+		return AnnotatedSubclassConfiguration.class.isAssignableFrom(type.getMainType()) ;
 	}
 
 	@Override
@@ -66,8 +66,8 @@ public class ConfigurationBaseSerializer extends Serializer {
 			value = new HashMap<Object, Object>();
 		}
 
-		Class<? extends AnnotatedConfiguration> configClass = type.getMainType().asSubclass(AnnotatedConfiguration.class);
-		Constructor<? extends AnnotatedConfiguration> constructor = CACHED_CONSTRUCTORS.get(configClass);
+		Class<? extends AnnotatedSubclassConfiguration> configClass = type.getMainType().asSubclass(AnnotatedSubclassConfiguration.class);
+		Constructor<? extends AnnotatedSubclassConfiguration> constructor = CACHED_CONSTRUCTORS.get(configClass);
 		if (constructor == null) {
 			try {
 				constructor = configClass.getDeclaredConstructor(Configuration.class);
@@ -77,7 +77,7 @@ public class ConfigurationBaseSerializer extends Serializer {
 			}
 			CACHED_CONSTRUCTORS.put(configClass, constructor);
 		}
-		AnnotatedConfiguration config = null;
+		AnnotatedSubclassConfiguration config = null;
 		MapConfiguration rawConfig = new MapConfiguration((Map<?, ?>) value);
 
 		try {
@@ -106,7 +106,7 @@ public class ConfigurationBaseSerializer extends Serializer {
 	protected Object handleSerialize(GenericType type, Object val) {
 		MapConfiguration config = new MapConfiguration();
 		try {
-			((AnnotatedConfiguration) val).save(config);
+			((AnnotatedSubclassConfiguration) val).save(config);
 			config.save();
 		} catch (ConfigurationException e) {
 			return null;
