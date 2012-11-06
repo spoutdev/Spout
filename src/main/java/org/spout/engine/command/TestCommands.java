@@ -47,6 +47,8 @@ import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
+import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.source.MaterialSource;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 import org.spout.engine.SpoutEngine;
@@ -66,8 +68,7 @@ public class TestCommands {
 		HitBlockComponent hbc = player.get(HitBlockComponent.class);
 		Block block = hbc.getTargetBlock();
 		source.sendMessage("Block to break: ", block.toString());
-		// TODO: A visual to test the code (maybe spawn an entity at the hit location)
-		// (I've tested it with coordinates and it seems to work)
+		block.setMaterial(BlockMaterial.AIR);
 	}
 	
 	@Command(aliases = {"dbg"}, desc = "Debug Output")
