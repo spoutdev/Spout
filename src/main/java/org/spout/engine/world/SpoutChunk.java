@@ -314,22 +314,33 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		return true;
 	}
 
+	public int touchBlock(int x, int y, int z) {
+		int bx = x & BLOCKS.MASK;
+		int by = y & BLOCKS.MASK;
+		int bz = z & BLOCKS.MASK;
+		try {
+			return blockStore.touchBlock(bx, by, bz);
+		} finally {
+			queueDirty();
+		}
+	}
+	
 	@Override
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Cause<?> cause) {
 		return setBlockMaterial(x, y, z, material, data, cause, true);
 	}
 
 	private boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Cause<?> cause, boolean event) {
-		x &= BLOCKS.MASK;
-		y &= BLOCKS.MASK;
-		z &= BLOCKS.MASK;
+		int bx = x & BLOCKS.MASK;
+		int by = y & BLOCKS.MASK;
+		int bz = z & BLOCKS.MASK;
 
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
 
 		if (event) {
 			// TODO - move to block change method?
-			Block block = getBlock(x, y, z);
+			Block block = getBlock(bx, by, bz);
 			BlockChangeEvent blockEvent = new BlockChangeEvent(block, new BlockSnapshot(block, material, data), cause);
 			Spout.getEngine().getEventManager().callEvent(blockEvent);
 			if (blockEvent.isCancelled()) {
@@ -346,66 +357,66 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		int oldState;
 		BlockMaterial oldMaterial;
 		if (material instanceof ComplexMaterial) {
-			oldState = getAndSetBlockLocked(x, y, z, newId, newData);
+			oldState = getAndSetBlockLocked(bx, by, bz, newId, newData);
 			oldMaterial = (BlockMaterial) MaterialRegistry.get(oldState);
 		} else {
 			boolean success = false;
 			do {
-				oldState = blockStore.getFullData(x, y, z);
+				oldState = blockStore.getFullData(bx, by, bz);
 				oldMaterial = (BlockMaterial) MaterialRegistry.get(oldState);
 				if (oldMaterial instanceof ComplexMaterial) {
-					oldState = getAndSetBlockLocked(x, y, z, newId, newData);
+					oldState = getAndSetBlockLocked(bx, by, bz, newId, newData);
 					success = true;
 				} else {
 					short oldId = BlockFullState.getId(oldState);
 					short oldData = BlockFullState.getData(oldState);
-					success = blockStore.compareAndSetBlock(x, y, z, oldId, oldData, newId, newData);
+					success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, newId, newData);
 				}
 			} while (!success);
 		}
 		
 		short oldData = BlockFullState.getData(oldState);
 
-		int oldheight = column.getSurfaceHeight(x, z);
-		y += this.getBlockY();
-		column.notifyBlockChange(x, y, z);
-		x += this.getBlockX();
-		z += this.getBlockZ();
-		int newheight = column.getSurfaceHeight(x, z);
+		int oldheight = column.getSurfaceHeight(bx, bz);
+		int wy = by + this.getBlockY();
+		column.notifyBlockChange(bx, wy, bz);
+		int wx = bx + this.getBlockX();
+		int wz = bz + this.getBlockZ();
+		int newheight = column.getSurfaceHeight(bx, bz);
 
 		if (this.isPopulated()) {
 			SpoutWorld world = this.getWorld();
 
 			// Update block lighting
-			if (!this.setBlockLight(x, y, z, material.getLightLevel(data), cause)) {
+			if (!this.setBlockLight(wx, wy, wz, material.getLightLevel(data), cause)) {
 				// if the light level is left unchanged, refresh lighting from
 				// neighbors
-				addBlockLightOperation(x, y, z, SpoutWorldLighting.REFRESH);
+				addBlockLightOperation(wx, wy, wz, SpoutWorldLighting.REFRESH);
 			}
 
 			// Update sky lighting
 			if (newheight > oldheight) {
 				// set sky light of blocks below to 0
 				for (y = oldheight; y < newheight; y++) {
-					world.setBlockSkyLight(x, y + 1, z, (byte) 0, cause);
+					world.setBlockSkyLight(wx, wy + 1, wz, (byte) 0, cause);
 				}
 			} else if (newheight < oldheight) {
 				// set sky light of blocks above to 15
 				for (y = newheight; y < oldheight; y++) {
-					world.setBlockSkyLight(x, y + 1, z, (byte) 15, cause);
+					world.setBlockSkyLight(wx, wy + 1, wz, (byte) 15, cause);
 				}
 			} else {
-				byte old = this.getBlockSkyLight(x, y, z);
+				byte old = this.getBlockSkyLight(wx, wy, wz);
 				if (old == 0) {
-					addSkyLightOperation(x, y, z, SpoutWorldLighting.REFRESH);
+					addSkyLightOperation(wx, wy, wz, SpoutWorldLighting.REFRESH);
 				} else if (old < 15) {
-					this.setBlockSkyLight(x, y, z, (byte) 0, cause);
+					this.setBlockSkyLight(wx, wy, wz, (byte) 0, cause);
 				}
 			}
 		}
 
 		if (newState != oldState) {
-			blockChanged(x, y, z, material, newData, oldMaterial, oldData, cause);
+			blockChanged(bx, by, bz, material, newData, oldMaterial, oldData, cause);
 			return true;
 		}
 		return false;
@@ -1502,6 +1513,11 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	public boolean compareAndSetData(int bx, int by, int bz, int expect, short data, Cause<?> cause) {
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
+		
+		bx &= BLOCKS.MASK;
+		by &= BLOCKS.MASK;
+		bz &= BLOCKS.MASK;
+		
 		short expId = BlockFullState.getId(expect);
 		short expData = BlockFullState.getData(expect);
 
@@ -1668,15 +1684,60 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	private void blockChanged(int x, int y, int z, BlockMaterial newMaterial, short newData, BlockMaterial oldMaterial, short oldData, Cause<?> cause) {
 		// Add chunk to regions's dirty queue
 		queueDirty();
+		
+		x &= BLOCKS.MASK;
+		y &= BLOCKS.MASK;
+		z &= BLOCKS.MASK;
+		
+		int rx = x + getBlockX();
+		int ry = y + getBlockY();
+		int rz = z + getBlockZ();
+		
+		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
+			int maxBlock = Chunk.BLOCKS.SIZE - 1;
+			if (x == 0) {
+				SpoutChunk c = getRegion().getLocalChunk(this, -1, 0, 0, LoadOption.NO_LOAD);
+				if (c != null) {
+					c.touchBlock(maxBlock, y, z);
+				}
+			} else if (x == maxBlock) {
+				SpoutChunk c = getRegion().getLocalChunk(this, +1, 0, 0, LoadOption.NO_LOAD);
+				if (c != null) {
+					c.touchBlock(0, y, z);
+				}
+			}
+			if (y == 0) {
+				SpoutChunk c = getRegion().getLocalChunk(this, 0, -1, 0, LoadOption.NO_LOAD);
+				if (c != null) {
+					c.touchBlock(x, maxBlock, z);
+				}
+			} else if (y == maxBlock) {
+				SpoutChunk c = getRegion().getLocalChunk(this, 0, +1, 0, LoadOption.NO_LOAD);
+				if (c != null) {
+					c.touchBlock(x, 0, z);
+				}
+			}
+			if (z == 0) {
+				SpoutChunk c = getRegion().getLocalChunk(this, 0, 0, -1, LoadOption.NO_LOAD);
+				if (c != null) {
+					c.touchBlock(x, y, maxBlock);
+				}
+			} else if (z == maxBlock) {
+				SpoutChunk c = getRegion().getLocalChunk(this, 0, 0, 1, LoadOption.NO_LOAD);
+				if (c != null) {
+					c.touchBlock(x, y, 0);
+				}
+			}
+		}
 
 		// Handle onPlacement for dynamic materials
 		if (newMaterial instanceof DynamicMaterial) {
 			if (oldMaterial instanceof DynamicMaterial) {
 				if (!oldMaterial.isCompatibleWith(newMaterial) || !newMaterial.isCompatibleWith(oldMaterial)) {
-					parentRegion.resetDynamicBlock(x, y, z);
+					parentRegion.resetDynamicBlock(rx, ry, rz);
 				}
 			} else {
-				parentRegion.resetDynamicBlock(x, y, z);
+				parentRegion.resetDynamicBlock(rx, ry, rz);
 			}
 		}
 
