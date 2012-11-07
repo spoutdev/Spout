@@ -65,14 +65,18 @@ public class HitBlockComponent extends EntityComponent {
 		int stepX = direction.getX() > 0 ? 1 : -1;
 		int stepY = direction.getY() > 0 ? 1 : -1;
 		int stepZ = direction.getZ() > 0 ? 1 : -1;
+
+		float dx = direction.getX();
+		float dy = direction.getY();
+		float dz = direction.getZ();
 		
-		float tDeltaX = Math.abs(1f / direction.getX());
-		float tDeltaY = Math.abs(1f / direction.getY());
-		float tDeltaZ = Math.abs(1f / direction.getZ());
+		float tDeltaX = (dx == 0f) ? Float.MAX_VALUE : Math.abs(1f / dx);
+		float tDeltaY = (dy == 0f) ? Float.MAX_VALUE : Math.abs(1f / dy);
+		float tDeltaZ = (dz == 0f) ? Float.MAX_VALUE : Math.abs(1f / dz);
 		
-		float tMaxX = Math.abs((X + (stepX > 0 ? 1 : 0) - origin.getX()) / direction.getX());
-		float tMaxY = Math.abs((Y + (stepY > 0 ? 1 : 0) - origin.getY()) / direction.getY());
-		float tMaxZ = Math.abs((Z + (stepZ > 0 ? 1 : 0) - origin.getZ()) / direction.getZ());
+		float tMaxX = (dx == 0f) ? Float.MAX_VALUE : (Math.abs(X + (stepX > 0 ? 1 : 0) - origin.getX()) / dx);
+		float tMaxY = (dy == 0f) ? Float.MAX_VALUE : (Math.abs(Y + (stepY > 0 ? 1 : 0) - origin.getY()) / dy);
+		float tMaxZ = (dz == 0f) ? Float.MAX_VALUE : (Math.abs(Z + (stepZ > 0 ? 1 : 0) - origin.getZ()) / dz);
 		
 		Block block = null;
 		BlockFace face = null;
