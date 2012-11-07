@@ -27,8 +27,6 @@
 package org.spout.engine.renderer;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -39,14 +37,12 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.spout.api.Spout;
-import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.geo.World;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
 import org.spout.engine.SpoutClient;
-import org.spout.engine.batcher.ChunkMeshBatch;
 import org.spout.engine.batcher.ChunkMeshBatchAggregator;
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.mesh.ComposedMesh;
@@ -57,9 +53,6 @@ public class WorldRenderer {
 	private final SpoutClient client;
 
 	public static final long TIME_LIMIT = 2;
-
-	//private TreeMap<RenderMaterial,List<ChunkMeshBatch>> chunkRenderers = new TreeMap<RenderMaterial,List<ChunkMeshBatch>>();
-	//private TInt21TripleObjectHashMap<Map<RenderMaterial,Map<BlockFace,ChunkMeshBatch>>> chunkRenderersByPosition = new TInt21TripleObjectHashMap<Map<RenderMaterial,Map<BlockFace,ChunkMeshBatch>>>();
 
 	private TreeMap<RenderMaterial,List<ChunkMeshBatchAggregator>> chunkRenderers = new TreeMap<RenderMaterial,List<ChunkMeshBatchAggregator>>();
 	
@@ -136,6 +129,7 @@ public class WorldRenderer {
 	private class BatchGeneratorTask implements Runnable {
 
 		private ChunkMesh chunkMesh = null;
+		private Vector3 position = null;
 
 		private Iterator<Entry<RenderMaterial, Map<BlockFace, ComposedMesh>>> it = null;
 
@@ -145,14 +139,12 @@ public class WorldRenderer {
 
 		public void run() {
 			final long start = System.currentTimeMillis();
-			
+
 			batch(start);
 
 			//Execute previous unfinished chunkMesh
-			//if(chunkMesh != null){
 			if(it2 != null){
-				Vector3 position = ChunkMeshBatchAggregator.getCoordFromChunkMesh(chunkMesh);
-				//RenderMaterial material = data.getKey();
+
 				while(it2.hasNext()){
 					Entry<BlockFace, ComposedMesh> entry = it2.next();
 					handle(position, entry.getKey(),entry.getValue(), start);
@@ -166,7 +158,7 @@ public class WorldRenderer {
 			}
 
 			if(it != null){
-				Vector3 position = ChunkMeshBatchAggregator.getCoordFromChunkMesh(chunkMesh);
+
 				while(it.hasNext()){
 					data = it.next();
 					material = data.getKey();
@@ -186,12 +178,13 @@ public class WorldRenderer {
 				}
 				it = null;
 				chunkMesh = null;
+				position = null;
 			}
 			//}
 
 			//Step 2 : Add ChunkMesh to ChunkMeshBatch
 			while( (chunkMesh = renderChunkMeshBatchQueue.poll()) != null){
-				Vector3 position = ChunkMeshBatchAggregator.getCoordFromChunkMesh(chunkMesh);
+				position = ChunkMeshBatchAggregator.getCoordFromChunkMesh(chunkMesh);
 
 				if(chunkMesh.isUnloaded()){
 					cleanBatchAggregator(position,chunkMesh);
@@ -220,6 +213,7 @@ public class WorldRenderer {
 				}
 				it = null;
 				chunkMesh = null;
+				position = null;
 			}
 		}
 
@@ -228,7 +222,8 @@ public class WorldRenderer {
 			ChunkMeshBatchAggregator chunkMeshBatch = getBatchAggregator(position, face, material);
 
 			if(chunkMeshBatch==null){
-				chunkMeshBatch = new ChunkMeshBatchAggregator(world,position.getFloorX(),position.getFloorY(),position.getFloorZ(),
+				Vector3 base = ChunkMeshBatchAggregator.getBaseFromChunkMesh(chunkMesh);
+				chunkMeshBatch = new ChunkMeshBatchAggregator(world,base.getFloorX(),base.getFloorY(),base.getFloorZ(),
 						face, material);
 				addBatchAggregator(chunkMeshBatch);
 			}
@@ -365,6 +360,7 @@ public class WorldRenderer {
 		Map<BlockFace, ChunkMeshBatchAggregator> map2 = map.get(material);
 		if( map2 == null )
 			return null;
+
 		return map2.get(face);
 	}
 	
@@ -373,13 +369,13 @@ public class WorldRenderer {
 	int rended = 0;
 
 	private void renderChunks() {
-		int minX = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getX() * ChunkMesh.SPLIT_X) / ChunkMeshBatchAggregator.SIZE_X) * ChunkMeshBatchAggregator.SIZE_X);
-		int minY = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getY() * ChunkMesh.SPLIT_Y) / ChunkMeshBatchAggregator.SIZE_Y) * ChunkMeshBatchAggregator.SIZE_Y);
-		int minZ = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getZ() * ChunkMesh.SPLIT_Z) / ChunkMeshBatchAggregator.SIZE_Z) * ChunkMeshBatchAggregator.SIZE_Z);
+		int minX = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getX() * ChunkMesh.SPLIT_X) / ChunkMeshBatchAggregator.SIZE_X));
+		int minY = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getY() * ChunkMesh.SPLIT_Y) / ChunkMeshBatchAggregator.SIZE_Y));
+		int minZ = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getZ() * ChunkMesh.SPLIT_Z) / ChunkMeshBatchAggregator.SIZE_Z));
 
-		int maxX = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getX() * ChunkMesh.SPLIT_X + ChunkMesh.SPLIT_X) / ChunkMeshBatchAggregator.SIZE_X) * ChunkMeshBatchAggregator.SIZE_X + ChunkMeshBatchAggregator.SIZE_X);
-		int maxY = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getY() * ChunkMesh.SPLIT_Y + ChunkMesh.SPLIT_Y) / ChunkMeshBatchAggregator.SIZE_Y) * ChunkMeshBatchAggregator.SIZE_Y + ChunkMeshBatchAggregator.SIZE_Y);
-		int maxZ = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getZ() * ChunkMesh.SPLIT_Z + ChunkMesh.SPLIT_Z) / ChunkMeshBatchAggregator.SIZE_Z) * ChunkMeshBatchAggregator.SIZE_Z + ChunkMeshBatchAggregator.SIZE_Z);
+		int maxX = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getX() * ChunkMesh.SPLIT_X + ChunkMesh.SPLIT_X) / ChunkMeshBatchAggregator.SIZE_X));
+		int maxY = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getY() * ChunkMesh.SPLIT_Y + ChunkMesh.SPLIT_Y) / ChunkMeshBatchAggregator.SIZE_Y));
+		int maxZ = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getZ() * ChunkMesh.SPLIT_Z + ChunkMesh.SPLIT_Z) / ChunkMeshBatchAggregator.SIZE_Z));
 		
 		ocludedChunks = 0;
 		culledChunks = 0;

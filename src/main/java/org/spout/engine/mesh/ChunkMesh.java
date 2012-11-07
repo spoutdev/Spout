@@ -79,21 +79,21 @@ public class ChunkMesh{
 	 */
 	private final long time;
 
-	private ChunkMesh(SpoutChunkSnapshotModel chunkModel, int subX, int subY, int subZ) {
+	public ChunkMesh(SpoutChunkSnapshotModel chunkModel, int x, int y, int z) {
 		this.chunkModel = chunkModel;
 		
 		chunkX = chunkModel.getX();
 		chunkY = chunkModel.getY();
 		chunkZ = chunkModel.getZ();
 		
-		this.subX = chunkModel.getX() * SPLIT_X + subX;
-		this.subY = chunkModel.getY() * SPLIT_Y + subY;
-		this.subZ = chunkModel.getZ() * SPLIT_Z + subZ;
+		subX = chunkX * SPLIT_X + x;
+		subY = chunkY * SPLIT_Y + y;
+		subZ = chunkZ * SPLIT_Z + z;
 		
 		time = chunkModel.getTime();
 		
-		start = new Vector3(SUBSIZE_X * subX, SUBSIZE_Y * subY, SUBSIZE_Z * subZ);
-		end = new Vector3(SUBSIZE_X * subX + SUBSIZE_X, SUBSIZE_Y * subY + SUBSIZE_Y, SUBSIZE_Z * subZ + SUBSIZE_Z);
+		start = new Vector3(SUBSIZE_X * x, SUBSIZE_Y * y, SUBSIZE_Z * z);
+		end = new Vector3(SUBSIZE_X * x + SUBSIZE_X, SUBSIZE_Y * y + SUBSIZE_Y, SUBSIZE_Z * z + SUBSIZE_Z);
 	}
 
 	public static List<ChunkMesh> getChunkMeshs(SpoutChunkSnapshotModel chunkModel){
