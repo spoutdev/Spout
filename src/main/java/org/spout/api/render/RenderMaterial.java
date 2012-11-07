@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.geo.cuboid.ChunkSnapshotModel;
+import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.MeshFace;
@@ -71,11 +72,6 @@ public abstract class RenderMaterial extends Resource implements Comparable<Rend
 	 * Called right after rendering
 	 */
 	public abstract void postRender();
-	
-	/**
-	 * Called to render a block
-	 */
-	public abstract List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel, Vector3 position, List<BlockFace> faces);
 
 	/**
 	 * Called to render a block side
@@ -84,7 +80,7 @@ public abstract class RenderMaterial extends Resource implements Comparable<Rend
 	 * @param face
 	 * @return
 	 */
-	public abstract List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel,
+	public abstract List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel,BlockMaterial blockMaterial,
 			Vector3 position, BlockFace face);
 
 	/**
