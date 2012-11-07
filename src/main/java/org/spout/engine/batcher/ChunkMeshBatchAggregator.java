@@ -177,4 +177,8 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 				Math.floor((float)mesh.getSubZ() / ChunkMeshBatchAggregator.SIZE_Z) * ChunkMeshBatchAggregator.SIZE_Z);
 	}
 
+	public boolean isEmpty() {
+		return count == 0;
+	}
+
 }

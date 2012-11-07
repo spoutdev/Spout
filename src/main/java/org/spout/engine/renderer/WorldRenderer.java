@@ -194,7 +194,7 @@ public class WorldRenderer {
 				Vector3 position = ChunkMeshBatchAggregator.getCoordFromChunkMesh(chunkMesh);
 
 				if(chunkMesh.isUnloaded()){
-					cleanBatchAggregator(position);
+					cleanBatchAggregator(position,chunkMesh);
 					chunkMesh = null;
 					continue;
 				}
@@ -295,29 +295,60 @@ public class WorldRenderer {
 	 * @param y
 	 * @param z
 	 */
-	private void cleanBatchAggregator(Vector3 position) {
-		//TODO Rewrite the cleaner : Clean chunkRenderersByPosition & chunkRenderers & dirties
-		/*Map<RenderMaterial, Map<BlockFace, ChunkMeshBatchAggregator>> chunkRenderersByMaterial =
-				chunkRenderersByPosition.remove(position.getFloorX(),position.getFloorY(),position.getFloorZ());
+	private void cleanBatchAggregator(Vector3 position, ChunkMesh chunkMesh) {
+		Map<RenderMaterial, Map<BlockFace, ChunkMeshBatchAggregator>> aggregatorPerMaterial =
+				chunkRenderersByPosition.get(position.getFloorX(),position.getFloorY(),position.getFloorZ());
 
 		//Can be null if the thread receive a unload model of a model wich has been send previously to load be not done
-		if(chunkRenderersByMaterial != null){
+		if(aggregatorPerMaterial != null){
 			
-			for(Entry<RenderMaterial, Map<BlockFace, ChunkMeshBatchAggregator>> entry : chunkRenderersByMaterial.entrySet()){
-				
+			LinkedList<RenderMaterial> materialToRemove = new LinkedList<RenderMaterial>();
+			
+			for(Entry<RenderMaterial, Map<BlockFace, ChunkMeshBatchAggregator>> entry : aggregatorPerMaterial.entrySet()){
+
 				RenderMaterial material = entry.getKey();
-				Collection<ChunkMeshBatchAggregator> batchs = entry.getValue().values();
+				LinkedList<BlockFace> faceToRemove = new LinkedList<BlockFace>();
+				List<ChunkMeshBatchAggregator> chunkRenderer = chunkRenderers.get(material);
+
+				for(Entry<BlockFace, ChunkMeshBatchAggregator> entry2 : entry.getValue().entrySet()){
+
+					BlockFace face = entry2.getKey();
+					ChunkMeshBatchAggregator batch = entry2.getValue();
+					batch.setSubBatch(chunkMesh.getSubX(), chunkMesh.getSubY(), chunkMesh.getSubZ(), null);
+					if(batch.isEmpty()){
+						batch.finalize();
+						
+						//Clean dirties
+						dirties.remove(batch);
+						
+						//Clean chunkRenderers
+						chunkRenderer.remove(batch);
+						
+						//Clean chunkRenderersByPosition
+						faceToRemove.add(face);
+					}
+				}
+
+				//Clean chunkRenderersByPosition
+				for(BlockFace face : faceToRemove)
+					entry.getValue().remove(face);
+
+				if(entry.getValue().isEmpty())
+					materialToRemove.add(material);
 				
-				for(ChunkMeshBatchAggregator batch : batchs)
-					batch.finalize();
-
-				List<ChunkMeshBatchAggregator> list = chunkRenderers.get(material);
-
-				list.removeAll(batchs);
-				if(list.isEmpty())
+				//Clean chunkRenderers
+				if(chunkRenderer.isEmpty())
 					chunkRenderers.remove(material);
 			}
-		}*/
+			
+			//Clean chunkRenderersByPosition
+			for(RenderMaterial material : materialToRemove)
+				aggregatorPerMaterial.remove(material);
+			
+			if(aggregatorPerMaterial.isEmpty())
+				chunkRenderersByPosition.remove(position.getFloorX(),position.getFloorY(),position.getFloorZ());
+			
+		}
 	}
 	
 	/**
@@ -421,5 +452,9 @@ public class WorldRenderer {
 
 	public int getBatchWaiting() {
 		return renderChunkMeshBatchQueue.size();
+	}
+	
+	public int getBatchDirties() {
+		return dirties.size();
 	}
 }
