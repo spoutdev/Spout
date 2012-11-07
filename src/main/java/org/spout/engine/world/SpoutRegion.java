@@ -72,7 +72,6 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
-import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.range.EffectRange;
@@ -411,7 +410,7 @@ public class SpoutRegion extends Region {
 			previous = renderChunkQueued.put((byte) model.getX(), (byte) model.getY(), (byte) model.getZ(), model);
 			if(previous != null){
 				renderChunkQueue.remove(previous);
-				model.addRenderMaterials(previous.getRenderMaterials());
+				model.addDirty(previous);
 			}
 		}
 
@@ -1047,7 +1046,7 @@ public class SpoutRegion extends Region {
 				 }
 			}
 			c.setRenderDirty(false);
-			addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks, distance, updatedRenderMaterials, System.currentTimeMillis()));
+			addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks, distance, updatedRenderMaterials, null, System.currentTimeMillis()));//TODO : replace null by the set of submesh
 		} else {
 			if (c.leftViewDistance()) {
 				c.setRenderDirty(false);

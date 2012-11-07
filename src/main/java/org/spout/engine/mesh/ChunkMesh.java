@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
@@ -98,12 +99,18 @@ public class ChunkMesh{
 
 	public static List<ChunkMesh> getChunkMeshs(SpoutChunkSnapshotModel chunkModel){
 		List<ChunkMesh> list = new ArrayList<ChunkMesh>();
-		for(int i = 0; i < SPLIT_X; i++){
-			for(int j = 0; j < SPLIT_Y; j++){
-				for(int k = 0; k < SPLIT_Z; k++){
-					list.add(new ChunkMesh(chunkModel, i, j, k));
+		Set<Vector3> subMeshs = chunkModel.getSubMeshs();
+		if(subMeshs == null){
+			for(int i = 0; i < SPLIT_X; i++){
+				for(int j = 0; j < SPLIT_Y; j++){
+					for(int k = 0; k < SPLIT_Z; k++){
+						list.add(new ChunkMesh(chunkModel, i, j, k));
+					}
 				}
 			}
+		}else{
+			for(Vector3 vector : subMeshs)
+				list.add(new ChunkMesh(chunkModel, vector.getFloorX(), vector.getFloorY(), vector.getFloorZ()));
 		}
 		return list;
 	}
