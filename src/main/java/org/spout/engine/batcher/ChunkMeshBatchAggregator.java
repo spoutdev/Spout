@@ -72,8 +72,8 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	}
 
 	public boolean update(long start) {
-		for(ChunkMeshBatch batch : dirties){
-			batch.update();
+		while(!dirties.isEmpty()){
+			dirties.remove(0).update();
 
 			if( System.currentTimeMillis() - start > WorldRenderer.TIME_LIMIT)
 				return false;
