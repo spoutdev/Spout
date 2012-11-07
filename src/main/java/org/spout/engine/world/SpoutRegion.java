@@ -72,7 +72,6 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
-import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.range.EffectRange;
@@ -83,6 +82,7 @@ import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TickStage;
+import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.map.TByteTripleObjectHashMap;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
@@ -1044,6 +1044,29 @@ public class SpoutRegion extends Region {
 				 for (int i = 0; i < dirtyBlocks; i++) {
 					 addMaterialToSet(updatedRenderMaterials, c.getDirtyOldState(i));
 					 addMaterialToSet(updatedRenderMaterials, c.getDirtyNewState(i));
+				 }
+				 // TODO - this needs to also update the chunk sub-batch
+				 int size = BLOCKS.SIZE;
+				 for (int i = 0; i < dirtyBlocks; i++) {
+					 Vector3 blockPos = c.getDirtyBlock(i);
+					 BlockMaterial material = c.getBlockMaterial(blockPos.getFloorX(), blockPos.getFloorY(), blockPos.getFloorZ());
+					 ByteBitSet occlusion = material.getOcclusion(material.getData());
+					 for(BlockFace face : BlockFace.values()){ 
+						 if (face.equals(BlockFace.THIS)) {
+							 continue;
+						 }
+						 if (occlusion.get(face)) {
+							 continue;
+						 }
+						 Vector3 neighborPos = blockPos.add(face.getOffset());
+						 int nx = neighborPos.getFloorX();
+						 int ny = neighborPos.getFloorX();
+						 int nz = neighborPos.getFloorX();
+						 if (nx < 0 || ny < 0 || nz < 0 || nx >= size || ny >= size || nz >= size) {
+							 int state = c.getBlockFullState(nx, ny, nz);
+							 addMaterialToSet(updatedRenderMaterials, state);
+						 }
+					 }
 				 }
 			}
 			c.setRenderDirty(false);
