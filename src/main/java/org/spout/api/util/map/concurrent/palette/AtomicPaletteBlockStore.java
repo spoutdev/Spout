@@ -138,6 +138,13 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	}
 	
 	@Override
+	public int touchBlock(int x, int y, int z) {
+		int state = getFullData(x, y, z);
+		markDirty(x, y, z, state, state);
+		return state;
+	}
+	
+	@Override
 	public void setBlock(int x, int y, int z, short id, short data) {
 		getAndSetBlock(x, y, z, id, data);
 	}

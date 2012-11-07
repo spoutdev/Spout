@@ -324,6 +324,11 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 		setBlock(x, y, z, material.getMaterial().getId(), material.getData());
 	}
 	
+	@Override
+	public int touchBlock(int x, int y, int z) {
+		throw new UnsupportedOperationException("Not implemented");
+	}
+	
 	/**
 	 * Sets the block id, data and auxData for the block at (x, y, z).<br>
 	 * <br>

@@ -88,6 +88,16 @@ public interface AtomicBlockStore {
 	public void setBlock(int x, int y, int z, MaterialSource material);
 	
 	/**
+	 * Marks the block id at (x, y, z) as dirty.<br>
+	 *
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @return the full state of the block
+	 */
+	public int touchBlock(int x, int y, int z);
+	
+	/**
 	 * Sets the block id and data for the block at (x, y, z).<br>
 	 * <br>
 	 * If the data is 0 and the auxData is null, then the block will be stored
