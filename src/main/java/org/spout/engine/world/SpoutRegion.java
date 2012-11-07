@@ -411,7 +411,7 @@ public class SpoutRegion extends Region {
 			previous = renderChunkQueued.put((byte) model.getX(), (byte) model.getY(), (byte) model.getZ(), model);
 			if(previous != null){
 				renderChunkQueue.remove(previous);
-				model.addRenderMaterials(previous.getRenderMaterials());
+				model.addDirty(previous);
 			}
 		}
 
@@ -1070,7 +1070,7 @@ public class SpoutRegion extends Region {
 				 }
 			}
 			c.setRenderDirty(false);
-			addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks, distance, updatedRenderMaterials, System.currentTimeMillis()));
+			addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks, distance, updatedRenderMaterials, null, System.currentTimeMillis()));//TODO : replace null by the set of submesh
 		} else {
 			if (c.leftViewDistance()) {
 				c.setRenderDirty(false);
@@ -1094,7 +1094,7 @@ public class SpoutRegion extends Region {
 		SpoutChunk c = getLocalChunk(cx, cy, cz, LoadOption.NO_LOAD);
 
 		if (c == null) {
-			Spout.getLogger().info("Getting " + cx + ", " + cy + ", " + cz + ": base = " + cRef.getBase().toBlockString() + " region base " + getBase().toBlockString());
+			//Spout.getLogger().info("Getting " + cx + ", " + cy + ", " + cz + ": base = " + cRef.getBase().toBlockString() + " region base " + getBase().toBlockString());
 			return null;
 		} else {
 			snapshot = c.getSnapshot(SnapshotType.BOTH, EntityType.NO_ENTITIES, ExtraData.NO_EXTRA_DATA);

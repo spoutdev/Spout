@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.ChunkSnapshotModel;
+import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
 
 //just need to,bottom,east,west,south,north, not diagonal neigbour it's 8 snapshot useless
@@ -60,15 +61,20 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	 */
 	private Set<RenderMaterial> renderMaterials = null;
 	
+	/**
+	 * Set of vector3 submesh to render, null -> all submesh
+	 */
+	private Set<Vector3> submeshs = null;
+	
 	public SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload, long time) {
-		this(cx, cy, cz, unload, null, 0, null, time);
+		this(cx, cy, cz, unload, null, 0, null, null, time);
 	}
 	
-	public SpoutChunkSnapshotModel(int cx, int cy, int cz, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, long time) {
-		this(cx, cy, cz, false, chunks, distance, renderMaterials, time);
+	public SpoutChunkSnapshotModel(int cx, int cy, int cz, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, Set<Vector3> submeshs, long time) {
+		this(cx, cy, cz, false, chunks, distance, renderMaterials, submeshs, time);
 	}
 
-	private SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, long time) {
+	private SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, Set<Vector3> submeshs,long time) {
 		this.cx = cx;
 		this.cy = cy;
 		this.cz = cz;
@@ -78,6 +84,7 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 		this.distance = distance;
 		this.id = idCounter.getAndIncrement();
 		this.renderMaterials = renderMaterials;
+		this.submeshs = submeshs;
 		this.time = time;
 	}
 
@@ -182,16 +189,37 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 		}
 	}
 
+	public void addDirty(SpoutChunkSnapshotModel oldModel){
+		addRenderMaterials(oldModel.getRenderMaterials());
+		addSubmeshs(oldModel.getSubMeshs());
+	}
+	
+	public Set<Vector3> getSubMeshs() {
+		return submeshs;
+	}
+
 	/**
 	 * Add a set of renderMaterial to render
 	 * If the set is null, the set isn't added because null -> all encountered render material
 	 * @param renderMaterials
 	 */
-	public void addRenderMaterials(Set<RenderMaterial> renderMaterials) {
+	private void addRenderMaterials(Set<RenderMaterial> renderMaterials) {
 		if( this.renderMaterials == null || renderMaterials == null)
 			this.renderMaterials = null;
 		else
 			this.renderMaterials.addAll(renderMaterials);
+	}
+	
+	/**
+	 * Add a set of submeshs to render
+	 * If the set is null, the set isn't added because null -> all submeshs
+	 * @param submeshs
+	 */
+	private void addSubmeshs(Set<Vector3> submeshs) {
+		if( this.submeshs == null || submeshs == null)
+			this.submeshs = null;
+		else
+			this.submeshs.addAll(submeshs);
 	}
 	
 	/**

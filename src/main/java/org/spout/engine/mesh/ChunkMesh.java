@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
@@ -79,31 +80,37 @@ public class ChunkMesh{
 	 */
 	private final long time;
 
-	private ChunkMesh(SpoutChunkSnapshotModel chunkModel, int subX, int subY, int subZ) {
+	public ChunkMesh(SpoutChunkSnapshotModel chunkModel, int x, int y, int z) {
 		this.chunkModel = chunkModel;
 		
 		chunkX = chunkModel.getX();
 		chunkY = chunkModel.getY();
 		chunkZ = chunkModel.getZ();
 		
-		this.subX = chunkModel.getX() * SPLIT_X + subX;
-		this.subY = chunkModel.getY() * SPLIT_Y + subY;
-		this.subZ = chunkModel.getZ() * SPLIT_Z + subZ;
+		subX = chunkX * SPLIT_X + x;
+		subY = chunkY * SPLIT_Y + y;
+		subZ = chunkZ * SPLIT_Z + z;
 		
 		time = chunkModel.getTime();
 		
-		start = new Vector3(SUBSIZE_X * subX, SUBSIZE_Y * subY, SUBSIZE_Z * subZ);
-		end = new Vector3(SUBSIZE_X * subX + SUBSIZE_X, SUBSIZE_Y * subY + SUBSIZE_Y, SUBSIZE_Z * subZ + SUBSIZE_Z);
+		start = new Vector3(SUBSIZE_X * x, SUBSIZE_Y * y, SUBSIZE_Z * z);
+		end = new Vector3(SUBSIZE_X * x + SUBSIZE_X, SUBSIZE_Y * y + SUBSIZE_Y, SUBSIZE_Z * z + SUBSIZE_Z);
 	}
 
 	public static List<ChunkMesh> getChunkMeshs(SpoutChunkSnapshotModel chunkModel){
 		List<ChunkMesh> list = new ArrayList<ChunkMesh>();
-		for(int i = 0; i < SPLIT_X; i++){
-			for(int j = 0; j < SPLIT_Y; j++){
-				for(int k = 0; k < SPLIT_Z; k++){
-					list.add(new ChunkMesh(chunkModel, i, j, k));
+		Set<Vector3> subMeshs = chunkModel.getSubMeshs();
+		if(subMeshs == null){
+			for(int i = 0; i < SPLIT_X; i++){
+				for(int j = 0; j < SPLIT_Y; j++){
+					for(int k = 0; k < SPLIT_Z; k++){
+						list.add(new ChunkMesh(chunkModel, i, j, k));
+					}
 				}
 			}
+		}else{
+			for(Vector3 vector : subMeshs)
+				list.add(new ChunkMesh(chunkModel, vector.getFloorX(), vector.getFloorY(), vector.getFloorZ()));
 		}
 		return list;
 	}
@@ -191,7 +198,7 @@ public class ChunkMesh{
 			ByteBitSet occlusion = neighbor.getOcclusion(material.getData());
 
 			if (!occlusion.get(face.getOpposite())) {
-				List<MeshFace> faces = renderMaterial.render(chunkSnapshotModel, position, face);
+				List<MeshFace> faces = renderMaterial.render(chunkSnapshotModel, material, position, face);
 
 				if(!faces.isEmpty()){
 					ComposedMesh mesh = meshs.get(face);
