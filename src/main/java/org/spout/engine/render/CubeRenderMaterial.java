@@ -33,12 +33,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.lwjgl.opengl.GL11;
-import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshotModel;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Matrix;
-import org.spout.api.math.Rectangle;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
@@ -50,7 +48,7 @@ import org.spout.api.render.Shader;
 import org.spout.engine.resources.ClientTexture;
 
 public class CubeRenderMaterial extends RenderMaterial {
-
+	
 	Shader shader;
 	Map<String, Object> materialParameters;
 
@@ -75,7 +73,7 @@ public class CubeRenderMaterial extends RenderMaterial {
 		this.depthTesting = depth;
 		this.layer = layer;
 	}
-
+	
 	@Override
 	public void assign(){
 		Set<Map.Entry<String, Object>> s = materialParameters.entrySet();
@@ -101,7 +99,7 @@ public class CubeRenderMaterial extends RenderMaterial {
 				shader.setUniform(entry.getKey(), (Matrix)entry.getValue());
 			}
 		}
-
+		
 		shader.assign();
 
 	}
@@ -110,36 +108,29 @@ public class CubeRenderMaterial extends RenderMaterial {
 	public Object getValue(String name) {
 		return materialParameters.get(name);
 	}
-
+	
 	@Override
 	public Shader getShader(){
 		return shader;
 	}
-
+	
 	@Override
 	public void preRender() {
-		if(!depthTesting)
-		{
+		if(!depthTesting){
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 		}
+		
 	}
-
+	
 	@Override
 	public void postRender() {
 		if(!depthTesting){
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 		}
 	}
-
 	@Override
-	public List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel,
-			Vector3 position, List<BlockFace> faces) {
+	public List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel,BlockMaterial blockMaterial, Vector3 position, BlockFace face) {
 		List<MeshFace> meshs = new ArrayList<MeshFace>();
-		BlockMaterial blockMaterial = chunkSnapshotModel.getCenter().getBlockMaterial(position.getFloorX(), position.getFloorY(), position.getFloorZ());
-		Vector3 p1 = null;
-		Vector3 p2 = null;
-		Vector3 p3 = null;
-		Vector3 p4 = null;
 
 		/*   1--2
 		 *  /| /|
@@ -150,102 +141,8 @@ public class CubeRenderMaterial extends RenderMaterial {
 		 *          /
 		 *         Z - East < WEST
 		 */
-		Vector3 model = new Vector3(position.getFloorX() & Chunk.BLOCKS.MASK, position.getFloorY() & Chunk.BLOCKS.MASK, position.getFloorZ() & Chunk.BLOCKS.MASK);
-
-		Vector3 vertex0 = model.add(0, 0, 0);
-		Vector3 vertex1 = model.add(0, 1, 0);
-		Vector3 vertex2 = model.add(1, 1, 0);
-		Vector3 vertex3 = model.add(1, 0, 0);
-		Vector3 vertex4 = model.add(0, 0, 1);
-		Vector3 vertex5 = model.add(0, 1, 1);
-		Vector3 vertex6 = model.add(1, 1, 1);
-		Vector3 vertex7 = model.add(1, 0, 1);
-
-		for(BlockFace face : faces){
-			switch (face) {
-			case TOP:
-				p1 = vertex1;
-				p2 = vertex2;
-				p3 = vertex6;
-				p4 = vertex5;
-				break;
-			case BOTTOM:
-				p1 = vertex0;
-				p2 = vertex4;
-				p3 = vertex7;
-				p4 = vertex3;
-				break;
-			case NORTH:
-				p1 = vertex0;
-				p2 = vertex1;
-				p3 = vertex5;
-				p4 = vertex4;
-				break;
-			case SOUTH:
-				p1 = vertex7;
-				p2 = vertex6;
-				p3 = vertex2;
-				p4 = vertex3;
-				break;
-			case WEST:
-				p1 = vertex5;
-				p2 = vertex6;
-				p3 = vertex7;
-				p4 = vertex4;
-				break;
-			case EAST:
-				p1 = vertex0;
-				p2 = vertex3;
-				p3 = vertex2;
-				p4 = vertex1;
-				break;
-			}
-
-			Rectangle r = new Rectangle(0, 0, 1, 1);//TODO : Replace by a getModel() to get TextMesh
-
-			Vector2 uv1 = new Vector2(r.getX(), r.getY());
-			Vector2 uv2 = new Vector2(r.getX(), r.getY()+r.getHeight());
-			Vector2 uv3 = new Vector2(r.getX()+r.getWidth(), r.getY()+r.getHeight());
-			Vector2 uv4 = new Vector2(r.getX()+r.getWidth(), r.getY());
-
-			Color color = Color.WHITE; // Temporary testing color
-			Vertex v1 = new Vertex(p1, face.getOffset(), uv1);
-			v1.color = color;
-
-			Vertex v2 = new Vertex(p2, face.getOffset(), uv2);
-			v2.color = color;
-
-			Vertex v3 = new Vertex(p3, face.getOffset(), uv3);
-			v3.color = color;
-
-			Vertex v4 = new Vertex(p4, face.getOffset(), uv4);
-			v4.color = color;
-
-			MeshFace f1 = new MeshFace(v1, v2, v3);
-			MeshFace f2 = new MeshFace(v3, v4, v1);
-			meshs.add(f1);
-			meshs.add(f2);
-		}
-
-		return meshs;
-	}
-
-	@Override
-	public List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel,
-			Vector3 position, BlockFace face) {
-		List<MeshFace> meshs = new ArrayList<MeshFace>();
-		BlockMaterial blockMaterial = chunkSnapshotModel.getCenter().getBlockMaterial(position.getFloorX(), position.getFloorY(), position.getFloorZ());
-
-		/*   1--2
-		 *  /| /|
-		 * 5--6 |   
-		 * | 0|-3    Y - Bottom < TOP
-		 * |/ |/     |
-		 * 4--7      O-- X - North < SOUTH
-		 *          /
-		 *         Z - East < WEST
-		 */
-		Vector3 model = new Vector3(position.getFloorX() & Chunk.BLOCKS.MASK, position.getFloorY() & Chunk.BLOCKS.MASK, position.getFloorZ() & Chunk.BLOCKS.MASK);
+		
+		Vector3 model = new Vector3(position.getFloorX(), position.getFloorY(), position.getFloorZ());
 
 		Vector3 vertex0 = model.add(0, 0, 0);
 		Vector3 vertex1 = model.add(0, 1, 0);
@@ -261,46 +158,56 @@ public class CubeRenderMaterial extends RenderMaterial {
 		Vertex v1 = null, v2 = null, v3 = null, v4 = null;
 		switch (face) {
 		case TOP:
-			v1 = new Vertex(vertex1, face.getOffset(), mesh.getUV(0,0));
-			v2 = new Vertex(vertex2, face.getOffset(), mesh.getUV(0,1));
-			v3 = new Vertex(vertex6, face.getOffset(), mesh.getUV(0,2));
-			v4 = new Vertex(vertex5, face.getOffset(), mesh.getUV(0,3));
+			v1 = new Vertex(vertex1, face.getOffset(), mesh.getUV(0,3));
+			v2 = new Vertex(vertex2, face.getOffset(), mesh.getUV(0,2));
+			v3 = new Vertex(vertex6, face.getOffset(), mesh.getUV(0,1));
+			v4 = new Vertex(vertex5, face.getOffset(), mesh.getUV(0,0));
 			break;
 		case BOTTOM:
-			v1 = new Vertex(vertex0, face.getOffset(), mesh.getUV(1,0));
+			v1 = new Vertex(vertex0, face.getOffset(), mesh.getUV(1,2));
 			v2 = new Vertex(vertex4, face.getOffset(), mesh.getUV(1,1));
-			v3 = new Vertex(vertex7, face.getOffset(), mesh.getUV(1,2));
+			v3 = new Vertex(vertex7, face.getOffset(), mesh.getUV(1,0));
 			v4 = new Vertex(vertex3, face.getOffset(), mesh.getUV(1,3));
 			break;
 		case NORTH:
-			v1 = new Vertex(vertex0, face.getOffset(), mesh.getUV(2,0));
-			v2 = new Vertex(vertex1, face.getOffset(), mesh.getUV(2,1));
-			v3 = new Vertex(vertex5, face.getOffset(), mesh.getUV(2,2));
-			v4 = new Vertex(vertex4, face.getOffset(), mesh.getUV(2,3));
+			v1 = new Vertex(vertex0, face.getOffset(), mesh.getUV(2,1));
+			v2 = new Vertex(vertex1, face.getOffset(), mesh.getUV(2,0));
+			v3 = new Vertex(vertex5, face.getOffset(), mesh.getUV(2,3));
+			v4 = new Vertex(vertex4, face.getOffset(), mesh.getUV(2,2));
 			break;
 		case SOUTH:
-			v1 = new Vertex(vertex7, face.getOffset(), mesh.getUV(3,0));
-			v2 = new Vertex(vertex6, face.getOffset(), mesh.getUV(3,1));
-			v3 = new Vertex(vertex2, face.getOffset(), mesh.getUV(3,2));
-			v4 = new Vertex(vertex3, face.getOffset(), mesh.getUV(3,3));
+			v1 = new Vertex(vertex7, face.getOffset(), mesh.getUV(3,1));
+			v2 = new Vertex(vertex6, face.getOffset(), mesh.getUV(3,0));
+			v3 = new Vertex(vertex2, face.getOffset(), mesh.getUV(3,3));
+			v4 = new Vertex(vertex3, face.getOffset(), mesh.getUV(3,2));
 			break;
 		case EAST:
-			v1 = new Vertex(vertex0, face.getOffset(), mesh.getUV(4,0));
+			v1 = new Vertex(vertex0, face.getOffset(), mesh.getUV(4,2));
 			v2 = new Vertex(vertex3, face.getOffset(), mesh.getUV(4,1));
-			v3 = new Vertex(vertex2, face.getOffset(), mesh.getUV(4,2));
+			v3 = new Vertex(vertex2, face.getOffset(), mesh.getUV(4,0));
 			v4 = new Vertex(vertex1, face.getOffset(), mesh.getUV(4,3));
 			break;
 		case WEST:
 			v1 = new Vertex(vertex5, face.getOffset(), mesh.getUV(5,0));
-			v2 = new Vertex(vertex6, face.getOffset(), mesh.getUV(5,1));
+			v2 = new Vertex(vertex6, face.getOffset(), mesh.getUV(5,3));
 			v3 = new Vertex(vertex7, face.getOffset(), mesh.getUV(5,2));
-			v4 = new Vertex(vertex4, face.getOffset(), mesh.getUV(5,3));
+			v4 = new Vertex(vertex4, face.getOffset(), mesh.getUV(5,1));
 			break;
 		case THIS:
 		default:
 			return meshs;
 		}
 
+		/*float lightD = ((15 - chunkSnapshotModel.getCenter().getBlockLight(position.getFloorX(), position.getFloorY(), position.getFloorZ())) * (1f / 15));
+		Color light = new Color(lightD * 0.5f, lightD * 0.25f, lightD * 0.25f);
+		
+		float skyLightD = ((15 - chunkSnapshotModel.getCenter().getBlockSkyLight(position.getFloorX(), position.getFloorY(), position.getFloorZ())) * (1f / 15));
+		Color skyLight = new Color(skyLightD * 0.25f, skyLightD * 0.25f, skyLightD * 0.5f);
+		
+		Color result = new Color(Math.max(light.getRed(),skyLight.getRed()),
+				Math.max(light.getGreen(),skyLight.getGreen()),
+				Math.max(light.getBlue(),skyLight.getBlue()));*/
+		
 		Color color = Color.WHITE; // Temporary testing color
 		v1.color = color;
 		v2.color = color;

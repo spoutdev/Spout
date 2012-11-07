@@ -198,7 +198,7 @@ public class ChunkMesh{
 			ByteBitSet occlusion = neighbor.getOcclusion(material.getData());
 
 			if (!occlusion.get(face.getOpposite())) {
-				List<MeshFace> faces = renderMaterial.render(chunkSnapshotModel, position, face);
+				List<MeshFace> faces = renderMaterial.render(chunkSnapshotModel, material, position, face);
 
 				if(!faces.isEmpty()){
 					ComposedMesh mesh = meshs.get(face);
