@@ -134,30 +134,32 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	}
 
 	public void setSubBatch(int x, int y, int z, ComposedMesh mesh) {
-		if( mesh == null ){
-			System.out.println("Mesh can't be null");
-			return;
-		}
 		x -= getBase().getFloorX();
 		y -= getBase().getFloorY();
 		z -= getBase().getFloorZ();
-		
+
 		int index = x * SIZE_Y * SIZE_Z + y * SIZE_Z + z;
-		
+
 		if(index < 0 || index >= COUNT){
 			System.out.println("Aggregator : " + getX() + "/" + getY() + "/" + getZ());
 			System.out.println("Mesh : " + x + "/" + y + "/" + z);
 			System.out.println("Error index" + index);
 			index = 0;
 		}
-		
-		if(batchs[index] == null){
-			batchs[index] = new ChunkMeshBatch(x, y, z, face, material);
-			count ++;
-		}
 
-		batchs[index].setMesh(mesh);
-		dirties.add(batchs[index]);
+		if( mesh == null ){
+			if(batchs[index] != null)
+				count --;
+			batchs[index] = null;
+		}else{
+			if(batchs[index] == null){
+				batchs[index] = new ChunkMeshBatch(x, y, z, face, material);
+				count ++;
+			}
+
+			batchs[index].setMesh(mesh);
+			dirties.add(batchs[index]);
+		}
 		dirty = true;
 	}
 
@@ -170,9 +172,9 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	}
 
 	public static Vector3 getCoordFromChunkMesh(ChunkMesh mesh) {
-		return new Vector3((mesh.getSubX() / ChunkMeshBatchAggregator.SIZE_X) * ChunkMeshBatchAggregator.SIZE_X,
-				(mesh.getSubY() / ChunkMeshBatchAggregator.SIZE_Y) * ChunkMeshBatchAggregator.SIZE_Y,
-				(mesh.getSubZ() / ChunkMeshBatchAggregator.SIZE_Z) * ChunkMeshBatchAggregator.SIZE_Z);
+		return new Vector3(Math.floor((float)mesh.getSubX() / ChunkMeshBatchAggregator.SIZE_X) * ChunkMeshBatchAggregator.SIZE_X,
+				Math.floor((float)mesh.getSubY() / ChunkMeshBatchAggregator.SIZE_Y) * ChunkMeshBatchAggregator.SIZE_Y,
+				Math.floor((float)mesh.getSubZ() / ChunkMeshBatchAggregator.SIZE_Z) * ChunkMeshBatchAggregator.SIZE_Z);
 	}
 
 }
