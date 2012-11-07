@@ -44,17 +44,85 @@ import org.spout.api.util.config.Configuration;
 import org.spout.api.util.config.ConfigurationNode;
 import org.spout.api.util.config.ConfigurationNodeSource;
 
+/**
+ * A configuration wrapper used to save annotated objects.
+ * <p>
+ * Fields from objects annotated with Setting will be saved to the configuration
+ * file. Methods from objects annotated with Load or Save and with a
+ * ConfigurationNode as a parameter will be invoked during the corresponding
+ * event.
+ * <p>
+ * Example:
+ * 
+ * <pre>
+ * public class AnnotatedObjectExample {
+ *     {@code @Setting}
+ *     private int num = 42;
+ *     {@code @Setting}({"foo", "bar"})
+ *     private String str = "hello world";
+ *     private long abc = 1234567890;
+ * 
+ *     {@code @Load}
+ *     private void load(ConfigurationNode node) {
+ *         abc = node.getNode("abc").getLong();
+ *     }
+ * 
+ *     {@code @Save}
+ *     private void save(ConfigurationNode node) {
+ *         node.getNode("abc").setValue(long);
+ *     }
+ * }
+ * </pre>
+ * 
+ * A new instance is made from the class above, and the object is saved with
+ * path "example".
+ * <p>
+ * This will result in a configuration file which will look like this:
+ * 
+ * <pre>
+ * example:
+ *     num: 42
+ *     foo:
+ *         bar: hello world
+ *     abc: 1234567890
+ * </pre>
+ * 
+ */
 public class AnnotatedObjectConfiguration extends AnnotatedConfiguration {
 	private final Map<Object, Set<Member>> objectMembers = new HashMap<Object, Set<Member>>();
 	private final Map<Object, String[]> objectPaths = new HashMap<Object, String[]>();
 
+	/**
+	 * Creates a new empty AnnotatedObjectConfiguration wrapper.
+	 */
 	public AnnotatedObjectConfiguration() {
 	}
 
+	/**
+	 * Creates a new AnnotatedObjectConfiguration wrapper wrapping the provided
+	 * configuration.
+	 */
 	public AnnotatedObjectConfiguration(Configuration config) {
 		super(config);
 	}
 
+	/**
+	 * Adds an object to be saved or loaded by the configuration.
+	 * <p>
+	 * The node path of the object in the configuration is specified as an array
+	 * (varargs) of strings. Only annotated fields and methods will be used.
+	 * <p>
+	 * The individual paths of the fields can be specified with the Setting
+	 * annotation. If none are specified, the field name is used.
+	 * <p>
+	 * A field named "exa" annotated with {@code @Setting({"cd.ef"})} in an object with
+	 * path "ab" will have its value saved at "ab.cd.ef". If no path is
+	 * specified in Setting, the path will be "ab.exa".
+	 *
+	 * @param object The object to load or save
+	 * @param path The path at which the object should be or is located in the
+	 * configuration
+	 */
 	public void addObject(Object object, String... path) {
 		if (!objectMembers.containsKey(object)) {
 			final Set<Member> members = new HashSet<Member>();
@@ -67,6 +135,12 @@ public class AnnotatedObjectConfiguration extends AnnotatedConfiguration {
 		}
 	}
 
+	/**
+	 * Removes an object from the configuration. It will not be used during the
+	 * next save or load invocations.
+	 *
+	 * @param object
+	 */
 	public void removeObject(Object object) {
 		objectMembers.remove(object);
 		objectPaths.remove(object);
