@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.lwjgl.opengl.GL11;
-import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshotModel;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
@@ -130,95 +129,9 @@ public class ClientRenderMaterial extends RenderMaterial {
 	}
 
 	@Override
-	public List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel,
-			Vector3 position, List<BlockFace> faces) {
-		List<MeshFace> meshs = new ArrayList<MeshFace>();
-		BlockMaterial blockMaterial = chunkSnapshotModel.getCenter().getBlockMaterial(position.getFloorX(), position.getFloorY(), position.getFloorZ());
-
-		/*   1--2
-		 *  /| /|
-		 * 5--6 |   
-		 * | 0|-3    Y - Bottom < TOP
-		 * |/ |/     |
-		 * 4--7      O-- X - North < SOUTH
-		 *          /
-		 *         Z - East < WEST
-		 */
-		Vector3 model = new Vector3(position.getFloorX() & Chunk.BLOCKS.MASK, position.getFloorY() & Chunk.BLOCKS.MASK, position.getFloorZ() & Chunk.BLOCKS.MASK);
-
-		Vector3 vertex0 = model.add(0, 0, 0);
-		Vector3 vertex1 = model.add(0, 1, 0);
-		Vector3 vertex2 = model.add(1, 1, 0);
-		Vector3 vertex3 = model.add(1, 0, 0);
-		Vector3 vertex4 = model.add(0, 0, 1);
-		Vector3 vertex5 = model.add(0, 1, 1);
-		Vector3 vertex6 = model.add(1, 1, 1);
-		Vector3 vertex7 = model.add(1, 0, 1);
-
-		TextureMesh mesh = (TextureMesh) blockMaterial.getModel().getMesh();
-		
-		for(BlockFace face : faces){
-			Vertex v1 = null, v2 = null, v3 = null, v4 = null;
-			switch (face) {
-			case TOP:
-				v1 = new Vertex(vertex1, face.getOffset(), mesh.getUV(0,0));
-				v2 = new Vertex(vertex2, face.getOffset(), mesh.getUV(0,1));
-				v3 = new Vertex(vertex6, face.getOffset(), mesh.getUV(0,2));
-				v4 = new Vertex(vertex5, face.getOffset(), mesh.getUV(0,3));
-				break;
-			case BOTTOM:
-				v1 = new Vertex(vertex0, face.getOffset(), mesh.getUV(1,0));
-				v2 = new Vertex(vertex4, face.getOffset(), mesh.getUV(1,1));
-				v3 = new Vertex(vertex7, face.getOffset(), mesh.getUV(1,2));
-				v4 = new Vertex(vertex3, face.getOffset(), mesh.getUV(1,3));
-				break;
-			case NORTH:
-				v1 = new Vertex(vertex0, face.getOffset(), mesh.getUV(2,0));
-				v2 = new Vertex(vertex1, face.getOffset(), mesh.getUV(2,1));
-				v3 = new Vertex(vertex5, face.getOffset(), mesh.getUV(2,2));
-				v4 = new Vertex(vertex4, face.getOffset(), mesh.getUV(2,3));
-				break;
-			case SOUTH:
-				v1 = new Vertex(vertex7, face.getOffset(), mesh.getUV(3,0));
-				v2 = new Vertex(vertex6, face.getOffset(), mesh.getUV(3,1));
-				v3 = new Vertex(vertex2, face.getOffset(), mesh.getUV(3,2));
-				v4 = new Vertex(vertex3, face.getOffset(), mesh.getUV(3,3));
-				break;
-			case EAST:
-				v1 = new Vertex(vertex0, face.getOffset(), mesh.getUV(4,0));
-				v2 = new Vertex(vertex3, face.getOffset(), mesh.getUV(4,1));
-				v3 = new Vertex(vertex2, face.getOffset(), mesh.getUV(4,2));
-				v4 = new Vertex(vertex1, face.getOffset(), mesh.getUV(4,3));
-				break;
-			case WEST:
-				v1 = new Vertex(vertex5, face.getOffset(), mesh.getUV(5,0));
-				v2 = new Vertex(vertex6, face.getOffset(), mesh.getUV(5,1));
-				v3 = new Vertex(vertex7, face.getOffset(), mesh.getUV(5,2));
-				v4 = new Vertex(vertex4, face.getOffset(), mesh.getUV(5,3));
-				break;
-			}
-
-			Color color = Color.WHITE; // Temporary testing color
-			v1.color = color;
-			v2.color = color;
-			v3.color = color;
-			v4.color = color;
-
-			MeshFace f1 = new MeshFace(v1, v2, v3);
-			MeshFace f2 = new MeshFace(v3, v4, v1);
-			meshs.add(f1);
-			meshs.add(f2);
-		}
-
-		return meshs;
-	}
-	
-
-	@Override
-	public List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel,
+	public List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel,BlockMaterial blockMaterial,
 			Vector3 position, BlockFace face) {
 		List<MeshFace> meshs = new ArrayList<MeshFace>();
-		BlockMaterial blockMaterial = chunkSnapshotModel.getCenter().getBlockMaterial(position.getFloorX(), position.getFloorY(), position.getFloorZ());
 
 		/*   1--2
 		 *  /| /|
@@ -229,9 +142,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 		 *          /
 		 *         Z - East < WEST
 		 */
-		
-		//Not need of & Chunk.BLOCKS.MASK if model of chunkbatch is identity
-		//Vector3 model = new Vector3(position.getFloorX() & Chunk.BLOCKS.MASK, position.getFloorY() & Chunk.BLOCKS.MASK, position.getFloorZ() & Chunk.BLOCKS.MASK);
+
 		Vector3 model = new Vector3(position.getFloorX(), position.getFloorY(), position.getFloorZ());
 
 		Vector3 vertex0 = model.add(0, 0, 0);
