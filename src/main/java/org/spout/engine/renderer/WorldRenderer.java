@@ -296,7 +296,8 @@ public class WorldRenderer {
 	 * @param z
 	 */
 	private void cleanBatchAggregator(Vector3 position) {
-		Map<RenderMaterial, Map<BlockFace, ChunkMeshBatchAggregator>> chunkRenderersByMaterial =
+		//TODO Rewrite the cleaner : Clean chunkRenderersByPosition & chunkRenderers & dirties
+		/*Map<RenderMaterial, Map<BlockFace, ChunkMeshBatchAggregator>> chunkRenderersByMaterial =
 				chunkRenderersByPosition.remove(position.getFloorX(),position.getFloorY(),position.getFloorZ());
 
 		//Can be null if the thread receive a unload model of a model wich has been send previously to load be not done
@@ -316,7 +317,7 @@ public class WorldRenderer {
 				if(list.isEmpty())
 					chunkRenderers.remove(material);
 			}
-		}
+		}*/
 	}
 	
 	/**
@@ -341,9 +342,13 @@ public class WorldRenderer {
 	int rended = 0;
 
 	private void renderChunks() {
-		int x = client.getActivePlayer().getChunk().getX();
-		int y = client.getActivePlayer().getChunk().getY();
-		int z = client.getActivePlayer().getChunk().getZ();
+		int minX = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getX() * ChunkMesh.SPLIT_X) / ChunkMeshBatchAggregator.SIZE_X) * ChunkMeshBatchAggregator.SIZE_X);
+		int minY = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getY() * ChunkMesh.SPLIT_Y) / ChunkMeshBatchAggregator.SIZE_Y) * ChunkMeshBatchAggregator.SIZE_Y);
+		int minZ = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getZ() * ChunkMesh.SPLIT_Z) / ChunkMeshBatchAggregator.SIZE_Z) * ChunkMeshBatchAggregator.SIZE_Z);
+
+		int maxX = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getX() * ChunkMesh.SPLIT_X + ChunkMesh.SPLIT_X) / ChunkMeshBatchAggregator.SIZE_X) * ChunkMeshBatchAggregator.SIZE_X + ChunkMeshBatchAggregator.SIZE_X);
+		int maxY = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getY() * ChunkMesh.SPLIT_Y + ChunkMesh.SPLIT_Y) / ChunkMeshBatchAggregator.SIZE_Y) * ChunkMeshBatchAggregator.SIZE_Y + ChunkMeshBatchAggregator.SIZE_Y);
+		int maxZ = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getZ() * ChunkMesh.SPLIT_Z + ChunkMesh.SPLIT_Z) / ChunkMeshBatchAggregator.SIZE_Z) * ChunkMeshBatchAggregator.SIZE_Z + ChunkMeshBatchAggregator.SIZE_Z);
 		
 		ocludedChunks = 0;
 		culledChunks = 0;
@@ -355,32 +360,37 @@ public class WorldRenderer {
 			material.getShader().setUniform("Projection", client.getActiveCamera().getProjection());
 			for (ChunkMeshBatchAggregator renderer : entry.getValue()) {
 
-				/*if(renderer.getY() > y && renderer.getFace() == BlockFace.TOP){
-					ocludedChunks++;
-					continue;
+				if(renderer.getFace() == BlockFace.TOP){
+					if(renderer.getY()>maxY){
+						ocludedChunks++;
+						continue;
+					}
+				}else if(renderer.getFace() == BlockFace.BOTTOM){
+					if(renderer.getY()<minY){
+						ocludedChunks++;
+						continue;
+					}
+				}else if(renderer.getFace() == BlockFace.SOUTH){
+					if(renderer.getX()>maxX){
+						ocludedChunks++;
+						continue;
+					}
+				}else if(renderer.getFace() == BlockFace.NORTH){
+					if(renderer.getX()<minX){
+						ocludedChunks++;
+						continue;
+					}
+				}else if(renderer.getFace() == BlockFace.WEST){
+					if(renderer.getZ()>maxZ){
+						ocludedChunks++;
+						continue;
+					}
+				}else if(renderer.getFace() == BlockFace.EAST){
+					if(renderer.getZ()<minZ){
+						ocludedChunks++;
+						continue;
+					}
 				}
-				if(renderer.getY() < y && renderer.getFace() == BlockFace.BOTTOM){
-					ocludedChunks++;
-					continue;
-				}
-
-				if(renderer.getX() > x && renderer.getFace() == BlockFace.SOUTH){
-					ocludedChunks++;
-					continue;
-				}
-				if(renderer.getX() < x && renderer.getFace() == BlockFace.NORTH){
-					ocludedChunks++;
-					continue;
-				}
-
-				if(renderer.getZ() > z && renderer.getFace() == BlockFace.WEST){
-					ocludedChunks++;
-					continue;
-				}
-				if(renderer.getZ() < z && renderer.getFace() == BlockFace.EAST){
-					ocludedChunks++;
-					continue;
-				}*/
 
 				material.getShader().setUniform("Model", renderer.getTransform());
 
@@ -395,9 +405,6 @@ public class WorldRenderer {
 			}*/
 			}
 		}
-
-		/*if( ocludedChunks > 0)
-			System.out.println("Ocluded facechunk : " + ocludedChunks);*/
 	}
 
 	public int getOcluded() {
