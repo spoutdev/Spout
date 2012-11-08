@@ -40,6 +40,7 @@ import org.spout.api.render.Renderer;
 import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.mesh.ComposedMesh;
+import org.spout.engine.renderer.BatchVertex;
 import org.spout.engine.renderer.BatchVertexRenderer;
 
 public class PrimitiveBatch {
@@ -159,5 +160,9 @@ public class PrimitiveBatch {
 
 	public void draw(RenderMaterial material) {
 		renderer.render(material);
+	}
+
+	public void setBatchVertex(BatchVertex batchVertex) {
+		((BatchVertexRenderer)renderer).setBatchVertex(batchVertex);
 	}
 }

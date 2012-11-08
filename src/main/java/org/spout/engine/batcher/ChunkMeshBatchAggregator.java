@@ -40,6 +40,7 @@ import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.mesh.ComposedMesh;
+import org.spout.engine.renderer.BatchVertex;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.WorldRenderer;
 
@@ -130,10 +131,10 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 		return "ChunkMeshBatch [base=" + base + ", size=" + size + "]";
 	}
 
-	public void setSubBatch(int x, int y, int z, ComposedMesh mesh) {
+	public void setSubBatch(int x, int y, int z, BatchVertex batchVertex) {
 		int index = (x - getBase().getFloorX()) * SIZE_Y * SIZE_Z + (y - getBase().getFloorY()) * SIZE_Z + (z - getBase().getFloorZ());
 
-		if( mesh == null ){
+		if( batchVertex == null ){
 			if(batchs[index] != null)
 				count --;
 			batchs[index] = null;
@@ -143,7 +144,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 				count ++;
 			}
 
-			batchs[index].setMesh(mesh);
+			batchs[index].setMesh(batchVertex);
 			dirties.add(batchs[index]);
 		}
 		dirty = true;
