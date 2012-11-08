@@ -410,8 +410,15 @@ public class SpoutRegion extends Region {
 		synchronized (renderChunkQueued) {
 			previous = renderChunkQueued.put((byte) model.getX(), (byte) model.getY(), (byte) model.getZ(), model);
 			if(previous != null){
-				renderChunkQueue.remove(previous);
-				model.addDirty(previous);
+				boolean removed = renderChunkQueue.remove(previous);
+				model.addDirty(previous, removed);
+				if (model.isUnload() && model.isFirst()) {
+					if (renderChunkQueued.remove((byte) model.getX(), (byte) model.getY(), (byte) model.getZ()) != model) {
+						throw new IllegalStateException("Removed model does not match put model");
+					} else {
+						return;
+					}
+				}
 			}
 		}
 
@@ -1070,7 +1077,8 @@ public class SpoutRegion extends Region {
 				 }
 			}
 			c.setRenderDirty(false);
-			addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks, distance, updatedRenderMaterials, null, System.currentTimeMillis()));//TODO : replace null by the set of submesh
+			boolean first = c.enteredViewDistance();
+			addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks, distance, updatedRenderMaterials, null, first, System.currentTimeMillis()));//TODO : replace null by the set of submesh
 		} else {
 			if (c.leftViewDistance()) {
 				c.setRenderDirty(false);

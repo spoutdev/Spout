@@ -66,15 +66,20 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	 */
 	private Set<Vector3> submeshs = null;
 	
+	/**
+	 * Indicates that the renderer has not received a model for this chunk yet
+	 */
+	private boolean first;
+	
 	public SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload, long time) {
-		this(cx, cy, cz, unload, null, 0, null, null, time);
+		this(cx, cy, cz, unload, null, 0, null, null, false, time);
 	}
 	
-	public SpoutChunkSnapshotModel(int cx, int cy, int cz, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, Set<Vector3> submeshs, long time) {
-		this(cx, cy, cz, false, chunks, distance, renderMaterials, submeshs, time);
+	public SpoutChunkSnapshotModel(int cx, int cy, int cz, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, Set<Vector3> submeshs, boolean first, long time) {
+		this(cx, cy, cz, false, chunks, distance, renderMaterials, submeshs, first, time);
 	}
 
-	private SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, Set<Vector3> submeshs,long time) {
+	private SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, Set<Vector3> submeshs, boolean first, long time) {
 		this.cx = cx;
 		this.cy = cy;
 		this.cz = cz;
@@ -86,6 +91,7 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 		this.renderMaterials = renderMaterials;
 		this.submeshs = submeshs;
 		this.time = time;
+		this.first = first;
 	}
 
 	public int getX() {
@@ -189,9 +195,16 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 		}
 	}
 
-	public void addDirty(SpoutChunkSnapshotModel oldModel){
+	public void addDirty(SpoutChunkSnapshotModel oldModel, boolean oldRemoved){
 		addRenderMaterials(oldModel.getRenderMaterials());
 		addSubmeshs(oldModel.getSubMeshs());
+		if (oldRemoved && oldModel.first) {
+			first = true;
+		}
+	}
+	
+	public boolean isFirst() {
+		return first;
 	}
 	
 	public Set<Vector3> getSubMeshs() {
