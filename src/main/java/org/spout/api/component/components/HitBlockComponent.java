@@ -28,8 +28,7 @@ package org.spout.api.component.components;
 
 import org.spout.api.entity.Player;
 import org.spout.api.geo.cuboid.Block;
-import org.spout.api.material.block.BlockFace;
-import org.spout.api.math.Vector3;
+import org.spout.api.util.BlockIterator;
 
 /**
  * A component allowing a player to interact with a block
@@ -52,68 +51,21 @@ public class HitBlockComponent extends EntityComponent {
 	 * @return block
 	 */
 	public Block getTargetBlock() {
-		/* It use a voxel fast traversal algorithm
-		 * from http://www.cse.yorku.ca/~amana/research/grid.pdf
-		 */
-		Vector3 origin = player.getTransform().getPosition();
-		Vector3 direction = player.getTransform().getTransform().forwardVector().multiply(-1);
-		
-		int X = origin.getFloorX();
-		int Y = origin.getFloorY();
-		int Z = origin.getFloorZ();
-		
-		int stepX = direction.getX() > 0 ? 1 : -1;
-		int stepY = direction.getY() > 0 ? 1 : -1;
-		int stepZ = direction.getZ() > 0 ? 1 : -1;
-
-		float dx = direction.getX();
-		float dy = direction.getY();
-		float dz = direction.getZ();
-		
-		float tDeltaX = (dx == 0f) ? Float.MAX_VALUE : Math.abs(1f / dx);
-		float tDeltaY = (dy == 0f) ? Float.MAX_VALUE : Math.abs(1f / dy);
-		float tDeltaZ = (dz == 0f) ? Float.MAX_VALUE : Math.abs(1f / dz);
-		
-		float tMaxX = (dx == 0f) ? Float.MAX_VALUE : Math.abs((X + (stepX > 0 ? 1 : 0) - origin.getX()) / dx);
-		float tMaxY = (dy == 0f) ? Float.MAX_VALUE : Math.abs((Y + (stepY > 0 ? 1 : 0) - origin.getY()) / dy);
-		float tMaxZ = (dz == 0f) ? Float.MAX_VALUE : Math.abs((Z + (stepZ > 0 ? 1 : 0) - origin.getZ()) / dz);
-		
-		Block block = null;
-		BlockFace face = null;
-		while (Math.min(Math.min(tMaxX, tMaxY), tMaxZ) <= range) {
-			if (tMaxX < tMaxY) {
-				if (tMaxX < tMaxZ) {
-					X += stepX;
-					tMaxX += tDeltaX;
-					face = stepX > 0 ? BlockFace.EAST : BlockFace.WEST;
-				} else {
-					Z += stepZ;
-					tMaxZ += tDeltaZ;
-					face = stepZ > 0 ? BlockFace.NORTH : BlockFace.SOUTH;
-				}
-			} else {
-				if (tMaxY < tMaxZ) {
-					Y += stepY;
-					tMaxY += tDeltaY;
-					face = stepY > 0 ? BlockFace.TOP : BlockFace.BOTTOM;
-				} else {
-					Z += stepZ;
-					tMaxZ += tDeltaZ;
-					face = stepZ > 0 ? BlockFace.NORTH : BlockFace.SOUTH;
-				}
-			}
-			
-			block = player.getWorld().getBlock(X, Y, Z);
-			if (block.getMaterial().isPlacementObstacle()) {
-				break;
-			}
+		BlockIterator blockIt = getAlignedBlocks();
+		Block block = blockIt.getTarget();
+		if (blockIt.getBlockFace()!=null) {
+			System.out.println("Face hit: " + blockIt.getBlockFace());
 		}
-		
-		if (face != null) {
-			System.out.println("Hited face: " + face.toString());
-		}
-		
 		return block;
+	}
+	
+	/**
+	 * Return a list of all the blocks in line
+	 * of view.
+	 * @return blocks
+	 */
+	public BlockIterator getAlignedBlocks() {
+		return new BlockIterator(player.getWorld(), player.getTransform().getTransform(), range);
 	}
 	
 	/**
