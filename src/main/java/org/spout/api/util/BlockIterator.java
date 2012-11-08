@@ -32,28 +32,51 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.MathHelper;
+import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector3;
 
 /**
  * This class performs ray tracing and iterates along blocks on a line
  */
 public class BlockIterator implements Iterator<Block> {
-	// how many steps on a block line for each unit of length
-	private static final byte STEPS_PER_UNIT = 10;
-	// world to iterate in
+	// World to iterate in
 	private final World world;
-	// current position
-	private Vector3 position;
-	// position we're aiming for
-	private final Vector3 end;
-	// vector added to the position at each step
-	private final Vector3 stepDirection;
-	// deltas used for finding out if we're closing in on the end point
-	private float lastDeltaX = Integer.MAX_VALUE;
-	private float lastDeltaZ = Integer.MAX_VALUE;
-	private float lastDeltaY = Integer.MAX_VALUE;
+	// Starting position
+	private final Vector3 origin;
+	// Direction of the ray
+	private final Vector3 direction;
+	// Max distance
+	private final float range;
+	
+	// Current position
+	private int X, Y, Z;
+	// Step in blocks
+	private int stepX, stepY, stepZ;
+	// Step in distance
+	private float tDeltaX, tDeltaY, tDeltaZ;
+	// Current distance
+	private float tMaxX, tMaxY, tMaxZ;
+	
+	// The face the ray enter by
+	private BlockFace face;
 
+	/**
+	 * Constructs the BlockIterator
+	 *
+	 * @param world The world to use for tracing
+	 * @param origin The starting position of the trace
+	 * @param direction The direction of the trace
+	 * @param maxDistance This is the maximum distance in blocks for the trace.
+	 *
+	 */
+	public BlockIterator(World world, Vector3 origin, Vector3 direction, float maxDistance) {
+		this.world = world;
+		this.origin = origin;
+		this.direction = direction;
+		this.range = maxDistance;
+		reset();
+	}
+	
 	/**
 	 * Constructs the BlockIterator
 	 *
@@ -62,15 +85,14 @@ public class BlockIterator implements Iterator<Block> {
 	 * @param maxDistance This is the maximum distance in blocks for the trace.
 	 *
 	 */
-	public BlockIterator(World world, Transform pos, int maxDistance) {
+	public BlockIterator(World world, Transform pos, float maxDistance) {
 		this.world = world;
-		position = pos.getPosition().floor();
-		final Vector3 direction = MathHelper.getDirectionVector(pos.getRotation());
-		final Vector3 normalizedDirection = direction.normalize();
-		stepDirection = normalizedDirection.divide(STEPS_PER_UNIT);
-		end = normalizedDirection.multiply(maxDistance).add(position).floor();
+		this.origin = pos.getPosition();
+		this.direction = pos.forwardVector().multiply(-1);
+		this.range = maxDistance;
+		reset();
 	}
-
+	
 	/**
 	 * Constructs the BlockIterator
 	 *
@@ -82,50 +104,101 @@ public class BlockIterator implements Iterator<Block> {
 		if (!from.getWorld().equals(to.getWorld())) {
 			throw new IllegalArgumentException("Cannot iterate between worlds.");
 		}
-		world = from.getWorld();
-		position = from.floor();
-		end = to.floor();
-		stepDirection = to.subtract(from).normalize().divide(STEPS_PER_UNIT);
+		
+		this.world = from.getWorld();
+		this.origin = from;
+		this.direction = to.subtract(from).normalize();
+		this.range = (float) from.distance(to);
+		
+		reset();
+	}
+	
+	/**
+	 * Reset the iterator
+	 */
+	public void reset() {
+		X = origin.getFloorX();
+		Y = origin.getFloorY();
+		Z = origin.getFloorZ();
+		
+		float dx = direction.getX();
+		float dy = direction.getY();
+		float dz = direction.getZ();
+		
+		stepX = dx > 0 ? 1 : -1;
+		stepY = dy > 0 ? 1 : -1;
+		stepZ = dz > 0 ? 1 : -1;
+		
+		tDeltaX = (dx == 0f) ? Float.MAX_VALUE : Math.abs(1f / dx);
+		tDeltaY = (dy == 0f) ? Float.MAX_VALUE : Math.abs(1f / dy);
+		tDeltaZ = (dz == 0f) ? Float.MAX_VALUE : Math.abs(1f / dz);
+		
+		tMaxX = (dx == 0f) ? Float.MAX_VALUE : Math.abs((X + (dx > 0 ? 1 : 0) - origin.getX()) / dx);
+		tMaxY = (dy == 0f) ? Float.MAX_VALUE : Math.abs((Y + (dy > 0 ? 1 : 0) - origin.getY()) / dy);
+		tMaxZ = (dz == 0f) ? Float.MAX_VALUE : Math.abs((Z + (dz > 0 ? 1 : 0) - origin.getZ()) / dz);
 	}
 
 	@Override
 	public boolean hasNext() {
-		// if the delta values are decreasing, we're nearing 0
-		// and we're still approaching the end position
-		// else, we've passed it
-		final float currentDeltaX = Math.abs(end.getX() - position.getX());
-		final float currentDeltaY = Math.abs(end.getY() - position.getY());
-		final float currentDeltaZ = Math.abs(end.getZ() - position.getZ());
-		boolean hasNext = false;
-		if (currentDeltaX < lastDeltaX
-				|| currentDeltaY < lastDeltaY
-				|| currentDeltaZ < lastDeltaZ) {
-			hasNext = true;
-		}
-		lastDeltaX = currentDeltaX;
-		lastDeltaY = currentDeltaY;
-		lastDeltaZ = currentDeltaZ;
-		return hasNext;
+		return (Math.min(Math.min(tMaxX, tMaxY), tMaxZ) <= range);
 	}
 
 	@Override
 	public Block next() {
-		final Block requested = world.getBlock(position.round());
-		//translate position to precisely end up at a new block
-		//TODO: Make this more efficient (it needs a calculation to get to the border of the current block)
-		//This requires some sort of distance calculation using a 1x1x1 bounding box
-		//Perhaps use the Collision utilities for this?
-		Vector3 current = position.floor();
-		Vector3 next = current;
-		while (next.floor().equals(current)) {
-			position = position.add(stepDirection);
-			next = position;
+		if (tMaxX < tMaxY) {
+			if (tMaxX < tMaxZ) {
+				X += stepX;
+				tMaxX += tDeltaX;
+				face = stepX > 0 ? BlockFace.NORTH : BlockFace.SOUTH;
+			} else {
+				Z += stepZ;
+				tMaxZ += tDeltaZ;
+				face = stepZ > 0 ? BlockFace.EAST : BlockFace.WEST;
+			}
+		} else {
+			if (tMaxY < tMaxZ) {
+				Y += stepY;
+				tMaxY += tDeltaY;
+				face = stepY > 0 ? BlockFace.BOTTOM : BlockFace.TOP;
+			} else {
+				Z += stepZ;
+				tMaxZ += tDeltaZ;
+				face = stepZ > 0 ? BlockFace.EAST : BlockFace.WEST;
+			}
 		}
-		return requested;
+		return world.getBlock(X, Y, Z);
 	}
 
 	@Override
 	public void remove() {
 		throw new UnsupportedOperationException("Block removal is not supported by this iterator");
+	}
+	
+	/**
+	 * Get the targeted block if there is one.
+	 * Then reset the iterator (but not the block face)
+	 * @return Block
+	 */
+	public Block getTarget() {
+		Block block = null;
+		while (hasNext()) {
+			block = next();
+			if (block.getMaterial().isPlacementObstacle()) {
+				break;
+			}
+		}
+		if (block==null || !block.getMaterial().isPlacementObstacle()) {
+			return null;
+		}
+		reset();
+		return block;
+	}
+	
+	/**
+	 * Get the face hit by the ray.
+	 * @return BlockFace
+	 */
+	public BlockFace getBlockFace() {
+		return face;
 	}
 }
