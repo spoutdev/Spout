@@ -109,6 +109,7 @@ import org.spout.engine.input.SpoutInputConfiguration;
 import org.spout.engine.listener.SpoutClientListener;
 import org.spout.engine.listener.channel.SpoutClientConnectListener;
 import org.spout.engine.protocol.SpoutClientSession;
+import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.resources.ClientEntityPrefab;
 import org.spout.engine.resources.ClientFont;
@@ -477,7 +478,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glClearColor((135.f / 255.0f), 206.f / 255.f, 250.f / 255.f, 1);
 
-
+		//Init pool of BatchVertexRenderer
+		BatchVertexRenderer.initPool(GL11.GL_TRIANGLES, 3000);
+		
 		worldRenderer = new WorldRenderer(this);
 		worldRenderer.setup();
 

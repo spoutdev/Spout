@@ -45,7 +45,6 @@ import org.spout.api.util.map.TInt21TripleObjectHashMap;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.batcher.ChunkMeshBatchAggregator;
 import org.spout.engine.mesh.ChunkMesh;
-import org.spout.engine.mesh.ComposedMesh;
 import org.spout.engine.mesh.CubeMesh;
 import org.spout.engine.world.SpoutWorld;
 
@@ -262,13 +261,16 @@ public class WorldRenderer {
 	}
 
 	private void addBatchAggregator(ChunkMeshBatchAggregator batch) {
+		// Add in chunkRenderers
 		List<ChunkMeshBatchAggregator> list = chunkRenderers.get(batch.getMaterial());
 		if(list == null){
 			list = new ArrayList<ChunkMeshBatchAggregator>();
 			chunkRenderers.put(batch.getMaterial(),list);
 		}
+
 		list.add(batch);
 
+		//Add in chunkRenderersByPosition
 		Map<RenderMaterial, Map<BlockFace, ChunkMeshBatchAggregator>> map = chunkRenderersByPosition.get(batch.getX(), batch.getY(), batch.getZ());
 		if(map == null){
 			map = new HashMap<RenderMaterial, Map<BlockFace, ChunkMeshBatchAggregator>>();
