@@ -82,7 +82,7 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 	}
 
 	@Override
-	public void merge(List<Renderer> renderers) {
+	public void doMerge(List<Renderer> renderers) {
 		numVertices = 0;
 		GL11.glNewList(displayList, GL11.GL_COMPILE);
 
@@ -92,6 +92,5 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 		}
 
 		GL11.glEndList();
-		flushed = true;
 	}
 }

@@ -39,7 +39,6 @@ import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
 import org.spout.engine.mesh.ChunkMesh;
-import org.spout.engine.mesh.ComposedMesh;
 import org.spout.engine.renderer.BatchVertex;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.WorldRenderer;
@@ -65,6 +64,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	private final BlockFace face;
 	private final RenderMaterial material;
 	private boolean dirty = true;
+	private boolean closed = false;
 
 	public ChunkMeshBatchAggregator(World world, int baseX, int baseY, int baseZ, BlockFace face, RenderMaterial material) {
 		super(new Point(world, baseX, baseY, baseZ), SIZE);
@@ -73,6 +73,9 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	}
 
 	public boolean update(long start) {
+		if (closed) {
+			throw new IllegalStateException("Already closed");
+		}
 		while(!dirties.isEmpty()){
 			dirties.remove(0).update();
 
@@ -99,6 +102,9 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	}
 
 	public int render(RenderMaterial material) {
+		if (closed) {
+			throw new IllegalStateException("Already closed");
+		}
 		int rended = 0;
 		if (dirty){
 			for(ChunkMeshBatch batch : batchs){
@@ -115,11 +121,16 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	}
 
 	public void finalize() {
+		if (closed) {
+			throw new IllegalStateException("Already closed");
+		}
+
 		for(ChunkMeshBatch batch : batchs)
 			if(batch != null)
 				batch.finalize();
 
-		((BatchVertexRenderer)renderer.getRenderer()).finalize();
+		((BatchVertexRenderer)renderer.getRenderer()).release();
+		closed = true;
 	}
 
 	public Matrix getTransform() {
@@ -135,8 +146,10 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 		int index = (x - getBase().getFloorX()) * SIZE_Y * SIZE_Z + (y - getBase().getFloorY()) * SIZE_Z + (z - getBase().getFloorZ());
 
 		if( batchVertex == null ){
-			if(batchs[index] != null)
+			if(batchs[index] != null){
 				count --;
+				batchs[index].finalize();
+			}
 			batchs[index] = null;
 		}else{
 			if(batchs[index] == null){
@@ -172,6 +185,15 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 
 	public boolean isEmpty() {
 		return count == 0;
+	}
+
+	/**
+	 * We can have only one instance of ChunkMeshBatchAggregator at one position, face and material
+	 * So we need to override the equals of extended class cuboid
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		return obj == this;
 	}
 
 }

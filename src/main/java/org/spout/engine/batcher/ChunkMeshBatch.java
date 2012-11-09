@@ -44,6 +44,7 @@ public class ChunkMeshBatch {
 	private Matrix modelMat = MathHelper.createIdentity();
 	private final BlockFace face;
 	private final RenderMaterial material;
+	private boolean closed = false;
 
 	public ChunkMeshBatch(int x, int y, int z, BlockFace face, RenderMaterial material) {
 		this.x = x;
@@ -58,6 +59,9 @@ public class ChunkMeshBatch {
 	}
 
 	public void update() {
+		if (closed) {
+			throw new IllegalStateException("Already closed");
+		}
 		if(batchVertex.getVertexCount() == 0){
 			hasVertices = false;
 			return;
@@ -78,13 +82,20 @@ public class ChunkMeshBatch {
 	}
 
 	public void render(RenderMaterial material) {
+		if (closed) {
+			throw new IllegalStateException("Already closed");
+		}
 		if (hasVertices) {
 			renderer.draw(material);
 		}
 	}
 
 	public void finalize() {
-		((BatchVertexRenderer)renderer.getRenderer()).finalize();
+		if (closed) {
+			throw new IllegalStateException("Already closed");
+		}
+		((BatchVertexRenderer)renderer.getRenderer()).release();
+		closed = true;
 	}
 
 	public Matrix getTransform() {
