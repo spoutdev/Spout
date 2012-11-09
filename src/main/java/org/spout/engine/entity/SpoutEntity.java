@@ -38,6 +38,7 @@ import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
 import org.spout.api.component.components.EntityComponent;
 import org.spout.api.component.components.NetworkComponent;
+import org.spout.api.component.components.PhysicsComponent;
 import org.spout.api.component.components.TransformComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
@@ -54,6 +55,7 @@ import org.spout.api.util.OutwardIterator;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.engine.SpoutConfiguration;
+import org.spout.engine.entity.component.SpoutPhysicsComponent;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.Snapshotable;
 import org.spout.engine.util.thread.snapshotable.SnapshotableBoolean;
@@ -125,6 +127,14 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		//Set all the initial snapshot values
 		//Ensures there are no null/wrong snapshot values for the first tick
 		snapshotManager.copyAllSnapshots();
+	}
+
+	@Override
+	protected <T extends Component> T add(Class<T> type, boolean attach) {
+		if (type.equals(PhysicsComponent.class)) {
+			return super.add(type, SpoutPhysicsComponent.class, attach);
+		}
+		return super.add(type, attach);
 	}
 
 	public SpoutEntity(Transform transform, int viewDistance) {
@@ -331,6 +341,10 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	public void copySnapshot() {
 		snapshotManager.copyAllSnapshots();
 		getTransform().copySnapshot();
+		PhysicsComponent physics = get(PhysicsComponent.class);
+		if (physics != null) {
+			((SpoutPhysicsComponent) physics).copySnapshot();
+		}
 		justSpawned = false;
 	}
 
