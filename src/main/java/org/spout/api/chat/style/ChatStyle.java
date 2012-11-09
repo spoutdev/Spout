@@ -44,7 +44,6 @@ import org.spout.api.util.StringMap;
 public abstract class ChatStyle {
 	private static final StringMap ID_LOOKUP = new StringMap(null, new MemoryStore<Integer>(), 0, Integer.MAX_VALUE, ChatStyle.class.getCanonicalName());
 	private static final Map<String, ChatStyle> BY_NAME = new HashMap<String, ChatStyle>();
-	protected static final Map<String, ChatStyle> BY_CODE = new HashMap<String, ChatStyle>();
 	private static final Set<ChatStyle> VALUES = new HashSet<ChatStyle>();
 
 	public static final ChatStyle BLACK = new ColorChatStyle("Black", Color.BLACK);
