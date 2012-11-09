@@ -29,164 +29,31 @@ package org.spout.engine.renderer;
 import gnu.trove.list.array.TFloatArrayList;
 
 import java.awt.Color;
-import java.util.List;
 
-import org.lwjgl.opengl.GL11;
-import org.spout.api.Client;
-import org.spout.api.Spout;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
-import org.spout.api.render.RenderMaterial;
-import org.spout.api.render.RenderMode;
-import org.spout.api.render.Renderer;
 
-public abstract class BatchVertexRenderer implements Renderer {
-	public static Renderer constructNewBatch(int renderMode) {
-		Client client = (Client) Spout.getEngine();
-		if (client.getRenderMode() == RenderMode.GL11) {
-			return new GL11BatchVertexRenderer(renderMode);
-		}
-		if (client.getRenderMode() == RenderMode.GL20) {
-			return new GL20BatchVertexRenderer(renderMode);
-		}
-		if (client.getRenderMode() == RenderMode.GL30) {
-			return new GL30BatchVertexRenderer(renderMode);
-		}
-		if (client.getRenderMode() == RenderMode.GLES20) {
-			return new GLES20BatchVertexRenderer(renderMode);
-		}
-		throw new IllegalArgumentException("GL Mode:" + client.getRenderMode() + " Not reconized");
-	}
+public class BatchVertex{
 
-	boolean batching = false;
-	boolean flushed = false;
-	int renderMode;
 	//Using FloatArrayList because I need O(1) access time
 	//and fast ToArray()
-	TFloatArrayList vertexBuffer = new TFloatArrayList();
-	TFloatArrayList colorBuffer = new TFloatArrayList();
-	TFloatArrayList normalBuffer = new TFloatArrayList();
-	TFloatArrayList uvBuffer = new TFloatArrayList();
+	public TFloatArrayList vertexBuffer = new TFloatArrayList();
+	public TFloatArrayList colorBuffer = new TFloatArrayList();
+	public TFloatArrayList normalBuffer = new TFloatArrayList();
+	public TFloatArrayList uvBuffer = new TFloatArrayList();
 	int numVertices = 0;
 	boolean useColors = false;
 	boolean useNormals = false;
 	boolean useTextures = false;
 	
-	public BatchVertexRenderer(int mode) {
-		renderMode = mode;
+	public BatchVertex() {
 	}
 
-	
-	@Override
 	public int getVertexCount(){
 		return numVertices;
 	}
-	
-	
-	@Override
-	public void begin() {
-		if (batching) {
-			throw new IllegalStateException("Already Batching!");
-		}
-		batching = true;
-		flushed = false;
-		
 
-		numVertices = 0;		
-	}
-
-	
-	@Override
-	public void end() {
-		if (!batching) {
-			throw new IllegalStateException("Not Batching!");
-		}
-		batching = false;
-		flush();
-	}
-
-	
-	public final void flush() {
-		if (vertexBuffer.size() % 4 != 0) {
-			throw new IllegalStateException("Vertex Size Mismatch (How did this happen?)");
-		}
-		if (useColors) {
-			if (colorBuffer.size() % 4 != 0) {
-				throw new IllegalStateException("Color Size Mismatch (How did this happen?)");
-			}
-			if (colorBuffer.size() / 4 != numVertices) {
-				throw new IllegalStateException("Color Buffer size does not match numVerticies");
-			}
-		}
-		if (useNormals) {
-			if (normalBuffer.size() % 4 != 0) {
-				throw new IllegalStateException("Normal Size Mismatch (How did this happen?)");
-			}
-			if (normalBuffer.size() / 4 != numVertices) {
-				throw new IllegalStateException("Normal Buffer size does not match numVerticies");
-			}
-		}
-		if (useTextures) {
-			if (uvBuffer.size() % 2 != 0) {
-				throw new IllegalStateException("UV size Mismatch (How did this happen?)");
-			}
-			if (uvBuffer.size() / 2 != numVertices) {
-				throw new IllegalStateException("UV Buffer size does not match numVerticies");
-			}
-		}
-		if(numVertices <= 0) throw new IllegalStateException("Must have more than 0 verticies!");
-		//Call the overriden flush
-		doFlush();
-
-		//clean up after flush
-		postFlush();
-	}
-
-	protected abstract void doFlush();
-
-	protected void postFlush() {
-		flushed = true;
-		vertexBuffer.clear();
-		colorBuffer.clear();
-		normalBuffer.clear();
-		uvBuffer.clear();
-	}
-	
-	/**
-	 * The act of drawing.  The Batch will check if it's possible to render
-	 * as well as setup for rendering.  If it's possible to render, it will call doRender()
-	 */
-	protected abstract void doRender(RenderMaterial materail, int startVert, int endVert);
-
-
-	public final void render(RenderMaterial material, int startVert, int endVert) {
-		checkRender();
-		if(numVertices <= 0) throw new IllegalStateException("Cannot render 0 verticies");
-		material.preRender();
-		doRender(material, startVert, endVert);
-		material.postRender();
-	}
-	
-	@Override	
-	public final void render(RenderMaterial material) {
-		render(material, 0, numVertices);
-	}
-
-	
-	
-	protected void checkRender() {
-		if (batching) {
-			throw new IllegalStateException("Cannot Render While Batching");
-		}
-		if (!flushed) {
-			throw new IllegalStateException("Cannot Render Without Flushing the Batch");
-		}
-		
-	}
-
-	
-	@Override
 	public void addVertex(float x, float y, float z, float w) {
 		vertexBuffer.add(x);
 		vertexBuffer.add(y);
@@ -196,41 +63,30 @@ public abstract class BatchVertexRenderer implements Renderer {
 		numVertices++;
 	}
 
-	@Override
 	public void addVertex(float x, float y, float z) {
 		addVertex(x, y, z, 1.0f);
 	}
 
-	
-	@Override
 	public void addVertex(float x, float y) {
 		addVertex(x, y, 1.0f, 1.0f);
 	}
 
-	
-	@Override
 	public void addVertex(Vector3 vertex) {
 		addVertex(vertex.getX(), vertex.getY(), vertex.getZ());
 	}
 
-	
-	@Override
 	public void addVertex(Vector2 vertex) {
 		addVertex(vertex.getX(), vertex.getY());
 	}
 
-	@Override
 	public void addVertex(Vector4 vertex) {
 		addVertex(vertex.getX(), vertex.getY(), vertex.getZ(), vertex.getZ());
 	}
 
-	@Override
 	public void addColor(float r, float g, float b) {
 		addColor(r, g, b, 1.0f);
 	}
 
-	
-	@Override
 	public void addColor(float r, float g, float b, float a) {
 		useColors = true;
 		colorBuffer.add(r);
@@ -243,14 +99,10 @@ public abstract class BatchVertexRenderer implements Renderer {
 		addColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
 	}
 
-	
-	@Override
 	public void addColor(Color color) {
 		addColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 	}
 
-	
-	@Override
 	public void addNormal(float x, float y, float z, float w) {
 		useNormals = true;
 		normalBuffer.add(x);
@@ -259,37 +111,27 @@ public abstract class BatchVertexRenderer implements Renderer {
 		normalBuffer.add(w);
 	}
 
-	
-	@Override
 	public void addNormal(float x, float y, float z) {
 		addNormal(x, y, z, 1.0f);
 	}
 
-
-	@Override
 	public void addNormal(Vector3 vertex) {
 		addNormal(vertex.getX(), vertex.getY(), vertex.getZ());
 	}
 
-	
-	@Override
 	public void addNormal(Vector4 vertex) {
 		addNormal(vertex.getX(), vertex.getY(), vertex.getZ(), vertex.getZ());
 	}
 
-	
-	@Override
 	public void addTexCoord(float u, float v) {
 		useTextures = true;
 		uvBuffer.add(u);
 		uvBuffer.add(v);
 	}
 
-	@Override
 	public void addTexCoord(Vector2 uv) {
 		addTexCoord(uv.getX(), uv.getY());
 	}
-
 
 	public void dumpBuffers() {
 		System.out.println("BatchVertexRenderer Debug Ouput: Verts: " + numVertices + " Using {colors, normal, textures} {" + useColors + ", " + useNormals + ", " + useTextures + "}");
@@ -308,19 +150,5 @@ public abstract class BatchVertexRenderer implements Renderer {
 			}
 			System.out.println("Vertex : {" + vertexBuffer.get(index) + " " + vertexBuffer.get(index + 1) + " " + vertexBuffer.get(index + 2) + " " + vertexBuffer.get(index + 3) + "}");
 		}
-	}
-	
-	public void finalize() { }
-
-
-	public void setBatchVertex(BatchVertex batchVertex) {
-		vertexBuffer = batchVertex.vertexBuffer;
-		colorBuffer = batchVertex.colorBuffer;
-		normalBuffer = batchVertex.normalBuffer;
-		uvBuffer = batchVertex.uvBuffer;
-		numVertices = batchVertex.numVertices;
-		useColors = batchVertex.useColors;
-		useNormals = batchVertex.useNormals;
-		useTextures = batchVertex.useTextures;
 	}
 }

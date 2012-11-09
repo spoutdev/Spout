@@ -38,8 +38,10 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.MeshFace;
+import org.spout.api.model.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.util.bytebit.ByteBitSet;
+import org.spout.engine.renderer.BatchVertex;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 
 /**
@@ -66,7 +68,7 @@ public class ChunkMesh{
 	public Vector3 start;
 	public Vector3 end;
 	
-	private HashMap<RenderMaterial, Map<BlockFace,ComposedMesh>> meshs = new HashMap<RenderMaterial, Map<BlockFace,ComposedMesh>>();
+	private HashMap<RenderMaterial, Map<BlockFace,BatchVertex>> meshs = new HashMap<RenderMaterial, Map<BlockFace,BatchVertex>>();
 
 	private SpoutChunkSnapshotModel chunkModel;
 	private ChunkSnapshot center;
@@ -151,10 +153,10 @@ public class ChunkMesh{
 		center = null;
 	}
 
-	private Map<BlockFace, ComposedMesh> getMaterialMap(RenderMaterial material){
-		Map<BlockFace, ComposedMesh> map = meshs.get(material);
+	private Map<BlockFace, BatchVertex> getMaterialMap(RenderMaterial material){
+		Map<BlockFace, BatchVertex> map = meshs.get(material);
 		if(map == null){
-			map = new HashMap<BlockFace, ComposedMesh>();
+			map = new HashMap<BlockFace, BatchVertex>();
 			meshs.put(material, map);
 		}
 		return map;
@@ -181,7 +183,7 @@ public class ChunkMesh{
 			return;
 		}
 		
-		Map<BlockFace, ComposedMesh> meshs = getMaterialMap(renderMaterial);
+		Map<BlockFace, BatchVertex> meshs = getMaterialMap(renderMaterial);
 
 		Vector3 position = new Vector3(x, y, z);
 		for(BlockFace face : BlockFace.values()){
@@ -201,12 +203,23 @@ public class ChunkMesh{
 				List<MeshFace> faces = renderMaterial.render(chunkSnapshotModel, material, position, face);
 
 				if(!faces.isEmpty()){
-					ComposedMesh mesh = meshs.get(face);
-					if(mesh == null){
-						mesh = new ComposedMesh();
-						meshs.put(face, mesh);
+					BatchVertex batchVertex = meshs.get(face);
+					if(batchVertex == null){
+						batchVertex = new BatchVertex();
+						meshs.put(face, batchVertex);
 					}
-					mesh.getMesh().addAll(faces);
+					
+					for (MeshFace meshFace : faces) {
+						for (Vertex vert : meshFace) {
+							if(vert.texCoord0 != null)
+								batchVertex.addTexCoord(vert.texCoord0);
+							if(vert.normal != null)
+								batchVertex.addNormal(vert.normal);
+							if(vert.color != null)
+								batchVertex.addColor(vert.color);
+							batchVertex.addVertex(vert.position);
+						}
+					}
 				}
 			}
 		}
@@ -230,11 +243,11 @@ public class ChunkMesh{
 		return isUnloaded;
 	}
 
-	public ComposedMesh getMesh(RenderMaterial material,BlockFace face) {
+	public BatchVertex getMesh(RenderMaterial material,BlockFace face) {
 		return meshs.get(material).get(face);
 	}
 
-	public HashMap<RenderMaterial, Map<BlockFace, ComposedMesh>> getMaterialsFaces() {
+	public HashMap<RenderMaterial, Map<BlockFace, BatchVertex>> getMaterialsFaces() {
 		return meshs;
 	}
 
