@@ -135,8 +135,9 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	public void copySnapshot() {
-		angularVelocity = getLinearVelocityLive();
-		linearVelocity = getAngularVelocityLive();
+		linearVelocity = getLinearVelocityLive();
+		angularVelocity = getAngularVelocityLive();
+		
 		collisionObject = collisionObjectLive;
 	}
 
