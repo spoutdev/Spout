@@ -1082,7 +1082,7 @@ public class SpoutRegion extends Region {
 			}
 			c.setRenderDirty(false);
 			boolean first = c.enteredViewDistance();
-			addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks, distance, updatedRenderMaterials, null, first, System.currentTimeMillis()));//TODO : replace null by the set of submesh
+			addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks, distance, updatedRenderMaterials, updatedSubMeshes, first, System.currentTimeMillis()));//TODO : replace null by the set of submesh
 		} else {
 			if (c.leftViewDistance()) {
 				c.setRenderDirty(false);
