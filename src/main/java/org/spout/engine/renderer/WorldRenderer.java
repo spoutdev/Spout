@@ -131,11 +131,11 @@ public class WorldRenderer {
 		private ChunkMesh chunkMesh = null;
 		private Vector3 position = null;
 
-		private Iterator<Entry<RenderMaterial, Map<BlockFace, ComposedMesh>>> it = null;
+		private Iterator<Entry<RenderMaterial, Map<BlockFace, BatchVertex>>> it = null;
 
-		private Entry<RenderMaterial, Map<BlockFace, ComposedMesh>> data;
+		private Entry<RenderMaterial, Map<BlockFace, BatchVertex>> data;
 		private RenderMaterial material;
-		private Iterator<Entry<BlockFace, ComposedMesh>> it2 = null;
+		private Iterator<Entry<BlockFace, BatchVertex>> it2 = null;
 
 		public void run() {
 			final long start = System.currentTimeMillis();
@@ -146,7 +146,7 @@ public class WorldRenderer {
 			if(it2 != null){
 
 				while(it2.hasNext()){
-					Entry<BlockFace, ComposedMesh> entry = it2.next();
+					Entry<BlockFace, BatchVertex> entry = it2.next();
 					handle(position, entry.getKey(),entry.getValue(), start);
 
 					if( System.currentTimeMillis() - start > TIME_LIMIT)
@@ -165,7 +165,7 @@ public class WorldRenderer {
 					it2 = data.getValue().entrySet().iterator();
 
 					while(it2.hasNext()){
-						Entry<BlockFace, ComposedMesh> entry = it2.next();
+						Entry<BlockFace, BatchVertex> entry = it2.next();
 						handle(position, entry.getKey(),entry.getValue(), start);
 
 						if( System.currentTimeMillis() - start > TIME_LIMIT)
@@ -200,7 +200,7 @@ public class WorldRenderer {
 					it2 = data.getValue().entrySet().iterator();
 
 					while(it2.hasNext()){
-						Entry<BlockFace, ComposedMesh> entry = it2.next();
+						Entry<BlockFace, BatchVertex> entry = it2.next();
 						handle(position, entry.getKey(), entry.getValue(), start);
 
 						if( System.currentTimeMillis() - start > TIME_LIMIT)
@@ -218,7 +218,7 @@ public class WorldRenderer {
 		}
 
 
-		private void handle(Vector3 position, BlockFace face, ComposedMesh mesh, long start){
+		private void handle(Vector3 position, BlockFace face, BatchVertex batchVertex, long start){
 			ChunkMeshBatchAggregator chunkMeshBatch = getBatchAggregator(position, face, material);
 
 			if(chunkMeshBatch==null){
@@ -228,7 +228,7 @@ public class WorldRenderer {
 				addBatchAggregator(chunkMeshBatch);
 			}
 
-			chunkMeshBatch.setSubBatch(chunkMesh.getSubX(),chunkMesh.getSubY(),chunkMesh.getSubZ(),mesh);
+			chunkMeshBatch.setSubBatch(chunkMesh.getSubX(),chunkMesh.getSubY(),chunkMesh.getSubZ(),batchVertex);
 			dirties.add(chunkMeshBatch);
 			batch(start);
 		}

@@ -26,12 +26,11 @@
  */
 package org.spout.engine.batcher;
 
-import org.spout.api.geo.World;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.render.RenderMaterial;
-import org.spout.engine.mesh.ComposedMesh;
+import org.spout.engine.renderer.BatchVertex;
 import org.spout.engine.renderer.BatchVertexRenderer;
 
 /**
@@ -40,42 +39,36 @@ import org.spout.engine.renderer.BatchVertexRenderer;
 public class ChunkMeshBatch {	
 	private int x,y,z;
 	private PrimitiveBatch renderer = new PrimitiveBatch();
-	private ComposedMesh mesh = null;
+	private BatchVertex batchVertex = null;
 	private boolean hasVertices = false;
 	private Matrix modelMat = MathHelper.createIdentity();
 	private final BlockFace face;
 	private final RenderMaterial material;
-	
+
 	public ChunkMeshBatch(int x, int y, int z, BlockFace face, RenderMaterial material) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.face = face;
 		this.material = material;
-		//Not need of modelMat if render use world block position
-		//modelMat = MathHelper.translate(new Vector3(baseX * ChunkMesh.SUBSIZE_X, baseY * ChunkMesh.SUBSIZE_Y, baseZ * ChunkMesh.SUBSIZE_Z));
 	}
 
 	public PrimitiveBatch getRenderer(){
 		return renderer;
 	}
-	
+
 	public void update() {
-		hasVertices = true;
-		/*hasVertices = false;
-			if (!mesh.getMesh().isEmpty()) {
-				hasVertices = true;
-				break;
-			}
-		if (!hasVertices) {
+		if(batchVertex.getVertexCount() == 0){
+			hasVertices = false;
 			return;
-		}*/
+		}
+		hasVertices = true;
 
 		renderer.begin();
 
-			material.preRender();
-			renderer.addMesh(mesh.getMesh());
-			material.postRender();
+		material.preRender();
+		renderer.setBatchVertex(batchVertex);
+		material.postRender();
 
 		renderer.end();
 	}
@@ -103,8 +96,8 @@ public class ChunkMeshBatch {
 		return "ChunkMeshBatch [x=" + x + ", y=" + y +  ", z=" + z + "]";
 	}
 
-	public void setMesh(ComposedMesh chunkMesh) {
-		mesh = chunkMesh;
+	public void setMesh(BatchVertex batchVertex) {
+		this.batchVertex = batchVertex;
 	}
 
 	public BlockFace getFace() {
