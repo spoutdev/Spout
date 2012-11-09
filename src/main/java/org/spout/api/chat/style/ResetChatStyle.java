@@ -26,10 +26,15 @@
  */
 package org.spout.api.chat.style;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 /**
  * Represents a ChatStyle that resets the current ChatStyle at its position in the String.
  */
 public class ResetChatStyle extends ChatStyle {
+	private static final long serialVersionUID = 1L;
 	public ResetChatStyle() {
 		super("Reset");
 	}
@@ -37,5 +42,15 @@ public class ResetChatStyle extends ChatStyle {
 	@Override
 	public boolean conflictsWith(ChatStyle other) {
 		return true;
+	}
+
+	@Override
+	protected void writeObject(ObjectOutputStream oos) throws IOException {
+		super.writeObject(oos);
+	}
+
+	@Override
+	protected void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+		super.readObject(ois);
 	}
 }

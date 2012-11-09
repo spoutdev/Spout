@@ -26,10 +26,16 @@
  */
 package org.spout.api.chat.style;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 /**
  * A ChatStyle that represents Formatting, can be paired with other FormatChatStyles, or {@link ColorChatStyle}s.
  */
 public class FormatChatStyle extends ChatStyle {
+	private static final long serialVersionUID = 1L;
+
 	public FormatChatStyle(String name) {
 		super(name);
 	}
@@ -43,5 +49,15 @@ public class FormatChatStyle extends ChatStyle {
 	@Override
 	public boolean conflictsWith(ChatStyle other) {
 		return false;
+	}
+
+	@Override
+	protected void writeObject(ObjectOutputStream oos) throws IOException {
+		super.writeObject(oos);
+	}
+
+	@Override
+	protected void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+		super.readObject(ois);
 	}
 }

@@ -27,6 +27,11 @@
 package org.spout.api.chat.style;
 
 import java.awt.Color;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -41,7 +46,8 @@ import org.spout.api.util.StringMap;
  * A style of chat for the client to implement.<br/>
  * FontRenderer. Names are from <a href="http://wiki.vg/Chat">http://wiki.vg/Chat</a>
  */
-public abstract class ChatStyle {
+public abstract class ChatStyle implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private static final StringMap ID_LOOKUP = new StringMap(null, new MemoryStore<Integer>(), 0, Integer.MAX_VALUE, ChatStyle.class.getCanonicalName());
 	private static final Map<String, ChatStyle> BY_NAME = new HashMap<String, ChatStyle>();
 	private static final Set<ChatStyle> VALUES = new HashSet<ChatStyle>();
@@ -147,6 +153,31 @@ public abstract class ChatStyle {
 	}
 
 	public abstract boolean conflictsWith(ChatStyle other);
+
+	protected void writeObject(ObjectOutputStream oos) throws IOException {
+		oos.writeInt(id);
+	}
+
+	protected void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+		int id = ois.readInt();
+		String key = ID_LOOKUP.getString(id);
+		ChatStyle style = BY_NAME.get(key);
+		setField(ChatStyle.class, "id", id);
+		setField(ChatStyle.class, "name", style.name);
+		setField(ChatStyle.class, "lookupName", style.lookupName);
+	
+		System.out.println("Reading serialized chat style: " + getName());
+	}
+
+	protected void setField(Class<?> clazz, String field, Object value) {
+		try {
+			Field f = clazz.getDeclaredField(field);
+			f.setAccessible(true);
+			f.set(this, value);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	@Override
 	public String toString() {

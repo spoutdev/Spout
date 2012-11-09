@@ -27,11 +27,15 @@
 package org.spout.api.chat.style;
 
 import java.awt.Color;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 /**
  * A ChatStyle that represents a color, and conflicts with other colors
  */
 public class ColorChatStyle extends ChatStyle {
+	private static final long serialVersionUID = 1L;
 	private final Color color;
 
 	public ColorChatStyle(String name, Color color) {
@@ -46,5 +50,16 @@ public class ColorChatStyle extends ChatStyle {
 
 	public Color getColor() {
 		return color;
+	}
+
+	@Override
+	protected void writeObject(ObjectOutputStream oos) throws IOException {
+		super.writeObject(oos);
+	}
+
+	@Override
+	protected void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+		super.readObject(ois);
+		setField(ColorChatStyle.class, "color", color);
 	}
 }
