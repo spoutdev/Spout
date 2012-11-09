@@ -35,6 +35,9 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,7 +50,7 @@ import org.spout.engine.renderer.shader.BasicShader;
 import org.spout.engine.renderer.shader.ClientShader;
 
 public class ClientFont extends ClientTexture implements org.spout.api.render.Font {
-	private static final long serialVersionUID = 390424588035835020L;
+	private static final long serialVersionUID = 1L;
 	
 	private static final String asciiset;
 	private static final FontRenderContext DEFAULT_CONTEXT = new FontRenderContext(null, true, true);
@@ -76,10 +79,12 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 
 	public ClientFont(Font f) {
 		this.ttfFont = f;
+		setup(f);
+	}
 
+	private void setup(Font f) {
 		//because getStringBounds(" ") returns 0
 		spaceWidth = (float)(ttfFont.getStringBounds("a a", DEFAULT_CONTEXT).getWidth() - ttfFont.getStringBounds("aa", DEFAULT_CONTEXT).getWidth());
-
 
 		vec = ttfFont.createGlyphVector(DEFAULT_CONTEXT, asciiset);
 		Rectangle2D bounds = ttfFont.getStringBounds(asciiset, DEFAULT_CONTEXT);
@@ -98,6 +103,15 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		this.image = image;
 	}
 
+	private void writeObject(ObjectOutputStream oos) throws IOException {
+		oos.writeObject(ttfFont);
+	}
+
+	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+		Font f = (Font) ois.readObject();
+		this.ttfFont = f;
+		setup(f);
+	}
 
 	@Override
 	public void load() {
