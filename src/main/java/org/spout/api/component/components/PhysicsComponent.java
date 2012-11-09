@@ -135,12 +135,6 @@ public abstract class PhysicsComponent extends EntityComponent {
 	public abstract void setLinearVelocity(Vector3 velocity);
 
 	/**
-	 * Sets both the live angular and linear velocities.
-	 * @param velocity the new live angular and linear velocity
-	 */
-	public abstract void setVelocity(Vector3 velocity);
-
-	/**
 	 * Returns if both the angular and linear velocities have changed "dirty" since the last tick.
 	 * @return true if dirty, false if not
 	 */
