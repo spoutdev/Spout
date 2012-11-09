@@ -54,13 +54,13 @@ public abstract class Component implements Tickable {
 	}
 
 	/**
-	 * Called when this component is attached to a holder.
+	 * Called when this component is attached to a owner.
 	 */
 	public void onAttached() {
 	}
 
 	/**
-	 * Called when this component is detached from a holder.
+	 * Called when this component is detached from a owner.
 	 */
 	public void onDetached() {
 	}

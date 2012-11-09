@@ -29,6 +29,9 @@ package org.spout.api.math;
 import java.awt.Color;
 import java.util.Random;
 
+import javax.vecmath.Quat4f;
+import javax.vecmath.Vector3f;
+
 import javolution.context.StackContext;
 
 /**
@@ -882,6 +885,30 @@ public class MathHelper {
 	}
 
 	/* Vector3 Helpers */
+
+	public static Vector3 toVector3(Vector3f vector) {
+		return new Vector3(vector.x, vector.y, vector.z);
+	}
+
+	public static Vector3f toVector3f(Vector3 vector) {
+		return toVector3f(vector.x, vector.y, vector.z);
+	}
+
+	public static Vector3f toVector3f(float x, float y, float z) {
+		return new Vector3f(x, y, z);
+	}
+
+	public static Quat4f toQuaternionf(float w, float y, float p, float r) {
+		return new Quat4f(w, y, p, r);
+	}
+
+	public static Quat4f toQuaternionf(Quaternion quaternion) {
+		return toQuaternionf(quaternion.w, quaternion.x, quaternion.y, quaternion.z);
+	}
+
+	public static Quaternion toQuaternion(Quat4f quaternion) {
+		return new Quaternion(quaternion.w, quaternion.x, quaternion.y, quaternion.z);
+	}
 
 	/**
 	 * Returns the angles, in degrees, about each axis of this quaternion stored

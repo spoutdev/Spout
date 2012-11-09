@@ -70,20 +70,41 @@ public class BaseComponentHolder implements ComponentHolder {
 		return add(type, true);
 	}
 
-	private <T extends Component> T add(Class<T> type, boolean attach) {
-		if (type == null) {
+	/**
+	 * Adds a component to the map
+	 * 
+	 * @param type to add
+	 * @param attach whether to call the component onAttached
+	 * 
+	 * @return instantiated component
+	 */
+	protected <T extends Component> T add(Class<T> type, boolean attach) {
+		return add(type, type, attach);
+	}
+
+	/**
+	 * Adds a component to the map
+	 * 
+	 * @param key the component class used as the lookup key
+	 * @param type of component to instantiate
+	 * @param attach whether to call the component onAttached
+	 * 
+	 * @return instantiated component
+	 */
+	@SuppressWarnings("unchecked")
+	protected final <T extends Component> T add(Class<T> key, Class<? extends Component> type, boolean attach) {
+		if (type == null || key == null) {
 			return null;
 		}
 
-		@SuppressWarnings("unchecked")
-		T component = (T) components.get(type);
+		T component = (T) components.get(key);
 
 		if (component != null) {
 			return component;
 		}
 
 		try {
-			component = type.newInstance();
+			component = (T) type.newInstance();
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -93,14 +114,14 @@ public class BaseComponentHolder implements ComponentHolder {
 		if (component != null) {
 			try {
 				if (component.attachTo(this)) {
-					components.put(type, component);
+					components.put(key, component);
 					if (attach) {
 						try {
 							component.onAttached();
 						} catch (Exception e) {
 							// Remove the component from the component map if onAttached can't be
 							// called, pass exception to next catch block.
-							components.remove(type);
+							components.remove(key);
 							throw e;
 						}
 					}

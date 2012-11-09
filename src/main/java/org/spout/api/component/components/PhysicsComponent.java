@@ -26,33 +26,129 @@
  */
 package org.spout.api.component.components;
 
-import org.spout.api.data.Data;
+import com.bulletphysics.collision.dispatch.CollisionObject;
+import com.bulletphysics.collision.shapes.CollisionShape;
+import com.bulletphysics.linearmath.MotionState;
 import org.spout.api.math.Vector3;
 
-/**
- * A component that represents the physics object that is a motion of the entity within the world.
- */
-public class PhysicsComponent extends EntityComponent {
-	private Vector3 lastVelocity = Vector3.ZERO;
+public abstract class PhysicsComponent extends EntityComponent {
+	private float mass;
 
 	@Override
-	public void onTick(float dt) {
-		lastVelocity = getVelocity();
-	}
-
-	public Vector3 getVelocity() {
-		return getData().get(Data.VELOCITY);
-	}
-
-	public void setVelocity(Vector3 velocity) {
-		getData().put(Data.VELOCITY, velocity);
+	public boolean isDetachable() {
+		return false;
 	}
 
 	/**
-	 * Returns whether the velocity has changed between the last and live velocity values.
-	 * @return True if dirty, false if not
+	 * Gets the mass of the entity.
+	 * @return the mass
 	 */
-	public boolean isVelocityDirty() {
-		return !lastVelocity.equals(getVelocity());
+	public float getMass() {
+		return mass;
 	}
+
+	/**
+	 * Sets the mass of the entity.
+	 * @param mass new mass of the entity
+	 */
+	public void setMass(float mass) {
+		this.mass = mass;
+	}
+
+	/**
+	 * Gets the collision object which holds the collision shape and is used to calculate physics such as velocity, intertia,
+	 * etc. All PhysicsComponents are guaranteed to have a valid object.
+	 * @return the CollisionObject
+	 */
+	public abstract CollisionObject getCollisionObject();
+
+	/**
+	 * Gets the live collision object. Caution must be used as it is not stable and is subject to changes from plugins.
+	 * @return the live CollisionObject
+	 */
+	public abstract CollisionObject getCollisionObjectLive();
+
+	/**
+	 * Sets the live CollisionObject.
+	 * @param collisionObject the new live CollisionObject
+	 * @throws IllegalArgumentException if the parameter is null
+	 */
+	public abstract void setCollisionObject(CollisionObject collisionObject);
+
+	/**
+	 * Gets the MotionState. A MotionState is the "bridge" between Bullet and Spout in-which Bullet tells Spout that the
+	 * object has moved and to update your transforms accordingly.
+	 * @return the MotionState
+	 */
+	public abstract MotionState getMotionState();
+
+	/**
+	 * Gets the shape used to define the volume. Shapes range anywhere from a standard AABB bounding box to a basic
+	 * sphere shape. The shape is important as it is used to calculate collisions, inertia, and other characteristics.
+	 * @return The CollisionShape
+	 */
+	public abstract CollisionShape getCollisionShape();
+
+	/**
+	 * Sets the shape of the volume.
+	 * @param shape the new CollisionShape
+	 * @throws IllegalArgumentException if the parameter is null
+	 */
+	public abstract void setCollisionShape(CollisionShape shape);
+
+	/**
+	 * Gets the angular velocity.
+	 * @return the angular velocity
+	 */
+	public abstract Vector3 getAngularVelocity();
+
+	/**
+	 * Gets the live angular velocity. Caution must be used as it is not stable and is subject to changes from
+	 * plugins.
+	 * @return the live angular velocity
+	 */
+	public abstract Vector3 getAngularVelocityLive();
+
+	/**
+	 * Gets the linear velocity.
+	 * @return the linear velocity
+	 */
+	public abstract Vector3 getLinearVelocity();
+
+	/**
+	 * Gets the live linear velocity. Caution must be used as it is not stable and is subject to changes from
+	 * plugins.
+	 * @return the live linear velocity
+	 */
+	public abstract Vector3 getLinearVelocityLive();
+
+	/**
+	 * Sets the live angular velocity.
+	 * @param velocity the new angular velocity
+	 */
+	public abstract void setAngularVelocity(Vector3 velocity);
+
+	/**
+	 * Sets the live linear velocity.
+	 * @param velocity the new linear velocity
+	 */
+	public abstract void setLinearVelocity(Vector3 velocity);
+
+	/**
+	 * Sets both the live angular and linear velocities.
+	 * @param velocity the new live angular and linear velocity
+	 */
+	public abstract void setVelocity(Vector3 velocity);
+
+	/**
+	 * Returns if both the angular and linear velocities have changed "dirty" since the last tick.
+	 * @return true if dirty, false if not
+	 */
+	public abstract boolean isVelocityDirty();
+
+	/**
+	 * Returns if the CollisionObject has changed "dirty" since the last tick
+	 * @return true if dirty, false if not
+	 */
+	public abstract boolean isCollisionObjectDirty();
 }

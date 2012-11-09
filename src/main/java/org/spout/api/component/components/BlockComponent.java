@@ -51,6 +51,10 @@ public class BlockComponent extends Component {
 		}
 	}
 
+	@Override
+	public final void onDetached() {
+		//Kept to prevent overriding
+	}
 	/**
 	* Gets the position of this block component
 	*
