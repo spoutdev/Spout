@@ -38,23 +38,23 @@ import com.bulletphysics.linearmath.Transform;
 import org.spout.api.component.components.PhysicsComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 
 /**
  * A component that represents the physics object that is a motion of the entity within the world.
- *
- * 	TODO Not thread safe at all...
  */
 public class SpoutPhysicsComponent extends PhysicsComponent {
+	private static final DefaultedKeyImpl<Vector3> ANGULAR_VELOCITY = new DefaultedKeyImpl<Vector3>("live_angular_velocity", Vector3.ZERO);
+	private static final DefaultedKeyImpl<Vector3> LINEAR_VELOCITY = new DefaultedKeyImpl<Vector3>("live_linear_velocity", Vector3.ZERO);
+	//TODO persist 
 	private CollisionObject collisionObject = new CollisionObject();
 	private CollisionObject collisionObjectLive = new CollisionObject();
 	private MotionState state;
 
 	private Vector3 angularVelocity = Vector3.ZERO;
-	private Vector3 angularVelocityLive = Vector3.ZERO;
 	private Vector3 linearVelocity = Vector3.ZERO;
-	private Vector3 linearVelocityLive = Vector3.ZERO;
 
 	@Override
 	public void onAttached() {
@@ -74,7 +74,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	@Override
 	public void setCollisionObject(CollisionObject collisionObject) {
 		if (collisionObject == null) {
-			throw new IllegalStateException("Collision object is NOT allowed to be null!");
+			throw new IllegalStateException("Collision object may not be set to null");
 		}
 		this.collisionObjectLive = collisionObject;
 	}
@@ -101,7 +101,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	@Override
 	public Vector3 getAngularVelocityLive() {
-		return angularVelocityLive;
+		return getData().get(ANGULAR_VELOCITY);
 	}
 
 	@Override
@@ -111,28 +111,22 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	@Override
 	public Vector3 getLinearVelocityLive() {
-		return linearVelocityLive;
+		return getData().get(LINEAR_VELOCITY);
 	}
 
 	@Override
 	public void setAngularVelocity(Vector3 velocity) {
-		angularVelocityLive = velocity;
+		getData().put(ANGULAR_VELOCITY, velocity);
 	}
 
 	@Override
 	public void setLinearVelocity(Vector3 velocity) {
-		linearVelocityLive = velocity;
-	}
-
-	@Override
-	public void setVelocity(Vector3 velocity) {
-		setAngularVelocity(velocity);
-		setLinearVelocity(velocity);
+		getData().put(LINEAR_VELOCITY, velocity);
 	}
 
 	@Override
 	public boolean isVelocityDirty() {
-		return !angularVelocity.equals(angularVelocityLive) && !linearVelocity.equals(linearVelocityLive);
+		return !angularVelocity.equals(getAngularVelocityLive()) && !linearVelocity.equals(getLinearVelocityLive());
 	}
 
 	@Override
@@ -141,17 +135,16 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	public void copySnapshot() {
-		angularVelocity = angularVelocityLive;
-		linearVelocity = linearVelocityLive;
+		angularVelocity = getLinearVelocityLive();
+		linearVelocity = getAngularVelocityLive();
 		collisionObject = collisionObjectLive;
 	}
 
 	public void updateCollisionData() {
-		getCollisionObjectLive().setInterpolationAngularVelocity(MathHelper.toVector3f(angularVelocityLive));
-		getCollisionObjectLive().setInterpolationLinearVelocity(MathHelper.toVector3f(linearVelocityLive));
+		getCollisionObjectLive().setInterpolationAngularVelocity(MathHelper.toVector3f(getAngularVelocityLive()));
+		getCollisionObjectLive().setInterpolationLinearVelocity(MathHelper.toVector3f(getAngularVelocityLive()));
 	}
 
-	//TODO Thread safety!! I think
 	private static class SpoutDefaultMotionState extends DefaultMotionState {
 		private final Entity entity;
 
