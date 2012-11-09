@@ -29,9 +29,10 @@ package org.spout.engine.renderer;
 import gnu.trove.list.array.TFloatArrayList;
 
 import java.awt.Color;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
-import org.lwjgl.opengl.GL11;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.math.Vector2;
@@ -42,8 +43,52 @@ import org.spout.api.render.RenderMode;
 import org.spout.api.render.Renderer;
 
 public abstract class BatchVertexRenderer implements Renderer {
-	public static Renderer constructNewBatch(int renderMode) {
+	
+	public static HashMap<Integer,List<Renderer>> pool = new HashMap<Integer,List<Renderer>>();
+	
+	public static void initPool(int renderMode, int number){
+		List<Renderer> list = pool.get(renderMode);
+
+		if(list == null){
+			list = new LinkedList<Renderer>();
+			pool.put(renderMode, list);
+		}
+		
 		Client client = (Client) Spout.getEngine();
+
+		if (client.getRenderMode() == RenderMode.GL11) {
+			for(int i = 0; i < number; i++)
+				list.add(new GL11BatchVertexRenderer(renderMode));
+			return;
+		}
+		if (client.getRenderMode() == RenderMode.GL20) {
+			for(int i = 0; i < number; i++)
+				list.add(new GL20BatchVertexRenderer(renderMode));
+			return;
+		}
+		if (client.getRenderMode() == RenderMode.GL30) {
+			for(int i = 0; i < number; i++)
+				list.add(new GL30BatchVertexRenderer(renderMode));
+			return;
+		}
+		if (client.getRenderMode() == RenderMode.GLES20) {
+			for(int i = 0; i < number; i++)
+				list.add(new GLES20BatchVertexRenderer(renderMode));
+			return;
+		}
+		throw new IllegalArgumentException("GL Mode:" + client.getRenderMode() + " Not reconized");
+	}
+	
+	public static Renderer constructNewBatch(int renderMode) {
+		List<Renderer> list = pool.get(renderMode);
+		if(list != null && !list.isEmpty()){
+			Renderer batch = list.remove(0);
+			((BatchVertexRenderer)batch).used++;
+			return batch;
+		}
+
+		Client client = (Client) Spout.getEngine();
+		
 		if (client.getRenderMode() == RenderMode.GL11) {
 			return new GL11BatchVertexRenderer(renderMode);
 		}
@@ -61,7 +106,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 
 	boolean batching = false;
 	boolean flushed = false;
-	int renderMode;
+	final int renderMode;
 	//Using FloatArrayList because I need O(1) access time
 	//and fast ToArray()
 	TFloatArrayList vertexBuffer = new TFloatArrayList();
@@ -72,6 +117,8 @@ public abstract class BatchVertexRenderer implements Renderer {
 	boolean useColors = false;
 	boolean useNormals = false;
 	boolean useTextures = false;
+	
+	int used = 1; // Benchmark
 	
 	public BatchVertexRenderer(int mode) {
 		renderMode = mode;
@@ -91,12 +138,8 @@ public abstract class BatchVertexRenderer implements Renderer {
 		}
 		batching = true;
 		flushed = false;
-		
-
-		numVertices = 0;		
 	}
 
-	
 	@Override
 	public void end() {
 		if (!batching) {
@@ -105,9 +148,18 @@ public abstract class BatchVertexRenderer implements Renderer {
 		batching = false;
 		flush();
 	}
-
 	
-	public final void flush() {
+	protected abstract void doMerge(List<Renderer> renderers);
+
+	public final void merge(List<Renderer> renderers) {
+		batching = true;
+		flushed = false;
+		doMerge(renderers);
+		batching = false;
+		flushed = true;
+	}
+
+	public void check(){
 		if (vertexBuffer.size() % 4 != 0) {
 			throw new IllegalStateException("Vertex Size Mismatch (How did this happen?)");
 		}
@@ -136,6 +188,11 @@ public abstract class BatchVertexRenderer implements Renderer {
 			}
 		}
 		if(numVertices <= 0) throw new IllegalStateException("Must have more than 0 verticies!");
+	}
+	
+	public final void flush() {
+		check();
+		
 		//Call the overriden flush
 		doFlush();
 
@@ -182,7 +239,6 @@ public abstract class BatchVertexRenderer implements Renderer {
 		if (!flushed) {
 			throw new IllegalStateException("Cannot Render Without Flushing the Batch");
 		}
-		
 	}
 
 	
@@ -310,8 +366,29 @@ public abstract class BatchVertexRenderer implements Renderer {
 		}
 	}
 	
-	public void finalize() { }
+	public void release() { 
+		batching = false;
+		flushed = false;
+		vertexBuffer.clear();
+		colorBuffer.clear();
+		normalBuffer.clear();
+		uvBuffer.clear();
+		numVertices = 0;
+		useColors = false;
+		useNormals = false;
+		useTextures = false;
 
+		//TODO : Implement for each version to empty display list, vbo, etc...
+		
+		List<Renderer> list = pool.get(renderMode);
+		if(list == null){
+			list = new LinkedList<Renderer>();
+			pool.put(renderMode, list);
+		}
+		list.add(this);
+	}
+	
+	public void finalize() { }
 
 	public void setBatchVertex(BatchVertex batchVertex) {
 		vertexBuffer = batchVertex.vertexBuffer;

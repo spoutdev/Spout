@@ -47,7 +47,7 @@ public class GLES20BatchVertexRenderer extends BatchVertexRenderer {
 	}
 
 	@Override
-	public void merge(List<Renderer> renderers) {
+	public void doMerge(List<Renderer> renderers) {
 		// TODO : To implement
 		
 	}
