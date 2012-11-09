@@ -273,8 +273,8 @@ public class ChunkMesh{
 	
 	static {
 		for (int x = 0; x < Chunk.BLOCKS.SIZE; x++) {
-			for (int y = 0; x < Chunk.BLOCKS.SIZE; x++) {
-				for (int z = 0; x < Chunk.BLOCKS.SIZE; x++) {
+			for (int y = 0; y < Chunk.BLOCKS.SIZE; y++) {
+				for (int z = 0; z < Chunk.BLOCKS.SIZE; z++) {
 					subMeshMap[getSubMeshIndex(x, y, z)] = getChunkSubMeshRaw(x, y, z);
 				}
 			}
