@@ -1043,38 +1043,42 @@ public class SpoutRegion extends Region {
 				}
 			}
 			final HashSet<RenderMaterial> updatedRenderMaterials;
+			final HashSet<Vector3> updatedSubMeshes;
 			if (c.isDirtyOverflow() || force) {
 				updatedRenderMaterials = null;
+				updatedSubMeshes = null;
 			} else {
 				updatedRenderMaterials = new HashSet<RenderMaterial>();
-				 int dirtyBlocks = c.getDirtyBlocks();
-				 for (int i = 0; i < dirtyBlocks; i++) {
-					 addMaterialToSet(updatedRenderMaterials, c.getDirtyOldState(i));
-					 addMaterialToSet(updatedRenderMaterials, c.getDirtyNewState(i));
-				 }
-				 // TODO - this needs to also update the chunk sub-batch
-				 int size = BLOCKS.SIZE;
-				 for (int i = 0; i < dirtyBlocks; i++) {
-					 Vector3 blockPos = c.getDirtyBlock(i);
-					 BlockMaterial material = c.getBlockMaterial(blockPos.getFloorX(), blockPos.getFloorY(), blockPos.getFloorZ());
-					 ByteBitSet occlusion = material.getOcclusion(material.getData());
-					 for(BlockFace face : BlockFace.values()){ 
-						 if (face.equals(BlockFace.THIS)) {
-							 continue;
-						 }
-						 if (occlusion.get(face)) {
-							 continue;
-						 }
-						 Vector3 neighborPos = blockPos.add(face.getOffset());
-						 int nx = neighborPos.getFloorX();
-						 int ny = neighborPos.getFloorX();
-						 int nz = neighborPos.getFloorX();
-						 if (nx < 0 || ny < 0 || nz < 0 || nx >= size || ny >= size || nz >= size) {
-							 int state = c.getBlockFullState(nx, ny, nz);
-							 addMaterialToSet(updatedRenderMaterials, state);
-						 }
-					 }
-				 }
+				updatedSubMeshes = new HashSet<Vector3>();
+				int dirtyBlocks = c.getDirtyBlocks();
+				for (int i = 0; i < dirtyBlocks; i++) {
+					addMaterialToSet(updatedRenderMaterials, c.getDirtyOldState(i));
+					addMaterialToSet(updatedRenderMaterials, c.getDirtyNewState(i));
+					addSubMeshToSet(updatedSubMeshes, c.getDirtyBlock(i));
+				}
+				int size = BLOCKS.SIZE;
+				for (int i = 0; i < dirtyBlocks; i++) {
+					Vector3 blockPos = c.getDirtyBlock(i);
+					BlockMaterial material = c.getBlockMaterial(blockPos.getFloorX(), blockPos.getFloorY(), blockPos.getFloorZ());
+					ByteBitSet occlusion = material.getOcclusion(material.getData());
+					for(BlockFace face : BlockFace.values()){ 
+						if (face.equals(BlockFace.THIS)) {
+							continue;
+						}
+						if (occlusion.get(face)) {
+							continue;
+						}
+						Vector3 neighborPos = blockPos.add(face.getOffset());
+						int nx = neighborPos.getFloorX();
+						int ny = neighborPos.getFloorX();
+						int nz = neighborPos.getFloorX();
+						if (nx >= 0 && ny >= 0 && nz >= 0 && nx < size && ny < size && nz < size) {
+							int state = c.getBlockFullState(nx, ny, nz);
+							addMaterialToSet(updatedRenderMaterials, state);
+							addSubMeshToSet(updatedSubMeshes, neighborPos);
+						}
+					}
+				}
 			}
 			c.setRenderDirty(false);
 			boolean first = c.enteredViewDistance();
@@ -1091,6 +1095,10 @@ public class SpoutRegion extends Region {
 	private static void addMaterialToSet(Set<RenderMaterial> set, int blockState) {
 		BlockMaterial material = (BlockMaterial) MaterialRegistry.get(blockState);
 		set.add(material.getModel().getRenderMaterial());
+	}
+	
+	private static void addSubMeshToSet(Set<Vector3> set, Vector3 dirtyBlock) {
+		set.add(ChunkMesh.getChunkSubMesh(dirtyBlock.getFloorX(), dirtyBlock.getFloorY(), dirtyBlock.getFloorZ()));
 	}
 
 	private ChunkSnapshot getRenderSnapshot(SpoutChunk cRef, int cx, int cy, int cz) {

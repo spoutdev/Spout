@@ -27,7 +27,9 @@
 package org.spout.engine.mesh;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -266,5 +268,45 @@ public class ChunkMesh{
 	public int getSubZ() {
 		return subZ;
 	}
+	
+	private static Vector3[] subMeshMap = new Vector3[Chunk.BLOCKS.VOLUME];
+	
+	static {
+		for (int x = 0; x < Chunk.BLOCKS.SIZE; x++) {
+			for (int y = 0; x < Chunk.BLOCKS.SIZE; x++) {
+				for (int z = 0; x < Chunk.BLOCKS.SIZE; x++) {
+					subMeshMap[getSubMeshIndex(x, y, z)] = getChunkSubMeshRaw(x, y, z);
+				}
+			}
+		}
+	}
+	
+	public static Vector3 getChunkSubMesh(int x, int y, int z) {
+		return subMeshMap[getSubMeshIndex(x, y, z)];
+	}
+	
+	private static Vector3 getChunkSubMeshRaw(int x, int y, int z) {
+		if (isOutsideChunk(x, y, z)) {
+			throw new IllegalArgumentException("(x, y, z) must be fall inside a chunk");
+		}
+		return new Vector3(
+                Math.floor((float) ((x & Chunk.BLOCKS.MASK) / SUBSIZE_X)),
+                Math.floor((float) ((y & Chunk.BLOCKS.MASK) / SUBSIZE_Y)),
+                Math.floor((float) ((z & Chunk.BLOCKS.MASK) / SUBSIZE_Z)));
+
+	}
+	
+	private static int getSubMeshIndex(int x, int y, int z) {
+		
+		return 
+				((x & Chunk.BLOCKS.MASK) << Chunk.BLOCKS.DOUBLE_BITS) |
+				((y & Chunk.BLOCKS.MASK) << Chunk.BLOCKS.BITS ) |
+				((z & Chunk.BLOCKS.MASK) << 0);
+	}
+	
+	private static boolean isOutsideChunk(int x, int y, int z) {
+		return x < 0 || x >= Chunk.BLOCKS.SIZE || y < 0 || y >= Chunk.BLOCKS.SIZE || z < 0 || z >= Chunk.BLOCKS.SIZE;
+	}
+
 
 }
