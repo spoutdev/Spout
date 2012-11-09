@@ -95,15 +95,6 @@ public abstract class ChatStyle {
 		}
 		return BY_NAME.get(toLookupName(name));
 	}
-	/**
-	 * Looks up a ChatStyle by its code.
-	 *
-	 * @param code
-	 * @return the ChatStyle, or null if not found.
-	 */
-	public static ChatStyle byCode(char code) {
-		return BY_CODE.get(""+code);
-	}
 
 	/**
 	 * Removes all ChatStyles from the given string.
