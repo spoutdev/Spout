@@ -121,6 +121,14 @@ public class FilteredChunk extends SpoutChunk{
 	public boolean isAboveGround() {
 		return this.getY() >= 4;
 	}
+	
+	@Override
+	public int touchBlock(int x, int y, int z) {
+		if (uniform.get()) {
+			initialize();
+		}
+		return super.touchBlock(x, y, z);
+	}
 
 	@Override
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Cause<?> cause) {
