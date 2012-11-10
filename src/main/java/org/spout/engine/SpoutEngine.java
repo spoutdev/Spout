@@ -101,7 +101,6 @@ import org.spout.engine.chat.console.FileConsole;
 import org.spout.engine.chat.console.JLineConsole;
 import org.spout.engine.command.AdministrationCommands;
 import org.spout.engine.command.ConnectionCommands;
-import org.spout.engine.command.InputCommands;
 import org.spout.engine.command.MessagingCommands;
 import org.spout.engine.command.RendererCommands;
 import org.spout.engine.command.SyncedRootCommand;
@@ -223,7 +222,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		getRootCommand().addSubCommands(this, AdministrationCommands.class, commandRegFactory);
 		getRootCommand().addSubCommands(this, MessagingCommands.class, commandRegFactory);
 		getRootCommand().addSubCommands(this, ConnectionCommands.class, commandRegFactory);
-		InputCommands.setupInputCommands(this, getRootCommand());
 		if (arguments.debug) {
 			getRootCommand().addSubCommands(this, TestCommands.class, commandRegFactory);
 		}

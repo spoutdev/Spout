@@ -180,18 +180,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		this.ccoverride = args.ccoverride;
 
-		inputManager.bind(SpoutInputConfiguration.FORWARD.getString(), "+Forward");
-		inputManager.bind(SpoutInputConfiguration.BACKWARD.getString(), "+BackWard");
-		inputManager.bind(SpoutInputConfiguration.LEFT.getString(), "+Left");
-		inputManager.bind(SpoutInputConfiguration.RIGHT.getString(), "+Right");
-		inputManager.bind(SpoutInputConfiguration.UP.getString(), "+Jump");
-		inputManager.bind(SpoutInputConfiguration.DOWN.getString(), "+Crouch");
-		inputManager.bind("KEY_F3", "debug_infos");
-		inputManager.bind("KEY_SCROLLDOWN", "+Select_Down");
-		inputManager.bind("KEY_SCROLLUP", "+Select_Up");
-		inputManager.bind("MOUSE_BUTTON0", "+FIRE_1");
-		inputManager.bind("MOUSE_BUTTON1", "+INTERACT");
-		inputManager.bind("MOUSE_BUTTON2", "+FIRE_2");
+
 
 	}
 
@@ -303,26 +292,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		inputManager.pollInput(activePlayer);
 
-		PlayerInputState inputState = activePlayer.input();
-		Transform ts = activePlayer.getTransform().getTransform();
-		ts.setRotation(MathHelper.rotation(inputState.pitch(), inputState.yaw(), ts.getRotation().getRoll()));
-
-		Point point = ts.getPosition();
-		if (inputState.getForward())
-			point = point.subtract(ts.forwardVector());
-		if (inputState.getBackward())
-			point = point.add(ts.forwardVector());
-		if (inputState.getLeft())
-			point = point.subtract(ts.rightVector());
-		if (inputState.getRight())
-			point = point.add(ts.rightVector());
-		if (inputState.getJump())
-			point = point.add(ts.upVector());
-		if (inputState.getCrouch())
-			point = point.subtract(ts.upVector());
-		ts.setPosition(point);
-
-		activePlayer.getTransform().setTransform(ts);
+		activePlayer.executeInput();
 	}
 
 	@Override
