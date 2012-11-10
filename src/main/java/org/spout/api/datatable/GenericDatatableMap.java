@@ -47,7 +47,7 @@ class GenericDatatableMap implements DatatableMap {
 	private static final StringMap ROOT_STRING_MAP = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE, GenericDatatableMap.class.getName());
 	private final StringMap stringmap;
 	private final TSynchronizedIntObjectMap<AbstractData> map = new TSynchronizedIntObjectMap<AbstractData>(new TIntObjectHashMap<AbstractData>());
-	private final NullData niltype = new NullData();
+	protected final NullData niltype = new NullData();
 
 	public static StringMap getStringMap() {
 		return ROOT_STRING_MAP;

@@ -466,7 +466,7 @@ public class ManagedHashMap implements SerializableMap{
 		}
 		return map;
 	}
-	
+
 	private final AbstractData getAbstractDataValue(int intKey, Serializable value) {
 		if (value instanceof Boolean) {
 			return new BooleanData(intKey, (Boolean)value);
@@ -487,7 +487,7 @@ public class ManagedHashMap implements SerializableMap{
 		} else if (value instanceof Serializable) {
 			return new SerializableData(intKey, value);
 		} else {
-			return null;
+			return map.niltype;
 		}
 	}
 }
