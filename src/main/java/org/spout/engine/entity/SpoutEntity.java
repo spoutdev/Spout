@@ -248,9 +248,11 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	protected void updateObserver() {
 		final int viewDistance = getViewDistance() >> Chunk.BLOCKS.BITS;
 		World w = getWorld();
-		int cx = getChunkLive().getX();
-		int cy = getChunkLive().getY();
-		int cz = getChunkLive().getZ();
+		Transform t = getTransform().getTransform();
+		Chunk c = w.getChunkFromBlock(t.getPosition(), LoadOption.LOAD_GEN);
+		int cx = c.getX();
+		int cy = c.getY();
+		int cz = c.getZ();
 		HashSet<SpoutChunk> observing = new HashSet<SpoutChunk>((viewDistance * viewDistance * viewDistance * 3) / 2);
 		OutwardIterator oi = new OutwardIterator(cx, cy, cz, viewDistance);
 		while (oi.hasNext()) {

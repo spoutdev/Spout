@@ -357,7 +357,9 @@ public class SpoutRegion extends Region {
 				chunk.copyElement(0, yy * Chunk.BLOCKS.VOLUME, Chunk.BLOCKS.VOLUME);
 				setChunk(new FilteredChunk(world, this, cx, cy, cz, chunk.getRawArray(), null), x, yy++, z, null, true, loadopt);
 			}
-			generated.set(true);
+			if (!generated.compareAndSet(false, true)) {
+				throw new IllegalStateException("Column generated twice");
+			}
 		}
 
 	}
