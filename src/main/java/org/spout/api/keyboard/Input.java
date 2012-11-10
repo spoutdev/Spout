@@ -50,7 +50,7 @@ public interface Input {
 	 * @param key
 	 * @param command
 	 */
-	public void bind(Keyboard key, String command);
+	public void bind(int key, String command);
 
 	/**
 	 * Binds an input action to a command.
