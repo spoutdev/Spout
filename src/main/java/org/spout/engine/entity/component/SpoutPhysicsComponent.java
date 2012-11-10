@@ -26,6 +26,9 @@
  */
 package org.spout.engine.entity.component;
 
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
+
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 
@@ -41,6 +44,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
+import org.spout.engine.world.SpoutRegion;
 
 /**
  * A component that represents the physics object that is a motion of the entity within the world.
@@ -49,8 +53,8 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	private static final DefaultedKeyImpl<Vector3> ANGULAR_VELOCITY = new DefaultedKeyImpl<Vector3>("live_angular_velocity", Vector3.ZERO);
 	private static final DefaultedKeyImpl<Vector3> LINEAR_VELOCITY = new DefaultedKeyImpl<Vector3>("live_linear_velocity", Vector3.ZERO);
 	//TODO persist 
-	private CollisionObject collisionObject = new CollisionObject();
-	private CollisionObject collisionObjectLive = new CollisionObject();
+	private final CollisionObject collisionObject = new CollisionObject();
+	private final AtomicReference<CollisionShape> liveShape = new AtomicReference<CollisionShape>(null);
 	private MotionState state;
 
 	private Vector3 angularVelocity = Vector3.ZERO;
@@ -59,24 +63,19 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	@Override
 	public void onAttached() {
 		state = new SpoutDefaultMotionState(getOwner());
+		org.spout.api.geo.discrete.Transform spoutTransform = getOwner().getTransform().getTransformLive();
+		Point point = spoutTransform.getPosition();
+		collisionObject.setWorldTransform(new Transform(new Matrix4f(MathHelper.toQuaternionf(spoutTransform.getRotation()), MathHelper.toVector3f(point.getX(), point.getY(), point.getZ()), 1)));
+	}
+
+	@Override
+	public void onDetached() {
+		((SpoutRegion)this.getOwner().getRegion()).removePhysics(this);
 	}
 
 	@Override
 	public CollisionObject getCollisionObject() {
 		return collisionObject;
-	}
-
-	@Override
-	public CollisionObject getCollisionObjectLive() {
-		return collisionObjectLive;
-	}
-
-	@Override
-	public void setCollisionObject(CollisionObject collisionObject) {
-		if (collisionObject == null) {
-			throw new IllegalStateException("Collision object may not be set to null");
-		}
-		this.collisionObjectLive = collisionObject;
 	}
 
 	@Override
@@ -91,7 +90,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	@Override
 	public void setCollisionShape(CollisionShape shape) {
-		collisionObject.setCollisionShape(shape);
+		liveShape.set(shape);
 	}
 
 	@Override
@@ -131,19 +130,17 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	@Override
 	public boolean isCollisionObjectDirty() {
-		return !collisionObject.equals(collisionObjectLive);
+		return !Objects.equals(liveShape.get(), getCollisionShape());
 	}
 
 	public void copySnapshot() {
+		//TODO this is all wrong, velocity needs to be retrieved from collision object
 		linearVelocity = getLinearVelocityLive();
 		angularVelocity = getAngularVelocityLive();
-		
-		collisionObject = collisionObjectLive;
-	}
 
-	public void updateCollisionData() {
-		getCollisionObjectLive().setInterpolationAngularVelocity(MathHelper.toVector3f(getAngularVelocityLive()));
-		getCollisionObjectLive().setInterpolationLinearVelocity(MathHelper.toVector3f(getAngularVelocityLive()));
+		if (isCollisionObjectDirty()) {
+			collisionObject.setCollisionShape(liveShape.get());
+		}
 	}
 
 	private static class SpoutDefaultMotionState extends DefaultMotionState {
@@ -166,6 +163,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 			org.spout.api.geo.discrete.Transform spoutTransform = entity.getTransform().getTransformLive();
 			spoutTransform.setPosition(new Point(MathHelper.toVector3(transform.origin), entity.getWorld()));
 			spoutTransform.setRotation(MathHelper.toQuaternion(transform.getRotation(new Quat4f())));
+			
 		}
 	}
 }

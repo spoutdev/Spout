@@ -47,8 +47,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Vector3f;
+
 import org.spout.api.Spout;
 import org.spout.api.component.components.BlockComponent;
+import org.spout.api.component.components.PhysicsComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
@@ -94,6 +99,7 @@ import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutPlayer;
+import org.spout.engine.entity.component.SpoutPhysicsComponent;
 import org.spout.engine.filesystem.ChunkDataForRegion;
 import org.spout.engine.filesystem.WorldFiles;
 import org.spout.engine.mesh.ChunkMesh;
@@ -104,8 +110,25 @@ import org.spout.engine.util.TripleInt;
 import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
+import org.spout.engine.world.collision.SpoutPhysicsWorld;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 import org.spout.engine.world.dynamic.DynamicBlockUpdateTree;
+
+import com.bulletphysics.collision.broadphase.BroadphaseInterface;
+import com.bulletphysics.collision.broadphase.DbvtBroadphase;
+import com.bulletphysics.collision.dispatch.CollisionConfiguration;
+import com.bulletphysics.collision.dispatch.CollisionDispatcher;
+import com.bulletphysics.collision.dispatch.CollisionFlags;
+import com.bulletphysics.collision.dispatch.CollisionObject;
+import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
+import com.bulletphysics.collision.dispatch.GhostPairCallback;
+import com.bulletphysics.collision.shapes.voxel.VoxelWorldShape;
+import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
+import com.bulletphysics.dynamics.RigidBody;
+import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
+import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
+import com.bulletphysics.linearmath.DefaultMotionState;
+import com.bulletphysics.linearmath.Transform;
 
 public class SpoutRegion extends Region {
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
@@ -170,8 +193,14 @@ public class SpoutRegion extends Region {
 	
 	private final TByteTripleObjectHashMap<SpoutChunkSnapshotModel> renderChunkQueued = new TByteTripleObjectHashMap<SpoutChunkSnapshotModel>();
 	private final ConcurrentSkipListSet<SpoutChunkSnapshotModel> renderChunkQueue = new ConcurrentSkipListSet<SpoutChunkSnapshotModel>();
-	
 	private final AtomicReference<SpoutRegion>[][][] neighbours;
+	
+	//Physics
+	private final DiscreteDynamicsWorld simulation;
+	private final CollisionDispatcher dispatcher;
+	private final BroadphaseInterface broadphase;
+	private final CollisionConfiguration configuration;
+	private final SequentialImpulseConstraintSolver solver;
 
 	@SuppressWarnings("unchecked")
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
@@ -241,8 +270,68 @@ public class SpoutRegion extends Region {
 		}
 		taskManager = new SpoutTaskManager(world.getEngine().getScheduler(), false, t, world.getAge());
 		scheduler = (SpoutScheduler) (Spout.getEngine().getScheduler());
+		
+		//Physics
+		broadphase = new DbvtBroadphase();
+		broadphase.getOverlappingPairCache().setInternalGhostPairCallback(new GhostPairCallback());
+		configuration = new DefaultCollisionConfiguration();
+		dispatcher = new CollisionDispatcher(configuration);
+		solver = new SequentialImpulseConstraintSolver();
+		simulation = new DiscreteDynamicsWorld(dispatcher, broadphase, solver, configuration);
+		simulation.setGravity(new Vector3f(0, -9.81F, 0));
+		final SpoutPhysicsWorld physicsInfo = new SpoutPhysicsWorld(this);
+		final VoxelWorldShape simulationShape = new VoxelWorldShape(physicsInfo);
+		final Matrix3f rot = new Matrix3f();
+		rot.setIdentity();
+		final DefaultMotionState regionMotionState = new DefaultMotionState(new Transform(new Matrix4f(rot, new Vector3f(0, 0, 0), 1.0f)));
+		final RigidBodyConstructionInfo regionBodyInfo = new RigidBodyConstructionInfo(0, regionMotionState, simulationShape, new Vector3f());
+		final RigidBody regionBody = new RigidBody(regionBodyInfo);
+		regionBody.setCollisionFlags(CollisionFlags.STATIC_OBJECT | regionBody.getCollisionFlags());
+		simulation.addRigidBody(regionBody);
 	}
-	
+
+	public void addPhysics(Entity e) {
+		PhysicsComponent physics = e.get(PhysicsComponent.class);
+		if (physics != null) {
+			addPhysics(physics);
+		}
+	}
+
+	public void removePhysics(Entity e) {
+		PhysicsComponent physics = e.get(PhysicsComponent.class);
+		if (physics != null) {
+			removePhysics(physics);
+		}
+	}
+
+	public void addPhysics(PhysicsComponent physics) {
+		((SpoutPhysicsComponent)physics).copySnapshot();
+		CollisionObject object = physics.getCollisionObject();
+		if (object.getCollisionShape() == null) {
+			return;
+		}
+		System.out.println("Tracking: " + physics.getOwner() + " with: " + object);
+		if (object instanceof RigidBody) {
+			simulation.addRigidBody((RigidBody) object);
+		} else if (object != null) {
+			simulation.addCollisionObject(object);
+		}
+	}
+
+	public void removePhysics(PhysicsComponent physics) {
+		((SpoutPhysicsComponent)physics).copySnapshot();
+		CollisionObject object = physics.getCollisionObject();
+		if (object.getCollisionShape() == null) {
+			return;
+		}
+		System.out.println("Untracking: " + physics.getOwner() + " with: " + object);
+		if (object instanceof RigidBody) {
+			simulation.removeRigidBody((RigidBody) object);
+		} else if (object != null) {
+			simulation.removeCollisionObject(object);
+		}
+	}
+
 	public void startMeshGeneratorThread() {
 		if (meshThread != null) {
 			for(Thread thread : meshThread){
@@ -824,25 +913,35 @@ public class SpoutRegion extends Region {
 		}
 	}
 
+	/**
+	 * Updates CollisionObjects in this region and adds/removes them from the simulation. 
+	 * Steps simulation forward and finally alerts the API in components.
+	 * @param dt
+	 */
+	private void updateDynamics(float dt) {
+		simulation.stepSimulation(dt, 5, 30);
+	}
+
 	public void startTickRun(int stage, long delta) {
+		final float dt = delta / 1000F;
 		switch (stage) {
-		case 0: {
-			final float dt = delta / 1000F;
-			taskManager.heartbeat(delta);
-			updateAutosave();
-			updateBlockComponents(dt);
-			updateEntities(dt);
-			updateLighting();
-			updatePopulation();
-			unloadChunks();
-			break;
-		}
-		case 1: {
-			break;
-		}
-		default: {
-			throw new IllegalStateException("Number of states exceeded limit for SpoutRegion");
-		}
+			case 0: {
+				taskManager.heartbeat(delta);
+				updateAutosave();
+				updateBlockComponents(dt);
+				updateEntities(dt);
+				updateLighting();
+				updatePopulation();
+				unloadChunks();
+				break;
+			}
+			case 1: {
+				updateDynamics(dt);
+				break;
+			}
+			default: {
+				throw new IllegalStateException("Number of states exceeded limit for SpoutRegion");
+			}
 		}
 	}
 
@@ -1492,7 +1591,16 @@ public class SpoutRegion extends Region {
 		return dynamicBlockTree.queueBlockUpdates(x, y, z);
 	}
 
-	// TODO - save needs to call this method
+	public void setGravity(Vector3 gravity) {
+		simulation.setGravity(MathHelper.toVector3f(gravity));
+	}
+
+	public Vector3 getGravity() {
+		Vector3f vector = new Vector3f();
+		vector = simulation.getGravity(vector);
+		return MathHelper.toVector3(vector);
+	}
+
 	public List<DynamicBlockUpdate> getDynamicBlockUpdates(Chunk c) {
 		Set<DynamicBlockUpdate> updates = dynamicBlockTree.getDynamicBlockUpdates(c);
 		int size = updates == null ? 0 : updates.size();
@@ -1523,7 +1631,7 @@ public class SpoutRegion extends Region {
 			throw new IllegalStateException("Physics chunk queue exceeded capacity", ise);
 		}
 	}
-	
+
 	public void unlinkNeighbours() {
 		TickStage.checkStage(TickStage.SNAPSHOT);
 		final int rx = getX();
@@ -1551,12 +1659,14 @@ public class SpoutRegion extends Region {
 			}
 		}
 	}
-	
+
+	@Override
 	public SpoutRegion getLocalRegion(BlockFace face, LoadOption loadopt) {
 		Vector3 offset = face.getOffset();
 		return getLocalRegion(offset.getFloorX() + 1, offset.getFloorY() + 1, offset.getFloorZ() + 1, loadopt);
 	}
-	
+
+	@Override
 	public SpoutRegion getLocalRegion(int dx, int dy, int dz, LoadOption loadopt) {
 		if (loadopt != LoadOption.NO_LOAD) {
 			TickStage.checkStage(~TickStage.SNAPSHOT);
@@ -1569,16 +1679,19 @@ public class SpoutRegion extends Region {
 		}
 		return region;
 	}
-	
+
+	@Override
 	public SpoutChunk getLocalChunk(Chunk c, BlockFace face, LoadOption loadopt) {
 		Vector3 offset = face.getOffset();
 		return getLocalChunk(c, offset.getFloorX(), offset.getFloorY(), offset.getFloorZ(), loadopt);
 	}
-	
+
+	@Override
 	public SpoutChunk getLocalChunk(Chunk c, int ox, int oy, int oz, LoadOption loadopt) {
 		return getLocalChunk(c.getX(), c.getY(), c.getZ(), ox, oy, oz, loadopt);
 	}
-	
+
+	@Override
 	public SpoutChunk getLocalChunk(int x, int y, int z, int ox, int oy, int oz, LoadOption loadopt) {
 		x &= CHUNKS.MASK;
 		y &= CHUNKS.MASK;
@@ -1588,7 +1701,8 @@ public class SpoutRegion extends Region {
 		z += oz;
 		return getLocalChunk(x, y, z, loadopt);
 	}
-	
+
+	@Override
 	public SpoutChunk getLocalChunk(int x, int y, int z, LoadOption loadopt) {
 		int dx = 1 + (x >> CHUNKS.BITS);
 		int dy = 1 + (y >> CHUNKS.BITS);

@@ -42,6 +42,8 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 
+import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
+
 /**
  * A class which manages all of the entities within a world.
  */
@@ -125,6 +127,7 @@ public class EntityManager {
 		if (entity instanceof Player) {
 			players.put((Player) entity, new ArrayList<SpoutEntity>());
 		}
+		region.addPhysics(entity);
 	}
 	
 	private static int getNextId() {
@@ -151,6 +154,7 @@ public class EntityManager {
 		if (entity instanceof Player) {
 			players.remove((Player) entity);
 		}
+		region.removePhysics(entity);
 	}
 
 	/**

@@ -189,6 +189,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	public void finalizeRun() {
 		SpoutChunk chunkLive = (SpoutChunk) getChunkLive();
+		SpoutChunk chunk = (SpoutChunk) getChunk();
 		
 		//Entity was removed so automatically remove observer/components
 		if (isRemoved()) {
@@ -198,13 +199,11 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 				detach(component.getClass());
 			}
 			//Track entities w/their chunks
-			if (chunkLive != null) {
-				chunkLive.onEntityLeave(this);
+			if (chunk != null) {
+				chunk.onEntityLeave(this);
 			}
 			return;
 		}
-		
-		SpoutChunk chunk = (SpoutChunk) getChunk();
 
 		//Track entities w/their chunks, for saving purposes
 		if (!(this instanceof SpoutPlayer)) {
@@ -213,7 +212,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 					chunk.onEntityLeave(this);
 				}
 				if (chunkLive != null) {
-					chunk.onEntityEnter(this);
+					chunkLive.onEntityEnter(this);
 				}
 			}
 		}
@@ -341,11 +340,16 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	public void copySnapshot() {
-		snapshotManager.copyAllSnapshots();
 		getTransform().copySnapshot();
+		snapshotManager.copyAllSnapshots();
+		
 		PhysicsComponent physics = get(PhysicsComponent.class);
 		if (physics != null) {
 			((SpoutPhysicsComponent) physics).copySnapshot();
+		}
+		//TODO players
+		if (!(this instanceof SpoutPlayer)) {
+			//getTransform().setPosition(getTransform().getTransformLive().getPosition().add(physics.getLinearVelocity()));
 		}
 		justSpawned = false;
 	}
