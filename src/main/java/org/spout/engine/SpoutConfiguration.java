@@ -34,6 +34,11 @@ import org.spout.api.util.config.ConfigurationHolderConfiguration;
 import org.spout.api.util.config.yaml.YamlConfiguration;
 
 public class SpoutConfiguration extends ConfigurationHolderConfiguration {
+	public static final ConfigurationHolder RECLAIM_MEMORY = new ConfigurationHolder(true, "reclaim-memory");
+	public static final ConfigurationHolder CHUNK_REAP_DELAY = new ConfigurationHolder(10000, "chunks", "reap-delay");
+	public static final ConfigurationHolder REAP_CHUNKS_PER_TICK = new ConfigurationHolder(5, "chunks", "reap-per-tick");
+	public static final ConfigurationHolder UNLOAD_CHUNKS_PER_TICK = new ConfigurationHolder(3, "chunks", "unload-per-tick");
+	public static final ConfigurationHolder AUTOSAVE_INTERVAL = new ConfigurationHolder(60000, "autosave-interval");
 	public static final ConfigurationHolder ALLOW_FLIGHT = new ConfigurationHolder(false, "allow-flight");
 	public static final ConfigurationHolder CONSOLE_TYPE = new ConfigurationHolder("jline", "console");
 	public static final ConfigurationHolder MAXIMUM_PLAYERS = new ConfigurationHolder(20, "maximum-players");

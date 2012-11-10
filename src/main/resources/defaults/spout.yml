@@ -11,7 +11,6 @@ whitelist:
 - jeb
 ops:
 
-worldcontainer: .
 allow-flight: false
 use-whitelist: false
 world-container: .

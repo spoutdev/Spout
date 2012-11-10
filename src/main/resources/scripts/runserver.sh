@@ -1,3 +1,3 @@
 #/bin/sh
 
-java -jar spout.*.jar --debug
+java -server -XX:+UseG1GC  -jar spout.*.jar --debug

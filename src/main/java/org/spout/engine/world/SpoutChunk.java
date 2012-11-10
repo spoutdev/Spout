@@ -122,10 +122,6 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	private static final int allowedStages = TickStage.STAGE1 | TickStage.STAGE2P | TickStage.TICKSTART | TickStage.GLOBAL_PHYSICS | TickStage.GLOBAL_DYNAMIC_BLOCKS;
 	;
 	/**
-	 * Time in ms between chunk reaper unload checks
-	 */
-	protected static final long UNLOAD_PERIOD = 60000;
-	/**
 	 * Storage for block ids, data and auxiliary data. For blocks with data = 0
 	 * and auxiliary data = null, the block is stored as a short.
 	 */
@@ -1406,7 +1402,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	public boolean isReapable(long worldAge) {
-		if (lastUnloadCheck.get() + UNLOAD_PERIOD >= worldAge) {
+		if (lastUnloadCheck.get() + SpoutConfiguration.CHUNK_REAP_DELAY.getLong() >= worldAge) {
 			return false;
 		}
 

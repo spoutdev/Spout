@@ -43,6 +43,7 @@ import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.Vector3;
 import org.spout.api.plugin.Platform;
 import org.spout.api.util.map.concurrent.palette.AtomicPaletteBlockStore;
+import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.SpoutEntity;
 
 public class FilteredChunk extends SpoutChunk{
@@ -58,6 +59,9 @@ public class FilteredChunk extends SpoutChunk{
 
 	protected final static byte[] DARK = new byte[BLOCKS.HALF_VOLUME];
 	protected final static byte[] LIGHT = new byte[BLOCKS.HALF_VOLUME];
+	
+	//Not static to allow the engine to parse values first
+	private final int autosaveInterval = SpoutConfiguration.AUTOSAVE_INTERVAL.getInt(60000);
 
 	static {
 		Arrays.fill(LIGHT, (byte) 255);
@@ -110,7 +114,7 @@ public class FilteredChunk extends SpoutChunk{
 
 	private void setModified() {
 		if (chunkModified.compareAndSet(false, true)) {
-			setAutosaveTicks(20 * 60 * 5);
+			setAutosaveTicks(autosaveInterval);
 		}
 	}
 
@@ -359,18 +363,22 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.getDirtyBlocks();
 	}
-	
+
+	@Override
 	public int getDirtyOldState(int i) {
 		if (uniform.get()) {
 			return -1;
 		}
-		return super.getDirtyOldState(i);	}
+		return super.getDirtyOldState(i);
+	}
 
+	@Override
 	public int getDirtyNewState(int i) {
 		if (uniform.get()) {
 			return -1;
 		}
-		return super.getDirtyNewState(i);	}
+		return super.getDirtyNewState(i);
+	}
 
 	@Override
 	public void resetDirtyArrays() {

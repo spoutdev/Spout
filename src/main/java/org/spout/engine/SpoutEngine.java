@@ -124,6 +124,7 @@ import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLinkedHashMap;
 import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
+import org.spout.engine.world.MemoryReclamationThread;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
@@ -167,6 +168,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private StringMap engineBiomeMap = null;
 	private MultiConsole console;
 	private SpoutApplication arguments;
+	private MemoryReclamationThread reclamation = null;
 
 	public SpoutEngine() {
 		super(1, new ThreadAsyncExecutor("Engine bootstrap thread"));
@@ -254,6 +256,11 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 			//If we don't have a default world set, just grab one.
 			getDefaultWorld();
+		}
+		
+		if (SpoutConfiguration.RECLAIM_MEMORY.getBoolean()) {
+			reclamation = new MemoryReclamationThread();
+			reclamation.start();
 		}
 
 		scheduler.startMainThread();
@@ -759,6 +766,10 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 			created = true;
 		}
 		SpoutPlayer oldPlayer = players.put(playerName, player);
+		
+		if (reclamation != null) {
+			reclamation.addPlayer();
+		}
 
 		if (oldPlayer != null) {
 			oldPlayer.kick("Login occured from another client");
@@ -781,7 +792,14 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	public boolean removePlayer(SpoutPlayer player) {
-		return players.remove(player.getName(), player);
+		boolean remove = players.remove(player.getName(), player);
+		if (remove) {
+			if (reclamation != null) {
+				reclamation.removePlayer();
+			}
+			return true;
+		}
+		return false;
 	}
 
 	protected Collection<SpoutWorld> getLiveWorlds() {

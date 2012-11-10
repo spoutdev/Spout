@@ -120,11 +120,6 @@ public class SpoutRegion extends Region {
 	 */
 	private static final int POPULATE_PER_TICK = 20;
 	/**
-	 * The maximum number of chunks that will be reaped by the chunk reaper each
-	 * tick.
-	 */
-	private static final int REAP_PER_TICK = 3;
-	/**
 	 * How many ticks to delay sending the entire chunk after lighting calculation has completed
 	 */
 	public static final int LIGHT_SEND_TICK_DELAY = 10;
@@ -806,7 +801,9 @@ public class SpoutRegion extends Region {
 
 	private void unloadChunks() {
 		Chunk toUnload = unloadQueue.poll();
-		if (toUnload != null) {
+		int unloadAmt = SpoutConfiguration.UNLOAD_CHUNKS_PER_TICK.getInt();
+		while (toUnload != null) {
+			unloadAmt--;
 			boolean do_unload = true;
 			if (ChunkUnloadEvent.getHandlerList().getRegisteredListeners().length > 0) {
 				ChunkUnloadEvent event = Spout.getEngine().getEventManager().callEvent(new ChunkUnloadEvent(toUnload));
@@ -816,6 +813,11 @@ public class SpoutRegion extends Region {
 			}
 			if (do_unload) {
 				toUnload.unload(true);
+			}
+			if (unloadAmt > 0) {
+				toUnload = unloadQueue.poll();
+			} else {
+				break;
 			}
 		}
 	}
@@ -849,7 +851,7 @@ public class SpoutRegion extends Region {
 
 	public void finalizeRun() {
 		long worldAge = getWorld().getAge();
-		for (int reap = 0; reap < REAP_PER_TICK; reap++) {
+		for (int reap = 0; reap < SpoutConfiguration.REAP_CHUNKS_PER_TICK.getInt(); reap++) {
 			if (++reapX >= CHUNKS.SIZE) {
 				reapX = 0;
 				if (++reapY >= CHUNKS.SIZE) {
