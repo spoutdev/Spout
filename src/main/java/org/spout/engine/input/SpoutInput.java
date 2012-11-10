@@ -31,10 +31,10 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.keyboard.Input;
-import org.spout.api.keyboard.Keyboard;
 import org.spout.engine.entity.SpoutPlayer;
 
 public class SpoutInput implements Input {
@@ -81,18 +81,8 @@ public class SpoutInput implements Input {
 		player.processCommand(command, new ChatArguments());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.spout.engine.input.Input#bind(org.spout.keyboard.Keyboard,
-	 * java.lang.String)
-	 */
 	@Override
-	public void bind(Keyboard key, String command) {
-		//keyCommands.put(key, command);
-	}
-
-	public void bind2(int key, String command) {
+	public void bind(int key, String command) {
 		keyCommands.put(key, command);
 	}
 
@@ -112,7 +102,7 @@ public class SpoutInput implements Input {
 			} else if (name.equals("SCROLLUP")) {
 				mouseCommands.put(KEY_SCROLLUP, command);
 			} else {
-				bind2(org.lwjgl.input.Keyboard.getKeyIndex(name), command);
+				bind(Keyboard.getKeyIndex(name), command);
 			}
 		} else if (key.startsWith("MOUSE")) {
 			int k = Mouse.getButtonIndex(key);
@@ -126,11 +116,11 @@ public class SpoutInput implements Input {
 			return;
 		}*/
 
-		if(org.lwjgl.input.Keyboard.isCreated()){
-			while (org.lwjgl.input.Keyboard.next()) {
-				int button = org.lwjgl.input.Keyboard.getEventKey();
+		if(Keyboard.isCreated()){
+			while (Keyboard.next()) {
+				int button = Keyboard.getEventKey();
 				if (button != -1)
-					doKeypress(player,button, org.lwjgl.input.Keyboard.getEventKeyState());
+					doKeypress(player,button, Keyboard.getEventKeyState());
 			}
 		}
 
