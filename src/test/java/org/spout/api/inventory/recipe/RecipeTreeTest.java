@@ -57,12 +57,19 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertSame;
+
+import org.junit.Before;
 import org.junit.Test;
 
 import org.spout.api.material.Material;
 import org.spout.api.material.BlockMaterial;
 
 public class RecipeTreeTest {
+	@Before
+	public void setupMaterials() {
+		EngineFaker.setupEngine();
+	}
+
 	@Test
 	public void treeTest() {
 		RecipeBuilder builder = new RecipeBuilder();

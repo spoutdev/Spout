@@ -26,6 +26,7 @@
  */
 package org.spout.api.inventory.recipe;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import org.spout.api.inventory.Inventory;
@@ -36,6 +37,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ShapedRecipeTest {
+	@Before
+	public void setupMaterials() {
+		EngineFaker.setupEngine();
+	}
+
 	/*@Test
 	public void testShapedRecipe() {
 

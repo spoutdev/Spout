@@ -55,6 +55,7 @@ package org.spout.api.inventory.recipe;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import org.spout.api.material.Material;
@@ -63,6 +64,11 @@ import static org.junit.Assert.assertTrue;
 import org.spout.api.material.BlockMaterial;
 
 public class RecipeBuilderTest {
+	@Before
+	public void setupMaterials() {
+		EngineFaker.setupEngine();
+	}
+
 	@Test
 	public void singleIngredientsTest() {
 		RecipeBuilder builder = new RecipeBuilder();

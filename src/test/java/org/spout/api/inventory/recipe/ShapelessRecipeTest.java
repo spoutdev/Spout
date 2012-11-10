@@ -26,6 +26,7 @@
  */
 package org.spout.api.inventory.recipe;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import org.spout.api.inventory.Inventory;
@@ -36,6 +37,11 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 public class ShapelessRecipeTest {
+	@Before
+	public void setupMaterials() {
+		EngineFaker.setupEngine();
+	}
+
 	/*@Test
 	public void testShapelessRecipe() {
 		ItemStack solid = new ItemStack(BlockMaterial.SOLID, 1);
