@@ -49,6 +49,9 @@ import org.spout.api.math.Vector3;
 import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.api.util.flag.Flag;
 
+import com.bulletphysics.collision.dispatch.CollisionObject;
+import com.bulletphysics.collision.shapes.CollisionShape;
+
 /**
  * Defines the specific characteristics of a Block
  */
@@ -58,36 +61,24 @@ public class BlockMaterial extends Material implements Placeable {
 	public static final BlockMaterial UNBREAKABLE = new BlockMaterial("Unbreakable").setHardness(100.f);
 	public static final BlockMaterial SKYBOX = new BasicSkyBox();
 	public static final BlockMaterial ERROR = new BlockMaterial("Missing Plugin").setHardness((100.f));
-
-	public BlockMaterial(String name, String model){
-		super(name, model);
-	}
+	
+	private final CollisionObject collisionObject = new CollisionObject();
+	private float mass = 1;
 
 	public BlockMaterial(String name) {
-		super(name);
+		this(name, 0, null, null);
 	}
 
 	public BlockMaterial(short dataMask, String name, String model){
 		super(dataMask, name, model);
 	}
-	public BlockMaterial(short dataMask, String name) {
-		super(dataMask, name);
-	}
 
-	public BlockMaterial(String name, int data, Material parent) {
-		this(name, data, parent, (String) null);
-	}
-	
 	public BlockMaterial(String name, int data, Material parent, String model) {
 		super(name, data, parent, model);
 	}
 	
 	protected BlockMaterial(String name, short id) {
 		super(name, id);
-	}
-	
-	protected BlockMaterial(short dataMask, String name, short id) {
-		super(dataMask, name, id);
 	}
 
 	/**
@@ -529,5 +520,38 @@ public class BlockMaterial extends Material implements Placeable {
 	 */
 	public Cause<BlockMaterial> toCause(Point p) {
 		return new MaterialCause<BlockMaterial>(this, p.getWorld().getBlock(p));
+	}
+
+	/**
+	 * Gets the CollisionObject of this material
+	 * @return CollisionObject
+	 */
+	public final CollisionObject getCollisionObject() {
+		return collisionObject;
+	}
+
+	/**
+	 * Gets the collision shape this block material has.
+	 * @return CollisionShape
+	 */
+	public CollisionShape getCollisionShape() {
+		return collisionObject.getCollisionShape();
+	}
+
+	/**
+	 * Sets the CollisionShape of this block material.
+	 * @param shape The new collision shape of this block material
+	 */
+	public BlockMaterial setCollisionShape(CollisionShape shape) {
+		collisionObject.setCollisionShape(shape);
+		return this;
+	}
+
+	public float getMass() {
+		return mass;
+	}
+
+	public void setMass(float mass) {
+		this.mass = mass;
 	}
 }

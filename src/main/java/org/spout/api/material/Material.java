@@ -88,11 +88,6 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 			this.model = null;
 
 	}
-	
-	public Material(String name, String model){
-		this((short)0, name, model);
-	}
-	
 
 	/**
 	 * Creates and registers a material
@@ -165,27 +160,6 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.data = 0;
 		this.id = (short) MaterialRegistry.register(this, id);
 		this.dataMask = 0;
-		this.root = this;
-		if(Spout.getEngine().getPlatform() == Platform.CLIENT)
-			this.model = (Model) Spout.getEngine().getFilesystem().getResource("model://Spout/resources/fallbacks/fallback.spm");
-		else
-			this.model = null;
-	}
-
-	/**
-	 * Creates a material with a reserved id
-	 * 
-	 * @param name of the material
-	 * @param id to reserve
-	 */
-	protected Material(short dataMask, String name, short id) {
-		this.isSubMaterial = true;
-		this.displayName = name;
-		this.name = name.replace(' ', '_');
-		this.parent = this;
-		this.data = 0;
-		this.id = (short) MaterialRegistry.register(this, id);
-		this.dataMask = dataMask;
 		this.root = this;
 		if(Spout.getEngine().getPlatform() == Platform.CLIENT)
 			this.model = (Model) Spout.getEngine().getFilesystem().getResource("model://Spout/resources/fallbacks/fallback.spm");
