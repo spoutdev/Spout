@@ -63,19 +63,6 @@ public abstract class PhysicsComponent extends EntityComponent {
 	public abstract CollisionObject getCollisionObject();
 
 	/**
-	 * Gets the live collision object. Caution must be used as it is not stable and is subject to changes from plugins.
-	 * @return the live CollisionObject
-	 */
-	public abstract CollisionObject getCollisionObjectLive();
-
-	/**
-	 * Sets the live CollisionObject.
-	 * @param collisionObject the new live CollisionObject
-	 * @throws IllegalArgumentException if the parameter is null
-	 */
-	public abstract void setCollisionObject(CollisionObject collisionObject);
-
-	/**
 	 * Gets the MotionState. A MotionState is the "bridge" between Bullet and Spout in-which Bullet tells Spout that the
 	 * object has moved and to update your transforms accordingly.
 	 * @return the MotionState

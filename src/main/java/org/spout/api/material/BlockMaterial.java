@@ -50,6 +50,7 @@ import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.api.util.flag.Flag;
 
 import com.bulletphysics.collision.dispatch.CollisionObject;
+import com.bulletphysics.collision.shapes.BoxShape;
 import com.bulletphysics.collision.shapes.CollisionShape;
 
 /**
@@ -65,21 +66,24 @@ public class BlockMaterial extends Material implements Placeable {
 	private final CollisionObject collisionObject = new CollisionObject();
 	private float mass = 1;
 
-	public BlockMaterial(String name) {
-		this(name, 0, null, null);
-	}
-
 	public BlockMaterial(short dataMask, String name, String model){
 		super(dataMask, name, model);
+		collisionObject.setCollisionShape(new BoxShape(1F, 1F, 1F));
 	}
 
 	public BlockMaterial(String name, int data, Material parent, String model) {
 		super(name, data, parent, model);
+		collisionObject.setCollisionShape(new BoxShape(1F, 1F, 1F));
 	}
-	
+
 	protected BlockMaterial(String name, short id) {
 		super(name, id);
 	}
+
+	protected BlockMaterial(String name) {
+		super(name);
+	}
+
 
 	/**
 	 * Gets the block with the given id, or null if none found

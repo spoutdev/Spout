@@ -118,7 +118,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	public Material(String name, int data, Material parent) {
 		this(name, data, parent, (String) null);
 	}
-	
+
 	/**
 	 * Creates and registers a sub material
 	 * 
