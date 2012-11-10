@@ -27,31 +27,26 @@
 package org.spout.api.inventory.recipe;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.spout.api.inventory.Inventory;
 import org.spout.api.inventory.ItemStack;
-import org.spout.api.inventory.shape.Grid;
-import org.spout.api.inventory.util.GridIterator;
 import org.spout.api.material.Material;
 
 /**
  * Represents a {@link Recipe} with a definite shape.
  */
 public class ShapedRecipe extends Recipe {
-	private final List<List<Character>> rows = new ArrayList<List<Character>>();
-	private final Map<Character, ItemStack> ingredientMap = new LinkedHashMap<Character, ItemStack>();
+	private final List<List<Character>> rows;
+	private final Map<Character, Material> ingredientsMap;
 
-	public ShapedRecipe(ItemStack result) {
-		super(result);
+	public ShapedRecipe(RecipeBuilder builder) {
+		super(builder.result, builder.plugin, builder.includeData);
+		this.rows = builder.rows;
+		this.ingredientsMap = builder.ingredientsMap;
 	}
-
-	// Row management
 
 	/**
 	 * Returns a {@link List} of a list of {@link Character}s that represent
@@ -61,26 +56,6 @@ public class ShapedRecipe extends Recipe {
 	 */
 	public List<List<Character>> getRows() {
 		return Collections.unmodifiableList(rows);
-	}
-
-	/**
-	 * Adds a row to the recipe.
-	 *
-	 * @param chars characters to represent {@link ItemStack}s
-	 * @return true if the row was added successfully
-	 */
-	public boolean addRow(Character... chars) {
-		return rows.add(Arrays.asList(chars));
-	}
-
-	/**
-	 * Adds the specified rows to the recipe.
-	 *
-	 * @param rows to add
-	 * @return true if all rows were added successfully
-	 */
-	public boolean addRows(List<List<Character>> rows) {
-		return rows.addAll(rows);
 	}
 
 	/**
@@ -121,60 +96,13 @@ public class ShapedRecipe extends Recipe {
 	// Ingredient management
 
 	/**
-	 * Sets the {@link Character} that the {@link ItemStack} ingredient is
-	 * represented by.
-	 *
-	 * @param c to represent specified ingredient
-	 * @param ingredient to be represented by specified character
-	 * @return previous ingredient represented by the specified character
-	 */
-	public ItemStack setIngredient(char c, ItemStack ingredient) {
-		return ingredientMap.put(c, ingredient);
-	}
-
-	/**
-	 * Sets the {@link Character} that the {@link ItemStack} ingredient is
-	 * represented by.
-	 *
-	 * @param c to represent specified ingredient
-	 * @param ingredient material to be represented by specified character
-	 * @param amount amount of material required
-	 * @return previous ingredient represented by the specified character
-	 */
-	public ItemStack setIngredient(char c, Material ingredient, int amount) {
-		return setIngredient(c, new ItemStack(ingredient, amount));
-	}
-
-	/**
-	 * Sets the {@link Character} that the {@link ItemStack} ingredient is
-	 * represented by.
-	 *
-	 * @param c character to represent one of the ingredient
-	 * @param ingredient to be represented by specified character
-	 * @return ingredient previously represented by specified character
-	 */
-	public ItemStack setIngredient(char c, Material ingredient) {
-		return setIngredient(c, ingredient, 1);
-	}
-
-	/**
-	 * Sets all {@link Character} in the map to represent all {@link ItemStack}
-	 * in the map.
-	 *
-	 * @param chars character map to represent values
-	 */
-	public void setIngredients(Map<Character, ItemStack> chars) {
-		ingredientMap.putAll(chars);
-	}
-
-	/**
 	 * Returns a {@link Map} with {@link ItemStack}s mapped to the
 	 * {@link Character} they are represented by.
 	 *
 	 * @return character item mapping
 	 */
-	public Map<Character, ItemStack> getIngredientMap() {
-		return Collections.unmodifiableMap(ingredientMap);
+	public Map<Character, Material> getIngredientsMap() {
+		return Collections.unmodifiableMap(ingredientsMap);
 	}
 
 	/**
@@ -183,12 +111,12 @@ public class ShapedRecipe extends Recipe {
 	 *
 	 * @return rows of the recipe
 	 */
-	public List<List<ItemStack>> getIngredientRows() {
-		List<List<ItemStack>> ingredientRows = new ArrayList<List<ItemStack>>();
+	public List<List<Material>> getIngredientRows() {
+		List<List<Material>> ingredientRows = new ArrayList<List<Material>>();
 		for (List<Character> row : rows) {
-			List<ItemStack> ingredientRow = new ArrayList<ItemStack>();
+			List<Material> ingredientRow = new ArrayList<Material>();
 			for (char c : row) {
-				ingredientRow.add(ingredientMap.get(c));
+				ingredientRow.add(ingredientsMap.get(c));
 			}
 			ingredientRows.add(ingredientRow);
 		}
@@ -198,48 +126,37 @@ public class ShapedRecipe extends Recipe {
 	// Overridden methods
 
 	@Override
-	public Collection<ItemStack> getIngredients() {
-		return Collections.unmodifiableCollection(ingredientMap.values());
-	}
-
-	@Override
-	public boolean handle(Inventory inventory) {
-
-		final Grid grid = inventory.grid(getRowLength());
-		final GridIterator i = grid.iterator();
-		final List<List<ItemStack>> rows = getIngredientRows();
-		final int lastRow = rows.size() - 1;
-
-		while (i.hasNext()) {
-			ItemStack actual = inventory.get(i.next());
-			ItemStack expected = rows.get(lastRow - i.getY()).get(i.getX());
-			if (actual == null && expected == null) {
-				continue;
-			}
-
-			if (((actual == null) != (expected == null)) || (!actual.equalsIgnoreSize(expected) || actual.getAmount() < expected.getAmount())) {
-				return false;
-			}
-		}
-
-		return true;
+	public List<Material> getIngredients() {
+		return Collections.unmodifiableList(new ArrayList<Material>(ingredientsMap.values()));
 	}
 
 	@Override
 	public ShapedRecipe clone() {
-		ShapedRecipe clone = new ShapedRecipe(result);
-		clone.addRows(rows);
-		clone.setIngredients(ingredientMap);
-		return clone;
+		return new RecipeBuilder().clone(this).buildShapedRecipe();
 	}
-
+	
 	@Override
-	public int hashCode() {
-		return getIngredientRows().hashCode();
+	public RecipeBuilder toBuilder() {
+		return new RecipeBuilder().clone(this);
 	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
-		return obj != null && obj instanceof ShapedRecipe && ((ShapedRecipe) obj).getIngredientRows() == getIngredientRows();
+		if (obj == null || !(obj instanceof ShapedRecipe)) {
+			return false;
+		}
+		final ShapedRecipe other = (ShapedRecipe) obj;
+		if (this.result != other.result && (this.result == null || !this.result.equals(other.result))) {
+			return false;
+		}
+		if (getIngredientsMap().equals(other.getIngredientsMap())) {
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		return (new HashCodeBuilder()).append(plugin).append(result).append(ingredientsMap).append(rows).build();
 	}
 }
