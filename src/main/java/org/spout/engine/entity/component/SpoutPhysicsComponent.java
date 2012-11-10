@@ -26,7 +26,6 @@
  */
 package org.spout.engine.entity.component;
 
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.vecmath.Matrix4f;
@@ -37,6 +36,7 @@ import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.MotionState;
 import com.bulletphysics.linearmath.Transform;
+import com.google.common.base.Objects;
 
 import org.spout.api.component.components.PhysicsComponent;
 import org.spout.api.entity.Entity;
@@ -130,7 +130,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	@Override
 	public boolean isCollisionObjectDirty() {
-		return !Objects.equals(liveShape.get(), getCollisionShape());
+		return !Objects.equal(liveShape.get(), getCollisionShape());
 	}
 
 	public void copySnapshot() {
