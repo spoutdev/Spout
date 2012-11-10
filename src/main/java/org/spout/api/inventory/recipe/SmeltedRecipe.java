@@ -26,62 +26,11 @@
  */
 package org.spout.api.inventory.recipe;
 
-import java.io.Serializable;
-import java.util.List;
+public class SmeltedRecipe extends ShapelessRecipe {
+	private static final long serialVersionUID = 1L;
 
-import org.spout.api.inventory.ItemStack;
-import org.spout.api.material.Material;
-import org.spout.api.plugin.Plugin;
-
-/**
- * Represents an arrangement of {@link ItemStack} with an outcome
- */
-public abstract class Recipe implements Serializable, Cloneable {
-	protected final ItemStack result;
-	protected final Plugin plugin;
-	protected final boolean includeData;
-
-	public Recipe(ItemStack result) {
-		this(result, null);
+	public SmeltedRecipe(RecipeBuilder builder) {
+		super(builder);
 	}
-
-	public Recipe(ItemStack result, Plugin plugin) {
-		this(result, plugin, false);
-	}
-
-	public Recipe(ItemStack result, Plugin plugin, boolean includeData) {
-		this.result = result;
-		this.plugin = plugin;
-		this.includeData = includeData;
-	}
-
-	/**
-	 * Returns the result of the Recipe if successful.
-	 *
-	 * @return result of recipe
-	 */
-	public ItemStack getResult() {
-		return result;
-	}
-
-	public Plugin getPlugin() {
-		return plugin;
-	}
-	
-	public boolean getIncludeData() {
-		return includeData;
-	}
-
-	/**
-	 * Returns the required ingredients to meet the requirements of the recipe.
-	 *
-	 * @return List of ingredients to craft the recipe
-	 */
-	public abstract List<Material> getIngredients();
-	
-	public abstract RecipeBuilder toBuilder();
-
-	@Override
-	public abstract Recipe clone();
 
 }

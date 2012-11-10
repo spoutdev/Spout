@@ -26,22 +26,22 @@
  */
 package org.spout.api.inventory.recipe;
 
-import java.util.Map;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
-import org.spout.api.inventory.Inventory;
-import org.spout.api.inventory.ItemStack;
+import org.spout.api.material.Material;
 import org.spout.api.plugin.Plugin;
 
 public interface RecipeManager {
+
 	/**
 	 * Registers a recipe to be stored.
 	 *
-	 * @param plugin to register recipe to
 	 * @param recipe to register
 	 * @return true if recipe already existed
 	 */
-	public boolean register(Plugin plugin, Recipe recipe);
+	public boolean register(Recipe recipe);
 
 	/**
 	 * Registers all the specified recipes to the specified plugin.
@@ -50,36 +50,28 @@ public interface RecipeManager {
 	 * @param recipes to register
 	 * @return true if the set of recipes was changed
 	 */
-	public boolean registerAll(Plugin plugin, Set<Recipe> recipes);
+	public boolean registerAll(Set<Recipe> recipes);
 
 	/**
 	 * Removes a recipe.
 	 *
-	 * @param plugin to remove recipe from
 	 * @param recipe to remove
 	 * @return whether the recipe existed
 	 */
-	public boolean remove(Plugin plugin, Recipe recipe);
-
+	public boolean remove(Recipe recipe);
+	
 	/**
-	 * Removes all recipes of the specified {@link Plugin}
-	 *
-	 * @param plugin to remove recipes
+	 * Replaces an old recipe with a new one.
+	 * @param oldRecipe
+	 * @param newRecipe
+	 * @return true if fully successful
 	 */
-	public void removeAll(Plugin plugin);
+	public boolean replaceRecipe(Recipe oldRecipe, Recipe newRecipe);
 
 	/**
 	 * Clears all recipes.
 	 */
 	public void clear();
-
-	/**
-	 * Returns all recipes registered to the specified {@link Plugin}
-	 *
-	 * @param plugin to get recipes from
-	 * @return recipes of plugin
-	 */
-	public Set<Recipe> getRecipes(Plugin plugin);
 
 	/**
 	 * Returns all recipes of all registered {@link Plugin}s
@@ -89,38 +81,46 @@ public interface RecipeManager {
 	public Set<Recipe> getAllRecipes();
 
 	/**
-	 * Returns a {@link java.util.Map} of {@link Plugin}s to their registered
-	 * {@link Recipe}s
-	 *
-	 * @return recipe map
+	 * Gets all the shaped recipes registered for a plugin.
+	 * @param plugin that the recipes belongs to
+	 * @return the recipes if they're found, otherwise an empty set
 	 */
-	public Map<Plugin, Set<Recipe>> getRecipeMap();
+	public Set<Recipe> getShapedRecipes(Plugin plugin);
 
 	/**
-	 * Tries to craft a result from specified recipes using the specified
-	 * {@link org.spout.api.inventory.Inventory} as ingredients.
-	 *
-	 * @param recipes to check
-	 * @param inventory to test
-	 * @return result of craft, null if no result
+	 * Gets all the shapeless recipes registered for a plugin.
+	 * @param plugin that the recipes belongs to
+	 * @return the recipes if they're found, otherwise an empty set
 	 */
-	public ItemStack handle(Set<Recipe> recipes, Inventory inventory);
+	public Set<Recipe> getShapelessRecipes(Plugin plugin);
 
 	/**
-	 * Tries to craft a result from all available recipes.
-	 *
-	 * @param inventory to test
-	 * @return result of craft
+	 * Match the materials to any ShapedRecipe
+	 * @param materials by rows
+	 * @return ShapedRecipe
 	 */
-	public ItemStack handle(Inventory inventory);
+	public ShapedRecipe matchShapedRecipe(List<List<Material>> materials);
 
 	/**
-	 * Tries to craft a result from all available recipes registered to the
-	 * specified {@link Plugin}.
-	 *
-	 * @param plugin to get recipes from
-	 * @param inventory to test
-	 * @return result of craft
+	 * Match the materials to any ShapelessRecipe
+	 * @param materials
+	 * @return ShapelesRecipe
 	 */
-	public ItemStack handle(Plugin plugin, Inventory inventory);
+	public ShapelessRecipe matchShapelessRecipe(Collection<Material> materials);
+
+	/**
+	 * Match the materials to any ShapedRecipe for a given plugin
+	 * @param plugin
+	 * @param materials by rows
+	 * @return ShapedRecipe
+	 */
+	public ShapedRecipe matchShapedRecipe(Plugin plugin, List<List<Material>> materials);
+
+	/**
+	 * Match the materials to any ShapelessRecipe for a given plugin
+	 * @param plugin
+	 * @param materials
+	 * @return ShapelesRecipe
+	 */
+	public ShapelessRecipe matchShapelessRecipe(Plugin plugin, Collection<Material> materials);
 }
