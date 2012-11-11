@@ -39,7 +39,6 @@ import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
 import org.spout.api.render.RenderMaterial;
-import org.spout.api.render.RenderMode;
 import org.spout.api.render.Renderer;
 
 public abstract class BatchVertexRenderer implements Renderer {
@@ -56,29 +55,28 @@ public abstract class BatchVertexRenderer implements Renderer {
 		
 		Client client = (Client) Spout.getEngine();
 
-		if (client.getRenderMode() == RenderMode.GL11) {
-			for(int i = 0; i < number; i++)
-				list.add(new GL11BatchVertexRenderer(renderMode));
-			return;
+		switch (client.getRenderMode()) {
+			case GL11:
+				for(int i = 0; i < number; i++)
+					list.add(new GL11BatchVertexRenderer(renderMode));
+				return;
+			case GL20:
+				for(int i = 0; i < number; i++)
+					list.add(new GL20BatchVertexRenderer(renderMode));
+				return;
+			case GL30:
+				for(int i = 0; i < number; i++)
+					list.add(new GL30BatchVertexRenderer(renderMode));
+				return;
+			case GLES20:
+				for(int i = 0; i < number; i++)
+					list.add(new GLES20BatchVertexRenderer(renderMode));
+				return;
+			default:
+				throw new IllegalArgumentException("GL Mode:" + client.getRenderMode() + " Not reconized");
 		}
-		if (client.getRenderMode() == RenderMode.GL20) {
-			for(int i = 0; i < number; i++)
-				list.add(new GL20BatchVertexRenderer(renderMode));
-			return;
-		}
-		if (client.getRenderMode() == RenderMode.GL30) {
-			for(int i = 0; i < number; i++)
-				list.add(new GL30BatchVertexRenderer(renderMode));
-			return;
-		}
-		if (client.getRenderMode() == RenderMode.GLES20) {
-			for(int i = 0; i < number; i++)
-				list.add(new GLES20BatchVertexRenderer(renderMode));
-			return;
-		}
-		throw new IllegalArgumentException("GL Mode:" + client.getRenderMode() + " Not reconized");
 	}
-	
+
 	public static Renderer constructNewBatch(int renderMode) {
 		List<Renderer> list = pool.get(renderMode);
 		if(list != null && !list.isEmpty()){
@@ -88,20 +86,19 @@ public abstract class BatchVertexRenderer implements Renderer {
 		}
 
 		Client client = (Client) Spout.getEngine();
-		
-		if (client.getRenderMode() == RenderMode.GL11) {
-			return new GL11BatchVertexRenderer(renderMode);
+
+		switch (client.getRenderMode()) {
+			case GL11:
+				return new GL11BatchVertexRenderer(renderMode);
+			case GL20:
+				return new GL20BatchVertexRenderer(renderMode);
+			case GL30:
+				return new GL30BatchVertexRenderer(renderMode);
+			case GLES20:
+				return new GLES20BatchVertexRenderer(renderMode);
+			default:
+				throw new IllegalArgumentException("GL Mode:" + client.getRenderMode() + " Not reconized");
 		}
-		if (client.getRenderMode() == RenderMode.GL20) {
-			return new GL20BatchVertexRenderer(renderMode);
-		}
-		if (client.getRenderMode() == RenderMode.GL30) {
-			return new GL30BatchVertexRenderer(renderMode);
-		}
-		if (client.getRenderMode() == RenderMode.GLES20) {
-			return new GLES20BatchVertexRenderer(renderMode);
-		}
-		throw new IllegalArgumentException("GL Mode:" + client.getRenderMode() + " Not reconized");
 	}
 
 	boolean batching = false;
