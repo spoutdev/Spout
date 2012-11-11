@@ -681,75 +681,13 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		unloadNoMark(save);
 		markForSaveUnload();
 	}
-
-	public boolean cancelUnload() {
-		boolean success = false;
-		SaveState oldState = null;
-		while (!success) {
-			oldState = saveState.get();
-			SaveState nextState;
-			switch (oldState) {
-				case UNLOAD_SAVE:
-					nextState = SaveState.SAVE;
-					break;
-				case UNLOAD:
-					nextState = SaveState.NONE;
-					break;
-				case POST_SAVED:
-					nextState = SaveState.NONE;
-					break;
-				case SAVE:
-					nextState = SaveState.SAVE;
-					break;
-				case NONE:
-					nextState = SaveState.NONE;
-					break;
-				case UNLOADED:
-					nextState = SaveState.UNLOADED;
-					break;
-				case SAVING:
-					nextState = SaveState.NONE;
-					break;
-				default:
-					throw new IllegalStateException("Unknown save state: " + oldState);
-			}
-			success = saveState.compareAndSet(oldState, nextState);
-		}
-		return oldState != SaveState.UNLOADED;
+	
+	public void unloadNoMark(boolean save) {
+		SaveState.unload(saveState, save);
 	}
 
-	public void unloadNoMark(boolean save) {
-		boolean success = false;
-		while (!success) {
-			SaveState state = saveState.get();
-			SaveState nextState;
-			switch (state) {
-				case UNLOAD_SAVE:
-					nextState = SaveState.UNLOAD_SAVE;
-					break;
-				case UNLOAD:
-					nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD;
-					break;
-				case POST_SAVED:
-					nextState = save ? SaveState.UNLOAD_SAVE : SaveState.POST_SAVED;
-					break;
-				case SAVE:
-					nextState = SaveState.UNLOAD_SAVE;
-					break;
-				case NONE:
-					nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD;
-					break;
-				case UNLOADED:
-					nextState = SaveState.UNLOADED;
-					break;
-				case SAVING:
-					nextState = SaveState.SAVING;
-					break;
-				default:
-					throw new IllegalStateException("Unknown save state: " + state);
-			}
-			success = saveState.compareAndSet(state, nextState);
-		}
+	public boolean cancelUnload() {
+		return SaveState.cancelUnload(saveState);
 	}
 
 	public SaveState getSaveState() {
@@ -762,88 +700,27 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		saveNoMark();
 		markForSaveUnload();
 	}
+	
+	public void saveNoMark() {
+		checkChunkLoaded();
+		SaveState.save(saveState);
+	}
 
 	private void markForSaveUnload() {
 		(parentRegion).markForSaveUnload(this);
 	}
 
-	public void saveNoMark() {
-		boolean success = false;
-		while (!success) {
-			SaveState state = saveState.get();
-			SaveState nextState;
-			switch (state) {
-				case UNLOAD_SAVE:
-					nextState = SaveState.UNLOAD_SAVE;
-					break;
-				case UNLOAD:
-					nextState = SaveState.UNLOAD_SAVE;
-					break;
-				case POST_SAVED:
-					nextState = SaveState.UNLOAD_SAVE;
-					break;
-				case SAVE:
-					nextState = SaveState.SAVE;
-					break;
-				case NONE:
-					nextState = SaveState.SAVE;
-					break;
-				case UNLOADED:
-					nextState = SaveState.UNLOADED;
-					break;
-				case SAVING:
-					nextState = SaveState.SAVING;
-					break;
-				default:
-					throw new IllegalStateException("Unknown save state: " + state);
-			}
-			success = saveState.compareAndSet(state, nextState);
-		}
-	}
-
 	public void saveComplete() {
 		if (isObserved()) {
-			resetPostSaving();
+			SaveState.resetPostSaving(saveState);
 		} else {
-			saveState.compareAndSet(SaveState.SAVING, SaveState.POST_SAVED);
+			SaveState.setPostSaved(saveState);
 		}
 		parentRegion.markForSaveUnload(this);
 	}
 
 	public SaveState getAndResetSaveState() {
-		boolean success = false;
-		SaveState old = null;
-		while (!success) {
-			old = saveState.get();
-			SaveState nextState;
-			switch (old) {
-				case UNLOAD_SAVE:
-					nextState = SaveState.SAVING;
-					break;
-				case UNLOAD:
-					nextState = SaveState.UNLOAD;
-					break;
-				case POST_SAVED:
-					nextState = SaveState.POST_SAVED;
-					break;
-				case SAVE:
-					nextState = SaveState.NONE;
-					break;
-				case NONE:
-					nextState = SaveState.NONE;
-					break;
-				case UNLOADED:
-					nextState = SaveState.UNLOADED;
-					break;
-				case SAVING:
-					nextState = SaveState.SAVING;
-					break;
-				default:
-					throw new IllegalStateException("Unknown save state: " + old);
-			}
-			success = saveState.compareAndSet(old, nextState);
-		}
-		return old;
+		return SaveState.getAndResetSaveState(saveState);
 	}
 
 	// Saves the chunk data - this occurs directly after a snapshot update
@@ -923,7 +800,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 				setRenderDirty(true);
 			}
 		}
-		resetPostSaving();
+		SaveState.resetPostSaving(saveState);
 		return true;
 	}
 
@@ -1083,14 +960,9 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		blockStore.resetDirtyArrays();
 	}
 
-	private void resetPostSaving() {
-		saveState.compareAndSet(SaveState.SAVING, SaveState.NONE);
-		saveState.compareAndSet(SaveState.POST_SAVED, SaveState.NONE);
-	}
-
 	@Override
 	public boolean isLoaded() {
-		return saveState.get() != SaveState.UNLOADED;
+		return !saveState.get().isUnloaded();
 	}
 
 	public void setUnloaded() {
@@ -1112,7 +984,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		this.blockLight = null;
 		this.skyLight = null;
 		this.dataMap.clear();
-		if (oldState != SaveState.UNLOADED) {
+		if (!oldState.isUnloaded()) {
 			deregisterFromColumn(saveColumn);
 		}
 	}
@@ -1131,7 +1003,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	public void copySnapshot() {
 	}
 
-	public static enum SaveState {
+	public enum SaveState {
 		UNLOAD_SAVE, UNLOAD, SAVE, NONE, SAVING, POST_SAVED, UNLOADED;
 
 		public boolean isSave() {
@@ -1144,6 +1016,131 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 
 		public boolean isPostUnload() {
 			return this == SAVING;
+		}
+		
+		public boolean isUnloaded() {
+			return this == UNLOADED;
+		}
+		
+		public static boolean cancelUnload(AtomicReference<SaveState> saveState) {
+			boolean success = false;
+			SaveState oldState = null;
+			while (!success) {
+				oldState = saveState.get();
+				SaveState nextState;
+				switch (oldState) {
+					case UNLOAD_SAVE: 
+						nextState = SaveState.SAVE; break;
+					case UNLOAD:
+						nextState = SaveState.NONE; break;
+					case POST_SAVED:
+						nextState = SaveState.NONE;	break;
+					case SAVE:
+						nextState = SaveState.SAVE;	break;
+					case NONE:
+						nextState = SaveState.NONE;	break;
+					case UNLOADED:
+						nextState = SaveState.UNLOADED;	break;
+					case SAVING:
+						nextState = SaveState.NONE;	break;
+					default:
+						throw new IllegalStateException("Unknown save state: " + oldState);
+				}
+				success = saveState.compareAndSet(oldState, nextState);
+			}
+			return oldState != SaveState.UNLOADED;
+		}
+		
+		public static void unload(AtomicReference<SaveState> saveState, boolean save) {
+			boolean success = false;
+			while (!success) {
+				SaveState state = saveState.get();
+				SaveState nextState;
+				switch (state) {
+					case UNLOAD_SAVE:
+						nextState = SaveState.UNLOAD_SAVE; break;
+					case UNLOAD:
+						nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD; break;
+					case POST_SAVED:
+						nextState = save ? SaveState.UNLOAD_SAVE : SaveState.POST_SAVED; break;
+					case SAVE:
+						nextState = SaveState.UNLOAD_SAVE; break;
+					case NONE:
+						nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD; break;
+					case UNLOADED:
+						nextState = SaveState.UNLOADED; break;
+					case SAVING:
+						nextState = SaveState.SAVING; break;
+					default:
+						throw new IllegalStateException("Unknown save state: " + state);
+				}
+				success = saveState.compareAndSet(state, nextState);
+			}
+		}
+		
+		public static void save(AtomicReference<SaveState> saveState) {
+			boolean success = false;
+			while (!success) {
+				SaveState state = saveState.get();
+				SaveState nextState;
+				switch (state) {
+					case UNLOAD_SAVE:
+						nextState = SaveState.UNLOAD_SAVE; break;
+					case UNLOAD:
+						nextState = SaveState.UNLOAD_SAVE; break;
+					case POST_SAVED:
+						nextState = SaveState.UNLOAD_SAVE; break;
+					case SAVE:
+						nextState = SaveState.SAVE; break;
+					case NONE:
+						nextState = SaveState.SAVE; break;
+					case UNLOADED:
+						nextState = SaveState.UNLOADED; break;
+					case SAVING:
+						nextState = SaveState.SAVING; break;
+					default:
+						throw new IllegalStateException("Unknown save state: " + state);
+				}
+				success = saveState.compareAndSet(state, nextState);
+			}
+		}
+		
+		public static SaveState getAndResetSaveState(AtomicReference<SaveState> saveState) {
+			boolean success = false;
+			SaveState old = null;
+			while (!success) {
+				old = saveState.get();
+				SaveState nextState;
+				switch (old) {
+					case UNLOAD_SAVE:
+						nextState = SaveState.SAVING; break;
+					case UNLOAD:
+						nextState = SaveState.UNLOAD; break;
+					case POST_SAVED:
+						nextState = SaveState.POST_SAVED; break;
+					case SAVE:
+						nextState = SaveState.NONE; break;
+					case NONE:
+						nextState = SaveState.NONE; break;
+					case UNLOADED:
+						nextState = SaveState.UNLOADED; break;
+					case SAVING:
+						nextState = SaveState.SAVING; break;
+					default:
+						throw new IllegalStateException("Unknown save state: " + old);
+				}
+				success = saveState.compareAndSet(old, nextState);
+			}
+			return old;
+		}
+		
+		public static void resetPostSaving(AtomicReference<SaveState> saveState) {
+			saveState.compareAndSet(SaveState.SAVING, SaveState.NONE);
+			saveState.compareAndSet(SaveState.POST_SAVED, SaveState.NONE);
+		}
+		
+		public static void setPostSaved(AtomicReference<SaveState> saveState) {
+			saveState.compareAndSet(SAVING, POST_SAVED);
 		}
 	}
 
