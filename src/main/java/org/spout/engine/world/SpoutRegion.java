@@ -115,6 +115,7 @@ import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 import org.spout.engine.world.dynamic.DynamicBlockUpdateTree;
 
 import com.bulletphysics.collision.broadphase.BroadphaseInterface;
+import com.bulletphysics.collision.broadphase.CollisionFilterGroups;
 import com.bulletphysics.collision.broadphase.DbvtBroadphase;
 import com.bulletphysics.collision.dispatch.CollisionConfiguration;
 import com.bulletphysics.collision.dispatch.CollisionDispatcher;
@@ -310,7 +311,6 @@ public class SpoutRegion extends Region {
 		if (object.getCollisionShape() == null) {
 			return;
 		}
-		System.out.println("Tracking: " + physics.getOwner() + " with: " + object);
 		if (object instanceof RigidBody) {
 			simulation.addRigidBody((RigidBody) object);
 		} else if (object != null) {
@@ -324,7 +324,6 @@ public class SpoutRegion extends Region {
 		if (object.getCollisionShape() == null) {
 			return;
 		}
-		System.out.println("Untracking: " + physics.getOwner() + " with: " + object);
 		if (object instanceof RigidBody) {
 			simulation.removeRigidBody((RigidBody) object);
 		} else if (object != null) {
@@ -919,7 +918,7 @@ public class SpoutRegion extends Region {
 	 * @param dt
 	 */
 	private void updateDynamics(float dt) {
-		simulation.stepSimulation(dt, 5, 30);
+		simulation.stepSimulation(1 / 20F, 0, 1 / 20F);
 	}
 
 	public void startTickRun(int stage, long delta) {

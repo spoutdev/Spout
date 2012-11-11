@@ -34,7 +34,6 @@ import com.bulletphysics.collision.shapes.voxel.VoxelPhysicsWorld;
 
 import org.spout.api.collision.CollisionStrategy;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 
 import org.spout.engine.world.SpoutBlock;
@@ -53,7 +52,6 @@ public class SpoutPhysicsWorld implements VoxelPhysicsWorld {
 	@Override
 	public CollisionSnapshot getCollisionShapeAt(int x, int y, int z) {
 		final SpoutBlock block = (SpoutBlock) simulation.getBlock(x, y, z);
-		System.out.println("Block: " + block);
 		return new SpoutVoxelCollisionSnapshot(block.getMaterial(), block.getPosition());
 	}
 
@@ -67,7 +65,6 @@ public class SpoutPhysicsWorld implements VoxelPhysicsWorld {
 			this.isColliding = shape != null && material.getCollisionModel().getStrategy() != CollisionStrategy.NOCOLLIDE;
 			this.isBlocking = shape != null && material.getCollisionModel().getStrategy() == CollisionStrategy.SOLID;
 			this.position = position;
-			System.out.println("Snapshot: " + shape + " " + isColliding + " " + isBlocking);
 		}
 
 		@Override
@@ -87,7 +84,8 @@ public class SpoutPhysicsWorld implements VoxelPhysicsWorld {
 
 		@Override
 		public Vector3f getCollisionOffset() {
-			return new Vector3f(0.5F, 0.5F, 0.5F); //TODO figure this out...
+			//This is the offset of the material shape from the center of the voxel (for a cube of 1, 1, 1 in size, this should be 0, 0, 0)
+			return new Vector3f(0, 0, 0);
 		}
 
 		@Override
