@@ -282,7 +282,7 @@ public class SimpleCommand implements Command {
 			if (event.isCancelled()) {
 				return false;
 			}
-			execute(source, name, args.toSections(ChatSection.SplitType.WORD), 0, fuzzyLookup);
+			execute(source, event.getCommand(), event.getArguments().toSections(ChatSection.SplitType.WORD), 0, fuzzyLookup);
 			return true;
 		} catch (WrappedCommandException e) {
 			if (e.getCause() instanceof NumberFormatException) {
