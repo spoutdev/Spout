@@ -299,28 +299,11 @@ public class Point extends Vector3 implements WorldSource {
 
 	@Override
 	public boolean equals(Object obj) {
-
-		if (obj == null) {
-			return false;
-		} else if (!(obj instanceof Point)) {
+		if (!(obj instanceof Point)) {
 			return false;
 		} else {
 			Point point = (Point) obj;
-
 			boolean worldEqual = point.world == world || (point.world != null && point.world.equals(world));
-			
-			return worldEqual && point.x == x && point.y == y && point.z == z;
-		}
-
-	}
-	
-	public boolean equals(Point point) {
-
-		if (point == this) {
-			return true;
-		} else {
-			boolean worldEqual = point.world == world || (point.world != null && point.world.equals(world));
-			
 			return worldEqual && point.x == x && point.y == y && point.z == z;
 		}
 	}
