@@ -42,9 +42,11 @@ import org.spout.api.plugin.Plugin;
 public class SimpleRecipeManager implements RecipeManager {
 	private final Map<Plugin, Map<Integer, RecipeTree>> registeredShapedRecipes = new ConcurrentHashMap<Plugin, Map<Integer, RecipeTree>>();
 	private final Map<Plugin, Map<Integer, Set<ShapelessRecipe>>> registeredShapelessRecipes = new ConcurrentHashMap<Plugin, Map<Integer, Set<ShapelessRecipe>>>();
+	private final Map<Plugin, Map<Integer, Set<SmeltedRecipe>>> registeredSmeltedRecipes = new ConcurrentHashMap<Plugin, Map<Integer, Set<SmeltedRecipe>>>();
 	private final Map<Integer, Set<Recipe>> allRecipes = new ConcurrentHashMap<Integer, Set<Recipe>>();
 	private final Map<Integer, RecipeTree> allShapedRecipes = new ConcurrentHashMap<Integer, RecipeTree>();
 	private final Map<Integer, Set<ShapelessRecipe>> allShapelessRecipes = new ConcurrentHashMap<Integer, Set<ShapelessRecipe>>();
+	private final Map<Integer, Set<SmeltedRecipe>> allSmeltedRecipes = new ConcurrentHashMap<Integer, Set<SmeltedRecipe>>();
 
 	@Override
 	public boolean register(Recipe recipe) {
@@ -53,6 +55,8 @@ public class SimpleRecipeManager implements RecipeManager {
 			failed = !registerShaped((ShapedRecipe) recipe);
 		} else if (recipe instanceof ShapelessRecipe) {
 			failed = !registerShapeless((ShapelessRecipe) recipe);
+		} else if (recipe instanceof SmeltedRecipe) {
+			failed = !registerSmelted((SmeltedRecipe) recipe);
 		} else {
 			Spout.log("Unknown recipe type!");
 		}
@@ -108,6 +112,30 @@ public class SimpleRecipeManager implements RecipeManager {
 			allShapelessRecipes.put(recipe.getIngredients().size(), recipes);
 		}
 		failed = !allShapelessRecipes.get(recipe.getIngredients().size()).add(recipe) || failed;
+		return !failed;
+	}
+
+	private boolean registerSmelted(SmeltedRecipe recipe) {
+		boolean failed = false;
+		Plugin plugin = recipe.getPlugin();
+		if (plugin != null) {
+			ConcurrentHashMap<Integer, Set<SmeltedRecipe>> recipesMap = (ConcurrentHashMap<Integer, Set<SmeltedRecipe>>) registeredSmeltedRecipes.get(plugin);
+			if (recipesMap == null) {
+				recipesMap = new ConcurrentHashMap<Integer, Set<SmeltedRecipe>>();
+				registeredSmeltedRecipes.put(plugin, recipesMap);
+			}
+			if (recipesMap.get(recipe.getIngredients().size()) == null) {
+				Set<SmeltedRecipe> recipes = Collections.newSetFromMap(new ConcurrentHashMap<SmeltedRecipe, Boolean>());
+				registeredSmeltedRecipes.get(plugin).put(recipe.getIngredients().size(), recipes);
+			}
+			failed = !registeredSmeltedRecipes.get(plugin).get(recipe.getIngredients().size()).add(recipe) || failed;
+		}
+
+		if (allSmeltedRecipes.get(recipe.getIngredients().size()) == null) {
+			Set<SmeltedRecipe> recipes = Collections.newSetFromMap(new ConcurrentHashMap<SmeltedRecipe, Boolean>());
+			allSmeltedRecipes.put(recipe.getIngredients().size(), recipes);
+		}
+		failed = !allSmeltedRecipes.get(recipe.getIngredients().size()).add(recipe) || failed;
 		return !failed;
 	}
 
