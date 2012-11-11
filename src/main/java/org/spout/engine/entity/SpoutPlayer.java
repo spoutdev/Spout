@@ -27,6 +27,8 @@
 package org.spout.engine.entity;
 
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -51,6 +53,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.lang.Locale;
 import org.spout.api.plugin.Platform;
+import org.spout.api.plugin.Plugin;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.access.BanType;
@@ -72,7 +75,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	private final AtomicBoolean onlineLive = new AtomicBoolean(false);
 	private boolean online;
 	private final int hashcode;
-	private PlayerInputState inputState = PlayerInputState.DEFAULT_STATE;
+	private Map<Class<? extends Plugin>, PlayerInputState> inputStates = new HashMap<Class<? extends Plugin>, PlayerInputState>();
 	private Locale preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
 
 	public SpoutPlayer(String name) {
@@ -316,17 +319,16 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	}
 
 	@Override
-	public PlayerInputState input() {
-		return inputState;
+	public PlayerInputState input(Class<? extends Plugin> plugin) {
+		return inputStates.get(plugin);
 	}
 
 	@Override
-	public void processInput(PlayerInputState state) {
+	public void processInput(Class<? extends Plugin> plugin, PlayerInputState state) {
 		if (state == null) {
 			throw new IllegalArgumentException("PlayerInputState cannot be null!");
 		}
-		inputState = state;
-
+		inputStates.put(plugin, state);
 	}
 
 	@Override
@@ -373,6 +375,16 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		if (this.isOnline()) {
 			this.getNetworkSynchronizer().preSnapshot();
 		}
+	}
+
+	@Override
+	public void addInputState(Class<? extends Plugin> plugin, PlayerInputState inputState) {
+		inputStates.put(plugin, inputState);
+	}
+
+	public void executeInput() {
+		for(PlayerInputState inputState : inputStates.values())
+			inputState.process(this);
 	}
 
 }

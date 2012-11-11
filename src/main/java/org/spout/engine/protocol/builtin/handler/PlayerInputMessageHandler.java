@@ -40,7 +40,8 @@ public class PlayerInputMessageHandler extends MessageHandler<PlayerInputMessage
 		}
 
 		Player player = session.getPlayer();
-	    PlayerInputState inputState = new PlayerInputState(message.getInputFlags(), (byte)message.getMouseDx(), (byte)message.getMouseDy() );
-		player.processInput(inputState);
+		//TODO : maybe make PlayerInputState interface serialisable ? 
+	    //PlayerInputState inputState = new PlayerInputState(message.getInputFlags(), (byte)message.getMouseDx(), (byte)message.getMouseDy() );
+		//player.processInput(inputState);
 	}
 }
