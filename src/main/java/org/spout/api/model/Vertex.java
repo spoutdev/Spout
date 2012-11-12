@@ -59,6 +59,14 @@ public class Vertex {
 		this(position, Vector3.ZERO, texture);
 	}
 	
+	public Vertex(Vertex v) {
+		this.color = v.color == null? null : new Color(v.color.getRed(),v.color.getGreen(),v.color.getBlue(),v.color.getAlpha());
+		this.position = v.position == null? null : new Vector3(v.position);
+		this.normal = v.normal == null? null : new Vector3(v.normal);
+		this.texCoord0 = v.texCoord0 == null? null : new Vector2(v.texCoord0);
+		this.texCoord1 = v.texCoord1 == null? null : new Vector2(v.texCoord1);
+	}
+
 	public float[] toArray(){
 		return new float[] { position.getX(), position.getY(), position.getZ(), 1.0f,
 							color.getRed() / 255.0f, color.getBlue() / 255.0f, color.getGreen() / 255.0f, color.getAlpha() / 255.0f,
