@@ -28,6 +28,7 @@ package org.spout.engine.resources;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,11 +41,14 @@ import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
+import org.spout.api.model.Mesh;
 import org.spout.api.model.MeshFace;
+import org.spout.api.model.OrientedMeshFace;
 import org.spout.api.model.TextureMesh;
 import org.spout.api.model.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Shader;
+import org.spout.engine.mesh.CubeMesh;
 
 public class ClientRenderMaterial extends RenderMaterial {
 	
@@ -130,7 +134,47 @@ public class ClientRenderMaterial extends RenderMaterial {
 
 	@Override
 	public List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel,BlockMaterial blockMaterial,
-			Vector3 position, BlockFace face) {
+			Vector3 position, BlockFace face, boolean toRender[]) {
+		Mesh mesh = blockMaterial.getModel().getMesh();
+		
+		if(mesh instanceof TextureMesh){
+			return renderCube(chunkSnapshotModel, blockMaterial, position, face, toRender, (TextureMesh)mesh);
+		}else if(mesh instanceof CubeMesh){
+			return renderCube(chunkSnapshotModel, blockMaterial, position, face, toRender, (CubeMesh)mesh);
+		}
+		
+		return new ArrayList<MeshFace>();
+	}
+
+	public List<MeshFace> renderCube(ChunkSnapshotModel chunkSnapshotModel,BlockMaterial blockMaterial,
+			Vector3 position, BlockFace face, boolean toRender[], CubeMesh mesh) {
+		List<MeshFace> meshs = new ArrayList<MeshFace>();
+		Vector3 model = new Vector3(position.getFloorX(), position.getFloorY(), position.getFloorZ());
+		for(OrientedMeshFace meshFace : mesh){
+			
+			if(!meshFace.canRender(toRender,face))
+				continue;
+			
+			Iterator<Vertex> it = meshFace.iterator();
+			Vertex v1 = new Vertex(it.next());
+			Vertex v2 = new Vertex(it.next());
+			Vertex v3 = new Vertex(it.next());
+			v1.position = v1.position.add(model);
+			v2.position = v2.position.add(model);
+			v3.position = v3.position.add(model);
+			
+			Color color = Color.WHITE; // Temporary testing color
+			v1.color = color;
+			v2.color = color;
+			v3.color = color;
+			
+			meshs.add(new MeshFace(v1, v2, v3));
+		}
+		return meshs;
+	}
+
+	public List<MeshFace> renderCube(ChunkSnapshotModel chunkSnapshotModel,BlockMaterial blockMaterial,
+			Vector3 position, BlockFace face, boolean toRender[], TextureMesh mesh) {
 		List<MeshFace> meshs = new ArrayList<MeshFace>();
 
 		/*   1--2
@@ -153,8 +197,6 @@ public class ClientRenderMaterial extends RenderMaterial {
 		Vector3 vertex5 = model.add(0, 1, 1);
 		Vector3 vertex6 = model.add(1, 1, 1);
 		Vector3 vertex7 = model.add(1, 0, 1);
-
-		TextureMesh mesh = (TextureMesh) blockMaterial.getModel().getMesh();
 
 		Vertex v1 = null, v2 = null, v3 = null, v4 = null;
 		switch (face) {
@@ -222,7 +264,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 
 		return meshs;
 	}
-
+	
 	@Override
 	public int getLayer() {
 		return layer;
