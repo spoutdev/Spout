@@ -72,7 +72,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 		this.material = material;
 	}
 
-	public boolean update(long start) {
+	public boolean update(long start, boolean force) {
 		if (closed) {
 			throw new IllegalStateException("Already closed");
 		}
@@ -83,7 +83,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 				return false;
 		}
 
-		if(isFull()){
+		if(isFull() || force){
 			List<Renderer> renderers = new ArrayList<Renderer>();
 
 			for(ChunkMeshBatch batch : batchs){
