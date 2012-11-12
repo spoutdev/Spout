@@ -78,10 +78,11 @@ public abstract class RenderMaterial extends Resource implements Comparable<Rend
 	 * @param chunkSnapshotModel
 	 * @param position
 	 * @param face
+	 * @param ocluded
 	 * @return
 	 */
 	public abstract List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel,BlockMaterial blockMaterial,
-			Vector3 position, BlockFace face);
+			Vector3 position, BlockFace face, boolean[] ocluded);
 
 	/**
 	 * Return the render pass order
