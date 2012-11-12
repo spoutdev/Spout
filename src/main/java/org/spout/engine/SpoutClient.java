@@ -479,7 +479,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		GL11.glClearColor((135.f / 255.0f), 206.f / 255.f, 250.f / 255.f, 1);
 
 		//Init pool of BatchVertexRenderer
-		BatchVertexRenderer.initPool(GL11.GL_TRIANGLES, 3000);
+		BatchVertexRenderer.initPool(GL11.GL_TRIANGLES, 10000);
 		
 		worldRenderer = new WorldRenderer(this);
 		worldRenderer.setup();
