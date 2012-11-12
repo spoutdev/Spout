@@ -76,13 +76,8 @@ public class SimpleInjector implements Injector {
 				ctr = clazz.getConstructor(argClasses);
 			}
 			return ctr.newInstance(args);
-		} catch (NoSuchMethodException e) {
-			return null;
-		} catch (InvocationTargetException e) {
-			return null;
-		} catch (InstantiationException e) {
-			return null;
-		} catch (IllegalAccessException e) {
+		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
