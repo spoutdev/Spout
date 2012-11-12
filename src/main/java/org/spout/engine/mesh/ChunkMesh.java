@@ -27,9 +27,8 @@
 package org.spout.engine.mesh;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,6 +65,8 @@ public class ChunkMesh{
 	public final static int SUBSIZE_Y = Chunk.BLOCKS.SIZE / SPLIT_Y;
 	public final static int SUBSIZE_Z = Chunk.BLOCKS.SIZE / SPLIT_Z;
 	public final static Vector3 SUBSIZE = new Vector3(SUBSIZE_X, SUBSIZE_Y, SUBSIZE_Z);
+
+	public final static List<BlockFace> shouldRender = new ArrayList<BlockFace>(Arrays.asList(BlockFace.TOP,BlockFace.BOTTOM,BlockFace.NORTH,BlockFace.SOUTH,BlockFace.WEST,BlockFace.EAST));
 	
 	public Vector3 start;
 	public Vector3 end;
@@ -188,39 +189,64 @@ public class ChunkMesh{
 		Map<BlockFace, BatchVertex> meshs = getMaterialMap(renderMaterial);
 
 		Vector3 position = new Vector3(x, y, z);
-		for(BlockFace face : BlockFace.values()){
+
+		boolean toRender[] = new boolean[shouldRender.size()];
+		boolean fullyOccluded = true;
+		for(int i = 0; i < shouldRender.size(); i++){
+			BlockFace face = shouldRender.get(i);
 			Vector3 facePos = position.add(face.getOffset());
 			int x1 = facePos.getFloorX();
 			int y1 = facePos.getFloorY();
 			int z1 = facePos.getFloorZ();
+			
 			BlockMaterial neighbor = chunkModel.getChunkFromBlock(x1, y1, z1).getBlockMaterial(x1, y1, z1);
 
-			if (!material.isFaceRendered(face, neighbor)) {
-				break;
+			if (material.isFaceRendered(face, neighbor)) {
+				toRender[i] = true;
+				fullyOccluded = false;
+			}else{
+				toRender[i] = false;
+				continue;
 			}
-
+			
 			ByteBitSet occlusion = neighbor.getOcclusion(material.getData());
 
-			if (!occlusion.get(face.getOpposite())) {
-				List<MeshFace> faces = renderMaterial.render(chunkSnapshotModel, material, position, face);
+			if (occlusion.get(face.getOpposite())) {
+				toRender[i] = false;
+				continue;
+			}else{
+				toRender[i] = true;
+				fullyOccluded = false;
+			}
+		}
+		
+		if(fullyOccluded)
+			return;
 
-				if(!faces.isEmpty()){
-					BatchVertex batchVertex = meshs.get(face);
-					if(batchVertex == null){
-						batchVertex = new BatchVertex();
-						meshs.put(face, batchVertex);
-					}
-					
-					for (MeshFace meshFace : faces) {
-						for (Vertex vert : meshFace) {
-							if(vert.texCoord0 != null)
-								batchVertex.addTexCoord(vert.texCoord0);
-							if(vert.normal != null)
-								batchVertex.addNormal(vert.normal);
-							if(vert.color != null)
-								batchVertex.addColor(vert.color);
-							batchVertex.addVertex(vert.position);
-						}
+		for(int i = 0; i < shouldRender.size(); i++){
+			BlockFace face = shouldRender.get(i);
+			
+			if(!toRender[i])
+				continue;
+
+			List<MeshFace> faces = renderMaterial.render(chunkSnapshotModel, material, position, face, toRender);
+
+			if(!faces.isEmpty()){
+				BatchVertex batchVertex = meshs.get(face);
+				if(batchVertex == null){
+					batchVertex = new BatchVertex();
+					meshs.put(face, batchVertex);
+				}
+
+				for (MeshFace meshFace : faces) {
+					for (Vertex vert : meshFace) {
+						if(vert.texCoord0 != null)
+							batchVertex.addTexCoord(vert.texCoord0);
+						if(vert.normal != null)
+							batchVertex.addNormal(vert.normal);
+						if(vert.color != null)
+							batchVertex.addColor(vert.color);
+						batchVertex.addVertex(vert.position);
 					}
 				}
 			}
