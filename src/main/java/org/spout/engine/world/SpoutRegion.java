@@ -202,6 +202,8 @@ public class SpoutRegion extends Region {
 	private final BroadphaseInterface broadphase;
 	private final CollisionConfiguration configuration;
 	private final SequentialImpulseConstraintSolver solver;
+	private final ConcurrentLinkedQueue<PhysicsComponent> physicsAddQueue = new ConcurrentLinkedQueue<PhysicsComponent>();
+	private final ConcurrentLinkedQueue<PhysicsComponent> physicsRemoveQueue = new ConcurrentLinkedQueue<PhysicsComponent>();
 
 	@SuppressWarnings("unchecked")
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
@@ -311,11 +313,7 @@ public class SpoutRegion extends Region {
 		if (object.getCollisionShape() == null) {
 			return;
 		}
-		if (object instanceof RigidBody) {
-			simulation.addRigidBody((RigidBody) object);
-		} else if (object != null) {
-			simulation.addCollisionObject(object);
-		}
+		physicsAddQueue.add(physics);
 	}
 
 	public void removePhysics(PhysicsComponent physics) {
@@ -324,11 +322,7 @@ public class SpoutRegion extends Region {
 		if (object.getCollisionShape() == null) {
 			return;
 		}
-		if (object instanceof RigidBody) {
-			simulation.removeRigidBody((RigidBody) object);
-		} else if (object != null) {
-			simulation.removeCollisionObject(object);
-		}
+		physicsRemoveQueue.add(physics);
 	}
 
 	public void startMeshGeneratorThread() {
@@ -918,6 +912,25 @@ public class SpoutRegion extends Region {
 	 * @param dt
 	 */
 	private void updateDynamics(float dt) {
+		PhysicsComponent physics = null;
+		while((physics = physicsAddQueue.poll()) != null) {
+			if (!physics.getOwner().isRemoved()) {
+				CollisionObject object = physics.getCollisionObject();
+				if (object instanceof RigidBody) {
+					simulation.addRigidBody((RigidBody) object);
+				} else if (object != null) {
+					simulation.addCollisionObject(object);
+				}
+			}
+		}
+		while((physics = physicsRemoveQueue.poll()) != null) {
+			CollisionObject object = physics.getCollisionObject();
+			if (object instanceof RigidBody) {
+				simulation.removeRigidBody((RigidBody) object);
+			} else if (object != null) {
+				simulation.removeCollisionObject(object);
+			}
+		}
 		simulation.stepSimulation(1 / 20F, 0, 1 / 20F);
 	}
 
