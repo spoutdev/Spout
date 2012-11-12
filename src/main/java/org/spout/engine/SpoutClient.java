@@ -528,7 +528,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 				r.render(activeCamera);
 			}
 		}
-
+		if(wireframe) {
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+		}
 		gui.begin();
 		if (showDebugInfos) {
 			Point position = activePlayer.getTransform().getPosition();
@@ -549,6 +551,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 			}
 		}
 		gui.render();
+		if(wireframe) {
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+		}
 
 		if (System.currentTimeMillis()-lastFrameTime>1000) {
 			lastFrameTime = System.currentTimeMillis();
