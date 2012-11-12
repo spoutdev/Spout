@@ -139,7 +139,7 @@ public class WorldRenderer {
 		public void run() {
 			final long start = System.currentTimeMillis();
 
-			batch(start);
+			batch(start, false);
 
 			//Execute previous unfinished chunkMesh
 			if(it2 != null){
@@ -214,6 +214,9 @@ public class WorldRenderer {
 				chunkMesh = null;
 				position = null;
 			}
+			
+			//Force merge of mesh when nothings to do
+			batch(start, true);
 		}
 
 
@@ -229,14 +232,15 @@ public class WorldRenderer {
 
 			chunkMeshBatch.setSubBatch(chunkMesh.getSubX(),chunkMesh.getSubY(),chunkMesh.getSubZ(),batchVertex);
 			dirties.add(chunkMeshBatch);
-			batch(start);
+			
+			batch(start,false);
 		}
 		
-		private void batch(long start){
+		private void batch(long start, boolean force){
 			while(!dirties.isEmpty()){
 				ChunkMeshBatchAggregator batch = dirties.remove(0);
 				
-				if(!batch.update(start))
+				if(!batch.update(start,force))
 					dirties.add(batch);
 				
 				if( System.currentTimeMillis() - start > TIME_LIMIT)

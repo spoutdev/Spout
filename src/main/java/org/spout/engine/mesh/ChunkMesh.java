@@ -42,6 +42,7 @@ import org.spout.api.model.MeshFace;
 import org.spout.api.model.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.util.bytebit.ByteBitSet;
+import org.spout.engine.batcher.ChunkMeshBatchAggregator;
 import org.spout.engine.renderer.BatchVertex;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 
@@ -54,7 +55,7 @@ public class ChunkMesh{
 	 * Number of piece per chunk for each dimension
 	 */
 	public final static int SPLIT_X = 2;
-	public final static int SPLIT_Y = 1;
+	public final static int SPLIT_Y = 2;
 	public final static int SPLIT_Z = 2;
 	public final static Vector3 SPLIT = new Vector3(SPLIT_X, SPLIT_Y, SPLIT_Z);
 	
@@ -68,6 +69,10 @@ public class ChunkMesh{
 
 	public final static List<BlockFace> shouldRender = new ArrayList<BlockFace>(Arrays.asList(BlockFace.TOP,BlockFace.BOTTOM,BlockFace.NORTH,BlockFace.SOUTH,BlockFace.WEST,BlockFace.EAST));
 	
+	private final static boolean UNLOAD_ACCELERATOR = SPLIT_X == ChunkMeshBatchAggregator.SIZE_X &&
+			SPLIT_Y == ChunkMeshBatchAggregator.SIZE_Y &&
+			SPLIT_Z == ChunkMeshBatchAggregator.SIZE_Z;
+	
 	public Vector3 start;
 	public Vector3 end;
 	
@@ -78,6 +83,7 @@ public class ChunkMesh{
 	private final int chunkX,chunkY,chunkZ;
 	private final int subX,subY,subZ;
 	private boolean isUnloaded = false;
+	private boolean first = false;
 	
 	/**
 	 * Time of the used SpoutChunkSnapshotModel generation
@@ -87,6 +93,7 @@ public class ChunkMesh{
 
 	public ChunkMesh(SpoutChunkSnapshotModel chunkModel, int x, int y, int z) {
 		this.chunkModel = chunkModel;
+		first = chunkModel.isFirst();
 		
 		chunkX = chunkModel.getX();
 		chunkY = chunkModel.getY();
@@ -105,17 +112,24 @@ public class ChunkMesh{
 	public static List<ChunkMesh> getChunkMeshs(SpoutChunkSnapshotModel chunkModel){
 		List<ChunkMesh> list = new ArrayList<ChunkMesh>();
 		Set<Vector3> subMeshs = chunkModel.getSubMeshs();
-		if(subMeshs == null){
-			for(int i = 0; i < SPLIT_X; i++){
-				for(int j = 0; j < SPLIT_Y; j++){
-					for(int k = 0; k < SPLIT_Z; k++){
-						list.add(new ChunkMesh(chunkModel, i, j, k));
+
+		if(chunkModel.isUnload() && UNLOAD_ACCELERATOR){
+			// Work only if ChunkMesh split == ChunkMeshBatchAggregator group, that say a aggregator contain a entire chunk
+			// The clean method unload all render/face for the aggregator that contain the mesh, so we can limit send only one mesh
+			list.add(new ChunkMesh(chunkModel, 0, 0, 0));
+		}else{
+			if(subMeshs == null){
+				for(int i = 0; i < SPLIT_X; i++){
+					for(int j = 0; j < SPLIT_Y; j++){
+						for(int k = 0; k < SPLIT_Z; k++){
+							list.add(new ChunkMesh(chunkModel, i, j, k));
+						}
 					}
 				}
+			}else{
+				for(Vector3 vector : subMeshs)
+					list.add(new ChunkMesh(chunkModel, vector.getFloorX(), vector.getFloorY(), vector.getFloorZ()));
 			}
-		}else{
-			for(Vector3 vector : subMeshs)
-				list.add(new ChunkMesh(chunkModel, vector.getFloorX(), vector.getFloorY(), vector.getFloorZ()));
 		}
 		return list;
 	}
@@ -277,6 +291,10 @@ public class ChunkMesh{
 
 	public HashMap<RenderMaterial, Map<BlockFace, BatchVertex>> getMaterialsFaces() {
 		return meshs;
+	}
+
+	public boolean isFirst() {
+		return first;
 	}
 
 	public long getTime() {

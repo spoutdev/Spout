@@ -62,10 +62,13 @@ public class ChunkMeshBatch {
 		if (closed) {
 			throw new IllegalStateException("Already closed");
 		}
+		
 		if(batchVertex.getVertexCount() == 0){
 			hasVertices = false;
+			batchVertex = null;
 			return;
 		}
+		
 		hasVertices = true;
 
 		renderer.begin();
@@ -75,6 +78,9 @@ public class ChunkMeshBatch {
 		material.postRender();
 
 		renderer.end();
+		
+		//Free batchVertex
+		batchVertex = null;
 	}
 
 	public boolean hasVertices() {
