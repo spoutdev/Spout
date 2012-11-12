@@ -35,6 +35,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.spout.api.Spout;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.api.scheduler.Task;
 import org.spout.api.scheduler.TaskManager;
@@ -173,7 +175,7 @@ public class SpoutTaskManager implements TaskManager {
 	public int schedule(SpoutTask task) {
 		synchronized (scheduleLock) {
 			addTask(task);
-			if (task.getDelay() == 0 && task.getPeriod() < 0) {
+			if (!task.isSync()) {
 				SpoutWorker worker = new SpoutWorker(task, this);
 				addWorker(worker, task);
 				worker.start();
