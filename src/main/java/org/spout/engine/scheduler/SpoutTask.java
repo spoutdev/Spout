@@ -199,7 +199,7 @@ public class SpoutTask implements Task, LongPrioritized {
 			return false;
 		}
 
-		if (scheduler.isServerLoaded()) {
+		if (scheduler.isServerOverloaded()) {
 			if (attemptDefer()) {
 				updateCallTime(SpoutScheduler.PULSE_EVERY);
 				return false;

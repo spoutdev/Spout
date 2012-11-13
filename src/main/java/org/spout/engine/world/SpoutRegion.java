@@ -885,10 +885,14 @@ public class SpoutRegion extends Region {
 			}
 			toPopulate.setNotQueuedForPopulation();
 			if (toPopulate.isLoaded()) {
-				toPopulate.populate();
-			} else {
-				i--;
+				if (toPopulate.populate()) {
+					if (scheduler.isServerOverloaded()) {
+						break;
+					}
+					continue;
+				}
 			}
+			i--;
 		}
 	}
 

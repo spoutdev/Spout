@@ -231,6 +231,7 @@ public final class SpoutScheduler implements Scheduler {
 		public void run() {
 			long targetPeriod = PULSE_EVERY;
 			long lastTick = System.currentTimeMillis();
+			boolean lastTickOverloaded = false;
 
 			while (!shutdown) {
 				long startTime = System.currentTimeMillis();
@@ -249,13 +250,17 @@ public final class SpoutScheduler implements Scheduler {
 				long freeTime = targetPeriod - (finishTime - startTime);
 
 				if (freeTime > 0) {
-					heavyLoad.set(false);
+					if (!lastTickOverloaded) {
+						heavyLoad.set(false);
+					}
+					lastTickOverloaded = false;
 					try {
 						Thread.sleep(freeTime);
 					} catch (InterruptedException e) {
 						shutdown = true;
 					}
 				} else {
+					lastTickOverloaded = true;
 					heavyLoad.set(true);
 				}
 			}
@@ -834,7 +839,7 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	@Override
-	public boolean isServerLoaded() {
+	public boolean isServerOverloaded() {
 		if (heavyLoad.get()) {
 			return true;
 		}

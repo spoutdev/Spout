@@ -427,4 +427,25 @@ public class FilteredChunk extends SpoutChunk{
 	public void fillBlockContainer(BlockContainer container) {
 		super.fillBlockContainer(container);
 	}
+	
+	@Override
+	public boolean populate() {
+		if (super.populate()) {
+			this.setModified();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean populate(boolean force) {
+		if (super.populate(force)) {
+			this.setModified();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 }

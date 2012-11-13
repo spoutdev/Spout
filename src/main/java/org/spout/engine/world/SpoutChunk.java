@@ -1309,18 +1309,18 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	@Override
-	public void populate() {
-		populate(false);
+	public boolean populate() {
+		return populate(false);
 	}
 
 	@Override
-	public void populate(boolean force) {
+	public boolean populate(boolean force) {
 		if (!isObserved() && !force) {
-			return;
+			return false;
 		}
 
 		if (!populationState.get().incomplete() && !force) {
-			return;
+			return false;
 		}
 
 		final List<Populator> clearPopulators = new ArrayList<Populator>();
@@ -1384,6 +1384,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 			this.initLighting();
 		}
 		parentRegion.onChunkPopulated(this);
+		return true;
 	}
 
 	public void populate(Populator populator) {
