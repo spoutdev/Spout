@@ -28,6 +28,7 @@ package org.spout.engine.world;
 
 import gnu.trove.map.TShortObjectMap;
 import gnu.trove.map.hash.TShortObjectHashMap;
+import gnu.trove.procedure.TShortObjectProcedure;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -62,11 +63,15 @@ import org.spout.api.geo.AreaBlockSource;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
+import org.spout.api.geo.cuboid.BlockComponentContainer;
+import org.spout.api.geo.cuboid.BlockContainer;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
+import org.spout.api.geo.cuboid.ContainerFillOrder;
+import org.spout.api.geo.cuboid.LightContainer;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.ComplexMaterial;
@@ -191,6 +196,11 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	 * The thread associated with the region
 	 */
 	private final Thread regionThread;
+	
+	/**
+	 * The order that blocks are stored in the block store
+	 */
+	private static ContainerFillOrder STORE_FILL_ORDER = ContainerFillOrder.XZY;
 
 	/**
 	 * A set of all blocks in this chunk that need a physics update in the next
@@ -532,6 +542,10 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	public int getBlockFullState(int x, int y, int z) {
 		return blockStore.getFullData(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK);
 	}
+	
+	public int getBlockFullState(int index) {
+		return blockStore.getFullData(index);
+	}
 
 	@Override
 	public short getBlockData(int x, int y, int z) {
@@ -626,7 +640,20 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	public byte getBlockSkyLightRaw(int x, int y, int z) {
 		checkChunkLoaded();
 		int index = getBlockIndex(x, y, z);
+		return getBlockSkyLightRaw(index);
+	}
+	
+	protected byte getBlockSkyLightRaw(int index) {
 		byte light = skyLight[index >> 1];
+		if ((index & 1) == 1) {
+			return NibblePairHashed.key1(light);
+		} else {
+			return NibblePairHashed.key2(light);
+		}
+	}
+	
+	protected byte getBlockBlockLightRaw(int index) {
+		byte light = blockLight[index >> 1];
 		if ((index & 1) == 1) {
 			return NibblePairHashed.key1(light);
 		} else {
@@ -732,6 +759,102 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	public ChunkSnapshot getSnapshot() {
 		return getSnapshot(SnapshotType.BOTH, EntityType.NO_ENTITIES, ExtraData.NO_EXTRA_DATA);
 	}
+	
+	@Override
+	public void fillBlockContainer(BlockContainer container) {
+		ContainerFillOrder sourceOrder = SpoutChunk.STORE_FILL_ORDER;
+		ContainerFillOrder destOrder = container.getOrder();
+		
+		int size = BLOCKS.SIZE;
+		
+		int sourceIndex = 0;
+
+		int thirdStep = destOrder.thirdStep(sourceOrder, size, size, size);
+		int secondStep = destOrder.secondStep(sourceOrder, size, size, size);
+		int firstStep = destOrder.firstStep(sourceOrder, size, size, size);
+
+		int thirdMax = destOrder.getThirdSize(size, size, size);
+		int secondMax = destOrder.getSecondSize(size, size, size);
+		int firstMax = destOrder.getFirstSize(size, size, size);
+		
+		for (int third = 0; third < thirdMax; third++) {
+			int secondStart = sourceIndex;
+			for (int second = 0; second < secondMax; second++) {
+				int firstStart = sourceIndex;
+				for (int first = 0; first < firstMax; first++) {
+					container.setBlockFullState(getBlockFullState(sourceIndex));
+					sourceIndex += firstStep;
+				}
+				sourceIndex = firstStart + secondStep;
+			}
+			sourceIndex = secondStart + thirdStep;
+		}
+	}
+	
+	@Override
+	public void fillSkyLightContainer(LightContainer container) {
+		fillLightContainerRaw(container, false);
+	}
+	
+	@Override
+	public void fillBlockLightContainer(LightContainer container) {
+		fillLightContainerRaw(container, true);
+	}
+	
+	public void fillLightContainerRaw(LightContainer container, boolean blockLight) {
+		ContainerFillOrder sourceOrder = SpoutChunk.STORE_FILL_ORDER;
+		ContainerFillOrder destOrder = container.getOrder();
+		
+		int size = BLOCKS.SIZE;
+		
+		int sourceIndex = 0;
+
+		int thirdStep = destOrder.thirdStep(sourceOrder, size, size, size);
+		int secondStep = destOrder.secondStep(sourceOrder, size, size, size);
+		int firstStep = destOrder.firstStep(sourceOrder, size, size, size);
+
+		int thirdMax = destOrder.getThirdSize(size, size, size);
+		int secondMax = destOrder.getSecondSize(size, size, size);
+		int firstMax = destOrder.getFirstSize(size, size, size);
+		
+		for (int third = 0; third < thirdMax; third++) {
+			int secondStart = sourceIndex;
+			for (int second = 0; second < secondMax; second++) {
+				int firstStart = sourceIndex;
+				for (int first = 0; first < firstMax; first++) {
+					if (blockLight) {
+						container.setLightLevel(getBlockBlockLightRaw(sourceIndex));
+					} else {
+						container.setLightLevel(getBlockSkyLightRaw(sourceIndex));
+					}
+					sourceIndex += firstStep;
+				}
+				sourceIndex = firstStart + secondStep;
+			}
+			sourceIndex = secondStart + thirdStep;
+		}
+	}
+
+	@Override
+	public void fillBlockComponentContainer(final BlockComponentContainer container) {
+		synchronized(getBlockComponents()) {
+			final int bx = getBlockX();
+			final int by = getBlockY();
+			final int bz = getBlockZ();
+			container.setBlockComponentCount(getBlockComponents().size());
+			getBlockComponents().forEachEntry(new TShortObjectProcedure<BlockComponent>() {
+				@Override
+				public boolean execute(short index, BlockComponent component) {
+					int x = NibbleQuadHashed.key1(index) + bx;
+					int y = NibbleQuadHashed.key2(index) + by;
+					int z = NibbleQuadHashed.key3(index) + bz;
+					container.setBlockComponent(x, y, z, component);
+					return true;
+				}
+			});
+		}
+	}
+
 
 	@Override
 	public SpoutChunkSnapshot getSnapshot(SnapshotType type, EntityType entities, ExtraData data) {

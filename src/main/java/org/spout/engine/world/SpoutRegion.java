@@ -445,7 +445,7 @@ public class SpoutRegion extends Region {
 				SpoutChunk newChunk = new FilteredChunk(world, this, cx, cy, cz, chunk.getRawArray(), null);
 				SpoutChunk currentChunk = setChunk(newChunk, x, yy++, z, null, true, loadopt);
 				if (currentChunk != newChunk) {
-					throw new IllegalStateException("Unable to set generated chunk, new Chunk " + newChunk + " chunk in memory " + currentChunk);
+					Spout.getLogger().info("Warning: Unable to set generated chunk, new Chunk " + newChunk + " chunk in memory " + currentChunk);
 				}
 			}
 			if (!generated.compareAndSet(false, true)) {

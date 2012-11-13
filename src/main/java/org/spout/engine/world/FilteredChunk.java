@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.spout.api.Spout;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.event.Cause;
+import org.spout.api.geo.cuboid.BlockContainer;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
@@ -42,6 +43,7 @@ import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.Vector3;
 import org.spout.api.plugin.Platform;
+import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.map.concurrent.palette.AtomicPaletteBlockStore;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.SpoutEntity;
@@ -162,6 +164,14 @@ public class FilteredChunk extends SpoutChunk{
 		}
 		return super.getBlockFullState(x, y, z);
 	}
+	
+	public int getBlockFullState(int index) {
+		if (uniform.get()) {
+			Material m = material.get();
+			return BlockFullState.getPacked(m.getId(), m.getData());
+		}
+		return super.getBlockFullState(index);
+	}
 
 	@Override
 	public short getBlockData(int x, int y, int z) {
@@ -251,6 +261,22 @@ public class FilteredChunk extends SpoutChunk{
 			return this.isAboveGround() ? (byte) 0xF : (byte) 0x0;
 		}
 		return super.getBlockSkyLightRaw(x, y, z);
+	}
+	
+	@Override
+	public byte getBlockSkyLightRaw(int index) {
+		if (uniform.get()) {
+			return this.isAboveGround() ? (byte) 0xF : (byte) 0x0;
+		}
+		return super.getBlockSkyLightRaw(index);
+	}
+	
+	@Override
+	protected byte getBlockBlockLightRaw(int index) {
+		if (uniform.get()) {
+			return material.get().getLightLevel((short) 0);
+		}
+		return super.getBlockBlockLightRaw(index);
 	}
 
 	@Override
@@ -395,5 +421,10 @@ public class FilteredChunk extends SpoutChunk{
 	@Override
 	public void onEntityLeave(SpoutEntity e) {
 		entitiesModified.compareAndSet(false, true);
+	}
+
+	@Override
+	public void fillBlockContainer(BlockContainer container) {
+		super.fillBlockContainer(container);
 	}
 }
