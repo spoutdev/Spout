@@ -199,8 +199,10 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	/**
 	 * Populates the chunk with all the Populators attached to the
 	 * WorldGenerator of its world.
+	 * 
+	 * @return
 	 */
-	public abstract void populate();
+	public abstract boolean populate();
 
 	/**
 	 * Initializes the lighting in this chunk
@@ -220,8 +222,9 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 *
 	 * @param force forces to populate the chunk even if it already has been
 	 *            populated.
+	 * @return
 	 */
-	public abstract void populate(boolean force);
+	public abstract boolean populate(boolean force);
 
 	/**
 	 * Gets if this chunk already has been populated.

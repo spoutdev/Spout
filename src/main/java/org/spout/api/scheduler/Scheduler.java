@@ -62,5 +62,5 @@ public interface Scheduler extends TaskManager {
 	 * @return true if the server is under heavy load
 	 */
 	@Threadsafe
-	public boolean isServerLoaded();
+	public boolean isServerOverloaded();
 }
