@@ -28,6 +28,8 @@ package org.spout.engine.resources;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +37,7 @@ import java.util.Set;
 
 import org.lwjgl.opengl.GL11;
 import org.spout.api.geo.cuboid.ChunkSnapshotModel;
-import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
@@ -46,12 +48,15 @@ import org.spout.api.model.MeshFace;
 import org.spout.api.model.OrientedMeshFace;
 import org.spout.api.model.TextureMesh;
 import org.spout.api.model.Vertex;
+import org.spout.api.render.BatchEffect;
+import org.spout.api.render.RenderEffect;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Shader;
+import org.spout.api.render.SnapshotRender;
 import org.spout.engine.mesh.CubeMesh;
 
 public class ClientRenderMaterial extends RenderMaterial {
-	
+
 	Shader shader;
 	Map<String, Object> materialParameters;
 
@@ -59,11 +64,12 @@ public class ClientRenderMaterial extends RenderMaterial {
 	Matrix view;
 	Matrix projection;
 	int layer;
+	private List<RenderEffect> renderEffects = new ArrayList<RenderEffect>();
 
 	public ClientRenderMaterial(Shader s, Map<String, Object> params){
 		this(s, params, null, null, true, 0);
 	}
-	
+
 	public ClientRenderMaterial(Shader s, Map<String, Object> params, int layer){
 		this(s, params, null, null, true, layer);
 	}
@@ -76,7 +82,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 		this.depthTesting = depth;
 		this.layer = layer;
 	}
-	
+
 	@Override
 	public void assign(){
 		Set<Map.Entry<String, Object>> s = materialParameters.entrySet();
@@ -102,7 +108,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 				shader.setUniform(entry.getKey(), (Matrix)entry.getValue());
 			}
 		}
-		
+
 		shader.assign();
 
 	}
@@ -111,50 +117,69 @@ public class ClientRenderMaterial extends RenderMaterial {
 	public Object getValue(String name) {
 		return materialParameters.get(name);
 	}
-	
+
 	@Override
 	public Shader getShader(){
 		return shader;
 	}
-	
+
+	@Override
+	public void preBatch(SnapshotRender snapshotRender) {
+		for(BatchEffect batchEffect : snapshotRender.getMaterial().getBatchEffects())
+			batchEffect.preBatch(snapshotRender);
+	}
+
+	@Override
+	public void postBatch(SnapshotRender snapshotRender) {
+		for(BatchEffect batchEffect : snapshotRender.getMaterial().getBatchEffects())
+			batchEffect.postBatch(snapshotRender);
+	}
+
 	@Override
 	public void preRender() {
+		for(RenderEffect renderEffect : getRenderEffects())
+			renderEffect.preRender();
+
 		if(!depthTesting){
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 		}
-		
+
 	}
-	
+
 	@Override
 	public void postRender() {
+		for(RenderEffect renderEffect : getRenderEffects())
+			renderEffect.postRender();
+
 		if(!depthTesting){
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 		}
 	}
 
 	@Override
-	public List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel,BlockMaterial blockMaterial,
-			Vector3 position, BlockFace face, boolean toRender[]) {
-		Mesh mesh = blockMaterial.getModel().getMesh();
-		
+	public List<MeshFace> render(SnapshotRender snapshotRender) {
+		Mesh mesh = snapshotRender.getMesh();
+
 		if(mesh instanceof TextureMesh){
-			return renderCube(chunkSnapshotModel, blockMaterial, position, face, toRender, (TextureMesh)mesh);
+			return renderCube(snapshotRender.getSnapshotModel(), snapshotRender.getMaterial(),
+					snapshotRender.getPosition(), snapshotRender.getFace(), snapshotRender.getToRender(), (TextureMesh)mesh);
 		}else if(mesh instanceof CubeMesh){
-			return renderCube(chunkSnapshotModel, blockMaterial, position, face, toRender, (CubeMesh)mesh);
+			return renderCube(snapshotRender.getSnapshotModel(), snapshotRender.getMaterial(),
+					snapshotRender.getPosition(), snapshotRender.getFace(), snapshotRender.getToRender(), (CubeMesh)mesh);
 		}
-		
+
 		return new ArrayList<MeshFace>();
 	}
 
-	public List<MeshFace> renderCube(ChunkSnapshotModel chunkSnapshotModel,BlockMaterial blockMaterial,
+	public List<MeshFace> renderCube(ChunkSnapshotModel chunkSnapshotModel,Material blockMaterial,
 			Vector3 position, BlockFace face, boolean toRender[], CubeMesh mesh) {
 		List<MeshFace> meshs = new ArrayList<MeshFace>();
 		Vector3 model = new Vector3(position.getFloorX(), position.getFloorY(), position.getFloorZ());
 		for(OrientedMeshFace meshFace : mesh){
-			
+
 			if(!meshFace.canRender(toRender,face))
 				continue;
-			
+
 			Iterator<Vertex> it = meshFace.iterator();
 			Vertex v1 = new Vertex(it.next());
 			Vertex v2 = new Vertex(it.next());
@@ -162,18 +187,18 @@ public class ClientRenderMaterial extends RenderMaterial {
 			v1.position = v1.position.add(model);
 			v2.position = v2.position.add(model);
 			v3.position = v3.position.add(model);
-			
+
 			Color color = Color.WHITE; // Temporary testing color
 			v1.color = color;
 			v2.color = color;
 			v3.color = color;
-			
+
 			meshs.add(new MeshFace(v1, v2, v3));
 		}
 		return meshs;
 	}
 
-	public List<MeshFace> renderCube(ChunkSnapshotModel chunkSnapshotModel,BlockMaterial blockMaterial,
+	public List<MeshFace> renderCube(ChunkSnapshotModel chunkSnapshotModel,Material blockMaterial,
 			Vector3 position, BlockFace face, boolean toRender[], TextureMesh mesh) {
 		List<MeshFace> meshs = new ArrayList<MeshFace>();
 
@@ -243,14 +268,14 @@ public class ClientRenderMaterial extends RenderMaterial {
 
 		/*float lightD = ((15 - chunkSnapshotModel.getCenter().getBlockLight(position.getFloorX(), position.getFloorY(), position.getFloorZ())) * (1f / 15));
 		Color light = new Color(lightD * 0.5f, lightD * 0.25f, lightD * 0.25f);
-		
+
 		float skyLightD = ((15 - chunkSnapshotModel.getCenter().getBlockSkyLight(position.getFloorX(), position.getFloorY(), position.getFloorZ())) * (1f / 15));
 		Color skyLight = new Color(skyLightD * 0.25f, skyLightD * 0.25f, skyLightD * 0.5f);
-		
+
 		Color result = new Color(Math.max(light.getRed(),skyLight.getRed()),
 				Math.max(light.getGreen(),skyLight.getGreen()),
 				Math.max(light.getBlue(),skyLight.getBlue()));*/
-		
+
 		Color color = Color.WHITE; // Temporary testing color
 		v1.color = color;
 		v2.color = color;
@@ -264,9 +289,20 @@ public class ClientRenderMaterial extends RenderMaterial {
 
 		return meshs;
 	}
-	
+
 	@Override
 	public int getLayer() {
 		return layer;
 	}
+
+	@Override
+	public void addRenderEffect(RenderEffect renderEffect) {
+		renderEffects.add(renderEffect);
+	}
+	
+	@Override
+	public Collection<RenderEffect> getRenderEffects() {
+		return Collections.unmodifiableCollection(renderEffects );
+	}
+
 }
