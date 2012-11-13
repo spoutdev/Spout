@@ -52,7 +52,6 @@ public class InventoryTest extends EngineFaker {
 
 	@Before
 	public void constructRandomInventory() {
-		EngineFaker.setupEngine();
 		for (int i = 0; i < inventory.size(); i++) {
 			inventory.set(i, getRandomItem());
 		}
@@ -100,10 +99,11 @@ public class InventoryTest extends EngineFaker {
 	public void testAdd() {
 		ItemStack item = new ItemStack(mats[0], getRandomSize());
 		ItemStack item1 = new ItemStack(mats[1], getRandomSize());
+		ItemStack clone = item1.clone();
 		inventory.set(0, item);
 		inventory.set(1, null);
 		inventory.add(item1);
-		assertEquals(item1, inventory.get(1));
+		assertEquals(clone, inventory.get(1));
 	}
 
 	@Test
