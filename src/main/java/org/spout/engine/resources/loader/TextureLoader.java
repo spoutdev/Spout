@@ -34,9 +34,12 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
+import org.spout.api.Spout;
+import org.spout.api.plugin.Platform;
 import org.spout.api.render.Texture;
 import org.spout.api.resource.BasicResourceLoader;
 import org.spout.engine.resources.ClientTexture;
+import org.spout.engine.resources.server.ServerTexture;
 
 public class TextureLoader extends BasicResourceLoader<Texture> {
 	/**
@@ -49,7 +52,11 @@ public class TextureLoader extends BasicResourceLoader<Texture> {
 		Texture t = null;
 		try {
 			BufferedImage image = ImageIO.read(stream);
-			t = new ClientTexture(image);
+			if (Spout.getPlatform()==Platform.SERVER) {
+				t = new ServerTexture(image);
+			} else {
+				t = new ClientTexture(image);
+			}
 		} catch (IOException e) {
 
 			e.printStackTrace();
