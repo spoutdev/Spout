@@ -298,6 +298,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 			ItemStack slot = get(index);
 			if (slot == null) {
 				set(index, item);
+				item.setAmount(0);
 				return;
 			}
 			if (!slot.equalsIgnoreSize(item)) {
