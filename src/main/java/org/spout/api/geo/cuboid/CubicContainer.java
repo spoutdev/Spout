@@ -26,13 +26,13 @@
  */
 package org.spout.api.geo.cuboid;
 
-public interface LightContainer extends CubicContainer {
-	
-	/**
-	 * Sets the nibble light level for the next block in the sequence.
-	 * 
-	 * @param light
-	 */
-	public void setLightLevel(byte light);
+public interface CubicContainer {
 
+	/**
+	 * Gets the fill order for the container
+	 * 
+	 * @return
+	 */
+	public ContainerFillOrder getOrder();
+	
 }

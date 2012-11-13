@@ -129,7 +129,10 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 */
 	public int getSequence(int x, int y, int z) {
 		checkCompressing();
-		int index = getIndex(x, y, z);
+		return getSequence(getIndex(x, y, z));
+	}
+		
+	private int getSequence(int index) {
 		int spins = 0;
 		boolean interrupted = false;
 		try {
@@ -168,13 +171,16 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 *         DatatableSequenceNumber.ATOMIC
 	 */
 	public boolean testSequence(int x, int y, int z, int expected) {
+		return testSequence(getIndex(x, y, z), expected);
+	}
+	
+	public boolean testSequence(int index, int expected) {
 
 		if (expected == AtomicSequenceNumber.ATOMIC) {
 			return false;
 		}
 
 		checkCompressing();
-		int index = getIndex(x, y, z);
 		boolean interrupted = false;
 		try {
 			checkCompressing();
@@ -279,7 +285,11 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 	 */
 	@Override
 	public int getFullData(int x, int y, int z) {
-		int index = getIndex(x, y, z);
+		return getFullData(getIndex(x, y, z));
+	}
+	
+	@Override
+	public int getFullData(int index) {
 		int spins = 0;
 		boolean interrupted = false;
 		try {
@@ -289,11 +299,11 @@ public final class AtomicBlockStoreImpl implements AtomicBlockStore {
 				}
 				checkCompressing();
 
-				int seq = getSequence(x, y, z);
+				int seq = getSequence(index);
 				short blockId = blockIds.get(index);
 				if (auxStore.isReserved(blockId)) {
 					int state = auxStore.getInt(blockId);
-					if (testSequence(x, y, z, seq)) {
+					if (testSequence(index, seq)) {
 						return state;
 					}
 				} else {

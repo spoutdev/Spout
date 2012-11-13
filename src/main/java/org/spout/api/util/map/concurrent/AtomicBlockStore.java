@@ -73,6 +73,15 @@ public interface AtomicBlockStore {
 	 * @return the full state of the block
 	 */
 	public int getFullData(int x, int y, int z);
+	
+	/**
+	 * Atomically gets the full set of data associated with the block.<br>
+	 * <br>
+	 *
+	 * @param index the block index
+	 * @return the full state of the block
+	 */
+	public int getFullData(int index);
 
 	/**
 	 * Sets the block id and data for the block at (x, y, z).<br>

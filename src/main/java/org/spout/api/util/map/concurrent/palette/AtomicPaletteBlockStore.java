@@ -117,7 +117,12 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	
 	@Override
 	public int getFullData(int x, int y, int z) {
-		return store.get(getIndex(x, y, z));
+		return getFullData(getIndex(x, y, z));
+	}
+	
+	@Override
+	public int getFullData(int index) {
+		return store.get(index);
 	}
 	
 	@Override

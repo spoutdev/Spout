@@ -26,13 +26,32 @@
  */
 package org.spout.api.geo.cuboid;
 
-public interface LightContainer extends CubicContainer {
+import org.spout.api.component.components.BlockComponent;
+
+public interface BlockComponentContainer extends CubicContainer {
 	
 	/**
-	 * Sets the nibble light level for the next block in the sequence.
+	 * Sets the next BlockComponentSnapshot in the sequence
 	 * 
-	 * @param light
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param component
 	 */
-	public void setLightLevel(byte light);
-
+	public void setBlockComponent(int x, int y, int z, BlockComponent snapshot);
+	
+	/**
+	 * Sets the number of block components.  This method is called before the first call to setBlockComponent();
+	 * 
+	 * @param count
+	 */
+	public void setBlockComponentCount(int count);
+	
+	/**
+	 * Sets the number of block components.  This method is called before the first call to setBlockComponent();
+	 * 
+	 * @return
+	 */
+	public int getBlockComponentCount();
+	
 }

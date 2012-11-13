@@ -26,7 +26,7 @@
  */
 package org.spout.api.geo.cuboid;
 
-public interface BlockContainer {
+public interface BlockContainer extends CubicContainer {
 	
 	/**
 	 * Sets the state for the next block in the sequence.
@@ -34,5 +34,5 @@ public interface BlockContainer {
 	 * @param state
 	 */
 	public void setBlockFullState(int state);
-
+	
 }

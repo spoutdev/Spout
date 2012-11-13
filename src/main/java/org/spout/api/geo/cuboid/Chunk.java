@@ -115,6 +115,34 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	public abstract ChunkSnapshot getSnapshot(SnapshotType type, EntityType entities, ExtraData data);
 	
 	/**
+	 * Fills the given block container with the block data for this chunk
+	 * 
+	 * @param container
+	 */
+	public abstract void fillBlockContainer(BlockContainer container);
+	
+	/**
+	 * Fills the given light container with the sky light data for this chunk
+	 * 
+	 * @param container
+	 */
+	public abstract void fillSkyLightContainer(LightContainer container);
+	
+	/**
+	 * Fills the given light container with the block light data for this chunk
+	 * 
+	 * @param container
+	 */
+	public abstract void fillBlockLightContainer(LightContainer container);
+	
+	/**
+	 * Fills the given block component container with the block components for this chunk
+	 * 
+	 * @param container
+	 */
+	public abstract void fillBlockComponentContainer(BlockComponentContainer container);
+	
+	/**
 	 * Gets a snapshot of the data for the chunk.  The snapshot will be taken at a stable moment in the tick.
 	 * <br/><br/>
 	 * This is the same as calling getFutureSnapshot(BOTH, WEAK_ENTITIES, NO_EXTRA_DATA)
