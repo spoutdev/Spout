@@ -40,7 +40,7 @@ public class RenderPart implements Comparable<RenderPart> {
 	private Rectangle source;
 	private Rectangle sprite;
 	private int zIndex = 0;
-	private Color color;
+	private Color color = Color.WHITE;
 	private RenderMaterial material;
 
 	public void setSource(Rectangle source) {
