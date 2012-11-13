@@ -24,22 +24,35 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.filesystem;
+package org.spout.engine.resources.server;
 
-import org.spout.engine.resources.loader.TextureLoader;
+import java.awt.image.BufferedImage;
 
-public class ServerFileSystem extends SharedFileSystem {
+import org.spout.api.render.Texture;
+
+public class ServerTexture extends Texture {
+
+	public ServerTexture(BufferedImage baseImage) {
+		super(baseImage);
+	}
+
+	protected ServerTexture(){
+		super(null);		
+	}
+	
 	@Override
-	public void init(){
-		if (!CONFIG_DIRECTORY.exists()) {
-			CONFIG_DIRECTORY.mkdirs();
-		}
-		if (!UPDATE_DIRECTORY.exists()) {
-			UPDATE_DIRECTORY.mkdirs();
-		}
+	public Texture subTexture(int x, int y, int w, int h) {
+		return new ServerTexture(image.getSubimage(x, y, w, h));
+	}
 
-		super.init();
+	@Override
+	public void load() { }
 
-		registerLoader(new TextureLoader());
+	@Override
+	public void bind() { }
+
+	@Override
+	public boolean isLoaded() {
+		return false;
 	}
 }
