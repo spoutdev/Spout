@@ -371,20 +371,25 @@ public class SpoutRegion extends Region {
 
 		SpoutChunk newChunk = null;
 		ChunkDataForRegion dataForRegion = null;
+		
+		boolean fileExists = this.inputStreamExists(x, y, z);
 
-		if (loadopt.loadIfNeeded() && this.inputStreamExists(x, y, z)) {
+		if (loadopt.loadIfNeeded() && fileExists) {
 			dataForRegion = new ChunkDataForRegion();
 			newChunk = WorldFiles.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z), dataForRegion);
 		}
 
-		if (loadopt.generateIfNeeded() && newChunk == null) {
+		if (loadopt.generateIfNeeded() && !fileExists && newChunk == null) {
+			// TODO remove debug code below
+			final boolean oldGenerated = generatedColumns[x][z].get();
+			// TODO remove debug code above
 			generateChunks(x, z, loadopt);
 			final SpoutChunk generatedChunk = chunks[x][y][z].get();
 			if (generatedChunk != null) {
 				checkChunkLoaded(generatedChunk, loadopt);
 				return generatedChunk;
 			} else {
-				Spout.getLogger().severe("Chunk failed to generate!");
+				Spout.getLogger().severe("Chunk failed to generate!  Column marked as generated: before " + oldGenerated + ", after " + generatedColumns[x][z].get());
 			}
 		}
 
@@ -437,7 +442,11 @@ public class SpoutRegion extends Region {
 				final CuboidShortBuffer chunk = new CuboidShortBuffer(cx << Chunk.BLOCKS.BITS, cy << Chunk.BLOCKS.BITS, cz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
 				chunk.setSource(column);
 				chunk.copyElement(0, yy * Chunk.BLOCKS.VOLUME, Chunk.BLOCKS.VOLUME);
-				setChunk(new FilteredChunk(world, this, cx, cy, cz, chunk.getRawArray(), null), x, yy++, z, null, true, loadopt);
+				SpoutChunk newChunk = new FilteredChunk(world, this, cx, cy, cz, chunk.getRawArray(), null);
+				SpoutChunk currentChunk = setChunk(newChunk, x, yy++, z, null, true, loadopt);
+				if (currentChunk != newChunk) {
+					throw new IllegalStateException("Unable to set generated chunk, new Chunk " + newChunk + " chunk in memory " + currentChunk);
+				}
 			}
 			if (!generated.compareAndSet(false, true)) {
 				throw new IllegalStateException("Column generated twice");
