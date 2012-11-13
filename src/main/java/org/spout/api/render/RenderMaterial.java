@@ -26,13 +26,10 @@
  */
 package org.spout.api.render;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.spout.api.geo.cuboid.ChunkSnapshotModel;
-import org.spout.api.material.BlockMaterial;
-import org.spout.api.material.block.BlockFace;
-import org.spout.api.math.Vector3;
 import org.spout.api.model.MeshFace;
 import org.spout.api.resource.Resource;
 
@@ -64,12 +61,26 @@ public abstract class RenderMaterial extends Resource implements Comparable<Rend
 	public abstract void assign();
 	
 	/**
+	 * Called right before batch
+	 * @param snapshotRender 
+	 */
+	public abstract void preBatch(SnapshotRender snapshotRender);
+
+	/**
+	 * Called right after batch
+	 * @param snapshotRender 
+	 */
+	public abstract void postBatch(SnapshotRender snapshotRender);
+
+	/**
 	 * Called right before rendering
+	 * @param material 
 	 */
 	public abstract void preRender();
-	
+
 	/**
 	 * Called right after rendering
+	 * @param material 
 	 */
 	public abstract void postRender();
 
@@ -81,15 +92,26 @@ public abstract class RenderMaterial extends Resource implements Comparable<Rend
 	 * @param ocluded
 	 * @return
 	 */
-	public abstract List<MeshFace> render(ChunkSnapshotModel chunkSnapshotModel,BlockMaterial blockMaterial,
-			Vector3 position, BlockFace face, boolean[] ocluded);
+	public abstract List<MeshFace> render(SnapshotRender snapshotRender);
 
 	/**
 	 * Return the render pass order
 	 * @return
 	 */
 	public abstract int getLayer();
-	
+
+	/**
+	 * Return the renderEffects
+	 * @return
+	 */
+	public abstract Collection<RenderEffect> getRenderEffects();
+
+	/**
+	 * Add RenderEffect
+	 * @param renderEffect
+	 */
+	public abstract void addRenderEffect(RenderEffect renderEffect);
+
 	@Override
 	public final int compareTo(RenderMaterial o) {
 		if (o == this) {

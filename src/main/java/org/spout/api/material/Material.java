@@ -29,7 +29,11 @@ package org.spout.api.material;
 /**
  * Defines the characteristics of Blocks or Items.
  */
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.spout.api.Spout;
@@ -42,6 +46,8 @@ import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.MathHelper;
 import org.spout.api.model.Model;
 import org.spout.api.plugin.Platform;
+import org.spout.api.render.BatchEffect;
+import org.spout.api.render.RenderEffect;
 import org.spout.api.util.LogicUtil;
 import org.spout.api.util.flag.Flag;
 import org.spout.api.util.flag.FlagSingle;
@@ -62,6 +68,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	private volatile boolean submaterialsDirty = true;
 	private final short dataMask;
 	private final FlagSingle useFlag = new FlagSingle();
+	private final List<BatchEffect> batchEffects = new ArrayList<BatchEffect>();
 	
 	/**
 	 * Creates a material with a dataMask, name
@@ -165,6 +172,13 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 			this.model = (Model) Spout.getEngine().getFilesystem().getResource("model://Spout/resources/fallbacks/fallback.spm");
 		else
 			this.model = null;
+	}
+
+	/**
+	 * Add a RenderEffect
+	 */
+	public void addRenderEffect(RenderEffect renderEffect){
+
 	}
 
 	public final short getId() {
@@ -477,5 +491,9 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	@Override
 	public String toString() {
 		return "Material {" + getName() + "}";
+	}
+
+	public Collection<BatchEffect> getBatchEffects() {
+		return Collections.unmodifiableCollection(batchEffects);
 	}
 }
