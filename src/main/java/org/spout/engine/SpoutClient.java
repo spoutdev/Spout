@@ -83,6 +83,7 @@ import org.spout.api.gui.FullScreen;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.ScreenStack;
 import org.spout.api.gui.Widget;
+import org.spout.api.input.Keyboard;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector2;
@@ -98,6 +99,7 @@ import org.spout.api.render.RenderMode;
 import org.spout.api.scheduler.TaskPriority;
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.batcher.SpriteBatch;
+import org.spout.engine.command.InputCommands;
 import org.spout.engine.command.InputManagementCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
@@ -180,18 +182,18 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		this.ccoverride = args.ccoverride;
 
-		inputManager.bind(SpoutInputConfiguration.FORWARD.getString(), "+Forward");
-		inputManager.bind(SpoutInputConfiguration.BACKWARD.getString(), "+BackWard");
-		inputManager.bind(SpoutInputConfiguration.LEFT.getString(), "+Left");
-		inputManager.bind(SpoutInputConfiguration.RIGHT.getString(), "+Right");
-		inputManager.bind(SpoutInputConfiguration.UP.getString(), "+Jump");
-		inputManager.bind(SpoutInputConfiguration.DOWN.getString(), "+Crouch");
-		inputManager.bind("KEY_F3", "debug_infos");
-		inputManager.bind("KEY_SCROLLDOWN", "+Select_Down");
-		inputManager.bind("KEY_SCROLLUP", "+Select_Up");
-		inputManager.bind("MOUSE_BUTTON0", "+FIRE_1");
-		inputManager.bind("MOUSE_BUTTON1", "+INTERACT");
-		inputManager.bind("MOUSE_BUTTON2", "+FIRE_2");
+		inputManager.bind(Keyboard.get(SpoutInputConfiguration.FORWARD.getString()), "forward");
+		inputManager.bind(Keyboard.get(SpoutInputConfiguration.BACKWARD.getString()), "backward");
+		inputManager.bind(Keyboard.get(SpoutInputConfiguration.LEFT.getString()), "left");
+		inputManager.bind(Keyboard.get(SpoutInputConfiguration.RIGHT.getString()), "right");
+		inputManager.bind(Keyboard.get(SpoutInputConfiguration.UP.getString()), "jump");
+		inputManager.bind(Keyboard.get(SpoutInputConfiguration.DOWN.getString()), "crouch");
+		inputManager.bind(Keyboard.KEY_F3, "debug_info");
+		inputManager.bind(Keyboard.KEY_SCROLLDOWN, "select_down");
+		inputManager.bind(Keyboard.KEY_SCROLLUP, "select_up");
+		inputManager.bind(org.spout.api.input.Mouse.MOUSE_BUTTON0, "fire_1");
+		inputManager.bind(org.spout.api.input.Mouse.MOUSE_BUTTON1, "interact");
+		inputManager.bind(org.spout.api.input.Mouse.MOUSE_BUTTON2, "fire_2");
 
 	}
 
@@ -290,7 +292,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	@Override
-	public SpoutInput getInput() {
+	public SpoutInput getInputManager() {
 		return inputManager;
 	}
 

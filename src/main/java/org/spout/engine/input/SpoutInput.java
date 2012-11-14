@@ -26,28 +26,20 @@
  */
 package org.spout.engine.input;
 
+import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.spout.api.chat.ChatArguments;
-import org.spout.api.keyboard.Input;
+import org.spout.api.input.InputManager;
+import org.spout.api.input.Keyboard;
+import org.spout.api.input.Mouse;
+
 import org.spout.engine.entity.SpoutPlayer;
 
-public class SpoutInput implements Input {
-	private static final int KEY_SCROLLUP = 0xdada;
-	private static final int KEY_SCROLLDOWN = 0xfee1bad;
-
-	Map<Integer, String> keyCommands = new HashMap<Integer, String>();
-	TIntObjectHashMap<String> mouseCommands = new TIntObjectHashMap<String>();
+public class SpoutInput implements InputManager {
+	private final TIntObjectMap<String> keyCommands = new TIntObjectHashMap<String>();
+	private final TIntObjectMap<String> mouseCommands = new TIntObjectHashMap<String>();
 	private boolean redirected = false;
-
-	public SpoutInput() {
-		
-	}
 
 	private void doKeypress(SpoutPlayer player, int button, boolean pressed) {
 		String cmd = keyCommands.get(button);
@@ -68,47 +60,28 @@ public class SpoutInput implements Input {
 		player.processCommand("+dy", new ChatArguments(dy));
 	}
 
-	private void doCommand(SpoutPlayer player,String command, boolean pressed) {
-		if (command == null)
+	private void doCommand(SpoutPlayer player, String command, boolean pressed) {
+		if (command == null) {
 			return;
-		
-		if (!command.startsWith("+") && !pressed)
-			return;
-		
-		if (command.startsWith("+") && !pressed) {
-			command = command.replaceFirst("\\+", "-");
 		}
+		
+		if (pressed) {
+			command = "+" + command;
+		} else {
+			command = "-" + command;
+		}
+
 		player.processCommand(command, new ChatArguments());
 	}
 
 	@Override
-	public void bind(int key, String command) {
-		keyCommands.put(key, command);
+	public void bind(Keyboard key, String command) {
+		keyCommands.put(key.getId(), command);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.spout.engine.input.Input#bind(java.lang.String,
-	 * java.lang.String)
-	 */
 	@Override
-	public void bind(String key, String command) {
-		key = key.toUpperCase();
-		if (key.startsWith("KEY_")) {
-			String name = key.substring(4);
-			if (name.equals("SCROLLDOWN")) {
-				mouseCommands.put(KEY_SCROLLDOWN, command);
-			} else if (name.equals("SCROLLUP")) {
-				mouseCommands.put(KEY_SCROLLUP, command);
-			} else {
-				bind(Keyboard.getKeyIndex(name), command);
-			}
-		} else if (key.startsWith("MOUSE")) {
-			int k = Mouse.getButtonIndex(key);
-			mouseCommands.put(k, command);
-		} else if (key.startsWith("AXIS")) {
-		}
+	public void bind(Mouse button, String command) {
+		mouseCommands.put(button.getId(), command);
 	}
 
 	public void pollInput(SpoutPlayer player) {
@@ -116,34 +89,34 @@ public class SpoutInput implements Input {
 			return;
 		}*/
 
-		if(Keyboard.isCreated()){
-			while (Keyboard.next()) {
-				int button = Keyboard.getEventKey();
+		if(org.lwjgl.input.Keyboard.isCreated()){
+			while (org.lwjgl.input.Keyboard.next()) {
+				int button = org.lwjgl.input.Keyboard.getEventKey();
 				if (button != -1)
-					doKeypress(player,button, Keyboard.getEventKeyState());
+					doKeypress(player,button, org.lwjgl.input.Keyboard.getEventKeyState());
 			}
 		}
 
 		// Handle mouse
-		if(Mouse.isCreated())
-			while (Mouse.next()) {
+		if(org.lwjgl.input.Mouse.isCreated())
+			while (org.lwjgl.input.Mouse.next()) {
 				// Handle buttons
-				int button = Mouse.getEventButton();
+				int button = org.lwjgl.input.Mouse.getEventButton();
 				if (button != -1) {
-					doMousepress(player, button, Mouse.getEventButtonState());
+					doMousepress(player, button, org.lwjgl.input.Mouse.getEventButtonState());
 					continue;
 				}
 
 				// Handle scrolls
-				int scroll = Mouse.getEventDWheel();
+				int scroll = org.lwjgl.input.Mouse.getEventDWheel();
 				if (scroll < 0) {
-					doMousepress(player, KEY_SCROLLUP, true);
+					doMousepress(player, Keyboard.KEY_SCROLLUP.getId(), true);
 				} else if (scroll > 0) {
-					doMousepress(player, KEY_SCROLLDOWN, true);
+					doMousepress(player, Keyboard.KEY_SCROLLDOWN.getId(), true);
 				}
 
-				doMouseDx(player, Mouse.getDX());
-				doMouseDy(player, Mouse.getDY());
+				doMouseDx(player, org.lwjgl.input.Mouse.getDX());
+				doMouseDy(player, org.lwjgl.input.Mouse.getDY());
 			}
 	}
 
