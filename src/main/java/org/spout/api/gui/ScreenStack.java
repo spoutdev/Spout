@@ -31,7 +31,7 @@ import java.util.LinkedList;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
-import org.spout.api.keyboard.Input;
+import org.spout.api.input.InputManager;
 import org.spout.api.signal.SignalSubscriberObject;
 import org.spout.api.tickable.Tickable;
 
@@ -79,7 +79,7 @@ public class ScreenStack extends SignalSubscriberObject implements Tickable, Run
 		}
 		if (Spout.getEngine() instanceof Client) {
 			Client engine = (Client) Spout.getEngine();
-			Input input = engine.getInput();
+			InputManager input = engine.getInputManager();
 			Iterator<Screen> iter = getVisibleScreens().descendingIterator();
 			Screen next;
 			inputScreen = null;

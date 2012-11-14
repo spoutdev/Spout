@@ -35,7 +35,7 @@ import org.spout.api.component.ComponentOwner;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Widget;
 import org.spout.api.gui.render.RenderPart;
-import org.spout.api.keyboard.KeyEvent;
+import org.spout.api.input.KeyEvent;
 import org.spout.api.math.IntVector2;
 import org.spout.api.signal.Signal;
 import org.spout.api.signal.SignalInterface;

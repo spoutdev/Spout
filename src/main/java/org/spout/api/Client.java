@@ -31,7 +31,7 @@ import java.util.UUID;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.geo.World;
 import org.spout.api.gui.ScreenStack;
-import org.spout.api.keyboard.Input;
+import org.spout.api.input.InputManager;
 import org.spout.api.math.Vector2;
 import org.spout.api.entity.Player;
 import org.spout.api.plugin.PluginStore;
@@ -89,7 +89,7 @@ public interface Client extends Engine {
 	 *
 	 * @return The client's input manager
 	 */
-	public Input getInput();
+	public InputManager getInputManager();
 
 	/**
 	 * Returns the current IP address the client is connected to.

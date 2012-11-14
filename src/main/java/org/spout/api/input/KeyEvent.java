@@ -24,40 +24,34 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.keyboard;
+package org.spout.api.input;
 
-/**
- * Represents the input of Spout.
- */
-public interface Input {
-	/**
-	 * Returns true if the input is redirected from this.
-	 *
-	 * @return
-	 */
-	public boolean isRedirected();
-
-	/**
-	 * Sets if the input should be redirected.
-	 *
-	 * @param redirect
-	 */
-	public void setRedirected(boolean redirect);
-
-	/**
-	 * Binds an input action to a command.
-	 *
-	 * @param key
-	 * @param command
-	 */
-	public void bind(int key, String command);
-
-	/**
-	 * Binds an input action to a command.
-	 *
-	 * @param key
-	 * @param command
-	 */
-	public void bind(String key, String command);
-
+public class KeyEvent {
+	private final Keyboard key;
+	private final boolean pressed;
+	private final char character;
+	private final long nanoseconds;
+	
+	public KeyEvent(Keyboard key, boolean press, char character, long nanoseconds) {
+		this.key = key;
+		this.pressed = press;
+		this.character = character;
+		this.nanoseconds = nanoseconds;
+	}
+	
+	public Keyboard getKey() {
+		return key;
+	}
+	
+	public boolean isPressed() {
+		return pressed;
+	}
+	
+	public char getCharacter() {
+		return character;
+	}
+	
+	public long getNanoseconds() {
+		return nanoseconds;
+	}
 }

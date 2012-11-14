@@ -32,7 +32,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import org.spout.api.Client;
+import org.spout.api.Spout;
 import org.spout.api.command.CommandRegistrationsFactory;
+import org.spout.api.input.Keyboard;
+import org.spout.api.input.Mouse;
 import org.spout.api.plugin.Platform;
 import org.spout.api.util.Named;
 
@@ -89,6 +93,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 			CommandPermissions perms = obj.getAnnotation(CommandPermissions.class);
 			child.setPermissions(perms.requireAll(), perms.value());
 		}
+
 		return child;
 	}
 
