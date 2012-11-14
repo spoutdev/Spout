@@ -24,34 +24,34 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.keyboard;
+package org.spout.api.input;
 
-public class KeyEvent {
-	Keyboard key;
-	boolean pressed;
-	char character;
-	long nanoseconds;
-	
-	public KeyEvent(Keyboard key, boolean press, char character, long nanoseconds) {
-		this.key = key;
-		this.pressed = press;
-		this.character = character;
-		this.nanoseconds = nanoseconds;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+
+public enum Mouse {
+	MOUSE_BUTTON0(0),
+	MOUSE_BUTTON1(1),
+	MOUSE_BUTTON2(2);
+
+	private final int id;
+	private static final TIntObjectMap<Mouse> idMap = new TIntObjectHashMap<Mouse>(Mouse.values().length);
+
+	static {
+		for (Mouse button : Mouse.values()) {
+			idMap.put(button.id, button);
+		}
 	}
-	
-	public Keyboard getKey() {
-		return key;
+
+	public static Mouse get(int id) {
+		return idMap.get(id);
 	}
-	
-	public boolean isPressed() {
-		return pressed;
+
+	private Mouse(int id) {
+		this.id = id;
 	}
-	
-	public char getCharacter() {
-		return character;
-	}
-	
-	public long getNanoseconds() {
-		return nanoseconds;
+
+	public int getId() {
+		return id;
 	}
 }
