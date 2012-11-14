@@ -32,6 +32,7 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.Executor;
 import org.spout.api.exception.CommandException;
+import org.spout.api.input.Keyboard;
 import org.spout.api.plugin.Platform;
 import org.spout.engine.SpoutEngine;
 
@@ -46,7 +47,7 @@ public class InputManagementCommands {
 	public class BindCommand {
 		@Executor(Platform.CLIENT)
 		public void bind(CommandContext args, CommandSource source) throws CommandException {
-			((Client) engine).getInput().bind(args.getString(0), args.getJoinedString(1).getPlainString());
+			((Client) engine).getInputManager().bind(Keyboard.get(args.getString(0)), args.getJoinedString(1).getPlainString());
 		}
 	}
 }
