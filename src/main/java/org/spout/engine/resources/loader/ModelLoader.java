@@ -30,7 +30,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 import org.spout.api.Spout;
-import org.spout.api.model.Mesh;
+import org.spout.api.model.mesh.Mesh;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.resource.BasicResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
