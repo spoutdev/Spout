@@ -70,7 +70,7 @@ public class ChunkMesh{
 
 	public final static List<BlockFace> shouldRender = new ArrayList<BlockFace>(Arrays.asList(BlockFace.TOP,BlockFace.BOTTOM,BlockFace.NORTH,BlockFace.SOUTH,BlockFace.WEST,BlockFace.EAST));
 	
-	private final static boolean UNLOAD_ACCELERATOR = SPLIT_X == ChunkMeshBatchAggregator.SIZE_X &&
+	public final static boolean UNLOAD_ACCELERATOR = SPLIT_X == ChunkMeshBatchAggregator.SIZE_X &&
 			SPLIT_Y == ChunkMeshBatchAggregator.SIZE_Y &&
 			SPLIT_Z == ChunkMeshBatchAggregator.SIZE_Z;
 	
