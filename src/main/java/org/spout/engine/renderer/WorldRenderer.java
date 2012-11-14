@@ -316,7 +316,7 @@ public class WorldRenderer {
 					BlockFace face = entry2.getKey();
 					ChunkMeshBatchAggregator batch = entry2.getValue();
 					batch.setSubBatch(chunkMesh.getSubX(), chunkMesh.getSubY(), chunkMesh.getSubZ(), null);
-					if(batch.isEmpty()){
+					if(ChunkMesh.UNLOAD_ACCELERATOR || batch.isEmpty()){
 						batch.finalize();
 						
 						//Clean dirties
