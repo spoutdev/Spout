@@ -26,6 +26,7 @@
  */
 package org.spout.engine.filesystem;
 
+import org.spout.engine.resources.loader.BlockMeshLoader;
 import org.spout.engine.resources.loader.CubeMeshLoader;
 import org.spout.engine.resources.loader.EntityPrefabLoader;
 import org.spout.engine.resources.loader.FontLoader;
@@ -35,7 +36,6 @@ import org.spout.engine.resources.loader.RenderMaterialLoader;
 import org.spout.engine.resources.loader.ShaderLoader;
 import org.spout.engine.resources.loader.SoundWavLoader;
 import org.spout.engine.resources.loader.TextureLoader;
-import org.spout.engine.resources.loader.TextureMeshLoader;
 
 public class ClientFileSystem extends SharedFileSystem {
 	@Override
@@ -52,9 +52,9 @@ public class ClientFileSystem extends SharedFileSystem {
 		registerLoader(new TextureLoader());
 		registerLoader(new ShaderLoader());
 		registerLoader(new ModelLoader());
-		registerLoader(new CubeMeshLoader());
 		registerLoader(new MeshLoader());
-		registerLoader(new TextureMeshLoader());
+		registerLoader(new CubeMeshLoader());
+		registerLoader(new BlockMeshLoader());
 		registerLoader(new RenderMaterialLoader());
 
 		//registerLoader(new SoundWavLoader());

@@ -36,7 +36,6 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector3;
@@ -45,7 +44,6 @@ import org.spout.api.util.map.TInt21TripleObjectHashMap;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.batcher.ChunkMeshBatchAggregator;
 import org.spout.engine.mesh.ChunkMesh;
-import org.spout.engine.mesh.CubeMesh;
 import org.spout.engine.world.SpoutWorld;
 
 public class WorldRenderer {
@@ -54,15 +52,12 @@ public class WorldRenderer {
 	public static final long TIME_LIMIT = 2;
 
 	private TreeMap<RenderMaterial,List<ChunkMeshBatchAggregator>> chunkRenderers = new TreeMap<RenderMaterial,List<ChunkMeshBatchAggregator>>();
-	
+
 	/**
 	 * Store ChunkMeshBatchAggregator by BlockFace, RenderMaterial and ChunkMeshBatchAggregator position
 	 */
 	private TInt21TripleObjectHashMap<Map<RenderMaterial,Map<BlockFace,ChunkMeshBatchAggregator>>> chunkRenderersByPosition = new TInt21TripleObjectHashMap<Map<RenderMaterial,Map<BlockFace,ChunkMeshBatchAggregator>>>();
 	private List<ChunkMeshBatchAggregator> dirties = new LinkedList<ChunkMeshBatchAggregator>();
-	
-	public static HashMap<String,CubeMesh> blocksMesh = new HashMap<String, CubeMesh>();
-	public static CubeMesh defaultMesh = null;
 
 	private World world; // temp
 	private final BatchGeneratorTask batchGenerator = new BatchGeneratorTask();
@@ -70,17 +65,12 @@ public class WorldRenderer {
 	public long minUpdate = Long.MAX_VALUE,maxUpdate = Long.MIN_VALUE,sumUpdate = 0;
 	public long minRender = Long.MAX_VALUE,maxRender = Long.MIN_VALUE,sumRender = 0;
 	public long count = 0;
-	
+
 	public WorldRenderer(SpoutClient client) {
 		this.client = client;
 	}
 
 	public void setup() {
-		defaultMesh = (CubeMesh) Spout.getEngine().getFilesystem().getResource("cubemesh://Spout/resources/resources/models/cube.obj");
-		blocksMesh.put("Stone",(CubeMesh) Spout.getEngine().getFilesystem().getResource("cubemesh://Spout/resources/resources/models/stone.obj"));
-		blocksMesh.put("Grass",(CubeMesh) Spout.getEngine().getFilesystem().getResource("cubemesh://Spout/resources/resources/models/grass.obj"));
-		blocksMesh.put("Dirt",(CubeMesh) Spout.getEngine().getFilesystem().getResource("cubemesh://Spout/resources/resources/models/dirt.obj"));
-
 		setupWorld();
 
 		//Enable(GL11.GL_CULL_FACE);
@@ -93,9 +83,9 @@ public class WorldRenderer {
 			sumUpdate = 0;
 			sumRender = 0;
 		}
-		
+
 		long time,start = System.currentTimeMillis();
-		
+
 		update();
 
 		time = System.currentTimeMillis() - start;
@@ -108,7 +98,7 @@ public class WorldRenderer {
 		start = System.currentTimeMillis();
 
 		renderChunks();
-		
+
 		time = System.currentTimeMillis() - start;
 		if(minRender > time)
 			minRender = time;
@@ -214,7 +204,7 @@ public class WorldRenderer {
 				chunkMesh = null;
 				position = null;
 			}
-			
+
 			//Force merge of mesh when nothings to do
 			batch(start, true);
 		}
@@ -232,17 +222,17 @@ public class WorldRenderer {
 
 			chunkMeshBatch.setSubBatch(chunkMesh.getSubX(),chunkMesh.getSubY(),chunkMesh.getSubZ(),batchVertex);
 			dirties.add(chunkMeshBatch);
-			
+
 			batch(start,false);
 		}
-		
+
 		private void batch(long start, boolean force){
 			while(!dirties.isEmpty()){
 				ChunkMeshBatchAggregator batch = dirties.remove(0);
-				
+
 				if(!batch.update(start,force))
 					dirties.add(batch);
-				
+
 				if( System.currentTimeMillis() - start > TIME_LIMIT)
 					return;
 			}
@@ -302,9 +292,9 @@ public class WorldRenderer {
 
 		//Can be null if the thread receive a unload model of a model wich has been send previously to load be not done
 		if(aggregatorPerMaterial != null){
-			
+
 			LinkedList<RenderMaterial> materialToRemove = new LinkedList<RenderMaterial>();
-			
+
 			for(Entry<RenderMaterial, Map<BlockFace, ChunkMeshBatchAggregator>> entry : aggregatorPerMaterial.entrySet()){
 
 				RenderMaterial material = entry.getKey();
@@ -318,13 +308,13 @@ public class WorldRenderer {
 					batch.setSubBatch(chunkMesh.getSubX(), chunkMesh.getSubY(), chunkMesh.getSubZ(), null);
 					if(batch.isEmpty()){
 						batch.finalize();
-						
+
 						//Clean dirties
 						dirties.remove(batch);
-						
+
 						//Clean chunkRenderers
 						chunkRenderer.remove(batch);
-						
+
 						//Clean chunkRenderersByPosition
 						faceToRemove.add(face);
 					}
@@ -336,22 +326,22 @@ public class WorldRenderer {
 
 				if(entry.getValue().isEmpty())
 					materialToRemove.add(material);
-				
+
 				//Clean chunkRenderers
 				if(chunkRenderer.isEmpty())
 					chunkRenderers.remove(material);
 			}
-			
+
 			//Clean chunkRenderersByPosition
 			for(RenderMaterial material : materialToRemove)
 				aggregatorPerMaterial.remove(material);
-			
+
 			if(aggregatorPerMaterial.isEmpty())
 				chunkRenderersByPosition.remove(position.getFloorX(),position.getFloorY(),position.getFloorZ());
-			
+
 		}
 	}
-	
+
 	/**
 	 * Gets the batch aggregator corresponding wuth the given mesh, face and material.
 	 * @param mesh
@@ -369,7 +359,7 @@ public class WorldRenderer {
 
 		return map2.get(face);
 	}
-	
+
 	int ocludedChunks = 0;
 	int culledChunks = 0;
 	int rended = 0;
@@ -382,11 +372,11 @@ public class WorldRenderer {
 		int maxX = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getX() * ChunkMesh.SPLIT_X + ChunkMesh.SPLIT_X) / ChunkMeshBatchAggregator.SIZE_X));
 		int maxY = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getY() * ChunkMesh.SPLIT_Y + ChunkMesh.SPLIT_Y) / ChunkMeshBatchAggregator.SIZE_Y));
 		int maxZ = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getZ() * ChunkMesh.SPLIT_Z + ChunkMesh.SPLIT_Z) / ChunkMeshBatchAggregator.SIZE_Z));
-		
+
 		ocludedChunks = 0;
 		culledChunks = 0;
 		rended = 0;
-		
+
 		for(Entry<RenderMaterial, List<ChunkMeshBatchAggregator>> entry : chunkRenderers.entrySet()){
 			RenderMaterial material = entry.getKey();
 			material.getShader().setUniform("View", client.getActiveCamera().getView());
@@ -455,7 +445,7 @@ public class WorldRenderer {
 	public int getBatchWaiting() {
 		return renderChunkMeshBatchQueue.size();
 	}
-	
+
 	public int getBatchDirties() {
 		return dirties.size();
 	}

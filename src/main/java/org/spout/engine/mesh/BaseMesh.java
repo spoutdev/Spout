@@ -30,9 +30,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.lwjgl.opengl.GL11;
-import org.spout.api.model.Mesh;
-import org.spout.api.model.MeshFace;
-import org.spout.api.model.Vertex;
+import org.spout.api.model.mesh.Mesh;
+import org.spout.api.model.mesh.MeshFace;
+import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
 import org.spout.api.resource.Resource;

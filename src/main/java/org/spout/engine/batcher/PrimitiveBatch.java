@@ -32,8 +32,8 @@ import java.util.List;
 import org.lwjgl.opengl.GL11;
 
 import org.spout.api.math.Vector3;
-import org.spout.api.model.MeshFace;
-import org.spout.api.model.Vertex;
+import org.spout.api.model.mesh.MeshFace;
+import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
 

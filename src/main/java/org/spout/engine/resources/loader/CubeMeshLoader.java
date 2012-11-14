@@ -31,94 +31,77 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.spout.api.math.Vector2;
-import org.spout.api.math.Vector3;
-import org.spout.api.model.OrientedMeshFace;
-import org.spout.api.model.Vertex;
+import org.spout.api.model.mesh.CubeMesh;
 import org.spout.api.resource.BasicResourceLoader;
-import org.spout.engine.mesh.CubeMesh;
 
 public class CubeMeshLoader extends BasicResourceLoader<CubeMesh> {
+
+	/* Exemple : TextureMesh file
+	 * #Comment
+	 * #First uv pos
+	 * vt 0.000 0.000
+	 * vt 1.000 0.000
+	 * vt 0.000 1.000
+	 * vt 1.000 1.000
+	 * #Second face->uv
+	 * #Order of face is important
+	 * f 0 1 2 3
+	 * f 2 1 3 4
+	 */
 
 	private static CubeMesh loadObj(InputStream stream) {
 		Scanner scan = new Scanner(stream);
 
-		ArrayList<Vector3> verticies = new ArrayList<Vector3>();
-		ArrayList<Vector3> normals = new ArrayList<Vector3>();
+		ArrayList<Vector2[]> textures = new ArrayList<Vector2[]>();
 		ArrayList<Vector2> uvs = new ArrayList<Vector2>();
-		ArrayList<OrientedMeshFace> faces = new ArrayList<OrientedMeshFace>();
+		Vector2 scale = Vector2.ONE;
+		Vector2 size = Vector2.ONE;
+		Vector2 sizeScaled = Vector2.ONE;
 
 		while (scan.hasNext()) {
 			String s = scan.nextLine();
-			if (s.startsWith("#"))
-				continue; // it's a comment, skip it
-			if (s.startsWith("v ")) { // Space is important !!
+			if (s.startsWith("#")) // Comment
+				continue;
+			else if (s.startsWith("scale ")) { // Scale x y
 				String[] sp = s.split(" ");
-				verticies.add(new Vector3(Float.parseFloat(sp[1]), Float.parseFloat(sp[2]), Float.parseFloat(sp[3])));
-			}
-			if (s.startsWith("vn ")) {
+				scale = new Vector2(1f / Float.parseFloat(sp[1]), 1f / Float.parseFloat(sp[2]));
+				sizeScaled = scale.multiply(size);
+			}else if (s.startsWith("size ")) { // Size x y
 				String[] sp = s.split(" ");
-				normals.add(new Vector3(Float.parseFloat(sp[1]), Float.parseFloat(sp[2]), Float.parseFloat(sp[3])));
-			}
-			if (s.startsWith("vt ")) {
+				size = new Vector2(Float.parseFloat(sp[1]), Float.parseFloat(sp[2]));
+				sizeScaled = scale.multiply(size);
+			}else if (s.startsWith("rect ")) { // Rect x y
 				String[] sp = s.split(" ");
-				uvs.add(new Vector2(Float.parseFloat(sp[1]), 1-Float.parseFloat(sp[2])));
-			}
-			if (s.startsWith("f ")) {
+				Vector2 base = scale.multiply(new Vector2(Integer.parseInt(sp[1]), Integer.parseInt(sp[2])));
+				textures.add(new Vector2[]{
+						base,
+						base.add(0f, sizeScaled.getY()),
+						base.add(sizeScaled.getX(), sizeScaled.getY()),
+						base.add(sizeScaled.getX(), 0f)});
+			}else if (s.startsWith("vt ")) { // Vertex texture x y
+				String[] sp = s.split(" ");
+				uvs.add(scale.multiply(new Vector2(Float.parseFloat(sp[1]), 1 - Float.parseFloat(sp[2]))));
+			}else if (s.startsWith("f ")) { // Face 1 2 3 ...
 				String[] sp = s.split(" ");
 
-				if (sp[1].contains("//")) {
-					ArrayList<Vertex> ar = new ArrayList<Vertex>();
-					for (int i = 1; i <= 3; i++) {
-						String[] sn = sp[i].split("//");
-						int pos = Integer.parseInt(sn[0]);
-						int norm = Integer.parseInt(sn[1]);
-						ar.add(new Vertex(verticies.get(pos - 1), normals.get(norm - 1)));
-
-					}
-					faces.add(new OrientedMeshFace(ar.get(0), ar.get(1), ar.get(2)));
-					ar.clear();
-
-				} else if (sp[1].contains("/")) {
-					ArrayList<Vertex> ar = new ArrayList<Vertex>();
-					for (int i = 1; i <= 3; i++) {
-						String[] sn = sp[i].split("/");
-						int pos = Integer.parseInt(sn[0]);
-						int uv = Integer.parseInt(sn[1]);
-						if (sn.length>2) {
-							int norm = Integer.parseInt(sn[2]);
-							ar.add(new Vertex(verticies.get(pos - 1), normals.get(norm - 1), uvs.get(uv - 1)));
-						} else {
-							ar.add(new Vertex(verticies.get(pos - 1), uvs.get(uv - 1)));
-						}
-
-					}
-					faces.add(new OrientedMeshFace(ar.get(0), ar.get(1), ar.get(2)));
-					ar.clear();
-
-				} else {
-					int face1 = Integer.parseInt(sp[1]) - 1;
-					int face2 = Integer.parseInt(sp[2]) - 1;
-					int face3 = Integer.parseInt(sp[3]) - 1;
-
-					Vertex p = new Vertex(verticies.get(face1));
-					Vertex p2 = new Vertex(verticies.get(face2));
-					Vertex p3 = new Vertex(verticies.get(face3));
-
-					faces.add(new OrientedMeshFace(p, p2, p3));
-
+				ArrayList<Vector2> ar = new ArrayList<Vector2>();
+				for (int i = 1; i < sp.length; i++) {
+					int uv = Integer.parseInt(sp[i]) - 1; //Begin at 1 ?
+					ar.add(uvs.get(uv));
 				}
-
+				textures.add((Vector2[]) ar.toArray(new Vector2[0]));
+				ar.clear();
 			}
 
 		}
 
-		return new CubeMesh(faces);
-
+		scan.close();
+		return new CubeMesh((Vector2[][]) textures.toArray(new Vector2[0][]));
 	}
 
 	@Override
 	public String getFallbackResourceName() {
-		return "cubemesh://Spout/resources/resources/models/cube.obj";
+		return "cubemesh://Spout/resources/fallbacks/cube.uvs";
 	}
 
 	@Override
@@ -133,7 +116,7 @@ public class CubeMeshLoader extends BasicResourceLoader<CubeMesh> {
 
 	@Override
 	public String[] getExtensions() {
-		return new String[] { "obj" };
+		return new String[] { "uvs" };
 	}
 
 }
