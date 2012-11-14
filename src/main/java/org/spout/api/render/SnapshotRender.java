@@ -30,7 +30,7 @@ import org.spout.api.geo.cuboid.ChunkSnapshotModel;
 import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector3;
-import org.spout.api.model.Mesh;
+import org.spout.api.model.mesh.Mesh;
 
 public class SnapshotRender {
 

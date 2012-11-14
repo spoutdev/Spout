@@ -26,6 +26,7 @@
  */
 package org.spout.api.model;
 
+import org.spout.api.model.mesh.Mesh;
 import org.spout.api.render.RenderMaterial;
 
 
