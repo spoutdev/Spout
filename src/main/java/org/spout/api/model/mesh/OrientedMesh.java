@@ -24,22 +24,24 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.model;
+package org.spout.api.model.mesh;
 
-import org.spout.api.math.Vector2;
+import java.util.Iterator;
+import java.util.List;
+
 import org.spout.api.resource.Resource;
 
-public class TextureMesh extends Resource implements Mesh {
+public class OrientedMesh extends Resource implements Mesh, Iterable<OrientedMeshFace> {
 
-	private Vector2 [][] uvs;
-	
-	public TextureMesh(Vector2 [][] uvs){
-		this.uvs = uvs;
+	protected List<OrientedMeshFace> meshFace;
+
+	public OrientedMesh(List<OrientedMeshFace> meshFace){
+		this.meshFace = meshFace;
 	}
 
-	public Vector2 getUV(int face, int vertex) {
-		int i = face % uvs.length;//Allow to render 6 face of a cube with a one face specified
-		return uvs[i][vertex % uvs[i].length];
+	@Override
+	public Iterator<OrientedMeshFace> iterator() {
+		return meshFace.iterator();
 	}
-	
+
 }

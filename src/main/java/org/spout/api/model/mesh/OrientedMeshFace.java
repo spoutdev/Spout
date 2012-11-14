@@ -24,7 +24,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.model;
+package org.spout.api.model.mesh;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,11 +43,11 @@ import org.spout.api.math.Vector3;
  * 
  */
 public class OrientedMeshFace extends MeshFace {
-	
-	public final static List<BlockFace> shouldRender = new ArrayList<BlockFace>(Arrays.asList(BlockFace.TOP,BlockFace.BOTTOM,BlockFace.NORTH,BlockFace.SOUTH,BlockFace.WEST,BlockFace.EAST));
+
+	private final static List<BlockFace> shouldRender = new ArrayList<BlockFace>(Arrays.asList(BlockFace.TOP,BlockFace.BOTTOM,BlockFace.NORTH,BlockFace.SOUTH,BlockFace.WEST,BlockFace.EAST));
 
 	private final static Map<Vector3,List<BlockFace>> faceMap = new HashMap<Vector3,List<BlockFace>>();
-	
+
 	static{
 		/*   1--2
 		 *  /| /|
@@ -68,9 +68,8 @@ public class OrientedMeshFace extends MeshFace {
 		faceMap.put(new Vector3(1, -1, 1).normalize(), new ArrayList<BlockFace>(Arrays.asList(BlockFace.BOTTOM,BlockFace.SOUTH,BlockFace.WEST)));
 	}
 
-	private int requireFace = -1;
-	private Set<BlockFace> seeFromFace = new HashSet<BlockFace>();
-	
+	private Set<BlockFace> seeFromFace;
+
 	public OrientedMeshFace(Vertex v1, Vertex v2, Vertex v3) {
 		super(v1,v2,v3);
 
@@ -82,40 +81,21 @@ public class OrientedMeshFace extends MeshFace {
 		// the normal vector which will be stored in out
 
 		Vector3 norm = vector1.cross(vector2).normalize();
-		
+
 		//Make the list of face can see this face
+		seeFromFace = new HashSet<BlockFace>();
 		for(Entry<Vector3, List<BlockFace>> entry : faceMap.entrySet()){
 			if (norm.distance(entry.getKey()) < 1)
 				seeFromFace.addAll(entry.getValue());
 		}
-		
-		
-		// Get min max abs xyz of the face
-		Vector3 min = new Vector3(Math.abs(Math.min(verts[0].position.getX(), Math.min(verts[1].position.getX(), verts[2].position.getX()))),
-				Math.abs(Math.min(verts[0].position.getY(), Math.min(verts[1].position.getY(), verts[2].position.getY()))),
-				Math.abs(Math.min(verts[0].position.getZ(), Math.min(verts[1].position.getZ(), verts[2].position.getZ()))));
-		Vector3 max = new Vector3(Math.abs(Math.max(verts[0].position.getX(), Math.max(verts[1].position.getX(), verts[2].position.getX()))),
-				Math.abs(Math.max(verts[0].position.getY(), Math.max(verts[1].position.getY(), verts[2].position.getY()))),
-				Math.abs(Math.max(verts[0].position.getZ(), Math.max(verts[1].position.getZ(), verts[2].position.getZ()))));
-		
-		//Get the required face not ocluded, a blockface is required if the face is a face on the limit of the cube
-		for(int i = 0; i < shouldRender.size(); i++){
-			BlockFace face = shouldRender.get(i);
-			if( min.getX() >= Math.abs(face.getOffset().getX()) && max.getX() >= Math.abs(face.getOffset().getX()) &&
-					min.getY() >= Math.abs(face.getOffset().getY()) && max.getY() >= Math.abs(face.getOffset().getY()) &&
-					min.getZ() >= Math.abs(face.getOffset().getZ()) && max.getZ() >= Math.abs(face.getOffset().getZ()) ){
-				requireFace = i;
-				break;
-			}
-		}
+	}
+
+	public OrientedMeshFace(Vertex v1, Vertex v2, Vertex v3,Set<BlockFace> requiredFace) {
+		super(v1,v2,v3);
+		seeFromFace = requiredFace;
 	}
 
 	public boolean canRender(boolean toRender[],BlockFace face){
-		
-		//If the required blockface is ocluded, don't render
-		if(requireFace != -1 && !toRender[requireFace])
-			return false;
-		
 		/**
 		 * For each face :
 		 * - Look if a face is see by a block face and this block face isn't occluded

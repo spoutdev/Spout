@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.spout.api.model.MeshFace;
+import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.resource.Resource;
 
 public abstract class RenderMaterial extends Resource implements Comparable<RenderMaterial> {

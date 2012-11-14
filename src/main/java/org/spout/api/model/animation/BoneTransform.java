@@ -24,10 +24,62 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.model;
+package org.spout.api.model.animation;
 
+import org.spout.api.math.Quaternion;
+import org.spout.api.math.Vector3;
 
-public interface Mesh {
-	
-	
+public class BoneTransform {
+	Vector3 position = Vector3.ZERO;
+	Quaternion rotation = Quaternion.IDENTITY;
+	Vector3 scale = Vector3.ONE;
+
+	BoneTransform parent;
+
+	public Vector3 getPosition() {
+		return position;
+	}
+
+	public void setPosition(Vector3 position) {
+		this.position = position;
+	}
+
+	public Quaternion getRotation() {
+		return rotation;
+	}
+
+	public void setRotation(Quaternion rotation) {
+		this.rotation = rotation;
+	}
+
+	public Vector3 getScale() {
+		return scale;
+	}
+
+	public void setScale(Vector3 scale) {
+		this.scale = scale;
+	}
+
+	public BoneTransform getParent() {
+		return parent;
+	}
+
+	public void setParent(BoneTransform parent) {
+		this.parent = parent;
+	}
+
+	private BoneTransform add(BoneTransform other) {
+		BoneTransform t = new BoneTransform();
+		t.position = position.add(other.position);
+		t.rotation = rotation.multiply(other.rotation);
+		t.scale = scale.add(other.scale);
+		return t;
+	}
+
+	public BoneTransform getAbsolutePosition() {
+		if (parent == null) {
+			return this;
+		}
+		return add(parent.getAbsolutePosition());
+	}
 }

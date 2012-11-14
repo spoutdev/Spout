@@ -24,7 +24,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.model;
+package org.spout.api.model.mesh;
 
 import java.awt.Color;
 
@@ -41,22 +41,23 @@ public class Vertex {
 	public Vector2 texCoord0;
 	public Vector2 texCoord1;
 	
-	public Vertex(Vector3 position, Vector3 normal, Vector2 texture) {
+	public Vertex(Vector3 position, Vector3 normal, Vector2 texture, Color color) {
 		this.position = position;
 		this.normal = normal;
 		this.texCoord0 = texture;
+		this.color = color == null ? null : new Color( color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 	}
 	
 	public Vertex(Vector3 position, Vector3 normal){
-		this(position, normal, Vector2.ZERO);
+		this(position, normal, Vector2.ZERO, null);
 	}
 	
 	public Vertex(Vector3 position) {
-		this(position, Vector3.ZERO, Vector2.ZERO);
+		this(position, Vector3.ZERO, Vector2.ZERO, null);
 	}
 	
 	public Vertex(Vector3 position, Vector2 texture){
-		this(position, Vector3.ZERO, texture);
+		this(position, Vector3.ZERO, texture, null);
 	}
 	
 	public Vertex(Vertex v) {
@@ -65,6 +66,10 @@ public class Vertex {
 		this.normal = v.normal == null? null : new Vector3(v.normal);
 		this.texCoord0 = v.texCoord0 == null? null : new Vector2(v.texCoord0);
 		this.texCoord1 = v.texCoord1 == null? null : new Vector2(v.texCoord1);
+	}
+
+	public Vertex(Vector3 position, Vector3 normal, Vector2 texture) {
+		this(position, normal, texture, null);
 	}
 
 	public float[] toArray(){

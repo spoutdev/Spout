@@ -24,62 +24,73 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.model;
+package org.spout.api.model.animation;
 
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-public class BoneTransform {
-	Vector3 position = Vector3.ZERO;
-	Quaternion rotation = Quaternion.IDENTITY;
-	Vector3 scale = Vector3.ONE;
+import org.spout.api.model.mesh.Mesh;
 
-	BoneTransform parent;
+public class Bone {
+	String name;
+	HashMap<String, Bone> children = new HashMap<String, Bone>();
+	BoneTransform transform = new BoneTransform();
 
-	public Vector3 getPosition() {
-		return position;
-	}
+	Mesh mesh;
 
-	public void setPosition(Vector3 position) {
-		this.position = position;
-	}
-
-	public Quaternion getRotation() {
-		return rotation;
-	}
-
-	public void setRotation(Quaternion rotation) {
-		this.rotation = rotation;
-	}
-
-	public Vector3 getScale() {
-		return scale;
-	}
-
-	public void setScale(Vector3 scale) {
-		this.scale = scale;
-	}
-
-	public BoneTransform getParent() {
-		return parent;
-	}
-
-	public void setParent(BoneTransform parent) {
-		this.parent = parent;
-	}
-
-	private BoneTransform add(BoneTransform other) {
-		BoneTransform t = new BoneTransform();
-		t.position = position.add(other.position);
-		t.rotation = rotation.multiply(other.rotation);
-		t.scale = scale.add(other.scale);
-		return t;
-	}
-
-	public BoneTransform getAbsolutePosition() {
-		if (parent == null) {
-			return this;
+	public Bone(String name, BoneTransform parent) {
+		if (parent != null) {
+			transform.setParent(parent);
 		}
-		return add(parent.getAbsolutePosition());
+		this.name = name;
+	}
+
+	public BoneTransform getTransform() {
+		return transform;
+	}
+
+	public Mesh getMesh() {
+		return mesh;
+	}
+
+	public void setMesh(Mesh mesh) {
+		this.mesh = mesh;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void attachBone(String name, Mesh mesh) {
+		Bone b = new Bone(name, getTransform());
+		b.setMesh(mesh);
+		children.put(name, b);
+	}
+
+	public boolean hasBone(String name) {
+		return children.containsKey(name);
+	}
+
+	public boolean isBone(String name) {
+		return name.equals(this.name);
+	}
+
+	public void removeBone(String name) {
+		if (children.containsKey(name)) {
+			children.remove(name);
+		}
+	}
+
+	public Bone getBone(String name) {
+		if (children.containsKey(name)) {
+			return children.get(name);
+		}
+		for (Bone b : children.values()) {
+			Bone r = b.getBone(name);
+			if (r != null) {
+				return r;
+			}
+		}
+		return null;
 	}
 }
