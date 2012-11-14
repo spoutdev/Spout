@@ -29,7 +29,7 @@ package org.spout.engine.mesh;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.spout.api.model.MeshFace;
+import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.resource.Resource;
 
 public class ComposedMesh extends Resource {
