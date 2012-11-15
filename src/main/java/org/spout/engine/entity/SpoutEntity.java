@@ -39,6 +39,7 @@ import org.spout.api.component.Component;
 import org.spout.api.component.components.EntityComponent;
 import org.spout.api.component.components.NetworkComponent;
 import org.spout.api.component.components.PhysicsComponent;
+import org.spout.api.component.components.PredictableTransformComponent;
 import org.spout.api.component.components.TransformComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
@@ -51,6 +52,7 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
+import org.spout.api.plugin.Platform;
 import org.spout.api.util.OutwardIterator;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
@@ -84,7 +86,12 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	public SpoutEntity(Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component> ...components) {
 		id.set(NOTSPAWNEDID);
-		add(TransformComponent.class);
+		
+		if(Spout.getPlatform() == Platform.CLIENT)
+			add(PredictableTransformComponent.class);
+		else
+			add(TransformComponent.class);
+
 		add(NetworkComponent.class);
 		
 		if (uid != null) {

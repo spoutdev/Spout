@@ -71,6 +71,7 @@ import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.component.components.CameraComponent;
 import org.spout.api.component.components.HitBlockComponent;
+import org.spout.api.component.components.PredictableTransformComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.state.PlayerInputState;
@@ -513,6 +514,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		doInput();
+
+		for (Entity e : super.getDefaultWorld().getAll()) {
+			((PredictableTransformComponent)e.getTransform()).updateRender(dt);
+		}
+
+		activeCamera.updateView();
 
 		if (Mouse.isButtonDown(0)) {
 			if (!Mouse.isGrabbed()) {
