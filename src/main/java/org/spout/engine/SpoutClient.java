@@ -521,13 +521,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		activeCamera.updateView();
 
-		if (Mouse.isButtonDown(0)) {
-			if (!Mouse.isGrabbed()) {
-				Mouse.setGrabbed(true);
-			}
-		} else {
-			Mouse.setGrabbed(false);
-		}
+		Mouse.setGrabbed(screenStack.getVisibleScreens().getLast().grabsMouse());
 
 		worldRenderer.render();
 
