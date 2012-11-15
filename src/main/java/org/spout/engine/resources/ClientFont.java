@@ -119,7 +119,6 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("Diffuse", this);
 		if (((SpoutClient) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
-
 			material = new ClientRenderMaterial(new BasicShader(), params);
 		} else {
 			material = new ClientRenderMaterial((ClientShader)Spout.getFilesystem().getResource("shader://Spout/resources/resources/shaders/textShader.ssf"), params);
@@ -127,6 +126,9 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	}
 
 	public RenderMaterial getMaterial() {
+		if (material==null) {
+			load();
+		}
 		return material;
 	}
 

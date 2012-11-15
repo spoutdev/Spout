@@ -488,7 +488,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		worldRenderer.setup();
 
 		gui = SpriteBatch.createSpriteBatch(getRenderMode(), resolution.getX(), resolution.getY());
-		font.load();
 
 		// Test
 		ClientEntityPrefab spoutyType = (ClientEntityPrefab) Spout.getFilesystem().getResource("entity://Spout/resources/resources/entities/Spouty/spouty.sep");
