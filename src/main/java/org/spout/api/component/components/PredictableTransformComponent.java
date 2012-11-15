@@ -59,7 +59,7 @@ public class PredictableTransformComponent extends TransformComponent {
 	public void setTransform(Transform transform) {
 		super.setTransform(transform);
 		lastTransform = transform.copy();
-		copySnapshot(); // Why if i don't do that, i keep a freeze ???? There are a lock when the engine load chunk ??? Need info !
+		copySnapshot(); //TODO: Why if i don't do that, i keep a freeze ???? There are a lock when the engine load chunk ??? Need info !
 	}
 	
 }
