@@ -71,6 +71,17 @@ public class AtomicVariableWidthArray implements Serializable {
 	 * @param width the number of bits in each entry
 	 */
 	public AtomicVariableWidthArray(int length, int width) {
+		this(length, width, null);
+	}
+	
+	/**
+	 * Creates a variable Atomic array.  The width must be a power of two from 1 to 32 and the length must be a multiple of the number of elements that fit in an int after packing.
+	 * 
+	 * @param length the length of the array
+	 * @param width the number of bits in each entry
+	 * @param initial the initial state of the array (in packed format)
+	 */
+	public AtomicVariableWidthArray(int length, int width, int[] initial) {
 		if (MathHelper.roundUpPow2(width) != width || width < 1 || width > 32) {
 			throw new IllegalArgumentException("Width must be a power of 2 between 1 and 32 " + width);
 		}
@@ -96,7 +107,15 @@ public class AtomicVariableWidthArray implements Serializable {
 			throw new IllegalArgumentException("The length must be a multiple of " + valuesPerInt + " for arrays of width " + width);
 		}
 		
-		this.array = new AtomicIntegerArray(newLength);
+		if (initial != null) {
+			if (newLength != initial.length) {
+				throw new IllegalArgumentException("Length of packed array did not match expected");
+			}
+			this.array = new AtomicIntegerArray(initial);
+		} else {
+			this.array = new AtomicIntegerArray(newLength);
+		}
+		
 		
 		this.fullWidth = width == 32;
 		
@@ -265,6 +284,20 @@ public class AtomicVariableWidthArray implements Serializable {
 		}
 		
 		return array;
+	}
+	
+	/**
+	 * Gets a packed version of this array.  Tearing may occur if the array is updated during this method call.
+	 * 
+	 * @return
+	 */
+	public int[] getPacked() {
+		int length = this.array.length();
+		int[] packed = new int[length];
+		for (int i = 0; i < length; i++) {
+			packed[i] = this.array.get(i);
+		}
+		return packed;
 	}
 	
 	/*

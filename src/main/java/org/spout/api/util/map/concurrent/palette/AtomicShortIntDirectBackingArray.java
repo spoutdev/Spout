@@ -30,11 +30,13 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 
 public class AtomicShortIntDirectBackingArray extends AtomicShortIntBackingArray {
 	
+	private final static int[] NO_PALETTE = new int[0];
+	
 	private final AtomicIntegerArray store;
 	private final int width;
 
 	public AtomicShortIntDirectBackingArray(int length) {
-		this(length, null);
+		this(length, (AtomicShortIntBackingArray) null);
 	}
 	public AtomicShortIntDirectBackingArray(AtomicShortIntBackingArray previous) {
 		this(previous.length(), previous);
@@ -49,6 +51,15 @@ public class AtomicShortIntDirectBackingArray extends AtomicShortIntBackingArray
 		} catch (PaletteFullException pfe) {
 			throw new IllegalStateException("Unable to copy old array to new array");
 		}
+	}
+	
+	public AtomicShortIntDirectBackingArray(int length, int[] initial) {
+		super(length);
+		if (initial.length != length) {
+			throw new IllegalArgumentException("The length of the initialization array must match the given length");
+		}
+		store = new AtomicIntegerArray(initial);
+		width = AtomicShortIntPaletteBackingArray.roundUpWidth(length - 1);
 	}
 
 	@Override
@@ -84,6 +95,14 @@ public class AtomicShortIntDirectBackingArray extends AtomicShortIntBackingArray
 	@Override
 	public boolean isPaletteMaxSize() {
 		return true;
+	}
+	@Override
+	public int[] getPalette() {
+		return NO_PALETTE;
+	}
+	@Override
+	public int[] getBackingArray() {
+		return toIntArray(store);
 	}
 
 }

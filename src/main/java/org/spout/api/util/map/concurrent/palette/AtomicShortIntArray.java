@@ -148,6 +148,49 @@ public class AtomicShortIntArray {
 	}
 	
 	/**
+	 * Sets the array equal to the given array.  The array should be the same length as this array
+	 * 
+	 * @param initial the array containing the new values
+	 */
+	public void set(int[] initial) {
+		resizeLock.lock();
+		try {
+			if (initial.length != length) {
+				throw new IllegalArgumentException("Array length mismatch, expected " + length + ", got " + initial.length);
+			}
+			int unique = AtomicShortIntArray.getUnique(initial);
+			int allowedPalette = AtomicShortIntPaletteBackingArray.getAllowedPalette(length);
+			if (unique > allowedPalette) {
+				store.set(new AtomicShortIntDirectBackingArray(length, initial));
+			} else {
+				store.set(new AtomicShortIntPaletteBackingArray(length, unique, initial));
+			}
+		} finally {
+			resizeLock.unlock();
+		}
+	}
+	
+	/**
+	 * Sets the array equal to the given palette based array.  The main array should be the same length as this array
+	 * 
+	 * @param palette the palette, if the palette is of length 0, variableWidthBlockArray contains the data, in flat format
+	 * @param blockArrayWidth the with of each entry in the main array
+	 * @param variableWidthBlockArray the array containing the new values, packed into ints
+	 */
+	public void set(int[] palette, int blockArrayWidth, int[] variableWidthBlockArray) {
+		resizeLock.lock();
+		try {
+			if (palette.length == 0) {
+				store.set(new AtomicShortIntDirectBackingArray(length, variableWidthBlockArray));
+			} else {
+				store.set(new AtomicShortIntPaletteBackingArray(length, palette, blockArrayWidth, variableWidthBlockArray));
+			}
+		} finally {
+			resizeLock.unlock();
+		}
+	}
+	
+	/**
 	 * Sets the element at the given index, but only if the previous value was the expected value.
 	 *
 	 * @param i the index
@@ -215,6 +258,39 @@ public class AtomicShortIntArray {
 		int unique = 0;
 		for (int i = 0; i < length; i++) {
 			if (inUse.add(get(i))) {
+				unique++;
+			}
+		}
+		return unique;
+	}
+	
+	/**
+	 * Gets the palette in use by the backing array or an array of zero length if no palette is in use.<br>
+	 * <br>
+	 * Data tearing may occur if the store is updated during this method call.
+	 * 
+	 * @return
+	 */
+	public int[] getPalette() {
+		return store.get().getPalette();
+	}
+
+	/**
+	 * Gets the packed array used by the backing store.  This is a flat array if there is no palette in use.<br>
+	 * <br>
+	 * Data tearing may occur if the store is updated during this method call.
+	 * 
+	 * @return
+	 */
+	public int[] getBackingArray() {
+		return store.get().getBackingArray();
+	}
+	
+	private static int getUnique(int[] initial) {
+		TIntHashSet inUse = new TIntHashSet();
+		int unique = 0;
+		for (int i = 0; i < initial.length; i++) {
+			if (inUse.add(initial[i])) {
 				unique++;
 			}
 		}

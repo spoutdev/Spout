@@ -68,7 +68,7 @@ public class AtomicShortIntPaletteBackingArray extends AtomicShortIntBackingArra
 				width = oldWidth <= 8 ? (oldWidth << 1) : (16);
 			}
 		}
-		int allowedPalette = length >> 2;
+		int allowedPalette = AtomicShortIntPaletteBackingArray.getAllowedPalette(length);
 		paletteSize = Math.min(widthToPaletteSize(width), allowedPalette);
 		maxPaletteSize = paletteSize == allowedPalette;
 		store = new AtomicVariableWidthArray(length, width);
@@ -86,6 +86,40 @@ public class AtomicShortIntPaletteBackingArray extends AtomicShortIntBackingArra
 			}
 		} catch (PaletteFullException pfe) {
 			throw new IllegalStateException("Unable to copy old array to new array, as palette was filled, length " + length + ", paletteSize " + paletteSize + ", unique " + unique);
+		}
+	}
+	
+	public AtomicShortIntPaletteBackingArray(int length, int unique, int[] initial) {
+		super(length);
+		width = roundUpWidth(unique - 1);
+		int allowedPalette = AtomicShortIntPaletteBackingArray.getAllowedPalette(length);
+		paletteSize = Math.min(widthToPaletteSize(width), allowedPalette);		
+		paletteCounter = new AtomicInteger(0);
+		maxPaletteSize = paletteSize == allowedPalette;
+		palette = new AtomicIntegerArray(paletteSize);
+		store = new AtomicVariableWidthArray(length, width);
+		idLookup = new AtomicIntShortSingleUseHashMap(paletteSize + (paletteSize >> 2));
+		try {
+			for (int i = 0; i < length; i++) {
+				set(i, initial[i]);
+			}
+		} catch (PaletteFullException pfe) {
+			throw new IllegalStateException("Unable to copy old array to new array, as palette was filled, length " + length + ", paletteSize " + paletteSize + ", unique " + unique);
+		}
+	}
+	
+	public AtomicShortIntPaletteBackingArray(int length, int[] palette, int width, int[] variableWidthBlockArray) {
+		super(length);
+		this.width = width;
+		int allowedPalette = AtomicShortIntPaletteBackingArray.getAllowedPalette(length);
+		this.paletteSize = palette.length;
+		this.paletteCounter = new AtomicInteger(palette.length);
+		this.maxPaletteSize = paletteSize >= allowedPalette;
+		this.palette = new AtomicIntegerArray(palette);
+		store = new AtomicVariableWidthArray(length, width, variableWidthBlockArray);
+		idLookup = new AtomicIntShortSingleUseHashMap(paletteSize + (paletteSize >> 2));
+		for (int i = 0; i < paletteSize; i++) {
+			idLookup.putIfAbsent(palette[i], (short) i);
 		}
 	}
 
@@ -184,6 +218,20 @@ public class AtomicShortIntPaletteBackingArray extends AtomicShortIntBackingArra
 	
 	public static int widthToPaletteSize(int width) {
 		return 1 << width;
+	}
+	
+	public static int getAllowedPalette(int length) {
+		return length >> 2;
+	}
+
+	@Override
+	public int[] getPalette() {
+		return toIntArray(palette, paletteCounter.get());
+	}
+
+	@Override
+	public int[] getBackingArray() {
+		return store.getPacked();
 	}
 
 }

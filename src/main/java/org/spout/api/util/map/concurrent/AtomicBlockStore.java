@@ -297,4 +297,25 @@ public interface AtomicBlockStore {
 	 * @return
 	 */
 	public int getDirtyNewState(int i);
+	
+	/**
+	 * Gets the width of each entry in the packed array
+	 * 
+	 * @return
+	 */
+	public int getPackedWidth();
+	
+	/**
+	 * Gets the packed array
+	 * 
+	 * @return
+	 */
+	public int[] getPackedArray();
+	
+	/**
+	 * Gets the palette for the packed array
+	 * 
+	 * @return
+	 */
+	public int[] getPalette();
 }

@@ -28,6 +28,8 @@ package org.spout.api.util.map.concurrent.palette;
 
 import gnu.trove.set.hash.TIntHashSet;
 
+import java.util.concurrent.atomic.AtomicIntegerArray;
+
 public abstract class AtomicShortIntBackingArray {
 	
 	/**
@@ -131,6 +133,26 @@ public abstract class AtomicShortIntBackingArray {
 		return unique;
 	}
 	
+	/**
+	 * Gets the palette in use by the backing array or an array of zero length if no palette is in use.
+	 * 
+	 * @return
+	 */
+	public abstract int[] getPalette();
+
+	/**
+	 * Gets the packed array used by the backing store.  This is a flat array if there is no palette in use.
+	 * 
+	 * @return
+	 */
+	public abstract int[] getBackingArray();
+	
+	/**
+	 * 
+	 * @param previous
+	 * @throws PaletteFullException
+	 */
+	
 	protected void copyFromPrevious(AtomicShortIntBackingArray previous) throws PaletteFullException {
 		if (previous != null) {
 			for (int i = 0; i < length; i++) {
@@ -139,5 +161,22 @@ public abstract class AtomicShortIntBackingArray {
 		} else {
 			set(0, 0);
 		}
+	}
+	
+	protected static int[] toIntArray(AtomicIntegerArray array, int length) {
+		int[] packed = new int[length];
+		for (int i = 0; i < length; i++) {
+			packed[i] = array.get(i);
+		}
+		return packed;	
+	}
+	
+	protected static int[] toIntArray(AtomicIntegerArray array) {
+		int length = array.length();
+		int[] packed = new int[length];
+		for (int i = 0; i < length; i++) {
+			packed[i] = array.get(i);
+		}
+		return packed;
 	}
 }

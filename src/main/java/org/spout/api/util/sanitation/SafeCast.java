@@ -74,6 +74,14 @@ public class SafeCast {
 
 		return (short[]) o;
 	}
+	
+	public static int[] toIntArray(Object o, int[] def) {
+		if (!(o instanceof int[])) {
+			return def;
+		}
+
+		return (int[]) o;
+	}
 
 	public static String toString(Object o, String def) {
 		if (!(o instanceof String)) {

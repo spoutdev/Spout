@@ -61,14 +61,6 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	}
 	
 	public AtomicPaletteBlockStore(int shift, boolean storeState, int dirtySize) {
-		this(shift, storeState, dirtySize, null);
-	}
-
-	public AtomicPaletteBlockStore(int shift, boolean storeState, int dirtySize, short[] initial) {
-		this(shift, storeState, dirtySize, initial, null);
-	}
-	
-	public AtomicPaletteBlockStore(int shift, boolean storeState, int dirtySize, short[] blocks, short[] data) {
 		this.side = 1 << shift;
 		this.shift = shift;
 		this.doubleShift = shift << 1;
@@ -86,33 +78,27 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 			oldState = null;
 			newState = null;
 		}
+	}
+
+	public AtomicPaletteBlockStore(int shift, boolean storeState, int dirtySize, short[] initial) {
+		this(shift, storeState, dirtySize, initial, null);
+	}
+	
+	public AtomicPaletteBlockStore(int shift, boolean storeState, int dirtySize, short[] blocks, short[] data) {
+		this(shift, storeState, dirtySize);
 		if (blocks != null) {
-			int x = 0;
-			int z = 0;
-			int y = 0;
-			int max = (1 << shift) - 1;
-
-			for (int i = 0; i < Math.min(blocks.length, size); i++) {
-				short d = data == null ? 0 : data[i];
-				this.setBlock(x, y, z, blocks[i], d);
-
-				if (x < max) {
-					x++;
-				} else {
-					x = 0;
-					if (z < max) {
-						z++;
-					} else {
-						z = 0;
-						if (y < max) {
-							y++;
-						} else {
-							y = 0;
-						}
-					}
-				}
+			int[] initial = new int[Math.min(blocks.length, this.length)];
+			for (int i = 0; i < blocks.length; i++) {
+				short d = data != null ? data[i] : 0;
+				initial[i] = BlockFullState.getPacked(blocks[i], d);
 			}
+			store.set(initial);
 		}
+	}
+	
+	public AtomicPaletteBlockStore(int shift, boolean storeState, int dirtySize, int[] palette, int blockArrayWidth, int[] variableWidthBlockArray) {
+		this(shift, storeState, dirtySize);
+		store.set(palette, blockArrayWidth, variableWidthBlockArray);
 	}
 	
 	@Override
@@ -304,5 +290,20 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	
 	private final int getIndex(int x, int y, int z) {
 		return (y << doubleShift) + (z << shift) + x;
+	}
+
+	@Override
+	public int getPackedWidth() {
+		return store.width();
+	}
+
+	@Override
+	public int[] getPackedArray() {
+		return store.getBackingArray();
+	}
+
+	@Override
+	public int[] getPalette() {
+		return store.getPalette();
 	}
 }
