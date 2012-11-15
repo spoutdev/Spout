@@ -265,26 +265,38 @@ public class WorldFiles {
 			int cx = r.getChunkX() + x;
 			int cy = r.getChunkY() + y;
 			int cz = r.getChunkZ() + z;
-
-			byte populationState = SafeCast.toGeneric(map.get("populationState"), new ByteTag("", PopulationState.POPULATED.getId()), ByteTag.class).getValue();
-			short[] blocks = SafeCast.toShortArray(NBTMapper.toTagValue(map.get("blocks")), null);
-			short[] data = SafeCast.toShortArray(NBTMapper.toTagValue(map.get("data")), null);
-			byte[] skyLight = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("skyLight")), null);
-			byte[] blockLight = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("blockLight")), null);
-			byte[] extraData = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("extraData")), null);
-
+			
 			//Convert world block ids to engine material ids
 			SpoutWorld world = r.getWorld();
 			StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
 			StringMap itemMap = world.getItemMap();
-			for (int i = 0; i < blocks.length; i++) {
-				blocks[i] = (short) itemMap.convertTo(global, blocks[i]);
-			}
+			
+			byte[] skyLight = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("skyLight")), null);
+			byte[] blockLight = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("blockLight")), null);
+			byte[] extraData = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("extraData")), null);
 
 			ManagedHashMap extraDataMap = new ManagedHashMap();
 			extraDataMap.deserialize(extraData);
 
-			chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), blocks, data, skyLight, blockLight, extraDataMap);
+			byte populationState = SafeCast.toGeneric(map.get("populationState"), new ByteTag("", PopulationState.POPULATED.getId()), ByteTag.class).getValue();
+			int[] palette = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("palette")), null);
+			if (palette == null) {
+				short[] blocks = SafeCast.toShortArray(NBTMapper.toTagValue(map.get("blocks")), null);
+				short[] data = SafeCast.toShortArray(NBTMapper.toTagValue(map.get("data")), null);
+				for (int i = 0; i < blocks.length; i++) {
+					blocks[i] = (short) itemMap.convertTo(global, blocks[i]);
+				}
+				chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), blocks, data, skyLight, blockLight, extraDataMap);
+			} else {
+				int blockArrayWidth = SafeCast.toInt(NBTMapper.toTagValue(map.get("blockArrayWidth")), -1);
+				int[] variableWidthBlockArray = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("variableWidthBlockArray")), null);
+				for (int i = 0; i < palette.length; i++) {
+					short newId = (short) itemMap.convertTo(global, BlockFullState.getId(palette[i]));
+					short oldData = BlockFullState.getData(palette[i]);
+					palette[i] = BlockFullState.getPacked(newId, oldData);
+				}
+				chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), palette, blockArrayWidth, variableWidthBlockArray, skyLight, blockLight, extraDataMap);
+			}
 
 			CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("entities")), (CompoundMap) null, CompoundMap.class);
 			loadEntities(r, entityMap, dataForRegion.loadedEntities);
@@ -299,22 +311,7 @@ public class WorldFiles {
 			//1.) Scan the blocks and add them to the chunk map
 			//2.) Load the datatables associated with the block components
 			//3.) Attach the components
-			for (int dx = 0; dx < Chunk.BLOCKS.SIZE; dx++) {
-				for (int dy = 0; dy < Chunk.BLOCKS.SIZE; dy++) {
-					for (int dz = 0; dz < Chunk.BLOCKS.SIZE; dz++) {
-						int index = (dy << 8) + (dz << 4) + dx;
-						BlockMaterial bm = (BlockMaterial) MaterialRegistry.get(BlockFullState.getPacked(blocks[index], data[index]));
-						if (bm instanceof ComplexMaterial) {
-							BlockComponent component = ((ComplexMaterial)bm).createBlockComponent();
-							short packed = NibbleQuadHashed.key(dx, dy, dz, 0);
-							//Does not need synchronized, the chunk is not yet accessible outside this thread
-							chunk.getBlockComponents().put(packed, component);
-							ChunkComponentOwner owner = new ChunkComponentOwner(chunk, chunk.getBlockX() + dx, chunk.getBlockY() + dy, chunk.getBlockZ() + dz);
-							component.attachTo(owner);
-						}
-					}
-				}
-			}
+			chunk.blockComponentScan();
 			//Load data associated with block components
 			loadBlockComponents(chunk, componentsList);
 			//Attach block components

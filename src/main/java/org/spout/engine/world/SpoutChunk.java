@@ -262,25 +262,14 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial, ManagedHashMap map) {
-		this(world, region, x, y, z, PopulationState.UNTOUCHED, initial, null, null, null, map);
+		this(world, region, x, y, z, PopulationState.UNTOUCHED, map);
+		delayedInitialize(initial, null, null, null);
 	}
 
-	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, ManagedHashMap extraData) {
+	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, ManagedHashMap extraData) {
 		super(world, x * BLOCKS.SIZE, y * BLOCKS.SIZE, z * BLOCKS.SIZE);
 		parentRegion = region;
-		blockStore = new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, 10, blocks, data);
 		this.populationState = new AtomicReference<PopulationState>(popState);
-
-		if (skyLight == null) {
-			this.skyLight = new byte[BLOCKS.HALF_VOLUME];
-		} else {
-			this.skyLight = skyLight;
-		}
-		if (blockLight == null) {
-			this.blockLight = new byte[BLOCKS.HALF_VOLUME];
-		} else {
-			this.blockLight = blockLight;
-		}
 
 		if (extraData != null) {
 			this.dataMap = extraData;
@@ -294,11 +283,43 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 		column.registerChunk(((int) y) << BLOCKS.BITS);
 		columnRegistered.set(true);
 		lastUnloadCheck.set(world.getAge());
-		blockStore.resetDirtyArrays(); // Clear false dirty state on freshly
 		// loaded chunk
 		this.regionThread = region.getExceutionThread();
 		selfReference = new WeakReference<Chunk>(this);
 		this.scheduler = (SpoutScheduler) Spout.getScheduler();
+	}
+	
+	protected void delayedInitialize(short[] blocks, short[] data, byte[] skyLight, byte[] blockLight) {
+		blockStore = new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, 10, blocks, data);
+		
+		if (skyLight == null) {
+			this.skyLight = new byte[BLOCKS.HALF_VOLUME];
+		} else {
+			this.skyLight = skyLight;
+		}
+		if (blockLight == null) {
+			this.blockLight = new byte[BLOCKS.HALF_VOLUME];
+		} else {
+			this.blockLight = blockLight;
+		}
+		
+		blockStore.resetDirtyArrays(); // Clear false dirty state on freshly
+
+	}
+	
+	protected void delayedInitialize(int[] palette, int blockArrayWidth, int[] variableWidthBlockArray, byte[] skyLight, byte[] blockLight) {
+		blockStore = new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, 10, palette, blockArrayWidth, variableWidthBlockArray);
+		
+		if (skyLight == null) {
+			this.skyLight = new byte[BLOCKS.HALF_VOLUME];
+		} else {
+			this.skyLight = skyLight;
+		}
+		if (blockLight == null) {
+			this.blockLight = new byte[BLOCKS.HALF_VOLUME];
+		} else {
+			this.blockLight = blockLight;
+		}
 	}
 
 	@Override
@@ -1565,6 +1586,27 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	 */
 	public TShortObjectMap<BlockComponent> getBlockComponents() {
 		return blockComponents;
+	}
+	
+	/**
+	 * Scans for block components.  This method must ONLY be called during load from disk
+	 */
+	public void blockComponentScan() {
+		for (int dx = 0; dx < Chunk.BLOCKS.SIZE; dx++) {
+			for (int dy = 0; dy < Chunk.BLOCKS.SIZE; dy++) {
+				for (int dz = 0; dz < Chunk.BLOCKS.SIZE; dz++) {
+					BlockMaterial bm = getBlockMaterial(dx, dy, dz);
+					if (bm instanceof ComplexMaterial) {
+						BlockComponent component = ((ComplexMaterial)bm).createBlockComponent();
+						short packed = NibbleQuadHashed.key(dx, dy, dz, 0);
+						//Does not need synchronized, the chunk is not yet accessible outside this thread
+						getBlockComponents().put(packed, component);
+						ChunkComponentOwner owner = new ChunkComponentOwner(this, getBlockX() + dx, getBlockY() + dy, getBlockZ() + dz);
+						component.attachTo(owner);
+					}
+				}
+			}
+		}
 	}
 	
 	private int getAndSetBlockLocked(int x, int y, int z, short newId, short newData) {

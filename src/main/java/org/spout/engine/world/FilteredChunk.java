@@ -75,12 +75,13 @@ public class FilteredChunk extends SpoutChunk{
 	}
 
 	public FilteredChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, ManagedHashMap extraData) {
-		super(world, region, x, y, z, popState, blocks, data, skyLight, blockLight, extraData);
+		super(world, region, x, y, z, popState, extraData);
 
 		uniform = new AtomicBoolean(true);
 		short id = blocks[0];
+		short d = data == null ? 0 : data[0];
 		for (int i = 1; i < blocks.length; i++) {
-			if (id != blocks[i]) {
+			if (id != blocks[i] || (data != null && d != data[i])) {
 				uniform.set(false);
 				break;
 			}
@@ -88,11 +89,24 @@ public class FilteredChunk extends SpoutChunk{
 
 		if (uniform.get()) {
 			uniformId.set(id);
-			material.set(BlockMaterial.get(id));
-			this.blockStore = null;
-			this.skyLight = null;
-			this.blockLight = null;
+			material.set(BlockMaterial.get(id).getSubMaterial(d));
+		} else {
+			delayedInitialize(blocks, data, skyLight, blockLight);
 		}
+	}
+	
+	public FilteredChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, int[] palette, int blockArrayWidth, int[] variableWidthBlockArray, byte[] skyLight, byte[] blockLight, ManagedHashMap extraData) {
+		super(world, region, x, y, z, popState, extraData);
+		
+		if (palette.length == 1) {
+			uniform = new AtomicBoolean(true);
+			uniformId.set(BlockFullState.getId(palette[0]));
+			material.set(BlockFullState.getMaterial(palette[0]));
+		} else {
+			uniform = new AtomicBoolean(false);
+			super.delayedInitialize(palette, blockArrayWidth, variableWidthBlockArray, skyLight, blockLight);
+		}
+		
 	}
 
 	private synchronized void initialize() {
