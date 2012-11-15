@@ -38,6 +38,7 @@ public class Screen extends BasicTickable implements Container {
 	private HashMap<Widget, Plugin> widgets = new LinkedHashMap<Widget, Plugin>();
 	private Widget focussedWidget = null;
 	private boolean takesInput = true;
+	private boolean grabsMouse = true;
 
 	@Override
 	public Set<Widget> getWidgets() {
@@ -92,6 +93,14 @@ public class Screen extends BasicTickable implements Container {
 	@Override
 	public boolean canTick() {
 		return true;
+	}
+
+	public boolean grabsMouse() {
+		return grabsMouse;
+	}
+
+	public void setGrabsMouse(boolean grabsMouse) {
+		this.grabsMouse = grabsMouse;
 	}
 
 	/**
