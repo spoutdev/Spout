@@ -37,6 +37,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
@@ -365,6 +366,8 @@ public class WorldRenderer {
 	int rended = 0;
 
 	private void renderChunks() {
+		/*Chunk chunk = client.getActivePlayer().getChunk();
+
 		int minX = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getX() * ChunkMesh.SPLIT_X) / ChunkMeshBatchAggregator.SIZE_X));
 		int minY = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getY() * ChunkMesh.SPLIT_Y) / ChunkMeshBatchAggregator.SIZE_Y));
 		int minZ = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getZ() * ChunkMesh.SPLIT_Z) / ChunkMeshBatchAggregator.SIZE_Z));
@@ -372,7 +375,7 @@ public class WorldRenderer {
 		int maxX = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getX() * ChunkMesh.SPLIT_X + ChunkMesh.SPLIT_X) / ChunkMeshBatchAggregator.SIZE_X));
 		int maxY = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getY() * ChunkMesh.SPLIT_Y + ChunkMesh.SPLIT_Y) / ChunkMeshBatchAggregator.SIZE_Y));
 		int maxZ = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getZ() * ChunkMesh.SPLIT_Z + ChunkMesh.SPLIT_Z) / ChunkMeshBatchAggregator.SIZE_Z));
-
+*/
 		ocludedChunks = 0;
 		culledChunks = 0;
 		rended = 0;
@@ -383,7 +386,7 @@ public class WorldRenderer {
 			material.getShader().setUniform("Projection", client.getActiveCamera().getProjection());
 			for (ChunkMeshBatchAggregator renderer : entry.getValue()) {
 
-				if(renderer.getFace() == BlockFace.TOP){
+				/*if(renderer.getFace() == BlockFace.TOP){
 					if(renderer.getY()>maxY){
 						ocludedChunks++;
 						continue;
@@ -413,7 +416,7 @@ public class WorldRenderer {
 						ocludedChunks++;
 						continue;
 					}
-				}
+				}*/
 
 				material.getShader().setUniform("Model", renderer.getTransform());
 
