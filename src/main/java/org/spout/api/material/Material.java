@@ -47,7 +47,6 @@ import org.spout.api.math.MathHelper;
 import org.spout.api.model.Model;
 import org.spout.api.plugin.Platform;
 import org.spout.api.render.BatchEffect;
-import org.spout.api.render.RenderEffect;
 import org.spout.api.util.LogicUtil;
 import org.spout.api.util.flag.Flag;
 import org.spout.api.util.flag.FlagSingle;
@@ -175,10 +174,10 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	}
 
 	/**
-	 * Add a RenderEffect
+	 * Add a BatchEffect
 	 */
-	public void addRenderEffect(RenderEffect renderEffect){
-
+	public void addBatchEffect(BatchEffect batchEffect){
+		batchEffects.add(batchEffect);
 	}
 
 	public final short getId() {

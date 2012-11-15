@@ -111,4 +111,8 @@ public class OrientedMeshFace extends MeshFace {
 		}
 		return false;
 	}
+
+	public Set<BlockFace> getSeeFromFace() {
+		return seeFromFace;
+	}
 }
