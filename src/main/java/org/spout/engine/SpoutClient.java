@@ -233,6 +233,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		activePlayer.add(HitBlockComponent.class);
 		super.getDefaultWorld().spawnEntity(activePlayer);
 
+		getScheduler().startInputThread();
 		getScheduler().startRenderThread();
 
 		//TODO Maybe a better way of alerting plugins the client is done?
@@ -296,11 +297,21 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return inputManager;
 	}
 
-	public void doInput() {
+	public void doInput(float dt) {
 		// TODO move this a plugin
 
 		if (activePlayer == null) {
 			return;
+		}
+
+		if(Mouse.isCreated()){
+			if (Mouse.isButtonDown(0)) {
+				if (!Mouse.isGrabbed()) {
+					Mouse.setGrabbed(true);
+				}
+			} else {
+				Mouse.setGrabbed(false);
+			}
 		}
 
 		inputManager.pollInput(activePlayer);
@@ -309,19 +320,21 @@ public class SpoutClient extends SpoutEngine implements Client {
 		Transform ts = activePlayer.getTransform().getTransform();
 		ts.setRotation(MathHelper.rotation(inputState.pitch(), inputState.yaw(), ts.getRotation().getRoll()));
 
+		dt *= 500; //Need to define a real speed
+		
 		Point point = ts.getPosition();
 		if (inputState.getForward())
-			point = point.subtract(ts.forwardVector());
+			point = point.subtract(ts.forwardVector().multiply(dt));
 		if (inputState.getBackward())
-			point = point.add(ts.forwardVector());
+			point = point.add(ts.forwardVector().multiply(dt));
 		if (inputState.getLeft())
-			point = point.subtract(ts.rightVector());
+			point = point.subtract(ts.rightVector().multiply(dt));
 		if (inputState.getRight())
-			point = point.add(ts.rightVector());
+			point = point.add(ts.rightVector().multiply(dt));
 		if (inputState.getJump())
-			point = point.add(ts.upVector());
+			point = point.add(ts.upVector().multiply(dt));
 		if (inputState.getCrouch())
-			point = point.subtract(ts.upVector());
+			point = point.subtract(ts.upVector().multiply(dt));
 		ts.setPosition(point);
 
 		activePlayer.getTransform().setTransform(ts);
@@ -511,16 +524,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		doInput();
-
-		if (Mouse.isButtonDown(0)) {
-			if (!Mouse.isGrabbed()) {
-				Mouse.setGrabbed(true);
-			}
-		} else {
-			Mouse.setGrabbed(false);
-		}
 
 		worldRenderer.render();
 

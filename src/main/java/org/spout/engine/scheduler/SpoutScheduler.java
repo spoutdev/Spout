@@ -136,6 +136,7 @@ public final class SpoutScheduler implements Scheduler {
 	private final SpoutSnapshotLock snapshotLock = new SpoutSnapshotLock();
 	private final Thread mainThread;
 	private Thread renderThread;
+	private Thread inputThread;
 	private final SpoutTaskManager taskManager;
 	private SpoutParallelTaskManager parallelTaskManager = null;
 	private final AtomicBoolean heavyLoad = new AtomicBoolean(false);
@@ -152,6 +153,7 @@ public final class SpoutScheduler implements Scheduler {
 
 		mainThread = new MainThread();
 		renderThread = new RenderThread();
+		inputThread = new InputThread();
 
 		taskManager = new SpoutTaskManager(this, true, mainThread);
 	}
@@ -221,6 +223,62 @@ public final class SpoutScheduler implements Scheduler {
 		}
 	}
 
+	private class InputThread extends Thread {
+		public InputThread() {
+			super("Input Thread");
+		}
+
+		@Override
+		public void run() {
+			SpoutClient c = (SpoutClient) Spout.getEngine();
+			int rate = (int) ((1f / TARGET_FPS) * 1000000000);
+
+			long lastTick = System.nanoTime();
+			
+			long timeError = 0;
+			long maxError = rate >> 2; // time error total limited to 0.25 seconds 
+			
+			while (!shutdown) {
+				long currentTime = System.nanoTime();
+				long delta = currentTime - lastTick;
+				lastTick = currentTime;
+
+				// Calculate error in frame time
+				timeError += delta - rate;
+				if (timeError > maxError) {
+					timeError = maxError;
+				} else if (timeError < -maxError) {
+					timeError = -maxError;
+				}
+
+				c.doInput(delta / 1000000000f);
+				
+				currentTime = System.nanoTime();
+				delta = currentTime - lastTick; // Time for render
+				
+				// Round delay to the nearest ms value (from ns)
+				long delay = (rate - delta + 500000) / 1000000;
+				
+				// Adjust delay by 1ms depending on current time error
+				// Forces average to the target rate
+				if (timeError > 0) {
+					delay--;
+				} else if (timeError < 0) {
+					delay++;
+				}
+				
+				if (delay > 0) {
+					try {
+						Thread.sleep(delay);
+					} catch (InterruptedException e) {
+						Spout.log("[Severe] Interrupted while sleeping!");
+					}
+				}
+
+			}
+		}
+	}
+	
 	private class MainThread extends Thread {
 		public MainThread() {
 			super("MainThread");
@@ -341,6 +399,16 @@ public final class SpoutScheduler implements Scheduler {
 			throw new IllegalStateException("Attempt was made to start the render thread twice");
 		}
 		renderThread.start();
+	}
+
+	public void startInputThread() {
+		if (!(Spout.getEngine() instanceof SpoutClient)) {
+			throw new IllegalStateException("Cannot start the rendering thread unless on the client");
+		}
+		if (inputThread.isAlive()) {
+			throw new IllegalStateException("Attempt was made to start the render thread twice");
+		}
+		inputThread.start();
 	}
 
 	/**
