@@ -137,7 +137,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 	@Override
 	public void preRender() {
 		for(RenderEffect renderEffect : getRenderEffects())
-			renderEffect.preRender();
+			renderEffect.preRender(this);
 
 		if(!depthTesting){
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -148,7 +148,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 	@Override
 	public void postRender() {
 		for(RenderEffect renderEffect : getRenderEffects())
-			renderEffect.postRender();
+			renderEffect.postRender(this);
 
 		if(!depthTesting){
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -187,10 +187,10 @@ public class ClientRenderMaterial extends RenderMaterial {
 			//Be sure we have a color
 			//All cube with the same renderMaterial MUST have a color
 			//OR All cube with the same renderMaterial MUST not have a color
-			Color color = Color.WHITE;
+			/*Color color = Color.WHITE;
 			v1.color = color;
 			v2.color = color;
-			v3.color = color;
+			v3.color = color;*/
 
 			meshs.add(new MeshFace(v1, v2, v3));
 		}
