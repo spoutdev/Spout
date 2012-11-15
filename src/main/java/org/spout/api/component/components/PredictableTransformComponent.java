@@ -34,18 +34,17 @@ import org.spout.api.geo.discrete.Transform;
 public class PredictableTransformComponent extends TransformComponent {
 
 	private Transform transformRender = null;
-	private Transform lastTransform = null;
 
 	public void updateRender(float dt) {
 		if(transformRender == null){
-			transformRender = getTransformLive().copy();
+			transformRender = getTransformLive();
 			return;
 		}
 
 		if(getOwner() == ((Client)Spout.getEngine()).getActivePlayer()){
-			transformRender = lastTransform;
+			transformRender = getTransformLive();
 		}else{
-			Point movement = lastTransform.getPosition().subtract(transformRender.getPosition());
+			Point movement = getTransformLive().getPosition().subtract(transformRender.getPosition());
 			movement = movement.multiply(dt);
 			transformRender.setPosition(transformRender.getPosition().add(movement));
 		}
@@ -53,13 +52,6 @@ public class PredictableTransformComponent extends TransformComponent {
 
 	public Transform getRenderTransform(){
 		return transformRender; // Don't need to send back a copy, only the render thread call it
-	}
-	
-	@Override
-	public void setTransform(Transform transform) {
-		super.setTransform(transform);
-		lastTransform = transform.copy();
-		copySnapshot(); //TODO: Why if i don't do that, i keep a freeze ???? There are a lock when the engine load chunk ??? Need info !
 	}
 	
 }
