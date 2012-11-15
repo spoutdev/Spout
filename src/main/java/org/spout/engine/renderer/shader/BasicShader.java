@@ -61,6 +61,8 @@ public class BasicShader extends ClientShader {
 		if (compatabilityMode) {
 			if (textures.size() > 0) {
 				textures.values().iterator().next().getTexture().bind();
+			} else {
+				GL11.glDisable(GL11.GL_TEXTURE_2D);
 			}
 			
 			GL11.glMatrixMode(GL11.GL_PROJECTION);
