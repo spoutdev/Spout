@@ -307,7 +307,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		inputManager.pollInput(activePlayer);
 
 		PlayerInputState inputState = activePlayer.input();
-		Transform ts = activePlayer.getTransform().getTransform();
+		Transform ts = activePlayer.getTransform().getTransformLive();
 		ts.setRotation(MathHelper.rotation(inputState.pitch(), inputState.yaw(), ts.getRotation().getRoll()));
 
 		Point point = ts.getPosition();
