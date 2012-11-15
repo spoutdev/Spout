@@ -186,10 +186,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	public void processCommand(String command, ChatArguments arguments) {
 		final RootCommand rootCmd = Spout.getEngine().getRootCommand();
 		Command cmd = rootCmd.getChild(command);
-		if (cmd == null) {
-			sendMessage(rootCmd.getMissingChildException(rootCmd.getUsage(command,
-					arguments.toSections(ChatSection.SplitType.WORD), -1)).getMessage());
-		}  else {
+		if (cmd != null) {
 			cmd.process(this, command, arguments, false);
 		}
 	}
