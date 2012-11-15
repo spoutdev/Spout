@@ -26,6 +26,7 @@
  */
 package org.spout.api.component.components;
 
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.render.Camera;
@@ -65,16 +66,24 @@ public class CameraComponent extends EntityComponent implements Camera {
 
 	@Override
 	public void updateView() {
-		Matrix pos = MathHelper.translate(getOwner().getTransform().getPosition().multiply(-1));
-		Matrix rot = MathHelper.rotate(getOwner().getTransform().getRotation());
-		view = pos.multiply(rot);
-		frustum.update(projection, view);
+		Transform transform = ((PredictableTransformComponent)getOwner().getTransform()).getRenderTransform();
+		if(transform != null){
+			Matrix pos = MathHelper.translate(transform.getPosition().multiply(-1));
+			Matrix rot = MathHelper.rotate(transform.getRotation());
+			view = pos.multiply(rot);
+			frustum.update(projection, view);
+		}
 	}
 
 	@Override
+	public boolean canTick() {
+		return false; // It's not the job of engine, if you want fluid movement, it's render job.
+	}
+
+	/*@Override
 	public void onTick(float dt) {
 		updateView();
-	}
+	}*/
 
 	@Override
 	public ViewFrustum getFrustum() {
