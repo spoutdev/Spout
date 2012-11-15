@@ -31,11 +31,12 @@ public interface RenderEffect {
 	/**
 	 * Called right before rendering
 	 */
-	public abstract void preRender();
+	public abstract void preRender(RenderMaterial renderMaterial);
 
 	/**
 	 * Called right after rendering
+	 * @param renderMaterial 
 	 */
-	public abstract void postRender();
+	public abstract void postRender(RenderMaterial renderMaterial);
 
 }
