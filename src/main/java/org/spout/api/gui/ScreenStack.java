@@ -35,8 +35,7 @@ import org.spout.api.input.InputManager;
 import org.spout.api.signal.SignalSubscriberObject;
 import org.spout.api.tickable.Tickable;
 
-public class ScreenStack extends SignalSubscriberObject implements Tickable, Runnable {
-	private long lastTick = 0;
+public class ScreenStack extends SignalSubscriberObject implements Tickable {
 	private LinkedList<Screen> screens = new LinkedList<Screen>();
 	private LinkedList<Screen> visibleScreens = new LinkedList<Screen>();
 	/**
@@ -132,17 +131,6 @@ public class ScreenStack extends SignalSubscriberObject implements Tickable, Run
 		for (Screen screen : getVisibleScreens()) {
 			screen.tick(dt);
 		}
-	}
-
-	@Override
-	public void run() {
-		float delta = 50f;
-		long current = System.currentTimeMillis();
-		if (lastTick != 0) {
-			delta = (float) (current - lastTick);
-		}
-		lastTick = current;
-		tick(delta);
 	}
 	
 	/**
