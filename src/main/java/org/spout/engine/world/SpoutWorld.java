@@ -78,6 +78,7 @@ import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.plugin.Plugin;
+import org.spout.api.render.WorldRenderEffect;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.cuboid.CuboidBuffer;
@@ -1242,5 +1243,17 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	public OutputStream getChunkOutputStream(ChunkSnapshot c) {
 		return regionFileManager.getChunkOutputStream(c);
+	}
+
+	private final List<WorldRenderEffect> worldRenderEffects = new ArrayList<WorldRenderEffect>();
+	
+	@Override
+	public List<WorldRenderEffect> getWorldRenderEffects() {
+		return worldRenderEffects;
+	}
+
+	@Override
+	public void addWorldRenderEffect(WorldRenderEffect renderEffect) {
+		worldRenderEffects.add(renderEffect);
 	}
 }

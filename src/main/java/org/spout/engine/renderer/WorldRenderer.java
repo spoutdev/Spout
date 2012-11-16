@@ -41,6 +41,7 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
+import org.spout.api.render.WorldRenderEffect;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.batcher.ChunkMeshBatchAggregator;
@@ -380,6 +381,10 @@ public class WorldRenderer {
 		culledChunks = 0;
 		rended = 0;
 
+		for(WorldRenderEffect renderEffect : world.getWorldRenderEffects()){
+			renderEffect.preRender();
+		}
+
 		for(Entry<RenderMaterial, List<ChunkMeshBatchAggregator>> entry : chunkRenderers.entrySet()){
 			RenderMaterial material = entry.getKey();
 			material.getShader().setUniform("View", client.getActiveCamera().getView());
@@ -431,6 +436,11 @@ public class WorldRenderer {
 			}*/
 			}
 		}
+
+		for(WorldRenderEffect renderEffect : world.getWorldRenderEffects()){
+			renderEffect.postRender();
+		}
+
 	}
 
 	public int getOcluded() {
