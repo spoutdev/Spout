@@ -47,7 +47,6 @@ import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
 import org.spout.api.Spout;
-import org.spout.api.component.ChunkComponentOwner;
 import org.spout.api.component.Component;
 import org.spout.api.component.components.BlockComponent;
 import org.spout.api.datatable.ManagedHashMap;
@@ -56,13 +55,11 @@ import org.spout.api.entity.PlayerSnapshot;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot.BlockComponentSnapshot;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.material.ComplexMaterial;
 import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFullState;
@@ -92,10 +89,10 @@ import org.spout.nbt.ByteTag;
 import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
 import org.spout.nbt.FloatTag;
+import org.spout.nbt.IntArrayTag;
 import org.spout.nbt.IntTag;
 import org.spout.nbt.ListTag;
 import org.spout.nbt.LongTag;
-import org.spout.nbt.ShortArrayTag;
 import org.spout.nbt.ShortTag;
 import org.spout.nbt.StringTag;
 import org.spout.nbt.Tag;
@@ -204,14 +201,16 @@ public class WorldFiles {
 
 	public static void saveChunk(SpoutWorld world, SpoutChunkSnapshot snapshot, List<DynamicBlockUpdate> blockUpdates, OutputStream dos) {
 		CompoundMap chunkTags = new CompoundMap();
-		short[] blocks = snapshot.getBlockIds();
-		short[] data = snapshot.getBlockData();
 
 		//Switch block ids from engine material ids to world specific ids
 		StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
 		StringMap itemMap = world.getItemMap();
-		for (int i = 0; i < blocks.length; i++) {
-			blocks[i] = (short) global.convertTo(itemMap, blocks[i]);
+
+		int[] palette = snapshot.getPalette();
+		for (int i = 0; i < palette.length; i++) {
+			short newId = (short) global.convertTo(itemMap, BlockFullState.getId(palette[i]));
+			short oldData = BlockFullState.getData(palette[i]);
+			palette[i] = BlockFullState.getPacked(newId, oldData);
 		}
 
 		chunkTags.put(new ByteTag("version", CHUNK_VERSION));
@@ -220,8 +219,9 @@ public class WorldFiles {
 		chunkTags.put(new IntTag("y", snapshot.getY()));
 		chunkTags.put(new IntTag("z", snapshot.getZ()));
 		chunkTags.put(new ByteTag("populationState", snapshot.getPopulationState().getId()));
-		chunkTags.put(new ShortArrayTag("blocks", blocks));
-		chunkTags.put(new ShortArrayTag("data", data));
+		chunkTags.put(new IntArrayTag("palette", palette));
+		chunkTags.put(new IntTag("packedWidth", snapshot.getPackedWidth()));
+		chunkTags.put(new IntArrayTag("packedBlockArray", snapshot.getPackedBlockArray()));
 		chunkTags.put(new ByteArrayTag("skyLight", snapshot.getSkyLight()));
 		chunkTags.put(new ByteArrayTag("blockLight", snapshot.getBlockLight()));
 		chunkTags.put(new CompoundTag("entities", saveEntities(snapshot.getEntities())));
@@ -288,8 +288,8 @@ public class WorldFiles {
 				}
 				chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), blocks, data, skyLight, blockLight, extraDataMap);
 			} else {
-				int blockArrayWidth = SafeCast.toInt(NBTMapper.toTagValue(map.get("blockArrayWidth")), -1);
-				int[] variableWidthBlockArray = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("variableWidthBlockArray")), null);
+				int blockArrayWidth = SafeCast.toInt(NBTMapper.toTagValue(map.get("packedWidth")), -1);
+				int[] variableWidthBlockArray = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("packedBlockArray")), null);
 				for (int i = 0; i < palette.length; i++) {
 					short newId = (short) itemMap.convertTo(global, BlockFullState.getId(palette[i]));
 					short oldData = BlockFullState.getData(palette[i]);

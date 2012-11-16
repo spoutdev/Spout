@@ -60,6 +60,9 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	private final byte worldSkyLightLoss;
 	private final List<EntitySnapshot> entities;
 	private final List<BlockComponentSnapshot> blockComponents;
+	private final int[] palette;
+	private final int packedWidth;
+	private final int[] packedBlockArray;
 	private final short[] blockIds;
 	private final short[] blockData;
 	private final byte[] blockLight;
@@ -68,8 +71,16 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	private final SerializableMap dataMap;
 	private final PopulationState populationState;
 	private boolean renderDirty = false;
-
+	
 	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, EntityType type, ExtraData data) {
+		this(chunk, blockIds, blockData, null, 0, null, blockLight, skyLight, type, data);
+	}
+
+	public SpoutChunkSnapshot(SpoutChunk chunk, int[] palette, int packedWidth, int[] packedBlockArray, byte[] blockLight, byte[] skyLight, EntityType type, ExtraData data) {
+		this(chunk, null, null, palette, packedWidth, packedBlockArray, blockLight, skyLight, type, data);
+	}
+
+	private SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, int[] palette, int packedWidth, int[] packedBlockArray, byte[] blockLight, byte[] skyLight, EntityType type, ExtraData data) {
 		super(chunk.getWorld(), chunk.getX() * CHUNK_SIZE, chunk.getY() * CHUNK_SIZE, chunk.getZ() * CHUNK_SIZE);
 		parentRegion = new WeakReference<Region>(chunk.getRegion());
 
@@ -103,6 +114,11 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		this.blockData = blockData;
 		this.blockLight = blockLight;
 		this.skyLight = skyLight;
+		
+		// Cache palette based block data
+		this.palette = palette;
+		this.packedWidth = packedWidth;
+		this.packedBlockArray = packedBlockArray;
 
 		// Cache extra data
 		if (data == ExtraData.BIOME_DATA) {
@@ -277,6 +293,18 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	@SnapshotRead
 	public BlockComponent getBlockComponent(int x, int y, int z) {
 		throw new UnsupportedOperationException("Use getBlockComponents instead");
+	}
+	
+	public int[] getPalette() {
+		return palette;
+	}
+	
+	public int getPackedWidth() {
+		return packedWidth;
+	}
+	
+	public int[] getPackedBlockArray() {
+		return packedBlockArray;
 	}
 
 	private static class SpoutBlockComponentSnapshot implements BlockComponentSnapshot {

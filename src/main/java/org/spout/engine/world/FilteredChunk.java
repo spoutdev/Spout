@@ -321,6 +321,11 @@ public class FilteredChunk extends SpoutChunk{
 
 	@Override
 	public SpoutChunkSnapshot getSnapshot(SnapshotType type, EntityType entities, ExtraData data) {
+		return getSnapshot(type, entities, data, false);
+	}
+	
+	@Override
+	public SpoutChunkSnapshot getSnapshot(SnapshotType type, EntityType entities, ExtraData data, boolean palette) {
 		if (uniform.get()) {
 			byte[] blockLightCopy = null, skyLightCopy = null;
 			short[] blockIds = null, blockData = null;
@@ -350,9 +355,16 @@ public class FilteredChunk extends SpoutChunk{
 					break;
 			}
 			
-			return new SpoutChunkSnapshot(this, blockIds, blockData, blockLightCopy, skyLightCopy, entities, data);
+			if (palette) {
+				int[] paletteArray = new int[1];
+				paletteArray[0] = BlockFullState.getPacked(material.get());
+				int[] newArray = new int[0];
+				return new SpoutChunkSnapshot(this, paletteArray, 0, newArray, blockLightCopy, skyLightCopy, entities, data);
+			} else {
+				return new SpoutChunkSnapshot(this, blockIds, blockData, blockLightCopy, skyLightCopy, entities, data);
+			}
 		}
-		return super.getSnapshot(type, entities, data);
+		return super.getSnapshot(type, entities, data, palette);
 	}
 	
 	private short[] uniformBlockIds() {

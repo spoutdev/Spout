@@ -879,6 +879,10 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 
 	@Override
 	public SpoutChunkSnapshot getSnapshot(SnapshotType type, EntityType entities, ExtraData data) {
+		return getSnapshot(type, entities, data, false);
+	}
+	
+	public SpoutChunkSnapshot getSnapshot(SnapshotType type, EntityType entities, ExtraData data, boolean palette) {
 		checkChunkLoaded();
 		byte[] blockLightCopy = null, skyLightCopy = null;
 		short[] blockIds = null, blockData = null;
@@ -909,7 +913,11 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 				break;
 		}
 
-		return new SpoutChunkSnapshot(this, blockIds, blockData, blockLightCopy, skyLightCopy, entities, data);
+		if (palette) {
+			return new SpoutChunkSnapshot(this, blockStore.getPalette(), blockStore.getPackedWidth(), blockStore.getPackedArray(), blockLightCopy, skyLightCopy, entities, data);
+		} else {
+			return new SpoutChunkSnapshot(this, blockIds, blockData, blockLightCopy, skyLightCopy, entities, data);
+		}
 	}
 
 	@Override
@@ -1597,6 +1605,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 				for (int dz = 0; dz < Chunk.BLOCKS.SIZE; dz++) {
 					BlockMaterial bm = getBlockMaterial(dx, dy, dz);
 					if (bm instanceof ComplexMaterial) {
+						Spout.getLogger().info("Found complex material " + bm.getClass().getSimpleName());
 						BlockComponent component = ((ComplexMaterial)bm).createBlockComponent();
 						short packed = NibbleQuadHashed.key(dx, dy, dz, 0);
 						//Does not need synchronized, the chunk is not yet accessible outside this thread
