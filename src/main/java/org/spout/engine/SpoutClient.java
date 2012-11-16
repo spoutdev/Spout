@@ -210,7 +210,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		mainScreen.setTakesInput(false);
 		screenStack = new ScreenStack(mainScreen);
 
-		getScheduler().scheduleAsyncRepeatingTask(getPluginManager().getPlugin("Spout"), getScreenStack(), 50, 50, TaskPriority.NORMAL);
 		super.start(checkWorlds);
 
 		getEventManager().registerEvents(new SpoutClientListener(this), this);
@@ -235,6 +234,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		super.getDefaultWorld().spawnEntity(activePlayer);
 
 		getScheduler().startRenderThread();
+		getScheduler().startGuiThread();
 
 		//TODO Maybe a better way of alerting plugins the client is done?
 		if (ClientEnableEvent.getHandlerList().getRegisteredListeners().length != 0) {

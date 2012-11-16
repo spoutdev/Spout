@@ -38,8 +38,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 
 import org.lwjgl.opengl.Display;
+import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
+import org.spout.api.gui.ScreenStack;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.Scheduler;
@@ -135,7 +137,8 @@ public final class SpoutScheduler implements Scheduler {
 	private volatile boolean shutdown = false;
 	private final SpoutSnapshotLock snapshotLock = new SpoutSnapshotLock();
 	private final Thread mainThread;
-	private Thread renderThread;
+	private final Thread renderThread;
+	private final Thread guiThread;
 	private final SpoutTaskManager taskManager;
 	private SpoutParallelTaskManager parallelTaskManager = null;
 	private final AtomicBoolean heavyLoad = new AtomicBoolean(false);
@@ -152,6 +155,7 @@ public final class SpoutScheduler implements Scheduler {
 
 		mainThread = new MainThread();
 		renderThread = new RenderThread();
+		guiThread = new GUIThread();
 
 		taskManager = new SpoutTaskManager(this, true, mainThread);
 	}
@@ -325,6 +329,45 @@ public final class SpoutScheduler implements Scheduler {
 		}
 	}
 
+	private class GUIThread extends Thread {
+		public GUIThread() {
+			super("GUI Thread");
+		}
+		
+		@Override
+		public void run() {
+			long targetPeriod = 1000/40;
+			long lastTick = System.currentTimeMillis();
+			long nextTick = lastTick + targetPeriod;
+			float dt = (float) targetPeriod;
+		
+			ScreenStack stack = null;
+			stack = ((Client) Spout.getEngine()).getScreenStack();
+			
+			while (!shutdown) {
+				try {
+					stack.tick(dt);
+				} catch (Exception ex) {
+					Spout.getLogger().log(Level.SEVERE, "[GUI] Error while pulsing: {0}", ex.getMessage());
+					ex.printStackTrace();
+				}
+				long now = System.currentTimeMillis();
+				long sleepFor = nextTick - now;
+				if (sleepFor < 0) {
+					sleepFor = 0;
+				}
+				try {
+					sleep(sleepFor);
+				} catch (InterruptedException e) {
+					break;
+				}
+				dt = (float) (now - lastTick);
+				lastTick = now;
+				nextTick += targetPeriod;
+			}
+		}
+	}
+	
 	public void startMainThread() {
 		if (mainThread.isAlive()) {
 			throw new IllegalStateException("Attempt was made to start the main thread twice");
@@ -341,6 +384,16 @@ public final class SpoutScheduler implements Scheduler {
 			throw new IllegalStateException("Attempt was made to start the render thread twice");
 		}
 		renderThread.start();
+	}
+	
+	public void startGuiThread() {
+		if (!(Spout.getEngine() instanceof SpoutClient)) {
+			throw new IllegalStateException("Cannot start the rendering thread unless on the client");
+		}
+		if (guiThread.isAlive()) {
+			throw new IllegalStateException("Attempt was made to start the GUI thread twice");
+		}
+		guiThread.start();
 	}
 
 	/**
