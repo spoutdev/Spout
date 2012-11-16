@@ -474,7 +474,11 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	public boolean addAll(Collection<? extends ItemStack> items) {
 		Iterator<? extends ItemStack> i = items.iterator();
 		while (i.hasNext()) {
-			add(i.next());
+			ItemStack next = i.next();
+			if (next == null) {
+				continue;
+			}
+			add(next);
 		}
 		return true;
 	}

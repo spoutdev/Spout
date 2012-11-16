@@ -159,7 +159,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * @param id to reserve
 	 */
 	protected Material(String name, short id) {
-		this.isSubMaterial = true;
+		this.isSubMaterial = false;
 		this.displayName = name;
 		this.name = name.replace(' ', '_');
 		this.parent = this;
