@@ -26,15 +26,17 @@
  */
 package org.spout.api.inventory.recipe;
 
+import java.util.Arrays;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.spout.api.inventory.Inventory;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.BlockMaterial;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import org.spout.api.material.Material;
 
 public class ShapelessRecipeTest {
 	@Before
@@ -42,14 +44,16 @@ public class ShapelessRecipeTest {
 		EngineFaker.setupEngine();
 	}
 
-	/*@Test
+	@Test
 	public void testShapelessRecipe() {
 		ItemStack solid = new ItemStack(BlockMaterial.SOLID, 1);
-		ShapelessRecipe recipe = new ShapelessRecipe(solid.clone());
-		recipe.addIngredient(solid.clone().setAmount(20));
-		Inventory inventory = new Inventory(1);
-		assertFalse(recipe.handle(inventory));
-		inventory.add(solid.clone().setAmount(64));
-		assertTrue(recipe.handle(inventory));
-	}*/
+		RecipeBuilder builder = new RecipeBuilder().setResult(solid).addIngredient(BlockMaterial.UNBREAKABLE);
+		ShapelessRecipe recipe = builder.buildShapelessRecipe();
+		List<Material> single = Arrays.asList((Material) BlockMaterial.UNBREAKABLE);
+		List<Material> multiple = Arrays.asList((Material) BlockMaterial.UNBREAKABLE, (Material) BlockMaterial.UNBREAKABLE);
+		SimpleRecipeManager manager = new SimpleRecipeManager();
+		manager.register(recipe);
+		assertNotNull(manager.matchShapelessRecipe(single));
+		assertNull(manager.matchShapelessRecipe(multiple));
+	}
 }

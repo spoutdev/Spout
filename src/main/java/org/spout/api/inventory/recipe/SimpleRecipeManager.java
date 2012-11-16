@@ -26,9 +26,12 @@
  */
 package org.spout.api.inventory.recipe;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -283,30 +286,38 @@ public class SimpleRecipeManager implements RecipeManager {
 	}
 
 	@Override
-	public ShapelessRecipe matchShapelessRecipe(Collection<Material> materials) {
-		Set<Material> set = new HashSet<Material>();
+	public ShapelessRecipe matchShapelessRecipe(List<Material> materials) {
+		Set<Material> unique = new HashSet<Material>();
 		List<Material> parentList = new ArrayList<Material>();
 		for (Material m : materials) {
-			if (m.isSubMaterial()) {
+			while (m.isSubMaterial()) {
 				m = m.getParentMaterial();
 			}
 			parentList.add(m);
 		}
-		set.addAll(parentList);
-		set.removeAll(Collections.singletonList(null));
+		unique.addAll(parentList);
+		unique.removeAll(Collections.singletonList(null));
 
 		ShapelessRecipe recipe = null;
-		if (!allShapelessRecipes.containsKey(set.size())) {
+		if (!allShapelessRecipes.containsKey(unique.size())) {
 			return null;
 		}
-		for (ShapelessRecipe r : allShapelessRecipes.get(set.size())) {
+		for (ShapelessRecipe r : allShapelessRecipes.get(unique.size())) {
 			if (r.getIncludeData()) {
-				if (materials.containsAll(r.getIngredients()) && r.getIngredients().containsAll(materials)) {
+				List<Material> materialsCopy = new ArrayList<Material>(materials);
+				List<Material> ingredientsCopy = new ArrayList<Material>(r.getIngredients());
+				Collections.sort(materialsCopy, new MaterialComparable());
+				Collections.sort(ingredientsCopy, new MaterialComparable());
+				if (materialsCopy.equals(ingredientsCopy)) {
 					recipe = r;
 					break;
 				}
 			} else {
-				if (parentList.containsAll(r.getIngredients()) && r.getIngredients().containsAll(parentList)) {
+				List<Material> parentsCopy = new ArrayList<Material>(parentList);
+				List<Material> ingredientsCopy = new ArrayList<Material>(r.getIngredients());
+				Collections.sort(parentsCopy, new MaterialComparable());
+				Collections.sort(ingredientsCopy, new MaterialComparable());
+				if (parentsCopy.equals(ingredientsCopy)) {
 					recipe = r;
 					break;
 				}
@@ -346,8 +357,8 @@ public class SimpleRecipeManager implements RecipeManager {
 	}
 
 	@Override
-	public ShapelessRecipe matchShapelessRecipe(Plugin plugin, Collection<Material> materials) {
-		Set<Material> set = new HashSet<Material>();
+	public ShapelessRecipe matchShapelessRecipe(Plugin plugin, List<Material> materials) {
+		Set<Material> unique = new HashSet<Material>();
 		List<Material> parentList = new ArrayList<Material>();
 		for (Material m : materials) {
 			if (m.isSubMaterial()) {
@@ -355,19 +366,27 @@ public class SimpleRecipeManager implements RecipeManager {
 			}
 			parentList.add(m);
 		}
-		set.addAll(parentList);
-		set.removeAll(Collections.singletonList(null));
+		unique.addAll(parentList);
+		unique.removeAll(Collections.singletonList(null));
 
 		ShapelessRecipe recipe = null;
-		if (registeredShapelessRecipes.containsKey(plugin) && registeredShapelessRecipes.get(plugin).containsKey(set.size())) {
-			for (ShapelessRecipe r : registeredShapelessRecipes.get(plugin).get(set.size())) {
+		if (registeredShapelessRecipes.containsKey(plugin) && registeredShapelessRecipes.get(plugin).containsKey(unique.size())) {
+			for (ShapelessRecipe r : registeredShapelessRecipes.get(plugin).get(unique.size())) {
 				if (r.getIncludeData()) {
-					if (materials.containsAll(r.getIngredients()) && r.getIngredients().containsAll(materials)) {
+					List<Material> materialsCopy = new ArrayList<Material>(materials);
+					List<Material> ingredientsCopy = new ArrayList<Material>(r.getIngredients());
+					Collections.sort(materialsCopy, new MaterialComparable());
+					Collections.sort(ingredientsCopy, new MaterialComparable());
+					if (materialsCopy.equals(ingredientsCopy)) {
 						recipe = r;
 						break;
 					}
 				} else {
-					if (parentList.containsAll(r.getIngredients()) && r.getIngredients().containsAll(parentList)) {
+					List<Material> parentsCopy = new ArrayList<Material>(parentList);
+					List<Material> ingredientsCopy = new ArrayList<Material>(r.getIngredients());
+					Collections.sort(parentsCopy, new MaterialComparable());
+					Collections.sort(ingredientsCopy, new MaterialComparable());
+					if (parentsCopy.equals(ingredientsCopy)) {
 						recipe = r;
 						break;
 					}
@@ -379,5 +398,24 @@ public class SimpleRecipeManager implements RecipeManager {
 		}
 
 		return recipe;
+	}
+	
+	private static class MaterialComparable implements Comparator<Material> {
+		@Override
+		public int compare(Material o1, Material o2) {
+			if (o1 == null) {
+				if (o2 == null) {
+					return 0;
+				}
+				return -1;
+			}
+			if (o2 == null) {
+				return 1;
+			}
+			if (o1.equals(o2)) {
+				return 0;
+			}
+			return o1.getName().compareTo(o2.getName());
+		}
 	}
 }

@@ -106,7 +106,7 @@ public interface RecipeManager {
 	 * @param materials
 	 * @return ShapelesRecipe
 	 */
-	public ShapelessRecipe matchShapelessRecipe(Collection<Material> materials);
+	public ShapelessRecipe matchShapelessRecipe(List<Material> materials);
 
 	/**
 	 * Match the materials to any ShapedRecipe for a given plugin
@@ -122,5 +122,5 @@ public interface RecipeManager {
 	 * @param materials
 	 * @return ShapelesRecipe
 	 */
-	public ShapelessRecipe matchShapelessRecipe(Plugin plugin, Collection<Material> materials);
+	public ShapelessRecipe matchShapelessRecipe(Plugin plugin, List<Material> materials);
 }
