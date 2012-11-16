@@ -26,7 +26,6 @@
  */
 package org.spout.api.model.mesh;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -51,45 +50,45 @@ public class CubeMesh extends OrientedMesh {
 
 		Vertex v1 = null, v2 = null, v3 = null, v4 = null;
 
-		v1 = new Vertex(vertex1, BlockFace.TOP.getOffset(), getUV(uvs, 0, 3), Color.white);
-		v2 = new Vertex(vertex2, BlockFace.TOP.getOffset(), getUV(uvs, 0, 2), Color.white);
-		v3 = new Vertex(vertex6, BlockFace.TOP.getOffset(), getUV(uvs, 0, 1), Color.white);
-		v4 = new Vertex(vertex5, BlockFace.TOP.getOffset(), getUV(uvs, 0, 0), Color.white);
+		v1 = new Vertex(vertex1, BlockFace.TOP.getOffset(), getUV(uvs, 0, 3));
+		v2 = new Vertex(vertex2, BlockFace.TOP.getOffset(), getUV(uvs, 0, 2));
+		v3 = new Vertex(vertex6, BlockFace.TOP.getOffset(), getUV(uvs, 0, 1));
+		v4 = new Vertex(vertex5, BlockFace.TOP.getOffset(), getUV(uvs, 0, 0));
 		meshFace.add(new OrientedMeshFace(v1, v2, v3, new HashSet<BlockFace>(Arrays.asList(BlockFace.TOP))));
 		meshFace.add(new OrientedMeshFace(v3, v4, v1, new HashSet<BlockFace>(Arrays.asList(BlockFace.TOP))));
 
-		v1 = new Vertex(vertex0, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 3), Color.white);
-		v2 = new Vertex(vertex4, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 2), Color.white);
-		v3 = new Vertex(vertex7, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 1), Color.white);
-		v4 = new Vertex(vertex3, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 3), Color.white);
+		v1 = new Vertex(vertex0, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 3));
+		v2 = new Vertex(vertex4, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 2));
+		v3 = new Vertex(vertex7, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 1));
+		v4 = new Vertex(vertex3, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 3));
 		meshFace.add(new OrientedMeshFace(v1, v2, v3, new HashSet<BlockFace>(Arrays.asList(BlockFace.BOTTOM))));
 		meshFace.add(new OrientedMeshFace(v3, v4, v1, new HashSet<BlockFace>(Arrays.asList(BlockFace.BOTTOM))));
 
-		v1 = new Vertex(vertex0, BlockFace.NORTH.getOffset(), getUV(uvs, 2, 2), Color.white);
-		v2 = new Vertex(vertex1, BlockFace.NORTH.getOffset(), getUV(uvs, 2, 1), Color.white);
-		v3 = new Vertex(vertex5, BlockFace.NORTH.getOffset(), getUV(uvs, 2, 0), Color.white);
-		v4 = new Vertex(vertex4, BlockFace.NORTH.getOffset(), getUV(uvs, 2, 3), Color.white);
+		v1 = new Vertex(vertex0, BlockFace.NORTH.getOffset(), getUV(uvs, 2, 2));
+		v2 = new Vertex(vertex1, BlockFace.NORTH.getOffset(), getUV(uvs, 2, 1));
+		v3 = new Vertex(vertex5, BlockFace.NORTH.getOffset(), getUV(uvs, 2, 0));
+		v4 = new Vertex(vertex4, BlockFace.NORTH.getOffset(), getUV(uvs, 2, 3));
 		meshFace.add(new OrientedMeshFace(v1, v2, v3, new HashSet<BlockFace>(Arrays.asList(BlockFace.NORTH))));
 		meshFace.add(new OrientedMeshFace(v3, v4, v1, new HashSet<BlockFace>(Arrays.asList(BlockFace.NORTH))));
 
-		v1 = new Vertex(vertex7, BlockFace.SOUTH.getOffset(), getUV(uvs, 3, 1), Color.white);
-		v2 = new Vertex(vertex6, BlockFace.SOUTH.getOffset(), getUV(uvs, 3, 0), Color.white);
-		v3 = new Vertex(vertex2, BlockFace.SOUTH.getOffset(), getUV(uvs, 3, 3), Color.white);
-		v4 = new Vertex(vertex3, BlockFace.SOUTH.getOffset(), getUV(uvs, 3, 2), Color.white);
+		v1 = new Vertex(vertex7, BlockFace.SOUTH.getOffset(), getUV(uvs, 3, 1));
+		v2 = new Vertex(vertex6, BlockFace.SOUTH.getOffset(), getUV(uvs, 3, 0));
+		v3 = new Vertex(vertex2, BlockFace.SOUTH.getOffset(), getUV(uvs, 3, 3));
+		v4 = new Vertex(vertex3, BlockFace.SOUTH.getOffset(), getUV(uvs, 3, 2));
 		meshFace.add(new OrientedMeshFace(v1, v2, v3, new HashSet<BlockFace>(Arrays.asList(BlockFace.SOUTH))));
 		meshFace.add(new OrientedMeshFace(v3, v4, v1, new HashSet<BlockFace>(Arrays.asList(BlockFace.SOUTH))));
 
-		v1 = new Vertex(vertex0, BlockFace.EAST.getOffset(), getUV(uvs, 4, 2), Color.white);
-		v2 = new Vertex(vertex3, BlockFace.EAST.getOffset(), getUV(uvs, 4, 1), Color.white);
-		v3 = new Vertex(vertex2, BlockFace.EAST.getOffset(), getUV(uvs, 4, 0), Color.white);
-		v4 = new Vertex(vertex1, BlockFace.EAST.getOffset(), getUV(uvs, 4, 3), Color.white);
+		v1 = new Vertex(vertex0, BlockFace.EAST.getOffset(), getUV(uvs, 4, 2));
+		v2 = new Vertex(vertex3, BlockFace.EAST.getOffset(), getUV(uvs, 4, 1));
+		v3 = new Vertex(vertex2, BlockFace.EAST.getOffset(), getUV(uvs, 4, 0));
+		v4 = new Vertex(vertex1, BlockFace.EAST.getOffset(), getUV(uvs, 4, 3));
 		meshFace.add(new OrientedMeshFace(v1, v2, v3, new HashSet<BlockFace>(Arrays.asList(BlockFace.EAST))));
 		meshFace.add(new OrientedMeshFace(v3, v4, v1, new HashSet<BlockFace>(Arrays.asList(BlockFace.EAST))));
 
-		v1 = new Vertex(vertex5, BlockFace.WEST.getOffset(), getUV(uvs, 5, 0), Color.white);
-		v2 = new Vertex(vertex6, BlockFace.WEST.getOffset(), getUV(uvs, 5, 3), Color.white);
-		v3 = new Vertex(vertex7, BlockFace.WEST.getOffset(), getUV(uvs, 5, 2), Color.white);
-		v4 = new Vertex(vertex4, BlockFace.WEST.getOffset(), getUV(uvs, 5, 1), Color.white);
+		v1 = new Vertex(vertex5, BlockFace.WEST.getOffset(), getUV(uvs, 5, 0));
+		v2 = new Vertex(vertex6, BlockFace.WEST.getOffset(), getUV(uvs, 5, 3));
+		v3 = new Vertex(vertex7, BlockFace.WEST.getOffset(), getUV(uvs, 5, 2));
+		v4 = new Vertex(vertex4, BlockFace.WEST.getOffset(), getUV(uvs, 5, 1));
 		meshFace.add(new OrientedMeshFace(v1, v2, v3, new HashSet<BlockFace>(Arrays.asList(BlockFace.WEST))));
 		meshFace.add(new OrientedMeshFace(v3, v4, v1, new HashSet<BlockFace>(Arrays.asList(BlockFace.WEST))));
 	}
