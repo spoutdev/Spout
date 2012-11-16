@@ -48,13 +48,11 @@ public interface Worker {
 	 * @return The Object that owns the task
 	 */
 	public Object getOwner();
-
+	
 	/**
-	 * Returns the thread for the worker
-	 *
-	 * @return The Thread object for the worker
+	 * Attempts to cancel the task.  This will trigger an interrupt for async tasks that are in progress.
 	 */
-	public Thread getThread();
+	public void cancel();
 	
 	/**
 	 * Gets the task associated with this worker

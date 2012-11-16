@@ -74,4 +74,11 @@ public interface Task {
 	 * @return the child task, or null if none
 	 */
 	public Task getChildTask(Region region);
+	
+	/**
+	 * Returns true if the task is a long lived async task
+	 * 
+	 * @return true if the task is a long lived task
+	 */
+	public boolean isLongLived();
 }

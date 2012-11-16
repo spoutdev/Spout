@@ -80,7 +80,7 @@ public interface TaskManager {
 	public int scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority);
 
 	/**
-	 * Schedules a once off task to occur as soon as possible.  This task will be
+	 * Schedules a once off short lived task to occur as soon as possible.  This task will be
 	 * executed by a thread managed by the scheduler
 	 * 
 	 * @param plugin the owner of the task
@@ -90,7 +90,18 @@ public interface TaskManager {
 	public int scheduleAsyncTask(Object plugin, Runnable task);
 	
 	/**
-	 * Schedules a once off task to occur after a delay.  This task will be
+	 * Schedules a once off task to occur as soon as possible.  This task will be
+	 * executed by a thread managed by the scheduler
+	 * 
+	 * @param plugin the owner of the task
+	 * @param task the task to execute
+	 * @param longLife indicates that the thread is long lived
+	 * @return the task id of the task
+	 */
+	public int scheduleAsyncTask(Object plugin, Runnable task, boolean longLife);
+	
+	/**
+	 * Schedules a once off short lived task to occur after a delay.  This task will be
 	 * executed by a thread managed by the scheduler.
 	 * 
 	 * @param plugin the owner of the task
@@ -100,20 +111,19 @@ public interface TaskManager {
 	 * @return the task id of the task
 	 */
 	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority);
-
+	
 	/**
-	 * Schedules a repeating task This task will be executed by a thread managed
-	 * by the scheduler.  The repeat will not be started if the task until the previous repeat 
-	 * has completed running.
+	 * Schedules a once off task to occur after a delay.  This task will be
+	 * executed by a thread managed by the scheduler.
 	 * 
 	 * @param plugin the owner of the task
 	 * @param task the task to execute
 	 * @param delay the delay, in ms, before the task starts
-	 * @param period the repeat period, in ms, of the task, or <= 0 to indicate a single shot task
 	 * @param priority the priority of the task
+	 * @param longLife indicates that the thread is long lived
 	 * @return the task id of the task
 	 */
-	public int scheduleAsyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority);
+	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority, boolean longLife);
 
 	/**
 	 * Calls a method on the main thread and returns a Future object This task
