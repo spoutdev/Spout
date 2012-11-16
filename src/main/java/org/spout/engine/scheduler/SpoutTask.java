@@ -102,6 +102,11 @@ public class SpoutTask implements Task, LongPrioritized {
 	 * The scheduler for the engine
 	 */
 	private final Scheduler scheduler;
+
+	/**
+	 * Indicates that the task is long lived
+	 */
+	private final boolean longLife;
 	
 	/**
 	 * Info about sub-tasks
@@ -113,7 +118,7 @@ public class SpoutTask implements Task, LongPrioritized {
 	 * calls to {@link #execute()}.
 	 * @param ticks The number of ticks.
 	 */
-	public SpoutTask(TaskManager manager, Scheduler scheduler, Object owner, Runnable task, boolean sync, long delay, long period, TaskPriority priority) {
+	public SpoutTask(TaskManager manager, Scheduler scheduler, Object owner, Runnable task, boolean sync, long delay, long period, TaskPriority priority, boolean longLife) {
 		this.taskId = nextTaskId.getAndIncrement();
 		this.nextCallTime = new AtomicLong(manager.getUpTime() + delay);
 		this.executing = new AtomicBoolean(false);
@@ -125,6 +130,7 @@ public class SpoutTask implements Task, LongPrioritized {
 		this.priority = priority;
 		this.manager = manager;
 		this.scheduler = scheduler;
+		this.longLife = longLife;
 	}
 	
 	/**
@@ -139,7 +145,7 @@ public class SpoutTask implements Task, LongPrioritized {
 			runnable = ((ParallelRunnable) runnable).newInstance(region, this);
 		}
 
-		return new SpoutTask(region.getTaskManager(), scheduler, owner, runnable, sync, delay, period, priority);
+		return new SpoutTask(region.getTaskManager(), scheduler, owner, runnable, sync, delay, period, priority, false);
 	}
 
 	/**
@@ -168,6 +174,11 @@ public class SpoutTask implements Task, LongPrioritized {
 	@Override
 	public boolean isAlive() {
 		return !queueState.get().isDead();
+	}
+	
+	@Override
+	public boolean isLongLived() {
+		return longLife;
 	}
 	
 	public long getNextCallTime() {

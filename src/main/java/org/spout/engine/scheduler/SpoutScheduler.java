@@ -821,15 +821,21 @@ public final class SpoutScheduler implements Scheduler {
 	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
 		return taskManager.scheduleAsyncDelayedTask(plugin, task, delay, priority);
 	}
+	
+
+	@Override
+	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority, boolean longLife) {
+		return taskManager.scheduleAsyncDelayedTask(plugin, task, delay, priority, longLife);
+	}
 
 	@Override
 	public int scheduleAsyncTask(Object plugin, Runnable task) {
 		return taskManager.scheduleAsyncTask(plugin, task);
 	}
-
+	
 	@Override
-	public int scheduleAsyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority) {
-		return taskManager.scheduleAsyncRepeatingTask(plugin, task, delay, period, priority);
+	public int scheduleAsyncTask(Object plugin, Runnable task, boolean longLife) {
+		return taskManager.scheduleAsyncTask(plugin, task, longLife);
 	}
 
 	@Override
@@ -945,4 +951,5 @@ public final class SpoutScheduler implements Scheduler {
 		}
 		*/
 	}
+
 }

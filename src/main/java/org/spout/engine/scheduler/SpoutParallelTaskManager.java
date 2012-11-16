@@ -105,21 +105,26 @@ public class SpoutParallelTaskManager implements TaskManager {
 
 	@Override
 	public int scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority) {
-		return schedule(new SpoutTask(this, scheduler, plugin, task, true, delay, period, priority));
+		return schedule(new SpoutTask(this, scheduler, plugin, task, true, delay, period, priority, false));
 	}
 
 	@Override
 	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
-		return scheduleAsyncRepeatingTask(plugin, task, delay, -1, priority);
+		throw new UnsupportedOperationException("Async tasks can only be initiated by the task manager for the server");
 	}
 
 	@Override
 	public int scheduleAsyncTask(Object plugin, Runnable task) {
-		return scheduleAsyncRepeatingTask(plugin, task, 0, -1, TaskPriority.CRITICAL);
+		throw new UnsupportedOperationException("Async tasks can only be initiated by the task manager for the server");
+	}
+	
+	@Override
+	public int scheduleAsyncTask(Object plugin, Runnable task, boolean longLife) {
+		throw new UnsupportedOperationException("Async tasks can only be initiated by the task manager for the server");
 	}
 
 	@Override
-	public int scheduleAsyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority) {
+	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority, boolean longLife) {
 		throw new UnsupportedOperationException("Async tasks can only be initiated by the task manager for the server");
 	}
 	

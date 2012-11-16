@@ -26,13 +26,25 @@
  */
 package org.spout.engine.scheduler;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.spout.api.scheduler.Worker;
+import org.spout.api.util.future.SimpleFuture;
 
 public class SpoutWorker implements Worker, Runnable {
+	@SuppressWarnings("rawtypes")
+	private static final Future<?> NOT_SUBMITED = new SimpleFuture();
+	@SuppressWarnings("rawtypes")
+	private static final Future<?> CANCELLED = new SimpleFuture();
+	
 	private final int id;
 	private final Object owner;
 	private final SpoutTask task;
 	private final Thread thread;
+	private final Runnable r;
+	private AtomicReference<Future<?>> futureRef = new AtomicReference<Future<?>>(NOT_SUBMITED);
 	private boolean shouldContinue = true;
 	private final SpoutTaskManager taskManager;
 
@@ -41,20 +53,31 @@ public class SpoutWorker implements Worker, Runnable {
 		owner = task.getOwner();
 		this.task = task;
 		String name = "Spout Worker{Owner:" + ((owner != null) ? owner.getClass().getName() : "none") + ", id:" + id + "}";
-		thread = new Thread(new Runnable() {
+		r = new Runnable() {
 			@Override
 			public void run() {
 				task.pulse();
 				taskManager.removeWorker(SpoutWorker.this, task);
 				taskManager.repeatSchedule(task);
 			}
-		}, name);
-		thread.setDaemon(true);
+		};
+		if (task.isLongLived()) {
+			thread = new Thread(r, name);
+		} else {
+			thread = null;
+		}
 		this.taskManager = taskManager;
 	}
 	
-	public void start() {
-		thread.start();
+	public void start(ExecutorService pool) {
+		if (thread != null) {
+			thread.start();
+		} else {
+			Future<?> future = pool.submit(r);
+			if (!this.futureRef.compareAndSet(NOT_SUBMITED, future)) {
+				future.cancel(true);
+			}
+		}
 	}
 	
 	@Override
@@ -73,11 +96,6 @@ public class SpoutWorker implements Worker, Runnable {
 	}
 
 	@Override
-	public Thread getThread() {
-		return thread;
-	}
-
-	@Override
 	public SpoutTask getTask() {
 		return task;
 	}
@@ -86,8 +104,20 @@ public class SpoutWorker implements Worker, Runnable {
 		return shouldContinue;
 	}
 
+	@Override
 	public void cancel() {
 		taskManager.cancelTask(task);
+	}
+	
+	public void interrupt() {
+		if (thread != null) {
+			thread.interrupt();
+		} else {
+			if (!this.futureRef.compareAndSet(NOT_SUBMITED, CANCELLED)) {
+				Future<?> future = futureRef.get();
+				future.cancel(true);
+			}
+		}
 	}
 
 	@Override

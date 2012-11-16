@@ -32,7 +32,10 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -42,6 +45,7 @@ import org.spout.api.scheduler.Task;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.scheduler.Worker;
+import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 
 public class SpoutTaskManager implements TaskManager {
 	
@@ -60,6 +64,8 @@ public class SpoutTaskManager implements TaskManager {
 	private final Object scheduleLock = new Object();
 	
 	private final Scheduler scheduler;
+	
+	private final ExecutorService pool = Executors.newFixedThreadPool(20, new NamedThreadFactory("Scheduler Thread Pool Thread"));
 	
 	public SpoutTaskManager(Scheduler scheduler, boolean mainThread) {
 		this(scheduler, mainThread, Thread.currentThread());
@@ -94,27 +100,32 @@ public class SpoutTaskManager implements TaskManager {
 
 	@Override
 	public int scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority) {
-		return schedule(new SpoutTask(this, scheduler, plugin, task, true, delay, period, priority));
-	}
-
-	@Override
-	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
-		return scheduleAsyncRepeatingTask(plugin, task, delay, -1, priority);
+		return schedule(new SpoutTask(this, scheduler, plugin, task, true, delay, period, priority, false));
 	}
 
 	@Override
 	public int scheduleAsyncTask(Object plugin, Runnable task) {
-		return scheduleAsyncRepeatingTask(plugin, task, 0, -1, TaskPriority.CRITICAL);
+		return scheduleAsyncTask(plugin, task, false);
 	}
-
+	
 	@Override
-	public int scheduleAsyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority) {
+	public int scheduleAsyncTask(Object plugin, Runnable task, boolean longLife) {
+		return scheduleAsyncDelayedTask(plugin, task, 0, TaskPriority.CRITICAL, longLife);
+	}
+	
+	@Override
+	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
+		return scheduleAsyncDelayedTask(plugin, task, delay, priority);
+	}
+	
+	@Override
+	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority, boolean longLife) {
 		if (!alive.get()) {
 			return -1;
 		} else if (!mainThread) {
 			throw new UnsupportedOperationException("Async tasks can only be initiated by the task manager for the server");
 		} else {
-			return schedule(new SpoutTask(this, scheduler, plugin, task, false, delay, period, priority));
+			return schedule(new SpoutTask(this, scheduler, plugin, task, false, delay, -1, priority, longLife));
 		}
 	}
 	
@@ -146,9 +157,7 @@ public class SpoutTaskManager implements TaskManager {
 					currentTask.pulse();
 					repeatSchedule(currentTask);
 				} else {
-					SpoutWorker worker = new SpoutWorker(currentTask, this);
-					addWorker(worker, currentTask);
-					worker.start();
+					Spout.getLogger().info("Async repeating task submitted");
 				}
 			}
 			if (taskQueue.complete(q, upTime)) {
@@ -167,7 +176,7 @@ public class SpoutTaskManager implements TaskManager {
 		if (!task.isSync()) {
 			SpoutWorker worker = activeWorkers.get(task);
 			if (worker != null) {
-				worker.getThread().interrupt();
+				worker.interrupt();
 			}
 		}
 	}
@@ -178,7 +187,7 @@ public class SpoutTaskManager implements TaskManager {
 			if (!task.isSync()) {
 				SpoutWorker worker = new SpoutWorker(task, this);
 				addWorker(worker, task);
-				worker.start();
+				worker.start(pool);
 			} else {
 				taskQueue.add(task);
 			}
@@ -207,6 +216,9 @@ public class SpoutTaskManager implements TaskManager {
 	
 	public void addTask(SpoutTask task) {
 		activeTasks.put(task.getTaskId(), task);
+		if (!alive.get()) {
+			cancelTask(task);
+		}
 	}
 	
 	public boolean removeTask(SpoutTask task) {
@@ -264,6 +276,7 @@ public class SpoutTaskManager implements TaskManager {
 			throw new IllegalStateException("Only the task manager for the main thread should be shutdown, since the other task managers do not support async tasks");
 		}
 		alive.set(false);
+		pool.shutdown();
 		cancelAllTasks();
 		return true;
 	}
