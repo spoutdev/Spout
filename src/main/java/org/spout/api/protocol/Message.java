@@ -45,4 +45,12 @@ public interface Message {
 	public abstract boolean equals(Object other);
 	@Override
 	public abstract int hashCode();
+
+	/**
+	 * Gets the channel id for this messages.  The ordering of messages with different channel ids by the network library is undefined.<br>
+	 * <br>
+	 * Channels from 0 to 7 are guaranteed to exist.  Channels outside this range may be aliased back into this range.
+	 * @return
+	 */
+	public abstract int getChannelId();
 }
