@@ -60,6 +60,7 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.ComplexMaterial;
 import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFullState;
@@ -207,6 +208,15 @@ public class WorldFiles {
 		StringMap itemMap = world.getItemMap();
 
 		int[] palette = snapshot.getPalette();
+		int[] packetBlockArray = snapshot.getPackedBlockArray();
+		int packedWidth = snapshot.getPackedWidth();
+		
+		if (palette.length > 0) {
+			convertArray(palette, global, itemMap);
+		} else {
+			convertArray(packetBlockArray, global, itemMap);
+		}
+
 		for (int i = 0; i < palette.length; i++) {
 			short newId = (short) global.convertTo(itemMap, BlockFullState.getId(palette[i]));
 			short oldData = BlockFullState.getData(palette[i]);
@@ -220,8 +230,8 @@ public class WorldFiles {
 		chunkTags.put(new IntTag("z", snapshot.getZ()));
 		chunkTags.put(new ByteTag("populationState", snapshot.getPopulationState().getId()));
 		chunkTags.put(new IntArrayTag("palette", palette));
-		chunkTags.put(new IntTag("packedWidth", snapshot.getPackedWidth()));
-		chunkTags.put(new IntArrayTag("packedBlockArray", snapshot.getPackedBlockArray()));
+		chunkTags.put(new IntTag("packedWidth", packedWidth));
+		chunkTags.put(new IntArrayTag("packedBlockArray", packetBlockArray));
 		chunkTags.put(new ByteArrayTag("skyLight", snapshot.getSkyLight()));
 		chunkTags.put(new ByteArrayTag("blockLight", snapshot.getBlockLight()));
 		chunkTags.put(new CompoundTag("entities", saveEntities(snapshot.getEntities())));
@@ -278,6 +288,8 @@ public class WorldFiles {
 			ManagedHashMap extraDataMap = new ManagedHashMap();
 			extraDataMap.deserialize(extraData);
 
+			boolean skipScan = false;
+			
 			byte populationState = SafeCast.toGeneric(map.get("populationState"), new ByteTag("", PopulationState.POPULATED.getId()), ByteTag.class).getValue();
 			int[] palette = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("palette")), null);
 			if (palette == null) {
@@ -290,10 +302,13 @@ public class WorldFiles {
 			} else {
 				int blockArrayWidth = SafeCast.toInt(NBTMapper.toTagValue(map.get("packedWidth")), -1);
 				int[] variableWidthBlockArray = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("packedBlockArray")), null);
-				for (int i = 0; i < palette.length; i++) {
-					short newId = (short) itemMap.convertTo(global, BlockFullState.getId(palette[i]));
-					short oldData = BlockFullState.getData(palette[i]);
-					palette[i] = BlockFullState.getPacked(newId, oldData);
+				
+				if (palette.length > 0) {
+					convertArray(palette, itemMap, global);
+					skipScan = componentSkipCheck(palette);
+				} else {
+					convertArray(variableWidthBlockArray, itemMap, global);
+					skipScan = componentSkipCheck(variableWidthBlockArray);
 				}
 				chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), palette, blockArrayWidth, variableWidthBlockArray, skyLight, blockLight, extraDataMap);
 			}
@@ -311,7 +326,9 @@ public class WorldFiles {
 			//1.) Scan the blocks and add them to the chunk map
 			//2.) Load the datatables associated with the block components
 			//3.) Attach the components
-			chunk.blockComponentScan();
+			if (!skipScan) {
+				chunk.blockComponentScan();
+			}
 			//Load data associated with block components
 			loadBlockComponents(chunk, componentsList);
 			//Attach block components
@@ -328,7 +345,23 @@ public class WorldFiles {
 		}
 		return chunk;
 	}
+	
+	private static void convertArray(int[] fullState, StringMap from, StringMap to) {
+		for (int i = 0; i < fullState.length; i++) {
+			short newId = (short) from.convertTo(to, BlockFullState.getId(fullState[i]));
+			short oldData = BlockFullState.getData(fullState[i]);
+			fullState[i] = BlockFullState.getPacked(newId, oldData);		}
+	}
 
+	private static boolean componentSkipCheck(int[] fullState) {
+		for (int i = 0; i < fullState.length; i++) {
+			if (BlockFullState.getMaterial(fullState[i]) instanceof ComplexMaterial) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	private static class AttachComponentProcedure implements TShortObjectProcedure<BlockComponent> {
 		@Override
 		public boolean execute(short a, BlockComponent b) {
