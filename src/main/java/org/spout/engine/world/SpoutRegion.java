@@ -309,7 +309,6 @@ public class SpoutRegion extends Region {
 	}
 
 	public void addPhysics(PhysicsComponent physics) {
-		((SpoutPhysicsComponent)physics).copySnapshot();
 		CollisionObject object = physics.getCollisionObject();
 		if (object == null || object.getCollisionShape() == null) {
 			return;
@@ -324,7 +323,6 @@ public class SpoutRegion extends Region {
 	}
 
 	public void removePhysics(PhysicsComponent physics) {
-		((SpoutPhysicsComponent)physics).copySnapshot();
 		CollisionObject object = physics.getCollisionObject();
 		if (object == null || object.getCollisionShape() == null) {
 			return;
