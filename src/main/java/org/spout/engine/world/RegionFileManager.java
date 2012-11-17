@@ -59,7 +59,7 @@ public class RegionFileManager {
 	public RegionFileManager(File worldDirectory, String prefix) {
 		this.regionDirectory = new File(worldDirectory, prefix);
 		this.regionDirectory.mkdirs();
-		this.timeoutThread = new TimeoutThread();
+		this.timeoutThread = new TimeoutThread(worldDirectory);
 		this.timeoutThread.start();
 	}
 	
@@ -115,6 +115,11 @@ public class RegionFileManager {
 	}
 	
 	private class TimeoutThread extends Thread {
+		
+		public TimeoutThread(File worldDirectory) {
+			super("Region File Manager Timeout Thread - " + worldDirectory.getPath());
+		}
+		
 		public void run() {
 			while (!isInterrupted()) {
 				int files = cache.size();
