@@ -256,6 +256,21 @@ public class SpoutTaskManager implements TaskManager {
 	public List<Worker> getActiveWorkers() {
 		return new ArrayList<Worker>(activeWorkers.values());
 	}
+	
+	public boolean waitForAsyncTasks(long timeout) {
+		long startTime = System.currentTimeMillis();
+		while (System.currentTimeMillis() < startTime + timeout) {
+			try {
+				if (activeWorkers.size() == 0) {
+					return true;
+				}
+				Thread.sleep(10);
+			} catch (InterruptedException ie) {
+				return false;
+			}
+		}
+		return false;
+	}
 
 	@Override
 	public List<Task> getPendingTasks() {

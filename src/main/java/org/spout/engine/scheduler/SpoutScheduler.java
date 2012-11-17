@@ -42,7 +42,7 @@ import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.gui.ScreenStack;
-import org.spout.api.plugin.Platform;
+import org.spout.api.plugin.CommonPlugin;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.api.scheduler.SnapshotLock;
@@ -281,6 +281,26 @@ public final class SpoutScheduler implements Scheduler {
 			runLastTickTasks();
 			taskManager.heartbeat(PULSE_EVERY << 2);
 			taskManager.shutdown(1L);
+			long delay = 2000;
+			while (!taskManager.waitForAsyncTasks(delay)) {
+				List<Worker> workers = taskManager.getActiveWorkers();
+				if (workers.size() == 0) {
+					break;
+				}
+				Spout.getLogger().info("Unable to shutdown due to async tasks still running");
+				for (Worker w : workers) {
+					Object owner = w.getOwner();
+					if (owner instanceof CommonPlugin) {
+						CommonPlugin p = (CommonPlugin) owner;
+						Spout.getLogger().info("Task with id of " + w.getTaskId() + " owned by " + p.getName() + " is still running");
+					} else {
+						Spout.getLogger().info("Task with id of " + w.getTaskId() + " owned by " + w.getOwner() + " is still running");
+					}
+				}
+				if (delay < 8000) {
+					delay = delay << 1;
+				}
+			}
 
 			asyncExecutors.copySnapshot();
 			try {
