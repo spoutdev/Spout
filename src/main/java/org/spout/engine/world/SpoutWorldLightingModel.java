@@ -56,7 +56,7 @@ public class SpoutWorldLightingModel {
 	private TShortIterator iter;
 
 	public void reportChanges() {
-		if (this.changes > 1000) {
+		if (this.changes > 100000) {
 			if (Spout.debugMode()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("[debug] Finished processing ").append(this.changes).append(sky ? " sky" : " block");

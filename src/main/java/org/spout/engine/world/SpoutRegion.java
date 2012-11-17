@@ -931,6 +931,8 @@ public class SpoutRegion extends Region {
 			}
 		}
 	}
+	
+	private static final Object logLock = new Object();
 
 	/**
 	 * Updates CollisionObjects in this region and adds/removes them from the simulation. 
@@ -938,8 +940,14 @@ public class SpoutRegion extends Region {
 	 * @param dt
 	 */
 	private void updateDynamics(float dt) {
-		synchronized(simulation) {
-			simulation.stepSimulation(1 / 20F, 0, 1 / 20F);
+		try {
+			synchronized(simulation) {
+				simulation.stepSimulation(1 / 20F, 0, 1 / 20F);
+			}
+		} catch (Exception e) {
+			synchronized(logLock) {
+				Spout.getLogger().log(Level.SEVERE, "Exception while using physics", e);
+			}
 		}
 	}
 
