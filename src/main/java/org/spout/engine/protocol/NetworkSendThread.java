@@ -110,7 +110,6 @@ public class NetworkSendThread {
 		
 		public ChannelQueueThread(int poolIndex, int channelId) {
 			super("Channel queue thread, pool index " + poolIndex + " channel id " + channelId);
-			setDaemon(true);
 		}
 		
 		public void send(SpoutSession<?> session, Channel channel, Message message) {
@@ -118,21 +117,34 @@ public class NetworkSendThread {
 		}
 		
 		public void run() {
+			QueueNode node;
 			while (!isInterrupted()) {
-				QueueNode node;
 				try {
 					node = queue.take();
 				} catch (InterruptedException ie) {
 					break;
 				}
-				Channel channel = node.getChannel();
-				try {
-					if (channel.isOpen()) {
-						channel.write(node.getMessage());
-					}
-				} catch (Exception e) {
-					node.getSession().disconnect(false, new Object[] {"Socket Error!"});
+				handle(node);
+			}
+			
+		}
+		
+		private void handle(QueueNode node) {
+			Channel channel = node.getChannel();
+			try {
+				if (channel.isOpen()) {
+					channel.write(node.getMessage());
 				}
+			} catch (Exception e) {
+				node.getSession().disconnect(false, new Object[] {"Socket Error!"});
+			}
+			flushQueue();
+		}
+		
+		private void flushQueue() {
+			QueueNode node;
+			while ((node = queue.poll()) != null) {
+				handle(node);
 			}
 		}
 		

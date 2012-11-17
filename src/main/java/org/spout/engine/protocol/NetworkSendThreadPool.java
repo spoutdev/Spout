@@ -26,6 +26,8 @@
  */
 package org.spout.engine.protocol;
 
+import org.spout.api.Spout;
+
 public class NetworkSendThreadPool {
 	
 	private static final int POOL_MASK = 0xF;
@@ -45,6 +47,19 @@ public class NetworkSendThreadPool {
 	public static void interrupt() {
 		for (int i = 0; i < pool.length; i++) {
 			pool[i].interrupt();
+		}
+	}
+	
+	public static void shutdown() {
+		for (int i = 0; i < pool.length; i++) {
+			pool[i].interrupt();
+		}
+		for (int i = 0; i < pool.length; i++) {
+			try {
+				pool[i].interruptAndJoin();
+			} catch (InterruptedException e) {
+				Spout.getLogger().info("Thread interrupted when waiting for NetworkSendPool to shutdown");
+			}
 		}
 	}
 	

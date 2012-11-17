@@ -54,6 +54,7 @@ import org.spout.api.util.thread.DelayedWrite;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.SpoutServer;
+import org.spout.engine.protocol.NetworkSendThreadPool;
 import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
 import org.spout.engine.util.thread.ThreadsafetyManager;
@@ -346,6 +347,8 @@ public final class SpoutScheduler implements Scheduler {
 			}
 
 			runFinalTasks();
+			
+			NetworkSendThreadPool.interrupt();
 		}
 	}
 
