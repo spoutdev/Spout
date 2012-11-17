@@ -278,11 +278,7 @@ public class SimpleCommand implements Command {
 	@Override
 	public boolean process(CommandSource source, String name, ChatArguments args, boolean fuzzyLookup) {
 		try {
-			PreCommandEvent event = Spout.getEventManager().callEvent(new PreCommandEvent(source, name, args));
-			if (event.isCancelled()) {
-				return false;
-			}
-			execute(source, event.getCommand(), event.getArguments().toSections(ChatSection.SplitType.WORD), 0, fuzzyLookup);
+			execute(source, name, args.toSections(ChatSection.SplitType.WORD), 0, fuzzyLookup);
 			return true;
 		} catch (WrappedCommandException e) {
 			if (e.getCause() instanceof NumberFormatException) {
