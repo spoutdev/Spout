@@ -42,6 +42,7 @@ import org.spout.api.component.Component;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.state.PlayerInputState;
+import org.spout.api.event.server.PreCommandEvent;
 import org.spout.api.event.server.RetrieveDataEvent;
 import org.spout.api.event.server.permissions.PermissionGroupsEvent;
 import org.spout.api.event.server.permissions.PermissionNodeEvent;
@@ -184,6 +185,13 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void processCommand(String command, ChatArguments arguments) {
+		PreCommandEvent event = Spout.getEventManager().callEvent(new PreCommandEvent(this, command, arguments));
+		if (event.isCancelled()) {
+			return;
+		}
+		command = event.getCommand();
+		arguments = event.getArguments();
+
 		final RootCommand rootCmd = Spout.getEngine().getRootCommand();
 		Command cmd = rootCmd.getChild(command);
 		if (cmd != null) {
