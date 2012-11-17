@@ -60,7 +60,9 @@ public class MappedRandomAccessFile {
 
 	public void close() throws IOException {
 		for (MappedByteBuffer m : pages) {
-			m.force();
+			if (m != null) {
+				m.force();
+			}
 		}
 		file.close();
 	}
