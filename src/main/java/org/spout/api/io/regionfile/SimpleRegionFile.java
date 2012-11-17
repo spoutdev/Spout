@@ -55,7 +55,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 
 	private final File filePath;
 	private final Object fileSyncObject = new Object();
-	private CachedRandomAccessFile file;
+	private MappedRandomAccessFile file;
 	@SuppressWarnings("unused")
 	private final int version;
 	private final int timeout;
@@ -107,7 +107,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 		refreshAccess();
 		
 		try {
-			this.file = new CachedRandomAccessFile(this.filePath, "rw");
+			this.file = new MappedRandomAccessFile(this.filePath, "rw");
 		} catch (FileNotFoundException e) {
 			this.closed.set(true);
 			throw new SRFException("Unable to open region file " + this.filePath, e);
@@ -212,7 +212,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 			byte[] result = new byte[actualLength];
 			synchronized (fileSyncObject) {
 				if (file == null) {
-					this.file = new CachedRandomAccessFile(this.filePath, "rw");
+					this.file = new MappedRandomAccessFile(this.filePath, "rw");
 				}
 				file.seek(start);
 				file.readFully(result);
@@ -252,7 +252,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 		int start = reserveBlockSegments(i, length);
 		synchronized(fileSyncObject) {
 			if (file == null) {
-				this.file = new CachedRandomAccessFile(this.filePath, "rw");
+				this.file = new MappedRandomAccessFile(this.filePath, "rw");
 			}
 			this.writeFAT(i, start, length);
 			file.seek(start << segmentSize);
@@ -275,7 +275,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 				if (file != null) {
 					file.close();
 					try {
-						this.file = new CachedRandomAccessFile(this.filePath, "rw");
+						this.file = new MappedRandomAccessFile(this.filePath, "rw");
 					} catch (FileNotFoundException e) {
 						this.closed.set(true);
 						throw new SRFException("Unable to refresh open region file " + this.filePath, e);
@@ -491,7 +491,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 		int FATEntryPosition = getFATOffset() + (i << 3);
 		synchronized(fileSyncObject) {
 			if (file == null) {
-				this.file = new CachedRandomAccessFile(this.filePath, "rw");
+				this.file = new MappedRandomAccessFile(this.filePath, "rw");
 			}
 			file.seek(FATEntryPosition);
 			file.writeInt(start);
