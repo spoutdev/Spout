@@ -90,36 +90,18 @@ public abstract class PhysicsComponent extends EntityComponent {
 	public abstract Vector3 getAngularVelocity();
 
 	/**
-	 * Gets the live angular velocity. Caution must be used as it is not stable and is subject to changes from
-	 * plugins.
-	 * @return the live angular velocity
-	 */
-	public abstract Vector3 getAngularVelocityLive();
-
-	/**
 	 * Gets the linear velocity.
 	 * @return the linear velocity
 	 */
 	public abstract Vector3 getLinearVelocity();
 
-	/**
-	 * Gets the live linear velocity. Caution must be used as it is not stable and is subject to changes from
-	 * plugins.
-	 * @return the live linear velocity
-	 */
-	public abstract Vector3 getLinearVelocityLive();
+	public abstract void applyImpulse(Vector3 impulse);
 
-	/**
-	 * Sets the live angular velocity.
-	 * @param velocity the new angular velocity
-	 */
-	public abstract void setAngularVelocity(Vector3 velocity);
+	public abstract void applyImpulse(Vector3 impulse, Vector3 relativePos);
 
-	/**
-	 * Sets the live linear velocity.
-	 * @param velocity the new linear velocity
-	 */
-	public abstract void setLinearVelocity(Vector3 velocity);
+	public abstract void appleForce(Vector3 impulse);
+
+	public abstract void applyForce(Vector3 force, Vector3 relativePos);
 
 	/**
 	 * Returns if both the angular and linear velocities have changed "dirty" since the last tick.
