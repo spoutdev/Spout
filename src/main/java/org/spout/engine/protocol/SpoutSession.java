@@ -36,7 +36,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 import org.jboss.netty.channel.Channel;
-
 import org.spout.api.Spout;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
@@ -118,6 +117,11 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	private final AtomicReference<NetworkSynchronizer> synchronizer = new AtomicReference<NetworkSynchronizer>(nullSynchronizer);
 
 	private final ManagedHashMap dataMap;
+	
+	/**
+	 * 
+	 */
+	private final AtomicReference<NetworkSendThread> networkSendThread = new AtomicReference<NetworkSendThread>();
 
 	/**
 	 * Creates a new session.
@@ -174,6 +178,9 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		if (!this.player.compareAndSet(null, player)) {
 			throw new IllegalStateException();
 		}
+		if (!this.networkSendThread.compareAndSet(null, NetworkSendThreadPool.getNetworkThread(player.getId()))) {
+			throw new IllegalStateException();
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -225,7 +232,12 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		try {
 			if (force || this.state == State.GAME) {
 				if (channel.isOpen()) {
-					channel.write(message);
+					NetworkSendThread sendThread = networkSendThread.get();
+					if (sendThread == null) {
+						channel.write(message);
+					} else {
+						sendThread.send(this, channel, message);
+					}
 				}
 			} else {
 				sendQueue.add(message);

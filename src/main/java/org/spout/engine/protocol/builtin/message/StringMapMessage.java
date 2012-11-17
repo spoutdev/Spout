@@ -33,11 +33,10 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
-import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 import org.spout.api.util.StringMapEvent;
 
-public class StringMapMessage implements Message {
+public class StringMapMessage extends SpoutMessage {
 	private final int map;
 	private final StringMapEvent.Action action;
 	private final List<Pair<Integer, String>> elements;

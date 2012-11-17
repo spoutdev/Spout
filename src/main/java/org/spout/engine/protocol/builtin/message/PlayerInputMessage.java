@@ -29,10 +29,9 @@ package org.spout.engine.protocol.builtin.message;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class PlayerInputMessage implements Message {
+public class PlayerInputMessage extends SpoutMessage {
 	private final short inputFlags;
 	private final short mouseDx, mouseDy;
 

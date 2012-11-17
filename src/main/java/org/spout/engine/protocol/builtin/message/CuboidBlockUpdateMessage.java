@@ -30,10 +30,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.math.Vector3;
-import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class CuboidBlockUpdateMessage implements Message {
+public class CuboidBlockUpdateMessage extends SpoutMessage {
 	private final int minX, minY, minZ;
 	private final int maxX, maxY, maxZ;
 	// These fields aren't sent across the network - just for reference

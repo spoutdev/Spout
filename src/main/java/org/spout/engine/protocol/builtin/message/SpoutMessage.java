@@ -26,45 +26,13 @@
  */
 package org.spout.engine.protocol.builtin.message;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.spout.api.util.SpoutToStringStyle;
+import org.spout.api.protocol.Message;
 
-public class RemoveEntityMessage extends SpoutMessage {
-	private final int entityId;
-
-	public RemoveEntityMessage(int entityId) {
-		this.entityId = entityId;
-	}
-
-	public int getEntityId() {
-		return entityId;
-	}
+public abstract class SpoutMessage implements Message {
 
 	@Override
-	public String toString() {
-		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
-				.append("entityId", entityId)
-				.toString();
+	public int getChannelId() {
+		return 0;
 	}
 
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder(61, 29)
-				.append(entityId)
-				.toHashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof RemoveEntityMessage) {
-			final RemoveEntityMessage other = (RemoveEntityMessage) obj;
-			return new EqualsBuilder()
-					.append(entityId, other.entityId)
-					.isEquals();
-		} else {
-			return false;
-		}
-	}
 }

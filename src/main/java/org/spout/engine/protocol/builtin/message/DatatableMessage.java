@@ -32,10 +32,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.datatable.SerializableMap;
-import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
-public abstract class DatatableMessage implements Message {
+public abstract class DatatableMessage extends SpoutMessage {
 	private final byte[] compressedData;
 
 	public DatatableMessage(byte[] compressedData) {

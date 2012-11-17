@@ -24,47 +24,34 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.protocol.builtin.message;
+package org.spout.engine.protocol;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.spout.api.util.SpoutToStringStyle;
-
-public class RemoveEntityMessage extends SpoutMessage {
-	private final int entityId;
-
-	public RemoveEntityMessage(int entityId) {
-		this.entityId = entityId;
-	}
-
-	public int getEntityId() {
-		return entityId;
-	}
-
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
-				.append("entityId", entityId)
-				.toString();
-	}
-
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder(61, 29)
-				.append(entityId)
-				.toHashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof RemoveEntityMessage) {
-			final RemoveEntityMessage other = (RemoveEntityMessage) obj;
-			return new EqualsBuilder()
-					.append(entityId, other.entityId)
-					.isEquals();
-		} else {
-			return false;
+public class NetworkSendThreadPool {
+	
+	private static final int POOL_MASK = 0xF;
+	private static final NetworkSendThread[] pool;
+	
+	static {
+		pool = new NetworkSendThread[POOL_MASK + 1];
+		for (int i = 0; i < pool.length; i++) {
+			pool[i] = new NetworkSendThread(i);
 		}
 	}
+	
+	public static NetworkSendThread getNetworkThread(int playerId) {
+		return pool[hash(playerId) & POOL_MASK];
+	}
+	
+	public static void interrupt() {
+		for (int i = 0; i < pool.length; i++) {
+			pool[i].interrupt();
+		}
+	}
+	
+	// Taken from HashMap
+	private static int hash(int h) {
+		h ^= (h >>> 20) ^ (h >>> 12);
+		return h ^ (h >>> 7) ^ (h >>> 4);
+	}
+
 }

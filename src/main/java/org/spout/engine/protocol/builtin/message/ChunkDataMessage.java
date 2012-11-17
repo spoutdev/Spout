@@ -31,10 +31,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
-import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class ChunkDataMessage implements Message {
+public class ChunkDataMessage extends SpoutMessage {
 	private final boolean unload;
 	private final int x, y, z;
 	private final short[] blockIds, blockData;

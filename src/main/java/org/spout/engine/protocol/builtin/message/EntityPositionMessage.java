@@ -36,10 +36,9 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
-import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class EntityPositionMessage implements Message {
+public class EntityPositionMessage extends SpoutMessage {
 	private final int entityId;
 	private final UUID worldUid;
 	private final Vector3 pos;

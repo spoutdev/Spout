@@ -32,11 +32,10 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.command.Command;
-import org.spout.api.protocol.Message;
 import org.spout.api.util.SpoutToStringStyle;
 import org.spout.engine.command.IdSimpleCommand;
 
-public class CommandMessage implements Message {
+public class CommandMessage extends SpoutMessage {
 	private final int command;
 	private final List<Object> arguments;
 
