@@ -42,7 +42,6 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.component.components.HitBlockComponent;
-
 import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
@@ -51,6 +50,7 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 import org.spout.engine.SpoutEngine;
+import org.spout.engine.util.thread.AsyncExecutorUtils;
 
 public class TestCommands {
 	private final SpoutEngine engine;
@@ -80,7 +80,11 @@ public class TestCommands {
 		source.sendMessage("World Entity count: ", world.getAll().size());
 	}
 
-
+	@Command(aliases = "dumpthreads", desc = "Dumps a listing of all thread stacks to the console")
+	public void dumpThreads(CommandContext args, CommandSource source) throws CommandException {
+		AsyncExecutorUtils.dumpAllStacks();
+	}
+	
 	@Command(aliases = "testmsg", desc = "Test extracting chat styles from a message and printing them")
 	public void testMsg(CommandContext args, CommandSource source) throws CommandException {
 		source.sendMessage(args.getJoinedString(0));
