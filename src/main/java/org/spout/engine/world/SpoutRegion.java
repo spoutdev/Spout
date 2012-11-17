@@ -115,7 +115,6 @@ import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 import org.spout.engine.world.dynamic.DynamicBlockUpdateTree;
 
 import com.bulletphysics.collision.broadphase.BroadphaseInterface;
-import com.bulletphysics.collision.broadphase.CollisionFilterGroups;
 import com.bulletphysics.collision.broadphase.DbvtBroadphase;
 import com.bulletphysics.collision.dispatch.CollisionConfiguration;
 import com.bulletphysics.collision.dispatch.CollisionDispatcher;
@@ -202,8 +201,6 @@ public class SpoutRegion extends Region {
 	private final BroadphaseInterface broadphase;
 	private final CollisionConfiguration configuration;
 	private final SequentialImpulseConstraintSolver solver;
-	private final ConcurrentLinkedQueue<PhysicsComponent> physicsAddQueue = new ConcurrentLinkedQueue<PhysicsComponent>();
-	private final ConcurrentLinkedQueue<PhysicsComponent> physicsRemoveQueue = new ConcurrentLinkedQueue<PhysicsComponent>();
 
 	@SuppressWarnings("unchecked")
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
@@ -293,6 +290,10 @@ public class SpoutRegion extends Region {
 		simulation.addRigidBody(regionBody);
 	}
 
+	public DiscreteDynamicsWorld getSimulation() {
+		return simulation;
+	}
+
 	public void addPhysics(Entity e) {
 		PhysicsComponent physics = e.get(PhysicsComponent.class);
 		if (physics != null) {
@@ -310,19 +311,31 @@ public class SpoutRegion extends Region {
 	public void addPhysics(PhysicsComponent physics) {
 		((SpoutPhysicsComponent)physics).copySnapshot();
 		CollisionObject object = physics.getCollisionObject();
-		if (object.getCollisionShape() == null) {
+		if (object == null || object.getCollisionShape() == null) {
 			return;
 		}
-		physicsAddQueue.add(physics);
+		synchronized(simulation) {
+			if (object instanceof RigidBody) {
+				simulation.addRigidBody((RigidBody) object);
+			} else {
+				simulation.addCollisionObject(object);
+			}
+		}
 	}
 
 	public void removePhysics(PhysicsComponent physics) {
 		((SpoutPhysicsComponent)physics).copySnapshot();
 		CollisionObject object = physics.getCollisionObject();
-		if (object.getCollisionShape() == null) {
+		if (object == null || object.getCollisionShape() == null) {
 			return;
 		}
-		physicsRemoveQueue.add(physics);
+		synchronized(simulation) {
+			if (object instanceof RigidBody) {
+				simulation.removeRigidBody((RigidBody) object);
+			} else {
+				simulation.removeCollisionObject(object);
+			}
+		}
 	}
 
 	public void startMeshGeneratorThread() {
@@ -925,26 +938,9 @@ public class SpoutRegion extends Region {
 	 * @param dt
 	 */
 	private void updateDynamics(float dt) {
-		PhysicsComponent physics = null;
-		while((physics = physicsAddQueue.poll()) != null) {
-			if (!physics.getOwner().isRemoved()) {
-				CollisionObject object = physics.getCollisionObject();
-				if (object instanceof RigidBody) {
-					simulation.addRigidBody((RigidBody) object);
-				} else if (object != null) {
-					simulation.addCollisionObject(object);
-				}
-			}
+		synchronized(simulation) {
+			simulation.stepSimulation(1 / 20F, 0, 1 / 20F);
 		}
-		while((physics = physicsRemoveQueue.poll()) != null) {
-			CollisionObject object = physics.getCollisionObject();
-			if (object instanceof RigidBody) {
-				simulation.removeRigidBody((RigidBody) object);
-			} else if (object != null) {
-				simulation.removeCollisionObject(object);
-			}
-		}
-		simulation.stepSimulation(1 / 20F, 0, 1 / 20F);
 	}
 
 	public void startTickRun(int stage, long delta) {
@@ -1617,13 +1613,17 @@ public class SpoutRegion extends Region {
 	}
 
 	public void setGravity(Vector3 gravity) {
-		simulation.setGravity(MathHelper.toVector3f(gravity));
+		synchronized(simulation) {
+			simulation.setGravity(MathHelper.toVector3f(gravity));
+		}
 	}
 
 	public Vector3 getGravity() {
-		Vector3f vector = new Vector3f();
-		vector = simulation.getGravity(vector);
-		return MathHelper.toVector3(vector);
+		synchronized(simulation) {
+			Vector3f vector = new Vector3f();
+			vector = simulation.getGravity(vector);
+			return MathHelper.toVector3(vector);
+		}
 	}
 
 	public List<DynamicBlockUpdate> getDynamicBlockUpdates(Chunk c) {

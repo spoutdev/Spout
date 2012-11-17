@@ -26,7 +26,6 @@
  */
 package org.spout.engine.entity.component;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.vecmath.Matrix4f;
@@ -44,7 +43,6 @@ import com.google.common.base.Objects;
 import org.spout.api.component.components.PhysicsComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.engine.world.SpoutRegion;
@@ -53,17 +51,14 @@ import org.spout.engine.world.SpoutRegion;
  * A component that represents the physics object that is a motion of the entity within the world.
  */
 public class SpoutPhysicsComponent extends PhysicsComponent {
-	private static final DefaultedKeyImpl<Vector3> ANGULAR_VELOCITY = new DefaultedKeyImpl<Vector3>("live_angular_velocity", Vector3.ZERO);
-	private static final DefaultedKeyImpl<Vector3> LINEAR_VELOCITY = new DefaultedKeyImpl<Vector3>("live_linear_velocity", Vector3.ZERO);
 	//TODO persist 
 	private RigidBody collisionObject = null;
 	private final AtomicReference<CollisionShape> liveShape = new AtomicReference<CollisionShape>(null);
 	private MotionState state;
 
-	private final AtomicBoolean dirtyAngularVelocity = new AtomicBoolean(false);
-	private final AtomicBoolean dirtyLinearVelocity = new AtomicBoolean(false);
 	private Vector3 angularVelocity = Vector3.ZERO;
 	private Vector3 linearVelocity = Vector3.ZERO;
+	private boolean dirty = false;
 
 	@Override
 	public void onAttached() {
@@ -79,7 +74,10 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	@Override
 	public void onDetached() {
-		((SpoutRegion)this.getOwner().getRegion()).removePhysics(this);
+		SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		if (region != null) {
+			region.removePhysics(this);
+		}
 	}
 
 	@Override
@@ -108,35 +106,13 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	@Override
-	public Vector3 getAngularVelocityLive() {
-		return getData().get(ANGULAR_VELOCITY);
-	}
-
-	@Override
 	public Vector3 getLinearVelocity() {
 		return linearVelocity;
 	}
 
 	@Override
-	public Vector3 getLinearVelocityLive() {
-		return getData().get(LINEAR_VELOCITY);
-	}
-
-	@Override
-	public void setAngularVelocity(Vector3 velocity) {
-		getData().put(ANGULAR_VELOCITY, velocity);
-		dirtyAngularVelocity.set(true);
-	}
-
-	@Override
-	public void setLinearVelocity(Vector3 velocity) {
-		getData().put(LINEAR_VELOCITY, velocity);
-		dirtyLinearVelocity.set(true);
-	}
-
-	@Override
 	public boolean isVelocityDirty() {
-		return !angularVelocity.equals(getAngularVelocityLive()) && !linearVelocity.equals(getLinearVelocityLive());
+		return dirty;
 	}
 
 	@Override
@@ -144,31 +120,62 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		return !Objects.equal(liveShape.get(), getCollisionShape());
 	}
 
-	public void copySnapshot() {
-		//Was dirty, cleaning
-		if (dirtyAngularVelocity.compareAndSet(true, false)) {
-			angularVelocity  = getAngularVelocityLive();
-			collisionObject.setInterpolationAngularVelocity(MathHelper.toVector3f(angularVelocity));
-		} else {
-			angularVelocity = MathHelper.toVector3(collisionObject.getInterpolationAngularVelocity(new Vector3f()));
-			getData().put(ANGULAR_VELOCITY, angularVelocity);
-		}
-		if (dirtyLinearVelocity.compareAndSet(true, false)) {
-			linearVelocity  = getLinearVelocityLive();
-			collisionObject.setInterpolationAngularVelocity(MathHelper.toVector3f(linearVelocity));
-		} else {
-			linearVelocity = MathHelper.toVector3(collisionObject.getInterpolationLinearVelocity(new Vector3f()));
-			getData().put(LINEAR_VELOCITY, linearVelocity);
-		}
-
-		if (isCollisionObjectDirty()) {
-			collisionObject.setCollisionShape(liveShape.get());
+	@Override
+	public void applyImpulse(Vector3 impulse) {
+		SpoutRegion r = (SpoutRegion) getOwner().getRegion();
+		if (r == null) throw new IllegalStateException("Entity region is null!");
+		synchronized(r.getSimulation()) {
+			collisionObject.applyCentralImpulse(MathHelper.toVector3f(impulse));
 		}
 	}
 
-	private static class SpoutDefaultMotionState extends DefaultMotionState {
-		private final Entity entity;
+	@Override
+	public void applyImpulse(Vector3 impulse, Vector3 relativePos) {
+		SpoutRegion r = (SpoutRegion) getOwner().getRegion();
+		if (r == null) throw new IllegalStateException("Entity region is null!");
+		synchronized(r.getSimulation()) {
+			collisionObject.applyImpulse(MathHelper.toVector3f(impulse), MathHelper.toVector3f(relativePos));
+		}
+	}
 
+	@Override
+	public void appleForce(Vector3 force) {
+		SpoutRegion r = (SpoutRegion) getOwner().getRegion();
+		if (r == null) throw new IllegalStateException("Entity region is null!");
+		synchronized(r.getSimulation()) {
+			collisionObject.applyCentralForce(MathHelper.toVector3f(force));
+		}
+	}
+
+	@Override
+	public void applyForce(Vector3 force, Vector3 relativePos) {
+		SpoutRegion r = (SpoutRegion) getOwner().getRegion();
+		if (r == null) throw new IllegalStateException("Entity region is null!");
+		synchronized(r.getSimulation()) {
+			collisionObject.applyForce(MathHelper.toVector3f(force), MathHelper.toVector3f(relativePos));
+		}
+	}
+
+	public void copySnapshot() {
+		SpoutRegion r = (SpoutRegion) getOwner().getRegion();
+		if (r == null) throw new IllegalStateException("Entity region is null!");
+		synchronized(r.getSimulation()) {
+			if (isCollisionObjectDirty()) {
+				collisionObject.setCollisionShape(liveShape.get());
+			}
+			angularVelocity = MathHelper.toVector3(collisionObject.getInterpolationAngularVelocity(new Vector3f()));
+			Vector3 velocity = MathHelper.toVector3(collisionObject.getInterpolationLinearVelocity(new Vector3f()));
+			if (!velocity.equals(linearVelocity)) {
+				dirty = true;
+			} else {
+				dirty = false;
+			}
+			linearVelocity = velocity;
+		}
+	}
+
+	private class SpoutDefaultMotionState extends DefaultMotionState {
+		private final Entity entity;
 		public SpoutDefaultMotionState(Entity entity) {
 			this.entity = entity;
 		}
