@@ -217,12 +217,6 @@ public class WorldFiles {
 			convertArray(packetBlockArray, global, itemMap);
 		}
 
-		for (int i = 0; i < palette.length; i++) {
-			short newId = (short) global.convertTo(itemMap, BlockFullState.getId(palette[i]));
-			short oldData = BlockFullState.getData(palette[i]);
-			palette[i] = BlockFullState.getPacked(newId, oldData);
-		}
-
 		chunkTags.put(new ByteTag("version", CHUNK_VERSION));
 		chunkTags.put(new ByteTag("format", (byte) 0));
 		chunkTags.put(new IntTag("x", snapshot.getX()));
