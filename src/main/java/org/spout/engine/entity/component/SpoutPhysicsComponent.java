@@ -26,8 +26,6 @@
  */
 package org.spout.engine.entity.component;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
@@ -35,11 +33,8 @@ import javax.vecmath.Vector3f;
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.dynamics.RigidBody;
-import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.MotionState;
 import com.bulletphysics.linearmath.Transform;
-import com.google.common.base.Objects;
-
 import org.spout.api.component.components.PhysicsComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.discrete.Point;
@@ -52,24 +47,15 @@ import org.spout.engine.world.SpoutRegion;
  */
 public class SpoutPhysicsComponent extends PhysicsComponent {
 	//TODO persist 
-	private RigidBody collisionObject = null;
-	private final AtomicReference<CollisionShape> liveShape = new AtomicReference<CollisionShape>(null);
+	private RigidBody body = null;
 	private MotionState state;
-
 	private Vector3 angularVelocity = Vector3.ZERO;
 	private Vector3 linearVelocity = Vector3.ZERO;
 	private boolean dirty = false;
 
 	@Override
 	public void onAttached() {
-		if (collisionObject != null) {
-			throw new IllegalStateException("Can not attach physics component twice!");
-		}
-		state = new SpoutDefaultMotionState(getOwner());
-		collisionObject = new RigidBody(0.5F, state, liveShape.get());
-		org.spout.api.geo.discrete.Transform spoutTransform = getOwner().getTransform().getTransformLive();
-		Point point = spoutTransform.getPosition();
-		collisionObject.setWorldTransform(new Transform(new Matrix4f(MathHelper.toQuaternionf(spoutTransform.getRotation()), MathHelper.toVector3f(point.getX(), point.getY(), point.getZ()), 1)));
+		
 	}
 
 	@Override
@@ -82,7 +68,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	@Override
 	public CollisionObject getCollisionObject() {
-		return collisionObject;
+		return body;
 	}
 
 	@Override
@@ -92,12 +78,23 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	@Override
 	public CollisionShape getCollisionShape() {
-		return collisionObject.getCollisionShape();
+		if (body == null) {
+			throw new IllegalStateException("A collision shape must be set first");
+		}
+		return body.getCollisionShape();
 	}
 
 	@Override
 	public void setCollisionShape(CollisionShape shape) {
-		liveShape.set(shape);
+		if (body != null) {
+			throw new IllegalStateException("Can not setup physics component twice!");
+		}
+		org.spout.api.geo.discrete.Transform spoutTransform = getOwner().getTransform().getTransformLive();
+		Point point = spoutTransform.getPosition();
+		state = new SpoutDefaultMotionState(getOwner());
+		body = new RigidBody(0.5F, state, shape);
+		body.setWorldTransform(new Transform(new Matrix4f(MathHelper.toQuaternionf(spoutTransform.getRotation()), MathHelper.toVector3f(point.getX(), point.getY(), point.getZ()), 1)));
+		body.activate();
 	}
 
 	@Override
@@ -116,65 +113,81 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	@Override
-	public boolean isCollisionObjectDirty() {
-		return !Objects.equal(liveShape.get(), getCollisionShape());
-	}
-
-	@Override
 	public void applyImpulse(Vector3 impulse) {
+		if (body == null) {
+			throw new IllegalStateException("A collision shape must be set first");
+		}
 		SpoutRegion r = (SpoutRegion) getOwner().getRegion();
-		if (r == null) throw new IllegalStateException("Entity region is null!");
+		if (r == null) {
+			throw new IllegalStateException("Entity region is null!");
+		}
 		synchronized(r.getSimulation()) {
-			collisionObject.applyCentralImpulse(MathHelper.toVector3f(impulse));
+			body.applyCentralImpulse(MathHelper.toVector3f(impulse));
 		}
 	}
 
 	@Override
 	public void applyImpulse(Vector3 impulse, Vector3 relativePos) {
+		if (body == null) {
+			throw new IllegalStateException("A collision shape must be set first");
+		}
 		SpoutRegion r = (SpoutRegion) getOwner().getRegion();
-		if (r == null) throw new IllegalStateException("Entity region is null!");
+		if (r == null) {
+			throw new IllegalStateException("Entity region is null!");
+		}
 		synchronized(r.getSimulation()) {
-			collisionObject.applyImpulse(MathHelper.toVector3f(impulse), MathHelper.toVector3f(relativePos));
+			body.applyImpulse(MathHelper.toVector3f(impulse), MathHelper.toVector3f(relativePos));
 		}
 	}
 
 	@Override
 	public void appleForce(Vector3 force) {
+		if (body == null) {
+			throw new IllegalStateException("A collision shape must be set first");
+		}
 		SpoutRegion r = (SpoutRegion) getOwner().getRegion();
-		if (r == null) throw new IllegalStateException("Entity region is null!");
+		if (r == null) {
+			throw new IllegalStateException("Entity region is null!");
+		}
 		synchronized(r.getSimulation()) {
-			collisionObject.applyCentralForce(MathHelper.toVector3f(force));
+			body.applyCentralForce(MathHelper.toVector3f(force));
 		}
 	}
 
 	@Override
 	public void applyForce(Vector3 force, Vector3 relativePos) {
+		if (body == null) {
+			throw new IllegalStateException("A collision shape must be set first");
+		}
 		SpoutRegion r = (SpoutRegion) getOwner().getRegion();
-		if (r == null) throw new IllegalStateException("Entity region is null!");
+		if (r == null) {
+			throw new IllegalStateException("Entity region is null!");
+		}
 		synchronized(r.getSimulation()) {
-			collisionObject.applyForce(MathHelper.toVector3f(force), MathHelper.toVector3f(relativePos));
+			body.applyForce(MathHelper.toVector3f(force), MathHelper.toVector3f(relativePos));
 		}
 	}
 
 	public void copySnapshot() {
-		SpoutRegion r = (SpoutRegion) getOwner().getRegion();
-		if (r == null) throw new IllegalStateException("Entity region is null!");
-		synchronized(r.getSimulation()) {
-			if (isCollisionObjectDirty()) {
-				collisionObject.setCollisionShape(liveShape.get());
+		if (body != null) {
+			SpoutRegion r = (SpoutRegion) getOwner().getRegion();
+			if (r == null) {
+				throw new IllegalStateException("Entity region is null!");
 			}
-			angularVelocity = MathHelper.toVector3(collisionObject.getInterpolationAngularVelocity(new Vector3f()));
-			Vector3 velocity = MathHelper.toVector3(collisionObject.getInterpolationLinearVelocity(new Vector3f()));
-			if (!velocity.equals(linearVelocity)) {
-				dirty = true;
-			} else {
-				dirty = false;
+			synchronized(r.getSimulation()) {
+				angularVelocity = MathHelper.toVector3(body.getInterpolationAngularVelocity(new Vector3f()));
+				Vector3 velocity = MathHelper.toVector3(body.getInterpolationLinearVelocity(new Vector3f()));
+				if (!velocity.equals(linearVelocity)) {
+					dirty = true;
+				} else {
+					dirty = false;
+				}
+				linearVelocity = velocity;
 			}
-			linearVelocity = velocity;
 		}
 	}
 
-	private class SpoutDefaultMotionState extends DefaultMotionState {
+	private class SpoutDefaultMotionState extends MotionState {
 		private final Entity entity;
 		public SpoutDefaultMotionState(Entity entity) {
 			this.entity = entity;

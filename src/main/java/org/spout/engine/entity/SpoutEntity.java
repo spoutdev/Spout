@@ -353,13 +353,6 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		PhysicsComponent physics = get(PhysicsComponent.class);
 		if (physics != null) {
 			((SpoutPhysicsComponent) physics).copySnapshot();
-			
-			//TODO players
-			if (!(this instanceof SpoutPlayer)) {
-				if (!physics.getLinearVelocity().equals(Vector3.ZERO)) { 
-					getTransform().setPosition(getTransform().getTransformLive().getPosition().add(physics.getLinearVelocity()));
-				}
-			}
 		}
 		
 		justSpawned = false;

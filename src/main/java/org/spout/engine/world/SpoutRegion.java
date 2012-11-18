@@ -940,7 +940,7 @@ public class SpoutRegion extends Region {
 	private void updateDynamics(float dt) {
 		try {
 			synchronized(simulation) {
-				simulation.stepSimulation(1 / 20F, 0, 1 / 20F);
+				simulation.stepSimulation(dt, 0, 1 / 20F);
 			}
 		} catch (Exception e) {
 			synchronized(logLock) {
