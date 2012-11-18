@@ -63,7 +63,6 @@ public class SpriteBatch {
 	}
 
 	public SpriteBatch(float screenW, float screenH) {
-		this.renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 		this.projection = MathHelper.createIdentity();
 		this.view = MathHelper.createIdentity();
 		this.screenWidth = screenW;
@@ -76,6 +75,7 @@ public class SpriteBatch {
 	}
 
 	public void render() {
+		renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 		renderer.begin();
 		for (int i = 0; i < sprites.size(); i++) {
 			RenderPart rect = sprites.get(i);
@@ -117,6 +117,7 @@ public class SpriteBatch {
 			renderer.render(rect.getRenderMaterial(), (i * 6), 6);
 		}
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		((BatchVertexRenderer)renderer).release();
 	}
 
 	public void drawText(ChatArguments text, ClientFont font, float x, float y, float size) {
