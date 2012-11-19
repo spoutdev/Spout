@@ -336,13 +336,12 @@ public class SimpleCommand implements Command {
 		ChatArguments usage = new ChatArguments("/");
 		
 		// appends every parent's preferred name after the slash
-		String fullName = name;
 		Command parent = this.parent;
 		while ( !(parent instanceof RootCommand) && this.parent != null ) {
 		    name = parent.getPreferredName() + " " + name;
 		    parent = parent.getParent();
 		}
-		usage.append(fullName);
+		usage.append(name);
 		
 		for (int i = 0; i <= baseIndex && i < args.size(); ++i) { // Add the arguments preceding the command
 			usage.append(" ");
