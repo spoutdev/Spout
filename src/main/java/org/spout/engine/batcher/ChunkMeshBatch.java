@@ -80,7 +80,7 @@ public class ChunkMeshBatch {
 		renderer.end();
 		
 		//Free batchVertex
-		batchVertex = null;
+		//batchVertex = null; // Needed tp keep it for GL 2 & 3
 	}
 
 	public boolean hasVertices() {
@@ -115,6 +115,10 @@ public class ChunkMeshBatch {
 
 	public void setMesh(BatchVertex batchVertex) {
 		this.batchVertex = batchVertex;
+	}
+
+	public BatchVertex getMesh() {
+		return batchVertex;
 	}
 
 	public BlockFace getFace() {
