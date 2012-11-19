@@ -28,27 +28,28 @@ package org.spout.api.component.components;
 
 import org.spout.api.Spout;
 import org.spout.api.model.Model;
+
 /**
  * A Component that adds a model to an entity.
  */
 public class ModelComponent extends EntityComponent {
-	
-	private Model model;
-	
-	public ModelComponent() {
-	}
 
-	@Override
-	public boolean canTick() {
-		return false;
-	}
-	
-	public Model getModel() {
-		return model;
-	}
-	
-	public void setModel(String resourcePath){
-		model = (Model)Spout.getFilesystem().getResource(resourcePath);
-	}
+    private Model model;
+
+    public ModelComponent() {
+    }
+
+    @Override
+    public boolean canTick() {
+        return false;
+    }
+
+    public Model getModel() {
+        return model;
+    }
+
+    public void setModel(String resourcePath) {
+        model = (Model) Spout.getFilesystem().getResource(resourcePath);
+    }
 
 }

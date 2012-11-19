@@ -30,80 +30,84 @@ import org.spout.api.component.components.DatatableComponent;
 import org.spout.api.tickable.Tickable;
 
 public abstract class Component implements Tickable {
-	private ComponentOwner owner;
+    private ComponentOwner owner;
 
-	public Component() {
-	}
+    public Component() {
+    }
 
-	/**
-	 * Attaches to a component owner.
-	 * @param owner the component owner to attach to
-	 * @return true if successful
-	 */
-	public boolean attachTo(ComponentOwner owner) {
-		this.owner = owner;
-		return true;
-	}
+    /**
+     * Attaches to a component owner.
+     *
+     * @param owner the component owner to attach to
+     * @return true if successful
+     */
+    public boolean attachTo(ComponentOwner owner) {
+        this.owner = owner;
+        return true;
+    }
 
-	/**
-	 * Gets the component holder that is holding this component.
-	 * @return the component holder
-	 */
-	public ComponentOwner getOwner() {
-		return owner;
-	}
+    /**
+     * Gets the component holder that is holding this component.
+     *
+     * @return the component holder
+     */
+    public ComponentOwner getOwner() {
+        return owner;
+    }
 
-	/**
-	 * Called when this component is attached to a owner.
-	 */
-	public void onAttached() {
-	}
+    /**
+     * Called when this component is attached to a owner.
+     */
+    public void onAttached() {
+    }
 
-	/**
-	 * Called when this component is detached from a owner.
-	 */
-	public void onDetached() {
-	}
+    /**
+     * Called when this component is detached from a owner.
+     */
+    public void onDetached() {
+    }
 
-	/**
-	 * Specifies whether or not this component can be detached,
-	 * after it has already been attached to a holder.
-	 * @return true if it can be detached
-	 */
-	public boolean isDetachable() {
-		return true;
-	}
+    /**
+     * Specifies whether or not this component can be detached,
+     * after it has already been attached to a holder.
+     *
+     * @return true if it can be detached
+     */
+    public boolean isDetachable() {
+        return true;
+    }
 
-	/**
-	 * Called when the holder is set to be synchronized.
-	 * <p/>
-	 * This method is READ ONLY. You cannot update in this method.
-	 */
-	public void onSync() {
-	}
+    /**
+     * Called when the holder is set to be synchronized.
+     * <p/>
+     * This method is READ ONLY. You cannot update in this method.
+     */
+    public void onSync() {
+    }
 
-	@Override
-	public boolean canTick() {
-		return true;
-	}
+    @Override
+    public boolean canTick() {
+        return true;
+    }
 
-	@Override
-	public final void tick(float dt) {
-		if (canTick()) {
-			onTick(dt);
-		}
-	}
+    @Override
+    public final void tick(float dt) {
+        if (canTick()) {
+            onTick(dt);
+        }
+    }
 
-	@Override
-	public void onTick(float dt) {
-	}
+    @Override
+    public void onTick(float dt) {
+    }
 
-	/**
-	 * Gets the datatable component attached to the holder.
-	 * This component exists in every holder.
-	 * @return the datatable component
-	 */
-	public final DatatableComponent getData() {
-		return getOwner().getData();
-	}
+    /**
+     * Gets the datatable component attached to the holder.
+     * This component exists in every holder.
+     *
+     * @return the datatable component
+     */
+    public final DatatableComponent getData() {
+        return getOwner().getData();
+    }
 }

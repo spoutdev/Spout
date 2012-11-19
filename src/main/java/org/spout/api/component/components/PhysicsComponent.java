@@ -32,80 +32,97 @@ import com.bulletphysics.linearmath.MotionState;
 import org.spout.api.math.Vector3;
 
 public abstract class PhysicsComponent extends EntityComponent {
-	private float mass;
+    @Override
+    public boolean isDetachable() {
+        return false;
+    }
 
-	@Override
-	public boolean isDetachable() {
-		return false;
-	}
+    /**
+     * Gets the friction of the entity.
+     *
+     * @return the friction
+     */
+    public abstract float getFriction();
 
-	/**
-	 * Gets the mass of the entity.
-	 * @return the mass
-	 */
-	public float getMass() {
-		return mass;
-	}
+    /**
+     * Sets the friction of the entity.
+     *
+     * @param friction new friction of the object
+     */
+    public abstract void setFriction(float friction);
 
-	/**
-	 * Sets the mass of the entity.
-	 * @param mass new mass of the entity
-	 */
-	public void setMass(float mass) {
-		this.mass = mass;
-	}
+    /**
+     * Gets the mass of the entity.
+     *
+     * @return the mass
+     */
+    public abstract float getMass();
 
-	/**
-	 * Gets the collision object which holds the collision shape and is used to calculate physics such as velocity, intertia,
-	 * etc. All PhysicsComponents are guaranteed to have a valid object.
-	 * @return the CollisionObject
-	 */
-	public abstract CollisionObject getCollisionObject();
+    /**
+     * Sets the mass of the entity.
+     *
+     * @param mass new mass of the entity
+     */
+    public abstract void setMass(float mass);
 
-	/**
-	 * Gets the MotionState. A MotionState is the "bridge" between Bullet and Spout in-which Bullet tells Spout that the
-	 * object has moved and to update your transforms accordingly.
-	 * @return the MotionState
-	 */
-	public abstract MotionState getMotionState();
+    /**
+     * Gets the collision object which holds the collision shape and is used to calculate physics such as velocity, intertia,
+     * etc. All PhysicsComponents are guaranteed to have a valid object.
+     *
+     * @return the CollisionObject
+     */
+    public abstract CollisionObject getCollisionObject();
 
-	/**
-	 * Gets the shape used to define the volume. Shapes range anywhere from a standard AABB bounding box to a basic
-	 * sphere shape. The shape is important as it is used to calculate collisions, inertia, and other characteristics.
-	 * @return The CollisionShape
-	 */
-	public abstract CollisionShape getCollisionShape();
+    /**
+     * Gets the MotionState. A MotionState is the "bridge" between Bullet and Spout in-which Bullet tells Spout that the
+     * object has moved and to update your transforms accordingly.
+     *
+     * @return the MotionState
+     */
+    public abstract MotionState getMotionState();
 
-	/**
-	 * Sets the shape of the volume.
-	 * @param shape the new CollisionShape
-	 * @throws IllegalArgumentException if the parameter is null
-	 */
-	public abstract void setCollisionShape(CollisionShape shape);
+    /**
+     * Gets the shape used to define the volume. Shapes range anywhere from a standard AABB bounding box to a basic
+     * sphere shape. The shape is important as it is used to calculate collisions, inertia, and other characteristics.
+     *
+     * @return The CollisionShape
+     */
+    public abstract CollisionShape getCollisionShape();
 
-	/**
-	 * Gets the angular velocity.
-	 * @return the angular velocity
-	 */
-	public abstract Vector3 getAngularVelocity();
+    /**
+     * Sets the shape of the volume.
+     *
+     * @param shape the new CollisionShape
+     * @throws IllegalArgumentException if the parameter is null
+     */
+    public abstract void setCollisionShape(CollisionShape shape);
 
-	/**
-	 * Gets the linear velocity.
-	 * @return the linear velocity
-	 */
-	public abstract Vector3 getLinearVelocity();
+    /**
+     * Gets the angular velocity.
+     *
+     * @return the angular velocity
+     */
+    public abstract Vector3 getAngularVelocity();
 
-	public abstract void applyImpulse(Vector3 impulse);
+    /**
+     * Gets the linear velocity.
+     *
+     * @return the linear velocity
+     */
+    public abstract Vector3 getLinearVelocity();
 
-	public abstract void applyImpulse(Vector3 impulse, Vector3 relativePos);
+    public abstract void applyImpulse(Vector3 impulse);
 
-	public abstract void appleForce(Vector3 impulse);
+    public abstract void applyImpulse(Vector3 impulse, Vector3 relativePos);
 
-	public abstract void applyForce(Vector3 force, Vector3 relativePos);
+    public abstract void applyForce(Vector3 impulse);
 
-	/**
-	 * Returns if both the angular and linear velocities have changed "dirty" since the last tick.
-	 * @return true if dirty, false if not
-	 */
-	public abstract boolean isVelocityDirty();
+    public abstract void applyForce(Vector3 force, Vector3 relativePos);
+
+    /**
+     * Returns if both the angular and linear velocities have changed "dirty" since the last tick.
+     *
+     * @return true if dirty, false if not
+     */
+    public abstract boolean isVelocityDirty();
 }

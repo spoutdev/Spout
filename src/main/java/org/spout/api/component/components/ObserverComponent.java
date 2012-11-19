@@ -30,20 +30,20 @@ package org.spout.api.component.components;
  * Component that represents the an entity that observes a radius of chunks
  */
 public class ObserverComponent extends EntityComponent {
-	public static final int CHUNK_VIEW_DISTANCE = 4;
+    public static final int CHUNK_VIEW_DISTANCE = 4;
 
-	public ObserverComponent() {
-	}
+    public ObserverComponent() {
+    }
 
-	@Override
-	public void onAttached() {
-		getOwner().setObserver(true);
-		getOwner().setSavable(false);
-		getOwner().setViewDistance(CHUNK_VIEW_DISTANCE);
-	}
+    @Override
+    public void onAttached() {
+        getOwner().setObserver(true);
+        getOwner().setSavable(false);
+        getOwner().setViewDistance(CHUNK_VIEW_DISTANCE);
+    }
 
-	@Override
-	public boolean canTick() {
-		return false;
-	}
+    @Override
+    public boolean canTick() {
+        return false;
+    }
 }

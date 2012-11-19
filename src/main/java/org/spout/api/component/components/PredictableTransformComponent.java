@@ -33,25 +33,25 @@ import org.spout.api.geo.discrete.Transform;
 
 public class PredictableTransformComponent extends TransformComponent {
 
-	private Transform transformRender = null;
+    private Transform transformRender = null;
 
-	public void updateRender(float dt) {
-		if(transformRender == null){
-			transformRender = getTransformLive();
-			return;
-		}
+    public void updateRender(float dt) {
+        if (transformRender == null) {
+            transformRender = getTransformLive();
+            return;
+        }
 
-		if(getOwner() == ((Client)Spout.getEngine()).getActivePlayer()){
-			transformRender = getTransformLive();
-		}else{
-			Point movement = getTransformLive().getPosition().subtract(transformRender.getPosition());
-			movement = movement.multiply(dt);
-			transformRender.setPosition(transformRender.getPosition().add(movement));
-		}
-	}
+        if (getOwner() == ((Client) Spout.getEngine()).getActivePlayer()) {
+            transformRender = getTransformLive();
+        } else {
+            Point movement = getTransformLive().getPosition().subtract(transformRender.getPosition());
+            movement = movement.multiply(dt);
+            transformRender.setPosition(transformRender.getPosition().add(movement));
+        }
+    }
 
-	public Transform getRenderTransform(){
-		return transformRender; // Don't need to send back a copy, only the render thread call it
-	}
-	
+    public Transform getRenderTransform() {
+        return transformRender; // Don't need to send back a copy, only the render thread call it
+    }
+
 }

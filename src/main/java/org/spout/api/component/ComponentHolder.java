@@ -30,57 +30,63 @@ package org.spout.api.component;
  * Represents an abstract holder, which contains components that may be added
  * and removed from it.
  */
-public interface ComponentHolder extends ComponentOwner{
+public interface ComponentHolder extends ComponentOwner {
 
-	/**
-	 * Adds the component of the specified type to the holder and returns it if it is not present.
-	 * 
-	 * Otherwise, it returns the component of the specified type if there was one present.
-	 * @param type whose component is to be added to the holder
-	 * @return the new component that was added, or the existing one if it had one
-	 */
-	public <T extends Component> T add(Class<T> type);
+    /**
+     * Adds the component of the specified type to the holder and returns it if it is not present.
+     * <p/>
+     * Otherwise, it returns the component of the specified type if there was one present.
+     *
+     * @param type whose component is to be added to the holder
+     * @return the new component that was added, or the existing one if it had one
+     */
+    public <T extends Component> T add(Class<T> type);
 
-	/**
-	 * Removes the component of the specified type from the holder if it is
-	 * present.
-	 * @param type whose component is to be removed from the holder
-	 * @return the removed component, or null if there was not one
-	 */
-	public <T extends Component> T detach(Class<? extends Component> type);
+    /**
+     * Removes the component of the specified type from the holder if it is
+     * present.
+     *
+     * @param type whose component is to be removed from the holder
+     * @return the removed component, or null if there was not one
+     */
+    public <T extends Component> T detach(Class<? extends Component> type);
 
-	/**
-	 * Returns the component of the specified type (or a child implementation) from the holder if it is
-	 * present.
-	 * @param type whose component is to be returned from the holder
-	 * @return the component, or null if one was not found
-	 */
-	public <T extends Component> T get(Class<T> type);
+    /**
+     * Returns the component of the specified type (or a child implementation) from the holder if it is
+     * present.
+     *
+     * @param type whose component is to be returned from the holder
+     * @return the component, or null if one was not found
+     */
+    public <T extends Component> T get(Class<T> type);
 
-	/**
-	 * Returns the component of the specified type (not a child implementation) from the holder if it is
-	 * present.
-	 * @param type whose component is to be returned from the holder
-	 * @return the component, or null if one was not found.
-	 */
-	public <T extends Component> T getExact(Class<T> type);
+    /**
+     * Returns the component of the specified type (not a child implementation) from the holder if it is
+     * present.
+     *
+     * @param type whose component is to be returned from the holder
+     * @return the component, or null if one was not found.
+     */
+    public <T extends Component> T getExact(Class<T> type);
 
-	/**
-	 * Returns true if the holder contains a component of the specified type.
-	 * Will always return true if the specified type is used, and will return
-	 * true for a super type if the super type was mapped to the component using
-	 * the special put.
-	 * @param type whose component is to be checked for in the holder
-	 * @return true if the component exists in the holder
-	 */
-	public boolean has(Class<? extends Component> type);
+    /**
+     * Returns true if the holder contains a component of the specified type.
+     * Will always return true if the specified type is used, and will return
+     * true for a super type if the super type was mapped to the component using
+     * the special put.
+     *
+     * @param type whose component is to be checked for in the holder
+     * @return true if the component exists in the holder
+     */
+    public boolean has(Class<? extends Component> type);
 
-	/**
-	 * Returns true if the holder contains a component of the specified type.
-	 * Will always return true if the specified type is used but will return false
-	 * for any child implementations of the type (think an exact match to the type).
-	 * @param type whose component is to be checked for in the holder
-	 * @return true if the component exists in the holder
-	 */
-	public boolean hasExact(Class<? extends Component> type);
+    /**
+     * Returns true if the holder contains a component of the specified type.
+     * Will always return true if the specified type is used but will return false
+     * for any child implementations of the type (think an exact match to the type).
+     *
+     * @param type whose component is to be checked for in the holder
+     * @return true if the component exists in the holder
+     */
+    public boolean hasExact(Class<? extends Component> type);
 }

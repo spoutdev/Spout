@@ -35,45 +35,45 @@ import org.spout.api.event.player.PlayerInteractEvent.Action;
  * Represents an attachment to a entity that can respond to Ticks.
  */
 public abstract class EntityComponent extends Component {
-	@Override
-	public Entity getOwner() {
-		return (Entity) super.getOwner();
-	}
+    @Override
+    public Entity getOwner() {
+        return (Entity) super.getOwner();
+    }
 
-	@Override
-	public final boolean attachTo(ComponentOwner holder) {
-		if (holder instanceof Entity) {
-			return super.attachTo(holder);
-		} else {
-			return false;
-		}
-	}
+    @Override
+    public final boolean attachTo(ComponentOwner holder) {
+        if (holder instanceof Entity) {
+            return super.attachTo(holder);
+        } else {
+            return false;
+        }
+    }
 
-	/**
-	 * Called when the parent entity is spawned into the world.
-	 */
-	public void onSpawned() {
-	}
+    /**
+     * Called when the parent entity is spawned into the world.
+     */
+    public void onSpawned() {
+    }
 
-	/**
-	 * Called when the entity changes from unobserved to observed.
-	 */
-	public void onObserved() {
-	}
+    /**
+     * Called when the entity changes from unobserved to observed.
+     */
+    public void onObserved() {
+    }
 
-	/**
-	 * Called when the entity changes from observed to unobserved.
-	 */
-	public void onUnObserved() {
-	}
+    /**
+     * Called when the entity changes from observed to unobserved.
+     */
+    public void onUnObserved() {
+    }
 
-	/**
-	 * Called when the entity is interacted with.
-	 * 
-	 * @param action being performed
-	 * @param source performing the action
-	 */
-	public void onInteract(Action action, Entity source) {
-		
-	}
+    /**
+     * Called when the entity is interacted with.
+     *
+     * @param action being performed
+     * @param source performing the action
+     */
+    public void onInteract(Action action, Entity source) {
+
+    }
 }

@@ -29,14 +29,14 @@ package org.spout.api.component;
 import org.spout.api.geo.World;
 
 public class WorldComponentHolder extends BaseComponentHolder {
-	private final World world;
+    private final World world;
 
-	public WorldComponentHolder(World world) {
-		super();
-		this.world = world;
-	}
+    public WorldComponentHolder(World world) {
+        super();
+        this.world = world;
+    }
 
-	public World getWorld() {
-		return world;
-	}
+    public World getWorld() {
+        return world;
+    }
 }

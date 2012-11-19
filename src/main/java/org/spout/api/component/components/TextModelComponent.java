@@ -33,79 +33,79 @@ import org.spout.api.math.Vector3;
 import org.spout.api.render.Font;
 
 public class TextModelComponent extends EntityComponent {
-	private static final DefaultedKey<ChatArguments> KEY_TEXT = new DefaultedKey<ChatArguments>() {
-		private final ChatArguments DEFAULT_VALUE = new ChatArguments("(your text here)");
-		
-		@Override
-		public ChatArguments getDefaultValue() {
-			return DEFAULT_VALUE;
-		}
-		
-		@Override
-		public String getKeyString() {
-			return "entity-text";
-		}
-		
-	};
-	
-	private static final DefaultedKey<Font> KEY_FONT = new DefaultedKey<Font>() {
-		@Override
-		public Font getDefaultValue() {
-			return (Font) Spout.getFilesystem().getResource("font://Spout/resources/resources/fonts/ubuntu/Ubuntu-M.ttf");
-		}
+    private static final DefaultedKey<ChatArguments> KEY_TEXT = new DefaultedKey<ChatArguments>() {
+        private final ChatArguments DEFAULT_VALUE = new ChatArguments("(your text here)");
 
-		@Override
-		public String getKeyString() {
-			return "font";
-		}
-	};
-	
-	protected float size = 1;
-	protected Vector3 translation = Vector3.ZERO;
-	protected boolean dirty = true;
-	protected boolean lookCamera = true;
-	
-	public ChatArguments getText() {
-		return getData().get(KEY_TEXT);
-	}
-	
-	public void setText(ChatArguments text) {
-		getData().put(KEY_TEXT, text);
-		dirty = true;
-	}
-	
-	public Font getFont() {
-		return getData().get(KEY_FONT);
-	}
-	
-	public void setFont(Font font) {
-		getData().put(KEY_FONT, font);
-		dirty = true;
-	}
-	
-	public float getSize() {
-		return size;
-	}
-	
-	public void setSize(float size) {
-		this.size = size;
-		dirty = true;
-	}
-	
-	public Vector3 getTranslation() {
-		return translation;
-	}
-	
-	public void setTranslation(Vector3 translation) {
-		this.translation = translation;
-		dirty = true;
-	}
-	
-	public boolean shouldLookCamera() {
-		return lookCamera;
-	}
-	
-	public void setShouldLookCamera(boolean yes) {
-		this.lookCamera = yes;
-	}
+        @Override
+        public ChatArguments getDefaultValue() {
+            return DEFAULT_VALUE;
+        }
+
+        @Override
+        public String getKeyString() {
+            return "entity-text";
+        }
+
+    };
+
+    private static final DefaultedKey<Font> KEY_FONT = new DefaultedKey<Font>() {
+        @Override
+        public Font getDefaultValue() {
+            return (Font) Spout.getFilesystem().getResource("font://Spout/resources/resources/fonts/ubuntu/Ubuntu-M.ttf");
+        }
+
+        @Override
+        public String getKeyString() {
+            return "font";
+        }
+    };
+
+    protected float size = 1;
+    protected Vector3 translation = Vector3.ZERO;
+    protected boolean dirty = true;
+    protected boolean lookCamera = true;
+
+    public ChatArguments getText() {
+        return getData().get(KEY_TEXT);
+    }
+
+    public void setText(ChatArguments text) {
+        getData().put(KEY_TEXT, text);
+        dirty = true;
+    }
+
+    public Font getFont() {
+        return getData().get(KEY_FONT);
+    }
+
+    public void setFont(Font font) {
+        getData().put(KEY_FONT, font);
+        dirty = true;
+    }
+
+    public float getSize() {
+        return size;
+    }
+
+    public void setSize(float size) {
+        this.size = size;
+        dirty = true;
+    }
+
+    public Vector3 getTranslation() {
+        return translation;
+    }
+
+    public void setTranslation(Vector3 translation) {
+        this.translation = translation;
+        dirty = true;
+    }
+
+    public boolean shouldLookCamera() {
+        return lookCamera;
+    }
+
+    public void setShouldLookCamera(boolean yes) {
+        this.lookCamera = yes;
+    }
 }
