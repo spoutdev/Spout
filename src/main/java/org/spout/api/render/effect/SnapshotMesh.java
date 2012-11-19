@@ -24,7 +24,7 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.render;
+package org.spout.api.render.effect;
 
 import org.spout.api.geo.cuboid.ChunkSnapshotModel;
 import org.spout.api.material.Material;
@@ -32,7 +32,7 @@ import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.mesh.Mesh;
 
-public class SnapshotRender {
+public class SnapshotMesh {
 
 	private Mesh mesh;
 	private Material material;
@@ -41,7 +41,7 @@ public class SnapshotRender {
 	private BlockFace face;
 	private boolean[] toRender;
 
-	public SnapshotRender(Material material, ChunkSnapshotModel snapshotModel, Vector3 position, BlockFace face, boolean toRender[]){
+	public SnapshotMesh(Material material, ChunkSnapshotModel snapshotModel, Vector3 position, BlockFace face, boolean toRender[]){
 		this.setMaterial(material);
 		this.setSnapshotModel(snapshotModel);
 		this.setPosition(position);

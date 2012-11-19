@@ -24,20 +24,32 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.render;
+package org.spout.api.render.effect;
 
-public interface BatchEffect {
+import gnu.trove.map.hash.TIntObjectHashMap;
 
-	/**
-	 * Called right before batch
-	 * @param snapshotRender 
-	 */
-	public abstract void preBatch(SnapshotRender snapshotRender);
+import org.spout.api.render.RenderMaterial;
+import org.spout.api.render.shader.VertexBuffer;
 
-	/**
-	 * Called right after batch
-	 * @param snapshotRender 
-	 */
-	public abstract void postBatch(SnapshotRender snapshotRender);
+public class SnapshotRender {
+
+	private final RenderMaterial material;
+	private TIntObjectHashMap<VertexBuffer> vertexBuffers = new TIntObjectHashMap<VertexBuffer>();
+
+	public SnapshotRender(RenderMaterial material){
+		this.material = material;
+	}
+
+	public RenderMaterial getMaterial() {
+		return material;
+	}
+
+	public TIntObjectHashMap<VertexBuffer> getVertexBuffers() {
+		return vertexBuffers;
+	}
+
+	public void addVertexBuffers(VertexBuffer vertexBuffer) {
+		vertexBuffers.put(vertexBuffer.getLayout(),vertexBuffer);
+	}
 
 }
