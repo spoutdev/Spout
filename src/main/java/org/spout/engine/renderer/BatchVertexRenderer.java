@@ -148,40 +148,32 @@ public abstract class BatchVertexRenderer implements Renderer {
 	
 	protected abstract void doMerge(List<Renderer> renderers);
 
-	public final void merge(List<Renderer> renderers) {
-		batching = true;
-		flushed = false;
-		doMerge(renderers);
-		batching = false;
-		flushed = true;
-	}
-
 	public void check(){
 		if (vertexBuffer.size() % 4 != 0) {
-			throw new IllegalStateException("Vertex Size Mismatch (How did this happen?)");
+			throw new IllegalStateException("Vertex Size Mismatch (How did this happen?) : " + vertexBuffer.size());
 		}
 		if (useColors) {
 			if (colorBuffer.size() % 4 != 0) {
-				throw new IllegalStateException("Color Size Mismatch (How did this happen?)");
+				throw new IllegalStateException("Color Size Mismatch (How did this happen?) : " + colorBuffer.size());
 			}
 			if (colorBuffer.size() / 4 != numVertices) {
-				throw new IllegalStateException("Color Buffer size does not match numVerticies");
+				throw new IllegalStateException("Color Buffer size does not match numVerticies : " + colorBuffer.size());
 			}
 		}
 		if (useNormals) {
 			if (normalBuffer.size() % 4 != 0) {
-				throw new IllegalStateException("Normal Size Mismatch (How did this happen?)");
+				throw new IllegalStateException("Normal Size Mismatch (How did this happen?) : " + normalBuffer.size());
 			}
 			if (normalBuffer.size() / 4 != numVertices) {
-				throw new IllegalStateException("Normal Buffer size does not match numVerticies");
+				throw new IllegalStateException("Normal Buffer size does not match numVerticies : " + normalBuffer.size());
 			}
 		}
 		if (useTextures) {
 			if (uvBuffer.size() % 2 != 0) {
-				throw new IllegalStateException("UV size Mismatch (How did this happen?)");
+				throw new IllegalStateException("UV size Mismatch (How did this happen?) : " + uvBuffer.size());
 			}
 			if (uvBuffer.size() / 2 != numVertices) {
-				throw new IllegalStateException("UV Buffer size does not match numVerticies");
+				throw new IllegalStateException("UV Buffer size does not match numVerticies : " + uvBuffer.size());
 			}
 		}
 		if(numVertices <= 0) throw new IllegalStateException("Must have more than 0 verticies!");
@@ -388,13 +380,74 @@ public abstract class BatchVertexRenderer implements Renderer {
 	public void finalize() { }
 
 	public void setBatchVertex(BatchVertex batchVertex) {
-		vertexBuffer = batchVertex.vertexBuffer;
-		colorBuffer = batchVertex.colorBuffer;
-		normalBuffer = batchVertex.normalBuffer;
-		uvBuffer = batchVertex.uvBuffer;
 		numVertices = batchVertex.numVertices;
+
+		if(numVertices == 0)
+			return;
+
+		vertexBuffer.addAll(batchVertex.vertexBuffer);
+
 		useColors = batchVertex.useColors;
+
+		if(useColors)
+			colorBuffer.addAll(batchVertex.colorBuffer);
+
 		useNormals = batchVertex.useNormals;
+
+		if(useNormals)
+			normalBuffer.addAll(batchVertex.normalBuffer);
+
 		useTextures = batchVertex.useTextures;
+
+		if(useTextures)
+			uvBuffer.addAll(batchVertex.uvBuffer);
+	}
+
+	public void merge(List<BatchVertex> batchs) {
+		begin();
+		
+		numVertices = 0;
+		
+		int colorCount = 0,normalCount = 0,uvCount = 0;
+		
+		for(BatchVertex batch : batchs){
+			numVertices += batch.numVertices;
+			vertexBuffer.addAll(batch.vertexBuffer);
+			
+			if(batch.useColors){
+				colorCount++;
+				colorBuffer.addAll(batch.colorBuffer);
+			}
+			
+			if(batch.useNormals){
+				normalCount++;
+				normalBuffer.addAll(batch.normalBuffer);
+			}
+			
+			if(batch.useTextures){
+				uvCount++;
+				uvBuffer.addAll(batch.uvBuffer);
+			}
+		}
+
+		if( colorCount > 0 && colorCount == batchs.size()){
+			useColors = true;
+		}else{
+			useColors = false;
+		}
+
+		if( normalCount > 0 && normalCount == batchs.size()){
+			useNormals = true;
+		}else{
+			useNormals = false;
+		}
+
+		if( uvCount > 0 && uvCount == batchs.size()){
+			useTextures = true;
+		}else{
+			useTextures = false;
+		}
+
+		end();
 	}
 }

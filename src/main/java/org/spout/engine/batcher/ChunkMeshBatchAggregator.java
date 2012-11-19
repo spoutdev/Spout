@@ -84,13 +84,14 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 		}
 
 		if(isFull() || force){
-			List<Renderer> renderers = new ArrayList<Renderer>();
+			List<BatchVertex> renderers = new ArrayList<BatchVertex>();
 
 			for(ChunkMeshBatch batch : batchs){
-				renderers.add(batch.getRenderer().getRenderer());
+				if(batch != null)
+					renderers.add(batch.getMesh());
 			}
 
-			renderer.getRenderer().merge(renderers);
+			((BatchVertexRenderer)renderer.getRenderer()).merge(renderers);
 
 			dirty = false;
 		}
