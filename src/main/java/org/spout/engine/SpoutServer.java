@@ -79,6 +79,7 @@ import org.spout.engine.protocol.SpoutNioServerSocketChannel;
 import org.spout.engine.protocol.SpoutServerSession;
 import org.spout.engine.util.access.SpoutAccessManager;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
+import org.spout.engine.world.SpoutWorld;
 
 import static org.spout.api.lang.Translation.log;
 
@@ -169,23 +170,28 @@ public class SpoutServer extends SpoutEngine implements Server {
 		if (!super.stop(message, false)) {
 			return false;
 		}
-		Runnable finalTask = new Runnable() {
+		Runnable lastTickTask = new Runnable() {
 			@Override
 			public void run() {
+				ServerStopEvent stopEvent = new ServerStopEvent(message);
+				getEventManager().callEvent(stopEvent);
 				for (Player player : getOnlinePlayers()) {
-					ServerStopEvent stopEvent = new ServerStopEvent(message);
-					getEventManager().callEvent(stopEvent);
 					player.kick(stopEvent.getMessage());
 				}
-
 				if (upnpService != null) {
 					upnpService.shutdown();
 				}
+			}
+		};
+		Runnable finalTask = new Runnable() {
+			@Override
+			public void run() {
 				bootstrap.getFactory().releaseExternalResources();
 				boundProtocols.clear();
 			}
 		};
-		getScheduler().submitFinalTask(finalTask, true);
+		getScheduler().submitLastTickTask(lastTickTask);
+		getScheduler().submitFinalTask(finalTask, false);
 		getScheduler().stop();
 		return true;
 	}

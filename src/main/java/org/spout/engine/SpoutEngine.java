@@ -49,6 +49,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.jboss.netty.channel.group.ChannelGroup;
+import org.jboss.netty.channel.group.ChannelGroupFuture;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 
 import org.spout.api.Engine;
@@ -505,13 +506,18 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		Runnable finalTask = new Runnable() {
 			@Override
 			public void run() {
-				group.close();
+				ChannelGroupFuture f = group.close();
+				try {
+					f.await();
+				} catch (InterruptedException ie) {
+					Spout.getLogger().info("Thread interrupted when waiting for network shutdown");
+				}
 				WorldSavingThread.finish();
 				WorldSavingThread.staticJoin();
 			}
 		};
 		scheduler.submitLastTickTask(lastTickTask);
-		scheduler.submitFinalTask(finalTask);
+		scheduler.submitFinalTask(finalTask, true);
 		if (stopScheduler) {
 			scheduler.stop();
 		}

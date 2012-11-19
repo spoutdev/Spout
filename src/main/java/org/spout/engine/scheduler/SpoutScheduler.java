@@ -269,6 +269,22 @@ public final class SpoutScheduler implements Scheduler {
 					heavyLoad.set(true);
 				}
 			}
+			
+			try {
+				if (renderThread.isAlive()) {
+					renderThread.join();
+				}
+			} catch (InterruptedException ie) {
+				Spout.getLogger().info("Interrupted when waiting for render thread to end");
+			}
+			
+			try {
+				if (guiThread.isAlive()) {
+					guiThread.join();
+				}
+			} catch (InterruptedException ie) {
+				Spout.getLogger().info("Interrupted when waiting for gui thread to end");
+			}
 
 			heavyLoad.set(false);
 
@@ -279,9 +295,9 @@ public final class SpoutScheduler implements Scheduler {
 				Spout.getLogger().log(Level.SEVERE, "Interrupt while running final snapshot copy: {0}", ex.getMessage());
 			}
 
-			runLastTickTasks();
 			taskManager.heartbeat(PULSE_EVERY << 2);
 			taskManager.shutdown(1L);
+			
 			long delay = 2000;
 			while (!taskManager.waitForAsyncTasks(delay)) {
 				List<Worker> workers = taskManager.getActiveWorkers();
@@ -302,6 +318,8 @@ public final class SpoutScheduler implements Scheduler {
 					delay = delay << 1;
 				}
 			}
+			
+			runLastTickTasks();
 
 			asyncExecutors.copySnapshot();
 			try {
@@ -346,9 +364,10 @@ public final class SpoutScheduler implements Scheduler {
 				engine.getLogger().log(Level.SEVERE, "Error while shutting down engine: {0}", ex.getMessage());
 			}
 
+			NetworkSendThreadPool.shutdown();
+			
 			runFinalTasks();
 			
-			NetworkSendThreadPool.interrupt();
 		}
 	}
 
