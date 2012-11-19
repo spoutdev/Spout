@@ -40,6 +40,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
+import org.spout.api.render.effect.SnapshotRender;
 
 public abstract class BatchVertexRenderer implements Renderer {
 	
@@ -209,9 +210,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	public final void render(RenderMaterial material, int startVert, int endVert) {
 		checkRender();
 		if(numVertices <= 0) throw new IllegalStateException("Cannot render 0 verticies");
-		material.preRender();
 		doRender(material, startVert, endVert);
-		material.postRender();
 	}
 	
 	@Override	
@@ -379,7 +378,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	
 	public void finalize() { }
 
-	public void setBatchVertex(BatchVertex batchVertex) {
+	public void setBatchVertex(BatchVertex batchVertex, SnapshotRender snapshotRender) {
 		numVertices = batchVertex.numVertices;
 
 		if(numVertices == 0)

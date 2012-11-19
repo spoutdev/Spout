@@ -41,7 +41,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.RenderMaterial;
-import org.spout.api.render.SnapshotRender;
+import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.engine.batcher.ChunkMeshBatchAggregator;
 import org.spout.engine.renderer.BatchVertex;
@@ -244,11 +244,11 @@ public class ChunkMesh{
 			if(!toRender[i])
 				continue;
 
-			SnapshotRender snapshotRender = new SnapshotRender(material, chunkSnapshotModel, position, face, toRender);
+			SnapshotMesh snapshotMesh = new SnapshotMesh(material, chunkSnapshotModel, position, face, toRender);
 			
-			renderMaterial.preBatch(snapshotRender);
-			List<MeshFace> faces = renderMaterial.render(snapshotRender);
-			renderMaterial.postBatch(snapshotRender);
+			renderMaterial.preMesh(snapshotMesh);
+			List<MeshFace> faces = renderMaterial.render(snapshotMesh);
+			renderMaterial.postMesh(snapshotMesh);
 
 			if(!faces.isEmpty()){
 				BatchVertex batchVertex = meshs.get(face);

@@ -30,6 +30,7 @@ import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.render.RenderMaterial;
+import org.spout.api.render.effect.SnapshotRender;
 import org.spout.engine.renderer.BatchVertex;
 import org.spout.engine.renderer.BatchVertexRenderer;
 
@@ -73,9 +74,11 @@ public class ChunkMeshBatch {
 
 		renderer.begin();
 
-		material.preRender();
-		renderer.setBatchVertex(batchVertex);
-		material.postRender();
+		SnapshotRender snapshotRender = new SnapshotRender(material);
+		
+		material.preRender(snapshotRender);
+		renderer.setBatchVertex(batchVertex,snapshotRender);
+		material.postRender(snapshotRender);
 
 		renderer.end();
 		

@@ -32,6 +32,7 @@ import org.lwjgl.opengl.GL11;
 
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
+import org.spout.api.render.effect.SnapshotRender;
 //TODO update this to work better
 public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 	int displayList;
@@ -92,5 +93,10 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 		}
 
 		GL11.glEndList();
+	}
+
+	@Override
+	public void render(RenderMaterial material, SnapshotRender snapshotRender) {
+		render(material);
 	}
 }
