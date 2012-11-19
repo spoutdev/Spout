@@ -26,6 +26,8 @@
  */
 package org.spout.engine.renderer;
 
+import gnu.trove.map.hash.TIntObjectHashMap;
+
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
@@ -33,6 +35,7 @@ import org.lwjgl.opengl.GL11;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
 import org.spout.api.render.effect.SnapshotRender;
+import org.spout.api.render.shader.VertexBuffer;
 //TODO update this to work better
 public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 	int displayList;
@@ -76,7 +79,14 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 		material.assign();
 		GL11.glCallList(displayList);
 	}
-	
+
+	@Override
+	protected void doRender(RenderMaterial material, int startVert,
+			int endVert, SnapshotRender snapshotRender) {
+		material.assign();
+		GL11.glCallList(displayList);
+	}
+
 	@Override
 	public void finalize() {
 		 GL11.glDeleteLists(displayList, 1);
@@ -96,7 +106,7 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 	}
 
 	@Override
-	public void render(RenderMaterial material, SnapshotRender snapshotRender) {
-		render(material);
+	public void addVertexBuffers(TIntObjectHashMap<VertexBuffer> vertexBuffers) {
+
 	}
 }

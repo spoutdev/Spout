@@ -27,6 +27,7 @@
 package org.spout.engine.resources;
 
 import java.awt.Color;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,7 +36,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.spout.api.Client;
+import org.spout.api.Spout;
 import org.spout.api.geo.cuboid.ChunkSnapshotModel;
 import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFace;
@@ -49,6 +53,7 @@ import org.spout.api.model.mesh.OrientedMesh;
 import org.spout.api.model.mesh.OrientedMeshFace;
 import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.RenderMaterial;
+import org.spout.api.render.RenderMode;
 import org.spout.api.render.Shader;
 import org.spout.api.render.effect.BatchEffect;
 import org.spout.api.render.effect.MeshEffect;
@@ -56,6 +61,9 @@ import org.spout.api.render.effect.RenderEffect;
 import org.spout.api.render.effect.SnapshotBatch;
 import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.render.effect.SnapshotRender;
+import org.spout.api.render.shader.VertexBuffer;
+import org.spout.engine.renderer.vertexbuffer.FakeVertexBuffer;
+import org.spout.engine.renderer.vertexbuffer.VertexBufferImpl;
 
 public class ClientRenderMaterial extends RenderMaterial {
 
@@ -247,6 +255,18 @@ public class ClientRenderMaterial extends RenderMaterial {
 	@Override
 	public void addMeshEffect(MeshEffect meshEffect) {
 		meshEffects.add(meshEffect);
+	}
+
+	@Override
+	public VertexBuffer getVertexBuffer(String name, int elements, int layout) {
+		if(((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL11)
+			return new FakeVertexBuffer();
+		return new VertexBufferImpl(name, elements, layout);
+	}
+
+	@Override
+	public FloatBuffer getFloatBuffer(int size) {
+		return BufferUtils.createFloatBuffer(size);
 	}
 
 }

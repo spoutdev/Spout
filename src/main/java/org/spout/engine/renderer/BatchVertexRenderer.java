@@ -27,6 +27,7 @@
 package org.spout.engine.renderer;
 
 import gnu.trove.list.array.TFloatArrayList;
+import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -40,7 +41,9 @@ import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
+import org.spout.api.render.effect.SnapshotBatch;
 import org.spout.api.render.effect.SnapshotRender;
+import org.spout.api.render.shader.VertexBuffer;
 
 public abstract class BatchVertexRenderer implements Renderer {
 	
@@ -206,11 +209,18 @@ public abstract class BatchVertexRenderer implements Renderer {
 	 */
 	protected abstract void doRender(RenderMaterial materail, int startVert, int endVert);
 
-
+	protected abstract void doRender(RenderMaterial material, int startVert, int endVert,
+			SnapshotRender snapshotRender);
+	
 	public final void render(RenderMaterial material, int startVert, int endVert) {
 		checkRender();
 		if(numVertices <= 0) throw new IllegalStateException("Cannot render 0 verticies");
 		doRender(material, startVert, endVert);
+	}
+	public final void render(RenderMaterial material, int startVert, int endVert, SnapshotRender snapshotRender) {
+		checkRender();
+		if(numVertices <= 0) throw new IllegalStateException("Cannot render 0 verticies");
+		doRender(material, startVert, endVert, snapshotRender);
 	}
 	
 	@Override	
@@ -218,7 +228,10 @@ public abstract class BatchVertexRenderer implements Renderer {
 		render(material, 0, numVertices);
 	}
 
-	
+	@Override
+	public void render(RenderMaterial material, SnapshotRender snapshotRender) {
+		render(material, 0, numVertices, snapshotRender);
+	}
 	
 	protected void checkRender() {
 		if (batching) {
@@ -377,8 +390,10 @@ public abstract class BatchVertexRenderer implements Renderer {
 	}
 	
 	public void finalize() { }
+	
+	public abstract void addVertexBuffers(TIntObjectHashMap<VertexBuffer> vertexBuffers);
 
-	public void setBatchVertex(BatchVertex batchVertex, SnapshotRender snapshotRender) {
+	public void setBatchVertex(BatchVertex batchVertex, SnapshotBatch snapshotBatch) {
 		numVertices = batchVertex.numVertices;
 
 		if(numVertices == 0)
@@ -400,6 +415,8 @@ public abstract class BatchVertexRenderer implements Renderer {
 
 		if(useTextures)
 			uvBuffer.addAll(batchVertex.uvBuffer);
+		
+		addVertexBuffers(snapshotBatch.getVertexBuffers());
 	}
 
 	public void merge(List<BatchVertex> batchs) {
