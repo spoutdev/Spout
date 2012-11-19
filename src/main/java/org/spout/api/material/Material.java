@@ -46,7 +46,7 @@ import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.MathHelper;
 import org.spout.api.model.Model;
 import org.spout.api.plugin.Platform;
-import org.spout.api.render.BatchEffect;
+import org.spout.api.render.effect.MeshEffect;
 import org.spout.api.util.LogicUtil;
 import org.spout.api.util.flag.Flag;
 import org.spout.api.util.flag.FlagSingle;
@@ -67,7 +67,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	private volatile boolean submaterialsDirty = true;
 	private final short dataMask;
 	private final FlagSingle useFlag = new FlagSingle();
-	private final List<BatchEffect> batchEffects = new ArrayList<BatchEffect>();
+	private final List<MeshEffect> batchEffects = new ArrayList<MeshEffect>();
 	
 	/**
 	 * Creates a material with a dataMask, name
@@ -176,7 +176,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	/**
 	 * Add a BatchEffect
 	 */
-	public void addBatchEffect(BatchEffect batchEffect){
+	public void addBatchEffect(MeshEffect batchEffect){
 		batchEffects.add(batchEffect);
 	}
 
@@ -492,7 +492,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		return "Material {" + getName() + "}";
 	}
 
-	public Collection<BatchEffect> getBatchEffects() {
+	public Collection<MeshEffect> getBatchEffects() {
 		return Collections.unmodifiableCollection(batchEffects);
 	}
 }

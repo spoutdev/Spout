@@ -31,6 +31,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.model.mesh.MeshFace;
+import org.spout.api.render.effect.BatchEffect;
+import org.spout.api.render.effect.MeshEffect;
+import org.spout.api.render.effect.RenderEffect;
+import org.spout.api.render.effect.SnapshotBatch;
+import org.spout.api.render.effect.SnapshotMesh;
+import org.spout.api.render.effect.SnapshotRender;
 import org.spout.api.resource.Resource;
 
 public abstract class RenderMaterial extends Resource implements Comparable<RenderMaterial> {
@@ -61,28 +67,40 @@ public abstract class RenderMaterial extends Resource implements Comparable<Rend
 	public abstract void assign();
 	
 	/**
+	 * Called right before generate a mesh
+	 * @param snapshotRender 
+	 */
+	public abstract void preMesh(SnapshotMesh snapshotMesh);
+
+	/**
+	 * Called right after generate a mesh
+	 * @param snapshotRender 
+	 */
+	public abstract void postMesh(SnapshotMesh snapshotMesh);
+	
+	/**
 	 * Called right before batch
 	 * @param snapshotRender 
 	 */
-	public abstract void preBatch(SnapshotRender snapshotRender);
+	public abstract void preBatch(SnapshotBatch snapshotBatch);
 
 	/**
 	 * Called right after batch
 	 * @param snapshotRender 
 	 */
-	public abstract void postBatch(SnapshotRender snapshotRender);
+	public abstract void postBatch(SnapshotBatch snapshotBatch);
 
 	/**
 	 * Called right before rendering
 	 * @param material 
 	 */
-	public abstract void preRender();
+	public abstract void preRender(SnapshotRender snapshotRender);
 
 	/**
 	 * Called right after rendering
 	 * @param material 
 	 */
-	public abstract void postRender();
+	public abstract void postRender(SnapshotRender snapshotRender);
 
 	/**
 	 * Called to render a block side
@@ -92,7 +110,7 @@ public abstract class RenderMaterial extends Resource implements Comparable<Rend
 	 * @param ocluded
 	 * @return
 	 */
-	public abstract List<MeshFace> render(SnapshotRender snapshotRender);
+	public abstract List<MeshFace> render(SnapshotMesh snapshotRender);
 
 	/**
 	 * Return the render pass order
@@ -100,6 +118,30 @@ public abstract class RenderMaterial extends Resource implements Comparable<Rend
 	 */
 	public abstract int getLayer();
 
+	/**
+	 * Return the MeshEffect
+	 * @return
+	 */
+	public abstract Collection<MeshEffect> getMeshEffects();
+
+	/**
+	 * Add MeshEffect
+	 * @param MeshEffect
+	 */
+	public abstract void addMeshEffect(MeshEffect meshEffect);
+	
+	/**
+	 * Return the BatchEffects
+	 * @return
+	 */
+	public abstract Collection<BatchEffect> getBatchEffects();
+
+	/**
+	 * Add BatchEffect
+	 * @param BatchEffect
+	 */
+	public abstract void addRenderEffect(BatchEffect renderEffect);
+	
 	/**
 	 * Return the renderEffects
 	 * @return

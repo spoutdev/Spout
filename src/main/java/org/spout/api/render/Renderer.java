@@ -27,11 +27,11 @@
 package org.spout.api.render;
 
 import java.awt.Color;
-import java.util.List;
 
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
+import org.spout.api.render.effect.SnapshotRender;
 
 public interface Renderer {
 
@@ -91,5 +91,7 @@ public interface Renderer {
 	public abstract void addTexCoord(Vector2 uv);
 
 	public abstract int getVertexCount();
+
+	public abstract void render(RenderMaterial material, SnapshotRender snapshotRender);
 
 }

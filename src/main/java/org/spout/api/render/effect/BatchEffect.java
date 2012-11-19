@@ -24,19 +24,21 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.render;
+package org.spout.api.render.effect;
 
-public interface RenderEffect {
 
-	/**
-	 * Called right before rendering
-	 */
-	public abstract void preRender(RenderMaterial renderMaterial);
+public interface BatchEffect {
 
 	/**
-	 * Called right after rendering
-	 * @param renderMaterial 
+	 * Called right before batch
+	 * @param snapshotBatch 
 	 */
-	public abstract void postRender(RenderMaterial renderMaterial);
+	public abstract void preBatch(SnapshotBatch snapshotBatch);
+
+	/**
+	 * Called right after batch
+	 * @param snapshotBatch 
+	 */
+	public abstract void postBatch(SnapshotBatch snapshotBatch);
 
 }
