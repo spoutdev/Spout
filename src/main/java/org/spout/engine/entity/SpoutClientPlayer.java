@@ -32,45 +32,46 @@ import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.Command;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.Message;
+
 import org.spout.engine.protocol.SpoutSession;
 
 /**
  * A subclass of SpoutPlayer with modifications for the client
  */
 public class SpoutClientPlayer extends SpoutPlayer {
-    public SpoutClientPlayer(String name) {
-        super(name);
-    }
+	public SpoutClientPlayer(String name) {
+		super(name);
+	}
 
-    public SpoutClientPlayer(String name, Transform transform, int viewDistance) {
-        super(name, transform, viewDistance);
-    }
+	public SpoutClientPlayer(String name, Transform transform, int viewDistance) {
+		super(name, transform, viewDistance);
+	}
 
-    @Override
-    public boolean sendRawMessage(ChatArguments message) {
-        SpoutSession<?> session;
-        try {
-            session = getSession();
-        } catch (IllegalArgumentException iae) {
-            Spout.getEngine().getConsoles().addMessage(message);
-            return true;
-        }
-        session.getEngine().getConsoles().addMessage(message);
-        return true;
-    }
+	@Override
+	public boolean sendRawMessage(ChatArguments message) {
+		SpoutSession<?> session;
+		try {
+			session = getSession();
+		} catch (IllegalArgumentException iae) {
+			Spout.getEngine().getConsoles().addMessage(message);
+			return true;
+		}
+		session.getEngine().getConsoles().addMessage(message);
+		return true;
+	}
 
-    @Override
-    public void sendCommand(String commandName, ChatArguments arguments) {
-        Command command = Spout.getEngine().getRootCommand().getChild(commandName);
-        if (command == null) {
-            sendMessage(ChatStyle.RED, "Unknown command: ", commandName);
-            return;
-        }
-        Message cmdMessage = getSession().getProtocol().getCommandMessage(command, arguments);
-        if (cmdMessage == null) {
-            return;
-        }
+	@Override
+	public void sendCommand(String commandName, ChatArguments arguments) {
+		Command command = Spout.getEngine().getRootCommand().getChild(commandName);
+		if (command == null) {
+			sendMessage(ChatStyle.RED, "Unknown command: ", commandName);
+			return;
+		}
+		Message cmdMessage = getSession().getProtocol().getCommandMessage(command, arguments);
+		if (cmdMessage == null) {
+			return;
+		}
 
-        getSession().send(true, cmdMessage);
-    }
+		getSession().send(true, cmdMessage);
+	}
 }

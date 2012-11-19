@@ -26,10 +26,21 @@
  */
 package org.spout.engine.entity;
 
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+
 import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
-import org.spout.api.component.components.*;
+import org.spout.api.component.components.EntityComponent;
+import org.spout.api.component.components.NetworkComponent;
+import org.spout.api.component.components.PhysicsComponent;
+import org.spout.api.component.components.PredictableTransformComponent;
+import org.spout.api.component.components.TransformComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.LoadOption;
@@ -45,349 +56,345 @@ import org.spout.api.plugin.Platform;
 import org.spout.api.util.OutwardIterator;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
+
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.component.SpoutPhysicsComponent;
-import org.spout.engine.util.thread.snapshotable.*;
+import org.spout.engine.util.thread.snapshotable.SnapshotManager;
+import org.spout.engine.util.thread.snapshotable.Snapshotable;
+import org.spout.engine.util.thread.snapshotable.SnapshotableBoolean;
+import org.spout.engine.util.thread.snapshotable.SnapshotableInt;
+import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-
 public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshotable {
-    public static final int NOTSPAWNEDID = -1;
+	public static final int NOTSPAWNEDID = -1;
+	private final SnapshotManager snapshotManager = new SnapshotManager();
+	//Snapshotable fields
+	private final SnapshotableReference<EntityManager> entityManager = new SnapshotableReference<EntityManager>(snapshotManager, null);
+	private final SnapshotableBoolean observer = new SnapshotableBoolean(snapshotManager, false);
+	private final SnapshotableBoolean save = new SnapshotableBoolean(snapshotManager, false);
+	private final AtomicInteger id = new AtomicInteger(NOTSPAWNEDID);
+	private final SnapshotableInt viewDistance = new SnapshotableInt(snapshotManager, 10);
+	private volatile boolean remove = false;
+	//Other
+	private final Set<SpoutChunk> observingChunks = new HashSet<SpoutChunk>();
+	private final UUID uid;
+	protected boolean justSpawned = true;
 
-    private final SnapshotManager snapshotManager = new SnapshotManager();
-    //Snapshotable fields
-    private final SnapshotableReference<EntityManager> entityManager = new SnapshotableReference<EntityManager>(snapshotManager, null);
-    private final SnapshotableBoolean observer = new SnapshotableBoolean(snapshotManager, false);
-    private final SnapshotableBoolean save = new SnapshotableBoolean(snapshotManager, false);
-    private final AtomicInteger id = new AtomicInteger(NOTSPAWNEDID);
-    private final SnapshotableInt viewDistance = new SnapshotableInt(snapshotManager, 10);
+	public SpoutEntity(Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
+		id.set(NOTSPAWNEDID);
 
-    private volatile boolean remove = false;
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			add(PredictableTransformComponent.class);
+		} else {
+			add(TransformComponent.class);
+		}
 
-    //Other
-    private final Set<SpoutChunk> observingChunks = new HashSet<SpoutChunk>();
-    private final UUID uid;
-    protected boolean justSpawned = true;
+		add(NetworkComponent.class);
 
-    public SpoutEntity(Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
-        id.set(NOTSPAWNEDID);
+		if (uid != null) {
+			this.uid = uid;
+		} else {
+			this.uid = UUID.randomUUID();
+		}
 
-        if (Spout.getPlatform() == Platform.CLIENT)
-            add(PredictableTransformComponent.class);
-        else
-            add(TransformComponent.class);
+		if (transform != null) {
+			getTransform().setTransform(transform);
+			getTransform().copySnapshot();
+		}
 
-        add(NetworkComponent.class);
+		if (transform != null && load) {
+			setupInitialChunk(transform);
+		}
 
-        if (uid != null) {
-            this.uid = uid;
-        } else {
-            this.uid = UUID.randomUUID();
-        }
+		int maxViewDistance = SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE;
 
-        if (transform != null) {
-            getTransform().setTransform(transform);
-            getTransform().copySnapshot();
-        }
+		if (viewDistance < 0) {
+			viewDistance = maxViewDistance;
+		} else if (viewDistance > maxViewDistance) {
+			viewDistance = maxViewDistance;
+		}
 
-        if (transform != null && load) {
-            setupInitialChunk(transform);
-        }
+		setViewDistance(viewDistance);
 
-        int maxViewDistance = SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE;
+		if (dataMap != null) {
+			try {
+				this.getData().deserialize(dataMap);
+			} catch (IOException e) {
+				Spout.getLogger().log(Level.SEVERE, "Unable to deserialize entity data", e);
+			}
+		}
 
-        if (viewDistance < 0) {
-            viewDistance = maxViewDistance;
-        } else if (viewDistance > maxViewDistance) {
-            viewDistance = maxViewDistance;
-        }
+		if (components != null && components.length > 0) {
+			this.add(components);
+		}
 
-        setViewDistance(viewDistance);
+		//Set all the initial snapshot values
+		//Ensures there are no null/wrong snapshot values for the first tick
+		snapshotManager.copyAllSnapshots();
+	}
 
-        if (dataMap != null) {
-            try {
-                this.getData().deserialize(dataMap);
-            } catch (IOException e) {
-                Spout.getLogger().log(Level.SEVERE, "Unable to deserialize entity data", e);
-            }
-        }
+	@Override
+	protected <T extends Component> T add(Class<T> type, boolean attach) {
+		if (type.equals(PhysicsComponent.class)) {
+			return super.add(type, SpoutPhysicsComponent.class, attach);
+		}
+		return super.add(type, attach);
+	}
 
-        if (components != null && components.length > 0) {
-            this.add(components);
-        }
+	public SpoutEntity(Transform transform, int viewDistance) {
+		this(transform, viewDistance, null, true, null, (Class<? extends Component>[]) null);
+	}
 
-        //Set all the initial snapshot values
-        //Ensures there are no null/wrong snapshot values for the first tick
-        snapshotManager.copyAllSnapshots();
-    }
+	public SpoutEntity(Transform transform) {
+		this(transform, -1);
+	}
 
-    @Override
-    protected <T extends Component> T add(Class<T> type, boolean attach) {
-        if (type.equals(PhysicsComponent.class)) {
-            return super.add(type, SpoutPhysicsComponent.class, attach);
-        }
-        return super.add(type, attach);
-    }
+	public SpoutEntity(Point point) {
+		this(new Transform(point, Quaternion.IDENTITY, Vector3.ONE));
+	}
 
-    public SpoutEntity(Transform transform, int viewDistance) {
-        this(transform, viewDistance, null, true, null, (Class<? extends Component>[]) null);
-    }
+	@Override
+	public void onTick(float dt) {
+		//System.out.println("entity ticked");
+		for (Component component : values()) {
+			component.tick(dt);
+		}
+	}
 
-    public SpoutEntity(Transform transform) {
-        this(transform, -1);
-    }
+	@Override
+	public boolean canTick() {
+		return !isRemoved();
+	}
 
-    public SpoutEntity(Point point) {
-        this(new Transform(point, Quaternion.IDENTITY, Vector3.ONE));
-    }
+	@Override
+	public void tick(float dt) {
+		if (canTick()) {
+			onTick(dt);
+		}
+	}
 
-    @Override
-    public void onTick(float dt) {
-        //System.out.println("entity ticked");
-        for (Component component : values()) {
-            component.tick(dt);
-        }
-    }
+	@Override
+	public int getId() {
+		return id.get();
+	}
 
-    @Override
-    public boolean canTick() {
-        return !isRemoved();
-    }
+	public void setId(int id) {
+		this.id.set(id);
+	}
 
-    @Override
-    public void tick(float dt) {
-        if (canTick()) {
-            onTick(dt);
-        }
-    }
+	@Override
+	public boolean isSpawned() {
+		return id.get() != NOTSPAWNEDID;
+	}
 
-    @Override
-    public int getId() {
-        return id.get();
-    }
+	public void preSnapshotRun() {
+		//Stubbed out in case it is needed for Entities, meanwhile SpoutPlayer overrides this.
+	}
 
-    public void setId(int id) {
-        this.id.set(id);
-    }
+	public void finalizeRun() {
+		SpoutChunk chunkLive = (SpoutChunk) getChunkLive();
+		SpoutChunk chunk = (SpoutChunk) getChunk();
 
-    @Override
-    public boolean isSpawned() {
-        return id.get() != NOTSPAWNEDID;
-    }
+		//Entity was removed so automatically remove observer/components
+		if (isRemoved()) {
+			removeObserver();
+			//Call onRemoved for Components and remove them
+			for (Component component : values()) {
+				detach(component.getClass());
+			}
+			//Track entities w/their chunks
+			if (chunk != null) {
+				chunk.onEntityLeave(this);
+			}
+			return;
+		}
 
-    public void preSnapshotRun() {
-        //Stubbed out in case it is needed for Entities, meanwhile SpoutPlayer overrides this.
-    }
+		//Track entities w/their chunks, for saving purposes
+		if (!(this instanceof SpoutPlayer)) {
+			if (chunk != chunkLive) {
+				if (chunk != null) {
+					chunk.onEntityLeave(this);
+				}
+				if (chunkLive != null) {
+					chunkLive.onEntityEnter(this);
+				}
+			}
+		}
 
-    public void finalizeRun() {
-        SpoutChunk chunkLive = (SpoutChunk) getChunkLive();
-        SpoutChunk chunk = (SpoutChunk) getChunk();
+		//Move entity from Region A to Region B
+		if (chunkLive != null && (chunk == null || chunk.getRegion() != chunkLive.getRegion())) {
+			entityManager.get().removeEntity(this);
+			//Only allow non removed entities to move to new region
+			if (!isRemoved()) {
+				//Set the new EntityManager for the new region
+				entityManager.set(chunkLive.getRegion().getEntityManager());
+				//Add entity to Region B
+				entityManager.getLive().addEntity(this);
+			}
+		}
 
-        //Entity was removed so automatically remove observer/components
-        if (isRemoved()) {
-            removeObserver();
-            //Call onRemoved for Components and remove them
-            for (Component component : values()) {
-                detach(component.getClass());
-            }
-            //Track entities w/their chunks
-            if (chunk != null) {
-                chunk.onEntityLeave(this);
-            }
-            return;
-        }
+		//Entity changed chunks as observer OR observer status changed so update
+		if ((chunk != chunkLive && observer.getLive()) || observer.isDirty()) {
+			updateObserver();
+		}
+	}
 
-        //Track entities w/their chunks, for saving purposes
-        if (!(this instanceof SpoutPlayer)) {
-            if (chunk != chunkLive) {
-                if (chunk != null) {
-                    chunk.onEntityLeave(this);
-                }
-                if (chunkLive != null) {
-                    chunkLive.onEntityEnter(this);
-                }
-            }
-        }
+	protected void removeObserver() {
+		for (SpoutChunk chunk : observingChunks) {
+			if (chunk.isLoaded()) {
+				chunk.removeObserver(this);
+			}
+		}
+		observingChunks.clear();
+	}
 
-        //Move entity from Region A to Region B
-        if (chunkLive != null && (chunk == null || chunk.getRegion() != chunkLive.getRegion())) {
-            entityManager.get().removeEntity(this);
-            //Only allow non removed entities to move to new region
-            if (!isRemoved()) {
-                //Set the new EntityManager for the new region
-                entityManager.set(chunkLive.getRegion().getEntityManager());
-                //Add entity to Region B
-                entityManager.getLive().addEntity(this);
-            }
-        }
+	protected void updateObserver() {
+		final int viewDistance = getViewDistance() >> Chunk.BLOCKS.BITS;
+		World w = getWorld();
+		Transform t = getTransform().getTransform();
+		Chunk c = w.getChunkFromBlock(t.getPosition(), LoadOption.LOAD_GEN);
+		int cx = c.getX();
+		int cy = c.getY();
+		int cz = c.getZ();
+		HashSet<SpoutChunk> observing = new HashSet<SpoutChunk>((viewDistance * viewDistance * viewDistance * 3) / 2);
+		OutwardIterator oi = new OutwardIterator(cx, cy, cz, viewDistance);
+		while (oi.hasNext()) {
+			IntVector3 v = oi.next();
+			Chunk chunk = w.getChunk(v.getX(), v.getY(), v.getZ(), LoadOption.LOAD_GEN);
+			chunk.refreshObserver(this);
+			observing.add((SpoutChunk) chunk);
+		}
+		observingChunks.removeAll(observing);
+		for (SpoutChunk chunk : observingChunks) {
+			if (chunk.isLoaded()) {
+				chunk.removeObserver(this);
+			}
+		}
+		observingChunks.clear();
+		observingChunks.addAll(observing);
+	}
 
-        //Entity changed chunks as observer OR observer status changed so update
-        if ((chunk != chunkLive && observer.getLive()) || observer.isDirty()) {
-            updateObserver();
-        }
-    }
+	@Override
+	public Chunk getChunk() {
+		return getTransform().getPosition().getChunk(LoadOption.NO_LOAD);
+	}
 
-    protected void removeObserver() {
-        for (SpoutChunk chunk : observingChunks) {
-            if (chunk.isLoaded()) {
-                chunk.removeObserver(this);
-            }
-        }
-        observingChunks.clear();
-    }
+	public Chunk getChunkLive() {
+		return getTransform().getTransformLive().getPosition().getChunk(LoadOption.NO_LOAD);
+	}
 
-    protected void updateObserver() {
-        final int viewDistance = getViewDistance() >> Chunk.BLOCKS.BITS;
-        World w = getWorld();
-        Transform t = getTransform().getTransform();
-        Chunk c = w.getChunkFromBlock(t.getPosition(), LoadOption.LOAD_GEN);
-        int cx = c.getX();
-        int cy = c.getY();
-        int cz = c.getZ();
-        HashSet<SpoutChunk> observing = new HashSet<SpoutChunk>((viewDistance * viewDistance * viewDistance * 3) / 2);
-        OutwardIterator oi = new OutwardIterator(cx, cy, cz, viewDistance);
-        while (oi.hasNext()) {
-            IntVector3 v = oi.next();
-            Chunk chunk = w.getChunk(v.getX(), v.getY(), v.getZ(), LoadOption.LOAD_GEN);
-            chunk.refreshObserver(this);
-            observing.add((SpoutChunk) chunk);
-        }
-        observingChunks.removeAll(observing);
-        for (SpoutChunk chunk : observingChunks) {
-            if (chunk.isLoaded()) {
-                chunk.removeObserver(this);
-            }
-        }
-        observingChunks.clear();
-        observingChunks.addAll(observing);
-    }
+	@Override
+	public Region getRegion() {
+		return entityManager.get().getRegion();
+	}
 
-    @Override
-    public Chunk getChunk() {
-        return getTransform().getPosition().getChunk(LoadOption.NO_LOAD);
-    }
+	@Override
+	public World getWorld() {
+		return entityManager.get().getRegion().getWorld();
+	}
 
-    public Chunk getChunkLive() {
-        return getTransform().getTransformLive().getPosition().getChunk(LoadOption.NO_LOAD);
-    }
+	public boolean justSpawned() {
+		return justSpawned;
+	}
 
-    @Override
-    public Region getRegion() {
-        return entityManager.get().getRegion();
-    }
+	@Override
+	public void setViewDistance(int distance) {
+		viewDistance.set(distance);
+	}
 
-    @Override
-    public World getWorld() {
-        return entityManager.get().getRegion().getWorld();
-    }
+	@Override
+	public int getViewDistance() {
+		return viewDistance.getLive();
+	}
 
-    public boolean justSpawned() {
-        return justSpawned;
-    }
+	public int getPrevViewDistance() {
+		return viewDistance.get();
+	}
 
-    @Override
-    public void setViewDistance(int distance) {
-        viewDistance.set(distance);
-    }
+	@Override
+	public void setObserver(boolean obs) {
+		observer.set(obs);
+	}
 
-    @Override
-    public int getViewDistance() {
-        return viewDistance.getLive();
-    }
+	@Override
+	public boolean isObserver() {
+		return observer.get();
+	}
 
-    public int getPrevViewDistance() {
-        return viewDistance.get();
-    }
+	@Override
+	public String toString() {
+		return "SpoutEntity - ID: " + this.getId() + " Position: " + getTransform().getPosition();
+	}
 
-    @Override
-    public void setObserver(boolean obs) {
-        observer.set(obs);
-    }
+	@Override
+	public UUID getUID() {
+		return uid;
+	}
 
-    @Override
-    public boolean isObserver() {
-        return observer.get();
-    }
+	/**
+	 * Prevents stack overflow when creating an entity during chunk loading due to circle of calls
+	 */
+	public void setupInitialChunk(Transform transform) {
+		if (isObserver()) {
+			updateObserver();
+		}
+		SpoutRegion region = (SpoutRegion) getTransform().getTransformLive().getPosition().getChunk(LoadOption.LOAD_GEN).getRegion();
+		entityManager.set(region.getEntityManager());
+	}
 
-    @Override
-    public String toString() {
-        return "SpoutEntity - ID: " + this.getId() + " Position: " + getTransform().getPosition();
-    }
+	@Override
+	public void copySnapshot() {
+		getTransform().copySnapshot();
+		snapshotManager.copyAllSnapshots();
 
-    @Override
-    public UUID getUID() {
-        return uid;
-    }
+		PhysicsComponent physics = get(PhysicsComponent.class);
+		if (physics != null) {
+			((SpoutPhysicsComponent) physics).copySnapshot();
+		}
 
-    /**
-     * Prevents stack overflow when creating an entity during chunk loading due to circle of calls
-     */
-    public void setupInitialChunk(Transform transform) {
-        if (isObserver()) {
-            updateObserver();
-        }
-        SpoutRegion region = (SpoutRegion) getTransform().getTransformLive().getPosition().getChunk(LoadOption.LOAD_GEN).getRegion();
-        entityManager.set(region.getEntityManager());
-    }
+		justSpawned = false;
+	}
 
-    @Override
-    public void copySnapshot() {
-        getTransform().copySnapshot();
-        snapshotManager.copyAllSnapshots();
+	@Override
+	public void remove() {
+		remove = true;
+	}
 
-        PhysicsComponent physics = get(PhysicsComponent.class);
-        if (physics != null) {
-            ((SpoutPhysicsComponent) physics).copySnapshot();
-        }
+	@Override
+	public boolean isRemoved() {
+		return remove;
+	}
 
-        justSpawned = false;
-    }
+	@Override
+	@DelayedWrite
+	public void setSavable(boolean savable) {
+		save.set(savable);
+	}
 
-    @Override
-    public void remove() {
-        remove = true;
-    }
+	@Override
+	@SnapshotRead
+	public boolean isSavable() {
+		return save.get();
+	}
 
-    @Override
-    public boolean isRemoved() {
-        return remove;
-    }
+	@Override
+	public NetworkComponent getNetwork() {
+		return get(NetworkComponent.class);
+	}
 
-    @Override
-    @DelayedWrite
-    public void setSavable(boolean savable) {
-        save.set(savable);
-    }
+	@Override
+	public TransformComponent getTransform() {
+		return get(TransformComponent.class);
+	}
 
-    @Override
-    @SnapshotRead
-    public boolean isSavable() {
-        return save.get();
-    }
-
-    @Override
-    public NetworkComponent getNetwork() {
-        return get(NetworkComponent.class);
-    }
-
-    @Override
-    public TransformComponent getTransform() {
-        return get(TransformComponent.class);
-    }
-
-    @Override
-    public void interact(Action action, Entity source) {
-        for (Component component : this.values()) {
-            if (component instanceof EntityComponent) {
-                ((EntityComponent) component).onInteract(action, source);
-            }
-        }
-    }
+	@Override
+	public void interact(Action action, Entity source) {
+		for (Component component : this.values()) {
+			if (component instanceof EntityComponent) {
+				((EntityComponent) component).onInteract(action, source);
+			}
+		}
+	}
 }
