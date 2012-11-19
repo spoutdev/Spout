@@ -41,6 +41,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
+import org.spout.api.util.concurrent.SpinLock;
 
 import org.spout.engine.world.SpoutRegion;
 
@@ -56,6 +57,8 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	private boolean dirty = false;
 	//Mass is stored but it can only be set on the object before the entity is spawned into the world.
 	private float mass = 0f;
+	//Concurrency
+	private final SpinLock lock = new SpinLock();
 
 	@Override
 	public void onDetached() {
@@ -67,63 +70,112 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	@Override
 	public float getFriction() {
-		return body.getFriction();
+		try {
+			lock.lock();
+			return body.getFriction();
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	@Override
 	public void setFriction(float friction) {
-		body.setFriction(friction);
+		try {
+			lock.lock();
+			body.setFriction(friction);
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	@Override
 	public float getMass() {
-		return mass;
+		try {
+			lock.lock();
+			return mass;
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	@Override
 	public void setMass(float mass) {
-		this.mass = mass;
+		try {
+			lock.lock();
+			this.mass = mass;
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	@Override
 	public CollisionObject getCollisionObject() {
-		return body;
+		try {
+			lock.lock();
+			return body;
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	@Override
 	public MotionState getMotionState() {
-		return state;
+		try {
+			lock.lock();
+			return state;
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	@Override
 	public CollisionShape getCollisionShape() {
-		if (body == null) {
-			throw new IllegalStateException("A collision shape must be set first");
+		try {
+			lock.lock();
+			if (body == null) {
+				throw new IllegalStateException("A collision shape must be set first");
+			}
+			return body.getCollisionShape();
+		} finally {
+			lock.unlock();
 		}
-		return body.getCollisionShape();
 	}
 
 	@Override
 	public void setCollisionShape(CollisionShape shape) {
-		if (body != null) {
-			throw new IllegalStateException("Can not setup physics component twice!");
+		try {
+			lock.lock();
+			if (body != null) {
+				throw new IllegalStateException("Can not setup physics component twice!");
+			}
+			Point point = getOwner().getTransform().getTransformLive().getPosition();
+			state = new SpoutDefaultMotionState(getOwner());
+			body = new RigidBody(getMass(), state, shape);
+			body.setWorldTransform(new Transform(new Matrix4f(MathHelper.toQuaternionf(getOwner().getTransform().getTransformLive().getRotation()), MathHelper.toVector3f(point.getX(), point.getY(), point.getZ()), 1)));
+			body.activate();
+		} finally {
+			lock.unlock();
 		}
-		org.spout.api.geo.discrete.Transform spoutTransform = getOwner().getTransform().getTransformLive();
-		Point point = spoutTransform.getPosition();
-		state = new SpoutDefaultMotionState(getOwner());
-		body = new RigidBody(getMass(), state, shape);
-		body.setWorldTransform(new Transform(new Matrix4f(MathHelper.toQuaternionf(spoutTransform.getRotation()), MathHelper.toVector3f(point.getX(), point.getY(), point.getZ()), 1)));
-		body.activate();
 	}
 
 	@Override
 	public Vector3 getAngularVelocity() {
-		return angularVelocity;
+		try {
+			lock.lock();
+			return angularVelocity;
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	@Override
 	public Vector3 getLinearVelocity() {
-		return linearVelocity;
+		try {
+			lock.lock();
+			return linearVelocity;
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	@Override
