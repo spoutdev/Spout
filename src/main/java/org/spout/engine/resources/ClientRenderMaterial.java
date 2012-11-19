@@ -48,11 +48,14 @@ import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.OrientedMesh;
 import org.spout.api.model.mesh.OrientedMeshFace;
 import org.spout.api.model.mesh.Vertex;
-import org.spout.api.render.BatchEffect;
-import org.spout.api.render.RenderEffect;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Shader;
-import org.spout.api.render.SnapshotRender;
+import org.spout.api.render.effect.BatchEffect;
+import org.spout.api.render.effect.MeshEffect;
+import org.spout.api.render.effect.RenderEffect;
+import org.spout.api.render.effect.SnapshotBatch;
+import org.spout.api.render.effect.SnapshotMesh;
+import org.spout.api.render.effect.SnapshotRender;
 
 public class ClientRenderMaterial extends RenderMaterial {
 
@@ -63,6 +66,8 @@ public class ClientRenderMaterial extends RenderMaterial {
 	Matrix view;
 	Matrix projection;
 	int layer;
+	private List<MeshEffect> meshEffects = new ArrayList<MeshEffect>();
+	private List<BatchEffect> batchEffects = new ArrayList<BatchEffect>();
 	private List<RenderEffect> renderEffects = new ArrayList<RenderEffect>();
 
 	public ClientRenderMaterial(Shader s, Map<String, Object> params){
@@ -123,21 +128,33 @@ public class ClientRenderMaterial extends RenderMaterial {
 	}
 
 	@Override
-	public void preBatch(SnapshotRender snapshotRender) {
-		for(BatchEffect batchEffect : snapshotRender.getMaterial().getBatchEffects())
-			batchEffect.preBatch(snapshotRender);
+	public void preMesh(SnapshotMesh snapshotMesh) {
+		for(MeshEffect meshEffect : getMeshEffects())
+			meshEffect.preMesh(snapshotMesh);
 	}
 
 	@Override
-	public void postBatch(SnapshotRender snapshotRender) {
-		for(BatchEffect batchEffect : snapshotRender.getMaterial().getBatchEffects())
-			batchEffect.postBatch(snapshotRender);
+	public void postMesh(SnapshotMesh snapshotMesh) {
+		for(MeshEffect meshEffect : getMeshEffects())
+			meshEffect.postMesh(snapshotMesh);
 	}
 
 	@Override
-	public void preRender() {
+	public void preBatch(SnapshotBatch snapshotBatch) {
+		for(BatchEffect batchEffect : getBatchEffects())
+			batchEffect.preBatch(snapshotBatch);
+	}
+
+	@Override
+	public void postBatch(SnapshotBatch snapshotBatch) {
+		for(BatchEffect batchEffect : getBatchEffects())
+			batchEffect.postBatch(snapshotBatch);
+	}
+
+	@Override
+	public void preRender(SnapshotRender snapshotRender) {
 		for(RenderEffect renderEffect : getRenderEffects())
-			renderEffect.preRender(this);
+			renderEffect.preRender(snapshotRender);
 
 		if(!depthTesting){
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -146,9 +163,9 @@ public class ClientRenderMaterial extends RenderMaterial {
 	}
 
 	@Override
-	public void postRender() {
+	public void postRender(SnapshotRender snapshotRender) {
 		for(RenderEffect renderEffect : getRenderEffects())
-			renderEffect.postRender(this);
+			renderEffect.postRender(snapshotRender);
 
 		if(!depthTesting){
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -156,7 +173,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 	}
 
 	@Override
-	public List<MeshFace> render(SnapshotRender snapshotRender) {
+	public List<MeshFace> render(SnapshotMesh snapshotRender) {
 		Mesh mesh = snapshotRender.getMesh();
 
 		if(mesh instanceof OrientedMesh){
@@ -209,7 +226,27 @@ public class ClientRenderMaterial extends RenderMaterial {
 	
 	@Override
 	public Collection<RenderEffect> getRenderEffects() {
-		return Collections.unmodifiableCollection(renderEffects );
+		return Collections.unmodifiableCollection(renderEffects);
+	}
+
+	@Override
+	public Collection<BatchEffect> getBatchEffects() {
+		return Collections.unmodifiableCollection(batchEffects);
+	}
+
+	@Override
+	public void addRenderEffect(BatchEffect batchEffect) {
+		batchEffects.add(batchEffect);
+	}
+
+	@Override
+	public Collection<MeshEffect> getMeshEffects() {
+		return Collections.unmodifiableCollection(meshEffects);
+	}
+
+	@Override
+	public void addMeshEffect(MeshEffect meshEffect) {
+		meshEffects.add(meshEffect);
 	}
 
 }

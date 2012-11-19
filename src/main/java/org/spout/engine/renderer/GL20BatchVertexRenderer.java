@@ -36,6 +36,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
+import org.spout.api.render.effect.SnapshotRender;
 import org.spout.engine.renderer.vertexbuffer.VertexBufferImpl;
 
 public class GL20BatchVertexRenderer extends BatchVertexRenderer {
@@ -147,5 +148,11 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 	public void doMerge(List<Renderer> renderers) {
 		// TODO : To implement
 		
+	}
+
+	@Override
+	public void render(RenderMaterial material, SnapshotRender snapshotRender) {
+		render(material);
+		//TODO : Apply snapshotRender
 	}
 }

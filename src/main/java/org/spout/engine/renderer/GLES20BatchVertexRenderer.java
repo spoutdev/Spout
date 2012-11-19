@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
+import org.spout.api.render.effect.SnapshotRender;
 
 public class GLES20BatchVertexRenderer extends BatchVertexRenderer {
 	public GLES20BatchVertexRenderer(int mode) {
@@ -50,5 +51,11 @@ public class GLES20BatchVertexRenderer extends BatchVertexRenderer {
 	public void doMerge(List<Renderer> renderers) {
 		// TODO : To implement
 		
+	}
+
+	@Override
+	public void render(RenderMaterial material, SnapshotRender snapshotRender) {
+		render(material);
+		//TODO : Apply snapshotRender
 	}
 }

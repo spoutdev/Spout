@@ -35,6 +35,7 @@ import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
+import org.spout.api.render.effect.SnapshotRender;
 import org.spout.api.resource.Resource;
 import org.spout.engine.renderer.BatchVertexRenderer;
 
@@ -81,9 +82,10 @@ public class BaseMesh extends Resource implements Mesh, Iterable<MeshFace> {
 		if (renderer == null)
 			throw new IllegalStateException("Cannot render without batching first!");
 		
-		material.preRender();
-		renderer.render(material);
-		material.postRender();
+		SnapshotRender snapshotRender = new SnapshotRender(material);
+		material.preRender(snapshotRender);
+		renderer.render(material,snapshotRender);
+		material.postRender(snapshotRender);
 	}
 	
 	

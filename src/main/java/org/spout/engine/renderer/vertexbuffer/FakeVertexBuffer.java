@@ -29,6 +29,7 @@ package org.spout.engine.renderer.vertexbuffer;
 import java.nio.FloatBuffer;
 
 import org.spout.api.render.RenderMaterial;
+import org.spout.api.render.shader.VertexBuffer;
 
 public class FakeVertexBuffer extends VertexBuffer {
 
@@ -45,7 +46,7 @@ public class FakeVertexBuffer extends VertexBuffer {
 	}
 
 	@Override
-	void bindBuffer() {
+	public void bindBuffer() {
 		// TODO Auto-generated method stub
 		
 	}
@@ -54,6 +55,12 @@ public class FakeVertexBuffer extends VertexBuffer {
 	public void drawBuffer(RenderMaterial material) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public int getLayout() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	
