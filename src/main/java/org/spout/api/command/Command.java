@@ -368,4 +368,10 @@ public interface Command extends Completor {
 	 * @return The responses to complete. If this is a client and a request to the server is needed, return null
 	 */
 	public CompletionResponse getCompletion(CompletionRequest request, int baseIndex);
+	
+	/**
+	 * Get the command's parent.
+	 * @return The command's parent, or null if there isn't.
+	 */
+	public Command getParent();
 }

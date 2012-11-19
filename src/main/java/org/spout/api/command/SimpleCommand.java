@@ -333,7 +333,17 @@ public class SimpleCommand implements Command {
 
 	@Override
 	public String getUsage(String name, List<ChatSection> args, int baseIndex) {
-		ChatArguments usage = new ChatArguments("/", name);
+		ChatArguments usage = new ChatArguments("/");
+		
+		// appends every parent's preferred name after the slash
+		String fullName = name;
+		Command parent = this.parent;
+		while ( !(parent instanceof RootCommand) ) {
+		    name = parent.getPreferredName() + " " + name;
+		    parent = parent.getParent();
+		}
+		usage.append(fullName);
+		
 		for (int i = 0; i <= baseIndex && i < args.size(); ++i) { // Add the arguments preceding the command
 			usage.append(" ");
 			usage.append(args.get(i));
@@ -630,4 +640,9 @@ public class SimpleCommand implements Command {
 		});
 		return responses;
 	}
+
+    @Override
+    public Command getParent() {
+        return this.parent;
+    }
 }
