@@ -92,6 +92,4 @@ public interface Renderer {
 
 	public abstract int getVertexCount();
 
-	public abstract void merge(List<Renderer> renderers);
-
 }
