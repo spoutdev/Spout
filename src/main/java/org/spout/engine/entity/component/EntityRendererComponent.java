@@ -36,52 +36,52 @@ import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.mesh.BaseMesh;
 
 public class EntityRendererComponent extends EntityComponent {
-	
-	ModelComponent model;
-	TransformComponent transform;
-	
-	PrimitiveBatch batch;
-	
-	boolean dirty = true;
-	
-	@Override
-	public void onAttached() {
-		model = getOwner().get(ModelComponent.class);
-		transform = getOwner().getTransform();
-		//batch = new PrimitiveBatch(); // cant create the batch before the context is created
-	}
-	
-	
-	public void render(Camera camera) {
-		if (model == null) {
-			model = getOwner().get(ModelComponent.class);
-			return;
-		}
-		
-		if (model.getModel() == null) {
-			model.setModel("model://Spout/resources/fallbacks/fallback.spm");
-			return;
-		}
-		
-		BaseMesh m = (BaseMesh)model.getModel().getMesh();
-		
-		if (dirty) {
-			m.batch();
-			dirty = false;
-		}
-		Matrix modelMatrix = transform.getTransformation();
-		RenderMaterial mat = model.getModel().getRenderMaterial();
-		
-		mat.getShader().setUniform("View", camera.getView());
-		mat.getShader().setUniform("Projection", camera.getProjection());
-		mat.getShader().setUniform("Model", modelMatrix);		
-		
-		m.render(mat);
-		
-		ClientTextModelComponent tmc = getOwner().get(ClientTextModelComponent.class);
-		if (tmc != null) {
-			tmc.render(camera);
-		}
-	}
-	
+
+    ModelComponent model;
+    TransformComponent transform;
+
+    PrimitiveBatch batch;
+
+    boolean dirty = true;
+
+    @Override
+    public void onAttached() {
+        model = getOwner().get(ModelComponent.class);
+        transform = getOwner().getTransform();
+        //batch = new PrimitiveBatch(); // cant create the batch before the context is created
+    }
+
+
+    public void render(Camera camera) {
+        if (model == null) {
+            model = getOwner().get(ModelComponent.class);
+            return;
+        }
+
+        if (model.getModel() == null) {
+            model.setModel("model://Spout/resources/fallbacks/fallback.spm");
+            return;
+        }
+
+        BaseMesh m = (BaseMesh) model.getModel().getMesh();
+
+        if (dirty) {
+            m.batch();
+            dirty = false;
+        }
+        Matrix modelMatrix = transform.getTransformation();
+        RenderMaterial mat = model.getModel().getRenderMaterial();
+
+        mat.getShader().setUniform("View", camera.getView());
+        mat.getShader().setUniform("Projection", camera.getProjection());
+        mat.getShader().setUniform("Model", modelMatrix);
+
+        m.render(mat);
+
+        ClientTextModelComponent tmc = getOwner().get(ClientTextModelComponent.class);
+        if (tmc != null) {
+            tmc.render(camera);
+        }
+    }
+
 }
