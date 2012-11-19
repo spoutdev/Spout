@@ -500,6 +500,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 				for (SpoutWorld world : engine.getLiveWorlds()) {
 					world.unload(true);
 				}
+				console.close();
 			}
 		};
 
@@ -655,7 +656,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public void haltRun() throws InterruptedException {
 		log("Server halting");
-		console.close();
 	}
 
 	@Override

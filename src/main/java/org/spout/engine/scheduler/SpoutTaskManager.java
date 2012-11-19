@@ -183,7 +183,9 @@ public class SpoutTaskManager implements TaskManager {
 	
 	public int schedule(SpoutTask task) {
 		synchronized (scheduleLock) {
-			addTask(task);
+			if (!addTask(task)) {
+				return task.getTaskId();
+			}
 			if (!task.isSync()) {
 				SpoutWorker worker = new SpoutWorker(task, this);
 				addWorker(worker, task);
@@ -214,11 +216,13 @@ public class SpoutTaskManager implements TaskManager {
 		return activeWorkers.remove(task, worker);
 	}
 	
-	public void addTask(SpoutTask task) {
+	public boolean addTask(SpoutTask task) {
 		activeTasks.put(task.getTaskId(), task);
 		if (!alive.get()) {
 			cancelTask(task);
+			return false;
 		}
+		return true;
 	}
 	
 	public boolean removeTask(SpoutTask task) {
