@@ -944,7 +944,7 @@ public class SpoutRegion extends Region {
 			}
 		} catch (Exception e) {
 			synchronized(logLock) {
-				Spout.getLogger().log(Level.SEVERE, "Exception while using physics", e);
+				Spout.getLogger().log(Level.SEVERE, "Exception while using physics in region " + getBase().toBlockString(), e);
 			}
 		}
 	}
