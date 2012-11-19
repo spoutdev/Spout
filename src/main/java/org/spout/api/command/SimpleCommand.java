@@ -338,7 +338,7 @@ public class SimpleCommand implements Command {
 		// appends every parent's preferred name after the slash
 		String fullName = name;
 		Command parent = this.parent;
-		while ( !(parent instanceof RootCommand) ) {
+		while ( !(parent instanceof RootCommand) && this.parent != null ) {
 		    name = parent.getPreferredName() + " " + name;
 		    parent = parent.getParent();
 		}
