@@ -40,9 +40,12 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.spout.api.Client;
 import org.spout.api.Spout;
+import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.ChunkSnapshotModel;
 import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFace;
+import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
@@ -192,6 +195,46 @@ public class ClientRenderMaterial extends RenderMaterial {
 		return new ArrayList<MeshFace>();
 	}
 
+	private void addColor(ChunkSnapshotModel chunkSnapshotModel, Vector3 position, Vertex ...vertexs){
+	
+		for(Vertex v : vertexs){
+			int x1 = position.getFloorX();
+			int y1 = position.getFloorY();
+			int z1 = position.getFloorZ();
+
+			int x2 = v.position.getFloorX() < position.getFloorX() + 0.5 ? position.getFloorX() - 1 : position.getFloorX() + 1;
+			int y2 = v.position.getFloorY() < position.getFloorY() + 0.5 ? position.getFloorY() - 1 : position.getFloorY() + 1;
+			int z2 = v.position.getFloorZ() < position.getFloorZ() + 0.5 ? position.getFloorZ() - 1 : position.getFloorZ() + 1;
+
+			double weight1 = new Vector3(v.position.getX(), v.position.getY(), v.position.getZ()).distance(new Vector3(x1 + 0.5, y1 + 0.5, z1 + 0.5));
+			double weight2 = new Vector3(v.position.getX(), v.position.getY(), v.position.getZ()).distance(new Vector3(x2 + 0.5, y2 + 0.5, z2 + 0.5));
+			
+			double weightSum = (weight1 + weight2) / 2;
+			
+			weight1 /= weightSum;
+			weight2 /= weightSum;
+			
+			float i = 254 / 16f; 
+			
+			//if(chunkSnapshotModel == null || position == null || chunkSnapshotModel.getChunkFromBlock(x1, y1, z1) == null || chunkSnapshotModel.getChunkFromBlock(x2, y2, z2) == null)
+			//	v.color = Color.MAGENTA;
+
+			ChunkSnapshot chunk1 = chunkSnapshotModel.getChunkFromBlock(x1, y1, z1);
+			ChunkSnapshot chunk2 = chunkSnapshotModel.getChunkFromBlock(x2, y2, z2);
+
+			byte l1 = chunk1.getBlockLight(x1 & Chunk.BLOCKS.MASK, y1 & Chunk.BLOCKS.MASK, z1 & Chunk.BLOCKS.MASK);
+			byte s1 = chunk1.getBlockSkyLight(x1 & Chunk.BLOCKS.MASK, y1 & Chunk.BLOCKS.MASK, z1 & Chunk.BLOCKS.MASK);
+			byte l2 = chunk2 != null ? chunk2.getBlockLight(x2 & Chunk.BLOCKS.MASK, y2 & Chunk.BLOCKS.MASK, z2 & Chunk.BLOCKS.MASK): 0;
+			byte s2 = chunk2 != null ? chunk2.getBlockSkyLight(x2 & Chunk.BLOCKS.MASK, y2 & Chunk.BLOCKS.MASK, z2 & Chunk.BLOCKS.MASK): 0;
+
+			float light = (float) ((l1 * weight1 + l2 * weight2) * i);
+
+			float sky = (float) ((s1 * weight1 + s2 * weight2) * i);
+
+			v.color = new Color((float)MathHelper.clamp(light, 0f, 1f),(float)MathHelper.clamp(sky, 0f, 1f),0.0f,1.0f);
+		}
+	}
+	
 	public List<MeshFace> renderBlock(ChunkSnapshotModel chunkSnapshotModel,Material blockMaterial,
 			Vector3 position, BlockFace face, boolean toRender[], OrientedMesh mesh) {
 		List<MeshFace> meshs = new ArrayList<MeshFace>();
@@ -209,13 +252,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 			v2.position = v2.position.add(model);
 			v3.position = v3.position.add(model);
 
-			//Be sure we have a color
-			//All cube with the same renderMaterial MUST have a color
-			//OR All cube with the same renderMaterial MUST not have a color
-			/*Color color = Color.WHITE;
-			v1.color = color;
-			v2.color = color;
-			v3.color = color;*/
+			addColor(chunkSnapshotModel, position, v1, v2, v3);
 
 			meshs.add(new MeshFace(v1, v2, v3));
 		}
