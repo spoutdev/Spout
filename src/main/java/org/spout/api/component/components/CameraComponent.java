@@ -33,60 +33,60 @@ import org.spout.api.render.Camera;
 import org.spout.api.render.ViewFrustum;
 
 public class CameraComponent extends EntityComponent implements Camera {
-    private Matrix projection;
-    private Matrix view;
-    private ViewFrustum frustum = new ViewFrustum();
-    private float fieldOfView = 75f;
+	private Matrix projection;
+	private Matrix view;
+	private ViewFrustum frustum = new ViewFrustum();
+	private float fieldOfView = 75f;
 
-    public CameraComponent() {
+	public CameraComponent() {
 
-    }
+	}
 
-    public CameraComponent(Matrix createPerspective, Matrix createLookAt) {
-        projection = createPerspective;
-        view = createLookAt;
-    }
+	public CameraComponent(Matrix createPerspective, Matrix createLookAt) {
+		projection = createPerspective;
+		view = createLookAt;
+	}
 
-    @Override
-    public void onAttached() {
-        // TODO Get FOV
-        projection = MathHelper.createPerspective(fieldOfView, 4.0f / 3.0f, .001f, 1000f);
-        updateView();
-    }
+	@Override
+	public void onAttached() {
+		// TODO Get FOV
+		projection = MathHelper.createPerspective(fieldOfView, 4.0f / 3.0f, .001f, 1000f);
+		updateView();
+	}
 
-    @Override
-    public Matrix getProjection() {
-        return projection;
-    }
+	@Override
+	public Matrix getProjection() {
+		return projection;
+	}
 
-    @Override
-    public Matrix getView() {
-        return view;
-    }
+	@Override
+	public Matrix getView() {
+		return view;
+	}
 
-    @Override
-    public void updateView() {
-        Transform transform = ((PredictableTransformComponent) getOwner().getTransform()).getRenderTransform();
-        if (transform != null) {
-            Matrix pos = MathHelper.translate(transform.getPosition().multiply(-1));
-            Matrix rot = MathHelper.rotate(transform.getRotation());
-            view = pos.multiply(rot);
-            frustum.update(projection, view);
-        }
-    }
+	@Override
+	public void updateView() {
+		Transform transform = ((PredictableTransformComponent) getOwner().getTransform()).getRenderTransform();
+		if (transform != null) {
+			Matrix pos = MathHelper.translate(transform.getPosition().multiply(-1));
+			Matrix rot = MathHelper.rotate(transform.getRotation());
+			view = pos.multiply(rot);
+			frustum.update(projection, view);
+		}
+	}
 
-    @Override
-    public boolean canTick() {
-        return false; // It's not the job of engine, if you want fluid movement, it's render job.
-    }
+	@Override
+	public boolean canTick() {
+		return false; // It's not the job of engine, if you want fluid movement, it's render job.
+	}
 
-    /*@Override
-     public void onTick(float dt) {
-         updateView();
-     }*/
+	/*@Override
+		 public void onTick(float dt) {
+			 updateView();
+		 }*/
 
-    @Override
-    public ViewFrustum getFrustum() {
-        return frustum;
-    }
+	@Override
+	public ViewFrustum getFrustum() {
+		return frustum;
+	}
 }

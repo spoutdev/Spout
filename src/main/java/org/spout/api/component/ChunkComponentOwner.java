@@ -26,67 +26,63 @@
  */
 package org.spout.api.component;
 
-import org.spout.api.component.components.DatatableComponent;
-import org.spout.api.geo.cuboid.Chunk;
-
 import java.util.Collection;
 import java.util.Collections;
 
+import org.spout.api.component.components.DatatableComponent;
+import org.spout.api.geo.cuboid.Chunk;
+
 public class ChunkComponentOwner implements ComponentOwner {
-    private final DatatableComponent data = new DatatableComponent();
-    private final Chunk chunk;
-    private final int x, y, z;
+	private final DatatableComponent data = new DatatableComponent();
+	private final Chunk chunk;
+	private final int x, y, z;
 
-    public ChunkComponentOwner(Chunk chunk, int x, int y, int z) {
-        this.chunk = chunk;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
+	public ChunkComponentOwner(Chunk chunk, int x, int y, int z) {
+		this.chunk = chunk;
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
 
-    @Override
-    public Collection<Component> values() {
-        return Collections.emptyList();
-    }
+	@Override
+	public Collection<Component> values() {
+		return Collections.emptyList();
+	}
 
-    @Override
-    public DatatableComponent getData() {
-        return data;
-    }
+	@Override
+	public DatatableComponent getData() {
+		return data;
+	}
 
-    /**
-     * Gets the chunk this component is in
-     *
-     * @return chunk
-     */
-    public Chunk getChunk() {
-        return chunk;
-    }
+	/**
+	 * Gets the chunk this component is in
+	 * @return chunk
+	 */
+	public Chunk getChunk() {
+		return chunk;
+	}
 
-    /**
-     * Gets the world block x-coordinate
-     *
-     * @return world x-coordinate
-     */
-    public int getX() {
-        return x;
-    }
+	/**
+	 * Gets the world block x-coordinate
+	 * @return world x-coordinate
+	 */
+	public int getX() {
+		return x;
+	}
 
-    /**
-     * Gets the world block y-coordinate
-     *
-     * @return world y-coordinate
-     */
-    public int getY() {
-        return y;
-    }
+	/**
+	 * Gets the world block y-coordinate
+	 * @return world y-coordinate
+	 */
+	public int getY() {
+		return y;
+	}
 
-    /**
-     * Gets the world block z-coordinate
-     *
-     * @return world z-coordinate
-     */
-    public int getZ() {
-        return z;
-    }
+	/**
+	 * Gets the world block z-coordinate
+	 * @return world z-coordinate
+	 */
+	public int getZ() {
+		return z;
+	}
 }

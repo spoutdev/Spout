@@ -36,254 +36,239 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 
 public class TransformComponent extends EntityComponent {
-    private final Transform transform = new Transform();
-    private final Transform transformLive = new Transform();
+	private final Transform transform = new Transform();
+	private final Transform transformLive = new Transform();
 
-    @Override
-    public boolean isDetachable() {
-        return false;
-    }
+	@Override
+	public boolean isDetachable() {
+		return false;
+	}
 
-    @Override
-    public void onTick(float dt) {
-        if (!transform.getPosition().getWorld().equals(transformLive.getPosition().getWorld())) {
-            if (EntityChangeWorldEvent.getHandlerList().getRegisteredListeners().length > 0) {
-                Spout.getEventManager().callEvent(new EntityChangeWorldEvent(getOwner(), transform.getPosition().getWorld(), transformLive.getPosition().getWorld()));
-            }
-        }
-    }
+	@Override
+	public void onTick(float dt) {
+		if (!transform.getPosition().getWorld().equals(transformLive.getPosition().getWorld())) {
+			if (EntityChangeWorldEvent.getHandlerList().getRegisteredListeners().length > 0) {
+				Spout.getEventManager().callEvent(new EntityChangeWorldEvent(getOwner(), transform.getPosition().getWorld(), transformLive.getPosition().getWorld()));
+			}
+		}
+	}
 
-    public void setTransform(Transform transform) {
-        transformLive.set(transform);
-    }
+	public void setTransform(Transform transform) {
+		transformLive.set(transform);
+	}
 
-    public Transform getTransform() {
-        return transform.copy();
-    }
+	public Transform getTransform() {
+		return transform.copy();
+	}
 
-    public Transform getTransformLive() {
-        return transformLive.copy();
-    }
+	public Transform getTransformLive() {
+		return transformLive.copy();
+	}
 
-    public boolean isDirty() {
-        return !transform.equals(transformLive);
-    }
+	public boolean isDirty() {
+		return !transform.equals(transformLive);
+	}
 
-    public boolean isPositionDirty() {
-        return !transform.getPosition().equals(transformLive.getPosition());
-    }
+	public boolean isPositionDirty() {
+		return !transform.getPosition().equals(transformLive.getPosition());
+	}
 
-    public boolean isRotationDirty() {
-        return !transform.getRotation().equals(transformLive.getRotation());
-    }
+	public boolean isRotationDirty() {
+		return !transform.getRotation().equals(transformLive.getRotation());
+	}
 
-    public boolean isScaleDirty() {
-        return !transform.getScale().equals(transformLive.getScale());
-    }
+	public boolean isScaleDirty() {
+		return !transform.getScale().equals(transformLive.getScale());
+	}
 
-    public Point getPosition() {
-        return transform.getPosition();
-    }
+	public Point getPosition() {
+		return transform.getPosition();
+	}
 
-    public void setPosition(Point position) {
-        if (position == null) {
-            getOwner().remove();
-            return;
-        }
-        transformLive.setPosition(position);
-    }
+	public void setPosition(Point position) {
+		if (position == null) {
+			getOwner().remove();
+			return;
+		}
+		transformLive.setPosition(position);
+	}
 
-    public Quaternion getRotation() {
-        return transform.getRotation();
-    }
+	public Quaternion getRotation() {
+		return transform.getRotation();
+	}
 
-    private Quaternion getRotationLive() {
-        return transformLive.getRotation();
-    }
+	private Quaternion getRotationLive() {
+		return transformLive.getRotation();
+	}
 
-    public void setRotation(Quaternion rotation) {
-        if (rotation == null) {
-            getOwner().remove();
-            return;
-        }
-        transformLive.setRotation(rotation);
-    }
+	public void setRotation(Quaternion rotation) {
+		if (rotation == null) {
+			getOwner().remove();
+			return;
+		}
+		transformLive.setRotation(rotation);
+	}
 
-    public Vector3 getScale() {
-        return transform.getScale();
-    }
+	public Vector3 getScale() {
+		return transform.getScale();
+	}
 
-    public void setScale(Vector3 scale) {
-        if (scale == null) {
-            getOwner().remove();
-            return;
-        }
-        transformLive.setScale(scale);
-    }
+	public void setScale(Vector3 scale) {
+		if (scale == null) {
+			getOwner().remove();
+			return;
+		}
+		transformLive.setScale(scale);
+	}
 
-    /**
-     * Moves the entity by the provided vector<br/>
-     *
-     * @param amount to move the entity
-     */
-    public void translate(Vector3 amount) {
-        setPosition(transformLive.getPosition().add(amount));
-    }
+	/**
+	 * Moves the entity by the provided vector<br/>
+	 * @param amount to move the entity
+	 */
+	public void translate(Vector3 amount) {
+		setPosition(transformLive.getPosition().add(amount));
+	}
 
-    /**
-     * Moves the entity by the provided vector
-     *
-     * @param x offset
-     * @param y offset
-     * @param z offset
-     */
-    public void translate(float x, float y, float z) {
-        setPosition(transformLive.getPosition().add(x, y, z));
-    }
+	/**
+	 * Moves the entity by the provided vector
+	 * @param x offset
+	 * @param y offset
+	 * @param z offset
+	 */
+	public void translate(float x, float y, float z) {
+		setPosition(transformLive.getPosition().add(x, y, z));
+	}
 
-    /**
-     * Rotates the entity about the provided axis by the provided angle
-     *
-     * @param ang
-     * @param x
-     * @param y
-     * @param z
-     */
-    public void rotate(float w, float x, float y, float z) {
-        setRotation(transformLive.getRotation().rotate(w, x, y, z));
-    }
+	/**
+	 * Rotates the entity about the provided axis by the provided angle
+	 * @param ang
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public void rotate(float w, float x, float y, float z) {
+		setRotation(transformLive.getRotation().rotate(w, x, y, z));
+	}
 
-    /**
-     * Rotates the entity by the provided rotation
-     *
-     * @param rot
-     */
-    public void rotate(Quaternion rot) {
-        setRotation(transformLive.getRotation().multiply(rot));
-    }
+	/**
+	 * Rotates the entity by the provided rotation
+	 * @param rot
+	 */
+	public void rotate(Quaternion rot) {
+		setRotation(transformLive.getRotation().multiply(rot));
+	}
 
-    /**
-     * Scales the entity by the provided amount
-     *
-     * @param amount
-     */
-    public void scale(Vector3 amount) {
-        setScale(transformLive.getScale().multiply(amount));
-    }
+	/**
+	 * Scales the entity by the provided amount
+	 * @param amount
+	 */
+	public void scale(Vector3 amount) {
+		setScale(transformLive.getScale().multiply(amount));
+	}
 
-    /**
-     * Scales the entity by the provided amount
-     *
-     * @param x
-     * @param y
-     * @param z
-     */
-    public void scale(float x, float y, float z) {
-        setScale(transformLive.getScale().multiply(x, y, z));
-    }
+	/**
+	 * Scales the entity by the provided amount
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public void scale(float x, float y, float z) {
+		setScale(transformLive.getScale().multiply(x, y, z));
+	}
 
-    /**
-     * Pitches the entity by the provided amount
-     *
-     * @param angle
-     */
-    public void pitch(float angle) {
-        setPitch(angle);
-    }
+	/**
+	 * Pitches the entity by the provided amount
+	 * @param angle
+	 */
+	public void pitch(float angle) {
+		setPitch(angle);
+	}
 
-    /**
-     * Yaws the entity by the provided amount
-     *
-     * @param angle
-     */
-    public void yaw(float angle) {
-        setYaw(angle);
-    }
+	/**
+	 * Yaws the entity by the provided amount
+	 * @param angle
+	 */
+	public void yaw(float angle) {
+		setYaw(angle);
+	}
 
-    /**
-     * Rolls the entity by the provided amount
-     *
-     * @param angle
-     */
-    public void roll(float angle) {
-        setRoll(angle);
-    }
+	/**
+	 * Rolls the entity by the provided amount
+	 * @param angle
+	 */
+	public void roll(float angle) {
+		setRoll(angle);
+	}
 
-    /**
-     * Gets the entities current pitch, or vertical angle.
-     *
-     * @return pitch of the entity
-     */
-    public float getPitch() {
-        return getRotation().getPitch();
-    }
+	/**
+	 * Gets the entities current pitch, or vertical angle.
+	 * @return pitch of the entity
+	 */
+	public float getPitch() {
+		return getRotation().getPitch();
+	}
 
-    private float getPitchLive() {
-        return getRotationLive().getPitch();
-    }
+	private float getPitchLive() {
+		return getRotationLive().getPitch();
+	}
 
-    /**
-     * Gets the entities current yaw, or horizontal angle.
-     *
-     * @return yaw of the entity.
-     */
-    public float getYaw() {
-        return getRotation().getYaw();
-    }
+	/**
+	 * Gets the entities current yaw, or horizontal angle.
+	 * @return yaw of the entity.
+	 */
+	public float getYaw() {
+		return getRotation().getYaw();
+	}
 
-    private float getYawLive() {
-        return getRotationLive().getYaw();
-    }
+	private float getYawLive() {
+		return getRotationLive().getYaw();
+	}
 
-    /**
-     * Gets the entities current roll as a float.
-     *
-     * @return roll of the entity
-     */
-    public float getRoll() {
-        return getRotation().getRoll();
-    }
+	/**
+	 * Gets the entities current roll as a float.
+	 * @return roll of the entity
+	 */
+	public float getRoll() {
+		return getRotation().getRoll();
+	}
 
-    private float getRollLive() {
-        return getRotationLive().getRoll();
-    }
+	private float getRollLive() {
+		return getRotationLive().getRoll();
+	}
 
-    /**
-     * Sets the pitch of the entity.
-     *
-     * @param ang
-     */
-    public void setPitch(float angle) {
-        setAxisAngles(getPitchLive(), getYawLive(), angle);
-    }
+	/**
+	 * Sets the pitch of the entity.
+	 * @param ang
+	 */
+	public void setPitch(float angle) {
+		setAxisAngles(getPitchLive(), getYawLive(), angle);
+	}
 
-    /**
-     * Sets the roll of the entity.
-     *
-     * @param ang
-     */
-    public void setRoll(float angle) {
-        setAxisAngles(getPitchLive(), getYawLive(), angle);
-    }
+	/**
+	 * Sets the roll of the entity.
+	 * @param ang
+	 */
+	public void setRoll(float angle) {
+		setAxisAngles(getPitchLive(), getYawLive(), angle);
+	}
 
-    /**
-     * sets the yaw of the entity.
-     *
-     * @param ang
-     */
-    public void setYaw(float angle) {
-        setAxisAngles(getPitchLive(), angle, getRollLive());
-    }
+	/**
+	 * sets the yaw of the entity.
+	 * @param ang
+	 */
+	public void setYaw(float angle) {
+		setAxisAngles(getPitchLive(), angle, getRollLive());
+	}
 
-    private void setAxisAngles(float pitch, float yaw, float roll) {
-        setRotation(MathHelper.rotation(pitch, yaw, roll));
-    }
+	private void setAxisAngles(float pitch, float yaw, float roll) {
+		setRotation(MathHelper.rotation(pitch, yaw, roll));
+	}
 
-    public void copySnapshot() {
-        this.transform.set(transformLive);
-    }
+	public void copySnapshot() {
+		this.transform.set(transformLive);
+	}
 
-    public Matrix getTransformation() {
-        return this.transform.toMatrix();
-    }
+	public Matrix getTransformation() {
+		return this.transform.toMatrix();
+	}
 }

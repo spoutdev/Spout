@@ -34,51 +34,49 @@ import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.discrete.Point;
 
 public class BlockComponent extends Component {
-    public BlockComponent() {
-    }
+	public BlockComponent() {
+	}
 
-    @Override
-    public final ChunkComponentOwner getOwner() {
-        return (ChunkComponentOwner) super.getOwner();
-    }
+	@Override
+	public final ChunkComponentOwner getOwner() {
+		return (ChunkComponentOwner) super.getOwner();
+	}
 
-    @Override
-    public final boolean attachTo(ComponentOwner owner) {
-        if (owner instanceof ChunkComponentOwner) {
-            return super.attachTo(owner);
-        } else {
-            return false;
-        }
-    }
+	@Override
+	public final boolean attachTo(ComponentOwner owner) {
+		if (owner instanceof ChunkComponentOwner) {
+			return super.attachTo(owner);
+		} else {
+			return false;
+		}
+	}
 
-    @Override
-    public final void onDetached() {
-        //Kept to prevent overriding
-    }
+	@Override
+	public final void onDetached() {
+		//Kept to prevent overriding
+	}
 
-    /**
-     * Gets the position of this block component
-     *
-     * @return position
-     */
-    public Point getPosition() {
-        if (getOwner() == null) {
-            throw new IllegalStateException("Must have an attached owner!");
-        }
-        return new Point(getOwner().getChunk().getWorld(), getOwner().getX(), getOwner().getY(), getOwner().getZ());
-    }
+	/**
+	 * Gets the position of this block component
+	 * @return position
+	 */
+	public Point getPosition() {
+		if (getOwner() == null) {
+			throw new IllegalStateException("Must have an attached owner!");
+		}
+		return new Point(getOwner().getChunk().getWorld(), getOwner().getX(), getOwner().getY(), getOwner().getZ());
+	}
 
-    @Override
-    public final boolean isDetachable() {
-        return false;
-    }
+	@Override
+	public final boolean isDetachable() {
+		return false;
+	}
 
-    /**
-     * Called when a player interacts with this BlockMaterial
-     *
-     * @param entity that interacted with this component
-     * @param type   action that the entity took on this component
-     */
-    public void onInteract(Entity entity, Action type) {
-    }
+	/**
+	 * Called when a player interacts with this BlockMaterial
+	 * @param entity that interacted with this component
+	 * @param type action that the entity took on this component
+	 */
+	public void onInteract(Entity entity, Action type) {
+	}
 }

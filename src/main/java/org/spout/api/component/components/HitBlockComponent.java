@@ -34,52 +34,49 @@ import org.spout.api.util.BlockIterator;
  * A component allowing a player to interact with a block
  */
 public class HitBlockComponent extends EntityComponent {
-    private Player player;
-    private float range = 8f;
+	private Player player;
+	private float range = 8f;
 
-    @Override
-    public void onAttached() {
-        if (!(getOwner() instanceof Player)) {
-            throw new IllegalStateException("May only attach this component to players!");
-        }
-        player = (Player) getOwner();
-    }
+	@Override
+	public void onAttached() {
+		if (!(getOwner() instanceof Player)) {
+			throw new IllegalStateException("May only attach this component to players!");
+		}
+		player = (Player) getOwner();
+	}
 
-    /**
-     * Return the block in front of you eyes if there
-     * is one in range.
-     *
-     * @return block
-     */
-    public Block getTargetBlock() {
-        BlockIterator blockIt = getAlignedBlocks();
-        Block block = blockIt.getTarget();
-        if (blockIt.getBlockFace() != null) {
-            System.out.println("Face hit: " + blockIt.getBlockFace());
-        }
-        return block;
-    }
+	/**
+	 * Return the block in front of you eyes if there
+	 * is one in range.
+	 * @return block
+	 */
+	public Block getTargetBlock() {
+		BlockIterator blockIt = getAlignedBlocks();
+		Block block = blockIt.getTarget();
+		if (blockIt.getBlockFace() != null) {
+			System.out.println("Face hit: " + blockIt.getBlockFace());
+		}
+		return block;
+	}
 
-    /**
-     * Return a list of all the blocks in line
-     * of view.
-     *
-     * @return blocks
-     */
-    public BlockIterator getAlignedBlocks() {
-        return new BlockIterator(player.getWorld(), player.getTransform().getTransform(), range);
-    }
+	/**
+	 * Return a list of all the blocks in line
+	 * of view.
+	 * @return blocks
+	 */
+	public BlockIterator getAlignedBlocks() {
+		return new BlockIterator(player.getWorld(), player.getTransform().getTransform(), range);
+	}
 
-    /**
-     * The max distance value you want the targeted block to be.
-     *
-     * @param range
-     */
-    public void setRange(float range) {
-        this.range = range;
-    }
+	/**
+	 * The max distance value you want the targeted block to be.
+	 * @param range
+	 */
+	public void setRange(float range) {
+		this.range = range;
+	}
 
-    public float getRange() {
-        return range;
-    }
+	public float getRange() {
+		return range;
+	}
 }

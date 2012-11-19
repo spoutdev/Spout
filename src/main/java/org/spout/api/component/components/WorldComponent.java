@@ -31,20 +31,20 @@ import org.spout.api.component.ComponentOwner;
 import org.spout.api.component.WorldComponentHolder;
 
 public class WorldComponent extends Component {
-    public WorldComponent() {
-    }
+	public WorldComponent() {
+	}
 
-    @Override
-    public boolean attachTo(ComponentOwner holder) {
-        if (holder instanceof WorldComponentHolder) {
-            return super.attachTo(holder);
-        } else {
-            return false;
-        }
-    }
+	@Override
+	public boolean attachTo(ComponentOwner holder) {
+		if (holder instanceof WorldComponentHolder) {
+			return super.attachTo(holder);
+		} else {
+			return false;
+		}
+	}
 
-    @Override
-    public WorldComponentHolder getOwner() {
-        return (WorldComponentHolder) super.getOwner();
-    }
+	@Override
+	public WorldComponentHolder getOwner() {
+		return (WorldComponentHolder) super.getOwner();
+	}
 }

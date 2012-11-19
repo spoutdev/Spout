@@ -33,23 +33,21 @@ import org.spout.api.model.Model;
  * A Component that adds a model to an entity.
  */
 public class ModelComponent extends EntityComponent {
+	private Model model;
 
-    private Model model;
+	public ModelComponent() {
+	}
 
-    public ModelComponent() {
-    }
+	@Override
+	public boolean canTick() {
+		return false;
+	}
 
-    @Override
-    public boolean canTick() {
-        return false;
-    }
+	public Model getModel() {
+		return model;
+	}
 
-    public Model getModel() {
-        return model;
-    }
-
-    public void setModel(String resourcePath) {
-        model = (Model) Spout.getFilesystem().getResource(resourcePath);
-    }
-
+	public void setModel(String resourcePath) {
+		model = (Model) Spout.getFilesystem().getResource(resourcePath);
+	}
 }
