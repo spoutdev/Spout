@@ -378,7 +378,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	
 	public void finalize() { }
 
-	public void setBatchVertex(BatchVertex batchVertex, SnapshotRender snapshotRender) {
+	public void setBatchVertex(BatchVertex batchVertex) {
 		numVertices = batchVertex.numVertices;
 
 		if(numVertices == 0)
