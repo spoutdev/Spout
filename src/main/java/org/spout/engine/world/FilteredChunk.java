@@ -128,6 +128,13 @@ public class FilteredChunk extends SpoutChunk{
 		}
 	}
 
+	@Override
+	protected void setIsInViewDistance(boolean value){
+		if(value && isUniform() && getBlockMaterial(0, 0, 0) == BlockMaterial.AIR)
+			return;
+		super.setIsInViewDistance(value);
+	}
+	
 	private void setModified() {
 		if (chunkModified.compareAndSet(false, true)) {
 			setAutosaveTicks(autosaveInterval);
