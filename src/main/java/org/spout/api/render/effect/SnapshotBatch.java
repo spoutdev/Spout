@@ -26,45 +26,18 @@
  */
 package org.spout.api.render.effect;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
-import org.spout.api.material.Material;
-import org.spout.api.math.Vector3;
-import org.spout.api.render.shader.VertexBuffer;
+import org.spout.api.render.RenderMaterial;
 
 public class SnapshotBatch {
 
-	private Material material;
-	private Vector3 position;
-	private TIntObjectHashMap<VertexBuffer> vertexBuffers = new TIntObjectHashMap<VertexBuffer>();
+	private final RenderMaterial material;
 
-	public SnapshotBatch(Material material, Vector3 position){
+	public SnapshotBatch(RenderMaterial material){
 		this.material = material;
-		this.position = position;
 	}
 
-	public Material getMaterial() {
+	public RenderMaterial getMaterial() {
 		return material;
-	}
-
-	public void setMaterial(Material material) {
-		this.material = material;
-	}
-
-	public Vector3 getPosition() {
-		return position;
-	}
-
-	public void setPosition(Vector3 position) {
-		this.position = position;
-	}
-
-	public TIntObjectHashMap<VertexBuffer> getVertexBuffers() {
-		return vertexBuffers;
-	}
-
-	public void addVertexBuffers(VertexBuffer vertexBuffer) {
-		vertexBuffers.put(vertexBuffer.getLayout(),vertexBuffer);
 	}
 
 }
