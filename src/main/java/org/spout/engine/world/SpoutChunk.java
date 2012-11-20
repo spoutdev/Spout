@@ -228,7 +228,7 @@ public abstract class SpoutChunk extends Chunk implements Snapshotable {
 	private boolean wasInViewDistance = false;
 	private boolean isInViewDistance = false;
 	
-	private void setIsInViewDistance(boolean value){
+	protected void setIsInViewDistance(boolean value){
 		isInViewDistance = value;
 		if (wasInViewDistance != isInViewDistance) {
 			queueDirty();

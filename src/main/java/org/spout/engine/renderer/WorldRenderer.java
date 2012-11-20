@@ -38,6 +38,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
@@ -367,11 +368,11 @@ public class WorldRenderer {
 	int rended = 0;
 
 	private void renderChunks() {
-		Chunk chunk = client.getActivePlayer().getChunk();
+		Point point = client.getActivePlayer().getTransform().getTransformLive().getPosition();
 
-		int x = chunk.getX();
-		int y = chunk.getY();
-		int z = chunk.getZ();
+		int x = point.getChunkX();
+		int y = point.getChunkY();
+		int z = point.getChunkZ();
 
 		ocludedChunks = 0;
 		culledChunks = 0;
