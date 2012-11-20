@@ -45,11 +45,11 @@ public class SpoutInput implements InputManager {
 
 	private void doKeypress(SpoutPlayer player, int button, boolean pressed) {
 		if (PlayerKeyboardEvent.getHandlerList().getRegisteredListeners().length > 0) {
-			final PlayerKeyboardEvent event = Spout.getEventManager().callEvent(new PlayerKeyboardEvent(player, Keyboard.get(button), pressed));
+			String cmd = keyCommands.get(button);
+			final PlayerKeyboardEvent event = Spout.getEventManager().callEvent(new PlayerKeyboardEvent(player, Keyboard.get(button), pressed, cmd));
 			if (event.isCancelled()) {
 				return;
 			}
-			String cmd = keyCommands.get(event.getKey().getId());
 			doCommand(player, cmd, pressed);
 		}
 	}
