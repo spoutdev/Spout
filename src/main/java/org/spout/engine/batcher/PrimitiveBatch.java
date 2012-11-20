@@ -163,7 +163,7 @@ public class PrimitiveBatch {
 		renderer.render(material);
 	}
 
-	public void setBatchVertex(BatchVertex batchVertex, SnapshotRender snapshotRender) {
-		((BatchVertexRenderer)renderer).setBatchVertex(batchVertex,snapshotRender);
+	public void setBatchVertex(BatchVertex batchVertex) {
+		((BatchVertexRenderer)renderer).setBatchVertex(batchVertex);
 	}
 }
