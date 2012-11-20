@@ -50,6 +50,16 @@ public class CubeMesh extends OrientedMesh {
 
 		Vertex v1 = null, v2 = null, v3 = null, v4 = null;
 
+		/*   1--2
+		 *  /| /|
+		 * 5--6 |   
+		 * | 0|-3    Y - Bottom < TOP
+		 * |/ |/     |
+		 * 4--7      O-- X - North < SOUTH
+		 *          /
+		 *         Z - East < WEST
+		 */
+		
 		v1 = new Vertex(vertex1, BlockFace.TOP.getOffset(), getUV(uvs, 0, 3));
 		v2 = new Vertex(vertex2, BlockFace.TOP.getOffset(), getUV(uvs, 0, 2));
 		v3 = new Vertex(vertex6, BlockFace.TOP.getOffset(), getUV(uvs, 0, 1));
@@ -60,7 +70,7 @@ public class CubeMesh extends OrientedMesh {
 		v1 = new Vertex(vertex0, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 3));
 		v2 = new Vertex(vertex4, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 2));
 		v3 = new Vertex(vertex7, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 1));
-		v4 = new Vertex(vertex3, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 3));
+		v4 = new Vertex(vertex3, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 0));
 		meshFace.add(new OrientedMeshFace(v1, v2, v3, new HashSet<BlockFace>(Arrays.asList(BlockFace.BOTTOM))));
 		meshFace.add(new OrientedMeshFace(v3, v4, v1, new HashSet<BlockFace>(Arrays.asList(BlockFace.BOTTOM))));
 
