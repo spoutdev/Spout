@@ -29,6 +29,7 @@ package org.spout.engine.batcher;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.lwjgl.opengl.GL11;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Cuboid;
 import org.spout.api.geo.discrete.Point;
@@ -38,6 +39,7 @@ import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
+import org.spout.api.render.effect.SnapshotRender;
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.renderer.BatchVertex;
 import org.spout.engine.renderer.BatchVertexRenderer;
@@ -58,7 +60,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	private List<ChunkMeshBatch> dirties = new ArrayList<ChunkMeshBatch>();
 	private int count = 0;
 
-	private PrimitiveBatch renderer = new PrimitiveBatch();
+	private Renderer renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 
 	private Matrix modelMat = MathHelper.createIdentity();
 	private final BlockFace face;
@@ -91,7 +93,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 					renderers.add(batch.getMesh());
 			}
 
-			((BatchVertexRenderer)renderer.getRenderer()).merge(renderers);
+			((BatchVertexRenderer)renderer).merge(renderers);
 
 			dirty = false;
 		}
@@ -102,7 +104,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 		return count == COUNT;
 	}
 
-	public int render(RenderMaterial material) {
+	public int render(RenderMaterial material, SnapshotRender snapshotRender) {
 		if (closed) {
 			throw new IllegalStateException("Already closed");
 		}
@@ -110,12 +112,12 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 		if (dirty){
 			for(ChunkMeshBatch batch : batchs){
 				if(batch != null){
-					batch.render(material);
+					batch.render(material,snapshotRender);
 					rended++;
 				}
 			}
 		}else{
-			renderer.draw(material);
+			renderer.render(material,snapshotRender);
 			rended++;
 		}
 		return rended;
@@ -130,7 +132,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 			if(batch != null)
 				batch.finalize();
 
-		((BatchVertexRenderer)renderer.getRenderer()).release();
+		((BatchVertexRenderer)renderer).release();
 		closed = true;
 	}
 

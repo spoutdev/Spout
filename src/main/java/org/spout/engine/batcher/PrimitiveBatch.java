@@ -36,6 +36,7 @@ import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
+import org.spout.api.render.effect.SnapshotBatch;
 import org.spout.api.render.effect.SnapshotRender;
 
 import org.spout.engine.mesh.BaseMesh;
@@ -163,7 +164,7 @@ public class PrimitiveBatch {
 		renderer.render(material);
 	}
 
-	public void setBatchVertex(BatchVertex batchVertex, SnapshotRender snapshotRender) {
-		((BatchVertexRenderer)renderer).setBatchVertex(batchVertex,snapshotRender);
+	public void setBatchVertex(BatchVertex batchVertex, SnapshotBatch snapshotBatch) {
+		((BatchVertexRenderer)renderer).setBatchVertex(batchVertex,snapshotBatch);
 	}
 }

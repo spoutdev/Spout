@@ -26,10 +26,14 @@
  */
 package org.spout.engine.batcher;
 
+import org.lwjgl.opengl.GL11;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
+import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
+import org.spout.api.render.Renderer;
+import org.spout.api.render.effect.SnapshotBatch;
 import org.spout.api.render.effect.SnapshotRender;
 import org.spout.engine.renderer.BatchVertex;
 import org.spout.engine.renderer.BatchVertexRenderer;
@@ -39,7 +43,7 @@ import org.spout.engine.renderer.BatchVertexRenderer;
  */
 public class ChunkMeshBatch {	
 	private int x,y,z;
-	private PrimitiveBatch renderer = new PrimitiveBatch();
+	private Renderer renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 	private BatchVertex batchVertex = null;
 	private boolean hasVertices = false;
 	private Matrix modelMat = MathHelper.createIdentity();
@@ -55,7 +59,7 @@ public class ChunkMeshBatch {
 		this.material = material;
 	}
 
-	public PrimitiveBatch getRenderer(){
+	public Renderer getRenderer(){
 		return renderer;
 	}
 
@@ -74,11 +78,11 @@ public class ChunkMeshBatch {
 
 		renderer.begin();
 
-		SnapshotRender snapshotRender = new SnapshotRender(material);
+		SnapshotBatch snapshotBatch = new SnapshotBatch(material, new Vector3(x, y, z));
 		
-		material.preRender(snapshotRender);
-		renderer.setBatchVertex(batchVertex,snapshotRender);
-		material.postRender(snapshotRender);
+		material.preBatch(snapshotBatch);
+		((BatchVertexRenderer)renderer).setBatchVertex(batchVertex,snapshotBatch);
+		material.postBatch(snapshotBatch);
 
 		renderer.end();
 		
@@ -90,12 +94,12 @@ public class ChunkMeshBatch {
 		return hasVertices;
 	}
 
-	public void render(RenderMaterial material) {
+	public void render(RenderMaterial material, SnapshotRender snapshotRender) {
 		if (closed) {
 			throw new IllegalStateException("Already closed");
 		}
 		if (hasVertices) {
-			renderer.draw(material);
+			renderer.render(material, snapshotRender);
 		}
 	}
 
@@ -103,7 +107,7 @@ public class ChunkMeshBatch {
 		if (closed) {
 			throw new IllegalStateException("Already closed");
 		}
-		((BatchVertexRenderer)renderer.getRenderer()).release();
+		((BatchVertexRenderer)renderer).release();
 		closed = true;
 	}
 

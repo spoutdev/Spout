@@ -26,11 +26,14 @@
  */
 package org.spout.engine.renderer;
 
+import gnu.trove.map.hash.TIntObjectHashMap;
+
 import java.util.List;
 
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
 import org.spout.api.render.effect.SnapshotRender;
+import org.spout.api.render.shader.VertexBuffer;
 
 public class GLES20BatchVertexRenderer extends BatchVertexRenderer {
 	public GLES20BatchVertexRenderer(int mode) {
@@ -57,5 +60,16 @@ public class GLES20BatchVertexRenderer extends BatchVertexRenderer {
 	public void render(RenderMaterial material, SnapshotRender snapshotRender) {
 		render(material);
 		//TODO : Apply snapshotRender
+	}
+
+	@Override
+	public void addVertexBuffers(TIntObjectHashMap<VertexBuffer> vertexBuffers) {
+	}
+
+	@Override
+	protected void doRender(RenderMaterial material, int startVert,
+			int endVert, SnapshotRender snapshotRender) {
+		// TODO Auto-generated method stub
+		
 	}
 }

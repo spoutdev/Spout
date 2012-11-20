@@ -38,6 +38,7 @@ import org.lwjgl.opengl.GL30;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
 import org.spout.api.render.effect.SnapshotRender;
+import org.spout.api.render.shader.VertexBuffer;
 import org.spout.engine.renderer.vertexbuffer.VertexBufferImpl;
 
 public class GL30BatchVertexRenderer extends BatchVertexRenderer {
@@ -147,6 +148,41 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 		
 		
 	}
+
+	@Override
+	protected void doRender(RenderMaterial material, int startVert,int endVert, SnapshotRender snapshotRender) {
+		
+		GL30.glBindVertexArray(vao);
+		
+		
+		material.assign();
+		
+		for(VertexBufferImpl vb : vertexBuffers.valueCollection()){
+			vb.bind();
+			GL20.glEnableVertexAttribArray(vb.getLayout());
+			GL20.glVertexAttribPointer(vb.getLayout(), vb.getElements(), GL11.GL_FLOAT, false, 0, 0);
+			//activeMaterial.getShader().enableAttribute(vb.getName(), vb.getElements(), GL11.GL_FLOAT, 0, 0, vb.getLayout());			
+		}
+		
+		for(VertexBuffer vb : snapshotRender.getVertexBuffers().valueCollection()){
+			vb.bind();
+			GL20.glEnableVertexAttribArray(vb.getLayout());
+			GL20.glVertexAttribPointer(vb.getLayout(), vb.getElements(), GL11.GL_FLOAT, false, 0, 0);
+			//activeMaterial.getShader().enableAttribute(vb.getName(), vb.getElements(), GL11.GL_FLOAT, 0, 0, vb.getLayout());			
+		}
+	
+		GL11.glDrawArrays(renderMode, startVert, endVert);
+	
+		for(VertexBuffer vb : snapshotRender.getVertexBuffers().valueCollection()){			
+			GL20.glDisableVertexAttribArray(vb.getLayout());		
+		}
+		
+		for(VertexBufferImpl vb : vertexBuffers.valueCollection()){			
+			GL20.glDisableVertexAttribArray(vb.getLayout());		
+		}
+		
+		
+	}
 	
 	private void dispose() {
 		for(VertexBufferImpl vb : vertexBuffers.valueCollection()){
@@ -165,8 +201,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 	}
 
 	@Override
-	public void render(RenderMaterial material, SnapshotRender snapshotRender) {
-		render(material);
-		//TODO : Apply snapshotRender
+	public void addVertexBuffers(TIntObjectHashMap<VertexBuffer> vertexBuffers) {
+		vertexBuffers.putAll(vertexBuffers);
 	}
 }

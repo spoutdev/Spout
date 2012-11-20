@@ -41,6 +41,7 @@ import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
+import org.spout.api.render.effect.SnapshotRender;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.batcher.ChunkMeshBatchAggregator;
@@ -379,9 +380,14 @@ public class WorldRenderer {
 		ocludedChunks = 0;
 		culledChunks = 0;
 		rended = 0;
+		
 
 		for(Entry<RenderMaterial, List<ChunkMeshBatchAggregator>> entry : chunkRenderers.entrySet()){
 			RenderMaterial material = entry.getKey();
+			
+			SnapshotRender snapshotRender = new SnapshotRender(material);
+			material.preRender(snapshotRender);
+			
 			material.getShader().setUniform("View", client.getActiveCamera().getView());
 			material.getShader().setUniform("Projection", client.getActiveCamera().getProjection());
 			for (ChunkMeshBatchAggregator renderer : entry.getValue()) {
@@ -425,11 +431,13 @@ public class WorldRenderer {
 				// But here's my frustrum
 				// so cull me maybe?
 				//if (client.getActiveCamera().getFrustum().intersects(renderer)) {
-				rended += renderer.render(material);
+				rended += renderer.render(material,snapshotRender);
 				/*} else {
 				culledChunks++;
 			}*/
 			}
+			
+			material.postRender(snapshotRender);
 		}
 	}
 

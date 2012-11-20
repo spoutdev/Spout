@@ -28,8 +28,9 @@ package org.spout.engine.renderer.vertexbuffer;
 
 import java.nio.FloatBuffer;
 import org.lwjgl.opengl.GL15;
+import org.spout.api.render.shader.VertexBuffer;
 
-public class VertexBufferImpl {	
+public class VertexBufferImpl extends VertexBuffer{	
 	int usage = GL15.GL_STATIC_DRAW;
 	
 	String elementName;
@@ -62,8 +63,6 @@ public class VertexBufferImpl {
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
 				
 	}
-	 
-	
 	
 	public String getName(){
 		return elementName;		
@@ -84,5 +83,4 @@ public class VertexBufferImpl {
 	public void finalize() {
 		dispose();
 	}
-	
 }
