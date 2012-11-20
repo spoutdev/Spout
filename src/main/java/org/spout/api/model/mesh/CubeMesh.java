@@ -67,17 +67,17 @@ public class CubeMesh extends OrientedMesh {
 		meshFace.add(new OrientedMeshFace(v1, v2, v3, new HashSet<BlockFace>(Arrays.asList(BlockFace.TOP))));
 		meshFace.add(new OrientedMeshFace(v3, v4, v1, new HashSet<BlockFace>(Arrays.asList(BlockFace.TOP))));
 
-		v1 = new Vertex(vertex0, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 3));
-		v2 = new Vertex(vertex4, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 2));
-		v3 = new Vertex(vertex7, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 1));
-		v4 = new Vertex(vertex3, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 0));
+		v1 = new Vertex(vertex0, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 0));
+		v2 = new Vertex(vertex4, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 3));
+		v3 = new Vertex(vertex7, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 2));
+		v4 = new Vertex(vertex3, BlockFace.BOTTOM.getOffset(), getUV(uvs, 1, 1));
 		meshFace.add(new OrientedMeshFace(v1, v2, v3, new HashSet<BlockFace>(Arrays.asList(BlockFace.BOTTOM))));
 		meshFace.add(new OrientedMeshFace(v3, v4, v1, new HashSet<BlockFace>(Arrays.asList(BlockFace.BOTTOM))));
 
-		v1 = new Vertex(vertex0, BlockFace.NORTH.getOffset(), getUV(uvs, 2, 2));
-		v2 = new Vertex(vertex1, BlockFace.NORTH.getOffset(), getUV(uvs, 2, 1));
-		v3 = new Vertex(vertex5, BlockFace.NORTH.getOffset(), getUV(uvs, 2, 0));
-		v4 = new Vertex(vertex4, BlockFace.NORTH.getOffset(), getUV(uvs, 2, 3));
+		v1 = new Vertex(vertex0, BlockFace.NORTH.getOffset(), getUV(uvs, 2, 1));
+		v2 = new Vertex(vertex1, BlockFace.NORTH.getOffset(), getUV(uvs, 2, 0));
+		v3 = new Vertex(vertex5, BlockFace.NORTH.getOffset(), getUV(uvs, 2, 3));
+		v4 = new Vertex(vertex4, BlockFace.NORTH.getOffset(), getUV(uvs, 2, 2));
 		meshFace.add(new OrientedMeshFace(v1, v2, v3, new HashSet<BlockFace>(Arrays.asList(BlockFace.NORTH))));
 		meshFace.add(new OrientedMeshFace(v3, v4, v1, new HashSet<BlockFace>(Arrays.asList(BlockFace.NORTH))));
 
