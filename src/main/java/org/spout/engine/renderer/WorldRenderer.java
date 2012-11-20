@@ -366,16 +366,12 @@ public class WorldRenderer {
 	int rended = 0;
 
 	private void renderChunks() {
-		/*Chunk chunk = client.getActivePlayer().getChunk();
+		Chunk chunk = client.getActivePlayer().getChunk();
 
-		int minX = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getX() * ChunkMesh.SPLIT_X) / ChunkMeshBatchAggregator.SIZE_X));
-		int minY = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getY() * ChunkMesh.SPLIT_Y) / ChunkMeshBatchAggregator.SIZE_Y));
-		int minZ = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getZ() * ChunkMesh.SPLIT_Z) / ChunkMeshBatchAggregator.SIZE_Z));
+		int x = chunk.getX();
+		int y = chunk.getY();
+		int z = chunk.getZ();
 
-		int maxX = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getX() * ChunkMesh.SPLIT_X + ChunkMesh.SPLIT_X) / ChunkMeshBatchAggregator.SIZE_X));
-		int maxY = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getY() * ChunkMesh.SPLIT_Y + ChunkMesh.SPLIT_Y) / ChunkMeshBatchAggregator.SIZE_Y));
-		int maxZ = (int) ((Math.floor((float)client.getActivePlayer().getChunk().getZ() * ChunkMesh.SPLIT_Z + ChunkMesh.SPLIT_Z) / ChunkMeshBatchAggregator.SIZE_Z));
-*/
 		ocludedChunks = 0;
 		culledChunks = 0;
 		rended = 0;
@@ -386,37 +382,39 @@ public class WorldRenderer {
 			material.getShader().setUniform("Projection", client.getActiveCamera().getProjection());
 			for (ChunkMeshBatchAggregator renderer : entry.getValue()) {
 
-				/*if(renderer.getFace() == BlockFace.TOP){
-					if(renderer.getY()>maxY){
-						ocludedChunks++;
-						continue;
+				if(ChunkMesh.UNLOAD_ACCELERATOR){ // Assume aggregator = chunk
+					if(renderer.getFace() == BlockFace.TOP){
+						if(renderer.getY() > y){
+							ocludedChunks++;
+							continue;
+						}
+					}else if(renderer.getFace() == BlockFace.BOTTOM){
+						if(renderer.getY() < y){
+							ocludedChunks++;
+							continue;
+						}
+					}else if(renderer.getFace() == BlockFace.SOUTH){
+						if(renderer.getX() > x){
+							ocludedChunks++;
+							continue;
+						}
+					}else if(renderer.getFace() == BlockFace.NORTH){
+						if(renderer.getX() < x){
+							ocludedChunks++;
+							continue;
+						}
+					}else if(renderer.getFace() == BlockFace.WEST){
+						if(renderer.getZ() > z){
+							ocludedChunks++;
+							continue;
+						}
+					}else if(renderer.getFace() == BlockFace.EAST){
+						if(renderer.getZ() < z){
+							ocludedChunks++;
+							continue;
+						}
 					}
-				}else if(renderer.getFace() == BlockFace.BOTTOM){
-					if(renderer.getY()<minY){
-						ocludedChunks++;
-						continue;
-					}
-				}else if(renderer.getFace() == BlockFace.SOUTH){
-					if(renderer.getX()>maxX){
-						ocludedChunks++;
-						continue;
-					}
-				}else if(renderer.getFace() == BlockFace.NORTH){
-					if(renderer.getX()<minX){
-						ocludedChunks++;
-						continue;
-					}
-				}else if(renderer.getFace() == BlockFace.WEST){
-					if(renderer.getZ()>maxZ){
-						ocludedChunks++;
-						continue;
-					}
-				}else if(renderer.getFace() == BlockFace.EAST){
-					if(renderer.getZ()<minZ){
-						ocludedChunks++;
-						continue;
-					}
-				}*/
+				}
 
 				material.getShader().setUniform("Model", renderer.getTransform());
 
