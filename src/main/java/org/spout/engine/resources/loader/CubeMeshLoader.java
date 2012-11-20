@@ -91,6 +91,40 @@ public class CubeMeshLoader extends BasicResourceLoader<CubeMesh> {
 				}
 				textures.add((Vector2[]) ar.toArray(new Vector2[0]));
 				ar.clear();
+			}else if (s.startsWith("rotate ")) { // rotate Phi Theta
+				String[] sp = s.split(" ");
+				int Phi = Integer.parseInt(sp[1]), Theta = Integer.parseInt(sp[2]);
+				if(Phi%90 + Theta%90 == 0){
+					Phi = (Phi%360)/90;
+					Theta = (Theta%360)/90;
+					// Rotation around y axe
+					for(int i=0;i<Phi;i++){
+						// Faces rotation
+						Vector2[] temp = textures.get(2);
+						textures.set(2, textures.get(4));
+						textures.set(4, textures.get(3));
+						textures.set(3, textures.get(5));
+						textures.set(5, temp);
+						// Top and bot textures rotation
+						textures.set(1, new Vector2[]{textures.get(1)[1],textures.get(1)[2],textures.get(1)[3],textures.get(1)[0]});
+						textures.set(0, new Vector2[]{textures.get(0)[3],textures.get(0)[0],textures.get(0)[1],textures.get(0)[2]});
+					}
+					// Rotation around z axe
+					for(int i=0;i<Theta;i++){
+						// Faces rotation
+						Vector2[] temp = textures.get(0);
+						textures.set(0, textures.get(3));
+						textures.set(3, textures.get(1));
+						textures.set(1, textures.get(2));
+						textures.set(2, temp);
+						// East and Weast textures rotation
+						textures.set(4, new Vector2[]{textures.get(4)[1],textures.get(4)[2],textures.get(4)[3],textures.get(4)[0]});
+						textures.set(5, new Vector2[]{textures.get(5)[3],textures.get(5)[0],textures.get(5)[1],textures.get(5)[2]});
+						// Others textures rotation fixes
+						textures.set(2, new Vector2[]{textures.get(2)[2],textures.get(2)[3],textures.get(2)[0],textures.get(2)[1]});
+						textures.set(3, new Vector2[]{textures.get(3)[2],textures.get(3)[3],textures.get(3)[0],textures.get(3)[1]});
+					}
+				}
 			}
 
 		}
