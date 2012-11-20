@@ -29,7 +29,9 @@ package org.spout.engine.input;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
+import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
+import org.spout.api.event.player.PlayerKeyboardEvent;
 import org.spout.api.input.InputManager;
 import org.spout.api.input.Keyboard;
 import org.spout.api.input.Mouse;
@@ -42,9 +44,14 @@ public class SpoutInput implements InputManager {
 	private boolean redirected = false;
 
 	private void doKeypress(SpoutPlayer player, int button, boolean pressed) {
-		String cmd = keyCommands.get(button);
-		doCommand(player,cmd, pressed);
-
+		if (PlayerKeyboardEvent.getHandlerList().getRegisteredListeners().length > 0) {
+			final PlayerKeyboardEvent event = Spout.getEventManager().callEvent(new PlayerKeyboardEvent(player, Keyboard.get(button), pressed));
+			if (event.isCancelled()) {
+				return;
+			}
+			String cmd = keyCommands.get(event.getKey().getId());
+			doCommand(player, cmd, pressed);
+		}
 	}
 
 	public void doMousepress(SpoutPlayer player, int button, boolean pressed) {
@@ -92,13 +99,14 @@ public class SpoutInput implements InputManager {
 		if(org.lwjgl.input.Keyboard.isCreated()){
 			while (org.lwjgl.input.Keyboard.next()) {
 				int button = org.lwjgl.input.Keyboard.getEventKey();
-				if (button != -1)
-					doKeypress(player,button, org.lwjgl.input.Keyboard.getEventKeyState());
+				if (button != -1) {
+					doKeypress(player, button, org.lwjgl.input.Keyboard.getEventKeyState());
+				}
 			}
 		}
 
 		// Handle mouse
-		if(org.lwjgl.input.Mouse.isCreated())
+		if (org.lwjgl.input.Mouse.isCreated()) {
 			while (org.lwjgl.input.Mouse.next()) {
 				// Handle buttons
 				int button = org.lwjgl.input.Mouse.getEventButton();
@@ -118,6 +126,7 @@ public class SpoutInput implements InputManager {
 				doMouseDx(player, org.lwjgl.input.Mouse.getDX());
 				doMouseDy(player, org.lwjgl.input.Mouse.getDY());
 			}
+		}
 	}
 
 	@Override
