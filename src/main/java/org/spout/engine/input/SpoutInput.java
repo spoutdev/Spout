@@ -44,14 +44,14 @@ public class SpoutInput implements InputManager {
 	private boolean redirected = false;
 
 	private void doKeypress(SpoutPlayer player, int button, boolean pressed) {
+		String cmd = keyCommands.get(button);
 		if (PlayerKeyboardEvent.getHandlerList().getRegisteredListeners().length > 0) {
-			String cmd = keyCommands.get(button);
 			final PlayerKeyboardEvent event = Spout.getEventManager().callEvent(new PlayerKeyboardEvent(player, Keyboard.get(button), pressed, cmd));
 			if (event.isCancelled()) {
 				return;
 			}
-			doCommand(player, cmd, pressed);
 		}
+		doCommand(player, cmd, pressed);
 	}
 
 	public void doMousepress(SpoutPlayer player, int button, boolean pressed) {
