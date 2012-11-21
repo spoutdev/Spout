@@ -59,6 +59,8 @@ import org.spout.api.render.effect.SnapshotRender;
 
 public class ClientRenderMaterial extends RenderMaterial {
 
+	private static RenderMaterial assigned = null;
+
 	Shader shader;
 	Map<String, Object> materialParameters;
 
@@ -89,32 +91,34 @@ public class ClientRenderMaterial extends RenderMaterial {
 
 	@Override
 	public void assign(){
-		Set<Map.Entry<String, Object>> s = materialParameters.entrySet();
+		if(assigned != this){
+			Set<Map.Entry<String, Object>> s = materialParameters.entrySet();
 
-		for(Map.Entry<String, Object> entry : s){
-			if(entry.getValue() instanceof Integer){
-				shader.setUniform(entry.getKey(), ((Integer)entry.getValue()).intValue());
-			} else if( entry.getValue() instanceof Float){
-				shader.setUniform(entry.getKey(), ((Float)entry.getValue()).floatValue());
-			} else if( entry.getValue() instanceof Double){
-				shader.setUniform(entry.getKey(), ((Double)entry.getValue()).floatValue());
-			} else if( entry.getValue() instanceof ClientTexture){
-				shader.setUniform(entry.getKey(), (ClientTexture)entry.getValue());
-			} else if( entry.getValue() instanceof Vector2){
-				shader.setUniform(entry.getKey(), (Vector2)entry.getValue());
-			} else if( entry.getValue() instanceof Vector3){
-				shader.setUniform(entry.getKey(), (Vector3)entry.getValue());
-			} else if( entry.getValue() instanceof Vector4){
-				shader.setUniform(entry.getKey(), (Vector4)entry.getValue());
-			} else if( entry.getValue() instanceof Color){
-				shader.setUniform(entry.getKey(), (Color)entry.getValue());
-			} else if( entry.getValue() instanceof Matrix) {
-				shader.setUniform(entry.getKey(), (Matrix)entry.getValue());
+			for(Map.Entry<String, Object> entry : s){
+				if(entry.getValue() instanceof Integer){
+					shader.setUniform(entry.getKey(), ((Integer)entry.getValue()).intValue());
+				} else if( entry.getValue() instanceof Float){
+					shader.setUniform(entry.getKey(), ((Float)entry.getValue()).floatValue());
+				} else if( entry.getValue() instanceof Double){
+					shader.setUniform(entry.getKey(), ((Double)entry.getValue()).floatValue());
+				} else if( entry.getValue() instanceof ClientTexture){
+					shader.setUniform(entry.getKey(), (ClientTexture)entry.getValue());
+				} else if( entry.getValue() instanceof Vector2){
+					shader.setUniform(entry.getKey(), (Vector2)entry.getValue());
+				} else if( entry.getValue() instanceof Vector3){
+					shader.setUniform(entry.getKey(), (Vector3)entry.getValue());
+				} else if( entry.getValue() instanceof Vector4){
+					shader.setUniform(entry.getKey(), (Vector4)entry.getValue());
+				} else if( entry.getValue() instanceof Color){
+					shader.setUniform(entry.getKey(), (Color)entry.getValue());
+				} else if( entry.getValue() instanceof Matrix) {
+					shader.setUniform(entry.getKey(), (Matrix)entry.getValue());
+				}
 			}
+			assigned = this;
 		}
 
 		shader.assign();
-
 	}
 
 	@Override
@@ -223,7 +227,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 	public void addRenderEffect(RenderEffect renderEffect) {
 		renderEffects.add(renderEffect);
 	}
-	
+
 	@Override
 	public Collection<RenderEffect> getRenderEffects() {
 		return Collections.unmodifiableCollection(renderEffects);

@@ -60,7 +60,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 
 	private PrimitiveBatch renderer = new PrimitiveBatch();
 
-	private Matrix modelMat = MathHelper.createIdentity();
+	public final static Matrix model = MathHelper.createIdentity();
 	private final BlockFace face;
 	private final RenderMaterial material;
 	private boolean dirty = true;
@@ -132,10 +132,6 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 
 		((BatchVertexRenderer)renderer.getRenderer()).release();
 		closed = true;
-	}
-
-	public Matrix getTransform() {
-		return modelMat;
 	}
 
 	@Override
