@@ -55,4 +55,8 @@ public interface Shader {
 
 	public abstract void assign();
 
+	public abstract RenderMaterial getMaterialAssigned();
+
+	public abstract void setMaterialAssigned(RenderMaterial material);
+
 }
