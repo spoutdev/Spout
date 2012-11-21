@@ -66,6 +66,31 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	@Override
+	public float getRestitution() {
+		return body.getRestitution();
+	}
+
+	@Override
+	public void setRestitution(float restitution) {
+		body.setRestitution(restitution);
+	}
+
+	@Override
+	public float getAngularDamping() {
+		return body.getAngularDamping();
+	}
+
+	@Override
+	public float getLinearDamping() {
+		return body.getLinearDamping();
+	}
+
+	@Override
+	public void setDamping(float linearDamping, float angularDamping) {
+		body.setDamping(linearDamping, angularDamping);
+	}
+
+	@Override
 	public float getFriction() {
 		return body.getFriction();
 	}
