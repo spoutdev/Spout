@@ -192,14 +192,12 @@ public class SpoutColumn {
 			return;
 		}
 
-		if (c instanceof FilteredChunk) {
-			if (((FilteredChunk) c).isUniform()) {
-				//simplified version
-				if (!isAir(c, x, maxY, z)) {
-					notifyBlockChange(v, x, maxY, z);
-				}
-				return;
+		if (((SpoutChunk) c).isBlockUniform()) {
+			//simplified version
+			if (!isAir(c, x, maxY, z)) {
+				notifyBlockChange(v, x, maxY, z);
 			}
+			return;
 		}
 
 		for (int yy = maxY; yy >= y; yy--) {

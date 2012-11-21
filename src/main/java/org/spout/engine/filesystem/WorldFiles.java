@@ -77,7 +77,6 @@ import org.spout.api.util.typechecker.TypeChecker;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutPlayer;
-import org.spout.engine.world.FilteredChunk;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutChunk.PopulationState;
 import org.spout.engine.world.SpoutChunkSnapshot;
@@ -292,7 +291,7 @@ public class WorldFiles {
 				for (int i = 0; i < blocks.length; i++) {
 					blocks[i] = (short) itemMap.convertTo(global, blocks[i]);
 				}
-				chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), blocks, data, skyLight, blockLight, extraDataMap);
+				chunk = new SpoutChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), blocks, data, skyLight, blockLight, extraDataMap);
 			} else {
 				int blockArrayWidth = SafeCast.toInt(NBTMapper.toTagValue(map.get("packedWidth")), -1);
 				int[] variableWidthBlockArray = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("packedBlockArray")), null);
@@ -304,7 +303,7 @@ public class WorldFiles {
 					convertArray(variableWidthBlockArray, itemMap, global);
 					skipScan = componentSkipCheck(variableWidthBlockArray);
 				}
-				chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), palette, blockArrayWidth, variableWidthBlockArray, skyLight, blockLight, extraDataMap);
+				chunk = new SpoutChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), palette, blockArrayWidth, variableWidthBlockArray, skyLight, blockLight, extraDataMap);
 			}
 
 			CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("entities")), (CompoundMap) null, CompoundMap.class);

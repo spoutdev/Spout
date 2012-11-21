@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.spout.api.Spout;
 import org.spout.api.component.components.BlockComponent;
 import org.spout.api.event.Cause;
 import org.spout.api.generator.biome.Biome;
@@ -93,16 +94,17 @@ public class SpoutBlock implements Block {
 	@Override
 	public Chunk getChunk() {
 		WeakReference<Chunk> chunkRef = this.chunk.get();
-		if (chunkRef.get() == null || !chunkRef.get().isLoaded()) {
-			Chunk chunk = loadChunk();
+		Chunk chunk = chunkRef.get();
+		if (chunk == null || !chunk.isLoaded()) {
+			chunk = loadChunk();
 			if (chunk == null) {
+				Spout.getLogger().info("Warning: unable to load chunk for block " + this);
 				this.chunk.set(SpoutChunk.NULL_WEAK_REFERENCE);
 			} else {
 				this.chunk.set(((SpoutChunk) chunk).getWeakReference());
 			}
-			return chunk;
 		}
-		return chunkRef.get();
+		return chunk;
 	}
 
 	@Override

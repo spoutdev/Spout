@@ -402,6 +402,10 @@ public class SpoutRegion extends Region {
 				return generatedChunk;
 			} else {
 				Spout.getLogger().severe("Chunk failed to generate!  Column marked as generated: before " + oldGenerated + ", after " + generatedColumns[x][z].get());
+				for (int yy = 0; yy < CHUNKS.SIZE; yy++) {
+					Spout.getLogger().info(x + ", " + (y + getChunkY()) + ", " + z + " : " + chunks[x][yy][z]);
+					Spout.getLogger().info("File exists: " + this.inputStreamExists(x, y, z));
+				}
 			}
 		}
 
@@ -454,7 +458,8 @@ public class SpoutRegion extends Region {
 				final CuboidShortBuffer chunk = new CuboidShortBuffer(cx << Chunk.BLOCKS.BITS, cy << Chunk.BLOCKS.BITS, cz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
 				chunk.setSource(column);
 				chunk.copyElement(0, yy * Chunk.BLOCKS.VOLUME, Chunk.BLOCKS.VOLUME);
-				SpoutChunk newChunk = new FilteredChunk(world, this, cx, cy, cz, chunk.getRawArray(), null);
+				SpoutChunk newChunk = new SpoutChunk(world, this, cx, cy, cz, chunk.getRawArray(), null);
+				newChunk.setModified();
 				SpoutChunk currentChunk = setChunk(newChunk, x, yy++, z, null, true, loadopt);
 				if (currentChunk != newChunk) {
 					Spout.getLogger().info("Warning: Unable to set generated chunk, new Chunk " + newChunk + " chunk in memory " + currentChunk);
@@ -1767,7 +1772,7 @@ public class SpoutRegion extends Region {
 		if (chunk != null) {
 			chunk.unload(false);
 		}
-		SpoutChunk newChunk = new FilteredChunk(getWorld(), this, getBlockX() | x, getBlockY() | y, getBlockZ() | z, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, skyLight, blockLight, new ManagedHashMap());
+		SpoutChunk newChunk = new SpoutChunk(getWorld(), this, getBlockX() | x, getBlockY() | y, getBlockZ() | z, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, skyLight, blockLight, new ManagedHashMap());
 		setChunk(newChunk, x, y, z, null, true, LoadOption.LOAD_GEN);
 	}
 	
