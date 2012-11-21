@@ -57,8 +57,6 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> {
 	public void send(boolean upstream, boolean force, Message message) {
 		if (!upstream) {
 			getEngine().getLogger().warning("Attempt made to send packet to client");
-		} else {
-			getEngine().getLogger().warning("Attempt made to send packet to server");
 		}
 		super.send(upstream, force, message);
 	}
