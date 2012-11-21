@@ -94,20 +94,6 @@ public abstract class PhysicsComponent extends EntityComponent {
 	public abstract void setMass(float mass);
 
 	/**
-	 * Gets the collision object which holds the collision shape and is used to calculate physics such as velocity, intertia,
-	 * etc. All PhysicsComponents are guaranteed to have a valid object.
-	 * @return the CollisionObject
-	 */
-	public abstract CollisionObject getCollisionObject();
-
-	/**
-	 * Gets the MotionState. A MotionState is the "bridge" between Bullet and Spout in-which Bullet tells Spout that the
-	 * object has moved and to update your transforms accordingly.
-	 * @return the MotionState
-	 */
-	public abstract MotionState getMotionState();
-
-	/**
 	 * Gets the shape used to define the volume. Shapes range anywhere from a standard AABB bounding box to a basic
 	 * sphere shape. The shape is important as it is used to calculate collisions, inertia, and other characteristics.
 	 * @return The CollisionShape

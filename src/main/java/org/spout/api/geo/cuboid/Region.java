@@ -202,10 +202,10 @@ public abstract class Region extends Cube implements AreaChunkAccess, LocalAreaA
 	public abstract void unload(boolean save);
 
 	/**
-	 * Gets all entities with the specified type.
+	 * Gets all resources.entities with the specified type.
 	 * @param type The {@link Class} for the type.
 	 * @param type The type of entity.
-	 * @return A set of entities with the specified type.
+	 * @return A set of resources.entities with the specified type.
 	 */
 	@SnapshotRead
 	public abstract List<Entity> getAll();

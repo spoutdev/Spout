@@ -34,7 +34,7 @@ import org.spout.api.event.entity.EntityEvent;
 
 /**
  * This {@link EntityEvent} is designed to be fired by plugins that wish to check if an entity can be damaged by the given {@link Reason}.
- * Protection plugins should utilize this event to prevent entities from being allowed to take damage from specific causes.
+ * Protection plugins should utilize this event to prevent resources.entities from being allowed to take damage from specific causes.
  */
 public class EntityCanBeHarmedEvent extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
