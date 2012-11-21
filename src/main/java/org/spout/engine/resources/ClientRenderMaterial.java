@@ -59,8 +59,6 @@ import org.spout.api.render.effect.SnapshotRender;
 
 public class ClientRenderMaterial extends RenderMaterial {
 
-	private static RenderMaterial assigned = null;
-
 	Shader shader;
 	Map<String, Object> materialParameters;
 
@@ -91,7 +89,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 
 	@Override
 	public void assign(){
-		if(assigned != this){
+		if(getShader().getMaterialAssigned() != this){
 			Set<Map.Entry<String, Object>> s = materialParameters.entrySet();
 
 			for(Map.Entry<String, Object> entry : s){
@@ -115,7 +113,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 					shader.setUniform(entry.getKey(), (Matrix)entry.getValue());
 				}
 			}
-			assigned = this;
+			getShader().setMaterialAssigned(this);
 		}
 
 		shader.assign();

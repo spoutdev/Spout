@@ -41,6 +41,7 @@ import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
+import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.Shader;
 import org.spout.api.render.Texture;
@@ -327,5 +328,17 @@ public class ClientShader extends Resource implements Shader {
 	
 	public void finalize() {
 		dispose();
+	}
+
+	private RenderMaterial renderMaterial = null;
+	
+	@Override
+	public RenderMaterial getMaterialAssigned() {
+		return renderMaterial;
+	}
+
+	@Override
+	public void setMaterialAssigned(RenderMaterial material) {
+		this.renderMaterial = material;
 	}
 }
