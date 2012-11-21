@@ -161,7 +161,7 @@ abstract class AbstractData{
 		int expectedLength = fixedLength();
 		if (expectedLength == -1) {
 			VarInt.writeInt(out, compressed != null ? compressed.length : 0);
-		} else if (expectedLength != compressed.length) {
+		} else if (expectedLength != (compressed == null ? 0 : compressed.length)) {
 			throw new IllegalStateException("Fixed length DatatableObject did not match actual length");
 		}
 		if (compressed != null) {
