@@ -191,29 +191,34 @@ public class ClientShader extends Resource implements Shader {
 	@Override
 	public void setUniform(String name, int value) {
 		variables.put(name, new IntShaderVariable(program, name, value));
+		if(assigned == this) assigned = null;
 	}
 
 
 	@Override
 	public void setUniform(String name, float value) {
 		variables.put(name, new FloatShaderVariable(program, name, value));
+		if(assigned == this) assigned = null;
 	}
 
 	@Override
 	public void setUniform(String name, Vector2 value) {
 		variables.put(name, new Vec2ShaderVariable(program, name, value));
+		if(assigned == this) assigned = null;
 	}
 
 
 	@Override
 	public void setUniform(String name, Vector3 value) {
 		variables.put(name, new Vec3ShaderVariable(program, name, value));
+		if(assigned == this) assigned = null;
 	}
 
 
 	@Override
 	public void setUniform(String name, Vector4 value) {
 		variables.put(name, new Vec4ShaderVariable(program, name, value));
+		if(assigned == this) assigned = null;
 	}
 
 
@@ -226,17 +231,20 @@ public class ClientShader extends Resource implements Shader {
 		} else if (value.getDimension() == 4) {
 			variables.put(name, new Mat4ShaderVariable(program, name, value));
 		}
+		if(assigned == this) assigned = null;
 	}
 
 	@Override
 	public void setUniform(String name, Color value) {
 		variables.put(name, new ColorShaderVariable(program, name, value));
+		if(assigned == this) assigned = null;
 	}
 
 
 	@Override
 	public void setUniform(String name, Texture value) {
 		textures.put(name, new TextureSamplerShaderVariable(program, name, value));
+		if(assigned == this) assigned = null;
 	}
 
 
@@ -246,20 +254,25 @@ public class ClientShader extends Resource implements Shader {
 		GL20.glVertexAttribPointer(layout, size, type, false, 0, offset);
 	}
 
+	private ClientShader assigned = null;
+	
 	@Override
 	public void assign() {
 		if (((Client)Spout.getEngine()).getRenderMode()==RenderMode.GL11) {
 			assign(true);
 			return;
 		}
-		GL20.glUseProgram(program);
-		for (ShaderVariable v : variables.values()) {
-			v.assign();
-		}
-		int i = 0;
-		for(TextureSamplerShaderVariable v : textures.values()){
-			v.bind(i);
-			i++;
+		if(assigned != this){
+			GL20.glUseProgram(program);
+			for (ShaderVariable v : variables.values()) {
+				v.assign();
+			}
+			int i = 0;
+			for(TextureSamplerShaderVariable v : textures.values()){
+				v.bind(i);
+				i++;
+			}
+			assigned = this;
 		}
 	}
 	

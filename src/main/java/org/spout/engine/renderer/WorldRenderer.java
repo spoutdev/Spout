@@ -386,6 +386,7 @@ public class WorldRenderer {
 			
 			material.getShader().setUniform("View", client.getActiveCamera().getView());
 			material.getShader().setUniform("Projection", client.getActiveCamera().getProjection());
+			material.getShader().setUniform("Model", ChunkMeshBatchAggregator.model);
 			
 			for (ChunkMeshBatchAggregator renderer : entry.getValue()) {
 
@@ -422,8 +423,6 @@ public class WorldRenderer {
 						}
 					}
 				}
-
-				material.getShader().setUniform("Model", renderer.getTransform());
 
 				// It's hard to look right
 				// at the world baby

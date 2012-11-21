@@ -43,7 +43,6 @@ public class ChunkMeshBatch {
 	private PrimitiveBatch renderer = new PrimitiveBatch();
 	private BatchVertex batchVertex = null;
 	private boolean hasVertices = false;
-	private Matrix modelMat = MathHelper.createIdentity();
 	private final BlockFace face;
 	private final RenderMaterial material;
 	private boolean closed = false;
@@ -106,10 +105,6 @@ public class ChunkMeshBatch {
 		}
 		((BatchVertexRenderer)renderer.getRenderer()).release();
 		closed = true;
-	}
-
-	public Matrix getTransform() {
-		return modelMat;
 	}
 
 	@Override
