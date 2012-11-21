@@ -941,11 +941,12 @@ public class SpoutRegion extends Region {
 	private void updateDynamics(float dt) {
 		try {
 			synchronized(simulation) {
-				simulation.stepSimulation(dt, 0, 1 / 20F);
+				simulation.stepSimulation(dt, 10);
+				simulation.applyGravity();
 			}
 		} catch (Exception e) {
 			synchronized(logLock) {
-				Spout.getLogger().log(Level.SEVERE, "Exception while using physics in region " + getBase().toBlockString(), e);
+				Spout.getLogger().log(Level.SEVERE, "Exception while executing physics in region " + getBase().toBlockString(), e);
 			}
 		}
 	}
