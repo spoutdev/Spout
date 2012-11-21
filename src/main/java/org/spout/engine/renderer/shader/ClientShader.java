@@ -28,7 +28,9 @@ package org.spout.engine.renderer.shader;
 
 import java.awt.Color;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -132,7 +134,9 @@ public class ClientShader extends Resource implements Shader {
 
 	HashMap<String, ShaderVariable> variables = new HashMap<String, ShaderVariable>();
 	HashMap<String, TextureSamplerShaderVariable> textures = new HashMap<String, TextureSamplerShaderVariable>();
-
+	List<String> dirtyVariables = new ArrayList<String>();
+	List<String> dirtyTextures = new ArrayList<String>();
+	
 	int maxTextures;
 
 	public static boolean validateShader = true;
@@ -191,34 +195,34 @@ public class ClientShader extends Resource implements Shader {
 	@Override
 	public void setUniform(String name, int value) {
 		variables.put(name, new IntShaderVariable(program, name, value));
-		if(assigned == this) assigned = null;
+		if(assigned == this) dirtyVariables.add(name);
 	}
 
 
 	@Override
 	public void setUniform(String name, float value) {
 		variables.put(name, new FloatShaderVariable(program, name, value));
-		if(assigned == this) assigned = null;
+		if(assigned == this) dirtyVariables.add(name);
 	}
 
 	@Override
 	public void setUniform(String name, Vector2 value) {
 		variables.put(name, new Vec2ShaderVariable(program, name, value));
-		if(assigned == this) assigned = null;
+		if(assigned == this) dirtyVariables.add(name);
 	}
 
 
 	@Override
 	public void setUniform(String name, Vector3 value) {
 		variables.put(name, new Vec3ShaderVariable(program, name, value));
-		if(assigned == this) assigned = null;
+		if(assigned == this) dirtyVariables.add(name);
 	}
 
 
 	@Override
 	public void setUniform(String name, Vector4 value) {
 		variables.put(name, new Vec4ShaderVariable(program, name, value));
-		if(assigned == this) assigned = null;
+		if(assigned == this) dirtyVariables.add(name);
 	}
 
 
@@ -231,20 +235,20 @@ public class ClientShader extends Resource implements Shader {
 		} else if (value.getDimension() == 4) {
 			variables.put(name, new Mat4ShaderVariable(program, name, value));
 		}
-		if(assigned == this) assigned = null;
+		if(assigned == this) dirtyVariables.add(name);
 	}
 
 	@Override
 	public void setUniform(String name, Color value) {
 		variables.put(name, new ColorShaderVariable(program, name, value));
-		if(assigned == this) assigned = null;
+		if(assigned == this) dirtyVariables.add(name);
 	}
 
 
 	@Override
 	public void setUniform(String name, Texture value) {
 		textures.put(name, new TextureSamplerShaderVariable(program, name, value));
-		if(assigned == this) assigned = null;
+		if(assigned == this) dirtyTextures.add(name);
 	}
 
 
@@ -267,12 +271,29 @@ public class ClientShader extends Resource implements Shader {
 			for (ShaderVariable v : variables.values()) {
 				v.assign();
 			}
+			dirtyVariables.clear();
 			int i = 0;
 			for(TextureSamplerShaderVariable v : textures.values()){
 				v.bind(i);
 				i++;
 			}
+			dirtyTextures.clear();
 			assigned = this;
+		}else{
+			for(String key : dirtyVariables) {
+				variables.get(key).assign();
+			}
+			dirtyVariables.clear();
+			
+			if(!dirtyTextures.isEmpty()){ // MUST all reassign it, because keep texture number
+				int i = 0;
+				for(TextureSamplerShaderVariable v : textures.values()){
+					v.bind(i);
+					i++;
+				}
+				dirtyTextures.clear();
+			}
+			
 		}
 	}
 	
