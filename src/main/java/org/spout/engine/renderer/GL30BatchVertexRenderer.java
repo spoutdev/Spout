@@ -57,7 +57,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 	public GL30BatchVertexRenderer(int renderMode) {
 		super(renderMode);
 		vao = GL30.glGenVertexArrays();
-		GL30.glBindVertexArray(vao);
+		//GL30.glBindVertexArray(vao); // useless
 		
 		vertexBuffers.put(0, new VertexBufferImpl("vPosition", 4, 0));
 	}
@@ -76,7 +76,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 		vBuffer.flip();
 		
 		vertexBuffers.get(0).flush(vBuffer);
-		
+		vertexBuffers.get(0).bind();
 		
 		if (useColors) {
 			if(vertexBuffers.get(1) == null) {
@@ -88,6 +88,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 			vBuffer.flip();
 			
 			vertexBuffers.get(1).flush(vBuffer);
+			vertexBuffers.get(1).bind();
 			
 			
 		}
@@ -102,6 +103,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 			vBuffer.flip();
 			
 			vertexBuffers.get(2).flush(vBuffer);
+			vertexBuffers.get(2).bind();
 		}
 		if (useTextures) {
 			
@@ -115,9 +117,11 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 			vBuffer.flip();
 			
 			vertexBuffers.get(3).flush(vBuffer);
+			vertexBuffers.get(3).bind();
 		}
 
-		
+
+		GL30.glBindVertexArray(0);
 	}
 
 	/**
@@ -132,9 +136,9 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 		material.assign();
 		
 		for(VertexBufferImpl vb : vertexBuffers.valueCollection()){
-			vb.bind();
+			//vb.bind();
 			GL20.glEnableVertexAttribArray(vb.getLayout());
-			GL20.glVertexAttribPointer(vb.getLayout(), vb.getElements(), GL11.GL_FLOAT, false, 0, 0);
+			//GL20.glVertexAttribPointer(vb.getLayout(), vb.getElements(), GL11.GL_FLOAT, false, 0, 0);
 			//activeMaterial.getShader().enableAttribute(vb.getName(), vb.getElements(), GL11.GL_FLOAT, 0, 0, vb.getLayout());			
 		}
 	

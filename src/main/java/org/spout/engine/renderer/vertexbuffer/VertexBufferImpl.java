@@ -27,7 +27,10 @@
 package org.spout.engine.renderer.vertexbuffer;
 
 import java.nio.FloatBuffer;
+
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL20;
 
 public class VertexBufferImpl {	
 	int usage = GL15.GL_STATIC_DRAW;
@@ -60,7 +63,7 @@ public class VertexBufferImpl {
 	public void bind(){
 		if(vboId == -1) throw new IllegalStateException("Cannot bind a vertex buffer without data!");
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
-				
+		GL20.glVertexAttribPointer(getLayout(), getElements(), GL11.GL_FLOAT, false, 0, 0);
 	}
 	 
 	
