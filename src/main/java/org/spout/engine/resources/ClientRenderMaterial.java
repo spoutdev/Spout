@@ -59,7 +59,7 @@ import org.spout.api.render.effect.SnapshotRender;
 
 public class ClientRenderMaterial extends RenderMaterial {
 
-	private RenderMaterial assigned = null;
+	private static RenderMaterial assigned = null;
 
 	Shader shader;
 	Map<String, Object> materialParameters;

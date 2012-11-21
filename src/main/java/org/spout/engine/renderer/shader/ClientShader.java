@@ -254,7 +254,7 @@ public class ClientShader extends Resource implements Shader {
 		GL20.glVertexAttribPointer(layout, size, type, false, 0, offset);
 	}
 
-	private ClientShader assigned = null;
+	private static ClientShader assigned = null;
 	
 	@Override
 	public void assign() {
