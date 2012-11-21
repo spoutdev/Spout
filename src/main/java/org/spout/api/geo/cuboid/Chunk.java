@@ -234,17 +234,17 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	public abstract boolean isPopulated();
 
 	/**
-	 * Gets the resources.entities in the chunk at the last snapshot
+	 * Gets the entities in the chunk at the last snapshot
 	 *
-	 * @return the resources.entities
+	 * @return the entities
 	 */
 	@SnapshotRead
 	public abstract List<Entity> getEntities();
 
 	/**
-	 * Gets the resources.entities currently in the chunk
+	 * Gets the entities currently in the chunk
 	 *
-	 * @return the resources.entities
+	 * @return the entities
 	 */
 	@LiveRead
 	public abstract List<Entity> getLiveEntities();
@@ -252,7 +252,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	
 	/**
 	 * Gets the number of observers viewing this chunk. If the number
-	 * of observing resources.entities falls to zero, this chunk may be reaped at
+	 * of observing entities falls to zero, this chunk may be reaped at
 	 * any time.
 	 * 
 	 * @return number of observers

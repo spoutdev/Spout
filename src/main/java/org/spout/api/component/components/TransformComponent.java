@@ -201,7 +201,7 @@ public class TransformComponent extends EntityComponent {
 	}
 
 	/**
-	 * Gets the resources.entities current pitch, or vertical angle.
+	 * Gets the entities current pitch, or vertical angle.
 	 * @return pitch of the entity
 	 */
 	public float getPitch() {
@@ -213,7 +213,7 @@ public class TransformComponent extends EntityComponent {
 	}
 
 	/**
-	 * Gets the resources.entities current yaw, or horizontal angle.
+	 * Gets the entities current yaw, or horizontal angle.
 	 * @return yaw of the entity.
 	 */
 	public float getYaw() {
@@ -225,7 +225,7 @@ public class TransformComponent extends EntityComponent {
 	}
 
 	/**
-	 * Gets the resources.entities current roll as a float.
+	 * Gets the entities current roll as a float.
 	 * @return roll of the entity
 	 */
 	public float getRoll() {

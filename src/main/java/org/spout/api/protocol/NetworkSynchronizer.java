@@ -92,7 +92,7 @@ public abstract class NetworkSynchronizer {
 	private final Set<Point> chunksToObserve = new LinkedHashSet<Point>();
 	private final Map<Class<? extends ProtocolEvent>, ProtocolEventExecutor> protocolEventMapping = new HashMap<Class<? extends ProtocolEvent>, ProtocolEventExecutor>();
 
-	//Holds all resources.entities that have ever been sync'd to this Synchronizer
+	//Holds all entities that have ever been sync'd to this Synchronizer
 	private final TIntHashSet synchronizedEntities = new TIntHashSet();
 
 	public NetworkSynchronizer(Session session, int minViewDistance) {
@@ -577,7 +577,7 @@ public abstract class NetworkSynchronizer {
 	}
 
 	/**
-	 * Instructs the client to update the resources.entities state and position<br><br>
+	 * Instructs the client to update the entities state and position<br><br>
 	 *
 	 * @param e the entity
 	 * @param spawn is True when the entity just spawned

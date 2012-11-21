@@ -31,7 +31,7 @@ import java.util.List;
 import org.spout.api.entity.Entity;
 
 /**
- * A class that generates messages associated with resources.entities
+ * A class that generates messages associated with entities
  */
 public interface EntityProtocol {
 

@@ -29,11 +29,11 @@ package org.spout.api.entity.spawn;
 import org.spout.api.geo.discrete.Point;
 
 /**
- * Represents an arrangement for spawning resources.entities
+ * Represents an arrangement for spawning entities
  */
 public interface SpawnArrangement {
 	/**
-	 * Gets the Points to spawn resources.entities at. The getController method
+	 * Gets the Points to spawn entities at. The getController method
 	 * is called to determine which entity for a given index.
 	 * @return the spawn points in an array
 	 */

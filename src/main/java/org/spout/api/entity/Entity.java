@@ -48,7 +48,7 @@ import org.spout.api.util.thread.SnapshotRead;
 public interface Entity extends Tickable, WorldSource, ComponentHolder {
 	/**
 	 * Gets the current ID of this entity within the current game session
-	 * @return The resources.entities' id.
+	 * @return The entities' id.
 	 */
 	public int getId();
 
@@ -153,7 +153,7 @@ public interface Entity extends Tickable, WorldSource, ComponentHolder {
 	public TransformComponent getTransform();
 
 	/**
-	 * Gets a {@link NetworkComponent} which holds the resources.entities protocol lookups.
+	 * Gets a {@link NetworkComponent} which holds the entities protocol lookups.
 	 * @return The network component
 	 */
 	public NetworkComponent getNetwork();

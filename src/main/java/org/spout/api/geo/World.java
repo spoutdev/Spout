@@ -204,16 +204,16 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 	public Entity createAndSpawnEntity(Point point, Class<? extends Component> type, LoadOption option);
 
 	/**
-	 * Creates and Spawns resources.entities at the given points.  This is the same as calling
+	 * Creates and Spawns entities at the given points.  This is the same as calling
 	 * {@link #createAndSpawnEntity(point, type)} for each element in the array.
-	 * @param points The points to use for spawning the resources.entities
+	 * @param points The points to use for spawning the entities
 	 * @param component The component to give the Entity.
 	 * @return The Entities that has been created and spawned
 	 */
 	public Entity[] createAndSpawnEntity(Point[] points, Class<? extends Component> type, LoadOption option);
 
 	/**
-	 * Creates and Spawns resources.entities for the given arrangement.  This is the same as calling
+	 * Creates and Spawns entities for the given arrangement.  This is the same as calling
 	 * {@link #createAndSpawnEntity(point, component)} for each Point, entity pair in
 	 * the arrangement
 	 * @param component The component to give the Entity.
@@ -274,8 +274,8 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 	public void setSkyLight(byte newLight);
 
 	/**
-	 * Gets all resources.entities with the specified type.
-	 * @return A collection of resources.entities with the specified type.
+	 * Gets all entities with the specified type.
+	 * @return A collection of entities with the specified type.
 	 */
 	@SnapshotRead
 	public List<Entity> getAll();
@@ -337,11 +337,11 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 	public abstract TaskManager getTaskManager();
 
 	/**
-	 * Gets a list of nearby resources.entities of the point, inside of the range
+	 * Gets a list of nearby entities of the point, inside of the range
 	 * @param position of the center
 	 * @param ignore Entity to ignore
 	 * @param range to look for
-	 * @return the list of nearby resources.entities (or empty if none)
+	 * @return the list of nearby entities (or empty if none)
 	 */
 	public List<Entity> getNearbyEntities(Point position, Entity ignore, int range);
 

@@ -98,7 +98,7 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	 * Gets an unmodifiable list of all of the entity snapshots
 	 * associated with this chunk.
 	 *
-	 * @return the resources.entities
+	 * @return the entities
 	 */
 	public abstract List<EntitySnapshot> getEntities();
 
