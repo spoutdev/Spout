@@ -107,6 +107,15 @@ public interface AtomicBlockStore {
 	public int touchBlock(int x, int y, int z);
 	
 	/**
+	 * Tests if all the entries in the block store are uniform.<br>
+	 * <br>
+	 * Note: this method may spuriously return false for uniform stores
+	 *
+	 * @return false if the store is not uniform
+	 */
+	public boolean isBlockUniform();
+	
+	/**
 	 * Sets the block id and data for the block at (x, y, z).<br>
 	 * <br>
 	 * If the data is 0 and the auxData is null, then the block will be stored
@@ -318,4 +327,23 @@ public interface AtomicBlockStore {
 	 * @return
 	 */
 	public int[] getPalette();
+	
+
+	/**
+	 * Write locks the store
+	 */
+	public void writeLock();
+
+	/**
+	 * Releases the store write lock
+	 */
+	public void writeUnlock();
+	
+
+	/**
+	 * Attempts to write lock the store
+	 * 
+	 * @return
+	 */
+	public boolean tryWriteLock();
 }

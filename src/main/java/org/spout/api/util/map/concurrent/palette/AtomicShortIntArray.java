@@ -63,7 +63,7 @@ public class AtomicShortIntArray {
 	
 	public AtomicShortIntArray(int length) {
 		this.length = length;
-		store.set(new AtomicShortIntPaletteBackingArray(length));
+		store.set(new AtomicShortIntUniformBackingArray(length));
 	}
 	
 	/**
@@ -160,7 +160,9 @@ public class AtomicShortIntArray {
 			}
 			int unique = AtomicShortIntArray.getUnique(initial);
 			int allowedPalette = AtomicShortIntPaletteBackingArray.getAllowedPalette(length);
-			if (unique > allowedPalette) {
+			if (unique == 1) {
+				store.set(new AtomicShortIntUniformBackingArray(length, initial[0]));
+			} else if (unique > allowedPalette) {
 				store.set(new AtomicShortIntDirectBackingArray(length, initial));
 			} else {
 				store.set(new AtomicShortIntPaletteBackingArray(length, unique, initial));
@@ -182,6 +184,8 @@ public class AtomicShortIntArray {
 		try {
 			if (palette.length == 0) {
 				store.set(new AtomicShortIntDirectBackingArray(length, variableWidthBlockArray));
+			} else if (palette.length == 1) {
+				store.set(new AtomicShortIntUniformBackingArray(length, palette[0]));
 			} else {
 				store.set(new AtomicShortIntPaletteBackingArray(length, palette, blockArrayWidth, variableWidthBlockArray));
 			}
@@ -189,7 +193,7 @@ public class AtomicShortIntArray {
 			resizeLock.unlock();
 		}
 	}
-	
+
 	/**
 	 * Sets the element at the given index, but only if the previous value was the expected value.
 	 *
@@ -238,11 +242,22 @@ public class AtomicShortIntArray {
 		resizeLock.lock();
 		try {
 			AtomicShortIntBackingArray s = store.get();
+			if (s instanceof AtomicShortIntUniformBackingArray) {
+				return;
+			}
 			int unique = s.getUnique(inUseSet);
 			if (AtomicShortIntPaletteBackingArray.roundUpWidth(unique - 1) >= s.width()) {
 				return;
 			}
-			store.set(new AtomicShortIntPaletteBackingArray(s, length, true, false, unique));
+			if (unique > AtomicShortIntPaletteBackingArray.getAllowedPalette(s.length())) {
+				return;
+			}
+			if (unique == 1) {
+				store.set(new AtomicShortIntUniformBackingArray(s));
+			} else {
+				store.set(new AtomicShortIntPaletteBackingArray(s, length, true, false, unique));
+			}
+			s = store.get();
 		} finally {
 			resizeLock.unlock();
 		}
@@ -296,5 +311,34 @@ public class AtomicShortIntArray {
 		}
 		return unique;
 	}
-
+	
+	/**
+	 * Locks the store so that reads and writes are prevented
+	 */
+	public void lock() {
+		resizeLock.lock();
+	}
+	
+	/**
+	 * Unlocks the store
+	 */
+	public void unlock() {
+		resizeLock.unlock();
+	}
+	
+	/**
+	 * Attempts to lock the store
+	 * 
+	 * @return true on success
+	 */
+	public boolean tryLock() {
+		return resizeLock.tryLock();
+	}
+	
+	/**
+	 * Gets if the store is uniform
+	 */
+	public boolean isUniform() {
+		return store.get() instanceof AtomicShortIntUniformBackingArray;
+	}
 }

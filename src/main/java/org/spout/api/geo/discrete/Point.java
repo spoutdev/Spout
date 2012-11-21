@@ -317,6 +317,10 @@ public class Point extends Vector3 implements WorldSource {
 		return "{" + world.getName() + ":" + getBlockX() + ", " + getBlockY() + "," + getBlockZ() + "}";
 	}
 	
+	public String toChunkString() {
+		return "{" + world.getName() + ":" + getChunkX() + ", " + getChunkY() + "," + getChunkZ() + "}";
+	}
+	
 	//Custom serialization logic because world can not be made serializable
 	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
 		out.writeFloat(this.x);

@@ -306,4 +306,24 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	public int[] getPalette() {
 		return store.getPalette();
 	}
+
+	@Override
+	public void writeLock() {
+		store.lock();
+	}
+
+	@Override
+	public void writeUnlock() {
+		store.unlock();
+	}
+	
+	@Override
+	public boolean tryWriteLock() {
+		return store.tryLock();
+	}
+
+	@Override
+	public boolean isBlockUniform() {
+		return store.isUniform();
+	}
 }

@@ -65,7 +65,7 @@ public class AtomicShortIntPaletteBackingArray extends AtomicShortIntBackingArra
 				width = roundUpWidth(expand ? unique : (unique - 1));
 			} else {
 				int oldWidth = previous.width();
-				width = oldWidth <= 8 ? (oldWidth << 1) : (16);
+				width = oldWidth == 0 ? 1 : oldWidth <= 8 ? (oldWidth << 1) : (16);
 			}
 		}
 		int allowedPalette = AtomicShortIntPaletteBackingArray.getAllowedPalette(length);
