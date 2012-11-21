@@ -1078,13 +1078,14 @@ public class SpoutRegion extends Region {
 	public void preSnapshotRun() {
 		entityManager.preSnapshotRun();
 		
+		boolean firstRenderQueueTick = false;
+		Point playerPosition = null;
+		
 		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
 			SpoutWorld world = this.getWorld();
 			
 			boolean worldRenderQueueEnabled = world.isRenderQueueEnabled();
-			boolean firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
-			
-			Point playerPosition = null;
+			firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
 			
 			SpoutPlayer player = ((SpoutClient) Spout.getEngine()).getActivePlayer();
 			if (player == null) {
@@ -1107,29 +1108,27 @@ public class SpoutRegion extends Region {
 
 				renderQueueEnabled = worldRenderQueueEnabled;
 			}
+		}
 
-			if( getRenderer() != null && getRenderer().getBatchWaiting() < RENDER_QUEUE_LIMIT && renderChunkQueue.size() < MESH_QUEUE_LIMIT){
-				SpoutChunk spoutChunk;
-				while ((spoutChunk = dirtyChunks.poll()) != null) {
+		SpoutChunk spoutChunk;
+		while ((spoutChunk = dirtyChunks.poll()) != null) {
 
-					spoutChunk.setNotDirtyQueued();
-					if (!spoutChunk.isLoaded()) {
-						continue;
-					}
+			spoutChunk.setNotDirtyQueued();
+			if (!spoutChunk.isLoaded()) {
+				continue;
+			}
 
-					if ((!firstRenderQueueTick) && renderQueueEnabled  && spoutChunk.isRenderDirty()) {
-						addUpdateToRenderQueue(playerPosition, spoutChunk, false);
-					}
-					if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
-						for (Player entity : spoutChunk.getObservingPlayers()) {
-							syncChunkToPlayer(spoutChunk, entity);
-						}
-						processChunkUpdatedEvent(spoutChunk);
-
-						spoutChunk.resetDirtyArrays();
-						spoutChunk.setLightDirty(false);
-					}
+			if ((!firstRenderQueueTick) && renderQueueEnabled  && spoutChunk.isRenderDirty()) {
+				addUpdateToRenderQueue(playerPosition, spoutChunk, false);
+			}
+			if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
+				for (Player entity : spoutChunk.getObservingPlayers()) {
+					syncChunkToPlayer(spoutChunk, entity);
 				}
+				processChunkUpdatedEvent(spoutChunk);
+
+				spoutChunk.resetDirtyArrays();
+				spoutChunk.setLightDirty(false);
 			}
 		}
 
