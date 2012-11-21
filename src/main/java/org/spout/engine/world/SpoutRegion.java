@@ -156,7 +156,7 @@ public class SpoutRegion extends Region {
 	 */
 	protected SnapshotManager snapshotManager = new SnapshotManager();
 	/**
-	 * Holds all of the resources.entities to be simulated
+	 * Holds all of the entities to be simulated
 	 */
 	protected final EntityManager entityManager = new EntityManager(this);
 	/**
@@ -1010,7 +1010,7 @@ public class SpoutRegion extends Region {
 				}
 			}
 		}
-		//Note: This must occur after any chunks are reaped, because reaping chunks may kill resources.entities, which need to be finalized
+		//Note: This must occur after any chunks are reaped, because reaping chunks may kill entities, which need to be finalized
 		entityManager.finalizeRun();
 	}
 

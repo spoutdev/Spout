@@ -84,7 +84,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		super(chunk.getWorld(), chunk.getX() * CHUNK_SIZE, chunk.getY() * CHUNK_SIZE, chunk.getZ() * CHUNK_SIZE);
 		parentRegion = new WeakReference<Region>(chunk.getRegion());
 
-		// Cache resources.entities
+		// Cache entities
 		if (type == EntityType.BOTH) {
 			this.entities = Collections.unmodifiableList(getEntities(chunk));
 			BlockSnapshotProcedure procedure = new BlockSnapshotProcedure(chunk);
@@ -226,7 +226,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	@Override
 	public List<EntitySnapshot> getEntities() {
 		if (this.entities == null) {
-			throw new UnsupportedOperationException("This chunk snapshot does not contain resources.entities");
+			throw new UnsupportedOperationException("This chunk snapshot does not contain entities");
 		} else {
 			return this.entities;
 		}
