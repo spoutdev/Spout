@@ -39,6 +39,37 @@ public abstract class PhysicsComponent extends EntityComponent {
 	}
 
 	/**
+	 * Gets the restitution of the entity.
+	 * @return the restitution
+	 */
+	public abstract float getRestitution();
+
+	/**
+	 * Sets the restitution of the entity.
+	 * @param restitution new restitution of the object
+	 */
+	public abstract void setRestitution(float restitution);
+
+	/**
+	 * Gets the angular damping of the entity.
+	 * @return the angular damping
+	 */
+	public abstract float getAngularDamping();
+
+	/**
+	 * Gets the linear damping of the entity.
+	 * @return the linear damping
+	 */
+	public abstract float getLinearDamping();
+
+	/**
+	 * Sets the damping of the entity.
+	 * @param linearDamping new linear damping of the object
+	 * @param angularDamping new angular damping of the object
+	 */
+	public abstract void setDamping(float linearDamping, float angularDamping);
+
+	/**
 	 * Gets the friction of the entity.
 	 * @return the friction
 	 */
