@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
@@ -272,6 +273,34 @@ public class ChatArguments implements Cloneable, ChatSection, Serializable {
 
 	public boolean hasPlaceholder(Placeholder placeholder) {
 		return placeholders.containsKey(placeholder);
+	}
+	
+	/**
+	 * Gets the value of a Placeholder, or null if either the placeholder has no value, or it does not exist in the ChatArgument.
+	 * @param The Placeholder
+	 * @return the value of the Placeholder
+	 */
+	public ChatArguments getPlaceholder(Placeholder placeHolder) {
+		lock.lock();
+		try {
+			Value value = placeholders.get(placeHolder);
+			return value == null ? null : value.value;
+		} finally {
+			lock.unlock();
+		}
+	}
+	
+	public Map<Placeholder, ChatArguments> getPlaceholders() {
+		lock.lock();
+		try {
+			Map<Placeholder, ChatArguments> newMap = new HashMap<Placeholder, ChatArguments>();
+			for ( Entry<Placeholder, Value> entry : placeholders.entrySet()) {
+				newMap.put(entry.getKey(), entry.getValue().value);
+			}
+			return newMap;
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	/**
