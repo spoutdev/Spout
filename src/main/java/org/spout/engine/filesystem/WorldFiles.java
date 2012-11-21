@@ -228,7 +228,7 @@ public class WorldFiles {
 		chunkTags.put(new IntArrayTag("packedBlockArray", packetBlockArray));
 		chunkTags.put(new ByteArrayTag("skyLight", snapshot.getSkyLight()));
 		chunkTags.put(new ByteArrayTag("blockLight", snapshot.getBlockLight()));
-		chunkTags.put(new CompoundTag("entities", saveEntities(snapshot.getEntities())));
+		chunkTags.put(new CompoundTag("resources.entities", saveEntities(snapshot.getEntities())));
 		chunkTags.put(saveDynamicUpdates(blockUpdates));
 		chunkTags.put(saveBlockComponents(snapshot.getBlockComponents()));
 		chunkTags.put(new ByteArrayTag("extraData", snapshot.getDataMap().serialize()));
@@ -307,7 +307,7 @@ public class WorldFiles {
 				chunk = new FilteredChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), palette, blockArrayWidth, variableWidthBlockArray, skyLight, blockLight, extraDataMap);
 			}
 
-			CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("entities")), (CompoundMap) null, CompoundMap.class);
+			CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("resources.entities")), (CompoundMap) null, CompoundMap.class);
 			loadEntities(r, entityMap, dataForRegion.loadedEntities);
 
 			List<? extends CompoundTag> updateList = checkerListCompoundTag.checkTag(map.get("dynamic_updates"));
@@ -452,7 +452,7 @@ public class WorldFiles {
 		//Setup entity
 		Region r = w.getRegionFromBlock(Math.round(pX), Math.round(pY), Math.round(pZ), player ? LoadOption.LOAD_GEN : LoadOption.NO_LOAD);
 		if (r == null) {
-			// TODO - this should never happen - entities should be located in the chunk that was just loaded
+			// TODO - this should never happen - resources.entities should be located in the chunk that was just loaded
 			Spout.getLogger().info("Attempted to load entity to unloaded region");
 			Thread.dumpStack();
 			return null;

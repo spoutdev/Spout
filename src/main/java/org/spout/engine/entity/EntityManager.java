@@ -44,7 +44,7 @@ import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 
 /**
- * A class which manages all of the entities within a world.
+ * A class which manages all of the resources.entities within a world.
  */
 public class EntityManager {
 	/**
@@ -52,7 +52,7 @@ public class EntityManager {
 	 */
 	protected final SnapshotManager snapshotManager = new SnapshotManager();
 	/**
-	 * A map of all the entity ids to the corresponding entities.
+	 * A map of all the entity ids to the corresponding resources.entities.
 	 */
 	private final SnapshotableHashMap<Integer, SpoutEntity> entities = new SnapshotableHashMap<Integer, SpoutEntity>(snapshotManager);
 	/**
@@ -60,11 +60,11 @@ public class EntityManager {
 	 */
 	private final static AtomicInteger nextId = new AtomicInteger(1);
 	/**
-	 * The region with entities this manager manages.
+	 * The region with resources.entities this manager manages.
 	 */
 	private final SpoutRegion region;
 	/**
-	 * Player listings plus listings of sync'd entities per player
+	 * Player listings plus listings of sync'd resources.entities per player
 	 */
 	private final SnapshotableHashMap<Player, ArrayList<SpoutEntity>> players = new SnapshotableHashMap<Player, ArrayList<SpoutEntity>>(snapshotManager);
 
@@ -76,16 +76,16 @@ public class EntityManager {
 	}
 
 	/**
-	 * Gets all entities.
-	 * @return A collection of entities.
+	 * Gets all resources.entities.
+	 * @return A collection of resources.entities.
 	 */
 	public Collection<SpoutEntity> getAll() {
 		return entities.get().values();
 	}
 
 	/**
-	 * Gets all the entities that are in a live state (not the snapshot).
-	 * @return A collection of entities
+	 * Gets all the resources.entities that are in a live state (not the snapshot).
+	 * @return A collection of resources.entities
 	 */
 	public Collection<SpoutEntity> getAllLive() {
 		return entities.getLive().values();
@@ -174,7 +174,7 @@ public class EntityManager {
 	}
 
 	/**
-	 * Snapshots the manager and all the entities managed in the SNAPSHOT tickstage.
+	 * Snapshots the manager and all the resources.entities managed in the SNAPSHOT tickstage.
 	 */
 	public void copyAllSnapshots() {
 		for (SpoutEntity e : entities.get().values()) {
@@ -192,11 +192,11 @@ public class EntityManager {
 	}
 
 	/**
-	 * Syncs all entities/observers in this region
+	 * Syncs all resources.entities/observers in this region
 	 */
 	public void syncEntities() {
 		for (Entity ent : getAll()) {
-			//Do not sync entities with null chunks
+			//Do not sync resources.entities with null chunks
 			if (ent.getChunk() == null) {
 				continue;
 			}

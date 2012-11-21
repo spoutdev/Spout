@@ -490,7 +490,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		gui = SpriteBatch.createSpriteBatch(getRenderMode(), resolution.getX(), resolution.getY());
 
 		// Test
-		ClientEntityPrefab spoutyType = (ClientEntityPrefab) Spout.getFilesystem().getResource("entity://Spout/resources/resources/entities/Spouty/spouty.sep");
+		ClientEntityPrefab spoutyType = (ClientEntityPrefab) Spout.getFilesystem().getResource("entity://Spout/resources/resources/resources.entities/Spouty/spouty.sep");
 
 		Entity e = spoutyType.createEntity(new Point(super.getDefaultWorld(),0,0,0));
 		e.setSavable(false); // To prevent entity duplication

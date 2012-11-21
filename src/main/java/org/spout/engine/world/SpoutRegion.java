@@ -129,6 +129,7 @@ import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
+import com.sun.xml.internal.bind.v2.TODO;
 
 public class SpoutRegion extends Region {
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
@@ -155,7 +156,7 @@ public class SpoutRegion extends Region {
 	 */
 	protected SnapshotManager snapshotManager = new SnapshotManager();
 	/**
-	 * Holds all of the entities to be simulated
+	 * Holds all of the resources.entities to be simulated
 	 */
 	protected final EntityManager entityManager = new EntityManager(this);
 	/**
@@ -286,6 +287,7 @@ public class SpoutRegion extends Region {
 		final DefaultMotionState regionMotionState = new DefaultMotionState(new Transform(new Matrix4f(rot, new Vector3f(0, 0, 0), 1.0f)));
 		final RigidBodyConstructionInfo regionBodyInfo = new RigidBodyConstructionInfo(0, regionMotionState, simulationShape, new Vector3f());
 		final RigidBody regionBody = new RigidBody(regionBodyInfo);
+		//TODO Recheck Terasology code for more correct flags
 		regionBody.setCollisionFlags(CollisionFlags.STATIC_OBJECT | regionBody.getCollisionFlags());
 		simulation.addRigidBody(regionBody);
 	}
@@ -309,7 +311,7 @@ public class SpoutRegion extends Region {
 	}
 
 	public void addPhysics(PhysicsComponent physics) {
-		CollisionObject object = physics.getCollisionObject();
+		CollisionObject object = ((SpoutPhysicsComponent) physics).getCollisionObject();
 		if (object == null || object.getCollisionShape() == null) {
 			return;
 		}
@@ -323,7 +325,7 @@ public class SpoutRegion extends Region {
 	}
 
 	public void removePhysics(PhysicsComponent physics) {
-		CollisionObject object = physics.getCollisionObject();
+		CollisionObject object = ((SpoutPhysicsComponent) physics).getCollisionObject();
 		if (object == null || object.getCollisionShape() == null) {
 			return;
 		}
@@ -1008,7 +1010,7 @@ public class SpoutRegion extends Region {
 				}
 			}
 		}
-		//Note: This must occur after any chunks are reaped, because reaping chunks may kill entities, which need to be finalized
+		//Note: This must occur after any chunks are reaped, because reaping chunks may kill resources.entities, which need to be finalized
 		entityManager.finalizeRun();
 	}
 

@@ -965,7 +965,7 @@ public class SpoutWorld extends AsyncManager implements World {
 			}
 		}
 
-		//TODO: colliding entities
+		//TODO: colliding resources.entities
 		return colliding;
 	}
 

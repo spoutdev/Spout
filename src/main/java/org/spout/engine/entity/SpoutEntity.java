@@ -157,7 +157,6 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	public void onTick(float dt) {
-		//System.out.println("entity ticked");
 		for (Component component : values()) {
 			component.tick(dt);
 		}
@@ -204,14 +203,14 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 			for (Component component : values()) {
 				detach(component.getClass());
 			}
-			//Track entities w/their chunks
+			//Track resources.entities w/their chunks
 			if (chunk != null) {
 				chunk.onEntityLeave(this);
 			}
 			return;
 		}
 
-		//Track entities w/their chunks, for saving purposes
+		//Track resources.entities w/their chunks, for saving purposes
 		if (!(this instanceof SpoutPlayer)) {
 			if (chunk != chunkLive) {
 				if (chunk != null) {
@@ -226,7 +225,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		//Move entity from Region A to Region B
 		if (chunkLive != null && (chunk == null || chunk.getRegion() != chunkLive.getRegion())) {
 			entityManager.get().removeEntity(this);
-			//Only allow non removed entities to move to new region
+			//Only allow non removed resources.entities to move to new region
 			if (!isRemoved()) {
 				//Set the new EntityManager for the new region
 				entityManager.set(chunkLive.getRegion().getEntityManager());
@@ -293,10 +292,6 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	@Override
 	public World getWorld() {
 		return entityManager.get().getRegion().getWorld();
-	}
-
-	public boolean justSpawned() {
-		return justSpawned;
 	}
 
 	@Override

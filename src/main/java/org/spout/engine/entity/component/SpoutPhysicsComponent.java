@@ -67,37 +67,72 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	@Override
 	public float getRestitution() {
-		return body.getRestitution();
+		if (body == null) {
+			throw new IllegalStateException("A collision shape must be set first");
+		}
+		synchronized (((SpoutRegion) getOwner().getRegion()).getSimulation()) {
+			return body.getRestitution();
+		}
 	}
 
 	@Override
 	public void setRestitution(float restitution) {
-		body.setRestitution(restitution);
+		if (body == null) {
+			throw new IllegalStateException("A collision shape must be set first");
+		}
+		synchronized (((SpoutRegion) getOwner().getRegion()).getSimulation()) {
+			body.setRestitution(restitution);
+		}
 	}
 
 	@Override
 	public float getAngularDamping() {
-		return body.getAngularDamping();
+		if (body == null) {
+			throw new IllegalStateException("A collision shape must be set first");
+		}
+		synchronized (((SpoutRegion) getOwner().getRegion()).getSimulation()) {
+			return body.getAngularDamping();
+		}
 	}
 
 	@Override
 	public float getLinearDamping() {
-		return body.getLinearDamping();
+		if (body == null) {
+			throw new IllegalStateException("A collision shape must be set first");
+		}
+		synchronized (((SpoutRegion) getOwner().getRegion()).getSimulation()) {
+			return body.getLinearDamping();
+		}
 	}
 
 	@Override
 	public void setDamping(float linearDamping, float angularDamping) {
-		body.setDamping(linearDamping, angularDamping);
+		if (body == null) {
+			throw new IllegalStateException("A collision shape must be set first");
+		}
+		synchronized (((SpoutRegion) getOwner().getRegion()).getSimulation()) {
+			body.setDamping(linearDamping, angularDamping);
+		}
 	}
 
 	@Override
 	public float getFriction() {
-		return body.getFriction();
+		if (body == null) {
+			throw new IllegalStateException("A collision shape must be set first");
+		}
+		synchronized (((SpoutRegion) getOwner().getRegion()).getSimulation()) {
+			return body.getFriction();
+		}
 	}
 
 	@Override
 	public void setFriction(float friction) {
-		body.setFriction(friction);
+		if (body == null) {
+			throw new IllegalStateException("A collision shape must be set first");
+		}
+		synchronized (((SpoutRegion) getOwner().getRegion()).getSimulation()) {
+			body.setFriction(friction);
+		}
 	}
 
 	@Override
@@ -107,17 +142,10 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	@Override
 	public void setMass(float mass) {
+		if (body != null) {
+			throw new IllegalStateException("Cannot set mass for a body which has already been created!");
+		}
 		this.mass = mass;
-	}
-
-	@Override
-	public CollisionObject getCollisionObject() {
-		return body;
-	}
-
-	@Override
-	public MotionState getMotionState() {
-		return state;
 	}
 
 	@Override
@@ -136,7 +164,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		org.spout.api.geo.discrete.Transform spoutTransform = getOwner().getTransform().getTransformLive();
 		Point point = spoutTransform.getPosition();
 		state = new SpoutDefaultMotionState(getOwner());
-		body = new RigidBody(getMass(), state, shape);
+		body = new RigidBody(mass, state, shape);
 		body.setWorldTransform(new Transform(new Matrix4f(MathHelper.toQuaternionf(spoutTransform.getRotation()), MathHelper.toVector3f(point.getX(), point.getY(), point.getZ()), 1)));
 		body.activate();
 	}
@@ -212,6 +240,24 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		}
 	}
 
+	/**
+	 * Gets the collision object which holds the collision shape and is used to calculate physics such as velocity, intertia,
+	 * etc. All PhysicsComponents are guaranteed to have a valid object.
+	 * @return the CollisionObject
+	 */
+	public CollisionObject getCollisionObject() {
+		return body;
+	}
+
+	/**
+	 * Gets the MotionState. A MotionState is the "bridge" between Bullet and Spout in-which Bullet tells Spout that the
+	 * object has moved and to update your transforms accordingly.
+	 * @return the MotionState
+	 */
+	public MotionState getMotionState() {
+		return state;
+	}
+
 	public void copySnapshot() {
 		if (body != null) {
 			SpoutRegion r = (SpoutRegion) getOwner().getRegion();
@@ -219,14 +265,15 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 				throw new IllegalStateException("Entity region is null!");
 			}
 			synchronized (r.getSimulation()) {
-				angularVelocity = MathHelper.toVector3(body.getInterpolationAngularVelocity(new Vector3f()));
-				Vector3 velocity = MathHelper.toVector3(body.getInterpolationLinearVelocity(new Vector3f()));
-				if (!velocity.equals(linearVelocity)) {
+				Vector3 angularVelocityLive = MathHelper.toVector3(body.getInterpolationAngularVelocity(new Vector3f()));
+				Vector3 linearVelocityLive = MathHelper.toVector3(body.getInterpolationLinearVelocity(new Vector3f()));
+				if (!linearVelocityLive.equals(linearVelocity) || angularVelocityLive.equals(angularVelocity)) {
 					dirty = true;
 				} else {
 					dirty = false;
 				}
-				linearVelocity = velocity;
+				angularVelocity = angularVelocityLive;
+				linearVelocity = linearVelocityLive;
 			}
 		}
 	}
@@ -248,8 +295,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 		@Override
 		public void setWorldTransform(Transform transform) {
-			Point pos = new Point(MathHelper.toVector3(transform.origin), entity.getWorld());
-			entity.getTransform().setPosition(pos);
+			entity.getTransform().setPosition(new Point(MathHelper.toVector3(transform.origin), entity.getWorld()));
 			entity.getTransform().setRotation(MathHelper.toQuaternion(transform.getRotation(new Quat4f())));
 		}
 	}
