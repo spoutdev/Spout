@@ -1,11 +1,12 @@
  #version 120
 
+uniform sampler2D Diffuse;
+
 varying vec4 color;
 varying vec2 uvcoord;
-uniform sampler2D texture;
-									
+
 void main()
 {
-	//gl_FragColor =  color;
-	gl_FragColor = texture2D(texture, uvcoord);
+	//gl_FragColor = color;
+	gl_FragColor = texture2D(Diffuse, uvcoord);
 } 

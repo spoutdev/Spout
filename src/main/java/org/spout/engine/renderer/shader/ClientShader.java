@@ -59,7 +59,6 @@ import org.spout.engine.renderer.shader.variables.TextureSamplerShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec2ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec3ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec4ShaderVariable;
-import org.spout.engine.resources.ClientFont;
 
 /**
  * Represents a Shader Object in OpenGL
@@ -255,8 +254,9 @@ public class ClientShader extends Resource implements Shader {
 
 	@Override
 	public void enableAttribute(String name, int size, int type, int stride, long offset, int layout) {
-		GL20.glEnableVertexAttribArray(layout);
-		GL20.glVertexAttribPointer(layout, size, type, false, 0, offset);
+		GL20.glBindAttribLocation(program, layout, name);
+		//GL20.glEnableVertexAttribArray(layout);
+		//GL20.glVertexAttribPointer(layout, size, type, false, 0, offset);
 	}
 
 	private static ClientShader assigned = null;
@@ -267,6 +267,7 @@ public class ClientShader extends Resource implements Shader {
 			assign(true);
 			return;
 		}
+		
 		if(assigned != this){
 			GL20.glUseProgram(program);
 			for (ShaderVariable v : variables.values()) {

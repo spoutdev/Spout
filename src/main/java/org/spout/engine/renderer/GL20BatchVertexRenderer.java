@@ -47,7 +47,7 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 	
 	
 	/**
-	 * Batch Renderer using OpenGL 3.0 mode.
+	 * Batch Renderer using OpenGL 2.0 mode.
 	 * @param renderMode Mode to render in
 	 */
 	public GL20BatchVertexRenderer(int renderMode) {
@@ -95,7 +95,7 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 		if (useTextures) {
 			
 			if(vertexBuffers.get(3) == null) {
-				vertexBuffers.put(3, new VertexBufferImpl("vTexCoord0", 2, 3));
+				vertexBuffers.put(3, new VertexBufferImpl("vTexCoord", 2, 3));
 			}
 			
 			vBuffer = BufferUtils.createFloatBuffer(uvBuffer.size());
@@ -105,8 +105,6 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 			
 			vertexBuffers.get(3).flush(vBuffer);
 		}
-
-		
 	}
 
 	/**
@@ -114,19 +112,16 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 	 */
 	@Override
 	public void doRender(RenderMaterial material, int startVert, int endVert) {
-
-		
 		material.assign();
 		
 		for(VertexBufferImpl vb : vertexBuffers.valueCollection()){
 			vb.bind();
 			GL20.glEnableVertexAttribArray(vb.getLayout());
-			GL20.glVertexAttribPointer(vb.getLayout(), vb.getElements(), GL11.GL_FLOAT, false, 0, 0);
-			//activeMaterial.getShader().enableAttribute(vb.getName(), vb.getElements(), GL11.GL_FLOAT, 0, 0, vb.getLayout());			
+			//GL20.glVertexAttribPointer(vb.getLayout(), vb.getElements(), GL11.GL_FLOAT, false, 0, 0);
+			//material.getShader().enableAttribute(vb.getName(), vb.getElements(), GL11.GL_FLOAT, 0, 0, vb.getLayout());
 		}
 	
 		GL11.glDrawArrays(renderMode, startVert, endVert);
-	
 		
 		for(VertexBufferImpl vb : vertexBuffers.valueCollection()){			
 			GL20.glDisableVertexAttribArray(vb.getLayout());		

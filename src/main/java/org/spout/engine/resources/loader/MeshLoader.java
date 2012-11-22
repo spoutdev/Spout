@@ -100,11 +100,11 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 					int face2 = Integer.parseInt(sp[2]) - 1;
 					int face3 = Integer.parseInt(sp[3]) - 1;
 
-					Vertex p = new Vertex(verticies.get(face1));
+					Vertex p1 = new Vertex(verticies.get(face1));
 					Vertex p2 = new Vertex(verticies.get(face2));
 					Vertex p3 = new Vertex(verticies.get(face3));
-
-					faces.add(new MeshFace(p, p2, p3));
+					
+					faces.add(new MeshFace(p1, p2, p3));
 
 				}
 
