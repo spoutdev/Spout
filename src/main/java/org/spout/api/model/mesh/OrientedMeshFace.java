@@ -95,7 +95,7 @@ public class OrientedMeshFace extends MeshFace {
 		seeFromFace = requiredFace;
 	}
 
-	public boolean canRender(boolean toRender[],BlockFace face){
+	public boolean canRender(boolean toRender[]){
 		/**
 		 * For each face :
 		 * - Look if a face is see by a block face and this block face isn't occluded
@@ -104,9 +104,7 @@ public class OrientedMeshFace extends MeshFace {
 		 */
 		for(int i = 0; i < shouldRender.size(); i++){
 			if(seeFromFace.contains(shouldRender.get(i)) && toRender[i]){
-				if(shouldRender.get(i) == face)
-					return true;
-				return false;
+				return true;
 			}
 		}
 		return false;

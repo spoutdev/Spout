@@ -28,7 +28,6 @@ package org.spout.api.render.effect;
 
 import org.spout.api.geo.cuboid.ChunkSnapshotModel;
 import org.spout.api.material.Material;
-import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.mesh.Mesh;
 
@@ -38,14 +37,12 @@ public class SnapshotMesh {
 	private Material material;
 	private ChunkSnapshotModel snapshotModel;
 	private Vector3 position;
-	private BlockFace face;
 	private boolean[] toRender;
 
-	public SnapshotMesh(Material material, ChunkSnapshotModel snapshotModel, Vector3 position, BlockFace face, boolean toRender[]){
+	public SnapshotMesh(Material material, ChunkSnapshotModel snapshotModel, Vector3 position, boolean toRender[]){
 		this.setMaterial(material);
 		this.setSnapshotModel(snapshotModel);
 		this.setPosition(position);
-		this.setFace(face);
 		this.setToRender(toRender);
 		mesh = material.getModel().getMesh();
 	}
@@ -80,14 +77,6 @@ public class SnapshotMesh {
 
 	public void setPosition(Vector3 position) {
 		this.position = position;
-	}
-
-	public BlockFace getFace() {
-		return face;
-	}
-
-	public void setFace(BlockFace face) {
-		this.face = face;
 	}
 
 	public boolean[] getToRender() {
