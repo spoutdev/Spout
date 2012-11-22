@@ -1,10 +1,8 @@
 #version 120
 
-varying vec4 color;
-							
-uniform vec4 BlendColor;	
+varying vec4 color;	
 						
 void main()
 {	
-	gl_FragColor = color * BlendColor;
+	gl_FragColor = color;
 } 

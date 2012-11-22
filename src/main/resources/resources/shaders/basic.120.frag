@@ -1,7 +1,7 @@
 #version 120
 
 varying vec4 color;
-uniform sampler2D font;
+uniform sampler2D Diffuse;
 
 void main()
 {
