@@ -58,17 +58,15 @@ public class TextureSamplerShaderVariable extends ShaderVariable {
 		textureID = this.texture.getTextureID();
 	}
 
-	public void bind(int unit){
+	public void bind(int unit) {
 		GL13.glActiveTexture(GL13.GL_TEXTURE0 + unit);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 		
 		if (((Client) Spout.getEngine()).getRenderMode() != RenderMode.GL30) {
-			GL20.glUniform1i(location, textureID);
-		
+			GL20.glUniform1i(location, unit);
 		} else {
 			GL30.glUniform1ui(location, textureID);
 		}
-		
 	}
 	
 	@Override
