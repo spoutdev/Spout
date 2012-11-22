@@ -32,12 +32,10 @@ import java.util.List;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Cuboid;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
-import org.spout.api.render.Renderer;
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.renderer.BatchVertex;
 import org.spout.engine.renderer.BatchVertexRenderer;
@@ -61,14 +59,12 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	private PrimitiveBatch renderer = new PrimitiveBatch();
 
 	public final static Matrix model = MathHelper.createIdentity();
-	private final BlockFace face;
 	private final RenderMaterial material;
 	private boolean dirty = true;
 	private boolean closed = false;
 
-	public ChunkMeshBatchAggregator(World world, int baseX, int baseY, int baseZ, BlockFace face, RenderMaterial material) {
+	public ChunkMeshBatchAggregator(World world, int baseX, int baseY, int baseZ, RenderMaterial material) {
 		super(new Point(world, baseX, baseY, baseZ), SIZE);
-		this.face = face;
 		this.material = material;
 	}
 
@@ -150,7 +146,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 			batchs[index] = null;
 		}else{
 			if(batchs[index] == null){
-				batchs[index] = new ChunkMeshBatch(x, y, z, face, material);
+				batchs[index] = new ChunkMeshBatch(x, y, z, material);
 				count ++;
 			}
 
@@ -158,10 +154,6 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 			dirties.add(batchs[index]);
 		}
 		dirty = true;
-	}
-
-	public BlockFace getFace() {
-		return face;
 	}
 
 	public RenderMaterial getMaterial() {
