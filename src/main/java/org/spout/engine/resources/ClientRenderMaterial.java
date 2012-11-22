@@ -38,7 +38,6 @@ import java.util.Set;
 import org.lwjgl.opengl.GL11;
 import org.spout.api.geo.cuboid.ChunkSnapshotModel;
 import org.spout.api.material.Material;
-import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
@@ -180,19 +179,19 @@ public class ClientRenderMaterial extends RenderMaterial {
 
 		if(mesh instanceof OrientedMesh){
 			return renderBlock(snapshotRender.getSnapshotModel(), snapshotRender.getMaterial(),
-					snapshotRender.getPosition(), snapshotRender.getFace(), snapshotRender.getToRender(), (OrientedMesh)mesh);
+					snapshotRender.getPosition(), snapshotRender.getToRender(), (OrientedMesh)mesh);
 		}
 
 		return new ArrayList<MeshFace>();
 	}
 
 	public List<MeshFace> renderBlock(ChunkSnapshotModel chunkSnapshotModel,Material blockMaterial,
-			Vector3 position, BlockFace face, boolean toRender[], OrientedMesh mesh) {
+			Vector3 position, boolean toRender[], OrientedMesh mesh) {
 		List<MeshFace> meshs = new ArrayList<MeshFace>();
 		Vector3 model = new Vector3(position.getFloorX(), position.getFloorY(), position.getFloorZ());
 		for(OrientedMeshFace meshFace : mesh){
 
-			if(!meshFace.canRender(toRender,face))
+			if(!meshFace.canRender(toRender))
 				continue;
 
 			Iterator<Vertex> it = meshFace.iterator();

@@ -26,12 +26,8 @@
  */
 package org.spout.engine.batcher;
 
-import org.spout.api.material.block.BlockFace;
-import org.spout.api.math.MathHelper;
-import org.spout.api.math.Matrix;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotBatch;
-import org.spout.api.render.effect.SnapshotRender;
 import org.spout.engine.renderer.BatchVertex;
 import org.spout.engine.renderer.BatchVertexRenderer;
 
@@ -43,15 +39,13 @@ public class ChunkMeshBatch {
 	private PrimitiveBatch renderer = new PrimitiveBatch();
 	private BatchVertex batchVertex = null;
 	private boolean hasVertices = false;
-	private final BlockFace face;
 	private final RenderMaterial material;
 	private boolean closed = false;
 
-	public ChunkMeshBatch(int x, int y, int z, BlockFace face, RenderMaterial material) {
+	public ChunkMeshBatch(int x, int y, int z, RenderMaterial material) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.face = face;
 		this.material = material;
 	}
 
@@ -63,25 +57,25 @@ public class ChunkMeshBatch {
 		if (closed) {
 			throw new IllegalStateException("Already closed");
 		}
-		
+
 		if(batchVertex.getVertexCount() == 0){
 			hasVertices = false;
 			batchVertex = null;
 			return;
 		}
-		
+
 		hasVertices = true;
 
 		renderer.begin();
 
 		SnapshotBatch snapshotBatch = new SnapshotBatch(material);
-		
+
 		material.preBatch(snapshotBatch);
 		renderer.setBatchVertex(batchVertex);
 		material.postBatch(snapshotBatch);
 
 		renderer.end();
-		
+
 		//Free batchVertex
 		//batchVertex = null; // Needed tp keep it for GL 2 & 3
 	}
@@ -118,10 +112,6 @@ public class ChunkMeshBatch {
 
 	public BatchVertex getMesh() {
 		return batchVertex;
-	}
-
-	public BlockFace getFace() {
-		return face;
 	}
 
 	public RenderMaterial getMaterial() {
