@@ -26,11 +26,13 @@
  */
 package org.spout.engine.world;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
+
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
@@ -135,7 +137,13 @@ public class WorldSavingThread extends Thread{
 			SpoutWorld world = chunk.getWorld();
 			OutputStream out = world.getChunkOutputStream(snapshot);
 			if (out != null) {
-				WorldFiles.saveChunk(chunk.getWorld(), snapshot, blockUpdates, out);
+				try {
+					WorldFiles.saveChunk(chunk.getWorld(), snapshot, blockUpdates, out);
+				} finally {
+					try {
+						out.close();
+					} catch (IOException ioe) {}
+				}
 				chunk.saveComplete();
 			} else {
 				Spout.getLogger().severe("World saving thread unable to open file for chunk " + chunk);

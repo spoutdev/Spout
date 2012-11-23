@@ -240,13 +240,6 @@ public class WorldFiles {
 			os.writeTag(chunkCompound);
 		} catch (IOException e) {
 			Spout.getLogger().log(Level.SEVERE, "Error saving chunk {" + snapshot.getX() + ", " + snapshot.getY() + ", " + snapshot + "}", e);
-		} finally {
-			if (os != null) {
-				try {
-					os.close();
-				} catch (IOException ignore) {
-				}
-			}
 		}
 
 		world.getItemMap().save();
