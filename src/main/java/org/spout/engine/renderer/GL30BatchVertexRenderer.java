@@ -89,8 +89,6 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 			
 			vertexBuffers.get(1).flush(vBuffer);
 			vertexBuffers.get(1).bind();
-			
-			
 		}
 		if (useNormals) {
 		

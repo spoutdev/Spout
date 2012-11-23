@@ -117,8 +117,6 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 		for(VertexBufferImpl vb : vertexBuffers.valueCollection()){
 			vb.bind();
 			GL20.glEnableVertexAttribArray(vb.getLayout());
-			//GL20.glVertexAttribPointer(vb.getLayout(), vb.getElements(), GL11.GL_FLOAT, false, 0, 0);
-			//material.getShader().enableAttribute(vb.getName(), vb.getElements(), GL11.GL_FLOAT, 0, 0, vb.getLayout());
 		}
 	
 		GL11.glDrawArrays(renderMode, startVert, endVert);
