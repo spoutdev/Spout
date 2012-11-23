@@ -244,7 +244,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		}
 		isInViewDistance = value;
 		if (wasInViewDistance != isInViewDistance) {
-			queueDirty();
+			setRenderDirty(true);
 		}
 	}
 	
@@ -972,7 +972,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			Engine engine = Spout.getEngine();
 			if(engine.getPlatform() ==  Platform.CLIENT && ((SpoutClient) engine).getActivePlayer() == entity) {
 				setIsInViewDistance(true);
-				setRenderDirty(true);
 			}
 		}
 		SaveState.resetPostSaving(saveState);
@@ -996,7 +995,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			Engine engine = Spout.getEngine();
 			if(engine.getPlatform() ==  Platform.CLIENT && ((SpoutClient) engine).getActivePlayer() == entity) {
 				setIsInViewDistance(false);
-				setRenderDirty(true);
 			}
 		}
 		expiredObserversQueue.add((SpoutEntity) entity);

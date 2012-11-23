@@ -275,6 +275,10 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		observingChunks.addAll(observing);
 	}
 
+	public Set<SpoutChunk> getObservingChunks(){
+		return observingChunks;
+	}
+	
 	@Override
 	public Chunk getChunk() {
 		return getTransform().getPosition().getChunk(LoadOption.NO_LOAD);
