@@ -36,8 +36,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.lwjgl.opengl.GL11;
+import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.ChunkSnapshotModel;
 import org.spout.api.material.Material;
+import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
@@ -185,6 +187,27 @@ public class ClientRenderMaterial extends RenderMaterial {
 		return new ArrayList<MeshFace>();
 	}
 
+	private void addColor(ChunkSnapshotModel chunkSnapshotModel, Vertex v){
+		if(chunkSnapshotModel != null){
+			ChunkSnapshot chunk = chunkSnapshotModel.getChunkFromBlock(v.position.getFloorX(), v.position.getFloorY(), v.position.getFloorZ());
+			if(chunk != null){
+				float light = chunk.getBlockLight(v.position.getFloorX(), v.position.getFloorY(), v.position.getFloorZ()) / 16f;
+				float sky = chunk.getBlockSkyLight(v.position.getFloorX(), v.position.getFloorY(), v.position.getFloorZ()) / 16f;
+				Color colorLight = new Color(light * 1.00f, light * 0.75f, light * 0.75f);
+				Color colorSky = new Color(sky * 0.75f, sky * 0.75f, sky * 1.00f);
+				v.color = new Color(
+						MathHelper.clamp(colorLight.getRed() + colorSky.getRed(), 0, 255),
+						MathHelper.clamp(colorLight.getGreen() + colorSky.getGreen(), 0, 255),
+						MathHelper.clamp(colorLight.getBlue() + colorSky.getBlue(), 0, 255)
+						);
+			}else{
+				v.color = Color.WHITE;
+			}
+		}else{
+			v.color = Color.WHITE;
+		}
+	}
+
 	public List<MeshFace> renderBlock(ChunkSnapshotModel chunkSnapshotModel,Material blockMaterial,
 			Vector3 position, boolean toRender[], OrientedMesh mesh) {
 		List<MeshFace> meshs = new ArrayList<MeshFace>();
@@ -201,6 +224,10 @@ public class ClientRenderMaterial extends RenderMaterial {
 			v1.position = v1.position.add(model);
 			v2.position = v2.position.add(model);
 			v3.position = v3.position.add(model);
+
+			addColor(chunkSnapshotModel,v1);
+			addColor(chunkSnapshotModel,v2);
+			addColor(chunkSnapshotModel,v3);
 
 			//Be sure we have a color
 			//All cube with the same renderMaterial MUST have a color
