@@ -39,7 +39,6 @@ import org.spout.engine.mesh.BaseMesh;
 public class EntityRendererComponent extends EntityComponent {
 	ModelComponent model;
 	TransformComponent transform;
-	PrimitiveBatch batch;
 	boolean dirty = true;
 
 	@Override

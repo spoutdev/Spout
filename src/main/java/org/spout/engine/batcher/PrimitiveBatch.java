@@ -36,11 +36,8 @@ import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
-import org.spout.api.render.effect.SnapshotRender;
 
 import org.spout.engine.mesh.BaseMesh;
-import org.spout.engine.mesh.ChunkMesh;
-import org.spout.engine.mesh.ComposedMesh;
 import org.spout.engine.renderer.BatchVertex;
 import org.spout.engine.renderer.BatchVertexRenderer;
 
