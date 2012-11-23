@@ -56,7 +56,7 @@ public class ViewFrustumTest {
 		Matrix projection = MathHelper.createPerspective(70, 16 / 9.0f, 1, 2000);
 		Matrix view = MathHelper.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
 
-		frustum.update(projection, view);
+		frustum.update(projection, view, new Vector3(0,0,0));
 
 		assertEquals(new Vector3(0, 0, 0), frustum.position);
 		// TODO test the created planes... a more patient person can do this
@@ -67,7 +67,7 @@ public class ViewFrustumTest {
 		Matrix projection = MathHelper.createPerspective(70, 16 / 9.0f, 1, 2000);
 		Matrix view = MathHelper.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
 
-		frustum.update(projection, view);
+		frustum.update(projection, view, new Vector3(0,0,0));
 
 		Vector3[] vertices = new Vector3[8];
 		// Front
@@ -92,7 +92,7 @@ public class ViewFrustumTest {
 		Matrix projection = MathHelper.createPerspective(70, 16 / 9.0f, 1, 2000);
 		Matrix view = MathHelper.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
 
-		frustum.update(projection, view);
+		frustum.update(projection, view, new Vector3(0,0,0));
 
 		Vector3[] vertices = new Vector3[8];
 		// Front
@@ -117,7 +117,7 @@ public class ViewFrustumTest {
 		Matrix projection = MathHelper.createPerspective(70, 16 / 9.0f, 1, 2000);
 		Matrix view = MathHelper.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
 
-		frustum.update(projection, view);
+		frustum.update(projection, view, new Vector3(0,0,0));
 
 		//assertTrue(frustum.contains(new Vector3(0, 0, 2)));
 		//assertTrue(frustum.contains(new Vector3(0, 0, 100)));
