@@ -428,11 +428,12 @@ public class WorldRenderer {
 				// at the world baby
 				// But here's my frustrum
 				// so cull me maybe?
-				//if (client.getActiveCamera().getFrustum().intersects(renderer)) {
-				rended += renderer.render(material);
-				/*} else {
-				culledChunks++;
-			}*/
+				
+				if (client.getActiveCamera().getFrustum().intersects(renderer)) {
+					rended += renderer.render(material);
+				} else {
+					culledChunks++;
+				}
 			}
 			
 			material.postRender(snapshotRender);
