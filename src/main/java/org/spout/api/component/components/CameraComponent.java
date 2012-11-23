@@ -71,7 +71,7 @@ public class CameraComponent extends EntityComponent implements Camera {
 			Matrix pos = MathHelper.translate(transform.getPosition().multiply(-1));
 			Matrix rot = MathHelper.rotate(transform.getRotation());
 			view = pos.multiply(rot);
-			frustum.update(projection, view);
+			frustum.update(projection, view, transform.getPosition());
 		}
 	}
 

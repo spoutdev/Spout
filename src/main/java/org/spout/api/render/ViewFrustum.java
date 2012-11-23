@@ -33,13 +33,18 @@ import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector3;
 
 public class ViewFrustum {
+	
+	// This is the renderer subsize in bloc scale ( because it is in aggregator scale when it's pass through intersects )
+	Vector3 rendererSize = new Vector3(16,16,16);
 	Vector3 position = null;
 	float[][] frustum = new float[6][4];
 
-	public void update(Matrix projection, Matrix view) {
+	public void update(Matrix projection, Matrix view, Vector3 paramPosition) {
+		
+		position = paramPosition;
+		
 		// http://www.crownandcutlass.com/features/technicaldetails/frustum.html
-		float[] clip = projection.multiply(view).toArray();
-		// Im not sure but this is what they tell in the link
+		float[] clip = view.multiply(projection).toArray();
 
 		/* Extract the numbers for the RIGHT plane */
 		frustum[0][0] = clip[3] - clip[0];
@@ -77,6 +82,8 @@ public class ViewFrustum {
 		frustum[5][2] = clip[11] + clip[10];
 		frustum[5][3] = clip[15] + clip[14];
 		
+		
+		
 		/* Normalize the result */
 		/* You can eliminate all the code that has to
 		 * do with normalizing the plane values. This will result in scaled
@@ -85,6 +92,7 @@ public class ViewFrustum {
 		 * using bounding spheres at all this will save a few expensive
 		 * calculations per frame, but those probably won't be an issue on
 		 * most systems.*/
+		
 		/*for (int i=0 ; i<6 ; i++) {
 			double t = sqrt(frustum[i][0] * frustum[i][0] + frustum[i][1] * frustum[i][1] + frustum[i][2] * frustum[i][2]);
 			frustum[i][0] /= t;
@@ -92,13 +100,7 @@ public class ViewFrustum {
 			frustum[i][2] /= t;
 			frustum[i][3] /= t;
 		}*/
-
-		// This is false: view is the inverse of the camera transform matrix
-		// This would be the dot product of rotation vector by the position vector
-		// And the position would be at (3,0), (3,1), (3,2)
-		// It is too hard to get the position this way, we have to get it from the player
-		// Anyway, I dont see why we need it.
-		position = new Vector3(view.get(0, 3), view.get(1, 3), view.get(2, 3));
+		
 	}
 	
 	/**
@@ -119,42 +121,46 @@ public class ViewFrustum {
 	 * @return True if the frustum intersects the cuboid.
 	 */
 	public boolean intersects(Cuboid c) {
+		
 		Vector3[] vertices = c.getVertices();
+		
 		for (int i = 0; i < 6; i++) {
-			if (distance(i, vertices[0].subtract(position)) > 0) {
+			
+			if (distance(i, vertices[0].multiply(rendererSize).subtract(position)) > 0) {
 				continue;
 			}
-
-			if (distance(i, vertices[1].subtract(position)) > 0) {
+			
+			if (distance(i, vertices[1].multiply(rendererSize).subtract(position)) > 0) {
 				continue;
 			}
-
-			if (distance(i, vertices[2].subtract(position)) > 0) {
+			
+			if (distance(i, vertices[2].multiply(rendererSize).subtract(position)) > 0) {
 				continue;
 			}
-
-			if (distance(i, vertices[3].subtract(position)) > 0) {
+			
+			if (distance(i, vertices[3].multiply(rendererSize).subtract(position)) > 0) {
 				continue;
 			}
-
-			if (distance(i, vertices[4].subtract(position)) > 0) {
+			
+			if (distance(i, vertices[4].multiply(rendererSize).subtract(position)) > 0) {
 				continue;
 			}
-
-			if (distance(i, vertices[5].subtract(position)) > 0) {
+			
+			if (distance(i, vertices[5].multiply(rendererSize).subtract(position)) > 0) {
 				continue;
 			}
-
-			if (distance(i, vertices[6].subtract(position)) > 0) {
+			
+			if (distance(i, vertices[6].multiply(rendererSize).subtract(position)) > 0) {
 				continue;
 			}
-
-			if (distance(i, vertices[7].subtract(position)) > 0) {
+			
+			if (distance(i, vertices[7].multiply(rendererSize).subtract(position)) > 0) {
 				continue;
 			}
+			
 			return false;
 		}
-
+		
 		return true;
 	}
 
