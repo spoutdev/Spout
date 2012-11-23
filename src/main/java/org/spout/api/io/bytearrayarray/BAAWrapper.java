@@ -82,7 +82,11 @@ public class BAAWrapper {
 		ByteArrayArray baa = baaRef.get();
 		if (baa != null) {
 			try {
-				return baa.attemptClose();
+				boolean success = baa.attemptClose();
+				if (baa.isClosed()) {
+					baaRef.compareAndSet(baa, null);
+				}
+				return success;
 			} catch (IOException ioe) {
 			}
 		}
