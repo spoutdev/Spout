@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -1067,7 +1068,6 @@ public class SpoutRegion extends Region {
 
 	private WorldRenderer renderer = null;
 	private static final int RENDER_QUEUE_LIMIT = 500;
-	private static final int MESH_QUEUE_LIMIT = 100;
 
 	private WorldRenderer getRenderer(){
 		if(renderer == null)
@@ -1080,6 +1080,9 @@ public class SpoutRegion extends Region {
 		
 		boolean firstRenderQueueTick = false;
 		Point playerPosition = null;
+		int renderLimit = Spout.getPlatform() == Platform.CLIENT && getRenderer() != null ?
+				RENDER_QUEUE_LIMIT - (getRenderer().getBatchWaiting() + renderChunkQueue.size()) :
+					0;
 		
 		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
 			SpoutWorld world = this.getWorld();
@@ -1094,8 +1097,12 @@ public class SpoutRegion extends Region {
 				playerPosition = player.getTransform().getPosition();
 			}
 
-			if (firstRenderQueueTick ) {
-				for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
+			if (firstRenderQueueTick && player != null) {
+				for( SpoutChunk c : player.getObservingChunks()){
+					c.setRenderDirty(true);
+				}
+				
+				/*for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
 					for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
 						for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
 							SpoutChunk chunk = chunks[dx][dy][dz].get();
@@ -1104,12 +1111,14 @@ public class SpoutRegion extends Region {
 							}
 						}
 					}
-				}
+				}*/
 
 				renderQueueEnabled = worldRenderQueueEnabled;
 			}
 		}
 
+		List<SpoutChunk> renderLater = new LinkedList<SpoutChunk>();
+		
 		SpoutChunk spoutChunk;
 		while ((spoutChunk = dirtyChunks.poll()) != null) {
 
@@ -1118,9 +1127,20 @@ public class SpoutRegion extends Region {
 				continue;
 			}
 
-			if ((!firstRenderQueueTick) && renderQueueEnabled  && spoutChunk.isRenderDirty()) {
-				addUpdateToRenderQueue(playerPosition, spoutChunk, false);
+			if (renderQueueEnabled && spoutChunk.isRenderDirty()) {
+				if(spoutChunk.isInViewDistance() || spoutChunk.leftViewDistance()){
+					if(renderLimit > 0 ){
+						addUpdateToRenderQueue(playerPosition, spoutChunk, false);
+						renderLimit--;
+					}else{
+						renderLater.add(spoutChunk);
+					}
+				}else{
+					spoutChunk.setRenderDirty(false);
+					spoutChunk.viewDistanceCopy();
+				}
 			}
+			
 			if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
 				for (Player entity : spoutChunk.getObservingPlayers()) {
 					syncChunkToPlayer(spoutChunk, entity);
@@ -1132,6 +1152,10 @@ public class SpoutRegion extends Region {
 			}
 		}
 
+		for(SpoutChunk c : renderLater){
+			c.setRenderDirty(true);
+		}
+		
 		SpoutChunkSnapshotFuture snapshotFuture;
 		while ((snapshotFuture = snapshotQueue.poll()) != null) {
 			snapshotFuture.run();
