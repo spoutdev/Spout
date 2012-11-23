@@ -85,8 +85,7 @@ public class ClientShader extends Resource implements Shader {
 			if (((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
 				return;
 			}
-
-
+			
 			//Create a new Shader object on the GPU
 			program = GL20.glCreateProgram();
 
@@ -98,7 +97,12 @@ public class ClientShader extends Resource implements Shader {
 			GL20.glAttachShader(program, fShader);
 
 			GL20.glLinkProgram(program);
-
+			
+			GL20.glBindAttribLocation(program, 0, "vPosition");
+			GL20.glBindAttribLocation(program, 1, "vColor");
+			GL20.glBindAttribLocation(program, 2, "vNormal");
+			GL20.glBindAttribLocation(program, 3, "vTexCoord");
+			
 			int status = GL20.glGetProgram(program, GL20.GL_LINK_STATUS);
 			if (status != GL11.GL_TRUE) {
 				String error = GL20.glGetProgramInfoLog(program, 255);
@@ -254,7 +258,6 @@ public class ClientShader extends Resource implements Shader {
 
 	@Override
 	public void enableAttribute(String name, int size, int type, int stride, long offset, int layout) {
-		GL20.glBindAttribLocation(program, layout, name);
 		//GL20.glEnableVertexAttribArray(layout);
 		//GL20.glVertexAttribPointer(layout, size, type, false, 0, offset);
 	}

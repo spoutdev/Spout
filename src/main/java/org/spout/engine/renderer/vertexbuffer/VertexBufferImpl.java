@@ -60,13 +60,14 @@ public class VertexBufferImpl {
 		
 	}
 	
-	public void bind(){
-		if(vboId == -1) throw new IllegalStateException("Cannot bind a vertex buffer without data!");
+	public void bind() {
+		if (vboId == -1) {
+			throw new IllegalStateException("Cannot bind a vertex buffer without data!");
+		}
+		
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
 		GL20.glVertexAttribPointer(getLayout(), getElements(), GL11.GL_FLOAT, false, 0, 0);
 	}
-	 
-	
 	
 	public String getName(){
 		return elementName;		
