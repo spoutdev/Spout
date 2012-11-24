@@ -29,6 +29,7 @@ package org.spout.api.component.components;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
+import org.spout.api.math.Vector3;
 import org.spout.api.render.Camera;
 import org.spout.api.render.ViewFrustum;
 
@@ -37,6 +38,7 @@ public class CameraComponent extends EntityComponent implements Camera {
 	private Matrix view;
 	private ViewFrustum frustum = new ViewFrustum();
 	private float fieldOfView = 75f;
+	private Vector3 speed = Vector3.ONE;
 
 	public CameraComponent() {
 
@@ -45,6 +47,11 @@ public class CameraComponent extends EntityComponent implements Camera {
 	public CameraComponent(Matrix createPerspective, Matrix createLookAt) {
 		projection = createPerspective;
 		view = createLookAt;
+	}
+	
+	public void setScale(float scale) { //1/2
+		projection = MathHelper.createPerspective(fieldOfView * scale, 4.0f / 3.0f, .001f * scale, 1000f * scale);
+		updateView();
 	}
 
 	@Override
@@ -88,5 +95,17 @@ public class CameraComponent extends EntityComponent implements Camera {
 	@Override
 	public ViewFrustum getFrustum() {
 		return frustum;
+	}
+	
+	public void setSpeed(Vector3 speed) {
+		this.speed = speed;
+	}
+	
+	public void setSpeed(float speed) {
+		this.speed = new Vector3(speed, speed, speed);
+	}
+	
+	public Vector3 getSpeed() {
+		return speed;
 	}
 }
