@@ -440,20 +440,16 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			if (newheight > oldheight) {
 				// set sky light of blocks below to 0
 				for (y = oldheight; y < newheight; y++) {
-					world.setBlockSkyLight(wx, wy + 1, wz, (byte) 0, cause);
+					world.setBlockSkyLight(wx, y + 1, wz, (byte) 0, cause);
 				}
 			} else if (newheight < oldheight) {
 				// set sky light of blocks above to 15
 				for (y = newheight; y < oldheight; y++) {
-					world.setBlockSkyLight(wx, wy + 1, wz, (byte) 15, cause);
+					world.setBlockSkyLight(wx, y + 1, wz, (byte) 15, cause);
 				}
 			} else {
-				byte old = this.getBlockSkyLight(wx, wy, wz);
-				if (old == 0) {
-					addSkyLightOperation(wx, wy, wz, SpoutWorldLighting.REFRESH);
-				} else if (old < 15) {
-					this.setBlockSkyLight(wx, wy, wz, (byte) 0, cause);
-				}
+				this.setBlockSkyLight(wx, wy, wz, (byte) 0, cause);
+				addSkyLightOperation(wx, wy, wz, SpoutWorldLighting.REFRESH);
 			}
 		}
 
