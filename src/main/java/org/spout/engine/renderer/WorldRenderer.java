@@ -36,6 +36,8 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.spout.api.Client;
+import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
@@ -59,7 +61,7 @@ public class WorldRenderer {
 	private TInt21TripleObjectHashMap<Map<RenderMaterial,ChunkMeshBatchAggregator>> chunkRenderersByPosition = new TInt21TripleObjectHashMap<Map<RenderMaterial,ChunkMeshBatchAggregator>>();
 	private List<ChunkMeshBatchAggregator> dirties = new LinkedList<ChunkMeshBatchAggregator>();
 
-	private World world; // temp
+	private SpoutWorld currentWorld = null;
 	private final BatchGeneratorTask batchGenerator = new BatchGeneratorTask();
 
 	public long minUpdate = Long.MAX_VALUE,maxUpdate = Long.MIN_VALUE,sumUpdate = 0;
@@ -68,12 +70,6 @@ public class WorldRenderer {
 
 	public WorldRenderer(SpoutClient client) {
 		this.client = client;
-	}
-
-	public void setup() {
-		setupWorld();
-
-		//Enable(GL11.GL_CULL_FACE);
 	}
 
 	public void render() {
@@ -107,18 +103,13 @@ public class WorldRenderer {
 		sumRender += time;
 	}
 
-	public void setupWorld(){
-		world = client.getDefaultWorld();
-		if( world != null )
-			((SpoutWorld)world).enableRenderQueue();
-	}
-
 	private final ConcurrentLinkedQueue<ChunkMesh> renderChunkMeshBatchQueue = new ConcurrentLinkedQueue<ChunkMesh>();
 
 	private class BatchGeneratorTask implements Runnable {
 
 		private ChunkMesh chunkMesh = null;
 		private Vector3 position = null;
+		private World world = null;
 
 		private Iterator<Entry<RenderMaterial, BatchVertex>> it = null;
 
@@ -152,10 +143,12 @@ public class WorldRenderer {
 
 			//Step 2 : Add ChunkMesh to ChunkMeshBatch
 			while( (chunkMesh = renderChunkMeshBatchQueue.poll()) != null){
+				world = chunkMesh.getWorld();
+				
 				position = ChunkMeshBatchAggregator.getCoordFromChunkMesh(chunkMesh);
 
 				if(chunkMesh.isUnloaded()){
-					cleanBatchAggregator(position,chunkMesh);
+					cleanBatchAggregator(position,world,chunkMesh);
 					chunkMesh = null;
 					continue;
 				}
@@ -213,15 +206,19 @@ public class WorldRenderer {
 	}
 
 	public void update(){
-		if( world == null ){
-			setupWorld();
-			if( world == null )
-				return;
+		SpoutWorld world = (SpoutWorld) ((Client)Spout.getEngine()).getActivePlayer().getWorld();
+
+		if(currentWorld != world){
+			if(currentWorld != null)
+				currentWorld.disableRenderQueue();
+			if(world != null)
+				world.enableRenderQueue();
+			currentWorld = world;
 		}
 
 		batchGenerator.run();
 	}
-
+	
 	public void addMeshToBatchQueue(ChunkMesh mesh) {
 		renderChunkMeshBatchQueue.add(mesh);
 	}
@@ -248,11 +245,12 @@ public class WorldRenderer {
 
 	/**
 	 * Remove all batch at the specified position
+	 * @param world 
 	 * @param x
 	 * @param y
 	 * @param z
 	 */
-	private void cleanBatchAggregator(Vector3 position, ChunkMesh chunkMesh) {
+	private void cleanBatchAggregator(Vector3 position, World world, ChunkMesh chunkMesh) {
 		Map<RenderMaterial, ChunkMeshBatchAggregator> aggregatorPerMaterial =
 				chunkRenderersByPosition.get(position.getFloorX(),position.getFloorY(),position.getFloorZ());
 
@@ -266,6 +264,9 @@ public class WorldRenderer {
 				RenderMaterial material = entry.getKey();
 				ChunkMeshBatchAggregator batch = entry.getValue();
 
+				if(batch.getWorld() != world)
+					continue;
+				
 				List<ChunkMeshBatchAggregator> chunkRenderer = chunkRenderers.get(material);
 
 				batch.setSubBatch(chunkMesh.getSubX(), chunkMesh.getSubY(), chunkMesh.getSubZ(), null);
