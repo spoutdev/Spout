@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.material.BlockMaterial;
@@ -81,6 +82,7 @@ public class ChunkMesh{
 
 	private SpoutChunkSnapshotModel chunkModel;
 	private ChunkSnapshot center;
+	private final World world;
 	private final int chunkX,chunkY,chunkZ;
 	private final int subX,subY,subZ;
 	private boolean isUnloaded = false;
@@ -95,6 +97,8 @@ public class ChunkMesh{
 	public ChunkMesh(SpoutChunkSnapshotModel chunkModel, int x, int y, int z) {
 		this.chunkModel = chunkModel;
 		first = chunkModel.isFirst();
+		
+		world = chunkModel.getWorld();
 		
 		chunkX = chunkModel.getX();
 		chunkY = chunkModel.getY();
@@ -333,6 +337,10 @@ public class ChunkMesh{
 	
 	private static boolean isOutsideChunk(int x, int y, int z) {
 		return x < 0 || x >= Chunk.BLOCKS.SIZE || y < 0 || y >= Chunk.BLOCKS.SIZE || z < 0 || z >= Chunk.BLOCKS.SIZE;
+	}
+
+	public World getWorld() {
+		return world;
 	}
 
 
