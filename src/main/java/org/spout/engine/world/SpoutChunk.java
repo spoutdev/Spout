@@ -2148,4 +2148,12 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		return blockStore.isBlockUniform();
 	}
 
+	private boolean rended = false;
+	
+	public void setRended(boolean rended) {
+		this.rended = rended;
+	}
+	public boolean isRended() {
+		return rended;
+	}
 }

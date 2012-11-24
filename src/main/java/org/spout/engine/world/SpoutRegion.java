@@ -1127,8 +1127,8 @@ public class SpoutRegion extends Region {
 				continue;
 			}
 
-			if (renderQueueEnabled && spoutChunk.isRenderDirty()) {
-				if(spoutChunk.isInViewDistance() || spoutChunk.leftViewDistance()){
+			if (renderQueueEnabled /*&& spoutChunk.isRenderDirty()*/) {
+				if(spoutChunk.isInViewDistance() || (spoutChunk.isRended() && spoutChunk.leftViewDistance())){
 					if(renderLimit > 0 ){
 						addUpdateToRenderQueue(playerPosition, spoutChunk, false);
 						renderLimit--;
@@ -1253,10 +1253,12 @@ public class SpoutRegion extends Region {
 					}
 				}
 			}
+			c.setRended(true);
 			c.setRenderDirty(false);
 			addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks, distance, updatedRenderMaterials, updatedSubMeshes, first, System.currentTimeMillis()));//TODO : replace null by the set of submesh
 		} else {
 			if (c.leftViewDistance()) {
+				c.setRended(false);
 				c.setRenderDirty(false);
 				addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, true, System.currentTimeMillis()));
 			}
