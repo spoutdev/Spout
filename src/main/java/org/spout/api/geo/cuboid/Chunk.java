@@ -225,6 +225,18 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 * @return
 	 */
 	public abstract boolean populate(boolean force);
+	
+	/**
+	 * Populates the chunk with all the Populators attached to the
+	 * WorldGenerator of its world.<br>
+	 * <br>
+	 * Warning: populating with force observer should not be called from within populators as it could lead to a population cascade
+	 *
+	 * @param sync queues the population to occur at a later time
+	 * @param observe forces the chunk to be observed for population
+	 * @return
+	 */
+	public abstract void populate(boolean sync, boolean observe);
 
 	/**
 	 * Gets if this chunk already has been populated.

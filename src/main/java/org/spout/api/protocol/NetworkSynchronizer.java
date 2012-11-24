@@ -325,8 +325,12 @@ public abstract class NetworkSynchronizer {
 
 	}
 	
+	protected boolean canSendChunk(Chunk c) {
+		return c.canSend();
+	}
+	
 	private Iterator<Point> attemptSendChunk(Iterator<Point> i, Iterable<Point> queue, Chunk c) {
-		if (c.canSend()) {
+		if (canSendChunk(c)) {
 			Collection<Chunk> sent = sendChunk(c);
 			activeChunks.add(c.getBase());
 			i.remove();
