@@ -97,10 +97,8 @@ import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMode;
-import org.spout.api.scheduler.TaskPriority;
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.batcher.SpriteBatch;
-import org.spout.engine.command.InputCommands;
 import org.spout.engine.command.InputManagementCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
@@ -297,13 +295,13 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return inputManager;
 	}
 
-	public void doInput() {
+	public void doInput(float dt) {
 		// TODO move this a plugin
 
 		if (activePlayer == null) {
 			return;
 		}
-
+		
 		inputManager.pollInput(activePlayer);
 
 		PlayerInputState inputState = activePlayer.input();
@@ -312,17 +310,17 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		Point point = ts.getPosition();
 		if (inputState.getForward())
-			point = point.subtract(ts.forwardVector());
+			point = point.subtract(ts.forwardVector().multiply(activeCamera.getSpeed()).multiply(dt));
 		if (inputState.getBackward())
-			point = point.add(ts.forwardVector());
+			point = point.add(ts.forwardVector().multiply(activeCamera.getSpeed()).multiply(dt));
 		if (inputState.getLeft())
-			point = point.subtract(ts.rightVector());
+			point = point.subtract(ts.rightVector().multiply(activeCamera.getSpeed()).multiply(dt));
 		if (inputState.getRight())
-			point = point.add(ts.rightVector());
+			point = point.add(ts.rightVector().multiply(activeCamera.getSpeed()).multiply(dt));
 		if (inputState.getJump())
-			point = point.add(ts.upVector());
+			point = point.add(ts.upVector().multiply(activeCamera.getSpeed()).multiply(dt));
 		if (inputState.getCrouch())
-			point = point.subtract(ts.upVector());
+			point = point.subtract(ts.upVector().multiply(activeCamera.getSpeed()).multiply(dt));
 		ts.setPosition(point);
 
 		activePlayer.getTransform().setTransform(ts);
@@ -512,7 +510,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		doInput();
+		doInput(dt);
 
 		for (Entity e : super.getDefaultWorld().getAll()) {
 			((PredictableTransformComponent)e.getTransform()).updateRender(dt);
