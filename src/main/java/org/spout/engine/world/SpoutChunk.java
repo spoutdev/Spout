@@ -88,9 +88,9 @@ import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.hashing.NibbleQuadHashed;
+import org.spout.api.util.list.TNibbleQuadList;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 import org.spout.api.util.map.concurrent.palette.AtomicPaletteBlockStore;
-import org.spout.api.util.set.TNibbleQuadHashSet;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.SpoutEntity;
@@ -182,11 +182,19 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	/**
 	 * Contains the pending block light operations of blocks in this chunk
 	 */
-	protected final TNibbleQuadHashSet blockLightOperations = new TNibbleQuadHashSet();
+	protected final TNibbleQuadList blockLightOperations = new TNibbleQuadList();
 	/**
 	 * Contains the pending sky light operations of blocks in this chunk
 	 */
-	protected final TNibbleQuadHashSet skyLightOperations = new TNibbleQuadHashSet();
+	protected final TNibbleQuadList skyLightOperations = new TNibbleQuadList();
+	/**
+	 * Contains the pending block light updates of blocks in this chunk
+	 */
+	protected final TNibbleQuadList blockLightUpdates = new TNibbleQuadList();
+	/**
+	 * Contains the pending sky light updates of blocks in this chunk
+	 */
+	protected final TNibbleQuadList skyLightUpdates = new TNibbleQuadList();
 	/**
 	 * Data map and Datatable associated with it
 	 */
@@ -448,7 +456,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 					world.setBlockSkyLight(wx, y + 1, wz, (byte) 15, cause);
 				}
 			} else {
-				this.setBlockSkyLight(wx, wy, wz, (byte) 0, cause);
+				this.addSkyLightUpdates(x, y, z, 0);
 				addSkyLightOperation(wx, wy, wz, SpoutWorldLighting.REFRESH);
 			}
 		}
@@ -503,6 +511,26 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 				this.getWorld().getLightingManager().addChunk(this.getX(), this.getY(), this.getZ());
 			}
 			this.blockLightOperations.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, operation);
+		}
+	}
+	
+	protected void addSkyLightUpdates(int x, int y, int z, int level) {
+		synchronized (this.skyLightUpdates) {
+			if (this.skyLightUpdates.isEmpty()) {
+				// Let the lighting manager know this chunk requires a lighting update
+				this.getWorld().getLightingManager().addChunk(this.getX(), this.getY(), this.getZ());
+			}
+			this.skyLightUpdates.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, level);
+		}
+	}
+
+	protected void addBlockLightUpdates(int x, int y, int z, int level) {
+		synchronized (this.blockLightUpdates) {
+			if (this.blockLightUpdates.isEmpty()) {
+				// Let the lighting manager know this chunk requires a lighting update
+				this.getWorld().getLightingManager().addChunk(this.getX(), this.getY(), this.getZ());
+			}
+			this.blockLightUpdates.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, level);
 		}
 	}
 
@@ -647,6 +675,11 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 	@Override
 	public boolean setBlockLight(int x, int y, int z, byte light, Cause<?> cause) {
+		addBlockLightUpdates(x, y, z, light);
+		return true;
+	}
+	
+	public boolean setBlockLightSync(int x, int y, int z, byte light, Cause<?> cause) {
 		light &= 0xF;
 		x &= BLOCKS.MASK;
 		y &= BLOCKS.MASK;
@@ -692,6 +725,11 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 	@Override
 	public boolean setBlockSkyLight(int x, int y, int z, byte light, Cause<?> cause) {
+		addSkyLightUpdates(x, y, z, light);
+		return true;
+	}
+	
+	public boolean setBlockSkyLightSync(int x, int y, int z, byte light, Cause<?> cause) {
 		light &= 0xF;
 		x &= BLOCKS.MASK;
 		y &= BLOCKS.MASK;
@@ -1573,12 +1611,12 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 				if (columnY < minY) {
 					// everything is air - ignore refresh checks
 					for (y = 0; y < BLOCKS.SIZE; y++) {
-						this.setBlockSkyLight(x, y, z, (byte) 15, null);
+						this.addSkyLightUpdates(x, y, z, 15);
 					}
 				} else {
 					// fill area above height with light
 					for (y = columnY; y < maxY; y++) {
-						this.setBlockSkyLight(x, y, z, (byte) 15, null);
+						this.addSkyLightUpdates(x, y, z, 15);
 					}
 
 					if (x == 0 || x == 15 || z == 0 || z == 15) {

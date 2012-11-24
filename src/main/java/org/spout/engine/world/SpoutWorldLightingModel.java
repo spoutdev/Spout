@@ -116,6 +116,18 @@ public class SpoutWorldLightingModel {
 		try {
 			// Load chunk information
 			if (this.sky) {
+				synchronized (chunk.skyLightUpdates) {
+					int length = chunk.skyLightUpdates.size();
+					this.iter = chunk.skyLightUpdates.iterator();
+					for (int i = 0; i < length && this.iter.hasNext(); i++) {
+						int key = iter.next();
+						x = NibbleQuadHashed.key1(key);
+						y = NibbleQuadHashed.key2(key) + chunk.getBlockY();
+						z = NibbleQuadHashed.key3(key) + chunk.getBlockZ();
+						chunk.setBlockSkyLightSync(x, y, z, NibbleQuadHashed.key4(key), null);
+					}
+					chunk.skyLightUpdates.clear();
+				}
 				synchronized (chunk.skyLightOperations) {
 					this.updateCount = chunk.skyLightOperations.size();
 					if (this.updateCount > 0) {
@@ -132,6 +144,18 @@ public class SpoutWorldLightingModel {
 					}
 				}
 			} else {
+				synchronized (chunk.blockLightUpdates) {
+					int length = chunk.blockLightUpdates.size();
+					this.iter = chunk.blockLightUpdates.iterator();
+					for (int i = 0; i < length && this.iter.hasNext(); i++) {
+						int key = iter.next();
+						x = NibbleQuadHashed.key1(key);
+						y = NibbleQuadHashed.key2(key) + chunk.getBlockY();
+						z = NibbleQuadHashed.key3(key) + chunk.getBlockZ();
+						chunk.setBlockLightSync(x, y, z, NibbleQuadHashed.key4(key), null);
+					}
+					chunk.blockLightUpdates.clear();
+				}
 				synchronized (chunk.blockLightOperations) {
 					this.updateCount = chunk.blockLightOperations.size();
 					if (this.updateCount > 0) {
@@ -327,7 +351,7 @@ public class SpoutWorldLightingModel {
 			if (this.light < this.blockLight) {
 				this.light = this.blockLight;
 			}
-			this.chunk.setBlockLight(this.x, this.y, this.z, this.light, null);
+			this.chunk.setBlockLightSync(this.x, this.y, this.z, this.light, null);
 		}
 
 		@Override
@@ -351,7 +375,7 @@ public class SpoutWorldLightingModel {
 		public void setLight(byte light) {
 			if (this.light != 15) {
 				this.light = light;
-				this.chunk.setBlockSkyLight(this.x, this.y, this.z, light, null);
+				this.chunk.setBlockSkyLightSync(this.x, this.y, this.z, light, null);
 			}
 		}
 
