@@ -67,18 +67,22 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 	}
 
 	@Override
-	public boolean create(Named owner, Class<?> commands, org.spout.api.command.Command parent) {
+	public final boolean create(Named owner, Class<?> commands, org.spout.api.command.Command parent) {
 		Object instance = null;
 		if (injector != null) {
 			instance = injector.newInstance(commands);
 		}
-
+		
+		return register(owner, commands, instance, parent);
+	}
+	
+	protected boolean register(Named owner, Class<?> commands, Object instance, org.spout.api.command.Command parent) {
 		boolean success = methodRegistration(owner, commands, instance, parent);
 		success &= nestedClassRegistration(owner, commands, instance, parent);
 		return success;
 	}
 
-	private org.spout.api.command.Command createCommand(Named owner, org.spout.api.command.Command parent, AnnotatedElement obj) {
+	protected org.spout.api.command.Command createCommand(Named owner, org.spout.api.command.Command parent, AnnotatedElement obj) {
 		if (!obj.isAnnotationPresent(Command.class)) {
 			return null;
 		}
@@ -97,7 +101,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 		return child;
 	}
 
-	private boolean methodRegistration(Named owner, Class<?> commands, Object instance, org.spout.api.command.Command parent) {
+	protected final boolean methodRegistration(Named owner, Class<?> commands, Object instance, org.spout.api.command.Command parent) {
 		boolean success = true, anyRegistered = false;
 		for (Method method : commands.getDeclaredMethods()) {
 			// Basic checks
@@ -124,7 +128,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public <T> Constructor<T> getClosestConstructor(Class<T> clazz, Class<?>... args) {
+	public final <T> Constructor<T> getClosestConstructor(Class<T> clazz, Class<?>... args) {
 		constructors: for (Constructor constructor : clazz.getDeclaredConstructors()) {
 			Class<?>[] classes = constructor.getParameterTypes();
 			if (classes.length != args.length) {
@@ -141,7 +145,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 		return null;
 	}
 
-	private boolean nestedClassRegistration(Named owner, Class<?> commands, Object instance, org.spout.api.command.Command parent) {
+	protected final boolean nestedClassRegistration(Named owner, Class<?> commands, Object instance, org.spout.api.command.Command parent) {
 		boolean success = true, anyRegistered = false;
 		for (Class<?> clazz : commands.getDeclaredClasses()) {
 			Object subInstance = null;
@@ -183,5 +187,13 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 			}
 		}
 		return success && anyRegistered;
+	}
+	
+	public final Injector getInjector() {
+		return injector;
+	}
+	
+	public final AnnotatedCommandExecutorFactory getExecutorFactory() {
+		return executorFactory;
 	}
 }
