@@ -85,7 +85,7 @@ import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.plugin.Platform;
 import org.spout.api.scheduler.TickStage;
-import org.spout.api.util.cuboid.CuboidBuffer;
+import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.hashing.NibbleQuadHashed;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
@@ -506,28 +506,88 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		}
 	}
 
-	protected void setCuboid(CuboidBuffer buffer) {
+
+	@Override
+	public void setCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
 		Vector3 base = buffer.getBase();
-		Vector3 size = buffer.getSize();
+		setCuboid(base.getFloorX(), base.getFloorY(), base.getFloorZ(), buffer, cause);
+	}
 
-		int startX = base.getFloorX() - this.getBlockX();
-		int startY = base.getFloorY() - this.getBlockY();
-		int startZ = base.getFloorZ() - this.getBlockZ();
+	@Override
+	public void setCuboid(int bx, int by, int bz, CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
+		blockStore.writeLock();
+		try {
+			Vector3 size = buffer.getSize();
+			
+			int startX = Math.max(bx, this.getBlockX());
+			int startY = Math.max(by, this.getBlockY());
+			int startZ = Math.max(bz, this.getBlockZ());
 
-		int endX = (base.getFloorX() + (int) size.getX()) - this.getBlockX();
-		int endY = (base.getFloorY() + (int) size.getY()) - this.getBlockY();
-		int endZ = (base.getFloorZ() + (int) size.getZ()) - this.getBlockZ();
+			int endX = Math.min(bx + size.getFloorX(), this.getBlockX() + BLOCKS.SIZE - 1);
+			int endY = Math.min(by + size.getFloorY(), this.getBlockY() + BLOCKS.SIZE - 1);
+			int endZ = Math.min(bz + size.getFloorZ(), this.getBlockZ() + BLOCKS.SIZE - 1);
+			
+			Vector3 base = buffer.getBase();
+			
+			int offX = bx - base.getFloorX();
+			int offY = by - base.getFloorY();
+			int offZ = bz - base.getFloorZ();
 
-		endX &= BLOCKS.MASK;
-		endY &= BLOCKS.MASK;
-		endZ &= BLOCKS.MASK;
-
-		for (int dx = startX; dx < endX; dx++) {
-			for (int dy = startY; dy < endY; dy++) {
-				for (int dz = startZ; dz < endZ; dz++) {
-					setBlockMaterial(dx, dy, dz, BlockMaterial.get(buffer.get(dx, dy, dz)), (short) 0, null, false);
+			for (int dx = startX; dx < endX; dx++) {
+				for (int dy = startY; dy < endY; dy++) {
+					for (int dz = startZ; dz < endZ; dz++) {
+						setBlockMaterial(dx, dy, dz, buffer.get(dx - offX, dy - offY, dz - offZ), buffer.getData(dx - offX, dy - offY, dz - offZ), cause, false);
+					}
 				}
 			}
+		} finally {
+			blockStore.writeUnlock();
+		}
+	}
+	
+	@Override
+	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz) {
+		CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(bx, by, bz, sx, sy, sz);
+		getCuboid(bx, by, bz, buffer);
+		return buffer;
+	}
+	
+	@Override
+	public void getCuboid(CuboidBlockMaterialBuffer buffer) {
+		Vector3 base = buffer.getBase();
+		getCuboid(base.getFloorX(), base.getFloorY(), base.getFloorZ(), buffer);
+	}
+
+	@Override
+	public void getCuboid(int bx, int by, int bz, CuboidBlockMaterialBuffer buffer) {
+		blockStore.writeLock();
+		try {
+			Vector3 size = buffer.getSize();
+
+			int startX = Math.max(bx, this.getBlockX());
+			int startY = Math.max(by, this.getBlockY());
+			int startZ = Math.max(bz, this.getBlockZ());
+
+			int endX = Math.min(bx + size.getFloorX(), this.getBlockX() + BLOCKS.SIZE - 1);
+			int endY = Math.min(by + size.getFloorY(), this.getBlockY() + BLOCKS.SIZE - 1);
+			int endZ = Math.min(bz + size.getFloorZ(), this.getBlockZ() + BLOCKS.SIZE - 1);
+			
+			Vector3 base = buffer.getBase();
+			
+			int offX = bx - base.getFloorX();
+			int offY = by - base.getFloorY();
+			int offZ = bz - base.getFloorZ();
+			
+			for (int dx = startX; dx < endX; dx++) {
+				for (int dy = startY; dy < endY; dy++) {
+					for (int dz = startZ; dz < endZ; dz++) {
+						int packed = this.getBlockFullState(dx, dy, dz);
+						buffer.set(dx - offX, dy - offY, dz - offZ, BlockFullState.getMaterial(packed), BlockFullState.getData(packed));
+					}
+				}
+			}
+		} finally {
+			blockStore.writeUnlock();
 		}
 	}
 
@@ -1100,6 +1160,20 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		}
 		return canSend;
 	}
+
+
+	public void lockStore() {
+		blockStore.writeLock();
+	}
+
+	public void unlockStore() {
+		blockStore.writeUnlock();
+	}
+
+	public boolean tryLockStore() {
+		return blockStore.tryWriteLock();
+	}
+
 
 	public boolean isCalculatingLighting() {
 		return this.lightingCounter.get() >= 0;
@@ -2073,4 +2147,5 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	public boolean isBlockUniform() {
 		return blockStore.isBlockUniform();
 	}
+
 }

@@ -89,6 +89,7 @@ import org.spout.api.render.RenderMaterial;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.bytebit.ByteBitSet;
+import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.map.TByteTripleObjectHashMap;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
@@ -1852,6 +1853,76 @@ public class SpoutRegion extends Region {
 			}
 		}
 
+	}
+
+	private SpoutChunk[][][] getChunks(int x, int y, int z, CuboidBlockMaterialBuffer buffer) {
+		Vector3 size = buffer.getSize();
+
+		int startX = Math.max(x, getBlockX());
+		int startY = Math.max(y, getBlockY());
+		int startZ = Math.max(z, getBlockZ());
+
+		int endX = Math.min(getBlockX() + BLOCKS.SIZE - 1, x + size.getFloorX());
+		int endY = Math.min(getBlockY() + BLOCKS.SIZE - 1, y + size.getFloorY());
+		int endZ = Math.min(getBlockZ() + BLOCKS.SIZE - 1, z + size.getFloorZ());
+
+		Chunk start = getChunkFromBlock(startX, startY, startZ);
+		Chunk end = getChunkFromBlock(endX - 1, endY - 1, endZ - 1);
+
+		int chunkSizeX = end.getX() - start.getX() + 1;
+		int chunkSizeY = end.getY() - start.getY() + 1;
+		int chunkSizeZ = end.getZ() - start.getZ() + 1;
+
+		int chunkStartX = start.getX();
+		int chunkStartY = start.getY();
+		int chunkStartZ = start.getZ();
+
+		int chunkEndX = end.getX();
+		int chunkEndY = end.getY();
+		int chunkEndZ = end.getZ();
+
+		SpoutChunk[][][] chunks = new SpoutChunk[chunkSizeX][chunkSizeY][chunkSizeZ];
+		for (int dx = chunkStartX; dx <= chunkEndX; dx++) {
+			for (int dy = chunkStartY; dy <= chunkEndY; dy++) {
+				for (int dz = chunkStartZ; dz <= chunkEndZ; dz++) {
+					SpoutChunk chunk = getChunk(dx, dy, dz, LoadOption.LOAD_GEN);
+					if (chunk == null) {
+						throw new IllegalStateException("Null chunk loaded with LoadOption.LOAD_GEN");
+					}
+					chunks[dx - chunkStartX][dy - chunkStartY][dz - chunkStartZ] = chunk;
+				}
+			}
+		}
+		return chunks;
+	}
+	
+	@Override
+	public void setCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
+		Vector3 base = buffer.getBase();
+		setCuboid(base.getFloorX(), base.getFloorY(), base.getFloorZ(), buffer, cause);
+	}
+
+	@Override
+	public void setCuboid(int x, int y, int z, CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
+		getWorld().setCuboid(getChunks(x, y, z, buffer), x, y, z, buffer, cause);
+	}
+
+	@Override
+	public void getCuboid(CuboidBlockMaterialBuffer buffer) {
+		Vector3 base = buffer.getBase();
+		getCuboid(base.getFloorX(), base.getFloorY(), base.getFloorZ(), buffer);
+	}
+	
+	@Override
+	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz) {
+		CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(bx, by, bz, sx, sy, sz);
+		getCuboid(bx, by, bz, buffer);
+		return buffer;
+	}
+
+	@Override
+	public void getCuboid(int bx, int by, int bz, CuboidBlockMaterialBuffer buffer) {
+		getWorld().getCuboid(getChunks(bx, by, bz, buffer), bx, by, bz, buffer);
 	}
 
 }
