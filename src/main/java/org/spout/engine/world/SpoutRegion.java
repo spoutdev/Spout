@@ -949,7 +949,6 @@ public class SpoutRegion extends Region {
 		try {
 			synchronized(simulation) {
 				simulation.stepSimulation(dt, 10);
-				simulation.applyGravity();
 			}
 		} catch (Exception e) {
 			synchronized(logLock) {
