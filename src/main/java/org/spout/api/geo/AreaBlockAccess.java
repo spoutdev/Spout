@@ -30,6 +30,7 @@ import org.spout.api.event.Cause;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.Vector3;
+import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.thread.LiveWrite;
 import org.spout.api.util.thread.Threadsafe;
 
@@ -264,4 +265,58 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 */
 	@Threadsafe
 	public Block getBlock(Vector3 position);
+	
+	/**
+	 * Atomically sets the cuboid volume to the values inside of the cuboid buffer.
+	 * @param buffer
+	 * @param cause that is setting the cuboid volume
+	 */
+	@Threadsafe
+	public void setCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause);
+
+	/**
+	 * Atomically sets the cuboid volume to the values inside of the cuboid buffer with the base located at the given coords
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param buffer
+	 * @param cause that is setting the cuboid volume
+	 */
+	@Threadsafe
+	public void setCuboid(int x, int y, int z, CuboidBlockMaterialBuffer buffer, Cause<?> cause);
+
+	/**
+	 * Atomically gets the cuboid volume with the base located at the given coords of the given size.<br>
+	 * <br>
+	 * Note: The block at the base coordinate is inside the 
+	 * @param bx base x-coordinate
+	 * @param by base y-coordinate
+	 * @param bz base z-coordinate
+	 * @param sx size x-coordinate
+	 * @param sy size y-coordinate
+	 * @param sz size z-coordinate
+	 */
+	@Threadsafe
+	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz);
+	
+	/**
+	 * Atomically gets the cuboid volume with the base located at the given coords and the size of the given buffer.<br>
+	 * <br>
+	 * Note: The block at the base coordinate is inside the 
+	 * @param bx base x-coordinate
+	 * @param by base y-coordinate
+	 * @param bz base z-coordinate
+	 * @param buffer
+	 */
+	@Threadsafe
+	public void getCuboid(int bx, int by, int bz, CuboidBlockMaterialBuffer buffer);
+
+	/**
+	 * Atomically gets the cuboid volume contained within the given buffer
+	 * 
+	 * @param buffer the buffer
+	 */
+	@Threadsafe
+	public void getCuboid(CuboidBlockMaterialBuffer buffer);
+
 }

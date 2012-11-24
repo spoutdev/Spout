@@ -417,4 +417,5 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	public static Point pointToBase(Point p) {
 		return new Point(p.getWorld(), (int) p.getX() & POINT_BASE_MASK, (int) p.getY() & POINT_BASE_MASK, (int) p.getZ() & POINT_BASE_MASK);
 	}
+	
 }

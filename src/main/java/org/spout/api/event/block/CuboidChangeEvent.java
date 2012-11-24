@@ -27,9 +27,9 @@
 package org.spout.api.event.block;
 
 import org.spout.api.event.Cancellable;
+import org.spout.api.event.Cause;
 import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;
-import org.spout.api.plugin.Plugin;
 import org.spout.api.util.cuboid.CuboidBuffer;
 
 /**
@@ -39,11 +39,11 @@ import org.spout.api.util.cuboid.CuboidBuffer;
 public class CuboidChangeEvent extends Event implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
 	private final CuboidBuffer buffer;
-	private final Plugin plugin;
+	private final Cause<?> cause;
 
-	public CuboidChangeEvent(CuboidBuffer buffer, Plugin plugin) {
+	public CuboidChangeEvent(CuboidBuffer buffer, Cause<?> cause) {
 		this.buffer = buffer;
-		this.plugin = plugin;
+		this.cause = cause;
 	}
 
 	/**
@@ -59,8 +59,8 @@ public class CuboidChangeEvent extends Event implements Cancellable {
 	 * The plugin that is setting the cuboid area.
 	 * @return plugin
 	 */
-	public Plugin getPlugin() {
-		return plugin;
+	public Cause<?> getCause() {
+		return cause;
 	}
 
 	@Override

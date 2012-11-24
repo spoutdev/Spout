@@ -27,10 +27,13 @@
 package org.spout.api.geo;
 
 import org.spout.api.component.components.BlockComponent;
+import org.spout.api.event.Cause;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.SnapshotRead;
+import org.spout.api.util.thread.Threadsafe;
 
 public interface AreaBlockSource {
 	/**
@@ -124,4 +127,5 @@ public interface AreaBlockSource {
 	 * @return The biome type at the location, or null if no biome exists.
 	 */
 	public Biome getBiome(int x, int y, int z);
+	
 }

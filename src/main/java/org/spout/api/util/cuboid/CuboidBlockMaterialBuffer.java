@@ -26,27 +26,30 @@
  */
 package org.spout.api.util.cuboid;
 
+import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.Vector3;
 
-public class CuboidShortBuffer extends CuboidBuffer {
-	private final short[] buffer;
-	private CuboidShortBuffer source;
+public class CuboidBlockMaterialBuffer extends CuboidBuffer {
+	private final BlockMaterial[] buffer;
+	private final short[] data;
+	private CuboidBlockMaterialBuffer source;
 
-	public CuboidShortBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, short[] buffer) {
+	public CuboidBlockMaterialBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, BlockMaterial[] buffer, short[] data) {
 		super(baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
 		this.buffer = buffer;
+		this.data = data;
 	}
 
-	public CuboidShortBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
-		this(baseX, baseY, baseZ, sizeX, sizeY, sizeZ, new short[sizeX * sizeY * sizeZ]);
+	public CuboidBlockMaterialBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
+		this(baseX, baseY, baseZ, sizeX, sizeY, sizeZ, new BlockMaterial[sizeX * sizeY * sizeZ], new short[sizeX * sizeY * sizeZ]);
 	}
 
-	public CuboidShortBuffer(double baseX, double baseY, double baseZ, double sizeX, double sizeY, double sizeZ) {
-		this((int) baseX, (int) baseY, (int) baseZ, (int) sizeX, (int) sizeY, (int) sizeZ, new short[(int) (sizeX * sizeY * sizeZ)]);
+	public CuboidBlockMaterialBuffer(double baseX, double baseY, double baseZ, double sizeX, double sizeY, double sizeZ) {
+		this((int) baseX, (int) baseY, (int) baseZ, (int) sizeX, (int) sizeY, (int) sizeZ, new BlockMaterial[(int) (sizeX * sizeY * sizeZ)], new short[(int) (sizeX * sizeY * sizeZ)]);
 	}
 
-	public CuboidShortBuffer(Vector3 base, Vector3 size) {
-		this((int) base.getX(), (int) base.getY(), (int) base.getZ(), (int) size.getX(), (int) size.getY(), (int) size.getZ(), new short[(int) (size.getX() * size.getY() * size.getZ())]);
+	public CuboidBlockMaterialBuffer(Vector3 base, Vector3 size) {
+		this((int) base.getX(), (int) base.getY(), (int) base.getZ(), (int) size.getX(), (int) size.getY(), (int) size.getZ(), new BlockMaterial[(int) (size.getX() * size.getY() * size.getZ())], new short[(int) (size.getX() * size.getY() * size.getZ())]);
 	}
 
 	@Override
@@ -59,23 +62,24 @@ public class CuboidShortBuffer extends CuboidBuffer {
 
 	@Override
 	public void setSource(CuboidBuffer source) {
-		if (source instanceof CuboidShortBuffer) {
-			this.source = (CuboidShortBuffer) source;
+		if (source instanceof CuboidBlockMaterialBuffer) {
+			this.source = (CuboidBlockMaterialBuffer) source;
 		} else {
 			throw new IllegalArgumentException("Only CuboidShortBuffers may be used as the data source when copying to a CuboidShortBuffer");
 		}
 	}
 
-	public void set(int x, int y, int z, short data) {
+	public void set(int x, int y, int z, BlockMaterial material, short data) {
 		int index = getIndex(x, y, z);
 		if (index < 0) {
 			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
 		}
 
-		buffer[index] = data;
+		this.buffer[index] = material;
+		this.data[index] = data;
 	}
 
-	public short get(int x, int y, int z) {
+	public BlockMaterial get(int x, int y, int z) {
 		int index = getIndex(x, y, z);
 		if (index < 0) {
 			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
@@ -83,14 +87,21 @@ public class CuboidShortBuffer extends CuboidBuffer {
 
 		return buffer[index];
 	}
+	
+	public short getData(int x, int y, int z) {
+		int index = getIndex(x, y, z);
+		if (index < 0) {
+			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
+		}
 
-	public short[] getRawArray() {
-		return buffer;
+		return data[index];
 	}
 
-	public void flood(short id) {
+
+	public void flood(BlockMaterial material, short data) {
 		for (int i = 0; i < buffer.length; i++) {
-			buffer[i] = id;
+			this.buffer[i] = material;
+			this.data[i] = data;
 		}
 	}
 }

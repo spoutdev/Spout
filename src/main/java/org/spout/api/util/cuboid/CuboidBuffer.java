@@ -157,8 +157,6 @@ public abstract class CuboidBuffer {
 
 	public abstract void setSource(CuboidBuffer source);
 
-	public abstract short get(int x, int y, int z);
-
 	@Override
 	public String toString() {
 		return this.getClass().getSimpleName() + "{Buffer Size=" + sizeX * sizeY * sizeZ + ", Base=(" + baseX + ", " + baseY + ", " + baseZ + "}, Size=(" + sizeX + ", " + sizeY + ", " + sizeZ + "), " + "Increments=(" + Xinc + ", " + Yinc + ", " + Zinc + "), Top=(" + topX + ", " + topY + ", " + topZ + ")}";
