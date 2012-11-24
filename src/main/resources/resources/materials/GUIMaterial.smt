@@ -33,5 +33,5 @@ RenderState:
 
 MaterialParams:
     Diffuse: texture://Spout/resources/resources/materials/testui.png
-    Color: color(1,1,1,1)
+    BlendColor: color(1,1,1,1)
     

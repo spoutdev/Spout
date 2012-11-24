@@ -33,5 +33,5 @@ RenderState:
 
 MaterialParams:
     Diffuse: texture://Spout/fallbacks/fallback.png
-    Color: color(1,1,1,1)
+    BlendColor: color(1,1,1,1)
     

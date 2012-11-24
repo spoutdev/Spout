@@ -10,7 +10,6 @@ layout(location=0) out vec4 outputColor;
 
 void main()
 {
-	vec4 t = texture(Diffuse, uvcoord);
-	
-	outputColor = t * vec4(color.rgb * BlendColor.rgb, 1);
+
+	outputColor = texture(Diffuse, uvcoord) * color * BlendColor;
 } 
