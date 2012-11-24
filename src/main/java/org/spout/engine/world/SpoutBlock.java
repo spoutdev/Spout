@@ -372,4 +372,16 @@ public class SpoutBlock implements Block {
 	public BlockComponent getComponent() {
 		return this.getRegion().getBlockComponent(x, y, z);
 	}
-}
+	
+	public Block getRelative(BlockFace face) {
+		return getRelative(face.getOffset());
+	}
+	
+	public Block getRelative(Vector3 vec) {
+		return getRelative(vec.getX(), vec.getY(), vec.getZ());
+	}
+	
+	public Block getRelative(float x, float y, float z) {
+		return world.get().getBlock(x+this.x, y+this.y, z+this.z);
+	}
+	}
