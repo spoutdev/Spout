@@ -29,6 +29,7 @@ package org.spout.engine.world;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.ChunkSnapshotModel;
@@ -70,16 +71,19 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	 * Indicates that the renderer has not received a model for this chunk yet
 	 */
 	private boolean first;
+
+	private final SpoutWorld world;
 	
-	public SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload, long time) {
-		this(cx, cy, cz, unload, null, 0, null, null, false, time);
+	public SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, boolean unload, long time) {
+		this(world, cx, cy, cz, unload, null, 0, null, null, false, time);
 	}
 	
-	public SpoutChunkSnapshotModel(int cx, int cy, int cz, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, Set<Vector3> submeshs, boolean first, long time) {
-		this(cx, cy, cz, false, chunks, distance, renderMaterials, submeshs, first, time);
+	public SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, Set<Vector3> submeshs, boolean first, long time) {
+		this(world, cx, cy, cz, false, chunks, distance, renderMaterials, submeshs, first, time);
 	}
 
-	private SpoutChunkSnapshotModel(int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, Set<Vector3> submeshs, boolean first, long time) {
+	private SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, Set<Vector3> submeshs, boolean first, long time) {
+		this.world = world;
 		this.cx = cx;
 		this.cy = cy;
 		this.cz = cz;
@@ -259,6 +263,10 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 
 	public long getTime() {
 		return time;
+	}
+
+	public World getWorld() {
+		return world;
 	}
 }
 

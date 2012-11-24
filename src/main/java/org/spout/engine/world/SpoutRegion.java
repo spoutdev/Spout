@@ -582,7 +582,7 @@ public class SpoutRegion extends Region {
 
 			currentChunk.setUnloaded();
 			if (renderQueueEnabled && currentChunk.isInViewDistance()) {
-				addToRenderQueue(new SpoutChunkSnapshotModel(currentChunk.getX(), currentChunk.getY(), currentChunk.getZ(), true, System.currentTimeMillis()));
+				addToRenderQueue(new SpoutChunkSnapshotModel(getWorld(),currentChunk.getX(), currentChunk.getY(), currentChunk.getZ(), true, System.currentTimeMillis()));
 			}
 
 			int cx = c.getX() & CHUNKS.MASK;
@@ -1078,7 +1078,6 @@ public class SpoutRegion extends Region {
 	public void preSnapshotRun() {
 		entityManager.preSnapshotRun();
 		
-		boolean firstRenderQueueTick = false;
 		Point playerPosition = null;
 		int renderLimit = Spout.getPlatform() == Platform.CLIENT && getRenderer() != null ?
 				RENDER_QUEUE_LIMIT - (getRenderer().getBatchWaiting() + renderChunkQueue.size()) :
@@ -1088,7 +1087,8 @@ public class SpoutRegion extends Region {
 			SpoutWorld world = this.getWorld();
 			
 			boolean worldRenderQueueEnabled = world.isRenderQueueEnabled();
-			firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
+			boolean firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
+			boolean unloadRenderQueue = !worldRenderQueueEnabled && renderQueueEnabled;
 			
 			SpoutPlayer player = ((SpoutClient) Spout.getEngine()).getActivePlayer();
 			if (player == null) {
@@ -1101,19 +1101,14 @@ public class SpoutRegion extends Region {
 				for( SpoutChunk c : player.getObservingChunks()){
 					c.setRenderDirty(true);
 				}
-				
-				/*for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
-					for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
-						for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
-							SpoutChunk chunk = chunks[dx][dy][dz].get();
-							if (chunk != null) {
-								addUpdateToRenderQueue(playerPosition, chunk, true);
-							}
-						}
-					}
-				}*/
-
 				renderQueueEnabled = worldRenderQueueEnabled;
+			}
+			
+			if(unloadRenderQueue){
+				for(SpoutChunk c : rended.toArray(new SpoutChunk[rended.size()])){
+					addUpdateToRenderQueue(playerPosition, c, false);
+					
+				}
 			}
 		}
 
@@ -1254,16 +1249,28 @@ public class SpoutRegion extends Region {
 				}
 			}
 			c.setRended(true);
+			addRendedChunk(c);
 			c.setRenderDirty(false);
-			addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, chunks, distance, updatedRenderMaterials, updatedSubMeshes, first, System.currentTimeMillis()));//TODO : replace null by the set of submesh
+			addToRenderQueue(new SpoutChunkSnapshotModel(getWorld(),bx + 1, by + 1, bz + 1, chunks, distance, updatedRenderMaterials, updatedSubMeshes, first, System.currentTimeMillis()));//TODO : replace null by the set of submesh
 		} else {
 			if (c.leftViewDistance()) {
 				c.setRended(false);
+				removeRendedChunk(c);
 				c.setRenderDirty(false);
-				addToRenderQueue(new SpoutChunkSnapshotModel(bx + 1, by + 1, bz + 1, true, System.currentTimeMillis()));
+				addToRenderQueue(new SpoutChunkSnapshotModel(getWorld(),bx + 1, by + 1, bz + 1, true, System.currentTimeMillis()));
 			}
 		}
 		c.viewDistanceCopy();
+	}
+	
+	private Set<SpoutChunk> rended = new HashSet<SpoutChunk>();
+	
+	public void addRendedChunk(SpoutChunk chunk){
+		rended.add(chunk);
+	}
+	
+	public void removeRendedChunk(SpoutChunk chunk){
+		rended.remove(chunk);
 	}
 	
 	private static void addMaterialToSet(Set<RenderMaterial> set, int blockState) {

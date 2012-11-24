@@ -483,7 +483,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		BatchVertexRenderer.initPool(GL11.GL_TRIANGLES, 10000);
 		
 		worldRenderer = new WorldRenderer(this);
-		worldRenderer.setup();
 
 		gui = SpriteBatch.createSpriteBatch(getRenderMode(), resolution.getX(), resolution.getY());
 
