@@ -240,6 +240,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	private final AtomicBoolean dirtyQueued = new AtomicBoolean(false);
 
 	private final AtomicBoolean populationQueued = new AtomicBoolean(false);
+	private final AtomicBoolean popObserver = new AtomicBoolean(false);
 
 	private final AtomicInteger autosaveTicks = new AtomicInteger(0);
 	
@@ -1472,10 +1473,26 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	@Override
+	public void populate(boolean sync, boolean observe) {
+		if (observe) {
+			this.popObserver.set(true);
+		}
+		if (sync) {
+			if (populationState.get().incomplete()) {
+				this.queueForPopulation();
+			}
+		} else {
+			populate();
+		}
+	}
+	
+	@Override
 	public boolean populate(boolean force) {
-		if (!isObserved() && !force) {
+		if (!isObserved() && !force && !popObserver.get()) {
 			return false;
 		}
+		
+		popObserver.set(false);
 
 		if (!populationState.get().incomplete() && !force) {
 			return false;
