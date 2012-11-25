@@ -151,7 +151,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	}
 
 	private int getBlockIndex(int x, int y, int z) {
-		return (y & Chunk.BLOCKS.MASK) << 8 | (z & Chunk.BLOCKS.MASK) << 4 | x & Chunk.BLOCKS.MASK;
+		return (y & Chunk.BLOCKS.MASK) << Chunk.BLOCKS.DOUBLE_BITS | (z & Chunk.BLOCKS.MASK) << Chunk.BLOCKS.BITS | x & Chunk.BLOCKS.MASK;
 	}
 
 	@Override

@@ -833,7 +833,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	private int getBlockIndex(int x, int y, int z) {
-		return (y & BLOCKS.MASK) << 8 | (z & BLOCKS.MASK) << 4 | (x & BLOCKS.MASK);
+		return (y & BLOCKS.MASK) << BLOCKS.DOUBLE_BITS | (z & BLOCKS.MASK) << BLOCKS.BITS | (x & BLOCKS.MASK);
 	}
 
 	@Override
