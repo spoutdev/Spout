@@ -160,6 +160,9 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 			throw new UnsupportedOperationException("This chunk snapshot does not contain block ids");
 		}
 		BlockMaterial mat = BlockMaterial.get(getBlockId(x, y, z));
+		if (mat != null) {
+			mat = mat.getSubMaterial(getBlockData(x, y, z));
+		}
 		return mat == null ? BlockMaterial.AIR : mat;
 	}
 
