@@ -117,14 +117,14 @@ public class SpoutWorldLightingModel {
 			// Load chunk information
 			if (this.sky) {
 				synchronized (chunk.skyLightUpdates) {
-					int length = chunk.skyLightUpdates.size();
 					this.iter = chunk.skyLightUpdates.iterator();
-					for (int i = 0; i < length && this.iter.hasNext(); i++) {
+					while (iter.hasNext()) {
 						int key = iter.next();
 						x = NibbleQuadHashed.key1(key);
 						y = NibbleQuadHashed.key2(key) + chunk.getBlockY();
 						z = NibbleQuadHashed.key3(key) + chunk.getBlockZ();
 						chunk.setBlockSkyLightSync(x, y, z, NibbleQuadHashed.key4(key), null);
+						chunk.notifyLightOperationComplete();
 					}
 					chunk.skyLightUpdates.clear();
 				}
@@ -135,8 +135,12 @@ public class SpoutWorldLightingModel {
 							this.updates = new short[this.updateCount + 100];
 						}
 						this.iter = chunk.skyLightOperations.iterator();
-						for (int i = 0; i < this.updateCount && this.iter.hasNext(); i++) {
+						int i;
+						for (i = 0; i < this.updateCount && this.iter.hasNext(); i++) {
 							this.updates[i] = iter.next();
+						}
+						if (i != this.updateCount || this.iter.hasNext()) {
+							Spout.getLogger().info("Warning: Copy of light updates to world lighting thread failed");
 						}
 						chunk.skyLightOperations.clear();
 					} else {
@@ -153,6 +157,7 @@ public class SpoutWorldLightingModel {
 						y = NibbleQuadHashed.key2(key) + chunk.getBlockY();
 						z = NibbleQuadHashed.key3(key) + chunk.getBlockZ();
 						chunk.setBlockLightSync(x, y, z, NibbleQuadHashed.key4(key), null);
+						chunk.notifyLightOperationComplete();
 					}
 					chunk.blockLightUpdates.clear();
 				}
@@ -163,8 +168,12 @@ public class SpoutWorldLightingModel {
 							this.updates = new short[this.updateCount + 100];
 						}
 						this.iter = chunk.blockLightOperations.iterator();
-						for (int i = 0; i < this.updateCount && this.iter.hasNext(); i++) {
+						int i;
+						for (i = 0; i < this.updateCount && this.iter.hasNext(); i++) {
 							this.updates[i] = iter.next();
+						}
+						if (i != this.updateCount || this.iter.hasNext()) {
+							Spout.getLogger().info("Warning: Copy of light updates to world lighting thread failed");
 						}
 						chunk.blockLightOperations.clear();
 					} else {
@@ -198,6 +207,7 @@ public class SpoutWorldLightingModel {
 						this.resolveRefresh(x, y, z);
 						break;
 				}
+				chunk.notifyLightOperationComplete();
 			}
 		} catch (Throwable t) {
 			String type = sky ? "sky" : "block";

@@ -222,6 +222,7 @@ public class WorldFiles {
 		chunkTags.put(new IntTag("y", snapshot.getY()));
 		chunkTags.put(new IntTag("z", snapshot.getZ()));
 		chunkTags.put(new ByteTag("populationState", snapshot.getPopulationState().getId()));
+		chunkTags.put(new ByteTag("lightStable", snapshot.isLightStable()));
 		chunkTags.put(new IntArrayTag("palette", palette));
 		chunkTags.put(new IntTag("packedWidth", packedWidth));
 		chunkTags.put(new IntArrayTag("packedBlockArray", packetBlockArray));
@@ -277,6 +278,8 @@ public class WorldFiles {
 			boolean skipScan = false;
 			
 			byte populationState = SafeCast.toGeneric(map.get("populationState"), new ByteTag("", PopulationState.POPULATED.getId()), ByteTag.class).getValue();
+			boolean lightStable = SafeCast.toByte(NBTMapper.toTagValue(map.get("lightStable")), (byte) 0) != 0;
+			
 			int[] palette = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("palette")), null);
 			if (palette == null) {
 				short[] blocks = SafeCast.toShortArray(NBTMapper.toTagValue(map.get("blocks")), null);
@@ -284,7 +287,7 @@ public class WorldFiles {
 				for (int i = 0; i < blocks.length; i++) {
 					blocks[i] = (short) itemMap.convertTo(global, blocks[i]);
 				}
-				chunk = new SpoutChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), blocks, data, skyLight, blockLight, extraDataMap);
+				chunk = new SpoutChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), blocks, data, skyLight, blockLight, extraDataMap, lightStable);
 			} else {
 				int blockArrayWidth = SafeCast.toInt(NBTMapper.toTagValue(map.get("packedWidth")), -1);
 				int[] variableWidthBlockArray = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("packedBlockArray")), null);
@@ -296,7 +299,7 @@ public class WorldFiles {
 					convertArray(variableWidthBlockArray, itemMap, global);
 					skipScan = componentSkipCheck(variableWidthBlockArray);
 				}
-				chunk = new SpoutChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), palette, blockArrayWidth, variableWidthBlockArray, skyLight, blockLight, extraDataMap);
+				chunk = new SpoutChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), palette, blockArrayWidth, variableWidthBlockArray, skyLight, blockLight, extraDataMap, lightStable);
 			}
 
 			CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("entities")), (CompoundMap) null, CompoundMap.class);

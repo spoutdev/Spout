@@ -491,6 +491,9 @@ public class SpoutRegion extends Region {
 					}
 					dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);
 				}
+				if (!newChunk.wasLightStableOnLoad() && newChunk.isPopulated()) {
+					newChunk.initLighting();
+				}
 				Spout.getEventManager().callDelayedEvent(new ChunkLoadEvent(newChunk, generated));
 
 				return newChunk;
@@ -1814,7 +1817,7 @@ public class SpoutRegion extends Region {
 		if (chunk != null) {
 			chunk.unload(false);
 		}
-		SpoutChunk newChunk = new SpoutChunk(getWorld(), this, getBlockX() | x, getBlockY() | y, getBlockZ() | z, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, skyLight, blockLight, new ManagedHashMap());
+		SpoutChunk newChunk = new SpoutChunk(getWorld(), this, getBlockX() | x, getBlockY() | y, getBlockZ() | z, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, skyLight, blockLight, new ManagedHashMap(), true);
 		setChunk(newChunk, x, y, z, null, true, LoadOption.LOAD_GEN);
 	}
 	

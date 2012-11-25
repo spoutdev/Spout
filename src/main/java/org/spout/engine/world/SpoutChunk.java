@@ -166,6 +166,14 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	 */
 	protected final AtomicBoolean isInitializingLighting = new AtomicBoolean(false);
 	/**
+	 * This is the number of light operations and updates pending
+	 */
+	protected final AtomicInteger lightOperationsPending = new AtomicInteger(0);
+	/**
+	 * This indicates that light for this chunk was stable when loaded from disk
+	 */
+	protected final boolean lightStableOnLoad;
+	/**
 	 * True if this chunk should be resent due to light calculations
 	 */
 	protected final AtomicBoolean lightDirty = new AtomicBoolean(false);
@@ -285,11 +293,11 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial, ManagedHashMap map) {
-		this(world, region, x, y, z, PopulationState.UNTOUCHED, initial, null, null, null, map);
+		this(world, region, x, y, z, PopulationState.UNTOUCHED, initial, null, null, null, map, false);
 	}
 	
-	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, int[] palette, int blockArrayWidth, int[] variableWidthBlockArray, byte[] skyLight, byte[] blockLight, ManagedHashMap extraData) {
-		this(world, region, x, y, z, popState, extraData);
+	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, int[] palette, int blockArrayWidth, int[] variableWidthBlockArray, byte[] skyLight, byte[] blockLight, ManagedHashMap extraData, boolean lightStable) {
+		this(world, region, x, y, z, popState, extraData, lightStable);
 		blockStore = new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, 10, palette, blockArrayWidth, variableWidthBlockArray);
 		
 		if (skyLight == null) {
@@ -306,8 +314,8 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		blockStore.resetDirtyArrays();
 	}
 	
-	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, ManagedHashMap extraData) {
-		this(world, region, x, y, z, popState, extraData);
+	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, ManagedHashMap extraData, boolean lightStable) {
+		this(world, region, x, y, z, popState, extraData, lightStable);
 		blockStore = new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, 10, blocks, data);
 		
 		if (skyLight == null) {
@@ -324,7 +332,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		blockStore.resetDirtyArrays();
 	}
 
-	private SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, ManagedHashMap extraData) {
+	private SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, ManagedHashMap extraData, boolean lightStable) {
 		super(world, x * BLOCKS.SIZE, y * BLOCKS.SIZE, z * BLOCKS.SIZE);
 		parentRegion = region;
 		this.populationState = new AtomicReference<PopulationState>(popState);
@@ -345,6 +353,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		this.regionThread = region.getExceutionThread();
 		selfReference = new WeakReference<Chunk>(this);
 		this.scheduler = (SpoutScheduler) Spout.getScheduler();
+		this.lightStableOnLoad = lightStable;
 	}
 
 	@Override
@@ -474,7 +483,25 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	 * This is always 'this', it is changed to a snapshot of the chunk in initLighting()
 	 * Do NOT set this to something else or use it elsewhere but in initLighting()
 	 */
-	protected AreaBlockSource lightBlockSource = this;
+	protected volatile AreaBlockSource lightBlockSource = this;
+	
+	private void registerWithLightingManager() {
+		this.getWorld().getLightingManager().addChunk(this.getX(), this.getY(), this.getZ());
+	}
+	
+	public boolean isLightStable() {
+		return lightOperationsPending.get() == 0;
+	}
+
+	public void notifyLightOperationComplete() {
+		if (lightOperationsPending.decrementAndGet() < 0) {
+			Spout.getLogger().info("Warning: Light operations counter decremented below zero");
+		}
+	}
+	
+	private void notifyLightOperationSubmission() {
+		this.lightOperationsPending.incrementAndGet();
+	}
 
 	protected void addSkyLightOperation(int x, int y, int z, int operation) {
 		SpoutWorldLightingModel model = this.getWorld().getLightingManager().getSkyModel();
@@ -490,8 +517,9 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		synchronized (this.skyLightOperations) {
 			if (this.skyLightOperations.isEmpty()) {
 				// Let the lighting manager know this chunk requires a lighting update
-				this.getWorld().getLightingManager().addChunk(this.getX(), this.getY(), this.getZ());
+				registerWithLightingManager();
 			}
+			notifyLightOperationSubmission();
 			this.skyLightOperations.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, operation);
 		}
 	}
@@ -510,8 +538,9 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		synchronized (this.blockLightOperations) {
 			if (this.blockLightOperations.isEmpty()) {
 				// Let the lighting manager know this chunk requires a lighting update
-				this.getWorld().getLightingManager().addChunk(this.getX(), this.getY(), this.getZ());
+				registerWithLightingManager();
 			}
+			notifyLightOperationSubmission();
 			this.blockLightOperations.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, operation);
 		}
 	}
@@ -520,8 +549,9 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		synchronized (this.skyLightUpdates) {
 			if (this.skyLightUpdates.isEmpty()) {
 				// Let the lighting manager know this chunk requires a lighting update
-				this.getWorld().getLightingManager().addChunk(this.getX(), this.getY(), this.getZ());
+				registerWithLightingManager();
 			}
+			notifyLightOperationSubmission();
 			this.skyLightUpdates.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, level);
 		}
 	}
@@ -530,8 +560,9 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		synchronized (this.blockLightUpdates) {
 			if (this.blockLightUpdates.isEmpty()) {
 				// Let the lighting manager know this chunk requires a lighting update
-				this.getWorld().getLightingManager().addChunk(this.getX(), this.getY(), this.getZ());
+				registerWithLightingManager();
 			}
+			notifyLightOperationSubmission();
 			this.blockLightUpdates.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, level);
 		}
 	}
@@ -792,12 +823,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			return NibblePairHashed.key1(light);
 		} else {
 			return NibblePairHashed.key2(light);
-		}
-	}
-
-	private void notifyLightChange() {
-		if (this.lightingCounter.getAndSet(0) == -1) {
-			this.parentRegion.reportChunkLightDirty(this.getX(), this.getY(), this.getZ());
 		}
 	}
 
@@ -1171,6 +1196,10 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	public boolean isRenderDirty() {
 		return renderDirty.get() || isDirty();
 	}
+	
+	public boolean wasLightStableOnLoad() {
+		return lightStableOnLoad;
+	}
 
 	public void setLightDirty(boolean dirty) {
 		lightDirty.set(dirty);
@@ -1210,7 +1239,12 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		return blockStore.tryWriteLock();
 	}
 
-
+	private void notifyLightChange() {
+		if (this.lightingCounter.getAndSet(0) == -1) {
+			this.parentRegion.reportChunkLightDirty(this.getX(), this.getY(), this.getZ());
+		}
+	}
+	
 	public boolean isCalculatingLighting() {
 		return this.lightingCounter.get() >= 0;
 	}
@@ -1665,6 +1699,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		}
 		this.isInitializingLighting.set(false);
 		this.lightBlockSource = this; // stop using the snapshot from now on
+		this.registerWithLightingManager();
 	}
 
 	@Override

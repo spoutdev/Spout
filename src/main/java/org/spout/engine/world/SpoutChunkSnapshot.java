@@ -70,6 +70,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	private final BiomeManager biomes;
 	private final SerializableMap dataMap;
 	private final PopulationState populationState;
+	private final boolean lightStable;
 	private boolean renderDirty = false;
 	
 	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, EntityType type, ExtraData data) {
@@ -136,6 +137,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		}
 		this.populationState = chunk.getPopulationState();
 		renderDirty = chunk.isDirty();
+		lightStable = chunk.isLightStable();
 	}
 
 	private static List<EntitySnapshot> getEntities(SpoutChunk chunk) {
@@ -308,6 +310,10 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	
 	public int[] getPackedBlockArray() {
 		return packedBlockArray;
+	}
+	
+	public boolean isLightStable() {
+		return lightStable;
 	}
 
 	private static class SpoutBlockComponentSnapshot implements BlockComponentSnapshot {
