@@ -240,6 +240,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	private final AtomicBoolean dirtyQueued = new AtomicBoolean(false);
 
 	private final AtomicBoolean populationQueued = new AtomicBoolean(false);
+	private final AtomicBoolean populationPriorityQueued = new AtomicBoolean(false);
 	private final AtomicBoolean popObserver = new AtomicBoolean(false);
 
 	private final AtomicInteger autosaveTicks = new AtomicInteger(0);
@@ -1058,9 +1059,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		parentRegion.markObserverDirty(this);
 		parentRegion.unloadQueue.remove(this);
 		if (!isPopulated()) {
-			if (populationQueued.compareAndSet(false, true)) {
-				parentRegion.queueChunkForPopulation(this);
-			}
+			queueForPopulation(false);
 		}
 		if (observers.add((SpoutEntity) entity) && (entity instanceof SpoutPlayer)) {
 			observingPlayers.add((SpoutPlayer) entity);
@@ -1193,9 +1192,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	public boolean canSend() {
 		boolean canSend = isPopulated() && !this.isCalculatingLighting();
 		if (!canSend && !isPopulated() && isObserved()) {
-			if (populationQueued.compareAndSet(false, true)) {
-				parentRegion.queueChunkForPopulation(this);
-			}
+			queueForPopulation(false);
 		}
 		return canSend;
 	}
@@ -1474,12 +1471,17 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 	@Override
 	public void populate(boolean sync, boolean observe) {
+		populate(sync, observe, false);
+	}
+	
+	@Override
+	public void populate(boolean sync, boolean observe, boolean priority) {
 		if (observe) {
 			this.popObserver.set(true);
 		}
 		if (sync) {
 			if (populationState.get().incomplete()) {
-				this.queueForPopulation();
+				this.queueForPopulation(priority);
 			}
 		} else {
 			populate();
@@ -1491,13 +1493,13 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		if (!isObserved() && !force && !popObserver.get()) {
 			return false;
 		}
-		
+
 		popObserver.set(false);
 
 		if (!populationState.get().incomplete() && !force) {
 			return false;
 		}
-
+		
 		final List<Populator> clearPopulators = new ArrayList<Populator>();
 		final List<Populator> populators = new ArrayList<Populator>();
 		for (Populator pop : getWorld().getGenerator().getPopulators()) {
@@ -1585,14 +1587,24 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		populationState.set(state);
 	}
 
-	public void queueForPopulation() {
-		if (populationQueued.compareAndSet(false, true)) {
-			parentRegion.queueChunkForPopulation(this);
+	public void queueForPopulation(boolean priority) {
+		if (!priority) {
+			if (populationQueued.compareAndSet(false, true)) {
+				parentRegion.queueChunkForPopulation(this, priority);
+			}
+		} else {
+			if (populationPriorityQueued.compareAndSet(false, true)) {
+				parentRegion.queueChunkForPopulation(this, priority);
+			}
 		}
 	}
 
-	public void setNotQueuedForPopulation() {
-		populationQueued.set(false);
+	public void setNotQueuedForPopulation(boolean priority) {
+		if (!priority) {
+			populationQueued.set(false);
+		} else {
+			populationPriorityQueued.set(false);
+		}
 	}
 
 	@Override

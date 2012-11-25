@@ -179,6 +179,7 @@ public class SpoutRegion extends Region {
 	 * A queue of chunks that need to be populated
 	 */
 	final ArrayBlockingQueue<SpoutChunk> populationQueue = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
+	final ArrayBlockingQueue<SpoutChunk> populationPriorityQueue = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final AtomicBoolean[][] generatedColumns = new AtomicBoolean[CHUNKS.SIZE][CHUNKS.SIZE];
 	private final SpoutTaskManager taskManager;
 	private final Thread executionThread;
@@ -803,8 +804,12 @@ public class SpoutRegion extends Region {
 		return empty;
 	}
 
-	public void queueChunkForPopulation(SpoutChunk c) {
-		populationQueue.add(c);
+	public void queueChunkForPopulation(SpoutChunk c, boolean priority) {
+		if (!priority) {
+			populationQueue.add(c);
+		} else {
+			populationPriorityQueue.add(c);
+		}
 	}
 
 	private void updateAutosave() {
@@ -898,11 +903,16 @@ public class SpoutRegion extends Region {
 
 	private void updatePopulation() {
 		for (int i = 0; i < POPULATE_PER_TICK; i++) {
-			SpoutChunk toPopulate = populationQueue.poll();
+			SpoutChunk toPopulate = populationPriorityQueue.poll();
 			if (toPopulate == null) {
-				break;
+				toPopulate = populationQueue.poll();
+				if (toPopulate == null) {
+					break;
+				}
+				toPopulate.setNotQueuedForPopulation(false);
+			} else {
+				toPopulate.setNotQueuedForPopulation(true);
 			}
-			toPopulate.setNotQueuedForPopulation();
 			if (toPopulate.isLoaded()) {
 				if (toPopulate.populate()) {
 					if (scheduler.isServerOverloaded()) {
@@ -1012,7 +1022,7 @@ public class SpoutRegion extends Region {
 				if (doUnload) {
 					chunk.unload(true);
 				} else if (!chunk.isPopulated()) {
-					chunk.queueForPopulation();
+					chunk.queueForPopulation(false);
 				}
 			}
 		}
