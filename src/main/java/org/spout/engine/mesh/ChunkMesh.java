@@ -186,7 +186,7 @@ public class ChunkMesh{
 	private void generateBlockVertices(SpoutChunkSnapshotModel chunkSnapshotModel, int x, int y, int z) {
 		BlockMaterial material = center.getBlockMaterial(x, y, z);
 
-		if (material.isTransparent()) {
+		if (material.isInvisible()) {
 			return;
 		}
 		
