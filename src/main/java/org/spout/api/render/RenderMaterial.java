@@ -117,18 +117,6 @@ public abstract class RenderMaterial extends Resource implements Comparable<Rend
 	 * @return
 	 */
 	public abstract int getLayer();
-
-	/**
-	 * Return the MeshEffect
-	 * @return
-	 */
-	public abstract Collection<MeshEffect> getMeshEffects();
-
-	/**
-	 * Add MeshEffect
-	 * @param MeshEffect
-	 */
-	public abstract void addMeshEffect(MeshEffect meshEffect);
 	
 	/**
 	 * Return the BatchEffects
