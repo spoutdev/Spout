@@ -145,6 +145,9 @@ public class WorldRenderer {
 			while( (chunkMesh = renderChunkMeshBatchQueue.poll()) != null){
 				world = chunkMesh.getWorld();
 				
+				if(world != currentWorld) //Some meshs can be keeped in the queue when you change of world
+					continue;
+				
 				position = ChunkMeshBatchAggregator.getCoordFromChunkMesh(chunkMesh);
 
 				if(chunkMesh.isUnloaded()){
