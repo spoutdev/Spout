@@ -120,6 +120,7 @@ public class BlockMaterial extends Material implements Placeable {
 	private float hardness = 0F;
 	private float friction = 0F;
 	private byte opacity = 0xF;
+	private boolean invisible = false;
 	private final CollisionModel collision = new CollisionModel(new BoundingBox(0F, 0F, 0F, 1F, 1F, 1F));
 
 	@Override
@@ -480,6 +481,23 @@ public class BlockMaterial extends Material implements Placeable {
 	 * @param clickedFace of the material clicked
 	 */
 	public void onInteractBy(Entity entity, Block block, Action type, BlockFace clickedFace) {
+	}
+	
+	/**
+	 * Returns true if the block is completely invisible
+	 * @return True if the block should never be rendered
+	 */
+	public boolean isInvisible() {
+		return this.invisible;
+	}
+	
+	/**
+	 * Turns this material invisible and sets it as non-occluding.  Invisible blocks are not rendered.
+	 */
+	public BlockMaterial setInvisible() {
+		this.invisible = true;
+		this.occlusion.set(BlockFaces.NONE);
+		return this;
 	}
 
 	/**
