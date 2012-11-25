@@ -262,6 +262,7 @@ public abstract class NetworkSynchronizer {
 	}
 	
 	private int chunksSent = 0;
+	private Set<Chunk> unsendable = new HashSet<Chunk>();
 
 	public void preSnapshot() {
 		if (removed) {
@@ -277,6 +278,9 @@ public abstract class NetworkSynchronizer {
 					worldChanged(ep.getWorld());
 				}
 			} else if (!worldChanged) {
+				
+				unsendable.clear();
+				
 				for (Point p : chunkFreeQueue) {
 					if (initializedChunks.remove(p)) {
 						freeChunk(p);
@@ -296,17 +300,21 @@ public abstract class NetworkSynchronizer {
 				}
 
 				chunkInitQueue.clear();
-
+				
 				Iterator<Point> i;
 
 				i = priorityChunkSendQueue.iterator();
 				while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
 					Point p = i.next();
 					Chunk c = p.getWorld().getChunkFromBlock(p);
-					i = attemptSendChunk(i, priorityChunkSendQueue, c);
+					i = attemptSendChunk(i, priorityChunkSendQueue, c, unsendable);
 				}
-
-				if (priorityChunkSendQueue.isEmpty() && teleported && player.getTransform().getTransformLive().equals(player.getTransform().getTransform())) {
+				
+				if (!priorityChunkSendQueue.isEmpty()) {
+					return;
+				}
+				
+				if (teleported && player.getTransform().getTransformLive().equals(player.getTransform().getTransform())) {
 					sendPosition(player.getTransform().getTransformLive().getPosition(), player.getTransform().getTransformLive().getRotation());
 					teleported = false;
 				}
@@ -317,7 +325,7 @@ public abstract class NetworkSynchronizer {
 				while (i.hasNext() && chunksSent < CHUNKS_PER_TICK && tickTimeRemaining) {
 					Point p = i.next();
 					Chunk c = p.getWorld().getChunkFromBlock(p);
-					i = attemptSendChunk(i, chunkSendQueue, c);
+					i = attemptSendChunk(i, chunkSendQueue, c, unsendable);
 					tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
 				}
 			}
@@ -325,12 +333,12 @@ public abstract class NetworkSynchronizer {
 
 	}
 	
-	protected boolean canSendChunk(Chunk c) {
+	protected boolean canSendChunk(Chunk c, Set<Chunk> unsendable) {
 		return c.canSend();
 	}
 	
-	private Iterator<Point> attemptSendChunk(Iterator<Point> i, Iterable<Point> queue, Chunk c) {
-		if (canSendChunk(c)) {
+	private Iterator<Point> attemptSendChunk(Iterator<Point> i, Iterable<Point> queue, Chunk c, Set<Chunk> unsendable) {
+		if (!unsendable.contains(c) && canSendChunk(c, unsendable)) {
 			Collection<Chunk> sent = sendChunk(c);
 			activeChunks.add(c.getBase());
 			i.remove();
