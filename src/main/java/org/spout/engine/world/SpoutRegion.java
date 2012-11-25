@@ -1225,7 +1225,8 @@ public class SpoutRegion extends Region {
 			boolean first = c.enteredViewDistance();
 			final HashSet<RenderMaterial> updatedRenderMaterials;
 			final HashSet<Vector3> updatedSubMeshes;
-			if (first || c.isDirtyOverflow() || force) {
+			// TODO - @L5D this is a hack to get light to work
+			if (first || c.isDirtyOverflow() || force || true) {
 				updatedRenderMaterials = null;
 				updatedSubMeshes = null;
 			} else {
