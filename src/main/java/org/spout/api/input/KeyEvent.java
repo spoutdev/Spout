@@ -29,14 +29,10 @@ package org.spout.api.input;
 public class KeyEvent {
 	private final Keyboard key;
 	private final boolean pressed;
-	private final char character;
-	private final long nanoseconds;
-	
-	public KeyEvent(Keyboard key, boolean press, char character, long nanoseconds) {
+
+	public KeyEvent(Keyboard key, boolean press) {
 		this.key = key;
 		this.pressed = press;
-		this.character = character;
-		this.nanoseconds = nanoseconds;
 	}
 	
 	public Keyboard getKey() {
@@ -45,13 +41,5 @@ public class KeyEvent {
 	
 	public boolean isPressed() {
 		return pressed;
-	}
-	
-	public char getCharacter() {
-		return character;
-	}
-	
-	public long getNanoseconds() {
-		return nanoseconds;
 	}
 }

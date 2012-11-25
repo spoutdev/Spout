@@ -32,7 +32,9 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 public enum Mouse {
 	MOUSE_BUTTON0(0),
 	MOUSE_BUTTON1(1),
-	MOUSE_BUTTON2(2);
+	MOUSE_BUTTON2(2),
+	MOUSE_SCROLLUP(0x0A),
+	MOUSE_SCROLLDOWN(0x0B);
 
 	private final int id;
 	private static final TIntObjectMap<Mouse> idMap = new TIntObjectHashMap<Mouse>(Mouse.values().length);
