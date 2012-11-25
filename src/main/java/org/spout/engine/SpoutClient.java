@@ -105,7 +105,7 @@ import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.entity.component.ClientTextModelComponent;
 import org.spout.engine.entity.component.EntityRendererComponent;
 import org.spout.engine.filesystem.ClientFileSystem;
-import org.spout.engine.input.SpoutInput;
+import org.spout.engine.input.SpoutInputManager;
 import org.spout.engine.input.SpoutInputConfiguration;
 import org.spout.engine.listener.SpoutClientListener;
 import org.spout.engine.listener.channel.SpoutClientConnectListener;
@@ -120,7 +120,7 @@ import org.spout.engine.world.SpoutClientWorld;
 
 public class SpoutClient extends SpoutEngine implements Client {
 	private final SoundManager soundManager = new SpoutSoundManager();
-	private final SpoutInput inputManager = new SpoutInput();
+	private final SpoutInputManager inputManager = new SpoutInputManager();
 	private final String name = "Spout Client";
 	private final Vector2 resolution = new Vector2(1024, 768);
 	private final boolean[] sides = {true, true, true, true, true, true};
@@ -188,8 +188,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		inputManager.bind(Keyboard.get(SpoutInputConfiguration.UP.getString()), "jump");
 		inputManager.bind(Keyboard.get(SpoutInputConfiguration.DOWN.getString()), "crouch");
 		inputManager.bind(Keyboard.KEY_F3, "debug_info");
-		inputManager.bind(Keyboard.KEY_SCROLLDOWN, "select_down");
-		inputManager.bind(Keyboard.KEY_SCROLLUP, "select_up");
+		inputManager.bind(org.spout.api.input.Mouse.MOUSE_SCROLLDOWN, "select_down");
+		inputManager.bind(org.spout.api.input.Mouse.MOUSE_SCROLLUP, "select_up");
 		inputManager.bind(org.spout.api.input.Mouse.MOUSE_BUTTON0, "fire_1");
 		inputManager.bind(org.spout.api.input.Mouse.MOUSE_BUTTON1, "interact");
 		inputManager.bind(org.spout.api.input.Mouse.MOUSE_BUTTON2, "fire_2");
@@ -291,7 +291,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	@Override
-	public SpoutInput getInputManager() {
+	public SpoutInputManager getInputManager() {
 		return inputManager;
 	}
 
