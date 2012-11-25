@@ -67,7 +67,6 @@ public class ClientRenderMaterial extends RenderMaterial {
 	Matrix view;
 	Matrix projection;
 	int layer;
-	private List<MeshEffect> meshEffects = new ArrayList<MeshEffect>();
 	private List<BatchEffect> batchEffects = new ArrayList<BatchEffect>();
 	private List<RenderEffect> renderEffects = new ArrayList<RenderEffect>();
 
@@ -132,13 +131,13 @@ public class ClientRenderMaterial extends RenderMaterial {
 
 	@Override
 	public void preMesh(SnapshotMesh snapshotMesh) {
-		for(MeshEffect meshEffect : getMeshEffects())
+		for(MeshEffect meshEffect : snapshotMesh.getMaterial().getMeshEffects())
 			meshEffect.preMesh(snapshotMesh);
 	}
 
 	@Override
 	public void postMesh(SnapshotMesh snapshotMesh) {
-		for(MeshEffect meshEffect : getMeshEffects())
+		for(MeshEffect meshEffect : snapshotMesh.getMaterial().getMeshEffects())
 			meshEffect.postMesh(snapshotMesh);
 	}
 
@@ -265,16 +264,6 @@ public class ClientRenderMaterial extends RenderMaterial {
 	@Override
 	public void addRenderEffect(BatchEffect batchEffect) {
 		batchEffects.add(batchEffect);
-	}
-
-	@Override
-	public Collection<MeshEffect> getMeshEffects() {
-		return Collections.unmodifiableCollection(meshEffects);
-	}
-
-	@Override
-	public void addMeshEffect(MeshEffect meshEffect) {
-		meshEffects.add(meshEffect);
 	}
 
 }

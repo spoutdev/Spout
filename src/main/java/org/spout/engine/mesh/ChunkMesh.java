@@ -36,6 +36,7 @@ import java.util.Set;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.Vector3;
@@ -231,7 +232,7 @@ public class ChunkMesh{
 		if(fullyOccluded)
 			return;
 
-		SnapshotMesh snapshotMesh = new SnapshotMesh(material, chunkSnapshotModel, position, toRender);
+		SnapshotMesh snapshotMesh = new SnapshotMesh(material, chunkSnapshotModel, new Point(position, world), toRender);
 
 		renderMaterial.preMesh(snapshotMesh);
 		List<MeshFace> faces = renderMaterial.render(snapshotMesh);
