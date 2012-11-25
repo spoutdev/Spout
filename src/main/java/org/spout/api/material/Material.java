@@ -67,7 +67,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	private volatile boolean submaterialsDirty = true;
 	private final short dataMask;
 	private final FlagSingle useFlag = new FlagSingle();
-	private final List<MeshEffect> batchEffects = new ArrayList<MeshEffect>();
+	private final List<MeshEffect> meshEffects = new ArrayList<MeshEffect>();
 	
 	/**
 	 * Creates a material with a dataMask, name
@@ -176,8 +176,8 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	/**
 	 * Add a BatchEffect
 	 */
-	public void addBatchEffect(MeshEffect batchEffect){
-		batchEffects.add(batchEffect);
+	public void addMeshEffect(MeshEffect batchEffect){
+		meshEffects.add(batchEffect);
 	}
 
 	public final short getId() {
@@ -492,7 +492,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		return "Material {" + getName() + "}";
 	}
 
-	public Collection<MeshEffect> getBatchEffects() {
-		return Collections.unmodifiableCollection(batchEffects);
+	public Collection<MeshEffect> getMeshEffects() {
+		return Collections.unmodifiableCollection(meshEffects);
 	}
 }
