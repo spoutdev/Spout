@@ -39,6 +39,7 @@ package org.spout.api.protocol;
  * and beaten with a shovel by zml2008 (Offer only valid in the Portland, OR area)
  */
 public interface Message {
+	public static final int DEFAULT_CHANNEL = 0;
 	@Override
 	public abstract String toString();
 	@Override
@@ -48,6 +49,8 @@ public interface Message {
 
 	/**
 	 * Gets the channel id for this messages.  The ordering of messages with different channel ids by the network library is undefined.<br>
+	 * Channels are used to allow certain messages that may have time-consuming encode or decode methods to be sent on a separate thread,
+	 * Usually you can just have this return {@link #DEFAULT_CHANNEL}.<br>
 	 * <br>
 	 * Channels from 0 to 7 are guaranteed to exist.  Channels outside this range may be aliased back into this range.
 	 * @return
