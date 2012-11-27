@@ -26,6 +26,9 @@
  */
 package org.spout.engine.mesh;
 
+import gnu.trove.list.array.TFloatArrayList;
+
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,9 +39,11 @@ import java.util.Set;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
+import org.spout.api.geo.cuboid.ChunkSnapshotModel;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
+import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.Vertex;
@@ -61,7 +66,7 @@ public class ChunkMesh{
 	public final static int SPLIT_Y = 2;
 	public final static int SPLIT_Z = 2;
 	public final static Vector3 SPLIT = new Vector3(SPLIT_X, SPLIT_Y, SPLIT_Z);
-	
+
 	/**
 	 * Number of block for a sub mesh
 	 */
@@ -71,15 +76,17 @@ public class ChunkMesh{
 	public final static Vector3 SUBSIZE = new Vector3(SUBSIZE_X, SUBSIZE_Y, SUBSIZE_Z);
 
 	public final static List<BlockFace> shouldRender = new ArrayList<BlockFace>(Arrays.asList(BlockFace.TOP,BlockFace.BOTTOM,BlockFace.NORTH,BlockFace.SOUTH,BlockFace.WEST,BlockFace.EAST));
-	
+
 	public final static boolean UNLOAD_ACCELERATOR = SPLIT_X == ChunkMeshBatchAggregator.SIZE_X &&
 			SPLIT_Y == ChunkMeshBatchAggregator.SIZE_Y &&
 			SPLIT_Z == ChunkMeshBatchAggregator.SIZE_Z;
-	
+
 	public Vector3 start;
 	public Vector3 end;
-	
+
 	private HashMap<RenderMaterial, BatchVertex> meshs = new HashMap<RenderMaterial, BatchVertex>();
+	private boolean verticeGenerated = false;
+	private boolean lightGenerated = false;
 
 	private SpoutChunkSnapshotModel chunkModel;
 	private ChunkSnapshot center;
@@ -88,7 +95,7 @@ public class ChunkMesh{
 	private final int subX,subY,subZ;
 	private boolean isUnloaded = false;
 	private boolean first = false;
-	
+
 	/**
 	 * Time of the used SpoutChunkSnapshotModel generation
 	 * To benchmark purpose
@@ -98,19 +105,19 @@ public class ChunkMesh{
 	public ChunkMesh(SpoutChunkSnapshotModel chunkModel, int x, int y, int z) {
 		this.chunkModel = chunkModel;
 		first = chunkModel.isFirst();
-		
+
 		world = chunkModel.getWorld();
-		
+
 		chunkX = chunkModel.getX();
 		chunkY = chunkModel.getY();
 		chunkZ = chunkModel.getZ();
-		
+
 		subX = chunkX * SPLIT_X + x;
 		subY = chunkY * SPLIT_Y + y;
 		subZ = chunkZ * SPLIT_Z + z;
-		
+
 		time = chunkModel.getTime();
-		
+
 		start = new Vector3(SUBSIZE_X * x, SUBSIZE_Y * y, SUBSIZE_Z * z);
 		end = new Vector3(SUBSIZE_X * x + SUBSIZE_X, SUBSIZE_Y * y + SUBSIZE_Y, SUBSIZE_Z * z + SUBSIZE_Z);
 	}
@@ -171,9 +178,82 @@ public class ChunkMesh{
 			}
 		}
 
+		verticeGenerated = true;
+		lightGenerated = false; //Invalid the light computation
+		
 		// Free memory
 		chunkModel = null;
 		center = null;
+	}
+
+	/**
+	 * Updates the mesh light, the block vertices MUST BE done before
+	 */
+	public void updateLight(SpoutChunkSnapshotModel chunkModelLight) {
+		if(!verticeGenerated)
+			throw new IllegalStateException("Vertice must be generated before compute light");
+			
+		//We don't need light to unload a chunk
+		/*if(chunkModelLight.isUnload()){
+			isUnloaded = true;
+			return;
+		}*/
+
+		int offsetColor = 0;
+		for(BatchVertex batch : meshs.values()){
+
+			//Reallocate the colorBuffer if needed (color -> 4 value RGBA) (vertex -> 3 value xyz)
+			if(batch.colorBuffer.size()/4 != batch.vertexBuffer.size()/3)
+				batch.colorBuffer = new TFloatArrayList(batch.vertexBuffer.size()/3*4);
+
+			for(int i = 0; i < batch.vertexBuffer.size();){
+				Color color = generateLightOnVertices(chunkModelLight,batch.vertexBuffer.get(i++),batch.vertexBuffer.get(i++),batch.vertexBuffer.get(i++));
+				batch.colorBuffer.set(offsetColor++, color.getRed());
+				batch.colorBuffer.set(offsetColor++, color.getGreen());
+				batch.colorBuffer.set(offsetColor++, color.getBlue());
+				batch.colorBuffer.set(offsetColor++, color.getAlpha());
+			}
+		}
+		
+		lightGenerated = true;
+	}
+
+	/**
+	 * Compute the light for one vertex
+	 * @param chunkModel
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @return
+	 */
+	private Color generateLightOnVertices(SpoutChunkSnapshotModel chunkModel, float x, float y, float z) {
+		int xi = (int)x;
+		int yi = (int)y;
+		int zi = (int)z;
+		if(chunkModel != null){
+			//TODO : Fix to get light from each shared block for the vertice
+			
+			//TODO : Maybe we should use two byte buffer to store light and let the shader use it as the shader want
+			//(we can give the sky color and light color with a render effect in Vanilla)
+			
+			//TODO : Make it use each sort of light if plugin can add others lights later
+			ChunkSnapshot chunk = chunkModel.getChunkFromBlock(xi, yi, zi);
+			if(chunk != null){
+				float light = chunk.getBlockLight(xi, yi, zi) / 16f;
+				float sky = chunk.getBlockSkyLight(xi, yi, zi) / 16f;
+				Color colorLight = new Color(light * 1.00f, light * 0.75f, light * 0.75f);
+				Color colorSky = new Color(sky * 0.75f, sky * 0.75f, sky * 1.00f);
+				return new Color(
+						MathHelper.clamp(colorLight.getRed() + colorSky.getRed(), 0, 255),
+						MathHelper.clamp(colorLight.getGreen() + colorSky.getGreen(), 0, 255),
+						MathHelper.clamp(colorLight.getBlue() + colorSky.getBlue(), 0, 255)
+						);
+			}else{
+				return Color.WHITE;
+			}
+		}else{
+			return Color.WHITE;
+		}
 	}
 
 	/**
@@ -190,7 +270,7 @@ public class ChunkMesh{
 		if (material.isInvisible()) {
 			return;
 		}
-		
+
 		RenderMaterial renderMaterial = material.getModel().getRenderMaterial();
 
 		if( !chunkModel.hasRenderMaterial(renderMaterial) ){
@@ -207,7 +287,7 @@ public class ChunkMesh{
 			int x1 = facePos.getFloorX();
 			int y1 = facePos.getFloorY();
 			int z1 = facePos.getFloorZ();
-			
+
 			BlockMaterial neighbor = chunkModel.getChunkFromBlock(x1, y1, z1).getBlockMaterial(x1, y1, z1);
 
 			if (material.isFaceRendered(face, neighbor)) {
@@ -217,7 +297,7 @@ public class ChunkMesh{
 				toRender[i] = false;
 				continue;
 			}
-			
+
 			ByteBitSet occlusion = neighbor.getOcclusion(material.getData());
 
 			if (occlusion.get(face.getOpposite())) {
@@ -300,9 +380,9 @@ public class ChunkMesh{
 	public int getSubZ() {
 		return subZ;
 	}
-	
+
 	private static Vector3[] subMeshMap = new Vector3[Chunk.BLOCKS.VOLUME];
-	
+
 	static {
 		for (int x = 0; x < Chunk.BLOCKS.SIZE; x++) {
 			for (int y = 0; y < Chunk.BLOCKS.SIZE; y++) {
@@ -312,30 +392,29 @@ public class ChunkMesh{
 			}
 		}
 	}
-	
+
 	public static Vector3 getChunkSubMesh(int x, int y, int z) {
 		return subMeshMap[getSubMeshIndex(x, y, z)];
 	}
-	
+
 	private static Vector3 getChunkSubMeshRaw(int x, int y, int z) {
 		if (isOutsideChunk(x, y, z)) {
 			throw new IllegalArgumentException("(x, y, z) must be fall inside a chunk");
 		}
 		return new Vector3(
-                Math.floor((float) ((x & Chunk.BLOCKS.MASK) / SUBSIZE_X)),
-                Math.floor((float) ((y & Chunk.BLOCKS.MASK) / SUBSIZE_Y)),
-                Math.floor((float) ((z & Chunk.BLOCKS.MASK) / SUBSIZE_Z)));
+				Math.floor((float) ((x & Chunk.BLOCKS.MASK) / SUBSIZE_X)),
+				Math.floor((float) ((y & Chunk.BLOCKS.MASK) / SUBSIZE_Y)),
+				Math.floor((float) ((z & Chunk.BLOCKS.MASK) / SUBSIZE_Z)));
 
 	}
-	
+
 	private static int getSubMeshIndex(int x, int y, int z) {
-		
 		return 
 				((x & Chunk.BLOCKS.MASK) << Chunk.BLOCKS.DOUBLE_BITS) |
 				((y & Chunk.BLOCKS.MASK) << Chunk.BLOCKS.BITS ) |
 				((z & Chunk.BLOCKS.MASK) << 0);
 	}
-	
+
 	private static boolean isOutsideChunk(int x, int y, int z) {
 		return x < 0 || x >= Chunk.BLOCKS.SIZE || y < 0 || y >= Chunk.BLOCKS.SIZE || z < 0 || z >= Chunk.BLOCKS.SIZE;
 	}
