@@ -32,6 +32,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -122,6 +123,30 @@ public class ChunkMesh{
 		end = new Vector3(SUBSIZE_X * x + SUBSIZE_X, SUBSIZE_Y * y + SUBSIZE_Y, SUBSIZE_Z * z + SUBSIZE_Z);
 	}
 
+	public static Set<Vector3> getSubMeshIndexs(SpoutChunkSnapshotModel chunkModel){
+		Set<Vector3> list = chunkModel.getSubMeshs();
+		
+		if(chunkModel.isUnload() && UNLOAD_ACCELERATOR){
+			// Work only if ChunkMesh split == ChunkMeshBatchAggregator group, that say a aggregator contain a entire chunk
+			// The clean method unload all render/face for the aggregator that contain the mesh, so we can limit send only one mesh
+			HashSet<Vector3> one = new HashSet<Vector3>();
+			one.add(Vector3.ZERO);
+			return one;
+		}else{
+			if(list == null){
+				list = new HashSet<Vector3>();
+				for(int i = 0; i < SPLIT_X; i++){
+					for(int j = 0; j < SPLIT_Y; j++){
+						for(int k = 0; k < SPLIT_Z; k++){
+							list.add(new Vector3(i, j, k));
+						}
+					}
+				}
+			}
+		}
+		return list;
+	}
+	
 	public static List<ChunkMesh> getChunkMeshs(SpoutChunkSnapshotModel chunkModel){
 		List<ChunkMesh> list = new ArrayList<ChunkMesh>();
 		Set<Vector3> subMeshs = chunkModel.getSubMeshs();
@@ -199,19 +224,23 @@ public class ChunkMesh{
 			return;
 		}*/
 
-		int offsetColor = 0;
+		//int offsetColor;
 		for(BatchVertex batch : meshs.values()){
 
-			//Reallocate the colorBuffer if needed (color -> 4 value RGBA) (vertex -> 3 value xyz)
-			if(batch.colorBuffer.size()/4 != batch.vertexBuffer.size()/3)
-				batch.colorBuffer = new TFloatArrayList(batch.vertexBuffer.size()/3*4);
-
+			//Reallocate the colorBuffer if needed (color -> 4 value RGBA) (vertex -> 4 value xyzw)
+			//if(batch.colorBuffer.size()/4 != batch.getVertexCount())
+			//	batch.colorBuffer = new TFloatArrayList(batch.getVertexCount() * 4);
+			batch.colorBuffer.clear();
+			
+			//offsetColor = 0;
 			for(int i = 0; i < batch.vertexBuffer.size();){
 				Color color = generateLightOnVertices(chunkModelLight,batch.vertexBuffer.get(i++),batch.vertexBuffer.get(i++),batch.vertexBuffer.get(i++));
-				batch.colorBuffer.set(offsetColor++, color.getRed());
+				i++; //Ignore w
+				batch.addColor(color);
+				/*batch.colorBuffer.set(offsetColor++, color.getRed());
 				batch.colorBuffer.set(offsetColor++, color.getGreen());
 				batch.colorBuffer.set(offsetColor++, color.getBlue());
-				batch.colorBuffer.set(offsetColor++, color.getAlpha());
+				batch.colorBuffer.set(offsetColor++, color.getAlpha());*/
 			}
 		}
 		

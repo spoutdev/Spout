@@ -31,6 +31,7 @@ import gnu.trove.iterator.TIntIterator;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -196,6 +197,8 @@ public class SpoutRegion extends Region {
 	
 	private final TByteTripleObjectHashMap<SpoutChunkSnapshotModel> renderChunkQueued = new TByteTripleObjectHashMap<SpoutChunkSnapshotModel>();
 	private final ConcurrentSkipListSet<SpoutChunkSnapshotModel> renderChunkQueue = new ConcurrentSkipListSet<SpoutChunkSnapshotModel>();
+	private final TByteTripleObjectHashMap<ChunkMesh> meshsWaitingLight = new TByteTripleObjectHashMap<ChunkMesh>();
+	
 	private final AtomicReference<SpoutRegion>[][][] neighbours;
 	
 	//Physics
@@ -1119,7 +1122,7 @@ public class SpoutRegion extends Region {
 			
 			if(unloadRenderQueue){
 				for(SpoutChunk c : rended.toArray(new SpoutChunk[rended.size()])){
-					addUpdateToRenderQueue(playerPosition, c, false);
+					addUpdateToRenderQueue(playerPosition, c, false, false, false);
 					
 				}
 			}
@@ -1138,7 +1141,7 @@ public class SpoutRegion extends Region {
 			if (renderQueueEnabled /*&& spoutChunk.isRenderDirty()*/) {
 				if(spoutChunk.isInViewDistance() || (spoutChunk.isRendered() && spoutChunk.leftViewDistance())){
 					if(renderLimit > 0 ){
-						addUpdateToRenderQueue(playerPosition, spoutChunk, false);
+						addUpdateToRenderQueue(playerPosition, spoutChunk, spoutChunk.isBlockDirty(), spoutChunk.isLightDirty(), false);
 						renderLimit--;
 					}else{
 						renderLater.add(spoutChunk);
@@ -1169,7 +1172,9 @@ public class SpoutRegion extends Region {
 			snapshotFuture.run();
 		}
 
-		renderSnapshotCache.clear();
+		renderSnapshotCacheBoth.clear();
+		renderSnapshotCacheLight.clear();
+		renderSnapshotCacheBlock.clear();
 
 		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
 			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
@@ -1191,14 +1196,21 @@ public class SpoutRegion extends Region {
 		return this.renderChunkQueue;
 	}*/
 
-	private TInt21TripleObjectHashMap<SpoutChunkSnapshot> renderSnapshotCache = new TInt21TripleObjectHashMap<SpoutChunkSnapshot>();
+	private TInt21TripleObjectHashMap<SpoutChunkSnapshot> renderSnapshotCacheBoth = new TInt21TripleObjectHashMap<SpoutChunkSnapshot>();
+	private TInt21TripleObjectHashMap<SpoutChunkSnapshot> renderSnapshotCacheLight = new TInt21TripleObjectHashMap<SpoutChunkSnapshot>();
+	private TInt21TripleObjectHashMap<SpoutChunkSnapshot> renderSnapshotCacheBlock = new TInt21TripleObjectHashMap<SpoutChunkSnapshot>();
 
-	private void addUpdateToRenderQueue(Point p, SpoutChunk c, boolean force) {
+	private void addUpdateToRenderQueue(Point p, SpoutChunk c, boolean block, boolean light, boolean force) {
 		int bx = c.getX() - 1;
 		int by = c.getY() - 1;
 		int bz = c.getZ() - 1;
 		
 		if (c.isInViewDistance()) {
+			if(!block && !light){//Firs time block and light isn't dirty
+				block = true;
+				light = true;
+			}
+			
 			int distance;
 			if (p == null) {
 				distance = 0;
@@ -1213,7 +1225,7 @@ public class SpoutRegion extends Region {
 				for (int y = 0; y < 3; y++) {
 					for (int z = 0; z < 3; z++) {
 						if (x == 1 || y == 1 || z == 1) {
-							ChunkSnapshot snapshot = getRenderSnapshot(c, ox + x, oy + y, oz + z);
+							ChunkSnapshot snapshot = getRenderSnapshot(c, ox + x, oy + y, oz + z, block, light);
 							if (snapshot == null) {
 								return;
 							}
@@ -1226,7 +1238,9 @@ public class SpoutRegion extends Region {
 			final HashSet<RenderMaterial> updatedRenderMaterials;
 			final HashSet<Vector3> updatedSubMeshes;
 			// TODO - @L5D this is a hack to get light to work
-			if (first || c.isDirtyOverflow() || force || true) {
+			// TODO - @raphfrk we can remove the light boolean if you make something as
+			// c.getDirtyBlockLight
+			if (first || c.isDirtyOverflow() || force /*|| true*/ || light) {
 				updatedRenderMaterials = null;
 				updatedSubMeshes = null;
 			} else {
@@ -1296,11 +1310,28 @@ public class SpoutRegion extends Region {
 		set.add(ChunkMesh.getChunkSubMesh(dirtyBlock.getFloorX(), dirtyBlock.getFloorY(), dirtyBlock.getFloorZ()));
 	}
 
-	private ChunkSnapshot getRenderSnapshot(SpoutChunk cRef, int cx, int cy, int cz) {
-		SpoutChunkSnapshot snapshot = renderSnapshotCache.get(cx, cy, cz);
+	private ChunkSnapshot getRenderSnapshot(SpoutChunk cRef, int cx, int cy, int cz, boolean block, boolean light) {
+		SpoutChunkSnapshot snapshot = renderSnapshotCacheBoth.get(cx, cy, cz);
 		if (snapshot != null) {
 			return snapshot;
 		}
+		
+		//TODO : We can optimise to get only block data or light data, but we need to merge ChunkSnapshot's data when
+		// we have old version removed in the meshqueue.
+		
+		/*if(!light){
+			snapshot = renderSnapshotCacheBlock.get(cx, cy, cz);
+			if (snapshot != null) {
+				return snapshot;
+			}
+		}
+		
+		if(!block){
+			snapshot = renderSnapshotCacheLight.get(cx, cy, cz);
+			if (snapshot != null) {
+				return snapshot;
+			}
+		}*/
 
 		SpoutChunk c = getLocalChunk(cx, cy, cz, LoadOption.NO_LOAD);
 
@@ -1308,10 +1339,26 @@ public class SpoutRegion extends Region {
 			//Spout.getLogger().info("Getting " + cx + ", " + cy + ", " + cz + ": base = " + cRef.getBase().toBlockString() + " region base " + getBase().toBlockString());
 			return null;
 		} else {
-			snapshot = c.getSnapshot(SnapshotType.BOTH, EntityType.NO_ENTITIES, ExtraData.NO_EXTRA_DATA);
-			if (snapshot != null) {
-				renderSnapshotCache.put(cx, cy, cz, snapshot);
-			}
+
+			//if(block && light){
+				snapshot = c.getSnapshot(SnapshotType.BOTH, EntityType.NO_ENTITIES, ExtraData.NO_EXTRA_DATA);
+				if (snapshot != null) {
+					renderSnapshotCacheBoth.put(cx, cy, cz, snapshot);
+				}
+			/*}else if(block){
+				snapshot = c.getSnapshot(SnapshotType.BLOCKS_ONLY, EntityType.NO_ENTITIES, ExtraData.NO_EXTRA_DATA);
+				if (snapshot != null) {
+					renderSnapshotCacheBlock.put(cx, cy, cz, snapshot);
+				}
+			}else if(light){
+				snapshot = c.getSnapshot(SnapshotType.LIGHT_ONLY, EntityType.NO_ENTITIES, ExtraData.NO_EXTRA_DATA);
+				if (snapshot != null) {
+					renderSnapshotCacheLight.put(cx, cy, cz, snapshot);
+				}
+			}else{
+				throw new IllegalStateException("Invalid parameters");
+			}*/
+			
 			return snapshot;
 		}
 	}
@@ -1869,10 +1916,47 @@ public class SpoutRegion extends Region {
 		}
 
 		private void handle(SpoutChunkSnapshotModel model) {
-			for(ChunkMesh mesh : ChunkMesh.getChunkMeshs(model)){
-				mesh.update();
-				renderer.addMeshToBatchQueue(mesh);
+			
+			//Unload case
+			if(model.isUnload()){
+				for(ChunkMesh mesh : ChunkMesh.getChunkMeshs(model)){
+					mesh.update();
+					renderer.addMeshToBatchQueue(mesh);
+				}
+				return;
 			}
+			
+			//Block case
+			if(model.getCenter().getBlockIds() != null){
+				for(ChunkMesh mesh : ChunkMesh.getChunkMeshs(model)){
+					mesh.update();
+					if(model.getCenter().getSkyLight() != null && model.getCenter().getBlockLight() != null){
+						mesh.updateLight(model);
+						renderer.addMeshToBatchQueue(mesh);
+					}else{
+						meshsWaitingLight.put((byte)mesh.getSubX(), (byte)mesh.getSubY(), (byte)mesh.getSubZ(), mesh);
+					}
+				}
+				
+				return;
+			}
+
+			//Light case
+			if(model.getCenter().getSkyLight()!=null && model.getCenter().getBlockLight() != null){
+				for(Vector3 pos : ChunkMesh.getSubMeshIndexs(model)){
+					ChunkMesh mesh = meshsWaitingLight.get((byte)pos.getFloorX(), (byte)pos.getFloorY(), (byte)pos.getFloorZ());//Don't remove it in case where only light change
+					
+					if(mesh == null)
+						new IllegalStateException("ChunkMesh never created");
+					
+					mesh.updateLight(model);
+					
+					renderer.addMeshToBatchQueue(mesh);
+				}
+				return;
+			}
+			
+			throw new IllegalStateException("Can't handle this ChunkSnapshotModel");
 		}
 
 	}
