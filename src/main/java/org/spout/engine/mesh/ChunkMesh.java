@@ -126,13 +126,14 @@ public class ChunkMesh{
 	public static Set<Vector3> getSubMeshIndexs(SpoutChunkSnapshotModel chunkModel){
 		Set<Vector3> list = chunkModel.getSubMeshs();
 		
-		if(chunkModel.isUnload() && UNLOAD_ACCELERATOR){
+		//Used to clean mesh waiting light, so we need all position
+		/*if(chunkModel.isUnload() && UNLOAD_ACCELERATOR){
 			// Work only if ChunkMesh split == ChunkMeshBatchAggregator group, that say a aggregator contain a entire chunk
 			// The clean method unload all render/face for the aggregator that contain the mesh, so we can limit send only one mesh
 			HashSet<Vector3> one = new HashSet<Vector3>();
 			one.add(Vector3.ZERO);
 			return one;
-		}else{
+		}else{*/
 			if(list == null){
 				list = new HashSet<Vector3>();
 				for(int i = 0; i < SPLIT_X; i++){
@@ -143,7 +144,7 @@ public class ChunkMesh{
 					}
 				}
 			}
-		}
+		//}
 		return list;
 	}
 	
