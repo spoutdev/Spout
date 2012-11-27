@@ -1203,10 +1203,16 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 	public void setLightDirty(boolean dirty) {
 		lightDirty.set(dirty);
+		if(dirty) //To send to the renderer
+			queueDirty();
 	}
 
 	public boolean isLightDirty() {
 		return lightDirty.get();
+	}
+	
+	public boolean isBlockDirty() {
+		return blockStore.isDirty();
 	}
 
 	public boolean isDirty() {
