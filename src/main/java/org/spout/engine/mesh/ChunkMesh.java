@@ -125,7 +125,7 @@ public class ChunkMesh{
 
 	public static Set<Vector3> getSubMeshIndexs(SpoutChunkSnapshotModel chunkModel){
 		Set<Vector3> list = chunkModel.getSubMeshs();
-		
+
 		//Used to clean mesh waiting light, so we need all position
 		/*if(chunkModel.isUnload() && UNLOAD_ACCELERATOR){
 			// Work only if ChunkMesh split == ChunkMeshBatchAggregator group, that say a aggregator contain a entire chunk
@@ -134,20 +134,20 @@ public class ChunkMesh{
 			one.add(Vector3.ZERO);
 			return one;
 		}else{*/
-			if(list == null){
-				list = new HashSet<Vector3>();
-				for(int i = 0; i < SPLIT_X; i++){
-					for(int j = 0; j < SPLIT_Y; j++){
-						for(int k = 0; k < SPLIT_Z; k++){
-							list.add(new Vector3(i, j, k));
-						}
+		if(list == null){
+			list = new HashSet<Vector3>();
+			for(int i = 0; i < SPLIT_X; i++){
+				for(int j = 0; j < SPLIT_Y; j++){
+					for(int k = 0; k < SPLIT_Z; k++){
+						list.add(new Vector3(i, j, k));
 					}
 				}
 			}
+		}
 		//}
 		return list;
 	}
-	
+
 	public static List<ChunkMesh> getChunkMeshs(SpoutChunkSnapshotModel chunkModel){
 		List<ChunkMesh> list = new ArrayList<ChunkMesh>();
 		Set<Vector3> subMeshs = chunkModel.getSubMeshs();
@@ -206,7 +206,7 @@ public class ChunkMesh{
 
 		verticeGenerated = true;
 		lightGenerated = false; //Invalid the light computation
-		
+
 		// Free memory
 		chunkModel = null;
 		center = null;
@@ -218,33 +218,21 @@ public class ChunkMesh{
 	public void updateLight(SpoutChunkSnapshotModel chunkModelLight) {
 		if(!verticeGenerated)
 			throw new IllegalStateException("Vertice must be generated before compute light");
-			
-		//We don't need light to unload a chunk
-		/*if(chunkModelLight.isUnload()){
-			isUnloaded = true;
-			return;
-		}*/
 
-		//int offsetColor;
+		if(chunkModelLight.isUnload())
+			throw new IllegalStateException("ChunkSnapshotModel with Unload state can't be used to compute light");
+
 		for(BatchVertex batch : meshs.values()){
 
-			//Reallocate the colorBuffer if needed (color -> 4 value RGBA) (vertex -> 4 value xyzw)
-			//if(batch.colorBuffer.size()/4 != batch.getVertexCount())
-			//	batch.colorBuffer = new TFloatArrayList(batch.getVertexCount() * 4);
-			batch.colorBuffer.clear();
-			
-			//offsetColor = 0;
+			batch.colorBuffer.clear(batch.getVertexCount() * 4);
+
 			for(int i = 0; i < batch.vertexBuffer.size();){
 				Color color = generateLightOnVertices(chunkModelLight,batch.vertexBuffer.get(i++),batch.vertexBuffer.get(i++),batch.vertexBuffer.get(i++));
 				i++; //Ignore w
 				batch.addColor(color);
-				/*batch.colorBuffer.set(offsetColor++, color.getRed());
-				batch.colorBuffer.set(offsetColor++, color.getGreen());
-				batch.colorBuffer.set(offsetColor++, color.getBlue());
-				batch.colorBuffer.set(offsetColor++, color.getAlpha());*/
 			}
 		}
-		
+
 		lightGenerated = true;
 	}
 
@@ -261,26 +249,53 @@ public class ChunkMesh{
 		int yi = (int)y;
 		int zi = (int)z;
 		if(chunkModel != null){
-			//TODO : Fix to get light from each shared block for the vertice
-			
+			float light = 0;
+			float skylight = 0;
+			int count = 0;
+
+			//TODO : Make it use each sort of light if plugin can add others lights later
+
+			ChunkSnapshot chunk = chunkModel.getChunkFromBlock(xi, yi, zi);
+			light += chunk.getBlockLight(xi, yi, zi);
+			skylight += chunk.getBlockSkyLight(xi, yi, zi);
+			count++;
+
+			if(x == xi){
+				chunk = chunkModel.getChunkFromBlock(xi - 1, yi, zi);
+				light += chunk.getBlockLight(xi - 1, yi, zi);
+				skylight += chunk.getBlockSkyLight(xi - 1, yi, zi);
+				count++;
+			}
+
+			if(y == yi){
+				chunk = chunkModel.getChunkFromBlock(xi, yi - 1, zi);
+				light += chunk.getBlockLight(xi, yi - 1, zi);
+				skylight += chunk.getBlockSkyLight(xi, yi - 1, zi);
+				count++;
+			}
+
+			if(z == zi){
+				chunk = chunkModel.getChunkFromBlock(xi, yi, zi - 1);
+				light += chunk.getBlockLight(xi, yi, zi - 1);
+				skylight += chunk.getBlockSkyLight(xi, yi, zi - 1);
+				count++;
+			}
+
+			light /= count;
+			skylight /= count;
+			light /= 16;
+			skylight /= 16;
+
 			//TODO : Maybe we should use two byte buffer to store light and let the shader use it as the shader want
 			//(we can give the sky color and light color with a render effect in Vanilla)
-			
-			//TODO : Make it use each sort of light if plugin can add others lights later
-			ChunkSnapshot chunk = chunkModel.getChunkFromBlock(xi, yi, zi);
-			if(chunk != null){
-				float light = chunk.getBlockLight(xi, yi, zi) / 16f;
-				float sky = chunk.getBlockSkyLight(xi, yi, zi) / 16f;
-				Color colorLight = new Color(light * 1.00f, light * 0.75f, light * 0.75f);
-				Color colorSky = new Color(sky * 0.75f, sky * 0.75f, sky * 1.00f);
-				return new Color(
-						MathHelper.clamp(colorLight.getRed() + colorSky.getRed(), 0, 255),
-						MathHelper.clamp(colorLight.getGreen() + colorSky.getGreen(), 0, 255),
-						MathHelper.clamp(colorLight.getBlue() + colorSky.getBlue(), 0, 255)
-						);
-			}else{
-				return Color.WHITE;
-			}
+
+			Color colorLight = new Color(light * 1.00f, light * 0.75f, light * 0.75f);
+			Color colorSky = new Color(skylight * 0.75f, skylight * 0.75f, skylight * 1.00f);
+			return new Color(
+					MathHelper.clamp(colorLight.getRed() + colorSky.getRed(), 0, 255),
+					MathHelper.clamp(colorLight.getGreen() + colorSky.getGreen(), 0, 255),
+					MathHelper.clamp(colorLight.getBlue() + colorSky.getBlue(), 0, 255)
+					);
 		}else{
 			return Color.WHITE;
 		}
