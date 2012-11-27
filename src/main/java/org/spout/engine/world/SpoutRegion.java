@@ -1224,13 +1224,13 @@ public class SpoutRegion extends Region {
 			for (int x = 0; x < 3; x++) {
 				for (int y = 0; y < 3; y++) {
 					for (int z = 0; z < 3; z++) {
-						if (x == 1 || y == 1 || z == 1) {
+						//if (x == 1 || y == 1 || z == 1) { //Need for light
 							ChunkSnapshot snapshot = getRenderSnapshot(c, ox + x, oy + y, oz + z, block, light);
 							if (snapshot == null) {
 								return;
 							}
 							chunks[x][y][z] = snapshot;
-						}
+						//}
 					}
 				}
 			}
