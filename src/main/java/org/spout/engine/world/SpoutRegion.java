@@ -1923,6 +1923,9 @@ public class SpoutRegion extends Region {
 					mesh.update();
 					renderer.addMeshToBatchQueue(mesh);
 				}
+				for(Vector3 pos : ChunkMesh.getSubMeshIndexs(model)){
+					meshsWaitingLight.remove((byte)pos.getFloorX(), (byte)pos.getFloorY(), (byte)pos.getFloorZ());
+				}
 				return;
 			}
 			
