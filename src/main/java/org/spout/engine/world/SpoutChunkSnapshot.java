@@ -140,6 +140,23 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		lightStable = chunk.isLightStable();
 	}
 
+	//Maybe we can use that in ChunkMesh generation in SpoutRegion
+	public SnapshotType getSnapshotType(){
+		if(blockIds != null && blockData!= null && blockLight != null && skyLight != null)
+			return SnapshotType.BOTH;
+
+		if(blockIds != null && blockData!= null)
+			return SnapshotType.BLOCKS_ONLY;
+
+		if(blockIds != null)
+			return SnapshotType.BLOCK_IDS_ONLY;
+
+		if(blockLight != null && skyLight != null)
+			return SnapshotType.LIGHT_ONLY;
+
+		return SnapshotType.NO_BLOCK_DATA;
+	}
+	
 	private static List<EntitySnapshot> getEntities(SpoutChunk chunk) {
 		ArrayList<EntitySnapshot> entities = new ArrayList<EntitySnapshot>();
 		for (Entity e : chunk.getLiveEntities()) {

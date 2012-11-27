@@ -187,7 +187,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 		return new ArrayList<MeshFace>();
 	}
 
-	private void addColor(ChunkSnapshotModel chunkSnapshotModel, Vertex v){
+	/*private void addColor(ChunkSnapshotModel chunkSnapshotModel, Vertex v){
 		if(chunkSnapshotModel != null){
 			ChunkSnapshot chunk = chunkSnapshotModel.getChunkFromBlock(v.position.getFloorX(), v.position.getFloorY(), v.position.getFloorZ());
 			if(chunk != null){
@@ -206,7 +206,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 		}else{
 			v.color = Color.WHITE;
 		}
-	}
+	}*/
 
 	public List<MeshFace> renderBlock(ChunkSnapshotModel chunkSnapshotModel,Material blockMaterial,
 			Vector3 position, boolean toRender[], OrientedMesh mesh) {
@@ -225,9 +225,12 @@ public class ClientRenderMaterial extends RenderMaterial {
 			v2.position = v2.position.add(model);
 			v3.position = v3.position.add(model);
 
-			addColor(chunkSnapshotModel,v1);
+			v1.color = Color.black;
+			v2.color = Color.black;
+			v3.color = Color.black;
+			/*addColor(chunkSnapshotModel,v1);
 			addColor(chunkSnapshotModel,v2);
-			addColor(chunkSnapshotModel,v3);
+			addColor(chunkSnapshotModel,v3);*/
 
 			//Be sure we have a color
 			//All cube with the same renderMaterial MUST have a color
