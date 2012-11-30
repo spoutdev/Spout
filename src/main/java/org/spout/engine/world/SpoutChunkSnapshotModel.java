@@ -33,7 +33,6 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.ChunkSnapshotModel;
-import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
 
 //just need to,bottom,east,west,south,north, not diagonal neigbour it's 8 snapshot useless
@@ -63,11 +62,6 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	private Set<RenderMaterial> renderMaterials = null;
 	
 	/**
-	 * Set of vector3 submesh to render, null -> all submesh
-	 */
-	private Set<Vector3> submeshs = null;
-	
-	/**
 	 * Indicates that the renderer has not received a model for this chunk yet
 	 */
 	private boolean first;
@@ -75,14 +69,14 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	private final SpoutWorld world;
 	
 	public SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, boolean unload, long time) {
-		this(world, cx, cy, cz, unload, null, 0, null, null, false, time);
+		this(world, cx, cy, cz, unload, null, 0, null, false, time);
 	}
 	
-	public SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, Set<Vector3> submeshs, boolean first, long time) {
-		this(world, cx, cy, cz, false, chunks, distance, renderMaterials, submeshs, first, time);
+	public SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, boolean first, long time) {
+		this(world, cx, cy, cz, false, chunks, distance, renderMaterials, first, time);
 	}
 
-	private SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, Set<Vector3> submeshs, boolean first, long time) {
+	private SpoutChunkSnapshotModel(SpoutWorld world, int cx, int cy, int cz, boolean unload, ChunkSnapshot[][][] chunks, int distance, Set<RenderMaterial> renderMaterials, boolean first, long time) {
 		this.world = world;
 		this.cx = cx;
 		this.cy = cy;
@@ -93,7 +87,6 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 		this.distance = distance;
 		this.id = idCounter.getAndIncrement();
 		this.renderMaterials = renderMaterials;
-		this.submeshs = submeshs;
 		this.time = time;
 		this.first = first;
 	}
@@ -201,7 +194,6 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 
 	public void addDirty(SpoutChunkSnapshotModel oldModel, boolean oldRemoved){
 		addRenderMaterials(oldModel.getRenderMaterials());
-		addSubmeshs(oldModel.getSubMeshs());
 		if (oldRemoved && oldModel.first) {
 			first = true;
 		}
@@ -209,10 +201,6 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	
 	public boolean isFirst() {
 		return first;
-	}
-	
-	public Set<Vector3> getSubMeshs() {
-		return submeshs;
 	}
 
 	/**
@@ -225,18 +213,6 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 			this.renderMaterials = null;
 		else
 			this.renderMaterials.addAll(renderMaterials);
-	}
-	
-	/**
-	 * Add a set of submeshs to render
-	 * If the set is null, the set isn't added because null -> all submeshs
-	 * @param submeshs
-	 */
-	private void addSubmeshs(Set<Vector3> submeshs) {
-		if( this.submeshs == null || submeshs == null)
-			this.submeshs = null;
-		else
-			this.submeshs.addAll(submeshs);
 	}
 	
 	/**

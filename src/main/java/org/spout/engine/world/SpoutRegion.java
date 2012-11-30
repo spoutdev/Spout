@@ -31,7 +31,6 @@ import gnu.trove.iterator.TIntIterator;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -229,7 +228,7 @@ public class SpoutRegion extends Region {
 		
 		if (Spout.getPlatform() == Platform.CLIENT) {
 			meshThread = new ArrayList<Thread>();
-			for(int i = 0; i < 4; i++ ){//TODO : Make a option to choice the number of thread to make mesh
+			for(int i = 0; i < 2; i++ ){//TODO : Make a option to choice the number of thread to make mesh
 				meshThread.add(new MeshGeneratorThread());
 			}
 		} else {
@@ -1227,6 +1226,7 @@ public class SpoutRegion extends Region {
 						//if (x == 1 || y == 1 || z == 1) { //Need for light
 							ChunkSnapshot snapshot = getRenderSnapshot(c, ox + x, oy + y, oz + z, block, light);
 							if (snapshot == null) {
+								//System.out.println("skip");
 								return;
 							}
 							chunks[x][y][z] = snapshot;
@@ -1236,21 +1236,16 @@ public class SpoutRegion extends Region {
 			}
 			boolean first = c.enteredViewDistance();
 			final HashSet<RenderMaterial> updatedRenderMaterials;
-			final HashSet<Vector3> updatedSubMeshes;
 			// TODO - @L5D this is a hack to get light to work
 			// TODO - @raphfrk we can remove the light boolean if you make something as
-			// c.getDirtyBlockLight
 			if (first || c.isDirtyOverflow() || force /*|| true*/ || light) {
 				updatedRenderMaterials = null;
-				updatedSubMeshes = null;
 			} else {
 				updatedRenderMaterials = new HashSet<RenderMaterial>();
-				updatedSubMeshes = new HashSet<Vector3>();
 				int dirtyBlocks = c.getDirtyBlocks();
 				for (int i = 0; i < dirtyBlocks; i++) {
 					addMaterialToSet(updatedRenderMaterials, c.getDirtyOldState(i));
 					addMaterialToSet(updatedRenderMaterials, c.getDirtyNewState(i));
-					addSubMeshToSet(updatedSubMeshes, c.getDirtyBlock(i));
 				}
 				int size = BLOCKS.SIZE;
 				for (int i = 0; i < dirtyBlocks; i++) {
@@ -1271,7 +1266,7 @@ public class SpoutRegion extends Region {
 						if (nx >= 0 && ny >= 0 && nz >= 0 && nx < size && ny < size && nz < size) {
 							int state = c.getBlockFullState(nx, ny, nz);
 							addMaterialToSet(updatedRenderMaterials, state);
-							addSubMeshToSet(updatedSubMeshes, neighborPos);
+							//addSubMeshToSet(updatedSubMeshes, neighborPos);
 						}
 					}
 				}
@@ -1279,7 +1274,7 @@ public class SpoutRegion extends Region {
 			c.setRendered(true);
 			addRendedChunk(c);
 			c.setRenderDirty(false);
-			addToRenderQueue(new SpoutChunkSnapshotModel(getWorld(),bx + 1, by + 1, bz + 1, chunks, distance, updatedRenderMaterials, updatedSubMeshes, first, System.currentTimeMillis()));//TODO : replace null by the set of submesh
+			addToRenderQueue(new SpoutChunkSnapshotModel(getWorld(),bx + 1, by + 1, bz + 1, chunks, distance, updatedRenderMaterials, first, System.currentTimeMillis()));//TODO : replace null by the set of submesh
 		} else {
 			if (c.leftViewDistance()) {
 				c.setRendered(false);
@@ -1306,9 +1301,9 @@ public class SpoutRegion extends Region {
 		set.add(material.getModel().getRenderMaterial());
 	}
 	
-	private static void addSubMeshToSet(Set<Vector3> set, Vector3 dirtyBlock) {
+	/*private static void addSubMeshToSet(Set<Vector3> set, Vector3 dirtyBlock) {
 		set.add(ChunkMesh.getChunkSubMesh(dirtyBlock.getFloorX(), dirtyBlock.getFloorY(), dirtyBlock.getFloorZ()));
-	}
+	}*/
 
 	private ChunkSnapshot getRenderSnapshot(SpoutChunk cRef, int cx, int cy, int cz, boolean block, boolean light) {
 		SpoutChunkSnapshot snapshot = renderSnapshotCacheBoth.get(cx, cy, cz);
@@ -1916,49 +1911,47 @@ public class SpoutRegion extends Region {
 		}
 
 		private void handle(SpoutChunkSnapshotModel model) {
-			
+
 			//Unload case
 			if(model.isUnload()){
-				for(ChunkMesh mesh : ChunkMesh.getChunkMeshs(model)){
-					mesh.update();
-					renderer.addMeshToBatchQueue(mesh);
-				}
-				for(Vector3 pos : ChunkMesh.getSubMeshIndexs(model)){
-					meshsWaitingLight.remove((byte)pos.getFloorX(), (byte)pos.getFloorY(), (byte)pos.getFloorZ());
-				}
+
+				ChunkMesh mesh = new ChunkMesh(model);
+				mesh.update();
+				renderer.addMeshToBatchQueue(mesh);
+				meshsWaitingLight.remove((byte)model.getX(),(byte)model.getY(),(byte)model.getZ());
+				
 				return;
 			}
-			
+
 			//Block case
 			if(model.getCenter().getBlockIds() != null){
-				for(ChunkMesh mesh : ChunkMesh.getChunkMeshs(model)){
-					mesh.update();
-					if(model.getCenter().getSkyLight() != null && model.getCenter().getBlockLight() != null){
-						mesh.updateLight(model);
-						renderer.addMeshToBatchQueue(mesh);
-					}else{
-						meshsWaitingLight.put((byte)mesh.getSubX(), (byte)mesh.getSubY(), (byte)mesh.getSubZ(), mesh);
-					}
+
+				ChunkMesh mesh = new ChunkMesh(model);
+				mesh.update();
+
+				if(model.getCenter().getSkyLight() != null && model.getCenter().getBlockLight() != null){
+					mesh.updateLight(model);
+					renderer.addMeshToBatchQueue(mesh);
+				}else{
+					meshsWaitingLight.put((byte)mesh.getChunkX(), (byte)mesh.getChunkY(), (byte)mesh.getChunkZ(), mesh);
 				}
-				
+
 				return;
 			}
 
 			//Light case
 			if(model.getCenter().getSkyLight()!=null && model.getCenter().getBlockLight() != null){
-				for(Vector3 pos : ChunkMesh.getSubMeshIndexs(model)){
-					ChunkMesh mesh = meshsWaitingLight.get((byte)pos.getFloorX(), (byte)pos.getFloorY(), (byte)pos.getFloorZ());//Don't remove it in case where only light change
-					
-					if(mesh == null)
-						new IllegalStateException("ChunkMesh never created");
-					
-					mesh.updateLight(model);
-					
-					renderer.addMeshToBatchQueue(mesh);
-				}
+
+				ChunkMesh mesh = meshsWaitingLight.get((byte)model.getX(), (byte)model.getY(), (byte)model.getZ());//Don't remove it in case where only light change
+
+				if(mesh == null)
+					new IllegalStateException("ChunkMesh never created");
+
+				mesh.updateLight(model);
+				renderer.addMeshToBatchQueue(mesh);
 				return;
 			}
-			
+
 			throw new IllegalStateException("Can't handle this ChunkSnapshotModel");
 		}
 
