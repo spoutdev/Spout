@@ -35,7 +35,7 @@ import org.spout.api.math.Vector3;
 public class ViewFrustum {
 	
 	// This is the renderer subsize in bloc scale ( because it is in aggregator scale when it's pass through intersects )
-	Vector3 rendererSize = new Vector3(16,16,16);
+	Vector3 rendererSize = new Vector3(2,2,2);
 	Vector3 position = null;
 	float[][] frustum = new float[6][4];
 
