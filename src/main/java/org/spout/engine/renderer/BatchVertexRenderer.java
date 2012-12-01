@@ -402,7 +402,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 			uvBuffer.addAll(batchVertex.uvBuffer);
 	}
 
-	public void merge(List<BatchVertex> batchs) {
+	/*public void merge(List<BatchVertex> batchs) {
 		begin();
 		
 		numVertices = 0;
@@ -448,5 +448,5 @@ public abstract class BatchVertexRenderer implements Renderer {
 		}
 
 		end();
-	}
+	}*/
 }
