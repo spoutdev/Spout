@@ -42,6 +42,7 @@ import org.spout.api.math.Rectangle;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.Renderer;
+import org.spout.api.render.effect.SnapshotRender;
 
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.resources.ClientFont;
@@ -114,7 +115,12 @@ public class SpriteBatch {
 			rect.getRenderMaterial().getShader().setUniform("View", this.view);
 			rect.getRenderMaterial().getShader().setUniform("Projection", this.projection);
 			rect.getRenderMaterial().getShader().setUniform("Model", this.view); //View is always an identity matrix.
+			
+			SnapshotRender snapshotRender = new SnapshotRender(rect.getRenderMaterial());
+			rect.getRenderMaterial().preRender(snapshotRender);
 			renderer.render(rect.getRenderMaterial(), (i * 6), 6);
+			rect.getRenderMaterial().postRender(snapshotRender);
+			
 		}
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		((BatchVertexRenderer)renderer).release();
