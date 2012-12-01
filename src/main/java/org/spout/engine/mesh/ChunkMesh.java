@@ -26,21 +26,16 @@
  */
 package org.spout.engine.mesh;
 
-import gnu.trove.list.array.TFloatArrayList;
-
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
-import org.spout.api.geo.cuboid.ChunkSnapshotModel;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFace;
@@ -51,7 +46,6 @@ import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.util.bytebit.ByteBitSet;
-import org.spout.engine.batcher.ChunkMeshBatchAggregator;
 import org.spout.engine.renderer.BatchVertex;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 
@@ -60,30 +54,7 @@ import org.spout.engine.world.SpoutChunkSnapshotModel;
  */
 public class ChunkMesh{
 
-	/**
-	 * Number of piece per chunk for each dimension
-	 */
-	public final static int SPLIT_X = 2;
-	public final static int SPLIT_Y = 2;
-	public final static int SPLIT_Z = 2;
-	public final static Vector3 SPLIT = new Vector3(SPLIT_X, SPLIT_Y, SPLIT_Z);
-
-	/**
-	 * Number of block for a sub mesh
-	 */
-	public final static int SUBSIZE_X = Chunk.BLOCKS.SIZE / SPLIT_X;
-	public final static int SUBSIZE_Y = Chunk.BLOCKS.SIZE / SPLIT_Y;
-	public final static int SUBSIZE_Z = Chunk.BLOCKS.SIZE / SPLIT_Z;
-	public final static Vector3 SUBSIZE = new Vector3(SUBSIZE_X, SUBSIZE_Y, SUBSIZE_Z);
-
 	public final static List<BlockFace> shouldRender = new ArrayList<BlockFace>(Arrays.asList(BlockFace.TOP,BlockFace.BOTTOM,BlockFace.NORTH,BlockFace.SOUTH,BlockFace.WEST,BlockFace.EAST));
-
-	public final static boolean UNLOAD_ACCELERATOR = SPLIT_X == ChunkMeshBatchAggregator.SIZE_X &&
-			SPLIT_Y == ChunkMeshBatchAggregator.SIZE_Y &&
-			SPLIT_Z == ChunkMeshBatchAggregator.SIZE_Z;
-
-	public Vector3 start;
-	public Vector3 end;
 
 	private HashMap<RenderMaterial, BatchVertex> meshs = new HashMap<RenderMaterial, BatchVertex>();
 	private boolean verticeGenerated = false;
@@ -93,7 +64,6 @@ public class ChunkMesh{
 	private ChunkSnapshot center;
 	private final World world;
 	private final int chunkX,chunkY,chunkZ;
-	private final int subX,subY,subZ;
 	private boolean isUnloaded = false;
 	private boolean first = false;
 
@@ -103,7 +73,7 @@ public class ChunkMesh{
 	 */
 	private final long time;
 
-	public ChunkMesh(SpoutChunkSnapshotModel chunkModel, int x, int y, int z) {
+	public ChunkMesh(SpoutChunkSnapshotModel chunkModel) {
 		this.chunkModel = chunkModel;
 		first = chunkModel.isFirst();
 
@@ -113,64 +83,7 @@ public class ChunkMesh{
 		chunkY = chunkModel.getY();
 		chunkZ = chunkModel.getZ();
 
-		subX = chunkX * SPLIT_X + x;
-		subY = chunkY * SPLIT_Y + y;
-		subZ = chunkZ * SPLIT_Z + z;
-
 		time = chunkModel.getTime();
-
-		start = new Vector3(SUBSIZE_X * x, SUBSIZE_Y * y, SUBSIZE_Z * z);
-		end = new Vector3(SUBSIZE_X * x + SUBSIZE_X, SUBSIZE_Y * y + SUBSIZE_Y, SUBSIZE_Z * z + SUBSIZE_Z);
-	}
-
-	public static Set<Vector3> getSubMeshIndexs(SpoutChunkSnapshotModel chunkModel){
-		Set<Vector3> list = chunkModel.getSubMeshs();
-
-		//Used to clean mesh waiting light, so we need all position
-		/*if(chunkModel.isUnload() && UNLOAD_ACCELERATOR){
-			// Work only if ChunkMesh split == ChunkMeshBatchAggregator group, that say a aggregator contain a entire chunk
-			// The clean method unload all render/face for the aggregator that contain the mesh, so we can limit send only one mesh
-			HashSet<Vector3> one = new HashSet<Vector3>();
-			one.add(Vector3.ZERO);
-			return one;
-		}else{*/
-		if(list == null){
-			list = new HashSet<Vector3>();
-			for(int i = 0; i < SPLIT_X; i++){
-				for(int j = 0; j < SPLIT_Y; j++){
-					for(int k = 0; k < SPLIT_Z; k++){
-						list.add(new Vector3(i, j, k));
-					}
-				}
-			}
-		}
-		//}
-		return list;
-	}
-
-	public static List<ChunkMesh> getChunkMeshs(SpoutChunkSnapshotModel chunkModel){
-		List<ChunkMesh> list = new ArrayList<ChunkMesh>();
-		Set<Vector3> subMeshs = chunkModel.getSubMeshs();
-
-		if(chunkModel.isUnload() && UNLOAD_ACCELERATOR){
-			// Work only if ChunkMesh split == ChunkMeshBatchAggregator group, that say a aggregator contain a entire chunk
-			// The clean method unload all render/face for the aggregator that contain the mesh, so we can limit send only one mesh
-			list.add(new ChunkMesh(chunkModel, 0, 0, 0));
-		}else{
-			if(subMeshs == null){
-				for(int i = 0; i < SPLIT_X; i++){
-					for(int j = 0; j < SPLIT_Y; j++){
-						for(int k = 0; k < SPLIT_Z; k++){
-							list.add(new ChunkMesh(chunkModel, i, j, k));
-						}
-					}
-				}
-			}else{
-				for(Vector3 vector : subMeshs)
-					list.add(new ChunkMesh(chunkModel, vector.getFloorX(), vector.getFloorY(), vector.getFloorZ()));
-			}
-		}
-		return list;
 	}
 
 	public int getChunkX(){
@@ -196,9 +109,9 @@ public class ChunkMesh{
 
 		center = chunkModel.getCenter();
 
-		for (int x = center.getBase().getBlockX() + start.getFloorX(); x < center.getBase().getBlockX() + end.getFloorX(); x++) {
-			for (int y = center.getBase().getBlockY() + start.getFloorY(); y < center.getBase().getBlockY() + end.getFloorY(); y++) {
-				for (int z = center.getBase().getBlockZ() + start.getFloorZ(); z < center.getBase().getBlockZ() + end.getFloorZ(); z++) {
+		for (int x = center.getBase().getBlockX(); x < center.getBase().getBlockX() + Chunk.BLOCKS.SIZE; x++) {
+			for (int y = center.getBase().getBlockY(); y < center.getBase().getBlockY() + Chunk.BLOCKS.SIZE; y++) {
+				for (int z = center.getBase().getBlockZ(); z < center.getBase().getBlockZ() + Chunk.BLOCKS.SIZE; z++) {
 					generateBlockVertices(chunkModel,x, y, z);
 				}
 			}
@@ -414,59 +327,8 @@ public class ChunkMesh{
 		return time;
 	}
 
-	public int getSubX() {
-		return subX;
-	}
-
-	public int getSubY() {
-		return subY;
-	}
-
-	public int getSubZ() {
-		return subZ;
-	}
-
-	private static Vector3[] subMeshMap = new Vector3[Chunk.BLOCKS.VOLUME];
-
-	static {
-		for (int x = 0; x < Chunk.BLOCKS.SIZE; x++) {
-			for (int y = 0; y < Chunk.BLOCKS.SIZE; y++) {
-				for (int z = 0; z < Chunk.BLOCKS.SIZE; z++) {
-					subMeshMap[getSubMeshIndex(x, y, z)] = getChunkSubMeshRaw(x, y, z);
-				}
-			}
-		}
-	}
-
-	public static Vector3 getChunkSubMesh(int x, int y, int z) {
-		return subMeshMap[getSubMeshIndex(x, y, z)];
-	}
-
-	private static Vector3 getChunkSubMeshRaw(int x, int y, int z) {
-		if (isOutsideChunk(x, y, z)) {
-			throw new IllegalArgumentException("(x, y, z) must be fall inside a chunk");
-		}
-		return new Vector3(
-				Math.floor((float) ((x & Chunk.BLOCKS.MASK) / SUBSIZE_X)),
-				Math.floor((float) ((y & Chunk.BLOCKS.MASK) / SUBSIZE_Y)),
-				Math.floor((float) ((z & Chunk.BLOCKS.MASK) / SUBSIZE_Z)));
-
-	}
-
-	private static int getSubMeshIndex(int x, int y, int z) {
-		return 
-				((x & Chunk.BLOCKS.MASK) << Chunk.BLOCKS.DOUBLE_BITS) |
-				((y & Chunk.BLOCKS.MASK) << Chunk.BLOCKS.BITS ) |
-				((z & Chunk.BLOCKS.MASK) << 0);
-	}
-
-	private static boolean isOutsideChunk(int x, int y, int z) {
-		return x < 0 || x >= Chunk.BLOCKS.SIZE || y < 0 || y >= Chunk.BLOCKS.SIZE || z < 0 || z >= Chunk.BLOCKS.SIZE;
-	}
-
 	public World getWorld() {
 		return world;
 	}
-
 
 }
