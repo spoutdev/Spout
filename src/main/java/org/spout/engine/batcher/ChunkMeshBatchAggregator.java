@@ -26,97 +26,65 @@
  */
 package org.spout.engine.batcher;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.lwjgl.opengl.GL11;
 import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Cuboid;
+import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.cuboid.Cube;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
-import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
-import org.spout.engine.mesh.ChunkMesh;
+import org.spout.api.render.effect.SnapshotBatch;
 import org.spout.engine.renderer.BatchVertex;
 import org.spout.engine.renderer.BatchVertexRenderer;
-import org.spout.engine.renderer.WorldRenderer;
 
 /**
  * Represents a group of chunk meshes to be rendered.
  */
-public class ChunkMeshBatchAggregator extends Cuboid {
+public class ChunkMeshBatchAggregator extends Cube {
 
-	public final static int SIZE_X = 2;
-	public final static int SIZE_Y = 2;
-	public final static int SIZE_Z = 2;
-	public final static Vector3 SIZE = new Vector3(SIZE_X, SIZE_Y, SIZE_Z);
-	public final static int COUNT = SIZE_X * SIZE_Y * SIZE_Z;
-
-	private ChunkMeshBatch []batchs = new ChunkMeshBatch[COUNT];
-	private List<ChunkMeshBatch> dirties = new ArrayList<ChunkMeshBatch>();
 	private int count = 0;
 
+	private BatchVertex batchVertex = null;
 	private Renderer renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 
 	public final static Matrix model = MathHelper.createIdentity();
 	private final RenderMaterial material;
-	private boolean dirty = true;
+	private boolean generated = false;
 	private boolean closed = false;
 
-	public ChunkMeshBatchAggregator(World world, int baseX, int baseY, int baseZ, RenderMaterial material) {
-		super(new Point(world, baseX, baseY, baseZ), SIZE);
+	public ChunkMeshBatchAggregator(World world, int x, int y, int z, RenderMaterial material) {
+		super(new Point(world, x << Chunk.BLOCKS.BITS, y << Chunk.BLOCKS.BITS, z << Chunk.BLOCKS.BITS), Chunk.BLOCKS.SIZE);
 		this.material = material;
 	}
 
-	public boolean update(long start, boolean force) {
+	public void update() {
 		if (closed) {
 			throw new IllegalStateException("Already closed");
 		}
-		while(!dirties.isEmpty()){
-			dirties.remove(0).update();
 
-			if( System.currentTimeMillis() - start > WorldRenderer.TIME_LIMIT)
-				return false;
-		}
+		renderer.begin();
 
-		if(isFull() || force){
-			List<BatchVertex> renderers = new ArrayList<BatchVertex>();
+		SnapshotBatch snapshotBatch = new SnapshotBatch(material);
 
-			for(ChunkMeshBatch batch : batchs){
-				if(batch != null)
-					renderers.add(batch.getMesh());
-			}
+		material.preBatch(snapshotBatch);
+		((BatchVertexRenderer)renderer).setBatchVertex(batchVertex);
+		material.postBatch(snapshotBatch);
 
-			((BatchVertexRenderer)renderer).merge(renderers);
+		renderer.end();
 
-			dirty = false;
-		}
-		return true;
+		generated = true;
 	}
 
-	private boolean isFull() {
-		return count == COUNT;
-	}
-
-	public int render(RenderMaterial material) {
+	public void render(RenderMaterial material) {
 		if (closed) {
 			throw new IllegalStateException("Already closed");
 		}
-		int rended = 0;
-		if (dirty){
-			for(ChunkMeshBatch batch : batchs){
-				if(batch != null){
-					batch.render(material);
-					rended++;
-				}
-			}
-		}else{
+
+		if(generated){
 			renderer.render(material);
-			rended++;
 		}
-		return rended;
 	}
 
 	public void finalize() {
@@ -124,54 +92,23 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 			throw new IllegalStateException("Already closed");
 		}
 
-		for(ChunkMeshBatch batch : batchs)
-			if(batch != null)
-				batch.finalize();
-
+		batchVertex = null;
 		((BatchVertexRenderer)renderer).release();
+
 		closed = true;
 	}
 
 	@Override
 	public String toString() {
-		return "ChunkMeshBatch [base=" + base + ", size=" + size + "]";
+		return "ChunkMeshBatch [base=" + getBase() + ", size=" + getSize() + "]";
 	}
 
-	public void setSubBatch(int x, int y, int z, BatchVertex batchVertex) {
-		int index = (x - getBase().getFloorX()) * SIZE_Y * SIZE_Z + (y - getBase().getFloorY()) * SIZE_Z + (z - getBase().getFloorZ());
-
-		if( batchVertex == null ){
-			if(batchs[index] != null){
-				count --;
-				batchs[index].finalize();
-			}
-			batchs[index] = null;
-		}else{
-			if(batchs[index] == null){
-				batchs[index] = new ChunkMeshBatch(x, y, z, material);
-				count ++;
-			}
-
-			batchs[index].setMesh(batchVertex);
-			dirties.add(batchs[index]);
-		}
-		dirty = true;
+	public void setSubBatch(BatchVertex batchVertex) {
+		this.batchVertex = batchVertex;
 	}
 
 	public RenderMaterial getMaterial() {
 		return material;
-	}
-
-	public static Vector3 getBaseFromChunkMesh(ChunkMesh mesh) {
-		return new Vector3(Math.floor((float)mesh.getSubX() / ChunkMeshBatchAggregator.SIZE_X) * ChunkMeshBatchAggregator.SIZE_X,
-				Math.floor((float)mesh.getSubY() / ChunkMeshBatchAggregator.SIZE_Y) * ChunkMeshBatchAggregator.SIZE_Y,
-				Math.floor((float)mesh.getSubZ() / ChunkMeshBatchAggregator.SIZE_Z) * ChunkMeshBatchAggregator.SIZE_Z);
-	}
-
-	public static Vector3 getCoordFromChunkMesh(ChunkMesh mesh) {
-		return new Vector3(Math.floor((float)mesh.getSubX() / ChunkMeshBatchAggregator.SIZE_X),
-				Math.floor((float)mesh.getSubY() / ChunkMeshBatchAggregator.SIZE_Y),
-				Math.floor((float)mesh.getSubZ() / ChunkMeshBatchAggregator.SIZE_Z));
 	}
 
 	public boolean isEmpty() {
@@ -179,7 +116,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	}
 
 	/**
-	 * We can have only one instance of ChunkMeshBatchAggregator at one position, face and material
+	 * We can have only one instance of ChunkMeshBatchAggregator at one position and material
 	 * So we need to override the equals of extended class cuboid
 	 */
 	@Override

@@ -39,7 +39,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
-import org.spout.api.math.Vector3;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotRender;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
@@ -59,11 +58,11 @@ public class WorldRenderer {
 	 * Store ChunkMeshBatchAggregator by BlockFace, RenderMaterial and ChunkMeshBatchAggregator position
 	 */
 	private TInt21TripleObjectHashMap<Map<RenderMaterial,ChunkMeshBatchAggregator>> chunkRenderersByPosition = new TInt21TripleObjectHashMap<Map<RenderMaterial,ChunkMeshBatchAggregator>>();
-	private List<ChunkMeshBatchAggregator> dirties = new LinkedList<ChunkMeshBatchAggregator>();
 
 	private SpoutWorld currentWorld = null;
 	private final BatchGeneratorTask batchGenerator = new BatchGeneratorTask();
 
+	//Benchmark
 	public long minUpdate = Long.MAX_VALUE,maxUpdate = Long.MIN_VALUE,sumUpdate = 0;
 	public long minRender = Long.MAX_VALUE,maxRender = Long.MIN_VALUE,sumRender = 0;
 	public long count = 0;
@@ -82,7 +81,7 @@ public class WorldRenderer {
 
 		long time,start = System.currentTimeMillis();
 
-		update();
+		update(System.currentTimeMillis() + TIME_LIMIT);
 
 		time = System.currentTimeMillis() - start;
 		if(minUpdate > time)
@@ -105,10 +104,9 @@ public class WorldRenderer {
 
 	private final ConcurrentLinkedQueue<ChunkMesh> renderChunkMeshBatchQueue = new ConcurrentLinkedQueue<ChunkMesh>();
 
-	private class BatchGeneratorTask implements Runnable {
+	private class BatchGeneratorTask{
 
 		private ChunkMesh chunkMesh = null;
-		private Vector3 position = null;
 		private World world = null;
 
 		private Iterator<Entry<RenderMaterial, BatchVertex>> it = null;
@@ -116,10 +114,7 @@ public class WorldRenderer {
 		private Entry<RenderMaterial, BatchVertex> data;
 		private RenderMaterial material;
 
-		public void run() {
-			final long start = System.currentTimeMillis();
-
-			batch(start, false);
+		public void run(final long limit) {
 
 			if(it != null){
 
@@ -127,9 +122,9 @@ public class WorldRenderer {
 					data = it.next();
 					material = data.getKey();
 
-					handle(position, data.getValue(), start);
+					handle( data.getValue(), limit);
 
-					if( System.currentTimeMillis() - start > TIME_LIMIT)
+					if( System.currentTimeMillis() > limit)
 						return;
 
 					material = null;
@@ -137,22 +132,22 @@ public class WorldRenderer {
 				}
 				it = null;
 				chunkMesh = null;
-				position = null;
 			}
-			//}
 
 			//Step 2 : Add ChunkMesh to ChunkMeshBatch
 			while( (chunkMesh = renderChunkMeshBatchQueue.poll()) != null){
 				world = chunkMesh.getWorld();
-				
+
 				if(world != currentWorld) //Some meshs can be keeped in the queue when you change of world
 					continue;
-				
-				position = ChunkMeshBatchAggregator.getCoordFromChunkMesh(chunkMesh);
 
 				if(chunkMesh.isUnloaded()){
-					cleanBatchAggregator(position,world,chunkMesh);
+					cleanBatchAggregator(world,chunkMesh);
 					chunkMesh = null;
+
+					if( System.currentTimeMillis() > limit)
+						return;
+
 					continue;
 				}
 
@@ -161,9 +156,9 @@ public class WorldRenderer {
 					data = it.next();
 					material = data.getKey();
 
-					handle(position, data.getValue(), start);
+					handle( data.getValue(), limit);
 
-					if( System.currentTimeMillis() - start > TIME_LIMIT)
+					if( System.currentTimeMillis() > limit)
 						return;
 
 					material = null;
@@ -171,44 +166,24 @@ public class WorldRenderer {
 				}
 				it = null;
 				chunkMesh = null;
-				position = null;
 			}
-
-			//Force merge of mesh when nothings to do
-			batch(start, true);
 		}
 
-
-		private void handle(Vector3 position, BatchVertex batchVertex, long start){
-			ChunkMeshBatchAggregator chunkMeshBatch = getBatchAggregator(position, material);
+		private void handle(BatchVertex batchVertex, long limit){
+			ChunkMeshBatchAggregator chunkMeshBatch = getBatchAggregator(chunkMesh.getChunkX(), chunkMesh.getChunkY(), chunkMesh.getChunkZ(), material);
 
 			if(chunkMeshBatch==null){
-				Vector3 base = ChunkMeshBatchAggregator.getBaseFromChunkMesh(chunkMesh);
-				chunkMeshBatch = new ChunkMeshBatchAggregator(world,base.getFloorX(),base.getFloorY(),base.getFloorZ(),material);
+				chunkMeshBatch = new ChunkMeshBatchAggregator(world,chunkMesh.getChunkX(), chunkMesh.getChunkY(), chunkMesh.getChunkZ(),material);
 				addBatchAggregator(chunkMeshBatch);
 			}
 
-			chunkMeshBatch.setSubBatch(chunkMesh.getSubX(),chunkMesh.getSubY(),chunkMesh.getSubZ(),batchVertex);
-			dirties.add(chunkMeshBatch);
-
-			batch(start,false);
-		}
-
-		private void batch(long start, boolean force){
-			while(!dirties.isEmpty()){
-				ChunkMeshBatchAggregator batch = dirties.remove(0);
-
-				if(!batch.update(start,force))
-					dirties.add(batch);
-
-				if( System.currentTimeMillis() - start > TIME_LIMIT)
-					return;
-			}
+			chunkMeshBatch.setSubBatch(batchVertex);
+			chunkMeshBatch.update();
 		}
 
 	}
 
-	public void update(){
+	public void update(long limit){
 		SpoutWorld world = (SpoutWorld) ((Client)Spout.getEngine()).getActivePlayer().getWorld();
 
 		if(currentWorld != world){
@@ -219,9 +194,9 @@ public class WorldRenderer {
 			currentWorld = world;
 		}
 
-		batchGenerator.run();
+		batchGenerator.run(limit);
 	}
-	
+
 	public void addMeshToBatchQueue(ChunkMesh mesh) {
 		renderChunkMeshBatchQueue.add(mesh);
 	}
@@ -253,9 +228,9 @@ public class WorldRenderer {
 	 * @param y
 	 * @param z
 	 */
-	private void cleanBatchAggregator(Vector3 position, World world, ChunkMesh chunkMesh) {
+	private void cleanBatchAggregator(World world, ChunkMesh chunkMesh) {
 		Map<RenderMaterial, ChunkMeshBatchAggregator> aggregatorPerMaterial =
-				chunkRenderersByPosition.get(position.getFloorX(),position.getFloorY(),position.getFloorZ());
+				chunkRenderersByPosition.get(chunkMesh.getChunkX(), chunkMesh.getChunkY(), chunkMesh.getChunkZ());
 
 		//Can be null if the thread receive a unload model of a model wich has been send previously to load be not done
 		if(aggregatorPerMaterial != null){
@@ -269,26 +244,16 @@ public class WorldRenderer {
 
 				if(batch.getWorld() != world)
 					continue;
-				
+
 				List<ChunkMeshBatchAggregator> chunkRenderer = chunkRenderers.get(material);
 
-				batch.setSubBatch(chunkMesh.getSubX(), chunkMesh.getSubY(), chunkMesh.getSubZ(), null);
+				batch.finalize();
 
-				if(ChunkMesh.UNLOAD_ACCELERATOR || batch.isEmpty()){
-					batch.finalize();
+				//Clean chunkRenderers
+				chunkRenderer.remove(batch);
 
-					//Clean dirties
-					dirties.remove(batch);
-
-					//Clean chunkRenderers
-					chunkRenderer.remove(batch);
-
-					//Clean chunkRenderersByPosition
-					materialToRemove.add(material);
-				}
-
-				if(entry.getValue().isEmpty())
-					materialToRemove.add(material);
+				//Clean chunkRenderersByPosition
+				materialToRemove.add(material);
 
 				//Clean chunkRenderers
 				if(chunkRenderer.isEmpty())
@@ -300,7 +265,7 @@ public class WorldRenderer {
 				aggregatorPerMaterial.remove(material);
 
 			if(aggregatorPerMaterial.isEmpty())
-				chunkRenderersByPosition.remove(position.getFloorX(),position.getFloorY(),position.getFloorZ());
+				chunkRenderersByPosition.remove(chunkMesh.getChunkX(), chunkMesh.getChunkY(), chunkMesh.getChunkZ());
 
 		}
 	}
@@ -311,8 +276,8 @@ public class WorldRenderer {
 	 * @param material
 	 * @return
 	 */
-	private ChunkMeshBatchAggregator getBatchAggregator(Vector3 position, RenderMaterial material) {
-		Map<RenderMaterial, ChunkMeshBatchAggregator> map = chunkRenderersByPosition.get( position.getFloorX(), position.getFloorY(), position.getFloorZ());
+	private ChunkMeshBatchAggregator getBatchAggregator(int x, int y, int z, RenderMaterial material) {
+		Map<RenderMaterial, ChunkMeshBatchAggregator> map = chunkRenderersByPosition.get( x, y, z);
 		if( map == null )
 			return null;
 		return map.get(material);
@@ -326,6 +291,11 @@ public class WorldRenderer {
 		ocludedChunks = 0;
 		culledChunks = 0;
 		rended = 0;
+
+		/*TODO (maybe): We could optimise iteration and testing frustum on ChunkMeshBatch.
+		 * If we sort ChunkMeshBatch by x, y and z, and test only cubo's vertice changing
+		 * Example : while we test batch with same x coord, we don't need to test 
+		 */
 
 		for(Entry<RenderMaterial, List<ChunkMeshBatchAggregator>> entry : chunkRenderers.entrySet()){
 			RenderMaterial material = entry.getKey();
@@ -342,9 +312,12 @@ public class WorldRenderer {
 				// at the world baby
 				// But here's my frustrum
 				// so cull me maybe?
-				
+				//System.out.println( renderer.getX() + "/" + renderer.getY() + "/" + renderer.getZ() + " : " + renderer.getBase() +  " : " + renderer.getSize());
+
+
 				if (client.getActiveCamera().getFrustum().intersects(renderer)) {
-					rended += renderer.render(material);
+					renderer.render(material);
+					rended ++;
 				} else {
 					culledChunks++;
 				}
@@ -368,9 +341,5 @@ public class WorldRenderer {
 
 	public int getBatchWaiting() {
 		return renderChunkMeshBatchQueue.size();
-	}
-
-	public int getBatchDirties() {
-		return dirties.size();
 	}
 }

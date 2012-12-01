@@ -116,7 +116,7 @@ public final class SpoutScheduler implements Scheduler {
 	/**
 	 * Target Frames per Second for the renderer
 	 */
-	private static final int TARGET_FPS = 180;
+	private static final int TARGET_FPS = 500;
 	/**
 	 * The engine this scheduler is managing for.
 	 */
@@ -173,10 +173,10 @@ public final class SpoutScheduler implements Scheduler {
 			int rate = (int) ((1f / TARGET_FPS) * 1000000000);
 
 			long lastTick = System.nanoTime();
-			
+
 			long timeError = 0;
 			long maxError = rate >> 2; // time error total limited to 0.25 seconds 
-			
+
 			while (!shutdown) {
 				if (Display.isCloseRequested() || !c.isRendering()) {
 					c.stop();
@@ -197,13 +197,13 @@ public final class SpoutScheduler implements Scheduler {
 				c.render(delta / 1000000000f);
 
 				Display.update(true);
-				
+
 				currentTime = System.nanoTime();
 				delta = currentTime - lastTick; // Time for render
-				
+
 				// Round delay to the nearest ms value (from ns)
 				long delay = (rate - delta + 500000) / 1000000;
-				
+
 				// Adjust delay by 1ms depending on current time error
 				// Forces average to the target rate
 				if (timeError > 0) {
@@ -211,15 +211,29 @@ public final class SpoutScheduler implements Scheduler {
 				} else if (timeError < 0) {
 					delay++;
 				}
-				
+
 				if (delay > 0) {
-					try {
-						Thread.sleep(delay);
-					} catch (InterruptedException e) {
-						Spout.log("[Severe] Interrupted while sleeping!");
+
+					c.updateRender(delay);//Use free time to make update
+
+					delay = (rate - delta + 500000) / 1000000;
+
+					// Adjust delay by 1ms depending on current time error
+					// Forces average to the target rate
+					if (timeError > 0) {
+						delay--;
+					} else if (timeError < 0) {
+						delay++;
+					}
+
+					if (delay > 0) {
+						try {
+							Thread.sleep(delay);
+						} catch (InterruptedException e) {
+							Spout.log("[Severe] Interrupted while sleeping!");
+						}
 					}
 				}
-
 			}
 			Display.destroy();
 			c.stopEngine();
@@ -269,7 +283,7 @@ public final class SpoutScheduler implements Scheduler {
 					heavyLoad.set(true);
 				}
 			}
-			
+
 			try {
 				if (renderThread.isAlive()) {
 					renderThread.join();
@@ -277,7 +291,7 @@ public final class SpoutScheduler implements Scheduler {
 			} catch (InterruptedException ie) {
 				Spout.getLogger().info("Interrupted when waiting for render thread to end");
 			}
-			
+
 			try {
 				if (guiThread.isAlive()) {
 					guiThread.join();
@@ -297,7 +311,7 @@ public final class SpoutScheduler implements Scheduler {
 
 			taskManager.heartbeat(PULSE_EVERY << 2);
 			taskManager.shutdown(1L);
-			
+
 			long delay = 2000;
 			while (!taskManager.waitForAsyncTasks(delay)) {
 				List<Worker> workers = taskManager.getActiveWorkers();
@@ -318,7 +332,7 @@ public final class SpoutScheduler implements Scheduler {
 					delay = delay << 1;
 				}
 			}
-			
+
 			runLastTickTasks();
 
 			asyncExecutors.copySnapshot();
@@ -365,9 +379,9 @@ public final class SpoutScheduler implements Scheduler {
 			}
 
 			NetworkSendThreadPool.shutdown();
-			
+
 			runFinalTasks();
-			
+
 		}
 	}
 
@@ -375,17 +389,17 @@ public final class SpoutScheduler implements Scheduler {
 		public GUIThread() {
 			super("GUI Thread");
 		}
-		
+
 		@Override
 		public void run() {
 			long targetPeriod = 1000/40;
 			long lastTick = System.currentTimeMillis();
 			long nextTick = lastTick + targetPeriod;
 			float dt = (float) targetPeriod;
-		
+
 			ScreenStack stack = null;
 			stack = ((Client) Spout.getEngine()).getScreenStack();
-			
+
 			while (!shutdown) {
 				try {
 					stack.tick(dt);
@@ -409,7 +423,7 @@ public final class SpoutScheduler implements Scheduler {
 			}
 		}
 	}
-	
+
 	public void startMainThread() {
 		if (mainThread.isAlive()) {
 			throw new IllegalStateException("Attempt was made to start the main thread twice");
@@ -427,7 +441,7 @@ public final class SpoutScheduler implements Scheduler {
 		}
 		renderThread.start();
 	}
-	
+
 	public void startGuiThread() {
 		if (!(Spout.getEngine() instanceof SpoutClient)) {
 			throw new IllegalStateException("Cannot start the rendering thread unless on the client");
@@ -507,7 +521,7 @@ public final class SpoutScheduler implements Scheduler {
 	private boolean tick(long delta) throws InterruptedException {
 		TickStage.setStage(TickStage.TICKSTART);
 		asyncExecutors.copySnapshot();
-		
+
 		taskManager.heartbeat(delta);
 
 		if (parallelTaskManager == null) {
@@ -752,7 +766,7 @@ public final class SpoutScheduler implements Scheduler {
 		lockSnapshotLock();
 		try {
 			copySnapshot(executors);
-			
+
 			TickStage.setStage(TickStage.TICKSTART);
 		} finally {
 			unlockSnapshotLock();
@@ -863,7 +877,7 @@ public final class SpoutScheduler implements Scheduler {
 	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
 		return taskManager.scheduleAsyncDelayedTask(plugin, task, delay, priority);
 	}
-	
+
 
 	@Override
 	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority, boolean longLife) {
@@ -874,7 +888,7 @@ public final class SpoutScheduler implements Scheduler {
 	public int scheduleAsyncTask(Object plugin, Runnable task) {
 		return taskManager.scheduleAsyncTask(plugin, task);
 	}
-	
+
 	@Override
 	public int scheduleAsyncTask(Object plugin, Runnable task, boolean longLife) {
 		return taskManager.scheduleAsyncTask(plugin, task, longLife);
@@ -991,7 +1005,7 @@ public final class SpoutScheduler implements Scheduler {
 				}
 			}
 		}
-		*/
+		 */
 	}
 
 }
