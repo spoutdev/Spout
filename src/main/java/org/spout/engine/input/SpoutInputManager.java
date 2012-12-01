@@ -37,11 +37,10 @@ import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.component.Component;
 import org.spout.api.component.components.WidgetComponent;
-import org.spout.api.event.player.PlayerKeyboardEvent;
+import org.spout.api.event.player.PlayerKeyEvent;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.input.InputManager;
-import org.spout.api.input.KeyEvent;
 import org.spout.api.input.Keyboard;
 import org.spout.api.input.Mouse;
 import org.spout.api.math.IntVector2;
@@ -55,18 +54,16 @@ public class SpoutInputManager implements InputManager {
 
 	private void onKeyPressed(SpoutPlayer player, Keyboard key, boolean pressed) {
 		String cmd = keyCommands.get(key);
-		if (PlayerKeyboardEvent.getHandlerList().getRegisteredListeners().length > 0) {
-			final PlayerKeyboardEvent event = Spout.getEventManager().callEvent(new PlayerKeyboardEvent(player, key, pressed, cmd));
-			if (event.isCancelled()) {
-				return;
-			}
-		}
-
-		for (WidgetComponent c : getWidgetComponents()) {
-			c.onKey(new KeyEvent(key, pressed));
+		final PlayerKeyEvent event = Spout.getEventManager().callEvent(new PlayerKeyEvent(player, key, pressed, cmd));
+		if (event.isCancelled()) {
+			return;
 		}
 
 		doCommand(player, cmd, pressed);
+
+		for (WidgetComponent c : getWidgetComponents()) {
+			c.onKey(event);
+		}
 	}
 
 	private void onMousePressed(SpoutPlayer player, Mouse button, boolean pressed, int x, int y) {

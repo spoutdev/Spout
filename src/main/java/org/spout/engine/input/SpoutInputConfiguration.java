@@ -33,14 +33,14 @@ import org.spout.api.util.config.ConfigurationHolder;
 import org.spout.api.util.config.ConfigurationHolderConfiguration;
 import org.spout.api.util.config.yaml.YamlConfiguration;
 
-public class SpoutInputConfiguration extends ConfigurationHolderConfiguration{
+public class SpoutInputConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder FORWARD = new ConfigurationHolder("KEY_W", "forward");
 	public static final ConfigurationHolder BACKWARD = new ConfigurationHolder("KEY_S", "backward");
 	public static final ConfigurationHolder LEFT = new ConfigurationHolder("KEY_A", "left");
 	public static final ConfigurationHolder RIGHT = new ConfigurationHolder("KEY_D", "right");
 	public static final ConfigurationHolder UP = new ConfigurationHolder("KEY_SPACE", "up");
 	public static final ConfigurationHolder DOWN = new ConfigurationHolder("KEY_LSHIFT", "down");
-	
+
 	public SpoutInputConfiguration() {
 		super(new YamlConfiguration(new File("config", "controls.yml")));
 	}
