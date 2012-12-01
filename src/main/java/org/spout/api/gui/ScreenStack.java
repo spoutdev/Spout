@@ -54,19 +54,19 @@ public class ScreenStack extends SignalSubscriberObject implements Tickable {
 		}
 		update();
 	}
-	
+
 	/**
 	 * Updates all internal caches
 	 */
 	private void update() {
 		synchronized (visibleScreens) {
 			visibleScreens.clear();
-			
+
 			synchronized (screens) {
 				Iterator<Screen> iter = screens.descendingIterator();
-				
+
 				Screen next = null;
-				
+
 				while (iter.hasNext()) {
 					next = iter.next();
 					visibleScreens.addFirst(next);
@@ -82,7 +82,7 @@ public class ScreenStack extends SignalSubscriberObject implements Tickable {
 			Iterator<Screen> iter = getVisibleScreens().descendingIterator();
 			Screen next;
 			inputScreen = null;
-			while(iter.hasNext()) {
+			while (iter.hasNext()) {
 				next = iter.next();
 				if (next.takesInput()) {
 					inputScreen = next;
@@ -132,7 +132,7 @@ public class ScreenStack extends SignalSubscriberObject implements Tickable {
 			screen.tick(dt);
 		}
 	}
-	
+
 	/**
 	 * Gets which screen takes input
 	 * @return

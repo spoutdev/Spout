@@ -32,10 +32,10 @@ import java.util.List;
 
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentOwner;
+import org.spout.api.event.player.PlayerKeyEvent;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Widget;
 import org.spout.api.gui.render.RenderPart;
-import org.spout.api.input.KeyEvent;
 import org.spout.api.math.IntVector2;
 import org.spout.api.signal.Signal;
 import org.spout.api.signal.SignalInterface;
@@ -74,7 +74,7 @@ public class WidgetComponent extends Component implements SignalInterface, Subsc
 	 * Called when this widget is focussed and a key was typed
 	 * @param event the key event
 	 */
-	public void onKey(KeyEvent event) {
+	public void onKey(PlayerKeyEvent event) {
 
 	}
 

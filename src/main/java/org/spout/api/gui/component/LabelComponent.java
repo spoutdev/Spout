@@ -44,6 +44,7 @@ import org.spout.api.render.Font;
 public class LabelComponent extends WidgetComponent {
 	private static final DefaultedKey<ChatArguments> KEY_TEXT = new DefaultedKey<ChatArguments>() {
 		private final ChatArguments DEFAULT_VALUE = new ChatArguments("(your text here)");
+
 		@Override
 		public ChatArguments getDefaultValue() {
 			return DEFAULT_VALUE;
@@ -54,7 +55,6 @@ public class LabelComponent extends WidgetComponent {
 			return "text";
 		}
 	};
-
 	private static final DefaultedKey<Color> KEY_COLOR = new DefaultedKey<Color>() {
 		@Override
 		public Color getDefaultValue() {
@@ -66,7 +66,6 @@ public class LabelComponent extends WidgetComponent {
 			return "text-color";
 		}
 	};
-
 	private static final DefaultedKey<Font> KEY_FONT = new DefaultedKey<Font>() {
 		@Override
 		public Font getDefaultValue() {
@@ -86,7 +85,7 @@ public class LabelComponent extends WidgetComponent {
 		if (getFont() == null) {
 			return ret;
 		}
-		
+
 		Color color = getColor();
 		Font font = getFont();
 
@@ -102,9 +101,9 @@ public class LabelComponent extends WidgetComponent {
 		for (Object arg : getText().getArguments()) {
 			if (arg instanceof String) {
 				String txt = (String) arg;
-				for (int i=0 ; i<txt.length() ; i++) {
+				for (int i = 0; i < txt.length(); i++) {
 					char c = txt.charAt(i);
-					if (c==' ') {
+					if (c == ' ') {
 						xCursor += font.getSpaceWidth() / screenWidth;
 					} else if (c == '\n') {
 						xCursor = getOwner().getGeometry().getX();

@@ -34,16 +34,16 @@ import org.spout.api.input.Keyboard;
 /**
  * Event is called when a key is pressed/held/or released from the client
  */
-public class PlayerKeyboardEvent extends PlayerEvent implements Cancellable {
+public class PlayerKeyEvent extends PlayerEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
 	private final Keyboard key;
 	private final String rawCommand;
-	private final boolean released;
+	private final boolean pressed;
 
-	public PlayerKeyboardEvent(Player p, Keyboard key, boolean released, String rawCommand) {
+	public PlayerKeyEvent(Player p, Keyboard key, boolean pressed, String rawCommand) {
 		super(p);
 		this.key = key;
-		this.released = released;
+		this.pressed = pressed;
 		this.rawCommand = rawCommand;
 	}
 
@@ -56,11 +56,11 @@ public class PlayerKeyboardEvent extends PlayerEvent implements Cancellable {
 	}
 
 	/**
-	 * Determines if the key was released.
-	 * @return True if released, false if first pressed
+	 * Determines if the key was pressed.
+	 * @return True if pressed, false if released
 	 */
-	public boolean isReleased() {
-		return released;
+	public boolean isPressed() {
+		return pressed;
 	}
 
 	/**
