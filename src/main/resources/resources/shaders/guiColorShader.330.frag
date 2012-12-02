@@ -8,5 +8,5 @@ layout(location=0) out vec4 outputColor;
 
 void main()
 {
-	outputColor = vec4(color.rgb * BlendColor.rgb, 1);
+	outputColor = vec4(color.rgb * BlendColor.rgb, color.a * BlendColor.a);
 } 
