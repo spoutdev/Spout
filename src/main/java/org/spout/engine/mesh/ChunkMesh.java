@@ -274,7 +274,9 @@ public class ChunkMesh{
 
 		renderMaterial.preMesh(snapshotMesh);
 		List<MeshFace> faces = renderMaterial.render(snapshotMesh);
+		snapshotMesh.setResult(faces);
 		renderMaterial.postMesh(snapshotMesh);
+		faces = snapshotMesh.getResult();
 
 		if(!faces.isEmpty()){
 			BatchVertex batchVertex = meshs.get(renderMaterial);
