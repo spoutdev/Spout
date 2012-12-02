@@ -64,8 +64,17 @@ public class Screen extends BasicTickable implements Container {
 	}
 
 	@Override
+	public void removeWidgets() {
+		widgets.clear();
+	}
+
+	@Override
 	public void removeWidgets(Plugin plugin) {
-		//TODO
+		for (Plugin p : widgets.values()) {
+			if (p.equals(plugin)) {
+				widgets.remove(p);
+			}
+		}
 	}
 
 	public Widget getFocussedWidget() {

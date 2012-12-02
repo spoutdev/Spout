@@ -31,6 +31,8 @@ import java.util.Set;
 import org.spout.api.plugin.Plugin;
 
 public interface Container {
+	public abstract void removeWidgets();
+
 	public abstract void removeWidgets(Plugin plugin);
 
 	public abstract void removeWidgets(Widget... widgets);
