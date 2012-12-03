@@ -36,6 +36,9 @@ import java.net.URISyntaxException;
 import java.security.CodeSource;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -71,6 +74,7 @@ import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.component.components.CameraComponent;
 import org.spout.api.component.components.HitBlockComponent;
+import org.spout.api.component.components.ModelComponent;
 import org.spout.api.component.components.PredictableTransformComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
@@ -524,13 +528,14 @@ public class SpoutClient extends SpoutEngine implements Client {
 		Mouse.setGrabbed(screenStack.getVisibleScreens().getLast().grabsMouse());
 
 		worldRenderer.render();
-
+		
 		for (Entity e : super.getDefaultWorld().getAll()) {
 			EntityRendererComponent r = e.get(EntityRendererComponent.class);
 			if (r != null) {
 				r.render(activeCamera);
 			}
 		}
+		
 		if(wireframe) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 		}
