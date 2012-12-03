@@ -96,7 +96,7 @@ public abstract class PhysicsComponent extends EntityComponent {
 	 * <p>
 	 * Friction values are between -10F and 10F (inclusive). Friction is similar to linear
 	 * and angular damping, except that it only has effect when a body is in contact with another
-	 * body.
+	 * body. The default value is 0.5F.
 	 * <p>
 	 * @return the friction
 	 */
@@ -104,6 +104,9 @@ public abstract class PhysicsComponent extends EntityComponent {
 
 	/**
 	 * Sets the friction of the entity.
+	 * <p>
+	 * See {@link #getFriction()} for details on friction.
+	 * </p>
 	 * @param friction new friction of the object
 	 */
 	public abstract void setFriction(float friction);
