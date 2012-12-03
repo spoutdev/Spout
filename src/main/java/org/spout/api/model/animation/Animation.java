@@ -24,18 +24,27 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.model;
+package org.spout.api.model.animation;
 
-import org.spout.api.model.animation.Bone;
-import org.spout.api.model.mesh.Mesh;
-import org.spout.api.render.RenderMaterial;
+public class Animation {
 
+	private String id;
+	private BoneTransform []transforms;
 
-public interface Model {
+	public BoneTransform [] getTransforms() {
+		return transforms;
+	}
 
-	public Mesh getMesh();
+	public void setTransforms(BoneTransform [] transforms) {
+		this.transforms = transforms;
+	}
 
-	public RenderMaterial getRenderMaterial();
+	public String getId() {
+		return id;
+	}
 
-	public Bone getBone();
+	public void setId(String id2) {
+		this.id = id2;
+	}
+
 }
