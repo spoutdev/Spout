@@ -26,10 +26,7 @@
  */
 package org.spout.api.component.components;
 
-import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.shapes.CollisionShape;
-import com.bulletphysics.linearmath.MotionState;
-
 import org.spout.api.math.Vector3;
 
 public abstract class PhysicsComponent extends EntityComponent {
@@ -40,30 +37,55 @@ public abstract class PhysicsComponent extends EntityComponent {
 
 	/**
 	 * Gets the restitution of the entity.
+	 * <p>
+	 * Note: Values are greater than or equal to zero
+	 * </p>
 	 * @return the restitution
 	 */
 	public abstract float getRestitution();
 
 	/**
 	 * Sets the restitution of the entity.
+	 * <p>
+	 * Restitution is the amount of restoring force applied when an object
+	 * encounters a barrier. 
+	 * <br><br>
+	 * Ex: A restitution value of 1 will result in an equal resulting
+	 * force when colliding with an object. A value of 2 will result in
+	 * a double force when colliding, whereas a value of 0.5F will result
+	 * in half the force.
+	 * </p>
 	 * @param restitution new restitution of the object
 	 */
 	public abstract void setRestitution(float restitution);
 
 	/**
 	 * Gets the angular damping of the entity.
+	 * <p>
+	 * Angular damping is how the body rotates through the world.
+	 * Values are between 0F and 1F (inclusive) and values > 0F of angular damping 
+	 * will cause bodies cease rotation more quickly than if just affected by friction.
+	 * </p>
 	 * @return the angular damping
 	 */
 	public abstract float getAngularDamping();
 
 	/**
 	 * Gets the linear damping of the entity.
+	 * <p>
+	 * Linear damping is how the body moves through the world at any given direction.
+	 * Values are between 0F and 1F (inclusive) and values > 0F of linear damping 
+	 * will cause bodies to come to rest more quickly than if just affected by friction.
+	 * </p>
 	 * @return the linear damping
 	 */
 	public abstract float getLinearDamping();
 
 	/**
 	 * Sets the damping of the entity.
+	 * <p>
+	 * For more on linear damping and angular damping, see {@link #getLinearDamping()} and {@link #getAngularDamping()}.
+	 * </p>
 	 * @param linearDamping new linear damping of the object
 	 * @param angularDamping new angular damping of the object
 	 */
@@ -71,6 +93,11 @@ public abstract class PhysicsComponent extends EntityComponent {
 
 	/**
 	 * Gets the friction of the entity.
+	 * <p>
+	 * Friction values are between -10F and 10F (inclusive). Friction is similar to linear
+	 * and angular damping, except that it only has effect when a body is in contact with another
+	 * body.
+	 * <p>
 	 * @return the friction
 	 */
 	public abstract float getFriction();
