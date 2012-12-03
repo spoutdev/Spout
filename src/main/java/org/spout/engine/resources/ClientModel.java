@@ -27,6 +27,7 @@
 package org.spout.engine.resources;
 
 import org.spout.api.model.Model;
+import org.spout.api.model.animation.Bone;
 import org.spout.api.model.mesh.Mesh;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.resource.Resource;
@@ -34,16 +35,27 @@ import org.spout.api.resource.Resource;
 public class ClientModel extends Resource implements Model {
 
 	public Mesh mesh;
+	public Bone bone;
 	public RenderMaterial material;
-	
+
 	public ClientModel(Mesh mesh,RenderMaterial material) {
+		this(mesh, null, material);
+	}
+	
+	public ClientModel(Mesh mesh, Bone bone, RenderMaterial material) {
 		this.mesh = mesh;
+		this.bone = bone;
 		this.material = material;
 	}
 	
 	@Override
 	public Mesh getMesh() {
 		return mesh;
+	}
+	
+	@Override
+	public Bone getBone() {
+		return bone;
 	}
 	
 	@Override
