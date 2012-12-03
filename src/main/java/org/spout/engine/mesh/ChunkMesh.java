@@ -166,8 +166,8 @@ public class ChunkMesh{
 				Vector3 normal = MathHelper.cross(v1.subtract(v2), v2.subtract(v3)).normalize();
 				
 				batch.addColor(generateLightOnVertices(chunkModelLight,v1.getX(), v1.getY(), v1.getZ(), normal));
-				batch.addColor(generateLightOnVertices(chunkModelLight,v1.getX(), v1.getY(), v1.getZ(), normal));
-				batch.addColor(generateLightOnVertices(chunkModelLight,v1.getX(), v1.getY(), v1.getZ(), normal));
+				batch.addColor(generateLightOnVertices(chunkModelLight,v2.getX(), v2.getY(), v2.getZ(), normal));
+				batch.addColor(generateLightOnVertices(chunkModelLight,v3.getX(), v3.getY(), v3.getZ(), normal));
 			}
 		}
 
