@@ -26,53 +26,42 @@
  */
 package org.spout.api.model.animation;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
-import org.spout.api.model.mesh.Mesh;
+import org.spout.api.resource.Resource;
 
-public class Bone {
-	String name;
-	HashMap<String, Bone> children = new HashMap<String, Bone>();
-	BoneTransform transform = new BoneTransform();
+public class Bone extends Resource{
+	private String name;
 
-	Mesh mesh;
+	private Bone parent = null;
+	private HashMap<String, Bone> children = new HashMap<String, Bone>();
 
-	public Bone(String name, BoneTransform parent) {
-		if (parent != null) {
-			transform.setParent(parent);
-		}
+	int[] vertex;
+	float[] weights;
+	
+	private Map<String, Animation> animations;
+
+	public Bone(String name, Bone parent, Map<String, Animation> animations2) {
+		this.parent = parent;
+
+		if(parent != null)
+			parent.attachBone(this);
+
 		this.name = name;
-	}
-
-	public BoneTransform getTransform() {
-		return transform;
-	}
-
-	public Mesh getMesh() {
-		return mesh;
-	}
-
-	public void setMesh(Mesh mesh) {
-		this.mesh = mesh;
+		this.animations = animations2;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public void attachBone(String name, Mesh mesh) {
-		Bone b = new Bone(name, getTransform());
-		b.setMesh(mesh);
-		children.put(name, b);
+	private void attachBone(Bone child) {
+		children.put(child.getName(), child);
 	}
 
 	public boolean hasBone(String name) {
 		return children.containsKey(name);
-	}
-
-	public boolean isBone(String name) {
-		return name.equals(this.name);
 	}
 
 	public void removeBone(String name) {
@@ -93,4 +82,17 @@ public class Bone {
 		}
 		return null;
 	}
+
+	public Bone getParent() {
+		return parent;
+	}
+
+	public void setVertex(int[] vertex) {
+		this.vertex = vertex;
+	}
+
+	public void setWeights(float[] weights) {
+		this.weights = weights;
+	}
+
 }
