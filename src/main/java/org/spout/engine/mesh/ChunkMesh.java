@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
@@ -140,14 +141,40 @@ public class ChunkMesh{
 			batch.colorBuffer.clear(batch.getVertexCount() * 4);
 
 			for(int i = 0; i < batch.vertexBuffer.size();){
-				Color color = generateLightOnVertices(chunkModelLight,batch.vertexBuffer.get(i++),batch.vertexBuffer.get(i++),batch.vertexBuffer.get(i++));
-				i++; //Ignore w
-				batch.addColor(color);
+				float x1 = batch.vertexBuffer.get(i++);
+				float y1 = batch.vertexBuffer.get(i++);
+				float z1 = batch.vertexBuffer.get(i++);
+				float w1 = batch.vertexBuffer.get(i++);
+				float x2 = batch.vertexBuffer.get(i++);
+				float y2 = batch.vertexBuffer.get(i++);
+				float z2 = batch.vertexBuffer.get(i++);
+				float w2 = batch.vertexBuffer.get(i++);
+				float x3 = batch.vertexBuffer.get(i++);
+				float y3 = batch.vertexBuffer.get(i++);
+				float z3 = batch.vertexBuffer.get(i++);
+				float w3 = batch.vertexBuffer.get(i++);
+				
+				// TODO - A float based cross product may speed things up here
+				//        or at least reduce garbage collection
+				//        float nx = MathHelper.crossX(x1, y1, z1, x2, y2, z2);
+				//        float ny = MathHelper.crossY(x1, y1, z1, x2, y2, z2);
+				//        float nz = MathHelper.crossZ(x1, y1, z1, x2, y2, z2);
+				Vector3 v1 = new Vector3(x1, y1, z1);
+				Vector3 v2 = new Vector3(x2, y2, z2);
+				Vector3 v3 = new Vector3(x3, y3, z3);
+				
+				Vector3 normal = MathHelper.cross(v1.subtract(v2), v2.subtract(v3)).normalize();
+				
+				batch.addColor(generateLightOnVertices(chunkModelLight,v1.getX(), v1.getY(), v1.getZ(), normal));
+				batch.addColor(generateLightOnVertices(chunkModelLight,v1.getX(), v1.getY(), v1.getZ(), normal));
+				batch.addColor(generateLightOnVertices(chunkModelLight,v1.getX(), v1.getY(), v1.getZ(), normal));
 			}
 		}
 
 		lightGenerated = true;
 	}
+	
+	private static final Vector3 sunDirection = new Vector3(0.1, 1, 0.3).normalize();
 
 	/**
 	 * Compute the light for one vertex
@@ -157,7 +184,7 @@ public class ChunkMesh{
 	 * @param z
 	 * @return
 	 */
-	private Color generateLightOnVertices(SpoutChunkSnapshotModel chunkModel, float x, float y, float z) {
+	private Color generateLightOnVertices(SpoutChunkSnapshotModel chunkModel, float x, float y, float z, Vector3 normal) {
 		int xi = (int)x;
 		int yi = (int)y;
 		int zi = (int)z;
@@ -167,30 +194,27 @@ public class ChunkMesh{
 			int count = 0;
 
 			//TODO : Make it use each sort of light if plugin can add others lights later
-
-			ChunkSnapshot chunk = chunkModel.getChunkFromBlock(xi, yi, zi);
-			light += chunk.getBlockLight(xi, yi, zi);
-			skylight += chunk.getBlockSkyLight(xi, yi, zi);
-			count++;
-
-			if(x == xi){
-				chunk = chunkModel.getChunkFromBlock(xi - 1, yi, zi);
-				light += chunk.getBlockLight(xi - 1, yi, zi);
-				skylight += chunk.getBlockSkyLight(xi - 1, yi, zi);
-				count++;
+			
+			int xs = (x == xi) ? (xi - 1) : xi;
+			int ys = (y == yi) ? (yi - 1) : yi;
+			int zs = (z == zi) ? (zi - 1) : zi;
+			
+			for (int xx = xs; xx <= xi; xx++) {
+				for (int yy = ys; yy <= yi; yy++) {
+					for (int zz = zs; zz <= zi; zz++) {
+						ChunkSnapshot chunk = null;
+						chunk = chunkModel.getChunkFromBlock(xx, yy, zz);
+						BlockMaterial m = chunk.getBlockMaterial(xx, yy, zz);
+						if (!m.isOpaque()) {
+							light += chunk.getBlockLight(xx, yy, zz);
+							skylight += chunk.getBlockSkyLight(xx, yy, zz);
+							count++;
+						}
+					}
+				}
 			}
-
-			if(y == yi){
-				chunk = chunkModel.getChunkFromBlock(xi, yi - 1, zi);
-				light += chunk.getBlockLight(xi, yi - 1, zi);
-				skylight += chunk.getBlockSkyLight(xi, yi - 1, zi);
-				count++;
-			}
-
-			if(z == zi){
-				chunk = chunkModel.getChunkFromBlock(xi, yi, zi - 1);
-				light += chunk.getBlockLight(xi, yi, zi - 1);
-				skylight += chunk.getBlockSkyLight(xi, yi, zi - 1);
+			
+			if (count == 0) {
 				count++;
 			}
 
@@ -198,6 +222,11 @@ public class ChunkMesh{
 			skylight /= count;
 			light /= 16;
 			skylight /= 16;
+			
+			// TODO - can we get the same effect on a frame by frame basis?
+			float skyFactor = 0.25F + (1 - normal.dot(sunDirection)) * 0.375F;
+			
+			skylight *= skyFactor;
 
 			//TODO : Maybe we should use two byte buffer to store light and let the shader use it as the shader want
 			//(we can give the sky color and light color with a render effect in Vanilla)
