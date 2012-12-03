@@ -181,7 +181,7 @@ public class BaseComponentHolder implements ComponentHolder {
 
 	@Override
 	public Collection<Component> values() {
-		return Collections.unmodifiableList(new ArrayList<Component>(components.values()));
+		return Collections.unmodifiableCollection(components.values());
 	}
 
 	@Override
