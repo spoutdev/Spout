@@ -29,7 +29,7 @@ package org.spout.api.model.animation;
 import org.spout.api.math.Vector3;
 
 public class BoneTransform {
-	
+
 	private Vector3 head;
 	private Vector3 tail;
 
@@ -53,5 +53,9 @@ public class BoneTransform {
 	public void setTail(Vector3 tail) {
 		this.tail = tail;
 	}
-	
+
+	public String toString(){
+		return "Head : " + head.getX() + " / " + head.getY() + " / " + head.getZ() +
+				" Tail " + tail.getX() + " / " + tail.getY() + " / " + tail.getZ();
+	}
 }
