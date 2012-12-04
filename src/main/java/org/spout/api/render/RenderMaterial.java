@@ -32,9 +32,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.render.effect.BatchEffect;
-import org.spout.api.render.effect.MeshEffect;
+import org.spout.api.render.effect.EntityEffect;
 import org.spout.api.render.effect.RenderEffect;
 import org.spout.api.render.effect.SnapshotBatch;
+import org.spout.api.render.effect.SnapshotEntity;
 import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.render.effect.SnapshotRender;
 import org.spout.api.resource.Resource;
@@ -103,6 +104,17 @@ public abstract class RenderMaterial extends Resource implements Comparable<Rend
 	public abstract void postRender(SnapshotRender snapshotRender);
 
 	/**
+	 * Called right before rendering an entity
+	 */
+	public abstract void preRenderEntity(SnapshotEntity snapshotEntity);
+
+	/**
+	 * Called right after rendering an entity
+	 * @param snapshotEntity 
+	 */
+	public abstract void postRenderEntity(SnapshotEntity snapshotEntity);
+	
+	/**
 	 * Called to render a block side
 	 * @param chunkSnapshotModel
 	 * @param position
@@ -141,6 +153,18 @@ public abstract class RenderMaterial extends Resource implements Comparable<Rend
 	 * @param renderEffect
 	 */
 	public abstract void addRenderEffect(RenderEffect renderEffect);
+	
+	/**
+	 * Return the entityEffects
+	 * @return
+	 */
+	public abstract Collection<EntityEffect> getEntityEffects();
+
+	/**
+	 * Add EntityEffect
+	 * @param entityEffect
+	 */
+	public abstract void addEntityEffect(EntityEffect entityEffect);
 
 	@Override
 	public final int compareTo(RenderMaterial o) {
