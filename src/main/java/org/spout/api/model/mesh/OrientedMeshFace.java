@@ -29,10 +29,8 @@ package org.spout.api.model.mesh;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.spout.api.material.block.BlockFace;
@@ -44,9 +42,9 @@ import org.spout.api.math.Vector3;
  */
 public class OrientedMeshFace extends MeshFace {
 
-	private final static List<BlockFace> shouldRender = new ArrayList<BlockFace>(Arrays.asList(BlockFace.TOP,BlockFace.BOTTOM,BlockFace.NORTH,BlockFace.SOUTH,BlockFace.WEST,BlockFace.EAST));
+	public final static BlockFace []shouldRender = new BlockFace[]{ BlockFace.TOP, BlockFace.BOTTOM, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST};
 
-	private final static Map<Vector3,List<BlockFace>> faceMap = new HashMap<Vector3,List<BlockFace>>();
+	private final static Map<BlockFace,List<Vector3>> faceMap = new HashMap<BlockFace,List<Vector3>>();
 
 	static{
 		/*   1--2
@@ -58,41 +56,46 @@ public class OrientedMeshFace extends MeshFace {
 		 *          /
 		 *         Z - East < WEST
 		 */
-		faceMap.put(new Vector3(-1, -1, -1).normalize(), new ArrayList<BlockFace>(Arrays.asList(BlockFace.BOTTOM,BlockFace.NORTH,BlockFace.EAST)));
-		faceMap.put(new Vector3(-1, 1, -1).normalize(), new ArrayList<BlockFace>(Arrays.asList(BlockFace.TOP,BlockFace.NORTH,BlockFace.EAST)));
-		faceMap.put(new Vector3(1, 1, -1).normalize(), new ArrayList<BlockFace>(Arrays.asList(BlockFace.TOP,BlockFace.SOUTH,BlockFace.EAST)));
-		faceMap.put(new Vector3(1, -1, -1).normalize(), new ArrayList<BlockFace>(Arrays.asList(BlockFace.BOTTOM,BlockFace.SOUTH,BlockFace.EAST)));
-		faceMap.put(new Vector3(-1, -1, 1).normalize(), new ArrayList<BlockFace>(Arrays.asList(BlockFace.BOTTOM,BlockFace.NORTH,BlockFace.WEST)));
-		faceMap.put(new Vector3(-1, 1, 1).normalize(), new ArrayList<BlockFace>(Arrays.asList(BlockFace.TOP,BlockFace.NORTH,BlockFace.WEST)));
-		faceMap.put(new Vector3(1, 1, 1).normalize(), new ArrayList<BlockFace>(Arrays.asList(BlockFace.TOP,BlockFace.SOUTH,BlockFace.WEST)));
-		faceMap.put(new Vector3(1, -1, 1).normalize(), new ArrayList<BlockFace>(Arrays.asList(BlockFace.BOTTOM,BlockFace.SOUTH,BlockFace.WEST)));
+		
+		//TODO : extract vector in variable
+		
+		faceMap.put(BlockFace.TOP, new ArrayList<Vector3>(Arrays.asList(new Vector3(-1, 1, -1).normalize(),new Vector3(1, 1, -1).normalize(),new Vector3(-1, 1, 1).normalize(),new Vector3(1, 1, 1).normalize())));
+		faceMap.put(BlockFace.BOTTOM, new ArrayList<Vector3>(Arrays.asList(new Vector3(-1, -1, -1).normalize(),new Vector3(1, -1, -1).normalize(),new Vector3(-1, -1, 1).normalize(),new Vector3(1, -1, 1).normalize())));
+		faceMap.put(BlockFace.NORTH, new ArrayList<Vector3>(Arrays.asList(new Vector3(-1, -1, -1).normalize(),new Vector3(-1, 1, -1).normalize(),new Vector3(-1, 1, 1).normalize(),new Vector3(-1, -1, 1).normalize())));
+		faceMap.put(BlockFace.SOUTH, new ArrayList<Vector3>(Arrays.asList(new Vector3(1, -1, -1).normalize(),new Vector3(1, -1, 1).normalize(),new Vector3(1, 1, -1).normalize(),new Vector3(1, 1, 1).normalize())));
+		faceMap.put(BlockFace.WEST, new ArrayList<Vector3>(Arrays.asList(new Vector3(-1, 1, 1).normalize(),new Vector3(-1, -1, 1).normalize(),new Vector3(1, -1, 1).normalize(),new Vector3(1, 1, 1).normalize())));
+		faceMap.put(BlockFace.EAST, new ArrayList<Vector3>(Arrays.asList(new Vector3(-1, -1, -1).normalize(),new Vector3(-1, 1, -1).normalize(),new Vector3(1, -1, -1).normalize(),new Vector3(1, 1, -1).normalize())));
 	}
 
-	private Set<BlockFace> seeFromFace;
+	private boolean []seeFromFace = new boolean[shouldRender.length];
 
 	public OrientedMeshFace(Vertex v1, Vertex v2, Vertex v3) {
 		super(v1,v2,v3);
 
 		// Calculate two vectors from the three points
+		
 		Vector3 vector1 = verts[0].position.subtract(verts[1].position);
 		Vector3 vector2 = verts[1].position.subtract(verts[2].position);
-
+		
 		// Take the cross product of the two vectors to get
 		// the normal vector which will be stored in out
-
+		
 		Vector3 norm = vector1.cross(vector2).normalize();
 
-		//Make the list of face can see this face
-		seeFromFace = new HashSet<BlockFace>();
-		for(Entry<Vector3, List<BlockFace>> entry : faceMap.entrySet()){
-			if (norm.distance(entry.getKey()) < 1)
-				seeFromFace.addAll(entry.getValue());
+		for(int i = 0; i < shouldRender.length; i++){
+			for(Vector3 edge : faceMap.get(shouldRender[i])){
+				if (norm.distance(edge) < 1)
+					seeFromFace[i] = true;
+			}
 		}
 	}
 
-	public OrientedMeshFace(Vertex v1, Vertex v2, Vertex v3,Set<BlockFace> requiredFace) {
+	public OrientedMeshFace(Vertex v1, Vertex v2, Vertex v3, Set<BlockFace> requiredFace) {
 		super(v1,v2,v3);
-		seeFromFace = requiredFace;
+
+		for(int i = 0; i < shouldRender.length; i++){
+			seeFromFace[i] = requiredFace.contains(shouldRender[i]);
+		}
 	}
 
 	public boolean canRender(boolean toRender[]){
@@ -102,15 +105,11 @@ public class OrientedMeshFace extends MeshFace {
 		 *   - If this face is the face what you want to draw, send yes
 		 *   - If it's not the face that you want to drawn, send no, because this face will be rended by a other blockface
 		 */
-		for(int i = 0; i < shouldRender.size(); i++){
-			if(seeFromFace.contains(shouldRender.get(i)) && toRender[i]){
+		for(int i = 0; i < shouldRender.length; i++){
+			if(seeFromFace[i] && toRender[i]){
 				return true;
 			}
 		}
 		return false;
-	}
-
-	public Set<BlockFace> getSeeFromFace() {
-		return seeFromFace;
 	}
 }
