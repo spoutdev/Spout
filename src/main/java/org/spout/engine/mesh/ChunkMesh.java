@@ -145,29 +145,8 @@ public class ChunkMesh{
 				float y1 = batch.vertexBuffer.get(i++);
 				float z1 = batch.vertexBuffer.get(i++);
 				float w1 = batch.vertexBuffer.get(i++);
-				float x2 = batch.vertexBuffer.get(i++);
-				float y2 = batch.vertexBuffer.get(i++);
-				float z2 = batch.vertexBuffer.get(i++);
-				float w2 = batch.vertexBuffer.get(i++);
-				float x3 = batch.vertexBuffer.get(i++);
-				float y3 = batch.vertexBuffer.get(i++);
-				float z3 = batch.vertexBuffer.get(i++);
-				float w3 = batch.vertexBuffer.get(i++);
-				
-				// TODO - A float based cross product may speed things up here
-				//        or at least reduce garbage collection
-				//        float nx = MathHelper.crossX(x1, y1, z1, x2, y2, z2);
-				//        float ny = MathHelper.crossY(x1, y1, z1, x2, y2, z2);
-				//        float nz = MathHelper.crossZ(x1, y1, z1, x2, y2, z2);
-				Vector3 v1 = new Vector3(x1, y1, z1);
-				Vector3 v2 = new Vector3(x2, y2, z2);
-				Vector3 v3 = new Vector3(x3, y3, z3);
-				
-				Vector3 normal = MathHelper.cross(v1.subtract(v2), v2.subtract(v3)).normalize();
-				
-				batch.addColor(generateLightOnVertices(chunkModelLight,v1.getX(), v1.getY(), v1.getZ(), normal));
-				batch.addColor(generateLightOnVertices(chunkModelLight,v2.getX(), v2.getY(), v2.getZ(), normal));
-				batch.addColor(generateLightOnVertices(chunkModelLight,v3.getX(), v3.getY(), v3.getZ(), normal));
+
+				batch.addColor(generateLightOnVertices(chunkModelLight,x1, y1, z1));
 			}
 		}
 
@@ -184,7 +163,7 @@ public class ChunkMesh{
 	 * @param z
 	 * @return
 	 */
-	private Color generateLightOnVertices(SpoutChunkSnapshotModel chunkModel, float x, float y, float z, Vector3 normal) {
+	private Color generateLightOnVertices(SpoutChunkSnapshotModel chunkModel, float x, float y, float z) {
 		int xi = (int)x;
 		int yi = (int)y;
 		int zi = (int)z;
@@ -223,11 +202,6 @@ public class ChunkMesh{
 			light /= 16;
 			skylight /= 16;
 			
-			// TODO - can we get the same effect on a frame by frame basis?
-			float skyFactor = 0.25F + (1 - normal.dot(sunDirection)) * 0.375F;
-			
-			skylight *= skyFactor;
-
 			//TODO : Maybe we should use two byte buffer to store light and let the shader use it as the shader want
 			//(we can give the sky color and light color with a render effect in Vanilla)
 
