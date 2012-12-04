@@ -112,9 +112,9 @@ public class BlockMeshLoader extends BasicResourceLoader<OrientedMesh> {
 					}
 
 					if(requiredFace == null)
-						faces.add(new OrientedMeshFace(ar.get(0), ar.get(1), ar.get(2)));
+						faces.add(new OrientedMeshFace(ar.get(2), ar.get(1), ar.get(0)));
 					else
-						faces.add(new OrientedMeshFace(ar.get(0), ar.get(1), ar.get(2), requiredFace));
+						faces.add(new OrientedMeshFace(ar.get(2), ar.get(1), ar.get(0), requiredFace));
 
 					ar.clear();
 
@@ -134,9 +134,9 @@ public class BlockMeshLoader extends BasicResourceLoader<OrientedMesh> {
 					}
 
 					if(requiredFace == null)
-						faces.add(new OrientedMeshFace(ar.get(0), ar.get(1), ar.get(2)));
+						faces.add(new OrientedMeshFace(ar.get(2), ar.get(1), ar.get(0)));
 					else
-						faces.add(new OrientedMeshFace(ar.get(0), ar.get(1), ar.get(2), requiredFace));
+						faces.add(new OrientedMeshFace(ar.get(2), ar.get(1), ar.get(0), requiredFace));
 
 					ar.clear();
 
@@ -145,14 +145,14 @@ public class BlockMeshLoader extends BasicResourceLoader<OrientedMesh> {
 					int face2 = Integer.parseInt(sp[2]) - 1;
 					int face3 = Integer.parseInt(sp[3]) - 1;
 
-					Vertex p = new Vertex(verticies.get(face1));
+					Vertex p1 = new Vertex(verticies.get(face1));
 					Vertex p2 = new Vertex(verticies.get(face2));
 					Vertex p3 = new Vertex(verticies.get(face3));
 
 					if(requiredFace == null)
-						faces.add(new OrientedMeshFace(p, p2, p3));
+						faces.add(new OrientedMeshFace(p3, p2, p1));
 					else
-						faces.add(new OrientedMeshFace(p, p2, p3, requiredFace));
+						faces.add(new OrientedMeshFace(p3, p2, p1, requiredFace));
 
 				}
 

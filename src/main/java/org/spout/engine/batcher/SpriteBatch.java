@@ -80,31 +80,31 @@ public class SpriteBatch {
 		renderer.begin();
 		for (int i = 0; i < sprites.size(); i++) {
 			RenderPart rect = sprites.get(i);
-
-			renderer.addVertex(rect.getSprite().getX(), rect.getSprite().getY() + rect.getSprite().getHeight());
+			
+			renderer.addVertex(rect.getSprite().getX() + rect.getSprite().getWidth(), rect.getSprite().getY());
 			renderer.addColor(rect.getColor());
-			renderer.addTexCoord(rect.getSource().getX(), rect.getSource().getY());
-
+			renderer.addTexCoord(rect.getSource().getX() + rect.getSource().getWidth(), rect.getSource().getY() + rect.getSource().getHeight());
+			
 			renderer.addVertex(rect.getSprite().getX(), rect.getSprite().getY());
 			renderer.addColor(rect.getColor());
 			renderer.addTexCoord(rect.getSource().getX(), rect.getSource().getY() + rect.getSource().getHeight());
 
-			renderer.addVertex(rect.getSprite().getX() + rect.getSprite().getWidth(), rect.getSprite().getY());
-			renderer.addColor(rect.getColor());
-			renderer.addTexCoord(rect.getSource().getX() + rect.getSource().getWidth(), rect.getSource().getY() + rect.getSource().getHeight());
-
-
 			renderer.addVertex(rect.getSprite().getX(), rect.getSprite().getY() + rect.getSprite().getHeight());
 			renderer.addColor(rect.getColor());
 			renderer.addTexCoord(rect.getSource().getX(), rect.getSource().getY());
 
+			
+			renderer.addVertex(rect.getSprite().getX() + rect.getSprite().getWidth(), rect.getSprite().getY() + rect.getSprite().getHeight());
+			renderer.addColor(rect.getColor());
+			renderer.addTexCoord(rect.getSource().getX() + rect.getSource().getWidth(), rect.getSource().getY());
+
 			renderer.addVertex(rect.getSprite().getX() + rect.getSprite().getWidth(), rect.getSprite().getY());
 			renderer.addColor(rect.getColor());
 			renderer.addTexCoord(rect.getSource().getX() + rect.getSource().getWidth(), rect.getSource().getY() + rect.getSource().getHeight());
 
-			renderer.addVertex(rect.getSprite().getX() + rect.getSprite().getWidth(), rect.getSprite().getY() + rect.getSprite().getHeight());
+			renderer.addVertex(rect.getSprite().getX(), rect.getSprite().getY() + rect.getSprite().getHeight());
 			renderer.addColor(rect.getColor());
-			renderer.addTexCoord(rect.getSource().getX() + rect.getSource().getWidth(), rect.getSource().getY());
+			renderer.addTexCoord(rect.getSource().getX(), rect.getSource().getY());
 		}
 		renderer.end();
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
