@@ -47,4 +47,14 @@ public class Animation {
 		this.id = id2;
 	}
 
+	public void dumbAnimation(String str) {
+		System.out.println(str + "Animation : " + id);
+		
+		int i = 0;
+		for(BoneTransform bt : transforms){
+			System.out.println(str + "  " + i + " : " + bt.toString());
+			i++;
+		}
+	}
+
 }

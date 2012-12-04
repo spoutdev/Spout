@@ -95,4 +95,31 @@ public class Bone extends Resource{
 		this.weights = weights;
 	}
 
+	public void dumbBone(String str){
+		System.out.println(str + "Bones : " + name + (parent != null ? "(parent : " + parent.getName() + ")" : ""));
+		
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append(str + "Vertices " + vertex.length + ": ");
+		for(int v : vertex)
+			sb.append(v).append(", ");
+		System.out.println(sb.toString());
+		
+		sb = new StringBuilder();
+		
+		sb.append(str + "Weights " + weights.length + ": ");
+		for(float w : weights)
+			sb.append(w).append(", ");
+		System.out.println(sb.toString());
+		
+		System.out.println(str + "Child : ");
+		for(Bone bone : children.values()){
+			bone.dumbBone(str + "  ");
+		}
+		
+		for(Animation a : animations.values()){
+			a.dumbAnimation(str + "  ");
+		}
+	}
+	
 }
