@@ -43,6 +43,7 @@ import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.mesh.MeshFace;
+import org.spout.api.model.mesh.OrientedMeshFace;
 import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotMesh;
@@ -55,7 +56,7 @@ import org.spout.engine.world.SpoutChunkSnapshotModel;
  */
 public class ChunkMesh{
 
-	public final static List<BlockFace> shouldRender = new ArrayList<BlockFace>(Arrays.asList(BlockFace.TOP,BlockFace.BOTTOM,BlockFace.NORTH,BlockFace.SOUTH,BlockFace.WEST,BlockFace.EAST));
+	//public final static BlockFace []shouldRender = new BlockFace[]{ BlockFace.TOP, BlockFace.BOTTOM, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST};
 
 	private HashMap<RenderMaterial, BatchVertex> meshs = new HashMap<RenderMaterial, BatchVertex>();
 	private boolean verticeGenerated = false;
@@ -240,10 +241,10 @@ public class ChunkMesh{
 
 		Vector3 position = new Vector3(x, y, z);
 
-		boolean toRender[] = new boolean[shouldRender.size()];
+		boolean toRender[] = new boolean[OrientedMeshFace.shouldRender.length];
 		boolean fullyOccluded = true;
-		for(int i = 0; i < shouldRender.size(); i++){
-			BlockFace face = shouldRender.get(i);
+		for(int i = 0; i < OrientedMeshFace.shouldRender.length; i++){
+			BlockFace face = OrientedMeshFace.shouldRender[i];
 			Vector3 facePos = position.add(face.getOffset());
 			int x1 = facePos.getFloorX();
 			int y1 = facePos.getFloorY();
