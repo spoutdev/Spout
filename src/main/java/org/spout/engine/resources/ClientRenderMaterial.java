@@ -36,10 +36,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.lwjgl.opengl.GL11;
-import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.ChunkSnapshotModel;
 import org.spout.api.material.Material;
-import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
@@ -52,9 +50,11 @@ import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Shader;
 import org.spout.api.render.effect.BatchEffect;
+import org.spout.api.render.effect.EntityEffect;
 import org.spout.api.render.effect.MeshEffect;
 import org.spout.api.render.effect.RenderEffect;
 import org.spout.api.render.effect.SnapshotBatch;
+import org.spout.api.render.effect.SnapshotEntity;
 import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.render.effect.SnapshotRender;
 
@@ -67,9 +67,9 @@ public class ClientRenderMaterial extends RenderMaterial {
 	Matrix view;
 	Matrix projection;
 	int layer;
-	private List<MeshEffect> meshEffects = new ArrayList<MeshEffect>();
 	private List<BatchEffect> batchEffects = new ArrayList<BatchEffect>();
 	private List<RenderEffect> renderEffects = new ArrayList<RenderEffect>();
+	private List<EntityEffect> entityEffects = new ArrayList<EntityEffect>();
 
 	public ClientRenderMaterial(Shader s, Map<String, Object> params){
 		this(s, params, null, null, true, 0);
@@ -175,6 +175,21 @@ public class ClientRenderMaterial extends RenderMaterial {
 		}
 	}
 
+
+	@Override
+	public void preRenderEntity(SnapshotEntity snapshotEntity) {
+		for (EntityEffect entityEffect : getEntityEffects()) {
+			entityEffect.preRenderEntity(snapshotEntity);
+		}
+	}
+
+	@Override
+	public void postRenderEntity(SnapshotEntity snapshotEntity) {
+		for (EntityEffect entityEffect : getEntityEffects()) {
+			entityEffect.postRenderEntity(snapshotEntity);
+		}
+	}
+	
 	@Override
 	public List<MeshFace> render(SnapshotMesh snapshotRender) {
 		Mesh mesh = snapshotRender.getMesh();
@@ -268,6 +283,16 @@ public class ClientRenderMaterial extends RenderMaterial {
 	@Override
 	public void addRenderEffect(BatchEffect batchEffect) {
 		batchEffects.add(batchEffect);
+	}
+
+	@Override
+	public Collection<EntityEffect> getEntityEffects() {
+		return Collections.unmodifiableCollection(entityEffects);
+	}
+
+	@Override
+	public void addEntityEffect(EntityEffect entityEffect) {
+		entityEffects.add(entityEffect);
 	}
 
 }

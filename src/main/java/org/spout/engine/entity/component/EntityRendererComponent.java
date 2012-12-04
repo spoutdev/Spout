@@ -35,6 +35,7 @@ import org.spout.api.component.components.TransformComponent;
 import org.spout.api.math.Matrix;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
+import org.spout.api.render.effect.SnapshotEntity;
 import org.spout.engine.mesh.BaseMesh;
 
 public class EntityRendererComponent extends EntityComponent {
@@ -66,7 +67,7 @@ public class EntityRendererComponent extends EntityComponent {
 	public void render(Camera camera) {
 		ModelComponent model = getOwner().get(ModelComponent.class);
 
-		if(model == null)
+		if (model == null)
 			return;
 
 		BaseMesh m = models.get(model);
@@ -80,8 +81,12 @@ public class EntityRendererComponent extends EntityComponent {
 		mat.getShader().setUniform("View", camera.getView());
 		mat.getShader().setUniform("Projection", camera.getProjection());
 		mat.getShader().setUniform("Model", modelMatrix);
-
+		
+		SnapshotEntity snap = new SnapshotEntity(mat, getOwner());
+		
+		mat.preRenderEntity(snap);
 		m.render(mat);
+		mat.postRenderEntity(snap);
 
 		ClientTextModelComponent tmc = getOwner().get(ClientTextModelComponent.class);
 		if (tmc != null) {
