@@ -26,19 +26,12 @@
  */
 package org.spout.engine;
 
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.glClear;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.CodeSource;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -62,6 +55,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.PixelFormat;
+
 import org.spout.api.Client;
 import org.spout.api.FileSystem;
 import org.spout.api.Spout;
@@ -74,7 +68,6 @@ import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.component.components.CameraComponent;
 import org.spout.api.component.components.HitBlockComponent;
-import org.spout.api.component.components.ModelComponent;
 import org.spout.api.component.components.PredictableTransformComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
@@ -90,7 +83,6 @@ import org.spout.api.gui.ScreenStack;
 import org.spout.api.gui.Widget;
 import org.spout.api.input.Keyboard;
 import org.spout.api.math.MathHelper;
-import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.plugin.Platform;
@@ -101,6 +93,7 @@ import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMode;
+
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.batcher.SpriteBatch;
 import org.spout.engine.command.InputManagementCommands;
@@ -109,8 +102,8 @@ import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.entity.component.ClientTextModelComponent;
 import org.spout.engine.entity.component.EntityRendererComponent;
 import org.spout.engine.filesystem.ClientFileSystem;
-import org.spout.engine.input.SpoutInputManager;
 import org.spout.engine.input.SpoutInputConfiguration;
+import org.spout.engine.input.SpoutInputManager;
 import org.spout.engine.listener.SpoutClientListener;
 import org.spout.engine.listener.channel.SpoutClientConnectListener;
 import org.spout.engine.protocol.SpoutClientSession;
@@ -122,6 +115,10 @@ import org.spout.engine.util.MacOSXUtils;
 import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutClientWorld;
+
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.glClear;
 
 public class SpoutClient extends SpoutEngine implements Client {
 	private final SoundManager soundManager = new SpoutSoundManager();
@@ -146,14 +143,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 	// Gui
 	private SpriteBatch gui;
 	private ScreenStack screenStack;
-   	private ClientFont font;
+	private ClientFont font;
 	private boolean showDebugInfos = true;
-
 	// FPS counter
 	private int fps = 0;
 	private int frames = 0;
 	private long lastFrameTime = System.currentTimeMillis();
-
 	private ConcurrentLinkedQueue<Runnable> renderTaskQueue = new ConcurrentLinkedQueue<Runnable>();
 
 	public SpoutClient() {
@@ -198,7 +193,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		inputManager.bind(org.spout.api.input.Mouse.MOUSE_BUTTON0, "fire_1");
 		inputManager.bind(org.spout.api.input.Mouse.MOUSE_BUTTON1, "interact");
 		inputManager.bind(org.spout.api.input.Mouse.MOUSE_BUTTON2, "fire_2");
-
 	}
 
 	@Override
@@ -305,7 +299,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		if (activePlayer == null) {
 			return;
 		}
-		
+
 		inputManager.pollInput(activePlayer);
 
 		PlayerInputState inputState = activePlayer.input();
@@ -313,18 +307,24 @@ public class SpoutClient extends SpoutEngine implements Client {
 		ts.setRotation(MathHelper.rotation(inputState.pitch(), inputState.yaw(), ts.getRotation().getRoll()));
 
 		Point point = ts.getPosition();
-		if (inputState.getForward())
+		if (inputState.getForward()) {
 			point = point.subtract(ts.forwardVector().multiply(activeCamera.getSpeed()).multiply(dt));
-		if (inputState.getBackward())
+		}
+		if (inputState.getBackward()) {
 			point = point.add(ts.forwardVector().multiply(activeCamera.getSpeed()).multiply(dt));
-		if (inputState.getLeft())
+		}
+		if (inputState.getLeft()) {
 			point = point.subtract(ts.rightVector().multiply(activeCamera.getSpeed()).multiply(dt));
-		if (inputState.getRight())
+		}
+		if (inputState.getRight()) {
 			point = point.add(ts.rightVector().multiply(activeCamera.getSpeed()).multiply(dt));
-		if (inputState.getJump())
+		}
+		if (inputState.getJump()) {
 			point = point.add(ts.upVector().multiply(activeCamera.getSpeed()).multiply(dt));
-		if (inputState.getCrouch())
+		}
+		if (inputState.getCrouch()) {
 			point = point.subtract(ts.upVector().multiply(activeCamera.getSpeed()).multiply(dt));
+		}
 		ts.setPosition(point);
 
 		activePlayer.getTransform().setTransform(ts);
@@ -483,13 +483,13 @@ public class SpoutClient extends SpoutEngine implements Client {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glFrontFace(GL11.GL_CW);
 		GL11.glCullFace(GL11.GL_BACK);
-		
+
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glClearColor((135.f / 255.0f), 206.f / 255.f, 250.f / 255.f, 1);
 
 		//Init pool of BatchVertexRenderer
 		BatchVertexRenderer.initPool(GL11.GL_TRIANGLES, 10000);
-		
+
 		worldRenderer = new WorldRenderer(this);
 
 		gui = SpriteBatch.createSpriteBatch(getRenderMode(), resolution.getX(), resolution.getY());
@@ -504,18 +504,17 @@ public class SpoutClient extends SpoutEngine implements Client {
 		tmc.setSize(0.5f);
 		tmc.setTranslation(new Vector3(0, 3f, 0));
 		tmc.setFont(font);
-		
 
 		super.getDefaultWorld().spawnEntity(e);
 	}
 
-	public void updateRender(long limit){
+	public void updateRender(long limit) {
 		worldRenderer.update(limit);
 	}
-	
+
 	public void render(float dt) {
 
-		while(renderTaskQueue.peek() != null) {
+		while (renderTaskQueue.peek() != null) {
 			Runnable task = renderTaskQueue.poll();
 			task.run();
 		}
@@ -525,7 +524,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		doInput(dt);
 
 		for (Entity e : super.getDefaultWorld().getAll()) {
-			((PredictableTransformComponent)e.getTransform()).updateRender(dt);
+			((PredictableTransformComponent) e.getTransform()).updateRender(dt);
 		}
 
 		activeCamera.updateView();
@@ -535,7 +534,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		worldRenderer.render();
 
 		//TODO Remove this when we use SpoutClientWorld
-		SpoutSnapshotLock lock = (SpoutSnapshotLock)Spout.getEngine().getScheduler().getSnapshotLock();
+		SpoutSnapshotLock lock = (SpoutSnapshotLock) getScheduler().getSnapshotLock();
 		lock.coreReadLock("Render Thread - Render Entities");
 		for (Entity e : super.getDefaultWorld().getAll()) {
 			EntityRendererComponent r = e.get(EntityRendererComponent.class);
@@ -545,7 +544,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 		lock.coreReadUnlock("Render Thread - Render Entities");
 
-		if(wireframe) {
+		if (wireframe) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 		}
 		gui.begin();
@@ -557,10 +556,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "z: ", position.getZ()), font, -0.95f, 0.6f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "fps: ", fps), font, -0.95f, 0.5f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "batch: ", worldRenderer.getRended() + "/" + worldRenderer.getBatchWaiting()), font, -0.95f, 0.4f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "ocluded: ", (int)((float)worldRenderer.getOcluded()/worldRenderer.getRended() * 100) + "%"), font, -0.95f, 0.3f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "culled: ", (int)((float)worldRenderer.getCulled()/worldRenderer.getRended() * 100), "%"), font, -0.95f, 0.2f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Update: ", worldRenderer.minUpdate + " / " + worldRenderer.maxUpdate + " / " + (worldRenderer.sumUpdate / Math.max(1,worldRenderer.count))), font, -0.95f, 0.1f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Render: ", worldRenderer.minRender + " / " + worldRenderer.maxRender + " / " + (worldRenderer.sumRender / Math.max(1,worldRenderer.count))), font, -0.95f, 0.0f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "ocluded: ", (int) ((float) worldRenderer.getOcluded() / worldRenderer.getRended() * 100) + "%"), font, -0.95f, 0.3f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "culled: ", (int) ((float) worldRenderer.getCulled() / worldRenderer.getRended() * 100), "%"), font, -0.95f, 0.2f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Update: ", worldRenderer.minUpdate + " / " + worldRenderer.maxUpdate + " / " + (worldRenderer.sumUpdate / Math.max(1, worldRenderer.count))), font, -0.95f, 0.1f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Render: ", worldRenderer.minRender + " / " + worldRenderer.maxRender + " / " + (worldRenderer.sumRender / Math.max(1, worldRenderer.count))), font, -0.95f, 0.0f, 8f);
 		}
 		for (Screen screen : screenStack.getVisibleScreens()) {
 			for (Widget widget : screen.getWidgets()) {
@@ -568,11 +567,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 			}
 		}
 		gui.render();
-		if(wireframe) {
+		if (wireframe) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 		}
 
-		if (System.currentTimeMillis()-lastFrameTime>1000) {
+		if (System.currentTimeMillis() - lastFrameTime > 1000) {
 			lastFrameTime = System.currentTimeMillis();
 			fps = frames;
 			frames = 0;
@@ -602,7 +601,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			Display.setDisplayMode(new DisplayMode((int) resolution.getX(), (int) resolution.getY()));
 
 			//Override using ContextAttribs for some videocards that don't support ARB_CREATE_CONTEXT
-			if(ccoverride){
+			if (ccoverride) {
 				Display.create(new PixelFormat(8, 24, 0));
 				Display.setTitle("Spout Client");
 				return;
@@ -688,7 +687,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	public void toggleWireframe() {
-		if(wireframe) {
+		if (wireframe) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 			wireframe = false;
 		} else {
