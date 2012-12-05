@@ -85,6 +85,7 @@ import org.spout.api.input.Keyboard;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
+import org.spout.api.model.Model;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.protocol.CommonPipelineFactory;
@@ -523,15 +524,15 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		if (super.getDefaultWorld().getDataMap().get("Skydome") == null && super.getDefaultWorld().getSkydomeModel() != null) {
-			super.getDefaultWorld().getSkydomeModel().getRenderMaterial().getShader().setUniform("View", MathHelper.createIdentity());
-			super.getDefaultWorld().getSkydomeModel().getRenderMaterial().getShader().setUniform("Projection", getActiveCamera().getProjection());
-			BaseMesh skydomeMesh = (BaseMesh)super.getDefaultWorld().getSkydomeModel().getMesh();
+		Model skydome = (Model)super.getDefaultWorld().getDataMap().get("Skydome");
+		if (skydome != null) {
+			skydome.getRenderMaterial().getShader().setUniform("View", MathHelper.createIdentity());
+			skydome.getRenderMaterial().getShader().setUniform("Projection", getActiveCamera().getProjection());
+			BaseMesh skydomeMesh = (BaseMesh)skydome.getMesh();
 			if (!skydomeMesh.isBatched()) {
 				skydomeMesh.batch();
 			}
-			skydomeMesh.render(super.getDefaultWorld().getSkydomeModel().getRenderMaterial());
+			skydomeMesh.render(skydome.getRenderMaterial());
 		}
 		
 		doInput(dt);
