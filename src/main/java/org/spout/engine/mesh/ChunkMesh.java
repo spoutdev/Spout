@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
@@ -42,6 +43,7 @@ import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.mesh.MeshFace;
+import org.spout.api.model.mesh.OrientedMeshFace;
 import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotMesh;
@@ -54,7 +56,7 @@ import org.spout.engine.world.SpoutChunkSnapshotModel;
  */
 public class ChunkMesh{
 
-	public final static List<BlockFace> shouldRender = new ArrayList<BlockFace>(Arrays.asList(BlockFace.TOP,BlockFace.BOTTOM,BlockFace.NORTH,BlockFace.SOUTH,BlockFace.WEST,BlockFace.EAST));
+	//public final static BlockFace []shouldRender = new BlockFace[]{ BlockFace.TOP, BlockFace.BOTTOM, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST};
 
 	private HashMap<RenderMaterial, BatchVertex> meshs = new HashMap<RenderMaterial, BatchVertex>();
 	private boolean verticeGenerated = false;
@@ -140,14 +142,19 @@ public class ChunkMesh{
 			batch.colorBuffer.clear(batch.getVertexCount() * 4);
 
 			for(int i = 0; i < batch.vertexBuffer.size();){
-				Color color = generateLightOnVertices(chunkModelLight,batch.vertexBuffer.get(i++),batch.vertexBuffer.get(i++),batch.vertexBuffer.get(i++));
-				i++; //Ignore w
-				batch.addColor(color);
+				float x1 = batch.vertexBuffer.get(i++);
+				float y1 = batch.vertexBuffer.get(i++);
+				float z1 = batch.vertexBuffer.get(i++);
+				float w1 = batch.vertexBuffer.get(i++);
+
+				batch.addColor(generateLightOnVertices(chunkModelLight,x1, y1, z1));
 			}
 		}
 
 		lightGenerated = true;
 	}
+	
+	private static final Vector3 sunDirection = new Vector3(0.1, 1, 0.3).normalize();
 
 	/**
 	 * Compute the light for one vertex
@@ -167,30 +174,27 @@ public class ChunkMesh{
 			int count = 0;
 
 			//TODO : Make it use each sort of light if plugin can add others lights later
-
-			ChunkSnapshot chunk = chunkModel.getChunkFromBlock(xi, yi, zi);
-			light += chunk.getBlockLight(xi, yi, zi);
-			skylight += chunk.getBlockSkyLight(xi, yi, zi);
-			count++;
-
-			if(x == xi){
-				chunk = chunkModel.getChunkFromBlock(xi - 1, yi, zi);
-				light += chunk.getBlockLight(xi - 1, yi, zi);
-				skylight += chunk.getBlockSkyLight(xi - 1, yi, zi);
-				count++;
+			
+			int xs = (x == xi) ? (xi - 1) : xi;
+			int ys = (y == yi) ? (yi - 1) : yi;
+			int zs = (z == zi) ? (zi - 1) : zi;
+			
+			for (int xx = xs; xx <= xi; xx++) {
+				for (int yy = ys; yy <= yi; yy++) {
+					for (int zz = zs; zz <= zi; zz++) {
+						ChunkSnapshot chunk = null;
+						chunk = chunkModel.getChunkFromBlock(xx, yy, zz);
+						BlockMaterial m = chunk.getBlockMaterial(xx, yy, zz);
+						if (!m.isOpaque()) {
+							light += chunk.getBlockLight(xx, yy, zz);
+							skylight += chunk.getBlockSkyLight(xx, yy, zz);
+							count++;
+						}
+					}
+				}
 			}
-
-			if(y == yi){
-				chunk = chunkModel.getChunkFromBlock(xi, yi - 1, zi);
-				light += chunk.getBlockLight(xi, yi - 1, zi);
-				skylight += chunk.getBlockSkyLight(xi, yi - 1, zi);
-				count++;
-			}
-
-			if(z == zi){
-				chunk = chunkModel.getChunkFromBlock(xi, yi, zi - 1);
-				light += chunk.getBlockLight(xi, yi, zi - 1);
-				skylight += chunk.getBlockSkyLight(xi, yi, zi - 1);
+			
+			if (count == 0) {
 				count++;
 			}
 
@@ -198,7 +202,7 @@ public class ChunkMesh{
 			skylight /= count;
 			light /= 16;
 			skylight /= 16;
-
+			
 			//TODO : Maybe we should use two byte buffer to store light and let the shader use it as the shader want
 			//(we can give the sky color and light color with a render effect in Vanilla)
 
@@ -237,10 +241,10 @@ public class ChunkMesh{
 
 		Vector3 position = new Vector3(x, y, z);
 
-		boolean toRender[] = new boolean[shouldRender.size()];
+		boolean toRender[] = new boolean[OrientedMeshFace.shouldRender.length];
 		boolean fullyOccluded = true;
-		for(int i = 0; i < shouldRender.size(); i++){
-			BlockFace face = shouldRender.get(i);
+		for(int i = 0; i < OrientedMeshFace.shouldRender.length; i++){
+			BlockFace face = OrientedMeshFace.shouldRender[i];
 			Vector3 facePos = position.add(face.getOffset());
 			int x1 = facePos.getFloorX();
 			int y1 = facePos.getFloorY();

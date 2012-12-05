@@ -75,7 +75,7 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 						ar.add(new Vertex(verticies.get(pos - 1), normals.get(norm - 1)));
 
 					}
-					faces.add(new MeshFace(ar.get(0), ar.get(1), ar.get(2)));
+					faces.add(new MeshFace(ar.get(2), ar.get(1), ar.get(0)));
 					ar.clear();
 
 				} else if (sp[1].contains("/")) {
@@ -92,7 +92,7 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 						}
 
 					}
-					faces.add(new MeshFace(ar.get(0), ar.get(1), ar.get(2)));
+					faces.add(new MeshFace(ar.get(2), ar.get(1), ar.get(0)));
 					ar.clear();
 
 				} else {
@@ -104,7 +104,7 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 					Vertex p2 = new Vertex(verticies.get(face2));
 					Vertex p3 = new Vertex(verticies.get(face3));
 					
-					faces.add(new MeshFace(p1, p2, p3));
+					faces.add(new MeshFace(p3, p2, p1));
 
 				}
 

@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 import org.spout.api.Spout;
+import org.spout.api.model.animation.Bone;
 import org.spout.api.model.mesh.Mesh;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.resource.BasicResourceLoader;
@@ -40,7 +41,7 @@ import org.yaml.snakeyaml.Yaml;
 public class ModelLoader extends BasicResourceLoader<ClientModel> {
 	private static final String[] extensions = new String[]{ "spm" };
 	private static final TypeChecker<Map<? extends String, ? extends String>> checkerMapStringObject = TypeChecker.tMap(String.class, String.class);
-	
+
 	@Override
 	public String getProtocol() {
 		return "model";
@@ -64,8 +65,14 @@ public class ModelLoader extends BasicResourceLoader<ClientModel> {
 		Mesh mesh = (Mesh)Spout.getFilesystem().getResource(resourceProperties.get("Mesh"));
 		RenderMaterial material = (RenderMaterial)Spout.getFilesystem().getResource(resourceProperties.get("Material"));
 		
-		return new ClientModel(mesh, material);
+		Bone bone = null;
 		
+		if(resourceProperties.containsKey("Animation")){
+			bone = (Bone)Spout.getFilesystem().getResource(resourceProperties.get("Animation"));
+			bone.dumbBone("");
+		}
+
+		return new ClientModel(mesh, bone, material);
 	}
 
 }

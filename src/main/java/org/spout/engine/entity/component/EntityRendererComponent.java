@@ -26,20 +26,23 @@
  */
 package org.spout.engine.entity.component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.spout.api.component.components.EntityComponent;
 import org.spout.api.component.components.ModelComponent;
 import org.spout.api.component.components.TransformComponent;
 import org.spout.api.math.Matrix;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
-
-import org.spout.engine.batcher.PrimitiveBatch;
+import org.spout.api.render.effect.SnapshotEntity;
 import org.spout.engine.mesh.BaseMesh;
 
 public class EntityRendererComponent extends EntityComponent {
+
+	Map<ModelComponent,BaseMesh> models = new HashMap<ModelComponent, BaseMesh>();
 	ModelComponent model;
 	TransformComponent transform;
-	boolean dirty = true;
 
 	@Override
 	public void onAttached() {
@@ -48,31 +51,42 @@ public class EntityRendererComponent extends EntityComponent {
 		//batch = new PrimitiveBatch(); // cant create the batch before the context is created
 	}
 
+	public void update(){
+		//Generate renderer
+		ModelComponent model = getOwner().get(ModelComponent.class);
+
+		if(model == null)
+			return;
+
+		BaseMesh mesh = (BaseMesh) model.getModel().getMesh();
+		mesh.batch();
+
+		models.put(model, mesh);
+	}
+
 	public void render(Camera camera) {
-		if (model == null) {
-			model = getOwner().get(ModelComponent.class);
+		ModelComponent model = getOwner().get(ModelComponent.class);
+
+		if (model == null)
 			return;
-		}
 
-		if (model.getModel() == null) {
-			model.setModel("model://Spout/resources/fallbacks/fallback.spm");
+		BaseMesh m = models.get(model);
+
+		if (m == null) 
 			return;
-		}
 
-		BaseMesh m = (BaseMesh) model.getModel().getMesh();
-
-		if (dirty) {
-			m.batch();
-			dirty = false;
-		}
 		Matrix modelMatrix = transform.getTransformation();
 		RenderMaterial mat = model.getModel().getRenderMaterial();
 
 		mat.getShader().setUniform("View", camera.getView());
 		mat.getShader().setUniform("Projection", camera.getProjection());
 		mat.getShader().setUniform("Model", modelMatrix);
-
+		
+		SnapshotEntity snap = new SnapshotEntity(mat, getOwner());
+		
+		mat.preRenderEntity(snap);
 		m.render(mat);
+		mat.postRenderEntity(snap);
 
 		ClientTextModelComponent tmc = getOwner().get(ClientTextModelComponent.class);
 		if (tmc != null) {

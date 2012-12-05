@@ -36,6 +36,9 @@ import java.net.URISyntaxException;
 import java.security.CodeSource;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -71,6 +74,7 @@ import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.component.components.CameraComponent;
 import org.spout.api.component.components.HitBlockComponent;
+import org.spout.api.component.components.ModelComponent;
 import org.spout.api.component.components.PredictableTransformComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
@@ -225,8 +229,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			// TODO : Wait until the world is fully loaded
 		}
 		font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/resources/resources/fonts/ubuntu/Ubuntu-M.ttf");
-		Transform loc = new Transform(new Point(super.getDefaultWorld(), 50f, 30f, 50f), new Quaternion(0f, 0f, 0f, 0f), Vector3.ONE);
-		activePlayer = new SpoutClientPlayer("Spouty", loc, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
+		activePlayer = new SpoutClientPlayer("Spouty", super.getDefaultWorld().getSpawnPoint(), SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 		activeCamera = activePlayer.add(CameraComponent.class);
 		activePlayer.add(HitBlockComponent.class);
 		super.getDefaultWorld().spawnEntity(activePlayer);
@@ -476,6 +479,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glFrontFace(GL11.GL_CW);
+		GL11.glCullFace(GL11.GL_BACK);
+		
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glClearColor((135.f / 255.0f), 206.f / 255.f, 250.f / 255.f, 1);
 
@@ -489,13 +496,14 @@ public class SpoutClient extends SpoutEngine implements Client {
 		// Test
 		ClientEntityPrefab spoutyType = (ClientEntityPrefab) Spout.getFilesystem().getResource("entity://Spout/resources/resources/entities/Spouty/spouty.sep");
 
-		Entity e = spoutyType.createEntity(new Point(super.getDefaultWorld(),0,0,0));
+		Entity e = spoutyType.createEntity(super.getDefaultWorld().getSpawnPoint().getPosition());
 		e.setSavable(false); // To prevent entity duplication
 		ClientTextModelComponent tmc = e.add(ClientTextModelComponent.class);
 		tmc.setText(new ChatArguments(ChatStyle.BLUE, "Sp", ChatStyle.WHITE, "ou", ChatStyle.RED, "ty"));
 		tmc.setSize(0.5f);
 		tmc.setTranslation(new Vector3(0, 3f, 0));
 		tmc.setFont(font);
+		
 
 		super.getDefaultWorld().spawnEntity(e);
 	}
@@ -524,13 +532,14 @@ public class SpoutClient extends SpoutEngine implements Client {
 		Mouse.setGrabbed(screenStack.getVisibleScreens().getLast().grabsMouse());
 
 		worldRenderer.render();
-
+		
 		for (Entity e : super.getDefaultWorld().getAll()) {
 			EntityRendererComponent r = e.get(EntityRendererComponent.class);
 			if (r != null) {
 				r.render(activeCamera);
 			}
 		}
+		
 		if(wireframe) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 		}
