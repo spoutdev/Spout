@@ -48,7 +48,7 @@ public class PlayerInputState {
 		CROUCH,
 		SELECT_UP,
 		SELECT_DOWN,
-		FIRE_1,
+		LEFT_CLICK,
 		FIRE_2,
 		INTERACT;
 		private final short bitValue;
@@ -85,7 +85,7 @@ public class PlayerInputState {
 		userCommands |= (crouch ? Flags.CROUCH.getBitFlag() : 0);
 		userCommands |= (selectUp ? Flags.SELECT_UP.getBitFlag() : 0);
 		userCommands |= (selectDown ? Flags.SELECT_DOWN.getBitFlag() : 0);
-		userCommands |= (fire1 ? Flags.FIRE_1.getBitFlag() : 0);
+		userCommands |= (fire1 ? Flags.LEFT_CLICK.getBitFlag() : 0);
 		userCommands |= (fire2 ? Flags.FIRE_2.getBitFlag() : 0);
 		userCommands |= (interact ? Flags.INTERACT.getBitFlag() : 0);
 		this.userCommands = userCommands;
@@ -132,7 +132,7 @@ public class PlayerInputState {
 	}
 
 	public boolean getFire1() {
-		return Flags.FIRE_1.has(userCommands);
+		return Flags.LEFT_CLICK.has(userCommands);
 	}
 
 	public boolean getFire2() {
