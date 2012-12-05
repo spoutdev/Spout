@@ -524,7 +524,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		if(super.getDefaultWorld().getDataMap().get("Skydome") == null) {
+		/*if(super.getDefaultWorld().getDataMap().get("Skydome") == null) {
 			super.getDefaultWorld().getSkydomeModel().getRenderMaterial().getShader().setUniform("View", MathHelper.createIdentity());
 			super.getDefaultWorld().getSkydomeModel().getRenderMaterial().getShader().setUniform("Projection", getActiveCamera().getProjection());
 			BaseMesh skydomeMesh = (BaseMesh)super.getDefaultWorld().getSkydomeModel().getMesh();
@@ -532,7 +532,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 				skydomeMesh.batch();
 			}
 			skydomeMesh.render(super.getDefaultWorld().getSkydomeModel().getRenderMaterial());
-		}
+		}*/
 		
 		doInput(dt);
 
