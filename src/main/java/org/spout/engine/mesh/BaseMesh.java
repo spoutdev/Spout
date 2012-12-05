@@ -44,7 +44,7 @@ public class BaseMesh extends Resource implements Mesh, Iterable<MeshFace> {
 	ArrayList<MeshFace> faces;
 	boolean dirty = false;
 
-	Renderer renderer;
+	//Renderer renderer;
 	
 	
 	public BaseMesh(){
@@ -57,7 +57,7 @@ public class BaseMesh extends Resource implements Mesh, Iterable<MeshFace> {
 	}
 
 	protected void batch(Renderer batcher) {
-		for (MeshFace face : faces) {
+		/*for (MeshFace face : faces) {
 			for(Vertex vert : face){
 				if (vert.texCoord0!=null)
 					batcher.addTexCoord(vert.texCoord0);
@@ -67,29 +67,29 @@ public class BaseMesh extends Resource implements Mesh, Iterable<MeshFace> {
 					batcher.addColor(vert.color);
 				batcher.addVertex(vert.position);
 			}
-		}
+		}*/
 	}
 
 	public void batch(){
-		if (renderer == null)
+		/*if (renderer == null)
 			renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 		renderer.begin();
 		this.batch(renderer);
-		renderer.end();
+		renderer.end();*/
 	}
 	
 	public void render(RenderMaterial material){
-		if (renderer == null)
+		/*if (renderer == null)
 			throw new IllegalStateException("Cannot render without batching first!");
 		
 		SnapshotRender snapshotRender = new SnapshotRender(material);
 		material.preRender(snapshotRender);
 		renderer.render(material,snapshotRender);
-		material.postRender(snapshotRender);
+		material.postRender(snapshotRender);*/
 	}
 	
 	public boolean isBatched() {
-		return renderer != null;
+		return true;//renderer != null;
 	}
 	
 

@@ -26,6 +26,8 @@
  */
 package org.spout.engine.batcher;
 
+import gnu.trove.list.array.TFloatArrayList;
+
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,14 +43,14 @@ import org.spout.api.math.Matrix;
 import org.spout.api.math.Rectangle;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
-import org.spout.api.render.Renderer;
 import org.spout.api.render.effect.SnapshotRender;
 
 import org.spout.engine.renderer.BatchVertexRenderer;
+import org.spout.engine.renderer.BufferContainer;
 import org.spout.engine.resources.ClientFont;
 
 public class SpriteBatch {
-	Renderer renderer;
+	BatchVertexRenderer renderer;
 	ArrayList<RenderPart> sprites = new ArrayList<RenderPart>();
 	Matrix view;
 	Matrix projection;
@@ -76,36 +78,94 @@ public class SpriteBatch {
 	}
 
 	public void render() {
-		renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
-		renderer.begin();
+		if(sprites.isEmpty())
+			return;
+
+		BufferContainer container = new BufferContainer();
+
+		container.element = sprites.size() * 3 * 2;
+
+		TFloatArrayList vertexBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.VERTEX_LAYER);
+		TFloatArrayList colorBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.COLOR_LAYER);
+		TFloatArrayList textureBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.TEXTURE0_LAYER);
+
+		if(vertexBuffer==null){
+			vertexBuffer = new TFloatArrayList(sprites.size() * 4 * 4);
+			container.setBuffers(BatchVertexRenderer.VERTEX_LAYER, vertexBuffer);
+		}
+
+		if(colorBuffer==null){
+			colorBuffer = new TFloatArrayList(sprites.size() * 4 * 4);
+			container.setBuffers(BatchVertexRenderer.COLOR_LAYER, colorBuffer);
+		}
+
+		if(textureBuffer==null){
+			textureBuffer = new TFloatArrayList(sprites.size() * 4 * 2);
+			container.setBuffers(BatchVertexRenderer.TEXTURE0_LAYER, textureBuffer);
+		}
+
 		for (int i = 0; i < sprites.size(); i++) {
 			RenderPart rect = sprites.get(i);
+
+			for(int j = 0; j < 6; j++){
+				colorBuffer.add(rect.getColor().getRed() / 255f);
+				colorBuffer.add(rect.getColor().getGreen() / 255f);
+				colorBuffer.add(rect.getColor().getBlue() / 255f);
+				colorBuffer.add(rect.getColor().getAlpha() / 255f);
+			}
+
+			//Triangle 1
 			
-			renderer.addVertex(rect.getSprite().getX() + rect.getSprite().getWidth(), rect.getSprite().getY());
-			renderer.addColor(rect.getColor());
-			renderer.addTexCoord(rect.getSource().getX() + rect.getSource().getWidth(), rect.getSource().getY() + rect.getSource().getHeight());
+			vertexBuffer.add(rect.getSprite().getX() + rect.getSprite().getWidth());
+			vertexBuffer.add(rect.getSprite().getY());
+			vertexBuffer.add(0f);
+			vertexBuffer.add(1f);
+			textureBuffer.add(rect.getSource().getX() + rect.getSource().getWidth());
+			textureBuffer.add(rect.getSource().getY() + rect.getSource().getHeight());
+
+			vertexBuffer.add(rect.getSprite().getX());
+			vertexBuffer.add(rect.getSprite().getY());
+			vertexBuffer.add(0f);
+			vertexBuffer.add(1f);
+			textureBuffer.add(rect.getSource().getX());
+			textureBuffer.add(rect.getSource().getY() + rect.getSource().getHeight());
+
+			vertexBuffer.add(rect.getSprite().getX());
+			vertexBuffer.add(rect.getSprite().getY() + rect.getSprite().getHeight());
+			vertexBuffer.add(0f);
+			vertexBuffer.add(1f);
+			textureBuffer.add(rect.getSource().getX());
+			textureBuffer.add(rect.getSource().getY());
+
+			//Triangle 2
 			
-			renderer.addVertex(rect.getSprite().getX(), rect.getSprite().getY());
-			renderer.addColor(rect.getColor());
-			renderer.addTexCoord(rect.getSource().getX(), rect.getSource().getY() + rect.getSource().getHeight());
+			vertexBuffer.add(rect.getSprite().getX() + rect.getSprite().getWidth());
+			vertexBuffer.add(rect.getSprite().getY() + rect.getSprite().getHeight());
+			vertexBuffer.add(0f);
+			vertexBuffer.add(1f);
+			textureBuffer.add(rect.getSource().getX() + rect.getSource().getWidth());
+			textureBuffer.add(rect.getSource().getY());
 
-			renderer.addVertex(rect.getSprite().getX(), rect.getSprite().getY() + rect.getSprite().getHeight());
-			renderer.addColor(rect.getColor());
-			renderer.addTexCoord(rect.getSource().getX(), rect.getSource().getY());
+			vertexBuffer.add(rect.getSprite().getX() + rect.getSprite().getWidth());
+			vertexBuffer.add(rect.getSprite().getY());
+			vertexBuffer.add(0f);
+			vertexBuffer.add(1f);
+			textureBuffer.add(rect.getSource().getX() + rect.getSource().getWidth());
+			textureBuffer.add(rect.getSource().getY() + rect.getSource().getHeight());
 
-			
-			renderer.addVertex(rect.getSprite().getX() + rect.getSprite().getWidth(), rect.getSprite().getY() + rect.getSprite().getHeight());
-			renderer.addColor(rect.getColor());
-			renderer.addTexCoord(rect.getSource().getX() + rect.getSource().getWidth(), rect.getSource().getY());
-
-			renderer.addVertex(rect.getSprite().getX() + rect.getSprite().getWidth(), rect.getSprite().getY());
-			renderer.addColor(rect.getColor());
-			renderer.addTexCoord(rect.getSource().getX() + rect.getSource().getWidth(), rect.getSource().getY() + rect.getSource().getHeight());
-
-			renderer.addVertex(rect.getSprite().getX(), rect.getSprite().getY() + rect.getSprite().getHeight());
-			renderer.addColor(rect.getColor());
-			renderer.addTexCoord(rect.getSource().getX(), rect.getSource().getY());
+			vertexBuffer.add(rect.getSprite().getX());
+			vertexBuffer.add(rect.getSprite().getY() + rect.getSprite().getHeight());
+			vertexBuffer.add(0f);
+			vertexBuffer.add(1f);
+			textureBuffer.add(rect.getSource().getX());
+			textureBuffer.add(rect.getSource().getY());
 		}
+
+		renderer = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
+		renderer.begin();
+
+		renderer.setBufferContainer(container);
+
 		renderer.end();
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 
@@ -115,12 +175,12 @@ public class SpriteBatch {
 			rect.getRenderMaterial().getShader().setUniform("View", this.view);
 			rect.getRenderMaterial().getShader().setUniform("Projection", this.projection);
 			rect.getRenderMaterial().getShader().setUniform("Model", this.view); //View is always an identity matrix.
-			
+
 			SnapshotRender snapshotRender = new SnapshotRender(rect.getRenderMaterial());
 			rect.getRenderMaterial().preRender(snapshotRender);
 			renderer.render(rect.getRenderMaterial(), (i * 6), 6);
 			rect.getRenderMaterial().postRender(snapshotRender);
-			
+
 		}
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		((BatchVertexRenderer)renderer).release();

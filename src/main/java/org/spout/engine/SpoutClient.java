@@ -96,7 +96,6 @@ import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMode;
 
 import org.spout.engine.audio.SpoutSoundManager;
-import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.batcher.SpriteBatch;
 import org.spout.engine.command.InputManagementCommands;
 import org.spout.engine.entity.SpoutClientPlayer;

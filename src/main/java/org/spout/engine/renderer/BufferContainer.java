@@ -24,68 +24,21 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.renderer.vertexbuffer;
+package org.spout.engine.renderer;
 
-import java.nio.FloatBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
+public class BufferContainer {
 
-public class VertexBufferImpl {	
-	int usage = GL15.GL_STATIC_DRAW;
-	
-	String elementName;
-	int type;
-	
-	int vboId = -1;
-	
-	int size;
-	
-	int elements;
-	int layout;
-	
-	public VertexBufferImpl(String name, int elements, int layout){
-		elementName = name;
-		this.elements = elements;
-		this.layout = layout;
+	public int element = 0;
+	final Map<Integer,Object> buffers = new HashMap<Integer,Object>();
+
+	public Map<Integer,Object> getBuffers(){
+		return buffers;
 	}
-	
-	public void flush(FloatBuffer buffer){
-		if(vboId == -1) vboId = GL15.glGenBuffers();
-		
-		
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, usage);				
-		
+
+	public void setBuffers(int layout, Object buffer){
+		buffers.put(layout, buffer);
 	}
-	
-	public void bind(){
-		if(vboId == -1) throw new IllegalStateException("Cannot bind a vertex buffer without data!");
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
-		GL20.glVertexAttribPointer(getLayout(), getElements(), GL11.GL_FLOAT, false, 0, 0);
-	}
-	 
-	
-	
-	public String getName(){
-		return elementName;		
-	}
-	
-	public int getElements() {
-		return elements;
-	}
-	
-	public int getLayout() {
-		return layout;
-	}
-	
-	public void dispose() {
-		if( vboId != -1 ) GL15.glDeleteBuffers(vboId);
-	}
-	
-	public void finalize() {
-		dispose();
-	}
-	
 }
