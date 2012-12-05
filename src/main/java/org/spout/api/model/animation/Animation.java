@@ -26,36 +26,35 @@
  */
 package org.spout.api.model.animation;
 
-import org.spout.api.math.Vector3;
+public class Animation {
 
-public class BoneTransform {
+	private String id;
+	private BoneTransform []transforms;
 
-	private Vector3 head;
-	private Vector3 tail;
-
-	public BoneTransform(Vector3 head, Vector3 tail){
-		this.setHead(head);
-		this.setTail(tail);
+	public BoneTransform [] getTransforms() {
+		return transforms;
 	}
 
-	public Vector3 getHead() {
-		return head;
+	public void setTransforms(BoneTransform [] transforms) {
+		this.transforms = transforms;
 	}
 
-	public void setHead(Vector3 head) {
-		this.head = head;
+	public String getId() {
+		return id;
 	}
 
-	public Vector3 getTail() {
-		return tail;
+	public void setId(String id2) {
+		this.id = id2;
 	}
 
-	public void setTail(Vector3 tail) {
-		this.tail = tail;
+	public void dumbAnimation(String str) {
+		System.out.println(str + "Animation : " + id);
+		
+		int i = 0;
+		for(BoneTransform bt : transforms){
+			System.out.println(str + "  " + i + " : " + bt.toString());
+			i++;
+		}
 	}
 
-	public String toString(){
-		return "Head : " + head.getX() + " / " + head.getY() + " / " + head.getZ() +
-				" Tail " + tail.getX() + " / " + tail.getY() + " / " + tail.getZ();
-	}
 }

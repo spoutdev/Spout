@@ -24,38 +24,25 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.model.animation;
+package org.spout.api.render.effect;
 
-import org.spout.api.math.Vector3;
+import org.spout.api.entity.Entity;
+import org.spout.api.render.RenderMaterial;
 
-public class BoneTransform {
-
-	private Vector3 head;
-	private Vector3 tail;
-
-	public BoneTransform(Vector3 head, Vector3 tail){
-		this.setHead(head);
-		this.setTail(tail);
+public class SnapshotEntity {
+	private final RenderMaterial material;
+	private final Entity entity;
+	
+	public SnapshotEntity(RenderMaterial material, Entity entity) {
+		this.material = material;
+		this.entity = entity;
 	}
-
-	public Vector3 getHead() {
-		return head;
+	
+	public Entity getEntity() {
+		return entity;
 	}
-
-	public void setHead(Vector3 head) {
-		this.head = head;
-	}
-
-	public Vector3 getTail() {
-		return tail;
-	}
-
-	public void setTail(Vector3 tail) {
-		this.tail = tail;
-	}
-
-	public String toString(){
-		return "Head : " + head.getX() + " / " + head.getY() + " / " + head.getZ() +
-				" Tail " + tail.getX() + " / " + tail.getY() + " / " + tail.getZ();
+	
+	public RenderMaterial getMaterial() {
+		return material;
 	}
 }

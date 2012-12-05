@@ -26,14 +26,16 @@
  */
 package org.spout.api.model;
 
+import org.spout.api.model.animation.Bone;
 import org.spout.api.model.mesh.Mesh;
 import org.spout.api.render.RenderMaterial;
 
 
 public interface Model {
-	
-	
+
 	public Mesh getMesh();
-	
+
 	public RenderMaterial getRenderMaterial();
+
+	public Bone getBone();
 }

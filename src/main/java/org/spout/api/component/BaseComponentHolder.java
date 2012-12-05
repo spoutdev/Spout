@@ -28,7 +28,6 @@ package org.spout.api.component;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.logging.Level;
 
@@ -44,9 +43,9 @@ public class BaseComponentHolder implements ComponentHolder {
 	 * Map of class name, component
 	 */
 	private final BiMap<Class<? extends Component>, Component> components = HashBiMap.create();
-
+	private final DatatableComponent data;
 	public BaseComponentHolder() {
-		add(DatatableComponent.class);
+		data = add(DatatableComponent.class);
 	}
 
 	/**
@@ -55,9 +54,11 @@ public class BaseComponentHolder implements ComponentHolder {
 	 */
 	protected void add(Class<? extends Component>... components) {
 		HashSet<Component> added = new HashSet<Component>();
-		for (Class<? extends Component> type : components) {
-			if (!this.components.containsKey(type)) {
-				added.add(add(type, false));
+		synchronized(components) {
+			for (Class<? extends Component> type : components) {
+				if (!this.components.containsKey(type)) {
+					added.add(add(type, false));
+				}
 			}
 		}
 		for (Component type : added) {
@@ -93,58 +94,62 @@ public class BaseComponentHolder implements ComponentHolder {
 			return null;
 		}
 
-		T component = (T) components.get(key);
-
-		if (component != null) {
-			return component;
-		}
-
-		try {
-			component = (T) type.newInstance();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-
-		if (component != null) {
+		synchronized(components) {
+			T component = (T) components.get(key);
+	
+			if (component != null) {
+				return component;
+			}
+	
 			try {
-				if (component.attachTo(this)) {
-					components.put(key, component);
-					if (attach) {
-						try {
-							component.onAttached();
-						} catch (Exception e) {
-							// Remove the component from the component map if onAttached can't be
-							// called, pass exception to next catch block.
-							components.remove(key);
-							throw e;
+				component = (T) type.newInstance();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+	
+			if (component != null) {
+				try {
+					if (component.attachTo(this)) {
+						components.put(key, component);
+						if (attach) {
+							try {
+								component.onAttached();
+							} catch (Exception e) {
+								// Remove the component from the component map if onAttached can't be
+								// called, pass exception to next catch block.
+								components.remove(key);
+								throw e;
+							}
 						}
 					}
+				} catch (Exception e) {
+					Spout.getEngine().getLogger().log(Level.SEVERE, "Error while attaching component " + type + ": ", e);
 				}
-			} catch (Exception e) {
-				Spout.getEngine().getLogger().log(Level.SEVERE, "Error while attaching component " + type + ": ", e);
 			}
+			return component;
 		}
-		return component;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Component> T detach(Class<? extends Component> type) {
 		Preconditions.checkNotNull(type);
-		T component = (T) get(type);
-
-		if (component != null && component.isDetachable()) {
-			components.inverse().remove(component);
-			try {
-				component.onDetached();
-			} catch (Exception e) {
-				Spout.getEngine().getLogger().log(Level.SEVERE, "Error detaching component " + type + " from holder: ", e);
+		synchronized(components) {
+			T component = (T) get(type);
+	
+			if (component != null && component.isDetachable()) {
+				components.inverse().remove(component);
+				try {
+					component.onDetached();
+				} catch (Exception e) {
+					Spout.getEngine().getLogger().log(Level.SEVERE, "Error detaching component " + type + " from holder: ", e);
+				}
 			}
+	
+			return component;
 		}
-
-		return component;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -166,7 +171,9 @@ public class BaseComponentHolder implements ComponentHolder {
 	@Override
 	public <T extends Component> T getExact(Class<T> type) {
 		Preconditions.checkNotNull(type);
-		return type != null ? (T) components.get(type) : null;
+		synchronized(components) {
+			return (T) components.get(type);
+		}
 	}
 
 	@Override
@@ -181,20 +188,24 @@ public class BaseComponentHolder implements ComponentHolder {
 
 	@Override
 	public Collection<Component> values() {
-		return Collections.unmodifiableList(new ArrayList<Component>(components.values()));
+		synchronized(components) {
+			return new ArrayList<Component>(components.values());
+		}
 	}
 
 	@Override
 	public DatatableComponent getData() {
-		return get(DatatableComponent.class);
+		return data;
 	}
 
 	@SuppressWarnings("unchecked")
 	private <T extends Component> T findComponent(Class<T> type) {
 		Preconditions.checkNotNull(type);
-		for (Component component : values()) {
-			if (type.isAssignableFrom(component.getClass())) {
-				return (T) component;
+		synchronized(components) {
+			for (Component component : values()) {
+				if (type.isAssignableFrom(component.getClass())) {
+					return (T) component;
+				}
 			}
 		}
 
