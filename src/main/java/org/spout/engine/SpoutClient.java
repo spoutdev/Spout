@@ -596,6 +596,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return resolution;
 	}
 
+	@Override
+	public float getAspectRatio() {
+		return aspectRatio;
+	}
+
 	private void createWindow() {
 		try {
 			Display.setDisplayMode(new DisplayMode((int) resolution.getX(), (int) resolution.getY()));
