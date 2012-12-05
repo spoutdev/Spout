@@ -52,6 +52,8 @@ import org.spout.api.util.flag.Flag;
 import org.spout.api.util.flag.FlagSingle;
 
 public abstract class Material extends MaterialRegistry implements MaterialSource {
+	private static final String DefaultModel = "model://Spout/resources/resources/models/unknownblock.spm";
+	
 	private final short id;
 	private final short data;
 	private final String name;
@@ -86,7 +88,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.root = this;
 		if(Spout.getEngine().getPlatform() == Platform.CLIENT)
 			if (model == null) {
-				this.model = (Model) Spout.getEngine().getFilesystem().getResource("model://Spout/resources/fallbacks/fallback.spm");
+				this.model = (Model) Spout.getEngine().getFilesystem().getResource(DefaultModel);
 			} else {
 				this.model = (Model) Spout.getEngine().getFilesystem().getResource(model);
 			}
@@ -111,7 +113,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * @param name of the material
 	 */
 	public Material(short dataMask, String name) {
-		this(dataMask, name, "model://Spout/resources/fallbacks/fallback.spm");		
+		this(dataMask, name, DefaultModel);		
 	}
 
 	/**
@@ -144,7 +146,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.root = parent.getRoot();
 		if(Spout.getEngine().getPlatform() == Platform.CLIENT)
 			if (model == null) {
-				this.model = (Model) Spout.getEngine().getFilesystem().getResource("model://Spout/resources/fallbacks/fallback.spm");
+				this.model = (Model) Spout.getEngine().getFilesystem().getResource(DefaultModel);
 			} else {
 				this.model = (Model) Spout.getEngine().getFilesystem().getResource(model);
 			}
@@ -168,7 +170,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.dataMask = 0;
 		this.root = this;
 		if(Spout.getEngine().getPlatform() == Platform.CLIENT)
-			this.model = (Model) Spout.getEngine().getFilesystem().getResource("model://Spout/resources/fallbacks/fallback.spm");
+			this.model = (Model) Spout.getEngine().getFilesystem().getResource(DefaultModel);
 		else
 			this.model = null;
 	}

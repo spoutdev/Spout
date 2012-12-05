@@ -48,6 +48,7 @@ public abstract class BasicResourceLoader<E extends Resource> implements Resourc
 		} catch (IOException e) {			
 			e.printStackTrace();
 		}
+		r.path = resource;
 		return r;
 	}
 }

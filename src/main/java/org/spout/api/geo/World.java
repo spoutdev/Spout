@@ -45,6 +45,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.model.Model;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.Named;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
@@ -520,4 +521,8 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 	 * @param save
 	 */
 	public void unload(boolean save);
+	
+	public Model getSkydomeModel();
+	
+	public void setSkydomeModel(Model model);
 }

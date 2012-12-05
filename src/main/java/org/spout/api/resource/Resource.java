@@ -26,12 +26,34 @@
  */
 package org.spout.api.resource;
 
+import java.io.Serializable;
 import java.net.URI;
 
-public class Resource {
-	URI path; //TODO set this
+import org.spout.api.Spout;
+import org.spout.api.util.config.serialization.GenericType;
+import org.spout.api.util.config.serialization.Serializer;
+
+public class Resource extends Serializer {
+	protected URI path; //TODO set this
 	public URI getPath() {
 		return path;
+	}
+	
+	@Override
+	protected Object handleSerialize(GenericType type, Object value) {
+		return path.toString();
+	}
+	@Override
+	protected Object handleDeserialize(GenericType type, Object value) {
+		return Spout.getFilesystem().getResource((String)value);
+	}
+	@Override
+	public boolean isApplicable(GenericType type) {
+		return Resource.class.isAssignableFrom(type.getMainType());
+	}
+	@Override
+	protected int getParametersRequired() {
+		return 0;
 	}
 	
 	
