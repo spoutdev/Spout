@@ -24,22 +24,24 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.renderer;
+package org.spout.engine.renderer.vertexbuffer;
 
-import org.spout.api.render.RenderMaterial;
+import java.nio.Buffer;
 
-public class GLES20BatchVertexRenderer extends BatchVertexRenderer {
-	public GLES20BatchVertexRenderer(int mode) {
-		super(mode);
-	}
+public interface VertexBuffer {
 
-	@Override
-	protected void doFlush() {
+	public void flush(Buffer buffer);
 
-	}
+	public void bind();
 
-	@Override
-	protected void doRender(RenderMaterial material, int startVert, int endVert) {
+	public String getName();
 
-	}
+	public int getElements();
+
+	public int getLayout();
+
+	public void dispose();
+
+	public void finalize();
+
 }

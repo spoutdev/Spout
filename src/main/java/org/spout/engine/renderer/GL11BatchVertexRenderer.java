@@ -26,14 +26,13 @@
  */
 package org.spout.engine.renderer;
 
-import java.util.List;
+import java.nio.Buffer;
+import java.nio.FloatBuffer;
+import java.util.Map.Entry;
 
 import org.lwjgl.opengl.GL11;
-
 import org.spout.api.render.RenderMaterial;
-import org.spout.api.render.Renderer;
-import org.spout.api.render.effect.SnapshotRender;
-//TODO update this to work better
+
 public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 	int displayList;
 
@@ -45,29 +44,39 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 	@Override
 	protected void doFlush() {
 		GL11.glNewList(displayList, GL11.GL_COMPILE);
-		
+
 		GL11.glBegin(renderMode);
-		
-		for (int i=0 ; i < numVertices ; i++) {
-			int index = i*4;
-			
-			if (useColors) {
-				GL11.glColor4f(colorBuffer.get(index), colorBuffer.get(index+1), colorBuffer.get(index+2), colorBuffer.get(index+3));
+
+		for(Entry<Integer, Buffer> entry : buffers.entrySet()){
+			int layout = entry.getKey();
+			FloatBuffer buffer = (FloatBuffer) entry.getValue();
+
+			switch (layout) {
+				case BatchVertexRenderer.VERTEX_LAYER:
+					while(buffer.position() < buffer.limit())
+						GL11.glVertex4f(buffer.get(),buffer.get(),buffer.get(),buffer.get());
+					break;
+				case BatchVertexRenderer.COLOR_LAYER:
+					while(buffer.position() < buffer.limit())
+						GL11.glColor4f(buffer.get(),buffer.get(),buffer.get(),buffer.get());
+					break;
+				case BatchVertexRenderer.NORMAL_LAYER:
+					while(buffer.position() < buffer.limit())
+						GL11.glNormal3f(buffer.get(),buffer.get(),buffer.get());
+					break;
+				case BatchVertexRenderer.TEXTURE0_LAYER:
+					while(buffer.position() < buffer.limit())
+						GL11.glTexCoord2f(buffer.get(),buffer.get());
+					break;
+				case BatchVertexRenderer.TEXTURE1_LAYER:
+					break;
+				default:
+					break;
 			}
-			
-			if (useNormals) {
-				GL11.glNormal3f(normalBuffer.get(index), normalBuffer.get(index+1), normalBuffer.get(index+2));
-			}
-			
-			if (useTextures) {
-				GL11.glTexCoord2f(uvBuffer.get(i*2), uvBuffer.get(i*2+1));
-			}
-			
-			GL11.glVertex4f(vertexBuffer.get(index), vertexBuffer.get(index+1), vertexBuffer.get(index+2), vertexBuffer.get(index+3));
 		}
-		
+
 		GL11.glEnd();
-		
+
 		GL11.glEndList();
 	}
 
@@ -76,27 +85,9 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 		material.assign();
 		GL11.glCallList(displayList);
 	}
-	
+
 	@Override
 	public void finalize() {
-		 GL11.glDeleteLists(displayList, 1);
-	}
-
-	@Override
-	public void doMerge(List<Renderer> renderers) {
-		numVertices = 0;
-		GL11.glNewList(displayList, GL11.GL_COMPILE);
-
-		for(Renderer render : renderers){
-			numVertices += ((GL11BatchVertexRenderer)render).numVertices;
-			GL11.glCallList(((GL11BatchVertexRenderer)render).displayList);
-		}
-
-		GL11.glEndList();
-	}
-
-	@Override
-	public void render(RenderMaterial material, SnapshotRender snapshotRender) {
-		render(material);
+		GL11.glDeleteLists(displayList, 1);
 	}
 }

@@ -45,17 +45,19 @@ public class BoneLoader extends BasicResourceLoader<Bone> {
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
 
 	private static Bone loadObj(InputStream stream) {
-		final Yaml yaml = new Yaml();
+		/*final Yaml yaml = new Yaml();
 		final Map<? extends String, ?> resourceProperties = checkerMapStringObject.check(yaml.load(stream));
 
 		String root = resourceProperties.keySet().iterator().next();
 
 		Map<? extends String, ?> node = (Map<? extends String, ?>) resourceProperties.get(root);
 
-		return loadBone(root, null, node);
+		return loadBone(root, null, node);*/
+		
+		return null;
 	}
 
-	private static Bone loadBone(String name, Bone parent, Map<? extends String, ?> keymap){
+	/*private static Bone loadBone(String name, Bone parent, Map<? extends String, ?> keymap){
 		Map<String, Animation> animations = loadAnimations((Map<? extends Integer, Map<? extends String, ?>>) keymap.get("anim"));
 
 		Bone bone = new Bone(name, parent, animations);
@@ -127,7 +129,7 @@ public class BoneLoader extends BasicResourceLoader<Bone> {
 				Double.parseDouble(split[0]),
 				Double.parseDouble(split[1]),
 				Double.parseDouble(split[2]));
-	}
+	}*/
 
 	@Override
 	public String getFallbackResourceName() {

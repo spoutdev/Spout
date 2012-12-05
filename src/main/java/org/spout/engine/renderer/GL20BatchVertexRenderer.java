@@ -28,82 +28,50 @@ package org.spout.engine.renderer;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 
+import java.nio.Buffer;
 import java.nio.FloatBuffer;
-import java.util.List;
+import java.util.Map.Entry;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.spout.api.render.RenderMaterial;
-import org.spout.api.render.Renderer;
-import org.spout.api.render.effect.SnapshotRender;
-import org.spout.engine.renderer.vertexbuffer.VertexBufferImpl;
+import org.spout.engine.renderer.vertexbuffer.GLFloatBuffer;
 
 public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 	final int SIZE_FLOAT = 4;
 	int vbos = -1;
 
-	TIntObjectHashMap<VertexBufferImpl > vertexBuffers = new TIntObjectHashMap<VertexBufferImpl>();
-	
-	
+	TIntObjectHashMap<GLFloatBuffer > vertexBuffers = new TIntObjectHashMap<GLFloatBuffer>();
+
+
 	/**
 	 * Batch Renderer using OpenGL 2.0 mode.
 	 * @param renderMode Mode to render in
 	 */
 	public GL20BatchVertexRenderer(int renderMode) {
 		super(renderMode);
-		
-		vertexBuffers.put(0, new VertexBufferImpl("vPosition", 4, 0));
+
+		//vertexBuffers.put(0, new GLFloatBuffer("vPosition", 4, 0));
 	}
 
 	@Override
 	protected void doFlush() {
-		
-		FloatBuffer vBuffer = BufferUtils.createFloatBuffer(vertexBuffer.size());
-		vBuffer.clear();
-		vBuffer.put(vertexBuffer.toArray());
-		vBuffer.flip();
-		
-		vertexBuffers.get(0).flush(vBuffer);
-		
-		
-		if (useColors) {
-			if(vertexBuffers.get(1) == null) {
-				vertexBuffers.put(1, new VertexBufferImpl("vColor", 4, 1));
+		for(Entry<Integer, Buffer> entry : buffers.entrySet()){
+			int layout = entry.getKey();
+			Buffer buffer = entry.getValue();
+
+			if(buffer instanceof FloatBuffer){
+				GLFloatBuffer vertexBuffer = vertexBuffers.get(layout);
+
+				if(vertexBuffer == null) {
+					vertexBuffer = new GLFloatBuffer("uselessname", 4, layout);
+					vertexBuffers.put(layout, vertexBuffer);
+				}
+
+				vertexBuffer.flush((FloatBuffer)buffer);
+			}else{
+				throw new IllegalStateException("Buffer different of FloatBuffer not yet supported");	
 			}
-			
-			vBuffer.clear();
-			vBuffer.put(colorBuffer.toArray());
-			vBuffer.flip();
-			
-			vertexBuffers.get(1).flush(vBuffer);
-			
-			
-		}
-		if (useNormals) {
-		
-			if(vertexBuffers.get(2) == null) {
-				vertexBuffers.put(2, new VertexBufferImpl("vNormal", 4, 2));
-			}
-			
-			vBuffer.clear();
-			vBuffer.put(normalBuffer.toArray());
-			vBuffer.flip();
-			
-			vertexBuffers.get(2).flush(vBuffer);
-		}
-		if (useTextures) {
-			
-			if(vertexBuffers.get(3) == null) {
-				vertexBuffers.put(3, new VertexBufferImpl("vTexCoord", 2, 3));
-			}
-			
-			vBuffer = BufferUtils.createFloatBuffer(uvBuffer.size());
-			vBuffer.clear();
-			vBuffer.put(uvBuffer.toArray());
-			vBuffer.flip();
-			
-			vertexBuffers.get(3).flush(vBuffer);
 		}
 	}
 
@@ -113,41 +81,29 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 	@Override
 	public void doRender(RenderMaterial material, int startVert, int endVert) {
 		material.assign();
-		
-		for(VertexBufferImpl vb : vertexBuffers.valueCollection()){
-			vb.bind();
-			GL20.glEnableVertexAttribArray(vb.getLayout());
+
+		for(GLFloatBuffer glBuffer : vertexBuffers.valueCollection()){
+			glBuffer.bind();
+			GL20.glEnableVertexAttribArray(glBuffer.getLayout());
 			//GL20.glVertexAttribPointer(vb.getLayout(), vb.getElements(), GL11.GL_FLOAT, false, 0, 0);
 			//material.getShader().enableAttribute(vb.getName(), vb.getElements(), GL11.GL_FLOAT, 0, 0, vb.getLayout());
 		}
-	
+
 		GL11.glDrawArrays(renderMode, startVert, endVert);
-		
-		for(VertexBufferImpl vb : vertexBuffers.valueCollection()){			
-			GL20.glDisableVertexAttribArray(vb.getLayout());		
+
+		for(GLFloatBuffer glBuffer : vertexBuffers.valueCollection()){			
+			GL20.glDisableVertexAttribArray(glBuffer.getLayout());		
 		}
-		
+
 	}
-	
+
 	private void dispose() {
-		for(VertexBufferImpl vb : vertexBuffers.valueCollection()){
-			vb.dispose();
+		for(GLFloatBuffer glBuffer : vertexBuffers.valueCollection()){
+			glBuffer.dispose();
 		}
 	}
-	
+
 	public void finalize() {
 		dispose();
-	}
-
-	@Override
-	public void doMerge(List<Renderer> renderers) {
-		// TODO : To implement
-		
-	}
-
-	@Override
-	public void render(RenderMaterial material, SnapshotRender snapshotRender) {
-		render(material);
-		//TODO : Apply snapshotRender
 	}
 }

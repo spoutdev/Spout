@@ -67,10 +67,10 @@ public class ModelLoader extends BasicResourceLoader<ClientModel> {
 		
 		Bone bone = null;
 		
-		if(resourceProperties.containsKey("Animation")){
+		/*if(resourceProperties.containsKey("Animation")){
 			bone = (Bone)Spout.getFilesystem().getResource(resourceProperties.get("Animation"));
 			bone.dumbBone("");
-		}
+		}*/
 
 		return new ClientModel(mesh, bone, material);
 	}

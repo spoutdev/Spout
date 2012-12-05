@@ -109,9 +109,9 @@ public class WorldRenderer {
 		private ChunkMesh chunkMesh = null;
 		private World world = null;
 
-		private Iterator<Entry<RenderMaterial, BatchVertex>> it = null;
+		private Iterator<Entry<RenderMaterial, BufferContainer>> it = null;
 
-		private Entry<RenderMaterial, BatchVertex> data;
+		private Entry<RenderMaterial, BufferContainer> data;
 		private RenderMaterial material;
 
 		public void run(final long limit) {
@@ -169,7 +169,7 @@ public class WorldRenderer {
 			}
 		}
 
-		private void handle(BatchVertex batchVertex, long limit){
+		private void handle(BufferContainer batchVertex, long limit){
 			ChunkMeshBatchAggregator chunkMeshBatch = getBatchAggregator(chunkMesh.getChunkX(), chunkMesh.getChunkY(), chunkMesh.getChunkZ(), material);
 
 			if(chunkMeshBatch==null){

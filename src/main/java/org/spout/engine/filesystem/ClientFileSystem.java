@@ -52,7 +52,7 @@ public class ClientFileSystem extends SharedFileSystem {
 		registerLoader(new TextureLoader());
 		registerLoader(new ShaderLoader());
 
-		registerLoader(new BoneLoader());
+		//registerLoader(new BoneLoader());
 		registerLoader(new ModelLoader());
 		
 		registerLoader(new MeshLoader());
