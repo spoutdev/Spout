@@ -115,7 +115,15 @@ public interface Client extends Engine {
 	 * @return the resolution of the window.
 	 */
 	public Vector2 getResolution();
-	
+
+	/**
+	 * Returns the aspect ratio of the client, in pixels.
+	 *
+	 * Ratio = (screen width / screen height)
+	 * @return The ratio as a float
+	 */
+	public float getAspectRatio();
+
 	/**
 	 * Returns the screen stack.
 	 * 
