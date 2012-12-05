@@ -64,7 +64,7 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 				GLFloatBuffer vertexBuffer = vertexBuffers.get(layout);
 
 				if(vertexBuffer == null) {
-					vertexBuffer = new GLFloatBuffer("uselessname", 4, layout);
+					vertexBuffer = new GLFloatBuffer("uselessname", buffer.limit() / numVertices, layout);
 					vertexBuffers.put(layout, vertexBuffer);
 				}
 
