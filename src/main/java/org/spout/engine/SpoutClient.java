@@ -95,6 +95,7 @@ import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMode;
 
 import org.spout.engine.audio.SpoutSoundManager;
+import org.spout.engine.batcher.PrimitiveBatch;
 import org.spout.engine.batcher.SpriteBatch;
 import org.spout.engine.command.InputManagementCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
@@ -106,6 +107,7 @@ import org.spout.engine.input.SpoutInputConfiguration;
 import org.spout.engine.input.SpoutInputManager;
 import org.spout.engine.listener.SpoutClientListener;
 import org.spout.engine.listener.channel.SpoutClientConnectListener;
+import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.protocol.SpoutClientSession;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.WorldRenderer;
@@ -150,7 +152,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private int frames = 0;
 	private long lastFrameTime = System.currentTimeMillis();
 	private ConcurrentLinkedQueue<Runnable> renderTaskQueue = new ConcurrentLinkedQueue<Runnable>();
-
+	
+	
 	public SpoutClient() {
 		this.filesystem = new ClientFileSystem();
 	}
@@ -190,7 +193,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		inputManager.bind(Keyboard.KEY_F3, "debug_info");
 		inputManager.bind(org.spout.api.input.Mouse.MOUSE_SCROLLDOWN, "select_down");
 		inputManager.bind(org.spout.api.input.Mouse.MOUSE_SCROLLUP, "select_up");
-		inputManager.bind(org.spout.api.input.Mouse.MOUSE_BUTTON0, "fire_1");
+		inputManager.bind(org.spout.api.input.Mouse.MOUSE_BUTTON0, "break");
 		inputManager.bind(org.spout.api.input.Mouse.MOUSE_BUTTON1, "interact");
 		inputManager.bind(org.spout.api.input.Mouse.MOUSE_BUTTON2, "fire_2");
 	}
@@ -403,7 +406,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	@Override
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] data) {
 		SpoutClientWorld world = new SpoutClientWorld(name, uuid, this, getEngineItemMap());
-
+		
 		SerializableMap map = world.getComponentHolder().getData();
 		try {
 			map.deserialize(data);
@@ -489,7 +492,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		//Init pool of BatchVertexRenderer
 		BatchVertexRenderer.initPool(GL11.GL_TRIANGLES, 10000);
-
+		
 		worldRenderer = new WorldRenderer(this);
 
 		gui = SpriteBatch.createSpriteBatch(getRenderMode(), resolution.getX(), resolution.getY());
@@ -521,6 +524,16 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		if(super.getDefaultWorld().getDataMap().get("Skydome") == null) {
+			super.getDefaultWorld().getSkydomeModel().getRenderMaterial().getShader().setUniform("View", MathHelper.createIdentity());
+			super.getDefaultWorld().getSkydomeModel().getRenderMaterial().getShader().setUniform("Projection", getActiveCamera().getProjection());
+			BaseMesh skydomeMesh = (BaseMesh)super.getDefaultWorld().getSkydomeModel().getMesh();
+			if(!skydomeMesh.isBatched()) {
+				skydomeMesh.batch();
+			}
+			skydomeMesh.render(super.getDefaultWorld().getSkydomeModel().getRenderMaterial());
+		}
+		
 		doInput(dt);
 
 		for (Entity e : super.getDefaultWorld().getAll()) {

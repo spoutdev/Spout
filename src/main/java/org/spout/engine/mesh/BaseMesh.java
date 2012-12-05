@@ -88,6 +88,9 @@ public class BaseMesh extends Resource implements Mesh, Iterable<MeshFace> {
 		material.postRender(snapshotRender);
 	}
 	
+	public boolean isBatched() {
+		return renderer != null;
+	}
 	
 
 	@Override

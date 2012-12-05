@@ -19,6 +19,6 @@ void main()
 	
 	uvcoord = vTexCoord;
 	color = vColor;
-	normal = View * Model * vNormal 
+	normal = View * Model * vNormal;
 
 } 

@@ -32,6 +32,7 @@ import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.ClientWorld;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
+import org.spout.api.model.Model;
 import org.spout.api.util.StringMap;
 
 import org.spout.engine.SpoutEngine;
@@ -40,6 +41,8 @@ import org.spout.engine.SpoutEngine;
  * A dummy world used for the client
  */
 public class SpoutClientWorld extends SpoutWorld implements ClientWorld {
+	
+	
 	
 	public SpoutClientWorld(String name, UUID uid, SpoutEngine engine, StringMap itemMap) {
 		super(name, engine, 0, 0, null, uid, itemMap);
@@ -54,4 +57,6 @@ public class SpoutClientWorld extends SpoutWorld implements ClientWorld {
 	public void addChunk(int x, int y, int z, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, BiomeManager biomes) {
 		getRegionFromBlock(x, y, z, LoadOption.LOAD_GEN).addChunk(x, y, z, blockIds, blockData, blockLight, skyLight, biomes);
 	}
+	
+	
 }

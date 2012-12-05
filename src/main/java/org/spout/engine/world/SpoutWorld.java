@@ -77,6 +77,7 @@ import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
+import org.spout.api.model.Model;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
@@ -189,6 +190,8 @@ public class SpoutWorld extends AsyncManager implements World {
 	 */
 	private final WeakReference<World> selfReference;
 	public static final WeakReference<World> NULL_WEAK_REFERENCE = new WeakReference<World>(null);
+	
+	Model skydome;
 
 	/*
 	 * Components
@@ -1366,5 +1369,13 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	public OutputStream getChunkOutputStream(ChunkSnapshot c) {
 		return regionFileManager.getChunkOutputStream(c);
+	}
+	
+	public Model getSkydomeModel(){
+		return skydome;
+	}
+	
+	public void setSkydomeModel(Model model){
+		this.skydome = model;
 	}
 }
