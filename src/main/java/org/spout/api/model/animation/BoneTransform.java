@@ -52,12 +52,6 @@ public class BoneTransform {
 	public Vector4 getScale() {
 		return scale;
 	}
-	
-	public static BoneTransform interpolate(BoneTransform bt1, float w1, BoneTransform bt2, float w2){
-		Vector4 translation = bt1.getTranslation().multiply(w1).add(bt2.getTranslation().multiply(w2));
-		Quaternion rotation = bt1.getTranslation().multiply(w1).add(bt2.getTranslation().multiply(w2));
-		Vector4 scale = bt1.getScale().multiply(w1).add(bt2.getScale().multiply(w2));
-	}
 
 	/*public String toString(){
 		return "Head : " + head.getX() + " / " + head.getY() + " / " + head.getZ() +
