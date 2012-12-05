@@ -26,63 +26,36 @@
  */
 package org.spout.api.model.animation;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.spout.api.resource.Resource;
 
 public class Bone extends Resource{
-	private String name;
 
+	private String name; //Debug
+	private int id;
 	private Bone parent = null;
-	private HashMap<String, Bone> children = new HashMap<String, Bone>();
+	private List<Bone> children = new ArrayList<Bone>();
 
 	int[] vertex;
 	float[] weights;
-	
-	private Map<String, Animation> animations;
 
-	public Bone(String name, Bone parent, Map<String, Animation> animations2) {
+	public Bone() {
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	void attachBone(Bone child) {
+		children.add(child);
+	}
+
+	void setParent(Bone parent) {
 		this.parent = parent;
-
-		if(parent != null)
-			parent.attachBone(this);
-
-		this.name = name;
-		this.animations = animations2;
 	}
-
-	public String getName() {
-		return name;
-	}
-
-	private void attachBone(Bone child) {
-		children.put(child.getName(), child);
-	}
-
-	public boolean hasBone(String name) {
-		return children.containsKey(name);
-	}
-
-	public void removeBone(String name) {
-		if (children.containsKey(name)) {
-			children.remove(name);
-		}
-	}
-
-	public Bone getBone(String name) {
-		if (children.containsKey(name)) {
-			return children.get(name);
-		}
-		for (Bone b : children.values()) {
-			Bone r = b.getBone(name);
-			if (r != null) {
-				return r;
-			}
-		}
-		return null;
-	}
-
+	
 	public Bone getParent() {
 		return parent;
 	}
@@ -96,7 +69,7 @@ public class Bone extends Resource{
 	}
 
 	public void dumbBone(String str){
-		System.out.println(str + "Bones : " + name + (parent != null ? "(parent : " + parent.getName() + ")" : ""));
+		System.out.println(str + "Bones : " + id + (parent != null ? "(parent : " + parent.getName() + ")" : ""));
 		
 		StringBuilder sb = new StringBuilder();
 		
@@ -113,13 +86,21 @@ public class Bone extends Resource{
 		System.out.println(sb.toString());
 		
 		System.out.println(str + "Child : ");
-		for(Bone bone : children.values()){
+		for(Bone bone : children){
 			bone.dumbBone(str + "  ");
 		}
-		
-		for(Animation a : animations.values()){
-			a.dumbAnimation(str + "  ");
-		}
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 }

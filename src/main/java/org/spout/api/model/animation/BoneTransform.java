@@ -26,36 +26,41 @@
  */
 package org.spout.api.model.animation;
 
-import org.spout.api.math.Vector3;
+import org.spout.api.math.Quaternion;
+import org.spout.api.math.Vector4;
 
 public class BoneTransform {
 
-	private Vector3 head;
-	private Vector3 tail;
+	private final Vector4 translation;
+	private final Quaternion rotation;
+	private final Vector4 scale;
 
-	public BoneTransform(Vector3 head, Vector3 tail){
-		this.setHead(head);
-		this.setTail(tail);
+	public BoneTransform(Vector4 translation, Quaternion rotation, Vector4 scale){
+		this.translation = translation;
+		this.rotation = rotation;
+		this.scale = scale;
 	}
 
-	public Vector3 getHead() {
-		return head;
+	public Vector4 getTranslation() {
+		return translation;
 	}
 
-	public void setHead(Vector3 head) {
-		this.head = head;
+	public Quaternion getRotation() {
+		return rotation;
 	}
 
-	public Vector3 getTail() {
-		return tail;
+	public Vector4 getScale() {
+		return scale;
+	}
+	
+	public static BoneTransform interpolate(BoneTransform bt1, float w1, BoneTransform bt2, float w2){
+		Vector4 translation = bt1.getTranslation().multiply(w1).add(bt2.getTranslation().multiply(w2));
+		Quaternion rotation = bt1.getTranslation().multiply(w1).add(bt2.getTranslation().multiply(w2));
+		Vector4 scale = bt1.getScale().multiply(w1).add(bt2.getScale().multiply(w2));
 	}
 
-	public void setTail(Vector3 tail) {
-		this.tail = tail;
-	}
-
-	public String toString(){
+	/*public String toString(){
 		return "Head : " + head.getX() + " / " + head.getY() + " / " + head.getZ() +
 				" Tail " + tail.getX() + " / " + tail.getY() + " / " + tail.getZ();
-	}
+	}*/
 }
