@@ -119,6 +119,7 @@ import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.resources.ClientEntityPrefab;
 import org.spout.engine.resources.ClientFont;
 import org.spout.engine.util.MacOSXUtils;
+import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutClientWorld;
 
@@ -532,14 +533,18 @@ public class SpoutClient extends SpoutEngine implements Client {
 		Mouse.setGrabbed(screenStack.getVisibleScreens().getLast().grabsMouse());
 
 		worldRenderer.render();
-		
+
+		//TODO Remove this when we use SpoutClientWorld
+		SpoutSnapshotLock lock = (SpoutSnapshotLock)Spout.getEngine().getScheduler().getSnapshotLock();
+		lock.coreReadLock("Render Thread - Render Entities");
 		for (Entity e : super.getDefaultWorld().getAll()) {
 			EntityRendererComponent r = e.get(EntityRendererComponent.class);
 			if (r != null) {
 				r.render(activeCamera);
 			}
 		}
-		
+		lock.coreReadUnlock("Render Thread - Render Entities");
+
 		if(wireframe) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 		}
