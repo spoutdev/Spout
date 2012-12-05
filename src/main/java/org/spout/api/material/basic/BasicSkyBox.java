@@ -26,7 +26,6 @@
  */
 package org.spout.api.material.basic;
 
-import org.spout.api.collision.CollisionStrategy;
 import org.spout.api.event.Cause;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
@@ -35,7 +34,7 @@ public class BasicSkyBox extends BlockMaterial {
 
 	public BasicSkyBox() {
 		super("Skybox");
-		this.setCollision(CollisionStrategy.NOCOLLIDE).setTransparent();
+		this.setCollisionShape(null).setTransparent();
 	}
 
 	@Override

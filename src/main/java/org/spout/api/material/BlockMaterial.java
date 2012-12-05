@@ -64,7 +64,6 @@ public class BlockMaterial extends Material implements Placeable {
 	public static final BlockMaterial ERROR = new BlockMaterial("Missing Plugin").setHardness((100.f));
 	
 	private final CollisionObject collisionObject = new CollisionObject();
-	private float mass = 1;
 
 	public BlockMaterial(short dataMask, String name, String model){
 		super(dataMask, name, model);
@@ -78,10 +77,12 @@ public class BlockMaterial extends Material implements Placeable {
 
 	protected BlockMaterial(String name, short id) {
 		super(name, id);
+		collisionObject.setCollisionShape(new BoxShape(1F, 1F, 1F));
 	}
 
 	protected BlockMaterial(String name) {
 		super(name);
+		collisionObject.setCollisionShape(new BoxShape(1F, 1F, 1F));
 	}
 
 
@@ -567,13 +568,5 @@ public class BlockMaterial extends Material implements Placeable {
 	public BlockMaterial setCollisionShape(CollisionShape shape) {
 		collisionObject.setCollisionShape(shape);
 		return this;
-	}
-
-	public float getMass() {
-		return mass;
-	}
-
-	public void setMass(float mass) {
-		this.mass = mass;
 	}
 }
