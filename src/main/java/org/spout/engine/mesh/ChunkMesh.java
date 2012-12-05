@@ -26,14 +26,13 @@
  */
 package org.spout.engine.mesh;
 
+import gnu.trove.list.array.TFloatArrayList;
+
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
@@ -48,7 +47,8 @@ import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.util.bytebit.ByteBitSet;
-import org.spout.engine.renderer.BatchVertex;
+import org.spout.engine.renderer.BatchVertexRenderer;
+import org.spout.engine.renderer.BufferContainer;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 
 /**
@@ -58,7 +58,7 @@ public class ChunkMesh{
 
 	//public final static BlockFace []shouldRender = new BlockFace[]{ BlockFace.TOP, BlockFace.BOTTOM, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST};
 
-	private HashMap<RenderMaterial, BatchVertex> meshs = new HashMap<RenderMaterial, BatchVertex>();
+	private HashMap<RenderMaterial, BufferContainer> meshs = new HashMap<RenderMaterial, BufferContainer>();
 	private boolean verticeGenerated = false;
 	private boolean lightGenerated = false;
 
@@ -119,6 +119,8 @@ public class ChunkMesh{
 			}
 		}
 
+		//TODO : resize BufferContainer to vertex generated to free space. Needed because we keep buffer in memory for light change.
+		
 		verticeGenerated = true;
 		lightGenerated = false; //Invalid the light computation
 
@@ -137,24 +139,33 @@ public class ChunkMesh{
 		if(chunkModelLight.isUnload())
 			throw new IllegalStateException("ChunkSnapshotModel with Unload state can't be used to compute light");
 
-		for(BatchVertex batch : meshs.values()){
+		for(BufferContainer container : meshs.values()){
 
-			batch.colorBuffer.clear(batch.getVertexCount() * 4);
+			TFloatArrayList vertexBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.VERTEX_LAYER);
+			TFloatArrayList lightBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.COLOR_LAYER);
 
-			for(int i = 0; i < batch.vertexBuffer.size();){
-				float x1 = batch.vertexBuffer.get(i++);
-				float y1 = batch.vertexBuffer.get(i++);
-				float z1 = batch.vertexBuffer.get(i++);
-				float w1 = batch.vertexBuffer.get(i++);
+			if(lightBuffer==null){
+				lightBuffer = new TFloatArrayList(vertexBuffer.size());
+				container.setBuffers(BatchVertexRenderer.COLOR_LAYER, lightBuffer);
+			}
 
-				batch.addColor(generateLightOnVertices(chunkModelLight,x1, y1, z1));
+			for(int i = 0; i < vertexBuffer.size();){
+				float x = vertexBuffer.get(i++);
+				float y = vertexBuffer.get(i++);
+				float z = vertexBuffer.get(i++);
+				/*float w = */vertexBuffer.get(i++);
+
+				Color color = generateLightOnVertices(chunkModelLight,x, y, z);
+
+				lightBuffer.add(color.getRed() / 255f);
+				lightBuffer.add(color.getGreen() / 255f);
+				lightBuffer.add(color.getBlue() / 255f);
+				lightBuffer.add(color.getAlpha() / 255f);
 			}
 		}
 
 		lightGenerated = true;
 	}
-	
-	private static final Vector3 sunDirection = new Vector3(0.1, 1, 0.3).normalize();
 
 	/**
 	 * Compute the light for one vertex
@@ -174,11 +185,11 @@ public class ChunkMesh{
 			int count = 0;
 
 			//TODO : Make it use each sort of light if plugin can add others lights later
-			
+
 			int xs = (x == xi) ? (xi - 1) : xi;
 			int ys = (y == yi) ? (yi - 1) : yi;
 			int zs = (z == zi) ? (zi - 1) : zi;
-			
+
 			for (int xx = xs; xx <= xi; xx++) {
 				for (int yy = ys; yy <= yi; yy++) {
 					for (int zz = zs; zz <= zi; zz++) {
@@ -193,7 +204,7 @@ public class ChunkMesh{
 					}
 				}
 			}
-			
+
 			if (count == 0) {
 				count++;
 			}
@@ -202,7 +213,7 @@ public class ChunkMesh{
 			skylight /= count;
 			light /= 16;
 			skylight /= 16;
-			
+
 			//TODO : Maybe we should use two byte buffer to store light and let the shader use it as the shader want
 			//(we can give the sky color and light color with a render effect in Vanilla)
 
@@ -283,21 +294,53 @@ public class ChunkMesh{
 		faces = snapshotMesh.getResult();
 
 		if(!faces.isEmpty()){
-			BatchVertex batchVertex = meshs.get(renderMaterial);
-			if(batchVertex == null){
-				batchVertex = new BatchVertex();
-				meshs.put(renderMaterial, batchVertex);
+			BufferContainer container = meshs.get(renderMaterial);
+
+			if(container == null){
+				container = new BufferContainer();
+				meshs.put(renderMaterial, container);
+			}
+
+			TFloatArrayList vertexBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.VERTEX_LAYER);
+			TFloatArrayList normalBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.NORMAL_LAYER);
+			TFloatArrayList textureBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.TEXTURE0_LAYER);
+
+			if(vertexBuffer==null){
+				vertexBuffer = new TFloatArrayList();
+				container.setBuffers(BatchVertexRenderer.VERTEX_LAYER, vertexBuffer);
+			}
+
+			if(normalBuffer==null){
+				normalBuffer = new TFloatArrayList();
+				container.setBuffers(BatchVertexRenderer.NORMAL_LAYER, normalBuffer);
+			}
+
+			if(textureBuffer==null){
+				textureBuffer = new TFloatArrayList();
+				container.setBuffers(BatchVertexRenderer.TEXTURE0_LAYER, textureBuffer);
 			}
 
 			for (MeshFace meshFace : faces) {
 				for (Vertex vert : meshFace) {
-					if(vert.texCoord0 != null)
-						batchVertex.addTexCoord(vert.texCoord0);
-					if(vert.normal != null)
-						batchVertex.addNormal(vert.normal);
-					if(vert.color != null)
-						batchVertex.addColor(vert.color);
-					batchVertex.addVertex(vert.position);
+
+					vertexBuffer.add(vert.position.getX());
+					vertexBuffer.add(vert.position.getY());
+					vertexBuffer.add(vert.position.getZ());
+					vertexBuffer.add(1f);
+
+					if(vert.texCoord0 != null){
+						textureBuffer.add(vert.texCoord0.getX());
+						textureBuffer.add(vert.texCoord0.getY());
+					}
+
+					if(vert.normal != null){
+						normalBuffer.add(vert.normal.getX());
+						normalBuffer.add(vert.normal.getY());
+						normalBuffer.add(vert.normal.getZ());
+						normalBuffer.add(1f);
+					}
+					
+					container.element++;
 				}
 			}
 		}
@@ -321,7 +364,7 @@ public class ChunkMesh{
 		return isUnloaded;
 	}
 
-	public Map<RenderMaterial, BatchVertex> getMaterialsFaces() {
+	public Map<RenderMaterial, BufferContainer> getMaterialsFaces() {
 		return meshs;
 	}
 

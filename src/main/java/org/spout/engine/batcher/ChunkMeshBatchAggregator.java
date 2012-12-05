@@ -34,10 +34,9 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.render.RenderMaterial;
-import org.spout.api.render.Renderer;
 import org.spout.api.render.effect.SnapshotBatch;
-import org.spout.engine.renderer.BatchVertex;
 import org.spout.engine.renderer.BatchVertexRenderer;
+import org.spout.engine.renderer.BufferContainer;
 
 /**
  * Represents a group of chunk meshes to be rendered.
@@ -46,13 +45,14 @@ public class ChunkMeshBatchAggregator extends Cube {
 
 	private int count = 0;
 
-	private BatchVertex batchVertex = null;
-	private Renderer renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
+	private BatchVertexRenderer renderer = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 
 	public final static Matrix model = MathHelper.createIdentity();
 	private final RenderMaterial material;
 	private boolean generated = false;
 	private boolean closed = false;
+
+	private BufferContainer bufferContainer;
 
 	public ChunkMeshBatchAggregator(World world, int x, int y, int z, RenderMaterial material) {
 		super(new Point(world, x << Chunk.BLOCKS.BITS, y << Chunk.BLOCKS.BITS, z << Chunk.BLOCKS.BITS), Chunk.BLOCKS.SIZE);
@@ -69,7 +69,7 @@ public class ChunkMeshBatchAggregator extends Cube {
 		SnapshotBatch snapshotBatch = new SnapshotBatch(material);
 
 		material.preBatch(snapshotBatch);
-		((BatchVertexRenderer)renderer).setBatchVertex(batchVertex);
+		((BatchVertexRenderer)renderer).setBufferContainer(bufferContainer);
 		material.postBatch(snapshotBatch);
 
 		renderer.end();
@@ -92,7 +92,7 @@ public class ChunkMeshBatchAggregator extends Cube {
 			throw new IllegalStateException("Already closed");
 		}
 
-		batchVertex = null;
+		bufferContainer = null;
 		((BatchVertexRenderer)renderer).release();
 
 		closed = true;
@@ -103,8 +103,8 @@ public class ChunkMeshBatchAggregator extends Cube {
 		return "ChunkMeshBatch [base=" + getBase() + ", size=" + getSize() + "]";
 	}
 
-	public void setSubBatch(BatchVertex batchVertex) {
-		this.batchVertex = batchVertex;
+	public void setSubBatch(BufferContainer bufferContainer) {
+		this.bufferContainer = bufferContainer;
 	}
 
 	public RenderMaterial getMaterial() {
