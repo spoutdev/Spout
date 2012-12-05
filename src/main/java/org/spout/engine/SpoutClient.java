@@ -193,7 +193,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		inputManager.bind(Keyboard.KEY_F3, "debug_info");
 		inputManager.bind(org.spout.api.input.Mouse.MOUSE_SCROLLDOWN, "select_down");
 		inputManager.bind(org.spout.api.input.Mouse.MOUSE_SCROLLUP, "select_up");
-		inputManager.bind(org.spout.api.input.Mouse.MOUSE_BUTTON0, "break");
+		inputManager.bind(org.spout.api.input.Mouse.MOUSE_BUTTON0, "left_click");
 		inputManager.bind(org.spout.api.input.Mouse.MOUSE_BUTTON1, "interact");
 		inputManager.bind(org.spout.api.input.Mouse.MOUSE_BUTTON2, "fire_2");
 	}
@@ -524,11 +524,11 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		if(super.getDefaultWorld().getDataMap().get("Skydome") == null) {
+		if (super.getDefaultWorld().getDataMap().get("Skydome") == null && super.getDefaultWorld().getSkydomeModel() != null) {
 			super.getDefaultWorld().getSkydomeModel().getRenderMaterial().getShader().setUniform("View", MathHelper.createIdentity());
 			super.getDefaultWorld().getSkydomeModel().getRenderMaterial().getShader().setUniform("Projection", getActiveCamera().getProjection());
 			BaseMesh skydomeMesh = (BaseMesh)super.getDefaultWorld().getSkydomeModel().getMesh();
-			if(!skydomeMesh.isBatched()) {
+			if (!skydomeMesh.isBatched()) {
 				skydomeMesh.batch();
 			}
 			skydomeMesh.render(super.getDefaultWorld().getSkydomeModel().getRenderMaterial());
