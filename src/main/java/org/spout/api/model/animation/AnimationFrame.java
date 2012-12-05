@@ -26,56 +26,17 @@
  */
 package org.spout.api.model.animation;
 
-import java.util.ArrayList;
-import java.util.List;
+public class AnimationFrame {
 
-public class Animation {
+	private final int key;
+	private BoneTransform []transforms;
 
-	private String name; //Debug
-	private int id;
-	private long delay;
-	private List<AnimationFrame> frames = new ArrayList<AnimationFrame>();
-
-	public Animation(){
-
+	public AnimationFrame(int key){
+		this.key = key;
 	}
 
-	public String getName() {
-		return name;
+	public int getKey() {
+		return key;
 	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public long getDelay() {
-		return delay;
-	}
-
-	public void setDelay(long delay) {
-		this.delay = delay;
-	}
-
-	public void addAnimationFrame(AnimationFrame frame){
-		frames.add(frame);
-	}
-
-	/*public void dumbAnimation(String str) {
-		System.out.println(str + "Animation : " + id);
-
-		int i = 0;
-		for(BoneTransform bt : transforms){
-			System.out.println(str + "  " + i + " : " + bt.toString());
-			i++;
-		}
-	}*/
 
 }

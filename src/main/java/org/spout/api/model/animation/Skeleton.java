@@ -26,56 +26,66 @@
  */
 package org.spout.api.model.animation;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Animation {
+import org.spout.api.resource.Resource;
 
-	private String name; //Debug
-	private int id;
-	private long delay;
-	private List<AnimationFrame> frames = new ArrayList<AnimationFrame>();
+public class Skeleton extends Resource{
 
-	public Animation(){
+	private Bone root;
+	private Map<String, Bone> bonesName = new HashMap<String, Bone>();
+
+	private Map<String,Animation> animations;
+
+	public Skeleton(){
 
 	}
 
-	public String getName() {
-		return name;
-	}
+	/**
+	 * Add a bone in this skeleton,
+	 * if the bone don't have parent, it must be the root bone
+	 * if the root is 
+	 * 
+	 * Define as 
+	 * @param name
+	 * @param parentName
+	 * @param bone
+	 */
+	public void addBone(String name, String parentName, Bone bone){
 
-	public void setName(String name) {
-		this.name = name;
-	}
+		//Define a uniq id
+		bone.setId(bonesName.size());
 
-	public int getId() {
-		return id;
-	}
+		//Store the bone with name
+		bonesName.put(name, bone);
 
-	public void setId(int id) {
-		this.id = id;
-	}
+		//Root bone
+		if(root == null){
+			if(parentName != null)
+				throw new IllegalStateException("Root bone can't have parent");
 
-	public long getDelay() {
-		return delay;
-	}
+			root = bone;
+		}else{
+			if(parentName == null)
+				throw new IllegalStateException("Root bone already defined");
 
-	public void setDelay(long delay) {
-		this.delay = delay;
-	}
+			Bone parent = bonesName.get(parentName);
 
-	public void addAnimationFrame(AnimationFrame frame){
-		frames.add(frame);
-	}
+			if(parent == null)
+				throw new IllegalStateException("Parent bone unfindable");
 
-	/*public void dumbAnimation(String str) {
-		System.out.println(str + "Animation : " + id);
-
-		int i = 0;
-		for(BoneTransform bt : transforms){
-			System.out.println(str + "  " + i + " : " + bt.toString());
-			i++;
+			parent.attachBone(bone);
+			bone.setParent(parent);
 		}
-	}*/
+	}
+	
+	/*
+	 * Add a animation
+	 */
+	public void addAnimation(String name, Animation animation){
+		animations.put(name, animation);
+	}
+
 
 }

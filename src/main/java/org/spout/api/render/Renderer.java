@@ -26,13 +26,6 @@
  */
 package org.spout.api.render;
 
-import java.awt.Color;
-
-import org.spout.api.math.Vector2;
-import org.spout.api.math.Vector3;
-import org.spout.api.math.Vector4;
-import org.spout.api.render.effect.SnapshotRender;
-
 public interface Renderer {
 
 	/**
@@ -51,7 +44,7 @@ public interface Renderer {
 	 * @param material RenderMaterial to render with
 	 */
 	public abstract void render(RenderMaterial material);
-	
+
 	/**
 	 * Renders the batch with a subset of the verticies in the buffer.  
 	 * @param material
@@ -59,39 +52,5 @@ public interface Renderer {
 	 * @param endVert
 	 */
 	public abstract void render(RenderMaterial material, int startVert, int endVert);
-	
-	public abstract void addVertex(float x, float y, float z, float w);
-
-	public abstract void addVertex(float x, float y, float z);
-
-	public abstract void addVertex(float x, float y);
-
-	public abstract void addVertex(Vector3 vertex);
-
-	public abstract void addVertex(Vector2 vertex);
-
-	public abstract void addVertex(Vector4 vertex);
-
-	public abstract void addColor(float r, float g, float b);
-
-	public abstract void addColor(float r, float g, float b, float a);
-
-	public abstract void addColor(Color color);
-
-	public abstract void addNormal(float x, float y, float z, float w);
-
-	public abstract void addNormal(float x, float y, float z);
-
-	public abstract void addNormal(Vector3 vertex);
-
-	public abstract void addNormal(Vector4 vertex);
-
-	public abstract void addTexCoord(float u, float v);
-
-	public abstract void addTexCoord(Vector2 uv);
-
-	public abstract int getVertexCount();
-
-	public abstract void render(RenderMaterial material, SnapshotRender snapshotRender);
 
 }
