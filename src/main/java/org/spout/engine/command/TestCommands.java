@@ -209,13 +209,14 @@ public class TestCommands {
 			throw new CommandException("Can only run this as a player!");
 		}
 		Spout.log("Toggling Physics...");
-		if (player.has(PhysicsComponent.class)) {
+		PhysicsComponent physics = player.get(PhysicsComponent.class);
+		if (physics != null) {
 			if (args.length() > 0) {
 				Spout.log("Specified a collision flag setting but physics is being turned off...");
 			}
 			player.detach(PhysicsComponent.class);
 		} else {
-			PhysicsComponent physics = player.add(PhysicsComponent.class);
+			physics = player.add(PhysicsComponent.class);
 			physics.setMass(10f);
 			physics.setCollisionShape(new BoxShape(1f, 3f, 1f));
 			physics.setRestitution(0f);

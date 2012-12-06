@@ -55,7 +55,6 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	private Vector3 angularVelocity = Vector3.ZERO;
 	private Vector3 linearVelocity = Vector3.ZERO;
 	private boolean dirty = false;
-	//Mass is stored but it can only be set on the object before the entity is spawned into the world.
 	private float mass = 0f;
 
 	@Override
@@ -267,11 +266,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 			synchronized (r.getSimulation()) {
 				Vector3 angularVelocityLive = MathHelper.toVector3(body.getInterpolationAngularVelocity(new Vector3f()));
 				Vector3 linearVelocityLive = MathHelper.toVector3(body.getInterpolationLinearVelocity(new Vector3f()));
-				if (!linearVelocityLive.equals(linearVelocity) || angularVelocityLive.equals(angularVelocity)) {
-					dirty = true;
-				} else {
-					dirty = false;
-				}
+				dirty = !linearVelocityLive.equals(linearVelocity) || angularVelocityLive.equals(angularVelocity);
 				angularVelocity = angularVelocityLive;
 				linearVelocity = linearVelocityLive;
 			}
