@@ -26,75 +26,119 @@
  */
 package org.spout.engine.mesh;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import java.util.Iterator;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.spout.api.model.mesh.Mesh;
 import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.RenderMaterial;
-import org.spout.api.render.Renderer;
 import org.spout.api.render.effect.SnapshotRender;
 import org.spout.api.resource.Resource;
 import org.spout.engine.renderer.BatchVertexRenderer;
+import org.spout.engine.renderer.GLBufferContainer;
 
 
-public class BaseMesh extends Resource implements Mesh, Iterable<MeshFace> {
-	ArrayList<MeshFace> faces;
-	boolean dirty = false;
+public class BaseMesh extends Resource implements Mesh{
+	GLBufferContainer container = new GLBufferContainer();
+	boolean batched = false;
 
-	//Renderer renderer;
-	
-	
-	public BaseMesh(){
-		faces = new ArrayList<MeshFace>();
-		
-	}
-	
-	public BaseMesh(ArrayList<MeshFace> faces){
-		this.faces = faces;
-	}
+	BatchVertexRenderer renderer;
 
-	protected void batch(Renderer batcher) {
-		/*for (MeshFace face : faces) {
-			for(Vertex vert : face){
-				if (vert.texCoord0!=null)
-					batcher.addTexCoord(vert.texCoord0);
-				if (vert.normal!=null)
-					batcher.addNormal(vert.normal);
-				if (vert.color!=null)
-					batcher.addColor(vert.color);
-				batcher.addVertex(vert.position);
+	public BaseMesh(ArrayList<MeshFace> faces, boolean normal, boolean color, boolean texture0){
+		FloatBuffer vertexBuffer, normalBuffer = null, colorBuffer = null, texture0Buffer = null;
+		int numVerticies = faces.size() * 3;
+
+		vertexBuffer = BufferUtils.createFloatBuffer(numVerticies * 4);
+		vertexBuffer.clear();
+
+		if(normal){
+			normalBuffer = BufferUtils.createFloatBuffer(numVerticies * 3);
+			normalBuffer.clear();
+		}
+		if(color){
+			colorBuffer = BufferUtils.createFloatBuffer(numVerticies * 4);
+			colorBuffer.clear();
+		}
+		if(texture0){
+			texture0Buffer = BufferUtils.createFloatBuffer(numVerticies * 2);
+			texture0Buffer.clear();
+		}
+
+		for(MeshFace face : faces){
+			for(Vertex v : face){
+				vertexBuffer.put(v.position.getX());
+				vertexBuffer.put(v.position.getY());
+				vertexBuffer.put(v.position.getZ());
+				vertexBuffer.put(1f);
+
+				if(normal){
+					normalBuffer.put(v.normal.getX());
+					normalBuffer.put(v.normal.getY());
+					normalBuffer.put(v.normal.getZ());
+				}
+
+				if(color){
+					colorBuffer.put(v.color.getRed() / 255f);
+					colorBuffer.put(v.color.getGreen() / 255f);
+					colorBuffer.put(v.color.getBlue() / 255f);
+					colorBuffer.put(v.color.getAlpha() / 255f);
+				}
+
+				if(texture0){
+					texture0Buffer.put(v.texCoord0.getX());
+					texture0Buffer.put(v.texCoord0.getY());
+				}
 			}
-		}*/
+		}
+
+		vertexBuffer.flip();
+
+		if(normal)
+			normalBuffer.flip();
+
+		if(color)
+			colorBuffer.flip();
+
+		if(texture0)
+			texture0Buffer.flip();
+
+		container.element = numVerticies;
+		container.setBuffers(BatchVertexRenderer.VERTEX_LAYER, vertexBuffer);
+		if(normal)
+			container.setBuffers(BatchVertexRenderer.NORMAL_LAYER, normalBuffer);
+		if(color)
+			container.setBuffers(BatchVertexRenderer.COLOR_LAYER, colorBuffer);
+		if(texture0)
+			container.setBuffers(BatchVertexRenderer.TEXTURE0_LAYER, texture0Buffer);
 	}
 
 	public void batch(){
-		/*if (renderer == null)
-			renderer = BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
+		if (renderer == null)
+			renderer = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
+
+		if(batched)
+			return;
+
 		renderer.begin();
-		this.batch(renderer);
-		renderer.end();*/
+		renderer.setGLBufferContainer(container);
+		renderer.end();
+		batched = true;
 	}
-	
+
 	public void render(RenderMaterial material){
-		/*if (renderer == null)
+		if (!batched)
 			throw new IllegalStateException("Cannot render without batching first!");
-		
+
 		SnapshotRender snapshotRender = new SnapshotRender(material);
 		material.preRender(snapshotRender);
-		renderer.render(material,snapshotRender);
-		material.postRender(snapshotRender);*/
+		renderer.render(material);
+		material.postRender(snapshotRender);
 	}
-	
-	public boolean isBatched() {
-		return true;//renderer != null;
-	}
-	
 
-	@Override
-	public Iterator<MeshFace> iterator() {
-		return faces.iterator();
+	public boolean isBatched() {
+		return batched;
 	}
 }

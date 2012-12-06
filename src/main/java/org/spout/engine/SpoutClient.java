@@ -552,6 +552,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		for (Entity e : super.getDefaultWorld().getAll()) {
 			EntityRendererComponent r = e.get(EntityRendererComponent.class);
 			if (r != null) {
+				r.update();
 				r.render(activeCamera);
 			}
 		}
