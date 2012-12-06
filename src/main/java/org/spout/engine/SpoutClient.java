@@ -68,6 +68,7 @@ import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.component.components.CameraComponent;
 import org.spout.api.component.components.HitBlockComponent;
+import org.spout.api.component.components.PhysicsComponent;
 import org.spout.api.component.components.PredictableTransformComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
