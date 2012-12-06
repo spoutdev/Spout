@@ -53,12 +53,23 @@ public class HitBlockComponent extends EntityComponent {
 	public Block getTargetBlock() {
 		BlockIterator blockIt = getAlignedBlocks();
 		Block block = blockIt.getTarget();
-		if (blockIt.getBlockFace() != null) {
-			System.out.println("Face hit: " + blockIt.getBlockFace());
-		}
 		return block;
 	}
 
+	/**
+	 * Return the last block before an obstacle
+	 * If there is no obstacle return null
+	 * @return block
+	 */
+	public Block getLastEmpty() {
+		BlockIterator blockIt = getAlignedBlocks();
+		Block block = blockIt.getTarget();
+		if (block==null) {
+			return null;
+		}
+		return block.translate(blockIt.getBlockFace());
+	}
+	
 	/**
 	 * Return a list of all the blocks in line
 	 * of view.
