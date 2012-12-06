@@ -68,21 +68,25 @@ public class BlockMaterial extends Material implements Placeable {
 	public BlockMaterial(short dataMask, String name, String model){
 		super(dataMask, name, model);
 		collisionObject.setCollisionShape(new BoxShape(1F, 1F, 1F));
+		collisionObject.setRestitution(0f);
 	}
 
 	public BlockMaterial(String name, int data, Material parent, String model) {
 		super(name, data, parent, model);
 		collisionObject.setCollisionShape(new BoxShape(1F, 1F, 1F));
+		collisionObject.setRestitution(0f);
 	}
 
 	protected BlockMaterial(String name, short id) {
 		super(name, id);
 		collisionObject.setCollisionShape(new BoxShape(1F, 1F, 1F));
+		collisionObject.setRestitution(0f);
 	}
 
 	protected BlockMaterial(String name) {
 		super(name);
 		collisionObject.setCollisionShape(new BoxShape(1F, 1F, 1F));
+		collisionObject.setRestitution(0f);
 	}
 
 
