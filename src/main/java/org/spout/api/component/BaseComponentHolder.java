@@ -177,11 +177,13 @@ public class BaseComponentHolder implements ComponentHolder {
 	}
 
 	@Override
+	@Deprecated
 	public boolean has(Class<? extends Component> type) {
 		return get(type) != null;
 	}
 
 	@Override
+	@Deprecated
 	public boolean hasExact(Class<? extends Component> type) {
 		return getExact(type) != null;
 	}
