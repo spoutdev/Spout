@@ -42,6 +42,7 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 	private static BaseMesh loadObj(InputStream stream) {
 		Scanner scan = new Scanner(stream);
 
+		boolean normal = false, color = false, texture0 = false;
 		ArrayList<Vector3> verticies = new ArrayList<Vector3>();
 		ArrayList<Vector3> normals = new ArrayList<Vector3>();
 		ArrayList<Vector2> uvs = new ArrayList<Vector2>();
@@ -67,24 +68,26 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 				String[] sp = s.split(" ");
 
 				if (sp[1].contains("//")) {
+					normal = true;
 					ArrayList<Vertex> ar = new ArrayList<Vertex>();
 					for (int i = 1; i <= 3; i++) {
 						String[] sn = sp[i].split("//");
 						int pos = Integer.parseInt(sn[0]);
 						int norm = Integer.parseInt(sn[1]);
 						ar.add(new Vertex(verticies.get(pos - 1), normals.get(norm - 1)));
-
 					}
 					faces.add(new MeshFace(ar.get(2), ar.get(1), ar.get(0)));
 					ar.clear();
 
 				} else if (sp[1].contains("/")) {
+					texture0 = true;
 					ArrayList<Vertex> ar = new ArrayList<Vertex>();
 					for (int i = 1; i <= 3; i++) {
 						String[] sn = sp[i].split("/");
 						int pos = Integer.parseInt(sn[0]);
 						int uv = Integer.parseInt(sn[1]);
 						if (sn.length>2) {
+							normal = true;
 							int norm = Integer.parseInt(sn[2]);
 							ar.add(new Vertex(verticies.get(pos - 1), normals.get(norm - 1), uvs.get(uv - 1)));
 						} else {
@@ -114,7 +117,7 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 
 		scan.close();
 		
-		return new BaseMesh(faces);
+		return new BaseMesh(faces,normal,color,texture0);
 	}
 
 	@Override

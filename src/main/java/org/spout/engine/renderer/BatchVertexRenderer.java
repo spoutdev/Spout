@@ -278,6 +278,14 @@ public abstract class BatchVertexRenderer implements Renderer {
 		}
 
 		numVertices = bufferContainer.element;
+	}
 
+	public void setGLBufferContainer(GLBufferContainer container) {
+		buffers.clear();
+
+		for(Entry<Integer, Buffer> entry : container.getBuffers().entrySet())
+			buffers.put(entry.getKey(), entry.getValue());
+
+		numVertices = container.element;
 	}
 }
