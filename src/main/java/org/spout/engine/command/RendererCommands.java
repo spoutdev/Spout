@@ -26,53 +26,27 @@
  */
 package org.spout.engine.command;
 
-import com.bulletphysics.collision.shapes.BoxShape;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
-import org.spout.api.component.components.PhysicsComponent;
-import org.spout.api.geo.World;
+
 import org.spout.engine.SpoutClient;
-import org.spout.engine.SpoutEngine;
-import org.spout.engine.entity.SpoutPlayer;
-import org.spout.engine.world.SpoutRegion;
 
 public class RendererCommands {
 	private final SpoutClient client;
+
 	public RendererCommands(SpoutClient client) {
 		this.client = client;
 	}
 
 	@Command(aliases = {"r_wireframe"}, desc = "Toggles Wireframe for the renderer")
 	public void toggleWireframe(CommandContext args, CommandSource source) {
-		client.enqueueTask(new Runnable(){
+		client.enqueueTask(new Runnable() {
 			public void run() {
 				Spout.log("Toggling Wireframe");
 				client.toggleWireframe();
 			}
 		});
 	}
-
-    @Command(aliases = {"r_noclip"}, desc = "Toggles noclip on the client")
-    public void toggleNoClip(CommandContext args, CommandSource source) {
-        client.enqueueTask(new Runnable(){
-            public void run() {
-                Spout.log("Toggling Physics...");
-                final SpoutPlayer player = client.getActivePlayer();
-                if (player.has(PhysicsComponent.class)) {
-                    Spout.log("Detaching Physics...");
-                    player.detach(PhysicsComponent.class);
-                } else {
-                    PhysicsComponent physics = player.add(PhysicsComponent.class);
-                    physics.setMass(5.0f);
-                    physics.setCollisionShape(new BoxShape(1, 3, 1));
-                    physics.setRestitution(0);
-                    physics.setDamping(.5f, 0f);
-                    Spout.log("Adding Physics...");
-                    ((SpoutRegion) player.getRegion()).addPhysics(player);
-                }
-            }
-        });
-    }
 }

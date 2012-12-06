@@ -124,6 +124,7 @@ import com.bulletphysics.collision.dispatch.CollisionFlags;
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
 import com.bulletphysics.collision.dispatch.GhostPairCallback;
+import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.collision.shapes.voxel.VoxelWorldShape;
 import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
 import com.bulletphysics.dynamics.RigidBody;
@@ -284,12 +285,13 @@ public class SpoutRegion extends Region {
 		solver = new SequentialImpulseConstraintSolver();
 		simulation = new DiscreteDynamicsWorld(dispatcher, broadphase, solver, configuration);
 		simulation.setGravity(new Vector3f(0, -9.81F, 0));
+		simulation.getDispatchInfo().allowedCcdPenetration = 5f;
 		final SpoutPhysicsWorld physicsInfo = new SpoutPhysicsWorld(this);
 		final VoxelWorldShape simulationShape = new VoxelWorldShape(physicsInfo);
 		final Matrix3f rot = new Matrix3f();
 		rot.setIdentity();
 		final DefaultMotionState regionMotionState = new DefaultMotionState(new Transform(new Matrix4f(rot, new Vector3f(0, 0, 0), 1.0f)));
-		final RigidBodyConstructionInfo regionBodyInfo = new RigidBodyConstructionInfo(0, regionMotionState, simulationShape, new Vector3f());
+		final RigidBodyConstructionInfo regionBodyInfo = new RigidBodyConstructionInfo(0, regionMotionState, simulationShape, new Vector3f(0f, 0f, 0f));
 		final RigidBody regionBody = new RigidBody(regionBodyInfo);
 		//TODO Recheck Terasology code for more correct flags
 		regionBody.setCollisionFlags(CollisionFlags.STATIC_OBJECT | regionBody.getCollisionFlags());

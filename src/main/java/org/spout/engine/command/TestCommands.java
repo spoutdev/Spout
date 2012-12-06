@@ -35,6 +35,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import com.bulletphysics.collision.dispatch.CollisionFlags;
+import com.bulletphysics.collision.dispatch.CollisionObject;
+import com.bulletphysics.collision.shapes.BoxShape;
+
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandContext;
@@ -42,6 +46,7 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.component.components.HitBlockComponent;
+import org.spout.api.component.components.PhysicsComponent;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
@@ -49,31 +54,37 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
+
+import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutEngine;
+import org.spout.engine.entity.SpoutPlayer;
+import org.spout.engine.entity.component.SpoutPhysicsComponent;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
+import org.spout.engine.world.SpoutRegion;
 
 public class TestCommands {
 	private final SpoutEngine engine;
+
 	public TestCommands(SpoutEngine engine) {
 		this.engine = engine;
 	}
 
-	@Command(aliases = "break", desc ="Debug command to break a block")
+	@Command(aliases = "break", desc = "Debug command to break a block")
 	public void debugBreak(CommandContext args, CommandSource source) throws CommandException {
-		if (Spout.getPlatform()!=Platform.CLIENT) {
+		if (Spout.getPlatform() != Platform.CLIENT) {
 			throw new CommandException("You must be a client to perform this command.");
 		}
 		Player player = ((Client) Spout.getEngine()).getActivePlayer();
 		Block block = player.get(HitBlockComponent.class).getTargetBlock();
-		
-		if (block==null || block.getMaterial().equals(BlockMaterial.AIR)) {
+
+		if (block == null || block.getMaterial().equals(BlockMaterial.AIR)) {
 			source.sendMessage("No blocks in range.");
 		} else {
 			source.sendMessage("Block to break: ", block.toString());
 			block.setMaterial(BlockMaterial.AIR);
 		}
 	}
-	
+
 	@Command(aliases = {"dbg"}, desc = "Debug Output")
 	public void debugOutput(CommandContext args, CommandSource source) {
 		World world = engine.getDefaultWorld();
@@ -84,115 +95,153 @@ public class TestCommands {
 	public void dumpThreads(CommandContext args, CommandSource source) throws CommandException {
 		AsyncExecutorUtils.dumpAllStacks();
 	}
-	
+
 	@Command(aliases = "testmsg", desc = "Test extracting chat styles from a message and printing them")
 	public void testMsg(CommandContext args, CommandSource source) throws CommandException {
 		source.sendMessage(args.getJoinedString(0));
 	}
-	
-    @Command(aliases = "plugins-tofile", usage = "[filename]", desc = "Creates a file containing all loaded plugins and their version", min = 0, max = 1)
-    @CommandPermissions("spout.command.pluginstofile")
-    public void getPluginDetails(CommandContext args, CommandSource source) throws CommandException {
 
-        // File and filename
-        String filename = "";
-        String standpath = "pluginreports";
-        File file = null;
+	@Command(aliases = "plugins-tofile", usage = "[filename]", desc = "Creates a file containing all loaded plugins and their version", min = 0, max = 1)
+	@CommandPermissions("spout.command.pluginstofile")
+	public void getPluginDetails(CommandContext args, CommandSource source) throws CommandException {
 
-        // Getting date
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        Date date = new Date();
-        String parse = dateFormat.format(date);
+		// File and filename
+		String filename = "";
+		String standpath = "pluginreports";
+		File file = null;
 
-        // Create file with passed filename or current date and time as name
-        if (args.length() == 1) {
-            filename = args.getString(0);
-            file = new File(standpath.concat("/" + replaceInvalidCharsWin(filename)));
-        } else {
-            file = new File(standpath.concat("/" + replaceInvalidCharsWin(parse)).concat(".txt"));
-        }
+		// Getting date
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		Date date = new Date();
+		String parse = dateFormat.format(date);
 
-        // Delete the file if existent
-        if (file.exists()) {
-            file.delete();
-        }
-        
-        String linesep = System.getProperty("line.separator");
+		// Create file with passed filename or current date and time as name
+		if (args.length() == 1) {
+			filename = args.getString(0);
+			file = new File(standpath.concat("/" + replaceInvalidCharsWin(filename)));
+		} else {
+			file = new File(standpath.concat("/" + replaceInvalidCharsWin(parse)).concat(".txt"));
+		}
 
-        // Create a new file
-        try {
-            new File("pluginreports").mkdirs();
-            file.createNewFile();
-        } catch (IOException e) {
-            throw new CommandException("Couldn't create report-file!" + linesep + "Please make sure to only use valid chars in the filename.");
-        }
+		// Delete the file if existent
+		if (file.exists()) {
+			file.delete();
+		}
 
-        // Content Builder
-        StringBuilder sbuild = new StringBuilder();
-        sbuild.append("# This file was created on the " + dateFormat.format(date).concat(linesep));
-        sbuild.append("# Plugin Name | Version | Authors".concat(linesep));
+		String linesep = System.getProperty("line.separator");
 
-        // Plugins to write down
-        List<Plugin> plugins = Spout.getEngine().getPluginManager().getPlugins();
+		// Create a new file
+		try {
+			new File("pluginreports").mkdirs();
+			file.createNewFile();
+		} catch (IOException e) {
+			throw new CommandException("Couldn't create report-file!" + linesep + "Please make sure to only use valid chars in the filename.");
+		}
 
-        // Getting plugin informations
-        for (Plugin plugin : plugins) {
+		// Content Builder
+		StringBuilder sbuild = new StringBuilder();
+		sbuild.append("# This file was created on the " + dateFormat.format(date).concat(linesep));
+		sbuild.append("# Plugin Name | Version | Authors".concat(linesep));
 
-            // Name and Version
-            sbuild.append(plugin.getName().concat(" | "));
-            sbuild.append(plugin.getDescription().getVersion());
+		// Plugins to write down
+		List<Plugin> plugins = Spout.getEngine().getPluginManager().getPlugins();
 
-            // Authors
-            List<String> authors = plugin.getDescription().getAuthors();
-            StringBuilder authbuilder = new StringBuilder();
-            if (authors != null && authors.size() > 0) {
-                int size = authors.size();
-                int count = 0;
-                for (String s : authors) {
-                    count++;
-                    if (count != size) {
-                        authbuilder.append(s + ", ");
-                    } else {
-                        authbuilder.append(s);
-                    }
-                }
-                sbuild.append(" | ".concat(authbuilder.toString()).concat(linesep));
-            } else {
-                sbuild.append(linesep);
-            }
-        }
+		// Getting plugin informations
+		for (Plugin plugin : plugins) {
 
-        BufferedWriter writer = null;
+			// Name and Version
+			sbuild.append(plugin.getName().concat(" | "));
+			sbuild.append(plugin.getDescription().getVersion());
 
-        // Write to file
-        if (file != null) {
-            try {
-                writer = new BufferedWriter(new FileWriter(file));
-                writer.write(sbuild.toString());
-            } catch (IOException e) {
-                throw new CommandException("Couldn't write to report-file!");
-            } finally {
-                if (writer != null) {
-                    try {
-                        writer.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
+			// Authors
+			List<String> authors = plugin.getDescription().getAuthors();
+			StringBuilder authbuilder = new StringBuilder();
+			if (authors != null && authors.size() > 0) {
+				int size = authors.size();
+				int count = 0;
+				for (String s : authors) {
+					count++;
+					if (count != size) {
+						authbuilder.append(s + ", ");
+					} else {
+						authbuilder.append(s);
+					}
+				}
+				sbuild.append(" | ".concat(authbuilder.toString()).concat(linesep));
+			} else {
+				sbuild.append(linesep);
+			}
+		}
 
-        source.sendMessage("Plugins-report successfully created! " + linesep + "Stored in: " + standpath);
-    }
+		BufferedWriter writer = null;
 
-    /**
-     * Replaces chars which are not allowed in filenames on windows with "-".
-     */
-    private String replaceInvalidCharsWin(String s) {
-        if (System.getProperty("os.name").toLowerCase().indexOf("win") >= 0) {
-            return s.replaceAll("[\\/:*?\"<>|]", "-");
-        } else {
-            return s;
-        }
-    }
+		// Write to file
+		if (file != null) {
+			try {
+				writer = new BufferedWriter(new FileWriter(file));
+				writer.write(sbuild.toString());
+			} catch (IOException e) {
+				throw new CommandException("Couldn't write to report-file!");
+			} finally {
+				if (writer != null) {
+					try {
+						writer.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+
+		source.sendMessage("Plugins-report successfully created! " + linesep + "Stored in: " + standpath);
+	}
+
+	@Command(aliases = {"noclip"}, desc = "Toggles noclip on the client", min = 0, max = 1)
+	public void toggleNoClip(CommandContext args, CommandSource source) throws CommandException {
+		SpoutPlayer player;
+		if (!(source instanceof Player)) {
+			if (Spout.getPlatform() == Platform.CLIENT) {
+				player = ((SpoutClient) engine).getActivePlayer();
+			} else {
+				player = (SpoutPlayer) source;
+			}
+		} else {
+			throw new CommandException("Can only run this as a player!");
+		}
+		Spout.log("Toggling Physics...");
+		if (player.has(PhysicsComponent.class)) {
+			if (args.length() > 0) {
+				Spout.log("Specified a collision flag setting but physics is being turned off...");
+			}
+			player.detach(PhysicsComponent.class);
+		} else {
+			PhysicsComponent physics = player.add(PhysicsComponent.class);
+			physics.setMass(10f);
+			physics.setCollisionShape(new BoxShape(1f, 3f, 1f));
+			physics.setRestitution(0f);
+			boolean dynamic = true;
+			if (args.length() > 0) {
+				String arg = args.getString(0);
+				if (arg.equalsIgnoreCase("kinematic")) {
+					dynamic = false;
+				}
+			}
+			if (!dynamic) {
+				CollisionObject object = ((SpoutPhysicsComponent) physics).getCollisionObject();
+				object.setCollisionFlags(object.getCollisionFlags() | CollisionFlags.KINEMATIC_OBJECT);
+			}
+			((SpoutRegion) player.getRegion()).addPhysics(player);
+		}
+	}
+
+	/**
+	 * Replaces chars which are not allowed in filenames on windows with "-".
+	 */
+	private String replaceInvalidCharsWin(String s) {
+		if (System.getProperty("os.name").toLowerCase().indexOf("win") >= 0) {
+			return s.replaceAll("[\\/:*?\"<>|]", "-");
+		} else {
+			return s;
+		}
+	}
 }

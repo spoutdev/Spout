@@ -33,6 +33,7 @@ import javax.vecmath.Vector3f;
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.dynamics.RigidBody;
+import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.MotionState;
 import com.bulletphysics.linearmath.Transform;
 
@@ -142,9 +143,6 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	@Override
 	public void setMass(float mass) {
-		if (body != null) {
-			throw new IllegalStateException("Cannot set mass for a body which has already been created!");
-		}
 		this.mass = mass;
 	}
 
@@ -164,7 +162,9 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		org.spout.api.geo.discrete.Transform spoutTransform = getOwner().getTransform().getTransformLive();
 		Point point = spoutTransform.getPosition();
 		state = new SpoutDefaultMotionState(getOwner());
-		body = new RigidBody(mass, state, shape);
+		Vector3f inertia = new Vector3f(0f, 0f, 0f);
+		shape.calculateLocalInertia(mass, new Vector3f(0f, 0f, 0f));
+		body = new RigidBody(new RigidBodyConstructionInfo(mass, state, shape, inertia));
 		body.setWorldTransform(new Transform(new Matrix4f(MathHelper.toQuaternionf(spoutTransform.getRotation()), MathHelper.toVector3f(point.getX(), point.getY(), point.getZ()), 1)));
 		body.activate();
 	}
