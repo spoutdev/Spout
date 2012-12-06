@@ -30,11 +30,6 @@ import com.bulletphysics.collision.shapes.CollisionShape;
 import org.spout.api.math.Vector3;
 
 public abstract class PhysicsComponent extends EntityComponent {
-	@Override
-	public boolean isDetachable() {
-		return false;
-	}
-
 	/**
 	 * Gets the restitution of the entity.
 	 * <p>
