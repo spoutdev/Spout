@@ -38,7 +38,7 @@ public class Bone extends Resource{
 	private Bone parent = null;
 	private List<Bone> children = new ArrayList<Bone>();
 
-	int[] vertex;
+	int[] verticies;
 	float[] weights;
 
 	public Bone() {
@@ -60,8 +60,8 @@ public class Bone extends Resource{
 		return parent;
 	}
 
-	public void setVertex(int[] vertex) {
-		this.vertex = vertex;
+	public void setVerticies(int[] vertex) {
+		this.verticies = vertex;
 	}
 
 	public void setWeights(float[] weights) {
@@ -73,8 +73,8 @@ public class Bone extends Resource{
 		
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append(str + "Vertices " + vertex.length + ": ");
-		for(int v : vertex)
+		sb.append(str + "Verticies " + verticies.length + ": ");
+		for(int v : verticies)
 			sb.append(v).append(", ");
 		System.out.println(sb.toString());
 		
@@ -101,6 +101,14 @@ public class Bone extends Resource{
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public int[] getVerticies() {
+		return verticies;
+	}
+	
+	public float[] getWeight() {
+		return weights;
 	}
 	
 }

@@ -59,4 +59,6 @@ public interface Shader {
 
 	public abstract void setMaterialAssigned(RenderMaterial material);
 
+	public abstract void setUniform(String name, Matrix[] matricies);
+
 }

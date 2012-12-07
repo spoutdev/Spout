@@ -38,5 +38,9 @@ public class AnimationFrame {
 	public int getKey() {
 		return key;
 	}
+	
+	public BoneTransform getTransform(int index){
+		return transforms[index];
+	}
 
 }

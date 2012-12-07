@@ -34,30 +34,133 @@ import org.spout.api.util.StringUtil;
 
 public class Vertex {
 	public static final int SIZE_FLOAT = 4;
+
+	public static final int VERTEX_LAYER = 0;
+	public static final int COLOR_LAYER = 1;
+	public static final int NORMAL_LAYER = 2;
+	public static final int TEXTURE0_LAYER = 3;
+	public static final int TEXTURE1_LAYER = 4;
 	
 	public Vector3 position;
 	public Color color;
 	public Vector3 normal;
 	public Vector2 texCoord0;
 	public Vector2 texCoord1;
+	public int id;
 	
-	public Vertex(Vector3 position, Vector3 normal, Vector2 texture, Color color) {
+	/**
+	 * Create a vertex with a position
+	 * @param position
+	 * @return
+	 */
+	public static Vertex createVertexPosition(Vector3 position){
+		return new Vertex(position, Vector3.ZERO, Vector2.ZERO, null, 0);
+	}
+	
+	/**
+	 * Create a vertex with a position and a normal
+	 * @param position
+	 * @param normal
+	 * @return
+	 */
+	public static Vertex createVertexPositionNormal(Vector3 position, Vector3 normal){
+		return new Vertex(position, normal, Vector2.ZERO, null, 0);
+	}
+
+	/**
+	 * Create a vertex with a position and a texture
+	 * @param position
+	 * @param texture
+	 * @return
+	 */
+	public static Vertex createVertexPositionTexture0(Vector3 position, Vector2 texture) {
+		return new Vertex(position, Vector3.ZERO, texture, null, 0);
+	}
+	
+	/**
+	 * Create a vertex with a position, a normal and a color
+	 * @param position
+	 * @param normal
+	 * @param color
+	 * @return
+	 */
+	public static Vertex createVertexPositionNormalColor(Vector3 position, Vector3 normal, Color color){
+		return new Vertex(position, normal, Vector2.ZERO, color, 0);
+	}
+	
+	/**
+	 * Create a vertex with a position, a normal and a texture
+	 * @param position
+	 * @param normal
+	 * @param texture
+	 * @return
+	 */
+	public static Vertex createVertexPositionNormaTexture0(Vector3 position, Vector3 normal, Vector2 texture){
+		return new Vertex(position, normal, texture, null, 0);
+	}
+	
+	/**
+	 * Create a vertex with a position, a normal, a texture and a color
+	 * @param position
+	 * @param normal
+	 * @param texture
+	 * @param color
+	 * @return
+	 */
+	public static Vertex createVertexPositionNormalTexture0Color(Vector3 position, Vector3 normal, Vector2 texture, Color color){
+		return new Vertex(position, normal, texture, color, 0);
+	}
+	
+	/**
+	 * Create a vertex with a position, a normal, a texture and a vertice index
+	 * @param position
+	 * @param normal
+	 * @param texture
+	 * @param id
+	 * @return
+	 */
+	public static Vertex createVertexPositionNormalTexture0Index(Vector3 position, Vector3 normal, Vector2 texture, int id){
+		return new Vertex(position, normal, texture, null, id);
+	}
+
+	/**
+	 * Create a vertex with a position, a normal and a vertice index
+	 * @param position
+	 * @param normal
+	 * @param id
+	 * @return
+	 */
+	public static Vertex createVertexPositionNormalIndex(Vector3 position, Vector3 normal, int id) {
+		return new Vertex(position, normal, Vector2.ZERO, null, id);
+	}
+
+	/**
+	 * Create a vertex with a position and a vertice index
+	 * @param position
+	 * @param id
+	 * @return
+	 */
+	public static Vertex createVertexPositionIndex(Vector3 position, int id) {
+		return new Vertex(position, Vector3.ZERO, Vector2.ZERO, null, id);
+	}
+
+	/**
+	 * Create a vertex with a position, a texture and a vertice index
+	 * @param position
+	 * @param texture
+	 * @param id
+	 * @return
+	 */
+	public static Vertex createVertexPositionTexture0Index(Vector3 position, Vector2 texture, int id) {
+		return new Vertex(position, Vector3.ZERO, texture, null, id);
+	}
+	
+	public Vertex(Vector3 position, Vector3 normal, Vector2 texture, Color color, int id) {
 		this.position = position;
 		this.normal = normal;
 		this.texCoord0 = texture;
 		this.color = color == null ? null : new Color( color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-	}
-	
-	public Vertex(Vector3 position, Vector3 normal){
-		this(position, normal, Vector2.ZERO, null);
-	}
-	
-	public Vertex(Vector3 position) {
-		this(position, Vector3.ZERO, Vector2.ZERO, null);
-	}
-	
-	public Vertex(Vector3 position, Vector2 texture){
-		this(position, Vector3.ZERO, texture, null);
+		this.id = id;
 	}
 	
 	public Vertex(Vertex v) {
@@ -66,10 +169,7 @@ public class Vertex {
 		this.normal = v.normal == null? null : new Vector3(v.normal);
 		this.texCoord0 = v.texCoord0 == null? null : new Vector2(v.texCoord0);
 		this.texCoord1 = v.texCoord1 == null? null : new Vector2(v.texCoord1);
-	}
-
-	public Vertex(Vector3 position, Vector3 normal, Vector2 texture) {
-		this(position, normal, texture, null);
+		this.id = v.id;
 	}
 
 	public float[] toArray(){
