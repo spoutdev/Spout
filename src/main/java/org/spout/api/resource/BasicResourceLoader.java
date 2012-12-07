@@ -40,7 +40,7 @@ public abstract class BasicResourceLoader<E extends Resource> implements Resourc
 	public abstract E getResource(InputStream stream);
 
 	@Override
-	public E getResource(URI resource) throws ResourceNotFoundException{
+	public E getResource(URI resource) throws ResourceNotFoundException {
 		InputStream s = Spout.getFilesystem().getResourceStream(resource);
 		E r = getResource(s);
 		try {
