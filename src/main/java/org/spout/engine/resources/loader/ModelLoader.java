@@ -31,6 +31,7 @@ import java.util.Map;
 
 import org.spout.api.Spout;
 import org.spout.api.model.animation.Bone;
+import org.spout.api.model.animation.Skeleton;
 import org.spout.api.model.mesh.Mesh;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.resource.BasicResourceLoader;
@@ -65,14 +66,13 @@ public class ModelLoader extends BasicResourceLoader<ClientModel> {
 		Mesh mesh = (Mesh)Spout.getFilesystem().getResource(resourceProperties.get("Mesh"));
 		RenderMaterial material = (RenderMaterial)Spout.getFilesystem().getResource(resourceProperties.get("Material"));
 		
-		Bone bone = null;
+		Skeleton skeleton = null;
 		
-		/*if(resourceProperties.containsKey("Animation")){
-			bone = (Bone)Spout.getFilesystem().getResource(resourceProperties.get("Animation"));
-			bone.dumbBone("");
-		}*/
+		if(resourceProperties.containsKey("Skeleton")){
+			skeleton = (Skeleton)Spout.getFilesystem().getResource(resourceProperties.get("Skeleton"));
+		}
 
-		return new ClientModel(mesh, bone, material);
+		return new ClientModel(mesh, skeleton, material);
 	}
 
 }

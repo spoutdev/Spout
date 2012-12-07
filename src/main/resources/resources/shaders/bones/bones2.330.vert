@@ -12,7 +12,7 @@ out vec2 uvcoord;
 
 uniform mat4 Projection;
 uniform mat4 View;
-uniform mat4[2] bone_matrixes;
+uniform mat4[10] bone_matrix;
       
 void main()
 {
@@ -20,7 +20,7 @@ void main()
    
    float total = 0;
    for (int i=0 ; i<2 ; ++i) {
-      bone_transform += bone_weights[i] * bone_matrixes[int(bone_ids[i])] * vec4(1,1,1,1);
+      bone_transform += bone_weights[i] * bone_matrix[int(bone_ids[i])] * vec4(1,1,1,1);
       
       total += bone_weights[i];
    }
