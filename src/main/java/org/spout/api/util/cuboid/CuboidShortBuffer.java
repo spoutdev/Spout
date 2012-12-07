@@ -26,6 +26,7 @@
  */
 package org.spout.api.util.cuboid;
 
+import org.spout.api.material.Material;
 import org.spout.api.math.Vector3;
 
 public class CuboidShortBuffer extends CuboidBuffer {
@@ -66,6 +67,7 @@ public class CuboidShortBuffer extends CuboidBuffer {
 		}
 	}
 
+	//This should be depricated in favor of the Material set.  
 	public void set(int x, int y, int z, short data) {
 		int index = getIndex(x, y, z);
 		if (index < 0) {
@@ -73,6 +75,10 @@ public class CuboidShortBuffer extends CuboidBuffer {
 		}
 
 		buffer[index] = data;
+	}
+	
+	public void set(int x, int y, int z, Material material){
+		set(x, y, z, material.getId());
 	}
 
 	public short get(int x, int y, int z) {
