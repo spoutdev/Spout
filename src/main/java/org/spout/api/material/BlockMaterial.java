@@ -41,6 +41,7 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.basic.BasicAir;
 import org.spout.api.material.basic.BasicSkyBox;
+import org.spout.api.material.basic.BasicSolid;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
 import org.spout.api.material.range.EffectRange;
@@ -58,7 +59,13 @@ import com.bulletphysics.collision.shapes.CollisionShape;
  */
 public class BlockMaterial extends Material implements Placeable {
 	public static final BlockMaterial AIR = new BasicAir();
-	public static final BlockMaterial SOLID = new BlockMaterial("solid").setHardness(1.f);
+	public static final BlockMaterial SOLID = new BasicSolid("SolidBlue", "model://Spout/resources/resources/models/solidBlue.spm");
+	public static final BlockMaterial SOLID_BROWN = new BasicSolid("SolidBrown", "model://Spout/resources/resources/models/solidBrown.spm");
+	public static final BlockMaterial SOLID_GREEN = new BasicSolid("SolidGreen", "model://Spout/resources/resources/models/solidGreen.spm");
+	public static final BlockMaterial SOLID_LIGHTGREEN = new BasicSolid("SolidLightGreen", "model://Spout/resources/resources/models/solidLightGreen.spm");
+	public static final BlockMaterial SOLID_RED = new BasicSolid("SolidRed", "model://Spout/resources/resources/models/solidRed.spm");
+	public static final BlockMaterial SOLID_SKYBLUE = new BasicSolid("SolidSkyBlue", "model://Spout/resources/resources/models/solidSkyBlue.spm");
+	
 	public static final BlockMaterial UNBREAKABLE = new BlockMaterial("Unbreakable").setHardness(100.f);
 	public static final BlockMaterial SKYBOX = new BasicSkyBox();
 	public static final BlockMaterial ERROR = new BlockMaterial("Missing Plugin").setHardness((100.f));
