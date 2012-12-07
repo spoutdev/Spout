@@ -31,25 +31,13 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.spout.api.math.Vector2;
-import org.spout.api.model.mesh.CubeMesh;
+import org.spout.api.model.mesh.CubeMeshFactory;
+import org.spout.api.model.mesh.OrientedMesh;
 import org.spout.api.resource.BasicResourceLoader;
 
-public class CubeMeshLoader extends BasicResourceLoader<CubeMesh> {
+public class CubeMeshLoader extends BasicResourceLoader<OrientedMesh> {
 
-	/* Exemple : TextureMesh file
-	 * #Comment
-	 * #First uv pos
-	 * vt 0.000 0.000
-	 * vt 1.000 0.000
-	 * vt 0.000 1.000
-	 * vt 1.000 1.000
-	 * #Second face->uv
-	 * #Order of face is important
-	 * f 0 1 2 3
-	 * f 2 1 3 4
-	 */
-
-	private static CubeMesh loadObj(InputStream stream) {
+	private static OrientedMesh loadObj(InputStream stream) {
 		Scanner scan = new Scanner(stream);
 
 		ArrayList<Vector2[]> textures = new ArrayList<Vector2[]>();
@@ -130,7 +118,7 @@ public class CubeMeshLoader extends BasicResourceLoader<CubeMesh> {
 		}
 
 		scan.close();
-		return new CubeMesh((Vector2[][]) textures.toArray(new Vector2[0][]));
+		return CubeMeshFactory.generateCubeMesh((Vector2[][]) textures.toArray(new Vector2[0][]));
 	}
 
 	@Override
@@ -139,7 +127,7 @@ public class CubeMeshLoader extends BasicResourceLoader<CubeMesh> {
 	}
 
 	@Override
-	public CubeMesh getResource(InputStream stream) {
+	public OrientedMesh getResource(InputStream stream) {
 		return CubeMeshLoader.loadObj(stream);
 	}
 

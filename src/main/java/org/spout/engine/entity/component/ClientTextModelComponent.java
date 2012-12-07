@@ -96,7 +96,7 @@ public class ClientTextModelComponent extends TextModelComponent {
 
 		translation = translation.subtract(xCursor / 2.f, 0, 0);
 
-		mesh = new BaseMesh(faces, false, true, true);
+		mesh = new BaseMesh(faces, false, true, true, false);
 		mesh.batch();
 	}
 
