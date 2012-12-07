@@ -60,7 +60,7 @@ public class EntityRendererComponent extends EntityComponent {
 		if(mesh.isBatched())
 			return;
 
-		Skeleton skeleton = model.getModel().getSkeleton();
+		Skeleton skeleton = null;//model.getModel().getSkeleton();
 
 		//TODO : In progress !
 		if(skeleton != null){
