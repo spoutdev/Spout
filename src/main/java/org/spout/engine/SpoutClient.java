@@ -148,10 +148,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private ScreenStack screenStack;
 	private ClientFont font;
 	private boolean showDebugInfos = true;
-	// FPS counter
-	private int fps = 0;
-	private int frames = 0;
-	private long lastFrameTime = System.currentTimeMillis();
 	private ConcurrentLinkedQueue<Runnable> renderTaskQueue = new ConcurrentLinkedQueue<Runnable>();
 	
 	
@@ -569,7 +565,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "x: ", position.getX()), font, -0.95f, 0.8f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "y: ", position.getY()), font, -0.95f, 0.7f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "z: ", position.getZ()), font, -0.95f, 0.6f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "fps: ", fps), font, -0.95f, 0.5f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "fps: ", getScheduler().getFps()), font, -0.95f, 0.5f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "batch: ", worldRenderer.getRended() + "/" + worldRenderer.getBatchWaiting()), font, -0.95f, 0.4f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "ocluded: ", (int) ((float) worldRenderer.getOcluded() / worldRenderer.getRended() * 100) + "%"), font, -0.95f, 0.3f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "culled: ", (int) ((float) worldRenderer.getCulled() / worldRenderer.getRended() * 100), "%"), font, -0.95f, 0.2f, 8f);
@@ -585,13 +581,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		if (wireframe) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 		}
-
-		if (System.currentTimeMillis() - lastFrameTime > 1000) {
-			lastFrameTime = System.currentTimeMillis();
-			fps = frames;
-			frames = 0;
-		}
-		frames++;
 	}
 
 	public void toggleDebugInfos() {
