@@ -30,7 +30,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.spout.api.FileSystem;
@@ -39,8 +41,9 @@ import org.spout.api.resource.Resource;
 import org.spout.api.resource.ResourceLoader;
 import org.spout.api.resource.ResourceNotFoundException;
 import org.spout.api.resource.ResourcePathResolver;
-import org.spout.engine.filesystem.path.FilepathResolver;
-import org.spout.engine.filesystem.path.JarfileResolver;
+
+import org.spout.engine.filesystem.path.FilePathResolver;
+import org.spout.engine.filesystem.path.JarFilePathResolver;
 
 /**
  * The basic filesystem of Spout.
@@ -56,11 +59,9 @@ public class SharedFileSystem implements FileSystem {
 	public static final File UPDATE_DIRECTORY = new File("update");
 	public static final File DATA_DIRECTORY = new File("data");
 	public static final File WORLDS_DIRECTORY = new File("worlds");
-
-	ResourcePathResolver[] searchpaths;
-
-	final Map<String, Map<String, ResourceLoader<?>>> loaders = new HashMap<String, Map<String, ResourceLoader<?>>>();
-	final HashMap<URI, Resource> loadedResouces = new HashMap<URI, Resource>();
+	private ResourcePathResolver[] searchPaths;
+	private final Map<String, Map<String, ResourceLoader<?>>> loaders = new HashMap<String, Map<String, ResourceLoader<?>>>();
+	private final HashMap<URI, Resource> loadedResources = new HashMap<URI, Resource>();
 
 	@Override
 	public void init() {
@@ -74,9 +75,9 @@ public class SharedFileSystem implements FileSystem {
 			WORLDS_DIRECTORY.mkdirs();
 		}
 
-		searchpaths = new ResourcePathResolver[] { new FilepathResolver("cache"),
-				// new ZipfileResolver(),
-				new JarfileResolver() };
+		searchPaths = new ResourcePathResolver[]{new FilePathResolver("cache"),
+				// new ZipFilePathResolver(),
+				new JarFilePathResolver()};
 	}
 
 	@Override
@@ -94,30 +95,19 @@ public class SharedFileSystem implements FileSystem {
 
 	@Override
 	public InputStream getResourceStream(URI path) throws ResourceNotFoundException {
-
-		for (int i = 0; i < searchpaths.length; i++) {
-			if (searchpaths[i].existsInPath(path)) {
-				return searchpaths[i].getStream(path);
-			}
+		// Find the correct search path
+		ResourcePathResolver searchPath = getPathResolver(path);
+		if (searchPath != null) {
+			return searchPath.getStream(path);
 		}
+
+		// No path found? Open our jar and grab the fallback 'file' scheme
 		Spout.getEngine().getLogger().warning("Tried to load " + path + " it isn't found!  Using system fallback");
-
-		// Open our jar and grab the fallback 'file' scheme
 		String scheme = path.getScheme();
-		if (scheme.equals("file")) {
-			return SharedFileSystem.class.getResourceAsStream("/fallbacks/" + path.getPath());
+		if (!scheme.equals("file")) {
+			throw new ResourceNotFoundException(path.toString());
 		}
-
-		// Still can't find it? Throw a ResourceNotFound exception and give out
-		// fallbacks
-		throw new ResourceNotFoundException(path.toString());
-
-		/*
-		 * String name = LOADERS.get(scheme).getFallbackResourceName();
-		 * InputStream stream =
-		 * FileSystem.class.getResourceAsStream("/fallbacks/" + name); return
-		 * stream;
-		 */
+		return SharedFileSystem.class.getResourceAsStream("/fallbacks/" + path.getPath());
 	}
 
 	@Override
@@ -125,7 +115,9 @@ public class SharedFileSystem implements FileSystem {
 		try {
 			return getResourceStream(new URI(path));
 		} catch (URISyntaxException e) {
-			throw new IllegalArgumentException("Tried to get a Resource Stream URI, but" + path + " Isn't a URI");
+			throw new IllegalArgumentException("Tried to get a Resource Stream URI, but" + path + " Isn't a URI", e);
+		} catch (ResourceNotFoundException e) {
+			throw new IllegalArgumentException("Resource not found at path '" + path + "':", e);
 		}
 	}
 
@@ -155,30 +147,31 @@ public class SharedFileSystem implements FileSystem {
 			throw new IllegalArgumentException("Unsupported file extension for protocol '" + protocol + "': " + ext);
 		}
 		Resource r = loader.getResource(path);
-		loadedResouces.put(path, r);
+		loadedResources.put(path, r);
 	}
 
 	@Override
 	public void loadResource(String path) {
 		try {
-			URI upath = new URI(path);
-			loadResource(upath);
+			loadResource(new URI(path));
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			throw new IllegalArgumentException("Tried to load resource at '" + path + "', but path is not a URI.", e);
+		} catch (ResourceNotFoundException e) {
+			throw new IllegalArgumentException("Resource not found at '" + path + "': ", e);
 		}
 	}
 
 	@Override
 	public Resource getResource(URI path) {
-		if (!loadedResouces.containsKey(path)) {
-			if (Spout.debugMode())
+		if (!loadedResources.containsKey(path)) {
+			if (Spout.debugMode()) {
 				Spout.getLogger().warning("Late Precache of resource: " + path.toString());
+			}
 			try {
 				loadResource(path);
 			} catch (ResourceNotFoundException e) {
 				String scheme = path.getScheme();
 				String extension = getExtension(path);
-
 				ResourceLoader<?> loader = getLoader(scheme, extension);
 				if (loader == null) {
 					throw new IllegalArgumentException("No loader found for " + scheme + " protocol with extension " + extension + "!");
@@ -187,26 +180,88 @@ public class SharedFileSystem implements FileSystem {
 				String name = loader.getFallbackResourceName();
 				try {
 					URI fallbackName = new URI(name);
-					return loadedResouces.get(fallbackName);
+					return loadedResources.get(fallbackName);
 				} catch (URISyntaxException e1) {
-
 					e1.printStackTrace();
 					return null;
 				}
-
 			}
 		}
-		return loadedResouces.get(path);
+		return loadedResources.get(path);
 	}
 
 	@Override
 	public Resource getResource(String path) {
 		try {
-			URI upath = new URI(path);
-			return getResource(upath);
+			return getResource(new URI(path));
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
-			return null;
+			throw new IllegalArgumentException("Tried to get resource at '" + path + "', but path is not a URI.");
+		}
+	}
+
+	@Override
+	public ResourcePathResolver getPathResolver(URI path) {
+		for (ResourcePathResolver searchPath : searchPaths) {
+			if (searchPath.existsInPath(path)) {
+				return searchPath;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public ResourcePathResolver getPathResolver(String path) {
+		try {
+			return getPathResolver(new URI(path));
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException("Tried to get path resolver at '" + path + "', but path is not a URI.");
+		}
+	}
+
+	@Override
+	public void loadResources(URI uri) {
+		ResourcePathResolver resolver = getPathResolver(uri);
+		if (resolver == null) {
+			throw new IllegalArgumentException("Could not resolve path '" + uri.toString() + "'");
+		}
+
+		String[] files = resolver.list(uri);
+		for (String file : files) {
+			loadResource(uri.getScheme() + "://" + uri.getHost() + uri.getPath() + file);
+		}
+	}
+
+	@Override
+	public void loadResources(String path) {
+		try {
+			loadResources(new URI(path));
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException("Tried to load resources from '" + path + "': ", e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends Resource> List<T> getResources(URI uri) {
+		ResourcePathResolver resolver = getPathResolver(uri);
+		if (resolver == null) {
+			throw new IllegalArgumentException("Could not resolve path '" + uri.toString() + "'");
+		}
+
+		String[] files = resolver.list(uri);
+		List<T> resources = new ArrayList<T>();
+		for (String file : files) {
+			resources.add((T) getResource(uri.getScheme() + "://" + uri.getHost() + uri.getPath() + file));
+		}
+		return resources;
+	}
+
+	@Override
+	public <T extends Resource> List<T> getResources(String path) {
+		try {
+			return getResources(new URI(path));
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException("Tried to get resources from '" + path + "': ", e);
 		}
 	}
 
