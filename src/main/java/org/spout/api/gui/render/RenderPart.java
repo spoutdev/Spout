@@ -87,10 +87,10 @@ public class RenderPart implements Comparable<RenderPart> {
 		Vector2 t3 = new Vector2(source.getX() + source.getWidth(), source.getY() + source.getHeight());
 		Vector2 t4 = new Vector2(source.getX(), source.getY() + source.getHeight());
 
-		face.add(new Vertex(p1, t1));
-		face.add(new Vertex(p2, t2));
-		face.add(new Vertex(p3, t3));
-		face.add(new Vertex(p4, t4));
+		face.add(Vertex.createVertexPositionTexture0(p1, t1));
+		face.add(Vertex.createVertexPositionTexture0(p2, t2));
+		face.add(Vertex.createVertexPositionTexture0(p3, t3));
+		face.add(Vertex.createVertexPositionTexture0(p4, t4));
 
 		for (Vertex v : face) {
 			v.color = color;

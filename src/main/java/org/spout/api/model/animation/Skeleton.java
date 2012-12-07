@@ -26,6 +26,7 @@
  */
 package org.spout.api.model.animation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +35,14 @@ import org.spout.api.resource.Resource;
 public class Skeleton extends Resource{
 
 	private Bone root;
+	private ArrayList<Bone> bones = new ArrayList<Bone>();
+	
 	private Map<String, Bone> bonesName = new HashMap<String, Bone>();
+	
+	
+	private ArrayList<ArrayList<Integer>> verticies = new ArrayList<ArrayList<Integer>>();
+	private ArrayList<ArrayList<Float>> weights = new ArrayList<ArrayList<Float>>();
+	private int maxBonePerVertice = 0;
 
 	private Map<String,Animation> animations;
 
@@ -59,6 +67,9 @@ public class Skeleton extends Resource{
 
 		//Store the bone with name
 		bonesName.put(name, bone);
+		
+		//Store it in array
+		bones.add(bone);
 
 		//Root bone
 		if(root == null){
@@ -78,6 +89,25 @@ public class Skeleton extends Resource{
 			parent.attachBone(bone);
 			bone.setParent(parent);
 		}
+		
+		if(bone.getVerticies().length != bone.getWeight().length)
+			throw new IllegalStateException("Number of vertices don't match number of weight");
+		
+		//Fill verticeBone
+		for(int i = 0; i < bone.getVerticies().length; i++){
+			int id = bone.getVerticies()[i];
+			float weight = bone.getWeight()[i];
+			
+			while(id > verticies.size() - 1){
+				verticies.add(new ArrayList<Integer>());
+				weights.add(new ArrayList<Float>());
+			}
+			
+			verticies.get(id).add(bone.getId());
+			weights.get(id).add(weight);
+			
+			maxBonePerVertice = Math.max(verticies.get(id).size(), maxBonePerVertice);
+		}
 	}
 	
 	/*
@@ -87,5 +117,36 @@ public class Skeleton extends Resource{
 		animations.put(name, animation);
 	}
 
+	public int getBoneSize() {
+		return bones.size();
+	}
 
+	public Bone getBone(int i){
+		return bones.get(i);
+	}
+
+	public ArrayList<ArrayList<Integer>> getVerticeArray() {
+		return verticies;
+	}
+	
+	public ArrayList<ArrayList<Float>> getWeightArray() {
+		return weights;
+	}
+
+	public int getBonePerVertice() {
+		return maxBonePerVertice;
+	}
+
+	public void print(){
+		StringBuilder str = new StringBuilder();
+		str.append("Skeleton : \n");
+		for(int i = 0; i < verticies.size(); i++){
+			str.append(" Vertice "+ i + " : ");
+			for(int j = 0; j < verticies.get(i).size(); j++){
+				str.append(verticies.get(i).get(j)+", ");
+			}
+			str.append("\n");
+		}
+		System.out.println(str.toString());
+	}
 }
