@@ -107,8 +107,8 @@ public class BlockMeshLoader extends BasicResourceLoader<OrientedMesh> {
 						String[] sn = sp[i].split("//");
 						int pos = Integer.parseInt(sn[0]);
 						int norm = Integer.parseInt(sn[1]);
-						ar.add(new Vertex(verticies.get(pos - 1), normals.get(norm - 1)));
-
+						
+						ar.add(Vertex.createVertexPositionNormal(verticies.get(pos - 1), normals.get(norm - 1)));
 					}
 
 					if(requiredFace == null)
@@ -126,9 +126,10 @@ public class BlockMeshLoader extends BasicResourceLoader<OrientedMesh> {
 						int uv = Integer.parseInt(sn[1]);
 						if (sn.length>2) {
 							int norm = Integer.parseInt(sn[2]);
-							ar.add(new Vertex(verticies.get(pos - 1), normals.get(norm - 1), uvs.get(uv - 1)));
+							
+							ar.add(Vertex.createVertexPositionNormaTexture0(verticies.get(pos - 1), normals.get(norm - 1), uvs.get(uv - 1)));
 						} else {
-							ar.add(new Vertex(verticies.get(pos - 1), uvs.get(uv - 1)));
+							ar.add(Vertex.createVertexPositionTexture0(verticies.get(pos - 1), uvs.get(uv - 1)));
 						}
 
 					}
@@ -145,9 +146,9 @@ public class BlockMeshLoader extends BasicResourceLoader<OrientedMesh> {
 					int face2 = Integer.parseInt(sp[2]) - 1;
 					int face3 = Integer.parseInt(sp[3]) - 1;
 
-					Vertex p1 = new Vertex(verticies.get(face1));
-					Vertex p2 = new Vertex(verticies.get(face2));
-					Vertex p3 = new Vertex(verticies.get(face3));
+					Vertex p1 = Vertex.createVertexPosition(verticies.get(face1));
+					Vertex p2 = Vertex.createVertexPosition(verticies.get(face2));
+					Vertex p3 = Vertex.createVertexPosition(verticies.get(face3));
 
 					if(requiredFace == null)
 						faces.add(new OrientedMeshFace(p3, p2, p1));

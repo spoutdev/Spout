@@ -40,7 +40,7 @@ import org.spout.api.util.typechecker.TypeChecker;
 import org.yaml.snakeyaml.Yaml;
 
 @SuppressWarnings("unchecked")
-public class BoneLoader extends BasicResourceLoader<Bone> {
+public class AnimationLoader extends BasicResourceLoader<Bone> {
 
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
 
@@ -138,7 +138,7 @@ public class BoneLoader extends BasicResourceLoader<Bone> {
 
 	@Override
 	public Bone getResource(InputStream stream) {
-		return BoneLoader.loadObj(stream);
+		return AnimationLoader.loadObj(stream);
 	}
 
 	@Override

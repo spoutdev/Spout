@@ -31,6 +31,7 @@ import java.util.ArrayList;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GLContext;
 import org.spout.api.model.mesh.Mesh;
 import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.Vertex;
@@ -47,9 +48,10 @@ public class BaseMesh extends Resource implements Mesh{
 
 	BatchVertexRenderer renderer;
 
-	public BaseMesh(ArrayList<MeshFace> faces, boolean normal, boolean color, boolean texture0){
+	public BaseMesh(ArrayList<MeshFace> faces, boolean normal, boolean color, boolean texture0, boolean indexate){
 		FloatBuffer vertexBuffer, normalBuffer = null, colorBuffer = null, texture0Buffer = null;
-		int numVerticies = faces.size() * 3;
+		int i = 0, numVerticies = faces.size() * 3;
+		int []verticeIndex = indexate ? new int[numVerticies * 3] : null;
 
 		vertexBuffer = BufferUtils.createFloatBuffer(numVerticies * 4);
 		vertexBuffer.clear();
@@ -91,6 +93,9 @@ public class BaseMesh extends Resource implements Mesh{
 					texture0Buffer.put(v.texCoord0.getX());
 					texture0Buffer.put(v.texCoord0.getY());
 				}
+				
+				if(indexate)
+					verticeIndex[i++] = v.id;
 			}
 		}
 
@@ -113,8 +118,14 @@ public class BaseMesh extends Resource implements Mesh{
 			container.setBuffers(BatchVertexRenderer.COLOR_LAYER, colorBuffer);
 		if(texture0)
 			container.setBuffers(BatchVertexRenderer.TEXTURE0_LAYER, texture0Buffer);
+		
+		container.setVerticeIndex(verticeIndex);
 	}
 
+	public GLBufferContainer getContainer(){
+		return container;
+	}
+	
 	public void batch(){
 		if (renderer == null)
 			renderer = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);

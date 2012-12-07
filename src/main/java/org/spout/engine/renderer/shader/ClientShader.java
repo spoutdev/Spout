@@ -54,6 +54,7 @@ import org.spout.engine.renderer.shader.variables.IntShaderVariable;
 import org.spout.engine.renderer.shader.variables.Mat2ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Mat3ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Mat4ShaderVariable;
+import org.spout.engine.renderer.shader.variables.Mat4x3ArrayShaderVariable;
 import org.spout.engine.renderer.shader.variables.ShaderVariable;
 import org.spout.engine.renderer.shader.variables.TextureSamplerShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec2ShaderVariable;
@@ -211,6 +212,11 @@ public class ClientShader extends Resource implements Shader {
 		if(assigned == this) dirtyVariables.add(name);
 	}
 
+	@Override
+	public void setUniform(String name, Matrix[] value) {
+		variables.put(name, new Mat4x3ArrayShaderVariable(program, name, value));//TODO  check 4x3 needed
+		if(assigned == this) dirtyVariables.add(name);
+	}
 
 	@Override
 	public void setUniform(String name, Vector3 value) {

@@ -26,28 +26,26 @@
  */
 package org.spout.engine.entity.component;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.FloatBuffer;
 
+import javax.vecmath.Matrix4f;
+
+import org.lwjgl.BufferUtils;
 import org.spout.api.component.components.EntityComponent;
 import org.spout.api.component.components.ModelComponent;
-import org.spout.api.component.components.TransformComponent;
+import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
+import org.spout.api.model.animation.Bone;
+import org.spout.api.model.animation.Skeleton;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotEntity;
 import org.spout.engine.mesh.BaseMesh;
 
 public class EntityRendererComponent extends EntityComponent {
-	
-	ModelComponent model;
-	TransformComponent transform;
 
 	@Override
 	public void onAttached() {
-		model = getOwner().get(ModelComponent.class);
-		transform = getOwner().getTransform();
-		//batch = new PrimitiveBatch(); // cant create the batch before the context is created
 	}
 
 	public void update(){
@@ -58,9 +56,58 @@ public class EntityRendererComponent extends EntityComponent {
 			return;
 
 		BaseMesh mesh = (BaseMesh) model.getModel().getMesh();
-		
-		if(!mesh.isBatched())
-			mesh.batch();
+
+		if(mesh.isBatched())
+			return;
+
+		Skeleton skeleton = model.getModel().getSkeleton();
+
+		//TODO : In progress !
+		if(skeleton != null){
+			System.out.println("Buffering skeleton");
+			FloatBuffer boneIdBuffer = BufferUtils.createFloatBuffer(mesh.getContainer().element * skeleton.getBonePerVertice());
+			FloatBuffer weightBuffer = BufferUtils.createFloatBuffer(mesh.getContainer().element * skeleton.getBonePerVertice());
+
+			if(skeleton.getBonePerVertice() > skeleton.getBonePerVertice())
+				System.out.println("Number of bone per vertice limited ! ");
+			
+			boneIdBuffer.clear();
+			weightBuffer.clear();
+
+			//For each vertice
+			for(int i = 0; i < mesh.getContainer().element; i++ ){
+
+				//Get the vertice id in the .obj/.ske referential
+				int vertexId =  mesh.getContainer().getVerticeIndex()[i];
+
+				if(vertexId >= skeleton.getVerticeArray().size()){
+					System.out.println("Depassement");
+					continue;
+				}
+				
+				int j = 0;
+				//For each registred bone associated with this vertice, add it in buffer
+				for(; j < skeleton.getVerticeArray().get(vertexId).size(); j++){
+					boneIdBuffer.put(skeleton.getVerticeArray().get(vertexId).get(j));
+					weightBuffer.put(skeleton.getWeightArray().get(vertexId).get(j));
+				}
+				//Full the buffer for the number of vertice
+				for(; j < skeleton.getBonePerVertice(); j++){
+					boneIdBuffer.put(-1);
+					weightBuffer.put(-1);
+				}
+				System.out.println("Taille : "+j );
+			}
+			
+			boneIdBuffer.flip();
+			weightBuffer.flip();
+
+			mesh.getContainer().setBuffers(5, boneIdBuffer);
+			mesh.getContainer().setBuffers(6, weightBuffer);
+			System.out.println("Buffering skeleton SUCCESS");
+		}
+
+		mesh.batch();
 	}
 
 	public void render(Camera camera) {
@@ -74,15 +121,17 @@ public class EntityRendererComponent extends EntityComponent {
 		if (mesh == null) 
 			return;
 
-		Matrix modelMatrix = transform.getTransformation();
+		Matrix modelMatrix = getOwner().getTransform().getTransformation();
 		RenderMaterial mat = model.getModel().getRenderMaterial();
 
 		mat.getShader().setUniform("View", camera.getView());
 		mat.getShader().setUniform("Projection", camera.getProjection());
 		mat.getShader().setUniform("Model", modelMatrix);
 		
-		SnapshotEntity snap = new SnapshotEntity(mat, getOwner());
+		mat.getShader().setUniform("bone_matrix", MathHelper.createIdentity());
 		
+		SnapshotEntity snap = new SnapshotEntity(mat, getOwner());
+
 		mat.preRenderEntity(snap);
 		mesh.render(mat);
 		mat.postRenderEntity(snap);

@@ -74,7 +74,7 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 						String[] sn = sp[i].split("//");
 						int pos = Integer.parseInt(sn[0]);
 						int norm = Integer.parseInt(sn[1]);
-						ar.add(new Vertex(verticies.get(pos - 1), normals.get(norm - 1)));
+						ar.add(Vertex.createVertexPositionNormalIndex(verticies.get(pos - 1), normals.get(norm - 1), pos));
 					}
 					faces.add(new MeshFace(ar.get(2), ar.get(1), ar.get(0)));
 					ar.clear();
@@ -89,9 +89,9 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 						if (sn.length>2) {
 							normal = true;
 							int norm = Integer.parseInt(sn[2]);
-							ar.add(new Vertex(verticies.get(pos - 1), normals.get(norm - 1), uvs.get(uv - 1)));
+							ar.add(Vertex.createVertexPositionNormalTexture0Index(verticies.get(pos - 1), normals.get(norm - 1), uvs.get(uv - 1), pos));
 						} else {
-							ar.add(new Vertex(verticies.get(pos - 1), uvs.get(uv - 1)));
+							ar.add(Vertex.createVertexPositionTexture0Index(verticies.get(pos - 1), uvs.get(uv - 1), pos));
 						}
 
 					}
@@ -99,16 +99,15 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 					ar.clear();
 
 				} else {
-					int face1 = Integer.parseInt(sp[1]) - 1;
-					int face2 = Integer.parseInt(sp[2]) - 1;
-					int face3 = Integer.parseInt(sp[3]) - 1;
+					int face1 = Integer.parseInt(sp[1]);
+					int face2 = Integer.parseInt(sp[2]);
+					int face3 = Integer.parseInt(sp[3]);
 
-					Vertex p1 = new Vertex(verticies.get(face1));
-					Vertex p2 = new Vertex(verticies.get(face2));
-					Vertex p3 = new Vertex(verticies.get(face3));
+					Vertex p1 = Vertex.createVertexPositionIndex(verticies.get(face1 - 1),face1);
+					Vertex p2 = Vertex.createVertexPositionIndex(verticies.get(face2 - 1), face2);
+					Vertex p3 = Vertex.createVertexPositionIndex(verticies.get(face3 - 1), face3);
 					
 					faces.add(new MeshFace(p3, p2, p1));
-
 				}
 
 			}
@@ -117,7 +116,7 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 
 		scan.close();
 		
-		return new BaseMesh(faces,normal,color,texture0);
+		return new BaseMesh(faces, normal, color, texture0, true);
 	}
 
 	@Override

@@ -24,31 +24,36 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.engine.renderer;
+package org.spout.engine.renderer.shader.variables;
 
-import java.nio.Buffer;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.FloatBuffer;
 
-public class GLBufferContainer {
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL21;
 
-	public int element = 0;
-	int[] verticeIndex;
-	final Map<Integer,Buffer> buffers = new HashMap<Integer,Buffer>();
+import org.spout.api.math.Matrix;
 
-	public Map<Integer,Buffer> getBuffers(){
-		return buffers;
+public class Mat4x3ArrayShaderVariable extends ShaderVariable {
+	Matrix []value;
+
+	public Mat4x3ArrayShaderVariable(int program, String name, Matrix []value) {
+		super(program, name);
+		this.value = value;
 	}
 
-	public void setBuffers(int layout, Buffer buffer){
-		buffers.put(layout, buffer);
+	public Matrix[] get() {
+		return value;
 	}
 
-	public void setVerticeIndex(int[] verticeIndex) {
-		this.verticeIndex = verticeIndex;
-	}
+	@Override
+	public void assign() {
+		FloatBuffer buff = BufferUtils.createFloatBuffer(4 * 3 * value.length);
+		
+		for(int i = 0; i < value.length; i++)
+			buff.put(value[i].toArray(),0,4 * 3);
+		
+		buff.flip();
 
-	public int[] getVerticeIndex() {
-		return verticeIndex;
+		GL21.glUniformMatrix4x3(location, false, buff);
 	}
 }
