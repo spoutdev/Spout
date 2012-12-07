@@ -34,7 +34,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NestedCommand {
-	public Class<?>[] commands();
+	public Class<?>[] value();
 	
 	public boolean ignoreBody() default true;
 }

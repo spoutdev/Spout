@@ -116,7 +116,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 			anyRegistered = true;
 
 			if (method.isAnnotationPresent(NestedCommand.class)) {
-				for (Class<?> clazz : method.getAnnotation(NestedCommand.class).commands()) {
+				for (Class<?> clazz : method.getAnnotation(NestedCommand.class).value()) {
 					success &= create(owner, clazz, child);
 				}
 				if ( !method.getAnnotation(NestedCommand.class).ignoreBody() ) {
