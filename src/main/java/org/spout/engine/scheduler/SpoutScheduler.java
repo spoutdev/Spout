@@ -37,6 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 
+import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
 import org.spout.api.Client;
 import org.spout.api.Engine;
@@ -154,9 +155,9 @@ public final class SpoutScheduler implements Scheduler {
 	public long getFps(){
 		return renderThread.getFps();
 	}
-	
+
 	public boolean isRendererOverloaded(){
-		return renderThread != null && renderThread.getFps() < OVERHEAD_FPS;
+		return renderThread != null && (renderThread.getFrameOverhead() || renderThread.getFps() < OVERHEAD_FPS);
 	}
 
 	/**
@@ -175,6 +176,7 @@ public final class SpoutScheduler implements Scheduler {
 
 	private class RenderThread extends Thread {
 		private int fps = 0;
+		boolean tooLongFrame = false;
 
 		public RenderThread() {
 			super("Render Thread");
@@ -184,12 +186,17 @@ public final class SpoutScheduler implements Scheduler {
 			return fps;
 		}
 
+		public boolean getFrameOverhead() {
+			return tooLongFrame;
+		}
+
 		@Override
 		public void run() {
 			SpoutClient c = (SpoutClient) Spout.getEngine();
 			c.initRenderer();
 			int frames = 0;
 			long lastFrameTime = System.currentTimeMillis();
+			int targetFrame = (int)(1f / TARGET_FPS * 1000);
 			int rate = (int) ((1f / TARGET_FPS) * 1000000000);
 
 			long lastTick = System.nanoTime();
@@ -253,7 +260,13 @@ public final class SpoutScheduler implements Scheduler {
 						Spout.log("[Severe] Interrupted while sleeping!");
 					}
 				}
+				tooLongFrame = false;
+			}else if(delay < - targetFrame){
+				tooLongFrame = true;
+			}else{
+				tooLongFrame = false;
 			}
+
 
 			if (System.currentTimeMillis() - lastFrameTime > 1000) {
 				lastFrameTime = System.currentTimeMillis();
