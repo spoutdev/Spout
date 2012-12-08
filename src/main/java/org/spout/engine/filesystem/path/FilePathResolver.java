@@ -26,62 +26,66 @@
  */
 package org.spout.engine.filesystem.path;
 
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.spout.engine.filesystem.SharedFileSystem;
+import org.spout.api.resource.ResourcePathResolver;
 
-public class ZipfileResolver extends FilepathResolver {
-	public ZipfileResolver() {
-		super(SharedFileSystem.RESOURCE_FOLDER.getPath());
+public class FilePathResolver implements ResourcePathResolver {
+	protected final String directory;
+
+	public FilePathResolver(String path) {
+		this.directory = path;
+	}
+
+	public File getFile(String host, String path) {
+		return new File(directory + File.separatorChar + host, path);
 	}
 
 	@Override
-	public boolean existsInPath(String file, String path) {
-		boolean has = false;
-		ZipFile f = null;
-		try {
-			System.out.println(path);
-			f = new ZipFile(path);
-			ZipEntry entry = f.getEntry(file);
-			has = entry != null;
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (f != null) {
-				try {
-					f.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return has;
+	public boolean existsInPath(String host, String path) {
+		return getFile(host, path).exists();
 	}
 
 	@Override
-	public InputStream getStream(String file, String path) {
-		ZipFile f = null;
-		FileInputStream stream = null;
+	public boolean existsInPath(URI uri) {
+		return this.existsInPath(uri.getHost(), uri.getPath());
+	}
+
+	@Override
+	public InputStream getStream(String host, String path) {
 		try {
-			f = new ZipFile(directory + path);
-			ZipEntry entry = f.getEntry(file);
-			InputStream s = f.getInputStream(entry);
-			return s; //TODO close the jar.
-		} catch (IOException e) {
+			return new FileInputStream(getFile(host, path));
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		} finally {
-			if (f != null) {
-				try {
-					f.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			return null;
+		}
+	}
+
+	@Override
+	public InputStream getStream(URI uri) {
+		return this.getStream(uri.getHost(), uri.getPath());
+	}
+
+	@Override
+	public String[] list(String host, String path) {
+		List<String> list = new ArrayList<String>();
+		for (File file : getFile(host, path).listFiles()) {
+			// we can't load directories, no point in returning them
+			if (file.isFile()) {
+				list.add(file.getName());
 			}
 		}
-		return stream;
+		return list.toArray(new String[list.size()]);
+	}
+
+	@Override
+	public String[] list(URI uri) {
+		return list(uri.getHost(), uri.getPath());
 	}
 }
