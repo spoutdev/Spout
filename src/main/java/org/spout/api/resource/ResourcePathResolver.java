@@ -30,9 +30,58 @@ import java.io.InputStream;
 import java.net.URI;
 
 public interface ResourcePathResolver {
-	public boolean existsInPath(String file, String path);
-	public boolean existsInPath(URI path);
-	
-	public InputStream getStream(String file, String path);
-	public InputStream getStream(URI path);
+	/**
+	 * Returns true if the specified path exists in the host.
+	 *
+	 * @param host of path
+	 * @param path within the host
+	 * @return true if specified path exists
+	 */
+	public boolean existsInPath(String host, String path);
+
+	/**
+	 * Returns true if the specified path exists in the host.
+	 *
+	 * @param uri including the host and path of the resource
+	 * @return true if specified path exists
+	 */
+	public boolean existsInPath(URI uri);
+
+	/**
+	 * Returns an {@link InputStream} at the given host and path to be resolved
+	 * by the implementing class.
+	 *
+	 * @param host of stream
+	 * @param path within the host
+	 * @return input stream
+	 */
+	public InputStream getStream(String host, String path);
+
+	/**
+	 * Returns an {@link InputStream} at the given host and path to be resolved
+	 * by the implementing class.
+	 *
+	 * @param uri including the host and path of the resource
+	 * @return input stream
+	 */
+	public InputStream getStream(URI uri);
+
+	/**
+	 * Lists all files in the specified directory within the host. The
+	 * specified path must end in a '/' to identify the path as a directory.
+	 *
+	 * @param host of the directory
+	 * @param path within the host
+	 * @return array of the names of the files within the specified path
+	 */
+	public String[] list(String host, String path);
+
+	/**
+	 * Lists all files in the specified directory within the host. The
+	 * specified path must end in a '/' to identify the path as a directory.
+	 *
+	 * @param uri including the host and path of the resource
+	 * @return array of the names of the files within the specified path
+	 */
+	public String[] list(URI uri);
 }

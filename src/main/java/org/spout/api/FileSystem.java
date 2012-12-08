@@ -28,10 +28,12 @@ package org.spout.api;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.util.List;
 
 import org.spout.api.resource.Resource;
 import org.spout.api.resource.ResourceLoader;
 import org.spout.api.resource.ResourceNotFoundException;
+import org.spout.api.resource.ResourcePathResolver;
 
 /**
  * A FileSystem handles the loading of client and server resources.
@@ -117,4 +119,80 @@ public interface FileSystem {
 	 * @return {@link Resource}
 	 */
 	public abstract Resource getResource(String path);
+
+	/**
+	 * Returns the {@link ResourcePathResolver} that passes the
+	 * {@link ResourcePathResolver#existsInPath(java.net.URI)} call for the
+	 * specified path signifying where to get a {@link Resource} from at the
+	 * specified path.
+	 *
+	 * @param path to the resource
+	 * @return resolution for path
+	 */
+	public abstract ResourcePathResolver getPathResolver(URI path);
+
+	/**
+	 * Returns the {@link ResourcePathResolver} that passes the
+	 * {@link ResourcePathResolver#existsInPath(java.net.URI)} call for the
+	 * specified path signifying where to get a {@link Resource} from at the
+	 * specified path.
+	 *
+	 * @param path to the resource
+	 * @return resolution for path
+	 */
+	public abstract ResourcePathResolver getPathResolver(String path);
+
+	/**
+	 * Attempts to load all resources into the FileSystem at the given
+	 * directory. Specified path must end with a '/' to identify the
+	 * path as a directory.
+	 *
+	 * @param uri to load resources from
+	 */
+	public abstract void loadResources(URI uri);
+
+	/**
+	 * Attempts to load all resources into the FileSystem at the given
+	 * directory. Specified path must end with a '/' to identify the
+	 * path as a directory.
+	 *
+	 * @param path to load resources from
+	 */
+	public abstract void loadResources(String path);
+
+	/**
+	 * Returns all the loaded resources in the FileSystem at the given
+	 * directory. If any of the resources in the specified directory
+	 * are not loaded this method will attempt to load the unloaded
+	 * resource. The specified type for the List must reflect the
+	 * given scheme in the URI or a {@link ClassCastException} will be
+	 * thrown. The given URI's path must end with a '/' to identify the
+	 * path as a directory.
+	 *
+	 * @param uri of the directory to get the resources from
+	 * @param <T> type of the {@link Resource} to load; this type parameter
+	 * must reflect the scheme of the URI or else a {@link ClassCastException}
+	 * will be thrown
+	 * @throws ClassCastException if type parameter does not reflect URI scheme
+	 * @return a list of <T> loaded from the directory at the specified URI
+	 */
+	public abstract <T extends Resource> List<T> getResources(URI uri);
+
+	/**
+	 * Returns all the loaded resources in the FileSystem at the given
+	 * directory. If any of the resources in the specified directory
+	 * are not loaded this method will attempt to load the unloaded
+	 * resource. The specified type for the List must reflect the
+	 * given scheme in the URI or a {@link ClassCastException} will be
+	 * thrown. The given URI's path must end with a '/' to identify the
+	 * path as a directory.
+	 *
+	 * @param path of the directory to get the resources from
+	 * @param <T> type of the {@link Resource} to load; this type parameter
+	 * must reflect the scheme of the URI or else a {@link ClassCastException}
+	 * will be thrown
+	 * @throws ClassCastException if type parameter does not reflect URI scheme
+	 * @return a list of <T> loaded from the directory at the specified URI
+	 */
+	public abstract <T extends Resource> List<T> getResources(String path);
 }

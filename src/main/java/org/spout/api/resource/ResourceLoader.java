@@ -49,7 +49,7 @@ public interface ResourceLoader<E extends Resource> {
 	 * @param resource
 	 * @return
 	 */
-	public E getResource(URI resource);
+	public E getResource(URI resource) throws ResourceNotFoundException;
 
 	/**
 	 * Returns the fallback name for this resource.
