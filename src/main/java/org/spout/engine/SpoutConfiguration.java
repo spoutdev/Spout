@@ -34,6 +34,7 @@ import org.spout.api.util.config.ConfigurationHolderConfiguration;
 import org.spout.api.util.config.yaml.YamlConfiguration;
 
 public class SpoutConfiguration extends ConfigurationHolderConfiguration {
+	public static final ConfigurationHolder UPNP = new ConfigurationHolder(true, "upnp");
 	public static final ConfigurationHolder RECLAIM_MEMORY = new ConfigurationHolder(true, "reclaim-memory");
 	public static final ConfigurationHolder CHUNK_REAP_DELAY = new ConfigurationHolder(10000, "chunks", "reap-delay");
 	public static final ConfigurationHolder REAP_CHUNKS_PER_TICK = new ConfigurationHolder(5, "chunks", "reap-per-tick");

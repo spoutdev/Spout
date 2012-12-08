@@ -28,6 +28,7 @@ package org.spout.engine;
 
 import java.net.InetAddress;
 import java.net.SocketAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -140,6 +141,15 @@ public class SpoutServer extends SpoutEngine implements Server {
 			portBindings.save();
 		} catch (ConfigurationException e) {
 			log("Error loading port bindings: %0", Level.SEVERE, e);
+		}
+
+		//UPnP
+		if (SpoutConfiguration.UPNP.getBoolean()) {
+			for (PortBinding binding : ((Server) getEngine()).getBoundAddresses()) {
+				if (binding.getAddress() instanceof InetSocketAddress) {
+					mapUPnPPort(((InetSocketAddress) binding.getAddress()).getPort(), "Spout Server");
+				}
+			}
 		}
 
 		if (boundProtocols.size() == 0) {
