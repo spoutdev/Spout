@@ -47,7 +47,7 @@ public class Mat4ShaderVariable extends ShaderVariable {
 
 	@Override
 	public void assign() {
-		FloatBuffer buff = BufferUtils.createFloatBuffer(4 * 4);
+		FloatBuffer buff = BufferUtils.createFloatBuffer(16);
 		buff.put(value.toArray());
 		buff.flip();
 

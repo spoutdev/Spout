@@ -195,7 +195,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	 * The act of drawing.  The Batch will check if it's possible to render
 	 * as well as setup for rendering.  If it's possible to render, it will call doRender()
 	 */
-	protected abstract void doRender(RenderMaterial materail, int startVert, int endVert);
+	protected abstract void doRender(RenderMaterial material, int startVert, int endVert);
 
 	public final void render(RenderMaterial material, int startVert, int endVert) {
 		checkRender();

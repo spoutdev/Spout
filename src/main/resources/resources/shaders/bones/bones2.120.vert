@@ -16,20 +16,16 @@ uniform mat4 View;
 uniform mat4 Model;
 uniform mat4[10] bone_matrix;
 
-void main()
-{
+void main() {
    vec4 bone_transform = vec4(0,0,0,0);
    
-   float total = 0;
    for (int i=0 ; i<2 ; ++i) {
-      bone_transform += bone_weights[i] * bone_matrix[int(bone_ids[i])] * vec4(1,1,1,1);
-      
-      total += bone_weights[i];
+      bone_transform += bone_weights[i] * bone_matrix[int(bone_ids[i])] * vPosition;
    }
-   bone_transform /= total;
    
-   gl_Position = Projection * View * vPosition * bone_transform;
+   gl_Position = Projection * View * Model * bone_transform;
    
    uvcoord = vTexCoord;
+   normal = vNormal;
    color = vColor;
 }
