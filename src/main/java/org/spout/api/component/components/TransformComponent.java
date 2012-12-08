@@ -138,6 +138,15 @@ public class TransformComponent extends EntityComponent {
 	public void translate(float x, float y, float z) {
 		transformLive.translate(x, y, z);
 	}
+	
+	/**
+	 * Moves the entity by the provided vector and sets the entity's rotation<br/>
+	 * @param amount to move the entity
+	 * @param rotation the new rotation
+	 */
+	public void translateAndSetRotation(Vector3 amount, Quaternion rotation) {
+		transformLive.translateAndSetRotation(amount, rotation);
+	}
 
 	/**
 	 * Rotates the entity about the provided axis by the provided angle
