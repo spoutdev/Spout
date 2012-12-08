@@ -74,6 +74,25 @@ public final class Transform implements Serializable {
 			lock.unlock();
 		}
 	}
+	
+	public void move(Vector3 offset) {
+		try {
+			lock.lock();
+			this.position = this.position.add(offset);
+		} finally {
+			lock.unlock();
+		}
+	}
+	
+	public void moveAndSetRotation(Vector3 offset, Quaternion rotation) {
+		try {
+			lock.lock();
+			this.position = this.position.add(offset);
+			this.rotation = rotation;
+		} finally {
+			lock.unlock();
+		}
+	}
 
 	public Quaternion getRotation() {
 		try {
