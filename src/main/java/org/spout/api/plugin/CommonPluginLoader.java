@@ -277,7 +277,12 @@ public class CommonPluginLoader implements PluginLoader {
 	protected Class<?> getClassByName(final String name, final CommonClassLoader commonLoader) {
 		CommonPlugin plugin = commonLoader.getPlugin();
 		Set<String> ignore = new HashSet<String>();
-		ignore.add(plugin.getName());
+		try {
+			ignore.add(plugin.getName());
+		} catch (NullPointerException nfe) {
+			Spout.getLogger().severe("Could not load " + name + ". Spout couldn't find the class, ask the developer to verify it exists");
+			return null;
+		}
 
 		if (plugin.getDescription().getDepends() != null) {
 			for (String dependency : plugin.getDescription().getDepends()) {
