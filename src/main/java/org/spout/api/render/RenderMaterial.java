@@ -114,16 +114,7 @@ public abstract class RenderMaterial extends Resource implements Comparable<Rend
 	 */
 	public abstract void postRenderEntity(SnapshotEntity snapshotEntity);
 	
-	/**
-	 * Called to render a block side
-	 * @param chunkSnapshotModel
-	 * @param position
-	 * @param face
-	 * @param ocluded
-	 * @return
-	 */
-	public abstract List<MeshFace> render(SnapshotMesh snapshotRender);
-
+	
 	/**
 	 * Return the render pass order
 	 * @return
