@@ -126,7 +126,7 @@ public class TransformComponent extends EntityComponent {
 	 * @param amount to move the entity
 	 */
 	public void translate(Vector3 amount) {
-		setPosition(transformLive.getPosition().add(amount));
+		transformLive.translate(amount);
 	}
 
 	/**
@@ -136,7 +136,7 @@ public class TransformComponent extends EntityComponent {
 	 * @param z offset
 	 */
 	public void translate(float x, float y, float z) {
-		setPosition(transformLive.getPosition().add(x, y, z));
+		transformLive.translate(x, y, z);
 	}
 
 	/**

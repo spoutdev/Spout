@@ -75,7 +75,7 @@ public final class Transform implements Serializable {
 		}
 	}
 	
-	public void move(Vector3 offset) {
+	public void translate(Vector3 offset) {
 		try {
 			lock.lock();
 			this.position = this.position.add(offset);
@@ -84,7 +84,16 @@ public final class Transform implements Serializable {
 		}
 	}
 	
-	public void moveAndSetRotation(Vector3 offset, Quaternion rotation) {
+	public void translate(float x, float y, float z) {
+		try {
+			lock.lock();
+			this.position = this.position.add(x, y, z);
+		} finally {
+			lock.unlock();
+		}
+	}
+	
+	public void translateAndSetRotation(Vector3 offset, Quaternion rotation) {
 		try {
 			lock.lock();
 			this.position = this.position.add(offset);
