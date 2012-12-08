@@ -44,6 +44,8 @@ import org.spout.engine.mesh.BaseMesh;
 
 public class EntityRendererComponent extends EntityComponent {
 
+	public float rot = 0f;
+	
 	@Override
 	public void onAttached() {
 	}
@@ -60,7 +62,7 @@ public class EntityRendererComponent extends EntityComponent {
 		if(mesh.isBatched())
 			return;
 
-		Skeleton skeleton = null;//model.getModel().getSkeleton();
+		Skeleton skeleton = model.getModel().getSkeleton();
 
 		//TODO : In progress !
 		if(skeleton != null){
@@ -78,8 +80,8 @@ public class EntityRendererComponent extends EntityComponent {
 			for(int i = 0; i < mesh.getContainer().element; i++ ){
 
 				//Get the vertice id in the .obj/.ske referential
-				int vertexId =  mesh.getContainer().getVerticeIndex()[i];
-
+				int vertexId =  mesh.getContainer().getVerticeIndex()[i] - 1;
+				
 				if(vertexId >= skeleton.getVerticeArray().size()){
 					System.out.println("Depassement");
 					continue;
@@ -96,14 +98,14 @@ public class EntityRendererComponent extends EntityComponent {
 					boneIdBuffer.put(-1);
 					weightBuffer.put(-1);
 				}
-				System.out.println("Taille : "+j );
+				//System.out.println("Taille : "+j );
 			}
 			
 			boneIdBuffer.flip();
 			weightBuffer.flip();
 
+			mesh.getContainer().setBuffers(4, weightBuffer);
 			mesh.getContainer().setBuffers(5, boneIdBuffer);
-			mesh.getContainer().setBuffers(6, weightBuffer);
 			System.out.println("Buffering skeleton SUCCESS");
 		}
 
@@ -128,7 +130,12 @@ public class EntityRendererComponent extends EntityComponent {
 		mat.getShader().setUniform("Projection", camera.getProjection());
 		mat.getShader().setUniform("Model", modelMatrix);
 		
-		mat.getShader().setUniform("bone_matrix", MathHelper.createIdentity());
+		Matrix[] matrices = new Matrix[10];
+		for (int i=0 ; i<10 ; i++)
+			matrices[i] = MathHelper.rotateX(rot);
+		rot += 0.1f;
+		
+		mat.getShader().setUniform("bone_matrix", matrices);
 		
 		SnapshotEntity snap = new SnapshotEntity(mat, getOwner());
 
