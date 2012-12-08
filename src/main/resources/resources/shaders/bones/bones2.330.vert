@@ -12,6 +12,7 @@ out vec2 uvcoord;
 
 uniform mat4 Projection;
 uniform mat4 View;
+uniform mat4 Model;
 uniform mat4[10] bone_matrix;
       
 void main() {
