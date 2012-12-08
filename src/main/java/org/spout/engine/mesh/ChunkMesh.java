@@ -29,19 +29,24 @@ package org.spout.engine.mesh;
 import gnu.trove.list.array.TFloatArrayList;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
+import org.spout.api.geo.cuboid.ChunkSnapshotModel;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.mesh.MeshFace;
+import org.spout.api.model.mesh.OrientedMesh;
 import org.spout.api.model.mesh.OrientedMeshFace;
 import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.RenderMaterial;
@@ -49,6 +54,7 @@ import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.BufferContainer;
+import org.spout.engine.resources.ClientRenderMaterial;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 
 /**
@@ -228,6 +234,43 @@ public class ChunkMesh{
 			return Color.WHITE;
 		}
 	}
+	
+	public List<MeshFace> buildBlock(ChunkSnapshotModel chunkSnapshotModel,Material blockMaterial,
+			Vector3 position, boolean toRender[], OrientedMesh mesh) {
+		List<MeshFace> meshs = new ArrayList<MeshFace>();
+		Vector3 model = new Vector3(position.getFloorX(), position.getFloorY(), position.getFloorZ());
+		for(OrientedMeshFace meshFace : mesh){
+
+			if(!meshFace.canRender(toRender))
+				continue;
+
+			Iterator<Vertex> it = meshFace.iterator();
+			Vertex v1 = new Vertex(it.next());
+			Vertex v2 = new Vertex(it.next());
+			Vertex v3 = new Vertex(it.next());
+			v1.position = v1.position.add(model);
+			v2.position = v2.position.add(model);
+			v3.position = v3.position.add(model);
+
+			v1.color = Color.black;
+			v2.color = Color.black;
+			v3.color = Color.black;
+			/*addColor(chunkSnapshotModel,v1);
+			addColor(chunkSnapshotModel,v2);
+			addColor(chunkSnapshotModel,v3);*/
+
+			//Be sure we have a color
+			//All cube with the same renderMaterial MUST have a color
+			//OR All cube with the same renderMaterial MUST not have a color
+			/*Color color = Color.WHITE;
+			v1.color = color;
+			v2.color = color;
+			v3.color = color;*/
+
+			meshs.add(new MeshFace(v1, v2, v3));
+		}
+		return meshs;
+	}
 
 	/**
 	 * Generates the vertices of the given block and adds them to the ChunkMesh.
@@ -288,7 +331,8 @@ public class ChunkMesh{
 		SnapshotMesh snapshotMesh = new SnapshotMesh(material, chunkSnapshotModel, new Point(position, world), toRender);
 
 		renderMaterial.preMesh(snapshotMesh);
-		List<MeshFace> faces = renderMaterial.render(snapshotMesh);
+		List<MeshFace> faces = buildBlock(snapshotMesh.getSnapshotModel(), snapshotMesh.getMaterial(),
+				snapshotMesh.getPosition(), snapshotMesh.getToRender(), (OrientedMesh)snapshotMesh.getMesh());
 		snapshotMesh.setResult(faces);
 		renderMaterial.postMesh(snapshotMesh);
 		faces = snapshotMesh.getResult();

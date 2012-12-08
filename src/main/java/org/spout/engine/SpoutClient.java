@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.CodeSource;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
@@ -97,6 +98,7 @@ import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.render.Camera;
+import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.batcher.SpriteBatch;
@@ -147,7 +149,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private ClientFont font;
 	private boolean showDebugInfos = true;
 	private ConcurrentLinkedQueue<Runnable> renderTaskQueue = new ConcurrentLinkedQueue<Runnable>();
-	
+	private ArrayList<RenderMaterial> postProcessMaterials = new ArrayList<RenderMaterial>();
 	
 	public SpoutClient() {
 		this.filesystem = new ClientFileSystem();

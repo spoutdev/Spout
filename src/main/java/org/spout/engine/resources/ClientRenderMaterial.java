@@ -189,76 +189,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 			entityEffect.postRenderEntity(snapshotEntity);
 		}
 	}
-	
-	@Override
-	public List<MeshFace> render(SnapshotMesh snapshotRender) {
-		Mesh mesh = snapshotRender.getMesh();
-
-		if(mesh instanceof OrientedMesh){
-			return renderBlock(snapshotRender.getSnapshotModel(), snapshotRender.getMaterial(),
-					snapshotRender.getPosition(), snapshotRender.getToRender(), (OrientedMesh)mesh);
-		}
-
-		return new ArrayList<MeshFace>();
-	}
-
-	/*private void addColor(ChunkSnapshotModel chunkSnapshotModel, Vertex v){
-		if(chunkSnapshotModel != null){
-			ChunkSnapshot chunk = chunkSnapshotModel.getChunkFromBlock(v.position.getFloorX(), v.position.getFloorY(), v.position.getFloorZ());
-			if(chunk != null){
-				float light = chunk.getBlockLight(v.position.getFloorX(), v.position.getFloorY(), v.position.getFloorZ()) / 16f;
-				float sky = chunk.getBlockSkyLight(v.position.getFloorX(), v.position.getFloorY(), v.position.getFloorZ()) / 16f;
-				Color colorLight = new Color(light * 1.00f, light * 0.75f, light * 0.75f);
-				Color colorSky = new Color(sky * 0.75f, sky * 0.75f, sky * 1.00f);
-				v.color = new Color(
-						MathHelper.clamp(colorLight.getRed() + colorSky.getRed(), 0, 255),
-						MathHelper.clamp(colorLight.getGreen() + colorSky.getGreen(), 0, 255),
-						MathHelper.clamp(colorLight.getBlue() + colorSky.getBlue(), 0, 255)
-						);
-			}else{
-				v.color = Color.WHITE;
-			}
-		}else{
-			v.color = Color.WHITE;
-		}
-	}*/
-
-	public List<MeshFace> renderBlock(ChunkSnapshotModel chunkSnapshotModel,Material blockMaterial,
-			Vector3 position, boolean toRender[], OrientedMesh mesh) {
-		List<MeshFace> meshs = new ArrayList<MeshFace>();
-		Vector3 model = new Vector3(position.getFloorX(), position.getFloorY(), position.getFloorZ());
-		for(OrientedMeshFace meshFace : mesh){
-
-			if(!meshFace.canRender(toRender))
-				continue;
-
-			Iterator<Vertex> it = meshFace.iterator();
-			Vertex v1 = new Vertex(it.next());
-			Vertex v2 = new Vertex(it.next());
-			Vertex v3 = new Vertex(it.next());
-			v1.position = v1.position.add(model);
-			v2.position = v2.position.add(model);
-			v3.position = v3.position.add(model);
-
-			v1.color = Color.black;
-			v2.color = Color.black;
-			v3.color = Color.black;
-			/*addColor(chunkSnapshotModel,v1);
-			addColor(chunkSnapshotModel,v2);
-			addColor(chunkSnapshotModel,v3);*/
-
-			//Be sure we have a color
-			//All cube with the same renderMaterial MUST have a color
-			//OR All cube with the same renderMaterial MUST not have a color
-			/*Color color = Color.WHITE;
-			v1.color = color;
-			v2.color = color;
-			v3.color = color;*/
-
-			meshs.add(new MeshFace(v1, v2, v3));
-		}
-		return meshs;
-	}
+		
 
 	@Override
 	public int getLayer() {

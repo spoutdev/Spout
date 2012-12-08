@@ -40,8 +40,10 @@ import org.spout.api.Spout;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
+import org.spout.api.plugin.CommonClassLoader;
 import org.spout.api.render.Shader;
 import org.spout.api.render.Texture;
+import org.spout.api.render.effect.RenderEffect;
 import org.spout.api.resource.BasicResourceLoader;
 import org.spout.api.resource.Resource;
 import org.spout.api.util.typechecker.TypeChecker;
@@ -198,7 +200,37 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 		}
 
 		//TODO: Parse matricies 
-		return new ClientRenderMaterial(shader, paramsNew, null, null, depthTesting, layer);
+		
+		ClientRenderMaterial material = new ClientRenderMaterial(shader, paramsNew, null, null, depthTesting, layer);
+		Object re = resourceProperties.get("RenderEffects");
+		if(re != null && re instanceof String[]) {
+			String[] renderEffects = (String[])re;
+			for(String effectName : renderEffects) {
+				try {
+					Class<?> effect = CommonClassLoader.findPluginClass(effectName);
+					if(!RenderEffect.class.isAssignableFrom(effect)) {
+						Spout.log("Error: " + effectName + " Is not a RenderEffect");
+					}
+					try {
+						RenderEffect effectInstance = (RenderEffect)effect.newInstance();
+						material.addRenderEffect(effectInstance);
+					} catch (InstantiationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} catch (ClassNotFoundException e) {
+					Spout.log("Warning: RenderEffect " + effectName + " Not Found.");
+				}
+			}
+			
+			
+		}
+
+		
+		return  material;
 	}
 	@Override
 	public String getProtocol() {
