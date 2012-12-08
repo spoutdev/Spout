@@ -29,14 +29,14 @@ package org.spout.engine.renderer.shader.variables;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL21;
+import org.lwjgl.opengl.GL20;
 
 import org.spout.api.math.Matrix;
 
-public class Mat4x3ArrayShaderVariable extends ShaderVariable {
-	Matrix []value;
+public class Mat4ArrayShaderVariable extends ShaderVariable {
+	Matrix[] value;
 
-	public Mat4x3ArrayShaderVariable(int program, String name, Matrix []value) {
+	public Mat4ArrayShaderVariable(int program, String name, Matrix []value) {
 		super(program, name);
 		this.value = value;
 	}
@@ -47,13 +47,13 @@ public class Mat4x3ArrayShaderVariable extends ShaderVariable {
 
 	@Override
 	public void assign() {
-		FloatBuffer buff = BufferUtils.createFloatBuffer(4 * 3 * value.length);
+		FloatBuffer buff = BufferUtils.createFloatBuffer(16 * value.length);
 		
-		for(int i = 0; i < value.length; i++)
-			buff.put(value[i].toArray(),0,4 * 3);
-		
+		for (int i = 0; i < value.length; i++) {
+			buff.put(value[i].toArray());
+		}
 		buff.flip();
-
-		GL21.glUniformMatrix4x3(location, false, buff);
+		
+		GL20.glUniformMatrix4(location, false, buff);
 	}
 }
