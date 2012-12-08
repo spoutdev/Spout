@@ -29,47 +29,30 @@ package org.spout.engine.filesystem.path;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
-import org.spout.api.Spout;
-import org.spout.api.plugin.Plugin;
-import org.spout.api.resource.ResourcePathResolver;
 import org.spout.engine.filesystem.SharedFileSystem;
 
-public class JarfileResolver implements ResourcePathResolver{
-	public JarfileResolver() {
-		
+public class ZipFilePathResolver extends FilePathResolver {
+	public ZipFilePathResolver() {
+		super(SharedFileSystem.RESOURCE_FOLDER.getPath());
 	}
 
-	File pluginsFolder = SharedFileSystem.PLUGIN_DIRECTORY;
-
-	
-	
-	
-	private JarFile getJar(String path) throws IOException{
-		Plugin p = Spout.getEngine().getPluginManager().getPlugin(path);
-		if (p == null) {
-			return null;
-		}
-		return new JarFile(p.getFile());
+	public ZipFile getZip(String host) throws IOException {
+		return new ZipFile(directory + File.separatorChar + host);
 	}
-	
+
 	@Override
-	public boolean existsInPath(String file, String path) {
-		boolean has = false;
-		JarFile f = null;
+	public boolean existsInPath(String host, String path) {
+		ZipFile f = null;
+		boolean b = false;
 		try {
-			
-			f = getJar(path);
-			if(f == null) {
-				Spout.log("Tried to get file " + file + " from plugin " + path + " but it isn't loaded!");
-				return false; //If the plugin doesn't exist, we don't have the file
-			}
-			file = file.substring(1);
-			JarEntry entry = f.getJarEntry(file);
-			has = entry != null;
+			f = getZip(host);
+			b = f.getEntry(path.substring(1)) != null;
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -81,31 +64,53 @@ public class JarfileResolver implements ResourcePathResolver{
 				}
 			}
 		}
-		return has;
+		return b;
 	}
 
 	@Override
-	public InputStream getStream(String file, String path) {
-		JarFile f = null;
+	public InputStream getStream(String host, String path) {
 		try {
-			f = getJar(path);
-			file = file.substring(1);
-			JarEntry entry = f.getJarEntry(file);
-			InputStream s = f.getInputStream(entry);
-			return s; //TODO close the jar.
+			ZipFile f = getZip(host);
+			ZipEntry entry = f.getEntry(path);
+			if (entry == null) {
+				return null;
+			}
+			return f.getInputStream(entry);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	@Override
-	public boolean existsInPath(URI path) {
-		return existsInPath(path.getPath(), path.getHost());
-	}
-
-	@Override
-	public InputStream getStream(URI path) {
-		return getStream(path.getPath(), path.getHost());
+	public String[] list(String host, String path) {
+		ZipFile zip = null;
+		try {
+			zip = getZip(host);
+			// iterate through the zip's entries
+			Enumeration<? extends ZipEntry> entries = zip.entries();
+			List<String> list = new ArrayList<String>();
+			path = path.substring(1);
+			while (entries.hasMoreElements()) {
+				ZipEntry entry = entries.nextElement();
+				String name = entry.getName();
+				// we can't load directories, no point in returning them
+				// verify the entry is within the given path
+				if (!entry.isDirectory() && name.startsWith(path)) {
+					list.add(name.replaceFirst(path, ""));
+				}
+			}
+			return list.toArray(new String[list.size()]);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (zip != null) {
+				try {
+					zip.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return null;
 	}
 }
