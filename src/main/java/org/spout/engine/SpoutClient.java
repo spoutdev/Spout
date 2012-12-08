@@ -324,9 +324,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		if (inputState.getCrouch()) {
 			offset = offset.subtract(ts.upVector().multiply(activeCamera.getSpeed()).multiply(dt));
 		}
-		ts.moveAndSetRotation(offset, MathHelper.rotation(inputState.pitch(), inputState.yaw(), ts.getRotation().getRoll()));
-
-		activePlayer.getTransform().setTransform(ts);
+		ts.translateAndSetRotation(offset, MathHelper.rotation(inputState.pitch(), inputState.yaw(), ts.getRotation().getRoll()));
 	}
 
 	@Override
