@@ -48,7 +48,7 @@ import org.spout.engine.SpoutServer;
  */
 public class PortBindings extends AnnotatedSubclassConfiguration {
 	private final SpoutServer server;
-	@Setting("addresses") private List<ConfigPortBinding> portBindings;
+	@Setting({"network", "addresses"}) private List<ConfigPortBinding> portBindings;
 
 	public static class ConfigPortBinding extends AnnotatedSubclassConfiguration implements PortBinding {
 		@Setting("protocol") private String protocolName;
