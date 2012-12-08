@@ -304,28 +304,27 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		PlayerInputState inputState = activePlayer.input();
 		Transform ts = activePlayer.getTransform().getTransformLive();
-		ts.setRotation(MathHelper.rotation(inputState.pitch(), inputState.yaw(), ts.getRotation().getRoll()));
 
-		Point point = ts.getPosition();
+		Vector3 offset = Vector3.ZERO;
 		if (inputState.getForward()) {
-			point = point.subtract(ts.forwardVector().multiply(activeCamera.getSpeed()).multiply(dt));
+			offset = offset.subtract(ts.forwardVector().multiply(activeCamera.getSpeed()).multiply(dt));
 		}
 		if (inputState.getBackward()) {
-			point = point.add(ts.forwardVector().multiply(activeCamera.getSpeed()).multiply(dt));
+			offset = offset.add(ts.forwardVector().multiply(activeCamera.getSpeed()).multiply(dt));
 		}
 		if (inputState.getLeft()) {
-			point = point.subtract(ts.rightVector().multiply(activeCamera.getSpeed()).multiply(dt));
+			offset = offset.subtract(ts.rightVector().multiply(activeCamera.getSpeed()).multiply(dt));
 		}
 		if (inputState.getRight()) {
-			point = point.add(ts.rightVector().multiply(activeCamera.getSpeed()).multiply(dt));
+			offset = offset.add(ts.rightVector().multiply(activeCamera.getSpeed()).multiply(dt));
 		}
 		if (inputState.getJump()) {
-			point = point.add(ts.upVector().multiply(activeCamera.getSpeed()).multiply(dt));
+			offset = offset.add(ts.upVector().multiply(activeCamera.getSpeed()).multiply(dt));
 		}
 		if (inputState.getCrouch()) {
-			point = point.subtract(ts.upVector().multiply(activeCamera.getSpeed()).multiply(dt));
+			offset = offset.subtract(ts.upVector().multiply(activeCamera.getSpeed()).multiply(dt));
 		}
-		ts.setPosition(point);
+		ts.moveAndSetRotation(offset, MathHelper.rotation(inputState.pitch(), inputState.yaw(), ts.getRotation().getRoll()));
 
 		activePlayer.getTransform().setTransform(ts);
 	}
