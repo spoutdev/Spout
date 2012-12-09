@@ -157,6 +157,16 @@ public class Matrix implements Serializable {
 	public float[] toArray() {
 		return MathHelper.toArray(this);
 	}
+	
+	/**
+	 * Fast access to matrix data used to fill a buffer
+	 * for instance.
+	 * 
+	 * @return float array of length size*size
+	 */
+	public float[] getData() {
+		return data;
+	}
 
 	@Override
 	public String toString() {
