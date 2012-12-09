@@ -123,11 +123,9 @@ public class SpoutInputManager implements InputManager {
 			return components;
 		}
 
-		for (Widget widget : inputScreen.getWidgets()) {
-			for (Component c : widget.values()) {
-				if (c instanceof WidgetComponent) {
-					components.add((WidgetComponent) c);
-				}
+		for (Component c : inputScreen.getFocusedWidget().values()) {
+			if (c instanceof WidgetComponent) {
+				components.add((WidgetComponent) c);
 			}
 		}
 
