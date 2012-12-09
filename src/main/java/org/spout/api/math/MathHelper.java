@@ -1559,4 +1559,12 @@ public class MathHelper {
 	public static int mod(int x, int div) {
 		return x < 0 ? (x % div) + div : x % div;
 	}
+	
+	public static float mod(float x, float div) {
+		return x < 0 ? (x % div) + div : x % div;
+	}
+	
+	public static double mod(double x, double div) {
+		return x < 0 ? (x % div) + div : x % div;
+	}
 }
