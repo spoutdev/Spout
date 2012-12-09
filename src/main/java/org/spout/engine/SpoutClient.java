@@ -563,10 +563,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "x: ", position.getX()), font, -0.95f, 0.8f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "y: ", position.getY()), font, -0.95f, 0.7f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "z: ", position.getZ()), font, -0.95f, 0.6f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "fps: ", getScheduler().getFps() , " (" , getScheduler().isRendererOverloaded() ,")"), font, -0.95f, 0.5f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "batch: ", worldRenderer.getRended() + "/" + worldRenderer.getBatchWaiting()), font, -0.95f, 0.4f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "ocluded: ", (int) ((float) worldRenderer.getOcluded() / worldRenderer.getRended() * 100) + "%"), font, -0.95f, 0.3f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "culled: ", (int) ((float) worldRenderer.getCulled() / worldRenderer.getRended() * 100), "%"), font, -0.95f, 0.2f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "fps: ", getScheduler().getFps() , " (" , getScheduler().isRendererOverloaded()?"Overloaded" : "Normal" ,")"), font, -0.95f, 0.5f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Chunks Drawn: ", ((int)((float)worldRenderer.getRenderedChunks() / (float)(worldRenderer.getTotalChunks()) * 100)) + "%" + " (" + worldRenderer.getRenderedChunks() +")") , font, -0.95f, 0.4f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Occluded Chunks: ", (int) ((float) worldRenderer.getOccludedChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getOccludedChunks() + ")" ), font, -0.95f, 0.3f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Cull Chunks: ", (int) ((float) worldRenderer.getCulledChunks() / worldRenderer.getTotalChunks() * 100), "% (" + worldRenderer.getCulledChunks() + ")"), font, -0.95f, 0.2f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Update: ", worldRenderer.minUpdate + " / " + worldRenderer.maxUpdate + " / " + (worldRenderer.sumUpdate / Math.max(1, worldRenderer.count))), font, -0.95f, 0.1f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Render: ", worldRenderer.minRender + " / " + worldRenderer.maxRender + " / " + (worldRenderer.sumRender / Math.max(1, worldRenderer.count))), font, -0.95f, 0.0f, 8f);
 		}

@@ -283,14 +283,16 @@ public class WorldRenderer {
 		return map.get(material);
 	}
 
-	int ocludedChunks = 0;
+	int occludedChunks = 0;
 	int culledChunks = 0;
-	int rended = 0;
+	int renderedChunks = 0;
+	int chunksToRender = 0;
 
 	private void renderChunks() {
-		ocludedChunks = 0;
+		occludedChunks = 0;
 		culledChunks = 0;
-		rended = 0;
+		renderedChunks = 0;
+		chunksToRender = 0;
 
 		/*TODO (maybe): We could optimise iteration and testing frustum on ChunkMeshBatch.
 		 * If we sort ChunkMeshBatch by x, y and z, and test only cubo's vertice changing
@@ -306,7 +308,7 @@ public class WorldRenderer {
 			material.getShader().setUniform("View", client.getActiveCamera().getView());
 			material.getShader().setUniform("Projection", client.getActiveCamera().getProjection());
 			material.getShader().setUniform("Model", ChunkMeshBatchAggregator.model);
-
+			chunksToRender += entry.getValue().size();
 			for (ChunkMeshBatchAggregator renderer : entry.getValue()) {
 				// It's hard to look right
 				// at the world baby
@@ -314,10 +316,10 @@ public class WorldRenderer {
 				// so cull me maybe?
 				//System.out.println( renderer.getX() + "/" + renderer.getY() + "/" + renderer.getZ() + " : " + renderer.getBase() +  " : " + renderer.getSize());
 
-
+				
 				if (client.getActiveCamera().getFrustum().intersects(renderer)) {
 					renderer.render(material);
-					rended ++;
+					renderedChunks ++;
 				} else {
 					culledChunks++;
 				}
@@ -327,16 +329,20 @@ public class WorldRenderer {
 		}
 	}
 
-	public int getOcluded() {
-		return ocludedChunks;
+	public int getOccludedChunks() {
+		return occludedChunks;
 	}
 
-	public int getCulled() {
+	public int getCulledChunks() {
 		return culledChunks;
 	}
 
-	public int getRended() {
-		return rended;
+	public int getRenderedChunks() {
+		return renderedChunks;
+	}
+	
+	public int getTotalChunks() {
+		return chunksToRender;
 	}
 
 	public int getBatchWaiting() {
