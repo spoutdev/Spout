@@ -33,6 +33,7 @@ import org.lwjgl.opengl.GL20;
 import org.spout.api.math.Matrix;
 
 public class Mat3ShaderVariable extends ShaderVariable {
+	public static final FloatBuffer buffer = FloatBuffer.allocate(9);
 	Matrix value;
 
 	public Mat3ShaderVariable(int program, String name, Matrix value) {
@@ -42,10 +43,10 @@ public class Mat3ShaderVariable extends ShaderVariable {
 
 	@Override
 	public void assign() {
-		FloatBuffer buff = FloatBuffer.allocate(3 * 3);
-		buff.put(value.toArray());
-		buff.flip();
+		buffer.position(0);
+		buffer.put(value.getData());
+		buffer.flip();
 
-		GL20.glUniformMatrix3(location, false, buff);
+		GL20.glUniformMatrix3(location, false, buffer);
 	}
 }
