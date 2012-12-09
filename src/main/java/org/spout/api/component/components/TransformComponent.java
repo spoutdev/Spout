@@ -250,7 +250,7 @@ public class TransformComponent extends EntityComponent {
 	 * @param ang
 	 */
 	public void setPitch(float angle) {
-		setAxisAngles(getPitchLive(), getYawLive(), angle);
+		setAxisAngles(angle, getYawLive(), getRollLive());
 	}
 
 	/**
