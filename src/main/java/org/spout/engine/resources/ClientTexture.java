@@ -26,6 +26,7 @@
  */
 package org.spout.engine.resources;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
@@ -36,23 +37,23 @@ import org.spout.api.render.Texture;
 
 public class ClientTexture extends Texture {
 	int textureID = -1;
+	
+	public ClientTexture(Color[] colors, int width, int height){
+		super(colors, width, height);
+	}
 
 	public ClientTexture(BufferedImage baseImage) {
-		super(baseImage);
+		super(Texture.convertFromIntArray(baseImage.getRGB(0, 0, baseImage.getWidth(), baseImage.getHeight(), null, 0, baseImage.getWidth())), baseImage.getWidth(), baseImage.getHeight());
 	}
-
-	protected ClientTexture(){
-		super(null);		
-	}
-
+	
 	@Override
 	public Texture subTexture(int x, int y, int w, int h) {
-		return new ClientTexture(image.getSubimage(x, y, w, h));
+		throw new UnsupportedOperationException("TODO: Reimplement this");
 	}
 
 	public int getTextureID() {
 		if (textureID == -1) {
-			load(); //TODO : Handle that better
+			writeGPU(); //TODO : Handle that better
 		}
 		if (textureID == -1) {
 			throw new IllegalStateException("Cannot use an unloaded texture");
@@ -63,7 +64,7 @@ public class ClientTexture extends Texture {
 	@Override
 	public void bind() {
 		if (textureID == -1) {
-			load(); //TODO : Handle that better
+			writeGPU(); //TODO : Handle that better
 		}
 		if (textureID == -1) {
 			throw new IllegalStateException("Cannot bind an unloaded texture!");
@@ -83,7 +84,7 @@ public class ClientTexture extends Texture {
 	}
 
 	@Override
-	public void load() {
+	public void writeGPU() {
 		if (textureID != -1) {
 			throw new IllegalStateException("Cannot load an already loaded texture!");
 		}
@@ -112,22 +113,20 @@ public class ClientTexture extends Texture {
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
 
-		int width = image.getWidth();
-		int height = image.getHeight();
+		int width = this.getWidth();
+		int height = this.getHeight();
 
-		int[] pixels = new int[width * height];
-		image.getRGB(0, 0, width, height, pixels, 0, width);
-
+		
 		ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * 4);
 		for (int y = 0; y < height; y++) {
 
 			for (int x = 0; x < width; x++) {
 
-				int pixel = pixels[y * width + x];
-				buffer.put((byte) ((pixel >> 16) & 0xFF)); // Red component
-				buffer.put((byte) ((pixel >> 8) & 0xFF));  // Green component
-				buffer.put((byte) (pixel & 0xFF));         // Blue component
-				buffer.put((byte) ((pixel >> 24) & 0xFF)); // Alpha component. Only for RGBA
+				Color pixel = this.image[y * width + x];
+				buffer.put((byte) pixel.getRed()); // Red component
+				buffer.put((byte) pixel.getGreen());  // Green component
+				buffer.put((byte) pixel.getBlue());         // Blue component
+				buffer.put((byte) pixel.getAlpha()); // Alpha component. Only for RGBA
 			}
 		}
 

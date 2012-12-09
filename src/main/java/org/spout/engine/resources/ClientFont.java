@@ -44,6 +44,7 @@ import java.util.Map;
 import org.spout.api.Spout;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
+import org.spout.api.render.Texture;
 
 import org.spout.engine.SpoutClient;
 import org.spout.engine.renderer.shader.BasicShader;
@@ -78,8 +79,10 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	}
 
 	public ClientFont(Font f) {
+		super(null, 0, 0);
 		this.ttfFont = f;
 		setup(f);
+		
 	}
 
 	private void setup(Font f) {
@@ -99,8 +102,9 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 
 		charHeight = (float)bounds.getHeight();
 		charTop = (float)(ttfFont.getSize() + bounds.getY());
-
-		this.image = image;
+		this.width = image.getWidth();
+		this.height = image.getHeight();
+		this.image = Texture.convertFromIntArray(image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth()));
 	}
 
 	private void writeObject(ObjectOutputStream oos) throws IOException {
@@ -114,8 +118,8 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	}
 
 	@Override
-	public void load() {
-		super.load();
+	public void writeGPU() {
+		super.writeGPU();
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("Diffuse", this);
 		if (((SpoutClient) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
@@ -127,7 +131,7 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 
 	public RenderMaterial getMaterial() {
 		if (material==null) {
-			load();
+			writeGPU();
 		}
 		return material;
 	}

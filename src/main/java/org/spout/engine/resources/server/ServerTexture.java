@@ -26,27 +26,28 @@
  */
 package org.spout.engine.resources.server;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 import org.spout.api.render.Texture;
 
 public class ServerTexture extends Texture {
 
-	public ServerTexture(BufferedImage baseImage) {
-		super(baseImage);
+	public ServerTexture(Color[] colors, int width, int height){
+		super(colors, width, height);
 	}
 
-	protected ServerTexture(){
-		super(null);		
+	public ServerTexture(BufferedImage baseImage) {
+		super(Texture.convertFromIntArray(baseImage.getRGB(0, 0, baseImage.getWidth(), baseImage.getHeight(), null, 0, baseImage.getWidth())), baseImage.getWidth(), baseImage.getHeight());
 	}
 	
 	@Override
 	public Texture subTexture(int x, int y, int w, int h) {
-		return new ServerTexture(image.getSubimage(x, y, w, h));
+		throw new UnsupportedOperationException("TODO: Reimplement this");
 	}
 
 	@Override
-	public void load() { }
+	public void writeGPU() { }
 
 	@Override
 	public void bind() { }
