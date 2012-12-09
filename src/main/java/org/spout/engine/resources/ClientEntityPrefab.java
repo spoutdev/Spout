@@ -33,6 +33,7 @@ import org.spout.api.component.components.ModelComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntityPrefab;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.resource.Resource;
 import org.spout.engine.entity.SpoutEntity;
 
@@ -61,6 +62,24 @@ public class ClientEntityPrefab extends Resource implements EntityPrefab {
 	
 	public Entity createEntity(Point point) {
 		SpoutEntity entity = new SpoutEntity(point);
+		for (Class<? extends EntityComponent> c : components) {
+			entity.add(c);
+		}
+		
+		if (datas.containsKey("Model")) {
+			ModelComponent mc = entity.get(ModelComponent.class);
+			if (mc == null) {
+				mc = entity.add(ModelComponent.class);
+			}
+			
+			mc.setModel((String) datas.get("Model"));
+		}
+		
+		return entity;
+	}
+	
+	public Entity createEntity(Transform transform) {
+		SpoutEntity entity = new SpoutEntity(transform);
 		for (Class<? extends EntityComponent> c : components) {
 			entity.add(c);
 		}
