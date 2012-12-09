@@ -31,6 +31,7 @@ import java.util.Map;
 
 import org.spout.api.component.components.EntityComponent;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
 
 public interface EntityPrefab {
 	public String getName();
@@ -40,4 +41,6 @@ public interface EntityPrefab {
 	public Map<String, Object> getDatas();
 	
 	public Entity createEntity(Point point);
+	
+	public Entity createEntity(Transform transform);
 }
