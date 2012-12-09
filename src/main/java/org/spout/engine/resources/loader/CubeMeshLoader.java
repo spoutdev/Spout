@@ -50,7 +50,7 @@ public class CubeMeshLoader extends BasicResourceLoader<OrientedMesh> {
 			String s = scan.nextLine();
 			if (s.startsWith("#")) // Comment
 				continue;
-			else if (s.startsWith("scale ")) { // Scale x y
+			else if (s.startsWith("scale ") || s.startsWith("subtextures")) { // Scale x y
 				String[] sp = s.split(" ");
 				scale = new Vector2(1f / Float.parseFloat(sp[1]), 1f / Float.parseFloat(sp[2]));
 				sizeScaled = scale.multiply(size);
@@ -138,7 +138,7 @@ public class CubeMeshLoader extends BasicResourceLoader<OrientedMesh> {
 
 	@Override
 	public String[] getExtensions() {
-		return new String[] { "uvs" };
+		return new String[] { "uvs", "scm" };
 	}
 
 }
