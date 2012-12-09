@@ -43,8 +43,7 @@ import org.spout.api.tickable.Tickable;
 public final class Widget extends BaseComponentHolder implements Tickable {
 	private List<RenderPart> renderPartCache = new LinkedList<RenderPart>();
 	private boolean renderCacheClean = false;
-	private Screen screen;
-	private Container container = null;
+	private Screen screen = null;
 	private static DefaultedKey<Rectangle> KEY_GEOMETRY = new DefaultedKey<Rectangle>() {
 		@Override
 		public Rectangle getDefaultValue() {
@@ -90,51 +89,28 @@ public final class Widget extends BaseComponentHolder implements Tickable {
 		}
 	}
 
-	/**
-	 * Sets the screen and the container to screen
-	 * @param screen
-	 */
-	public void setScreen(Screen screen) {
+	protected void setScreen(Screen screen) {
 		this.screen = screen;
-		this.container = screen;
 	}
 
-	public Container getScreen() {
+	public Screen getScreen() {
 		return screen;
 	}
 
-	public Container getContainer() {
-		return container;
+	public boolean isFocused() {
+		return screen.getFocusedWidget().equals(this);
 	}
 
-	public void setContainer(Container container) {
-		this.container = container;
-	}
-
-	public boolean hasFocus() {
-		return screen.getFocussedWidget() == this; // Exact instance
-	}
-
-	public void setFocus(FocusReason reason) {
-		screen.setFocussedWidget(this);
-
+	protected void onFocusLost() {
 		for (Component c : values()) {
-			if (c instanceof WidgetComponent) {
-				WidgetComponent wc = (WidgetComponent) c;
-				wc.onFocus(reason);
-			}
+			((WidgetComponent) c).onFocusLost();
 		}
 	}
 
-	public void onFocusLost() {
+	protected void onFocus(FocusReason reason) {
 		for (Component c : values()) {
-			WidgetComponent wc = (WidgetComponent) c;
-			wc.onFocusLost();
+			((WidgetComponent) c).onFocus(reason);
 		}
-	}
-
-	public void setFocus() {
-		setFocus(FocusReason.PROGRAMMED);
 	}
 
 	public Rectangle getTranslatedGeometry() {

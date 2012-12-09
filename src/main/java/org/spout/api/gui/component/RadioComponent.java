@@ -64,7 +64,7 @@ public class RadioComponent extends ButtonComponent {
 		getData().put(KEY_SELECTED, selected);
 		emit(SIGNAL_SELECTED, selected);
 		if (selected) {
-			for (Widget widget : getOwner().getContainer().getWidgets()) {
+			for (Widget widget : getOwner().getScreen().getWidgets()) {
 				if (widget.hasExact(RadioComponent.class)) {
 					RadioComponent other = widget.get(RadioComponent.class);
 					other.setSelected(false);

@@ -26,6 +26,7 @@
  */
 package org.spout.api.gui;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.spout.api.plugin.Plugin;
@@ -41,5 +42,5 @@ public interface Container {
 
 	public abstract void attachWidget(Plugin plugin, Widget widget);
 
-	public abstract Set<Widget> getWidgets();
+	public abstract Collection<Widget> getWidgets();
 }

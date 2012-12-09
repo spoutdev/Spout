@@ -34,15 +34,18 @@ import org.spout.api.component.components.WidgetComponent;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.render.RectanglePart;
 import org.spout.api.gui.render.RenderPart;
+import org.spout.api.math.Rectangle;
+import org.spout.api.render.SpoutRenderMaterials;
 
 public class ControlComponent extends WidgetComponent {
 	@Override
 	public List<RenderPart> getRenderParts() {
 		LinkedList<RenderPart> ret = new LinkedList<RenderPart>();
-		if (getOwner().hasFocus()) {
+		if (getOwner().isFocused()) {
 			RectanglePart part = new RectanglePart();
+			part.setRenderMaterial(SpoutRenderMaterials.GUI_COLOR);
 			part.setColor(Color.BLUE);
-			part.setSource(getOwner().getGeometry());
+			part.setSource(new Rectangle(0, 0, 0, 0));
 			part.setSprite(getOwner().getGeometry());
 			part.setZIndex(-100);
 			ret.add(part);

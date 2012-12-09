@@ -26,8 +26,12 @@
  */
 package org.spout.api.gui;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 
 import org.spout.api.gui.component.ControlComponent;
@@ -39,20 +43,22 @@ public class Screen extends BasicTickable implements Container {
 	private Widget focussedWidget = null;
 	private boolean takesInput = true;
 	private boolean grabsMouse = true;
+	private int focus = 0;
 
 	@Override
-	public Set<Widget> getWidgets() {
-		return widgets.keySet();
+	public List<Widget> getWidgets() {
+		return Collections.unmodifiableList(new ArrayList<Widget>(widgets.keySet()));
 	}
 
 	@Override
 	public void attachWidget(Plugin plugin, Widget widget) {
-		widgets.put(widget, plugin);
 		widget.setScreen(this);
+		widgets.put(widget, plugin);
 	}
 
 	@Override
 	public void removeWidget(Widget widget) {
+		widget.setScreen(null);
 		widgets.remove(widget);
 	}
 
@@ -65,30 +71,22 @@ public class Screen extends BasicTickable implements Container {
 
 	@Override
 	public void removeWidgets() {
-		widgets.clear();
+		Iterator<Widget> i = getWidgets().iterator();
+		while (i.hasNext()) {
+			i.next().setScreen(null);
+			i.remove();
+		}
 	}
 
 	@Override
 	public void removeWidgets(Plugin plugin) {
-		for (Plugin p : widgets.values()) {
-			if (p.equals(plugin)) {
-				widgets.remove(p);
+		Iterator<Widget> i = getWidgets().iterator();
+		while (i.hasNext()) {
+			Widget widget = i.next();
+			if (widgets.get(widget).equals(plugin)) {
+				widget.setScreen(null);
+				i.remove();
 			}
-		}
-	}
-
-	public Widget getFocussedWidget() {
-		return focussedWidget;
-	}
-
-	public void setFocussedWidget(Widget focussedWidget) {
-		if (focussedWidget.has(ControlComponent.class)) {
-			if (this.focussedWidget != null && this.focussedWidget != focussedWidget) {
-				this.focussedWidget.onFocusLost();
-			}
-			this.focussedWidget = focussedWidget;
-		} else {
-			throw new IllegalStateException("Can only focus controls, add a ControlComponent to your widget!");
 		}
 	}
 
@@ -102,6 +100,77 @@ public class Screen extends BasicTickable implements Container {
 	@Override
 	public boolean canTick() {
 		return true;
+	}
+
+	public Widget getFocusedWidget() {
+		return getWidgets().get(focus);
+	}
+
+	public void setFocus(int focus, FocusReason reason) {
+		// Focus hasn't changed
+		if (this.focus == focus) {
+			return;
+		}
+
+		// Make sure the focus is within range
+		List<Widget> widgets = getWidgets();
+		int size = widgets.size();
+		if (focus < 0 || focus >= size) {
+			throw new IllegalArgumentException("Focus must be between 0 and " + (size - 1));
+		}
+
+		// Verify the new focus has a ControlComponent
+		if (widgets.get(focus).get(ControlComponent.class) == null) {
+			throw new IllegalStateException("Can only focus controls, add a ControlComponent to your widget!");
+		}
+
+		// Notify old widget of lost focus; notify new widget with focus gained
+		getFocusedWidget().onFocusLost();
+		this.focus = focus;
+		getFocusedWidget().onFocus(reason);
+
+	}
+
+	public void setFocus(int focus) {
+		setFocus(focus, FocusReason.PROGRAMMED);
+	}
+
+	public void setFocus(Widget widget, FocusReason reason) {
+		List<Widget> widgets = getWidgets();
+		if (!widgets.contains(widget)) {
+			throw new IllegalArgumentException("Cannot focus Widget on Screen because specified Widget is not attached.");
+		}
+		setFocus(widgets.indexOf(widget), reason);
+	}
+
+	public void setFocus(Widget widget) {
+		setFocus(widget, FocusReason.PROGRAMMED);
+	}
+
+	public void nextFocus(FocusReason reason) {
+		int size = getWidgets().size();
+		if (focus + 1 >= size) {
+			setFocus(0, reason);
+		} else {
+			setFocus(focus + 1, reason);
+		}
+	}
+
+	public void nextFocus() {
+		nextFocus(FocusReason.PROGRAMMED);
+	}
+
+	public void previousFocus(FocusReason reason) {
+		int size = getWidgets().size();
+		if (focus - 1 < 0) {
+			setFocus(size - 1, reason);
+		} else {
+			setFocus(focus - 1, reason);
+		}
+	}
+
+	public void previousFocus() {
+		previousFocus(FocusReason.PROGRAMMED);
 	}
 
 	public boolean grabsMouse() {
