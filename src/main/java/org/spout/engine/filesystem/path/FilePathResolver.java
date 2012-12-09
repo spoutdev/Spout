@@ -89,3 +89,4 @@ public class FilePathResolver implements ResourcePathResolver {
 		return list(uri.getHost(), uri.getPath());
 	}
 }
+
