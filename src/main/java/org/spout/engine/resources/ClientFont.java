@@ -31,6 +31,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphMetrics;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
@@ -58,6 +59,8 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	private ClientRenderMaterial material;
 	private Font ttfFont;
 	private GlyphVector vec;
+	private Rectangle[] glyphBounds = new Rectangle[95];
+	private GlyphMetrics[] glyphMetrics = new GlyphMetrics[95];
 	private float charTop;
 	private float charHeight;
 	private float spaceWidth = 0.0f;
@@ -77,6 +80,10 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	public static final String getCharset() {
 		return asciiset;
 	}
+	
+	private static int indexOf(char c) {
+		return (((int)c) - 32);
+	}
 
 	public ClientFont(Font f) {
 		super(null, 0, 0);
@@ -91,6 +98,11 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 
 		vec = ttfFont.createGlyphVector(DEFAULT_CONTEXT, asciiset);
 		Rectangle2D bounds = ttfFont.getStringBounds(asciiset, DEFAULT_CONTEXT);
+		
+		for (int i=0 ; i<127-32 ; i++) {
+			glyphBounds[i] = vec.getGlyphPixelBounds(i*2, DEFAULT_CONTEXT, 0, ttfFont.getSize());
+			glyphMetrics[i] = vec.getGlyphMetrics(i*2);
+		}
 
 		//Create the font's bitmaptexture
 		BufferedImage image = new BufferedImage((int)bounds.getWidth()+2, (int)bounds.getHeight()+2, BufferedImage.TYPE_INT_ARGB);
@@ -98,7 +110,6 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		g.setColor(Color.white);
 		g.drawGlyphVector(vec, 0, ttfFont.getSize());
 		g.dispose();
-
 
 		charHeight = (float)bounds.getHeight();
 		charTop = (float)(ttfFont.getSize() + bounds.getY());
@@ -152,7 +163,7 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	}
 	
 	public float getBearingX(char c) {
-		return vec.getGlyphMetrics(0).getLSB();
+		return glyphMetrics[indexOf(c)].getLSB();
 	}
 	
 	public float getBearingY(char c) {
@@ -162,12 +173,12 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		return (float)ts.getTranslateY();
 	}
 	
-	public float getAdvance(char c) {
-		return vec.getGlyphMetrics(asciiset.indexOf(c)).getAdvanceX();
+	public float getAdvance(char c) {//
+		return glyphMetrics[indexOf(c)].getAdvanceX();
 	}
 
 	@Override
-	public Rectangle getPixelBounds(char c) {
-		return vec.getGlyphPixelBounds(asciiset.indexOf(c), DEFAULT_CONTEXT, 0, ttfFont.getSize());
+	public Rectangle getPixelBounds(char c) {//
+		return glyphBounds[indexOf(c)];
 	}
 }
