@@ -166,8 +166,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 			e.printStackTrace();
 		}
 
-		if (inJar) {
-			unpackLwjgl();
+		if (inJar || args.path != null) {
+			unpackLwjgl(args.path);
 		}
 
 		ExecutorService executorBoss = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Boss", true));
@@ -648,7 +648,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 	}
 
-	private static void unpackLwjgl() {
+	private static void unpackLwjgl(String path) {
 		String[] files;
 		String osPath;
 
@@ -666,7 +666,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			return;
 		}
 
-		File cacheDir = new File(System.getProperty("user.dir"), "natives/" + osPath);
+		File cacheDir = new File(path == null ? System.getProperty("user.dir") : path, "natives" + File.separator + osPath);
 		cacheDir.mkdirs();
 		for (String f : files) {
 			File outFile = new File(cacheDir, f);

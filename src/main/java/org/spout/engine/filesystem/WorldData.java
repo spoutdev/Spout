@@ -234,6 +234,6 @@ public class WorldData extends FieldHolder {
 	}
 
 	public File getFolderForWorld() {
-		return new File(SharedFileSystem.WORLDS_DIRECTORY, name);
+		return new File(SharedFileSystem.getWorldsDirectory(), name);
 	}
 }

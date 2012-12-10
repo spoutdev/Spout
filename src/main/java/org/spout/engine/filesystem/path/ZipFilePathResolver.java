@@ -39,7 +39,7 @@ import org.spout.engine.filesystem.SharedFileSystem;
 
 public class ZipFilePathResolver extends FilePathResolver {
 	public ZipFilePathResolver() {
-		super(SharedFileSystem.RESOURCE_FOLDER.getPath());
+		super(SharedFileSystem.getResourceDirectory().getPath());
 	}
 
 	public ZipFile getZip(String host) throws IOException {

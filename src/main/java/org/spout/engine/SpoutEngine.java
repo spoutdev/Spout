@@ -136,10 +136,6 @@ import static org.spout.api.lang.Translation.tr;
 public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private static final Logger logger = Logger.getLogger("Spout");
 	private final String name = "Spout Engine";
-	private final File pluginDirectory = SharedFileSystem.PLUGIN_DIRECTORY;
-	private final File configDirectory = SharedFileSystem.CONFIG_DIRECTORY;
-	private final File updateDirectory = SharedFileSystem.UPDATE_DIRECTORY;
-	private final File dataDirectory = SharedFileSystem.DATA_DIRECTORY;
 	private final Random random = new Random();
 	private final CommonSecurityManager securityManager = new CommonSecurityManager(0); //TODO Need to integrate this/evaluate security in the engine.
 	private final CommonPluginManager pluginManager = new CommonPluginManager(this, securityManager, 0.0);
@@ -159,7 +155,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private final SpoutInputConfiguration inputConfig = new SpoutInputConfiguration();
 	private final CompletionManager completions = new CompletionManagerImpl();
 	private final SyncedRootCommand rootCommand = new SyncedRootCommand(this);
-	private final File worldFolder = SharedFileSystem.WORLDS_DIRECTORY;
 	private final SnapshotableLinkedHashMap<String, SpoutWorld> loadedWorlds = new SnapshotableLinkedHashMap<String, SpoutWorld>(snapshotManager);
 	private final SnapshotableReference<World> defaultWorld = new SnapshotableReference<World>(snapshotManager, null);
 	protected final ConcurrentMap<SocketAddress, Protocol> boundProtocols = new ConcurrentHashMap<SocketAddress, Protocol>();
@@ -279,11 +274,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		pluginManager.registerPluginLoader(CommonPluginLoader.class);
 		pluginManager.clearPlugins();
 
-		if (!pluginDirectory.exists()) {
-			pluginDirectory.mkdirs();
-		}
-
-		List<Plugin> plugins = pluginManager.loadPlugins(pluginDirectory);
+		List<Plugin> plugins = pluginManager.loadPlugins(SharedFileSystem.getPluginDirectory());
 
 		for (Plugin plugin : plugins) {
 			try {
@@ -338,38 +329,27 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 	@Override
 	public File getUpdateFolder() {
-		if (!updateDirectory.exists()) {
-			updateDirectory.mkdirs();
-		}
-		return updateDirectory;
+		return SharedFileSystem.getUpdateDirectory();
 	}
 
 	@Override
 	public File getConfigFolder() {
-		if (!configDirectory.exists()) {
-			configDirectory.mkdirs();
-		}
-		return configDirectory;
+		return SharedFileSystem.getConfigDirectory();
 	}
 
 	@Override
 	public File getDataFolder() {
-		if (!dataDirectory.exists()) {
-			dataDirectory.mkdirs();
-		}
-		File playerDirectory = new File(dataDirectory.toString() + File.separator + "players");
+		File dataDir = SharedFileSystem.getDataDirectory();
+		File playerDirectory = new File(dataDir, "players");
 		if (!playerDirectory.exists()) {
 			playerDirectory.mkdirs();
 		}
-		return dataDirectory;
+		return dataDir;
 	}
 
 	@Override
 	public File getPluginFolder() {
-		if (!pluginDirectory.exists()) {
-			pluginDirectory.mkdirs();
-		}
-		return pluginDirectory;
+		return SharedFileSystem.getPluginDirectory();
 	}
 
 	@Override
@@ -437,7 +417,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		if (worldData == null) {
 			log("Generating new world named [%0]", name);
 
-			File itemMapFile = new File(new File(SharedFileSystem.WORLDS_DIRECTORY, name), "materials.dat");
+			File itemMapFile = new File(new File(SharedFileSystem.getWorldsDirectory(), name), "materials.dat");
 			BinaryFileStore itemStore = new BinaryFileStore(itemMapFile);
 			StringMap itemMap = new StringMap(engineItemMap, itemStore, 0, Short.MAX_VALUE, name + "ItemMap");
 
@@ -543,7 +523,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 	@Override
 	public File getWorldFolder() {
-		return worldFolder;
+		return SharedFileSystem.getWorldsDirectory();
 	}
 
 	@Override

@@ -26,6 +26,8 @@
  */
 package org.spout.engine;
 
+import java.io.File;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
@@ -33,6 +35,7 @@ import org.spout.api.Spout;
 import org.spout.api.plugin.Platform;
 import org.spout.api.render.RenderMode;
 
+import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.engine.util.argument.PlatformConverter;
 import org.spout.engine.util.argument.RenderModeConverter;
 
@@ -48,12 +51,21 @@ public class SpoutApplication {
 	RenderMode renderMode = RenderMode.GL30;
 	@Parameter(names = {"--ccoverride" }, description = "Override ARB_CREATE_CONTEXT for the client")
 	public boolean ccoverride = false;
+	@Parameter(names = {"--path" }, description = "Override path for the client")
+	public String path = null;
 
 	public static void main(String[] args) {
 		try {
 			SpoutApplication main = new SpoutApplication();
 			JCommander commands = new JCommander(main);
 			commands.parse(args);
+			if (main.path != null) {
+				File dir = new File(main.path);
+				if (!dir.exists()) {
+					dir.mkdirs();
+				}
+				SharedFileSystem.setParentDirectory(dir);
+			}
 	
 			SpoutEngine engine;
 			switch (main.platform) {

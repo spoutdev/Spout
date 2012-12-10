@@ -39,6 +39,7 @@ import java.util.logging.Level;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.engine.SpoutEngine;
+import org.spout.engine.filesystem.SharedFileSystem;
 
 /**
  * A file-outputting console
@@ -60,11 +61,13 @@ public class FileConsole extends AbstractConsole {
 		date = new SimpleDateFormat("yyyy-MM-dd");
 		logFileName = calculateFilename();
 
-		logFile = new File(logFileName);
-		if (logFile.getParentFile() != null) {
-			logFile.getParentFile().mkdirs();
+		File logDir = new File(SharedFileSystem.getParentDirectory(), "logs");
+		logFile = new File(logDir, logFileName);
+		if (!logDir.exists()) {
+			logDir.mkdirs();
 		}
 	}
+
 	private String calculateFilename() {
 		return fileNameFormat.replace("%D", date.format(new Date()));
 	}

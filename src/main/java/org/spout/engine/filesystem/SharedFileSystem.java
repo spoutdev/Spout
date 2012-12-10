@@ -49,30 +49,69 @@ import org.spout.engine.filesystem.path.JarFilePathResolver;
  * The basic filesystem of Spout.
  */
 public class SharedFileSystem implements FileSystem {
-	/**
-	 * Plugins live in this folder (SERVER and CLIENT)
-	 */
-	public static final File PLUGIN_DIRECTORY = new File("plugins");
-	public static final File RESOURCE_FOLDER = new File("resources");
-	public static final File CACHE_FOLDER = new File("cache");
-	public static final File CONFIG_DIRECTORY = new File("config");
-	public static final File UPDATE_DIRECTORY = new File("update");
-	public static final File DATA_DIRECTORY = new File("data");
-	public static final File WORLDS_DIRECTORY = new File("worlds");
+	private static File parentDir = new File(".");
 	private ResourcePathResolver[] searchPaths;
 	private final Map<String, Map<String, ResourceLoader<?>>> loaders = new HashMap<String, Map<String, ResourceLoader<?>>>();
 	private final HashMap<URI, Resource> loadedResources = new HashMap<URI, Resource>();
 
+	public synchronized static File getParentDirectory() {
+		return parentDir;
+	}
+
+	public synchronized static void setParentDirectory(File parentDir) {
+		SharedFileSystem.parentDir = parentDir;
+	}
+
+	public synchronized static File getPluginDirectory() {
+		return new File(parentDir, "plugins");
+	}
+	
+	public synchronized static File getResourceDirectory() {
+		return new File(parentDir, "resources");
+	}
+
+	public synchronized static File getCacheDirectory() {
+		return new File(parentDir, "cache");
+	}
+
+	public synchronized static File getConfigDirectory() {
+		return new File(parentDir, "config");
+	}
+
+	public synchronized static File getUpdateDirectory() {
+		return new File(parentDir, "update");
+	}
+
+	public synchronized static File getDataDirectory() {
+		return new File(parentDir, "data");
+	}
+
+	public synchronized static File getWorldsDirectory() {
+		return new File(parentDir, "worlds");
+	}
+
 	@Override
 	public void init() {
-		if (!PLUGIN_DIRECTORY.exists()) {
-			PLUGIN_DIRECTORY.mkdirs();
+		if (!getPluginDirectory().exists()) {
+			getPluginDirectory().mkdirs();
 		}
-		if (!DATA_DIRECTORY.exists()) {
-			DATA_DIRECTORY.mkdirs();
+		if (!getResourceDirectory().exists()) {
+			getResourceDirectory().mkdirs();
 		}
-		if (!WORLDS_DIRECTORY.exists()) {
-			WORLDS_DIRECTORY.mkdirs();
+		if (!getCacheDirectory().exists()) {
+			getCacheDirectory().mkdirs();
+		}
+		if (!getConfigDirectory().exists()) {
+			getConfigDirectory().mkdirs();
+		}
+		if (!getUpdateDirectory().exists()) {
+			getUpdateDirectory().mkdirs();
+		}
+		if (!getDataDirectory().exists()) {
+			getDataDirectory().mkdirs();
+		}
+		if (!getWorldsDirectory().exists()) {
+			getWorldsDirectory().mkdirs();
 		}
 
 		searchPaths = new ResourcePathResolver[]{new FilePathResolver("cache"),

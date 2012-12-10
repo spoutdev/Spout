@@ -214,7 +214,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.generator = generator;
 		regions = new RegionSource(this, snapshotManager);
 
-		worldDirectory = new File(SharedFileSystem.WORLDS_DIRECTORY, name);
+		worldDirectory = new File(engine.getWorldFolder(), name);
 		worldDirectory.mkdirs();
 
 		regionFileManager = new RegionFileManager(worldDirectory);

@@ -40,13 +40,6 @@ import org.spout.engine.resources.loader.TextureLoader;
 public class ClientFileSystem extends SharedFileSystem {
 	@Override
 	public void init() {
-		if (!RESOURCE_FOLDER.exists()) {
-			RESOURCE_FOLDER.mkdirs();
-		}
-		if (!CACHE_FOLDER.exists()) {
-			CACHE_FOLDER.mkdirs();
-		}
-
 		super.init();
 
 		registerLoader(new TextureLoader());
