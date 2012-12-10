@@ -26,30 +26,81 @@
  */
 package org.spout.api.component.components;
 
-import org.spout.api.Client;
-import org.spout.api.Spout;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.math.MathHelper;
+import org.spout.api.math.Quaternion;
+import org.spout.api.math.Vector3;
 
 public class PredictableTransformComponent extends TransformComponent {
-	private Transform transformRender = null;
+
+	private static final int ref = 3;
+	private static final long late = 1000 / 30;//Late of 1.5 engine cycle
+
+	private Transform []transformsReferences = new Transform[ref];
+	private long []timeReferences = new long[ref];
+	private float []weightReferences = new float[ref];
+
+	private Transform transformRender = new Transform();
+
+	@Override
+	public void onAttached(){
+		super.onAttached();
+
+		for(int i = 0; i < transformsReferences.length; i++){
+			transformsReferences[i] = new Transform();
+			timeReferences[i] = System.currentTimeMillis();
+		}
+
+	}
 
 	public void updateRender(float dt) {
-		if (transformRender == null) {
-			transformRender = getTransformLive();
-			return;
+		Vector3 translation = Vector3.ZERO;
+		Vector3 rotation = Vector3.ZERO;
+		Vector3 scale = Vector3.ZERO;
+
+		long currentTime = System.currentTimeMillis() - late;
+
+		long maxDiff = Math.max( Math.abs(currentTime - timeReferences[ref - 1]), Math.abs(currentTime - timeReferences[0]));
+		long weightSum = 0;
+		
+		for(int i = 0; i < ref; i++){
+			weightReferences[i] = maxDiff - Math.abs(currentTime - timeReferences[i]);
+			weightSum += weightReferences[i];
+		}
+		
+		for(int i = 0; i < ref; i++){
+			weightReferences[i] /= weightSum;
+			
+			translation = translation.add(transformsReferences[i].getPosition().multiply(weightReferences[i]));
+
+			Quaternion q = transformsReferences[i].getRotation();
+			rotation = rotation.add(q.getPitch() * weightReferences[i],
+					q.getYaw() * weightReferences[i],
+					q.getRoll() * weightReferences[i]);
+
+			scale = scale.add(transformsReferences[i].getScale().multiply(weightReferences[i]));
 		}
 
-		if (getOwner() == ((Client) Spout.getEngine()).getActivePlayer()) {
-			transformRender = getTransformLive();
-		} else {
-			Point movement = getTransformLive().getPosition().subtract(transformRender.getPosition());
-			movement = movement.multiply(dt);
-			transformRender.setPosition(transformRender.getPosition().add(movement));
-		}
+
+		transformRender.set(new Transform(new Point(translation, getOwner().getWorld()), MathHelper.rotation(rotation.getX(), rotation.getY(), rotation.getZ()), scale));
 	}
 
 	public Transform getRenderTransform() {
-		return transformRender; // Don't need to send back a copy, only the render thread call it
+		return transformRender;
+	}
+
+
+	@Override
+	public void copySnapshot(){
+		for(int i = 0; i < ref - 1; i ++){
+			transformsReferences[i] = transformsReferences[i+1];
+			timeReferences[i] = timeReferences[i+1];
+		}
+
+		transformsReferences[ref - 1] = getTransform();
+		timeReferences[ref - 1] = System.currentTimeMillis();
+
+		super.copySnapshot();
 	}
 }
