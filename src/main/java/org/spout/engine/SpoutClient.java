@@ -302,7 +302,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		inputManager.pollInput(activePlayer);
 
-		PlayerInputState inputState = activePlayer.input();
+		//Moved in plugin
+		/*PlayerInputState inputState = activePlayer.input();
 		TransformComponent tc = activePlayer.getTransform();
 		Transform ts = tc.getTransformLive();
 
@@ -325,7 +326,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		if (inputState.getCrouch()) {
 			offset = offset.subtract(ts.upVector().multiply(activeCamera.getSpeed()).multiply(dt));
 		}
-		tc.translateAndSetRotation(offset, MathHelper.rotation(inputState.pitch(), inputState.yaw(), ts.getRotation().getRoll()));
+		tc.translateAndSetRotation(offset, MathHelper.rotation(inputState.pitch(), inputState.yaw(), ts.getRotation().getRoll()));*/
 	}
 
 	@Override
