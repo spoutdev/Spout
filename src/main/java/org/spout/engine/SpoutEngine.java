@@ -80,7 +80,7 @@ import org.spout.api.inventory.recipe.RecipeManager;
 import org.spout.api.inventory.recipe.SimpleRecipeManager;
 import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.material.MaterialRegistry;
-import org.spout.api.permissions.DefaultPermissions;
+//import org.spout.api.permissions.DefaultPermissions;
 import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.plugin.CommonPluginLoader;
 import org.spout.api.plugin.CommonPluginManager;
@@ -190,7 +190,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 			throw new IllegalStateException("SpoutEngine's executor was already started");
 		}
 
-		DefaultPermissions.addDefaultPermission(STANDARD_BROADCAST_PERMISSION);
+		//DefaultPermissions.addDefaultPermission(STANDARD_BROADCAST_PERMISSION);
 
 		if (debugMode()) {
 			new TicklockMonitor().start();

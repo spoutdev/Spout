@@ -39,7 +39,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.event.player.PlayerChatEvent;
 import org.spout.api.exception.CommandException;
-import org.spout.api.permissions.DefaultPermissions;
+//import org.spout.api.permissions.DefaultPermissions;
 import org.spout.api.plugin.Platform;
 
 import org.spout.engine.SpoutEngine;
@@ -57,8 +57,8 @@ public class MessagingCommands {
 	@Command(aliases = {"say", "chat"}, usage = "[message]", desc = "Say something!", min = 1, max = -1)
 	public class SayCommand {
 		public SayCommand() {
-			DefaultPermissions.addDefaultPermission("spout.chat.send");
-			DefaultPermissions.addDefaultPermission("spout.chat.receive.*");
+			//DefaultPermissions.addDefaultPermission("spout.chat.send");
+			//DefaultPermissions.addDefaultPermission("spout.chat.receive.*");
 		}
 
 		@Executor(Platform.SERVER)
