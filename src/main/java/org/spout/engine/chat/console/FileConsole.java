@@ -49,7 +49,6 @@ public class FileConsole extends AbstractConsole {
 	private final SpoutEngine engine;
 	private final String fileNameFormat;
 	private String logFileName;
-	private File logFile;
 	private LogFlushThread logFlush;
 	private final ReentrantLock writerLock = new ReentrantLock();
 	private OutputStreamWriter writer;
@@ -60,12 +59,14 @@ public class FileConsole extends AbstractConsole {
 		setDateFormat(new SimpleDateFormat("HH:mm:ss"));
 		date = new SimpleDateFormat("yyyy-MM-dd");
 		logFileName = calculateFilename();
+	}
 
+	private File getLogFile() {
 		File logDir = new File(SharedFileSystem.getParentDirectory(), "logs");
-		logFile = new File(logDir, logFileName);
 		if (!logDir.exists()) {
 			logDir.mkdirs();
 		}
+		return new File(logDir, logFileName);
 	}
 
 	private String calculateFilename() {
@@ -75,7 +76,7 @@ public class FileConsole extends AbstractConsole {
 	@Override
 	protected void initImpl() {
 		try {
-			writer = new OutputStreamWriter(new FileOutputStream(logFile, true));
+			writer = new OutputStreamWriter(new FileOutputStream(getLogFile(), true));
 		} catch (FileNotFoundException ex) {
 			engine.getLogger().log(Level.SEVERE, "Unable to open {0} for writing: {1}", new Object[]{logFileName, ex.getMessage()});
 			ex.printStackTrace();
@@ -98,11 +99,10 @@ public class FileConsole extends AbstractConsole {
 		try {
 			if (!logFileName.equals(calculateFilename())) {
 				logFileName = calculateFilename();
-				logFile = new File(logFileName);
 				engine.getLogger().log(Level.INFO, "Log rotating to {0}...", logFileName);
 				try {
 					writer.close();
-					writer = new OutputStreamWriter(new FileOutputStream(logFile, true));
+					writer = new OutputStreamWriter(new FileOutputStream(getLogFile(), true));
 				} catch (FileNotFoundException ex) {
 					engine.getLogger().log(Level.SEVERE, "Unable to open {0} for writing: {1}", new Object[]{logFileName, ex.getMessage()});
 					ex.printStackTrace();
