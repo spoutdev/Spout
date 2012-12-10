@@ -34,6 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
+import org.spout.api.component.Component;
 import org.spout.api.gui.component.ControlComponent;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.tickable.BasicTickable;
@@ -107,6 +108,7 @@ public class Screen extends BasicTickable implements Container {
 	}
 
 	public void setFocus(int focus, FocusReason reason) {
+		System.out.println("Setting focus");
 		// Focus hasn't changed
 		if (this.focus == focus) {
 			return;
@@ -120,9 +122,11 @@ public class Screen extends BasicTickable implements Container {
 		}
 
 		// Verify the new focus has a ControlComponent
-		if (widgets.get(focus).get(ControlComponent.class) == null) {
+		if (!widgets.get(focus).canFocus()) {
 			throw new IllegalStateException("Can only focus controls, add a ControlComponent to your widget!");
 		}
+
+		System.out.println("Focus: " + focus);
 
 		// Notify old widget of lost focus; notify new widget with focus gained
 		getFocusedWidget().onFocusLost();
@@ -148,11 +152,19 @@ public class Screen extends BasicTickable implements Container {
 	}
 
 	public void nextFocus(FocusReason reason) {
-		int size = getWidgets().size();
-		if (focus + 1 >= size) {
-			setFocus(0, reason);
-		} else {
-			setFocus(focus + 1, reason);
+		List<Widget> widgets = getWidgets();
+		int size = widgets.size();
+		int newFocus = focus + 1;
+		while (newFocus != focus) {
+			if (newFocus >= size) {
+				newFocus = 0;
+			}
+			Widget widget = widgets.get(newFocus);
+			if (widget.canFocus()) {
+				setFocus(newFocus, reason);
+				break;
+			}
+			newFocus++;
 		}
 	}
 
@@ -161,11 +173,19 @@ public class Screen extends BasicTickable implements Container {
 	}
 
 	public void previousFocus(FocusReason reason) {
-		int size = getWidgets().size();
-		if (focus - 1 < 0) {
-			setFocus(size - 1, reason);
-		} else {
-			setFocus(focus - 1, reason);
+		List<Widget> widgets = getWidgets();
+		int size = widgets.size();
+		int newFocus = focus - 1;
+		while (newFocus != focus) {
+			if (newFocus < 0) {
+				newFocus = size - 1;
+			}
+			Widget widget = widgets.get(newFocus);
+			if (widget.canFocus()) {
+				setFocus(newFocus, reason);
+				break;
+			}
+			newFocus--;
 		}
 	}
 

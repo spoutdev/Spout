@@ -35,6 +35,7 @@ import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
 import org.spout.api.component.components.WidgetComponent;
+import org.spout.api.gui.component.ControlComponent;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.math.Rectangle;
@@ -97,19 +98,27 @@ public final class Widget extends BaseComponentHolder implements Tickable {
 		return screen;
 	}
 
+	public boolean canFocus() {
+		return get(ControlComponent.class) != null;
+	}
+
 	public boolean isFocused() {
 		return screen.getFocusedWidget().equals(this);
 	}
 
 	protected void onFocusLost() {
 		for (Component c : values()) {
-			((WidgetComponent) c).onFocusLost();
+			if (c instanceof WidgetComponent) {
+				((WidgetComponent) c).onFocusLost();
+			}
 		}
 	}
 
 	protected void onFocus(FocusReason reason) {
 		for (Component c : values()) {
-			((WidgetComponent) c).onFocus(reason);
+			if (c instanceof WidgetComponent) {
+				((WidgetComponent) c).onFocus(reason);
+			}
 		}
 	}
 
