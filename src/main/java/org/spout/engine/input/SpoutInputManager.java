@@ -38,8 +38,8 @@ import org.spout.api.chat.ChatArguments;
 import org.spout.api.component.Component;
 import org.spout.api.component.components.WidgetComponent;
 import org.spout.api.event.player.PlayerKeyEvent;
+import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Screen;
-import org.spout.api.gui.Widget;
 import org.spout.api.input.InputManager;
 import org.spout.api.input.Keyboard;
 import org.spout.api.input.Mouse;
@@ -48,6 +48,7 @@ import org.spout.api.math.IntVector2;
 import org.spout.engine.entity.SpoutPlayer;
 
 public class SpoutInputManager implements InputManager {
+	private static final Keyboard FOCUS_KEY = Keyboard.KEY_TAB;
 	private final Map<Keyboard, String> keyCommands = new HashMap<Keyboard, String>();
 	private final Map<Mouse, String> mouseCommands = new HashMap<Mouse, String>();
 	private boolean redirected = false;
@@ -61,12 +62,23 @@ public class SpoutInputManager implements InputManager {
 
 		doCommand(player, cmd, pressed);
 
+		if (Spout.debugMode()) {
+			Spout.log("Key " + key + " was " + (pressed ? "pressed" : "released"));
+		}
+
+		if (key == FOCUS_KEY && pressed) {
+			Screen in = getInputScreen();
+			if (in != null) {
+				in.nextFocus(FocusReason.KEYBOARD_TAB);
+			}
+		}
+
 		for (WidgetComponent c : getWidgetComponents()) {
 			c.onKey(event);
 		}
 	}
 
-	private void onMousePressed(SpoutPlayer player, Mouse button, boolean pressed, int x, int y) {
+	private void onMouseClicked(SpoutPlayer player, Mouse button, boolean pressed, int x, int y) {
 		for (WidgetComponent c : getWidgetComponents()) {
 			c.onClicked(new IntVector2(x, y), pressed);
 		}
@@ -111,14 +123,18 @@ public class SpoutInputManager implements InputManager {
 		player.processCommand(command, new ChatArguments());
 	}
 
-	private Set<WidgetComponent> getWidgetComponents() {
+	private Screen getInputScreen() {
 		Engine engine = Spout.getEngine();
 		if (!(engine instanceof Client)) {
 			throw new IllegalStateException("Cannot access ScreenStack in server mode.");
 		}
+		return ((Client) engine).getScreenStack().getInputScreen();
+	}
 
+
+	private Set<WidgetComponent> getWidgetComponents() {
 		Set<WidgetComponent> components = new HashSet<WidgetComponent>();
-		Screen inputScreen = ((Client) engine).getScreenStack().getInputScreen();
+		Screen inputScreen = getInputScreen();
 		if (inputScreen == null) {
 			return components;
 		}
@@ -150,16 +166,16 @@ public class SpoutInputManager implements InputManager {
 				int x = org.lwjgl.input.Mouse.getX(), y = org.lwjgl.input.Mouse.getY();
 				Mouse button = Mouse.get(org.lwjgl.input.Mouse.getEventButton());
 				if (button != null) {
-					onMousePressed(player, button, org.lwjgl.input.Mouse.getEventButtonState(), x, y);
+					onMouseClicked(player, button, org.lwjgl.input.Mouse.getEventButtonState(), x, y);
 					continue;
 				}
 
 				// Handle scrolls
 				int scroll = org.lwjgl.input.Mouse.getEventDWheel();
 				if (scroll < 0) {
-					onMousePressed(player, Mouse.MOUSE_SCROLLUP, true, x, y);
+					onMouseClicked(player, Mouse.MOUSE_SCROLLUP, true, x, y);
 				} else if (scroll > 0) {
-					onMousePressed(player, Mouse.MOUSE_SCROLLDOWN, true, x, y);
+					onMouseClicked(player, Mouse.MOUSE_SCROLLDOWN, true, x, y);
 				}
 
 				onMouseMove(player, org.lwjgl.input.Mouse.getDX(), org.lwjgl.input.Mouse.getDY(), org.lwjgl.input.Mouse.getX(), org.lwjgl.input.Mouse.getY());
