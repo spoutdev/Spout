@@ -52,8 +52,10 @@ public abstract class Texture extends Resource {
 		return this.width;
 	}
 
-	public final Color[] getImage() {
-		return image;
+	public Color[] getImage() {
+		Color[] colorCopy = new Color[image.length];
+		System.arraycopy(image, 0, colorCopy, 0, image.length);
+		return colorCopy;
 	}
 	
 	public final void setColors(Color[] colors, int offset, int num){
