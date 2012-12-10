@@ -121,7 +121,7 @@ public class MathHelper {
 	 * Wraps the angle between -180 and 180 degrees
 	 *
 	 * @param angle to wrap
-	 * @return -180 > angle <= 180
+	 * @return -180 < angle <= 180
 	 */
 	public static float wrapAngle(float angle) {
 		angle %= 360f;
@@ -134,12 +134,18 @@ public class MathHelper {
 		}
 	}
 	
+	/**
+	 * Wraps the pitch angle between -90 and 90 degrees
+	 * 
+	 * @param angle to wrap
+	 * @return -90 < angle < 90
+	 */
 	public static float wrapAnglePitch(float angle) {
 		angle = wrapAngle(angle);
 		
-		if (angle<-90)
+		if (angle < -90)
 			return -90;
-		if (angle>90)
+		if (angle > 90)
 			return 90;
 		return angle;
 	}
@@ -148,7 +154,7 @@ public class MathHelper {
 	 * Wraps a byte between 0 and 256
 	 * 
 	 * @param value to wrap
-	 * @return 0 >= byte < 256
+	 * @return 0 < byte < 256
 	 */
 	public static byte wrapByte(int value) {
 		value %= 256;
@@ -162,7 +168,7 @@ public class MathHelper {
 	 * Wraps the radian between -PI and PI
 	 *
 	 * @param radian to wrap
-	 * @return -PI > radian <= PI
+	 * @return -PI < radian <= PI
 	 */
 	public static double wrapRadian(double radian) {
 		radian %= TWO_PI;
@@ -273,7 +279,7 @@ public class MathHelper {
 	 * @param a
 	 * @param b
 	 * @param percent
-	 * @return
+	 * @return Color
 	 */
 	public static Color lerp(Color a, Color b, double percent) {
 		int red = lerp(a.getRed(), b.getRed(), percent);
@@ -283,6 +289,15 @@ public class MathHelper {
 		return new Color(red, green, blue, alpha);
 	}
 
+	/**
+	 * Calculates the linear interpolation between a and b with the given
+	 * percent
+	 * 
+	 * @param a
+	 * @param b
+	 * @param percent
+	 * @return Quarternion
+	 */
 	public static Quaternion lerp(Quaternion a, Quaternion b, float percent) {
 		float x = lerp(a.getX(), b.getX(), percent);
 		float y = lerp(a.getY(), b.getY(), percent);
@@ -403,11 +418,24 @@ public class MathHelper {
 		return new Color(red, green, blue, alpha);
 	}
 
+	/**
+	 * Generates a random color
+	 * 
+	 * @return Random color
+	 */
 	public static Color randomColor() {
 		Random rng = new Random();
 		return new Color(rng.nextInt(255), rng.nextInt(255), rng.nextInt(255));
 	}
 	
+	/**
+	 * Clamps the value between the low and high boundaries
+	 * 
+	 * @param value
+	 * @param low
+	 * @param high
+	 * @return Clamped value
+	 */
 	public static double clamp(double value, double low, double high) {
 		if (value < low) {
 			return low;
@@ -417,7 +445,15 @@ public class MathHelper {
 		}
 		return value;
 	}
-
+	
+	/**
+	 * Clamps the value between the low and high boundaries
+	 * 
+	 * @param value
+	 * @param low
+	 * @param high
+	 * @return Clamped value
+	 */
 	public static int clamp(int value, int low, int high) {
 		if (value < low) {
 			return low;
@@ -515,6 +551,12 @@ public class MathHelper {
 
 	// Integer Maths
 
+	/**
+	 * Rounds x down to the cloest integer
+	 * 
+	 * @param x
+	 * @return int
+	 */
 	public static int floor(double x) {
 		int y = (int) x;
 		if (x < y) {
@@ -523,6 +565,12 @@ public class MathHelper {
 		return y;
 	}
 
+	/**
+	 * Rounds x down to the cloest integer
+	 * 
+	 * @param x
+	 * @return int
+	 */
 	public static int floor(float x) {
 		int y = (int) x;
 		if (x < y) {
