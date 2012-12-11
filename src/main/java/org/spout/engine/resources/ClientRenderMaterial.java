@@ -30,23 +30,15 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.lwjgl.opengl.GL11;
-import org.spout.api.geo.cuboid.ChunkSnapshotModel;
-import org.spout.api.material.Material;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
-import org.spout.api.model.mesh.Mesh;
-import org.spout.api.model.mesh.MeshFace;
-import org.spout.api.model.mesh.OrientedMesh;
-import org.spout.api.model.mesh.OrientedMeshFace;
-import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Shader;
 import org.spout.api.render.effect.BatchEffect;
@@ -57,6 +49,7 @@ import org.spout.api.render.effect.SnapshotBatch;
 import org.spout.api.render.effect.SnapshotEntity;
 import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.render.effect.SnapshotRender;
+import org.spout.api.render.effect.VertexEffect;
 
 public class ClientRenderMaterial extends RenderMaterial {
 
@@ -67,9 +60,10 @@ public class ClientRenderMaterial extends RenderMaterial {
 	Matrix view;
 	Matrix projection;
 	int layer;
-	private List<BatchEffect> batchEffects = new ArrayList<BatchEffect>();
-	private List<RenderEffect> renderEffects = new ArrayList<RenderEffect>();
-	private List<EntityEffect> entityEffects = new ArrayList<EntityEffect>();
+	private final List<BatchEffect> batchEffects = new ArrayList<BatchEffect>();
+	private final List<RenderEffect> renderEffects = new ArrayList<RenderEffect>();
+	private final List<EntityEffect> entityEffects = new ArrayList<EntityEffect>();
+	private final List<VertexEffect> vertexEffects = new ArrayList<VertexEffect>();
 
 	public ClientRenderMaterial(Shader s, Map<String, Object> params){
 		this(s, params, null, null, true, 0);
@@ -226,4 +220,25 @@ public class ClientRenderMaterial extends RenderMaterial {
 		entityEffects.add(entityEffect);
 	}
 
+	@Override
+	public Collection<VertexEffect> getVertexEffects() {
+		return Collections.unmodifiableCollection(vertexEffects);
+	}
+	
+	@Override
+	public boolean hasVertexEffects() {
+		return !vertexEffects.isEmpty();
+	}
+
+	@Override
+	public void addVertexEffect(VertexEffect effect) {
+		final int layout = effect.getLayout();
+		for (VertexEffect current : vertexEffects) {
+			if (current.getLayout() == layout) {
+				throw new IllegalArgumentException("Cannot add " + effect
+						+ ". Layout " + layout + " is already in use.");
+			}
+		}
+		vertexEffects.add(effect);
+	}
 }
