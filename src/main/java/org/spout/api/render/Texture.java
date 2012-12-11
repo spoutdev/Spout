@@ -34,11 +34,11 @@ import org.spout.api.resource.Resource;
 
 public abstract class Texture extends Resource {
 
-	protected Color[] image;
+	protected int[] image;
 	protected int width;
 	protected int height;
 
-	public Texture(Color[] baseImage, int width, int height) {
+	public Texture(int[] baseImage, int width, int height) {
 		this.image = baseImage;
 		this.width = width;
 		this.height = height;
@@ -52,21 +52,21 @@ public abstract class Texture extends Resource {
 		return this.width;
 	}
 
-	public Color[] getImage() {
-		Color[] colorCopy = new Color[image.length];
+	public int[] getImage() {
+		int[] colorCopy = new int[image.length];
 		System.arraycopy(image, 0, colorCopy, 0, image.length);
 		return colorCopy;
 	}
 	
 	public final void setColors(Color[] colors, int offset, int num){
 		for(int i = 0; i < num; i++) {
-			this.image[offset + i] = colors[i]; 
+			this.image[offset + i] = colors[i].getRGB(); 
 		}
 	}
 	
 	public final void setColors(Color[] colors){
 		for(int i = 0; i < colors.length; i++) {
-			this.image[i] = colors[i];
+			this.image[i] = colors[i].getRGB();
 		}
 	}
 
