@@ -29,16 +29,26 @@ package org.spout.engine.renderer;
 import java.util.HashMap;
 import java.util.Map;
 
+import gnu.trove.list.array.TFloatArrayList;
+
 public class BufferContainer {
-
 	public int element = 0;
-	final Map<Integer,Object> buffers = new HashMap<Integer,Object>();
+	final Map<Integer, Object> buffers = new HashMap<Integer, Object>();
 
-	public Map<Integer,Object> getBuffers(){
+	public Map<Integer, Object> getBuffers() {
 		return buffers;
 	}
 
-	public void setBuffers(int layout, Object buffer){
+	public Object getOrCreateBuffer(int layout) {
+		if (!buffers.containsKey(layout)) {
+			final TFloatArrayList buffer = new TFloatArrayList();
+			setBuffers(layout, buffer);
+			return buffer;
+		}
+		return buffers.get(layout);
+	}
+
+	public void setBuffers(int layout, Object buffer) {
 		buffers.put(layout, buffer);
 	}
 }

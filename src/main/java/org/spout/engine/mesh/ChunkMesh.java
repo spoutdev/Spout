@@ -26,10 +26,14 @@
  */
 package org.spout.engine.mesh;
 
+import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.list.array.TFloatArrayList;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -51,10 +55,10 @@ import org.spout.api.model.mesh.OrientedMeshFace;
 import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotMesh;
+import org.spout.api.render.effect.VertexEffect;
 import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.BufferContainer;
-import org.spout.engine.resources.ClientRenderMaterial;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 
 /**
@@ -345,23 +349,21 @@ public class ChunkMesh{
 				meshs.put(renderMaterial, container);
 			}
 
-			TFloatArrayList vertexBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.VERTEX_LAYER);
-			TFloatArrayList normalBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.NORMAL_LAYER);
-			TFloatArrayList textureBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.TEXTURE0_LAYER);
-
-			if(vertexBuffer==null){
-				vertexBuffer = new TFloatArrayList();
-				container.setBuffers(BatchVertexRenderer.VERTEX_LAYER, vertexBuffer);
-			}
-
-			if(normalBuffer==null){
-				normalBuffer = new TFloatArrayList();
-				container.setBuffers(BatchVertexRenderer.NORMAL_LAYER, normalBuffer);
-			}
-
-			if(textureBuffer==null){
-				textureBuffer = new TFloatArrayList();
-				container.setBuffers(BatchVertexRenderer.TEXTURE0_LAYER, textureBuffer);
+			TFloatArrayList vertexBuffer = (TFloatArrayList) container.getOrCreateBuffer(BatchVertexRenderer.VERTEX_LAYER);
+			TFloatArrayList normalBuffer = (TFloatArrayList) container.getOrCreateBuffer(BatchVertexRenderer.NORMAL_LAYER);
+			TFloatArrayList textureBuffer = (TFloatArrayList) container.getOrCreateBuffer(BatchVertexRenderer.TEXTURE0_LAYER);
+			
+			final TIntObjectMap<TFloatArrayList> extraDataBuffers;
+			final Collection<VertexEffect> effects;
+			if (renderMaterial.hasVertexEffects()) {
+				effects = renderMaterial.getVertexEffects();
+				extraDataBuffers = new TIntObjectHashMap<TFloatArrayList>(effects.size());
+				for (VertexEffect effect : effects) {
+					extraDataBuffers.put(effect.getLayout(), (TFloatArrayList) container.getOrCreateBuffer(effect.getLayout()));
+				}
+			} else {
+				extraDataBuffers = null;
+				effects = null;
 			}
 
 			for (MeshFace meshFace : faces) {
@@ -384,6 +386,12 @@ public class ChunkMesh{
 						normalBuffer.add(1f);
 					}
 					
+					if (extraDataBuffers != null) {
+						for (VertexEffect effect : effects) {
+							extraDataBuffers.get(effect.getLayout()).addAll(effect.getVertexData(world, vert.position));
+						}
+					}
+
 					container.element++;
 				}
 			}
