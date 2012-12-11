@@ -123,7 +123,7 @@ public class RectangularPacker {
 		Graphics2D canvas = image.createGraphics();
 		for (Entry<Texture, Node> entry : fits.entrySet()) {
 			Texture texture = entry.getKey();
-			image.setRGB(0, 0, texture.getWidth(), texture.getHeight(), Texture.converToIntArray(texture.getImage()), 0, texture.getWidth());			
+			image.setRGB(0, 0, texture.getWidth(), texture.getHeight(), texture.getImage(), 0, texture.getWidth());			
 			canvas.drawImage(image, entry.getValue().getX(), entry.getValue().getY(), null);
 		}
 

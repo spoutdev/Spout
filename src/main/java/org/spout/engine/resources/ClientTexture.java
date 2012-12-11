@@ -38,12 +38,12 @@ import org.spout.api.render.Texture;
 public class ClientTexture extends Texture {
 	int textureID = -1;
 	
-	public ClientTexture(Color[] colors, int width, int height){
+	public ClientTexture(int[] colors, int width, int height){
 		super(colors, width, height);
 	}
 
 	public ClientTexture(BufferedImage baseImage) {
-		super(Texture.convertFromIntArray(baseImage.getRGB(0, 0, baseImage.getWidth(), baseImage.getHeight(), null, 0, baseImage.getWidth())), baseImage.getWidth(), baseImage.getHeight());
+		super(baseImage.getRGB(0, 0, baseImage.getWidth(), baseImage.getHeight(), null, 0, baseImage.getWidth()), baseImage.getWidth(), baseImage.getHeight());
 	}
 	
 	@Override
@@ -121,8 +121,7 @@ public class ClientTexture extends Texture {
 		for (int y = 0; y < height; y++) {
 
 			for (int x = 0; x < width; x++) {
-
-				Color pixel = this.image[y * width + x];
+				Color pixel = new Color(this.image[y * width + x], true);
 				buffer.put((byte) pixel.getRed()); // Red component
 				buffer.put((byte) pixel.getGreen());  // Green component
 				buffer.put((byte) pixel.getBlue());         // Blue component

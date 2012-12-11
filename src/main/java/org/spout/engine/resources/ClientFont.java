@@ -115,7 +115,7 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		charTop = (float)(ttfFont.getSize() + bounds.getY());
 		this.width = image.getWidth();
 		this.height = image.getHeight();
-		this.image = Texture.convertFromIntArray(image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth()));
+		this.image = image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
 	}
 
 	private void writeObject(ObjectOutputStream oos) throws IOException {
