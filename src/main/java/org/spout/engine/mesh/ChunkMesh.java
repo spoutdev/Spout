@@ -139,11 +139,30 @@ public class ChunkMesh{
 		for(BufferContainer container : meshs.values()){
 
 			TFloatArrayList vertexBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.VERTEX_LAYER);
+			
+			/*
+			 * Use a shader light (2) and skylight (4)
+			 * 
+			 * WE NEED TO USE 2 BECAUSE WE DON'T USE COLOR
+			 * OPENGL 2 NEED TO USE LAYOUT IN THE ORDER
+			 * WE CAN'T USE 3 IF 2 ISN'T USED
+			 * 
+			 * One float per vertice
+			 * file://Vanilla/resources/shaders/terrain.120.vert 
+			 * file://Vanilla/resources/shaders/terrain.330.vert
+			 */
+			
 			TFloatArrayList lightBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.COLOR_LAYER);
+			TFloatArrayList skylightBuffer = (TFloatArrayList) container.getBuffers().get(4);
 
 			if(lightBuffer==null){
-				lightBuffer = new TFloatArrayList(vertexBuffer.size());
+				lightBuffer = new TFloatArrayList(vertexBuffer.size() / 4);
 				container.setBuffers(BatchVertexRenderer.COLOR_LAYER, lightBuffer);
+			}
+			
+			if(skylightBuffer==null){
+				skylightBuffer = new TFloatArrayList(vertexBuffer.size() / 4);
+				container.setBuffers(4, skylightBuffer);
 			}
 
 			for(int i = 0; i < vertexBuffer.size();){
@@ -154,7 +173,7 @@ public class ChunkMesh{
 
 				//TODO : Create a buffer for each light registred by plugin
 
-				generateLightOnVertices( chunkModel, x, y, z, lightBuffer);
+				generateLightOnVertices( chunkModel, x, y, z, lightBuffer, skylightBuffer);
 			}
 		}
 	}
@@ -168,7 +187,7 @@ public class ChunkMesh{
 	 * @param lightBuffer 
 	 * @return
 	 */
-	private void generateLightOnVertices(SpoutChunkSnapshotModel chunkModel, float x, float y, float z, TFloatArrayList lightBuffer) {
+	private void generateLightOnVertices(SpoutChunkSnapshotModel chunkModel, float x, float y, float z, TFloatArrayList lightBuffer, TFloatArrayList skylightBuffer) {
 		int xi = (int)x;
 		int yi = (int)y;
 		int zi = (int)z;
@@ -190,7 +209,7 @@ public class ChunkMesh{
 						BlockMaterial m = chunk.getBlockMaterial(xx, yy, zz);
 						if (!m.isOpaque()) {
 							light += chunk.getBlockLight(xx, yy, zz);
-							skylight += chunk.getBlockSkyLight(xx, yy, zz);
+							skylight += chunk.getBlockSkyLightRaw(xx, yy, zz); //use the SkyLightRaw, the real sky state would be apply by the shader
 							count++;
 						}
 					}
@@ -208,13 +227,9 @@ public class ChunkMesh{
 
 			//TODO : To replace by 2 byte buffer for Vanilla
 			
-			lightBuffer.add(light + skylight * 0.75f);
-			lightBuffer.add((light + skylight) * 0.75f);
-			lightBuffer.add(light * 0.75f + skylight);
-			lightBuffer.add(1f);
+			lightBuffer.add(light);
+			skylightBuffer.add(skylight);
 		}else{
-			lightBuffer.add(1f);
-			lightBuffer.add(1f);
 			lightBuffer.add(1f);
 			lightBuffer.add(1f);
 		}
