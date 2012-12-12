@@ -88,10 +88,14 @@ public class FileConsole extends AbstractConsole {
 	@Override
 	protected void closeImpl() {
 		try {
-			writer.close();
+			if (writer != null) {
+				writer.close();
+			}
 		} catch (IOException ignore) {
 		}
-		logFlush.interrupt();
+		if (logFlush != null) {
+			logFlush.interrupt();
+		}
 	}
 
 	protected void flush() {
