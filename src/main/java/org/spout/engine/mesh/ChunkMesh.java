@@ -424,4 +424,13 @@ public class ChunkMesh{
 		return world;
 	}
 
+	public int getFloatCount() {
+		int count = 0;
+		for(BufferContainer container : meshs.values())
+			for(Object buffer : container.getBuffers().values())
+				if(buffer instanceof TFloatArrayList)
+					count += ((TFloatArrayList)buffer).size();
+		return count;
+	}
+
 }

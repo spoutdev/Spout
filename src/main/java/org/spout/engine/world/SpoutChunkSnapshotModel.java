@@ -90,7 +90,7 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 		this.time = time;
 		this.first = first;
 	}
-
+	
 	public int getX() {
 		return cx;
 	}

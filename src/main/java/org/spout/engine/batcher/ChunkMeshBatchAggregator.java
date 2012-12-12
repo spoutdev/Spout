@@ -74,6 +74,7 @@ public class ChunkMeshBatchAggregator extends Cube {
 
 		renderer.end();
 
+		bufferContainer = null;
 		generated = true;
 	}
 

@@ -194,13 +194,12 @@ public class SpoutRegion extends Region {
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 	private boolean renderQueueEnabled = false;
-	
+
 	private final TByteTripleObjectHashMap<SpoutChunkSnapshotModel> renderChunkQueued = new TByteTripleObjectHashMap<SpoutChunkSnapshotModel>();
 	private final ConcurrentSkipListSet<SpoutChunkSnapshotModel> renderChunkQueue = new ConcurrentSkipListSet<SpoutChunkSnapshotModel>();
-	private final TByteTripleObjectHashMap<ChunkMesh> meshsWaitingLight = new TByteTripleObjectHashMap<ChunkMesh>();
-	
+
 	private final AtomicReference<SpoutRegion>[][][] neighbours;
-	
+
 	//Physics
 	private final DiscreteDynamicsWorld simulation;
 	private final CollisionDispatcher dispatcher;
@@ -226,7 +225,7 @@ public class SpoutRegion extends Region {
 		} else {
 			executionThread = null;
 		}
-		
+
 		if (Spout.getPlatform() == Platform.CLIENT) {
 			meshThread = new ArrayList<Thread>();
 			for(int i = 0; i < 2; i++ ){//TODO : Make a option to choice the number of thread to make mesh
@@ -252,7 +251,7 @@ public class SpoutRegion extends Region {
 			}
 
 		}
-		
+
 		neighbours = new AtomicReference[3][3][3];
 
 		final int rx = getX();
@@ -276,7 +275,7 @@ public class SpoutRegion extends Region {
 		}
 		taskManager = new SpoutTaskManager(world.getEngine().getScheduler(), false, t, world.getAge());
 		scheduler = (SpoutScheduler) (Spout.getEngine().getScheduler());
-		
+
 		//Physics
 		broadphase = new DbvtBroadphase();
 		broadphase.getOverlappingPairCache().setInternalGhostPairCallback(new GhostPairCallback());
@@ -351,7 +350,7 @@ public class SpoutRegion extends Region {
 			}
 		}
 	}
-	
+
 	public void stopMeshGeneratorThread() {
 		if (meshThread != null) {
 			for(Thread thread : meshThread){
@@ -377,7 +376,7 @@ public class SpoutRegion extends Region {
 		if (loadopt != LoadOption.NO_LOAD) {
 			TickStage.checkStage(~TickStage.SNAPSHOT);
 		}
-		
+
 		x &= CHUNKS.MASK;
 		y &= CHUNKS.MASK;
 		z &= CHUNKS.MASK;
@@ -390,7 +389,7 @@ public class SpoutRegion extends Region {
 
 		SpoutChunk newChunk = null;
 		ChunkDataForRegion dataForRegion = null;
-		
+
 		boolean fileExists = this.inputStreamExists(x, y, z);
 
 		if (loadopt.loadIfNeeded() && fileExists) {
@@ -538,7 +537,7 @@ public class SpoutRegion extends Region {
 		}
 
 		renderChunkQueue.add(model);
-		
+
 		synchronized (renderChunkQueued) {
 			renderChunkQueued.notify();
 		}
@@ -563,7 +562,7 @@ public class SpoutRegion extends Region {
 		}
 		return model;
 	}
-	
+
 	/**
 	 * Removes a chunk from the region and indicates if the region is empty
 	 * @param c the chunk to remove
@@ -954,7 +953,7 @@ public class SpoutRegion extends Region {
 			}
 		}
 	}
-	
+
 	private static final Object logLock = new Object();
 
 	/**
@@ -977,23 +976,23 @@ public class SpoutRegion extends Region {
 	public void startTickRun(int stage, long delta) {
 		final float dt = delta / 1000F;
 		switch (stage) {
-			case 0: {
-				taskManager.heartbeat(delta);
-				updateAutosave();
-				updateBlockComponents(dt);
-				updateEntities(dt);
-				updateLighting();
-				updatePopulation();
-				unloadChunks();
-				break;
-			}
-			case 1: {
-				updateDynamics(dt);
-				break;
-			}
-			default: {
-				throw new IllegalStateException("Number of states exceeded limit for SpoutRegion");
-			}
+		case 0: {
+			taskManager.heartbeat(delta);
+			updateAutosave();
+			updateBlockComponents(dt);
+			updateEntities(dt);
+			updateLighting();
+			updatePopulation();
+			unloadChunks();
+			break;
+		}
+		case 1: {
+			updateDynamics(dt);
+			break;
+		}
+		default: {
+			throw new IllegalStateException("Number of states exceeded limit for SpoutRegion");
+		}
 		}
 	}
 
@@ -1094,101 +1093,101 @@ public class SpoutRegion extends Region {
 
 	public void preSnapshotRun() {
 		entityManager.preSnapshotRun();
-		
+
 		Point playerPosition = null;
 		int renderLimit = Spout.getPlatform() == Platform.CLIENT && getRenderer() != null ?
 				RENDER_QUEUE_LIMIT - (getRenderer().getBatchWaiting() + renderChunkQueue.size()) :
 					0;
-		
-		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-			SpoutWorld world = this.getWorld();
-			
-			boolean worldRenderQueueEnabled = world.isRenderQueueEnabled();
-			boolean firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
-			boolean unloadRenderQueue = !worldRenderQueueEnabled && renderQueueEnabled;
-			
-			SpoutPlayer player = ((SpoutClient) Spout.getEngine()).getActivePlayer();
-			if (player == null) {
-				playerPosition = null;
-			} else {
-				playerPosition = player.getTransform().getPosition();
-			}
 
-			if (firstRenderQueueTick && player != null) {
-				for( SpoutChunk c : player.getObservingChunks()){
+				if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
+					SpoutWorld world = this.getWorld();
+
+					boolean worldRenderQueueEnabled = world.isRenderQueueEnabled();
+					boolean firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
+					boolean unloadRenderQueue = !worldRenderQueueEnabled && renderQueueEnabled;
+
+					SpoutPlayer player = ((SpoutClient) Spout.getEngine()).getActivePlayer();
+					if (player == null) {
+						playerPosition = null;
+					} else {
+						playerPosition = player.getTransform().getPosition();
+					}
+
+					if (firstRenderQueueTick && player != null) {
+						for( SpoutChunk c : player.getObservingChunks()){
+							c.setRenderDirty(true);
+						}
+						renderQueueEnabled = worldRenderQueueEnabled;
+					}
+
+					if(unloadRenderQueue){
+						for(SpoutChunk c : rended.toArray(new SpoutChunk[rended.size()])){
+							addUpdateToRenderQueue(playerPosition, c, false, false, false);
+
+						}
+					}
+				}
+
+				List<SpoutChunk> renderLater = new LinkedList<SpoutChunk>();
+
+				SpoutChunk spoutChunk;
+				while ((spoutChunk = dirtyChunks.poll()) != null) {
+
+					spoutChunk.setNotDirtyQueued();
+					if (!spoutChunk.isLoaded()) {
+						continue;
+					}
+
+					if (renderQueueEnabled /*&& spoutChunk.isRenderDirty()*/) {
+						if(spoutChunk.isInViewDistance() || (spoutChunk.isRendered() && spoutChunk.leftViewDistance())){
+							if(renderLimit > 0 ){
+								addUpdateToRenderQueue(playerPosition, spoutChunk, spoutChunk.isBlockDirty(), spoutChunk.isLightDirty(), false);
+								renderLimit--;
+							}else{
+								renderLater.add(spoutChunk);
+							}
+						}else{
+							spoutChunk.setRenderDirty(false);
+							spoutChunk.viewDistanceCopy();
+						}
+					}
+
+					if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
+						for (Player entity : spoutChunk.getObservingPlayers()) {
+							syncChunkToPlayer(spoutChunk, entity);
+						}
+						processChunkUpdatedEvent(spoutChunk);
+
+						spoutChunk.resetDirtyArrays();
+						spoutChunk.setLightDirty(false);
+					}
+				}
+
+				for(SpoutChunk c : renderLater){
 					c.setRenderDirty(true);
 				}
-				renderQueueEnabled = worldRenderQueueEnabled;
-			}
-			
-			if(unloadRenderQueue){
-				for(SpoutChunk c : rended.toArray(new SpoutChunk[rended.size()])){
-					addUpdateToRenderQueue(playerPosition, c, false, false, false);
-					
+
+				SpoutChunkSnapshotFuture snapshotFuture;
+				while ((snapshotFuture = snapshotQueue.poll()) != null) {
+					snapshotFuture.run();
 				}
-			}
-		}
 
-		List<SpoutChunk> renderLater = new LinkedList<SpoutChunk>();
-		
-		SpoutChunk spoutChunk;
-		while ((spoutChunk = dirtyChunks.poll()) != null) {
+				renderSnapshotCacheBoth.clear();
+				renderSnapshotCacheLight.clear();
+				renderSnapshotCacheBlock.clear();
 
-			spoutChunk.setNotDirtyQueued();
-			if (!spoutChunk.isLoaded()) {
-				continue;
-			}
-
-			if (renderQueueEnabled /*&& spoutChunk.isRenderDirty()*/) {
-				if(spoutChunk.isInViewDistance() || (spoutChunk.isRendered() && spoutChunk.leftViewDistance())){
-					if(renderLimit > 0 ){
-						addUpdateToRenderQueue(playerPosition, spoutChunk, spoutChunk.isBlockDirty(), spoutChunk.isLightDirty(), false);
-						renderLimit--;
-					}else{
-						renderLater.add(spoutChunk);
-					}
-				}else{
-					spoutChunk.setRenderDirty(false);
-					spoutChunk.viewDistanceCopy();
-				}
-			}
-			
-			if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
-				for (Player entity : spoutChunk.getObservingPlayers()) {
-					syncChunkToPlayer(spoutChunk, entity);
-				}
-				processChunkUpdatedEvent(spoutChunk);
-
-				spoutChunk.resetDirtyArrays();
-				spoutChunk.setLightDirty(false);
-			}
-		}
-
-		for(SpoutChunk c : renderLater){
-			c.setRenderDirty(true);
-		}
-		
-		SpoutChunkSnapshotFuture snapshotFuture;
-		while ((snapshotFuture = snapshotQueue.poll()) != null) {
-			snapshotFuture.run();
-		}
-
-		renderSnapshotCacheBoth.clear();
-		renderSnapshotCacheLight.clear();
-		renderSnapshotCacheBlock.clear();
-
-		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
-			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
-				for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
-					SpoutChunk chunk = chunks[dx][dy][dz].get();
-					if (chunk != null) {
-						chunk.updateExpiredObservers();
+				for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
+					for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
+						for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+							SpoutChunk chunk = chunks[dx][dy][dz].get();
+							if (chunk != null) {
+								chunk.updateExpiredObservers();
+							}
+						}
 					}
 				}
-			}
-		}
 
-		entityManager.syncEntities();
+				entityManager.syncEntities();
 
 	}
 
@@ -1205,13 +1204,8 @@ public class SpoutRegion extends Region {
 		int bx = c.getX() - 1;
 		int by = c.getY() - 1;
 		int bz = c.getZ() - 1;
-		
+
 		if (c.isInViewDistance()) {
-			if(!block && !light){//Firs time block and light isn't dirty
-				block = true;
-				light = true;
-			}
-			
 			int distance;
 			if (p == null) {
 				distance = 0;
@@ -1226,21 +1220,20 @@ public class SpoutRegion extends Region {
 				for (int y = 0; y < 3; y++) {
 					for (int z = 0; z < 3; z++) {
 						//if (x == 1 || y == 1 || z == 1) { //Need for light
-							ChunkSnapshot snapshot = getRenderSnapshot(c, ox + x, oy + y, oz + z, block, light);
-							if (snapshot == null) {
-								//System.out.println("skip");
-								return;
-							}
-							chunks[x][y][z] = snapshot;
+						ChunkSnapshot snapshot = getRenderSnapshot(c, ox + x, oy + y, oz + z);
+						if (snapshot == null) {
+							//System.out.println("skip");
+							return;
+						}
+						chunks[x][y][z] = snapshot;
 						//}
 					}
 				}
 			}
 			boolean first = c.enteredViewDistance();
 			final HashSet<RenderMaterial> updatedRenderMaterials;
-			// TODO - @L5D this is a hack to get light to work
-			// TODO - @raphfrk we can remove the light boolean if you make something as
-			if (first || c.isDirtyOverflow() || force /*|| true*/ || light) {
+
+			if (first || c.isDirtyOverflow() || force || c.isLightDirty()) {
 				updatedRenderMaterials = null;
 			} else {
 				updatedRenderMaterials = new HashSet<RenderMaterial>();
@@ -1276,7 +1269,7 @@ public class SpoutRegion extends Region {
 			c.setRendered(true);
 			addRendedChunk(c);
 			c.setRenderDirty(false);
-			addToRenderQueue(new SpoutChunkSnapshotModel(getWorld(),bx + 1, by + 1, bz + 1, chunks, distance, updatedRenderMaterials, first, System.currentTimeMillis()));//TODO : replace null by the set of submesh
+			addToRenderQueue(new SpoutChunkSnapshotModel(getWorld(),bx + 1, by + 1, bz + 1, chunks, distance, updatedRenderMaterials, first, System.currentTimeMillis()));
 		} else {
 			if (c.leftViewDistance()) {
 				c.setRendered(false);
@@ -1287,48 +1280,31 @@ public class SpoutRegion extends Region {
 		}
 		c.viewDistanceCopy();
 	}
-	
+
 	private Set<SpoutChunk> rended = new HashSet<SpoutChunk>();
-	
+
 	public void addRendedChunk(SpoutChunk chunk){
 		rended.add(chunk);
 	}
-	
+
 	public void removeRendedChunk(SpoutChunk chunk){
 		rended.remove(chunk);
 	}
-	
+
 	private static void addMaterialToSet(Set<RenderMaterial> set, int blockState) {
 		BlockMaterial material = (BlockMaterial) MaterialRegistry.get(blockState);
 		set.add(material.getModel().getRenderMaterial());
 	}
-	
+
 	/*private static void addSubMeshToSet(Set<Vector3> set, Vector3 dirtyBlock) {
 		set.add(ChunkMesh.getChunkSubMesh(dirtyBlock.getFloorX(), dirtyBlock.getFloorY(), dirtyBlock.getFloorZ()));
 	}*/
 
-	private ChunkSnapshot getRenderSnapshot(SpoutChunk cRef, int cx, int cy, int cz, boolean block, boolean light) {
+	private ChunkSnapshot getRenderSnapshot(SpoutChunk cRef, int cx, int cy, int cz) {
 		SpoutChunkSnapshot snapshot = renderSnapshotCacheBoth.get(cx, cy, cz);
 		if (snapshot != null) {
 			return snapshot;
 		}
-		
-		//TODO : We can optimise to get only block data or light data, but we need to merge ChunkSnapshot's data when
-		// we have old version removed in the meshqueue.
-		
-		/*if(!light){
-			snapshot = renderSnapshotCacheBlock.get(cx, cy, cz);
-			if (snapshot != null) {
-				return snapshot;
-			}
-		}
-		
-		if(!block){
-			snapshot = renderSnapshotCacheLight.get(cx, cy, cz);
-			if (snapshot != null) {
-				return snapshot;
-			}
-		}*/
 
 		SpoutChunk c = getLocalChunk(cx, cy, cz, LoadOption.NO_LOAD);
 
@@ -1336,26 +1312,10 @@ public class SpoutRegion extends Region {
 			//Spout.getLogger().info("Getting " + cx + ", " + cy + ", " + cz + ": base = " + cRef.getBase().toBlockString() + " region base " + getBase().toBlockString());
 			return null;
 		} else {
-
-			//if(block && light){
-				snapshot = c.getSnapshot(SnapshotType.BOTH, EntityType.NO_ENTITIES, ExtraData.NO_EXTRA_DATA);
-				if (snapshot != null) {
-					renderSnapshotCacheBoth.put(cx, cy, cz, snapshot);
-				}
-			/*}else if(block){
-				snapshot = c.getSnapshot(SnapshotType.BLOCKS_ONLY, EntityType.NO_ENTITIES, ExtraData.NO_EXTRA_DATA);
-				if (snapshot != null) {
-					renderSnapshotCacheBlock.put(cx, cy, cz, snapshot);
-				}
-			}else if(light){
-				snapshot = c.getSnapshot(SnapshotType.LIGHT_ONLY, EntityType.NO_ENTITIES, ExtraData.NO_EXTRA_DATA);
-				if (snapshot != null) {
-					renderSnapshotCacheLight.put(cx, cy, cz, snapshot);
-				}
-			}else{
-				throw new IllegalStateException("Invalid parameters");
-			}*/
-			
+			snapshot = c.getSnapshot(SnapshotType.BOTH, EntityType.NO_ENTITIES, ExtraData.NO_EXTRA_DATA);
+			if (snapshot != null) {
+				renderSnapshotCacheBoth.put(cx, cy, cz, snapshot);
+			}
 			return snapshot;
 		}
 	}
@@ -1504,7 +1464,7 @@ public class SpoutRegion extends Region {
 	public InputStream getChunkInputStream(int x, int y, int z) {
 		return chunkStore.getBlockInputStream(getChunkKey(x, y, z));
 	}
-	
+
 	public static int getChunkKey(int chunkX, int chunkY, int chunkZ) {
 		chunkX &= CHUNKS.MASK;
 		chunkY &= CHUNKS.MASK;
@@ -1789,7 +1749,7 @@ public class SpoutRegion extends Region {
 			}
 		}
 	}
-	
+
 	private void unlinkNeighbour(SpoutRegion r) {
 		for (int dx = 0; dx < 3; dx++) {
 			for (int dy = 0; dy < 3; dy++) {
@@ -1853,7 +1813,7 @@ public class SpoutRegion extends Region {
 		}
 		return region.getChunk(x, y, z, loadopt);
 	}
-	
+
 	public void addChunk(int x, int y, int z, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, BiomeManager biomes) {
 		x &= BLOCKS.MASK;
 		y &= BLOCKS.MASK;
@@ -1865,11 +1825,11 @@ public class SpoutRegion extends Region {
 		SpoutChunk newChunk = new SpoutChunk(getWorld(), this, getBlockX() | x, getBlockY() | y, getBlockZ() | z, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, skyLight, blockLight, new ManagedHashMap(), true);
 		setChunk(newChunk, x, y, z, null, true, LoadOption.LOAD_GEN);
 	}
-	
+
 	private class MeshGeneratorThread extends Thread {
-		
+
 		private WorldRenderer renderer = null;
-		
+
 		public MeshGeneratorThread() {
 			super(SpoutRegion.this.toString() + " Mesh Generation Thread");
 			this.setDaemon(true);
@@ -1877,14 +1837,14 @@ public class SpoutRegion extends Region {
 
 		public void run() {
 			while (renderer == null) {
-				 renderer = ((SpoutClient) Spout.getEngine()).getWorldRenderer();
-				 if (renderer == null) {
-					 try {
-						 Thread.sleep(100);
-					 } catch (InterruptedException ie) {
-						 return;
-					 }
-				 }
+				renderer = ((SpoutClient) Spout.getEngine()).getWorldRenderer();
+				if (renderer == null) {
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException ie) {
+						return;
+					}
+				}
 			}
 			while (!Thread.interrupted()) {
 				try {
@@ -1913,48 +1873,15 @@ public class SpoutRegion extends Region {
 		}
 
 		private void handle(SpoutChunkSnapshotModel model) {
+			ChunkMesh mesh = new ChunkMesh(model);
+
+			mesh.update();
 
 			//Unload case
-			if(model.isUnload()){
-
-				ChunkMesh mesh = new ChunkMesh(model);
-				mesh.update();
-				renderer.addMeshToBatchQueue(mesh);
-				meshsWaitingLight.remove((byte)model.getX(),(byte)model.getY(),(byte)model.getZ());
-				
-				return;
-			}
-
-			//Block case
-			if(model.getCenter().getBlockIds() != null){
-
-				ChunkMesh mesh = new ChunkMesh(model);
-				mesh.update();
-
-				if(model.getCenter().getSkyLight() != null && model.getCenter().getBlockLight() != null){
-					mesh.updateLight(model);
-					renderer.addMeshToBatchQueue(mesh);
-				}else{
-					meshsWaitingLight.put((byte)mesh.getChunkX(), (byte)mesh.getChunkY(), (byte)mesh.getChunkZ(), mesh);
-				}
-
-				return;
-			}
-
-			//Light case
-			if(model.getCenter().getSkyLight()!=null && model.getCenter().getBlockLight() != null){
-
-				ChunkMesh mesh = meshsWaitingLight.get((byte)model.getX(), (byte)model.getY(), (byte)model.getZ());//Don't remove it in case where only light change
-
-				if(mesh == null)
-					new IllegalStateException("ChunkMesh never created");
-
+			if(!model.isUnload())
 				mesh.updateLight(model);
-				renderer.addMeshToBatchQueue(mesh);
-				return;
-			}
 
-			throw new IllegalStateException("Can't handle this ChunkSnapshotModel");
+			renderer.addMeshToBatchQueue(mesh);
 		}
 
 	}
@@ -1999,7 +1926,7 @@ public class SpoutRegion extends Region {
 		}
 		return chunks;
 	}
-	
+
 	@Override
 	public void setCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
 		Vector3 base = buffer.getBase();
@@ -2016,7 +1943,7 @@ public class SpoutRegion extends Region {
 		Vector3 base = buffer.getBase();
 		getCuboid(base.getFloorX(), base.getFloorY(), base.getFloorZ(), buffer);
 	}
-	
+
 	@Override
 	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz) {
 		CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(bx, by, bz, sx, sy, sz);
