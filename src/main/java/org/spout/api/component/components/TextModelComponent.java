@@ -26,37 +26,13 @@
  */
 package org.spout.api.component.components;
 
-import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.Font;
+import org.spout.api.render.SpoutRenderMaterials;
 
 public class TextModelComponent extends EntityComponent {
-	private static final DefaultedKey<ChatArguments> KEY_TEXT = new DefaultedKey<ChatArguments>() {
-		private final ChatArguments DEFAULT_VALUE = new ChatArguments("(your text here)");
-
-		@Override
-		public ChatArguments getDefaultValue() {
-			return DEFAULT_VALUE;
-		}
-
-		@Override
-		public String getKeyString() {
-			return "entity-text";
-		}
-	};
-	private static final DefaultedKey<Font> KEY_FONT = new DefaultedKey<Font>() {
-		@Override
-		public Font getDefaultValue() {
-			return (Font) Spout.getFilesystem().getResource("font://Spout/resources/resources/fonts/ubuntu/Ubuntu-M.ttf");
-		}
-
-		@Override
-		public String getKeyString() {
-			return "font";
-		}
-	};
 	protected float size = 1;
 	protected Vector3 translation = Vector3.ZERO;
 	protected boolean dirty = true;
@@ -105,4 +81,29 @@ public class TextModelComponent extends EntityComponent {
 	public void setShouldLookCamera(boolean yes) {
 		this.lookCamera = yes;
 	}
+
+	private static final DefaultedKey<ChatArguments> KEY_TEXT = new DefaultedKey<ChatArguments>() {
+		private final ChatArguments DEFAULT_VALUE = new ChatArguments("(your text here)");
+
+		@Override
+		public ChatArguments getDefaultValue() {
+			return DEFAULT_VALUE;
+		}
+
+		@Override
+		public String getKeyString() {
+			return "entity-text";
+		}
+	};
+	private static final DefaultedKey<Font> KEY_FONT = new DefaultedKey<Font>() {
+		@Override
+		public Font getDefaultValue() {
+			return SpoutRenderMaterials.DEFAULT_FONT;
+		}
+
+		@Override
+		public String getKeyString() {
+			return "font";
+		}
+	};
 }

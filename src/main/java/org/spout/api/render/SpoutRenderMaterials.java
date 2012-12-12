@@ -31,9 +31,11 @@ import org.spout.api.Spout;
 
 public class SpoutRenderMaterials {
 	public static final FileSystem FILE_SYSTEM = Spout.getFilesystem();
+	public static final Font DEFAULT_FONT;
 	public static final RenderMaterial GUI_COLOR;
 
 	static {
+		DEFAULT_FONT = (Font) Spout.getFilesystem().getResource("font://Spout/resources/resources/fonts/ubuntu/Ubuntu-M.ttf");
 		GUI_COLOR = (RenderMaterial) FILE_SYSTEM.getResource("material://Spout/resources/resources/materials/GUIColorMaterial.smt");
 	}
 

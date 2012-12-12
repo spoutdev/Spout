@@ -52,6 +52,7 @@ public class TextFieldComponent extends LabelComponent {
 	private float blinkingTimer = 0.5f;
 	private boolean scrollable = false;
 	private boolean passwordField = false;
+	private char passwordChar = '*';
 
 	@Override
 	public void onAttached() {
@@ -347,25 +348,41 @@ public class TextFieldComponent extends LabelComponent {
 	}
 
 	/**
-	 * Whether this text field should output all inputted text as asterisks
-	 * <b>(*)</b> for viewing protection for fields that could be used for
+	 * Whether this text field should output all inputted text as the character specified in
+	 * {@link #getPasswordCharacter()} for viewing protection for fields that could be used for
 	 * passwords.
 	 *
-	 * @return true if is password field
+	 * @return true if this is a password field
 	 */
 	public boolean isPasswordField() {
 		return passwordField;
 	}
 
 	/**
-	 * Sets whether this text field should output all inputted text as
-	 * asterisks <b>(*)</b> for viewing protection for fields that could be
-	 * used for passwords.
+	 * Sets whether this text field should output all inputted text as the character specified in
+	 * {@link #getPasswordCharacter()} for viewing protection for fields that could be used for
+	 * passwords.
 	 *
 	 * @param passwordField
 	 */
 	public void setPasswordField(boolean passwordField) {
 		this.passwordField = passwordField;
+	}
+
+	/**
+	 * Gets the character used when {@link #isPasswordField()} returns true.
+	 */
+	public char getPasswordCharacter() {
+		return passwordChar;
+	}
+
+	/**
+	 * Sets the character used when {@link #isPasswordField()} returns true.
+	 *
+	 * @param character
+	 */
+	public void setPasswordCharacter(char character) {
+		passwordChar = character;
 	}
 
 	/**
