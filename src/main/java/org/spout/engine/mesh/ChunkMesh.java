@@ -28,7 +28,6 @@ package org.spout.engine.mesh;
 
 import gnu.trove.list.array.TFloatArrayList;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,7 +42,6 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFace;
-import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.OrientedMesh;
@@ -154,12 +152,9 @@ public class ChunkMesh{
 				float z = vertexBuffer.get(i++);
 				i++; // w component
 
-				Color color = generateLightOnVertices(chunkModel,x, y, z);
+				//TODO : Create a buffer for each light registred by plugin
 
-				lightBuffer.add(color.getRed() / 255f);
-				lightBuffer.add(color.getGreen() / 255f);
-				lightBuffer.add(color.getBlue() / 255f);
-				lightBuffer.add(color.getAlpha() / 255f);
+				generateLightOnVertices( chunkModel, x, y, z, lightBuffer);
 			}
 		}
 	}
@@ -170,9 +165,10 @@ public class ChunkMesh{
 	 * @param x
 	 * @param y
 	 * @param z
+	 * @param lightBuffer 
 	 * @return
 	 */
-	private Color generateLightOnVertices(SpoutChunkSnapshotModel chunkModel, float x, float y, float z) {
+	private void generateLightOnVertices(SpoutChunkSnapshotModel chunkModel, float x, float y, float z, TFloatArrayList lightBuffer) {
 		int xi = (int)x;
 		int yi = (int)y;
 		int zi = (int)z;
@@ -190,8 +186,7 @@ public class ChunkMesh{
 			for (int xx = xs; xx <= xi; xx++) {
 				for (int yy = ys; yy <= yi; yy++) {
 					for (int zz = zs; zz <= zi; zz++) {
-						ChunkSnapshot chunk = null;
-						chunk = chunkModel.getChunkFromBlock(xx, yy, zz);
+						ChunkSnapshot chunk = chunkModel.getChunkFromBlock(xx, yy, zz);
 						BlockMaterial m = chunk.getBlockMaterial(xx, yy, zz);
 						if (!m.isOpaque()) {
 							light += chunk.getBlockLight(xx, yy, zz);
@@ -211,18 +206,17 @@ public class ChunkMesh{
 			light /= 16;
 			skylight /= 16;
 
-			//TODO : Maybe we should use two byte buffer to store light and let the shader use it as the shader want
-			//(we can give the sky color and light color with a render effect in Vanilla)
-
-			Color colorLight = new Color(light * 1.00f, light * 0.75f, light * 0.75f);
-			Color colorSky = new Color(skylight * 0.75f, skylight * 0.75f, skylight * 1.00f);
-			return new Color(
-					MathHelper.clamp(colorLight.getRed() + colorSky.getRed(), 0, 255),
-					MathHelper.clamp(colorLight.getGreen() + colorSky.getGreen(), 0, 255),
-					MathHelper.clamp(colorLight.getBlue() + colorSky.getBlue(), 0, 255)
-					);
+			//TODO : To replace by 2 byte buffer for Vanilla
+			
+			lightBuffer.add(light + skylight * 0.75f);
+			lightBuffer.add((light + skylight) * 0.75f);
+			lightBuffer.add(light * 0.75f + skylight);
+			lightBuffer.add(1f);
 		}else{
-			return Color.WHITE;
+			lightBuffer.add(1f);
+			lightBuffer.add(1f);
+			lightBuffer.add(1f);
+			lightBuffer.add(1f);
 		}
 	}
 
@@ -242,10 +236,6 @@ public class ChunkMesh{
 			v1.position = v1.position.add(model);
 			v2.position = v2.position.add(model);
 			v3.position = v3.position.add(model);
-
-			v1.color = Color.black;
-			v2.color = Color.black;
-			v3.color = Color.black;
 
 			meshs.add(new MeshFace(v1, v2, v3));
 		}
