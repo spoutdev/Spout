@@ -28,6 +28,7 @@ package org.spout.api.render;
 
 import org.spout.api.FileSystem;
 import org.spout.api.Spout;
+import org.spout.api.plugin.Platform;
 
 public class SpoutRenderMaterials {
 	public static final FileSystem FILE_SYSTEM = Spout.getFilesystem();
@@ -35,8 +36,13 @@ public class SpoutRenderMaterials {
 	public static final RenderMaterial GUI_COLOR;
 
 	static {
-		DEFAULT_FONT = (Font) Spout.getFilesystem().getResource("font://Spout/resources/resources/fonts/ubuntu/Ubuntu-M.ttf");
-		GUI_COLOR = (RenderMaterial) FILE_SYSTEM.getResource("material://Spout/resources/resources/materials/GUIColorMaterial.smt");
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			DEFAULT_FONT = (Font) Spout.getFilesystem().getResource("font://Spout/resources/resources/fonts/ubuntu/Ubuntu-M.ttf");
+			GUI_COLOR = (RenderMaterial) FILE_SYSTEM.getResource("material://Spout/resources/resources/materials/GUIColorMaterial.smt");
+		} else {
+			DEFAULT_FONT = null;
+			GUI_COLOR = null;
+		}
 	}
 
 
