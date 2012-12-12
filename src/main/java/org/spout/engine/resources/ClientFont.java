@@ -45,7 +45,6 @@ import java.util.Map;
 import org.spout.api.Spout;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
-import org.spout.api.render.Texture;
 
 import org.spout.engine.SpoutClient;
 import org.spout.engine.renderer.shader.BasicShader;
@@ -61,15 +60,15 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	private GlyphVector vec;
 	private Rectangle[] glyphBounds = new Rectangle[95];
 	private GlyphMetrics[] glyphMetrics = new GlyphMetrics[95];
-	private float charTop;
-	private float charHeight;
-	private float spaceWidth = 0.0f;
+	private int charTop;
+	private int charHeight;
+	private int spaceWidth;
 
 	static {
 		asciiset = getASCII();
 	}
 
-	private static final String getASCII() {
+	private static String getASCII() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 32; i < 127; i++) {
 			sb.append((char) i).append(" ");
@@ -77,7 +76,7 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		return sb.toString();
 	}
 
-	public static final String getCharset() {
+	public static String getCharset() {
 		return asciiset;
 	}
 	
@@ -88,18 +87,18 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	public ClientFont(Font f) {
 		super(null, 0, 0);
 		this.ttfFont = f;
-		setup(f);
+		init();
 		
 	}
 
-	private void setup(Font f) {
+	private void init() {
 		//because getStringBounds(" ") returns 0
-		spaceWidth = (float)(ttfFont.getStringBounds("a a", DEFAULT_CONTEXT).getWidth() - ttfFont.getStringBounds("aa", DEFAULT_CONTEXT).getWidth());
+		spaceWidth = (int) (ttfFont.getStringBounds("a a", DEFAULT_CONTEXT).getWidth() - (int) ttfFont.getStringBounds("aa", DEFAULT_CONTEXT).getWidth());
 
 		vec = ttfFont.createGlyphVector(DEFAULT_CONTEXT, asciiset);
 		Rectangle2D bounds = ttfFont.getStringBounds(asciiset, DEFAULT_CONTEXT);
 		
-		for (int i=0 ; i<127-32 ; i++) {
+		for (int i = 0; i < 127 - 32 ; i++) {
 			glyphBounds[i] = vec.getGlyphPixelBounds(i*2, DEFAULT_CONTEXT, 0, ttfFont.getSize());
 			glyphMetrics[i] = vec.getGlyphMetrics(i*2);
 		}
@@ -111,8 +110,8 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		g.drawGlyphVector(vec, 0, ttfFont.getSize());
 		g.dispose();
 
-		charHeight = (float)bounds.getHeight();
-		charTop = (float)(ttfFont.getSize() + bounds.getY());
+		charHeight = (int) bounds.getHeight();
+		charTop = (int) (ttfFont.getSize() + bounds.getY());
 		this.width = image.getWidth();
 		this.height = image.getHeight();
 		this.image = image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
@@ -123,9 +122,8 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	}
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
-		Font f = (Font) ois.readObject();
-		this.ttfFont = f;
-		setup(f);
+		this.ttfFont = (Font) ois.readObject();
+		init();
 	}
 
 	@Override
@@ -148,17 +146,17 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	}
 
 	@Override
-	public float getCharTop() {
+	public int getCharTop() {
 		return charTop;
 	}
 
 	@Override
-	public float getCharHeight() {
+	public int getCharHeight() {
 		return charHeight;
 	}
 
 	@Override
-	public float getSpaceWidth() {
+	public int getSpaceWidth() {
 		return spaceWidth;
 	}
 	

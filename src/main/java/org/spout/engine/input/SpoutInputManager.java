@@ -53,9 +53,9 @@ public class SpoutInputManager implements InputManager {
 	private final Map<Mouse, String> mouseCommands = new HashMap<Mouse, String>();
 	private boolean redirected = false;
 
-	private void onKeyPressed(SpoutPlayer player, Keyboard key, boolean pressed) {
+	private void onKeyPressed(SpoutPlayer player, Keyboard key, boolean pressed, char ch) {
 		String cmd = keyCommands.get(key);
-		final PlayerKeyEvent event = Spout.getEventManager().callEvent(new PlayerKeyEvent(player, key, pressed, cmd));
+		final PlayerKeyEvent event = Spout.getEventManager().callEvent(new PlayerKeyEvent(player, key, pressed, cmd, ch));
 		if (event.isCancelled()) {
 			return;
 		}
@@ -153,7 +153,7 @@ public class SpoutInputManager implements InputManager {
 			while (org.lwjgl.input.Keyboard.next()) {
 				Keyboard key = Keyboard.get(org.lwjgl.input.Keyboard.getEventKey());
 				if (key != null) {
-					onKeyPressed(player, key, org.lwjgl.input.Keyboard.getEventKeyState());
+					onKeyPressed(player, key, org.lwjgl.input.Keyboard.getEventKeyState(), org.lwjgl.input.Keyboard.getEventCharacter());
 				}
 			}
 		}
