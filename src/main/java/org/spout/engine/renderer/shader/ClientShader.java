@@ -150,7 +150,7 @@ public class ClientShader extends Resource implements Shader {
 	}
 
 	public ClientShader(String vshaderSource, String vshaderUrl, String fshaderSource, String fshaderUrl, boolean override){
-		doCompileShader(vshaderSource, vshaderUrl, fshaderSource, vshaderUrl);
+		doCompileShader(vshaderSource, vshaderUrl, fshaderSource, fshaderUrl);
 	}
 
 
