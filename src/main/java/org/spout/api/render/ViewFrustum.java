@@ -44,7 +44,7 @@ public class ViewFrustum {
 		position = paramPosition;
 		
 		// http://www.crownandcutlass.com/features/technicaldetails/frustum.html
-		float[] clip = view.multiply(projection).toArray();
+		float[] clip = view.multiply(projection).getData();
 
 		/* Extract the numbers for the RIGHT plane */
 		frustum[0][0] = clip[3] - clip[0];
