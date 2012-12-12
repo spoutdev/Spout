@@ -124,7 +124,6 @@ import com.bulletphysics.collision.dispatch.CollisionFlags;
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
 import com.bulletphysics.collision.dispatch.GhostPairCallback;
-import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.collision.shapes.voxel.VoxelWorldShape;
 import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
 import com.bulletphysics.dynamics.RigidBody;
@@ -1876,10 +1875,6 @@ public class SpoutRegion extends Region {
 			ChunkMesh mesh = new ChunkMesh(model);
 
 			mesh.update();
-
-			//Unload case
-			if(!model.isUnload())
-				mesh.updateLight(model);
 
 			renderer.addMeshToBatchQueue(mesh);
 		}

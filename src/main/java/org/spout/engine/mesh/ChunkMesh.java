@@ -54,7 +54,6 @@ import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.BufferContainer;
-import org.spout.engine.resources.ClientRenderMaterial;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 
 /**
@@ -62,11 +61,7 @@ import org.spout.engine.world.SpoutChunkSnapshotModel;
  */
 public class ChunkMesh{
 
-	//public final static BlockFace []shouldRender = new BlockFace[]{ BlockFace.TOP, BlockFace.BOTTOM, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST};
-
 	private HashMap<RenderMaterial, BufferContainer> meshs = new HashMap<RenderMaterial, BufferContainer>();
-	private boolean verticeGenerated = false;
-	private boolean lightGenerated = false;
 
 	private SpoutChunkSnapshotModel chunkModel;
 	private ChunkSnapshot center;
@@ -106,10 +101,7 @@ public class ChunkMesh{
 		return chunkZ;
 	}
 
-	/**
-	 * Updates the mesh.
-	 */
-	public void update() {
+	public void update(){
 		if(chunkModel.isUnload()){
 			isUnloaded = true;
 			return;
@@ -117,18 +109,9 @@ public class ChunkMesh{
 
 		center = chunkModel.getCenter();
 
-		for (int x = center.getBase().getBlockX(); x < center.getBase().getBlockX() + Chunk.BLOCKS.SIZE; x++) {
-			for (int y = center.getBase().getBlockY(); y < center.getBase().getBlockY() + Chunk.BLOCKS.SIZE; y++) {
-				for (int z = center.getBase().getBlockZ(); z < center.getBase().getBlockZ() + Chunk.BLOCKS.SIZE; z++) {
-					generateBlockVertices(chunkModel,x, y, z);
-				}
-			}
-		}
-
-		//TODO : resize BufferContainer to vertex generated to free space. Needed because we keep buffer in memory for light change.
-		
-		verticeGenerated = true;
-		lightGenerated = false; //Invalid the light computation
+		//Update mesh vertex and light
+		updateBlock();
+		updateLight();
 
 		// Free memory
 		chunkModel = null;
@@ -136,13 +119,23 @@ public class ChunkMesh{
 	}
 
 	/**
+	 * Updates the mesh.
+	 */
+	private void updateBlock() {
+		for (int x = center.getBase().getBlockX(); x < center.getBase().getBlockX() + Chunk.BLOCKS.SIZE; x++) {
+			for (int y = center.getBase().getBlockY(); y < center.getBase().getBlockY() + Chunk.BLOCKS.SIZE; y++) {
+				for (int z = center.getBase().getBlockZ(); z < center.getBase().getBlockZ() + Chunk.BLOCKS.SIZE; z++) {
+					generateBlockVertices(chunkModel,x, y, z);
+				}
+			}
+		}
+	}
+
+	/**
 	 * Updates the mesh light, the block vertices MUST BE done before
 	 */
-	public void updateLight(SpoutChunkSnapshotModel chunkModelLight) {
-		if(!verticeGenerated)
-			throw new IllegalStateException("Vertice must be generated before compute light");
-
-		if(chunkModelLight.isUnload())
+	private void updateLight() {
+		if(chunkModel.isUnload())
 			throw new IllegalStateException("ChunkSnapshotModel with Unload state can't be used to compute light");
 
 		for(BufferContainer container : meshs.values()){
@@ -159,9 +152,9 @@ public class ChunkMesh{
 				float x = vertexBuffer.get(i++);
 				float y = vertexBuffer.get(i++);
 				float z = vertexBuffer.get(i++);
-				/*float w = */vertexBuffer.get(i++);
+				i++; // w component
 
-				Color color = generateLightOnVertices(chunkModelLight,x, y, z);
+				Color color = generateLightOnVertices(chunkModel,x, y, z);
 
 				lightBuffer.add(color.getRed() / 255f);
 				lightBuffer.add(color.getGreen() / 255f);
@@ -169,8 +162,6 @@ public class ChunkMesh{
 				lightBuffer.add(color.getAlpha() / 255f);
 			}
 		}
-
-		lightGenerated = true;
 	}
 
 	/**
@@ -234,7 +225,7 @@ public class ChunkMesh{
 			return Color.WHITE;
 		}
 	}
-	
+
 	public List<MeshFace> buildBlock(ChunkSnapshotModel chunkSnapshotModel,Material blockMaterial,
 			Vector3 position, boolean toRender[], OrientedMesh mesh) {
 		List<MeshFace> meshs = new ArrayList<MeshFace>();
@@ -255,17 +246,6 @@ public class ChunkMesh{
 			v1.color = Color.black;
 			v2.color = Color.black;
 			v3.color = Color.black;
-			/*addColor(chunkSnapshotModel,v1);
-			addColor(chunkSnapshotModel,v2);
-			addColor(chunkSnapshotModel,v3);*/
-
-			//Be sure we have a color
-			//All cube with the same renderMaterial MUST have a color
-			//OR All cube with the same renderMaterial MUST not have a color
-			/*Color color = Color.WHITE;
-			v1.color = color;
-			v2.color = color;
-			v3.color = color;*/
 
 			meshs.add(new MeshFace(v1, v2, v3));
 		}
@@ -383,7 +363,7 @@ public class ChunkMesh{
 						normalBuffer.add(vert.normal.getZ());
 						normalBuffer.add(1f);
 					}
-					
+
 					container.element++;
 				}
 			}
@@ -422,15 +402,6 @@ public class ChunkMesh{
 
 	public World getWorld() {
 		return world;
-	}
-
-	public int getFloatCount() {
-		int count = 0;
-		for(BufferContainer container : meshs.values())
-			for(Object buffer : container.getBuffers().values())
-				if(buffer instanceof TFloatArrayList)
-					count += ((TFloatArrayList)buffer).size();
-		return count;
 	}
 
 }
