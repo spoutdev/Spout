@@ -182,4 +182,9 @@ public abstract class AbstractConfigurationNodeSource implements ConfigurationNo
 	public boolean hasChildren() {
 		return children.size() > 0;
 	}
+
+	@Override
+	public boolean hasChild(String key) {
+		return children.containsKey(key);
+	}
 }

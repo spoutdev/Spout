@@ -138,6 +138,14 @@ public interface ConfigurationNodeSource {
 	public boolean hasChildren();
 
 	/**
+	 * Returns whether the direct child (not checking children of children, etc) at {@code key} exists
+	 * 
+	 * @param key The key to check
+	 * @return Whether key is a direct child of this node
+	 */
+	public boolean hasChild(String key);
+
+	/**
 	 * Returns the configuration this node source is attached to.
 	 * This may return the same object if this {@link ConfigurationNodeSource} is a Configuration.
 	 *

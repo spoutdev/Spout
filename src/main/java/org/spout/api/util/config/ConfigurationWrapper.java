@@ -169,6 +169,11 @@ public abstract class ConfigurationWrapper implements Configuration {
 	}
 
 	@Override
+	public boolean hasChild(String key) {
+		return getConfiguration().hasChild(key);
+	}
+
+	@Override
 	public String[] getPathElements() {
 		return getConfiguration().getPathElements();
 	}
