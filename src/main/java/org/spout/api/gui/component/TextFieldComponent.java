@@ -35,9 +35,9 @@ import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.event.player.PlayerKeyEvent;
 import org.spout.api.gui.render.RenderPart;
-import org.spout.api.input.Keyboard;
 import org.spout.api.math.Rectangle;
 import org.spout.api.math.Vector2;
+import org.spout.api.render.Font;
 
 public class TextFieldComponent extends LabelComponent {
 	private final RenderPart cursor = new RenderPart();
@@ -45,11 +45,12 @@ public class TextFieldComponent extends LabelComponent {
 	private final RenderPart border = new RenderPart();
 	private Client client;
 	private int cursorIndex = 0;
-	private int maxRows = 1;
-	private int maxChars = 20;
-	private String lastText;
+	private int cursorRow = 0;
+	private int rows = 1;
+	private int maxRows = 20;
+	private int maxChars = 100;
+	private String cachedText = "";
 	private float typingTimer = 2;
-	private float blinkingTimer = 0.5f;
 	private boolean scrollable = false;
 	private boolean passwordField = false;
 	private char passwordChar = '*';
@@ -66,29 +67,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	@Override
 	public void onTick(float dt) {
-		super.onTick(dt);
-		String text = getText().getPlainString();
-		if (lastText != null && lastText.equals(text)) {
-			// text hasn't changed, decrement timer
-			if (typingTimer > 0) {
-				typingTimer -= dt;
-			}
-		} else {
-			// text changed, reset timer
-			typingTimer = 2;
-		}
-		lastText = text;
-
-		if (typingTimer <= 0) {
-			// user not typing
-			if (blinkingTimer > 0) {
-				blinkingTimer -= dt;
-			} else {
-				setCursorVisible(!isCursorVisible());
-			}
-		} else {
-			blinkingTimer = 0.5f;
-		}
+		// TODO: Implement cursor blinking
 	}
 
 	@Override
@@ -103,29 +82,58 @@ public class TextFieldComponent extends LabelComponent {
 		if (!event.isPressed()) {
 			return;
 		}
-		String str = getText().getPlainString();
-		Keyboard key = event.getKey();
-		if (key == Keyboard.KEY_BACK) {
-			if (str.isEmpty()) {
+
+		switch (event.getKey()) {
+			case KEY_BACK:
+				backspace();
 				return;
-			}
-			str = str.substring(0, str.length() - 1);
-		} else {
-			str += event.getChar();
+			case KEY_RETURN:
+				if (getRows() < maxRows) {
+					newLine();
+				}
+				return;
 		}
-		setText(new ChatArguments(str));
+
+		char c = event.getChar();
+		if (cachedText.length() >= maxChars || !isValidChar(c)) {
+			return;
+		}
+
+		if (!canFitOnRow(cursorRow, c)) {
+			if (getRows() < maxRows) {
+				newLine();
+			} else {
+				setText(new ChatArguments(getText().getPlainString().substring(1)));
+			}
+		}
+		append(c);
+		cachedText += c;
+
+	}
+
+	@Override
+	public void backspace() {
+		super.backspace();
+		if (!cachedText.isEmpty()) {
+			cachedText = cachedText.substring(0, cachedText.length() - 1);
+		}
+	}
+
+	@Override
+	public void newLine() {
+		super.newLine();
+		cursorRow++;
+		setRows(getRows() + 1);
 	}
 
 	private void init() {
 
-		setText(new ChatArguments(""));
+		clear();
 
 		Rectangle geo = getOwner().getGeometry();
 		float fieldX = geo.getX() - toScreenX(4);
 		float fieldY = geo.getY() - toScreenY(4);
 		float fieldWidth = 0.25f;
-
-		System.out.println("Row height: " + getRowHeight());
 
 		field.setZIndex(2);
 		field.setSprite(new Rectangle(fieldX, fieldY, fieldWidth, getRowHeight()));
@@ -146,6 +154,45 @@ public class TextFieldComponent extends LabelComponent {
 
 	private void update() {
 		// TODO: Call whenever field is changed and update the other render parts
+	}
+
+	private boolean canFitOnRow(int row, char c) {
+		String text = getText(row);
+		Font font = getFont();
+		float textWidth = 0;
+		float space = field.getSprite().getWidth() - toScreenX(8); // Leave some room in the field
+		float charWidth = toScreenX(font.getPixelBounds(c).width);
+
+		for (char ch : text.toCharArray()) {
+			textWidth += toScreenX(font.getPixelBounds(ch).width);
+		}
+
+		return textWidth + charWidth <= space;
+	}
+
+	public boolean isValidChar(char c) {
+		try {
+			getFont().getPixelBounds(c);
+			return true;
+		} catch (IndexOutOfBoundsException e) {
+			return false;
+		}
+	}
+
+	public String getText(int row) {
+		String str = cachedText;
+		int start = 0;
+		int end = indexOf(str, 0);
+		for (int i = 0; i < row; i++) {
+			str = str.substring(start, end);
+			start = str.indexOf('\n') + 1;
+			end = indexOf(str, start + 1);
+		}
+		return str;
+	}
+
+	private int indexOf(String str, int from) {
+		return str.indexOf('\n', from) == -1 ? str.length() - 1 : str.indexOf('\n');
 	}
 
 	/**
@@ -184,10 +231,11 @@ public class TextFieldComponent extends LabelComponent {
 		if (rows < 1 || rows > getMaxRows()) {
 			throw new IllegalArgumentException("Specified rows exceeds the limit for this text field or is less than one.");
 		}
+		this.rows = rows;
 		Rectangle rect = field.getSprite();
-		float height = getRowHeight();
+		float height = getRowHeight() * rows;
 		// shift y down, multiply row height by specified rows
-		field.setSprite(new Rectangle(rect.getX(), rect.getY() - height, rect.getWidth(), height * rows));
+		field.setSprite(new Rectangle(rect.getX(), rect.getY() - height / rows, rect.getWidth(), height));
 	}
 
 	/**
@@ -196,7 +244,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @return rows of TextField
 	 */
 	public int getRows() {
-		return (int) getRowHeight() / (int) field.getSprite().getHeight();
+		return rows;
 	}
 
 	/**
@@ -206,7 +254,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @return the height of a single row
 	 */
 	public float getRowHeight() {
-		return (getFont().getCharHeight() + 8) / client.getResolution().getY();
+		return toScreenY(getFont().getCharHeight() + 8);
 	}
 
 	public Rectangle getBorderBounds() {
@@ -221,7 +269,7 @@ public class TextFieldComponent extends LabelComponent {
 	public Rectangle getInitialCursorBounds() {
 		Rectangle rect = field.getSprite();
 		float height = rect.getHeight() - toScreenY(4);
-		float width = rect.getWidth() - toScreenX(getFont().getSpaceWidth() / 2);
+		float width = toScreenX(getFont().getSpaceWidth() / 2);
 		float x = rect.getX() + toScreenX(2);
 		float y = rect.getY() + toScreenY(2);
 		return new Rectangle(x, y, width, height);
@@ -349,7 +397,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	/**
 	 * Whether this text field should output all inputted text as the character specified in
-	 * {@link #getPasswordCharacter()} for viewing protection for fields that could be used for
+	 * {@link #getPasswordChar()} for viewing protection for fields that could be used for
 	 * passwords.
 	 *
 	 * @return true if this is a password field
@@ -360,7 +408,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	/**
 	 * Sets whether this text field should output all inputted text as the character specified in
-	 * {@link #getPasswordCharacter()} for viewing protection for fields that could be used for
+	 * {@link #getPasswordChar()} for viewing protection for fields that could be used for
 	 * passwords.
 	 *
 	 * @param passwordField
@@ -372,7 +420,7 @@ public class TextFieldComponent extends LabelComponent {
 	/**
 	 * Gets the character used when {@link #isPasswordField()} returns true.
 	 */
-	public char getPasswordCharacter() {
+	public char getPasswordChar() {
 		return passwordChar;
 	}
 
@@ -381,7 +429,7 @@ public class TextFieldComponent extends LabelComponent {
 	 *
 	 * @param character
 	 */
-	public void setPasswordCharacter(char character) {
+	public void setPasswordChar(char character) {
 		passwordChar = character;
 	}
 
@@ -416,6 +464,14 @@ public class TextFieldComponent extends LabelComponent {
 	 */
 	public void setCursorIndex(int cursorIndex) {
 		this.cursorIndex = cursorIndex;
+	}
+
+	public int getCursorRow() {
+		return cursorRow;
+	}
+
+	public void setCursorRow(int cursorRow) {
+		this.cursorRow = cursorRow;
 	}
 
 	/**

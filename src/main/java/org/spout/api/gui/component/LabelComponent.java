@@ -151,6 +151,29 @@ public class LabelComponent extends WidgetComponent {
 		getOwner().update();
 	}
 
+	public void clear() {
+		setText(new ChatArguments(""));
+	}
+
+	public void backspace() {
+		String str = getText().getPlainString();
+		if (!str.isEmpty()) {
+			setText(new ChatArguments(str.substring(0, str.length() - 1)));
+		}
+	}
+
+	public void append(char c) {
+		setText(new ChatArguments(getText().append(c)));
+	}
+
+	public void append(String str) {
+		setText(new ChatArguments(getText().append(str)));
+	}
+
+	public void newLine() {
+		append('\n');
+	}
+
 	public Color getColor() {
 		return getData().get(KEY_COLOR);
 	}
