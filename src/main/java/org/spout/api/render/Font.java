@@ -41,11 +41,11 @@ public interface Font extends Serializable {
 	
 	public int getHeight();
 	
-	public float getCharTop();
+	public int getCharTop();
 	
-	public float getCharHeight();
-	
-	public float getSpaceWidth();
+	public int getCharHeight();
+
+	public int getSpaceWidth();
 	
 	public Rectangle getPixelBounds(char ch);
 	

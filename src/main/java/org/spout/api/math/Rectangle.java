@@ -30,6 +30,7 @@ import java.io.Serializable;
 
 public class Rectangle implements Serializable {
 	private static final long serialVersionUID = 2080093328836030546L;
+	public static final Rectangle ZERO = new Rectangle(0, 0, 0, 0);
 	
 	final Vector2 position;
 	final Vector2 extents;

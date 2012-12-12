@@ -116,6 +116,7 @@ public class LabelComponent extends WidgetComponent {
 						part.setColor(color);
 						part.setSprite(new Rectangle(xCursor, yCursor, (float) r.width / screenWidth, h / screenHeight));
 						part.setSource(new Rectangle(r.x / w, 0f, r.width / w, 1f));
+						part.setZIndex(0);
 
 						xCursor += (float) font.getAdvance(c) / screenWidth;
 
