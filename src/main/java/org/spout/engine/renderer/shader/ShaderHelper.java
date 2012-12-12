@@ -35,7 +35,7 @@ import org.lwjgl.opengl.GL20;
 
 public class ShaderHelper {
 
-	public static int compileShader(String source, int type) {
+	public static int compileShader(String source, String sourceUrl, int type) {
 
 		int shader = GL20.glCreateShader(type);
 		GL20.glShaderSource(shader, source);
@@ -44,7 +44,7 @@ public class ShaderHelper {
 
 		if (status != GL11.GL_TRUE) {
 			String error = GL20.glGetShaderInfoLog(shader, 255);
-			throw new ShaderCompileException("Compile Error in " + ((type == GL20.GL_FRAGMENT_SHADER) ? "Fragment Shader" : "VertexShader") + ": " + error);
+			throw new ShaderCompileException("Compile Error in " + sourceUrl + " : " + error);
 		}
 		return shader;
 	}

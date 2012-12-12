@@ -70,11 +70,14 @@ public class ClientShader extends Resource implements Shader {
 
 		private final ClientShader shader;
 		private final String vsource,fsource;
+		private final String vsourceUrl,fsourceUrl;
 		
-		public ShaderCompilationTask(ClientShader shader,String vsource, String fsource){
+		public ShaderCompilationTask(ClientShader shader,String vsource, String vsourceUrl, String fsource, String fsourceUrl){
 			this.shader = shader;
 			this.vsource = vsource;
+			this.vsourceUrl = vsourceUrl;
 			this.fsource = fsource;
+			this.fsourceUrl = fsourceUrl;
 		}
 		
 		@Override
@@ -91,11 +94,11 @@ public class ClientShader extends Resource implements Shader {
 			//Create a new Shader object on the GPU
 			program = GL20.glCreateProgram();
 
-			int vShader = ShaderHelper.compileShader(vsource, GL20.GL_VERTEX_SHADER);
+			int vShader = ShaderHelper.compileShader(vsource, vsourceUrl, GL20.GL_VERTEX_SHADER);
 			GL20.glAttachShader(program, vShader);
 
 
-			int fShader = ShaderHelper.compileShader(fsource, GL20.GL_FRAGMENT_SHADER);
+			int fShader = ShaderHelper.compileShader(fsource, fsourceUrl, GL20.GL_FRAGMENT_SHADER);
 			GL20.glAttachShader(program, fShader);
 
 			GL20.glLinkProgram(program);
@@ -146,8 +149,8 @@ public class ClientShader extends Resource implements Shader {
 
 	}
 
-	public ClientShader(String vshaderSource, String fshaderSource, boolean override){
-		doCompileShader(vshaderSource, fshaderSource);
+	public ClientShader(String vshaderSource, String vshaderUrl, String fshaderSource, String fshaderUrl, boolean override){
+		doCompileShader(vshaderSource, vshaderUrl, fshaderSource, vshaderUrl);
 	}
 
 
@@ -182,13 +185,13 @@ public class ClientShader extends Resource implements Shader {
 			}
 		}
 
-		doCompileShader(vshader, fshader);
+		doCompileShader(vshader, vertexShader, fshader, fragmentShader);
 
 	}
 
 
-	private void doCompileShader(String vsource, String fsource){
-		((SpoutClient) Spout.getEngine()).enqueueTask(new ShaderCompilationTask(this, vsource, fsource));
+	private void doCompileShader(String vsource, String vsourceUrl, String fsource, String fsourceUrl){
+		((SpoutClient) Spout.getEngine()).enqueueTask(new ShaderCompilationTask(this, vsource, vsourceUrl, fsource, fsourceUrl));
 	}
 
 

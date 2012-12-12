@@ -70,7 +70,7 @@ public class ShaderLoader extends BasicResourceLoader<ClientShader> {
 		String fragSrc = readShaderSource(Spout.getFilesystem().getResourceStream(fragShader));
 		String vertSrc = readShaderSource(Spout.getFilesystem().getResourceStream(vertShader));
 
-		shader = new ClientShader(vertSrc, fragSrc, true);
+		shader = new ClientShader(vertSrc, vertShader, fragSrc, fragShader, true);
 		// TODO: Read Values in the shader to file
 
 		return shader;
