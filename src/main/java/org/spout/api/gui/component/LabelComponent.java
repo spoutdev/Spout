@@ -182,4 +182,20 @@ public class LabelComponent extends WidgetComponent {
 		getData().put(KEY_COLOR, color);
 		getOwner().update();
 	}
+
+	/**
+	 * Whether the specified char can be added to the label with the current
+	 * font.
+	 *
+	 * @param c char to check
+	 * @return true if char can be added to label
+	 */
+	public boolean isValidChar(char c) {
+		try {
+			getFont().getPixelBounds(c);
+			return true;
+		} catch (IndexOutOfBoundsException e) {
+			return false;
+		}
+	}
 }

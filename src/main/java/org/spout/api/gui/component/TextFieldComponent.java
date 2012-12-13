@@ -193,16 +193,31 @@ public class TextFieldComponent extends LabelComponent {
 		return textWidth + charWidth <= space;
 	}
 
-	public boolean isValidChar(char c) {
-		try {
-			getFont().getPixelBounds(c);
-			return true;
-		} catch (IndexOutOfBoundsException e) {
-			return false;
-		}
+	private int indexOf(String str, int from) {
+		// first new line from the specified int or last index
+		return str.indexOf('\n', from) == -1 ? str.length() - 1 : str.indexOf('\n');
 	}
 
+	private float toScreenX(int pixels) {
+		return pixels / client.getResolution().getX();
+	}
+
+	private float toScreenY(int pixels) {
+		return pixels / client.getResolution().getY();
+	}
+
+	/**
+	 * Returns the text on the specified row. Note that this method uses the
+	 * {@link #cachedText} field which means not all returned text is
+	 * necessarily visible.
+	 *
+	 * @param row to get text from
+	 * @return text on specified row
+	 */
 	public String getText(int row) {
+		if (row < 0 || row > maxRows) {
+			throw new IllegalArgumentException("Specified row must be between 0 and " + maxRows);
+		}
 		String str = cachedText;
 		int start = 0;
 		int end = indexOf(str, 0);
@@ -214,12 +229,8 @@ public class TextFieldComponent extends LabelComponent {
 		return str;
 	}
 
-	private int indexOf(String str, int from) {
-		return str.indexOf('\n', from) == -1 ? str.length() - 1 : str.indexOf('\n');
-	}
-
 	/**
-	 * Returns the bounding {@link Rectangle} for the TextField.
+	 * Returns the bounding {@link Rectangle} for this TextField.
 	 *
 	 * @return bounding rectangle of field
 	 */
@@ -271,8 +282,7 @@ public class TextFieldComponent extends LabelComponent {
 	}
 
 	/**
-	 * Returns the height of a row in the text field. The row of this text
-	 * field is determined by <code>(charHeight + 4) / screenHeight</code>
+	 * Returns the height of a row in the text field.
 	 *
 	 * @return the height of a single row
 	 */
@@ -280,6 +290,12 @@ public class TextFieldComponent extends LabelComponent {
 		return toScreenY(getFont().getCharHeight() + 8);
 	}
 
+	/**
+	 * Returns the proper bounds for the border of the text field proportional
+	 * to the text field itself.
+	 *
+	 * @return bounds of field border
+	 */
 	public Rectangle getBorderBounds() {
 		Rectangle rect = field.getSprite();
 		float height = rect.getHeight() + toScreenY(8);
@@ -289,6 +305,13 @@ public class TextFieldComponent extends LabelComponent {
 		return new Rectangle(x, y, width, height);
 	}
 
+	/**
+	 * Returns the proper bounds for the cursor proportional to the text field.
+	 * Note that the x value will always be at cursor index 0 and the y value
+	 * will always be on the bottom row of the field.
+	 *
+	 * @return bounds of the cursor
+	 */
 	public Rectangle getInitialCursorBounds() {
 		Rectangle rect = field.getSprite();
 		float height = rect.getHeight() - toScreenY(4);
@@ -296,14 +319,6 @@ public class TextFieldComponent extends LabelComponent {
 		float x = rect.getX() + toScreenX(2);
 		float y = rect.getY() + toScreenY(2);
 		return new Rectangle(x, y, width, height);
-	}
-
-	private float toScreenX(int pixels) {
-		return pixels / client.getResolution().getX();
-	}
-
-	private float toScreenY(int pixels) {
-		return pixels / client.getResolution().getY();
 	}
 
 	/**
@@ -421,10 +436,13 @@ public class TextFieldComponent extends LabelComponent {
 	/**
 	 * Sets the character used when {@link #isPasswordField()} returns true.
 	 *
-	 * @param character
+	 * @param passwordChar char for password field
 	 */
-	public void setPasswordChar(char character) {
-		passwordChar = character;
+	public void setPasswordChar(char passwordChar) {
+		if (!isValidChar(passwordChar)) {
+			throw new IllegalArgumentException("Specified character must be a valid character as designated by LabelComponent#isValidChar(char)");
+		}
+		this.passwordChar = passwordChar;
 	}
 
 	/**
@@ -457,9 +475,12 @@ public class TextFieldComponent extends LabelComponent {
 	 * @param cursorIndex index of cursor
 	 */
 	public void setCursorIndex(int cursorIndex) {
+		String row = getText(cursorRow);
+		if (cursorIndex < 0 || cursorIndex > row.length() - 1) {
+			throw new IllegalArgumentException("Specified index must be between 0 and " + (row.length() - 1));
+		}
 		Font font = getFont();
 		float x = getInitialCursorBounds().getX();
-		String row = getText(cursorRow);
 		for (int i = 0; i < cursorIndex; i++) {
 			x += toScreenX(font.getPixelBounds(row.charAt(i)).width);
 		}
@@ -468,11 +489,24 @@ public class TextFieldComponent extends LabelComponent {
 		this.cursorIndex = cursorIndex;
 	}
 
+	/**
+	 * Returns the current row on which the cursor is on.
+	 *
+	 * @return row that cursor is on
+	 */
 	public int getCursorRow() {
 		return cursorRow;
 	}
 
+	/**
+	 * Sets the row on which the cursor is on.
+	 *
+	 * @param cursorRow row that cursor is on
+	 */
 	public void setCursorRow(int cursorRow) {
+		if (cursorRow < 0 || cursorRow > rows - 1) {
+			throw new IllegalArgumentException("Specified row must be between 0 and " + (rows - 1));
+		}
 		float rowHeight = getRowHeight();
 		float y = getInitialCursorBounds().getY() + rows * rowHeight - cursorRow * rowHeight;
 		Rectangle rect = cursor.getSprite();
@@ -498,10 +532,21 @@ public class TextFieldComponent extends LabelComponent {
 		cursor.setColor(color);
 	}
 
+	/**
+	 * Whether the cursor is visible or not.
+	 *
+	 * @return true if cursor is visible
+	 */
 	public boolean isCursorVisible() {
 		return cursor.getColor().getAlpha() > 0;
 	}
 
+	/**
+	 * Sets whether the cursor is visible or not. This method's primary use is
+	 * to implement the blinking cursor while a user is not typing.
+	 *
+	 * @param visible true to make the cursor visible
+	 */
 	public void setCursorVisible(boolean visible) {
 		Color c = cursor.getColor();
 		cursor.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), visible ? 255 : 0));
@@ -523,5 +568,18 @@ public class TextFieldComponent extends LabelComponent {
 	 */
 	public void setBorderColor(Color color) {
 		border.setColor(color);
+	}
+
+	/**
+	 * Returns <b>all</b> of the text in the text field. The inputted text of
+	 * this text field must be cached in the text field because
+	 * {@link org.spout.api.gui.component.LabelComponent#getText()} only
+	 * returns any <b>visible</b> text; not all text in a text field is
+	 * necessarily visible.
+	 *
+	 * @return all of the text
+	 */
+	public String getCachedText() {
+		return cachedText;
 	}
 }
