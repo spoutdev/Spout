@@ -33,10 +33,10 @@ import org.spout.api.geo.cuboid.Cube;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
+import org.spout.api.render.BufferContainer;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotBatch;
 import org.spout.engine.renderer.BatchVertexRenderer;
-import org.spout.engine.renderer.BufferContainer;
 
 /**
  * Represents a group of chunk meshes to be rendered.

@@ -30,26 +30,19 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.lwjgl.opengl.GL11;
-import org.spout.api.geo.cuboid.ChunkSnapshotModel;
-import org.spout.api.material.Material;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
-import org.spout.api.model.mesh.Mesh;
-import org.spout.api.model.mesh.MeshFace;
-import org.spout.api.model.mesh.OrientedMesh;
-import org.spout.api.model.mesh.OrientedMeshFace;
-import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Shader;
 import org.spout.api.render.effect.BatchEffect;
+import org.spout.api.render.effect.BufferEffect;
 import org.spout.api.render.effect.EntityEffect;
 import org.spout.api.render.effect.MeshEffect;
 import org.spout.api.render.effect.RenderEffect;
@@ -70,6 +63,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 	private List<BatchEffect> batchEffects = new ArrayList<BatchEffect>();
 	private List<RenderEffect> renderEffects = new ArrayList<RenderEffect>();
 	private List<EntityEffect> entityEffects = new ArrayList<EntityEffect>();
+	private List<BufferEffect> bufferEffects = new ArrayList<BufferEffect>();
 
 	public ClientRenderMaterial(Shader s, Map<String, Object> params){
 		this(s, params, null, null, true, 0);
@@ -224,6 +218,16 @@ public class ClientRenderMaterial extends RenderMaterial {
 	@Override
 	public void addEntityEffect(EntityEffect entityEffect) {
 		entityEffects.add(entityEffect);
+	}
+
+	@Override
+	public void addBufferEffect(BufferEffect effect) {
+		bufferEffects.add(effect);
+	}
+
+	@Override
+	public List<BufferEffect> getBufferEffects() {
+		return bufferEffects;
 	}
 
 }

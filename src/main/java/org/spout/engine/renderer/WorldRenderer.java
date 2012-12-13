@@ -39,6 +39,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
+import org.spout.api.render.BufferContainer;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotRender;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;

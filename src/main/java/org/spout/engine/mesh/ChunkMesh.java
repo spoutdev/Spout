@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -47,11 +48,12 @@ import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.OrientedMesh;
 import org.spout.api.model.mesh.OrientedMeshFace;
 import org.spout.api.model.mesh.Vertex;
+import org.spout.api.render.BufferContainer;
 import org.spout.api.render.RenderMaterial;
+import org.spout.api.render.effect.BufferEffect;
 import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.engine.renderer.BatchVertexRenderer;
-import org.spout.engine.renderer.BufferContainer;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 
 /**
@@ -108,8 +110,15 @@ public class ChunkMesh{
 		center = chunkModel.getCenter();
 
 		//Update mesh vertex and light
+
 		updateBlock();
-		updateLight();
+
+		//Execute post buffer effect for each renderMaterial
+		for(Entry<RenderMaterial, BufferContainer> entry : meshs.entrySet()){
+			for(BufferEffect effect : entry.getKey().getBufferEffects()){
+				effect.post(chunkModel, entry.getValue());
+			}
+		}
 
 		// Free memory
 		chunkModel = null;
@@ -126,112 +135,6 @@ public class ChunkMesh{
 					generateBlockVertices(chunkModel,x, y, z);
 				}
 			}
-		}
-	}
-
-	/**
-	 * Updates the mesh light, the block vertices MUST BE done before
-	 */
-	private void updateLight() {
-		if(chunkModel.isUnload())
-			throw new IllegalStateException("ChunkSnapshotModel with Unload state can't be used to compute light");
-
-		for(BufferContainer container : meshs.values()){
-
-			TFloatArrayList vertexBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.VERTEX_LAYER);
-			
-			/*
-			 * Use a shader light (2) and skylight (4)
-			 * 
-			 * WE NEED TO USE 2 BECAUSE WE DON'T USE COLOR
-			 * OPENGL 2 NEED TO USE LAYOUT IN THE ORDER
-			 * WE CAN'T USE 3 IF 2 ISN'T USED
-			 * 
-			 * One float per vertice
-			 * file://Vanilla/resources/shaders/terrain.120.vert 
-			 * file://Vanilla/resources/shaders/terrain.330.vert
-			 */
-			
-			TFloatArrayList lightBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.COLOR_LAYER);
-			TFloatArrayList skylightBuffer = (TFloatArrayList) container.getBuffers().get(4);
-
-			if(lightBuffer==null){
-				lightBuffer = new TFloatArrayList(vertexBuffer.size() / 4);
-				container.setBuffers(BatchVertexRenderer.COLOR_LAYER, lightBuffer);
-			}
-			
-			if(skylightBuffer==null){
-				skylightBuffer = new TFloatArrayList(vertexBuffer.size() / 4);
-				container.setBuffers(4, skylightBuffer);
-			}
-
-			for(int i = 0; i < vertexBuffer.size();){
-				float x = vertexBuffer.get(i++);
-				float y = vertexBuffer.get(i++);
-				float z = vertexBuffer.get(i++);
-				i++; // w component
-
-				//TODO : Create a buffer for each light registred by plugin
-
-				generateLightOnVertices( chunkModel, x, y, z, lightBuffer, skylightBuffer);
-			}
-		}
-	}
-
-	/**
-	 * Compute the light for one vertex
-	 * @param chunkModel
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param lightBuffer 
-	 * @return
-	 */
-	private void generateLightOnVertices(SpoutChunkSnapshotModel chunkModel, float x, float y, float z, TFloatArrayList lightBuffer, TFloatArrayList skylightBuffer) {
-		int xi = (int)x;
-		int yi = (int)y;
-		int zi = (int)z;
-		if(chunkModel != null){
-			float light = 0;
-			float skylight = 0;
-			int count = 0;
-
-			//TODO : Make it use each sort of light if plugin can add others lights later
-
-			int xs = (x == xi) ? (xi - 1) : xi;
-			int ys = (y == yi) ? (yi - 1) : yi;
-			int zs = (z == zi) ? (zi - 1) : zi;
-
-			for (int xx = xs; xx <= xi; xx++) {
-				for (int yy = ys; yy <= yi; yy++) {
-					for (int zz = zs; zz <= zi; zz++) {
-						ChunkSnapshot chunk = chunkModel.getChunkFromBlock(xx, yy, zz);
-						BlockMaterial m = chunk.getBlockMaterial(xx, yy, zz);
-						if (!m.isOpaque()) {
-							light += chunk.getBlockLight(xx, yy, zz);
-							skylight += chunk.getBlockSkyLightRaw(xx, yy, zz); //use the SkyLightRaw, the real sky state would be apply by the shader
-							count++;
-						}
-					}
-				}
-			}
-
-			if (count == 0) {
-				count++;
-			}
-
-			light /= count;
-			skylight /= count;
-			light /= 16;
-			skylight /= 16;
-
-			//TODO : To replace by 2 byte buffer for Vanilla
-			
-			lightBuffer.add(light);
-			skylightBuffer.add(skylight);
-		}else{
-			lightBuffer.add(1f);
-			lightBuffer.add(1f);
 		}
 	}
 

@@ -39,6 +39,7 @@ import java.util.Map.Entry;
 import org.lwjgl.BufferUtils;
 import org.spout.api.Client;
 import org.spout.api.Spout;
+import org.spout.api.render.BufferContainer;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
 

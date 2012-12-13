@@ -41,12 +41,12 @@ import org.spout.api.gui.render.RenderPart;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Rectangle;
+import org.spout.api.render.BufferContainer;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.effect.SnapshotRender;
 
 import org.spout.engine.renderer.BatchVertexRenderer;
-import org.spout.engine.renderer.BufferContainer;
 import org.spout.engine.resources.ClientFont;
 
 public class SpriteBatch {
