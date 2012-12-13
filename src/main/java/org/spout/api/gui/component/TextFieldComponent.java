@@ -32,11 +32,9 @@ import java.util.List;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
-import org.spout.api.chat.ChatArguments;
 import org.spout.api.event.player.PlayerKeyEvent;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.math.Rectangle;
-import org.spout.api.math.Vector2;
 import org.spout.api.render.Font;
 
 public class TextFieldComponent extends LabelComponent {
@@ -49,6 +47,7 @@ public class TextFieldComponent extends LabelComponent {
 	private int rows = 1;
 	private int maxRows = 20;
 	private int maxChars = 100;
+	// we need to cache the inputted text because not all the text is necessarily visible
 	private String cachedText = "";
 	private int typingTimer = 80;
 	private int blinkingTimer = 20;
@@ -115,16 +114,24 @@ public class TextFieldComponent extends LabelComponent {
 			return;
 		}
 
+		/*
+		 * If the char can't fit on the current row and we have room for
+		 * another line, make a new line, set the cursor index to zero, and
+		 * increment the cursor row. If we don't have room for another line,
+		 * start to scroll to the right.
+		 */
+
 		if (!canFitOnRow(cursorRow, c)) {
 			if (getRows() < maxRows) {
 				newLine();
 			} else {
-				setText(new ChatArguments(getText().getPlainString().substring(1)));
+				// TODO: scroll to right
 			}
 		}
-		append(c);
-		cachedText += c;
 
+		append(isPasswordField() ? passwordChar : c);
+		cachedText += c;
+		setCursorIndex(getCursorIndex() + 1);
 	}
 
 	@Override
@@ -132,14 +139,16 @@ public class TextFieldComponent extends LabelComponent {
 		super.backspace();
 		if (!cachedText.isEmpty()) {
 			cachedText = cachedText.substring(0, cachedText.length() - 1);
+			setCursorIndex(getCursorIndex() - 1);
 		}
 	}
 
 	@Override
 	public void newLine() {
 		super.newLine();
-		cursorRow++;
 		setRows(getRows() + 1);
+		setCursorIndex(0);
+		setCursorRow(getCursorRow() + 1);
 	}
 
 	private void init() {
@@ -155,14 +164,12 @@ public class TextFieldComponent extends LabelComponent {
 		field.setSprite(new Rectangle(fieldX, fieldY, fieldWidth, getRowHeight()));
 		field.setColor(Color.WHITE);
 
-		Rectangle borderRect = getBorderBounds();
 		border.setZIndex(3);
-		border.setSprite(new Rectangle(borderRect.getX(), borderRect.getY(), borderRect.getWidth(), borderRect.getHeight()));
+		border.setSprite(getBorderBounds());
 		border.setColor(Color.GRAY);
 
-		Rectangle cursorRect = getInitialCursorBounds();
 		cursor.setZIndex(1);
-		cursor.setSprite(new Rectangle(cursorRect.getX(), cursorRect.getY(), cursorRect.getWidth(), cursorRect.getHeight()));
+		cursor.setSprite(getInitialCursorBounds());
 		cursor.setColor(Color.BLACK);
 
 		getOwner().add(ControlComponent.class);
@@ -341,35 +348,6 @@ public class TextFieldComponent extends LabelComponent {
 	}
 
 	/**
-	 * Returns the position of the field on the screen.
-	 *
-	 * @return position of field
-	 */
-	public Vector2 getPosition() {
-		return field.getSprite().getPosition();
-	}
-
-	/**
-	 * Sets the position of the field on the screen.
-	 *
-	 * @param x coordinate of field
-	 * @param y coordinate of field
-	 */
-	public void setPosition(float x, float y) {
-		Rectangle rect = field.getSprite();
-		field.setSprite(new Rectangle(x, y, rect.getWidth(), rect.getHeight()));
-	}
-
-	/**
-	 * Sets the position of the field on the screen.
-	 *
-	 * @param pos position on screen
-	 */
-	public void setPosition(Vector2 pos) {
-		setPosition(pos.getX(), pos.getY());
-	}
-
-	/**
 	 * Returns the maximum amount of chars permitted on a row. A new line will
 	 * be formed once exceeding this limit if permitted by
 	 * {@link #getMaxRows()}.
@@ -476,9 +454,17 @@ public class TextFieldComponent extends LabelComponent {
 	 * The cursor must always be behind a character so this index may not
 	 * exceed the last index of the text's characters.
 	 *
-	 * @return index of the cursor among the text
+	 * @param cursorIndex index of cursor
 	 */
 	public void setCursorIndex(int cursorIndex) {
+		Font font = getFont();
+		float x = getInitialCursorBounds().getX();
+		String row = getText(cursorRow);
+		for (int i = 0; i < cursorIndex; i++) {
+			x += toScreenX(font.getPixelBounds(row.charAt(i)).width);
+		}
+		Rectangle rect = cursor.getSprite();
+		cursor.setSprite(new Rectangle(x, rect.getY(), rect.getWidth(), rect.getHeight()));
 		this.cursorIndex = cursorIndex;
 	}
 
@@ -487,6 +473,10 @@ public class TextFieldComponent extends LabelComponent {
 	}
 
 	public void setCursorRow(int cursorRow) {
+		float rowHeight = getRowHeight();
+		float y = getInitialCursorBounds().getY() + rows * rowHeight - cursorRow * rowHeight;
+		Rectangle rect = cursor.getSprite();
+		cursor.setSprite(new Rectangle(rect.getX(), y, rect.getWidth(), rect.getHeight()));
 		this.cursorRow = cursorRow;
 	}
 
