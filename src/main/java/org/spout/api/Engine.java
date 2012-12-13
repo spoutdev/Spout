@@ -50,6 +50,7 @@ import org.spout.api.event.EventManager;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.inventory.recipe.RecipeManager;
+import org.spout.api.permissions.DefaultPermissions;
 import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.PluginManager;
@@ -557,4 +558,11 @@ public interface Engine extends Named {
 	 * @return The completion manager
 	 */
 	public CompletionManager getCompletionManager();
+
+	/**
+	 * Gets the default permissions handler for the engine
+	 *
+	 * @return The default permissions handler
+	 */
+	public DefaultPermissions getDefaultPermissions();
 }
