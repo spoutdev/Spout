@@ -80,7 +80,7 @@ import org.spout.api.inventory.recipe.RecipeManager;
 import org.spout.api.inventory.recipe.SimpleRecipeManager;
 import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.material.MaterialRegistry;
-//import org.spout.api.permissions.DefaultPermissions;
+import org.spout.api.permissions.DefaultPermissions;
 import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.plugin.CommonPluginLoader;
 import org.spout.api.plugin.CommonPluginManager;
@@ -165,6 +165,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private MultiConsole console;
 	private SpoutApplication arguments;
 	private MemoryReclamationThread reclamation = null;
+	private DefaultPermissions defaultPerms;
 
 	public SpoutEngine() {
 		super(1, new ThreadAsyncExecutor("Engine bootstrap thread"));
@@ -190,7 +191,8 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 			throw new IllegalStateException("SpoutEngine's executor was already started");
 		}
 
-		//DefaultPermissions.addDefaultPermission(STANDARD_BROADCAST_PERMISSION);
+		defaultPerms = new DefaultPermissions(this, new File(SharedFileSystem.getConfigDirectory(), "permissions.yml"));
+		getDefaultPermissions().addDefaultPermission(STANDARD_BROADCAST_PERMISSION);
 
 		if (debugMode()) {
 			new TicklockMonitor().start();
@@ -220,10 +222,12 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		getRootCommand().addSubCommands(this, MessagingCommands.class, commandRegFactory);
 		getRootCommand().addSubCommands(this, ConnectionCommands.class, commandRegFactory);
 		InputCommands.setupInputCommands(this, getRootCommand());
-		if (arguments.debug) {
+
+		if (debugMode()) {
 			getRootCommand().addSubCommands(this, TestCommands.class, commandRegFactory);
 		}
-		if(Spout.getPlatform() == Platform.CLIENT){
+
+		if (getPlatform() == Platform.CLIENT) {
 			getRootCommand().addSubCommands(this, RendererCommands.class, commandRegFactory);
 		}
 		Protocol.registerProtocol(new SpoutProtocol());
@@ -241,7 +245,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		if (checkWorlds) {
 			//At least one plugin should have registered atleast one world
 			if (loadedWorlds.getLive().size() == 0) {
-				throw new IllegalStateException("There are no loaded worlds!  You must install a plugin that creates a world (Did you forget Vanilla?)");
+				throw new IllegalStateException("There are no loaded worlds! You must install a plugin that creates a world (Did you forget Vanilla?)");
 			}
 
 			//Pick the default world from the configuration
@@ -253,7 +257,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 			//If we don't have a default world set, just grab one.
 			getDefaultWorld();
 		}
-		
+
 		if (SpoutConfiguration.RECLAIM_MEMORY.getBoolean()) {
 			reclamation = new MemoryReclamationThread();
 			reclamation.start();
@@ -752,7 +756,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 			created = true;
 		}
 		SpoutPlayer oldPlayer = players.put(playerName, player);
-		
+
 		if (reclamation != null) {
 			reclamation.addPlayer();
 		}
@@ -844,6 +848,10 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public CompletionManager getCompletionManager() {
 		return completions;
+	}
+
+	public DefaultPermissions getDefaultPermissions() {
+		return defaultPerms;
 	}
 
 	private class SessionTask implements Runnable {

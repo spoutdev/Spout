@@ -32,9 +32,10 @@ import org.spout.api.exception.ConfigurationException;
 import org.spout.api.util.config.ConfigurationHolder;
 import org.spout.api.util.config.ConfigurationHolderConfiguration;
 import org.spout.api.util.config.yaml.YamlConfiguration;
+import org.spout.engine.filesystem.SharedFileSystem;
 
 public class SpoutConfiguration extends ConfigurationHolderConfiguration {
-	
+
 	// General
 	public static final ConfigurationHolder MAXIMUM_PLAYERS = new ConfigurationHolder(20, "general", "maximum-players");
 	public static final ConfigurationHolder DEFAULT_WORLD = new ConfigurationHolder("world", "general", "default-world");
@@ -43,29 +44,25 @@ public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder RECLAIM_MEMORY = new ConfigurationHolder(true, "general", "reclaim-memory");
 	public static final ConfigurationHolder AUTOSAVE_INTERVAL = new ConfigurationHolder(60000, "general", "autosave-interval");
 	public static final ConfigurationHolder CONSOLE_TYPE = new ConfigurationHolder("jline", "general","console");
-	
+
 	// Lightning
 	public static final ConfigurationHolder LIGHTING_ENABLED = new ConfigurationHolder(true, "lightning", "enabled");
 	public static final ConfigurationHolder LIVE_LIGHTING = new ConfigurationHolder(false, "lightning", "live-lighting");
-	
+
 	// Chunks
 	public static final ConfigurationHolder CHUNK_REAP_DELAY = new ConfigurationHolder(10000, "chunks", "reap-delay");
 	public static final ConfigurationHolder REAP_CHUNKS_PER_TICK = new ConfigurationHolder(5, "chunks", "reap-per-tick");
 	public static final ConfigurationHolder UNLOAD_CHUNKS_PER_TICK = new ConfigurationHolder(3, "chunks", "unload-per-tick");
-	
+
 	// Messages
 	public static final ConfigurationHolder DEFAULT_LANGUAGE = new ConfigurationHolder("EN_US", "messages", "default-language");
-	public static final ConfigurationHolder DEFAULT_CHATCHANNEL_NAME = new ConfigurationHolder("", "messages", "default-chatchannel-name");
-	public static final ConfigurationHolder DEFAULT_CHATCHANNEL_FORMAT = new ConfigurationHolder("{{GREY}}<{{player-name}}> {{message}}", "messages", "default-chatchannel-format");
-	public static final ConfigurationHolder CONSOLE_CHATCHANNEL_NAME = new ConfigurationHolder("Console ", "messages", "console-chatchannel-name");
-	public static final ConfigurationHolder CONSOLE_CHATCHANNEL_FORMAT = new ConfigurationHolder("{{GREY}}<{{channel-name}}> {{message}}", "messages", "console-chatchannel-format");
 
 	// Network
 	public static final ConfigurationHolder UPNP = new ConfigurationHolder(true, "network", "upnp");
 	public static final ConfigurationHolder BONJOUR = new ConfigurationHolder(true, "network", "bonjour");
-	
+
 	public SpoutConfiguration() {
-		super(new YamlConfiguration(new File("config", "spout.yml")));
+		super(new YamlConfiguration(new File(SharedFileSystem.getConfigDirectory(), "spout.yml")));
 	}
 
 	@Override
