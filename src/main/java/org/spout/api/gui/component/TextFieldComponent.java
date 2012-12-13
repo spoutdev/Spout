@@ -50,7 +50,8 @@ public class TextFieldComponent extends LabelComponent {
 	private int maxRows = 20;
 	private int maxChars = 100;
 	private String cachedText = "";
-	private float typingTimer = 2;
+	private int typingTimer = 80;
+	private int blinkingTimer = 20;
 	private boolean scrollable = false;
 	private boolean passwordField = false;
 	private char passwordChar = '*';
@@ -67,7 +68,21 @@ public class TextFieldComponent extends LabelComponent {
 
 	@Override
 	public void onTick(float dt) {
-		// TODO: Implement cursor blinking
+		if (typingTimer > 0) {
+			typingTimer--;
+		}
+
+		if (!isTyping()) {
+			if (blinkingTimer > 0) {
+				blinkingTimer--;
+			} else {
+				// toggle cursor
+				setCursorVisible(!isCursorVisible());
+				blinkingTimer = 20;
+			}
+		} else {
+			setCursorVisible(true);
+		}
 	}
 
 	@Override
@@ -83,6 +98,7 @@ public class TextFieldComponent extends LabelComponent {
 			return;
 		}
 
+		typingTimer = 80;
 		switch (event.getKey()) {
 			case KEY_BACK:
 				backspace();
@@ -498,7 +514,7 @@ public class TextFieldComponent extends LabelComponent {
 
 	public void setCursorVisible(boolean visible) {
 		Color c = cursor.getColor();
-		cursor.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), visible ? 1 : 0));
+		cursor.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), visible ? 255 : 0));
 	}
 
 	/**
