@@ -30,8 +30,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.render.effect.BatchEffect;
+import org.spout.api.render.effect.BufferEffect;
 import org.spout.api.render.effect.EntityEffect;
 import org.spout.api.render.effect.RenderEffect;
 import org.spout.api.render.effect.SnapshotBatch;
@@ -181,4 +181,9 @@ public abstract class RenderMaterial extends Resource implements Comparable<Rend
 	public int hashCode() {
 		return id;
 	}
+
+	public abstract void addBufferEffect(BufferEffect effect);
+
+	public abstract List<BufferEffect> getBufferEffects();
+
 }
