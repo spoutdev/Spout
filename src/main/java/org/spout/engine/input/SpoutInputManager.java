@@ -36,7 +36,7 @@ import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.component.Component;
-import org.spout.api.component.components.WidgetComponent;
+import org.spout.api.component.type.WidgetComponent;
 import org.spout.api.event.player.PlayerKeyEvent;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Screen;
@@ -130,7 +130,6 @@ public class SpoutInputManager implements InputManager {
 		}
 		return ((Client) engine).getScreenStack().getInputScreen();
 	}
-
 
 	private Set<WidgetComponent> getWidgetComponents() {
 		Set<WidgetComponent> components = new HashSet<WidgetComponent>();

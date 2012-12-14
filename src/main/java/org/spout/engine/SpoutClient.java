@@ -26,10 +26,6 @@
  */
 package org.spout.engine;
 
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.glClear;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -60,6 +56,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.PixelFormat;
+
 import org.spout.api.Client;
 import org.spout.api.FileSystem;
 import org.spout.api.Spout;
@@ -70,18 +67,15 @@ import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
-import org.spout.api.component.components.CameraComponent;
-import org.spout.api.component.components.HitBlockComponent;
-import org.spout.api.component.components.PredictableTransformComponent;
-import org.spout.api.component.components.TransformComponent;
+import org.spout.api.component.implementation.CameraComponent;
+import org.spout.api.component.implementation.HitBlockComponent;
+import org.spout.api.component.implementation.PredictableTransformComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.event.server.ClientEnableEvent;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.FullScreen;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.ScreenStack;
@@ -100,6 +94,7 @@ import org.spout.api.protocol.Session;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
+
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.batcher.SpriteBatch;
 import org.spout.engine.command.InputManagementCommands;
@@ -122,6 +117,10 @@ import org.spout.engine.util.MacOSXUtils;
 import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutClientWorld;
+
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.glClear;
 
 public class SpoutClient extends SpoutEngine implements Client {
 	private final SoundManager soundManager = new SpoutSoundManager();
@@ -150,7 +149,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private boolean showDebugInfos = true;
 	private ConcurrentLinkedQueue<Runnable> renderTaskQueue = new ConcurrentLinkedQueue<Runnable>();
 	private ArrayList<RenderMaterial> postProcessMaterials = new ArrayList<RenderMaterial>();
-	
+
 	public SpoutClient() {
 		this.filesystem = new ClientFileSystem();
 	}
@@ -402,7 +401,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	@Override
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] data) {
 		SpoutClientWorld world = new SpoutClientWorld(name, uuid, this, getEngineItemMap());
-		
+
 		SerializableMap map = world.getComponentHolder().getData();
 		try {
 			map.deserialize(data);
@@ -488,7 +487,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		//Init pool of BatchVertexRenderer
 		BatchVertexRenderer.initPool(GL11.GL_TRIANGLES, 10000);
-		
+
 		worldRenderer = new WorldRenderer(this);
 
 		gui = SpriteBatch.createSpriteBatch(getRenderMode(), resolution.getX(), resolution.getY());
@@ -519,17 +518,17 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		Model skydome = (Model)super.getDefaultWorld().getDataMap().get("Skydome");
+		Model skydome = (Model) super.getDefaultWorld().getDataMap().get("Skydome");
 		if (skydome != null) {
 			skydome.getRenderMaterial().getShader().setUniform("View", MathHelper.createIdentity());
 			skydome.getRenderMaterial().getShader().setUniform("Projection", getActiveCamera().getProjection());
-			BaseMesh skydomeMesh = (BaseMesh)skydome.getMesh();
+			BaseMesh skydomeMesh = (BaseMesh) skydome.getMesh();
 			if (!skydomeMesh.isBatched()) {
 				skydomeMesh.batch();
 			}
 			skydomeMesh.render(skydome.getRenderMaterial());
 		}
-		
+
 		doInput(dt);
 
 		for (Entity e : super.getDefaultWorld().getAll()) {
@@ -564,9 +563,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "x: ", position.getX()), font, -0.95f, 0.8f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "y: ", position.getY()), font, -0.95f, 0.7f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "z: ", position.getZ()), font, -0.95f, 0.6f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "fps: ", getScheduler().getFps() , " (" , getScheduler().isRendererOverloaded()?"Overloaded" : "Normal" ,")"), font, -0.95f, 0.5f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Chunks Drawn: ", ((int)((float)worldRenderer.getRenderedChunks() / (float)(worldRenderer.getTotalChunks()) * 100)) + "%" + " (" + worldRenderer.getRenderedChunks() +")") , font, -0.95f, 0.4f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Occluded Chunks: ", (int) ((float) worldRenderer.getOccludedChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getOccludedChunks() + ")" ), font, -0.95f, 0.3f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "fps: ", getScheduler().getFps(), " (", getScheduler().isRendererOverloaded() ? "Overloaded" : "Normal", ")"), font, -0.95f, 0.5f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Chunks Drawn: ", ((int) ((float) worldRenderer.getRenderedChunks() / (float) (worldRenderer.getTotalChunks()) * 100)) + "%" + " (" + worldRenderer.getRenderedChunks() + ")"), font, -0.95f, 0.4f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Occluded Chunks: ", (int) ((float) worldRenderer.getOccludedChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getOccludedChunks() + ")"), font, -0.95f, 0.3f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Cull Chunks: ", (int) ((float) worldRenderer.getCulledChunks() / worldRenderer.getTotalChunks() * 100), "% (" + worldRenderer.getCulledChunks() + ")"), font, -0.95f, 0.2f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Update: ", worldRenderer.minUpdate + " / " + worldRenderer.maxUpdate + " / " + (worldRenderer.sumUpdate / Math.max(1, worldRenderer.count))), font, -0.95f, 0.1f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Render: ", worldRenderer.minRender + " / " + worldRenderer.maxRender + " / " + (worldRenderer.sumRender / Math.max(1, worldRenderer.count))), font, -0.95f, 0.0f, 8f);

@@ -26,8 +26,6 @@
  */
 package org.spout.engine.filesystem;
 
-import gnu.trove.procedure.TShortObjectProcedure;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -45,10 +43,13 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
+import gnu.trove.procedure.TShortObjectProcedure;
+
 import org.apache.commons.io.FileUtils;
+
 import org.spout.api.Spout;
 import org.spout.api.component.Component;
-import org.spout.api.component.components.BlockComponent;
+import org.spout.api.component.type.BlockComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.entity.PlayerSnapshot;
@@ -74,6 +75,7 @@ import org.spout.api.util.hashing.NibbleQuadHashed;
 import org.spout.api.util.hashing.SignedTenBitTripleHashed;
 import org.spout.api.util.sanitation.SafeCast;
 import org.spout.api.util.typechecker.TypeChecker;
+
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutPlayer;
@@ -138,8 +140,9 @@ public class WorldFiles {
 		} finally {
 			if (os != null) {
 				try {
-				  os.close();
-				} catch (IOException ignore) { }
+					os.close();
+				} catch (IOException ignore) {
+				}
 			}
 		}
 		try {
@@ -159,7 +162,7 @@ public class WorldFiles {
 
 	/**
 	 * Loads player data for the player, if it exists
-	 *
+	 * <p/>
 	 * Returns null on failure or if the data could not be loaded.
 	 * If an exception is thrown or the player data is not in a valid format
 	 * it will be backed up and new player data will be created for the player
@@ -176,7 +179,7 @@ public class WorldFiles {
 				is = new NBTInputStream(new DataInputStream(new FileInputStream(playerData)), false);
 				CompoundTag dataTag = (CompoundTag) is.readTag();
 				World world = Spout.getEngine().getWorld(dataTag.getName());
-				return (SpoutPlayer)loadEntity(world, dataTag, name);
+				return (SpoutPlayer) loadEntity(world, dataTag, name);
 			} catch (Exception e) {
 				Spout.getLogger().log(Level.SEVERE, "Error loading player data for " + name, e);
 
@@ -193,7 +196,8 @@ public class WorldFiles {
 			} finally {
 				try {
 					is.close();
-				} catch (IOException ignore) { }
+				} catch (IOException ignore) {
+				}
 			}
 		}
 		return null;
@@ -209,7 +213,7 @@ public class WorldFiles {
 		int[] palette = snapshot.getPalette();
 		int[] packetBlockArray = snapshot.getPackedBlockArray();
 		int packedWidth = snapshot.getPackedWidth();
-		
+
 		if (palette.length > 0) {
 			convertArray(palette, global, itemMap);
 		} else {
@@ -262,12 +266,12 @@ public class WorldFiles {
 			int cx = r.getChunkX() + x;
 			int cy = r.getChunkY() + y;
 			int cz = r.getChunkZ() + z;
-			
+
 			//Convert world block ids to engine material ids
 			SpoutWorld world = r.getWorld();
 			StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
 			StringMap itemMap = world.getItemMap();
-			
+
 			byte[] skyLight = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("skyLight")), null);
 			byte[] blockLight = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("blockLight")), null);
 			byte[] extraData = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("extraData")), null);
@@ -276,10 +280,10 @@ public class WorldFiles {
 			extraDataMap.deserialize(extraData);
 
 			boolean skipScan = false;
-			
+
 			byte populationState = SafeCast.toGeneric(map.get("populationState"), new ByteTag("", PopulationState.POPULATED.getId()), ByteTag.class).getValue();
 			boolean lightStable = SafeCast.toByte(NBTMapper.toTagValue(map.get("lightStable")), (byte) 0) != 0;
-			
+
 			int[] palette = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("palette")), null);
 			if (palette == null) {
 				short[] blocks = SafeCast.toShortArray(NBTMapper.toTagValue(map.get("blocks")), null);
@@ -291,7 +295,7 @@ public class WorldFiles {
 			} else {
 				int blockArrayWidth = SafeCast.toInt(NBTMapper.toTagValue(map.get("packedWidth")), -1);
 				int[] variableWidthBlockArray = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("packedBlockArray")), null);
-				
+
 				if (palette.length > 0) {
 					convertArray(palette, itemMap, global);
 					skipScan = componentSkipCheck(palette);
@@ -334,12 +338,13 @@ public class WorldFiles {
 		}
 		return chunk;
 	}
-	
+
 	private static void convertArray(int[] fullState, StringMap from, StringMap to) {
 		for (int i = 0; i < fullState.length; i++) {
 			short newId = (short) from.convertTo(to, BlockFullState.getId(fullState[i]));
 			short oldData = BlockFullState.getData(fullState[i]);
-			fullState[i] = BlockFullState.getPacked(newId, oldData);		}
+			fullState[i] = BlockFullState.getPacked(newId, oldData);
+		}
 	}
 
 	private static boolean componentSkipCheck(int[] fullState) {
@@ -350,7 +355,7 @@ public class WorldFiles {
 		}
 		return true;
 	}
-	
+
 	private static class AttachComponentProcedure implements TShortObjectProcedure<BlockComponent> {
 		@Override
 		public boolean execute(short a, BlockComponent b) {
@@ -454,7 +459,7 @@ public class WorldFiles {
 		}
 		final Transform t = new Transform(new Point(r.getWorld(), pX, pY, pZ), new Quaternion(qX, qY, qZ, qW, false), new Vector3(sX, sY, sZ));
 
-		ListTag<StringTag> components = (ListTag<StringTag>)map.get("components");
+		ListTag<StringTag> components = (ListTag<StringTag>) map.get("components");
 		List<Class<? extends Component>> types = new ArrayList<Class<? extends Component>>(components.getValue().size());
 		for (StringTag component : components.getValue()) {
 			try {
@@ -492,7 +497,7 @@ public class WorldFiles {
 
 		//Write entity
 		Transform t = e.getTransform();
-		map.put(new FloatTag("posX",t.getPosition().getX()));
+		map.put(new FloatTag("posX", t.getPosition().getX()));
 		map.put(new FloatTag("posY", t.getPosition().getY()));
 		map.put(new FloatTag("posZ", t.getPosition().getZ()));
 
@@ -729,7 +734,6 @@ public class WorldFiles {
 			} catch (Exception e) {
 				Spout.getLogger().log(Level.SEVERE, "Failed to read biome data for column", e);
 			}
-
 		} catch (IOException e) {
 			Spout.getLogger().severe("Error reading column height-map for column" + column.getX() + ", " + column.getZ());
 		}

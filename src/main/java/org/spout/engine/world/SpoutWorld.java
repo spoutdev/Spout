@@ -42,6 +42,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.spout.api.Spout;
 import org.spout.api.collision.BoundingBox;
 import org.spout.api.collision.CollisionModel;
@@ -49,8 +50,8 @@ import org.spout.api.collision.CollisionVolume;
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentHolder;
 import org.spout.api.component.WorldComponentHolder;
-import org.spout.api.component.components.BlockComponent;
-import org.spout.api.component.components.EntityComponent;
+import org.spout.api.component.type.BlockComponent;
+import org.spout.api.component.type.EntityComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntityPrefab;
 import org.spout.api.entity.Player;
@@ -89,9 +90,9 @@ import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
 import org.spout.api.util.sanitation.StringSanitizer;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.Threadsafe;
+
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
-import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.engine.filesystem.WorldData;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
@@ -174,25 +175,20 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * Hashcode cache
 	 */
 	private final int hashcode;
-
 	/**
 	 * Indicates if the snapshot queue for the renderer should be populated
 	 */
 	private final AtomicBoolean renderQueueEnabled = new AtomicBoolean(false);
-
 	/**
 	 * RegionFile manager for the world
 	 */
 	private final RegionFileManager regionFileManager;
-
 	/*
 	 * A WeakReference to this world
 	 */
 	private final WeakReference<World> selfReference;
 	public static final WeakReference<World> NULL_WEAK_REFERENCE = new WeakReference<World>(null);
-	
 	Model skydome;
-
 	/*
 	 * Components
 	 */
@@ -298,7 +294,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		final SpoutColumn column = getColumn(x, z, true);
 		final BiomeManager manager = column.getBiomeManager();
 		if (manager != null) {
-			final Biome biome = column.getBiomeManager().getBiome(x & SpoutColumn.BLOCKS.MASK, y & SpoutColumn.BLOCKS.MASK, z  & SpoutColumn.BLOCKS.MASK);
+			final Biome biome = column.getBiomeManager().getBiome(x & SpoutColumn.BLOCKS.MASK, y & SpoutColumn.BLOCKS.MASK, z & SpoutColumn.BLOCKS.MASK);
 			if (biome != null) {
 				return biome;
 			}
@@ -490,7 +486,6 @@ public class SpoutWorld extends AsyncManager implements World {
 		return this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z);
 	}
 
-
 	public StringMap getItemMap() {
 		return itemMap;
 	}
@@ -553,8 +548,9 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public Entity createEntity(Point point, EntityPrefab prefab) {
 		SpoutEntity entity = new SpoutEntity(point);
-		for (Class<? extends EntityComponent> c : prefab.getComponents())
+		for (Class<? extends EntityComponent> c : prefab.getComponents()) {
 			entity.add(c);
+		}
 		return entity;
 	}
 
@@ -1163,7 +1159,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	public TaskManager getTaskManager() {
 		return taskManager;
 	}
-	
+
 	private SpoutChunk[][][] getChunks(int x, int y, int z, CuboidBlockMaterialBuffer buffer) {
 		Vector3 size = buffer.getSize();
 
@@ -1185,11 +1181,11 @@ public class SpoutWorld extends AsyncManager implements World {
 		int chunkEndX = end.getX();
 		int chunkEndY = end.getY();
 		int chunkEndZ = end.getZ();
-		
+
 		int chunkSizeX = chunkEndX - chunkStartX + 1;
 		int chunkSizeY = chunkEndY - chunkStartY + 1;
 		int chunkSizeZ = chunkEndZ - chunkStartZ + 1;
-		
+
 		SpoutChunk[][][] chunks = new SpoutChunk[chunkSizeX][chunkSizeY][chunkSizeZ];
 		for (int dx = chunkStartX; dx <= chunkEndX; dx++) {
 			for (int dy = chunkStartY; dy <= chunkEndY; dy++) {
@@ -1204,7 +1200,6 @@ public class SpoutWorld extends AsyncManager implements World {
 		}
 		return chunks;
 	}
-
 
 	protected void lockChunks(SpoutChunk[][][] chunks) {
 		for (int dx = 0; dx < chunks.length; dx++) {
@@ -1229,13 +1224,13 @@ public class SpoutWorld extends AsyncManager implements World {
 			}
 		}
 	}
-	
+
 	@Override
 	public void setCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
 		Vector3 base = buffer.getBase();
 		setCuboid(base.getFloorX(), base.getFloorY(), base.getFloorZ(), buffer, cause);
 	}
-	
+
 	@Override
 	public void setCuboid(int x, int y, int z, CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
 		if (cause == null) {
@@ -1248,11 +1243,10 @@ public class SpoutWorld extends AsyncManager implements World {
 		}
 
 		SpoutChunk[][][] chunks = getChunks(x, y, z, buffer);
-		
+
 		setCuboid(chunks, x, y, z, buffer, cause);
-		
 	}
-	
+
 	protected void setCuboid(SpoutChunk[][][] chunks, int x, int y, int z, CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
 
 		lockChunks(chunks);
@@ -1270,9 +1264,8 @@ public class SpoutWorld extends AsyncManager implements World {
 		} finally {
 			unlockChunks(chunks);
 		}
-
 	}
-	
+
 	@Override
 	public CuboidBlockMaterialBuffer getCuboid(int x, int y, int z, int sx, int sy, int sz) {
 		CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(x, y, z, sx, sy, sz);
@@ -1285,14 +1278,14 @@ public class SpoutWorld extends AsyncManager implements World {
 		Vector3 base = buffer.getBase();
 		getCuboid(base.getFloorX(), base.getFloorY(), base.getFloorZ(), buffer);
 	}
-	
-	@Override 
+
+	@Override
 	public void getCuboid(int x, int y, int z, CuboidBlockMaterialBuffer buffer) {
 		SpoutChunk[][][] chunks = getChunks(x, y, z, buffer);
-		
+
 		getCuboid(chunks, x, y, z, buffer);
 	}
-	
+
 	protected void getCuboid(SpoutChunk[][][] chunks, int x, int y, int z, CuboidBlockMaterialBuffer buffer) {
 
 		lockChunks(chunks);
@@ -1310,9 +1303,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		} finally {
 			unlockChunks(chunks);
 		}
-
 	}
-
 
 	public void enableRenderQueue() {
 		this.renderQueueEnabled.set(true);
@@ -1370,12 +1361,12 @@ public class SpoutWorld extends AsyncManager implements World {
 	public OutputStream getChunkOutputStream(ChunkSnapshot c) {
 		return regionFileManager.getChunkOutputStream(c);
 	}
-	
-	public Model getSkydomeModel(){
+
+	public Model getSkydomeModel() {
 		return skydome;
 	}
-	
-	public void setSkydomeModel(Model model){
+
+	public void setSkydomeModel(Model model) {
 		this.skydome = model;
 	}
 }

@@ -26,10 +26,6 @@
  */
 package org.spout.engine.world;
 
-import gnu.trove.map.TShortObjectMap;
-import gnu.trove.map.hash.TShortObjectHashMap;
-import gnu.trove.procedure.TShortObjectProcedure;
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,10 +43,16 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
+import com.google.common.collect.Sets;
+
+import gnu.trove.map.TShortObjectMap;
+import gnu.trove.map.hash.TShortObjectHashMap;
+import gnu.trove.procedure.TShortObjectProcedure;
+
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.component.ChunkComponentOwner;
-import org.spout.api.component.components.BlockComponent;
+import org.spout.api.component.type.BlockComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
@@ -91,6 +93,7 @@ import org.spout.api.util.hashing.NibbleQuadHashed;
 import org.spout.api.util.list.TNibbleQuadList;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 import org.spout.api.util.map.concurrent.palette.AtomicPaletteBlockStore;
+
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.SpoutEntity;
@@ -100,14 +103,10 @@ import org.spout.engine.util.thread.snapshotable.Snapshotable;
 import org.spout.engine.world.physics.PhysicsQueue;
 import org.spout.engine.world.physics.UpdateQueue;
 
-import com.google.common.collect.Sets;
-
 public class SpoutChunk extends Chunk implements Snapshotable {
 	public static final WeakReference<Chunk> NULL_WEAK_REFERENCE = new WeakReference<Chunk>(null);
-	
 	//Not static to allow the engine to parse values first
 	private final int autosaveInterval = SpoutConfiguration.AUTOSAVE_INTERVAL.getInt(60000);
-
 	private final Set<SpoutEntity> observers = Sets.newSetFromMap(new ConcurrentHashMap<SpoutEntity, Boolean>());
 	private final Set<SpoutEntity> unmodifiableObservers = Collections.unmodifiableSet(observers);
 	private final Set<SpoutPlayer> observingPlayers = Sets.newSetFromMap(new ConcurrentHashMap<SpoutPlayer, Boolean>());
@@ -115,12 +114,10 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	private final ConcurrentLinkedQueue<SpoutEntity> expiredObserversQueue = new ConcurrentLinkedQueue<SpoutEntity>();
 	private final LinkedHashSet<SpoutEntity> expiredObservers = new LinkedHashSet<SpoutEntity>();
 	private final Set<SpoutEntity> unmodifiableExpiredObservers = Collections.unmodifiableSet(expiredObservers);
-
 	/**
 	 * Not thread safe, synchronize on access
 	 */
 	private final TShortObjectHashMap<BlockComponent> blockComponents = new TShortObjectHashMap<BlockComponent>();
-
 	/**
 	 * Multi-thread write access to the block store is only allowed during the
 	 * allowed stages. During the restricted stages, only the region thread may
@@ -215,48 +212,38 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	 * The thread associated with the region
 	 */
 	private final Thread regionThread;
-	
 	/**
 	 * The order that blocks are stored in the block store
 	 */
 	private static ContainerFillOrder STORE_FILL_ORDER = ContainerFillOrder.XZY;
-
 	/**
 	 * A set of all blocks in this chunk that need a physics update in the next
 	 * tick. The coordinates in this set are relative to the <b>Region</b> containing the
 	 * chunk.
 	 */
 	private final PhysicsQueue physicsQueue;
-
 	private final SpoutScheduler scheduler;
-	
 	/**
 	 * Keeps track if the chunk has been modified since it's last save
 	 */
 	private final AtomicBoolean chunkModified = new AtomicBoolean(false);
-
 	private final AtomicBoolean entitiesModified = new AtomicBoolean(false);
-
 	/**
 	 * A WeakReference to this chunk
 	 */
 	private final WeakReference<Chunk> selfReference;
-
 	/**
 	 * Indicates that the chunk has been added to the dirty queue
 	 */
 	private final AtomicBoolean dirtyQueued = new AtomicBoolean(false);
-
 	private final AtomicBoolean populationQueued = new AtomicBoolean(false);
 	private final AtomicBoolean populationPriorityQueued = new AtomicBoolean(false);
 	private final AtomicBoolean popObserver = new AtomicBoolean(false);
-
 	private final AtomicInteger autosaveTicks = new AtomicInteger(0);
-	
 	private boolean wasInViewDistance = false;
 	private boolean isInViewDistance = false;
-	
-	protected void setIsInViewDistance(boolean value){
+
+	protected void setIsInViewDistance(boolean value) {
 		if (value && isBlockUniform() && getBlockMaterial(0, 0, 0) == BlockMaterial.AIR) {
 			return;
 		}
@@ -265,7 +252,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			setRenderDirty(true);
 		}
 	}
-	
+
 	public boolean enteredViewDistance() {
 		return (!wasInViewDistance) && isInViewDistance;
 	}
@@ -273,15 +260,15 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	public boolean isInViewDistance() {
 		return isInViewDistance;
 	}
-	
+
 	public boolean leftViewDistance() {
 		return wasInViewDistance && (!isInViewDistance);
 	}
-	
+
 	public void viewDistanceCopy() {
 		wasInViewDistance = isInViewDistance;
 	}
-	
+
 	static {
 		for (int i = 0; i < shiftCache.length; i++) {
 			int shift = 0;
@@ -295,11 +282,11 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial, ManagedHashMap map) {
 		this(world, region, x, y, z, PopulationState.UNTOUCHED, initial, null, null, null, map, false);
 	}
-	
+
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, int[] palette, int blockArrayWidth, int[] variableWidthBlockArray, byte[] skyLight, byte[] blockLight, ManagedHashMap extraData, boolean lightStable) {
 		this(world, region, x, y, z, popState, extraData, lightStable);
 		blockStore = new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, 10, palette, blockArrayWidth, variableWidthBlockArray);
-		
+
 		if (skyLight == null) {
 			this.skyLight = new byte[BLOCKS.HALF_VOLUME];
 		} else {
@@ -310,14 +297,14 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		} else {
 			this.blockLight = blockLight;
 		}
-		
+
 		blockStore.resetDirtyArrays();
 	}
-	
+
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, ManagedHashMap extraData, boolean lightStable) {
 		this(world, region, x, y, z, popState, extraData, lightStable);
 		blockStore = new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, 10, blocks, data);
-		
+
 		if (skyLight == null) {
 			this.skyLight = new byte[BLOCKS.HALF_VOLUME];
 		} else {
@@ -328,7 +315,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		} else {
 			this.blockLight = blockLight;
 		}
-		
+
 		blockStore.resetDirtyArrays();
 	}
 
@@ -385,7 +372,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			queueDirty();
 		}
 	}
-	
+
 	@Override
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Cause<?> cause) {
 		return setBlockMaterial(x, y, z, material, data, cause, true);
@@ -414,7 +401,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		short newId = material.getId();
 		short newData = data;
 		int newState = BlockFullState.getPacked(newId, newData);
-		
+
 		int oldState;
 		BlockMaterial oldMaterial;
 		if (material instanceof ComplexMaterial) {
@@ -435,7 +422,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 				}
 			} while (!success);
 		}
-		
+
 		short oldData = BlockFullState.getData(oldState);
 
 		int oldheight = column.getSurfaceHeight(bx, bz);
@@ -478,17 +465,17 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * This is always 'this', it is changed to a snapshot of the chunk in initLighting()
 	 * Do NOT set this to something else or use it elsewhere but in initLighting()
 	 */
 	protected volatile AreaBlockSource lightBlockSource = this;
-	
+
 	private void registerWithLightingManager() {
 		this.getWorld().getLightingManager().addChunk(this.getX(), this.getY(), this.getZ());
 	}
-	
+
 	public boolean isLightStable() {
 		return lightOperationsPending.get() == 0;
 	}
@@ -498,7 +485,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			Spout.getLogger().info("Warning: Light operations counter decremented below zero");
 		}
 	}
-	
+
 	private void notifyLightOperationSubmission() {
 		this.lightOperationsPending.incrementAndGet();
 	}
@@ -544,7 +531,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			this.blockLightOperations.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, operation);
 		}
 	}
-	
+
 	protected void addSkyLightUpdates(int x, int y, int z, int level) {
 		synchronized (this.skyLightUpdates) {
 			if (this.skyLightUpdates.isEmpty()) {
@@ -567,7 +554,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		}
 	}
 
-
 	@Override
 	public void setCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
 		Vector3 base = buffer.getBase();
@@ -579,7 +565,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		blockStore.writeLock();
 		try {
 			Vector3 size = buffer.getSize();
-			
+
 			int startX = Math.max(bx, this.getBlockX());
 			int startY = Math.max(by, this.getBlockY());
 			int startZ = Math.max(bz, this.getBlockZ());
@@ -587,9 +573,9 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			int endX = Math.min(bx + size.getFloorX(), this.getBlockX() + BLOCKS.SIZE - 1);
 			int endY = Math.min(by + size.getFloorY(), this.getBlockY() + BLOCKS.SIZE - 1);
 			int endZ = Math.min(bz + size.getFloorZ(), this.getBlockZ() + BLOCKS.SIZE - 1);
-			
+
 			Vector3 base = buffer.getBase();
-			
+
 			int offX = bx - base.getFloorX();
 			int offY = by - base.getFloorY();
 			int offZ = bz - base.getFloorZ();
@@ -605,14 +591,14 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			blockStore.writeUnlock();
 		}
 	}
-	
+
 	@Override
 	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz) {
 		CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(bx, by, bz, sx, sy, sz);
 		getCuboid(bx, by, bz, buffer);
 		return buffer;
 	}
-	
+
 	@Override
 	public void getCuboid(CuboidBlockMaterialBuffer buffer) {
 		Vector3 base = buffer.getBase();
@@ -632,13 +618,13 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			int endX = Math.min(bx + size.getFloorX(), this.getBlockX() + BLOCKS.SIZE - 1);
 			int endY = Math.min(by + size.getFloorY(), this.getBlockY() + BLOCKS.SIZE - 1);
 			int endZ = Math.min(bz + size.getFloorZ(), this.getBlockZ() + BLOCKS.SIZE - 1);
-			
+
 			Vector3 base = buffer.getBase();
-			
+
 			int offX = bx - base.getFloorX();
 			int offY = by - base.getFloorY();
 			int offZ = bz - base.getFloorZ();
-			
+
 			for (int dx = startX; dx < endX; dx++) {
 				for (int dy = startY; dy < endY; dy++) {
 					for (int dz = startZ; dz < endZ; dz++) {
@@ -695,7 +681,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	public int getBlockFullState(int x, int y, int z) {
 		return blockStore.getFullData(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK);
 	}
-	
+
 	public int getBlockFullState(int index) {
 		return blockStore.getFullData(index);
 	}
@@ -711,7 +697,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		addBlockLightUpdates(x, y, z, light);
 		return true;
 	}
-	
+
 	public boolean setBlockLightSync(int x, int y, int z, byte light, Cause<?> cause) {
 		light &= 0xF;
 		x &= BLOCKS.MASK;
@@ -761,7 +747,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		addSkyLightUpdates(x, y, z, light);
 		return true;
 	}
-	
+
 	public boolean setBlockSkyLightSync(int x, int y, int z, byte light, Cause<?> cause) {
 		light &= 0xF;
 		x &= BLOCKS.MASK;
@@ -807,7 +793,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		int index = getBlockIndex(x, y, z);
 		return getBlockSkyLightRaw(index);
 	}
-	
+
 	protected byte getBlockSkyLightRaw(int index) {
 		byte light = skyLight[index >> 1];
 		if ((index & 1) == 1) {
@@ -816,7 +802,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			return NibblePairHashed.key2(light);
 		}
 	}
-	
+
 	protected byte getBlockBlockLightRaw(int index) {
 		byte light = blockLight[index >> 1];
 		if ((index & 1) == 1) {
@@ -867,7 +853,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		unloadNoMark(save);
 		markForSaveUnload();
 	}
-	
+
 	public void unloadNoMark(boolean save) {
 		SaveState.unload(saveState, save);
 	}
@@ -886,7 +872,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		saveNoMark();
 		markForSaveUnload();
 	}
-	
+
 	public void saveNoMark() {
 		checkChunkLoaded();
 		SaveState.save(saveState);
@@ -924,14 +910,14 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	public ChunkSnapshot getSnapshot() {
 		return getSnapshot(SnapshotType.BOTH, EntityType.NO_ENTITIES, ExtraData.NO_EXTRA_DATA);
 	}
-	
+
 	@Override
 	public void fillBlockContainer(BlockContainer container) {
 		ContainerFillOrder sourceOrder = SpoutChunk.STORE_FILL_ORDER;
 		ContainerFillOrder destOrder = container.getOrder();
-		
+
 		int size = BLOCKS.SIZE;
-		
+
 		int sourceIndex = 0;
 
 		int thirdStep = destOrder.thirdStep(sourceOrder, size, size, size);
@@ -941,7 +927,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		int thirdMax = destOrder.getThirdSize(size, size, size);
 		int secondMax = destOrder.getSecondSize(size, size, size);
 		int firstMax = destOrder.getFirstSize(size, size, size);
-		
+
 		for (int third = 0; third < thirdMax; third++) {
 			int secondStart = sourceIndex;
 			for (int second = 0; second < secondMax; second++) {
@@ -955,23 +941,23 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			sourceIndex = secondStart + thirdStep;
 		}
 	}
-	
+
 	@Override
 	public void fillSkyLightContainer(LightContainer container) {
 		fillLightContainerRaw(container, false);
 	}
-	
+
 	@Override
 	public void fillBlockLightContainer(LightContainer container) {
 		fillLightContainerRaw(container, true);
 	}
-	
+
 	public void fillLightContainerRaw(LightContainer container, boolean blockLight) {
 		ContainerFillOrder sourceOrder = SpoutChunk.STORE_FILL_ORDER;
 		ContainerFillOrder destOrder = container.getOrder();
-		
+
 		int size = BLOCKS.SIZE;
-		
+
 		int sourceIndex = 0;
 
 		int thirdStep = destOrder.thirdStep(sourceOrder, size, size, size);
@@ -981,7 +967,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		int thirdMax = destOrder.getThirdSize(size, size, size);
 		int secondMax = destOrder.getSecondSize(size, size, size);
 		int firstMax = destOrder.getFirstSize(size, size, size);
-		
+
 		for (int third = 0; third < thirdMax; third++) {
 			int secondStart = sourceIndex;
 			for (int second = 0; second < secondMax; second++) {
@@ -1002,7 +988,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 	@Override
 	public void fillBlockComponentContainer(final BlockComponentContainer container) {
-		synchronized(getBlockComponents()) {
+		synchronized (getBlockComponents()) {
 			final int bx = getBlockX();
 			final int by = getBlockY();
 			final int bz = getBlockZ();
@@ -1020,12 +1006,11 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		}
 	}
 
-
 	@Override
 	public SpoutChunkSnapshot getSnapshot(SnapshotType type, EntityType entities, ExtraData data) {
 		return getSnapshot(type, entities, data, false);
 	}
-	
+
 	public SpoutChunkSnapshot getSnapshot(SnapshotType type, EntityType entities, ExtraData data, boolean palette) {
 		checkChunkLoaded();
 		byte[] blockLightCopy = null, skyLightCopy = null;
@@ -1089,7 +1074,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		if (observers.add((SpoutEntity) entity) && (entity instanceof SpoutPlayer)) {
 			observingPlayers.add((SpoutPlayer) entity);
 			Engine engine = Spout.getEngine();
-			if(engine.getPlatform() ==  Platform.CLIENT && ((SpoutClient) engine).getActivePlayer() == entity) {
+			if (engine.getPlatform() == Platform.CLIENT && ((SpoutClient) engine).getActivePlayer() == entity) {
 				setIsInViewDistance(true);
 			}
 		}
@@ -1110,9 +1095,9 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 		if (observers.remove((SpoutEntity) entity) && (entity instanceof SpoutPlayer)) {
 			observingPlayers.remove((SpoutPlayer) entity);
-			
+
 			Engine engine = Spout.getEngine();
-			if(engine.getPlatform() ==  Platform.CLIENT && ((SpoutClient) engine).getActivePlayer() == entity) {
+			if (engine.getPlatform() == Platform.CLIENT && ((SpoutClient) engine).getActivePlayer() == entity) {
 				setIsInViewDistance(false);
 			}
 		}
@@ -1136,20 +1121,20 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	public Set<SpoutPlayer> getObservingPlayers() {
 		return unmodifiableObservingPlayers;
 	}
-	
+
 	@Override
 	public Set<SpoutEntity> getObservers() {
 		return unmodifiableObservers;
 	}
+
 	/**
 	 * Gets observers that have expired during the most recent tick
-	 * 
 	 * @return the expired observers
 	 */
 	public Set<SpoutEntity> getExpiredObservers() {
-		return unmodifiableExpiredObservers;		
+		return unmodifiableExpiredObservers;
 	}
-	
+
 	public void updateExpiredObservers() {
 		expiredObservers.clear();
 		SpoutEntity e;
@@ -1185,32 +1170,34 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			}
 		}
 	}
-	
+
 	public void setRenderDirty(boolean dirty) {
 		renderDirty.set(dirty);
 		if (dirty) {
 			queueDirty();
 		}
 	}
-	
+
 	public boolean isRenderDirty() {
 		return renderDirty.get() || isDirty();
 	}
-	
+
 	public boolean wasLightStableOnLoad() {
 		return lightStableOnLoad;
 	}
 
 	public void setLightDirty(boolean dirty) {
 		lightDirty.set(dirty);
-		if(dirty) //To send to the renderer
+		if (dirty) //To send to the renderer
+		{
 			queueDirty();
+		}
 	}
 
 	public boolean isLightDirty() {
 		return lightDirty.get();
 	}
-	
+
 	public boolean isBlockDirty() {
 		return blockStore.isDirty();
 	}
@@ -1232,7 +1219,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		return canSend;
 	}
 
-
 	public void lockStore() {
 		blockStore.writeLock();
 	}
@@ -1250,7 +1236,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			this.parentRegion.reportChunkLightDirty(this.getX(), this.getY(), this.getZ());
 		}
 	}
-	
+
 	public boolean isCalculatingLighting() {
 		return this.lightingCounter.get() >= 0;
 	}
@@ -1262,11 +1248,11 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	protected Vector3 getDirtyBlock(int i) {
 		return blockStore.getDirtyBlock(i);
 	}
-	
+
 	public int getDirtyBlocks() {
 		return blockStore.getDirtyBlocks();
 	}
-	
+
 	public int getDirtyOldState(int i) {
 		return blockStore.getDirtyOldState(i);
 	}
@@ -1274,7 +1260,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	public int getDirtyNewState(int i) {
 		return blockStore.getDirtyNewState(i);
 	}
-	
+
 	public void resetDirtyArrays() {
 		blockStore.resetDirtyArrays();
 	}
@@ -1336,11 +1322,11 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		public boolean isPostUnload() {
 			return this == SAVING;
 		}
-		
+
 		public boolean isUnloaded() {
 			return this == UNLOADED;
 		}
-		
+
 		public static boolean cancelUnload(AtomicReference<SaveState> saveState) {
 			boolean success = false;
 			SaveState oldState = null;
@@ -1348,20 +1334,27 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 				oldState = saveState.get();
 				SaveState nextState;
 				switch (oldState) {
-					case UNLOAD_SAVE: 
-						nextState = SaveState.SAVE; break;
+					case UNLOAD_SAVE:
+						nextState = SaveState.SAVE;
+						break;
 					case UNLOAD:
-						nextState = SaveState.NONE; break;
+						nextState = SaveState.NONE;
+						break;
 					case POST_SAVED:
-						nextState = SaveState.NONE;	break;
+						nextState = SaveState.NONE;
+						break;
 					case SAVE:
-						nextState = SaveState.SAVE;	break;
+						nextState = SaveState.SAVE;
+						break;
 					case NONE:
-						nextState = SaveState.NONE;	break;
+						nextState = SaveState.NONE;
+						break;
 					case UNLOADED:
-						nextState = SaveState.UNLOADED;	break;
+						nextState = SaveState.UNLOADED;
+						break;
 					case SAVING:
-						nextState = SaveState.NONE;	break;
+						nextState = SaveState.NONE;
+						break;
 					default:
 						throw new IllegalStateException("Unknown save state: " + oldState);
 				}
@@ -1369,7 +1362,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			}
 			return oldState != SaveState.UNLOADED;
 		}
-		
+
 		public static void unload(AtomicReference<SaveState> saveState, boolean save) {
 			boolean success = false;
 			while (!success) {
@@ -1377,26 +1370,33 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 				SaveState nextState;
 				switch (state) {
 					case UNLOAD_SAVE:
-						nextState = SaveState.UNLOAD_SAVE; break;
+						nextState = SaveState.UNLOAD_SAVE;
+						break;
 					case UNLOAD:
-						nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD; break;
+						nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD;
+						break;
 					case POST_SAVED:
-						nextState = save ? SaveState.UNLOAD_SAVE : SaveState.POST_SAVED; break;
+						nextState = save ? SaveState.UNLOAD_SAVE : SaveState.POST_SAVED;
+						break;
 					case SAVE:
-						nextState = SaveState.UNLOAD_SAVE; break;
+						nextState = SaveState.UNLOAD_SAVE;
+						break;
 					case NONE:
-						nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD; break;
+						nextState = save ? SaveState.UNLOAD_SAVE : SaveState.UNLOAD;
+						break;
 					case UNLOADED:
-						nextState = SaveState.UNLOADED; break;
+						nextState = SaveState.UNLOADED;
+						break;
 					case SAVING:
-						nextState = SaveState.SAVING; break;
+						nextState = SaveState.SAVING;
+						break;
 					default:
 						throw new IllegalStateException("Unknown save state: " + state);
 				}
 				success = saveState.compareAndSet(state, nextState);
 			}
 		}
-		
+
 		public static void save(AtomicReference<SaveState> saveState) {
 			boolean success = false;
 			while (!success) {
@@ -1404,26 +1404,33 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 				SaveState nextState;
 				switch (state) {
 					case UNLOAD_SAVE:
-						nextState = SaveState.UNLOAD_SAVE; break;
+						nextState = SaveState.UNLOAD_SAVE;
+						break;
 					case UNLOAD:
-						nextState = SaveState.UNLOAD_SAVE; break;
+						nextState = SaveState.UNLOAD_SAVE;
+						break;
 					case POST_SAVED:
-						nextState = SaveState.UNLOAD_SAVE; break;
+						nextState = SaveState.UNLOAD_SAVE;
+						break;
 					case SAVE:
-						nextState = SaveState.SAVE; break;
+						nextState = SaveState.SAVE;
+						break;
 					case NONE:
-						nextState = SaveState.SAVE; break;
+						nextState = SaveState.SAVE;
+						break;
 					case UNLOADED:
-						nextState = SaveState.UNLOADED; break;
+						nextState = SaveState.UNLOADED;
+						break;
 					case SAVING:
-						nextState = SaveState.SAVING; break;
+						nextState = SaveState.SAVING;
+						break;
 					default:
 						throw new IllegalStateException("Unknown save state: " + state);
 				}
 				success = saveState.compareAndSet(state, nextState);
 			}
 		}
-		
+
 		public static SaveState getAndResetSaveState(AtomicReference<SaveState> saveState) {
 			boolean success = false;
 			SaveState old = null;
@@ -1432,19 +1439,26 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 				SaveState nextState;
 				switch (old) {
 					case UNLOAD_SAVE:
-						nextState = SaveState.SAVING; break;
+						nextState = SaveState.SAVING;
+						break;
 					case UNLOAD:
-						nextState = SaveState.UNLOAD; break;
+						nextState = SaveState.UNLOAD;
+						break;
 					case POST_SAVED:
-						nextState = SaveState.POST_SAVED; break;
+						nextState = SaveState.POST_SAVED;
+						break;
 					case SAVE:
-						nextState = SaveState.NONE; break;
+						nextState = SaveState.NONE;
+						break;
 					case NONE:
-						nextState = SaveState.NONE; break;
+						nextState = SaveState.NONE;
+						break;
 					case UNLOADED:
-						nextState = SaveState.UNLOADED; break;
+						nextState = SaveState.UNLOADED;
+						break;
 					case SAVING:
-						nextState = SaveState.SAVING; break;
+						nextState = SaveState.SAVING;
+						break;
 					default:
 						throw new IllegalStateException("Unknown save state: " + old);
 				}
@@ -1452,12 +1466,12 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			}
 			return old;
 		}
-		
+
 		public static void resetPostSaving(AtomicReference<SaveState> saveState) {
 			saveState.compareAndSet(SaveState.SAVING, SaveState.NONE);
 			saveState.compareAndSet(SaveState.POST_SAVED, SaveState.NONE);
 		}
-		
+
 		public static void setPostSaved(AtomicReference<SaveState> saveState) {
 			saveState.compareAndSet(SAVING, POST_SAVED);
 		}
@@ -1513,7 +1527,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	public void populate(boolean sync, boolean observe) {
 		populate(sync, observe, false);
 	}
-	
+
 	@Override
 	public void populate(boolean sync, boolean observe, boolean priority) {
 		if (observe) {
@@ -1527,7 +1541,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			populate();
 		}
 	}
-	
+
 	@Override
 	public boolean populate(boolean force) {
 		if (!isObserved() && !force && !popObserver.get()) {
@@ -1539,7 +1553,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		if (!populationState.get().incomplete() && !force) {
 			return false;
 		}
-		
+
 		final List<Populator> clearPopulators = new ArrayList<Populator>();
 		final List<Populator> populators = new ArrayList<Populator>();
 		for (Populator pop : getWorld().getGenerator().getPopulators()) {
@@ -1789,13 +1803,12 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 	/**
 	 * Not thread-safe, must synchronize on access
-	 * 
 	 * @return block components
 	 */
 	public TShortObjectMap<BlockComponent> getBlockComponents() {
 		return blockComponents;
 	}
-	
+
 	/**
 	 * Scans for block components.  This method must ONLY be called during load from disk
 	 */
@@ -1805,7 +1818,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 				for (int dz = 0; dz < Chunk.BLOCKS.SIZE; dz++) {
 					BlockMaterial bm = getBlockMaterial(dx, dy, dz);
 					if (bm instanceof ComplexMaterial) {
-						BlockComponent component = ((ComplexMaterial)bm).createBlockComponent();
+						BlockComponent component = ((ComplexMaterial) bm).createBlockComponent();
 						short packed = NibbleQuadHashed.key(dx, dy, dz, 0);
 						//Does not need synchronized, the chunk is not yet accessible outside this thread
 						getBlockComponents().put(packed, component);
@@ -1816,13 +1829,13 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			}
 		}
 	}
-	
+
 	private int getAndSetBlockLocked(int x, int y, int z, short newId, short newData) {
 		x &= BLOCKS.MASK;
 		y &= BLOCKS.MASK;
 		z &= BLOCKS.MASK;
-		
-		synchronized(blockComponents) {
+
+		synchronized (blockComponents) {
 			int oldState = blockStore.getAndSetBlock(x, y, z, newId, newData);
 			short oldId = BlockFullState.getId(oldState);
 			BlockMaterial newMaterial = (BlockMaterial) MaterialRegistry.get(BlockFullState.getPacked(newId, newData));
@@ -1842,13 +1855,13 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 	@Override
 	public BlockComponent getBlockComponent(int x, int y, int z) {
-		synchronized(blockComponents) {
+		synchronized (blockComponents) {
 			return blockComponents.get(NibbleQuadHashed.key(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, 0));
 		}
 	}
 
 	protected void tickBlockComponents(float dt) {
-		synchronized(blockComponents) {
+		synchronized (blockComponents) {
 			for (BlockComponent c : blockComponents.valueCollection()) {
 				try {
 					if (c.canTick()) {
@@ -1880,11 +1893,11 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	public boolean compareAndSetData(int bx, int by, int bz, int expect, short data, Cause<?> cause) {
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
-		
+
 		bx &= BLOCKS.MASK;
 		by &= BLOCKS.MASK;
 		bz &= BLOCKS.MASK;
-		
+
 		short expId = BlockFullState.getId(expect);
 		short expData = BlockFullState.getData(expect);
 
@@ -1978,7 +1991,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			newData = (short) (((value << shift) & bits) | (oldData & ~bits));
 			BlockMaterial bm = (BlockMaterial) BlockMaterial.get(state);
 			newId = bm.getId();
-			
+
 			Block block = getBlock(bx, by, bz);
 			BlockChangeEvent blockEvent = new BlockChangeEvent(block, new BlockSnapshot(block, bm, newData), cause);
 			Spout.getEngine().getEventManager().callEvent(blockEvent);
@@ -2023,7 +2036,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			newData = (short) (((oldData + (value << shift)) & bits) | (oldData & ~bits));
 			BlockMaterial bm = (BlockMaterial) BlockMaterial.get(state);
 			newId = bm.getId();
-			
+
 			Block block = getBlock(bx, by, bz);
 			BlockChangeEvent blockEvent = new BlockChangeEvent(block, new BlockSnapshot(block, bm, newData), cause);
 			Spout.getEngine().getEventManager().callEvent(blockEvent);
@@ -2051,15 +2064,15 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	private void blockChanged(int x, int y, int z, BlockMaterial newMaterial, short newData, BlockMaterial oldMaterial, short oldData, Cause<?> cause) {
 		// Add chunk to regions's dirty queue
 		queueDirty();
-		
+
 		x &= BLOCKS.MASK;
 		y &= BLOCKS.MASK;
 		z &= BLOCKS.MASK;
-		
+
 		int rx = x + getBlockX();
 		int ry = y + getBlockY();
 		int rz = z + getBlockZ();
-		
+
 		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
 			int maxBlock = Chunk.BLOCKS.SIZE - 1;
 			if (x == 0) {
@@ -2122,7 +2135,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 		// Update block lighting
 		this.setBlockLight(x, y, z, newMaterial.getLightLevel(newData), cause);
-		
+
 		setModified();
 	}
 
@@ -2225,9 +2238,8 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	/**
 	 * Called when an entity enters the chunk.
 	 * This method is NOT called for players.
-	 * 
+	 * <p/>
 	 * This method occurs during finalizeRun
-	 * 
 	 * @param e
 	 */
 	public void onEntityEnter(SpoutEntity e) {
@@ -2237,30 +2249,30 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	/**
 	 * Called when an entity leaves the chunk.
 	 * This method is NOT called for players.
-	 * 
+	 * <p/>
 	 * This method occurs during finalizeRun
-	 * 
 	 * @param e
 	 */
 	public void onEntityLeave(SpoutEntity e) {
 		entitiesModified.compareAndSet(false, true);
 	}
-	
+
 	protected void setModified() {
 		if (chunkModified.compareAndSet(false, true)) {
 			setAutosaveTicks(autosaveInterval);
 		}
 	}
-	
+
 	public boolean isBlockUniform() {
 		return blockStore.isBlockUniform();
 	}
 
 	private boolean rendered = false;
-	
+
 	public void setRendered(boolean rendered) {
 		this.rendered = rendered;
 	}
+
 	public boolean isRendered() {
 		return rendered;
 	}

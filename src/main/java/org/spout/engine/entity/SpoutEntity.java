@@ -36,11 +36,11 @@ import java.util.logging.Level;
 import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
-import org.spout.api.component.components.EntityComponent;
-import org.spout.api.component.components.NetworkComponent;
-import org.spout.api.component.components.PhysicsComponent;
-import org.spout.api.component.components.PredictableTransformComponent;
-import org.spout.api.component.components.TransformComponent;
+import org.spout.api.component.implementation.NetworkComponent;
+import org.spout.api.component.implementation.PhysicsComponent;
+import org.spout.api.component.implementation.PredictableTransformComponent;
+import org.spout.api.component.implementation.TransformComponent;
+import org.spout.api.component.type.EntityComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.LoadOption;
@@ -275,10 +275,10 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		observingChunks.addAll(observing);
 	}
 
-	public Set<SpoutChunk> getObservingChunks(){
+	public Set<SpoutChunk> getObservingChunks() {
 		return observingChunks;
 	}
-	
+
 	@Override
 	public Chunk getChunk() {
 		return getTransform().getPosition().getChunk(LoadOption.NO_LOAD);

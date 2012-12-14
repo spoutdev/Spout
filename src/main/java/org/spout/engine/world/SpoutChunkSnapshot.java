@@ -26,14 +26,14 @@
  */
 package org.spout.engine.world;
 
-import gnu.trove.procedure.TShortObjectProcedure;
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.spout.api.component.components.BlockComponent;
+import gnu.trove.procedure.TShortObjectProcedure;
+
+import org.spout.api.component.type.BlockComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntitySnapshot;
@@ -72,7 +72,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	private final PopulationState populationState;
 	private final boolean lightStable;
 	private boolean renderDirty = false;
-	
+
 	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, EntityType type, ExtraData data) {
 		this(chunk, blockIds, blockData, null, 0, null, blockLight, skyLight, type, data);
 	}
@@ -89,7 +89,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		if (type == EntityType.BOTH) {
 			this.entities = Collections.unmodifiableList(getEntities(chunk));
 			BlockSnapshotProcedure procedure = new BlockSnapshotProcedure(chunk);
-			synchronized(chunk.getBlockComponents()) {
+			synchronized (chunk.getBlockComponents()) {
 				chunk.getBlockComponents().forEachEntry(procedure);
 			}
 			this.blockComponents = Collections.unmodifiableList(procedure.snapshots);
@@ -99,7 +99,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		} else if (type == EntityType.BLOCK_COMPONENTS) {
 			this.entities = null;
 			BlockSnapshotProcedure procedure = new BlockSnapshotProcedure(chunk);
-			synchronized(chunk.getBlockComponents()) {
+			synchronized (chunk.getBlockComponents()) {
 				chunk.getBlockComponents().forEachEntry(procedure);
 			}
 			this.blockComponents = Collections.unmodifiableList(procedure.snapshots);
@@ -115,7 +115,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		this.blockData = blockData;
 		this.blockLight = blockLight;
 		this.skyLight = skyLight;
-		
+
 		// Cache palette based block data
 		this.palette = palette;
 		this.packedWidth = packedWidth;
@@ -141,22 +141,26 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	}
 
 	//Maybe we can use that in ChunkMesh generation in SpoutRegion
-	public SnapshotType getSnapshotType(){
-		if(blockIds != null && blockData!= null && blockLight != null && skyLight != null)
+	public SnapshotType getSnapshotType() {
+		if (blockIds != null && blockData != null && blockLight != null && skyLight != null) {
 			return SnapshotType.BOTH;
+		}
 
-		if(blockIds != null && blockData!= null)
+		if (blockIds != null && blockData != null) {
 			return SnapshotType.BLOCKS_ONLY;
+		}
 
-		if(blockIds != null)
+		if (blockIds != null) {
 			return SnapshotType.BLOCK_IDS_ONLY;
+		}
 
-		if(blockLight != null && skyLight != null)
+		if (blockLight != null && skyLight != null) {
 			return SnapshotType.LIGHT_ONLY;
+		}
 
 		return SnapshotType.NO_BLOCK_DATA;
 	}
-	
+
 	private static List<EntitySnapshot> getEntities(SpoutChunk chunk) {
 		ArrayList<EntitySnapshot> entities = new ArrayList<EntitySnapshot>();
 		for (Entity e : chunk.getLiveEntities()) {
@@ -316,19 +320,19 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	public BlockComponent getBlockComponent(int x, int y, int z) {
 		throw new UnsupportedOperationException("Use getBlockComponents instead");
 	}
-	
+
 	public int[] getPalette() {
 		return palette;
 	}
-	
+
 	public int getPackedWidth() {
 		return packedWidth;
 	}
-	
+
 	public int[] getPackedBlockArray() {
 		return packedBlockArray;
 	}
-	
+
 	public boolean isLightStable() {
 		return lightStable;
 	}
@@ -337,6 +341,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		private final int x, y, z;
 		private final Class<? extends BlockComponent> clazz;
 		private final SerializableMap data;
+
 		private SpoutBlockComponentSnapshot(int x, int y, int z, Class<? extends BlockComponent> clazz, SerializableMap data) {
 			this.x = x;
 			this.y = y;
@@ -374,6 +379,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	private static class BlockSnapshotProcedure implements TShortObjectProcedure<BlockComponent> {
 		private final SpoutChunk chunk;
 		private final ArrayList<BlockComponentSnapshot> snapshots = new ArrayList<BlockComponentSnapshot>();
+
 		private BlockSnapshotProcedure(SpoutChunk chunk) {
 			this.chunk = chunk;
 		}
