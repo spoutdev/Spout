@@ -29,7 +29,7 @@ package org.spout.api.gui.component;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.spout.api.component.components.WidgetComponent;
+import org.spout.api.component.type.WidgetComponent;
 import org.spout.api.gui.render.RenderPart;
 
 public class RenderPartsHolderComponent extends WidgetComponent {

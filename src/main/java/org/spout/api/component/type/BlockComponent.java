@@ -24,27 +24,59 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.component.components;
+package org.spout.api.component.type;
 
+import org.spout.api.component.ChunkComponentOwner;
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentOwner;
-import org.spout.api.component.WorldComponentHolder;
+import org.spout.api.entity.Entity;
+import org.spout.api.event.player.PlayerInteractEvent.Action;
+import org.spout.api.geo.discrete.Point;
 
-public class WorldComponent extends Component {
-	public WorldComponent() {
+public class BlockComponent extends Component {
+	public BlockComponent() {
 	}
 
 	@Override
-	public boolean attachTo(ComponentOwner holder) {
-		if (holder instanceof WorldComponentHolder) {
-			return super.attachTo(holder);
+	public final ChunkComponentOwner getOwner() {
+		return (ChunkComponentOwner) super.getOwner();
+	}
+
+	@Override
+	public final boolean attachTo(ComponentOwner owner) {
+		if (owner instanceof ChunkComponentOwner) {
+			return super.attachTo(owner);
 		} else {
 			return false;
 		}
 	}
 
 	@Override
-	public WorldComponentHolder getOwner() {
-		return (WorldComponentHolder) super.getOwner();
+	public final void onDetached() {
+		//Kept to prevent overriding
+	}
+
+	/**
+	 * Gets the position of this block component
+	 * @return position
+	 */
+	public Point getPosition() {
+		if (getOwner() == null) {
+			throw new IllegalStateException("Must have an attached owner!");
+		}
+		return new Point(getOwner().getChunk().getWorld(), getOwner().getX(), getOwner().getY(), getOwner().getZ());
+	}
+
+	@Override
+	public final boolean isDetachable() {
+		return false;
+	}
+
+	/**
+	 * Called when a player interacts with this BlockMaterial
+	 * @param entity that interacted with this component
+	 * @param type action that the entity took on this component
+	 */
+	public void onInteract(Entity entity, Action type) {
 	}
 }

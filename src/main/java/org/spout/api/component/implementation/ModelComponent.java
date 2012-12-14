@@ -24,55 +24,31 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.component.components;
+package org.spout.api.component.implementation;
 
-import org.spout.api.component.Component;
-import org.spout.api.component.ComponentOwner;
-import org.spout.api.entity.Entity;
-import org.spout.api.event.player.PlayerInteractEvent.Action;
+import org.spout.api.Spout;
+import org.spout.api.component.type.EntityComponent;
+import org.spout.api.model.Model;
 
 /**
- * Represents an attachment to a entity that can respond to Ticks.
+ * A Component that adds a model to an entity.
  */
-public abstract class EntityComponent extends Component {
-	@Override
-	public Entity getOwner() {
-		return (Entity) super.getOwner();
+public class ModelComponent extends EntityComponent {
+	private Model model;
+
+	public ModelComponent() {
 	}
 
 	@Override
-	public final boolean attachTo(ComponentOwner holder) {
-		if (holder instanceof Entity) {
-			return super.attachTo(holder);
-		} else {
-			return false;
-		}
+	public boolean canTick() {
+		return false;
 	}
 
-	/**
-	 * Called when the parent entity is spawned into the world.
-	 */
-	public void onSpawned() {
+	public Model getModel() {
+		return model;
 	}
 
-	/**
-	 * Called when the entity changes from unobserved to observed.
-	 */
-	public void onObserved() {
-	}
-
-	/**
-	 * Called when the entity changes from observed to unobserved.
-	 */
-	public void onUnObserved() {
-	}
-
-	/**
-	 * Called when the entity is interacted with.
-	 * @param action being performed
-	 * @param source performing the action
-	 */
-	public void onInteract(Action action, Entity source) {
-
+	public void setModel(String resourcePath) {
+		model = (Model) Spout.getFilesystem().getResource(resourcePath);
 	}
 }

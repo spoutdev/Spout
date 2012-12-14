@@ -24,9 +24,10 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.component.components;
+package org.spout.api.component.implementation;
 
 import org.spout.api.Spout;
+import org.spout.api.component.type.EntityComponent;
 import org.spout.api.event.entity.EntityChangeWorldEvent;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;

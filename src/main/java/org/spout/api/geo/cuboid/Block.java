@@ -26,7 +26,7 @@
  */
 package org.spout.api.geo.cuboid;
 
-import org.spout.api.component.components.BlockComponent;
+import org.spout.api.component.type.BlockComponent;
 import org.spout.api.event.Cause;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.World;

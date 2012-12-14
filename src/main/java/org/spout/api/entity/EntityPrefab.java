@@ -29,7 +29,7 @@ package org.spout.api.entity;
 import java.util.List;
 import java.util.Map;
 
-import org.spout.api.component.components.EntityComponent;
+import org.spout.api.component.type.EntityComponent;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 

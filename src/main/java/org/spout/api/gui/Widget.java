@@ -34,7 +34,7 @@ import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
-import org.spout.api.component.components.WidgetComponent;
+import org.spout.api.component.type.WidgetComponent;
 import org.spout.api.gui.component.ControlComponent;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.map.DefaultedKey;

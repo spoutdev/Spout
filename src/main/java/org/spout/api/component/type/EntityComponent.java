@@ -24,59 +24,55 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.component.components;
+package org.spout.api.component.type;
 
-import org.spout.api.component.ChunkComponentOwner;
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentOwner;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
-import org.spout.api.geo.discrete.Point;
 
-public class BlockComponent extends Component {
-	public BlockComponent() {
+/**
+ * Represents an attachment to a entity that can respond to Ticks.
+ */
+public abstract class EntityComponent extends Component {
+	@Override
+	public Entity getOwner() {
+		return (Entity) super.getOwner();
 	}
 
 	@Override
-	public final ChunkComponentOwner getOwner() {
-		return (ChunkComponentOwner) super.getOwner();
-	}
-
-	@Override
-	public final boolean attachTo(ComponentOwner owner) {
-		if (owner instanceof ChunkComponentOwner) {
-			return super.attachTo(owner);
+	public final boolean attachTo(ComponentOwner holder) {
+		if (holder instanceof Entity) {
+			return super.attachTo(holder);
 		} else {
 			return false;
 		}
 	}
 
-	@Override
-	public final void onDetached() {
-		//Kept to prevent overriding
+	/**
+	 * Called when the parent entity is spawned into the world.
+	 */
+	public void onSpawned() {
 	}
 
 	/**
-	 * Gets the position of this block component
-	 * @return position
+	 * Called when the entity changes from unobserved to observed.
 	 */
-	public Point getPosition() {
-		if (getOwner() == null) {
-			throw new IllegalStateException("Must have an attached owner!");
-		}
-		return new Point(getOwner().getChunk().getWorld(), getOwner().getX(), getOwner().getY(), getOwner().getZ());
-	}
-
-	@Override
-	public final boolean isDetachable() {
-		return false;
+	public void onObserved() {
 	}
 
 	/**
-	 * Called when a player interacts with this BlockMaterial
-	 * @param entity that interacted with this component
-	 * @param type action that the entity took on this component
+	 * Called when the entity changes from observed to unobserved.
 	 */
-	public void onInteract(Entity entity, Action type) {
+	public void onUnObserved() {
+	}
+
+	/**
+	 * Called when the entity is interacted with.
+	 * @param action being performed
+	 * @param source performing the action
+	 */
+	public void onInteract(Action action, Entity source) {
+
 	}
 }

@@ -28,7 +28,7 @@ package org.spout.api.component;
 
 import java.util.Collection;
 
-import org.spout.api.component.components.DatatableComponent;
+import org.spout.api.component.implementation.DatatableComponent;
 
 /**
  * Represents an object which may own components.

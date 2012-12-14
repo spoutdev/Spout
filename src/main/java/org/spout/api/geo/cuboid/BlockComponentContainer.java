@@ -26,7 +26,7 @@
  */
 package org.spout.api.geo.cuboid;
 
-import org.spout.api.component.components.BlockComponent;
+import org.spout.api.component.type.BlockComponent;
 
 public interface BlockComponentContainer extends CubicContainer {
 	

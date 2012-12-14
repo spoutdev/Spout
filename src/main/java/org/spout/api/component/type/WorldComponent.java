@@ -24,26 +24,27 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.component.components;
+package org.spout.api.component.type;
 
-/**
- * Component that represents the an entity that observes a radius of chunks
- */
-public class ObserverComponent extends EntityComponent {
-	public static final int CHUNK_VIEW_DISTANCE = 4;
+import org.spout.api.component.Component;
+import org.spout.api.component.ComponentOwner;
+import org.spout.api.component.WorldComponentHolder;
 
-	public ObserverComponent() {
+public class WorldComponent extends Component {
+	public WorldComponent() {
 	}
 
 	@Override
-	public void onAttached() {
-		getOwner().setObserver(true);
-		getOwner().setSavable(false);
-		getOwner().setViewDistance(CHUNK_VIEW_DISTANCE);
+	public boolean attachTo(ComponentOwner holder) {
+		if (holder instanceof WorldComponentHolder) {
+			return super.attachTo(holder);
+		} else {
+			return false;
+		}
 	}
 
 	@Override
-	public boolean canTick() {
-		return false;
+	public WorldComponentHolder getOwner() {
+		return (WorldComponentHolder) super.getOwner();
 	}
 }

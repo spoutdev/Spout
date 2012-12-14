@@ -28,7 +28,7 @@ package org.spout.api.geo.cuboid;
 
 import java.util.List;
 
-import org.spout.api.component.components.BlockComponent;
+import org.spout.api.component.type.BlockComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.generator.biome.BiomeManager;

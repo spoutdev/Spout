@@ -24,9 +24,10 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.component.components;
+package org.spout.api.component.implementation;
 
 import org.spout.api.chat.ChatArguments;
+import org.spout.api.component.type.EntityComponent;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.Font;

@@ -30,7 +30,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.spout.api.component.components.WidgetComponent;
+import org.spout.api.component.type.WidgetComponent;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.math.Rectangle;
 import org.spout.api.render.RenderMaterial;

@@ -35,7 +35,7 @@ import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ColorChatStyle;
 import org.spout.api.chat.style.ResetChatStyle;
-import org.spout.api.component.components.WidgetComponent;
+import org.spout.api.component.type.WidgetComponent;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.math.Rectangle;

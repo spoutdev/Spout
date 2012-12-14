@@ -26,7 +26,7 @@
  */
 package org.spout.api.material;
 
-import org.spout.api.component.components.BlockComponent;
+import org.spout.api.component.type.BlockComponent;
 
 /**
  * Represents a material that has a block component associated with it

@@ -24,9 +24,11 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.component.components;
+package org.spout.api.component.implementation;
 
 import com.bulletphysics.collision.shapes.CollisionShape;
+
+import org.spout.api.component.type.EntityComponent;
 import org.spout.api.math.Vector3;
 
 public abstract class PhysicsComponent extends EntityComponent {

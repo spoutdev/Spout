@@ -24,30 +24,28 @@
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
-package org.spout.api.component.components;
+package org.spout.api.component.implementation;
 
-import org.spout.api.Spout;
-import org.spout.api.model.Model;
+import org.spout.api.component.type.EntityComponent;
 
 /**
- * A Component that adds a model to an entity.
+ * Component that represents the an entity that observes a radius of chunks
  */
-public class ModelComponent extends EntityComponent {
-	private Model model;
+public class ObserverComponent extends EntityComponent {
+	public static final int CHUNK_VIEW_DISTANCE = 4;
 
-	public ModelComponent() {
+	public ObserverComponent() {
+	}
+
+	@Override
+	public void onAttached() {
+		getOwner().setObserver(true);
+		getOwner().setSavable(false);
+		getOwner().setViewDistance(CHUNK_VIEW_DISTANCE);
 	}
 
 	@Override
 	public boolean canTick() {
 		return false;
-	}
-
-	public Model getModel() {
-		return model;
-	}
-
-	public void setModel(String resourcePath) {
-		model = (Model) Spout.getFilesystem().getResource(resourcePath);
 	}
 }

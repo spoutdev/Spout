@@ -36,7 +36,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 import org.spout.api.Spout;
-import org.spout.api.component.components.DatatableComponent;
+import org.spout.api.component.implementation.DatatableComponent;
 
 public class BaseComponentHolder implements ComponentHolder {
 	/**

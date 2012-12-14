@@ -29,14 +29,13 @@ package org.spout.api.entity;
 import java.util.UUID;
 
 import org.spout.api.component.ComponentHolder;
-import org.spout.api.component.components.EntityComponent;
-import org.spout.api.component.components.NetworkComponent;
-import org.spout.api.component.components.TransformComponent;
+import org.spout.api.component.type.EntityComponent;
+import org.spout.api.component.implementation.NetworkComponent;
+import org.spout.api.component.implementation.TransformComponent;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
-import org.spout.api.math.Vector3;
 import org.spout.api.tickable.Tickable;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveRead;
