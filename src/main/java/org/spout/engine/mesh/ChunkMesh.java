@@ -141,7 +141,7 @@ public class ChunkMesh{
 	public List<MeshFace> buildBlock(ChunkSnapshotModel chunkSnapshotModel,Material blockMaterial,
 			Vector3 position, boolean toRender[], OrientedMesh mesh) {
 		List<MeshFace> meshs = new ArrayList<MeshFace>();
-		Vector3 model = new Vector3(position.getFloorX(), position.getFloorY(), position.getFloorZ());
+		Vector3 model = new Vector3(position.getX(), position.getY(), position.getZ());
 		for(OrientedMeshFace meshFace : mesh){
 
 			if(!meshFace.canRender(toRender))
