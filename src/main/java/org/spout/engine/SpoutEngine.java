@@ -169,7 +169,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 	public SpoutEngine() {
 		super(1, new ThreadAsyncExecutor("Engine bootstrap thread"));
-		logFile = "logs" + File.separator + "log-%D.txt";
+		logFile = "log-%D.txt";
 		consoleManager = new ConsoleManager(this);
 	}
 
