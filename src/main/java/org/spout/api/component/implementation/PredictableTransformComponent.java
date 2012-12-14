@@ -26,7 +26,6 @@
  */
 package org.spout.api.component.implementation;
 
-import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
@@ -34,56 +33,26 @@ import org.spout.api.math.Vector3;
 
 public class PredictableTransformComponent extends TransformComponent {
 
-	private static final int ref = 3;
-	private static final long late = 1000 / 30;//Late of 1.5 engine cycle
+	private Transform transformRender;
 
-	private Transform []transformsReferences = new Transform[ref];
-	private long []timeReferences = new long[ref];
-	private float []weightReferences = new float[ref];
+	private long lastTime;
 
-	private Transform transformRender = new Transform();
+	private Vector3 speed = Vector3.ONE;
+	private Vector3 rotate = Vector3.ONE;
+	private Vector3 scale = Vector3.ONE;
 
 	@Override
 	public void onAttached(){
 		super.onAttached();
-
-		for(int i = 0; i < transformsReferences.length; i++){
-			transformsReferences[i] = new Transform();
-			timeReferences[i] = System.currentTimeMillis();
-		}
-
+		transformRender = getTransform();
+		lastTime = System.currentTimeMillis();
 	}
 
 	public void updateRender(float dt) {
-		Vector3 translation = Vector3.ZERO;
-		Vector3 rotation = Vector3.ZERO;
-		Vector3 scale = Vector3.ZERO;
-
-		long currentTime = System.currentTimeMillis() - late;
-
-		long maxDiff = Math.max( Math.abs(currentTime - timeReferences[ref - 1]), Math.abs(currentTime - timeReferences[0]));
-		long weightSum = 0;
-		
-		for(int i = 0; i < ref; i++){
-			weightReferences[i] = maxDiff - Math.abs(currentTime - timeReferences[i]);
-			weightSum += weightReferences[i];
-		}
-		
-		for(int i = 0; i < ref; i++){
-			weightReferences[i] /= weightSum;
-			
-			translation = translation.add(transformsReferences[i].getPosition().multiply(weightReferences[i]));
-
-			Quaternion q = transformsReferences[i].getRotation();
-			rotation = rotation.add(q.getPitch() * weightReferences[i],
-					q.getYaw() * weightReferences[i],
-					q.getRoll() * weightReferences[i]);
-
-			scale = scale.add(transformsReferences[i].getScale().multiply(weightReferences[i]));
-		}
-
-
-		transformRender.set(new Transform(new Point(translation, getOwner().getWorld()), MathHelper.rotation(rotation.getX(), rotation.getY(), rotation.getZ()), scale));
+		transformRender.translate(speed.multiply(dt));
+		Quaternion q = transformRender.getRotation();
+		transformRender.setRotation(MathHelper.rotation(q.getPitch() + rotate.getX() * dt, q.getYaw() + rotate.getY() * dt, q.getRoll() + rotate.getZ() * dt));
+		transformRender.setScale(transformRender.getScale().add(scale.multiply(dt)));
 	}
 
 	public Transform getRenderTransform() {
@@ -93,14 +62,22 @@ public class PredictableTransformComponent extends TransformComponent {
 
 	@Override
 	public void copySnapshot(){
-		for(int i = 0; i < ref - 1; i ++){
-			transformsReferences[i] = transformsReferences[i+1];
-			timeReferences[i] = timeReferences[i+1];
-		}
-
-		transformsReferences[ref - 1] = getTransform();
-		timeReferences[ref - 1] = System.currentTimeMillis();
-
 		super.copySnapshot();
+
+		Transform t = getTransform();
+
+		//float delay = (lastTime - System.currentTimeMillis()) / 1000f;
+		float ratio = 80f / 20f;
+
+		speed = t.getPosition().subtract(transformRender.getPosition()).multiply(ratio);			
+
+		rotate = new Vector3(t.getRotation().getPitch() - transformRender.getRotation().getPitch(),
+				t.getRotation().getYaw() - transformRender.getRotation().getYaw(),
+				t.getRotation().getRoll() - transformRender.getRotation().getRoll()).multiply(ratio);
+
+		scale = t.getScale().subtract(transformRender.getScale()).multiply(ratio);
+
+		System.out.println(speed);
+		lastTime = System.currentTimeMillis();
 	}
 }
