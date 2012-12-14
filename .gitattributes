@@ -5,3 +5,4 @@
 # Binary files that should not be modified
 *.png binary
 *.jpg binary
+*.ttf binary
