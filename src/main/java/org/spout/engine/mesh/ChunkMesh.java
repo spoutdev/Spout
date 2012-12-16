@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
@@ -269,7 +270,7 @@ public class ChunkMesh{
 						normalBuffer.add(vert.normal.getX());
 						normalBuffer.add(vert.normal.getY());
 						normalBuffer.add(vert.normal.getZ());
-						normalBuffer.add(1f);
+						normalBuffer.add(0f);
 					}
 
 					container.element++;
