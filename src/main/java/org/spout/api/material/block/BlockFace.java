@@ -120,17 +120,7 @@ public enum BlockFace implements ByteBitMask {
 	 * @return the block face
 	 */
 	public static BlockFace fromYaw(float yaw) {
-		yaw = MathHelper.wrapAngle(yaw);
-		//apply angle differences
-		if (yaw >= -135f && yaw < -45f) {
-			return BlockFace.NORTH;
-		} else if (yaw >= -45f && yaw < 45f) {
-			return BlockFace.WEST;
-		} else if (yaw >= 45f && yaw < 135f) {
-			return BlockFace.SOUTH;
-		} else {
-			return BlockFace.EAST;
-		}
+		return BlockFaces.WNES.get(Math.round(yaw / 90f) & 0x3);
 	}
 
 	public static BlockFace fromOffset(Vector3 offset) {
