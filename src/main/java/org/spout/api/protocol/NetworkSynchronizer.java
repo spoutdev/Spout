@@ -261,6 +261,20 @@ public abstract class NetworkSynchronizer {
 
 	}
 	
+	
+	/**
+	 * Resets all chunk stores for the client.  This method is only called during the pre-snapshot part of the tick.
+	 */
+	protected void resetChunks() {
+		priorityChunkSendQueue.clear();
+		chunkSendQueue.clear();
+		chunkFreeQueue.clear();
+		chunkInitQueue.clear();
+		activeChunks.clear();
+		initializedChunks.clear();
+		lastChunkCheck = Point.invalid;
+	}
+	
 	private int chunksSent = 0;
 	private Set<Chunk> unsendable = new HashSet<Chunk>();
 
@@ -274,9 +288,8 @@ public abstract class NetworkSynchronizer {
 			if (worldChanged) {
 				first = false;
 				Point ep = player.getTransform().getPosition();
-				if (worldChanged) {
-					worldChanged(ep.getWorld());
-				}
+				resetChunks();
+				worldChanged(ep.getWorld());
 			} else if (!worldChanged) {
 				
 				unsendable.clear();
@@ -302,7 +315,7 @@ public abstract class NetworkSynchronizer {
 				chunkInitQueue.clear();
 				
 				Iterator<Point> i;
-
+				
 				i = priorityChunkSendQueue.iterator();
 				while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
 					Point p = i.next();
