@@ -81,17 +81,20 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	private final Set<SpoutChunk> observingChunks = new HashSet<SpoutChunk>();
 	private final UUID uid;
 	protected boolean justSpawned = true;
+	//For faster access
+	private final NetworkComponent network;
+	private final TransformComponent transform;
 
 	public SpoutEntity(Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
 		id.set(NOTSPAWNEDID);
 
 		if (Spout.getPlatform() == Platform.CLIENT) {
-			add(PredictableTransformComponent.class);
+			this.transform = add(PredictableTransformComponent.class);
 		} else {
-			add(TransformComponent.class);
+			this.transform = add(TransformComponent.class);
 		}
 
-		add(NetworkComponent.class);
+		network = add(NetworkComponent.class);
 
 		if (uid != null) {
 			this.uid = uid;
@@ -380,12 +383,12 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	public NetworkComponent getNetwork() {
-		return get(NetworkComponent.class);
+		return network;
 	}
 
 	@Override
 	public TransformComponent getTransform() {
-		return get(TransformComponent.class);
+		return transform;
 	}
 
 	@Override
