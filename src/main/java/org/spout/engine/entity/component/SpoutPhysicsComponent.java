@@ -38,6 +38,7 @@ import com.bulletphysics.linearmath.MotionState;
 import com.bulletphysics.linearmath.Transform;
 
 import org.spout.api.component.implementation.PhysicsComponent;
+import org.spout.api.component.implementation.TransformComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.MathHelper;
@@ -290,8 +291,31 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 		@Override
 		public void setWorldTransform(Transform transform) {
-			entity.getTransform().setPosition(new Point(MathHelper.toVector3(transform.origin), entity.getWorld()));
-			entity.getTransform().setRotation(MathHelper.toQuaternion(transform.getRotation(new Quat4f())));
+			TransformComponent t = entity.getTransform();
+			org.spout.api.geo.discrete.Transform spoutTransform = t.getTransformLive();
+			Point point = spoutTransform.getPosition();
+			boolean resetPos = false, resetRot = false;
+			if (!t.isPositionDirty()) {
+				t.setPosition(new Point(MathHelper.toVector3(transform.origin), entity.getWorld()));
+			} else {
+				resetPos = true;
+			}
+			if (!t.isRotationDirty()) {
+				t.setRotation(MathHelper.toQuaternion(transform.getRotation(new Quat4f())));
+			} else {
+				resetRot = true;
+			}
+			
+			if (resetPos && resetRot) {
+				transform.set(new Matrix4f(MathHelper.toQuaternionf(spoutTransform.getRotation()), MathHelper.toVector3f(point.getX(), point.getY(), point.getZ()), 1));
+				body.setWorldTransform(transform);
+			} else if (resetPos) {
+				transform.set(new Matrix4f(transform.getRotation(new Quat4f()), MathHelper.toVector3f(point.getX(), point.getY(), point.getZ()), 1));
+				body.setWorldTransform(transform);
+			} else if (resetRot) {
+				transform.set(new Matrix4f(MathHelper.toQuaternionf(spoutTransform.getRotation()), transform.origin, 1));
+				body.setWorldTransform(transform);
+			}
 		}
 	}
 }
