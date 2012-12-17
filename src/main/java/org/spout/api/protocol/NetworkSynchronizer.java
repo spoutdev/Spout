@@ -204,6 +204,12 @@ public abstract class NetworkSynchronizer {
 	public void onRemoved() {
 		TickStage.checkStage(TickStage.FINALIZE);
 		removed = true;
+		clearObservers();
+	}
+	
+	private void clearObservers() {
+		TickStage.checkStage(TickStage.FINALIZE);
+		chunksToObserve.clear();
 		for (Point p : initializedChunks) {
 			removeObserver(p);
 		}
@@ -231,6 +237,7 @@ public abstract class NetworkSynchronizer {
 			}
 
 			if (first || lastPosition == null || lastPosition.getWorld() != currentPosition.getWorld()) {
+				clearObservers();
 				worldChanged = true;
 				setPositionDirty();
 			}
