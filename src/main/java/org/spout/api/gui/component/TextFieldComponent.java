@@ -476,17 +476,25 @@ public class TextFieldComponent extends LabelComponent {
 	 */
 	public void setCursorIndex(int cursorIndex) {
 		String row = getText(cursorRow);
-		if (cursorIndex < 0 || cursorIndex > row.length() - 1) {
-			throw new IllegalArgumentException("Specified index must be between 0 and " + (row.length() - 1));
+		if (cursorIndex < 0 || cursorIndex > row.length()) {
+			throw new IllegalArgumentException("Specified index must be between 0 and " + row.length());
 		}
-		Font font = getFont();
+
+		this.cursorIndex = cursorIndex;
+		Rectangle rect = cursor.getSprite();
 		float x = getInitialCursorBounds().getX();
+		int textIndex = cursorIndex - 1;
+		if (textIndex < 0) {
+			cursor.setSprite(new Rectangle(x, rect.getY(), rect.getWidth(), rect.getHeight()));
+			return;
+		}
+
+		Font font = getFont();
 		for (int i = 0; i < cursorIndex; i++) {
 			x += toScreenX(font.getPixelBounds(row.charAt(i)).width);
 		}
-		Rectangle rect = cursor.getSprite();
+
 		cursor.setSprite(new Rectangle(x, rect.getY(), rect.getWidth(), rect.getHeight()));
-		this.cursorIndex = cursorIndex;
 	}
 
 	/**
