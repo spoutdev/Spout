@@ -124,7 +124,9 @@ public abstract class NetworkSynchronizer {
 	}
 	
 	public void clearTeleportPending() {
-		teleportPending = false;
+		if (!teleported) {
+			teleportPending = false;
+		}
 	}
 
 	public Player getPlayer() {
