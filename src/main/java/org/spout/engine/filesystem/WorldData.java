@@ -76,6 +76,7 @@ public class WorldData extends FieldHolder {
 	private StringMap itemMap;
 
 	private static interface VersionedData {
+		@SuppressWarnings("unused")
 		public static final Field[] EMPTY_FIELD_ARRAY = new Field[0];
 		public UUID getUID();
 		public Transform getSpawnPosition(SpoutWorld world);

@@ -426,7 +426,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 			StringMap itemMap = new StringMap(engineItemMap, itemStore, 0, Short.MAX_VALUE, name + "ItemMap");
 
 			world = new SpoutWorld(name, this, random.nextLong(), 0L, generator, UUID.randomUUID(), itemMap);
-			new WorldData(world).saveToFile();
+			world.save();
 		} else {
 			log("Loading world [%0]", name);
 			world = worldData.toWorld(generator, engineItemMap);

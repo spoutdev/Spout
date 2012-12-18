@@ -59,6 +59,7 @@ import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.event.Cause;
 import org.spout.api.event.block.CuboidChangeEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
+import org.spout.api.event.world.WorldSaveEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeGenerator;
@@ -1076,13 +1077,14 @@ public class SpoutWorld extends AsyncManager implements World {
 		return worldDirectory;
 	}
 
+	@Override
 	public void unload(boolean save) {
 		for (Component component : componentHolder.values()) {
 			component.onDetached();
 		}
 		this.getLightingManager().abort();
 		if (save) {
-			new WorldData(this).saveToFile();
+			save();
 		}
 		Collection<Region> regions = this.regions.getRegions();
 		final int total = Math.max(1, regions.size());
@@ -1096,6 +1098,13 @@ public class SpoutWorld extends AsyncManager implements World {
 		}
 	}
 
+	@Override
+	public void save() {
+		new WorldData(this).saveToFile();
+		Spout.getEventManager().callDelayedEvent(new WorldSaveEvent(this));
+	}
+
+	@Override
 	public Collection<Region> getRegions() {
 		return this.regions.getRegions();
 	}
