@@ -45,7 +45,7 @@ MANIFEST.MF
 dependency-reduced-pom.xml
 
 # Project files #
-#####################
+#################
 .classpath
 .externalToolBuilders
 .idea
@@ -64,3 +64,14 @@ nb-configuration.xml
 # Misc files #
 ##############
 *.bak
+
+# Spout runtime folders #
+#########################
+/cache
+/config
+/data
+/logs
+/plugins
+/resources
+/update
+/worlds
