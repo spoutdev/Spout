@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<!-- Project information -->
@@ -8,84 +9,90 @@
 	<version>dev-SNAPSHOT</version>
 	<url>http://www.spout.org</url>
 	<inceptionYear>2011</inceptionYear>
-	<description>SpoutAPI is the API framework for the Spout server and client.</description>
+	<description></description>
 
+	<!-- Build properties -->
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<noiseVersion>dev-SNAPSHOT</noiseVersion>
+		<currentYear>2012</currentYear>
 		<nbtVersion>1.0.5-SNAPSHOT</nbtVersion>
-		<powermock.version>1.4.12</powermock.version>
+		<nettyVersion>3.4.6.Final</nettyVersion><!-- 3.5.11.Final available -->
+		<noiseVersion>dev-SNAPSHOT</noiseVersion>
+		<buildNumber>0</buildNumber>
 	</properties>
 
-	<!-- Organization -->
+	<!-- Company information -->
 	<organization>
-		<name>SpoutDev</name>
+		<name>Spout LLC</name>
 		<url>http://www.spout.org</url>
 	</organization>
 
-	<!-- License -->
+	<!-- License information -->
 	<licenses>
 		<license>
-			<name>SpoutDev License Version 1</name>
-			<url>http://www.spout.org/SpoutDevLicenseV1.txt</url>
+			<name>Spout License Version 1</name>
+			<url>http://spout.in/licensev1</url>
 			<distribution>repo</distribution>
 			<comments>GNU Lesser General Public License Version 3, but with a provision that files are released under the MIT license 180 days after they are published</comments>
 		</license>
 	</licenses>
 
-	<!-- Source code -->
+	<!-- Source code access -->
 	<scm>
 		<developerConnection>scm:git:git@github.com:SpoutDev/SpoutAPI.git</developerConnection>
 		<connection>scm:git:git://github.com/SpoutDev/SpoutAPI.git</connection>
 		<url>https://github.com/SpoutDev/SpoutAPI</url>
 	</scm>
 
-	<!-- Continuous integration -->
+	<!-- Build server -->
 	<ciManagement>
 		<system>jenkins</system>
 		<url>http://build.spout.org/job/SpoutAPI</url>
 	</ciManagement>
 
-	<!-- Issue management -->
+	<!-- Issue tracker -->
 	<issueManagement>
 		<system>jira</system>
 		<url>http://issues.spout.org/browse/SPOUTAPI</url>
 	</issueManagement>
 
-	<!-- Repository locations -->
+	<!-- Dependency repositories -->
 	<repositories>
 		<repository>
 			<id>spout-repo</id>
 			<url>http://repo.spout.org</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
 		</repository>
 	</repositories>
+
+	<!-- Build plugin repositories -->
 	<pluginRepositories>
 		<pluginRepository>
-			<id>spout-plugins</id>
+			<id>spout-repo</id>
 			<url>http://repo.spout.org</url>
 		</pluginRepository>
 	</pluginRepositories>
 
-	<!-- Dependencies -->
+	<!-- Distribution management -->
+	<distributionManagement>
+		<!-- Publish releases here -->
+		<repository>
+			<id>spout-releases</id>
+			<url>http://nexus.spout.org/content/repositories/releases</url>
+		</repository>
+		<!-- Publish snapshots here -->
+		<snapshotRepository>
+			<id>spout-snapshots</id>
+			<url>http://nexus.spout.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<!-- Project dependencies -->
 	<dependencies>
-		<dependency>
-			<groupId>org.spout</groupId>
-			<artifactId>simplenbt</artifactId>
-			<version>${nbtVersion}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>net.royawesome</groupId>
-			<artifactId>jlibnoise</artifactId>
-			<version>${noiseVersion}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty</artifactId>
-			<version>3.4.6.Final</version>
-			<scope>compile</scope>
-		</dependency>
+		<!-- Included in the final JAR -->
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk15on</artifactId>
@@ -93,21 +100,9 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>12.0</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.3</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.1</version>
+			<version>2.4</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -117,15 +112,15 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.trove4j</groupId>
-			<artifactId>trove4j</artifactId>
-			<version>3.0.3</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.yaml</groupId>
-			<artifactId>snakeyaml</artifactId>
-			<version>1.10</version>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>12.0.1</version><!-- 13.0.1 available -->
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -141,15 +136,52 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>net.royawesome</groupId>
+			<artifactId>jlibnoise</artifactId>
+			<version>${noiseVersion}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty</artifactId>
+			<version>${nettyVersion}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.alta189</groupId>
 			<artifactId>processors</artifactId>
 			<version>1.1.1-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.spout</groupId>
+			<artifactId>simplenbt</artifactId>
+			<version>${nbtVersion}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
+			<version>1.11</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.spout</groupId>
+			<artifactId>terabullet</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.trove4j</groupId>
+			<artifactId>trove4j</artifactId>
+			<version>3.0.3</version>
+			<scope>compile</scope>
+		</dependency>
+		<!-- Testing only -->
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.10</version>
+			<version>4.11</version>
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>
@@ -161,34 +193,30 @@
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-library</artifactId>
-			<version>1.2.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-junit4</artifactId>
-			<version>${powermock.version}</version>
+			<version>1.3</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-api-mockito</artifactId>
-			<version>${powermock.version}</version>
+			<version>1.5</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.spout</groupId>
-			<artifactId>terabullet</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-			<scope>compile</scope>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>1.5</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
-	<!-- Build settings -->
+	<!-- Build configuration -->
 	<build>
 		<defaultGoal>clean install</defaultGoal>
-		<!-- Resources -->
+
+		<!-- Resources to include -->
 		<resources>
+			<!-- Static resources -->
 			<resource>
 				<targetPath>.</targetPath>
 				<filtering>false</filtering>
@@ -198,69 +226,68 @@
 				</includes>
 			</resource>
 		</resources>
-		<!-- Plugins -->
+
+		<!-- Build plugins -->
 		<plugins>
-			<!-- License header formatting plugin -->
+			<!-- License headers plugin -->
 			<plugin>
 				<groupId>com.mycila.maven-license-plugin</groupId>
 				<artifactId>maven-license-plugin</artifactId>
 				<version>1.10.b1</version>
 				<executions>
 					<execution>
+						<configuration>
+							<properties>
+								<name>${project.name}</name>
+								<url>${project.organization.url}</url>
+								<copyright>Copyright (c) ${project.inceptionYear}-${currentYear}, ${project.organization.name}</copyright>
+							</properties>
+							<quiet>true</quiet>
+							<encoding>UTF-8</encoding>
+							<strictCheck>true</strictCheck>
+							<header>${basedir}/HEADER.txt</header>
+							<mapping>
+								<java>SLASHSTAR_STYLE</java>
+							</mapping>
+							<keywords>
+								<keyword>${project.name}</keyword>
+								<keyword>license</keyword>
+							</keywords>
+							<includes>
+								<include>src/main/java/**</include>
+								<include>src/test/java/**</include>
+							</includes>
+						</configuration>
 						<phase>clean</phase>
 						<goals>
 							<goal>format</goal>
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<quiet>true</quiet>
-					<encoding>UTF-8</encoding>
-					<strictCheck>true</strictCheck>
-					<header>${basedir}/HEADER.txt</header>
-					<keywords>
-						<keyword>${project.name}</keyword>
-						<keyword>license</keyword>
-					</keywords>
-					<mapping>
-						<java>SLASHSTAR_STYLE</java>
-					</mapping>
-					<properties>
-						<name>${project.name}</name>
-						<url>${project.organization.url}</url>
-						<license>SpoutDev License Version 1</license>
-						<licenseUrl>http://www.spout.org/SpoutDevLicenseV1.txt</licenseUrl>
-						<copyright>Copyright (c) ${project.inceptionYear}-2012, ${project.organization.name}</copyright>
-					</properties>
-					<includes>
-						<include>src/main/java/**</include>
-						<include>src/test/java/**</include>
-					</includes>
-				</configuration>
 			</plugin>
-			<!-- Version strip plugin -->
+			<!-- Release version plugin -->
 			<plugin>
 				<groupId>com.sourcesense.maven</groupId>
 				<artifactId>maven-nosnapshot-plugin</artifactId>
-				<version>0.0.7-SNAPSHOT</version>
+				<version>0.0.7</version>
 				<executions>
 					<execution>
+						<configuration>
+							<version>${project.version}</version>
+							<propertyName>releaseVersion</propertyName>
+						</configuration>
 						<phase>initialize</phase>
 						<goals>
 							<goal>strip</goal>
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<version>${project.version}</version>
-					<propertyName>releaseVersion</propertyName>
-				</configuration>
 			</plugin>
-			<!-- Compiler plugin -->
+			<!-- Source compiler plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.4</version>
+				<version>3.0</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -272,17 +299,13 @@
 					<showDeprecation>true</showDeprecation>
 				</configuration>
 			</plugin>
-			<!-- JAR dependency addition plugin -->
+			<!-- Dependency addition plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>1.6</version>
+				<version>2.0</version>
 				<executions>
 					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
 						<configuration>
 							<filters>
 								<filter>
@@ -306,19 +329,25 @@
 								</filter>
 							</filters>
 						</configuration>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>
-			<!-- Testing plugin -->
+			<!-- Reporting plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.12</version>
+				<version>2.12.4</version>
 				<configuration>
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
 				</configuration>
 			</plugin>
 		</plugins>
+
+		<!-- Plugin management -->
 		<pluginManagement>
 			<plugins>
 				<!-- Eclipse exclusions -->
@@ -333,13 +362,13 @@
 									<pluginExecutionFilter>
 										<groupId>com.sourcesense.maven</groupId>
 										<artifactId>maven-nosnapshot-plugin</artifactId>
-										<versionRange>[0.0.7-SNAPSHOT,)</versionRange>
+										<versionRange>[0.0.7,)</versionRange>
 										<goals>
 											<goal>strip</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<execute/>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>

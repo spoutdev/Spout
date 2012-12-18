@@ -39,25 +39,28 @@ ehthumbs.db
 Icon?
 Thumbs.db
 
-# Project files #
+# Build files #
 #################
+MANIFEST.MF
+dependency-reduced-pom.xml
+
+# Project files #
+#####################
 .classpath
 .externalToolBuilders
+.idea
 .project
 .settings
-MANIFEST.MF
-
-# Netbeans files #
-##################
 build
 dist
 nbproject
+atlassian-ide-plugin.xml
 build.xml
 nb-configuration.xml
-
-# IntelliJ IDEA files #
-#######################
-.idea
 *.iml
 *.ipr
 *.iws
+
+# Misc files #
+##############
+*.bak

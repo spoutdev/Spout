@@ -1,28 +1,28 @@
 /*
  * This file is part of SpoutAPI.
  *
- * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
- * SpoutAPI is licensed under the SpoutDev License Version 1.
+ * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * SpoutAPI is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
  *
  * In addition, 180 days after any changes are published, you can use the
  * software, incorporating those changes, under the terms of the MIT license,
- * as described in the SpoutDev License Version 1.
+ * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev License Version 1 along with this program.
+ * the MIT license and the Spout License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
- * including the MIT license.
+ * License and see <http://spout.in/licensev1> for the full license, including
+ * the MIT license.
  */
 package org.spout.api.material;
 
@@ -59,12 +59,12 @@ import com.bulletphysics.collision.shapes.CollisionShape;
  */
 public class BlockMaterial extends Material implements Placeable {
 	public static final BlockMaterial AIR = new BasicAir();
-	public static final BlockMaterial SOLID = new BasicSolid("SolidBlue", "model://Spout/resources/resources/models/solidBlue.spm");
-	public static final BlockMaterial SOLID_BROWN = new BasicSolid("SolidBrown", "model://Spout/resources/resources/models/solidBrown.spm");
-	public static final BlockMaterial SOLID_GREEN = new BasicSolid("SolidGreen", "model://Spout/resources/resources/models/solidGreen.spm");
-	public static final BlockMaterial SOLID_LIGHTGREEN = new BasicSolid("SolidLightGreen", "model://Spout/resources/resources/models/solidLightGreen.spm");
-	public static final BlockMaterial SOLID_RED = new BasicSolid("SolidRed", "model://Spout/resources/resources/models/solidRed.spm");
-	public static final BlockMaterial SOLID_SKYBLUE = new BasicSolid("SolidSkyBlue", "model://Spout/resources/resources/models/solidSkyBlue.spm");
+	public static final BlockMaterial SOLID = new BasicSolid("SolidBlue", "model://Spout/models/solidBlue.spm");
+	public static final BlockMaterial SOLID_BROWN = new BasicSolid("SolidBrown", "model://Spout/models/solidBrown.spm");
+	public static final BlockMaterial SOLID_GREEN = new BasicSolid("SolidGreen", "model://Spout/models/solidGreen.spm");
+	public static final BlockMaterial SOLID_LIGHTGREEN = new BasicSolid("SolidLightGreen", "model://Spout/models/solidLightGreen.spm");
+	public static final BlockMaterial SOLID_RED = new BasicSolid("SolidRed", "model://Spout/models/solidRed.spm");
+	public static final BlockMaterial SOLID_SKYBLUE = new BasicSolid("SolidSkyBlue", "model://Spout/models/solidSkyBlue.spm");
 	
 	public static final BlockMaterial UNBREAKABLE = new BlockMaterial("Unbreakable").setHardness(100.f);
 	public static final BlockMaterial SKYBOX = new BasicSkyBox();
