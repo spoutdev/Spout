@@ -50,7 +50,6 @@ import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.Named;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.thread.LiveRead;
-import org.spout.api.util.thread.LiveWrite;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;
 
@@ -525,4 +524,13 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 	public Model getSkydomeModel();
 	
 	public void setSkydomeModel(Model model);
+	
+	/**
+	 * Saves all world data to world data file.
+	 * <p>
+	 * Note: World data does not include chunks, regions, or other data.
+	 * World data pertains to world age, world name, and world data maps.
+	 * </p>
+	 */
+	public void save();
 }
