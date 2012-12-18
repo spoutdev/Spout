@@ -44,7 +44,7 @@ import org.spout.api.io.bytearrayarray.ByteArrayArray;
 public class SimpleRegionFileTest {
 	private static int desiredEntries = 128; // Region.REGION_SIZE * Region.REGION_SIZE *Region.REGION_SIZE;
 	private static int chunkBlocks = 128; // Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE;
-	private static String filename = "regionfile.dat";
+	private static String filename = "target/regionfile.dat";
 
 	private byte[][] dataCache = new byte[desiredEntries][];
 	private ByteArrayArray srf;

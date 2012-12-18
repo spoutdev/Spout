@@ -34,7 +34,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 public class CachedRandomAccessFileTest {
-	private static String filename = "regionfile.dat";
+	private static String filename = "target/regionfile.dat";
 
 	@Test
 	public void test() throws IOException {
