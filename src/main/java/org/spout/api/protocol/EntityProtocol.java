@@ -29,6 +29,7 @@ package org.spout.api.protocol;
 import java.util.List;
 
 import org.spout.api.entity.Entity;
+import org.spout.api.protocol.reposition.RepositionManager;
 
 /**
  * A class that generates messages associated with entities
@@ -40,9 +41,10 @@ public interface EntityProtocol {
 	 * location at the last snapshot
 	 *
 	 * @param entity the entity
+	 * @param em the reposition manager
 	 * @return messages to send
 	 */
-	public List<Message> getSpawnMessages(Entity entity);
+	public List<Message> getSpawnMessages(Entity entity, RepositionManager rm);
 
 	/**
 	 * Gets the messages to destroy the entity.
@@ -57,7 +59,8 @@ public interface EntityProtocol {
 	 * snapshot position to its live position.
 	 *
 	 * @param entity the entity
+	 * @param em the reposition manager
 	 * @return messages to send
 	 */
-	public List<Message> getUpdateMessages(Entity entity);
+	public List<Message> getUpdateMessages(Entity entity, RepositionManager rm);
 }

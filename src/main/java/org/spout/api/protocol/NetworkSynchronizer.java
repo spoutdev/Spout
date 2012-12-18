@@ -26,23 +26,22 @@
  */
 package org.spout.api.protocol;
 
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-import gnu.trove.set.hash.TIntHashSet;
-
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
 import org.spout.api.event.EventHandler;
 import org.spout.api.exception.EventException;
 import org.spout.api.geo.LoadOption;
@@ -52,10 +51,11 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Quaternion;
-import org.spout.api.entity.Player;
 import org.spout.api.protocol.event.ProtocolEvent;
 import org.spout.api.protocol.event.ProtocolEventExecutor;
 import org.spout.api.protocol.event.ProtocolEventListener;
+import org.spout.api.protocol.reposition.NullRepositionManager;
+import org.spout.api.protocol.reposition.RepositionManager;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.OutwardIterator;
 
@@ -91,6 +91,8 @@ public abstract class NetworkSynchronizer {
 	private final LinkedHashSet<Chunk> observed = new LinkedHashSet<Chunk>();
 	private final Set<Point> chunksToObserve = new LinkedHashSet<Point>();
 	private final Map<Class<? extends ProtocolEvent>, ProtocolEventExecutor> protocolEventMapping = new HashMap<Class<? extends ProtocolEvent>, ProtocolEventExecutor>();
+	
+	private final AtomicReference<RepositionManager> rm = new AtomicReference<RepositionManager>(NullRepositionManager.getInstance());
 
 	//Holds all entities that have ever been sync'd to this Synchronizer
 	private final TIntHashSet synchronizedEntities = new TIntHashSet();
@@ -645,5 +647,22 @@ public abstract class NetworkSynchronizer {
 
 	public boolean hasSpawned(Entity e) {
 		return synchronizedEntities.contains(e.getId());
+	}
+	
+	/**
+	 * Gets the reposition manager that converts local coordinates into remote coordinates
+	 * 
+	 * @return
+	 */
+	public RepositionManager getRepositionManager() {
+		return rm.get();
+	}
+	
+	public void setRepositionManager(RepositionManager rm) {
+		if (rm == null) {
+			this.rm.set(NullRepositionManager.getInstance());
+		} else {
+			this.rm.set(rm);
+		}
 	}
 }
