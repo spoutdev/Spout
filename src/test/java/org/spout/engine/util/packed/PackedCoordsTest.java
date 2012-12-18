@@ -1,28 +1,28 @@
 /*
  * This file is part of Spout.
  *
- * Copyright (c) 2011-2012, SpoutDev <http://www.spout.org/>
- * Spout is licensed under the SpoutDev License Version 1.
+ * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
  *
- * Spout is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Spout is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
  *
  * In addition, 180 days after any changes are published, you can use the
  * software, incorporating those changes, under the terms of the MIT license,
- * as described in the SpoutDev License Version 1.
+ * as described in the Spout License Version 1.
  *
- * Spout is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
- * the MIT license and the SpoutDev License Version 1 along with this program.
+ * the MIT license and the Spout License Version 1 along with this program.
  * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
- * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
- * including the MIT license.
+ * License and see <http://spout.in/licensev1> for the full license, including
+ * the MIT license.
  */
 package org.spout.engine.util.packed;
 
@@ -33,14 +33,12 @@ import java.util.Random;
 import org.junit.Test;
 
 public class PackedCoordsTest {
-	
 	private final int LENGTH = 1000;
-	
+
 	@Test
 	public void test() {
-		
 		Random r = new Random();
-		
+
 		for (int i = 0; i < LENGTH; i++) {
 			int rx = r.nextInt() & 0xFFFFFF00;
 			int ry = r.nextInt() & 0xFFFFFF00;
@@ -59,24 +57,21 @@ public class PackedCoordsTest {
 			testPacked("X2", rx, x2, packed2, PackedCoords.getX(rx, packed2));
 			testPacked("Y2", ry, y2, packed2, PackedCoords.getY(ry, packed2));
 			testPacked("Z2", rz, z2, packed2, PackedCoords.getZ(rz, packed2));
-			
+
 			int ox = (x1 - x2);
 			int oy = (y1 - y2);
 			int oz = (z1 - z2);
-			
+
 			int translated = PackedCoords.translate(packed2, ox, oy, oz);
-				
+
 			assertTrue("Packed coords did not match after translation", translated == packed1);
 		}
-		
-		
 	}
-	
+
 	private void testPacked(String name, int r, int o, int packed, int packedGet) {
 		boolean match = packedGet == r + o;
-		String failure = name + " decoded correctly, " + Integer.toHexString(r) + " + " + Integer.toHexString(o) + 
+		String failure = name + " decoded correctly, " + Integer.toHexString(r) + " + " + Integer.toHexString(o) +
 				" != " + Integer.toHexString(packedGet) + ", packed = " + Integer.toHexString(packed);
 		assertTrue(failure, match);
 	}
-
 }

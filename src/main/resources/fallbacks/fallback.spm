@@ -1,3 +1,2 @@
-Mesh: cubemesh://Spout/resources/fallbacks/cube.uvs
-Material: material://Spout/resources/fallbacks/generic.smt
-    
+Mesh: cubemesh://Spout/fallbacks/cube.uvs
+Material: material://Spout/fallbacks/generic.smt

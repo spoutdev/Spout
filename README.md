@@ -1,4 +1,5 @@
 [![Spout][Project Logo]][Website]
+
 What is Spout?
 --------------
 Spout is an open-source implementation of the [Minecraft](http://minecraft.net) server software written in Java, originally forked from Tad Hardesty's [Glowstone](https://github.com/SpaceManiac/Glowstone) project, which was originally forked from Graham Edgecombe's now-defunct [Lightstone](https://github.com/grahamedgecombe/lightstone) project.
@@ -7,12 +8,12 @@ The official server software has some shortcomings such as the use of threaded, 
 
 Spout's goal and focus is to offer a higher performance server that implements the universal [SpoutAPI](https://github.com/SpoutDev/SpoutAPI) client/server platform. The [Vanilla](https://github.com/SpoutDev/Vanilla) plugin can be used to implement Minecraft functionality. Bukkit plugin compatibility will be possible through the [BukkitBridge](https://github.com/SpoutDev/BukkitBridge).
 
-Copyright (c) 2011-2012, SpoutDev <http://www.spout.org>
+Copyright (c) 2011-2012, SpoutDev <<http://www.spout.org/>>
 
 Who is SpoutDev?
 ----------------
 SpoutDev is the team behind the Spout and Spoutcraft projects, I See You, and Pipe.    
-[![Afforess](https://secure.gravatar.com/avatar/ea0be49e1e4deac42ed9204ffd95b56c?d=mm&r=pg&s=48)](http://forums.spout.org/members/afforess.2/) [![alta189](https://secure.gravatar.com/avatar/7a087430b2bf9456b8879c5469aadb95?d=mm&r=pg&s=48)](http://forums.spout.org/members/alta189.3/) [![Wulfspider](https://secure.gravatar.com/avatar/6f2a0dcb60cd1ebee57875f9326bc98c?d=mm&r=pg&s=48)](http://forums.spout.org/members/wulfspider.1/) [![raphfrk](https://secure.gravatar.com/avatar/68186a30d5a714f6012a9c48d2b10630?d=mm&r=pg&s=48)](http://forums.spout.org/members/raphfrk.601/) [![narrowtux](https://secure.gravatar.com/avatar/f110a5b8feacea25275521f4efd0d7f2?d=mm&r=pg&s=48)](http://forums.spout.org/members/narrowtux.5/) [![Top_Cat](https://secure.gravatar.com/avatar/defeffc70d775f6df95b68f0ece46c9e?d=mm&r=pg&s=48)](http://forums.spout.org/members/top_cat.4/) [![Olloth](https://secure.gravatar.com/avatar/fa8429add105b86cf3b61dbe15638812?d=mm&r=pg&s=48)](http://forums.spout.org/members/olloth.6/) [![Rycochet](https://secure.gravatar.com/avatar/b06c12e72953e0edd3054a8645d76791?d=mm&r=pg&s=48)](http://forums.spout.org/members/rycochet.10/) [![RoyAwesome](https://secure.gravatar.com/avatar/6d258213c33a16465021daa8df299a0d?d=mm&r=pg&s=48)](http://forums.spout.org/members/royawesome.8/) [![zml2008](https://secure.gravatar.com/avatar/2320ab48d0715a4e9c73b7ec13fd6f3a?d=mm&r=pg&s=48)](http://forums.spout.org/members/zml2008.14/) [![Zidane](https://secure.gravatar.com/avatar/99532c7f117c8dac751422376116fb38?d=mm&r=pg&s=48)](http://forums.spout.org/members/zidane.7/) 
+[![Afforess](https://secure.gravatar.com/avatar/ea0be49e1e4deac42ed9204ffd95b56c?d=mm&r=pg&s=48)](http://forums.spout.org/members/afforess.2/) [![alta189](https://secure.gravatar.com/avatar/7a087430b2bf9456b8879c5469aadb95?d=mm&r=pg&s=48)](http://forums.spout.org/members/alta189.3/) [![Wulfspider](https://secure.gravatar.com/avatar/6f2a0dcb60cd1ebee57875f9326bc98c?d=mm&r=pg&s=48)](http://forums.spout.org/members/wulfspider.1/) [![raphfrk](https://secure.gravatar.com/avatar/68186a30d5a714f6012a9c48d2b10630?d=mm&r=pg&s=48)](http://forums.spout.org/members/raphfrk.601/) [![narrowtux](https://secure.gravatar.com/avatar/f110a5b8feacea25275521f4efd0d7f2?d=mm&r=pg&s=48)](http://forums.spout.org/members/narrowtux.5/) [![Top_Cat](https://secure.gravatar.com/avatar/defeffc70d775f6df95b68f0ece46c9e?d=mm&r=pg&s=48)](http://forums.spout.org/members/top_cat.4/) [![Olloth](https://secure.gravatar.com/avatar/fa8429add105b86cf3b61dbe15638812?d=mm&r=pg&s=48)](http://forums.spout.org/members/olloth.6/) [![Rycochet](https://secure.gravatar.com/avatar/b06c12e72953e0edd3054a8645d76791?d=mm&r=pg&s=48)](http://forums.spout.org/members/rycochet.10/) [![RoyAwesome](https://secure.gravatar.com/avatar/6d258213c33a16465021daa8df299a0d?d=mm&r=pg&s=48)](http://forums.spout.org/members/royawesome.8/) [![zml2008](https://secure.gravatar.com/avatar/2320ab48d0715a4e9c73b7ec13fd6f3a?d=mm&r=pg&s=48)](http://forums.spout.org/members/zml2008.14/)  [![Zidane](https://secure.gravatar.com/avatar/3b8d6171c3f15daf35328a4f04c83de9?d=mm&r=pg&s=48)](http://forums.spout.org/members/zidane.7/) [![Contex](https://secure.gravatar.com/avatar/ab34f58825a956a975f1a3dcdf97a173?d=mm&r=pg&s=48)](http://forums.spout.org/members/contex.1916/) 
 
 Visit our [website][Website] or get support on our [forums][Forums].  
 Track and submit issues and bugs on our [issue tracker][Issues].
@@ -30,11 +31,11 @@ Credits
 Source
 ------
 The latest and greatest source can be found on [GitHub].  
-Download the latest builds from [Jenkins].
+Download the latest builds from [Jenkins]. [![Build Status](http://build.spout.org/job/Spout/badge/icon)][Jenkins]
 
 License
 -------
-Spout is licensed under [GNU Lesser General Public License Version 3][License], but with a provision that files are released under the MIT license 180 days after they are published. Please see the `LICENSE.txt` file for details.
+Spout is licensed under the [GNU Lesser General Public License Version 3][License], but with a provision that files are released under the MIT license 180 days after they are published. Please see the `LICENSE.txt` file for details.
 
 Compiling
 ---------

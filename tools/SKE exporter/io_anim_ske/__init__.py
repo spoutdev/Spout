@@ -1,5 +1,5 @@
-import bpy
-from bpy_extras.io_utils import ExportHelper
+import bpy;
+from bpy_extras.io_utils import ExportHelper;
 
 bl_info = {
     "name":         "Spout Skeleton",
@@ -15,7 +15,7 @@ class ExportSKE(bpy.types.Operator, ExportHelper):
     bl_idname       = "export_bones.ske";
     bl_label        = "Spout Animation Model";
     bl_options      = {'PRESET'};
-    
+
     filename_ext    = ".ske";
 
     def saveSKE(self, context, path):
@@ -37,18 +37,18 @@ class ExportSKE(bpy.types.Operator, ExportHelper):
             children[bone.name] = [];
         for bone in armature.bones:
             children[getattr(bone.parent, "name", None)].append(bone.name);
-        
+
         def writeBones(bone, indent):
             indent_str = (indent*4) * " ";
             f.write(indent_str + bone + ":\n");
             indent_str += "    ";
-            
+
             # Children
             if (children[bone]):
                 f.write(indent_str + "children:\n");
                 for child in children[bone]:
                     writeBones(child, indent+2);
-                    
+
             # Vertices & Weight
             if (vgroups[bone]):
                 f.write(indent_str + "vertices:");
@@ -61,10 +61,10 @@ class ExportSKE(bpy.types.Operator, ExportHelper):
                 f.write("\n");
 
         writeBones(children[None][0], 0);
-        
+
         f.close();
         return {'FINISHED'};
-    
+
     def execute(self, context):
         path = self.as_keywords()["filepath"];
         return self.saveSKE(context, path);
@@ -75,7 +75,7 @@ def menu_func(self, context):
 def register():
     bpy.utils.register_module(__name__);
     bpy.types.INFO_MT_file_export.append(menu_func);
-    
+
 def unregister():
     bpy.utils.unregister_module(__name__);
     bpy.types.INFO_MT_file_export.remove(menu_func);

@@ -1,5 +1,4 @@
-Shader: shader://Spout/resources/fallbacks/fallback.ssf
+Shader: shader://Spout/fallbacks/fallback.ssf
 
 MaterialParams:
-    Diffuse: texture://Spout/resources/fallbacks/fallback.png
-    
+    Diffuse: texture://Spout/fallbacks/fallback.png

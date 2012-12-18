@@ -17,7 +17,7 @@ class ExportSAM(bpy.types.Operator, ExportHelper):
     bl_idname       = "export_anim.sam";
     bl_label        = "Spout Animation Model";
     bl_options      = {'PRESET'};
-    
+
     filename_ext    = ".sam";
 
     startFrame_prop = IntProperty(name="Start frame",
@@ -49,14 +49,14 @@ class ExportSAM(bpy.types.Operator, ExportHelper):
         f.write("frames: %d\n" % (endFrame - startFrame + 1));
         f.write("delay: %.6f\n" % (1.0 / (scene.render.fps / scene.render.fps_base)));
         f.write("bones_data:\n");
-        
+
         for bone in armature.bones:
             f.write("    " + bone.name + ":\n");
             self.writeAnimation(f, scene, startFrame, endFrame, bone);
-        
+
         f.close();
         return {'FINISHED'};
-    
+
     def execute(self, context):
         path = self.as_keywords()["filepath"];
         start = self.as_keywords()["startFrame_prop"];
@@ -69,7 +69,7 @@ def menu_func(self, context):
 def register():
     bpy.utils.register_module(__name__);
     bpy.types.INFO_MT_file_export.append(menu_func);
-    
+
 def unregister():
     bpy.utils.unregister_module(__name__);
     bpy.types.INFO_MT_file_export.remove(menu_func);

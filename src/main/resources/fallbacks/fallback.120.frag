@@ -1,4 +1,4 @@
- #version 120
+#version 120
 
 uniform sampler2D Diffuse;
 
