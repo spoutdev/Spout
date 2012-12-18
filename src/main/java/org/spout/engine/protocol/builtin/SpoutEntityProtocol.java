@@ -33,6 +33,7 @@ import java.util.List;
 import org.spout.api.entity.Entity;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.Message;
+import org.spout.api.protocol.reposition.RepositionManager;
 import org.spout.engine.protocol.builtin.message.AddEntityMessage;
 import org.spout.engine.protocol.builtin.message.EntityPositionMessage;
 import org.spout.engine.protocol.builtin.message.RemoveEntityMessage;
@@ -47,8 +48,8 @@ public class SpoutEntityProtocol implements EntityProtocol {
 	}
 
 	@Override
-	public List<Message> getSpawnMessages(Entity entity) {
-		return Arrays.<Message>asList(new AddEntityMessage(entity.getId(), entity.getTransform().getTransform()));
+	public List<Message> getSpawnMessages(Entity entity, RepositionManager rm) {
+		return Arrays.<Message>asList(new AddEntityMessage(entity.getId(), entity.getTransform().getTransform(), rm));
 	}
 
 	@Override
@@ -57,10 +58,10 @@ public class SpoutEntityProtocol implements EntityProtocol {
 	}
 
 	@Override
-	public List<Message> getUpdateMessages(Entity entity) {
+	public List<Message> getUpdateMessages(Entity entity, RepositionManager rm) {
 		List<Message> messages = new ArrayList<Message>(2);
 		if (entity.getTransform().isDirty()) {
-			messages.add(new EntityPositionMessage(entity.getId(), entity.getTransform().getTransform()));
+			messages.add(new EntityPositionMessage(entity.getId(), entity.getTransform().getTransform(), rm));
 		}
 		return messages;
 	}

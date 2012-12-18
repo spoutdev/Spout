@@ -32,8 +32,9 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
-import org.spout.engine.protocol.builtin.message.AddEntityMessage;
+import org.spout.api.protocol.reposition.RepositionManager;
 import org.spout.engine.protocol.builtin.SpoutProtocol;
+import org.spout.engine.protocol.builtin.message.AddEntityMessage;
 
 public class AddEntityMessageHandler extends MessageHandler<AddEntityMessage> {
 	@Override
@@ -44,14 +45,15 @@ public class AddEntityMessageHandler extends MessageHandler<AddEntityMessage> {
 		System.out.println("Ading entity with id " + message.getEntityId());
 
 		Player player = session.getPlayer();
+		RepositionManager rmInverse = player.getNetworkSynchronizer().getRepositionManager().getInverse();
 		Entity newEntity;
 		if (message.getEntityId() == session.getDataMap().get(SpoutProtocol.PLAYER_ENTITY_ID)) {
 			newEntity = player;
 		} else {
-			newEntity = session.getEngine().getDefaultWorld().createEntity(message.getTransform().getPosition(), (Class<? extends Component>)null);
+			newEntity = session.getEngine().getDefaultWorld().createEntity(rmInverse.convert(message.getTransform().getPosition()), (Class<? extends Component>)null);
 		}
 
-		newEntity.getTransform().setTransform(message.getTransform());
+		newEntity.getTransform().setTransform(rmInverse.convert(message.getTransform()));
 		//newEntity.setId(message.getEntityId()); // TODO: Allow providing an entity ID to use
 		((Client) session.getEngine()).getDefaultWorld().spawnEntity(newEntity);
 	}

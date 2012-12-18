@@ -65,7 +65,7 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 
 	@Override
 	protected void sendPosition(Point p, Quaternion rot) {
-		session.send(false, new EntityPositionMessage(player.getId(), new Transform(p, rot, Vector3.ONE)));
+		session.send(false, new EntityPositionMessage(player.getId(), new Transform(p, rot, Vector3.ONE), getRepositionManager()));
 	}
 
 	@Override
@@ -95,10 +95,10 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 			messages.addAll(protocol.getDestroyMessages(e));
 		}
 		if (spawn) {
-			messages.addAll(protocol.getSpawnMessages(e));
+			messages.addAll(protocol.getSpawnMessages(e, getRepositionManager()));
 		}
 		if (update) {
-			messages.addAll(protocol.getUpdateMessages(e));
+			messages.addAll(protocol.getUpdateMessages(e, getRepositionManager()));
 		}
 		for (Message message : messages) {
 			this.session.send(false, message);

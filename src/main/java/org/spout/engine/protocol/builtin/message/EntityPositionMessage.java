@@ -36,6 +36,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
+import org.spout.api.protocol.reposition.RepositionManager;
 import org.spout.api.util.SpoutToStringStyle;
 
 public class EntityPositionMessage extends SpoutMessage {
@@ -45,18 +46,18 @@ public class EntityPositionMessage extends SpoutMessage {
 	private final Quaternion rotation;
 	private final Vector3 scale;
 
-	public EntityPositionMessage(int entityId, Transform transform) {
+	public EntityPositionMessage(int entityId, Transform transform, RepositionManager rm) {
 		this.entityId = entityId;
 		this.worldUid = transform.getPosition().getWorld().getUID();
-		this.pos = transform.getPosition();
+		this.pos = rm.convert(transform.getPosition());
 		this.rotation = transform.getRotation();
 		this.scale = transform.getScale();
 	}
 
-	public EntityPositionMessage(int entityId, UUID worldUid, Vector3 pos, Quaternion rotation, Vector3 scale) {
+	public EntityPositionMessage(int entityId, UUID worldUid, Vector3 pos, Quaternion rotation, Vector3 scale, RepositionManager rm) {
 		this.entityId = entityId;
 		this.worldUid = worldUid;
-		this.pos = pos;
+		this.pos = rm.convert(pos);
 		this.rotation = rotation;
 		this.scale = scale;
 	}

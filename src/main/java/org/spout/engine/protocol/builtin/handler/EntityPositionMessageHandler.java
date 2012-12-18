@@ -27,10 +27,12 @@
 package org.spout.engine.protocol.builtin.handler;
 
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
-import org.spout.engine.protocol.builtin.message.EntityPositionMessage;
+import org.spout.api.protocol.reposition.RepositionManager;
 import org.spout.engine.protocol.builtin.SpoutProtocol;
+import org.spout.engine.protocol.builtin.message.EntityPositionMessage;
 
 public class EntityPositionMessageHandler extends MessageHandler<EntityPositionMessage> {
 	@Override
@@ -38,6 +40,9 @@ public class EntityPositionMessageHandler extends MessageHandler<EntityPositionM
 		if(!session.hasPlayer()) {
 			return;
 		}
+
+		Player player = session.getPlayer();
+		RepositionManager rmInverse = player.getNetworkSynchronizer().getRepositionManager().getInverse();
 
 		Entity entity;
 		if (message.getEntityId() == session.getDataMap().get(SpoutProtocol.PLAYER_ENTITY_ID)) {
@@ -47,7 +52,7 @@ public class EntityPositionMessageHandler extends MessageHandler<EntityPositionM
 		}
 
 		if (entity != null) {
-			entity.getTransform().setTransform(message.getTransform());
+			entity.getTransform().setTransform(rmInverse.convert(message.getTransform()));
 		}
 	}
 }

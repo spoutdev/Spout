@@ -33,6 +33,7 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.protocol.MessageCodec;
+import org.spout.api.protocol.reposition.NullRepositionManager;
 import org.spout.engine.protocol.builtin.ChannelBufferUtils;
 import org.spout.engine.protocol.builtin.message.AddEntityMessage;
 
@@ -59,6 +60,6 @@ public class AddEntityCodec extends MessageCodec<AddEntityMessage> {
 		final Vector3 position = ChannelBufferUtils.readVector3(buffer);
 		final Quaternion rotation = ChannelBufferUtils.readQuaternion(buffer);
 		final Vector3 scale = ChannelBufferUtils.readVector3(buffer);
-		return new AddEntityMessage(entityId, worldUid, position, rotation, scale);
+		return new AddEntityMessage(entityId, worldUid, position, rotation, scale, NullRepositionManager.getInstance());
 	}
 }
