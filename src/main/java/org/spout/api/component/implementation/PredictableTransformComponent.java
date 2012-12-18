@@ -77,7 +77,7 @@ public class PredictableTransformComponent extends TransformComponent {
 
 		scale = t.getScale().subtract(transformRender.getScale()).multiply(ratio);
 
-		System.out.println(speed);
+		//System.out.println(speed); //Debug
 		lastTime = System.currentTimeMillis();
 	}
 }
