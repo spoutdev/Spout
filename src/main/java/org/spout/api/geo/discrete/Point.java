@@ -34,6 +34,7 @@ import org.spout.api.Spout;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.WorldSource;
+import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
@@ -286,6 +287,15 @@ public class Point extends Vector3 implements WorldSource {
 	@Override
 	public World getWorld() {
 		return world;
+	}
+
+	/**
+	 * Gets the block this point is locate in
+	 *
+	 * @return the world
+	 */	
+	public Block getBlock() {
+        return world.getBlock(x, y, z);
 	}
 
 	@Override

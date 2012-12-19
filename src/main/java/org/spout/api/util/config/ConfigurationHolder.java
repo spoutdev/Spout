@@ -165,4 +165,8 @@ public class ConfigurationHolder extends ValueHolderBase implements Configuratio
 	public boolean hasChild(String key) {
 		return getNode().hasChild(key);
 	}
+
+	public boolean hasNode(String... path) {
+		return getNode().hasNode(path);
+	}
 }
