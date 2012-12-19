@@ -35,17 +35,17 @@ public abstract class RepositionManagerImpl implements RepositionManager {
 
 	@Override
 	public int convertChunkX(int x) {
-		return (convertX(x << Chunk.BLOCKS.BITS)) >>> Chunk.BLOCKS.BITS;
+		return (convertX(x << Chunk.BLOCKS.BITS)) >> Chunk.BLOCKS.BITS;
 	}
 
 	@Override
 	public int convertChunkY(int y) {
-		return (convertY(y << Chunk.BLOCKS.BITS)) >>> Chunk.BLOCKS.BITS;
+		return (convertY(y << Chunk.BLOCKS.BITS)) >> Chunk.BLOCKS.BITS;
 	}
 
 	@Override
 	public int convertChunkZ(int z) {
-		return (convertZ(z << Chunk.BLOCKS.BITS)) >>> Chunk.BLOCKS.BITS;
+		return (convertZ(z << Chunk.BLOCKS.BITS)) >> Chunk.BLOCKS.BITS;
 	}
 	
 	@Override
