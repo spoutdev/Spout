@@ -28,16 +28,47 @@ package org.spout.api.event.cause;
 
 import org.spout.api.entity.Entity;
 import org.spout.api.event.Cause;
+import org.spout.api.exception.MaxCauseChainReached;
 import org.spout.api.geo.cuboid.Block;
 
-public class BlockCause implements Cause<Block>{
+public class BlockCause extends BaseCause<Block> implements Cause<Block> {
 	private final Block block;
+
 	public BlockCause(Block block) {
+		this.block = block;
+	}
+
+	/**
+	 * Creates a BlockCause with a parent. If the {@link #chainPosition} is larger than {@link org.spout.api.Engine#getCauseChainMaximum()}
+	 * a {@link org.spout.api.exception.MaxCauseChainReached} RuntimeException will be thrown and the {@link #parentCause},
+	 * {@link #mainCause} and {@link #chainPosition} reseted.
+	 * @param block who caused this cause
+	 * @param parent cause of this cause
+	 */
+	public BlockCause(Block block, Cause parent) {
+		super(parent);
 		this.block = block;
 	}
 
 	@Override
 	public Block getSource() {
 		return block;
+	}
+
+	/**
+	 * Checks if the Class of the parent cause is the same class as the new cause
+	 * @return true if class of parent cause and new cause are the same
+	 */
+	@Override
+	protected boolean causeOfSameClass() {
+		return getParentCause() != null && getParentCause().getClass() == this.getClass();
+	}
+
+	/**
+	 * Throws the {@link org.spout.api.exception.MaxCauseChainReached} Exception with the point of the cause
+	 */
+	@Override
+	protected void throwException() {
+		throw new MaxCauseChainReached(block.getPosition());
 	}
 }

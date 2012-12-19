@@ -27,11 +27,13 @@
 package org.spout.api.event.cause;
 
 import org.spout.api.event.Cause;
+import org.spout.api.exception.MaxCauseChainReached;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 
-public class WorldCause implements Cause<World>{
+public class WorldCause extends BaseCause<World> implements Cause<World> {
 	private final World world;
+
 	public WorldCause(World world) {
 		this.world = world;
 	}
@@ -39,5 +41,34 @@ public class WorldCause implements Cause<World>{
 	@Override
 	public World getSource() {
 		return world;
+	}
+
+	/**
+	 * Creates a cause with a parent. If the {@link #chainPosition} is larger than {@link org.spout.api.Engine#getCauseChainMaximum()}
+	 * a {@link org.spout.api.exception.MaxCauseChainReached} RuntimeException will be thrown and the {@link #parentCause},
+	 * {@link #mainCause} and {@link #chainPosition} reseted.
+	 * @param world who caused this cause
+	 * @param parent cause of this cause
+	 */
+	public WorldCause(World world, Cause parent) {
+		super(parent);
+		this.world = world;
+	}
+
+	/**
+	 * Checks if the Class of the parent cause is the same class as the new cause
+	 * @return true if class of parent cause and new cause are the same
+	 */
+	@Override
+	protected boolean causeOfSameClass() {
+		return getParentCause() != null && getParentCause().getClass() == this.getClass();
+	}
+
+	/**
+	 * Throws the {@link org.spout.api.exception.MaxCauseChainReached} Exception with the point of the cause
+	 */
+	@Override
+	protected void throwException() {
+		throw new MaxCauseChainReached(world);
 	}
 }

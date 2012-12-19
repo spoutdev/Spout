@@ -24,37 +24,32 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.event;
+package org.spout.api.exception;
 
-public interface Cause<T> {
-	/**
-	 * Gets the source of the action
-	 * @return
-	 */
-	public T getSource();
+import org.spout.api.geo.World;
+import org.spout.api.geo.discrete.Point;
+import org.spout.api.plugin.Plugin;
 
-	/**
-	 * Gets the main cause of the cause chain.
-	 * The result needs to be checked with instanceOf and casted to the correct cause.
-	 * Note: Can be null if there is no parent
-	 * @return main cause or null if there is no parent
-	 */
-	public Cause getMainCause();
+/**
+ * Exception which is thrown when the maximum length of the cause chain is reached.
+ * This is a save guard against memory leaks due to redstone clocks and similar.
+ */
+public class MaxCauseChainReached extends RuntimeException {
+	public MaxCauseChainReached(Point point) {
+		super("at location: " + point.toBlockString());
+	}
 
-	/**
-	 * Gets the parent cause of this cause in the cause chain.
-	 * The result needs to be checked with instanceOf and casted to the correct cause.
-	 * Note: Can be null if there is no parent
-	 * @return parent cause or null if there is no parent
-	 */
-	public Cause getParentCause();
+	public MaxCauseChainReached(Plugin plugin) {
+		super("by a cause from plugin " + plugin.getName());
+	}
 
-	/**
-	 * Gets the position of this cause in the cause chain.
-	 * Note: 0 means no parent, values higher than 0 are not in sequence
-	 * as same causes are collapsed into one cause but the chain position pointer goes up.
-	 * @return position in chain or 0 if no parent
-	 */
-	public int getChainPosition();
+	public MaxCauseChainReached(World world) {
+		super("by a cause from world " + world.getName());
+	}
+
+	@Override
+	public Throwable fillInStackTrace() {
+		return this;
+	}
 }
 

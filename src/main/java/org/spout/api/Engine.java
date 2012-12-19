@@ -74,12 +74,10 @@ public interface Engine extends Named {
 	 * this permissions with {@link org.spout.api.permissions.DefaultPermissions}
 	 */
 	public static final String STANDARD_BROADCAST_PERMISSION = "spout.broadcast.standard";
-
 	public static final ChatChannel STANDARD_BROADCAST_CHANNEL = new PermissionChatChannel("Standard Broadcasts", STANDARD_BROADCAST_PERMISSION);
 
 	/**
 	 * Gets the name of this game's implementation
-	 *
 	 * @return name of the implementation
 	 */
 	@Override
@@ -87,7 +85,6 @@ public interface Engine extends Named {
 
 	/**
 	 * Gets the version of this game's implementation
-	 *
 	 * @return build version
 	 */
 	public String getVersion();
@@ -95,7 +92,6 @@ public interface Engine extends Named {
 	/**
 	 * Returns a Set of all permissions subjects with the provided node. Plugins wishing
 	 * to modify the result of this event should listen to the {@link org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent} event.
-	 *
 	 * @param permission The permission to check
 	 * @return Every {@link PermissionsSubject} with the specified node
 	 */
@@ -104,14 +100,12 @@ public interface Engine extends Named {
 	/**
 	 * Gets singleton instance of the plugin manager, used to interact with
 	 * other plugins and register events.
-	 *
 	 * @return plugin manager instance.
 	 */
 	public PluginManager getPluginManager();
 
 	/**
 	 * Gets the {@link Logger} instance that is used to write to the console.
-	 *
 	 * @return logger
 	 */
 	public Logger getLogger();
@@ -119,37 +113,32 @@ public interface Engine extends Named {
 	/**
 	 * Gets the update folder. The update folder is used to safely update
 	 * plugins at the right moment on a plugin load.
-	 *
+	 * <p/>
 	 * The update folder name is relative to the plugins folder.
-	 *
 	 * @return {@link File} of the update folder
 	 */
 	public File getUpdateFolder();
 
 	/**
 	 * Gets the configuration folder for the game
-	 *
 	 * @return {@link File} of the configuration folder
 	 */
 	public File getConfigFolder();
 
 	/**
 	 * Gets the folder which contains world, entity and player data.
-	 *
 	 * @return {@link File} of the data folder.
 	 */
 	public File getDataFolder();
 
 	/**
 	 * Gets the folder which contains plugins.
-	 *
 	 * @return {@link File} of the plugin folder.
 	 */
 	public File getPluginFolder();
 
 	/**
 	 * Creates a new Session
-	 *
 	 * @param channel the associated channel
 	 * @return the session
 	 */
@@ -161,7 +150,6 @@ public interface Engine extends Named {
 	 * Performs a search on each world and then searches each world respectively
 	 * for the entity, stopping when it is found, or after all the worlds have
 	 * been searched upon failure.
-	 *
 	 * @param uid to search and match
 	 * @return {@link Entity} that matched the uid, or null if none was found
 	 */
@@ -170,7 +158,6 @@ public interface Engine extends Named {
 
 	/**
 	 * Returns all player names that have ever played on this Game, whether they are online or not.
-	 *
 	 * @return all the player names
 	 */
 	public List<String> getAllPlayers();
@@ -186,7 +173,6 @@ public interface Engine extends Named {
 	 * start with the given parameter. <br/>
 	 * <br/>
 	 * This method is case-insensitive.
-	 *
 	 * @param name to look up
 	 * @param exact Whether to use exact lookup
 	 * @return Player if found, else null
@@ -195,10 +181,9 @@ public interface Engine extends Named {
 
 	/**
 	 * Matches the given username to all players that contain it in their name.
-	 *
+	 * <p/>
 	 * If no matches are found, an empty collection will be returned. The return
 	 * will always be non-null.
-	 *
 	 * @param name to match
 	 * @return Collection of all possible matches
 	 */
@@ -215,9 +200,8 @@ public interface Engine extends Named {
 	 * to the given name, by comparing the length of other player names that
 	 * start with the given parameter. <br/>
 	 * <br/>
-	 *
+	 * <p/>
 	 * Worlds are added to the list immediately, but removed at the end of a tick.
-	 *
 	 * @param name of the world to search for
 	 * @param exact Whether to use exact lookup
 	 * @return world if found, else null
@@ -233,9 +217,8 @@ public interface Engine extends Named {
 	 * The implementation is identical to iterating over {@link #getWorlds()}
 	 * and checking for a world that matches {@link World#getName()}. <br/>
 	 * <br/>
-	 *
+	 * <p/>
 	 * Worlds are added to the list immediately, but removed at the end of a tick.
-	 *
 	 * @param name of the world to search for
 	 * @return {@link World} if found, else null
 	 */
@@ -250,9 +233,8 @@ public interface Engine extends Named {
 	 * The implementation is identical to iterating over {@link #getWorlds()}
 	 * and checking for a world that matches {@link World#getName()} <br/>
 	 * <br/>
-	 *
+	 * <p/>
 	 * Worlds are added to the list immediately, but removed at the end of a tick.
-	 *
 	 * @param name of the world to search for, or part of it
 	 * @return a collection of worlds that matched the name
 	 */
@@ -266,9 +248,8 @@ public interface Engine extends Named {
 	 * The implementation is identical to iterating over {@link #getWorlds()}
 	 * and checking for a world that matches {@link World#getUID()}. <br/>
 	 * <br/>
-	 *
+	 * <p/>
 	 * Worlds are added to the list immediately, but removed at the end of a tick.
-	 *
 	 * @param uid of the world to search for
 	 * @return {@link World} if found, else null
 	 */
@@ -278,9 +259,8 @@ public interface Engine extends Named {
 
 	/**
 	 * Gets a List of all currently loaded worlds
-	 *
+	 * <p/>
 	 * Worlds are added to the list immediately, but removed at the end of a tick.
-	 *
 	 * @return {@link Collection} of actively loaded worlds
 	 */
 	@LiveRead
@@ -292,7 +272,6 @@ public interface Engine extends Named {
 	 * If the world doesn't exist on disk, it creates it.<br/>
 	 * <br/>
 	 * if the world is already loaded, this functions the same as {@link #getWorld(String)}
-	 *
 	 * @param name Name of the world
 	 * @param generator World Generator
 	 * @return {@link World} loaded or created.
@@ -304,7 +283,6 @@ public interface Engine extends Named {
 	 * Unloads this world from memory. <br/>
 	 * <br/>
 	 * <b>Note: </b>Worlds can not be unloaded if players are currently on them.
-	 *
 	 * @param name of the world to unload
 	 * @param save whether or not to save the world state to file
 	 * @return true if the world was unloaded, false if not
@@ -315,7 +293,6 @@ public interface Engine extends Named {
 	 * Unloads this world from memory. <br/>
 	 * <br/>
 	 * <b>Note: </b>Worlds can not be unloaded if players are currently on them.
-	 *
 	 * @param world to unload
 	 * @param save whether or not to save the world state to file
 	 * @return true if the world was unloaded, false if not
@@ -327,7 +304,6 @@ public interface Engine extends Named {
 	 * <br/>
 	 * It will save the state of the world, if specificed, and the state of
 	 * players, if specified.
-	 *
 	 * @param worlds true to save the state of all active worlds
 	 * @param players true to save the state of all active players
 	 */
@@ -347,7 +323,6 @@ public interface Engine extends Named {
 	 * data is saved, and all threads are ended cleanly.<br/>
 	 * <br/>
 	 * Players will be sent a default disconnect message.
-	 *
 	 * @return true for for the first stop
 	 */
 	public boolean stop();
@@ -357,7 +332,6 @@ public interface Engine extends Named {
 	 * data is saved, and all threads are ended cleanly.
 	 * <br/>
 	 * If any players are connected, will kick them with the given reason.
-	 *
 	 * @param reason for stopping the game instance
 	 * @return true for for the first stop
 	 */
@@ -365,7 +339,6 @@ public interface Engine extends Named {
 
 	/**
 	 * Gets the world folders which match the world name.
-	 *
 	 * @param worldName to match the world folders with
 	 * @return the world folders that match the world name
 	 */
@@ -375,7 +348,6 @@ public interface Engine extends Named {
 	 * Gets all the individual world folders where world data is stored. <br/>
 	 * <br/>
 	 * This includes offline worlds.
-	 *
 	 * @return a list of available world folders
 	 */
 	public List<File> getWorldFolders();
@@ -384,7 +356,6 @@ public interface Engine extends Named {
 	 * Gets the folder that contains the world save data. <br/>
 	 * <br/>
 	 * If the folder is unusued, the file path will be '.'
-	 *
 	 * @return world folder
 	 */
 	public File getWorldFolder();
@@ -393,7 +364,6 @@ public interface Engine extends Named {
 	 * Returns the game's root {@link Command}. <br/>
 	 * <br/>
 	 * All command registration and execution is performed through here.
-	 *
 	 * @return the {@link Engine}'s root {@link Command}
 	 */
 	public RootCommand getRootCommand();
@@ -401,42 +371,36 @@ public interface Engine extends Named {
 	/**
 	 * Returns the game's {@link EventManager} Event listener registration and
 	 * calling is handled through this.
-	 *
 	 * @return Our EventManager instance
 	 */
 	public EventManager getEventManager();
 
 	/**
 	 * Returns the {@link Platform} that the game is currently running on.
-	 *
 	 * @return current platform type
 	 */
 	public Platform getPlatform();
 
 	/**
 	 * Gets the network channel group.
-	 *
 	 * @return The {@link ChannelGroup}.
 	 */
 	public ChannelGroup getChannelGroup();
 
 	/**
 	 * Gets the session registry.
-	 *
 	 * @return The {@link SessionRegistry}.
 	 */
 	public SessionRegistry getSessionRegistry();
 
 	/**
 	 * Gets the default world generator for this game. Specific generators can be specified when loading new worlds.
-	 *
 	 * @return default world generator.
 	 */
 	public WorldGenerator getDefaultGenerator();
 
 	/**
 	 * Gets the scheduler
-	 *
 	 * @return the scheduler
 	 */
 	public Scheduler getScheduler();
@@ -453,14 +417,12 @@ public interface Engine extends Named {
 	 * This task manager does not support async tasks.
 	 * <br/>
 	 * If the Runnable for the task is a ParallelRunnable, then a new instance of the Runnable will be created for each region.
-	 *
 	 * @return the parallel {@link TaskManager} for the engine
 	 */
 	public TaskManager getParallelTaskManager();
 
 	/**
 	 * Returns the bootstrap protocol for {@code address}
-	 *
 	 * @param address The address
 	 * @return The protocol
 	 */
@@ -468,14 +430,12 @@ public interface Engine extends Named {
 
 	/**
 	 * Gets the service manager
-	 *
 	 * @return ServiceManager
 	 */
 	public ServiceManager getServiceManager();
 
 	/**
 	 * Gets the recipe manager
-	 *
 	 * @return RecipeManager
 	 */
 	public RecipeManager getRecipeManager();
@@ -484,7 +444,6 @@ public interface Engine extends Named {
 	 * Returns true if the game is running in debug mode <br/>
 	 * <br/>
 	 * To start debug mode, start Spout with -debug
-	 *
 	 * @return true if server is started with the -debug flag, false if not
 	 */
 	public boolean debugMode();
@@ -499,11 +458,10 @@ public interface Engine extends Named {
 
 	/**
 	 * Sets the default world.
-	 *
+	 * <p/>
 	 * The first loaded world will be set as the default world automatically.
-	 *
+	 * <p/>
 	 * New players start in the default world.
-	 *
 	 * @param world the default world
 	 * @return true on success
 	 */
@@ -512,7 +470,6 @@ public interface Engine extends Named {
 
 	/**
 	 * Gets the default {@link World}.
-	 *
 	 * @return the default world
 	 */
 	@SnapshotRead
@@ -520,26 +477,23 @@ public interface Engine extends Named {
 
 	/**
 	 * Gets the name of the server's log file
-	 *
 	 * @return the log filename
 	 */
 	public String getLogFile();
 
 	/**
 	 * Gets an abstract representation of the engine Filesystem.
-	 *
+	 * <p/>
 	 * The Filesystem handles the loading of all resources.
-	 *
+	 * <p/>
 	 * On the client, loading a resource will load the resource from the harddrive.
 	 * On the server, it will notify all clients to load the resource, as well as provide a representation of that resource.
-	 *
 	 */
 	public FileSystem getFilesystem();
 
 	/**
 	 * Gets the command source that prints to the console<br/>
 	 * Can be used to print colored text to the console
-	 *
 	 * @return the console command source
 	 */
 	public CommandSource getCommandSource();
@@ -547,22 +501,25 @@ public interface Engine extends Named {
 	/**
 	 * Gets the console collection that the engine is currently using.
 	 * This can be used to modify console output and print raw text to the console
-	 *
 	 * @return The engine's console collection
 	 */
 	public MultiConsole getConsoles();
 
 	/**
 	 * Get the manager responsible for completions
-	 *
 	 * @return The completion manager
 	 */
 	public CompletionManager getCompletionManager();
 
 	/**
 	 * Gets the default permissions handler for the engine
-	 *
 	 * @return The default permissions handler
 	 */
 	public DefaultPermissions getDefaultPermissions();
+
+	/**
+	 * Gets the maximum length a cause chain can have before a new main cause is being used.
+	 * @return The maximumg length of a cause chain
+	 */
+	public int getCauseChainMaximum();
 }
