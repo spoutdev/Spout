@@ -2,13 +2,13 @@
 Shader: shader://Spout/shaders/diffuse.ssf
 
 RenderState:
-	# Whether or not to use the Depth Buffer for rendering this material.  Defaults to True.
-	Depth: true
-	# View and projection matricies.  Used to override the rendering mode to a static matrix.
-	# null matrix uses Main Camera
-	# Defaults to null.
-	Projection: null
-	View: null
+    # Whether or not to use the Depth Buffer for rendering this material.  Defaults to True.
+    Depth: true
+    # View and projection matricies.  Used to override the rendering mode to a static matrix.
+    # null matrix uses Main Camera
+    # Defaults to null.
+    Projection: null
+    View: null
 
 # Parameters for the Shader.
 # Accepted Types:
@@ -32,4 +32,4 @@ RenderState:
 # Names match up to the name in the shader.
 
 MaterialParams:
-	Diffuse: texture://Spout/textures/colorTerrain.png
+    Diffuse: texture://Spout/textures/colorTerrain.png
