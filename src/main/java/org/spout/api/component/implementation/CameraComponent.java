@@ -109,4 +109,10 @@ public class CameraComponent extends EntityComponent implements Camera {
 	public Vector3 getSpeed() {
 		return speed;
 	}
+
+	@Override
+	public Matrix getRotation() {
+		Transform transform = ((PredictableTransformComponent) getOwner().getTransform()).getRenderTransform();
+		return MathHelper.rotate(transform.getRotation());
+	}
 }

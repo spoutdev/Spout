@@ -63,4 +63,6 @@ public interface Camera {
 	public void setSpeed(Vector3 speed);
 	
 	public Vector3 getSpeed();
+	
+	public Matrix getRotation();
 }
