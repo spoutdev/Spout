@@ -9,5 +9,5 @@ uniform vec4 BlendColor;
 layout(location=0) out vec4 outputColor;
 
 void main() {
-	outputColor = texture(Diffuse, uvcoord) * color * BlendColor;
+	outputColor = texture(Diffuse, uvcoord);
 }

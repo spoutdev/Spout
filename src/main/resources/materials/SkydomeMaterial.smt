@@ -9,7 +9,7 @@ RenderState:
     # Defaults to null.
     Projection: null
     View: null
-    Depth: true
+    Depth: false
 
 # Parameters for the Shader.
 # Accepted Types:
@@ -33,5 +33,5 @@ RenderState:
 # Names match up to the name in the shader.
 
 MaterialParams:
-    Diffuse: texture://Spout/textures/defaultskydome.png
+    Diffuse: texture://Spout/textures/testsky.png
     BlendColor: color(1,1,1,1)
