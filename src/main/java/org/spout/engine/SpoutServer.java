@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
-
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
 
@@ -112,11 +111,9 @@ public class SpoutServer extends SpoutEngine implements Server {
 	 * The {@link AccessManager} for the Server.
 	 */
 	private final SpoutAccessManager accessManager = new SpoutAccessManager();
-
 	private final Object jmdnsSync = new Object();
-	
 	private JmDNS jmdns = null;
-	
+
 	public SpoutServer() {
 		this.filesystem = new ServerFileSystem();
 	}
@@ -161,7 +158,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 		//Bonjour
 		setupBonjour();
-		
+
 		if (boundProtocols.size() == 0) {
 			log("No port bindings registered! Clients will not be able to connect to the server.", Level.WARNING);
 		}
@@ -417,7 +414,16 @@ public class SpoutServer extends SpoutEngine implements Server {
 	public FileSystem getFilesystem() {
 		return filesystem;
 	}
-	
+
+	/**
+	 * Gets the maximum length a cause chain can have before a new main cause is being used.
+	 * @return The maximumg length of a cause chain
+	 */
+	@Override
+	public int getCauseChainMaximum() {
+		return SpoutConfiguration.MAX_CAUSE_CHAIN.getInt();
+	}
+
 	private void setupBonjour() {
 		if (getEngine() instanceof Server && SpoutConfiguration.BONJOUR.getBoolean()) {
 			getEngine().getScheduler().scheduleAsyncTask(this, new Runnable() {
@@ -442,9 +448,9 @@ public class SpoutServer extends SpoutEngine implements Server {
 			});
 		}
 	}
-	
+
 	private void closeBonjour() {
-		
+
 		if (jmdns != null) {
 			getEngine().getLogger().info(">>> Shutting down Bonjour service...");
 			final JmDNS jmdns = this.jmdns;
