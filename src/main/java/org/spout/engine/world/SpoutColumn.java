@@ -41,7 +41,8 @@ import org.spout.api.material.block.BlockFaces;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.BitSize;
 import org.spout.api.scheduler.TickStage;
-import org.spout.engine.filesystem.WorldFiles;
+import org.spout.engine.filesystem.versioned.ColumnFiles;
+import org.spout.engine.filesystem.versioned.WorldFiles;
 
 public class SpoutColumn {
 	/**
@@ -80,7 +81,7 @@ public class SpoutColumn {
 
 		lowestY.set(Integer.MAX_VALUE);
 
-		WorldFiles.readColumn(((SpoutWorld) world).getHeightMapInputStream(x, z), this, this.lowestY, topmostBlocks);
+		ColumnFiles.readColumn(((SpoutWorld) world).getHeightMapInputStream(x, z), this, this.lowestY, topmostBlocks);
 		//Could not load biomes from column, so calculate them
 		if (biomes.get() == null) {
 			if (world.getGenerator() instanceof BiomeGenerator) {
@@ -132,7 +133,7 @@ public class SpoutColumn {
 			if (activeChunks.decrementAndGet() == 0) {
 				OutputStream out = ((SpoutWorld) world).getHeightMapOutputStream(x, z);
 				try {
-					WorldFiles.writeColumn(out, this, lowestY, topmostBlocks);
+					ColumnFiles.writeColumn(out, this, lowestY, topmostBlocks);
 				} finally {
 					try {
 						out.close();

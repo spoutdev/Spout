@@ -38,7 +38,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
-import org.spout.engine.filesystem.WorldFiles;
+import org.spout.engine.filesystem.versioned.ChunkFiles;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 
 /**
@@ -138,7 +138,7 @@ public class WorldSavingThread extends Thread{
 			OutputStream out = world.getChunkOutputStream(snapshot);
 			if (out != null) {
 				try {
-					WorldFiles.saveChunk(chunk.getWorld(), snapshot, blockUpdates, out);
+					ChunkFiles.saveChunk(chunk.getWorld(), snapshot, blockUpdates, out);
 				} finally {
 					try {
 						out.close();

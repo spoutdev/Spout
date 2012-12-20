@@ -53,8 +53,8 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 
 import org.spout.api.Spout;
-import org.spout.api.component.type.BlockComponent;
 import org.spout.api.component.implementation.PhysicsComponent;
+import org.spout.api.component.type.BlockComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
@@ -103,7 +103,7 @@ import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.entity.component.SpoutPhysicsComponent;
 import org.spout.engine.filesystem.ChunkDataForRegion;
-import org.spout.engine.filesystem.WorldFiles;
+import org.spout.engine.filesystem.versioned.ChunkFiles;
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.scheduler.SpoutScheduler;
@@ -393,7 +393,7 @@ public class SpoutRegion extends Region {
 
 		if (loadopt.loadIfNeeded() && fileExists) {
 			dataForRegion = new ChunkDataForRegion();
-			newChunk = WorldFiles.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z), dataForRegion);
+			newChunk = ChunkFiles.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z), dataForRegion);
 		}
 
 		if (loadopt.generateIfNeeded() && !fileExists && newChunk == null) {

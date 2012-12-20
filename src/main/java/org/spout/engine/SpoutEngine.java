@@ -26,6 +26,9 @@
  */
 package org.spout.engine;
 
+import static org.spout.api.lang.Translation.log;
+import static org.spout.api.lang.Translation.tr;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.Inet4Address;
@@ -51,7 +54,6 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.ChannelGroupFuture;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
-
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.chat.completion.CompletionManager;
@@ -78,7 +80,6 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.recipe.RecipeManager;
 import org.spout.api.inventory.recipe.SimpleRecipeManager;
-import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.permissions.DefaultPermissions;
 import org.spout.api.permissions.PermissionsSubject;
@@ -96,7 +97,6 @@ import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.StringUtil;
-
 import org.spout.engine.chat.console.ConsoleManager;
 import org.spout.engine.chat.console.FileConsole;
 import org.spout.engine.chat.console.JLineConsole;
@@ -110,8 +110,8 @@ import org.spout.engine.command.TestCommands;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.SharedFileSystem;
-import org.spout.engine.filesystem.WorldData;
-import org.spout.engine.filesystem.WorldFiles;
+import org.spout.engine.filesystem.versioned.PlayerFiles;
+import org.spout.engine.filesystem.versioned.WorldFiles;
 import org.spout.engine.input.SpoutInputConfiguration;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.protocol.SpoutSessionRegistry;
@@ -129,9 +129,6 @@ import org.spout.engine.world.MemoryReclamationThread;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
-
-import static org.spout.api.lang.Translation.log;
-import static org.spout.api.lang.Translation.tr;
 
 public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private static final Logger logger = Logger.getLogger("Spout");
@@ -416,21 +413,8 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		if (generator == null) {
 			generator = defaultGenerator;
 		}
-		WorldData worldData = WorldData.loadForWorld(name);
-		SpoutWorld world;
-		if (worldData == null) {
-			log("Generating new world named [%0]", name);
-
-			File itemMapFile = new File(new File(SharedFileSystem.getWorldsDirectory(), name), "materials.dat");
-			BinaryFileStore itemStore = new BinaryFileStore(itemMapFile);
-			StringMap itemMap = new StringMap(engineItemMap, itemStore, 0, Short.MAX_VALUE, name + "ItemMap");
-
-			world = new SpoutWorld(name, this, random.nextLong(), 0L, generator, UUID.randomUUID(), itemMap);
-			world.save();
-		} else {
-			log("Loading world [%0]", name);
-			world = worldData.toWorld(generator, engineItemMap);
-		}
+		
+		SpoutWorld world = WorldFiles.loadWorld(this, generator, name);
 
 		World oldWorld = loadedWorlds.putIfAbsent(name, world);
 
@@ -750,7 +734,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 	// Players should use weak map?
 	public Player addPlayer(String playerName, SpoutSession<?> session, int viewDistance) {
-		SpoutPlayer player = WorldFiles.loadPlayerData(playerName);
+		SpoutPlayer player = PlayerFiles.loadPlayerData(playerName);
 		boolean created = false;
 		if (player == null) {
 			player = new SpoutPlayer(playerName, null, viewDistance);

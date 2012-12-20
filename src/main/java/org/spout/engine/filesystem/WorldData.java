@@ -52,6 +52,7 @@ import org.spout.nbt.holder.FieldHolder;
 import org.spout.nbt.holder.FieldValue;
 import org.spout.engine.filesystem.fields.TransformField;
 import org.spout.engine.filesystem.fields.UUIDField;
+import org.spout.engine.filesystem.versioned.WorldFiles;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.nbt.ByteArrayTag;
 import org.spout.nbt.ByteTag;
@@ -74,7 +75,7 @@ public class WorldData extends FieldHolder {
 	private final FieldValue<TransformField.Holder> spawnPosition = FieldValue.from("spawn_position", TransformField.INSTANCE, new TransformField.Holder());
 	private VersionedData versionData = new Version2Data();
 	private StringMap itemMap;
-
+	
 	private static interface VersionedData {
 		@SuppressWarnings("unused")
 		public static final Field[] EMPTY_FIELD_ARRAY = new Field[0];

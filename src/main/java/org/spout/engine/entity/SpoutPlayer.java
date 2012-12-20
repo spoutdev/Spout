@@ -57,10 +57,9 @@ import org.spout.api.util.access.BanType;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;
-
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
-import org.spout.engine.filesystem.WorldFiles;
+import org.spout.engine.filesystem.versioned.PlayerFiles;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutWorld;
 
@@ -143,7 +142,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		((SpoutWorld) getWorld()).removePlayer(this);
 		onlineLive.set(false);
 		//save player data on disconnect, probably should do this periodically as well...
-		WorldFiles.savePlayerData(this);
+		PlayerFiles.savePlayerData(this);
 		return true;
 	}
 
