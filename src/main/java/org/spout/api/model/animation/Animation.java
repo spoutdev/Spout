@@ -26,18 +26,25 @@
  */
 package org.spout.api.model.animation;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.spout.api.math.Matrix;
+import org.spout.api.resource.Resource;
 
-public class Animation {
+public class Animation extends Resource{
 
 	private String name; //Debug
+	
 	private int id;
-	private long delay;
-	private List<AnimationFrame> frames = new ArrayList<AnimationFrame>();
+	
+	private final int frame;
+	
+	private final float delay;
+	
+	private final BoneTransform [][]frames;
 
-	public Animation(){
-
+	public Animation(Skeleton skeleton, int frame, float delay){
+		frames = new BoneTransform[skeleton.getBoneSize()][frame];
+		this.frame = frame;
+		this.delay = delay;
 	}
 
 	public String getName() {
@@ -56,16 +63,23 @@ public class Animation {
 		this.id = id;
 	}
 
-	public long getDelay() {
+	public float getDelay() {
 		return delay;
 	}
 
-	public void setDelay(long delay) {
-		this.delay = delay;
+	public void setBoneTransform(int bone, int frame, BoneTransform transform){
+		if(frames[bone][frame] != null)
+			throw new IllegalStateException("This bone transform is already define");
+		
+		frames[bone][frame] = transform;
 	}
 
-	public void addAnimationFrame(AnimationFrame frame){
-		frames.add(frame);
+	public int getFrame() {
+		return frame;
+	}
+
+	public BoneTransform getBoneTransform(int bone, int frame) {
+		return frames[bone][frame];
 	}
 
 	/*public void dumbAnimation(String str) {

@@ -26,35 +26,18 @@
  */
 package org.spout.api.model.animation;
 
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector4;
-
 public class BoneTransform {
+	
+	private final float []matrix;
 
-	private final Vector4 translation;
-	private final Quaternion rotation;
-	private final Vector4 scale;
-
-	public BoneTransform(Vector4 translation, Quaternion rotation, Vector4 scale){
-		this.translation = translation;
-		this.rotation = rotation;
-		this.scale = scale;
+	//TODO : If we don't need BoneTransform to make interpolation or other things,
+	//we should remove it and store matrix directly in animation class
+	
+	public BoneTransform(float[] matrix) {
+		this.matrix = matrix;
 	}
 
-	public Vector4 getTranslation() {
-		return translation;
+	public float [] getMatrix() {
+		return matrix;
 	}
-
-	public Quaternion getRotation() {
-		return rotation;
-	}
-
-	public Vector4 getScale() {
-		return scale;
-	}
-
-	/*public String toString(){
-		return "Head : " + head.getX() + " / " + head.getY() + " / " + head.getZ() +
-				" Tail " + tail.getX() + " / " + tail.getY() + " / " + tail.getZ();
-	}*/
 }

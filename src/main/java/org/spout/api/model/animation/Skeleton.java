@@ -149,4 +149,8 @@ public class Skeleton extends Resource{
 		}
 		System.out.println(str.toString());
 	}
+
+	public Bone getBoneByName(String key) {
+		return bonesName.get(key);
+	}
 }
