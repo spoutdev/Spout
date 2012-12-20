@@ -27,109 +27,66 @@
 package org.spout.engine.resources.loader;
 
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.spout.api.math.Vector3;
+import org.spout.api.Spout;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Bone;
 import org.spout.api.model.animation.BoneTransform;
+import org.spout.api.model.animation.Skeleton;
 import org.spout.api.resource.BasicResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
 import org.yaml.snakeyaml.Yaml;
 
 @SuppressWarnings("unchecked")
-public class AnimationLoader extends BasicResourceLoader<Bone> {
+public class AnimationLoader extends BasicResourceLoader<Animation> {
 
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
 
-	private static Bone loadObj(InputStream stream) {
-		/*final Yaml yaml = new Yaml();
+	private static Animation loadObj(InputStream stream) {
+		final Yaml yaml = new Yaml();
 		final Map<? extends String, ?> resourceProperties = checkerMapStringObject.check(yaml.load(stream));
 
-		String root = resourceProperties.keySet().iterator().next();
-
-		Map<? extends String, ?> node = (Map<? extends String, ?>) resourceProperties.get(root);
-
-		return loadBone(root, null, node);*/
+		Skeleton skeleton = (Skeleton)Spout.getFilesystem().getResource((String)resourceProperties.get("Skeleton"));
 		
-		return null;
-	}
+		int frames = (Integer)resourceProperties.get("frames");
+		float delay = ((Double)resourceProperties.get("delay")).floatValue();
+		
+		Animation animation = new Animation(skeleton,frames,delay);
+		
+		Map<? extends String, ?> bones_data = (Map<? extends String, ?>) resourceProperties.get("bones_data");
+		
+		for(Entry<? extends String, ?> entry : bones_data.entrySet()){
+			
+			Bone bone = skeleton.getBoneByName(entry.getKey());
+			if(bone == null)
+				throw new IllegalStateException("Animation file mapped with the bad Skeleton file");
+			
+			Map<? extends Integer, String> value = (Map<? extends Integer, String>)entry.getValue();
+			
+			for(Entry<? extends Integer, String> entryBone : value.entrySet()){
+				int frame = (Integer)entryBone.getKey() - 1; //Start at 1
 
-	/*private static Bone loadBone(String name, Bone parent, Map<? extends String, ?> keymap){
-		Map<String, Animation> animations = loadAnimations((Map<? extends Integer, Map<? extends String, ?>>) keymap.get("anim"));
-
-		Bone bone = new Bone(name, parent, animations);
-
-		if(keymap.containsKey("children"))
-			loadChild(bone, (Map<? extends String, Map<? extends String, ?>>) keymap.get("children"));
-
-		bone.setVertex(loadIntList((String) keymap.get("vertices")));
-		bone.setWeights(loadFloatList((String) keymap.get("weight")));
-
-		return bone;
-	}
-
-	private static void loadChild(Bone parent, Map<? extends String, Map<? extends String, ?>> keymap){
-		for(Entry<? extends String, Map<? extends String, ?>> entry : keymap.entrySet()){
-			loadBone(entry.getKey(), parent, (Map<? extends String, Map<? extends String, ?>>)entry.getValue());
+				BoneTransform boneTransform = new BoneTransform(loadFloatList((String)entryBone.getValue()));
+				
+				animation.setBoneTransform(bone.getId(), frame, boneTransform);
+			}
 		}
-	}
-
-	private static Map<String,Animation> loadAnimations(Map<? extends Integer, Map<? extends String, ?>> keymap){
-		Map<String,Animation> map = new HashMap<String,Animation>();
-		Animation animation = new Animation();
-		animation.setTransforms(new BoneTransform[keymap.size()]);
-
-		//int index = 0;
-		for(Entry<? extends Integer, Map<? extends String, ?>> entry : keymap.entrySet()){
-			Integer index = entry.getKey();
-
-			animation.getTransforms()[index] = loadBoneTransform((Map<? extends String, Object>)entry.getValue());
-
-			//index++;
-		}
-
-		return map;
-	}
-
-	private static BoneTransform loadBoneTransform(Map<? extends String, Object> keymap){
-		Vector3 head = loadVector3((String)keymap.get("head"));
-		Vector3 tail = loadVector3((String)keymap.get("tail"));
-
-		return new BoneTransform(head, tail);
-	}
-
-	private static int[] loadIntList(String str){
-		String []split = str.split(" ");
-		int []result = new int[split.length];
-
-		for(int i = 0; i < split.length; i++){		
-			result[i] = Integer.parseInt(split[i]);
-		}
-
-		return result;
+		
+		return animation;
 	}
 
 	private static float[] loadFloatList(String str){
-		String []split = str.split(" ");
+		String []split = str.split(",");
 		float []result = new float[split.length];
 
 		for(int i = 0; i < split.length; i++){		
-			result[i] = Float.parseFloat(split[i]);
+			result[i] = (float)Double.parseDouble(split[i]);
 		}
 
 		return result;
 	}
-
-	private static Vector3 loadVector3(String str){
-		String []split = str.split(" ");
-		return new Vector3(
-				Double.parseDouble(split[0]),
-				Double.parseDouble(split[1]),
-				Double.parseDouble(split[2]));
-	}*/
 
 	@Override
 	public String getFallbackResourceName() {
@@ -137,7 +94,7 @@ public class AnimationLoader extends BasicResourceLoader<Bone> {
 	}
 
 	@Override
-	public Bone getResource(InputStream stream) {
+	public Animation getResource(InputStream stream) {
 		return AnimationLoader.loadObj(stream);
 	}
 

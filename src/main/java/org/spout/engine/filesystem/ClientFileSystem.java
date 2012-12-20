@@ -26,6 +26,7 @@
  */
 package org.spout.engine.filesystem;
 
+import org.spout.engine.resources.loader.AnimationLoader;
 import org.spout.engine.resources.loader.BlockMeshLoader;
 import org.spout.engine.resources.loader.SkeletonLoader;
 import org.spout.engine.resources.loader.CubeMeshLoader;
@@ -47,6 +48,7 @@ public class ClientFileSystem extends SharedFileSystem {
 
 		registerLoader(new ModelLoader());
 		registerLoader(new SkeletonLoader());
+		registerLoader(new AnimationLoader());
 		
 		registerLoader(new MeshLoader());
 		registerLoader(new CubeMeshLoader());

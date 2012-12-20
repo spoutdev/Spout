@@ -34,6 +34,7 @@ import org.spout.api.component.implementation.ModelComponent;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
+import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
@@ -42,20 +43,24 @@ import org.spout.api.render.effect.SnapshotEntity;
 import org.spout.engine.mesh.BaseMesh;
 
 public class EntityRendererComponent extends EntityComponent {
+	
+	public Animation animation = null;
+	public int currentFrame = 0;
+	public float currentTime = 0;
+	
 	public float rot = 0f;
 
 	@Override
 	public void onAttached() {
 	}
 
-	public void update() {
-		//Generate renderer
+	private void batch(){
 		ModelComponent model = getOwner().get(ModelComponent.class);
 
 		if (model == null) {
 			return;
 		}
-
+		
 		BaseMesh mesh = (BaseMesh) model.getModel().getMesh();
 
 		if (mesh.isBatched()) {
@@ -112,6 +117,40 @@ public class EntityRendererComponent extends EntityComponent {
 
 		mesh.batch();
 	}
+	
+	private void updateAnimation(float dt){
+		if(animation == null){
+			ModelComponent model = getOwner().get(ModelComponent.class);
+
+			if (model == null) {
+				return;
+			}
+			
+			animation = model.getModel().getAnimations().get("animatest");
+			currentTime = 0;
+			currentFrame = 0;
+			return;
+		}
+		
+		currentTime += dt;
+		
+		currentFrame = (int) (currentTime / animation.getDelay());
+		
+		if(currentFrame >= animation.getFrame()){ //Loop
+			currentTime = 0;
+			currentFrame = 0;
+		}
+		
+		//TODO : Send a animation finish event.
+		//TODO : Loop on animation if wanted
+	}
+	
+	public void update(float dt) {
+		
+		batch(); //TODO : Call the batch method one time when the render start
+		
+		updateAnimation(dt);
+	}
 
 	public void render(Camera camera) {
 		ModelComponent model = getOwner().get(ModelComponent.class);
@@ -119,7 +158,7 @@ public class EntityRendererComponent extends EntityComponent {
 		if (model == null) {
 			return;
 		}
-
+		
 		BaseMesh mesh = (BaseMesh) model.getModel().getMesh();
 
 		if (mesh == null) {
@@ -133,11 +172,18 @@ public class EntityRendererComponent extends EntityComponent {
 		mat.getShader().setUniform("Projection", camera.getProjection());
 		mat.getShader().setUniform("Model", modelMatrix);
 
-		Matrix[] matrices = new Matrix[10];
-		for (int i = 0; i < 10; i++) {
-			matrices[i] = MathHelper.rotateX(rot);
+		Matrix[] matrices = new Matrix[model.getModel().getSkeleton().getBoneSize()];
+		
+		if(animation != null){
+			for (int i = 0; i < matrices.length; i++) {
+				matrices[i] = new Matrix(4, animation.getBoneTransform(i, currentFrame).getMatrix());
+			}
+		}else{
+			for (int i = 0; i < matrices.length; i++) {
+				matrices[i] = MathHelper.rotateX(rot);
+			}
+			rot += 0.1f;
 		}
-		rot += 0.1f;
 
 		mat.getShader().setUniform("bone_matrix", matrices);
 

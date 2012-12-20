@@ -30,8 +30,6 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.lwjgl.Sys;
-import org.spout.api.math.Vector3;
 import org.spout.api.model.animation.Bone;
 import org.spout.api.model.animation.Skeleton;
 import org.spout.api.resource.BasicResourceLoader;
@@ -82,30 +80,6 @@ public class SkeletonLoader extends BasicResourceLoader<Skeleton> {
 		}
 	}
 
-	/*private static Map<String,Animation> loadAnimations(Map<? extends Integer, Map<? extends String, ?>> keymap){
-		Map<String,Animation> map = new HashMap<String,Animation>();
-		Animation animation = new Animation();
-		animation.setTransforms(new BoneTransform[keymap.size()]);
-
-		//int index = 0;
-		for(Entry<? extends Integer, Map<? extends String, ?>> entry : keymap.entrySet()){
-			Integer index = entry.getKey();
-
-			animation.getTransforms()[index] = loadBoneTransform((Map<? extends String, Object>)entry.getValue());
-
-			//index++;
-		}
-
-		return map;
-	}
-
-	private static BoneTransform loadBoneTransform(Map<? extends String, Object> keymap){
-		Vector3 head = loadVector3((String)keymap.get("head"));
-		Vector3 tail = loadVector3((String)keymap.get("tail"));
-
-		return new BoneTransform(head, tail);
-	}*/
-
 	private static int[] loadIntList(String str){
 		String []split = str.split(" ");
 		int []result = new int[split.length];
@@ -126,14 +100,6 @@ public class SkeletonLoader extends BasicResourceLoader<Skeleton> {
 		}
 
 		return result;
-	}
-
-	private static Vector3 loadVector3(String str){
-		String []split = str.split(" ");
-		return new Vector3(
-				Double.parseDouble(split[0]),
-				Double.parseDouble(split[1]),
-				Double.parseDouble(split[2]));
 	}
 
 	@Override

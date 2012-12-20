@@ -26,7 +26,11 @@
  */
 package org.spout.engine.resources;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.spout.api.model.Model;
+import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
 import org.spout.api.model.mesh.Mesh;
 import org.spout.api.render.RenderMaterial;
@@ -37,15 +41,17 @@ public class ClientModel extends Resource implements Model {
 	public Mesh mesh;
 	public Skeleton skeleton;
 	public RenderMaterial material;
+	public Map<String, Animation> animations;
 
 	public ClientModel(Mesh mesh,RenderMaterial material) {
-		this(mesh, null, material);
+		this(mesh, null, material, Collections.EMPTY_MAP);
 	}
 	
-	public ClientModel(Mesh mesh, Skeleton skeleton, RenderMaterial material) {
+	public ClientModel(Mesh mesh, Skeleton skeleton, RenderMaterial material, Map<String, Animation> animations) {
 		this.mesh = mesh;
 		this.skeleton = skeleton;
 		this.material = material;
+		this.animations = animations;
 	}
 	
 	@Override
@@ -61,6 +67,11 @@ public class ClientModel extends Resource implements Model {
 	@Override
 	public RenderMaterial getRenderMaterial() {
 		return material;
+	}
+
+	@Override
+	public Map<String, Animation> getAnimations() {
+		return animations;
 	}
 
 }

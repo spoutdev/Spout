@@ -27,10 +27,12 @@
 package org.spout.engine.resources.loader;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.spout.api.Spout;
-import org.spout.api.model.animation.Bone;
+import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
 import org.spout.api.model.mesh.Mesh;
 import org.spout.api.render.RenderMaterial;
@@ -41,7 +43,7 @@ import org.yaml.snakeyaml.Yaml;
 
 public class ModelLoader extends BasicResourceLoader<ClientModel> {
 	private static final String[] extensions = new String[]{ "spm" };
-	private static final TypeChecker<Map<? extends String, ? extends String>> checkerMapStringObject = TypeChecker.tMap(String.class, String.class);
+	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
 
 	@Override
 	public String getProtocol() {
@@ -61,18 +63,31 @@ public class ModelLoader extends BasicResourceLoader<ClientModel> {
 	@Override
 	public ClientModel getResource(InputStream stream) {
 		final Yaml yaml = new Yaml();
-		final Map<? extends String, ? extends String> resourceProperties = checkerMapStringObject.check(yaml.load(stream));
+		final Map<? extends String, ?> resourceProperties = checkerMapStringObject.check(yaml.load(stream));
 
-		Mesh mesh = (Mesh)Spout.getFilesystem().getResource(resourceProperties.get("Mesh"));
-		RenderMaterial material = (RenderMaterial)Spout.getFilesystem().getResource(resourceProperties.get("Material"));
+		Mesh mesh = (Mesh)Spout.getFilesystem().getResource((String)resourceProperties.get("Mesh"));
+		RenderMaterial material = (RenderMaterial)Spout.getFilesystem().getResource((String)resourceProperties.get("Material"));
 		
 		Skeleton skeleton = null;
 		
 		if(resourceProperties.containsKey("Skeleton")){
-			skeleton = (Skeleton)Spout.getFilesystem().getResource(resourceProperties.get("Skeleton"));
+			skeleton = (Skeleton)Spout.getFilesystem().getResource((String)resourceProperties.get("Skeleton"));
+		}
+		
+		Map<String, Animation> animations = new HashMap<String, Animation>();
+		
+		if(resourceProperties.containsKey("Animation")){
+			
+			Map<? extends String, ?> map = checkerMapStringObject.check(resourceProperties.get("Animation"));
+			
+			for(Entry<? extends String, ?> entry : map.entrySet()){
+				Animation animation = (Animation) Spout.getFilesystem().getResource( (String) entry.getValue() );
+				
+				animations.put(entry.getKey(), animation);
+			}
 		}
 
-		return new ClientModel(mesh, skeleton, material);
+		return new ClientModel(mesh, skeleton, material, animations);
 	}
 
 }
