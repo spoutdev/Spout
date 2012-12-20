@@ -72,7 +72,7 @@ public class ChunkFiles {
 	
 	private static final TypeChecker<List<? extends CompoundTag>> checkerListCompoundTag = TypeChecker.tList(CompoundTag.class);
 	
-	public static final byte CHUNK_VERSION = 1;
+	public static final byte CHUNK_VERSION = 2;
 	
 	public static SpoutChunk loadChunk(SpoutRegion r, int x, int y, int z, InputStream dis, ChunkDataForRegion dataForRegion) {
 		SpoutChunk chunk = null;
@@ -81,7 +81,6 @@ public class ChunkFiles {
 		try {
 			if (dis == null) {
 				//The inputstream is null because no chunk data exists
-				Spout.getLogger().info("No input stream for chunk");
 				return chunk;
 			}
 
@@ -91,23 +90,26 @@ public class ChunkFiles {
 
 			byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), (byte) -1);
 
-			if (version == -1) {
-				Spout.getLogger().info("Version = -1 for chunk");
-				return null;
-			}
+			boolean converted = false;
 			
 			if (version > CHUNK_VERSION) {
 				Spout.getLogger().log(Level.SEVERE, "Chunk version " + version + " exceeds maximum allowed value of " + CHUNK_VERSION);
 				return null;
 			} else if (version < CHUNK_VERSION) {
-				// TODO - Add conversion code here
-				Spout.getLogger().log(Level.SEVERE, "Outdated Chunk version " + version);
-				return null;
+				if (version <= 0) {
+					Spout.getLogger().log(Level.SEVERE, "Unable to parse chunk version " + version);
+					return null;
+				}
+				converted = true;
+				if (version <= 1) {
+					map = convertV1V2(map);
+				}
 			}
 			
-			// Add conversion code here
-
-			return loadChunk(r, x, y, z, dataForRegion, map, version);
+			chunk = loadChunk(r, x, y, z, dataForRegion, map, version);
+			if (converted) {
+				chunk.setModified();
+			}
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -272,20 +274,7 @@ public class ChunkFiles {
 
 		return null;
 	}
-
-	private static ListTag<CompoundTag> saveDynamicUpdates(List<DynamicBlockUpdate> updates) {
-		List<CompoundTag> list = new ArrayList<CompoundTag>(updates.size());
-
-		for (DynamicBlockUpdate update : updates) {
-			CompoundTag tag = saveDynamicUpdate(update);
-			if (tag != null) {
-				list.add(tag);
-			}
-		}
-
-		return new ListTag<CompoundTag>("dynamic_updates", CompoundTag.class, list);
-	}
-
+	
 	private static void loadBlockComponents(SpoutChunk chunk, List<? extends CompoundTag> list) {
 		if (list == null) {
 			return;
@@ -319,10 +308,23 @@ public class ChunkFiles {
 		return new ListTag<CompoundTag>("block_components", CompoundTag.class, list);
 	}
 
+	private static ListTag<CompoundTag> saveDynamicUpdates(List<DynamicBlockUpdate> updates) {
+		List<CompoundTag> list = new ArrayList<CompoundTag>(updates.size());
+
+		for (DynamicBlockUpdate update : updates) {
+			CompoundTag tag = saveDynamicUpdate(update);
+			if (tag != null) {
+				list.add(tag);
+			}
+		}
+
+		return new ListTag<CompoundTag>("dynamic_updates", CompoundTag.class, list);
+	}
+
 	private static CompoundTag saveDynamicUpdate(DynamicBlockUpdate update) {
 		CompoundMap map = new CompoundMap();
 
-		map.put(new IntTag("packedv2", update.getPacked()));
+		map.put(new IntTag("packedPosition", update.getPacked()));
 		map.put(new LongTag("nextUpdate", update.getNextUpdate()));
 		map.put(new IntTag("data", update.getData()));
 
@@ -346,17 +348,9 @@ public class ChunkFiles {
 
 	private static DynamicBlockUpdate loadDynamicUpdate(CompoundTag compoundTag) {
 		final CompoundMap map = compoundTag.getValue();
-		int packed = SafeCast.toInt(NBTMapper.toTagValue(map.get("packedv2")), -1);
+		int packed = SafeCast.toInt(NBTMapper.toTagValue(map.get("packedPosition")), -1);
 		if (packed == -1) {
-			packed = SafeCast.toInt(NBTMapper.toTagValue(map.get("packed")), -1);
-			if (packed < 0) {
-				return null;
-			} else {
-				int x = 0xFF & ByteTripleHashed.key1(packed);
-				int y = 0xFF & ByteTripleHashed.key2(packed);
-				int z = 0xFF & ByteTripleHashed.key3(packed);
-				packed = SignedTenBitTripleHashed.key(x, y, z);
-			}
+			return null;
 		}
 		final long nextUpdate = SafeCast.toLong(NBTMapper.toTagValue(map.get("nextUpdate")), -1L);
 		if (nextUpdate < 0) {
@@ -377,6 +371,113 @@ public class ChunkFiles {
 			}
 			return true;
 		}
+	}
+
+	/**
+	 * Version 1 to version 2 conversion
+	 * 
+	 * Dynamic block updates converted from using "packed" and "packedv2" to just packedPosition.  This is the same format as "packedv2".
+	 * 
+	 * The conversion has a loader for V1 and a saver for V2.  They both use the DynamicBlockUpdateV1 class for temp storage.
+	 */
+	
+	private static class DynamicBlockUpdateV1 {
+		private final int packed;
+		private final long nextUpdate;
+		private final int data;
+		
+		public DynamicBlockUpdateV1(int packed, long nextUpdate, int data) {
+			this.packed = packed;
+			this.nextUpdate = nextUpdate;
+			this.data = data;
+		}
+		
+		public int getPacked() {
+			return packed;
+		}
+		
+		public long getNextUpdate() {
+			return nextUpdate;
+		}
+		
+		public int getData() {
+			return data;
+		}
+	}
+	
+	public static CompoundMap convertV1V2(CompoundMap map) {
+		List<? extends CompoundTag> updateList = checkerListCompoundTag.checkTag(map.get("dynamic_updates"));
+		
+		List<DynamicBlockUpdateV1> loadedUpdates = new ArrayList<DynamicBlockUpdateV1>(10);
+
+		loadDynamicUpdatesV1(updateList, loadedUpdates);
+		
+		ListTag<CompoundTag> newList = saveDynamicUpdatesV2(loadedUpdates);
+		
+		map.put(newList);
+		
+		return map;
+	}
+	
+	private static void loadDynamicUpdatesV1(List<? extends CompoundTag> list, List<DynamicBlockUpdateV1> loadedUpdates) {
+		if (list == null) {
+			return;
+		}
+
+		for (CompoundTag compoundTag : list) {
+			DynamicBlockUpdateV1 update = loadDynamicUpdateV1(compoundTag);
+			if (update == null) {
+				continue;
+			}
+
+			loadedUpdates.add(update);
+		}
+	}
+
+	private static DynamicBlockUpdateV1 loadDynamicUpdateV1(CompoundTag compoundTag) {
+		final CompoundMap map = compoundTag.getValue();
+		int packed = SafeCast.toInt(NBTMapper.toTagValue(map.get("packedv2")), -1);
+		if (packed == -1) {
+			packed = SafeCast.toInt(NBTMapper.toTagValue(map.get("packed")), -1);
+			if (packed < 0) {
+				return null;
+			} else {
+				int x = 0xFF & ByteTripleHashed.key1(packed);
+				int y = 0xFF & ByteTripleHashed.key2(packed);
+				int z = 0xFF & ByteTripleHashed.key3(packed);
+				packed = SignedTenBitTripleHashed.key(x, y, z);
+			}
+		}
+		final long nextUpdate = SafeCast.toLong(NBTMapper.toTagValue(map.get("nextUpdate")), -1L);
+		if (nextUpdate < 0) {
+			return null;
+		}
+
+		final int data = SafeCast.toInt(NBTMapper.toTagValue(map.get("data")), 0);
+		return new DynamicBlockUpdateV1(packed, nextUpdate, data);
+	}
+	
+	private static ListTag<CompoundTag> saveDynamicUpdatesV2(List<DynamicBlockUpdateV1> updates) {
+		List<CompoundTag> list = new ArrayList<CompoundTag>(updates.size());
+
+		for (DynamicBlockUpdateV1 update : updates) {
+			CompoundTag tag = saveDynamicUpdateV2(update);
+			if (tag != null) {
+				list.add(tag);
+			}
+		}
+
+		return new ListTag<CompoundTag>("dynamic_updates", CompoundTag.class, list);
+	}
+
+	private static CompoundTag saveDynamicUpdateV2(DynamicBlockUpdateV1 update) {
+		CompoundMap map = new CompoundMap();
+
+		map.put(new IntTag("packedPosition", update.getPacked()));
+		map.put(new LongTag("nextUpdate", update.getNextUpdate()));
+		map.put(new IntTag("data", update.getData()));
+
+		return new CompoundTag("update", map);
 	}
 	
 }

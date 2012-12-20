@@ -2257,7 +2257,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		entitiesModified.compareAndSet(false, true);
 	}
 
-	protected void setModified() {
+	public void setModified() {
 		if (chunkModified.compareAndSet(false, true)) {
 			setAutosaveTicks(autosaveInterval);
 		}
