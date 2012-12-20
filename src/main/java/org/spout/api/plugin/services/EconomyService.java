@@ -107,6 +107,32 @@ public abstract class EconomyService {
 
 
 	/**
+	 * Attempts to transfer the given amount from one account to another.<br/>
+	 * 
+	 * <p>This call will check if the from account has enough funds, then attempt to deposit funds into the to account.<br/>
+	 * If there is an issue depositing funds into the to account, the transfer fails immediately.  
+	 * Next, it will then attempt to remove the amount from the from account, if this fails for any reason, it will attempt to remove the funds from the TO account.<br/>
+	 * This may result in an edge case where the funds are left in the TO account but were never removed out of the FROM account.</p>
+	 * 
+	 * @param account from
+	 * @param account to
+	 * @param amount to transfer
+	 * @return if the transfer was successful
+	 */
+	public boolean transfer(String from, String to, double amount) {
+		if (has(from, amount)) {
+			if (deposit(to, amount)) {
+				if(!withdraw(from, amount)) {
+					withdraw(to, amount);
+				} else {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Checks if the account exists in the economy service.
 	 * 
 	 * @param name of the account
@@ -125,6 +151,13 @@ public abstract class EconomyService {
 	public boolean has(Player player, double amount) {
 		return has(player.getName(), amount);
 	}
+
+	/**
+	 * Creates the account.
+	 * @param name of the account
+	 * @return true if the operation was successfull
+	 */
+	public abstract boolean create(String name);
 
 	/**
 	 * This is a copied-method that assumes the player's name is their account name and<br/>
@@ -213,6 +246,32 @@ public abstract class EconomyService {
 	 * @return formatted string
 	 */
 	public abstract String formatShort(double amount);
+
+	/**
+	 * This will return a list of the top account names from the Economy.<br/>
+	 * If playersOnly is true, only player accounts will be returned from the Economy.<br/>
+	 * 
+	 * An implementation should allow -1 for the end value to assume all accounts.<br/>
+	 * Depending on how the economy loads and stores accounts, this method may be particularly slow for getting large numbers of accounts.<br/>
+	 * 
+	 * @param the start number, 1 for the account with the most money.
+	 * @param the end number, must be greater than the start.
+	 * @param only players
+	 * @return ordered list of accounts
+	 */
+	public abstract List<String> getTopAccounts(int start, int end, boolean playersOnly);
+
+	/**
+	 * This is a copied-method that assumes you only want the top player accounts<br/>
+	 * See {@link #getTopAccounts()}
+	 * 
+	 * @param the start number, 1 for the account with the most money.
+	 * @param the end number, must be greater than the start.
+	 * @return ordered list of top player accounts within the range
+	 */
+	public List<String> getTopPlayerAccounts(int start, int end) {
+		return getTopAccounts(start, end, true);
+	}
 
 	/**
 	 * Some economy services round off after a specific number of digits.<br/>
@@ -323,6 +382,33 @@ public abstract class EconomyService {
 	}
 
 	/**
+	 * MULTICURRENCY ONLY: Attempts to transfer the given amount from one account to another of the specified currency.<br/>
+	 * 
+	 * <p>This call will check if the from account has enough funds, then attempt to deposit funds into the to account.<br/>
+	 * If there is an issue depositing funds into the to account, the transfer fails immediately.  
+	 * Next, it will then attempt to remove the amount from the from account, if this fails for any reason, it will attempt to remove the funds from the TO account.<br/>
+	 * This may result in an edge case where the funds are left in the TO account but were never removed out of the FROM account.</p>
+	 * 
+	 * @param account from
+	 * @param account to
+	 * @param amount to transfer
+	 * @param name of the currency
+	 * @return if the transfer was successful
+	 */
+	public boolean transfer(String from, String to, double amount, String currency) {
+		if (has(from, amount, currency)) {
+			if (deposit(to, amount, currency)) {
+				if(!withdraw(from, amount, currency)) {
+					withdraw(to, amount, currency);
+				} else {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * MULTICURRENCY ONLY: Checks if the given account has at least as much as the amount specified of the given currency.
 	 * 
 	 * @param name of the account to check
@@ -365,4 +451,42 @@ public abstract class EconomyService {
 	public double get(Player player, String currency) {
 		return get(player.getName(), currency);
 	}
+
+	/**
+	 * MULTICURRENCY ONLY: This will return a list of the top account names from the Economy.<br/>
+	 * If playersOnly is true, only player accounts will be returned from the Economy.<br/>
+	 * 
+	 * It is assumed that a start value of 1 will return the highest value account.<br/>
+	 * An implementation should allow -1 for the end value to assume all accounts.<br/>
+	 * Depending on how the economy loads and stores accounts, this method may be particularly slow for getting large numbers of accounts.
+	 * 
+	 * @param the start number, 1 for the account with the most money.
+	 * @param the end number, must be greater than the start.
+	 * @param currency name to check
+	 * @param only players
+	 * @return 
+	 */
+	public abstract List<String> getTopAccounts(int start, int end, String currency, boolean playersOnly);
+
+	/**
+	 * MULTICURRENCY ONLY: This is a copied-method that assumes you only want the top player accounts of a given currency<br/>
+	 * See {@link #getTopAccounts()}
+	 * 
+	 * @param the start number, 1 for the account with the most money.
+	 * @param the end number, must be greater than the start.
+	 * @return ordered list of player accounts
+	 */
+	public List<String> getTopPlayerAccounts(int start, int end, String currency) {
+		return getTopAccounts(start, end, currency, true);
+	}
+
+	/**
+	 * MULTICURRENCY ONLY: returns the given exchange rate as a double value between the two given currencies.<br/>
+	 * This result is: 1 currencyFrom equals X of currency to.
+	 * 
+	 * @param currency going from
+	 * @param currency going to
+	 * @return how much currencyTo you get for 1 currencyFrom
+	 */
+	public abstract double getExchangeRate(String currencyFrom, String currencyTo);
 }
