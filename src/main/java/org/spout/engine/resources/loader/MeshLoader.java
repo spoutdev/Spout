@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import org.spout.api.Spout;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.mesh.MeshFace;
@@ -66,6 +67,9 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 			}
 			if (s.startsWith("f ")) {
 				String[] sp = s.split(" ");
+				if(sp.length > 4){
+					throw new RuntimeException(".obj files must be triangulated.  Re-export the mesh with triangles, not quads");				
+				}
 
 				if (sp[1].contains("//")) {
 					normal = true;
