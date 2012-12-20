@@ -26,24 +26,19 @@
  */
 package org.spout.engine.world.collision;
 
-import javax.vecmath.Vector3f;
-
 import org.spout.api.geo.cuboid.Region;
 
 import com.bulletphysics.collision.shapes.voxel.VoxelPhysicsWorld;
 import com.bulletphysics.collision.shapes.voxel.VoxelWorldShape;
-import com.bulletphysics.linearmath.Transform;
 
-public class RegionShape extends VoxelWorldShape{
+public final class RegionShape extends VoxelWorldShape{
 	private final Region region;
 	public RegionShape(VoxelPhysicsWorld world, Region region) {
 		super(world);
 		this.region = region;
 	}
-	
-	@Override
-	public void getAabb(Transform trans, Vector3f aabbMin, Vector3f aabbMax) {
-		//trans.origin
-	}
 
+	public Region getRegion() {
+		return region;
+	}
 }

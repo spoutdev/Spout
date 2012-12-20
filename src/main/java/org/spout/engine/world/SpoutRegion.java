@@ -112,6 +112,7 @@ import org.spout.engine.util.TripleInt;
 import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
+import org.spout.engine.world.collision.RegionShape;
 import org.spout.engine.world.collision.SpoutPhysicsWorld;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 import org.spout.engine.world.dynamic.DynamicBlockUpdateTree;
@@ -285,7 +286,7 @@ public class SpoutRegion extends Region {
 		simulation.setGravity(new Vector3f(0, -9.81F, 0));
 		simulation.getDispatchInfo().allowedCcdPenetration = 5f;
 		final SpoutPhysicsWorld physicsInfo = new SpoutPhysicsWorld(this);
-		final VoxelWorldShape simulationShape = new VoxelWorldShape(physicsInfo);
+		final VoxelWorldShape simulationShape = new RegionShape(physicsInfo, this);
 		final Matrix3f rot = new Matrix3f();
 		rot.setIdentity();
 		final DefaultMotionState regionMotionState = new DefaultMotionState(new Transform(new Matrix4f(rot, new Vector3f(0, 0, 0), 1.0f)));
