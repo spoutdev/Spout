@@ -26,21 +26,22 @@
  */
 package org.spout.api.plugin.services;
 
+import java.util.List;
+
 import org.spout.api.Spout;
 import org.spout.api.entity.Player;
 
 /**
- * The economy service is a basic service that can be extended and registered as a service provider.
- * To implement your own economy, create a new class which extends EconomyService and overrides
- * the abstract methods.
- * To register your EconomyService you will need to do something similar to:
+ * The economy service is a basic service that can be extended and registered as a service provider.<br/>
+ * To implement your own economy, create a new class which extends EconomyService and overrides the abstract methods.<br/>
+ * 
+ * To register your EconomyService you will need to do something similar to:<br/>
  * <code>getServiceManager().register(EconomyService.class, myEconomyInstance, myPlugin, ServicePriority)</code>
  * 
  * For plugins that wish to get the current economy provider, they will need to:
- * {@link EconomyService#getEconomy()}</code> this method can possibly return null, if an economy service
- * has not been registered yet with the ServiceManager.  
+ * {@link EconomyService#getEconomy()} this method can possibly return null, if an economy service has not been registered yet with the ServiceManager.  
  * 
- * Another option is to hook the {@link ServiceRegisterEvent}
+ * Another option is to hook the {@link ServiceRegisterEvent} and get the service provider that is being registered in the event.
  *
  */
 public abstract class EconomyService {
@@ -85,7 +86,8 @@ public abstract class EconomyService {
 	public abstract double get(String name);
 
 	/**
-	 * Withdraws the given amount from the account name specified, this operation should fail if the account would drop below 0.
+	 * Withdraws the given amount from the account name specified<br/>
+	 * This operation should fail if the account would drop below 0.
 	 * 
 	 * @param name of the account to withdraw from
 	 * @param amount to withdraw from the account
@@ -94,7 +96,8 @@ public abstract class EconomyService {
 	public abstract boolean withdraw(String name, double amount);
 
 	/**
-	 * Deposits the given amount into the account specific, this operation should only fail if the economy implementation has maximum values for accounts.
+	 * Deposits the given amount into the account specified.<br/> 
+	 * This operation should only fail if the economy implementation has maximum values for accounts.
 	 * 
 	 * @param name of the account to deposit into
 	 * @param amount to deposit into the account
@@ -170,17 +173,17 @@ public abstract class EconomyService {
 	}
 
 	/**
-	 * Returns the name of the currency in singular form.
+	 * Returns the name of the default currency in singular form.
 	 * 
-	 * @return name of the currency (singular)
+	 * @return name of the default currency (singular)
 	 */
 	public abstract String getCurrencyNameSingular();
 
 
 	/**
-	 * Returns the name of the currency in plural form.
+	 * Returns the name of the default currency in plural form.
 	 * 
-	 * @return name of the currency (plural)
+	 * @return name of the default currency (plural)
 	 */
 	public abstract String getCurrencyNamePlural();
 
@@ -194,7 +197,8 @@ public abstract class EconomyService {
 	public abstract String getCurrencySymbol();
 
 	/**
-	 * Returns a string formatted with the given currency names.
+	 * Returns a string formatted with the default currency name.<br/>
+	 * Please see {@link EconomyService#formatShort()} for use with signs, or for the shorter symbol based output.
 	 * 
 	 * @param amount to format
 	 * @return formatted string
@@ -209,7 +213,7 @@ public abstract class EconomyService {
 	 * @return formatted string
 	 */
 	public abstract String formatShort(double amount);
-	
+
 	/**
 	 * Some economy services round off after a specific number of digits.<br/>
 	 * This function returns the number of digits the service keeps or -1 if no rounding occurs.<br/>
@@ -218,4 +222,147 @@ public abstract class EconomyService {
 	 * @return number of digits after the decimal point kept
 	 */
 	public abstract int numSignificantDigits();
+
+	/**
+	 * Whether this economy supports Multiple currencies or not.
+	 * 
+	 * @return true if the economy supports multiple currencies.
+	 */
+	public abstract boolean hasMulticurrencySupport();
+
+	/**
+	 * MULTICURRENCY ONLY:  Get the list of currency names, these should be the singular names.<br/>
+	 * It is necessary that this list return an ordered list that will not change over restarts.
+	 * 
+	 * @return list of currency names
+	 */
+	public abstract List<String> getCurrencyNames();
+
+	/**
+	 * MULTICURRENCY ONLY: Returns the plural form of the given currency name.
+	 * 
+	 * @param singular name
+	 * @return plural name
+	 */
+	public abstract String getCurrencyNamePlural(String name);
+
+	/**
+	 * MULTICURRENCY ONLY: Returns the symbol of the given currency.
+	 * 
+	 * @param name of the currency
+	 * @return the currency's symbol
+	 */
+	public abstract String getCurrencySymbol(String name);
+
+	/**
+	 * MULTICURRENCY ONLY: Returns a formatted amount of the given currency name.<br/>
+	 * Please see {@link EconomyService#formatShort()} for use with signs, or for the shorter symbol based output.
+	 * 
+	 * @param name of the currency
+	 * @param amount
+	 * @return formatted output of the amount
+	 */
+	public abstract String format(String name, double amount);
+
+	/**
+	 * MULTICURRENCY ONLY: Returns a short formatted version of the amount with the given currency.<br/>
+	 * This should be used for signs, or other places where you'd like to format the amount using the symbol.
+	 * 
+	 * @param name
+	 * @param amount
+	 * @return formatted amount using the currency symbol.
+	 */
+	public abstract String formatShort(String name, double amount);
+
+	/**
+	 * MULTICURRENCY ONLY: Withdraws the given amount of the specified currency from the account given.<br/>
+	 * This operation should fail if the account would drop below 0.
+	 * 
+	 * @param name of the account to withdraw from
+	 * @param amount to withdraw from the account
+	 * @param currency name
+	 * @return true if the withdrawal was successful
+	 */
+	public abstract boolean withdraw(String name, double amount, String currency);
+
+	/**
+	 * MULTICURRENCY ONLY: This is a copied-method that assumes the player's name is their account name and<br/>
+	 * Withdraws the given amount from the account name specified, this operation should fail if the account would drop below 0.
+	 * 
+	 * @param player of the account to withdraw from
+	 * @param amount to withdraw from the account
+	 * @param currency name
+	 * @return true if the withdrawal was successful
+	 */
+	public boolean withdraw(Player player, double amount, String currency) {
+		return withdraw(player.getName(), amount, currency);
+	}
+
+	/**
+	 * Deposits the given amount of the currency into the account specified<br/>
+	 * This operation should only fail if the economy implementation has maximum values for accounts.
+	 * 
+	 * @param name of the account to deposit into
+	 * @param amount to deposit into the account
+	 * @param currency name
+	 * @return true if the deposit was successful
+	 */
+	public abstract boolean deposit(String name, double amount, String currency);
+
+	/**
+	 * MULTICURRENCY ONLY: This is a copied-method that assumes the player's name is their account name and deposits the given amount into the account specific.<br/> 
+	 * This operation should only fail if the economy implementation has maximum values for accounts.
+	 * 
+	 * @param player of the account to deposit into
+	 * @param amount to deposit into the account
+	 * @param currency name
+	 * @return true if the deposit was successful
+	 */
+	public boolean deposit(Player player, double amount, String currency) {
+		return deposit(player.getName(), amount, currency);
+	}
+
+	/**
+	 * MULTICURRENCY ONLY: Checks if the given account has at least as much as the amount specified of the given currency.
+	 * 
+	 * @param name of the account to check
+	 * @param amount to check if the account has
+	 * @param currency name
+	 * @return true if the account has the given amount
+	 */
+	public abstract boolean has(String name, double amount, String currency);
+
+	/**
+	 * MULTICURRENCY ONLY: Returns the balance of the given account name for the specified currency.
+	 * 
+	 * @param name of the account to check
+	 * @param currency name
+	 * @return double balance of the account
+	 */
+	public abstract double get(String name, String currency);
+
+	/**
+	 * MULTICURRENCY ONLY: This is a copied-method that assumes the player's name is their account name and<br/>
+	 * Checks if the given account has at least as much as the amount specified.
+	 * 
+	 * @param player of the account to check
+	 * @param amount to check if the account has
+	 * @param currency name
+	 * @return true if the account has the given amount
+	 */
+	public boolean has(Player player, double amount, String currency) {
+		return has(player.getName(), amount, currency);
+	}
+
+	/**
+	 * MULTICURRENCY ONLY: This is a copied-method that assumes the player's name is their account name and<br/>
+	 * Returns the balance of the given account name.
+	 * 
+	 * @param player of the account to check
+	 * @param currency name
+	 * @return double balance of the account
+	 */
+	public double get(Player player, String currency) {
+		return get(player.getName(), currency);
+	}
 }
