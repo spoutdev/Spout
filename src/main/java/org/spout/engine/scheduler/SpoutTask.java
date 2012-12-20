@@ -74,7 +74,7 @@ public class SpoutTask implements Task, LongPrioritized {
 	 * The number of ticks between each call to the Runnable.
 	 */
 	private final long period;
-	/** 
+	/**
 	 * Indicates if the task is a synchronous task or an async task
 	 */
 	private final boolean sync;
@@ -92,7 +92,7 @@ public class SpoutTask implements Task, LongPrioritized {
 	 * Indicates if the task is being deferred and when it started
 	 */
 	private long deferBegin = -1;
-	
+
 	/**
 	 * The manager associated with this task
 	 */
@@ -112,7 +112,7 @@ public class SpoutTask implements Task, LongPrioritized {
 	 * Info about sub-tasks
 	 */
 	private ParallelTaskInfo parallelInfo;
-	
+
 	/**
 	 * Creates a new task with the specified number of ticks between consecutive
 	 * calls to {@link #execute()}.
@@ -132,10 +132,10 @@ public class SpoutTask implements Task, LongPrioritized {
 		this.scheduler = scheduler;
 		this.longLife = longLife;
 	}
-	
+
 	/**
 	 * Creates a copy of this task for a particular Region
-	 * 
+	 *
 	 * @param region the region
 	 * @return the new task instance
 	 */
@@ -160,7 +160,7 @@ public class SpoutTask implements Task, LongPrioritized {
 	public boolean isSync() {
 		return sync;
 	}
-	
+
 	@Override
 	public boolean isExecuting() {
 		return executing.get();
@@ -170,25 +170,30 @@ public class SpoutTask implements Task, LongPrioritized {
 	public Object getOwner() {
 		return owner;
 	}
-	
+
 	@Override
 	public boolean isAlive() {
 		return !queueState.get().isDead();
 	}
-	
+
 	@Override
 	public boolean isLongLived() {
 		return longLife;
 	}
-	
+
+	@Override
+	public void cancel() {
+		manager.cancelTask(taskId);
+	}
+
 	public long getNextCallTime() {
 		return nextCallTime.get();
 	}
-	
+
 	protected long getPeriod() {
 		return this.period;
 	}
-	
+
 	protected long getDelay() {
 		return this.delay;
 	}
@@ -202,7 +207,7 @@ public class SpoutTask implements Task, LongPrioritized {
 
 	/**
 	 * Executes the task.  The task will fail to execute if it is no longer running, if it is called early, or if it is already executing.
-	 * 
+	 *
 	 * @return The task successfully executed.
 	 */
 	boolean pulse() {
@@ -216,7 +221,7 @@ public class SpoutTask implements Task, LongPrioritized {
 				return false;
 			}
 		}
-		
+
 		if (!executing.compareAndSet(false, true)) {
 			return false;
 		}
@@ -235,23 +240,23 @@ public class SpoutTask implements Task, LongPrioritized {
 
 		return true;
 	}
-	
+
 	public void remove() {
 		queueState.set(QueueState.DEAD);
 	}
-	
+
 	public boolean setQueued() {
 		if (!queueState.compareAndSet(QueueState.UNQUEUED, QueueState.QUEUED)) {
 			boolean success = false;
 			while (!success) {
 				QueueState oldState = queueState.get();
 				switch (oldState) {
-					case DEAD: 
+					case DEAD:
 						return false;
-					case QUEUED: 
+					case QUEUED:
 						throw new IllegalStateException("Task added in the queue twice without being removed");
 					case UNQUEUED:
-						success = queueState.compareAndSet(QueueState.UNQUEUED, QueueState.QUEUED); 
+						success = queueState.compareAndSet(QueueState.UNQUEUED, QueueState.QUEUED);
 						break;
 					default:
 						throw new IllegalStateException("Unknown queue state " + oldState);
@@ -260,19 +265,19 @@ public class SpoutTask implements Task, LongPrioritized {
 		}
 		return true;
 	}
-	
+
 	public boolean setUnqueued() {
 		if (!queueState.compareAndSet(QueueState.QUEUED, QueueState.UNQUEUED)) {
 			boolean success = false;
 			while (!success) {
 				QueueState oldState = queueState.get();
 				switch (oldState) {
-					case DEAD: 
+					case DEAD:
 						return false;
-					case UNQUEUED: 
+					case UNQUEUED:
 						throw new IllegalStateException("Task set as unqueued before being set as queued");
 					case QUEUED:
-						success = queueState.compareAndSet(QueueState.QUEUED, QueueState.UNQUEUED); 
+						success = queueState.compareAndSet(QueueState.QUEUED, QueueState.UNQUEUED);
 						break;
 					default:
 						throw new IllegalStateException("Unknown queue state " + oldState);
@@ -288,24 +293,24 @@ public class SpoutTask implements Task, LongPrioritized {
 		String ownerName = owner == null || !(owner instanceof Named) ? "null" : ((Named) owner).getName();
 		return this.getClass().getSimpleName() + "{" + getTaskId() + ", " + ownerName + "}";
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return taskId;
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == this) {
 			return true;
 		} else if (o instanceof SpoutTask) {
-			SpoutTask other = (SpoutTask)o;
+			SpoutTask other = (SpoutTask) o;
 			return other.taskId == taskId;
 		} else {
 			return false;
 		}
 	}
-	
+
 	private boolean attemptDefer() {
 		if (priority.getMaxDeferred() <= 0) {
 			return false;
@@ -323,11 +328,10 @@ public class SpoutTask implements Task, LongPrioritized {
 		return true;
 	}
 
-	
 	private void updateCallTime() {
 		updateCallTime(period);
 	}
-	
+
 	private boolean updateCallTime(long offset) {
 		boolean success = setQueued();
 		if (!success) {
@@ -337,7 +341,7 @@ public class SpoutTask implements Task, LongPrioritized {
 			long now = manager.getUpTime();
 			if (nextCallTime.addAndGet(offset) <= now) {
 				nextCallTime.set(now + 1);
-			}		
+			}
 		} finally {
 			setUnqueued();
 		}
@@ -352,7 +356,7 @@ public class SpoutTask implements Task, LongPrioritized {
 
 		return parallelInfo.getTask(region);
 	}
-	
+
 	public void setParallelInfo(ParallelTaskInfo info) {
 		this.parallelInfo = info;
 	}
@@ -361,21 +365,20 @@ public class SpoutTask implements Task, LongPrioritized {
 	public long getPriority() {
 		return nextCallTime.get();
 	}
-	
+
 	private static enum QueueState {
 		QUEUED, UNQUEUED, DEAD;
-		
+
 		public boolean isDead() {
 			return this == DEAD;
 		}
-		
+
 		public boolean isQueued() {
 			return this == QUEUED;
 		}
-		
+
 		public boolean isUnQueued() {
 			return this == UNQUEUED;
 		}
 	}
-
 }

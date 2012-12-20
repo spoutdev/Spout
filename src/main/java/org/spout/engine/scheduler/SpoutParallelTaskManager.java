@@ -89,42 +89,42 @@ public class SpoutParallelTaskManager implements TaskManager {
 	}
 
 	@Override
-	public int scheduleSyncDelayedTask(Object plugin, Runnable task) {
+	public Task scheduleSyncDelayedTask(Object plugin, Runnable task) {
 		return scheduleSyncDelayedTask(plugin, task, TaskPriority.CRITICAL);
 	}
 	
 	@Override
-	public int scheduleSyncDelayedTask(Object plugin, Runnable task, TaskPriority priority) {
+	public Task scheduleSyncDelayedTask(Object plugin, Runnable task, TaskPriority priority) {
 		return scheduleSyncDelayedTask(plugin, task, 0, priority);
 	}
 	
 	@Override
-	public int scheduleSyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
+	public Task scheduleSyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
 		return scheduleSyncRepeatingTask(plugin, task, delay, -1, priority);
 	}
 
 	@Override
-	public int scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority) {
+	public Task scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority) {
 		return schedule(new SpoutTask(this, scheduler, plugin, task, true, delay, period, priority, false));
 	}
 
 	@Override
-	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
+	public Task scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
 		throw new UnsupportedOperationException("Async tasks can only be initiated by the task manager for the server");
 	}
 
 	@Override
-	public int scheduleAsyncTask(Object plugin, Runnable task) {
+	public Task scheduleAsyncTask(Object plugin, Runnable task) {
 		throw new UnsupportedOperationException("Async tasks can only be initiated by the task manager for the server");
 	}
 	
 	@Override
-	public int scheduleAsyncTask(Object plugin, Runnable task, boolean longLife) {
+	public Task scheduleAsyncTask(Object plugin, Runnable task, boolean longLife) {
 		throw new UnsupportedOperationException("Async tasks can only be initiated by the task manager for the server");
 	}
 
 	@Override
-	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority, boolean longLife) {
+	public Task scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority, boolean longLife) {
 		throw new UnsupportedOperationException("Async tasks can only be initiated by the task manager for the server");
 	}
 	
@@ -175,13 +175,13 @@ public class SpoutParallelTaskManager implements TaskManager {
 		}
 	}
 	
-	protected int schedule(SpoutTask task) {
+	protected Task schedule(SpoutTask task) {
 		ParallelTaskInfo info = new ParallelTaskInfo(task);
 		if (task.getPeriod() > 0) {
 			activeTasks.put(task.getTaskId(), info);
 		}
 		newTasks.add(task);
-		return task.getTaskId();
+		return task;
 	}
 	
 	public void registerRegion(SpoutRegion r) {
@@ -199,6 +199,11 @@ public class SpoutParallelTaskManager implements TaskManager {
 		if (info != null) {
 			info.stop();
 		}
+	}
+
+	@Override
+	public void cancelTask(Task task) {
+		cancelTask(task.getTaskId());
 	}
 
 	@Override

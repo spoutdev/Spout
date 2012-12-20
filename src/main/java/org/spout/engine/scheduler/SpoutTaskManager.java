@@ -84,44 +84,44 @@ public class SpoutTaskManager implements TaskManager {
 	}
 
 	@Override
-	public int scheduleSyncDelayedTask(Object plugin, Runnable task) {
+	public Task scheduleSyncDelayedTask(Object plugin, Runnable task) {
 		return scheduleSyncDelayedTask(plugin, task, 0, TaskPriority.CRITICAL);
 	}
 	
 	@Override
-	public int scheduleSyncDelayedTask(Object plugin, Runnable task, TaskPriority priority) {
+	public Task scheduleSyncDelayedTask(Object plugin, Runnable task, TaskPriority priority) {
 		return scheduleSyncDelayedTask(plugin, task, 0, priority);
 	}
 	
 	@Override
-	public int scheduleSyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
+	public Task scheduleSyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
 		return scheduleSyncRepeatingTask(plugin, task, delay, -1, priority);
 	}
 
 	@Override
-	public int scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority) {
+	public Task scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority) {
 		return schedule(new SpoutTask(this, scheduler, plugin, task, true, delay, period, priority, false));
 	}
 
 	@Override
-	public int scheduleAsyncTask(Object plugin, Runnable task) {
+	public Task scheduleAsyncTask(Object plugin, Runnable task) {
 		return scheduleAsyncTask(plugin, task, false);
 	}
 	
 	@Override
-	public int scheduleAsyncTask(Object plugin, Runnable task, boolean longLife) {
+	public Task scheduleAsyncTask(Object plugin, Runnable task, boolean longLife) {
 		return scheduleAsyncDelayedTask(plugin, task, 0, TaskPriority.CRITICAL, longLife);
 	}
 	
 	@Override
-	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
-		return scheduleAsyncDelayedTask(plugin, task, delay, priority);
+	public Task scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
+		return scheduleAsyncDelayedTask(plugin, task, delay, priority, true);
 	}
 	
 	@Override
-	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority, boolean longLife) {
+	public Task scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority, boolean longLife) {
 		if (!alive.get()) {
-			return -1;
+			return null;
 		} else if (!mainThread) {
 			throw new UnsupportedOperationException("Async tasks can only be initiated by the task manager for the server");
 		} else {
@@ -166,7 +166,7 @@ public class SpoutTaskManager implements TaskManager {
 		}
 	}
 
-	public void cancelTask(SpoutTask task) {
+    public void cancelTask(SpoutTask task) {
 		synchronized (scheduleLock) {
 			task.stop();
 			if (taskQueue.remove(task)) {
@@ -181,10 +181,10 @@ public class SpoutTaskManager implements TaskManager {
 		}
 	}
 	
-	public int schedule(SpoutTask task) {
+	public Task schedule(SpoutTask task) {
 		synchronized (scheduleLock) {
 			if (!addTask(task)) {
-				return task.getTaskId();
+				return task;
 			}
 			if (!task.isSync()) {
 				SpoutWorker worker = new SpoutWorker(task, this);
@@ -193,11 +193,11 @@ public class SpoutTaskManager implements TaskManager {
 			} else {
 				taskQueue.add(task);
 			}
-			return task.getTaskId();
+			return task;
 		}
 	}
 	
-	protected int repeatSchedule(SpoutTask task) {
+	protected Task repeatSchedule(SpoutTask task) {
 		synchronized (scheduleLock) {
 			if (task.isAlive()) {
 				schedule(task);
@@ -205,7 +205,7 @@ public class SpoutTaskManager implements TaskManager {
 				removeTask(task);
 			}
 		}
-		return task.getTaskId();
+		return task;
 	}
 	
 	public void addWorker(SpoutWorker worker, SpoutTask task) {
@@ -236,6 +236,11 @@ public class SpoutTaskManager implements TaskManager {
 	@Override
 	public void cancelTask(int taskId) {
 		cancelTask(activeTasks.get(taskId));
+	}
+
+	@Override
+	public void cancelTask(Task task) {
+		cancelTask(activeTasks.get(task.getTaskId()));
 	}
 
 	@Override
