@@ -29,6 +29,7 @@ package org.spout.api.io.nbt;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.spout.api.Spout;
 import org.spout.api.math.Vector3;
 import org.spout.nbt.FloatTag;
 import org.spout.nbt.ListTag;
@@ -66,7 +67,7 @@ public class Vector3Tag extends ListTag<FloatTag> {
 	}
 	
 	public static Vector3 getValue(List<FloatTag> list) {
-		if (list == null || list.size() != 4) {
+		if (list == null || list.size() != 3) {
 			return null;
 		}
 		Float x = NBTMapper.toTagValue(list.get(0), Float.class, null);

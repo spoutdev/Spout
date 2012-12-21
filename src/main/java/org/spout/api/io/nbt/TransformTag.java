@@ -34,19 +34,26 @@ import org.spout.api.math.Vector3;
 import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
 import org.spout.nbt.Tag;
-import org.spout.nbt.util.NBTMapper;
 
 public class TransformTag extends CompoundTag {
 
 	public TransformTag(String name, Transform t) {
-		super(name, transformToMap(t));
+		this(name, t.getPosition(), t.getRotation(), t.getScale());
 	}
 	
-	private static CompoundMap transformToMap(Transform t) {
+	public TransformTag(String name, float px, float py, float pz, float qx, float qy, float qz, float qw, float sx, float sy, float sz) {
+		this(name, new Vector3(px, py, pz), new Quaternion(qx, qy, qz, qw, false), new Vector3(sx, sy, sz));
+	}
+	
+	public TransformTag(String name, Vector3 p, Quaternion q, Vector3 s) {
+		super(name, toMap(p, q, s));
+	}
+	
+	private static CompoundMap toMap(Vector3 p, Quaternion q, Vector3 s) {
 		CompoundMap map = new CompoundMap();
-		map.put(new Vector3Tag("pos", t.getPosition()));
-		map.put(new QuaternionTag("rot", t.getRotation()));
-		map.put(new Vector3Tag("scale", t.getScale()));
+		map.put(new Vector3Tag("pos", p));
+		map.put(new QuaternionTag("rot", q));
+		map.put(new Vector3Tag("scale", s));
 		return map;
 	}
 	
