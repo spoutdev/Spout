@@ -1010,6 +1010,10 @@ public class SpoutWorld extends AsyncManager implements World {
 	public SpoutColumn getColumn(int x, int z) {
 		return getColumn(x, z, false);
 	}
+	
+	public SpoutColumn[] getColumns() {
+		return columns.values(new SpoutColumn[0]);
+	}
 
 	private BAAWrapper getColumnHeightMapBAA(int x, int z) {
 		int cx = x >> Region.CHUNKS.BITS;
@@ -1022,7 +1026,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		if (baa == null) {
 			File columnDirectory = new File(worldDirectory, "col");
 			columnDirectory.mkdirs();
-			File file = new File(columnDirectory, "col" + cx + "_" + cz + ".scl");
+			File file = new File(columnDirectory, "col" + cx + "_" + cz + ".sco");
 			baa = new BAAWrapper(file, 1024, 256, RegionFileManager.TIMEOUT);
 			BAAWrapper oldBAA = heightMapBAAs.putIfAbsent(cx, cz, baa);
 			if (oldBAA != null) {

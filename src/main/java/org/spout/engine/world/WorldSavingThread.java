@@ -115,6 +115,12 @@ public class WorldSavingThread extends Thread{
 		}
 		Collection<World> worlds = Spout.getEngine().getWorlds();
 		for (World w : worlds) {
+			SpoutColumn[] columns = ((SpoutWorld) w).getColumns();
+			for (SpoutColumn c : columns) {
+				c.syncSave();
+			}
+		}
+		for (World w : worlds) {
 			((SpoutWorld) w).getRegionFileManager().stopTimeoutThread();
 		}
 		for (World w : worlds) {

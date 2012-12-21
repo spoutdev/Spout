@@ -27,7 +27,6 @@
 package org.spout.engine.filesystem.versioned;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -40,9 +39,21 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFullState;
+import org.spout.api.util.NBTMapper;
 import org.spout.api.util.StringMap;
+import org.spout.api.util.hashing.NibblePairHashed;
+import org.spout.api.util.sanitation.SafeCast;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.world.SpoutColumn;
+import org.spout.nbt.ByteArrayTag;
+import org.spout.nbt.ByteTag;
+import org.spout.nbt.CompoundMap;
+import org.spout.nbt.CompoundTag;
+import org.spout.nbt.IntArrayTag;
+import org.spout.nbt.IntTag;
+import org.spout.nbt.StringTag;
+import org.spout.nbt.stream.NBTInputStream;
+import org.spout.nbt.stream.NBTOutputStream;
 
 public class ColumnFiles {
 	
@@ -54,91 +65,113 @@ public class ColumnFiles {
 			return;
 		}
 
+		NBTInputStream is = null;
 		DataInputStream dataStream = new DataInputStream(in);
 		try {
-			for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
-				for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
-					column.getAtomicInteger(x, z).set(dataStream.readInt());
-				}
-			}
+			is = new NBTInputStream(dataStream, false);
+			CompoundTag chunkTag = (CompoundTag) is.readTag();
+			CompoundMap map = chunkTag.getValue();
 
-			int version = dataStream.readInt();
-			
+			byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), (byte) -1);
+
+			boolean converted = false;
+
 			if (version > COLUMN_VERSION) {
-				Spout.getLogger().log(Level.SEVERE, "Column version " + version + " exceeds maximum allowed value of " + COLUMN_VERSION);
+				Spout.getLogger().log(Level.SEVERE, "Chunk version " + version + " exceeds maximum allowed value of " + COLUMN_VERSION);
 				initColumn(column, lowestY, topmostBlocks);
 				return;
 			} else if (version < COLUMN_VERSION) {
-				// TODO - Add conversion code here
-				Spout.getLogger().log(Level.SEVERE, "Outdated Column version " + version);
-				initColumn(column, lowestY, topmostBlocks);
-				return;
+				if (version <= 0) {
+					Spout.getLogger().log(Level.SEVERE, "Invalid column version " + version);
+					initColumn(column, lowestY, topmostBlocks);
+					return;
+				}
+				converted = true;
+				// Added conversion code here
 			}
 
-			lowestY.set(dataStream.readInt());
-
-			//Save heightmap
-			StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
-			StringMap itemMap = column.getWorld().getItemMap();
-			boolean warning = false;
-			for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
-				for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
-					if (!dataStream.readBoolean()) {
-						continue;
-					}
-					int blockState = dataStream.readInt();
-					short blockId = BlockFullState.getId(blockState);
-					short blockData = BlockFullState.getData(blockState);
-					blockId = (short) itemMap.convertTo(global, blockId);
-					blockState = BlockFullState.getPacked(blockId, blockData);
-					BlockMaterial m;
-					try {
-						m = (BlockMaterial) MaterialRegistry.get(blockState);
-					} catch (ClassCastException e) {
-						m = null;
-						if (!warning) {
-							Spout.getLogger().severe("Error reading column topmost block information, block was not a valid BlockMaterial");
-							warning = false;
-						}
-					}
-					if (m == null) {
-						column.setDirty(x, z);
-					}
-					topmostBlocks[x][z] = m;
-				}
-			}
-
-			//Save Biomes
-			BiomeManager manager = null;
-			try {
-				//Biome manager is serialized with:
-				// - boolean, if a biome manager exists
-				// - String, the class name
-				// - int, the number of bytes of data to read
-				// - byte[], size of the above int in length
-				boolean exists = dataStream.readBoolean();
-				if (exists) {
-					String biomeManagerClass = dataStream.readUTF();
-					int biomeSize = dataStream.readInt();
-					byte[] biomes = new byte[biomeSize];
-					dataStream.readFully(biomes);
-
-					//Attempt to create the biome manager class from the class name
-					@SuppressWarnings("unchecked")
-					Class<? extends BiomeManager> clazz = (Class<? extends BiomeManager>) Class.forName(biomeManagerClass);
-					Class<?>[] params = {int.class, int.class};
-					manager = clazz.getConstructor(params).newInstance(column.getX(), column.getZ());
-					manager.deserialize(biomes);
-					column.setBiomeManager(manager);
-				}
-			} catch (Exception e) {
-				Spout.getLogger().log(Level.SEVERE, "Failed to read biome data for column", e);
+			loadColumn(column, lowestY, topmostBlocks, map);
+			
+			if (converted) {
+				column.setDirty();
 			}
 		} catch (IOException e) {
 			Spout.getLogger().severe("Error reading column height-map for column" + column.getX() + ", " + column.getZ());
 		}
 	}
 	
+	private static void loadColumn(SpoutColumn column, AtomicInteger lowestY, BlockMaterial[][] topmostBlocks, CompoundMap map) {
+			
+		int[] heights = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("heights")), null);
+				
+		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
+			for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
+				column.getAtomicInteger(x, z).set(heights[NibblePairHashed.intKey(x, z)]);
+			}
+		}
+
+		lowestY.set(SafeCast.toInt(NBTMapper.toTagValue(map.get("lowest_y")), Integer.MAX_VALUE));
+
+		//Save heightmap
+		StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
+		StringMap itemMap = column.getWorld().getItemMap();
+		boolean warning = false;
+		byte[] validMaterial = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("valid_material")), null);
+		int[] topmostMaterial = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("topmost_material")), null);
+		
+		if (validMaterial == null || topmostMaterial == null) {
+			Spout.getLogger().severe("Topmost block arrays missing when reading column");
+			initColumn(column, lowestY, topmostBlocks);
+			return;
+		}
+		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
+			for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
+				int key = NibblePairHashed.intKey(x, z);
+				if (validMaterial[key] == 0) {
+					continue;
+				}
+				int blockState = topmostMaterial[key];
+				short blockId = BlockFullState.getId(blockState);
+				short blockData = BlockFullState.getData(blockState);
+				blockId = (short) itemMap.convertTo(global, blockId);
+				blockState = BlockFullState.getPacked(blockId, blockData);
+				BlockMaterial m;
+				try {
+					m = (BlockMaterial) MaterialRegistry.get(blockState);
+				} catch (ClassCastException e) {
+					m = null;
+					if (!warning) {
+						Spout.getLogger().severe("Error reading column topmost block information, block was not a valid BlockMaterial");
+						warning = true;
+					}
+				}
+				if (m == null) {
+					column.setDirty(x, z);
+				}
+				topmostBlocks[x][z] = m;
+			}
+		}
+
+		BiomeManager manager = null;
+		String biomeManagerClass = SafeCast.toString(NBTMapper.toTagValue(map.get("biome_manager")), null);
+		byte[] biomes = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("biomes")), null); 
+		
+		if (biomeManagerClass != null && biomes != null) {
+			//Attempt to create the biome manager class from the class name
+			try {
+				@SuppressWarnings("unchecked")
+				Class<? extends BiomeManager> clazz = (Class<? extends BiomeManager>) Class.forName(biomeManagerClass);
+				Class<?>[] params = {int.class, int.class};
+				manager = clazz.getConstructor(params).newInstance(column.getX(), column.getZ());
+				manager.deserialize(biomes);
+				column.setBiomeManager(manager);
+			} catch (Exception e) {
+				Spout.getLogger().severe("Unable to find biome manager class " + biomeManagerClass + ", this may cause world corruption");
+				e.printStackTrace();
+			}
+		}
+	}
+
 	private static void initColumn(SpoutColumn column, AtomicInteger lowestY, BlockMaterial[][] topmostBlocks) {
 		//The inputstream is null because no height map data exists
 		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
@@ -152,52 +185,67 @@ public class ColumnFiles {
 	}
 
 	public static void writeColumn(OutputStream out, SpoutColumn column, AtomicInteger lowestY, BlockMaterial[][] topmostBlocks) {
-		DataOutputStream dataStream = new DataOutputStream(out);
 		try {
-			for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
-				for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
-					dataStream.writeInt(column.getAtomicInteger(x, z).get());
-				}
-			}
-			dataStream.writeInt(COLUMN_VERSION);
-			dataStream.writeInt(lowestY.get());
-			StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
-			StringMap itemMap;
-			itemMap = column.getWorld().getItemMap();
-			for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
-				for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
-					Material m = topmostBlocks[x][z];
-					if (m == null) {
-						dataStream.writeBoolean(false);
-						continue;
-					} else {
-						dataStream.writeBoolean(true);
-					}
-					short blockId = m.getId();
-					short blockData = m.getData();
-					blockId = (short) global.convertTo(itemMap, blockId);
-					dataStream.writeInt(BlockFullState.getPacked(blockId, blockData));
-				}
-			}
-			//Biome manager is serialized with:
-			// - boolean, if a biome manager exists
-			// - String, the class name
-			// - int, the number of bytes of data to read
-			// - byte[], size of the above int in length
-			BiomeManager manager = column.getBiomeManager();
-			if (manager != null) {
-				dataStream.writeBoolean(true);
-				dataStream.writeUTF(manager.getClass().getName());
-				byte[] data = manager.serialize();
-				dataStream.writeInt(data.length);
-				dataStream.write(data);
-			} else {
-				dataStream.writeBoolean(false);
-			}
-			dataStream.flush();
-		} catch (IOException e) {
-			Spout.getLogger().severe("Error writing column height-map for column" + column.getX() + ", " + column.getZ());
+			NBTOutputStream NBTStream = new NBTOutputStream(out, false);
+			CompoundMap map = saveColumn(column, lowestY, topmostBlocks);
+			NBTStream.writeTag(new CompoundTag("column", map));
+			NBTStream.flush();
+		} catch (IOException ioe) {
+			Spout.getLogger().log(Level.SEVERE, "Error saving column {" + column.getX() + ", " + column.getZ() + "}", ioe);
 		}
 	}
+	
+	private static CompoundMap saveColumn(SpoutColumn column, AtomicInteger lowestY, BlockMaterial[][] topmostBlocks) {
+		
+		CompoundMap map = new CompoundMap();
+		
+		map.put(new ByteTag("version", (byte) COLUMN_VERSION));
+		
+		int[] heights = new int[SpoutColumn.BLOCKS.SIZE * SpoutColumn.BLOCKS.SIZE];
 
+		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
+			for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
+				int key = NibblePairHashed.intKey(x, z);
+				heights[key] = column.getAtomicInteger(x, z).get();
+			}
+		}
+		
+		map.put(new IntArrayTag("heights", heights));
+
+		map.put(new IntTag("lowest_y", lowestY.get()));
+		
+		byte[] validMaterial = new byte[SpoutColumn.BLOCKS.SIZE * SpoutColumn.BLOCKS.SIZE];
+		int[] topmostMaterial = new int[SpoutColumn.BLOCKS.SIZE * SpoutColumn.BLOCKS.SIZE];
+		
+		StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
+		StringMap itemMap;
+		itemMap = column.getWorld().getItemMap();
+		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
+			for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
+				int key = NibblePairHashed.intKey(x, z);
+				Material m = topmostBlocks[x][z];
+				if (m == null) {
+					continue;
+				}
+				validMaterial[key] = 1;
+				short blockId = m.getId();
+				short blockData = m.getData();
+				blockId = (short) global.convertTo(itemMap, blockId);
+				topmostMaterial[key] = BlockFullState.getPacked(blockId, blockData);
+			}
+		}
+
+		map.put(new ByteArrayTag("valid_material", validMaterial));
+		map.put(new IntArrayTag("topmost_material", topmostMaterial));
+
+		BiomeManager manager = column.getBiomeManager();
+		if (manager != null) {
+			map.put(new StringTag("biome_manager", manager.getClass().getName()));
+			map.put(new ByteArrayTag("biomes", manager.serialize()));
+		}
+		
+		return map;
+
+	}
 }
+

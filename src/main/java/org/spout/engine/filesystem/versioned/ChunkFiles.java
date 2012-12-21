@@ -234,6 +234,7 @@ public class ChunkFiles {
 		try {
 			os = new NBTOutputStream(dos, false);
 			os.writeTag(chunkCompound);
+			os.flush();
 		} catch (IOException e) {
 			Spout.getLogger().log(Level.SEVERE, "Error saving chunk {" + snapshot.getX() + ", " + snapshot.getY() + ", " + snapshot + "}", e);
 		}

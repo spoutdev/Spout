@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.spout.api.Spout;
 import org.spout.api.generator.biome.BiomeGenerator;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.LoadOption;
@@ -131,19 +132,23 @@ public class SpoutColumn {
 		if (save) {
 			TickStage.checkStage(TickStage.SNAPSHOT);
 			if (activeChunks.decrementAndGet() == 0) {
-				OutputStream out = ((SpoutWorld) world).getHeightMapOutputStream(x, z);
-				try {
-					ColumnFiles.writeColumn(out, this, lowestY, topmostBlocks);
-				} finally {
-					try {
-						out.close();
-					} catch (IOException e) {
-					}
-				}
+				syncSave();
 				((SpoutWorld) world).removeColumn(x, z, this);
 			}
 		} else {
 			activeChunks.decrementAndGet();
+		}
+	}
+	
+	public synchronized void syncSave() {
+		OutputStream out = ((SpoutWorld) world).getHeightMapOutputStream(x, z);
+		try {
+			ColumnFiles.writeColumn(out, this, lowestY, topmostBlocks);
+		} finally {
+			try {
+				out.close();
+			} catch (IOException e) {
+			}
 		}
 	}
 
@@ -290,6 +295,10 @@ public class SpoutColumn {
 
 	public void setDirty(int x, int z) {
 		getDirtyFlag(x, z).set(true);
+		setDirty();
+	}
+	
+	public void setDirty() {
 		dirty.set(true);
 	}
 	

@@ -73,6 +73,7 @@ public class PlayerFiles {
 		try {
 			os = new NBTOutputStream(new DataOutputStream(new FileOutputStream(playerData)), false);
 			os.writeTag(playerTag);
+			os.flush();
 		} catch (IOException e) {
 			Spout.getLogger().log(Level.SEVERE, "Error saving player data for " + player.getName(), e);
 			playerData.delete();
