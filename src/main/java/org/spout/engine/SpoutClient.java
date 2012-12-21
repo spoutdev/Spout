@@ -72,7 +72,8 @@ import org.spout.api.component.implementation.HitBlockComponent;
 import org.spout.api.component.implementation.PredictableTransformComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
-import org.spout.api.event.server.ClientEnableEvent;
+import org.spout.api.event.engine.EngineStartEvent;
+import org.spout.api.event.engine.EngineStopEvent;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
@@ -233,8 +234,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		getScheduler().startGuiThread();
 
 		//TODO Maybe a better way of alerting plugins the client is done?
-		if (ClientEnableEvent.getHandlerList().getRegisteredListeners().length != 0) {
-			Spout.getEventManager().callEvent(new ClientEnableEvent());
+		if (EngineStartEvent.getHandlerList().getRegisteredListeners().length != 0) {
+			Spout.getEventManager().callEvent(new EngineStartEvent());
 		}
 	}
 
@@ -344,6 +345,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 		Runnable finalTask = new Runnable() {
 			@Override
 			public void run() {
+				EngineStopEvent stopEvent = new EngineStopEvent(stopMessage);
+				getEventManager().callEvent(stopEvent);
+				stopMessage = stopEvent.getMessage();
+				
 				bootstrap.getFactory().releaseExternalResources();
 				boundProtocols.clear();
 			}
