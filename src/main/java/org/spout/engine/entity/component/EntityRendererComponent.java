@@ -171,21 +171,23 @@ public class EntityRendererComponent extends EntityComponent {
 		mat.getShader().setUniform("View", camera.getView());
 		mat.getShader().setUniform("Projection", camera.getProjection());
 		mat.getShader().setUniform("Model", modelMatrix);
-
-		Matrix[] matrices = new Matrix[model.getModel().getSkeleton().getBoneSize()];
+		Skeleton skeleton = model.getModel().getSkeleton();
+		if (skeleton != null) {
+			Matrix[] matrices = new Matrix[model.getModel().getSkeleton().getBoneSize()];
 		
-		if(animation != null){
-			for (int i = 0; i < matrices.length; i++) {
-				matrices[i] = new Matrix(4, animation.getBoneTransform(i, currentFrame).getMatrix());
+			if(animation != null){
+				for (int i = 0; i < matrices.length; i++) {
+					matrices[i] = new Matrix(4, animation.getBoneTransform(i, currentFrame).getMatrix());
+				}
+			}else{
+				for (int i = 0; i < matrices.length; i++) {
+					matrices[i] = MathHelper.rotateX(rot);
+				}
+				rot += 0.1f;
 			}
-		}else{
-			for (int i = 0; i < matrices.length; i++) {
-				matrices[i] = MathHelper.rotateX(rot);
-			}
-			rot += 0.1f;
-		}
 
-		mat.getShader().setUniform("bone_matrix", matrices);
+			mat.getShader().setUniform("bone_matrix", matrices);
+		}
 
 		SnapshotEntity snap = new SnapshotEntity(mat, getOwner());
 
