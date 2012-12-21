@@ -24,16 +24,39 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.event.server;
+package org.spout.api.event.engine;
 
 import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;
 
 /**
- * Called right after the Client has finished starting and the render thread has began.
+ * Called when the engine has received the command to stop, but before it has begun the shutdown process.
  */
-public class ClientEnableEvent extends Event {
+public class EngineStopEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();
+	private String message;
+
+	public EngineStopEvent(String message) {
+		this.setMessage(message);
+	}
+
+	/**
+	 * Returns the message that will be sent when the engine stops.
+	 * 
+	 * @return the message to send.
+	 */
+	public String getMessage() {
+		return message;
+	}
+
+	/**
+	 * Sets the message to be sent when the engine stops.
+	 * 
+	 * @param message the message to set
+	 */
+	public void setMessage(String message) {
+		this.message = message;
+	}
 
 	@Override
 	public HandlerList getHandlers() {
