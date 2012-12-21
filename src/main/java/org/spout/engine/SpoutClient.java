@@ -253,15 +253,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 	}
 
-	/**
-	 * Gets the maximum length a cause chain can have before a new main cause is being used.
-	 * @return The maximumg length of a cause chain
-	 */
-	@Override
-	public int getCauseChainMaximum() {
-		return SpoutConfiguration.MAX_CAUSE_CHAIN.getInt();
-	}
-
 	@Override
 	public Camera getActiveCamera() {
 		return activeCamera;

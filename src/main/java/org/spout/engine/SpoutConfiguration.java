@@ -44,7 +44,6 @@ public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder RECLAIM_MEMORY = new ConfigurationHolder(true, "general", "reclaim-memory");
 	public static final ConfigurationHolder AUTOSAVE_INTERVAL = new ConfigurationHolder(60000, "general", "autosave-interval");
 	public static final ConfigurationHolder CONSOLE_TYPE = new ConfigurationHolder("jline", "general", "console");
-	public static final ConfigurationHolder MAX_CAUSE_CHAIN = new ConfigurationHolder("100", "general", "max-cause-chain");
 	// Lightning
 	public static final ConfigurationHolder LIGHTING_ENABLED = new ConfigurationHolder(true, "lightning", "enabled");
 	public static final ConfigurationHolder LIVE_LIGHTING = new ConfigurationHolder(false, "lightning", "live-lighting");
