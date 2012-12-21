@@ -42,7 +42,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.spout.api.Spout;
 import org.spout.api.collision.BoundingBox;
 import org.spout.api.collision.CollisionModel;
@@ -91,10 +90,9 @@ import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
 import org.spout.api.util.sanitation.StringSanitizer;
 import org.spout.api.util.thread.LiveRead;
 import org.spout.api.util.thread.Threadsafe;
-
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
-import org.spout.engine.filesystem.WorldData;
+import org.spout.engine.filesystem.versioned.WorldFiles;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.scheduler.SpoutTaskManager;
@@ -1104,7 +1102,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public void save() {
-		new WorldData(this).saveToFile();
+		WorldFiles.saveWorld(this);
 		Spout.getEventManager().callDelayedEvent(new WorldSaveEvent(this));
 	}
 

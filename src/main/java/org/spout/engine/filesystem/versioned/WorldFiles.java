@@ -29,16 +29,37 @@ package org.spout.engine.filesystem.versioned;
 import static org.spout.api.lang.Translation.log;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Random;
 import java.util.UUID;
+import java.util.logging.Level;
 
+import org.spout.api.Spout;
+import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.generator.WorldGenerator;
+import org.spout.api.geo.discrete.Transform;
+import org.spout.api.io.nbt.TransformTag;
+import org.spout.api.io.nbt.UUIDTag;
 import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.util.StringMap;
+import org.spout.api.util.sanitation.SafeCast;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.filesystem.SharedFileSystem;
-import org.spout.engine.filesystem.WorldData;
 import org.spout.engine.world.SpoutWorld;
+import org.spout.nbt.ByteArrayTag;
+import org.spout.nbt.ByteTag;
+import org.spout.nbt.CompoundMap;
+import org.spout.nbt.CompoundTag;
+import org.spout.nbt.LongTag;
+import org.spout.nbt.StringTag;
+import org.spout.nbt.stream.NBTInputStream;
+import org.spout.nbt.stream.NBTOutputStream;
+import org.spout.nbt.util.NBTMapper;
 
 
 public class WorldFiles {
@@ -46,22 +67,124 @@ public class WorldFiles {
 	public static final byte WORLD_VERSION = 2;
 	
 	public static SpoutWorld loadWorld(SpoutEngine engine, WorldGenerator generator, String name) {
-		WorldData worldData = WorldData.loadForWorld(name);
-		SpoutWorld world;
-		if (worldData == null) {
-			log("Generating new world named [%0]", name);
+		
+		File worldDir = new File(SharedFileSystem.getWorldsDirectory(), name);
+		
+		worldDir.mkdirs();
+		
+		File worldFile = new File(worldDir, "world.dat");
 
-			File itemMapFile = new File(new File(SharedFileSystem.getWorldsDirectory(), name), "materials.dat");
-			BinaryFileStore itemStore = new BinaryFileStore(itemMapFile);
-			StringMap itemMap = new StringMap(engine.getEngineItemMap(), itemStore, 0, Short.MAX_VALUE, name + "ItemMap");
+		SpoutWorld world = null;
+		
+		File itemMapFile = new File(worldDir, "materials.dat");
+		BinaryFileStore itemStore = new BinaryFileStore(itemMapFile);
+		itemStore.load();
+		
+		StringMap itemMap = new StringMap(engine.getEngineItemMap(), itemStore, 0, Short.MAX_VALUE, name + "ItemMap");
+		
+		try {
+			InputStream is = new FileInputStream(worldFile);
+			NBTInputStream ns = new NBTInputStream(is, false);
+			CompoundMap map;
+			try {
+				CompoundTag tag = (CompoundTag) ns.readTag();
+				map = tag.getValue();
+			} finally {
+				try {
+					ns.close();
+				} catch (IOException e) {
+					log("Cannot close world file");
+				}
+			}
+			log("Loading world [%0]", name);
+			world = loadWorldImpl(name, map, generator, itemMap);
+		} catch (FileNotFoundException ioe) {
+			log("Generating new world named [%0]", name);
 
 			world = new SpoutWorld(name, engine, new Random().nextLong(), 0L, generator, UUID.randomUUID(), itemMap);
 			world.save();
-		} else {
-			log("Loading world [%0]", name);
-			world = worldData.toWorld(generator, engine.getEngineItemMap());
+
+		} catch (IOException ioe) {
+			log("Error reading file for world " + name);
 		}
 		return world;
+	}
+
+	private static SpoutWorld loadWorldImpl(String name, CompoundMap map, WorldGenerator generator, StringMap itemMap) {
+
+		byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), (byte) -1);
+
+		if (version > WORLD_VERSION) {
+			Spout.getLogger().log(Level.SEVERE, "World version " + version + " exceeds maximum allowed value of " + WORLD_VERSION);
+			return null;
+		} else if (version < WORLD_VERSION) {
+			// TODO - Add conversion code here
+			Spout.getLogger().log(Level.SEVERE, "Outdated World version " + version);
+			return null;
+		}
+		
+		String generatorName = SafeCast.toString(NBTMapper.toTagValue(map.get("generator")), null);
+		Long seed = SafeCast.toLong(NBTMapper.toTagValue(map.get("seed")), 0);
+		byte[] extraData = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("extra_data")), null);
+		Long age = SafeCast.toLong(NBTMapper.toTagValue(map.get("age")), 0);
+		UUID uuid = UUIDTag.getValue(map.get("uuid"));
+		
+		if (!generatorName.equals(generator.getName())) {
+			Spout.getLogger().severe("World was saved last with the generator: " + generatorName + " but is being loaded with: " + generator.getName() + " THIS MAY CAUSE WORLD CORRUPTION!");
+		}
+		
+		SpoutWorld world = new SpoutWorld(name, (SpoutEngine) Spout.getEngine(), seed, age, generator, uuid, itemMap);
+		
+		Transform t = TransformTag.getValue(world, map.get("spawn_position"));
+		
+		world.setSpawnPoint(t);
+		
+		ManagedHashMap dataMap = world.getComponentHolder().getData().getBaseMap();
+		dataMap.clear();
+		try {
+			dataMap.deserialize(extraData);
+		} catch (IOException e) {
+			Spout.getLogger().severe("Could not deserialize datatable for world: " + name);
+		}
+		
+		return world;
+	}
+	
+	public static void saveWorld(SpoutWorld world) {
+		
+		File worldDir = new File(SharedFileSystem.getWorldsDirectory(), world.getName());
+		
+		worldDir.mkdirs();
+		
+		File worldFile = new File(worldDir, "world.dat");
+
+		world.getItemMap().save();
+		
+		CompoundMap map = saveWorldImpl(world);
+		
+		try {
+			OutputStream is = new FileOutputStream(worldFile);
+			NBTOutputStream ns = new NBTOutputStream(is, false);
+			ns.writeTag(new CompoundTag("world_" + world.getName(), map));
+		} catch (IOException ioe) {
+			log("Error writing file for world " + world.getName());
+		}
+	}
+	
+	private static CompoundMap saveWorldImpl(SpoutWorld world) {
+		
+		CompoundMap map = new CompoundMap();
+		
+		map.put(new ByteTag("version", (byte) WORLD_VERSION));
+		map.put(new StringTag("generator", world.getGenerator().getName()));
+		map.put(new LongTag("seed", world.getSeed()));
+		map.put(new ByteArrayTag("extra_data", world.getComponentHolder().getData().serialize()));
+		map.put(new LongTag("age", world.getAge()));
+		map.put(new UUIDTag("uuid", world.getUID()));
+		map.put(new TransformTag("spawn_position", world.getSpawnPoint()));
+		
+		return map;
+		
 	}
 	
 }
