@@ -24,15 +24,15 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.event.server;
+package org.spout.api.event.engine;
 
 import org.spout.api.event.Event;
 import org.spout.api.event.HandlerList;
 
 /**
- * Called when the server has finished starting, but before the server has begun processing anything else.
+ * Called when the engine has finished starting, but before the engine has begun processing anything else.
  */
-public class ServerStartEvent extends Event {
+public class EngineStartEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();
 
 	@Override
