@@ -39,10 +39,9 @@ import org.spout.api.entity.PlayerSnapshot;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Region;
-import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.Vector3;
+import org.spout.api.io.nbt.TransformTag;
+import org.spout.api.io.nbt.UUIDTag;
 import org.spout.api.plugin.CommonClassLoader;
 import org.spout.api.util.sanitation.SafeCast;
 import org.spout.engine.entity.SpoutEntity;
@@ -52,17 +51,15 @@ import org.spout.nbt.ByteArrayTag;
 import org.spout.nbt.ByteTag;
 import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
-import org.spout.nbt.FloatTag;
 import org.spout.nbt.IntTag;
 import org.spout.nbt.ListTag;
-import org.spout.nbt.LongTag;
 import org.spout.nbt.StringTag;
 import org.spout.nbt.Tag;
 import org.spout.nbt.util.NBTMapper;
 
 public class EntityFiles {
 
-	public static final byte ENTITY_VERSION = 1;
+	public static final byte ENTITY_VERSION = 2;
 	
 	@SuppressWarnings("rawtypes")
 	protected static void loadEntities(SpoutRegion r, CompoundMap map, List<SpoutEntity> loadedEntities) {
@@ -120,34 +117,33 @@ public class EntityFiles {
 			Spout.getLogger().log(Level.SEVERE, "Entity version " + version + " exceeds maximum allowed value of " + ENTITY_VERSION);
 			return null;
 		} else if (version < ENTITY_VERSION) {
-			// TODO - Add conversion code here
-			Spout.getLogger().log(Level.SEVERE, "Outdated Entity version " + version);
-			return null;
+			if (version < 1) {
+				Spout.getLogger().log(Level.SEVERE, "Unknown entity version " + version);
+				return null;
+			}
+			
+			if (version <= 1) {
+				map = convertV1V2(map);
+				if (map == null) {
+					return null;
+				}
+			}
+
 		}
 		
 		boolean player = SafeCast.toByte(NBTMapper.toTagValue(map.get("player")), (byte) 0) == 1;
-
-		//Read entity
-		Float pX = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posX")), Float.MAX_VALUE);
-		Float pY = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posY")), Float.MAX_VALUE);
-		Float pZ = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posZ")), Float.MAX_VALUE);
-
-		if (pX == Float.MAX_VALUE || pY == Float.MAX_VALUE || pZ == Float.MAX_VALUE) {
+		
+		Transform t = TransformTag.getValue(w, map.get("position"));
+		
+		if (t == null) {
 			return null;
 		}
-
-		float sX = SafeCast.toFloat(NBTMapper.toTagValue(map.get("scaleX")), 1.0F);
-		float sY = SafeCast.toFloat(NBTMapper.toTagValue(map.get("scaleY")), 1.0F);
-		float sZ = SafeCast.toFloat(NBTMapper.toTagValue(map.get("scaleZ")), 1.0F);
-
-		float qX = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatX")), 0.0F);
-		float qY = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatY")), 0.0F);
-		float qZ = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatZ")), 0.0F);
-		float qW = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatW")), 1.0F);
-
-		long msb = SafeCast.toLong(NBTMapper.toTagValue(map.get("UUID_msb")), new Random().nextLong());
-		long lsb = SafeCast.toLong(NBTMapper.toTagValue(map.get("UUID_lsb")), new Random().nextLong());
-		UUID uid = new UUID(msb, lsb);
+		
+		UUID uid = UUIDTag.getValue(map.get("uuid"));
+		
+		if (uid == null) {
+			return null;
+		}
 
 		int view = SafeCast.toInt(NBTMapper.toTagValue(map.get("view")), 0);
 		boolean observer = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("observer")), new ByteTag("", (byte) 0), ByteTag.class).getBooleanValue();
@@ -160,14 +156,13 @@ public class EntityFiles {
 		}
 
 		//Setup entity
-		Region r = w.getRegionFromBlock(Math.round(pX), Math.round(pY), Math.round(pZ), player ? LoadOption.LOAD_GEN : LoadOption.NO_LOAD);
+		Region r = w.getRegionFromBlock(t.getPosition(), player ? LoadOption.LOAD_GEN : LoadOption.NO_LOAD);
 		if (r == null) {
 			// TODO - this should never happen - entities should be located in the chunk that was just loaded
 			Spout.getLogger().info("Attempted to load entity to unloaded region");
 			Thread.dumpStack();
 			return null;
 		}
-		final Transform t = new Transform(new Point(r.getWorld(), pX, pY, pZ), new Quaternion(qX, qY, qZ, qW, false), new Vector3(sX, sY, sZ));
 
 		ListTag<StringTag> components = (ListTag<StringTag>) map.get("components");
 		List<Class<? extends Component>> types = new ArrayList<Class<? extends Component>>(components.getValue().size());
@@ -206,23 +201,9 @@ public class EntityFiles {
 		map.put(new ByteTag("player", (e instanceof PlayerSnapshot)));
 
 		//Write entity
-		Transform t = e.getTransform();
-		map.put(new FloatTag("posX", t.getPosition().getX()));
-		map.put(new FloatTag("posY", t.getPosition().getY()));
-		map.put(new FloatTag("posZ", t.getPosition().getZ()));
-
-		map.put(new FloatTag("scaleX", t.getScale().getX()));
-		map.put(new FloatTag("scaleY", t.getScale().getY()));
-		map.put(new FloatTag("scaleZ", t.getScale().getZ()));
-
-		map.put(new FloatTag("quatX", t.getRotation().getX()));
-		map.put(new FloatTag("quatY", t.getRotation().getY()));
-		map.put(new FloatTag("quatZ", t.getRotation().getZ()));
-		map.put(new FloatTag("quatW", t.getRotation().getW()));
-
-		map.put(new LongTag("UUID_msb", e.getUID().getMostSignificantBits()));
-		map.put(new LongTag("UUID_lsb", e.getUID().getLeastSignificantBits()));
-
+		map.put(new TransformTag("position", e.getTransform()));
+		map.put(new UUIDTag("uuid", e.getUID()));
+		
 		map.put(new IntTag("view", e.getViewDistance()));
 		map.put(new ByteTag("observer", e.isObserver()));
 
@@ -247,6 +228,43 @@ public class EntityFiles {
 			tag = new CompoundTag("entity_" + e.getId(), map);
 		}
 		return tag;
+	}
+	
+
+	/**
+	 * Version 1 to version 2 conversion
+	 *
+	 * Transform and UUID use the new tags
+	 */
+	
+	private static CompoundMap convertV1V2(CompoundMap map) {
+		
+		float pX = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posX")), Float.MAX_VALUE);
+		float pY = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posY")), Float.MAX_VALUE);
+		float pZ = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posZ")), Float.MAX_VALUE);
+
+		if (pX == Float.MAX_VALUE || pY == Float.MAX_VALUE || pZ == Float.MAX_VALUE) {
+			return null;
+		}
+
+		float sX = SafeCast.toFloat(NBTMapper.toTagValue(map.get("scaleX")), 1.0F);
+		float sY = SafeCast.toFloat(NBTMapper.toTagValue(map.get("scaleY")), 1.0F);
+		float sZ = SafeCast.toFloat(NBTMapper.toTagValue(map.get("scaleZ")), 1.0F);
+
+		float qX = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatX")), 0.0F);
+		float qY = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatY")), 0.0F);
+		float qZ = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatZ")), 0.0F);
+		float qW = SafeCast.toFloat(NBTMapper.toTagValue(map.get("quatW")), 1.0F);
+
+		long msb = SafeCast.toLong(NBTMapper.toTagValue(map.get("UUID_msb")), new Random().nextLong());
+		long lsb = SafeCast.toLong(NBTMapper.toTagValue(map.get("UUID_lsb")), new Random().nextLong());
+
+		map.put(new TransformTag("position", pX, pY, pZ, qX, qY, qZ, qW, sX, sY, sZ));
+		
+		map.put(new UUIDTag("uuid", new UUID(msb, lsb)));
+		
+		return map;
+	
 	}
 
 }
