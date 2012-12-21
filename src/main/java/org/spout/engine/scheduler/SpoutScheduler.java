@@ -894,43 +894,43 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	@Override
-	public int scheduleSyncDelayedTask(Object plugin, Runnable task) {
+	public Task scheduleSyncDelayedTask(Object plugin, Runnable task) {
 		return taskManager.scheduleSyncDelayedTask(plugin, task);
 	}
 
 	@Override
-	public int scheduleSyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
+	public Task scheduleSyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
 		return taskManager.scheduleSyncDelayedTask(plugin, task, delay, priority);
 	}
 
 	@Override
-	public int scheduleSyncDelayedTask(Object plugin, Runnable task, TaskPriority priority) {
+	public Task scheduleSyncDelayedTask(Object plugin, Runnable task, TaskPriority priority) {
 		return taskManager.scheduleSyncDelayedTask(plugin, task, priority);
 	}
 
 	@Override
-	public int scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority) {
+	public Task scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority) {
 		return taskManager.scheduleSyncRepeatingTask(plugin, task, delay, period, priority);
 	}
 
 	@Override
-	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
+	public Task scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
 		return taskManager.scheduleAsyncDelayedTask(plugin, task, delay, priority);
 	}
 
 
 	@Override
-	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority, boolean longLife) {
+	public Task scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority, boolean longLife) {
 		return taskManager.scheduleAsyncDelayedTask(plugin, task, delay, priority, longLife);
 	}
 
 	@Override
-	public int scheduleAsyncTask(Object plugin, Runnable task) {
+	public Task scheduleAsyncTask(Object plugin, Runnable task) {
 		return taskManager.scheduleAsyncTask(plugin, task);
 	}
 
 	@Override
-	public int scheduleAsyncTask(Object plugin, Runnable task, boolean longLife) {
+	public Task scheduleAsyncTask(Object plugin, Runnable task, boolean longLife) {
 		return taskManager.scheduleAsyncTask(plugin, task, longLife);
 	}
 
@@ -947,6 +947,11 @@ public final class SpoutScheduler implements Scheduler {
 	@Override
 	public void cancelTask(int taskId) {
 		taskManager.cancelTask(taskId);
+	}
+
+	@Override
+	public void cancelTask(Task task) {
+		taskManager.cancelTask(task);
 	}
 
 	@Override
