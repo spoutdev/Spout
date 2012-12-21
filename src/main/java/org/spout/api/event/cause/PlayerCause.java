@@ -28,43 +28,18 @@ package org.spout.api.event.cause;
 
 import org.spout.api.entity.Player;
 import org.spout.api.event.Cause;
-import org.spout.api.exception.MaxCauseChainReached;
 
 public class PlayerCause extends EntityCause {
 	public PlayerCause(Player player) {
 		super(player);
 	}
 
+	public PlayerCause(Cause<?> parent, Player player) {
+		super(parent, player);
+	}
+
 	@Override
 	public Player getSource() {
 		return (Player) super.getSource();
-	}
-
-	/**
-	 * Creates a cause with a parent. If the {@link #chainPosition} is larger than {@link org.spout.api.Engine#getCauseChainMaximum()}
-	 * a {@link org.spout.api.exception.MaxCauseChainReached} RuntimeException will be thrown and the {@link #parentCause},
-	 * {@link #mainCause} and {@link #chainPosition} reseted.
-	 * @param player who caused this cause
-	 * @param parent cause of this cause
-	 */
-	public PlayerCause(Player player, Cause parent) {
-		super(player, parent);
-	}
-
-	/**
-	 * Checks if the Class of the parent cause is the same class as the new cause
-	 * @return true if class of parent cause and new cause are the same
-	 */
-	@Override
-	protected boolean causeOfSameClass() {
-		return getParentCause() != null && getParentCause().getClass() == this.getClass();
-	}
-
-	/**
-	 * Throws the {@link org.spout.api.exception.MaxCauseChainReached} Exception with the point of the cause
-	 */
-	@Override
-	protected void throwException() {
-		throw new MaxCauseChainReached(getSource().getTransform().getPosition());
 	}
 }

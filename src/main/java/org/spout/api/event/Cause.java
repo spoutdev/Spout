@@ -26,35 +26,67 @@
  */
 package org.spout.api.event;
 
-public interface Cause<T> {
+/**
+ * Represents a cause of an event
+ * 
+ * @param <T> source of the cause
+ */
+public abstract class Cause<T> {
+	private static final int MAX_CAUSES = 100;
+	private final Cause<?> parent;
 	/**
 	 * Gets the source of the action
 	 * @return
 	 */
-	public T getSource();
+	public abstract T getSource();
 
 	/**
-	 * Gets the main cause of the cause chain.
-	 * The result needs to be checked with instanceOf and casted to the correct cause.
-	 * Note: Can be null if there is no parent
-	 * @return main cause or null if there is no parent
+	 * Constructs a cause with no parent cause
 	 */
-	public Cause getMainCause();
+	public Cause() {
+			this(null);
+	}
 
 	/**
-	 * Gets the parent cause of this cause in the cause chain.
-	 * The result needs to be checked with instanceOf and casted to the correct cause.
+	 * Constructs a cause with a parent cause that was directly responsible for the action
+	 * 
+	 * @param parent
+	 */
+	public Cause(Cause<?> parent) {
+		this.parent = parent;
+	}
+
+	/**
+	 * Gets the first cause in the parent-child series of causes that led to this.
+	 * 
+	 * <p>May terminate early to prevent infinite loops</p>
+	 * 
+	 * Note: Can be null if there is no parent
+	 * 
+	 * @return first cause or null if there is no parent
+	 */
+	public final Cause<?> getFirstCause() {
+		int causes = 0;
+		Cause<?> main = this;
+		while(causes < MAX_CAUSES) {
+			if (main.getParent() != null) {
+				main = main.getParent();
+			} else {
+				break;
+			}
+		}
+		return main;
+	}
+
+	/**
+	 * Gets the parent cause of this cause.
+	 * <br/><br/>
 	 * Note: Can be null if there is no parent
 	 * @return parent cause or null if there is no parent
 	 */
-	public Cause getParentCause();
+	public final Cause<?> getParent() {
+		return parent;
+	}
 
-	/**
-	 * Gets the position of this cause in the cause chain.
-	 * Note: 0 means no parent, values higher than 0 are not in sequence
-	 * as same causes are collapsed into one cause but the chain position pointer goes up.
-	 * @return position in chain or 0 if no parent
-	 */
-	public int getChainPosition();
 }
 

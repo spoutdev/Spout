@@ -516,10 +516,4 @@ public interface Engine extends Named {
 	 * @return The default permissions handler
 	 */
 	public DefaultPermissions getDefaultPermissions();
-
-	/**
-	 * Gets the maximum length a cause chain can have before a new main cause is being used.
-	 * @return The maximumg length of a cause chain
-	 */
-	public int getCauseChainMaximum();
 }
