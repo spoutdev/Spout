@@ -233,21 +233,19 @@ public class EntityManager {
 			//Grab player's view distance
 			int view = player.getViewDistance();
 			/*
-							* Just because a player can see a chunk doesn't mean the entity is within sync-range, do the math and sync based on the result.
-							*
-							* Following variables hold sync status
-							*/
+			 * Just because a player can see a chunk doesn't mean the entity is within sync-range, do the math and sync based on the result.
+			 *
+			 * Following variables hold sync status
+			 */
 			boolean spawn, sync, destroy;
 			spawn = sync = destroy = false;
 			//Entity is out of range of the player's view distance, destroy
-			if (forceDestroy || ent.isRemoved() || MathHelper.distance(ent.getTransform().getPosition(), player.getTransform().getPosition()) > view) {
+			if (forceDestroy || ent.isRemoved() || MathHelper.distance(ent.getTransform().getPosition(), player.getTransform().getPosition()) > view || player.isInvisible(ent)) {
 				destroy = true;
+			} else if (network.hasSpawned(ent)) {
+				sync = true;
 			} else {
-				if (!network.hasSpawned(ent)) {
-					spawn = true;
-				} else {
-					sync = true;
-				}
+				spawn = true;
 			}
 			network.syncEntity(ent, spawn, destroy, sync);
 		}

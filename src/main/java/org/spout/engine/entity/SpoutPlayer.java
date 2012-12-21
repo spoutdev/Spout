@@ -27,6 +27,9 @@
 package org.spout.engine.entity;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -39,8 +42,11 @@ import org.spout.api.command.Command;
 import org.spout.api.command.RootCommand;
 import org.spout.api.component.Component;
 import org.spout.api.data.ValueHolder;
+import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.state.PlayerInputState;
+import org.spout.api.event.entity.EntityHiddenEvent;
+import org.spout.api.event.entity.EntityShownEvent;
 import org.spout.api.event.server.PreCommandEvent;
 import org.spout.api.event.server.RetrieveDataEvent;
 import org.spout.api.event.server.permissions.PermissionGroupsEvent;
@@ -54,6 +60,7 @@ import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.util.access.BanType;
+import org.spout.api.util.list.concurrent.ConcurrentList;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.SnapshotRead;
 import org.spout.api.util.thread.Threadsafe;
@@ -73,6 +80,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	private final int hashcode;
 	private PlayerInputState inputState = PlayerInputState.DEFAULT_STATE;
 	private Locale preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
+	private List<Entity> hiddenEntities = new ConcurrentList<Entity>();
 
 	public SpoutPlayer(String name) {
 		this(name, null, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
@@ -377,5 +385,26 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		if (this.isOnline()) {
 			this.getNetworkSynchronizer().preSnapshot();
 		}
+	}
+
+	@Override
+	public void setVisible(Entity entity, boolean visible) {
+		if (visible) {
+			hiddenEntities.remove(entity);
+			Spout.getEventManager().callEvent(new EntityShownEvent(entity, this));
+		} else {
+			hiddenEntities.add(entity);
+			Spout.getEventManager().callEvent(new EntityHiddenEvent(entity, this));
+		}
+	}
+
+	@Override
+	public List<Entity> getInvisibleEntities() {
+		return new ArrayList<Entity>(hiddenEntities);
+	}
+
+	@Override
+	public boolean isInvisible(Entity entity) {
+		return hiddenEntities.contains(entity);
 	}
 }
