@@ -253,6 +253,15 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 	}
 
+	/**
+	 * Gets the maximum length a cause chain can have before a new main cause is being used.
+	 * @return The maximumg length of a cause chain
+	 */
+	@Override
+	public int getCauseChainMaximum() {
+		return SpoutConfiguration.MAX_CAUSE_CHAIN.getInt();
+	}
+
 	@Override
 	public Camera getActiveCamera() {
 		return activeCamera;
@@ -508,8 +517,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		tmc.setSize(0.5f);
 		tmc.setTranslation(new Vector3(0, 3f, 0));
 		tmc.setFont(font);
-		
-		skdome = (Model)Spout.getFilesystem().getResource("model://Spout/models/defaultskydome.spm");
+
+		skdome = (Model) Spout.getFilesystem().getResource("model://Spout/models/defaultskydome.spm");
 
 		super.getDefaultWorld().spawnEntity(e);
 	}
@@ -517,10 +526,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public void updateRender(long limit) {
 		worldRenderer.update(limit);
 	}
-	
+
 	Model skdome;
 	Matrix ident = MathHelper.createIdentity();
-	Matrix testView = MathHelper.createLookAt(new Vector3(-1,0,0), Vector3.ZERO, Vector3.UP);
+	Matrix testView = MathHelper.createLookAt(new Vector3(-1, 0, 0), Vector3.ZERO, Vector3.UP);
 
 	public void render(float dt) {
 
@@ -528,14 +537,14 @@ public class SpoutClient extends SpoutEngine implements Client {
 			Runnable task = renderTaskQueue.poll();
 			task.run();
 		}
-		
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		Model skydome = skdome; //(Model) super.getDefaultWorld().getDataMap().get("Skydome");
 		if (skydome != null) {
 			//Matrix skydomeView = MathHelper.translate(new Vector3(0, .5, 0));
 			//skydomeView.multiply(this.getActiveCamera().getRotation());
 			skydome.getRenderMaterial().getShader().setUniform("View", this.getActiveCamera().getRotation());
-			skydome.getRenderMaterial().getShader().setUniform("Projection",this.getActiveCamera().getProjection() );
+			skydome.getRenderMaterial().getShader().setUniform("Projection", this.getActiveCamera().getProjection());
 			skydome.getRenderMaterial().getShader().setUniform("Model", ident);
 			BaseMesh skydomeMesh = (BaseMesh) skydome.getMesh();
 			if (!skydomeMesh.isBatched()) {
@@ -571,7 +580,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		if (wireframe) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 		}
-		
+
 		gui.begin();
 		if (showDebugInfos) {
 			Point position = activePlayer.getTransform().getPosition();
