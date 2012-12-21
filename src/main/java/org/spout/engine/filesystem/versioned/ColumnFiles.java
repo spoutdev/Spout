@@ -39,7 +39,6 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFullState;
-import org.spout.api.util.NBTMapper;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.sanitation.SafeCast;
@@ -54,6 +53,7 @@ import org.spout.nbt.IntTag;
 import org.spout.nbt.StringTag;
 import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
+import org.spout.nbt.util.NBTMapper;
 
 public class ColumnFiles {
 	

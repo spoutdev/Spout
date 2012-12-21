@@ -44,7 +44,6 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.plugin.CommonClassLoader;
-import org.spout.api.util.NBTMapper;
 import org.spout.api.util.sanitation.SafeCast;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutPlayer;
@@ -59,6 +58,7 @@ import org.spout.nbt.ListTag;
 import org.spout.nbt.LongTag;
 import org.spout.nbt.StringTag;
 import org.spout.nbt.Tag;
+import org.spout.nbt.util.NBTMapper;
 
 public class EntityFiles {
 

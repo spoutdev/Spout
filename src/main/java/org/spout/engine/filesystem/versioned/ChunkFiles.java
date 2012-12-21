@@ -41,7 +41,6 @@ import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.geo.cuboid.ChunkSnapshot.BlockComponentSnapshot;
 import org.spout.api.material.ComplexMaterial;
 import org.spout.api.material.block.BlockFullState;
-import org.spout.api.util.NBTMapper;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.hashing.ByteTripleHashed;
 import org.spout.api.util.hashing.NibbleQuadHashed;
@@ -67,6 +66,7 @@ import org.spout.nbt.LongTag;
 import org.spout.nbt.ShortTag;
 import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
+import org.spout.nbt.util.NBTMapper;
 
 public class ChunkFiles {
 	
