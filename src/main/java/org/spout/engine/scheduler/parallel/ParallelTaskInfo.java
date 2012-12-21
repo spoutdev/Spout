@@ -70,7 +70,7 @@ public class ParallelTaskInfo {
 			Spout.getLogger().info("Unable to create parallel task for " + task);
 		}
 
-		int newId = ((SpoutTaskManager) region.getTaskManager()).schedule(newTask);
+		int newId = ((SpoutTaskManager) region.getTaskManager()).schedule(newTask).getTaskId();
 		children.add(new RegionIdPair(newId, region));
 		regions.put(region, newTask);
 		return true;
