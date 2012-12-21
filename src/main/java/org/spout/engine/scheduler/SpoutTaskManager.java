@@ -166,7 +166,10 @@ public class SpoutTaskManager implements TaskManager {
 		}
 	}
 
-    public void cancelTask(SpoutTask task) {
+	public void cancelTask(SpoutTask task) {
+		if (task == null) {
+			throw new IllegalArgumentException("Task cannot be null!");
+		}
 		synchronized (scheduleLock) {
 			task.stop();
 			if (taskQueue.remove(task)) {
@@ -240,6 +243,9 @@ public class SpoutTaskManager implements TaskManager {
 
 	@Override
 	public void cancelTask(Task task) {
+		if (task == null) {
+			throw new IllegalArgumentException("Task cannot be null!");
+		}
 		cancelTask(activeTasks.get(task.getTaskId()));
 	}
 

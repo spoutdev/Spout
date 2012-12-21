@@ -203,6 +203,9 @@ public class SpoutParallelTaskManager implements TaskManager {
 
 	@Override
 	public void cancelTask(Task task) {
+		if (task == null) {
+			throw new IllegalArgumentException("Task cannot be null!");
+		}
 		cancelTask(task.getTaskId());
 	}
 
