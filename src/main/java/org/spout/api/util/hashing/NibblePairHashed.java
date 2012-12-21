@@ -37,7 +37,18 @@ public class NibblePairHashed {
 	public static byte key(int key1, int key2) {
 		return (byte) (((key1 & 0xF) << 4) | (key2 & 0xF));
 	}
-
+	
+	/**
+	 * Packs the first 4 most significant bits of each byte into an <code>int</code> with the top 16 bits as zero.
+	 *
+	 * @param key1 a <code>byte</code> value
+	 * @param key2 a <code>byte</code> value
+	 * @return The first 4 most significant bits of each byte packed into a <code>byte</code>
+	 */
+	public static int intKey(int key1, int key2) {
+		return key(key1, key2) & 0xFF;
+	}
+	
 	/**
 	 * Sets 4 most significant bits in the composite to the 4 least significant bits in the key
 	 * @param composite

@@ -26,6 +26,17 @@
  */
 package org.spout.api.util.map.concurrent;
 
+import gnu.trove.function.TObjectFunction;
+import gnu.trove.impl.Constants;
+import gnu.trove.iterator.TLongObjectIterator;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.procedure.TLongObjectProcedure;
+import gnu.trove.procedure.TLongProcedure;
+import gnu.trove.procedure.TObjectProcedure;
+import gnu.trove.set.TLongSet;
+
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -36,16 +47,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.spout.api.math.MathHelper;
-
-import gnu.trove.function.TObjectFunction;
-import gnu.trove.impl.Constants;
-import gnu.trove.iterator.TLongObjectIterator;
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.procedure.TLongObjectProcedure;
-import gnu.trove.procedure.TLongProcedure;
-import gnu.trove.procedure.TObjectProcedure;
-import gnu.trove.set.TLongSet;
 
 /**
  * This is a synchronised version of the Trove LongObjectHashMap.
@@ -377,21 +378,45 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 	}
 
 	@Override
-	public V[] values() {
-		return values(null);
+	public Object[] values() {
+		for (int m = 0; m < mapCount; m++) {
+			lockArray[m].readLock().lock();
+		}
+		try {
+			int localSize = totalKeys.get();
+			Object[] values = new Object[size()];
+			int position = 0;
+			for (int m = 0; m < mapCount; m++) {
+				Object[] mapValues = mapArray[m].values();
+				for (Object mapValue : mapValues) {
+					values[position++] = mapValue;
+				}
+			}
+			if (position != localSize) {
+				throw new IllegalStateException("Key counter does not match actual total map size");
+			}
+			return values;
+		} finally {
+			for (int m = 0; m < mapCount; m++) {
+				lockArray[m].readLock().unlock();
+			}
+		}	
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public V[] values(V[] dest) {
+		if (dest == null) {
+			throw new IllegalArgumentException("Destination array must not be null");
+		}
 		for (int m = 0; m < mapCount; m++) {
 			lockArray[m].readLock().lock();
 		}
 		try {
 			int localSize = totalKeys.get();
 			V[] values;
-			if (dest == null || dest.length < localSize) {
-				values = (V[]) new Object[size()];
+			if (dest.length < localSize) {
+				values = (V[]) Array.newInstance(dest.getClass().getComponentType(), size());
 			} else {
 				values = dest;
 			}
@@ -404,6 +429,9 @@ public class TSyncLongObjectHashMap<V> implements TSyncLongObjectMap<V> {
 			}
 			if (position != localSize) {
 				throw new IllegalStateException("Key counter does not match actual total map size");
+			}
+			for (int i = position; i < dest.length; i++) {
+				values[i] = null;
 			}
 			return values;
 		} finally {
