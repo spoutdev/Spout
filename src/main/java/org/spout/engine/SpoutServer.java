@@ -63,8 +63,8 @@ import org.spout.api.chat.channel.ChatChannel;
 import org.spout.api.command.CommandSource;
 import org.spout.api.entity.Player;
 import org.spout.api.event.Listener;
-import org.spout.api.event.server.ServerStartEvent;
-import org.spout.api.event.server.ServerStopEvent;
+import org.spout.api.event.engine.EngineStartEvent;
+import org.spout.api.event.engine.EngineStopEvent;
 import org.spout.api.exception.ConfigurationException;
 import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.plugin.Platform;
@@ -135,7 +135,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		super.start(checkWorlds);
 		getEventManager().registerEvents(listener, this);
 		getFilesystem().postStartup();
-		getEventManager().callEvent(new ServerStartEvent());
+		getEventManager().callEvent(new EngineStartEvent());
 		log("Done Loading, ready for players.");
 	}
 
@@ -193,7 +193,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		Runnable lastTickTask = new Runnable() {
 			@Override
 			public void run() {
-				ServerStopEvent stopEvent = new ServerStopEvent(message);
+				EngineStopEvent stopEvent = new EngineStopEvent(message);
 				getEventManager().callEvent(stopEvent);
 				for (Player player : getOnlinePlayers()) {
 					player.kick(stopEvent.getMessage());
