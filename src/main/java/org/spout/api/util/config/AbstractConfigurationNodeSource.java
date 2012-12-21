@@ -187,4 +187,21 @@ public abstract class AbstractConfigurationNodeSource implements ConfigurationNo
 	public boolean hasChild(String key) {
 		return children.containsKey(key);
 	}
+
+	@Override
+	public boolean hasNode(String... path) {
+		if (path.length == 0) {
+			throw new IllegalArgumentException("Path must not be empty!");
+		}
+		path = getConfiguration().ensureCorrectPath(path);
+		AbstractConfigurationNodeSource current = this;
+		for (String key : path) {
+		ConfigurationNode node = current.children.get(key);
+		if (node == null) {
+			return false;
+		}
+		current = node;
+		}
+		return true;
+	}
 }

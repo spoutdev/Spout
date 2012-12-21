@@ -39,9 +39,9 @@ public interface TaskManager {
 	 * 
 	 * @param plugin the owner of the task
 	 * @param task the task to execute
-	 * @return the task id of the task
+	 * @return the task
 	 */
-	public int scheduleSyncDelayedTask(Object plugin, Runnable task);
+	public Task scheduleSyncDelayedTask(Object plugin, Runnable task);
 	/**
 	 * Schedules a once off task to occur as soon as possible This task will be
 	 * executed by the main server thread.
@@ -49,9 +49,9 @@ public interface TaskManager {
 	 * @param plugin the owner of the task
 	 * @param task the task to execute
 	 * @param priority the priority of the task
-	 * @return the task id of the task
+	 * @return the task
 	 */
-	public int scheduleSyncDelayedTask(Object plugin, Runnable task, TaskPriority priority);
+	public Task scheduleSyncDelayedTask(Object plugin, Runnable task, TaskPriority priority);
 	
 	/**
 	 * Schedules a once off task to occur after a delay.   This task will be
@@ -61,9 +61,9 @@ public interface TaskManager {
 	 * @param task the task to execute
 	 * @param delay the delay, in ms, before the task starts
 	 * @param priority the priority of the task
-	 * @return the task id of the task
+	 * @return the task
 	 */
-	public int scheduleSyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority);
+	public Task scheduleSyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority);
 
 	/**
 	 * Schedules a repeating task This task will be executed by the main server
@@ -75,9 +75,9 @@ public interface TaskManager {
 	 * @param delay the delay, in ms, before the task starts
 	 * @param period the repeat period, in ms, of the task, or <= 0 to indicate a single shot task
 	 * @param priority the priority of the task
-	 * @return the task id of the task
+	 * @return the task
 	 */
-	public int scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority);
+	public Task scheduleSyncRepeatingTask(Object plugin, Runnable task, long delay, long period, TaskPriority priority);
 
 	/**
 	 * Schedules a once off short lived task to occur as soon as possible.  This task will be
@@ -87,7 +87,7 @@ public interface TaskManager {
 	 * @param task the task to execute
 	 * @return the task id of the task
 	 */
-	public int scheduleAsyncTask(Object plugin, Runnable task);
+	public Task scheduleAsyncTask(Object plugin, Runnable task);
 	
 	/**
 	 * Schedules a once off task to occur as soon as possible.  This task will be
@@ -96,9 +96,9 @@ public interface TaskManager {
 	 * @param plugin the owner of the task
 	 * @param task the task to execute
 	 * @param longLife indicates that the thread is long lived
-	 * @return the task id of the task
+	 * @return the tas
 	 */
-	public int scheduleAsyncTask(Object plugin, Runnable task, boolean longLife);
+	public Task scheduleAsyncTask(Object plugin, Runnable task, boolean longLife);
 	
 	/**
 	 * Schedules a once off short lived task to occur after a delay.  This task will be
@@ -108,9 +108,9 @@ public interface TaskManager {
 	 * @param task the task to execute
 	 * @param delay the delay, in ms, before the task starts
 	 * @param priority the priority of the task
-	 * @return the task id of the task
+	 * @return the task
 	 */
-	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority);
+	public Task scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority);
 	
 	/**
 	 * Schedules a once off task to occur after a delay.  This task will be
@@ -121,9 +121,9 @@ public interface TaskManager {
 	 * @param delay the delay, in ms, before the task starts
 	 * @param priority the priority of the task
 	 * @param longLife indicates that the thread is long lived
-	 * @return the task id of the task
+	 * @return the task
 	 */
-	public int scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority, boolean longLife);
+	public Task scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority, boolean longLife);
 
 	/**
 	 * Calls a method on the main thread and returns a Future object This task
@@ -153,6 +153,11 @@ public interface TaskManager {
 	 * Removes task from scheduler
 	 */
 	public void cancelTask(int taskId);
+
+	/**
+	 * Removes task from scheduler
+	 */
+	public void cancelTask(Task task);
 
 	/**
 	 * Removes all tasks associated with a particular object from the scheduler

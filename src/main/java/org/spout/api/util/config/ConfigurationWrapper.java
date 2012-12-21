@@ -174,6 +174,11 @@ public abstract class ConfigurationWrapper implements Configuration {
 	}
 
 	@Override
+	public boolean hasNode(String... path) {
+		return getConfiguration().hasNode(path);
+	}
+
+	@Override
 	public String[] getPathElements() {
 		return getConfiguration().getPathElements();
 	}

@@ -81,4 +81,9 @@ public interface Task {
 	 * @return true if the task is a long lived task
 	 */
 	public boolean isLongLived();
+
+	/**
+	 * Cancels current Task
+	 */
+	public void cancel();
 }
