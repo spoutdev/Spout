@@ -27,6 +27,7 @@
 package org.spout.engine.filesystem.versioned;
 
 import gnu.trove.procedure.TShortObjectProcedure;
+import gnu.trove.set.hash.TIntHashSet;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -72,7 +73,7 @@ public class ChunkFiles {
 	
 	private static final TypeChecker<List<? extends CompoundTag>> checkerListCompoundTag = TypeChecker.tList(CompoundTag.class);
 	
-	public static final byte CHUNK_VERSION = 2;
+	public static final byte CHUNK_VERSION = 3;
 	
 	public static SpoutChunk loadChunk(SpoutRegion r, int x, int y, int z, InputStream dis, ChunkDataForRegion dataForRegion) {
 		SpoutChunk chunk = null;
@@ -103,6 +104,9 @@ public class ChunkFiles {
 				converted = true;
 				if (version <= 1) {
 					map = convertV1V2(map);
+				}
+				if (version <= 2) {
+					map = convertV2V3(map);
 				}
 			}
 			
@@ -148,28 +152,19 @@ public class ChunkFiles {
 
 		byte populationState = SafeCast.toGeneric(map.get("populationState"), new ByteTag("", PopulationState.POPULATED.getId()), ByteTag.class).getValue();
 		boolean lightStable = SafeCast.toByte(NBTMapper.toTagValue(map.get("lightStable")), (byte) 0) != 0;
-
+		
 		int[] palette = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("palette")), null);
-		if (palette == null) {
-			short[] blocks = SafeCast.toShortArray(NBTMapper.toTagValue(map.get("blocks")), null);
-			short[] data = SafeCast.toShortArray(NBTMapper.toTagValue(map.get("data")), null);
-			for (int i = 0; i < blocks.length; i++) {
-				blocks[i] = (short) itemMap.convertTo(global, blocks[i]);
-			}
-			chunk = new SpoutChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), blocks, data, skyLight, blockLight, extraDataMap, lightStable);
-		} else {
-			int blockArrayWidth = SafeCast.toInt(NBTMapper.toTagValue(map.get("packedWidth")), -1);
-			int[] variableWidthBlockArray = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("packedBlockArray")), null);
+		int blockArrayWidth = SafeCast.toInt(NBTMapper.toTagValue(map.get("packedWidth")), -1);
+		int[] variableWidthBlockArray = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("packedBlockArray")), null);
 
-			if (palette.length > 0) {
-				convertArray(palette, itemMap, global);
-				skipScan = componentSkipCheck(palette);
-			} else {
-				convertArray(variableWidthBlockArray, itemMap, global);
-				skipScan = componentSkipCheck(variableWidthBlockArray);
-			}
-			chunk = new SpoutChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), palette, blockArrayWidth, variableWidthBlockArray, skyLight, blockLight, extraDataMap, lightStable);
+		if (palette.length > 0) {
+			convertArray(palette, itemMap, global);
+			skipScan = componentSkipCheck(palette);
+		} else {
+			convertArray(variableWidthBlockArray, itemMap, global);
+			skipScan = componentSkipCheck(variableWidthBlockArray);
 		}
+		chunk = new SpoutChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), palette, blockArrayWidth, variableWidthBlockArray, skyLight, blockLight, extraDataMap, lightStable);
 
 		CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("entities")), (CompoundMap) null, CompoundMap.class);
 		EntityFiles.loadEntities(r, entityMap, dataForRegion.loadedEntities);
@@ -479,6 +474,45 @@ public class ChunkFiles {
 		map.put(new IntTag("data", update.getData()));
 
 		return new CompoundTag("update", map);
+	}
+	
+	/**
+	 * Version 2 to version 3 conversion
+	 * 
+	 * This removes the option to use the "blocks" and "data" tags.  The "packedWidth" and "packedBlockArray" fields are used instead.
+	 * 
+	 * These fields were obsolete anyway.
+	 */
+	
+	private static CompoundMap convertV2V3(CompoundMap map) {
+		
+		int[] palette = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("palette")), null);
+		
+		if (palette != null) {
+			return map;
+		}
+		
+		short[] blocks = SafeCast.toShortArray(NBTMapper.toTagValue(map.get("blocks")), null);
+		short[] data = SafeCast.toShortArray(NBTMapper.toTagValue(map.get("data")), null);
+		
+		int[] packed = new int[4096];
+		
+		for (int i = 0; i < 4096; i++) {
+			short d = data == null ? 0 : data[i];
+			packed[i] = BlockFullState.getPacked(blocks[i], d);
+		}
+		
+		// Just use the non-compressed format.  The engine will compress the chunks over time.
+		
+		palette = new int[0];
+		int[] packetBlockArray = packed;
+		int packedWidth = 16;
+		
+		map.put(new IntArrayTag("palette", palette));
+		map.put(new IntTag("packedWidth", packedWidth));
+		map.put(new IntArrayTag("packedBlockArray", packetBlockArray));
+		
+		return map;
 	}
 	
 }
