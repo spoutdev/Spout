@@ -124,6 +124,11 @@ public abstract class ConfigurationWrapper implements Configuration {
 	}
 
 	@Override
+	public ConfigurationNode addNode(String name) {
+		return getConfiguration().addNode(name);
+	}
+
+	@Override
 	public void addChildren(ConfigurationNode... nodes) {
 		getConfiguration().addChildren(nodes);
 	}

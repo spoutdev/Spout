@@ -118,6 +118,11 @@ public class ConfigurationHolder extends ValueHolderBase implements Configuratio
 	}
 
 	@Override
+	public ConfigurationNode addNode(String name) {
+		return getNode().addNode(name);
+	}
+
+	@Override
 	public void addChildren(ConfigurationNode... nodes) {
 		getNode().addChildren(nodes);
 	}
