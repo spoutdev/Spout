@@ -47,7 +47,7 @@ abstract class AbstractData{
 	protected final AtomicBoolean dirty;
 	protected final AtomicReference<byte[]> compressed;
 
-	private static AbstractData[] newInstanceArray = new AbstractData[8];
+	private static AbstractData[] newInstanceArray = new AbstractData[10];
 
 	public AbstractData() {
 		this(0);
@@ -74,6 +74,8 @@ abstract class AbstractData{
 		register(new LongData(0));
 		register(new StringData(0));
 		register(new DoubleData(0));
+		register(new ShortData(0));
+		register(new ByteData(0));
 	}
 
 	private static void register(AbstractData o) {

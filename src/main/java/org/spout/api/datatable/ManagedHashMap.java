@@ -479,9 +479,9 @@ public class ManagedHashMap implements SerializableMap{
 		} else if (value instanceof Integer) {
 			return new IntegerData(intKey, (Integer)value);
 		}  else if (value instanceof Short) {
-			return new IntegerData(intKey, (Short)value);
+			return new ShortData(intKey, (Short)value);
 		}  else if (value instanceof Byte) {
-			return new IntegerData(intKey, (Byte)value);
+			return new ByteData(intKey, (Byte)value);
 		} else if (value instanceof String) {
 			return new StringData(intKey, (String)value);
 		} else if (value instanceof Serializable) {
