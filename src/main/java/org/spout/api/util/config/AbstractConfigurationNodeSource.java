@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A basic implementation of ConfigurationNodeSource.
@@ -76,6 +77,21 @@ public abstract class AbstractConfigurationNodeSource implements ConfigurationNo
 		node.setAttached(true);
 		node.setParent(this);
 		return ret;
+	}
+
+	@Override
+	public ConfigurationNode addNode(String name) {
+		if (name.contains(getConfiguration().getPathSeparator())) {
+			String[] split = name.split(getConfiguration().getPathSeparator());
+			ConfigurationNode newNode = createConfigurationNode(ArrayUtils.add(getPathElements(), split[0]), null);
+			addChild(newNode);
+			ArrayUtils.remove(split, 0);
+			newNode.addNode(StringUtils.join(split, getConfiguration().getPathSeparator()));
+			return newNode;
+		}
+		ConfigurationNode newNode = createConfigurationNode(ArrayUtils.add(getPathElements(), name), null);
+		addChild(newNode);
+		return newNode;
 	}
 
 	@Override

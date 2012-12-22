@@ -60,6 +60,15 @@ public interface ConfigurationNodeSource {
 	public ConfigurationNode addChild(ConfigurationNode node);
 
 	/**
+	 * Adds a new node as a child to this one
+	 * Will overwrite existing
+	 *
+	 * @param name The path to the node to add
+	 * @return The previous node at the specified path (can be null)
+	 */
+	public ConfigurationNode addNode(String name);
+
+	/**
 	 * Add the given children. The process for adding children is the same as that for {@link #addChild(ConfigurationNode)}
 	 *
 	 * @see #addChild(ConfigurationNode)
