@@ -36,6 +36,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
 import org.spout.api.Spout;
+import org.spout.api.exception.ComputerIsPotatoException;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.Texture;
 import org.spout.engine.SpoutClient;
@@ -115,6 +116,12 @@ public class ClientRenderTexture extends ClientTexture {
 				}
 				GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, SCREEN_BUFFER);
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+				
+				if(GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER) != GL30.GL_FRAMEBUFFER_COMPLETE)
+				{
+					System.out.println("ERROR: Framebuffer not complete");
+					throw new ComputerIsPotatoException("Framebuffer not complete");
+				}
 			}
 		}
 		

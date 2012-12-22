@@ -509,8 +509,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		tmc.setTranslation(new Vector3(0, 3f, 0));
 		tmc.setFont(font);
 
-		skdome = (Model) Spout.getFilesystem().getResource("model://Spout/models/defaultskydome.spm");
-
+		
 		super.getDefaultWorld().spawnEntity(e);
 	}
 
@@ -518,10 +517,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		worldRenderer.update(limit);
 	}
 
-	Model skdome;
 	Matrix ident = MathHelper.createIdentity();
-	Matrix testView = MathHelper.createLookAt(new Vector3(-1, 0, 0), Vector3.ZERO, Vector3.UP);
-
+	
 	public void render(float dt) {
 
 		while (renderTaskQueue.peek() != null) {
@@ -530,10 +527,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		Model skydome = skdome; //(Model) super.getDefaultWorld().getDataMap().get("Skydome");
+		Model skydome = (Model) super.getDefaultWorld().getDataMap().get("Skydome");
 		if (skydome != null) {
-			//Matrix skydomeView = MathHelper.translate(new Vector3(0, .5, 0));
-			//skydomeView.multiply(this.getActiveCamera().getRotation());
 			skydome.getRenderMaterial().getShader().setUniform("View", this.getActiveCamera().getRotation());
 			skydome.getRenderMaterial().getShader().setUniform("Projection", this.getActiveCamera().getProjection());
 			skydome.getRenderMaterial().getShader().setUniform("Model", ident);
