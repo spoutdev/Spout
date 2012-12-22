@@ -31,32 +31,34 @@ import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
 
 /**
- * Called when one {@link Entity} interacts with another {@link Entity}.
+ * Called when an Entity interacts with something else.
  * Implements {@link Cancellable}, which allows this event's normal outcome to be prevented.
+ * 
+ * @param <T> the type of object being interacted with.
  */
-public class EntityInteractEvent extends EntityEvent implements Cancellable {
+public class EntityInteractEvent<T> extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
-	private Entity interacted;
+	private T interacted;
 
-	public EntityInteractEvent(Entity e, Entity interacted) {
+	public EntityInteractEvent(Entity e, T interacted) {
 		super(e);
 		this.interacted = interacted;
 	}
 
 	/**
-	 * Get the entity being interacted with.
-	 * @return The entity interacted with.
+	 * Get the object being interacted with.
+	 * @return The object interacted with.
 	 */
-	public Entity getInteractedWith() {
+	public T getInteractedWith() {
 		return interacted;
 	}
 
 	/**
-	 * Set the entity being interacted with.
-	 * @param e The entity that will be interacted with.
+	 * Set the object being interacted with.
+	 * @param t The object that will be interacted with.
 	 */
-	public void setInteractedWith(Entity e) {
-		interacted = e;
+	public void setInteractedWith(T t) {
+		interacted = t;
 	}
 
 	@Override
