@@ -26,14 +26,17 @@
  */
 package org.spout.api.inventory;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import org.spout.api.inventory.shape.Cube;
 
+import org.spout.api.inventory.shape.Cube;
 import org.spout.api.inventory.shape.Grid;
 import org.spout.api.inventory.util.InventoryIterator;
 import org.spout.api.material.Material;
@@ -49,9 +52,11 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	private static final long serialVersionUID = 1L;
 	/**
 	 * A set of {@link InventoryViewer} to send updates every time a slot is 
-	 * set.
+	 * set.<br>
+	 * Note: Do not make changes to this variable, it is intended to be final, but 
+	 * transient variables cannot be set to final.
 	 */
-	private transient final Set<InventoryViewer> viewers = new HashSet<InventoryViewer>();
+	private transient Set<InventoryViewer> viewers = new HashSet<InventoryViewer>();
 	/**
 	 * An array of {@link ItemStack}s that act as a mapping between slots and 
 	 * items.
@@ -712,4 +717,10 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	public Inventory clone() {
 		return new Inventory(contents.clone());
 	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		viewers = new HashSet<InventoryViewer>();
+	}
+
 }
