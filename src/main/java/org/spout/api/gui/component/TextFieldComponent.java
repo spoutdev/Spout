@@ -67,7 +67,7 @@ public class TextFieldComponent extends LabelComponent {
 	 */
 	public static final Signal SIGNAL_RETURN_PRESSED = new Signal("returnPressed");
 	
-	{
+	public TextFieldComponent() {
 		registerSignal(SIGNAL_TEXT_CHANGED);
 	}
 
@@ -227,6 +227,24 @@ public class TextFieldComponent extends LabelComponent {
 		return pixels / client.getResolution().getY();
 	}
 
+	private Rectangle getBorderBounds() {
+		Rectangle rect = field.getSprite();
+		float height = rect.getHeight() + toScreenY(8);
+		float width = rect.getWidth() + toScreenX(8);
+		float x = rect.getX() - toScreenX(4);
+		float y = rect.getY() - toScreenY(4);
+		return new Rectangle(x, y, width, height);
+	}
+
+	private Rectangle getInitialCursorBounds() {
+		Rectangle rect = field.getSprite();
+		float height = rect.getHeight() - toScreenY(4);
+		float width = toScreenX(getFont().getSpaceWidth() / 2);
+		float x = rect.getX() + toScreenX(2);
+		float y = rect.getY() + toScreenY(2);
+		return new Rectangle(x, y, width, height);
+	}
+
 	/**
 	 * Returns the text on the specified row. Note that this method uses the
 	 * {@link #cachedText} field which means not all returned text is
@@ -309,37 +327,6 @@ public class TextFieldComponent extends LabelComponent {
 	 */
 	public float getRowHeight() {
 		return toScreenY(getFont().getCharHeight() + 8);
-	}
-
-	/**
-	 * Returns the proper bounds for the border of the text field proportional
-	 * to the text field itself.
-	 *
-	 * @return bounds of field border
-	 */
-	public Rectangle getBorderBounds() {
-		Rectangle rect = field.getSprite();
-		float height = rect.getHeight() + toScreenY(8);
-		float width = rect.getWidth() + toScreenX(8);
-		float x = rect.getX() - toScreenX(4);
-		float y = rect.getY() - toScreenY(4);
-		return new Rectangle(x, y, width, height);
-	}
-
-	/**
-	 * Returns the proper bounds for the cursor proportional to the text field.
-	 * Note that the x value will always be at cursor index 0 and the y value
-	 * will always be on the bottom row of the field.
-	 *
-	 * @return bounds of the cursor
-	 */
-	public Rectangle getInitialCursorBounds() {
-		Rectangle rect = field.getSprite();
-		float height = rect.getHeight() - toScreenY(4);
-		float width = toScreenX(getFont().getSpaceWidth() / 2);
-		float x = rect.getX() + toScreenX(2);
-		float y = rect.getY() + toScreenY(2);
-		return new Rectangle(x, y, width, height);
 	}
 
 	/**
