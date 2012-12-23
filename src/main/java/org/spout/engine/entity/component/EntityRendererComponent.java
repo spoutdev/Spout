@@ -30,7 +30,7 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 
-import org.spout.api.component.implementation.ModelComponent;
+import org.spout.api.component.impl.ModelComponent;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;

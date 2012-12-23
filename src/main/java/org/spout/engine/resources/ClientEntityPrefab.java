@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.spout.api.component.implementation.ModelComponent;
+import org.spout.api.component.impl.ModelComponent;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntityPrefab;

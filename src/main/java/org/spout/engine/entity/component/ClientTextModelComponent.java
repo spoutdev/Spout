@@ -32,7 +32,7 @@ import java.util.List;
 
 import org.spout.api.chat.style.ColorChatStyle;
 import org.spout.api.chat.style.ResetChatStyle;
-import org.spout.api.component.implementation.TextModelComponent;
+import org.spout.api.component.impl.TextModelComponent;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.math.Rectangle;
