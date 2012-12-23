@@ -53,8 +53,10 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 
 import org.spout.api.Spout;
+import org.spout.api.component.Component;
 import org.spout.api.component.impl.PhysicsComponent;
 import org.spout.api.component.type.BlockComponent;
+import org.spout.api.component.type.EntityComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
@@ -119,12 +121,14 @@ import org.spout.engine.world.dynamic.DynamicBlockUpdateTree;
 
 import com.bulletphysics.collision.broadphase.BroadphaseInterface;
 import com.bulletphysics.collision.broadphase.DbvtBroadphase;
+import com.bulletphysics.collision.broadphase.Dispatcher;
 import com.bulletphysics.collision.dispatch.CollisionConfiguration;
 import com.bulletphysics.collision.dispatch.CollisionDispatcher;
 import com.bulletphysics.collision.dispatch.CollisionFlags;
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
 import com.bulletphysics.collision.dispatch.GhostPairCallback;
+import com.bulletphysics.collision.narrowphase.PersistentManifold;
 import com.bulletphysics.collision.shapes.voxel.VoxelWorldShape;
 import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
 import com.bulletphysics.dynamics.RigidBody;
@@ -964,7 +968,37 @@ public class SpoutRegion extends Region {
 	private void updateDynamics(float dt) {
 		try {
 			synchronized(simulation) {
+				//Simulate physics
 				simulation.stepSimulation(dt, 10);
+				final Dispatcher dispatcher = simulation.getDispatcher();
+				int manifolds = dispatcher.getNumManifolds();
+				for (int i = 0; i < manifolds; i++) {
+					PersistentManifold contact = dispatcher.getManifoldByIndexInternal(i);
+					Object colliderRawA = contact.getBody0();
+					Object colliderRawB = contact.getBody1();
+					if (!(colliderRawA instanceof CollisionObject) || !(colliderRawB instanceof CollisionObject)) {
+						continue;
+					}
+					Object holderA = ((CollisionObject) colliderRawA).getUserPointer();
+					Object holderB = ((CollisionObject) colliderRawB).getUserPointer();
+					//Entity -> Entity Collisions
+					if (holderA instanceof Entity) {
+						if (holderB instanceof Entity) {
+							//Call onCollide for colliderA's EntityComponents
+							for (Component component : ((Entity) holderA).values()) {
+								if (component instanceof EntityComponent) {
+									((EntityComponent) component).onCollide((Entity) holderB);
+								}
+							}
+							//Call onCollide for colliderB's EntityComponents
+							for (Component component : ((Entity) holderB).values()) {
+								if (component instanceof EntityComponent) {
+									((EntityComponent) component).onCollide((Entity) holderA);
+								}
+							}
+						}
+					}
+				}
 			}
 		} catch (Exception e) {
 			synchronized(logLock) {

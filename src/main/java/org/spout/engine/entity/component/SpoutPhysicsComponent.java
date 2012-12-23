@@ -165,6 +165,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		Vector3f inertia = new Vector3f(0f, 0f, 0f);
 		shape.calculateLocalInertia(mass, new Vector3f(0f, 0f, 0f));
 		body = new RigidBody(new RigidBodyConstructionInfo(mass, state, shape, inertia));
+		body.setUserPointer(getOwner());
 		body.setWorldTransform(new Transform(new Matrix4f(MathHelper.toQuaternionf(spoutTransform.getRotation()), MathHelper.toVector3f(point.getX(), point.getY(), point.getZ()), 1)));
 		body.activate();
 	}
