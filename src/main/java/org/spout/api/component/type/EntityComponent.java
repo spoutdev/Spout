@@ -30,6 +30,8 @@ import org.spout.api.component.Component;
 import org.spout.api.component.ComponentOwner;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
+import org.spout.api.geo.cuboid.Block;
+import org.spout.api.material.Material;
 
 /**
  * Represents an attachment to a entity that can respond to Ticks.
@@ -65,6 +67,14 @@ public abstract class EntityComponent extends Component {
 	 * Called when the entity changes from observed to unobserved.
 	 */
 	public void onUnObserved() {
+	}
+
+	/**
+	 * Called when the entity collides with another entity
+	 * @param entity
+	 */
+	public void onCollide(Entity entity) {
+
 	}
 
 	/**
