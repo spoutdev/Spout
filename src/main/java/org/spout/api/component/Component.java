@@ -26,7 +26,7 @@
  */
 package org.spout.api.component;
 
-import org.spout.api.component.implementation.DatatableComponent;
+import org.spout.api.component.impl.DatatableComponent;
 import org.spout.api.tickable.Tickable;
 
 public abstract class Component implements Tickable {

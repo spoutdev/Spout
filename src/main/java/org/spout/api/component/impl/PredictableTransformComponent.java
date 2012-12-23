@@ -24,7 +24,7 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.component.implementation;
+package org.spout.api.component.impl;
 
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.MathHelper;

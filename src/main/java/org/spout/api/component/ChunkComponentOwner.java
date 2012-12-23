@@ -29,7 +29,7 @@ package org.spout.api.component;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.spout.api.component.implementation.DatatableComponent;
+import org.spout.api.component.impl.DatatableComponent;
 import org.spout.api.geo.cuboid.Chunk;
 
 public class ChunkComponentOwner implements ComponentOwner {

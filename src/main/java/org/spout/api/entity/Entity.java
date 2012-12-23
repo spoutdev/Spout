@@ -30,8 +30,8 @@ import java.util.UUID;
 
 import org.spout.api.component.ComponentHolder;
 import org.spout.api.component.type.EntityComponent;
-import org.spout.api.component.implementation.NetworkComponent;
-import org.spout.api.component.implementation.TransformComponent;
+import org.spout.api.component.impl.NetworkComponent;
+import org.spout.api.component.impl.TransformComponent;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
