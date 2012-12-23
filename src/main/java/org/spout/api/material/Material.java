@@ -499,4 +499,15 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	public Collection<MeshEffect> getMeshEffects() {
 		return Collections.unmodifiableCollection(meshEffects);
 	}
+	
+	/**
+	 * Indicates that the dataMask covers the least significant bits.<br>
+	 * <br>
+	 * This method is used when verifying that the dataMask is set correctly
+	 * 
+	 * @return
+	 */
+	public boolean hasLSBDataMask() {
+		return true;
+	}
 }

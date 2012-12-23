@@ -220,7 +220,9 @@ public abstract class MaterialRegistry {
 			minimumMask |= sm.getData() & 0xFFFF;
 		}
 
-		minimumMask = (short) (MathHelper.roundUpPow2(minimumMask + 1) - 1);
+		if (m.hasLSBDataMask()) {
+			minimumMask = (short) (MathHelper.roundUpPow2(minimumMask + 1) - 1);
+		}
 
 		return minimumMask;
 	}
