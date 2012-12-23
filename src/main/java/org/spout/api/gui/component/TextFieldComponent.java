@@ -33,9 +33,11 @@ import java.util.List;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.event.player.PlayerKeyEvent;
+import org.spout.api.geo.cuboid.UpdateOption;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.math.Rectangle;
 import org.spout.api.render.Font;
+import org.spout.api.signal.Signal;
 
 public class TextFieldComponent extends LabelComponent {
 	private final RenderPart cursor = new RenderPart();
@@ -54,6 +56,20 @@ public class TextFieldComponent extends LabelComponent {
 	private boolean scrollable = false;
 	private boolean passwordField = false;
 	private char passwordChar = '*';
+	
+	/**
+	 * Emitted whenever the text changes
+	 */
+	public static final Signal SIGNAL_TEXT_CHANGED = new Signal("textChanged", String.class);
+	
+	/**
+	 * Emitted whenever the user presses enter or return.
+	 */
+	public static final Signal SIGNAL_RETURN_PRESSED = new Signal("returnPressed");
+	
+	{
+		registerSignal(SIGNAL_TEXT_CHANGED);
+	}
 
 	@Override
 	public void onAttached() {
@@ -98,20 +114,21 @@ public class TextFieldComponent extends LabelComponent {
 		}
 
 		typingTimer = 80;
+		boolean whitespace = false;
 		switch (event.getKey()) {
 			case KEY_BACK:
 				backspace();
-				return;
+				whitespace = true;
+				break;
 			case KEY_RETURN:
 				if (getRows() < maxRows) {
 					newLine();
 				}
-				return;
-		}
-
-		char c = event.getChar();
-		if (cachedText.length() >= maxChars || !isValidChar(c)) {
-			return;
+				whitespace = true;
+				emit(SIGNAL_RETURN_PRESSED);
+				break;
+			default:
+				break;
 		}
 
 		/*
@@ -121,17 +138,25 @@ public class TextFieldComponent extends LabelComponent {
 		 * start to scroll to the right.
 		 */
 
-		if (!canFitOnRow(cursorRow, c)) {
-			if (getRows() < maxRows) {
-				newLine();
-			} else {
-				// TODO: scroll to right
+		if (!whitespace) {
+			char c = event.getChar();
+			if (cachedText.length() >= maxChars || !isValidChar(c)) {
+				return;
 			}
+			if (!canFitOnRow(cursorRow, c)) {
+				if (getRows() < maxRows) {
+					newLine();
+				} else {
+					// TODO: scroll to right
+				}
+			}
+			append(isPasswordField() ? passwordChar : c);
+			cachedText += c;
+			setCursorIndex(getCursorIndex() + 1);
 		}
-
-		append(isPasswordField() ? passwordChar : c);
-		cachedText += c;
-		setCursorIndex(getCursorIndex() + 1);
+		
+		emit(SIGNAL_TEXT_CHANGED, getText());
+		getOwner().update();
 	}
 
 	@Override
@@ -173,10 +198,6 @@ public class TextFieldComponent extends LabelComponent {
 		cursor.setColor(Color.BLACK);
 
 		getOwner().add(ControlComponent.class);
-	}
-
-	private void update() {
-		// TODO: Call whenever field is changed and update the other render parts
 	}
 
 	private boolean canFitOnRow(int row, char c) {
