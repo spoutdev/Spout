@@ -69,6 +69,7 @@ public class TextFieldComponent extends LabelComponent {
 	
 	public TextFieldComponent() {
 		registerSignal(SIGNAL_TEXT_CHANGED);
+		registerSignal(SIGNAL_RETURN_PRESSED);
 	}
 
 	@Override
