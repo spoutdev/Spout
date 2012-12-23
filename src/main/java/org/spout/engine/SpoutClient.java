@@ -527,7 +527,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		Model skydome = (Model) super.getDefaultWorld().getDataMap().get("Skydome");
+		Model skydome = (Model) this.getActiveWorld().getDataMap().get("Skydome");
 		if (skydome != null) {
 			skydome.getRenderMaterial().getShader().setUniform("View", this.getActiveCamera().getRotation());
 			skydome.getRenderMaterial().getShader().setUniform("Projection", this.getActiveCamera().getProjection());
@@ -712,5 +712,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 			wireframe = true;
 		}
+	}
+	
+	public World getActiveWorld(){
+		return getActivePlayer().getWorld();
 	}
 }
