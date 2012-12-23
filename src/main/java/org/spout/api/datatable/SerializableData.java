@@ -29,13 +29,16 @@ package org.spout.api.datatable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.io.Serializable;
 import java.util.logging.Level;
 
 import org.apache.commons.io.IOUtils;
 import org.spout.api.Spout;
+import org.spout.api.plugin.CommonClassLoader;
 
 public class SerializableData extends AbstractData {
 
@@ -86,7 +89,7 @@ public class SerializableData extends AbstractData {
 			}
 			try {
 				ByteArrayWrapper w = (ByteArrayWrapper) s;
-				ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(w.getArray()));
+				ObjectInputStream stream = new PluginClassResolverObjectInputStream(new ByteArrayInputStream(w.getArray()));
 				Object result;
 				try {
 					result = stream.readObject();
@@ -138,6 +141,22 @@ public class SerializableData extends AbstractData {
 		public byte[] getArray() {
 			return array;
 		}
+	}
+	
+	public static class PluginClassResolverObjectInputStream extends ObjectInputStream {
+
+		public PluginClassResolverObjectInputStream(InputStream in) throws IOException {
+			super(in);
+		}
+
+		protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+			try {
+				return super.resolveClass(desc);
+			} catch (ClassNotFoundException e) {
+				return CommonClassLoader.findPluginClass(desc.getName());
+			}
+		}
+
 	}
 
 	@Override
