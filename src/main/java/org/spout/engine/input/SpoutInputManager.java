@@ -69,7 +69,7 @@ public class SpoutInputManager implements InputManager {
 		if (key == FOCUS_KEY && pressed) {
 			Screen in = getInputScreen();
 			if (in != null) {
-				in.nextFocus(FocusReason.KEYBOARD_TAB);
+//				in.nextFocus(FocusReason.KEYBOARD_TAB);
 			}
 		}
 
