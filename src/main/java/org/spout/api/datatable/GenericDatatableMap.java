@@ -39,6 +39,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.spout.api.Spout;
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.VarInt;
@@ -46,7 +47,8 @@ import org.spout.api.util.VarInt;
 class GenericDatatableMap implements DatatableMap {
 	private static final StringMap ROOT_STRING_MAP = new StringMap(null, new MemoryStore<Integer>(), 0, Short.MAX_VALUE, GenericDatatableMap.class.getName());
 	private final StringMap stringmap;
-	private final TSynchronizedIntObjectMap<AbstractData> map = new TSynchronizedIntObjectMap<AbstractData>(new TIntObjectHashMap<AbstractData>());
+	private final Object mapMutex = new Object();
+	private final TSynchronizedIntObjectMap<AbstractData> map = new TSynchronizedIntObjectMap<AbstractData>(new TIntObjectHashMap<AbstractData>(), mapMutex);
 	protected final NullData niltype = new NullData();
 
 	public static StringMap getStringMap() {
@@ -98,11 +100,30 @@ class GenericDatatableMap implements DatatableMap {
 	}
 
 	private AbstractData setIfAbsentRaw(int key, AbstractData value) {
-		if (value != null) {
-			value.setKey(key);
-			return map.putIfAbsent(key, value);
+		if (value == null) {
+			throw new IllegalArgumentException("Value cannot be null, use NullData");
 		}
-		return null;
+		value.setKey(key);
+
+		AbstractData old = map.putIfAbsent(key, value);
+		
+		if (old == null) {
+			return old;
+		}
+		
+		if (old.get() != null || value.get() == null) {
+			return old;
+		} else {
+			synchronized (mapMutex) {
+				old = map.get(key);
+				if (old == null || old.get() == null) {
+					map.put(key,  value);
+					return null;
+				} else {
+					return old;
+				}
+			}
+		}
 	}
 
 	@Override
