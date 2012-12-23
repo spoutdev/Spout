@@ -32,10 +32,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
 
-import org.spout.api.component.Component;
-import org.spout.api.gui.component.ControlComponent;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.tickable.BasicTickable;
 
@@ -44,7 +41,6 @@ public class Screen extends BasicTickable implements Container {
 	private Widget focussedWidget = null;
 	private boolean takesInput = true;
 	private boolean grabsMouse = true;
-	private int focus = 0;
 
 	@Override
 	public List<Widget> getWidgets() {
@@ -104,93 +100,20 @@ public class Screen extends BasicTickable implements Container {
 	}
 
 	public Widget getFocusedWidget() {
-		return getWidgets().get(focus);
+		return focussedWidget;
 	}
-
-	public void setFocus(int focus, FocusReason reason) {
-		System.out.println("Setting focus");
-		// Focus hasn't changed
-		if (this.focus == focus) {
-			return;
-		}
-
-		// Make sure the focus is within range
-		List<Widget> widgets = getWidgets();
-		int size = widgets.size();
-		if (focus < 0 || focus >= size) {
-			throw new IllegalArgumentException("Focus must be between 0 and " + (size - 1));
-		}
-
-		// Verify the new focus has a ControlComponent
-		if (!widgets.get(focus).canFocus()) {
-			throw new IllegalStateException("Can only focus controls, add a ControlComponent to your widget!");
-		}
-
-		System.out.println("Focus: " + focus);
-
-		// Notify old widget of lost focus; notify new widget with focus gained
-		getFocusedWidget().onFocusLost();
-		this.focus = focus;
-		getFocusedWidget().onFocus(reason);
-
-	}
-
-	public void setFocus(int focus) {
-		setFocus(focus, FocusReason.PROGRAMMED);
-	}
-
-	public void setFocus(Widget widget, FocusReason reason) {
-		List<Widget> widgets = getWidgets();
-		if (!widgets.contains(widget)) {
-			throw new IllegalArgumentException("Cannot focus Widget on Screen because specified Widget is not attached.");
-		}
-		setFocus(widgets.indexOf(widget), reason);
-	}
-
-	public void setFocus(Widget widget) {
-		setFocus(widget, FocusReason.PROGRAMMED);
-	}
-
-	public void nextFocus(FocusReason reason) {
-		List<Widget> widgets = getWidgets();
-		int size = widgets.size();
-		int newFocus = focus + 1;
-		while (newFocus != focus) {
-			if (newFocus >= size) {
-				newFocus = 0;
+	
+	public void setFocus(Widget newFocus, FocusReason reason) {
+		if (focussedWidget != newFocus) {
+			Widget oldFocus = focussedWidget;
+			focussedWidget = newFocus;
+			if (oldFocus != null) {
+				oldFocus.onFocusLost();
 			}
-			Widget widget = widgets.get(newFocus);
-			if (widget.canFocus()) {
-				setFocus(newFocus, reason);
-				break;
+			if (newFocus != null) {
+				newFocus.onFocus(reason);
 			}
-			newFocus++;
 		}
-	}
-
-	public void nextFocus() {
-		nextFocus(FocusReason.PROGRAMMED);
-	}
-
-	public void previousFocus(FocusReason reason) {
-		List<Widget> widgets = getWidgets();
-		int size = widgets.size();
-		int newFocus = focus - 1;
-		while (newFocus != focus) {
-			if (newFocus < 0) {
-				newFocus = size - 1;
-			}
-			Widget widget = widgets.get(newFocus);
-			if (widget.canFocus()) {
-				setFocus(newFocus, reason);
-				break;
-			}
-			newFocus--;
-		}
-	}
-
-	public void previousFocus() {
-		previousFocus(FocusReason.PROGRAMMED);
 	}
 
 	public boolean grabsMouse() {
