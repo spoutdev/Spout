@@ -55,8 +55,8 @@ public class Screen extends BasicTickable implements Container {
 
 	@Override
 	public void removeWidget(Widget widget) {
-		widget.setScreen(null);
 		widgets.remove(widget);
+		cleanupWidget(widget);
 	}
 
 	@Override
@@ -70,8 +70,16 @@ public class Screen extends BasicTickable implements Container {
 	public void removeWidgets() {
 		Iterator<Widget> i = getWidgets().iterator();
 		while (i.hasNext()) {
-			i.next().setScreen(null);
+			cleanupWidget(i.next());
 			i.remove();
+		}
+	}
+	
+	private void cleanupWidget(Widget widget) {
+		widget.setScreen(null);
+		if (widget == focussedWidget) {
+			focussedWidget = null;
+			widget.onFocusLost();
 		}
 	}
 
@@ -81,8 +89,8 @@ public class Screen extends BasicTickable implements Container {
 		while (i.hasNext()) {
 			Widget widget = i.next();
 			if (widgets.get(widget).equals(plugin)) {
-				widget.setScreen(null);
 				i.remove();
+				cleanupWidget(widget);
 			}
 		}
 	}
@@ -103,15 +111,21 @@ public class Screen extends BasicTickable implements Container {
 		return focussedWidget;
 	}
 	
+	public void setFocus(Widget newFocus) {
+		setFocus(newFocus, FocusReason.PROGRAMMED);
+	}
+	
 	public void setFocus(Widget newFocus, FocusReason reason) {
-		if (focussedWidget != newFocus) {
-			Widget oldFocus = focussedWidget;
-			focussedWidget = newFocus;
-			if (oldFocus != null) {
-				oldFocus.onFocusLost();
-			}
-			if (newFocus != null) {
-				newFocus.onFocus(reason);
+		if (widgets.containsKey(newFocus)) {			
+			if (focussedWidget != newFocus) {
+				Widget oldFocus = focussedWidget;
+				focussedWidget = newFocus;
+				if (oldFocus != null) {
+					oldFocus.onFocusLost();
+				}
+				if (newFocus != null) {
+					newFocus.onFocus(reason);
+				}
 			}
 		}
 	}
