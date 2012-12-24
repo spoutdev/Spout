@@ -134,7 +134,7 @@ public class SpoutInputManager implements InputManager {
 	private Set<WidgetComponent> getWidgetComponents() {
 		Set<WidgetComponent> components = new HashSet<WidgetComponent>();
 		Screen inputScreen = getInputScreen();
-		if (inputScreen == null) {
+		if (inputScreen == null || inputScreen.getFocusedWidget() == null) { //TODO Fix this narrowtux/W1ndwaker as I think this shouldn't be null
 			return components;
 		}
 
