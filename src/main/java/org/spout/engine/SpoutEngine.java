@@ -703,10 +703,10 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	@Override
-	public List<Player> getAllPlayers() {
-		List<Player> names = new ArrayList<Player>();
+	public List<String> getAllPlayers() {
+		List<String> names = new ArrayList<String>();
 		for (Player player : players.getValues()) {
-			names.add(player);
+			names.add(player.getName());
 		}
 		return Collections.unmodifiableList(names);
 	}
