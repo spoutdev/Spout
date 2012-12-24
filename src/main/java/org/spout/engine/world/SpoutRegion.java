@@ -999,9 +999,17 @@ public class SpoutRegion extends Region {
 
 						//Resolve Entity -> Entity Collisions
 						if (holderA instanceof Entity) {
+							//Entity was removed before the contact point could be resolved, break
+							if (((Entity) holderA).isRemoved()) {
+								break;
+							}
 							//HolderA: Entity
 							//HolderB: Entity
 							if (holderB instanceof Entity) {
+								//Entity was removed before the contact point could be resolved, break
+								if (((Entity) holderB).isRemoved()) {
+									break;
+								}
 								//Call onCollide for colliderA's EntityComponents
 								for (Component component : ((Entity) holderA).values()) {
 									if (component instanceof EntityComponent) {
@@ -1029,6 +1037,10 @@ public class SpoutRegion extends Region {
 						//HolderB: Entity
 						} else if (holderA instanceof Block) {
 							if (holderB instanceof Entity) {
+								//Entity was removed before the contact point could be resolved, break
+								if (((Entity) holderB).isRemoved()) {
+									break;
+								}
 								//Call onCollide for colliderB's EntityComponents
 								for (Component component : ((Entity) holderB).values()) {
 									if (component instanceof EntityComponent) {
