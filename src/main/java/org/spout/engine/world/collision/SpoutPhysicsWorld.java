@@ -33,6 +33,7 @@ import com.bulletphysics.collision.shapes.voxel.CollisionSnapshot;
 import com.bulletphysics.collision.shapes.voxel.VoxelPhysicsWorld;
 
 import org.spout.api.collision.CollisionStrategy;
+import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.Vector3;
 
@@ -52,19 +53,21 @@ public class SpoutPhysicsWorld implements VoxelPhysicsWorld {
 	@Override
 	public CollisionSnapshot getCollisionShapeAt(int x, int y, int z) {
 		final SpoutBlock block = (SpoutBlock) simulation.getBlock(x, y, z);
-		return new SpoutVoxelCollisionSnapshot(block.getMaterial(), block.getPosition());
+		return new SpoutVoxelCollisionSnapshot(block.getMaterial(), simulation, block.getPosition());
 	}
 
 	private static class SpoutVoxelCollisionSnapshot implements CollisionSnapshot {
 		private final boolean isColliding, isBlocking;
 		private final CollisionShape shape;
 		private final Vector3 position;
+		private final Region region;
 
-		public SpoutVoxelCollisionSnapshot(BlockMaterial material, Vector3 position) {
+		public SpoutVoxelCollisionSnapshot(BlockMaterial material, Region region, Vector3 position) {
 			this.shape = material.getCollisionShape();
 			this.isColliding = shape != null && material.getCollisionModel().getStrategy() != CollisionStrategy.NOCOLLIDE;
 			this.isBlocking = shape != null && material.getCollisionModel().getStrategy() == CollisionStrategy.SOLID;
 			this.position = position;
+			this.region = region;
 		}
 
 		@Override
@@ -74,7 +77,7 @@ public class SpoutPhysicsWorld implements VoxelPhysicsWorld {
 
 		@Override
 		public Object getUserData() {
-			return position;
+			return region.getBlock(position);
 		}
 
 		@Override

@@ -128,6 +128,7 @@ import com.bulletphysics.collision.dispatch.CollisionFlags;
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
 import com.bulletphysics.collision.dispatch.GhostPairCallback;
+import com.bulletphysics.collision.narrowphase.ManifoldPoint;
 import com.bulletphysics.collision.narrowphase.PersistentManifold;
 import com.bulletphysics.collision.shapes.voxel.VoxelWorldShape;
 import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
@@ -981,19 +982,58 @@ public class SpoutRegion extends Region {
 					}
 					Object holderA = ((CollisionObject) colliderRawA).getUserPointer();
 					Object holderB = ((CollisionObject) colliderRawB).getUserPointer();
-					//Entity -> Entity Collisions
-					if (holderA instanceof Entity) {
-						if (holderB instanceof Entity) {
-							//Call onCollide for colliderA's EntityComponents
-							for (Component component : ((Entity) holderA).values()) {
-								if (component instanceof EntityComponent) {
-									((EntityComponent) component).onCollide((Entity) holderB);
+					int contacts = contact.getNumContacts();
+
+					//Loop through the contact points
+					for (int j = 0; j < contacts; j++) {
+						//Grab a contact point
+						final ManifoldPoint bulletPoint = contact.getContactPoint(j);
+						//Contact point is no longer valid as negative values = still within contact so lets not resolve that to the API
+						if (bulletPoint.getDistance() > 0f) {
+							continue;
+						}
+						//3D position where colliderA contacted colliderB
+						Point contactPointA = new Point(MathHelper.toVector3(bulletPoint.getPositionWorldOnA(new Vector3f())), getWorld());
+						//3D position where colliderB contacted colliderA
+						Point contactPointB = new Point(MathHelper.toVector3(bulletPoint.getPositionWorldOnB(new Vector3f())), getWorld());
+
+						//Resolve Entity -> Entity Collisions
+						if (holderA instanceof Entity) {
+							//HolderA: Entity
+							//HolderB: Entity
+							if (holderB instanceof Entity) {
+								//Call onCollide for colliderA's EntityComponents
+								for (Component component : ((Entity) holderA).values()) {
+									if (component instanceof EntityComponent) {
+										((EntityComponent) component).onCollided(contactPointA, contactPointB, (Entity) holderB);
+									}
 								}
+								//Call onCollide for colliderB's EntityComponents
+								for (Component component : ((Entity) holderB).values()) {
+									if (component instanceof EntityComponent) {
+										((EntityComponent) component).onCollided(contactPointB, contactPointA, (Entity) holderA);
+									}
+								}
+							//HolderA: Entity
+							//HolderB: Block
+							} else if (holderB instanceof Block) {
+								//Call onCollide for colliderA's EntityComponents
+								for (Component component : ((Entity) holderA).values()) {
+									if (component instanceof EntityComponent) {
+										((EntityComponent) component).onCollided(contactPointA, contactPointB, (Block) holderB);
+									}
+								}
+								//TODO onCollide in materials?
 							}
-							//Call onCollide for colliderB's EntityComponents
-							for (Component component : ((Entity) holderB).values()) {
-								if (component instanceof EntityComponent) {
-									((EntityComponent) component).onCollide((Entity) holderA);
+						//HolderA: Block
+						//HolderB: Entity
+						} else if (holderA instanceof Block) {
+							if (holderB instanceof Entity) {
+								//Call onCollide for colliderB's EntityComponents
+								for (Component component : ((Entity) holderB).values()) {
+									if (component instanceof EntityComponent) {
+										((EntityComponent) component).onCollided(contactPointB, contactPointA, (Block) holderA);
+									}
 								}
 							}
 						}
