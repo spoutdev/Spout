@@ -31,7 +31,8 @@ import org.spout.api.component.ComponentOwner;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.cuboid.Block;
-import org.spout.api.material.Material;
+import org.spout.api.geo.discrete.Point;
+import org.spout.api.material.BlockMaterial;
 
 /**
  * Represents an attachment to a entity that can respond to Ticks.
@@ -70,10 +71,22 @@ public abstract class EntityComponent extends Component {
 	}
 
 	/**
-	 * Called when the entity collides with another entity
-	 * @param entity
+	 * Called when the entity collides with another entity.
+	 * @param colliderPoint The point where this entity collided with the other entity
+	 * @param collidedPoint The point where the other entity collided with this entity
+	 * @param entity The other entity that was collided with this entity
 	 */
-	public void onCollide(Entity entity) {
+	public void onCollided(Point colliderPoint, Point collidedPoint, Entity entity) {
+
+	}
+
+	/**
+	 * Called when the entity collides with a block.
+	 * @param colliderPoint The point where this entity collided with the material
+	 * @param collidedPoint The point where the material was collided with the entity
+	 * @param block The block this entity collided with
+	 */
+	public void onCollided(Point colliderPoint, Point collidedPoint, Block block) {
 
 	}
 

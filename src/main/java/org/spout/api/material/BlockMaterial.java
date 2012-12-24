@@ -69,7 +69,7 @@ public class BlockMaterial extends Material implements Placeable {
 	public static final BlockMaterial UNBREAKABLE = new BlockMaterial("Unbreakable").setHardness(100.f);
 	public static final BlockMaterial SKYBOX = new BasicSkyBox();
 	public static final BlockMaterial ERROR = new BlockMaterial("Missing Plugin").setHardness((100.f));
-	
+
 	private final CollisionObject collisionObject = new CollisionObject();
 
 	public BlockMaterial(short dataMask, String name, String model){
@@ -575,14 +575,6 @@ public class BlockMaterial extends Material implements Placeable {
 	 */
 	public Cause<BlockMaterial> toCause(Point p) {
 		return new MaterialCause<BlockMaterial>(this, p.getWorld().getBlock(p));
-	}
-
-	/**
-	 * Gets the CollisionObject of this material
-	 * @return CollisionObject
-	 */
-	public final CollisionObject getCollisionObject() {
-		return collisionObject;
 	}
 
 	/**
