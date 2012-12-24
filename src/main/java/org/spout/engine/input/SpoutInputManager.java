@@ -69,7 +69,11 @@ public class SpoutInputManager implements InputManager {
 		if (key == FOCUS_KEY && pressed) {
 			Screen in = getInputScreen();
 			if (in != null) {
-//				in.nextFocus(FocusReason.KEYBOARD_TAB);
+				if (org.lwjgl.input.Keyboard.isKeyDown(Keyboard.KEY_LSHIFT.getId()) || org.lwjgl.input.Keyboard.isKeyDown(Keyboard.KEY_RSHIFT.getId())) {
+					in.previousFocus(FocusReason.KEYBOARD_TAB);
+				} else {
+					in.nextFocus(FocusReason.KEYBOARD_TAB);
+				}
 			}
 		}
 
