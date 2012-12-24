@@ -34,10 +34,14 @@ import org.spout.api.component.type.WidgetComponent;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.render.RectanglePart;
 import org.spout.api.gui.render.RenderPart;
+import org.spout.api.map.DefaultedKey;
+import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.math.Rectangle;
 import org.spout.api.render.SpoutRenderMaterials;
 
 public class ControlComponent extends WidgetComponent {
+	private static final DefaultedKey<Integer> KEY_TAB_INDEX = new DefaultedKeyImpl<Integer>("tabIndex", 0);
+	
 	@Override
 	public List<RenderPart> getRenderParts() {
 		LinkedList<RenderPart> ret = new LinkedList<RenderPart>();
@@ -62,4 +66,13 @@ public class ControlComponent extends WidgetComponent {
 	public void onFocusLost() {
 		getOwner().update();
 	}
+	
+	public int getTabIndex() {
+		return getData().get(KEY_TAB_INDEX);
+	}
+	
+	public void setTabIndex(int newIndex) {
+		getData().put(KEY_TAB_INDEX, newIndex);
+	}
+	
 }

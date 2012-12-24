@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.spout.api.gui.component.ControlComponent;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.tickable.BasicTickable;
 
@@ -116,7 +117,7 @@ public class Screen extends BasicTickable implements Container {
 	}
 	
 	public void setFocus(Widget newFocus, FocusReason reason) {
-		if (widgets.containsKey(newFocus)) {			
+		if (widgets.containsKey(newFocus) && newFocus.get(ControlComponent.class) != null) {			
 			if (focussedWidget != newFocus) {
 				Widget oldFocus = focussedWidget;
 				focussedWidget = newFocus;
@@ -128,6 +129,46 @@ public class Screen extends BasicTickable implements Container {
 				}
 			}
 		}
+	}
+	
+	public void nextFocus(FocusReason reason) {
+		int current = 0;
+		if (getFocusedWidget() != null) {
+			current = getFocusedWidget().get(ControlComponent.class).getTabIndex();
+		}
+		
+		Widget lowest = null;
+		int lowestTab = Integer.MAX_VALUE;
+		for (Widget w:getWidgets()) {
+			if (w.get(ControlComponent.class) != null) {
+				int ti = w.get(ControlComponent.class).getTabIndex();
+				if (ti < lowestTab && ti > current) {
+					lowest = w;
+					lowestTab = ti;
+				}
+			}
+		}
+		setFocus(lowest, reason);
+	}
+	
+	public void previousFocus(FocusReason reason) {
+		int current = 0;
+		if (getFocusedWidget() != null) {
+			current = getFocusedWidget().get(ControlComponent.class).getTabIndex();
+		}
+		
+		Widget highest = null;
+		int highestTab = Integer.MIN_VALUE;
+		for (Widget w:getWidgets()) {
+			if (w.get(ControlComponent.class) != null) {
+				int ti = w.get(ControlComponent.class).getTabIndex();
+				if (ti > highestTab && ti < current) {
+					highest = w;
+					highestTab = ti;
+				}
+			}
+		}
+		setFocus(highest, reason);
 	}
 
 	public boolean grabsMouse() {
