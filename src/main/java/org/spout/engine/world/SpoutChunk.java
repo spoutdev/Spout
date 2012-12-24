@@ -279,8 +279,8 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		}
 	}
 
-	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] initial, ManagedHashMap map) {
-		this(world, region, x, y, z, PopulationState.UNTOUCHED, initial, null, null, null, map, false);
+	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] block, short[] data, ManagedHashMap map) {
+		this(world, region, x, y, z, PopulationState.UNTOUCHED, block, data, null, null, map, false);
 	}
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, int[] palette, int blockArrayWidth, int[] variableWidthBlockArray, byte[] skyLight, byte[] blockLight, ManagedHashMap extraData, boolean lightStable) {
@@ -632,7 +632,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 				for (int dy = startY; dy < endY; dy++) {
 					for (int dz = startZ; dz < endZ; dz++) {
 						int packed = this.getBlockFullState(dx, dy, dz);
-						buffer.set(dx - offX, dy - offY, dz - offZ, BlockFullState.getMaterial(packed), BlockFullState.getData(packed));
+						buffer.set(dx - offX, dy - offY, dz - offZ, BlockFullState.getMaterial(packed).getId(), BlockFullState.getData(packed));
 					}
 				}
 			}

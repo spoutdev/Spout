@@ -461,15 +461,15 @@ public class SpoutRegion extends Region {
 			int cz = getChunkZ(z);
 			final SpoutWorld world = getWorld();
 
-			final CuboidShortBuffer column = new CuboidShortBuffer(cx << Chunk.BLOCKS.BITS, cy << Chunk.BLOCKS.BITS, cz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, CHUNKS.SIZE * Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
+			final CuboidBlockMaterialBuffer column = new CuboidBlockMaterialBuffer(cx << Chunk.BLOCKS.BITS, cy << Chunk.BLOCKS.BITS, cz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, CHUNKS.SIZE * Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
 			getWorld().getGenerator().generate(column, cx, cy, cz, world);
 
 			final int endY = cy + CHUNKS.SIZE;
 			for (int yy = 0; cy < endY; cy++) {
-				final CuboidShortBuffer chunk = new CuboidShortBuffer(cx << Chunk.BLOCKS.BITS, cy << Chunk.BLOCKS.BITS, cz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
+				final CuboidBlockMaterialBuffer chunk = new CuboidBlockMaterialBuffer(cx << Chunk.BLOCKS.BITS, cy << Chunk.BLOCKS.BITS, cz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
 				chunk.setSource(column);
 				chunk.copyElement(0, yy * Chunk.BLOCKS.VOLUME, Chunk.BLOCKS.VOLUME);
-				SpoutChunk newChunk = new SpoutChunk(world, this, cx, cy, cz, chunk.getRawArray(), null);
+				SpoutChunk newChunk = new SpoutChunk(world, this, cx, cy, cz, chunk.getRawId(), chunk.getRawData(), null);
 				newChunk.setModified();
 				SpoutChunk currentChunk = setChunk(newChunk, x, yy++, z, null, true, loadopt);
 				if (currentChunk != newChunk) {
