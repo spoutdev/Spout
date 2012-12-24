@@ -28,7 +28,7 @@ package org.spout.api.generator;
 
 import org.spout.api.geo.World;
 import org.spout.api.util.Named;
-import org.spout.api.util.cuboid.CuboidShortBuffer;
+import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 
 /**
  * Represents a World generator.
@@ -54,7 +54,7 @@ public interface WorldGenerator extends Named {
 	 * @param chunkZ coordinate
 	 * @param seed the seed used to seed noise and randoms for generation
 	 */
-	public void generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ, World world);
+	public void generate(CuboidBlockMaterialBuffer blockData, int chunkX, int chunkY, int chunkZ, World world);
 
 	/**
 	 * Gets the surface height of the world. This is used for initialisation

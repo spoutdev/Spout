@@ -27,11 +27,11 @@
 package org.spout.api.generator;
 
 import org.spout.api.generator.biome.BiomeManager;
-import org.spout.api.util.cuboid.CuboidShortBuffer;
+import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 
 /**
  * Represents a populator for a generator
  */
 public interface GeneratorPopulator {
-	public void populate(CuboidShortBuffer blockData, int x, int y, int z, BiomeManager biomes, long seed);
+	public void populate(CuboidBlockMaterialBuffer blockData, int x, int y, int z, BiomeManager biomes, long seed);
 }

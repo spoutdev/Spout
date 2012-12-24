@@ -36,7 +36,7 @@ import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.util.cuboid.CuboidShortBuffer;
+import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 
 /**
  * Abstract Biome Column Generator.
@@ -79,7 +79,7 @@ public abstract class BiomeGenerator implements WorldGenerator {
 	}
 
 	@Override
-	public void generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ, World world) {
+	public void generate(CuboidBlockMaterialBuffer blockData, int chunkX, int chunkY, int chunkZ, World world) {
 		final int x = chunkX << Chunk.BLOCKS.BITS;
 		final int y = chunkY << Chunk.BLOCKS.BITS;
 		final int z = chunkZ << Chunk.BLOCKS.BITS;
@@ -106,7 +106,7 @@ public abstract class BiomeGenerator implements WorldGenerator {
 		return biomeManager;
 	}
 
-	protected abstract void generateTerrain(CuboidShortBuffer blockData, int x, int y, int z, BiomeManager manager, long seed);
+	protected abstract void generateTerrain(CuboidBlockMaterialBuffer blockData, int x, int y, int z, BiomeManager manager, long seed);
 
 	@Override
 	public final Populator[] getPopulators() {

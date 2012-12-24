@@ -30,33 +30,34 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.Vector3;
 
 public class CuboidBlockMaterialBuffer extends CuboidBuffer {
-	private final BlockMaterial[] buffer;
+	private final short[] id;
 	private final short[] data;
 	private CuboidBlockMaterialBuffer source;
 
-	public CuboidBlockMaterialBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, BlockMaterial[] buffer, short[] data) {
+	public CuboidBlockMaterialBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, short[] id, short[] data) {
 		super(baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
-		this.buffer = buffer;
+		this.id = id;
 		this.data = data;
 	}
 
 	public CuboidBlockMaterialBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
-		this(baseX, baseY, baseZ, sizeX, sizeY, sizeZ, new BlockMaterial[sizeX * sizeY * sizeZ], new short[sizeX * sizeY * sizeZ]);
+		this(baseX, baseY, baseZ, sizeX, sizeY, sizeZ, new short[sizeX * sizeY * sizeZ], new short[sizeX * sizeY * sizeZ]);
 	}
 
 	public CuboidBlockMaterialBuffer(double baseX, double baseY, double baseZ, double sizeX, double sizeY, double sizeZ) {
-		this((int) baseX, (int) baseY, (int) baseZ, (int) sizeX, (int) sizeY, (int) sizeZ, new BlockMaterial[(int) (sizeX * sizeY * sizeZ)], new short[(int) (sizeX * sizeY * sizeZ)]);
+		this((int) baseX, (int) baseY, (int) baseZ, (int) sizeX, (int) sizeY, (int) sizeZ, new short[(int) (sizeX * sizeY * sizeZ)], new short[(int) (sizeX * sizeY * sizeZ)]);
 	}
 
 	public CuboidBlockMaterialBuffer(Vector3 base, Vector3 size) {
-		this((int) base.getX(), (int) base.getY(), (int) base.getZ(), (int) size.getX(), (int) size.getY(), (int) size.getZ(), new BlockMaterial[(int) (size.getX() * size.getY() * size.getZ())], new short[(int) (size.getX() * size.getY() * size.getZ())]);
+		this((int) base.getX(), (int) base.getY(), (int) base.getZ(), (int) size.getX(), (int) size.getY(), (int) size.getZ(), new short[(int) (size.getX() * size.getY() * size.getZ())], new short[(int) (size.getX() * size.getY() * size.getZ())]);
 	}
 
 	@Override
 	public void copyElement(int thisIndex, int sourceIndex, int runLength) {
 		final int end = thisIndex + runLength;
 		for (; thisIndex < end; thisIndex++) {
-			buffer[thisIndex] = source.buffer[sourceIndex++];
+			id[thisIndex] = source.id[sourceIndex];
+			data[thisIndex] = source.data[sourceIndex++];
 		}
 	}
 
@@ -68,14 +69,24 @@ public class CuboidBlockMaterialBuffer extends CuboidBuffer {
 			throw new IllegalArgumentException("Only CuboidShortBuffers may be used as the data source when copying to a CuboidShortBuffer");
 		}
 	}
-
-	public void set(int x, int y, int z, BlockMaterial material, short data) {
+	
+	public void set(int x, int y, int z, BlockMaterial material) {
 		int index = getIndex(x, y, z);
 		if (index < 0) {
 			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
 		}
 
-		this.buffer[index] = material;
+		this.id[index] = material.getId();
+		this.data[index] = material.getData();
+	}
+
+	public void set(int x, int y, int z, short id, short data) {
+		int index = getIndex(x, y, z);
+		if (index < 0) {
+			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
+		}
+
+		this.id[index] = id;
 		this.data[index] = data;
 	}
 
@@ -84,8 +95,8 @@ public class CuboidBlockMaterialBuffer extends CuboidBuffer {
 		if (index < 0) {
 			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
 		}
-
-		return buffer[index];
+		
+		return BlockMaterial.get(id[index], data[index]);
 	}
 	
 	public short getData(int x, int y, int z) {
@@ -98,10 +109,18 @@ public class CuboidBlockMaterialBuffer extends CuboidBuffer {
 	}
 
 
-	public void flood(BlockMaterial material, short data) {
-		for (int i = 0; i < buffer.length; i++) {
-			this.buffer[i] = material;
-			this.data[i] = data;
+	public void flood(BlockMaterial material) {
+		for (int i = 0; i < id.length; i++) {
+			this.id[i] = material.getId();
+			this.data[i] = material.getData();
 		}
+	}
+
+	public short[] getRawId() {
+		return id;
+	}
+
+	public short[] getRawData() {
+		return data;
 	}
 }

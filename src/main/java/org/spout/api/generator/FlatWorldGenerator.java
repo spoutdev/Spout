@@ -29,16 +29,16 @@ package org.spout.api.generator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.util.cuboid.CuboidShortBuffer;
+import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 
 /**
  * Generates a flat world of an unbreakable material
  */
 public class FlatWorldGenerator implements WorldGenerator {
 	@Override
-	public void generate(CuboidShortBuffer blockData, int chunkX, int chunkY, int chunkZ, World world) {
+	public void generate(CuboidBlockMaterialBuffer blockData, int chunkX, int chunkY, int chunkZ, World world) {
 		if (chunkY < 0) {
-			blockData.flood(BlockMaterial.UNBREAKABLE.getId());
+			blockData.flood(BlockMaterial.UNBREAKABLE);
 		}
 	}
 
