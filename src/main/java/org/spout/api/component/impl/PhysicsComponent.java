@@ -146,6 +146,18 @@ public abstract class PhysicsComponent extends EntityComponent {
 	 */
 	public abstract Vector3 getLinearVelocity();
 
+	/**
+	 * Sets the angular velocity.
+	 * @param velocity the angular velocity
+	 */
+	public abstract void setAngularVelocity(Vector3 velocity);
+
+	/**
+	 * Sets the linear velocity.
+	 * @param velocity the linear velocity
+	 */
+	public abstract void setLinearVelocity(Vector3 velocity);
+
 	public abstract void applyImpulse(Vector3 impulse);
 
 	public abstract void applyImpulse(Vector3 impulse, Vector3 relativePos);
