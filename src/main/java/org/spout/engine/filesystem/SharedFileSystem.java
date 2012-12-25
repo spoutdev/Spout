@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.spout.api.Client;
 import org.spout.api.FileSystem;
 import org.spout.api.Spout;
 import org.spout.api.resource.Resource;
@@ -114,14 +115,14 @@ public class SharedFileSystem implements FileSystem {
 			getWorldsDirectory().mkdirs();
 		}
 
-		searchPaths = new ResourcePathResolver[]{new FilePathResolver("cache"),
-				// new ZipFilePathResolver(),
-				new JarFilePathResolver()};
+		searchPaths = new ResourcePathResolver[]{new FilePathResolver("cache"), new JarFilePathResolver()};
 	}
 
 	@Override
 	public void postStartup() {
-		loadFallbacks();
+		if (Spout.getEngine() instanceof Client) {
+			loadFallbacks();
+		}
 	}
 
 	private void loadFallbacks() {
