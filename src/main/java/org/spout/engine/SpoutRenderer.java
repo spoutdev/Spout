@@ -30,6 +30,7 @@ import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 
+import java.awt.Canvas;
 import java.util.ArrayList;
 
 import org.lwjgl.LWJGLException;
@@ -101,8 +102,8 @@ public class SpoutRenderer {
 		
 	}
 	
-	public void initRenderer() {
-		createWindow();
+	public void initRenderer(Canvas parent) {
+		createWindow(parent);
 
 		
 		SpoutClient client = (SpoutClient)Spout.getEngine();
@@ -247,12 +248,12 @@ public class SpoutRenderer {
 		return aspectRatio;
 	}
 
-	private void createWindow() {
+	private void createWindow(Canvas parent) {
 		SpoutClient client = (SpoutClient)Spout.getEngine();
 		
 		try {
 			Display.setDisplayMode(new DisplayMode((int) resolution.getX(), (int) resolution.getY()));
-
+			Display.setParent(parent);
 			//Override using ContextAttribs for some videocards that don't support ARB_CREATE_CONTEXT
 			if (ccoverride) {
 				Display.create(new PixelFormat(8, 24, 0));
@@ -274,7 +275,7 @@ public class SpoutRenderer {
 					Display.create(new PixelFormat(8, 24, 0), ca);
 				}
 			}
-
+			
 			Display.setTitle("Spout Client");
 		} catch (LWJGLException e) {
 			e.printStackTrace();

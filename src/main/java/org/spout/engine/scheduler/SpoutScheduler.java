@@ -26,6 +26,7 @@
  */
 package org.spout.engine.scheduler;
 
+import java.awt.Canvas;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -183,6 +184,7 @@ public final class SpoutScheduler implements Scheduler {
 		boolean tooLongFrame = false;
 		SpoutRenderer renderer;
 		private ConcurrentLinkedQueue<Runnable> renderTaskQueue = new ConcurrentLinkedQueue<Runnable>();
+		Canvas parent = null;
 		
 
 		public RenderThread() {
@@ -194,7 +196,9 @@ public final class SpoutScheduler implements Scheduler {
 		public void enqueueRenderTask(Runnable task){
 			renderTaskQueue.add(task);
 		}
-
+		public void setParent(Canvas parent){
+			this.parent = parent;			
+		}
 		public int getFps() {
 			return fps;
 		}
@@ -206,7 +210,7 @@ public final class SpoutScheduler implements Scheduler {
 		@Override
 		public void run() {
 			SpoutClient c = (SpoutClient) Spout.getEngine();
-			renderer.initRenderer();
+			renderer.initRenderer(parent);
 			int frames = 0;
 			long lastFrameTime = System.currentTimeMillis();
 			int targetFrame = (int)(1f / TARGET_FPS * 1000);
@@ -490,7 +494,7 @@ public final class SpoutScheduler implements Scheduler {
 		mainThread.start();
 	}
 
-	public SpoutRenderer startRenderThread(Vector2 resolution, boolean ccoverride) {
+	public SpoutRenderer startRenderThread(Vector2 resolution, boolean ccoverride, Canvas parent) {
 		if (!(Spout.getEngine() instanceof SpoutClient)) {
 			throw new IllegalStateException("Cannot start the rendering thread unless on the client");
 		}
@@ -499,6 +503,7 @@ public final class SpoutScheduler implements Scheduler {
 		}
 		SpoutRenderer renderer = new SpoutRenderer(resolution, ccoverride);
 		renderThread.setRenderer(renderer);
+		renderThread.setParent(parent);
 		renderThread.start();
 		return renderer;
 	}

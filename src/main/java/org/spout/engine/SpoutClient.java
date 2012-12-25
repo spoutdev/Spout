@@ -189,7 +189,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		getActiveWorld().spawnEntity(e);
 
 
-		renderer = getScheduler().startRenderThread(new Vector2(1204, 796), ccoverride);
+		renderer = getScheduler().startRenderThread(new Vector2(1204, 796), ccoverride, null);
 		getScheduler().startGuiThread();
 
 		//TODO Maybe a better way of alerting plugins the client is done?
