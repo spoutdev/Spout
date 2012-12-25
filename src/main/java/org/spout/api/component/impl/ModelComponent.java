@@ -51,4 +51,11 @@ public class ModelComponent extends EntityComponent {
 	public void setModel(String resourcePath) {
 		model = (Model) Spout.getFilesystem().getResource(resourcePath);
 	}
+        
+        public void setModel(Model temp)
+        {
+            if(temp == null)
+                return;
+            model = temp;
+        }
 }
