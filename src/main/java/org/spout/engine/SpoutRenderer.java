@@ -45,6 +45,7 @@ import org.lwjgl.opengl.PixelFormat;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
+import org.spout.api.component.impl.PhysicsComponent;
 import org.spout.api.component.impl.PredictableTransformComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.discrete.Point;
@@ -175,8 +176,11 @@ public class SpoutRenderer {
 			skydomeMesh.render(skydome.getRenderMaterial());
 		}
 
+		//Interpolate entity transform if Physics is not currently applied to the entity
 		for (Entity e : client.getActiveWorld().getAll()) {
-			((PredictableTransformComponent) e.getTransform()).updateRender(dt);
+			if (e.get(PhysicsComponent.class) == null) {
+				((PredictableTransformComponent) e.getTransform()).updateRender(dt);
+			}
 		}
 
 		client.getActiveCamera().updateView();

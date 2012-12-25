@@ -34,6 +34,7 @@ import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
+import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.MotionState;
 import com.bulletphysics.linearmath.Transform;
 
@@ -52,7 +53,7 @@ import org.spout.engine.world.SpoutRegion;
 public class SpoutPhysicsComponent extends PhysicsComponent {
 	//TODO persist
 	private RigidBody body = null;
-	private MotionState state;
+	private DefaultMotionState state;
 	private Vector3 angularVelocity = Vector3.ZERO;
 	private Vector3 linearVelocity = Vector3.ZERO;
 	private boolean dirty = false;
@@ -255,7 +256,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	 * object has moved and to update your transforms accordingly.
 	 * @return the MotionState
 	 */
-	public MotionState getMotionState() {
+	public DefaultMotionState getMotionState() {
 		return state;
 	}
 
@@ -275,7 +276,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		}
 	}
 
-	private class SpoutDefaultMotionState extends MotionState {
+	private class SpoutDefaultMotionState extends DefaultMotionState {
 		private final Entity entity;
 
 		public SpoutDefaultMotionState(Entity entity) {
