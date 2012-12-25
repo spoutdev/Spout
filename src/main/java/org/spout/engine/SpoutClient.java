@@ -539,7 +539,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 			skydomeMesh.render(skydome.getRenderMaterial());
 		}
 
+		SpoutSnapshotLock lock = (SpoutSnapshotLock) getScheduler().getSnapshotLock();
+		lock.coreReadLock("Render Thread - Input");
 		doInput(dt);
+		lock.coreReadUnlock("Render Thread - Input");
 
 		for (Entity e : super.getDefaultWorld().getAll()) {
 			((PredictableTransformComponent) e.getTransform()).updateRender(dt);
@@ -552,7 +555,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		worldRenderer.render();
 
 		//TODO Remove this when we use SpoutClientWorld
-		SpoutSnapshotLock lock = (SpoutSnapshotLock) getScheduler().getSnapshotLock();
+		lock = (SpoutSnapshotLock) getScheduler().getSnapshotLock();
 		lock.coreReadLock("Render Thread - Render Entities");
 		for (Entity e : super.getDefaultWorld().getAll()) {
 			EntityRendererComponent r = e.get(EntityRendererComponent.class);
