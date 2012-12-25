@@ -179,12 +179,13 @@ public class SpoutInputManager implements InputManager {
 
 		// Handle mouse
 		if (org.lwjgl.input.Mouse.isCreated()) {
+			int x = 0, y= 0;
+			
 			while (org.lwjgl.input.Mouse.next()) {
 
 				// Calculate dx/dy since last event polling
-				int x = 0, y= 0;
-				x += org.lwjgl.input.Mouse.getEventX();
-				y += org.lwjgl.input.Mouse.getEventY();
+				x = org.lwjgl.input.Mouse.getEventX();
+				y = org.lwjgl.input.Mouse.getEventY();
 				
 				Mouse button = Mouse.get(org.lwjgl.input.Mouse.getEventButton());
 				if (button != null) {
@@ -200,7 +201,7 @@ public class SpoutInputManager implements InputManager {
 					onMouseClicked(player, Mouse.MOUSE_SCROLLDOWN, true, x, y);
 				}
 
-				onMouseMove(player, org.lwjgl.input.Mouse.getDX(), org.lwjgl.input.Mouse.getDY(), org.lwjgl.input.Mouse.getX(), org.lwjgl.input.Mouse.getY());
+				onMouseMove(player, org.lwjgl.input.Mouse.getEventDX(), org.lwjgl.input.Mouse.getEventDY(), org.lwjgl.input.Mouse.getEventX(), org.lwjgl.input.Mouse.getEventY());
 			}
 		}
 	}
