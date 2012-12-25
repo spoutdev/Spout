@@ -30,6 +30,8 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 
+import org.spout.api.Client;
+import org.spout.api.Spout;
 import org.spout.api.component.impl.ModelComponent;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.math.MathHelper;
@@ -152,7 +154,8 @@ public class EntityRendererComponent extends EntityComponent {
 		updateAnimation(dt);
 	}
 
-	public void render(Camera camera) {
+	public void render() {
+		Camera camera = ((Client)Spout.getEngine()).getActiveCamera();
 		ModelComponent model = getOwner().get(ModelComponent.class);
 
 		if (model == null) {

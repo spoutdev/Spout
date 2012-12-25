@@ -70,10 +70,15 @@ public class InputCommands {
 			if (!(source instanceof Player)) {
 				throw new CommandException("Source must be a player!");
 			}
+			if(Spout.getPlatform() != Platform.CLIENT) throw new CommandException("Must be on the client");
 			
-			if (Spout.getEngine() instanceof SpoutClient) {
-				((SpoutClient)Spout.getEngine()).toggleDebugInfos();
-			}
+			SpoutClient c = (SpoutClient)Spout.getEngine();
+			c.getScheduler().enqueueRenderTask(new Runnable(){
+				public void run(){
+					((SpoutClient)Spout.getEngine()).getRenderer().toggleDebugInfos();
+				}
+			});
+			
 		}
 		
 	}

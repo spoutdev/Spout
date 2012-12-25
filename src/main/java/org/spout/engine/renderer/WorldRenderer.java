@@ -49,8 +49,6 @@ import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.world.SpoutWorld;
 
 public class WorldRenderer {
-	private final SpoutClient client;
-
 	public static final long TIME_LIMIT = 2;
 
 	private TreeMap<RenderMaterial,List<ChunkMeshBatchAggregator>> chunkRenderers = new TreeMap<RenderMaterial,List<ChunkMeshBatchAggregator>>();
@@ -68,8 +66,8 @@ public class WorldRenderer {
 	public long minRender = Long.MAX_VALUE,maxRender = Long.MIN_VALUE,sumRender = 0;
 	public long count = 0;
 
-	public WorldRenderer(SpoutClient client) {
-		this.client = client;
+	public WorldRenderer() {
+		
 	}
 
 	public void render() {
@@ -305,7 +303,7 @@ public class WorldRenderer {
 
 			SnapshotRender snapshotRender = new SnapshotRender(material);
 			material.preRender(snapshotRender);
-
+			Client client = (Client)Spout.getEngine();
 			material.getShader().setUniform("View", client.getActiveCamera().getView());
 			material.getShader().setUniform("Projection", client.getActiveCamera().getProjection());
 			material.getShader().setUniform("Model", ChunkMeshBatchAggregator.model);

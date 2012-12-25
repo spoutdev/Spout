@@ -43,6 +43,7 @@ import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.gui.ScreenStack;
+import org.spout.api.math.Vector2;
 import org.spout.api.plugin.CommonPlugin;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.Scheduler;
@@ -54,6 +55,7 @@ import org.spout.api.scheduler.Worker;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutEngine;
+import org.spout.engine.SpoutRenderer;
 import org.spout.engine.SpoutServer;
 import org.spout.engine.protocol.NetworkSendThreadPool;
 import org.spout.engine.util.thread.AsyncExecutor;
@@ -173,13 +175,24 @@ public final class SpoutScheduler implements Scheduler {
 
 		taskManager = new SpoutTaskManager(this, true, mainThread);
 	}
+	
+	
 
 	private class RenderThread extends Thread {
 		private int fps = 0;
 		boolean tooLongFrame = false;
+		SpoutRenderer renderer;
+		private ConcurrentLinkedQueue<Runnable> renderTaskQueue = new ConcurrentLinkedQueue<Runnable>();
+		
 
 		public RenderThread() {
 			super("Render Thread");
+		}
+		public void setRenderer(SpoutRenderer renderer) {			
+			this.renderer = renderer;
+		}
+		public void enqueueRenderTask(Runnable task){
+			renderTaskQueue.add(task);
 		}
 
 		public int getFps() {
@@ -193,7 +206,7 @@ public final class SpoutScheduler implements Scheduler {
 		@Override
 		public void run() {
 			SpoutClient c = (SpoutClient) Spout.getEngine();
-			c.initRenderer();
+			renderer.initRenderer();
 			int frames = 0;
 			long lastFrameTime = System.currentTimeMillis();
 			int targetFrame = (int)(1f / TARGET_FPS * 1000);
@@ -220,8 +233,13 @@ public final class SpoutScheduler implements Scheduler {
 			} else if (timeError < -maxError) {
 				timeError = -maxError;
 			}
+			
+			while (renderTaskQueue.peek() != null) {
+				Runnable task = renderTaskQueue.poll();
+				task.run();
+			}
 
-			c.render(delta / 1000000000f);
+			renderer.render(delta / 1000000000f);
 
 			Display.update(true);
 
@@ -241,7 +259,7 @@ public final class SpoutScheduler implements Scheduler {
 
 			if (delay > 0) {
 
-				c.updateRender(delay);//Use free time to make update
+				renderer.updateRender(delay);//Use free time to make update
 
 				delay = (rate - delta + 500000) / 1000000;
 
@@ -472,16 +490,23 @@ public final class SpoutScheduler implements Scheduler {
 		mainThread.start();
 	}
 
-	public void startRenderThread() {
+	public SpoutRenderer startRenderThread(Vector2 resolution, boolean ccoverride) {
 		if (!(Spout.getEngine() instanceof SpoutClient)) {
 			throw new IllegalStateException("Cannot start the rendering thread unless on the client");
 		}
 		if (renderThread.isAlive()) {
 			throw new IllegalStateException("Attempt was made to start the render thread twice");
 		}
+		SpoutRenderer renderer = new SpoutRenderer(resolution, ccoverride);
+		renderThread.setRenderer(renderer);
 		renderThread.start();
+		return renderer;
 	}
-
+	
+	public void enqueueRenderTask(Runnable task){
+		renderThread.enqueueRenderTask(task);		
+	}
+	
 	public void startGuiThread() {
 		if (!(Spout.getEngine() instanceof SpoutClient)) {
 			throw new IllegalStateException("Cannot start the rendering thread unless on the client");

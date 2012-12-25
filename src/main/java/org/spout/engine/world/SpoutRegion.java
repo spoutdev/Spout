@@ -92,7 +92,6 @@ import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
-import org.spout.api.util.cuboid.CuboidShortBuffer;
 import org.spout.api.util.map.TByteTripleObjectHashMap;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
 import org.spout.api.util.set.TByteTripleHashSet;
@@ -1173,7 +1172,7 @@ public class SpoutRegion extends Region {
 
 	private WorldRenderer getRenderer(){
 		if(renderer == null)
-			renderer = ((SpoutClient) Spout.getEngine()).getWorldRenderer();
+			renderer = ((SpoutClient) Spout.getEngine()).getRenderer().getWorldRenderer();
 		return renderer;
 	}
 
@@ -1922,8 +1921,17 @@ public class SpoutRegion extends Region {
 		}
 
 		public void run() {
+			//Sleep while the renderer doesn't exist
+			while(((SpoutClient) Spout.getEngine()).getRenderer() == null){
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException ie) {
+					return;
+				}
+			}
+			
 			while (renderer == null) {
-				renderer = ((SpoutClient) Spout.getEngine()).getWorldRenderer();
+				renderer = ((SpoutClient) Spout.getEngine()).getRenderer().getWorldRenderer();
 				if (renderer == null) {
 					try {
 						Thread.sleep(100);

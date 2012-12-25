@@ -26,6 +26,7 @@
  */
 package org.spout.engine.entity;
 
+import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
@@ -33,6 +34,7 @@ import org.spout.api.command.Command;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.Message;
 
+import org.spout.engine.input.SpoutInputManager;
 import org.spout.engine.protocol.SpoutSession;
 
 /**
@@ -73,5 +75,12 @@ public class SpoutClientPlayer extends SpoutPlayer {
 		}
 
 		getSession().send(true, cmdMessage);
+	}
+	@Override
+	public void onTick(float dt){
+
+		((SpoutInputManager)((Client)Spout.getEngine()).getInputManager()).pollInput(this);
+
+		super.onTick(dt);
 	}
 }

@@ -42,10 +42,11 @@ public class RendererCommands {
 
 	@Command(aliases = {"r_wireframe"}, desc = "Toggles Wireframe for the renderer")
 	public void toggleWireframe(CommandContext args, CommandSource source) {
-		client.enqueueTask(new Runnable() {
+		
+		client.getScheduler().enqueueRenderTask(new Runnable() {
 			public void run() {
 				Spout.log("Toggling Wireframe");
-				client.toggleWireframe();
+				client.getRenderer().toggleWireframe();
 			}
 		});
 	}

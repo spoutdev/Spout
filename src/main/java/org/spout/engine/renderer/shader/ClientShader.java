@@ -191,7 +191,7 @@ public class ClientShader extends Resource implements Shader {
 
 
 	private void doCompileShader(String vsource, String vsourceUrl, String fsource, String fsourceUrl){
-		((SpoutClient) Spout.getEngine()).enqueueTask(new ShaderCompilationTask(this, vsource, vsourceUrl, fsource, fsourceUrl));
+		((SpoutClient) Spout.getEngine()).getScheduler().enqueueRenderTask(new ShaderCompilationTask(this, vsource, vsourceUrl, fsource, fsourceUrl));
 	}
 
 

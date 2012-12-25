@@ -53,6 +53,22 @@ public class SpoutInputManager implements InputManager {
 	private final Map<Mouse, String> mouseCommands = new HashMap<Mouse, String>();
 	private boolean redirected = false;
 
+	public SpoutInputManager()
+	{
+		bind(Keyboard.get(SpoutInputConfiguration.FORWARD.getString()), "forward");
+		bind(Keyboard.get(SpoutInputConfiguration.BACKWARD.getString()), "backward");
+		bind(Keyboard.get(SpoutInputConfiguration.LEFT.getString()), "left");
+		bind(Keyboard.get(SpoutInputConfiguration.RIGHT.getString()), "right");
+		bind(Keyboard.get(SpoutInputConfiguration.UP.getString()), "jump");
+		bind(Keyboard.get(SpoutInputConfiguration.DOWN.getString()), "crouch");
+		bind(Keyboard.KEY_F3, "debug_info");
+		bind(org.spout.api.input.Mouse.MOUSE_SCROLLDOWN, "select_down");
+		bind(org.spout.api.input.Mouse.MOUSE_SCROLLUP, "select_up");
+		bind(org.spout.api.input.Mouse.MOUSE_BUTTON0, "left_click");
+		bind(org.spout.api.input.Mouse.MOUSE_BUTTON1, "interact");
+		bind(org.spout.api.input.Mouse.MOUSE_BUTTON2, "fire_2");
+	}
+	
 	private void onKeyPressed(SpoutPlayer player, Keyboard key, boolean pressed, char ch) {
 		String cmd = keyCommands.get(key);
 		final PlayerKeyEvent event = Spout.getEventManager().callEvent(new PlayerKeyEvent(player, key, pressed, cmd, ch));
@@ -165,8 +181,11 @@ public class SpoutInputManager implements InputManager {
 		if (org.lwjgl.input.Mouse.isCreated()) {
 			while (org.lwjgl.input.Mouse.next()) {
 
-				// Handle buttons
-				int x = org.lwjgl.input.Mouse.getX(), y = org.lwjgl.input.Mouse.getY();
+				// Calculate dx/dy since last event polling
+				int x = 0, y= 0;
+				x += org.lwjgl.input.Mouse.getEventX();
+				y += org.lwjgl.input.Mouse.getEventY();
+				
 				Mouse button = Mouse.get(org.lwjgl.input.Mouse.getEventButton());
 				if (button != null) {
 					onMouseClicked(player, button, org.lwjgl.input.Mouse.getEventButtonState(), x, y);
