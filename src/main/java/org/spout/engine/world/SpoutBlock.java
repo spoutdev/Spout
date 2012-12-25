@@ -138,6 +138,9 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public Block translate(BlockFace offset) {
+		if (offset == null) {
+			return null;
+		}
 		return this.translate(offset.getOffset());
 	}
 
