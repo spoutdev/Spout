@@ -182,6 +182,26 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	@Override
+	public void setAngularVelocity(Vector3 velocity) {
+		if (body == null) {
+			throw new IllegalStateException("A collision shape must be set first");
+		}
+		synchronized (((SpoutRegion) getOwner().getRegion()).getSimulation()) {
+			body.setAngularVelocity(MathHelper.toVector3f(velocity));
+		}
+	}
+
+	@Override
+	public void setLinearVelocity(Vector3 velocity) {
+		if (body == null) {
+			throw new IllegalStateException("A collision shape must be set first");
+		}
+		synchronized (((SpoutRegion) getOwner().getRegion()).getSimulation()) {
+			body.setLinearVelocity(MathHelper.toVector3f(velocity));
+		}
+	}
+
+	@Override
 	public boolean isVelocityDirty() {
 		return dirty;
 	}
