@@ -39,8 +39,10 @@ import org.spout.api.component.impl.PredictableTransformComponent;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
+import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
+import org.spout.api.model.mesh.Mesh;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotEntity;
@@ -62,11 +64,14 @@ public class EntityRendererComponent extends EntityComponent {
 	private void batch(){
 		ModelComponent model = getOwner().get(ModelComponent.class);
 
-		if (model == null) {
+		if (model == null || model.getModel() == null) {
 			return;
 		}
-		
-		BaseMesh mesh = (BaseMesh) model.getModel().getMesh();
+		Mesh meshRaw = model.getModel().getMesh();
+		if (meshRaw == null) {
+			return;
+		}
+		BaseMesh mesh = (BaseMesh) meshRaw;
 
 		if (mesh.isBatched()) {
 			return;
@@ -124,13 +129,12 @@ public class EntityRendererComponent extends EntityComponent {
 	}
 	
 	private void updateAnimation(float dt){
-		if(animation == null){
+		if (animation == null){
 			ModelComponent model = getOwner().get(ModelComponent.class);
 
-			if (model == null) {
+			if (model == null || model.getModel() == null) {
 				return;
 			}
-			
 			animation = model.getModel().getAnimations().get("animatest");
 			currentTime = 0;
 			currentFrame = 0;
@@ -161,7 +165,7 @@ public class EntityRendererComponent extends EntityComponent {
 		Camera camera = ((Client)Spout.getEngine()).getActiveCamera();
 		ModelComponent model = getOwner().get(ModelComponent.class);
 
-		if (model == null) {
+		if (model == null || model.getModel() == null) {
 			return;
 		}
 		
