@@ -178,9 +178,7 @@ public class SpoutRenderer {
 
 		//Interpolate entity transform if Physics is not currently applied to the entity
 		for (Entity e : client.getActiveWorld().getAll()) {
-			if (e.get(PhysicsComponent.class) == null) {
-				((PredictableTransformComponent) e.getTransform()).updateRender(dt);
-			}
+			((PredictableTransformComponent) e.getTransform()).updateRender(dt);
 		}
 
 		client.getActiveCamera().updateView();

@@ -35,6 +35,7 @@ import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.component.impl.ModelComponent;
 import org.spout.api.component.impl.PhysicsComponent;
+import org.spout.api.component.impl.PredictableTransformComponent;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
@@ -170,14 +171,7 @@ public class EntityRendererComponent extends EntityComponent {
 			return;
 		}
 
-		SpoutPhysicsComponent physics = (SpoutPhysicsComponent) getOwner().get(PhysicsComponent.class);
-		Matrix modelMatrix;
-		if (physics == null) {
-			modelMatrix = getOwner().getTransform().getTransformation();
-		} else {
-			//Bullet provides a transform for graphics, use it instead
-			modelMatrix = MathHelper.toMatrix(physics.getMotionState().graphicsWorldTrans.getMatrix(new Matrix4f()));
-		}
+		Matrix modelMatrix = ((PredictableTransformComponent) getOwner().getTransform()).getRenderTransform().toMatrix();
 		RenderMaterial mat = model.getModel().getRenderMaterial();
 
 		mat.getShader().setUniform("View", camera.getView());
