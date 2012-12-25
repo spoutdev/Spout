@@ -28,11 +28,13 @@ package org.spout.api.math;
 
 import java.awt.Color;
 import java.util.Random;
-
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
 import javolution.context.StackContext;
+
+import org.spout.api.geo.discrete.Transform;
 
 /**
  * Class containing various mathematical functions
@@ -1591,7 +1593,17 @@ public class MathHelper {
 		}
 		return r;
 	}
-	
+
+	public static Matrix toMatrix(Matrix4f matrix) {
+		Matrix out = new Matrix(4);
+		for (int i = 0; i < out.dimension; i++) {
+			for (int j = 0; j <= i; j++) {
+				out.set(i, j, matrix.getElement(i, j));
+			}
+		}
+		return out;
+	}
+
 	public static int index(int x, int y, int dim) {
 		return x * dim + y;
 	}
