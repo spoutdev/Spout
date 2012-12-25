@@ -179,21 +179,39 @@ public class BlockIterator implements Iterator<Block> {
 	 * Then reset the iterator (but not the block face)
 	 * @return Block
 	 */
-	public Block getTarget() {
+	public Block getTarget(boolean invisible) {
 		Block block = null;
 		while (hasNext()) {
 			block = next();
-			if (block.getMaterial().isPlacementObstacle()) {
-				break;
+			if (invisible) {
+				if (!block.getMaterial().isInvisible()) {
+					break;
+				}
+			} else {
+				if (block.getMaterial().isPlacementObstacle()) {
+					break;
+				}
 			}
 		}
-		if (block==null || !block.getMaterial().isPlacementObstacle()) {
-			return null;
+		if (block == null) {
+			if (invisible) {
+				if (block.getMaterial().isInvisible()) {
+					return null;
+				}
+			} else {
+				if (!block.getMaterial().isPlacementObstacle()) {
+					return null;
+				}
+			}
 		}
 		reset();
 		return block;
 	}
-	
+
+	public Block getTarget() {
+		return getTarget(false);
+	}
+
 	/**
 	 * Get the face hit by the ray.
 	 * @return BlockFace

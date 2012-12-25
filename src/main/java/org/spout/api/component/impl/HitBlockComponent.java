@@ -29,6 +29,7 @@ package org.spout.api.component.impl;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.entity.Player;
 import org.spout.api.geo.cuboid.Block;
+import org.spout.api.material.block.BlockFace;
 import org.spout.api.util.BlockIterator;
 
 /**
@@ -51,10 +52,24 @@ public class HitBlockComponent extends EntityComponent {
 	 * is one in range.
 	 * @return block
 	 */
-	public Block getTargetBlock() {
+	public Block getTargetBlock(boolean invisible) {
 		BlockIterator blockIt = getAlignedBlocks();
-		Block block = blockIt.getTarget();
+		Block block = blockIt.getTarget(invisible);
 		return block;
+	}
+
+	public Block getTargetBlock() {
+		return getTargetBlock(false);
+	}
+
+	public BlockFace getTargetFace(boolean invisible) {
+		BlockIterator blockIt = getAlignedBlocks();
+		blockIt.getTarget(invisible);
+		return blockIt.getBlockFace();
+	}
+
+	public BlockFace getTargetFace() {
+		return getTargetFace(false);
 	}
 
 	/**
