@@ -32,20 +32,27 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.spout.api.Spout;
 
 public class CommonClassLoader extends URLClassLoader {
 	private final Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
 	private final CommonPluginLoader loader;
 	private CommonPlugin plugin;
+	private final List<String> depends;
+	private final List<String> softDepends;
 	private static HashMap<String, CommonPlugin> pluginsForClassNames = new HashMap<String, CommonPlugin>(500);
 	private static Set<CommonClassLoader> loaders = new HashSet<CommonClassLoader>();
 
-	public CommonClassLoader(final CommonPluginLoader loader, final ClassLoader parent) {
+	public CommonClassLoader(final CommonPluginLoader loader, final ClassLoader parent, List<String> depends, List<String> softDepends) {
 		super(new URL[0], parent);
 		this.loader = loader;
 		loaders.add(this);
+		this.depends = depends == null ? Collections.<String>emptyList() : Collections.unmodifiableList(depends);
+		this.softDepends = softDepends == null ? Collections.<String>emptyList() : Collections.unmodifiableList(softDepends);
 	}
 
 	@Override
@@ -61,6 +68,14 @@ public class CommonClassLoader extends URLClassLoader {
 	protected CommonPlugin getPlugin() {
 		return plugin;
 	}
+	
+	public List<String> getDepends() {
+		return depends;
+	}
+	
+	public List<String> getSoftDepends() {
+		return softDepends;
+	}
 
 	@Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
@@ -73,7 +88,7 @@ public class CommonClassLoader extends URLClassLoader {
 		if (result == null) {
 			try {
 				result = super.findClass(name);
-			} catch (Exception ignored) {
+			} catch (ClassNotFoundException ignored) {
 			}
 
 			if (result == null && checkGlobal) {

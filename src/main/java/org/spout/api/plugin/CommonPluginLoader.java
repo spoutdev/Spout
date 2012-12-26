@@ -148,9 +148,9 @@ public class CommonPluginLoader implements PluginLoader {
 
 		try {
 			if (engine.getPlatform() == Platform.CLIENT) {
-				loader = new ClientClassLoader(this, this.getClass().getClassLoader());
+				loader = new ClientClassLoader(this, this.getClass().getClassLoader(), desc.getDepends(), desc.getSoftDepends());
 			} else {
-				loader = new CommonClassLoader(this, this.getClass().getClassLoader());
+				loader = new CommonClassLoader(this, this.getClass().getClassLoader(), desc.getDepends(), desc.getSoftDepends());
 			}
 			loader.addURL(paramFile.toURI().toURL());
 			Class<?> main = Class.forName(desc.getMain(), true, loader);
@@ -275,39 +275,28 @@ public class CommonPluginLoader implements PluginLoader {
 	}
 
 	protected Class<?> getClassByName(final String name, final CommonClassLoader commonLoader) {
-		CommonPlugin plugin = commonLoader.getPlugin();
 		Set<String> ignore = new HashSet<String>();
-		try {
-			ignore.add(plugin.getName());
-		} catch (NullPointerException nfe) {
-			Spout.getLogger().severe("Could not load " + name + ". Spout couldn't find the class, ask the developer to verify it exists");
-			return null;
+
+		for (String dependency : commonLoader.getDepends()) {
+			try {
+				Class<?> clazz = loaders.get(dependency).findClass(name, false);
+				if (clazz != null) {
+					return clazz;
+				}
+			} catch (ClassNotFoundException ignored) {
+			}
+			ignore.add(dependency);
 		}
 
-		if (plugin.getDescription().getDepends() != null) {
-			for (String dependency : plugin.getDescription().getDepends()) {
-				try {
-					Class<?> clazz = loaders.get(dependency).findClass(name, false);
-					if (clazz != null) {
-						return clazz;
-					}
-				} catch (ClassNotFoundException ignored) {
+		for (String softDependency : commonLoader.getSoftDepends()) {
+			try {
+				Class<?> clazz = loaders.get(softDependency).findClass(name, false);
+				if (clazz != null) {
+					return clazz;
 				}
-				ignore.add(dependency);
+			} catch (ClassNotFoundException ignored) {
 			}
-		}
-
-		if (plugin.getDescription().getSoftDepends() != null) {
-			for (String softDependency : plugin.getDescription().getSoftDepends()) {
-				try {
-					Class<?> clazz = loaders.get(softDependency).findClass(name, false);
-					if (clazz != null) {
-						return clazz;
-					}
-				} catch (ClassNotFoundException ignored) {
-				}
-				ignore.add(softDependency);
-			}
+			ignore.add(softDependency);
 		}
 
 		for (String current : loaders.keySet()) {
@@ -315,6 +304,9 @@ public class CommonPluginLoader implements PluginLoader {
 				continue;
 			}
 			CommonClassLoader loader = loaders.get(current);
+			if (loader == commonLoader) {
+				continue;
+			}
 			try {
 				Class<?> clazz = loader.findClass(name, false);
 				if (clazz != null) {
