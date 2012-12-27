@@ -29,31 +29,78 @@ package org.spout.api.util.cuboid;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.Vector3;
 
-public class CuboidBlockMaterialBuffer extends CuboidBuffer {
-	private final short[] id;
-	private final short[] data;
+public class CuboidBlockMaterialBuffer extends ImmutableCuboidBlockMaterialBuffer {
 	private CuboidBlockMaterialBuffer source;
-
+	private final ImmutableCuboidBlockMaterialBuffer backBuffer;
+	
+	public CuboidBlockMaterialBuffer(CuboidBlockMaterialBuffer buffer) {
+		this(buffer, false);
+	}
+	
+	public CuboidBlockMaterialBuffer(CuboidBlockMaterialBuffer buffer, boolean backBuffer) {
+		super(buffer);
+		if (backBuffer) {
+			this.backBuffer = new ImmutableCuboidBlockMaterialBuffer(this);
+		} else {
+			this.backBuffer = null;
+		}
+	}
+	
 	public CuboidBlockMaterialBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, short[] id, short[] data) {
-		super(baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
-		this.id = id;
-		this.data = data;
+		this(baseX, baseY, baseZ, sizeX, sizeY, sizeZ, id, data, false);
 	}
 
+	public CuboidBlockMaterialBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, short[] id, short[] data, boolean backBuffer) {
+		super(baseX, baseY, baseZ, sizeX, sizeY, sizeZ, id, data);
+		if (backBuffer) {
+			this.backBuffer = new ImmutableCuboidBlockMaterialBuffer(this);
+		} else {
+			this.backBuffer = null;
+		}
+	}
+	
 	public CuboidBlockMaterialBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
-		this(baseX, baseY, baseZ, sizeX, sizeY, sizeZ, new short[sizeX * sizeY * sizeZ], new short[sizeX * sizeY * sizeZ]);
+		this(baseX, baseY, baseZ, sizeX, sizeY, sizeZ, false);
 	}
 
+	public CuboidBlockMaterialBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, boolean backBuffer) {
+		super(baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
+		if (backBuffer) {
+			this.backBuffer = new ImmutableCuboidBlockMaterialBuffer(this);
+		} else {
+			this.backBuffer = null;
+		}
+	}
+	
 	public CuboidBlockMaterialBuffer(double baseX, double baseY, double baseZ, double sizeX, double sizeY, double sizeZ) {
-		this((int) baseX, (int) baseY, (int) baseZ, (int) sizeX, (int) sizeY, (int) sizeZ, new short[(int) (sizeX * sizeY * sizeZ)], new short[(int) (sizeX * sizeY * sizeZ)]);
+		this(baseX, baseY, baseZ, sizeX, sizeY, sizeZ, false);
+	}
+
+	public CuboidBlockMaterialBuffer(double baseX, double baseY, double baseZ, double sizeX, double sizeY, double sizeZ, boolean backBuffer) {
+		super(baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
+		if (backBuffer) {
+			this.backBuffer = new ImmutableCuboidBlockMaterialBuffer(this);
+		} else {
+			this.backBuffer = null;
+		}
 	}
 
 	public CuboidBlockMaterialBuffer(Vector3 base, Vector3 size) {
-		this((int) base.getX(), (int) base.getY(), (int) base.getZ(), (int) size.getX(), (int) size.getY(), (int) size.getZ(), new short[(int) (size.getX() * size.getY() * size.getZ())], new short[(int) (size.getX() * size.getY() * size.getZ())]);
+		this(base, size, false);
+	}
+	
+	public CuboidBlockMaterialBuffer(Vector3 base, Vector3 size, boolean backBuffer) {
+		super(base, size);
+		if (backBuffer) {
+			this.backBuffer = new ImmutableCuboidBlockMaterialBuffer(this);
+		} else {
+			this.backBuffer = null;
+		}
 	}
 
 	@Override
 	public void copyElement(int thisIndex, int sourceIndex, int runLength) {
+		
 		final int end = thisIndex + runLength;
 		for (; thisIndex < end; thisIndex++) {
 			id[thisIndex] = source.id[sourceIndex];
@@ -75,7 +122,7 @@ public class CuboidBlockMaterialBuffer extends CuboidBuffer {
 		if (index < 0) {
 			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
 		}
-
+		
 		this.id[index] = material.getId();
 		this.data[index] = material.getData();
 	}
@@ -90,25 +137,6 @@ public class CuboidBlockMaterialBuffer extends CuboidBuffer {
 		this.data[index] = data;
 	}
 
-	public BlockMaterial get(int x, int y, int z) {
-		int index = getIndex(x, y, z);
-		if (index < 0) {
-			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
-		}
-		
-		return BlockMaterial.get(id[index], data[index]);
-	}
-	
-	public short getData(int x, int y, int z) {
-		int index = getIndex(x, y, z);
-		if (index < 0) {
-			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
-		}
-
-		return data[index];
-	}
-
-
 	public void flood(BlockMaterial material) {
 		for (int i = 0; i < id.length; i++) {
 			this.id[i] = material.getId();
@@ -122,5 +150,9 @@ public class CuboidBlockMaterialBuffer extends CuboidBuffer {
 
 	public short[] getRawData() {
 		return data;
+	}
+	
+	public ImmutableCuboidBlockMaterialBuffer getBackBuffer() {
+		return backBuffer == null ? this : backBuffer;
 	}
 }

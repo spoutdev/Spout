@@ -267,6 +267,14 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	public Block getBlock(Vector3 position);
 	
 	/**
+	 * Atomically sets the cuboid volume to the values inside of the cuboid buffer, if the contents of the buffer's backbuffer matches the world.
+	 * @param buffer
+	 * @param cause that is setting the cuboid volume
+	 */
+	@Threadsafe
+	public boolean commitCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause);
+	
+	/**
 	 * Atomically sets the cuboid volume to the values inside of the cuboid buffer.
 	 * @param buffer
 	 * @param cause that is setting the cuboid volume
@@ -287,8 +295,9 @@ public interface AreaBlockAccess extends AreaBlockSource {
 
 	/**
 	 * Atomically gets the cuboid volume with the base located at the given coords of the given size.<br>
+	 * The buffer returned contains a back buffer
 	 * <br>
-	 * Note: The block at the base coordinate is inside the 
+	 * Note: The block at the base coordinate is inside the buffer
 	 * @param bx base x-coordinate
 	 * @param by base y-coordinate
 	 * @param bz base z-coordinate
@@ -298,6 +307,21 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	 */
 	@Threadsafe
 	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz);
+	
+	/**
+	 * Atomically gets the cuboid volume with the base located at the given coords of the given size.<br>
+	 * <br>
+	 * Note: The block at the base coordinate is inside the buffer
+	 * @param bx base x-coordinate
+	 * @param by base y-coordinate
+	 * @param bz base z-coordinate
+	 * @param sx size x-coordinate
+	 * @param sy size y-coordinate
+	 * @param sz size z-coordinate
+	 * @param backBuffer true for a buffer with a back buffer
+	 */
+	@Threadsafe
+	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz, boolean backBuffer);
 	
 	/**
 	 * Atomically gets the cuboid volume with the base located at the given coords and the size of the given buffer.<br>
