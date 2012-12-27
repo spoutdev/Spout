@@ -227,7 +227,7 @@ public class SpoutTaskManager implements TaskManager {
 		}
 		return true;
 	}
-	
+
 	public boolean removeTask(SpoutTask task) {
 		return activeTasks.remove(task.getTaskId(), task);
 	}
