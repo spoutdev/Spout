@@ -2016,6 +2016,16 @@ public class SpoutRegion extends Region {
 		}
 		return chunks;
 	}
+	
+	@Override
+	public boolean commitCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
+		Vector3 base = buffer.getBase();
+		int x = base.getFloorX();
+		int y = base.getFloorY();
+		int z = base.getFloorZ();
+		
+		return getWorld().commitCuboid(getChunks(x, y, z, buffer), buffer, cause);
+	}
 
 	@Override
 	public void setCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
@@ -2036,7 +2046,12 @@ public class SpoutRegion extends Region {
 
 	@Override
 	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz) {
-		CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(bx, by, bz, sx, sy, sz);
+		return getCuboid(bx, by, bz, sx, sy, sz, true);
+	}
+	
+	@Override
+	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz, boolean backBuffer) {
+		CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(bx, by, bz, sx, sy, sz, backBuffer);
 		getCuboid(bx, by, bz, buffer);
 		return buffer;
 	}

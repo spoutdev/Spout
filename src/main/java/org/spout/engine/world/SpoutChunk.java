@@ -556,6 +556,29 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			this.blockLightUpdates.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, level);
 		}
 	}
+	
+	@Override
+	public boolean commitCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
+		blockStore.writeLock();
+
+		try {
+			Vector3 base = buffer.getBase();
+			int x = base.getFloorX();
+			int y = base.getFloorY();
+			int z = base.getFloorZ();
+			
+			if (!testCuboid(x, y, z, buffer)) {
+				return false;
+			}
+			
+			setCuboid(x, y, z, buffer, cause);
+			
+			return true;
+			
+		} finally {
+			blockStore.writeUnlock();
+		}
+	}
 
 	@Override
 	public void setCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
@@ -594,10 +617,60 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			blockStore.writeUnlock();
 		}
 	}
+	
+	public boolean testCuboid(int bx, int by, int bz, CuboidBlockMaterialBuffer buffer) {
+		blockStore.writeLock();
+		try {
+			Vector3 size = buffer.getSize();
+
+			int startX = Math.max(bx, this.getBlockX());
+			int startY = Math.max(by, this.getBlockY());
+			int startZ = Math.max(bz, this.getBlockZ());
+
+			int endX = Math.min(bx + size.getFloorX(), this.getBlockX() + BLOCKS.SIZE - 1);
+			int endY = Math.min(by + size.getFloorY(), this.getBlockY() + BLOCKS.SIZE - 1);
+			int endZ = Math.min(bz + size.getFloorZ(), this.getBlockZ() + BLOCKS.SIZE - 1);
+
+			Vector3 base = buffer.getBase();
+
+			int offX = bx - base.getFloorX();
+			int offY = by - base.getFloorY();
+			int offZ = bz - base.getFloorZ();
+
+			for (int dx = startX; dx < endX; dx++) {
+				for (int dy = startY; dy < endY; dy++) {
+					for (int dz = startZ; dz < endZ; dz++) {
+						BlockMaterial worldMaterial = getBlockMaterial(dx, dy, dz);
+						BlockMaterial bufferMaterial = buffer.get(dx - offX, dy - offY, dz - offZ);
+
+						if (worldMaterial != bufferMaterial) {
+							return false;
+						}
+
+						short worldData = getBlockData(dx, dy, dz);
+						short bufferData = buffer.getData(dx - offX, dy - offY, dz - offZ);
+
+						if (worldData != bufferData) {
+							return false;
+						}
+					}
+				}
+			}
+
+			return true;
+		} finally {
+			blockStore.writeUnlock();
+		}
+	}
 
 	@Override
 	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz) {
-		CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(bx, by, bz, sx, sy, sz);
+		return getCuboid(bx, by, bz, sx, sy, sz, true);
+	}
+	
+	@Override
+	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz, boolean backBuffer) {
+		CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(bx, by, bz, sx, sy, sz, backBuffer);
 		getCuboid(bx, by, bz, buffer);
 		return buffer;
 	}

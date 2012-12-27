@@ -1257,6 +1257,56 @@ public class SpoutWorld extends AsyncManager implements World {
 
 		setCuboid(chunks, x, y, z, buffer, cause);
 	}
+	
+	public boolean commitCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
+		Vector3 base = buffer.getBase();
+		int x = base.getFloorX();
+		int y = base.getFloorY();
+		int z = base.getFloorZ();
+		SpoutChunk[][][] chunks = getChunks(x, y, z, buffer);
+		
+		return commitCuboid(chunks, buffer, cause);
+	}
+	
+	protected boolean commitCuboid(SpoutChunk[][][] chunks, CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
+		
+		Vector3 base = buffer.getBase();
+		int x = base.getFloorX();
+		int y = base.getFloorY();
+		int z = base.getFloorZ();
+		
+		lockChunks(chunks);
+		
+		try {
+			for (int dx = 0; dx < chunks.length; dx++) {
+				SpoutChunk[][] subArray1 = chunks[dx];
+				for (int dy = 0; dy < subArray1.length; dy++) {
+					SpoutChunk[] subArray2 = subArray1[dy];
+					for (int dz = 0; dz < subArray2.length; dz++) {
+						if (!subArray2[dz].testCuboid(x, y, z, buffer)) {
+							return false;
+						}
+					}
+				}
+			}
+
+			// set
+			for (int dx = 0; dx < chunks.length; dx++) {
+				SpoutChunk[][] subArray1 = chunks[dx];
+				for (int dy = 0; dy < subArray1.length; dy++) {
+					SpoutChunk[] subArray2 = subArray1[dy];
+					for (int dz = 0; dz < subArray2.length; dz++) {
+						subArray2[dz].setCuboid(x, y, z, buffer, cause);
+					}
+				}
+			}
+			
+			return true;
+		} finally {
+			unlockChunks(chunks);
+		}
+		
+	}
 
 	protected void setCuboid(SpoutChunk[][][] chunks, int x, int y, int z, CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
 
@@ -1279,7 +1329,12 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public CuboidBlockMaterialBuffer getCuboid(int x, int y, int z, int sx, int sy, int sz) {
-		CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(x, y, z, sx, sy, sz);
+		return getCuboid(x, y, z, sx, sy, sz, true);
+	}
+	
+	@Override
+	public CuboidBlockMaterialBuffer getCuboid(int x, int y, int z, int sx, int sy, int sz, boolean backBuffer) {
+		CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(x, y, z, sx, sy, sz, backBuffer);
 		getCuboid(x, y, z, buffer);
 		return buffer;
 	}
