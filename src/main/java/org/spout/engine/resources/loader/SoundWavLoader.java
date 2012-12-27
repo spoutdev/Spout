@@ -33,8 +33,10 @@ import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.util.WaveData;
+
+import org.spout.api.resource.BasicResourceLoader;
+
 import org.spout.engine.audio.SpoutSoundManager;
-import org.spout.engine.filesystem.BasicResourceLoader;
 import org.spout.engine.resources.ClientSound;
 
 public class SoundWavLoader extends BasicResourceLoader<ClientSound> {

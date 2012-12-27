@@ -43,7 +43,11 @@ public class ZipFilePathResolver extends FilePathResolver {
 	}
 
 	public ZipFile getZip(String host) throws IOException {
-		return new ZipFile(directory + File.separatorChar + host);
+		File file = new File(directory + File.separatorChar + host + ".zip");
+		if (file.exists()) {
+			return new ZipFile(file);
+		}
+		return null;
 	}
 
 	@Override
@@ -52,6 +56,9 @@ public class ZipFilePathResolver extends FilePathResolver {
 		boolean b = false;
 		try {
 			f = getZip(host);
+			if (f == null) {
+				return false;
+			}
 			b = f.getEntry(path.substring(1)) != null;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -71,21 +78,27 @@ public class ZipFilePathResolver extends FilePathResolver {
 	public InputStream getStream(String host, String path) {
 		try {
 			ZipFile f = getZip(host);
-			ZipEntry entry = f.getEntry(path);
+			if (f == null) {
+				throw new IllegalArgumentException("Specified ZipFile does not exist.");
+			}
+			ZipEntry entry = f.getEntry(path.substring(1));
 			if (entry == null) {
-				return null;
+				throw new IllegalArgumentException("Specified ZipEntry does not exist.");
 			}
 			return f.getInputStream(entry);
 		} catch (IOException e) {
 			e.printStackTrace();
+			return null;
 		}
-		return null;
 	}
 
 	public String[] list(String host, String path) {
 		ZipFile zip = null;
 		try {
 			zip = getZip(host);
+			if (zip == null) {
+				throw new IllegalArgumentException("Specified ZipFile does not exist.");
+			}
 			// iterate through the zip's entries
 			Enumeration<? extends ZipEntry> entries = zip.entries();
 			List<String> list = new ArrayList<String>();

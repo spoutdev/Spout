@@ -44,6 +44,7 @@ import org.spout.api.resource.ResourcePathResolver;
 
 import org.spout.engine.filesystem.path.FilePathResolver;
 import org.spout.engine.filesystem.path.JarFilePathResolver;
+import org.spout.engine.filesystem.path.ZipFilePathResolver;
 
 /**
  * The basic filesystem of Spout.
@@ -114,9 +115,7 @@ public class SharedFileSystem implements FileSystem {
 			getWorldsDirectory().mkdirs();
 		}
 
-		searchPaths = new ResourcePathResolver[]{new FilePathResolver("cache"),
-				// new ZipFilePathResolver(),
-				new JarFilePathResolver()};
+		searchPaths = new ResourcePathResolver[]{new FilePathResolver("cache"), new ZipFilePathResolver(), new JarFilePathResolver()};
 	}
 
 	@Override

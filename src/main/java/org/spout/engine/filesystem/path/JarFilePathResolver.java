@@ -83,17 +83,17 @@ public class JarFilePathResolver implements ResourcePathResolver {
 		try {
 			JarFile f = getJar(host);
 			if (f == null) {
-				return null;
+				throw new IllegalArgumentException("Specified JarFile does not exist.");
 			}
 			JarEntry entry = f.getJarEntry(path.substring(1));
 			if (entry == null) {
-				return null;
+				throw new IllegalArgumentException("Specified JarEntry does not exist.");
 			}
 			return f.getInputStream(entry);
 		} catch (IOException e) {
 			e.printStackTrace();
+			return null;
 		}
-		return null;
 	}
 
 	@Override
@@ -107,7 +107,7 @@ public class JarFilePathResolver implements ResourcePathResolver {
 		try {
 			jar = getJar(host);
 			if (jar == null) {
-				return null;
+				throw new IllegalArgumentException("Specified JarFile does not exist.");
 			}
 			// iterate through the JarEntries
 			Enumeration<JarEntry> entries = jar.entries();
@@ -119,7 +119,6 @@ public class JarFilePathResolver implements ResourcePathResolver {
 				// we can't load directories, no point in returning them
 				// verify that the entry is in the given path
 				if (!entry.isDirectory() && name.startsWith(path)) {
-					System.out.println("Adding: " + name);
 					list.add(name.replaceFirst(path, ""));
 				}
 			}

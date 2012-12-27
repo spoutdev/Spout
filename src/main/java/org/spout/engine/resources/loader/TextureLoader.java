@@ -52,19 +52,17 @@ public class TextureLoader extends BasicResourceLoader<Texture> {
 		Texture t = null;
 		try {
 			BufferedImage image = ImageIO.read(stream);
-			if (Spout.getPlatform()==Platform.SERVER) {
+			if (Spout.getPlatform() == Platform.SERVER) {
 				t = new ServerTexture(image);
 			} else {
 				t = new ClientTexture(image);
 			}
 		} catch (IOException e) {
-
 			e.printStackTrace();
 		} finally {
 			try {
 				stream.close();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
