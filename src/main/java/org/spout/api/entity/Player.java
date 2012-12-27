@@ -27,6 +27,7 @@
 package org.spout.api.entity;
 
 import java.net.InetAddress;
+import java.util.List;
 
 import org.spout.api.command.CommandSource;
 import org.spout.api.entity.state.PlayerInputState;
@@ -138,6 +139,17 @@ public interface Player extends CommandSource, Entity {
 	 * @return true if successful
 	 */
 	public boolean save();
+	
+	/**
+	 * If an entity is set as invisible, it will not be sent to the client.
+	 * @param entity
+	 * @param visible
+	 */
+	public void setVisible(Entity entity, boolean visible);
+		
+	public List<Entity> getInvisibleEntities();
+	
+	public boolean isInvisible(Entity entity);
 
 	public void processInput(PlayerInputState state);
 }
