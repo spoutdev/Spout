@@ -54,6 +54,10 @@ public class TNibbleQuadList extends NibbleQuadHashed {
 	public boolean add(int key1, int key2, int key3, int key4) {
 		return list.add(key(key1, key2, key3, key4));
 	}
+	
+	public boolean addRaw(short value) {
+		return list.add(value);
+	}
 
 	public boolean contains(int key1, int key2, int key3, int key4) {
 		return list.contains(key(key1, key2, key3, key4));
