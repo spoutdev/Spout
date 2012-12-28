@@ -1031,7 +1031,7 @@ public class SpoutRegion extends Region {
 										((EntityComponent) component).onCollided(contactPointA, contactPointB, (Block) holderB);
 									}
 								}
-								//TODO onCollide in materials?
+								((Block) holderB).getMaterial().onCollided(contactPointB, contactPointA, (Entity) holderA);
 							}
 						//HolderA: Block
 						//HolderB: Entity
@@ -1041,6 +1041,7 @@ public class SpoutRegion extends Region {
 								if (((Entity) holderB).isRemoved()) {
 									break;
 								}
+								((Block) holderA).getMaterial().onCollided(contactPointA, contactPointB, (Entity) holderB);
 								//Call onCollide for colliderB's EntityComponents
 								for (Component component : ((Entity) holderB).values()) {
 									if (component instanceof EntityComponent) {
