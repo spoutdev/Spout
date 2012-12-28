@@ -37,34 +37,36 @@ import org.spout.api.util.list.concurrent.RedirectableConcurrentLinkedQueue;
 public class TaskPriorityQueue extends ConcurrentLongPriorityQueue<SpoutTask> {
 
 	private static final long serialVersionUID = 1L;
-	
 	private final Thread taskThread;
 
 	public TaskPriorityQueue(long resolution) {
 		this(Thread.currentThread(), resolution);
 	}
-	
+
 	public TaskPriorityQueue(Thread t, long resolution) {
 		super(resolution);
 		taskThread = t;
 	}
-	
+
 	/**
-	 * Gets the first pending task on the queue.  A task is considered pending if its next call time is less than or equal to the given current time.<br>
+	 * Gets the first pending task on the queue. A task is considered pending
+	 * if its next call time is less than or equal to the given current
+	 * time.<br>
 	 * <br>
-	 * NOTE: This method should only be called from a single thread.  
-	 * 
+	 * NOTE: This method should only be called from a single thread.
+	 *
 	 * @param currentTime the current time
+	 *
 	 * @return the first pending task, or null if no task is pending
 	 */
 	public Queue<SpoutTask> getPendingTask(long currentTime) {
 		if (Thread.currentThread() != taskThread) {
 			throw new IllegalStateException("getPendingTask() may only be called from the thread that created the TaskPriorityQueue");
 		}
-		
+
 		return super.poll(currentTime);
 	}
-	
+
 	@Override
 	public boolean add(SpoutTask task) {
 		if (task != null) {
@@ -86,7 +88,7 @@ public class TaskPriorityQueue extends ConcurrentLongPriorityQueue<SpoutTask> {
 
 		return true;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("{");
@@ -101,7 +103,7 @@ public class TaskPriorityQueue extends ConcurrentLongPriorityQueue<SpoutTask> {
 		}
 		return sb.append("}").toString();
 	}
-	
+
 	public List<SpoutTask> getTasks() {
 		List<SpoutTask> list = new ArrayList<SpoutTask>();
 		Iterator<RedirectableConcurrentLinkedQueue<SpoutTask>> iq = queueMap.values().iterator();
@@ -115,4 +117,3 @@ public class TaskPriorityQueue extends ConcurrentLongPriorityQueue<SpoutTask> {
 		return list;
 	}
 }
-

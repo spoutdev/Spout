@@ -46,15 +46,17 @@ import org.spout.engine.protocol.PortBindingImpl;
  * Commands to help with management of client connections
  */
 public class ConnectionCommands {
+
 	private final SpoutEngine engine;
 
 	public ConnectionCommands(SpoutEngine engine) {
 		this.engine = engine;
 	}
 
-	@Command(aliases = "disconnect", desc = "Disconnect the client from the server", usage = "[message]", min = 0, max = -1)
+	@Command (aliases = "disconnect", desc = "Disconnect the client from the server", usage = "[message]", min = 0, max = -1)
 	public class DisconnectCommand {
-		@Executor(Platform.SERVER)
+
+		@Executor (Platform.SERVER)
 		public void executeServer(CommandContext args, CommandSource source) throws CommandException {
 			ChatArguments message;
 			if (args.length() == 0) {
@@ -68,7 +70,7 @@ public class ConnectionCommands {
 			}
 		}
 
-		@Executor(Platform.CLIENT)
+		@Executor (Platform.CLIENT)
 		public void executeClient(CommandContext args, CommandSource source) throws CommandException {
 			if (source instanceof Player) {
 				((Player) source).getSession().dispose();
@@ -76,9 +78,10 @@ public class ConnectionCommands {
 		}
 	}
 
-	@Command(aliases = {"connect", "conn"}, desc = "Connect to a server", usage = "<protocol> <address> [port]", min = 2, max = 3)
+	@Command (aliases = {"connect", "conn"}, desc = "Connect to a server", usage = "<protocol> <address> [port]", min = 2, max = 3)
 	public class ConnectCommand {
-		@Executor(Platform.CLIENT)
+
+		@Executor (Platform.CLIENT)
 		public void executeClient(CommandContext args, CommandSource source) throws CommandException {
 			Protocol protocol = Protocol.getProtocol(args.getString(0));
 			if (protocol == null) {
@@ -90,4 +93,5 @@ public class ConnectionCommands {
 			source.sendMessage("Connected to ", address, ":", port, " with protocol ", protocol.getName());
 		}
 	}
+
 }

@@ -31,6 +31,7 @@ import org.lwjgl.opengl.GL20;
 import org.spout.api.math.Vector2;
 
 public class Vec2ShaderVariable extends ShaderVariable {
+
 	Vector2 value;
 
 	public Vec2ShaderVariable(int program, String name, Vector2 value) {

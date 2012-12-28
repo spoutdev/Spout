@@ -39,6 +39,7 @@ import org.spout.engine.resources.loader.ShaderLoader;
 import org.spout.engine.resources.loader.TextureLoader;
 
 public class ClientFileSystem extends SharedFileSystem {
+
 	@Override
 	public void init() {
 		super.init();
@@ -49,7 +50,7 @@ public class ClientFileSystem extends SharedFileSystem {
 		registerLoader(new ModelLoader());
 		registerLoader(new SkeletonLoader());
 		registerLoader(new AnimationLoader());
-		
+
 		registerLoader(new MeshLoader());
 		registerLoader(new CubeMeshLoader());
 		registerLoader(new BlockMeshLoader());

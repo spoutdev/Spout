@@ -34,13 +34,13 @@ public class GLBufferContainer {
 
 	public int element = 0;
 	int[] verticeIndex;
-	final Map<Integer,Buffer> buffers = new HashMap<Integer,Buffer>();
+	final Map<Integer, Buffer> buffers = new HashMap<Integer, Buffer>();
 
-	public Map<Integer,Buffer> getBuffers(){
+	public Map<Integer, Buffer> getBuffers() {
 		return buffers;
 	}
 
-	public void setBuffers(int layout, Buffer buffer){
+	public void setBuffers(int layout, Buffer buffer) {
 		buffers.put(layout, buffer);
 	}
 

@@ -37,9 +37,11 @@ import org.spout.api.util.thread.SnapshotRead;
  * <p/>
  * This class should be used for immutable types that are updated by replacing
  * with a new immutable object
+ *
  * @param <T> the underlying type
  */
 public class SnapshotableReference<T> implements Snapshotable {
+
 	private AtomicReference<T> next = new AtomicReference<T>();
 	private T snapshot;
 
@@ -51,6 +53,7 @@ public class SnapshotableReference<T> implements Snapshotable {
 
 	/**
 	 * Sets the next value for the Snapshotable
+	 *
 	 * @param next
 	 */
 	@DelayedWrite
@@ -60,8 +63,10 @@ public class SnapshotableReference<T> implements Snapshotable {
 
 	/**
 	 * Sets the live value to update, if the live value is equal to expect.
+	 *
 	 * @param expect the expected value
 	 * @param update the new value
+	 *
 	 * @return true on success
 	 */
 	@DelayedWrite
@@ -71,6 +76,7 @@ public class SnapshotableReference<T> implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value for
+	 *
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
@@ -80,6 +86,7 @@ public class SnapshotableReference<T> implements Snapshotable {
 
 	/**
 	 * Gets the live value
+	 *
 	 * @return the unstable Live "next" value
 	 */
 	@LiveRead

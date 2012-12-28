@@ -29,6 +29,7 @@ package org.spout.engine.renderer.shader.variables;
 import org.lwjgl.opengl.GL20;
 
 public class FloatShaderVariable extends ShaderVariable {
+
 	float value;
 
 	public FloatShaderVariable(int program, String name, float value) {

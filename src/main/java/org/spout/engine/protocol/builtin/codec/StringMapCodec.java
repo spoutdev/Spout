@@ -38,6 +38,7 @@ import org.spout.engine.protocol.builtin.ChannelBufferUtils;
 import org.spout.engine.protocol.builtin.message.StringMapMessage;
 
 public class StringMapCodec extends MessageCodec<StringMapMessage> {
+
 	public StringMapCodec() {
 		super(StringMapMessage.class, 0x01);
 	}
@@ -61,7 +62,7 @@ public class StringMapCodec extends MessageCodec<StringMapMessage> {
 		final byte action = buffer.readByte();
 		final int elementCount = buffer.readInt();
 		List<Pair<Integer, String>> elements = new ArrayList<Pair<Integer, String>>(elementCount);
-		for (int i = 0; i < elementCount; ++i) {
+		for (int i = 0 ; i < elementCount ; ++i) {
 			final int key = buffer.readInt();
 			final String value = ChannelBufferUtils.readString(buffer);
 			elements.add(new ImmutablePair<Integer, String>(key, value));

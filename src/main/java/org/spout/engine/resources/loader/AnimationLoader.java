@@ -39,7 +39,7 @@ import org.spout.api.resource.BasicResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
 import org.yaml.snakeyaml.Yaml;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings ("unchecked")
 public class AnimationLoader extends BasicResourceLoader<Animation> {
 
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
@@ -48,41 +48,42 @@ public class AnimationLoader extends BasicResourceLoader<Animation> {
 		final Yaml yaml = new Yaml();
 		final Map<? extends String, ?> resourceProperties = checkerMapStringObject.check(yaml.load(stream));
 
-		Skeleton skeleton = (Skeleton)Spout.getFilesystem().getResource((String)resourceProperties.get("Skeleton"));
-		
-		int frames = (Integer)resourceProperties.get("frames");
-		float delay = ((Double)resourceProperties.get("delay")).floatValue();
-		
-		Animation animation = new Animation(skeleton,frames,delay);
-		
-		Map<? extends String, ?> bones_data = (Map<? extends String, ?>) resourceProperties.get("bones_data");
-		
-		for(Entry<? extends String, ?> entry : bones_data.entrySet()){
-			
-			Bone bone = skeleton.getBoneByName(entry.getKey());
-			if(bone == null)
-				throw new IllegalStateException("Animation file mapped with the bad Skeleton file");
-			
-			Map<? extends Integer, String> value = (Map<? extends Integer, String>)entry.getValue();
-			
-			for(Entry<? extends Integer, String> entryBone : value.entrySet()){
-				int frame = (Integer)entryBone.getKey() - 1; //Start at 1
+		Skeleton skeleton = (Skeleton) Spout.getFilesystem().getResource((String) resourceProperties.get("Skeleton"));
 
-				BoneTransform boneTransform = new BoneTransform(loadFloatList((String)entryBone.getValue()));
-				
+		int frames = (Integer) resourceProperties.get("frames");
+		float delay = ((Double) resourceProperties.get("delay")).floatValue();
+
+		Animation animation = new Animation(skeleton, frames, delay);
+
+		Map<? extends String, ?> bones_data = (Map<? extends String, ?>) resourceProperties.get("bones_data");
+
+		for (Entry<? extends String, ?> entry : bones_data.entrySet()) {
+
+			Bone bone = skeleton.getBoneByName(entry.getKey());
+			if (bone == null) {
+				throw new IllegalStateException("Animation file mapped with the bad Skeleton file");
+			}
+
+			Map<? extends Integer, String> value = (Map<? extends Integer, String>) entry.getValue();
+
+			for (Entry<? extends Integer, String> entryBone : value.entrySet()) {
+				int frame = (Integer) entryBone.getKey() - 1; //Start at 1
+
+				BoneTransform boneTransform = new BoneTransform(loadFloatList((String) entryBone.getValue()));
+
 				animation.setBoneTransform(bone.getId(), frame, boneTransform);
 			}
 		}
-		
+
 		return animation;
 	}
 
-	private static float[] loadFloatList(String str){
-		String []split = str.split(",");
-		float []result = new float[split.length];
+	private static float[] loadFloatList(String str) {
+		String[] split = str.split(",");
+		float[] result = new float[split.length];
 
-		for(int i = 0; i < split.length; i++){		
-			result[i] = (float)Double.parseDouble(split[i]);
+		for (int i = 0 ; i < split.length ; i++) {
+			result[i] = (float) Double.parseDouble(split[i]);
 		}
 
 		return result;
@@ -105,7 +106,6 @@ public class AnimationLoader extends BasicResourceLoader<Animation> {
 
 	@Override
 	public String[] getExtensions() {
-		return new String[] { "sam" };
+		return new String[]{"sam"};
 	}
-
 }

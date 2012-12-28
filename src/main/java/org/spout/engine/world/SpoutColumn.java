@@ -46,11 +46,11 @@ import org.spout.engine.filesystem.versioned.ColumnFiles;
 import org.spout.engine.filesystem.versioned.WorldFiles;
 
 public class SpoutColumn {
+
 	/**
 	 * Stores the size of the amount of blocks in this Column
 	 */
 	public static BitSize BLOCKS = Chunk.BLOCKS;
-
 	private final SpoutWorld world;
 	private final int x;
 	private final int z;
@@ -73,8 +73,8 @@ public class SpoutColumn {
 		this.topmostBlocks = new BlockMaterial[BLOCKS.SIZE][BLOCKS.SIZE];
 		this.worldThread = (Thread) (((SpoutWorld) world).getExecutor());
 
-		for (int xx = 0; xx < BLOCKS.SIZE; xx++) {
-			for (int zz = 0; zz < BLOCKS.SIZE; zz++) {
+		for (int xx = 0 ; xx < BLOCKS.SIZE ; xx++) {
+			for (int zz = 0 ; zz < BLOCKS.SIZE ; zz++) {
 				heightMap[xx][zz] = new AtomicInteger(0);
 				dirtyArray[xx][zz] = new AtomicBoolean(false);
 			}
@@ -86,7 +86,7 @@ public class SpoutColumn {
 		//Could not load biomes from column, so calculate them
 		if (biomes.get() == null) {
 			if (world.getGenerator() instanceof BiomeGenerator) {
-				BiomeGenerator generator = (BiomeGenerator)world.getGenerator();
+				BiomeGenerator generator = (BiomeGenerator) world.getGenerator();
 				setBiomeManager(generator.generateBiomes(x, z, world));
 			}
 		}
@@ -97,8 +97,8 @@ public class SpoutColumn {
 		if (dirty.compareAndSet(true, false)) {
 			int wx = (this.x << BLOCKS.BITS);
 			int wz = (this.z << BLOCKS.BITS);
-			for (int xx = 0; xx < BLOCKS.SIZE; xx++) {
-				for (int zz = 0; zz < BLOCKS.SIZE; zz++) {
+			for (int xx = 0 ; xx < BLOCKS.SIZE ; xx++) {
+				for (int zz = 0 ; zz < BLOCKS.SIZE ; zz++) {
 					if (getDirtyFlag(xx, zz).compareAndSet(true, false)) {
 						int y = getAtomicInteger(xx, zz).get();
 						int wxx = wx + xx;
@@ -106,7 +106,7 @@ public class SpoutColumn {
 						Chunk c = world.getChunkFromBlock(wxx, y, wzz, LoadOption.LOAD_ONLY);
 						BlockMaterial bm = null;
 						if (c != null) {
-							 bm = c.getBlockMaterial(wx + xx, y, wz + zz);
+							bm = c.getBlockMaterial(wx + xx, y, wz + zz);
 						}
 						topmostBlocks[xx][zz] = bm;
 					}
@@ -139,7 +139,7 @@ public class SpoutColumn {
 			activeChunks.decrementAndGet();
 		}
 	}
-	
+
 	public synchronized void syncSave() {
 		OutputStream out = ((SpoutWorld) world).getHeightMapOutputStream(x, z);
 		try {
@@ -206,7 +206,7 @@ public class SpoutColumn {
 			return;
 		}
 
-		for (int yy = maxY; yy >= y; yy--) {
+		for (int yy = maxY ; yy >= y ; yy--) {
 			if (!isAir(c, x, yy, z)) {
 				notifyBlockChange(v, x, yy, z);
 				return;
@@ -265,8 +265,8 @@ public class SpoutColumn {
 		int xx = (this.x << BLOCKS.BITS) + (x & BLOCKS.MASK);
 		int yy = y;
 		int zz = (this.z << BLOCKS.BITS) + (z & BLOCKS.MASK);
-		LoadOption opt = y < getGeneratorHeight(x, y) - Chunk.BLOCKS.DOUBLE_SIZE ?
-				LoadOption.LOAD_ONLY : LoadOption.LOAD_GEN;
+		LoadOption opt = y < getGeneratorHeight(x, y) - Chunk.BLOCKS.DOUBLE_SIZE
+						 ? LoadOption.LOAD_ONLY : LoadOption.LOAD_GEN;
 		Chunk c = world.getChunkFromBlock(xx, yy, zz, opt);
 		if (c == null) {
 			return false;
@@ -297,15 +297,15 @@ public class SpoutColumn {
 		getDirtyFlag(x, z).set(true);
 		setDirty();
 	}
-	
+
 	public void setDirty() {
 		dirty.set(true);
 	}
-	
+
 	public BiomeManager getBiomeManager() {
 		return biomes.get();
 	}
-	
+
 	public boolean setBiomeManager(BiomeManager manager) {
 		if (biomes.compareAndSet(null, manager)) {
 			return true;

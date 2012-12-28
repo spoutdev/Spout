@@ -33,6 +33,7 @@ import org.spout.api.datatable.SerializableMap;
 import org.spout.api.util.SpoutToStringStyle;
 
 public class EntityDatatableMessage extends DatatableMessage {
+
 	private final int entityId;
 
 	public EntityDatatableMessage(int entityId, SerializableMap data) {

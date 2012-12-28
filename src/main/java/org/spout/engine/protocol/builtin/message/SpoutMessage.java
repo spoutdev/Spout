@@ -34,5 +34,4 @@ public abstract class SpoutMessage implements Message {
 	public int getChannelId() {
 		return 0;
 	}
-
 }

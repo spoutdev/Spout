@@ -34,7 +34,8 @@ import java.util.logging.Level;
 
 import org.spout.api.Spout;
 
-public class MemoryReclamationThread extends Thread{
+public class MemoryReclamationThread extends Thread {
+
 	private int previousPlayers = 0;
 	private final AtomicInteger numPlayers = new AtomicInteger(0);
 
@@ -72,7 +73,7 @@ public class MemoryReclamationThread extends Thread{
 			Spout.getLogger().log(Level.INFO, "G1 Garbage Collector is  set, memory reclamation enabled.");
 		}
 
-		while(!this.isInterrupted()) {
+		while (!this.isInterrupted()) {
 			try {
 				sleep(60000);
 			} catch (InterruptedException e) {
@@ -86,7 +87,7 @@ public class MemoryReclamationThread extends Thread{
 				}
 				previousPlayers = numPlayers;
 			}
-			
+
 		}
 	}
 }

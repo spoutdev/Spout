@@ -43,11 +43,10 @@ import org.spout.engine.renderer.shader.variables.TextureSamplerShaderVariable;
 import org.spout.engine.resources.ClientFont;
 
 public class BasicShader extends ClientShader {
+
 	FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(4 * 4);
 
-
 	public BasicShader() {
-	 
 	}
 
 	public void assign(boolean compatabilityMode) {
@@ -64,14 +63,14 @@ public class BasicShader extends ClientShader {
 			} else {
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
 			}
-			
+
 			GL11.glMatrixMode(GL11.GL_PROJECTION);
 			matrixBuffer.clear();
 			matrixBuffer.put(getProjectionMatrix().toArray());
 			matrixBuffer.flip();
 
 			GL11.glLoadMatrix(matrixBuffer);
-			
+
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
 			matrixBuffer.clear();
 			matrixBuffer.put(getModelViewMatrix().multiply(getViewMatrix()).toArray());
@@ -82,7 +81,7 @@ public class BasicShader extends ClientShader {
 			super.assign();
 		}
 	}
-	
+
 	public void setModelViewMatrix(Matrix mat) {
 		setUniform("Model", mat);
 	}

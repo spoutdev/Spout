@@ -42,11 +42,13 @@ import org.spout.engine.world.SpoutWorld;
  * Handle client-specific session tasks
  */
 public class SpoutClientSession extends SpoutSession<SpoutClient> {
+
 	private final AtomicReference<SpoutWorld> activeWorld = new AtomicReference<SpoutWorld>();
+
 	/**
 	 * Creates a new session.
 	 *
-	 * @param engine The client this session belongs to.
+	 * @param engine  The client this session belongs to.
 	 * @param channel The channel associated with this session.
 	 */
 	public SpoutClientSession(SpoutClient engine, Channel channel, Protocol bootstrapProtocol) {

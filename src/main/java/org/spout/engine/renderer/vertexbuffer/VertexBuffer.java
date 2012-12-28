@@ -43,5 +43,4 @@ public interface VertexBuffer {
 	public void dispose();
 
 	public void finalize();
-
 }

@@ -46,6 +46,7 @@ import org.spout.engine.world.SpoutRegion;
  * Represents a task which is executed periodically.
  */
 public class SpoutTask implements Task, LongPrioritized {
+
 	/**
 	 * The next task ID pending.
 	 */
@@ -87,35 +88,32 @@ public class SpoutTask implements Task, LongPrioritized {
 	 * A flag indicating if the task is actually executing
 	 */
 	private final AtomicBoolean executing;
-	
 	/**
 	 * Indicates if the task is being deferred and when it started
 	 */
 	private long deferBegin = -1;
-
 	/**
 	 * The manager associated with this task
 	 */
 	private final TaskManager manager;
-	
 	/**
 	 * The scheduler for the engine
 	 */
 	private final Scheduler scheduler;
-
 	/**
 	 * Indicates that the task is long lived
 	 */
 	private final boolean longLife;
-	
 	/**
 	 * Info about sub-tasks
 	 */
 	private ParallelTaskInfo parallelInfo;
 
 	/**
-	 * Creates a new task with the specified number of ticks between consecutive
+	 * Creates a new task with the specified number of ticks between
+	 * consecutive
 	 * calls to {@link #execute()}.
+	 *
 	 * @param ticks The number of ticks.
 	 */
 	public SpoutTask(TaskManager manager, Scheduler scheduler, Object owner, Runnable task, boolean sync, long delay, long period, TaskPriority priority, boolean longLife) {
@@ -137,6 +135,7 @@ public class SpoutTask implements Task, LongPrioritized {
 	 * Creates a copy of this task for a particular Region
 	 *
 	 * @param region the region
+	 *
 	 * @return the new task instance
 	 */
 	public SpoutTask getRegionTask(SpoutRegion region) {
@@ -206,7 +205,8 @@ public class SpoutTask implements Task, LongPrioritized {
 	}
 
 	/**
-	 * Executes the task.  The task will fail to execute if it is no longer running, if it is called early, or if it is already executing.
+	 * Executes the task. The task will fail to execute if it is no longer
+	 * running, if it is called early, or if it is already executing.
 	 *
 	 * @return The task successfully executed.
 	 */
@@ -367,6 +367,7 @@ public class SpoutTask implements Task, LongPrioritized {
 	}
 
 	private static enum QueueState {
+
 		QUEUED, UNQUEUED, DEAD;
 
 		public boolean isDead() {
@@ -381,4 +382,5 @@ public class SpoutTask implements Task, LongPrioritized {
 			return this == UNQUEUED;
 		}
 	}
+
 }

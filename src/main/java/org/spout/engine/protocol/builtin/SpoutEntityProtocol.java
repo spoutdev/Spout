@@ -42,7 +42,9 @@ import org.spout.engine.protocol.builtin.message.RemoveEntityMessage;
  * EntityProtocol for the SpoutClient protocol
  */
 public class SpoutEntityProtocol implements EntityProtocol {
+
 	public static final SpoutEntityProtocol INSTANCE = new SpoutEntityProtocol();
+
 	protected SpoutEntityProtocol() {
 		super();
 	}

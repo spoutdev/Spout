@@ -55,6 +55,7 @@ import org.spout.api.util.LogicUtil;
 import org.spout.api.util.StringUtil;
 
 public class SpoutBlock implements Block {
+
 	private final int x, y, z;
 	private final WeakReference<World> world;
 	private final AtomicReference<WeakReference<Chunk>> chunk;

@@ -35,6 +35,7 @@ import org.spout.engine.protocol.builtin.message.CuboidBlockUpdateMessage;
  *
  */
 public class CuboidBlockUpdateCodec extends MessageCodec<CuboidBlockUpdateMessage> {
+
 	public CuboidBlockUpdateCodec() {
 		super(CuboidBlockUpdateMessage.class, 0x0A);
 	}
@@ -80,11 +81,11 @@ public class CuboidBlockUpdateCodec extends MessageCodec<CuboidBlockUpdateMessag
 		}
 		byte[] blockLight = new byte[lightArraySize];
 		byte[] skyLight = new byte[lightArraySize];
-		for (int i = 0; i < blockTypes.length; ++i) {
+		for (int i = 0 ; i < blockTypes.length ; ++i) {
 			blockTypes[i] = buffer.readShort();
 		}
 
-		for (int i = 0; i < blockData.length; ++i) {
+		for (int i = 0 ; i < blockData.length ; ++i) {
 			blockData[i] = buffer.readShort();
 		}
 

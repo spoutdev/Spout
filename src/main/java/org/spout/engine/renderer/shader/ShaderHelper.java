@@ -49,7 +49,6 @@ public class ShaderHelper {
 		return shader;
 	}
 
-
 	public static String readShaderSource(String file) throws FileNotFoundException {
 
 		FileInputStream in = new FileInputStream(file);
@@ -63,5 +62,4 @@ public class ShaderHelper {
 
 		return src.toString();
 	}
-
 }

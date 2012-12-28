@@ -33,13 +33,14 @@ import java.util.Random;
 import org.junit.Test;
 
 public class PackedCoordsTest {
+
 	private final int LENGTH = 1000;
 
 	@Test
 	public void test() {
 		Random r = new Random();
 
-		for (int i = 0; i < LENGTH; i++) {
+		for (int i = 0 ; i < LENGTH ; i++) {
 			int rx = r.nextInt() & 0xFFFFFF00;
 			int ry = r.nextInt() & 0xFFFFFF00;
 			int rz = r.nextInt() & 0xFFFFFF00;
@@ -70,8 +71,8 @@ public class PackedCoordsTest {
 
 	private void testPacked(String name, int r, int o, int packed, int packedGet) {
 		boolean match = packedGet == r + o;
-		String failure = name + " decoded correctly, " + Integer.toHexString(r) + " + " + Integer.toHexString(o) +
-				" != " + Integer.toHexString(packedGet) + ", packed = " + Integer.toHexString(packed);
+		String failure = name + " decoded correctly, " + Integer.toHexString(r) + " + " + Integer.toHexString(o)
+						 + " != " + Integer.toHexString(packedGet) + ", packed = " + Integer.toHexString(packed);
 		assertTrue(failure, match);
 	}
 }

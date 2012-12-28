@@ -31,8 +31,8 @@ import org.spout.api.protocol.Session;
 import org.spout.engine.protocol.builtin.message.ClickMessage;
 
 public class ClickMessageHandler extends MessageHandler<ClickMessage> {
+
 	@Override
 	public void handleServer(Session session, ClickMessage message) {
-
 	}
 }

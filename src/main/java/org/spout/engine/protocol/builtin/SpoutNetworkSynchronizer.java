@@ -48,6 +48,7 @@ import org.spout.engine.protocol.builtin.message.EntityPositionMessage;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 
 public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
+
 	public SpoutNetworkSynchronizer(Session session) {
 		super(session, 3);
 	}

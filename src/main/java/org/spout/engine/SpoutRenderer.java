@@ -67,46 +67,39 @@ import org.spout.engine.resources.ClientFont;
 import org.spout.engine.util.MacOSXUtils;
 
 public class SpoutRenderer {
-	
-	
+
 	private SpriteBatch gui;
 	private ScreenStack screenStack;
 	private ClientFont font;
 	private boolean showDebugInfos = true;
-	private ArrayList<RenderMaterial> postProcessMaterials = new ArrayList<RenderMaterial>();	
+	private ArrayList<RenderMaterial> postProcessMaterials = new ArrayList<RenderMaterial>();
 	private boolean ccoverride = false;
-	private Vector2 resolution = new Vector2(1024, 768);	
+	private Vector2 resolution = new Vector2(1024, 768);
 	private float aspectRatio = resolution.getX() / resolution.getY();
 	private WorldRenderer worldRenderer;
-	
 	private boolean wireframe = false;
-	
-	
 
-	
-	
-	public SpoutRenderer(Vector2 resolution, boolean ccoverride)
-	{
+	public SpoutRenderer(Vector2 resolution, boolean ccoverride) {
 		this.resolution = resolution;
 		aspectRatio = resolution.getX() / resolution.getY();
-		
-		
+
+
 		// Building the screenStack
 		FullScreen mainScreen = new FullScreen();
 		mainScreen.setTakesInput(false);
 		screenStack = new ScreenStack(mainScreen);
 
-		
+
 		this.ccoverride = ccoverride;
-		
+
 	}
-	
+
 	public void initRenderer(Canvas parent) {
 		createWindow(parent);
 
-		
-		SpoutClient client = (SpoutClient)Spout.getEngine();
-		
+
+		SpoutClient client = (SpoutClient) Spout.getEngine();
+
 		client.getLogger().info("SpoutClient Information");
 		client.getLogger().info("Operating System: " + System.getProperty("os.name"));
 		client.getLogger().info("Renderer Mode: " + client.getRenderMode().toString());
@@ -117,7 +110,7 @@ public class SpoutRenderer {
 		client.getLogger().info("Max Textures: " + GL11.glGetString(GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS));
 		String extensions = "Extensions Supported: ";
 		if (client.getRenderMode() == RenderMode.GL30) {
-			for (int i = 0; i < GL11.glGetInteger(GL30.GL_NUM_EXTENSIONS); i++) {
+			for (int i = 0 ; i < GL11.glGetInteger(GL30.GL_NUM_EXTENSIONS) ; i++) {
 				extensions += GL30.glGetStringi(GL11.GL_EXTENSIONS, i) + " ";
 			}
 		} else {
@@ -144,23 +137,22 @@ public class SpoutRenderer {
 		gui = SpriteBatch.createSpriteBatch(client.getRenderMode(), resolution.getX(), resolution.getY());
 
 		font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
-		
-		
-		
-		
+
+
+
+
 	}
 
 	public void updateRender(long limit) {
 		worldRenderer.update(limit);
 	}
-
 	Matrix ident = MathHelper.createIdentity();
-	
-	public void render(float dt) {
-		SpoutClient client = (SpoutClient)Spout.getEngine();
-		
 
-	
+	public void render(float dt) {
+		SpoutClient client = (SpoutClient) Spout.getEngine();
+
+
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		Model skydome = (Model) client.getActiveWorld().getDataMap().get("Skydome");
 		if (skydome != null) {
@@ -238,19 +230,17 @@ public class SpoutRenderer {
 		return screenStack;
 	}
 
-	
 	public Vector2 getResolution() {
 		return resolution;
 	}
 
-	
 	public float getAspectRatio() {
 		return aspectRatio;
 	}
 
 	private void createWindow(Canvas parent) {
-		SpoutClient client = (SpoutClient)Spout.getEngine();
-		
+		SpoutClient client = (SpoutClient) Spout.getEngine();
+
 		try {
 			Display.setDisplayMode(new DisplayMode((int) resolution.getX(), (int) resolution.getY()));
 			Display.setParent(parent);
@@ -275,7 +265,7 @@ public class SpoutRenderer {
 					Display.create(new PixelFormat(8, 24, 0), ca);
 				}
 			}
-			
+
 			Display.setTitle("Spout Client");
 		} catch (LWJGLException e) {
 			e.printStackTrace();
@@ -284,8 +274,8 @@ public class SpoutRenderer {
 
 	private void createMacWindow() throws LWJGLException {
 
-		SpoutClient client = (SpoutClient)Spout.getEngine();
-		
+		SpoutClient client = (SpoutClient) Spout.getEngine();
+
 		if (client.getRenderMode() == RenderMode.GL30) {
 			if (MacOSXUtils.getOSXVersion() >= 7) {
 				ContextAttribs ca = new ContextAttribs(3, 2).withProfileCore(true);
@@ -298,8 +288,6 @@ public class SpoutRenderer {
 		}
 	}
 
-
-	
 	public void toggleWireframe() {
 		if (wireframe) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
@@ -309,5 +297,4 @@ public class SpoutRenderer {
 			wireframe = true;
 		}
 	}
-
 }

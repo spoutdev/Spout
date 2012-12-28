@@ -44,14 +44,11 @@ import org.spout.engine.renderer.BatchVertexRenderer;
 public class ChunkMeshBatchAggregator extends Cube {
 
 	private int count = 0;
-
 	private BatchVertexRenderer renderer = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
-
 	public final static Matrix model = MathHelper.createIdentity();
 	private final RenderMaterial material;
 	private boolean generated = false;
 	private boolean closed = false;
-
 	private BufferContainer bufferContainer;
 
 	public ChunkMeshBatchAggregator(World world, int x, int y, int z, RenderMaterial material) {
@@ -83,12 +80,12 @@ public class ChunkMeshBatchAggregator extends Cube {
 			throw new IllegalStateException("Already closed");
 		}
 
-		if(generated){
+		if (generated) {
 			renderer.render(material);
 		}
 	}
 
-    @Override
+	@Override
 	public void finalize() {
 		if (closed) {
 			throw new IllegalStateException("Already closed");
@@ -117,7 +114,8 @@ public class ChunkMeshBatchAggregator extends Cube {
 	}
 
 	/**
-	 * We can have only one instance of ChunkMeshBatchAggregator at one position and material
+	 * We can have only one instance of ChunkMeshBatchAggregator at one
+	 * position and material
 	 * So we need to override the equals of extended class cuboid
 	 */
 	@Override

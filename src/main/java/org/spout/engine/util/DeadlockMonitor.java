@@ -33,12 +33,12 @@ import java.lang.management.ThreadMXBean;
 import org.spout.api.Spout;
 
 public class DeadlockMonitor extends Thread {
-	
+
 	public DeadlockMonitor() {
 		super("Deadlock Monitor");
 		setDaemon(true);
 	}
-	
+
 	@Override
 	public void run() {
 

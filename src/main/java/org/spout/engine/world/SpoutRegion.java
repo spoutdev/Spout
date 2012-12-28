@@ -138,11 +138,12 @@ import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 
 public class SpoutRegion extends Region {
+
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
 	// Can't extend AsyncManager and Region
 	private final SpoutRegionManager manager;
 	private ConcurrentLinkedQueue<TripleInt> saveMarked = new ConcurrentLinkedQueue<TripleInt>();
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	public AtomicReference<SpoutChunk>[][][] chunks = new AtomicReference[CHUNKS.SIZE][CHUNKS.SIZE][CHUNKS.SIZE];
 	/**
 	 * The maximum number of chunks that will be processed for population each
@@ -150,7 +151,8 @@ public class SpoutRegion extends Region {
 	 */
 	private static final int POPULATE_PER_TICK = 20;
 	/**
-	 * How many ticks to delay sending the entire chunk after lighting calculation has completed
+	 * How many ticks to delay sending the entire chunk after lighting
+	 * calculation has completed
 	 */
 	public static final int LIGHT_SEND_TICK_DELAY = 10;
 	/**
@@ -173,7 +175,8 @@ public class SpoutRegion extends Region {
 	protected Queue<Chunk> unloadQueue = new ConcurrentLinkedQueue<Chunk>();
 	public static final byte POPULATE_CHUNK_MARGIN = 1;
 	/**
-	 * The sequence number for executing inter-region physics and dynamic updates
+	 * The sequence number for executing inter-region physics and dynamic
+	 * updates
 	 */
 	private final int updateSequence;
 	/**
@@ -199,12 +202,9 @@ public class SpoutRegion extends Region {
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 	private boolean renderQueueEnabled = false;
-
 	private final TByteTripleObjectHashMap<SpoutChunkSnapshotModel> renderChunkQueued = new TByteTripleObjectHashMap<SpoutChunkSnapshotModel>();
 	private final ConcurrentSkipListSet<SpoutChunkSnapshotModel> renderChunkQueue = new ConcurrentSkipListSet<SpoutChunkSnapshotModel>();
-
 	private final AtomicReference<SpoutRegion>[][][] neighbours;
-
 	//Physics
 	private final DiscreteDynamicsWorld simulation;
 	private final CollisionDispatcher dispatcher;
@@ -212,7 +212,7 @@ public class SpoutRegion extends Region {
 	private final CollisionConfiguration configuration;
 	private final SequentialImpulseConstraintSolver solver;
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	public SpoutRegion(SpoutWorld world, float x, float y, float z, RegionSource source) {
 		super(world, x * Region.BLOCKS.SIZE, y * Region.BLOCKS.SIZE, z * Region.BLOCKS.SIZE);
 		this.source = source;
@@ -233,7 +233,7 @@ public class SpoutRegion extends Region {
 
 		if (Spout.getPlatform() == Platform.CLIENT) {
 			meshThread = new ArrayList<Thread>();
-			for(int i = 0; i < 2; i++ ){//TODO : Make a option to choice the number of thread to make mesh
+			for (int i = 0 ; i < 2 ; i++) {//TODO : Make a option to choice the number of thread to make mesh
 				meshThread.add(new MeshGeneratorThread());
 			}
 		} else {
@@ -242,16 +242,16 @@ public class SpoutRegion extends Region {
 
 		dynamicBlockTree = new DynamicBlockUpdateTree(this);
 
-		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
-			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
-				for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+		for (int dx = 0 ; dx < CHUNKS.SIZE ; dx++) {
+			for (int dy = 0 ; dy < CHUNKS.SIZE ; dy++) {
+				for (int dz = 0 ; dz < CHUNKS.SIZE ; dz++) {
 					chunks[dx][dy][dz] = new AtomicReference<SpoutChunk>(null);
 				}
 			}
 		}
 
-		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
-			for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+		for (int dx = 0 ; dx < CHUNKS.SIZE ; dx++) {
+			for (int dz = 0 ; dz < CHUNKS.SIZE ; dz++) {
 				generatedColumns[dx][dz] = new AtomicBoolean(false);
 			}
 
@@ -262,9 +262,9 @@ public class SpoutRegion extends Region {
 		final int rx = getX();
 		final int ry = getY();
 		final int rz = getZ();
-		for (int dx = 0; dx < 3; dx++) {
-			for (int dy = 0; dy < 3; dy++) {
-				for (int dz = 0; dz < 3; dz++) {
+		for (int dx = 0 ; dx < 3 ; dx++) {
+			for (int dy = 0 ; dy < 3 ; dy++) {
+				for (int dz = 0 ; dz < 3 ; dz++) {
 					neighbours[dx][dy][dz] = new AtomicReference<SpoutRegion>(world.getRegion(rx + dx - 1, ry + dy - 1, rz + dz - 1, LoadOption.NO_LOAD));
 				}
 			}
@@ -325,7 +325,7 @@ public class SpoutRegion extends Region {
 		if (object == null || object.getCollisionShape() == null) {
 			return;
 		}
-		synchronized(simulation) {
+		synchronized (simulation) {
 			if (object instanceof RigidBody) {
 				simulation.addRigidBody((RigidBody) object);
 			} else {
@@ -339,7 +339,7 @@ public class SpoutRegion extends Region {
 		if (object == null || object.getCollisionShape() == null) {
 			return;
 		}
-		synchronized(simulation) {
+		synchronized (simulation) {
 			if (object instanceof RigidBody) {
 				simulation.removeRigidBody((RigidBody) object);
 			} else {
@@ -350,7 +350,7 @@ public class SpoutRegion extends Region {
 
 	public void startMeshGeneratorThread() {
 		if (meshThread != null) {
-			for(Thread thread : meshThread){
+			for (Thread thread : meshThread) {
 				thread.start();
 			}
 		}
@@ -358,7 +358,7 @@ public class SpoutRegion extends Region {
 
 	public void stopMeshGeneratorThread() {
 		if (meshThread != null) {
-			for(Thread thread : meshThread){
+			for (Thread thread : meshThread) {
 				thread.interrupt();
 			}
 		}
@@ -413,7 +413,7 @@ public class SpoutRegion extends Region {
 				return generatedChunk;
 			} else {
 				Spout.getLogger().severe("Chunk failed to generate!  Column marked as generated: before " + oldGenerated + ", after " + generatedColumns[x][z].get());
-				for (int yy = 0; yy < CHUNKS.SIZE; yy++) {
+				for (int yy = 0 ; yy < CHUNKS.SIZE ; yy++) {
 					Spout.getLogger().info(x + ", " + (y + getChunkY()) + ", " + z + " : " + chunks[x][yy][z]);
 					Spout.getLogger().info("File exists: " + this.inputStreamExists(x, y, z));
 				}
@@ -452,7 +452,7 @@ public class SpoutRegion extends Region {
 		if (generated.get()) {
 			return;
 		}
-		synchronized(generated) {
+		synchronized (generated) {
 			if (generated.get()) {
 				return;
 			}
@@ -465,7 +465,7 @@ public class SpoutRegion extends Region {
 			getWorld().getGenerator().generate(column, cx, cy, cz, world);
 
 			final int endY = cy + CHUNKS.SIZE;
-			for (int yy = 0; cy < endY; cy++) {
+			for (int yy = 0 ; cy < endY ; cy++) {
 				final CuboidBlockMaterialBuffer chunk = new CuboidBlockMaterialBuffer(cx << Chunk.BLOCKS.BITS, cy << Chunk.BLOCKS.BITS, cz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
 				chunk.setSource(column);
 				chunk.copyElement(0, yy * Chunk.BLOCKS.VOLUME, Chunk.BLOCKS.VOLUME);
@@ -488,7 +488,7 @@ public class SpoutRegion extends Region {
 		while (true) {
 			if (chunkReference.compareAndSet(null, newChunk)) {
 				newChunk.notifyColumn();
-				if (Spout.getEngine().getPlatform() == Platform.CLIENT) { 
+				if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
 					newChunk.setNeighbourRenderDirty(true);
 				}
 				numberActiveChunks.incrementAndGet();
@@ -524,11 +524,11 @@ public class SpoutRegion extends Region {
 		}
 	}
 
-	private void addToRenderQueue(SpoutChunkSnapshotModel model){
+	private void addToRenderQueue(SpoutChunkSnapshotModel model) {
 		SpoutChunkSnapshotModel previous;
 		synchronized (renderChunkQueued) {
 			previous = renderChunkQueued.put((byte) model.getX(), (byte) model.getY(), (byte) model.getZ(), model);
-			if(previous != null){
+			if (previous != null) {
 				boolean removed = renderChunkQueue.remove(previous);
 				model.addDirty(previous, removed);
 				if (model.isUnload() && model.isFirst()) {
@@ -570,7 +570,9 @@ public class SpoutRegion extends Region {
 
 	/**
 	 * Removes a chunk from the region and indicates if the region is empty
+	 *
 	 * @param c the chunk to remove
+	 *
 	 * @return true if the region is now empty
 	 */
 	public boolean removeChunk(Chunk c) {
@@ -594,7 +596,7 @@ public class SpoutRegion extends Region {
 
 			currentChunk.setUnloaded();
 			if (renderQueueEnabled && currentChunk.isInViewDistance()) {
-				addToRenderQueue(new SpoutChunkSnapshotModel(getWorld(),currentChunk.getX(), currentChunk.getY(), currentChunk.getZ(), true, System.currentTimeMillis()));
+				addToRenderQueue(new SpoutChunkSnapshotModel(getWorld(), currentChunk.getX(), currentChunk.getY(), currentChunk.getZ(), true, System.currentTimeMillis()));
 			}
 
 			int cx = c.getX() & CHUNKS.MASK;
@@ -634,9 +636,9 @@ public class SpoutRegion extends Region {
 
 	public boolean isEmpty() {
 		TickStage.checkStage(TickStage.SNAPSHOT);
-		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
-			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
-				for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+		for (int dx = 0 ; dx < CHUNKS.SIZE ; dx++) {
+			for (int dy = 0 ; dy < CHUNKS.SIZE ; dy++) {
+				for (int dz = 0 ; dz < CHUNKS.SIZE ; dz++) {
 					if (chunks[dx][dy][dz].get() != null) {
 						return false;
 					}
@@ -668,9 +670,9 @@ public class SpoutRegion extends Region {
 	@Override
 	@DelayedWrite
 	public void save() {
-		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
-			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
-				for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+		for (int dx = 0 ; dx < CHUNKS.SIZE ; dx++) {
+			for (int dy = 0 ; dy < CHUNKS.SIZE ; dy++) {
+				for (int dz = 0 ; dz < CHUNKS.SIZE ; dz++) {
 					SpoutChunk chunk = chunks[dx][dy][dz].get();
 					if (chunk != null) {
 						chunk.saveNoMark();
@@ -683,9 +685,9 @@ public class SpoutRegion extends Region {
 
 	@Override
 	public void unload(boolean save) {
-		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
-			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
-				for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+		for (int dx = 0 ; dx < CHUNKS.SIZE ; dx++) {
+			for (int dy = 0 ; dy < CHUNKS.SIZE ; dy++) {
+				for (int dz = 0 ; dz < CHUNKS.SIZE ; dz++) {
 					SpoutChunk chunk = chunks[dx][dy][dz].get();
 					if (chunk != null) {
 						chunk.unloadNoMark(save);
@@ -732,9 +734,9 @@ public class SpoutRegion extends Region {
 		TripleInt chunkCoords;
 		while ((chunkCoords = saveMarked.poll()) != null) {
 			if (chunkCoords == TripleInt.NULL) {
-				for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
-					for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
-						for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+				for (int dx = 0 ; dx < CHUNKS.SIZE ; dx++) {
+					for (int dy = 0 ; dy < CHUNKS.SIZE ; dy++) {
+						for (int dz = 0 ; dz < CHUNKS.SIZE ; dz++) {
 							if (processChunkSaveUnload(dx, dy, dz)) {
 								empty = true;
 							}
@@ -824,9 +826,9 @@ public class SpoutRegion extends Region {
 	}
 
 	private void updateAutosave() {
-		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
-			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
-				for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+		for (int dx = 0 ; dx < CHUNKS.SIZE ; dx++) {
+			for (int dy = 0 ; dy < CHUNKS.SIZE ; dy++) {
+				for (int dz = 0 ; dz < CHUNKS.SIZE ; dz++) {
 					SpoutChunk chunk = chunks[dx][dy][dz].get();
 					if (chunk != null && chunk.isLoaded()) {
 						if (chunk.getAutosaveTicks() > 1) {
@@ -842,9 +844,9 @@ public class SpoutRegion extends Region {
 	}
 
 	private void updateBlockComponents(float dt) {
-		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
-			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
-				for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+		for (int dx = 0 ; dx < CHUNKS.SIZE ; dx++) {
+			for (int dy = 0 ; dy < CHUNKS.SIZE ; dy++) {
+				for (int dz = 0 ; dz < CHUNKS.SIZE ; dz++) {
 					SpoutChunk chunk = chunks[dx][dy][dz].get();
 					if (chunk != null && chunk.isLoaded()) {
 						chunk.tickBlockComponents(dt);
@@ -913,7 +915,7 @@ public class SpoutRegion extends Region {
 	}
 
 	private void updatePopulation() {
-		for (int i = 0; i < POPULATE_PER_TICK; i++) {
+		for (int i = 0 ; i < POPULATE_PER_TICK ; i++) {
 			SpoutChunk toPopulate = populationPriorityQueue.poll();
 			if (toPopulate == null) {
 				toPopulate = populationQueue.poll();
@@ -958,22 +960,23 @@ public class SpoutRegion extends Region {
 			}
 		}
 	}
-
 	private static final Object logLock = new Object();
 
 	/**
-	 * Updates CollisionObjects in this region and adds/removes them from the simulation. 
+	 * Updates CollisionObjects in this region and adds/removes them from the
+	 * simulation.
 	 * Steps simulation forward and finally alerts the API in components.
+	 *
 	 * @param dt
 	 */
 	private void updateDynamics(float dt) {
 		try {
-			synchronized(simulation) {
+			synchronized (simulation) {
 				//Simulate physics
 				simulation.stepSimulation(dt, 10);
 				final Dispatcher dispatcher = simulation.getDispatcher();
 				int manifolds = dispatcher.getNumManifolds();
-				for (int i = 0; i < manifolds; i++) {
+				for (int i = 0 ; i < manifolds ; i++) {
 					PersistentManifold contact = dispatcher.getManifoldByIndexInternal(i);
 					Object colliderRawA = contact.getBody0();
 					Object colliderRawB = contact.getBody1();
@@ -985,7 +988,7 @@ public class SpoutRegion extends Region {
 					int contacts = contact.getNumContacts();
 
 					//Loop through the contact points
-					for (int j = 0; j < contacts; j++) {
+					for (int j = 0 ; j < contacts ; j++) {
 						//Grab a contact point
 						final ManifoldPoint bulletPoint = contact.getContactPoint(j);
 						//Contact point is no longer valid as negative values = still within contact so lets not resolve that to the API
@@ -1022,8 +1025,8 @@ public class SpoutRegion extends Region {
 										((EntityComponent) component).onCollided(contactPointB, contactPointA, (Entity) holderA);
 									}
 								}
-							//HolderA: Entity
-							//HolderB: Block
+								//HolderA: Entity
+								//HolderB: Block
 							} else if (holderB instanceof Block) {
 								//Call onCollide for colliderA's EntityComponents
 								for (Component component : ((Entity) holderA).values()) {
@@ -1033,8 +1036,8 @@ public class SpoutRegion extends Region {
 								}
 								//TODO onCollide in materials?
 							}
-						//HolderA: Block
-						//HolderB: Entity
+							//HolderA: Block
+							//HolderB: Entity
 						} else if (holderA instanceof Block) {
 							if (holderB instanceof Entity) {
 								//Entity was removed before the contact point could be resolved, break
@@ -1053,7 +1056,7 @@ public class SpoutRegion extends Region {
 				}
 			}
 		} catch (Exception e) {
-			synchronized(logLock) {
+			synchronized (logLock) {
 				Spout.getLogger().log(Level.SEVERE, "Exception while executing physics in region " + getBase().toBlockString(), e);
 			}
 		}
@@ -1062,34 +1065,33 @@ public class SpoutRegion extends Region {
 	public void startTickRun(int stage, long delta) {
 		final float dt = delta / 1000F;
 		switch (stage) {
-		case 0: {
-			taskManager.heartbeat(delta);
-			updateAutosave();
-			updateBlockComponents(dt);
-			updateEntities(dt);
-			updateLighting();
-			updatePopulation();
-			unloadChunks();
-			break;
-		}
-		case 1: {
-			updateDynamics(dt);
-			break;
-		}
-		default: {
-			throw new IllegalStateException("Number of states exceeded limit for SpoutRegion");
-		}
+			case 0: {
+				taskManager.heartbeat(delta);
+				updateAutosave();
+				updateBlockComponents(dt);
+				updateEntities(dt);
+				updateLighting();
+				updatePopulation();
+				unloadChunks();
+				break;
+			}
+			case 1: {
+				updateDynamics(dt);
+				break;
+			}
+			default: {
+				throw new IllegalStateException("Number of states exceeded limit for SpoutRegion");
+			}
 		}
 	}
 
 	public void haltRun() {
 	}
-
 	private int reapX = 0, reapY = 0, reapZ = 0;
 
 	public void finalizeRun() {
 		long worldAge = getWorld().getAge();
-		for (int reap = 0; reap < SpoutConfiguration.REAP_CHUNKS_PER_TICK.getInt(); reap++) {
+		for (int reap = 0 ; reap < SpoutConfiguration.REAP_CHUNKS_PER_TICK.getInt() ; reap++) {
 			if (++reapX >= CHUNKS.SIZE) {
 				reapX = 0;
 				if (++reapY >= CHUNKS.SIZE) {
@@ -1126,7 +1128,7 @@ public class SpoutRegion extends Region {
 		if (player.isOnline()) {
 			NetworkSynchronizer synchronizer = player.getNetworkSynchronizer();
 			if (!chunk.isDirtyOverflow() && !chunk.isLightDirty()) {
-				for (int i = 0; true; i++) {
+				for (int i = 0 ; true ; i++) {
 					Vector3 block = chunk.getDirtyBlock(i);
 					if (block == null) {
 						break;
@@ -1155,7 +1157,7 @@ public class SpoutRegion extends Region {
 		} else {
 			ArrayList<Vector3> lst = new ArrayList<Vector3>();
 			boolean done = false;
-			for (int i = 0; !done; i++) {
+			for (int i = 0 ; !done ; i++) {
 				Vector3 v = chunk.getDirtyBlock(i);
 				if (v != null) {
 					lst.add(v);
@@ -1167,13 +1169,13 @@ public class SpoutRegion extends Region {
 		}
 		Spout.getEventManager().callDelayedEvent(evt);
 	}
-
 	private WorldRenderer renderer = null;
 	private static final int RENDER_QUEUE_LIMIT = 500;
 
-	private WorldRenderer getRenderer(){
-		if(renderer == null)
+	private WorldRenderer getRenderer() {
+		if (renderer == null) {
 			renderer = ((SpoutClient) Spout.getEngine()).getRenderer().getWorldRenderer();
+		}
 		return renderer;
 	}
 
@@ -1181,111 +1183,108 @@ public class SpoutRegion extends Region {
 		entityManager.preSnapshotRun();
 
 		Point playerPosition = null;
-		int renderLimit = Spout.getPlatform() == Platform.CLIENT && getRenderer() != null ?
-				RENDER_QUEUE_LIMIT - (getRenderer().getBatchWaiting() + renderChunkQueue.size()) :
-					0;
+		int renderLimit = Spout.getPlatform() == Platform.CLIENT && getRenderer() != null
+						  ? RENDER_QUEUE_LIMIT - (getRenderer().getBatchWaiting() + renderChunkQueue.size())
+						  : 0;
 
-				if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-					SpoutWorld world = this.getWorld();
+		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
+			SpoutWorld world = this.getWorld();
 
-					boolean worldRenderQueueEnabled = world.isRenderQueueEnabled();
-					boolean firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
-					boolean unloadRenderQueue = !worldRenderQueueEnabled && renderQueueEnabled;
+			boolean worldRenderQueueEnabled = world.isRenderQueueEnabled();
+			boolean firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
+			boolean unloadRenderQueue = !worldRenderQueueEnabled && renderQueueEnabled;
 
-					SpoutPlayer player = ((SpoutClient) Spout.getEngine()).getActivePlayer();
-					if (player == null) {
-						playerPosition = null;
-					} else {
-						playerPosition = player.getTransform().getPosition();
-					}
+			SpoutPlayer player = ((SpoutClient) Spout.getEngine()).getActivePlayer();
+			if (player == null) {
+				playerPosition = null;
+			} else {
+				playerPosition = player.getTransform().getPosition();
+			}
 
-					if (firstRenderQueueTick && player != null) {
-						for( SpoutChunk c : player.getObservingChunks()){
-							c.setRenderDirty(true);
-						}
-						renderQueueEnabled = worldRenderQueueEnabled;
-					}
-
-					if(unloadRenderQueue){
-						for(SpoutChunk c : rended.toArray(new SpoutChunk[rended.size()])){
-							addUpdateToRenderQueue(playerPosition, c, false, false, false);
-
-						}
-					}
-				}
-				
-				SpoutChunk spoutChunk;
-				while ((spoutChunk = lightTransferDirtyChunks.poll()) != null) {
-					spoutChunk.transferNewLightOperations();
-				}
-
-				List<SpoutChunk> renderLater = new LinkedList<SpoutChunk>();
-
-				while ((spoutChunk = dirtyChunks.poll()) != null) {
-
-					spoutChunk.setNotDirtyQueued();
-					if (!spoutChunk.isLoaded()) {
-						continue;
-					}
-
-					if (renderQueueEnabled /*&& spoutChunk.isRenderDirty()*/) {
-						if(spoutChunk.isInViewDistance() || (spoutChunk.isRendered() && spoutChunk.leftViewDistance())){
-							if(renderLimit > 0 ){
-								addUpdateToRenderQueue(playerPosition, spoutChunk, spoutChunk.isBlockDirty(), spoutChunk.isLightDirty(), false);
-								renderLimit--;
-							}else{
-								renderLater.add(spoutChunk);
-							}
-						}else{
-							spoutChunk.setRenderDirty(false);
-							spoutChunk.viewDistanceCopy();
-						}
-					}
-
-					if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
-						for (Player entity : spoutChunk.getObservingPlayers()) {
-							syncChunkToPlayer(spoutChunk, entity);
-						}
-						processChunkUpdatedEvent(spoutChunk);
-
-						spoutChunk.resetDirtyArrays();
-						spoutChunk.setLightDirty(false);
-					}
-				}
-
-				for(SpoutChunk c : renderLater){
+			if (firstRenderQueueTick && player != null) {
+				for (SpoutChunk c : player.getObservingChunks()) {
 					c.setRenderDirty(true);
 				}
+				renderQueueEnabled = worldRenderQueueEnabled;
+			}
 
-				SpoutChunkSnapshotFuture snapshotFuture;
-				while ((snapshotFuture = snapshotQueue.poll()) != null) {
-					snapshotFuture.run();
+			if (unloadRenderQueue) {
+				for (SpoutChunk c : rended.toArray(new SpoutChunk[rended.size()])) {
+					addUpdateToRenderQueue(playerPosition, c, false, false, false);
+
 				}
+			}
+		}
 
-				renderSnapshotCacheBoth.clear();
-				renderSnapshotCacheLight.clear();
-				renderSnapshotCacheBlock.clear();
+		SpoutChunk spoutChunk;
+		while ((spoutChunk = lightTransferDirtyChunks.poll()) != null) {
+			spoutChunk.transferNewLightOperations();
+		}
 
-				for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
-					for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
-						for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
-							SpoutChunk chunk = chunks[dx][dy][dz].get();
-							if (chunk != null) {
-								chunk.updateExpiredObservers();
-							}
-						}
+		List<SpoutChunk> renderLater = new LinkedList<SpoutChunk>();
+
+		while ((spoutChunk = dirtyChunks.poll()) != null) {
+
+			spoutChunk.setNotDirtyQueued();
+			if (!spoutChunk.isLoaded()) {
+				continue;
+			}
+
+			if (renderQueueEnabled /*&& spoutChunk.isRenderDirty()*/) {
+				if (spoutChunk.isInViewDistance() || (spoutChunk.isRendered() && spoutChunk.leftViewDistance())) {
+					if (renderLimit > 0) {
+						addUpdateToRenderQueue(playerPosition, spoutChunk, spoutChunk.isBlockDirty(), spoutChunk.isLightDirty(), false);
+						renderLimit--;
+					} else {
+						renderLater.add(spoutChunk);
+					}
+				} else {
+					spoutChunk.setRenderDirty(false);
+					spoutChunk.viewDistanceCopy();
+				}
+			}
+
+			if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
+				for (Player entity : spoutChunk.getObservingPlayers()) {
+					syncChunkToPlayer(spoutChunk, entity);
+				}
+				processChunkUpdatedEvent(spoutChunk);
+
+				spoutChunk.resetDirtyArrays();
+				spoutChunk.setLightDirty(false);
+			}
+		}
+
+		for (SpoutChunk c : renderLater) {
+			c.setRenderDirty(true);
+		}
+
+		SpoutChunkSnapshotFuture snapshotFuture;
+		while ((snapshotFuture = snapshotQueue.poll()) != null) {
+			snapshotFuture.run();
+		}
+
+		renderSnapshotCacheBoth.clear();
+		renderSnapshotCacheLight.clear();
+		renderSnapshotCacheBlock.clear();
+
+		for (int dx = 0 ; dx < CHUNKS.SIZE ; dx++) {
+			for (int dy = 0 ; dy < CHUNKS.SIZE ; dy++) {
+				for (int dz = 0 ; dz < CHUNKS.SIZE ; dz++) {
+					SpoutChunk chunk = chunks[dx][dy][dz].get();
+					if (chunk != null) {
+						chunk.updateExpiredObservers();
 					}
 				}
+			}
+		}
 
-				entityManager.syncEntities();
+		entityManager.syncEntities();
 
 	}
-
-
 	/*public ConcurrentSkipListSet<SpoutChunkSnapshotModel> getRenderChunkQueue() {
-		return this.renderChunkQueue;
-	}*/
-
+	 return this.renderChunkQueue;
+	 }*/
 	private TInt21TripleObjectHashMap<SpoutChunkSnapshot> renderSnapshotCacheBoth = new TInt21TripleObjectHashMap<SpoutChunkSnapshot>();
 	private TInt21TripleObjectHashMap<SpoutChunkSnapshot> renderSnapshotCacheLight = new TInt21TripleObjectHashMap<SpoutChunkSnapshot>();
 	private TInt21TripleObjectHashMap<SpoutChunkSnapshot> renderSnapshotCacheBlock = new TInt21TripleObjectHashMap<SpoutChunkSnapshot>();
@@ -1306,9 +1305,9 @@ public class SpoutRegion extends Region {
 			int oy = by - getChunkY();
 			int oz = bz - getChunkZ();
 			ChunkSnapshot[][][] chunks = new ChunkSnapshot[3][3][3];
-			for (int x = 0; x < 3; x++) {
-				for (int y = 0; y < 3; y++) {
-					for (int z = 0; z < 3; z++) {
+			for (int x = 0 ; x < 3 ; x++) {
+				for (int y = 0 ; y < 3 ; y++) {
+					for (int z = 0 ; z < 3 ; z++) {
 						//if (x == 1 || y == 1 || z == 1) { //Need for light
 						ChunkSnapshot snapshot = getRenderSnapshot(c, ox + x, oy + y, oz + z);
 						if (snapshot == null) {
@@ -1328,16 +1327,16 @@ public class SpoutRegion extends Region {
 			} else {
 				updatedRenderMaterials = new HashSet<RenderMaterial>();
 				int dirtyBlocks = c.getDirtyBlocks();
-				for (int i = 0; i < dirtyBlocks; i++) {
+				for (int i = 0 ; i < dirtyBlocks ; i++) {
 					addMaterialToSet(updatedRenderMaterials, c.getDirtyOldState(i));
 					addMaterialToSet(updatedRenderMaterials, c.getDirtyNewState(i));
 				}
 				int size = BLOCKS.SIZE;
-				for (int i = 0; i < dirtyBlocks; i++) {
+				for (int i = 0 ; i < dirtyBlocks ; i++) {
 					Vector3 blockPos = c.getDirtyBlock(i);
 					BlockMaterial material = c.getBlockMaterial(blockPos.getFloorX(), blockPos.getFloorY(), blockPos.getFloorZ());
 					ByteBitSet occlusion = material.getOcclusion(material.getData());
-					for(BlockFace face : BlockFace.values()){ 
+					for (BlockFace face : BlockFace.values()) {
 						if (face.equals(BlockFace.THIS)) {
 							continue;
 						}
@@ -1359,25 +1358,24 @@ public class SpoutRegion extends Region {
 			c.setRendered(true);
 			addRendedChunk(c);
 			c.setRenderDirty(false);
-			addToRenderQueue(new SpoutChunkSnapshotModel(getWorld(),bx + 1, by + 1, bz + 1, chunks, distance, updatedRenderMaterials, first, System.currentTimeMillis()));
+			addToRenderQueue(new SpoutChunkSnapshotModel(getWorld(), bx + 1, by + 1, bz + 1, chunks, distance, updatedRenderMaterials, first, System.currentTimeMillis()));
 		} else {
 			if (c.leftViewDistance()) {
 				c.setRendered(false);
 				removeRendedChunk(c);
 				c.setRenderDirty(false);
-				addToRenderQueue(new SpoutChunkSnapshotModel(getWorld(),bx + 1, by + 1, bz + 1, true, System.currentTimeMillis()));
+				addToRenderQueue(new SpoutChunkSnapshotModel(getWorld(), bx + 1, by + 1, bz + 1, true, System.currentTimeMillis()));
 			}
 		}
 		c.viewDistanceCopy();
 	}
-
 	private Set<SpoutChunk> rended = new HashSet<SpoutChunk>();
 
-	public void addRendedChunk(SpoutChunk chunk){
+	public void addRendedChunk(SpoutChunk chunk) {
 		rended.add(chunk);
 	}
 
-	public void removeRendedChunk(SpoutChunk chunk){
+	public void removeRendedChunk(SpoutChunk chunk) {
 		rended.remove(chunk);
 	}
 
@@ -1387,9 +1385,8 @@ public class SpoutRegion extends Region {
 	}
 
 	/*private static void addSubMeshToSet(Set<Vector3> set, Vector3 dirtyBlock) {
-		set.add(ChunkMesh.getChunkSubMesh(dirtyBlock.getFloorX(), dirtyBlock.getFloorY(), dirtyBlock.getFloorZ()));
-	}*/
-
+	 set.add(ChunkMesh.getChunkSubMesh(dirtyBlock.getFloorX(), dirtyBlock.getFloorY(), dirtyBlock.getFloorZ()));
+	 }*/
 	private ChunkSnapshot getRenderSnapshot(SpoutChunk cRef, int cx, int cy, int cz) {
 		SpoutChunkSnapshot snapshot = renderSnapshotCacheBoth.get(cx, cy, cz);
 		if (snapshot != null) {
@@ -1413,7 +1410,7 @@ public class SpoutRegion extends Region {
 	public void queueDirty(SpoutChunk chunk) {
 		dirtyChunks.add(chunk);
 	}
-	
+
 	public void queueForLightTransfer(SpoutChunk chunk) {
 		lightTransferDirtyChunks.add(chunk);
 	}
@@ -1483,7 +1480,6 @@ public class SpoutRegion extends Region {
 			}
 		}
 	}
-
 	int lightingUpdates = 0;
 
 	public void runLighting(int sequence) throws InterruptedException {
@@ -1552,7 +1548,9 @@ public class SpoutRegion extends Region {
 	 * Gets the DataInputStream corresponding to a given Chunk.<br>
 	 * <br>
 	 * The stream is based on a snapshot of the array.
+	 *
 	 * @param x the chunk
+	 *
 	 * @return the DataInputStream
 	 */
 	public InputStream getChunkInputStream(int x, int y, int z) {
@@ -1734,10 +1732,12 @@ public class SpoutRegion extends Region {
 
 	/**
 	 * Test if region file exists
+	 *
 	 * @param world world
-	 * @param x region x coordinate
-	 * @param y region y coordinate
-	 * @param z region z coordinate
+	 * @param x     region x coordinate
+	 * @param y     region y coordinate
+	 * @param z     region z coordinate
+	 *
 	 * @return true if exists, false if doesn't exist
 	 */
 	public static boolean regionFileExists(World world, int x, int y, int z) {
@@ -1782,13 +1782,13 @@ public class SpoutRegion extends Region {
 	}
 
 	public void setGravity(Vector3 gravity) {
-		synchronized(simulation) {
+		synchronized (simulation) {
 			simulation.setGravity(MathHelper.toVector3f(gravity));
 		}
 	}
 
 	public Vector3 getGravity() {
-		synchronized(simulation) {
+		synchronized (simulation) {
 			Vector3f vector = new Vector3f();
 			vector = simulation.getGravity(vector);
 			return MathHelper.toVector3(vector);
@@ -1832,9 +1832,9 @@ public class SpoutRegion extends Region {
 		final int ry = getY();
 		final int rz = getZ();
 		final SpoutWorld world = getWorld();
-		for (int dx = 0; dx < 3; dx++) {
-			for (int dy = 0; dy < 3; dy++) {
-				for (int dz = 0; dz < 3; dz++) {
+		for (int dx = 0 ; dx < 3 ; dx++) {
+			for (int dy = 0 ; dy < 3 ; dy++) {
+				for (int dz = 0 ; dz < 3 ; dz++) {
 					SpoutRegion region = world.getRegion(rx + dx - 1, ry + dy - 1, rz + dz - 1, LoadOption.NO_LOAD);
 					if (region != null) {
 						region.unlinkNeighbour(this);
@@ -1845,9 +1845,9 @@ public class SpoutRegion extends Region {
 	}
 
 	private void unlinkNeighbour(SpoutRegion r) {
-		for (int dx = 0; dx < 3; dx++) {
-			for (int dy = 0; dy < 3; dy++) {
-				for (int dz = 0; dz < 3; dz++) {
+		for (int dx = 0 ; dx < 3 ; dx++) {
+			for (int dy = 0 ; dy < 3 ; dy++) {
+				for (int dz = 0 ; dz < 3 ; dz++) {
 					neighbours[dx][dy][dz].compareAndSet(r, null);
 				}
 			}
@@ -1931,14 +1931,14 @@ public class SpoutRegion extends Region {
 
 		public void run() {
 			//Sleep while the renderer doesn't exist
-			while(((SpoutClient) Spout.getEngine()).getRenderer() == null){
+			while (((SpoutClient) Spout.getEngine()).getRenderer() == null) {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException ie) {
 					return;
 				}
 			}
-			
+
 			while (renderer == null) {
 				renderer = ((SpoutClient) Spout.getEngine()).getRenderer().getWorldRenderer();
 				if (renderer == null) {
@@ -1952,7 +1952,7 @@ public class SpoutRegion extends Region {
 			while (!Thread.interrupted()) {
 				try {
 					SpoutChunkSnapshotModel model;
-					while( ( model = removeFromRenderQueue() ) != null){
+					while ((model = removeFromRenderQueue()) != null) {
 						handle(model);
 						Thread.sleep(20);
 					}
@@ -1982,7 +1982,6 @@ public class SpoutRegion extends Region {
 
 			renderer.addMeshToBatchQueue(mesh);
 		}
-
 	}
 
 	private SpoutChunk[][][] getChunks(int x, int y, int z, CuboidBlockMaterialBuffer buffer) {
@@ -2012,9 +2011,9 @@ public class SpoutRegion extends Region {
 		int chunkEndZ = end.getZ();
 
 		SpoutChunk[][][] chunks = new SpoutChunk[chunkSizeX][chunkSizeY][chunkSizeZ];
-		for (int dx = chunkStartX; dx <= chunkEndX; dx++) {
-			for (int dy = chunkStartY; dy <= chunkEndY; dy++) {
-				for (int dz = chunkStartZ; dz <= chunkEndZ; dz++) {
+		for (int dx = chunkStartX ; dx <= chunkEndX ; dx++) {
+			for (int dy = chunkStartY ; dy <= chunkEndY ; dy++) {
+				for (int dz = chunkStartZ ; dz <= chunkEndZ ; dz++) {
 					SpoutChunk chunk = getChunk(dx, dy, dz, LoadOption.LOAD_GEN);
 					if (chunk == null) {
 						throw new IllegalStateException("Null chunk loaded with LoadOption.LOAD_GEN");
@@ -2025,14 +2024,14 @@ public class SpoutRegion extends Region {
 		}
 		return chunks;
 	}
-	
+
 	@Override
 	public boolean commitCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
 		Vector3 base = buffer.getBase();
 		int x = base.getFloorX();
 		int y = base.getFloorY();
 		int z = base.getFloorZ();
-		
+
 		return getWorld().commitCuboid(getChunks(x, y, z, buffer), buffer, cause);
 	}
 
@@ -2057,7 +2056,7 @@ public class SpoutRegion extends Region {
 	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz) {
 		return getCuboid(bx, by, bz, sx, sy, sz, true);
 	}
-	
+
 	@Override
 	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz, boolean backBuffer) {
 		CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(bx, by, bz, sx, sy, sz, backBuffer);
@@ -2069,5 +2068,4 @@ public class SpoutRegion extends Region {
 	public void getCuboid(int bx, int by, int bz, CuboidBlockMaterialBuffer buffer) {
 		getWorld().getCuboid(getChunks(bx, by, bz, buffer), bx, by, bz, buffer);
 	}
-
 }

@@ -38,6 +38,7 @@ import java.util.zip.ZipFile;
 import org.spout.engine.filesystem.SharedFileSystem;
 
 public class ZipFilePathResolver extends FilePathResolver {
+
 	public ZipFilePathResolver() {
 		super(SharedFileSystem.getResourceDirectory().getPath());
 	}
@@ -92,7 +93,7 @@ public class ZipFilePathResolver extends FilePathResolver {
 		}
 	}
 
-    @Override
+	@Override
 	public String[] list(String host, String path) {
 		ZipFile zip = null;
 		try {

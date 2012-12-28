@@ -35,6 +35,7 @@ import org.spout.api.resource.BasicResourceLoader;
 import org.spout.engine.resources.ClientFont;
 
 public class FontLoader extends BasicResourceLoader<ClientFont> {
+
 	@Override
 	public final String getFallbackResourceName() {
 		return "font://Spout/fonts/ubuntu/Ubuntu-R.ttf";

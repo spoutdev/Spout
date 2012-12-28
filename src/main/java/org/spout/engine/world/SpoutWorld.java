@@ -103,6 +103,7 @@ import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLong;
 
 public class SpoutWorld extends AsyncManager implements World {
+
 	private SnapshotManager snapshotManager = new SnapshotManager();
 	/**
 	 * The server of this world.
@@ -158,11 +159,13 @@ public class SpoutWorld extends AsyncManager implements World {
 	 */
 	private final File worldDirectory;
 	/**
-	 * The async thread which handles the calculation of block and sky lighting in the world
+	 * The async thread which handles the calculation of block and sky lighting
+	 * in the world
 	 */
 	private final SpoutWorldLighting lightingManager;
 	/**
-	 * The parallel task manager.  This is used for submitting tasks to all regions in the world.
+	 * The parallel task manager. This is used for submitting tasks to all
+	 * regions in the world.
 	 */
 	protected final SpoutParallelTaskManager parallelTaskManager;
 	private final SpoutTaskManager taskManager;
@@ -554,7 +557,8 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	/**
-	 * Spawns an entity into the world. Fires off a cancellable EntitySpawnEvent
+	 * Spawns an entity into the world. Fires off a cancellable
+	 * EntitySpawnEvent
 	 */
 	@Override
 	public void spawnEntity(Entity e) {
@@ -599,7 +603,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	@Override
 	public Entity[] createAndSpawnEntity(Point[] points, Class<? extends Component> type, LoadOption option) {
 		Entity[] entities = new Entity[points.length];
-		for (int i = 0; i < points.length; i++) {
+		for (int i = 0 ; i < points.length ; i++) {
 			entities[i] = createAndSpawnEntity(points[i], type, option);
 		}
 		return entities;
@@ -660,6 +664,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Gets the lighting manager that calculates the light for this world
+	 *
 	 * @return world lighting manager
 	 */
 	public SpoutWorldLighting getLightingManager() {
@@ -717,7 +722,6 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	@Override
 	public void preSnapshotRun() throws InterruptedException {
-
 	}
 
 	@Override
@@ -815,9 +819,11 @@ public class SpoutWorld extends AsyncManager implements World {
 	/**
 	 * Gets a set of nearby players to the point, inside of the range.
 	 * The search will ignore the specified entity.
+	 *
 	 * @param position of the center
-	 * @param ignore Entity to ignore
-	 * @param range to look for
+	 * @param ignore   Entity to ignore
+	 * @param range    to look for
+	 *
 	 * @return A set of nearby Players
 	 */
 	@Override
@@ -835,8 +841,10 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Gets a set of nearby players to the point, inside of the range
+	 *
 	 * @param position of the center
-	 * @param range to look for
+	 * @param range    to look for
+	 *
 	 * @return A set of nearby Players
 	 */
 	@Override
@@ -848,8 +856,10 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Gets a set of nearby players to the entity, inside of the range
+	 *
 	 * @param entity marking the center and which is ignored
-	 * @param range to look for
+	 * @param range  to look for
+	 *
 	 * @return A set of nearby Players
 	 */
 	@Override
@@ -860,10 +870,13 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	/**
-	 * Gets the absolute closest player from the specified point within a specified range.
+	 * Gets the absolute closest player from the specified point within a
+	 * specified range.
+	 *
 	 * @param position to search from
-	 * @param ignore to ignore while searching
-	 * @param range to search
+	 * @param ignore   to ignore while searching
+	 * @param range    to search
+	 *
 	 * @return nearest player
 	 */
 	@Override
@@ -886,8 +899,11 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	/**
-	 * Gets the absolute closest player from the specified point within a specified range.
+	 * Gets the absolute closest player from the specified point within a
+	 * specified range.
+	 *
 	 * @param range to search
+	 *
 	 * @return nearest player
 	 */
 	@Override
@@ -898,9 +914,12 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	/**
-	 * Gets the absolute closest player from the specified point within a specified range.
+	 * Gets the absolute closest player from the specified point within a
+	 * specified range.
+	 *
 	 * @param entity to search from
-	 * @param range to search
+	 * @param range  to search
+	 *
 	 * @return nearest player
 	 */
 	@Override
@@ -912,8 +931,10 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Finds all the players inside of the regions inside the range area
+	 *
 	 * @param position to search from
-	 * @param range to search for regions
+	 * @param range    to search for regions
+	 *
 	 * @return nearby region's players
 	 */
 	private List<Entity> getEntitiesNearRegion(Point position, int range) {
@@ -922,9 +943,9 @@ public class SpoutWorld extends AsyncManager implements World {
 		ArrayList<Entity> entities = new ArrayList<Entity>();
 		if (center != null) {
 			final int regions = (range + Region.BLOCKS.SIZE - 1) / Region.BLOCKS.SIZE; //round up 1 region size
-			for (int dx = -regions; dx < regions; dx++) {
-				for (int dy = -regions; dy < regions; dy++) {
-					for (int dz = -regions; dz < regions; dz++) {
+			for (int dx = -regions ; dx < regions ; dx++) {
+				for (int dy = -regions ; dy < regions ; dy++) {
+					for (int dz = -regions ; dz < regions ; dz++) {
 						Region region = this.getRegion(center.getX() + dx, center.getY() + dy, center.getZ() + dz, LoadOption.NO_LOAD);
 						if (region != null) {
 							entities.addAll(region.getAll());
@@ -949,9 +970,9 @@ public class SpoutWorld extends AsyncManager implements World {
 
 		final BoundingBox mutable = new BoundingBox(0, 0, 0, 0, 0, 0);
 
-		for (int dx = minX; dx < maxX; dx++) {
-			for (int dy = minY; dy < maxY; dy++) {
-				for (int dz = minZ; dz < maxZ; dz++) {
+		for (int dx = minX ; dx < maxX ; dx++) {
+			for (int dy = minY ; dy < maxY ; dy++) {
+				for (int dz = minZ ; dz < maxZ ; dz++) {
 					BlockMaterial material = this.getBlockMaterial(dx, dy, dz);
 					mutable.set((BoundingBox) material.getBoundingArea());
 					BoundingBox box = mutable.offset(dx, dy, dz);
@@ -968,6 +989,7 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Removes a column corresponding to the given Column coordinates
+	 *
 	 * @param x the x coordinate
 	 * @param z the z coordinate
 	 */
@@ -982,9 +1004,11 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	/**
 	 * Gets the column corresponding to the given Block coordinates
-	 * @param x the x block coordinate
-	 * @param z the z block coordinate
+	 *
+	 * @param x      the x block coordinate
+	 * @param z      the z block coordinate
 	 * @param create true to create the column if it doesn't exist
+	 *
 	 * @return the column or null if it doesn't exist
 	 */
 	public SpoutColumn getColumn(int x, int z, boolean create) {
@@ -1008,7 +1032,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	public SpoutColumn getColumn(int x, int z) {
 		return getColumn(x, z, false);
 	}
-	
+
 	public SpoutColumn[] getColumns() {
 		return columns.values(new SpoutColumn[0]);
 	}
@@ -1198,9 +1222,9 @@ public class SpoutWorld extends AsyncManager implements World {
 		int chunkSizeZ = chunkEndZ - chunkStartZ + 1;
 
 		SpoutChunk[][][] chunks = new SpoutChunk[chunkSizeX][chunkSizeY][chunkSizeZ];
-		for (int dx = chunkStartX; dx <= chunkEndX; dx++) {
-			for (int dy = chunkStartY; dy <= chunkEndY; dy++) {
-				for (int dz = chunkStartZ; dz <= chunkEndZ; dz++) {
+		for (int dx = chunkStartX ; dx <= chunkEndX ; dx++) {
+			for (int dy = chunkStartY ; dy <= chunkEndY ; dy++) {
+				for (int dz = chunkStartZ ; dz <= chunkEndZ ; dz++) {
 					SpoutChunk chunk = getChunk(dx, dy, dz, LoadOption.LOAD_GEN);
 					if (chunk == null) {
 						throw new IllegalStateException("Null chunk loaded with LoadOption.LOAD_GEN");
@@ -1213,11 +1237,11 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	protected void lockChunks(SpoutChunk[][][] chunks) {
-		for (int dx = 0; dx < chunks.length; dx++) {
+		for (int dx = 0 ; dx < chunks.length ; dx++) {
 			SpoutChunk[][] subArray1 = chunks[dx];
-			for (int dy = 0; dy < subArray1.length; dy++) {
+			for (int dy = 0 ; dy < subArray1.length ; dy++) {
 				SpoutChunk[] subArray2 = subArray1[dy];
-				for (int dz = 0; dz < subArray2.length; dz++) {
+				for (int dz = 0 ; dz < subArray2.length ; dz++) {
 					subArray2[dz].lockStore();
 				}
 			}
@@ -1225,11 +1249,11 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	protected void unlockChunks(SpoutChunk[][][] chunks) {
-		for (int dx = 0; dx < chunks.length; dx++) {
+		for (int dx = 0 ; dx < chunks.length ; dx++) {
 			SpoutChunk[][] subArray1 = chunks[dx];
-			for (int dy = 0; dy < subArray1.length; dy++) {
+			for (int dy = 0 ; dy < subArray1.length ; dy++) {
 				SpoutChunk[] subArray2 = subArray1[dy];
-				for (int dz = 0; dz < subArray2.length; dz++) {
+				for (int dz = 0 ; dz < subArray2.length ; dz++) {
 					subArray2[dz].unlockStore();
 				}
 			}
@@ -1257,32 +1281,32 @@ public class SpoutWorld extends AsyncManager implements World {
 
 		setCuboid(chunks, x, y, z, buffer, cause);
 	}
-	
+
 	public boolean commitCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
 		Vector3 base = buffer.getBase();
 		int x = base.getFloorX();
 		int y = base.getFloorY();
 		int z = base.getFloorZ();
 		SpoutChunk[][][] chunks = getChunks(x, y, z, buffer);
-		
+
 		return commitCuboid(chunks, buffer, cause);
 	}
-	
+
 	protected boolean commitCuboid(SpoutChunk[][][] chunks, CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
-		
+
 		Vector3 base = buffer.getBase();
 		int x = base.getFloorX();
 		int y = base.getFloorY();
 		int z = base.getFloorZ();
-		
+
 		lockChunks(chunks);
-		
+
 		try {
-			for (int dx = 0; dx < chunks.length; dx++) {
+			for (int dx = 0 ; dx < chunks.length ; dx++) {
 				SpoutChunk[][] subArray1 = chunks[dx];
-				for (int dy = 0; dy < subArray1.length; dy++) {
+				for (int dy = 0 ; dy < subArray1.length ; dy++) {
 					SpoutChunk[] subArray2 = subArray1[dy];
-					for (int dz = 0; dz < subArray2.length; dz++) {
+					for (int dz = 0 ; dz < subArray2.length ; dz++) {
 						if (!subArray2[dz].testCuboid(x, y, z, buffer)) {
 							return false;
 						}
@@ -1291,21 +1315,21 @@ public class SpoutWorld extends AsyncManager implements World {
 			}
 
 			// set
-			for (int dx = 0; dx < chunks.length; dx++) {
+			for (int dx = 0 ; dx < chunks.length ; dx++) {
 				SpoutChunk[][] subArray1 = chunks[dx];
-				for (int dy = 0; dy < subArray1.length; dy++) {
+				for (int dy = 0 ; dy < subArray1.length ; dy++) {
 					SpoutChunk[] subArray2 = subArray1[dy];
-					for (int dz = 0; dz < subArray2.length; dz++) {
+					for (int dz = 0 ; dz < subArray2.length ; dz++) {
 						subArray2[dz].setCuboid(x, y, z, buffer, cause);
 					}
 				}
 			}
-			
+
 			return true;
 		} finally {
 			unlockChunks(chunks);
 		}
-		
+
 	}
 
 	protected void setCuboid(SpoutChunk[][][] chunks, int x, int y, int z, CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
@@ -1313,11 +1337,11 @@ public class SpoutWorld extends AsyncManager implements World {
 		lockChunks(chunks);
 
 		try {
-			for (int dx = 0; dx < chunks.length; dx++) {
+			for (int dx = 0 ; dx < chunks.length ; dx++) {
 				SpoutChunk[][] subArray1 = chunks[dx];
-				for (int dy = 0; dy < subArray1.length; dy++) {
+				for (int dy = 0 ; dy < subArray1.length ; dy++) {
 					SpoutChunk[] subArray2 = subArray1[dy];
-					for (int dz = 0; dz < subArray2.length; dz++) {
+					for (int dz = 0 ; dz < subArray2.length ; dz++) {
 						subArray2[dz].setCuboid(x, y, z, buffer, cause);
 					}
 				}
@@ -1331,7 +1355,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	public CuboidBlockMaterialBuffer getCuboid(int x, int y, int z, int sx, int sy, int sz) {
 		return getCuboid(x, y, z, sx, sy, sz, true);
 	}
-	
+
 	@Override
 	public CuboidBlockMaterialBuffer getCuboid(int x, int y, int z, int sx, int sy, int sz, boolean backBuffer) {
 		CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(x, y, z, sx, sy, sz, backBuffer);
@@ -1357,11 +1381,11 @@ public class SpoutWorld extends AsyncManager implements World {
 		lockChunks(chunks);
 
 		try {
-			for (int dx = 0; dx < chunks.length; dx++) {
+			for (int dx = 0 ; dx < chunks.length ; dx++) {
 				SpoutChunk[][] subArray1 = chunks[dx];
-				for (int dy = 0; dy < subArray1.length; dy++) {
+				for (int dy = 0 ; dy < subArray1.length ; dy++) {
 					SpoutChunk[] subArray2 = subArray1[dy];
-					for (int dz = 0; dz < subArray2.length; dz++) {
+					for (int dz = 0 ; dz < subArray2.length ; dz++) {
 						subArray2[dz].getCuboid(x, y, z, buffer);
 					}
 				}
@@ -1384,7 +1408,6 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	// Worlds don't do any of these
-
 	@Override
 	public void runPhysics(int sequence) throws InterruptedException {
 	}

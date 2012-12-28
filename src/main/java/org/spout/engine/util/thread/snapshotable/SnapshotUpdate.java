@@ -27,6 +27,7 @@
 package org.spout.engine.util.thread.snapshotable;
 
 public class SnapshotUpdate<T> {
+
 	private final boolean add;
 	private final int index;
 	private final T object;
@@ -61,6 +62,7 @@ public class SnapshotUpdate<T> {
 
 	/**
 	 * Indicates if this update is an addition or removal
+	 *
 	 * @return true for additions
 	 */
 	public boolean isAdd() {
@@ -69,6 +71,7 @@ public class SnapshotUpdate<T> {
 
 	/**
 	 * Indicates if this is an indexed operation
+	 *
 	 * @return true for indexed operations
 	 */
 	public boolean isIndexed() {
@@ -77,6 +80,7 @@ public class SnapshotUpdate<T> {
 
 	/**
 	 * Gets the object
+	 *
 	 * @return the object
 	 */
 	public T getObject() {
@@ -85,6 +89,7 @@ public class SnapshotUpdate<T> {
 
 	/**
 	 * Gets the index
+	 *
 	 * @return
 	 */
 	public int getIndex() {

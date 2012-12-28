@@ -70,6 +70,7 @@ import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutWorld;
 
 public class SpoutPlayer extends SpoutEntity implements Player {
+
 	private final AtomicReference<SpoutSession<?>> sessionLive = new AtomicReference<SpoutSession<?>>();
 	private SpoutSession<?> session;
 	private final String name;

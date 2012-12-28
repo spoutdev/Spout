@@ -33,6 +33,7 @@ import org.spout.engine.protocol.builtin.message.StringMapMessage;
 import org.spout.api.util.StringMap;
 
 public class StringMapMessageHandler extends MessageHandler<StringMapMessage> {
+
 	@Override
 	public void handleClient(Session session, StringMapMessage message) {
 		StringMap map = StringMap.get(message.getMap());

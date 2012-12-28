@@ -38,6 +38,7 @@ import org.spout.api.util.thread.SnapshotRead;
  * A snapshotable array of type short
  */
 public class SnapshotableShortArray implements Snapshotable {
+
 	private final short[] snapshot;
 	private final AtomicIntegerArray live;
 	private final AtomicIntegerArray dirtyArray;
@@ -53,7 +54,7 @@ public class SnapshotableShortArray implements Snapshotable {
 		live = new AtomicIntegerArray(initial.length >> 1);
 		this.dirtySize = dirtySize;
 		dirtyArray = new AtomicIntegerArray(dirtySize);
-		for (int i = 0; i < initial.length; i++) {
+		for (int i = 0 ; i < initial.length ; i++) {
 			snapshot[i] = initial[i];
 			set(i, initial[i]);
 		}
@@ -61,6 +62,7 @@ public class SnapshotableShortArray implements Snapshotable {
 
 	/**
 	 * Gets a copy of the snapshot short array
+	 *
 	 * @return copy of the snapshot short array
 	 */
 	public short[] get() {
@@ -69,11 +71,12 @@ public class SnapshotableShortArray implements Snapshotable {
 
 	/**
 	 * Gets a copy of the live short array
+	 *
 	 * @return copy of the live short array
 	 */
 	public short[] getLive() {
 		short[] live = new short[snapshot.length];
-		for (int i = 0; i < this.live.length(); i++) {
+		for (int i = 0 ; i < this.live.length() ; i++) {
 			int value = this.live.get(i);
 			live[(i << 1)] = (short) (value & 0xFFFF);
 			live[(i << 1) + 1] = (short) (value >> 16 & 0xFFFF);
@@ -83,7 +86,9 @@ public class SnapshotableShortArray implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value in the array
+	 *
 	 * @param index to lookup
+	 *
 	 * @return snapshot value
 	 */
 	@SnapshotRead
@@ -93,7 +98,9 @@ public class SnapshotableShortArray implements Snapshotable {
 
 	/**
 	 * Gets the live value in the array
+	 *
 	 * @param index to lookup
+	 *
 	 * @return live value
 	 */
 	@LiveRead
@@ -108,8 +115,10 @@ public class SnapshotableShortArray implements Snapshotable {
 
 	/**
 	 * Sets the value for the next snapshot
+	 *
 	 * @param index to set at
 	 * @param value to set to
+	 *
 	 * @return the old value
 	 */
 	@DelayedWrite
@@ -152,12 +161,12 @@ public class SnapshotableShortArray implements Snapshotable {
 	public void copySnapshot() {
 		int length = dirtyIndex.get();
 		if (length <= dirtySize) {
-			for (int i = 0; i < length; i++) {
+			for (int i = 0 ; i < length ; i++) {
 				int index = dirtyArray.get(i);
 				snapshot[index] = getLive(i);
 			}
 		} else {
-			for (int i = 0; i < snapshot.length; i++) {
+			for (int i = 0 ; i < snapshot.length ; i++) {
 				snapshot[i] = getLive(i);
 			}
 		}

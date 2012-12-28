@@ -35,9 +35,10 @@ import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
  *
  */
 public class EntityDatatableMessageHandler extends MessageHandler<EntityDatatableMessage> {
+
 	@Override
 	public void handleClient(Session session, EntityDatatableMessage message) {
-		if(!session.hasPlayer()) {
+		if (!session.hasPlayer()) {
 			return;
 		}
 

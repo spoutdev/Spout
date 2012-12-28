@@ -68,6 +68,7 @@ import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 
 public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshotable {
+
 	public static final int NOTSPAWNEDID = -1;
 	private final SnapshotManager snapshotManager = new SnapshotManager();
 	//Snapshotable fields
@@ -107,7 +108,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 			getTransform().setTransform(transform);
 			getTransform().copySnapshot();
 		}
-		
+
 		if (components != null && components.length > 0) {
 			initialComponents = components;
 		}
@@ -133,7 +134,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		//Set all the initial snapshot values
 		//Ensures there are no null/wrong snapshot values for the first tick
 		snapshotManager.copyAllSnapshots();
-		
+
 		if (transform != null && load) {
 			setupInitialChunk(transform);
 		}
@@ -337,7 +338,8 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	}
 
 	/**
-	 * Prevents stack overflow when creating an entity during chunk loading due to circle of calls
+	 * Prevents stack overflow when creating an entity during chunk loading due
+	 * to circle of calls
 	 */
 	public void setupInitialChunk(Transform transform) {
 		if (isObserver()) {
@@ -345,9 +347,9 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		}
 		SpoutRegion region = (SpoutRegion) getTransform().getTransformLive().getPosition().getChunk(LoadOption.LOAD_GEN).getRegion();
 		entityManager.set(region.getEntityManager());
-		
+
 		snapshotManager.copyAllSnapshots();
-		
+
 		if (initialComponents != null) {
 			this.add(initialComponents);
 			initialComponents = null;

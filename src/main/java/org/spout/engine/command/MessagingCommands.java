@@ -45,20 +45,22 @@ import org.spout.engine.SpoutEngine;
  * Commands relating to messaging
  */
 public class MessagingCommands {
+
 	private final SpoutEngine engine;
 
 	public MessagingCommands(SpoutEngine engine) {
 		this.engine = engine;
 	}
 
-	@Command(aliases = {"say", "chat"}, usage = "[message]", desc = "Say something!", min = 1, max = -1)
+	@Command (aliases = {"say", "chat"}, usage = "[message]", desc = "Say something!", min = 1, max = -1)
 	public class SayCommand {
+
 		public SayCommand() {
 			engine.getDefaultPermissions().addDefaultPermission("spout.chat.send");
 			engine.getDefaultPermissions().addDefaultPermission("spout.chat.receive.*");
 		}
 
-		@Executor(Platform.SERVER)
+		@Executor (Platform.SERVER)
 		public void server(CommandContext args, CommandSource source) throws CommandException {
 			ChatArguments message = args.getJoinedString(0);
 			if (!message.getPlainString().isEmpty()) {
@@ -83,14 +85,14 @@ public class MessagingCommands {
 			}
 		}
 
-		@Executor(Platform.CLIENT)
+		@Executor (Platform.CLIENT)
 		public void client(CommandContext args, CommandSource source) {
 			engine.getCommandSource().sendMessage(args.getJoinedString(0));
 		}
 	}
 
-	@Command(aliases = {"tell", "msg"}, usage = "<target> <message>", desc = "Tell a message to a specific user", min = 2)
-	@CommandPermissions("spout.command.tell")
+	@Command (aliases = {"tell", "msg"}, usage = "<target> <message>", desc = "Tell a message to a specific user", min = 2)
+	@CommandPermissions ("spout.command.tell")
 	public void tell(CommandContext args, CommandSource source) throws CommandException {
 		if (Spout.getPlatform() != Platform.SERVER && Spout.getPlatform() != Platform.PROXY) {
 			throw new CommandException("You may only message other users in server mode.");
@@ -109,8 +111,8 @@ public class MessagingCommands {
 		}
 	}
 
-	@Command(aliases = {"emote", "me", "action"}, usage = "<action>", desc = "Emote in the third person", min = 1)
-	@CommandPermissions("spout.command.emote")
+	@Command (aliases = {"emote", "me", "action"}, usage = "<action>", desc = "Emote in the third person", min = 1)
+	@CommandPermissions ("spout.command.emote")
 	public void emote(CommandContext args, CommandSource source) throws CommandException {
 		if (Spout.getPlatform() != Platform.SERVER && Spout.getPlatform() != Platform.PROXY) {
 			throw new CommandException("You may only message other users in server mode.");

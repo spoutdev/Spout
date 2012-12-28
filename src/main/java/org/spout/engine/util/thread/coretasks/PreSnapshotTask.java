@@ -30,6 +30,7 @@ import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.ManagementRunnable;
 
 public class PreSnapshotTask extends ManagementRunnable {
+
 	private static final long serialVersionUID = 1L;
 
 	@Override

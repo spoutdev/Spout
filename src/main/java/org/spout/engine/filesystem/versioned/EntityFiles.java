@@ -59,12 +59,11 @@ import org.spout.nbt.util.NBTMapper;
 
 public class EntityFiles {
 
-    private EntityFiles() {
-    }
-    
+	private EntityFiles() {
+	}
 	public static final byte ENTITY_VERSION = 2;
-	
-	@SuppressWarnings("rawtypes")
+
+	@SuppressWarnings ("rawtypes")
 	protected static void loadEntities(SpoutRegion r, CompoundMap map, List<SpoutEntity> loadedEntities) {
 		if (r != null && map != null) {
 			for (Tag tag : map) {
@@ -76,7 +75,7 @@ public class EntityFiles {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings ("rawtypes")
 	protected static CompoundMap saveEntities(List<EntitySnapshot> entities) {
 		CompoundMap tagMap = new CompoundMap();
 		for (EntitySnapshot e : entities) {
@@ -91,7 +90,7 @@ public class EntityFiles {
 
 		return tagMap;
 	}
-	
+
 	private static SpoutEntity loadEntity(SpoutRegion r, CompoundTag tag) {
 		return loadEntity(r.getWorld(), tag, null);
 	}
@@ -105,17 +104,17 @@ public class EntityFiles {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	private static SpoutEntity loadEntityImpl(World w, CompoundTag tag, String name) {
 		CompoundMap map = tag.getValue();
 
 		byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), (byte) -1);
-		
+
 		if (version == -1) {
 			Spout.getLogger().info("Entity version is -1");
 			return null;
 		}
-		
+
 		if (version > ENTITY_VERSION) {
 			Spout.getLogger().log(Level.SEVERE, "Entity version " + version + " exceeds maximum allowed value of " + ENTITY_VERSION);
 			return null;
@@ -124,7 +123,7 @@ public class EntityFiles {
 				Spout.getLogger().log(Level.SEVERE, "Unknown entity version " + version);
 				return null;
 			}
-			
+
 			if (version <= 1) {
 				map = convertV1V2(map);
 				if (map == null) {
@@ -133,17 +132,17 @@ public class EntityFiles {
 			}
 
 		}
-		
+
 		boolean player = SafeCast.toByte(NBTMapper.toTagValue(map.get("player")), (byte) 0) == 1;
-		
+
 		Transform t = TransformTag.getValue(w, map.get("position"));
-		
+
 		if (t == null) {
 			return null;
 		}
-		
+
 		UUID uid = UUIDTag.getValue(map.get("uuid"));
-		
+
 		if (uid == null) {
 			return null;
 		}
@@ -206,7 +205,7 @@ public class EntityFiles {
 		//Write entity
 		map.put(new TransformTag("position", e.getTransform()));
 		map.put(new UUIDTag("uuid", e.getUID()));
-		
+
 		map.put(new IntTag("view", e.getViewDistance()));
 		map.put(new ByteTag("observer", e.isObserver()));
 
@@ -232,16 +231,14 @@ public class EntityFiles {
 		}
 		return tag;
 	}
-	
 
 	/**
 	 * Version 1 to version 2 conversion
 	 *
 	 * Transform and UUID use the new tags
 	 */
-	
 	private static CompoundMap convertV1V2(CompoundMap map) {
-		
+
 		float pX = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posX")), Float.MAX_VALUE);
 		float pY = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posY")), Float.MAX_VALUE);
 		float pZ = SafeCast.toFloat(NBTMapper.toTagValue(map.get("posZ")), Float.MAX_VALUE);
@@ -263,11 +260,10 @@ public class EntityFiles {
 		long lsb = SafeCast.toLong(NBTMapper.toTagValue(map.get("UUID_lsb")), new Random().nextLong());
 
 		map.put(new TransformTag("position", pX, pY, pZ, qX, qY, qZ, qW, sX, sY, sZ));
-		
-		map.put(new UUIDTag("uuid", new UUID(msb, lsb)));
-		
-		return map;
-	
-	}
 
+		map.put(new UUIDTag("uuid", new UUID(msb, lsb)));
+
+		return map;
+
+	}
 }

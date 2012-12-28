@@ -35,6 +35,7 @@ import org.spout.api.chat.style.ColorChatStyle;
 import org.spout.api.chat.style.FormatChatStyle;
 
 public class JansiStyleHandlerTest {
+
 	@Test
 	public void testInclusion() {
 		for (ChatStyle style : ChatStyle.getValues()) {

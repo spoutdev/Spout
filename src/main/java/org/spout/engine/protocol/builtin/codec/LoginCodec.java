@@ -33,6 +33,7 @@ import org.spout.engine.protocol.builtin.ChannelBufferUtils;
 import org.spout.engine.protocol.builtin.message.LoginMessage;
 
 public class LoginCodec extends MessageCodec<LoginMessage> {
+
 	public LoginCodec() {
 		super(LoginMessage.class, 0x00);
 	}

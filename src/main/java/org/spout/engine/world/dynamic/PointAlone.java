@@ -44,9 +44,8 @@ public class PointAlone extends Point {
 	public Object getHint() {
 		return null;
 	}
-	
+
 	public int getData() {
 		return 0;
 	}
-	
 }

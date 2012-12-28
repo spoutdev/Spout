@@ -37,6 +37,7 @@ import java.util.List;
 import org.spout.api.resource.ResourcePathResolver;
 
 public class FilePathResolver implements ResourcePathResolver {
+
 	protected final String directory;
 
 	public FilePathResolver(String path) {
@@ -89,4 +90,3 @@ public class FilePathResolver implements ResourcePathResolver {
 		return list(uri.getHost(), uri.getPath());
 	}
 }
-

@@ -43,27 +43,27 @@ public class ClientModel extends Resource implements Model {
 	public RenderMaterial material;
 	public Map<String, Animation> animations;
 
-	public ClientModel(Mesh mesh,RenderMaterial material) {
+	public ClientModel(Mesh mesh, RenderMaterial material) {
 		this(mesh, null, material, Collections.EMPTY_MAP);
 	}
-	
+
 	public ClientModel(Mesh mesh, Skeleton skeleton, RenderMaterial material, Map<String, Animation> animations) {
 		this.mesh = mesh;
 		this.skeleton = skeleton;
 		this.material = material;
 		this.animations = animations;
 	}
-	
+
 	@Override
 	public Mesh getMesh() {
 		return mesh;
 	}
-	
+
 	@Override
 	public Skeleton getSkeleton() {
 		return skeleton;
 	}
-	
+
 	@Override
 	public RenderMaterial getRenderMaterial() {
 		return material;
@@ -73,5 +73,4 @@ public class ClientModel extends Resource implements Model {
 	public Map<String, Animation> getAnimations() {
 		return animations;
 	}
-
 }

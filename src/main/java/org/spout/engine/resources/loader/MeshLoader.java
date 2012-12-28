@@ -51,8 +51,9 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 
 		while (scan.hasNext()) {
 			String s = scan.nextLine();
-			if (s.startsWith("#"))
+			if (s.startsWith("#")) {
 				continue; // it's a comment, skip it
+			}
 			if (s.startsWith("v ")) { // Space is important !!
 				String[] sp = s.split(" ");
 				verticies.add(new Vector3(Float.parseFloat(sp[1]), Float.parseFloat(sp[2]), Float.parseFloat(sp[3])));
@@ -63,18 +64,18 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 			}
 			if (s.startsWith("vt ")) {
 				String[] sp = s.split(" ");
-				uvs.add(new Vector2(Float.parseFloat(sp[1]), 1-Float.parseFloat(sp[2])));
+				uvs.add(new Vector2(Float.parseFloat(sp[1]), 1 - Float.parseFloat(sp[2])));
 			}
 			if (s.startsWith("f ")) {
 				String[] sp = s.split(" ");
-				if(sp.length > 4){
-					throw new RuntimeException(".obj files must be triangulated.  Re-export the mesh with triangles, not quads");				
+				if (sp.length > 4) {
+					throw new RuntimeException(".obj files must be triangulated.  Re-export the mesh with triangles, not quads");
 				}
 
 				if (sp[1].contains("//")) {
 					normal = true;
 					ArrayList<Vertex> ar = new ArrayList<Vertex>();
-					for (int i = 1; i <= 3; i++) {
+					for (int i = 1 ; i <= 3 ; i++) {
 						String[] sn = sp[i].split("//");
 						int pos = Integer.parseInt(sn[0]);
 						int norm = Integer.parseInt(sn[1]);
@@ -86,11 +87,11 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 				} else if (sp[1].contains("/")) {
 					texture0 = true;
 					ArrayList<Vertex> ar = new ArrayList<Vertex>();
-					for (int i = 1; i <= 3; i++) {
+					for (int i = 1 ; i <= 3 ; i++) {
 						String[] sn = sp[i].split("/");
 						int pos = Integer.parseInt(sn[0]);
 						int uv = Integer.parseInt(sn[1]);
-						if (sn.length>2) {
+						if (sn.length > 2) {
 							normal = true;
 							int norm = Integer.parseInt(sn[2]);
 							ar.add(Vertex.createVertexPositionNormalTexture0Index(verticies.get(pos - 1), normals.get(norm - 1), uvs.get(uv - 1), pos));
@@ -107,10 +108,10 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 					int face2 = Integer.parseInt(sp[2]);
 					int face3 = Integer.parseInt(sp[3]);
 
-					Vertex p1 = Vertex.createVertexPositionIndex(verticies.get(face1 - 1),face1);
+					Vertex p1 = Vertex.createVertexPositionIndex(verticies.get(face1 - 1), face1);
 					Vertex p2 = Vertex.createVertexPositionIndex(verticies.get(face2 - 1), face2);
 					Vertex p3 = Vertex.createVertexPositionIndex(verticies.get(face3 - 1), face3);
-					
+
 					faces.add(new MeshFace(p3, p2, p1));
 				}
 
@@ -119,7 +120,7 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 		}
 
 		scan.close();
-		
+
 		return new BaseMesh(faces, normal, color, texture0, true);
 	}
 
@@ -140,7 +141,6 @@ public class MeshLoader extends BasicResourceLoader<BaseMesh> {
 
 	@Override
 	public String[] getExtensions() {
-		return new String[] { "obj" };
+		return new String[]{"obj"};
 	}
-
 }

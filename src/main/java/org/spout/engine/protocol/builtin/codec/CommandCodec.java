@@ -35,6 +35,7 @@ import org.spout.engine.protocol.builtin.ChannelBufferUtils;
 import org.spout.engine.protocol.builtin.message.CommandMessage;
 
 public class CommandCodec extends MessageCodec<CommandMessage> {
+
 	public CommandCodec() {
 		super(CommandMessage.class, 0x03);
 	}

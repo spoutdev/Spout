@@ -47,6 +47,7 @@ import org.spout.engine.SpoutProxy;
  * A SpoutSession setup for proxies
  */
 public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
+
 	/**
 	 * Information about the connection required for proxying
 	 */
@@ -64,7 +65,8 @@ public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
 	 */
 	private final AtomicBoolean passthrough = new AtomicBoolean(false);
 	/**
-	 * Indicates the number of times the proxy has connected to a server for this session
+	 * Indicates the number of times the proxy has connected to a server for
+	 * this session
 	 */
 	private final AtomicInteger connects = new AtomicInteger(0);
 
@@ -93,7 +95,7 @@ public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
 				super.send(upstream, force, message);
 			}
 		} catch (Exception e) {
-			disconnect(false, new Object[] {"Socket Error!"});
+			disconnect(false, new Object[]{"Socket Error!"});
 		}
 	}
 

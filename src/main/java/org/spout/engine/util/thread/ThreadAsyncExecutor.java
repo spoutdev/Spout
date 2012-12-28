@@ -44,6 +44,7 @@ import org.spout.engine.util.thread.coretasks.StartTickTask;
  * This is a thread that executes tasks
  */
 public final class ThreadAsyncExecutor extends PulsableThread implements AsyncExecutor {
+
 	private final ConcurrentLinkedQueue<ManagementRunnable> taskQueue = new ConcurrentLinkedQueue<ManagementRunnable>();
 	private final CopySnapshotTask copySnapshotTask = new CopySnapshotTask();
 	private final StartTickTask startTickTask = new StartTickTask();
@@ -63,7 +64,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	public ThreadAsyncExecutor(String name) {
 		this(name, Integer.MIN_VALUE);
 	}
-	
+
 	public ThreadAsyncExecutor(String name, int sequence) {
 		super(name);
 		this.sequence = sequence;
@@ -125,6 +126,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 
 	/**
 	 * Executes all tasks on the queue
+	 *
 	 * @throws InterruptedException
 	 */
 	private final void executeAllTasks() throws InterruptedException {
@@ -159,7 +161,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 		taskQueue.add(preSnapshotTask);
 		return pulse();
 	}
-	
+
 	@Override
 	public final boolean doPhysics(int sequence) {
 		if (sequence == -1 || sequence == this.sequence) {
@@ -171,7 +173,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 			return true;
 		}
 	}
-	
+
 	@Override
 	public final boolean doDynamicUpdates(long time, int sequence) {
 		if (sequence == -1 || sequence == manager.getSequence()) {
@@ -184,7 +186,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 			return true;
 		}
 	}
-	
+
 	@Override
 	public final boolean doLighting(int sequence) {
 		if (sequence == -1 || sequence == this.sequence) {
@@ -196,7 +198,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 			return true;
 		}
 	}
-	
+
 	@Override
 	public final boolean startTick(int stage, long delta) {
 		ThreadsafetyManager.checkMainThread();
@@ -236,7 +238,7 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 							throw new IllegalStateException("Bit zero of wake counter set to 0 while pulse was being triggered");
 						}
 						success = true;
-					}		
+					}
 				} else {
 					success = false;
 				}
@@ -284,9 +286,11 @@ public final class ThreadAsyncExecutor extends PulsableThread implements AsyncEx
 	}
 
 	private static enum ExecutorState {
+
 		CREATED,
 		STARTED,
 		HALTING,
 		HALTED
 	}
+
 }

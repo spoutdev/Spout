@@ -48,6 +48,7 @@ import org.spout.engine.chat.style.JansiStyleHandler;
  * A console backed by JLine
  */
 public class JLineConsole extends AbstractConsole {
+
 	private final SpoutEngine engine;
 	private final ConsoleReader reader;
 	private final OutputStreamWriter writer;
@@ -64,12 +65,12 @@ public class JLineConsole extends AbstractConsole {
 			throw new ExceptionInInitializerError(e);
 		}
 
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings ("unchecked")
 		final Collection<Completor> completors = reader.getCompletors();
 		for (Completor c : new ArrayList<Completor>(completors)) {
 			reader.removeCompletor(c);
 		}
-		Completor[] list = new Completor[] {new SpoutCommandCompletor(engine), new NullCompletor()};
+		Completor[] list = new Completor[]{new SpoutCommandCompletor(engine), new NullCompletor()};
 		reader.addCompletor(new ArgumentCompletor(list));
 	}
 
@@ -151,6 +152,7 @@ public class JLineConsole extends AbstractConsole {
 	}
 
 	private class CommandTask implements Runnable {
+
 		private final String command;
 		private final ChatArguments arguments;
 
@@ -170,4 +172,5 @@ public class JLineConsole extends AbstractConsole {
 			engine.getCommandSource().sendCommand(command, arguments);
 		}
 	}
+
 }

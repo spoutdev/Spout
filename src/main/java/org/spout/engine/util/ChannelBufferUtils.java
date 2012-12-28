@@ -52,6 +52,7 @@ import org.spout.nbt.stream.NBTOutputStream;
  * Contains several {@link ChannelBuffer}-related utility methods.
  */
 public final class ChannelBufferUtils {
+
 	/**
 	 * The UTF-8 character set.
 	 */
@@ -59,10 +60,11 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Writes a list of parameters (e.g. mob metadata) to the buffer.
+	 *
 	 * @param buf        The buffer.
 	 * @param parameters The parameters.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	public static void writeParameters(ChannelBuffer buf, List<Parameter<?>> parameters) {
 		for (Parameter<?> parameter : parameters) {
 			int type = parameter.getType();
@@ -100,13 +102,15 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Reads a list of parameters from the buffer.
+	 *
 	 * @param buf The buffer.
+	 *
 	 * @return The parameters.
 	 */
 	public static List<Parameter<?>> readParameters(ChannelBuffer buf) {
 		List<Parameter<?>> parameters = new ArrayList<Parameter<?>>();
 
-		for (int b = buf.readUnsignedByte(); b != 127; ) {
+		for (int b = buf.readUnsignedByte() ; b != 127 ;) {
 			int type = (b & 0x0E) >> 5;
 			int index = b & 0x1F;
 
@@ -141,10 +145,13 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Writes a string to the buffer.
+	 *
 	 * @param buf The buffer.
 	 * @param str The string.
-	 * @throws IllegalArgumentException if the string is too long <em>after</em>
-	 *                                  it is encoded.
+	 *
+	 * @throws IllegalArgumentException if the string is too long
+	 *                                     <em>after</em>
+	 *                                     it is encoded.
 	 */
 	public static void writeString(ChannelBuffer buf, String str) {
 		int len = str.length();
@@ -153,17 +160,20 @@ public final class ChannelBufferUtils {
 		}
 
 		buf.writeShort(len);
-		for (int i = 0; i < len; ++i) {
+		for (int i = 0 ; i < len ; ++i) {
 			buf.writeChar(str.charAt(i));
 		}
 	}
 
 	/**
 	 * Writes a UTF-8 string to the buffer.
+	 *
 	 * @param buf The buffer.
 	 * @param str The string.
-	 * @throws IllegalArgumentException if the string is too long <em>after</em>
-	 *                                  it is encoded.
+	 *
+	 * @throws IllegalArgumentException if the string is too long
+	 *                                     <em>after</em>
+	 *                                     it is encoded.
 	 */
 	public static void writeUtf8String(ChannelBuffer buf, String str) {
 		byte[] bytes = str.getBytes(CHARSET_UTF8);
@@ -177,14 +187,16 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Reads a string from the buffer.
+	 *
 	 * @param buf The buffer.
+	 *
 	 * @return The string.
 	 */
 	public static String readString(ChannelBuffer buf) {
 		int len = buf.readUnsignedShort();
 
 		char[] characters = new char[len];
-		for (int i = 0; i < len; i++) {
+		for (int i = 0 ; i < len ; i++) {
 			characters[i] = buf.readChar();
 		}
 
@@ -193,7 +205,9 @@ public final class ChannelBufferUtils {
 
 	/**
 	 * Reads a UTF-8 encoded string from the buffer.
+	 *
 	 * @param buf The buffer.
+	 *
 	 * @return The string.
 	 */
 	public static String readUtf8String(ChannelBuffer buf) {

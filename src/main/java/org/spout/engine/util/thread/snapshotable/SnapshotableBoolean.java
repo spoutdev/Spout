@@ -36,6 +36,7 @@ import org.spout.api.util.thread.SnapshotRead;
  * A snapshotable object that supports primitive booleans
  */
 public class SnapshotableBoolean implements Snapshotable {
+
 	private AtomicBoolean next;
 	private boolean snapshot;
 
@@ -47,18 +48,21 @@ public class SnapshotableBoolean implements Snapshotable {
 
 	/**
 	 * Sets the next value for the Snapshotable
+	 *
 	 * @param next
 	 */
 	@DelayedWrite
 	public void set(boolean next) {
 		this.next.set(next);
 	}
-	
+
 	/**
-	 * Sets the next value but only if the current next value is the given value
-	 * 
+	 * Sets the next value but only if the current next value is the given
+	 * value
+	 *
 	 * @param expect
 	 * @param next
+	 *
 	 * @return true on success
 	 */
 	public boolean compareAndSet(boolean expect, boolean next) {
@@ -67,6 +71,7 @@ public class SnapshotableBoolean implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value for
+	 *
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
@@ -76,6 +81,7 @@ public class SnapshotableBoolean implements Snapshotable {
 
 	/**
 	 * Gets the live value
+	 *
 	 * @return the unstable Live "next" value
 	 */
 	@LiveRead

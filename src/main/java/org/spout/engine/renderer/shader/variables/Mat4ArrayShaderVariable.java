@@ -34,9 +34,10 @@ import org.lwjgl.opengl.GL20;
 import org.spout.api.math.Matrix;
 
 public class Mat4ArrayShaderVariable extends ShaderVariable {
+
 	Matrix[] value;
 
-	public Mat4ArrayShaderVariable(int program, String name, Matrix []value) {
+	public Mat4ArrayShaderVariable(int program, String name, Matrix[] value) {
 		super(program, name);
 		this.value = value;
 	}
@@ -48,12 +49,12 @@ public class Mat4ArrayShaderVariable extends ShaderVariable {
 	@Override
 	public void assign() {
 		FloatBuffer buff = BufferUtils.createFloatBuffer(16 * value.length);
-		
-		for (int i = 0; i < value.length; i++) {
+
+		for (int i = 0 ; i < value.length ; i++) {
 			buff.put(value[i].getData());
 		}
 		buff.flip();
-		
+
 		GL20.glUniformMatrix4(location, false, buff);
 	}
 }

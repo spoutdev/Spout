@@ -38,9 +38,10 @@ import org.spout.api.protocol.Session;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
 
 public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
+
 	@Override
 	public void handleClient(Session session, ChunkDataMessage message) {
-		if(!session.hasPlayer()) {
+		if (!session.hasPlayer()) {
 			return;
 		}
 
@@ -49,7 +50,7 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 		try {
 			Class<?> testClass = Class.forName(message.getBiomeManagerClass());
 			if (!BiomeManager.class.isAssignableFrom(testClass)) {
-				throw new IllegalArgumentException("Biome manager class "+ testClass + " is not a BiomeManager");
+				throw new IllegalArgumentException("Biome manager class " + testClass + " is not a BiomeManager");
 			}
 			managerClass = testClass.asSubclass(BiomeManager.class);
 		} catch (ClassNotFoundException e) {

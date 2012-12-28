@@ -37,6 +37,7 @@ import org.spout.api.protocol.SessionRegistry;
  * method to pulse every session in one operation.
  */
 public final class SpoutSessionRegistry implements SessionRegistry {
+
 	/**
 	 * A list of the sessions.
 	 */
@@ -53,6 +54,7 @@ public final class SpoutSessionRegistry implements SessionRegistry {
 
 	/**
 	 * Adds a new session.
+	 *
 	 * @param session The session to add.
 	 */
 	@Override
@@ -66,6 +68,7 @@ public final class SpoutSessionRegistry implements SessionRegistry {
 
 	/**
 	 * Removes a session.
+	 *
 	 * @param session The session to remove.
 	 */
 	@Override

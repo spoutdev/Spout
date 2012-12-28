@@ -30,6 +30,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class NamedThreadFactory implements ThreadFactory {
+
 	private final String namePrefix;
 	private final boolean daemon;
 	private static final AtomicInteger idCounter = new AtomicInteger();

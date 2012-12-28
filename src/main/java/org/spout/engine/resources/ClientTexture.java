@@ -36,16 +36,17 @@ import org.lwjgl.opengl.GL12;
 import org.spout.api.render.Texture;
 
 public class ClientTexture extends Texture {
+
 	int textureID = -1;
-	
-	public ClientTexture(int[] colors, int width, int height){
+
+	public ClientTexture(int[] colors, int width, int height) {
 		super(colors, width, height);
 	}
 
 	public ClientTexture(BufferedImage baseImage) {
 		super(baseImage.getRGB(0, 0, baseImage.getWidth(), baseImage.getHeight(), null, 0, baseImage.getWidth()), baseImage.getWidth(), baseImage.getHeight());
 	}
-	
+
 	@Override
 	public Texture subTexture(int x, int y, int w, int h) {
 		throw new UnsupportedOperationException("TODO: Reimplement this");
@@ -98,9 +99,9 @@ public class ClientTexture extends Texture {
 
 		/*if (((Client) Spout.getEngine()).getRenderMode() != RenderMode.GL30) {
 
-			//Use Mipmaps
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
-		}*/
+		 //Use Mipmaps
+		 GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
+		 }*/
 
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_BASE_LEVEL, 0);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LEVEL, 0);
@@ -116,11 +117,11 @@ public class ClientTexture extends Texture {
 		int width = this.getWidth();
 		int height = this.getHeight();
 
-		
-		ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * 4);
-		for (int y = 0; y < height; y++) {
 
-			for (int x = 0; x < width; x++) {
+		ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * 4);
+		for (int y = 0 ; y < height ; y++) {
+
+			for (int x = 0 ; x < width ; x++) {
 				Color pixel = new Color(this.image[y * width + x], true);
 				buffer.put((byte) pixel.getRed()); // Red component
 				buffer.put((byte) pixel.getGreen());  // Green component

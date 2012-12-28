@@ -30,6 +30,7 @@ import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.ManagementRunnable;
 
 public class CopySnapshotTask extends ManagementRunnable {
+
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -37,5 +38,4 @@ public class CopySnapshotTask extends ManagementRunnable {
 		executor.getManager().copySnapshotRun();
 		executor.haltCheck();
 	}
-
 }

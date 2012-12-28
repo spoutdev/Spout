@@ -42,6 +42,7 @@ import org.spout.engine.protocol.SpoutClientSession;
  * A listener for SpoutClient connects
  */
 public class SpoutClientConnectListener implements ChannelFutureListener {
+
 	private final SpoutClient client;
 	private final PortBinding binding;
 

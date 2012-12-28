@@ -30,10 +30,9 @@ package org.spout.engine.util;
  * Class for automatically wrapping chat lines while maintaining colour.
  */
 public final class TextWrapper {
-    
-    private TextWrapper() {
-    }
-    
+
+	private TextWrapper() {
+	}
 	private static final int[] characterWidths = new int[]{1, 9, 9, 8, 8, 8, 8, 7, 9, 8, 9, 9, 8, 9, 9, 9, 8, 8, 8, 8, 9, 9, 8, 9, 8, 8, 8, 8, 8, 9, 9, 9, 4, 2, 5, 6, 6, 6, 6, 3, 5, 5, 5, 6, 2, 6, 2, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 2, 2, 5, 6, 5, 6, 7, 6, 6, 6, 6, 6, 6, 6, 6, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 4, 6, 4, 6, 6, 3, 6, 6, 6, 6, 6, 5, 6, 6, 2, 6, 5, 3, 6, 6, 6, 6, 6, 6, 6, 4, 6, 6, 6, 6, 6, 6, 5, 2, 5, 7, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 4, 6, 3, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 4, 6, 6, 3, 6, 6, 6, 6, 6, 6, 6, 7, 6, 6, 6, 2, 6, 6, 8, 9, 9, 6, 6, 6, 8, 8, 6, 8, 8, 8, 8, 8, 6, 6, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 6, 9, 9, 9, 5, 9, 9, 8, 7, 7, 8, 7, 8, 8, 8, 7, 8, 8, 7, 9, 9, 6, 7, 7, 7, 7, 7, 9, 6, 7, 8, 7, 6, 6, 9, 7, 6, 7, 1};
 	private static final char COLOR_CHAR = '\u00A7';
 	private static final int CHAT_WINDOW_WIDTH = 320;
@@ -42,7 +41,9 @@ public final class TextWrapper {
 
 	/**
 	 * Wrap the specified text taking character size and colors into account.
+	 *
 	 * @param text The text to wrap.
+	 *
 	 * @return A String[] containing the wrapped lines.
 	 */
 	public static String[] wrapText(String text) {
@@ -51,7 +52,7 @@ public final class TextWrapper {
 		int lineWidth = 0;
 		int lineLength = 0;
 
-		for (int i = 0; i < text.length(); ++i) {
+		for (int i = 0 ; i < text.length() ; ++i) {
 			char ch = text.charAt(i);
 
 			// Check for a color code

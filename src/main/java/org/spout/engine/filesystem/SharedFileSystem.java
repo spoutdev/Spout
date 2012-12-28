@@ -50,6 +50,7 @@ import org.spout.engine.filesystem.path.ZipFilePathResolver;
  * The basic file system of Spout.
  */
 public class SharedFileSystem implements FileSystem {
+
 	private static File parentDir = new File(".");
 	private ResourcePathResolver[] searchPaths;
 	private final Map<String, Map<String, ResourceLoader<?>>> loaders = new HashMap<String, Map<String, ResourceLoader<?>>>();
@@ -66,7 +67,7 @@ public class SharedFileSystem implements FileSystem {
 	public synchronized static File getPluginDirectory() {
 		return new File(parentDir, "plugins");
 	}
-	
+
 	public synchronized static File getResourceDirectory() {
 		return new File(parentDir, "resources");
 	}
@@ -278,7 +279,7 @@ public class SharedFileSystem implements FileSystem {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	@Override
 	public <T extends Resource> List<T> getResources(URI uri) {
 		ResourcePathResolver resolver = getPathResolver(uri);

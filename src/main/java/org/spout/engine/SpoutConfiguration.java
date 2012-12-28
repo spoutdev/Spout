@@ -37,6 +37,7 @@ import org.spout.engine.filesystem.SharedFileSystem;
 
 public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	// General
+
 	public static final ConfigurationHolder MAXIMUM_PLAYERS = new ConfigurationHolder(20, "general", "maximum-players");
 	public static final ConfigurationHolder DEFAULT_WORLD = new ConfigurationHolder("world", "general", "default-world");
 	public static final ConfigurationHolder WHITELIST_ENABLED = new ConfigurationHolder(false, "general", "whitelist-enabled");

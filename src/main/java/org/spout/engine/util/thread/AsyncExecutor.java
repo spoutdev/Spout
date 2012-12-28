@@ -29,48 +29,58 @@ package org.spout.engine.util.thread;
 import java.util.concurrent.TimeoutException;
 
 public interface AsyncExecutor {
+
 	/**
 	 * Sets the AsyncManager for this executor.
 	 * <p/>
 	 * This method may only be called once
+	 *
 	 * @param manager the manager
 	 */
 	public void setManager(AsyncManager manager);
 
 	/**
 	 * Gets the AsyncManager for this executor.
+	 *
 	 * @return the manager
 	 */
 	public AsyncManager getManager();
 
 	/**
 	 * Adds a task to this executor's queue
+	 *
 	 * @param task the runnable to execute
 	 */
 	public void addToQueue(ManagementRunnable task) throws InterruptedException;
-	
+
 	/**
-	 * This method is called to perform physics and is called multiple times per tick.  
-	 * 
+	 * This method is called to perform physics and is called multiple times
+	 * per tick.
+	 *
 	 * @param sequence -1 for local, 0 - 26 for which sequence
+	 *
 	 * @return false if the executor was active
 	 */
 	public boolean doPhysics(int sequence);
-	
+
 	/**
-	 * This method is called to perform dynamic updates and is called multiple times per tick, 
+	 * This method is called to perform dynamic updates and is called multiple
+	 * times per tick,
 	 * once physics has settled down.
-	 * 
-	 * @param time the world time
+	 *
+	 * @param time     the world time
 	 * @param sequence -1 for local, 0 - 26 for which sequence
+	 *
 	 * @return false if the executor was active
 	 */
 	public boolean doDynamicUpdates(long time, int sequence);
-	
+
 	/**
-	 * This method is called to perform lighting and is called multiple times per tick.  
-	 * 
+	 * This method is called to perform lighting and is called multiple times
+	 * per tick.
+	 *
 	 * @param sequence -1 for local, 0 - 26 for which sequence
+	 *
 	 * @return false if the executor was active
 	 */
 	public boolean doLighting(int sequence);
@@ -79,6 +89,7 @@ public interface AsyncExecutor {
 	 * This is called as the last stage prior to the snapshot being taken.<br>
 	 * <br>
 	 * It is not considered part of the stable snapshot.
+	 *
 	 * @return false if the executor was active
 	 */
 	public boolean finalizeTick();
@@ -91,12 +102,14 @@ public interface AsyncExecutor {
 	 * updates.<br>
 	 * <br>
 	 * All data must remain stable for this stage.
+	 *
 	 * @return false if the executor was active
 	 */
 	public boolean preSnapshot();
 
 	/**
 	 * Instructs the executor to copy all updated data to its snapshot
+	 *
 	 * @return false if the executor was active
 	 */
 	public boolean copySnapshot();
@@ -105,9 +118,11 @@ public interface AsyncExecutor {
 	 * Instructs the executor to start a new tick or stage.
 	 * <p/>
 	 * The first stage in a tick is stage zero
+	 *
 	 * @param stage the stage number for the tick
 	 * @param delta the time since the last tick in ms (only relevant for stage
-	 *              0)
+	 *                 0)
+	 *
 	 * @return false if the executor was active
 	 */
 	public boolean startTick(int stage, long delta);
@@ -124,6 +139,7 @@ public interface AsyncExecutor {
 	/**
 	 * Returns if this executor has completed its pulse and all submitted tasks
 	 * associated with it
+	 *
 	 * @return true if the pulse was completed
 	 */
 	public boolean isPulseFinished();
@@ -137,8 +153,9 @@ public interface AsyncExecutor {
 	/**
 	 * Puts the current thread to sleep until the current pulse operation has
 	 * completed
+	 *
 	 * @param millis the time in milliseconds to wait before throwing a
-	 *               TimeoutException
+	 *                  TimeoutException
 	 */
 	public void pulseJoin(long millis) throws InterruptedException, TimeoutException;
 
@@ -160,6 +177,7 @@ public interface AsyncExecutor {
 
 	/**
 	 * Starts the executor. An executor may only be started once.
+	 *
 	 * @return false if the executor was already started
 	 */
 	public boolean startExecutor();
@@ -168,6 +186,7 @@ public interface AsyncExecutor {
 	 * Halts the executor. An executor may only be halted once.
 	 * <p/>
 	 * Halting happens after the next snapshot copy.
+	 *
 	 * @return false if the executor was already halted
 	 */
 	public boolean haltExecutor();

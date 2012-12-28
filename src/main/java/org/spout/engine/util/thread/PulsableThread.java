@@ -37,6 +37,7 @@ import org.spout.api.Spout;
  * A Thread object that can be pulsed
  */
 public abstract class PulsableThread extends Thread {
+
 	private static final Logger logger = Logger.getLogger(PulsableThread.class.getCanonicalName());
 	private final AtomicReference<PulseState> pulsing = new AtomicReference<PulseState>(PulseState.WAITING);
 
@@ -46,6 +47,7 @@ public abstract class PulsableThread extends Thread {
 
 	/**
 	 * Causes the thread to execute one pulse by calling pulseRun();
+	 *
 	 * @return false if the thread was already pulsing
 	 */
 	public boolean pulse() {
@@ -82,8 +84,9 @@ public abstract class PulsableThread extends Thread {
 	/**
 	 * Puts the current thread to sleep until the current pulse operation has
 	 * completed
+	 *
 	 * @param millis the time in milliseconds to wait before throwing a
-	 *               TimeoutException
+	 *                  TimeoutException
 	 */
 	public void pulseJoin(long millis) throws InterruptedException, TimeoutException {
 		if (millis == 0) {
@@ -105,6 +108,7 @@ public abstract class PulsableThread extends Thread {
 
 	/**
 	 * This method indicates if the thread is currently pulsing
+	 *
 	 * @return true if the thread is pulsing
 	 */
 	public boolean isPulsing() {
@@ -161,6 +165,7 @@ public abstract class PulsableThread extends Thread {
 	}
 
 	private static enum PulseState {
+
 		PULSING,
 		WAITING,
 		DEAD;
@@ -169,4 +174,5 @@ public abstract class PulsableThread extends Thread {
 			return this == PULSING;
 		}
 	}
+
 }

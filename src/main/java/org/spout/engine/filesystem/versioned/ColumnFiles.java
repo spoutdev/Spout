@@ -56,12 +56,11 @@ import org.spout.nbt.stream.NBTOutputStream;
 import org.spout.nbt.util.NBTMapper;
 
 public class ColumnFiles {
-	
-    private ColumnFiles() {        
-    }
-    
+
+	private ColumnFiles() {
+	}
 	public static final int COLUMN_VERSION = 1;
-	
+
 	public static void readColumn(InputStream in, SpoutColumn column, AtomicInteger lowestY, BlockMaterial[][] topmostBlocks) {
 		if (in == null) {
 			initColumn(column, lowestY, topmostBlocks);
@@ -94,7 +93,7 @@ public class ColumnFiles {
 			}
 
 			loadColumn(column, lowestY, topmostBlocks, map);
-			
+
 			if (converted) {
 				column.setDirty();
 			}
@@ -102,13 +101,13 @@ public class ColumnFiles {
 			Spout.getLogger().severe("Error reading column height-map for column" + column.getX() + ", " + column.getZ());
 		}
 	}
-	
+
 	private static void loadColumn(SpoutColumn column, AtomicInteger lowestY, BlockMaterial[][] topmostBlocks, CompoundMap map) {
-			
+
 		int[] heights = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("heights")), null);
-				
-		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
-			for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
+
+		for (int x = 0 ; x < SpoutColumn.BLOCKS.SIZE ; x++) {
+			for (int z = 0 ; z < SpoutColumn.BLOCKS.SIZE ; z++) {
 				column.getAtomicInteger(x, z).set(heights[NibblePairHashed.intKey(x, z)]);
 			}
 		}
@@ -121,14 +120,14 @@ public class ColumnFiles {
 		boolean warning = false;
 		byte[] validMaterial = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("valid_material")), null);
 		int[] topmostMaterial = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("topmost_material")), null);
-		
+
 		if (validMaterial == null || topmostMaterial == null) {
 			Spout.getLogger().severe("Topmost block arrays missing when reading column");
 			initColumn(column, lowestY, topmostBlocks);
 			return;
 		}
-		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
-			for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
+		for (int x = 0 ; x < SpoutColumn.BLOCKS.SIZE ; x++) {
+			for (int z = 0 ; z < SpoutColumn.BLOCKS.SIZE ; z++) {
 				int key = NibblePairHashed.intKey(x, z);
 				if (validMaterial[key] == 0) {
 					continue;
@@ -157,12 +156,12 @@ public class ColumnFiles {
 
 		BiomeManager manager;
 		String biomeManagerClass = SafeCast.toString(NBTMapper.toTagValue(map.get("biome_manager")), null);
-		byte[] biomes = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("biomes")), null); 
-		
+		byte[] biomes = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("biomes")), null);
+
 		if (biomeManagerClass != null && biomes != null) {
 			//Attempt to create the biome manager class from the class name
 			try {
-				@SuppressWarnings("unchecked")
+				@SuppressWarnings ("unchecked")
 				Class<? extends BiomeManager> clazz = (Class<? extends BiomeManager>) Class.forName(biomeManagerClass);
 				Class<?>[] params = {int.class, int.class};
 				manager = clazz.getConstructor(params).newInstance(column.getX(), column.getZ());
@@ -177,8 +176,8 @@ public class ColumnFiles {
 
 	private static void initColumn(SpoutColumn column, AtomicInteger lowestY, BlockMaterial[][] topmostBlocks) {
 		//The inputstream is null because no height map data exists
-		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
-			for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
+		for (int x = 0 ; x < SpoutColumn.BLOCKS.SIZE ; x++) {
+			for (int z = 0 ; z < SpoutColumn.BLOCKS.SIZE ; z++) {
 				column.getAtomicInteger(x, z).set(Integer.MIN_VALUE);
 				topmostBlocks[x][z] = null;
 				column.setDirty(x, z);
@@ -197,34 +196,34 @@ public class ColumnFiles {
 			Spout.getLogger().log(Level.SEVERE, "Error saving column {" + column.getX() + ", " + column.getZ() + "}", ioe);
 		}
 	}
-	
+
 	private static CompoundMap saveColumn(SpoutColumn column, AtomicInteger lowestY, BlockMaterial[][] topmostBlocks) {
-		
+
 		CompoundMap map = new CompoundMap();
-		
+
 		map.put(new ByteTag("version", (byte) COLUMN_VERSION));
-		
+
 		int[] heights = new int[SpoutColumn.BLOCKS.SIZE * SpoutColumn.BLOCKS.SIZE];
 
-		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
-			for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
+		for (int x = 0 ; x < SpoutColumn.BLOCKS.SIZE ; x++) {
+			for (int z = 0 ; z < SpoutColumn.BLOCKS.SIZE ; z++) {
 				int key = NibblePairHashed.intKey(x, z);
 				heights[key] = column.getAtomicInteger(x, z).get();
 			}
 		}
-		
+
 		map.put(new IntArrayTag("heights", heights));
 
 		map.put(new IntTag("lowest_y", lowestY.get()));
-		
+
 		byte[] validMaterial = new byte[SpoutColumn.BLOCKS.SIZE * SpoutColumn.BLOCKS.SIZE];
 		int[] topmostMaterial = new int[SpoutColumn.BLOCKS.SIZE * SpoutColumn.BLOCKS.SIZE];
-		
+
 		StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
 		StringMap itemMap;
 		itemMap = column.getWorld().getItemMap();
-		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
-			for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
+		for (int x = 0 ; x < SpoutColumn.BLOCKS.SIZE ; x++) {
+			for (int z = 0 ; z < SpoutColumn.BLOCKS.SIZE ; z++) {
 				int key = NibblePairHashed.intKey(x, z);
 				Material m = topmostBlocks[x][z];
 				if (m == null) {
@@ -246,9 +245,8 @@ public class ColumnFiles {
 			map.put(new StringTag("biome_manager", manager.getClass().getName()));
 			map.put(new ByteArrayTag("biomes", manager.serialize()));
 		}
-		
+
 		return map;
 
 	}
 }
-

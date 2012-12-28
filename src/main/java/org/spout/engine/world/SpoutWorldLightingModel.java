@@ -39,17 +39,17 @@ import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.api.util.hashing.NibbleQuadHashed;
 
 /**
- * This model can store a diamond-shaped model of blocks to perform lighting on.<br>
+ * This model can store a diamond-shaped model of blocks to perform lighting
+ * on.<br>
  * In addition, it also stores the lists to operate on.
  */
 public class SpoutWorldLightingModel {
+
 	private final SpoutWorldLighting instance;
 	private final boolean sky;
-
 	// Used to debug and log statistics
 	private int changes = 0;
 	private final NanoStopWatch totalTime = new NanoStopWatch();
-
 	// Stores temporary objects to save memory
 	private short[] updates = new short[1000];
 	protected int updateCount = 0;
@@ -74,7 +74,7 @@ public class SpoutWorldLightingModel {
 		this.instance = instance;
 		this.center = sky ? new SkyElement(this, BlockFace.THIS, null) : new BlockElement(this, BlockFace.THIS, null);
 		this.neighbors = new Element[6];
-		for (int i = 0; i < this.neighbors.length; i++) {
+		for (int i = 0 ; i < this.neighbors.length ; i++) {
 			BlockFace face = BlockFaces.NESWBT.get(i);
 			this.neighbors[i] = sky ? new SkyElement(this, face, this.center) : new BlockElement(this, face, this.center);
 		}
@@ -82,10 +82,12 @@ public class SpoutWorldLightingModel {
 
 	/**
 	 * Checks if this model can greaten the lighting at the block specified
+	 *
 	 * @param chunk the block is in
-	 * @param x coordinate of the block
-	 * @param y coordinate of the block
-	 * @param z coordinate of the block
+	 * @param x     coordinate of the block
+	 * @param y     coordinate of the block
+	 * @param z     coordinate of the block
+	 *
 	 * @return True if it can greaten the lighting, False if not
 	 */
 	public boolean canGreater(AreaBlockSource chunk, int x, int y, int z) {
@@ -96,10 +98,12 @@ public class SpoutWorldLightingModel {
 
 	/**
 	 * Checks if this model can refresh the lighting at the block specified
+	 *
 	 * @param chunk the block is in
-	 * @param x coordinate of the block
-	 * @param y coordinate of the block
-	 * @param z coordinate of the block
+	 * @param x     coordinate of the block
+	 * @param y     coordinate of the block
+	 * @param z     coordinate of the block
+	 *
 	 * @return True if it can refresh the lighting, False if not
 	 */
 	public boolean canRefresh(AreaBlockSource chunk, int x, int y, int z) {
@@ -109,6 +113,7 @@ public class SpoutWorldLightingModel {
 
 	/**
 	 * Resolves all the operations in the chunk specified
+	 *
 	 * @param currentChunk in which the updates exist
 	 */
 	public boolean resolve(SpoutChunk chunk) {
@@ -136,7 +141,7 @@ public class SpoutWorldLightingModel {
 						}
 						this.iter = chunk.skyLightOperations.iterator();
 						int i;
-						for (i = 0; i < this.updateCount && this.iter.hasNext(); i++) {
+						for (i = 0 ; i < this.updateCount && this.iter.hasNext() ; i++) {
 							this.updates[i] = iter.next();
 						}
 						if (i != this.updateCount || this.iter.hasNext()) {
@@ -151,7 +156,7 @@ public class SpoutWorldLightingModel {
 				synchronized (chunk.blockLightUpdates) {
 					int length = chunk.blockLightUpdates.size();
 					this.iter = chunk.blockLightUpdates.iterator();
-					for (int i = 0; i < length && this.iter.hasNext(); i++) {
+					for (int i = 0 ; i < length && this.iter.hasNext() ; i++) {
 						int key = iter.next();
 						x = NibbleQuadHashed.key1(key);
 						y = NibbleQuadHashed.key2(key) + chunk.getBlockY();
@@ -169,7 +174,7 @@ public class SpoutWorldLightingModel {
 						}
 						this.iter = chunk.blockLightOperations.iterator();
 						int i;
-						for (i = 0; i < this.updateCount && this.iter.hasNext(); i++) {
+						for (i = 0 ; i < this.updateCount && this.iter.hasNext() ; i++) {
 							this.updates[i] = iter.next();
 						}
 						if (i != this.updateCount || this.iter.hasNext()) {
@@ -186,7 +191,7 @@ public class SpoutWorldLightingModel {
 			int i;
 			short key;
 
-			for (i = 0; i < updateCount; i++) {
+			for (i = 0 ; i < updateCount ; i++) {
 				key = updates[i];
 				x = NibbleQuadHashed.key1(key) + chunk.getBlockX();
 				y = NibbleQuadHashed.key2(key) + chunk.getBlockY();
@@ -274,16 +279,19 @@ public class SpoutWorldLightingModel {
 	 */
 	public void cleanUp() {
 		center.cleanUp();
-		for (Element neigh: this.neighbors) {
+		for (Element neigh : this.neighbors) {
 			neigh.cleanUp();
 		}
 	}
 
 	/**
-	 * Loads the block model assuming that the center block will emit light to the neighbors
+	 * Loads the block model assuming that the center block will emit light to
+	 * the neighbors
+	 *
 	 * @param x coordinate of the center block
 	 * @param y coordinate of the center block
 	 * @param z coordinate of the center block
+	 *
 	 * @return True if it was successful
 	 */
 	public boolean loadEmitting(int x, int y, int z) {
@@ -311,10 +319,13 @@ public class SpoutWorldLightingModel {
 	}
 
 	/**
-	 * Loads the block model assuming that the center block will receive light from the neighbors
+	 * Loads the block model assuming that the center block will receive light
+	 * from the neighbors
+	 *
 	 * @param x coordinate of the center block
 	 * @param y coordinate of the center block
 	 * @param z coordinate of the center block
+	 *
 	 * @return True if it was successful
 	 */
 	public boolean loadReceiving(int x, int y, int z) {
@@ -336,8 +347,9 @@ public class SpoutWorldLightingModel {
 		}
 		return true;
 	}
-	
+
 	public static class BlockElement extends Element {
+
 		private byte blockLight;
 
 		public BlockElement(SpoutWorldLightingModel model, BlockFace offset, Element center) {
@@ -399,6 +411,7 @@ public class SpoutWorldLightingModel {
 	 * Contains the live information of a single block
 	 */
 	public static abstract class Element {
+
 		public int x, y, z;
 		public SpoutChunk chunk;
 		public BlockMaterial material;
@@ -420,7 +433,8 @@ public class SpoutWorldLightingModel {
 		}
 
 		/**
-		 * Checks if this element is a source of light (and does not require occlusion checks)
+		 * Checks if this element is a source of light (and does not require
+		 * occlusion checks)
 		 */
 		public boolean isSource() {
 			return false;
@@ -440,13 +454,16 @@ public class SpoutWorldLightingModel {
 
 		/**
 		 * Adds a new operation for this block
+		 *
 		 * @param operation to perform
 		 */
 		public abstract void addOperation(int operation);
 
 		/**
-		 * Loads the material, data and lighting information of this element<br>
+		 * Loads the material, data and lighting information of this
+		 * element<br>
 		 * This assumes this element is the center
+		 *
 		 * @param x coordinate of the center block element
 		 * @param y coordinate of the center block element
 		 * @param z coordinate of the center block element
@@ -459,8 +476,10 @@ public class SpoutWorldLightingModel {
 		}
 
 		/**
-		 * Loads the material, data and lighting information of this element<br>
-		 * This assumes this element is a neighbor emitting light to the center
+		 * Loads the material, data and lighting information of this
+		 * element<br>
+		 * This assumes this element is a neighbor emitting light to the
+		 * center
 		 */
 		public void loadEmitting() {
 			this.load();
@@ -470,8 +489,10 @@ public class SpoutWorldLightingModel {
 		}
 
 		/**
-		 * Loads the material, data and lighting information of this element<br>
-		 * This assumes this element is a neighbor receiving light from the center
+		 * Loads the material, data and lighting information of this
+		 * element<br>
+		 * This assumes this element is a neighbor receiving light from the
+		 * center
 		 */
 		public void loadReceiving() {
 			this.load();
@@ -481,7 +502,8 @@ public class SpoutWorldLightingModel {
 		}
 
 		/**
-		 * Loads the material, data and lighting information of this element<br>
+		 * Loads the material, data and lighting information of this
+		 * element<br>
 		 */
 		private void load() {
 			if (this.center != this) {
@@ -511,4 +533,5 @@ public class SpoutWorldLightingModel {
 
 		public abstract void setLight(byte light);
 	}
+
 }

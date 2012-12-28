@@ -40,6 +40,7 @@ import org.spout.api.plugin.Plugin;
 import org.spout.api.resource.ResourcePathResolver;
 
 public class JarFilePathResolver implements ResourcePathResolver {
+
 	public JarFile getJar(String host) throws IOException {
 		Plugin p = Spout.getEngine().getPluginManager().getPlugin(host);
 		if (p == null) {

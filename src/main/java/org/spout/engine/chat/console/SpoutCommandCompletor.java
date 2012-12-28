@@ -38,14 +38,16 @@ import java.util.TreeSet;
  * from the list of commands registered with the commands manager
  */
 public class SpoutCommandCompletor implements Completor {
+
 	private final Engine engine;
 
 	public SpoutCommandCompletor(Engine engine) {
 		this.engine = engine;
 	}
+
 	@Override
-	@SuppressWarnings("unchecked")
-	public int complete(String buffer, int cursor, @SuppressWarnings("rawtypes") List candidates) {
+	@SuppressWarnings ("unchecked")
+	public int complete(String buffer, int cursor, @SuppressWarnings ("rawtypes") List candidates) {
 		String start = (buffer == null) ? "" : buffer;
 		TreeSet<String> all = new TreeSet<String>();
 		all.addAll(engine.getRootCommand().getChildNames());
@@ -59,12 +61,12 @@ public class SpoutCommandCompletor implements Completor {
 			}
 
 			/*if (delimiter != null) {
-				int index = can.indexOf(delimiter, cursor);
+			 int index = can.indexOf(delimiter, cursor);
 
-				if (index != -1) {
-					can = can.substring(0, index + 1);
-				}
-			}*/
+			 if (index != -1) {
+			 can = can.substring(0, index + 1);
+			 }
+			 }*/
 
 			candidates.add(can);
 		}

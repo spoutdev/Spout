@@ -66,9 +66,9 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 
 	public Object[] getDefaultLeaveMessage() {
 		if (getPlayer() == null) {
-			return new Object[] {ChatStyle.CYAN, "Unknown", ChatStyle.CYAN , " has left the game"};
+			return new Object[]{ChatStyle.CYAN, "Unknown", ChatStyle.CYAN, " has left the game"};
 		} else {
-			return new Object[] {ChatStyle.CYAN, getPlayer().getDisplayName(), ChatStyle.CYAN, " has left the game"};
+			return new Object[]{ChatStyle.CYAN, getPlayer().getDisplayName(), ChatStyle.CYAN, " has left the game"};
 		}
 	}
 

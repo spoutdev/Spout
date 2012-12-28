@@ -34,6 +34,7 @@ import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.util.SpoutToStringStyle;
 
 public class ChunkDataMessage extends SpoutMessage {
+
 	private final boolean unload;
 	private final int x, y, z;
 	private final short[] blockIds, blockData;

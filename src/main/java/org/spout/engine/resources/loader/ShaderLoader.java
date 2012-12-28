@@ -41,6 +41,7 @@ import org.spout.engine.renderer.shader.ClientShader;
 import org.yaml.snakeyaml.Yaml;
 
 public class ShaderLoader extends BasicResourceLoader<ClientShader> {
+
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
 
 	@Override
@@ -105,7 +106,6 @@ public class ShaderLoader extends BasicResourceLoader<ClientShader> {
 
 	@Override
 	public String[] getExtensions() {
-		return new String[] { "ssf" };
+		return new String[]{"ssf"};
 	}
-
 }

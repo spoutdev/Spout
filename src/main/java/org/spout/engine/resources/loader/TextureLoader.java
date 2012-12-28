@@ -42,6 +42,7 @@ import org.spout.engine.resources.ClientTexture;
 import org.spout.engine.resources.server.ServerTexture;
 
 public class TextureLoader extends BasicResourceLoader<Texture> {
+
 	/**
 	 * An array of strings of the supported extensions in this TextureLoader.
 	 */
@@ -86,11 +87,10 @@ public class TextureLoader extends BasicResourceLoader<Texture> {
 
 	public static String[] unique(String[] strings) {
 		Set<String> set = new HashSet<String>();
-		for (int i = 0; i < strings.length; i++) {
+		for (int i = 0 ; i < strings.length ; i++) {
 			String name = strings[i].toLowerCase();
 			set.add(name);
 		}
 		return (String[]) set.toArray(new String[0]);
 	}
-
 }

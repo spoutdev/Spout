@@ -36,6 +36,7 @@ import org.spout.api.util.thread.SnapshotRead;
  * A snapshotable array of type byte
  */
 public class SnapshotableByteArray implements Snapshotable {
+
 	private final byte[] snapshot;
 	private final byte[] live;
 	private final int[] dirtyArray;
@@ -49,7 +50,7 @@ public class SnapshotableByteArray implements Snapshotable {
 		snapshot = new byte[initial.length];
 		live = new byte[initial.length];
 		dirtyArray = new int[dirtySize];
-		for (int i = 0; i < initial.length; i++) {
+		for (int i = 0 ; i < initial.length ; i++) {
 			snapshot[i] = initial[i];
 			live[i] = initial[i];
 		}
@@ -57,7 +58,9 @@ public class SnapshotableByteArray implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value in the array
+	 *
 	 * @param index to lookup
+	 *
 	 * @return snapshot value
 	 */
 	@SnapshotRead
@@ -67,7 +70,9 @@ public class SnapshotableByteArray implements Snapshotable {
 
 	/**
 	 * Gets the live value in the array
+	 *
 	 * @param index to lookup
+	 *
 	 * @return live value
 	 */
 	@LiveRead
@@ -79,6 +84,7 @@ public class SnapshotableByteArray implements Snapshotable {
 
 	/**
 	 * Sets the value for the next snapshot
+	 *
 	 * @param index to set at
 	 * @param value to set to
 	 */
@@ -101,12 +107,12 @@ public class SnapshotableByteArray implements Snapshotable {
 	public void copySnapshot() {
 		int length = dirtyIndex.get();
 		if (length <= dirtyArray.length) {
-			for (int i = 0; i < length; i++) {
+			for (int i = 0 ; i < length ; i++) {
 				int index = dirtyArray[i];
 				snapshot[index] = live[index];
 			}
 		} else {
-			for (int i = 0; i < live.length; i++) {
+			for (int i = 0 ; i < live.length ; i++) {
 				snapshot[i] = live[i];
 			}
 		}

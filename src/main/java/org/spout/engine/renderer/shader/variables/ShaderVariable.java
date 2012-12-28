@@ -35,6 +35,7 @@ import org.spout.api.render.RenderMode;
 import org.spout.engine.renderer.shader.ShaderVariableNotFoundException;
 
 public abstract class ShaderVariable {
+
 	/**
 	 * Error levels
 	 * 0 - No message
@@ -45,7 +46,7 @@ public abstract class ShaderVariable {
 	int program;
 	int location;
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings ("unused")
 	public ShaderVariable(int program, String name) {
 		if (((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
 			return;  //Shaders don't exist in OpenGL 1.1

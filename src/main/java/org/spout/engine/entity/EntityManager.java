@@ -47,6 +47,7 @@ import org.spout.engine.world.SpoutRegion;
  * A class which manages all of the entities within a world.
  */
 public class EntityManager {
+
 	/**
 	 * The snapshot manager
 	 */
@@ -77,6 +78,7 @@ public class EntityManager {
 
 	/**
 	 * Gets all entities.
+	 *
 	 * @return A collection of entities.
 	 */
 	public Collection<SpoutEntity> getAll() {
@@ -85,6 +87,7 @@ public class EntityManager {
 
 	/**
 	 * Gets all the entities that are in a live state (not the snapshot).
+	 *
 	 * @return A collection of entities
 	 */
 	public Collection<SpoutEntity> getAllLive() {
@@ -93,6 +96,7 @@ public class EntityManager {
 
 	/**
 	 * Gets all the players currently in the engine.
+	 *
 	 * @return The list of players.
 	 */
 	public List<Player> getPlayers() {
@@ -101,7 +105,9 @@ public class EntityManager {
 
 	/**
 	 * Gets an entity by its id.
+	 *
 	 * @param id The id.
+	 *
 	 * @return The entity, or {@code null} if it could not be found.
 	 */
 	public SpoutEntity getEntity(int id) {
@@ -110,6 +116,7 @@ public class EntityManager {
 
 	/**
 	 * Adds an entity to the manager.
+	 *
 	 * @param entity The entity
 	 */
 	public void addEntity(SpoutEntity entity) {
@@ -142,6 +149,7 @@ public class EntityManager {
 
 	/**
 	 * Removes an entity from the manager.
+	 *
 	 * @param entity The entity
 	 */
 	public void removeEntity(SpoutEntity entity) {
@@ -174,7 +182,8 @@ public class EntityManager {
 	}
 
 	/**
-	 * Snapshots the manager and all the entities managed in the SNAPSHOT tickstage.
+	 * Snapshots the manager and all the entities managed in the SNAPSHOT
+	 * tickstage.
 	 */
 	public void copyAllSnapshots() {
 		for (SpoutEntity e : entities.get().values()) {
@@ -185,6 +194,7 @@ public class EntityManager {
 
 	/**
 	 * The region this entity manager oversees
+	 *
 	 * @return region
 	 */
 	public SpoutRegion getRegion() {

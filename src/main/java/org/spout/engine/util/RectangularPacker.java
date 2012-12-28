@@ -40,7 +40,7 @@ import org.spout.engine.resources.ClientTexture;
 
 /**
  * A bin packing algorithm useful for merging multiple textures into one.
- * 
+ *
  * <p>
  * This algorithm is based on a JavaScript algorithm found <a
  * href="http://codeincomplete.com/posts/2011/5/7/bin_packing/">on this
@@ -48,6 +48,7 @@ import org.spout.engine.resources.ClientTexture;
  * </p>
  */
 public class RectangularPacker {
+
 	private final Texture[] textures;
 	private Node root;
 	private Map<Texture, Node> fits;
@@ -55,7 +56,6 @@ public class RectangularPacker {
 
 	private RectangularPacker(List<Texture> textures) {
 		Collections.sort(textures, new Comparator<Texture>() {
-
 			@Override
 			public int compare(Texture a, Texture b) {
 				int heightDiff = b.getHeight() - a.getHeight();
@@ -67,7 +67,7 @@ public class RectangularPacker {
 			}
 		});
 		this.textures = textures.toArray(new Texture[textures.size()]);
-		
+
 		fit();
 		BufferedImage image = generateImage(true);
 		this.texture = new ClientTexture(image);
@@ -84,7 +84,7 @@ public class RectangularPacker {
 
 		fits = new HashMap<Texture, Node>();
 
-		for (int n = 0; n < len; n++) {
+		for (int n = 0 ; n < len ; n++) {
 			Texture texture = textures[n];
 			Node fit;
 
@@ -102,12 +102,12 @@ public class RectangularPacker {
 
 	public Map<Texture, Node> getFits() {
 		return fits; // Don't bother cloning the hashmap; this is a single-use
-						// class since we can't do multiple returns
+		// class since we can't do multiple returns
 	}
 
 	/**
 	 * Generates the packed image.
-	 * 
+	 *
 	 * @return The packed image.
 	 */
 	private BufferedImage generateImage(boolean powerOfTwo) {
@@ -123,16 +123,16 @@ public class RectangularPacker {
 		Graphics2D canvas = image.createGraphics();
 		for (Entry<Texture, Node> entry : fits.entrySet()) {
 			Texture texture = entry.getKey();
-			image.setRGB(0, 0, texture.getWidth(), texture.getHeight(), texture.getImage(), 0, texture.getWidth());			
+			image.setRGB(0, 0, texture.getWidth(), texture.getHeight(), texture.getImage(), 0, texture.getWidth());
 			canvas.drawImage(image, entry.getValue().getX(), entry.getValue().getY(), null);
 		}
 
 		return image;
 	}
-	
+
 	/**
 	 * Gets the resulting texture from the packer.
-	 * 
+	 *
 	 * @return
 	 */
 	public Texture getTexture() {
@@ -141,9 +141,10 @@ public class RectangularPacker {
 
 	/**
 	 * Grows the root node to allow space for another image.
-	 * 
+	 *
 	 * @param w
 	 * @param h
+	 *
 	 * @return
 	 */
 	private Node grow(int w, int h) {
@@ -203,11 +204,12 @@ public class RectangularPacker {
 
 		return null; // this happens when we don't sort.
 	}
-	
+
 	/**
 	 * Packs the given textures into one Texture.
-	 * 
+	 *
 	 * @param textures
+	 *
 	 * @return
 	 */
 	public static RectangularPacker packTextures(List<Texture> textures) {
@@ -218,6 +220,7 @@ public class RectangularPacker {
 	 * Helper object representing a node within the tree of packed rectangles.
 	 */
 	public static class Node {
+
 		private boolean used = false;
 		private int x;
 		private int y;
@@ -250,13 +253,15 @@ public class RectangularPacker {
 		}
 
 		/**
-		 * Finds either this node or a child node that can fit an image with the
+		 * Finds either this node or a child node that can fit an image with
+		 * the
 		 * given width and height.
-		 * 
+		 *
 		 * @param w
 		 * @param h
+		 *
 		 * @return The next available node within this node, or null if a node
-		 *         could not be found.
+		 *               could not be found.
 		 */
 		public Node find(int w, int h) {
 			if (used) {
@@ -277,9 +282,10 @@ public class RectangularPacker {
 
 		/**
 		 * Adds two children to the node.
-		 * 
+		 *
 		 * @param w
 		 * @param h
+		 *
 		 * @return
 		 */
 		public Node split(int w, int h) {
@@ -289,4 +295,5 @@ public class RectangularPacker {
 			return this;
 		}
 	}
+
 }

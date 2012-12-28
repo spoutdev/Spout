@@ -70,14 +70,12 @@ import org.spout.nbt.stream.NBTOutputStream;
 import org.spout.nbt.util.NBTMapper;
 
 public class ChunkFiles {
-	
-    private ChunkFiles() {
-    }
-    
+
+	private ChunkFiles() {
+	}
 	private static final TypeChecker<List<? extends CompoundTag>> checkerListCompoundTag = TypeChecker.tList(CompoundTag.class);
-	
 	public static final byte CHUNK_VERSION = 3;
-	
+
 	public static SpoutChunk loadChunk(SpoutRegion r, int x, int y, int z, InputStream dis, ChunkDataForRegion dataForRegion) {
 		SpoutChunk chunk = null;
 		NBTInputStream is = null;
@@ -95,7 +93,7 @@ public class ChunkFiles {
 			byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), (byte) -1);
 
 			boolean converted = false;
-			
+
 			if (version > CHUNK_VERSION) {
 				Spout.getLogger().log(Level.SEVERE, "Chunk version " + version + " exceeds maximum allowed value of " + CHUNK_VERSION);
 				return null;
@@ -112,7 +110,7 @@ public class ChunkFiles {
 					map = convertV2V3(map);
 				}
 			}
-			
+
 			chunk = loadChunk(r, x, y, z, dataForRegion, map, version);
 			if (converted) {
 				chunk.setModified();
@@ -130,11 +128,11 @@ public class ChunkFiles {
 		}
 		return chunk;
 	}
-	
+
 	public static SpoutChunk loadChunk(SpoutRegion r, int x, int y, int z, ChunkDataForRegion dataForRegion, CompoundMap map, int version) throws IOException {
-		
+
 		SpoutChunk chunk;
-		
+
 		int cx = r.getChunkX() + x;
 		int cy = r.getChunkY() + y;
 		int cz = r.getChunkZ() + z;
@@ -155,7 +153,7 @@ public class ChunkFiles {
 
 		byte populationState = SafeCast.toGeneric(map.get("populationState"), new ByteTag("", PopulationState.POPULATED.getId()), ByteTag.class).getValue();
 		boolean lightStable = SafeCast.toByte(NBTMapper.toTagValue(map.get("lightStable")), (byte) 0) != 0;
-		
+
 		int[] palette = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("palette")), null);
 		int blockArrayWidth = SafeCast.toInt(NBTMapper.toTagValue(map.get("packedWidth")), -1);
 		int[] variableWidthBlockArray = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("packedBlockArray")), null);
@@ -191,7 +189,7 @@ public class ChunkFiles {
 		chunk.getBlockComponents().forEachEntry(new AttachComponentProcedure());
 		return chunk;
 	}
-	
+
 	public static void saveChunk(SpoutWorld world, SpoutChunkSnapshot snapshot, List<DynamicBlockUpdate> blockUpdates, OutputStream dos) {
 		CompoundMap chunkTags = new CompoundMap();
 
@@ -239,9 +237,9 @@ public class ChunkFiles {
 
 		world.getItemMap().save();
 	}
-	
+
 	private static void convertArray(int[] fullState, StringMap from, StringMap to) {
-		for (int i = 0; i < fullState.length; i++) {
+		for (int i = 0 ; i < fullState.length ; i++) {
 			short newId = (short) from.convertTo(to, BlockFullState.getId(fullState[i]));
 			short oldData = BlockFullState.getData(fullState[i]);
 			fullState[i] = BlockFullState.getPacked(newId, oldData);
@@ -249,14 +247,14 @@ public class ChunkFiles {
 	}
 
 	private static boolean componentSkipCheck(int[] fullState) {
-		for (int i = 0; i < fullState.length; i++) {
+		for (int i = 0 ; i < fullState.length ; i++) {
 			if (BlockFullState.getMaterial(fullState[i]) instanceof ComplexMaterial) {
 				return false;
 			}
 		}
 		return true;
 	}
-	
+
 	private static CompoundTag saveBlockComponent(BlockComponentSnapshot snapshot) {
 		if (!snapshot.getData().isEmpty()) {
 			byte[] data = snapshot.getData().serialize();
@@ -273,7 +271,7 @@ public class ChunkFiles {
 
 		return null;
 	}
-	
+
 	private static void loadBlockComponents(SpoutChunk chunk, List<? extends CompoundTag> list) {
 		if (list == null) {
 			return;
@@ -294,7 +292,7 @@ public class ChunkFiles {
 			}
 		}
 	}
-	
+
 	private static ListTag<CompoundTag> saveBlockComponents(List<BlockComponentSnapshot> components) {
 		List<CompoundTag> list = new ArrayList<CompoundTag>(components.size());
 
@@ -359,8 +357,9 @@ public class ChunkFiles {
 		final int data = SafeCast.toInt(NBTMapper.toTagValue(map.get("data")), 0);
 		return new DynamicBlockUpdate(packed, nextUpdate, data);
 	}
-	
+
 	private static class AttachComponentProcedure implements TShortObjectProcedure<BlockComponent> {
+
 		@Override
 		public boolean execute(short a, BlockComponent b) {
 			try {
@@ -374,50 +373,52 @@ public class ChunkFiles {
 
 	/**
 	 * Version 1 to version 2 conversion
-	 * 
-	 * Dynamic block updates converted from using "packed" and "packedv2" to just packedPosition.  This is the same format as "packedv2".
-	 * 
-	 * The conversion has a loader for V1 and a saver for V2.  They both use the DynamicBlockUpdateV1 class for temp storage.
+	 *
+	 * Dynamic block updates converted from using "packed" and "packedv2" to
+	 * just packedPosition. This is the same format as "packedv2".
+	 *
+	 * The conversion has a loader for V1 and a saver for V2. They both use the
+	 * DynamicBlockUpdateV1 class for temp storage.
 	 */
-	
 	private static class DynamicBlockUpdateV1 {
+
 		private final int packed;
 		private final long nextUpdate;
 		private final int data;
-		
+
 		public DynamicBlockUpdateV1(int packed, long nextUpdate, int data) {
 			this.packed = packed;
 			this.nextUpdate = nextUpdate;
 			this.data = data;
 		}
-		
+
 		public int getPacked() {
 			return packed;
 		}
-		
+
 		public long getNextUpdate() {
 			return nextUpdate;
 		}
-		
+
 		public int getData() {
 			return data;
 		}
 	}
-	
+
 	public static CompoundMap convertV1V2(CompoundMap map) {
 		List<? extends CompoundTag> updateList = checkerListCompoundTag.checkTag(map.get("dynamic_updates"));
-		
+
 		List<DynamicBlockUpdateV1> loadedUpdates = new ArrayList<DynamicBlockUpdateV1>(10);
 
 		loadDynamicUpdatesV1(updateList, loadedUpdates);
-		
+
 		ListTag<CompoundTag> newList = saveDynamicUpdatesV2(loadedUpdates);
-		
+
 		map.put(newList);
-		
+
 		return map;
 	}
-	
+
 	private static void loadDynamicUpdatesV1(List<? extends CompoundTag> list, List<DynamicBlockUpdateV1> loadedUpdates) {
 		if (list == null) {
 			return;
@@ -455,7 +456,7 @@ public class ChunkFiles {
 		final int data = SafeCast.toInt(NBTMapper.toTagValue(map.get("data")), 0);
 		return new DynamicBlockUpdateV1(packed, nextUpdate, data);
 	}
-	
+
 	private static ListTag<CompoundTag> saveDynamicUpdatesV2(List<DynamicBlockUpdateV1> updates) {
 		List<CompoundTag> list = new ArrayList<CompoundTag>(updates.size());
 
@@ -478,44 +479,43 @@ public class ChunkFiles {
 
 		return new CompoundTag("update", map);
 	}
-	
+
 	/**
 	 * Version 2 to version 3 conversion
-	 * 
-	 * This removes the option to use the "blocks" and "data" tags.  The "packedWidth" and "packedBlockArray" fields are used instead.
-	 * 
+	 *
+	 * This removes the option to use the "blocks" and "data" tags. The
+	 * "packedWidth" and "packedBlockArray" fields are used instead.
+	 *
 	 * These fields were obsolete anyway.
 	 */
-	
 	private static CompoundMap convertV2V3(CompoundMap map) {
-		
+
 		int[] palette = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("palette")), null);
-		
+
 		if (palette != null) {
 			return map;
 		}
-		
+
 		short[] blocks = SafeCast.toShortArray(NBTMapper.toTagValue(map.get("blocks")), null);
 		short[] data = SafeCast.toShortArray(NBTMapper.toTagValue(map.get("data")), null);
-		
+
 		int[] packed = new int[4096];
-		
-		for (int i = 0; i < 4096; i++) {
+
+		for (int i = 0 ; i < 4096 ; i++) {
 			short d = data == null ? 0 : data[i];
 			packed[i] = BlockFullState.getPacked(blocks[i], d);
 		}
-		
+
 		// Just use the non-compressed format.  The engine will compress the chunks over time.
-		
+
 		palette = new int[0];
 		int[] packetBlockArray = packed;
 		int packedWidth = 16;
-		
+
 		map.put(new IntArrayTag("palette", palette));
 		map.put(new IntTag("packedWidth", packedWidth));
 		map.put(new IntArrayTag("packedBlockArray", packetBlockArray));
-		
+
 		return map;
 	}
-	
 }

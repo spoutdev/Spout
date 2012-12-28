@@ -27,9 +27,10 @@
 package org.spout.engine.renderer.shader;
 
 /**
- * Empty Shader for 1.1 only.  Do not use this for 3.0 ever.
+ * Empty Shader for 1.1 only. Do not use this for 3.0 ever.
  */
 public class EmptyShader extends ClientShader {
+
 	public EmptyShader() {
 		super(null, null);
 	}

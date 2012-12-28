@@ -34,6 +34,7 @@ import org.spout.api.util.thread.SnapshotRead;
  * A snapshotable object that supports primitive shorts
  */
 public class SnapshotableShort implements Snapshotable {
+
 	private volatile short next;
 	private short snapshot;
 
@@ -45,6 +46,7 @@ public class SnapshotableShort implements Snapshotable {
 
 	/**
 	 * Sets the next value for the Snapshotable
+	 *
 	 * @param next
 	 */
 	@DelayedWrite
@@ -54,6 +56,7 @@ public class SnapshotableShort implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value for
+	 *
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
@@ -63,6 +66,7 @@ public class SnapshotableShort implements Snapshotable {
 
 	/**
 	 * Gets the live value
+	 *
 	 * @return the unstable Live "next" value
 	 */
 	@LiveRead

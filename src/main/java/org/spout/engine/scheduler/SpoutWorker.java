@@ -34,11 +34,11 @@ import org.spout.api.scheduler.Worker;
 import org.spout.api.util.future.SimpleFuture;
 
 public class SpoutWorker implements Worker, Runnable {
-	@SuppressWarnings("rawtypes")
+
+	@SuppressWarnings ("rawtypes")
 	private static final Future<?> NOT_SUBMITED = new SimpleFuture();
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings ("rawtypes")
 	private static final Future<?> CANCELLED = new SimpleFuture();
-	
 	private final int id;
 	private final Object owner;
 	private final SpoutTask task;
@@ -68,7 +68,7 @@ public class SpoutWorker implements Worker, Runnable {
 		}
 		this.taskManager = taskManager;
 	}
-	
+
 	public void start(ExecutorService pool) {
 		if (thread != null) {
 			thread.start();
@@ -79,7 +79,7 @@ public class SpoutWorker implements Worker, Runnable {
 			}
 		}
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return id;
@@ -108,7 +108,7 @@ public class SpoutWorker implements Worker, Runnable {
 	public void cancel() {
 		taskManager.cancelTask(task);
 	}
-	
+
 	public void interrupt() {
 		if (thread != null) {
 			thread.interrupt();

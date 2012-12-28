@@ -26,7 +26,6 @@
  */
 package org.spout.engine.chat.console;
 
-
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.Command;
@@ -38,9 +37,11 @@ import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 
 /**
- * An implementation of CommandSource that sends to and receives from various consoles.
+ * An implementation of CommandSource that sends to and receives from various
+ * consoles.
  */
 public class ConsoleCommandSource implements CommandSource {
+
 	private final SpoutEngine engine;
 	private Locale preferredLocale = null;
 

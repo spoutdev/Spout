@@ -36,11 +36,11 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * TripleInt.NULL can be added to HashMaps that don't support null objects/
  */
 public class TripleInt {
+
 	public final static TripleInt NULL = new TripleInt(0, 0, 0);
 	public final int x;
 	public final int y;
 	public final int z;
-	
 	/**
 	 * Hashcode caching
 	 */

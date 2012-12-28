@@ -30,6 +30,7 @@ import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.ManagementRunnable;
 
 public class StartTickTask extends ManagementRunnable {
+
 	private static final long serialVersionUID = 1L;
 	private long delta;
 	private int stage;

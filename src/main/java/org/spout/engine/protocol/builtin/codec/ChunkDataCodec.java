@@ -42,6 +42,7 @@ import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
  *
  */
 public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
+
 	public ChunkDataCodec() {
 		super(ChunkDataMessage.class, 0x08);
 	}
@@ -145,10 +146,10 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 			final byte[] biomeData = hasBiomes ? new byte[Chunk.BLOCKS.AREA] : null;
 
 			int index = 0;
-			for (int i = 0; i < blockIds.length; ++i) {
+			for (int i = 0 ; i < blockIds.length ; ++i) {
 				blockIds[i] = (short) (uncompressedData[index++] | (uncompressedData[index++] << 8));
 			}
-			for (int i = 0; i < blockData.length; ++i) {
+			for (int i = 0 ; i < blockData.length ; ++i) {
 				blockData[i] = (short) (uncompressedData[index++] | (uncompressedData[index++] << 8));
 			}
 			System.arraycopy(uncompressedData, index, blockLight, 0, blockLight.length);

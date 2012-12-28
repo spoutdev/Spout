@@ -31,6 +31,7 @@ import java.awt.Color;
 import org.spout.api.math.Vector3;
 
 public class PositionColor extends VertexFormat {
+
 	Vector3 position;
 	Color color;
 

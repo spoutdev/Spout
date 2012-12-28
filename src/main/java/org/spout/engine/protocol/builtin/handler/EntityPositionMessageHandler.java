@@ -35,9 +35,10 @@ import org.spout.engine.protocol.builtin.SpoutProtocol;
 import org.spout.engine.protocol.builtin.message.EntityPositionMessage;
 
 public class EntityPositionMessageHandler extends MessageHandler<EntityPositionMessage> {
+
 	@Override
 	public void handleClient(Session session, EntityPositionMessage message) {
-		if(!session.hasPlayer()) {
+		if (!session.hasPlayer()) {
 			return;
 		}
 

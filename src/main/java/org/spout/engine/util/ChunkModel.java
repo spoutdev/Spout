@@ -36,6 +36,7 @@ import org.spout.engine.world.SpoutWorld;
  * Stores 9 chunks (1 middle chunk and 8 neighbours) for quick access
  */
 public class ChunkModel {
+
 	private final SpoutWorld world;
 	private int cx, cy, cz;
 	private SpoutChunk[][][] chunks = new SpoutChunk[3][3][3];
@@ -58,9 +59,9 @@ public class ChunkModel {
 			return this;
 		}
 		this.centerRegion = this.center.getRegion();
-		for (int x = 0; x < 3; x++) {
-			for (int y = 0; y < 3; y++) {
-				for (int z = 0; z < 3; z++) {
+		for (int x = 0 ; x < 3 ; x++) {
+			for (int y = 0 ; y < 3 ; y++) {
+				for (int z = 0 ; z < 3 ; z++) {
 					this.loaded[x][y][z] = false;
 				}
 			}
@@ -79,7 +80,8 @@ public class ChunkModel {
 	}
 
 	/**
-	 * Gets if the center chunk of this model was successfully loaded and has been populated
+	 * Gets if the center chunk of this model was successfully loaded and has
+	 * been populated
 	 */
 	public boolean isLoadedAndPopulated() {
 		return this.isLoaded() && this.center.isPopulated();
@@ -87,6 +89,7 @@ public class ChunkModel {
 
 	/**
 	 * Gets the current center chunk of this model
+	 *
 	 * @return
 	 */
 	public SpoutChunk getCenter() {
@@ -97,9 +100,9 @@ public class ChunkModel {
 	 * Clears all references to live chunks and regions
 	 */
 	public void cleanUp() {
-		for (int x = 0; x < 3; x++) {
-			for (int y = 0; y < 3; y++) {
-				for (int z = 0; z < 3; z++) {
+		for (int x = 0 ; x < 3 ; x++) {
+			for (int y = 0 ; y < 3 ; y++) {
+				for (int z = 0 ; z < 3 ; z++) {
 					this.chunks[x][y][z] = null;
 				}
 			}
@@ -110,10 +113,13 @@ public class ChunkModel {
 
 	/**
 	 * Gets the chunk at world chunk coordinates<br>
-	 * Note: Coordinates must be within this model, or index out of bounds will be thrown.
+	 * Note: Coordinates must be within this model, or index out of bounds will
+	 * be thrown.
+	 *
 	 * @param cx coordinate of the chunk
 	 * @param cy coordinate of the chunk
 	 * @param cz coordinate of the chunk
+	 *
 	 * @return The chunk, or null if not available
 	 */
 	public SpoutChunk getChunk(int cx, int cy, int cz) {
@@ -135,10 +141,13 @@ public class ChunkModel {
 
 	/**
 	 * Gets the chunk at world block coordinates<br>
-	 * Note: Coordinates must be within this model, or index out of bounds will be thrown.
+	 * Note: Coordinates must be within this model, or index out of bounds will
+	 * be thrown.
+	 *
 	 * @param bx coordinate of the block
 	 * @param by coordinate of the block
 	 * @param bz coordinate of the block
+	 *
 	 * @return The chunk, or null if not available
 	 */
 	public SpoutChunk getChunkFromBlock(int bx, int by, int bz) {

@@ -42,9 +42,10 @@ import org.spout.engine.protocol.builtin.codec.StringMapCodec;
 import org.spout.engine.protocol.builtin.codec.WorldChangeCodec;
 
 /**
- * 
+ *
  */
 public class SpoutCodecLookupService extends CodecLookupService {
+
 	public SpoutCodecLookupService() {
 		try {
 			/* 0x00 */ bind(LoginCodec.class);

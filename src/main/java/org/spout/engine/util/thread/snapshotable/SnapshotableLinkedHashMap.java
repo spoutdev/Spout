@@ -46,6 +46,7 @@ import org.spout.api.util.thread.SnapshotRead;
  * A snapshotable class for LinkedHashMaps
  */
 public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
+
 	private final Map<K, V> snapshot = new LinkedHashMap<K, V>();
 	private final Map<K, V> unmodifySnapshot = Collections.unmodifiableMap(snapshot);
 	private final Collection<V> unmodifyValues = Collections.unmodifiableCollection(snapshot.values());
@@ -63,8 +64,10 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Adds a key/value pair to the map
+	 *
 	 * @param key   the key
 	 * @param value the value
+	 *
 	 * @return the old value
 	 */
 	@DelayedWrite
@@ -77,8 +80,10 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Adds a key/value pair to the map, if no value exists for the key
+	 *
 	 * @param key   the key
 	 * @param value the value
+	 *
 	 * @return the old value
 	 */
 	@DelayedWrite
@@ -93,7 +98,9 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Removes a key/value pair from the list
+	 *
 	 * @param key the key
+	 *
 	 * @return the old value
 	 */
 	@DelayedWrite
@@ -108,8 +115,10 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Removes a key/value pair from the list
+	 *
 	 * @param key   the key
 	 * @param value the value
+	 *
 	 * @return true if the key/value pair was removed
 	 */
 	@DelayedWrite
@@ -124,6 +133,7 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value
+	 *
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
@@ -133,6 +143,7 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Gets the live value
+	 *
 	 * @return the live set
 	 */
 	@LiveRead
@@ -142,6 +153,7 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Get the values in the map, in order
+	 *
 	 * @return the values
 	 */
 	@SnapshotRead
@@ -151,6 +163,7 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Get the values in the map, in order
+	 *
 	 * @return the values
 	 */
 	@SnapshotRead
@@ -162,8 +175,10 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 	 * Creates a list of keys that have been changed since the last snapshot
 	 * copy.<br>
 	 * <br>
-	 * This method may only be called during the pre-snapshot stage and the list
+	 * This method may only be called during the pre-snapshot stage and the
+	 * list
 	 * only remains valid during that stage.
+	 *
 	 * @return the list of elements that have been updated
 	 */
 	public List<K> getDirtyList() {
@@ -182,6 +197,7 @@ public class SnapshotableLinkedHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Tests if the set is empty
+	 *
 	 * @return true if the set is empty
 	 */
 	public boolean isEmptyLive() {

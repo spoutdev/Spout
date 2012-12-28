@@ -53,6 +53,7 @@ import org.spout.api.util.thread.SnapshotRead;
 import org.spout.engine.world.SpoutChunk.PopulationState;
 
 public class SpoutChunkSnapshot extends ChunkSnapshot {
+
 	/**
 	 * The parent region that manages this chunk
 	 */
@@ -338,6 +339,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	}
 
 	private static class SpoutBlockComponentSnapshot implements BlockComponentSnapshot {
+
 		private final int x, y, z;
 		private final Class<? extends BlockComponent> clazz;
 		private final SerializableMap data;
@@ -377,6 +379,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	}
 
 	private static class BlockSnapshotProcedure implements TShortObjectProcedure<BlockComponent> {
+
 		private final SpoutChunk chunk;
 		private final ArrayList<BlockComponentSnapshot> snapshots = new ArrayList<BlockComponentSnapshot>();
 
@@ -393,4 +396,5 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 			return true;
 		}
 	}
+
 }

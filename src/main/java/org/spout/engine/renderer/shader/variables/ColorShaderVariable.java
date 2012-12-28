@@ -31,6 +31,7 @@ import java.awt.Color;
 import org.lwjgl.opengl.GL20;
 
 public class ColorShaderVariable extends ShaderVariable {
+
 	Color value;
 
 	public ColorShaderVariable(int program, String name, Color value) {

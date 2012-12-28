@@ -45,6 +45,7 @@ import org.spout.engine.filesystem.SharedFileSystem;
  * A file-outputting console
  */
 public class FileConsole extends AbstractConsole {
+
 	private final SimpleDateFormat date;
 	private final SpoutEngine engine;
 	private final String fileNameFormat;
@@ -146,6 +147,7 @@ public class FileConsole extends AbstractConsole {
 	}
 
 	private class LogFlushThread extends Thread {
+
 		public LogFlushThread() {
 			super("Log Flush Thread");
 			this.setDaemon(true);
@@ -153,12 +155,14 @@ public class FileConsole extends AbstractConsole {
 
 		@Override
 		public void run() {
-			while(!this.isInterrupted()) {
+			while (!this.isInterrupted()) {
 				flush();
 				try {
 					sleep(60000);
-				} catch (InterruptedException e) { }
+				} catch (InterruptedException e) {
+				}
 			}
 		}
 	}
+
 }

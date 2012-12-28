@@ -47,10 +47,12 @@ import org.spout.api.math.Vector3;
 import org.spout.engine.world.SpoutRegion;
 
 /**
- * A component that represents the physics object that is a motion of the entity within the world.
+ * A component that represents the physics object that is a motion of the entity
+ * within the world.
  */
 public class SpoutPhysicsComponent extends PhysicsComponent {
 	//TODO persist
+
 	private RigidBody body = null;
 	private DefaultMotionState state;
 	private Vector3 angularVelocity = Vector3.ZERO;
@@ -262,8 +264,10 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	/**
-	 * Gets the collision object which holds the collision shape and is used to calculate physics such as velocity, intertia,
+	 * Gets the collision object which holds the collision shape and is used to
+	 * calculate physics such as velocity, intertia,
 	 * etc. All PhysicsComponents are guaranteed to have a valid object.
+	 *
 	 * @return the CollisionObject
 	 */
 	public CollisionObject getCollisionObject() {
@@ -271,8 +275,10 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	/**
-	 * Gets the MotionState. A MotionState is the "bridge" between Bullet and Spout in-which Bullet tells Spout that the
+	 * Gets the MotionState. A MotionState is the "bridge" between Bullet and
+	 * Spout in-which Bullet tells Spout that the
 	 * object has moved and to update your transforms accordingly.
+	 *
 	 * @return the MotionState
 	 */
 	public DefaultMotionState getMotionState() {
@@ -296,6 +302,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	}
 
 	private class SpoutDefaultMotionState extends DefaultMotionState {
+
 		private final Entity entity;
 
 		public SpoutDefaultMotionState(Entity entity) {
@@ -326,7 +333,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 			} else {
 				resetRot = true;
 			}
-			
+
 			if (resetPos && resetRot) {
 				transform.set(new Matrix4f(MathHelper.toQuaternionf(spoutTransform.getRotation()), MathHelper.toVector3f(point.getX(), point.getY(), point.getZ()), 1));
 				body.setWorldTransform(transform);
@@ -339,4 +346,5 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 			}
 		}
 	}
+
 }

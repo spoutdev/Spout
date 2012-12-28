@@ -34,52 +34,52 @@ public class GL11SpriteBatch extends SpriteBatch {
 	public GL11SpriteBatch(float screenW, float screenH) {
 		super(screenW, screenH);
 	}
-	
-    @Override
+
+	@Override
 	public void render() {
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		
-		for(int i = 0; i < sprites.size(); i++) {
+
+		for (int i = 0 ; i < sprites.size() ; i++) {
 			RenderPart rect = sprites.get(i);
-			
+
 			rect.getRenderMaterial().getShader().setUniform("View", this.view);
 			rect.getRenderMaterial().getShader().setUniform("Projection", this.projection);
 			rect.getRenderMaterial().getShader().setUniform("Model", this.view); //View is always an identity matrix.
-			
+
 			rect.getRenderMaterial().assign();
-			
+
 			GL11.glBegin(GL11.GL_TRIANGLES);
-			
+
 			float r = (float) rect.getColor().getRed() / 255f;
 			float g = (float) rect.getColor().getGreen() / 255f;
 			float b = (float) rect.getColor().getBlue() / 255f;
 			float a = (float) rect.getColor().getAlpha() / 255f;
-			
+
 			GL11.glColor4f(r, g, b, a);
 			GL11.glTexCoord2f(rect.getSource().getX(), rect.getSource().getY());
 			GL11.glVertex3f(rect.getSprite().getX(), rect.getSprite().getY() + rect.getSprite().getHeight(), 0.f);
-			
+
 			GL11.glColor4f(r, g, b, a);
 			GL11.glTexCoord2f(rect.getSource().getX(), rect.getSource().getY() + rect.getSource().getHeight());
-			GL11.glVertex3f(rect.getSprite().getX(), rect.getSprite().getY(), 0.f);	
+			GL11.glVertex3f(rect.getSprite().getX(), rect.getSprite().getY(), 0.f);
 
 			GL11.glColor4f(r, g, b, a);
 			GL11.glTexCoord2f(rect.getSource().getX() + rect.getSource().getWidth(), rect.getSource().getY() + rect.getSource().getHeight());
 			GL11.glVertex3f(rect.getSprite().getX() + rect.getSprite().getWidth(), rect.getSprite().getY(), 0.f);
-			
-			
+
+
 			GL11.glColor4f(r, g, b, a);
-			GL11.glTexCoord2f(rect.getSource().getX(), rect.getSource().getY());	
-			GL11.glVertex3f(rect.getSprite().getX(), rect.getSprite().getY() + rect.getSprite().getHeight(), 0.f);		
-			
+			GL11.glTexCoord2f(rect.getSource().getX(), rect.getSource().getY());
+			GL11.glVertex3f(rect.getSprite().getX(), rect.getSprite().getY() + rect.getSprite().getHeight(), 0.f);
+
 			GL11.glColor4f(r, g, b, a);
 			GL11.glTexCoord2f(rect.getSource().getX() + rect.getSource().getWidth(), rect.getSource().getY() + rect.getSource().getHeight());
 			GL11.glVertex3f(rect.getSprite().getX() + rect.getSprite().getWidth(), rect.getSprite().getY(), 0.f);
-			
+
 			GL11.glColor4f(r, g, b, a);
 			GL11.glTexCoord2f(rect.getSource().getX() + rect.getSource().getWidth(), rect.getSource().getY());
-			GL11.glVertex3f(rect.getSprite().getX() + rect.getSprite().getWidth(), rect.getSprite().getY() + rect.getSprite().getHeight(), 0.f);		
-			
+			GL11.glVertex3f(rect.getSprite().getX() + rect.getSprite().getWidth(), rect.getSprite().getY() + rect.getSprite().getHeight(), 0.f);
+
 			GL11.glEnd();
 		}
 		GL11.glEnable(GL11.GL_DEPTH_TEST);

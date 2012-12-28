@@ -48,6 +48,7 @@ import org.spout.api.util.StringMap;
  * The protocol used in SpoutClient
  */
 public class SpoutProtocol extends Protocol {
+
 	public static final int ENTITY_PROTOCOL_ID = NetworkComponent.getProtocolId(SpoutProtocol.class.getName());
 	public static final SpoutProtocol INSTANCE = new SpoutProtocol();
 	public static final DefaultedKey<Integer> PLAYER_ENTITY_ID = new DefaultedKeyImpl<Integer>("playerEntityId", -1);
@@ -104,12 +105,12 @@ public class SpoutProtocol extends Protocol {
 		session.setNetworkSynchronizer(new SpoutNetworkSynchronizer(session));
 
 		session.send(false, new StringMapMessage(StringMap.REGISTRATION_MAP, StringMapEvent.Action.SET, StringMap.get(StringMap.REGISTRATION_MAP).getItems()));
-        /*StringMap.get(StringMap.REGISTRATION_MAP).registerListener(new EventableListener<StringMapEvent>() {
-            @Override
-            public void onEvent(StringMapEvent event) {
-                session.send(false, new StringMapMessage(event.getAssociatedObject().getId(), StringMapEvent.Action.ADD, event.getModifiedElements()));
-            }
-        });*/ // Not correct - TODO Fix
+		/*StringMap.get(StringMap.REGISTRATION_MAP).registerListener(new EventableListener<StringMapEvent>() {
+		 @Override
+		 public void onEvent(StringMapEvent event) {
+		 session.send(false, new StringMapMessage(event.getAssociatedObject().getId(), StringMapEvent.Action.ADD, event.getModifiedElements()));
+		 }
+		 });*/ // Not correct - TODO Fix
 
 		for (StringMap map : StringMap.getAll()) {
 			session.send(false, new StringMapMessage(map.getId(), StringMapEvent.Action.SET, map.getItems()));

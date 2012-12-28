@@ -42,23 +42,23 @@ import org.yaml.snakeyaml.Yaml;
 public class EntityPrefabLoader extends BasicResourceLoader<ClientEntityPrefab> {
 
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
-	private static final TypeChecker<List<? extends String>> checkerListString =  TypeChecker.tList(String.class);
-	
-	@SuppressWarnings("unchecked")
+	private static final TypeChecker<List<? extends String>> checkerListString = TypeChecker.tList(String.class);
+
+	@SuppressWarnings ("unchecked")
 	@Override
 	public ClientEntityPrefab getResource(InputStream stream) {
 		final Yaml yaml = new Yaml();
 		final Map<? extends String, ?> resourceProperties = checkerMapStringObject.check(yaml.load(stream));
-		
+
 		if (!(resourceProperties.containsKey("Name")) || !(resourceProperties.containsKey("Components")) || !(resourceProperties.containsKey("Data"))) {
 			throw new IllegalStateException("A property is missing (Name, Components or Data)");
 		}
-		
+
 		final Object name = resourceProperties.get("Name");
 		if (!(name instanceof String)) {
 			throw new IllegalStateException("Tried to load an entity prefab but wasn't given a name");
 		}
-		
+
 		final List<? extends String> componentsPath = checkerListString.check(resourceProperties.get("Components"));
 		final List<Class<? extends EntityComponent>> components = new ArrayList<Class<? extends EntityComponent>>();
 		for (String path : componentsPath) {
@@ -70,7 +70,7 @@ public class EntityPrefabLoader extends BasicResourceLoader<ClientEntityPrefab> 
 					componentClass = Class.forName(path);
 				}
 			} catch (ClassNotFoundException e) {
-				throw new IllegalStateException("A component is missing: "+path);
+				throw new IllegalStateException("A component is missing: " + path);
 			}
 			if (EntityComponent.class.isAssignableFrom(componentClass)) {
 				components.add((Class<? extends EntityComponent>) componentClass);
@@ -78,14 +78,14 @@ public class EntityPrefabLoader extends BasicResourceLoader<ClientEntityPrefab> 
 				throw new IllegalStateException("This is not an entity component.");
 			}
 		}
-		
+
 		final Map<? extends String, ?> datasOld = checkerMapStringObject.check(resourceProperties.get("Data"));
 		final Map<String, Object> datas = new HashMap<String, Object>();
 		datas.putAll(datasOld);
-		
-		return new ClientEntityPrefab((String)name, components, datas);
+
+		return new ClientEntityPrefab((String) name, components, datas);
 	}
-	
+
 	@Override
 	public String getProtocol() {
 		return "entity";
@@ -93,12 +93,11 @@ public class EntityPrefabLoader extends BasicResourceLoader<ClientEntityPrefab> 
 
 	@Override
 	public String[] getExtensions() {
-		return new String[] { "sep" }; //Spout Entity Prefab
+		return new String[]{"sep"}; //Spout Entity Prefab
 	}
 
 	@Override
 	public String getFallbackResourceName() {
 		return "entity://Spout/fallbacks/entity.sep";
 	}
-
 }

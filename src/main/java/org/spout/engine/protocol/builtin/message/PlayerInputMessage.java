@@ -32,6 +32,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.util.SpoutToStringStyle;
 
 public class PlayerInputMessage extends SpoutMessage {
+
 	private final short inputFlags;
 	private final short mouseDx, mouseDy;
 
@@ -41,7 +42,6 @@ public class PlayerInputMessage extends SpoutMessage {
 		this.mouseDx = mouseDx;
 		this.mouseDy = mouseDy;
 	}
-
 
 	public short getInputFlags() {
 		return inputFlags;

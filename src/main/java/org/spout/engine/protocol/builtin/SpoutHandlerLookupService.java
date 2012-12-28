@@ -55,6 +55,7 @@ import org.spout.engine.protocol.builtin.handler.StringMapMessageHandler;
 import org.spout.engine.protocol.builtin.handler.WorldChangeMessageHandler;
 
 public class SpoutHandlerLookupService extends HandlerLookupService {
+
 	public SpoutHandlerLookupService() {
 		try {
 			bind(LoginMessage.class, LoginMessageHandler.class);
