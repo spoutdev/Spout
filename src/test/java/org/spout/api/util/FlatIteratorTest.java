@@ -26,13 +26,13 @@
  */
 package org.spout.api.util;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.spout.api.math.IntVector3;
 
-public class OutwardIteratorTest {
+public class FlatIteratorTest {
 	
 	private final int SIZE = 40;
 	
@@ -40,20 +40,20 @@ public class OutwardIteratorTest {
 	
 	private final int[][][] hits = new int[SIZE][SIZE][SIZE];
 	
-	IntVector3 center = new IntVector3(SIZE / 2, SIZE / 2, SIZE / 2);
+	IntVector3 center = new IntVector3(SIZE / 2, SIZE / 4, SIZE / 2);
+	int height = SIZE / 3;
 	
 	@Test
 	public void test() {
 		
-		OutwardIterator itr = new OutwardIterator(center.getX(), center.getY(), center.getZ(), DIST);
+		FlatIterator itr = new FlatIterator(center.getX(), center.getY(), center.getZ(), height, DIST);
 		
 		int prev = -1;
 
 		while (itr.hasNext()) {
 			IntVector3 next = itr.next();
 			int dist = getDistance(center, next);
-			System.out.println(next);
-			assertTrue("Distance readback is incorrect", dist == itr.getDistance());
+			assertTrue("Distance readback is incorrect, exp " + dist + ", got " + itr.getDistance(), dist == itr.getDistance());
 			assertTrue("Iterator moved inwards", dist >= prev);
 			add(next);
 			prev = dist;
@@ -64,7 +64,7 @@ public class OutwardIteratorTest {
 	}
 	
 	private int getDistance(IntVector3 a, IntVector3 b) {
-		return Math.abs(a.getX() - b.getX()) + Math.abs(a.getY() - b.getY()) + Math.abs(a.getZ() - b.getZ());
+		return Math.abs(a.getX() - b.getX()) + Math.abs(a.getZ() - b.getZ());
 		
 	}
 	
@@ -76,13 +76,21 @@ public class OutwardIteratorTest {
 		assertFalse("Coordinate hit more than once " + v, (hits[v.getX()][v.getY()][v.getZ()]++) > 0);
 	}
 	
+	private boolean inRange(int distance, int y) {
+		if (y >= center.getY() + height || y < center.getY()) {
+			return false;
+		}
+		return distance <= DIST;
+	}
+	
 	private boolean check() {
 		for (int x = 0; x < SIZE; x++) {
 			for (int y = 0; y < SIZE; y++) {
 				for (int z = 0; z < SIZE; z++) {
 					int distance = getDistance(center, new IntVector3(x, y, z));
-					assertTrue("Location missed " + x + " " + y + " " + z, distance > DIST || hits[x][y][z] == 1);
-					assertTrue("Location out of range hit " + x + " " + y + " " + z, distance <= DIST || hits[x][y][z] == 0);
+					boolean inRange = inRange(distance, y);
+					assertTrue("Location missed " + x + " " + y + " " + z, !inRange || hits[x][y][z] == 1);
+					assertTrue("Location out of range hit " + x + " " + y + " " + z, inRange || hits[x][y][z] == 0);
 				}
 			}
 		}
