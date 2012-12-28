@@ -31,6 +31,7 @@ import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Level;
 
 import jline.ArgumentCompletor;
 import jline.Completor;
@@ -142,7 +143,7 @@ public class JLineConsole extends AbstractConsole {
 
 					engine.getScheduler().scheduleSyncDelayedTask(null, new CommandTask(command.trim()));
 				} catch (Exception ex) {
-					engine.getLogger().severe("Exception that shouldn't happen while executing command: " + ex.getMessage());
+					engine.getLogger().log(Level.SEVERE, "Exception that shouldn''t happen while executing command: {0}", ex.getMessage());
 					ex.printStackTrace();
 				}
 			}

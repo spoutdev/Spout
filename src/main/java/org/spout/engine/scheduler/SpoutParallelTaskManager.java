@@ -166,11 +166,9 @@ public class SpoutParallelTaskManager implements TaskManager {
 			}
 		}
 		while ((region = deadRegions.poll()) != null) {
-			while (newRegions.remove(region))
-				;
+			while (newRegions.remove(region));
 			for (ParallelTaskInfo info : activeTasks.values(ParallelTaskInfo.EMPTY_ARRAY)) {
-				while (info.remove(region))
-					;
+				while (info.remove(region));
 			}
 		}
 	}
@@ -254,5 +252,4 @@ public class SpoutParallelTaskManager implements TaskManager {
 	public boolean isQueued(int taskId) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
-
 }

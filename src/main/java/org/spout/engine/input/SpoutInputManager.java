@@ -179,7 +179,7 @@ public class SpoutInputManager implements InputManager {
 
 		// Handle mouse
 		if (org.lwjgl.input.Mouse.isCreated()) {
-			int x = 0, y= 0;
+			int x, y;
 			
 			while (org.lwjgl.input.Mouse.next()) {
 

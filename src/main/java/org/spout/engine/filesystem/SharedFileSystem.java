@@ -47,7 +47,7 @@ import org.spout.engine.filesystem.path.JarFilePathResolver;
 import org.spout.engine.filesystem.path.ZipFilePathResolver;
 
 /**
- * The basic filesystem of Spout.
+ * The basic file system of Spout.
  */
 public class SharedFileSystem implements FileSystem {
 	private static File parentDir = new File(".");

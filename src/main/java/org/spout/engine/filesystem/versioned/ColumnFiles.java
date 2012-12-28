@@ -57,6 +57,9 @@ import org.spout.nbt.util.NBTMapper;
 
 public class ColumnFiles {
 	
+    private ColumnFiles() {        
+    }
+    
 	public static final int COLUMN_VERSION = 1;
 	
 	public static void readColumn(InputStream in, SpoutColumn column, AtomicInteger lowestY, BlockMaterial[][] topmostBlocks) {
@@ -65,7 +68,7 @@ public class ColumnFiles {
 			return;
 		}
 
-		NBTInputStream is = null;
+		NBTInputStream is;
 		DataInputStream dataStream = new DataInputStream(in);
 		try {
 			is = new NBTInputStream(dataStream, false);
@@ -152,7 +155,7 @@ public class ColumnFiles {
 			}
 		}
 
-		BiomeManager manager = null;
+		BiomeManager manager;
 		String biomeManagerClass = SafeCast.toString(NBTMapper.toTagValue(map.get("biome_manager")), null);
 		byte[] biomes = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("biomes")), null); 
 		

@@ -42,7 +42,7 @@ import org.spout.engine.resources.ClientTexture;
  * A bin packing algorithm useful for merging multiple textures into one.
  * 
  * <p>
- * This algorithm is based on a Javascript algorithm found <a
+ * This algorithm is based on a JavaScript algorithm found <a
  * href="http://codeincomplete.com/posts/2011/5/7/bin_packing/">on this
  * page</a>.
  * </p>

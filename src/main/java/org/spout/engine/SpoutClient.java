@@ -408,7 +408,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			files = new String[]{"liblwjgl.so", "liblwjgl64.so", "libopenal.so", "libopenal64.so", "libjinput-linux.so", "libjinput-linux64.so"};
 			osPath = "linux/";
 		} else {
-			Spout.getEngine().getLogger().log(Level.SEVERE, "Error loading natives of operating system type: " + SystemUtils.OS_NAME);
+			Spout.getEngine().getLogger().log(Level.SEVERE, "Error loading natives of operating system type: {0}", SystemUtils.OS_NAME);
 			return;
 		}
 

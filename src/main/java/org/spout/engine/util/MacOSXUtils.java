@@ -36,6 +36,9 @@ import java.lang.reflect.Method;
  */
 public class MacOSXUtils {
 
+    private MacOSXUtils() {
+    }
+    
 	private static final boolean isOSX;
 	private static final int osVersion;
 	static {

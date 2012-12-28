@@ -31,7 +31,6 @@ import java.util.ArrayList;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GLContext;
 import org.spout.api.model.mesh.Mesh;
 import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.Vertex;
@@ -94,31 +93,35 @@ public class BaseMesh extends Resource implements Mesh{
 					texture0Buffer.put(v.texCoord0.getY());
 				}
 				
-				if(indexate)
-					verticeIndex[i++] = v.id;
+				if(indexate) {
+                    verticeIndex[i++] = v.id;
+                }
 			}
 		}
 
 		vertexBuffer.flip();
 
-		if(normal)
-			normalBuffer.flip();
-
-		if(color)
-			colorBuffer.flip();
-
-		if(texture0)
-			texture0Buffer.flip();
+		if(normal) {
+            normalBuffer.flip();
+        }
+		if(color) {
+            colorBuffer.flip();
+        }
+		if(texture0) {
+            texture0Buffer.flip();
+        }
 
 		container.element = numVerticies;
 		container.setBuffers(BatchVertexRenderer.VERTEX_LAYER, vertexBuffer);
-		if(normal)
-			container.setBuffers(BatchVertexRenderer.NORMAL_LAYER, normalBuffer);
-		if(color)
-			container.setBuffers(BatchVertexRenderer.COLOR_LAYER, colorBuffer);
-		if(texture0)
-			container.setBuffers(BatchVertexRenderer.TEXTURE0_LAYER, texture0Buffer);
-		
+		if(normal) {
+            container.setBuffers(BatchVertexRenderer.NORMAL_LAYER, normalBuffer);
+        }
+		if(color) {
+            container.setBuffers(BatchVertexRenderer.COLOR_LAYER, colorBuffer);
+        }
+		if(texture0) {
+            container.setBuffers(BatchVertexRenderer.TEXTURE0_LAYER, texture0Buffer);
+        }		
 		container.setVerticeIndex(verticeIndex);
 	}
 
@@ -127,12 +130,12 @@ public class BaseMesh extends Resource implements Mesh{
 	}
 	
 	public void batch(){
-		if (renderer == null)
-			renderer = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
-
-		if(batched)
-			return;
-
+		if (renderer == null) {
+            renderer = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
+        }
+		if(batched) {
+            return;
+        }
 		renderer.begin();
 		renderer.setGLBufferContainer(container);
 		renderer.end();
@@ -140,9 +143,9 @@ public class BaseMesh extends Resource implements Mesh{
 	}
 
 	public void render(RenderMaterial material){
-		if (!batched)
-			throw new IllegalStateException("Cannot render without batching first!");
-
+		if (!batched) {
+            throw new IllegalStateException("Cannot render without batching first!");
+        }
 		SnapshotRender snapshotRender = new SnapshotRender(material);
 		material.preRender(snapshotRender);
 		renderer.render(material);

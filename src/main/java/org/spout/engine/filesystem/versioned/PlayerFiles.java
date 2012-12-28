@@ -47,7 +47,10 @@ import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 
 public class PlayerFiles {
-	
+
+    private PlayerFiles() {
+    }
+    
 	public static void savePlayerData(List<SpoutPlayer> Players) {
 		for (SpoutPlayer player : Players) {
 			savePlayerData(player);

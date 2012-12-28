@@ -67,7 +67,7 @@ public class AdministrationCommands {
 	@Command(aliases = "stop", usage = "[message]", desc = "Stop the server!", max = -1)
 	@CommandPermissions("spout.command.stop")
 	public void stop(CommandContext args, CommandSource source) {
-		String message = "Engine halting";
+		String message;
 		switch (Spout.getPlatform()) {
 			case CLIENT:
 				message = "Client halting";

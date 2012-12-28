@@ -78,8 +78,9 @@ public class SpriteBatch {
 	}
 
 	public void render() {
-		if(sprites.isEmpty())
-			return;
+		if(sprites.isEmpty()) {
+            return;
+        }
 
 		BufferContainer container = new BufferContainer();
 
@@ -183,7 +184,7 @@ public class SpriteBatch {
 
 		}
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		((BatchVertexRenderer)renderer).release();
+		renderer.release();
 	}
 
 	public void drawText(ChatArguments text, ClientFont font, float x, float y, float size) {
@@ -202,8 +203,9 @@ public class SpriteBatch {
 	}
 
 	public void draw(List<RenderPart> parts) {
-		for (RenderPart part : parts)
-			draw(part);
+		for (RenderPart part : parts) {
+            draw(part);
+        }
 	}
 
 	public void draw(RenderMaterial material, float x, float y, float w, float h) {

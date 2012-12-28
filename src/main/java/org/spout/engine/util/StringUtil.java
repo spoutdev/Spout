@@ -27,6 +27,10 @@
 package org.spout.engine.util;
 
 public class StringUtil {
+    
+    private StringUtil() {
+    }
+    
 	public static int getLevenshteinDistance(String s, String t) {
 		if (s == null || t == null) {
 			throw new IllegalArgumentException("Strings must not be null");

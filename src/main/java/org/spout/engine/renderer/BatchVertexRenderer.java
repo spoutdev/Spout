@@ -59,20 +59,24 @@ public abstract class BatchVertexRenderer implements Renderer {
 
 		switch (client.getRenderMode()) {
 		case GL11:
-			for(int i = 0; i < number; i++)
-				list.add(new GL11BatchVertexRenderer(renderMode));
+			for(int i = 0; i < number; i++) {
+                list.add(new GL11BatchVertexRenderer(renderMode));
+            }
 			return;
 		case GL20:
-			for(int i = 0; i < number; i++)
-				list.add(new GL20BatchVertexRenderer(renderMode));
+			for(int i = 0; i < number; i++) {
+                list.add(new GL20BatchVertexRenderer(renderMode));
+            }
 			return;
 		case GL30:
-			for(int i = 0; i < number; i++)
-				list.add(new GL30BatchVertexRenderer(renderMode));
+			for(int i = 0; i < number; i++) {
+                list.add(new GL30BatchVertexRenderer(renderMode));
+            }
 			return;
 		case GLES20:
-			for(int i = 0; i < number; i++)
-				list.add(new GLES20BatchVertexRenderer(renderMode));
+			for(int i = 0; i < number; i++) {
+                list.add(new GLES20BatchVertexRenderer(renderMode));
+            }
 			return;
 		default:
 			throw new IllegalArgumentException("GL Mode:" + client.getRenderMode() + " Not reconized");
@@ -198,9 +202,12 @@ public abstract class BatchVertexRenderer implements Renderer {
 	 */
 	protected abstract void doRender(RenderMaterial material, int startVert, int endVert);
 
+    @Override
 	public final void render(RenderMaterial material, int startVert, int endVert) {
 		checkRender();
-		if(getVertexCount() <= 0) throw new IllegalStateException("Cannot render 0 verticies");
+		if(getVertexCount() <= 0) {
+            throw new IllegalStateException("Cannot render 0 verticies");
+        }
 		doRender(material, startVert, endVert);
 	}
 
@@ -252,6 +259,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 		list.add(this);
 	}
 
+    @Override
 	public void finalize() { }
 
 	public void setBufferContainer(BufferContainer bufferContainer) {
@@ -263,8 +271,9 @@ public abstract class BatchVertexRenderer implements Renderer {
 
 			if(buffer instanceof TFloatArrayList){
 
-				if(((TFloatArrayList) buffer).isEmpty())
-					throw new IllegalStateException("Buffer can't be empty");
+				if(((TFloatArrayList) buffer).isEmpty()) {
+                    throw new IllegalStateException("Buffer can't be empty");
+                }
 
 				FloatBuffer floatBuffer = BufferUtils.createFloatBuffer(((TFloatArrayList) buffer).size());
 				floatBuffer.clear();
@@ -284,8 +293,9 @@ public abstract class BatchVertexRenderer implements Renderer {
 	public void setGLBufferContainer(GLBufferContainer container) {
 		buffers.clear();
 
-		for(Entry<Integer, Buffer> entry : container.getBuffers().entrySet())
-			buffers.put(entry.getKey(), entry.getValue());
+		for(Entry<Integer, Buffer> entry : container.getBuffers().entrySet()) {
+            buffers.put(entry.getKey(), entry.getValue());
+        }
 
 		numVertices = container.element;
 	}

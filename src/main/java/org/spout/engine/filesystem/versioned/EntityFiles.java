@@ -59,6 +59,9 @@ import org.spout.nbt.util.NBTMapper;
 
 public class EntityFiles {
 
+    private EntityFiles() {
+    }
+    
 	public static final byte ENTITY_VERSION = 2;
 	
 	@SuppressWarnings("rawtypes")
@@ -221,7 +224,7 @@ public class EntityFiles {
 		}
 		map.put(new ListTag<StringTag>("components", StringTag.class, components));
 
-		CompoundTag tag = null;
+		CompoundTag tag;
 		if (e instanceof PlayerSnapshot) {
 			tag = new CompoundTag(e.getWorldName(), map);
 		} else {

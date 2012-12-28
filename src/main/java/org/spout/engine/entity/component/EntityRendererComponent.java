@@ -26,7 +26,6 @@
  */
 package org.spout.engine.entity.component;
 
-import javax.vecmath.Matrix4f;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
@@ -34,12 +33,10 @@ import org.lwjgl.BufferUtils;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.component.impl.ModelComponent;
-import org.spout.api.component.impl.PhysicsComponent;
 import org.spout.api.component.impl.PredictableTransformComponent;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
-import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
 import org.spout.api.model.mesh.Mesh;

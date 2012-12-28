@@ -35,7 +35,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -232,6 +231,7 @@ public class SpoutTaskManager implements TaskManager {
 		return activeTasks.remove(task.getTaskId(), task);
 	}
 
+    @Override
 	public boolean isQueued(int taskId) {
 		return activeTasks.containsKey(taskId);
 	}
@@ -276,7 +276,7 @@ public class SpoutTaskManager implements TaskManager {
 		long startTime = System.currentTimeMillis();
 		while (System.currentTimeMillis() < startTime + timeout) {
 			try {
-				if (activeWorkers.size() == 0) {
+				if (activeWorkers.isEmpty()) {
 					return true;
 				}
 				Thread.sleep(10);

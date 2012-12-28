@@ -1,4 +1,4 @@
-/*
+    /*
  * This file is part of Spout.
  *
  * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
@@ -133,7 +133,6 @@ import org.spout.engine.world.WorldSavingThread;
 public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private static final Logger logger = Logger.getLogger("Spout");
 	private final String name = "Spout Engine";
-	private final Random random = new Random();
 	private final CommonSecurityManager securityManager = new CommonSecurityManager(0); //TODO Need to integrate this/evaluate security in the engine.
 	private final CommonPluginManager pluginManager = new CommonPluginManager(this, securityManager, 0.0);
 	private final ConsoleManager consoleManager;
@@ -241,7 +240,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 		if (checkWorlds) {
 			//At least one plugin should have registered atleast one world
-			if (loadedWorlds.getLive().size() == 0) {
+			if (loadedWorlds.getLive().isEmpty()) {
 				throw new IllegalStateException("There are no loaded worlds! You must install a plugin that creates a world (Did you forget Vanilla?)");
 			}
 
@@ -835,6 +834,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		return completions;
 	}
 
+    @Override
 	public DefaultPermissions getDefaultPermissions() {
 		return defaultPerms;
 	}

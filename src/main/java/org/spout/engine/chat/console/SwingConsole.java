@@ -137,7 +137,8 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 			close();
 		}
 
-		(thread = new MessageAdderThread()).start();
+		thread = new MessageAdderThread();
+        thread.start();
 
 		frame = new JFrame();
 		frame.setTitle("Spout");

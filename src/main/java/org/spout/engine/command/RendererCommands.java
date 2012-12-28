@@ -30,7 +30,6 @@ import org.spout.api.Spout;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
-
 import org.spout.engine.SpoutClient;
 
 public class RendererCommands {
@@ -44,6 +43,7 @@ public class RendererCommands {
 	public void toggleWireframe(CommandContext args, CommandSource source) {
 		
 		client.getScheduler().enqueueRenderTask(new Runnable() {
+            @Override
 			public void run() {
 				Spout.log("Toggling Wireframe");
 				client.getRenderer().toggleWireframe();

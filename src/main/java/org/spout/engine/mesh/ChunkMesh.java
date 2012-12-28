@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
@@ -143,11 +142,10 @@ public class ChunkMesh{
 			Vector3 position, boolean toRender[], OrientedMesh mesh) {
 		List<MeshFace> meshs = new ArrayList<MeshFace>();
 		Vector3 model = new Vector3(position.getX(), position.getY(), position.getZ());
-		for(OrientedMeshFace meshFace : mesh){
-
-			if(!meshFace.canRender(toRender))
-				continue;
-
+		for(OrientedMeshFace meshFace : mesh) {
+			if(!meshFace.canRender(toRender)) {
+                continue;
+            }
 			Iterator<Vertex> it = meshFace.iterator();
 			Vertex v1 = new Vertex(it.next());
 			Vertex v2 = new Vertex(it.next());
@@ -213,10 +211,9 @@ public class ChunkMesh{
 				fullyOccluded = false;
 			}
 		}
-
-		if(fullyOccluded)
-			return;
-
+		if(fullyOccluded) {
+            return;
+        }
 		SnapshotMesh snapshotMesh = new SnapshotMesh(material, chunkSnapshotModel, new Point(position, world), toRender);
 
 		renderMaterial.preMesh(snapshotMesh);

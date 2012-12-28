@@ -42,6 +42,10 @@ import org.spout.engine.SpoutClient;
  * Class to create the input command structure that modifies {@link org.spout.api.entity.state.PlayerInputState}
  */
 public class InputCommands {
+    
+    private InputCommands() {
+    }
+    
 	public static void setupInputCommands(Engine engine, Command parent) {
 		for (PlayerInputState.Flags flag : PlayerInputState.Flags.values()) {
 			parent.addSubCommand(engine, "+" + flag.name())
@@ -70,17 +74,17 @@ public class InputCommands {
 			if (!(source instanceof Player)) {
 				throw new CommandException("Source must be a player!");
 			}
-			if(Spout.getPlatform() != Platform.CLIENT) throw new CommandException("Must be on the client");
-			
+			if(Spout.getPlatform() != Platform.CLIENT) {
+                throw new CommandException("Must be on the client");
+            }			
 			SpoutClient c = (SpoutClient)Spout.getEngine();
 			c.getScheduler().enqueueRenderTask(new Runnable(){
+                @Override
 				public void run(){
 					((SpoutClient)Spout.getEngine()).getRenderer().toggleDebugInfos();
 				}
-			});
-			
-		}
-		
+			});			
+		}		
 	}
 	
 	public static class InputFlagHandler implements CommandExecutor {

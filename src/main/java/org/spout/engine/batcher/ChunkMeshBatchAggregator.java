@@ -69,7 +69,7 @@ public class ChunkMeshBatchAggregator extends Cube {
 		SnapshotBatch snapshotBatch = new SnapshotBatch(material);
 
 		material.preBatch(snapshotBatch);
-		((BatchVertexRenderer)renderer).setBufferContainer(bufferContainer);
+		renderer.setBufferContainer(bufferContainer);
 		material.postBatch(snapshotBatch);
 
 		renderer.end();
@@ -88,14 +88,14 @@ public class ChunkMeshBatchAggregator extends Cube {
 		}
 	}
 
+    @Override
 	public void finalize() {
 		if (closed) {
 			throw new IllegalStateException("Already closed");
 		}
 
 		bufferContainer = null;
-		((BatchVertexRenderer)renderer).release();
-
+		renderer.release();
 		closed = true;
 	}
 
@@ -124,5 +124,4 @@ public class ChunkMeshBatchAggregator extends Cube {
 	public boolean equals(Object obj) {
 		return obj == this;
 	}
-
 }

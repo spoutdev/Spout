@@ -71,6 +71,9 @@ import org.spout.nbt.util.NBTMapper;
 
 public class ChunkFiles {
 	
+    private ChunkFiles() {
+    }
+    
 	private static final TypeChecker<List<? extends CompoundTag>> checkerListCompoundTag = TypeChecker.tList(CompoundTag.class);
 	
 	public static final byte CHUNK_VERSION = 3;
@@ -130,7 +133,7 @@ public class ChunkFiles {
 	
 	public static SpoutChunk loadChunk(SpoutRegion r, int x, int y, int z, ChunkDataForRegion dataForRegion, CompoundMap map, int version) throws IOException {
 		
-		SpoutChunk chunk = null;
+		SpoutChunk chunk;
 		
 		int cx = r.getChunkX() + x;
 		int cy = r.getChunkY() + y;
@@ -225,7 +228,7 @@ public class ChunkFiles {
 
 		CompoundTag chunkCompound = new CompoundTag("chunk", chunkTags);
 
-		NBTOutputStream os = null;
+		NBTOutputStream os;
 		try {
 			os = new NBTOutputStream(dos, false);
 			os.writeTag(chunkCompound);

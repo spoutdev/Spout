@@ -35,6 +35,7 @@ public class GL11SpriteBatch extends SpriteBatch {
 		super(screenW, screenH);
 	}
 	
+    @Override
 	public void render() {
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		

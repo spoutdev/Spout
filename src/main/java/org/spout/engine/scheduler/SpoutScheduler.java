@@ -38,7 +38,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 
-import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
 import org.spout.api.Client;
 import org.spout.api.Engine;
@@ -303,9 +302,10 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	private class MainThread extends Thread {
+        
 		public MainThread() {
 			super("MainThread");
-			ThreadsafetyManager.setMainThread(this);
+			ThreadsafetyManager.setMainThread(this); //Change 'this' leaky constructor
 		}
 
 		@Override
@@ -377,7 +377,7 @@ public final class SpoutScheduler implements Scheduler {
 			long delay = 2000;
 			while (!taskManager.waitForAsyncTasks(delay)) {
 				List<Worker> workers = taskManager.getActiveWorkers();
-				if (workers.size() == 0) {
+				if (workers.isEmpty()) {
 					break;
 				}
 				Spout.getLogger().info("Unable to shutdown due to async tasks still running");
@@ -391,7 +391,7 @@ public final class SpoutScheduler implements Scheduler {
 					}
 				}
 				if (delay < 8000) {
-					delay = delay << 1;
+					delay <<= 1;
 				}
 			}
 

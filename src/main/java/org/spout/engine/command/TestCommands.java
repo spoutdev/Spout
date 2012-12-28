@@ -106,9 +106,9 @@ public class TestCommands {
 	public void getPluginDetails(CommandContext args, CommandSource source) throws CommandException {
 
 		// File and filename
-		String filename = "";
+		String filename;
 		String standpath = "pluginreports";
-		File file = null;
+		File file;
 
 		// Getting date
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
