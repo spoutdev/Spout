@@ -30,14 +30,17 @@ import java.awt.Window;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-
 /**
- * Mac OS X-specific utility functions. If these are invoked when Mac OS X is not the active OS, they will do nothing (or return null)
+ * Mac OS X-specific utility functions. If these are invoked when Mac OS X is
+ * not the active OS, they will do nothing (or return null)
  */
 public class MacOSXUtils {
 
+	private MacOSXUtils() {
+	}
 	private static final boolean isOSX;
 	private static final int osVersion;
+
 	static {
 		isOSX = System.getProperty("os.name").toLowerCase().contains("mac");
 		if (isOSX) {
@@ -56,8 +59,8 @@ public class MacOSXUtils {
 	public static int getOSXVersion() {
 		return osVersion;
 	}
-
 	private static final Method fullScreenUtilities_setWindowCanFullScreenMethod;
+
 	static {
 		Method m = null;
 		try {
@@ -84,7 +87,6 @@ public class MacOSXUtils {
 			}
 		}
 	}
-
 	private static final Object application;
 
 	static {
@@ -105,6 +107,4 @@ public class MacOSXUtils {
 	public static Object Application_getApplication() {
 		return application;
 	}
-
-
 }

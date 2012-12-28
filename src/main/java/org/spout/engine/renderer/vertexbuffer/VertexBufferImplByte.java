@@ -33,20 +33,17 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 
-public class VertexBufferImplByte implements VertexBuffer{	
-	int usage = GL15.GL_STATIC_DRAW;
+public class VertexBufferImplByte implements VertexBuffer {
 
+	int usage = GL15.GL_STATIC_DRAW;
 	String elementName;
 	int type;
-
 	int vboId = -1;
-
 	int size;
-
 	int elements;
 	int layout;
 
-	public VertexBufferImplByte(String name, int elements, int layout){
+	public VertexBufferImplByte(String name, int elements, int layout) {
 		elementName = name;
 		this.elements = elements;
 		this.layout = layout;
@@ -58,20 +55,24 @@ public class VertexBufferImplByte implements VertexBuffer{
 	}
 
 	public void flush(ByteBuffer buffer) {
-		if(vboId == -1) vboId = GL15.glGenBuffers();
+		if (vboId == -1) {
+			vboId = GL15.glGenBuffers();
+		}
 
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, usage);	
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, usage);
 	}
 
-	public void bind(){
-		if(vboId == -1) throw new IllegalStateException("Cannot bind a vertex buffer without data!");
+	public void bind() {
+		if (vboId == -1) {
+			throw new IllegalStateException("Cannot bind a vertex buffer without data!");
+		}
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
 		GL20.glVertexAttribPointer(getLayout(), getElements(), GL11.GL_BYTE, false, 0, 0);
 	}
 
-	public String getName(){
-		return elementName;		
+	public String getName() {
+		return elementName;
 	}
 
 	public int getElements() {
@@ -83,11 +84,12 @@ public class VertexBufferImplByte implements VertexBuffer{
 	}
 
 	public void dispose() {
-		if( vboId != -1 ) GL15.glDeleteBuffers(vboId);
+		if (vboId != -1) {
+			GL15.glDeleteBuffers(vboId);
+		}
 	}
 
 	public void finalize() {
 		dispose();
 	}
-
 }

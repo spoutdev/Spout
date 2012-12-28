@@ -41,6 +41,7 @@ import org.spout.engine.world.SpoutBlock;
 import org.spout.engine.world.SpoutRegion;
 
 public class SpoutPhysicsWorld implements VoxelPhysicsWorld {
+
 	private final SpoutRegion simulation;
 
 	public SpoutPhysicsWorld(SpoutRegion simulation) {
@@ -57,6 +58,7 @@ public class SpoutPhysicsWorld implements VoxelPhysicsWorld {
 	}
 
 	private static class SpoutVoxelCollisionSnapshot implements CollisionSnapshot {
+
 		private final boolean isColliding, isBlocking;
 		private final CollisionShape shape;
 		private final Vector3 position;
@@ -96,4 +98,5 @@ public class SpoutPhysicsWorld implements VoxelPhysicsWorld {
 			return isBlocking;
 		}
 	}
+
 }

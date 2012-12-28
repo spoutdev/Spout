@@ -33,6 +33,7 @@ import org.spout.api.event.player.ClientPlayerConnectedEvent;
 import org.spout.engine.SpoutClient;
 
 public class SpoutClientListener implements Listener {
+
 	private final SpoutClient client;
 
 	public SpoutClientListener(SpoutClient client) {

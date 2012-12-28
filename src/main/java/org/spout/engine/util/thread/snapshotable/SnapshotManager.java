@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SnapshotManager {
+
 	private List<Snapshotable> managed = new ArrayList<Snapshotable>();
 
 	public synchronized void add(Snapshotable s) {
@@ -40,7 +41,7 @@ public class SnapshotManager {
 
 	public void copyAllSnapshots() {
 		synchronized (managed) {
-			for (int i = 0; i < managed.size(); i++) {
+			for (int i = 0 ; i < managed.size() ; i++) {
 				managed.get(i).copySnapshot();
 			}
 		}

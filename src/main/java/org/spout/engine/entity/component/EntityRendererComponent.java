@@ -26,7 +26,6 @@
  */
 package org.spout.engine.entity.component;
 
-import javax.vecmath.Matrix4f;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
@@ -34,12 +33,10 @@ import org.lwjgl.BufferUtils;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.component.impl.ModelComponent;
-import org.spout.api.component.impl.PhysicsComponent;
 import org.spout.api.component.impl.PredictableTransformComponent;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
-import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
 import org.spout.api.model.mesh.Mesh;
@@ -50,18 +47,17 @@ import org.spout.api.render.effect.SnapshotEntity;
 import org.spout.engine.mesh.BaseMesh;
 
 public class EntityRendererComponent extends EntityComponent {
-	
+
 	public Animation animation = null;
 	public int currentFrame = 0;
 	public float currentTime = 0;
-	
 	public float rot = 0f;
 
 	@Override
 	public void onAttached() {
 	}
 
-	private void batch(){
+	private void batch() {
 		ModelComponent model = getOwner().get(ModelComponent.class);
 
 		if (model == null || model.getModel() == null) {
@@ -93,7 +89,7 @@ public class EntityRendererComponent extends EntityComponent {
 			weightBuffer.clear();
 
 			//For each vertice
-			for (int i = 0; i < mesh.getContainer().element; i++) {
+			for (int i = 0 ; i < mesh.getContainer().element ; i++) {
 
 				//Get the vertice id in the .obj/.ske referential
 				int vertexId = mesh.getContainer().getVerticeIndex()[i] - 1;
@@ -105,12 +101,12 @@ public class EntityRendererComponent extends EntityComponent {
 
 				int j = 0;
 				//For each registred bone associated with this vertice, add it in buffer
-				for (; j < skeleton.getVerticeArray().get(vertexId).size(); j++) {
+				for (; j < skeleton.getVerticeArray().get(vertexId).size() ; j++) {
 					boneIdBuffer.put(skeleton.getVerticeArray().get(vertexId).get(j));
 					weightBuffer.put(skeleton.getWeightArray().get(vertexId).get(j));
 				}
 				//Full the buffer for the number of vertice
-				for (; j < skeleton.getBonePerVertice(); j++) {
+				for (; j < skeleton.getBonePerVertice() ; j++) {
 					boneIdBuffer.put(-1);
 					weightBuffer.put(-1);
 				}
@@ -127,9 +123,9 @@ public class EntityRendererComponent extends EntityComponent {
 
 		mesh.batch();
 	}
-	
-	private void updateAnimation(float dt){
-		if (animation == null){
+
+	private void updateAnimation(float dt) {
+		if (animation == null) {
 			ModelComponent model = getOwner().get(ModelComponent.class);
 
 			if (model == null || model.getModel() == null) {
@@ -140,35 +136,35 @@ public class EntityRendererComponent extends EntityComponent {
 			currentFrame = 0;
 			return;
 		}
-		
+
 		currentTime += dt;
-		
+
 		currentFrame = (int) (currentTime / animation.getDelay());
-		
-		if(currentFrame >= animation.getFrame()){ //Loop
+
+		if (currentFrame >= animation.getFrame()) { //Loop
 			currentTime = 0;
 			currentFrame = 0;
 		}
-		
+
 		//TODO : Send a animation finish event.
 		//TODO : Loop on animation if wanted
 	}
-	
+
 	public void update(float dt) {
-		
+
 		batch(); //TODO : Call the batch method one time when the render start
-		
+
 		updateAnimation(dt);
 	}
 
 	public void render() {
-		Camera camera = ((Client)Spout.getEngine()).getActiveCamera();
+		Camera camera = ((Client) Spout.getEngine()).getActiveCamera();
 		ModelComponent model = getOwner().get(ModelComponent.class);
 
 		if (model == null || model.getModel() == null) {
 			return;
 		}
-		
+
 		BaseMesh mesh = (BaseMesh) model.getModel().getMesh();
 
 		if (mesh == null) {
@@ -184,13 +180,13 @@ public class EntityRendererComponent extends EntityComponent {
 		Skeleton skeleton = model.getModel().getSkeleton();
 		if (skeleton != null) {
 			Matrix[] matrices = new Matrix[model.getModel().getSkeleton().getBoneSize()];
-		
-			if(animation != null){
-				for (int i = 0; i < matrices.length; i++) {
+
+			if (animation != null) {
+				for (int i = 0 ; i < matrices.length ; i++) {
 					matrices[i] = new Matrix(4, animation.getBoneTransform(i, currentFrame).getMatrix());
 				}
-			}else{
-				for (int i = 0; i < matrices.length; i++) {
+			} else {
+				for (int i = 0 ; i < matrices.length ; i++) {
 					matrices[i] = MathHelper.rotateX(rot);
 				}
 				rot += 0.1f;

@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 import org.spout.api.Spout;
 
 public class AsyncExecutorUtils {
+
 	private static final String LINE = "------------------------------";
 	private static final AtomicReference<AsyncExecutor> waitingExecutor = new AtomicReference<AsyncExecutor>();
 
@@ -59,7 +60,7 @@ public class AsyncExecutorUtils {
 			log.info("    PID: " + thread.getId() + " | Alive: " + thread.isAlive() + " | State: " + thread.getState());
 			log.info("    Stack:");
 			StackTraceElement[] stack = entry.getValue();
-			for (int line = 0; line < stack.length; line++) {
+			for (int line = 0 ; line < stack.length ; line++) {
 				log.info("        " + stack[line].toString());
 			}
 		}
@@ -82,10 +83,10 @@ public class AsyncExecutorUtils {
 			}
 		}
 	}
-	
+
 	/**
 	 * Dumps the stack for the given Thread
-	 * 
+	 *
 	 * @param t the thread
 	 */
 	public static void dumpStackTrace(Thread t) {
@@ -95,10 +96,11 @@ public class AsyncExecutorUtils {
 			Spout.getEngine().getLogger().info("\tat " + e);
 		}
 	}
-	
+
 	/**
-	 * Gets the current executor that pulseJoinAll is waiting on, or null of none
-	 * 
+	 * Gets the current executor that pulseJoinAll is waiting on, or null of
+	 * none
+	 *
 	 * @return the executor, or null if none
 	 */
 	public static AsyncExecutor getWaitingExecutor() {
@@ -107,6 +109,7 @@ public class AsyncExecutorUtils {
 
 	/**
 	 * Waits for a list of ManagedThreads to complete a pulse
+	 *
 	 * @param executors the threads to join for
 	 * @param timeout   how long to wait, or 0 to wait forever
 	 */

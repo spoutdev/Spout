@@ -42,6 +42,7 @@ import org.spout.api.audio.SoundSource;
  * {@link SoundManager} Spout implementation
  */
 public class SpoutSoundManager implements SoundManager {
+
 	@Override
 	public void init() {
 		try {

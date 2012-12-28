@@ -65,12 +65,12 @@ import org.spout.engine.util.MacOSXUtils;
  * A gui chat panel
  */
 public class SwingConsole extends JPanel implements Console, KeyListener, WindowListener {
+
 	private static final long serialVersionUID = -3982648070770129340L;
 	public static final int MAX_RECORDS = 500;
 	public static final Font TEXT_FONT = Font.getFont(Font.MONOSPACED);
 	public static final Color BG_COLOR = Color.BLACK; //new Color(Color.BLACK.getRed(), Color.BLACK.getGreen(), Color.BLACK.getBlue(), 40);
 	public static final Color FG_COLOR = Color.WHITE;
-
 	private final SpoutEngine engine;
 	private final JTextField cmdInput;
 	private final JEditorPane output;
@@ -78,11 +78,10 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 	private final HTMLDocument document;
 	private MessageAdderThread thread;
 	private JFrame frame;
-
-	private static final String HTML_PREFIX = "<html>" +
-			"<body style=\"color: white; font-family: monospace; font-size: 12pt;\">";
-	private static final String HTML_SUFFIX = "</body>" +
-			"</html>";
+	private static final String HTML_PREFIX = "<html>"
+											  + "<body style=\"color: white; font-family: monospace; font-size: 12pt;\">";
+	private static final String HTML_SUFFIX = "</body>"
+											  + "</html>";
 
 	public SwingConsole(SpoutEngine engine) {
 		this.engine = engine;
@@ -130,14 +129,14 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 		cmdInput.grabFocus();
 	}
 
-
 	@Override
 	public void init() {
 		if (frame != null) {
 			close();
 		}
 
-		(thread = new MessageAdderThread()).start();
+		thread = new MessageAdderThread();
+		thread.start();
 
 		frame = new JFrame();
 		frame.setTitle("Spout");
@@ -163,8 +162,8 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 		}
 		thread.interrupt();
 	}
-
 	private DateFormat dateFormat;
+
 	@Override
 	public void setDateFormat(DateFormat format) {
 		this.dateFormat = format;
@@ -178,7 +177,7 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 	}
 
 	public Element getElement(String name, Element source) {
-		for (int i = 0; i < source.getElementCount(); ++i) {
+		for (int i = 0 ; i < source.getElementCount() ; ++i) {
 			Element testElement = source.getElement(i);
 			if (!testElement.isLeaf() && testElement.getName().equalsIgnoreCase(name)) {
 				return testElement;
@@ -195,13 +194,13 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 		}
 		return null;
 	}
-
 	private static final AtomicInteger threadCounter = new AtomicInteger();
+
 	private class MessageAdderThread extends Thread {
+
 		public MessageAdderThread() {
 			super("SwingConsole message adder-" + threadCounter.getAndIncrement());
 		}
-
 		private final AtomicInteger recordCount = new AtomicInteger(0);
 		private final BlockingQueue<String> messageQueue = new LinkedBlockingQueue<String>();
 

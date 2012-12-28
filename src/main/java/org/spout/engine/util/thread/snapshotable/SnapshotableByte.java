@@ -34,6 +34,7 @@ import org.spout.api.util.thread.SnapshotRead;
  * A snapshotable object that supports primitive bytes
  */
 public class SnapshotableByte implements Snapshotable {
+
 	private volatile byte next;
 	private byte snapshot;
 
@@ -45,6 +46,7 @@ public class SnapshotableByte implements Snapshotable {
 
 	/**
 	 * Sets the next value for the Snapshotable
+	 *
 	 * @param next
 	 */
 	@DelayedWrite
@@ -54,6 +56,7 @@ public class SnapshotableByte implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value for
+	 *
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
@@ -63,6 +66,7 @@ public class SnapshotableByte implements Snapshotable {
 
 	/**
 	 * Gets the live value
+	 *
 	 * @return the unstable Live "next" value
 	 */
 	@LiveRead

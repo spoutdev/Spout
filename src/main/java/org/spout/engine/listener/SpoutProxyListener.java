@@ -38,13 +38,14 @@ import org.spout.engine.SpoutProxy;
 import org.spout.engine.protocol.SpoutSession;
 
 public class SpoutProxyListener implements Listener {
+
 	private final SpoutProxy proxy;
 
 	public SpoutProxyListener(SpoutProxy proxy) {
 		this.proxy = proxy;
 	}
 
-	@EventHandler(order = Order.MONITOR)
+	@EventHandler (order = Order.MONITOR)
 	public void onPlayerConnect(PlayerConnectEvent event) {
 		if (event.isCancelled()) {
 			return;
@@ -54,7 +55,7 @@ public class SpoutProxyListener implements Listener {
 		proxy.connect(event.getPlayerName(), event.getSession());
 	}
 
-	@EventHandler(order = Order.EARLIEST)
+	@EventHandler (order = Order.EARLIEST)
 	public void onGetAllWithNode(PermissionGetAllWithNodeEvent event) {
 		for (Player player : proxy.getOnlinePlayers()) {
 			event.getReceivers().put(player, Result.DEFAULT);

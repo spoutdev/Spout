@@ -52,6 +52,7 @@ import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 
 public class SpoutProxy extends SpoutServer {
+
 	/**
 	 * The {@link ServerBootstrap} used to initialize Netty.
 	 */
@@ -70,7 +71,7 @@ public class SpoutProxy extends SpoutServer {
 	@Override
 	public Player addPlayer(String playerName, SpoutSession<?> session, int viewDistance) {
 		SpoutPlayer player = new SpoutPlayer(playerName, null, -1);
-		players.putIfAbsent(playerName, player);		
+		players.putIfAbsent(playerName, player);
 		session.setPlayer(player);
 		return player;
 	}

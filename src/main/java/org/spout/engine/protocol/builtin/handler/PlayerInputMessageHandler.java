@@ -33,14 +33,15 @@ import org.spout.api.protocol.Session;
 import org.spout.engine.protocol.builtin.message.PlayerInputMessage;
 
 public class PlayerInputMessageHandler extends MessageHandler<PlayerInputMessage> {
+
 	@Override
 	public void handleServer(Session session, PlayerInputMessage message) {
-		if(!session.hasPlayer()) {
+		if (!session.hasPlayer()) {
 			return;
 		}
 
 		Player player = session.getPlayer();
-	    PlayerInputState inputState = new PlayerInputState(message.getInputFlags(), (byte)message.getMouseDx(), (byte)message.getMouseDy() );
+		PlayerInputState inputState = new PlayerInputState(message.getInputFlags(), (byte) message.getMouseDx(), (byte) message.getMouseDy());
 		player.processInput(inputState);
 	}
 }

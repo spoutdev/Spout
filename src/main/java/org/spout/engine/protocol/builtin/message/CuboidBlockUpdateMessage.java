@@ -33,6 +33,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.util.SpoutToStringStyle;
 
 public class CuboidBlockUpdateMessage extends SpoutMessage {
+
 	private final int minX, minY, minZ;
 	private final int maxX, maxY, maxZ;
 	// These fields aren't sent across the network - just for reference
@@ -42,8 +43,8 @@ public class CuboidBlockUpdateMessage extends SpoutMessage {
 
 	public CuboidBlockUpdateMessage(Vector3 min, Vector3 max, short[] blockTypes, short[] blockData, byte[] blockLight, byte[] skyLight) {
 		this(min.getFloorX(), min.getFloorY(), min.getFloorZ(),
-				max.getFloorX(), max.getFloorY(), max.getFloorZ(),
-				blockTypes, blockData, blockLight, skyLight);
+			 max.getFloorX(), max.getFloorY(), max.getFloorZ(),
+			 blockTypes, blockData, blockLight, skyLight);
 	}
 
 	public CuboidBlockUpdateMessage(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, short[] blockTypes, short[] blockData, byte[] blockLight, byte[] skyLight) {
@@ -58,22 +59,22 @@ public class CuboidBlockUpdateMessage extends SpoutMessage {
 		this.sizeZ = Math.abs(maxZ - minZ);
 		if (blockTypes.length != sizeX * sizeY * sizeZ) {
 			throw new IllegalArgumentException(String.format("blockTypes is not of expected size (%d instead of %d)",
-					blockTypes.length, sizeX * sizeY * sizeZ));
+															 blockTypes.length, sizeX * sizeY * sizeZ));
 		}
 
 		if (blockData.length != sizeX * sizeY * sizeZ) {
 			throw new IllegalArgumentException(String.format("blockData is not of expected size (%d instead of %d)",
-					blockData.length, sizeX * sizeY * sizeZ));
+															 blockData.length, sizeX * sizeY * sizeZ));
 		}
 
 		if (blockLight.length != sizeX * sizeY * sizeZ / 2) {
 			throw new IllegalArgumentException(String.format("blockLight is not of expected size (%d instead of %d)",
-					blockLight.length, sizeX * sizeY * sizeZ / 2));
+															 blockLight.length, sizeX * sizeY * sizeZ / 2));
 		}
 
 		if (skyLight.length != sizeX * sizeY * sizeZ / 2) {
 			throw new IllegalArgumentException(String.format("skyLight is not of expected size (%d instead of %d)",
-					skyLight.length, sizeX * sizeY * sizeZ / 2));
+															 skyLight.length, sizeX * sizeY * sizeZ / 2));
 		}
 
 		this.blockTypes = blockTypes;
@@ -105,7 +106,6 @@ public class CuboidBlockUpdateMessage extends SpoutMessage {
 	public int getMaxZ() {
 		return maxZ;
 	}
-
 
 	public short[] getBlockTypes() {
 		return blockTypes;

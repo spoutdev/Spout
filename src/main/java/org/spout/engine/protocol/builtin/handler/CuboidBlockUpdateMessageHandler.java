@@ -31,6 +31,7 @@ import org.spout.api.protocol.Session;
 import org.spout.engine.protocol.builtin.message.CuboidBlockUpdateMessage;
 
 public class CuboidBlockUpdateMessageHandler extends MessageHandler<CuboidBlockUpdateMessage> {
+
 	@Override
 	public void handleClient(Session session, CuboidBlockUpdateMessage message) {
 		throw new UnsupportedOperationException("Cuboid block updates have not been implemented yet!");

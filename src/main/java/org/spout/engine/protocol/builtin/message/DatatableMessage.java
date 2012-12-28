@@ -35,6 +35,7 @@ import org.spout.api.datatable.SerializableMap;
 import org.spout.api.util.SpoutToStringStyle;
 
 public abstract class DatatableMessage extends SpoutMessage {
+
 	private final byte[] compressedData;
 
 	public DatatableMessage(byte[] compressedData) {

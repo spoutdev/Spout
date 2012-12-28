@@ -30,11 +30,11 @@ import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.ManagementRunnable;
 
 public class FinalizeTask extends ManagementRunnable {
+
 	private static final long serialVersionUID = 1L;
 
 	@Override
 	public void run(AsyncExecutor executor) throws InterruptedException {
 		executor.getManager().finalizeRun();
 	}
-
 }

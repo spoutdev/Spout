@@ -46,6 +46,7 @@ import org.spout.api.util.access.AccessManager;
  * Implementation of AccessManager that uses PlayerListFiles.
  */
 public class SpoutAccessManager implements AccessManager {
+
 	private final ListFile bannedPlayers = new ListFile(new File("config/banned_players.txt"));
 	private final ListFile bannedIps = new ListFile(new File("config/banned_ips.txt"));
 	private final ListFile whitelist = new ListFile(new File("config/whitelist.txt"));
@@ -93,7 +94,7 @@ public class SpoutAccessManager implements AccessManager {
 
 	@Override
 	public void unwhitelist(String player, boolean kick) {
-		unwhitelist(player, kick, (Object[])null);
+		unwhitelist(player, kick, (Object[]) null);
 	}
 
 	@Override
@@ -101,7 +102,7 @@ public class SpoutAccessManager implements AccessManager {
 		Server server = (Server) Spout.getEngine();
 		if (kick) {
 			if (reason == null) {
-				reason = new Object[] {ChatStyle.RED, "Unwhitelisted from server."};
+				reason = new Object[]{ChatStyle.RED, "Unwhitelisted from server."};
 			}
 			Player p = server.getPlayer(player, true);
 			if (p != null) {
@@ -139,7 +140,7 @@ public class SpoutAccessManager implements AccessManager {
 
 	@Override
 	public void ban(BanType type, String s, boolean kick) {
-		ban(type, s, kick, (Object[])null);
+		ban(type, s, kick, (Object[]) null);
 	}
 
 	@Override
@@ -147,7 +148,7 @@ public class SpoutAccessManager implements AccessManager {
 		Server server = (Server) Spout.getEngine();
 		if (kick) {
 			if (reason == null) {
-				reason = new Object[] {ChatStyle.RED, "Banned from server."};
+				reason = new Object[]{ChatStyle.RED, "Banned from server."};
 			}
 			if (type == BanType.PLAYER) {
 				Player player = server.getPlayer(s, true);

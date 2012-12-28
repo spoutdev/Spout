@@ -38,7 +38,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 
-import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
 import org.spout.api.Client;
 import org.spout.api.Engine;
@@ -105,6 +104,7 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
  * </ul>
  */
 public final class SpoutScheduler implements Scheduler {
+
 	/**
 	 * The threshold before physics and dynamic updates are aborted
 	 */
@@ -141,7 +141,6 @@ public final class SpoutScheduler implements Scheduler {
 	 * Update count for physics and dynamic updates
 	 */
 	private final AtomicInteger updates = new AtomicInteger(0);
-
 	private final AtomicLong tickStartTime = new AtomicLong();
 	private volatile boolean shutdown = false;
 	private final SpoutSnapshotLock snapshotLock = new SpoutSnapshotLock();
@@ -155,11 +154,11 @@ public final class SpoutScheduler implements Scheduler {
 	private final LinkedBlockingDeque<Runnable> finalTaskQueue = new LinkedBlockingDeque<Runnable>();
 	private final ConcurrentLinkedQueue<Runnable> lastTickTaskQueue = new ConcurrentLinkedQueue<Runnable>();
 
-	public long getFps(){
+	public long getFps() {
 		return renderThread.getFps();
 	}
 
-	public boolean isRendererOverloaded(){
+	public boolean isRendererOverloaded() {
 		return renderThread != null && (renderThread.getFrameOverhead() || renderThread.getFps() < OVERHEAD_FPS);
 	}
 
@@ -176,29 +175,31 @@ public final class SpoutScheduler implements Scheduler {
 
 		taskManager = new SpoutTaskManager(this, true, mainThread);
 	}
-	
-	
 
 	private class RenderThread extends Thread {
+
 		private int fps = 0;
 		boolean tooLongFrame = false;
 		SpoutRenderer renderer;
 		private ConcurrentLinkedQueue<Runnable> renderTaskQueue = new ConcurrentLinkedQueue<Runnable>();
 		Canvas parent = null;
-		
 
 		public RenderThread() {
 			super("Render Thread");
 		}
-		public void setRenderer(SpoutRenderer renderer) {			
+
+		public void setRenderer(SpoutRenderer renderer) {
 			this.renderer = renderer;
 		}
-		public void enqueueRenderTask(Runnable task){
+
+		public void enqueueRenderTask(Runnable task) {
 			renderTaskQueue.add(task);
 		}
-		public void setParent(Canvas parent){
-			this.parent = parent;			
+
+		public void setParent(Canvas parent) {
+			this.parent = parent;
 		}
+
 		public int getFps() {
 			return fps;
 		}
@@ -213,7 +214,7 @@ public final class SpoutScheduler implements Scheduler {
 			renderer.initRenderer(parent);
 			int frames = 0;
 			long lastFrameTime = System.currentTimeMillis();
-			int targetFrame = (int)(1f / TARGET_FPS * 1000);
+			int targetFrame = (int) (1f / TARGET_FPS * 1000);
 			int rate = (int) ((1f / TARGET_FPS) * 1000000000);
 
 			long lastTick = System.nanoTime();
@@ -221,51 +222,37 @@ public final class SpoutScheduler implements Scheduler {
 			long timeError = 0;
 			long maxError = rate >> 2; // time error total limited to 0.25 seconds 
 
-		while (!shutdown) {
-			if (Display.isCloseRequested() || !c.isRendering()) {
-				c.stop();
-				break;
-			}
-			long currentTime = System.nanoTime();
-			long delta = currentTime - lastTick;
-			lastTick = currentTime;
+			while (!shutdown) {
+				if (Display.isCloseRequested() || !c.isRendering()) {
+					c.stop();
+					break;
+				}
+				long currentTime = System.nanoTime();
+				long delta = currentTime - lastTick;
+				lastTick = currentTime;
 
-			// Calculate error in frame time
-			timeError += delta - rate;
-			if (timeError > maxError) {
-				timeError = maxError;
-			} else if (timeError < -maxError) {
-				timeError = -maxError;
-			}
-			
-			while (renderTaskQueue.peek() != null) {
-				Runnable task = renderTaskQueue.poll();
-				task.run();
-			}
+				// Calculate error in frame time
+				timeError += delta - rate;
+				if (timeError > maxError) {
+					timeError = maxError;
+				} else if (timeError < -maxError) {
+					timeError = -maxError;
+				}
 
-			renderer.render(delta / 1000000000f);
+				while (renderTaskQueue.peek() != null) {
+					Runnable task = renderTaskQueue.poll();
+					task.run();
+				}
 
-			Display.update(true);
+				renderer.render(delta / 1000000000f);
 
-			currentTime = System.nanoTime();
-			delta = currentTime - lastTick; // Time for render
+				Display.update(true);
 
-			// Round delay to the nearest ms value (from ns)
-			long delay = (rate - delta + 500000) / 1000000;
+				currentTime = System.nanoTime();
+				delta = currentTime - lastTick; // Time for render
 
-			// Adjust delay by 1ms depending on current time error
-			// Forces average to the target rate
-			if (timeError > 0) {
-				delay--;
-			} else if (timeError < 0) {
-				delay++;
-			}
-
-			if (delay > 0) {
-
-				renderer.updateRender(delay);//Use free time to make update
-
-				delay = (rate - delta + 500000) / 1000000;
+				// Round delay to the nearest ms value (from ns)
+				long delay = (rate - delta + 500000) / 1000000;
 
 				// Adjust delay by 1ms depending on current time error
 				// Forces average to the target rate
@@ -276,36 +263,51 @@ public final class SpoutScheduler implements Scheduler {
 				}
 
 				if (delay > 0) {
-					try {
-						Thread.sleep(delay);
-					} catch (InterruptedException e) {
-						Spout.log("[Severe] Interrupted while sleeping!");
+
+					renderer.updateRender(delay);//Use free time to make update
+
+					delay = (rate - delta + 500000) / 1000000;
+
+					// Adjust delay by 1ms depending on current time error
+					// Forces average to the target rate
+					if (timeError > 0) {
+						delay--;
+					} else if (timeError < 0) {
+						delay++;
 					}
+
+					if (delay > 0) {
+						try {
+							Thread.sleep(delay);
+						} catch (InterruptedException e) {
+							Spout.log("[Severe] Interrupted while sleeping!");
+						}
+					}
+					tooLongFrame = false;
+				} else if (delay < -targetFrame) {
+					tooLongFrame = true;
+				} else {
+					tooLongFrame = false;
 				}
-				tooLongFrame = false;
-			}else if(delay < - targetFrame){
-				tooLongFrame = true;
-			}else{
-				tooLongFrame = false;
-			}
 
 
-			if (System.currentTimeMillis() - lastFrameTime > 1000) {
-				lastFrameTime = System.currentTimeMillis();
-				fps = frames;
-				frames = 0;
+				if (System.currentTimeMillis() - lastFrameTime > 1000) {
+					lastFrameTime = System.currentTimeMillis();
+					fps = frames;
+					frames = 0;
+				}
+				frames++;
 			}
-			frames++;
-		}
-		Display.destroy();
-		c.stopEngine();
+			Display.destroy();
+			c.stopEngine();
 		}
 	}
 
 	private class MainThread extends Thread {
+
 		public MainThread() {
 			super("MainThread");
-			ThreadsafetyManager.setMainThread(this);
+			ThreadsafetyManager.setMainThread(this); //Change 'this' leaky constructor
 		}
 
 		@Override
@@ -377,7 +379,7 @@ public final class SpoutScheduler implements Scheduler {
 			long delay = 2000;
 			while (!taskManager.waitForAsyncTasks(delay)) {
 				List<Worker> workers = taskManager.getActiveWorkers();
-				if (workers.size() == 0) {
+				if (workers.isEmpty()) {
 					break;
 				}
 				Spout.getLogger().info("Unable to shutdown due to async tasks still running");
@@ -391,7 +393,7 @@ public final class SpoutScheduler implements Scheduler {
 					}
 				}
 				if (delay < 8000) {
-					delay = delay << 1;
+					delay <<= 1;
 				}
 			}
 
@@ -448,13 +450,14 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	private class GUIThread extends Thread {
+
 		public GUIThread() {
 			super("GUI Thread");
 		}
 
 		@Override
 		public void run() {
-			long targetPeriod = 1000/40;
+			long targetPeriod = 1000 / 40;
 			long lastTick = System.currentTimeMillis();
 			long nextTick = lastTick + targetPeriod;
 			float dt = (float) targetPeriod;
@@ -507,11 +510,11 @@ public final class SpoutScheduler implements Scheduler {
 		renderThread.start();
 		return renderer;
 	}
-	
-	public void enqueueRenderTask(Runnable task){
-		renderThread.enqueueRenderTask(task);		
+
+	public void enqueueRenderTask(Runnable task) {
+		renderThread.enqueueRenderTask(task);
 	}
-	
+
 	public void startGuiThread() {
 		if (!(Spout.getEngine() instanceof SpoutClient)) {
 			throw new IllegalStateException("Cannot start the rendering thread unless on the client");
@@ -595,7 +598,7 @@ public final class SpoutScheduler implements Scheduler {
 		taskManager.heartbeat(delta);
 
 		if (parallelTaskManager == null) {
-			parallelTaskManager = ((SpoutParallelTaskManager)engine.getParallelTaskManager());
+			parallelTaskManager = ((SpoutParallelTaskManager) engine.getParallelTaskManager());
 		}
 		parallelTaskManager.heartbeat(delta);
 
@@ -634,7 +637,7 @@ public final class SpoutScheduler implements Scheduler {
 					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
 					joined = true;
 				} catch (TimeoutException e) {
-					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+					if (((SpoutEngine) Spout.getEngine()).isSetupComplete()) {
 						logLongDurationTick("Stage " + stage, executors);
 					}
 				}
@@ -684,7 +687,7 @@ public final class SpoutScheduler implements Scheduler {
 		int startUpdates = updates.get();
 		while (passStartUpdates < updates.get() && updates.get() < startUpdates + UPDATE_THRESHOLD) {
 			passStartUpdates = updates.get();
-			for (int sequence = -1; sequence < 27 && updates.get() < startUpdates + UPDATE_THRESHOLD; sequence++) {
+			for (int sequence = -1 ; sequence < 27 && updates.get() < startUpdates + UPDATE_THRESHOLD ; sequence++) {
 				if (sequence == -1) {
 					TickStage.setStage(TickStage.PHYSICS);
 				} else {
@@ -703,7 +706,7 @@ public final class SpoutScheduler implements Scheduler {
 						AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
 						joined = true;
 					} catch (TimeoutException e) {
-						if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+						if (((SpoutEngine) Spout.getEngine()).isSetupComplete()) {
 							logLongDurationTick("Local Physics", executors);
 						}
 					}
@@ -731,7 +734,7 @@ public final class SpoutScheduler implements Scheduler {
 		while (passStartUpdates < updates.get() && updates.get() < startUpdates + UPDATE_THRESHOLD) {
 			passStartUpdates = updates.get();
 
-			for (int sequence = -1; sequence < 27 && updates.get() < startUpdates + UPDATE_THRESHOLD; sequence++) {
+			for (int sequence = -1 ; sequence < 27 && updates.get() < startUpdates + UPDATE_THRESHOLD ; sequence++) {
 				if (sequence == -1) {
 					TickStage.setStage(TickStage.DYNAMIC_BLOCKS);
 				} else {
@@ -751,7 +754,7 @@ public final class SpoutScheduler implements Scheduler {
 						AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
 						joined = true;
 					} catch (TimeoutException e) {
-						if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+						if (((SpoutEngine) Spout.getEngine()).isSetupComplete()) {
 							logLongDurationTick("Local Dynamic Blocks", executors);
 						}
 					}
@@ -765,7 +768,7 @@ public final class SpoutScheduler implements Scheduler {
 		int startUpdates = updates.get();
 		while (passStartUpdates < updates.get() && updates.get() < startUpdates + UPDATE_THRESHOLD) {
 			passStartUpdates = updates.get();
-			for (int sequence = -1; sequence < 27 && updates.get() < startUpdates + UPDATE_THRESHOLD; sequence++) {
+			for (int sequence = -1 ; sequence < 27 && updates.get() < startUpdates + UPDATE_THRESHOLD ; sequence++) {
 				if (sequence == -1) {
 					TickStage.setStage(TickStage.LIGHTING);
 				} else {
@@ -784,7 +787,7 @@ public final class SpoutScheduler implements Scheduler {
 						AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
 						joined = true;
 					} catch (TimeoutException e) {
-						if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+						if (((SpoutEngine) Spout.getEngine()).isSetupComplete()) {
 							logLongDurationTick("Lighting", executors);
 						}
 					}
@@ -825,7 +828,7 @@ public final class SpoutScheduler implements Scheduler {
 				AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
 				joined = true;
 			} catch (TimeoutException e) {
-				if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+				if (((SpoutEngine) Spout.getEngine()).isSetupComplete()) {
 					logLongDurationTick("Finalize", executors);
 				}
 			}
@@ -859,7 +862,7 @@ public final class SpoutScheduler implements Scheduler {
 				AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
 				joined = true;
 			} catch (TimeoutException e) {
-				if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+				if (((SpoutEngine) Spout.getEngine()).isSetupComplete()) {
 					logLongDurationTick("Pre Snapshot", executors);
 				}
 			}
@@ -879,7 +882,7 @@ public final class SpoutScheduler implements Scheduler {
 				AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
 				joined = true;
 			} catch (TimeoutException e) {
-				if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+				if (((SpoutEngine) Spout.getEngine()).isSetupComplete()) {
 					logLongDurationTick("Copy Snapshot", executors);
 				}
 			}
@@ -947,7 +950,6 @@ public final class SpoutScheduler implements Scheduler {
 	public Task scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
 		return taskManager.scheduleAsyncDelayedTask(plugin, task, delay, priority);
 	}
-
 
 	@Override
 	public Task scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority, boolean longLife) {
@@ -1043,7 +1045,8 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	/**
-	 * For internal use only.  This is for tasks that must happen right at the start of the new tick.<br>
+	 * For internal use only. This is for tasks that must happen right at the
+	 * start of the new tick.<br>
 	 * <br>
 	 * Tasks are executed in the order that they are received.<br>
 	 * <br>
@@ -1057,30 +1060,29 @@ public final class SpoutScheduler implements Scheduler {
 
 	private void logLongDurationTick(String stage, Iterable<AsyncExecutor> executors) {
 		/*
-		engine.getLogger().info("Tick stage (" + stage + ") had not completed after " + (PULSE_EVERY << 4) + "ms");
-		AsyncExecutorUtils.dumpAllStacks();
-		AsyncExecutorUtils.checkForDeadlocks();
-		for (AsyncExecutor executor : executors) {
-			if (!executor.isPulseFinished()) {
-				if (executor.getManager() instanceof SpoutRegionManager) {
-					SpoutRegionManager m = (SpoutRegionManager)executor.getManager();
-					engine.getLogger().info("Region manager has not completed pulse " + m.getParent());
-				} else if (executor.getManager() instanceof SpoutWorld) {
-					SpoutWorld w = (SpoutWorld)executor.getManager();
-					engine.getLogger().info("World has not completed pulse " + w);
-				} else {
-					engine.getLogger().info("Async Manager has not completed pulse " + executor.getManager().getClass().getSimpleName());
-				}
-				if (executor instanceof Thread) {
-					StackTraceElement[] stackTrace = ((Thread)executor).getStackTrace();
-					engine.getLogger().info("Thread for stalled manager is executing");
-					for (StackTraceElement e : stackTrace) {
-						engine.getLogger().info("\tat " + e);
-					}
-				}
-			}
-		}
+		 * engine.getLogger().info("Tick stage (" + stage + ") had not completed after " + (PULSE_EVERY << 4) + "ms");
+		 * AsyncExecutorUtils.dumpAllStacks();
+		 * AsyncExecutorUtils.checkForDeadlocks();
+		 * for (AsyncExecutor executor : executors) {
+		 * if (!executor.isPulseFinished()) {
+		 * if (executor.getManager() instanceof SpoutRegionManager) {
+		 * SpoutRegionManager m = (SpoutRegionManager)executor.getManager();
+		 * engine.getLogger().info("Region manager has not completed pulse " + m.getParent());
+		 * } else if (executor.getManager() instanceof SpoutWorld) {
+		 * SpoutWorld w = (SpoutWorld)executor.getManager();
+		 * engine.getLogger().info("World has not completed pulse " + w);
+		 * } else {
+		 * engine.getLogger().info("Async Manager has not completed pulse " + executor.getManager().getClass().getSimpleName());
+		 * }
+		 * if (executor instanceof Thread) {
+		 * StackTraceElement[] stackTrace = ((Thread)executor).getStackTrace();
+		 * engine.getLogger().info("Thread for stalled manager is executing");
+		 * for (StackTraceElement e : stackTrace) {
+		 * engine.getLogger().info("\tat " + e);
+		 * }
+		 * }
+		 * }
+		 * }
 		 */
 	}
-
 }

@@ -32,6 +32,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.util.SpoutToStringStyle;
 
 public class LoginMessage extends SpoutMessage {
+
 	private final String playerName;
 	private final int protoVersion;
 

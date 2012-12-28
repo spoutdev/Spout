@@ -34,6 +34,7 @@ import org.spout.engine.util.thread.AsyncManager;
  * This class just passes through the period method calls to the SpoutRegion
  */
 public class SpoutRegionManager extends AsyncManager {
+
 	private final SpoutRegion parent;
 
 	public SpoutRegionManager(SpoutRegion parent, int maxStage, AsyncExecutor executor, Engine server) {
@@ -74,7 +75,7 @@ public class SpoutRegionManager extends AsyncManager {
 	public void runPhysics(int sequence) throws InterruptedException {
 		parent.runPhysics(sequence);
 	}
-	
+
 	@Override
 	public void runLighting(int sequence) throws InterruptedException {
 		parent.runLighting(sequence);
@@ -89,7 +90,7 @@ public class SpoutRegionManager extends AsyncManager {
 	public void runDynamicUpdates(long time, int sequence) throws InterruptedException {
 		parent.runDynamicUpdates(time, sequence);
 	}
-	
+
 	@Override
 	public int getSequence() {
 		return parent.getSequence();

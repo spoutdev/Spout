@@ -40,6 +40,7 @@ import org.spout.api.util.thread.SnapshotRead;
  * A snapshotable object for ArrayLists
  */
 public class SnapshotableArrayList<T> implements Snapshotable {
+
 	private final ConcurrentLinkedQueue<T> dirty = new ConcurrentLinkedQueue<T>();
 	private final List<T> snapshot;
 	private final List<T> live;

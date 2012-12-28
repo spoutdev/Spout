@@ -38,17 +38,18 @@ import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.SnapshotLock;
 
 public class SpoutSnapshotLock implements SnapshotLock {
+
 	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	private final ConcurrentHashMap<Plugin, LockInfo> locks = new ConcurrentHashMap<Plugin, LockInfo>();
 	private final ConcurrentHashMap<String, Integer> coreTasks = new ConcurrentHashMap<String, Integer>();
 	private final ConcurrentHashMap<Thread, Integer> coreLockingThreads = new ConcurrentHashMap<Thread, Integer>();
 
- 	@Override
+	@Override
 	public void readLock(Plugin plugin) {
 		lock.readLock().lock();
 		addLock(plugin);
 	}
-	
+
 	public void coreReadLock(String taskName) {
 		if (taskName == null) {
 			throw new IllegalArgumentException("Taskname may not be null");
@@ -65,7 +66,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		}
 		return success;
 	}
-	
+
 	public boolean coreReadTryLock(String taskName) {
 		if (taskName == null) {
 			throw new IllegalArgumentException("Taskname may not be null");
@@ -82,7 +83,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		lock.readLock().unlock();
 		removeLock(plugin);
 	}
-	
+
 	public void coreReadUnlock(String taskName) {
 		lock.readLock().unlock();
 		decrementCoreCounter(taskName);
@@ -112,11 +113,11 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		}
 		return plugins;
 	}
-	
+
 	public Set<String> getLockingTasks() {
 		return coreTasks.keySet();
 	}
-	
+
 	public Set<Thread> getCoreLockingThreads() {
 		return coreLockingThreads.keySet();
 	}
@@ -156,7 +157,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 			success = locks.replace(plugin, oldLockInfo, newLockInfo);
 		}
 	}
-	
+
 	private void incrementCoreCounter(String taskName) {
 		boolean success = false;
 		while (!success) {
@@ -167,7 +168,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 				success = coreTasks.replace(taskName, i, i + 1);
 			}
 		}
-		
+
 		success = false;
 		while (!success) {
 			Thread t = Thread.currentThread();
@@ -179,7 +180,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 			}
 		}
 	}
-	
+
 	private void decrementCoreCounter(String taskName) {
 		boolean success = false;
 		while (!success) {
@@ -192,7 +193,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 				success = coreTasks.replace(taskName, i, i - 1);
 			}
 		}
-		
+
 		success = false;
 		while (!success) {
 			Thread t = Thread.currentThread();
@@ -208,12 +209,13 @@ public class SpoutSnapshotLock implements SnapshotLock {
 	}
 
 	private class LockInfo {
+
 		public LockInfo(long oldestLock, int locks) {
 			this.oldestLock = oldestLock;
 			this.locks = locks;
 		}
-
 		public final long oldestLock;
 		public final int locks;
 	}
+
 }

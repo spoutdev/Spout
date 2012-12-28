@@ -29,7 +29,6 @@ package org.spout.engine.entity;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -71,6 +70,7 @@ import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutWorld;
 
 public class SpoutPlayer extends SpoutEntity implements Player {
+
 	private final AtomicReference<SpoutSession<?>> sessionLive = new AtomicReference<SpoutSession<?>>();
 	private SpoutSession<?> session;
 	private final String name;

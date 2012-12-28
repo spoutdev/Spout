@@ -87,6 +87,7 @@ import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import static org.spout.api.lang.Translation.log;
 
 public class SpoutServer extends SpoutEngine implements Server {
+
 	/**
 	 * The name of the server
 	 */
@@ -244,7 +245,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 	@Override
 	public void save(boolean worlds, boolean players) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -418,6 +418,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	private void setupBonjour() {
 		if (getEngine() instanceof Server && SpoutConfiguration.BONJOUR.getBoolean()) {
 			getEngine().getScheduler().scheduleAsyncTask(this, new Runnable() {
+				@Override
 				public void run() {
 					synchronized (jmdnsSync) {
 						try {
@@ -428,7 +429,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 									int port = ((InetSocketAddress) binding.getAddress()).getPort();
 									ServiceInfo info = ServiceInfo.create("pipework._tcp.local.", "Spout Server", port, "");
 									jmdns.registerService(info);
-									getEngine().getLogger().info("Started Bonjour Service Discovery on port: " + port);
+									getEngine().getLogger().log(Level.INFO, "Started Bonjour Service Discovery on port: {0}", port);
 								}
 							}
 						} catch (IOException e) {

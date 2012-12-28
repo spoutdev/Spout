@@ -32,6 +32,7 @@ import org.spout.api.protocol.MessageCodec;
 import org.spout.engine.protocol.builtin.message.RemoveEntityMessage;
 
 public class RemoveEntityCodec extends MessageCodec<RemoveEntityMessage> {
+
 	public RemoveEntityCodec() {
 		super(RemoveEntityMessage.class, 0x05);
 	}

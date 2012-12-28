@@ -55,7 +55,6 @@ public class ClientRenderMaterial extends RenderMaterial {
 
 	Shader shader;
 	Map<String, Object> materialParameters;
-
 	boolean depthTesting;
 	Matrix view;
 	Matrix projection;
@@ -65,15 +64,15 @@ public class ClientRenderMaterial extends RenderMaterial {
 	private List<EntityEffect> entityEffects = new ArrayList<EntityEffect>();
 	private List<BufferEffect> bufferEffects = new ArrayList<BufferEffect>();
 
-	public ClientRenderMaterial(Shader s, Map<String, Object> params){
+	public ClientRenderMaterial(Shader s, Map<String, Object> params) {
 		this(s, params, null, null, true, 0);
 	}
 
-	public ClientRenderMaterial(Shader s, Map<String, Object> params, int layer){
+	public ClientRenderMaterial(Shader s, Map<String, Object> params, int layer) {
 		this(s, params, null, null, true, layer);
 	}
 
-	public ClientRenderMaterial(Shader s, Map<String, Object> params, Matrix projection, Matrix view, boolean depth, int layer){
+	public ClientRenderMaterial(Shader s, Map<String, Object> params, Matrix projection, Matrix view, boolean depth, int layer) {
 		this.shader = s;
 		this.materialParameters = params;
 		this.projection = projection;
@@ -83,29 +82,29 @@ public class ClientRenderMaterial extends RenderMaterial {
 	}
 
 	@Override
-	public void assign(){
-		if(getShader().getMaterialAssigned() != this){
+	public void assign() {
+		if (getShader().getMaterialAssigned() != this) {
 			Set<Map.Entry<String, Object>> s = materialParameters.entrySet();
 
-			for(Map.Entry<String, Object> entry : s){
-				if(entry.getValue() instanceof Integer){
-					shader.setUniform(entry.getKey(), ((Integer)entry.getValue()).intValue());
-				} else if( entry.getValue() instanceof Float){
-					shader.setUniform(entry.getKey(), ((Float)entry.getValue()).floatValue());
-				} else if( entry.getValue() instanceof Double){
-					shader.setUniform(entry.getKey(), ((Double)entry.getValue()).floatValue());
-				} else if( entry.getValue() instanceof ClientTexture){
-					shader.setUniform(entry.getKey(), (ClientTexture)entry.getValue());
-				} else if( entry.getValue() instanceof Vector2){
-					shader.setUniform(entry.getKey(), (Vector2)entry.getValue());
-				} else if( entry.getValue() instanceof Vector3){
-					shader.setUniform(entry.getKey(), (Vector3)entry.getValue());
-				} else if( entry.getValue() instanceof Vector4){
-					shader.setUniform(entry.getKey(), (Vector4)entry.getValue());
-				} else if( entry.getValue() instanceof Color){
-					shader.setUniform(entry.getKey(), (Color)entry.getValue());
-				} else if( entry.getValue() instanceof Matrix) {
-					shader.setUniform(entry.getKey(), (Matrix)entry.getValue());
+			for (Map.Entry<String, Object> entry : s) {
+				if (entry.getValue() instanceof Integer) {
+					shader.setUniform(entry.getKey(), ((Integer) entry.getValue()).intValue());
+				} else if (entry.getValue() instanceof Float) {
+					shader.setUniform(entry.getKey(), ((Float) entry.getValue()).floatValue());
+				} else if (entry.getValue() instanceof Double) {
+					shader.setUniform(entry.getKey(), ((Double) entry.getValue()).floatValue());
+				} else if (entry.getValue() instanceof ClientTexture) {
+					shader.setUniform(entry.getKey(), (ClientTexture) entry.getValue());
+				} else if (entry.getValue() instanceof Vector2) {
+					shader.setUniform(entry.getKey(), (Vector2) entry.getValue());
+				} else if (entry.getValue() instanceof Vector3) {
+					shader.setUniform(entry.getKey(), (Vector3) entry.getValue());
+				} else if (entry.getValue() instanceof Vector4) {
+					shader.setUniform(entry.getKey(), (Vector4) entry.getValue());
+				} else if (entry.getValue() instanceof Color) {
+					shader.setUniform(entry.getKey(), (Color) entry.getValue());
+				} else if (entry.getValue() instanceof Matrix) {
+					shader.setUniform(entry.getKey(), (Matrix) entry.getValue());
 				}
 			}
 			getShader().setMaterialAssigned(this);
@@ -120,40 +119,45 @@ public class ClientRenderMaterial extends RenderMaterial {
 	}
 
 	@Override
-	public Shader getShader(){
+	public Shader getShader() {
 		return shader;
 	}
 
 	@Override
 	public void preMesh(SnapshotMesh snapshotMesh) {
-		for(MeshEffect meshEffect : snapshotMesh.getMaterial().getMeshEffects())
+		for (MeshEffect meshEffect : snapshotMesh.getMaterial().getMeshEffects()) {
 			meshEffect.preMesh(snapshotMesh);
+		}
 	}
 
 	@Override
 	public void postMesh(SnapshotMesh snapshotMesh) {
-		for(MeshEffect meshEffect : snapshotMesh.getMaterial().getMeshEffects())
+		for (MeshEffect meshEffect : snapshotMesh.getMaterial().getMeshEffects()) {
 			meshEffect.postMesh(snapshotMesh);
+		}
 	}
 
 	@Override
 	public void preBatch(SnapshotBatch snapshotBatch) {
-		for(BatchEffect batchEffect : getBatchEffects())
+		for (BatchEffect batchEffect : getBatchEffects()) {
 			batchEffect.preBatch(snapshotBatch);
+		}
 	}
 
 	@Override
 	public void postBatch(SnapshotBatch snapshotBatch) {
-		for(BatchEffect batchEffect : getBatchEffects())
+		for (BatchEffect batchEffect : getBatchEffects()) {
 			batchEffect.postBatch(snapshotBatch);
+		}
 	}
 
 	@Override
 	public void preRender(SnapshotRender snapshotRender) {
-		for(RenderEffect renderEffect : getRenderEffects())
+		for (RenderEffect renderEffect : getRenderEffects()) {
 			renderEffect.preRender(snapshotRender);
+		}
 
-		if(!depthTesting){
+		if (!depthTesting) {
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 		}
 
@@ -161,14 +165,14 @@ public class ClientRenderMaterial extends RenderMaterial {
 
 	@Override
 	public void postRender(SnapshotRender snapshotRender) {
-		for(RenderEffect renderEffect : getRenderEffects())
+		for (RenderEffect renderEffect : getRenderEffects()) {
 			renderEffect.postRender(snapshotRender);
+		}
 
-		if(!depthTesting){
+		if (!depthTesting) {
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 		}
 	}
-
 
 	@Override
 	public void preRenderEntity(SnapshotEntity snapshotEntity) {
@@ -183,7 +187,6 @@ public class ClientRenderMaterial extends RenderMaterial {
 			entityEffect.postRenderEntity(snapshotEntity);
 		}
 	}
-		
 
 	@Override
 	public int getLayer() {
@@ -229,5 +232,4 @@ public class ClientRenderMaterial extends RenderMaterial {
 	public List<BufferEffect> getBufferEffects() {
 		return bufferEffects;
 	}
-
 }

@@ -29,6 +29,7 @@ package org.spout.engine.renderer.shader.variables;
 import org.lwjgl.opengl.GL20;
 
 public class AttributeShaderVariable extends ShaderVariable {
+
 	int size;
 	int type;
 	long offset;
@@ -44,6 +45,5 @@ public class AttributeShaderVariable extends ShaderVariable {
 
 	@Override
 	public void assign() {
-	
 	}
 }

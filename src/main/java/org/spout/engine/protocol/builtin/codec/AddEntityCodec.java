@@ -38,6 +38,7 @@ import org.spout.engine.protocol.builtin.ChannelBufferUtils;
 import org.spout.engine.protocol.builtin.message.AddEntityMessage;
 
 public class AddEntityCodec extends MessageCodec<AddEntityMessage> {
+
 	public AddEntityCodec() {
 		super(AddEntityMessage.class, 0x04);
 	}

@@ -32,6 +32,7 @@ import org.spout.engine.SpoutEngine;
 import org.spout.engine.scheduler.SpoutScheduler;
 
 public abstract class AsyncManager {
+
 	private final int maxStage;
 	private final Engine engine; // null means that this AsyncManager is the Server
 	private final AsyncExecutor executor;
@@ -69,6 +70,7 @@ public abstract class AsyncManager {
 
 	/**
 	 * Gets the associated AsyncExecutor
+	 *
 	 * @return the executor
 	 */
 	public final AsyncExecutor getExecutor() {
@@ -96,49 +98,58 @@ public abstract class AsyncManager {
 
 	/**
 	 * This method is called in order to start a new tick
+	 *
 	 * @param delta the time since the last tick
 	 */
 	public abstract void startTickRun(int stage, long delta) throws InterruptedException;
-	
+
 	/**
-	 * This method is called to execute physics for blocks local to the Region.  
+	 * This method is called to execute physics for blocks local to the Region.
 	 * It might be called multiple times per tick
+	 *
 	 * @param sequence -1 for local, 0 - 26 for which sequence
+	 *
 	 * @throws InterruptedException
 	 */
 	public abstract void runPhysics(int sequence) throws InterruptedException;
-	
+
 	/**
-	 * This method is called to execute dynamic updates for blocks in the Region.  
-	 * It might be called multiple times per tick, the sequence number indicates
+	 * This method is called to execute dynamic updates for blocks in the
+	 * Region.
+	 * It might be called multiple times per tick, the sequence number
+	 * indicates
 	 * which lists to check
-	 * 
+	 *
 	 * @param sequence -1 for local, 0 - 26 for which sequence
-	 * @param time the time to use for the updates
+	 * @param time     the time to use for the updates
+	 *
 	 * @throws InterruptedException
 	 */
 	public abstract void runDynamicUpdates(long time, int sequence) throws InterruptedException;
-	
+
 	/**
-	 * This method is called to update lighting. 
+	 * This method is called to update lighting.
 	 * It might be called multiple times per tick
+	 *
 	 * @param sequence -1 for local, 0 - 26 for which sequence
+	 *
 	 * @throws InterruptedException
 	 */
 	public abstract void runLighting(int sequence) throws InterruptedException;
 
 	/**
 	 * Gets the sequence number associated with this manager
-	 * 
+	 *
 	 * @return the sequence number, of -1 for none
 	 */
 	public int getSequence() {
 		return -1;
 	}
-	
+
 	/**
-	 * This method is called to determine the earliest available dynamic update time
-	 * 
+	 * This method is called to determine the earliest available dynamic update
+	 * time
+	 *
 	 * @return the earliest pending dynamic block update
 	 */
 	public abstract long getFirstDynamicUpdateTime();
@@ -147,12 +158,14 @@ public abstract class AsyncManager {
 	 * This method is called when the associated executor is halted and occurs
 	 * right after the copySnapshotRun() method call.
 	 * <p/>
-	 * This method is not called if the executor is halted before being started.
+	 * This method is not called if the executor is halted before being
+	 * started.
 	 */
 	public abstract void haltRun() throws InterruptedException;
 
 	/**
 	 * Gets the number of stages this manager requires per tick
+	 *
 	 * @return the number of stages
 	 */
 	public final int getStages() {

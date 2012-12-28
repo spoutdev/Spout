@@ -32,9 +32,10 @@ import org.spout.api.protocol.Session;
 import org.spout.engine.protocol.builtin.message.RemoveEntityMessage;
 
 public class RemoveEntityMessageHandler extends MessageHandler<RemoveEntityMessage> {
+
 	@Override
 	public void handleClient(Session session, RemoveEntityMessage message) {
-		if(!session.hasPlayer()) {
+		if (!session.hasPlayer()) {
 			return;
 		}
 

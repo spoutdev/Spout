@@ -48,8 +48,8 @@ import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 
 public class RegionSource implements Iterable<Region> {
-	private final static int REGION_MAP_BITS = 5;
 
+	private final static int REGION_MAP_BITS = 5;
 	private final static AtomicInteger regionsLoaded = new AtomicInteger(0);
 	private final static AtomicInteger warnThreshold = new AtomicInteger(Integer.MAX_VALUE);
 	/**
@@ -69,7 +69,7 @@ public class RegionSource implements Iterable<Region> {
 	@DelayedWrite
 	public void removeRegion(final SpoutRegion r) {
 		TickStage.checkStage(TickStage.SNAPSHOT);
-		
+
 		if (!r.getWorld().equals(world)) {
 			return;
 		}
@@ -93,11 +93,11 @@ public class RegionSource implements Iterable<Region> {
 								r.stopMeshGeneratorThread();
 							}
 							TaskManager tm = Spout.getEngine().getParallelTaskManager();
-							SpoutParallelTaskManager ptm = (SpoutParallelTaskManager)tm;
+							SpoutParallelTaskManager ptm = (SpoutParallelTaskManager) tm;
 							ptm.unRegisterRegion(r);
 
 							TaskManager tmWorld = world.getParallelTaskManager();
-							SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager)tmWorld;
+							SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager) tmWorld;
 							ptmWorld.unRegisterRegion(r);
 
 							if (regionsLoaded.decrementAndGet() < 0) {
@@ -105,7 +105,7 @@ public class RegionSource implements Iterable<Region> {
 							}
 
 							Spout.getEventManager().callDelayedEvent(new RegionUnloadEvent(world, r));
-							
+
 							r.unlinkNeighbours();
 						} else {
 							Spout.getLogger().info("Tried to remove region " + r + " but region removal failed");
@@ -124,11 +124,14 @@ public class RegionSource implements Iterable<Region> {
 	 * Gets the region associated with the region x, y, z coordinates <br/>
 	 * <p/>
 	 * Will load or generate a region if requested.
-	 * @param x    the x coordinate
-	 * @param y    the y coordinate
-	 * @param z    the z coordinate
-	 * @param loadopt whether to load or generate the region if one does not exist
-	 *             at the coordinates
+	 *
+	 * @param x       the x coordinate
+	 * @param y       the y coordinate
+	 * @param z       the z coordinate
+	 * @param loadopt whether to load or generate the region if one does not
+	 *                   exist
+	 *                   at the coordinates
+	 *
 	 * @return region
 	 */
 	@LiveRead
@@ -136,7 +139,7 @@ public class RegionSource implements Iterable<Region> {
 		if (loadopt != LoadOption.NO_LOAD) {
 			TickStage.checkStage(~TickStage.SNAPSHOT);
 		}
-		
+
 		SpoutRegion region = (SpoutRegion) loadedRegions.get(x, y, z);
 
 		if (region != null) {
@@ -147,7 +150,9 @@ public class RegionSource implements Iterable<Region> {
 			return null;
 		}
 
-		/* If not generating region, and it doesn't exist yet, we're done */
+		/*
+		 * If not generating region, and it doesn't exist yet, we're done
+		 */
 		if ((!loadopt.generateIfNeeded()) && (!SpoutRegion.regionFileExists(world, x, y, z))) {
 			return null;
 		}
@@ -156,32 +161,32 @@ public class RegionSource implements Iterable<Region> {
 		SpoutRegion current = (SpoutRegion) loadedRegions.putIfAbsent(x, y, z, region);
 
 		if (current != null) {
-			((SpoutScheduler)Spout.getScheduler()).removeAsyncExecutor(region.getManager().getExecutor());
+			((SpoutScheduler) Spout.getScheduler()).removeAsyncExecutor(region.getManager().getExecutor());
 			return current;
 		}
 
 		if (!region.getManager().getExecutor().startExecutor()) {
 			throw new IllegalStateException("Unable to start region executor");
 		}
-		
+
 		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
 			region.startMeshGeneratorThread();
 		}
 
 		int threshold = warnThreshold.get();
 		if (regionsLoaded.getAndIncrement() > threshold) {
-			Spout.getLogger().info("Warning: number of spout regions exceeds " + threshold + " when creating (" +
-                x + ", " + y + ", " + z + ")");
+			Spout.getLogger().info("Warning: number of spout regions exceeds " + threshold + " when creating ("
+								   + x + ", " + y + ", " + z + ")");
 			Thread.dumpStack();
 			warnThreshold.addAndGet(10);
 		}
 
 		TaskManager tm = Spout.getEngine().getParallelTaskManager();
-		SpoutParallelTaskManager ptm = (SpoutParallelTaskManager)tm;
+		SpoutParallelTaskManager ptm = (SpoutParallelTaskManager) tm;
 		ptm.registerRegion(region);
 
 		TaskManager tmWorld = world.getParallelTaskManager();
-		SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager)tmWorld;
+		SpoutParallelTaskManager ptmWorld = (SpoutParallelTaskManager) tmWorld;
 		ptmWorld.registerRegion(region);
 
 		Spout.getEventManager().callDelayedEvent(new RegionLoadEvent(world, region));
@@ -191,9 +196,11 @@ public class RegionSource implements Iterable<Region> {
 
 	/**
 	 * True if there is a region loaded at the region x, y, z coordinates
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
+	 *
 	 * @return true if there is a region loaded
 	 */
 	@LiveRead
@@ -203,6 +210,7 @@ public class RegionSource implements Iterable<Region> {
 
 	/**
 	 * Gets an unmodifiable collection of all loaded regions.
+	 *
 	 * @return collection of all regions
 	 */
 	public Collection<Region> getRegions() {

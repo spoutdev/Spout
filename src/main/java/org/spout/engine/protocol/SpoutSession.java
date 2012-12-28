@@ -53,11 +53,13 @@ import org.spout.engine.entity.SpoutPlayer;
  * player.
  */
 public abstract class SpoutSession<T extends SpoutEngine> implements Session {
+
 	/**
-	 * The number of ticks which are elapsed before a client is disconnected due
+	 * The number of ticks which are elapsed before a client is disconnected
+	 * due
 	 * to a timeout.
 	 */
-	@SuppressWarnings("unused")
+	@SuppressWarnings ("unused")
 	private static final int TIMEOUT_TICKS = 20 * 60;
 	/**
 	 * The server this session belongs to.
@@ -80,7 +82,8 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	 */
 	private final Queue<Message> fromUpMessageQueue = new ArrayDeque<Message>();
 	/**
-	 * A queue of outgoing messages that will be sent after the client finishes identification
+	 * A queue of outgoing messages that will be sent after the client finishes
+	 * identification
 	 */
 	protected final Queue<Message> sendQueue = new ConcurrentLinkedQueue<Message>();
 	/**
@@ -99,32 +102,29 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	 * The protocol for this session
 	 */
 	private final AtomicReference<Protocol> protocol;
-
 	/**
 	 * Stores if this is Connected
 	 * TODO: Probably add to SpoutAPI
 	 */
 	protected boolean isConnected = false;
-
 	/**
-	 * A network synchronizer that doesn't do anything, used until a real synchronizer is set.
+	 * A network synchronizer that doesn't do anything, used until a real
+	 * synchronizer is set.
 	 */
 	private final NetworkSynchronizer nullSynchronizer = new NullNetworkSynchronizer(this);
-
 	/**
 	 * The NetworkSynchronizer being used for this session
 	 */
 	private final AtomicReference<NetworkSynchronizer> synchronizer = new AtomicReference<NetworkSynchronizer>(nullSynchronizer);
-
 	private final ManagedHashMap dataMap;
-	
 	/**
-	 * 
+	 *
 	 */
 	private final AtomicReference<NetworkSendThread> networkSendThread = new AtomicReference<NetworkSendThread>();
 
 	/**
 	 * Creates a new session.
+	 *
 	 * @param engine  The server this session belongs to.
 	 * @param channel The channel associated with this session.
 	 */
@@ -138,6 +138,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 	/**
 	 * Gets the state of this session.
+	 *
 	 * @return The session's state.
 	 */
 	@Override
@@ -147,6 +148,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 	/**
 	 * Sets the state of this session.
+	 *
 	 * @param state The new state.
 	 */
 	@Override
@@ -161,6 +163,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 	/**
 	 * Gets the player associated with this session.
+	 *
 	 * @return The player, or {@code null} if no player is associated with it.
 	 */
 	@Override
@@ -170,9 +173,11 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 	/**
 	 * Sets the player associated with this session.
+	 *
 	 * @param player The new player.
+	 *
 	 * @throws IllegalStateException if there is already a player associated
-	 *                               with this session.
+	 *                                  with this session.
 	 */
 	public void setPlayer(SpoutPlayer player) {
 		if (!this.player.compareAndSet(null, player)) {
@@ -183,7 +188,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings ("unchecked")
 	public void pulse() {
 		Message message;
 
@@ -201,7 +206,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 				} catch (Exception e) {
 					Spout.getEngine().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + (getPlayer() != null ? getPlayer().getName() : "null"));
 					e.printStackTrace();
-					disconnect(false, new Object[] {"Message handler exception for ", message.getClass().getSimpleName()});
+					disconnect(false, new Object[]{"Message handler exception for ", message.getClass().getSimpleName()});
 				}
 			}
 		}
@@ -213,7 +218,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 				} catch (Exception e) {
 					Spout.getEngine().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + (getPlayer() != null ? getPlayer().getName() : "null"));
 					e.printStackTrace();
-					disconnect(false, new Object[] {"Message handler exception for", message.getClass().getSimpleName()});
+					disconnect(false, new Object[]{"Message handler exception for", message.getClass().getSimpleName()});
 				}
 			}
 		}
@@ -243,7 +248,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 				sendQueue.add(message);
 			}
 		} catch (Exception e) {
-			disconnect(false, new Object[] {"Socket Error!"});
+			disconnect(false, new Object[]{"Socket Error!"});
 		}
 	}
 
@@ -261,6 +266,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 	/**
 	 * Returns the address of this session.
+	 *
 	 * @return The remote address.
 	 */
 	@Override
@@ -280,6 +286,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 
 	/**
 	 * Adds a message to the unprocessed queue.
+	 *
 	 * @param message The message.
 	 */
 	@Override
@@ -296,14 +303,15 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		return sessionId;
 	}
 
-	/*public BlockPlacementMessage getPreviousPlacement() {
-		return previousPlacement;
-	}
-
-	public void setPreviousPlacement(BlockPlacementMessage message) {
-		previousPlacement = message;
-	}*/
-
+	/*
+	 * public BlockPlacementMessage getPreviousPlacement() {
+	 * return previousPlacement;
+	 * }
+	 *
+	 * public void setPreviousPlacement(BlockPlacementMessage message) {
+	 * previousPlacement = message;
+	 * }
+	 */
 	@Override
 	public Protocol getProtocol() {
 		return this.protocol.get();
@@ -355,5 +363,4 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	public NetworkSynchronizer getNetworkSynchronizer() {
 		return synchronizer.get();
 	}
-
 }

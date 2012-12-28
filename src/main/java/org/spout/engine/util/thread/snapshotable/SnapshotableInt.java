@@ -34,6 +34,7 @@ import org.spout.api.util.thread.SnapshotRead;
  * A snapshotable object that supports primitive ints
  */
 public class SnapshotableInt implements Snapshotable {
+
 	private volatile int next;
 	private int snapshot;
 
@@ -45,6 +46,7 @@ public class SnapshotableInt implements Snapshotable {
 
 	/**
 	 * Sets the next value for the Snapshotable
+	 *
 	 * @param next
 	 */
 	@DelayedWrite
@@ -54,6 +56,7 @@ public class SnapshotableInt implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value for
+	 *
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
@@ -63,6 +66,7 @@ public class SnapshotableInt implements Snapshotable {
 
 	/**
 	 * Gets the live value
+	 *
 	 * @return the unstable Live "next" value
 	 */
 	@LiveRead

@@ -53,12 +53,10 @@ public class UpdateQueue {
 			TIntIterator i = list.iterator();
 			while (i.hasNext()) {
 				int index = i.next();
-				if (
-						(xArray.get(index) & 0xFF) == (x & 0xFF) && 
-						(yArray.get(index) & 0xFF) == (y & 0xFF) && 
-						(zArray.get(index) & 0xFF) == (z & 0xFF) &&
-						materials.get(index) == oldMaterial
-						) {
+				if ((xArray.get(index) & 0xFF) == (x & 0xFF)
+					&& (yArray.get(index) & 0xFF) == (y & 0xFF)
+					&& (zArray.get(index) & 0xFF) == (z & 0xFF)
+					&& materials.get(index) == oldMaterial) {
 					return;
 				}
 			}
@@ -78,8 +76,9 @@ public class UpdateQueue {
 	}
 
 	/**
-	 * Gets the next x coordinate.  This method updates the internal array indexes and should only be called if hasNext returns true
-	 * 
+	 * Gets the next x coordinate. This method updates the internal array
+	 * indexes and should only be called if hasNext returns true
+	 *
 	 * @return the next x coordinate
 	 */
 	public int getX() {
@@ -98,19 +97,19 @@ public class UpdateQueue {
 		}
 		return x;
 	}
-	
+
 	/**
 	 * Gets the y coordinate
-	 * 
+	 *
 	 * @return the y coordinate
 	 */
 	public int getY() {
 		return y;
 	}
-	
+
 	/**
 	 * Gets the z coordinate
-	 * 
+	 *
 	 * @return the z coordinate
 	 */
 	public int getZ() {
@@ -119,11 +118,10 @@ public class UpdateQueue {
 
 	/**
 	 * Gets the old material
-	 * 
+	 *
 	 * @return the old material
 	 */
 	public BlockMaterial getOldMaterial() {
 		return oldMaterial;
 	}
-
 }

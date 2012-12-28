@@ -30,20 +30,21 @@ import org.spout.api.Spout;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
-
 import org.spout.engine.SpoutClient;
 
 public class RendererCommands {
+
 	private final SpoutClient client;
 
 	public RendererCommands(SpoutClient client) {
 		this.client = client;
 	}
 
-	@Command(aliases = {"r_wireframe"}, desc = "Toggles Wireframe for the renderer")
+	@Command (aliases = {"r_wireframe"}, desc = "Toggles Wireframe for the renderer")
 	public void toggleWireframe(CommandContext args, CommandSource source) {
-		
+
 		client.getScheduler().enqueueRenderTask(new Runnable() {
+			@Override
 			public void run() {
 				Spout.log("Toggling Wireframe");
 				client.getRenderer().toggleWireframe();

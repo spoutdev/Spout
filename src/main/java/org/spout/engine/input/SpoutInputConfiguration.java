@@ -35,6 +35,7 @@ import org.spout.api.util.config.yaml.YamlConfiguration;
 import org.spout.engine.filesystem.SharedFileSystem;
 
 public class SpoutInputConfiguration extends ConfigurationHolderConfiguration {
+
 	public static final ConfigurationHolder FORWARD = new ConfigurationHolder("KEY_W", "forward");
 	public static final ConfigurationHolder BACKWARD = new ConfigurationHolder("KEY_S", "backward");
 	public static final ConfigurationHolder LEFT = new ConfigurationHolder("KEY_A", "left");

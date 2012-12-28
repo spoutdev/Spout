@@ -27,6 +27,10 @@
 package org.spout.engine.util;
 
 public class StackTrace {
+
+	private StackTrace() {
+	}
+
 	public static void printStackTrace() {
 		try {
 			throw new RuntimeException("Stack trace");

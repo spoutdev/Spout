@@ -43,6 +43,7 @@ import org.spout.engine.resources.ClientSound;
  * Represents a source of sound in the game backed by OpenAL.
  */
 public class SpoutSoundSource implements SoundSource {
+
 	private final int sourceId;
 	private Sound sound = null;
 
@@ -100,16 +101,16 @@ public class SpoutSoundSource implements SoundSource {
 	public SoundSourceState getState() {
 		int state = getInt(AL10.AL_SOURCE_STATE);
 		switch (state) {
-		case AL10.AL_PLAYING:
-			return SoundSourceState.PLAYING;
-		case AL10.AL_PAUSED:
-			return SoundSourceState.PAUSED;
-		case AL10.AL_STOPPED:
-			return SoundSourceState.STOPPED;
-		case AL10.AL_INITIAL:
-			return SoundSourceState.INITIAL;
-		default:
-			return SoundSourceState.UNKNOWN;
+			case AL10.AL_PLAYING:
+				return SoundSourceState.PLAYING;
+			case AL10.AL_PAUSED:
+				return SoundSourceState.PAUSED;
+			case AL10.AL_STOPPED:
+				return SoundSourceState.STOPPED;
+			case AL10.AL_INITIAL:
+				return SoundSourceState.INITIAL;
+			default:
+				return SoundSourceState.UNKNOWN;
 		}
 	}
 

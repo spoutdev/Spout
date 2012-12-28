@@ -41,6 +41,7 @@ import org.spout.engine.protocol.SpoutSession;
  * A subclass of SpoutPlayer with modifications for the client
  */
 public class SpoutClientPlayer extends SpoutPlayer {
+
 	public SpoutClientPlayer(String name) {
 		super(name);
 	}
@@ -76,10 +77,11 @@ public class SpoutClientPlayer extends SpoutPlayer {
 
 		getSession().send(true, cmdMessage);
 	}
-	@Override
-	public void onTick(float dt){
 
-		((SpoutInputManager)((Client)Spout.getEngine()).getInputManager()).pollInput(this);
+	@Override
+	public void onTick(float dt) {
+
+		((SpoutInputManager) ((Client) Spout.getEngine()).getInputManager()).pollInput(this);
 
 		super.onTick(dt);
 	}

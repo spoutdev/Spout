@@ -1,4 +1,4 @@
-/*
+    /*
  * This file is part of Spout.
  *
  * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
@@ -131,9 +131,9 @@ import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
 
 public abstract class SpoutEngine extends AsyncManager implements Engine {
+
 	private static final Logger logger = Logger.getLogger("Spout");
 	private final String name = "Spout Engine";
-	private final Random random = new Random();
 	private final CommonSecurityManager securityManager = new CommonSecurityManager(0); //TODO Need to integrate this/evaluate security in the engine.
 	private final CommonPluginManager pluginManager = new CommonPluginManager(this, securityManager, 0.0);
 	private final ConsoleManager consoleManager;
@@ -241,7 +241,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 		if (checkWorlds) {
 			//At least one plugin should have registered atleast one world
-			if (loadedWorlds.getLive().size() == 0) {
+			if (loadedWorlds.getLive().isEmpty()) {
 				throw new IllegalStateException("There are no loaded worlds! You must install a plugin that creates a world (Did you forget Vanilla?)");
 			}
 
@@ -266,7 +266,8 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	/**
-	 * This method is called after {@link #loadPlugins()} but before {@link #enablePlugins()}
+	 * This method is called after {@link #loadPlugins()} but before
+	 * {@link #enablePlugins()}
 	 */
 	protected void postPluginLoad(SpoutConfiguration config) {
 	}
@@ -413,7 +414,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		if (generator == null) {
 			generator = defaultGenerator;
 		}
-		
+
 		SpoutWorld world = WorldFiles.loadWorld(this, generator, name);
 
 		World oldWorld = loadedWorlds.putIfAbsent(name, world);
@@ -438,7 +439,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	public boolean stop() {
 		return stop(tr("Spout shutting down", getCommandSource())); // TODO distribute the message differently
 	}
-
 	private final AtomicBoolean stopping = new AtomicBoolean();
 
 	@Override
@@ -447,12 +447,14 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	/**
-	 * Used to allow subclasses submit final tasks before stopping the scheduler
+	 * Used to allow subclasses submit final tasks before stopping the
+	 * scheduler
+	 *
 	 * @param message
 	 * @param stopScheduler
+	 *
 	 * @return
 	 */
-
 	protected boolean stop(final String message, boolean stopScheduler) {
 		final SpoutEngine engine = this;
 
@@ -558,7 +560,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 				if (entry.getKey() instanceof InetSocketAddress && socketAddress instanceof InetSocketAddress) {
 					InetSocketAddress key = (InetSocketAddress) entry.getKey(), given = (InetSocketAddress) socketAddress;
 					if (key.getPort() == given.getPort() && ((given.getAddress() instanceof Inet4Address && key.getAddress().getHostAddress().equals("0.0.0.0"))
-							|| (given.getAddress() instanceof Inet6Address && key.getAddress().getHostAddress().equals("::")))) { // TODO: Make sure IPV6 works
+															 || (given.getAddress() instanceof Inet6Address && key.getAddress().getHostAddress().equals("::")))) { // TODO: Make sure IPV6 works
 						proto = entry.getValue();
 						break;
 					}
@@ -595,13 +597,11 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	@Override
 	public void finalizeRun() throws InterruptedException {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void preSnapshotRun() throws InterruptedException {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -788,6 +788,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 	/**
 	 * Gets the item map used across all worlds on the engine
+	 *
 	 * @return engine map
 	 */
 	public StringMap getEngineItemMap() {
@@ -796,6 +797,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 	/**
 	 * Gets the biome map used accorss all worlds on the engine
+	 *
 	 * @return biome map
 	 */
 	public StringMap getBiomeMap() {
@@ -812,7 +814,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	// The engine doesn't do any of these
-
 	@Override
 	public void runPhysics(int sequence) throws InterruptedException {
 	}
@@ -835,11 +836,13 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		return completions;
 	}
 
+	@Override
 	public DefaultPermissions getDefaultPermissions() {
 		return defaultPerms;
 	}
 
 	private class SessionTask implements Runnable {
+
 		final SpoutSessionRegistry registry;
 
 		SessionTask(SpoutSessionRegistry registry) {
@@ -851,4 +854,5 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 			registry.pulse();
 		}
 	}
+
 }

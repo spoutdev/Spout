@@ -33,12 +33,12 @@ import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
 import org.spout.api.util.future.SimpleFuture;
 
 public class SpoutChunkSnapshotFuture extends SimpleFuture<ChunkSnapshot> implements Runnable {
-	
+
 	private final SpoutChunk chunk;
 	private final SnapshotType type;
 	private final EntityType entities;
 	private final ExtraData data;
-	
+
 	public SpoutChunkSnapshotFuture(SpoutChunk chunk, SnapshotType type, EntityType entities, ExtraData data) {
 		this.chunk = chunk;
 		this.type = type;
@@ -55,5 +55,4 @@ public class SpoutChunkSnapshotFuture extends SimpleFuture<ChunkSnapshot> implem
 			super.setThrowable(t);
 		}
 	}
-
 }

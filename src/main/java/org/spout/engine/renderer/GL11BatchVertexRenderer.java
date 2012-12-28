@@ -34,6 +34,7 @@ import org.lwjgl.opengl.GL11;
 import org.spout.api.render.RenderMaterial;
 
 public class GL11BatchVertexRenderer extends BatchVertexRenderer {
+
 	int displayList;
 
 	public GL11BatchVertexRenderer(int mode) {
@@ -47,26 +48,30 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 
 		GL11.glBegin(renderMode);
 
-		for(Entry<Integer, Buffer> entry : buffers.entrySet()){
+		for (Entry<Integer, Buffer> entry : buffers.entrySet()) {
 			int layout = entry.getKey();
 			FloatBuffer buffer = (FloatBuffer) entry.getValue();
 
 			switch (layout) {
 				case BatchVertexRenderer.VERTEX_LAYER:
-					while(buffer.position() < buffer.limit())
-						GL11.glVertex4f(buffer.get(),buffer.get(),buffer.get(),buffer.get());
+					while (buffer.position() < buffer.limit()) {
+						GL11.glVertex4f(buffer.get(), buffer.get(), buffer.get(), buffer.get());
+					}
 					break;
 				case BatchVertexRenderer.COLOR_LAYER:
-					while(buffer.position() < buffer.limit())
-						GL11.glColor4f(buffer.get(),buffer.get(),buffer.get(),buffer.get());
+					while (buffer.position() < buffer.limit()) {
+						GL11.glColor4f(buffer.get(), buffer.get(), buffer.get(), buffer.get());
+					}
 					break;
 				case BatchVertexRenderer.NORMAL_LAYER:
-					while(buffer.position() < buffer.limit())
-						GL11.glNormal3f(buffer.get(),buffer.get(),buffer.get());
+					while (buffer.position() < buffer.limit()) {
+						GL11.glNormal3f(buffer.get(), buffer.get(), buffer.get());
+					}
 					break;
 				case BatchVertexRenderer.TEXTURE0_LAYER:
-					while(buffer.position() < buffer.limit())
-						GL11.glTexCoord2f(buffer.get(),buffer.get());
+					while (buffer.position() < buffer.limit()) {
+						GL11.glTexCoord2f(buffer.get(), buffer.get());
+					}
 					break;
 				case BatchVertexRenderer.TEXTURE1_LAYER:
 					break;

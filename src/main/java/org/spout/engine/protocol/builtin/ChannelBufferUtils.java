@@ -44,6 +44,7 @@ import org.spout.api.math.Vector3;
  * Various utility methods to help with writing objects to a ChannelBuffer
  */
 public class ChannelBufferUtils {
+
 	public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");
 
 	private ChannelBufferUtils() {
@@ -61,7 +62,6 @@ public class ChannelBufferUtils {
 		buffer.writeInt(stringBytes.length);
 		buffer.writeBytes(stringBytes);
 	}
-
 	public static final int UUID_SIZE = 16;
 
 	public static UUID readUUID(ChannelBuffer buffer) {
@@ -74,7 +74,6 @@ public class ChannelBufferUtils {
 		buffer.writeLong(uuid.getLeastSignificantBits());
 		buffer.writeLong(uuid.getMostSignificantBits());
 	}
-
 	public static final int VECTOR3_SIZE = 12;
 	private static final int POINT_SIZE = VECTOR3_SIZE + UUID_SIZE;
 	public static final int QUATERNINON_SIZE = 16;
@@ -140,13 +139,12 @@ public class ChannelBufferUtils {
 		buffer.writeFloat(quaternion.getZ());
 		buffer.writeFloat(quaternion.getW());
 	}
-
 	private static final byte ARGUMENT_TYPE_STYLE = 0x0, ARGUMENT_TYPE_STRING = 0x1;
 
 	public static List<Object> readCommandArguments(ChannelBuffer buffer) {
 		final int length = buffer.readShort();
 		List<Object> arguments = new ArrayList<Object>(length);
-		for (int i = 0; i < length; ++i) {
+		for (int i = 0 ; i < length ; ++i) {
 			switch (buffer.readByte()) {
 				case ARGUMENT_TYPE_STYLE:
 					short id = buffer.readShort();

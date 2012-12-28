@@ -47,7 +47,10 @@ import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 
 public class PlayerFiles {
-	
+
+	private PlayerFiles() {
+	}
+
 	public static void savePlayerData(List<SpoutPlayer> Players) {
 		for (SpoutPlayer player : Players) {
 			savePlayerData(player);
@@ -107,7 +110,9 @@ public class PlayerFiles {
 	 * Returns null on failure or if the data could not be loaded.
 	 * If an exception is thrown or the player data is not in a valid format
 	 * it will be backed up and new player data will be created for the player
+	 *
 	 * @param name
+	 *
 	 * @return player, or null if it could not be loaded
 	 */
 	public static SpoutPlayer loadPlayerData(String name) {
@@ -143,5 +148,4 @@ public class PlayerFiles {
 		}
 		return null;
 	}
-
 }

@@ -40,6 +40,7 @@ import org.spout.api.protocol.reposition.RepositionManager;
 import org.spout.api.util.SpoutToStringStyle;
 
 public class EntityPositionMessage extends SpoutMessage {
+
 	private final int entityId;
 	private final UUID worldUid;
 	private final Vector3 pos;

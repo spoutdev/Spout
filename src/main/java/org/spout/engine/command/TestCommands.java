@@ -63,13 +63,14 @@ import org.spout.engine.util.thread.AsyncExecutorUtils;
 import org.spout.engine.world.SpoutRegion;
 
 public class TestCommands {
+
 	private final SpoutEngine engine;
 
 	public TestCommands(SpoutEngine engine) {
 		this.engine = engine;
 	}
 
-	@Command(aliases = "break", desc = "Debug command to break a block")
+	@Command (aliases = "break", desc = "Debug command to break a block")
 	public void debugBreak(CommandContext args, CommandSource source) throws CommandException {
 		if (Spout.getPlatform() != Platform.CLIENT) {
 			throw new CommandException("You must be a client to perform this command.");
@@ -85,30 +86,30 @@ public class TestCommands {
 		}
 	}
 
-	@Command(aliases = {"dbg"}, desc = "Debug Output")
+	@Command (aliases = {"dbg"}, desc = "Debug Output")
 	public void debugOutput(CommandContext args, CommandSource source) {
 		World world = engine.getDefaultWorld();
 		source.sendMessage("World Entity count: ", world.getAll().size());
 	}
 
-	@Command(aliases = "dumpthreads", desc = "Dumps a listing of all thread stacks to the console")
+	@Command (aliases = "dumpthreads", desc = "Dumps a listing of all thread stacks to the console")
 	public void dumpThreads(CommandContext args, CommandSource source) throws CommandException {
 		AsyncExecutorUtils.dumpAllStacks();
 	}
 
-	@Command(aliases = "testmsg", desc = "Test extracting chat styles from a message and printing them")
+	@Command (aliases = "testmsg", desc = "Test extracting chat styles from a message and printing them")
 	public void testMsg(CommandContext args, CommandSource source) throws CommandException {
 		source.sendMessage(args.getJoinedString(0));
 	}
 
-	@Command(aliases = "plugins-tofile", usage = "[filename]", desc = "Creates a file containing all loaded plugins and their version", min = 0, max = 1)
-	@CommandPermissions("spout.command.pluginstofile")
+	@Command (aliases = "plugins-tofile", usage = "[filename]", desc = "Creates a file containing all loaded plugins and their version", min = 0, max = 1)
+	@CommandPermissions ("spout.command.pluginstofile")
 	public void getPluginDetails(CommandContext args, CommandSource source) throws CommandException {
 
 		// File and filename
-		String filename = "";
+		String filename;
 		String standpath = "pluginreports";
-		File file = null;
+		File file;
 
 		// Getting date
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -196,7 +197,7 @@ public class TestCommands {
 		source.sendMessage("Plugins-report successfully created! " + linesep + "Stored in: " + standpath);
 	}
 
-	@Command(aliases = {"noclip"}, desc = "Toggles noclip on the client", min = 0, max = 1)
+	@Command (aliases = {"noclip"}, desc = "Toggles noclip on the client", min = 0, max = 1)
 	public void toggleNoClip(CommandContext args, CommandSource source) throws CommandException {
 		SpoutPlayer player;
 		if (!(source instanceof Player)) {

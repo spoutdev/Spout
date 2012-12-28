@@ -33,16 +33,18 @@ import org.spout.api.util.Named;
  * Variant of SimpleCommand with an id
  */
 public class IdSimpleCommand extends SimpleCommand {
-    private int id = -1;
-    public IdSimpleCommand(Named owner, String... names) {
-        super(owner, names);
-    }
 
-    public int getId() {
-        return id;
-    }
+	private int id = -1;
 
-    void setId(int id) {
-        this.id = id;
-    }
+	public IdSimpleCommand(Named owner, String... names) {
+		super(owner, names);
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	void setId(int id) {
+		this.id = id;
+	}
 }

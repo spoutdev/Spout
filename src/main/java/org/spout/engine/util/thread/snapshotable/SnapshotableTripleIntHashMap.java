@@ -46,6 +46,7 @@ import org.spout.engine.util.TripleInt;
  * Removals from the Map occur at the next snapshot update.
  */
 public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
+
 	private final TInt21TripleObjectHashMap<V> live;
 	private final ConcurrentHashMap<TripleInt, Boolean> dirtyMap;
 	private final ConcurrentLinkedQueue<TripleInt> dirtyQueue;
@@ -65,10 +66,12 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Adds an object to the map
+	 *
 	 * @param x     x coordinate
 	 * @param y     y coordinate
 	 * @param z     z coordinate
 	 * @param value the value
+	 *
 	 * @return the previous value
 	 */
 	@DelayedWrite
@@ -82,10 +85,12 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Adds an object to the map, if not already present
+	 *
 	 * @param x     x coordinate
 	 * @param y     y coordinate
 	 * @param z     z coordinate
 	 * @param value the value
+	 *
 	 * @return the current value, or null on success
 	 */
 	@DelayedWrite
@@ -104,9 +109,11 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Removes a key/value pair from the Map
+	 *
 	 * @param x x coordinate
 	 * @param y y coordinate
 	 * @param z z coordinate
+	 *
 	 * @return the previous value
 	 */
 	@DelayedWrite
@@ -128,10 +135,12 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 	 * <p/>
 	 * This method will have no effect if the key does not map to the given
 	 * value when the removal is attempted
+	 *
 	 * @param x     x coordinate
 	 * @param y     y coordinate
 	 * @param z     z coordinate
 	 * @param value the value
+	 *
 	 * @return true if the value was removed
 	 */
 	@DelayedWrite
@@ -152,6 +161,7 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value
+	 *
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
@@ -161,6 +171,7 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Gets the live/unstable value
+	 *
 	 * @return the stable snapshot value
 	 */
 	@LiveRead
@@ -170,10 +181,13 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Gets a value from a key, checks the Live map and then the snapshot map
+	 *
 	 * @param x x coordinate
 	 * @param y y coordinate
 	 * @param z z coordinate
-	 * @return the live value, or the snapshot value if no live value is present
+	 *
+	 * @return the live value, or the snapshot value if no live value is
+	 *            present
 	 */
 	@LiveRead
 	@SnapshotRead
@@ -190,10 +204,13 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Gets a value from a key
+	 *
 	 * @param x x coordinate
 	 * @param y y coordinate
 	 * @param z z coordinate
-	 * @return the live value, or the snapshot value if no live value is present
+	 *
+	 * @return the live value, or the snapshot value if no live value is
+	 *            present
 	 */
 	@SnapshotRead
 	public V get(int x, int y, int z) {
@@ -202,10 +219,13 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Gets a value from a key
+	 *
 	 * @param x x coordinate
 	 * @param y y coordinate
 	 * @param z z coordinate
-	 * @return the live value, or the snapshot value if no live value is present
+	 *
+	 * @return the live value, or the snapshot value if no live value is
+	 *            present
 	 */
 	@LiveRead
 	public V getLive(int x, int y, int z) {
@@ -216,6 +236,7 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 
 	/**
 	 * Gets all values that are on the live map and the snapshot map
+	 *
 	 * @return an Iterable containing the values
 	 */
 	@LiveRead

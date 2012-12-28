@@ -29,6 +29,7 @@ package org.spout.engine.util.argument;
 import org.spout.api.render.RenderMode;
 
 public class RenderModeConverter extends EnumConverter<RenderMode> {
+
 	public RenderModeConverter() {
 		super(RenderMode.class);
 	}

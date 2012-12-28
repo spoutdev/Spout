@@ -66,6 +66,6 @@ public class SoundWavLoader extends BasicResourceLoader<ClientSound> {
 
 	@Override
 	public String[] getExtensions() {
-		return new String[] { "wav" };
+		return new String[]{"wav"};
 	}
 }

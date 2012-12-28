@@ -31,6 +31,7 @@ package org.spout.engine.util.thread;
  * API method calls
  */
 public class ThreadsafetyManager {
+
 	private static Thread mainThread = null;
 
 	public static void setMainThread(Thread thread) {

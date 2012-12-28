@@ -38,23 +38,23 @@ public class PhysicsUpdate {
 	private final byte z;
 	private final EffectRange range;
 	private final BlockMaterial oldMaterial;
-	
+
 	public PhysicsUpdate(int x, int y, int z, EffectRange range, BlockMaterial oldMaterial) {
-		this.x = (byte)x;
-		this.y = (byte)y;
-		this.z = (byte)z;
+		this.x = (byte) x;
+		this.y = (byte) y;
+		this.z = (byte) z;
 		this.range = range;
 		this.oldMaterial = oldMaterial;
 	}
-	
+
 	public int getX() {
 		return x & 0xFF;
 	}
-	
+
 	public int getY() {
 		return y & 0xFF;
 	}
-	
+
 	public int getZ() {
 		return z & 0xFF;
 	}
@@ -62,21 +62,20 @@ public class PhysicsUpdate {
 	public EffectRange getRange() {
 		return range;
 	}
-	
+
 	public BlockMaterial getOldMaterial() {
 		return oldMaterial;
 	}
-	
+
 	@Override
 	public String toString() {
-		 return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
-         .append("x", x)
-         .append("y", y)
-         .append("z", z)
-         .append("range", range.getClass().getName())
-		 .append("old-material", oldMaterial.getClass().getName())
-         .toString();
+		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
+				.append("x", x)
+				.append("y", y)
+				.append("z", z)
+				.append("range", range.getClass().getName())
+				.append("old-material", oldMaterial.getClass().getName())
+				.toString();
 
 	}
-	
 }

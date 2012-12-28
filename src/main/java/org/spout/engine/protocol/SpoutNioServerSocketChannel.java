@@ -33,23 +33,22 @@ import org.jboss.netty.channel.socket.ServerSocketChannel;
 import org.jboss.netty.channel.socket.SocketChannelConfig;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
-public class SpoutNioServerSocketChannel extends NioServerSocketChannelFactory{
+public class SpoutNioServerSocketChannel extends NioServerSocketChannelFactory {
 
 	public SpoutNioServerSocketChannel(Executor boss, Executor worker) {
 		super(boss, worker);
 	}
 
 	@Override
-	 public ServerSocketChannel newChannel(ChannelPipeline pipeline) {
+	public ServerSocketChannel newChannel(ChannelPipeline pipeline) {
 		ServerSocketChannel channel = super.newChannel(pipeline);
 		channel.getConfig().setPerformancePreferences(0, 2, 1);
 		if (channel.getConfig() instanceof SocketChannelConfig) {
-			((SocketChannelConfig)channel.getConfig()).setTrafficClass(24);
-			((SocketChannelConfig)channel.getConfig()).setTcpNoDelay(true);
+			((SocketChannelConfig) channel.getConfig()).setTrafficClass(24);
+			((SocketChannelConfig) channel.getConfig()).setTcpNoDelay(true);
 		} else {
 			//TODO: fix
 		}
 		return channel;
-    }
-
+	}
 }

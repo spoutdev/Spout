@@ -44,6 +44,7 @@ import org.spout.api.util.thread.SnapshotRead;
  * A snapshotable class for HashMaps
  */
 public class SnapshotableHashMap<K, V> implements Snapshotable {
+
 	private final Map<K, V> snapshot = new LinkedHashMap<K, V>();
 	private final Map<K, V> unmodifySnapshot = Collections.unmodifiableMap(snapshot);
 	private final ConcurrentMap<K, V> live = new ConcurrentHashMap<K, V>();
@@ -57,8 +58,10 @@ public class SnapshotableHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Adds a key/value pair to the map
+	 *
 	 * @param key   the key
 	 * @param value the value
+	 *
 	 * @return the old value
 	 */
 	@DelayedWrite
@@ -72,8 +75,10 @@ public class SnapshotableHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Adds a key/value pair to the map, if no value exists for the key
+	 *
 	 * @param key   the key
 	 * @param value the value
+	 *
 	 * @return the old value
 	 */
 	@DelayedWrite
@@ -89,7 +94,9 @@ public class SnapshotableHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Removes a key/value pair from the list
+	 *
 	 * @param key the key
+	 *
 	 * @return the old value
 	 */
 	@DelayedWrite
@@ -105,8 +112,10 @@ public class SnapshotableHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Removes a key/value pair from the list
+	 *
 	 * @param key   the key
 	 * @param value the value
+	 *
 	 * @return true if the key/value pair was removed
 	 */
 	@DelayedWrite
@@ -122,6 +131,7 @@ public class SnapshotableHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Gets the snapshot value
+	 *
 	 * @return the stable snapshot value
 	 */
 	@SnapshotRead
@@ -131,6 +141,7 @@ public class SnapshotableHashMap<K, V> implements Snapshotable {
 
 	/**
 	 * Gets the live value
+	 *
 	 * @return the live set
 	 */
 	public Map<K, V> getLive() {
@@ -141,8 +152,10 @@ public class SnapshotableHashMap<K, V> implements Snapshotable {
 	 * Creates a list of keys that have been changed since the last snapshot
 	 * copy.<br>
 	 * <br>
-	 * This method may only be called during the pre-snapshot stage and the list
+	 * This method may only be called during the pre-snapshot stage and the
+	 * list
 	 * only remains valid during that stage.
+	 *
 	 * @return the list of elements that have been updated
 	 */
 	public List<K> getDirtyKeyList() {
@@ -154,8 +167,10 @@ public class SnapshotableHashMap<K, V> implements Snapshotable {
 	 * Creates a list of values that have been changed since the last snapshot
 	 * copy.<br>
 	 * <br>
-	 * This method may only be called during the pre-snapshot stage and the list
+	 * This method may only be called during the pre-snapshot stage and the
+	 * list
 	 * only remains valid during that stage.
+	 *
 	 * @return the list of elements that have been updated
 	 */
 	public List<V> getDirtyValueList() {

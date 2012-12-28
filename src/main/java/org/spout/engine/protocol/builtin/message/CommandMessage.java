@@ -36,6 +36,7 @@ import org.spout.api.util.SpoutToStringStyle;
 import org.spout.engine.command.IdSimpleCommand;
 
 public class CommandMessage extends SpoutMessage {
+
 	private final int command;
 	private final List<Object> arguments;
 

@@ -29,6 +29,7 @@ package org.spout.engine.chat.style;
 import org.fusesource.jansi.Ansi;
 
 public class JansiColorFormatter extends JansiStyleFormatter {
+
 	private final Ansi.Color color;
 	private final boolean bright;
 

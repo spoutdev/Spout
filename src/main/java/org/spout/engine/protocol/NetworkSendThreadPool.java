@@ -29,32 +29,32 @@ package org.spout.engine.protocol;
 import org.spout.api.Spout;
 
 public class NetworkSendThreadPool {
-	
+
 	private static final int POOL_MASK = 0xF;
 	private static final NetworkSendThread[] pool;
-	
+
 	static {
 		pool = new NetworkSendThread[POOL_MASK + 1];
-		for (int i = 0; i < pool.length; i++) {
+		for (int i = 0 ; i < pool.length ; i++) {
 			pool[i] = new NetworkSendThread(i);
 		}
 	}
-	
+
 	public static NetworkSendThread getNetworkThread(int playerId) {
 		return pool[hash(playerId) & POOL_MASK];
 	}
-	
+
 	public static void interrupt() {
-		for (int i = 0; i < pool.length; i++) {
+		for (int i = 0 ; i < pool.length ; i++) {
 			pool[i].interrupt();
 		}
 	}
-	
+
 	public static void shutdown() {
-		for (int i = 0; i < pool.length; i++) {
+		for (int i = 0 ; i < pool.length ; i++) {
 			pool[i].interrupt();
 		}
-		for (int i = 0; i < pool.length; i++) {
+		for (int i = 0 ; i < pool.length ; i++) {
 			try {
 				pool[i].interruptAndJoin();
 			} catch (InterruptedException e) {
@@ -62,11 +62,10 @@ public class NetworkSendThreadPool {
 			}
 		}
 	}
-	
+
 	// Taken from HashMap
 	private static int hash(int h) {
 		h ^= (h >>> 20) ^ (h >>> 12);
 		return h ^ (h >>> 7) ^ (h >>> 4);
 	}
-
 }

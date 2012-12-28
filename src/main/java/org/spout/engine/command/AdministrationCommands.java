@@ -58,16 +58,17 @@ import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 
 public class AdministrationCommands {
+
 	private final SpoutEngine engine;
 
 	public AdministrationCommands(SpoutEngine engine) {
 		this.engine = engine;
 	}
 
-	@Command(aliases = "stop", usage = "[message]", desc = "Stop the server!", max = -1)
-	@CommandPermissions("spout.command.stop")
+	@Command (aliases = "stop", usage = "[message]", desc = "Stop the server!", max = -1)
+	@CommandPermissions ("spout.command.stop")
 	public void stop(CommandContext args, CommandSource source) {
-		String message = "Engine halting";
+		String message;
 		switch (Spout.getPlatform()) {
 			case CLIENT:
 				message = "Client halting";
@@ -87,8 +88,8 @@ public class AdministrationCommands {
 		engine.stop(message);
 	}
 
-	@Command(desc = "Writes the stack trace of all active threads to the logs", max = -1, aliases = {""})
-	@CommandPermissions("spout.command.dumpstack")
+	@Command (desc = "Writes the stack trace of all active threads to the logs", max = -1, aliases = {""})
+	@CommandPermissions ("spout.command.dumpstack")
 	public void dumpstack(CommandContext args, CommandSource source) {
 		Map<Thread, StackTraceElement[]> dump = Thread.getAllStackTraces();
 		Iterator<Entry<Thread, StackTraceElement[]>> i = dump.entrySet().iterator();
@@ -104,8 +105,8 @@ public class AdministrationCommands {
 		engine.getLogger().info("[---------------End Stack Dump---------------]");
 	}
 
-	@Command(aliases = "kick", usage = "<player> [message]", desc = "Kick a player", min = 1, max = -1)
-	@CommandPermissions("spout.command.kick")
+	@Command (aliases = "kick", usage = "<player> [message]", desc = "Kick a player", min = 1, max = -1)
+	@CommandPermissions ("spout.command.kick")
 	public void kick(CommandContext args, CommandSource source) throws CommandException {
 		Platform p = Spout.getPlatform();
 		if (p != Platform.SERVER && p != Platform.PROXY) {
@@ -134,8 +135,8 @@ public class AdministrationCommands {
 		}
 	}
 
-	@Command(aliases = "whitelist", desc = "Add, remove, list, or toggle players on the whitelist.", usage = "<add|remove|list|on|off> [player] [reason]", min = 1, max = 3)
-	@CommandPermissions("spout.command.whitelist")
+	@Command (aliases = "whitelist", desc = "Add, remove, list, or toggle players on the whitelist.", usage = "<add|remove|list|on|off> [player] [reason]", min = 1, max = 3)
+	@CommandPermissions ("spout.command.whitelist")
 	public void whitelist(CommandContext args, CommandSource source) throws CommandException {
 		Platform p = Spout.getPlatform();
 		if (p != Platform.SERVER && p != Platform.PROXY) {
@@ -149,7 +150,7 @@ public class AdministrationCommands {
 				Collection<String> c = accessManager.getWhitelistedPlayers();
 				String[] whitelisted = c.toArray(new String[c.size()]);
 				ChatArguments message = new ChatArguments(ChatStyle.BRIGHT_GREEN, "Whitelisted (", whitelisted.length, "): ");
-				for (int i = 0; i < whitelisted.length; i++) {
+				for (int i = 0 ; i < whitelisted.length ; i++) {
 					message.append(ChatStyle.BLUE, whitelisted[i]);
 					if (i != whitelisted.length - 1) {
 						message.append(ChatStyle.RESET, ", ");
@@ -191,8 +192,8 @@ public class AdministrationCommands {
 		}
 	}
 
-	@Command(aliases = "banlist", usage = "[ips]", desc = "Shows banned players or ips.", min = 0, max = 1)
-	@CommandPermissions("spout.command.banlist")
+	@Command (aliases = "banlist", usage = "[ips]", desc = "Shows banned players or ips.", min = 0, max = 1)
+	@CommandPermissions ("spout.command.banlist")
 	public void banList(CommandContext args, CommandSource source) throws CommandException {
 		Platform p = Spout.getPlatform();
 		if (p != Platform.SERVER && p != Platform.PROXY) {
@@ -210,7 +211,7 @@ public class AdministrationCommands {
 		Collection<String> c = accessManager.getBanned(type);
 		String[] banned = c.toArray(new String[c.size()]);
 		ChatArguments message = new ChatArguments(ChatStyle.BRIGHT_GREEN, "Banned ", type == BanType.IP ? "IPs " : "", "(", banned.length, "): ");
-		for (int i = 0; i < banned.length; i++) {
+		for (int i = 0 ; i < banned.length ; i++) {
 			message.append(ChatStyle.BLUE, banned[i]);
 			if (i != banned.length - 1) {
 				message.append(ChatStyle.RESET, ", ");
@@ -219,8 +220,8 @@ public class AdministrationCommands {
 		source.sendMessage(message);
 	}
 
-	@Command(aliases = "ban", usage = "<player> [reason]", desc = "Ban a player", min = 1, max = -1)
-	@CommandPermissions("spout.command.ban")
+	@Command (aliases = "ban", usage = "<player> [reason]", desc = "Ban a player", min = 1, max = -1)
+	@CommandPermissions ("spout.command.ban")
 	public void ban(CommandContext args, CommandSource source) throws CommandException {
 		Platform p = Spout.getPlatform();
 		if (p != Platform.SERVER && p != Platform.PROXY) {
@@ -237,8 +238,8 @@ public class AdministrationCommands {
 		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Banned player '", player, "' from the server.");
 	}
 
-	@Command(aliases = "unban", usage = "<player>", desc = "Unban a player", min = 1, max = 1)
-	@CommandPermissions("spout.command.unban")
+	@Command (aliases = "unban", usage = "<player>", desc = "Unban a player", min = 1, max = 1)
+	@CommandPermissions ("spout.command.unban")
 	public void unban(CommandContext args, CommandSource source) throws CommandException {
 		Platform p = Spout.getPlatform();
 		if (p != Platform.SERVER && p != Platform.PROXY) {
@@ -249,8 +250,8 @@ public class AdministrationCommands {
 		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Unbanned player '", player, "' from the server.");
 	}
 
-	@Command(aliases = "ban-ip", usage = "<address> [reason]", desc = "Ban an IP address", min = 1, max = -1)
-	@CommandPermissions("spout.command.banip")
+	@Command (aliases = "ban-ip", usage = "<address> [reason]", desc = "Ban an IP address", min = 1, max = -1)
+	@CommandPermissions ("spout.command.banip")
 	public void banIp(CommandContext args, CommandSource source) throws CommandException {
 		Platform p = Spout.getPlatform();
 		if (p != Platform.SERVER && p != Platform.PROXY) {
@@ -272,8 +273,8 @@ public class AdministrationCommands {
 		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Banned IP address '", address, "' from the server.");
 	}
 
-	@Command(aliases = "unban-ip", usage = "<address>", desc = "Unban an IP address", min = 1, max = 1)
-	@CommandPermissions("spout.command.unbanip")
+	@Command (aliases = "unban-ip", usage = "<address>", desc = "Unban an IP address", min = 1, max = 1)
+	@CommandPermissions ("spout.command.unbanip")
 	public void unbanIp(CommandContext args, CommandSource source) throws CommandException {
 		Platform p = Spout.getPlatform();
 		if (p != Platform.SERVER && p != Platform.PROXY) {
@@ -284,8 +285,8 @@ public class AdministrationCommands {
 		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Unbanned IP address '", address, "' from the server");
 	}
 
-	@Command(aliases = "reload", usage = "[plugin]", desc = "Reload engine and/or plugins", max = 1)
-	@CommandPermissions("spout.command.reload")
+	@Command (aliases = "reload", usage = "[plugin]", desc = "Reload engine and/or plugins", max = 1)
+	@CommandPermissions ("spout.command.reload")
 	public void reload(CommandContext args, CommandSource source) throws CommandException {
 		if (args.length() == 0) {
 			source.sendMessage(ChatStyle.BRIGHT_GREEN, "Reloading engine...");
@@ -312,14 +313,14 @@ public class AdministrationCommands {
 		}
 	}
 
-	@Command(aliases = {"plugins", "pl"}, desc = "List all plugins on the engine")
-	@CommandPermissions("spout.command.plugins")
+	@Command (aliases = {"plugins", "pl"}, desc = "List all plugins on the engine")
+	@CommandPermissions ("spout.command.plugins")
 	public void plugins(CommandContext args, CommandSource source) {
 		List<Plugin> plugins = Spout.getEngine().getPluginManager().getPlugins();
 		ChatArguments pluginListString = new ChatArguments();
-		pluginListString.append(Arrays.<Object>asList("Plugins (", plugins.size()  - 1, "): "));
+		pluginListString.append(Arrays.<Object>asList("Plugins (", plugins.size() - 1, "): "));
 
-		for (int i = 0; i < plugins.size(); i++) {
+		for (int i = 0 ; i < plugins.size() ; i++) {
 			Plugin plugin = plugins.get(i);
 			if (plugin instanceof SpoutMetaPlugin) {
 				continue;
@@ -335,8 +336,8 @@ public class AdministrationCommands {
 		source.sendMessage(pluginListString);
 	}
 
-	@Command(aliases = {"players", "who", "list"}, desc = "List all online players")
-	@CommandPermissions("spout.command.players")
+	@Command (aliases = {"players", "who", "list"}, desc = "List all online players")
+	@CommandPermissions ("spout.command.players")
 	public void list(CommandContext args, CommandSource source) throws CommandException {
 		if (Spout.getPlatform() != Platform.SERVER && Spout.getPlatform() != Platform.PROXY) {
 			throw new CommandException("You may only list online players in server mode.");
@@ -344,7 +345,7 @@ public class AdministrationCommands {
 
 		Player[] players = ((Server) Spout.getEngine()).getOnlinePlayers();
 		ChatArguments onlineMsg = new ChatArguments(Arrays.asList("Online (", (players.length <= 0 ? ChatStyle.RED : ChatStyle.BRIGHT_GREEN), players.length, ChatStyle.RESET, "): "));
-		for (int i = 0; i < players.length; i++) {
+		for (int i = 0 ; i < players.length ; i++) {
 			if (!players[i].isOnline()) {
 				continue;
 			}
@@ -356,8 +357,8 @@ public class AdministrationCommands {
 		source.sendMessage(onlineMsg);
 	}
 
-	@Command(aliases = {"setspawn", "ss"}, desc = "Sets the spawnpoint for a world", min = 0, max = 4)
-	@CommandPermissions("spout.command.setspawn")
+	@Command (aliases = {"setspawn", "ss"}, desc = "Sets the spawnpoint for a world", min = 0, max = 4)
+	@CommandPermissions ("spout.command.setspawn")
 	public void setspawn(CommandContext args, CommandSource source) throws CommandException {
 		//Not a player? Make sure the console is specifying world, x, y, z
 		if (!(source instanceof Player)) {
@@ -369,7 +370,7 @@ public class AdministrationCommands {
 		//Source is a player and didn't provide world, x, y, z so instead set the spawn point of their current world at their current position.
 		if (args.length() != 4) {
 			point = ((Player) source).getTransform().getPosition();
-		//Either Source is the console or the player specified world, x, y, z so set those values
+			//Either Source is the console or the player specified world, x, y, z so set those values
 		} else {
 			if (args.getWorld(0) == null) {
 				throw new CommandException("World: " + args.getString(0) + " is not loaded/existant!");
@@ -380,11 +381,11 @@ public class AdministrationCommands {
 		point.getWorld().setSpawnPoint(new Transform(point, Quaternion.IDENTITY, Vector3.ONE));
 		//Notify the source
 		source.sendMessage(new ChatArguments("Set the spawnpoint of world: ", ChatStyle.PURPLE, point.getWorld().getName(), ChatStyle.WHITE, " to x: ",
-				ChatStyle.BRIGHT_GREEN, point.getBlockX(), ChatStyle.WHITE, ", y: ", ChatStyle.BRIGHT_GREEN, point.getBlockY(), ChatStyle.WHITE, ", z: ", ChatStyle.BRIGHT_GREEN, point.getBlockZ()));
+											 ChatStyle.BRIGHT_GREEN, point.getBlockX(), ChatStyle.WHITE, ", y: ", ChatStyle.BRIGHT_GREEN, point.getBlockY(), ChatStyle.WHITE, ", z: ", ChatStyle.BRIGHT_GREEN, point.getBlockZ()));
 	}
 
-	@Command(aliases = {"whatisspawn", "wis"}, desc = "Tells you the spawnpoint of a world", min = 0, max = 1)
-	@CommandPermissions("spout.command.tellspawn")
+	@Command (aliases = {"whatisspawn", "wis"}, desc = "Tells you the spawnpoint of a world", min = 0, max = 1)
+	@CommandPermissions ("spout.command.tellspawn")
 	public void tellspawn(CommandContext args, CommandSource source) throws CommandException {
 		if (!(source instanceof Player)) {
 			if (args.length() != 1) {
@@ -402,16 +403,16 @@ public class AdministrationCommands {
 			point = world.getSpawnPoint().getPosition();
 		}
 		source.sendMessage(new ChatArguments("The spawnpoint of world: ", ChatStyle.PURPLE, point.getWorld().getName(), ChatStyle.WHITE, " is x: ",
-				ChatStyle.BRIGHT_GREEN, point.getBlockX(), ChatStyle.WHITE, ", y: ", ChatStyle.BRIGHT_GREEN, point.getBlockY(), ChatStyle.WHITE, ", z: ", ChatStyle.BRIGHT_GREEN, point.getBlockZ()));
+											 ChatStyle.BRIGHT_GREEN, point.getBlockX(), ChatStyle.WHITE, ", y: ", ChatStyle.BRIGHT_GREEN, point.getBlockY(), ChatStyle.WHITE, ", z: ", ChatStyle.BRIGHT_GREEN, point.getBlockZ()));
 	}
 
-	@Command(aliases = {"worldinfo"}, desc = "Provides info about known worlds", usage = "[world]", min = 0, max = 1)
-	@CommandPermissions("spout.command.worldinfo")
+	@Command (aliases = {"worldinfo"}, desc = "Provides info about known worlds", usage = "[world]", min = 0, max = 1)
+	@CommandPermissions ("spout.command.worldinfo")
 	public void worldInfo(CommandContext args, CommandSource source) throws CommandException {
 		if (args.length() == 0) {
 			Collection<World> worlds = engine.getWorlds();
 			ChatArguments output = new ChatArguments("Worlds (", worlds.size(), "): ");
-			for (Iterator<World> i = worlds.iterator(); i.hasNext();) {
+			for (Iterator<World> i = worlds.iterator() ; i.hasNext() ;) {
 				output.append(i.next().getName());
 				if (i.hasNext()) {
 					output.append(", ");

@@ -37,6 +37,7 @@ import org.spout.api.util.SpoutToStringStyle;
 import org.spout.api.util.StringMapEvent;
 
 public class StringMapMessage extends SpoutMessage {
+
 	private final int map;
 	private final StringMapEvent.Action action;
 	private final List<Pair<Integer, String>> elements;

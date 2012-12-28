@@ -30,6 +30,7 @@ package org.spout.engine.util;
  * Simple 2-dimensional Perlin noise generator.
  */
 public class Perlin2D {
+
 	public double amplitude;
 	public double frequency;
 	public int[] primes;

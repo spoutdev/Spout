@@ -44,9 +44,11 @@ import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 /**
  * Dedicated thread to IO write operations for world chunks
  */
-public class WorldSavingThread extends Thread{
+public class WorldSavingThread extends Thread {
+
 	private static WorldSavingThread instance = null;
 	private final LinkedBlockingQueue<Callable<SpoutWorld>> queue = new LinkedBlockingQueue<Callable<SpoutWorld>>();
+
 	public WorldSavingThread() {
 		super("World Saving Thread");
 	}
@@ -129,9 +131,11 @@ public class WorldSavingThread extends Thread{
 	}
 
 	private static class ChunkSaveTask implements Callable<SpoutWorld> {
+
 		final SpoutChunkSnapshot snapshot;
 		final List<DynamicBlockUpdate> blockUpdates;
 		final SpoutChunk chunk;
+
 		ChunkSaveTask(SpoutChunk chunk) {
 			this.snapshot = (SpoutChunkSnapshot) chunk.getSnapshot(SnapshotType.LIGHT_ONLY, EntityType.BOTH, ExtraData.DATATABLE, true);
 			this.blockUpdates = chunk.getRegion().getDynamicBlockUpdates(chunk);
@@ -148,7 +152,8 @@ public class WorldSavingThread extends Thread{
 				} finally {
 					try {
 						out.close();
-					} catch (IOException ioe) {}
+					} catch (IOException ioe) {
+					}
 				}
 				chunk.saveComplete();
 			} else {
@@ -157,4 +162,5 @@ public class WorldSavingThread extends Thread{
 			return world;
 		}
 	}
+
 }

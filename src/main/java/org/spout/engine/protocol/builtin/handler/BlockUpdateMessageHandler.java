@@ -36,15 +36,16 @@ import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
  *
  */
 public class BlockUpdateMessageHandler extends MessageHandler<BlockUpdateMessage> {
+
 	@Override
 	public void handleClient(Session session, BlockUpdateMessage message) {
-		if(!session.hasPlayer()) {
+		if (!session.hasPlayer()) {
 			return;
 		}
 
 		Player player = session.getPlayer();
 		player.getWorld().getBlock(message.getX(), message.getY(), message.getZ())
-		.setMaterial(Material.get(message.getType()), message.getData())
-		.setBlockLight(message.getBlockLight()).setSkyLight(message.getSkyLight());
+				.setMaterial(Material.get(message.getType()), message.getData())
+				.setBlockLight(message.getBlockLight()).setSkyLight(message.getSkyLight());
 	}
 }

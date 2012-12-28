@@ -49,13 +49,14 @@ import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.world.SpoutWorld;
 
 public class SpoutServerListener implements Listener {
+
 	private final SpoutServer server;
 
 	public SpoutServerListener(SpoutServer server) {
 		this.server = server;
 	}
 
-	@EventHandler(order = Order.MONITOR)
+	@EventHandler (order = Order.MONITOR)
 	public void onPlayerConnect(PlayerConnectEvent event) {
 		if (event.isCancelled()) {
 			return;
@@ -82,7 +83,7 @@ public class SpoutServerListener implements Listener {
 		}
 	}
 
-	@EventHandler(order = Order.EARLIEST)
+	@EventHandler (order = Order.EARLIEST)
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		Player p = event.getPlayer();
 		PlayerBanKickEvent banEvent = null;
@@ -99,12 +100,12 @@ public class SpoutServerListener implements Listener {
 		}
 
 		if (banEvent != null && !banEvent.isCancelled()) {
-			event.disallow(!banEvent.getMessage().getPlainString().equals("") ? banEvent.getMessage() : server.getAccessManager().getBanMessage(banEvent.getBanType()));
+			event.disallow(!banEvent.getMessage().getPlainString().isEmpty() ? banEvent.getMessage() : server.getAccessManager().getBanMessage(banEvent.getBanType()));
 			return;
 		}
 
 		if (whitelistEvent != null && !whitelistEvent.isCancelled()) {
-			event.disallow(!whitelistEvent.getMessage().getPlainString().equals("") ? whitelistEvent.getMessage() : server.getAccessManager().getWhitelistMessage());
+			event.disallow(!whitelistEvent.getMessage().getPlainString().isEmpty() ? whitelistEvent.getMessage() : server.getAccessManager().getWhitelistMessage());
 			return;
 		}
 
@@ -113,14 +114,14 @@ public class SpoutServerListener implements Listener {
 		}
 	}
 
-	@EventHandler(order = Order.MONITOR)
+	@EventHandler (order = Order.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		if (event.getMessage() != null) {
 			server.broadcastMessage(event.getMessage());
 		}
 	}
 
-	@EventHandler(order = Order.EARLIEST)
+	@EventHandler (order = Order.EARLIEST)
 	public void onGetAllWithNode(PermissionGetAllWithNodeEvent event) {
 		for (Player player : server.getOnlinePlayers()) {
 			event.getReceivers().put(player, Result.DEFAULT);
@@ -128,7 +129,7 @@ public class SpoutServerListener implements Listener {
 		event.getReceivers().put(server.getCommandSource(), Result.DEFAULT);
 	}
 
-	@EventHandler(order = Order.EARLIEST)
+	@EventHandler (order = Order.EARLIEST)
 	public void onEntityChangeWorld(EntityChangeWorldEvent event) {
 		if (!(event.getEntity() instanceof Player)) {
 			return;

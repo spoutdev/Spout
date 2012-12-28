@@ -37,17 +37,20 @@ import org.spout.api.plugin.Platform;
 import org.spout.engine.SpoutEngine;
 
 public class InputManagementCommands {
+
 	private final SpoutEngine engine;
 
 	public InputManagementCommands(SpoutEngine engine) {
 		this.engine = engine;
 	}
 
-	@Command(aliases = {"bind"}, usage = "bind <key> <command>", desc = "Binds a command to a key", min = 2)
+	@Command (aliases = {"bind"}, usage = "bind <key> <command>", desc = "Binds a command to a key", min = 2)
 	public class BindCommand {
-		@Executor(Platform.CLIENT)
+
+		@Executor (Platform.CLIENT)
 		public void bind(CommandContext args, CommandSource source) throws CommandException {
 			((Client) engine).getInputManager().bind(Keyboard.get(args.getString(0)), args.getJoinedString(1).getPlainString());
 		}
 	}
+
 }

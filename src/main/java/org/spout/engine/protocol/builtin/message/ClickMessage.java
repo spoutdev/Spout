@@ -32,7 +32,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.util.SpoutToStringStyle;
 
 public class ClickMessage extends SpoutMessage {
+
 	public enum Action {
+
 		LEFT, RIGHT, CENTER,
 	}
 

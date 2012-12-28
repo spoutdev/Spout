@@ -37,11 +37,14 @@ import org.spout.api.chat.style.StyleHandler;
  * StyleHandler that applies styles with Jansi
  */
 public class JansiStyleHandler extends StyleHandler {
+
 	public static final JansiStyleHandler INSTANCE = new JansiStyleHandler();
 	public static final int ID = register(INSTANCE);
+
 	static {
 		AnsiConsole.systemInstall();
 	}
+
 	public JansiStyleHandler() {
 		super();
 		registerFormatter(ChatStyle.RED, new JansiColorFormatter(Ansi.Color.RED, true));

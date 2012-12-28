@@ -35,14 +35,12 @@ import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.util.hashing.SignedTenBitTripleHashed;
 
 public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate>, DynamicUpdateEntry {
-	
-	private final static AtomicInteger idCounter = new AtomicInteger(0);
 
+	private final static AtomicInteger idCounter = new AtomicInteger(0);
 	private final int id;
 	private final int packed;
 	private final long nextUpdate;
 	private final int data;
-
 	private DynamicBlockUpdate next;
 
 	public DynamicBlockUpdate(int packed, long nextUpdate, int data) {
@@ -82,7 +80,7 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate>, Dynam
 	public int getPacked() {
 		return packed;
 	}
-	
+
 	@Override
 	public int getData() {
 		return data;
@@ -112,10 +110,9 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate>, Dynam
 			return false;
 		}
 
-		return id == ((DynamicBlockUpdate)o).id;
+		return id == ((DynamicBlockUpdate) o).id;
 	}
 
-	
 	@Override
 	public int compareTo(DynamicBlockUpdate o) {
 		if (nextUpdate != o.nextUpdate) {
@@ -124,12 +121,12 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate>, Dynam
 			return id - o.id;
 		}
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return ((int) nextUpdate) + id;
 	}
-	
+
 	private final int subToInt(long a, long b) {
 		long result = a - b;
 		int msbs = (int) (result >> 32);
@@ -196,16 +193,16 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate>, Dynam
 
 	@Override
 	public String toString() {
-		return "DynamicBlockUpdate{ id: + " + id + " packed: " + getPacked() + " chunkPacked: " + getChunkPacked() + 
-				" nextUpdate: " + getNextUpdate() + 
-				" pos: (" + getX() + ", " + getY() + ", " + getZ() + ")" +
-				" data: " + data + "}";
+		return "DynamicBlockUpdate{ id: + " + id + " packed: " + getPacked() + " chunkPacked: " + getChunkPacked()
+			   + " nextUpdate: " + getNextUpdate()
+			   + " pos: (" + getX() + ", " + getY() + ", " + getZ() + ")"
+			   + " data: " + data + "}";
 	}
-	
+
 	public static int getPointPacked(Point p) {
 		return getBlockPacked(p.getBlockX(), p.getBlockY(), p.getBlockZ());
 	}
-		
+
 	public static int getBlockPacked(int x, int y, int z) {
 		return SignedTenBitTripleHashed.key(x & Region.BLOCKS.MASK, y & Region.BLOCKS.MASK, z & Region.BLOCKS.MASK);
 	}

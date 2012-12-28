@@ -36,8 +36,10 @@ import org.spout.api.geo.World;
 import org.spout.api.util.SpoutToStringStyle;
 
 public class WorldChangeMessage extends DatatableMessage {
+
 	private final String worldName;
 	private final UUID worldUuid;
+
 	public WorldChangeMessage(World world, SerializableMap data) {
 		this(world.getName(), world.getUID(), data.serialize());
 	}

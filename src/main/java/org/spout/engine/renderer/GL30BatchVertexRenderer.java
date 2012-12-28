@@ -39,14 +39,15 @@ import org.spout.api.render.RenderMaterial;
 import org.spout.engine.renderer.vertexbuffer.GLFloatBuffer;
 
 public class GL30BatchVertexRenderer extends BatchVertexRenderer {
+
 	final int SIZE_FLOAT = 4;
 	int vao;
 	int vbos = -1;
-
-	TIntObjectHashMap<GLFloatBuffer > vertexBuffers = new TIntObjectHashMap<GLFloatBuffer>();
+	TIntObjectHashMap<GLFloatBuffer> vertexBuffers = new TIntObjectHashMap<GLFloatBuffer>();
 
 	/**
 	 * Batch Renderer using OpenGL 3.0 mode.
+	 *
 	 * @param renderMode Mode to render in
 	 */
 	public GL30BatchVertexRenderer(int renderMode) {
@@ -60,22 +61,22 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 	protected void doFlush() {
 		GL30.glBindVertexArray(vao);
 
-		for(Entry<Integer, Buffer> entry : buffers.entrySet()){
+		for (Entry<Integer, Buffer> entry : buffers.entrySet()) {
 			int layout = entry.getKey();
 			Buffer buffer = entry.getValue();
 
-			if(buffer instanceof FloatBuffer){
+			if (buffer instanceof FloatBuffer) {
 				GLFloatBuffer vertexBuffer = vertexBuffers.get(layout);
 
-				if(vertexBuffer == null) {
+				if (vertexBuffer == null) {
 					vertexBuffer = new GLFloatBuffer("uselessname", buffer.limit() / numVertices, layout);
 					vertexBuffers.put(layout, vertexBuffer);
 				}
 
-				vertexBuffer.flush((FloatBuffer)buffer);
+				vertexBuffer.flush((FloatBuffer) buffer);
 				vertexBuffer.bind();
-			}else{
-				throw new IllegalStateException("Buffer different of FloatBuffer not yet supported");	
+			} else {
+				throw new IllegalStateException("Buffer different of FloatBuffer not yet supported");
 			}
 		}
 
@@ -91,7 +92,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 
 		material.assign();
 
-		for(GLFloatBuffer glBuffer : vertexBuffers.valueCollection()){
+		for (GLFloatBuffer glBuffer : vertexBuffers.valueCollection()) {
 			//vb.bind();
 			GL20.glEnableVertexAttribArray(glBuffer.getLayout());
 			//GL20.glVertexAttribPointer(vb.getLayout(), vb.getElements(), GL11.GL_FLOAT, false, 0, 0);
@@ -100,15 +101,15 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 
 		GL11.glDrawArrays(renderMode, startVert, endVert);
 
-		for(GLFloatBuffer glBuffer : vertexBuffers.valueCollection()){			
-			GL20.glDisableVertexAttribArray(glBuffer.getLayout());		
+		for (GLFloatBuffer glBuffer : vertexBuffers.valueCollection()) {
+			GL20.glDisableVertexAttribArray(glBuffer.getLayout());
 		}
 
 		//GL30.glBindVertexArray(0); //Run without
 	}
 
 	private void dispose() {
-		for(GLFloatBuffer glBuffer : vertexBuffers.valueCollection()){
+		for (GLFloatBuffer glBuffer : vertexBuffers.valueCollection()) {
 			glBuffer.dispose();
 		}
 	}

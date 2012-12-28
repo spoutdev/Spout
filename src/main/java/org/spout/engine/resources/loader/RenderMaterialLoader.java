@@ -51,13 +51,14 @@ import org.spout.api.util.typechecker.TypeChecker;
 import org.spout.engine.resources.ClientRenderMaterial;
 
 public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMaterial> {
+
 	@Override
 	public String getFallbackResourceName() {
 		return "material://Spout/fallbacks/generic.smt";
 	}
-
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
 	private static final Pattern vectorPattern = Pattern.compile("(vector[234]|color)\\((.*)\\)");
+
 	@Override
 	public ClientRenderMaterial getResource(InputStream stream) {
 		final Yaml yaml = new Yaml();
@@ -79,13 +80,16 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 		final Shader shader = (Shader) shaderObject;
 		int layer = 0;
 		boolean depthTesting = true;
-		if(resourceProperties.containsKey("RenderState"))
-		{
+		if (resourceProperties.containsKey("RenderState")) {
 			final Map<? extends String, ?> renderState = checkerMapStringObject.check(resourceProperties.get("RenderState"));
 			Object s = renderState.get("Depth");
-			if(s instanceof Boolean) depthTesting = (Boolean)s;
+			if (s instanceof Boolean) {
+				depthTesting = (Boolean) s;
+			}
 			Object s2 = renderState.get("Layer");
-			if(s2 != null && s2 instanceof Integer) layer = (Integer)s2;
+			if (s2 != null && s2 instanceof Integer) {
+				layer = (Integer) s2;
+			}
 		}
 		final Map<? extends String, ?> params = checkerMapStringObject.check(resourceProperties.get("MaterialParams"));
 
@@ -107,7 +111,7 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 			if (val.contains("://")) {
 				// It's a resource!
 				Resource resource = Spout.getFilesystem().getResource(val);
-				if (resource instanceof Texture && !((Texture)resource).isLoaded()) {
+				if (resource instanceof Texture && !((Texture) resource).isLoaded()) {
 					//((Texture)resource).load();//TODO : Control if GL ready
 				}
 
@@ -129,31 +133,29 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 
 			if (type.equals("color")) {
 				switch (values.length) {
-				case 0:
-				case 1:
-				case 2:
-					throw new IllegalArgumentException("Colors need at least 3 components");
+					case 0:
+					case 1:
+					case 2:
+						throw new IllegalArgumentException("Colors need at least 3 components");
 
-				case 3:
-					paramsNew.put(key, new Color(
-							Float.parseFloat(values[0]),
-							Float.parseFloat(values[1]),
-							Float.parseFloat(values[2]),
-							1.0f
-					));
-					continue;
+					case 3:
+						paramsNew.put(key, new Color(
+								Float.parseFloat(values[0]),
+								Float.parseFloat(values[1]),
+								Float.parseFloat(values[2]),
+								1.0f));
+						continue;
 
-				case 4:
-					paramsNew.put(key, new Color(
-							Float.parseFloat(values[0]),
-							Float.parseFloat(values[1]),
-							Float.parseFloat(values[2]),
-							Float.parseFloat(values[3])
-					));
-					continue;
+					case 4:
+						paramsNew.put(key, new Color(
+								Float.parseFloat(values[0]),
+								Float.parseFloat(values[1]),
+								Float.parseFloat(values[2]),
+								Float.parseFloat(values[3])));
+						continue;
 
-				default:
-					throw new IllegalArgumentException("Colors takes at most 3 components");
+					default:
+						throw new IllegalArgumentException("Colors takes at most 3 components");
 				}
 			}
 
@@ -164,8 +166,7 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 
 				paramsNew.put(key, new Vector2(
 						Float.parseFloat(values[0]),
-						Float.parseFloat(values[1])
-				));
+						Float.parseFloat(values[1])));
 				continue;
 			}
 
@@ -177,8 +178,7 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 				paramsNew.put(key, new Vector3(
 						Float.parseFloat(values[0]),
 						Float.parseFloat(values[1]),
-						Float.parseFloat(values[2])
-				));
+						Float.parseFloat(values[2])));
 				continue;
 			}
 
@@ -191,8 +191,7 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 						Float.parseFloat(values[0]),
 						Float.parseFloat(values[1]),
 						Float.parseFloat(values[2]),
-						Float.parseFloat(values[3])
-				));
+						Float.parseFloat(values[3])));
 				continue;
 			}
 
@@ -200,19 +199,19 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 		}
 
 		//TODO: Parse matricies 
-		
+
 		ClientRenderMaterial material = new ClientRenderMaterial(shader, paramsNew, null, null, depthTesting, layer);
 		Object re = resourceProperties.get("RenderEffects");
-		if(re != null && re instanceof String[]) {
-			String[] renderEffects = (String[])re;
-			for(String effectName : renderEffects) {
+		if (re != null && re instanceof String[]) {
+			String[] renderEffects = (String[]) re;
+			for (String effectName : renderEffects) {
 				try {
 					Class<?> effect = CommonClassLoader.findPluginClass(effectName);
-					if(!RenderEffect.class.isAssignableFrom(effect)) {
+					if (!RenderEffect.class.isAssignableFrom(effect)) {
 						Spout.log("Error: " + effectName + " Is not a RenderEffect");
 					}
 					try {
-						RenderEffect effectInstance = (RenderEffect)effect.newInstance();
+						RenderEffect effectInstance = (RenderEffect) effect.newInstance();
 						material.addRenderEffect(effectInstance);
 					} catch (InstantiationException e) {
 						// TODO Auto-generated catch block
@@ -225,19 +224,21 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 					Spout.log("Warning: RenderEffect " + effectName + " Not Found.");
 				}
 			}
-			
-			
+
+
 		}
 
-		
-		return  material;
+
+		return material;
 	}
+
 	@Override
 	public String getProtocol() {
 		return "material";
 	}
+
 	@Override
 	public String[] getExtensions() {
-		return new String[] { "smt" };
+		return new String[]{"smt"};
 	}
 }

@@ -31,6 +31,7 @@ import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Level;
 
 import jline.ArgumentCompletor;
 import jline.Completor;
@@ -47,6 +48,7 @@ import org.spout.engine.chat.style.JansiStyleHandler;
  * A console backed by JLine
  */
 public class JLineConsole extends AbstractConsole {
+
 	private final SpoutEngine engine;
 	private final ConsoleReader reader;
 	private final OutputStreamWriter writer;
@@ -63,12 +65,12 @@ public class JLineConsole extends AbstractConsole {
 			throw new ExceptionInInitializerError(e);
 		}
 
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings ("unchecked")
 		final Collection<Completor> completors = reader.getCompletors();
 		for (Completor c : new ArrayList<Completor>(completors)) {
 			reader.removeCompletor(c);
 		}
-		Completor[] list = new Completor[] {new SpoutCommandCompletor(engine), new NullCompletor()};
+		Completor[] list = new Completor[]{new SpoutCommandCompletor(engine), new NullCompletor()};
 		reader.addCompletor(new ArgumentCompletor(list));
 	}
 
@@ -142,7 +144,7 @@ public class JLineConsole extends AbstractConsole {
 
 					engine.getScheduler().scheduleSyncDelayedTask(null, new CommandTask(command.trim()));
 				} catch (Exception ex) {
-					engine.getLogger().severe("Exception that shouldn't happen while executing command: " + ex.getMessage());
+					engine.getLogger().log(Level.SEVERE, "Exception that shouldn''t happen while executing command: {0}", ex.getMessage());
 					ex.printStackTrace();
 				}
 			}
@@ -150,6 +152,7 @@ public class JLineConsole extends AbstractConsole {
 	}
 
 	private class CommandTask implements Runnable {
+
 		private final String command;
 		private final ChatArguments arguments;
 
@@ -169,4 +172,5 @@ public class JLineConsole extends AbstractConsole {
 			engine.getCommandSource().sendCommand(command, arguments);
 		}
 	}
+
 }

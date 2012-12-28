@@ -47,14 +47,20 @@ import org.spout.engine.SpoutServer;
  * Handler for reading port bindings from the configuration
  */
 public class PortBindings extends AnnotatedSubclassConfiguration {
+
 	private final SpoutServer server;
-	@Setting({"network", "addresses"}) private List<ConfigPortBinding> portBindings;
+	@Setting ({"network", "addresses"})
+	private List<ConfigPortBinding> portBindings;
 
 	public static class ConfigPortBinding extends AnnotatedSubclassConfiguration implements PortBinding {
-		@Setting("protocol") private String protocolName;
+
+		@Setting ("protocol")
+		private String protocolName;
 		private transient Protocol protocol;
-		@Setting("address") private String address = "0.0.0.0";
-		@Setting("port") private int port = -1;
+		@Setting ("address")
+		private String address = "0.0.0.0";
+		@Setting ("port")
+		private int port = -1;
 
 		public ConfigPortBinding(Configuration baseConfig) {
 			super(baseConfig);

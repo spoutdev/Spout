@@ -36,7 +36,7 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 
 public class RegionFileManager {
-	
+
 	/**
 	 * The segment size to use for chunk storage. The actual size is
 	 * 2^(SEGMENT_SIZE)
@@ -47,22 +47,21 @@ public class RegionFileManager {
 	 * within that time, it can be automatically shutdown
 	 */
 	public static final int TIMEOUT = 30000;
-	
 	private final File regionDirectory;
 	private final ConcurrentHashMap<String, BAAWrapper> cache = new ConcurrentHashMap<String, BAAWrapper>();
 	private final TimeoutThread timeoutThread;
-	
+
 	public RegionFileManager(File worldDirectory) {
 		this(worldDirectory, "region");
 	}
-	
+
 	public RegionFileManager(File worldDirectory, String prefix) {
 		this.regionDirectory = new File(worldDirectory, prefix);
 		this.regionDirectory.mkdirs();
 		this.timeoutThread = new TimeoutThread(worldDirectory);
 		this.timeoutThread.start();
 	}
-	
+
 	public BAAWrapper getBAAWrapper(int rx, int ry, int rz) {
 		String filename = getFilename(rx, ry, rz);
 		BAAWrapper regionFile = cache.get(filename);
@@ -77,12 +76,14 @@ public class RegionFileManager {
 		}
 		return regionFile;
 	}
-	
+
 	/**
 	 * Gets the DataOutputStream corresponding to a given Chunk Snapshot.<br>
 	 * <br>
 	 * WARNING: This block will be locked until the stream is closed
+	 *
 	 * @param c the chunk snapshot
+	 *
 	 * @return the DataOutputStream
 	 */
 	public OutputStream getChunkOutputStream(ChunkSnapshot c) {
@@ -91,11 +92,11 @@ public class RegionFileManager {
 		int rz = c.getZ() >> Region.CHUNKS.BITS;
 		return getBAAWrapper(rx, ry, rz).getBlockOutputStream(SpoutRegion.getChunkKey(c.getX(), c.getY(), c.getZ()));
 	}
-	
+
 	public void stopTimeoutThread() {
 		timeoutThread.interrupt();
 	}
-	
+
 	public void closeAll() {
 		timeoutThread.interrupt();
 		try {
@@ -109,24 +110,24 @@ public class RegionFileManager {
 			}
 		}
 	}
-	
+
 	private static String getFilename(int rx, int ry, int rz) {
 		return "reg" + rx + "_" + ry + "_" + rz + ".spr";
 	}
-	
+
 	private class TimeoutThread extends Thread {
-		
+
 		public TimeoutThread(File worldDirectory) {
 			super("Region File Manager Timeout Thread - " + worldDirectory.getPath());
 		}
-		
+
 		public void run() {
 			while (!isInterrupted()) {
 				int files = cache.size();
 				if (files <= 0) {
 					try {
 						Thread.sleep(TIMEOUT >> 1);
-					}  catch (InterruptedException ie) {
+					} catch (InterruptedException ie) {
 						return;
 					}
 					continue;

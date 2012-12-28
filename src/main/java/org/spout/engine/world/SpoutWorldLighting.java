@@ -37,6 +37,7 @@ import org.spout.engine.util.ChunkModel;
 import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 
 public class SpoutWorldLighting extends Thread {
+
 	private static String taskName = "Lighting Thread";
 	private static final long MAX_CYCLE_TIME = 20; // Time to perform lighting per tick
 
@@ -46,13 +47,11 @@ public class SpoutWorldLighting extends Thread {
 	public static final int GREATER = 0;
 	public static final int LESSER = 1;
 	public static final int REFRESH = 2;
-
 	private SpoutWorldLightingModel skyLight;
 	private SpoutWorldLightingModel blockLight;
 	private final ChunkModel tmpChunks;
 	private final SpoutWorld world;
 	private boolean running = false;
-
 	private final TInt21TripleHashSet dirtyChunks = new TInt21TripleHashSet();
 
 	public void addChunk(int x, int y, int z) {
@@ -63,7 +62,7 @@ public class SpoutWorldLighting extends Thread {
 
 	/**
 	 * Gets the model to calculate sky light
-	 * 
+	 *
 	 * @return sky light model
 	 */
 	public SpoutWorldLightingModel getSkyModel() {
@@ -72,7 +71,7 @@ public class SpoutWorldLighting extends Thread {
 
 	/**
 	 * Gets the model to calculate block light
-	 * 
+	 *
 	 * @return block light model
 	 */
 	public SpoutWorldLightingModel getBlockModel() {
@@ -81,7 +80,7 @@ public class SpoutWorldLighting extends Thread {
 
 	/**
 	 * Sets the model to calculate sky light
-	 * 
+	 *
 	 * @param model to set to
 	 */
 	public void setSkyModel(SpoutWorldLightingModel model) {
@@ -90,7 +89,7 @@ public class SpoutWorldLighting extends Thread {
 
 	/**
 	 * Sets the model to calculate block light
-	 * 
+	 *
 	 * @param model to set to
 	 */
 	public void setBlockModel(SpoutWorldLightingModel model) {
@@ -119,7 +118,8 @@ public class SpoutWorldLighting extends Thread {
 	}
 
 	/**
-	 * Only to be used by the SpoutWorldLightingModel of this thread (is not thread safe!)
+	 * Only to be used by the SpoutWorldLightingModel of this thread (is not
+	 * thread safe!)
 	 */
 	protected SpoutChunk getChunkFromBlock(int bx, int by, int bz) {
 		return this.tmpChunks.getChunkFromBlock(bx, by, bz);
@@ -135,7 +135,7 @@ public class SpoutWorldLighting extends Thread {
 		this.running = SpoutConfiguration.LIGHTING_ENABLED.getBoolean();
 		long startTime = System.currentTimeMillis();
 		boolean stop = false;
-		SpoutSnapshotLock lock = (SpoutSnapshotLock)Spout.getEngine().getScheduler().getSnapshotLock();
+		SpoutSnapshotLock lock = (SpoutSnapshotLock) Spout.getEngine().getScheduler().getSnapshotLock();
 		while (this.running) {
 			boolean updated = false;
 			// Obtain the chunks to work with
@@ -145,7 +145,7 @@ public class SpoutWorldLighting extends Thread {
 						chunkBuffer = new long[chunkBufferSize + 100];
 					}
 					iter = this.dirtyChunks.iterator();
-					for (i = 0; i < chunkBufferSize && iter.hasNext(); i++) {
+					for (i = 0 ; i < chunkBufferSize && iter.hasNext() ; i++) {
 						chunkBuffer[i] = iter.next();
 					}
 					this.dirtyChunks.clear();
@@ -158,7 +158,7 @@ public class SpoutWorldLighting extends Thread {
 					startTime = System.currentTimeMillis();
 					stop = false;
 
-					for (i = 0; i < chunkBufferSize; i++) {
+					for (i = 0 ; i < chunkBufferSize ; i++) {
 						cx = Int21TripleHashed.key1(chunkBuffer[i]);
 						cy = Int21TripleHashed.key2(chunkBuffer[i]);
 						cz = Int21TripleHashed.key3(chunkBuffer[i]);
@@ -201,7 +201,8 @@ public class SpoutWorldLighting extends Thread {
 				}
 				try {
 					Thread.sleep(50);
-				} catch (InterruptedException ex) {}
+				} catch (InterruptedException ex) {
+				}
 			}
 		}
 	}

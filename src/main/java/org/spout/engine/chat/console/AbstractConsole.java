@@ -38,6 +38,7 @@ import org.spout.api.chat.console.Console;
  * Abstract Console with implementation for the date format
  */
 public abstract class AbstractConsole implements Console {
+
 	private DateFormat dateFormat;
 	private final AtomicBoolean initialized = new AtomicBoolean();
 

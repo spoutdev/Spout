@@ -44,6 +44,7 @@ import org.spout.api.render.Font;
 import org.spout.engine.mesh.BaseMesh;
 
 public class ClientTextModelComponent extends TextModelComponent {
+
 	private BaseMesh mesh;
 
 	public void updateMesh() {
@@ -63,7 +64,7 @@ public class ClientTextModelComponent extends TextModelComponent {
 		for (Object arg : getText().getArguments()) {
 			if (arg instanceof String) {
 				String txt = (String) arg;
-				for (int i = 0; i < txt.length(); i++) {
+				for (int i = 0 ; i < txt.length() ; i++) {
 					char c = txt.charAt(i);
 					if (c == ' ') {
 						xCursor += font.getSpaceWidth() / ratio;

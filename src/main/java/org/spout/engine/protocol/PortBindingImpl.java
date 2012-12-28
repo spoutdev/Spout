@@ -39,6 +39,7 @@ import org.spout.api.util.SpoutToStringStyle;
  * Implementation of {@link PortBinding}
  */
 public class PortBindingImpl implements PortBinding {
+
 	private final Protocol protocol;
 	private final SocketAddress address;
 	private int hashCode;
@@ -68,8 +69,12 @@ public class PortBindingImpl implements PortBinding {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null) {return false;}
-		if (getClass() != obj.getClass()) {return false;}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
 		final PortBindingImpl other = (PortBindingImpl) obj;
 		return new EqualsBuilder()
 				.append(this.protocol, other.protocol)

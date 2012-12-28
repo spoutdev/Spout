@@ -42,7 +42,8 @@ import org.spout.engine.resources.ClientModel;
 import org.yaml.snakeyaml.Yaml;
 
 public class ModelLoader extends BasicResourceLoader<ClientModel> {
-	private static final String[] extensions = new String[]{ "spm" };
+
+	private static final String[] extensions = new String[]{"spm"};
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
 
 	@Override
@@ -65,29 +66,28 @@ public class ModelLoader extends BasicResourceLoader<ClientModel> {
 		final Yaml yaml = new Yaml();
 		final Map<? extends String, ?> resourceProperties = checkerMapStringObject.check(yaml.load(stream));
 
-		Mesh mesh = (Mesh)Spout.getFilesystem().getResource((String)resourceProperties.get("Mesh"));
-		RenderMaterial material = (RenderMaterial)Spout.getFilesystem().getResource((String)resourceProperties.get("Material"));
-		
+		Mesh mesh = (Mesh) Spout.getFilesystem().getResource((String) resourceProperties.get("Mesh"));
+		RenderMaterial material = (RenderMaterial) Spout.getFilesystem().getResource((String) resourceProperties.get("Material"));
+
 		Skeleton skeleton = null;
-		
-		if(resourceProperties.containsKey("Skeleton")){
-			skeleton = (Skeleton)Spout.getFilesystem().getResource((String)resourceProperties.get("Skeleton"));
+
+		if (resourceProperties.containsKey("Skeleton")) {
+			skeleton = (Skeleton) Spout.getFilesystem().getResource((String) resourceProperties.get("Skeleton"));
 		}
-		
+
 		Map<String, Animation> animations = new HashMap<String, Animation>();
-		
-		if(resourceProperties.containsKey("Animation")){
-			
+
+		if (resourceProperties.containsKey("Animation")) {
+
 			Map<? extends String, ?> map = checkerMapStringObject.check(resourceProperties.get("Animation"));
-			
-			for(Entry<? extends String, ?> entry : map.entrySet()){
-				Animation animation = (Animation) Spout.getFilesystem().getResource( (String) entry.getValue() );
-				
+
+			for (Entry<? extends String, ?> entry : map.entrySet()) {
+				Animation animation = (Animation) Spout.getFilesystem().getResource((String) entry.getValue());
+
 				animations.put(entry.getKey(), animation);
 			}
 		}
 
 		return new ClientModel(mesh, skeleton, material, animations);
 	}
-
 }

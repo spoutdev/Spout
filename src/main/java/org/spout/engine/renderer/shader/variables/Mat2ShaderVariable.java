@@ -33,6 +33,7 @@ import org.lwjgl.opengl.GL20;
 import org.spout.api.math.Matrix;
 
 public class Mat2ShaderVariable extends ShaderVariable {
+
 	public static final FloatBuffer buffer = FloatBuffer.allocate(4);
 	Matrix value;
 

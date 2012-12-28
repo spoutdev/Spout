@@ -91,26 +91,22 @@ import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutClientWorld;
 
 public class SpoutClient extends SpoutEngine implements Client {
+
 	private final SoundManager soundManager = new SpoutSoundManager();
 	private final String name = "Spout Client";
-	
 	private final FileSystem filesystem;
 	private Camera activeCamera;
 	private final AtomicReference<SpoutClientSession> session = new AtomicReference<SpoutClientSession>();
 	private SpoutPlayer activePlayer;
 	private final AtomicReference<SpoutClientWorld> activeWorld = new AtomicReference<SpoutClientWorld>();
 	private final AtomicReference<PortBinding> potentialBinding = new AtomicReference<PortBinding>();
-		// Handle stopping
+	// Handle stopping
 	private volatile boolean rendering = true;
 	private String stopMessage = null;
 	private final ClientBootstrap bootstrap = new ClientBootstrap();
 	private boolean ccoverride = false;
-	
 	SpoutRenderer renderer;
-	
 	private SpoutInputManager inputManager;
-
-		
 
 	public SpoutClient() {
 		this.filesystem = new ClientFileSystem();
@@ -142,9 +138,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		super.init(args);
 
 		this.ccoverride = args.ccoverride;
-		
 
-		 inputManager = new SpoutInputManager();
+
+		inputManager = new SpoutInputManager();
 	}
 
 	@Override
@@ -153,7 +149,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	@Override
-	public void start(boolean checkWorlds) {		
+	public void start(boolean checkWorlds) {
 		super.start(checkWorlds);
 
 		getEventManager().registerEvents(new SpoutClientListener(this), this);
@@ -175,7 +171,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		activePlayer.add(HitBlockComponent.class);
 		getActiveWorld().spawnEntity(activePlayer);
 		Font font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
-		
+
 		// Test
 		ClientEntityPrefab spoutyType = (ClientEntityPrefab) Spout.getFilesystem().getResource("entity://Spout/entities/Spouty/spouty.sep");
 		Entity e = spoutyType.createEntity(super.getDefaultWorld().getSpawnPoint().getPosition());
@@ -185,7 +181,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		tmc.setSize(0.5f);
 		tmc.setTranslation(new Vector3(0, 3f, 0));
 		tmc.setFont(font);
-		
+
 		getActiveWorld().spawnEntity(e);
 
 
@@ -253,7 +249,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return this.inputManager;
 	}
 
-	
 	@Override
 	public PortBinding getAddress() {
 		return session.get().getActiveAddress();
@@ -272,7 +267,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 				EngineStopEvent stopEvent = new EngineStopEvent(stopMessage);
 				getEventManager().callEvent(stopEvent);
 				stopMessage = stopEvent.getMessage();
-				
+
 				bootstrap.getFactory().releaseExternalResources();
 				boundProtocols.clear();
 			}
@@ -293,21 +288,22 @@ public class SpoutClient extends SpoutEngine implements Client {
 		super.stop(stopMessage);
 	}
 
-	/*@Override //Because there is a conflict when the spout engine tries to load the world
-	public SpoutClientWorld getWorld(String name, boolean exact) {
-		SpoutClientWorld world = activeWorld.get();
-		if (world == null) {
-			return null;
-		}
-
-		if ((exact && world.getName().equals(name))
-				|| world.getName().startsWith(name)) {
-			return world;
-		} else {
-			return null;
-		}
-	}*/
-
+	/*
+	 * @Override //Because there is a conflict when the spout engine tries to load the world
+	 * public SpoutClientWorld getWorld(String name, boolean exact) {
+	 * SpoutClientWorld world = activeWorld.get();
+	 * if (world == null) {
+	 * return null;
+	 * }
+	 *
+	 * if ((exact && world.getName().equals(name))
+	 * || world.getName().startsWith(name)) {
+	 * return world;
+	 * } else {
+	 * return null;
+	 * }
+	 * }
+	 */
 	@Override
 	public SpoutClientWorld getWorld(UUID uid) {
 		SpoutClientWorld world = activeWorld.get();
@@ -323,11 +319,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return Collections.<World>singletonList(activeWorld.get());
 	}
 
-	/*@Override
-	public SpoutClientWorld getDefaultWorld() {
-		return activeWorld.get();
-	}*/
-
+	/*
+	 * @Override
+	 * public SpoutClientWorld getDefaultWorld() {
+	 * return activeWorld.get();
+	 * }
+	 */
 	@Override
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] data) {
 		SpoutClientWorld world = new SpoutClientWorld(name, uuid, this, getEngineItemMap());
@@ -388,12 +385,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return filesystem;
 	}
 
-
-
-	public World getActiveWorld(){
+	public World getActiveWorld() {
 		return getActivePlayer().getWorld();
 	}
-	
+
 	private static void unpackLwjgl(String path) {
 		String[] files;
 		String osPath;
@@ -408,7 +403,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			files = new String[]{"liblwjgl.so", "liblwjgl64.so", "libopenal.so", "libopenal64.so", "libjinput-linux.so", "libjinput-linux64.so"};
 			osPath = "linux/";
 		} else {
-			Spout.getEngine().getLogger().log(Level.SEVERE, "Error loading natives of operating system type: " + SystemUtils.OS_NAME);
+			Spout.getEngine().getLogger().log(Level.SEVERE, "Error loading natives of operating system type: {0}", SystemUtils.OS_NAME);
 			return;
 		}
 
@@ -444,6 +439,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public ScreenStack getScreenStack() {
 		return renderer.getScreenStack();
 	}
+
 	public SpoutRenderer getRenderer() {
 		return renderer;
 	}
