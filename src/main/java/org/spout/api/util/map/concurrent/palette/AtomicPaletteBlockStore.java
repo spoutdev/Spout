@@ -160,7 +160,7 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 		int exp = BlockFullState.getPacked(expectId, expectData);
 		int update = BlockFullState.getPacked(newId, newData);
 		boolean success = store.compareAndSet(getIndex(x, y, z), exp, update);
-		if (success) {
+		if (success && exp != update) {
 			markDirty(x, y, z, exp, update);
 		}
 		return success;
