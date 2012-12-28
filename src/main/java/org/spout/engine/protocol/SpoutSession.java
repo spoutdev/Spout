@@ -303,13 +303,15 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		return sessionId;
 	}
 
-	/*public BlockPlacementMessage getPreviousPlacement() {
-	 return previousPlacement;
-	 }
-
-	 public void setPreviousPlacement(BlockPlacementMessage message) {
-	 previousPlacement = message;
-	 }*/
+	/*
+	 * public BlockPlacementMessage getPreviousPlacement() {
+	 * return previousPlacement;
+	 * }
+	 *
+	 * public void setPreviousPlacement(BlockPlacementMessage message) {
+	 * previousPlacement = message;
+	 * }
+	 */
 	@Override
 	public Protocol getProtocol() {
 		return this.protocol.get();

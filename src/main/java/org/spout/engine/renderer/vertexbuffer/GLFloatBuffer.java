@@ -65,9 +65,11 @@ public class GLFloatBuffer {
 		GL20.glVertexAttribPointer(getLayout(), getElements(), GL11.GL_FLOAT, false, 0, 0);
 	}
 
-	/*public String getName(){
-	 return elementName;		
-	 }*/
+	/*
+	 * public String getName(){
+	 * return elementName;
+	 * }
+	 */
 	public int getElements() {
 		return elements;
 	}

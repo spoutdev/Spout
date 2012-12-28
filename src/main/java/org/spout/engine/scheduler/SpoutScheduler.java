@@ -1060,29 +1060,29 @@ public final class SpoutScheduler implements Scheduler {
 
 	private void logLongDurationTick(String stage, Iterable<AsyncExecutor> executors) {
 		/*
-		 engine.getLogger().info("Tick stage (" + stage + ") had not completed after " + (PULSE_EVERY << 4) + "ms");
-		 AsyncExecutorUtils.dumpAllStacks();
-		 AsyncExecutorUtils.checkForDeadlocks();
-		 for (AsyncExecutor executor : executors) {
-		 if (!executor.isPulseFinished()) {
-		 if (executor.getManager() instanceof SpoutRegionManager) {
-		 SpoutRegionManager m = (SpoutRegionManager)executor.getManager();
-		 engine.getLogger().info("Region manager has not completed pulse " + m.getParent());
-		 } else if (executor.getManager() instanceof SpoutWorld) {
-		 SpoutWorld w = (SpoutWorld)executor.getManager();
-		 engine.getLogger().info("World has not completed pulse " + w);
-		 } else {
-		 engine.getLogger().info("Async Manager has not completed pulse " + executor.getManager().getClass().getSimpleName());
-		 }
-		 if (executor instanceof Thread) {
-		 StackTraceElement[] stackTrace = ((Thread)executor).getStackTrace();
-		 engine.getLogger().info("Thread for stalled manager is executing");
-		 for (StackTraceElement e : stackTrace) {
-		 engine.getLogger().info("\tat " + e);
-		 }
-		 }
-		 }
-		 }
+		 * engine.getLogger().info("Tick stage (" + stage + ") had not completed after " + (PULSE_EVERY << 4) + "ms");
+		 * AsyncExecutorUtils.dumpAllStacks();
+		 * AsyncExecutorUtils.checkForDeadlocks();
+		 * for (AsyncExecutor executor : executors) {
+		 * if (!executor.isPulseFinished()) {
+		 * if (executor.getManager() instanceof SpoutRegionManager) {
+		 * SpoutRegionManager m = (SpoutRegionManager)executor.getManager();
+		 * engine.getLogger().info("Region manager has not completed pulse " + m.getParent());
+		 * } else if (executor.getManager() instanceof SpoutWorld) {
+		 * SpoutWorld w = (SpoutWorld)executor.getManager();
+		 * engine.getLogger().info("World has not completed pulse " + w);
+		 * } else {
+		 * engine.getLogger().info("Async Manager has not completed pulse " + executor.getManager().getClass().getSimpleName());
+		 * }
+		 * if (executor instanceof Thread) {
+		 * StackTraceElement[] stackTrace = ((Thread)executor).getStackTrace();
+		 * engine.getLogger().info("Thread for stalled manager is executing");
+		 * for (StackTraceElement e : stackTrace) {
+		 * engine.getLogger().info("\tat " + e);
+		 * }
+		 * }
+		 * }
+		 * }
 		 */
 	}
 }

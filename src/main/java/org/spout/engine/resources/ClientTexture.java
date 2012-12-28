@@ -97,11 +97,13 @@ public class ClientTexture extends Texture {
 
 		GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
 
-		/*if (((Client) Spout.getEngine()).getRenderMode() != RenderMode.GL30) {
-
-		 //Use Mipmaps
-		 GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
-		 }*/
+		/*
+		 * if (((Client) Spout.getEngine()).getRenderMode() != RenderMode.GL30) {
+		 *
+		 * //Use Mipmaps
+		 * GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
+		 * }
+		 */
 
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_BASE_LEVEL, 0);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LEVEL, 0);

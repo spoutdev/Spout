@@ -288,20 +288,22 @@ public class SpoutClient extends SpoutEngine implements Client {
 		super.stop(stopMessage);
 	}
 
-	/*@Override //Because there is a conflict when the spout engine tries to load the world
-	 public SpoutClientWorld getWorld(String name, boolean exact) {
-	 SpoutClientWorld world = activeWorld.get();
-	 if (world == null) {
-	 return null;
-	 }
-
-	 if ((exact && world.getName().equals(name))
-	 || world.getName().startsWith(name)) {
-	 return world;
-	 } else {
-	 return null;
-	 }
-	 }*/
+	/*
+	 * @Override //Because there is a conflict when the spout engine tries to load the world
+	 * public SpoutClientWorld getWorld(String name, boolean exact) {
+	 * SpoutClientWorld world = activeWorld.get();
+	 * if (world == null) {
+	 * return null;
+	 * }
+	 *
+	 * if ((exact && world.getName().equals(name))
+	 * || world.getName().startsWith(name)) {
+	 * return world;
+	 * } else {
+	 * return null;
+	 * }
+	 * }
+	 */
 	@Override
 	public SpoutClientWorld getWorld(UUID uid) {
 		SpoutClientWorld world = activeWorld.get();
@@ -317,10 +319,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return Collections.<World>singletonList(activeWorld.get());
 	}
 
-	/*@Override
-	 public SpoutClientWorld getDefaultWorld() {
-	 return activeWorld.get();
-	 }*/
+	/*
+	 * @Override
+	 * public SpoutClientWorld getDefaultWorld() {
+	 * return activeWorld.get();
+	 * }
+	 */
 	@Override
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] data) {
 		SpoutClientWorld world = new SpoutClientWorld(name, uuid, this, getEngineItemMap());

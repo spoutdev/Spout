@@ -60,13 +60,15 @@ public class SpoutCommandCompletor implements Completor {
 				break;
 			}
 
-			/*if (delimiter != null) {
-			 int index = can.indexOf(delimiter, cursor);
-
-			 if (index != -1) {
-			 can = can.substring(0, index + 1);
-			 }
-			 }*/
+			/*
+			 * if (delimiter != null) {
+			 * int index = can.indexOf(delimiter, cursor);
+			 *
+			 * if (index != -1) {
+			 * can = can.substring(0, index + 1);
+			 * }
+			 * }
+			 */
 
 			candidates.add(can);
 		}

@@ -305,9 +305,10 @@ public class WorldRenderer {
 		renderedChunks = 0;
 		chunksToRender = 0;
 
-		/*TODO (maybe): We could optimise iteration and testing frustum on ChunkMeshBatch.
+		/*
+		 * TODO (maybe): We could optimise iteration and testing frustum on ChunkMeshBatch.
 		 * If we sort ChunkMeshBatch by x, y and z, and test only cubo's vertice changing
-		 * Example : while we test batch with same x coord, we don't need to test 
+		 * Example : while we test batch with same x coord, we don't need to test
 		 */
 
 		for (Entry<RenderMaterial, List<ChunkMeshBatchAggregator>> entry : chunkRenderers.entrySet()) {

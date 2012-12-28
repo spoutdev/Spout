@@ -145,34 +145,36 @@ public abstract class BatchVertexRenderer implements Renderer {
 	}
 
 	public void check() {
-		/*if (vertexBuffer.size() % 4 != 0) {
-		 throw new IllegalStateException("Vertex Size Mismatch (How did this happen?) : " + vertexBuffer.size());
-		 }
-		 if (useColors) {
-		 if (colorBuffer.size() % 4 != 0) {
-		 throw new IllegalStateException("Color Size Mismatch (How did this happen?) : " + colorBuffer.size());
-		 }
-		 if (colorBuffer.size() / 4 != numVertices) {
-		 throw new IllegalStateException("Color Buffer size does not match numVerticies : " + colorBuffer.size());
-		 }
-		 }
-		 if (useNormals) {
-		 if (normalBuffer.size() % 4 != 0) {
-		 throw new IllegalStateException("Normal Size Mismatch (How did this happen?) : " + normalBuffer.size());
-		 }
-		 if (normalBuffer.size() / 4 != numVertices) {
-		 throw new IllegalStateException("Normal Buffer size does not match numVerticies : " + normalBuffer.size());
-		 }
-		 }
-		 if (useTextures) {
-		 if (uvBuffer.size() % 2 != 0) {
-		 throw new IllegalStateException("UV size Mismatch (How did this happen?) : " + uvBuffer.size());
-		 }
-		 if (uvBuffer.size() / 2 != numVertices) {
-		 throw new IllegalStateException("UV Buffer size does not match numVerticies : " + uvBuffer.size());
-		 }
-		 }
-		 if(numVertices <= 0) throw new IllegalStateException("Must have more than 0 verticies!");*/
+		/*
+		 * if (vertexBuffer.size() % 4 != 0) {
+		 * throw new IllegalStateException("Vertex Size Mismatch (How did this happen?) : " + vertexBuffer.size());
+		 * }
+		 * if (useColors) {
+		 * if (colorBuffer.size() % 4 != 0) {
+		 * throw new IllegalStateException("Color Size Mismatch (How did this happen?) : " + colorBuffer.size());
+		 * }
+		 * if (colorBuffer.size() / 4 != numVertices) {
+		 * throw new IllegalStateException("Color Buffer size does not match numVerticies : " + colorBuffer.size());
+		 * }
+		 * }
+		 * if (useNormals) {
+		 * if (normalBuffer.size() % 4 != 0) {
+		 * throw new IllegalStateException("Normal Size Mismatch (How did this happen?) : " + normalBuffer.size());
+		 * }
+		 * if (normalBuffer.size() / 4 != numVertices) {
+		 * throw new IllegalStateException("Normal Buffer size does not match numVerticies : " + normalBuffer.size());
+		 * }
+		 * }
+		 * if (useTextures) {
+		 * if (uvBuffer.size() % 2 != 0) {
+		 * throw new IllegalStateException("UV size Mismatch (How did this happen?) : " + uvBuffer.size());
+		 * }
+		 * if (uvBuffer.size() / 2 != numVertices) {
+		 * throw new IllegalStateException("UV Buffer size does not match numVerticies : " + uvBuffer.size());
+		 * }
+		 * }
+		 * if(numVertices <= 0) throw new IllegalStateException("Must have more than 0 verticies!");
+		 */
 	}
 
 	public final void flush() {
@@ -223,22 +225,24 @@ public abstract class BatchVertexRenderer implements Renderer {
 	}
 
 	public void dumpBuffers() {
-		/*System.out.println("BatchVertexRenderer Debug Ouput: Verts: " + numVertices + " Using {colors, normal, textures} {" + useColors + ", " + useNormals + ", " + useTextures + "}");
-		 System.out.println("colors:"+colorBuffer.size()+", normals:"+normalBuffer.size()+", vertices:"+vertexBuffer.size());
-		 for (int i = 0; i < numVertices; i++) {
-		 int index = i * 4;
-
-		 if (useColors) {
-		 System.out.print("Color: {" + colorBuffer.get(index) + " " + colorBuffer.get(index + 1) + " " + colorBuffer.get(index + 2) + " " + colorBuffer.get(index + 3) + "}\t");
-		 }
-		 if (useNormals) {
-		 System.out.print("Normal : {" + normalBuffer.get(index) + " " + normalBuffer.get(index + 1) + " " + normalBuffer.get(index + 2) + "}");
-		 }
-		 if (useTextures) {
-		 System.out.print("TexCoord0 : {" + uvBuffer.get((i * 2)) + " " + uvBuffer.get((i * 2) + 1) + "}");
-		 }
-		 System.out.println("Vertex : {" + vertexBuffer.get(index) + " " + vertexBuffer.get(index + 1) + " " + vertexBuffer.get(index + 2) + " " + vertexBuffer.get(index + 3) + "}");
-		 }*/
+		/*
+		 * System.out.println("BatchVertexRenderer Debug Ouput: Verts: " + numVertices + " Using {colors, normal, textures} {" + useColors + ", " + useNormals + ", " + useTextures + "}");
+		 * System.out.println("colors:"+colorBuffer.size()+", normals:"+normalBuffer.size()+", vertices:"+vertexBuffer.size());
+		 * for (int i = 0; i < numVertices; i++) {
+		 * int index = i * 4;
+		 *
+		 * if (useColors) {
+		 * System.out.print("Color: {" + colorBuffer.get(index) + " " + colorBuffer.get(index + 1) + " " + colorBuffer.get(index + 2) + " " + colorBuffer.get(index + 3) + "}\t");
+		 * }
+		 * if (useNormals) {
+		 * System.out.print("Normal : {" + normalBuffer.get(index) + " " + normalBuffer.get(index + 1) + " " + normalBuffer.get(index + 2) + "}");
+		 * }
+		 * if (useTextures) {
+		 * System.out.print("TexCoord0 : {" + uvBuffer.get((i * 2)) + " " + uvBuffer.get((i * 2) + 1) + "}");
+		 * }
+		 * System.out.println("Vertex : {" + vertexBuffer.get(index) + " " + vertexBuffer.get(index + 1) + " " + vertexBuffer.get(index + 2) + " " + vertexBuffer.get(index + 3) + "}");
+		 * }
+		 */
 	}
 
 	public void release() {

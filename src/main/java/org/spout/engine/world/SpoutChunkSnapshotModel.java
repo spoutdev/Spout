@@ -43,7 +43,7 @@ package org.spout.engine.world;
  *
  * Spout is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
@@ -260,9 +260,11 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	 */
 	public boolean hasRenderMaterial(RenderMaterial renderMaterial) {
 		//TODO : Fix render material set and decomment that
-		/*if( this.renderMaterials == null)
-		 return true;
-		 return renderMaterials.contains(renderMaterial);*/
+		/*
+		 * if( this.renderMaterials == null)
+		 * return true;
+		 * return renderMaterials.contains(renderMaterial);
+		 */
 		return true;
 	}
 

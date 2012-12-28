@@ -1147,12 +1147,16 @@ public class SpoutRegion extends Region {
 	}
 
 	private void processChunkUpdatedEvent(SpoutChunk chunk) {
-		/* If no listeners, quit */
+		/*
+		 * If no listeners, quit
+		 */
 		if (ChunkUpdatedEvent.getHandlerList().getRegisteredListeners().length == 0) {
 			return;
 		}
 		ChunkUpdatedEvent evt;
-		if (chunk.isDirtyOverflow()) {    /* If overflow, notify for whole chunk */
+		if (chunk.isDirtyOverflow()) {    /*
+			 * If overflow, notify for whole chunk
+			 */
 			evt = new ChunkUpdatedEvent(chunk, null);
 		} else {
 			ArrayList<Vector3> lst = new ArrayList<Vector3>();
@@ -1230,7 +1234,9 @@ public class SpoutRegion extends Region {
 				continue;
 			}
 
-			if (renderQueueEnabled /*&& spoutChunk.isRenderDirty()*/) {
+			if (renderQueueEnabled /*
+					 * && spoutChunk.isRenderDirty()
+					 */) {
 				if (spoutChunk.isInViewDistance() || (spoutChunk.isRendered() && spoutChunk.leftViewDistance())) {
 					if (renderLimit > 0) {
 						addUpdateToRenderQueue(playerPosition, spoutChunk, spoutChunk.isBlockDirty(), spoutChunk.isLightDirty(), false);
@@ -1282,9 +1288,11 @@ public class SpoutRegion extends Region {
 		entityManager.syncEntities();
 
 	}
-	/*public ConcurrentSkipListSet<SpoutChunkSnapshotModel> getRenderChunkQueue() {
-	 return this.renderChunkQueue;
-	 }*/
+	/*
+	 * public ConcurrentSkipListSet<SpoutChunkSnapshotModel> getRenderChunkQueue() {
+	 * return this.renderChunkQueue;
+	 * }
+	 */
 	private TInt21TripleObjectHashMap<SpoutChunkSnapshot> renderSnapshotCacheBoth = new TInt21TripleObjectHashMap<SpoutChunkSnapshot>();
 	private TInt21TripleObjectHashMap<SpoutChunkSnapshot> renderSnapshotCacheLight = new TInt21TripleObjectHashMap<SpoutChunkSnapshot>();
 	private TInt21TripleObjectHashMap<SpoutChunkSnapshot> renderSnapshotCacheBlock = new TInt21TripleObjectHashMap<SpoutChunkSnapshot>();
@@ -1384,9 +1392,11 @@ public class SpoutRegion extends Region {
 		set.add(material.getModel().getRenderMaterial());
 	}
 
-	/*private static void addSubMeshToSet(Set<Vector3> set, Vector3 dirtyBlock) {
-	 set.add(ChunkMesh.getChunkSubMesh(dirtyBlock.getFloorX(), dirtyBlock.getFloorY(), dirtyBlock.getFloorZ()));
-	 }*/
+	/*
+	 * private static void addSubMeshToSet(Set<Vector3> set, Vector3 dirtyBlock) {
+	 * set.add(ChunkMesh.getChunkSubMesh(dirtyBlock.getFloorX(), dirtyBlock.getFloorY(), dirtyBlock.getFloorZ()));
+	 * }
+	 */
 	private ChunkSnapshot getRenderSnapshot(SpoutChunk cRef, int cx, int cy, int cz) {
 		SpoutChunkSnapshot snapshot = renderSnapshotCacheBoth.get(cx, cy, cz);
 		if (snapshot != null) {
