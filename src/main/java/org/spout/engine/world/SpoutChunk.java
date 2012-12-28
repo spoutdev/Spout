@@ -1370,7 +1370,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	public boolean isCalculatingLighting() {
-		return this.lightingCounter.get() >= 0;
+		return lightOperationsPending.get() > 0;
 	}
 
 	public boolean isDirtyOverflow() {
