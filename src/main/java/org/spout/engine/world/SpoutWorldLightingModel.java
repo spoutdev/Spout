@@ -436,7 +436,7 @@ public class SpoutWorldLightingModel {
 			this.offset = offset;
 			this.model = model;
 			this.world = this.model.instance.getWorld();
-			this.center = center == null ? this : center;;
+			this.center = center == null ? this : center;
 		}
 
 		/**
