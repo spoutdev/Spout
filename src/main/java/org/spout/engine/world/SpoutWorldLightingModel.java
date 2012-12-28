@@ -113,10 +113,14 @@ public class SpoutWorldLightingModel {
 	 */
 	public boolean resolve(SpoutChunk chunk) {
 		int x = 0, y = 0, z = 0;
+		boolean update = false;
 		try {
 			// Load chunk information
 			if (this.sky) {
 				synchronized (chunk.skyLightUpdates) {
+					if (chunk.skyLightUpdates.size() > 0) {
+						update = true;
+					}
 					this.iter = chunk.skyLightUpdates.iterator();
 					while (iter.hasNext()) {
 						int key = iter.next();
@@ -144,11 +148,14 @@ public class SpoutWorldLightingModel {
 						}
 						chunk.skyLightOperations.clear();
 					} else {
-						return false;
+						return update;
 					}
 				}
 			} else {
 				synchronized (chunk.blockLightUpdates) {
+					if (chunk.skyLightUpdates.size() > 0) {
+						update = true;
+					}
 					int length = chunk.blockLightUpdates.size();
 					this.iter = chunk.blockLightUpdates.iterator();
 					for (int i = 0; i < length && this.iter.hasNext(); i++) {
@@ -177,7 +184,7 @@ public class SpoutWorldLightingModel {
 						}
 						chunk.blockLightOperations.clear();
 					} else {
-						return false;
+						return update;
 					}
 				}
 			}
