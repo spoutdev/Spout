@@ -2275,7 +2275,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		dirtyQueued.set(false);
 	}
 
-	private void queueDirty() {
+	protected void queueDirty() {
 		if (dirtyQueued.compareAndSet(false, true)) {
 			parentRegion.queueDirty(this);
 		}

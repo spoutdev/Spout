@@ -1216,11 +1216,9 @@ public class SpoutRegion extends Region {
 				}
 				
 				SpoutChunk spoutChunk;
-				while ((spoutChunk = lightTransferDirtyChunks.poll()) != null) {
-					spoutChunk.transferNewLightOperations();
-				}
 
 				List<SpoutChunk> renderLater = new LinkedList<SpoutChunk>();
+				List<SpoutChunk> couldNotSend = new LinkedList<SpoutChunk>();
 
 				while ((spoutChunk = dirtyChunks.poll()) != null) {
 
@@ -1244,14 +1242,22 @@ public class SpoutRegion extends Region {
 					}
 
 					if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
-						for (Player entity : spoutChunk.getObservingPlayers()) {
-							syncChunkToPlayer(spoutChunk, entity);
-						}
-						processChunkUpdatedEvent(spoutChunk);
+						if (!spoutChunk.canSend()) {
+							couldNotSend.add(spoutChunk);
+						} else {
+							for (Player entity : spoutChunk.getObservingPlayers()) {
+								syncChunkToPlayer(spoutChunk, entity);
+							}
+							processChunkUpdatedEvent(spoutChunk);
 
-						spoutChunk.resetDirtyArrays();
-						spoutChunk.setLightDirty(false);
+							spoutChunk.resetDirtyArrays();
+							spoutChunk.setLightDirty(false);
+						}
 					}
+				}
+				
+				for (SpoutChunk c : couldNotSend) {
+					c.queueDirty();
 				}
 
 				for(SpoutChunk c : renderLater){
@@ -1261,6 +1267,10 @@ public class SpoutRegion extends Region {
 				SpoutChunkSnapshotFuture snapshotFuture;
 				while ((snapshotFuture = snapshotQueue.poll()) != null) {
 					snapshotFuture.run();
+				}
+				
+				while ((spoutChunk = lightTransferDirtyChunks.poll()) != null) {
+					spoutChunk.transferNewLightOperations();
 				}
 
 				renderSnapshotCacheBoth.clear();
