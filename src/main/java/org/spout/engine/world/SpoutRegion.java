@@ -195,6 +195,7 @@ public class SpoutRegion extends Region {
 	private final ArrayBlockingQueue<SpoutChunk> localPhysicsChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final ArrayBlockingQueue<SpoutChunk> globalPhysicsChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final ArrayBlockingQueue<SpoutChunk> dirtyChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
+	private final ArrayBlockingQueue<SpoutChunk> lightTransferDirtyChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 	private boolean renderQueueEnabled = false;
@@ -1212,10 +1213,14 @@ public class SpoutRegion extends Region {
 						}
 					}
 				}
+				
+				SpoutChunk spoutChunk;
+				while ((spoutChunk = lightTransferDirtyChunks.poll()) != null) {
+					spoutChunk.transferNewLightOperations();
+				}
 
 				List<SpoutChunk> renderLater = new LinkedList<SpoutChunk>();
 
-				SpoutChunk spoutChunk;
 				while ((spoutChunk = dirtyChunks.poll()) != null) {
 
 					spoutChunk.setNotDirtyQueued();
@@ -1407,6 +1412,10 @@ public class SpoutRegion extends Region {
 
 	public void queueDirty(SpoutChunk chunk) {
 		dirtyChunks.add(chunk);
+	}
+	
+	public void queueForLightTransfer(SpoutChunk chunk) {
+		lightTransferDirtyChunks.add(chunk);
 	}
 
 	public void runPhysics(int sequence) throws InterruptedException {
