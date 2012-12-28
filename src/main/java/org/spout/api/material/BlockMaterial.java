@@ -515,7 +515,16 @@ public class BlockMaterial extends Material implements Placeable {
 	 */
 	public void onInteractBy(Entity entity, Block block, Action type, BlockFace clickedFace) {
 	}
-	
+
+	/**
+	 * Called when the entity collides with a block material
+	 * @param colliderPoint The point where this entity collided with the material
+	 * @param collidedPoint The point where the material was collided with the entity
+	 * @param entity The entity that collided with this block material
+	 */
+	public void onCollided(Point colliderPoint, Point collidedPoint, Entity entity) {
+	}
+
 	/**
 	 * Returns true if the block is completely invisible
 	 * @return True if the block should never be rendered
