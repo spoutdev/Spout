@@ -370,7 +370,9 @@ public abstract class NetworkSynchronizer {
 				boolean updated = false;
 				for (Chunk s : sent) {
 					Point base = s.getBase();
-					if (priorityChunkSendQueue.remove(base) || chunkSendQueue.remove(base)) {
+					boolean removed = priorityChunkSendQueue.remove(base);
+					removed |= chunkSendQueue.remove(base);
+					if (removed) {
 						updated = true;
 						if (initializedChunks.contains(base)) {
 							activeChunks.add(base);
@@ -458,7 +460,7 @@ public abstract class NetworkSynchronizer {
 		int cy = by >> Chunk.BLOCKS.BITS;
 		int cz = bz >> Chunk.BLOCKS.BITS;
 
-		Iterator<IntVector3> itr = new OutwardIterator(cx, cy, cz, viewDistance);
+		Iterator<IntVector3> itr = getViewableVolume(cx, cy, cz, viewDistance);
 
 		priorityChunkSendQueue.clear();
 		chunkSendQueue.clear();
@@ -478,6 +480,19 @@ public abstract class NetworkSynchronizer {
 				chunkInitQueue.add(base);
 			}
 		}
+	}
+	
+	/**
+	 * Gets the viewable volume centred on the given chunk coordinates and the given view distance
+	 * 
+	 * @param cx
+	 * @param cy
+	 * @param cz
+	 * @param viewDistance
+	 * @return
+	 */
+	public Iterator<IntVector3> getViewableVolume(int cx, int cy, int cz, int viewDistance) {
+		return new OutwardIterator(cx, cy, cz, viewDistance);
 	}
 
 	/**
@@ -514,7 +529,7 @@ public abstract class NetworkSynchronizer {
 	 * multiple threads
 	 *
 	 * @param c the chunk
-	 * @return the chunks that were sent, or null if only the given chunk was sent
+	 * @return the chunks that were sent, or null if no chunk was sent
 	 */
 	public Collection<Chunk> sendChunk(Chunk c) {
 		return null;
