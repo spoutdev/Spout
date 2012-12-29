@@ -26,6 +26,8 @@
  */
 package org.spout.engine.protocol.builtin;
 
+import java.net.InetSocketAddress;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.Spout;
@@ -38,11 +40,11 @@ import org.spout.api.protocol.Message;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
+import org.spout.api.util.StringMap;
 import org.spout.api.util.StringMapEvent;
 import org.spout.engine.protocol.builtin.message.CommandMessage;
 import org.spout.engine.protocol.builtin.message.LoginMessage;
 import org.spout.engine.protocol.builtin.message.StringMapMessage;
-import org.spout.api.util.StringMap;
 
 /**
  * The protocol used in SpoutClient
@@ -95,7 +97,7 @@ public class SpoutProtocol extends Protocol {
 	}
 
 	@Override
-	public Message getIntroductionMessage(String playerName) {
+	public Message getIntroductionMessage(String playerName, InetSocketAddress addr) {
 		return new LoginMessage(playerName, PROTOCOL_VERSION);
 	}
 

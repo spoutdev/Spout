@@ -26,15 +26,14 @@
  */
 package org.spout.engine.listener.channel;
 
+import java.net.InetSocketAddress;
 import java.util.logging.Level;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
-
 import org.spout.api.protocol.CommonHandler;
 import org.spout.api.protocol.PortBinding;
-
 import org.spout.engine.SpoutClient;
 import org.spout.engine.protocol.SpoutClientSession;
 
@@ -58,7 +57,7 @@ public class SpoutClientConnectListener implements ChannelFutureListener {
 			SpoutClientSession session = client.newSession(channel);
 			handler.setSession(session);
 			client.setSession(session);
-			session.send(true, true, binding.getProtocol().getIntroductionMessage(client.getActivePlayer().getName()));
+			session.send(true, true, binding.getProtocol().getIntroductionMessage(client.getActivePlayer().getName(), (InetSocketAddress) channel.getRemoteAddress()));
 		} else {
 			client.getLogger().log(Level.WARNING, "Could not connect to " + binding, channelFuture.getCause());
 		}

@@ -36,17 +36,16 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipelineFactory;
-
+import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
+import org.spout.api.Spout;
 import org.spout.api.entity.Player;
 import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
-
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.listener.SpoutProxyListener;
 import org.spout.engine.listener.channel.SpoutProxyConnectListener;
-import org.spout.engine.protocol.SpoutNioServerSocketChannel;
 import org.spout.engine.protocol.SpoutProxySession;
 import org.spout.engine.protocol.SpoutSession;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
@@ -81,7 +80,8 @@ public class SpoutProxy extends SpoutServer {
 
 	public void connect(String hostname, int port, String playerName, Session session) {
 		ChannelFutureListener listener = new SpoutProxyConnectListener(this, playerName, session);
-		clientBootstrap.connect(new InetSocketAddress(hostname, port)).addListener(listener);
+		InetSocketAddress addr = new InetSocketAddress(hostname, port);
+		clientBootstrap.connect(addr).addListener(listener);
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class SpoutProxy extends SpoutServer {
 		//Note: All threads are daemons, cleanup of the executors is handled by clientBootstrap.getFactory().releaseExternalResources(); in stop(...).
 		ExecutorService executorBoss = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Boss", true));
 		ExecutorService executorWorker = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Worker", true));
-		ChannelFactory factory = new SpoutNioServerSocketChannel(executorBoss, executorWorker);
+		ChannelFactory factory = new NioClientSocketChannelFactory(executorBoss, executorWorker);
 		clientBootstrap.setFactory(factory);
 
 		ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, true);
