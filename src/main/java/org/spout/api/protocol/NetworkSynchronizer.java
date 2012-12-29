@@ -363,7 +363,7 @@ public abstract class NetworkSynchronizer {
 	
 	private Iterator<Point> attemptSendChunk(Iterator<Point> i, Iterable<Point> queue, Chunk c, Set<Chunk> unsendable) {
 		if (!unsendable.contains(c) && canSendChunk(c, unsendable)) {
-			Collection<Chunk> sent = sendChunk(c);
+			Collection<Chunk> sent = sendChunk(c, true);
 			activeChunks.add(c.getBase());
 			i.remove();
 			if (sent != null) {
@@ -544,6 +544,29 @@ public abstract class NetworkSynchronizer {
 	 * @return the chunks that were sent, or null if no chunk was sent
 	 */
 	public Collection<Chunk> sendChunk(Chunk c) {
+		if (canSendChunk(c, null)) {
+			return sendChunk(c, false);
+		} else {
+			return null;
+		}
+	}
+	
+	/**
+	 * Sends a chunk to the client.
+	 *
+	 * This method is called during the startSnapshot stage of the tick.
+	 *
+	 * This is a MONITOR method, for sending network updates, no changes should
+	 * be made to the chunk
+	 *
+	 * While always called during the startSnapshot part of the tick, it may be called from
+	 * multiple threads
+	 *
+	 * @param c the chunk
+	 * @param force forces sending of the chunk without checking the canSendChunk method
+	 * @return the chunks that were sent, or null if no chunk was sent
+	 */
+	protected Collection<Chunk> sendChunk(Chunk c, boolean force) {
 		return null;
 	}
 
