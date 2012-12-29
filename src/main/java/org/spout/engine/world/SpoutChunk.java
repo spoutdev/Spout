@@ -396,10 +396,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 	@Override
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Cause<?> cause) {
-		return setBlockMaterial(x, y, z, material, data, cause, true);
-	}
-
-	private boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Cause<?> cause, boolean event) {
 		int bx = x & BLOCKS.MASK;
 		int by = y & BLOCKS.MASK;
 		int bz = z & BLOCKS.MASK;
@@ -409,18 +405,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		
 		short dataMask = material.getDataMask();
 		data = (short) ((data & ~dataMask) | (material.getData() & dataMask));
-
-		if (event) {
-			// TODO - move to block change method?
-			Block block = getBlock(bx, by, bz);
-			BlockChangeEvent blockEvent = new BlockChangeEvent(block, new BlockSnapshot(block, material, data), cause);
-			Spout.getEngine().getEventManager().callEvent(blockEvent);
-			if (blockEvent.isCancelled()) {
-				return false;
-			}
-			material = blockEvent.getSnapshot().getMaterial();
-			data = blockEvent.getSnapshot().getData();
-		}
 
 		short newId = material.getId();
 		short newData = data;
@@ -656,7 +640,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			for (int dx = startX; dx < endX; dx++) {
 				for (int dy = startY; dy < endY; dy++) {
 					for (int dz = startZ; dz < endZ; dz++) {
-						setBlockMaterial(dx, dy, dz, buffer.get(dx - offX, dy - offY, dz - offZ), buffer.getData(dx - offX, dy - offY, dz - offZ), cause, false);
+						setBlockMaterial(dx, dy, dz, buffer.get(dx - offX, dy - offY, dz - offZ), buffer.getData(dx - offX, dy - offY, dz - offZ), cause);
 					}
 				}
 			}
