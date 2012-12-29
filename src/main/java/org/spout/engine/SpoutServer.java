@@ -184,6 +184,11 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	@Override
 	public boolean stop(final String message) {
+		return stop(message, true);
+	}
+		
+	@Override
+	public boolean stop(final String message, boolean stopScheduler) {
 		if (!super.stop(message, false)) {
 			return false;
 		}
