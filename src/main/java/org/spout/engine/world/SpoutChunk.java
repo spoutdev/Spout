@@ -261,6 +261,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	private final AtomicBoolean populationPriorityQueued = new AtomicBoolean(false);
 	private final AtomicBoolean popObserver = new AtomicBoolean(false);
 	private final AtomicInteger autosaveTicks = new AtomicInteger(0);
+	private final AtomicBoolean isUnloadQueued = new AtomicBoolean(false);
 	private boolean wasInViewDistance = false;
 	private boolean isInViewDistance = false;
 
@@ -1183,6 +1184,22 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		parentRegion.addSnapshotFuture(future);
 		return future;
 	}
+	
+	private void addToRegionUnloadQueue() {
+		if (isUnloadQueued.compareAndSet(false, true)) {
+			parentRegion.unloadQueue.add(this);
+		}
+	}
+	
+	private void removeFromRegionUnloadQueue() {
+		if (isUnloadQueued.compareAndSet(true, false)) {
+			parentRegion.unloadQueue.remove(this);
+		}
+	}
+	
+	public void setNotUnloadQueued() {
+		isUnloadQueued.set(false);
+	}
 
 	@Override
 	public boolean refreshObserver(Entity entity) {
@@ -1190,7 +1207,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 		checkChunkLoaded();
 		parentRegion.markObserverDirty(this);
-		parentRegion.unloadQueue.remove(this);
+		removeFromRegionUnloadQueue();
 		if (!isPopulated()) {
 			queueForPopulation(false);
 		}
@@ -1226,7 +1243,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		}
 		expiredObserversQueue.add((SpoutEntity) entity);
 		if (!isObserved()) {
-			parentRegion.unloadQueue.add(this);
+			addToRegionUnloadQueue();
 		}
 		return true;
 	}
