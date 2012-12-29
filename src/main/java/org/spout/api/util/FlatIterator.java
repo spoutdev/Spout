@@ -29,6 +29,7 @@ package org.spout.api.util;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import org.spout.api.Spout;
 import org.spout.api.math.IntVector3;
 
 /**
@@ -45,7 +46,7 @@ public class FlatIterator extends IntVector3 implements Iterator<IntVector3> {
 	private int top;
 	private boolean hasNext;
 	private boolean first = true;
-
+	
 	public FlatIterator() {
 		this(0, 0, 0, 1);
 	}

@@ -444,21 +444,21 @@ public abstract class NetworkSynchronizer {
 		int bx = (int) currentPosition.getX();
 		int by = (int) currentPosition.getY();
 		int bz = (int) currentPosition.getZ();
+		
+		int cx = bx >> Chunk.BLOCKS.BITS;
+		int cy = by >> Chunk.BLOCKS.BITS;
+		int cz = bz >> Chunk.BLOCKS.BITS;
 
 		Point playerChunkBase = Chunk.pointToBase(currentPosition);
 		Point playerHoldingChunkBase = holdingPosition == null ? null : Chunk.pointToBase(holdingPosition);
 
 		for (Point p : initializedChunks) {
-			if (p.getManhattanDistance(playerChunkBase) > blockViewDistance) {
-				if (playerHoldingChunkBase == null || p.getManhattanDistance(playerHoldingChunkBase) > blockMinimumViewDistance) {
+			if (!isInViewVolume(p, playerChunkBase, viewDistance)) {
+				if (playerHoldingChunkBase == null || p.getMaxDistance(playerHoldingChunkBase) > blockMinimumViewDistance) {
 					chunkFreeQueue.add(p);
 				}
 			}
 		}
-
-		int cx = bx >> Chunk.BLOCKS.BITS;
-		int cy = by >> Chunk.BLOCKS.BITS;
-		int cz = bz >> Chunk.BLOCKS.BITS;
 
 		Iterator<IntVector3> itr = getViewableVolume(cx, cy, cz, viewDistance);
 
@@ -493,6 +493,18 @@ public abstract class NetworkSynchronizer {
 	 */
 	public Iterator<IntVector3> getViewableVolume(int cx, int cy, int cz, int viewDistance) {
 		return new OutwardIterator(cx, cy, cz, viewDistance);
+	}
+	
+	/**
+	 * Test if a given chunk base is in the view volume for a given player chunk base point
+	 * 
+	 * @param playerChunkBase
+	 * @param testChunkBase
+	 * @param blockViewDistance view distance in chunks
+	 * @return true if in the view volume
+	 */
+	public boolean isInViewVolume(Point playerChunkBase, Point testChunkBase, int viewDistance) {
+		return testChunkBase.getManhattanDistance(playerChunkBase) <= (viewDistance << Chunk.BLOCKS.BITS);
 	}
 
 	/**
