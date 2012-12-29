@@ -39,7 +39,7 @@ import org.spout.api.resource.BasicResourceLoader;
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.resources.ClientSound;
 
-public class SoundWavLoader extends BasicResourceLoader<ClientSound> {
+public class SoundLoader extends BasicResourceLoader<ClientSound> {
 
 	@Override
 	public String getFallbackResourceName() {
@@ -66,6 +66,6 @@ public class SoundWavLoader extends BasicResourceLoader<ClientSound> {
 
 	@Override
 	public String[] getExtensions() {
-		return new String[] { "wav" };
+		return new String[] {"wav"};
 	}
 }

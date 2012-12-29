@@ -26,6 +26,9 @@
  */
 package org.spout.engine.audio;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.lwjgl.LWJGLException;
@@ -35,13 +38,14 @@ import org.lwjgl.openal.OpenALException;
 
 import org.spout.api.Spout;
 import org.spout.api.audio.Sound;
+import org.spout.api.audio.SoundListener;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.audio.SoundSource;
 
-/**
- * {@link SoundManager} Spout implementation
- */
 public class SpoutSoundManager implements SoundManager {
+	private final List<SoundSource> sources = new ArrayList<SoundSource>();
+	private SoundListener listener = new SpoutSoundListener();
+
 	@Override
 	public void init() {
 		try {
@@ -57,7 +61,33 @@ public class SpoutSoundManager implements SoundManager {
 	public SoundSource createSource(Sound sound) {
 		SoundSource source = new SpoutSoundSource();
 		source.setSound(sound);
+		sources.add(source);
 		return source;
+	}
+
+	@Override
+	public void removeSource(SoundSource source) {
+		sources.remove(source);
+	}
+
+	@Override
+	public void clearSources() {
+		sources.clear();
+	}
+
+	@Override
+	public List<SoundSource> getSources() {
+		return Collections.unmodifiableList(sources);
+	}
+
+	@Override
+	public SoundListener getActiveListener() {
+		return listener;
+	}
+
+	@Override
+	public void setActiveListener(SoundListener listener) {
+		this.listener = listener;
 	}
 
 	/**

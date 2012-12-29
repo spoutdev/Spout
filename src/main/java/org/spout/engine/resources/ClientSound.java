@@ -33,10 +33,8 @@ import org.spout.api.audio.Sound;
  * An OpenAL-based implementation of the Sound class.
  */
 public class ClientSound extends Sound {
-	private final int bufferId;
-
-	public ClientSound(int bufferId) {
-		this.bufferId = bufferId;
+	public ClientSound(int id) {
+		super(id);
 	}
 
 	@Override
@@ -59,17 +57,8 @@ public class ClientSound extends Sound {
 		return getInt(AL10.AL_SIZE);
 	}
 
-	/**
-	 * Gets the buffer id of this sound.
-	 * 
-	 * @return
-	 */
-	public int getBufferId() {
-		return bufferId;
-	}
-
 	private int getInt(int property) {
-		return AL10.alGetBufferi(bufferId, property);
+		return AL10.alGetBufferi(id, property);
 	}
 
 }

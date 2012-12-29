@@ -35,7 +35,7 @@ import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 import org.spout.api.audio.Sound;
 import org.spout.api.audio.SoundSource;
-import org.spout.api.audio.SoundSourceState;
+import org.spout.api.audio.SoundState;
 import org.spout.api.math.Vector3;
 import org.spout.engine.resources.ClientSound;
 
@@ -46,7 +46,7 @@ public class SpoutSoundSource implements SoundSource {
 	private final int sourceId;
 	private Sound sound = null;
 
-	public SpoutSoundSource() {
+	protected SpoutSoundSource() {
 		this.sourceId = AL10.alGenSources();
 		reset();
 	}
@@ -61,13 +61,7 @@ public class SpoutSoundSource implements SoundSource {
 		if (sound == null) {
 			throw new IllegalArgumentException("Sound cannot be null!");
 		}
-
-		if (!(sound instanceof ClientSound)) {
-			throw new IllegalArgumentException("Sound is not a ClientSound!");
-		}
-
 		this.sound = sound;
-
 		bindSound();
 	}
 
@@ -91,38 +85,24 @@ public class SpoutSoundSource implements SoundSource {
 	 */
 	private void bindSound() {
 		stop(); // Ensure that the sound has come to a complete stop.
-
-		ClientSound cs = (ClientSound) sound;
-		setInt(AL10.AL_BUFFER, cs.getBufferId());
+		setInt(AL10.AL_BUFFER, sound.getId());
 	}
 
 	@Override
-	public SoundSourceState getState() {
-		int state = getInt(AL10.AL_SOURCE_STATE);
-		switch (state) {
-		case AL10.AL_PLAYING:
-			return SoundSourceState.PLAYING;
-		case AL10.AL_PAUSED:
-			return SoundSourceState.PAUSED;
-		case AL10.AL_STOPPED:
-			return SoundSourceState.STOPPED;
-		case AL10.AL_INITIAL:
-			return SoundSourceState.INITIAL;
-		default:
-			return SoundSourceState.UNKNOWN;
-		}
+	public SoundState getState() {
+		return SoundState.get(getInt(AL10.AL_SOURCE_STATE) + 4113);
 	}
 
 	@Override
 	public void play() {
-		if (!getState().equals(SoundSourceState.PLAYING)) {
+		if (!getState().equals(SoundState.PLAYING)) {
 			AL10.alSourcePlay(sourceId);
 		}
 	}
 
 	@Override
 	public void pause() {
-		if (getState().equals(SoundSourceState.PLAYING)) {
+		if (getState().equals(SoundState.PLAYING)) {
 			AL10.alSourcePause(sourceId);
 		}
 	}
@@ -130,7 +110,7 @@ public class SpoutSoundSource implements SoundSource {
 	@Override
 	public void stop() {
 		// People should just use rewind.
-		if (getState().equals(SoundSourceState.PLAYING)) {
+		if (getState().equals(SoundState.PLAYING)) {
 			AL10.alSourceStop(sourceId);
 		}
 	}
@@ -177,14 +157,8 @@ public class SpoutSoundSource implements SoundSource {
 
 	@Override
 	public void setPlaybackPosition(float seconds) {
-		boolean playing = getState().equals(SoundSourceState.PLAYING);
-
-		rewind();
 		setFloat(AL11.AL_SEC_OFFSET, seconds);
-
-		if (playing) {
-			play();
-		}
+		rewind();
 	}
 
 	@Override
