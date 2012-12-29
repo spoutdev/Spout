@@ -50,6 +50,8 @@ import org.spout.api.chat.ChatTemplate;
 import org.spout.api.chat.console.Console;
 import org.spout.api.chat.Placeholder;
 import org.spout.api.chat.style.ChatStyle;
+import org.spout.api.plugin.PluginLogRecord;
+
 import org.spout.engine.SpoutEngine;
 /**
  * A meta-class to handle all logging and input-related console improvements.
@@ -138,7 +140,11 @@ public final class ConsoleManager {
 			ChatArguments args = LOG_TEMPLATE.getArguments();
 			ChatArguments level = colorizeLevel(record.getLevel());
 			args.setPlaceHolder(LEVEL, level);
-			args.setPlaceHolder(MESSAGE, new ChatArguments(getFormatter().formatMessage(record)));
+			if (record instanceof PluginLogRecord) {
+				args.setPlaceHolder(MESSAGE, ((PluginLogRecord) record).getFormattedMessage());
+			} else {
+				args.setPlaceHolder(MESSAGE, new ChatArguments(getFormatter().formatMessage(record)));
+			}
 			console.addMessage(args);
 
 			if (record.getThrown() != null) {
