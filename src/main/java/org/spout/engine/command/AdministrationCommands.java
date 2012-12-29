@@ -54,6 +54,7 @@ import org.spout.api.plugin.Plugin;
 import org.spout.api.util.access.AccessManager;
 import org.spout.api.util.access.BanType;
 
+import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 
@@ -317,7 +318,7 @@ public class AdministrationCommands {
 	public void plugins(CommandContext args, CommandSource source) {
 		List<Plugin> plugins = Spout.getEngine().getPluginManager().getPlugins();
 		ChatArguments pluginListString = new ChatArguments();
-		pluginListString.append(Arrays.<Object>asList("Plugins (", plugins.size()  - 1, "): "));
+		pluginListString.append(Arrays.<Object>asList("Plugins (", plugins.size() - 1, "): "));
 
 		for (int i = 0; i < plugins.size(); i++) {
 			Plugin plugin = plugins.get(i);
@@ -369,7 +370,7 @@ public class AdministrationCommands {
 		//Source is a player and didn't provide world, x, y, z so instead set the spawn point of their current world at their current position.
 		if (args.length() != 4) {
 			point = ((Player) source).getTransform().getPosition();
-		//Either Source is the console or the player specified world, x, y, z so set those values
+			//Either Source is the console or the player specified world, x, y, z so set those values
 		} else {
 			if (args.getWorld(0) == null) {
 				throw new CommandException("World: " + args.getString(0) + " is not loaded/existant!");
@@ -411,7 +412,7 @@ public class AdministrationCommands {
 		if (args.length() == 0) {
 			Collection<World> worlds = engine.getWorlds();
 			ChatArguments output = new ChatArguments("Worlds (", worlds.size(), "): ");
-			for (Iterator<World> i = worlds.iterator(); i.hasNext();) {
+			for (Iterator<World> i = worlds.iterator(); i.hasNext(); ) {
 				output.append(i.next().getName());
 				if (i.hasNext()) {
 					output.append(", ");
@@ -429,5 +430,72 @@ public class AdministrationCommands {
 			source.sendMessage("UUID: ", world.getUID());
 			source.sendMessage("Seed: ", world.getSeed());
 		}
+	}
+
+	@Command(aliases = {"tp", "teleport"}, usage = "[player] [player|x] [y] [z] [-w <world>]", flags = "w:", desc = "Teleport to a location", min = 1, max = 4)
+	@CommandPermissions("spout.command.tp")
+	public void tp(CommandContext args, CommandSource source) throws CommandException {
+		int index = 0;
+		Player player;
+
+		if (args.length() % 2 == 0) {
+			if (Spout.getEngine() instanceof SpoutClient) {
+				throw new CommandException("You cannot search for players unless you are in server mode.");
+			}
+			player = Spout.getEngine().getPlayer(args.getString(index++), true);
+
+			if (player == null || !player.isOnline()) {
+				throw new CommandException(args.getString(0) + " is not online.");
+			}
+		} else {
+			if (!(source instanceof Player)) {
+				throw new CommandException("You must be a player to teleport yourself!");
+			}
+
+			player = (Player) source;
+		}
+
+		Point point;
+		Player target = null;
+
+		if (args.length() > 2) {
+			World world = player.getWorld();
+
+			if (args.hasFlag('w')) {
+				if (!source.hasPermission("spout.command.tp.world-flag")) {
+					throw new CommandException("You are not allowed to use the world flag.");
+				}
+
+				world = Spout.getEngine().getWorld(args.getFlagString('w'));
+
+				if (world == null) {
+					throw new CommandException("Please supply an existing world.");
+				}
+			}
+
+			point = new Point(world, args.getInteger(index), args.getInteger(index + 1), args.getInteger(index + 2));
+		} else {
+			if (Spout.getEngine() instanceof SpoutClient) {
+				throw new CommandException("You cannot search for players unless you are in server mode.");
+			}
+			target = (Spout.getEngine()).getPlayer(args.getString(index), true);
+
+			if (target == null || !target.isOnline()) {
+				throw new CommandException(args.getString(0) + " is not online.");
+			}
+
+			point = target.getTransform().getPosition();
+		}
+
+		point.getWorld().getChunkFromBlock(point);
+		player.teleport(point);
+
+		if (target != null) {
+			player.sendMessage(ChatStyle.RESET, ChatStyle.BLUE, "You teleported to ", ChatStyle.WHITE, target.getName() + ".", ChatStyle.RESET);
+			target.sendMessage(ChatStyle.RESET, ChatStyle.WHITE, player.getName(), ChatStyle.BLUE, " teleported to you.", ChatStyle.RESET);
+			return;
+		}
+		player.sendMessage(ChatStyle.RESET, ChatStyle.BLUE, "You were teleported to ", ChatStyle.BRIGHT_GREEN, point.getWorld().getName(), ChatStyle.BLUE, ", X: ", ChatStyle.WHITE, point.getX(),
+				ChatStyle.BLUE, ", Y: ", ChatStyle.WHITE, point.getY(), ChatStyle.BLUE, ", Z: ", ChatStyle.WHITE, point.getZ(), ChatStyle.BLUE, ".", ChatStyle.RESET);
 	}
 }
