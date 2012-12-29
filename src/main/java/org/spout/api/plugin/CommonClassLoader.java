@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.spout.api.Spout;
-
 public class CommonClassLoader extends URLClassLoader {
 	private final Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
 	private final CommonPluginLoader loader;
@@ -68,11 +66,11 @@ public class CommonClassLoader extends URLClassLoader {
 	protected CommonPlugin getPlugin() {
 		return plugin;
 	}
-	
+
 	public List<String> getDepends() {
 		return depends;
 	}
-	
+
 	public List<String> getSoftDepends() {
 		return softDepends;
 	}
@@ -108,7 +106,6 @@ public class CommonClassLoader extends URLClassLoader {
 
 	/**
 	 * Returns a set of cached classes' names
-	 *
 	 * @return set of class names
 	 */
 	public Set<String> getClassNames() {
@@ -117,17 +114,16 @@ public class CommonClassLoader extends URLClassLoader {
 
 	/**
 	 * Returns a set of cached classes
-	 *
 	 * @return set of classes
 	 */
 	public Collection<Class<?>> getClasses() {
 		return Collections.unmodifiableCollection(classes.values());
 	}
-	
+
 	public static CommonPlugin getPlugin(String className) {
 		return pluginsForClassNames.get(className);
 	}
-	
+
 	public static Class<?> findPluginClass(String name) throws ClassNotFoundException {
 		for (CommonClassLoader loader : loaders) {
 			Class<?> clazz = loader.findClass(name);

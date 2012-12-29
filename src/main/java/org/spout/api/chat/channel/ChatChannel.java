@@ -32,6 +32,7 @@ import java.util.WeakHashMap;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
+
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.ChatTemplate;
 import org.spout.api.chat.Placeholder;
@@ -47,7 +48,6 @@ import org.spout.api.util.Named;
 public abstract class ChatChannel implements Named {
 	public static final ChatTemplate DEFAULT_FORMAT = new ChatTemplate(new ChatArguments(PlayerChatEvent.MESSAGE));
 	public static final Placeholder CHANNEL_NAME = new Placeholder("channel-name");
-
 	private final String name;
 	private ChatTemplate format = DEFAULT_FORMAT;
 
@@ -67,14 +67,12 @@ public abstract class ChatChannel implements Named {
 	/**
 	 * Returns the members who should receive messages sent to this chat channel.
 	 * The returned set must be an unmodifiable snapshot.
-	 *
 	 * @return The the set of {@link CommandSource CommandSources}
 	 */
 	public abstract Set<CommandSource> getReceivers();
 
 	/**
 	 * This implementation may be inefficient. Subclasses may override if they wish.
-	 *
 	 * @param source The source to check
 	 * @return whether the source provided is a receiver
 	 */
@@ -84,7 +82,6 @@ public abstract class ChatChannel implements Named {
 
 	/**
 	 * Broadcast to all the CommandSources of {@link #getReceivers()}.
-	 *
 	 * @param message The message to broadcast
 	 */
 	public void broadcastToReceivers(ChatArguments message) {
@@ -93,7 +90,6 @@ public abstract class ChatChannel implements Named {
 		for (CommandSource source : getReceivers()) {
 			source.sendMessage(formatted);
 		}
-
 	}
 
 	private ChatArguments applyPlaceholders(ChatArguments message) {
@@ -110,7 +106,6 @@ public abstract class ChatChannel implements Named {
 	/**
 	 * Gets the format of the ChatChannel.
 	 * The default format is "{MESSAGE}"
-	 *
 	 * @return format of ChatChannel
 	 */
 	public final ChatTemplate getFormat() {
@@ -122,9 +117,8 @@ public abstract class ChatChannel implements Named {
 	 * Verification is performed to make sure that the ChatArguments has the {@link org.spout.api.event.player.PlayerChatEvent#MESSAGE message} placeholder.
 	 * The {@link org.spout.api.event.player.PlayerChatEvent#MESSAGE} will be used to hold the contents of messages broadcasted through this channel.
 	 * The {@link #CHANNEL_NAME} placeholder will be replaced with the result of {@link #getName()} if present
-	 *
+	 * <p/>
 	 * If verification of the format fails the format will not change.
-	 *
 	 * @param format The format to set.
 	 * @return true if the format was valid, otherwise false.
 	 */
@@ -174,7 +168,6 @@ public abstract class ChatChannel implements Named {
 		/**
 		 * Register a newly constructed channel.
 		 * WILL ONLY BE CALLED FROM {@link ChatChannel} CONSTRUCTOR
-		 *
 		 * @param channel The channel to add
 		 */
 		private static void addChannel(ChatChannel channel) {

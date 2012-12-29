@@ -38,10 +38,8 @@ import java.util.List;
  * precedence.
  */
 public interface ServiceManager {
-
 	/**
 	 * Register a provider of a service.
-	 *
 	 * @param <T> Provider
 	 * @param service service class
 	 * @param provider provider to register
@@ -52,14 +50,12 @@ public interface ServiceManager {
 
 	/**
 	 * Unregister all the providers registered by a particular plugin.
-	 *
 	 * @param plugin
 	 */
 	public void unregisterAll(Plugin plugin);
 
 	/**
 	 * Unregister a particular provider for a particular service.
-	 *
 	 * @param service
 	 * @param provider
 	 */
@@ -67,7 +63,6 @@ public interface ServiceManager {
 
 	/**
 	 * Unregister a particular provider.
-	 *
 	 * @param provider
 	 */
 	public void unregister(Object provider);
@@ -75,7 +70,6 @@ public interface ServiceManager {
 	/**
 	 * Queries for a provider. This may return if no provider has been
 	 * registered for a service. The highest priority provider is returned.
-	 *
 	 * @param <T>
 	 * @param service
 	 * @return provider or null
@@ -85,7 +79,6 @@ public interface ServiceManager {
 	/**
 	 * Queries for a provider registration. This may return if no provider has
 	 * been registered for a service.
-	 *
 	 * @param <T>
 	 * @param service
 	 * @return provider registration or null
@@ -94,7 +87,6 @@ public interface ServiceManager {
 
 	/**
 	 * Get registrations of providers for a plugin.
-	 *
 	 * @param plugin
 	 * @return provider registration or null
 	 */
@@ -103,7 +95,6 @@ public interface ServiceManager {
 	/**
 	 * Get registrations of providers for a service. The returned list is
 	 * unmodifiable.
-	 *
 	 * @param <T>
 	 * @param service
 	 * @return list of registrations
@@ -113,7 +104,6 @@ public interface ServiceManager {
 	/**
 	 * Get a list of known services. A service is known if it has registered
 	 * providers for it.
-	 *
 	 * @return list of known services
 	 */
 	public Collection<Class<?>> getKnownServices();
@@ -122,7 +112,6 @@ public interface ServiceManager {
 	 * Returns whether a provider has been registered for a service. Do not
 	 * check this first only to call <code>load(service)</code> later, as that
 	 * would be a non-thread safe situation.
-	 *
 	 * @param <T> service
 	 * @param service service to check
 	 * @return whether there has been a registered provider

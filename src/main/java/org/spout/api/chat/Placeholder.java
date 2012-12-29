@@ -27,6 +27,7 @@
 package org.spout.api.chat;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import org.spout.api.util.SpoutToStringStyle;
 
 /**
@@ -50,8 +51,12 @@ public class Placeholder {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null) {return false;}
-		if (getClass() != obj.getClass()) {return false;}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
 		return ((Placeholder) obj).name.equals(this.name);
 	}
 
@@ -72,12 +77,18 @@ class Value {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
 		Value other = (Value) o;
 
-		if (index != other.index) return false;
+		if (index != other.index) {
+			return false;
+		}
 		if (value != null ? !value.equals(other.value) : other.value != null) {
 			return false;
 		}

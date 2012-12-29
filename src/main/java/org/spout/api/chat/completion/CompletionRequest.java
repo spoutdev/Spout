@@ -49,7 +49,6 @@ public class CompletionRequest {
 
 	/**
 	 * Gets the cursor index
-	 *
 	 * @return the cursorIndex
 	 */
 	public int getCursorIndex() {
@@ -58,7 +57,6 @@ public class CompletionRequest {
 
 	/**
 	 * Gets the original {@link ChatArguments} passed in
-	 *
 	 * @return the original {@link ChatArguments} object passed to this request
 	 */
 	public ChatArguments getOriginalArguments() {
@@ -67,7 +65,6 @@ public class CompletionRequest {
 
 	/**
 	 * Gets the List of ChatSections for this request
-	 *
 	 * @return the sections
 	 */
 	public List<ChatSection> getSections() {
@@ -76,7 +73,6 @@ public class CompletionRequest {
 
 	/**
 	 * Gets the word index
-	 *
 	 * @return the word index
 	 */
 	public int getWordIndex() {
@@ -85,10 +81,10 @@ public class CompletionRequest {
 	}
 
 	//TODO: Cache these responses
+
 	/**
 	 * Return the word that the cursor is currently in.
 	 * This may return an incomplete word if the word hasn't been fully typed yet.
-	 *
 	 * @return The word the cursor is in
 	 */
 	public ChatSection getWordOnCursor() {
@@ -100,7 +96,6 @@ public class CompletionRequest {
 
 	/**
 	 * Gets the text after the cursor in {@link ChatArguments} form
-	 *
 	 * @return the ChatArguments text after the cursor
 	 */
 	public ChatArguments getTextAfterCursor() {
@@ -109,7 +104,6 @@ public class CompletionRequest {
 
 	/**
 	 * Gets the {@link ChatArguments} text from the cursor word
-	 *
 	 * @return the cursor word in ChatArguments form
 	 */
 	public ChatArguments getTextFromCursorWord() {

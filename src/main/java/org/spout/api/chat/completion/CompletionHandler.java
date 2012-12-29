@@ -32,7 +32,6 @@ package org.spout.api.chat.completion;
 public interface CompletionHandler {
 	/**
 	 * Handles a completion request
-	 *
 	 * @param request
 	 * @return the completed request
 	 */

@@ -35,6 +35,7 @@ import java.io.ObjectOutputStream;
  */
 public class ResetChatStyle extends ChatStyle {
 	private static final long serialVersionUID = 1L;
+
 	public ResetChatStyle() {
 		super("Reset");
 	}

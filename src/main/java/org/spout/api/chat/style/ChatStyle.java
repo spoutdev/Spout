@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import org.spout.api.io.store.simple.MemoryStore;
 import org.spout.api.util.SpoutToStringStyle;
 import org.spout.api.util.StringMap;
@@ -46,12 +47,11 @@ import org.spout.api.util.StringMap;
  * A style of chat for the client to implement.<br/>
  * FontRenderer. Names are from <a href="http://wiki.vg/Chat">http://wiki.vg/Chat</a>
  */
-public abstract class ChatStyle implements Serializable{
+public abstract class ChatStyle implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final StringMap ID_LOOKUP = new StringMap(null, new MemoryStore<Integer>(), 0, Integer.MAX_VALUE, ChatStyle.class.getCanonicalName());
 	private static final Map<String, ChatStyle> BY_NAME = new HashMap<String, ChatStyle>();
 	private static final Set<ChatStyle> VALUES = new HashSet<ChatStyle>();
-
 	public static final ChatStyle BLACK = new ColorChatStyle("Black", Color.BLACK);
 	public static final ChatStyle DARK_BLUE = new ColorChatStyle("Dark Blue", Color.BLUE.darker().darker());
 	public static final ChatStyle DARK_GREEN = new ColorChatStyle("Dark Green", Color.GREEN.darker().darker());
@@ -81,7 +81,6 @@ public abstract class ChatStyle implements Serializable{
 
 	/**
 	 * Looks up a ChatStyle by its ID.
-	 *
 	 * @param id
 	 * @return the ChatStyle, or null if not found.
 	 */
@@ -91,7 +90,6 @@ public abstract class ChatStyle implements Serializable{
 
 	/**
 	 * Looks up a ChatStyle by its name.
-	 *
 	 * @param name
 	 * @return the ChatStyle, or null if not found.
 	 */
@@ -104,7 +102,6 @@ public abstract class ChatStyle implements Serializable{
 
 	/**
 	 * Removes all ChatStyles from the given string.
-	 *
 	 * @param str to strip.
 	 * @return String with all ChatStyles removed.
 	 */
@@ -141,7 +138,6 @@ public abstract class ChatStyle implements Serializable{
 
 	/**
 	 * Returns the lookup name for this style. This is the name used for the style for lookups.
-	 *
 	 * @return The lookup name.
 	 */
 	public String getLookupName() {
@@ -165,7 +161,7 @@ public abstract class ChatStyle implements Serializable{
 		setField(ChatStyle.class, "id", id);
 		setField(ChatStyle.class, "name", style.name);
 		setField(ChatStyle.class, "lookupName", style.lookupName);
-	
+
 		System.out.println("Reading serialized chat style: " + getName());
 	}
 

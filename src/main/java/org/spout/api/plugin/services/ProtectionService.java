@@ -42,20 +42,17 @@ import org.spout.api.plugin.ServiceProvider;
  * the abstract methods.
  * To register your ProtectionService you will need to do something similar to:
  * <code>getServiceManager().register(ProtectionService.class, myProtectionServiceInstance, myPlugin, ServicePriority)</code>
- * 
+ * <p/>
  * The static methods provided are intended for direct usage by any plugins.  Plugins should NOT be getting the
  * protection services directly as it may result in incomplete data from the server.
- *
  */
 public abstract class ProtectionService {
-
 	private static boolean isRegistered() {
 		return Spout.getEngine().getServiceManager().getRegistrations(ProtectionService.class) != null;
 	}
 
 	/**
 	 * Gets the list of all active protections on the server, this may be slow depending on how many protections there are.
-	 * 
 	 * @return list of all active protections on the server
 	 */
 	public static List<Protection> getProtections() {
@@ -71,7 +68,6 @@ public abstract class ProtectionService {
 	/**
 	 * Gets the list of all active protections on the server that are at the specific point.
 	 * This may be slow, depending on how optimized specific Protection plugins are in finding their protections.
-	 * 
 	 * @param point to test protections at.
 	 * @return List of all protections that are at the point
 	 */
@@ -88,7 +84,6 @@ public abstract class ProtectionService {
 	/**
 	 * Gets the list of all active protections on the server that are on the specific world.
 	 * This may be slow, depending on how optimized specific Protection plugins are in finding their protections.
-	 * 
 	 * @param world to get protections from.
 	 * @return List of all protections that are at the point
 	 */
@@ -104,7 +99,6 @@ public abstract class ProtectionService {
 
 	/**
 	 * Attempts to lookup the protection by name.
-	 * 
 	 * @param name
 	 * @return the region
 	 */
@@ -112,7 +106,6 @@ public abstract class ProtectionService {
 
 	/**
 	 * Gets all protections on the given world.
-	 * 
 	 * @param world
 	 * @return a collection of protections.
 	 */
@@ -120,7 +113,6 @@ public abstract class ProtectionService {
 
 	/**
 	 * Gets all protections at the given point.
-	 * 
 	 * @param point
 	 * @return a collection of protections
 	 */

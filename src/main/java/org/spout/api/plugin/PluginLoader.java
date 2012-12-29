@@ -38,21 +38,18 @@ public interface PluginLoader {
 
 	/**
 	 * Enables the plugin
-	 *
 	 * @param plugin
 	 */
 	public abstract void enablePlugin(Plugin plugin);
 
 	/**
 	 * Disables the plugin
-	 *
 	 * @param plugin
 	 */
 	public abstract void disablePlugin(Plugin plugin);
 
 	/**
 	 * Loads the file as a plugin
-	 *
 	 * @param file
 	 * @return instance of the plugin
 	 * @throws InvalidPluginException
@@ -64,10 +61,9 @@ public interface PluginLoader {
 
 	/**
 	 * Loads the file as a plugin
-	 *
 	 * @param file
 	 * @param paramBoolean ignores soft dependencies when it attempts to load
-	 *            the plugin
+	 * the plugin
 	 * @return instance of the plugin
 	 * @throws InvalidPluginException
 	 * @throws InvalidPluginException

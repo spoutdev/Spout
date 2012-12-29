@@ -29,8 +29,6 @@ package org.spout.api.plugin;
 import java.io.File;
 import java.util.List;
 
-import javax.swing.ListModel;
-
 import org.spout.api.exception.InvalidDescriptionFileException;
 import org.spout.api.exception.InvalidPluginException;
 import org.spout.api.exception.UnknownDependencyException;
@@ -38,7 +36,6 @@ import org.spout.api.exception.UnknownDependencyException;
 public interface PluginManager {
 	/**
 	 * Returns the the instance of a plugins when given its name
-	 *
 	 * @param plugin's name
 	 * @return instance of the plugin
 	 */
@@ -46,14 +43,12 @@ public interface PluginManager {
 
 	/**
 	 * Returns an array of plugins that have been loaded
-	 *
 	 * @return plugins
 	 */
 	public List<Plugin> getPlugins();
 
 	/**
 	 * Loads the file as a plugin
-	 *
 	 * @param file
 	 * @return instance of the plugin
 	 * @throws InvalidPluginException
@@ -64,7 +59,6 @@ public interface PluginManager {
 
 	/**
 	 * Loads all plugins in a directory
-	 *
 	 * @param file
 	 * @return array of plugins loaded
 	 */
@@ -82,14 +76,12 @@ public interface PluginManager {
 
 	/**
 	 * Enables the plugin
-	 *
 	 * @param plugin
 	 */
 	public abstract void enablePlugin(Plugin plugin);
 
 	/**
 	 * Disables the plugin
-	 *
 	 * @param plugin
 	 */
 	public abstract void disablePlugin(Plugin plugin);

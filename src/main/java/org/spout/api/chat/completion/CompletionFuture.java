@@ -33,6 +33,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.Validate;
+
 import org.spout.api.event.object.Eventable;
 import org.spout.api.event.object.EventableBase;
 import org.spout.api.event.object.EventableListener;
@@ -101,7 +102,6 @@ public class CompletionFuture extends ObjectEvent<CompletionFuture> implements F
 
 	/**
 	 * Returns the response to this future. Will be null if the future is not yet completed.
-	 *
 	 * @return The response, or null if there is no response.
 	 */
 	public CompletionResponse getImmediately() {
@@ -111,7 +111,6 @@ public class CompletionFuture extends ObjectEvent<CompletionFuture> implements F
 	/**
 	 * Complete the future with a response. This method will set the result, call
 	 * If this future already has a response, this method will do nothing.
-	 *
 	 * @param result The result to set
 	 * @return Whether the result was actually set.
 	 */
@@ -128,7 +127,6 @@ public class CompletionFuture extends ObjectEvent<CompletionFuture> implements F
 
 	/**
 	 * Register a listener to be called on completion of this future. The result of get() is guaranteed to return immediately.
-	 *
 	 * @param listener The listener to register.
 	 */
 	@Override

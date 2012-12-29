@@ -35,6 +35,7 @@ import java.util.Map;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.util.SpoutToStringStyle;
 
@@ -126,8 +127,12 @@ public class ChatSectionImpl implements ChatSection {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null) {return false;}
-		if (getClass() != obj.getClass()) {return false;}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
 		final ChatSectionImpl other = (ChatSectionImpl) obj;
 		return new EqualsBuilder()
 				.append(this.activeStyles, other.activeStyles)

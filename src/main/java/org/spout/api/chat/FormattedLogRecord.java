@@ -24,14 +24,12 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.plugin;
+package org.spout.api.chat;
 
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
-import org.spout.api.chat.ChatArguments;
-
-public class PluginLogRecord extends LogRecord {
+public class FormattedLogRecord extends LogRecord {
 	/**
 	 * Construct a LogRecord with the given level and message values.
 	 * <p/>
@@ -49,12 +47,12 @@ public class PluginLogRecord extends LogRecord {
 	 */
 	private final ChatArguments arguments;
 
-	public PluginLogRecord(Level level, ChatArguments arguments) {
+	public FormattedLogRecord(Level level, ChatArguments arguments) {
 		super(level, arguments.getPlainString());
 		this.arguments = arguments;
 	}
 
-	public PluginLogRecord(Level level, String msg) {
+	public FormattedLogRecord(Level level, String msg) {
 		this(level, new ChatArguments(msg));
 	}
 

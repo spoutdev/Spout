@@ -43,29 +43,25 @@ public interface ChatSection {
 
 	/**
 	 * The string that this word is.
-	 *
 	 * @return The value of this word
 	 */
 	String getPlainString();
 
 	/**
 	 * Returns the split type that was used to create this
-	 *
 	 * @return The {@link org.spout.api.chat.ChatSection.SplitType} that was originally
-	 * 			used to create this object (along with any others)
+	 *         used to create this object (along with any others)
 	 */
 	SplitType getSplitType();
 
 	/**
 	 * Creates a new ChatArguments instance containing this ChatSection
-	 *
 	 * @return a ChatArguments instance with the data in this section
 	 */
 	ChatArguments toChatArguments();
 
 	/**
 	 * Returns a section of this ChatSection instance.
-	 *
 	 * @param startIndex The index to start from, inclusive
 	 * @param endIndex The index to end at, inclusive
 	 * @return The section of this {@link ChatSection}
@@ -76,7 +72,6 @@ public interface ChatSection {
 	/**
 	 * Returns the length of the raw text content of this section.
 	 * Should equal {@link #getPlainString()}.{@link String#length() length()}
-	 *
 	 * @return The length of the text.
 	 */
 	int length();

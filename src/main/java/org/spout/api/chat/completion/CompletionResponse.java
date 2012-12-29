@@ -47,7 +47,6 @@ public class CompletionResponse {
 
 	/**
 	 * Returns whether the response should complete automatically
-	 *
 	 * @return whether the response should automatically complete
 	 */
 	public boolean shouldCompleteAutomatically() {
@@ -56,7 +55,6 @@ public class CompletionResponse {
 
 	/**
 	 * Gets the {@link CompletionRequest} for this response
-	 *
 	 * @return the CompletionRequest for this reponse
 	 */
 	public CompletionRequest getRequest() {
@@ -65,7 +63,6 @@ public class CompletionResponse {
 
 	/**
 	 * Gets the results as a List of ChatArguments
-	 *
 	 * @return the results of the response
 	 */
 	public List<ChatArguments> getResults() {

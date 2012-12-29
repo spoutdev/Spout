@@ -43,7 +43,6 @@ public class FormatChatStyle extends ChatStyle {
 	/**
 	 * Checks if this Format style conflicts with any {@link ChatStyle}.<br/>
 	 * Always returns false.  FormatChatStyles never conflict with other ChatStyles.</br>
-	 * 
 	 * @return false
 	 */
 	@Override

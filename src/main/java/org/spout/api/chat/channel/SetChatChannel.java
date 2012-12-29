@@ -26,13 +26,14 @@
  */
 package org.spout.api.chat.channel;
 
-import com.google.common.collect.Sets;
-import org.spout.api.command.CommandSource;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.google.common.collect.Sets;
+
+import org.spout.api.command.CommandSource;
 
 /**
  * An implementation of {@link ChatChannel} that contains a manually modified list of receivers.

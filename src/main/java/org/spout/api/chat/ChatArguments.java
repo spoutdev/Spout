@@ -42,6 +42,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.chat.style.StyleHandler;
 import org.spout.api.chat.style.fallback.DefaultStyleHandler;
@@ -274,7 +275,7 @@ public class ChatArguments implements Cloneable, ChatSection, Serializable {
 	public boolean hasPlaceholder(Placeholder placeholder) {
 		return placeholders.containsKey(placeholder);
 	}
-	
+
 	/**
 	 * Gets the value of a Placeholder, or null if either the placeholder has no value, or it does not exist in the ChatArgument.
 	 * @param The Placeholder
@@ -289,12 +290,12 @@ public class ChatArguments implements Cloneable, ChatSection, Serializable {
 			lock.unlock();
 		}
 	}
-	
+
 	public Map<Placeholder, ChatArguments> getPlaceholders() {
 		lock.lock();
 		try {
 			Map<Placeholder, ChatArguments> newMap = new HashMap<Placeholder, ChatArguments>();
-			for ( Entry<Placeholder, Value> entry : placeholders.entrySet()) {
+			for (Entry<Placeholder, Value> entry : placeholders.entrySet()) {
 				newMap.put(entry.getKey(), entry.getValue().value);
 			}
 			return newMap;
@@ -305,7 +306,6 @@ public class ChatArguments implements Cloneable, ChatSection, Serializable {
 
 	/**
 	 * Expands all the placeholders in {@link #getArguments()} to their values
-	 *
 	 * @return A {@link List List&lt;Object>} with all the placeholders in these arguments replaced with their correct values
 	 */
 	public List<Object> getExpandedPlaceholders() throws MissingPlaceholderException {
@@ -335,7 +335,6 @@ public class ChatArguments implements Cloneable, ChatSection, Serializable {
 
 	/**
 	 * Splits this ChatArguments instance into sections
-	 *
 	 * @param type How these arguments are to be split into sections
 	 * @return The split sections
 	 */
@@ -422,7 +421,6 @@ public class ChatArguments implements Cloneable, ChatSection, Serializable {
 
 	/**
 	 * Represents these ChatArguments as a string using {@link DefaultStyleHandler}
-	 *
 	 * @return These ChatArguments as a string
 	 * @see #asString(int)
 	 */
@@ -434,7 +432,6 @@ public class ChatArguments implements Cloneable, ChatSection, Serializable {
 	 * Starting from end of elements, append strings as they appear. If a ChatStyle appears, apply it to existing text.
 	 * If this existing text has already been formatted, check for conflicts
 	 * If no conflicts, append existing text to the area to be formatted
-	 *
 	 * @param handlerId The handlerId to use to get the {@link org.spout.api.chat.style.StyleFormatter StyleFormatters} for ChatStyles
 	 * @return The stringified version of this object
 	 */
@@ -478,7 +475,6 @@ public class ChatArguments implements Cloneable, ChatSection, Serializable {
 	/**
 	 * Create an instance of ChatArguments by extracting arguments from a string in
 	 * the format specified by the given style handler.
-	 *
 	 * @param str The string to extract styles from
 	 * @return The new ChatArguments instance
 	 * @see #fromString(String, int)
@@ -490,7 +486,6 @@ public class ChatArguments implements Cloneable, ChatSection, Serializable {
 	/**
 	 * Create an instance of ChatArguments by extracting arguments from a string in
 	 * the format specified by the given style handler. This method currently just delegates to the StyleHandler,
-	 *
 	 * @param str The string to extract styles from
 	 * @param handlerId The ID of the {@link StyleHandler} to use to extract style information
 	 * @return The new ChatArguments instance
@@ -504,9 +499,8 @@ public class ChatArguments implements Cloneable, ChatSection, Serializable {
 	 * Provides a format string representation of a ChatArguments object.
 	 * In a format string, parameters surrounded with a  <pre>{{arg}}</pre> are interpreted as ChatStyles
 	 * and parameters surrounded with a <pre>{arg}</pre> are interpreted as placeholders.
-	 *
-	 * @see #fromFormatString(String)
 	 * @return The format string
+	 * @see #fromFormatString(String)
 	 */
 	public String toFormatString() {
 		StringBuilder builder = new StringBuilder();
@@ -528,10 +522,9 @@ public class ChatArguments implements Cloneable, ChatSection, Serializable {
 	/**
 	 * Creates a arguments object with content in a format string
 	 * {@link #toFormatString()} describes the format for format strings.
-	 *
-	 * @see #toFormatString()
 	 * @param format The format string. The format for format strings is described in {@link #toFormatString()}
 	 * @return The {@link ChatArguments} object created from the format string
+	 * @see #toFormatString()
 	 */
 	public static ChatArguments fromFormatString(String format) {
 		ChatArguments args = new ChatArguments();

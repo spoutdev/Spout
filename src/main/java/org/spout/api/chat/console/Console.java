@@ -69,7 +69,6 @@ public interface Console extends Closeable {
 	/**
 	 * Returns whether this console is at a point where the console is initialized
 	 * If this method has already been called and init has not been called since, this method will do nothing
-	 *
 	 * @return Whether this console has been initialized
 	 */
 	public boolean isInitialized();
@@ -84,14 +83,12 @@ public interface Console extends Closeable {
 	/**
 	 * Set the date format to be used when printing the date of log messages.
 	 * If {@code format} is null, no date will be printed.
-	 *
 	 * @param format the log message date format.
 	 */
 	public void setDateFormat(DateFormat format);
 
 	/**
 	 * Add a message to the console
-	 *
 	 * @param message the message to add
 	 */
 	public void addMessage(ChatArguments message);

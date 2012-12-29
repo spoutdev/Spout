@@ -38,17 +38,17 @@ import org.spout.api.chat.style.ChatStyle;
  * Utility methods for implementations of {@link ChatSection}
  */
 public class ChatSectionUtils {
-	private ChatSectionUtils() {}
+	private ChatSectionUtils() {
+	}
 
 	/**
 	 * Removes styles that conflict with {@code check} from the specified collection.
-	 *
 	 * @param collection The collection to check
 	 * @param check The style to check conflicts against
 	 */
 	public static void removeConflicting(Collection<? extends ChatStyle> collection, ChatStyle check) {
 		if (collection.size() > 0) {
-			for (Iterator<? extends ChatStyle> i = collection.iterator(); i.hasNext();) {
+			for (Iterator<? extends ChatStyle> i = collection.iterator(); i.hasNext(); ) {
 				if (check.conflictsWith(i.next())) {
 					i.remove();
 				}
@@ -58,7 +58,6 @@ public class ChatSectionUtils {
 
 	/**
 	 * Gets a list from the given map at {@code key}, or creates one and adds it if there is no value
-	 *
 	 * @param map The map to source from
 	 * @param key The key to look up
 	 * @param <T> The type of list values

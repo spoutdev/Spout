@@ -75,7 +75,6 @@ public class MultiConsole implements Console {
 
 	/**
 	 * Returns the list of consoles managed by this MultiConsole
-	 *
 	 * @return The managed consoles
 	 */
 	public List<Console> getConsoles() {
@@ -85,7 +84,6 @@ public class MultiConsole implements Console {
 	/**
 	 * Removes a console from management
 	 * Remember that this will not close the console. The close method must be called manually.
-	 *
 	 * @param console The console to remove
 	 * @return Whether the console was removed (previously present)
 	 */
@@ -95,7 +93,6 @@ public class MultiConsole implements Console {
 
 	/**
 	 * This method will add a console to management by this MultiConsole.
-	 *
 	 * @param console The console to add
 	 */
 	public void addConsole(Console console) {

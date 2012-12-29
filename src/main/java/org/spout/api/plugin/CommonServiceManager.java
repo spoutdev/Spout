@@ -41,15 +41,12 @@ import org.spout.api.event.server.service.ServiceUnregisterEvent;
 
 /**
  * A common service manager.
- *
  */
 public class CommonServiceManager implements ServiceManager {
-
 	/**
 	 * Map of providers.
 	 */
 	private final Map<Class<?>, List<ServiceProvider<?>>> providers = new HashMap<Class<?>, List<ServiceProvider<?>>>();
-
 	/**
 	 * The service manager instance
 	 */
@@ -67,7 +64,6 @@ public class CommonServiceManager implements ServiceManager {
 
 	/**
 	 * Register a provider of a service.
-	 *
 	 * @param <T> Provider
 	 * @param service service class
 	 * @param provider provider to register
@@ -96,7 +92,6 @@ public class CommonServiceManager implements ServiceManager {
 
 	/**
 	 * Unregister all the providers registered by a particular plugin.
-	 *
 	 * @param plugin
 	 */
 	@Override
@@ -134,7 +129,6 @@ public class CommonServiceManager implements ServiceManager {
 
 	/**
 	 * Unregister a particular provider for a particular service.
-	 *
 	 * @param service
 	 * @param provider
 	 */
@@ -179,7 +173,6 @@ public class CommonServiceManager implements ServiceManager {
 
 	/**
 	 * Unregister a particular provider.
-	 *
 	 * @param provider
 	 */
 	@Override
@@ -218,7 +211,6 @@ public class CommonServiceManager implements ServiceManager {
 	/**
 	 * Queries for a provider. This may return if no provider has been
 	 * registered for a service. The highest priority provider is returned.
-	 *
 	 * @param <T>
 	 * @param service
 	 * @return provider or null
@@ -241,7 +233,6 @@ public class CommonServiceManager implements ServiceManager {
 	/**
 	 * Queries for a provider registration. This may return if no provider has
 	 * been registered for a service.
-	 *
 	 * @param <T>
 	 * @param service
 	 * @return provider registration or null
@@ -263,7 +254,6 @@ public class CommonServiceManager implements ServiceManager {
 
 	/**
 	 * Get registrations of providers for a plugin.
-	 *
 	 * @param plugin
 	 * @return provider registration or null
 	 */
@@ -287,7 +277,6 @@ public class CommonServiceManager implements ServiceManager {
 	/**
 	 * Get registrations of providers for a service. The returned list is
 	 * unmodifiable.
-	 *
 	 * @param <T>
 	 * @param service
 	 * @return list of registrations
@@ -315,7 +304,6 @@ public class CommonServiceManager implements ServiceManager {
 	/**
 	 * Get a list of known services. A service is known if it has registered
 	 * providers for it.
-	 *
 	 * @return list of known services
 	 */
 	@Override
@@ -327,7 +315,6 @@ public class CommonServiceManager implements ServiceManager {
 	 * Returns whether a provider has been registered for a service. Do not
 	 * check this first only to call <code>load(service)</code> later, as that
 	 * would be a non-thread safe situation.
-	 *
 	 * @param <T> service
 	 * @param service service to check
 	 * @return whether there has been a registered provider

@@ -36,10 +36,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.spout.api.exception.InvalidDescriptionFileException;
-import org.spout.api.util.config.serialization.Serialization;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
+
+import org.spout.api.exception.InvalidDescriptionFileException;
+import org.spout.api.util.config.serialization.Serialization;
 
 public class PluginDescriptionFile {
 	private static final Yaml yaml = new Yaml(new SafeConstructor());
@@ -48,7 +49,6 @@ public class PluginDescriptionFile {
 			"org.getspout",
 			"org.spoutcraft",
 			"in.spout"));
-
 	private final HashMap<String, String> data = new HashMap<String, String>();
 	private String name;
 	private String version;
@@ -138,10 +138,10 @@ public class PluginDescriptionFile {
 		if (map.containsKey("website")) {
 			website = getEntry("website", String.class, map);
 		}
-		
+
 		if (map.containsKey("codedlocale")) {
 			Locale[] locales = Locale.getAvailableLocales();
-			for (Locale l:locales) {
+			for (Locale l : locales) {
 				if (l.getLanguage().equals((new Locale((String) map.get("codedlocale"))).getLanguage())) {
 					codedLocale = l;
 				}
@@ -169,7 +169,6 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns true if the plugin is an Official Spout Plugin
-	 *
 	 * @param namespace The plugin's main class namespace
 	 * @return true if an official plugin
 	 */
@@ -182,7 +181,6 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns the plugin's name
-	 *
 	 * @return name
 	 */
 	public String getName() {
@@ -191,7 +189,6 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns the plugin's version
-	 *
 	 * @return version
 	 */
 	public String getVersion() {
@@ -200,7 +197,6 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns the plugin's description
-	 *
 	 * @return description
 	 */
 	public String getDescription() {
@@ -209,7 +205,6 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns the plugin's authors
-	 *
 	 * @return authors
 	 */
 	public List<String> getAuthors() {
@@ -218,7 +213,6 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns the plugin's website
-	 *
 	 * @return website
 	 */
 	public String getWebsite() {
@@ -227,7 +221,6 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns false if the plugin wants to be exempt from a reload
-	 *
 	 * @return reload
 	 */
 	public boolean allowsReload() {
@@ -236,7 +229,6 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns the plugin's platform
-	 *
 	 * @return platform
 	 */
 	public Platform getPlatform() {
@@ -245,7 +237,6 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns the plugin's load order
-	 *
 	 * @return load
 	 */
 	public LoadOrder getLoad() {
@@ -254,7 +245,6 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns the path the plugins main class
-	 *
 	 * @return main
 	 */
 	public String getMain() {
@@ -263,7 +253,6 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns the plugin's dependencies
-	 *
 	 * @return depends
 	 */
 	public List<String> getDepends() {
@@ -272,7 +261,6 @@ public class PluginDescriptionFile {
 
 	/**
 	 * Returns the plugin's soft dependencies
-	 *
 	 * @return softdepends
 	 */
 	public List<String> getSoftDepends() {
@@ -282,17 +270,15 @@ public class PluginDescriptionFile {
 	/**
 	 * Returns the plugin's fullname The fullname is formatted as follows:
 	 * [name] v[version]
-	 *
 	 * @return The full name of the plugin
 	 */
 	public String getFullName() {
 		return fullname;
 	}
-	
+
 	/**
 	 * Returns the locale the strings in the plugin are coded in.
 	 * Will be read from the plugins properties.yml from the field "codedlocale"
-	 * 
 	 * @return the locale the plugin is coded in
 	 */
 	public Locale getCodedLocale() {

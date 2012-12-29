@@ -31,22 +31,23 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import org.spout.api.chat.ChatArguments;
+import org.spout.api.chat.FormattedLogRecord;
 
 public class PluginLogger extends Logger {
 	private final Plugin plugin;
-    private ChatArguments tag;
+	private ChatArguments tag;
 
-    public PluginLogger(Plugin plugin) {
-        super(plugin.getClass().getCanonicalName(), null);
-        setLevel(Level.ALL);
-        setParent(plugin.getEngine().getLogger());
-        tag = new ChatArguments("[" + plugin.getDescription().getName() + "] ");
-        this.plugin = plugin;
-    }
+	public PluginLogger(Plugin plugin) {
+		super(plugin.getClass().getCanonicalName(), null);
+		setLevel(Level.ALL);
+		setParent(plugin.getEngine().getLogger());
+		tag = new ChatArguments("[" + plugin.getDescription().getName() + "] ");
+		this.plugin = plugin;
+	}
 
-    @Override
-    public void log(LogRecord logRecord) {
-		final PluginLogRecord record = new PluginLogRecord(logRecord.getLevel(), new ChatArguments(tag, logRecord.getMessage()));
+	@Override
+	public void log(LogRecord logRecord) {
+		final FormattedLogRecord record = new FormattedLogRecord(logRecord.getLevel(), new ChatArguments(tag, logRecord.getMessage()));
 		record.setLoggerName(logRecord.getLoggerName());
 		record.setMillis(logRecord.getMillis());
 		record.setParameters(logRecord.getParameters());
@@ -57,17 +58,16 @@ public class PluginLogger extends Logger {
 		record.setSourceMethodName(logRecord.getSourceMethodName());
 		record.setThreadID(logRecord.getThreadID());
 		record.setThrown(logRecord.getThrown());
-        super.log(record);
-    }
+		super.log(record);
+	}
 
-    /**
-     * Gets the Plugin associated with this Logger
-     * 
-     * @return the Plugin
-     */
-    public Plugin getPlugin() {
-    	return this.plugin;
-    }
+	/**
+	 * Gets the Plugin associated with this Logger
+	 * @return the Plugin
+	 */
+	public Plugin getPlugin() {
+		return this.plugin;
+	}
 
 	/**
 	 * Sets the tag prefix'd to the plugin's logger.

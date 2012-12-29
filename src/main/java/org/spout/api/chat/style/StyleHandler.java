@@ -39,7 +39,6 @@ import org.spout.api.chat.style.fallback.DefaultStyleHandler;
  * A StyleHandler handles converting arrays of objects into correctly formatted strings for display
  */
 public abstract class StyleHandler {
-
 	private static final List<StyleHandler> REGISTERED_HANDLERS = new ArrayList<StyleHandler>();
 
 	public static int register(StyleHandler handler) {
@@ -84,7 +83,6 @@ public abstract class StyleHandler {
 
 	/**
 	 * Make sure no conflicting characters are present in the unformatted strings being passed through this {@link StyleHandler}
-	 *
 	 * @param unformatted The unformatted string
 	 * @return The escaped unformatted string
 	 */

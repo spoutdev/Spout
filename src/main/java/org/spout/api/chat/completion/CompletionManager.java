@@ -30,13 +30,12 @@ import java.util.regex.Pattern;
 
 /**
  * Entry point for requesting completions
- * 
+ * <p/>
  * Note: Completion refers to the auto-completion of user command and chats.
  */
 public interface CompletionManager {
 	/**
 	 * Gets the {@link CompletionFuture} for the given request
-	 *
 	 * @param input
 	 * @return the CompletionFuture for the request
 	 */
@@ -44,7 +43,6 @@ public interface CompletionManager {
 
 	/**
 	 * Registers a completer
-	 *
 	 * @param completor
 	 * @param regex
 	 * @param matchLocation

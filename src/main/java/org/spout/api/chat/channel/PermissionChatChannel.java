@@ -26,13 +26,14 @@
  */
 package org.spout.api.chat.channel;
 
+import java.util.Collections;
+import java.util.Set;
+
 import com.google.common.collect.Sets;
+
 import org.spout.api.Spout;
 import org.spout.api.command.CommandSource;
 import org.spout.api.permissions.PermissionsSubject;
-
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * An implementation of {@link ChatChannel} that gets receivers based on all players who have a certain permission

@@ -26,15 +26,6 @@
  */
 package org.spout.api.plugin;
 
-import org.apache.commons.io.FileUtils;
-import org.spout.api.Engine;
-import org.spout.api.event.HandlerList;
-import org.spout.api.exception.InvalidDescriptionFileException;
-import org.spout.api.exception.InvalidPluginException;
-import org.spout.api.exception.UnknownDependencyException;
-import org.spout.api.meta.SpoutMetaPlugin;
-import org.spout.api.plugin.security.CommonSecurityManager;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -50,6 +41,16 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.io.FileUtils;
+
+import org.spout.api.Engine;
+import org.spout.api.event.HandlerList;
+import org.spout.api.exception.InvalidDescriptionFileException;
+import org.spout.api.exception.InvalidPluginException;
+import org.spout.api.exception.UnknownDependencyException;
+import org.spout.api.meta.SpoutMetaPlugin;
+import org.spout.api.plugin.security.CommonSecurityManager;
 
 public class CommonPluginManager implements PluginManager {
 	private final Engine engine;
@@ -284,7 +285,7 @@ public class CommonPluginManager implements PluginManager {
 		plugins.add(metaPlugin);
 		names.put("Spout", metaPlugin);
 	}
-	
+
 	public SpoutMetaPlugin getMetaPlugin() {
 		return metaPlugin;
 	}
