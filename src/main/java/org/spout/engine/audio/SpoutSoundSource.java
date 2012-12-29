@@ -90,7 +90,7 @@ public class SpoutSoundSource implements SoundSource {
 
 	@Override
 	public SoundState getState() {
-		return SoundState.get(getInt(AL10.AL_SOURCE_STATE) + 4113);
+		return SoundState.get(getInt(AL10.AL_SOURCE_STATE) - 4113);
 	}
 
 	@Override
