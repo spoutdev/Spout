@@ -119,8 +119,7 @@ public class PlayerFiles {
 			try {
 				is = new NBTInputStream(new DataInputStream(new FileInputStream(playerData)), false);
 				CompoundTag dataTag = (CompoundTag) is.readTag();
-				World world = Spout.getEngine().getWorld(dataTag.getName());
-				return (SpoutPlayer) EntityFiles.loadEntity(world, dataTag, name);
+				return (SpoutPlayer) EntityFiles.loadPlayerEntity(dataTag, name);
 			} catch (Exception e) {
 				Spout.getLogger().log(Level.SEVERE, "Error loading player data for " + name, e);
 

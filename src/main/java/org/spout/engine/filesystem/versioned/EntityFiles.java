@@ -59,7 +59,7 @@ import org.spout.nbt.util.NBTMapper;
 
 public class EntityFiles {
 
-	public static final byte ENTITY_VERSION = 2;
+	public static final byte ENTITY_VERSION = 3;
 	
 	@SuppressWarnings("rawtypes")
 	protected static void loadEntities(SpoutRegion r, CompoundMap map, List<SpoutEntity> loadedEntities) {
@@ -90,18 +90,22 @@ public class EntityFiles {
 	}
 	
 	private static SpoutEntity loadEntity(SpoutRegion r, CompoundTag tag) {
-		return loadEntity(r.getWorld(), tag, null);
+		return loadEntity(r.getWorld(), tag);
 	}
 
-	protected static SpoutEntity loadEntity(World w, CompoundTag tag, String name) {
+	protected static SpoutEntity loadEntity(World w, CompoundTag tag) {
 		try {
-			return loadEntityImpl(w, tag, name);
+			return loadEntityImpl(w, tag, null);
 		} catch (Exception e) {
 			Spout.getLogger().log(Level.SEVERE, "Unable to load entity", e);
 		}
 		return null;
 	}
 
+	protected static SpoutEntity loadPlayerEntity(CompoundTag tag, String name) {
+		return loadEntityImpl(null, tag, name);
+	}
+	
 	@SuppressWarnings("unchecked")
 	private static SpoutEntity loadEntityImpl(World w, CompoundTag tag, String name) {
 		CompoundMap map = tag.getValue();
@@ -128,15 +132,40 @@ public class EntityFiles {
 					return null;
 				}
 			}
+			if (version <= 2) {
+				map = convertV2V3(tag, map);
+				if (map == null) {
+					return null;
+				}
+			}
 
 		}
 		
+		UUID worldUUID = null;
+		
 		boolean player = SafeCast.toByte(NBTMapper.toTagValue(map.get("player")), (byte) 0) == 1;
 		
-		Transform t = TransformTag.getValue(w, map.get("position"));
-		
-		if (t == null) {
+		if (player) {
+			if (name == null) {
+				return null;
+			}
+			worldUUID = UUIDTag.getValue(map.get("world_uuid"));
+			w = Spout.getEngine().getWorld(worldUUID);
+		} else if (w == null) {
 			return null;
+		}
+		
+		Transform t; 
+		
+		if (w != null) {
+			t = TransformTag.getValue(w, map.get("position"));
+			if (t == null) {
+				return null;
+			}
+		} else {
+			Spout.getLogger().info("Unable to find world with UUID of " + worldUUID + ", using the default spawn point as position for " + name);
+			w = Spout.getEngine().getDefaultWorld();
+			t = w.getSpawnPoint();
 		}
 		
 		UUID uid = UUIDTag.getValue(map.get("uuid"));
@@ -198,7 +227,12 @@ public class EntityFiles {
 		CompoundMap map = new CompoundMap();
 		map.put(new ByteTag("version", ENTITY_VERSION));
 
-		map.put(new ByteTag("player", (e instanceof PlayerSnapshot)));
+		boolean player = e instanceof PlayerSnapshot;
+		map.put(new ByteTag("player", player));
+		
+		if (player) {
+			map.put(new UUIDTag("world_uuid", e.getTransform().getPosition().getWorld().getUID()));
+		}
 
 		//Write entity
 		map.put(new TransformTag("position", e.getTransform()));
@@ -223,7 +257,7 @@ public class EntityFiles {
 
 		CompoundTag tag = null;
 		if (e instanceof PlayerSnapshot) {
-			tag = new CompoundTag(e.getWorldName(), map);
+			tag = new CompoundTag(((PlayerSnapshot) e).getName(), map);
 		} else {
 			tag = new CompoundTag("entity_" + e.getId(), map);
 		}
@@ -266,5 +300,30 @@ public class EntityFiles {
 		return map;
 	
 	}
+	
+	/**
+	 * Version 2 to version 3 conversion
+	 * 
+	 * Player entity data contains 
+	 */
+	private static CompoundMap convertV2V3(CompoundTag tag, CompoundMap map) {
+		boolean player = SafeCast.toByte(NBTMapper.toTagValue(map.get("player")), (byte) 0) == 1;
+		if (!player) {
+			return map;
+		}
+		
+		World world = Spout.getEngine().getWorld(tag.getName());
+		
+		if (world == null) {
+			Spout.getLogger().info("Conversion failed");
+			return null;
+		}
+		
+		map.put(new UUIDTag("world_uuid", world.getUID()));
+		
+		return map;
+		
+	}
+		
 
 }

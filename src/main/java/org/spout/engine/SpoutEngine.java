@@ -737,6 +737,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		SpoutPlayer player = PlayerFiles.loadPlayerData(playerName);
 		boolean created = false;
 		if (player == null) {
+			Spout.getLogger().info("First login for " + playerName + ", creating new player data");
 			player = new SpoutPlayer(playerName, null, viewDistance);
 			created = true;
 		}
