@@ -28,6 +28,7 @@ package org.spout.api.protocol;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -179,7 +180,7 @@ public abstract class Protocol {
 	 * @param playerName the name of the player
 	 * @return the message, or null if there is no message
 	 */
-	public abstract Message getIntroductionMessage(String playerName);
+	public abstract Message getIntroductionMessage(String playerName, InetSocketAddress addr);
 
 	/**
 	 * Set up the initial data for the given session.
