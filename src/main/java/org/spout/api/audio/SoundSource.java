@@ -37,7 +37,7 @@ public interface SoundSource {
 	 * 
 	 * @return
 	 */
-	public SoundSourceState getState();
+	public SoundState getState();
 
 	/**
 	 * Gets the Sound associated with this SoundSource.

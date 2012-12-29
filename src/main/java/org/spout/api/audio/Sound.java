@@ -32,6 +32,21 @@ import org.spout.api.resource.Resource;
  * Represents a sound.
  */
 public abstract class Sound extends Resource {
+	protected final int id;
+
+	public Sound(int id) {
+		this.id = id;
+	}
+
+	/**
+	 * Returns the unique identifier of this Sound.
+	 *
+	 * @return id of sound
+	 */
+	public int getId() {
+		return id;
+	}
+
 	/**
 	 * Gets the sampling rate (sampling frequency) of the sound.
 	 * 

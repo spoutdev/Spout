@@ -26,32 +26,48 @@
  */
 package org.spout.api.audio;
 
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+
 /**
  * Represents the state of a sound source.
  */
-public enum SoundSourceState {
+public enum SoundState {
 	/**
 	 * The sound is currently playing.
 	 */
-	PLAYING,
-
+	PLAYING(0),
 	/**
 	 * The sound is currently paused.
 	 */
-	PAUSED,
-
+	PAUSED(1),
 	/**
 	 * The sound is stopped.
 	 */
-	STOPPED,
-
+	STOPPED(2),
 	/**
 	 * The sound has not been played before.
 	 */
-	INITIAL,
+	INITIAL(3);
 
-	/**
-	 * The state of the sound is unknown.
-	 */
-	UNKNOWN;
+	private final int id;
+	private static final TIntObjectMap<SoundState> idMap = new TIntObjectHashMap<SoundState>();
+
+	static {
+		for (SoundState state : SoundState.values()) {
+			idMap.put(state.getId(), state);
+		}
+	}
+
+	public static SoundState get(int id) {
+		return idMap.get(id);
+	}
+
+	private SoundState(int id) {
+		this.id = id;
+	}
+
+	public int getId() {
+		return id;
+	}
 }

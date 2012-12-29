@@ -26,6 +26,8 @@
  */
 package org.spout.api.audio;
 
+import java.util.List;
+
 /**
  * Manages Sounds.
  */
@@ -41,4 +43,37 @@ public interface SoundManager {
 	 * @return the creates SoundSource
 	 */
 	public SoundSource createSource(Sound sound);
+
+	/**
+	 * Removes a {@link SoundSource} from the manager.
+	 *
+	 * @param source
+	 */
+	public void removeSource(SoundSource source);
+
+	/**
+	 * Removes all {@link SoundSource}s from the manager.
+	 */
+	public void clearSources();
+
+	/**
+	 * Returns all {@link SoundSource}s
+	 *
+	 * @return sources
+	 */
+	public List<SoundSource> getSources();
+
+	/**
+	 * Returns the active {@link SoundListener}
+	 *
+	 * @return active listener
+	 */
+	public SoundListener getActiveListener();
+
+	/**
+	 * Sets the active {@link SoundListener}
+	 *
+	 * @param listener to set
+	 */
+	public void setActiveListener(SoundListener listener);
 }
