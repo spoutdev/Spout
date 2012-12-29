@@ -27,16 +27,10 @@
 package org.spout.engine.chat.console;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FilterOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -44,15 +38,16 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import org.spout.api.chat.ChatArguments;
 import org.spout.api.Engine;
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.ChatTemplate;
-import org.spout.api.chat.console.Console;
+import org.spout.api.chat.FormattedLogRecord;
 import org.spout.api.chat.Placeholder;
+import org.spout.api.chat.console.Console;
 import org.spout.api.chat.style.ChatStyle;
-import org.spout.api.plugin.PluginLogRecord;
 
 import org.spout.engine.SpoutEngine;
+
 /**
  * A meta-class to handle all logging and input-related console improvements.
  */
@@ -92,6 +87,7 @@ public final class ConsoleManager {
 	private static class ServerShutdownThread extends Thread {
 		private static final AtomicInteger COUNT = new AtomicInteger(1);
 		private final SpoutEngine engine;
+
 		public ServerShutdownThread(SpoutEngine engine) {
 			super("ServerShutdownThread-" + COUNT.getAndIncrement());
 			this.engine = engine;
@@ -127,7 +123,6 @@ public final class ConsoleManager {
 	private static class SpoutHandler extends Handler {
 		private static final Placeholder LEVEL = new Placeholder("level"), MESSAGE = new Placeholder("message");
 		private static final ChatTemplate LOG_TEMPLATE = new ChatTemplate(new ChatArguments("[", LEVEL, "] ", MESSAGE));
-
 		private final Console console;
 
 		public SpoutHandler(Console console) {
@@ -140,8 +135,8 @@ public final class ConsoleManager {
 			ChatArguments args = LOG_TEMPLATE.getArguments();
 			ChatArguments level = colorizeLevel(record.getLevel());
 			args.setPlaceHolder(LEVEL, level);
-			if (record instanceof PluginLogRecord) {
-				args.setPlaceHolder(MESSAGE, ((PluginLogRecord) record).getFormattedMessage());
+			if (record instanceof FormattedLogRecord) {
+				args.setPlaceHolder(MESSAGE, ((FormattedLogRecord) record).getFormattedMessage());
 			} else {
 				args.setPlaceHolder(MESSAGE, new ChatArguments(getFormatter().formatMessage(record)));
 			}

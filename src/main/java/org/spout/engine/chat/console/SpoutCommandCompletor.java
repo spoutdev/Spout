@@ -26,12 +26,13 @@
  */
 package org.spout.engine.chat.console;
 
-import jline.Completor;
-import org.spout.api.Engine;
-
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import jline.Completor;
+
+import org.spout.api.Engine;
 
 /**
  * A copy of {@link jline.SimpleCompletor} that uses a set of strings sourced
@@ -43,9 +44,12 @@ public class SpoutCommandCompletor implements Completor {
 	public SpoutCommandCompletor(Engine engine) {
 		this.engine = engine;
 	}
+
 	@Override
 	@SuppressWarnings("unchecked")
-	public int complete(String buffer, int cursor, @SuppressWarnings("rawtypes") List candidates) {
+	public int complete(String buffer, int cursor,
+						@SuppressWarnings("rawtypes")
+						List candidates) {
 		String start = (buffer == null) ? "" : buffer;
 		TreeSet<String> all = new TreeSet<String>();
 		all.addAll(engine.getRootCommand().getChildNames());

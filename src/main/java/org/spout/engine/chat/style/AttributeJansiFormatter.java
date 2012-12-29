@@ -27,11 +27,13 @@
 package org.spout.engine.chat.style;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
+
 import org.apache.commons.lang3.Validate;
 import org.fusesource.jansi.Ansi;
 
 public class AttributeJansiFormatter extends JansiStyleFormatter {
 	private static final TIntObjectHashMap<Ansi.Attribute> ATTRIBUTE_ID_MAP = new TIntObjectHashMap<Ansi.Attribute>();
+
 	static {
 		for (Ansi.Attribute attr : Ansi.Attribute.values()) {
 			ATTRIBUTE_ID_MAP.put(attr.value(), attr);

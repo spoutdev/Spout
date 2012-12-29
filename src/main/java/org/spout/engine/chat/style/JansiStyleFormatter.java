@@ -27,6 +27,7 @@
 package org.spout.engine.chat.style;
 
 import org.fusesource.jansi.Ansi;
+
 import org.spout.api.chat.style.StyleFormatter;
 
 public abstract class JansiStyleFormatter implements StyleFormatter {

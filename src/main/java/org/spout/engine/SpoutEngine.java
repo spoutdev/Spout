@@ -26,9 +26,6 @@
  */
 package org.spout.engine;
 
-import static org.spout.api.lang.Translation.log;
-import static org.spout.api.lang.Translation.tr;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.Inet4Address;
@@ -54,6 +51,7 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.ChannelGroupFuture;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
+
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.chat.completion.CompletionManager;
@@ -97,6 +95,7 @@ import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.StringUtil;
+
 import org.spout.engine.chat.console.ConsoleManager;
 import org.spout.engine.chat.console.FileConsole;
 import org.spout.engine.chat.console.JLineConsole;
@@ -129,6 +128,9 @@ import org.spout.engine.world.MemoryReclamationThread;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
+
+import static org.spout.api.lang.Translation.log;
+import static org.spout.api.lang.Translation.tr;
 
 public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private static final Logger logger = Logger.getLogger("Spout");
@@ -413,7 +415,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		if (generator == null) {
 			generator = defaultGenerator;
 		}
-		
+
 		SpoutWorld world = WorldFiles.loadWorld(this, generator, name);
 
 		World oldWorld = loadedWorlds.putIfAbsent(name, world);
@@ -452,7 +454,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	 * @param stopScheduler
 	 * @return
 	 */
-
 	protected boolean stop(final String message, boolean stopScheduler) {
 		final SpoutEngine engine = this;
 

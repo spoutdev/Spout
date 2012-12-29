@@ -45,6 +45,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
+
 import org.spout.api.Client;
 import org.spout.api.FileSystem;
 import org.spout.api.Spout;
@@ -75,6 +76,7 @@ import org.spout.api.protocol.Session;
 import org.spout.api.render.Camera;
 import org.spout.api.render.Font;
 import org.spout.api.render.RenderMode;
+
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.command.InputManagementCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
@@ -93,24 +95,19 @@ import org.spout.engine.world.SpoutClientWorld;
 public class SpoutClient extends SpoutEngine implements Client {
 	private final SoundManager soundManager = new SpoutSoundManager();
 	private final String name = "Spout Client";
-	
 	private final FileSystem filesystem;
 	private Camera activeCamera;
 	private final AtomicReference<SpoutClientSession> session = new AtomicReference<SpoutClientSession>();
 	private SpoutPlayer activePlayer;
 	private final AtomicReference<SpoutClientWorld> activeWorld = new AtomicReference<SpoutClientWorld>();
 	private final AtomicReference<PortBinding> potentialBinding = new AtomicReference<PortBinding>();
-		// Handle stopping
+	// Handle stopping
 	private volatile boolean rendering = true;
 	private String stopMessage = null;
 	private final ClientBootstrap bootstrap = new ClientBootstrap();
 	private boolean ccoverride = false;
-	
 	SpoutRenderer renderer;
-	
 	private SpoutInputManager inputManager;
-
-		
 
 	public SpoutClient() {
 		this.filesystem = new ClientFileSystem();
@@ -127,7 +124,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 			e.printStackTrace();
 		}
 
-
 		if (inJar || args.path != null) {
 			unpackLwjgl(args.path);
 		}
@@ -142,9 +138,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		super.init(args);
 
 		this.ccoverride = args.ccoverride;
-		
 
-		 inputManager = new SpoutInputManager();
+		inputManager = new SpoutInputManager();
 	}
 
 	@Override
@@ -153,7 +148,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	@Override
-	public void start(boolean checkWorlds) {		
+	public void start(boolean checkWorlds) {
 		super.start(checkWorlds);
 
 		getEventManager().registerEvents(new SpoutClientListener(this), this);
@@ -175,7 +170,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		activePlayer.add(HitBlockComponent.class);
 		getActiveWorld().spawnEntity(activePlayer);
 		Font font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
-		
+
 		// Test
 		ClientEntityPrefab spoutyType = (ClientEntityPrefab) Spout.getFilesystem().getResource("entity://Spout/entities/Spouty/spouty.sep");
 		Entity e = spoutyType.createEntity(super.getDefaultWorld().getSpawnPoint().getPosition());
@@ -185,9 +180,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		tmc.setSize(0.5f);
 		tmc.setTranslation(new Vector3(0, 3f, 0));
 		tmc.setFont(font);
-		
-		getActiveWorld().spawnEntity(e);
 
+		getActiveWorld().spawnEntity(e);
 
 		renderer = getScheduler().startRenderThread(new Vector2(1204, 796), ccoverride, null);
 		getScheduler().startGuiThread();
@@ -253,7 +247,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return this.inputManager;
 	}
 
-	
 	@Override
 	public PortBinding getAddress() {
 		return session.get().getActiveAddress();
@@ -272,7 +265,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 				EngineStopEvent stopEvent = new EngineStopEvent(stopMessage);
 				getEventManager().callEvent(stopEvent);
 				stopMessage = stopEvent.getMessage();
-				
+
 				bootstrap.getFactory().releaseExternalResources();
 				boundProtocols.clear();
 			}
@@ -388,12 +381,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return filesystem;
 	}
 
-
-
-	public World getActiveWorld(){
+	public World getActiveWorld() {
 		return getActivePlayer().getWorld();
 	}
-	
+
 	private static void unpackLwjgl(String path) {
 		String[] files;
 		String osPath;
@@ -444,6 +435,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public ScreenStack getScreenStack() {
 		return renderer.getScreenStack();
 	}
+
 	public SpoutRenderer getRenderer() {
 		return renderer;
 	}

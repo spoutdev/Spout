@@ -38,6 +38,7 @@ import java.util.logging.Level;
 
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
+
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.filesystem.SharedFileSystem;
 
@@ -153,11 +154,12 @@ public class FileConsole extends AbstractConsole {
 
 		@Override
 		public void run() {
-			while(!this.isInterrupted()) {
+			while (!this.isInterrupted()) {
 				flush();
 				try {
 					sleep(60000);
-				} catch (InterruptedException e) { }
+				} catch (InterruptedException e) {
+				}
 			}
 		}
 	}

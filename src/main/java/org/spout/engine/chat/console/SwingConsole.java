@@ -26,6 +26,17 @@
  */
 package org.spout.engine.chat.console;
 
+import javax.swing.BorderFactory;
+import javax.swing.JEditorPane;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Element;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -43,21 +54,11 @@ import java.util.Date;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.swing.BorderFactory;
-import javax.swing.JEditorPane;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Element;
-import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
 
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.console.Console;
 import org.spout.api.chat.style.html.HTMLStyleHandler;
+
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.util.MacOSXUtils;
 
@@ -70,7 +71,6 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 	public static final Font TEXT_FONT = Font.getFont(Font.MONOSPACED);
 	public static final Color BG_COLOR = Color.BLACK; //new Color(Color.BLACK.getRed(), Color.BLACK.getGreen(), Color.BLACK.getBlue(), 40);
 	public static final Color FG_COLOR = Color.WHITE;
-
 	private final SpoutEngine engine;
 	private final JTextField cmdInput;
 	private final JEditorPane output;
@@ -78,7 +78,6 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 	private final HTMLDocument document;
 	private MessageAdderThread thread;
 	private JFrame frame;
-
 	private static final String HTML_PREFIX = "<html>" +
 			"<body style=\"color: white; font-family: monospace; font-size: 12pt;\">";
 	private static final String HTML_SUFFIX = "</body>" +
@@ -107,7 +106,6 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 		entryPanel.setBorder(BorderFactory.createEmptyBorder());
 		add(entryPanel, BorderLayout.SOUTH);
 
-
 		output = applyProperties(new JEditorPane());
 		output.setBorder(BorderFactory.createEmptyBorder());
 		output.setEditorKit(new HTMLEditorKit());
@@ -129,7 +127,6 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 		add(scroll, BorderLayout.CENTER);
 		cmdInput.grabFocus();
 	}
-
 
 	@Override
 	public void init() {
@@ -165,6 +162,7 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 	}
 
 	private DateFormat dateFormat;
+
 	@Override
 	public void setDateFormat(DateFormat format) {
 		this.dateFormat = format;
@@ -197,6 +195,7 @@ public class SwingConsole extends JPanel implements Console, KeyListener, Window
 	}
 
 	private static final AtomicInteger threadCounter = new AtomicInteger();
+
 	private class MessageAdderThread extends Thread {
 		public MessageAdderThread() {
 			super("SwingConsole message adder-" + threadCounter.getAndIncrement());

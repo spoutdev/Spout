@@ -26,10 +26,12 @@
  */
 package org.spout.engine;
 
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.SocketAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,8 +42,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceInfo;
 
 import org.apache.commons.lang3.Validate;
 import org.jboss.netty.bootstrap.ServerBootstrap;

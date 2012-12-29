@@ -29,6 +29,7 @@ package org.spout.engine.chat.style;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 import org.fusesource.jansi.AnsiString;
+
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.chat.style.StyleHandler;
@@ -39,9 +40,11 @@ import org.spout.api.chat.style.StyleHandler;
 public class JansiStyleHandler extends StyleHandler {
 	public static final JansiStyleHandler INSTANCE = new JansiStyleHandler();
 	public static final int ID = register(INSTANCE);
+
 	static {
 		AnsiConsole.systemInstall();
 	}
+
 	public JansiStyleHandler() {
 		super();
 		registerFormatter(ChatStyle.RED, new JansiColorFormatter(Ansi.Color.RED, true));

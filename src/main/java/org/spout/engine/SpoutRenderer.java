@@ -26,10 +26,6 @@
  */
 package org.spout.engine;
 
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.glClear;
-
 import java.awt.Canvas;
 import java.util.ArrayList;
 
@@ -42,10 +38,10 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.PixelFormat;
+
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
-import org.spout.api.component.impl.PhysicsComponent;
 import org.spout.api.component.impl.PredictableTransformComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.discrete.Point;
@@ -59,6 +55,7 @@ import org.spout.api.math.Vector2;
 import org.spout.api.model.Model;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
+
 import org.spout.engine.batcher.SpriteBatch;
 import org.spout.engine.entity.component.EntityRendererComponent;
 import org.spout.engine.mesh.BaseMesh;
@@ -66,49 +63,40 @@ import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.resources.ClientFont;
 import org.spout.engine.util.MacOSXUtils;
-import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
+
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.glClear;
 
 public class SpoutRenderer {
-	
-	
 	private SpriteBatch gui;
 	private ScreenStack screenStack;
 	private ClientFont font;
 	private boolean showDebugInfos = true;
-	private ArrayList<RenderMaterial> postProcessMaterials = new ArrayList<RenderMaterial>();	
+	private ArrayList<RenderMaterial> postProcessMaterials = new ArrayList<RenderMaterial>();
 	private boolean ccoverride = false;
-	private Vector2 resolution = new Vector2(1024, 768);	
+	private Vector2 resolution = new Vector2(1024, 768);
 	private float aspectRatio = resolution.getX() / resolution.getY();
 	private WorldRenderer worldRenderer;
-	
 	private boolean wireframe = false;
-	
-	
 
-	
-	
-	public SpoutRenderer(Vector2 resolution, boolean ccoverride)
-	{
+	public SpoutRenderer(Vector2 resolution, boolean ccoverride) {
 		this.resolution = resolution;
 		aspectRatio = resolution.getX() / resolution.getY();
-		
-		
+
 		// Building the screenStack
 		FullScreen mainScreen = new FullScreen();
 		mainScreen.setTakesInput(false);
 		screenStack = new ScreenStack(mainScreen);
 
-		
 		this.ccoverride = ccoverride;
-		
 	}
-	
+
 	public void initRenderer(Canvas parent) {
 		createWindow(parent);
 
-		
-		SpoutClient client = (SpoutClient)Spout.getEngine();
-		
+		SpoutClient client = (SpoutClient) Spout.getEngine();
+
 		client.getLogger().info("SpoutClient Information");
 		client.getLogger().info("Operating System: " + System.getProperty("os.name"));
 		client.getLogger().info("Renderer Mode: " + client.getRenderMode().toString());
@@ -146,10 +134,6 @@ public class SpoutRenderer {
 		gui = SpriteBatch.createSpriteBatch(client.getRenderMode(), resolution.getX(), resolution.getY());
 
 		font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
-		
-		
-		
-		
 	}
 
 	public void updateRender(long limit) {
@@ -157,12 +141,10 @@ public class SpoutRenderer {
 	}
 
 	Matrix ident = MathHelper.createIdentity();
-	
-	public void render(float dt) {
-		SpoutClient client = (SpoutClient)Spout.getEngine();
-		
 
-	
+	public void render(float dt) {
+		SpoutClient client = (SpoutClient) Spout.getEngine();
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		Model skydome = (Model) client.getActiveWorld().getDataMap().get("Skydome");
 		if (skydome != null) {
@@ -188,8 +170,8 @@ public class SpoutRenderer {
 		worldRenderer.render();
 
 		//TODO Remove this when we use SpoutClientWorld
-//		SpoutSnapshotLock lock = (SpoutSnapshotLock) client.getScheduler().getSnapshotLock();
-//		lock.coreReadLock("Render Thread - Render Entities");
+		//		SpoutSnapshotLock lock = (SpoutSnapshotLock) client.getScheduler().getSnapshotLock();
+		//		lock.coreReadLock("Render Thread - Render Entities");
 		for (Entity e : client.getActiveWorld().getAll()) {
 			EntityRendererComponent r = e.get(EntityRendererComponent.class);
 			if (r != null) {
@@ -197,7 +179,7 @@ public class SpoutRenderer {
 				r.render();
 			}
 		}
-//		lock.coreReadUnlock("Render Thread - Render Entities");
+		//		lock.coreReadUnlock("Render Thread - Render Entities");
 
 		if (wireframe) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
@@ -240,19 +222,17 @@ public class SpoutRenderer {
 		return screenStack;
 	}
 
-	
 	public Vector2 getResolution() {
 		return resolution;
 	}
 
-	
 	public float getAspectRatio() {
 		return aspectRatio;
 	}
 
 	private void createWindow(Canvas parent) {
-		SpoutClient client = (SpoutClient)Spout.getEngine();
-		
+		SpoutClient client = (SpoutClient) Spout.getEngine();
+
 		try {
 			Display.setDisplayMode(new DisplayMode((int) resolution.getX(), (int) resolution.getY()));
 			Display.setParent(parent);
@@ -277,7 +257,7 @@ public class SpoutRenderer {
 					Display.create(new PixelFormat(8, 24, 0), ca);
 				}
 			}
-			
+
 			Display.setTitle("Spout Client");
 		} catch (LWJGLException e) {
 			e.printStackTrace();
@@ -286,8 +266,8 @@ public class SpoutRenderer {
 
 	private void createMacWindow() throws LWJGLException {
 
-		SpoutClient client = (SpoutClient)Spout.getEngine();
-		
+		SpoutClient client = (SpoutClient) Spout.getEngine();
+
 		if (client.getRenderMode() == RenderMode.GL30) {
 			if (MacOSXUtils.getOSXVersion() >= 7) {
 				ContextAttribs ca = new ContextAttribs(3, 2).withProfileCore(true);
@@ -300,8 +280,6 @@ public class SpoutRenderer {
 		}
 	}
 
-
-	
 	public void toggleWireframe() {
 		if (wireframe) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
@@ -311,5 +289,4 @@ public class SpoutRenderer {
 			wireframe = true;
 		}
 	}
-
 }

@@ -49,9 +49,9 @@ public class SpoutApplication {
 	public boolean debug = false;
 	@Parameter(names = {"--rendermode", "-rendermode", "--r", "-r"}, converter = RenderModeConverter.class, description = "Render Version.  Versions: GL11, GL20, GL30, GLES20")
 	RenderMode renderMode = RenderMode.GL30;
-	@Parameter(names = {"--ccoverride" }, description = "Override ARB_CREATE_CONTEXT for the client")
+	@Parameter(names = {"--ccoverride"}, description = "Override ARB_CREATE_CONTEXT for the client")
 	public boolean ccoverride = false;
-	@Parameter(names = {"--path" }, description = "Override path for the client")
+	@Parameter(names = {"--path"}, description = "Override path for the client")
 	public String path = null;
 
 	public static void main(String[] args) {
@@ -66,7 +66,7 @@ public class SpoutApplication {
 				}
 				SharedFileSystem.setParentDirectory(dir);
 			}
-	
+
 			SpoutEngine engine;
 			switch (main.platform) {
 				case CLIENT:
@@ -81,7 +81,7 @@ public class SpoutApplication {
 				default:
 					throw new IllegalArgumentException("Unknown platform: " + main.platform);
 			}
-	
+
 			Spout.setEngine(engine);
 			Spout.getFilesystem().init();
 			engine.init(main);

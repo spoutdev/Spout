@@ -39,7 +39,9 @@ import jline.ConsoleReader;
 import jline.NullCompletor;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
+
 import org.spout.api.chat.ChatArguments;
+
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.chat.style.JansiStyleHandler;
 
@@ -68,7 +70,7 @@ public class JLineConsole extends AbstractConsole {
 		for (Completor c : new ArrayList<Completor>(completors)) {
 			reader.removeCompletor(c);
 		}
-		Completor[] list = new Completor[] {new SpoutCommandCompletor(engine), new NullCompletor()};
+		Completor[] list = new Completor[]{new SpoutCommandCompletor(engine), new NullCompletor()};
 		reader.addCompletor(new ArgumentCompletor(list));
 	}
 
@@ -123,7 +125,6 @@ public class JLineConsole extends AbstractConsole {
 	}
 
 	private class ConsoleCommandThread extends Thread {
-
 		public ConsoleCommandThread() {
 			super("ConsoleCommandThread");
 			setDaemon(true);
