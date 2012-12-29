@@ -30,22 +30,34 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import org.spout.api.chat.ChatArguments;
+
 public class PluginLogger extends Logger {
-    private final String tag;
-    private final Plugin plugin;
+	private final Plugin plugin;
+    private ChatArguments tag;
 
     public PluginLogger(Plugin plugin) {
         super(plugin.getClass().getCanonicalName(), null);
         setLevel(Level.ALL);
         setParent(plugin.getEngine().getLogger());
-        tag = "[" + plugin.getDescription().getName() + "] ";
+        tag = new ChatArguments("[" + plugin.getDescription().getName() + "] ");
         this.plugin = plugin;
     }
 
     @Override
     public void log(LogRecord logRecord) {
-        logRecord.setMessage(tag + logRecord.getMessage());
-        super.log(logRecord);
+		final PluginLogRecord record = new PluginLogRecord(logRecord.getLevel(), new ChatArguments(tag, logRecord.getMessage()));
+		record.setLoggerName(logRecord.getLoggerName());
+		record.setMillis(logRecord.getMillis());
+		record.setParameters(logRecord.getParameters());
+		record.setResourceBundle(logRecord.getResourceBundle());
+		record.setResourceBundleName(logRecord.getResourceBundleName());
+		record.setSequenceNumber(logRecord.getSequenceNumber());
+		record.setSourceClassName(logRecord.getSourceClassName());
+		record.setSourceMethodName(logRecord.getSourceMethodName());
+		record.setThreadID(logRecord.getThreadID());
+		record.setThrown(logRecord.getThrown());
+        super.log(record);
     }
 
     /**
@@ -56,4 +68,20 @@ public class PluginLogger extends Logger {
     public Plugin getPlugin() {
     	return this.plugin;
     }
+
+	/**
+	 * Sets the tag prefix'd to the plugin's logger.
+	 * @param tag The new tag for the logger
+	 */
+	public void setTag(ChatArguments tag) {
+		this.tag = tag;
+	}
+
+	/**
+	 * Gets the tag prefix'd to the plugin's logger.
+	 * @return The tag
+	 */
+	public ChatArguments getTag() {
+		return tag;
+	}
 }

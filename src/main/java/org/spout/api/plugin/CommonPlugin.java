@@ -30,6 +30,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.Validate;
 import org.spout.api.Engine;
 import org.spout.api.UnsafeMethod;
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.lang.JavaPluginDictionary;
 import org.spout.api.lang.PluginDictionary;
@@ -53,6 +54,7 @@ public abstract class CommonPlugin implements Plugin {
 	private boolean enabled;
 	private Logger logger;
 	private PluginDictionary dictionary;
+	private ChatArguments tagStyle;
 
 	public final void initialize(CommonPluginLoader pluginLoader, Engine engine, PluginDescriptionFile description, File dataFolder, File file, CommonClassLoader classLoader) {
 		this.pluginLoader = pluginLoader;
