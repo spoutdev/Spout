@@ -43,6 +43,7 @@ public final class BasicAir extends BlockMaterial {
 	}
 
 	@Override
-	public void onDestroy(Block block, Cause<?> cause) {
+	public boolean onDestroy(Block block, Cause<?> cause) {
+		return false;
 	}
 }

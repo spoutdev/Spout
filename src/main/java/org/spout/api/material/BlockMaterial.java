@@ -354,9 +354,11 @@ public class BlockMaterial extends Material implements Placeable {
 	 */
 	public boolean destroy(Block block, Set<Flag> flags, Cause<?> cause) {
 		this.getBlockFlags(block, flags);
-		this.onDestroy(block, cause);
-		this.onPostDestroy(block, flags);
-		return true;
+		if (this.onDestroy(block, cause)) {
+			this.onPostDestroy(block, flags);
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -364,9 +366,10 @@ public class BlockMaterial extends Material implements Placeable {
 	 * This function performs the actual destruction of the block.
 	 * 
 	 * @param block that got destroyed
+	 * @return true if the destruction occurred
 	 */
-	public void onDestroy(Block block, Cause<?> cause) {
-		block.setMaterial(AIR, cause);
+	public boolean onDestroy(Block block, Cause<?> cause) {
+		return block.setMaterial(AIR, cause);
 	}
 
 	/**

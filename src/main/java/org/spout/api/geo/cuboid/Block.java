@@ -38,14 +38,13 @@ import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.material.source.DataSource;
 import org.spout.api.material.source.MaterialSource;
-import org.spout.api.material.source.MaterialAccess;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.api.util.thread.LiveWrite;
 import org.spout.api.util.thread.Threadsafe;
 
-public interface Block extends MaterialAccess, WorldSource {
+public interface Block extends MaterialSource, WorldSource {
 
 	/**
 	 * Gets the {@link Point} position of this block in the world
@@ -157,7 +156,6 @@ public interface Block extends MaterialAccess, WorldSource {
 	 * @param data to set to
 	 * @return this Block
 	 */
-	@Override
 	public Block setData(DataSource data);
 
 	/**
@@ -166,7 +164,6 @@ public interface Block extends MaterialAccess, WorldSource {
 	 * @param data to set to
 	 * @return this Block
 	 */
-	@Override
 	public Block setData(int data);
 
 	/**
@@ -190,39 +187,36 @@ public interface Block extends MaterialAccess, WorldSource {
 	 * Sets the material of this block
 	 *
 	 * @param material to set to
-	 * @return this Block
+	 * @return whether the material set was successful
 	 */
-	@Override
-	public Block setMaterial(MaterialSource material);
-	
+	public boolean setMaterial(BlockMaterial material);
+
 	/**
 	 * Sets the material of this block
 	 *
 	 * @param material to set to
 	 * @param cause of the change
-	 * @return this Block
+	 * @return whether the material set was successful
 	 */
-	public Block setMaterial(MaterialSource material, Cause<?> cause);
+	public boolean setMaterial(BlockMaterial material, Cause<?> cause);
 
 	/**
 	 * Sets the material and data of this block
 	 *
 	 * @param material to set to
 	 * @param data to set to
-	 * @return this Block
+	 * @return whether the material set was successful
 	 */
-	@Override
-	public Block setMaterial(MaterialSource material, DataSource data);
+	public boolean setMaterial(BlockMaterial material, DataSource data);
 
 	/**
 	 * Sets the material and data of this block
 	 *
 	 * @param material to set to
 	 * @param data to set to
-	 * @return this Block
+	 * @return whether the material set was successful
 	 */
-	@Override
-	public Block setMaterial(MaterialSource material, int data);
+	public boolean setMaterial(BlockMaterial material, int data);
 
 	/**
 	 * Sets the material and data of this block
@@ -230,9 +224,9 @@ public interface Block extends MaterialAccess, WorldSource {
 	 * @param material to set to
 	 * @param data to set to
 	 * @param cause of the change
-	 * @return this Block
+	 * @return whether the material set was successful
 	 */
-	public Block setMaterial(MaterialSource material, int data, Cause<?> cause);
+	public boolean setMaterial(BlockMaterial material, int data, Cause<?> cause);
 
 	/**
 	 * Sets the given bits in the data for the block<br>
