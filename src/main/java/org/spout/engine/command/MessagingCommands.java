@@ -29,6 +29,8 @@ package org.spout.engine.command;
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
+import org.spout.api.chat.channel.ChatChannel;
+import org.spout.api.chat.conversation.Conversation;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
@@ -125,5 +127,20 @@ public class MessagingCommands {
 		}
 
 		((Server) Spout.getEngine()).broadcastMessage(ChatStyle.YELLOW, ChatStyle.ITALIC, source.getName(), " ", args.getJoinedString(0));
+	}
+
+	@Command(aliases = {"endconvo"}, desc = "Removes the conversation you are currently in", min = 0, max = 0)
+	@CommandPermissions("spout.command.endconversation")
+	public void endconvo(CommandContext args, CommandSource source) throws CommandException {
+		ChatChannel current = source.getActiveChannel();
+		if (!(current instanceof Conversation)) {
+			throw new CommandException("You are not currently in a conversation!");
+		}
+
+		if (((Conversation) current).finish()) {
+			source.sendMessage(ChatStyle.CYAN, "Conversation exited!");
+		} else {
+			throw new CommandException("Unable to exit conversation! There's some sort of state issue!");
+		}
 	}
 }
