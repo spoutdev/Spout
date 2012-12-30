@@ -1067,7 +1067,7 @@ public class SpoutRegion extends Region {
 	}
 
 	public void startTickRun(int stage, long delta) {
-		final float dt = delta / 1000F;
+		final float dt = delta;
 		switch (stage) {
 		case 0: {
 			taskManager.heartbeat(delta);
