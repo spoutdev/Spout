@@ -35,7 +35,7 @@ import org.spout.api.util.sanitation.SafeCast;
 import org.spout.nbt.FloatTag;
 import org.spout.nbt.ListTag;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class NBTMapperTest {
 	@Test
@@ -50,8 +50,8 @@ public class NBTMapperTest {
 		float ftest2 = SafeCast.toFloat(testList.getValue().get(1).getValue(), 4f);
 		System.out.println("Safe cast of first test tag returned: " + ftest);
 		System.out.println("Safe cast of second test tag returned: " + ftest2);
-		assertEquals(test.getValue(), ftest);
-		assertEquals(test2.getValue(), ftest2);
+		assertEquals((float) test.getValue(), ftest, 0.001f);
+		assertEquals((float) test2.getValue(), ftest2, 0.001f);
 
 	}
 }

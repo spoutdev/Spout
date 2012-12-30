@@ -34,8 +34,8 @@ import org.junit.Test;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.BlockMaterial;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import org.spout.api.material.Material;
 
 public class ShapelessRecipeTest {
