@@ -683,7 +683,7 @@ public final class SpoutScheduler implements Scheduler {
 			}
 
 			if (totalUpdates >= (UPDATE_THRESHOLD >> 3)) {
-				Spout.getLogger().warning("Block updates per tick of " + totalUpdates + " exceeded one eight of the threshold " + UPDATE_THRESHOLD + "; " + dynamicUpdates + " dynamic updates, " + physicsUpdates + " block physics updates and " + lightUpdates + " lighting updates");
+				Spout.getLogger().warning("Block updates per tick of " + totalUpdates + " exceeded one eighth of the threshold " + UPDATE_THRESHOLD + "; " + dynamicUpdates + " dynamic updates, " + physicsUpdates + " block physics updates and " + lightUpdates + " lighting updates");
 			}
 
 			finalizeTick(executors);
