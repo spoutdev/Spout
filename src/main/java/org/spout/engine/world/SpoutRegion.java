@@ -980,7 +980,7 @@ public class SpoutRegion extends Region {
 		try {
 			synchronized(simulation) {
 				//Simulate physics
-				simulation.stepSimulation(dt, 10);
+				simulation.stepSimulation(dt/1000, 2);
 				final Dispatcher dispatcher = simulation.getDispatcher();
 				int manifolds = dispatcher.getNumManifolds();
 				for (int i = 0; i < manifolds; i++) {
