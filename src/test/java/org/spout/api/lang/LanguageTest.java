@@ -31,6 +31,8 @@ import java.io.InputStream;
 import org.junit.Before;
 import org.junit.Test;
 import org.spout.api.chat.ChatArguments;
+import org.spout.api.chat.channel.ChatChannel;
+import org.spout.api.chat.channel.SetChatChannel;
 import org.spout.api.command.CommandSource;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.geo.World;
@@ -73,98 +75,107 @@ public class LanguageTest {
 			loadLanguage(openLangResource("lang-DE_DE.yml"), "lang-DE_DE.yml");
 		}
 	}
-	
+
 	public static class TestCommandSource implements CommandSource {
-		
+
 		@Override
 		public boolean hasPermission(String node) {
 			return false;
 		}
-		
+
 		@Override
 		public boolean hasPermission(World world, String node) {
 			return false;
 		}
-		
+
 		@Override
 		public boolean isInGroup(String group) {
 			return false;
 		}
-		
+
 		@Override
 		public boolean isInGroup(World world, String group) {
 			return false;
 		}
-		
+
 		@Override
 		public String[] getGroups() {
 			return null;
 		}
-		
+
 		@Override
 		public String[] getGroups(World world) {
 			return null;
 		}
-		
+
 		@Override
 		public ValueHolder getData(String node) {
 			return null;
 		}
-		
+
 		@Override
 		public ValueHolder getData(World world, String node) {
 			return null;
 		}
-		
+
 		@Override
 		public boolean hasData(String node) {
 			return false;
 		}
-		
+
 		@Override
 		public boolean hasData(World world, String node) {
 			return false;
 		}
-		
+
 		@Override
 		public String getName() {
 			return null;
 		}
-		
+
 		@Override
 		public boolean sendMessage(Object... message) {
 			return false;
 		}
-		
+
 		@Override
 		public void sendCommand(String command, ChatArguments arguments) {
-			
+
 		}
-		
+
 		@Override
 		public void processCommand(String command, ChatArguments arguments) {
-			
+
 		}
-		
+
 		@Override
 		public boolean sendMessage(ChatArguments message) {
 			return false;
 		}
-		
+
 		@Override
 		public boolean sendRawMessage(Object... message) {
 			return false;
 		}
-		
+
 		@Override
 		public boolean sendRawMessage(ChatArguments message) {
 			return false;
 		}
-		
+
 		@Override
 		public Locale getPreferredLocale() {
 			return Locale.GERMAN_DE;
 		}
-		
+
+		@Override
+		public ChatChannel getActiveChannel() {
+			return new SetChatChannel("Default");
+		}
+
+		@Override
+		public void setActiveChannel(ChatChannel chan) {
+			// nope
+		}
 	}
 }

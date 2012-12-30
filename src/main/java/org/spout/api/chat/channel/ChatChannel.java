@@ -42,8 +42,7 @@ import org.spout.api.util.Named;
 
 /**
  * ChatChannel define a way how Chat Messages are shown to the player and console. They can also be used to limit messages to a certain group of players.
- * Every joining player will be moved into the defaultChatChannel for talking and listening. A player can be removed from the defaultChatChannel for talking
- * but not for listening.<br/>
+ * Every joining player will be moved into the defaultChatChannel for talking and listening.
  */
 public abstract class ChatChannel implements Named {
 	public static final ChatTemplate DEFAULT_FORMAT = new ChatTemplate(new ChatArguments(PlayerChatEvent.MESSAGE));
@@ -85,10 +84,21 @@ public abstract class ChatChannel implements Named {
 	 * @param message The message to broadcast
 	 */
 	public void broadcastToReceivers(ChatArguments message) {
+		broadcastToReceivers(null, message);
+
+	}
+
+	/**
+	 * Broadcast to all the CommandSources of {@link #getReceivers()}.
+	 *
+	 * @param source The {@link CommandSource} which sent this message. May be null.
+	 * @param message The message to broadcast
+	 */
+	public void broadcastToReceivers(CommandSource source, ChatArguments message) {
 		ChatArguments formatted = applyPlaceholders(message);
 
-		for (CommandSource source : getReceivers()) {
-			source.sendMessage(formatted);
+		for (CommandSource receiver : getReceivers()) {
+			receiver.sendMessage(formatted);
 		}
 	}
 
@@ -131,6 +141,23 @@ public abstract class ChatChannel implements Named {
 		this.format = format;
 		return true;
 	}
+
+	/**
+	 * This method is called by command sources when they {@link CommandSource#setActiveChannel(ChatChannel)} to this channel.
+	 * {@link org.spout.api.command.CommandSource#getActiveChannel()} will return the previous channel when called while this method is being executed.
+	 *
+	 * @param source The command source that this channel is being attached to
+	 */
+	public void onAttachTo(CommandSource source) {}
+
+	/**
+	 * This method is called by command sources when they {@link CommandSource#setActiveChannel(ChatChannel)} to a channel
+	 * that is not this channel. At the time this method is called, {@link org.spout.api.command.CommandSource#getActiveChannel()}
+	 * will return the new channel.
+	 *
+	 * @param source The command source this channel is being detached from
+	 */
+	public void onDetachedFrom(CommandSource source) {}
 
 	public static class Registry {
 		private static final Set<ChatChannel> CHANNELS = Sets.newSetFromMap(new WeakHashMap<ChatChannel, Boolean>());

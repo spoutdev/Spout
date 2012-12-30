@@ -27,6 +27,7 @@
 package org.spout.api.command;
 
 import org.spout.api.chat.ChatArguments;
+import org.spout.api.chat.channel.ChatChannel;
 import org.spout.api.lang.Locale;
 import org.spout.api.permissions.PermissionsSubject;
 
@@ -80,9 +81,24 @@ public interface CommandSource extends PermissionsSubject{
 	 * @return whether the message was sent correctly
 	 */
 	public boolean sendRawMessage(ChatArguments message);
-	
+
 	/**
 	 * @return the preferred locale of the sender
 	 */
 	public Locale getPreferredLocale();
+
+	/**
+	 * Returns the channel that all messages sent as this CommandSource should be passed to
+	 *
+	 * @see {@link ChatChannel#broadcastToReceivers(org.spout.api.chat.ChatArguments)}
+	 * @return The channel sent messages should be sent to
+	 */
+	public ChatChannel getActiveChannel();
+
+	/**
+	 * Change the channel sent messages should be sent to.
+	 *
+	 * @param chan The channel to set
+	 */
+	public void setActiveChannel(ChatChannel chan);
 }

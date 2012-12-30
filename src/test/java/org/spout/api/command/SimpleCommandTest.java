@@ -32,6 +32,8 @@ import org.junit.Test;
 
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.ChatSection;
+import org.spout.api.chat.channel.ChatChannel;
+import org.spout.api.chat.channel.SetChatChannel;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.exception.CommandException;
 import org.spout.api.exception.MissingCommandException;
@@ -140,5 +142,15 @@ public class SimpleCommandTest implements CommandSource {
 	@Override
 	public Locale getPreferredLocale() {
 		return Locale.ENGLISH_US;
+	}
+
+	@Override
+	public ChatChannel getActiveChannel() {
+		return new SetChatChannel("Default");
+	}
+
+	@Override
+	public void setActiveChannel(ChatChannel chan) {
+		// nope
 	}
 }
