@@ -68,12 +68,5 @@ public interface SoundManager {
 	 *
 	 * @return active listener
 	 */
-	public SoundListener getActiveListener();
-
-	/**
-	 * Sets the active {@link SoundListener}
-	 *
-	 * @param listener to set
-	 */
-	public void setActiveListener(SoundListener listener);
+	public SoundListener getListener();
 }
