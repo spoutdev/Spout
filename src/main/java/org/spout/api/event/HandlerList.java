@@ -31,12 +31,12 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * A list of event handlers, stored per-event.
  */
-public class HandlerList {
+public final class HandlerList {
 	/**
 	 * Handler array. This field being an array is the key to this system's
 	 * speed.
@@ -49,6 +49,9 @@ public class HandlerList {
 	 * @return map of Registered handlers
 	 */
 	private final EnumMap<Order, List<ListenerRegistration>> handlerSlots;
+
+	private final CopyOnWriteArrayList<HandlerList> children = new CopyOnWriteArrayList<HandlerList>(); // Not modified that much, it's fine
+	private final HandlerList parent;
 	/**
 	 * List of all HandlerLists which have been created, for use in bakeAll()
 	 * @return the list of all Handlers.
@@ -84,11 +87,20 @@ public class HandlerList {
 	 * HandlerList is then added to meta-list for use in bakeAll()
 	 */
 	public HandlerList() {
+		this(null);
+	}
+
+	public HandlerList(HandlerList parent) {
 		handlerSlots = new EnumMap<Order, List<ListenerRegistration>>(Order.class);
 		for (Order o : Order.values()) {
 			handlerSlots.put(o, new ArrayList<ListenerRegistration>());
 		}
 		ALL_LISTS.add(this);
+
+		this.parent = parent;
+		if (parent != null) {
+			parent.addChild(this);
+		}
 	}
 
 	/**
@@ -99,7 +111,7 @@ public class HandlerList {
 		if (handlerSlots.get(listener.getOrder()).contains(listener)) {
 			throw new IllegalStateException("This listener is already registered to priority " + listener.getOrder().toString());
 		}
-		handlers = null;
+		dirty();
 		handlerSlots.get(listener.getOrder()).add(listener);
 	}
 
@@ -115,7 +127,7 @@ public class HandlerList {
 	 */
 	public void unregister(ListenerRegistration listener) {
 		if (handlerSlots.get(listener.getOrder()).contains(listener)) {
-			handlers = null;
+			dirty();
 			handlerSlots.get(listener.getOrder()).remove(listener);
 		}
 	}
@@ -131,7 +143,7 @@ public class HandlerList {
 			}
 		}
 		if (changed) {
-			handlers = null;
+			dirty();
 		}
 	}
 
@@ -145,11 +157,31 @@ public class HandlerList {
 			return handlers; // don't re-bake when still valid
 		}
 		List<ListenerRegistration> entries = new ArrayList<ListenerRegistration>();
-		for (Entry<Order, List<ListenerRegistration>> entry : handlerSlots.entrySet()) {
-			entries.addAll(entry.getValue());
+		for (Order order : Order.values()) {
+			addToEntries(entries, order);
 		}
 		this.handlers = handlers = entries.toArray(new ListenerRegistration[entries.size()]);
 		return handlers;
+	}
+
+	private void dirty() {
+		this.handlers = null;
+		if (children.size() > 0) {
+			for (int i = 0; i < children.size(); ++i) {
+				children.get(i).dirty();
+			}
+		}
+	}
+
+	private void addToEntries(List<ListenerRegistration> entries, Order order) {
+		List<ListenerRegistration> entry = handlerSlots.get(order);
+		if (entry != null) {
+			entries.addAll(entry);
+		}
+
+		if (parent != null) {
+			parent.addToEntries(entries, order);
+		}
 	}
 
 	/**
@@ -162,5 +194,13 @@ public class HandlerList {
 			handlers = bake();
 		}
 		return handlers;
+	}
+
+	protected void addChild(HandlerList handlerList) {
+		children.add(handlerList);
+	}
+
+	public boolean hasChildren() {
+		return children.size() > 0;
 	}
 }

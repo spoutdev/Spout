@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.spout.api.Spout;
 import org.spout.api.exception.EventException;
@@ -45,6 +46,7 @@ import org.spout.api.exception.IllegalPluginAccessException;
  * A simple implementation of the {@link EventManager} that handles all {@link Event}s for the server.
  */
 public class SimpleEventManager implements EventManager {
+	private static final Logger LOGGER = Logger.getLogger(SimpleEventManager.class.getCanonicalName());
 	@Override
 	public <T extends Event> void callDelayedEvent(final T event) {
 		Spout.getEngine().getScheduler().scheduleSyncDelayedTask(null, new Runnable() {
@@ -67,7 +69,7 @@ public class SimpleEventManager implements EventManager {
 						listener.getExecutor().execute(event);
 					}
 				} catch (Throwable ex) {
-					Spout.getEngine().getLogger().log(Level.SEVERE, "Could not pass event " + event.getEventName() + " to " + listener.getOwner().getClass().getName(), ex);
+					LOGGER.log(Level.SEVERE, "Could not pass event " + event.getEventName() + " to " + listener.getOwner().getClass().getName(), ex);
 				}
 			}
 			event.setHasBeenCalled(true);
@@ -80,7 +82,7 @@ public class SimpleEventManager implements EventManager {
 		for (Map.Entry<Class<? extends Event>, Set<ListenerRegistration>> entry : createRegisteredListeners(listener, owner).entrySet()) {
 			Class<? extends Event> delegatedClass = getRegistrationClass(entry.getKey());
 			if (!entry.getKey().equals(delegatedClass)) {
-				Spout.getEngine().getLogger().severe("Plugin attempted to register delegated event class " + entry.getKey() + ". It should be using " + delegatedClass + "!");
+				LOGGER.severe("Plugin attempted to register delegated event class " + entry.getKey() + ". It should be using " + delegatedClass + "!");
 				continue;
 			}
 			getEventListeners(delegatedClass).registerAll(entry.getValue());
@@ -128,7 +130,7 @@ public class SimpleEventManager implements EventManager {
 			try {
 				methods.addAll(Arrays.asList(listenerClass.getDeclaredMethods()));
 			} catch (NoClassDefFoundError e) {
-				Spout.getEngine().getLogger().severe("Plugin " + plugin.getClass().getSimpleName() + " is attempting to register event " + e.getMessage() + ", which does not exist. Ignoring events registered in " + listenerClass);
+				LOGGER.severe("Plugin " + plugin.getClass().getSimpleName() + " is attempting to register event " + e.getMessage() + ", which does not exist. Ignoring events registered in " + listenerClass);
 				return ret;
 			}
 			listenerClass = listenerClass.getSuperclass();
@@ -141,7 +143,7 @@ public class SimpleEventManager implements EventManager {
 			final Class<?> checkClass = method.getParameterTypes()[0];
 			Class<? extends Event> eventClass;
 			if (!Event.class.isAssignableFrom(checkClass) || method.getParameterTypes().length != 1) {
-				Spout.getEngine().getLogger().severe("Wrong method arguments used for event type registered");
+				LOGGER.severe("Wrong method arguments used for event type registered");
 				continue;
 			}
 

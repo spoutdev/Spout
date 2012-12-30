@@ -51,6 +51,20 @@ public class SimpleEventManagerTest {
 		eventManager.registerEvents(testListener, this);
 		eventManager.callEvent(new TestEvent());
 		assertTrue(testListener.hasBeenCalled());
+
+		HandlerList.unregisterAll();
+	}
+
+	@Test
+	public void testSubEventCalling() {
+		final EventManager eventManager = new SimpleEventManager();
+		final TestSubListener testListener = new TestSubListener();
+		eventManager.registerEvents(testListener, this);
+		eventManager.callEvent(new TestEvent());
+		eventManager.callEvent(new TestSubEvent());
+
+		assertEquals(2, testListener.getParentCallCount());
+		assertEquals(1, testListener.getChildCallCount());
 	}
 
 	@Test
@@ -75,15 +89,51 @@ public class SimpleEventManagerTest {
 }
 
 class TestEvent extends Event {
-	private static final HandlerList handlers = new HandlerList();
+	private static final HandlerList HANDLERS = new HandlerList();
 
 	@Override
 	public HandlerList getHandlers() {
-		return handlers;
+		return HANDLERS;
 	}
 
 	public static HandlerList getHandlerList() {
-		return handlers;
+		return HANDLERS;
+	}
+}
+
+class TestSubEvent extends TestEvent {
+	private static final HandlerList HANDLERS = new HandlerList(TestEvent.getHandlerList());
+
+	@Override
+	public HandlerList getHandlers() {
+		return HANDLERS;
+	}
+
+	public static HandlerList getHandlerList() {
+		return HANDLERS;
+	}
+}
+
+class TestSubListener implements Listener {
+	private int parentCallCount = 0;
+	private int childCallCount = 0;
+
+	@EventHandler
+	public void onTestEvent(TestEvent event) {
+		parentCallCount++;
+	}
+
+	@EventHandler
+	public void onTestSubEvent(TestSubEvent event) {
+		childCallCount++;
+	}
+
+	public int getParentCallCount() {
+		return parentCallCount;
+	}
+
+	public int getChildCallCount() {
+		return childCallCount;
 	}
 }
 
