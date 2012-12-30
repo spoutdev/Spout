@@ -57,31 +57,37 @@ public class MessagingCommands {
 	public class SayCommand {
 		public SayCommand() {
 			engine.getDefaultPermissions().addDefaultPermission("spout.chat.send");
-			engine.getDefaultPermissions().addDefaultPermission("spout.chat.receive.*");
+			engine.getDefaultPermissions().addDefaultPermission("spout.chat.receive");
 		}
 
 		@Executor(Platform.SERVER)
 		public void server(CommandContext args, CommandSource source) throws CommandException {
 			ChatArguments message = args.getJoinedString(0);
 			if (!message.getPlainString().isEmpty()) {
+				if (!source.hasPermission("spout.chat.send")) {
+					throw new CommandException("You do not have permission to send chat messages");
+				}
+
+				ChatArguments template;
+				String name;
 				if (source instanceof Player) {
 					Player player = (Player) source;
-					if (!player.hasPermission("spout.chat.send")) {
-						throw new CommandException("You do not have permission to send chat messages");
-					}
 					PlayerChatEvent event = Spout.getEngine().getEventManager().callEvent(new PlayerChatEvent(player, message));
 					if (event.isCancelled()) {
 						return;
 					}
-
-					ChatArguments template = event.getFormat().getArguments();
-					template.setPlaceHolder(PlayerChatEvent.NAME, new ChatArguments(player.getDisplayName()));
-					template.setPlaceHolder(PlayerChatEvent.MESSAGE, event.getMessage());
-
-					((Server) engine).broadcastMessage("spout.chat.receive." + player.getName(), template);
+					name = player.getDisplayName();
+					template = event.getFormat().getArguments();
+					message = event.getMessage();
 				} else {
-					((Server) engine).broadcastMessage("spout.chat.receive.console", "<", source.getName(), "> ", message);
+					name = source.getName();
+					template = new ChatArguments("<", PlayerChatEvent.NAME, "> ", PlayerChatEvent.MESSAGE);
 				}
+
+				template.setPlaceHolder(PlayerChatEvent.NAME, new ChatArguments(name));
+				template.setPlaceHolder(PlayerChatEvent.MESSAGE, message);
+
+				source.getActiveChannel().broadcastToReceivers(source, template);
 			}
 		}
 

@@ -29,14 +29,16 @@ package org.spout.engine.entity;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.google.common.base.Preconditions;
+import org.spout.api.Engine;
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
+import org.spout.api.chat.channel.ChatChannel;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.Command;
 import org.spout.api.command.RootCommand;
@@ -81,6 +83,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	private PlayerInputState inputState = PlayerInputState.DEFAULT_STATE;
 	private Locale preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
 	private List<Entity> hiddenEntities = new ConcurrentList<Entity>();
+	private final AtomicReference<ChatChannel> activeChannel = new AtomicReference<ChatChannel>(Engine.STANDARD_BROADCAST_CHANNEL);
 
 	public SpoutPlayer(String name) {
 		this(name, null, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
@@ -202,6 +205,8 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		Command cmd = rootCmd.getChild(command);
 		if (cmd != null) {
 			cmd.process(this, command, arguments, false);
+		} else {
+			sendMessage(ChatStyle.RED, "Unknown command: ", command);
 		}
 	}
 
@@ -344,6 +349,18 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	public Locale getPreferredLocale() {
 		return preferredLocale;
+	}
+
+	@Override
+	public ChatChannel getActiveChannel() {
+		return activeChannel.get();
+	}
+
+	@Override
+	public void setActiveChannel(ChatChannel chan) {
+		Preconditions.checkNotNull(chan);
+		chan.onAttachTo(this);
+		this.activeChannel.getAndSet(chan).onDetachedFrom(this);
 	}
 
 	@Override

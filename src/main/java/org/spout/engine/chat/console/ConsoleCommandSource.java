@@ -26,7 +26,12 @@
  */
 package org.spout.engine.chat.console;
 
+import java.util.concurrent.atomic.AtomicReference;
+
+import com.google.common.base.Preconditions;
+import org.spout.api.Engine;
 import org.spout.api.chat.ChatArguments;
+import org.spout.api.chat.channel.ChatChannel;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
@@ -41,6 +46,7 @@ import org.spout.engine.SpoutEngine;
  * An implementation of CommandSource that sends to and receives from various consoles.
  */
 public class ConsoleCommandSource implements CommandSource {
+	private final AtomicReference<ChatChannel> activeChannel = new AtomicReference<ChatChannel>(Engine.STANDARD_BROADCAST_CHANNEL);
 	private final SpoutEngine engine;
 	private Locale preferredLocale = null;
 
@@ -145,5 +151,16 @@ public class ConsoleCommandSource implements CommandSource {
 			preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
 		}
 		return preferredLocale;
+	}
+
+	public ChatChannel getActiveChannel() {
+		return activeChannel.get();
+	}
+
+	public void setActiveChannel(ChatChannel chan) {
+		Preconditions.checkNotNull(chan);
+		chan.onAttachTo(this);
+		this.activeChannel.getAndSet(chan).onDetachedFrom(this);
+
 	}
 }
