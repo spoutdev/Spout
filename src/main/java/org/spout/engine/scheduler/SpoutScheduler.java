@@ -55,6 +55,7 @@ import org.spout.api.scheduler.TickStage;
 import org.spout.api.scheduler.Worker;
 import org.spout.api.util.thread.DelayedWrite;
 import org.spout.engine.SpoutClient;
+import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.SpoutRenderer;
 import org.spout.engine.SpoutServer;
@@ -65,6 +66,7 @@ import org.spout.engine.util.thread.ThreadsafetyManager;
 import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
+import org.spout.engine.world.dynamic.DynamicBlockUpdateTree;
 
 /**
  * A class which handles scheduling for the engine {@link SpoutTask}s.<br>
@@ -646,24 +648,42 @@ public final class SpoutScheduler implements Scheduler {
 
 		try {
 			int totalUpdates = -1;
+			int lightUpdates = 0;
+			int dynamicUpdates = 0;
+			int physicsUpdates = 0;
 			updates.set(1);
-			while (updates.get() > 0 && totalUpdates < UPDATE_THRESHOLD) {
-				totalUpdates += updates.getAndSet(0);
+			int uD = 1;
+			int uP = 1;
+			while ((uD + uP) > 0 && totalUpdates < UPDATE_THRESHOLD) {
+				if (SpoutConfiguration.DYNAMIC_BLOCKS.getBoolean()) {
+					doDynamicUpdates(executors);
+				}
 
-				doDynamicUpdates(executors);
+				uD = updates.getAndSet(0);
+				totalUpdates += uD;
+				dynamicUpdates += uD;
 
-				doPhysics(executors);
+				if (SpoutConfiguration.BLOCK_PHYSICS.getBoolean()) {
+					doPhysics(executors);
+				}
+				
+				uP = updates.getAndSet(0);
+				totalUpdates += uP;
+				physicsUpdates += uP;
 			}
 
 			updates.set(1);
-			while (updates.get() > 0 && totalUpdates < UPDATE_THRESHOLD) {
-				totalUpdates += updates.getAndSet(0);
-
+			int u = 1;
+			while (u > 0 && totalUpdates < UPDATE_THRESHOLD) {
 				doLighting(executors);
+				
+				u = updates.getAndSet(0);
+				totalUpdates += u;
+				lightUpdates += u;
 			}
 
-			if (totalUpdates >= UPDATE_THRESHOLD) {
-				Spout.getLogger().warning("Physics updates per tick of " + totalUpdates + " exceeded threshold " + UPDATE_THRESHOLD);
+			if (totalUpdates >= (UPDATE_THRESHOLD >> 3)) {
+				Spout.getLogger().warning("Block updates per tick of " + totalUpdates + " exceeded one eight of the threshold " + UPDATE_THRESHOLD + "; " + dynamicUpdates + " dynamic updates, " + physicsUpdates + " block physics updates and " + lightUpdates + " lighting updates");
 			}
 
 			finalizeTick(executors);

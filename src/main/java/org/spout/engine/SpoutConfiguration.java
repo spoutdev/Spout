@@ -51,6 +51,8 @@ public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder CHUNK_REAP_DELAY = new ConfigurationHolder(10000, "chunks", "reap-delay");
 	public static final ConfigurationHolder REAP_CHUNKS_PER_TICK = new ConfigurationHolder(5, "chunks", "reap-per-tick");
 	public static final ConfigurationHolder UNLOAD_CHUNKS_PER_TICK = new ConfigurationHolder(3, "chunks", "unload-per-tick");
+	public static final ConfigurationHolder DYNAMIC_BLOCKS = new ConfigurationHolder(true, "chunks", "dynamic-blocks");
+	public static final ConfigurationHolder BLOCK_PHYSICS = new ConfigurationHolder(true, "chunks", "block-physics");	
 	// Messages
 	public static final ConfigurationHolder DEFAULT_LANGUAGE = new ConfigurationHolder("EN_US", "messages", "default-language");
 	// Network
