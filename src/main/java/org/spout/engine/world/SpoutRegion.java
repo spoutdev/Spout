@@ -400,6 +400,10 @@ public class SpoutRegion extends Region {
 		if (loadopt.loadIfNeeded() && fileExists) {
 			dataForRegion = new ChunkDataForRegion();
 			newChunk = ChunkFiles.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z), dataForRegion);
+			if (newChunk == null) {
+				Spout.getLogger().severe("Unable to load chunk at location " + x + ", " + y + ", " + z + " in region " + this + ", regenerating chunks");
+				fileExists = false;
+			}
 		}
 
 		if (loadopt.generateIfNeeded() && !fileExists && newChunk == null) {
