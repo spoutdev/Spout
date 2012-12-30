@@ -126,7 +126,7 @@ public class NetworkSendThread {
 				}
 				handle(node);
 			}
-
+			flushQueue();
 		}
 
 		private void handle(QueueNode node) {
@@ -138,7 +138,6 @@ public class NetworkSendThread {
 			} catch (Exception e) {
 				node.getSession().disconnect(false, new Object[] {"Socket Error!"});
 			}
-			flushQueue();
 		}
 
 		private void flushQueue() {
