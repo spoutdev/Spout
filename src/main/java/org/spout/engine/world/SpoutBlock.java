@@ -47,7 +47,6 @@ import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.material.source.DataSource;
-import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
@@ -197,17 +196,12 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public SpoutBlock setMaterial(MaterialSource material, int data, Cause<?> cause) {
-		if (material.getMaterial() instanceof BlockMaterial) {
-			this.getChunk().setBlockMaterial(this.x, y, z, (BlockMaterial) material.getMaterial(), (short) data, cause);
-		} else {
-			throw new IllegalArgumentException("Can't set a block to a non-block material!");
-		}
-		return this;
+	public boolean setMaterial(BlockMaterial material, int data, Cause<?> cause) {
+		return this.getChunk().setBlockMaterial(this.x, y, z, material, (short) data, cause);
 	}
 
 	@Override
-	public SpoutBlock setMaterial(MaterialSource material, int data) {
+	public boolean setMaterial(BlockMaterial material, int data) {
 		return setMaterial(material, data, null);
 	}
 
@@ -284,17 +278,17 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public Block setMaterial(MaterialSource material) {
+	public boolean setMaterial(BlockMaterial material) {
 		return this.setMaterial(material, material.getData());
 	}
 
 	@Override
-	public Block setMaterial(MaterialSource material, Cause<?> cause) {
+	public boolean setMaterial(BlockMaterial material, Cause<?> cause) {
 		return this.setMaterial(material, material.getData(), cause);
 	}
 
 	@Override
-	public Block setMaterial(MaterialSource material, DataSource data) {
+	public boolean setMaterial(BlockMaterial material, DataSource data) {
 		return this.setMaterial(material, data.getData());
 	}
 

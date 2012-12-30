@@ -26,8 +26,9 @@
  */
 package org.spout.engine.protocol.builtin.handler;
 
-import org.spout.api.material.Material;
+import org.spout.api.material.BlockMaterial;
 import org.spout.api.entity.Player;
+import org.spout.api.geo.cuboid.Block;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
@@ -43,8 +44,8 @@ public class BlockUpdateMessageHandler extends MessageHandler<BlockUpdateMessage
 		}
 
 		Player player = session.getPlayer();
-		player.getWorld().getBlock(message.getX(), message.getY(), message.getZ())
-		.setMaterial(Material.get(message.getType()), message.getData())
-		.setBlockLight(message.getBlockLight()).setSkyLight(message.getSkyLight());
+		Block block = player.getWorld().getBlock(message.getX(), message.getY(), message.getZ());
+		block.setMaterial(BlockMaterial.get(message.getType()), message.getData());
+		block.setBlockLight(message.getBlockLight()).setSkyLight(message.getSkyLight());
 	}
 }
