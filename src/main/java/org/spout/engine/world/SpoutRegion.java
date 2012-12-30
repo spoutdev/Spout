@@ -980,7 +980,7 @@ public class SpoutRegion extends Region {
 		try {
 			synchronized(simulation) {
 				//Simulate physics
-				simulation.stepSimulation(dt/1000, 2);
+				simulation.stepSimulation(dt, 2);
 				final Dispatcher dispatcher = simulation.getDispatcher();
 				int manifolds = dispatcher.getNumManifolds();
 				for (int i = 0; i < manifolds; i++) {
@@ -1071,7 +1071,7 @@ public class SpoutRegion extends Region {
 	}
 
 	public void startTickRun(int stage, long delta) {
-		final float dt = delta;
+		final float dt = delta / 1000;
 		switch (stage) {
 		case 0: {
 			taskManager.heartbeat(delta);

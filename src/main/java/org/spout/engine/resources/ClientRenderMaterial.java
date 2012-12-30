@@ -84,7 +84,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 
 	@Override
 	public void assign(){
-		if(getShader().getMaterialAssigned() != this){
+		if(materialParameters != null && getShader().getMaterialAssigned() != this){
 			Set<Map.Entry<String, Object>> s = materialParameters.entrySet();
 
 			for(Map.Entry<String, Object> entry : s){
