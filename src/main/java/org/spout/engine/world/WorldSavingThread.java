@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
@@ -45,27 +46,32 @@ import org.spout.engine.world.dynamic.DynamicBlockUpdate;
  * Dedicated thread to IO write operations for world chunks
  */
 public class WorldSavingThread extends Thread{
-	private static WorldSavingThread instance = null;
+	private static final WorldSavingThread instance = new WorldSavingThread();
+	private final AtomicBoolean queueRunning = new AtomicBoolean(true);
 	private final LinkedBlockingQueue<Callable<SpoutWorld>> queue = new LinkedBlockingQueue<Callable<SpoutWorld>>();
 	public WorldSavingThread() {
 		super("World Saving Thread");
 	}
 
 	public static void startThread() {
-		if (instance == null) {
-			instance = new WorldSavingThread();
-			instance.start();
-		}
+		instance.start();
 	}
 
 	public static void saveChunk(SpoutChunk chunk) {
+		instance.addChunk(chunk);
+	}
+	
+	public void addChunk(SpoutChunk chunk) {
 		ChunkSaveTask task = new ChunkSaveTask(chunk);
-		if (instance.isInterrupted() || !instance.isAlive()) {
-			Spout.getLogger().warning("Attempt to queue chunks for saving after world thread shutdown");
-			task.call();
-		} else {
-			instance.queue.add(task);
+		instance.queue.add(task);
+		pingBackup();
+	}
+	
+	private void pingBackup() {
+		if (instance.queueRunning.compareAndSet(false, true)) {
+			new BackupThread().start();
 		}
+
 	}
 
 	public static void finish() {
@@ -93,10 +99,10 @@ public class WorldSavingThread extends Thread{
 				e.printStackTrace();
 			}
 		}
-		processRemaining();
+		processRemaining("main");	
 	}
 
-	private void processRemaining() {
+	private void processRemaining(String threadType) {
 		int toSave = queue.size();
 		int saved = 0;
 		int lastTenth = 0;
@@ -126,6 +132,15 @@ public class WorldSavingThread extends Thread{
 		for (World w : worlds) {
 			((SpoutWorld) w).getRegionFileManager().closeAll();
 		}
+		
+		if (!queueRunning.compareAndSet(true, false)) {
+			Spout.getLogger().severe("queueRunning was already false when " + threadType + " world saving thread finished");
+		}
+		
+		if (!queue.isEmpty()) {
+			pingBackup();
+		}
+		
 	}
 
 	private static class ChunkSaveTask implements Callable<SpoutWorld> {
@@ -156,5 +171,18 @@ public class WorldSavingThread extends Thread{
 			}
 			return world;
 		}
+	}
+	
+	private class BackupThread extends Thread {
+		
+		public BackupThread() {
+			Spout.getLogger().info("Backup world save thread started due to late submission of chunk for saving");
+			Thread.dumpStack();
+		}
+		
+		public void run() {
+			processRemaining("backup");
+		}
+
 	}
 }
