@@ -45,7 +45,7 @@ import org.spout.api.map.DefaultedKey;
  * to an array of bytes and deserialized from an array of bytes, intended for persistence
  * and network transfers.
  */
-public class ManagedHashMap implements SerializableMap{
+public class ManagedHashMap implements SerializableMap {
 	final GenericDatatableMap map;
 	public ManagedHashMap() {
 		this.map = new GenericDatatableMap();
@@ -87,7 +87,7 @@ public class ManagedHashMap implements SerializableMap{
 	public Serializable get(Object key) {
 		return get(key, null);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Serializable> T get(Object key, T defaultValue) {
@@ -117,7 +117,7 @@ public class ManagedHashMap implements SerializableMap{
 
 		return value;
 	}
-	
+
 	@Override
 	public <T extends Serializable> T get(DefaultedKey<T> key) {
 		T defaultValue = key.getDefaultValue();
@@ -135,7 +135,7 @@ public class ManagedHashMap implements SerializableMap{
 		}
 		return null;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Serializable> T putIfAbsent(DefaultedKey<T> key, T value) {
@@ -157,7 +157,7 @@ public class ManagedHashMap implements SerializableMap{
 			return data.get();
 		}
 	}
-	
+
 	@Override
 	public Serializable put(String key, Serializable value) {
 		int intKey = map.getIntKey(key);
@@ -189,7 +189,7 @@ public class ManagedHashMap implements SerializableMap{
 		}
 		return null;
 	}
-	
+
 	public Serializable remove(String key) {
 		return map.remove(key).get();
 	}
@@ -220,10 +220,10 @@ public class ManagedHashMap implements SerializableMap{
 	public Set<java.util.Map.Entry<String, Serializable>> entrySet() {
 		return new EntrySet();
 	}
-	
+
 	private final class EntrySet extends AbstractSet<Map.Entry<String, Serializable>> {
 		int size = map.size();
-		
+
 		@Override
 		public Iterator<java.util.Map.Entry<String, Serializable>> iterator() {
 			return new EntryIterator();
@@ -233,9 +233,9 @@ public class ManagedHashMap implements SerializableMap{
 		public int size() {
 			return size;
 		}
-		
+
 	}
-	
+
 	private final class Values extends AbstractCollection<Serializable> {
 		@Override
 		public Iterator<Serializable> iterator() {
@@ -257,7 +257,7 @@ public class ManagedHashMap implements SerializableMap{
 			map.clear();
 		}
 	}
-	
+
 	private final class EntryIterator implements Iterator<Map.Entry<String, Serializable>> {
 		Serializable next, current;
 		int index = 0;
@@ -276,7 +276,7 @@ public class ManagedHashMap implements SerializableMap{
 				next = list.get(index);
 			}
 		}
-		
+
 		@Override
 		public boolean hasNext() {
 			return next != null;
@@ -309,7 +309,7 @@ public class ManagedHashMap implements SerializableMap{
 			map.remove(keys.get(index));
 		}
 	}
-	
+
 	private final class Entry implements Map.Entry<String, Serializable> {
 		final String key;
 		Serializable value;
@@ -333,9 +333,9 @@ public class ManagedHashMap implements SerializableMap{
 			this.value = value;
 			return ManagedHashMap.this.put(key, value);
 		}
-		
+
 	}
-	
+
 	private final class ValueIterator implements Iterator<Serializable> {
 		Serializable next, current;
 		int index = 0;
@@ -357,7 +357,7 @@ public class ManagedHashMap implements SerializableMap{
 				current = next = null;
 			}
 		}
-		
+
 		@Override
 		public boolean hasNext() {
 			return next != null;
@@ -390,7 +390,7 @@ public class ManagedHashMap implements SerializableMap{
 			map.remove(keys.get(index));
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder toString = new StringBuilder("DataMap {");
@@ -405,7 +405,7 @@ public class ManagedHashMap implements SerializableMap{
 		toString.append("}");
 		return toString.toString();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		HashCodeBuilder builder = new HashCodeBuilder();
@@ -415,7 +415,7 @@ public class ManagedHashMap implements SerializableMap{
 		}
 		return builder.toHashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof ManagedHashMap)) {

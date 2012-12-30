@@ -122,10 +122,10 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 	 */
 	@LiveRead
 	public BlockMaterial getTopmostBlock(int x, int z, boolean load);
-	
+
 	/**
 	 * Gets the biome manager in the given (x, z) column.<br>
-	 * 
+	 *
 	 * @param x the block x coordinate of the column
 	 * @param z the block z coordinate of the column
 	 * @return the biome manager
@@ -135,7 +135,7 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 
 	/**
 	 * Gets the biome manager in the given (x, z) column.<br>
-	 * 
+	 *
 	 * @param x the block x coordinate of the column
 	 * @param z the block z coordinate of the column
 	 * @param load height map is loaded if necessary
@@ -163,9 +163,9 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 	 * @param point The point to spawn the Entity
 	 * @param component The component to give the Entity.
 	 * @return The created entity
-	 */	
+	 */
 	public Entity createEntity(Point point, Class<? extends Component> type);
-	
+
 	/**
 	 * Create a new Entity for initialization
 	 * <p/>
@@ -174,9 +174,9 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 	 * @param point The point to spawn the Entity
 	 * @param prefab The entity prefab.
 	 * @return The created entity
-	 */	
+	 */
 	public Entity createEntity(Point point, EntityPrefab prefab);
-	
+
 	/**
 	 * Add a created entity to the world for simulation and syncing to clients
 	 * @param e The entity to spawn
@@ -192,7 +192,7 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 	 * @return The Entity that has been created and spawned
 	 */
 	public Entity createAndSpawnEntity(Point point, EntityPrefab prefab, LoadOption option);
-	
+
 	/**
 	 * Creates and Spawns an entity at the given point and with the given
 	 * Controller This is the same as {@link #createEntity(Point, org.spout.api.entity.Controller)} and
@@ -216,7 +216,7 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 	 * Creates and Spawns entities for the given arrangement.  This is the same as calling
 	 * {@link #createAndSpawnEntity(point, component)} for each Point, entity pair in
 	 * the arrangement
-	 * @param component The component to give the Entity.
+	 * @param type The component to give the Entity.
 	 * @return The Entities that has been created and spawned
 	 */
 	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, Class<? extends Component> type, LoadOption option);
@@ -301,19 +301,19 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 
 	/**
 	 * Gets the component holder for this world.
-	 * 
+	 *
 	 * @return component holder
 	 */
 	public ComponentHolder getComponentHolder();
 
 	/**
 	 * Gets the data map for this world, persisted between saves.
-	 * 
+	 *
 	 * A convenience method that is identical to getComponentHolder().getData()
-	 * 
+	 *
 	 * @return world data
 	 */
-	public DefaultedMap<String, Serializable> getDataMap();
+	public DefaultedMap<Serializable> getDataMap();
 
 	/**
 	 * Gets the task manager responsible for parallel region tasks.<br>
@@ -481,7 +481,7 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 	/**
 	 * Atomically gets the cuboid volume with the base located at the given coords of the given size.<br>
 	 * <br>
-	 * Note: The block at the base coordinate is inside the 
+	 * Note: The block at the base coordinate is inside the
 	 * @param bx base x-coordinate
 	 * @param by base y-coordinate
 	 * @param bz base z-coordinate
@@ -491,11 +491,11 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 	 */
 	@Threadsafe
 	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz);
-	
+
 	/**
 	 * Atomically gets the cuboid volume with the base located at the given coords and the size of the given buffer.<br>
 	 * <br>
-	 * Note: The block at the base coordinate is inside the 
+	 * Note: The block at the base coordinate is inside the
 	 * @param bx base x-coordinate
 	 * @param by base y-coordinate
 	 * @param bz base z-coordinate
@@ -505,7 +505,7 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 
 	/**
 	 * Atomically gets the cuboid volume contained within the given buffer
-	 * 
+	 *
 	 * @param buffer the buffer
 	 */
 	@Threadsafe
@@ -516,15 +516,15 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 	 * Unloads the world from the server. Undefined behavior will occur
 	 * if any players are currently alive on the world while it is being
 	 * unloaded.
-	 * 
+	 *
 	 * @param save
 	 */
 	public void unload(boolean save);
-	
+
 	public Model getSkydomeModel();
-	
+
 	public void setSkydomeModel(Model model);
-	
+
 	/**
 	 * Saves all world data to world data file.
 	 * <p>

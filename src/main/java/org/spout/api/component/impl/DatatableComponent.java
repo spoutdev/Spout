@@ -175,6 +175,6 @@ public final class DatatableComponent extends Component implements SerializableM
 
 	@Override
 	public <T> T get(String key, Class<T> clazz) {
-		return dataMap.get(key, clazz);
+		return dataMap.<T>get(key, clazz);
 	}
 }

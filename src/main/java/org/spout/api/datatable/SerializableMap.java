@@ -31,13 +31,13 @@ import java.io.Serializable;
 
 import org.spout.api.map.DefaultedMap;
 
-public interface SerializableMap extends DefaultedMap<String, Serializable> {
+public interface SerializableMap extends DefaultedMap<Serializable> {
 
 	/**
 	 * Serializes the information in this map into an array of bytes.
-	 * 
+	 *
 	 * This information can be used to reconstruct a deep copy of the map, or for persistence.
-	 * 
+	 *
 	 * @return serialized bytes
 	 */
 	public byte[] serialize();
@@ -45,7 +45,7 @@ public interface SerializableMap extends DefaultedMap<String, Serializable> {
 	/**
 	 * Deserializes the array of information into the contents of the map.
 	 * This will wipe all previous data in the map.
-	 * 
+	 *
 	 * @throws IOException if an error in deserialization occurred
 	 * @param data to deserialize
 	 */
@@ -53,7 +53,7 @@ public interface SerializableMap extends DefaultedMap<String, Serializable> {
 
 	/**
 	 * Deserializes the array of information into the contents of the map.
-	 * 
+	 *
 	 * @throws IOException if an error in deserialization occurred
 	 * @param data to deserialize
 	 * @param wipe true if the previous data in the map should be wiped
@@ -62,14 +62,14 @@ public interface SerializableMap extends DefaultedMap<String, Serializable> {
 
 	/**
 	 * Returns a deep copy of this map
-	 * 
+	 *
 	 * @return deep copy
 	 */
 	public SerializableMap deepCopy();
 
 	 /**
 	  * Returns the value to which the specified key is mapped,
-	  * or {@code null} if this map contains no mapping for the key, 
+	  * or {@code null} if this map contains no mapping for the key,
 	  * or the value is not a type or subtype of the given class.
 
 	  * @param key the key whose associated value is to be returned

@@ -26,14 +26,13 @@
  */
 package org.spout.api.map;
 
-import java.io.Serializable;
 import java.util.Map;
 
 /**
  * An extension of the default Java.util Map interface, that allows
  * a default value to be returned when keys are not present in the map.
  */
-public interface DefaultedMap<K, V> extends Map<K, V> {
+public interface DefaultedMap<V> extends Map<String, V> {
 
 	/**
 	 * Returns the value to which the specified key is mapped,
@@ -53,7 +52,7 @@ public interface DefaultedMap<K, V> extends Map<K, V> {
 	 * @param key the key whose associated value is to be returned
 	 * @return the value the key is mapped to or the default value
 	 */
-	public <T extends Serializable> T get(DefaultedKey<T> key);
+	public <T extends V> T get(DefaultedKey<T> key);
 
 	/**
 	 * Associates the specified value with the String for the given key and returns
@@ -63,8 +62,8 @@ public interface DefaultedMap<K, V> extends Map<K, V> {
 	 * @param value the value the key is to be mapped
 	 * @return the previous value, or null if none
 	 */
-	public <T extends Serializable> T put(DefaultedKey<T> key, T value);
-	
+	public <T extends V> T put(DefaultedKey<T> key, T value);
+
 	/**
 	 * Associates the specified value with the String for the given key if there is no
 	 * value associated with that key already and returns
@@ -74,8 +73,8 @@ public interface DefaultedMap<K, V> extends Map<K, V> {
 	 * @param value the value the key is to be mapped
 	 * @return the previous value, or null if none
 	 */
-	public <T extends Serializable> T putIfAbsent(DefaultedKey<T> key, T value);
-	
+	public <T extends V> T putIfAbsent(DefaultedKey<T> key, T value);
+
 	/**
 	 * Associates the specified value with the key if there is no
 	 * value associated with that key already and returns
@@ -85,6 +84,6 @@ public interface DefaultedMap<K, V> extends Map<K, V> {
 	 * @param value the value the key is to be mapped
 	 * @return the previous value, or null if none
 	 */
-	public V putIfAbsent(K key, V value);
+	public V putIfAbsent(String key, V value);
 
 }

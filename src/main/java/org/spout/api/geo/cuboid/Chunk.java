@@ -65,11 +65,11 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 * Mask to convert a block integer coordinate into the point base
 	 */
 	public final static int POINT_BASE_MASK = -BLOCKS.SIZE;
-	
+
 	private final int blockX;
 	private final int blockY;
 	private final int blockZ;
-	
+
 	public Chunk(World world, float x, float y, float z) {
 		super(new Point(world, x, y, z), BLOCKS.SIZE);
 		blockX = super.getX() << BLOCKS.BITS;
@@ -113,35 +113,35 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 */
 	@LiveRead
 	public abstract ChunkSnapshot getSnapshot(SnapshotType type, EntityType entities, ExtraData data);
-	
+
 	/**
 	 * Fills the given block container with the block data for this chunk
-	 * 
+	 *
 	 * @param container
 	 */
 	public abstract void fillBlockContainer(BlockContainer container);
-	
+
 	/**
 	 * Fills the given light container with the sky light data for this chunk
-	 * 
+	 *
 	 * @param container
 	 */
 	public abstract void fillSkyLightContainer(LightContainer container);
-	
+
 	/**
 	 * Fills the given light container with the block light data for this chunk
-	 * 
+	 *
 	 * @param container
 	 */
 	public abstract void fillBlockLightContainer(LightContainer container);
-	
+
 	/**
 	 * Fills the given block component container with the block components for this chunk
-	 * 
+	 *
 	 * @param container
 	 */
 	public abstract void fillBlockComponentContainer(BlockComponentContainer container);
-	
+
 	/**
 	 * Gets a snapshot of the data for the chunk.  The snapshot will be taken at a stable moment in the tick.
 	 * <br/><br/>
@@ -199,7 +199,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	/**
 	 * Populates the chunk with all the Populators attached to the
 	 * WorldGenerator of its world.
-	 * 
+	 *
 	 * @return
 	 */
 	public abstract boolean populate();
@@ -225,7 +225,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 * @return
 	 */
 	public abstract boolean populate(boolean force);
-	
+
 	/**
 	 * Populates the chunk with all the Populators attached to the
 	 * WorldGenerator of its world.<br>
@@ -237,7 +237,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 * @return
 	 */
 	public abstract void populate(boolean sync, boolean observe);
-	
+
 	/**
 	 * Populates the chunk with all the Populators attached to the
 	 * WorldGenerator of its world.<br>
@@ -273,13 +273,13 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 */
 	@LiveRead
 	public abstract List<Entity> getLiveEntities();
-	
-	
+
+
 	/**
 	 * Gets the number of observers viewing this chunk. If the number
 	 * of observing entities falls to zero, this chunk may be reaped at
 	 * any time.
-	 * 
+	 *
 	 * @return number of observers
 	 */
 	@LiveRead
@@ -293,11 +293,11 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Gets the observers of this chunk
-	 * 
+	 *
 	 * @return Set containing the observing players
 	 */
 	public abstract Set<? extends Entity> getObservers();
-	
+
 	/**
 	 * A thread-safe map of data attached to the chunk, which will be persisted between saves.
 	 *
@@ -307,7 +307,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 */
 	@LiveRead
 	@LiveWrite
-	public abstract DefaultedMap<String, Serializable> getDataMap();
+	public abstract DefaultedMap<Serializable> getDataMap();
 
 	@Override
 	public boolean containsBlock(int x, int y, int z) {
@@ -442,5 +442,5 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	public static Point pointToBase(Point p) {
 		return new Point(p.getWorld(), (int) p.getX() & POINT_BASE_MASK, (int) p.getY() & POINT_BASE_MASK, (int) p.getZ() & POINT_BASE_MASK);
 	}
-	
+
 }

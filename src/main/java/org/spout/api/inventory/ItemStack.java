@@ -152,7 +152,7 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 	 * Gets the map containing the aux data for this stack
 	 * @return the aux data
 	 */
-	public DefaultedMap<String, Serializable> getAuxData() {
+	public DefaultedMap<Serializable> getAuxData() {
 		return auxData;
 	}
 
@@ -182,7 +182,7 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 	}
 
 	/**
-	 * If the item is null or empty, null is returned, otherwise the item is 
+	 * If the item is null or empty, null is returned, otherwise the item is
 	 * cloned
 	 * @param item to clone
 	 * @return null, or the cloned item
@@ -244,10 +244,10 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 	/**
 	 * Gets this item stack limited by the maximum stacking size<br>
 	 * The amount of this item stack is set to contain the remaining amount<br>
-	 * The amount of the returned stack is set to be this amount or the maximum 
+	 * The amount of the returned stack is set to be this amount or the maximum
 	 * stacking size<br><br>
 	 * <p/>
-	 * For example, limiting a stack of amount 120 to a max stacking size of 64 
+	 * For example, limiting a stack of amount 120 to a max stacking size of 64
 	 * will:
 	 * <ul>
 	 * <li>Set the amount of this item stack to 56
@@ -262,7 +262,7 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 	/**
 	 * Gets this item stack limited by the maximum size specified<br>
 	 * The amount of this item stack is set to contain the remaining amount<br>
-	 * The amount of the returned stack is set to be this amount or the maximum 
+	 * The amount of the returned stack is set to be this amount or the maximum
 	 * amount<br><br>
 	 * <p/>
 	 * For example, limiting a stack of amount 5 to a max size of 2 will:
@@ -289,7 +289,7 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 	 * The amount of this item is kept below the max stacking size<br><br>
 	 * <p/>
 	 * The input item amount is affected<br>
-	 * If true is returned, this amount is 0, otherwise it is the amount it 
+	 * If true is returned, this amount is 0, otherwise it is the amount it
 	 * didn't stack into this item
 	 * @param item to stack
 	 * @return True if stacking was successful, False otherwise
@@ -313,7 +313,7 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 	}
 
 	/**
-	 * Gets the maximum size this {@link ItemStack} can be using the material 
+	 * Gets the maximum size this {@link ItemStack} can be using the material
 	 * it has
 	 * @return the max stack size
 	 */
@@ -325,7 +325,7 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 	}
 
 	/**
-	 * Gets the maximum data this {@link ItemStack} can have using the material 
+	 * Gets the maximum data this {@link ItemStack} can have using the material
 	 * it has
 	 * @return the max data
 	 */
@@ -333,7 +333,7 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 		return this.getMaterial().getMaxData();
 	}
 
-	//Custom serialization logic because material & auxData can not be made 
+	//Custom serialization logic because material & auxData can not be made
 	// serializable
 	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
 		out.writeShort(material.getId());
