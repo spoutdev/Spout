@@ -33,27 +33,27 @@ import org.jboss.netty.channel.Channel;
 import org.spout.api.protocol.Message;
 
 public class NetworkSendThread {
-	
+
 	private final static int QUEUE_ID_MASK = 7;
-	
+
 	private final int poolIndex;
-	
+
 	private final AtomicReference<ChannelQueueThread[]> channelQueues = new  AtomicReference<ChannelQueueThread[]>();
-	
+
 	private final AtomicReference<ChannelQueueThread[]> interruptedQueues = new AtomicReference<ChannelQueueThread[]>();
-	
+
 	public NetworkSendThread(int poolIndex) {
 		this.poolIndex = poolIndex;
 		channelQueues.set(new ChannelQueueThread[0]);
 	}
-	
+
 	public void send(SpoutSession<?> session, Channel channel, Message message) {
 		ChannelQueueThread queue = getChannelQueue(message.getChannelId());
 		if (queue != null) {
 			queue.send(session, channel, message);
 		}
 	}
-	
+
 	private ChannelQueueThread getChannelQueue(int queueId) {
 		queueId = queueId & QUEUE_ID_MASK;
 
@@ -75,7 +75,7 @@ public class NetworkSendThread {
 		}
 		return queues[queueId];
 	}
-	
+
 	public void interrupt() {
 		ChannelQueueThread[] queues = channelQueues.getAndSet(null);
 		if (queues == null) {
@@ -89,7 +89,7 @@ public class NetworkSendThread {
 		}
 		interruptedQueues.set(queues);
 	}
-	
+
 	public void interruptAndJoin() throws InterruptedException {
 		ChannelQueueThread[] queues = interruptedQueues.get();
 		if (queues == null) {
@@ -103,19 +103,19 @@ public class NetworkSendThread {
 			}
 		}
 	}
-	
+
 	private static class ChannelQueueThread extends Thread {
-		
+
 		private final LinkedBlockingQueue<QueueNode> queue = new LinkedBlockingQueue<QueueNode>();
-		
+
 		public ChannelQueueThread(int poolIndex, int channelId) {
 			super("Channel queue thread, pool index " + poolIndex + " channel id " + channelId);
 		}
-		
+
 		public void send(SpoutSession<?> session, Channel channel, Message message) {
 			queue.add(new QueueNode(session, channel, message));
 		}
-		
+
 		public void run() {
 			QueueNode node;
 			while (!isInterrupted()) {
@@ -126,9 +126,9 @@ public class NetworkSendThread {
 				}
 				handle(node);
 			}
-			
+
 		}
-		
+
 		private void handle(QueueNode node) {
 			Channel channel = node.getChannel();
 			try {
@@ -140,39 +140,39 @@ public class NetworkSendThread {
 			}
 			flushQueue();
 		}
-		
+
 		private void flushQueue() {
 			QueueNode node;
 			while ((node = queue.poll()) != null) {
 				handle(node);
 			}
 		}
-		
+
 	}
-	
+
 	private static class QueueNode {
 		private final SpoutSession<?> session;
 		private final Channel channel;
 		private final Message message;
-		
+
 		public QueueNode(SpoutSession<?> session, Channel channel, Message message) {
 			this.channel = channel;
 			this.message = message;
 			this.session = session;
 		}
-		
+
 		public Channel getChannel() {
 			return channel;
 		}
-		
+
 		public SpoutSession<?> getSession() {
 			return session;
 		}
-		
+
 		public Message getMessage() {
 			return message;
 		}
-		
+
 	}
 
 }
