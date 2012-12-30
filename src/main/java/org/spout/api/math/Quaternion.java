@@ -165,6 +165,15 @@ public class Quaternion implements Serializable, ValueType{
 	}
 
 	/**
+	 * Returns the direction this Quaternion is pointed at.
+	 *
+	 * @return direction of Quaternion
+	 */
+	public Vector3 getDirection() {
+		return MathHelper.getDirectionVector(this);
+	}
+
+	/**
 	 * Returns the length squared of the quaternion
 	 *
 	 * @return
