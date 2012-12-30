@@ -88,7 +88,7 @@ public class AdministrationCommands {
 		engine.stop(message);
 	}
 
-	@Command(desc = "Writes the stack trace of all active threads to the logs", max = -1, aliases = {""})
+	@Command(aliases = "stackdump", desc = "Writes the stack trace of all active threads to the logs", max = -1)
 	@CommandPermissions("spout.command.dumpstack")
 	public void dumpstack(CommandContext args, CommandSource source) {
 		Map<Thread, StackTraceElement[]> dump = Thread.getAllStackTraces();
