@@ -1008,7 +1008,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	public SpoutColumn getColumn(int x, int z) {
 		return getColumn(x, z, false);
 	}
-	
+
 	public SpoutColumn[] getColumns() {
 		return columns.values(new SpoutColumn[0]);
 	}
@@ -1257,26 +1257,26 @@ public class SpoutWorld extends AsyncManager implements World {
 
 		setCuboid(chunks, x, y, z, buffer, cause);
 	}
-	
+
 	public boolean commitCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
 		Vector3 base = buffer.getBase();
 		int x = base.getFloorX();
 		int y = base.getFloorY();
 		int z = base.getFloorZ();
 		SpoutChunk[][][] chunks = getChunks(x, y, z, buffer);
-		
+
 		return commitCuboid(chunks, buffer, cause);
 	}
-	
+
 	protected boolean commitCuboid(SpoutChunk[][][] chunks, CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
-		
+
 		Vector3 base = buffer.getBase();
 		int x = base.getFloorX();
 		int y = base.getFloorY();
 		int z = base.getFloorZ();
-		
+
 		lockChunks(chunks);
-		
+
 		try {
 			for (int dx = 0; dx < chunks.length; dx++) {
 				SpoutChunk[][] subArray1 = chunks[dx];
@@ -1300,12 +1300,12 @@ public class SpoutWorld extends AsyncManager implements World {
 					}
 				}
 			}
-			
+
 			return true;
 		} finally {
 			unlockChunks(chunks);
 		}
-		
+
 	}
 
 	protected void setCuboid(SpoutChunk[][][] chunks, int x, int y, int z, CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
@@ -1331,7 +1331,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	public CuboidBlockMaterialBuffer getCuboid(int x, int y, int z, int sx, int sy, int sz) {
 		return getCuboid(x, y, z, sx, sy, sz, true);
 	}
-	
+
 	@Override
 	public CuboidBlockMaterialBuffer getCuboid(int x, int y, int z, int sx, int sy, int sz, boolean backBuffer) {
 		CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(x, y, z, sx, sy, sz, backBuffer);
@@ -1412,7 +1412,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public DefaultedMap<String, Serializable> getDataMap() {
+	public DefaultedMap<Serializable> getDataMap() {
 		return componentHolder.getData();
 	}
 
