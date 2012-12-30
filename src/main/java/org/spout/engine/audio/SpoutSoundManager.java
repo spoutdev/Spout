@@ -41,10 +41,12 @@ import org.spout.api.audio.Sound;
 import org.spout.api.audio.SoundListener;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.audio.SoundSource;
+import org.spout.api.geo.discrete.Point;
+import org.spout.api.math.Vector3;
 
 public class SpoutSoundManager implements SoundManager {
 	private final List<SoundSource> sources = new ArrayList<SoundSource>();
-	private SoundListener listener = new SpoutSoundListener();
+	private final SoundListener listener = new SpoutSoundListener();
 
 	@Override
 	public void init() {
@@ -55,6 +57,11 @@ public class SpoutSoundManager implements SoundManager {
 			return;
 		}
 		checkErrors();
+
+		// Initialize the listener
+		listener.setPosition(new Point(Spout.getEngine().getDefaultWorld(), 0, 0, 0));
+		listener.setVelocity(Vector3.ZERO);
+		listener.setOrientation(Vector3.ZERO, Vector3.ZERO);
 	}
 
 	@Override
@@ -81,13 +88,8 @@ public class SpoutSoundManager implements SoundManager {
 	}
 
 	@Override
-	public SoundListener getActiveListener() {
+	public SoundListener getListener() {
 		return listener;
-	}
-
-	@Override
-	public void setActiveListener(SoundListener listener) {
-		this.listener = listener;
 	}
 
 	/**
