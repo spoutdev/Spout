@@ -24,10 +24,13 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.ai;
+package org.spout.api.ai.pathfinder;
 
-public interface Plan<T> {
-	boolean isComplete();
+import org.spout.api.material.Material;
 
-	void update(T t);
+public abstract class AbstractBlockSource implements BlockSource {
+	@Override
+	public Material getMaterialAt(int x, int y, int z) {
+		return Material.get(getBlockTypeIdAt(x, y, z));
+	}
 }

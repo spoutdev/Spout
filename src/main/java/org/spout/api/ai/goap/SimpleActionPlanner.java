@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.spout.api.ai.Agent;
 import org.spout.api.ai.Plan;
 
 import com.google.common.collect.Lists;
@@ -39,7 +40,7 @@ public class SimpleActionPlanner implements ActionPlanner {
 	private final List<Action> availableActions = Lists.newArrayList();
 	private final List<Goal> availableGoals = Lists.newArrayList();
 	private Goal currentGoal;
-	private Plan currentPlan;
+	private Plan<Agent> currentPlan;
 
 	public SimpleActionPlanner(PlannerAgent agent) {
 		this.agent = agent;
@@ -58,7 +59,7 @@ public class SimpleActionPlanner implements ActionPlanner {
 	private void replan() {
 		Goal best = selectBestGoal(agent);
 		if (best != null) {
-			Plan plan = agent.generatePlan(best.getGoalState());
+			Plan<Agent> plan = agent.generatePlan(best.getGoalState());
 			boolean replace = shouldReplaceCurrentPlan(plan);
 			if (replace)
 				switchPlanTo(best, plan);
@@ -91,15 +92,15 @@ public class SimpleActionPlanner implements ActionPlanner {
 	}
 
 	@SuppressWarnings("unchecked")
-	private boolean shouldReplaceCurrentPlan(Plan plan) {
+	private boolean shouldReplaceCurrentPlan(Plan<Agent> plan) {
 		if (plan == null)
 			return false;
 		if (currentPlan == null)
 			return true;
-		return ((Comparable<Plan>) currentPlan).compareTo(plan) < 0 && !currentPlan.equals(plan);
+		return ((Comparable<Plan<Agent>>) currentPlan).compareTo(plan) < 0 && !currentPlan.equals(plan);
 	}
 
-	private void switchPlanTo(Goal goal, Plan plan) {
+	private void switchPlanTo(Goal goal, Plan<Agent> plan) {
 		currentGoal = goal;
 		currentPlan = plan;
 	}

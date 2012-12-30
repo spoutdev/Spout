@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.spout.api.ai.AStarGoal;
 import org.spout.api.ai.AStarMachine;
+import org.spout.api.ai.Agent;
 import org.spout.api.ai.Plan;
 import org.spout.api.ai.Sensor;
 import org.spout.api.component.impl.AIComponent;
@@ -37,7 +38,7 @@ import org.spout.api.component.impl.AIComponent;
 import com.google.common.collect.Maps;
 
 public class GoapAIComponent extends AIComponent implements PlannerAgent {
-	private final AStarMachine<PlannerNode, Plan> machine = AStarMachine.createWithDefaultStorage();
+	private final AStarMachine<PlannerNode, ActionPlan> machine = AStarMachine.createWithDefaultStorage();
 	private final ActionPlanner planner = new SimpleActionPlanner(this);
 	private final Map<Class<? extends Sensor>, Sensor> sensors = Maps.newHashMap();
 	private WorldState worldState = WorldState.createEmptyState();
@@ -53,7 +54,7 @@ public class GoapAIComponent extends AIComponent implements PlannerAgent {
 	}
 
 	@Override
-	public Plan generatePlan(WorldState to) {
+	public Plan<Agent> generatePlan(WorldState to) {
 		PlannerNode root = PlannerNode.create(this, worldState);
 		AStarGoal<PlannerNode> goal = PlannerGoal.createWithGoalState(to);
 		return machine.runFully(goal, root);

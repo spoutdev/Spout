@@ -24,10 +24,10 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.ai;
+package org.spout.api.ai.pathfinder;
 
-public interface Plan<T> {
-	boolean isComplete();
+public interface BlockExaminer {
+	float getCost(BlockSource source, PathPoint point);
 
-	void update(T t);
+	boolean isPassable(BlockSource source, PathPoint point);
 }

@@ -29,7 +29,7 @@ package org.spout.api.ai;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
 
-public class AStarMachine<N extends AStarNode, P extends Plan> {
+public class AStarMachine<N extends AStarNode, P extends Plan<?>> {
 	private Supplier<AStarStorage> storageSupplier;
 
 	private AStarMachine(Supplier<AStarStorage> storage) {
@@ -185,7 +185,7 @@ public class AStarMachine<N extends AStarNode, P extends Plan> {
 	 * 
 	 * @return The created instance
 	 */
-	public static <N extends AStarNode, P extends Plan> AStarMachine<N, P> createWithDefaultStorage() {
+	public static <N extends AStarNode, P extends Plan<?>> AStarMachine<N, P> createWithDefaultStorage() {
 		return createWithStorage(SimpleAStarStorage.FACTORY);
 	}
 
@@ -197,7 +197,7 @@ public class AStarMachine<N extends AStarNode, P extends Plan> {
 	 *            The storage supplier
 	 * @return The created instance
 	 */
-	public static <N extends AStarNode, P extends Plan> AStarMachine<N, P> createWithStorage(Supplier<AStarStorage> storageSupplier) {
+	public static <N extends AStarNode, P extends Plan<?>> AStarMachine<N, P> createWithStorage(Supplier<AStarStorage> storageSupplier) {
 		return new AStarMachine<N, P>(storageSupplier);
 	}
 }

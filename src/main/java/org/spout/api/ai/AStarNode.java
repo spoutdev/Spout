@@ -37,7 +37,7 @@ public abstract class AStarNode implements Comparable<AStarNode> {
 
 	List<AStarNode> parents;
 
-	public abstract Plan buildPlan();
+	public abstract Plan<?> buildPlan();
 
 	@Override
 	public int compareTo(AStarNode other) {

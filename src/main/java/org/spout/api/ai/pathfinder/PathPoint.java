@@ -24,10 +24,18 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.ai;
+package org.spout.api.ai.pathfinder;
 
-public interface Plan<T> {
-	boolean isComplete();
+import org.spout.api.entity.Entity;
+import org.spout.api.geo.cuboid.Block;
+import org.spout.api.math.Vector3;
 
-	void update(T t);
+public interface PathPoint {
+	void addCallback(PathCallback callback);
+
+	Vector3 getVector();
+
+	public static interface PathCallback {
+		void run(Entity entity, Block point);
+	}
 }
