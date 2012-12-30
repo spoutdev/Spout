@@ -34,21 +34,21 @@ import gnu.trove.map.hash.TIntObjectHashMap;
  */
 public enum SoundState {
 	/**
+	 * The sound has not been played before.
+	 */
+	INITIAL(0),
+	/**
 	 * The sound is currently playing.
 	 */
-	PLAYING(0),
+	PLAYING(1),
 	/**
 	 * The sound is currently paused.
 	 */
-	PAUSED(1),
+	PAUSED(2),
 	/**
 	 * The sound is stopped.
 	 */
-	STOPPED(2),
-	/**
-	 * The sound has not been played before.
-	 */
-	INITIAL(3);
+	STOPPED(3);
 
 	private final int id;
 	private static final TIntObjectMap<SoundState> idMap = new TIntObjectHashMap<SoundState>();
