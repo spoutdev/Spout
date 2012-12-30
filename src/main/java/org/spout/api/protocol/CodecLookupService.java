@@ -40,7 +40,10 @@ import org.spout.api.util.StringMap;
  *
  */
 public abstract class CodecLookupService {
-	protected final MessageCodec<?>[] opcodeTable = new MessageCodec<?>[65536];
+	protected final MessageCodec<?>[] opcodeTable;
+	protected CodecLookupService(int size) {
+		opcodeTable = new MessageCodec<?>[size];
+	}
 
 	private int nextId = 0;
 
@@ -142,11 +145,5 @@ public abstract class CodecLookupService {
 
 	public Collection<MessageCodec<?>> getCodecs() {
 		return Collections.unmodifiableCollection(classTable.values());
-	}
-
-	/**
-	 * Default private constructor to prevent instantiation.
-	 */
-	protected CodecLookupService() {
 	}
 }
