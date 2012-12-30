@@ -480,8 +480,8 @@ public class AdministrationCommands {
 			}
 			target = (Spout.getEngine()).getPlayer(args.getString(index), true);
 
-			if (target == null || !target.isOnline()) {
-				throw new CommandException(args.getString(0) + " is not online.");
+			if (!target.isOnline()) {
+				throw new CommandException(target.getName() + " is not online.");
 			}
 
 			point = target.getTransform().getPosition();
