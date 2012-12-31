@@ -36,10 +36,10 @@ import org.spout.api.material.block.BlockFace;
 public class BlockFaceTest {
 	@Test
 	public void testFaceFromYaw() {
-		assertEquals(BlockFace.fromYaw(-80f), BlockFace.SOUTH);
-		assertEquals(BlockFace.fromYaw(283f), BlockFace.SOUTH);
+		assertEquals(BlockFace.fromYaw(-80f), BlockFace.NORTH);
+		assertEquals(BlockFace.fromYaw(283f), BlockFace.NORTH);
 		assertEquals(BlockFace.fromYaw(12f), BlockFace.WEST);
-		assertEquals(BlockFace.fromYaw(87f), BlockFace.NORTH);
+		assertEquals(BlockFace.fromYaw(87f), BlockFace.SOUTH);
 		assertEquals(BlockFace.fromYaw(180f), BlockFace.EAST);
 	}
 	

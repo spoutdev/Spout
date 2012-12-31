@@ -99,6 +99,11 @@ public class BlockFaces implements Iterable<BlockFace>, ByteBitMask {
 	public static final BlockFaces WNES = new BlockFaces(BlockFace.WEST, BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH);
 
 	/**
+	 * The [west-south-east-north] faces
+	 */
+	public static final BlockFaces WSEN = new BlockFaces(BlockFace.WEST, BlockFace.SOUTH, BlockFace.EAST, BlockFace.NORTH);
+
+	/**
 	 * The [south-north-east-west] faces
 	 */
 	public static final BlockFaces SNEW = new BlockFaces(BlockFace.SOUTH, BlockFace.NORTH, BlockFace.EAST, BlockFace.WEST);
