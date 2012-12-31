@@ -489,24 +489,40 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	@Override
-	public boolean canPlace(Block block, short data, BlockFace against, Vector3 clickedPos, boolean isClickedBlock) {
-		return true;
+	public boolean canPlace(Block block, short data, BlockFace against, Vector3 clickedPos, boolean isClickedBlock, Cause<?> cause) {
+		return canCreate(block, data, cause);
 	}
 
 	@Override
-	public boolean onPlacement(Block block, short data, BlockFace against, Vector3 clickedPos, boolean isClickedBlock, Cause<?> cause) {
+	public void onPlacement(Block block, short data, BlockFace against, Vector3 clickedPos, boolean isClickedBlock, Cause<?> cause) {
+		this.onCreate(block, data, cause);
+	}
+
+	/**
+	 * Checks the block to see if it can be created at that position<br>
+	 * Orientation-specific checks are performed in the {@link canPlace} method<br>
+	 * Use this method to see if creation is possible at a given position when not placed
+	 * 
+	 * @param block this Block Material should be created in
+	 * @param data for the material
+	 * @param cause of this creation
+	 * @return True if creation is possible, False if not
+	 */
+	public boolean canCreate(Block block, short data, Cause<?> cause) {
+		return true;
+	}
+
+	/**
+	 * Creates this Block Material at a block in the world<br>
+	 * Orientation-specific changes are performed in the {@link onPlacement} method<br>
+	 * Use this method to create the block at a given position when not placed
+	 * 
+	 * @param block to create this Block Material in
+	 * @param data for the material
+	 * @param cause of this creation
+	 */
+	public void onCreate(Block block, short data, Cause<?> cause) {
 		block.setMaterial(this, data, cause);
-		return true;
-	}
-
-	@Override
-	public final boolean canPlace(Block block, short data) {
-		return this.canPlace(block, data, BlockFace.BOTTOM, Vector3.UNIT_Y, false);
-	}
-
-	@Override
-	public final boolean onPlacement(Block block, short data, Cause<?> cause) {
-		return this.onPlacement(block, data, BlockFace.BOTTOM, Vector3.UNIT_Y, false, cause);
 	}
 
 	/**

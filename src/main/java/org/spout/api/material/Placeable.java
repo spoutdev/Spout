@@ -35,7 +35,6 @@ import org.spout.api.math.Vector3;
  * An interface defining a {@link Material} that can be placed
  */
 public interface Placeable {
-
 	/**
 	 * Called when this block is about to be placed (before {@link #onPlacement(Block, short, BlockFace, boolean)}), 
 	 * checking if placement is allowed or not.
@@ -44,18 +43,15 @@ public interface Placeable {
 	 * @param data block data to use during placement
 	 * @param against face against the block is placed
 	 * @param isClickedBlock whether the block is to be placed at the clicked block
+	 * @param cause the cause of the placement
 	 * @return true if placement is allowed
 	 */
-	public boolean canPlace(Block block, short data, BlockFace against, Vector3 clickedPos, boolean isClickedBlock);
+	public boolean canPlace(Block block, short data, BlockFace against, Vector3 clickedPos, boolean isClickedBlock, Cause<?> cause);
 
 	/**
-	 * See the other canPlace function, this function calls that one.<br>
-	 * It is not allowed to override this function, if you could.
-	 */
-	public boolean canPlace(Block block, short data);
-
-	/**
-	 * Called when this block is placed, handles the actual placement.
+	 * Called when this block is placed, handling the actual placement<br>
+	 * This method should only change properties that rely on the face it is placed against, 
+	 * or in what way it is placed. All other logic should be performed in onCreate.
 	 * 
 	 * @param block to affect
 	 * @param data block data to use during placement
@@ -63,12 +59,6 @@ public interface Placeable {
 	 * @param clickedPos relative position the block was clicked to place this block
 	 * @param isClickedBlock whether the block is being placed at the clicked block
 	 * @param cause the cause of the placement
-	 * @return true if placement is handled
 	 */
-	public boolean onPlacement(Block block, short data, BlockFace against, Vector3 clickedPos, boolean isClickedBlock, Cause<?> cause);
-
-	/**
-	 * Called when the data for this block is changed.
-	 */
-	public boolean onPlacement(Block block, short data, Cause<?> cause);
+	public void onPlacement(Block block, short data, BlockFace against, Vector3 clickedPos, boolean isClickedBlock, Cause<?> cause);
 }
