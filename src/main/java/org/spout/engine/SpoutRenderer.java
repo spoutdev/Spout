@@ -55,6 +55,7 @@ import org.spout.api.math.Vector2;
 import org.spout.api.model.Model;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
+import org.spout.api.render.Shader;
 
 import org.spout.engine.batcher.SpriteBatch;
 import org.spout.engine.entity.component.EntityRendererComponent;
@@ -62,6 +63,8 @@ import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.resources.ClientFont;
+import org.spout.engine.resources.ClientRenderMaterial;
+import org.spout.engine.resources.ClientRenderTexture;
 import org.spout.engine.util.MacOSXUtils;
 
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
@@ -134,6 +137,11 @@ public class SpoutRenderer {
 		gui = SpriteBatch.createSpriteBatch(client.getRenderMode(), resolution.getX(), resolution.getY());
 
 		font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
+		
+		t = new ClientRenderTexture();
+		Shader s = (Shader)Spout.getFilesystem().getResource("shader://Spout/shaders/diffuse.ssf");
+		mat = new ClientRenderMaterial(s, null);
+		t.writeGPU();
 	}
 
 	public void updateRender(long limit) {
@@ -141,11 +149,17 @@ public class SpoutRenderer {
 	}
 
 	Matrix ident = MathHelper.createIdentity();
+	
+	ClientRenderTexture t;
+	ClientRenderMaterial mat;
 
 	public void render(float dt) {
 		SpoutClient client = (SpoutClient) Spout.getEngine();
-
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+		t.activate();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
 		Model skydome = (Model) client.getActiveWorld().getDataMap().get("Skydome");
 		if (skydome != null) {
 			skydome.getRenderMaterial().getShader().setUniform("View", client.getActiveCamera().getRotation());
@@ -157,6 +171,8 @@ public class SpoutRenderer {
 			}
 			skydomeMesh.render(skydome.getRenderMaterial());
 		}
+		t.release();
+		
 
 		//Interpolate entity transform if Physics is not currently applied to the entity
 		for (Entity e : client.getActiveWorld().getAll()) {
@@ -199,6 +215,8 @@ public class SpoutRenderer {
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Update: ", worldRenderer.minUpdate + " / " + worldRenderer.maxUpdate + " / " + (worldRenderer.sumUpdate / Math.max(1, worldRenderer.count))), font, -0.95f, 0.1f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Render: ", worldRenderer.minRender + " / " + worldRenderer.maxRender + " / " + (worldRenderer.sumRender / Math.max(1, worldRenderer.count))), font, -0.95f, 0.0f, 8f);
 		}
+		mat.getShader().setUniform("Diffuse", t);
+		gui.draw(mat, 0.25f, 0.25f, .25f, .25f);
 		for (Screen screen : screenStack.getVisibleScreens()) {
 			for (Widget widget : screen.getWidgets()) {
 				gui.draw(widget.getRenderParts());
