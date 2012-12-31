@@ -6,7 +6,7 @@ Spout is an open-source implementation of the [Minecraft](http://minecraft.net) 
 
 The official server software has some shortcomings such as the use of threaded, synchronous I/O along with high CPU and RAM usage. Spout aims to be a lightweight and high-performance alternative.
 
-Spout's goal and focus is to offer a higher performance server that implements the universal [SpoutAPI](https://github.com/SpoutDev/SpoutAPI) client/server platform. The [Vanilla](https://github.com/SpoutDev/Vanilla) plugin can be used to implement Minecraft functionality. Bukkit plugin compatibility will be possible through the [BukkitBridge](https://github.com/SpoutDev/BukkitBridge).
+Spout's goal and focus is to offer a higher performance server that implements the universal [SpoutAPI](https://github.com/SpoutDev/SpoutAPI) client/server platform. The [Vanilla](https://github.com/VanillaDev/Vanilla) plugin can be used to implement Minecraft functionality. Bukkit plugin compatibility will be possible through the [BukkitBridge](https://github.com/VanillaDev/BukkitBridge).
 
 Copyright (c) 2011-2012, SpoutDev <<http://www.spout.org/>>
 
