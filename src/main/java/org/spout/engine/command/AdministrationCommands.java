@@ -445,7 +445,7 @@ public class AdministrationCommands {
 			player = Spout.getEngine().getPlayer(args.getString(index++), true);
 
 			if (player == null || !player.isOnline()) {
-				throw new CommandException(args.getString(0) + " is not online.");
+				throw new CommandException(args.getString(index++) + " is not online.");
 			}
 		} else {
 			if (!(source instanceof Player)) {
