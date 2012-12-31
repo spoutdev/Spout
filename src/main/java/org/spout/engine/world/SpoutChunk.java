@@ -2198,6 +2198,9 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	private void blockChanged(int x, int y, int z, short newId, short newData, short oldId, short oldData, Cause<?> cause) {
 		BlockMaterial newMaterial = (BlockMaterial) MaterialRegistry.get(newId).getSubMaterial(newData);
 		BlockMaterial oldMaterial = (BlockMaterial) MaterialRegistry.get(oldId).getSubMaterial(oldData);
+		if (oldMaterial == null) {
+			oldMaterial = BlockMaterial.ERROR;
+		}
 		blockChanged(x, y, z, newMaterial, newData, oldMaterial, oldData, cause);
 	}
 
