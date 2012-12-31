@@ -412,18 +412,21 @@ public interface Block extends MaterialSource, WorldSource {
 	 * Queues a dynamic update on this block<br>
 	 * The Block Material must be dynamic for this to function.
 	 * 
+	 * @param exclusive true, if only one update should be stored for this block
+	 * 
 	 * @return the old update for that block at that time instant, or null if none
 	 */
-	public DynamicUpdateEntry dynamicUpdate();
+	public DynamicUpdateEntry dynamicUpdate(boolean exclusive);
 
 	/**
 	 * Queues a dynamic update on this block<br>
 	 * The Block Material must be dynamic for this to function.
 	 * 
 	 * @param nextUpdate the time for the next update
+	 * @param exclusive true, if only one update should be stored for this block
 	 * @return the old update for that block at that time instant, or null if none
 	 */
-	public DynamicUpdateEntry dynamicUpdate(long nextUpdate);
+	public DynamicUpdateEntry dynamicUpdate(long nextUpdate, boolean exclusive);
 	
 	/**
 	 * Queues a dynamic update on this block<br>
@@ -431,7 +434,8 @@ public interface Block extends MaterialSource, WorldSource {
 	 * 
 	 * @param nextUpdate the time for the next update
 	 * @param data persistent data to be used for the update
+	 * @param exclusive true, if only one update should be stored for this block
 	 * @return the old update for that block at that time instant, or null if none
 	 **/
-	public DynamicUpdateEntry dynamicUpdate(long nextUpdate, int data);
+	public DynamicUpdateEntry dynamicUpdate(long nextUpdate, int data, boolean exclusive);
 }

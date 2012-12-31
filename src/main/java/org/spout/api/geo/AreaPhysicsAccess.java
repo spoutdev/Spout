@@ -59,10 +59,11 @@ public interface AreaPhysicsAccess {
 	 * @param x
 	 * @param y
 	 * @param z
+	 * @param exclusive true, if only one update should be stored for this block
 	 * @return the old update for that block at that time instant, or null if none
 	 */
 	@DelayedWrite
-	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z);
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, boolean exclusive);
 	
 	/**
 	 * Queues a dynamic material updated for the given location. This list is checked during the finalize part of the tick, and will cause the update method to be called.<br>
@@ -71,10 +72,11 @@ public interface AreaPhysicsAccess {
 	 * @param y
 	 * @param z
 	 * @param nextUpdate the update time
+	 * @param exclusive true, if only one update should be stored for this block
 	 * @return the old update for that block at that time instant, or null if none
 	 */
 	@DelayedWrite
-	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate);
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, boolean exclusive);
 	
 	/**
 	 * Queues a dynamic material updated for the given location. This list is checked during the finalize part of the tick, and will cause the update method to be called.<br>
@@ -84,10 +86,11 @@ public interface AreaPhysicsAccess {
 	 * @param z
 	 * @param nextUpdate the update time
 	 * @param data persistent data to be used for the update
+	 * @param exclusive true, if only one update should be stored for this block
 	 * @return the old update for that block at that time instant, or null if none
 	 */
 	@DelayedWrite
-	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, int data);
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, int data, boolean exclusive);
 	
 	/**
 	 * Queues a physics update for the block at (x, y, z) and all blocks within the given range.  
