@@ -471,18 +471,18 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, int data) {
-		return this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z, nextUpdate, data);
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, int data, boolean exclusive) {
+		return this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z, nextUpdate, data, exclusive);
 	}
 
 	@Override
-	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate) {
-		return this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z, nextUpdate);
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, boolean exclusive) {
+		return this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z, nextUpdate, exclusive);
 	}
 
 	@Override
-	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z) {
-		return this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z);
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, boolean exclusive) {
+		return this.getRegionFromBlock(x, y, z).queueDynamicUpdate(x, y, z, exclusive);
 	}
 
 	public StringMap getItemMap() {

@@ -128,24 +128,33 @@ public class DynamicBlockUpdateTree {
 		}
 	}
 
-	public DynamicUpdateEntry queueBlockUpdates(int x, int y, int z) {
+	public DynamicUpdateEntry queueBlockUpdates(int x, int y, int z, boolean exclusive) {
 		checkStages();
+		if (exclusive) {
+			syncResetBlockUpdates(x, y, z, 0, false);
+		}
 		x &= Region.BLOCKS.MASK;
 		y &= Region.BLOCKS.MASK;
 		z &= Region.BLOCKS.MASK;
 		return add(new DynamicBlockUpdate(x, y, z, 0, 0));
 	}
 	
-	public DynamicUpdateEntry queueBlockUpdates(int x, int y, int z, long updateTime) {
+	public DynamicUpdateEntry queueBlockUpdates(int x, int y, int z, long updateTime, boolean exclusive) {
 		checkStages();
+		if (exclusive) {
+			syncResetBlockUpdates(x, y, z, 0, false);
+		}
 		x &= Region.BLOCKS.MASK;
 		y &= Region.BLOCKS.MASK;
 		z &= Region.BLOCKS.MASK;
 		return add(new DynamicBlockUpdate(x, y, z, updateTime, 0));
 	}
 	
-	public DynamicUpdateEntry queueBlockUpdates(int x, int y, int z, long updateTime, int data) {
+	public DynamicUpdateEntry queueBlockUpdates(int x, int y, int z, long updateTime, int data, boolean exclusive) {
 		checkStages();
+		if (exclusive) {
+			syncResetBlockUpdates(x, y, z, 0, false);
+		}
 		x &= Region.BLOCKS.MASK;
 		y &= Region.BLOCKS.MASK;
 		z &= Region.BLOCKS.MASK;

@@ -1790,21 +1790,21 @@ public class SpoutRegion extends Region {
 	}
 
 	@Override
-	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, int data) {
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, int data, boolean exclusive) {
 		setChunkModified(x, y, z);
-		return dynamicBlockTree.queueBlockUpdates(x, y, z, nextUpdate, data);
+		return dynamicBlockTree.queueBlockUpdates(x, y, z, nextUpdate, data, exclusive);
 	}
 
 	@Override
-	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate) {
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, boolean exclusive) {
 		setChunkModified(x, y, z);
-		return dynamicBlockTree.queueBlockUpdates(x, y, z, nextUpdate);
+		return dynamicBlockTree.queueBlockUpdates(x, y, z, nextUpdate, exclusive);
 	}
 
 	@Override
-	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z) {
+	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, boolean exclusive) {
 		setChunkModified(x, y, z);
-		return dynamicBlockTree.queueBlockUpdates(x, y, z);
+		return dynamicBlockTree.queueBlockUpdates(x, y, z, exclusive);
 	}
 	
 	public void setChunkModified(int x, int y, int z) {

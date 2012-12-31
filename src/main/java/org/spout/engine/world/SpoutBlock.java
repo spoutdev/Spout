@@ -346,18 +346,18 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public DynamicUpdateEntry dynamicUpdate() {
-		return this.getRegion().queueDynamicUpdate(this.x, this.y, this.z);
+	public DynamicUpdateEntry dynamicUpdate(boolean exclusive) {
+		return this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, exclusive);
 	}
 
 	@Override
-	public DynamicUpdateEntry dynamicUpdate(long updateTime) {
-		return this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, updateTime);
+	public DynamicUpdateEntry dynamicUpdate(long updateTime, boolean exclusive) {
+		return this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, updateTime, exclusive);
 	}
 
 	@Override
-	public DynamicUpdateEntry dynamicUpdate(long updateTime, int data) {
-		return this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, updateTime, data);
+	public DynamicUpdateEntry dynamicUpdate(long updateTime, int data, boolean exclusive) {
+		return this.getRegion().queueDynamicUpdate(this.x, this.y, this.z, updateTime, data, exclusive);
 	}
 
 	@Override
