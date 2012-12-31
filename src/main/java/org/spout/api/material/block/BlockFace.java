@@ -120,7 +120,7 @@ public enum BlockFace implements ByteBitMask {
 	 * @return the block face
 	 */
 	public static BlockFace fromYaw(float yaw) {
-		return BlockFaces.WNES.get(Math.round(yaw / 90f) & 0x3);
+		return BlockFaces.WSEN.get(Math.round(yaw / 90f) & 0x3);
 	}
 
 	public static BlockFace fromOffset(Vector3 offset) {

@@ -27,7 +27,6 @@
 package org.spout.api.material;
 
 import org.spout.api.geo.cuboid.Block;
-import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.range.EffectRange;
 
 /**
@@ -35,35 +34,32 @@ import org.spout.api.material.range.EffectRange;
  *
  */
 public interface DynamicMaterial {
-	
+
 	/**
 	 * Gets the maximum effect range associated with this dynamic material
 	 * 
 	 * @return the effect range
 	 */
 	public EffectRange getDynamicRange();
-	
+
 	/**
 	 * This method is called during the DYNAMIC_BLOCKS or GLOBAL_DYNAMIC_BLOCKS tick stage. <br>
 	 * <br>
 	 * World updates must NOT make changes outside the Region that contains the block.<br>
 	 * 
-	 * @param b the block
-	 * @param r the region that contains the block
+	 * @param block the block
 	 * @param currentTime the age of the world
 	 */
-	public void onPlacement(Block b, Region r, long currentTime);
-	
+	public void onFirstUpdate(Block block, long currentTime);
+
 	/**
 	 * This method is called during the DYNAMIC_BLOCKS or GLOBAL_DYNAMIC_BLOCKS tick stage. <br>
 	 * <br>
 	 * World updates must NOT make updates outside of the cuboid defined by the maxRange method.<br>
 	 * 
-	 * @param b the block
-	 * @param r the region that contains the block
+	 * @param block the block
 	 * @param updateTime the time the update was intended to happen
 	 * @param data persistent data for the update
 	 */
-	public void onDynamicUpdate(Block b, Region r, long updateTime, int data);
-
+	public void onDynamicUpdate(Block block, long updateTime, int data);
 }
