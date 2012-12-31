@@ -57,7 +57,7 @@ public interface RepositionManager {
 	public int convertChunkZ(int z);
 	
 	/**
-	 * Gets the converted x value for the given x value
+	 * Gets the converted x value for the given x value.  The change must be exactly an integer number of chunks.
 	 * 
 	 * @param x the x value
 	 * @return
@@ -65,7 +65,7 @@ public interface RepositionManager {
 	public int convertX(int x);
 	
 	/**
-	 * Gets the converted y value for the given y value
+	 * Gets the converted y value for the given y value.  The change must be exactly an integer number of chunks.
 	 * 
 	 * @param y the y value
 	 * @return
@@ -73,7 +73,7 @@ public interface RepositionManager {
 	public int convertY(int y);
 	
 	/**
-	 * Gets the converted z value for the given z value
+	 * Gets the converted z value for the given z value.  The change must be exactly an integer number of chunks.
 	 * 
 	 * @param z the z value
 	 * @return
@@ -81,7 +81,7 @@ public interface RepositionManager {
 	public int convertZ(int z);
 	
 	/**
-	 * Gets the converted x value for the given x value
+	 * Gets the converted x value for the given x value.  The change must be exactly an integer number of chunks.
 	 * 
 	 * @param x the x value
 	 * @return
@@ -89,7 +89,7 @@ public interface RepositionManager {
 	public float convertX(float x);
 	
 	/**
-	 * Gets the converted y value for the given y value
+	 * Gets the converted y value for the given y value.  The change must be exactly an integer number of chunks.
 	 * 
 	 * @param y the y value
 	 * @return
@@ -97,7 +97,7 @@ public interface RepositionManager {
 	public float convertY(float y);
 	
 	/**
-	 * Gets the converted z value for the given y value
+	 * Gets the converted z value for the given y value.  The change must be exactly an integer number of chunks.
 	 * 
 	 * @param z the z value
 	 * @return
@@ -105,7 +105,7 @@ public interface RepositionManager {
 	public float convertZ(float z);
 	
 	/**
-	 * Gets the converted x value for the given x value
+	 * Gets the converted x value for the given x value.  The change must be exactly an integer number of chunks.
 	 * 
 	 * @param x the x value
 	 * @return
@@ -113,7 +113,7 @@ public interface RepositionManager {
 	public double convertX(double x);
 	
 	/**
-	 * Gets converted y value for the given y value
+	 * Gets converted y value for the given y value.  The change must be exactly an integer number of chunks.
 	 * 
 	 * @param y the y value
 	 * @return
@@ -121,7 +121,7 @@ public interface RepositionManager {
 	public double convertY(double y);
 	
 	/**
-	 * Gets the converted z value for the given z value
+	 * Gets the converted z value for the given z value.  The change must be exactly an integer number of chunks.
 	 * 
 	 * @param z the z value
 	 * @return
@@ -129,7 +129,7 @@ public interface RepositionManager {
 	public double convertZ(double z);
 	
 	/**
-	 * Gets the converted Transform for the given Transform
+	 * Gets the converted Transform for the given Transform.  The change must be exactly an integer number of chunks in each dimension.
 	 * 
 	 * @param t the transform
 	 * @return
@@ -137,7 +137,7 @@ public interface RepositionManager {
 	public Transform convert(Transform t);
 	
 	/**
-	 * Gets the converted Point for the given Point
+	 * Gets the converted Point for the given Point.  The change must be exactly an integer number of chunks in each dimension.
 	 * 
 	 * @param p the point
 	 * @return
@@ -145,7 +145,7 @@ public interface RepositionManager {
 	public Point convert(Point p);
 	
 	/**
-	 * Gets the converted Vector3 for the given Vector3
+	 * Gets the converted Vector3 for the given Vector3.  The change must be exactly an integer number of chunks in each dimension.
 	 * 
 	 * @param p the point
 	 * @return
@@ -153,7 +153,7 @@ public interface RepositionManager {
 	public Vector3 convert(Vector3 p);
 
 	/**
-	 * Gets the inverse RepositionManager that reverses changes made by this manager
+	 * Gets the inverse RepositionManager that reverses changes made by this manager.
 	 * 
 	 * @return
 	 */
