@@ -26,7 +26,6 @@
  */
 package org.spout.api.geo;
 
-import org.spout.api.event.Cause;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.util.thread.DelayedWrite;
@@ -44,7 +43,7 @@ public interface AreaPhysicsAccess {
 	public void resetDynamicBlock(int x, int y, int z);
 	
 	/**
-	 * Immediately resets all dynamic material updates for the given location.  This does not trigger the onPlacement() call
+	 * Immediately clears all dynamic material updates for the given location.  This does not trigger the onPlacement() call
 	 * 
 	 * @param x
 	 * @param y

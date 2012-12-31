@@ -404,9 +404,8 @@ public interface Block extends MaterialSource, WorldSource {
 	public void resetDynamic();
 	
 	/**
-	 * Immediately resets all dynamic material updates for this block.  This does not trigger the onPlacement() call
+	 * Immediately clears all dynamic material updates for this block.  This does not trigger the onPlacement() call
 	 */
-	@DelayedWrite
 	public void syncResetDynamic();
 
 	/**
