@@ -1779,27 +1779,39 @@ public class SpoutRegion extends Region {
 
 	@Override
 	public void resetDynamicBlock(int x, int y, int z) {
+		setChunkModified(x, y, z);
 		dynamicBlockTree.resetBlockUpdates(x, y, z);
 	}
 
 	@Override
 	public void syncResetDynamicBlock(int x, int y, int z) {
+		setChunkModified(x, y, z);
 		dynamicBlockTree.syncResetBlockUpdates(x, y, z);
 	}
 
 	@Override
 	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate, int data) {
+		setChunkModified(x, y, z);
 		return dynamicBlockTree.queueBlockUpdates(x, y, z, nextUpdate, data);
 	}
 
 	@Override
 	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z, long nextUpdate) {
+		setChunkModified(x, y, z);
 		return dynamicBlockTree.queueBlockUpdates(x, y, z, nextUpdate);
 	}
 
 	@Override
 	public DynamicUpdateEntry queueDynamicUpdate(int x, int y, int z) {
+		setChunkModified(x, y, z);
 		return dynamicBlockTree.queueBlockUpdates(x, y, z);
+	}
+	
+	public void setChunkModified(int x, int y, int z) {
+		SpoutChunk c = getChunk(x, y, z, LoadOption.NO_LOAD);
+		if (c != null) {
+			c.setModified();
+		}
 	}
 
 	public void setGravity(Vector3 gravity) {

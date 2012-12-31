@@ -32,10 +32,12 @@ import gnu.trove.set.hash.TIntHashSet;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.spout.api.Spout;
 import org.spout.api.geo.LoadOption;
@@ -48,6 +50,7 @@ import org.spout.api.material.Material;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.scheduler.TickStage;
 import org.spout.engine.scheduler.SpoutScheduler;
+import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 
@@ -248,12 +251,13 @@ public class DynamicBlockUpdateTree {
 		int by = update.getY();
 		int bz = update.getZ();
 
-		Chunk c = region.getChunkFromBlock(bx, by, bz, LoadOption.NO_LOAD);
+		SpoutChunk c = region.getChunkFromBlock(bx, by, bz, LoadOption.NO_LOAD);
 
 		if (c == null) {
 			return UpdateResult.NOT_DYNAMIC;
 		}
 		
+		c.setModified();
 		
 		Material m = c.getBlockMaterial(bx, by, bz);
 		

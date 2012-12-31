@@ -61,17 +61,17 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate>, Dynam
 
 	@Override
 	public int getX() {
-		return SignedTenBitTripleHashed.key1(packed) & 0xFF;
+		return unpackX(packed);
 	}
 
 	@Override
 	public int getY() {
-		return SignedTenBitTripleHashed.key2(packed) & 0xFF;
+		return unpackY(packed);
 	}
 
 	@Override
 	public int getZ() {
-		return SignedTenBitTripleHashed.key3(packed) & 0xFF;
+		return unpackZ(packed);
 	}
 
 	@Override
@@ -211,18 +211,18 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate>, Dynam
 	}
 
 	public static int getChunkPacked(Chunk c) {
-		return SignedTenBitTripleHashed.key(c.getX() & Chunk.BLOCKS.MASK, c.getY() & Chunk.BLOCKS.MASK, c.getZ() & Chunk.BLOCKS.MASK);
+		return SignedTenBitTripleHashed.key(c.getX() & Region.CHUNKS.MASK, c.getY() & Region.CHUNKS.MASK, c.getZ() & Region.CHUNKS.MASK);
 	}
 
 	public static int unpackX(int packed) {
-		return SignedTenBitTripleHashed.key1(packed);
+		return SignedTenBitTripleHashed.key1(packed) & 0xFF;
 	}
 
 	public static int unpackY(int packed) {
-		return SignedTenBitTripleHashed.key2(packed);
+		return SignedTenBitTripleHashed.key2(packed) & 0xFF;
 	}
 
 	public static int unpackZ(int packed) {
-		return SignedTenBitTripleHashed.key3(packed);
+		return SignedTenBitTripleHashed.key3(packed) & 0xFF;
 	}
 }

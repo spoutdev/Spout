@@ -163,7 +163,9 @@ public class WorldSavingThread extends Thread{
 				} finally {
 					try {
 						out.close();
-					} catch (IOException ioe) {}
+					} catch (IOException ioe) {
+						Spout.getLogger().info("Failed to commit chunk " + chunk);
+					}
 				}
 				chunk.saveComplete();
 			} else {

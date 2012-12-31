@@ -40,7 +40,6 @@ import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
 import org.spout.api.Spout;
 import org.spout.api.entity.PlayerSnapshot;
-import org.spout.api.geo.World;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.nbt.CompoundTag;
 import org.spout.nbt.stream.NBTInputStream;
