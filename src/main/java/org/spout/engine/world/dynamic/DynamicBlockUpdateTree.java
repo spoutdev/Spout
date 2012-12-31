@@ -102,31 +102,32 @@ public class DynamicBlockUpdateTree {
 		checkStages();
 		syncResetBlockUpdates(x, y, z, world.getAge(), false);
 	}
-	
-	private boolean syncResetBlockUpdates(int x, int y, int z, long currentTime, boolean triggerPlacement) {
+
+	private void syncResetBlockUpdates(int x, int y, int z, long currentTime, boolean triggerPlacement) {
 		x &= Region.BLOCKS.MASK;
 		y &= Region.BLOCKS.MASK;
 		z &= Region.BLOCKS.MASK;
-		
+
 		removeAll(DynamicBlockUpdate.getBlockPacked(x, y, z));
+
+		if (!triggerPlacement) {
+			return;
+		}
 
 		Chunk c = region.getChunkFromBlock(x, y, z, LoadOption.NO_LOAD);
 		if (c == null) {
-			return false;
+			return;
 		}
 
-		if (triggerPlacement) {
-			Material m = c.getBlockMaterial(x, y, z);
+		Material m = c.getBlockMaterial(x, y, z);
 
-			if (m instanceof DynamicMaterial) {
-				Block b = c.getBlock(x, y, z);
-				DynamicMaterial dm = (DynamicMaterial)m;
-				dm.onPlacement(b, region, currentTime);
-			}
+		if (m instanceof DynamicMaterial) {
+			Block b = c.getBlock(x, y, z);
+			DynamicMaterial dm = (DynamicMaterial)m;
+			dm.onPlacement(b, region, currentTime);
 		}
-		return true;
 	}
-	
+
 	public DynamicUpdateEntry queueBlockUpdates(int x, int y, int z) {
 		checkStages();
 		x &= Region.BLOCKS.MASK;
