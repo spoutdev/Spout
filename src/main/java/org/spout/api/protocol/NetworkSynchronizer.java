@@ -26,8 +26,6 @@
  */
 package org.spout.api.protocol;
 
-import gnu.trove.set.hash.TIntHashSet;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -58,6 +56,7 @@ import org.spout.api.protocol.reposition.NullRepositionManager;
 import org.spout.api.protocol.reposition.RepositionManager;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.OutwardIterator;
+import org.spout.api.util.set.concurrent.TSyncIntHashSet;
 
 public abstract class NetworkSynchronizer {
 	protected final Player player;
@@ -95,7 +94,7 @@ public abstract class NetworkSynchronizer {
 	private final AtomicReference<RepositionManager> rm = new AtomicReference<RepositionManager>(NullRepositionManager.getInstance());
 
 	//Holds all entities that have ever been sync'd to this Synchronizer
-	private final TIntHashSet synchronizedEntities = new TIntHashSet();
+	private final TSyncIntHashSet synchronizedEntities = new TSyncIntHashSet();
 
 	public NetworkSynchronizer(Session session, int minViewDistance) {
 		this.session = session;
@@ -672,13 +671,9 @@ public abstract class NetworkSynchronizer {
 	 */
 	public void syncEntity(Entity e, boolean spawn, boolean destroy, boolean update) {
 		if (spawn) {
-			if (!synchronizedEntities.contains(e.getId())) {
-				synchronizedEntities.add(e.getId());
-			}
+			synchronizedEntities.add(e.getId());
 		} else if (destroy) {
-			if (synchronizedEntities.contains(e.getId())) {
-				synchronizedEntities.remove(e.getId());
-			}
+			synchronizedEntities.remove(e.getId());
 		}
 	}
 
