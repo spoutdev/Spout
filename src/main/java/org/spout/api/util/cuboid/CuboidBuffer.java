@@ -49,19 +49,19 @@ import org.spout.api.math.Vector3;
  * TODO is this the best package to put this?
  */
 public abstract class CuboidBuffer {
-	private final int sizeX;
-	private final int sizeY;
-	private final int sizeZ;
-	private final int baseX;
-	private final int baseY;
-	private final int baseZ;
-	/**
+	protected final int sizeX;
+	protected final int sizeY;
+	protected final int sizeZ;
+	protected final int baseX;
+	protected final int baseY;
+	protected final int baseZ;
+	/*
 	 * Note: These values are not actually within the cuboid The cuboid goes
 	 * from baseX to baseX + sizeX - 1 top = base + size
 	 */
-	private final int topX;
-	private final int topY;
-	private final int topZ;
+	protected final int topX;
+	protected final int topY;
+	protected final int topZ;
 	protected final int Xinc;
 	protected final int Yinc;
 	protected final int Zinc;
@@ -102,6 +102,14 @@ public abstract class CuboidBuffer {
 	 */
 	public Vector3 getSize() {
 		return new Vector3(sizeX, sizeY, sizeZ);
+	}
+
+	/**
+	 * Gets the top-coordinates of the CuboidBuffer, these are outside this buffer<br>
+	 * These coordinates are an addition of base and size
+	 */
+	public Vector3 getTop() {
+		return new Vector3(topX, topY, topZ);
 	}
 
 	/**

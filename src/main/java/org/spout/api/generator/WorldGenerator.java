@@ -39,9 +39,11 @@ public interface WorldGenerator extends Named {
 	/**
 	 * Gets the block structure for a Chunk.
 	 *
-	 * The CuboidBuffer will always be exactly one Chunk in size {@link org.spout.api.geo.cuboid.Chunk#CHUNKS}
-	 * cubed and Chunk aligned.
-	 *
+	 * The CuboidBuffer will always be:<br>
+	 * - One Chunk in width and length {@link org.spout.api.geo.cuboid.Chunk#CHUNKS}<br>
+	 * - One Region in height {@link org.spout.api.geo.cuboid.Region#CHUNKS}<br>
+	 * - Chunk aligned<br>
+	 * <br>
 	 * Structural blocks should not contain any lighting sources and the
 	 * generator should give repeatable results.
 	 *
@@ -52,7 +54,7 @@ public interface WorldGenerator extends Named {
 	 * @param chunkX coordinate
 	 * @param chunkY coordinate
 	 * @param chunkZ coordinate
-	 * @param seed the seed used to seed noise and randoms for generation
+	 * @param world in which is generated
 	 */
 	public void generate(CuboidBlockMaterialBuffer blockData, int chunkX, int chunkY, int chunkZ, World world);
 
