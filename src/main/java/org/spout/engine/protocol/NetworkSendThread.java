@@ -30,6 +30,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.jboss.netty.channel.Channel;
+import org.spout.api.Spout;
 import org.spout.api.protocol.Message;
 
 public class NetworkSendThread {
@@ -136,7 +137,15 @@ public class NetworkSendThread {
 					channel.write(node.getMessage());
 				}
 			} catch (Exception e) {
-				node.getSession().disconnect(false, new Object[] {"Socket Error!"});
+				try {
+					node.getSession().disconnect(false, new Object[] {"Socket Error!"});
+				} catch (Exception e2) {
+					try {
+						Spout.getLogger().info("Unable to cleanly close session for " + node.getSession().getPlayer().getName());
+					} catch (Exception e3) {
+						Spout.getLogger().info("Unable to cleanly close session for unknown player (Unable to get player name)");
+					}
+				}
 			}
 		}
 
