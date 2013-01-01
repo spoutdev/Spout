@@ -185,7 +185,7 @@ public class EntityFiles {
 		if (controllerDataExists == null) {
 			return null;
 		}
-		Spout.getLogger().info("Controller data exists: " + controllerDataExists);
+
 		byte[] dataMap = null;
 		if (controllerDataExists) {
 			dataMap = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("controller_data")), new byte[0]);
