@@ -26,6 +26,8 @@
  */
 package org.spout.api.util.cuboid;
 
+import java.util.Arrays;
+
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.Vector3;
 
@@ -100,7 +102,6 @@ public class CuboidBlockMaterialBuffer extends ImmutableCuboidBlockMaterialBuffe
 
 	@Override
 	public void copyElement(int thisIndex, int sourceIndex, int runLength) {
-		
 		final int end = thisIndex + runLength;
 		for (; thisIndex < end; thisIndex++) {
 			id[thisIndex] = source.id[sourceIndex];
@@ -116,7 +117,44 @@ public class CuboidBlockMaterialBuffer extends ImmutableCuboidBlockMaterialBuffe
 			throw new IllegalArgumentException("Only CuboidShortBuffers may be used as the data source when copying to a CuboidShortBuffer");
 		}
 	}
-	
+
+	/**
+	 * Sets a horizontal layer of blocks to a given material
+	 * 
+	 * @param y - coordinate of the start of the layer
+	 * @param height of the layer
+	 * @param material to set to
+	 */
+	public void setHorizontalLayer(int y, int height, BlockMaterial material) {
+		setHorizontalLayer(y, height, material.getId(), material.getData());
+	}
+
+	/**
+	 * Sets a horizontal layer of blocks to a given material id and data
+	 * 
+	 * @param y - coordinate of the start of the layer
+	 * @param height of the layer
+	 * @param id of the material to set to
+	 * @param data to set to
+	 */
+	public void setHorizontalLayer(int y, int height, short id, short data) {
+		final int startIndex = getIndex(this.baseX, y, this.baseZ);
+		final int endIndex = getIndex(this.topX - 1, y + height - 1, this.topZ - 1) + 1;
+		if (startIndex < 0 || endIndex <= 0) {
+			throw new IllegalArgumentException("Layer Y-Coordinate (y=" + y + ", height=" + height + ") are outside the buffer");
+		}
+		Arrays.fill(this.id, startIndex, endIndex, id);
+		Arrays.fill(this.data, startIndex, endIndex, data);
+	}
+
+	/**
+	 * Sets a single block material
+	 * 
+	 * @param x - coordinate of the block
+	 * @param y - coordinate of the block
+	 * @param z - coordinate of the block
+	 * @param material to set to
+	 */
 	public void set(int x, int y, int z, BlockMaterial material) {
 		int index = getIndex(x, y, z);
 		if (index < 0) {
@@ -127,6 +165,15 @@ public class CuboidBlockMaterialBuffer extends ImmutableCuboidBlockMaterialBuffe
 		this.data[index] = material.getData();
 	}
 
+	/**
+	 * Sets a single block material id and data
+	 * 
+	 * @param x - coordinate of the block
+	 * @param y - coordinate of the block
+	 * @param z - coordinate of the block
+	 * @param id of the material to set to
+	 * @param data to set to
+	 */
 	public void set(int x, int y, int z, short id, short data) {
 		int index = getIndex(x, y, z);
 		if (index < 0) {

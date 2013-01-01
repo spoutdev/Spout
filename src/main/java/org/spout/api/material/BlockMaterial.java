@@ -614,11 +614,16 @@ public class BlockMaterial extends Material implements Placeable {
 	}
 
 	/**
-	 * Sets the CollisionShape of this block material.
+	 * Sets the CollisionShape of this block material<br>
+	 * If null is specified, it is assumed that this block has no collision
+	 * 
 	 * @param shape The new collision shape of this block material
 	 */
 	public BlockMaterial setCollisionShape(CollisionShape shape) {
 		collisionObject.setCollisionShape(shape);
+		if (shape == null) {
+			collision.setStrategy(CollisionStrategy.NOCOLLIDE);
+		}
 		return this;
 	}
 }
