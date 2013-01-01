@@ -29,6 +29,7 @@ package org.spout.engine.world;
 import gnu.trove.iterator.TShortIterator;
 import gnu.trove.map.TShortObjectMap;
 import gnu.trove.map.hash.TShortObjectHashMap;
+import gnu.trove.procedure.TObjectProcedure;
 import gnu.trove.procedure.TShortObjectProcedure;
 import gnu.trove.set.hash.TIntHashSet;
 
@@ -2002,15 +2003,24 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 	protected void tickBlockComponents(float dt) {
 		synchronized (blockComponents) {
-			for (BlockComponent c : blockComponents.valueCollection()) {
-				try {
-					if (c.canTick()) {
-						c.tick(dt);
-					}
-				} catch (Exception e) {
-					Spout.getLogger().log(Level.SEVERE, "Unhandled exception while ticking block component", e);
+			procedure.dt = dt;
+			blockComponents.forEachValue(procedure);
+		}
+	}
+
+	private final BlockComponentTickProcedure procedure = new BlockComponentTickProcedure();
+	private static class BlockComponentTickProcedure implements TObjectProcedure<BlockComponent> {
+		private float dt;
+		@Override
+		public boolean execute(BlockComponent component) {
+			try {
+				if (component.canTick()) {
+					component.tick(dt);
 				}
+			} catch (Exception e) {
+				Spout.getLogger().log(Level.SEVERE, "Unhandled exception while ticking block component", e);
 			}
+			return true;
 		}
 	}
 
