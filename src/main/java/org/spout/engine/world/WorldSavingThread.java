@@ -165,6 +165,7 @@ public class WorldSavingThread extends Thread{
 						out.close();
 					} catch (IOException ioe) {
 						Spout.getLogger().info("Failed to commit chunk " + chunk);
+						ioe.printStackTrace();
 					}
 				}
 				chunk.saveComplete();
