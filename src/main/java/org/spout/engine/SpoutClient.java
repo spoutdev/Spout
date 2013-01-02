@@ -165,6 +165,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			}
 			// TODO : Wait until the world is fully loaded
 		}
+		renderer = getScheduler().startRenderThread(new Vector2(1204, 796), ccoverride, null);
 		activePlayer = new SpoutClientPlayer("Spouty", super.getDefaultWorld().getSpawnPoint(), SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 		activeCamera = activePlayer.add(CameraComponent.class);
 		activePlayer.add(HitBlockComponent.class);
@@ -183,7 +184,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		getActiveWorld().spawnEntity(e);
 
-		renderer = getScheduler().startRenderThread(new Vector2(1204, 796), ccoverride, null);
 		getScheduler().startGuiThread();
 
 		//TODO Maybe a better way of alerting plugins the client is done?
