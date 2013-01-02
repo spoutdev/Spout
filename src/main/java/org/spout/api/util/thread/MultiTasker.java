@@ -31,15 +31,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.spout.api.Spout;
-
 /**
  * Uses multiple threads to process tasks asynchronously<br>
  * Once started, it runs forever, and needs to be stopped manually<br>
+ * Tasks have to be handled in the {@link handle(task, remaining)} method
  * 
  * @param <T>
  */
-public class MultiTasker<T extends Runnable> {
+public abstract class MultiTasker<T> {
 	private final AtomicInteger size = new AtomicInteger();
 	private final BlockingQueue <T> queue = new LinkedBlockingQueue <T>();
 	private final WorkerThread<?>[] threads;
@@ -65,10 +64,9 @@ public class MultiTasker<T extends Runnable> {
 	 * Called (from another thread) when a task has been handled
 	 * 
 	 * @param task that is handled
-	 * @param remainingTasks to be handled
+	 * @param remaining task count to be handled
 	 */
-	protected void onHandled(T task, int remainingTasks) {
-	}
+	protected abstract void handle(T task, int remaining);
 
 	/**
 	 * Adds a single task to be scheduled
@@ -195,7 +193,7 @@ public class MultiTasker<T extends Runnable> {
 		}
 	}
 
-	private static class WorkerThread<T extends Runnable> extends Thread {
+	private static class WorkerThread<T> extends Thread {
 		private final MultiTasker<T> owner;
 		private int remaining;
 
@@ -208,11 +206,9 @@ public class MultiTasker<T extends Runnable> {
 			remaining = owner.size.decrementAndGet();
 			// Handle the task
 			try {
-				task.run();
+				owner.handle(task, remaining);
 			} catch (Exception e) {
 				e.printStackTrace();
-			} finally {
-				owner.onHandled(task, remaining);
 			}
 		}
 
