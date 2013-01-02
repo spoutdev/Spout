@@ -60,7 +60,8 @@ public interface EntityProtocol {
 	 *
 	 * @param entity the entity
 	 * @param em the reposition manager
+	 * @param force true to send an absolute update even if no update is required
 	 * @return messages to send
 	 */
-	public List<Message> getUpdateMessages(Entity entity, RepositionManager rm);
+	public List<Message> getUpdateMessages(Entity entity, RepositionManager rm, boolean force);
 }

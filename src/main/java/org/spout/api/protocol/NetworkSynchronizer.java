@@ -95,6 +95,8 @@ public abstract class NetworkSynchronizer {
 
 	//Holds all entities that have ever been sync'd to this Synchronizer
 	private final TSyncIntHashSet synchronizedEntities = new TSyncIntHashSet();
+	
+	protected int tickCounter = 0;
 
 	public NetworkSynchronizer(Session session, int minViewDistance) {
 		this.session = session;
@@ -224,6 +226,7 @@ public abstract class NetworkSynchronizer {
 	 * are non-conflicting.
 	 */
 	public void finalizeTick() {
+		tickCounter++;
 		if (removed) {
 			return;
 		}
