@@ -98,7 +98,8 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 			messages.addAll(protocol.getSpawnMessages(e, getRepositionManager()));
 		}
 		if (update) {
-			messages.addAll(protocol.getUpdateMessages(e, getRepositionManager()));
+			// TODO - might be worth adding force support
+			messages.addAll(protocol.getUpdateMessages(e, getRepositionManager(), false));
 		}
 		for (Message message : messages) {
 			this.session.send(false, message);

@@ -58,9 +58,9 @@ public class SpoutEntityProtocol implements EntityProtocol {
 	}
 
 	@Override
-	public List<Message> getUpdateMessages(Entity entity, RepositionManager rm) {
+	public List<Message> getUpdateMessages(Entity entity, RepositionManager rm, boolean force) {
 		List<Message> messages = new ArrayList<Message>(2);
-		if (entity.getTransform().isDirty()) {
+		if (force || entity.getTransform().isDirty()) {
 			messages.add(new EntityPositionMessage(entity.getId(), entity.getTransform().getTransform(), rm));
 		}
 		return messages;
