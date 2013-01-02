@@ -27,14 +27,14 @@
 package org.spout.api.math;
 
 import java.awt.Color;
+import java.security.SecureRandom;
 import java.util.Random;
+
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
 import javolution.context.StackContext;
-
-import org.spout.api.geo.discrete.Transform;
 
 /**
  * Class containing various mathematical functions
@@ -1626,5 +1626,28 @@ public class MathHelper {
 	
 	public static double mod(double x, double div) {
 		return x < 0 ? (x % div) + div : x % div;
+	}
+	
+	private final static ThreadLocal<Random> randomThreadLocal = new ThreadLocal<Random>() {
+		private final long HASH_SEED = 0x710677E178DFAF2EL;
+		
+		protected Random initialValue() {
+			// Overkill, since only a standard Random is used after seeding
+			long hash = HASH_SEED;
+			byte[] arr = SecureRandom.getSeed(8);
+			for (int i = 0; i < 8; i++) {
+				hash = hash << 8 | (arr[i] & 0xFFL);
+			}
+			return new Random(hash);
+		}
+	};
+	
+	/**
+	 * Gets a thread local Random object that is seeded using SecureRandom.  Only one Random is created per thread.
+	 * 
+	 * @return
+	 */
+	public static Random getRandom() {
+		return randomThreadLocal.get();
 	}
 }
