@@ -36,7 +36,11 @@ import org.spout.api.material.range.EffectRange;
 public interface DynamicMaterial {
 
 	/**
-	 * Gets the maximum effect range associated with this dynamic material
+	 * Gets the maximum effect range associated with this dynamic material.<br>
+	 * <br>
+	 * This method is used to determine if the update is localised to a single region.  Otherwise, the update is less parallel.<br>
+	 * <br>
+	 * Note: Updates may not modify blocks that are not in the current region or one of its neighbours. 
 	 * 
 	 * @return the effect range
 	 */
