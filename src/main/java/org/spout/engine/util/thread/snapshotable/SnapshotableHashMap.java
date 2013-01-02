@@ -36,9 +36,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 
 import org.spout.api.scheduler.TickStage;
-import org.spout.api.util.thread.DelayedWrite;
-import org.spout.api.util.thread.LiveRead;
-import org.spout.api.util.thread.SnapshotRead;
+import org.spout.api.util.thread.annotation.DelayedWrite;
+import org.spout.api.util.thread.annotation.LiveRead;
+import org.spout.api.util.thread.annotation.SnapshotRead;
 
 /**
  * A snapshotable class for HashMaps

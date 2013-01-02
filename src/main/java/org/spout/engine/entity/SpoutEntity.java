@@ -54,8 +54,8 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.plugin.Platform;
 import org.spout.api.util.OutwardIterator;
-import org.spout.api.util.thread.DelayedWrite;
-import org.spout.api.util.thread.SnapshotRead;
+import org.spout.api.util.thread.annotation.DelayedWrite;
+import org.spout.api.util.thread.annotation.SnapshotRead;
 
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.component.SpoutPhysicsComponent;

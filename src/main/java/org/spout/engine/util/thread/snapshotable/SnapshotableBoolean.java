@@ -28,9 +28,9 @@ package org.spout.engine.util.thread.snapshotable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.spout.api.util.thread.DelayedWrite;
-import org.spout.api.util.thread.LiveRead;
-import org.spout.api.util.thread.SnapshotRead;
+import org.spout.api.util.thread.annotation.DelayedWrite;
+import org.spout.api.util.thread.annotation.LiveRead;
+import org.spout.api.util.thread.annotation.SnapshotRead;
 
 /**
  * A snapshotable object that supports primitive booleans

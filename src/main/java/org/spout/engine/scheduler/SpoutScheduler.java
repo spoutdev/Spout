@@ -53,7 +53,7 @@ import org.spout.api.scheduler.Task;
 import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.scheduler.Worker;
-import org.spout.api.util.thread.DelayedWrite;
+import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;

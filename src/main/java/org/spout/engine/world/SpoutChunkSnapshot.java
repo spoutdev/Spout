@@ -48,7 +48,7 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.hashing.NibbleQuadHashed;
-import org.spout.api.util.thread.SnapshotRead;
+import org.spout.api.util.thread.annotation.SnapshotRead;
 
 import org.spout.engine.world.SpoutChunk.PopulationState;
 

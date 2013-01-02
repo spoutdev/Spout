@@ -32,9 +32,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
 import org.spout.api.util.map.TUnmodifiableInt21TripleObjectHashMap;
-import org.spout.api.util.thread.DelayedWrite;
-import org.spout.api.util.thread.LiveRead;
-import org.spout.api.util.thread.SnapshotRead;
+import org.spout.api.util.thread.annotation.DelayedWrite;
+import org.spout.api.util.thread.annotation.LiveRead;
+import org.spout.api.util.thread.annotation.SnapshotRead;
 
 import org.spout.engine.util.TripleInt;
 
