@@ -264,7 +264,11 @@ public class DynamicBlockUpdateTree {
 		SpoutChunk c = region.getChunkFromBlock(bx, by, bz, LoadOption.NO_LOAD);
 
 		if (c == null) {
-			return UpdateResult.NOT_DYNAMIC;
+			return UpdateResult.NOT_LOADED;
+		}
+		
+		if (!c.isPopulated()) {
+			return UpdateResult.NOT_POPULATED;
 		}
 		
 		c.setModified();
@@ -456,7 +460,7 @@ public class DynamicBlockUpdateTree {
 	}
 	
 	public static enum UpdateResult {
-		NON_LOCAL, DONE, NOT_DYNAMIC;
+		NON_LOCAL, DONE, NOT_DYNAMIC, NOT_LOADED, NOT_POPULATED;
 		
 		public boolean isLocal() {
 			return this != NON_LOCAL;

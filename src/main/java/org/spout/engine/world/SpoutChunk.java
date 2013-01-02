@@ -1756,8 +1756,19 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			this.initLighting();
 		}
 		parentRegion.onChunkPopulated(this);
+		resetAllDynamicBlocks();
 		setModified();
 		return true;
+	}
+	
+	private void resetAllDynamicBlocks() {
+		for (int x = 0; x < Chunk.BLOCKS.SIZE; x++) {
+			for (int y = 0; y < Chunk.BLOCKS.SIZE; y++) {
+				for (int z = 0; z < Chunk.BLOCKS.SIZE; z++) {
+					this.resetDynamicBlock(x, y, z);
+				}
+			}
+		}
 	}
 
 	public void populate(Populator populator) {
