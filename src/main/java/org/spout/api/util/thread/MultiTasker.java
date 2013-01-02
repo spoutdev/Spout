@@ -29,10 +29,13 @@ package org.spout.api.util.thread;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.spout.api.Spout;
 
 /**
  * Uses multiple threads to process tasks asynchronously<br>
- * Once started, it runs forever, and needs to be stopped manually
+ * Once started, it runs forever, and needs to be stopped manually<br>
  * 
  * @param <T>
  */
@@ -41,8 +44,8 @@ public class MultiTasker<T extends Runnable> {
 	private final BlockingQueue <T> queue = new LinkedBlockingQueue <T>();
 	private final WorkerThread<?>[] threads;
 	private final String rootThreadName;
-	private volatile boolean active = false;
-	private volatile boolean finish = false;
+	private final AtomicInteger activeThreads = new AtomicInteger();
+	private final AtomicReference<ExecutionState> state = new AtomicReference<ExecutionState>(ExecutionState.IDLE);
 
 	/**
 	 * Constructs a new MultiTasker with the specified amount of threads to handle incoming tasks
@@ -56,9 +59,6 @@ public class MultiTasker<T extends Runnable> {
 		// Create the threads that will process the tasks
 		this.threads = new WorkerThread[threadCount];
 		this.rootThreadName = getClass().getSimpleName() + "_Thread";
-		for (int i = 0; i < this.threads.length; i++) {
-			this.threads[i] = new WorkerThread<T>(this, this.rootThreadName + (i + 1));
-		}
 	}
 
 	/**
@@ -114,54 +114,62 @@ public class MultiTasker<T extends Runnable> {
 	 * @return True if threads are running or are ready, False if not
 	 */
 	public boolean isActive() {
-		return this.active;
+		return activeThreads.get() > 0;
 	}
 
 	/**
-	 * Starts all the threads to begin processing
+	 * Starts all the threads to begin processing<br>
+	 * <br>
+	 * Note: <b>start(), stop() and finish() may not be called from two threads at the same time</b>
 	 */
 	public void start() {
 		// Ignore this method if already running
-		if (this.active) {
-			return;
-		}
-		this.active = true;
-		this.finish = false;
-		for (int i = 0; i < this.threads.length; i++) {
-			if (this.threads[i].isAlive()) {
-				// Create a new thread object, interrupt the old one to stop it
-				this.threads[i].interrupt();
-				this.threads[i] = new WorkerThread<T>(this, this.rootThreadName + (i + 1));
+		if (setStart()) {
+			for (int i = 0; i < this.threads.length; i++) {
+				WorkerThread<T> t = new WorkerThread<T>(this, this.rootThreadName + (i + 1));
+				this.threads[i] = t;
+				t.start();
 			}
-			try {
-				this.threads[i].start();
-			} catch (IllegalThreadStateException ex) {
-				// The thread was not alive yet failed to start. It started right 
-				// after the isAlive check, and we can assume that the thread was
-				// already started in a previous call to start()
-			}
+		} else {
+			throw new IllegalStateException("Tasker cannot be started when it is already running");
 		}
 	}
-
+	
 	/**
 	 * Tells all threads to finish all remaining tasks in the queue, does not instantly abort<br>
 	 * Use the {@link join()} method to wait until processing of all the tasks has finished<br>
 	 * <br>
-	 * To only finish the current tasks and not the remaining ones in the queue, use the {@link stop()} method instead
+	 * To only finish the current tasks and not the remaining ones in the queue, use the {@link stop()} method instead<br>
+	 * <br>
+	 * Note: <b>start(), stop() and finish() may not be called from two threads at the same time</b>
 	 */
 	public void finish() {
-		this.finish = true;
-		this.stop();
+		if (!this.state.compareAndSet(ExecutionState.RUNNING, ExecutionState.IDLE_FINISH)) {
+			throw new IllegalStateException("Tasker cannot be finished unless it is running");
+		}
+		this.interruptAll();
 	}
 
 	/**
 	 * Tells all threads to finish processing their current tasks, does not instantly abort<br>
 	 * Use the {@link join()} method to wait until processing of current tasks has finished<br>
 	 * <br>
-	 * To finish processing all remaining tasks and then stop, use the {@link finish()} method instead
+	 * To finish processing all remaining tasks and then stop, use the {@link finish()} method instead<br>
+	 * <br>
+	 * Note: <b>start(), stop() and finish() may not be called from two threads at the same time</b>
 	 */
 	public void stop() {
-		this.active = false;
+		if (!state.compareAndSet(ExecutionState.RUNNING, ExecutionState.IDLE)) {
+			throw new IllegalStateException("Tasker can only be stopped if it is running");
+		}
+		this.interruptAll();
+	}
+	
+	private boolean setStart() {
+		return this.state.compareAndSet(ExecutionState.IDLE, ExecutionState.RUNNING) || this.state.compareAndSet(ExecutionState.IDLE_FINISH, ExecutionState.RUNNING);
+	}
+	
+	private void interruptAll() {
 		// Interrupt all threads to stop processing
 		for (int i = 0; i < this.threads.length; i++) {
 			this.threads[i].interrupt();
@@ -178,6 +186,14 @@ public class MultiTasker<T extends Runnable> {
 			this.threads[i].join();
 		}
 	}
+	
+	private static enum ExecutionState {
+		IDLE, RUNNING, IDLE_FINISH;
+		
+		public boolean shouldFinish() {
+			return this == IDLE_FINISH;
+		}
+	}
 
 	private static class WorkerThread<T extends Runnable> extends Thread {
 		private final MultiTasker<T> owner;
@@ -191,24 +207,39 @@ public class MultiTasker<T extends Runnable> {
 		private void handleTask(T task) {
 			remaining = owner.size.decrementAndGet();
 			// Handle the task
-			task.run();
-			owner.onHandled(task, remaining);
+			try {
+				task.run();
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				owner.onHandled(task, remaining);
+			}
 		}
 
 		@Override
+		public void start() {
+			owner.activeThreads.incrementAndGet();
+			super.start();
+		}
+		
+		@Override
 		public void run() {
 			T next;
-			while (!interrupted()) {
-				try {
-					next = owner.queue.take();
-				} catch (InterruptedException ex) {
-					break;
+			try {
+				while (!interrupted()) {
+					try {
+						next = owner.queue.take();
+					} catch (InterruptedException ex) {
+						break;
+					}
+					handleTask(next);
 				}
-				handleTask(next);
-			}
-			// Finish all the other tasks?
-			while (owner.finish && (next = owner.queue.poll()) != null) {
-				handleTask(next);
+				// Finish all the other tasks?
+				while (owner.state.get().shouldFinish() && (next = owner.queue.poll()) != null) {
+					handleTask(next);
+				}
+			} finally {
+				owner.activeThreads.decrementAndGet();
 			}
 		}
 	}
