@@ -32,8 +32,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.Spout;
+import org.spout.api.geo.cuboid.Region;
 import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.material.block.BlockFullState;
+import org.spout.api.math.IntVector3;
 import org.spout.api.math.MathHelper;
 import org.spout.api.util.StringMap;
 
@@ -85,6 +87,7 @@ public abstract class MaterialRegistry {
 	 * @return id of the material registered
 	 */
 	protected static int register(Material material) {
+		testEffectRanges(material);
 		if (material.isSubMaterial()) {
 			material.getParentMaterial().registerSubMaterial(material);
 			nameLookup.put(formatName(material.getDisplayName()), material);
@@ -225,5 +228,29 @@ public abstract class MaterialRegistry {
 		}
 
 		return minimumMask;
+	}
+	
+	private static void testEffectRanges(Material m) {
+		if (m instanceof DynamicMaterial) {
+			testEffectRange(m, ((DynamicMaterial) m).getDynamicRange(), "Dynamic effect range");
+		}
+		if (m instanceof BlockMaterial) {
+			testEffectRange(m, ((BlockMaterial) m).getMaximumPhysicsRange((short) 0), "Physics maximum effect range");
+		}
+	}
+	
+	private static void testEffectRange(Material m, Iterable<IntVector3> range, String rangeType) {
+		if (range == null) {
+			throw new NullPointerException(rangeType + " must be set before registering material");
+		}
+		int maxRange = Region.BLOCKS.SIZE;
+		for (IntVector3 i : range) {
+			int dx = i.getX();
+			int dy = i.getY();
+			int dz = i.getZ();
+			if (dx < -maxRange || dx > maxRange || dy < -maxRange || dy > maxRange || dz < -maxRange || dz > maxRange) {
+				throw new UnsupportedOperationException(rangeType + " for material " + m + " is more than 1 Region away for the source block " + dx + ", " + dy + ", " + dz);
+			}
+		}
 	}
 }
