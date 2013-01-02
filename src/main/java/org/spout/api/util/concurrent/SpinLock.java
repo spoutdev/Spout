@@ -129,5 +129,21 @@ public class SpinLock implements Lock {
 			}
 		}
 	}
+	
+	public static void dualLock(Lock a, Lock b) {
+		while (true) {
+			a.lock();
+			if (b.tryLock()) {
+				return;
+			}
+			a.unlock();
+			b.lock();
+			if (a.tryLock()) {
+				return;
+			}
+			b.unlock();
+		}
+	}
 
 }
+

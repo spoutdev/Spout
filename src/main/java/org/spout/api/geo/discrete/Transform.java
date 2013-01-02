@@ -153,6 +153,8 @@ public final class Transform implements Serializable {
 		}
 
 		try {
+			// TODO - no deadlock safe -- needs to use SpinLock.dualLock too
+			//      - could add a nonLockingSet()
 			transform.lock.lock();
 			set(transform.position, transform.rotation, transform.scale);
 		} finally {
@@ -245,8 +247,7 @@ public final class Transform implements Serializable {
 		}
 		Transform t = (Transform) other;
 		try {
-			lock.lock();
-			t.lock.lock();
+			SpinLock.dualLock(lock, t.lock);
 			return position.equals(t.position) && rotation.equals(t.rotation) && scale.equals(t.scale);
 		} finally {
 			lock.unlock();
