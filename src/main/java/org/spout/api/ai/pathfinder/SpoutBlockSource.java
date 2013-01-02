@@ -24,10 +24,37 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.ai;
+package org.spout.api.ai.pathfinder;
 
-public interface Plan<T> {
-	boolean isComplete();
+import org.spout.api.geo.World;
+import org.spout.api.geo.discrete.Point;
+import org.spout.api.material.Material;
+import org.spout.api.math.Vector3;
 
-	void update(T t);
+public class SpoutBlockSource extends AbstractBlockSource {
+	private final World world;
+
+	public SpoutBlockSource(Point root) {
+		this.world = root.getWorld();
+	}
+
+	@Override
+	public int getBlockTypeIdAt(int x, int y, int z) {
+		return world.getBlockMaterial(x, y, z).getId();
+	}
+
+	@Override
+	public int getLightLevel(Vector3 pos) {
+		return world.getBlock(pos).getLight();
+	}
+
+	@Override
+	public int getBlockTypeIdAt(Vector3 pos) {
+		return getMaterialAt(pos).getId();
+	}
+
+	@Override
+	public Material getMaterialAt(Vector3 pos) {
+		return world.getBlockMaterial(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
+	}
 }

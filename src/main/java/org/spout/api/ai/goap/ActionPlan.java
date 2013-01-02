@@ -31,7 +31,7 @@ import java.util.Arrays;
 import org.spout.api.ai.Agent;
 import org.spout.api.ai.Plan;
 
-public class ActionPlan implements Plan, Comparable<Plan> {
+public class ActionPlan implements Plan<Agent>, Comparable<Plan<Agent>> {
 	private final float cost;
 	private final WorldState end;
 	private Action executing;
@@ -55,7 +55,7 @@ public class ActionPlan implements Plan, Comparable<Plan> {
 	}
 
 	@Override
-	public int compareTo(Plan o) {
+	public int compareTo(Plan<Agent> o) {
 		return (int) (this.cost - ((ActionPlan) o).cost);
 	}
 

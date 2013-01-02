@@ -24,10 +24,34 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.ai;
+package org.spout.api.ai.pathfinder;
 
-public interface Plan<T> {
-	boolean isComplete();
+import org.spout.api.math.Vector3;
 
-	void update(T t);
+public class VectorGoal implements org.spout.api.ai.AStarGoal<VectorNode> {
+	private final Vector3 goal;
+
+	public VectorGoal(Vector3 goal) {
+		this.goal = goal;
+	}
+
+	@Override
+	public float g(VectorNode from, VectorNode to) {
+		return from.distance(to);
+	}
+
+	@Override
+	public float getInitialCost(VectorNode node) {
+		return node.heuristicDistance(goal);
+	}
+
+	@Override
+	public float h(VectorNode from) {
+		return from.heuristicDistance(goal);
+	}
+
+	@Override
+	public boolean isFinished(VectorNode node) {
+		return node.at(goal);
+	}
 }

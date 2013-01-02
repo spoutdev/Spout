@@ -32,6 +32,7 @@ import java.util.Deque;
 import java.util.List;
 
 import org.spout.api.ai.AStarNode;
+import org.spout.api.ai.Agent;
 import org.spout.api.ai.Plan;
 
 import com.google.common.collect.Lists;
@@ -53,7 +54,7 @@ public class PlannerNode extends AStarNode {
 	}
 
 	@Override
-	public Plan buildPlan() {
+	public Plan<Agent> buildPlan() {
 		Deque<Action> actions = new ArrayDeque<Action>();
 		Iterable<PlannerNode> parents = getParents();
 		for (PlannerNode start : parents) {

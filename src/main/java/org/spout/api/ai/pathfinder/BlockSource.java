@@ -24,10 +24,19 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.ai;
+package org.spout.api.ai.pathfinder;
 
-public interface Plan<T> {
-	boolean isComplete();
+import org.spout.api.material.Material;
+import org.spout.api.math.Vector3;
 
-	void update(T t);
+public interface BlockSource {
+	int getBlockTypeIdAt(int x, int y, int z);
+
+	int getBlockTypeIdAt(Vector3 pos);
+
+	int getLightLevel(Vector3 pos);
+
+	Material getMaterialAt(int x, int y, int z);
+
+	Material getMaterialAt(Vector3 pos);
 }

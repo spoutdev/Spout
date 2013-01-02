@@ -35,7 +35,7 @@ public interface PlannerAgent extends Agent {
 
 	boolean contains(WorldState state);
 
-	Plan generatePlan(WorldState to);
+	Plan<Agent> generatePlan(WorldState to);
 
 	Iterable<Action> getAvailableActions();
 
