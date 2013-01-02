@@ -35,7 +35,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.Session;
-import org.spout.api.util.thread.Threadsafe;
+import org.spout.api.util.thread.annotation.Threadsafe;
 
 public interface Player extends CommandSource, Entity {
 	/**

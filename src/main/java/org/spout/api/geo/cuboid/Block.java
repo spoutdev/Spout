@@ -40,9 +40,9 @@ import org.spout.api.material.source.DataSource;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
-import org.spout.api.util.thread.DelayedWrite;
-import org.spout.api.util.thread.LiveWrite;
-import org.spout.api.util.thread.Threadsafe;
+import org.spout.api.util.thread.annotation.DelayedWrite;
+import org.spout.api.util.thread.annotation.LiveWrite;
+import org.spout.api.util.thread.annotation.Threadsafe;
 
 public interface Block extends MaterialSource, WorldSource {
 

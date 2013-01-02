@@ -28,9 +28,9 @@ package org.spout.api.geo;
 
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.math.Vector3;
-import org.spout.api.util.thread.DelayedWrite;
-import org.spout.api.util.thread.LiveRead;
-import org.spout.api.util.thread.SnapshotRead;
+import org.spout.api.util.thread.annotation.DelayedWrite;
+import org.spout.api.util.thread.annotation.LiveRead;
+import org.spout.api.util.thread.annotation.SnapshotRead;
 
 public interface AreaChunkAccess extends AreaBlockAccess {
 

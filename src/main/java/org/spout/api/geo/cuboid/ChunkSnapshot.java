@@ -35,7 +35,7 @@ import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.AreaBlockSource;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.util.thread.SnapshotRead;
+import org.spout.api.util.thread.annotation.SnapshotRead;
 
 public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	/**

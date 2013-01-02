@@ -37,7 +37,7 @@ import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.StringUtil;
 import org.spout.api.util.concurrent.SpinLock;
-import org.spout.api.util.thread.Threadsafe;
+import org.spout.api.util.thread.annotation.Threadsafe;
 
 @ThreadSafe
 public final class Transform implements Serializable {

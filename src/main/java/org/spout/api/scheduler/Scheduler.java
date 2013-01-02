@@ -26,7 +26,7 @@
  */
 package org.spout.api.scheduler;
 
-import org.spout.api.util.thread.Threadsafe;
+import org.spout.api.util.thread.annotation.Threadsafe;
 
 public interface Scheduler extends TaskManager {
 

@@ -28,7 +28,7 @@ package org.spout.api.geo;
 
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
-import org.spout.api.util.thread.DelayedWrite;
+import org.spout.api.util.thread.annotation.DelayedWrite;
 
 public interface AreaPhysicsAccess {
 

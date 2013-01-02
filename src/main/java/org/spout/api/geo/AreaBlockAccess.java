@@ -31,8 +31,8 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
-import org.spout.api.util.thread.LiveWrite;
-import org.spout.api.util.thread.Threadsafe;
+import org.spout.api.util.thread.annotation.LiveWrite;
+import org.spout.api.util.thread.annotation.Threadsafe;
 
 public interface AreaBlockAccess extends AreaBlockSource {
 	/**

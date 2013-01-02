@@ -26,7 +26,7 @@
  */
 package org.spout.api.event.object;
 
-import org.spout.api.util.thread.Threadsafe;
+import org.spout.api.util.thread.annotation.Threadsafe;
 
 /**
  * Base interface for an object that can accept listeners for a specified event

@@ -49,9 +49,9 @@ import org.spout.api.model.Model;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.Named;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
-import org.spout.api.util.thread.LiveRead;
-import org.spout.api.util.thread.SnapshotRead;
-import org.spout.api.util.thread.Threadsafe;
+import org.spout.api.util.thread.annotation.LiveRead;
+import org.spout.api.util.thread.annotation.SnapshotRead;
+import org.spout.api.util.thread.annotation.Threadsafe;
 
 /**
  * Represents a World.

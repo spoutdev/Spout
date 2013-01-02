@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
-import org.spout.api.util.thread.Threadsafe;
+import org.spout.api.util.thread.annotation.Threadsafe;
 
 public interface TaskManager {
 	/**

@@ -37,10 +37,10 @@ import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.tickable.Tickable;
-import org.spout.api.util.thread.DelayedWrite;
-import org.spout.api.util.thread.LiveRead;
-import org.spout.api.util.thread.LiveWrite;
-import org.spout.api.util.thread.SnapshotRead;
+import org.spout.api.util.thread.annotation.DelayedWrite;
+import org.spout.api.util.thread.annotation.LiveRead;
+import org.spout.api.util.thread.annotation.LiveWrite;
+import org.spout.api.util.thread.annotation.SnapshotRead;
 
 /**
  * Represents an entity, which may or may not be spawned into the world.

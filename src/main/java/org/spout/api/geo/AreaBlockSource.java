@@ -29,8 +29,8 @@ package org.spout.api.geo;
 import org.spout.api.component.type.BlockComponent;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.util.thread.LiveRead;
-import org.spout.api.util.thread.SnapshotRead;
+import org.spout.api.util.thread.annotation.LiveRead;
+import org.spout.api.util.thread.annotation.SnapshotRead;
 
 public interface AreaBlockSource {
 	/**

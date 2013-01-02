@@ -24,12 +24,18 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.util.thread;
+package org.spout.api.util.thread.annotation;
 
-public @interface MainThreadOnly {
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Documented
+@Retention(value = RetentionPolicy.RUNTIME)
+public @interface DelayedWrite {
 	public String author() default "SpoutDev";
 
 	public String version() default "1.0";
 
-	public String shortDescription() default "Indicates that the method may only be called from the main thread";
+	public String shortDescription() default "Indicates that this method submits an update for writing.  The changes will be incorporated into the next snapshot.  Snapshots are taken at the end of every tick.";
 }

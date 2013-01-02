@@ -61,9 +61,9 @@ import org.spout.api.protocol.SessionRegistry;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.Named;
-import org.spout.api.util.thread.DelayedWrite;
-import org.spout.api.util.thread.LiveRead;
-import org.spout.api.util.thread.SnapshotRead;
+import org.spout.api.util.thread.annotation.DelayedWrite;
+import org.spout.api.util.thread.annotation.LiveRead;
+import org.spout.api.util.thread.annotation.SnapshotRead;
 
 /**
  * Represents the core of an implementation of an engine (powers a game).
