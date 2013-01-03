@@ -26,16 +26,19 @@
  */
 package org.spout.api.entity;
 
+import java.util.Iterator;
 import java.util.UUID;
 
 import org.spout.api.component.ComponentHolder;
-import org.spout.api.component.type.EntityComponent;
 import org.spout.api.component.impl.NetworkComponent;
 import org.spout.api.component.impl.TransformComponent;
+import org.spout.api.component.type.EntityComponent;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.geo.discrete.Transform;
+import org.spout.api.math.IntVector3;
 import org.spout.api.tickable.Tickable;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.LiveRead;
@@ -117,6 +120,15 @@ public interface Entity extends Tickable, WorldSource, ComponentHolder {
 	 */
 	@DelayedWrite
 	public void setObserver(boolean obs);
+	
+	/**
+	 * Sets the entity as an observer using a custom view volume.<br/>
+	 * An observer is any entity that is allowed to keep chunks from being unloaded.</br>
+	 * Note: The custom view volume does not move with the entity
+	 * @param custom True if the entity should be an observer, false if not
+	 */
+	@DelayedWrite
+	public void setObserver(Iterator<IntVector3> custom);
 
 	/**
 	 * Checks whether or not the entity is currently observing the region it is in.<br/>
