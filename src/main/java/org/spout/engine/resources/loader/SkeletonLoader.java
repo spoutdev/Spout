@@ -54,7 +54,7 @@ public class SkeletonLoader extends BasicResourceLoader<Skeleton> {
 		
 		loadBone(skeleton, root, null, node);
 
-		skeleton.print();
+		//skeleton.print(); //Debug to check skeleton loaded
 		
 		System.out.println("Loadind skeleton SUCESS");
 		
