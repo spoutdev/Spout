@@ -34,6 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.ClosedByInterruptException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -211,11 +212,28 @@ public class SimpleRegionFile implements ByteArrayArray {
 			int actualLength = blockActualLength[i].get();
 			byte[] result = new byte[actualLength];
 			synchronized (fileSyncObject) {
-				if (file == null) {
-					this.file = new MappedRandomAccessFile(this.filePath, "rw");
+				boolean success = false;
+				boolean interrupted = false;
+				try {
+					while (!success) {
+						success = true;
+						try {
+							if (file == null) {
+								this.file = new MappedRandomAccessFile(this.filePath, "rw");
+							}
+							file.seek(start);
+							file.readFully(result);
+						} catch (ClosedByInterruptException e) {
+							this.file = null;
+							success = false;
+							interrupted = true;
+						}
+					}
+				} finally {
+					if (interrupted) {
+						Thread.currentThread().interrupt();
+					}
 				}
-				file.seek(start);
-				file.readFully(result);
 			}
 			return new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(result)));
 		} finally {
@@ -251,12 +269,29 @@ public class SimpleRegionFile implements ByteArrayArray {
 		refreshAccess();
 		int start = reserveBlockSegments(i, length);
 		synchronized(fileSyncObject) {
-			if (file == null) {
-				this.file = new MappedRandomAccessFile(this.filePath, "rw");
+			boolean success = false;
+			boolean interrupted = false;
+			try {
+				while (!success) {
+					success = true;
+					try {
+						if (file == null) {
+							this.file = new MappedRandomAccessFile(this.filePath, "rw");
+						}
+						this.writeFAT(i, start, length);
+						file.seek(start << segmentSize);
+						file.write(buf, 0, length);
+					} catch (ClosedByInterruptException e) {
+						this.file = null;
+						success = false;
+						interrupted = true;
+					}
+				}
+			} finally {
+				if (interrupted) {
+					Thread.currentThread().interrupt();
+				}
 			}
-			this.writeFAT(i, start, length);
-			file.seek(start << segmentSize);
-			file.write(buf, 0, length);
 		}
 	}
 	
@@ -490,12 +525,29 @@ public class SimpleRegionFile implements ByteArrayArray {
 	private void writeFAT(int i, int start, int actualLength) throws IOException {
 		int FATEntryPosition = getFATOffset() + (i << 3);
 		synchronized(fileSyncObject) {
-			if (file == null) {
-				this.file = new MappedRandomAccessFile(this.filePath, "rw");
+			boolean success = false;
+			boolean interrupted = false;
+			try {
+				while (!success) {
+					success = true;
+					try {
+						if (file == null) {
+							this.file = new MappedRandomAccessFile(this.filePath, "rw");
+						}
+						file.seek(FATEntryPosition);
+						file.writeInt(start);
+						file.writeInt(actualLength);
+					} catch (ClosedByInterruptException e) {
+						this.file = null;
+						success = false;
+						interrupted = true;
+					}
+				}
+			} finally {
+				if (interrupted) {
+					Thread.currentThread().interrupt();
+				}
 			}
-			file.seek(FATEntryPosition);
-			file.writeInt(start);
-			file.writeInt(actualLength);
 		}
 	}
 	
