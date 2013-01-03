@@ -26,8 +26,10 @@
  */
 package org.spout.engine.input;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,6 +42,7 @@ import org.spout.api.component.type.WidgetComponent;
 import org.spout.api.event.player.PlayerKeyEvent;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Screen;
+import org.spout.api.input.InputExecutor;
 import org.spout.api.input.InputManager;
 import org.spout.api.input.Keyboard;
 import org.spout.api.input.Mouse;
@@ -51,6 +54,9 @@ public class SpoutInputManager implements InputManager {
 	private static final Keyboard FOCUS_KEY = Keyboard.KEY_TAB;
 	private final Map<Keyboard, String> keyCommands = new HashMap<Keyboard, String>();
 	private final Map<Mouse, String> mouseCommands = new HashMap<Mouse, String>();
+	
+	private final List<InputExecutor> inputExecutors = new ArrayList<InputExecutor>();
+	
 	private boolean redirected = false;
 
 	public SpoutInputManager()
@@ -206,6 +212,12 @@ public class SpoutInputManager implements InputManager {
 		}
 	}
 
+	public void execute(float dt){
+		for(InputExecutor executor : inputExecutors){
+			executor.execute(dt);
+		}
+	}
+	
 	@Override
 	public void bind(Keyboard key, String command) {
 		keyCommands.put(key, command);
@@ -224,5 +236,9 @@ public class SpoutInputManager implements InputManager {
 	@Override
 	public void setRedirected(boolean redirect) {
 		redirected = redirect;
+	}
+
+	public void addInputExecutors(InputExecutor executor) {
+		inputExecutors.add(executor);
 	}
 }

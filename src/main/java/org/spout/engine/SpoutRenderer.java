@@ -39,6 +39,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.PixelFormat;
 
+import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
@@ -59,6 +60,7 @@ import org.spout.api.render.Shader;
 
 import org.spout.engine.batcher.SpriteBatch;
 import org.spout.engine.entity.component.EntityRendererComponent;
+import org.spout.engine.input.SpoutInputManager;
 import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.WorldRenderer;
@@ -181,6 +183,12 @@ public class SpoutRenderer {
 
 		client.getActiveCamera().updateView();
 
+		//Pull input each frame
+		((SpoutInputManager)((Client)Spout.getEngine()).getInputManager()).pollInput(client.getActivePlayer());
+		
+		//Call InputExecutor registred by plugin
+		((SpoutInputManager)((Client)Spout.getEngine()).getInputManager()).execute(dt);
+		
 		Mouse.setGrabbed(screenStack.getVisibleScreens().getLast().grabsMouse());
 
 		worldRenderer.render();
