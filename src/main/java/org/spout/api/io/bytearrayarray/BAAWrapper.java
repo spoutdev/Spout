@@ -30,8 +30,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.ClosedByInterruptException;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.spout.api.Spout;
 import org.spout.api.io.regionfile.SimpleRegionFile;
 
 public class BAAWrapper {
@@ -181,48 +183,58 @@ public class BAAWrapper {
 
 	private ByteArrayArray getByteArrayArray() {
 		int count = 0;
-		while (true) {
-			ByteArrayArray baa = baaRef.get();
+		boolean interrupted = false;
+		try {
+			while (true) {
+				ByteArrayArray baa = baaRef.get();
 
-			if (baa != null) {
-				// If the baa exists and isn't closed return it
-				if (!baa.isClosed()) {
-					return baa;
+				if (baa != null) {
+					// If the baa exists and isn't closed return it
+					if (!baa.isClosed()) {
+						return baa;
+					}
+					baaRef.compareAndSet(baa, null);
+					continue;
 				}
-				baaRef.compareAndSet(baa, null);
-				continue;
-			}
 
-			if (baaRef.compareAndSet(null, openInProgress)) {
-				// Successfully claimed the right to open a new file
-				// Attempt to open the file.  If an IOException is throw return null
-				//baa = null; // not needed - already null
-				try {
+				if (baaRef.compareAndSet(null, openInProgress)) {
+					// Successfully claimed the right to open a new file
+					// Attempt to open the file.  If an IOException is throw return null
+					//baa = null; // not needed - already null
 					try {
-						baa = new SimpleRegionFile(file, segmentSize, entries, timeout);
-					} catch (IOException e) {
-						System.out.println("Error when creating SimpleRegionFile object: " + file);
-						//baa = null; // not needed - already null. The assignment above comes after the potential IOException. 
-					}
+						try {
+							baa = new SimpleRegionFile(file, segmentSize, entries, timeout);
+						} catch (ClosedByInterruptException e1) {
+							interrupted = true;
+							baaRef.compareAndSet(openInProgress, null);
+						} catch (IOException e) {
+							System.out.println("Error when creating SimpleRegionFile object: " + file);
+							//baa = null; // not needed - already null. The assignment above comes after the potential IOException. 
+						}
 
-					return baa;
-				} finally {
-					if (!baaRef.compareAndSet(openInProgress, baa)) {
-						throw new IllegalStateException("chunkStore variable changed outside locking scheme");
+						return baa;
+					} finally {
+						if (!baaRef.compareAndSet(openInProgress, baa)) {
+							throw new IllegalStateException("chunkStore variable changed outside locking scheme");
+						}
 					}
+				}
+
+				// Some other thread is trying to open the file
+				// Spinning lock, then yield and then sleep
+				count++;
+				if (count > 10) {
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException e) {
+					}
+				} else if (count > 0) {
+					Thread.yield();
 				}
 			}
-
-			// Some other thread is trying to open the file
-			// Spinning lock, then yield and then sleep
-			count++;
-			if (count > 10) {
-				try {
-					Thread.sleep(1);
-				} catch (InterruptedException e) {
-				}
-			} else if (count > 0) {
-				Thread.yield();
+		} finally {
+			if (interrupted) {
+				Thread.currentThread().interrupt();
 			}
 		}
 	}
