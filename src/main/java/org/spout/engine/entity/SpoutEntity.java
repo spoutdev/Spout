@@ -27,7 +27,9 @@
 package org.spout.engine.entity;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -56,7 +58,6 @@ import org.spout.api.plugin.Platform;
 import org.spout.api.util.OutwardIterator;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.SnapshotRead;
-
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.component.SpoutPhysicsComponent;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
@@ -69,10 +70,12 @@ import org.spout.engine.world.SpoutRegion;
 
 public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshotable {
 	public static final int NOTSPAWNEDID = -1;
+	private static final Iterator<IntVector3> OBSERVING = new ArrayList<IntVector3>().iterator();
+	private static final Iterator<IntVector3> NOT_OBSERVING = new ArrayList<IntVector3>().iterator();
 	private final SnapshotManager snapshotManager = new SnapshotManager();
 	//Snapshotable fields
 	private final SnapshotableReference<EntityManager> entityManager = new SnapshotableReference<EntityManager>(snapshotManager, null);
-	private final SnapshotableBoolean observer = new SnapshotableBoolean(snapshotManager, false);
+	private final SnapshotableReference<Iterator<IntVector3>> observer = new SnapshotableReference<Iterator<IntVector3>>(snapshotManager, NOT_OBSERVING);
 	private final SnapshotableBoolean save = new SnapshotableBoolean(snapshotManager, false);
 	private final AtomicInteger id = new AtomicInteger(NOTSPAWNEDID);
 	private final SnapshotableInt viewDistance = new SnapshotableInt(snapshotManager, 10);
@@ -239,7 +242,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		}
 
 		//Entity changed chunks as observer OR observer status changed so update
-		if ((chunk != chunkLive && observer.getLive()) || observer.isDirty()) {
+		if ((chunk != chunkLive && (observer.getLive() == OBSERVING)) || observer.isDirty()) {
 			updateObserver();
 		}
 	}
@@ -262,9 +265,12 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		int cy = c.getY();
 		int cz = c.getZ();
 		HashSet<SpoutChunk> observing = new HashSet<SpoutChunk>((viewDistance * viewDistance * viewDistance * 3) / 2);
-		OutwardIterator oi = new OutwardIterator(cx, cy, cz, viewDistance);
-		while (oi.hasNext()) {
-			IntVector3 v = oi.next();
+		Iterator<IntVector3> itr = observer.getLive();
+		if (itr == OBSERVING) {
+			itr = new OutwardIterator(cx, cy, cz, viewDistance);
+		}
+		while (itr.hasNext()) {
+			IntVector3 v = itr.next();
 			Chunk chunk = w.getChunk(v.getX(), v.getY(), v.getZ(), LoadOption.LOAD_GEN);
 			chunk.refreshObserver(this);
 			observing.add((SpoutChunk) chunk);
@@ -318,12 +324,21 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	public void setObserver(boolean obs) {
-		observer.set(obs);
+		observer.set(obs ? OBSERVING : NOT_OBSERVING);
+	}
+	
+	@Override
+	public void setObserver(Iterator<IntVector3> custom) {
+		if (custom == null) {
+			setObserver(false);
+		} else {
+			observer.set(custom);
+		}
 	}
 
 	@Override
 	public boolean isObserver() {
-		return observer.get();
+		return observer.get() != NOT_OBSERVING;
 	}
 
 	@Override
