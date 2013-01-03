@@ -224,9 +224,12 @@ public class SimpleRegionFile implements ByteArrayArray {
 							file.seek(start);
 							file.readFully(result);
 						} catch (ClosedByInterruptException e) {
+							interrupted |= Thread.interrupted();
+							if (file != null) {
+								file.close();
+							}
 							this.file = null;
 							success = false;
-							interrupted = true;
 						}
 					}
 				} finally {
@@ -282,9 +285,12 @@ public class SimpleRegionFile implements ByteArrayArray {
 						file.seek(start << segmentSize);
 						file.write(buf, 0, length);
 					} catch (ClosedByInterruptException e) {
+						interrupted |= Thread.interrupted();
+						if (file != null) {
+							file.close();
+						}
 						this.file = null;
 						success = false;
-						interrupted = true;
 					}
 				}
 			} finally {
@@ -538,9 +544,12 @@ public class SimpleRegionFile implements ByteArrayArray {
 						file.writeInt(start);
 						file.writeInt(actualLength);
 					} catch (ClosedByInterruptException e) {
+						interrupted |= Thread.interrupted();
+						if (file != null) {
+							file.close();
+						}
 						this.file = null;
 						success = false;
-						interrupted = true;
 					}
 				}
 			} finally {

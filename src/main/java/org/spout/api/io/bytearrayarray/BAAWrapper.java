@@ -205,10 +205,12 @@ public class BAAWrapper {
 						try {
 							baa = new SimpleRegionFile(file, segmentSize, entries, timeout);
 						} catch (ClosedByInterruptException e1) {
-							interrupted = true;
+							interrupted |= Thread.interrupted();
 							baaRef.compareAndSet(openInProgress, null);
+							continue;
 						} catch (IOException e) {
 							System.out.println("Error when creating SimpleRegionFile object: " + file);
+							baaRef.compareAndSet(openInProgress, null);
 							//baa = null; // not needed - already null. The assignment above comes after the potential IOException. 
 						}
 
