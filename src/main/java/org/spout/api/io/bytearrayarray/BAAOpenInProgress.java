@@ -75,4 +75,8 @@ public final class BAAOpenInProgress implements ByteArrayArray {
 		return false;
 	}
 
+	@Override
+	public void delete(int i) throws IOException {
+	}
+
 }
