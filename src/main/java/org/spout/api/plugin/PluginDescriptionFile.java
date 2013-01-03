@@ -36,14 +36,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.SafeConstructor;
-
+import org.spout.api.exception.ConfigurationException;
 import org.spout.api.exception.InvalidDescriptionFileException;
+import org.spout.api.util.config.ConfigurationNode;
+import org.spout.api.util.config.ConfigurationNodeSource;
 import org.spout.api.util.config.serialization.Serialization;
+import org.spout.api.util.config.yaml.YamlConfiguration;
 
 public class PluginDescriptionFile {
-	private static final Yaml yaml = new Yaml(new SafeConstructor());
 	public static final List<String> RESTRICTED_NAMES = Collections.unmodifiableList(Arrays.asList(
 			"org.spout",
 			"org.getspout",
@@ -73,15 +73,33 @@ public class PluginDescriptionFile {
 	}
 
 	public PluginDescriptionFile(InputStream stream) throws InvalidDescriptionFileException {
-		load((Map<?, ?>) yaml.load(stream));
+		YamlConfiguration yaml = new YamlConfiguration(stream);
+		try {
+			yaml.load();
+		} catch (ConfigurationException e) {
+			throw new InvalidDescriptionFileException(e);
+		}
+		load(yaml);
 	}
 
 	public PluginDescriptionFile(Reader reader) throws InvalidDescriptionFileException {
-		load((Map<?, ?>) yaml.load(reader));
+		YamlConfiguration yaml = new YamlConfiguration(reader);
+		try {
+			yaml.load();
+		} catch (ConfigurationException e) {
+			throw new InvalidDescriptionFileException(e);
+		}
+		load(yaml);
 	}
 
 	public PluginDescriptionFile(String raw) throws InvalidDescriptionFileException {
-		load((Map<?, ?>) yaml.load(raw));
+		YamlConfiguration yaml = new YamlConfiguration(raw);
+		try {
+			yaml.load();
+		} catch (ConfigurationException e) {
+			throw new InvalidDescriptionFileException(e);
+		}
+		load(yaml);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -157,6 +175,78 @@ public class PluginDescriptionFile {
 		}
 	}
 
+	private void load(YamlConfiguration yaml) throws InvalidDescriptionFileException {
+		name = getEntry("name", String.class, yaml);
+		if (!name.matches("^[A-Za-z0-9 _.-]+$")) {
+			throw new InvalidDescriptionFileException("The field 'name' in properties.yml contains invalid characters.");
+		}
+		if (name.toLowerCase().contains("spout")) {
+			throw new InvalidDescriptionFileException("The plugin '" + name + "' has Spout in the name. This is not allowed.");
+		}
+
+		main = getEntry("main", String.class, yaml);
+		if (!isOfficialPlugin(main)) {
+			for (String namespace : RESTRICTED_NAMES) {
+				if (main.startsWith(namespace)) {
+					throw new InvalidDescriptionFileException("The use of the namespace '" + namespace + "' is not permitted.");
+				}
+			}
+		}
+
+		version = getEntry("version", String.class, yaml);
+		platform = getEntry("platform", Platform.class, yaml);
+		fullname = name + " v" + version;
+
+		if (yaml.hasChild("author")) {
+			authors.add(getEntry("author", String.class, yaml));
+		}
+
+		if (yaml.hasChild("authors")) {
+			authors.addAll(getEntry("authors", List.class, yaml));
+		}
+
+		if (yaml.hasChild("depends")) {
+			depends = getEntry("depends", List.class, yaml);
+		}
+
+		if (yaml.hasChild("softdepends")) {
+			softdepends = getEntry("softdepends", List.class, yaml);
+		}
+
+		if (yaml.hasChild("description")) {
+			description = getEntry("description", String.class, yaml);
+		}
+
+		if (yaml.hasChild("load")) {
+			load = getEntry("load", LoadOrder.class, yaml);
+		}
+
+		if (yaml.hasChild("reload")) {
+			reload = getEntry("reload", Boolean.class, yaml);
+		}
+
+		if (yaml.hasChild("website")) {
+			website = getEntry("website", String.class, yaml);
+		}
+
+		if (yaml.hasChild("codedlocale")) {
+			Locale[] locales = Locale.getAvailableLocales();
+			for (Locale l : locales) {
+				if (l.getLanguage().equals((new Locale(yaml.getChild("codedlocale").getString())).getLanguage())) {
+					codedLocale = l;
+				}
+			}
+		}
+		if (yaml.hasChild("data")) {
+			Map<String, ConfigurationNode> data = yaml.getChild("data").getChildren();
+			for (Map.Entry<String, ConfigurationNode> entry : data.entrySet()) {
+				String key = entry.getKey();
+				String value = entry.getValue().getString();
+				this.data.put(key, value);
+			}
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	private <T> T getEntry(Object key, Class<T> type, Map<?, ?> values) throws InvalidDescriptionFileException {
 		Object value = values.get(key);
@@ -165,6 +255,14 @@ public class PluginDescriptionFile {
 		}
 
 		return (T) Serialization.deserialize(type, value);
+	}
+
+	private <T> T getEntry(String key, Class<T> type, ConfigurationNodeSource src) throws InvalidDescriptionFileException {
+		T value = src.getChild(key).getTypedValue(type);
+		if (value == null) {
+			throw new InvalidDescriptionFileException("The field '" + key + "' is not present in the properties.yml!");
+		}
+		return value;
 	}
 
 	/**

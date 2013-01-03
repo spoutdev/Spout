@@ -66,6 +66,7 @@ public class YamlConfiguration extends MapBasedConfiguration implements FileConf
 	private final File file;
 	private final InputStream stream;
 	private final String string;
+	private final Reader reader;
 	private final Yaml yaml;
 	private String[] header = null;
 
@@ -73,6 +74,7 @@ public class YamlConfiguration extends MapBasedConfiguration implements FileConf
 		this.file = file;
 		this.stream = null;
 		this.string = null;
+		this.reader = null;
 
 		DumperOptions options = new DumperOptions();
 
@@ -86,7 +88,22 @@ public class YamlConfiguration extends MapBasedConfiguration implements FileConf
 		this.file = null;
 		this.stream = stream;
 		this.string = null;
+		this.reader = null;
 
+		DumperOptions options = new DumperOptions();
+
+		options.setIndent(4);
+		options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
+		yaml = new Yaml(new SafeConstructor(), new EmptyNullRepresenter(), options);
+	}
+	
+	public YamlConfiguration(Reader reader) {
+		this.file = null;
+		this.stream = null;
+		this.string = null;
+		this.reader = reader;
+		
 		DumperOptions options = new DumperOptions();
 
 		options.setIndent(4);
@@ -99,6 +116,7 @@ public class YamlConfiguration extends MapBasedConfiguration implements FileConf
 		this.file = null;
 		this.stream = null;
 		this.string = string;
+		this.reader = null;
 
 		DumperOptions options = new DumperOptions();
 
@@ -112,6 +130,7 @@ public class YamlConfiguration extends MapBasedConfiguration implements FileConf
 		this.file = null;
 		this.stream = null;
 		this.string = null;
+		this.reader = null;
 
 		DumperOptions options = new DumperOptions();
 
@@ -274,7 +293,9 @@ public class YamlConfiguration extends MapBasedConfiguration implements FileConf
 	}
 
 	protected Reader getReader() throws IOException {
-		if (file != null) {
+		if (reader != null) {
+			return reader;
+		} else if (file != null) {
 			return new InputStreamReader(new FileInputStream(file), "UTF-8");
 		} else if (stream != null) {
 			return new InputStreamReader(stream, "UTF-8");
