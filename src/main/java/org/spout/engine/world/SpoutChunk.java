@@ -26,12 +26,10 @@
  */
 package org.spout.engine.world;
 
-import gnu.trove.iterator.TShortIterator;
 import gnu.trove.map.TShortObjectMap;
 import gnu.trove.map.hash.TShortObjectHashMap;
 import gnu.trove.procedure.TObjectProcedure;
 import gnu.trove.procedure.TShortObjectProcedure;
-import gnu.trove.set.hash.TIntHashSet;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -181,10 +179,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	 */
 	protected final AtomicBoolean renderDirty = new AtomicBoolean(false);
 	/**
-	 * True if a new lighting submission has been made but not transferred
-	 */
-	protected final AtomicBoolean newLightDirty = new AtomicBoolean(false);
-	/**
 	 * If -1, there are no changes. If higher, there are changes and the number
 	 * denotes how many ticks these have been there.<br> Every time a change is
 	 * committed the value is set to 0. The region will increment it as well.
@@ -206,22 +200,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	 * Contains the pending sky light updates of blocks in this chunk
 	 */
 	protected final TNibbleQuadList skyLightUpdates = new TNibbleQuadList();
-	/**
-	 * Contains the pending block light operations of blocks in this chunk, generated during the current tick
-	 */
-	protected final TNibbleQuadList newBlockLightOperations = new TNibbleQuadList();
-	/**
-	 * Contains the pending sky light operations of blocks in this chunk, generated during the current tick
-	 */
-	protected final TNibbleQuadList newSkyLightOperations = new TNibbleQuadList();
-	/**
-	 * Contains the pending block light updates of blocks in this chunk, generated during the current tick
-	 */
-	protected final TNibbleQuadList newBlockLightUpdates = new TNibbleQuadList();
-	/**
-	 * Contains the pending sky light updates of blocks in this chunk, generated during the current tick
-	 */
-	protected final TNibbleQuadList newSkyLightUpdates = new TNibbleQuadList();
 	/**
 	 * Data map and Datatable associated with it
 	 */
@@ -498,8 +476,16 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	 */
 	protected volatile AreaBlockSource lightBlockSource = this;
 
+	private AtomicBoolean registeredWithLightingManager = new AtomicBoolean(false);
+	
 	private void registerWithLightingManager() {
-		this.getWorld().getLightingManager().addChunk(this.getX(), this.getY(), this.getZ());
+		if (registeredWithLightingManager.compareAndSet(false, true)) {
+			this.getWorld().getLightingManager().addChunk(this.getX(), this.getY(), this.getZ());
+		}
+	}
+	
+	public void clearRegisteredWithLightingManager() {
+		registeredWithLightingManager.set(false);
 	}
 
 	public boolean isLightStable() {
@@ -507,55 +493,50 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	public void notifyLightOperationComplete() {
-		if (lightOperationsPending.decrementAndGet() < 0) {
+		int remaining = lightOperationsPending.decrementAndGet();
+		if (remaining < 0) {
 			Spout.getLogger().info("Warning: Light operations counter decremented below zero");
+		} if (remaining <= 0) {
+			synchronized (lightOperationsPending) {
+				lightOperationsPending.notifyAll();
+			}
 		}
 	}
+	
+	private final AtomicBoolean lightUnstableQueued = new AtomicBoolean(false);
 
 	private void notifyLightOperationSubmission() {
+		if (lightUnstableQueued.compareAndSet(false, true)) {
+			getRegion().queueForLightUnstable(this);
+		}
 		this.lightOperationsPending.incrementAndGet();
 	}
 	
-	private void notifyLightOperationPreSubmission() {
-		notifyLightOperationSubmission();
-		if (newLightDirty.compareAndSet(false, true)) {
-			getRegion().queueForLightTransfer(this);
-		}
+	public void clearLightUnstableQueued() {
+		lightUnstableQueued.set(false);
 	}
 	
-	private TIntHashSet lightSet = new TIntHashSet();
-	
-	private boolean transfer(TNibbleQuadList dest, TNibbleQuadList src) {
-		boolean updated = false;
-		lightSet.clear();
-		synchronized (src) {
-			synchronized (dest) {
-				TShortIterator iter = src.iterator();
-				while (iter.hasNext()) {
-					short value = iter.next();
-					if (lightSet.add(value)) {
-						dest.addRaw(value);
-						updated = true;
-					} else {
-						notifyLightOperationComplete();
+	public boolean waitUntilLightingStable() {
+		if (isLightStable()) {
+			return false;
+		}
+		boolean interrupted = false;
+		try {
+			synchronized (lightOperationsPending) {
+				while (!isLightStable()) {
+					try {
+						lightOperationsPending.wait();
+					} catch (InterruptedException e) {
+						interrupted = true;
 					}
 				}
-				src.clear();
+			}
+		} finally {
+			if (interrupted) {
+				Thread.currentThread().interrupt();
 			}
 		}
-		return updated;
-	}
-	
-	protected void transferNewLightOperations() {
-		newLightDirty.set(false);
-		boolean updated = false;
-		updated |= transfer(this.blockLightOperations, this.newBlockLightOperations);
-		updated |= transfer(this.blockLightUpdates, this.newBlockLightUpdates);
-		updated |= transfer(this.skyLightOperations, this.newSkyLightOperations);
-		updated |= transfer(this.skyLightUpdates, this.newSkyLightUpdates);
-		if (updated) {
-			registerWithLightingManager();
-		}
+		return true;
 	}
 
 	protected void addSkyLightOperation(int x, int y, int z, int operation) {
@@ -569,10 +550,11 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 				return;
 			}
 		}
-		notifyLightOperationPreSubmission();
-		synchronized (this.newSkyLightOperations) {
-			this.newSkyLightOperations.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, operation);
+		notifyLightOperationSubmission();
+		synchronized (this.skyLightOperations) {
+			this.skyLightOperations.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, operation);
 		}
+		registerWithLightingManager();
 	}
 
 	protected void addBlockLightOperation(int x, int y, int z, int operation) {
@@ -586,24 +568,27 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 				return;
 			}
 		}
-		notifyLightOperationPreSubmission();
-		synchronized (this.newBlockLightOperations) {
-			this.newBlockLightOperations.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, operation);
+		notifyLightOperationSubmission();
+		synchronized (this.blockLightOperations) {
+			this.blockLightOperations.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, operation);
 		}
+		registerWithLightingManager();
 	}
 
 	protected void addSkyLightUpdates(int x, int y, int z, int level) {
-		notifyLightOperationPreSubmission();
-		synchronized (this.newSkyLightUpdates) {
-			this.newSkyLightUpdates.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, level);
+		notifyLightOperationSubmission();
+		synchronized (this.skyLightUpdates) {
+			this.skyLightUpdates.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, level);
 		}
+		registerWithLightingManager();
 	}
 
 	protected void addBlockLightUpdates(int x, int y, int z, int level) {
-		notifyLightOperationPreSubmission();
-		synchronized (this.newBlockLightUpdates) {
-			this.newBlockLightUpdates.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, level);
+		notifyLightOperationSubmission();
+		synchronized (this.blockLightUpdates) {
+			this.blockLightUpdates.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, level);
 		}
+		registerWithLightingManager();
 	}
 	
 	@Override

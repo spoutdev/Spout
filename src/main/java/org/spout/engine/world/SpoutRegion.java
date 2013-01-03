@@ -195,7 +195,7 @@ public class SpoutRegion extends Region {
 	private final ArrayBlockingQueue<SpoutChunk> localPhysicsChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final ArrayBlockingQueue<SpoutChunk> globalPhysicsChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final ArrayBlockingQueue<SpoutChunk> dirtyChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
-	private final ArrayBlockingQueue<SpoutChunk> lightTransferDirtyChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
+	private final ArrayBlockingQueue<SpoutChunk> lightUnstableChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 	private boolean renderQueueEnabled = false;
@@ -222,7 +222,7 @@ public class SpoutRegion extends Region {
 		int zz = MathHelper.mod(getZ(), 3);
 		updateSequence = (xx * 9) + (yy * 3) + zz;
 
-		manager = new SpoutRegionManager(this, 2, new ThreadAsyncExecutor(this.toString() + " Thread", updateSequence), world.getEngine());
+		manager = new SpoutRegionManager(this, 3, new ThreadAsyncExecutor(this.toString() + " Thread", updateSequence), world.getEngine());
 
 		AsyncExecutor ae = manager.getExecutor();
 		if (ae instanceof Thread) {
@@ -1069,6 +1069,18 @@ public class SpoutRegion extends Region {
 			}
 		}
 	}
+	
+	private void waitForLighting() {
+		SpoutChunk chunk;
+		boolean updated = true;
+		while (updated) {
+			updated = false;
+			while ((chunk =	this.lightUnstableChunks.poll()) != null) {
+				chunk.clearLightUnstableQueued();
+				updated |= chunk.waitUntilLightingStable();
+			}
+		}
+	}
 
 	public void startTickRun(int stage, long delta) {
 		final float dt = delta / 1000f;
@@ -1085,6 +1097,10 @@ public class SpoutRegion extends Region {
 		}
 		case 1: {
 			updateDynamics(dt);
+			break;
+		}
+		case 2: {
+			waitForLighting();
 			break;
 		}
 		default: {
@@ -1278,10 +1294,6 @@ public class SpoutRegion extends Region {
 				while ((snapshotFuture = snapshotQueue.poll()) != null) {
 					snapshotFuture.run();
 				}
-				
-				while ((spoutChunk = lightTransferDirtyChunks.poll()) != null) {
-					spoutChunk.transferNewLightOperations();
-				}
 
 				renderSnapshotCacheBoth.clear();
 				renderSnapshotCacheLight.clear();
@@ -1435,8 +1447,8 @@ public class SpoutRegion extends Region {
 		dirtyChunks.add(chunk);
 	}
 	
-	public void queueForLightTransfer(SpoutChunk chunk) {
-		lightTransferDirtyChunks.add(chunk);
+	public void queueForLightUnstable(SpoutChunk chunk) {
+		lightUnstableChunks.add(chunk);
 	}
 
 	public void runPhysics(int sequence) throws InterruptedException {

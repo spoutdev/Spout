@@ -168,6 +168,7 @@ public class SpoutWorldLighting extends Thread {
 						} else {
 							if (this.tmpChunks.load(cx, cy, cz, LoadOption.LOAD_ONLY).isLoadedAndPopulated()) {
 								SpoutChunk center = this.tmpChunks.getCenter();
+								center.clearRegisteredWithLightingManager();
 								if (center.isInitializingLighting.get()) {
 									// Schedule the chunk for a later check-up
 									this.addChunk(cx, cy, cz);
