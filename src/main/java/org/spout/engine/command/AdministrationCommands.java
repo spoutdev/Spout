@@ -435,58 +435,54 @@ public class AdministrationCommands {
 	@Command(aliases = {"tp", "teleport"}, usage = "[player] [player|x] [y] [z] [-w <world>]", flags = "w:", desc = "Teleport to a location", min = 1, max = 4)
 	@CommandPermissions("spout.command.tp")
 	public void tp(CommandContext args, CommandSource source) throws CommandException {
-		int index = 0;
 		Player player;
-
-		if (args.length() % 2 == 0) {
-			if (Spout.getEngine() instanceof SpoutClient) {
-				throw new CommandException("You cannot search for players unless you are in server mode.");
-			}
-			player = Spout.getEngine().getPlayer(args.getString(index++), true);
-
-			if (player == null || !player.isOnline()) {
-				throw new CommandException(args.getString(index++) + " is not online.");
-			}
-		} else {
+		Player target = null;
+		Point point;
+		if (args.length() % 2 == 0 && (engine instanceof SpoutClient)) {
+			throw new CommandException("You cannot search for players unless you are in server mode.");
+		}
+		if (args.length() == 1) {
 			if (!(source instanceof Player)) {
 				throw new CommandException("You must be a player to teleport yourself!");
 			}
 
-			player = (Player) source;
-		}
-
-		Point point;
-		Player target = null;
-
-		if (args.length() > 2) {
-			World world = player.getWorld();
-
-			if (args.hasFlag('w')) {
-				if (!source.hasPermission("spout.command.tp.world-flag")) {
-					throw new CommandException("You are not allowed to use the world flag.");
-				}
-
-				world = Spout.getEngine().getWorld(args.getFlagString('w'));
-
-				if (world == null) {
-					throw new CommandException("Please supply an existing world.");
-				}
+			player = engine.getPlayer(args.getString(0), true);
+			if (player == null || !player.isOnline()) {
+				throw new CommandException(args.getString(0) + " is not online.");
 			}
-
-			point = new Point(world, args.getInteger(index), args.getInteger(index + 1), args.getInteger(index + 2));
+			point = player.getTransform().getPosition();
 		} else {
-			if (Spout.getEngine() instanceof SpoutClient) {
-				throw new CommandException("You cannot search for players unless you are in server mode.");
-			}
-			target = (Spout.getEngine()).getPlayer(args.getString(index), true);
-
-			if (!target.isOnline()) {
-				throw new CommandException(target.getName() + " is not online.");
+			player = engine.getPlayer(args.getString(0), true);
+			if (player == null || !player.isOnline())  {
+				throw new CommandException(args.getString(0) + " is not online.");
 			}
 
-			point = target.getTransform().getPosition();
+			if (args.length() > 2) {
+				World world = player.getWorld();
+
+				if (args.hasFlag('w')) {
+					if (!source.hasPermission("spout.command.tp.world-flag")) {
+						throw new CommandException("You are not allowed to use the world flag.");
+					}
+
+					world = engine.getWorld(args.getFlagString('w'));
+
+					if (world == null) {
+						throw new CommandException("Please supply an existing world.");
+					}
+				}
+
+				point = new Point(world, args.getInteger(1), args.getInteger(2), args.getInteger(3));
+			} else {
+				target = engine.getPlayer(args.getString(1), true);
+
+				if (target == null || !target.isOnline()) {
+					throw new CommandException(args.getString(1) + " is not online.");
+				}
+
+				point = target.getTransform().getPosition();
+			}
 		}
-
 		point.getWorld().getChunkFromBlock(point);
 		player.teleport(point);
 
