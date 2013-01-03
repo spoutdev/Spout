@@ -119,6 +119,33 @@ public class BAAWrapper {
 			}
 		}
 	}
+	
+	/**
+	 * Checks if the InputStream exists at the given index.
+	 * 
+	 * @param i the block index
+	 * @return true if the delete was successful
+	 */
+	public boolean delete(int i) {
+		while (true) {
+			ByteArrayArray baa = getByteArrayArray();
+			if (baa == null) {
+				return false;
+			}
+			if (baa == openInProgress) {
+				continue;
+			}
+			try {
+				baa.delete(i);
+				return true;
+			} catch (BAAClosedException e) {
+				continue;
+			} catch (IOException e) {
+				return false;
+			}
+		}
+	}
+
 
 	/**
 	 * Gets the DataOutputStream corresponding to a given block.<br>

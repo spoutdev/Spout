@@ -98,5 +98,13 @@ public interface ByteArrayArray {
 	 * @throws IOException
 	 */
 	boolean exists(int i) throws IOException;
+	
+	/**
+	 * Deletes the data at the block index.
+	 * 
+	 * @param i the block index
+	 * @throws IOException
+	 */
+	void delete(int i) throws IOException;
 
 }

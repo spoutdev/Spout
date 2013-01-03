@@ -301,6 +301,58 @@ public class SimpleRegionFile implements ByteArrayArray {
 		}
 	}
 	
+	/**
+	 * Deletes a block.
+	 * <br>
+	 * Note: It is assumed that the block is locked when making these changes<br>
+	 * 
+	 * @param i the block index
+	 * @param buf the buffer
+	 * @param length the actual block length
+	 * @throws IOException
+	 */
+	public void delete(int i) throws IOException {
+		refreshAccess();
+		Lock lock = blockLock[i].writeLock();
+		lock.lock();
+		try {
+			if (this.isClosed()) {
+				throw new SRFClosedException("File closed");
+			}
+			this.blockSegmentStart[i].set(0);
+			this.blockSegmentLength[i].set(0);
+			this.blockActualLength[i].set(0);;
+			synchronized(fileSyncObject) {
+				boolean success = false;
+				boolean interrupted = false;
+				try {
+					while (!success) {
+						success = true;
+						try {
+							if (file == null) {
+								this.file = new MappedRandomAccessFile(this.filePath, "rw");
+							}
+							this.writeFAT(i, 0, 0);
+						} catch (ClosedByInterruptException e) {
+							interrupted |= Thread.interrupted();
+							if (file != null) {
+								file.close();
+							}
+							this.file = null;
+							success = false;
+						}
+					}
+				} finally {
+					if (interrupted) {
+						Thread.currentThread().interrupt();
+					}
+				}
+			}
+		} finally {
+			lock.unlock();
+		}
+	}
+	
 	@Override
 	public boolean isTimedOut() {
 		return this.lastAccess.get() + this.timeout < System.currentTimeMillis();
