@@ -59,4 +59,11 @@ public interface InputManager {
 	 * @param command
 	 */
 	public void bind(Mouse button, String command);
+	
+	/**
+	 * Register a input executor called each frame.
+	 * 
+	 * @param executor
+	 */
+	public void addInputExecutors(InputExecutor executor);
 }
