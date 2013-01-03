@@ -227,18 +227,17 @@ public class BAAWrapper {
 				if (baaRef.compareAndSet(null, openInProgress)) {
 					// Successfully claimed the right to open a new file
 					// Attempt to open the file.  If an IOException is throw return null
-					//baa = null; // not needed - already null
+					baa = null; // not needed - already null
 					try {
 						try {
 							baa = new SimpleRegionFile(file, segmentSize, entries, timeout);
 						} catch (ClosedByInterruptException e1) {
 							interrupted |= Thread.interrupted();
-							baaRef.compareAndSet(openInProgress, null);
+							baa = null; // not needed - already null
 							continue;
 						} catch (IOException e) {
 							System.out.println("Error when creating SimpleRegionFile object: " + file);
-							baaRef.compareAndSet(openInProgress, null);
-							//baa = null; // not needed - already null. The assignment above comes after the potential IOException. 
+							baa = null; // not needed - already null. The assignment above comes after the potential IOException. 
 						}
 
 						return baa;
