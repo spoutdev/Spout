@@ -42,6 +42,7 @@ import org.spout.api.resource.ResourceLoader;
 import org.spout.api.resource.ResourceNotFoundException;
 import org.spout.api.resource.ResourcePathResolver;
 
+import org.spout.engine.SpoutEngine;
 import org.spout.engine.filesystem.path.FilePathResolver;
 import org.spout.engine.filesystem.path.JarFilePathResolver;
 import org.spout.engine.filesystem.path.ZipFilePathResolver;
@@ -202,7 +203,7 @@ public class SharedFileSystem implements FileSystem {
 	@Override
 	public Resource getResource(URI path) {
 		if (!loadedResources.containsKey(path)) {
-			if (Spout.debugMode()) {
+			if (Spout.debugMode() && ((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
 				Spout.getLogger().warning("Late Precache of resource: " + path.toString());
 			}
 			try {
