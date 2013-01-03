@@ -1199,7 +1199,7 @@ public class SpoutRegion extends Region {
 	private static final int RENDER_QUEUE_LIMIT = 500;
 
 	private WorldRenderer getRenderer(){
-		if(renderer == null)
+		if(renderer == null && ((SpoutClient) Spout.getEngine()).getRenderer() != null)
 			renderer = ((SpoutClient) Spout.getEngine()).getRenderer().getWorldRenderer();
 		return renderer;
 	}
