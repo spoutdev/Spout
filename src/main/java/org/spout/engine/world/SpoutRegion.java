@@ -917,7 +917,7 @@ public class SpoutRegion extends Region {
 	}
 
 	private void updatePopulation() {
-		for (int i = 0; i < POPULATE_PER_TICK; i++) {
+		for (int i = 0; i < POPULATE_PER_TICK && !scheduler.isServerOverloaded(); i++) {
 			SpoutChunk toPopulate = populationPriorityQueue.poll();
 			if (toPopulate == null) {
 				toPopulate = populationQueue.poll();
