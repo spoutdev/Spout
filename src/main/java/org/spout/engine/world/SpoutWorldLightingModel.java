@@ -153,7 +153,7 @@ public class SpoutWorldLightingModel {
 				}
 			} else {
 				synchronized (chunk.blockLightUpdates) {
-					if (chunk.skyLightUpdates.size() > 0) {
+					if (chunk.blockLightUpdates.size() > 0) {
 						update = true;
 					}
 					int length = chunk.blockLightUpdates.size();

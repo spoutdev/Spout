@@ -133,8 +133,6 @@ public class SpoutWorldLighting extends Thread {
 		int i, cx, cy, cz;
 		int idleCounter = 0;
 		this.running = SpoutConfiguration.LIGHTING_ENABLED.getBoolean();
-		long startTime = System.currentTimeMillis();
-		boolean stop = false;
 		SpoutSnapshotLock lock = (SpoutSnapshotLock)Spout.getEngine().getScheduler().getSnapshotLock();
 		while (this.running) {
 			boolean updated = false;
@@ -154,35 +152,20 @@ public class SpoutWorldLighting extends Thread {
 			if (updated = chunkBufferSize > 0) {
 				lock.coreReadLock(taskName);
 				try {
-					// Resolve all chunks
-					startTime = System.currentTimeMillis();
-					stop = false;
-
 					for (i = 0; i < chunkBufferSize; i++) {
 						cx = Int21TripleHashed.key1(chunkBuffer[i]);
 						cy = Int21TripleHashed.key2(chunkBuffer[i]);
 						cz = Int21TripleHashed.key3(chunkBuffer[i]);
-						if (stop) {
-							// Add chunk back for next cycle
-							this.addChunk(cx, cy, cz);
-						} else {
-							if (this.tmpChunks.load(cx, cy, cz, LoadOption.LOAD_ONLY).isLoadedAndPopulated()) {
-								SpoutChunk center = this.tmpChunks.getCenter();
-								center.clearRegisteredWithLightingManager();
-								if (center.isInitializingLighting.get()) {
-									// Schedule the chunk for a later check-up
-									this.addChunk(cx, cy, cz);
-								} else {
-									while (!stop && this.skyLight.resolve(center)) {
-										if (stop = (System.currentTimeMillis() - startTime) >= MAX_CYCLE_TIME) {
-											this.addChunk(cx, cy, cz);
-										}
-									}
-									while (!stop && this.blockLight.resolve(center)) {
-										if (stop = (System.currentTimeMillis() - startTime) >= MAX_CYCLE_TIME) {
-											this.addChunk(cx, cy, cz);
-										}
-									}
+						if (this.tmpChunks.load(cx, cy, cz, LoadOption.LOAD_ONLY).isLoaded()) {
+							SpoutChunk center = this.tmpChunks.getCenter();
+							center.clearRegisteredWithLightingManager();
+							if (center.isInitializingLighting.get()) {
+								// Schedule the chunk for a later check-up
+								this.addChunk(cx, cy, cz);
+							} else {
+								while (this.skyLight.resolve(center)) {
+								}
+								while (this.blockLight.resolve(center)) {
 								}
 							}
 						}

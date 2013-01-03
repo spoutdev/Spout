@@ -1077,6 +1077,9 @@ public class SpoutRegion extends Region {
 			updated = false;
 			while ((chunk =	this.lightUnstableChunks.poll()) != null) {
 				chunk.clearLightUnstableQueued();
+				if (!chunk.isLoaded()) {
+					continue;
+				}
 				updated |= chunk.waitUntilLightingStable();
 			}
 		}
