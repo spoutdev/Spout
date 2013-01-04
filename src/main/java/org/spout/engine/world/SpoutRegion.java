@@ -175,7 +175,8 @@ public class SpoutRegion extends Region {
 	 */
 	private final BAAWrapper chunkStore;
 	private final ArrayBlockingQueue<SpoutChunkSnapshotFuture> snapshotQueue = new ArrayBlockingQueue<SpoutChunkSnapshotFuture>(CHUNKS.VOLUME);
-	protected Queue<SpoutChunk> unloadQueue = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
+	
+	protected SetQueue<SpoutChunk> unloadQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
 	public static final byte POPULATE_CHUNK_MARGIN = 1;
 	/**
 	 * The sequence number for executing inter-region physics and dynamic updates
@@ -796,7 +797,7 @@ public class SpoutRegion extends Region {
 			if (oldState.isSave()) {
 				c.syncSave();
 			}
-			if (oldState.isUnload()) {
+			if (oldState.isUnload() && !c.isObserved()) {
 				if (removeChunk(c)) {
 					empty = true;
 				}
@@ -928,9 +929,6 @@ public class SpoutRegion extends Region {
 
 	private void unloadChunks() {
 		SpoutChunk toUnload = unloadQueue.poll();
-		if (toUnload != null) {
-			toUnload.setNotUnloadQueued();
-		}
 		int unloadAmt = SpoutConfiguration.UNLOAD_CHUNKS_PER_TICK.getInt();
 		while (toUnload != null) {
 			unloadAmt--;
@@ -946,9 +944,6 @@ public class SpoutRegion extends Region {
 			}
 			if (unloadAmt > 0) {
 				toUnload = unloadQueue.poll();
-				if (toUnload != null) {
-					toUnload.setNotUnloadQueued();
-				}			
 			} else {
 				break;
 			}

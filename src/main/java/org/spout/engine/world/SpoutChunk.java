@@ -138,7 +138,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	 * Indicates that the chunk should be saved if unloaded
 	 */
 	protected final AtomicReference<SaveState> saveState = new AtomicReference<SaveState>(SaveState.NONE);
-	private final ChunkSetQueueElement saveMarkedElement;
+	private final ChunkSetQueueElement<Cube> saveMarkedElement;
 	/**
 	 * The parent region that manages this chunk
 	 */
@@ -244,7 +244,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	private final AtomicBoolean populationPriorityQueued = new AtomicBoolean(false);
 	private final AtomicBoolean popObserver = new AtomicBoolean(false);
 	private final AtomicInteger autosaveTicks = new AtomicInteger(0);
-	private final AtomicBoolean isUnloadQueued = new AtomicBoolean(false);
+	private final ChunkSetQueueElement<SpoutChunk> unloadQueueElement;
 	private boolean wasInViewDistance = false;
 	private boolean isInViewDistance = false;
 
@@ -346,7 +346,8 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		selfReference = new WeakReference<Chunk>(this);
 		this.scheduler = (SpoutScheduler) Spout.getScheduler();
 		this.lightStableOnLoad = lightStable;
-		this.saveMarkedElement = new ChunkSetQueueElement(getRegion().saveMarkedQueue, this);
+		this.saveMarkedElement = new ChunkSetQueueElement<Cube>(getRegion().saveMarkedQueue, this);
+		this.unloadQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().unloadQueue, this);
 	}
 
 	@Override
@@ -1177,19 +1178,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	}
 	
 	private void addToRegionUnloadQueue() {
-		if (isUnloadQueued.compareAndSet(false, true)) {
-			parentRegion.unloadQueue.add(this);
-		}
-	}
-	
-	private void removeFromRegionUnloadQueue() {
-		if (isUnloadQueued.compareAndSet(true, false)) {
-			parentRegion.unloadQueue.remove(this);
-		}
-	}
-	
-	public void setNotUnloadQueued() {
-		isUnloadQueued.set(false);
+		this.unloadQueueElement.add();
 	}
 
 	@Override
@@ -1198,7 +1187,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 		checkChunkLoaded();
 		parentRegion.markObserverDirty(this);
-		removeFromRegionUnloadQueue();
 		if (!isPopulated()) {
 			queueForPopulation(false);
 		}
@@ -2431,9 +2419,9 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		return rendered;
 	}
 	
-	private class ChunkSetQueueElement extends SetQueueElement<Cube> {
+	private class ChunkSetQueueElement<T extends Cube> extends SetQueueElement<T> {
 
-		public ChunkSetQueueElement(SetQueue<Cube> queue, SpoutChunk value) {
+		public ChunkSetQueueElement(SetQueue<T> queue, T value) {
 			super(queue, value);
 		}
 
