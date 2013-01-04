@@ -68,6 +68,7 @@ import org.spout.api.geo.cuboid.BlockComponentContainer;
 import org.spout.api.geo.cuboid.BlockContainer;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
+import org.spout.api.geo.cuboid.Cube;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
@@ -90,6 +91,8 @@ import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.hashing.NibbleQuadHashed;
 import org.spout.api.util.list.TNibbleQuadList;
+import org.spout.api.util.list.concurrent.setqueue.SetQueue;
+import org.spout.api.util.list.concurrent.setqueue.SetQueueElement;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 import org.spout.api.util.map.concurrent.palette.AtomicPaletteBlockStore;
 import org.spout.engine.SpoutClient;
@@ -135,6 +138,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	 * Indicates that the chunk should be saved if unloaded
 	 */
 	protected final AtomicReference<SaveState> saveState = new AtomicReference<SaveState>(SaveState.NONE);
+	private final ChunkSetQueueElement saveMarkedElement;
 	/**
 	 * The parent region that manages this chunk
 	 */
@@ -342,6 +346,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		selfReference = new WeakReference<Chunk>(this);
 		this.scheduler = (SpoutScheduler) Spout.getScheduler();
 		this.lightStableOnLoad = lightStable;
+		this.saveMarkedElement = new ChunkSetQueueElement(getRegion().saveMarkedQueue, this);
 	}
 
 	@Override
@@ -989,7 +994,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	private void markForSaveUnload() {
-		(parentRegion).markForSaveUnload(this);
+		saveMarkedElement.add();
 	}
 
 	public void saveComplete() {
@@ -998,7 +1003,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		} else {
 			SaveState.setPostSaved(saveState);
 		}
-		parentRegion.markForSaveUnload(this);
+		saveMarkedElement.add();
 	}
 
 	public SaveState getAndResetSaveState() {
@@ -2424,5 +2429,18 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 	public boolean isRendered() {
 		return rendered;
+	}
+	
+	private class ChunkSetQueueElement extends SetQueueElement<Cube> {
+
+		public ChunkSetQueueElement(SetQueue<Cube> queue, SpoutChunk value) {
+			super(queue, value);
+		}
+
+		@Override
+		protected boolean isValid() {
+			return isLoaded();
+		}
+		
 	}
 }

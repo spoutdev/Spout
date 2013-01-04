@@ -75,6 +75,7 @@ import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
+import org.spout.api.geo.cuboid.Cube;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
@@ -92,6 +93,8 @@ import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
+import org.spout.api.util.list.concurrent.setqueue.SetQueue;
+import org.spout.api.util.list.concurrent.setqueue.SetQueueElement;
 import org.spout.api.util.map.TByteTripleObjectHashMap;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
 import org.spout.api.util.set.TByteTripleHashSet;
@@ -109,7 +112,6 @@ import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.scheduler.SpoutTaskManager;
-import org.spout.engine.util.TripleInt;
 import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
@@ -141,7 +143,10 @@ public class SpoutRegion extends Region {
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
 	// Can't extend AsyncManager and Region
 	private final SpoutRegionManager manager;
-	private ConcurrentLinkedQueue<TripleInt> saveMarked = new ConcurrentLinkedQueue<TripleInt>();
+	
+	protected final SetQueue<Cube> saveMarkedQueue = new SetQueue<Cube>(CHUNKS.VOLUME + 1);
+	private final RegionSetQueueElement saveMarkedElement = new RegionSetQueueElement(saveMarkedQueue, this);
+	
 	@SuppressWarnings("unchecked")
 	public AtomicReference<SpoutChunk>[][][] chunks = new AtomicReference[CHUNKS.SIZE][CHUNKS.SIZE][CHUNKS.SIZE];
 	/**
@@ -467,10 +472,11 @@ public class SpoutRegion extends Region {
 						final CuboidBlockMaterialBuffer chunk = new CuboidBlockMaterialBuffer(cxx << Chunk.BLOCKS.BITS, cyy << Chunk.BLOCKS.BITS, czz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
 						chunk.write(buffer);
 						SpoutChunk newChunk = new SpoutChunk(world, this, cxx, cyy, czz, chunk.getRawId(), chunk.getRawData(), null);
-						newChunk.setModified();
 						SpoutChunk currentChunk = setChunk(newChunk, xx, yy, zz, null, true, loadopt);
 						if (currentChunk != newChunk) {
 							Spout.getLogger().info("Warning: Unable to set generated chunk, new Chunk " + newChunk + " chunk in memory " + currentChunk);
+						} else {
+							newChunk.save();
 						}
 					}
 				}
@@ -703,23 +709,8 @@ public class SpoutRegion extends Region {
 		}
 	}
 
-	public void markForSaveUnload(Chunk c) {
-		if (c.getRegion() != this) {
-			return;
-		}
-		int cx = c.getX() & CHUNKS.MASK;
-		int cy = c.getY() & CHUNKS.MASK;
-		int cz = c.getZ() & CHUNKS.MASK;
-
-		markForSaveUnload(cx, cy, cz);
-	}
-
-	public void markForSaveUnload(int x, int y, int z) {
-		saveMarked.add(new TripleInt(x, y, z));
-	}
-
 	public void markForSaveUnload() {
-		saveMarked.add(TripleInt.NULL);
+		saveMarkedElement.add();
 	}
 
 	public void copySnapshotRun() {
@@ -728,24 +719,25 @@ public class SpoutRegion extends Region {
 		snapshotManager.copyAllSnapshots();
 
 		boolean empty = false;
-		TripleInt chunkCoords;
-		while ((chunkCoords = saveMarked.poll()) != null) {
-			if (chunkCoords == TripleInt.NULL) {
+		Cube cube;
+		while ((cube = saveMarkedQueue.poll()) != null) {
+			if (cube == this) {
 				for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
 					for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
 						for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
-							if (processChunkSaveUnload(dx, dy, dz)) {
+							SpoutChunk c = getChunk(dx, dy, dz, LoadOption.NO_LOAD);
+							if (processChunkSaveUnload(c)) {
 								empty = true;
 							}
 						}
 					}
 				}
 				// No point in checking any others, since all processed
-				saveMarked.clear();
+				saveMarkedQueue.clear();
 				break;
 			}
 
-			empty |= processChunkSaveUnload(chunkCoords.x, chunkCoords.y, chunkCoords.z);
+			empty |= processChunkSaveUnload((SpoutChunk) cube);
 		}
 
 		SpoutChunk c;
@@ -797,9 +789,8 @@ public class SpoutRegion extends Region {
 		}
 	}
 
-	public boolean processChunkSaveUnload(int x, int y, int z) {
+	public boolean processChunkSaveUnload(SpoutChunk c) {
 		boolean empty = false;
-		SpoutChunk c = getChunk(x, y, z, LoadOption.NO_LOAD);
 		if (c != null) {
 			SpoutChunk.SaveState oldState = c.getAndResetSaveState();
 			if (oldState.isSave()) {
@@ -2111,6 +2102,19 @@ public class SpoutRegion extends Region {
 	@Override
 	public void getCuboid(int bx, int by, int bz, CuboidBlockMaterialBuffer buffer) {
 		getWorld().getCuboid(getChunks(bx, by, bz, buffer), bx, by, bz, buffer);
+	}
+	
+	private class RegionSetQueueElement extends SetQueueElement<Cube> {
+
+		public RegionSetQueueElement(SetQueue<Cube> queue, SpoutRegion value) {
+			super(queue, value);
+		}
+
+		@Override
+		protected boolean isValid() {
+			return true;
+		}
+		
 	}
 
 }
