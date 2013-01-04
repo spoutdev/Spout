@@ -130,7 +130,7 @@ public class SpoutColumn {
 		while (!success) {
 			int oldHighestY = highestY.get();
 			if (maxY > oldHighestY) {
-				success = lowestY.compareAndSet(oldHighestY, maxY);
+				success = highestY.compareAndSet(oldHighestY, maxY);
 			} else {
 				success = true;
 			}
