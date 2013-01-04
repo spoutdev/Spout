@@ -957,7 +957,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		rx += (getX() & Region.CHUNKS.MASK) << BLOCKS.BITS;
 		ry += (getY() & Region.CHUNKS.MASK) << BLOCKS.BITS;
 		rz += (getZ() & Region.CHUNKS.MASK) << BLOCKS.BITS;
-		physicsQueue.queueForUpdate(rx, ry, rz, null);
+		physicsQueue.queueForUpdate(rx, ry, rz, oldMaterial);
 	}
 
 	private int getBlockIndex(int x, int y, int z) {
