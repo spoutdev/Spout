@@ -159,7 +159,7 @@ public class SpoutRenderer {
 		SpoutClient client = (SpoutClient) Spout.getEngine();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		t.activate();
+	//	t.activate();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		Model skydome = (Model) client.getActiveWorld().getDataMap().get("Skydome");
@@ -173,7 +173,7 @@ public class SpoutRenderer {
 			}
 			skydomeMesh.render(skydome.getRenderMaterial());
 		}
-		t.release();
+	//	t.release();
 		
 
 		//Interpolate entity transform if Physics is not currently applied to the entity
@@ -223,8 +223,8 @@ public class SpoutRenderer {
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Update: ", worldRenderer.minUpdate + " / " + worldRenderer.maxUpdate + " / " + (worldRenderer.sumUpdate / Math.max(1, worldRenderer.count))), font, -0.95f, 0.1f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Render: ", worldRenderer.minRender + " / " + worldRenderer.maxRender + " / " + (worldRenderer.sumRender / Math.max(1, worldRenderer.count))), font, -0.95f, 0.0f, 8f);
 		}
-		mat.getShader().setUniform("Diffuse", t);
-		gui.draw(mat, 0.25f, 0.25f, .25f, .25f);
+	//	mat.getShader().setUniform("Diffuse", t);
+	//	gui.draw(mat, 0.25f, 0.25f, .25f, .25f);
 		for (Screen screen : screenStack.getVisibleScreens()) {
 			for (Widget widget : screen.getWidgets()) {
 				gui.draw(widget.getRenderParts());
