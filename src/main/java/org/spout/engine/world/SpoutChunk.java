@@ -1270,6 +1270,10 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		if (!blockStore.needsCompression()) {
 			return false;
 		}
+		return compressRaw();
+	}
+	
+	protected boolean compressRaw() {
 		blockStore.compress();
 		return true;
 	}
