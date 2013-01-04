@@ -57,11 +57,11 @@ import org.spout.nbt.util.NBTMapper;
 
 public class ColumnFiles {
 	
-	public static final int COLUMN_VERSION = 1;
+	public static final int COLUMN_VERSION = 2;
 	
-	public static void readColumn(InputStream in, SpoutColumn column, AtomicInteger lowestY, BlockMaterial[][] topmostBlocks) {
+	public static void readColumn(InputStream in, SpoutColumn column, AtomicInteger lowestY, AtomicInteger highestY, BlockMaterial[][] topmostBlocks) {
 		if (in == null) {
-			initColumn(column, lowestY, topmostBlocks);
+			initColumn(column, lowestY, highestY, topmostBlocks);
 			return;
 		}
 
@@ -78,19 +78,22 @@ public class ColumnFiles {
 
 			if (version > COLUMN_VERSION) {
 				Spout.getLogger().log(Level.SEVERE, "Chunk version " + version + " exceeds maximum allowed value of " + COLUMN_VERSION);
-				initColumn(column, lowestY, topmostBlocks);
+				initColumn(column, lowestY, highestY, topmostBlocks);
 				return;
 			} else if (version < COLUMN_VERSION) {
 				if (version <= 0) {
 					Spout.getLogger().log(Level.SEVERE, "Invalid column version " + version);
-					initColumn(column, lowestY, topmostBlocks);
+					initColumn(column, lowestY, highestY, topmostBlocks);
 					return;
+				}
+				if (version >= 1) {
+					map = convertV1V2(map);
 				}
 				converted = true;
 				// Added conversion code here
 			}
 
-			loadColumn(column, lowestY, topmostBlocks, map);
+			loadColumn(column, lowestY, highestY, topmostBlocks, map);
 			
 			if (converted) {
 				column.setDirty();
@@ -100,7 +103,7 @@ public class ColumnFiles {
 		}
 	}
 	
-	private static void loadColumn(SpoutColumn column, AtomicInteger lowestY, BlockMaterial[][] topmostBlocks, CompoundMap map) {
+	private static void loadColumn(SpoutColumn column, AtomicInteger lowestY, AtomicInteger highestY, BlockMaterial[][] topmostBlocks, CompoundMap map) {
 			
 		int[] heights = SafeCast.toIntArray(NBTMapper.toTagValue(map.get("heights")), null);
 				
@@ -111,6 +114,7 @@ public class ColumnFiles {
 		}
 
 		lowestY.set(SafeCast.toInt(NBTMapper.toTagValue(map.get("lowest_y")), Integer.MAX_VALUE));
+		highestY.set(SafeCast.toInt(NBTMapper.toTagValue(map.get("highest_y")), Integer.MAX_VALUE));
 
 		//Save heightmap
 		StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
@@ -121,7 +125,7 @@ public class ColumnFiles {
 		
 		if (validMaterial == null || topmostMaterial == null) {
 			Spout.getLogger().severe("Topmost block arrays missing when reading column");
-			initColumn(column, lowestY, topmostBlocks);
+			initColumn(column, lowestY, highestY, topmostBlocks);
 			return;
 		}
 		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
@@ -172,7 +176,7 @@ public class ColumnFiles {
 		}
 	}
 
-	private static void initColumn(SpoutColumn column, AtomicInteger lowestY, BlockMaterial[][] topmostBlocks) {
+	private static void initColumn(SpoutColumn column, AtomicInteger lowestY, AtomicInteger highestY, BlockMaterial[][] topmostBlocks) {
 		//The inputstream is null because no height map data exists
 		for (int x = 0; x < SpoutColumn.BLOCKS.SIZE; x++) {
 			for (int z = 0; z < SpoutColumn.BLOCKS.SIZE; z++) {
@@ -182,12 +186,13 @@ public class ColumnFiles {
 			}
 		}
 		lowestY.set(Integer.MAX_VALUE);
+		highestY.set(Integer.MIN_VALUE);
 	}
 
-	public static void writeColumn(OutputStream out, SpoutColumn column, AtomicInteger lowestY, BlockMaterial[][] topmostBlocks) {
+	public static void writeColumn(OutputStream out, SpoutColumn column, AtomicInteger lowestY, AtomicInteger highestY, BlockMaterial[][] topmostBlocks) {
 		try {
 			NBTOutputStream NBTStream = new NBTOutputStream(out, false);
-			CompoundMap map = saveColumn(column, lowestY, topmostBlocks);
+			CompoundMap map = saveColumn(column, lowestY, highestY, topmostBlocks);
 			NBTStream.writeTag(new CompoundTag("column", map));
 			NBTStream.flush();
 		} catch (IOException ioe) {
@@ -195,7 +200,7 @@ public class ColumnFiles {
 		}
 	}
 	
-	private static CompoundMap saveColumn(SpoutColumn column, AtomicInteger lowestY, BlockMaterial[][] topmostBlocks) {
+	private static CompoundMap saveColumn(SpoutColumn column, AtomicInteger lowestY, AtomicInteger highestY, BlockMaterial[][] topmostBlocks) {
 		
 		CompoundMap map = new CompoundMap();
 		
@@ -213,6 +218,7 @@ public class ColumnFiles {
 		map.put(new IntArrayTag("heights", heights));
 
 		map.put(new IntTag("lowest_y", lowestY.get()));
+		map.put(new IntTag("highest_y", highestY.get()));
 		
 		byte[] validMaterial = new byte[SpoutColumn.BLOCKS.SIZE * SpoutColumn.BLOCKS.SIZE];
 		int[] topmostMaterial = new int[SpoutColumn.BLOCKS.SIZE * SpoutColumn.BLOCKS.SIZE];
@@ -246,6 +252,18 @@ public class ColumnFiles {
 		
 		return map;
 
+	}
+	
+	/**
+	 * Converts from version 1 to version 2<br>
+	 * <br>
+	 * Adds a highestY field
+	 * @param map
+	 * @return
+	 */
+	private static CompoundMap convertV1V2(CompoundMap map) {
+		map.put(new IntTag("highest_y", Integer.MIN_VALUE));
+		return map;
 	}
 }
 

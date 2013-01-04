@@ -57,6 +57,7 @@ public class SpoutColumn {
 	private final AtomicInteger activeChunks = new AtomicInteger(0);
 	private final AtomicInteger[][] heightMap;
 	private final AtomicInteger lowestY = new AtomicInteger();
+	private final AtomicInteger highestY = new AtomicInteger();
 	private final AtomicReference<int[][]> heights = new AtomicReference<int[][]>();
 	private final AtomicBoolean dirty = new AtomicBoolean(false);
 	private final AtomicBoolean dirtyArray[][];
@@ -82,7 +83,7 @@ public class SpoutColumn {
 
 		lowestY.set(Integer.MAX_VALUE);
 
-		ColumnFiles.readColumn(((SpoutWorld) world).getHeightMapInputStream(x, z), this, this.lowestY, topmostBlocks);
+		ColumnFiles.readColumn(((SpoutWorld) world).getHeightMapInputStream(x, z), this, this.lowestY, this.highestY, topmostBlocks);
 		//Could not load biomes from column, so calculate them
 		if (biomes.get() == null) {
 			if (world.getGenerator() instanceof BiomeGenerator) {
@@ -115,12 +116,21 @@ public class SpoutColumn {
 		}
 	}
 
-	public void registerChunk(int y) {
+	public void registerCuboid(int minY, int maxY) {
 		boolean success = false;
 		while (!success) {
 			int oldLowestY = lowestY.get();
-			if (y < oldLowestY) {
-				success = lowestY.compareAndSet(oldLowestY, y);
+			if (minY < oldLowestY) {
+				success = lowestY.compareAndSet(oldLowestY, minY);
+			} else {
+				success = true;
+			}
+		}
+		success = false;
+		while (!success) {
+			int oldHighestY = highestY.get();
+			if (maxY > oldHighestY) {
+				success = lowestY.compareAndSet(oldHighestY, maxY);
 			} else {
 				success = true;
 			}
@@ -143,7 +153,7 @@ public class SpoutColumn {
 	public synchronized void syncSave() {
 		OutputStream out = ((SpoutWorld) world).getHeightMapOutputStream(x, z);
 		try {
-			ColumnFiles.writeColumn(out, this, lowestY, topmostBlocks);
+			ColumnFiles.writeColumn(out, this, lowestY, highestY, topmostBlocks);
 		} finally {
 			try {
 				out.close();
