@@ -28,9 +28,11 @@ package org.spout.api.protocol;
 
 import java.io.Serializable;
 import java.net.InetSocketAddress;
+import java.util.logging.Level;
 
 import org.jboss.netty.channel.Channel;
 import org.spout.api.Engine;
+import org.spout.api.Spout;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Player;
@@ -226,4 +228,47 @@ public interface Session {
 	 * @return data map
 	 */
 	public SerializableMap getDataMap();
+
+	public interface UncaughtExceptionHandler {
+		/**
+		 * Called when an exception occurs during session handling
+		 * 
+		 * @param the message the message handler threw an exception on
+		 * @param the message handler that threw the an exception handling the message
+		 * @param ex the exception
+		 */
+		public void uncaughtException(Message message, MessageHandler<?> handle, Exception ex);
+	}
+
+	/**
+	 * Gets the uncaught exception handler.
+	 * 
+	 * <p>Note: the default exception handler is the {@link DefaultUncaughtExceptionHandler}.</p>
+	 * 
+	 * @return exception handler
+	 */
+	public UncaughtExceptionHandler getUncaughtExceptionHandler();
+
+	/**
+	 * Sets the uncaught exception handler to be used for this session. Null values are not permitted.
+	 * 
+	 * <p>Note: to reset the default exception handler, use the{@link DefaultUncaughtExceptionHandler}.</p>
+	 * 
+	 * @param handler
+	 */
+	public void setUncaughtExceptionHandler(UncaughtExceptionHandler handler);
+
+	public static final class DefaultUncaughtExceptionHandler implements UncaughtExceptionHandler {
+		private final Session session;
+		public DefaultUncaughtExceptionHandler(Session session) {
+			this.session = session;
+		}
+
+		@Override
+		public void uncaughtException(Message message, MessageHandler<?> handle, Exception ex) {
+			Spout.getEngine().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + (session.getPlayer() != null ? session.getPlayer().getName() : "null"));
+			ex.printStackTrace();
+			session.disconnect(false, new Object[] {"Message handler exception for ", message.getClass().getSimpleName()});
+		}
+	}
 }
