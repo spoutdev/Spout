@@ -185,7 +185,7 @@ public class SpoutRegion extends Region {
 	 */
 	final ArrayBlockingQueue<SpoutChunk> populationQueue = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
 	final ArrayBlockingQueue<SpoutChunk> populationPriorityQueue = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
-	private final AtomicBoolean[][] generatedColumns = new AtomicBoolean[CHUNKS.SIZE][CHUNKS.SIZE];
+	private final AtomicBoolean generated = new AtomicBoolean(false);
 	private final SpoutTaskManager taskManager;
 	private final Thread executionThread;
 	private final List<Thread> meshThread;
@@ -248,13 +248,6 @@ public class SpoutRegion extends Region {
 					chunks[dx][dy][dz] = new AtomicReference<SpoutChunk>(null);
 				}
 			}
-		}
-
-		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
-			for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
-				generatedColumns[dx][dz] = new AtomicBoolean(false);
-			}
-
 		}
 
 		neighbours = new AtomicReference[3][3][3];
@@ -407,16 +400,14 @@ public class SpoutRegion extends Region {
 		}
 
 		if (loadopt.generateIfNeeded() && !fileExists && newChunk == null) {
-			// TODO remove debug code below
-			final boolean oldGenerated = generatedColumns[x][z].get();
-			// TODO remove debug code above
-			generateChunks(x, z, loadopt);
+			boolean oldGenerated = generated.get();
+			generateChunks(loadopt);
 			final SpoutChunk generatedChunk = chunks[x][y][z].get();
 			if (generatedChunk != null) {
 				checkChunkLoaded(generatedChunk, loadopt);
 				return generatedChunk;
 			} else {
-				Spout.getLogger().severe("Chunk failed to generate!  Column marked as generated: before " + oldGenerated + ", after " + generatedColumns[x][z].get());
+				Spout.getLogger().severe("Chunk failed to generate!  Column marked as generated: before " + oldGenerated + ", after " + generated.get());
 				for (int yy = 0; yy < CHUNKS.SIZE; yy++) {
 					Spout.getLogger().info(x + ", " + (y + getChunkY()) + ", " + z + " : " + chunks[x][yy][z]);
 					Spout.getLogger().info("File exists: " + this.inputStreamExists(x, y, z));
@@ -451,8 +442,7 @@ public class SpoutRegion extends Region {
 		return this.getChunk(x >> Chunk.BLOCKS.BITS, y >> Chunk.BLOCKS.BITS, z >> Chunk.BLOCKS.BITS, loadopt);
 	}
 
-	private void generateChunks(int x, int z, LoadOption loadopt) {
-		final AtomicBoolean generated = generatedColumns[x][z];
+	private void generateChunks(LoadOption loadopt) {
 		if (generated.get()) {
 			return;
 		}
@@ -460,33 +450,38 @@ public class SpoutRegion extends Region {
 			if (generated.get()) {
 				return;
 			}
-			int cx = getChunkX(x);
+			int cx = getChunkX();
 			int cy = getChunkY();
-			int cz = getChunkZ(z);
+			int cz = getChunkZ();
 			final SpoutWorld world = getWorld();
 
-			final CuboidBlockMaterialBuffer column = new CuboidBlockMaterialBuffer(cx << Chunk.BLOCKS.BITS, cy << Chunk.BLOCKS.BITS, cz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, CHUNKS.SIZE * Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
-			getWorld().getGenerator().generate(column, cx, cy, cz, world);
+			final CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(cx << Chunk.BLOCKS.BITS, cy << Chunk.BLOCKS.BITS, cz << Chunk.BLOCKS.BITS, Region.BLOCKS.SIZE, Region.BLOCKS.SIZE, Region.BLOCKS.SIZE);
+			getWorld().getGenerator().generate(buffer, cx, cy, cz, world);
 
-			final int endY = cy + CHUNKS.SIZE;
-			for (int yy = 0; cy < endY; cy++) {
-				final CuboidBlockMaterialBuffer chunk = new CuboidBlockMaterialBuffer(cx << Chunk.BLOCKS.BITS, cy << Chunk.BLOCKS.BITS, cz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
-				chunk.setSource(column);
-				chunk.copyElement(0, yy * Chunk.BLOCKS.VOLUME, Chunk.BLOCKS.VOLUME);
-				SpoutChunk newChunk = new SpoutChunk(world, this, cx, cy, cz, chunk.getRawId(), chunk.getRawData(), null);
-				newChunk.setModified();
-				SpoutChunk currentChunk = setChunk(newChunk, x, yy++, z, null, true, loadopt);
-				if (currentChunk != newChunk) {
-					Spout.getLogger().info("Warning: Unable to set generated chunk, new Chunk " + newChunk + " chunk in memory " + currentChunk);
+			for (int xx = 0; xx < Region.CHUNKS.SIZE; xx++) {
+				int cxx = cx + xx;
+				for (int yy = 0; yy < Region.CHUNKS.SIZE; yy++) {
+					int cyy = cy + yy;
+					for (int zz = 0; zz < Region.CHUNKS.SIZE; zz++) {
+						int czz = cz + zz;
+						final CuboidBlockMaterialBuffer chunk = new CuboidBlockMaterialBuffer(cxx << Chunk.BLOCKS.BITS, cyy << Chunk.BLOCKS.BITS, czz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
+						chunk.write(buffer);
+						SpoutChunk newChunk = new SpoutChunk(world, this, cxx, cyy, czz, chunk.getRawId(), chunk.getRawData(), null);
+						newChunk.setModified();
+						SpoutChunk currentChunk = setChunk(newChunk, xx, yy, zz, null, true, loadopt);
+						if (currentChunk != newChunk) {
+							Spout.getLogger().info("Warning: Unable to set generated chunk, new Chunk " + newChunk + " chunk in memory " + currentChunk);
+						}
+					}
 				}
 			}
 			if (!generated.compareAndSet(false, true)) {
-				throw new IllegalStateException("Column generated twice");
+				throw new IllegalStateException("Region generated twice");
 			}
 		}
 
 	}
-
+	
 	private SpoutChunk setChunk(SpoutChunk newChunk, int x, int y, int z, ChunkDataForRegion dataForRegion, boolean generated, LoadOption loadopt) {
 		final AtomicReference<SpoutChunk> chunkReference = chunks[x][y][z];
 		while (true) {
