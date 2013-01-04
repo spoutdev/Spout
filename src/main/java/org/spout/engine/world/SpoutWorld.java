@@ -278,6 +278,8 @@ public class SpoutWorld extends AsyncManager implements World {
 		SpoutRegion region = getRegionFromChunk(x, y, z, loadopt);
 		if (region != null) {
 			return region.getChunk(x, y, z, loadopt);
+		} else if (loadopt.loadIfNeeded() || loadopt.generateIfNeeded()) {
+			Spout.getLogger().info("Warning unable to load region: " + x + ", " + y + ", " + z + ":" + loadopt);
 		}
 		return null;
 	}

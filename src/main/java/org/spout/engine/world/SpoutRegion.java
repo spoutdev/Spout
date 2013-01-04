@@ -400,7 +400,7 @@ public class SpoutRegion extends Region {
 			dataForRegion = new ChunkDataForRegion();
 			newChunk = ChunkFiles.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z), dataForRegion);
 			if (newChunk == null) {
-				Spout.getLogger().severe("Unable to load chunk at location " + x + ", " + y + ", " + z + " in region " + this + ", regenerating chunks");
+				Spout.getLogger().severe("Unable to load chunk at location " + (getChunkX() + x) + ", " + (getChunkY() + y) + ", " + (getChunkZ() + z) + " in region " + this + ", regenerating chunks");
 				fileExists = false;
 			}
 		}
@@ -413,11 +413,9 @@ public class SpoutRegion extends Region {
 				checkChunkLoaded(generatedChunk, loadopt);
 				return generatedChunk;
 			} else {
-				Spout.getLogger().severe("Chunk failed to generate!  Column marked as generated: before " + oldGenerated + ", after " + generated.get());
-				for (int yy = 0; yy < CHUNKS.SIZE; yy++) {
-					Spout.getLogger().info(x + ", " + (y + getChunkY()) + ", " + z + " : " + chunks[x][yy][z]);
-					Spout.getLogger().info("File exists: " + this.inputStreamExists(x, y, z));
-				}
+				Spout.getLogger().severe("Chunk failed to generate!  (" + loadopt + ") Region marked as generated: before " + oldGenerated + ", after " + generated.get());
+				Spout.getLogger().info("Region " + this + ", chunk " + (getChunkX() + x) + ", " + (getChunkY() + y) + ", " + (getChunkZ() + z) + " : " + chunks[x][y][z]);
+				Thread.dumpStack();
 			}
 		}
 
@@ -459,6 +457,7 @@ public class SpoutRegion extends Region {
 			int cx = getChunkX();
 			int cy = getChunkY();
 			int cz = getChunkZ();
+
 			final SpoutWorld world = getWorld();
 
 			final CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(cx << Chunk.BLOCKS.BITS, cy << Chunk.BLOCKS.BITS, cz << Chunk.BLOCKS.BITS, Region.BLOCKS.SIZE, Region.BLOCKS.SIZE, Region.BLOCKS.SIZE);
@@ -477,7 +476,7 @@ public class SpoutRegion extends Region {
 						if (currentChunk != newChunk) {
 							Spout.getLogger().info("Warning: Unable to set generated chunk, new Chunk " + newChunk + " chunk in memory " + currentChunk);
 						} else {
-							newChunk.save();
+							newChunk.setModified();
 						}
 					}
 				}
@@ -509,7 +508,6 @@ public class SpoutRegion extends Region {
 					newChunk.initLighting();
 				}
 				Spout.getEventManager().callDelayedEvent(new ChunkLoadEvent(newChunk, generated));
-
 				return newChunk;
 			}
 
