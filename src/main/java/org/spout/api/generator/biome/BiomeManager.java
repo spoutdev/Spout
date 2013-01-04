@@ -27,7 +27,7 @@
 package org.spout.api.generator.biome;
 
 /**
- * Manages the biomes for a specific chunk in the world
+ * Manages the biomes for a specific volume in the world
  */
 public abstract class BiomeManager implements Cloneable {
 	private final int chunkX, chunkZ;
@@ -38,7 +38,7 @@ public abstract class BiomeManager implements Cloneable {
 	}
 
 	/**
-	 * Gets the x chunk coordinate of the chunk this biome manager oversees
+	 * Gets the x chunk coordinate of the base of the cuboid this biome manager oversees
 	 *
 	 * @return x chunk coordinate
 	 */
@@ -47,7 +47,7 @@ public abstract class BiomeManager implements Cloneable {
 	}
 
 	/**
-	 * Gets the z chunk coordinate of the chunk this biome manager oversees
+	 * Gets the z chunk coordinate of the base of the cuboid this biome manager oversees
 	 *
 	 * @return z chunk coordinate
 	 */
@@ -56,11 +56,11 @@ public abstract class BiomeManager implements Cloneable {
 	}
 
 	/**
-	 * Gets the biome at the relative block coords inside the chunk
+	 * Gets the biome at the relative block coords inside the cuboid
 	 *
-	 * @param x coordinate (0-15)
-	 * @param y coordinate (0-15)
-	 * @param z coordinate (0-15)
+	 * @param x coordinate 
+	 * @param y coordinate 
+	 * @param z coordinate 
 	 * @return biome
 	 */
 	public abstract Biome getBiome(int x, int y, int z);

@@ -139,8 +139,8 @@ public abstract class CuboidBuffer {
 					outerSourceIndex += source.Zinc;
 					outerThisIndex += Zinc;
 				}
-				sourceIndex += source.Xinc;
-				thisIndex += Xinc;
+				sourceIndex += source.Yinc;
+				thisIndex += Yinc;
 			}
 		}
 	}
@@ -208,7 +208,7 @@ public abstract class CuboidBuffer {
 		}
 
 		public int getLength() {
-			return overlapSizeY;
+			return overlapSizeX;
 		}
 
 		public int getInnerRepeats() {
@@ -216,7 +216,7 @@ public abstract class CuboidBuffer {
 		}
 
 		public int getOuterRepeats() {
-			return overlapSizeX;
+			return overlapSizeY;
 		}
 	}
 }
