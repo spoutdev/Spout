@@ -248,6 +248,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	private final ChunkSetQueueElement<SpoutChunk> chunkObserversDirtyQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> localPhysicsChunkQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> globalPhysicsChunkQueueElement;
+	private final ChunkSetQueueElement<SpoutChunk> dirtyChunkQueueElement;
 	
 	private boolean wasInViewDistance = false;
 	private boolean isInViewDistance = false;
@@ -357,6 +358,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		this.chunkObserversDirtyQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().chunkObserversDirtyQueue, this, true);
 		this.localPhysicsChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().localPhysicsChunkQueue, this);
 		this.globalPhysicsChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().globalPhysicsChunkQueue, this);
+		this.dirtyChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().dirtyChunkQueue, this);
 	}
 
 	@Override
@@ -1328,8 +1330,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 	public void setLightDirty(boolean dirty) {
 		lightDirty.set(dirty);
-		if (dirty) //To send to the renderer
-		{
+		if (dirty) { //To send to the renderer
 			queueDirty();
 		}
 	}
@@ -2304,9 +2305,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	protected void queueDirty() {
-		if (dirtyQueued.compareAndSet(false, true)) {
-			parentRegion.queueDirty(this);
-		}
+		dirtyChunkQueueElement.add();
 	}
 
 	int physicsUpdates = 0;

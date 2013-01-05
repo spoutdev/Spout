@@ -200,7 +200,7 @@ public class SpoutRegion extends Region {
 	protected final SetQueue<SpoutChunk> chunkObserversDirtyQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
 	protected final SetQueue<SpoutChunk> localPhysicsChunkQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
 	protected final SetQueue<SpoutChunk> globalPhysicsChunkQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
-	private final ArrayBlockingQueue<SpoutChunk> dirtyChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
+	protected final SetQueue<SpoutChunk> dirtyChunkQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final ArrayBlockingQueue<SpoutChunk> lightUnstableChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
@@ -617,8 +617,6 @@ public class SpoutRegion extends Region {
 					}
 				}
 			}
-
-			dirtyChunks.remove(currentChunk);
 
 			removeDynamicBlockUpdates(currentChunk);
 
@@ -1213,7 +1211,7 @@ public class SpoutRegion extends Region {
 				List<SpoutChunk> renderLater = new LinkedList<SpoutChunk>();
 				List<SpoutChunk> couldNotSend = new LinkedList<SpoutChunk>();
 
-				while ((spoutChunk = dirtyChunks.poll()) != null) {
+				while ((spoutChunk = dirtyChunkQueue.poll()) != null) {
 
 					spoutChunk.setNotDirtyQueued();
 					if (!spoutChunk.isLoaded()) {
@@ -1408,10 +1406,6 @@ public class SpoutRegion extends Region {
 			}
 			return snapshot;
 		}
-	}
-
-	public void queueDirty(SpoutChunk chunk) {
-		dirtyChunks.add(chunk);
 	}
 	
 	public void queueForLightUnstable(SpoutChunk chunk) {
