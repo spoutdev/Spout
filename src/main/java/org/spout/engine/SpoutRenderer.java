@@ -143,7 +143,7 @@ public class SpoutRenderer {
 		font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
 		
 		t = new ClientRenderTexture();
-		Shader s = (Shader)Spout.getFilesystem().getResource("shader://Spout/shaders/fin.ssf");
+		Shader s = (Shader)Spout.getFilesystem().getResource("shader://Spout/shaders/diffuse.ssf");
 		mat = new ClientRenderMaterial(s, null);
 		t.writeGPU();
 	}

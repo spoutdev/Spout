@@ -121,10 +121,7 @@ public class ClientRenderTexture extends ClientTexture {
 			framebuffer = EXTFramebufferObject.glGenFramebuffersEXT();		
 			EXTFramebufferObject.glFramebufferTexture2DEXT(GL11.GL_TEXTURE_2D, EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT, 0, textureID, 0);
 			
-			IntBuffer bufs = BufferUtils.createIntBuffer(1);
-			bufs.put(EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT);
-			bufs.flip();
-			GL20.glDrawBuffers(bufs);
+			
 			
 			if(useDepthBuffer) {
 				depthTarget = GL30.glGenRenderbuffers();
@@ -148,12 +145,7 @@ public class ClientRenderTexture extends ClientTexture {
 				
 								
 				
-				GL30.glFramebufferTexture2D(GL11.GL_TEXTURE_2D, GL30.GL_COLOR_ATTACHMENT0, 0, textureID, 0);
-				
-				IntBuffer bufs = BufferUtils.createIntBuffer(1);
-				bufs.put(GL30.GL_COLOR_ATTACHMENT0);
-				bufs.flip();
-				GL20.glDrawBuffers(bufs);
+				GL30.glFramebufferTexture2D(GL11.GL_TEXTURE_2D, GL30.GL_COLOR_ATTACHMENT0, 0, textureID, 0);			
 				
 				if(useDepthBuffer) {
 					depthTarget = GL30.glGenRenderbuffers();
