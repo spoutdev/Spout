@@ -60,6 +60,7 @@ import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.SnapshotRead;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.component.SpoutPhysicsComponent;
+import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.Snapshotable;
 import org.spout.engine.util.thread.snapshotable.SnapshotableBoolean;
@@ -355,17 +356,27 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	 * Prevents stack overflow when creating an entity during chunk loading due to circle of calls
 	 */
 	public void setupInitialChunk(Transform transform) {
-		if (isObserver()) {
-			updateObserver();
-		}
-		SpoutRegion region = (SpoutRegion) getTransform().getTransformLive().getPosition().getChunk(LoadOption.LOAD_GEN).getRegion();
-		entityManager.set(region.getEntityManager());
-		
-		snapshotManager.copyAllSnapshots();
-		
-		if (initialComponents != null) {
-			this.add(initialComponents);
-			initialComponents = null;
+		//The setupInitialChunk can be called bu other thread than the main thread, so need a lock : 
+		SpoutSnapshotLock lock = (SpoutSnapshotLock)Spout.getEngine().getScheduler().getSnapshotLock();
+
+		lock.coreReadLock("SetupInitialChunk");
+
+		try {
+			if (isObserver()) {
+				updateObserver();
+			}
+			SpoutRegion region = (SpoutRegion) getTransform().getTransformLive().getPosition().getChunk(LoadOption.LOAD_GEN).getRegion();
+			entityManager.set(region.getEntityManager());
+
+			snapshotManager.copyAllSnapshots();
+
+			if (initialComponents != null) {
+				this.add(initialComponents);
+				initialComponents = null;
+			}
+
+		} finally {
+			lock.coreReadUnlock("SetupInitialChunk");
 		}
 	}
 
