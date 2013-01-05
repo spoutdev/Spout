@@ -182,5 +182,4 @@ public class ClientRenderTexture extends ClientTexture {
 	public boolean isLoaded() {
 		return framebuffer != INVALID_BUFFER;
 	}
-
 }
