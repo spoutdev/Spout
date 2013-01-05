@@ -197,7 +197,7 @@ public class SpoutRegion extends Region {
 	private final List<Thread> meshThread;
 	private final SpoutScheduler scheduler;
 	private final LinkedHashMap<SpoutPlayer, TByteTripleHashSet> observers = new LinkedHashMap<SpoutPlayer, TByteTripleHashSet>();
-	private final ConcurrentLinkedQueue<SpoutChunk> observedChunkQueue = new ConcurrentLinkedQueue<SpoutChunk>();
+	protected final SetQueue<SpoutChunk> chunkObserversDirtyQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final ArrayBlockingQueue<SpoutChunk> localPhysicsChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final ArrayBlockingQueue<SpoutChunk> globalPhysicsChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final ArrayBlockingQueue<SpoutChunk> dirtyChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
@@ -739,14 +739,10 @@ public class SpoutRegion extends Region {
 		}
 
 		SpoutChunk c;
-		TByteTripleHashSet done = new TByteTripleHashSet();
-		while ((c = observedChunkQueue.poll()) != null) {
+		while ((c = chunkObserversDirtyQueue.poll()) != null) {
 			int cx = c.getX() & CHUNKS.MASK;
 			int cy = c.getY() & CHUNKS.MASK;
 			int cz = c.getZ() & CHUNKS.MASK;
-			if (!done.add(cx, cy, cz)) {
-				continue;
-			}
 			c = chunks[cx][cy][cz].get();
 			Set<SpoutEntity> chunkObservers = c == null ? Collections.<SpoutEntity>emptySet() : c.getObservers();
 
@@ -1753,10 +1749,6 @@ public class SpoutRegion extends Region {
 	@Override
 	public TaskManager getTaskManager() {
 		return taskManager;
-	}
-
-	public void markObserverDirty(SpoutChunk chunk) {
-		observedChunkQueue.add(chunk);
 	}
 
 	@Override

@@ -245,6 +245,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	private final ChunkSetQueueElement<SpoutChunk> unloadQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> populationQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> populationPriorityQueueElement;
+	private final ChunkSetQueueElement<SpoutChunk> chunkObserversDirtyQueueElement;
 	private boolean wasInViewDistance = false;
 	private boolean isInViewDistance = false;
 
@@ -350,6 +351,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		this.unloadQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().unloadQueue, this);
 		this.populationQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().populationQueue, this);
 		this.populationPriorityQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().populationPriorityQueue, this);
+		this.chunkObserversDirtyQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().chunkObserversDirtyQueue, this, true);
 	}
 
 	@Override
@@ -1188,7 +1190,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		TickStage.checkStage(TickStage.FINALIZE);
 
 		checkChunkLoaded();
-		parentRegion.markObserverDirty(this);
+		chunkObserversDirtyQueueElement.add();
 		if (!isPopulated()) {
 			queueForPopulation(false);
 		}
@@ -1206,7 +1208,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	@Override
 	public boolean removeObserver(Entity entity) {
 		checkChunkLoaded();
-		parentRegion.markObserverDirty(this);
+		chunkObserversDirtyQueueElement.add();
 		TickStage.checkStage(TickStage.FINALIZE);
 
 		Integer oldDistance = ((SpoutEntity) entity).getPrevViewDistance();
@@ -2414,14 +2416,21 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	}
 	
 	private class ChunkSetQueueElement<T extends Cube> extends SetQueueElement<T> {
+		
+		private final boolean validIfUnloaded;
 
 		public ChunkSetQueueElement(SetQueue<T> queue, T value) {
+			this(queue, value, false);
+		}
+		
+		public ChunkSetQueueElement(SetQueue<T> queue, T value, boolean validIfUnloaded) {
 			super(queue, value);
+			this.validIfUnloaded = validIfUnloaded;
 		}
 
 		@Override
 		protected boolean isValid() {
-			return isLoaded();
+			return validIfUnloaded || isLoaded();
 		}
 		
 	}
