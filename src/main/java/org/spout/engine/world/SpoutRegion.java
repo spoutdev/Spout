@@ -174,7 +174,7 @@ public class SpoutRegion extends Region {
 	 * Reference to the persistent ByteArrayArray that stores chunk data
 	 */
 	private final BAAWrapper chunkStore;
-	private final ArrayBlockingQueue<SpoutChunkSnapshotFuture> snapshotQueue = new ArrayBlockingQueue<SpoutChunkSnapshotFuture>(CHUNKS.VOLUME);
+	private final Queue<SpoutChunkSnapshotFuture> snapshotQueue = new ConcurrentLinkedQueue<SpoutChunkSnapshotFuture>();
 	
 	protected SetQueue<SpoutChunk> unloadQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
 	public static final byte POPULATE_CHUNK_MARGIN = 1;
