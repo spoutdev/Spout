@@ -399,18 +399,21 @@ public interface Block extends MaterialSource, WorldSource {
 	
 	/**
 	 * Resets all dynamic material updates queued for this block. This list is checked during the DYNAMIC_BLOCKS part 
-	 * of the tick, and will cause the onPlacement method to be called.<br>
+	 * of the tick, and will cause the onFirstUpdate method to be called.<br>
 	 */
+	@DelayedWrite
 	public void resetDynamic();
 	
 	/**
-	 * Immediately clears all dynamic material updates for this block.  This does not trigger the onPlacement() call
+	 * Immediately clears all dynamic material updates for this block.  This does not trigger the onPlacement() call.<br>
+	 * Note: This method may only be called during dynamic updates and physics
 	 */
 	public void syncResetDynamic();
 
 	/**
 	 * Queues a dynamic update on this block<br>
-	 * The Block Material must be dynamic for this to function.
+	 * The Block Material must be dynamic for this to function.<br>
+	 * Note: This method may only be called during dynamic updates and physics
 	 * 
 	 * @param exclusive true, if only one update should be stored for this block
 	 * 
@@ -420,7 +423,8 @@ public interface Block extends MaterialSource, WorldSource {
 
 	/**
 	 * Queues a dynamic update on this block<br>
-	 * The Block Material must be dynamic for this to function.
+	 * The Block Material must be dynamic for this to function.<br>
+	 * Note: This method may only be called during dynamic updates and physics
 	 * 
 	 * @param nextUpdate the time for the next update
 	 * @param exclusive true, if only one update should be stored for this block
@@ -430,7 +434,8 @@ public interface Block extends MaterialSource, WorldSource {
 	
 	/**
 	 * Queues a dynamic update on this block<br>
-	 * The Block Material must be dynamic for this to function.
+	 * The Block Material must be dynamic for this to function.<br>
+	 * Note: This method may only be called during dynamic updates and physics
 	 * 
 	 * @param nextUpdate the time for the next update
 	 * @param data persistent data to be used for the update

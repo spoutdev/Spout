@@ -43,7 +43,8 @@ public interface AreaPhysicsAccess {
 	public void resetDynamicBlock(int x, int y, int z);
 	
 	/**
-	 * Immediately clears all dynamic material updates for the given location.  This does not trigger the onPlacement() call
+	 * Immediately clears all dynamic material updates for the given location.  This does not trigger the onFirstUpdate() call.<br>
+	 * Note: This method may only be called during dynamic updates and physics
 	 * 
 	 * @param x
 	 * @param y
@@ -55,6 +56,7 @@ public interface AreaPhysicsAccess {
 	
 	/**
 	 * Queues a dynamic material updated for the given location. This list is checked during the finalize part of the tick, and will cause the update method to be called.<br>
+	 * Note: This method may only be called during dynamic updates and physics
 	 * 
 	 * @param x
 	 * @param y
@@ -67,6 +69,7 @@ public interface AreaPhysicsAccess {
 	
 	/**
 	 * Queues a dynamic material updated for the given location. This list is checked during the finalize part of the tick, and will cause the update method to be called.<br>
+	 * Note: This method may only be called during dynamic updates and physics
 	 * 
 	 * @param x
 	 * @param y
@@ -80,6 +83,7 @@ public interface AreaPhysicsAccess {
 	
 	/**
 	 * Queues a dynamic material updated for the given location. This list is checked during the finalize part of the tick, and will cause the update method to be called.<br>
+	 * Note: This method may only be called during dynamic updates and physics
 	 * 
 	 * @param x
 	 * @param y
