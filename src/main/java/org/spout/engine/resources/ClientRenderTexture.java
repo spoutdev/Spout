@@ -111,15 +111,20 @@ public class ClientRenderTexture extends ClientTexture {
 		textureID = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 		
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, this.getWidth(), this.getHeight(), 0, GL11.GL_RGBA8, GL11.GL_UNSIGNED_BYTE, EMPTY_BUFFER);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_INT, (java.nio.ByteBuffer) null);  // Create the texture data
 
 		
 		if(useEXT) {
-			framebuffer = EXTFramebufferObject.glGenFramebuffersEXT();		
-			EXTFramebufferObject.glFramebufferTexture2DEXT(GL11.GL_TEXTURE_2D, EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT, 0, textureID, 0);
+			framebuffer = EXTFramebufferObject.glGenFramebuffersEXT();
+			
+			EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, framebuffer);
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+			
+			
+			
+			EXTFramebufferObject.glFramebufferTexture2DEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT, GL11.GL_TEXTURE_2D, textureID, 0);
 			
 			
 			
@@ -130,7 +135,6 @@ public class ClientRenderTexture extends ClientTexture {
 				EXTFramebufferObject.glFramebufferRenderbufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, GL30.GL_DEPTH_ATTACHMENT, EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthTarget);
 			}
 			
-			EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, SCREEN_BUFFER);
 			
 			if(EXTFramebufferObject.glCheckFramebufferStatusEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT) != EXTFramebufferObject.GL_FRAMEBUFFER_COMPLETE_EXT)
 			{
@@ -142,10 +146,11 @@ public class ClientRenderTexture extends ClientTexture {
 		} else {
 				framebuffer = GL30.glGenFramebuffers();
 				GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, framebuffer);
+				GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 				
 								
+				GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, textureID, 0);			
 				
-				GL30.glFramebufferTexture2D(GL11.GL_TEXTURE_2D, GL30.GL_COLOR_ATTACHMENT0, 0, textureID, 0);			
 				
 				if(useDepthBuffer) {
 					depthTarget = GL30.glGenRenderbuffers();
