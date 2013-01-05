@@ -46,6 +46,7 @@ public class UpdateQueue {
 	private int y;
 	private int z;
 	private BlockMaterial oldMaterial;
+	private int maxSize = 0;
 
 	public void add(int x, int y, int z, BlockMaterial oldMaterial) {
 		TIntList list = map.get(x, y & 0xFF, z);
@@ -66,7 +67,11 @@ public class UpdateQueue {
 			list = new TIntArrayList();
 			map.put(x, y & 0xFF, z, list);
 		}
-		list.add(xArray.size());
+		int size = xArray.size();
+		if (size > maxSize) {
+			maxSize = size;
+		} 
+		list.add(size);
 		xArray.add((byte) x);
 		yArray.add((byte) y);
 		zArray.add((byte) z);
@@ -89,6 +94,15 @@ public class UpdateQueue {
 		y = yArray.removeAt(index) & 0xFF;
 		z = zArray.removeAt(index) & 0xFF;
 		oldMaterial = materials.remove(index);
+		
+		if (maxSize > 20 && index < (maxSize >> 1)) {
+			xArray.trimToSize();
+			yArray.trimToSize();
+			zArray.trimToSize();
+			materials.trimToSize();
+			maxSize = xArray.size();
+		}
+		
 		TIntList list = map.get(x, y & 0xFF, z);
 		if (list == null || !list.remove(index)) {
 			throw new IllegalStateException("Index was not in list, or list was null");
