@@ -124,6 +124,11 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	private final AtomicReference<NetworkSendThread> networkSendThread = new AtomicReference<NetworkSendThread>();
 
 	/**
+	 * Default uncaught exception handler
+	 */
+	private final AtomicReference<UncaughtExceptionHandler> exceptionHandler;
+
+	/**
 	 * Creates a new session.
 	 * @param engine  The server this session belongs to.
 	 * @param channel The channel associated with this session.
@@ -134,6 +139,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		protocol = new AtomicReference<Protocol>(bootstrapProtocol);
 		isConnected = true;
 		this.dataMap = new ManagedHashMap();
+		this.exceptionHandler = new AtomicReference<UncaughtExceptionHandler>(new DefaultUncaughtExceptionHandler(this));
 	}
 
 	/**
@@ -199,9 +205,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 				try {
 					handler.handle(false, this, message);
 				} catch (Exception e) {
-					Spout.getEngine().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + (getPlayer() != null ? getPlayer().getName() : "null"));
-					e.printStackTrace();
-					disconnect(false, new Object[] {"Message handler exception for ", message.getClass().getSimpleName()});
+					exceptionHandler.get().uncaughtException(message, handler, e);
 				}
 			}
 		}
@@ -211,9 +215,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 				try {
 					handler.handle(true, this, message);
 				} catch (Exception e) {
-					Spout.getEngine().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + (getPlayer() != null ? getPlayer().getName() : "null"));
-					e.printStackTrace();
-					disconnect(false, new Object[] {"Message handler exception for", message.getClass().getSimpleName()});
+					exceptionHandler.get().uncaughtException(message, handler, e);
 				}
 			}
 		}
@@ -356,4 +358,17 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		return synchronizer.get();
 	}
 
+	@Override
+	public UncaughtExceptionHandler getUncaughtExceptionHandler() {
+		return exceptionHandler.get();
+	}
+
+	@Override
+	public void setUncaughtExceptionHandler(UncaughtExceptionHandler handler) {
+		if (handler != null) {
+			exceptionHandler.set(handler);
+		} else {
+			throw new IllegalArgumentException("Null uncaught exception handlers are not permitted");
+		}
+	}
 }
