@@ -60,7 +60,6 @@ import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.SnapshotRead;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.component.SpoutPhysicsComponent;
-import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.Snapshotable;
 import org.spout.engine.util.thread.snapshotable.SnapshotableBoolean;
@@ -71,12 +70,13 @@ import org.spout.engine.world.SpoutRegion;
 
 public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshotable {
 	public static final int NOTSPAWNEDID = -1;
+	private static final Iterator<IntVector3> INITIAL_TICK = new ArrayList<IntVector3>().iterator();
 	private static final Iterator<IntVector3> OBSERVING = new ArrayList<IntVector3>().iterator();
 	private static final Iterator<IntVector3> NOT_OBSERVING = new ArrayList<IntVector3>().iterator();
 	private final SnapshotManager snapshotManager = new SnapshotManager();
 	//Snapshotable fields
 	private final SnapshotableReference<EntityManager> entityManager = new SnapshotableReference<EntityManager>(snapshotManager, null);
-	private final SnapshotableReference<Iterator<IntVector3>> observer = new SnapshotableReference<Iterator<IntVector3>>(snapshotManager, NOT_OBSERVING);
+	private final SnapshotableReference<Iterator<IntVector3>> observer = new SnapshotableReference<Iterator<IntVector3>>(snapshotManager, INITIAL_TICK);
 	private final SnapshotableBoolean save = new SnapshotableBoolean(snapshotManager, false);
 	private final AtomicInteger id = new AtomicInteger(NOTSPAWNEDID);
 	private final SnapshotableInt viewDistance = new SnapshotableInt(snapshotManager, 10);
@@ -243,7 +243,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		}
 
 		//Entity changed chunks as observer OR observer status changed so update
-		if ((chunk != chunkLive && (observer.getLive() == OBSERVING)) || observer.isDirty()) {
+		if ((chunk != chunkLive && (observer.getLive() == OBSERVING)) || observer.isDirty() || observer.get() == INITIAL_TICK) {
 			updateObserver();
 		}
 	}
@@ -258,6 +258,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	}
 
 	protected void updateObserver() {
+		
 		final int viewDistance = getViewDistance() >> Chunk.BLOCKS.BITS;
 		World w = getWorld();
 		Transform t = getTransform().getTransform();
@@ -356,27 +357,14 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	 * Prevents stack overflow when creating an entity during chunk loading due to circle of calls
 	 */
 	public void setupInitialChunk(Transform transform) {
-		//The setupInitialChunk can be called bu other thread than the main thread, so need a lock : 
-		SpoutSnapshotLock lock = (SpoutSnapshotLock)Spout.getEngine().getScheduler().getSnapshotLock();
+		SpoutRegion region = (SpoutRegion) getTransform().getTransformLive().getPosition().getChunk(LoadOption.LOAD_GEN).getRegion();
+		entityManager.set(region.getEntityManager());
 
-		lock.coreReadLock("SetupInitialChunk");
+		snapshotManager.copyAllSnapshots();
 
-		try {
-			if (isObserver()) {
-				updateObserver();
-			}
-			SpoutRegion region = (SpoutRegion) getTransform().getTransformLive().getPosition().getChunk(LoadOption.LOAD_GEN).getRegion();
-			entityManager.set(region.getEntityManager());
-
-			snapshotManager.copyAllSnapshots();
-
-			if (initialComponents != null) {
-				this.add(initialComponents);
-				initialComponents = null;
-			}
-
-		} finally {
-			lock.coreReadUnlock("SetupInitialChunk");
+		if (initialComponents != null) {
+			this.add(initialComponents);
+			initialComponents = null;
 		}
 	}
 

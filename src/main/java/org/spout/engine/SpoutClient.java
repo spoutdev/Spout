@@ -45,7 +45,6 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-
 import org.spout.api.Client;
 import org.spout.api.FileSystem;
 import org.spout.api.Spout;
@@ -76,7 +75,6 @@ import org.spout.api.protocol.Session;
 import org.spout.api.render.Camera;
 import org.spout.api.render.Font;
 import org.spout.api.render.RenderMode;
-
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.command.InputManagementCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
@@ -89,6 +87,7 @@ import org.spout.engine.listener.channel.SpoutClientConnectListener;
 import org.spout.engine.protocol.SpoutClientSession;
 import org.spout.engine.resources.ClientEntityPrefab;
 import org.spout.engine.resources.ClientFont;
+import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutClientWorld;
 
@@ -166,26 +165,30 @@ public class SpoutClient extends SpoutEngine implements Client {
 			// TODO : Wait until the world is fully loaded
 		}
 		
-		activePlayer = new SpoutClientPlayer("Spouty", super.getDefaultWorld().getSpawnPoint(), SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
-		activeCamera = activePlayer.add(CameraComponent.class);
-		activePlayer.add(HitBlockComponent.class);
-		getActiveWorld().spawnEntity(activePlayer);
-		Font font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
+		((SpoutScheduler) Spout.getScheduler()).coreSafeRun("Client setup task", new Runnable() {
+			public void run() {
+				activePlayer = new SpoutClientPlayer("Spouty", getDefaultWorld().getSpawnPoint(), SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
+				activeCamera = activePlayer.add(CameraComponent.class);
+				activePlayer.add(HitBlockComponent.class);
+				getActiveWorld().spawnEntity(activePlayer);
+				Font font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
 
-		// Test
-		ClientEntityPrefab spoutyType = (ClientEntityPrefab) Spout.getFilesystem().getResource("entity://Spout/entities/Spouty/spouty.sep");
-		Entity e = spoutyType.createEntity(super.getDefaultWorld().getSpawnPoint().getPosition());
-		e.setSavable(false); // To prevent entity duplication
-		ClientTextModelComponent tmc = e.add(ClientTextModelComponent.class);
-		tmc.setText(new ChatArguments(ChatStyle.BLUE, "Sp", ChatStyle.WHITE, "ou", ChatStyle.RED, "ty"));
-		tmc.setSize(0.5f);
-		tmc.setTranslation(new Vector3(0, 3f, 0));
-		tmc.setFont(font);
+				// Test
+				ClientEntityPrefab spoutyType = (ClientEntityPrefab) Spout.getFilesystem().getResource("entity://Spout/entities/Spouty/spouty.sep");
+				Entity e = spoutyType.createEntity(getDefaultWorld().getSpawnPoint().getPosition());
+				e.setSavable(false); // To prevent entity duplication
+				ClientTextModelComponent tmc = e.add(ClientTextModelComponent.class);
+				tmc.setText(new ChatArguments(ChatStyle.BLUE, "Sp", ChatStyle.WHITE, "ou", ChatStyle.RED, "ty"));
+				tmc.setSize(0.5f);
+				tmc.setTranslation(new Vector3(0, 3f, 0));
+				tmc.setFont(font);
 
-		getActiveWorld().spawnEntity(e);
+				getActiveWorld().spawnEntity(e);
 
-		//The render need the active player to find the world to draw, so we start it after initialize player
-		renderer = getScheduler().startRenderThread(new Vector2(1204, 796), ccoverride, null);
+				//The render need the active player to find the world to draw, so we start it after initialize player
+				renderer = getScheduler().startRenderThread(new Vector2(1204, 796), ccoverride, null);
+			}
+		});
 		
 		getScheduler().startGuiThread();
 		

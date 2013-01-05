@@ -149,7 +149,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		while (!success) {
 			final LockInfo oldLockInfo = locks.get(plugin);
 			if (oldLockInfo == null) {
-				throw new IllegalArgumentException("Attempted to remove a lock for a plugin with no previously added lock");
+				throw new IllegalArgumentException("Attempted to remove a lock for a plugin with no previously added lock, " + plugin.getName());
 			}
 
 			final LockInfo newLockInfo = new LockInfo(oldLockInfo.oldestLock, oldLockInfo.locks - 1);
@@ -185,7 +185,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		while (!success) {
 			Integer i = coreTasks.get(taskName);
 			if (i == null || i <= 0) {
-				throw new IllegalStateException("Attempting to unlock a core read lock which was already unlocked");
+				throw new IllegalStateException("Attempting to unlock a core read lock which was already unlocked, " + taskName);
 			} else if (i.equals(1)) {
 				success = coreTasks.remove(taskName, i);
 			} else {
@@ -198,7 +198,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 			Thread t = Thread.currentThread();
 			Integer i = coreLockingThreads.get(t);
 			if (i == null || i <= 0) {
-				throw new IllegalStateException("Attempting to unlock a core read lock which was already unlocked");
+				throw new IllegalStateException("Attempting to unlock a core read lock which was already unlocked, " + taskName);
 			} else if (i.equals(1)) {
 				success = coreLockingThreads.remove(t, i);
 			} else {

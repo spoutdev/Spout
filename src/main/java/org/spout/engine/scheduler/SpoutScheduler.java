@@ -1030,7 +1030,7 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	@Override
-	public SnapshotLock getSnapshotLock() {
+	public SpoutSnapshotLock getSnapshotLock() {
 		return snapshotLock;
 	}
 
@@ -1060,6 +1060,66 @@ public final class SpoutScheduler implements Scheduler {
 
 		heavyLoad.set(true);
 		return true;
+	}
+	
+	@Override
+	public void safeRun(final Plugin plugin, final Runnable task) {
+		SpoutSnapshotLock lock = getSnapshotLock();
+		lock.readLock(plugin);
+		try {
+			try {
+				task.run();
+			} catch (Exception e) {
+				Spout.getLogger().info("Exception throw when executing task from plugin " + plugin.getName() + ", " + e.getMessage());
+			}
+		} finally {
+			lock.readUnlock(plugin);
+		}
+	}
+	
+	public void coreSafeRun(final String taskName, final Runnable task) {
+		SpoutSnapshotLock lock = getSnapshotLock();
+		lock.coreReadLock(taskName);
+		try {
+			try {
+				task.run();
+			} catch (Exception e) {
+				Spout.getLogger().info("Exception throw when executing task, " + taskName + ", " + e.getMessage());
+			}
+		} finally {
+			lock.coreReadUnlock(taskName);
+		}
+	}
+	
+	@Override
+	public <T> T safeCall(final Plugin plugin, final Callable<T> task) {
+		SpoutSnapshotLock lock = getSnapshotLock();
+		lock.readLock(plugin);
+		try {
+			try {
+				return task.call();
+			} catch (Exception e) {
+				Spout.getLogger().info("Exception throw when executing task from plugin " + plugin.getName() + ", " + e.getMessage());
+				return null;
+			}
+		} finally {
+			lock.readUnlock(plugin);
+		}
+	}
+	
+	public <T> T coreSafeCall(final String taskName, final Callable<T> task) {
+		SpoutSnapshotLock lock = getSnapshotLock();
+		lock.coreReadLock(taskName);
+		try {
+			try {
+				return task.call();
+			} catch (Exception e) {
+				Spout.getLogger().info("Exception throw when executing task, " + taskName + ", " + e.getMessage());
+				return null;
+			}
+		} finally {
+			lock.coreReadUnlock(taskName);
+		}
 	}
 
 	/**
