@@ -33,6 +33,7 @@ import gnu.trove.list.array.TByteArrayList;
 
 import java.util.ArrayList;
 
+import org.spout.api.Spout;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.util.map.TByteShortByteKeyedObjectHashMap;
 
@@ -47,6 +48,7 @@ public class UpdateQueue {
 	private int z;
 	private BlockMaterial oldMaterial;
 	private int maxSize = 0;
+	private int maxMapSize = 0;
 
 	public void add(int x, int y, int z, BlockMaterial oldMaterial) {
 		TIntList list = map.get(x, y & 0xFF, z);
@@ -66,6 +68,9 @@ public class UpdateQueue {
 		} else {
 			list = new TIntArrayList();
 			map.put(x, y & 0xFF, z, list);
+			if (map.size() > maxMapSize) {
+				maxMapSize = map.size();
+			}
 		}
 		int size = xArray.size();
 		if (size > maxSize) {
@@ -95,7 +100,7 @@ public class UpdateQueue {
 		z = zArray.removeAt(index) & 0xFF;
 		oldMaterial = materials.remove(index);
 		
-		if (maxSize > 20 && index < (maxSize >> 1)) {
+		if (maxSize > 10 && index < (maxSize >> 1)) {
 			xArray.trimToSize();
 			yArray.trimToSize();
 			zArray.trimToSize();
@@ -107,8 +112,14 @@ public class UpdateQueue {
 		if (list == null || !list.remove(index)) {
 			throw new IllegalStateException("Index was not in list, or list was null");
 		}
-		if (list.size() == 0 && map.remove(x, y & 0xFF, z) == null) {
-			throw new IllegalStateException("Removed update location was not in HashSet");
+		if (list.size() == 0) {
+			if (map.remove(x, y & 0xFF, z) == null) {
+				throw new IllegalStateException("Removed update location was not in HashSet");
+			}
+			if (maxMapSize > 5 && map.size() < (maxMapSize >> 1)) {
+				map.compact();
+				maxMapSize = map.size();
+			}
 		}
 		return x;
 	}
