@@ -37,6 +37,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GLContext;
 import org.lwjgl.opengl.PixelFormat;
 
 import org.spout.api.Client;
@@ -105,12 +106,13 @@ public class SpoutRenderer {
 		client.getLogger().info("SpoutClient Information");
 		client.getLogger().info("Operating System: " + System.getProperty("os.name"));
 		client.getLogger().info("Renderer Mode: " + client.getRenderMode().toString());
+		client.getLogger().info("GL21: " + GLContext.getCapabilities().OpenGL21 + " GL32: " + GLContext.getCapabilities().OpenGL32);		
 		client.getLogger().info("OpenGL Information");
 		client.getLogger().info("Vendor: " + GL11.glGetString(GL11.GL_VENDOR));
 		client.getLogger().info("OpenGL Version: " + GL11.glGetString(GL11.GL_VERSION));
 		client.getLogger().info("GLSL Version: " + GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
 		client.getLogger().info("Max Textures: " + GL11.glGetString(GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS));
-		String extensions = "Extensions Supported: ";
+			String extensions = "Extensions Supported: ";
 		if (client.getRenderMode() == RenderMode.GL30) {
 			for (int i = 0; i < GL11.glGetInteger(GL30.GL_NUM_EXTENSIONS); i++) {
 				extensions += GL30.glGetStringi(GL11.GL_EXTENSIONS, i) + " ";
