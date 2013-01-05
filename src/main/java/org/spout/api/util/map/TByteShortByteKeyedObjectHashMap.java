@@ -43,7 +43,7 @@ public class TByteShortByteKeyedObjectHashMap<K> extends ByteShortByteHashed {
 	protected final TIntObjectHashMap<K> map;
 
 	public TByteShortByteKeyedObjectHashMap() {
-		map = new TIntObjectHashMap<K>(100);
+		map = new TIntObjectHashMap<K>(5);
 	}
 
 	public TByteShortByteKeyedObjectHashMap(int capacity) {
@@ -67,6 +67,10 @@ public class TByteShortByteKeyedObjectHashMap<K> extends ByteShortByteHashed {
 
 	public void clear() {
 		map.clear();
+	}
+	
+	public void compact() {
+		map.compact();
 	}
 
 	public boolean containsValue(int val) {
