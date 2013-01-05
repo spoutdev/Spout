@@ -26,6 +26,9 @@
  */
 package org.spout.api.scheduler;
 
+import java.util.concurrent.Callable;
+
+import org.spout.api.plugin.Plugin;
 import org.spout.api.util.thread.annotation.Threadsafe;
 
 public interface Scheduler extends TaskManager {
@@ -63,4 +66,23 @@ public interface Scheduler extends TaskManager {
 	 */
 	@Threadsafe
 	public boolean isServerOverloaded();
+	
+	/**
+	 * Runs a Runnable during a safe moment in the tick.  This method locks the snapshot lock while running the task.
+	 * 
+	 * @param plugin
+	 * @param task
+	 */
+	@Threadsafe
+	public void safeRun(final Plugin plugin, final Runnable task);
+	
+	/**
+	 * Calls a Callable during a safe moment in the tick.  This method locks the snapshot lock while running the task.
+	 * 
+	 * @param plugin
+	 * @param task
+	 * @return
+	 */
+	@Threadsafe
+	public <T> T safeCall(final Plugin plugin, final Callable<T> task);
 }
