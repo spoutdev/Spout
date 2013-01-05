@@ -288,7 +288,8 @@ public class SpoutRegion extends Region {
 		solver = new SequentialImpulseConstraintSolver();
 		simulation = new DiscreteDynamicsWorld(dispatcher, broadphase, solver, configuration);
 		simulation.setGravity(new Vector3f(0, -9.81F, 0));
-		simulation.getDispatchInfo().allowedCcdPenetration = 5f;
+		simulation.getDispatchInfo().allowedCcdPenetration = 3f;
+		simulation.getSolverInfo().splitImpulse = true;
 		final SpoutPhysicsWorld physicsInfo = new SpoutPhysicsWorld(this);
 		final VoxelWorldShape simulationShape = new RegionShape(physicsInfo, this);
 		final Matrix3f rot = new Matrix3f();
