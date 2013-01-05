@@ -246,6 +246,9 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	private final ChunkSetQueueElement<SpoutChunk> populationQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> populationPriorityQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> chunkObserversDirtyQueueElement;
+	private final ChunkSetQueueElement<SpoutChunk> localPhysicsChunkQueueElement;
+	private final ChunkSetQueueElement<SpoutChunk> globalPhysicsChunkQueueElement;
+	
 	private boolean wasInViewDistance = false;
 	private boolean isInViewDistance = false;
 
@@ -352,6 +355,8 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		this.populationQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().populationQueue, this);
 		this.populationPriorityQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().populationPriorityQueue, this);
 		this.chunkObserversDirtyQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().chunkObserversDirtyQueue, this, true);
+		this.localPhysicsChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().localPhysicsChunkQueue, this);
+		this.globalPhysicsChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().globalPhysicsChunkQueue, this);
 	}
 
 	@Override
@@ -929,6 +934,14 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			return NibblePairHashed.key1(light);
 		} else {
 			return NibblePairHashed.key2(light);
+		}
+	}
+	
+	public void setPhysicsActive(boolean local) {
+		if (local) {
+			this.localPhysicsChunkQueueElement.add();
+		} else {
+			this.globalPhysicsChunkQueueElement.add();
 		}
 	}
 
@@ -2294,10 +2307,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		if (dirtyQueued.compareAndSet(false, true)) {
 			parentRegion.queueDirty(this);
 		}
-	}
-
-	public void setInactivePhysics(boolean local) {
-		physicsQueue.setInactive(local);
 	}
 
 	int physicsUpdates = 0;

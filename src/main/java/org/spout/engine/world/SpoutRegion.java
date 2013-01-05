@@ -198,8 +198,8 @@ public class SpoutRegion extends Region {
 	private final SpoutScheduler scheduler;
 	private final LinkedHashMap<SpoutPlayer, TByteTripleHashSet> observers = new LinkedHashMap<SpoutPlayer, TByteTripleHashSet>();
 	protected final SetQueue<SpoutChunk> chunkObserversDirtyQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
-	private final ArrayBlockingQueue<SpoutChunk> localPhysicsChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
-	private final ArrayBlockingQueue<SpoutChunk> globalPhysicsChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
+	protected final SetQueue<SpoutChunk> localPhysicsChunkQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
+	protected final SetQueue<SpoutChunk> globalPhysicsChunkQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final ArrayBlockingQueue<SpoutChunk> dirtyChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final ArrayBlockingQueue<SpoutChunk> lightUnstableChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final DynamicBlockUpdateTree dynamicBlockTree;
@@ -1432,8 +1432,7 @@ public class SpoutRegion extends Region {
 		while (updated) {
 			updated = false;
 			SpoutChunk c;
-			while ((c = this.localPhysicsChunks.poll()) != null) {
-				c.setInactivePhysics(true);
+			while ((c = this.localPhysicsChunkQueue.poll()) != null) {
 				updated |= c.runLocalPhysics();
 			}
 		}
@@ -1441,8 +1440,7 @@ public class SpoutRegion extends Region {
 
 	public void runGlobalPhysics() throws InterruptedException {
 		SpoutChunk c;
-		while ((c = this.globalPhysicsChunks.poll()) != null) {
-			c.setInactivePhysics(false);
+		while ((c = this.globalPhysicsChunkQueue.poll()) != null) {
 			c.runGlobalPhysics();
 		}
 	}
@@ -1820,18 +1818,6 @@ public class SpoutRegion extends Region {
 
 	public void addSnapshotFuture(SpoutChunkSnapshotFuture future) {
 		snapshotQueue.add(future);
-	}
-
-	public void setPhysicsActive(SpoutChunk chunk, boolean local) {
-		try {
-			if (local) {
-				localPhysicsChunks.add(chunk);
-			} else {
-				globalPhysicsChunks.add(chunk);
-			}
-		} catch (IllegalStateException ise) {
-			throw new IllegalStateException("Physics chunk queue exceeded capacity", ise);
-		}
 	}
 
 	public void unlinkNeighbours() {

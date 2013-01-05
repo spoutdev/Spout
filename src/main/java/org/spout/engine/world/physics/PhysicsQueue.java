@@ -120,12 +120,8 @@ public class PhysicsQueue {
 	}
 	
 	public void registerActive() {
-		if (localActive.compareAndSet(false, true)) {
-			region.setPhysicsActive(chunk, true);
-		}
-		if (globalActive.compareAndSet(false, true)) {
-			region.setPhysicsActive(chunk, false);
-		}
+		chunk.setPhysicsActive(true);
+		chunk.setPhysicsActive(false);
 	}
 	
 	public UpdateQueue getUpdateQueue() {
