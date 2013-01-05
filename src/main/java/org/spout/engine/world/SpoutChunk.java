@@ -240,11 +240,11 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	 * Indicates that the chunk has been added to the dirty queue
 	 */
 	private final AtomicBoolean dirtyQueued = new AtomicBoolean(false);
-	private final AtomicBoolean populationQueued = new AtomicBoolean(false);
-	private final AtomicBoolean populationPriorityQueued = new AtomicBoolean(false);
 	private final AtomicBoolean popObserver = new AtomicBoolean(false);
 	private final AtomicInteger autosaveTicks = new AtomicInteger(0);
 	private final ChunkSetQueueElement<SpoutChunk> unloadQueueElement;
+	private final ChunkSetQueueElement<SpoutChunk> populationQueueElement;
+	private final ChunkSetQueueElement<SpoutChunk> populationPriorityQueueElement;
 	private boolean wasInViewDistance = false;
 	private boolean isInViewDistance = false;
 
@@ -348,6 +348,8 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		this.lightStableOnLoad = lightStable;
 		this.saveMarkedElement = new ChunkSetQueueElement<Cube>(getRegion().saveMarkedQueue, this);
 		this.unloadQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().unloadQueue, this);
+		this.populationQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().populationQueue, this);
+		this.populationPriorityQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().populationPriorityQueue, this);
 	}
 
 	@Override
@@ -1777,21 +1779,9 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 	public void queueForPopulation(boolean priority) {
 		if (!priority) {
-			if (populationQueued.compareAndSet(false, true)) {
-				parentRegion.queueChunkForPopulation(this, priority);
-			}
+			populationQueueElement.add();
 		} else {
-			if (populationPriorityQueued.compareAndSet(false, true)) {
-				parentRegion.queueChunkForPopulation(this, priority);
-			}
-		}
-	}
-
-	public void setNotQueuedForPopulation(boolean priority) {
-		if (!priority) {
-			populationQueued.set(false);
-		} else {
-			populationPriorityQueued.set(false);
+			populationPriorityQueueElement.add();
 		}
 	}
 
