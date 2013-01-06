@@ -86,8 +86,6 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 				engine.getSessionRegistry().add(session);
 				setSession(session);
 				ctx.setAttachment(session);
-
-				engine.getLogger().info("Downstream channel connected: " + c + ".");
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				throw new RuntimeException("Exception thrown when connecting", ex);
