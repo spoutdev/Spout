@@ -299,20 +299,24 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 * @param item to attempt to add to the inventory
 	 */
 	public void add(int firstSlot, int lastSlot, ItemStack item) {
-		for (int index = firstSlot; index < lastSlot; index++) {
-			ItemStack slot = get(index);
-			if (slot == null) {
-				set(index, item);
-				item.setAmount(0);
-				return;
-			}
-			if (!slot.equalsIgnoreSize(item)) {
-				continue;
-			}
-			slot.stack(item);
-			set(index, slot);
-			if (item.isEmpty()) {
-				return;
+		//First pass try to add to existing stacks, second pass, add to empty slots
+		for (int pass = 0; pass < 2; pass++) {
+			for (int index = firstSlot; index < lastSlot; index++) {
+				ItemStack slot = get(index);
+				if (pass == 1) {
+					if (slot == null) {
+						set(index, item);
+						item.setAmount(0);
+						return;
+					}
+				}
+				if (slot != null && slot.equalsIgnoreSize(item)) {
+					slot.stack(item);
+					set(index, slot);
+				}
+				if (item.isEmpty()) {
+					return;
+				}
 			}
 		}
 	}
