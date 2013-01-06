@@ -47,6 +47,8 @@ public interface Message {
 	@Override
 	public abstract int hashCode();
 
+	public abstract boolean isAsync();
+
 	/**
 	 * Gets the channel id for this messages.  The ordering of messages with different channel ids by the network library is undefined.<br>
 	 * Channels are used to allow certain messages that may have time-consuming encode or decode methods to be sent on a separate thread,
