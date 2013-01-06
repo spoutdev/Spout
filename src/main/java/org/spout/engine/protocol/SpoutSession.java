@@ -33,10 +33,7 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
-
 import org.jboss.netty.channel.Channel;
-import org.spout.api.Spout;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.protocol.Message;
@@ -189,7 +186,6 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public void pulse() {
 		Message message;
 
@@ -200,23 +196,21 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		}
 
 		while ((message = fromDownMessageQueue.poll()) != null) {
-			MessageHandler<Message> handler = (MessageHandler<Message>) protocol.get().getHandlerLookupService().find(message.getClass());
-			if (handler != null) {
-				try {
-					handler.handle(false, this, message);
-				} catch (Exception e) {
-					exceptionHandler.get().uncaughtException(message, handler, e);
-				}
-			}
+			handleMessage(false, message);
 		}
 		while ((message = fromUpMessageQueue.poll()) != null) {
-			MessageHandler<Message> handler = (MessageHandler<Message>) protocol.get().getHandlerLookupService().find(message.getClass());
-			if (handler != null) {
-				try {
-					handler.handle(true, this, message);
-				} catch (Exception e) {
-					exceptionHandler.get().uncaughtException(message, handler, e);
-				}
+			handleMessage(true, message);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void handleMessage(boolean upstream, Message message) {
+		MessageHandler<Message> handler = (MessageHandler<Message>) protocol.get().getHandlerLookupService().find(message.getClass());
+		if (handler != null) {
+			try {
+				handler.handle(upstream, this, message);
+			} catch (Exception e) {
+				exceptionHandler.get().uncaughtException(message, handler, e);
 			}
 		}
 	}
@@ -286,7 +280,10 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	 */
 	@Override
 	public void messageReceived(boolean upstream, Message message) {
-		if (upstream) {
+		if (message.isAsync()) {
+			handleMessage(upstream, message);
+		}
+		else if (upstream) {
 			fromUpMessageQueue.add(message);
 		} else {
 			fromDownMessageQueue.add(message);

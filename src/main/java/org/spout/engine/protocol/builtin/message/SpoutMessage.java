@@ -35,4 +35,8 @@ public abstract class SpoutMessage implements Message {
 		return 0;
 	}
 
+	@Override
+	public boolean isAsync() {
+		return false;
+	}
 }
