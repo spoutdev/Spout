@@ -124,7 +124,12 @@ public class DynamicBlockUpdateTree {
 		if (m instanceof DynamicMaterial) {
 			Block b = c.getBlock(x, y, z);
 			DynamicMaterial dm = (DynamicMaterial)m;
-			dm.onFirstUpdate(b, currentTime);
+			try {
+				dm.onFirstUpdate(b, currentTime);
+			} catch (RuntimeException e) {
+				Spout.getLogger().severe("Unable to execute dynamic update for " + dm.getClass().getSimpleName());
+				throw e;
+			}
 		}
 	}
 
@@ -285,7 +290,12 @@ public class DynamicBlockUpdateTree {
 			return UpdateResult.NON_LOCAL;
 		} else {
 			Block b =  c.getBlock(bx, by, bz);
-			dm.onDynamicUpdate(b, update.getNextUpdate(), update.getData());
+			try {
+				dm.onDynamicUpdate(b, update.getNextUpdate(), update.getData());
+			} catch (RuntimeException e) {
+				Spout.getLogger().severe("Unable to execute dynamic update for " + dm.getClass().getSimpleName());
+				throw e;
+			}
 			lastUpdates++;
 			return UpdateResult.DONE;
 		}
