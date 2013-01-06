@@ -56,7 +56,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	private DefaultMotionState state;
 	private Vector3 angularVelocity = Vector3.ZERO;
 	private Vector3 linearVelocity = Vector3.ZERO;
-	private boolean dirty = false;
+	private boolean dirtyVelocity = false, dirtyAngularVelocity = false, dirtyLinearVelocity = false;
 	private float mass = 0f;
 
 	@Override
@@ -150,7 +150,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 	@Override
 	public CollisionShape getCollisionShape() {
 		if (body == null) {
-			throw new IllegalStateException("A collision shape must be set first");
+			return null;
 		}
 		return body.getCollisionShape();
 	}
@@ -205,7 +205,17 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 
 	@Override
 	public boolean isVelocityDirty() {
-		return dirty;
+		return dirtyVelocity;
+	}
+
+	@Override
+	public boolean isAngularVelocityDirty() {
+		return dirtyAngularVelocity;
+	}
+
+	@Override
+	public boolean isLinearVelocityDirty() {
+		return dirtyLinearVelocity;
 	}
 
 	@Override
@@ -291,7 +301,9 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 			synchronized (r.getSimulation()) {
 				Vector3 angularVelocityLive = MathHelper.toVector3(body.getInterpolationAngularVelocity(new Vector3f()));
 				Vector3 linearVelocityLive = MathHelper.toVector3(body.getInterpolationLinearVelocity(new Vector3f()));
-				dirty = !linearVelocityLive.equals(linearVelocity) || angularVelocityLive.equals(angularVelocity);
+				dirtyLinearVelocity = !linearVelocityLive.equals(linearVelocity);
+				dirtyAngularVelocity = angularVelocityLive.equals(angularVelocity);
+				dirtyVelocity = dirtyAngularVelocity && dirtyLinearVelocity;
 				angularVelocity = angularVelocityLive;
 				linearVelocity = linearVelocityLive;
 			}
