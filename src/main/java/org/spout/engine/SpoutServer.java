@@ -269,6 +269,9 @@ public class SpoutServer extends SpoutEngine implements Server {
 	@Override
 	public Session newSession(Channel channel) {
 		Protocol protocol = getProtocol(channel.getLocalAddress());
+		if (SpoutConfiguration.SHOW_CONNECTIONS.getBoolean()) {
+			getLogger().info("Downstream channel connected: " + channel + ".");
+		}
 		return new SpoutServerSession<SpoutServer>(this, channel, protocol);
 	}
 

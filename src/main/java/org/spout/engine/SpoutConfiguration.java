@@ -58,6 +58,7 @@ public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	// Network
 	public static final ConfigurationHolder UPNP = new ConfigurationHolder(true, "network", "upnp");
 	public static final ConfigurationHolder BONJOUR = new ConfigurationHolder(true, "network", "bonjour");
+	public static final ConfigurationHolder SHOW_CONNECTIONS = new ConfigurationHolder(false, "network", "show-connections");
 
 	public SpoutConfiguration() {
 		super(new YamlConfiguration(new File(SharedFileSystem.getConfigDirectory(), "spout.yml")));
