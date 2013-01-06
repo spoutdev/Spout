@@ -32,9 +32,7 @@ import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.ClientWorld;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
-import org.spout.api.model.Model;
 import org.spout.api.util.StringMap;
-
 import org.spout.engine.SpoutEngine;
 
 /**
@@ -44,8 +42,8 @@ public class SpoutClientWorld extends SpoutWorld implements ClientWorld {
 	
 	
 	
-	public SpoutClientWorld(String name, UUID uid, SpoutEngine engine, StringMap itemMap) {
-		super(name, engine, 0, 0, null, uid, itemMap);
+	public SpoutClientWorld(String name, UUID uid, SpoutEngine engine, StringMap itemMap, StringMap lightingMap) {
+		super(name, engine, 0, 0, null, uid, itemMap, lightingMap);
 	}
 
 	@Override

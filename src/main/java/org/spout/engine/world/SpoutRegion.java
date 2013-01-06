@@ -1542,14 +1542,14 @@ public class SpoutRegion extends Region {
 			ty[i] = by[i] + size;
 			tz[i] = bz[i] + size;
 		}
-		LightingManager<?>[] managers = LightingRegistry.getManagers();
+		LightingManager<?>[] managers = getWorld().getLightingManagers();
 		for (int i = 0; i < managers.length; i++) {
 			managers[i].resolve(null, null, bx, by, bz, tx, ty, tz, cuboids);
 		}
 	}
 	
 	private void resolveBlocks(int[] x, int[] y, int[] z) {
-		LightingManager<?>[] managers = LightingRegistry.getManagers();
+		LightingManager<?>[] managers = getWorld().getLightingManagers();
 		for (int i = 0; i < managers.length; i++) {
 			managers[i].resolve(null, null, x, y, z, x.length);
 		}

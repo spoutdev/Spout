@@ -797,6 +797,14 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	public StringMap getEngineItemMap() {
 		return engineItemMap;
 	}
+	
+	/**
+	 * Gets the lighting map used across all worlds on the engine
+	 * @return engine map
+	 */
+	public StringMap getEngineLightingMap() {
+		return engineLightingMap;
+	}
 
 	/**
 	 * Gets the biome map used accorss all worlds on the engine

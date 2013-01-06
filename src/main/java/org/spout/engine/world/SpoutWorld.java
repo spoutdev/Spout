@@ -71,6 +71,7 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
+import org.spout.api.lighting.LightingManager;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
@@ -85,6 +86,7 @@ import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.hashing.IntPairHashed;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.list.concurrent.ConcurrentList;
+import org.spout.api.util.list.concurrent.UnprotectedCopyOnUpdateArray;
 import org.spout.api.util.map.concurrent.TSyncIntPairObjectHashMap;
 import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
 import org.spout.api.util.sanitation.StringSanitizer;
@@ -120,6 +122,14 @@ public class SpoutWorld extends AsyncManager implements World {
 	 * String item map, used to convert local id's to the server id
 	 */
 	private final StringMap itemMap;
+	/**
+	 * String lighting map, used to covert local id's to the server id
+	 */
+	private final StringMap lightingMap;
+	/**
+	 * Lighting managers
+	 */
+	private final UnprotectedCopyOnUpdateArray<LightingManager<?>> lightingManagers;
 	/**
 	 * The region source
 	 */
@@ -194,7 +204,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	private final WorldComponentHolder componentHolder;
 
 	// TODO set up number of stages ?
-	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid, StringMap itemMap) {
+	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid, StringMap itemMap, StringMap lightingMap) {
 		super(1, new ThreadAsyncExecutor(toString(name, uid, age)), engine);
 		this.engine = engine;
 		if (!StringSanitizer.isAlphaNumericUnderscore(name)) {
@@ -204,6 +214,7 @@ public class SpoutWorld extends AsyncManager implements World {
 		this.name = name;
 		this.uid = uid;
 		this.itemMap = itemMap;
+		this.lightingMap = lightingMap;
 		this.seed = seed;
 
 		this.generator = generator;
@@ -230,6 +241,8 @@ public class SpoutWorld extends AsyncManager implements World {
 		} else {
 			throw new IllegalStateException("AsyncExecutor should be instance of Thread");
 		}
+		
+		lightingManagers = new UnprotectedCopyOnUpdateArray<LightingManager<?>>(LightingManager.class, true);
 
 		this.age = new SnapshotableLong(snapshotManager, age);
 		taskManager = new SpoutTaskManager(getEngine().getScheduler(), false, t, age);
@@ -489,6 +502,10 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	public StringMap getItemMap() {
 		return itemMap;
+	}
+	
+	public StringMap getLightingMap() {
+		return lightingMap;
 	}
 
 	@Override
@@ -1436,5 +1453,14 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	public void setSkydomeModel(Model model) {
 		this.skydome = model;
+	}
+
+	@Override
+	public boolean addLightingManager(LightingManager<?> manager) {
+		return this.lightingManagers.add(manager);
+	}
+	
+	protected LightingManager<?>[] getLightingManagers() {
+		return this.lightingManagers.toArray();
 	}
 }

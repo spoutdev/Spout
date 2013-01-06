@@ -82,6 +82,12 @@ public class WorldFiles {
 		
 		StringMap itemMap = new StringMap(engine.getEngineItemMap(), itemStore, 0, Short.MAX_VALUE, name + "ItemMap");
 		
+		File lightingMapFile = new File(worldDir, "lighting.dat");
+		BinaryFileStore lightingStore = new BinaryFileStore(lightingMapFile);
+		lightingStore.load();
+		
+		StringMap lightingMap = new StringMap(engine.getEngineLightingMap(), itemStore, 0, Short.MAX_VALUE, name + "lightingMap");
+		
 		try {
 			InputStream is = new FileInputStream(worldFile);
 			NBTInputStream ns = new NBTInputStream(is, false);
@@ -97,11 +103,11 @@ public class WorldFiles {
 				}
 			}
 			log("Loading world [%0]", name);
-			world = loadWorldImpl(name, map, generator, itemMap);
+			world = loadWorldImpl(name, map, generator, itemMap, lightingMap);
 		} catch (FileNotFoundException ioe) {
 			log("Generating new world named [%0]", name);
 
-			world = new SpoutWorld(name, engine, new Random().nextLong(), 0L, generator, UUID.randomUUID(), itemMap);
+			world = new SpoutWorld(name, engine, new Random().nextLong(), 0L, generator, UUID.randomUUID(), itemMap, lightingMap);
 			world.save();
 
 		} catch (IOException ioe) {
@@ -110,7 +116,7 @@ public class WorldFiles {
 		return world;
 	}
 
-	private static SpoutWorld loadWorldImpl(String name, CompoundMap map, WorldGenerator generator, StringMap itemMap) {
+	private static SpoutWorld loadWorldImpl(String name, CompoundMap map, WorldGenerator generator, StringMap itemMap, StringMap lightingMap) {
 
 		byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), (byte) -1);
 
@@ -133,7 +139,7 @@ public class WorldFiles {
 			Spout.getLogger().severe("World was saved last with the generator: " + generatorName + " but is being loaded with: " + generator.getName() + " THIS MAY CAUSE WORLD CORRUPTION!");
 		}
 		
-		SpoutWorld world = new SpoutWorld(name, (SpoutEngine) Spout.getEngine(), seed, age, generator, uuid, itemMap);
+		SpoutWorld world = new SpoutWorld(name, (SpoutEngine) Spout.getEngine(), seed, age, generator, uuid, itemMap, lightingMap);
 		
 		Transform t = TransformTag.getValue(world, map.get("spawn_position"));
 		
@@ -159,6 +165,8 @@ public class WorldFiles {
 		File worldFile = new File(worldDir, "world.dat");
 
 		world.getItemMap().save();
+		
+		world.getLightingMap().save();
 		
 		CompoundMap map = saveWorldImpl(world);
 		
