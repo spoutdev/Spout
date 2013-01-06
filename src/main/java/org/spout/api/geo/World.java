@@ -43,6 +43,7 @@ import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.lighting.LightingManager;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.model.Model;
@@ -524,6 +525,14 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 	public Model getSkydomeModel();
 
 	public void setSkydomeModel(Model model);
+	
+	/**
+	 * Adds a lighting manager to the world
+	 * 
+	 * @param manager the lighting manager
+	 * @return true, if the lighting manager was added
+	 */
+	public boolean addLightingManager(LightingManager<?> manager);
 
 	/**
 	 * Saves all world data to world data file.
