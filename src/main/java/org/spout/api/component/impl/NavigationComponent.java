@@ -69,6 +69,10 @@ public class NavigationComponent extends EntityComponent {
         }
     }
 
+	public void stop() {
+		plan = null;
+	}
+
     @Override
     public void onTick(float dt) {
         lock.lock();
@@ -89,7 +93,7 @@ public class NavigationComponent extends EntityComponent {
             float dY = (vector.getY() - root.getY()) / 20;
             float dZ = (vector.getZ() - root.getZ()) / 20;
             transform.translate(dX, dY, dZ);
-            getOwner().getTransform().setTransform(transform);
+			getOwner().getTransform().setTransform(transform);
         } finally {
             lock.unlock();
         }
