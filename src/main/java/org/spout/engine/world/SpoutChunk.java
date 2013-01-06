@@ -236,10 +236,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	 * A WeakReference to this chunk
 	 */
 	private final WeakReference<Chunk> selfReference;
-	/**
-	 * Indicates that the chunk has been added to the dirty queue
-	 */
-	private final AtomicBoolean dirtyQueued = new AtomicBoolean(false);
+
 	private final AtomicBoolean popObserver = new AtomicBoolean(false);
 	private final AtomicInteger autosaveTicks = new AtomicInteger(0);
 	private final ChunkSetQueueElement<SpoutChunk> unloadQueueElement;
@@ -2298,10 +2295,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 	public WeakReference<Chunk> getWeakReference() {
 		return selfReference;
-	}
-
-	public void setNotDirtyQueued() {
-		dirtyQueued.set(false);
 	}
 
 	protected void queueDirty() {

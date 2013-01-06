@@ -79,6 +79,8 @@ import org.spout.api.geo.cuboid.Cube;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
+import org.spout.api.lighting.LightingManager;
+import org.spout.api.lighting.LightingRegistry;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.MaterialRegistry;
@@ -1213,11 +1215,6 @@ public class SpoutRegion extends Region {
 
 				while ((spoutChunk = dirtyChunkQueue.poll()) != null) {
 
-					spoutChunk.setNotDirtyQueued();
-					if (!spoutChunk.isLoaded()) {
-						continue;
-					}
-
 					if (renderQueueEnabled /*&& spoutChunk.isRenderDirty()*/) {
 						if(spoutChunk.isInViewDistance() || (spoutChunk.isRendered() && spoutChunk.leftViewDistance())){
 							if(renderLimit > 0 ){
@@ -1479,21 +1476,83 @@ public class SpoutRegion extends Region {
 	int lightingUpdates = 0;
 
 	public void runLighting(int sequence) throws InterruptedException {
-		if (sequence == -1) {
-			runLocalLighting();
-		} else if (sequence == this.updateSequence) {
-			runGlobalLighting();
+		if (sequence != this.updateSequence) {
+			return;
+		}
+
+		int cuboids = 0;
+		int blocks = 0;
+		for (SpoutChunk c : this.dirtyChunkQueue) {
+			if (c.isDirtyOverflow()) {
+				cuboids++;
+			} else {
+				blocks += c.getDirtyBlocks();
+			}
+		}
+
+		SpoutChunk[] chunks = new SpoutChunk[cuboids];
+		int[] x = new int[blocks];
+		int[] y = new int[blocks];
+		int[] z = new int[blocks];
+		
+		blocks = 0;
+		cuboids = 0;
+		
+		for (SpoutChunk c : this.dirtyChunkQueue) {
+			if (c.isDirtyOverflow()) {
+				chunks[cuboids++] = c;
+			} else {
+				int dirtyBlocks = c.getDirtyBlocks();
+				for (int i = 0; i < dirtyBlocks; i++) {
+					Vector3 v = c.getDirtyBlock(i);
+					x[blocks] = v.getFloorX();
+					y[blocks] = v.getFloorY();
+					z[blocks] = v.getFloorZ();
+					blocks++;
+				}
+			}
+		}
+		
+		if (chunks.length > 0) {
+			resolveCuboids(chunks);
+		}
+		if (x.length > 0) {
+			resolveBlocks(x, y, z);
+		}
+
+		scheduler.addUpdates(lightingUpdates);
+		lightingUpdates = 0;
+	}
+	
+	private void resolveCuboids(SpoutChunk[] chunks) {
+		int cuboids = chunks.length;
+		int[] bx = new int[cuboids];
+		int[] by = new int[cuboids];
+		int[] bz = new int[cuboids];
+		int[] tx = new int[cuboids];
+		int[] ty = new int[cuboids];
+		int[] tz = new int[cuboids];
+		int size = Chunk.BLOCKS.SIZE;
+		for (int i = 0; i < cuboids; i++) {
+			SpoutChunk chunk = chunks[i];
+			bx[i] = chunk.getBlockX();
+			by[i] = chunk.getBlockY();
+			bz[i] = chunk.getBlockZ();
+			tx[i] = bx[i] + size;
+			ty[i] = by[i] + size;
+			tz[i] = bz[i] + size;
+		}
+		LightingManager<?>[] managers = LightingRegistry.getManagers();
+		for (int i = 0; i < managers.length; i++) {
+			managers[i].resolve(null, null, bx, by, bz, tx, ty, tz, cuboids);
 		}
 	}
-
-	public void runLocalLighting() throws InterruptedException {
-		scheduler.addUpdates(lightingUpdates);
-		lightingUpdates = 0;
-	}
-
-	public void runGlobalLighting() throws InterruptedException {
-		scheduler.addUpdates(lightingUpdates);
-		lightingUpdates = 0;
+	
+	private void resolveBlocks(int[] x, int[] y, int[] z) {
+		LightingManager<?>[] managers = LightingRegistry.getManagers();
+		for (int i = 0; i < managers.length; i++) {
+			managers[i].resolve(null, null, x, y, z, x.length);
+		}
 	}
 
 	public int getSequence() {

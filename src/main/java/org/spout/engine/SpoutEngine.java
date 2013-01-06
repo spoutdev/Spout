@@ -80,6 +80,7 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.inventory.recipe.RecipeManager;
 import org.spout.api.inventory.recipe.SimpleRecipeManager;
+import org.spout.api.lighting.LightingRegistry;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.permissions.DefaultPermissions;
 import org.spout.api.permissions.PermissionsSubject;
@@ -159,6 +160,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private String logFile;
 	private StringMap engineItemMap = null;
 	private StringMap engineBiomeMap = null;
+	private StringMap engineLightingMap = null;
 	private MultiConsole console;
 	private SpoutApplication arguments;
 	private MemoryReclamationThread reclamation = null;
@@ -233,6 +235,8 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		engineItemMap = MaterialRegistry.setupRegistry();
 		//Setup the Biome Registry
 		engineBiomeMap = BiomeRegistry.setupRegistry();
+		//Setup the Lighting Registry
+		engineLightingMap = LightingRegistry.setupRegistry();
 
 		// Start loading plugins
 		loadPlugins();

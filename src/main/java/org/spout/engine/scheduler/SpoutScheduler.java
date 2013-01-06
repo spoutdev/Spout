@@ -673,14 +673,8 @@ public final class SpoutScheduler implements Scheduler {
 			}
 
 			updates.set(1);
-			int u = 1;
-			while (u > 0 && totalUpdates < UPDATE_THRESHOLD) {
-				doLighting(executors);
-				
-				u = updates.getAndSet(0);
-				totalUpdates += u;
-				lightUpdates += u;
-			}
+
+			doLighting(executors);
 
 			if (totalUpdates >= UPDATE_THRESHOLD) {
 				Spout.getLogger().warning("Block updates per tick of " + totalUpdates + " exceeded the threshold " + UPDATE_THRESHOLD + "; " + dynamicUpdates + " dynamic updates, " + physicsUpdates + " block physics updates and " + lightUpdates + " lighting updates");
@@ -781,36 +775,29 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	private void doLighting(List<AsyncExecutor> executors) throws InterruptedException {
-		int passStartUpdates = updates.get() - 1;
-		int startUpdates = updates.get();
-		while (passStartUpdates < updates.get() && updates.get() < startUpdates + UPDATE_THRESHOLD) {
-			passStartUpdates = updates.get();
-			for (int sequence = -1; sequence < 27 && updates.get() < startUpdates + UPDATE_THRESHOLD; sequence++) {
-				if (sequence == -1) {
-					TickStage.setStage(TickStage.LIGHTING);
-				} else {
-					TickStage.setStage(TickStage.GLOBAL_LIGHTING);
-				}
 
-				for (AsyncExecutor e : executors) {
-					if (!e.doLighting(sequence)) {
-						throw new IllegalStateException("Attempt made to do lighting while the previous operation was still active");
-					}
-				}
+		TickStage.setStage(TickStage.LIGHTING);
+		
+		for (int sequence = 0; sequence < 27; sequence++) {
 
-				boolean joined = false;
-				while (!joined) {
-					try {
-						AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
-						joined = true;
-					} catch (TimeoutException e) {
-						if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-							logLongDurationTick("Lighting", executors);
-						}
-					}
+			for (AsyncExecutor e : executors) {
+				if (!e.doLighting(sequence)) {
+					throw new IllegalStateException("Attempt made to do lighting while the previous operation was still active");
 				}
-
 			}
+
+			boolean joined = false;
+			while (!joined) {
+				try {
+					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
+					joined = true;
+				} catch (TimeoutException e) {
+					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+						logLongDurationTick("Lighting", executors);
+					}
+				}
+			}
+
 		}
 	}
 
