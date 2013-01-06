@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class UnprotectedCopyOnUpdateArray<T> implements Collection<T> {
 	
 	private final AtomicReference<T[]> ref;
-	private final Class<T> clazz;
+	private final Class<?> clazz;
 	private final boolean asSet;
 	
 	/**
@@ -50,7 +50,7 @@ public class UnprotectedCopyOnUpdateArray<T> implements Collection<T> {
 	 * 
 	 * @param the component class
 	 */
-	public UnprotectedCopyOnUpdateArray(Class<T> clazz) {
+	public UnprotectedCopyOnUpdateArray(Class<?> clazz) {
 		this.clazz = clazz;
 		this.ref = new AtomicReference<T[]>(newArray(0));
 		if (clazz == null) {
@@ -65,7 +65,7 @@ public class UnprotectedCopyOnUpdateArray<T> implements Collection<T> {
 	 * @param the component class
 	 * @param asSet duplicate elements are rejected, if true
 	 */
-	public UnprotectedCopyOnUpdateArray(Class<T> clazz, boolean asSet) {
+	public UnprotectedCopyOnUpdateArray(Class<?> clazz, boolean asSet) {
 		this.clazz = clazz;
 		this.ref = new AtomicReference<T[]>(newArray(0));
 		if (clazz == null) {
@@ -82,7 +82,7 @@ public class UnprotectedCopyOnUpdateArray<T> implements Collection<T> {
 	 * @param the component class
 	 * @param initial
 	 */
-	public UnprotectedCopyOnUpdateArray(Class<T> clazz, T[] initial) {
+	public UnprotectedCopyOnUpdateArray(Class<?> clazz, T[] initial) {
 		this(clazz);
 		ref.set(initial);
 	}
@@ -96,7 +96,7 @@ public class UnprotectedCopyOnUpdateArray<T> implements Collection<T> {
 	 * @param initial
 	 * @param asSet duplicate elements are rejected, if true
 	 */
-	public UnprotectedCopyOnUpdateArray(Class<T> clazz, T[] initial, boolean asSet) {
+	public UnprotectedCopyOnUpdateArray(Class<?> clazz, T[] initial, boolean asSet) {
 		this(clazz, asSet);
 		ref.set(initial);
 	}
@@ -149,7 +149,7 @@ public class UnprotectedCopyOnUpdateArray<T> implements Collection<T> {
 	}
 
 	@Override
-	public Object[] toArray() {
+	public T[] toArray() {
 		return ref.get();
 	}
 

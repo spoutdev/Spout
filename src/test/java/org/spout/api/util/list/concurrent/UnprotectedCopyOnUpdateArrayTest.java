@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
@@ -137,6 +138,23 @@ public class UnprotectedCopyOnUpdateArrayTest {
 			String op = add ? "adding" : "removing";
 			assertTrue("Arrays mismatch after " + op + " element " + v, testEqualSet(refArray, testArray));
 		}
+		
+	}
+	
+	@Test
+	public void testGenerics() {
+		
+		UnprotectedCopyOnUpdateArray<AtomicReference<Integer>> testArray = new UnprotectedCopyOnUpdateArray<AtomicReference<Integer>>(AtomicReference.class, true);
+		
+		AtomicReference<Integer> one = new AtomicReference<Integer>(1);
+		
+		testArray.add(one);
+		
+		AtomicReference<Integer>[] arr = testArray.toArray();
+		
+		Integer i = arr[0].get();
+
+		assertTrue("Unexcepted value, exp 1, got " + i, Integer.valueOf(1).equals(i));
 		
 	}
 	
