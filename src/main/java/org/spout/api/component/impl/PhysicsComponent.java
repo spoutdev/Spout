@@ -171,4 +171,16 @@ public abstract class PhysicsComponent extends EntityComponent {
 	 * @return true if dirty, false if not
 	 */
 	public abstract boolean isVelocityDirty();
+
+	/**
+	 * Returns if both the angular and linear velocities have changed "dirty" since the last tick.
+	 * @return true if dirty, false if not
+	 */
+	public abstract boolean isAngularVelocityDirty();
+
+	/**
+	 * Returns if both the angular and linear velocities have changed "dirty" since the last tick.
+	 * @return true if dirty, false if not
+	 */
+	public abstract boolean isLinearVelocityDirty();
 }
