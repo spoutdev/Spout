@@ -302,7 +302,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 				Vector3 angularVelocityLive = MathHelper.toVector3(body.getInterpolationAngularVelocity(new Vector3f()));
 				Vector3 linearVelocityLive = MathHelper.toVector3(body.getInterpolationLinearVelocity(new Vector3f()));
 				dirtyLinearVelocity = !linearVelocityLive.equals(linearVelocity);
-				dirtyAngularVelocity = angularVelocityLive.equals(angularVelocity);
+				dirtyAngularVelocity = !angularVelocityLive.equals(angularVelocity);
 				dirtyVelocity = dirtyAngularVelocity && dirtyLinearVelocity;
 				angularVelocity = angularVelocityLive;
 				linearVelocity = linearVelocityLive;
