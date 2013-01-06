@@ -338,8 +338,8 @@ public class MathHelper {
 	 * @param q01 the second known value (known1.x, known2.y)
 	 * @param q10 the third known value (known2.x, known1.y)
 	 * @param q11 the fourth known value (known2.x, known2.y)
-	 * @param know1 the X coord of q00 and q01 and the Y coord of q00 and q10
-	 * @param know2 the X coord of q10 and q11 and the Y coord of q01 and q11
+	 * @param known1 the X coord of q00 and q01 and the Y coord of q00 and q10
+	 * @param known2 the X coord of q10 and q11 and the Y coord of q01 and q11
 	 * @return the interpolated value
 	 */
 	public static double biLerp(Vector2 target, double q00, double q01,
@@ -949,7 +949,7 @@ public class MathHelper {
 	}
 
 	public static Quat4f toQuaternionf(float w, float y, float p, float r) {
-		return new Quat4f(w, y, p, r);
+		return new Quat4f(y, p, r, w);
 	}
 
 	public static Quat4f toQuaternionf(Quaternion quaternion) {
@@ -957,7 +957,7 @@ public class MathHelper {
 	}
 
 	public static Quaternion toQuaternion(Quat4f quaternion) {
-		return new Quaternion(quaternion.w, quaternion.x, quaternion.y, quaternion.z);
+		return new Quaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w, false);
 	}
 
 	/**

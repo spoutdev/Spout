@@ -42,69 +42,69 @@ import org.spout.api.math.Vector3;
 import org.spout.api.util.concurrent.SpinLock;
 
 public class NavigationComponent extends EntityComponent {
-    private final AStarMachine<VectorNode, Path> astar = AStarMachine.createWithDefaultStorage();
-    private final Lock lock = new SpinLock();
-    private Path plan;
-    private Vector3 vector;
-    private BlockExaminer[] defaultExaminers;
+	private final AStarMachine<VectorNode, Path> astar = AStarMachine.createWithDefaultStorage();
+	private final Lock lock = new SpinLock();
+	private Path plan;
+	private Vector3 vector;
+	private BlockExaminer[] defaultExaminers;
 
-    public void setDefaultExaminers(BlockExaminer... blockExaminers) {
-        this.defaultExaminers = Arrays.copyOf(blockExaminers, blockExaminers.length);
-    }
+	public void setDefaultExaminers(BlockExaminer... blockExaminers) {
+		this.defaultExaminers = Arrays.copyOf(blockExaminers, blockExaminers.length);
+	}
 
-    public void setDestination(Point dest) {
-        lock.lock();
-        try {
-            Point current = getOwner().getTransform().getPosition();
-            plan = astar.runFully(new VectorGoal(dest), new VectorNode(current, new SpoutBlockSource(current),
-                    defaultExaminers), 10000);
-            if (plan == null || plan.isComplete()) {
-                // failed TODO: add an event
-                plan = null;
-            } else {
-                vector = plan.getCurrentVector();
-            }
-        } finally {
-            lock.unlock();
-        }
-    }
+	public void setDestination(Point dest) {
+		lock.lock();
+		try {
+			Point current = getOwner().getTransform().getPosition();
+			plan = astar.runFully(new VectorGoal(dest), new VectorNode(current, new SpoutBlockSource(current),
+					defaultExaminers), 10000);
+			if (plan == null || plan.isComplete()) {
+				// failed TODO: add an event
+				plan = null;
+			} else {
+				vector = plan.getCurrentVector();
+			}
+		} finally {
+			lock.unlock();
+		}
+	}
 
 	public void stop() {
 		plan = null;
 	}
 
-    @Override
-    public void onTick(float dt) {
-        lock.lock();
-        try {
-            if (plan == null || plan.isComplete()) {
-                plan = null;
-                return;
-            }
-            Transform transform = getOwner().getTransform().getTransform();
-            Point root = transform.getPosition();
-            if (root.distanceSquared(vector) <= 12) {
-                plan.update(getOwner());
-                if (plan.isComplete())
-                    return;
-                vector = plan.getCurrentVector();
-            }
-            float dX = (vector.getX() - root.getX()) / 20;
-            float dY = (vector.getY() - root.getY()) / 20;
-            float dZ = (vector.getZ() - root.getZ()) / 20;
-            transform.translate(dX, dY, dZ);
+	@Override
+	public void onTick(float dt) {
+		lock.lock();
+		try {
+			if (plan == null || plan.isComplete()) {
+				plan = null;
+				return;
+			}
+			Transform transform = getOwner().getTransform().getTransform();
+			Point root = transform.getPosition();
+			if (root.distanceSquared(vector) <= 12) {
+				plan.update(getOwner());
+				if (plan.isComplete())
+					return;
+				vector = plan.getCurrentVector();
+			}
+			float dX = (vector.getX() - root.getX()) / 20;
+			float dY = (vector.getY() - root.getY()) / 20;
+			float dZ = (vector.getZ() - root.getZ()) / 20;
+			transform.translate(dX, dY, dZ);
 			getOwner().getTransform().setTransform(transform);
-        } finally {
-            lock.unlock();
-        }
-    }
+		} finally {
+			lock.unlock();
+		}
+	}
 
-    public boolean isNavigating() {
-        lock.lock();
-        try {
-            return plan != null;
-        } finally {
-            lock.unlock();
-        }
-    }
+	public boolean isNavigating() {
+		lock.lock();
+		try {
+			return plan != null;
+		} finally {
+			lock.unlock();
+		}
+	}
 }

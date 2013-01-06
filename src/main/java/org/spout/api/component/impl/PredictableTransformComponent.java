@@ -70,19 +70,19 @@ public class PredictableTransformComponent extends TransformComponent {
 		float ratio = 80f / 20f;
 
 		speed = t.getPosition().subtract(transformRender.getPosition()).multiply(ratio);
-		
+
 		float rPitch = t.getRotation().getPitch() - transformRender.getRotation().getPitch();
 		float rYaw = t.getRotation().getYaw() - transformRender.getRotation().getYaw();
 		float rRoll = t.getRotation().getRoll() - transformRender.getRotation().getRoll();
-		
+
 		rPitch = (rPitch<-180f) ? rPitch+360f : rPitch;
 		rYaw = (rYaw<-180f) ? rYaw+360f : rYaw;
 		rRoll = (rRoll<-180f) ? rRoll+360f : rRoll;
-		
+
 		rPitch = (rPitch>180f) ? rPitch-360f : rPitch;
 		rYaw = (rYaw>180f) ? rYaw-360f : rYaw;
 		rRoll = (rRoll>180f) ? rRoll-360f : rRoll;
-		
+
 		rotate = new Vector3(rPitch,rYaw,rRoll).multiply(ratio);
 
 		scale = t.getScale().subtract(transformRender.getScale()).multiply(ratio);
