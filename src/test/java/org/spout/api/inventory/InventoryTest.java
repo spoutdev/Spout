@@ -100,6 +100,7 @@ public class InventoryTest extends EngineFaker {
 		ItemStack item = new ItemStack(mats[0], getRandomSize());
 		ItemStack item1 = new ItemStack(mats[1], getRandomSize());
 		ItemStack clone = item1.clone();
+		inventory.clear();
 		inventory.set(0, item);
 		inventory.set(1, null);
 		inventory.add(item1);
