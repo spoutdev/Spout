@@ -583,6 +583,9 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 */
 	@Override
 	public ItemStack set(int i, ItemStack item) {
+		if (item != null && item.isEmpty()) {
+			item = null;
+		}
 		ItemStack old = get(i);
 		contents[i] = item == null ? null : item.clone();
 		update(i);
