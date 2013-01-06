@@ -27,6 +27,7 @@
 package org.spout.api.util.list.concurrent.setqueue;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -37,7 +38,7 @@ import java.util.concurrent.ArrayBlockingQueue;
  *
  * @param <T>
  */
-public class SetQueue<T> {
+public class SetQueue<T> implements Iterable<T> {
 	
 	private final int MAX_ATTEMPTS = 10;
 	
@@ -83,6 +84,10 @@ public class SetQueue<T> {
 		while (poll() != null) {
 		}
 	}
+	
+	public Iterator<T> iterator() {
+		return new SetQueueIterator(queue.iterator());
+	}
 
 	private void checkQueueElements() {
 		Iterator<SetQueueElement<T>> itr = queue.iterator();
@@ -91,6 +96,48 @@ public class SetQueue<T> {
 				itr.remove();
 			}
 		}
+	}
+	
+	private class SetQueueIterator implements Iterator<T> {
+		
+		private final Iterator<SetQueueElement<T>> parent;
+		private T next;
+		
+		public SetQueueIterator(Iterator<SetQueueElement<T>> parent) {
+			this.parent = parent;
+			next = getNext();
+		}
+
+		@Override
+		public boolean hasNext() {
+			return next != null;
+		}
+
+		@Override
+		public T next() {
+			if (next == null) {
+				throw new NoSuchElementException("No more elements");
+			}
+			T value = next;
+			next = getNext();
+			return value;
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException("The queue may not be modified by the iterator");
+		}
+		
+		private T getNext() {
+			while (parent.hasNext()) {
+				SetQueueElement<T> nextElement = parent.next();
+				if (nextElement.isValid()) {
+					return nextElement.getValue();
+				}
+			}
+			return null;
+		}
+		
 	}
 
 }

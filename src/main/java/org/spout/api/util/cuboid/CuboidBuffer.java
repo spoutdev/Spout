@@ -103,6 +103,13 @@ public abstract class CuboidBuffer {
 	public Vector3 getSize() {
 		return new Vector3(sizeX, sizeY, sizeZ);
 	}
+	
+	/**
+	 * Gets the volume of the CuboidBuffer
+	 */
+	public int getVolume() {
+		return sizeX * sizeY * sizeZ;
+	}
 
 	/**
 	 * Gets the top-coordinates of the CuboidBuffer, these are outside this buffer<br>

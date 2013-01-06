@@ -92,21 +92,14 @@ public class TickStage {
 	 * <br>
 	 * This is for minor changes prior to the snapshot process.
 	 */
-	public final static int GLOBAL_LIGHTING = 1 << 8;
-
-	/**
-	 * This is the final stage before entering the pre-snapshot stage.<br>
-	 * <br>
-	 * This is for minor changes prior to the snapshot process.
-	 */
-	public final static int FINALIZE = 1 << 9;
+	public final static int FINALIZE = 1 << 8;
 
 	/**
 	 * This stage occurs before the snapshot stage.<br>
 	 * <br>
 	 * This is a MONITOR ONLY stage, no changes should be made during the stage.
 	 */
-	public final static int PRESNAPSHOT = 1 << 10;
+	public final static int PRESNAPSHOT = 1 << 9;
 
 	/**
 	 * This is the snapshot copy stage.<br>
@@ -144,12 +137,10 @@ public class TickStage {
 			case 1 << 7:
 				return "LIGHTING";
 			case 1 << 8:
-				return "GLOBAL_LIGHTING";
-			case 1 << 9:
 				return "FINALIZE";
-			case 1 << 10:
+			case 1 << 9:
 				return "PRESNAPSHOT";
-			case 1 << 11:
+			case 1 << 10:
 				return "SNAPSHOT";
 			default:
 				return "UNKNOWN";
