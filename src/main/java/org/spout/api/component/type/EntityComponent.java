@@ -26,6 +26,8 @@
  */
 package org.spout.api.component.type;
 
+import java.util.Random;
+
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentOwner;
 import org.spout.api.entity.Entity;
@@ -50,6 +52,15 @@ public abstract class EntityComponent extends Component {
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * Returns a random number generator seeded with the age of the world
+	 * 
+	 * @return random
+	 */
+	public final Random getRandom() {
+		return new Random(getOwner().getWorld().getAge());
 	}
 
 	/**
