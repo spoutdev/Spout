@@ -88,7 +88,7 @@ public class BlockIterator implements Iterator<Block> {
 	public BlockIterator(World world, Transform pos, float maxDistance) {
 		this.world = world;
 		this.origin = pos.getPosition();
-		this.direction = pos.forwardVector().multiply(-1);
+		this.direction = pos.forwardVector();
 		this.range = maxDistance;
 		reset();
 	}

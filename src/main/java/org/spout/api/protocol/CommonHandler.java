@@ -106,7 +106,6 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
 				engine.getSessionRegistry().remove(session);
 				session.dispose();
 			}
-			engine.getLogger().info("Channel disconnected: " + c + ".");
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw new RuntimeException("Exception thrown when disconnecting", ex);
