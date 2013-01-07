@@ -68,13 +68,15 @@ import org.spout.api.geo.cuboid.BlockComponentContainer;
 import org.spout.api.geo.cuboid.BlockContainer;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
-import org.spout.api.geo.cuboid.Cube;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
 import org.spout.api.geo.cuboid.ContainerFillOrder;
+import org.spout.api.geo.cuboid.Cube;
 import org.spout.api.geo.cuboid.LightContainer;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.lighting.LightingManager;
+import org.spout.api.lighting.LightingRegistry;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.ComplexMaterial;
 import org.spout.api.material.DynamicMaterial;
@@ -88,6 +90,7 @@ import org.spout.api.math.Vector3;
 import org.spout.api.plugin.Platform;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
+import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.hashing.NibbleQuadHashed;
 import org.spout.api.util.list.TNibbleQuadList;
@@ -236,6 +239,11 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	 * A WeakReference to this chunk
 	 */
 	private final WeakReference<Chunk> selfReference;
+	
+	/**
+	 * An array of light buffers associated with this Chunk
+	 */
+	private CuboidLightBuffer[] lightBuffers = new CuboidLightBuffer[0];
 
 	private final AtomicBoolean popObserver = new AtomicBoolean(false);
 	private final AtomicInteger autosaveTicks = new AtomicInteger(0);
@@ -2416,6 +2424,26 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		return rendered;
 	}
 	
+	public CuboidLightBuffer getLightBuffer(short id) {
+		TickStage.checkStage(TickStage.LIGHTING);
+		if (id >= lightBuffers.length) {
+			CuboidLightBuffer[] buf = new CuboidLightBuffer[id+1];
+			System.arraycopy(lightBuffers, 0, buf, 0, lightBuffers.length);
+			lightBuffers = buf;
+		}
+		CuboidLightBuffer buf = lightBuffers[id];
+		if (buf != null) {
+			return buf;
+		}
+		LightingManager<?> manager = LightingRegistry.get(id);
+		if (manager == null) {
+			return null;
+		}
+		buf = manager.newLightBuffer(getBlockX(), getBlockY(), getBlockZ(), BLOCKS.SIZE, BLOCKS.SIZE, BLOCKS.SIZE);
+		lightBuffers[id] = buf;
+		return buf;
+	}
+
 	private class ChunkSetQueueElement<T extends Cube> extends SetQueueElement<T> {
 		
 		private final boolean validIfUnloaded;
