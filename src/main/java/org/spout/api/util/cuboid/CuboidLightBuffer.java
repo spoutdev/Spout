@@ -29,7 +29,19 @@ package org.spout.api.util.cuboid;
 
 public abstract class CuboidLightBuffer extends CuboidBuffer {
 	
-	protected CuboidLightBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
+	private final int id;
+	
+	protected CuboidLightBuffer(int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
 		super(baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
+		this.id = id;
+	}
+	
+	/**
+	 * Gets the engine id for the manager associated with this light buffer
+	 * 
+	 * @return id
+	 */
+	public int getManagerId() {
+		return id;
 	}
 }

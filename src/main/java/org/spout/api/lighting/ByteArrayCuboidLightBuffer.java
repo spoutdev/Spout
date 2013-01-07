@@ -32,12 +32,12 @@ import org.spout.api.util.cuboid.CuboidLightBuffer;
 /**
  * A Cuboid Light Buffer that is used for unknown light managers to store the serialized data
  */
-public class ByteCuboidLightBuffer extends CuboidLightBuffer {
+public class ByteArrayCuboidLightBuffer extends CuboidLightBuffer {
 	
 	private final byte[] data;
 
-	protected ByteCuboidLightBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data) {
-		super(baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
+	protected ByteArrayCuboidLightBuffer(int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data) {
+		super(id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
 		this.data = data;
 	}
 

@@ -33,12 +33,12 @@ public class CuboidNibbleLightBuffer extends CuboidLightBuffer {
 	private final byte[] lightData;
 	private CuboidNibbleLightBuffer source = null;
 	
-	protected CuboidNibbleLightBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
-		this(baseX, baseY, baseZ, sizeX, sizeY, sizeZ, null);
+	protected CuboidNibbleLightBuffer(int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
+		this(id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ, null);
 	}
 	
-	protected CuboidNibbleLightBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data) {
-		super(baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
+	protected CuboidNibbleLightBuffer(int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data) {
+		super(id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
 		int volume = getVolume();
 		if ((volume | 1) == volume) {
 			throw new IllegalArgumentException("Buffer volume must be an even number, " + volume);

@@ -94,10 +94,31 @@ public abstract class LightingManager<T extends CuboidLightBuffer> {
 	 * @param changedColumns the number of changed columns
 	 */
 	public abstract void resolve(T light, ImmutableCuboidBlockMaterialBuffer material, int[] hx, int[] hz, int[] oldHy, int[] newHy, int changedColumns);
+	
+	/**
+	 * Creates a new light buffer for chunks which don't have a light buffer associated with this lighting manager
+	 * 
+	 * @param baseX the x coordinate of the base of the buffer
+	 * @param baseY the y coordinate of the base of the buffer
+	 * @param baseZ the z coordinate of the base of the buffer
+	 * @param sizeX the x coordinate of the size of the buffer
+	 * @param sizeY the y coordinate of the size of the buffer
+	 * @param sizeZ the z coordinate of the size of the buffer
+	 * @return
+	 */
+	public T newLightBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
+		return deserialize(baseX, baseY, baseZ, sizeX, sizeY, sizeZ, null);
+	}
 
 	/**
 	 * Deserializes a cuboid light buffer associated with this lighting manager
-	 * 
+	 *
+	 * @param baseX the x coordinate of the base of the buffer
+	 * @param baseY the y coordinate of the base of the buffer
+	 * @param baseZ the z coordinate of the base of the buffer
+	 * @param sizeX the x coordinate of the size of the buffer
+	 * @param sizeY the y coordinate of the size of the buffer
+	 * @param sizeZ the z coordinate of the size of the buffer
 	 * @param data
 	 * @return
 	 */
