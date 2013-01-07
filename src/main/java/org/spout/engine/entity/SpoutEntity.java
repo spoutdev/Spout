@@ -76,7 +76,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	private final SnapshotManager snapshotManager = new SnapshotManager();
 	//Snapshotable fields
 	private final SnapshotableReference<EntityManager> entityManager = new SnapshotableReference<EntityManager>(snapshotManager, null);
-	private final SnapshotableReference<Iterator<IntVector3>> observer = new SnapshotableReference<Iterator<IntVector3>>(snapshotManager, INITIAL_TICK);
+	private final SnapshotableReference<Iterator<IntVector3>> observer;
 	private final SnapshotableBoolean save = new SnapshotableBoolean(snapshotManager, false);
 	private final AtomicInteger id = new AtomicInteger(NOTSPAWNEDID);
 	private final SnapshotableInt viewDistance = new SnapshotableInt(snapshotManager, 10);
@@ -92,6 +92,9 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	public SpoutEntity(Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
 		id.set(NOTSPAWNEDID);
+		
+		observer = new SnapshotableReference<Iterator<IntVector3>>(snapshotManager, INITIAL_TICK);
+		observer.set(NOT_OBSERVING);
 
 		if (Spout.getPlatform() == Platform.CLIENT) {
 			this.transform = add(PredictableTransformComponent.class);
