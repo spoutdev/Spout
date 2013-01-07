@@ -35,6 +35,7 @@ import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.AreaBlockSource;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.thread.annotation.SnapshotRead;
 
 public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
@@ -86,6 +87,13 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	 * @return raw skylight data
 	 */
 	public abstract byte[] getSkyLight();
+	
+	/**
+	 * Gets an array containing a copy of the light data arrays
+	 * 
+	 * @return
+	 */
+	public abstract CuboidLightBuffer[] getLightBuffer();
 
 	/**
 	 * Gets the region that this chunk is located in.

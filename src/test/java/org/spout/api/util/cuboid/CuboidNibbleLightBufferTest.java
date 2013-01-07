@@ -56,7 +56,10 @@ public class CuboidNibbleLightBufferTest {
 			if ((vol | 1) == vol) {
 				sx = sx & (~1);
 			}
-			CuboidNibbleLightBuffer dest = new CuboidNibbleLightBuffer(bx, by, bz, sx, sy, sz);
+			short destId = (short) r.nextInt();
+			CuboidNibbleLightBuffer dest = new CuboidNibbleLightBuffer(destId, bx, by, bz, sx, sy, sz);
+			
+			assertTrue("Id not set correctly", destId == dest.getManagerId());
 			
 			int bx2 = bx + r.nextInt(HALF_SIZE);
 			int by2 = by + r.nextInt(HALF_SIZE);
@@ -71,7 +74,10 @@ public class CuboidNibbleLightBufferTest {
 				sx2 = sx2 & (~1);
 			}
 			
-			CuboidNibbleLightBuffer src = new CuboidNibbleLightBuffer(bx2, by2, bz2, sx2, sy2, sz2);
+			short srcId = (short) r.nextInt();
+			CuboidNibbleLightBuffer src = new CuboidNibbleLightBuffer(srcId, bx2, by2, bz2, sx2, sy2, sz2);
+			
+			assertTrue("Id not set correctly", srcId == src.getManagerId());
 			
 			byte[][][] values = new byte[sx2][sy2][sz2];
 
