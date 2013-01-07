@@ -42,6 +42,7 @@ import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.NullNetworkSynchronizer;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
+import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutPlayer;
 
@@ -358,6 +359,13 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 	@Override
 	public UncaughtExceptionHandler getUncaughtExceptionHandler() {
 		return exceptionHandler.get();
+	}
+
+	@Override
+	public void dispose() {
+		if (SpoutConfiguration.SHOW_CONNECTIONS.getBoolean()) {
+			engine.getLogger().info("Channel disconnected: " + channel + ".");
+		}
 	}
 
 	@Override

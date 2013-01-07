@@ -104,6 +104,7 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 
 	@Override
 	public void dispose() {
+		super.dispose();
 		dispose(new PlayerLeaveEvent(getPlayer(), getDefaultLeaveMessage()));
 	}
 
