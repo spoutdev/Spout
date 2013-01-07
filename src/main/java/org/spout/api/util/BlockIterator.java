@@ -193,17 +193,6 @@ public class BlockIterator implements Iterator<Block> {
 				}
 			}
 		}
-		if (block == null) {
-			if (invisible) {
-				if (block.getMaterial().isInvisible()) {
-					return null;
-				}
-			} else {
-				if (!block.getMaterial().isPlacementObstacle()) {
-					return null;
-				}
-			}
-		}
 		reset();
 		return block;
 	}
