@@ -26,6 +26,7 @@
  */
 package org.spout.api.lighting;
 
+import org.bouncycastle.util.Arrays;
 import org.spout.api.util.cuboid.CuboidBuffer;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 
@@ -35,6 +36,11 @@ import org.spout.api.util.cuboid.CuboidLightBuffer;
 public class ByteArrayCuboidLightBuffer extends CuboidLightBuffer {
 	
 	private final byte[] data;
+	
+	protected ByteArrayCuboidLightBuffer(ByteArrayCuboidLightBuffer buffer) {
+		this(buffer.getManagerId(), buffer.baseX, buffer.baseY, buffer.baseZ, buffer.sizeX, buffer.sizeY, buffer.sizeZ, 
+				buffer.data == null ? null : Arrays.copyOf(buffer.data, buffer.data.length));
+	}
 
 	protected ByteArrayCuboidLightBuffer(int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data) {
 		super(id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
@@ -53,6 +59,11 @@ public class ByteArrayCuboidLightBuffer extends CuboidLightBuffer {
 	
 	public byte[] getData() {
 		return data;
+	}
+
+	@Override
+	public ByteArrayCuboidLightBuffer copy() {
+		return new ByteArrayCuboidLightBuffer(this);
 	}
 
 }
