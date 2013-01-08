@@ -35,6 +35,7 @@ import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.math.MathHelper;
 
 /**
  * Represents an attachment to a entity that can respond to Ticks.
@@ -55,12 +56,12 @@ public abstract class EntityComponent extends Component {
 	}
 
 	/**
-	 * Returns a random number generator seeded with the age of the world
+	 * Returns a thread-safe, deterministic random number generator
 	 * 
 	 * @return random
 	 */
 	public final Random getRandom() {
-		return new Random(getOwner().getWorld().getAge());
+		return MathHelper.getRandom();
 	}
 
 	/**
