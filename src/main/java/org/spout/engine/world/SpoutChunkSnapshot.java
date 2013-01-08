@@ -26,12 +26,12 @@
  */
 package org.spout.engine.world;
 
+import gnu.trove.procedure.TShortObjectProcedure;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import gnu.trove.procedure.TShortObjectProcedure;
 
 import org.spout.api.component.type.BlockComponent;
 import org.spout.api.datatable.SerializableMap;
@@ -46,10 +46,10 @@ import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
+import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.hashing.NibbleQuadHashed;
 import org.spout.api.util.thread.annotation.SnapshotRead;
-
 import org.spout.engine.world.SpoutChunk.PopulationState;
 
 public class SpoutChunkSnapshot extends ChunkSnapshot {
@@ -67,21 +67,22 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	private final short[] blockData;
 	private final byte[] blockLight;
 	private final byte[] skyLight;
+	private final CuboidLightBuffer[] lightBuffers;
 	private final BiomeManager biomes;
 	private final SerializableMap dataMap;
 	private final PopulationState populationState;
 	private final boolean lightStable;
 	private boolean renderDirty = false;
 
-	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, EntityType type, ExtraData data) {
-		this(chunk, blockIds, blockData, null, 0, null, blockLight, skyLight, type, data);
+	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, CuboidLightBuffer[] lightBuffers, EntityType type, ExtraData data) {
+		this(chunk, blockIds, blockData, null, 0, null, blockLight, skyLight, lightBuffers, type, data);
 	}
 
-	public SpoutChunkSnapshot(SpoutChunk chunk, int[] palette, int packedWidth, int[] packedBlockArray, byte[] blockLight, byte[] skyLight, EntityType type, ExtraData data) {
-		this(chunk, null, null, palette, packedWidth, packedBlockArray, blockLight, skyLight, type, data);
+	public SpoutChunkSnapshot(SpoutChunk chunk, int[] palette, int packedWidth, int[] packedBlockArray, byte[] blockLight, byte[] skyLight, CuboidLightBuffer[] lightBuffers, EntityType type, ExtraData data) {
+		this(chunk, null, null, palette, packedWidth, packedBlockArray, blockLight, skyLight, lightBuffers, type, data);
 	}
 
-	private SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, int[] palette, int packedWidth, int[] packedBlockArray, byte[] blockLight, byte[] skyLight, EntityType type, ExtraData data) {
+	private SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, int[] palette, int packedWidth, int[] packedBlockArray, byte[] blockLight, byte[] skyLight, CuboidLightBuffer[] lightBuffers, EntityType type, ExtraData data) {
 		super(chunk.getWorld(), chunk.getX() * CHUNK_SIZE, chunk.getY() * CHUNK_SIZE, chunk.getZ() * CHUNK_SIZE);
 		parentRegion = new WeakReference<Region>(chunk.getRegion());
 
@@ -115,6 +116,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		this.blockData = blockData;
 		this.blockLight = blockLight;
 		this.skyLight = skyLight;
+		this.lightBuffers = lightBuffers;
 
 		// Cache palette based block data
 		this.palette = palette;
@@ -392,5 +394,10 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 			snapshots.add(new SpoutBlockComponentSnapshot(x, y, z, component.getClass(), component.getOwner().getData()));
 			return true;
 		}
+	}
+
+	@Override
+	public CuboidLightBuffer[] getLightBuffers() {
+		return lightBuffers;
 	}
 }

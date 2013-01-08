@@ -1155,6 +1155,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		checkChunkLoaded();
 		byte[] blockLightCopy = null, skyLightCopy = null;
 		short[] blockIds = null, blockData = null;
+		CuboidLightBuffer[] lightBuffersCopy = null;
 		switch (type) {
 			case NO_BLOCK_DATA:
 				break;
@@ -1170,6 +1171,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 				System.arraycopy(blockLight, 0, blockLightCopy, 0, blockLight.length);
 				skyLightCopy = new byte[skyLight.length];
 				System.arraycopy(skyLight, 0, skyLightCopy, 0, skyLight.length);
+				lightBuffersCopy = copyLightBuffers();
 				break;
 			case BOTH:
 				blockIds = blockStore.getBlockIdArray();
@@ -1183,9 +1185,9 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		}
 
 		if (palette) {
-			return new SpoutChunkSnapshot(this, blockStore.getPalette(), blockStore.getPackedWidth(), blockStore.getPackedArray(), blockLightCopy, skyLightCopy, entities, data);
+			return new SpoutChunkSnapshot(this, blockStore.getPalette(), blockStore.getPackedWidth(), blockStore.getPackedArray(), blockLightCopy, skyLightCopy, lightBuffersCopy, entities, data);
 		} else {
-			return new SpoutChunkSnapshot(this, blockIds, blockData, blockLightCopy, skyLightCopy, entities, data);
+			return new SpoutChunkSnapshot(this, blockIds, blockData, blockLightCopy, skyLightCopy, lightBuffersCopy, entities, data);
 		}
 	}
 
@@ -2442,6 +2444,25 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		buf = manager.newLightBuffer(getBlockX(), getBlockY(), getBlockZ(), BLOCKS.SIZE, BLOCKS.SIZE, BLOCKS.SIZE);
 		lightBuffers[id] = buf;
 		return buf;
+	}
+	
+	protected CuboidLightBuffer[] getLightBuffers() {
+		ArrayList<CuboidLightBuffer> list = new ArrayList<CuboidLightBuffer>(lightBuffers.length);
+		for (int i = 0; i < lightBuffers.length; i++) {
+			if (lightBuffers[i] != null) {
+				list.add(lightBuffers[i]);
+			}
+		}
+		return list.toArray(lightBuffers);
+	}
+	
+	protected CuboidLightBuffer[] copyLightBuffers() {
+		CuboidLightBuffer[] live = getLightBuffers();
+		CuboidLightBuffer[] newArray = new CuboidLightBuffer[live.length];
+		for (int i = 0; i < live.length; i++) {
+			newArray[i] = live[i].copy();
+		}
+		return newArray;
 	}
 
 	private class ChunkSetQueueElement<T extends Cube> extends SetQueueElement<T> {
