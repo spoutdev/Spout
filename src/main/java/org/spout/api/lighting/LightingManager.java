@@ -124,12 +124,4 @@ public abstract class LightingManager<T extends CuboidLightBuffer> {
 	 */
 	public abstract T deserialize(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data);
 	
-	/**
-	 * Serializes a cuboid light buffer associated with this lighting manager
-	 * 
-	 * @param data
-	 * @return
-	 */
-	public abstract byte[] serialize(T buffer);
-	
 }

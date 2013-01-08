@@ -66,4 +66,9 @@ public class ByteArrayCuboidLightBuffer extends CuboidLightBuffer {
 		return new ByteArrayCuboidLightBuffer(this);
 	}
 
+	@Override
+	public byte[] serialize() {
+		return Arrays.copyOf(data, data.length);
+	}
+
 }

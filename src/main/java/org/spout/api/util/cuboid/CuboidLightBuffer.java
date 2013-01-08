@@ -51,4 +51,11 @@ public abstract class CuboidLightBuffer extends CuboidBuffer {
 	 * @param buffer
 	 */
 	public abstract CuboidLightBuffer copy();
+	
+	/**
+	 * Serialized the buffer.  The position and id of the buffer should not be serialized
+	 * 
+	 * @return
+	 */
+	public abstract byte[] serialize();
 }
