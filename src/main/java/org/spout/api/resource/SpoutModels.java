@@ -24,17 +24,16 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.material.basic;
+package org.spout.api.resource;
 
-import org.spout.api.material.BlockMaterial;
 import org.spout.api.model.Model;
-import org.spout.api.resource.ResourcePointer;
 
-public class BasicSolid extends BlockMaterial {
-
-	public BasicSolid(String name, ResourcePointer<Model> model) {
-		super((short)0, name, model);		
-		
-		setHardness(100);
-	}
+public class SpoutModels {
+	public static final ResourcePointer<Model> DEFAULT_MODEL = new ResourcePointer<Model>("model://Spout/models/unknownblock.spm");
+	public static final ResourcePointer<Model> SOLID_BLUE = new ResourcePointer<Model>("model://Spout/models/solidBlue.spm");
+	public static final ResourcePointer<Model> SOLID_BROWN = new ResourcePointer<Model>("model://Spout/models/solidBrown.spm");
+	public static final ResourcePointer<Model> SOLID_GREEN = new ResourcePointer<Model>("model://Spout/models/solidGreen.spm");
+	public static final ResourcePointer<Model> SOLID_LIGHTGREEN = new ResourcePointer<Model>("model://Spout/models/solidLightGreen.spm");
+	public static final ResourcePointer<Model> SOLID_RED = new ResourcePointer<Model>("model://Spout/models/solidRed.spm");
+	public static final ResourcePointer<Model> SOLID_SKYBLUE = new ResourcePointer<Model>("model://Spout/models/solidSkyBlue.spm");
 }
