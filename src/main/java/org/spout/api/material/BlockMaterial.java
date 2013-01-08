@@ -47,6 +47,9 @@ import org.spout.api.material.block.BlockFaces;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
+import org.spout.api.model.Model;
+import org.spout.api.resource.ResourcePointer;
+import org.spout.api.resource.SpoutModels;
 import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.api.util.flag.Flag;
 
@@ -59,27 +62,27 @@ import com.bulletphysics.collision.shapes.CollisionShape;
  */
 public class BlockMaterial extends Material implements Placeable {
 	public static final BlockMaterial AIR = new BasicAir();
-	public static final BlockMaterial SOLID = new BasicSolid("SolidBlue", "model://Spout/models/solidBlue.spm");
-	public static final BlockMaterial SOLID_BROWN = new BasicSolid("SolidBrown", "model://Spout/models/solidBrown.spm");
-	public static final BlockMaterial SOLID_GREEN = new BasicSolid("SolidGreen", "model://Spout/models/solidGreen.spm");
-	public static final BlockMaterial SOLID_LIGHTGREEN = new BasicSolid("SolidLightGreen", "model://Spout/models/solidLightGreen.spm");
-	public static final BlockMaterial SOLID_RED = new BasicSolid("SolidRed", "model://Spout/models/solidRed.spm");
-	public static final BlockMaterial SOLID_SKYBLUE = new BasicSolid("SolidSkyBlue", "model://Spout/models/solidSkyBlue.spm");
-	
+	public static final BlockMaterial SOLID = new BasicSolid("SolidBlue", SpoutModels.SOLID_BLUE);
+	public static final BlockMaterial SOLID_BROWN = new BasicSolid("SolidBrown", SpoutModels.SOLID_BROWN);
+	public static final BlockMaterial SOLID_GREEN = new BasicSolid("SolidGreen", SpoutModels.SOLID_GREEN);
+	public static final BlockMaterial SOLID_LIGHTGREEN = new BasicSolid("SolidLightGreen", SpoutModels.SOLID_LIGHTGREEN);
+	public static final BlockMaterial SOLID_RED = new BasicSolid("SolidRed", SpoutModels.SOLID_RED);
+	public static final BlockMaterial SOLID_SKYBLUE = new BasicSolid("SolidSkyBlue", SpoutModels.SOLID_SKYBLUE);
+
 	public static final BlockMaterial UNBREAKABLE = new BlockMaterial("Unbreakable").setHardness(100.f);
 	public static final BlockMaterial SKYBOX = new BasicSkyBox();
 	public static final BlockMaterial ERROR = new BlockMaterial("Missing Plugin").setHardness((100.f));
 
 	private final CollisionObject collisionObject = new CollisionObject();
 
-	public BlockMaterial(short dataMask, String name, String model){
+	public BlockMaterial(short dataMask, String name, ResourcePointer<Model> model){
 		super(dataMask, name, model);
 		collisionObject.setCollisionShape(new BoxShape(1F, 1F, 1F));
 		collisionObject.setRestitution(0f);
 		collisionObject.setFriction(1f);
 	}
 
-	public BlockMaterial(String name, int data, Material parent, String model) {
+	public BlockMaterial(String name, int data, Material parent, ResourcePointer<Model> model) {
 		super(name, data, parent, model);
 		collisionObject.setCollisionShape(new BoxShape(1F, 1F, 1F));
 		collisionObject.setRestitution(0f);

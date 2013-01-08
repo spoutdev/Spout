@@ -47,13 +47,13 @@ import org.spout.api.math.MathHelper;
 import org.spout.api.model.Model;
 import org.spout.api.plugin.Platform;
 import org.spout.api.render.effect.MeshEffect;
+import org.spout.api.resource.ResourcePointer;
+import org.spout.api.resource.SpoutModels;
 import org.spout.api.util.LogicUtil;
 import org.spout.api.util.flag.Flag;
 import org.spout.api.util.flag.FlagSingle;
 
 public abstract class Material extends MaterialRegistry implements MaterialSource {
-	private static final String DefaultModel = "model://Spout/models/unknownblock.spm";
-
 	private final short id;
 	private final short data;
 	private final String name;
@@ -77,7 +77,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * @param name
 	 * @param model
 	 */
-	public Material(short dataMask, String name, String model) {
+	public Material(short dataMask, String name, ResourcePointer<Model> model) {
 		this.isSubMaterial = false;
 		this.displayName = name;
 		this.name = getClass().getCanonicalName() + "_" + name.replace(' ', '_');
@@ -86,12 +86,11 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.id = (short) MaterialRegistry.register(this);
 		this.dataMask = dataMask;
 		this.root = this;
+		if (model == null) {
+			model = SpoutModels.DEFAULT_MODEL;
+		}
 		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-			if (model == null) {
-				this.model = (Model) Spout.getEngine().getFilesystem().getResource(DefaultModel);
-			} else {
-				this.model = (Model) Spout.getEngine().getFilesystem().getResource(model);
-			}
+			this.model = model.get(SpoutModels.DEFAULT_MODEL);
 		} else {
 			this.model = null;
 		}
@@ -113,7 +112,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * @param name of the material
 	 */
 	public Material(short dataMask, String name) {
-		this(dataMask, name, DefaultModel);
+		this(dataMask, name, SpoutModels.DEFAULT_MODEL);
 	}
 
 	/**
@@ -124,7 +123,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * @param parent material
 	 */
 	public Material(String name, int data, Material parent) {
-		this(name, data, parent, (String) null);
+		this(name, data, parent, (ResourcePointer<Model>) null);
 	}
 
 	/**
@@ -135,7 +134,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * @param parent material
 	 * @param model
 	 */
-	public Material(String name, int data, Material parent, String model) {
+	public Material(String name, int data, Material parent, ResourcePointer<Model> model) {
 		this.isSubMaterial = true;
 		this.displayName = name;
 		this.name = name.replace(' ', '_');
@@ -144,12 +143,11 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.id = (short) MaterialRegistry.register(this);
 		this.dataMask = parent.getDataMask();
 		this.root = parent.getRoot();
+		if (model == null) {
+			model = SpoutModels.DEFAULT_MODEL;
+		}
 		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-			if (model == null) {
-				this.model = (Model) Spout.getEngine().getFilesystem().getResource(DefaultModel);
-			} else {
-				this.model = (Model) Spout.getEngine().getFilesystem().getResource(model);
-			}
+			this.model = model.get(SpoutModels.DEFAULT_MODEL);
 		} else {
 			this.model = null;
 		}
@@ -171,7 +169,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.dataMask = 0;
 		this.root = this;
 		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-			this.model = (Model) Spout.getEngine().getFilesystem().getResource(DefaultModel);
+			this.model = SpoutModels.DEFAULT_MODEL.get();
 		} else {
 			this.model = null;
 		}
