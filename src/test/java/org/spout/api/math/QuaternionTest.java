@@ -59,16 +59,18 @@ public class QuaternionTest {
 		testValues(rot, qx, qy, qz, qw);
 
 		rot = new Quaternion(40, new Vector3(3, 2, 1));
-		qx = 3.f * (float) Math.sin((Math.toRadians(40) / 2));
-		qy = 2.f * (float) Math.sin((Math.toRadians(40) / 2));
-		qz = 1.f * (float) Math.sin((Math.toRadians(40) / 2));
+		float length = (float) Math.sqrt(3 * 3 + 2 * 2 + 1 * 1);
+		qx = 3.f / length * (float) Math.sin((Math.toRadians(40) / 2));
+		qy = 2.f / length * (float) Math.sin((Math.toRadians(40) / 2));
+		qz = 1.f / length * (float) Math.sin((Math.toRadians(40) / 2));
 		qw = (float) Math.cos((Math.toRadians(40) / 2));
 		testValues(rot, qx, qy, qz, qw);
 
 		rot = new Quaternion(120, new Vector3(6, -3, 2));
-		qx = 6.f * (float) Math.sin((Math.toRadians(120) / 2));
-		qy = -3.f * (float) Math.sin((Math.toRadians(120) / 2));
-		qz = 2.f * (float) Math.sin((Math.toRadians(120) / 2));
+		length = (float) Math.sqrt(6 * 6 + -3 * -3 + 2 * 2);
+		qx = 6.f / length * (float) Math.sin((Math.toRadians(120) / 2));
+		qy = -3.f / length * (float) Math.sin((Math.toRadians(120) / 2));
+		qz = 2.f / length * (float) Math.sin((Math.toRadians(120) / 2));
 		qw = (float) Math.cos((Math.toRadians(120) / 2));
 		testValues(rot, qx, qy, qz, qw);
 	}
@@ -187,9 +189,10 @@ public class QuaternionTest {
 		ang = 120;
 		a = new Quaternion(0, 0, 0, 1, true);
 		res = a.rotate(ang, new Vector3(x, y, z));
-		qx = x * (float) Math.sin((Math.toRadians(ang) / 2));
-		qy = y * (float) Math.sin((Math.toRadians(ang) / 2));
-		qz = z * (float) Math.sin((Math.toRadians(ang) / 2));
+		float length = (float) Math.sqrt(1 * 1 + 4 * 4 + -3 * -3);
+		qx = x / length * (float) Math.sin((Math.toRadians(ang) / 2));
+		qy = y / length * (float) Math.sin((Math.toRadians(ang) / 2));
+		qz = z / length * (float) Math.sin((Math.toRadians(ang) / 2));
 		qw = (float) Math.cos((Math.toRadians(ang) / 2));
 		testValues(res, qx, qy, qz, qw);
 	}

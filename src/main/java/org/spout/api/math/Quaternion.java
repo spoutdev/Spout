@@ -82,7 +82,7 @@ public class Quaternion implements Serializable, ValueType{
 
 	/**
 	 * Constructs a new Quaternion that represents a given rotation around an
-	 * arbatrary axis
+	 * arbitrary axis
 	 *
 	 * @param angle Angle, in Degrees, to rotate the axis about by
 	 * @param x-axis
@@ -90,12 +90,12 @@ public class Quaternion implements Serializable, ValueType{
 	 * @param z-axis
 	 */
 	public Quaternion(float angle, float x, float y, float z) {
-		double rads = Math.toRadians(angle);
-		double halfAngle = Math.sin(rads / 2);
-		this.x = (float) (x * halfAngle);
-		this.y = (float) (y * halfAngle);
-		this.z = (float) (z * halfAngle);
-		this.w = (float) Math.cos(rads / 2);
+		double halfAngle = Math.toRadians(angle) / 2;
+		double q = Math.sin(halfAngle) / Math.sqrt(x * x + y * y + z * z);
+		this.x = (float) (x * q);
+		this.y = (float) (y * q);
+		this.z = (float) (z * q);
+		this.w = (float) Math.cos(halfAngle);
 	}
 
 	/**
