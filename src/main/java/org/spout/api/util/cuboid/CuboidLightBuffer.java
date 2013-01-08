@@ -44,4 +44,11 @@ public abstract class CuboidLightBuffer extends CuboidBuffer {
 	public int getManagerId() {
 		return id;
 	}
+	
+	/**
+	 * Gets a copy of the buffer
+	 * 
+	 * @param buffer
+	 */
+	public abstract CuboidLightBuffer copy();
 }

@@ -33,6 +33,10 @@ public class CuboidNibbleLightBuffer extends CuboidLightBuffer {
 	private final byte[] lightData;
 	private CuboidNibbleLightBuffer source = null;
 	
+	protected CuboidNibbleLightBuffer(CuboidNibbleLightBuffer buffer) {
+		this(buffer.getManagerId(), buffer.baseX, buffer.baseY, buffer.baseZ, buffer.sizeX, buffer.sizeY, buffer.sizeZ, buffer.lightData);
+	}
+	
 	protected CuboidNibbleLightBuffer(int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
 		this(id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ, null);
 	}
@@ -116,6 +120,10 @@ public class CuboidNibbleLightBuffer extends CuboidLightBuffer {
 			index >>= 1;
 			return (byte) ((lightData[index] >> 4) & 0x0F);
 		}		
+	}
+	
+	public CuboidNibbleLightBuffer copy() {
+		return new CuboidNibbleLightBuffer(this);
 	}
 	
 	public byte[] serialize() {

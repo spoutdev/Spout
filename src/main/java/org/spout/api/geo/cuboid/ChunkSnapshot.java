@@ -93,7 +93,7 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	 * 
 	 * @return
 	 */
-	public abstract CuboidLightBuffer[] getLightBuffer();
+	public abstract CuboidLightBuffer[] getLightBuffers();
 
 	/**
 	 * Gets the region that this chunk is located in.
