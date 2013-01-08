@@ -27,7 +27,6 @@
 package org.spout.engine.filesystem.versioned;
 
 import gnu.trove.procedure.TShortObjectProcedure;
-import gnu.trove.set.hash.TIntHashSet;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,7 +41,9 @@ import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.geo.cuboid.ChunkSnapshot.BlockComponentSnapshot;
 import org.spout.api.material.ComplexMaterial;
 import org.spout.api.material.block.BlockFullState;
+import org.spout.api.math.Vector3;
 import org.spout.api.util.StringMap;
+import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.hashing.ByteTripleHashed;
 import org.spout.api.util.hashing.NibbleQuadHashed;
 import org.spout.api.util.hashing.SignedTenBitTripleHashed;
@@ -73,7 +74,7 @@ public class ChunkFiles {
 	
 	private static final TypeChecker<List<? extends CompoundTag>> checkerListCompoundTag = TypeChecker.tList(CompoundTag.class);
 	
-	public static final byte CHUNK_VERSION = 3;
+	public static final byte CHUNK_VERSION = 4;
 	
 	public static SpoutChunk loadChunk(SpoutRegion r, int x, int y, int z, InputStream dis, ChunkDataForRegion dataForRegion) {
 		SpoutChunk chunk = null;
@@ -107,6 +108,9 @@ public class ChunkFiles {
 				}
 				if (version <= 2) {
 					map = convertV2V3(map);
+				}
+				if (version <= 3) {
+					map = convertV3V4(map);
 				}
 			}
 			
@@ -195,6 +199,8 @@ public class ChunkFiles {
 		//Switch block ids from engine material ids to world specific ids
 		StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
 		StringMap itemMap = world.getItemMap();
+		
+		StringMap lightingMap = world.getItemMap();
 
 		int[] palette = snapshot.getPalette();
 		int[] packetBlockArray = snapshot.getPackedBlockArray();
@@ -222,6 +228,7 @@ public class ChunkFiles {
 		chunkTags.put(saveDynamicUpdates(blockUpdates));
 		chunkTags.put(saveBlockComponents(snapshot.getBlockComponents()));
 		chunkTags.put(new ByteArrayTag("extraData", snapshot.getDataMap().serialize()));
+		chunkTags.put(saveLightingBuffers(lightingMap, snapshot.getLightBuffers()));
 
 		CompoundTag chunkCompound = new CompoundTag("chunk", chunkTags);
 
@@ -235,6 +242,7 @@ public class ChunkFiles {
 		}
 
 		world.getItemMap().save();
+		world.getLightingMap().save();
 	}
 	
 	private static void convertArray(int[] fullState, StringMap from, StringMap to) {
@@ -367,6 +375,27 @@ public class ChunkFiles {
 			}
 			return true;
 		}
+	}
+	
+	private static CompoundTag saveLightingBuffers(StringMap worldLighting, CuboidLightBuffer[] buffers) {
+		CompoundMap map = new CompoundMap();
+
+		StringMap globalLighting = ((SpoutEngine) Spout.getEngine()).getEngineLightingMap();
+		
+		for (int i = 0; i < buffers.length; i++) {
+			CuboidLightBuffer buffer = buffers[i];
+			int worldId = globalLighting.convertTo(worldLighting, buffer.getManagerId());
+			map.put(saveLightingBuffer(worldId, buffer));
+		}
+		
+		return new CompoundTag("light_buffers", map);
+	}
+	
+	private static CompoundTag saveLightingBuffer(int worldId, CuboidLightBuffer buffer) {
+		CompoundMap map = new CompoundMap();
+		map.put(new IntTag("manager_id", worldId));
+		map.put(new ByteArrayTag("light_data", buffer.serialize()));
+		return new CompoundTag("lighting_" + worldId, map);
 	}
 
 	/**
@@ -512,6 +541,16 @@ public class ChunkFiles {
 		map.put(new IntTag("packedWidth", packedWidth));
 		map.put(new IntArrayTag("packedBlockArray", packetBlockArray));
 		
+		return map;
+	}
+	
+	/**
+	 * Version 3 to version 4 conversion
+	 * 
+	 * Extra field for custom lighting added, so no conversion needed.
+	 */
+	
+	private static CompoundMap convertV3V4(CompoundMap map) {
 		return map;
 	}
 	
