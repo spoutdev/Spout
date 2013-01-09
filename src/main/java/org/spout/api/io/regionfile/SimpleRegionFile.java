@@ -100,7 +100,6 @@ public class SimpleRegionFile implements ByteArrayArray {
 		
 		this.timeout = timeout;
 		this.lastAccess = new AtomicLong(0);
-		this.lastSync = new AtomicLong(System.currentTimeMillis());
 		refreshAccess();
 		
 		try {
