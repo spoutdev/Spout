@@ -525,17 +525,8 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		}
 	}
 	
-	private final AtomicBoolean lightUnstableQueued = new AtomicBoolean(false);
-
 	private void notifyLightOperationSubmission() {
-		if (lightUnstableQueued.compareAndSet(false, true)) {
-			getRegion().queueForLightUnstable(this);
-		}
 		this.lightOperationsPending.incrementAndGet();
-	}
-	
-	public void clearLightUnstableQueued() {
-		lightUnstableQueued.set(false);
 	}
 	
 	public boolean waitUntilLightingStable() {

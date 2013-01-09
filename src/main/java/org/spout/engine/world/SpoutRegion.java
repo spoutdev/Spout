@@ -205,7 +205,6 @@ public class SpoutRegion extends Region {
 	protected final SetQueue<SpoutChunk> localPhysicsChunkQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
 	protected final SetQueue<SpoutChunk> globalPhysicsChunkQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
 	protected final SetQueue<SpoutChunk> dirtyChunkQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
-	private final ArrayBlockingQueue<SpoutChunk> lightUnstableChunks = new ArrayBlockingQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 	private boolean renderQueueEnabled = false;
@@ -1104,21 +1103,6 @@ public class SpoutRegion extends Region {
 		}
 	}
 	
-	private void waitForLighting() {
-		SpoutChunk chunk;
-		boolean updated = true;
-		while (updated) {
-			updated = false;
-			while ((chunk =	this.lightUnstableChunks.poll()) != null) {
-				chunk.clearLightUnstableQueued();
-				if (!chunk.isLoaded()) {
-					continue;
-				}
-				updated |= chunk.waitUntilLightingStable();
-			}
-		}
-	}
-
 	public void startTickRun(int stage, long delta) {
 		final float dt = delta / 1000f;
 		switch (stage) {
@@ -1137,7 +1121,6 @@ public class SpoutRegion extends Region {
 			break;
 		}
 		case 2: {
-			waitForLighting();
 			break;
 		}
 		default: {
@@ -1473,10 +1456,6 @@ public class SpoutRegion extends Region {
 			}
 			return snapshot;
 		}
-	}
-	
-	public void queueForLightUnstable(SpoutChunk chunk) {
-		lightUnstableChunks.add(chunk);
 	}
 
 	public void runPhysics(int sequence) throws InterruptedException {
