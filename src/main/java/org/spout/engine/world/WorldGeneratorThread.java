@@ -119,7 +119,7 @@ public class WorldGeneratorThread extends Thread {
 							}
 						});
 					}
-					if (scheduler.isServerOverloaded()) {
+					while (scheduler.isServerOverloaded()) {
 						try {
 							Thread.sleep(50);
 						} catch (InterruptedException e) {

@@ -30,6 +30,7 @@ import gnu.trove.iterator.TLongIterator;
 
 import org.spout.api.Spout;
 import org.spout.api.geo.LoadOption;
+import org.spout.api.scheduler.Scheduler;
 import org.spout.api.util.hashing.Int21TripleHashed;
 import org.spout.api.util.set.TInt21TripleHashSet;
 import org.spout.engine.SpoutConfiguration;
@@ -133,7 +134,8 @@ public class SpoutWorldLighting extends Thread {
 		int i, cx, cy, cz;
 		int idleCounter = 0;
 		this.running = SpoutConfiguration.LIGHTING_ENABLED.getBoolean();
-		SpoutSnapshotLock lock = (SpoutSnapshotLock)Spout.getEngine().getScheduler().getSnapshotLock();
+		Scheduler scheduler = Spout.getEngine().getScheduler();
+		SpoutSnapshotLock lock = (SpoutSnapshotLock) scheduler.getSnapshotLock();
 		while (this.running) {
 			boolean updated = false;
 			// Obtain the chunks to work with
@@ -150,9 +152,9 @@ public class SpoutWorldLighting extends Thread {
 				}
 			}
 			if (updated = chunkBufferSize > 0) {
-				lock.coreReadLock(taskName);
-				try {
-					for (i = 0; i < chunkBufferSize; i++) {
+				for (i = 0; i < chunkBufferSize; i++) {
+					lock.coreReadLock(taskName);
+					try {
 						cx = Int21TripleHashed.key1(chunkBuffer[i]);
 						cy = Int21TripleHashed.key2(chunkBuffer[i]);
 						cz = Int21TripleHashed.key3(chunkBuffer[i]);
@@ -169,11 +171,11 @@ public class SpoutWorldLighting extends Thread {
 								}
 							}
 						}
+					} finally {
+						lock.coreReadUnlock(taskName);
 					}
-					idleCounter = 0;
-				} finally {
-					lock.coreReadUnlock(taskName);
 				}
+				idleCounter = 0;
 			}
 			if (!updated) {
 				if (idleCounter++ == 20) {
