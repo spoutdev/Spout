@@ -121,7 +121,7 @@ public class WorldGeneratorThread extends Thread {
 					}
 					if (scheduler.isServerOverloaded()) {
 						try {
-							Thread.sleep(5);
+							Thread.sleep(50);
 						} catch (InterruptedException e) {
 							break mainLoop;
 						}
