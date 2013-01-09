@@ -31,17 +31,21 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
+import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 
 public class MappedRandomAccessFile {
 
-	private final RandomAccessFile file;
+	private final File filePath;
+	private final String permissions;
 	private long pos = 0;
 	private final ArrayList<MappedByteBuffer> pages = new ArrayList<MappedByteBuffer>();
 	private final int PAGE_SHIFT;
 	private final int PAGE_SIZE;
 	private final long PAGE_MASK;
+	
+	private RandomAccessFile file;
 
 	public MappedRandomAccessFile(File filePath, String permissions) throws FileNotFoundException {
 		this(filePath, permissions, 17);
@@ -52,6 +56,8 @@ public class MappedRandomAccessFile {
 		this.PAGE_SHIFT = pageShift;
 		PAGE_SIZE = (1 << PAGE_SHIFT);
 		PAGE_MASK = PAGE_SIZE - 1;
+		this.filePath = filePath;
+		this.permissions = permissions;
 	}
 
 	public long length() throws IOException {
@@ -94,7 +100,25 @@ public class MappedRandomAccessFile {
 		MappedByteBuffer page = pages.get(pageIndex);
 		if (page == null) {
 			long pagePosition = pageIndex << PAGE_SHIFT;
-			page = file.getChannel().map(FileChannel.MapMode.READ_WRITE, pagePosition, PAGE_SIZE);
+			boolean interrupted = false;
+			boolean success = false;
+			try {
+				while (!success) {
+					try {
+						interrupted |= Thread.interrupted();
+						page = file.getChannel().map(FileChannel.MapMode.READ_WRITE, pagePosition, PAGE_SIZE);
+						success = true;
+					} catch (ClosedByInterruptException e) {
+						file = new RandomAccessFile(filePath, permissions);
+					} catch (IOException e) {
+						throw new IOException("Unable to refresh RandomAccessFile after interrupt, " + filePath, e);
+					}
+				}
+			} finally {
+				if (interrupted) {
+					Thread.currentThread().interrupt();
+				}
+			}
 			pages.set(pageIndex, page);
 		}
 		return page;
@@ -167,6 +191,6 @@ public class MappedRandomAccessFile {
 			j += length;
 		}
 
-		pos += b.length;
+		pos += len;
 	}
 }

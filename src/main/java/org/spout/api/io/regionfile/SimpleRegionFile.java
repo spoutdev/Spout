@@ -34,7 +34,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.ClosedByInterruptException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -67,9 +66,7 @@ public class SimpleRegionFile implements ByteArrayArray {
 	private final SRFReentrantReadWriteLock[] blockLock;
 	private final AtomicInteger numberBlocksLocked;
 	
-	private final AtomicBoolean closed;
 	private final AtomicLong lastAccess;
-	private final AtomicLong lastSync;
 	
 	private final AtomicReference<AtomicBoolean[]> inuse;
 	private final int segmentSize;
@@ -100,7 +97,6 @@ public class SimpleRegionFile implements ByteArrayArray {
 	public SimpleRegionFile(File filePath, int desiredSegmentSize, int entries, int timeout) throws IOException {
 		
 		this.filePath = filePath;
-		this.closed = new AtomicBoolean(false);
 		
 		this.timeout = timeout;
 		this.lastAccess = new AtomicLong(0);
@@ -110,7 +106,6 @@ public class SimpleRegionFile implements ByteArrayArray {
 		try {
 			this.file = new MappedRandomAccessFile(this.filePath, "rw");
 		} catch (FileNotFoundException e) {
-			this.closed.set(true);
 			throw new SRFException("Unable to open region file " + this.filePath, e);
 		}
 		
@@ -134,7 +129,6 @@ public class SimpleRegionFile implements ByteArrayArray {
 		
 		if (entries != this.entries) {
 			file.close();
-			this.closed.set(true);
 			throw new SRFException("Number of entries mismatch for file " + this.filePath + ", expected " + entries + " got " + this.entries);
 		}
 		
@@ -207,36 +201,15 @@ public class SimpleRegionFile implements ByteArrayArray {
 				//This block is of 0 length, and will cause EOF errors if you attempt to make a stream with it.
 				return null;
 			}
-
 			int start = blockSegmentStart[i].get() << segmentSize;
 			int actualLength = blockActualLength[i].get();
 			byte[] result = new byte[actualLength];
 			synchronized (fileSyncObject) {
-				boolean success = false;
-				boolean interrupted = false;
-				try {
-					while (!success) {
-						success = true;
-						try {
-							if (file == null) {
-								this.file = new MappedRandomAccessFile(this.filePath, "rw");
-							}
-							file.seek(start);
-							file.readFully(result);
-						} catch (ClosedByInterruptException e) {
-							interrupted |= Thread.interrupted();
-							if (file != null) {
-								file.close();
-							}
-							this.file = null;
-							success = false;
-						}
-					}
-				} finally {
-					if (interrupted) {
-						Thread.currentThread().interrupt();
-					}
+				if (file == null) {
+					this.file = new MappedRandomAccessFile(this.filePath, "rw");
 				}
+				file.seek(start);
+				file.readFully(result);
 			}
 			return new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(result)));
 		} finally {
@@ -272,39 +245,17 @@ public class SimpleRegionFile implements ByteArrayArray {
 		refreshAccess();
 		int start = reserveBlockSegments(i, length);
 		synchronized(fileSyncObject) {
-			boolean success = false;
-			boolean interrupted = false;
-			try {
-				while (!success) {
-					success = true;
-					try {
-						if (file == null) {
-							this.file = new MappedRandomAccessFile(this.filePath, "rw");
-						}
-						this.writeFAT(i, start, length);
-						file.seek(start << segmentSize);
-						file.write(buf, 0, length);
-					} catch (ClosedByInterruptException e) {
-						interrupted |= Thread.interrupted();
-						if (file != null) {
-							file.close();
-						}
-						this.file = null;
-						success = false;
-					}
-				}
-			} finally {
-				if (interrupted) {
-					Thread.currentThread().interrupt();
-				}
+			if (file == null) {
+				this.file = new MappedRandomAccessFile(this.filePath, "rw");
 			}
+			this.writeFAT(i, start, length);
+			file.seek(start << segmentSize);
+			file.write(buf, 0, length);
 		}
 	}
-	
+
 	/**
 	 * Deletes a block.
-	 * <br>
-	 * Note: It is assumed that the block is locked when making these changes<br>
 	 * 
 	 * @param i the block index
 	 * @param buf the buffer
@@ -319,34 +270,12 @@ public class SimpleRegionFile implements ByteArrayArray {
 			if (this.isClosed()) {
 				throw new SRFClosedException("File closed");
 			}
-			this.blockSegmentStart[i].set(0);
-			this.blockSegmentLength[i].set(0);
-			this.blockActualLength[i].set(0);;
+			int start = reserveBlockSegments(i, 0);
 			synchronized(fileSyncObject) {
-				boolean success = false;
-				boolean interrupted = false;
-				try {
-					while (!success) {
-						success = true;
-						try {
-							if (file == null) {
-								this.file = new MappedRandomAccessFile(this.filePath, "rw");
-							}
-							this.writeFAT(i, 0, 0);
-						} catch (ClosedByInterruptException e) {
-							interrupted |= Thread.interrupted();
-							if (file != null) {
-								file.close();
-							}
-							this.file = null;
-							success = false;
-						}
-					}
-				} finally {
-					if (interrupted) {
-						Thread.currentThread().interrupt();
-					}
+				if (file == null) {
+					this.file = new MappedRandomAccessFile(this.filePath, "rw");
 				}
+				this.writeFAT(i, start, 0);
 			}
 		} finally {
 			lock.unlock();
@@ -363,47 +292,32 @@ public class SimpleRegionFile implements ByteArrayArray {
 		if (isTimedOut()) {
 			attemptClose();
 		}
-		if (syncCheck()) {
-			synchronized (fileSyncObject) {
-				if (file != null) {
-					file.close();
-					try {
-						this.file = new MappedRandomAccessFile(this.filePath, "rw");
-					} catch (FileNotFoundException e) {
-						this.closed.set(true);
-						throw new SRFException("Unable to refresh open region file " + this.filePath, e);
-					}
-				}
-			}
-		}
 	}
-	
-	private boolean syncCheck() {
-		boolean success = false;
-		while (!success) {
-			long last = lastSync.get();
-			long currentTime = System.currentTimeMillis();
-			if (currentTime < last + this.timeout) {
-				return false;
-			}
-			success = lastSync.compareAndSet(last, currentTime);
-		}
-		return true;
-	}
-	
+
 	@Override
 	public boolean isClosed() {
-		return this.numberBlocksLocked.get() == FILE_CLOSED;
+		if (this.numberBlocksLocked.get() == FILE_CLOSED) {
+			synchronized(fileSyncObject) {
+				return this.numberBlocksLocked.get() == FILE_CLOSED;
+			}
+		} else {
+			return false;
+		}
 	}
 	
 	@Override
 	public boolean attemptClose() throws IOException {
 		refreshAccess();
-		if (!this.numberBlocksLocked.compareAndSet(0, FILE_CLOSED)) {
-			// Cannot close: either the file is already closed or there are still blocks locked.
-			return false;
+		synchronized(fileSyncObject) {
+			if (!this.numberBlocksLocked.compareAndSet(0, FILE_CLOSED)) {
+				// Cannot close: either the file is already closed or there are still blocks locked.
+				return false;
+			}
+			return closeFileRaw();
 		}
-
+	}
+	
+	private boolean closeFileRaw() throws IOException {
 		synchronized(fileSyncObject) {
 			try {
 				if (file != null) {
@@ -579,36 +493,16 @@ public class SimpleRegionFile implements ByteArrayArray {
 		blockBytes.set(length);
 		return newStart;
 	}
-	
+
 	private void writeFAT(int i, int start, int actualLength) throws IOException {
 		int FATEntryPosition = getFATOffset() + (i << 3);
 		synchronized(fileSyncObject) {
-			boolean success = false;
-			boolean interrupted = false;
-			try {
-				while (!success) {
-					success = true;
-					try {
-						if (file == null) {
-							this.file = new MappedRandomAccessFile(this.filePath, "rw");
-						}
-						file.seek(FATEntryPosition);
-						file.writeInt(start);
-						file.writeInt(actualLength);
-					} catch (ClosedByInterruptException e) {
-						interrupted |= Thread.interrupted();
-						if (file != null) {
-							file.close();
-						}
-						this.file = null;
-						success = false;
-					}
-				}
-			} finally {
-				if (interrupted) {
-					Thread.currentThread().interrupt();
-				}
+			if (file == null) {
+				this.file = new MappedRandomAccessFile(this.filePath, "rw");
 			}
+			file.seek(FATEntryPosition);
+			file.writeInt(start);
+			file.writeInt(actualLength);
 		}
 	}
 	

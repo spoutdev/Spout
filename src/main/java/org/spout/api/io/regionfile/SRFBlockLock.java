@@ -102,14 +102,15 @@ public class SRFBlockLock implements Lock {
 	private int decrementLockCounter() {
 		while (true) {
 			int oldValue = this.lockCounter.get();
-			
+
+			int newValue = oldValue - 1;
+
 			if (oldValue == SimpleRegionFile.FILE_CLOSED) {
-				return SimpleRegionFile.FILE_CLOSED;
+				newValue = SimpleRegionFile.FILE_CLOSED;
 			} else if (oldValue <= 0) {
 				throw new RuntimeException("Attempt made to decrement lock counter below zero");
 			}
-			
-			int newValue = oldValue - 1;
+
 			if (this.lockCounter.compareAndSet(oldValue, newValue)) {
 				return newValue;
 			}
