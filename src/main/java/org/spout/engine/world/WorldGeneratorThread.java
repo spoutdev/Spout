@@ -74,9 +74,6 @@ public class WorldGeneratorThread extends Thread {
 		
 		mainLoop:
 		while (!isInterrupted()) {
-			
-			boolean debug = Spout.getEngine().debugMode();
-			
 			Point p;
 			try {
 				p = queue.take();
@@ -94,14 +91,9 @@ public class WorldGeneratorThread extends Thread {
 					return ((SpoutWorld) base.getWorld()).getRegion(rx, ry, rz, LoadOption.LOAD_GEN);
 				}
 			});
-			long start = System.currentTimeMillis();
 			final CuboidBlockMaterialBuffer buffer = r.generateChunks();
 			if (buffer == null) {
 				continue;
-			}
-			if (debug) {
-				Spout.getLogger().info("Region " + r + " generated (" + (System.currentTimeMillis() - start) + " ms)");
-				Spout.getLogger().info("Copying buffer to Region " + r);
 			}
 			int cx = r.getChunkX();
 			int cy = r.getChunkY();
@@ -127,9 +119,6 @@ public class WorldGeneratorThread extends Thread {
 						}
 					}
 				}
-			}
-			if (debug) {
-				Spout.getLogger().info("Copy complete, " + r);
 			}
 		}
 		
