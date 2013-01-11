@@ -40,7 +40,7 @@ public class TransformTest {
 	public void test() {
 		World mock = PowerMockito.mock(World.class);
 		Point p = new Point(mock, 0, 0, 0);
-		Quaternion q = new Quaternion(1, 0, 0, 0);
+		Quaternion q = Quaternion.UNIT_X;
 		Vector3 s = new Vector3(0, 0, 0);
 		Transform transform = new Transform(p, q, s);
 		assertEquals("Transform point values did not match", transform.getPosition(), p);

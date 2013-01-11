@@ -822,7 +822,7 @@ public class MathHelper {
 		return sum/values.length;
 	}
 
-	/* Quaterion Helpers */
+	/* Quaternion Helpers */
 
 	/**
 	 * Returns the length squared of the given Quaternion
@@ -928,10 +928,11 @@ public class MathHelper {
 		if (a == b || a.equals(b)) {
 			return Quaternion.IDENTITY;
 		}
-		//Normalize the input vectors before doing math on them.
+		// Normally the dot product must be divided by the product of the lengths,
+		// but if they are both 1, we can skip that.
 		a = a.normalize();
 		b = b.normalize();
-		return new Quaternion((float)Math.toDegrees(Math.acos(a.dot(b))), a.cross(b));
+		return new Quaternion((float) Math.toDegrees(Math.acos(a.dot(b))), a.cross(b));
 	}
 
 	/* Vector3 Helpers */
