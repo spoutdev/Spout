@@ -101,7 +101,7 @@ public class JLineConsole extends AbstractConsole {
 	public void addMessage(ChatArguments message) {
 		try {
 			synchronized (writer) {
-				reader.printString(ConsoleOperations.RESET_LINE + "");
+				reader.printString(ConsoleOperations.RESET_LINE + "\033[K");
 				reader.flushConsole();
 				appendDateFormat(writer);
 				for (String line : stringify(message).split("\n")) {
