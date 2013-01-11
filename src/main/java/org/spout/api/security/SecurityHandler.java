@@ -254,10 +254,13 @@ public class SecurityHandler {
 			} else {
 				return SecureRandom.getInstance(RNGAlgorithm);
 			}
-		} catch (NoSuchProviderException e) {
+		} catch (NoSuchProviderException e) {	
 			//Fallback to any provider for the algorithm
 			return getSecureRandom(RNGAlgorithm, null);
 		} catch (NoSuchAlgorithmException e) {
+			if (RNGProvider != null) {
+				return getSecureRandom(RNGAlgorithm, null);
+			}
 			Spout.getLogger().severe("Unable to find algorithm to generate random number generator for key pair creation (" + RNGAlgorithm + ", " + RNGProvider + ")");
 			return null;
 		}
