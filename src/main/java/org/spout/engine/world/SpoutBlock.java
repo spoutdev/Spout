@@ -50,7 +50,6 @@ import org.spout.api.material.source.DataSource;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
-import org.spout.api.util.LogicUtil;
 import org.spout.api.util.StringUtil;
 
 public class SpoutBlock implements Block {
@@ -362,7 +361,7 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public boolean isMaterial(Material... materials) {
-		return LogicUtil.equalsAny(this.getMaterial(), (Object[]) materials);
+		return getMaterial().isMaterial(materials);
 	}
 
 	@Override
