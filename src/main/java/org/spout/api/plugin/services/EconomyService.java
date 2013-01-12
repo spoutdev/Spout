@@ -212,7 +212,7 @@ public abstract class EconomyService {
 	 * @param amount to check
 	 * @return true if the account can have the given amount withdrawn
 	 */
-	public abstract boolean canWithdraw(String name, double amount, String currency);
+	public abstract boolean canWithdraw(String name, double amount, String currency) throws UnknownCurrencyException;
 
 	/**
 	 * MULTICURRENCY ONLY: This is a copied-method that assumes the player's name is their account name and<br/>
@@ -224,7 +224,7 @@ public abstract class EconomyService {
 	 * @param amount to check
 	 * @return true if the account can have the given amount withdrawn
 	 */
-	public boolean canWithdraw(Player player, double amount, String currency) {
+	public boolean canWithdraw(Player player, double amount, String currency) throws UnknownCurrencyException {
 		return canWithdraw(player.getName(), amount, currency);
 	}
 
@@ -455,7 +455,7 @@ public abstract class EconomyService {
 	 * @param name of the currency
 	 * @return the currency's symbol
 	 */
-	public abstract String getCurrencySymbol(String name);
+	public abstract String getCurrencySymbol(String name) throws UnknownCurrencyException;
 
 	/**
 	 * Returns a string formatted with the default currency name.<br/>
