@@ -40,7 +40,17 @@ public interface MaterialSource extends DataSource {
 	public Material getMaterial();
 
 	/**
-	 * Gets if the material contained equals one of the materials specified
+	 * Gets if the material contained is the same one of the materials specified<br>
+	 * If a parent material is supplied, sub-materials will evaluate true with it as well<br><br>
+	 * 
+	 * For example:<br>
+	 * - sub.isMaterial(sub) == True<br>
+	 * - parent.isMaterial(parent) == True<br>
+	 * - sub.isMaterial(parent) == True<br>
+	 * - parent.isMaterial(sub) == False<br><br>
+	 * 
+	 * If sub-materials should not evaluate true to its parent materials, use {@link equals()} instead
+	 * 
 	 * @param materials to evaluate against
 	 * @return True if one of the materials equal this material
 	 */
