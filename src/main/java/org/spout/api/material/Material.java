@@ -330,7 +330,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	}
 
 	/**
-	 * Gets the root parent of this sub materia;
+	 * Gets the root parent of this sub material
 	 *
 	 * @return the material root
 	 */
@@ -462,7 +462,6 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 */
 	public void onInteract(Entity entity, Action type) {
 	}
-
 
 	@Override
 	public boolean isMaterial(Material... materials) {
