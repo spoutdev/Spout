@@ -409,6 +409,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
 		
+		material = material.getSubMaterial(data);
 		short dataMask = material.getDataMask();
 		data = (short) ((data & ~dataMask) | (material.getData() & dataMask));
 
