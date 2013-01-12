@@ -57,15 +57,20 @@ import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.component.impl.CameraComponent;
 import org.spout.api.component.impl.HitBlockComponent;
+import org.spout.api.component.impl.ModelComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
+import org.spout.api.event.EventHandler;
+import org.spout.api.event.Listener;
 import org.spout.api.event.engine.EngineStartEvent;
 import org.spout.api.event.engine.EngineStopEvent;
+import org.spout.api.event.entity.AnimationEndEvent;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.gui.ScreenStack;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
+import org.spout.api.model.animation.Animation;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.protocol.CommonPipelineFactory;
@@ -80,6 +85,7 @@ import org.spout.engine.command.InputManagementCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.entity.component.ClientTextModelComponent;
+import org.spout.engine.entity.component.EntityRendererComponent;
 import org.spout.engine.filesystem.ClientFileSystem;
 import org.spout.engine.input.SpoutInputManager;
 import org.spout.engine.listener.SpoutClientListener;
@@ -145,7 +151,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public void start() {
 		start(true);
 	}
-
+	
 	@Override
 	public void start(boolean checkWorlds) {
 		super.start(checkWorlds);
@@ -175,8 +181,20 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 				// Test
 				ClientEntityPrefab spoutyType = (ClientEntityPrefab) Spout.getFilesystem().getResource("entity://Spout/entities/Spouty/spouty.sep");
+
 				Entity e = spoutyType.createEntity(getDefaultWorld().getSpawnPoint().getPosition());
 				e.setSavable(false); // To prevent entity duplication
+				
+				//Animation part
+				EntityRendererComponent renderComponent = e.get(EntityRendererComponent.class);
+				ModelComponent model = e.get(ModelComponent.class);
+				
+				Animation a1 = model.getModel().getAnimations().get("animatest1");
+				Animation a2 = model.getModel().getAnimations().get("animatest2");
+
+				//Launch first animation
+				renderComponent.playAnimation(a1,true);
+				
 				ClientTextModelComponent tmc = e.add(ClientTextModelComponent.class);
 				tmc.setText(new ChatArguments(ChatStyle.BLUE, "Sp", ChatStyle.WHITE, "ou", ChatStyle.RED, "ty"));
 				tmc.setSize(0.5f);

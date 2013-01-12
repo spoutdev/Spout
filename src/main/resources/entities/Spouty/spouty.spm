@@ -2,5 +2,6 @@ Mesh: mesh://Spout/entities/Spouty/spouty.obj
 Material: material://Spout/entities/Spouty/spouty.smt
 Skeleton: skeleton://Spout/entities/Spouty/spouty.ske
 Animation:
-    animatest: animation://Spout/entities/Spouty/spouty.sam
+    animatest1: animation://Spout/entities/Spouty/spouty.sam
+    animatest2: animation://Spout/entities/Spouty/spouty2.sam
     

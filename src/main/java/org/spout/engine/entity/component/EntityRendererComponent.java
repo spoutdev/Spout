@@ -26,37 +26,50 @@
  */
 package org.spout.engine.entity.component;
 
-import javax.vecmath.Matrix4f;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
-
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.component.impl.ModelComponent;
-import org.spout.api.component.impl.PhysicsComponent;
 import org.spout.api.component.impl.PredictableTransformComponent;
 import org.spout.api.component.type.EntityComponent;
+import org.spout.api.event.entity.AnimationEndEvent;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
-import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
 import org.spout.api.model.mesh.Mesh;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotEntity;
-
 import org.spout.engine.mesh.BaseMesh;
 
 public class EntityRendererComponent extends EntityComponent {
 	
 	public Animation animation = null;
+	public boolean loop = false;
 	public int currentFrame = 0;
 	public float currentTime = 0;
 	
 	public float rot = 0f;
 
+	//TODO : Move it in SpoutAPI, make a AnimationComponent ?
+	public void playAnimation(Animation animation){
+		playAnimation(animation,false);
+	}
+	
+	public void playAnimation(Animation animation, boolean loop){
+		//TODO : Maybe check if the animation is compatible with the skeletin of this model
+		//TODO : Maybe make real sync to avoid error with render
+		
+		currentFrame = 0;
+		currentTime = 0;
+		currentFrame = 0;
+		this.loop = loop;
+		this.animation = animation; // Finish by set of the animation to avoid NPE
+	}
+	
 	@Override
 	public void onAttached() {
 	}
@@ -129,23 +142,26 @@ public class EntityRendererComponent extends EntityComponent {
 	}
 	
 	private void updateAnimation(float dt){
-		if (animation == null){
-			ModelComponent model = getOwner().get(ModelComponent.class);
-
-			if (model == null || model.getModel() == null) {
-				return;
-			}
-			animation = model.getModel().getAnimations().get("animatest");
-			currentTime = 0;
-			currentFrame = 0;
+		if (animation == null)
 			return;
-		}
 		
 		currentTime += dt;
 		
 		currentFrame = (int) (currentTime / animation.getDelay());
 		
 		if(currentFrame >= animation.getFrame()){ //Loop
+			if(!loop){
+				
+				//TODO : Send a AnimationEndEvent is the loop is enabled ?
+				
+				Animation a = animation;
+				
+				animation = null;
+				
+				if (AnimationEndEvent.getHandlerList().getRegisteredListeners().length != 0) {
+					Spout.getEventManager().callEvent(new AnimationEndEvent(getOwner(),a));
+				}
+			}
 			currentTime = 0;
 			currentFrame = 0;
 		}
