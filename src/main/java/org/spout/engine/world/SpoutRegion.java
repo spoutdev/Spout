@@ -1234,101 +1234,100 @@ public class SpoutRegion extends Region {
 				RENDER_QUEUE_LIMIT - (getRenderer().getBatchWaiting() + renderChunkQueue.size()) :
 					0;
 
-				if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-					SpoutWorld world = this.getWorld();
+		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
+			SpoutWorld world = this.getWorld();
 
-					boolean worldRenderQueueEnabled = world.isRenderQueueEnabled();
-					boolean firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
-					boolean unloadRenderQueue = !worldRenderQueueEnabled && renderQueueEnabled;
+			boolean worldRenderQueueEnabled = world.isRenderQueueEnabled();
+			boolean firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
+			boolean unloadRenderQueue = !worldRenderQueueEnabled && renderQueueEnabled;
 
-					SpoutPlayer player = ((SpoutClient) Spout.getEngine()).getActivePlayer();
-					if (player == null) {
-						playerPosition = null;
-					} else {
-						playerPosition = player.getTransform().getPosition();
-					}
+			SpoutPlayer player = ((SpoutClient) Spout.getEngine()).getActivePlayer();
+			if (player == null) {
+				playerPosition = null;
+			} else {
+				playerPosition = player.getTransform().getPosition();
+			}
 
-					if (firstRenderQueueTick && player != null) {
-						for( SpoutChunk c : player.getObservingChunks()){
-							c.setRenderDirty(true);
-						}
-						renderQueueEnabled = worldRenderQueueEnabled;
-					}
-
-					if(unloadRenderQueue){
-						for(SpoutChunk c : rended.toArray(new SpoutChunk[rended.size()])){
-							addUpdateToRenderQueue(playerPosition, c, false, false, false);
-
-						}
-					}
-				}
-				
-				SpoutChunk spoutChunk;
-
-				List<SpoutChunk> renderLater = new LinkedList<SpoutChunk>();
-				List<SpoutChunk> couldNotSend = new LinkedList<SpoutChunk>();
-
-				while ((spoutChunk = dirtyChunkQueue.poll()) != null) {
-
-					if (renderQueueEnabled /*&& spoutChunk.isRenderDirty()*/) {
-						if(spoutChunk.isInViewDistance() || (spoutChunk.isRendered() && spoutChunk.leftViewDistance())){
-							if(renderLimit > 0 ){
-								addUpdateToRenderQueue(playerPosition, spoutChunk, spoutChunk.isBlockDirty(), spoutChunk.isLightDirty(), false);
-								renderLimit--;
-							}else{
-								renderLater.add(spoutChunk);
-							}
-						}else{
-							spoutChunk.setRenderDirty(false);
-							spoutChunk.viewDistanceCopy();
-						}
-					}
-
-					if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
-						if (!spoutChunk.canSend()) {
-							couldNotSend.add(spoutChunk);
-						} else {
-							for (Player entity : spoutChunk.getObservingPlayers()) {
-								syncChunkToPlayer(spoutChunk, entity);
-							}
-							processChunkUpdatedEvent(spoutChunk);
-
-							spoutChunk.resetDirtyArrays();
-							spoutChunk.setLightDirty(false);
-						}
-					}
-				}
-				
-				for (SpoutChunk c : couldNotSend) {
-					c.queueDirty();
-				}
-
-				for(SpoutChunk c : renderLater){
+			if (firstRenderQueueTick && player != null) {
+				for( SpoutChunk c : player.getObservingChunks()){
 					c.setRenderDirty(true);
 				}
+				renderQueueEnabled = worldRenderQueueEnabled;
+			}
 
-				SpoutChunkSnapshotFuture snapshotFuture;
-				while ((snapshotFuture = snapshotQueue.poll()) != null) {
-					snapshotFuture.run();
+			if(unloadRenderQueue){
+				for(SpoutChunk c : rended.toArray(new SpoutChunk[rended.size()])){
+					addUpdateToRenderQueue(playerPosition, c, false, false, false);
+
 				}
+			}
+		}
+		
+		SpoutChunk spoutChunk;
 
-				renderSnapshotCacheBoth.clear();
-				renderSnapshotCacheLight.clear();
-				renderSnapshotCacheBlock.clear();
+		List<SpoutChunk> renderLater = new LinkedList<SpoutChunk>();
+		List<SpoutChunk> couldNotSend = new LinkedList<SpoutChunk>();
 
-				for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
-					for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
-						for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
-							SpoutChunk chunk = chunks[dx][dy][dz].get();
-							if (chunk != null) {
-								chunk.updateExpiredObservers();
-							}
-						}
+		while ((spoutChunk = dirtyChunkQueue.poll()) != null) {
+
+			if (renderQueueEnabled /*&& spoutChunk.isRenderDirty()*/) {
+				if(spoutChunk.isInViewDistance() || (spoutChunk.isRendered() && spoutChunk.leftViewDistance())){
+					if(renderLimit > 0 ){
+						addUpdateToRenderQueue(playerPosition, spoutChunk, spoutChunk.isBlockDirty(), spoutChunk.isLightDirty(), false);
+						renderLimit--;
+					}else{
+						renderLater.add(spoutChunk);
+					}
+				}else{
+					spoutChunk.setRenderDirty(false);
+					spoutChunk.viewDistanceCopy();
+				}
+			}
+
+			if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
+				if (!spoutChunk.canSend()) {
+					couldNotSend.add(spoutChunk);
+				} else {
+					for (Player entity : spoutChunk.getObservingPlayers()) {
+						syncChunkToPlayer(spoutChunk, entity);
+					}
+					processChunkUpdatedEvent(spoutChunk);
+
+					spoutChunk.resetDirtyArrays();
+					spoutChunk.setLightDirty(false);
+				}
+			}
+		}
+		
+		for (SpoutChunk c : couldNotSend) {
+			c.queueDirty();
+		}
+
+		for(SpoutChunk c : renderLater){
+			c.setRenderDirty(true);
+		}
+
+		SpoutChunkSnapshotFuture snapshotFuture;
+		while ((snapshotFuture = snapshotQueue.poll()) != null) {
+			snapshotFuture.run();
+		}
+
+		renderSnapshotCacheBoth.clear();
+		renderSnapshotCacheLight.clear();
+		renderSnapshotCacheBlock.clear();
+
+		for (int dx = 0; dx < CHUNKS.SIZE; dx++) {
+			for (int dy = 0; dy < CHUNKS.SIZE; dy++) {
+				for (int dz = 0; dz < CHUNKS.SIZE; dz++) {
+					SpoutChunk chunk = chunks[dx][dy][dz].get();
+					if (chunk != null) {
+						chunk.updateExpiredObservers();
 					}
 				}
+			}
+		}
 
-				entityManager.syncEntities();
-
+		entityManager.syncEntities();
 	}
 
 
