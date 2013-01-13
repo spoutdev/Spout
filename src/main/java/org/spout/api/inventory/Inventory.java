@@ -578,6 +578,19 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
+	 * Checks whether a certain slot can be set to the item specified<br>
+	 * {@link set(i, item)} does not call this method before setting, this method is used
+	 * externally before set is called
+	 * 
+	 * @param i slot to set the item at
+	 * @param item to set in the specified slot
+	 * @return True if the item can be set at the slot, False if not
+	 */
+	public boolean canSet(int i, ItemStack item) {
+		return true;
+	}
+
+	/**
 	 * Replaces the {@link ItemStack} at the specified slot in this inventory
 	 * with the specified ItemStack.
 	 * 
