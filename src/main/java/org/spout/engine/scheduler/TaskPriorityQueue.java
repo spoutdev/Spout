@@ -74,6 +74,11 @@ public class TaskPriorityQueue extends ConcurrentLongPriorityQueue<SpoutTask> {
 		}
 		return super.add(task);
 	}
+		
+	@Override
+	public boolean redirect(SpoutTask task) {
+		return super.add(task);
+	}
 
 	@Override
 	public boolean remove(SpoutTask task) {
