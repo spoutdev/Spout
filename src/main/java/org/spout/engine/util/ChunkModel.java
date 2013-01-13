@@ -28,6 +28,7 @@ package org.spout.engine.util;
 
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.cuboid.Region;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
@@ -125,8 +126,13 @@ public class ChunkModel {
 		} else {
 			// Load chunk using options
 			this.loaded[dx][dy][dz] = true;
-			if (this.centerRegion.containsChunk(cx, cy, cz)) {
+			int rx = cx >> Region.CHUNKS.BITS;
+			int ry = cy >> Region.CHUNKS.BITS;
+			int rz = cz >> Region.CHUNKS.BITS;
+			if (centerRegion.containsChunk(cx, cy, cz)) {
 				return (this.chunks[dx][dy][dz] = this.centerRegion.getChunk(cx, cy, cz, this.loadOption));
+			} else if (Math.abs(centerRegion.getX() - rx) <= 1 && Math.abs(centerRegion.getY() - ry) <= 1 && Math.abs(centerRegion.getZ() - rz) <= 1) {
+				return (this.chunks[dx][dy][dz] = this.centerRegion.getLocalChunk(cx - centerRegion.getChunkX(), cy - centerRegion.getChunkY(), cz - centerRegion.getChunkZ(), this.loadOption));
 			} else {
 				return (this.chunks[dx][dy][dz] = this.world.getChunk(cx, cy, cz, this.loadOption));
 			}

@@ -48,9 +48,9 @@ public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder LIGHTING_ENABLED = new ConfigurationHolder(true, "lightning", "enabled");
 	public static final ConfigurationHolder LIVE_LIGHTING = new ConfigurationHolder(false, "lightning", "live-lighting");
 	// Chunks
-	public static final ConfigurationHolder CHUNK_REAP_DELAY = new ConfigurationHolder(10, "chunks", "reap-delay");
-	public static final ConfigurationHolder REAP_CHUNKS_PER_TICK = new ConfigurationHolder(25, "chunks", "reap-per-tick");
-	public static final ConfigurationHolder UNLOAD_CHUNKS_PER_TICK = new ConfigurationHolder(25, "chunks", "unload-per-tick");
+	public static final ConfigurationHolder CHUNK_REAP_DELAY = new ConfigurationHolder(1, "chunks", "reap-delay");
+	public static final ConfigurationHolder REAP_CHUNKS_PER_TICK = new ConfigurationHolder(50, "chunks", "reap-per-tick");
+	public static final ConfigurationHolder UNLOAD_CHUNKS_PER_TICK = new ConfigurationHolder(50, "chunks", "unload-per-tick");
 	public static final ConfigurationHolder DYNAMIC_BLOCKS = new ConfigurationHolder(true, "chunks", "dynamic-blocks");
 	public static final ConfigurationHolder BLOCK_PHYSICS = new ConfigurationHolder(true, "chunks", "block-physics");	
 	// Messages
