@@ -92,12 +92,18 @@ public class NetworkComponent extends EntityComponent {
 	 */
 	public void callProtocolEvent(ProtocolEvent event, boolean ignoreHolder) {
 		Set<? extends Player> players = getOwner().getChunk().getObservingPlayers();
-		if (getOwner() instanceof Player && ignoreHolder) {
-			if (players.contains(getOwner())) {
-				players.remove(getOwner());
+		Player[] thePlayers;
+		if (getOwner() instanceof Player && ignoreHolder && players.contains(getOwner())) {
+			thePlayers = new Player[players.size() - 1];
+		} else {
+			thePlayers = new Player[players.size()];
+		}
+		int index = 0;
+		for (Player p : players) {
+			if (!ignoreHolder || getOwner() != p) {
+				thePlayers[index++] = p;
 			}
 		}
-		Player[] thePlayers = players.toArray(new Player[players.size()]);
 		callProtocolEvent(event, thePlayers);
 	}
 

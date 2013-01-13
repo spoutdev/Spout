@@ -286,6 +286,7 @@ public abstract class NetworkSynchronizer {
 		activeChunks.clear();
 		initializedChunks.clear();
 		lastChunkCheck = Point.invalid;
+		synchronizedEntities.clear();
 	}
 	
 	private int chunksSent = 0;
