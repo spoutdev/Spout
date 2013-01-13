@@ -295,13 +295,13 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 * stack is empty, or the iteration has ended.
 	 *
 	 * @param firstSlot slot to start iteration at
-	 * @param lastSlot slot to end iteration at
+	 * @param lastSlot slot to end iteration at (inclusive)
 	 * @param item to attempt to add to the inventory
 	 */
 	public void add(int firstSlot, int lastSlot, ItemStack item) {
 		//First pass try to add to existing stacks, second pass, add to empty slots
 		for (int pass = 0; pass < 2; pass++) {
-			for (int index = firstSlot; index < lastSlot; index++) {
+			for (int index = firstSlot; index <= lastSlot; index++) {
 				ItemStack slot = get(index);
 				if (pass == 1) {
 					if (slot == null) {
@@ -628,7 +628,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 */
 	@Override
 	public void add(int i, ItemStack item) {
-		add(i, contents.length, item);
+		add(i, contents.length - 1, item);
 	}
 
 	/**
