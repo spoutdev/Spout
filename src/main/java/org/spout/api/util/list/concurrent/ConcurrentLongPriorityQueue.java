@@ -56,6 +56,20 @@ public class ConcurrentLongPriorityQueue<T extends LongPrioritized> {
 	 * @param o
 	 */
 	public boolean add(T o) {
+		return addRaw(o);
+	}
+	
+	/**
+	 * This method is used to add elements to the queue when redirecting.  It should not be used for other purposes.
+	 * 
+	 * @param e
+	 * @return
+	 */
+	public boolean redirect(T o) {
+		return addRaw(o);
+	}
+	
+	private boolean addRaw(T o) {
 		Long key = getKey(o.getPriority());
 		RedirectableConcurrentLinkedQueue<T> queue = queueMap.get(key);
 		if (queue == null) {
@@ -66,16 +80,6 @@ public class ConcurrentLongPriorityQueue<T extends LongPrioritized> {
 			}
 		}
 		return queue.add(o);
-	}
-	
-	/**
-	 * This method is used to add elements to the queue when redirecting.  It should not be used for other purposed.
-	 * 
-	 * @param e
-	 * @return
-	 */
-	public boolean redirect(T o) {
-		return add(o);
 	}
 	
 	/**
