@@ -26,19 +26,12 @@
  */
 package org.spout.engine.entity.component;
 
-import java.nio.FloatBuffer;
-
-import org.lwjgl.BufferUtils;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.component.impl.ModelComponent;
 import org.spout.api.component.impl.PredictableTransformComponent;
 import org.spout.api.component.type.EntityComponent;
-import org.spout.api.event.entity.AnimationEndEvent;
-import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
-import org.spout.api.model.animation.Animation;
-import org.spout.api.model.animation.Skeleton;
 import org.spout.api.model.mesh.Mesh;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
@@ -46,34 +39,9 @@ import org.spout.api.render.effect.SnapshotEntity;
 import org.spout.engine.mesh.BaseMesh;
 
 public class EntityRendererComponent extends EntityComponent {
-	
-	public Animation animation = null;
-	public boolean loop = false;
-	public int currentFrame = 0;
-	public float currentTime = 0;
-	
-	public float rot = 0f;
 
-	//TODO : Move it in SpoutAPI, make a AnimationComponent ?
-	public void playAnimation(Animation animation){
-		playAnimation(animation,false);
-	}
+	private SpoutAnimationComponent animation;
 	
-	public void playAnimation(Animation animation, boolean loop){
-		//TODO : Maybe check if the animation is compatible with the skeletin of this model
-		//TODO : Maybe make real sync to avoid error with render
-		
-		currentFrame = 0;
-		currentTime = 0;
-		currentFrame = 0;
-		this.loop = loop;
-		this.animation = animation; // Finish by set of the animation to avoid NPE
-	}
-	
-	@Override
-	public void onAttached() {
-	}
-
 	private void batch(){
 		ModelComponent model = getOwner().get(ModelComponent.class);
 
@@ -90,91 +58,20 @@ public class EntityRendererComponent extends EntityComponent {
 			return;
 		}
 
-		Skeleton skeleton = model.getModel().getSkeleton();
+		animation = getOwner().get(SpoutAnimationComponent.class);
 
-		//TODO : In progress !
-		if (skeleton != null) {
-			System.out.println("Buffering skeleton");
-			FloatBuffer boneIdBuffer = BufferUtils.createFloatBuffer(mesh.getContainer().element * skeleton.getBonePerVertice());
-			FloatBuffer weightBuffer = BufferUtils.createFloatBuffer(mesh.getContainer().element * skeleton.getBonePerVertice());
-
-			if (skeleton.getBonePerVertice() > skeleton.getBonePerVertice()) {
-				System.out.println("Number of bone per vertice limited ! ");
-			}
-
-			boneIdBuffer.clear();
-			weightBuffer.clear();
-
-			//For each vertice
-			for (int i = 0; i < mesh.getContainer().element; i++) {
-
-				//Get the vertice id in the .obj/.ske referential
-				int vertexId = mesh.getContainer().getVerticeIndex()[i] - 1;
-
-				if (vertexId >= skeleton.getVerticeArray().size()) {
-					System.out.println("Depassement");
-					continue;
-				}
-
-				int j = 0;
-				//For each registred bone associated with this vertice, add it in buffer
-				for (; j < skeleton.getVerticeArray().get(vertexId).size(); j++) {
-					boneIdBuffer.put(skeleton.getVerticeArray().get(vertexId).get(j));
-					weightBuffer.put(skeleton.getWeightArray().get(vertexId).get(j));
-				}
-				//Full the buffer for the number of vertice
-				for (; j < skeleton.getBonePerVertice(); j++) {
-					boneIdBuffer.put(-1);
-					weightBuffer.put(-1);
-				}
-				//System.out.println("Taille : "+j );
-			}
-
-			boneIdBuffer.flip();
-			weightBuffer.flip();
-
-			mesh.getContainer().setBuffers(4, weightBuffer);
-			mesh.getContainer().setBuffers(5, boneIdBuffer);
-			System.out.println("Buffering skeleton SUCCESS");
+		if(animation != null){
+			animation.batchSkeleton(mesh);
 		}
 
 		mesh.batch();
 	}
-	
-	private void updateAnimation(float dt){
-		if (animation == null)
-			return;
-		
-		currentTime += dt;
-		
-		currentFrame = (int) (currentTime / animation.getDelay());
-		
-		if(currentFrame >= animation.getFrame()){ //Loop
-			if(!loop){
-				
-				//TODO : Send a AnimationEndEvent is the loop is enabled ?
-				
-				Animation a = animation;
-				
-				animation = null;
-				
-				if (AnimationEndEvent.getHandlerList().getRegisteredListeners().length != 0) {
-					Spout.getEventManager().callEvent(new AnimationEndEvent(getOwner(),a));
-				}
-			}
-			currentTime = 0;
-			currentFrame = 0;
-		}
-		
-		//TODO : Send a animation finish event.
-		//TODO : Loop on animation if wanted
-	}
-	
+
 	public void update(float dt) {
-		
 		batch(); //TODO : Call the batch method one time when the render start
-		
-		updateAnimation(dt);
+
+		if(animation != null)
+			animation.updateAnimation(dt);
 	}
 
 	public void render() {
@@ -184,7 +81,7 @@ public class EntityRendererComponent extends EntityComponent {
 		if (model == null || model.getModel() == null) {
 			return;
 		}
-		
+
 		BaseMesh mesh = (BaseMesh) model.getModel().getMesh();
 
 		if (mesh == null) {
@@ -197,22 +94,9 @@ public class EntityRendererComponent extends EntityComponent {
 		mat.getShader().setUniform("View", camera.getView());
 		mat.getShader().setUniform("Projection", camera.getProjection());
 		mat.getShader().setUniform("Model", modelMatrix);
-		Skeleton skeleton = model.getModel().getSkeleton();
-		if (skeleton != null) {
-			Matrix[] matrices = new Matrix[model.getModel().getSkeleton().getBoneSize()];
-		
-			if(animation != null){
-				for (int i = 0; i < matrices.length; i++) {
-					matrices[i] = new Matrix(4, animation.getBoneTransform(i, currentFrame).getMatrix());
-				}
-			}else{
-				for (int i = 0; i < matrices.length; i++) {
-					matrices[i] = MathHelper.rotateX(rot);
-				}
-				rot += 0.1f;
-			}
 
-			mat.getShader().setUniform("bone_matrix", matrices);
+		if(animation != null){
+			animation.render();
 		}
 
 		SnapshotEntity snap = new SnapshotEntity(mat, getOwner());

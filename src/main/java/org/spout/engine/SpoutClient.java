@@ -55,6 +55,7 @@ import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
+import org.spout.api.component.impl.AnimationComponent;
 import org.spout.api.component.impl.CameraComponent;
 import org.spout.api.component.impl.HitBlockComponent;
 import org.spout.api.component.impl.ModelComponent;
@@ -187,13 +188,14 @@ public class SpoutClient extends SpoutEngine implements Client {
 				
 				//Animation part
 				EntityRendererComponent renderComponent = e.get(EntityRendererComponent.class);
+				AnimationComponent animationComponent = e.get(AnimationComponent.class);
 				ModelComponent model = e.get(ModelComponent.class);
 				
 				Animation a1 = model.getModel().getAnimations().get("animatest1");
 				Animation a2 = model.getModel().getAnimations().get("animatest2");
 
 				//Launch first animation
-				renderComponent.playAnimation(a1,true);
+				animationComponent.playAnimation(a1,true);
 				
 				ClientTextModelComponent tmc = e.add(ClientTextModelComponent.class);
 				tmc.setText(new ChatArguments(ChatStyle.BLUE, "Sp", ChatStyle.WHITE, "ou", ChatStyle.RED, "ty"));
