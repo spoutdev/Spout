@@ -244,6 +244,27 @@ public class CommandContext {
 		}
 	}
 
+	
+	public double getFloat(int index) throws NumberFormatException {
+		return Float.parseFloat(getString(index));
+	}
+
+	public double getFloat(int index, double def) throws NumberFormatException {
+		return index < parsedArgs.size() ? Float.parseFloat(parsedArgs.get(index).getPlainString()) : def;
+	}
+
+	public boolean isFloat(int index) {
+		if (index >= parsedArgs.size()) {
+			return false;
+		}
+		try {
+			Float.parseFloat(parsedArgs.get(index).getPlainString());
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
+	
 	public ChatSection get(int index) {
 		return parsedArgs.get(index);
 	}
