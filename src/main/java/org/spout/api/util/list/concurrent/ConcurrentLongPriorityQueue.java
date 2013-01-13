@@ -65,8 +65,17 @@ public class ConcurrentLongPriorityQueue<T extends LongPrioritized> {
 				queue = previous;
 			}
 		}
-		queue.add(o);
-		return true;
+		return queue.add(o);
+	}
+	
+	/**
+	 * This method is used to add elements to the queue when redirecting.  It should not be used for other purposed.
+	 * 
+	 * @param e
+	 * @return
+	 */
+	public boolean redirect(T o) {
+		return add(o);
 	}
 	
 	/**

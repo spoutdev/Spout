@@ -52,7 +52,7 @@ public class RedirectableConcurrentLinkedQueue<T extends LongPrioritized> extend
 	public void dumpToRedirect(ConcurrentLongPriorityQueue<T> target) {
 		T next;
 		while ((next = poll()) != null) {
-			target.add(next);
+			target.redirect(next);
 		}
 	}
 	
