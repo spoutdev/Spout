@@ -245,11 +245,11 @@ public class CommandContext {
 	}
 
 	
-	public double getFloat(int index) throws NumberFormatException {
+	public float getFloat(int index) throws NumberFormatException {
 		return Float.parseFloat(getString(index));
 	}
 
-	public double getFloat(int index, double def) throws NumberFormatException {
+	public float getFloat(int index, float def) throws NumberFormatException {
 		return index < parsedArgs.size() ? Float.parseFloat(parsedArgs.get(index).getPlainString()) : def;
 	}
 
