@@ -28,45 +28,43 @@ package org.spout.api.generator.biome;
 
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.geo.cuboid.Region;
 
 /**
  * Wraps multiple BiomeManagers into a single BiomeManager
  */
 public class WrappedBiomeManager extends BiomeManager {
-	
-	private final int BLOCK_MASK = Chunk.BLOCKS.MASK;
-	private final int BLOCK_BITS = Chunk.BLOCKS.BITS;
-	
 	private final BiomeManager[][] subManagers;
-	
-	public WrappedBiomeManager(World world, int bx, int bz, boolean load) {
-		super(bx, bz);
-		subManagers = new BiomeManager[Region.CHUNKS.SIZE][Region.CHUNKS.SIZE];
-		int xx = 0;
-		for (int x = 0; x < Region.CHUNKS.SIZE; x++) {
-			int zz = 0;
-			for (int z = 0; z < Region.CHUNKS.SIZE; z++) {
-				subManagers[x][z] = world.getBiomeManager(xx + bx, zz + bz, load);
-				zz += Chunk.BLOCKS.SIZE;
+
+	/**
+	 * Construct a new WrappedBiomeManager which will wrap biome managers on
+	 * plane starting at (x, z) and ending at (x + sizeX, z + sizeZ). All
+	 * coordinates are in chunks.
+	 *
+	 * @param world The world which will provide the biome data.
+	 * @param x The starting x coordinate in chunks.
+	 * @param z The starting z coordinate in chunks.
+	 * @param sizeX The size on x in chunks.
+	 * @param sizeZ The size on z in chunks.
+	 * @param load Allow or disallow necessary loading.
+	 */
+	public WrappedBiomeManager(World world, int x, int z, int sizeX, int sizeZ, boolean load) {
+		super(x, z);
+		subManagers = new BiomeManager[sizeX][sizeZ];
+		for (int xx = 0; xx < sizeX; xx++) {
+			for (int zz = 0; zz < sizeZ; zz++) {
+				subManagers[xx][zz] = world.getBiomeManager(x + xx << Chunk.BLOCKS.BITS,
+						z + zz << Chunk.BLOCKS.BITS, load);
 			}
-			xx += Chunk.BLOCKS.SIZE;
 		}
 	}
 
 	@Override
 	public Biome getBiome(int x, int y, int z) {
-		int bx = x & BLOCK_MASK;
-		int cx = (x >> BLOCK_BITS);
-		
-		int bz = z & BLOCK_MASK;
-		int cz = (z >> BLOCK_BITS);
-		
-		BiomeManager bm = subManagers[cx][cz];
+		final BiomeManager bm = subManagers[x >> Chunk.BLOCKS.BITS][z >> Chunk.BLOCKS.BITS];
 		if (bm == null) {
 			return null;
 		}
-		return bm.getBiome(bx, y, bz);
+		return bm.getBiome(x & Chunk.BLOCKS.MASK, y, z & Chunk.BLOCKS.MASK);
 	}
 
 	@Override
@@ -76,12 +74,11 @@ public class WrappedBiomeManager extends BiomeManager {
 
 	@Override
 	public void deserialize(byte[] bytes) {
-		throw new UnsupportedOperationException();		
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public BiomeManager clone() {
 		throw new UnsupportedOperationException();
 	}
-
 }

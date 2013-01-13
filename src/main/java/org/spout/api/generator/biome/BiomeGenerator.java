@@ -29,15 +29,15 @@ package org.spout.api.generator.biome;
 import java.util.ArrayList;
 import java.util.Set;
 
+import com.google.common.collect.Lists;
+
 import org.spout.api.generator.GeneratorPopulator;
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.geo.cuboid.Region;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
-
-import com.google.common.collect.Lists;
+import org.spout.api.math.Vector3;
 
 /**
  * Abstract Biome Column Generator.
@@ -60,7 +60,7 @@ public abstract class BiomeGenerator implements WorldGenerator {
 	/**
 	 * Called during biome generator's construction phase
 	 */
-	public abstract void registerBiomes();
+	protected abstract void registerBiomes();
 
 	protected void setSelector(BiomeSelector selector) {
 		biomes.setSelector(selector);
@@ -84,15 +84,25 @@ public abstract class BiomeGenerator implements WorldGenerator {
 		final int x = chunkX << Chunk.BLOCKS.BITS;
 		final int y = chunkY << Chunk.BLOCKS.BITS;
 		final int z = chunkZ << Chunk.BLOCKS.BITS;
-		final long seed = world.getSeed();
 		final BiomeManager manager;
-		if (blockData.getSize().getFloorX() == Chunk.BLOCKS.SIZE && blockData.getSize().getFloorZ() == Chunk.BLOCKS.SIZE) {
+		if (blockData.getSize().getFloorX() <= Chunk.BLOCKS.SIZE
+				&& blockData.getSize().getFloorZ() <= Chunk.BLOCKS.SIZE) {
 			manager = world.getBiomeManager(x, z, true);
-		} else if (blockData.getSize().getFloorX() == Region.BLOCKS.SIZE && blockData.getSize().getFloorZ() == Region.BLOCKS.SIZE) {
-			manager = new WrappedBiomeManager(world, x, z, true);
 		} else {
-			throw new IllegalArgumentException("Cuboid buffer must either be a single column or an entire region");
+			final Vector3 size = blockData.getSize();
+			final int xSize = size.getFloorX();
+			final int zSize = size.getFloorZ();
+			int xChunkSize = xSize >> Chunk.BLOCKS.BITS;
+			int zChunkSize = zSize >> Chunk.BLOCKS.BITS;
+			if (xSize % Chunk.BLOCKS.SIZE > 0) {
+				xChunkSize++;
+			}
+			if (zSize % Chunk.BLOCKS.SIZE > 0) {
+				zChunkSize++;
+			}
+			manager = new WrappedBiomeManager(world, chunkX, chunkZ, xChunkSize, zChunkSize, true);
 		}
+		final long seed = world.getSeed();
 		generateTerrain(blockData, x, y, z, manager, seed);
 		for (GeneratorPopulator generatorPopulator : generatorPopulators) {
 			generatorPopulator.populate(blockData, x, y, z, manager, seed);

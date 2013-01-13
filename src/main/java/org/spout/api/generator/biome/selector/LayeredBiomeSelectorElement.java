@@ -24,45 +24,13 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.generator.biome;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-
-import org.spout.api.generator.biome.selector.LayeredBiomeSelectorElement;
-import org.spout.api.geo.cuboid.Chunk;
+package org.spout.api.generator.biome.selector;
 
 /**
- * Defines an abstract biome.
+ * Represents an element of
+ * {@link org.spout.api.generator.biome.selector.LayeredBiomeSelector}, which is
+ * either a {@link org.spout.api.generator.biome.Biome} or a
+ * {@link BiomeSelectorLayer}.
  */
-public abstract class Biome implements LayeredBiomeSelectorElement {
-	private int id;
-	private boolean registered = false;
-	List<Decorator> decorators = new ArrayList<Decorator>();
-
-	public Biome(Decorator... decorators) {
-		this.decorators.addAll(Arrays.asList(decorators));
-		BiomeRegistry.register(this);
-	}
-
-	public final void decorate(Chunk chunk, Random random) {
-		for (Decorator b : decorators) {
-			b.populate(chunk, random);
-		}
-	}
-
-	protected final void setId(int id) {
-		if (!registered) {
-			this.id = id;
-			registered = true;
-		}
-	}
-
-	public final int getId() {
-		return id;
-	}
-
-	public abstract String getName();
+public interface LayeredBiomeSelectorElement {
 }
