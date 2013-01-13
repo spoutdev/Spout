@@ -24,52 +24,22 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.generator;
-
-import org.spout.api.geo.World;
+package org.spout.api.generator.biome.selector;
 
 /**
- * Represents an Object for a WorldGenerator
+ * A layer of a {@link LayeredBiomeSelector}.
  */
-public abstract class WorldGeneratorObject {
+public interface BiomeSelectorLayer extends LayeredBiomeSelectorElement {
 	/**
-	 * Verify if the object can be placed at the given coordinates.
+	 * Picks and returns a {@link LayeredBiomeSelectorElement} from the seed and
+	 * coordinates.
 	 *
-	 * @param w The world w.
 	 * @param x The x coordinate.
 	 * @param y The y coordinate.
 	 * @param z The z coordinate.
-	 * @return true if the object can be placed, false if it can't.
+	 * @param seed The seed from which should be used to determine what element
+	 * to pick.
+	 * @return The picked {@link LayeredBiomeSelectorElement}.
 	 */
-	public abstract boolean canPlaceObject(World w, int x, int y, int z);
-
-	/**
-	 * Place this object into the world at the given coordinates.
-	 *
-	 * @param w The world w.
-	 * @param x The x coordinate.
-	 * @param y The y coordinate.
-	 * @param z The z coordinate.
-	 */
-	public abstract void placeObject(World w, int x, int y, int z);
-
-	/**
-	 * Attempts placement of this object into the world at the given
-	 * coordinates. The attempt will fail if
-	 * {@link #canPlaceObject(org.spout.api.geo.World, int, int, int)} returns
-	 * false.
-	 *
-	 * @param w The world w.
-	 * @param x The x coordinate.
-	 * @param y The y coordinate.
-	 * @param z The z coordinate.
-	 * @return True if the object was placed, false if otherwise.
-	 */
-	public boolean tryPlaceObject(World w, int x, int y, int z) {
-		if (canPlaceObject(w, x, y, z)) {
-			placeObject(w, x, y, z);
-			return true;
-		}
-		return false;
-	}
+	public LayeredBiomeSelectorElement pick(int x, int y, int z, long seed);
 }
