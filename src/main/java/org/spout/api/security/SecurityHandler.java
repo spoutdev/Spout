@@ -249,11 +249,14 @@ public class SecurityHandler {
 	
 	private SecureRandom getSecureRandom(String RNGAlgorithm, String RNGProvider) {
 		try {
+			SecureRandom r;
 			if (RNGProvider != null) {
-				return SecureRandom.getInstance(RNGAlgorithm, RNGProvider);
+				r = SecureRandom.getInstance(RNGAlgorithm, RNGProvider);
 			} else {
-				return SecureRandom.getInstance(RNGAlgorithm);
+				r = SecureRandom.getInstance(RNGAlgorithm);
 			}
+			r.nextBytes(new byte[1]);
+			return r;
 		} catch (NoSuchProviderException e) {	
 			//Fallback to any provider for the algorithm
 			return getSecureRandom(RNGAlgorithm, null);
