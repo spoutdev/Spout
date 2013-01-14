@@ -29,11 +29,11 @@ package org.spout.api.resource;
 import org.spout.api.model.Model;
 
 public class SpoutModels {
-	public static final ResourcePointer<Model> DEFAULT_MODEL = new ResourcePointer<Model>("model://Spout/models/unknownblock.spm");
-	public static final ResourcePointer<Model> SOLID_BLUE = new ResourcePointer<Model>("model://Spout/models/solidBlue.spm");
-	public static final ResourcePointer<Model> SOLID_BROWN = new ResourcePointer<Model>("model://Spout/models/solidBrown.spm");
-	public static final ResourcePointer<Model> SOLID_GREEN = new ResourcePointer<Model>("model://Spout/models/solidGreen.spm");
-	public static final ResourcePointer<Model> SOLID_LIGHTGREEN = new ResourcePointer<Model>("model://Spout/models/solidLightGreen.spm");
-	public static final ResourcePointer<Model> SOLID_RED = new ResourcePointer<Model>("model://Spout/models/solidRed.spm");
-	public static final ResourcePointer<Model> SOLID_SKYBLUE = new ResourcePointer<Model>("model://Spout/models/solidSkyBlue.spm");
+	public static final String DEFAULT_MODEL = "model://Spout/models/unknownblock.spm";
+	public static final String SOLID_BLUE = "model://Spout/models/solidBlue.spm";
+	public static final String SOLID_BROWN = "model://Spout/models/solidBrown.spm";
+	public static final String SOLID_GREEN = "model://Spout/models/solidGreen.spm";
+	public static final String SOLID_LIGHTGREEN = "model://Spout/models/solidLightGreen.spm";
+	public static final String SOLID_RED = "model://Spout/models/solidRed.spm";
+	public static final String SOLID_SKYBLUE = "model://Spout/models/solidSkyBlue.spm";
 }

@@ -27,12 +27,10 @@
 package org.spout.api.material.basic;
 
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.model.Model;
-import org.spout.api.resource.ResourcePointer;
 
 public class BasicSolid extends BlockMaterial {
 
-	public BasicSolid(String name, ResourcePointer<Model> model) {
+	public BasicSolid(String name, String model) {
 		super((short)0, name, model);		
 		
 		setHardness(100);

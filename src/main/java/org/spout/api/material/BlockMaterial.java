@@ -48,7 +48,6 @@ import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
-import org.spout.api.resource.ResourcePointer;
 import org.spout.api.resource.SpoutModels;
 import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.api.util.flag.Flag;
@@ -75,14 +74,14 @@ public class BlockMaterial extends Material implements Placeable {
 
 	private final CollisionObject collisionObject = new CollisionObject();
 
-	public BlockMaterial(short dataMask, String name, ResourcePointer<Model> model){
+	public BlockMaterial(short dataMask, String name, String model){
 		super(dataMask, name, model);
 		collisionObject.setCollisionShape(new BoxShape(1F, 1F, 1F));
 		collisionObject.setRestitution(0f);
 		collisionObject.setFriction(1f);
 	}
 
-	public BlockMaterial(String name, int data, Material parent, ResourcePointer<Model> model) {
+	public BlockMaterial(String name, int data, Material parent, String model) {
 		super(name, data, parent, model);
 		collisionObject.setCollisionShape(new BoxShape(1F, 1F, 1F));
 		collisionObject.setRestitution(0f);
