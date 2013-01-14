@@ -1,4 +1,4 @@
-Shader: shader://Spout/shaders/bones/bones.ssf
+Shader: shader://Spout/shaders/bones2b2a/bones.ssf
 
 MaterialParams:
     Diffuse: texture://Spout/entities/Spouty/spouty.png
