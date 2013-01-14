@@ -64,6 +64,7 @@ import org.spout.engine.entity.component.EntityRendererComponent;
 import org.spout.engine.input.SpoutInputManager;
 import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
+import org.spout.engine.renderer.EntityRenderer;
 import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.resources.ClientFont;
 import org.spout.engine.resources.ClientRenderMaterial;
@@ -83,6 +84,7 @@ public class SpoutRenderer {
 	private boolean ccoverride = false;
 	private Vector2 resolution = new Vector2(1024, 768);
 	private float aspectRatio = resolution.getX() / resolution.getY();
+	private EntityRenderer entityRenderer;
 	private WorldRenderer worldRenderer;
 	private boolean wireframe = false;
 
@@ -95,6 +97,8 @@ public class SpoutRenderer {
 		mainScreen.setTakesInput(false);
 		screenStack = new ScreenStack(mainScreen);
 
+		entityRenderer = new EntityRenderer();
+		
 		this.ccoverride = ccoverride;
 	}
 
@@ -195,17 +199,7 @@ public class SpoutRenderer {
 
 		worldRenderer.render();
 
-		//TODO Remove this when we use SpoutClientWorld
-		//		SpoutSnapshotLock lock = (SpoutSnapshotLock) client.getScheduler().getSnapshotLock();
-		//		lock.coreReadLock("Render Thread - Render Entities");
-		for (Entity e : client.getActiveWorld().getAll()) {
-			EntityRendererComponent r = e.get(EntityRendererComponent.class);
-			if (r != null) {
-				r.update(dt);
-				r.render();
-			}
-		}
-		//		lock.coreReadUnlock("Render Thread - Render Entities");
+		entityRenderer.render(dt);
 
 		if (wireframe) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
