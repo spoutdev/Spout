@@ -1634,12 +1634,11 @@ public class MathHelper {
 		
 		protected Random initialValue() {
 			// Overkill, since only a standard Random is used after seeding
-			long hash = HASH_SEED;
 			byte[] arr = SecureRandom.getSeed(8);
 			for (int i = 0; i < 8; i++) {
-				hash = hash << 8 | (arr[i] & 0xFFL);
+				hash = (hash << 8) | (arr[i] & 0xFFL);
 			}
-			return new Random(hash);
+			return new Random(hash ^ HASH_SEED);
 		}
 	};
 	
