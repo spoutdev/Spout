@@ -36,6 +36,7 @@ import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
 import org.spout.api.data.ValueHolder;
+import org.spout.api.event.player.PlayerChatEvent;
 import org.spout.api.geo.World;
 import org.spout.api.lang.Locale;
 
@@ -46,7 +47,7 @@ import org.spout.engine.SpoutEngine;
  * An implementation of CommandSource that sends to and receives from various consoles.
  */
 public class ConsoleCommandSource implements CommandSource {
-	private final AtomicReference<ChatChannel> activeChannel = new AtomicReference<ChatChannel>(Engine.STANDARD_BROADCAST_CHANNEL);
+	private final AtomicReference<ChatChannel> activeChannel = new AtomicReference<ChatChannel>(PlayerChatEvent.CHAT_SEND_CHANNEL);
 	private final SpoutEngine engine;
 	private Locale preferredLocale = null;
 

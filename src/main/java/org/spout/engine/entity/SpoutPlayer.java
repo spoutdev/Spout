@@ -49,6 +49,7 @@ import org.spout.api.entity.Player;
 import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.event.entity.EntityHiddenEvent;
 import org.spout.api.event.entity.EntityShownEvent;
+import org.spout.api.event.player.PlayerChatEvent;
 import org.spout.api.event.server.PreCommandEvent;
 import org.spout.api.event.server.RetrieveDataEvent;
 import org.spout.api.event.server.permissions.PermissionGroupsEvent;
@@ -83,7 +84,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	private PlayerInputState inputState = PlayerInputState.DEFAULT_STATE;
 	private Locale preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
 	private List<Entity> hiddenEntities = new ConcurrentList<Entity>();
-	private final AtomicReference<ChatChannel> activeChannel = new AtomicReference<ChatChannel>(Engine.STANDARD_BROADCAST_CHANNEL);
+	private final AtomicReference<ChatChannel> activeChannel = new AtomicReference<ChatChannel>(PlayerChatEvent.CHAT_SEND_CHANNEL);
 
 	public SpoutPlayer(String name) {
 		this(name, null, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
