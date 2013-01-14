@@ -41,8 +41,6 @@ import org.spout.api.event.HandlerList;
  */
 public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	public static final Placeholder NAME = new Placeholder("name"), MESSAGE = new Placeholder("message");
-	public static final String CHAT_SEND_PERMISSION = "spout.chat.send";
-	public static final ChatChannel CHAT_SEND_CHANNEL = new PermissionChatChannel("Chat", CHAT_SEND_PERMISSION);
 
 	private static final HandlerList handlers = new HandlerList();
 	private ChatArguments message;

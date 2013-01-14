@@ -38,6 +38,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.group.ChannelGroup;
 
 import org.spout.api.chat.channel.ChatChannel;
+import org.spout.api.chat.channel.ChatChannelFactory;
 import org.spout.api.chat.channel.PermissionChatChannel;
 import org.spout.api.chat.completion.CompletionManager;
 import org.spout.api.chat.console.MultiConsole;
@@ -516,4 +517,19 @@ public interface Engine extends Named {
 	 * @return The default permissions handler
 	 */
 	public DefaultPermissions getDefaultPermissions();
+
+	/**
+	 * Return the engine's chat channel factory.
+	 * This is used to create the default chat channel for in-engine command sources.
+	 *
+	 * @return The channel factory
+	 */
+	public ChatChannelFactory getChatChannelFactory();
+
+	/**
+	 * Set the new factory for the server's chat channels
+	 *
+	 * @param factory The factory to set
+	 */
+	public void setChatChannelFactory(ChatChannelFactory factory);
 }
