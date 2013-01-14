@@ -1634,6 +1634,7 @@ public class MathHelper {
 		
 		protected Random initialValue() {
 			// Overkill, since only a standard Random is used after seeding
+			long hash = 0L;
 			byte[] arr = SecureRandom.getSeed(8);
 			for (int i = 0; i < 8; i++) {
 				hash = (hash << 8) | (arr[i] & 0xFFL);
