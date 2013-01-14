@@ -56,6 +56,7 @@ import org.jboss.netty.channel.group.ChannelGroupFuture;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
+import org.spout.api.chat.channel.ChatChannelFactory;
 import org.spout.api.chat.completion.CompletionManager;
 import org.spout.api.chat.completion.CompletionManagerImpl;
 import org.spout.api.chat.console.MultiConsole;
@@ -98,6 +99,7 @@ import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.StringUtil;
+import org.spout.engine.chat.SpoutChatChannelFactory;
 import org.spout.engine.chat.console.ConsoleManager;
 import org.spout.engine.chat.console.JLineConsole;
 import org.spout.engine.chat.console.NonClosingFileConsole;
@@ -166,6 +168,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private SpoutApplication arguments;
 	private MemoryReclamationThread reclamation = null;
 	private DefaultPermissions defaultPerms;
+	private ChatChannelFactory chatChannelFactory = new SpoutChatChannelFactory();
 
 	public SpoutEngine() {
 		super(1, new ThreadAsyncExecutor("Engine bootstrap thread"));
@@ -801,7 +804,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	public StringMap getEngineItemMap() {
 		return engineItemMap;
 	}
-	
+
 	/**
 	 * Gets the lighting map used across all worlds on the engine
 	 * @return engine map
@@ -853,6 +856,16 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 
 	public DefaultPermissions getDefaultPermissions() {
 		return defaultPerms;
+	}
+
+	@Override
+	public ChatChannelFactory getChatChannelFactory() {
+		return chatChannelFactory;
+	}
+
+	@Override
+	public void setChatChannelFactory(ChatChannelFactory factory) {
+		this.chatChannelFactory = factory;
 	}
 
 	private class SessionTask implements Runnable {

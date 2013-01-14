@@ -84,7 +84,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	private PlayerInputState inputState = PlayerInputState.DEFAULT_STATE;
 	private Locale preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
 	private List<Entity> hiddenEntities = new ConcurrentList<Entity>();
-	private final AtomicReference<ChatChannel> activeChannel = new AtomicReference<ChatChannel>(PlayerChatEvent.CHAT_SEND_CHANNEL);
+	private final AtomicReference<ChatChannel> activeChannel = new AtomicReference<ChatChannel>();
 
 	public SpoutPlayer(String name) {
 		this(name, null, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
@@ -100,6 +100,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		displayName.set(name);
 		hashcode = name.hashCode();
 		this.setObserver(true);
+		activeChannel.set(Spout.getEngine().getChatChannelFactory().create(this));
 	}
 
 	@Override
