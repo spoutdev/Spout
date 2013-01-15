@@ -120,6 +120,18 @@ public abstract class CuboidBuffer {
 	}
 
 	/**
+	 * Return true if the coordinates are inside the buffer.
+	 *
+	 * @param x The x coordinate to check.
+	 * @param y The y coordinate to check.
+	 * @param z The Z coordinate to check.
+	 * @return True if the coordinate are in the buffer, false if not.
+	 */
+	public boolean isInside(int x, int y, int z) {
+		return getIndex(x, y, z) >= 0;
+	}
+
+	/**
 	 * Copies the data contained within the given CuboidShortBuffer to this one.
 	 * Any non-overlapping locations are ignored
 	 *
