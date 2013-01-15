@@ -45,7 +45,9 @@ import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
+import org.spout.api.component.impl.AnimationComponent;
 import org.spout.api.component.impl.HitBlockComponent;
+import org.spout.api.component.impl.ModelComponent;
 import org.spout.api.component.impl.PhysicsComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
@@ -54,6 +56,8 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.model.animation.Animation;
+import org.spout.api.model.animation.Skeleton;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 
@@ -324,6 +328,93 @@ public class TestCommands {
 		Spout.log("Entity " + id + " scale to " + x + " " + y + " " +z);
 	}
 
+	@Command(aliases = {"animstart"}, desc = "Launch a animation his Id", min = 2, max = 3)
+	public void playAnimation(CommandContext args, CommandSource source) throws CommandException {
+		SpoutPlayer player;
+		if (!(source instanceof Player)) {
+			if (Spout.getPlatform() == Platform.CLIENT) {
+				player = ((SpoutClient) engine).getActivePlayer();
+			} else {
+				player = (SpoutPlayer) source;
+			}
+		} else {
+			throw new CommandException("Can only run this as a player!");
+		}
+
+		int id = args.getInteger(0);
+
+		Entity e = player.getWorld().getEntity(id);
+		
+		if(e == null){
+			Spout.log("Entity not found");
+			return;
+		}
+		
+		ModelComponent model = e.get(ModelComponent.class);
+		
+		if(model == null){
+			Spout.log("No model on this entity");
+			return;
+		}
+
+		Skeleton skeleton = model.getModel().getSkeleton();
+
+		if(skeleton == null){
+			Spout.log("No skeleton on this entity");
+			return;
+		}
+
+		Animation animation = model.getModel().getAnimations().get(args.getString(1));
+		
+		if(animation == null){
+			Spout.log("No animation with " + args.getString(1) + ", see the list :");
+			for(String a : model.getModel().getAnimations().keySet()){
+				Spout.log(a);
+			}
+			return;
+		}
+		
+		AnimationComponent ac = e.get(AnimationComponent.class);
+
+		ac.playAnimation(animation, args.length() > 2 ? args.getString(2).equalsIgnoreCase("on") : false);
+		
+		Spout.log("Entity " + id + " play " + animation.getName());
+	}
+	
+	@Command(aliases = {"animstop"}, desc = "Stop all animation on a entity", min = 1, max = 1)
+	public void stopAnimation(CommandContext args, CommandSource source) throws CommandException {
+		SpoutPlayer player;
+		if (!(source instanceof Player)) {
+			if (Spout.getPlatform() == Platform.CLIENT) {
+				player = ((SpoutClient) engine).getActivePlayer();
+			} else {
+				player = (SpoutPlayer) source;
+			}
+		} else {
+			throw new CommandException("Can only run this as a player!");
+		}
+
+		int id = args.getInteger(0);
+
+		Entity e = player.getWorld().getEntity(id);
+		
+		if(e == null){
+			Spout.log("Entity not found");
+			return;
+		}
+		
+		AnimationComponent ac = e.get(AnimationComponent.class);
+		
+		if(ac == null){
+			Spout.log("No AnimationComponent on this entity");
+			return;
+		}
+
+		ac.stopAnimations();
+		
+		Spout.log("Entity " + id + " animation stopped ");
+	}
+	
 	/**
 	 * Replaces chars which are not allowed in filenames on windows with "-".
 	 */
