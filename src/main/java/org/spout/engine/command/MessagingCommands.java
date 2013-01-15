@@ -59,7 +59,7 @@ public class MessagingCommands {
 	public class SayCommand {
 		public SayCommand() {
 			engine.getDefaultPermissions().addDefaultPermission("spout.chat.send");
-			engine.getDefaultPermissions().addDefaultPermission("spout.chat.receive");
+			engine.getDefaultPermissions().addDefaultPermission("spout.chat.receive.*");
 		}
 
 		@Executor(Platform.SERVER)
