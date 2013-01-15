@@ -28,13 +28,34 @@ package org.spout.api.component.impl;
 
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.model.animation.Animation;
+import org.spout.api.model.animation.AnimationPlayed;
 
 public abstract class AnimationComponent extends EntityComponent {
 	
-	public abstract void playAnimation(Animation animation);
+	/**
+	 * Send a animation to play once time
+	 * @param animation
+	 * @return
+	 */
+	public abstract AnimationPlayed playAnimation(Animation animation);
 	
-	public abstract void playAnimation(Animation animation, boolean loop);
+	/**
+	 * Send a animation to play
+	 * @param animation
+	 * @param loop true to loop the animation
+	 * @return
+	 */
+	public abstract AnimationPlayed playAnimation(Animation animation, boolean loop);
+
+	/**
+	 * Stop the animation
+	 * @param animation (Require to send the AnimationPlayed returned when send to play)
+	 */
+	public abstract void stopAnimation(AnimationPlayed animation);
 	
-	public abstract void stopAnimation();
+	/**
+	 * Stop all animations
+	 */
+	public abstract void stopAnimations();
 	
 }
