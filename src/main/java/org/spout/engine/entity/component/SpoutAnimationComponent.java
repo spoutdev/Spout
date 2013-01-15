@@ -38,6 +38,7 @@ import org.spout.api.event.entity.AnimationEndEvent;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.model.animation.Animation;
+import org.spout.api.model.animation.AnimationPlayed;
 import org.spout.api.model.animation.Skeleton;
 import org.spout.api.render.RenderMaterial;
 import org.spout.engine.mesh.BaseMesh;
@@ -48,46 +49,36 @@ public class SpoutAnimationComponent extends AnimationComponent {
 
 	//Keep a matrices array at the size of managed skeleton
 	private Matrix[] matrices = null;
-	
-	class AnimationChannel{
-		public Animation animation = null;
-		public float speed = 1f;
-		public boolean loop = false;
-		private Matrix[] matrices = null;
-		
-		public int currentFrame = 0;
-		public float currentTime = 0;
-	}
-	
-	public List<AnimationChannel> animations = new ArrayList<AnimationChannel>();
-	
-	public void playAnimation(Animation animation){
-		playAnimation(animation,false);
+
+	public List<AnimationPlayed> animations = new ArrayList<AnimationPlayed>();
+
+	@Override
+	public AnimationPlayed playAnimation(Animation animation){
+		return playAnimation(animation,false);
 	}
 
-	public void playAnimation(Animation animation, boolean loop){
+	@Override
+	public AnimationPlayed playAnimation(Animation animation, boolean loop){
 		//TODO : Maybe check if the animation is compatible with the skeletin of this model
 		//TODO : Maybe make real sync to avoid error with render
 
-		AnimationChannel ac = new AnimationChannel();
-		
-		ac.currentFrame = 0;
-		ac.currentTime = 0;
-		ac.currentFrame = 0;
-		ac.loop = loop;
-		ac.animation = animation; // Finish by set of the animation to avoid NPE
+		AnimationPlayed ac = new AnimationPlayed(animation, loop);
 
 		//Allocate matrices
-		ac.matrices = new Matrix[getOwner().get(ModelComponent.class).getModel().getSkeleton().getBoneSize()];
+		ac.setMatrices(new Matrix[getOwner().get(ModelComponent.class).getModel().getSkeleton().getBoneSize()]);
 		
 		animations.add(ac);
+		
+		return ac;
 	}
-	
-	public void stopAnimation(int i){
-		animations.remove(i);
+
+	@Override
+	public void stopAnimation(AnimationPlayed animation){
+		animations.remove(animation);
 	}
-	
-	public void stopAnimation(){
+
+	@Override
+	public void stopAnimations() {
 		animations.clear();
 	}
 
@@ -152,14 +143,14 @@ public class SpoutAnimationComponent extends AnimationComponent {
 			return;
 
 		for(int i = 0; i < animations.size(); i++){
-			AnimationChannel ac = animations.get(i);
+			AnimationPlayed ac = animations.get(i);
 
-			ac.currentTime += dt * ac.speed;
+			ac.setCurrentTime(ac.getCurrentTime() + dt * ac.getSpeed());
 
-			ac.currentFrame = (int) (ac.currentTime / ac.animation.getDelay());
+			ac.setCurrentFrame((int) (ac.getCurrentTime() / ac.getAnimation().getDelay()));
 
-			if(ac.currentFrame >= ac.animation.getFrame()){ //Loop
-				if(!ac.loop){
+			if(ac.getCurrentFrame() >= ac.getAnimation().getFrame()){ //Loop
+				if(!ac.isLoop()){
 
 					//TODO : Send a AnimationEndEvent is the loop is enabled ?
 
@@ -167,11 +158,11 @@ public class SpoutAnimationComponent extends AnimationComponent {
 					i--;
 					
 					if (AnimationEndEvent.getHandlerList().getRegisteredListeners().length != 0) {
-						Spout.getEventManager().callEvent(new AnimationEndEvent(getOwner(),ac.animation));
+						Spout.getEventManager().callEvent(new AnimationEndEvent(getOwner(),ac.getAnimation()));
 					}
 				}
-				ac.currentTime = 0;
-				ac.currentFrame = 0;
+				ac.setCurrentTime(0);
+				ac.setCurrentFrame(0);
 			}
 		}
 	}
@@ -187,17 +178,17 @@ public class SpoutAnimationComponent extends AnimationComponent {
 		RenderMaterial mat = model.getModel().getRenderMaterial();
 
 		int count = 0;
-		for(AnimationChannel ac : animations){
+		for(AnimationPlayed ac : animations){
 			if(count >= ALLOWED_ANIMATION)
 				break;
 
-			for (int i = 0; i < ac.matrices.length; i++) {
-				ac.matrices[i] = new Matrix(4, ac.animation.getBoneTransform(i, ac.currentFrame).getMatrix());
+			for (int i = 0; i < ac.getMatrices().length; i++) {
+				ac.getMatrices()[i] = new Matrix(4, ac.getAnimation().getBoneTransform(i, ac.getCurrentFrame()).getMatrix());
 			}
 			
 			//System.out.println(count + " : play animation");
 
-			mat.getShader().setUniform("bone_matrix" + (count + 1), ac.matrices);
+			mat.getShader().setUniform("bone_matrix" + (count + 1), ac.getMatrices());
 
 			count++;
 		}

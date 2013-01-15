@@ -47,10 +47,12 @@ import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.component.impl.HitBlockComponent;
 import org.spout.api.component.impl.PhysicsComponent;
+import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
@@ -233,6 +235,93 @@ public class TestCommands {
 			}
 			((SpoutRegion) player.getRegion()).addPhysics(player);
 		}
+	}
+
+	@Command(aliases = {"move"}, desc = "Move a entity with his Id", min = 4, max = 4)
+	public void moveEntity(CommandContext args, CommandSource source) throws CommandException {
+		SpoutPlayer player;
+		if (!(source instanceof Player)) {
+			if (Spout.getPlatform() == Platform.CLIENT) {
+				player = ((SpoutClient) engine).getActivePlayer();
+			} else {
+				player = (SpoutPlayer) source;
+			}
+		} else {
+			throw new CommandException("Can only run this as a player!");
+		}
+
+		int id = args.getInteger(0);
+		float x = args.getFloat(1);
+		float y = args.getFloat(2);
+		float z = args.getFloat(3);
+
+		Entity e = player.getWorld().getEntity(id);
+
+		if(e == null)
+			return;
+
+		e.getTransform().setPosition(new Point(e.getWorld(), x, y, z));
+
+		Spout.log("Entity " + id + " move to " + x + " " + y + " " +z);
+	}
+
+	@Command(aliases = {"rotate"}, desc = "Rotate a entity with his Id", min = 4, max = 4)
+	public void rotateEntity(CommandContext args, CommandSource source) throws CommandException {
+		SpoutPlayer player;
+		if (!(source instanceof Player)) {
+			if (Spout.getPlatform() == Platform.CLIENT) {
+				player = ((SpoutClient) engine).getActivePlayer();
+			} else {
+				player = (SpoutPlayer) source;
+			}
+		} else {
+			throw new CommandException("Can only run this as a player!");
+		}
+
+		int id = args.getInteger(0);
+		float pitch = args.getFloat(1);
+		float yaw = args.getFloat(2);
+		float roll = args.getFloat(3);
+
+		Entity e = player.getWorld().getEntity(id);
+
+		if(e == null)
+			return;
+
+		e.getTransform().setPitch(pitch);
+		e.getTransform().setYaw(yaw);
+		e.getTransform().setRoll(roll);
+
+		Spout.log("Entity " + id + " rotate to " + pitch + " " + yaw + " " +roll);
+	}
+
+
+	@Command(aliases = {"scale"}, desc = "Scale a entity with his Id", min = 4, max = 4)
+	public void scaleEntity(CommandContext args, CommandSource source) throws CommandException {
+		SpoutPlayer player;
+		if (!(source instanceof Player)) {
+			if (Spout.getPlatform() == Platform.CLIENT) {
+				player = ((SpoutClient) engine).getActivePlayer();
+			} else {
+				player = (SpoutPlayer) source;
+			}
+		} else {
+			throw new CommandException("Can only run this as a player!");
+		}
+
+		int id = args.getInteger(0);
+		float x = args.getFloat(1);
+		float y = args.getFloat(2);
+		float z = args.getFloat(3);
+
+		Entity e = player.getWorld().getEntity(id);
+
+		if(e == null)
+			return;
+
+		e.getTransform().scale(x, y, z);
+
+		Spout.log("Entity " + id + " scale to " + x + " " + y + " " +z);
 	}
 
 	/**
