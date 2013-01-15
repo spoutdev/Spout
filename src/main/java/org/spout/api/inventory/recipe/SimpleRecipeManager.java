@@ -26,10 +26,7 @@
  */
 package org.spout.api.inventory.recipe;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -54,12 +51,12 @@ public class SimpleRecipeManager implements RecipeManager {
 	@Override
 	public boolean register(Recipe recipe) {
 		boolean failed = false;
-		if (recipe instanceof ShapedRecipe) {
+		if (recipe instanceof SmeltedRecipe) {
+			failed = !registerSmelted((SmeltedRecipe) recipe);
+		} else if (recipe instanceof ShapedRecipe) {
 			failed = !registerShaped((ShapedRecipe) recipe);
 		} else if (recipe instanceof ShapelessRecipe) {
 			failed = !registerShapeless((ShapelessRecipe) recipe);
-		} else if (recipe instanceof SmeltedRecipe) {
-			failed = !registerSmelted((SmeltedRecipe) recipe);
 		} else {
 			Spout.log("Unknown recipe type!");
 		}

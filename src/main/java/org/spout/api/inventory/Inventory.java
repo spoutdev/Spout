@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -217,10 +216,9 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 * @return {@link ItemStack} at the slot
 	 */
 	public void update(int slot) {
-		ItemStack item = get(slot);
-		onSlotChanged(slot, item);
+		onSlotChanged(slot, get(slot));
 		for (InventoryViewer viewer : viewers) {
-			viewer.onSlotSet(this, slot, item);
+			viewer.onSlotSet(this, slot, get(slot));
 		}
 	}
 
@@ -598,17 +596,32 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 * 
 	 * @param i slot to set the item at
 	 * @param item to set in the specified slot
+	 * @Param update whether to update the item and notify viewers
 	 * @return the item previously at the slot 
 	 */
-	@Override
-	public ItemStack set(int i, ItemStack item) {
+	public ItemStack set(int i, ItemStack item, boolean update) {
 		if (item != null && item.isEmpty()) {
 			item = null;
 		}
 		ItemStack old = get(i);
 		contents[i] = item == null ? null : item.clone();
-		update(i);
+		if (update) {
+			update(i);
+		}
 		return old;
+	}
+
+	/**
+	 * Replaces the {@link ItemStack} at the specified slot in this inventory
+	 * with the specified ItemStack.
+	 * 
+	 * @param i slot to set the item at
+	 * @param item to set in the specified slot
+	 * @return the item previously at the slot 
+	 */
+	@Override
+	public ItemStack set(int i, ItemStack item) {
+		return set(i, item, true);
 	}
 
 	/**
