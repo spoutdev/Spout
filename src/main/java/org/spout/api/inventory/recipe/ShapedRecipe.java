@@ -39,6 +39,7 @@ import org.spout.api.material.Material;
  * Represents a {@link Recipe} with a definite shape.
  */
 public class ShapedRecipe extends Recipe {
+	private static final long serialVersionUID = 1L;
 	private final List<List<Character>> rows;
 	private final Map<Character, Material> ingredientsMap;
 

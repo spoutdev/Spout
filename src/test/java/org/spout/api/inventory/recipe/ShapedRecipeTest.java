@@ -26,12 +26,16 @@
  */
 package org.spout.api.inventory.recipe;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import org.spout.api.inventory.Inventory;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.material.Material;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -42,32 +46,32 @@ public class ShapedRecipeTest {
 		EngineFaker.setupEngine();
 	}
 
-	/*@Test
+	@Test
 	public void testShapedRecipe() {
-
-		final ItemStack solid = new ItemStack(BlockMaterial.SOLID, 5);
-		final ShapedRecipe recipe = new ShapedRecipe(new ItemStack(BlockMaterial.UNBREAKABLE, 1));
+		RecipeBuilder builder = new RecipeBuilder();
 
 		// Add rows
-		recipe.addRow(' ', 'X', ' ');
-		recipe.addRow('X', 'X', 'X');
-		recipe.addRow(' ', 'X', ' ');
-		recipe.setIngredient('X', solid.clone());
+		builder.addRow(' ', 'X', ' ');
+		builder.addRow('X', 'X', 'X');
+		builder.addRow(' ', 'X', ' ');
+		builder.setIngredient('X', BlockMaterial.SOLID);
+		builder.setResult(new ItemStack(BlockMaterial.AIR, 1));
 
-		// Create inventory to test
-		Inventory inventory = new Inventory(9);
+		final ShapedRecipe recipe = builder.buildShapedRecipe();
+		SimpleRecipeManager manager = new SimpleRecipeManager();
+		manager.register(recipe);
+
+		List<List<Material>> materials = new ArrayList<List<Material>>();
 
 		// Make sure we can't craft yet
-		assertFalse(recipe.handle(inventory));
+		assertFalse(manager.matchShapedRecipe(materials) != null);
 
 		// Add ingredients
-		inventory.set(1, solid.clone());
-		inventory.set(3, solid.clone());
-		inventory.set(4, solid.clone());
-		inventory.set(5, solid.clone());
-		inventory.set(7, solid.clone());
+		materials.add(Arrays.asList(new Material[] {null, BlockMaterial.SOLID, null}));
+		materials.add(Arrays.asList(new Material[] {BlockMaterial.SOLID, BlockMaterial.SOLID, BlockMaterial.SOLID}));
+		materials.add(Arrays.asList(new Material[] {null, BlockMaterial.SOLID, null}));
 
 		// Try to craft
-		assertTrue(recipe.handle(inventory));
-	}*/
+		assertTrue(manager.matchShapedRecipe(materials) != null);
+	}
 }
