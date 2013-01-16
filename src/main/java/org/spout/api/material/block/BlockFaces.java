@@ -278,6 +278,18 @@ public class BlockFaces implements Iterable<BlockFace>, ByteBitMask {
 
 	/**
 	 * Gets the previous BlockFace in this circular BlockFaces constant<br>
+	 * This function calls previous using an offset of 1
+	 * 
+	 * @see BlockFaces.previous(BlockFace from, int offset);
+	 * @param from the BlockFace to count
+	 * @return the face at the offset
+	 */
+	public BlockFace previous(BlockFace from) {
+		return previous(from, 1);
+	}
+
+	/**
+	 * Gets the previous BlockFace in this circular BlockFaces constant<br>
 	 * This function calls next using a negative offset
 	 * 
 	 * @see BlockFaces.next(BlockFace from, int offset);
@@ -287,6 +299,18 @@ public class BlockFaces implements Iterable<BlockFace>, ByteBitMask {
 	 */
 	public BlockFace previous(BlockFace from, int offset) {
 		return this.next(from, -offset);
+	}
+
+	/**
+	 * Gets the next BlockFace in this circular BlockFaces constant<br>
+	 * This function calls next using an offset of 1
+	 * 
+	 * @see BlockFaces.next(BlockFace from, int offset);
+	 * @param from the BlockFace to count
+	 * @return the face at the offset
+	 */
+	public BlockFace next(BlockFace from) {
+		return next(from, 1);
 	}
 
 	/**
