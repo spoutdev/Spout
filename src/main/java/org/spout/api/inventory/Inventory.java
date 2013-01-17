@@ -222,8 +222,9 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 *
 	 * @param slot that's being set
 	 * @param item that the slot is being set to
+	 * @param the previous item in the slot
 	 */
-	public void onSlotChanged(int slot, ItemStack item) {
+	public void onSlotChanged(int slot, ItemStack newItem, ItemStack previous) {
 	}
 
 	/**
@@ -232,10 +233,10 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 * @param slot to update
 	 * @return {@link ItemStack} at the slot
 	 */
-	public void update(int slot) {
-		onSlotChanged(slot, get(slot));
+	public void update(int slot, ItemStack previous) {
+		onSlotChanged(slot, get(slot), previous);
 		for (InventoryViewer viewer : getViewers()) {
-			viewer.onSlotSet(this, slot, get(slot));
+			viewer.onSlotSet(this, slot, get(slot), previous);
 		}
 	}
 
@@ -244,7 +245,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 */
 	public void updateAll() {
 		for (int slot = 0; slot < size(); slot++) {
-			update(slot);
+			update(slot, get(slot));
 		}
 	}
 
@@ -624,7 +625,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 		ItemStack old = get(i);
 		getContents()[i] = item == null ? null : item.clone();
 		if (update) {
-			update(i);
+			update(i, old);
 		}
 		return old;
 	}

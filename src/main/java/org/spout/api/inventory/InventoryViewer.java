@@ -36,6 +36,7 @@ public interface InventoryViewer {
 	 * @param inventory The {@link Inventory} in which a slot has changed.
 	 * @param slot The slot number which has changed.
 	 * @param item The {@link ItemStack} which the slot has changed to.
+	 * @param previous The {@link ItemStack} that was previously in the slot.
 	 */
-	public void onSlotSet(Inventory inventory, int slot, ItemStack item);
+	public void onSlotSet(Inventory inventory, int slot, ItemStack item, ItemStack previous);
 }
