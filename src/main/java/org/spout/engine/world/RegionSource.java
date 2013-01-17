@@ -86,8 +86,8 @@ public class RegionSource implements Iterable<Region> {
 						int z = r.getZ();
 						boolean success = loadedRegions.remove(x, y, z, r);
 						if (success) {
-							if (!r.getManager().getExecutor().haltExecutor()) {
-								throw new IllegalStateException("Failed to halt the region executor when removing the region");
+							if (!world.getEngine().getScheduler().removeAsyncManager(r)) {
+								throw new IllegalStateException("Failed to de-register the region from the scheduler");
 							}
 							if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
 								r.stopMeshGeneratorThread();
@@ -156,12 +156,8 @@ public class RegionSource implements Iterable<Region> {
 		SpoutRegion current = (SpoutRegion) loadedRegions.putIfAbsent(x, y, z, region);
 
 		if (current != null) {
-			((SpoutScheduler)Spout.getScheduler()).removeAsyncExecutor(region.getManager().getExecutor());
+			((SpoutScheduler)Spout.getScheduler()).removeAsyncManager(region);
 			return current;
-		}
-
-		if (!region.getManager().getExecutor().startExecutor()) {
-			throw new IllegalStateException("Unable to start region executor");
 		}
 		
 		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {

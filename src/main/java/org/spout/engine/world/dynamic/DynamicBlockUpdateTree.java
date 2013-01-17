@@ -73,7 +73,7 @@ public class DynamicBlockUpdateTree {
 	private ConcurrentHashMap<PointAlone, Boolean> resetPendingMap = new ConcurrentHashMap<PointAlone, Boolean>();
 	private ConcurrentLinkedQueue<List<DynamicBlockUpdate>> pendingLists = new ConcurrentLinkedQueue<List<DynamicBlockUpdate>>();
 	private TIntHashSet processed = new TIntHashSet();
-	private final Thread regionThread;
+	private Thread regionThread;
 	@SuppressWarnings("unused")
 	private final Thread mainThread;
 	private final static int localStages = TickStage.DYNAMIC_BLOCKS | TickStage.PHYSICS;
@@ -83,9 +83,12 @@ public class DynamicBlockUpdateTree {
 	
 	public DynamicBlockUpdateTree(SpoutRegion region) {
 		this.region = region;
-		this.regionThread = region.getExceutionThread();
 		this.mainThread = ((SpoutScheduler)Spout.getScheduler()).getMainThread();
 		this.world = region.getWorld();
+	}
+	
+	public void setRegionThread(Thread t) {
+		this.regionThread = t;
 	}
 
 	public void resetBlockUpdates(int x, int y, int z) {

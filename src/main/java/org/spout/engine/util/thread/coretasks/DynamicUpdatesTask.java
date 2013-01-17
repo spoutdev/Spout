@@ -26,33 +26,24 @@
  */
 package org.spout.engine.util.thread.coretasks;
 
-import org.spout.engine.util.thread.AsyncExecutor;
-import org.spout.engine.util.thread.ManagementRunnable;
+import org.spout.engine.util.thread.AsyncManager;
 
-public class DynamicUpdatesTask extends ManagementRunnable {
-	private static final long serialVersionUID = 1L;
 
-	private long time;
-	private int sequence;
+public class DynamicUpdatesTask extends SequencedManagerRunnableFactory {
+
+	private long threshold = 0;
 	
 	@Override
-	public void run(AsyncExecutor executor) throws InterruptedException {
-		executor.getManager().runDynamicUpdates(time, sequence);
+	public ManagerRunnable getTask(final AsyncManager manager, final int sequence) {
+		return new ManagerRunnable(manager) {
+			public void runTask() {
+				manager.runDynamicUpdates(threshold, sequence);
+			}
+		};
 	}
 	
-	public void setTime(long time) {
-		this.time = time;
+	public void setThreshold(long threshold) {
+		this.threshold = threshold;
 	}
-	
-	public long getTime() {
-		return time;
-	}
-	
-	public void setSequence(int sequence) {
-		this.sequence = sequence;
-	}
-	
-	public int getSequence() {
-		return sequence;
-	}
+
 }

@@ -30,18 +30,14 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
 import org.spout.api.Spout;
 
 public class AsyncExecutorUtils {
 	private static final String LINE = "------------------------------";
-	private static final AtomicReference<AsyncExecutor> waitingExecutor = new AtomicReference<AsyncExecutor>();
 
 	/**
 	 * Logs all threads, the thread details, and active stack traces
@@ -96,69 +92,4 @@ public class AsyncExecutorUtils {
 		}
 	}
 	
-	/**
-	 * Gets the current executor that pulseJoinAll is waiting on, or null of none
-	 * 
-	 * @return the executor, or null if none
-	 */
-	public static AsyncExecutor getWaitingExecutor() {
-		return waitingExecutor.get();
-	}
-
-	/**
-	 * Waits for a list of ManagedThreads to complete a pulse
-	 * @param executors the threads to join for
-	 * @param timeout   how long to wait, or 0 to wait forever
-	 */
-	public static void pulseJoinAll(List<AsyncExecutor> executors, long timeout) throws TimeoutException, InterruptedException {
-		ThreadsafetyManager.checkMainThread();
-
-		long currentTime = System.currentTimeMillis();
-		long endTime = currentTime + timeout;
-		boolean waitForever = timeout == 0;
-
-		if (timeout < 0) {
-			throw new IllegalArgumentException("Negative timeouts are not allowed (" + timeout + ")");
-		}
-
-		boolean done = false;
-		while (!done && (endTime > currentTime || waitForever)) {
-			done = false;
-			while (!done && (endTime > currentTime || waitForever)) {
-				done = true;
-				for (AsyncExecutor e : executors) {
-					currentTime = System.currentTimeMillis();
-					if (endTime <= currentTime && !waitForever) {
-						break;
-					}
-					if (!e.isPulseFinished()) {
-						done = false;
-						waitingExecutor.set(e);
-						e.pulseJoin(endTime - currentTime);
-						waitingExecutor.set(null);
-					}
-				}
-			}
-			try {
-				for (AsyncExecutor e : executors) {
-					e.disableWake();
-				}
-				done = true;
-				for (AsyncExecutor e : executors) {
-					if (!e.isPulseFinished()) {
-						done = false;
-						break;
-					}
-				}
-			} finally {
-				for (AsyncExecutor e : executors) {
-					e.enableWake();
-				}
-			}
-		}
-
-		if (endTime <= currentTime && !waitForever) {
-			throw new TimeoutException("pulseJoinAll timed out");
-		}
-	}
 }

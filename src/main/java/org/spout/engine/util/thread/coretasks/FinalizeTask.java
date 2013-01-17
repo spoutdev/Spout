@@ -26,15 +26,18 @@
  */
 package org.spout.engine.util.thread.coretasks;
 
-import org.spout.engine.util.thread.AsyncExecutor;
-import org.spout.engine.util.thread.ManagementRunnable;
+import org.spout.engine.util.thread.AsyncManager;
 
-public class FinalizeTask extends ManagementRunnable {
-	private static final long serialVersionUID = 1L;
+
+public class FinalizeTask extends GlobalManagerRunnableFactory {
 
 	@Override
-	public void run(AsyncExecutor executor) throws InterruptedException {
-		executor.getManager().finalizeRun();
+	public ManagerRunnable getTask(final AsyncManager manager, final int sequence) {
+		return new ManagerRunnable(manager) {
+			public void runTask() {
+				manager.finalizeRun();
+			}
+		};
 	}
 
 }

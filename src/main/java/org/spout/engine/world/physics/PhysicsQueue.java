@@ -50,7 +50,7 @@ public class PhysicsQueue {
 	
 	private final SpoutRegion region;
 	private final SpoutChunk chunk;
-	private final Thread regionThread;
+	private Thread regionThread;
 	@SuppressWarnings("unused")
 	private final Thread mainThread;
 	private final AtomicBoolean localActive = new AtomicBoolean(false);
@@ -63,7 +63,6 @@ public class PhysicsQueue {
 	public PhysicsQueue(SpoutChunk chunk) {
 		this.region = chunk.getRegion();
 		this.chunk = chunk;
-		this.regionThread = region.getExceutionThread();
 		this.mainThread = ((SpoutScheduler)Spout.getScheduler()).getMainThread();
 	}
 	
@@ -133,6 +132,7 @@ public class PhysicsQueue {
 	}
 	
 	private void checkStages() {
+		this.regionThread = region.getExecutionThread();
 		TickStage.checkStage(globalStages, localStages, regionThread);
 	}
 

@@ -35,7 +35,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -45,6 +44,7 @@ import org.spout.api.scheduler.Task;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.scheduler.Worker;
+import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 
 public class SpoutTaskManager implements TaskManager {
@@ -56,6 +56,7 @@ public class SpoutTaskManager implements TaskManager {
 	private final TaskPriorityQueue taskQueue;
 	
 	private final boolean mainThread;
+	private final Thread t;
 	
 	private final AtomicBoolean alive;
 	
@@ -67,17 +68,18 @@ public class SpoutTaskManager implements TaskManager {
 	
 	private final ExecutorService pool = Executors.newFixedThreadPool(20, new NamedThreadFactory("Scheduler Thread Pool Thread"));
 	
-	public SpoutTaskManager(Scheduler scheduler, boolean mainThread) {
-		this(scheduler, mainThread, Thread.currentThread());
+	public SpoutTaskManager(Scheduler scheduler, Thread mainThread) {
+		this(scheduler, mainThread, null, 0L);
 	}
 	
-	public SpoutTaskManager(Scheduler scheduler, boolean mainThread, Thread t) {
-		this(scheduler, mainThread, t, 0L);
+	public SpoutTaskManager(Scheduler scheduler, AsyncManager manager) {
+		this(scheduler, null, manager, 0L);
 	}
 	
-	public SpoutTaskManager(Scheduler scheduler, boolean mainThread, Thread t, long age) {
-		this.taskQueue = new TaskPriorityQueue(t, SpoutScheduler.PULSE_EVERY / 4);
-		this.mainThread = mainThread;
+	public SpoutTaskManager(Scheduler scheduler, Thread mainThread, AsyncManager manager, long age) {
+		this.taskQueue = new TaskPriorityQueue(manager, SpoutScheduler.PULSE_EVERY / 4);
+		this.mainThread = mainThread != null;
+		this.t = mainThread;
 		this.alive = new AtomicBoolean(true);
 		this.upTime = new AtomicLong(age);
 		this.scheduler = scheduler;

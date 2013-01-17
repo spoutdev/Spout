@@ -360,14 +360,14 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		SpoutClientWorld oldWorld = activeWorld.getAndSet(world);
 		if (oldWorld != null) {
-			if (!oldWorld.getExecutor().haltExecutor()) {
-				throw new IllegalStateException("Executor was already halted when halting was attempted");
+			if (!scheduler.removeAsyncManager(oldWorld)) {
+				throw new IllegalStateException("Unable to remove old world from scheduler");
 			}
 			oldWorld.unload(false);
 		}
-		if (!world.getExecutor().startExecutor()) {
+		if (!scheduler.addAsyncManager(world)) {
 			activeWorld.compareAndSet(world, null);
-			throw new IllegalStateException("Unable to start executor for new world");
+			throw new IllegalStateException("Unable to add new world to the scheduler");
 		}
 		return world;
 	}

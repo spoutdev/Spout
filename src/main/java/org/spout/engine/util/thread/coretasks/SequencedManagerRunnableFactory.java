@@ -24,15 +24,19 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.util.thread;
+package org.spout.engine.util.thread.coretasks;
 
-/**
- * An Exception thrown when pulsable thread timing assumption are violated
- */
-public class ThreadTimingException extends RuntimeException {
-	private static final long serialVersionUID = 1L;
 
-	public ThreadTimingException(String message) {
-		super(message);
+public abstract class SequencedManagerRunnableFactory implements ManagerRunnableFactory {
+
+	@Override
+	public int getMaxSequence() {
+		return 27;
 	}
+	
+	@Override
+	public int getMinSequence() {
+		return -1;
+	}
+
 }

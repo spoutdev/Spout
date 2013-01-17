@@ -124,7 +124,6 @@ import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.DeadlockMonitor;
 import org.spout.engine.util.TicklockMonitor;
 import org.spout.engine.util.thread.AsyncManager;
-import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLinkedHashMap;
 import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
@@ -134,7 +133,7 @@ import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldGeneratorThread;
 import org.spout.engine.world.WorldSavingThread;
 
-public abstract class SpoutEngine extends AsyncManager implements Engine {
+public abstract class SpoutEngine implements AsyncManager, Engine {
 	private static final Logger logger = Logger.getLogger("Spout");
 	private final String name = "Spout Engine";
 	private final Random random = new Random();
@@ -171,7 +170,6 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	private ChatChannelFactory chatChannelFactory = new SpoutChatChannelFactory();
 
 	public SpoutEngine() {
-		super(1, new ThreadAsyncExecutor("Engine bootstrap thread"));
 		logFile = "log-%D.txt";
 		consoleManager = new ConsoleManager(this);
 	}
@@ -188,11 +186,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		console = new MultiConsole(new NonClosingFileConsole(this), new JLineConsole(this));
 		consoleManager.setupConsole(console);
 
-		registerWithScheduler(scheduler);
-
-		if (!getExecutor().startExecutor()) {
-			throw new IllegalStateException("SpoutEngine's executor was already started");
-		}
+		scheduler.addAsyncManager(this);
 
 		defaultPerms = new DefaultPermissions(this, new File(SharedFileSystem.getConfigDirectory(), "permissions.yml"));
 		getDefaultPermissions().addDefaultPermission(STANDARD_BROADCAST_PERMISSION);
@@ -431,8 +425,8 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 			return oldWorld;
 		}
 
-		if (!world.getExecutor().startExecutor()) {
-			throw new IllegalStateException("Unable to start executor for new world");
+		if (!scheduler.addAsyncManager(world)) {
+			throw new IllegalStateException("Unable to add world to the scheduler");
 		}
 		getEventManager().callDelayedEvent(new WorldLoadEvent(world));
 		return world;
@@ -603,19 +597,19 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	@Override
-	public void finalizeRun() throws InterruptedException {
+	public void finalizeRun() {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void preSnapshotRun() throws InterruptedException {
+	public void preSnapshotRun() {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void copySnapshotRun() throws InterruptedException {
+	public void copySnapshotRun() {
 		snapshotManager.copyAllSnapshots();
 		for (Player player : players.get().values()) {
 			((SpoutPlayer) player).copySnapshot();
@@ -623,7 +617,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	@Override
-	public void startTickRun(int stage, long delta) throws InterruptedException {
+	public void startTickRun(int stage, long delta) {
 		switch (stage) {
 			case 0:
 				engineItemMap.save();
@@ -631,10 +625,10 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 				break;
 		}
 	}
-
+	
 	@Override
-	public void haltRun() throws InterruptedException {
-		log("Server halting");
+	public int getMaxStage() {
+		return 0;
 	}
 
 	@Override
@@ -684,8 +678,8 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		if (success) {
 			if (save) {
 				SpoutWorld w = (SpoutWorld) world;
-				if (!w.getExecutor().haltExecutor()) {
-					throw new IllegalStateException("Executor was already halted when halting was attempted");
+				if (!scheduler.removeAsyncManager(w)) {
+					throw new IllegalStateException("Unable to remove world from scheduler when halting was attempted");
 				}
 				getEventManager().callDelayedEvent(new WorldUnloadEvent(world));
 				w.unload(save);
@@ -833,7 +827,7 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	// The engine doesn't do any of these
 
 	@Override
-	public void runPhysics(int sequence) throws InterruptedException {
+	public void runPhysics(int sequence) {
 	}
 
 	@Override
@@ -842,11 +836,11 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 	}
 
 	@Override
-	public void runDynamicUpdates(long time, int sequence) throws InterruptedException {
+	public void runDynamicUpdates(long time, int sequence) {
 	}
 
 	@Override
-	public void runLighting(int sequence) throws InterruptedException {
+	public void runLighting(int sequence) {
 	}
 
 	@Override
@@ -879,5 +873,19 @@ public abstract class SpoutEngine extends AsyncManager implements Engine {
 		public void run() {
 			registry.pulse();
 		}
+	}
+	
+	private Thread executionThread;
+	
+	public Thread getExecutionThread() {
+		return executionThread;
+	}
+	
+	public void setExecutionThread(Thread t) {
+		this.executionThread = t;
+	}
+	
+	public int getSequence() {
+		return 0;
 	}
 }

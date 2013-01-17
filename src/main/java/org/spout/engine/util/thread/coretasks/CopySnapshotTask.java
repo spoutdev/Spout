@@ -26,16 +26,18 @@
  */
 package org.spout.engine.util.thread.coretasks;
 
-import org.spout.engine.util.thread.AsyncExecutor;
-import org.spout.engine.util.thread.ManagementRunnable;
+import org.spout.engine.util.thread.AsyncManager;
 
-public class CopySnapshotTask extends ManagementRunnable {
-	private static final long serialVersionUID = 1L;
+
+public class CopySnapshotTask extends GlobalManagerRunnableFactory {
 
 	@Override
-	public void run(AsyncExecutor executor) throws InterruptedException {
-		executor.getManager().copySnapshotRun();
-		executor.haltCheck();
+	public ManagerRunnable getTask(final AsyncManager manager, final int sequence) {
+		return new ManagerRunnable(manager) {
+			public void runTask() {
+				manager.copySnapshotRun();
+			}
+		};
 	}
 
 }

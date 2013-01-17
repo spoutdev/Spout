@@ -26,8 +26,8 @@
  */
 package org.spout.engine;
 
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceInfo;
+import static org.spout.api.lang.Translation.log;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -43,20 +43,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
+
 import org.apache.commons.lang3.Validate;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.teleal.cling.UpnpService;
-import org.teleal.cling.UpnpServiceImpl;
-import org.teleal.cling.controlpoint.ControlPoint;
-import org.teleal.cling.support.igd.PortMappingListener;
-import org.teleal.cling.support.model.PortMapping;
-import org.teleal.cling.transport.spi.InitializationException;
-
+import org.spout.api.Engine;
 import org.spout.api.FileSystem;
 import org.spout.api.Server;
+import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.channel.ChatChannel;
 import org.spout.api.command.CommandSource;
@@ -73,7 +71,6 @@ import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.util.StringUtil;
 import org.spout.api.util.access.AccessManager;
-
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ServerFileSystem;
 import org.spout.engine.listener.SpoutServerListener;
@@ -83,8 +80,12 @@ import org.spout.engine.protocol.SpoutNioServerSocketChannel;
 import org.spout.engine.protocol.SpoutServerSession;
 import org.spout.engine.util.access.SpoutAccessManager;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
-
-import static org.spout.api.lang.Translation.log;
+import org.teleal.cling.UpnpService;
+import org.teleal.cling.UpnpServiceImpl;
+import org.teleal.cling.controlpoint.ControlPoint;
+import org.teleal.cling.support.igd.PortMappingListener;
+import org.teleal.cling.support.model.PortMapping;
+import org.teleal.cling.transport.spi.InitializationException;
 
 public class SpoutServer extends SpoutEngine implements Server {
 	/**
@@ -460,5 +461,9 @@ public class SpoutServer extends SpoutEngine implements Server {
 			}
 			getEngine().getLogger().info("<<< Bonjour service shutdown completed.");
 		}
+	}
+	
+	public Engine getEngine() {
+		return Spout.getEngine();
 	}
 }

@@ -24,19 +24,19 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.util.thread;
+package org.spout.engine.util.thread.coretasks;
 
-import java.io.Serializable;
 
-/**
- * This task must support being serialized and then the deserialized object
- * being run instead
- * <p/>
- * This task does not have a return a value
- */
-public abstract class ManagementRunnable implements Serializable {
-	private static final long serialVersionUID = 1L;
+public abstract class GlobalManagerRunnableFactory implements ManagerRunnableFactory {
 
-	public abstract void run(AsyncExecutor executor) throws InterruptedException;
+	@Override
+	public int getMaxSequence() {
+		return -1;
+	}
 	
+	@Override
+	public int getMinSequence() {
+		return -1;
+	}
+
 }

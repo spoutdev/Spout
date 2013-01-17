@@ -63,7 +63,6 @@ public class SpoutColumn {
 	private final AtomicBoolean dirtyArray[][];
 	private final BlockMaterial[][] topmostBlocks;
 	private final AtomicReference<BiomeManager> biomes = new AtomicReference<BiomeManager>();
-	private final Thread worldThread;
 
 	public SpoutColumn(SpoutWorld world, int x, int z) {
 		this.world = world;
@@ -72,7 +71,6 @@ public class SpoutColumn {
 		this.heightMap = new AtomicInteger[BLOCKS.SIZE][BLOCKS.SIZE];
 		this.dirtyArray = new AtomicBoolean[BLOCKS.SIZE][BLOCKS.SIZE];
 		this.topmostBlocks = new BlockMaterial[BLOCKS.SIZE][BLOCKS.SIZE];
-		this.worldThread = (Thread) (((SpoutWorld) world).getExecutor());
 
 		for (int xx = 0; xx < BLOCKS.SIZE; xx++) {
 			for (int zz = 0; zz < BLOCKS.SIZE; zz++) {
@@ -94,7 +92,7 @@ public class SpoutColumn {
 	}
 
 	public void onFinalize() {
-		TickStage.checkStage(TickStage.FINALIZE, worldThread);
+		TickStage.checkStage(TickStage.FINALIZE);
 		if (dirty.compareAndSet(true, false)) {
 			int wx = (this.x << BLOCKS.BITS);
 			int wz = (this.z << BLOCKS.BITS);

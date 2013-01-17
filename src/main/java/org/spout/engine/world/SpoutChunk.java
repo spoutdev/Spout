@@ -216,10 +216,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	 */
 	protected final static int[] shiftCache = new int[65536];
 	/**
-	 * The thread associated with the region
-	 */
-	private final Thread regionThread;
-	/**
 	 * The order that blocks are stored in the block store
 	 */
 	private static ContainerFillOrder STORE_FILL_ORDER = ContainerFillOrder.XZY;
@@ -352,7 +348,6 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		columnRegistered.set(true);
 		lastUnloadCheck.set(world.getAge());
 		// loaded chunk
-		this.regionThread = region.getExceutionThread();
 		selfReference = new WeakReference<Chunk>(this);
 		this.scheduler = (SpoutScheduler) Spout.getScheduler();
 		this.lightStableOnLoad = lightStable;
@@ -1284,7 +1279,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 	public boolean compressIfRequired() {
 		checkChunkLoaded();
-		TickStage.checkStage(TickStage.FINALIZE, regionThread);
+		TickStage.checkStage(TickStage.FINALIZE);
 		if (!blockStore.needsCompression()) {
 			return false;
 		}
@@ -1411,7 +1406,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	public void setUnloaded() {
-		TickStage.checkStage(TickStage.SNAPSHOT, regionThread);
+		TickStage.checkStage(TickStage.SNAPSHOT);
 		setUnloadedRaw(true);
 	}
 
@@ -1441,7 +1436,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	}
 
 	private void checkBlockStoreUpdateAllowed() {
-		TickStage.checkStage(allowedStages, restrictedStages, regionThread);
+		TickStage.checkStage(allowedStages, restrictedStages, getRegion().getExecutionThread());
 	}
 
 	@Override

@@ -64,12 +64,14 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 	 * @param object
 	 */
 	@DelayedWrite
-	public void add(T object) {
+	public boolean add(T object) {
 		boolean success = live.add(object);
 
 		if (success) {
 			dirty.add(object);
 		}
+		
+		return success;
 	}
 
 	@DelayedWrite
@@ -89,12 +91,14 @@ public class SnapshotableArrayList<T> implements Snapshotable {
 	 * @param object
 	 */
 	@DelayedWrite
-	public void remove(T object) {
+	public boolean remove(T object) {
 		boolean success = live.remove(object);
 
 		if (success) {
 			dirty.add(object);
 		}
+		
+		return success;
 	}
 
 	/**

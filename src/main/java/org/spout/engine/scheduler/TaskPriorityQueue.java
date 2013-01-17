@@ -33,20 +33,15 @@ import java.util.Queue;
 
 import org.spout.api.util.list.concurrent.ConcurrentLongPriorityQueue;
 import org.spout.api.util.list.concurrent.RedirectableConcurrentLinkedQueue;
+import org.spout.engine.util.thread.AsyncManager;
 
 public class TaskPriorityQueue extends ConcurrentLongPriorityQueue<SpoutTask> {
 
-	private static final long serialVersionUID = 1L;
+	private final AsyncManager taskManager;
 	
-	private final Thread taskThread;
-
-	public TaskPriorityQueue(long resolution) {
-		this(Thread.currentThread(), resolution);
-	}
-	
-	public TaskPriorityQueue(Thread t, long resolution) {
+	public TaskPriorityQueue(AsyncManager manager, long resolution) {
 		super(resolution);
-		taskThread = t;
+		taskManager = manager;
 	}
 	
 	/**
@@ -58,7 +53,7 @@ public class TaskPriorityQueue extends ConcurrentLongPriorityQueue<SpoutTask> {
 	 * @return the first pending task, or null if no task is pending
 	 */
 	public Queue<SpoutTask> getPendingTask(long currentTime) {
-		if (Thread.currentThread() != taskThread) {
+		if (Thread.currentThread() != taskManager.getExecutionThread()) {
 			throw new IllegalStateException("getPendingTask() may only be called from the thread that created the TaskPriorityQueue");
 		}
 		

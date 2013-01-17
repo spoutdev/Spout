@@ -98,13 +98,11 @@ import org.spout.engine.filesystem.versioned.WorldFiles;
 import org.spout.engine.scheduler.SpoutParallelTaskManager;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.scheduler.SpoutTaskManager;
-import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.AsyncManager;
-import org.spout.engine.util.thread.ThreadAsyncExecutor;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLong;
 
-public class SpoutWorld extends AsyncManager implements World {
+public class SpoutWorld implements AsyncManager, World {
 	private SnapshotManager snapshotManager = new SnapshotManager();
 	/**
 	 * The server of this world.
@@ -185,6 +183,10 @@ public class SpoutWorld extends AsyncManager implements World {
 	 */
 	private final int hashcode;
 	/**
+	 * The execution thread for this world
+	 */
+	private Thread executionThread;
+	/**
 	 * Indicates if the snapshot queue for the renderer should be populated
 	 */
 	private final AtomicBoolean renderQueueEnabled = new AtomicBoolean(false);
@@ -205,7 +207,6 @@ public class SpoutWorld extends AsyncManager implements World {
 
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid, StringMap itemMap, StringMap lightingMap) {
-		super(1, new ThreadAsyncExecutor(toString(name, uid, age)), engine);
 		this.engine = engine;
 		if (!StringSanitizer.isAlphaNumericUnderscore(name)) {
 			name = Long.toHexString(System.currentTimeMillis());
@@ -234,21 +235,15 @@ public class SpoutWorld extends AsyncManager implements World {
 
 		parallelTaskManager = new SpoutParallelTaskManager(engine.getScheduler(), this);
 
-		AsyncExecutor e = getExecutor();
-		Thread t;
-		if (e instanceof Thread) {
-			t = (Thread) e;
-		} else {
-			throw new IllegalStateException("AsyncExecutor should be instance of Thread");
-		}
-		
 		lightingManagers = new UnprotectedCopyOnUpdateArray<LightingManager<?>>(LightingManager.class, true);
 
 		this.age = new SnapshotableLong(snapshotManager, age);
-		taskManager = new SpoutTaskManager(getEngine().getScheduler(), false, t, age);
+		taskManager = new SpoutTaskManager(getEngine().getScheduler(), null, this, age);
 		spawnLocation.set(new Transform(new Point(this, 1, 100, 1), Quaternion.IDENTITY, Vector3.ONE));
 		selfReference = new WeakReference<World>(this);
 		componentHolder = new WorldComponentHolder(this);
+		
+		((SpoutScheduler) Spout.getEngine().getScheduler()).addAsyncManager(this);
 	}
 
 	@Override
@@ -630,12 +625,12 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public void copySnapshotRun() throws InterruptedException {
+	public void copySnapshotRun() {
 		snapshotManager.copyAllSnapshots();
 	}
 
 	@Override
-	public void startTickRun(int stage, long delta) throws InterruptedException {
+	public void startTickRun(int stage, long delta) {
 		switch (stage) {
 			case 0: {
 				age.set(age.get() + delta);
@@ -651,10 +646,10 @@ public class SpoutWorld extends AsyncManager implements World {
 			}
 		}
 	}
-
+	
 	@Override
-	public void haltRun() throws InterruptedException {
-		// TODO - save on halt ?
+	public int getMaxStage() {
+		return 0;
 	}
 
 	@Override
@@ -726,7 +721,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public void finalizeRun() throws InterruptedException {
+	public void finalizeRun() {
 		synchronized (columnSet) {
 			for (SpoutColumn c : columnSet) {
 				c.onFinalize();
@@ -735,7 +730,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public void preSnapshotRun() throws InterruptedException {
+	public void preSnapshotRun() {
 
 	}
 
@@ -1405,11 +1400,11 @@ public class SpoutWorld extends AsyncManager implements World {
 	// Worlds don't do any of these
 
 	@Override
-	public void runPhysics(int sequence) throws InterruptedException {
+	public void runPhysics(int sequence) {
 	}
 
 	@Override
-	public void runLighting(int sequence) throws InterruptedException {
+	public void runLighting(int sequence) {
 	}
 
 	@Override
@@ -1418,7 +1413,7 @@ public class SpoutWorld extends AsyncManager implements World {
 	}
 
 	@Override
-	public void runDynamicUpdates(long time, int sequence) throws InterruptedException {
+	public void runDynamicUpdates(long time, int sequence) {
 	}
 
 	public WeakReference<World> getWeakReference() {
@@ -1462,5 +1457,21 @@ public class SpoutWorld extends AsyncManager implements World {
 	
 	protected LightingManager<?>[] getLightingManagers() {
 		return this.lightingManagers.toArray();
+	}
+
+	@Override
+	public int getSequence() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Thread getExecutionThread() {
+		return executionThread;
+	}
+	
+	@Override
+	public void setExecutionThread(Thread t) {
+		this.executionThread = t;
 	}
 }

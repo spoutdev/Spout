@@ -24,32 +24,16 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.util.thread;
+package org.spout.engine.util.thread.coretasks;
 
-/**
- * This class contains various methods to verify thread safe operation of the
- * API method calls
- */
-public class ThreadsafetyManager {
-	private static Thread mainThread = null;
+import org.spout.engine.util.thread.AsyncManager;
 
-	public static void setMainThread(Thread thread) {
-		if (mainThread == null) {
-			mainThread = thread;
-		} else {
-			throw new IllegalArgumentException("The main thread may not be set more than once");
-		}
-	}
+public interface ManagerRunnableFactory {
+	
+	public ManagerRunnable getTask(AsyncManager manager, int sequence);
+	
+	public int getMaxSequence();
+	
+	public int getMinSequence();
 
-	public static void checkMainThread() {
-		if (Thread.currentThread() != mainThread) {
-			throw new ThreadTimingException("An attempt was made to run a main thread only method from outside the main thread");
-		}
-	}
-
-	public static void checkCurrentThread(Thread thread) {
-		if (Thread.currentThread() != thread) {
-			throw new ThreadTimingException("An attempt was made to run a manager only thread only method from outside the main thread");
-		}
-	}
 }

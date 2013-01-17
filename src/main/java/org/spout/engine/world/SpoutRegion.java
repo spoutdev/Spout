@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -80,7 +79,6 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.lighting.LightingManager;
-import org.spout.api.lighting.LightingRegistry;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.MaterialRegistry;
@@ -114,8 +112,7 @@ import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.renderer.WorldRenderer;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.scheduler.SpoutTaskManager;
-import org.spout.engine.util.thread.AsyncExecutor;
-import org.spout.engine.util.thread.ThreadAsyncExecutor;
+import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.world.collision.RegionShape;
 import org.spout.engine.world.collision.SpoutPhysicsWorld;
@@ -141,13 +138,13 @@ import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSo
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 
-public class SpoutRegion extends Region {
+public class SpoutRegion extends Region implements AsyncManager {
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
-	// Can't extend AsyncManager and Region
-	private final SpoutRegionManager manager;
-	
+
 	protected final SetQueue<Cube> saveMarkedQueue = new SetQueue<Cube>(CHUNKS.VOLUME + 1);
 	private final RegionSetQueueElement saveMarkedElement = new RegionSetQueueElement(saveMarkedQueue, this);
+	
+	private Thread executionThread;
 	
 	@SuppressWarnings("unchecked")
 	public AtomicReference<SpoutChunk>[][][] chunks = new AtomicReference[CHUNKS.SIZE][CHUNKS.SIZE][CHUNKS.SIZE];
@@ -197,7 +194,6 @@ public class SpoutRegion extends Region {
 	private final AtomicBoolean generated = new AtomicBoolean(false);
 	private final AtomicBoolean[][] generatedColumns = new AtomicBoolean[CHUNKS.SIZE][CHUNKS.SIZE];
 	private final SpoutTaskManager taskManager;
-	private final Thread executionThread;
 	private final List<Thread> meshThread;
 	private final SpoutScheduler scheduler;
 	private final LinkedHashMap<SpoutPlayer, TByteTripleHashSet> observers = new LinkedHashMap<SpoutPlayer, TByteTripleHashSet>();
@@ -230,15 +226,6 @@ public class SpoutRegion extends Region {
 		int yy = MathHelper.mod(getY(), 3);
 		int zz = MathHelper.mod(getZ(), 3);
 		updateSequence = (xx * 9) + (yy * 3) + zz;
-
-		manager = new SpoutRegionManager(this, 3, new ThreadAsyncExecutor(this.toString() + " Thread", updateSequence), world.getEngine());
-
-		AsyncExecutor ae = manager.getExecutor();
-		if (ae instanceof Thread) {
-			executionThread = (Thread) ae;
-		} else {
-			executionThread = null;
-		}
 
 		if (Spout.getPlatform() == Platform.CLIENT) {
 			meshThread = new ArrayList<Thread>();
@@ -280,15 +267,10 @@ public class SpoutRegion extends Region {
 		}
 
 		this.chunkStore = world.getRegionFile(getX(), getY(), getZ());
-		Thread t;
-		AsyncExecutor e = manager.getExecutor();
-		if (e instanceof Thread) {
-			t = (Thread) e;
-		} else {
-			throw new IllegalStateException("AsyncExecutor should be instance of Thread");
-		}
-		taskManager = new SpoutTaskManager(world.getEngine().getScheduler(), false, t, world.getAge());
+		taskManager = new SpoutTaskManager(world.getEngine().getScheduler(), null, this, world.getAge());
 		scheduler = (SpoutScheduler) (Spout.getEngine().getScheduler());
+		
+		scheduler.addAsyncManager(this);
 
 		//Physics
 		broadphase = new DbvtBroadphase();
@@ -653,7 +635,7 @@ public class SpoutRegion extends Region {
 	 * @return true if the region is now empty
 	 */
 	public boolean removeChunk(Chunk c) {
-		TickStage.checkStage(TickStage.SNAPSHOT, executionThread);
+		TickStage.checkStage(TickStage.SNAPSHOT);
 		if (c.getRegion() != this) {
 			return false;
 		}
@@ -721,10 +703,6 @@ public class SpoutRegion extends Region {
 		return true;
 	}
 
-	SpoutRegionManager getManager() {
-		return manager;
-	}
-
 	/**
 	 * Queues a Chunk for saving
 	 */
@@ -787,6 +765,8 @@ public class SpoutRegion extends Region {
 		entityManager.copyAllSnapshots();
 
 		snapshotManager.copyAllSnapshots();
+		
+		dynamicBlockTree.setRegionThread(Thread.currentThread());
 
 		boolean empty = false;
 		Cube cube;
@@ -1130,8 +1110,10 @@ public class SpoutRegion extends Region {
 		}
 		}
 	}
-
-	public void haltRun() {
+	
+	@Override
+	public int getMaxStage() {
+		return 2;
 	}
 
 	private int reapX = 0, reapY = 0, reapZ = 0;
@@ -1459,7 +1441,10 @@ public class SpoutRegion extends Region {
 		}
 	}
 
-	public void runPhysics(int sequence) throws InterruptedException {
+	public void runPhysics(int sequence) {
+		
+		dynamicBlockTree.setRegionThread(Thread.currentThread());
+
 		if (sequence == -1) {
 			runLocalPhysics();
 		} else if (sequence == this.updateSequence) {
@@ -1467,7 +1452,7 @@ public class SpoutRegion extends Region {
 		}
 	}
 
-	public void runLocalPhysics() throws InterruptedException {
+	public void runLocalPhysics() {
 		boolean updated = true;
 
 		while (updated) {
@@ -1479,16 +1464,17 @@ public class SpoutRegion extends Region {
 		}
 	}
 
-	public void runGlobalPhysics() throws InterruptedException {
+	public void runGlobalPhysics() {
 		SpoutChunk c;
 		while ((c = this.globalPhysicsChunkQueue.poll()) != null) {
 			c.runGlobalPhysics();
 		}
 	}
 
-	public void runDynamicUpdates(long time, int sequence) throws InterruptedException {
+	public void runDynamicUpdates(long time, int sequence) {
 		scheduler.addUpdates(dynamicBlockTree.getLastUpdates());
 		dynamicBlockTree.resetLastUpdates();
+		dynamicBlockTree.setRegionThread(Thread.currentThread());
 
 		if (sequence == -1) {
 			runLocalDynamicUpdates(time);
@@ -1501,7 +1487,7 @@ public class SpoutRegion extends Region {
 		return dynamicBlockTree.getFirstDynamicUpdateTime();
 	}
 
-	public void runLocalDynamicUpdates(long time) throws InterruptedException {
+	public void runLocalDynamicUpdates(long time) {
 		long currentTime = getWorld().getAge();
 		if (time > currentTime) {
 			time = currentTime;
@@ -1510,7 +1496,7 @@ public class SpoutRegion extends Region {
 		multiRegionUpdates = dynamicBlockTree.updateDynamicBlocks(currentTime, time);
 	}
 
-	public void runGlobalDynamicUpdates() throws InterruptedException {
+	public void runGlobalDynamicUpdates() {
 		long currentTime = getWorld().getAge();
 		if (multiRegionUpdates != null) {
 			boolean updated = false;
@@ -1525,7 +1511,7 @@ public class SpoutRegion extends Region {
 
 	int lightingUpdates = 0;
 
-	public void runLighting(int sequence) throws InterruptedException {
+	public void runLighting(int sequence) {
 		if (sequence != this.updateSequence) {
 			return;
 		}
@@ -1635,10 +1621,6 @@ public class SpoutRegion extends Region {
 	@Override
 	public String toString() {
 		return "SpoutRegion{ ( " + getX() + ", " + getY() + ", " + getZ() + "), World: " + this.getWorld() + "}";
-	}
-
-	public Thread getExceutionThread() {
-		return executionThread;
 	}
 
 	public boolean inputStreamExists(int x, int y, int z) {
@@ -2179,6 +2161,16 @@ public class SpoutRegion extends Region {
 			return true;
 		}
 		
+	}
+
+	@Override
+	public Thread getExecutionThread() {
+		return executionThread;
+	}
+	
+	@Override
+	public void setExecutionThread(Thread t) {
+		this.executionThread = t;
 	}
 
 }

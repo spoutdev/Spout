@@ -26,59 +26,13 @@
  */
 package org.spout.engine.util.thread;
 
-import org.spout.api.Engine;
-import org.spout.api.scheduler.Scheduler;
-import org.spout.engine.SpoutEngine;
-import org.spout.engine.scheduler.SpoutScheduler;
 
-public abstract class AsyncManager {
-	private final int maxStage;
-	private final Engine engine; // null means that this AsyncManager is the Server
-	private final AsyncExecutor executor;
-
-	public AsyncManager(int maxStage, AsyncExecutor executor) {
-		this.executor = executor;
-		engine = null;
-		this.maxStage = maxStage;
-		executor.setManager(this);
-	}
-
-	public AsyncManager(int maxStage, AsyncExecutor executor, Engine server) {
-		this.executor = executor;
-		this.engine = server;
-		this.maxStage = maxStage;
-		executor.setManager(this);
-		registerWithScheduler(((SpoutEngine) server).getScheduler());
-	}
-
-	public void registerWithScheduler(Scheduler scheduler) {
-		((SpoutScheduler) scheduler).addAsyncExecutor(executor);
-	}
-
-	public Engine getEngine() {
-		if (engine != null) {
-			return engine;
-		}
-
-		if (!(this instanceof Engine)) {
-			throw new IllegalStateException("Only the Engine object itself should have a null engine reference");
-		}
-
-		return (Engine) this;
-	}
-
-	/**
-	 * Gets the associated AsyncExecutor
-	 * @return the executor
-	 */
-	public final AsyncExecutor getExecutor() {
-		return executor;
-	}
+public interface AsyncManager {
 
 	/**
 	 * This method is called directly before preSnapshot is called
 	 */
-	public abstract void finalizeRun() throws InterruptedException;
+	public void finalizeRun();
 
 	/**
 	 * This method is called directly before copySnapshotRun and is a MONITOR
@@ -86,19 +40,19 @@ public abstract class AsyncManager {
 	 * <br>
 	 * It occurs after the finalize stage and before the copy snapshot stage.
 	 */
-	public abstract void preSnapshotRun() throws InterruptedException;
+	public void preSnapshotRun();
 
 	/**
 	 * This method is called in order to update the snapshot at the end of each
 	 * tick
 	 */
-	public abstract void copySnapshotRun() throws InterruptedException;
+	public void copySnapshotRun();
 
 	/**
 	 * This method is called in order to start a new tick
 	 * @param delta the time since the last tick
 	 */
-	public abstract void startTickRun(int stage, long delta) throws InterruptedException;
+	public void startTickRun(int stage, long delta);
 	
 	/**
 	 * This method is called to execute physics for blocks local to the Region.  
@@ -106,18 +60,18 @@ public abstract class AsyncManager {
 	 * @param sequence -1 for local, 0 - 26 for which sequence
 	 * @throws InterruptedException
 	 */
-	public abstract void runPhysics(int sequence) throws InterruptedException;
+	public void runPhysics(int sequence);
 	
 	/**
 	 * This method is called to execute dynamic updates for blocks in the Region.  
 	 * It might be called multiple times per tick, the sequence number indicates
 	 * which lists to check
 	 * 
+	 * @param threshold
 	 * @param sequence -1 for local, 0 - 26 for which sequence
-	 * @param time the time to use for the updates
 	 * @throws InterruptedException
 	 */
-	public abstract void runDynamicUpdates(long time, int sequence) throws InterruptedException;
+	public void runDynamicUpdates(long threshold, int sequence);
 	
 	/**
 	 * This method is called to update lighting. 
@@ -125,37 +79,37 @@ public abstract class AsyncManager {
 	 * @param sequence -1 for local, 0 - 26 for which sequence
 	 * @throws InterruptedException
 	 */
-	public abstract void runLighting(int sequence) throws InterruptedException;
+	public void runLighting(int sequence);
 
 	/**
 	 * Gets the sequence number associated with this manager
 	 * 
 	 * @return the sequence number, of -1 for none
 	 */
-	public int getSequence() {
-		return -1;
-	}
+	public int getSequence();
 	
 	/**
 	 * This method is called to determine the earliest available dynamic update time
 	 * 
 	 * @return the earliest pending dynamic block update
 	 */
-	public abstract long getFirstDynamicUpdateTime();
+	public long getFirstDynamicUpdateTime();
 
 	/**
-	 * This method is called when the associated executor is halted and occurs
-	 * right after the copySnapshotRun() method call.
-	 * <p/>
-	 * This method is not called if the executor is halted before being started.
+	 * Gets the execution thread associated with this manager
+	 * 
+	 * @return
 	 */
-	public abstract void haltRun() throws InterruptedException;
-
+	public Thread getExecutionThread();
+	
 	/**
-	 * Gets the number of stages this manager requires per tick
-	 * @return the number of stages
+	 * Sets the execution thread associated with this manager
 	 */
-	public final int getStages() {
-		return maxStage;
-	}
+	public void setExecutionThread(Thread t);
+	
+	/**
+	 * Gets the highest stage for the start tick task
+	 */
+	public int getMaxStage();
+
 }

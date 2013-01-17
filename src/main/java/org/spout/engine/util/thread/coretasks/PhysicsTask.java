@@ -26,24 +26,16 @@
  */
 package org.spout.engine.util.thread.coretasks;
 
-import org.spout.engine.util.thread.AsyncExecutor;
-import org.spout.engine.util.thread.ManagementRunnable;
+import org.spout.engine.util.thread.AsyncManager;
 
-public class PhysicsTask extends ManagementRunnable {
-	private static final long serialVersionUID = 1L;
+public class PhysicsTask extends SequencedManagerRunnableFactory {
 	
-	private int sequence;
-
 	@Override
-	public void run(AsyncExecutor executor) throws InterruptedException {
-		executor.getManager().runPhysics(sequence);
-	}
-	
-	public void setSequence(int sequence) {
-		this.sequence = sequence;
-	}
-	
-	public int getSequence() {
-		return sequence;
+	public ManagerRunnable getTask(final AsyncManager manager, final int sequence) {
+		return new ManagerRunnable(manager) {
+			public void runTask() {
+				manager.runPhysics(sequence);
+			}
+		};
 	}
 }

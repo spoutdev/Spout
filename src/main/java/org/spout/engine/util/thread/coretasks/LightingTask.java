@@ -26,24 +26,21 @@
  */
 package org.spout.engine.util.thread.coretasks;
 
-import org.spout.engine.util.thread.AsyncExecutor;
-import org.spout.engine.util.thread.ManagementRunnable;
+import org.spout.engine.util.thread.AsyncManager;
 
-public class LightingTask extends ManagementRunnable {
-	private static final long serialVersionUID = 1L;
-	
-	private int sequence;
+public class LightingTask extends SequencedManagerRunnableFactory {
 
 	@Override
-	public void run(AsyncExecutor executor) throws InterruptedException {
-		executor.getManager().runLighting(sequence);
+	public ManagerRunnable getTask(final AsyncManager manager, final int sequence) {
+		return new ManagerRunnable(manager) {
+			public void runTask() {
+				manager.runLighting(sequence);
+			}
+		};
 	}
 	
-	public void setSequence(int sequence) {
-		this.sequence = sequence;
-	}
-	
-	public int getSequence() {
-		return sequence;
+	@Override
+	public int getMinSequence() {
+		return 0;
 	}
 }

@@ -27,18 +27,22 @@
 package org.spout.engine.scheduler;
 
 import java.awt.Canvas;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 
-import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
 import org.spout.api.Client;
 import org.spout.api.Engine;
@@ -48,7 +52,6 @@ import org.spout.api.math.Vector2;
 import org.spout.api.plugin.CommonPlugin;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.Scheduler;
-import org.spout.api.scheduler.SnapshotLock;
 import org.spout.api.scheduler.Task;
 import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.scheduler.TickStage;
@@ -58,15 +61,21 @@ import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.SpoutRenderer;
-import org.spout.engine.SpoutServer;
 import org.spout.engine.protocol.NetworkSendThreadPool;
-import org.spout.engine.util.thread.AsyncExecutor;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
-import org.spout.engine.util.thread.ThreadsafetyManager;
+import org.spout.engine.util.thread.AsyncManager;
+import org.spout.engine.util.thread.coretasks.CopySnapshotTask;
+import org.spout.engine.util.thread.coretasks.DynamicUpdatesTask;
+import org.spout.engine.util.thread.coretasks.FinalizeTask;
+import org.spout.engine.util.thread.coretasks.LightingTask;
+import org.spout.engine.util.thread.coretasks.ManagerRunnableFactory;
+import org.spout.engine.util.thread.coretasks.PhysicsTask;
+import org.spout.engine.util.thread.coretasks.PreSnapshotTask;
+import org.spout.engine.util.thread.coretasks.StartTickTask;
 import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
-import org.spout.engine.world.dynamic.DynamicBlockUpdateTree;
+import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 
 /**
  * A class which handles scheduling for the engine {@link SpoutTask}s.<br>
@@ -138,7 +147,7 @@ public final class SpoutScheduler implements Scheduler {
 	/**
 	 * A list of all AsyncManagers
 	 */
-	private final SnapshotableArrayList<AsyncExecutor> asyncExecutors = new SnapshotableArrayList<AsyncExecutor>(snapshotManager, null);
+	private final SnapshotableArrayList<AsyncManager> asyncManagers = new SnapshotableArrayList<AsyncManager>(snapshotManager, null);
 	/**
 	 * Update count for physics and dynamic updates
 	 */
@@ -156,6 +165,22 @@ public final class SpoutScheduler implements Scheduler {
 	private final ConcurrentLinkedQueue<Runnable> coreTaskQueue = new ConcurrentLinkedQueue<Runnable>();
 	private final LinkedBlockingDeque<Runnable> finalTaskQueue = new LinkedBlockingDeque<Runnable>();
 	private final ConcurrentLinkedQueue<Runnable> lastTickTaskQueue = new ConcurrentLinkedQueue<Runnable>();
+	
+	// Scheduler tasks
+	private final StartTickTask[] startTickTask = new StartTickTask[] {
+			new StartTickTask(0),
+			new StartTickTask(1),
+			new StartTickTask(2)
+	};
+	private final DynamicUpdatesTask dynamicUpdatesTask = new DynamicUpdatesTask();
+	private final PhysicsTask physicsTask = new PhysicsTask();
+	private final LightingTask lightingTask = new LightingTask();
+	private final FinalizeTask finalizeTask = new FinalizeTask();
+	private final PreSnapshotTask preSnapshotTask = new PreSnapshotTask();
+	private final CopySnapshotTask copySnapshotTask = new CopySnapshotTask();
+	
+	// scheduler executor service
+	private final ExecutorService executorService;
 
 	public long getFps(){
 		return renderThread.getFps();
@@ -175,8 +200,10 @@ public final class SpoutScheduler implements Scheduler {
 		mainThread = new MainThread();
 		renderThread = new RenderThread();
 		guiThread = new GUIThread();
-
-		taskManager = new SpoutTaskManager(this, true, mainThread);
+		
+		executorService = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutScheduler - async manager executor service", true));
+		
+		taskManager = new SpoutTaskManager(this, mainThread);
 	}
 	
 	
@@ -307,7 +334,6 @@ public final class SpoutScheduler implements Scheduler {
 	private class MainThread extends Thread {
 		public MainThread() {
 			super("MainThread");
-			ThreadsafetyManager.setMainThread(this);
 		}
 
 		@Override
@@ -366,9 +392,9 @@ public final class SpoutScheduler implements Scheduler {
 
 			heavyLoad.set(false);
 
-			asyncExecutors.copySnapshot();
+			asyncManagers.copySnapshot();
 			try {
-				copySnapshotWithLock(asyncExecutors.get());
+				copySnapshotWithLock(asyncManagers.get());
 			} catch (InterruptedException ex) {
 				Spout.getLogger().log(Level.SEVERE, "Interrupt while running final snapshot copy: {0}", ex.getMessage());
 			}
@@ -399,48 +425,30 @@ public final class SpoutScheduler implements Scheduler {
 
 			runLastTickTasks();
 
-			asyncExecutors.copySnapshot();
+			asyncManagers.copySnapshot();
 			try {
-				copySnapshotWithLock(asyncExecutors.get());
+				copySnapshotWithLock(asyncManagers.get());
 			} catch (InterruptedException ex) {
 				Spout.getLogger().log(Level.SEVERE, "Interrupt while running final snapshot copy: {0}", ex.getMessage());
 			}
 
-			asyncExecutors.copySnapshot();
-
-			// Halt all executors, except the Server
-			for (AsyncExecutor e : asyncExecutors.get()) {
-				if (!(e.getManager() instanceof SpoutServer)) {
-					if (!e.haltExecutor()) {
-						throw new IllegalStateException("Unable to halt executor, " + e + " for " + e.getManager());
-					}
-				}
-			}
+			asyncManagers.copySnapshot();
 
 			try {
-				copySnapshotWithLock(asyncExecutors.get());
+				copySnapshotWithLock(asyncManagers.get());
 			} catch (InterruptedException ex) {
 				Spout.getLogger().log(Level.SEVERE, "Error while halting all executors: {0}", ex.getMessage());
 			}
 
-			asyncExecutors.copySnapshot();
-
-			// Halt the executor for the Server
-			for (AsyncExecutor e : asyncExecutors.get()) {
-				if (!(e.getManager() instanceof SpoutEngine)) {
-					throw new IllegalStateException("Only the engine should be left to shutdown");
-				}
-
-				if (!e.haltExecutor()) {
-					throw new IllegalStateException("Unable to halt engine executor");
-				}
-			}
+			asyncManagers.copySnapshot();
 
 			try {
-				copySnapshotWithLock(asyncExecutors.get());
+				copySnapshotWithLock(asyncManagers.get());
 			} catch (InterruptedException ex) {
 				engine.getLogger().log(Level.SEVERE, "Error while shutting down engine: {0}", ex.getMessage());
 			}
+			
+			// Shutdown manager thread pool
 
 			NetworkSendThreadPool.shutdown();
 
@@ -528,16 +536,16 @@ public final class SpoutScheduler implements Scheduler {
 	 * Adds an async manager to the scheduler
 	 */
 	@DelayedWrite
-	public void addAsyncExecutor(AsyncExecutor manager) {
-		asyncExecutors.add(manager);
+	public boolean addAsyncManager(AsyncManager manager) {
+		return asyncManagers.add(manager);
 	}
 
 	/**
 	 * Removes an async manager from the scheduler
 	 */
 	@DelayedWrite
-	public void removeAsyncExecutor(AsyncExecutor manager) {
-		asyncExecutors.remove(manager);
+	public boolean removeAsyncManager(AsyncManager manager) {
+		return asyncManagers.remove(manager);
 	}
 
 	/**
@@ -592,7 +600,7 @@ public final class SpoutScheduler implements Scheduler {
 	 */
 	private boolean tick(long delta) throws InterruptedException {
 		TickStage.setStage(TickStage.TICKSTART);
-		asyncExecutors.copySnapshot();
+		asyncManagers.copySnapshot();
 
 		taskManager.heartbeat(delta);
 
@@ -601,47 +609,22 @@ public final class SpoutScheduler implements Scheduler {
 		}
 		parallelTaskManager.heartbeat(delta);
 
-		List<AsyncExecutor> executors = asyncExecutors.get();
-
-		int stage = 0;
-		boolean allStagesComplete = false;
-		boolean joined = false;
+		List<AsyncManager> managers = asyncManagers.get();
 
 		TickStage.setStage(TickStage.STAGE1);
 
-		while (!allStagesComplete) {
-
+		for (int stage = 0; stage < this.startTickTask.length; stage++) {
 			if (stage == 0) {
 				TickStage.setStage(TickStage.STAGE1);
 			} else {
 				TickStage.setStage(TickStage.STAGE2P);
 			}
-
-			allStagesComplete = true;
-
-			for (AsyncExecutor e : executors) {
-				if (stage < e.getManager().getStages()) {
-					allStagesComplete = false;
-					if (!e.startTick(stage, delta)) {
-						return false;
-					}
-				} else {
-					continue;
-				}
-			}
-
-			joined = false;
-			while (!joined) {
-				try {
-					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
-					joined = true;
-				} catch (TimeoutException e) {
-					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-						logLongDurationTick("Stage " + stage, executors);
-					}
-				}
-			}
-			stage++;
+			
+			startTickTask[stage].setDelta(delta);
+			
+			int tickStage = stage == 0 ? TickStage.STAGE1 : TickStage.STAGE2P;
+			
+			runTasks(managers, startTickTask[stage], "Stage " + stage, tickStage);
 		}
 
 		lockSnapshotLock();
@@ -656,7 +639,7 @@ public final class SpoutScheduler implements Scheduler {
 			int uP = 1;
 			while ((uD + uP) > 0 && totalUpdates < UPDATE_THRESHOLD) {
 				if (SpoutConfiguration.DYNAMIC_BLOCKS.getBoolean()) {
-					doDynamicUpdates(executors);
+					doDynamicUpdates(managers);
 				}
 
 				uD = updates.getAndSet(0);
@@ -664,7 +647,7 @@ public final class SpoutScheduler implements Scheduler {
 				dynamicUpdates += uD;
 
 				if (SpoutConfiguration.BLOCK_PHYSICS.getBoolean()) {
-					doPhysics(executors);
+					doPhysics(managers);
 				}
 				
 				uP = updates.getAndSet(0);
@@ -674,15 +657,15 @@ public final class SpoutScheduler implements Scheduler {
 
 			updates.set(1);
 
-			doLighting(executors);
+			doLighting(managers);
 
 			if (totalUpdates >= UPDATE_THRESHOLD) {
 				Spout.getLogger().warning("Block updates per tick of " + totalUpdates + " exceeded the threshold " + UPDATE_THRESHOLD + "; " + dynamicUpdates + " dynamic updates, " + physicsUpdates + " block physics updates and " + lightUpdates + " lighting updates");
 			}
 
-			finalizeTick(executors);
+			finalizeTick(managers);
 
-			copySnapshot(executors);
+			copySnapshot(managers);
 
 			runCoreTasks();
 
@@ -693,41 +676,16 @@ public final class SpoutScheduler implements Scheduler {
 		return true;
 	}
 
-	private void doPhysics(List<AsyncExecutor> executors) throws InterruptedException {
+	private void doPhysics(List<AsyncManager> managers) throws InterruptedException {
 		int passStartUpdates = updates.get() - 1;
 		int startUpdates = updates.get();
 		while (passStartUpdates < updates.get() && updates.get() < startUpdates + UPDATE_THRESHOLD) {
 			passStartUpdates = updates.get();
-			for (int sequence = -1; sequence < 27 && updates.get() < startUpdates + UPDATE_THRESHOLD; sequence++) {
-				if (sequence == -1) {
-					TickStage.setStage(TickStage.PHYSICS);
-				} else {
-					TickStage.setStage(TickStage.GLOBAL_PHYSICS);
-				}
-
-				for (AsyncExecutor e : executors) {
-					if (!e.doPhysics(sequence)) {
-						throw new IllegalStateException("Attempt made to do physics while the previous operation was still active");
-					}
-				}
-
-				boolean joined = false;
-				while (!joined) {
-					try {
-						AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
-						joined = true;
-					} catch (TimeoutException e) {
-						if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-							logLongDurationTick("Local Physics", executors);
-						}
-					}
-				}
-
-			}
+			this.runTasks(managers, physicsTask, "Physics", TickStage.GLOBAL_PHYSICS, TickStage.PHYSICS);
 		}
 	}
 
-	private void doDynamicUpdates(List<AsyncExecutor> executors) throws InterruptedException {
+	private void doDynamicUpdates(List<AsyncManager> managers) throws InterruptedException {
 		int passStartUpdates = updates.get() - 1;
 		int startUpdates = updates.get();
 
@@ -735,8 +693,8 @@ public final class SpoutScheduler implements Scheduler {
 
 		long earliestTime = END_OF_THE_WORLD;
 
-		for (AsyncExecutor e : executors) {
-			long firstTime = e.getManager().getFirstDynamicUpdateTime();
+		for (AsyncManager e : managers) {
+			long firstTime = e.getFirstDynamicUpdateTime();
 			if (firstTime < earliestTime) {
 				earliestTime = firstTime;
 			}
@@ -745,60 +703,17 @@ public final class SpoutScheduler implements Scheduler {
 		while (passStartUpdates < updates.get() && updates.get() < startUpdates + UPDATE_THRESHOLD) {
 			passStartUpdates = updates.get();
 
-			for (int sequence = -1; sequence < 27 && updates.get() < startUpdates + UPDATE_THRESHOLD; sequence++) {
-				if (sequence == -1) {
-					TickStage.setStage(TickStage.DYNAMIC_BLOCKS);
-				} else {
-					TickStage.setStage(TickStage.GLOBAL_DYNAMIC_BLOCKS);
-				}
-				long threshold = earliestTime + PULSE_EVERY - 1;
+			long threshold = earliestTime + PULSE_EVERY - 1;
+				
+			dynamicUpdatesTask.setThreshold(threshold);
 
-				for (AsyncExecutor e : executors) {
-					if (!e.doDynamicUpdates(threshold, sequence)) {
-						throw new IllegalStateException("Attempt made to pulse while the previous operation was still active");
-					}
-				}
-
-				boolean joined = false;
-				while (!joined) {
-					try {
-						AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
-						joined = true;
-					} catch (TimeoutException e) {
-						if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-							logLongDurationTick("Local Dynamic Blocks", executors);
-						}
-					}
-				}
-			}
+			this.runTasks(managers, dynamicUpdatesTask, "Dynamic Blocks", TickStage.GLOBAL_DYNAMIC_BLOCKS, TickStage.DYNAMIC_BLOCKS);
 		}
 	}
 
-	private void doLighting(List<AsyncExecutor> executors) throws InterruptedException {
+	private void doLighting(List<AsyncManager> managers) throws InterruptedException {
 
-		TickStage.setStage(TickStage.LIGHTING);
-		
-		for (int sequence = 0; sequence < 27; sequence++) {
-
-			for (AsyncExecutor e : executors) {
-				if (!e.doLighting(sequence)) {
-					throw new IllegalStateException("Attempt made to do lighting while the previous operation was still active");
-				}
-			}
-
-			boolean joined = false;
-			while (!joined) {
-				try {
-					AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
-					joined = true;
-				} catch (TimeoutException e) {
-					if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-						logLongDurationTick("Lighting", executors);
-					}
-				}
-			}
-
-		}
+		this.runTasks(managers, lightingTask, "Lighting", TickStage.LIGHTING);
 	}
 
 	public void addUpdates(int inc) {
@@ -817,32 +732,14 @@ public final class SpoutScheduler implements Scheduler {
 		}
 	}
 
-	private void finalizeTick(List<AsyncExecutor> executors) throws InterruptedException {
-		TickStage.setStage(TickStage.FINALIZE);
-
-		for (AsyncExecutor e : executors) {
-			if (!e.finalizeTick()) {
-				throw new IllegalStateException("Attempt made to finalize a tick before snapshot copy while the previous operation was still active");
-			}
-		}
-
-		boolean joined = false;
-		while (!joined) {
-			try {
-				AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
-				joined = true;
-			} catch (TimeoutException e) {
-				if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-					logLongDurationTick("Finalize", executors);
-				}
-			}
-		}
+	private void finalizeTick(List<AsyncManager> managers) throws InterruptedException {
+		this.runTasks(managers, finalizeTask, "Finalize", TickStage.FINALIZE);
 	}
 
-	private void copySnapshotWithLock(List<AsyncExecutor> executors) throws InterruptedException {
+	private void copySnapshotWithLock(List<AsyncManager> managers) throws InterruptedException {
 		lockSnapshotLock();
 		try {
-			copySnapshot(executors);
+			copySnapshot(managers);
 
 			TickStage.setStage(TickStage.TICKSTART);
 		} finally {
@@ -850,47 +747,11 @@ public final class SpoutScheduler implements Scheduler {
 		}
 	}
 
-	private void copySnapshot(List<AsyncExecutor> executors) throws InterruptedException {
+	private void copySnapshot(List<AsyncManager> managers) throws InterruptedException {
 
-		TickStage.setStage(TickStage.PRESNAPSHOT);
+		this.runTasks(managers, preSnapshotTask, "Pre-snapshot", TickStage.PRESNAPSHOT);
 
-		for (AsyncExecutor e : executors) {
-			if (!e.preSnapshot()) {
-				throw new IllegalStateException("Attempt made to enter the pre-snapshot stage for a tick while the previous operation was still active");
-			}
-		}
-
-		boolean joined = false;
-		while (!joined) {
-			try {
-				AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
-				joined = true;
-			} catch (TimeoutException e) {
-				if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-					logLongDurationTick("Pre Snapshot", executors);
-				}
-			}
-		}
-
-		TickStage.setStage(TickStage.SNAPSHOT);
-
-		for (AsyncExecutor e : executors) {
-			if (!e.copySnapshot()) {
-				throw new IllegalStateException("Attempt made to copy the snapshot for a tick while the previous operation was still active");
-			}
-		}
-
-		joined = false;
-		while (!joined) {
-			try {
-				AsyncExecutorUtils.pulseJoinAll(executors, (PULSE_EVERY << 4));
-				joined = true;
-			} catch (TimeoutException e) {
-				if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-					logLongDurationTick("Copy Snapshot", executors);
-				}
-			}
-		}
+		this.runTasks(managers, copySnapshotTask, "Copy-snapshot", TickStage.SNAPSHOT);
 	}
 
 	private void lockSnapshotLock() {
@@ -928,6 +789,49 @@ public final class SpoutScheduler implements Scheduler {
 
 	private void unlockSnapshotLock() {
 		snapshotLock.writeUnlock();
+	}
+	
+	private void runTasks(List<AsyncManager> managers, ManagerRunnableFactory taskFactory, String stageString, int tickStage) {
+		runTasks(managers, taskFactory, stageString, tickStage, tickStage);
+	}
+	
+	private void runTasks(List<AsyncManager> managers, ManagerRunnableFactory taskFactory, String stageString, int globalStage, int localStage) {
+		int maxSequence = taskFactory.getMaxSequence();
+		for (int s = taskFactory.getMinSequence(); s <= maxSequence; s++) {
+			if (s == -1) {
+				TickStage.setStage(localStage);
+			} else {
+				TickStage.setStage(globalStage);
+			}
+			List<Future<?>> futures = new ArrayList<Future<?>>(managers.size());
+			for (AsyncManager manager : managers) {
+				if (s == -1 || s == manager.getSequence()) {
+					Runnable r = taskFactory.getTask(manager, s);
+					if (r != null) {
+						futures.add(executorService.submit(r));
+					}
+				}
+			}
+			for (int i = 0; i < futures.size(); i++) {
+				boolean done = false;
+				while (!done) {
+					done = true;
+					try {
+						futures.get(i).get(PULSE_EVERY << 4, TimeUnit.MILLISECONDS);
+					} catch (InterruptedException e) {
+						Spout.getLogger().info("Warning: main thread interrupted while waiting on tick stage task, " + taskFactory.getClass().getName());
+					} catch (ExecutionException e) {
+						Spout.getLogger().info("Exception thrown when executing task, " + taskFactory.getClass().getName() + ", " + e.getMessage());
+						e.printStackTrace();
+					} catch (TimeoutException e) {
+						if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+							logLongDurationTick(stageString, managers);
+						}
+						done = false;
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -1122,7 +1026,7 @@ public final class SpoutScheduler implements Scheduler {
 		coreTaskQueue.add(r);
 	}
 
-	private void logLongDurationTick(String stage, Iterable<AsyncExecutor> executors) {
+	private void logLongDurationTick(String stage, Iterable<AsyncManager> executors) {
 		/*
 		engine.getLogger().info("Tick stage (" + stage + ") had not completed after " + (PULSE_EVERY << 4) + "ms");
 		AsyncExecutorUtils.dumpAllStacks();

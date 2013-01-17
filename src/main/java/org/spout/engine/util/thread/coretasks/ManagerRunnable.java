@@ -28,31 +28,19 @@ package org.spout.engine.util.thread.coretasks;
 
 import org.spout.engine.util.thread.AsyncManager;
 
-
-public class StartTickTask extends GlobalManagerRunnableFactory {
-
-	private final int stage;
-	private long delta;
+public abstract class ManagerRunnable implements Runnable {
 	
-	public StartTickTask(int stage) {
-		this.stage = stage;
+	private final AsyncManager manager;
+	
+	public ManagerRunnable(AsyncManager manager) {
+		this.manager = manager;
 	}
-	
+
 	@Override
-	public ManagerRunnable getTask(final AsyncManager manager, final int sequence) {
-		final long delta = this.delta;
-		if (manager.getMaxStage() < stage) {
-			return null;
-		}
-		return new ManagerRunnable(manager) {
-			public void runTask() {
-				manager.startTickRun(stage, delta);
-			}
-		};
-	}
-	
-	public void setDelta(long delta) {
-		this.delta = delta;
+	public final void run() {
+		manager.setExecutionThread(Thread.currentThread());
+		runTask();
 	}
 
+	protected abstract void runTask();
 }
