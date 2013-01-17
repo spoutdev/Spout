@@ -29,19 +29,27 @@ package org.spout.engine.batcher;
 import org.lwjgl.opengl.GL11;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.geo.cuboid.Cube;
+import org.spout.api.geo.cuboid.Cuboid;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
+import org.spout.api.math.Vector3;
 import org.spout.api.render.BufferContainer;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotBatch;
+import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
 
 /**
  * Represents a group of chunk meshes to be rendered.
  */
-public class ChunkMeshBatchAggregator extends Cube {
+public class ChunkMeshBatchAggregator extends Cuboid {
+
+	public final static int SIZE_X = 4;
+	public final static int SIZE_Y = 4;
+	public final static int SIZE_Z = 4;
+	public final static Vector3 SIZE = new Vector3(SIZE_X, SIZE_Y, SIZE_Z);
+	public final static int COUNT = SIZE_X * SIZE_Y * SIZE_Z;
 
 	private int count = 0;
 
@@ -52,10 +60,44 @@ public class ChunkMeshBatchAggregator extends Cube {
 	private boolean generated = false;
 	private boolean closed = false;
 
-	private BufferContainer bufferContainer;
+	private final BufferContainer bufferContainer[] = new BufferContainer[COUNT];
+
+	private int getIndex(int x, int y, int z){
+		int index = (x - getBase().getChunkX()) * SIZE_Y * SIZE_Z + (y - getBase().getChunkY()) * SIZE_Z + (z - getBase().getChunkZ());
+		
+		//Debug
+		/*System.out.println("Index : " + x + "/"+ y + "/"+ z + " -> " +
+				getBase().getChunkX() + "/" + getBase().getChunkY() + "/" + getBase().getChunkZ() + " -> "+
+				index);*/
+
+		
+		return index;
+	}
+
+	public static Vector3 getBaseFromChunkMesh(ChunkMesh mesh) {
+		Vector3 v = new Vector3(Math.floor((float)mesh.getChunkX() / ChunkMeshBatchAggregator.SIZE_X) * ChunkMeshBatchAggregator.SIZE_X,
+				Math.floor((float)mesh.getChunkY() / ChunkMeshBatchAggregator.SIZE_Y) * ChunkMeshBatchAggregator.SIZE_Y,
+				Math.floor((float)mesh.getChunkZ() / ChunkMeshBatchAggregator.SIZE_Z) * ChunkMeshBatchAggregator.SIZE_Z);
+
+		//Debug
+		//System.out.println("Base : " + mesh.getChunkX() + "/"+ mesh.getChunkY() + "/"+ mesh.getChunkZ() + " -> " + v.getFloorX() + "/" + v.getFloorY() + "/" + v.getFloorZ() + "/");
+
+		return v;
+	}
+
+	public static Vector3 getCoordFromChunkMesh(ChunkMesh mesh) {
+		Vector3 v = new Vector3(Math.floor((float)mesh.getChunkX() / ChunkMeshBatchAggregator.SIZE_X),
+				Math.floor((float)mesh.getChunkY() / ChunkMeshBatchAggregator.SIZE_Y),
+				Math.floor((float)mesh.getChunkZ() / ChunkMeshBatchAggregator.SIZE_Z));
+
+		//Debug
+		//System.out.println("Coord : " + mesh.getChunkX() + "/"+ mesh.getChunkY() + "/"+ mesh.getChunkZ() + " -> " + v.getFloorX() + "/" + v.getFloorY() + "/" + v.getFloorZ() + "/");
+
+		return v;
+	}
 
 	public ChunkMeshBatchAggregator(World world, int x, int y, int z, RenderMaterial material) {
-		super(new Point(world, x << Chunk.BLOCKS.BITS, y << Chunk.BLOCKS.BITS, z << Chunk.BLOCKS.BITS), Chunk.BLOCKS.SIZE);
+		super(new Point(world, x << Chunk.BLOCKS.BITS, y << Chunk.BLOCKS.BITS, z << Chunk.BLOCKS.BITS), SIZE.multiply(Chunk.BLOCKS.SIZE));
 		this.material = material;
 	}
 
@@ -69,12 +111,11 @@ public class ChunkMeshBatchAggregator extends Cube {
 		SnapshotBatch snapshotBatch = new SnapshotBatch(material);
 
 		material.preBatch(snapshotBatch);
-		((BatchVertexRenderer)renderer).setBufferContainer(bufferContainer);
+		((BatchVertexRenderer)renderer).setBufferContainers(bufferContainer);
 		material.postBatch(snapshotBatch);
 
 		renderer.end();
 
-		bufferContainer = null;
 		generated = true;
 	}
 
@@ -93,7 +134,9 @@ public class ChunkMeshBatchAggregator extends Cube {
 			throw new IllegalStateException("Already closed");
 		}
 
-		bufferContainer = null;
+		for(int i = 0; i < bufferContainer.length; i++)
+			bufferContainer[i] = null;
+
 		((BatchVertexRenderer)renderer).release();
 
 		closed = true;
@@ -104,8 +147,8 @@ public class ChunkMeshBatchAggregator extends Cube {
 		return "ChunkMeshBatch [base=" + getBase() + ", size=" + getSize() + "]";
 	}
 
-	public void setSubBatch(BufferContainer bufferContainer) {
-		this.bufferContainer = bufferContainer;
+	public void setSubBatch(BufferContainer bufferContainer, int x, int y, int z) {
+		this.bufferContainer[getIndex(x, y, z)] = bufferContainer;
 	}
 
 	public RenderMaterial getMaterial() {

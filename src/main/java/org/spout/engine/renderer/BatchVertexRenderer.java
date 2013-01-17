@@ -281,6 +281,59 @@ public abstract class BatchVertexRenderer implements Renderer {
 		numVertices = bufferContainer.element;
 	}
 
+	public void setBufferContainers(BufferContainer []bufferContainers) {
+		buffers.clear();
+
+		int first = 0;
+		
+		while(first < bufferContainers.length && bufferContainers[first] == null)
+			first++;
+		
+		if(first == bufferContainers.length)
+			throw new IllegalStateException("BufferContainers array can't be fully empty");
+		
+		//For each layout
+		for(Entry<Integer, Object> entry : bufferContainers[first].getBuffers().entrySet()){
+
+			int layout = entry.getKey();
+			int count = 0;
+
+			if(entry.getValue() instanceof TFloatArrayList){
+
+				//First pass, count element
+				for(BufferContainer bufferContainer : bufferContainers){
+					if(bufferContainer == null) continue;
+					Object buffer = bufferContainer.getBuffers().get(layout);
+					count += ((TFloatArrayList)buffer).size();
+				}
+
+				//Allocate with result (to avoid constant reallocation during copy)
+				FloatBuffer floatBuffer = BufferUtils.createFloatBuffer(count);
+				floatBuffer.clear();
+
+				//Second pass, add element
+				for(BufferContainer bufferContainer : bufferContainers){
+					if(bufferContainer == null) continue;
+					Object buffer = bufferContainer.getBuffers().get(layout);
+					floatBuffer.put(((TFloatArrayList)buffer).toArray());
+				}
+
+				floatBuffer.flip();
+
+				buffers.put(layout, floatBuffer);
+
+			}else{
+				throw new IllegalStateException("Buffer different of TFloatArrayList not yet supported");
+			}
+		}
+
+		//Count vertices
+		numVertices = 0;	
+		for(BufferContainer bufferContainer : bufferContainers)
+			if(bufferContainer != null)
+				numVertices += bufferContainer.element;	
+	}
+	
 	public void setGLBufferContainer(GLBufferContainer container) {
 		buffers.clear();
 

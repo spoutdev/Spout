@@ -39,11 +39,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
+import org.spout.api.math.Vector3;
 import org.spout.api.render.BufferContainer;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotRender;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
-import org.spout.engine.SpoutClient;
 import org.spout.engine.batcher.ChunkMeshBatchAggregator;
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.world.SpoutWorld;
@@ -169,14 +169,15 @@ public class WorldRenderer {
 		}
 
 		private void handle(BufferContainer batchVertex, long limit){
-			ChunkMeshBatchAggregator chunkMeshBatch = getBatchAggregator(chunkMesh.getChunkX(), chunkMesh.getChunkY(), chunkMesh.getChunkZ(), material);
+			ChunkMeshBatchAggregator chunkMeshBatch = getBatchAggregator(chunkMesh, material);
 
 			if(chunkMeshBatch==null){
-				chunkMeshBatch = new ChunkMeshBatchAggregator(world,chunkMesh.getChunkX(), chunkMesh.getChunkY(), chunkMesh.getChunkZ(),material);
+				Vector3 base = ChunkMeshBatchAggregator.getBaseFromChunkMesh(chunkMesh);
+				chunkMeshBatch = new ChunkMeshBatchAggregator(world, base.getFloorX(), base.getFloorY(), base.getFloorZ(), material);
 				addBatchAggregator(chunkMeshBatch);
 			}
 
-			chunkMeshBatch.setSubBatch(batchVertex);
+			chunkMeshBatch.setSubBatch(batchVertex,chunkMesh.getChunkX(), chunkMesh.getChunkY(), chunkMesh.getChunkZ());
 			chunkMeshBatch.update();
 		}
 
@@ -211,6 +212,7 @@ public class WorldRenderer {
 		list.add(batch);
 
 		//Add in chunkRenderersByPosition
+		
 		Map<RenderMaterial, ChunkMeshBatchAggregator> map = chunkRenderersByPosition.get(batch.getX(), batch.getY(), batch.getZ());
 		if(map == null){
 			map = new HashMap<RenderMaterial, ChunkMeshBatchAggregator>();
@@ -228,8 +230,8 @@ public class WorldRenderer {
 	 * @param z
 	 */
 	private void cleanBatchAggregator(World world, ChunkMesh chunkMesh) {
-		Map<RenderMaterial, ChunkMeshBatchAggregator> aggregatorPerMaterial =
-				chunkRenderersByPosition.get(chunkMesh.getChunkX(), chunkMesh.getChunkY(), chunkMesh.getChunkZ());
+		Vector3 position = ChunkMeshBatchAggregator.getCoordFromChunkMesh(chunkMesh);
+		Map<RenderMaterial, ChunkMeshBatchAggregator> aggregatorPerMaterial = chunkRenderersByPosition.get(position.getFloorX(),position.getFloorY(),position.getFloorZ());
 
 		//Can be null if the thread receive a unload model of a model wich has been send previously to load be not done
 		if(aggregatorPerMaterial != null){
@@ -264,19 +266,30 @@ public class WorldRenderer {
 				aggregatorPerMaterial.remove(material);
 
 			if(aggregatorPerMaterial.isEmpty())
-				chunkRenderersByPosition.remove(chunkMesh.getChunkX(), chunkMesh.getChunkY(), chunkMesh.getChunkZ());
+				chunkRenderersByPosition.remove(position.getFloorX(),position.getFloorY(),position.getFloorZ());
 
 		}
 	}
-
+	
 	/**
 	 * Gets the batch aggregator corresponding wuth the given mesh and material.
 	 * @param mesh
 	 * @param material
 	 * @return
 	 */
-	private ChunkMeshBatchAggregator getBatchAggregator(int x, int y, int z, RenderMaterial material) {
-		Map<RenderMaterial, ChunkMeshBatchAggregator> map = chunkRenderersByPosition.get( x, y, z);
+	/*private ChunkMeshBatchAggregator getBatchAggregator(int x, int y, int z, RenderMaterial material) {
+		Map<RenderMaterial, ChunkMeshBatchAggregator> map = chunkRenderersByPosition.get(x / ChunkMeshBatchAggregator.SIZE_X,
+				y / ChunkMeshBatchAggregator.SIZE_Y,
+				z / ChunkMeshBatchAggregator.SIZE_Z);
+		if( map == null )
+			return null;
+		return map.get(material);
+	}*/
+
+	private ChunkMeshBatchAggregator getBatchAggregator(
+			ChunkMesh mesh, RenderMaterial material) {
+		Vector3 position = ChunkMeshBatchAggregator.getCoordFromChunkMesh(mesh);
+		Map<RenderMaterial, ChunkMeshBatchAggregator> map = chunkRenderersByPosition.get(position.getFloorX(), position.getFloorY(), position.getFloorZ());
 		if( map == null )
 			return null;
 		return map.get(material);
