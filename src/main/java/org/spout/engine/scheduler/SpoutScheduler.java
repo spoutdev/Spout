@@ -201,7 +201,7 @@ public final class SpoutScheduler implements Scheduler {
 		renderThread = new RenderThread();
 		guiThread = new GUIThread();
 		
-		executorService = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutScheduler - async manager executor service", true));
+		executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2 + 1, new NamedThreadFactory("SpoutScheduler - async manager executor service", true));
 		
 		taskManager = new SpoutTaskManager(this, mainThread);
 	}
