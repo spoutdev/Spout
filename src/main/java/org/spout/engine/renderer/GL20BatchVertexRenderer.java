@@ -98,6 +98,8 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 
 		for(int layout : buffer.getLayout())
 			GL20.glDisableVertexAttribArray(layout);
+
+		buffer.unbind();
 	}
 
 	private void dispose() {

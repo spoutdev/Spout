@@ -40,19 +40,19 @@ public class ComposedFloatBuffer {
 	int []elements;
 	int []layout;
 	int []offset;
-	
+
 	int stride;
 
 	public static final int FLOAT_SIZE = Float.SIZE / Byte.SIZE;
-	
+
 	public ComposedFloatBuffer(int []elements, int[] layouts){
 		if(elements.length != layouts.length)
 			throw new IllegalStateException("Number of elements and layout must be same");
-		
+
 		this.elements = elements;
 		this.layout = layouts;
 		offset = new int[elements.length];
-		
+
 		stride = 0;
 		for(int i = 0; i < elements.length; i++){
 			offset[i] = stride;
@@ -65,14 +65,19 @@ public class ComposedFloatBuffer {
 
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, usage);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
 
 	public void bind(){
 		if(vboId == -1) throw new IllegalStateException("Cannot bind a vertex buffer without data!");
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
-		
+
 		for(int i = 0; i < elements.length; i++)
 			GL20.glVertexAttribPointer(layout[i], elements[i], GL11.GL_FLOAT, false, stride, offset[i]);
+	}
+
+	public void unbind() {
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
 
 	public int[] getElements() {

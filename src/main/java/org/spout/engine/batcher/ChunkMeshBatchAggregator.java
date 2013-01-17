@@ -120,14 +120,13 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 		generated = true;
 
 		//DEBUG
-		/*
-		int vertices = 0;
+		/*int vertices = 0;
 		for(BufferContainer buffer : bufferContainer)
 			if(buffer != null)
 				vertices += buffer.element;
 
-		System.out.println("Batch take " + (System.nanoTime() - start) + " ns for " + count + " elt / " + vertices + " vertices");
-		*/
+		System.out.println("BENCHMARK " + (System.nanoTime() - start) + "\t" + count + "\t" + vertices);*/
+		
 	}
 
 	public void render(RenderMaterial material) {
