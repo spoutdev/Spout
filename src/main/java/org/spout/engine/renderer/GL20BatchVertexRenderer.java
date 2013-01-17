@@ -26,53 +26,61 @@
  */
 package org.spout.engine.renderer;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.util.Map.Entry;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.spout.api.render.RenderMaterial;
-import org.spout.engine.renderer.vertexbuffer.GLFloatBuffer;
+import org.spout.engine.renderer.vertexbuffer.ComposedFloatBuffer;
 
 public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 	final int SIZE_FLOAT = 4;
 	int vbos = -1;
 
-	TIntObjectHashMap<GLFloatBuffer > vertexBuffers = new TIntObjectHashMap<GLFloatBuffer>();
-
-
+	ComposedFloatBuffer buffer = null;
+	
 	/**
 	 * Batch Renderer using OpenGL 2.0 mode.
 	 * @param renderMode Mode to render in
 	 */
 	public GL20BatchVertexRenderer(int renderMode) {
 		super(renderMode);
-
-		//vertexBuffers.put(0, new GLFloatBuffer("vPosition", 4, 0));
 	}
 
 	@Override
 	protected void doFlush() {
+		int size = 0;
+		int []layouts = new int[buffers.size()];
+		int []elements = new int[buffers.size()];
+		FloatBuffer[] floatBuffers = new FloatBuffer[buffers.size()];
+
+		int i = 0;
 		for(Entry<Integer, Buffer> entry : buffers.entrySet()){
-			int layout = entry.getKey();
-			Buffer buffer = entry.getValue();
+			layouts[i] = entry.getKey();
+			floatBuffers[i] = (FloatBuffer) entry.getValue();
+			elements[i] = floatBuffers[i].limit() / numVertices;
+			size += floatBuffers[i].limit();
+			i++;
+		}
+		
+		FloatBuffer genericBuffer = BufferUtils.createFloatBuffer(size);
+		genericBuffer.clear();
 
-			if(buffer instanceof FloatBuffer){
-				GLFloatBuffer vertexBuffer = vertexBuffers.get(layout);
-
-				if(vertexBuffer == null) {
-					vertexBuffer = new GLFloatBuffer("uselessname", buffer.limit() / numVertices, layout);
-					vertexBuffers.put(layout, vertexBuffer);
+		for(int vertex = 0; vertex < numVertices; vertex++){
+			for(i = 0; i < layouts.length; i++){ 	
+				for(int k = 0; k < elements[i]; k++){
+					genericBuffer.put(floatBuffers[i].get(vertex * elements[i] + k));
 				}
-
-				vertexBuffer.flush((FloatBuffer)buffer);
-			}else{
-				throw new IllegalStateException("Buffer different of FloatBuffer not yet supported");	
 			}
 		}
+		
+		genericBuffer.flip();
+		
+		buffer = new ComposedFloatBuffer(elements, layouts);
+		buffer.flush(genericBuffer);
 	}
 
 	/**
@@ -82,25 +90,18 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 	public void doRender(RenderMaterial material, int startVert, int endVert) {
 		material.assign();
 
-		for(GLFloatBuffer glBuffer : vertexBuffers.valueCollection()){
-			glBuffer.bind();
-			GL20.glEnableVertexAttribArray(glBuffer.getLayout());
-			//GL20.glVertexAttribPointer(vb.getLayout(), vb.getElements(), GL11.GL_FLOAT, false, 0, 0);
-			//material.getShader().enableAttribute(vb.getName(), vb.getElements(), GL11.GL_FLOAT, 0, 0, vb.getLayout());
-		}
+		buffer.bind();
+		for(int layout : buffer.getLayout())
+			GL20.glEnableVertexAttribArray(layout);
 
 		GL11.glDrawArrays(renderMode, startVert, endVert);
 
-		for(GLFloatBuffer glBuffer : vertexBuffers.valueCollection()){			
-			GL20.glDisableVertexAttribArray(glBuffer.getLayout());		
-		}
-
+		for(int layout : buffer.getLayout())
+			GL20.glDisableVertexAttribArray(layout);
 	}
 
 	private void dispose() {
-		for(GLFloatBuffer glBuffer : vertexBuffers.valueCollection()){
-			glBuffer.dispose();
-		}
+		buffer.dispose();
 	}
 
 	public void finalize() {
