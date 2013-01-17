@@ -45,9 +45,9 @@ import org.spout.engine.renderer.BatchVertexRenderer;
  */
 public class ChunkMeshBatchAggregator extends Cuboid {
 
-	public final static int SIZE_X = 4;
-	public final static int SIZE_Y = 4;
-	public final static int SIZE_Z = 4;
+	public final static int SIZE_X = 3;
+	public final static int SIZE_Y = 3;
+	public final static int SIZE_Z = 3;
 	public final static Vector3 SIZE = new Vector3(SIZE_X, SIZE_Y, SIZE_Z);
 	public final static int COUNT = SIZE_X * SIZE_Y * SIZE_Z;
 
@@ -102,6 +102,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	}
 
 	public void update() {
+		long start = System.nanoTime();
 		if (closed) {
 			throw new IllegalStateException("Already closed");
 		}
@@ -117,6 +118,16 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 		renderer.end();
 
 		generated = true;
+
+		//DEBUG
+		/*
+		int vertices = 0;
+		for(BufferContainer buffer : bufferContainer)
+			if(buffer != null)
+				vertices += buffer.element;
+
+		System.out.println("Batch take " + (System.nanoTime() - start) + " ns for " + count + " elt / " + vertices + " vertices");
+		 */
 	}
 
 	public void render(RenderMaterial material) {
@@ -148,6 +159,13 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	}
 
 	public void setSubBatch(BufferContainer bufferContainer, int x, int y, int z) {
+		int index = getIndex(x, y, z);
+		
+		if(bufferContainer == null && this.bufferContainer[index] != null)
+			count--;
+		else if(bufferContainer != null && this.bufferContainer[index] == null)
+			count++;
+		
 		this.bufferContainer[getIndex(x, y, z)] = bufferContainer;
 	}
 

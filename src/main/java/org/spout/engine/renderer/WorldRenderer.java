@@ -248,6 +248,11 @@ public class WorldRenderer {
 
 				List<ChunkMeshBatchAggregator> chunkRenderer = chunkRenderers.get(material);
 
+				batch.setSubBatch(null, chunkMesh.getChunkX(), chunkMesh.getChunkY(), chunkMesh.getChunkZ());
+				
+				if(!batch.isEmpty())
+					continue;
+				
 				batch.finalize();
 
 				//Clean chunkRenderers
