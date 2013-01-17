@@ -29,6 +29,7 @@ package org.spout.api.inventory;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -82,7 +83,23 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
+	 * Gets the raw content array of this inventory
+	 * 
+	 * <p>
+	 * Modifications to this array will modify the inventory contents
+	 * </p>
+	 * 
+	 * @return raw contents
+	 */
+	public ItemStack[] getContents() {
+		return contents;
+	}
+
+	/**
 	 * Gets the set of {@link InventoryViewer} viewing the inventory.
+	 * <p>
+	 * Modifications to this set will alter the viewers of this inventory
+	 * </p>
 	 *
 	 * @return set of viewers
 	 */
@@ -97,7 +114,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 * @return true if the set contained the viewer
 	 */
 	public boolean addViewer(InventoryViewer viewer) {
-		return viewers.add(viewer);
+		return getViewers().add(viewer);
 	}
 
 	/**
@@ -107,7 +124,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 * @return true if the set contained the viewer
 	 */
 	public boolean removeViewer(InventoryViewer viewer) {
-		return viewers.remove(viewer);
+		return getViewers().remove(viewer);
 	}
 
 	/**
@@ -189,7 +206,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 */
 	public int getAmount(Material material) {
 		int amount = 0;
-		for (ItemStack item : contents) {
+		for (ItemStack item : getContents()) {
 			if (item == null) {
 				continue;
 			}
@@ -217,7 +234,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 */
 	public void update(int slot) {
 		onSlotChanged(slot, get(slot));
-		for (InventoryViewer viewer : viewers) {
+		for (InventoryViewer viewer : getViewers()) {
 			viewer.onSlotSet(this, slot, get(slot));
 		}
 	}
@@ -226,7 +243,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 * Updates all slots in the inventory for all viewers
 	 */
 	public void updateAll() {
-		for (int slot = 0; slot < contents.length; slot++) {
+		for (int slot = 0; slot < size(); slot++) {
 			update(slot);
 		}
 	}
@@ -238,7 +255,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 * @return new grid
 	 */
 	public Grid grid(int length) {
-		return new Grid(length, contents.length / length);
+		return new Grid(length, size() / length);
 	}
 	
 	/**
@@ -250,7 +267,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 * @return new cube
 	 */
 	public Cube cube(int length, int height) {
-		return new Cube(length, height, contents.length / length * height);
+		return new Cube(length, height, size() / length * height);
 	}
 
 	/**
@@ -329,7 +346,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 */
 	@Override
 	public int size() {
-		return contents.length;
+		return getContents().length;
 	}
 
 	/**
@@ -340,7 +357,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 */
 	@Override
 	public boolean isEmpty() {
-		for (ItemStack item : contents) {
+		for (ItemStack item : getContents()) {
 			if (item != null) {
 				return false;
 			}
@@ -360,7 +377,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 */
 	@Override
 	public boolean contains(Object o) {
-		for (ItemStack item : contents) {
+		for (ItemStack item : getContents()) {
 			if (item == null) {
 				continue;
 			}
@@ -390,7 +407,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 */
 	@Override
 	public Object[] toArray() {
-		return contents;
+		return getContents();
 	}
 
 	/**
@@ -403,9 +420,10 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 * @param a array of ItemStacks
 	 * @return an array containing the slot to item mapping of the inventory
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T[] toArray(T[] a) {
-		return (T[]) contents;
+		return (T[]) getContents();
 	}
 
 	/**
@@ -521,7 +539,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 		Iterator<?> iter = objects.iterator();
 		while (iter.hasNext()) {
 			Object o = iter.next();
-			for (int i = 0; i < contents.length; i++) {
+			for (int i = 0; i < size(); i++) {
 				ItemStack item = get(i);
 				if (item == null) {
 					continue;
@@ -544,7 +562,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 */
 	@Override
 	public boolean retainAll(Collection<?> objects) {
-		for (ItemStack item : contents) {
+		for (ItemStack item : getContents()) {
 			if (item == null) {
 				continue;
 			}
@@ -561,7 +579,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 */
 	@Override
 	public void clear() {
-		for (int i = 0; i < contents.length; i++) {
+		for (int i = 0; i < size(); i++) {
 			set(i, null);
 		}
 	}
@@ -574,7 +592,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 */
 	@Override
 	public ItemStack get(int i) {
-		return contents[i];
+		return getContents()[i];
 	}
 
 	/**
@@ -604,7 +622,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 			item = null;
 		}
 		ItemStack old = get(i);
-		contents[i] = item == null ? null : item.clone();
+		getContents()[i] = item == null ? null : item.clone();
 		if (update) {
 			update(i);
 		}
@@ -643,7 +661,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 */
 	@Override
 	public void add(int i, ItemStack item) {
-		add(i, contents.length - 1, item);
+		add(i, size() - 1, item);
 	}
 
 	/**
@@ -666,7 +684,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 */
 	@Override
 	public int indexOf(Object o) {
-		for (int i = 0; i < contents.length; i++) {
+		for (int i = 0; i < size(); i++) {
 			ItemStack item = get(i);
 			if (item == null) {
 				continue;
@@ -687,7 +705,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 */
 	@Override
 	public int lastIndexOf(Object o) {
-		for (int i = contents.length - 1; i > -1; i--) {
+		for (int i = size() - 1; i > -1; i--) {
 			ItemStack item = get(i);
 			if (item == null) {
 				continue;
@@ -750,7 +768,7 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	 */
 	@Override
 	public Inventory clone() {
-		return new Inventory(contents.clone());
+		return new Inventory(Arrays.copyOf(getContents(), size()));
 	}
 
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
