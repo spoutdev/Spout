@@ -26,6 +26,7 @@
  */
 package org.spout.api.scheduler;
 
+import org.spout.api.Spout;
 import org.spout.api.exception.IllegalTickSequenceException;
 
 /**
@@ -106,7 +107,7 @@ public class TickStage {
 	 * <br>
 	 * All snapshots are updated to the equal to the live value.
 	 */
-	public final static int SNAPSHOT = 1 << 11;
+	public final static int SNAPSHOT = 1 << 10;
 	
 	public final static int ALL_PHYSICS = PHYSICS | GLOBAL_PHYSICS;
 	
