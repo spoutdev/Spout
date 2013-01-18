@@ -111,7 +111,6 @@ public class ChunkMesh{
 		center = chunkModel.getCenter();
 
 		//Update mesh vertex and light
-
 		updateBlock();
 
 		//Execute post buffer effect for each renderMaterial
@@ -133,7 +132,7 @@ public class ChunkMesh{
 		for (int x = center.getBase().getBlockX(); x < center.getBase().getBlockX() + Chunk.BLOCKS.SIZE; x++) {
 			for (int y = center.getBase().getBlockY(); y < center.getBase().getBlockY() + Chunk.BLOCKS.SIZE; y++) {
 				for (int z = center.getBase().getBlockZ(); z < center.getBase().getBlockZ() + Chunk.BLOCKS.SIZE; z++) {
-					generateBlockVertices(chunkModel,x, y, z);
+					generateBlockVertices(chunkModel, x, y, z);
 				}
 			}
 		}
@@ -228,29 +227,25 @@ public class ChunkMesh{
 
 		if(!faces.isEmpty()){
 			BufferContainer container = meshs.get(renderMaterial);
+			TFloatArrayList vertexBuffer, normalBuffer, textureBuffer;
 
 			if(container == null){
 				container = new BufferContainer();
-				meshs.put(renderMaterial, container);
-			}
-
-			TFloatArrayList vertexBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.VERTEX_LAYER);
-			TFloatArrayList normalBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.NORMAL_LAYER);
-			TFloatArrayList textureBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.TEXTURE0_LAYER);
-
-			if(vertexBuffer==null){
+				
 				vertexBuffer = new TFloatArrayList();
 				container.setBuffers(BatchVertexRenderer.VERTEX_LAYER, vertexBuffer);
-			}
-
-			if(normalBuffer==null){
+				
 				normalBuffer = new TFloatArrayList();
 				container.setBuffers(BatchVertexRenderer.NORMAL_LAYER, normalBuffer);
-			}
-
-			if(textureBuffer==null){
+				
 				textureBuffer = new TFloatArrayList();
 				container.setBuffers(BatchVertexRenderer.TEXTURE0_LAYER, textureBuffer);
+				
+				meshs.put(renderMaterial, container);
+			}else{
+				 vertexBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.VERTEX_LAYER);
+				 normalBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.NORMAL_LAYER);
+				 textureBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.TEXTURE0_LAYER);
 			}
 
 			for (MeshFace meshFace : faces) {

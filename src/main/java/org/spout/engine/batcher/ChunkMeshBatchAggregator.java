@@ -45,9 +45,9 @@ import org.spout.engine.renderer.BatchVertexRenderer;
  */
 public class ChunkMeshBatchAggregator extends Cuboid {
 
-	public final static int SIZE_X = 3;
-	public final static int SIZE_Y = 3;
-	public final static int SIZE_Z = 3;
+	public final static int SIZE_X = 1;
+	public final static int SIZE_Y = 8;
+	public final static int SIZE_Z = 1;
 	public final static Vector3 SIZE = new Vector3(SIZE_X, SIZE_Y, SIZE_Z);
 	public final static int COUNT = SIZE_X * SIZE_Y * SIZE_Z;
 
@@ -59,6 +59,9 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	private final RenderMaterial material;
 	private boolean generated = false;
 	private boolean closed = false;
+	
+	//Debug
+	private long time;
 
 	private final BufferContainer bufferContainer[] = new BufferContainer[COUNT];
 
@@ -139,6 +142,10 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 		}
 	}
 
+	public boolean isClosed() {
+		return closed;
+	}
+
 	public void finalize() {
 		if (closed) {
 			throw new IllegalStateException("Already closed");
@@ -185,4 +192,22 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 		return obj == this;
 	}
 
+	public void setTime(long time) {
+		this.time = time;
+	}
+
+	public long getTime() {
+		return time;
+	}
+
+	private boolean queued = false;
+	
+	public void setQueued(boolean queued) {
+		this.queued = queued;
+	}
+
+	public boolean isQueued(){
+		return queued;
+	}
+	
 }

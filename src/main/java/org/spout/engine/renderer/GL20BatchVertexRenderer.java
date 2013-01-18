@@ -102,10 +102,15 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 		buffer.unbind();
 	}
 
-	private void dispose() {
+	@Override
+	public void doRelease(){
 		buffer.dispose();
 	}
 
+	private void dispose() {
+		buffer.dispose();
+	}
+	
 	public void finalize() {
 		dispose();
 	}

@@ -42,4 +42,9 @@ public class GLES20BatchVertexRenderer extends BatchVertexRenderer {
 	protected void doRender(RenderMaterial material, int startVert, int endVert) {
 
 	}
+
+	@Override
+	public void doRelease() {
+
+	}
 }

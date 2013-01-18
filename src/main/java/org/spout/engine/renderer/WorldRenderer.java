@@ -28,14 +28,18 @@ package org.spout.engine.renderer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.lwjgl.Sys;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
@@ -103,6 +107,8 @@ public class WorldRenderer {
 
 	private final ConcurrentLinkedQueue<ChunkMesh> renderChunkMeshBatchQueue = new ConcurrentLinkedQueue<ChunkMesh>();
 
+	private final Queue<ChunkMeshBatchAggregator> toUpdate = new LinkedList<ChunkMeshBatchAggregator>();
+	
 	private class BatchGeneratorTask{
 
 		private ChunkMesh chunkMesh = null;
@@ -166,6 +172,18 @@ public class WorldRenderer {
 				it = null;
 				chunkMesh = null;
 			}
+			
+			while(!toUpdate.isEmpty()){
+				
+				ChunkMeshBatchAggregator batch = toUpdate.poll();
+				batch.setQueued(false);
+				
+				batch.update();
+				//System.out.println("Update batch take " + (System.currentTimeMillis() - batch.getTime()) + " (" + toUpdate.size() + " in queue)");
+
+				if( System.currentTimeMillis() > limit)
+					return;
+			}
 		}
 
 		private void handle(BufferContainer batchVertex, long limit){
@@ -178,7 +196,12 @@ public class WorldRenderer {
 			}
 
 			chunkMeshBatch.setSubBatch(batchVertex,chunkMesh.getChunkX(), chunkMesh.getChunkY(), chunkMesh.getChunkZ());
-			chunkMeshBatch.update();
+			chunkMeshBatch.setTime(chunkMesh.getTime());
+			
+			if(!chunkMeshBatch.isQueued()){
+				toUpdate.add(chunkMeshBatch);
+				chunkMeshBatch.setQueued(true);
+			}
 		}
 
 	}
@@ -254,6 +277,9 @@ public class WorldRenderer {
 					continue;
 				
 				batch.finalize();
+				
+				if(batch.isQueued())
+					toUpdate.remove(batch);
 
 				//Clean chunkRenderers
 				chunkRenderer.remove(batch);

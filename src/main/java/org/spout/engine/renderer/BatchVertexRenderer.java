@@ -237,6 +237,8 @@ public abstract class BatchVertexRenderer implements Renderer {
 		}*/
 	}
 
+	public abstract void doRelease();
+	
 	public void release() { 
 		batching = false;
 		flushed = false;

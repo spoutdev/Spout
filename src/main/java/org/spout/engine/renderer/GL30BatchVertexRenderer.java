@@ -116,4 +116,10 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 	public void finalize() {
 		dispose();
 	}
+
+	@Override
+	public void doRelease() {
+		// TODO Auto-generated method stub
+		
+	}
 }

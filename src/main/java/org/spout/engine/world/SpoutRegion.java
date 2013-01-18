@@ -229,7 +229,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 		if (Spout.getPlatform() == Platform.CLIENT) {
 			meshThread = new ArrayList<Thread>();
-			for(int i = 0; i < 2; i++ ){//TODO : Make a option to choice the number of thread to make mesh
+			for(int i = 0; i < 1; i++ ){//TODO : Make a option to choice the number of thread to make mesh
 				meshThread.add(new MeshGeneratorThread());
 			}
 		} else {
@@ -2034,7 +2034,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 					SpoutChunkSnapshotModel model;
 					while( ( model = removeFromRenderQueue() ) != null){
 						handle(model);
-						Thread.sleep(20);
 					}
 				} catch (InterruptedException ie) {
 					break;
@@ -2059,7 +2058,10 @@ public class SpoutRegion extends Region implements AsyncManager {
 			ChunkMesh mesh = new ChunkMesh(model);
 
 			mesh.update();
-
+			
+			//Debug
+			//System.out.println("Generate ChunkMesh take " + (System.currentTimeMillis() - mesh.getTime()) + " (in queue : " + renderChunkQueue.size() +")");
+			
 			renderer.addMeshToBatchQueue(mesh);
 		}
 

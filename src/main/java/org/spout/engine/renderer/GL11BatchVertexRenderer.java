@@ -90,4 +90,10 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 	public void finalize() {
 		GL11.glDeleteLists(displayList, 1);
 	}
+
+	@Override
+	public void doRelease() {
+		// TODO Auto-generated method stub
+		
+	}
 }

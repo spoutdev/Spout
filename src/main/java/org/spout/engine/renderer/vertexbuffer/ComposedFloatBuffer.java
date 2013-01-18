@@ -88,6 +88,14 @@ public class ComposedFloatBuffer {
 		return layout;
 	}
 
+	public void release() {
+		if(vboId == -1) return;
+
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 0, usage);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+	}
+	
 	public void dispose() {
 		if( vboId != -1 ) GL15.glDeleteBuffers(vboId);
 	}
