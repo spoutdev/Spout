@@ -44,6 +44,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.OpenGLException;
+import org.lwjgl.opengl.Util;
 import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
@@ -275,6 +277,14 @@ public final class SpoutScheduler implements Scheduler {
 			renderer.render(delta / 1000000000f);
 
 			Display.update(true);
+
+			if(Spout.debugMode()){
+				try{
+					Util.checkGLError();
+				}catch(OpenGLException e){
+					e.printStackTrace();
+				}
+			}
 
 			currentTime = System.nanoTime();
 			delta = currentTime - lastTick; // Time for render
