@@ -30,6 +30,7 @@ import java.awt.Font;
 import java.io.InputStream;
 
 import org.spout.api.Spout;
+import org.spout.api.plugin.Platform;
 import org.spout.api.resource.BasicResourceLoader;
 
 import org.spout.engine.resources.ClientFont;
@@ -49,6 +50,9 @@ public class FontLoader extends BasicResourceLoader<ClientFont> {
 		try {
 			final Font raw = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(Font.BOLD, 30f);
 			fontFromResource = new ClientFont(raw);
+			
+			if(Spout.getPlatform() == Platform.CLIENT)
+				fontFromResource.writeGPU();
 		} catch (Exception e) {
 			Spout.getLogger().severe("Exception caught when reading in a font.");
 			e.printStackTrace();

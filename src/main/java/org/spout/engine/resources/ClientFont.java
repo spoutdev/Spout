@@ -139,9 +139,10 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	}
 
 	public RenderMaterial getMaterial() {
-		if (material==null) {
+		/*if (material==null) {
 			writeGPU();
-		}
+		}*/
+		//Shader is compilation is queue in render, so shader must be compile before that
 		return material;
 	}
 

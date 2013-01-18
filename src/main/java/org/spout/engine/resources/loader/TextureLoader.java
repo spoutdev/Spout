@@ -56,6 +56,7 @@ public class TextureLoader extends BasicResourceLoader<Texture> {
 				t = new ServerTexture(image);
 			} else {
 				t = new ClientTexture(image);
+				t.writeGPU();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
