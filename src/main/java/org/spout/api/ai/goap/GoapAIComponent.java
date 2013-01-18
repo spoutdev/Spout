@@ -34,6 +34,7 @@ import org.spout.api.ai.Agent;
 import org.spout.api.ai.Plan;
 import org.spout.api.ai.Sensor;
 import org.spout.api.component.impl.AIComponent;
+import org.spout.api.entity.Entity;
 
 import com.google.common.collect.Maps;
 
@@ -74,6 +75,11 @@ public class GoapAIComponent extends AIComponent implements PlannerAgent {
 	@SuppressWarnings("unchecked")
 	public <T extends Sensor> T getSensor(Class<T> clazz) {
 		return (T) sensors.get(clazz);
+	}
+
+	@Override
+	public Entity getEntity() {
+		return getOwner();
 	}
 
 	@Override

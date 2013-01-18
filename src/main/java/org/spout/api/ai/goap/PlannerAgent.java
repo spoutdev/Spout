@@ -29,6 +29,7 @@ package org.spout.api.ai.goap;
 import org.spout.api.ai.Agent;
 import org.spout.api.ai.Plan;
 import org.spout.api.ai.Sensor;
+import org.spout.api.entity.Entity;
 
 public interface PlannerAgent extends Agent {
 	void apply(WorldState changes);
@@ -42,4 +43,6 @@ public interface PlannerAgent extends Agent {
 	float getCostModifierFor(Action action);
 
 	<T extends Sensor> T getSensor(Class<T> clazz);
+
+	Entity getEntity();
 }
