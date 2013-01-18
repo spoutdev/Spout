@@ -42,6 +42,8 @@ public class ComposedFloatBuffer {
 	int []offset;
 
 	int stride;
+	
+	int maxSize = 0;
 
 	public static final int FLOAT_SIZE = Float.SIZE / Byte.SIZE;
 
@@ -64,7 +66,13 @@ public class ComposedFloatBuffer {
 		if(vboId == -1) vboId = GL15.glGenBuffers();
 
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, usage);
+		if(buffer.limit() > maxSize){
+			maxSize = buffer.limit();
+			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, usage);
+		}else{
+			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 0, usage);
+			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, buffer);
+		}
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
 
@@ -91,6 +99,7 @@ public class ComposedFloatBuffer {
 	public void release() {
 		if(vboId == -1) return;
 
+		maxSize = 0;
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 0, usage);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
