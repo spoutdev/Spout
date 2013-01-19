@@ -31,6 +31,7 @@ import java.util.logging.Level;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
+
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
@@ -38,6 +39,7 @@ import org.spout.api.event.player.PlayerKickEvent;
 import org.spout.api.event.player.PlayerLeaveEvent;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.Protocol;
+
 import org.spout.engine.SpoutServer;
 import org.spout.engine.entity.SpoutPlayer;
 
@@ -45,7 +47,6 @@ import org.spout.engine.entity.SpoutPlayer;
  * SpoutSession for servers
  */
 public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
-
 	public SpoutServerSession(T engine, Channel channel, Protocol bootstrapProtocol) {
 		super(engine, channel, bootstrapProtocol);
 	}
@@ -66,9 +67,9 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 
 	public Object[] getDefaultLeaveMessage() {
 		if (getPlayer() == null) {
-			return new Object[] {ChatStyle.CYAN, "Unknown", ChatStyle.CYAN , " has left the game"};
+			return new Object[]{ChatStyle.WHITE, "Unknown", ChatStyle.CYAN, " has left the game"};
 		} else {
-			return new Object[] {ChatStyle.CYAN, getPlayer().getDisplayName(), ChatStyle.CYAN, " has left the game"};
+			return new Object[]{ChatStyle.WHITE, getPlayer().getDisplayName(), ChatStyle.CYAN, " has left the game"};
 		}
 	}
 
