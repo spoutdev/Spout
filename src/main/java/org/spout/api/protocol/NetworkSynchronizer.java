@@ -65,10 +65,9 @@ public abstract class NetworkSynchronizer {
 
 	private final static int CHUNKS_PER_TICK = 20;
 
-	private final int viewDistance;
-	private final int blockViewDistance;
+	private int viewDistance;
 	private final int blockMinimumViewDistance;
-	
+
 	private Point lastChunkCheck =  Point.invalid;
 
 	// Base points used so as not to load chunks unnecessarily
@@ -103,11 +102,11 @@ public abstract class NetworkSynchronizer {
 		player = session.getPlayer();
 		if (player != null) {
 			player.setObserver(true);
-			blockViewDistance = player.getViewDistance();
+			viewDistance = player.getViewDistance() >> Chunk.BLOCKS.BITS;
 		} else {
-			blockViewDistance = 0;
+			viewDistance = minViewDistance;
 		}
-		viewDistance = blockViewDistance >> Chunk.BLOCKS.BITS;
+
 		blockMinimumViewDistance = minViewDistance * Chunk.BLOCKS.SIZE;
 	}
 
@@ -231,17 +230,20 @@ public abstract class NetworkSynchronizer {
 			return;
 		}
 
+		//TODO: update chunk lists?
+		final int prevViewDistance = viewDistance;
+		final int currentViewDistance = player.getViewDistance() >> Chunk.BLOCKS.BITS;
+		if (viewDistance != currentViewDistance) {
+			viewDistance = currentViewDistance;
+		}
+
 		Point currentPosition = player.getTransform().getPosition();
 		if (currentPosition != null) {
-			if (worldChanged || 
-					(!currentPosition.equals(lastChunkCheck) &&
-					currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.BLOCKS.SIZE >> 1))
-			{
+			if (prevViewDistance != currentViewDistance || worldChanged || (!currentPosition.equals(lastChunkCheck) &&	currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.BLOCKS.SIZE >> 1)) {
 				checkChunkUpdates(currentPosition);
 				lastChunkCheck = currentPosition;
 				worldChanged = false;
 			}
-
 			if (first || lastPosition == null || lastPosition.getWorld() != currentPosition.getWorld()) {
 				clearObservers();
 				worldChanged = true;
