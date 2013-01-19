@@ -33,6 +33,7 @@ import java.util.Map.Entry;
 import org.lwjgl.opengl.GL11;
 import org.spout.api.render.RenderMaterial;
 
+@Deprecated
 public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 	int displayList;
 
