@@ -29,6 +29,7 @@ package org.spout.engine.renderer.shader.variables;
 import org.lwjgl.opengl.GL20;
 
 import org.spout.api.math.Vector4;
+import org.spout.engine.SpoutRenderer;
 
 public class Vec4ShaderVariable extends ShaderVariable {
 	Vector4 value;
@@ -41,5 +42,6 @@ public class Vec4ShaderVariable extends ShaderVariable {
 	@Override
 	public void assign() {
 		GL20.glUniform4f(location, value.getX(), value.getY(), value.getZ(), value.getW());
+		SpoutRenderer.checkGLError();
 	}
 }

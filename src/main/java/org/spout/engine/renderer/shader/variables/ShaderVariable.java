@@ -32,6 +32,7 @@ import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.render.RenderMode;
 
+import org.spout.engine.SpoutRenderer;
 import org.spout.engine.renderer.shader.ShaderVariableNotFoundException;
 
 public abstract class ShaderVariable {
@@ -57,6 +58,7 @@ public abstract class ShaderVariable {
 		}
 
 		this.location = GL20.glGetUniformLocation(program, name);
+		SpoutRenderer.checkGLError();
 
 		//Error Checking.  In production, leave this as a warning, because OpenGL doesn't care if you try to put something
 		//into a variable that doesn't exist (it ignores it).

@@ -27,6 +27,7 @@
 package org.spout.engine.renderer.shader.variables;
 
 import org.lwjgl.opengl.GL20;
+import org.spout.engine.SpoutRenderer;
 
 public class AttributeShaderVariable extends ShaderVariable {
 	int size;
@@ -36,6 +37,7 @@ public class AttributeShaderVariable extends ShaderVariable {
 	public AttributeShaderVariable(int program, String name, int size, int type, int stride, long offset) {
 		super(program, name);
 		this.location = GL20.glGetAttribLocation(program, name);
+		SpoutRenderer.checkGLError();
 
 		this.size = size;
 		this.type = type;

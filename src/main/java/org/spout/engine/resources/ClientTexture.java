@@ -33,14 +33,17 @@ import java.nio.ByteBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+import org.spout.api.Client;
 import org.spout.api.Spout;
+import org.spout.api.render.RenderMode;
 import org.spout.api.render.Texture;
 import org.spout.engine.SpoutClient;
+import org.spout.engine.SpoutRenderer;
 import org.spout.engine.renderer.shader.ClientShader.ShaderCompilationTask;
 
 public class ClientTexture extends Texture {
 	int textureID = -1;
-	
+
 	public ClientTexture(int[] colors, int width, int height){
 		super(colors, width, height);
 	}
@@ -48,16 +51,13 @@ public class ClientTexture extends Texture {
 	public ClientTexture(BufferedImage baseImage) {
 		super(baseImage.getRGB(0, 0, baseImage.getWidth(), baseImage.getHeight(), null, 0, baseImage.getWidth()), baseImage.getWidth(), baseImage.getHeight());
 	}
-	
+
 	@Override
 	public Texture subTexture(int x, int y, int w, int h) {
 		throw new UnsupportedOperationException("TODO: Reimplement this");
 	}
 
 	public int getTextureID() {
-		/*if (textureID == -1) {
-			writeGPU(); //TODO : Handle that better
-		}*/
 		if (textureID == -1) {
 			throw new IllegalStateException("Cannot use an unloaded texture");
 		}
@@ -66,15 +66,13 @@ public class ClientTexture extends Texture {
 
 	@Override
 	public void bind() {
-		/*if (textureID == -1) {
-			writeGPU(); //TODO : Handle that better
-		}*/
 		if (textureID == -1) {
 			throw new IllegalStateException("Cannot bind an unloaded texture!");
 		}
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+		SpoutRenderer.checkGLError();
 	}
 
 	public void unload() {
@@ -83,27 +81,35 @@ public class ClientTexture extends Texture {
 		}
 
 		GL11.glDeleteTextures(textureID);
+		SpoutRenderer.checkGLError();
 		textureID = -1;
 	}
 
 	class WriteGPUTask implements Runnable{
 		int width, height;
 		int[] image;
-		
+
 		public WriteGPUTask(int width, int height, int[] image){
 			this.width = width;
 			this.height = height;
 			this.image = image;
 		}
-		
+
 		@Override
 		public void run() {
-			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			if( ((Client)Spout.getEngine()).getRenderMode() == RenderMode.GL11){
+				GL11.glEnable(GL11.GL_TEXTURE_2D);
+				SpoutRenderer.checkGLError();
+			}
 
 			textureID = GL11.glGenTextures();
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+			SpoutRenderer.checkGLError();
 
-			GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
+			if( ((Client)Spout.getEngine()).getRenderMode() == RenderMode.GL11){
+				GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
+				SpoutRenderer.checkGLError();
+			}
 
 			/*if (((Client) Spout.getEngine()).getRenderMode() != RenderMode.GL30) {
 
@@ -112,16 +118,22 @@ public class ClientTexture extends Texture {
 			}*/
 
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_BASE_LEVEL, 0);
+			SpoutRenderer.checkGLError();
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LEVEL, 0);
+			SpoutRenderer.checkGLError();
 
 			//Bilinear Filter the closest mipmap
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+			SpoutRenderer.checkGLError();
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+			SpoutRenderer.checkGLError();
 
 			//Wrap the texture
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+			SpoutRenderer.checkGLError();
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
-			
+			SpoutRenderer.checkGLError();
+
 			ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * 4);
 			for (int y = 0; y < height; y++) {
 
@@ -141,12 +153,13 @@ public class ClientTexture extends Texture {
 
 
 			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+			SpoutRenderer.checkGLError();
 
 			//EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D); //Not sure if this extension is supported on most cards. 
 		}
-		
+
 	}
-	
+
 	@Override
 	public void writeGPU() {
 		if (textureID != -1) {

@@ -27,6 +27,7 @@
 package org.spout.engine.renderer.shader.variables;
 
 import org.lwjgl.opengl.GL20;
+import org.spout.engine.SpoutRenderer;
 
 public class IntShaderVariable extends ShaderVariable {
 	int value;
@@ -39,5 +40,6 @@ public class IntShaderVariable extends ShaderVariable {
 	@Override
 	public void assign() {
 		GL20.glUniform1i(location, value);
+		SpoutRenderer.checkGLError();
 	}
 }

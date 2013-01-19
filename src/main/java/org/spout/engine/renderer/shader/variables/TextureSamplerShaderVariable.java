@@ -36,6 +36,7 @@ import org.spout.api.Spout;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.Texture;
 
+import org.spout.engine.SpoutRenderer;
 import org.spout.engine.resources.ClientTexture;
 
 public class TextureSamplerShaderVariable extends ShaderVariable {
@@ -60,13 +61,16 @@ public class TextureSamplerShaderVariable extends ShaderVariable {
 
 	public void bind(int unit) {
 		GL13.glActiveTexture(GL13.GL_TEXTURE0 + unit);
+		SpoutRenderer.checkGLError();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+		SpoutRenderer.checkGLError();
 		
 		if (((Client) Spout.getEngine()).getRenderMode() != RenderMode.GL30) {
 			GL20.glUniform1i(location, unit);
 		} else {
-			GL30.glUniform1ui(location, textureID);
+			//GL30.glUniform1ui(location, textureID);
 		}
+		SpoutRenderer.checkGLError();
 	}
 	
 	@Override

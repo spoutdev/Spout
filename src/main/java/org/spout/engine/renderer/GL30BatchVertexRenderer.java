@@ -34,8 +34,8 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.Util;
 import org.spout.api.render.RenderMaterial;
+import org.spout.engine.SpoutRenderer;
 import org.spout.engine.renderer.vertexbuffer.ComposedFloatBuffer;
 
 public class GL30BatchVertexRenderer extends BatchVertexRenderer {
@@ -53,6 +53,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 	public GL30BatchVertexRenderer(int renderMode) {
 		super(renderMode);
 		vao = GL30.glGenVertexArrays();
+		SpoutRenderer.checkGLError();
 		//Util.checkGLError();
 		//GL30.glBindVertexArray(vao); // useless
 		//vertexBuffers.put(0, new VertexBufferImpl("vPosition", 4, 0)); //Auto create the first time
@@ -90,9 +91,13 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 		buffer = new ComposedFloatBuffer(elements, layouts);
 
 		GL30.glBindVertexArray(vao);
+		SpoutRenderer.checkGLError();
+		
 		buffer.flush(genericBuffer);
 		buffer.bind();
+		
 		GL30.glBindVertexArray(0);
+		SpoutRenderer.checkGLError();
 	}
 
 	/**
@@ -101,17 +106,21 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 	@Override
 	public void doRender(RenderMaterial material, int startVert, int endVert) {
 		GL30.glBindVertexArray(vao);
+		SpoutRenderer.checkGLError();
 
 		material.assign();
 
 		for(int layout : buffer.getLayout()){
 			GL20.glEnableVertexAttribArray(layout);
+			SpoutRenderer.checkGLError();
 		}
 
 		GL11.glDrawArrays(renderMode, startVert, endVert);
+		SpoutRenderer.checkGLError();
 
 		for(int layout : buffer.getLayout()){
 			GL20.glDisableVertexAttribArray(layout);
+			SpoutRenderer.checkGLError();
 		}
 
 		//GL30.glBindVertexArray(0); //Run without
@@ -123,7 +132,6 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 
 	public void finalize() {
 		dispose();
-		Util.checkGLError();
 	}
 
 	@Override

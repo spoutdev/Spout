@@ -50,6 +50,7 @@ import org.spout.api.render.effect.SnapshotBatch;
 import org.spout.api.render.effect.SnapshotEntity;
 import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.render.effect.SnapshotRender;
+import org.spout.engine.SpoutRenderer;
 
 public class ClientRenderMaterial extends RenderMaterial {
 
@@ -155,6 +156,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 
 		if(!depthTesting){
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			SpoutRenderer.checkGLError();
 		}
 
 	}
@@ -166,6 +168,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 
 		if(!depthTesting){
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
+			SpoutRenderer.checkGLError();
 		}
 	}
 

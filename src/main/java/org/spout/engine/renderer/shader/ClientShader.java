@@ -48,6 +48,7 @@ import org.spout.api.render.Texture;
 import org.spout.api.resource.Resource;
 
 import org.spout.engine.SpoutClient;
+import org.spout.engine.SpoutRenderer;
 import org.spout.engine.renderer.shader.variables.ColorShaderVariable;
 import org.spout.engine.renderer.shader.variables.FloatShaderVariable;
 import org.spout.engine.renderer.shader.variables.IntShaderVariable;
@@ -130,6 +131,7 @@ public class ClientShader extends Resource implements Shader {
 					System.out.println("\t" + GL20.glGetActiveUniform(program, i, maxUniformLength));
 				}
 			}
+			SpoutRenderer.checkGLError();
 			System.out.println("Compiled Shader with id: " + program);
 		}
 	}
@@ -264,6 +266,7 @@ public class ClientShader extends Resource implements Shader {
 	@Override
 	public void enableAttribute(String name, int size, int type, int stride, long offset, int layout) {
 		GL20.glBindAttribLocation(program, layout, name);
+		SpoutRenderer.checkGLError();
 		//GL20.glEnableVertexAttribArray(layout);
 		//GL20.glVertexAttribPointer(layout, size, type, false, 0, offset);
 	}
@@ -279,6 +282,7 @@ public class ClientShader extends Resource implements Shader {
 		
 		if(assigned != this){
 			GL20.glUseProgram(program);
+			SpoutRenderer.checkGLError();
 			for (ShaderVariable v : variables.values()) {
 				v.assign();
 			}

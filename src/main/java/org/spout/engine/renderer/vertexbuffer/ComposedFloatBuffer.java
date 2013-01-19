@@ -31,6 +31,7 @@ import java.nio.FloatBuffer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
+import org.spout.engine.SpoutRenderer;
 
 public class ComposedFloatBuffer {	
 	int usage = GL15.GL_STATIC_DRAW;
@@ -66,26 +67,35 @@ public class ComposedFloatBuffer {
 		if(vboId == -1) vboId = GL15.glGenBuffers();
 
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
+		SpoutRenderer.checkGLError();
 		if(buffer.limit() > maxSize){
 			maxSize = buffer.limit();
 			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, usage);
+			SpoutRenderer.checkGLError();
 		}else{
 			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 0, usage);
+			SpoutRenderer.checkGLError();
 			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, buffer);
+			SpoutRenderer.checkGLError();
 		}
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		SpoutRenderer.checkGLError();
 	}
 
 	public void bind(){
 		if(vboId == -1) throw new IllegalStateException("Cannot bind a vertex buffer without data!");
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
+		SpoutRenderer.checkGLError();
 
-		for(int i = 0; i < elements.length; i++)
+		for(int i = 0; i < elements.length; i++){
 			GL20.glVertexAttribPointer(layout[i], elements[i], GL11.GL_FLOAT, false, stride, offset[i]);
+			SpoutRenderer.checkGLError();
+		}
 	}
 
 	public void unbind() {
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		SpoutRenderer.checkGLError();
 	}
 
 	public int[] getElements() {
@@ -101,12 +111,20 @@ public class ComposedFloatBuffer {
 
 		maxSize = 0;
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
+		SpoutRenderer.checkGLError();
+		
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 0, usage);
+		SpoutRenderer.checkGLError();
+		
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		SpoutRenderer.checkGLError();
 	}
 	
 	public void dispose() {
-		if( vboId != -1 ) GL15.glDeleteBuffers(vboId);
+		if( vboId != -1 ){
+			GL15.glDeleteBuffers(vboId);
+			SpoutRenderer.checkGLError();
+		}
 	}
 
 	public void finalize() {

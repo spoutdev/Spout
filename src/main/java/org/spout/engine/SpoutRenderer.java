@@ -38,7 +38,9 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GLContext;
+import org.lwjgl.opengl.OpenGLException;
 import org.lwjgl.opengl.PixelFormat;
+import org.lwjgl.opengl.Util;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
@@ -124,6 +126,7 @@ public class SpoutRenderer {
 		} else {
 			extensions += GL11.glGetString(GL11.GL_EXTENSIONS);
 		}
+		SpoutRenderer.checkGLError();
 		client.getLogger().info(extensions);
 		//soundManager.init();
 		Spout.getFilesystem().postStartup();
@@ -133,9 +136,11 @@ public class SpoutRenderer {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glFrontFace(GL11.GL_CW);
 		GL11.glCullFace(GL11.GL_BACK);
+		SpoutRenderer.checkGLError();
 
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glClearColor((135.f / 255.0f), 206.f / 255.f, 250.f / 255.f, 1);
+		SpoutRenderer.checkGLError();
 
 		//Init pool of BatchVertexRenderer
 		BatchVertexRenderer.initPool(GL11.GL_TRIANGLES, 10000);
@@ -309,6 +314,14 @@ public class SpoutRenderer {
 		} else {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 			wireframe = true;
+		}
+	}
+	
+	public static void checkGLError(){
+		try{
+			Util.checkGLError();
+		}catch(OpenGLException e){
+			e.printStackTrace();
 		}
 	}
 }

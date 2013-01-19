@@ -34,6 +34,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.spout.api.render.RenderMaterial;
+import org.spout.engine.SpoutRenderer;
 import org.spout.engine.renderer.vertexbuffer.ComposedFloatBuffer;
 
 public class GL20BatchVertexRenderer extends BatchVertexRenderer {
@@ -91,13 +92,18 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 		material.assign();
 
 		buffer.bind();
-		for(int layout : buffer.getLayout())
+		for(int layout : buffer.getLayout()){
 			GL20.glEnableVertexAttribArray(layout);
+			SpoutRenderer.checkGLError();
+		}
 
 		GL11.glDrawArrays(renderMode, startVert, endVert);
+		SpoutRenderer.checkGLError();
 
-		for(int layout : buffer.getLayout())
+		for(int layout : buffer.getLayout()){
 			GL20.glDisableVertexAttribArray(layout);
+			SpoutRenderer.checkGLError();
+		}
 
 		buffer.unbind();
 	}
