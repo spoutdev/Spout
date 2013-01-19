@@ -43,6 +43,7 @@ import org.spout.api.event.player.PlayerWhitelistKickEvent;
 import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
 import org.spout.api.event.storage.PlayerLoadEvent;
 import org.spout.api.util.access.BanType;
+
 import org.spout.engine.SpoutServer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.protocol.SpoutSession;
@@ -75,7 +76,7 @@ public class SpoutServerListener implements Listener {
 					player.kick();
 				}
 			} else {
-				server.getEventManager().callEvent(new PlayerJoinEvent(player, ChatStyle.CYAN, player.getDisplayName(), ChatStyle.CYAN, " has joined the game"));
+				server.getEventManager().callEvent(new PlayerJoinEvent(player, ChatStyle.WHITE, player.getDisplayName(), ChatStyle.CYAN, " has joined the game"));
 			}
 		} else {
 			event.getSession().disconnect("Player is already online");
