@@ -1631,13 +1631,13 @@ public class MathHelper {
 	
 	private final static ThreadLocal<Random> randomThreadLocal = new ThreadLocal<Random>() {
 		private final long HASH_SEED = 0x710677E178DFAF2EL;
-		
+		private final byte[] SECURE_SEED = SecureRandom.getSeed(8);
+
 		protected Random initialValue() {
 			// Overkill, since only a standard Random is used after seeding
 			long hash = 0L;
-			byte[] arr = SecureRandom.getSeed(8);
 			for (int i = 0; i < 8; i++) {
-				hash = (hash << 8) | (arr[i] & 0xFFL);
+				hash = (hash << 8) | (SECURE_SEED[i] & 0xFFL);
 			}
 			return new Random(hash ^ HASH_SEED);
 		}
