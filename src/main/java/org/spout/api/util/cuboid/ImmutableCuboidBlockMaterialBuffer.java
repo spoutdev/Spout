@@ -82,7 +82,6 @@ public class ImmutableCuboidBlockMaterialBuffer extends CuboidBuffer {
 		if (index < 0) {
 			throw new IllegalArgumentException("Coordinate (" + x + ", " + y + ", " + z + ") is outside the buffer");
 		}
-
 		return id[index];
 	}
 	

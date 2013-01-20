@@ -31,6 +31,7 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
+import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.thread.annotation.LiveWrite;
 import org.spout.api.util.thread.annotation.Threadsafe;
 
@@ -293,6 +294,22 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	@Threadsafe
 	public void setCuboid(int x, int y, int z, CuboidBlockMaterialBuffer buffer, Cause<?> cause);
 
+	/**
+	 * Gets the CuboidLightBuffer for a given id.
+	 * 
+	 * @param id the id for the buffer
+	 */
+	@Threadsafe
+	public CuboidLightBuffer getLightBuffer(short id);
+	
+	/**
+	 * Atomically gets the cuboid volume
+	 * 
+	 * @param backBuffer true for a buffer with a back buffer
+	 */
+	@Threadsafe
+	public CuboidBlockMaterialBuffer getCuboid(boolean backBuffer);
+	
 	/**
 	 * Atomically gets the cuboid volume with the base located at the given coords of the given size.<br>
 	 * The buffer returned contains a back buffer

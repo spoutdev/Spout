@@ -26,6 +26,7 @@
  */
 package org.spout.api.lighting;
 
+import org.spout.api.util.cuboid.ChunkCuboidLightBufferWrapper;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.cuboid.ImmutableCuboidBlockMaterialBuffer;
 
@@ -65,7 +66,12 @@ public abstract class LightingManager<T extends CuboidLightBuffer> {
 	 * @param z the z coordinates of the changed blocks
 	 * @param changedBlocks the number of changed blocks
 	 */
-	public abstract void resolve(T light, ImmutableCuboidBlockMaterialBuffer material, int[] x, int[] y, int[] z, int changedBlocks);
+	protected abstract void resolve(ChunkCuboidLightBufferWrapper<T> light, ImmutableCuboidBlockMaterialBuffer material, int[] x, int[] y, int[] z, int changedBlocks);
+	
+	@SuppressWarnings("unchecked")
+	public void resolveUnchecked(ChunkCuboidLightBufferWrapper<?> light, ImmutableCuboidBlockMaterialBuffer material, int[] x, int[] y, int[] z, int changedBlocks) {
+		resolve((ChunkCuboidLightBufferWrapper<T>) light, material, x, y, z, changedBlocks);
+	}
 	
 	/**
 	 * Recalculates lighting after a change to the block materials at a given set of cuboid regions.<br>
@@ -82,7 +88,12 @@ public abstract class LightingManager<T extends CuboidLightBuffer> {
 	 * @param tz the top z coordinates of the cuboid
 	 * @param changedCuboids the number of cuboids
 	 */
-	public abstract void resolve(T light, ImmutableCuboidBlockMaterialBuffer material, int[] bx, int[] by, int[] bz, int[] tx, int[] ty, int[] tz, int changedCuboids);
+	protected abstract void resolve(ChunkCuboidLightBufferWrapper<T> light, ImmutableCuboidBlockMaterialBuffer material, int[] bx, int[] by, int[] bz, int[] tx, int[] ty, int[] tz, int changedCuboids);
+	
+	@SuppressWarnings("unchecked")
+	public void resolveUnchecked(ChunkCuboidLightBufferWrapper<?> light, ImmutableCuboidBlockMaterialBuffer material, int[] bx, int[] by, int[] bz, int[] tx, int[] ty, int[] tz, int changedCuboids) {
+		resolve((ChunkCuboidLightBufferWrapper<T>) light, material, bx, by, bz, tx, ty, tz, changedCuboids);
+	}
 	
 	/**
 	 * Recalculates lighting after a change to the world surface height.<br>
@@ -93,8 +104,13 @@ public abstract class LightingManager<T extends CuboidLightBuffer> {
 	 * @param newHy the new height for this column
 	 * @param changedColumns the number of changed columns
 	 */
-	public abstract void resolve(T light, ImmutableCuboidBlockMaterialBuffer material, int[] hx, int[] hz, int[] oldHy, int[] newHy, int changedColumns);
-	
+	protected abstract void resolve(ChunkCuboidLightBufferWrapper<T> light, ImmutableCuboidBlockMaterialBuffer material, int[] hx, int[] hz, int[] oldHy, int[] newHy, int changedColumns);
+
+	@SuppressWarnings("unchecked")
+	public void resolveUnchecked(ChunkCuboidLightBufferWrapper<?> light, ImmutableCuboidBlockMaterialBuffer material, int[] hx, int[] hz, int[] oldHy, int[] newHy, int changedColumns) {
+		resolve((ChunkCuboidLightBufferWrapper<T>) light, material, hx, hz, oldHy, newHy, changedColumns);
+	}
+
 	/**
 	 * Creates a new light buffer for chunks which don't have a light buffer associated with this lighting manager
 	 * 
@@ -106,7 +122,7 @@ public abstract class LightingManager<T extends CuboidLightBuffer> {
 	 * @param sizeZ the z coordinate of the size of the buffer
 	 * @return
 	 */
-	public T newLightBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
+	public CuboidLightBuffer newLightBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
 		return deserialize(baseX, baseY, baseZ, sizeX, sizeY, sizeZ, null);
 	}
 
@@ -122,6 +138,6 @@ public abstract class LightingManager<T extends CuboidLightBuffer> {
 	 * @param data
 	 * @return
 	 */
-	public abstract T deserialize(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data);
+	public abstract CuboidLightBuffer deserialize(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data);
 	
 }
