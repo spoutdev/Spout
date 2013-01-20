@@ -1,12 +1,11 @@
 #version 330
 
 in vec2 uvcoord;
-
 uniform sampler2D Diffuse;
 
 layout(location=0) out vec4 outputColor;
 
-void main() {
+void main()
+{
 	outputColor = texture(Diffuse, uvcoord);
-	//outputColor = vec4(1,0,0,1);
 }
