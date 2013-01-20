@@ -39,12 +39,25 @@ public class GLES20BatchVertexRenderer extends BatchVertexRenderer {
 	}
 
 	@Override
-	protected void doRender(RenderMaterial material, int startVert, int endVert) {
+	public void doRelease() {
 
 	}
 
 	@Override
-	public void doRelease() {
+	public void preDraw() {
+		// TODO Auto-generated method stub
+		
+	}
 
+	@Override
+	public void postDraw() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void doDraw(RenderMaterial material, int startVert, int endVert) {
+		// TODO Auto-generated method stub
+		
 	}
 }

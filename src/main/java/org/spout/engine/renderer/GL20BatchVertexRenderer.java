@@ -84,28 +84,35 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 		buffer.flush(genericBuffer);
 	}
 
-	/**
-	 * Draws this batch
-	 */
 	@Override
-	public void doRender(RenderMaterial material, int startVert, int endVert) {
-		material.assign();
-
-		buffer.bind();
+	public void preDraw() {
 		for(int layout : buffer.getLayout()){
 			GL20.glEnableVertexAttribArray(layout);
 			SpoutRenderer.checkGLError();
 		}
+	}
+
+	/**
+	 * Draws this batch
+	 */
+	@Override
+	public void doDraw(RenderMaterial material, int startVert, int endVert) {
+		material.assign();
+
+		buffer.bind();
 
 		GL11.glDrawArrays(renderMode, startVert, endVert);
 		SpoutRenderer.checkGLError();
 
+		buffer.unbind();
+	}
+
+	@Override
+	public void postDraw() {
 		for(int layout : buffer.getLayout()){
 			GL20.glDisableVertexAttribArray(layout);
 			SpoutRenderer.checkGLError();
 		}
-
-		buffer.unbind();
 	}
 
 	@Override

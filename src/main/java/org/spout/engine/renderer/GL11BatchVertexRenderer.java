@@ -82,7 +82,7 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 	}
 
 	@Override
-	public void doRender(RenderMaterial material, int startVert, int endVert) {
+	public void doDraw(RenderMaterial material, int startVert, int endVert) {
 		material.assign();
 		GL11.glCallList(displayList);
 	}
@@ -94,6 +94,18 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 
 	@Override
 	public void doRelease() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void preDraw() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void postDraw() {
 		// TODO Auto-generated method stub
 		
 	}

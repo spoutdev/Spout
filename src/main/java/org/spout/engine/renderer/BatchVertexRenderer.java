@@ -192,16 +192,31 @@ public abstract class BatchVertexRenderer implements Renderer {
 		buffers.clear();
 	}
 
+	@Override
+	public void draw(RenderMaterial material){
+		draw(material, 0, getVertexCount());
+	}
+
+	@Override
+	public void draw(RenderMaterial material, int startVert, int endVert){
+		checkRender();
+		if(getVertexCount() <= 0) throw new IllegalStateException("Cannot render 0 verticies");
+		doDraw(material, startVert, endVert);
+		
+	}
+	
 	/**
 	 * The act of drawing.  The Batch will check if it's possible to render
 	 * as well as setup for rendering.  If it's possible to render, it will call doRender()
 	 */
-	protected abstract void doRender(RenderMaterial material, int startVert, int endVert);
+	protected abstract void doDraw(RenderMaterial material, int startVert, int endVert);
 
 	public final void render(RenderMaterial material, int startVert, int endVert) {
 		checkRender();
 		if(getVertexCount() <= 0) throw new IllegalStateException("Cannot render 0 verticies");
-		doRender(material, startVert, endVert);
+		preDraw();
+		doDraw(material, startVert, endVert);
+		postDraw();
 	}
 
 	@Override	
