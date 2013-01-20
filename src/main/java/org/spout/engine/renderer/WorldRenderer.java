@@ -352,7 +352,32 @@ public class WorldRenderer {
 			material.getShader().setUniform("Projection", client.getActiveCamera().getProjection());
 			material.getShader().setUniform("Model", ChunkMeshBatchAggregator.model);
 			chunksToRender += entry.getValue().size();
-			for (ChunkMeshBatchAggregator renderer : entry.getValue()) {
+			
+			Iterator<ChunkMeshBatchAggregator> it = entry.getValue().iterator();
+			ChunkMeshBatchAggregator firstBatch = null;
+			
+			while(it.hasNext()){
+				firstBatch = it.next();
+				
+				if(!firstBatch.isReady())
+					continue;
+				
+				firstBatch.preRender();
+				
+				if (client.getActiveCamera().getFrustum().intersects(firstBatch)) {
+					firstBatch.render(material);
+					renderedChunks ++;
+				} else {
+					culledChunks++;
+				}
+			}
+			
+			while(it.hasNext()){
+				ChunkMeshBatchAggregator renderer = it.next();
+
+				if(!renderer.isReady())
+					continue;
+				
 				// It's hard to look right
 				// at the world baby
 				// But here's my frustrum
@@ -366,6 +391,10 @@ public class WorldRenderer {
 				} else {
 					culledChunks++;
 				}
+			}
+			
+			if(firstBatch != null && firstBatch.isReady()){
+				firstBatch.postRender();
 			}
 
 			material.postRender(snapshotRender);

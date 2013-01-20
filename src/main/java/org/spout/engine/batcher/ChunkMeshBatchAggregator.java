@@ -137,9 +137,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 			throw new IllegalStateException("Already closed");
 		}
 
-		if(generated){
-			renderer.render(material);
-		}
+		renderer.draw(material);
 	}
 
 	public boolean isClosed() {
@@ -208,6 +206,18 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 
 	public boolean isQueued(){
 		return queued;
+	}
+
+	public boolean isReady() {
+		return generated;
+	}
+
+	public void preRender() {
+		renderer.preDraw();
+	}
+	
+	public void postRender() {
+		renderer.postDraw();
 	}
 	
 }
