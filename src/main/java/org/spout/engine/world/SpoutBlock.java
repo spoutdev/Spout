@@ -71,7 +71,11 @@ public class SpoutBlock implements Block {
 			this.world = SpoutWorld.NULL_WEAK_REFERENCE;
 		}
 		if (chunk != null && !chunk.containsBlock(this.x, this.y, this.z)) {
-			chunk = null; // chunk does not contain this Block, invalidate
+			if (chunk.getRegion().containsBlock(this.x, this.y, this.z)) {
+				chunk = chunk.getRegion().getChunkFromBlock(this.x, this.y, this.z, LoadOption.NO_LOAD);
+			} else {
+				chunk = null; // chunk does not contain this Block, invalidate
+			}
 		}
 		if (chunk != null) {
 			this.chunk = new AtomicReference<WeakReference<Chunk>>(((SpoutChunk) chunk).getWeakReference());
