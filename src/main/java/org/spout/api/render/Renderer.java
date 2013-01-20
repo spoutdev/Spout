@@ -52,5 +52,13 @@ public interface Renderer {
 	 * @param endVert
 	 */
 	public abstract void render(RenderMaterial material, int startVert, int endVert);
+	
+	public abstract void preDraw();
+
+	public abstract void postDraw();
+	
+	public abstract void draw(RenderMaterial material);
+
+	public abstract void draw(RenderMaterial material, int startVert, int endVert);
 
 }
