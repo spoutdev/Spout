@@ -21,7 +21,8 @@ void main() {
 	vec4 bone_transform = vec4(0,0,0,0);
 
 	for (int i=0 ; i<2 ; ++i) {
-		bone_transform += bone_weights[i] * bone_matrix1[int(bone_ids[i])] * bone_matrix2[int(bone_ids[i])] * vPosition;
+		int bone_id = int(bone_ids[i]);
+		bone_transform += bone_weights[i] * bone_matrix1[bone_id] * bone_matrix2[bone_id] * vPosition;
 	}
 
 	gl_Position = Projection * View * Model * bone_transform;
