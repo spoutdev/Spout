@@ -92,7 +92,12 @@ import org.spout.api.render.RenderMaterial;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.bytebit.ByteBitSet;
+import org.spout.api.util.cuboid.ChunkCuboidLightBufferWrapper;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
+import org.spout.api.util.cuboid.CuboidLightBuffer;
+import org.spout.api.util.cuboid.ImmutableCuboidBlockMaterialBuffer;
+import org.spout.api.util.cuboid.LocalRegionChunkCuboidBlockMaterialBufferWrapper;
+import org.spout.api.util.cuboid.LocalRegionChunkCuboidLightBufferWrapper;
 import org.spout.api.util.list.concurrent.setqueue.SetQueue;
 import org.spout.api.util.list.concurrent.setqueue.SetQueueElement;
 import org.spout.api.util.map.TByteTripleObjectHashMap;
@@ -1509,13 +1514,34 @@ public class SpoutRegion extends Region implements AsyncManager {
 		}
 	}
 
-	int lightingUpdates = 0;
+	private int lightingUpdates = 0;
 
+	private ImmutableCuboidBlockMaterialBuffer blockMaterialBuffer = null;
+	private ChunkCuboidLightBufferWrapper<?>[] lightBuffers = null;
+	
+	@SuppressWarnings("rawtypes")
 	public void runLighting(int sequence) {
 		if (sequence != this.updateSequence) {
 			return;
 		}
-
+		
+		LightingManager<?>[] managers = getWorld().getLightingManagers();
+		
+		if (blockMaterialBuffer == null) {
+			blockMaterialBuffer = new LocalRegionChunkCuboidBlockMaterialBufferWrapper(this, LoadOption.LOAD_ONLY, BlockMaterial.UNGENENERATED);
+		}
+		
+		if (lightBuffers == null || lightBuffers.length != managers.length) {
+			lightBuffers = new ChunkCuboidLightBufferWrapper[managers.length];
+		}
+		
+		for (int i = 0; i < lightBuffers.length; i++) {
+			short managerId = managers[i].getId();
+			if (lightBuffers[i] == null || lightBuffers[i].getManagerId() != managerId) {
+				lightBuffers[i] = new LocalRegionChunkCuboidLightBufferWrapper(this, managerId, LoadOption.LOAD_ONLY);
+			}
+		}
+		
 		int cuboids = 0;
 		int blocks = 0;
 		for (SpoutChunk c : this.dirtyChunkQueue) {
@@ -1541,26 +1567,38 @@ public class SpoutRegion extends Region implements AsyncManager {
 				int dirtyBlocks = c.getDirtyBlocks();
 				for (int i = 0; i < dirtyBlocks; i++) {
 					Vector3 v = c.getDirtyBlock(i);
-					x[blocks] = v.getFloorX();
-					y[blocks] = v.getFloorY();
-					z[blocks] = v.getFloorZ();
+					x[blocks] = c.getBlockX() + (v.getFloorX() & Chunk.BLOCKS.MASK);
+					y[blocks] = c.getBlockY() + (v.getFloorY() & Chunk.BLOCKS.MASK);
+					z[blocks] = c.getBlockZ() + (v.getFloorZ() & Chunk.BLOCKS.MASK);
 					blocks++;
 				}
 			}
 		}
 		
 		if (chunks.length > 0) {
-			resolveCuboids(chunks);
+			resolveCuboids(chunks, managers);
 		}
 		if (x.length > 0) {
-			resolveBlocks(x, y, z);
+			resolveBlocks(x, y, z, managers);
 		}
 
 		scheduler.addUpdates(lightingUpdates);
 		lightingUpdates = 0;
+		
+		if (blockMaterialBuffer != null) {
+			((LocalRegionChunkCuboidBlockMaterialBufferWrapper) blockMaterialBuffer).clear();
+		}
+		
+		if (lightBuffers != null) {
+			for (int i = 0; i < lightBuffers.length; i++) {
+				if (lightBuffers[i] != null) {
+					lightBuffers[i].clear();
+				}
+			}
+		}
 	}
 	
-	private void resolveCuboids(SpoutChunk[] chunks) {
+	private void resolveCuboids(SpoutChunk[] chunks, LightingManager<?>[] managers) {
 		int cuboids = chunks.length;
 		int[] bx = new int[cuboids];
 		int[] by = new int[cuboids];
@@ -1578,16 +1616,14 @@ public class SpoutRegion extends Region implements AsyncManager {
 			ty[i] = by[i] + size;
 			tz[i] = bz[i] + size;
 		}
-		LightingManager<?>[] managers = getWorld().getLightingManagers();
 		for (int i = 0; i < managers.length; i++) {
-			managers[i].resolve(null, null, bx, by, bz, tx, ty, tz, cuboids);
+			managers[i].resolveUnchecked(lightBuffers[i], blockMaterialBuffer, bx, by, bz, tx, ty, tz, cuboids);
 		}
 	}
 	
-	private void resolveBlocks(int[] x, int[] y, int[] z) {
-		LightingManager<?>[] managers = getWorld().getLightingManagers();
+	private void resolveBlocks(int[] x, int[] y, int[] z, LightingManager<?>[] managers) {
 		for (int i = 0; i < managers.length; i++) {
-			managers[i].resolve(null, null, x, y, z, x.length);
+			managers[i].resolveUnchecked(lightBuffers[i], blockMaterialBuffer, x, y, z, x.length);
 		}
 	}
 
@@ -2066,6 +2102,11 @@ public class SpoutRegion extends Region implements AsyncManager {
 		}
 
 	}
+	
+	@Override
+	public CuboidLightBuffer getLightBuffer(short id) {
+		throw new UnsupportedOperationException("Unable to get a light buffer corresponding to a region");
+	}
 
 	private SpoutChunk[][][] getChunks(int x, int y, int z, CuboidBlockMaterialBuffer buffer) {
 		Vector3 size = buffer.getSize();
@@ -2138,6 +2179,11 @@ public class SpoutRegion extends Region implements AsyncManager {
 	@Override
 	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz) {
 		return getCuboid(bx, by, bz, sx, sy, sz, true);
+	}
+	
+	@Override
+	public CuboidBlockMaterialBuffer getCuboid(boolean backBuffer) {
+		return getCuboid(getBlockX(), getBlockY(), getBlockZ(), Region.BLOCKS.SIZE, Region.BLOCKS.SIZE, Region.BLOCKS.SIZE, backBuffer);
 	}
 	
 	@Override

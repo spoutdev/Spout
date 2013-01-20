@@ -46,6 +46,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.logging.Level;
 
 import org.spout.api.Engine;
@@ -239,8 +240,9 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	/**
 	 * An array of light buffers associated with this Chunk
 	 */
-	private CuboidLightBuffer[] lightBuffers = new CuboidLightBuffer[0];
-
+	private final AtomicReference<AtomicReferenceArray<CuboidLightBuffer>> lightBuffers = new AtomicReference<AtomicReferenceArray<CuboidLightBuffer>>(new AtomicReferenceArray<CuboidLightBuffer>(0));
+	private final static CuboidLightBuffer[] lightBufferExample = new CuboidLightBuffer[0];
+	
 	private final AtomicBoolean popObserver = new AtomicBoolean(false);
 	private final AtomicInteger autosaveTicks = new AtomicInteger(0);
 	private final ChunkSetQueueElement<SpoutChunk> unloadQueueElement;
@@ -705,6 +707,11 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			blockStore.writeUnlock();
 		}
 	}
+	
+	@Override
+	public CuboidBlockMaterialBuffer getCuboid(boolean backBuffer) {
+		return getCuboid(getBlockX(), getBlockY(), getBlockZ(), Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, backBuffer);
+	}
 
 	@Override
 	public CuboidBlockMaterialBuffer getCuboid(int bx, int by, int bz, int sx, int sy, int sz) {
@@ -734,9 +741,9 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			int startY = Math.max(by, this.getBlockY());
 			int startZ = Math.max(bz, this.getBlockZ());
 
-			int endX = Math.min(bx + size.getFloorX(), this.getBlockX() + BLOCKS.SIZE - 1);
-			int endY = Math.min(by + size.getFloorY(), this.getBlockY() + BLOCKS.SIZE - 1);
-			int endZ = Math.min(bz + size.getFloorZ(), this.getBlockZ() + BLOCKS.SIZE - 1);
+			int endX = Math.min(bx + size.getFloorX(), this.getBlockX() + BLOCKS.SIZE);
+			int endY = Math.min(by + size.getFloorY(), this.getBlockY() + BLOCKS.SIZE);
+			int endZ = Math.min(bz + size.getFloorZ(), this.getBlockZ() + BLOCKS.SIZE);
 
 			Vector3 base = buffer.getBase();
 
@@ -2413,34 +2420,59 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		return rendered;
 	}
 	
+	@Override
 	public CuboidLightBuffer getLightBuffer(short id) {
+		if (id < 0) {
+			throw new IllegalArgumentException("Id must be positive");
+		}
 		TickStage.checkStage(TickStage.LIGHTING);
-		if (id >= lightBuffers.length) {
-			CuboidLightBuffer[] buf = new CuboidLightBuffer[id+1];
-			System.arraycopy(lightBuffers, 0, buf, 0, lightBuffers.length);
-			lightBuffers = buf;
+		AtomicReferenceArray<CuboidLightBuffer> array = lightBuffers.get();
+		CuboidLightBuffer buf;
+		if (array != null && id < array.length()) {
+			buf = array.get(id);
+			if (buf != null) {
+				return buf;
+			}
 		}
-		CuboidLightBuffer buf = lightBuffers[id];
-		if (buf != null) {
-			return buf;
+		
+		if (array == null || array.length() <= id) {
+			boolean success = false;
+			while (!success) {
+				array = lightBuffers.get();
+				if (array == null || array.length() <= id) {
+					AtomicReferenceArray<CuboidLightBuffer> newArray = new AtomicReferenceArray<CuboidLightBuffer>(id + 1);
+					success = lightBuffers.compareAndSet(array, newArray);
+				} else {
+					success = true;
+				}
+			}
+			array = lightBuffers.get();
 		}
-		LightingManager<?> manager = LightingRegistry.get(id);
+		
+		LightingManager manager = LightingRegistry.get(id);
 		if (manager == null) {
 			return null;
 		}
+		
 		buf = manager.newLightBuffer(getBlockX(), getBlockY(), getBlockZ(), BLOCKS.SIZE, BLOCKS.SIZE, BLOCKS.SIZE);
-		lightBuffers[id] = buf;
-		return buf;
+		
+		if (array.compareAndSet(id, null, buf)) {
+			return buf;
+		} else {
+			return array.get(id);
+		}
 	}
 	
 	protected CuboidLightBuffer[] getLightBuffers() {
-		ArrayList<CuboidLightBuffer> list = new ArrayList<CuboidLightBuffer>(lightBuffers.length);
-		for (int i = 0; i < lightBuffers.length; i++) {
-			if (lightBuffers[i] != null) {
-				list.add(lightBuffers[i]);
+		AtomicReferenceArray<CuboidLightBuffer> array = lightBuffers.get();
+		ArrayList<CuboidLightBuffer> list = new ArrayList<CuboidLightBuffer>(array.length());
+		for (int i = 0; i < array.length(); i++) {
+			CuboidLightBuffer b = array.get(i);
+			if (b != null) {
+				list.add(b);
 			}
 		}
-		return list.toArray(lightBuffers);
+		return list.toArray(lightBufferExample);
 	}
 	
 	protected CuboidLightBuffer[] copyLightBuffers() {

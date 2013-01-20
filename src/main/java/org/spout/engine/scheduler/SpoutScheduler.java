@@ -712,7 +712,6 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	private void doLighting(List<AsyncManager> managers) throws InterruptedException {
-
 		this.runTasks(managers, lightingTask, "Lighting", TickStage.LIGHTING);
 	}
 

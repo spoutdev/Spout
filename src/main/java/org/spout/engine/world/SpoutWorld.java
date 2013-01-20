@@ -83,6 +83,7 @@ import org.spout.api.model.Model;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
+import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.hashing.IntPairHashed;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.list.concurrent.ConcurrentList;
@@ -1340,7 +1341,17 @@ public class SpoutWorld implements AsyncManager, World {
 			unlockChunks(chunks);
 		}
 	}
+	
+	@Override
+	public CuboidLightBuffer getLightBuffer(short id) {
+		throw new UnsupportedOperationException("Unable to get a light buffer corresponding to an entire world");
+	}
 
+	@Override
+	public CuboidBlockMaterialBuffer getCuboid(boolean backBuffer) {
+		throw new UnsupportedOperationException("Unable to create a cuboid corresponding to an entire world");
+	}
+	
 	@Override
 	public CuboidBlockMaterialBuffer getCuboid(int x, int y, int z, int sx, int sy, int sz) {
 		return getCuboid(x, y, z, sx, sy, sz, true);
