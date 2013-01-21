@@ -26,41 +26,33 @@
  */
 package org.spout.api.event.inventory;
 
+import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
 import org.spout.api.event.Cancellable;
-import org.spout.api.event.Cause;
 import org.spout.api.event.HandlerList;
+import org.spout.api.event.cause.EntityCause;
+import org.spout.api.event.cause.PlayerCause;
 import org.spout.api.inventory.Inventory;
 
 /**
- * Event which is called when an inventory close event happens aka somebody closes an inventory etc.
- * todo implement calling of this event
+ * Event which is fired when an inventory is closed.
  */
 public class InventoryCloseEvent extends InventoryEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
-	private final Inventory inventory;
-	private final Cause cause;
+	private final Entity viewer;
 
-	public InventoryCloseEvent(Inventory inventory, Cause<?> reason) {
-		super(inventory,reason);
-		this.inventory = inventory;
-		this.cause = reason;
+	public InventoryCloseEvent(Inventory inventory, Entity viewer) {
+		super(inventory, (viewer instanceof Player ? new PlayerCause((Player) viewer) : new EntityCause(viewer)));
+		this.viewer = viewer;
 	}
 
 	/**
-	 * Returns the inventory which caused this event.
-	 *
-	 * @return inventory
+	 * Returns the viewer who closed the inventory
+	 * 
+	 * @return viewer
 	 */
-	public Inventory getInventory() {
-		return inventory;
-	}
-
-	/**
-	 * Returns the Cause which caused the InventoryCloseEvent
-	 * @return cause
-	 */
-	public Cause<?> getCause() {
-		return cause;
+	public Entity getViewer() {
+		return viewer;
 	}
 
 	@Override

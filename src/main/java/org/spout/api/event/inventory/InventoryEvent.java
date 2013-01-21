@@ -29,17 +29,14 @@ package org.spout.api.event.inventory;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.Cause;
 import org.spout.api.event.Event;
-import org.spout.api.event.HandlerList;
 import org.spout.api.inventory.Inventory;
 
 /**
- * Event which is called when an inventory event happens.
- * todo implement calling of this event
+ * Event which is fired when a modification to an inventory occurs.
  */
-public class InventoryEvent extends Event implements Cancellable {
-	private static HandlerList handlers = new HandlerList();
+public abstract class InventoryEvent extends Event implements Cancellable {
 	private final Inventory inventory;
-	private final Cause cause;
+	private final Cause<?> cause;
 
 	public InventoryEvent(Inventory inventory, Cause<?> reason) {
 		this.inventory = inventory;
@@ -66,14 +63,5 @@ public class InventoryEvent extends Event implements Cancellable {
 	@Override
 	public void setCancelled(boolean cancelled) {
 		super.setCancelled(cancelled);
-	}
-
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
-
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
 	}
 }

@@ -26,42 +26,33 @@
  */
 package org.spout.api.event.inventory;
 
+import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
 import org.spout.api.event.Cancellable;
-import org.spout.api.event.Cause;
 import org.spout.api.event.HandlerList;
+import org.spout.api.event.cause.EntityCause;
+import org.spout.api.event.cause.PlayerCause;
 import org.spout.api.inventory.Inventory;
 
 /**
- * Event which is called when an inventory open event happens aka somebody is looking into an inventory.
- * todo implement calling of this event
+ * Event which is fired when an inventory is opened.
  */
 public class InventoryOpenEvent extends InventoryEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
-	private final Inventory inventory;
-	private final Cause cause;
+	private final Entity opener;
 
-	public InventoryOpenEvent(Inventory inventory, Cause<?> reason) {
-		super(inventory,reason);
-		this.inventory = inventory;
-		this.cause = reason;
+	public InventoryOpenEvent(Inventory inventory, Entity opener) {
+		super(inventory, (opener instanceof Player ? new PlayerCause((Player) opener) : new EntityCause(opener)));
+		this.opener = opener;
 	}
 
 	/**
-	 * Returns the inventory which caused this event.
-	 * NOTE: This doesn't has to be a BLOCK!
-	 *
-	 * @return inventory
+	 * Returns the entity which opened the inventory
+	 * 
+	 * @return entity
 	 */
-	public Inventory getInventory() {
-		return inventory;
-	}
-
-	/**
-	 * Returns the Cause which caused the InventoryOpenEvent
-	 * @return cause
-	 */
-	public Cause<?> getCause() {
-		return cause;
+	public Entity getOpener() {
+		return opener;
 	}
 
 	@Override
