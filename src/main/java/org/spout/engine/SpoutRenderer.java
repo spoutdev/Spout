@@ -27,11 +27,10 @@
 package org.spout.engine;
 
 import java.awt.Canvas;
-import java.awt.Color;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.Sys;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
@@ -57,7 +56,6 @@ import org.spout.api.gui.ScreenStack;
 import org.spout.api.gui.Widget;
 import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
-import org.spout.api.math.Rectangle;
 import org.spout.api.math.Vector2;
 import org.spout.api.model.Model;
 import org.spout.api.render.RenderMaterial;
@@ -154,13 +152,10 @@ public class SpoutRenderer {
 
 		font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
 		
-		t = new ClientRenderTexture(true, false, true);
+		t = new ClientRenderTexture();
+		Shader s = (Shader)Spout.getFilesystem().getResource("shader://Spout/shaders/diffuse.ssf");
+		mat = new ClientRenderMaterial(s, null);
 		t.writeGPU();
-		Shader s = (Shader)Spout.getFilesystem().getResource("shader://Spout/shaders/guiShader.ssf");
-		HashMap<String, Object> params = new HashMap<String, Object>();
-		params.put("Diffuse", t);
-		mat = new ClientRenderMaterial(s, params);
-		
 	}
 
 	public void updateRender(long limit) {
@@ -190,6 +185,7 @@ public class SpoutRenderer {
 			}
 			skydomeMesh.render(skydome.getRenderMaterial());
 		}
+		t.release();
 		
 
 		//Interpolate entity transform if Physics is not currently applied to the entity
@@ -207,20 +203,24 @@ public class SpoutRenderer {
 		
 		Mouse.setGrabbed(screenStack.getVisibleScreens().getLast().grabsMouse());
 
+		long start = System.nanoTime();
+
 		worldRenderer.render();
 
+		long worldTime = System.nanoTime() - start;
+		start = System.nanoTime();
+
 		entityRenderer.render(dt);
-		
-		t.release();
-		
+
+		long entityTime = System.nanoTime() - start;
 
 		if (wireframe) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 		}
 
+		start = System.nanoTime();
+
 		gui.begin();
-		gui.draw(mat, -1, -1, 2, 2);
-		
 		if (showDebugInfos) {
 			Point position = client.getActivePlayer().getTransform().getPosition();
 			gui.drawText(new ChatArguments("Spout client! Logged as ", ChatStyle.RED, client.getActivePlayer().getDisplayName(), ChatStyle.RESET, " in world: ", ChatStyle.RED, client.getActiveWorld().getName()), font, -0.95f, 0.9f, 10f);
@@ -231,19 +231,26 @@ public class SpoutRenderer {
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Chunks Drawn: ", ((int) ((float) worldRenderer.getRenderedChunks() / (float) (worldRenderer.getTotalChunks()) * 100)) + "%" + " (" + worldRenderer.getRenderedChunks() + ")"), font, -0.95f, 0.4f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Occluded Chunks: ", (int) ((float) worldRenderer.getOccludedChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getOccludedChunks() + ")"), font, -0.95f, 0.3f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Cull Chunks: ", (int) ((float) worldRenderer.getCulledChunks() / worldRenderer.getTotalChunks() * 100), "% (" + worldRenderer.getCulledChunks() + ")"), font, -0.95f, 0.2f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Update: ", worldRenderer.minUpdate + " / " + worldRenderer.maxUpdate + " / " + (worldRenderer.sumUpdate / Math.max(1, worldRenderer.count))), font, -0.95f, 0.1f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Render: ", worldRenderer.minRender + " / " + worldRenderer.maxRender + " / " + (worldRenderer.sumRender / Math.max(1, worldRenderer.count))), font, -0.95f, 0.0f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Buffer: ", worldRenderer.addedBatch + " / " + worldRenderer.updatedBatch), font, -0.95f, 0.0f, 8f);
+			//gui.drawText(new ChatArguments(ChatStyle.BLUE, "Time: ", worldTime / 1000000.0 + " / " + entityTime / 1000000.0 + " / " + guiTime / 1000000.0), font, -0.95f, -0.1f, 8f);
 		}
+		mat.getShader().setUniform("Diffuse", t);
+		gui.draw(mat, 0.25f, 0.25f, .25f, .25f);
 		for (Screen screen : screenStack.getVisibleScreens()) {
 			for (Widget widget : screen.getWidgets()) {
 				gui.draw(widget.getRenderParts());
 			}
 		}
-		gui.render();
+		gui.render();	
+
+		guiTime = System.nanoTime() - start;
+
 		if (wireframe) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 		}
 	}
+	
+	long guiTime;
 
 	public void toggleDebugInfos() {
 		showDebugInfos = !showDebugInfos;

@@ -66,43 +66,16 @@ public class WorldRenderer {
 	private final BatchGeneratorTask batchGenerator = new BatchGeneratorTask();
 
 	//Benchmark
-	public long minUpdate = Long.MAX_VALUE,maxUpdate = Long.MIN_VALUE,sumUpdate = 0;
-	public long minRender = Long.MAX_VALUE,maxRender = Long.MIN_VALUE,sumRender = 0;
-	public long count = 0;
-
-	public WorldRenderer() {
-		
-	}
+	public int addedBatch,updatedBatch;
 
 	public void render() {
-		count ++;
-		if(count > 600){
-			count = 0;
-			sumUpdate = 0;
-			sumRender = 0;
-		}
-
-		long time,start = System.currentTimeMillis();
-
-		update(System.currentTimeMillis() + TIME_LIMIT);
-
-		time = System.currentTimeMillis() - start;
-		if(minUpdate > time)
-			minUpdate = time;
-		if(maxUpdate < time)
-			maxUpdate = time;
-		sumUpdate += time;
-
-		start = System.currentTimeMillis();
-
+		long start = System.currentTimeMillis();
+		
+		update(start + TIME_LIMIT);
+		
 		renderChunks();
 
-		time = System.currentTimeMillis() - start;
-		if(minRender > time)
-			minRender = time;
-		if(maxRender < time)
-			maxRender = time;
-		sumRender += time;
+		//System.out.println("WorldRenderer take : " + (System.currentTimeMillis() - start) + " ms");;
 	}
 
 	private final ConcurrentLinkedQueue<ChunkMesh> renderChunkMeshBatchQueue = new ConcurrentLinkedQueue<ChunkMesh>();
@@ -120,7 +93,9 @@ public class WorldRenderer {
 		private RenderMaterial material;
 
 		public void run(final long limit) {
-
+			addedBatch = 0;
+			updatedBatch = 0;
+			
 			if(it != null){
 
 				while(it.hasNext()){
@@ -179,6 +154,7 @@ public class WorldRenderer {
 				batch.setQueued(false);
 				
 				batch.update();
+				updatedBatch++;
 				//System.out.println("Update batch take " + (System.currentTimeMillis() - batch.getTime()) + " (" + toUpdate.size() + " in queue)");
 
 				if( System.currentTimeMillis() > limit)
@@ -199,6 +175,7 @@ public class WorldRenderer {
 			chunkMeshBatch.setTime(chunkMesh.getTime());
 			
 			if(!chunkMeshBatch.isQueued()){
+				addedBatch++;
 				toUpdate.add(chunkMeshBatch);
 				chunkMeshBatch.setQueued(true);
 			}

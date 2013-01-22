@@ -105,8 +105,8 @@ public class EntityRenderer {
 		}*/
 
 		//TODO Remove this when we use SpoutClientWorld
-		SpoutSnapshotLock lock = (SpoutSnapshotLock) ((Client)Spout.getEngine()).getScheduler().getSnapshotLock();
-		lock.coreReadLock("Render Thread - Render Entities");
+		//SpoutSnapshotLock lock = (SpoutSnapshotLock) ((Client)Spout.getEngine()).getScheduler().getSnapshotLock();
+		//lock.coreReadLock("Render Thread - Render Entities");
 		for (Entity e : ((SpoutClient)Spout.getEngine()).getActiveWorld().getAll()) {
 			EntityRendererComponent r = e.get(EntityRendererComponent.class);
 			if (r != null) {
@@ -114,7 +114,7 @@ public class EntityRenderer {
 				r.render();
 			}
 		}
-		lock.coreReadUnlock("Render Thread - Render Entities");
+		//lock.coreReadUnlock("Render Thread - Render Entities");
 	}
 	
 }
