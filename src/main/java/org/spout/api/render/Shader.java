@@ -50,6 +50,8 @@ public interface Shader {
 	public abstract void setUniform(String name, Color value);
 
 	public abstract void setUniform(String name, Texture value);
+	
+	public abstract void setUniform(String name, Vector3[] values);
 
 	public abstract void enableAttribute(String name, int size, int type, int stride, long offset, int layout);
 
