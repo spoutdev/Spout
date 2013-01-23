@@ -31,7 +31,6 @@ import java.util.ArrayList;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GLContext;
 import org.spout.api.model.mesh.Mesh;
 import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.Vertex;
@@ -133,9 +132,8 @@ public class BaseMesh extends Resource implements Mesh{
 		if(batched)
 			return;
 
-		renderer.begin();
 		renderer.setGLBufferContainer(container);
-		renderer.end();
+		renderer.flush(true);
 		batched = true;
 	}
 

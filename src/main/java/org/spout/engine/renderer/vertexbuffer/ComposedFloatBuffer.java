@@ -27,28 +27,62 @@
 package org.spout.engine.renderer.vertexbuffer;
 
 import java.nio.FloatBuffer;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.spout.engine.SpoutRenderer;
 
-public class ComposedFloatBuffer {	
+public class ComposedFloatBuffer {
+	
+	private static List<Integer> BUFFER_POOL = new LinkedList<Integer>();
+	
+	public static void initPool(int amount){
+		while(amount < BUFFER_POOL.size()){
+			BUFFER_POOL.add(GL15.glGenBuffers());
+		}
+	}
+	
+	public static void clearPool(){
+		while(!BUFFER_POOL.isEmpty()){
+			GL15.glDeleteBuffers(BUFFER_POOL.remove(0));
+			SpoutRenderer.checkGLError();
+		}
+	}
+	
+	public static ComposedFloatBuffer getBuffer(){
+		if(BUFFER_POOL.isEmpty()){
+			return new ComposedFloatBuffer(GL15.glGenBuffers());
+		}else{
+			return new ComposedFloatBuffer(BUFFER_POOL.remove(0));
+		}
+	}
+	
+	//Buffer data
 	int usage = GL15.GL_STATIC_DRAW;
-
 	int vboId = -1;
 
+	//VertexAttribPointer data
 	int []elements;
 	int []layout;
 	int []offset;
-
 	int stride;
 	
-	int maxSize = 0;
+	//Flush work data
+	private static int STEP = 2048;
+	FloatBuffer buffer;
+	int allocated = 0;
+	int current = 0;
 
 	public static final int FLOAT_SIZE = Float.SIZE / Byte.SIZE;
 
-	public ComposedFloatBuffer(int []elements, int[] layouts){
+	private ComposedFloatBuffer(int vboId){
+		this.vboId = vboId;
+	}
+
+	public void setData(int []elements, int[] layouts, FloatBuffer buffer){
 		if(elements.length != layouts.length)
 			throw new IllegalStateException("Number of elements and layout must be same");
 
@@ -61,25 +95,48 @@ public class ComposedFloatBuffer {
 			offset[i] = stride;
 			stride += elements[i] * FLOAT_SIZE;
 		}
+		
+		this.buffer = buffer;
+		current = 0;
 	}
-
-	public void flush(FloatBuffer buffer){
-		if(vboId == -1) vboId = GL15.glGenBuffers();
-
+	
+	public boolean flush(boolean force){
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
 		SpoutRenderer.checkGLError();
-		if(buffer.limit() > maxSize){
-			maxSize = buffer.limit();
-			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, usage);
-			SpoutRenderer.checkGLError();
-		}else{
-			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 0, usage);
-			SpoutRenderer.checkGLError();
-			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, buffer);
+
+		//Re/Allocate if needed
+		if(buffer.limit() > allocated){
+			allocated = buffer.limit();
+			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, allocated * FLOAT_SIZE, usage);
 			SpoutRenderer.checkGLError();
 		}
+
+		//GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 0, usage);
+		//SpoutRenderer.checkGLError();
+		int end;
+		
+		if(force)
+			end = buffer.capacity();
+		else
+			end = Math.min(current + STEP, buffer.capacity());
+
+		buffer.position(current);
+		buffer.limit(end);
+
+		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, current * FLOAT_SIZE, buffer);
+		SpoutRenderer.checkGLError();
+
+		current = end;
+
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		SpoutRenderer.checkGLError();
+		
+		if(end == buffer.capacity()){
+			buffer = null;
+			return true;
+		}
+		return false;
+
 	}
 
 	public void bind(){
@@ -107,9 +164,6 @@ public class ComposedFloatBuffer {
 	}
 
 	public void release() {
-		if(vboId == -1) return;
-
-		maxSize = 0;
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
 		SpoutRenderer.checkGLError();
 		
@@ -118,17 +172,9 @@ public class ComposedFloatBuffer {
 		
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		SpoutRenderer.checkGLError();
-	}
-	
-	public void dispose() {
-		if( vboId != -1 ){
-			GL15.glDeleteBuffers(vboId);
-			SpoutRenderer.checkGLError();
-		}
-	}
-
-	public void finalize() {
-		dispose();
+		
+		BUFFER_POOL.add(vboId);
+		vboId = -1;
 	}
 
 }

@@ -162,11 +162,10 @@ public class SpriteBatch {
 		}
 
 		renderer = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
-		renderer.begin();
 
 		renderer.setBufferContainer(container);
+		renderer.flush(true);
 
-		renderer.end();
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 
 		for (int i = 0; i < sprites.size(); i++) {

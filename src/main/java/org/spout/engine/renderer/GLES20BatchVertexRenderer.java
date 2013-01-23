@@ -26,16 +26,14 @@
  */
 package org.spout.engine.renderer;
 
+import java.nio.Buffer;
+import java.util.Map;
+
 import org.spout.api.render.RenderMaterial;
 
 public class GLES20BatchVertexRenderer extends BatchVertexRenderer {
 	public GLES20BatchVertexRenderer(int mode) {
 		super(mode);
-	}
-
-	@Override
-	protected void doFlush() {
-
 	}
 
 	@Override
@@ -57,6 +55,18 @@ public class GLES20BatchVertexRenderer extends BatchVertexRenderer {
 
 	@Override
 	protected void doDraw(RenderMaterial material, int startVert, int endVert) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected boolean doFlush(boolean force) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	protected void initFlush(Map<Integer, Buffer> buffers) {
 		// TODO Auto-generated method stub
 		
 	}

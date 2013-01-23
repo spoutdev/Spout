@@ -149,11 +149,14 @@ public class WorldRenderer {
 			}
 			
 			while(!toUpdate.isEmpty()){
-				
-				ChunkMeshBatchAggregator batch = toUpdate.poll();
-				batch.setQueued(false);
-				
-				batch.update();
+
+				ChunkMeshBatchAggregator batch = toUpdate.peek();
+
+				if(batch.update()){
+					toUpdate.poll();
+					batch.setQueued(false);
+				}
+
 				updatedBatch++;
 				//System.out.println("Update batch take " + (System.currentTimeMillis() - batch.getTime()) + " (" + toUpdate.size() + " in queue)");
 

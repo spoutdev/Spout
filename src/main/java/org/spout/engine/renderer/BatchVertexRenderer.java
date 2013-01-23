@@ -42,6 +42,7 @@ import org.spout.api.Spout;
 import org.spout.api.render.BufferContainer;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
+import org.spout.engine.renderer.vertexbuffer.ComposedFloatBuffer;
 
 public abstract class BatchVertexRenderer implements Renderer {
 
@@ -58,24 +59,24 @@ public abstract class BatchVertexRenderer implements Renderer {
 		Client client = (Client) Spout.getEngine();
 
 		switch (client.getRenderMode()) {
-		case GL11:
-			for(int i = 0; i < number; i++)
-				list.add(new GL11BatchVertexRenderer(renderMode));
-			return;
-		case GL20:
-			for(int i = 0; i < number; i++)
-				list.add(new GL20BatchVertexRenderer(renderMode));
-			return;
-		case GL30:
-			for(int i = 0; i < number; i++)
-				list.add(new GL30BatchVertexRenderer(renderMode));
-			return;
-		case GLES20:
-			for(int i = 0; i < number; i++)
-				list.add(new GLES20BatchVertexRenderer(renderMode));
-			return;
-		default:
-			throw new IllegalArgumentException("GL Mode:" + client.getRenderMode() + " Not reconized");
+			case GL11:
+				for(int i = 0; i < number; i++)
+					list.add(new GL11BatchVertexRenderer(renderMode));
+				return;
+			case GL20:
+				for(int i = 0; i < number; i++)
+					list.add(new GL20BatchVertexRenderer(renderMode));
+				return;
+			case GL30:
+				for(int i = 0; i < number; i++)
+					list.add(new GL30BatchVertexRenderer(renderMode));
+				return;
+			case GLES20:
+				for(int i = 0; i < number; i++)
+					list.add(new GLES20BatchVertexRenderer(renderMode));
+				return;
+			default:
+				throw new IllegalArgumentException("GL Mode:" + client.getRenderMode() + " Not reconized");
 		}
 	}
 
@@ -90,22 +91,18 @@ public abstract class BatchVertexRenderer implements Renderer {
 		Client client = (Client) Spout.getEngine();
 
 		switch (client.getRenderMode()) {
-		case GL11:
-			return new GL11BatchVertexRenderer(renderMode);
-		case GL20:
-			return new GL20BatchVertexRenderer(renderMode);
-		case GL30:
-			return new GL30BatchVertexRenderer(renderMode);
-		case GLES20:
-			return new GLES20BatchVertexRenderer(renderMode);
-		default:
-			throw new IllegalArgumentException("GL Mode:" + client.getRenderMode() + " Not reconized");
+			case GL11:
+				return new GL11BatchVertexRenderer(renderMode);
+			case GL20:
+				return new GL20BatchVertexRenderer(renderMode);
+			case GL30:
+				return new GL30BatchVertexRenderer(renderMode);
+			case GLES20:
+				return new GLES20BatchVertexRenderer(renderMode);
+			default:
+				throw new IllegalArgumentException("GL Mode:" + client.getRenderMode() + " Not reconized");
 		}
 	}
-
-	boolean batching = false;
-	boolean flushed = false;
-	final int renderMode;
 
 	public static final int VERTEX_LAYER = 0;
 	public static final int COLOR_LAYER = 1;
@@ -113,9 +110,13 @@ public abstract class BatchVertexRenderer implements Renderer {
 	public static final int TEXTURE0_LAYER = 3;
 	public static final int TEXTURE1_LAYER = 4;
 
-	final Map<Integer,Buffer> buffers = new HashMap<Integer, Buffer>();
-	int numVertices = 0;
+	final int renderMode;
 
+	ComposedFloatBuffer currentBuffer = null;
+	ComposedFloatBuffer flushingBuffer = null;
+	int currentNumVertices = 0;
+	int flushingNumVertices = 0;
+	
 	int used = 1; // Benchmark
 
 	public BatchVertexRenderer(int mode) {
@@ -123,86 +124,24 @@ public abstract class BatchVertexRenderer implements Renderer {
 	}
 
 	public int getVertexCount(){
-		return numVertices;
+		return currentNumVertices;
 	}
 
-	@Override
-	public void begin() {
-		if (batching) {
-			throw new IllegalStateException("Already Batching!");
+	protected abstract boolean doFlush(boolean force);
+
+	public final boolean flush(boolean force) {
+		if(doFlush(force)){
+			if(currentBuffer != null)
+				currentBuffer.release();
+			currentBuffer = flushingBuffer;
+			flushingBuffer = null;
+			
+			currentNumVertices = flushingNumVertices;
+			flushingNumVertices = 0;
+			
+			return true;
 		}
-		batching = true;
-		flushed = false;
-	}
-
-	@Override
-	public void end() {
-		if (!batching) {
-			throw new IllegalStateException("Not Batching!");
-		}
-		batching = false;
-		flush();
-	}
-
-	public void check(){
-		/*if (vertexBuffer.size() % 4 != 0) {
-			throw new IllegalStateException("Vertex Size Mismatch (How did this happen?) : " + vertexBuffer.size());
-		}
-		if (useColors) {
-			if (colorBuffer.size() % 4 != 0) {
-				throw new IllegalStateException("Color Size Mismatch (How did this happen?) : " + colorBuffer.size());
-			}
-			if (colorBuffer.size() / 4 != numVertices) {
-				throw new IllegalStateException("Color Buffer size does not match numVerticies : " + colorBuffer.size());
-			}
-		}
-		if (useNormals) {
-			if (normalBuffer.size() % 4 != 0) {
-				throw new IllegalStateException("Normal Size Mismatch (How did this happen?) : " + normalBuffer.size());
-			}
-			if (normalBuffer.size() / 4 != numVertices) {
-				throw new IllegalStateException("Normal Buffer size does not match numVerticies : " + normalBuffer.size());
-			}
-		}
-		if (useTextures) {
-			if (uvBuffer.size() % 2 != 0) {
-				throw new IllegalStateException("UV size Mismatch (How did this happen?) : " + uvBuffer.size());
-			}
-			if (uvBuffer.size() / 2 != numVertices) {
-				throw new IllegalStateException("UV Buffer size does not match numVerticies : " + uvBuffer.size());
-			}
-		}
-		if(numVertices <= 0) throw new IllegalStateException("Must have more than 0 verticies!");*/
-	}
-
-	public final void flush() {
-		check();
-
-		//Call the overriden flush
-		doFlush();
-
-		//clean up after flush
-		postFlush();
-	}
-
-	protected abstract void doFlush();
-
-	protected void postFlush() {
-		flushed = true;
-		buffers.clear();
-	}
-
-	@Override
-	public void draw(RenderMaterial material){
-		draw(material, 0, getVertexCount());
-	}
-
-	@Override
-	public void draw(RenderMaterial material, int startVert, int endVert){
-		checkRender();
-		if(getVertexCount() <= 0) throw new IllegalStateException("Cannot render 0 verticies");
-		doDraw(material, startVert, endVert);
-		
+		return false;
 	}
 	
 	/**
@@ -210,13 +149,16 @@ public abstract class BatchVertexRenderer implements Renderer {
 	 * as well as setup for rendering.  If it's possible to render, it will call doRender()
 	 */
 	protected abstract void doDraw(RenderMaterial material, int startVert, int endVert);
+	
+	@Override
+	public void draw(RenderMaterial material){
+		draw(material, 0, getVertexCount());
+	}
 
-	public final void render(RenderMaterial material, int startVert, int endVert) {
-		checkRender();
+	@Override
+	public void draw(RenderMaterial material, int startVert, int endVert){
 		if(getVertexCount() <= 0) throw new IllegalStateException("Cannot render 0 verticies");
-		preDraw();
 		doDraw(material, startVert, endVert);
-		postDraw();
 	}
 
 	@Override	
@@ -224,41 +166,16 @@ public abstract class BatchVertexRenderer implements Renderer {
 		render(material, 0, getVertexCount());
 	}
 
-	protected void checkRender() {
-		if (batching) {
-			throw new IllegalStateException("Cannot Render While Batching");
-		}
-		if (!flushed) {
-			throw new IllegalStateException("Cannot Render Without Flushing the Batch");
-		}
-	}
-
-	public void dumpBuffers() {
-		/*System.out.println("BatchVertexRenderer Debug Ouput: Verts: " + numVertices + " Using {colors, normal, textures} {" + useColors + ", " + useNormals + ", " + useTextures + "}");
-		System.out.println("colors:"+colorBuffer.size()+", normals:"+normalBuffer.size()+", vertices:"+vertexBuffer.size());
-		for (int i = 0; i < numVertices; i++) {
-			int index = i * 4;
-
-			if (useColors) {
-				System.out.print("Color: {" + colorBuffer.get(index) + " " + colorBuffer.get(index + 1) + " " + colorBuffer.get(index + 2) + " " + colorBuffer.get(index + 3) + "}\t");
-			}
-			if (useNormals) {
-				System.out.print("Normal : {" + normalBuffer.get(index) + " " + normalBuffer.get(index + 1) + " " + normalBuffer.get(index + 2) + "}");
-			}
-			if (useTextures) {
-				System.out.print("TexCoord0 : {" + uvBuffer.get((i * 2)) + " " + uvBuffer.get((i * 2) + 1) + "}");
-			}
-			System.out.println("Vertex : {" + vertexBuffer.get(index) + " " + vertexBuffer.get(index + 1) + " " + vertexBuffer.get(index + 2) + " " + vertexBuffer.get(index + 3) + "}");
-		}*/
+	public final void render(RenderMaterial material, int startVert, int endVert) {
+		if(getVertexCount() <= 0) throw new IllegalStateException("Cannot render 0 verticies");
+		preDraw();
+		doDraw(material, startVert, endVert);
+		postDraw();
 	}
 
 	public abstract void doRelease();
 	
-	public void release() { 
-		batching = false;
-		flushed = false;
-		buffers.clear();
-
+	public void release() {
 		//TODO : Implement for each version to empty display list, vbo, etc...
 
 		List<Renderer> list = pool.get(renderMode);
@@ -271,8 +188,10 @@ public abstract class BatchVertexRenderer implements Renderer {
 
 	public void finalize() { }
 
+	protected abstract void initFlush(Map<Integer,Buffer> buffers);
+	
 	public void setBufferContainer(BufferContainer bufferContainer) {
-		buffers.clear();
+		Map<Integer,Buffer> buffers = new HashMap<Integer, Buffer>();
 
 		for(Entry<Integer, Object> entry : bufferContainer.getBuffers().entrySet()){
 			int layout = entry.getKey();
@@ -295,11 +214,13 @@ public abstract class BatchVertexRenderer implements Renderer {
 			}
 		}
 
-		numVertices = bufferContainer.element;
+		flushingNumVertices = bufferContainer.element;
+		
+		initFlush(buffers);
 	}
 
 	public void setBufferContainers(BufferContainer []bufferContainers) {
-		buffers.clear();
+		Map<Integer,Buffer> buffers = new HashMap<Integer, Buffer>();
 
 		int first = 0;
 		
@@ -345,18 +266,22 @@ public abstract class BatchVertexRenderer implements Renderer {
 		}
 
 		//Count vertices
-		numVertices = 0;	
+		flushingNumVertices = 0;	
 		for(BufferContainer bufferContainer : bufferContainers)
 			if(bufferContainer != null)
-				numVertices += bufferContainer.element;	
+				flushingNumVertices += bufferContainer.element;
+		
+		initFlush(buffers);
 	}
 	
 	public void setGLBufferContainer(GLBufferContainer container) {
-		buffers.clear();
+		Map<Integer,Buffer> buffers = new HashMap<Integer, Buffer>();
 
 		for(Entry<Integer, Buffer> entry : container.getBuffers().entrySet())
 			buffers.put(entry.getKey(), entry.getValue());
 
-		numVertices = container.element;
+		flushingNumVertices = container.element;
+		
+		initFlush(buffers);
 	}
 }

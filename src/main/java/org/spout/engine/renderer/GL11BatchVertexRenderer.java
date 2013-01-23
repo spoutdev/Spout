@@ -27,75 +27,16 @@
 package org.spout.engine.renderer;
 
 import java.nio.Buffer;
-import java.nio.FloatBuffer;
-import java.util.Map.Entry;
+import java.util.Map;
 
-import org.lwjgl.opengl.GL11;
 import org.spout.api.render.RenderMaterial;
 
 @Deprecated
 public class GL11BatchVertexRenderer extends BatchVertexRenderer {
-	int displayList;
 
 	public GL11BatchVertexRenderer(int mode) {
 		super(mode);
-		displayList = GL11.glGenLists(1);
-	}
-
-	@Override
-	protected void doFlush() {
-		GL11.glNewList(displayList, GL11.GL_COMPILE);
-
-		GL11.glBegin(renderMode);
-
-		for(Entry<Integer, Buffer> entry : buffers.entrySet()){
-			int layout = entry.getKey();
-			FloatBuffer buffer = (FloatBuffer) entry.getValue();
-
-			switch (layout) {
-				case BatchVertexRenderer.VERTEX_LAYER:
-					while(buffer.position() < buffer.limit())
-						GL11.glVertex4f(buffer.get(),buffer.get(),buffer.get(),buffer.get());
-					break;
-				case BatchVertexRenderer.COLOR_LAYER:
-					while(buffer.position() < buffer.limit())
-						GL11.glColor4f(buffer.get(),buffer.get(),buffer.get(),buffer.get());
-					break;
-				case BatchVertexRenderer.NORMAL_LAYER:
-					while(buffer.position() < buffer.limit())
-						GL11.glNormal3f(buffer.get(),buffer.get(),buffer.get());
-					break;
-				case BatchVertexRenderer.TEXTURE0_LAYER:
-					while(buffer.position() < buffer.limit())
-						GL11.glTexCoord2f(buffer.get(),buffer.get());
-					break;
-				case BatchVertexRenderer.TEXTURE1_LAYER:
-					break;
-				default:
-					break;
-			}
-		}
-
-		GL11.glEnd();
-
-		GL11.glEndList();
-	}
-
-	@Override
-	public void doDraw(RenderMaterial material, int startVert, int endVert) {
-		material.assign();
-		GL11.glCallList(displayList);
-	}
-
-	@Override
-	public void finalize() {
-		GL11.glDeleteLists(displayList, 1);
-	}
-
-	@Override
-	public void doRelease() {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -109,4 +50,29 @@ public class GL11BatchVertexRenderer extends BatchVertexRenderer {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	protected boolean doFlush(boolean force) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	protected void doDraw(RenderMaterial material, int startVert, int endVert) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void doRelease() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void initFlush(Map<Integer, Buffer> buffers) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }

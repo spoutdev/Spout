@@ -29,6 +29,7 @@ package org.spout.engine.renderer;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.lwjgl.BufferUtils;
@@ -63,7 +64,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 	}
 
 	@Override
-	protected void doFlush() {
+	protected void initFlush(Map<Integer,Buffer> buffers){
 		int size = 0;
 		int []layouts = new int[buffers.size()];
 		int []elements = new int[buffers.size()];
@@ -73,51 +74,61 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 		for(Entry<Integer, Buffer> entry : buffers.entrySet()){
 			layouts[i] = entry.getKey();
 			floatBuffers[i] = (FloatBuffer) entry.getValue();
-			elements[i] = floatBuffers[i].limit() / numVertices;
+			elements[i] = floatBuffers[i].limit() / flushingNumVertices;
 			size += floatBuffers[i].limit();
 			i++;
 		}
+		
+		FloatBuffer buffer = BufferUtils.createFloatBuffer(size);
+		buffer.clear();
 
-		FloatBuffer genericBuffer = BufferUtils.createFloatBuffer(size);
-		genericBuffer.clear();
-
-		for(int vertex = 0; vertex < numVertices; vertex++){
+		for(int vertex = 0; vertex < flushingNumVertices; vertex++){
 			for(i = 0; i < layouts.length; i++){ 	
 				for(int k = 0; k < elements[i]; k++){
-					genericBuffer.put(floatBuffers[i].get(vertex * elements[i] + k));
+					buffer.put(floatBuffers[i].get(vertex * elements[i] + k));
 				}
 			}
 		}
-
-		genericBuffer.flip();
-
-		buffer = new ComposedFloatBuffer(elements, layouts);
-
-		GL30.glBindVertexArray(vao);
-		SpoutRenderer.checkGLError();
 		
-		buffer.flush(genericBuffer);
-		buffer.bind();
+		buffer.flip();
 		
-		for(int layout : assigned){
-			GL20.glDisableVertexAttribArray(layout);
+		if(flushingBuffer == null)
+			flushingBuffer = ComposedFloatBuffer.getBuffer();
+		
+		flushingBuffer.setData(elements, layouts, buffer);
+	}
+	
+	@Override
+	protected boolean doFlush(boolean force) {
+		if(flushingBuffer.flush(force)){
+			GL30.glBindVertexArray(vao);
 			SpoutRenderer.checkGLError();
-		}
-		assigned.clear();
-		
-		for(int layout : buffer.getLayout()){
-			GL20.glEnableVertexAttribArray(layout);
+
+			if(currentBuffer != null){
+				currentBuffer.unbind();
+				for(int layout : currentBuffer.getLayout()){
+					GL20.glDisableVertexAttribArray(layout);
+					SpoutRenderer.checkGLError();
+				}
+			}
+
+			flushingBuffer.bind();
+
+			for(int layout : flushingBuffer.getLayout()){
+				GL20.glEnableVertexAttribArray(layout);
+				SpoutRenderer.checkGLError();
+			}
+
+			GL30.glBindVertexArray(0);
 			SpoutRenderer.checkGLError();
-			
-			assigned.add(layout);
+			return true;
 		}
-		
-		GL30.glBindVertexArray(0);
-		SpoutRenderer.checkGLError();
+		return false;
 	}
 
 	@Override
 	public void preDraw() {
+		//Nothing to do
 	}
 
 	/**
@@ -139,19 +150,31 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 
 	@Override
 	public void postDraw() {
-	}
-
-	private void dispose() {
-		buffer.dispose();
-	}
-
-	public void finalize() {
-		dispose();
+		//Nothing to do
 	}
 
 	@Override
-	public void doRelease() {
+	public void doRelease(){
+		if(currentBuffer != null){
+			currentBuffer.release();
+			currentBuffer = null;
+		}
+		if(flushingBuffer != null){
+			flushingBuffer.release();
+			flushingBuffer = null;
+		}
+	}
 
+	public void finalize() {
+		if(currentBuffer != null){
+			currentBuffer.release();
+			currentBuffer = null;
+		}
+		if(flushingBuffer != null){
+			flushingBuffer.release();
+			flushingBuffer = null;
+		}
+		GL30.glDeleteVertexArrays(vao);
 	}
 
 }

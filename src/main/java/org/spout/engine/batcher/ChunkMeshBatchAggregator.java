@@ -57,6 +57,9 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 
 	public final static Matrix model = MathHelper.createIdentity();
 	private final RenderMaterial material;
+
+	private boolean dataSended = false;
+	private boolean flushing = false;
 	private boolean generated = false;
 	private boolean closed = false;
 	
@@ -104,24 +107,28 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 		this.material = material;
 	}
 
-	public void update() {
-		long start = System.nanoTime();
+	public boolean update() {
+		//long start = System.nanoTime();
 		if (closed) {
 			throw new IllegalStateException("Already closed");
 		}
 
-		renderer.begin();
+		//Send data
+		if(!dataSended){
+			((BatchVertexRenderer)renderer).setBufferContainers(bufferContainer);
+			dataSended = true;
+		}
 
-		SnapshotBatch snapshotBatch = new SnapshotBatch(material);
-
-		material.preBatch(snapshotBatch);
-		((BatchVertexRenderer)renderer).setBufferContainers(bufferContainer);
-		material.postBatch(snapshotBatch);
-
-		renderer.end();
-
-		generated = true;
-
+		//Start to flush
+		if(renderer.flush(false)){
+			generated = true;
+			flushing = false;
+			return true;
+		}else{
+			flushing = true;
+			return false;
+		}
+		
 		//DEBUG
 		/*int vertices = 0;
 		for(BufferContainer buffer : bufferContainer)
@@ -171,6 +178,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 			count++;
 		
 		this.bufferContainer[getIndex(x, y, z)] = bufferContainer;
+		dataSended = false;
 	}
 
 	public RenderMaterial getMaterial() {
