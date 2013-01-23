@@ -61,6 +61,7 @@ import org.spout.engine.renderer.shader.variables.TextureSamplerShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec2ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec3ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec4ShaderVariable;
+import org.spout.engine.renderer.shader.variables.Vector3ArrayShaderVariable;
 
 /**
  * Represents a Shader Object in OpenGL
@@ -107,7 +108,7 @@ public class ClientShader extends Resource implements Shader {
 			int status = GL20.glGetProgram(program, GL20.GL_LINK_STATUS);
 			if (status != GL11.GL_TRUE) {
 				String error = GL20.glGetProgramInfoLog(program, 255);
-				throw new ShaderCompileException("Link Error: " + error);
+				throw new ShaderCompileException("Link Error in " + vsourceUrl + ", " + fsourceUrl +": " + error);
 			}
 			if (validateShader) {
 				GL20.glValidateProgram(shader.program);
@@ -229,6 +230,10 @@ public class ClientShader extends Resource implements Shader {
 		if(assigned == this) dirtyVariables.add(name);
 	}
 
+	public void setUniform(String name, Vector3[] value) {
+		variables.put(name, new Vector3ArrayShaderVariable(program, name, value));
+		if(assigned == this) dirtyVariables.add(name);
+	}
 
 	@Override
 	public void setUniform(String name, Vector4 value) {

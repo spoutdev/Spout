@@ -27,11 +27,17 @@
 package org.spout.engine.resources;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL31;
+import org.lwjgl.opengl.GL32;
+import org.lwjgl.opengl.GL33;
 import org.lwjgl.opengl.GLContext;
 import org.spout.api.Spout;
 import org.spout.api.exception.ComputerIsPotatoException;
@@ -48,32 +54,47 @@ public class ClientRenderTexture extends ClientTexture {
 	private int framebuffer = INVALID_BUFFER;
 	private boolean useDepthBuffer = false;
 	private boolean useStencilBuffer = false;
+	private boolean useNormalBuffer = false;
 
 	int depthTarget = INVALID_BUFFER;
 	int stencilTarget = INVALID_BUFFER; //TODO: Implement stencil component
+	int normalTarget = INVALID_BUFFER;
 
+	ClientTextureHandle depthTexture = null;
+	ClientTextureHandle stencilTexture = null;
+	ClientTextureHandle normalTexture = null;
 
 	boolean useEXT = false;
 
 	public ClientRenderTexture() {
 		super(null, (int)((SpoutClient)Spout.getEngine()).getResolution().getX(), (int)((SpoutClient)Spout.getEngine()).getResolution().getY());
 
+		
 		//Detect which path we should use to create framebuffers.  
-		//if both of these are false, we cannot use framebuffers so throw an exception
+		//if all 3 are false, we cannot use framebuffers so throw an exception
+		boolean gl30 = GLContext.getCapabilities().OpenGL30;		
 		boolean arb = GLContext.getCapabilities().GL_ARB_framebuffer_object;
-		boolean ext = GLContext.getCapabilities().GL_EXT_framebuffer_object;		
-		if(!arb && !ext) throw new ComputerIsPotatoException("Does not support Framebuffers");	
+		boolean ext = GLContext.getCapabilities().GL_EXT_framebuffer_object;	
+		//We can use ARB style if gl30 or arb is supported. 
+		if((!gl30 || !arb) && !ext) throw new ComputerIsPotatoException("Does not support Framebuffers");	
 
-		//if arb is false, use ext
-		if(!arb) useEXT = true;
+		//if arb and gl30 is false, use ext
+		if(!arb && !gl30) useEXT = true;
 
 		Spout.log("Using EXT: " + useEXT);
 
 	}
 
 	public ClientRenderTexture(boolean depth){
+		this(true, false, false);
+		
+	}
+	
+	public ClientRenderTexture(boolean depth, boolean stencil, boolean normals){
 		this();
-		useDepthBuffer = true;
+		useDepthBuffer = depth;
+		useStencilBuffer = stencil;
+		useNormalBuffer = normals;
 	}
 
 	@Override
@@ -101,6 +122,8 @@ public class ClientRenderTexture extends ClientTexture {
 
 			GL11.glViewport(0, 0, width, height);
 			SpoutRenderer.checkGLError();
+			
+			GL11.glDrawBuffer(GL11.GL_BACK);
 		}
 	}
 
@@ -108,6 +131,8 @@ public class ClientRenderTexture extends ClientTexture {
 	public void writeGPU() {				
 		if(framebuffer != INVALID_BUFFER) throw new IllegalStateException("Framebuffer already created!");
 
+		int buffers = 1;	
+		
 		//Create the color buffer for this renderTexture
 		textureID = GL11.glGenTextures();
 		SpoutRenderer.checkGLError();
@@ -120,7 +145,41 @@ public class ClientRenderTexture extends ClientTexture {
 		SpoutRenderer.checkGLError();
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_INT, (java.nio.ByteBuffer) null);  // Create the texture data
 		SpoutRenderer.checkGLError();
+		
+		if(useNormalBuffer) {
+			//Create the color buffer for this renderTexture
+			normalTarget = GL11.glGenTextures();
+			SpoutRenderer.checkGLError();
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, normalTarget);
+			SpoutRenderer.checkGLError();
 
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+			SpoutRenderer.checkGLError();
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+			SpoutRenderer.checkGLError();
+			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (java.nio.ByteBuffer) null);  // Create the texture data
+			SpoutRenderer.checkGLError();
+			buffers++;
+			
+		}
+		
+		if(useDepthBuffer){
+			//Create the color buffer for this renderTexture
+			depthTarget = GL11.glGenTextures();
+			SpoutRenderer.checkGLError();
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, depthTarget);
+			SpoutRenderer.checkGLError();
+
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+			SpoutRenderer.checkGLError();
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+			SpoutRenderer.checkGLError();
+			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_DEPTH_COMPONENT, width, height, 0, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, (java.nio.ByteBuffer) null);  // Create the texture data
+			SpoutRenderer.checkGLError();
+			buffers++;
+		}
+
+	
 
 		if(useEXT) {
 			framebuffer = EXTFramebufferObject.glGenFramebuffersEXT();
@@ -136,19 +195,31 @@ public class ClientRenderTexture extends ClientTexture {
 			SpoutRenderer.checkGLError();
 
 			if(useDepthBuffer) {
-				depthTarget = GL30.glGenRenderbuffers();
+				int depthbuffer = GL30.glGenRenderbuffers();
 				SpoutRenderer.checkGLError();
 				
-				EXTFramebufferObject.glBindRenderbufferEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthTarget);
+				EXTFramebufferObject.glBindRenderbufferEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthbuffer);
 				SpoutRenderer.checkGLError();
 				
 				EXTFramebufferObject.glRenderbufferStorageEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, GL11.GL_DEPTH_COMPONENT, this.getWidth(), this.getHeight());
 				SpoutRenderer.checkGLError();
 				
-				EXTFramebufferObject.glFramebufferRenderbufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, GL30.GL_DEPTH_ATTACHMENT, EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthTarget);
+				EXTFramebufferObject.glFramebufferRenderbufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, GL30.GL_DEPTH_ATTACHMENT, EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthbuffer);
+				SpoutRenderer.checkGLError();
+				
+				EXTFramebufferObject.glFramebufferTexture2DEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT, GL11.GL_TEXTURE_2D, depthTarget, 0);
 				SpoutRenderer.checkGLError();
 			}
 
+			if(useNormalBuffer){
+				
+				GL11.glBindTexture(GL11.GL_TEXTURE_2D, normalTarget);
+				SpoutRenderer.checkGLError();
+
+				EXTFramebufferObject.glFramebufferTexture2DEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, EXTFramebufferObject.GL_COLOR_ATTACHMENT1_EXT, GL11.GL_TEXTURE_2D, normalTarget, 0);
+				SpoutRenderer.checkGLError();
+			}
+			
 			if(EXTFramebufferObject.glCheckFramebufferStatusEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT) != EXTFramebufferObject.GL_FRAMEBUFFER_COMPLETE_EXT){
 				System.out.println("ERROR: Framebuffer not complete");
 				throw new ComputerIsPotatoException("Framebuffer not complete");
@@ -158,44 +229,86 @@ public class ClientRenderTexture extends ClientTexture {
 		} else {
 			framebuffer = GL30.glGenFramebuffers();
 			SpoutRenderer.checkGLError();
+
 			
 			GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, framebuffer);
 			SpoutRenderer.checkGLError();
 			
+			IntBuffer drawBuffers = BufferUtils.createIntBuffer(buffers);
+			drawBuffers.put(GL30.GL_COLOR_ATTACHMENT0);
+			if(useDepthBuffer) drawBuffers.put(GL30.GL_DEPTH_ATTACHMENT);
+			if(useStencilBuffer) drawBuffers.put(GL30.GL_STENCIL_ATTACHMENT);
+			if(useNormalBuffer) drawBuffers.put(GL30.GL_COLOR_ATTACHMENT1);
+			drawBuffers.flip();
+			GL20.glDrawBuffers(drawBuffers);
+			
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 			SpoutRenderer.checkGLError();
 
-			GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, textureID, 0);	
+			GL32.glFramebufferTexture(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0,  textureID, 0);	
 			SpoutRenderer.checkGLError();		
 
 			if(useDepthBuffer) {
-				depthTarget = GL30.glGenRenderbuffers();
+				GL11.glBindTexture(GL11.GL_TEXTURE_2D, depthTarget);
 				SpoutRenderer.checkGLError();
+		
 				
-				GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, depthTarget);
-				SpoutRenderer.checkGLError();
-				
-				GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL11.GL_DEPTH_COMPONENT, this.getWidth(), this.getHeight());
-				SpoutRenderer.checkGLError();
-				
-				GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, GL30.GL_RENDERBUFFER, depthTarget);
-				SpoutRenderer.checkGLError();
+				GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, GL11.GL_TEXTURE_2D, depthTarget, 0);	
+				SpoutRenderer.checkGLError();	
 			}
+			if(useNormalBuffer) {
+				GL11.glBindTexture(GL11.GL_TEXTURE_2D, normalTarget);
+				SpoutRenderer.checkGLError();
+
+				GL32.glFramebufferTexture(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT1,  normalTarget, 0);	
+				SpoutRenderer.checkGLError();		
+
+			}
+			
+			int status = GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER);
+			if(status != GL30.GL_FRAMEBUFFER_COMPLETE){
+				System.out.println("ERROR: Framebuffer not complete.  Status: " + status);
+				throw new ComputerIsPotatoException("Framebuffer not complete");
+			}
+			SpoutRenderer.checkGLError();
+			
+			
+			
 			
 			GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, SCREEN_BUFFER);
 			SpoutRenderer.checkGLError();
 
-			if(GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER) != GL30.GL_FRAMEBUFFER_COMPLETE){
-				System.out.println("ERROR: Framebuffer not complete");
-				throw new ComputerIsPotatoException("Framebuffer not complete");
-			}
-			SpoutRenderer.checkGLError();
+			
 
 		}
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		SpoutRenderer.checkGLError();
 	}
 
+	
+	public Texture getDepthTexture(){
+		if(depthTexture == null){
+			depthTexture = new ClientTextureHandle(depthTarget, width, height);
+		}
+		return depthTexture;
+	}
+	
+	public Texture getStencilTexture(){
+		if(stencilTexture == null){
+			stencilTexture = new ClientTextureHandle(stencilTarget, width, height);
+		}
+		return stencilTexture;
+	}
+	
+	
+	public Texture getNormalTexture() {
+		if(normalTexture == null){
+			normalTexture = new ClientTextureHandle(normalTarget, width, height);
+		}
+		return normalTexture;
+		
+	}
+	
 	protected boolean isGL30() {
 		return ((SpoutClient)Spout.getEngine()).getRenderMode() == RenderMode.GL30;
 	}

@@ -87,120 +87,126 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 			Object s2 = renderState.get("Layer");
 			if(s2 != null && s2 instanceof Integer) layer = (Integer)s2;
 		}
-		final Map<? extends String, ?> params = checkerMapStringObject.check(resourceProperties.get("MaterialParams"));
 
 		// Better make a new HashMap, who knows whether we can even write to it...
 		final Map<String, Object> paramsNew = new HashMap<String, Object>();
 
-		// Loop through the params and replace
-		for (Entry<? extends String, ?> entry : params.entrySet()) {
-			final String key = entry.getKey();
-			final Object value = entry.getValue();
+		if(resourceProperties.containsKey("MaterialParams"))
+		{
+			final Map<? extends String, ?> params = checkerMapStringObject.check(resourceProperties.get("MaterialParams"));
 
-			if (!(value instanceof String)) {
-				paramsNew.put(key, value);
-				continue;
-			}
 
-			final String val = (String) value;
 
-			if (val.contains("://")) {
-				// It's a resource!
-				Resource resource = Spout.getFilesystem().getResource(val);
-				if (resource instanceof Texture && !((Texture)resource).isLoaded()) {
-					//((Texture)resource).load();//TODO : Control if GL ready
+			// Loop through the params and replace
+			for (Entry<? extends String, ?> entry : params.entrySet()) {
+				final String key = entry.getKey();
+				final Object value = entry.getValue();
+
+				if (!(value instanceof String)) {
+					paramsNew.put(key, value);
+					continue;
 				}
 
-				paramsNew.put(key, resource);
-				continue;
-			}
+				final String val = (String) value;
 
-			final Matcher matcher = vectorPattern.matcher(val);
-			if (!matcher.matches()) {
-				// It's not a Vector or a color => next
-				paramsNew.put(key, value);
-				continue;
-			}
+				if (val.contains("://")) {
+					// It's a resource!
+					Resource resource = Spout.getFilesystem().getResource(val);
+					if (resource instanceof Texture && !((Texture)resource).isLoaded()) {
+						//((Texture)resource).load();//TODO : Control if GL ready
+					}
 
-			final String type = matcher.group(1);
-			final String[] values = matcher.group(2).split(",");
+					paramsNew.put(key, resource);
+					continue;
+				}
 
-			System.out.println(values);
+				final Matcher matcher = vectorPattern.matcher(val);
+				if (!matcher.matches()) {
+					// It's not a Vector or a color => next
+					paramsNew.put(key, value);
+					continue;
+				}
 
-			if (type.equals("color")) {
-				switch (values.length) {
-				case 0:
-				case 1:
-				case 2:
-					throw new IllegalArgumentException("Colors need at least 3 components");
+				final String type = matcher.group(1);
+				final String[] values = matcher.group(2).split(",");
 
-				case 3:
-					paramsNew.put(key, new Color(
+				System.out.println(values);
+
+				if (type.equals("color")) {
+					switch (values.length) {
+						case 0:
+						case 1:
+						case 2:
+							throw new IllegalArgumentException("Colors need at least 3 components");
+
+						case 3:
+							paramsNew.put(key, new Color(
+									Float.parseFloat(values[0]),
+									Float.parseFloat(values[1]),
+									Float.parseFloat(values[2]),
+									1.0f
+									));
+							continue;
+
+						case 4:
+							paramsNew.put(key, new Color(
+									Float.parseFloat(values[0]),
+									Float.parseFloat(values[1]),
+									Float.parseFloat(values[2]),
+									Float.parseFloat(values[3])
+									));
+							continue;
+
+						default:
+							throw new IllegalArgumentException("Colors takes at most 3 components");
+					}
+				}
+
+				if (type.equals("vector2")) {
+					if (values.length != 2) {
+						throw new IllegalArgumentException("Vector2 needs 2 components");
+					}
+
+					paramsNew.put(key, new Vector2(
+							Float.parseFloat(values[0]),
+							Float.parseFloat(values[1])
+							));
+					continue;
+				}
+
+				if (type.equals("vector3")) {
+					if (values.length != 3) {
+						throw new IllegalArgumentException("Vector3 needs 3 components");
+					}
+
+					paramsNew.put(key, new Vector3(
 							Float.parseFloat(values[0]),
 							Float.parseFloat(values[1]),
-							Float.parseFloat(values[2]),
-							1.0f
-					));
+							Float.parseFloat(values[2])
+							));
 					continue;
+				}
 
-				case 4:
-					paramsNew.put(key, new Color(
+				if (val.startsWith("vector4")) {
+					if (values.length != 4) {
+						throw new IllegalArgumentException("Vector4 needs 4 components");
+					}
+
+					paramsNew.put(key, new Vector4(
 							Float.parseFloat(values[0]),
 							Float.parseFloat(values[1]),
 							Float.parseFloat(values[2]),
 							Float.parseFloat(values[3])
-					));
+							));
 					continue;
-
-				default:
-					throw new IllegalArgumentException("Colors takes at most 3 components");
-				}
-			}
-
-			if (type.equals("vector2")) {
-				if (values.length != 2) {
-					throw new IllegalArgumentException("Vector2 needs 2 components");
 				}
 
-				paramsNew.put(key, new Vector2(
-						Float.parseFloat(values[0]),
-						Float.parseFloat(values[1])
-				));
-				continue;
+				throw new IllegalStateException("This should never happen.");
 			}
-
-			if (type.equals("vector3")) {
-				if (values.length != 3) {
-					throw new IllegalArgumentException("Vector3 needs 3 components");
-				}
-
-				paramsNew.put(key, new Vector3(
-						Float.parseFloat(values[0]),
-						Float.parseFloat(values[1]),
-						Float.parseFloat(values[2])
-				));
-				continue;
-			}
-
-			if (val.startsWith("vector4")) {
-				if (values.length != 4) {
-					throw new IllegalArgumentException("Vector4 needs 4 components");
-				}
-
-				paramsNew.put(key, new Vector4(
-						Float.parseFloat(values[0]),
-						Float.parseFloat(values[1]),
-						Float.parseFloat(values[2]),
-						Float.parseFloat(values[3])
-				));
-				continue;
-			}
-
-			throw new IllegalStateException("This should never happen.");
 		}
 
 		//TODO: Parse matricies 
-		
+
 		ClientRenderMaterial material = new ClientRenderMaterial(shader, paramsNew, null, null, depthTesting, layer);
 		Object re = resourceProperties.get("RenderEffects");
 		if(re != null && re instanceof String[]) {
@@ -225,11 +231,11 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 					Spout.log("Warning: RenderEffect " + effectName + " Not Found.");
 				}
 			}
-			
-			
+
+
 		}
 
-		
+
 		return  material;
 	}
 	@Override
