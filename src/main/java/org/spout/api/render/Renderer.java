@@ -29,17 +29,6 @@ package org.spout.api.render;
 public interface Renderer {
 
 	/**
-	 * Begins batching calls
-	 * 
-	 */
-	public abstract void begin();
-
-	/**
-	 * Ends batching and flushes cache to the GPU
-	 */
-	public abstract void end();
-
-	/**
 	 * Renders the batch.
 	 * @param material RenderMaterial to render with
 	 */
