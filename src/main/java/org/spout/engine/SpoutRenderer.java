@@ -28,6 +28,7 @@ package org.spout.engine;
 
 import java.awt.Canvas;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
@@ -152,10 +153,13 @@ public class SpoutRenderer {
 
 		font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
 		
-		t = new ClientRenderTexture();
-		Shader s = (Shader)Spout.getFilesystem().getResource("shader://Spout/shaders/diffuse.ssf");
-		mat = new ClientRenderMaterial(s, null);
+		t = new ClientRenderTexture(true, false, true);
 		t.writeGPU();
+		Shader s = (Shader)Spout.getFilesystem().getResource("shader://Spout/shaders/diffuse.ssf");
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("Diffuse", t);
+		mat = new ClientRenderMaterial(s, map);
+		
 	}
 
 	public void updateRender(long limit) {
@@ -185,7 +189,7 @@ public class SpoutRenderer {
 			}
 			skydomeMesh.render(skydome.getRenderMaterial());
 		}
-		t.release();
+		
 		
 
 		//Interpolate entity transform if Physics is not currently applied to the entity
@@ -218,9 +222,15 @@ public class SpoutRenderer {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 		}
 
+		
 		start = System.nanoTime();
 
+		t.release();
+		
+		
 		gui.begin();
+		gui.draw(mat, -1, -1, 2, 2);
+		
 		if (showDebugInfos) {
 			Point position = client.getActivePlayer().getTransform().getPosition();
 			gui.drawText(new ChatArguments("Spout client! Logged as ", ChatStyle.RED, client.getActivePlayer().getDisplayName(), ChatStyle.RESET, " in world: ", ChatStyle.RED, client.getActiveWorld().getName()), font, -0.95f, 0.9f, 10f);
@@ -234,8 +244,6 @@ public class SpoutRenderer {
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Buffer: ", worldRenderer.addedBatch + " / " + worldRenderer.updatedBatch), font, -0.95f, 0.0f, 8f);
 			//gui.drawText(new ChatArguments(ChatStyle.BLUE, "Time: ", worldTime / 1000000.0 + " / " + entityTime / 1000000.0 + " / " + guiTime / 1000000.0), font, -0.95f, -0.1f, 8f);
 		}
-		mat.getShader().setUniform("Diffuse", t);
-		gui.draw(mat, 0.25f, 0.25f, .25f, .25f);
 		for (Screen screen : screenStack.getVisibleScreens()) {
 			for (Widget widget : screen.getWidgets()) {
 				gui.draw(widget.getRenderParts());

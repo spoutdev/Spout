@@ -66,7 +66,7 @@ public class ClientTexture extends Texture {
 
 	@Override
 	public void bind() {
-		if (textureID == -1) {
+		if (isLoaded()) {
 			throw new IllegalStateException("Cannot bind an unloaded texture!");
 		}
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -76,6 +76,7 @@ public class ClientTexture extends Texture {
 	}
 
 	public void unload() {
+		
 		if (textureID == -1) {
 			throw new IllegalStateException("Cannot delete an unloaded texture!");
 		}
