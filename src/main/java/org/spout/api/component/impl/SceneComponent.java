@@ -1,5 +1,7 @@
 package org.spout.api.component.impl;
 
+import com.bulletphysics.collision.shapes.CollisionShape;
+
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
@@ -13,6 +15,7 @@ import org.spout.api.math.Vector3;
  * the rendering state. This component can be used to manipulate the object within the scene.
  */
 public abstract class SceneComponent extends EntityComponent {
+
 	// Transform
 
 	/**
@@ -25,40 +28,32 @@ public abstract class SceneComponent extends EntityComponent {
 	 */
 	public abstract Transform getTransform();
 
-	// Position
-
 	/**
 	 * Gets the {@link Point} representing the location where the {@link org.spout.api.entity.Entity} is within the scene.
 	 * <p>
-	 * The Point is guarantee'd to always be valid.
+	 * The Point is guaranteed to always be valid.
 	 * </p>
 	 * @return The Point in the scene.
 	 */
 	public abstract Point getPosition();
 
-	// Rotation
-
 	/**
 	 * Gets the {@link Quaternion} representing the rotation of the {@link org.spout.api.entity.Entity} within the scene.
 	 * <p>
-	 * The Quaternion is gurrantee'd to always be valid.
+	 * The Quaternion is guaranteed to always be valid.
 	 * </p>
 	 * @return The Quaternion in the scene.
 	 */
 	public abstract Quaternion getRotation();
 
-	// Scale
-
 	/**
 	 * Gets the {@link Vector3} representing the scale of the {@link org.spout.api.entity.Entity} within the scene.
 	 * <p>
-	 * The Scale is gurrantee'd to always be valid.
+	 * The Scale is guaranteed to always be valid.
 	 * </p>
 	 * @return The Scale (Vector3) in the scene.
 	 */
 	public abstract Vector3 getScale();
-
-	// Physics
 
 	/**
 	 * Translates this {@link org.spout.api.entity.Entity} from its current {@link Point} to the Point
@@ -69,10 +64,10 @@ public abstract class SceneComponent extends EntityComponent {
 	 * Bear in mind, doing a translate does so without physics and instead the position of the Entity will be directly set within its physics
 	 * transform.
 	 * </p>
-	 * @param howMuch A Vector3 which will be added to the current Point (position).
-	 * @return SceneComponent Returns this component for chaining.
+	 * @param point A Vector3 which will be added to the current Point (position).
+	 * @return This component, so you can chain.
 	 */
-	public abstract SceneComponent translate(Vector3 howMuch);
+	public abstract SceneComponent translate(Vector3 point);
 
 	/**
 	 * Rotates this {@link org.spout.api.entity.Entity} from its current {@link org.spout.api.math.Quaternion} to the Quaternion
@@ -83,10 +78,10 @@ public abstract class SceneComponent extends EntityComponent {
 	 * Bear in mind, doing a rotate does so without physics and instead the rotation of the Entity will be directly set within its physics
 	 * transform.
 	 * </p>
-	 * @param howMuch A Quaternion which will be added to the current Quaternion (rotation).
-	 * @return SceneComponent Returns this component for chaining.
+	 * @param rotate A Quaternion which will be added to the current Quaternion (rotation).
+	 * @return This component, so you can chain.
 	 */
-	public abstract SceneComponent rotate(Quaternion howMuch);
+	public abstract SceneComponent rotate(Quaternion rotate);
 
 	/**
 	 * Scales this {@link org.spout.api.entity.Entity} from its current scale to the {@link Vector3} representing the new scale which is
@@ -94,15 +89,17 @@ public abstract class SceneComponent extends EntityComponent {
 	 * <p>
 	 * For example, if I want to scale an Entity to be taller (which is scaling its y-factor), I would do a scale(new Vector3(0, 1, 0));
 	 * </p>
-	 * @param howMuch A Vector3 which will be added to the current Vector3 (scale).
-	 * @return SceneComponent Returns this component for chaining.
+	 * @param scale A Vector3 which will be added to the current Vector3 (scale).
+	 * @return This component, so you can chain.
 	 */
-	public abstract SceneComponent scale(Vector3 howMuch);
+	public abstract SceneComponent scale(Vector3 scale);
+
+	// Physics
 
 	/**
 	 * Impulse performs a translation of the {@link org.spout.api.entity.Entity} by the {@link Vector3} from the Vector3 offset.
 	 * <p>
-	 * Impulse is a force across delta time. A few rules apply.
+	 * Impulse is a force across delta time (since last simulation tick). A few rules apply.
 	 * - The entity must have a mass > 0 (ie not a static object).
 	 * - The offset is in world space. This means the impulse is applied from the offset provided.
 	 * - Entities of higher masses need greater impulses to move. Can't get movement to occur? Lower mass or apply greater impulse.
@@ -113,11 +110,11 @@ public abstract class SceneComponent extends EntityComponent {
 	 * scene.impulse(Vector3.FORWARD, new Vector3(getPosition().subtract(getTransform().getForward()));
 	 * // The above adds 1 to the forwardness of the Entity every simulation step (if applied in onTick for example)
 	 * </p>
-	 * @param howMuch The Vector3 impulse (force) to apply.
+	 * @param impulse The Vector3 impulse (force) to apply.
 	 * @param offset The offset within the world to apply the impulse from.
-	 * @return SceneComponent Returns this component for chaining.
+	 * @return This component, so you can chain.
 	 */
-	public abstract SceneComponent impulse(Vector3 howMuch, Vector3 offset);
+	public abstract SceneComponent impulse(Vector3 impulse, Vector3 offset);
 
 	/**
 	 * Force performs a translation of the {@link org.spout.api.entity.Entity} by the {@link Vector3} from the Vector3 offset.
@@ -129,17 +126,168 @@ public abstract class SceneComponent extends EntityComponent {
 	 * <p/>
 	 * For example, if I want to propel an entity right in an instant, such as simulating a two entities hitting each other, I would do the following.
 	 * <p/>
-	 * // Vector3,RIGHT = 1, 0, 0
+	 * // Vector3.RIGHT = 1, 0, 0
 	 * scene.force(Vector3.RIGHT, new Vector3(getPosition().subtract(getTransform.getRight()));
 	 * // The above forces the Entity's momentum by 1 every simulation step (if applied in onTick for example).
 	 * </p>
-	 * @param howMuch The Vector3 force to apply.
+	 * @param force The Vector3 force to apply.
 	 * @param offset The offset within the world to apply the force from.
-	 * @return SceneComponent Returns this component for chaining.
+	 * @return This component, so you can chain.
 	 */
-	public abstract SceneComponent force(Vector3 howMuch, Vector3 offset);
+	public abstract SceneComponent force(Vector3 force, Vector3 offset);
+
+	/**
+	 * Torque performs a rotation of the {@link org.spout.api.entity.Entity} by the {@link Vector3}.
+	 * <p/>
+	 * The Vector3 is (yaw, pitch, roll) and is an instant change to rotation.
+	 * <p/>
+	 * For example, if I want to rotate the entity to the right, I would do the following.
+	 * <p/>
+	 * //Vector3.RIGHT = 1, 0, 0
+	 * scene.torque(Vector3.RIGHT);
+	 * //The above rotates the Entity to the right instantly.
+	 * @param torque The Vector3 torque to apply
+	 * @return This component, so you can chain.
+	 */
+	public abstract SceneComponent torque(Vector3 torque);
+
+	/**
+	 * Impulse Torque performs a rotation over a delta of the {@link org.spout.api.entity.Entity} by the {@link Vector3}.
+	 * <p/>
+	 * The Vector3 is (yaw, pitch, roll) and is a change in rotation spread over delta time (since last simulation).
+	 * <p/>
+	 * For example, if I want to rotate the entity to the right over time, I would do the following.
+	 * <p/>
+	 * //Vector3.RIGHT = 1, 0, 0
+	 * scene.impulseTorque(Vector3.RIGHT)
+	 * //The above rotates the Entity over time to the right.
+	 * @param torque Tne Vector3 torque to apply.
+	 * @return This component, so you can chain.
+	 */
+	public abstract SceneComponent impulseTorque(Vector3 torque);
+
+	/**
+	 * Dampens the {@link org.spout.api.entity.Entity}'s movement velocity by the factor provided.
+	 * <p/>
+	 * 0.0f = no dampening, 1.0f = full velocity stop. Any values outside this range will be clamped to the nearest bound.
+	 * @param damp The float dampener to apply.
+	 */
+	public abstract void dampenMovement(float damp);
+
+	/**
+	 * Dampens the {@link org.spout.api.entity.Entity}'s rotation velocity by the factor provided.
+	 * <p/>
+	 * 0.0f = no dampening, 1.0f = full velocity stop. Any values outside this range will be clamped to the nearest bound.
+	 * @param damp The float dampener to apply.
+	 * @return This component, so you can chain.
+	 */
+	public abstract SceneComponent dampenRotation(float damp);
+
+	// Physics characteristics
+
+	/**
+	 * Gets the {@link CollisionShape} this {@link org.spout.api.entity.Entity} currently has applied to it.
+	 * <p/>
+	 * If no shape is available currently, a null will be returned.
+	 * @return The current CollisionShape applied.
+	 */
+	public abstract CollisionShape getShape();
+
+	/**
+	 * Sets the {@link CollisionShape} for {@link org.spout.api.entity.Entity}.
+	 * <p/>
+	 * See {@}
+	 * @param shape
+	 * @return This component, so you can chain.
+	 */
+	public abstract SceneComponent setShape(CollisionShape shape);
+
+	/**
+	 * Gets the friction (slipperiness) of this {@link org.spout.api.entity.Entity}.
+	 * <p/>
+	 * 0.0f = no slipperiness, 1.0f = full slipperiness.
+	 * @return the value of the friction.
+	 */
+	public abstract float getFriction();
+
+	/**
+	 * Sets the friction (slipperiness) of this {@link org.spout.api.entity.Entity}.
+	 * <p/>
+	 * 0.0f = no slipperiness, 1.0f = full slipperiness. Any values outside of this range will be clamped to the nearest bound.
+	 * @param friction The float friction value this entity will have.
+	 * @return This component, so you can chain.
+	 */
+	public abstract SceneComponent setFriction(float friction);
+
+	/**
+	 * Gets the mass (heaviness) of this {@link org.spout.api.entity.Entity}.
+	 * <p/>
+	 * Mass of 0f means this is a static entity, one in-which doesn't move.
+	 * @return the value of the mass.
+	 */
+	public abstract float getMass();
+
+	/**
+	 * Sets the mass (heaviness) of this {@link org.spout.api.entity.Entity}.
+	 * <p/>
+	 * Mass of 0f informs Spout that this is a static entity, one in-which doesn't move. For forces to take effect on an Entity,
+	 * you must provide a mass of at least 1f. Also, higher masses take larger amounts of force to move.
+	 * @param mass The float mass value this entity will have.
+	 * @return This component, so you can chain.
+	 */
+	public abstract SceneComponent setMass(float mass);
+
+	/**
+	 * Gets the restitution (bounciness) of this {@link org.spout.api.entity.Entity}.
+	 * <p/>
+	 * 0.0f = no bounciness, 1.0f = full bounciness.
+	 * @return the value of the restitution.
+	 */
+	public abstract float getRestitution();
+
+	/**
+	 * Sets the restitution (bounciness) of this {@link org.spout.api.entity.Entity}.
+	 * <p/>
+	 * 0.0f = no bounciness, 1.0f = full bounciness. Any values outside of this range will be clamped to the nearest bound.
+	 * @param restitution The float restitution value this entity will have.
+	 * @return This component, so you can chain.
+	 */
+	public abstract SceneComponent setRestitution(float restitution);
+
+	/**
+	 * Gets the movement velocity of this {@link org.spout.api.entity.Entity}.
+	 * @return the current velocity as a {@link Vector3}.
+	 */
+	public abstract Vector3 getMovementVelocity();
+
+	/**
+	 * Sets the movement velocity for this {@link org.spout.api.entity.Entity}.
+	 * @param velocity The {@link Vector3} velocity to apply to movement.
+	 * @return This component, so you can chain.
+	 */
+	public abstract SceneComponent setMovementVelocity(Vector3 velocity);
+
+	/**
+	 * Gets rotation velocity of this {@link org.spout.api.entity.Entity}.
+	 * @return the current velocity as a {@link Vector3}.
+	 */
+	public abstract Vector3 getRotationVelocity();
+
+	/**
+	 * Sets the rotation velocity for this {@link org.spout.api.entity.Entity}.
+	 * @param velocity The {@link Vector3} velocity to apply to rotation.
+	 * @return This component, so you can chain.
+	 */
+	public abstract SceneComponent setRotationVelocity(Vector3 velocity);
 
 	// Other
+
+	/**
+	 * De-activates/activates this {@link org.spout.api.entity.Entity} for physics.
+	 * @param activate True to activate the entity, false to deactivate
+	 * @return This component, so you can chain.
+	 */
+	public abstract SceneComponent setActivated(boolean activate);
 
 	@Override
 	public boolean isDetachable() {
