@@ -31,14 +31,13 @@ import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.AnimationPlayed;
 
 public abstract class AnimationComponent extends EntityComponent {
-	
 	/**
 	 * Send a animation to play once time
 	 * @param animation
 	 * @return
 	 */
 	public abstract AnimationPlayed playAnimation(Animation animation);
-	
+
 	/**
 	 * Send a animation to play
 	 * @param animation
@@ -52,10 +51,9 @@ public abstract class AnimationComponent extends EntityComponent {
 	 * @param animation (Require to send the AnimationPlayed returned when send to play)
 	 */
 	public abstract void stopAnimation(AnimationPlayed animation);
-	
+
 	/**
 	 * Stop all animations
 	 */
 	public abstract void stopAnimations();
-	
 }

@@ -34,7 +34,6 @@ import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.GenericMath;
 
 /**
@@ -57,7 +56,6 @@ public abstract class EntityComponent extends Component {
 
 	/**
 	 * Returns a thread-safe, deterministic random number generator
-	 * 
 	 * @return random
 	 */
 	public final Random getRandom() {

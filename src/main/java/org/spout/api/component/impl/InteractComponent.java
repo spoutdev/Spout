@@ -80,12 +80,12 @@ public class InteractComponent extends EntityComponent {
 	public Block getLastEmpty() {
 		BlockIterator blockIt = getAlignedBlocks();
 		Block block = blockIt.getTarget();
-		if (block==null) {
+		if (block == null) {
 			return null;
 		}
 		return block.translate(blockIt.getBlockFace());
 	}
-	
+
 	/**
 	 * Return a list of all the blocks in line
 	 * of view.

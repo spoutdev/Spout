@@ -44,6 +44,7 @@ public class BaseComponentHolder implements ComponentHolder {
 	 */
 	private final BiMap<Class<? extends Component>, Component> components = HashBiMap.create();
 	private final DatatableComponent data;
+
 	public BaseComponentHolder() {
 		data = add(DatatableComponent.class);
 	}
@@ -54,7 +55,7 @@ public class BaseComponentHolder implements ComponentHolder {
 	 */
 	protected void add(Class<? extends Component>... components) {
 		HashSet<Component> added = new HashSet<Component>();
-		synchronized(components) {
+		synchronized (components) {
 			for (Class<? extends Component> type : components) {
 				if (!this.components.containsKey(type)) {
 					added.add(add(type, false));
@@ -94,13 +95,13 @@ public class BaseComponentHolder implements ComponentHolder {
 			return null;
 		}
 
-		synchronized(components) {
+		synchronized (components) {
 			T component = (T) components.get(key);
-	
+
 			if (component != null) {
 				return component;
 			}
-	
+
 			try {
 				component = (T) type.newInstance();
 			} catch (InstantiationException e) {
@@ -108,7 +109,7 @@ public class BaseComponentHolder implements ComponentHolder {
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
-	
+
 			if (component != null) {
 				try {
 					if (component.attachTo(this)) {
@@ -136,9 +137,9 @@ public class BaseComponentHolder implements ComponentHolder {
 	@Override
 	public <T extends Component> T detach(Class<? extends Component> type) {
 		Preconditions.checkNotNull(type);
-		synchronized(components) {
+		synchronized (components) {
 			T component = (T) get(type);
-	
+
 			if (component != null && component.isDetachable()) {
 				components.inverse().remove(component);
 				try {
@@ -147,7 +148,7 @@ public class BaseComponentHolder implements ComponentHolder {
 					Spout.getEngine().getLogger().log(Level.SEVERE, "Error detaching component " + type + " from holder: ", e);
 				}
 			}
-	
+
 			return component;
 		}
 	}
@@ -171,7 +172,7 @@ public class BaseComponentHolder implements ComponentHolder {
 	@Override
 	public <T extends Component> T getExact(Class<T> type) {
 		Preconditions.checkNotNull(type);
-		synchronized(components) {
+		synchronized (components) {
 			return (T) components.get(type);
 		}
 	}
@@ -190,7 +191,7 @@ public class BaseComponentHolder implements ComponentHolder {
 
 	@Override
 	public Collection<Component> values() {
-		synchronized(components) {
+		synchronized (components) {
 			return new ArrayList<Component>(components.values());
 		}
 	}
@@ -203,7 +204,7 @@ public class BaseComponentHolder implements ComponentHolder {
 	@SuppressWarnings("unchecked")
 	private <T extends Component> T findComponent(Class<T> type) {
 		Preconditions.checkNotNull(type);
-		synchronized(components) {
+		synchronized (components) {
 			for (Component component : values()) {
 				if (type.isAssignableFrom(component.getClass())) {
 					return (T) component;

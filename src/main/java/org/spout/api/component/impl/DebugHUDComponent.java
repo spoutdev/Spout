@@ -41,49 +41,50 @@ import org.spout.api.meta.SpoutMetaPlugin;
 import org.spout.api.plugin.CommonPluginManager;
 import org.spout.api.plugin.Platform;
 import org.spout.api.render.SpoutRenderMaterials;
+
 /**
  * DebugHUD for Spout (client). Its purpose, by default, is to render debug developer info when a client player
  * presses F3. The internal debug screen is exposed so plugins can add their own widgets to this.
- *
+ * <p/>
  * I'll take a moment to briefly explain some of the more confusing methods found in this class (namely
  * how setSprite and setSource works).
- *
+ * <p/>
  * Firstly you must understand how Rectangle works in-regards to drawing onscreen. Here is some things to remember.
  * Ex. setSprite(new Rectangle(x, y, width, height))
- *
+ * <p/>
  * X = Where to start drawing X-wise. -1 is western bounds of the screen, 1 is eastern bounds of the screen.
  * Y = Where to start drawing Y-wise. -1 is bottom bounds of the screen, 1 is top bounds of the screen.
  * Width = The width of the sprite. Negative values will drawn leftwards, positive values draw rightwards.
  * Height = The height of the sprite. Negative values will drawn downwards, positive values draw upwards.
- *
+ * <p/>
  * Secondly you must understand how setSource works. Its almost the same but we are now looking at grabbing a certain texture
  * from a sprite sheet (texture atlas). Its the same concept with rectangles: choose where to start with x, y and then the width and height
  * of the image to grab.
- *
+ * <p/>
  * Ex. You have a sprite sheet with images (think terrain.png) that is 256 x 256. You want to grab a specific texture from it. You would
  * take the texture and use an application like paint to find the exact pixel this image starts at. It comes down to basic coordinate planes.
  * In short, you want the "origin" to start at within the image, it is the top left corner of the pixel where it starts drawing (both x and y).
  * The following demonstrates how you would perceive a sprite sheet to find the appropriate values.
- *
- *              0
- *              ^
- *              |
- *              |
+ * <p/>
+ * 0
+ * ^
+ * |
+ * |
  * 0 <----------|----------> 256
- *              |
- *              |
- *              v
- *             256
- *
+ * |
+ * |
+ * v
+ * 256
+ * <p/>
  * In our example, lets say our image starts at 120x and is at the top of the sprite sheet so 0y. Now its a matter of finding out the width and height
  * of the image. An application like paint allows you to select an image and find out its width and height. We will assume its a 16x16. Here is the
  * final code line to grab the image:
- *
+ * <p/>
  * setSource(new Rectangle(120f/256f, 0f, 16f/256f, 16f/256f));
- *
+ * <p/>
  * Finally some tricks I've found. I'll add on to this as I further complete this component...
  * - If you want to just draw a rectangle with a solid color on the screen, setSprite(new Color(r, g, b, a)) to whatever you like and
- *   setSource(new Rectangle(0f, 0f, 0f, 0f)). This will render your entire sprite with the color you chose!
+ * setSource(new Rectangle(0f, 0f, 0f, 0f)). This will render your entire sprite with the color you chose!
  */
 public class DebugHUDComponent extends EntityComponent {
 	// The Internal Spout-dummy plugin
@@ -134,19 +135,6 @@ public class DebugHUDComponent extends EntityComponent {
 		screen.setGrabsMouse(false);
 		screen.setTakesInput(false);
 		final RenderPartsHolderComponent debugBar = debug.add(RenderPartsHolderComponent.class);
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 		//The pop-out bar
 		final RenderPart bar = new RenderPart();

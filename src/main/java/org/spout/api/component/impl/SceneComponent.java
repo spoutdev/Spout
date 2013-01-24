@@ -57,11 +57,11 @@ public abstract class SceneComponent extends EntityComponent {
 
 	/**
 	 * Sets the {@link Transform} for this {@link org.spout.api.entity.Entity}.
-	 *
+	 * <p/>
 	 * This function sets the live state of the entity's transform, not the snapshot state. As such, its advised
 	 * to set the transform lastly else retrieving the transform afterwards within the same tick will not return
 	 * expected values (due to potential other plugin changes as well as getTransform() returning snapshot state).
-	 *
+	 * <p/>
 	 * Additionally, this method also sets the transform for physics as well.
 	 * @param transform The new live transform state of this entity.
 	 * @return This component, for chaining.
@@ -70,17 +70,16 @@ public abstract class SceneComponent extends EntityComponent {
 
 	/**
 	 * Returns whether the live transform and snapshot transform are not equal.
- 	 * @return True if live is different than snapshot, false if the same.
+	 * @return True if live is different than snapshot, false if the same.
 	 */
 	public abstract boolean isTransformDirty();
 
 	/**
 	 * Gets the {@link Transform} this {@link org.spout.api.entity.Entity} had within the last game tick
 	 * of the scene with interpolation applied (so it appears smooth to users).
-	 *
-	 * The render transform is simply the transform of the Entity players see within the scene.
-	 *
-	 * @return
+	 * <p/>
+	 * The render transform is simply the transform of the entity clients see within the scene.
+	 * @return The Transform, interpolated, as of the last game tick.
 	 */
 	@ClientOnly
 	public abstract Transform getRenderTransform();

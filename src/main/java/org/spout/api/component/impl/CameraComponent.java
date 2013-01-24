@@ -26,17 +26,11 @@
  */
 package org.spout.api.component.impl;
 
-import net.royawesome.jlibnoise.MathHelper;
-
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.GenericMath;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.MatrixMath;
-import org.spout.api.math.Quaternion;
-import org.spout.api.math.QuaternionMath;
 import org.spout.api.math.Vector3;
-import org.spout.api.math.VectorMath;
 import org.spout.api.render.Camera;
 import org.spout.api.render.ViewFrustum;
 
@@ -55,7 +49,7 @@ public class CameraComponent extends EntityComponent implements Camera {
 		projection = createPerspective;
 		view = createLookAt;
 	}
-	
+
 	public void setScale(float scale) { //1/2
 		projection = MatrixMath.createPerspective(fieldOfView * scale, 4.0f / 3.0f, .001f * scale, 1000f * scale);
 		updateView();

@@ -85,8 +85,9 @@ public class NavigationComponent extends EntityComponent {
 			Point root = transform.getPosition();
 			if (root.distanceSquared(vector) <= 12) {
 				plan.update(getOwner());
-				if (plan.isComplete())
+				if (plan.isComplete()) {
 					return;
+				}
 				vector = plan.getCurrentVector();
 			}
 			float dX = (vector.getX() - root.getX()) / 20;
