@@ -59,15 +59,12 @@ import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.component.impl.AnimationComponent;
 import org.spout.api.component.impl.CameraComponent;
-import org.spout.api.component.impl.HitBlockComponent;
+import org.spout.api.component.impl.InteractComponent;
 import org.spout.api.component.impl.ModelComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
-import org.spout.api.event.EventHandler;
-import org.spout.api.event.Listener;
 import org.spout.api.event.engine.EngineStartEvent;
 import org.spout.api.event.engine.EngineStopEvent;
-import org.spout.api.event.entity.AnimationEndEvent;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.gui.ScreenStack;
@@ -180,7 +177,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			public void run() {
 				activePlayer = new SpoutClientPlayer("Spouty", getDefaultWorld().getSpawnPoint(), SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 				activeCamera = activePlayer.add(CameraComponent.class);
-				activePlayer.add(HitBlockComponent.class);
+				activePlayer.add(InteractComponent.class);
 				getActiveWorld().spawnEntity(activePlayer);
 				Font font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
 

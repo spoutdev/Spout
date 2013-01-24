@@ -46,9 +46,8 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.component.impl.AnimationComponent;
-import org.spout.api.component.impl.HitBlockComponent;
+import org.spout.api.component.impl.InteractComponent;
 import org.spout.api.component.impl.ModelComponent;
-import org.spout.api.component.impl.PhysicsComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
@@ -81,7 +80,7 @@ public class TestCommands {
 			throw new CommandException("You must be a client to perform this command.");
 		}
 		Player player = ((Client) Spout.getEngine()).getActivePlayer();
-		Block block = player.get(HitBlockComponent.class).getTargetBlock();
+		Block block = player.get(InteractComponent.class).getTargetBlock();
 
 		if (block == null || block.getMaterial().equals(BlockMaterial.AIR)) {
 			source.sendMessage("No blocks in range.");

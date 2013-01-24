@@ -29,7 +29,6 @@ package org.spout.engine.entity.component;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.component.impl.ModelComponent;
-import org.spout.api.component.impl.PredictableTransformComponent;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.math.Matrix;
 import org.spout.api.render.Camera;

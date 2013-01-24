@@ -53,7 +53,6 @@ import javax.vecmath.Vector3f;
 
 import org.spout.api.Spout;
 import org.spout.api.component.Component;
-import org.spout.api.component.impl.PhysicsComponent;
 import org.spout.api.component.type.BlockComponent;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.datatable.ManagedHashMap;
