@@ -26,11 +26,17 @@
  */
 package org.spout.api.component.impl;
 
+import net.royawesome.jlibnoise.MathHelper;
+
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.math.GenericMath;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.MatrixMath;
+import org.spout.api.math.Quaternion;
+import org.spout.api.math.QuaternionMath;
 import org.spout.api.math.Vector3;
+import org.spout.api.math.VectorMath;
 import org.spout.api.render.Camera;
 import org.spout.api.render.ViewFrustum;
 
@@ -74,24 +80,17 @@ public class CameraComponent extends EntityComponent implements Camera {
 
 	@Override
 	public void updateView() {
-		Transform transform = ((PredictableTransformComponent) getOwner().getTransform()).getRenderTransform();
-		if (transform != null) {
-			Matrix pos = MatrixMath.translate(transform.getPosition().multiply(-1));
-			Matrix rot = MatrixMath.rotate(transform.getRotation());
-			view = pos.multiply(rot);
-			frustum.update(projection, view, transform.getPosition());
-		}
+		Transform transform = getOwner().getScene().getRenderTransform();
+		Matrix pos = MatrixMath.translate(transform.getPosition().multiply(-1));
+		Matrix rot = MatrixMath.rotate(transform.getRotation());
+		view = pos.multiply(rot);
+		frustum.update(projection, view, transform.getPosition());
 	}
 
 	@Override
 	public boolean canTick() {
-		return false; // It's not the job of engine, if you want fluid movement, it's render job.
+		return false;
 	}
-
-	/*@Override
-		 public void onTick(float dt) {
-			 updateView();
-		 }*/
 
 	@Override
 	public ViewFrustum getFrustum() {
@@ -115,7 +114,7 @@ public class CameraComponent extends EntityComponent implements Camera {
 
 	@Override
 	public Matrix getRotation() {
-		Transform transform = ((PredictableTransformComponent) getOwner().getTransform()).getRenderTransform();
+		Transform transform = getOwner().getScene().getRenderTransform();
 		return MatrixMath.rotate(transform.getRotation());
 	}
 }

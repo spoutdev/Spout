@@ -1,7 +1,34 @@
+/*
+ * This file is part of SpoutAPI.
+ *
+ * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * SpoutAPI is licensed under the Spout License Version 1.
+ *
+ * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the Spout License Version 1.
+ *
+ * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the Spout License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://spout.in/licensev1> for the full license, including
+ * the MIT license.
+ */
 package org.spout.api.component.impl;
 
 import com.bulletphysics.collision.shapes.CollisionShape;
 
+import org.spout.api.ClientOnly;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
@@ -27,6 +54,36 @@ public abstract class SceneComponent extends EntityComponent {
 	 * @return The Transform as of the last game tick.
 	 */
 	public abstract Transform getTransform();
+
+	/**
+	 * Sets the {@link Transform} for this {@link org.spout.api.entity.Entity}.
+	 *
+	 * This function sets the live state of the entity's transform, not the snapshot state. As such, its advised
+	 * to set the transform lastly else retrieving the transform afterwards within the same tick will not return
+	 * expected values (due to potential other plugin changes as well as getTransform() returning snapshot state).
+	 *
+	 * Additionally, this method also sets the transform for physics as well.
+	 * @param transform The new live transform state of this entity.
+	 * @return This component, for chaining.
+	 */
+	public abstract SceneComponent setTransform(Transform transform);
+
+	/**
+	 * Returns whether the live transform and snapshot transform are not equal.
+ 	 * @return True if live is different than snapshot, false if the same.
+	 */
+	public abstract boolean isTransformDirty();
+
+	/**
+	 * Gets the {@link Transform} this {@link org.spout.api.entity.Entity} had within the last game tick
+	 * of the scene with interpolation applied (so it appears smooth to users).
+	 *
+	 * The render transform is simply the transform of the Entity players see within the scene.
+	 *
+	 * @return
+	 */
+	@ClientOnly
+	public abstract Transform getRenderTransform();
 
 	/**
 	 * Gets the {@link Point} representing the location where the {@link org.spout.api.entity.Entity} is within the scene.

@@ -237,7 +237,7 @@ public abstract class NetworkSynchronizer {
 			viewDistance = currentViewDistance;
 		}
 
-		Point currentPosition = player.getTransform().getPosition();
+		Point currentPosition = player.getScene().getPosition();
 		if (currentPosition != null) {
 			if (prevViewDistance != currentViewDistance || worldChanged || (!currentPosition.equals(lastChunkCheck) &&	currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.BLOCKS.SIZE >> 1)) {
 				checkChunkUpdates(currentPosition);
@@ -303,7 +303,7 @@ public abstract class NetworkSynchronizer {
 		} else {
 			if (worldChanged) {
 				first = false;
-				Point ep = player.getTransform().getPosition();
+				Point ep = player.getScene().getPosition();
 				resetChunks();
 				worldChanged(ep.getWorld());
 			} else if (!worldChanged) {
@@ -343,7 +343,8 @@ public abstract class NetworkSynchronizer {
 					return;
 				}
 				
-				if (teleported && player.getTransform().getTransformLive().equals(player.getTransform().getTransform())) {
+				if (teleported && player.getScene().isTransformDirty()) {
+					//TODO Raphfrk this method needs to go into Spout (with it abstracted here possibly).
 					sendPosition(player.getTransform().getTransformLive().getPosition(), player.getTransform().getTransformLive().getRotation());
 					teleported = false;
 				}
@@ -505,7 +506,6 @@ public abstract class NetworkSynchronizer {
 	 * 
 	 * @param playerChunkBase
 	 * @param testChunkBase
-	 * @param blockViewDistance view distance in chunks
 	 * @return true if in the view volume
 	 */
 	public boolean isInViewVolume(Point playerChunkBase, Point testChunkBase, int viewDistance) {

@@ -35,7 +35,7 @@ import org.spout.api.util.BlockIterator;
 /**
  * A component allowing a player to interact with a block
  */
-public class HitBlockComponent extends EntityComponent {
+public class InteractComponent extends EntityComponent {
 	private Player player;
 	private float range = 8f;
 
@@ -92,7 +92,7 @@ public class HitBlockComponent extends EntityComponent {
 	 * @return blocks
 	 */
 	public BlockIterator getAlignedBlocks() {
-		return new BlockIterator(player.getWorld(), player.getTransform().getTransform(), range);
+		return new BlockIterator(player.getWorld(), player.getScene().getTransform(), range);
 	}
 
 	/**
