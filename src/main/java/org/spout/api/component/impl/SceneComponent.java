@@ -120,10 +120,10 @@ public abstract class SceneComponent extends EntityComponent {
 	 * Bear in mind, doing a translate does so without physics and instead the position of the Entity will be directly set within its physics
 	 * transform.
 	 * </p>
-	 * @param point A Vector3 which will be added to the current Point (position).
+	 * @param translation A Vector3 which will be added to the current Point (position).
 	 * @return This component, so you can chain.
 	 */
-	public abstract SceneComponent translate(Vector3 point);
+	public abstract SceneComponent translate(Vector3 translation);
 
 	/**
 	 * Rotates this {@link org.spout.api.entity.Entity} from its current {@link org.spout.api.math.Quaternion} to the Quaternion

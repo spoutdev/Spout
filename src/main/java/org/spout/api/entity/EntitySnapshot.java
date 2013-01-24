@@ -58,7 +58,7 @@ public class EntitySnapshot {
 		this.entity = new WeakReference<Entity>(e);
 		this.entityId = e.getId();
 		this.uniqueId = e.getUID();
-		this.location = e.getTransform().getTransformLive();
+		this.location = e.getScene().getTransform();
 		this.worldName = e.getWorld().getName();
 		this.worldId = e.getWorld().getUID();
 		this.viewDistance = e.getViewDistance();

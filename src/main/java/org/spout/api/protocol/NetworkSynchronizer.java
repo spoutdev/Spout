@@ -344,8 +344,8 @@ public abstract class NetworkSynchronizer {
 				}
 				
 				if (teleported && player.getScene().isTransformDirty()) {
-					//TODO Raphfrk this method needs to go into Spout (with it abstracted here possibly).
-					sendPosition(player.getTransform().getTransformLive().getPosition(), player.getTransform().getTransformLive().getRotation());
+					//TODO Afforess this method needs to go into Spout or adjusted somehow for snapshot values.
+					//sendPosition(player.getTransform().getTransformLive().getPosition(), player.getTransform().getTransformLive().getRotation());
 					teleported = false;
 				}
 
