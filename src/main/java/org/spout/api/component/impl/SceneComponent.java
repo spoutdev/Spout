@@ -34,6 +34,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
+import org.spout.api.util.thread.annotation.SnapshotRead;
 
 /**
  * Component that gives the owner the characteristics to be a part of a Scene.
@@ -53,6 +54,7 @@ public abstract class SceneComponent extends EntityComponent {
 	 * </p>
 	 * @return The Transform as of the last game tick.
 	 */
+	@SnapshotRead
 	public abstract Transform getTransform();
 
 	/**
@@ -94,32 +96,64 @@ public abstract class SceneComponent extends EntityComponent {
 	public abstract Point getPosition();
 
 	/**
+	 * Sets the {@link Point} for this {@link org.spout.api.entity.Entity}. This will directly set both the world space
+	 * of the Entity as well as physics space. The physics space will be cleared of all forces in the process.
+	 *
+	 * This function sets the live state of the entity's point, not the snapshot state. As such, its advised to set the
+	 * point lastly else retrieving the point afterwards within the same tick will not return expected values (due to
+	 * potential other plugin changes as well as getPosition() returning snapshot state).
+	 * @param point The new live position state of this entity.
+	 * @return This component, for chaining.
+	 */
+	public abstract SceneComponent setPosition(Point point);
+
+	/**
 	 * Gets the {@link Quaternion} representing the rotation of the {@link org.spout.api.entity.Entity} within the scene.
 	 * <p>
 	 * The Quaternion is guaranteed to always be valid.
 	 * </p>
 	 * @return The Quaternion in the scene.
 	 */
+	@SnapshotRead
 	public abstract Quaternion getRotation();
 
 	/**
-	 * Gets the {@link Vector3} representing the scale of the {@link org.spout.api.entity.Entity} within the scene.
+	 * Sets the {@link Quaternion} for this {@link org.spout.api.entity.Entity}.
+	 *
+	 * This functions sets the live state of the entity's quaternion (rotation), not the snapshot state. As such, its advised
+	 * to set the quaternion lastly else retrieving the quaternion afterwards within the same tick will not return expected
+	 * values (due to potential other plugin changes as well as getRotation() returning snapshot state).
+	 * @param rotation The new live quaternion (rotation) of this entity.
+	 * @return This component, for chaining.
+	 */
+	public abstract SceneComponent setRotation(Quaternion rotation);
+
+	/**
+	 * Gets the {@link Vector3} representing the scale of the {@link org.spout.api.entity.Entity}.
 	 * <p>
 	 * The Scale is guaranteed to always be valid.
 	 * </p>
 	 * @return The Scale (Vector3) in the scene.
 	 */
+	@SnapshotRead
 	public abstract Vector3 getScale();
+
+	/**
+	 * Sets the {@link Vector3} representing the scale of the {@link org.spout.api.entity.Entity}.
+	 *
+	 * This functions sets the live state of the entity's scale, not the snapshot state. As such, its advised
+	 * to set the scale lastly else retrieving the scale afterwards within the same tick will not return expected
+	 * values (due to potential other plugin changes as well as getScale() returning snapshot state).
+	 * @param scale The new live scale of this entity.
+	 * @return This component, for chaining.
+	 */
+	public abstract SceneComponent setScale(Vector3 scale);
 
 	/**
 	 * Translates this {@link org.spout.api.entity.Entity} from its current {@link Point} to the Point
 	 * that is the addition of the {@link Vector3} provided.
 	 * <p>
 	 * For example, if I want to move an Entity up one (Up being the y-axis), I would do a translate(new Vector3(0, 1, 0));
-	 * <p/>
-	 * Bear in mind, doing a translate does so without physics and instead the position of the Entity will be directly set within its physics
-	 * transform.
-	 * </p>
 	 * @param translation A Vector3 which will be added to the current Point (position).
 	 * @return This component, so you can chain.
 	 */
