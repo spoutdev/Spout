@@ -28,6 +28,7 @@ package org.spout.api.component.impl;
 
 import java.util.Set;
 
+import org.spout.api.Spout;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.entity.Player;
 import org.spout.api.io.store.simple.MemoryStore;
@@ -95,20 +96,30 @@ public class NetworkComponent extends EntityComponent {
 	 * @param ignoreHolder If true, the holder will be excluded from being sent the protocol event (only valid if the holder has a NetworkSynchronier i.e. Player)
 	 */
 	public void callProtocolEvent(ProtocolEvent event, boolean ignoreHolder) {
-		Set<? extends Player> players = getOwner().getChunk().getObservingPlayers();
-		Player[] thePlayers;
-		if (getOwner() instanceof Player && ignoreHolder && players.contains(getOwner())) {
-			thePlayers = new Player[players.size() - 1];
-		} else {
-			thePlayers = new Player[players.size()];
-		}
-		int index = 0;
-		for (Player p : players) {
-			if (!ignoreHolder || getOwner() != p) {
-				thePlayers[index++] = p;
+		try {
+			Set<? extends Player> players = getOwner().getChunk().getObservingPlayers();
+			Player[] thePlayers;
+			if (getOwner() instanceof Player && ignoreHolder && players.contains(getOwner())) {
+				thePlayers = new Player[players.size() - 1];
+			} else {
+				thePlayers = new Player[players.size()];
 			}
+			int index = 0;
+			for (Player p : players) {
+				if (!ignoreHolder || getOwner() != p) {
+					thePlayers[index++] = p;
+				}
+			}
+			callProtocolEvent(event, thePlayers);
+		} catch (NullPointerException npe) {
+			//NPE logging to diagnose VANILLA-338
+			Spout.getLogger().info("Exception handling protocol event: " + npe.getClass().getSimpleName() + "\n" +
+				"    Owner: " + getOwner() + "\n" +
+				"    Chunk: " + (getOwner() != null ? getOwner().getChunk() : null) + "\n" + 
+				"    Position: " + (getOwner() != null ? getOwner().getTransform().getPosition() : null) + "\n" +
+				"    Is Owner Alive: " + (getOwner() != null ? getOwner().isRemoved() : "owner is null") + "\n");
+			npe.printStackTrace();
 		}
-		callProtocolEvent(event, thePlayers);
 	}
 
 	/**
