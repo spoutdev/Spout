@@ -62,6 +62,8 @@ public class MathHelper {
 
 	public static final double DEGTORAD = PI / 180.0;
 
+	public static final double HALF_DEGTORAD = PI / 360.0;
+	
 	public static final double RADTODEG = 180.0 / PI;
 
 	public static final double SQRTOFTWO = Math.sqrt(2.0);
@@ -981,7 +983,7 @@ public class MathHelper {
 		} else { // pitch is at north or south pole
 			int sign = (test < 0) ? -1 : 1;
 			r1 = 0;
-			r2 = sign * Math.PI / 2;
+			r2 = sign * HALF_PI;
 			r3 = -sign * 2 * Math.atan2(q1, q0);
 		}
 
@@ -1570,7 +1572,7 @@ public class MathHelper {
 	 */
 	public static Matrix createPerspective(float fov, float aspect, float znear, float zfar) {
 		float ymax, xmax;
-		ymax = znear * (float) Math.tan(fov * Math.PI / 360.0);
+		ymax = znear * (float) Math.tan(fov * HALF_DEGTORAD);
 		xmax = ymax * aspect;
 		return createOrthographic(xmax, -xmax, ymax, -ymax, znear, zfar);
 	}
