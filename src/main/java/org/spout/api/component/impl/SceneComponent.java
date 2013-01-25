@@ -98,7 +98,7 @@ public abstract class SceneComponent extends EntityComponent {
 	/**
 	 * Sets the {@link Point} for this {@link org.spout.api.entity.Entity}. This will directly set both the world space
 	 * of the Entity as well as physics space. The physics space will be cleared of all forces in the process.
-	 *
+	 * <p/>
 	 * This function sets the live state of the entity's point, not the snapshot state. As such, its advised to set the
 	 * point lastly else retrieving the point afterwards within the same tick will not return expected values (due to
 	 * potential other plugin changes as well as getPosition() returning snapshot state).
@@ -119,7 +119,7 @@ public abstract class SceneComponent extends EntityComponent {
 
 	/**
 	 * Sets the {@link Quaternion} for this {@link org.spout.api.entity.Entity}.
-	 *
+	 * <p/>
 	 * This functions sets the live state of the entity's quaternion (rotation), not the snapshot state. As such, its advised
 	 * to set the quaternion lastly else retrieving the quaternion afterwards within the same tick will not return expected
 	 * values (due to potential other plugin changes as well as getRotation() returning snapshot state).
@@ -140,7 +140,7 @@ public abstract class SceneComponent extends EntityComponent {
 
 	/**
 	 * Sets the {@link Vector3} representing the scale of the {@link org.spout.api.entity.Entity}.
-	 *
+	 * <p/>
 	 * This functions sets the live state of the entity's scale, not the snapshot state. As such, its advised
 	 * to set the scale lastly else retrieving the scale afterwards within the same tick will not return expected
 	 * values (due to potential other plugin changes as well as getScale() returning snapshot state).
@@ -152,7 +152,7 @@ public abstract class SceneComponent extends EntityComponent {
 	/**
 	 * Translates this {@link org.spout.api.entity.Entity} from its current {@link Point} to the Point
 	 * that is the addition of the {@link Vector3} provided.
-	 * <p>
+	 * <p/>
 	 * For example, if I want to move an Entity up one (Up being the y-axis), I would do a translate(new Vector3(0, 1, 0));
 	 * @param translation A Vector3 which will be added to the current Point (position).
 	 * @return This component, so you can chain.
