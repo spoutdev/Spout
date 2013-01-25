@@ -1390,10 +1390,16 @@ public class MathHelper {
 	 */
 	public static Matrix rotateX(float rot) {
 		Matrix res = createIdentity();
-		res.set(1, 1, (float) Math.cos(Math.toRadians(rot)));
-		res.set(1, 2, (float) -Math.sin(Math.toRadians(rot)));
-		res.set(2, 1, (float) Math.sin(Math.toRadians(rot)));
-		res.set(2, 2, (float) Math.cos(Math.toRadians(rot)));
+		
+		double rotRad = Math.toRadians(rot);
+		
+		float rotCos = (float) Math.cos(rotRad);
+		float rotSin = (float) Math.sin(rotRad);
+		
+		res.set(1, 1, rotCos);
+		res.set(1, 2, -rotSin);
+		res.set(2, 1, rotSin);
+		res.set(2, 2, rotCos);
 
 		return res;
 	}
@@ -1406,10 +1412,17 @@ public class MathHelper {
 	 */
 	public static Matrix rotateY(float rot) {
 		Matrix res = createIdentity();
-		res.set(0, 0, (float) Math.cos(Math.toRadians(rot)));
-		res.set(0, 2, (float) Math.sin(Math.toRadians(rot)));
-		res.set(2, 0, (float) -Math.sin(Math.toRadians(rot)));
-		res.set(2, 2, (float) Math.cos(Math.toRadians(rot)));
+
+		double rotRad = Math.toRadians(rot);
+		
+		float rotCos = (float) Math.cos(rotRad);
+		float rotSin = (float) Math.sin(rotRad);
+		
+		res.set(0, 0, rotCos);
+		res.set(0, 2, rotSin);
+		res.set(2, 0, -rotSin);
+		res.set(2, 2, rotCos);
+		
 		return res;
 	}
 
@@ -1421,10 +1434,17 @@ public class MathHelper {
 	 */
 	public static Matrix rotateZ(float rot) {
 		Matrix res = createIdentity();
-		res.set(0, 0, (float) Math.cos(Math.toRadians(rot)));
-		res.set(0, 1, (float) -Math.sin(Math.toRadians(rot)));
-		res.set(1, 0, (float) Math.sin(Math.toRadians(rot)));
-		res.set(1, 1, (float) Math.cos(Math.toRadians(rot)));
+
+		double rotRad = Math.toRadians(rot);
+		
+		float rotCos = (float) Math.cos(rotRad);
+		float rotSin = (float) Math.sin(rotRad);
+		
+		res.set(0, 0, rotCos);
+		res.set(0, 1, -rotSin);
+		res.set(1, 0, rotSin);
+		res.set(1, 1, rotCos);
+		
 		return res;
 	}
 
@@ -1439,19 +1459,31 @@ public class MathHelper {
 		Matrix res = createIdentity();
 		Quaternion r = rot.normalize(); //Confirm that we are dealing with a unit quaternion
 
-		res.set(0, 0, 1 - 2 * r.getY() * r.getY() - 2 * r.getZ() * r.getZ());
-		res.set(0, 1, 2 * r.getX() * r.getY() - 2 * r.getW() * r.getZ());
-		res.set(0, 2, 2 * r.getX() * r.getZ() + 2 * r.getW() * r.getY());
+		float xx2 = 2f * r.getX() * r.getX();
+		float yy2 = 2f * r.getY() * r.getY();
+		float zz2 = 2f * r.getZ() * r.getZ();
+
+		float xy2 = 2f * r.getX() * r.getY();
+		float xz2 = 2f * r.getX() * r.getZ();
+		float yz2 = 2f * r.getY() * r.getZ();
+		
+		float wx2 = 2f * r.getW() * r.getX();
+		float wy2 = 2f * r.getW() * r.getY();
+		float wz2 = 2f * r.getW() * r.getZ();
+		
+		res.set(0, 0, 1 - yy2 - zz2);
+		res.set(0, 1, xy2 - wz2);
+		res.set(0, 2, xz2 + wy2);
 		res.set(0, 3, 0);
 
-		res.set(1, 0, 2 * r.getX() * r.getY() + 2 * r.getW() * r.getZ());
-		res.set(1, 1, 1 - 2 * r.getX() * r.getX() - 2 * r.getZ() * r.getZ());
-		res.set(1, 2, 2 * r.getY() * r.getZ() - 2 * r.getW() * r.getX());
+		res.set(1, 0, xy2 + wz2);
+		res.set(1, 1, 1 - xx2 - zz2);
+		res.set(1, 2, yz2 - wx2);
 		res.set(1, 3, 0);
 
-		res.set(2, 0, 2 * r.getX() * r.getZ() - 2 * r.getW() * r.getY());
-		res.set(2, 1, 2.f * r.getY() * r.getZ() + 2.f * r.getX() * r.getW());
-		res.set(2, 2, 1 - 2 * r.getX() * r.getX() - 2 * r.getY() * r.getY());
+		res.set(2, 0, xz2 - wy2);
+		res.set(2, 1, yz2 + wx2);
+		res.set(2, 2, 1 - xx2 - yy2);
 		res.set(2, 3, 0);
 
 		//3, [0-3] will be 0,0,0,1 due to identity matrix
