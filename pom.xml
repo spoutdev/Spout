@@ -130,12 +130,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>javolution</groupId>
-			<artifactId>javolution</artifactId>
-			<version>5.5.1</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>net.royawesome</groupId>
 			<artifactId>jlibnoise</artifactId>
 			<version>${noiseVersion}</version>

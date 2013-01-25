@@ -28,15 +28,13 @@ package org.spout.api.math;
 
 import java.io.Serializable;
 
-import javolution.lang.ValueType;
-
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.util.StringUtil;
 
 /**
  * Represents a rotation around a unit 4d circle.
  */
-public class Quaternion implements Serializable, ValueType{
+public class Quaternion implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	protected final float x, y, z, w;
@@ -273,10 +271,5 @@ public class Quaternion implements Serializable, ValueType{
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder(41, 63).append(w).append(x).append(y).append(z).toHashCode();
-	}
-
-	@Override
-	public Object copy() {
-		return new Quaternion(this);
 	}
 }
