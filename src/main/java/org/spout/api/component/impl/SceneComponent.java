@@ -30,6 +30,7 @@ import com.bulletphysics.collision.shapes.CollisionShape;
 
 import org.spout.api.ClientOnly;
 import org.spout.api.component.type.EntityComponent;
+import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Quaternion;
@@ -169,6 +170,20 @@ public abstract class SceneComponent extends EntityComponent {
 	public abstract boolean isScaleDirty();
 
 	/**
+	 * Gets the {@link World} in-which this {@link org.spout.api.entity.Entity} is a part of.
+	 * @return The world this entity is in.
+	 */
+	public abstract World getWorld();
+
+	/**
+	 * Determines if this {@link org.spout.api.entity.Entity} has a dirty {@link World}.
+	 *
+	 * A dirty world is when the snapshot world (last tick) and live world are not equal.
+	 * @return True if dirty, false if not.
+	 */
+	public abstract boolean isWorldDirty();
+
+	/**
 	 * Translates this {@link org.spout.api.entity.Entity} from its current {@link Point} to the Point
 	 * that is the addition of the {@link Vector3} provided.
 	 * <p/>
@@ -280,8 +295,9 @@ public abstract class SceneComponent extends EntityComponent {
 	 * <p/>
 	 * 0.0f = no dampening, 1.0f = full velocity stop. Any values outside this range will be clamped to the nearest bound.
 	 * @param damp The float dampener to apply.
+	 * @return This component, so you can chain.
 	 */
-	public abstract void dampenMovement(float damp);
+	public abstract SceneComponent dampenMovement(float damp);
 
 	/**
 	 * Dampens the {@link org.spout.api.entity.Entity}'s rotation velocity by the factor provided.
@@ -305,11 +321,11 @@ public abstract class SceneComponent extends EntityComponent {
 	/**
 	 * Sets the {@link CollisionShape} for {@link org.spout.api.entity.Entity}.
 	 * <p/>
-	 * See {@}
+	 * @param mass
 	 * @param shape
 	 * @return This component, so you can chain.
 	 */
-	public abstract SceneComponent setShape(CollisionShape shape);
+	public abstract SceneComponent setShape(float mass, CollisionShape shape);
 
 	/**
 	 * Gets the friction (slipperiness) of this {@link org.spout.api.entity.Entity}.
@@ -335,16 +351,6 @@ public abstract class SceneComponent extends EntityComponent {
 	 * @return the value of the mass.
 	 */
 	public abstract float getMass();
-
-	/**
-	 * Sets the mass (heaviness) of this {@link org.spout.api.entity.Entity}.
-	 * <p/>
-	 * Mass of 0f informs Spout that this is a static entity, one in-which doesn't move. For forces to take effect on an Entity,
-	 * you must provide a mass of at least 1f. Also, higher masses take larger amounts of force to move.
-	 * @param mass The float mass value this entity will have.
-	 * @return This component, so you can chain.
-	 */
-	public abstract SceneComponent setMass(float mass);
 
 	/**
 	 * Gets the restitution (bounciness) of this {@link org.spout.api.entity.Entity}.
