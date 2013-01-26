@@ -1,8 +1,5 @@
 package org.spout.engine.entity.component;
 
-import javax.vecmath.Vector3f;
-
-import com.bulletphysics.$Stack;
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.dynamics.RigidBody;
@@ -26,6 +23,7 @@ public class SpoutSceneComponent extends SceneComponent {
 	private final Transform snapshot = new Transform();
 	private final Transform live = new Transform();
 	private final Transform render = new Transform();
+	private CollisionObject object;
 
 	@Override
 	public Transform getTransform() {
@@ -50,12 +48,14 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public SceneComponent setPosition(Point point) {
-		return null;
+		live.setPosition(point);
+		forcePhysicsUpdate();
+		return this;
 	}
 
 	@Override
 	public boolean isPositionDirty() {
-		return false;
+		return !snapshot.equals(live);
 	}
 
 	@Override
@@ -65,12 +65,14 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public SceneComponent setRotation(Quaternion rotation) {
-		return null;
+		live.setRotation(rotation);
+		forcePhysicsUpdate();
+		return this;
 	}
 
 	@Override
 	public boolean isRotationDirty() {
-		return false;
+		return !snapshot.equals(live);
 	}
 
 	@Override
@@ -80,12 +82,13 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public SceneComponent setScale(Vector3 scale) {
-		return null;
+		live.setScale(scale);
+		return this;
 	}
 
 	@Override
 	public boolean isScaleDirty() {
-		return false;
+		return !snapshot.equals(live);
 	}
 
 	@Override
@@ -108,22 +111,34 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public SceneComponent impulse(Vector3 impulse, Vector3 offset) {
-		return null;
+		if (object instanceof RigidBody) {
+			((RigidBody) object).applyImpulse(MathHelper.toVector3f(impulse), MathHelper.toVector3f(offset));
+		}
+		return this;
 	}
 
 	@Override
 	public SceneComponent force(Vector3 force, Vector3 offset) {
-		return null;
+		if (object instanceof RigidBody) {
+			((RigidBody) object).applyForce(MathHelper.toVector3f(force), MathHelper.toVector3f(offset));
+		}
+		return this;
 	}
 
 	@Override
 	public SceneComponent torque(Vector3 torque) {
-		return null;
+		if (object instanceof RigidBody) {
+			((RigidBody) object).applyTorque(MathHelper.toVector3f(torque));
+		}
+		return this;
 	}
 
 	@Override
 	public SceneComponent impulseTorque(Vector3 torque) {
-		return null;
+		if (object instanceof RigidBody) {
+			((RigidBody) object).applyTorqueImpulse(MathHelper.toVector3f(torque));
+		}
+		return this;
 	}
 
 	@Override
@@ -197,7 +212,8 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public SceneComponent setActivated(boolean activate) {
-		return null;
+		object.setActivationState(activate == true ? CollisionObject.ACTIVE_TAG : CollisionObject.DISABLE_SIMULATION);
+		return this;
 	}
 
 	/**
@@ -220,19 +236,32 @@ public class SpoutSceneComponent extends SceneComponent {
 	 */
 	@ClientOnly
 	public Transform getRenderTransform() {
-		return null;
+		return render;
 	}
 
-	public Vector3 getScaleLive() {
-		return null;
-	}
-
+	/**
+	 * Gets the {@link CollisionObject} that this {@link Entity} has within Physics space.
+	 * @return The collision object.
+	 */
 	public CollisionObject getObject() {
-		return null;
+		return object;
 	}
 
+	/**
+	 * Snapshots values for the next tick.
+	 */
 	public void copySnapshot() {
+		live.set(snapshot);
+	}
 
+	/**
+	 * Forces a physics body translation without forces or any physics corrections.
+	 */
+	private void forcePhysicsUpdate() {
+		object.setWorldTransform(MathHelper.toPhysicsTransform(live));
+		if (object instanceof RigidBody) {
+			((RigidBody) object).clearForces(); //TODO May not be correct here, needs testing.
+		}
 	}
 
 	private final class SpoutMotionState extends DefaultMotionState {
@@ -258,7 +287,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 		/**
 		 * Called post-physics tick by TeraBullet. This is used to update Scene space with transforms calculated from Physics space.
-		 * @param in An Interpolated Physics Transform, to be used by SpoutRenderer.
+		 * @param in An interpolated Physics Transform, to be used by SpoutRenderer.
 		 */
 		@Override
 		public void setWorldTransform(com.bulletphysics.linearmath.Transform in) {
@@ -267,8 +296,8 @@ public class SpoutSceneComponent extends SceneComponent {
 				Physics completely ignores scale and has no concept of a SpoutWorld so we must "help the helper".
 			 */
 			final Transform liveContainer = new Transform(); //TODO Possibly pass the helper World and Scale to bypass the need for a transform.
-			liveContainer.setPosition(new Point(Vector3.ZERO, scene.getOwner().getWorld()));
-			liveContainer.setScale(scene.getScaleLive());
+			liveContainer.setPosition(scene.getTransformLive().getPosition());
+			liveContainer.setScale(scene.getTransformLive().getScale());
 			/*
 				Now we can set render and live
 
