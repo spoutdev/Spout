@@ -33,13 +33,14 @@ import org.spout.api.entity.Player;
 
 /**
  * The economy service is a basic service that can be extended and registered as a service provider.<br/>
- * To implement your own economy, create a new class which extends EconomyService and overrides the abstract methods.<br/>
+ * To implement your own economy, create a new class which extends EconomyService and override the abstract methods.<br/>
+ * Since the assumption is, that EconomyService methods can be called outside of the main server thread, <b>you must make your implementation thread-safe.</b><br/>
  * <p/>
  * To register your EconomyService you will need to do something similar to:<br/>
  * <code>getServiceManager().register(EconomyService.class, myEconomyInstance, myPlugin, ServicePriority)</code>
  * <p/>
- * For plugins that wish to get the current economy provider, they will need to:
- * {@link EconomyService#getEconomy()} this method can possibly return null, if an economy service has not been registered yet with the ServiceManager.
+ * For plugins that wish to get the current economy provider, they will need to: {@link EconomyService#getEconomy()} this method can possibly return null, if an economy service has not been registered
+ * yet with the ServiceManager.
  * <p/>
  * Another option is to hook the {@link ServiceRegisterEvent} and get the service provider that is being registered in the event.
  */
@@ -92,6 +93,14 @@ public abstract class EconomyService {
 	 * @return true if the operation was successfull
 	 */
 	public abstract boolean create(String name);
+	
+	/**
+	 * Removes an account.
+	 * 
+	 * @param name of the account
+	 * @return true if the operation was successfull, false when the account doesn't exist and therefore can't be removed
+	 */
+	public abstract boolean remove(String name);
 
 	/**
 	 * Returns the balance of the given account name.
