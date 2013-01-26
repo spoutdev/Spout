@@ -11,4 +11,7 @@ void main()
 {
 	outputColor = texture(Diffuse, uvcoord);
 	normals =  (normal + vec4(1, 1, 1, 1)) / 2;
+    if (outputColor.a == 0) {
+        discard;
+    }
 }
