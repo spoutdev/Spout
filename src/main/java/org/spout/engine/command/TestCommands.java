@@ -55,6 +55,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.math.Vector3;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
 import org.spout.api.plugin.Platform;
@@ -63,7 +64,6 @@ import org.spout.api.plugin.Plugin;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutPlayer;
-import org.spout.engine.entity.component.SpoutPhysicsComponent;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
 import org.spout.engine.world.SpoutRegion;
 
@@ -201,45 +201,6 @@ public class TestCommands {
 		source.sendMessage("Plugins-report successfully created! " + linesep + "Stored in: " + standpath);
 	}
 
-	@Command(aliases = {"noclip"}, desc = "Toggles noclip on the client", min = 0, max = 1)
-	public void toggleNoClip(CommandContext args, CommandSource source) throws CommandException {
-		SpoutPlayer player;
-		if (!(source instanceof Player)) {
-			if (Spout.getPlatform() == Platform.CLIENT) {
-				player = ((SpoutClient) engine).getActivePlayer();
-			} else {
-				player = (SpoutPlayer) source;
-			}
-		} else {
-			throw new CommandException("Can only run this as a player!");
-		}
-		Spout.log("Toggling Physics...");
-		PhysicsComponent physics = player.get(PhysicsComponent.class);
-		if (physics != null) {
-			if (args.length() > 0) {
-				Spout.log("Specified a collision flag setting but physics is being turned off...");
-			}
-			player.detach(PhysicsComponent.class);
-		} else {
-			physics = player.add(PhysicsComponent.class);
-			physics.setMass(10f);
-			physics.setCollisionShape(new BoxShape(1f, 3f, 1f));
-			physics.setRestitution(0f);
-			boolean dynamic = true;
-			if (args.length() > 0) {
-				String arg = args.getString(0);
-				if (arg.equalsIgnoreCase("kinematic")) {
-					dynamic = false;
-				}
-			}
-			if (!dynamic) {
-				CollisionObject object = ((SpoutPhysicsComponent) physics).getCollisionObject();
-				object.setCollisionFlags(object.getCollisionFlags() | CollisionFlags.KINEMATIC_OBJECT);
-			}
-			((SpoutRegion) player.getRegion()).addPhysics(player);
-		}
-	}
-
 	@Command(aliases = {"move"}, desc = "Move a entity with his Id", min = 4, max = 4)
 	public void moveEntity(CommandContext args, CommandSource source) throws CommandException {
 		SpoutPlayer player;
@@ -263,7 +224,7 @@ public class TestCommands {
 		if(e == null)
 			return;
 
-		e.getTransform().setPosition(new Point(e.getWorld(), x, y, z));
+		e.getScene().setPosition(new Point(e.getWorld(), x, y, z));
 
 		Spout.log("Entity " + id + " move to " + x + " " + y + " " +z);
 	}
@@ -290,7 +251,6 @@ public class TestCommands {
 
 		if(e == null)
 			return;
-
 		e.getTransform().setPitch(pitch);
 		e.getTransform().setYaw(yaw);
 		e.getTransform().setRoll(roll);
@@ -322,7 +282,7 @@ public class TestCommands {
 		if(e == null)
 			return;
 
-		e.getTransform().scale(x, y, z);
+		e.getScene().getTransform().scale(new Vector3(x, y, z));
 
 		Spout.log("Entity " + id + " scale to " + x + " " + y + " " +z);
 	}

@@ -27,6 +27,8 @@
 package org.spout.engine.protocol.builtin;
 
 import org.spout.api.protocol.HandlerLookupService;
+
+import org.spout.engine.protocol.builtin.handler.EntityTransformMessageHandler;
 import org.spout.engine.protocol.builtin.message.AddEntityMessage;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
@@ -34,7 +36,7 @@ import org.spout.engine.protocol.builtin.message.ClickMessage;
 import org.spout.engine.protocol.builtin.message.CommandMessage;
 import org.spout.engine.protocol.builtin.message.CuboidBlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
-import org.spout.engine.protocol.builtin.message.EntityPositionMessage;
+import org.spout.engine.protocol.builtin.message.EntityTransformMessage;
 import org.spout.engine.protocol.builtin.message.LoginMessage;
 import org.spout.engine.protocol.builtin.message.PlayerInputMessage;
 import org.spout.engine.protocol.builtin.message.RemoveEntityMessage;
@@ -47,7 +49,6 @@ import org.spout.engine.protocol.builtin.handler.ClickMessageHandler;
 import org.spout.engine.protocol.builtin.handler.CommandMessageHandler;
 import org.spout.engine.protocol.builtin.handler.CuboidBlockUpdateMessageHandler;
 import org.spout.engine.protocol.builtin.handler.EntityDatatableMessageHandler;
-import org.spout.engine.protocol.builtin.handler.EntityPositionMessageHandler;
 import org.spout.engine.protocol.builtin.handler.LoginMessageHandler;
 import org.spout.engine.protocol.builtin.handler.PlayerInputMessageHandler;
 import org.spout.engine.protocol.builtin.handler.RemoveEntityMessageHandler;
@@ -64,7 +65,7 @@ public class SpoutHandlerLookupService extends HandlerLookupService {
 			bind(AddEntityMessage.class, AddEntityMessageHandler.class);
 			bind(RemoveEntityMessage.class, RemoveEntityMessageHandler.class);
 			bind(EntityDatatableMessage.class, EntityDatatableMessageHandler.class);
-			bind(EntityPositionMessage.class, EntityPositionMessageHandler.class);
+			bind(EntityTransformMessage.class, EntityTransformMessageHandler.class);
 			bind(ChunkDataMessage.class, ChunkDataMessageHandler.class);
 			bind(BlockUpdateMessage.class, BlockUpdateMessageHandler.class);
 			bind(CuboidBlockUpdateMessage.class, CuboidBlockUpdateMessageHandler.class);

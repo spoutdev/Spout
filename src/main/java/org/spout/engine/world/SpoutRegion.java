@@ -108,7 +108,6 @@ import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutPlayer;
-import org.spout.engine.entity.component.SpoutPhysicsComponent;
 import org.spout.engine.filesystem.ChunkDataForRegion;
 import org.spout.engine.filesystem.versioned.ChunkFiles;
 import org.spout.engine.mesh.ChunkMesh;
@@ -302,48 +301,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	public DiscreteDynamicsWorld getSimulation() {
 		return simulation;
-	}
-
-	public void addPhysics(Entity e) {
-		PhysicsComponent physics = e.get(PhysicsComponent.class);
-		if (physics != null) {
-			addPhysics(physics);
-		}
-	}
-
-	public void removePhysics(Entity e) {
-		PhysicsComponent physics = e.get(PhysicsComponent.class);
-		if (physics != null) {
-			removePhysics(physics);
-		}
-	}
-
-	public void addPhysics(PhysicsComponent physics) {
-		CollisionObject object = ((SpoutPhysicsComponent) physics).getCollisionObject();
-		if (object == null || object.getCollisionShape() == null) {
-			return;
-		}
-		synchronized(simulation) {
-			if (object instanceof RigidBody) {
-				simulation.addRigidBody((RigidBody) object);
-			} else {
-				simulation.addCollisionObject(object);
-			}
-		}
-	}
-
-	public void removePhysics(PhysicsComponent physics) {
-		CollisionObject object = ((SpoutPhysicsComponent) physics).getCollisionObject();
-		if (object == null || object.getCollisionShape() == null) {
-			return;
-		}
-		synchronized(simulation) {
-			if (object instanceof RigidBody) {
-				simulation.removeRigidBody((RigidBody) object);
-			} else {
-				simulation.removeCollisionObject(object);
-			}
-		}
 	}
 
 	public void startMeshGeneratorThread() {
@@ -563,7 +520,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 				numberActiveChunks.incrementAndGet();
 				if (dataForRegion != null) {
 					for (SpoutEntity entity : dataForRegion.loadedEntities) {
-						entity.setupInitialChunk(entity.getTransform().getTransform());
+						entity.setupInitialChunk(entity.getScene().getTransform());
 						entityManager.addEntity(entity);
 					}
 					dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);
@@ -1236,7 +1193,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 			if (player == null) {
 				playerPosition = null;
 			} else {
-				playerPosition = player.getTransform().getPosition();
+				playerPosition = player.getScene().getPosition();
 			}
 
 			if (firstRenderQueueTick && player != null) {

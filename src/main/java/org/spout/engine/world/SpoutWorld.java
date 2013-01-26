@@ -582,7 +582,7 @@ public class SpoutWorld implements AsyncManager, World {
 			throw new IllegalStateException("Cannot spawn an entity that has a null region!");
 		}
 		if (region.getEntityManager().isSpawnable((SpoutEntity) e)) {
-			EntitySpawnEvent event = Spout.getEventManager().callEvent(new EntitySpawnEvent(e, e.getTransform().getPosition()));
+			EntitySpawnEvent event = Spout.getEventManager().callEvent(new EntitySpawnEvent(e, e.getScene().getPosition()));
 			if (event.isCancelled()) {
 				return;
 			}
@@ -781,7 +781,7 @@ public class SpoutWorld implements AsyncManager, World {
 
 		for (Entity entity : getEntitiesNearRegion(position, range)) {
 			if (entity != null && entity != ignore) {
-				double distance = VectorMath.distanceSquared(position, entity.getTransform().getPosition());
+				double distance = VectorMath.distanceSquared(position, entity.getScene().getPosition());
 				if (distance < RANGE_SQUARED) {
 					foundEntities.add(entity);
 				}
@@ -798,7 +798,7 @@ public class SpoutWorld implements AsyncManager, World {
 
 	@Override
 	public List<Entity> getNearbyEntities(Entity entity, int range) {
-		return getNearbyEntities(entity.getTransform().getPosition(), range);
+		return getNearbyEntities(entity.getScene().getPosition(), range);
 	}
 
 	@Override
@@ -808,7 +808,7 @@ public class SpoutWorld implements AsyncManager, World {
 
 		for (Entity entity : getEntitiesNearRegion(position, range)) {
 			if (entity != null && entity != ignore) {
-				double distance = VectorMath.distanceSquared(position, entity.getTransform().getPosition());
+				double distance = VectorMath.distanceSquared(position, entity.getScene().getPosition());
 				if (distance < bestDistance) {
 					bestDistance = distance;
 					best = entity;
@@ -825,7 +825,7 @@ public class SpoutWorld implements AsyncManager, World {
 
 	@Override
 	public Entity getNearestEntity(Entity entity, int range) {
-		return getNearestEntity(entity.getTransform().getPosition(), range);
+		return getNearestEntity(entity.getScene().getPosition(), range);
 	}
 
 	/**
@@ -872,7 +872,7 @@ public class SpoutWorld implements AsyncManager, World {
 	@LiveRead
 	@Threadsafe
 	public List<Player> getNearbyPlayers(Entity entity, int range) {
-		return getNearbyPlayers(entity.getTransform().getPosition(), range);
+		return getNearbyPlayers(entity.getScene().getPosition(), range);
 	}
 
 	/**
@@ -891,7 +891,7 @@ public class SpoutWorld implements AsyncManager, World {
 
 		for (Entity entity : getEntitiesNearRegion(position, range)) {
 			if (entity != null && entity instanceof Player && entity != ignore) {
-				double distance = VectorMath.distanceSquared(position, entity.getTransform().getPosition());
+				double distance = VectorMath.distanceSquared(position, entity.getScene().getPosition());
 				if (distance < bestDistance) {
 					bestDistance = distance;
 					best = entity;
@@ -923,7 +923,7 @@ public class SpoutWorld implements AsyncManager, World {
 	@LiveRead
 	@Threadsafe
 	public Player getNearestPlayer(Entity entity, int range) {
-		return getNearestPlayer(entity.getTransform().getPosition(), range);
+		return getNearestPlayer(entity.getScene().getPosition(), range);
 	}
 
 	/**

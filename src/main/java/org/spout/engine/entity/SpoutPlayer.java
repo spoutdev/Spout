@@ -169,7 +169,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		if (newTransform == null || newTransform.getPosition().getWorld() == null) {
 			return false;
 		}
-		getTransform().setTransform(newTransform);
+		getScene().setTransform(newTransform);
 		if (Spout.getPlatform() == Platform.SERVER) {
 			setupInitialChunk(newTransform);
 		}
@@ -372,13 +372,13 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void teleport(Point loc) {
-		getTransform().setPosition(loc);
+		getScene().setPosition(loc);
 		getNetworkSynchronizer().setPositionDirty();
 	}
 
 	@Override
 	public void teleport(Transform transform) {
-		getTransform().setTransform(transform);
+		getScene().setTransform(transform);
 		getNetworkSynchronizer().setPositionDirty();
 	}
 

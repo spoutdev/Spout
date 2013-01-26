@@ -35,18 +35,18 @@ import org.spout.api.math.Vector3;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.api.protocol.reposition.NullRepositionManager;
 import org.spout.engine.protocol.builtin.ChannelBufferUtils;
-import org.spout.engine.protocol.builtin.message.EntityPositionMessage;
+import org.spout.engine.protocol.builtin.message.EntityTransformMessage;
 
 /**
  *
  */
-public class EntityPositionCodec extends MessageCodec<EntityPositionMessage> {
-	public EntityPositionCodec() {
-		super(EntityPositionMessage.class, 0x07);
+public class EntityTransformCodec extends MessageCodec<EntityTransformMessage> {
+	public EntityTransformCodec() {
+		super(EntityTransformMessage.class, 0x07);
 	}
 
 	@Override
-	public ChannelBuffer encode(EntityPositionMessage message) {
+	public ChannelBuffer encode(EntityTransformMessage message) {
 		ChannelBuffer buffer = ChannelBuffers.buffer(4 + ChannelBufferUtils.TRANSFORM_SIZE);
 		buffer.writeInt(message.getEntityId());
 		ChannelBufferUtils.writeUUID(buffer, message.getWorldUid());
@@ -57,12 +57,12 @@ public class EntityPositionCodec extends MessageCodec<EntityPositionMessage> {
 	}
 
 	@Override
-	public EntityPositionMessage decode(ChannelBuffer buffer) {
+	public EntityTransformMessage decode(ChannelBuffer buffer) {
 		final int entityId = buffer.readInt();
 		final UUID worldUid = ChannelBufferUtils.readUUID(buffer);
 		final Vector3 position = ChannelBufferUtils.readVector3(buffer);
 		final Quaternion rotation = ChannelBufferUtils.readQuaternion(buffer);
 		final Vector3 scale = ChannelBufferUtils.readVector3(buffer);
-		return new EntityPositionMessage(entityId, worldUid, position, rotation, scale, NullRepositionManager.getInstance());
+		return new EntityTransformMessage(entityId, worldUid, position, rotation, scale, NullRepositionManager.getInstance());
 	}
 }

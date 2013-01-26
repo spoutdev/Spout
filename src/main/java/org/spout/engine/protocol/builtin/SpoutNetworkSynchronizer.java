@@ -44,7 +44,7 @@ import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.Session;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
-import org.spout.engine.protocol.builtin.message.EntityPositionMessage;
+import org.spout.engine.protocol.builtin.message.EntityTransformMessage;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 
 public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
@@ -55,7 +55,7 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 	@Override
 	public Collection<Chunk> sendChunk(Chunk c) {
 		session.send(false, new ChunkDataMessage(c.getSnapshot()));
-		return null;
+		return null; //TODO Why does this return null?
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 
 	@Override
 	protected void sendPosition(Point p, Quaternion rot) {
-		session.send(false, new EntityPositionMessage(player.getId(), new Transform(p, rot, Vector3.ONE), getRepositionManager()));
+		session.send(false, new EntityTransformMessage(player.getId(), new Transform(p, rot, Vector3.ONE), getRepositionManager()));
 	}
 
 	@Override

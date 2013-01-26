@@ -89,8 +89,7 @@ public class EntityRendererComponent extends EntityComponent {
 
 	public void render() {
 		Camera camera = ((Client)Spout.getEngine()).getActiveCamera();
-
-		Matrix modelMatrix = ((PredictableTransformComponent) getOwner().getTransform()).getRenderTransform().toMatrix();
+		Matrix modelMatrix = getOwner().getScene().getRenderTransform().toMatrix();
 
 		renderMaterial.getShader().setUniform("View", camera.getView());
 		renderMaterial.getShader().setUniform("Projection", camera.getProjection());

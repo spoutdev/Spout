@@ -38,6 +38,7 @@ import org.spout.api.entity.Player;
 import org.spout.api.math.VectorMath;
 import org.spout.api.protocol.NetworkSynchronizer;
 
+import org.spout.engine.entity.component.SpoutSceneComponent;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableHashMap;
 import org.spout.engine.world.SpoutChunk;
@@ -122,7 +123,6 @@ public class EntityManager {
 		if (entity instanceof Player) {
 			players.put((Player) entity, new ArrayList<SpoutEntity>());
 		}
-		region.addPhysics(entity);
 	}
 
 	private static int getNextId() {
@@ -149,7 +149,6 @@ public class EntityManager {
 		if (entity instanceof Player) {
 			players.remove((Player) entity);
 		}
-		region.removePhysics(entity);
 	}
 
 	/**
@@ -240,7 +239,8 @@ public class EntityManager {
 			boolean spawn, sync, destroy;
 			spawn = sync = destroy = false;
 			//Entity is out of range of the player's view distance, destroy
-			if (forceDestroy || ent.isRemoved() || VectorMath.distance(ent.getTransform().getPosition(), player.getTransform().getPosition()) > view || player.isInvisible(ent)) {
+			final SpoutSceneComponent scene = (SpoutSceneComponent) ent.getScene();
+			if (forceDestroy || ent.isRemoved() || VectorMath.distance(scene.getTransformLive().getPosition(), scene.getPosition()) > view || player.isInvisible(ent)) {
 				destroy = true;
 			} else if (network.hasSpawned(ent)) {
 				sync = true;
