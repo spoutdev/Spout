@@ -38,7 +38,7 @@ public class PredictableTransformComponent extends TransformComponent {
 	private long lastTime;
 
 	private Vector3 speed = Vector3.ONE;
-	private Vector3 rotate = Vector3.ONE;
+	private Quaternion rotate = Quaternion.IDENTITY;
 	private Vector3 scale = Vector3.ONE;
 
 	@Override
@@ -51,7 +51,10 @@ public class PredictableTransformComponent extends TransformComponent {
 	public void updateRender(float dt) {
 		transformRender.translate(speed.multiply(dt));
 		Quaternion q = transformRender.getRotation();
-		transformRender.setRotation(MathHelper.rotation(q.getPitch() + rotate.getX() * dt, q.getYaw() + rotate.getY() * dt, q.getRoll() + rotate.getZ() * dt));
+		transformRender.setRotation(new Quaternion(	q.getX()*(1-dt) + rotate.getX()*dt,
+													q.getY()*(1-dt) + rotate.getY()*dt,
+													q.getZ()*(1-dt) + rotate.getZ()*dt,
+													q.getW()*(1-dt) + rotate.getW()*dt,false));
 		transformRender.setScale(transformRender.getScale().add(scale.multiply(dt)));
 	}
 
@@ -70,20 +73,8 @@ public class PredictableTransformComponent extends TransformComponent {
 		float ratio = 80f / 20f;
 
 		speed = t.getPosition().subtract(transformRender.getPosition()).multiply(ratio);
-
-		float rPitch = t.getRotation().getPitch() - transformRender.getRotation().getPitch();
-		float rYaw = t.getRotation().getYaw() - transformRender.getRotation().getYaw();
-		float rRoll = t.getRotation().getRoll() - transformRender.getRotation().getRoll();
-
-		rPitch = (rPitch<-180f) ? rPitch+360f : rPitch;
-		rYaw = (rYaw<-180f) ? rYaw+360f : rYaw;
-		rRoll = (rRoll<-180f) ? rRoll+360f : rRoll;
-
-		rPitch = (rPitch>180f) ? rPitch-360f : rPitch;
-		rYaw = (rYaw>180f) ? rYaw-360f : rYaw;
-		rRoll = (rRoll>180f) ? rRoll-360f : rRoll;
-
-		rotate = new Vector3(rPitch,rYaw,rRoll).multiply(ratio);
+		
+		rotate = t.getRotation();
 
 		scale = t.getScale().subtract(transformRender.getScale()).multiply(ratio);
 
