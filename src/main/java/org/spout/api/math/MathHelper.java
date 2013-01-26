@@ -29,6 +29,7 @@ package org.spout.api.math;
 import java.awt.Color;
 import java.security.SecureRandom;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
@@ -1656,16 +1657,12 @@ public class MathHelper {
 	}
 	
 	private final static ThreadLocal<Random> randomThreadLocal = new ThreadLocal<Random>() {
-		private final long HASH_SEED = 0x710677E178DFAF2EL;
-		private final byte[] SECURE_SEED = SecureRandom.getSeed(8);
+		private final Random random = new SecureRandom();
 
 		protected Random initialValue() {
-			// Overkill, since only a standard Random is used after seeding
-			long hash = 0L;
-			for (int i = 0; i < 8; i++) {
-				hash = (hash << 8) | (SECURE_SEED[i] & 0xFFL);
+			synchronized (random) {
+				return new Random(random.nextLong());
 			}
-			return new Random(hash ^ HASH_SEED);
 		}
 	};
 	
