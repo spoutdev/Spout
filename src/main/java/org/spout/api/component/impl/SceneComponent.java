@@ -35,6 +35,7 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.thread.annotation.SnapshotRead;
+import org.spout.api.util.thread.annotation.Threadsafe;
 
 /**
  * Component that gives the owner the characteristics to be a part of a Scene.
@@ -77,22 +78,14 @@ public abstract class SceneComponent extends EntityComponent {
 	public abstract boolean isTransformDirty();
 
 	/**
-	 * Gets the {@link Transform} this {@link org.spout.api.entity.Entity} had within the last game tick
-	 * of the scene with interpolation applied (so it appears smooth to users).
-	 * <p/>
-	 * The render transform is simply the transform of the entity clients see within the scene.
-	 * @return The Transform, interpolated, as of the last game tick.
-	 */
-	@ClientOnly
-	public abstract Transform getRenderTransform();
-
-	/**
 	 * Gets the {@link Point} representing the location where the {@link org.spout.api.entity.Entity} is within the scene.
 	 * <p>
 	 * The Point is guaranteed to always be valid.
 	 * </p>
 	 * @return The Point in the scene.
 	 */
+	@SnapshotRead
+	@Threadsafe
 	public abstract Point getPosition();
 
 	/**
@@ -108,6 +101,14 @@ public abstract class SceneComponent extends EntityComponent {
 	public abstract SceneComponent setPosition(Point point);
 
 	/**
+	 * Determines if this {@link org.spout.api.entity.Entity} has a dirty position.
+	 *
+	 * A dirty position is when the snapshot position (last tick) and live position are not equal.
+	 * @return True if position is dirty, false if not.
+	 */
+	public abstract boolean isPositionDirty();
+
+	/**
 	 * Gets the {@link Quaternion} representing the rotation of the {@link org.spout.api.entity.Entity} within the scene.
 	 * <p>
 	 * The Quaternion is guaranteed to always be valid.
@@ -115,6 +116,7 @@ public abstract class SceneComponent extends EntityComponent {
 	 * @return The Quaternion in the scene.
 	 */
 	@SnapshotRead
+	@Threadsafe
 	public abstract Quaternion getRotation();
 
 	/**
@@ -129,6 +131,14 @@ public abstract class SceneComponent extends EntityComponent {
 	public abstract SceneComponent setRotation(Quaternion rotation);
 
 	/**
+	 * Determines if this {@link org.spout.api.entity.Entity} has a dirty rotation.
+	 *
+	 * A dirty rotation is when the snapshot rotation (last tick) and live rotation are not equal.
+	 * @return True if dirty, false if not.
+	 */
+	public abstract boolean isRotationDirty();
+
+	/**
 	 * Gets the {@link Vector3} representing the scale of the {@link org.spout.api.entity.Entity}.
 	 * <p>
 	 * The Scale is guaranteed to always be valid.
@@ -136,6 +146,7 @@ public abstract class SceneComponent extends EntityComponent {
 	 * @return The Scale (Vector3) in the scene.
 	 */
 	@SnapshotRead
+	@Threadsafe
 	public abstract Vector3 getScale();
 
 	/**
@@ -148,6 +159,14 @@ public abstract class SceneComponent extends EntityComponent {
 	 * @return This component, for chaining.
 	 */
 	public abstract SceneComponent setScale(Vector3 scale);
+
+	/**
+	 * Determines if this {@link org.spout.api.entity.Entity} has a dirty scale.
+	 *
+	 * A dirty scale is when the snapshot scale (last tick) and live scale are not equal.
+	 * @return True if dirty, false if not.
+	 */
+	public abstract boolean isScaleDirty();
 
 	/**
 	 * Translates this {@link org.spout.api.entity.Entity} from its current {@link Point} to the Point
