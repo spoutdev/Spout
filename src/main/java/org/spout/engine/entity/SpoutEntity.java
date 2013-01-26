@@ -365,7 +365,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	public void copySnapshot() {
-
+		scene.copySnapshot();
 		snapshotManager.copyAllSnapshots();
 
 		justSpawned = false;
