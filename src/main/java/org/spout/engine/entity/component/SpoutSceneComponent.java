@@ -172,14 +172,14 @@ public class SpoutSceneComponent extends SceneComponent {
 	@Override
 	public SceneComponent dampenMovement(float damp) {
 		validateBody();
-		body.setDamping(damp, 0f);
+		body.setDamping(damp, body.getAngularDamping());
 		return this;
 	}
 
 	@Override
 	public SceneComponent dampenRotation(float damp) {
 		validateBody();
-		body.setDamping(0, damp);
+		body.setDamping(body.getLinearDamping(), damp);
 		return this;
 	}
 
@@ -306,7 +306,7 @@ public class SpoutSceneComponent extends SceneComponent {
 	 * Snapshots values for the next tick.
 	 */
 	public void copySnapshot() {
-		live.set(snapshot);
+		snapshot.set(live);
 	}
 
 	/**
