@@ -46,7 +46,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 
 /**
  * This is a synchronised version of the Trove IntObjectHashMap.
@@ -117,7 +117,7 @@ public class TSyncIntObjectHashMap<V> implements TSyncIntObjectMap<V> {
 		if (mapCount > 0x100000) {
 			throw new IllegalArgumentException("Map count exceeds valid range");
 		}
-		mapCount = MathHelper.roundUpPow2(mapCount);
+		mapCount = GenericMath.roundUpPow2(mapCount);
 		mapMask = mapCount - 1;
 		this.mapCount = mapCount;
 		this.hashScramble = (mapCount << 8) + 1;

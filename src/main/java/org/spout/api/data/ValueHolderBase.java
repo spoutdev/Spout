@@ -26,7 +26,7 @@
  */
 package org.spout.api.data;
 
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 import org.spout.api.util.config.serialization.Serialization;
 
 import java.lang.reflect.Type;
@@ -53,7 +53,7 @@ public class ValueHolderBase implements ValueHolder {
 
 	@Override
 	public boolean getBoolean(boolean def) {
-		final Boolean val = MathHelper.castBoolean(getValue(def));
+		final Boolean val = GenericMath.castBoolean(getValue(def));
 		return val == null ? def : val;
 	}
 
@@ -64,7 +64,7 @@ public class ValueHolderBase implements ValueHolder {
 
 	@Override
 	public byte getByte(byte def) {
-		final Byte val = MathHelper.castByte(getValue(def));
+		final Byte val = GenericMath.castByte(getValue(def));
 		return val == null ? def : val;
 	}
 
@@ -75,7 +75,7 @@ public class ValueHolderBase implements ValueHolder {
 
 	@Override
 	public float getFloat(float def) {
-		final Float val = MathHelper.castFloat(getValue(def));
+		final Float val = GenericMath.castFloat(getValue(def));
 		return val == null ? def : val;
 	}
 
@@ -86,7 +86,7 @@ public class ValueHolderBase implements ValueHolder {
 
 	@Override
 	public short getShort(short def) {
-		final Short val = MathHelper.castShort(getValue(def));
+		final Short val = GenericMath.castShort(getValue(def));
 		return val == null ? def : val;
 	}
 
@@ -97,7 +97,7 @@ public class ValueHolderBase implements ValueHolder {
 
 	@Override
 	public int getInt(int def) {
-		final Integer val = MathHelper.castInt(getValue(def));
+		final Integer val = GenericMath.castInt(getValue(def));
 		return val == null ? def : val;
 	}
 
@@ -108,7 +108,7 @@ public class ValueHolderBase implements ValueHolder {
 
 	@Override
 	public long getLong(long def) {
-		final Long val = MathHelper.castLong(getValue(def));
+		final Long val = GenericMath.castLong(getValue(def));
 		return val == null ? def : val;
 	}
 
@@ -119,7 +119,7 @@ public class ValueHolderBase implements ValueHolder {
 
 	@Override
 	public double getDouble(double def) {
-		final Double val = MathHelper.castDouble(getValue(def));
+		final Double val = GenericMath.castDouble(getValue(def));
 		return val == null ? def : val;
 	}
 
@@ -217,7 +217,7 @@ public class ValueHolderBase implements ValueHolder {
 		List<?> val = getList(def);
 		List<Integer> ret = new ArrayList<Integer>();
 		for (Object item : val) {
-			Integer asInt = MathHelper.castInt(item);
+			Integer asInt = GenericMath.castInt(item);
 			if (asInt == null) {
 				return def == null ? Collections.<Integer>emptyList() : def;
 			}
@@ -236,7 +236,7 @@ public class ValueHolderBase implements ValueHolder {
 		List<?> val = getList(def);
 		List<Double> ret = new ArrayList<Double>();
 		for (Object item : val) {
-			Double asDouble = MathHelper.castDouble(item);
+			Double asDouble = GenericMath.castDouble(item);
 			if (asDouble == null) {
 				return def == null ? Collections.<Double>emptyList() : def;
 			}
@@ -255,7 +255,7 @@ public class ValueHolderBase implements ValueHolder {
 		List<?> val = getList(def);
 		List<Boolean> ret = new ArrayList<Boolean>();
 		for (Object item : val) {
-			Boolean asBoolean = MathHelper.castBoolean(item);
+			Boolean asBoolean = GenericMath.castBoolean(item);
 			if (asBoolean == null) {
 				return def == null ? Collections.<Boolean>emptyList() : def;
 			}

@@ -26,7 +26,7 @@
  */
 package org.spout.api.render;
 
-import static org.spout.api.math.MathHelper.sqrt;
+import static org.spout.api.math.GenericMath.sqrt;
 
 import org.spout.api.geo.cuboid.Cuboid;
 import org.spout.api.math.Matrix;

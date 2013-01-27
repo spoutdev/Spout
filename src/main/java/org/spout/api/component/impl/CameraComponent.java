@@ -28,8 +28,8 @@ package org.spout.api.component.impl;
 
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
+import org.spout.api.math.MatrixMath;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.Camera;
 import org.spout.api.render.ViewFrustum;
@@ -51,14 +51,14 @@ public class CameraComponent extends EntityComponent implements Camera {
 	}
 	
 	public void setScale(float scale) { //1/2
-		projection = MathHelper.createPerspective(fieldOfView * scale, 4.0f / 3.0f, .001f * scale, 1000f * scale);
+		projection = MatrixMath.createPerspective(fieldOfView * scale, 4.0f / 3.0f, .001f * scale, 1000f * scale);
 		updateView();
 	}
 
 	@Override
 	public void onAttached() {
 		// TODO Get FOV
-		projection = MathHelper.createPerspective(fieldOfView, 4.0f / 3.0f, .001f, 1000f);
+		projection = MatrixMath.createPerspective(fieldOfView, 4.0f / 3.0f, .001f, 1000f);
 		updateView();
 	}
 
@@ -76,8 +76,8 @@ public class CameraComponent extends EntityComponent implements Camera {
 	public void updateView() {
 		Transform transform = ((PredictableTransformComponent) getOwner().getTransform()).getRenderTransform();
 		if (transform != null) {
-			Matrix pos = MathHelper.translate(transform.getPosition().multiply(-1));
-			Matrix rot = MathHelper.rotate(transform.getRotation());
+			Matrix pos = MatrixMath.translate(transform.getPosition().multiply(-1));
+			Matrix rot = MatrixMath.rotate(transform.getRotation());
 			view = pos.multiply(rot);
 			frustum.update(projection, view, transform.getPosition());
 		}
@@ -98,14 +98,17 @@ public class CameraComponent extends EntityComponent implements Camera {
 		return frustum;
 	}
 	
+	@Override
 	public void setSpeed(Vector3 speed) {
 		this.speed = speed;
 	}
 	
+	@Override
 	public void setSpeed(float speed) {
 		this.speed = new Vector3(speed, speed, speed);
 	}
 	
+	@Override
 	public Vector3 getSpeed() {
 		return speed;
 	}
@@ -113,6 +116,6 @@ public class CameraComponent extends EntityComponent implements Camera {
 	@Override
 	public Matrix getRotation() {
 		Transform transform = ((PredictableTransformComponent) getOwner().getTransform()).getRenderTransform();
-		return MathHelper.rotate(transform.getRotation());
+		return MatrixMath.rotate(transform.getRotation());
 	}
 }

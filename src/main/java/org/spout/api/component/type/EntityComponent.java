@@ -35,7 +35,7 @@ import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 
 /**
  * Represents an attachment to a entity that can respond to Ticks.
@@ -61,7 +61,7 @@ public abstract class EntityComponent extends Component {
 	 * @return random
 	 */
 	public final Random getRandom() {
-		return MathHelper.getRandom();
+		return GenericMath.getRandom();
 	}
 
 	/**

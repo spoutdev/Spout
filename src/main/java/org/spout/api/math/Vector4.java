@@ -29,6 +29,7 @@ package org.spout.api.math;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.spout.api.util.StringUtil;
 
 /**
@@ -168,19 +169,19 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 	}
 
 	public int getFloorX() {
-		return MathHelper.floor(x);
+		return GenericMath.floor(x);
 	}
 
 	public int getFloorY() {
-		return MathHelper.floor(y);
+		return GenericMath.floor(y);
 	}
 
 	public int getFloorZ() {
-		return MathHelper.floor(z);
+		return GenericMath.floor(z);
 	}
 
 	public int getFloorW() {
-		return MathHelper.floor(w);
+		return GenericMath.floor(w);
 	}
 
 	/**
@@ -815,7 +816,7 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 	 * @return
 	 */
 	public static double distance(Vector4 a, Vector4 b) {
-		return MathHelper.length(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
+		return GenericMath.length(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
 	}
 
 	/**
@@ -826,7 +827,7 @@ public class Vector4 implements Comparable<Vector4>, Serializable {
 	 * @return
 	 */
 	public static double distanceSquared(Vector4 a, Vector4 b) {
-		return MathHelper.lengthSquared(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
+		return GenericMath.lengthSquared(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
 	}
 
 	/**

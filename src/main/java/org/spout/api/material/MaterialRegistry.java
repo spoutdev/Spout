@@ -36,7 +36,7 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.IntVector3;
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 import org.spout.api.util.StringMap;
 
 /**
@@ -224,7 +224,7 @@ public abstract class MaterialRegistry {
 		}
 
 		if (m.hasLSBDataMask()) {
-			minimumMask = (short) (MathHelper.roundUpPow2(minimumMask + 1) - 1);
+			minimumMask = (short) (GenericMath.roundUpPow2(minimumMask + 1) - 1);
 		}
 
 		return minimumMask;

@@ -26,7 +26,7 @@
  */
 package org.spout.api.collision;
 
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 import org.spout.api.math.Vector3;
 
 public class CollisionHelper {
@@ -114,9 +114,9 @@ public class CollisionHelper {
 
 		// Add in an epsilon term to counteract arithmetic errors when segment is
 		// (near) parallel to a coordinate axis (see text for detail)
-		adx += MathHelper.FLT_EPSILON;
-		ady += MathHelper.FLT_EPSILON;
-		adz += MathHelper.FLT_EPSILON;
+		adx += GenericMath.FLT_EPSILON;
+		ady += GenericMath.FLT_EPSILON;
+		adz += GenericMath.FLT_EPSILON;
 
 		// Try cross products of segment direction vector with coordinate axes
 		if (Math.abs(m.getY() * seg.getZ() - m.getZ() * seg.getY()) > box.getY() * adz + box.getZ() * ady) {
@@ -196,7 +196,7 @@ public class CollisionHelper {
 		}
 
 		//Check that the intersection is not past the segment
-		return -e - MathHelper.sqrt(discr) <= lnorm;
+		return -e - GenericMath.sqrt(discr) <= lnorm;
 	}
 
 	/**
@@ -368,7 +368,7 @@ public class CollisionHelper {
 		float tmax = Float.MAX_VALUE;
 
 		//Check X slab
-		if (Math.abs(b.direction.getX()) < MathHelper.FLT_EPSILON && (b.origin.getX() < a.min.getX() || b.origin.getX() > a.max.getX())) {
+		if (Math.abs(b.direction.getX()) < GenericMath.FLT_EPSILON && (b.origin.getX() < a.min.getX() || b.origin.getX() > a.max.getX())) {
 			return null;
 		}
 		float ood = 1.0f / b.direction.getX();
@@ -390,7 +390,7 @@ public class CollisionHelper {
 		}
 
 		//Check Y slab
-		if (Math.abs(b.direction.getY()) < MathHelper.FLT_EPSILON && (b.origin.getY() < a.min.getY() || b.origin.getY() > a.max.getY())) {
+		if (Math.abs(b.direction.getY()) < GenericMath.FLT_EPSILON && (b.origin.getY() < a.min.getY() || b.origin.getY() > a.max.getY())) {
 			return null;
 		}
 		ood = 1.0f / b.direction.getY();
@@ -412,7 +412,7 @@ public class CollisionHelper {
 		}
 
 		//Check Z slab
-		if (Math.abs(b.direction.getZ()) < MathHelper.FLT_EPSILON && (b.origin.getZ() < a.min.getZ() || b.origin.getZ() > a.max.getZ())) {
+		if (Math.abs(b.direction.getZ()) < GenericMath.FLT_EPSILON && (b.origin.getZ() < a.min.getZ() || b.origin.getZ() > a.max.getZ())) {
 			return null;
 		}
 		ood = 1.0f / b.direction.getZ();
@@ -466,7 +466,7 @@ public class CollisionHelper {
 		}
 
 		// Ray now found to intersect sphere, compute smallest t value of intersection
-		float t = (float) (-e - MathHelper.sqrt(discr));
+		float t = (float) (-e - GenericMath.sqrt(discr));
 
 		// If t is negative, ray started inside sphere so clamp t to zero
 		if (t < 0.0f) {
@@ -499,7 +499,7 @@ public class CollisionHelper {
 		}
 
 		// Ray now found to intersect sphere, compute smallest t value of intersection
-		float t = (float) (-e - MathHelper.sqrt(discr));
+		float t = (float) (-e - GenericMath.sqrt(discr));
 
 		// If t is negative, ray started inside sphere so clamp t to zero
 		if (t < 0.0f) {
@@ -632,7 +632,7 @@ public class CollisionHelper {
 	}
 
 	public static boolean contains(Plane a, Vector3 b) {
-		return a.distance(b) < MathHelper.FLT_EPSILON;
+		return a.distance(b) < GenericMath.FLT_EPSILON;
 	}
 
 	public static boolean contains(Ray a, Vector3 b) {

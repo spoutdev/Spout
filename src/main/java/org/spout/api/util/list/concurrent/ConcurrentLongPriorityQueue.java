@@ -30,7 +30,7 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 
 public class ConcurrentLongPriorityQueue<T extends LongPrioritized> {
 	
@@ -42,7 +42,7 @@ public class ConcurrentLongPriorityQueue<T extends LongPrioritized> {
 		if (resolution < 1) {
 			resolution = 1;
 		}
-		long mask = MathHelper.roundUpPow2(resolution);
+		long mask = GenericMath.roundUpPow2(resolution);
 		while (mask > resolution) {
 			mask = mask >> 1;
 		}

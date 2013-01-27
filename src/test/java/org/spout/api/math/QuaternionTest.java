@@ -216,7 +216,7 @@ public class QuaternionTest {
 		assertEquals(q.getYaw(), yaw, eps);
 		assertEquals(q.getRoll(), roll, eps);
 
-		final Quaternion q2 = MathHelper.rotation(pitch, yaw, roll);
+		final Quaternion q2 = QuaternionMath.rotation(pitch, yaw, roll);
 		assertEquals(q2.getPitch(), pitch, eps);
 		assertEquals(q2.getYaw(), yaw, eps);
 		assertEquals(q2.getRoll(), roll, eps);
@@ -224,7 +224,7 @@ public class QuaternionTest {
 		final float polePitch = 90;
 		final float poleYaw = 18;
 		final float poleRoll = 0;
-		final Quaternion pole = MathHelper.rotation(polePitch, poleYaw, 0);
+		final Quaternion pole = QuaternionMath.rotation(polePitch, poleYaw, 0);
 		assertEquals(polePitch, pole.getPitch(), eps);
 		assertEquals(poleYaw, pole.getYaw(), eps);
 		assertEquals(poleRoll, pole.getRoll(), eps);
@@ -233,7 +233,7 @@ public class QuaternionTest {
 	@Test
 	public void testBulletToSpoutQuaternionConversion() {
 		final Quat4f bulletQuaternion = new Quat4f(1f, -5f, 0f, 1f);
-		final Quaternion spoutQuaternion = MathHelper.toQuaternion(bulletQuaternion);
+		final Quaternion spoutQuaternion = QuaternionMath.toQuaternion(bulletQuaternion);
 		assertEquals(bulletQuaternion.w, spoutQuaternion.w, eps);
 		assertEquals(bulletQuaternion.x, spoutQuaternion.x, eps);
 		assertEquals(bulletQuaternion.y, spoutQuaternion.y, eps);
@@ -243,7 +243,7 @@ public class QuaternionTest {
 	@Test
 	public void testSpoutToBulletQuaternionConversion() {
 		final Quaternion spoutQuaternion = new Quaternion(1f, -5f, 0f, 1f);
-		final Quat4f bulletQuaternion = MathHelper.toQuaternionf(spoutQuaternion);
+		final Quat4f bulletQuaternion = QuaternionMath.toQuaternionf(spoutQuaternion);
 		assertEquals(spoutQuaternion.w, bulletQuaternion.w, eps);
 		assertEquals(spoutQuaternion.x, bulletQuaternion.x, eps);
 		assertEquals(spoutQuaternion.y, bulletQuaternion.y, eps);

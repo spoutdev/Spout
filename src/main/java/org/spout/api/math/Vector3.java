@@ -29,6 +29,7 @@ package org.spout.api.math;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.spout.api.util.StringUtil;
 
 /**
@@ -145,15 +146,15 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	}
 
 	public int getFloorX() {
-		return MathHelper.floor(x);
+		return GenericMath.floor(x);
 	}
 
 	public int getFloorY() {
-		return MathHelper.floor(y);
+		return GenericMath.floor(y);
 	}
 
 	public int getFloorZ() {
-		return MathHelper.floor(z);
+		return GenericMath.floor(z);
 	}
 
 	public final float getRight() {
@@ -183,7 +184,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return the new Vector3
 	 */
 	public Vector3 add(Vector3 that) {
-		return MathHelper.add(this, that);
+		return VectorMath.add(this, that);
 	}
 
 	/**
@@ -229,7 +230,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return the new Vector3
 	 */
 	public Vector3 subtract(Vector3 that) {
-		return MathHelper.subtract(this, that);
+		return VectorMath.subtract(this, that);
 	}
 
 	/**
@@ -275,7 +276,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return the new Vector3
 	 */
 	public Vector3 multiply(Vector3 that) {
-		return MathHelper.multiply(this, that);
+		return VectorMath.multiply(this, that);
 	}
 
 	/**
@@ -351,7 +352,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return the new Vector3
 	 */
 	public Vector3 divide(Vector3 that) {
-		return MathHelper.divide(this, that);
+		return VectorMath.divide(this, that);
 	}
 
 	/**
@@ -427,7 +428,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public float dot(Vector3 that) {
-		return MathHelper.dot(this, that);
+		return VectorMath.dot(this, that);
 	}
 
 	/**
@@ -438,7 +439,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public Vector2 toVector2() {
-		return MathHelper.toVector2(this);
+		return VectorMath.toVector2(this);
 	}
 
 	/**
@@ -448,7 +449,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public Vector3 cross(Vector3 that) {
-		return MathHelper.cross(this, that);
+		return VectorMath.cross(this, that);
 	}
 
 	/**
@@ -497,7 +498,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public double distance(Vector3 a) {
-		return MathHelper.distance(a, this);
+		return VectorMath.distance(a, this);
 	}
 
 	/**
@@ -507,7 +508,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public double distanceSquared(Vector3 a) {
-		return MathHelper.distanceSquared(a, this);
+		return VectorMath.distanceSquared(a, this);
 	}
 
 	/**
@@ -517,7 +518,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public Vector3 pow(double power) {
-		return MathHelper.pow(this, power);
+		return VectorMath.pow(this, power);
 	}
 
 	/**
@@ -526,7 +527,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public float lengthSquared() {
-		return MathHelper.lengthSquared(this);
+		return VectorMath.lengthSquared(this);
 	}
 
 	/**
@@ -536,7 +537,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public float length() {
-		return MathHelper.length(this);
+		return VectorMath.length(this);
 	}
 
 	/**
@@ -545,7 +546,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public float fastLength() {
-		return MathHelper.fastLength(this);
+		return VectorMath.fastLength(this);
 	}
 
 	/**
@@ -554,7 +555,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public Vector3 normalize() {
-		return MathHelper.normalize(this);
+		return VectorMath.normalize(this);
 	}
 
 	/**
@@ -563,7 +564,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public float[] toArray() {
-		return MathHelper.toArray(this);
+		return VectorMath.toArray(this);
 	}
 
 	/**
@@ -574,7 +575,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public Vector3 transform(Matrix transformation) {
-		return MathHelper.transform(this, transformation);
+		return VectorMath.transform(this, transformation);
 	}
 
 	/**
@@ -585,7 +586,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public Vector3 transform(Quaternion transformation) {
-		return MathHelper.transform(this, transformation);
+		return VectorMath.transform(this, transformation);
 	}	
 
 	/**
@@ -595,7 +596,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public Vector3 min(Vector3 other) {
-		return MathHelper.min(this, other);
+		return VectorMath.min(this, other);
 	}
 
 	/**
@@ -605,7 +606,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 * @return
 	 */
 	public Vector3 max(Vector3 other) {
-		return MathHelper.max(this, other);
+		return VectorMath.max(this, other);
 	}
 
 	/**
@@ -613,7 +614,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 */
 	@Override
 	public int compareTo(Vector3 o) {
-		return MathHelper.compareTo(this, o);
+		return VectorMath.compareTo(this, o);
 	}
 
 	/**
@@ -634,7 +635,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 
 	public Quaternion rotationTo(Vector3 other) {
-		return MathHelper.rotationTo(this, other);
+		return QuaternionMath.rotationTo(this, other);
 	}
 
 	// All of the below methods use .x, .y, .z instead of .getX() on purpose. Changing them will break AtomicPoint!

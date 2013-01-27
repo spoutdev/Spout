@@ -26,7 +26,7 @@
  */
 package org.spout.api.util;
 
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 
 /**
  * Can be used to measure the execution time of a block of code
@@ -103,7 +103,7 @@ public class NanoStopWatch {
 	 * @return total rounded time in milliseconds
 	 */
 	public double getRoundedTimeMillis(int decimals) {
-		return MathHelper.round(this.getTimeMillis(), decimals);
+		return GenericMath.round(this.getTimeMillis(), decimals);
 	}
 
 	/**

@@ -91,7 +91,7 @@ public class MatrixTest {
 	public void testMultiplyMatrix() {
 		Matrix a = new Matrix();
 		Matrix b = new Matrix();
-		Matrix m = MathHelper.multiply(a, b);
+		Matrix m = MatrixMath.multiply(a, b);
 		if (m.getDimension() != 4) {
 			fail("Default Constructor should make 4x4, got" + m.getDimension());
 		}
@@ -104,7 +104,7 @@ public class MatrixTest {
 		Matrix d = new Matrix();
 		d.set(3, 2, 4);
 		d.set(0, 0, -1);
-		m = MathHelper.multiply(c, d);
+		m = MatrixMath.multiply(c, d);
 		if (m.getDimension() != 4) {
 			fail("Default Constructor should make 4x4, got" + m.getDimension());
 		}
@@ -137,8 +137,8 @@ public class MatrixTest {
 		mat.set(2, 1, -f.getY());
 		mat.set(2, 2, -f.getZ());
 
-		Matrix trans = MathHelper.translate(center.multiply(-1));
-		mat = MathHelper.multiply(mat, trans);
+		Matrix trans = MatrixMath.translate(center.multiply(-1));
+		mat = MatrixMath.multiply(mat, trans);
 		id = new double[][] { {-0.7071068f, 0.0f, 0.7071068f, 0.0f}, {0.0f, 1.0000001f, 0.0f, 0.0f}, {-0.7071068f, 0.0f, -0.7071068f, 0.0f}, {-5.0f, 0.0f, -5.0f, 1.0f}};
 		compareMatrixToArray(mat, id);
 	}
@@ -147,7 +147,7 @@ public class MatrixTest {
 	public void testAddMatrix() {
 		Matrix a = new Matrix();
 		Matrix b = new Matrix();
-		Matrix m = MathHelper.add(a, b);
+		Matrix m = MatrixMath.add(a, b);
 		if (m.getDimension() != 4) {
 			fail("Default Constructor should make 4x4, got" + m.getDimension());
 		}
@@ -160,7 +160,7 @@ public class MatrixTest {
 		Matrix d = new Matrix();
 		d.set(3, 2, 4);
 		d.set(0, 0, -1);
-		m = MathHelper.add(c, d);
+		m = MatrixMath.add(c, d);
 		if (m.getDimension() != 4) {
 			fail("Default Constructor should make 4x4, got" + m.getDimension());
 		}
@@ -172,14 +172,14 @@ public class MatrixTest {
 	public void testTranslate() {
 		Vector3 a = new Vector3(-1, 2, 4);
 		double[][] id = { {1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {-1, 2, 4, 1}};
-		Matrix m = MathHelper.translate(a);
+		Matrix m = MatrixMath.translate(a);
 		compareMatrixToArray(m, id);
 	}
 
 	@Test
 	public void testScaleDouble() {
 		double[][] id = { {5, 0, 0, 0}, {0, 5, 0, 0}, {0, 0, 5, 0}, {0, 0, 0, 1}};
-		Matrix m = MathHelper.scale(5.0f);
+		Matrix m = MatrixMath.createScaled(5.0f);
 		compareMatrixToArray(m, id);
 	}
 
@@ -187,7 +187,7 @@ public class MatrixTest {
 	public void testScaleVector3() {
 		Vector3 s = new Vector3(-1, 5, 3);
 		double[][] id = { {-1, 0, 0, 0}, {0, 5, 0, 0}, {0, 0, 3, 0}, {0, 0, 0, 1}};
-		Matrix m = MathHelper.scale(s);
+		Matrix m = MatrixMath.createScaled(s);
 		compareMatrixToArray(m, id);
 	}
 
@@ -195,7 +195,7 @@ public class MatrixTest {
 	public void testRotateX() {
 		float theta = 30;
 		double[][] id = { {1, 0, 0, 0}, {0, Math.cos(Math.toRadians(theta)), -Math.sin(Math.toRadians(theta)), 0}, {0, Math.sin(Math.toRadians(theta)), Math.cos(Math.toRadians(theta)), 0}, {0, 0, 0, 1}};
-		Matrix m = MathHelper.rotateX(theta);
+		Matrix m = MatrixMath.rotateX(theta);
 		compareMatrixToArray(m, id);
 	}
 
@@ -203,7 +203,7 @@ public class MatrixTest {
 	public void testRotateY() {
 		float theta = 10;
 		double[][] id = { {Math.cos(Math.toRadians(theta)), 0, Math.sin(Math.toRadians(theta)), 0}, {0, 1, 0, 0}, {-Math.sin(Math.toRadians(theta)), 0, Math.cos(Math.toRadians(theta)), 0}, {0, 0, 0, 1}};
-		Matrix m = MathHelper.rotateY(theta);
+		Matrix m = MatrixMath.rotateY(theta);
 		compareMatrixToArray(m, id);
 	}
 
@@ -211,7 +211,7 @@ public class MatrixTest {
 	public void testRotateZ() {
 		float theta = 40;
 		double[][] id = { {Math.cos(Math.toRadians(theta)), -Math.sin(Math.toRadians(theta)), 0, 0}, {Math.sin(Math.toRadians(theta)), Math.cos(Math.toRadians(theta)), 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
-		compareMatrixToArray(MathHelper.rotateZ(theta), id);
+		compareMatrixToArray(MatrixMath.rotateZ(theta), id);
 	}
 
 	@Test
@@ -220,21 +220,21 @@ public class MatrixTest {
 		Quaternion rot;
 
 		rot = Quaternion.IDENTITY;
-		m = MathHelper.rotate(rot);
+		m = MatrixMath.rotate(rot);
 
 		double[][] id = { {1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
 
 		compareMatrixToArray(m, id);
 
 		rot = new Quaternion(4, 3, 2, 0, true);
-		m = MathHelper.rotate(rot);
+		m = MatrixMath.rotate(rot);
 
 		id = new double[][] { {0.103448, 0.827586, 0.551724, 0}, {0.827586, -0.37931, 0.413793, 0}, {0.551724, 0.413793, -0.724138, 0}, {0, 0, 0, 1}};
 
 		compareMatrixToArray(m, id);
 
 		rot = new Quaternion(90, new Vector3(0, 1, 0));
-		m = MathHelper.rotate(rot);
+		m = MatrixMath.rotate(rot);
 		id = new double[][] { {0, 0, 1, 0}, {0, 1, 0, 0}, {-1, 0, 0, 0}, {0, 0, 0, 1}};
 
 		compareMatrixToArray(m, id);
@@ -244,7 +244,7 @@ public class MatrixTest {
 	public void testBulletMatrixConvert() {
 		Matrix4f bullet = new Matrix4f();
 		bullet.setElement(0, 0, 10f);
-		Matrix spout = MathHelper.toMatrix(bullet);
+		Matrix spout = MatrixMath.toMatrix(bullet);
 		assertTrue(spout.get(0, 0) == 10f);
 	}
 }

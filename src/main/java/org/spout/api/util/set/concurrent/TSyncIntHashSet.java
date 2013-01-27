@@ -39,7 +39,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 /**
  * This is a synchronised version of the Trove IntHashSet.
  *
@@ -106,7 +106,7 @@ public class TSyncIntHashSet implements TIntSet {
 		if (setCount > 0x100000) {
 			throw new IllegalArgumentException("Set count exceeds valid range");
 		}
-		setCount = MathHelper.roundUpPow2(setCount);
+		setCount = GenericMath.roundUpPow2(setCount);
 		setMask = setCount - 1;
 		this.setCount = setCount;
 		this.hashScramble = (setCount << 8) + 1;

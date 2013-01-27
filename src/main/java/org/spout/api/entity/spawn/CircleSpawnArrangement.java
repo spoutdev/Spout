@@ -27,8 +27,8 @@
 package org.spout.api.entity.spawn;
 
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
+import org.spout.api.math.MatrixMath;
 import org.spout.api.math.Vector3;
 
 public class CircleSpawnArrangement extends GenericSpawnArrangement {
@@ -45,9 +45,9 @@ public class CircleSpawnArrangement extends GenericSpawnArrangement {
 	protected Point[] generatePoints(Point center, int number) {
 		Vector3 offset = Point.FORWARD.multiply(radius);
 		int angle = number == 0 ? 0 : (360 / number);
-		Matrix rotate = MathHelper.rotateY(angle);
+		Matrix rotate = MatrixMath.rotateY(angle);
 		if (halfRotate) {
-			offset = offset.transform(MathHelper.rotateY(angle / 2));
+			offset = offset.transform(MatrixMath.rotateY(angle / 2));
 		}
 		Point[] points = new Point[number];
 		for (int i = 0; i < number; i++) {

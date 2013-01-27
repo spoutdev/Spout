@@ -29,6 +29,7 @@ package org.spout.api.math;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.spout.api.util.StringUtil;
 
 /**
@@ -133,11 +134,11 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	}
 
 	public int getFloorX() {
-		return MathHelper.floor(x);
+		return GenericMath.floor(x);
 	}
 
 	public int getFloorY() {
-		return MathHelper.floor(y);
+		return GenericMath.floor(y);
 	}
 
 	/**
@@ -818,7 +819,7 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	 * @return
 	 */
 	public static double distance(Vector2 a, Vector2 b) {
-		return MathHelper.length(a.x - b.x, a.y - b.y);
+		return GenericMath.length(a.x - b.x, a.y - b.y);
 	}
 
 	/**
@@ -829,7 +830,7 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	 * @return
 	 */
 	public static double distanceSquared(Vector2 a, Vector2 b) {
-		return MathHelper.lengthSquared(a.x - b.x, a.y - b.y);
+		return GenericMath.lengthSquared(a.x - b.x, a.y - b.y);
 	}
 
 	/**

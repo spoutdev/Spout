@@ -26,15 +26,14 @@
  */
 package org.spout.api.render;
 
-import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.spout.api.geo.cuboid.Cuboid;
-import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
+import org.spout.api.math.MatrixMath;
 import org.spout.api.math.Vector3;
 import static org.mockito.Mockito.*;
 
@@ -53,8 +52,8 @@ public class ViewFrustumTest {
 
 	@Test
 	public void testUpdate() {
-		Matrix projection = MathHelper.createPerspective(70, 16 / 9.0f, 1, 2000);
-		Matrix view = MathHelper.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
+		Matrix projection = MatrixMath.createPerspective(70, 16 / 9.0f, 1, 2000);
+		Matrix view = MatrixMath.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
 
 		frustum.update(projection, view, new Vector3(0,0,0));
 
@@ -64,8 +63,8 @@ public class ViewFrustumTest {
 
 	@Test
 	public void testIntersects() {
-		Matrix projection = MathHelper.createPerspective(70, 16 / 9.0f, 1, 2000);
-		Matrix view = MathHelper.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
+		Matrix projection = MatrixMath.createPerspective(70, 16 / 9.0f, 1, 2000);
+		Matrix view = MatrixMath.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
 
 		frustum.update(projection, view, new Vector3(0,0,0));
 
@@ -89,8 +88,8 @@ public class ViewFrustumTest {
 
 	@Test
 	public void testIntersectsFalse() {
-		Matrix projection = MathHelper.createPerspective(70, 16 / 9.0f, 1, 2000);
-		Matrix view = MathHelper.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
+		Matrix projection = MatrixMath.createPerspective(70, 16 / 9.0f, 1, 2000);
+		Matrix view = MatrixMath.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
 
 		frustum.update(projection, view, new Vector3(0,0,0));
 
@@ -114,8 +113,8 @@ public class ViewFrustumTest {
 
 	@Test
 	public void testContains() {
-		Matrix projection = MathHelper.createPerspective(70, 16 / 9.0f, 1, 2000);
-		Matrix view = MathHelper.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
+		Matrix projection = MatrixMath.createPerspective(70, 16 / 9.0f, 1, 2000);
+		Matrix view = MatrixMath.createLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, 1000), Vector3.UP);
 
 		frustum.update(projection, view, new Vector3(0,0,0));
 

@@ -29,32 +29,28 @@ package org.spout.api.math;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.spout.api.util.StringUtil;
 
 /**
  * Represents a rotation around a unit 4d circle.
  */
-public class Quaternion implements Serializable{
+public class Quaternion implements Serializable {
 	private static final long serialVersionUID = 1L;
-
 	protected final float x, y, z, w;
 	protected transient volatile Vector3 cachedAngle = null;
-
 	/**
 	 * Represents no rotation
 	 */
 	public static final Quaternion IDENTITY = new Quaternion(0, 0, 0, 1, true);
-
 	/**
 	 * Represents 90 degrees rotation around the x axis
 	 */
 	public static final Quaternion UNIT_X = new Quaternion(1, 0, 0, 0, true);
-
 	/**
 	 * Represents 90 degrees rotation around the < axis
 	 */
 	public static final Quaternion UNIT_Y = new Quaternion(0, 1, 0, 0, true);
-
 	/**
 	 * Represents 90 degrees rotation around the z axis
 	 */
@@ -69,7 +65,8 @@ public class Quaternion implements Serializable{
 	 * @param y
 	 * @param z
 	 * @param w
-	 * @param ignore Ignored.  This is because float float float float should be for angle/x,y,z
+	 * @param ignore Ignored. This is because float float float float should be
+	 * for angle/x,y,z
 	 */
 	public Quaternion(float x, float y, float z, float w, boolean ignore) {
 		this.x = x;
@@ -168,7 +165,7 @@ public class Quaternion implements Serializable{
 	 * @return direction of Quaternion
 	 */
 	public Vector3 getDirection() {
-		return MathHelper.getDirectionVector(this);
+		return VectorMath.getDirection(this);
 	}
 
 	/**
@@ -177,7 +174,7 @@ public class Quaternion implements Serializable{
 	 * @return
 	 */
 	public float lengthSquared() {
-		return MathHelper.lengthSquared(this);
+		return QuaternionMath.lengthSquared(this);
 	}
 
 	/**
@@ -187,7 +184,7 @@ public class Quaternion implements Serializable{
 	 * @return
 	 */
 	public float length() {
-		return MathHelper.length(this);
+		return QuaternionMath.length(this);
 	}
 
 	/**
@@ -196,7 +193,7 @@ public class Quaternion implements Serializable{
 	 * @return
 	 */
 	public Quaternion normalize() {
-		return MathHelper.normalize(this);
+		return QuaternionMath.normalize(this);
 	}
 
 	/**
@@ -206,7 +203,7 @@ public class Quaternion implements Serializable{
 	 * @return
 	 */
 	public Quaternion multiply(Quaternion o) {
-		return MathHelper.multiply(this, o);
+		return QuaternionMath.multiply(this, o);
 	}
 
 	/**
@@ -218,7 +215,7 @@ public class Quaternion implements Serializable{
 	 * @return rotated Quaternion
 	 */
 	public Quaternion rotate(float angle, Vector3 axis) {
-		return MathHelper.rotate(this, angle, axis);
+		return QuaternionMath.rotate(this, angle, axis);
 	}
 
 	/**
@@ -232,7 +229,7 @@ public class Quaternion implements Serializable{
 	 * @return rotated Quaternion
 	 */
 	public Quaternion rotate(float angle, float x, float y, float z) {
-		return MathHelper.rotate(this, angle, x, y, z);
+		return QuaternionMath.rotate(this, angle, x, y, z);
 	}
 
 	/**
@@ -245,7 +242,7 @@ public class Quaternion implements Serializable{
 	 */
 	public Vector3 getAxisAngles() {
 		if (cachedAngle == null) {
-			cachedAngle = MathHelper.getAxisAngles(this);
+			cachedAngle = QuaternionMath.getAxisAngles(this);
 		}
 
 		return cachedAngle;
@@ -264,7 +261,7 @@ public class Quaternion implements Serializable{
 		if (obj == this) {
 			return true;
 		}
-		Quaternion q = (Quaternion)obj;
+		Quaternion q = (Quaternion) obj;
 		return this.w == q.w && this.x == q.x && this.y == q.y && this.z == q.z;
 	}
 

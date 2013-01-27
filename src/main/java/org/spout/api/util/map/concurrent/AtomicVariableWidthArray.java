@@ -29,7 +29,7 @@ package org.spout.api.util.map.concurrent;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 
 /**
  * This class implements a variable width Atomic array.  It is backed by an AtomicInteger array.<br>
@@ -82,7 +82,7 @@ public class AtomicVariableWidthArray implements Serializable {
 	 * @param initial the initial state of the array (in packed format)
 	 */
 	public AtomicVariableWidthArray(int length, int width, int[] initial) {
-		if (MathHelper.roundUpPow2(width) != width || width < 1 || width > 32) {
+		if (GenericMath.roundUpPow2(width) != width || width < 1 || width > 32) {
 			throw new IllegalArgumentException("Width must be a power of 2 between 1 and 32 " + width);
 		}
 		

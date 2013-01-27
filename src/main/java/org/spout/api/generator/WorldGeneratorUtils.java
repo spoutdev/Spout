@@ -31,7 +31,7 @@ import java.util.Random;
 import net.royawesome.jlibnoise.module.Module;
 
 import org.spout.api.geo.World;
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 
 /**
  * Utilities for World generation
@@ -243,7 +243,7 @@ public class WorldGeneratorUtils {
 		for (int xx = 0; xx < xSize; xx++) {
 			if (xx % samplingRate != 0) {
 				int nx = (xx / samplingRate) * samplingRate;
-				noiseArray[xx] = MathHelper.lerp(xx, nx, nx + samplingRate,
+				noiseArray[xx] = GenericMath.lerp(xx, nx, nx + samplingRate,
 						noiseArray[nx], noiseArray[nx + samplingRate]);
 			}
 		}
@@ -291,7 +291,7 @@ public class WorldGeneratorUtils {
 				if (xx % samplingRate != 0 || zz % samplingRate != 0) {
 					int nx = (xx / samplingRate) * samplingRate;
 					int nz = (zz / samplingRate) * samplingRate;
-					noiseArray[xx][zz] = MathHelper.biLerp(xx, zz, noiseArray[nx][nz],
+					noiseArray[xx][zz] = GenericMath.biLerp(xx, zz, noiseArray[nx][nz],
 							noiseArray[nx][nz + samplingRate], noiseArray[nx + samplingRate][nz],
 							noiseArray[nx + samplingRate][nz + samplingRate], nx, nx + samplingRate,
 							nz, nz + samplingRate);
@@ -351,7 +351,7 @@ public class WorldGeneratorUtils {
 						int nx = (xx / samplingRate) * samplingRate;
 						int ny = (yy / samplingRate) * samplingRate;
 						int nz = (zz / samplingRate) * samplingRate;
-						noiseArray[xx][yy][zz] = MathHelper.triLerp(xx, yy, zz,
+						noiseArray[xx][yy][zz] = GenericMath.triLerp(xx, yy, zz,
 								noiseArray[nx][ny][nz], noiseArray[nx][ny + samplingRate][nz],
 								noiseArray[nx][ny][nz + samplingRate], noiseArray[nx][ny + samplingRate][nz + samplingRate],
 								noiseArray[nx + samplingRate][ny][nz], noiseArray[nx + samplingRate][ny + samplingRate][nz],

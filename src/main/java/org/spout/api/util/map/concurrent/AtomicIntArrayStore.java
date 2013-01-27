@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 import org.spout.api.util.concurrent.AtomicSequenceNumber;
 
 /**
@@ -81,10 +81,10 @@ public final class AtomicIntArrayStore {
 	}
 
 	public AtomicIntArrayStore(int maxEntries, double loadFactor, int initialSize) {
-		this.maxLength = MathHelper.roundUpPow2((int) (maxEntries / loadFactor));
-		this.reservedMask = -MathHelper.roundUpPow2(maxLength) & 0xFFFF;
+		this.maxLength = GenericMath.roundUpPow2((int) (maxEntries / loadFactor));
+		this.reservedMask = -GenericMath.roundUpPow2(maxLength) & 0xFFFF;
 
-		this.length.set(MathHelper.roundUpPow2(initialSize));
+		this.length.set(GenericMath.roundUpPow2(initialSize));
 		this.entries.set(0);
 
 		intArray = new AtomicReference<int[]>(new int[this.length.get()]);
