@@ -35,15 +35,15 @@ import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
-import com.bulletphysics.linearmath.MotionState;
 import com.bulletphysics.linearmath.Transform;
 
 import org.spout.api.component.impl.PhysicsComponent;
 import org.spout.api.component.impl.TransformComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.QuaternionMath;
 import org.spout.api.math.Vector3;
+import org.spout.api.math.VectorMath;
 
 import org.spout.engine.world.SpoutRegion;
 
@@ -169,7 +169,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		info.restitution = 0f;
 		body = new RigidBody(info);
 		body.setUserPointer(getOwner());
-		body.setWorldTransform(new Transform(new Matrix4f(MathHelper.toQuaternionf(spoutTransform.getRotation()), MathHelper.toVector3f(point.getX(), point.getY(), point.getZ()), 1)));
+		body.setWorldTransform(new Transform(new Matrix4f(QuaternionMath.toQuaternionf(spoutTransform.getRotation()), new Vector3f(point.getX(), point.getY(), point.getZ()), 1)));
 		body.activate();
 	}
 
@@ -189,7 +189,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 			throw new IllegalStateException("A collision shape must be set first");
 		}
 		synchronized (((SpoutRegion) getOwner().getRegion()).getSimulation()) {
-			body.setAngularVelocity(MathHelper.toVector3f(velocity));
+			body.setAngularVelocity(VectorMath.toVector3f(velocity));
 		}
 	}
 
@@ -199,7 +199,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 			throw new IllegalStateException("A collision shape must be set first");
 		}
 		synchronized (((SpoutRegion) getOwner().getRegion()).getSimulation()) {
-			body.setLinearVelocity(MathHelper.toVector3f(velocity));
+			body.setLinearVelocity(VectorMath.toVector3f(velocity));
 		}
 	}
 
@@ -228,7 +228,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 			throw new IllegalStateException("Entity region is null!");
 		}
 		synchronized (r.getSimulation()) {
-			body.applyCentralImpulse(MathHelper.toVector3f(impulse));
+			body.applyCentralImpulse(VectorMath.toVector3f(impulse));
 		}
 	}
 
@@ -242,7 +242,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 			throw new IllegalStateException("Entity region is null!");
 		}
 		synchronized (r.getSimulation()) {
-			body.applyImpulse(MathHelper.toVector3f(impulse), MathHelper.toVector3f(relativePos));
+			body.applyImpulse(VectorMath.toVector3f(impulse), VectorMath.toVector3f(relativePos));
 		}
 	}
 
@@ -256,7 +256,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 			throw new IllegalStateException("Entity region is null!");
 		}
 		synchronized (r.getSimulation()) {
-			body.applyCentralForce(MathHelper.toVector3f(force));
+			body.applyCentralForce(VectorMath.toVector3f(force));
 		}
 	}
 
@@ -270,7 +270,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 			throw new IllegalStateException("Entity region is null!");
 		}
 		synchronized (r.getSimulation()) {
-			body.applyForce(MathHelper.toVector3f(force), MathHelper.toVector3f(relativePos));
+			body.applyForce(VectorMath.toVector3f(force), VectorMath.toVector3f(relativePos));
 		}
 	}
 
@@ -299,8 +299,8 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 				throw new IllegalStateException("Entity region is null!");
 			}
 			synchronized (r.getSimulation()) {
-				Vector3 angularVelocityLive = MathHelper.toVector3(body.getInterpolationAngularVelocity(new Vector3f()));
-				Vector3 linearVelocityLive = MathHelper.toVector3(body.getInterpolationLinearVelocity(new Vector3f()));
+				Vector3 angularVelocityLive = VectorMath.toVector3(body.getInterpolationAngularVelocity(new Vector3f()));
+				Vector3 linearVelocityLive = VectorMath.toVector3(body.getInterpolationLinearVelocity(new Vector3f()));
 				dirtyLinearVelocity = !linearVelocityLive.equals(linearVelocity);
 				dirtyAngularVelocity = !angularVelocityLive.equals(angularVelocity);
 				dirtyVelocity = dirtyAngularVelocity && dirtyLinearVelocity;
@@ -321,7 +321,7 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 		public Transform getWorldTransform(Transform transform) {
 			org.spout.api.geo.discrete.Transform spoutTransform = entity.getTransform().getTransformLive();
 			Point point = spoutTransform.getPosition();
-			transform.set(new Matrix4f(MathHelper.toQuaternionf(spoutTransform.getRotation()), MathHelper.toVector3f(point.getX(), point.getY(), point.getZ()), 1));
+			transform.set(new Matrix4f(QuaternionMath.toQuaternionf(spoutTransform.getRotation()), new Vector3f(point.getX(), point.getY(), point.getZ()), 1));
 			return transform;
 		}
 
@@ -332,24 +332,24 @@ public class SpoutPhysicsComponent extends PhysicsComponent {
 			Point point = spoutTransform.getPosition();
 			boolean resetPos = false, resetRot = false;
 			if (!t.isPositionDirty()) {
-				t.setPosition(new Point(MathHelper.toVector3(transform.origin), entity.getWorld()));
+				t.setPosition(new Point(VectorMath.toVector3(transform.origin), entity.getWorld()));
 			} else {
 				resetPos = true;
 			}
 			if (!t.isRotationDirty()) {
-				t.setRotation(MathHelper.toQuaternion(transform.getRotation(new Quat4f())));
+				t.setRotation(QuaternionMath.toQuaternion(transform.getRotation(new Quat4f())));
 			} else {
 				resetRot = true;
 			}
 			
 			if (resetPos && resetRot) {
-				transform.set(new Matrix4f(MathHelper.toQuaternionf(spoutTransform.getRotation()), MathHelper.toVector3f(point.getX(), point.getY(), point.getZ()), 1));
+				transform.set(new Matrix4f(QuaternionMath.toQuaternionf(spoutTransform.getRotation()), new Vector3f(point.getX(), point.getY(), point.getZ()), 1));
 				body.setWorldTransform(transform);
 			} else if (resetPos) {
-				transform.set(new Matrix4f(transform.getRotation(new Quat4f()), MathHelper.toVector3f(point.getX(), point.getY(), point.getZ()), 1));
+				transform.set(new Matrix4f(transform.getRotation(new Quat4f()), new Vector3f(point.getX(), point.getY(), point.getZ()), 1));
 				body.setWorldTransform(transform);
 			} else if (resetRot) {
-				transform.set(new Matrix4f(MathHelper.toQuaternionf(spoutTransform.getRotation()), transform.origin, 1));
+				transform.set(new Matrix4f(QuaternionMath.toQuaternionf(spoutTransform.getRotation()), transform.origin, 1));
 				body.setWorldTransform(transform);
 			}
 		}

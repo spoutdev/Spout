@@ -29,10 +29,9 @@ package org.spout.engine.effects;
 import java.awt.Color;
 import java.util.Random;
 
-import net.royawesome.jlibnoise.MathHelper;
-
 import org.spout.api.Client;
 import org.spout.api.Spout;
+import org.spout.api.math.GenericMath;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.effect.RenderEffect;
@@ -69,7 +68,7 @@ public class SSAOPostProcessEffect implements RenderEffect {
 			//Scale it into the hemisphere so the vectors aren't all along the surface. 
 			//We want the distance from the origin to fall off as we generate more points.  
 			float scale = (float)i / (float)kernelSize;
-			scale = MathHelper.lerp(0.1f, 1.0f, scale * scale);
+			scale = GenericMath.lerp(0.1f, 1.0f, scale * scale);
 			
 			kernel[i] = kernel[i].multiply(scale);
 		}

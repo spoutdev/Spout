@@ -38,8 +38,8 @@ import org.spout.api.chat.ChatArguments;
 import org.spout.api.gui.Widget;
 import org.spout.api.gui.component.LabelComponent;
 import org.spout.api.gui.render.RenderPart;
-import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
+import org.spout.api.math.MatrixMath;
 import org.spout.api.math.Rectangle;
 import org.spout.api.render.BufferContainer;
 import org.spout.api.render.RenderMaterial;
@@ -66,8 +66,8 @@ public class SpriteBatch {
 	}
 
 	public SpriteBatch(float screenW, float screenH) {
-		this.projection = MathHelper.createIdentity();
-		this.view = MathHelper.createIdentity();
+		this.projection = MatrixMath.createIdentity();
+		this.view = MatrixMath.createIdentity();
 		this.screenWidth = screenW;
 		this.screenHeight = screenH;
 		this.aspectRatio = screenW / screenH;
@@ -78,8 +78,9 @@ public class SpriteBatch {
 	}
 
 	public void render() {
-		if(sprites.isEmpty())
+		if (sprites.isEmpty()) {
 			return;
+		}
 
 		BufferContainer container = new BufferContainer();
 
@@ -89,17 +90,17 @@ public class SpriteBatch {
 		TFloatArrayList colorBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.COLOR_LAYER);
 		TFloatArrayList textureBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.TEXTURE0_LAYER);
 
-		if(vertexBuffer==null){
+		if (vertexBuffer == null) {
 			vertexBuffer = new TFloatArrayList(sprites.size() * 4 * 4);
 			container.setBuffers(BatchVertexRenderer.VERTEX_LAYER, vertexBuffer);
 		}
 
-		if(colorBuffer==null){
+		if (colorBuffer == null) {
 			colorBuffer = new TFloatArrayList(sprites.size() * 4 * 4);
 			container.setBuffers(BatchVertexRenderer.COLOR_LAYER, colorBuffer);
 		}
 
-		if(textureBuffer==null){
+		if (textureBuffer == null) {
 			textureBuffer = new TFloatArrayList(sprites.size() * 4 * 2);
 			container.setBuffers(BatchVertexRenderer.TEXTURE0_LAYER, textureBuffer);
 		}
@@ -107,7 +108,7 @@ public class SpriteBatch {
 		for (int i = 0; i < sprites.size(); i++) {
 			RenderPart rect = sprites.get(i);
 
-			for(int j = 0; j < 6; j++){
+			for (int j = 0; j < 6; j++) {
 				colorBuffer.add(rect.getColor().getRed() / 255f);
 				colorBuffer.add(rect.getColor().getGreen() / 255f);
 				colorBuffer.add(rect.getColor().getBlue() / 255f);
@@ -115,7 +116,7 @@ public class SpriteBatch {
 			}
 
 			//Triangle 1
-			
+
 			vertexBuffer.add(rect.getSprite().getX() + rect.getSprite().getWidth());
 			vertexBuffer.add(rect.getSprite().getY());
 			vertexBuffer.add(0f);
@@ -138,7 +139,7 @@ public class SpriteBatch {
 			textureBuffer.add(rect.getSource().getY());
 
 			//Triangle 2
-			
+
 			vertexBuffer.add(rect.getSprite().getX() + rect.getSprite().getWidth());
 			vertexBuffer.add(rect.getSprite().getY() + rect.getSprite().getHeight());
 			vertexBuffer.add(0f);
@@ -182,7 +183,7 @@ public class SpriteBatch {
 
 		}
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		((BatchVertexRenderer)renderer).release();
+		((BatchVertexRenderer) renderer).release();
 	}
 
 	public void drawText(ChatArguments text, ClientFont font, float x, float y, float size) {
@@ -201,12 +202,13 @@ public class SpriteBatch {
 	}
 
 	public void draw(List<RenderPart> parts) {
-		for (RenderPart part : parts)
+		for (RenderPart part : parts) {
 			draw(part);
+		}
 	}
 
 	public void draw(RenderMaterial material, float x, float y, float w, float h) {
-		draw(material, new Rectangle(0, 0, 1, 1), new Rectangle(x, y, w, h * aspectRatio),  Color.white);
+		draw(material, new Rectangle(0, 0, 1, 1), new Rectangle(x, y, w, h * aspectRatio), Color.white);
 	}
 
 	public void draw(RenderMaterial material, Rectangle source, Rectangle destination, Color color) {
