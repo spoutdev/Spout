@@ -24,34 +24,13 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.util.cuboid;
+package org.spout.api.lighting;
 
-import org.spout.api.lighting.Modifiable;
-
-public class NullCuboidLightBuffer extends CuboidLightBuffer {
-
-	protected NullCuboidLightBuffer(Modifiable holder, int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
-		super(holder, id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
-	}
-
-	@Override
-	public CuboidLightBuffer copy() {
-		throw new UnsupportedOperationException("Buffer is null light buffer");		
-	}
-
-	@Override
-	public byte[] serialize() {
-		throw new UnsupportedOperationException("Buffer is null light buffer");		
-	}
-
-	@Override
-	public void copyElement(int thisIndex, int sourceIndex, int runLength) {
-		throw new UnsupportedOperationException("Buffer is null light buffer");				
-	}
-
-	@Override
-	public void setSource(CuboidBuffer source) {
-		throw new UnsupportedOperationException("Buffer is null light buffer");		
-	}
+public interface Modifiable {
+	
+	/**
+	 * Marks this object as modified
+	 */
+	public void setModified();
 
 }

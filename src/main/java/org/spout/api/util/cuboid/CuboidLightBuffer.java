@@ -26,14 +26,22 @@
  */
 package org.spout.api.util.cuboid;
 
+import org.spout.api.lighting.Modifiable;
 
-public abstract class CuboidLightBuffer extends CuboidBuffer {
+
+public abstract class CuboidLightBuffer extends CuboidBuffer implements Modifiable {
 	
 	private final int id;
+	protected final Modifiable holder;
 	
-	protected CuboidLightBuffer(int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
+	protected CuboidLightBuffer(Modifiable holder, int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
 		super(baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
 		this.id = id;
+		if (holder == null) {
+			this.holder = this;
+		} else {
+			this.holder = holder;
+		}
 	}
 	
 	/**
@@ -58,4 +66,10 @@ public abstract class CuboidLightBuffer extends CuboidBuffer {
 	 * @return
 	 */
 	public abstract byte[] serialize();
+	
+	/**
+	 * Used to dispose of calls to setModified for wrapped buffers
+	 */
+	public final void setModified() {
+	}
 }

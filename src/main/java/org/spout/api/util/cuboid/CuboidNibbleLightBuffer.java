@@ -28,21 +28,23 @@ package org.spout.api.util.cuboid;
 
 import java.util.Arrays;
 
+import org.spout.api.lighting.Modifiable;
+
 
 public class CuboidNibbleLightBuffer extends CuboidLightBuffer {
 	private final byte[] lightData;
 	private CuboidNibbleLightBuffer source = null;
 	
 	protected CuboidNibbleLightBuffer(CuboidNibbleLightBuffer buffer) {
-		this(buffer.getManagerId(), buffer.baseX, buffer.baseY, buffer.baseZ, buffer.sizeX, buffer.sizeY, buffer.sizeZ, buffer.lightData);
+		this(buffer.holder, buffer.getManagerId(), buffer.baseX, buffer.baseY, buffer.baseZ, buffer.sizeX, buffer.sizeY, buffer.sizeZ, buffer.lightData);
 	}
 	
-	protected CuboidNibbleLightBuffer(int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
-		this(id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ, null);
+	protected CuboidNibbleLightBuffer(Modifiable holder, int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
+		this(holder, id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ, null);
 	}
 	
-	protected CuboidNibbleLightBuffer(int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data) {
-		super(id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
+	protected CuboidNibbleLightBuffer(Modifiable holder, int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data) {
+		super(holder, id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
 		int volume = getVolume();
 		if ((volume | 1) == volume) {
 			throw new IllegalArgumentException("Buffer volume must be an even number, " + volume);
@@ -69,6 +71,7 @@ public class CuboidNibbleLightBuffer extends CuboidLightBuffer {
 
 	@Override
 	public void copyElement(int thisIndex, int sourceIndex, int runLength) {
+		holder.setModified();
 		if (!isEven(thisIndex + sourceIndex)) {
 			// means one is even and one is odd
 			for (int i = 0; i < runLength; i++) {
@@ -103,6 +106,7 @@ public class CuboidNibbleLightBuffer extends CuboidLightBuffer {
 	}
 	
 	public void set(int index, byte value) {
+		holder.setModified();
 		if (isEven(index)) {
 			index >>= 1;
 			lightData[index] = (byte) ((lightData[index] & 0xF0) | (value & 0x0F));

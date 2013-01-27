@@ -38,12 +38,12 @@ public class ByteArrayCuboidLightBuffer extends CuboidLightBuffer {
 	private final byte[] data;
 	
 	protected ByteArrayCuboidLightBuffer(ByteArrayCuboidLightBuffer buffer) {
-		this(buffer.getManagerId(), buffer.baseX, buffer.baseY, buffer.baseZ, buffer.sizeX, buffer.sizeY, buffer.sizeZ, 
+		this(buffer.holder, buffer.getManagerId(), buffer.baseX, buffer.baseY, buffer.baseZ, buffer.sizeX, buffer.sizeY, buffer.sizeZ, 
 				buffer.data == null ? null : Arrays.copyOf(buffer.data, buffer.data.length));
 	}
 
-	protected ByteArrayCuboidLightBuffer(int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data) {
-		super(id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
+	protected ByteArrayCuboidLightBuffer(Modifiable holder, int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data) {
+		super(holder, id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
 		this.data = data;
 	}
 

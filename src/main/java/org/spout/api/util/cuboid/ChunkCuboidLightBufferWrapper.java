@@ -46,7 +46,7 @@ public abstract class ChunkCuboidLightBufferWrapper<T extends CuboidLightBuffer>
 	private final CuboidLightBuffer[][][] cache;
 
 	protected ChunkCuboidLightBufferWrapper(int bx, int by, int bz, int sx, int sy, int sz, short id) {
-		super(id, bx, by, bz, sx, sy, sz);
+		super(null, id, bx, by, bz, sx, sy, sz);
 		this.cTx = (bx + sx) >> Chunk.BLOCKS.BITS;
 		this.cTy = (by + sy) >> Chunk.BLOCKS.BITS;
 		this.cTz = (bz + sz) >> Chunk.BLOCKS.BITS;
@@ -129,27 +129,27 @@ public abstract class ChunkCuboidLightBufferWrapper<T extends CuboidLightBuffer>
 	private static class NullCuboidLightBuffer extends CuboidLightBuffer {
 
 		protected NullCuboidLightBuffer() {
-			super(0, 0, 0, 0, 0, 0, 0);
+			super(null, 0, 0, 0, 0, 0, 0, 0);
 		}
 
 		@Override
 		public CuboidLightBuffer copy() {
-			throw new UnsupportedOperationException("Buffer is null light buffer");		
+			throw new UnsupportedOperationException("Buffer is the null light buffer");		
 		}
 
 		@Override
 		public byte[] serialize() {
-			throw new UnsupportedOperationException("Buffer is null light buffer");		
+			throw new UnsupportedOperationException("Buffer is the null light buffer");		
 		}
 
 		@Override
 		public void copyElement(int thisIndex, int sourceIndex, int runLength) {
-			throw new UnsupportedOperationException("Buffer is null light buffer");				
+			throw new UnsupportedOperationException("Buffer is the null light buffer");				
 		}
 
 		@Override
 		public void setSource(CuboidBuffer source) {
-			throw new UnsupportedOperationException("Buffer is null light buffer");		
+			throw new UnsupportedOperationException("Buffer is the null light buffer");		
 		}
 
 	}

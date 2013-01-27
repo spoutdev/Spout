@@ -114,6 +114,7 @@ public abstract class LightingManager<T extends CuboidLightBuffer> {
 	/**
 	 * Creates a new light buffer for chunks which don't have a light buffer associated with this lighting manager
 	 * 
+	 * @param holder the holder for the new light buffer
 	 * @param baseX the x coordinate of the base of the buffer
 	 * @param baseY the y coordinate of the base of the buffer
 	 * @param baseZ the z coordinate of the base of the buffer
@@ -122,13 +123,14 @@ public abstract class LightingManager<T extends CuboidLightBuffer> {
 	 * @param sizeZ the z coordinate of the size of the buffer
 	 * @return
 	 */
-	public CuboidLightBuffer newLightBuffer(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
-		return deserialize(baseX, baseY, baseZ, sizeX, sizeY, sizeZ, null);
+	public CuboidLightBuffer newLightBuffer(Modifiable holder, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
+		return deserialize(holder, baseX, baseY, baseZ, sizeX, sizeY, sizeZ, null);
 	}
 
 	/**
 	 * Deserializes a cuboid light buffer associated with this lighting manager
 	 *
+	 * @param holder the holder for the new light buffer
 	 * @param baseX the x coordinate of the base of the buffer
 	 * @param baseY the y coordinate of the base of the buffer
 	 * @param baseZ the z coordinate of the base of the buffer
@@ -138,6 +140,6 @@ public abstract class LightingManager<T extends CuboidLightBuffer> {
 	 * @param data
 	 * @return
 	 */
-	public abstract CuboidLightBuffer deserialize(int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data);
+	public abstract CuboidLightBuffer deserialize(Modifiable holder, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data);
 	
 }
