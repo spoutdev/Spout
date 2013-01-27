@@ -207,6 +207,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 	protected final SetQueue<SpoutChunk> localPhysicsChunkQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
 	protected final SetQueue<SpoutChunk> globalPhysicsChunkQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
 	protected final SetQueue<SpoutChunk> dirtyChunkQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
+	protected final SetQueue<SpoutChunk> newChunkQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 	private boolean renderQueueEnabled = false;
@@ -572,6 +573,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 					newChunk.initLighting();
 				}
 				Spout.getEventManager().callDelayedEvent(new ChunkLoadEvent(newChunk, generated));
+				if (generated) {
+					newChunk.queueNew();
+				}
 				return newChunk;
 			}
 
@@ -1543,6 +1547,13 @@ public class SpoutRegion extends Region implements AsyncManager {
 			}
 		}
 		
+		ArrayList<SpoutChunk> newChunks = new ArrayList<SpoutChunk>();
+		
+		SpoutChunk newChunk;
+		while ((newChunk = newChunkQueue.poll()) != null) {
+			newChunks.add(newChunk);
+		}
+		
 		int cuboids = 0;
 		int blocks = 0;
 		for (SpoutChunk c : this.dirtyChunkQueue) {
@@ -1552,6 +1563,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 				blocks += c.getDirtyBlocks();
 			}
 		}
+		
+		cuboids += newChunks.size();
 
 		SpoutChunk[] chunks = new SpoutChunk[cuboids];
 		int[] x = new int[blocks];
@@ -1574,6 +1587,10 @@ public class SpoutRegion extends Region implements AsyncManager {
 					blocks++;
 				}
 			}
+		}
+		
+		for (SpoutChunk c : newChunks) {
+			chunks[cuboids++] = c;
 		}
 		
 		if (chunks.length > 0) {

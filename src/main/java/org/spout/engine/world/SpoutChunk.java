@@ -78,6 +78,7 @@ import org.spout.api.geo.cuboid.LightContainer;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.lighting.LightingManager;
 import org.spout.api.lighting.LightingRegistry;
+import org.spout.api.lighting.Modifiable;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.ComplexMaterial;
 import org.spout.api.material.DynamicMaterial;
@@ -86,6 +87,7 @@ import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.block.BlockSnapshot;
 import org.spout.api.material.range.EffectRange;
+import org.spout.api.math.GenericMath;
 import org.spout.api.math.Vector3;
 import org.spout.api.plugin.Platform;
 import org.spout.api.scheduler.TickStage;
@@ -108,9 +110,8 @@ import org.spout.engine.world.physics.PhysicsQueue;
 import org.spout.engine.world.physics.UpdateQueue;
 
 import com.google.common.collect.Sets;
-import org.spout.api.math.GenericMath;
 
-public class SpoutChunk extends Chunk implements Snapshotable {
+public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public static final WeakReference<Chunk> NULL_WEAK_REFERENCE = new WeakReference<Chunk>(null);
 	//Not static to allow the engine to parse values first
 	private final int autosaveInterval = SpoutConfiguration.AUTOSAVE_INTERVAL.getInt(60000);
@@ -240,7 +241,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	/**
 	 * An array of light buffers associated with this Chunk
 	 */
-	private final AtomicReference<AtomicReferenceArray<CuboidLightBuffer>> lightBuffers = new AtomicReference<AtomicReferenceArray<CuboidLightBuffer>>(new AtomicReferenceArray<CuboidLightBuffer>(0));
+	private final AtomicReference<CuboidLightBuffer[]> lightBuffers = new AtomicReference<CuboidLightBuffer[]>(new CuboidLightBuffer[0]);
 	private final static CuboidLightBuffer[] lightBufferExample = new CuboidLightBuffer[0];
 	
 	private final AtomicBoolean popObserver = new AtomicBoolean(false);
@@ -252,6 +253,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	private final ChunkSetQueueElement<SpoutChunk> localPhysicsChunkQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> globalPhysicsChunkQueueElement;
 	private final ChunkSetQueueElement<SpoutChunk> dirtyChunkQueueElement;
+	private final ChunkSetQueueElement<SpoutChunk> newChunkQueueElement;
 	
 	private boolean wasInViewDistance = false;
 	private boolean isInViewDistance = false;
@@ -361,6 +363,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 		this.localPhysicsChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().localPhysicsChunkQueue, this);
 		this.globalPhysicsChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().globalPhysicsChunkQueue, this);
 		this.dirtyChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().dirtyChunkQueue, this);
+		this.newChunkQueueElement = new ChunkSetQueueElement<SpoutChunk>(getRegion().newChunkQueue, this);
 	}
 
 	@Override
@@ -2304,6 +2307,10 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 	protected void queueDirty() {
 		dirtyChunkQueueElement.add();
 	}
+	
+	protected void queueNew() {
+		newChunkQueueElement.add();
+	}
 
 	int physicsUpdates = 0;
 
@@ -2426,48 +2433,48 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 			throw new IllegalArgumentException("Id must be positive");
 		}
 		TickStage.checkStage(TickStage.LIGHTING);
-		AtomicReferenceArray<CuboidLightBuffer> array = lightBuffers.get();
+		
+		CuboidLightBuffer[] array = lightBuffers.get();
 		CuboidLightBuffer buf;
-		if (array != null && id < array.length()) {
-			buf = array.get(id);
+		if (id < array.length) {
+			buf = array[id];
 			if (buf != null) {
 				return buf;
 			}
 		}
-		
-		if (array == null || array.length() <= id) {
-			boolean success = false;
-			while (!success) {
-				array = lightBuffers.get();
-				if (array == null || array.length() <= id) {
-					AtomicReferenceArray<CuboidLightBuffer> newArray = new AtomicReferenceArray<CuboidLightBuffer>(id + 1);
-					success = lightBuffers.compareAndSet(array, newArray);
-				} else {
-					success = true;
-				}
-			}
-			array = lightBuffers.get();
-		}
-		
-		LightingManager manager = LightingRegistry.get(id);
+	
+		LightingManager<?> manager = LightingRegistry.get(id);
 		if (manager == null) {
 			return null;
 		}
 		
-		buf = manager.newLightBuffer(getBlockX(), getBlockY(), getBlockZ(), BLOCKS.SIZE, BLOCKS.SIZE, BLOCKS.SIZE);
+		CuboidLightBuffer newBuf = manager.newLightBuffer(this, getBlockX(), getBlockY(), getBlockZ(), BLOCKS.SIZE, BLOCKS.SIZE, BLOCKS.SIZE);
 		
-		if (array.compareAndSet(id, null, buf)) {
-			return buf;
-		} else {
-			return array.get(id);
+		boolean success = false;
+		
+		while (!success) {
+			array = lightBuffers.get();
+			if (id < array.length) {
+				buf = array[id];
+				if (buf != null) {
+					return buf;
+				}
+			}
+			CuboidLightBuffer[] newArray = new CuboidLightBuffer[Math.max(id + 1, array.length)];
+			for (int i = 0; i < array.length; i++) {
+				newArray[i] = array[i];
+			}
+			success = lightBuffers.compareAndSet(array, newArray);
 		}
+		
+		return newBuf;
 	}
 	
 	protected CuboidLightBuffer[] getLightBuffers() {
-		AtomicReferenceArray<CuboidLightBuffer> array = lightBuffers.get();
-		ArrayList<CuboidLightBuffer> list = new ArrayList<CuboidLightBuffer>(array.length());
-		for (int i = 0; i < array.length(); i++) {
-			CuboidLightBuffer b = array.get(i);
+		CuboidLightBuffer[] array = lightBuffers.get();
+		ArrayList<CuboidLightBuffer> list = new ArrayList<CuboidLightBuffer>(array.length);
+		for (int i = 0; i < array.length; i++) {
+			CuboidLightBuffer b = array[i];
 			if (b != null) {
 				list.add(b);
 			}
