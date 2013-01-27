@@ -31,12 +31,11 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Cuboid;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
+import org.spout.api.math.MatrixMath;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.BufferContainer;
 import org.spout.api.render.RenderMaterial;
-import org.spout.api.render.effect.SnapshotBatch;
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
 
@@ -55,7 +54,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 
 	private BatchVertexRenderer renderer = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 
-	public final static Matrix model = MathHelper.createIdentity();
+	public final static Matrix model = MatrixMath.createIdentity();
 	private final RenderMaterial material;
 
 	private boolean dataSended = false;

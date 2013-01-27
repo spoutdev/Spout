@@ -86,7 +86,6 @@ import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.block.BlockSnapshot;
 import org.spout.api.material.range.EffectRange;
-import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
 import org.spout.api.plugin.Platform;
 import org.spout.api.scheduler.TickStage;
@@ -109,6 +108,7 @@ import org.spout.engine.world.physics.PhysicsQueue;
 import org.spout.engine.world.physics.UpdateQueue;
 
 import com.google.common.collect.Sets;
+import org.spout.api.math.GenericMath;
 
 public class SpoutChunk extends Chunk implements Snapshotable {
 	public static final WeakReference<Chunk> NULL_WEAK_REFERENCE = new WeakReference<Chunk>(null);
@@ -2026,7 +2026,7 @@ public class SpoutChunk extends Chunk implements Snapshotable {
 
 	@Override
 	public Block getBlock(float x, float y, float z) {
-		return getBlock(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
+		return getBlock(GenericMath.floor(x), GenericMath.floor(y), GenericMath.floor(z));
 	}
 
 	@Override

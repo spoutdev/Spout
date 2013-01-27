@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.VectorMath;
 import org.spout.api.protocol.NetworkSynchronizer;
 
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
@@ -240,7 +240,7 @@ public class EntityManager {
 			boolean spawn, sync, destroy;
 			spawn = sync = destroy = false;
 			//Entity is out of range of the player's view distance, destroy
-			if (forceDestroy || ent.isRemoved() || MathHelper.distance(ent.getTransform().getPosition(), player.getTransform().getPosition()) > view || player.isInvisible(ent)) {
+			if (forceDestroy || ent.isRemoved() || VectorMath.distance(ent.getTransform().getPosition(), player.getTransform().getPosition()) > view || player.isInvisible(ent)) {
 				destroy = true;
 			} else if (network.hasSpawned(ent)) {
 				sync = true;

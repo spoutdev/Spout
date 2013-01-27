@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.lwjgl.LWJGLException;
-import org.lwjgl.Sys;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
@@ -55,8 +54,8 @@ import org.spout.api.gui.FullScreen;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.ScreenStack;
 import org.spout.api.gui.Widget;
-import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
+import org.spout.api.math.MatrixMath;
 import org.spout.api.math.Vector2;
 import org.spout.api.model.Model;
 import org.spout.api.render.RenderMaterial;
@@ -64,7 +63,6 @@ import org.spout.api.render.RenderMode;
 import org.spout.api.render.Shader;
 
 import org.spout.engine.batcher.SpriteBatch;
-import org.spout.engine.entity.component.EntityRendererComponent;
 import org.spout.engine.input.SpoutInputManager;
 import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
@@ -168,7 +166,7 @@ public class SpoutRenderer {
 		worldRenderer.update(limit);
 	}
 
-	Matrix ident = MathHelper.createIdentity();
+	Matrix ident = MatrixMath.createIdentity();
 	
 	ClientRenderTexture t;
 	ClientRenderMaterial mat;

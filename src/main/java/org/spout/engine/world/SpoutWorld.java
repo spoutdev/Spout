@@ -76,9 +76,10 @@ import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
+import org.spout.api.math.VectorMath;
 import org.spout.api.model.Model;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.StringMap;
@@ -269,7 +270,7 @@ public class SpoutWorld implements AsyncManager, World {
 
 	@Override
 	public SpoutBlock getBlock(float x, float y, float z) {
-		return this.getBlock(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
+		return this.getBlock(GenericMath.floor(x), GenericMath.floor(y), GenericMath.floor(z));
 	}
 
 	@Override
@@ -780,7 +781,7 @@ public class SpoutWorld implements AsyncManager, World {
 
 		for (Entity entity : getEntitiesNearRegion(position, range)) {
 			if (entity != null && entity != ignore) {
-				double distance = MathHelper.distanceSquared(position, entity.getTransform().getPosition());
+				double distance = VectorMath.distanceSquared(position, entity.getTransform().getPosition());
 				if (distance < RANGE_SQUARED) {
 					foundEntities.add(entity);
 				}
@@ -807,7 +808,7 @@ public class SpoutWorld implements AsyncManager, World {
 
 		for (Entity entity : getEntitiesNearRegion(position, range)) {
 			if (entity != null && entity != ignore) {
-				double distance = MathHelper.distanceSquared(position, entity.getTransform().getPosition());
+				double distance = VectorMath.distanceSquared(position, entity.getTransform().getPosition());
 				if (distance < bestDistance) {
 					bestDistance = distance;
 					best = entity;
@@ -890,7 +891,7 @@ public class SpoutWorld implements AsyncManager, World {
 
 		for (Entity entity : getEntitiesNearRegion(position, range)) {
 			if (entity != null && entity instanceof Player && entity != ignore) {
-				double distance = MathHelper.distanceSquared(position, entity.getTransform().getPosition());
+				double distance = VectorMath.distanceSquared(position, entity.getTransform().getPosition());
 				if (distance < bestDistance) {
 					bestDistance = distance;
 					best = entity;
@@ -953,9 +954,9 @@ public class SpoutWorld implements AsyncManager, World {
 
 	public List<CollisionVolume> getCollidingObject(CollisionModel model) {
 		//TODO Make this more general
-		final int minX = MathHelper.floor(model.getVolume().getPosition().getX());
-		final int minY = MathHelper.floor(model.getVolume().getPosition().getY());
-		final int minZ = MathHelper.floor(model.getVolume().getPosition().getZ());
+		final int minX = GenericMath.floor(model.getVolume().getPosition().getX());
+		final int minY = GenericMath.floor(model.getVolume().getPosition().getY());
+		final int minZ = GenericMath.floor(model.getVolume().getPosition().getZ());
 		final int maxX = minX + 1;
 		final int maxY = minY + 1;
 		final int maxZ = minZ + 1;
