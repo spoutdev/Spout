@@ -43,7 +43,7 @@ import org.spout.api.geo.cuboid.Block;
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.source.MaterialSource;
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 import org.spout.api.model.Model;
 import org.spout.api.plugin.Platform;
 import org.spout.api.render.effect.MeshEffect;
@@ -290,7 +290,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 						this.submaterials = new Material[16];
 					}
 					if (data >= this.submaterials.length) {
-						int newSize = MathHelper.roundUpPow2(data + (data >> 1));
+						int newSize = GenericMath.roundUpPow2(data + (data >> 1));
 						Material[] newSubmaterials = new Material[newSize];
 						for (int i = 0; i < submaterials.length; i++) {
 							newSubmaterials[i] = submaterials[i];

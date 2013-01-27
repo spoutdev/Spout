@@ -34,7 +34,7 @@ import java.util.List;
 import net.royawesome.jlibnoise.module.modifier.Turbulence;
 import net.royawesome.jlibnoise.module.source.Voronoi;
 
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 
 /**
  * A layer where each voronoi cell is a {@link LayeredBiomeSelectorElement}.
@@ -65,7 +65,7 @@ public class VoronoiLayer implements BiomeSelectorLayer, Cloneable {
 		voronoi.setSeed((int) seed * uniquenessValue);
 		turbulence.setSeed((int) seed * uniquenessValue * uniquenessValue);
 		final float size = selectorElements.size() / 2f;
-		return selectorElements.get(MathHelper.floor(turbulence.GetValue(x, y, z) * size + size));
+		return selectorElements.get(GenericMath.floor(turbulence.GetValue(x, y, z) * size + size));
 	}
 
 	/**

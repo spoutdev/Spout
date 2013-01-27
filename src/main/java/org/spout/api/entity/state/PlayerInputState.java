@@ -30,7 +30,7 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 
 /**
  * Represents the current player input state
@@ -160,11 +160,11 @@ public class PlayerInputState {
 	}
 
 	public PlayerInputState withAddedPitch(float pitch) {
-		return new PlayerInputState(userCommands, MathHelper.wrapAnglePitch(pitch + this.pitch), yaw);
+		return new PlayerInputState(userCommands, GenericMath.wrapAnglePitch(pitch + this.pitch), yaw);
 	}
 
 	public PlayerInputState withAddedYaw(float yaw) {
-		return new PlayerInputState(userCommands, pitch, MathHelper.wrapAngle(yaw + this.yaw));
+		return new PlayerInputState(userCommands, pitch, GenericMath.wrapAngle(yaw + this.yaw));
 	}
 
 	public Set<Flags> getFlagSet() {

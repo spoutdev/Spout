@@ -31,10 +31,11 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.geo.World;
-import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
+import org.spout.api.math.MatrixMath;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
+import org.spout.api.math.VectorMath;
 import org.spout.api.util.StringUtil;
 import org.spout.api.util.concurrent.SpinLock;
 import org.spout.api.util.thread.annotation.Threadsafe;
@@ -260,9 +261,9 @@ public final class Transform implements Serializable {
 	 * @return
 	 */
 	public Matrix toMatrix(){
-		Matrix translate = MathHelper.translate(getPosition());
-		Matrix rotate = MathHelper.rotate(getRotation());
-		Matrix scale = MathHelper.scale(getScale());
+		Matrix translate = MatrixMath.translate(getPosition());
+		Matrix rotate = MatrixMath.rotate(getRotation());
+		Matrix scale = MatrixMath.createScaled(getScale());
 		return scale.multiply(rotate).multiply(translate);
 	}
 
@@ -271,14 +272,14 @@ public final class Transform implements Serializable {
 	 * @return
 	 */
 	public Vector3 forwardVector() {
-		return MathHelper.transform(Vector3.FORWARD, getRotation());
+		return VectorMath.transform(Vector3.FORWARD, getRotation());
 	}
 
 	/**
 	 * Returns a unit vector that points right in relation to this transform
 	 */
 	public Vector3 rightVector() {
-		return MathHelper.transform(Vector3.RIGHT, getRotation());
+		return VectorMath.transform(Vector3.RIGHT, getRotation());
 	}
 
 	/**
@@ -286,6 +287,6 @@ public final class Transform implements Serializable {
 	 * @return
 	 */
 	public Vector3 upVector() {
-		return MathHelper.transform(Vector3.UP, getRotation());
+		return VectorMath.transform(Vector3.UP, getRotation());
 	}
 }

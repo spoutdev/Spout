@@ -26,8 +26,8 @@
  */
 package org.spout.api.collision;
 
-import org.spout.api.math.MathHelper;
 import org.spout.api.math.Vector3;
+import org.spout.api.math.VectorMath;
 
 public class Ray extends CollisionVolume {
 	/**
@@ -47,7 +47,7 @@ public class Ray extends CollisionVolume {
 	}
 
 	public Ray(Vector3 start, float pitch, float yaw) {
-		this(start, MathHelper.getDirectionVector(pitch, yaw));
+		this(start, VectorMath.getDirection3D(pitch, yaw));
 	}
 
 	//	public boolean intersects(BoundingBox b) {

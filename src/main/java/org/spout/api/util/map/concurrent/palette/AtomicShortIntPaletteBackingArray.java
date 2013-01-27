@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
 import org.spout.api.Spout;
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 import org.spout.api.util.map.concurrent.AtomicVariableWidthArray;
 
 public class AtomicShortIntPaletteBackingArray extends AtomicShortIntBackingArray {
@@ -213,7 +213,7 @@ public class AtomicShortIntPaletteBackingArray extends AtomicShortIntBackingArra
 	
 	
 	public static int roundUpWidth(int i) {
-		return roundLookup[MathHelper.roundUpPow2(i + 1)];
+		return roundLookup[GenericMath.roundUpPow2(i + 1)];
 	}
 	
 	public static int widthToPaletteSize(int width) {

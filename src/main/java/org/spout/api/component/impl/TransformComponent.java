@@ -31,9 +31,9 @@ import org.spout.api.component.type.EntityComponent;
 import org.spout.api.event.entity.EntityChangeWorldEvent;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.MathHelper;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Quaternion;
+import org.spout.api.math.QuaternionMath;
 import org.spout.api.math.Vector3;
 
 public class TransformComponent extends EntityComponent {
@@ -271,7 +271,7 @@ public class TransformComponent extends EntityComponent {
 	}
 
 	private void setAxisAngles(float pitch, float yaw, float roll) {
-		setRotation(MathHelper.rotation(pitch, yaw, roll));
+		setRotation(QuaternionMath.rotation(pitch, yaw, roll));
 	}
 
 	public void copySnapshot() {

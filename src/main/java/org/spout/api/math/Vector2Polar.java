@@ -29,6 +29,7 @@ package org.spout.api.math;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.spout.api.util.StringUtil;
 
 /**
@@ -562,7 +563,7 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 	 * @return The orthogonal vector to this vector.
 	 */
 	public static Vector2Polar cross(Vector2Polar o) {
-		return new Vector2Polar(o.r, o.theta + MathHelper.QUARTER_PI);
+		return new Vector2Polar(o.r, o.theta + TrigMath.QUARTER_PI);
 	}
 
 	/**
@@ -626,7 +627,7 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 	 * @return
 	 */
 	public static Vector2Polar rand() {
-		return new Vector2Polar(Math.random(), Math.random() * MathHelper.TWO_PI);
+		return new Vector2Polar(Math.random(), Math.random() * TrigMath.TWO_PI);
 	}
 
 	/**
@@ -675,9 +676,9 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 	 * @return
 	 */
 	public static float getRealAngle(float theta) {
-		theta %= MathHelper.TWO_PI;
+		theta %= TrigMath.TWO_PI;
 		if (theta < 0) {
-			theta += MathHelper.TWO_PI;
+			theta += TrigMath.TWO_PI;
 		}
 		return theta;
 	}

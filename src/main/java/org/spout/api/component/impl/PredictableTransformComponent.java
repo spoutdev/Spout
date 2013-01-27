@@ -27,7 +27,7 @@
 package org.spout.api.component.impl;
 
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 

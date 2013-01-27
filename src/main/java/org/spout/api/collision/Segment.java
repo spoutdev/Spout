@@ -26,8 +26,9 @@
  */
 package org.spout.api.collision;
 
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 import org.spout.api.math.Vector3;
+import org.spout.api.math.VectorMath;
 
 public class Segment extends CollisionVolume {
 	/**
@@ -49,7 +50,7 @@ public class Segment extends CollisionVolume {
 		origin = start;
 		endpoint = end;
 		direction = end.subtract(start).normalize();
-		length = (float) MathHelper.sqrt(endpoint.dot(origin));
+		length = (float) GenericMath.sqrt(endpoint.dot(origin));
 	}
 
 	public Segment(Vector3 start, Vector3 direction, float distance) {
@@ -57,7 +58,7 @@ public class Segment extends CollisionVolume {
 	}
 
 	public Segment(Vector3 start, float pitch, float yaw, float distance) {
-		this(start, MathHelper.getDirectionVector(pitch, yaw), distance);
+		this(start, VectorMath.getDirection3D(pitch, yaw), distance);
 	}
 
 	public boolean intersects(BoundingBox b) {

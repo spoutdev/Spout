@@ -33,9 +33,8 @@ import java.io.Serializable;
  */
 public class Matrix implements Serializable {
 	private static final long serialVersionUID = 1L;
-
-	int dimension;
-	float[] data;
+	private final int dimension;
+	private final float[] data;
 
 	/**
 	 * Creates a new 4x4 matrix, set to the Identity Matrix
@@ -51,13 +50,13 @@ public class Matrix implements Serializable {
 	 */
 	public Matrix(int dim) {
 		dimension = dim;
-		data = new float[dim * dim];
-		for (int x = 0; x < dim; x++) {
-			for (int y = 0; y < dim; y++) {
+		data = new float[dimension * dimension];
+		for (int x = 0; x < dimension; x++) {
+			for (int y = 0; y < dimension; y++) {
 				if (x == y) {
-					data[MathHelper.index(x, y, dim)] = 1;
+					data[index(x, y)] = 1;
 				} else {
-					data[MathHelper.index(x, y, dim)] = 0;
+					data[index(x, y)] = 0;
 				}
 			}
 		}
@@ -74,8 +73,10 @@ public class Matrix implements Serializable {
 		dimension = dim;
 		data = dat.clone();
 	}
+
 	/**
 	 * Creates a new copy of provided matrix
+	 *
 	 * @param copy
 	 */
 	public Matrix(Matrix copy) {
@@ -100,7 +101,7 @@ public class Matrix implements Serializable {
 		if (column < 0 || column >= dimension) {
 			throw new IllegalArgumentException("Column must be between 0 and " + (dimension - 1));
 		}
-		return data[MathHelper.index(row, column, dimension)];
+		return data[index(row, column)];
 	}
 
 	/**
@@ -117,7 +118,7 @@ public class Matrix implements Serializable {
 		if (column < 0 || column >= dimension) {
 			throw new IllegalArgumentException("Column must be between 0 and " + (dimension - 1));
 		}
-		data[MathHelper.index(row, column, dimension)] = value;
+		data[index(row, column)] = value;
 	}
 
 	/**
@@ -127,7 +128,7 @@ public class Matrix implements Serializable {
 	 * @return
 	 */
 	public Matrix multiply(Matrix that) {
-		return MathHelper.multiply(this, that);
+		return MatrixMath.multiply(this, that);
 	}
 
 	/**
@@ -137,31 +138,30 @@ public class Matrix implements Serializable {
 	 * @return
 	 */
 	public Matrix add(Matrix that) {
-		return MathHelper.add(this, that);
+		return MatrixMath.add(this, that);
 	}
 
 	/**
 	 * Transpose the matrix
 	 *
-	 * @return the transposition of this matrix 
+	 * @return the transposition of this matrix
 	 */
 	public Matrix transpose() {
-		return MathHelper.transpose(this);
+		return MatrixMath.transpose(this);
 	}
-	
+
 	/**
 	 * Returns this matrix in a single dimension float array
 	 *
 	 * @return
 	 */
 	public float[] toArray() {
-		return MathHelper.toArray(this);
+		return data.clone();
 	}
-	
+
 	/**
-	 * Fast access to matrix data used to fill a buffer
-	 * for instance.
-	 * 
+	 * Fast access to matrix data used to fill a buffer for instance.
+	 *
 	 * @return float array of length size*size
 	 */
 	public float[] getData() {
@@ -183,5 +183,9 @@ public class Matrix implements Serializable {
 			sb.append(" ]\n");
 		}
 		return sb.toString();
+	}
+
+	private int index(int x, int y) {
+		return x * dimension + y;
 	}
 }

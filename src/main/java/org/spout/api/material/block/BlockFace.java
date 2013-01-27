@@ -28,9 +28,9 @@ package org.spout.api.material.block;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 
-import org.spout.api.math.MathHelper;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
+import org.spout.api.math.VectorMath;
 import org.spout.api.util.bytebit.ByteBitMask;
 
 /**
@@ -124,7 +124,7 @@ public enum BlockFace implements ByteBitMask {
 	}
 
 	public static BlockFace fromOffset(Vector3 offset) {
-		offset = MathHelper.round(MathHelper.normalize(offset));
+		offset = VectorMath.round(VectorMath.normalize(offset));
 		return OFFSET_MAP.get(getOffsetHash(offset));
 	}
 }

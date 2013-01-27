@@ -45,7 +45,7 @@ import org.spout.api.material.basic.BasicSolid;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.block.BlockFaces;
 import org.spout.api.material.range.EffectRange;
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.resource.SpoutModels;
@@ -245,7 +245,7 @@ public class BlockMaterial extends Material implements Placeable {
 	 * @return this material
 	 */
 	public BlockMaterial setOpacity(int level) {
-		this.opacity = (byte) MathHelper.clamp(level, 0, 15);
+		this.opacity = (byte) GenericMath.clamp(level, 0, 15);
 		return this;
 	}
 
