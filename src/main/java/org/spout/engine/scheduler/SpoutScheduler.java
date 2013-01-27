@@ -811,22 +811,27 @@ public final class SpoutScheduler implements Scheduler {
 					}
 				}
 			}
+			forLoop:
 			for (int i = 0; i < futures.size(); i++) {
 				boolean done = false;
 				while (!done) {
-					done = true;
 					try {
-						futures.get(i).get(PULSE_EVERY << 4, TimeUnit.MILLISECONDS);
+						Future<?> f = futures.get(i);
+						if (!f.isDone()) {
+							f.get(PULSE_EVERY << 4, TimeUnit.MILLISECONDS);
+						}
+						done = true;
 					} catch (InterruptedException e) {
 						Spout.getLogger().info("Warning: main thread interrupted while waiting on tick stage task, " + taskFactory.getClass().getName());
+						break forLoop;
 					} catch (ExecutionException e) {
 						Spout.getLogger().info("Exception thrown when executing task, " + taskFactory.getClass().getName() + ", " + e.getMessage());
 						e.printStackTrace();
+						done = true;
 					} catch (TimeoutException e) {
 						if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
 							logLongDurationTick(stageString, managers);
 						}
-						done = false;
 					}
 				}
 			}
