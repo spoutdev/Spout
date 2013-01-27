@@ -38,6 +38,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
+import net.royawesome.jlibnoise.MathHelper;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.jboss.netty.bootstrap.ClientBootstrap;
@@ -69,9 +71,11 @@ import org.spout.api.event.entity.AnimationEndEvent;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.gui.ScreenStack;
+import org.spout.api.math.GenericMath;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.animation.Animation;
+import org.spout.api.model.animation.AnimationPlayed;
 import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.protocol.CommonPipelineFactory;
@@ -190,15 +194,17 @@ public class SpoutClient extends SpoutEngine implements Client {
 						e.setSavable(false); // To prevent entity duplication
 
 						//Animation part
-						EntityRendererComponent renderComponent = e.get(EntityRendererComponent.class);
-						AnimationComponent animationComponent = e.get(AnimationComponent.class);
 						ModelComponent model = e.get(ModelComponent.class);
-
+						//EntityRendererComponent renderComponent = e.get(EntityRendererComponent.class);
+						AnimationComponent animationComponent = e.get(AnimationComponent.class);
+						
 						Animation a1 = model.getModel().getAnimations().get("animatest1");
 						Animation a2 = model.getModel().getAnimations().get("animatest2");
 
 						//Launch first animation
-						animationComponent.playAnimation(a1,true);
+						AnimationPlayed ac = animationComponent.playAnimation(a1, true);
+						ac.setCurrentTime(j * 0.5f);
+						ac.setSpeed(j * 0.5f);
 
 						ClientTextModelComponent tmc = e.add(ClientTextModelComponent.class);
 						tmc.setText(new ChatArguments(ChatStyle.BLUE, "Sp", ChatStyle.WHITE, "ou", ChatStyle.RED, "ty"));

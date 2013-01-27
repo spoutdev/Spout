@@ -32,82 +32,83 @@ import org.spout.api.component.impl.ModelComponent;
 import org.spout.api.component.impl.PredictableTransformComponent;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.math.Matrix;
-import org.spout.api.model.mesh.Mesh;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotEntity;
 import org.spout.engine.mesh.BaseMesh;
 
 public class EntityRendererComponent extends EntityComponent {
+	
+	private ModelComponent modelComponent;
+	private SpoutAnimationComponent animationComponent;
+	private ClientTextModelComponent textModelComponent;
+	
+	private RenderMaterial renderMaterial;
+	private BaseMesh mesh;
+	
+	private boolean initialized = false;
+	
+	public void init(){
+		modelComponent = getOwner().get(ModelComponent.class);
+		animationComponent = getOwner().get(SpoutAnimationComponent.class);
+		textModelComponent = getOwner().get(ClientTextModelComponent.class);
 
-	private SpoutAnimationComponent animation;
+		if (modelComponent == null) {
+			throw new IllegalStateException("Entity must have a ModelComponent to use EntityRendererComponent");
+		}
+		
+		if (modelComponent.getModel() == null) {
+			throw new IllegalStateException("Entity must have a model to use EntityRendererComponent");
+		}
+		
+		if (modelComponent.getModel().getMesh() == null) {
+			throw new IllegalStateException("Entity must have a mesh to use EntityRendererComponent");
+		}
+		
+		renderMaterial = modelComponent.getModel().getRenderMaterial();
+		mesh = (BaseMesh) modelComponent.getModel().getMesh();
+		
+		batch();
+		initialized = true;
+	}
 	
 	private void batch(){
-		ModelComponent model = getOwner().get(ModelComponent.class);
-
-		if (model == null || model.getModel() == null) {
-			return;
-		}
-		Mesh meshRaw = model.getModel().getMesh();
-		if (meshRaw == null) {
-			return;
-		}
-		BaseMesh mesh = (BaseMesh) meshRaw;
-
-		if (mesh.isBatched()) {
-			return;
-		}
-
-		animation = getOwner().get(SpoutAnimationComponent.class);
-
-		if(animation != null){
-			animation.batchSkeleton(mesh);
+		if(animationComponent != null){
+			animationComponent.batchSkeleton(mesh);
 		}
 
 		mesh.batch();
 	}
 
 	public void update(float dt) {
-		batch(); //TODO : Call the batch method one time when the render start
-
-		if(animation != null)
-			animation.updateAnimation(dt);
+		if(!initialized)
+			init();
+		
+		if(animationComponent != null)
+			animationComponent.updateAnimation(dt);
 	}
 
 	public void render() {
 		Camera camera = ((Client)Spout.getEngine()).getActiveCamera();
-		ModelComponent model = getOwner().get(ModelComponent.class);
-
-		if (model == null || model.getModel() == null) {
-			return;
-		}
-
-		BaseMesh mesh = (BaseMesh) model.getModel().getMesh();
-
-		if (mesh == null) {
-			return;
-		}
 
 		Matrix modelMatrix = ((PredictableTransformComponent) getOwner().getTransform()).getRenderTransform().toMatrix();
-		RenderMaterial mat = model.getModel().getRenderMaterial();
 
-		mat.getShader().setUniform("View", camera.getView());
-		mat.getShader().setUniform("Projection", camera.getProjection());
-		mat.getShader().setUniform("Model", modelMatrix);
+		renderMaterial.getShader().setUniform("View", camera.getView());
+		renderMaterial.getShader().setUniform("Projection", camera.getProjection());
+		renderMaterial.getShader().setUniform("Model", modelMatrix);
 
-		if(animation != null){
-			animation.render();
+		if(animationComponent != null){
+			animationComponent.render();
 		}
 
-		SnapshotEntity snap = new SnapshotEntity(mat, getOwner());
+		SnapshotEntity snapshot = new SnapshotEntity(renderMaterial, getOwner());
 
-		mat.preRenderEntity(snap);
-		mesh.render(mat);
-		mat.postRenderEntity(snap);
+		renderMaterial.preRenderEntity(snapshot);
+		mesh.render(renderMaterial);
+		renderMaterial.postRenderEntity(snapshot);
 
-		ClientTextModelComponent tmc = getOwner().get(ClientTextModelComponent.class);
-		if (tmc != null) {
-			tmc.render(camera);
+		if (textModelComponent != null) {
+			textModelComponent.render(camera);
 		}
 	}
 }
