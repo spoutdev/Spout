@@ -57,7 +57,7 @@ public class CuboidNibbleLightBufferTest {
 				sx = sx & (~1);
 			}
 			short destId = (short) r.nextInt();
-			CuboidNibbleLightBuffer dest = new CuboidNibbleLightBuffer(destId, bx, by, bz, sx, sy, sz);
+			CuboidNibbleLightBuffer dest = new CuboidNibbleLightBuffer(null, destId, bx, by, bz, sx, sy, sz);
 			
 			assertTrue("Id not set correctly", destId == dest.getManagerId());
 			
@@ -75,7 +75,7 @@ public class CuboidNibbleLightBufferTest {
 			}
 			
 			short srcId = (short) r.nextInt();
-			CuboidNibbleLightBuffer src = new CuboidNibbleLightBuffer(srcId, bx2, by2, bz2, sx2, sy2, sz2);
+			CuboidNibbleLightBuffer src = new CuboidNibbleLightBuffer(null, srcId, bx2, by2, bz2, sx2, sy2, sz2);
 			
 			assertTrue("Id not set correctly", srcId == src.getManagerId());
 			
