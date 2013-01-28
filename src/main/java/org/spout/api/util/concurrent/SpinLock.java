@@ -32,6 +32,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
+import org.spout.api.Spout;
+
 /**
 * A non-reentrant spin lock.<br>
 * <br>
@@ -131,6 +133,11 @@ public class SpinLock implements Lock {
 	}
 	
 	public static void dualLock(Lock a, Lock b) {
+		if (a == b) {
+			a.lock();
+			return;
+		}
+		
 		while (true) {
 			a.lock();
 			if (b.tryLock()) {
@@ -143,6 +150,17 @@ public class SpinLock implements Lock {
 			}
 			b.unlock();
 		}
+	}
+	
+	public static void dualUnlock(Lock a, Lock b) {
+		try {
+			a.unlock();
+		} finally {
+			if (b != a) {
+				b.unlock();
+			}
+		}
+		
 	}
 
 }

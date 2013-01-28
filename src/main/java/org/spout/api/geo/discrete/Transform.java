@@ -172,12 +172,10 @@ public final class Transform implements Serializable {
 		}
 
 		try {
-			// TODO - no deadlock safe -- needs to use SpinLock.dualLock too
-			//      - could add a nonLockingSet()
-			transform.lock.lock();
-			set(transform.position, transform.rotation, transform.scale);
+			SpinLock.dualLock(lock, transform.lock);
+			setUnsafe(transform.position, transform.rotation, transform.scale);
 		} finally {
-			transform.lock.unlock();
+			SpinLock.dualUnlock(lock, transform.lock);
 		}
 	}
 
@@ -212,14 +210,17 @@ public final class Transform implements Serializable {
 	public void set(Point p, Quaternion r, Vector3 s) {
 		try {
 			lock.lock();
-			this.position = p;
-			this.rotation = r;
-			this.scale = s;
+			setUnsafe(p, r, s);
 		} finally {
 			lock.unlock();
 		}
 	}
-
+	
+	private void setUnsafe(Point p, Quaternion r, Vector3 s) {
+		this.position = p;
+		this.rotation = r;
+		this.scale = s;
+	}
 	/**
 	 * Creates a Transform that is a copy of this transform
 	 *
@@ -269,8 +270,7 @@ public final class Transform implements Serializable {
 			SpinLock.dualLock(lock, t.lock);
 			return position.equals(t.position) && rotation.equals(t.rotation) && scale.equals(t.scale);
 		} finally {
-			lock.unlock();
-			t.lock.unlock();
+			SpinLock.dualUnlock(lock, t.lock);
 		}
 	}
 
