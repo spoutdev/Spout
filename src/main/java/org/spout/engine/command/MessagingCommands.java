@@ -102,10 +102,6 @@ public class MessagingCommands {
 	@Command(aliases = {"tell", "msg"}, usage = "<target> <message>", desc = "Tell a message to a specific user", min = 2)
 	@CommandPermissions("spout.command.tell")
 	public void tell(CommandContext args, CommandSource source) throws CommandException {
-		if (Spout.getPlatform() != Platform.SERVER && Spout.getPlatform() != Platform.PROXY) {
-			throw new CommandException("You may only message other users in server mode.");
-		}
-
 		String playerName = args.getString(0);
 		ChatArguments message = args.getJoinedString(1);
 		Player player = engine.getPlayer(playerName, false);
@@ -122,11 +118,7 @@ public class MessagingCommands {
 	@Command(aliases = {"emote", "me", "action"}, usage = "<action>", desc = "Emote in the third person", min = 1)
 	@CommandPermissions("spout.command.emote")
 	public void emote(CommandContext args, CommandSource source) throws CommandException {
-		if (Spout.getPlatform() != Platform.SERVER && Spout.getPlatform() != Platform.PROXY) {
-			throw new CommandException("You may only message other users in server mode.");
-		}
-
-		((Server) Spout.getEngine()).broadcastMessage(ChatStyle.YELLOW, ChatStyle.ITALIC, source.getName(), " ", args.getJoinedString(0));
+		source.getActiveChannel().broadcastToReceivers(new ChatArguments(ChatStyle.YELLOW, ChatStyle.ITALIC, source.getName(), " ", args.getJoinedString(0)));
 	}
 
 	@Command(aliases = {"endconvo"}, desc = "Removes the conversation you are currently in", min = 0, max = 0)
