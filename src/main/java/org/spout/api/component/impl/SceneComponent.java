@@ -251,6 +251,8 @@ public abstract class SceneComponent extends EntityComponent {
 	 */
 	public abstract SceneComponent impulse(Vector3 impulse, Vector3 offset);
 
+	public abstract SceneComponent impulse(Vector3 impulse);
+
 	/**
 	 * Force performs a translation of the {@link org.spout.api.entity.Entity} by the {@link Vector3} from the Vector3 offset.
 	 * <p>
@@ -270,6 +272,8 @@ public abstract class SceneComponent extends EntityComponent {
 	 * @return This component, so you can chain.
 	 */
 	public abstract SceneComponent force(Vector3 force, Vector3 offset);
+
+	public abstract SceneComponent force(Vector3 force);
 
 	/**
 	 * Torque performs a rotation of the {@link org.spout.api.entity.Entity} by the {@link Vector3}.
