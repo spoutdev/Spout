@@ -438,9 +438,6 @@ public class AdministrationCommands {
 		Player player;
 		Player target = null;
 		Point point;
-		if (args.length() % 2 == 0 && (engine instanceof SpoutClient)) {
-			throw new CommandException("You cannot search for players unless you are in server mode.");
-		}
 		if (args.length() == 1) {
 			if (!(source instanceof Player)) {
 				throw new CommandException("You must be a player to teleport yourself!");
@@ -471,8 +468,35 @@ public class AdministrationCommands {
 						throw new CommandException("Please supply an existing world.");
 					}
 				}
+				
+				float x = player.getTransform().getPosition().getX();
+				if (args.isInteger(1)) {
+					x = args.getInteger(1);
+				} else if (args.getString(1).startsWith("~")) {
+					x += Integer.parseInt(args.getString(1).substring(1));
+				} else {
+					throw new CommandException("Invalid coordinates");
+				}
+				
+				float y = player.getTransform().getPosition().getY();
+				if (args.isInteger(2)) {
+					y = args.getInteger(2);
+				} else if (args.getString(2).startsWith("~")) {
+					y += Integer.parseInt(args.getString(2).substring(1));
+				} else {
+					throw new CommandException("Invalid coordinates");
+				}
+				
+				float z = player.getTransform().getPosition().getZ();
+				if (args.isInteger(3)) {
+					z = args.getInteger(3);
+				} else if (args.getString(3).startsWith("~")) {
+					z += Integer.parseInt(args.getString(3).substring(1));
+				} else {
+					throw new CommandException("Invalid coordinates");
+				}
 
-				point = new Point(world, args.getInteger(1), args.getInteger(2), args.getInteger(3));
+				point = new Point(world, x, y, z);
 			} else {
 				target = engine.getPlayer(args.getString(1), true);
 
