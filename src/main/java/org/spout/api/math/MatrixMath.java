@@ -37,7 +37,6 @@ public class MatrixMath {
 
 	/**
 	 * Rounds all fields of the vector to the nearest integer value.
-	 *
 	 * @param o Matrix to use
 	 * @return The rounded matrix
 	 */
@@ -54,7 +53,6 @@ public class MatrixMath {
 
 	/**
 	 * Adds two matrices together
-	 *
 	 * @param a The left matrix
 	 * @param b The right matrix
 	 * @return The sum matrix of left plus right
@@ -75,7 +73,6 @@ public class MatrixMath {
 
 	/**
 	 * Multiplies two matrices together
-	 *
 	 * @param a The left matrix
 	 * @param b The right matrix
 	 * @return The product matrix of left times right
@@ -92,7 +89,6 @@ public class MatrixMath {
 				for (int k = 0; k < dimension; k++) {
 					float r = a.get(i, k) * b.get(k, j);
 					res.set(i, j, res.get(i, j) + r);
-
 				}
 			}
 		}
@@ -101,7 +97,6 @@ public class MatrixMath {
 
 	/**
 	 * Creates and returns a 4x4 identity matrix
-	 *
 	 * @return a 4x4 identity matrix
 	 */
 	public static Matrix createIdentity() {
@@ -110,7 +105,6 @@ public class MatrixMath {
 
 	/**
 	 * Creates and returns a 4x4 uniform scalar matrix
-	 *
 	 * @param scale The scale to apply to the identity matrix
 	 * @return The scaled matrix
 	 */
@@ -124,7 +118,6 @@ public class MatrixMath {
 
 	/**
 	 * Creates and returns a 4x4 uniform scalar matrix
-	 *
 	 * @param scale The scale to apply to the identity matrix
 	 * @return The scaled matrix
 	 */
@@ -139,7 +132,6 @@ public class MatrixMath {
 	/**
 	 * Creates and returns a 4x4 matrix that represents the translation provided
 	 * by the given Vector3
-	 *
 	 * @param vector The translation vector
 	 * @return The matrix form of the translation vector
 	 */
@@ -153,7 +145,6 @@ public class MatrixMath {
 
 	/**
 	 * Creates and returns a 4x4 rotation matrix around the X axis
-	 *
 	 * @param rot The rotation around x in degrees
 	 * @return The matrix corresponding to the rotation
 	 */
@@ -175,7 +166,6 @@ public class MatrixMath {
 
 	/**
 	 * Creates and returns a 4x4 rotation matrix around the Y axis
-	 *
 	 * @param rot The rotation around y in degrees
 	 * @return The matrix corresponding to the rotation
 	 */
@@ -197,7 +187,6 @@ public class MatrixMath {
 
 	/**
 	 * Creates and returns a 4x4 rotation matrix around the Z axis
-	 *
 	 * @param rot The rotation around z in degrees
 	 * @return The matrix corresponding to the rotation
 	 */
@@ -220,7 +209,6 @@ public class MatrixMath {
 	/**
 	 * Creates and returns a 4x4 rotation matrix given by the provided
 	 * Quaternion
-	 *
 	 * @param rot The rotation
 	 * @return The rotation matrix for the quaternion
 	 */
@@ -262,12 +250,11 @@ public class MatrixMath {
 
 	/**
 	 * Creates a lookat matrix with the given eye point.
-	 *
 	 * @param eye The location of the camera
 	 * @param at The location that the camera is looking at
 	 * @param up The direction that corrisponds to Up
 	 * @return A rotational transform that corrisponds to a camera looking at
-	 * the given values
+	 *         the given values
 	 */
 	public static Matrix createLookAt(Vector3 eye, Vector3 at, Vector3 up) {
 		Vector3 f = at.subtract(eye).normalize();
@@ -298,7 +285,6 @@ public class MatrixMath {
 	/**
 	 * Creates a perspective projection matrix with the given (x) FOV, aspect,
 	 * near and far planes
-	 *
 	 * @param fov The Field of View in the x direction
 	 * @param aspect The aspect ratio, usually width/height
 	 * @param znear The near plane. Cannot be 0
@@ -314,7 +300,6 @@ public class MatrixMath {
 
 	/**
 	 * Creates an orthographic viewing fustrum built from the provided values
-	 *
 	 * @param right the right most plane of the viewing fustrum
 	 * @param left the left most plane of the viewing fustrum
 	 * @param top the top plane of the viewing fustrum
@@ -347,7 +332,6 @@ public class MatrixMath {
 
 	/**
 	 * Transpose the matrix.
-	 *
 	 * @param in The matrix to transpose
 	 * @return The transposed matrix
 	 */
@@ -364,7 +348,6 @@ public class MatrixMath {
 
 	/**
 	 * Transforms a vecmath matrix to a Spout matrix.
-	 *
 	 * @param vector The vecmath matrix
 	 * @return The vector as a Spout matrix
 	 */

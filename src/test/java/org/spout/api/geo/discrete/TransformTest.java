@@ -30,17 +30,19 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 import org.powermock.api.mockito.PowerMockito;
 
 import org.spout.api.geo.World;
+import org.spout.api.math.GenericMath;
 import org.spout.api.math.Quaternion;
+import org.spout.api.math.QuaternionMath;
 import org.spout.api.math.Vector3;
 
-public class TransformTest {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+public class TransformTest {
 	@Test
 	public void test() {
 		World mock = PowerMockito.mock(World.class);
@@ -51,19 +53,19 @@ public class TransformTest {
 		assertEquals("Transform point values did not match", transform.getPosition(), p);
 		assertEquals("Transform quaternion values did not match", transform.getRotation(), q);
 		assertEquals("Transform scale values did not match", transform.getScale(), s);
-		
+
 		p = p.add(1, 5, -3);
 		transform.setPosition(p);
 		assertEquals("Transform point values did not match", transform.getPosition(), p);
-		
-		q = q.rotate(45F,  0, 1, 0);
+
+		q = q.rotate(45F, 0, 1, 0);
 		transform.setRotation(q);
 		assertEquals("Transform quaternion values did not match", transform.getRotation(), q);
-		
+
 		s = s.add(-3, 5, -13);
 		transform.setScale(s);
 		assertEquals("Transform scale values did not match", transform.getScale(), s);
-		
+
 		p = p.multiply(5);
 		q = q.rotate(-45, 1, 0, 0);
 		s = s.divide(0.85F);
@@ -71,12 +73,12 @@ public class TransformTest {
 		assertEquals("Transform point values did not match", transform.getPosition(), p);
 		assertEquals("Transform quaternion values did not match", transform.getRotation(), q);
 		assertEquals("Transform scale values did not match", transform.getScale(), s);
-		
+
 		Transform copy = new Transform(new Point(p), new Quaternion(q), new Vector3(s));
 		assertEquals("Copy of transform failed equals test", transform, copy);
 		assertEquals("Copy of transform failed reverse-equals test", copy, transform);
 		assertEquals("Copy of transform hashcodes do not match", transform.hashCode(), copy.hashCode());
-		
+
 		copy = transform.copy();
 		assertEquals("Copy of transform failed equals test", transform, copy);
 		assertEquals("Copy of transform failed reverse-equals test", copy, transform);
@@ -91,7 +93,7 @@ public class TransformTest {
 		final Quaternion q = Quaternion.UNIT_X;
 		final Vector3 s = new Vector3(0, 0, 0);
 		final Transform sceneTransform = new Transform(p, q, s);
-		final com.bulletphysics.linearmath.Transform physicsTransform = MathHelper.toPhysicsTransform(sceneTransform);
+		final com.bulletphysics.linearmath.Transform physicsTransform = GenericMath.toPhysicsTransform(sceneTransform);
 		//Test Physics Space
 		final Vector3f physicsSpace = physicsTransform.origin;
 		assertTrue(physicsSpace.x == p.getX());
@@ -110,13 +112,13 @@ public class TransformTest {
 	public void physicsToSceneTest() {
 		final World mock = PowerMockito.mock(World.class);
 		final Vector3f physicsSpace = new Vector3f(0, 0, 0);
-		final Quat4f physicsRotation = new Quat4f(MathHelper.toQuaternionf(Quaternion.UNIT_X));
+		final Quat4f physicsRotation = new Quat4f(QuaternionMath.toQuaternionf(Quaternion.UNIT_X));
 		final Matrix4f physicsMatrix = new Matrix4f(physicsRotation, physicsSpace, 1);
 		final com.bulletphysics.linearmath.Transform physicsTransform = new com.bulletphysics.linearmath.Transform(physicsMatrix);
 		final Transform liveState = new Transform();
 		liveState.setPosition(new Point(mock, 0, 0, 0)); //To purely set the world
 		liveState.setScale(new Vector3(0, 0, 0)); //Physics has no scale but we still test conversion of it
-		final Transform sceneTransform = MathHelper.toSceneTransform(liveState, physicsTransform);
+		final Transform sceneTransform = GenericMath.toSceneTransform(liveState, physicsTransform);
 		final Point sceneSpace = sceneTransform.getPosition();
 		final Quaternion sceneRotation = sceneTransform.getRotation();
 		final Vector3 sceneScale = sceneTransform.getScale();

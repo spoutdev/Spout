@@ -60,6 +60,17 @@ public abstract class SceneComponent extends EntityComponent {
 	public abstract Transform getTransform();
 
 	/**
+	 * Gets the {@link Transform} this {@link org.spout.api.entity.Entity} had within the last game tick
+	 * of the scene with interpolation applied (so it appears smooth to users).
+	 * <p/>
+	 * The render transform is simply the transform of the entity clients see within the scene.
+	 * @return The Transform, interpolated, as of the last game tick.
+	 */
+	@SnapshotRead
+	@ClientOnly
+	public abstract Transform getRenderTransform();
+
+	/**
 	 * Sets the {@link Transform} for this {@link org.spout.api.entity.Entity}.
 	 * <p/>
 	 * This function sets the live state of the entity's transform, not the snapshot state. As such, its advised
@@ -103,7 +114,7 @@ public abstract class SceneComponent extends EntityComponent {
 
 	/**
 	 * Determines if this {@link org.spout.api.entity.Entity} has a dirty position.
-	 *
+	 * <p/>
 	 * A dirty position is when the snapshot position (last tick) and live position are not equal.
 	 * @return True if position is dirty, false if not.
 	 */
@@ -133,7 +144,7 @@ public abstract class SceneComponent extends EntityComponent {
 
 	/**
 	 * Determines if this {@link org.spout.api.entity.Entity} has a dirty rotation.
-	 *
+	 * <p/>
 	 * A dirty rotation is when the snapshot rotation (last tick) and live rotation are not equal.
 	 * @return True if dirty, false if not.
 	 */
@@ -163,7 +174,7 @@ public abstract class SceneComponent extends EntityComponent {
 
 	/**
 	 * Determines if this {@link org.spout.api.entity.Entity} has a dirty scale.
-	 *
+	 * <p/>
 	 * A dirty scale is when the snapshot scale (last tick) and live scale are not equal.
 	 * @return True if dirty, false if not.
 	 */
@@ -177,7 +188,7 @@ public abstract class SceneComponent extends EntityComponent {
 
 	/**
 	 * Determines if this {@link org.spout.api.entity.Entity} has a dirty {@link World}.
-	 *
+	 * <p/>
 	 * A dirty world is when the snapshot world (last tick) and live world are not equal.
 	 * @return True if dirty, false if not.
 	 */

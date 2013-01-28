@@ -37,7 +37,6 @@ public class QuaternionMath {
 
 	/**
 	 * Returns the length squared of the given Quaternion
-	 *
 	 * @param a The quaternion
 	 * @return The square of the length
 	 */
@@ -48,7 +47,6 @@ public class QuaternionMath {
 	/**
 	 * Returns the length of the given Quaternion <br/> <br/> Note: Uses
 	 * Math.sqrt.
-	 *
 	 * @param a The quaternion
 	 * @return length of the quaternion
 	 */
@@ -59,7 +57,6 @@ public class QuaternionMath {
 	/**
 	 * Constructs and returns a new Quaternion that is the given Quaternion but
 	 * with a length of 1
-	 *
 	 * @param a The quaternion
 	 * @return normalized Quaternion
 	 */
@@ -70,7 +67,6 @@ public class QuaternionMath {
 
 	/**
 	 * Constructs and returns a new Quaternion that is A * B
-	 *
 	 * @param a The left quaternion
 	 * @param b The right quaternion
 	 * @return The product quaternion of left times b
@@ -89,7 +85,6 @@ public class QuaternionMath {
 
 	/**
 	 * Creates a quaternion of the axis angles.
-	 *
 	 * @param pitch The pitch; the rotation around x
 	 * @param yaw The yaw; the rotation around y
 	 * @param roll The roll; the rotation around z
@@ -105,7 +100,6 @@ public class QuaternionMath {
 	/**
 	 * Constructs and returns a new Quaternion that is rotated about the axis
 	 * and angle
-	 *
 	 * @param a The quaternion
 	 * @param angle The angle around the axis
 	 * @param axis The axis
@@ -118,7 +112,6 @@ public class QuaternionMath {
 	/**
 	 * Constructs and returns a new Quaternion that is rotated about the axis
 	 * and angle
-	 *
 	 * @param a The quaternion
 	 * @param angle The angle
 	 * @param x The x dimension of the axis
@@ -132,7 +125,6 @@ public class QuaternionMath {
 
 	/**
 	 * Returns the rotation between two vectors.
-	 *
 	 * @param a The first vector
 	 * @param b The second vector
 	 * @return the rotation between both vectors
@@ -151,10 +143,9 @@ public class QuaternionMath {
 	/**
 	 * Returns the angles, in degrees, about each axis of this quaternion stored
 	 * in a Vector3 <br/> <br/>
-	 *
+	 * <p/>
 	 * vect.X = Rotation about the X axis (Pitch) <br/> vect.Y = Rotation about
 	 * the Y axis (Yaw) <br/> vect.Z = Rotation about the Z axis (Roll) <br/>
-	 *
 	 * @param a The quaternion
 	 * @return The axis angles
 	 */
@@ -194,7 +185,6 @@ public class QuaternionMath {
 
 	/**
 	 * Transforms a vecmath quaternion to a Spout quaternion.
-	 *
 	 * @param vector The vecmath quaternion
 	 * @return The vector as a Spout quaternion
 	 */
@@ -204,7 +194,6 @@ public class QuaternionMath {
 
 	/**
 	 * Transforms a Spout quaternion to a vecmath quaternion.
-	 *
 	 * @param vector The Spout 3D quaternion
 	 * @return The vector as a vecmath 3D quaternion
 	 */

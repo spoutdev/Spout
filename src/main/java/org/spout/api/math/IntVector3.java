@@ -37,7 +37,6 @@ import org.spout.api.util.StringUtil;
  * A 3-dimensional vector represented by int-precision x,y coordinates
  */
 public class IntVector3 extends IntVector2 {
-
 	private int z;
 
 	public IntVector3(BlockFace face) {
@@ -52,28 +51,25 @@ public class IntVector3 extends IntVector2 {
 		super(x, y);
 		this.z = z;
 	}
-	
+
 	/**
 	 * Sets the Z coordinate
-	 * 
 	 * @param z
 	 */
 	public void setZ(int z) {
 		this.z = z;
 	}
-	
+
 	/**
 	 * Gets the Z coordinate
-	 *
 	 * @return The Z coordinate
 	 */
 	public int getZ() {
 		return z;
 	}
-	
+
 	/**
 	 * Sets this vector equal to the given vector
-	 * 
 	 * @param other
 	 */
 	public void set(IntVector3 v) {
@@ -81,7 +77,7 @@ public class IntVector3 extends IntVector2 {
 		setY(v.getY());
 		setZ(v.getZ());
 	}
-	
+
 	/**
 	 * Sets this vector equal to the given coordinates
 	 */
@@ -90,32 +86,31 @@ public class IntVector3 extends IntVector2 {
 		setY(y);
 		setZ(z);
 	}
-	
+
 	@Override
 	public boolean isZero() {
 		return super.isZero() && this.z == 0;
 	}
-	
+
 	/**
 	 * Adds the given vector to this vector
-	 * 
 	 * @param other
 	 */
 	public void add(IntVector3 other) {
 		super.add(other);
 		z += other.z;
 	}
-	
+
 	@Override
 	public String toString() {
 		return StringUtil.toString(getX(), getY(), getZ());
 	}
-	
+
 	public IntVector3 copy() {
 		return new IntVector3(getX(), getY(), getZ());
 	}
-	
-	public static List<IntVector3> createList(int ... coords) {
+
+	public static List<IntVector3> createList(int... coords) {
 		if (coords.length % 3 != 0) {
 			throw new IllegalArgumentException("The number of coordinates must be a multiple of three to construct a list");
 		}

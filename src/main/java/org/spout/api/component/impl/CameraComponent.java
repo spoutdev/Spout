@@ -90,17 +90,17 @@ public class CameraComponent extends EntityComponent implements Camera {
 	public ViewFrustum getFrustum() {
 		return frustum;
 	}
-	
+
 	@Override
 	public void setSpeed(Vector3 speed) {
 		this.speed = speed;
 	}
-	
+
 	@Override
 	public void setSpeed(float speed) {
 		this.speed = new Vector3(speed, speed, speed);
 	}
-	
+
 	@Override
 	public Vector3 getSpeed() {
 		return speed;

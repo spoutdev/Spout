@@ -60,7 +60,6 @@ public class Quaternion implements Serializable {
 	 * Constructs a new Quaternion with the given xyzw NOTE: This represents a
 	 * Unit Vector in 4d space. Do not use unless you know what you are doing.
 	 * If you want to create a normal rotation, use the angle/axis override.
-	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -78,7 +77,6 @@ public class Quaternion implements Serializable {
 	/**
 	 * Constructs a new Quaternion that represents a given rotation around an
 	 * arbitrary axis
-	 *
 	 * @param angle Angle, in Degrees, to rotate the axis about by
 	 * @param x-axis
 	 * @param y-axis
@@ -96,7 +94,6 @@ public class Quaternion implements Serializable {
 	/**
 	 * Constructs a new Quaternion that represents a given rotation around an
 	 * arbatrary axis
-	 *
 	 * @param angle Angle, in Degrees, to rotate the axis about by
 	 * @param axis
 	 */
@@ -113,7 +110,6 @@ public class Quaternion implements Serializable {
 
 	/**
 	 * Returns the X component of the quaternion
-	 *
 	 * @return
 	 */
 	public float getX() {
@@ -122,7 +118,6 @@ public class Quaternion implements Serializable {
 
 	/**
 	 * Returns the Y component of the quaternion
-	 *
 	 * @return
 	 */
 	public float getY() {
@@ -131,7 +126,6 @@ public class Quaternion implements Serializable {
 
 	/**
 	 * Returns the Z component of the quaternion
-	 *
 	 * @return
 	 */
 	public float getZ() {
@@ -140,7 +134,6 @@ public class Quaternion implements Serializable {
 
 	/**
 	 * Returns the W component of the quaternion
-	 *
 	 * @return
 	 */
 	public float getW() {
@@ -161,7 +154,6 @@ public class Quaternion implements Serializable {
 
 	/**
 	 * Returns the direction this Quaternion is pointed at.
-	 *
 	 * @return direction of Quaternion
 	 */
 	public Vector3 getDirection() {
@@ -170,7 +162,6 @@ public class Quaternion implements Serializable {
 
 	/**
 	 * Returns the length squared of the quaternion
-	 *
 	 * @return
 	 */
 	public float lengthSquared() {
@@ -180,7 +171,6 @@ public class Quaternion implements Serializable {
 	/**
 	 * Returns the length of the quaternion. Note: This uses square root, so is
 	 * slowish
-	 *
 	 * @return
 	 */
 	public float length() {
@@ -189,7 +179,6 @@ public class Quaternion implements Serializable {
 
 	/**
 	 * Returns this quaternion but length() == 1
-	 *
 	 * @return
 	 */
 	public Quaternion normalize() {
@@ -198,7 +187,6 @@ public class Quaternion implements Serializable {
 
 	/**
 	 * Multiplies this Quaternion by the other Quaternion
-	 *
 	 * @param o
 	 * @return
 	 */
@@ -209,7 +197,6 @@ public class Quaternion implements Serializable {
 	/**
 	 * Creates and returns a new Quaternion that represnets this quaternion
 	 * rotated by the given Axis and Angle
-	 *
 	 * @param angle
 	 * @param axis
 	 * @return rotated Quaternion
@@ -221,7 +208,6 @@ public class Quaternion implements Serializable {
 	/**
 	 * Creates and returns a new Quaternion that represnets this quaternion
 	 * rotated by the given Axis and Angle
-	 *
 	 * @param angle
 	 * @param x axis
 	 * @param y axis
@@ -234,10 +220,9 @@ public class Quaternion implements Serializable {
 
 	/**
 	 * Returns the angles about each axis of this quaternion stored in a Vector3
-	 *
+	 * <p/>
 	 * vect.X = Rotation about the X axis (Roll) vect.Y = Rotation about the Y
 	 * axis (Yaw) vect.Z = Rotation about the Z axis (Pitch)
-	 *
 	 * @return
 	 */
 	public Vector3 getAxisAngles() {

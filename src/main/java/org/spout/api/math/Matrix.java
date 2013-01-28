@@ -45,7 +45,6 @@ public class Matrix implements Serializable {
 
 	/**
 	 * Creates a new matrix with the given dimension
-	 *
 	 * @param dim
 	 */
 	public Matrix(int dim) {
@@ -65,7 +64,6 @@ public class Matrix implements Serializable {
 	/**
 	 * Creates a new matrix from the given dimension and given data in column
 	 * major order
-	 *
 	 * @param dim
 	 * @param dat
 	 */
@@ -76,7 +74,6 @@ public class Matrix implements Serializable {
 
 	/**
 	 * Creates a new copy of provided matrix
-	 *
 	 * @param copy
 	 */
 	public Matrix(Matrix copy) {
@@ -89,7 +86,6 @@ public class Matrix implements Serializable {
 
 	/**
 	 * Gets the value at the given row and colum
-	 *
 	 * @param row
 	 * @param column
 	 * @return
@@ -106,7 +102,6 @@ public class Matrix implements Serializable {
 
 	/**
 	 * Sets the value at the given row and column
-	 *
 	 * @param row
 	 * @param column
 	 * @param value
@@ -123,7 +118,6 @@ public class Matrix implements Serializable {
 
 	/**
 	 * Multiplies this matrix with the provided matrix
-	 *
 	 * @param that
 	 * @return
 	 */
@@ -133,7 +127,6 @@ public class Matrix implements Serializable {
 
 	/**
 	 * Adds this matrix to the given matrix
-	 *
 	 * @param that
 	 * @return
 	 */
@@ -143,7 +136,6 @@ public class Matrix implements Serializable {
 
 	/**
 	 * Transpose the matrix
-	 *
 	 * @return the transposition of this matrix
 	 */
 	public Matrix transpose() {
@@ -152,7 +144,6 @@ public class Matrix implements Serializable {
 
 	/**
 	 * Returns this matrix in a single dimension float array
-	 *
 	 * @return
 	 */
 	public float[] toArray() {
@@ -161,7 +152,6 @@ public class Matrix implements Serializable {
 
 	/**
 	 * Fast access to matrix data used to fill a buffer for instance.
-	 *
 	 * @return float array of length size*size
 	 */
 	public float[] getData() {
