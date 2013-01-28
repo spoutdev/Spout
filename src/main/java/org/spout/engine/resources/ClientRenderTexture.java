@@ -215,18 +215,9 @@ public class ClientRenderTexture extends ClientTexture {
 			SpoutRenderer.checkGLError();
 
 			if(useDepthBuffer) {
-				int depthbuffer = GL30.glGenRenderbuffers();
+				GL11.glBindTexture(GL11.GL_TEXTURE_2D, depthTarget);
 				SpoutRenderer.checkGLError();
-				
-				EXTFramebufferObject.glBindRenderbufferEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthbuffer);
-				SpoutRenderer.checkGLError();
-				
-				EXTFramebufferObject.glRenderbufferStorageEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, GL11.GL_DEPTH_COMPONENT, this.getWidth(), this.getHeight());
-				SpoutRenderer.checkGLError();
-				
-				EXTFramebufferObject.glFramebufferRenderbufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, GL30.GL_DEPTH_ATTACHMENT, EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthbuffer);
-				SpoutRenderer.checkGLError();
-				
+
 				EXTFramebufferObject.glFramebufferTexture2DEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT, GL11.GL_TEXTURE_2D, depthTarget, 0);
 				SpoutRenderer.checkGLError();
 			}
@@ -239,6 +230,9 @@ public class ClientRenderTexture extends ClientTexture {
 				EXTFramebufferObject.glFramebufferTexture2DEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, EXTFramebufferObject.GL_COLOR_ATTACHMENT1_EXT, GL11.GL_TEXTURE_2D, normalTarget, 0);
 				SpoutRenderer.checkGLError();
 			}
+			
+			
+			
 			
 			if(EXTFramebufferObject.glCheckFramebufferStatusEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT) != EXTFramebufferObject.GL_FRAMEBUFFER_COMPLETE_EXT){
 				System.out.println("ERROR: Framebuffer not complete");
@@ -265,7 +259,7 @@ public class ClientRenderTexture extends ClientTexture {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 			SpoutRenderer.checkGLError();
 
-			GL32.glFramebufferTexture(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0,  textureID, 0);	
+			GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D,  textureID, 0);	
 			SpoutRenderer.checkGLError();		
 
 			if(useDepthBuffer) {
@@ -280,7 +274,7 @@ public class ClientRenderTexture extends ClientTexture {
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, normalTarget);
 				SpoutRenderer.checkGLError();
 
-				GL32.glFramebufferTexture(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT1,  normalTarget, 0);	
+				GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT1, GL11.GL_TEXTURE_2D, normalTarget, 0);	
 				SpoutRenderer.checkGLError();		
 
 			}
