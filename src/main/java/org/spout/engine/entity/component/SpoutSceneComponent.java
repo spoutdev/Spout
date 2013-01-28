@@ -55,7 +55,6 @@ public class SpoutSceneComponent extends SceneComponent {
 	private final Transform snapshot = new Transform();
 	private final Transform live = new Transform();
 	private final Transform render = new Transform();
-	private final Vector3f inertia = new Vector3f();
 	private RigidBody body;
 
 	@Override
@@ -64,15 +63,18 @@ public class SpoutSceneComponent extends SceneComponent {
 //		if (getOwner() instanceof Player) {
 //			throw new IllegalStateException("This component is not designed for Players.");
 //		}
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
-		if (region != null && body != null) {
-			try {
-				region.getPhysicsLock().writeLock().lock();
-				updatePhysicsSpace();
-			} finally {
-				region.getPhysicsLock().writeLock().unlock();
-			}
-		}
+
+		//TODO Afforess, this will NPE every time as Players that are logging in don't have a region when
+		//onAttached is called. This will be a problem once the player version of this component is made.
+//		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+//		if (region != null && body != null) {
+//			try {
+//				region.getPhysicsLock().writeLock().lock();
+//				updatePhysicsSpace();
+//			} finally {
+//				region.getPhysicsLock().writeLock().unlock();
+//			}
+//		}
 	}
 
 	@Override
@@ -82,7 +84,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public SceneComponent setTransform(Transform transform) {
-		snapshot.set(transform);
+		live.set(transform);
 		if (body != null) {
 			forcePhysicsUpdate();
 		}
@@ -297,6 +299,7 @@ public class SpoutSceneComponent extends SceneComponent {
 		//TODO: allowing api to setShape more than once could cause tearing/threading issues
 		final RigidBody previous = body;
 		//Calculate inertia
+		final Vector3f inertia = new Vector3f();
 		shape.calculateLocalInertia(getMass(), inertia);
 		//Construct body blueprint
 		final RigidBodyConstructionInfo blueprint = new RigidBodyConstructionInfo(mass, new SpoutMotionState(getOwner()), shape, inertia);
