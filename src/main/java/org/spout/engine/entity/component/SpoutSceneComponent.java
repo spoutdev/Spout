@@ -190,12 +190,38 @@ public class SpoutSceneComponent extends SceneComponent {
 	}
 
 	@Override
+	public SceneComponent impulse(Vector3 impulse) {
+		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		validateBody(region);
+		try {
+			region.getPhysicsLock().writeLock().lock();
+			body.applyCentralImpulse(VectorMath.toVector3f(impulse));
+			return this;
+		} finally {
+			region.getPhysicsLock().writeLock().unlock();
+		}
+	}
+
+	@Override
 	public SceneComponent force(Vector3 force, Vector3 offset) {
 		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
 			body.applyForce(VectorMath.toVector3f(force), VectorMath.toVector3f(offset));
+			return this;
+		} finally {
+			region.getPhysicsLock().writeLock().unlock();
+		}
+	}
+
+	@Override
+	public SceneComponent force(Vector3 force) {
+		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		validateBody(region);
+		try {
+			region.getPhysicsLock().writeLock().lock();
+			body.applyCentralForce(VectorMath.toVector3f(force));
 			return this;
 		} finally {
 			region.getPhysicsLock().writeLock().unlock();
