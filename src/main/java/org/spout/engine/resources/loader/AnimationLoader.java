@@ -73,6 +73,9 @@ public class AnimationLoader extends BasicResourceLoader<Animation> {
 				animation.setBoneTransform(bone.getId(), frame, boneTransform);
 			}
 		}
+
+		//System.out.println("Animation loaded : (org.spout.engine.resources.loader.AnimationLoader line 77)");
+		//animation.dumbAnimation(" ");
 		
 		return animation;
 	}

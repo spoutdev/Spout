@@ -47,10 +47,20 @@ public class SpoutAnimationComponent extends AnimationComponent {
 
 	private final static Matrix identity = MatrixMath.createIdentity();
 
-	//Keep a matrices array at the size of managed skeleton
-	private Matrix[] matrices = null;
+	//Depend of the shader
+	public final static int ALLOWED_BONE_PER_VERTEX = 2;
+	public final static int ALLOWED_ANIMATION_PER_MESH = 2;
+	public final static int ALLOWED_BONE_PER_MESH = 10;
+	
+	public final static int LAYOUT_WEIGHT = 4;
+	public final static int LAYOUT_ID = 5;
 
-	public List<AnimationPlayed> animations = new ArrayList<AnimationPlayed>();
+	private List<AnimationPlayed> animations = new ArrayList<AnimationPlayed>();
+
+	//Keep a matrices array at the size of managed skeleton
+	private RenderMaterial renderMaterial;
+	private int bonesInMesh = 0;
+	private Matrix[] matrices = null;
 
 	@Override
 	public AnimationPlayed playAnimation(Animation animation){
@@ -65,10 +75,10 @@ public class SpoutAnimationComponent extends AnimationComponent {
 		AnimationPlayed ac = new AnimationPlayed(animation, loop);
 
 		//Allocate matrices
-		ac.setMatrices(new Matrix[getOwner().get(ModelComponent.class).getModel().getSkeleton().getBoneSize()]);
-		
+		ac.setMatrices(new Matrix[ALLOWED_BONE_PER_MESH]);
+
 		animations.add(ac);
-		
+
 		return ac;
 	}
 
@@ -84,22 +94,30 @@ public class SpoutAnimationComponent extends AnimationComponent {
 
 	public void batchSkeleton(BaseMesh mesh) {
 		ModelComponent model = getOwner().get(ModelComponent.class);
+
+		if( model.getModel().getSkeleton() == null)
+			throw new IllegalStateException("AnimationComponent require a entity with a skeleton");
+
 		Skeleton skeleton = model.getModel().getSkeleton();
+
 		if (skeleton != null) {
 
+			renderMaterial = model.getModel().getRenderMaterial();
+
 			//Register matrices identity to fill when no animation
-			matrices = new Matrix[skeleton.getBoneSize()];
+			matrices = new Matrix[ALLOWED_BONE_PER_MESH];
 			for (int i = 0; i < matrices.length; i++) {
 				matrices[i] = identity;
 			}
 
-			System.out.println("Buffering skeleton");
-			FloatBuffer boneIdBuffer = BufferUtils.createFloatBuffer(mesh.getContainer().element * skeleton.getBonePerVertice());
-			FloatBuffer weightBuffer = BufferUtils.createFloatBuffer(mesh.getContainer().element * skeleton.getBonePerVertice());
+			bonesInMesh = skeleton.getBoneSize();
 
-			if (skeleton.getBonePerVertice() > skeleton.getBonePerVertice()) {
-				System.out.println("Number of bone per vertice limited ! ");
-			}
+			if(mesh.getContainer().getBuffers().containsKey(LAYOUT_ID))
+				return;
+
+			System.out.println("Buffering skeleton");
+			FloatBuffer boneIdBuffer = BufferUtils.createFloatBuffer(mesh.getContainer().element * ALLOWED_BONE_PER_VERTEX);
+			FloatBuffer weightBuffer = BufferUtils.createFloatBuffer(mesh.getContainer().element * ALLOWED_BONE_PER_VERTEX);
 
 			boneIdBuffer.clear();
 			weightBuffer.clear();
@@ -111,29 +129,31 @@ public class SpoutAnimationComponent extends AnimationComponent {
 				int vertexId = mesh.getContainer().getVerticeIndex()[i] - 1;
 
 				if (vertexId >= skeleton.getVerticeArray().size()) {
-					System.out.println("Depassement");
-					continue;
+					throw new IllegalStateException("Mesh don't match skeleton");
 				}
 
 				int j = 0;
 				//For each registred bone associated with this vertice, add it in buffer
 				for (; j < skeleton.getVerticeArray().get(vertexId).size(); j++) {
-					boneIdBuffer.put(skeleton.getVerticeArray().get(vertexId).get(j));
-					weightBuffer.put(skeleton.getWeightArray().get(vertexId).get(j));
+					int bone_id = skeleton.getVerticeArray().get(vertexId).get(j);
+					boneIdBuffer.put(bone_id);
+					float weight = skeleton.getWeightArray().get(vertexId).get(j);
+					weightBuffer.put(weight);
 				}
 				//Full the buffer for the number of vertice
-				for (; j < skeleton.getBonePerVertice(); j++) {
-					boneIdBuffer.put(-1);
-					weightBuffer.put(-1);
+				for (; j < ALLOWED_BONE_PER_VERTEX; j++) {
+					boneIdBuffer.put(0);
+					weightBuffer.put(0);
 				}
-				//System.out.println("Taille : "+j );
 			}
 
 			boneIdBuffer.flip();
 			weightBuffer.flip();
+			System.out.println(mesh.getContainer().element + " -> " + boneIdBuffer.limit());
 
-			mesh.getContainer().setBuffers(4, weightBuffer);
-			mesh.getContainer().setBuffers(5, boneIdBuffer);
+			mesh.getContainer().setBuffers(LAYOUT_WEIGHT, weightBuffer);
+			mesh.getContainer().setBuffers(LAYOUT_ID, boneIdBuffer);
+			render();//Render one time to send the required uniform
 			System.out.println("Buffering skeleton SUCCESS");
 		}
 	}
@@ -156,7 +176,7 @@ public class SpoutAnimationComponent extends AnimationComponent {
 
 					animations.remove(i);
 					i--;
-					
+
 					if (AnimationEndEvent.getHandlerList().getRegisteredListeners().length != 0) {
 						Spout.getEventManager().callEvent(new AnimationEndEvent(getOwner(),ac.getAnimation()));
 					}
@@ -166,39 +186,30 @@ public class SpoutAnimationComponent extends AnimationComponent {
 			}
 		}
 	}
-	
-	public final static int ALLOWED_ANIMATION = 2; //Depend of the shader
-	
+
 	public void render(){
-		ModelComponent model = getOwner().get(ModelComponent.class);
-		
-		if( model.getModel().getSkeleton() == null)
-			throw new IllegalStateException("AnimationComponent require a entity with a skeleton");
-
-		RenderMaterial mat = model.getModel().getRenderMaterial();
-
 		int count = 0;
 		for(AnimationPlayed ac : animations){
-			if(count >= ALLOWED_ANIMATION)
-				break;
+			int i;
 
-			for (int i = 0; i < ac.getMatrices().length; i++) {
-				ac.getMatrices()[i] = new Matrix(4, ac.getAnimation().getBoneTransform(i, ac.getCurrentFrame()).getMatrix());
+			for (i = 0; i < bonesInMesh; i++) {
+				ac.getMatrices()[i] = ac.getAnimation().getBoneTransform(i, ac.getCurrentFrame()).getMatrix();
 			}
-			
-			//System.out.println(count + " : play animation");
 
-			mat.getShader().setUniform("bone_matrix" + (count + 1), ac.getMatrices());
+			for (; i < ALLOWED_BONE_PER_MESH; i++) {
+				ac.getMatrices()[i] = identity.transpose();
+			}
+
+			renderMaterial.getShader().setUniform("bone_matrix" + (count + 1), ac.getMatrices());
 
 			count++;
+			if(count >= ALLOWED_ANIMATION_PER_MESH)
+				break;
 		}
 
-		while(count < ALLOWED_ANIMATION){
-			//System.out.println(count + " : use identity");
-			mat.getShader().setUniform("bone_matrix" + (count + 1), matrices);
+		while(count < ALLOWED_ANIMATION_PER_MESH){
+			renderMaterial.getShader().setUniform("bone_matrix" + (count + 1), matrices);
 			count++;
 		}
-
-		//TODO : Replace "bone_matrix" by something configurable ?
 	}
 }

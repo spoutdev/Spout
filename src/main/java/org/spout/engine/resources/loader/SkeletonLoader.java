@@ -53,10 +53,9 @@ public class SkeletonLoader extends BasicResourceLoader<Skeleton> {
 		Skeleton skeleton = new Skeleton();
 		
 		loadBone(skeleton, root, null, node);
-
-		//skeleton.print(); //Debug to check skeleton loaded
 		
-		System.out.println("Loadind skeleton SUCESS");
+		//System.out.println("Skeleton loaded : (org.spout.engine.resources.loader.SkeletonLoader line 57)");
+		//skeleton.print();
 		
 		return skeleton;
 	}
