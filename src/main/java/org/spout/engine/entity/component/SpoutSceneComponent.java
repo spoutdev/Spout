@@ -1,3 +1,29 @@
+/*
+ * This file is part of Spout.
+ *
+ * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
+ * Spout is licensed under the Spout License Version 1.
+ *
+ * Spout is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * In addition, 180 days after any changes are published, you can use the
+ * software, incorporating those changes, under the terms of the MIT license,
+ * as described in the Spout License Version 1.
+ *
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License,
+ * the MIT license and the Spout License Version 1 along with this program.
+ * If not, see <http://www.gnu.org/licenses/> for the GNU Lesser General Public
+ * License and see <http://spout.in/licensev1> for the full license, including
+ * the MIT license.
+ */
 package org.spout.engine.entity.component;
 
 import javax.vecmath.Vector3f;
@@ -15,9 +41,10 @@ import org.spout.api.entity.Player;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.math.MathHelper;
+import org.spout.api.math.GenericMath;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
+import org.spout.api.math.VectorMath;
 
 import org.spout.engine.world.SpoutRegion;
 
@@ -33,9 +60,10 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public void onAttached() {
-		if (getOwner() instanceof Player) {
-			throw new IllegalStateException("This component is not designed for Players.");
-		}
+//TODO Player Physics
+//		if (getOwner() instanceof Player) {
+//			throw new IllegalStateException("This component is not designed for Players.");
+//		}
 		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
 		if (region != null && body != null) {
 			try {
@@ -154,7 +182,7 @@ public class SpoutSceneComponent extends SceneComponent {
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
-			body.applyImpulse(MathHelper.toVector3f(impulse), MathHelper.toVector3f(offset));
+			body.applyImpulse(VectorMath.toVector3f(impulse), VectorMath.toVector3f(offset));
 			return this;
 		} finally {
 			region.getPhysicsLock().writeLock().unlock();
@@ -167,7 +195,7 @@ public class SpoutSceneComponent extends SceneComponent {
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
-			body.applyForce(MathHelper.toVector3f(force), MathHelper.toVector3f(offset));
+			body.applyForce(VectorMath.toVector3f(force), VectorMath.toVector3f(offset));
 			return this;
 		} finally {
 			region.getPhysicsLock().writeLock().unlock();
@@ -180,7 +208,7 @@ public class SpoutSceneComponent extends SceneComponent {
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
-			body.applyTorque(MathHelper.toVector3f(torque));
+			body.applyTorque(VectorMath.toVector3f(torque));
 			return this;
 		} finally {
 			region.getPhysicsLock().writeLock().unlock();
@@ -193,7 +221,7 @@ public class SpoutSceneComponent extends SceneComponent {
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
-			body.applyTorqueImpulse(MathHelper.toVector3f(torque));
+			body.applyTorqueImpulse(VectorMath.toVector3f(torque));
 			return this;
 		} finally {
 			region.getPhysicsLock().writeLock().unlock();
@@ -334,7 +362,7 @@ public class SpoutSceneComponent extends SceneComponent {
 		try {
 			region.getPhysicsLock().readLock().lock();
 			//TODO Snapshot/live values needed?
-			return MathHelper.toVector3(body.getLinearVelocity(new Vector3f()));
+			return VectorMath.toVector3(body.getLinearVelocity(new Vector3f()));
 		} finally {
 			region.getPhysicsLock().readLock().unlock();
 		}
@@ -346,7 +374,7 @@ public class SpoutSceneComponent extends SceneComponent {
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
-			body.setLinearVelocity(MathHelper.toVector3f(velocity));
+			body.setLinearVelocity(VectorMath.toVector3f(velocity));
 			//TODO May need to perform a Physics space update...testing needed.
 			return this;
 		} finally {
@@ -361,7 +389,7 @@ public class SpoutSceneComponent extends SceneComponent {
 		try {
 			region.getPhysicsLock().readLock().lock();
 			//TODO Snapshot/live values needed?
-			return MathHelper.toVector3(body.getAngularVelocity(new Vector3f()));
+			return VectorMath.toVector3(body.getAngularVelocity(new Vector3f()));
 		} finally {
 			region.getPhysicsLock().readLock().unlock();
 		}
@@ -373,7 +401,7 @@ public class SpoutSceneComponent extends SceneComponent {
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
-			body.setAngularVelocity(MathHelper.toVector3f(velocity));
+			body.setAngularVelocity(VectorMath.toVector3f(velocity));
 			//TODO May need to perform a Physics space update...testing needed.
 			return this;
 		} finally {
@@ -396,7 +424,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	/**
 	 * Gets the live transform state of this {@link org.spout.api.entity.Entity} within the scene.
-	 *
+	 * <p/>
 	 * Keep in mind it is completely unstable; the API can change it at anytime during Stage 1 of the
 	 * tick.
 	 * @return The Transform representing the live state.
@@ -434,13 +462,13 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	/**
 	 * Updates a body within the simulation.
-	 *
+	 * <p/>
 	 * Due to how TeraBullet caches bodies in the simulation, updating attributes of a body tend to have no
 	 * effect as it uses cached values. This method does a workaround by hotswapping bodies.
-	 *
+	 * <p/>
 	 * This method should be entirely safe to use as physics isn't ticked until Stage 2, this method is only
 	 * available in Stage 1.
-	 *
+	 * <p/>
 	 * TODO See if clearing cache pairs solves this without hotswapping?
 	 */
 	private void updatePhysicsSpace() {
@@ -470,7 +498,7 @@ public class SpoutSceneComponent extends SceneComponent {
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
-			body.setWorldTransform(MathHelper.toPhysicsTransform(live));
+			body.setWorldTransform(GenericMath.toPhysicsTransform(live));
 			body.clearForces(); //TODO May not be correct here, needs testing.
 		} finally {
 			region.getPhysicsLock().writeLock().unlock();
@@ -481,7 +509,7 @@ public class SpoutSceneComponent extends SceneComponent {
 		private final SpoutSceneComponent scene;
 
 		public SpoutMotionState(Entity entity) {
-			super(MathHelper.toPhysicsTransform(((SpoutSceneComponent) entity.getScene()).getTransformLive()));
+			super(GenericMath.toPhysicsTransform(((SpoutSceneComponent) entity.getScene()).getTransformLive()));
 			this.scene = (SpoutSceneComponent) entity.getScene();
 		}
 
@@ -493,7 +521,7 @@ public class SpoutSceneComponent extends SceneComponent {
 		 */
 		@Override
 		public com.bulletphysics.linearmath.Transform getWorldTransform(com.bulletphysics.linearmath.Transform out) {
-			final com.bulletphysics.linearmath.Transform physicsTransform = MathHelper.toPhysicsTransform(scene.getTransformLive());
+			final com.bulletphysics.linearmath.Transform physicsTransform = GenericMath.toPhysicsTransform(scene.getTransformLive());
 			out.set(physicsTransform);
 			return out;
 		}
@@ -517,7 +545,7 @@ public class SpoutSceneComponent extends SceneComponent {
 				The Transform passed into this method has been interpolated, ready for graphics. We don't set it to the live
 				as live needs to be the transform from the last physics tick. We will handle this momentarily.
 			 */
-			scene.getRenderTransform().set(MathHelper.toSceneTransform(liveContainer, in));
+			scene.getRenderTransform().set(GenericMath.toSceneTransform(liveContainer, in));
 			/*
 				Now we will set the Scene's live transform to that of the Physics' transform.
 
@@ -528,7 +556,7 @@ public class SpoutSceneComponent extends SceneComponent {
 			 */
 			final com.bulletphysics.linearmath.Transform physicsContainer = new com.bulletphysics.linearmath.Transform();
 			scene.getBody().getWorldTransform(physicsContainer);
-			scene.getTransformLive().set(MathHelper.toSceneTransform(liveContainer, physicsContainer));
+			scene.getTransformLive().set(GenericMath.toSceneTransform(liveContainer, physicsContainer));
 		}
 	}
 }

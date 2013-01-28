@@ -189,13 +189,6 @@ public class SpoutRenderer {
 			}
 			skydomeMesh.render(skydome.getRenderMaterial());
 		}
-		
-		
-
-		//Interpolate entity transform if Physics is not currently applied to the entity
-		for (Entity e : client.getActiveWorld().getAll()) {
-			((PredictableTransformComponent) e.getTransform()).updateRender(dt);
-		}
 
 		client.getActiveCamera().updateView();
 
@@ -211,19 +204,13 @@ public class SpoutRenderer {
 
 		worldRenderer.render();
 
-		long worldTime = System.nanoTime() - start;
 		start = System.nanoTime();
 
 		entityRenderer.render(dt);
 
-		long entityTime = System.nanoTime() - start;
-
 		if (wireframe) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 		}
-
-
-		start = System.nanoTime();
 
 		if(t.isEnable())
 			t.release();
@@ -235,7 +222,7 @@ public class SpoutRenderer {
 			gui.draw(mat, -1, -1, 2, 2);
 
 		if (showDebugInfos) {
-			Point position = client.getActivePlayer().getTransform().getPosition();
+			Point position = client.getActivePlayer().getScene().getPosition();
 			gui.drawText(new ChatArguments("Spout client! Logged as ", ChatStyle.RED, client.getActivePlayer().getDisplayName(), ChatStyle.RESET, " in world: ", ChatStyle.RED, client.getActiveWorld().getName()), font, -0.95f, 0.9f, 10f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "x: ", position.getX()), font, -0.95f, 0.8f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "y: ", position.getY()), font, -0.95f, 0.7f, 8f);

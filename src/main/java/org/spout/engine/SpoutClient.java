@@ -405,7 +405,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public void setSession(SpoutClientSession session) {
 		this.session.set(session);
 		getSessionRegistry().add(session);
-		activePlayer.connect(session, activePlayer.getTransform().getTransform());
+		activePlayer.connect(session, activePlayer.getScene().getTransform());
 		session.setPlayer(activePlayer);
 		players.putIfAbsent(activePlayer.getName(), activePlayer);
 	}

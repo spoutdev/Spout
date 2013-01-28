@@ -52,7 +52,7 @@ public class EntityTransformMessageHandler extends MessageHandler<EntityTransfor
 		}
 
 		if (entity != null) {
-			entity.getTransform().setTransform(rmInverse.convert(message.getTransform()));
+			entity.getScene().setTransform(rmInverse.convert(message.getTransform()));
 		}
 	}
 }

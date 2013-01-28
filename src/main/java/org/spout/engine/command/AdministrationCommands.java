@@ -369,7 +369,7 @@ public class AdministrationCommands {
 		Point point;
 		//Source is a player and didn't provide world, x, y, z so instead set the spawn point of their current world at their current position.
 		if (args.length() != 4) {
-			point = ((Player) source).getTransform().getPosition();
+			point = ((Player) source).getScene().getPosition();
 			//Either Source is the console or the player specified world, x, y, z so set those values
 		} else {
 			if (args.getWorld(0) == null) {
@@ -394,7 +394,7 @@ public class AdministrationCommands {
 		}
 		Point point;
 		if (args.length() != 1) {
-			point = ((Player) source).getTransform().getPosition();
+			point = ((Player) source).getScene().getPosition();
 		} else {
 			final World world = args.getWorld(0);
 			if (world == null) {
@@ -450,7 +450,7 @@ public class AdministrationCommands {
 			if (player == null || !player.isOnline()) {
 				throw new CommandException(args.getString(0) + " is not online.");
 			}
-			point = player.getTransform().getPosition();
+			point = player.getScene().getPosition();
 		} else {
 			player = engine.getPlayer(args.getString(0), true);
 			if (player == null || !player.isOnline())  {
@@ -480,7 +480,7 @@ public class AdministrationCommands {
 					throw new CommandException(args.getString(1) + " is not online.");
 				}
 
-				point = target.getTransform().getPosition();
+				point = target.getScene().getPosition();
 			}
 		}
 		point.getWorld().getChunkFromBlock(point);

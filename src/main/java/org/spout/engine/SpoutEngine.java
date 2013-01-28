@@ -112,6 +112,7 @@ import org.spout.engine.command.SyncedRootCommand;
 import org.spout.engine.command.TestCommands;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutPlayer;
+import org.spout.engine.entity.component.SpoutSceneComponent;
 import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.engine.filesystem.versioned.PlayerFiles;
 import org.spout.engine.filesystem.versioned.WorldFiles;
@@ -754,12 +755,12 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		if (oldPlayer != null) {
 			oldPlayer.kick("Login occured from another client");
 		}
-
+		final SpoutSceneComponent scene = (SpoutSceneComponent) player.getScene();
 		//Connect the player and set their transform to the default world's spawn.
-		player.connect(session, created ? getDefaultWorld().getSpawnPoint() : player.getTransform().getTransformLive());
+		player.connect(session, created ? getDefaultWorld().getSpawnPoint() : scene.getTransformLive());
 
 		//Spawn the player in the world
-		World world = player.getTransform().getTransformLive().getPosition().getWorld();
+		World world = scene.getTransformLive().getPosition().getWorld();
 		world.spawnEntity(player);
 		((SpoutWorld) world).addPlayer(player);
 

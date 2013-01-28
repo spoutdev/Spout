@@ -55,6 +55,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
@@ -251,9 +252,7 @@ public class TestCommands {
 
 		if(e == null)
 			return;
-		e.getTransform().setPitch(pitch);
-		e.getTransform().setYaw(yaw);
-		e.getTransform().setRoll(roll);
+		e.getScene().getTransform().getRotation().rotate(0, pitch, yaw, roll);
 
 		Spout.log("Entity " + id + " rotate to " + pitch + " " + yaw + " " +roll);
 	}
