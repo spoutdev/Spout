@@ -82,14 +82,18 @@ public class Animation extends Resource{
 		return frames[bone][frame];
 	}
 
-	/*public void dumbAnimation(String str) {
+	public void dumbAnimation(String str) {
 		System.out.println(str + "Animation : " + id);
 
-		int i = 0;
-		for(BoneTransform bt : transforms){
-			System.out.println(str + "  " + i + " : " + bt.toString());
+		int i = 0,j;
+		for(BoneTransform[] bones : frames){
+			j = 0;
+			for(BoneTransform frame : bones){
+				System.out.println(str + "  " + i + "/" + j +" : " + frame.toString());
+				j++;
+			}
 			i++;
 		}
-	}*/
+	}
 
 }
