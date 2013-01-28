@@ -82,12 +82,21 @@ public class ClientRenderTexture extends ClientTexture {
 		//We can use ARB style if gl30 or arb is supported. 
 		if((!gl30 || !arb) && !ext) throw new ComputerIsPotatoException("Does not support Framebuffers");	
 		
+		/*
+		 * EXT require EXT and GL30 (GL30.glGenRenderbuffers() used line 214)
+		 * No EXT require GL30 & GL32
+		 * ARB ? I don't know, ask to RoyAwesome
+		 */
+		
+		if(ext && gl30) useEXT = true;
+		else if(!gl30 || !gl32) disable = true;
+		
 		//if arb and gl30 is false, use ext
-		if(!arb && !gl30) useEXT = true;
-		else if(!gl32) disable = true;
+		//if((!arb && !gl30) || !gl32) useEXT = true;
+		//else if(!gl32) disable = true;
 
 		Spout.log("Using EXT: " + useEXT);
-
+		Spout.log("Using FrameBuffer: " + !disable);
 	}
 
 	public ClientRenderTexture(boolean depth){
