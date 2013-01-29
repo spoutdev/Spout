@@ -418,6 +418,15 @@ public abstract class SceneComponent extends EntityComponent {
 	 * @return This component, so you can chain.
 	 */
 	public abstract SceneComponent setActivated(boolean activate);
+	
+	/**
+	 * Returns whether the physics for this scene has been actived or not.
+	 * <p>
+	 * See: {@link #setActivated(boolean)}
+	 * </p>
+	 * @return
+	 */
+	public abstract boolean isActivated();
 
 	@Override
 	public boolean isDetachable() {

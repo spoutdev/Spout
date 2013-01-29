@@ -46,6 +46,7 @@ import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Quaternion;
@@ -671,11 +672,12 @@ public abstract class NetworkSynchronizer {
 	 * Instructs the client to update the entities state and position<br><br>
 	 *
 	 * @param e the entity
+	 * @param the live transform (latest) for the entity
 	 * @param spawn is True when the entity just spawned
 	 * @param destroy is True when the entity just got destroyed
 	 * @param update is True when the entity is being updated
 	 */
-	public void syncEntity(Entity e, boolean spawn, boolean destroy, boolean update) {
+	public void syncEntity(Entity e, Transform liveTransform, boolean spawn, boolean destroy, boolean update) {
 		if (spawn) {
 			synchronizedEntities.add(e.getId());
 		} else if (destroy) {

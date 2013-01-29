@@ -52,6 +52,10 @@ public final class Transform implements Serializable {
 		this(Point.invalid, Quaternion.IDENTITY, Vector3.ONE);
 	}
 
+	public Transform(Transform transform) {
+		set(transform);
+	}
+
 	public Transform(Point position, Quaternion rotation, Vector3 scale) {
 		this.position = position;
 		this.rotation = rotation;

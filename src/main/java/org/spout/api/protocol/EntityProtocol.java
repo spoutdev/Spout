@@ -29,6 +29,7 @@ package org.spout.api.protocol;
 import java.util.List;
 
 import org.spout.api.entity.Entity;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.reposition.RepositionManager;
 
 /**
@@ -59,9 +60,10 @@ public interface EntityProtocol {
 	 * snapshot position to its live position.
 	 *
 	 * @param entity the entity
+	 * @param liveTransform the latest transform for the entity
 	 * @param em the reposition manager
 	 * @param force true to send an absolute update even if no update is required
 	 * @return messages to send
 	 */
-	public List<Message> getUpdateMessages(Entity entity, RepositionManager rm, boolean force);
+	public List<Message> getUpdateMessages(Entity entity, Transform liveTransform, RepositionManager rm, boolean force);
 }
