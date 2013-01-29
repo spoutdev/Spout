@@ -79,7 +79,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public Transform getTransform() {
-		return snapshot;
+		return snapshot.copy();
 	}
 
 	@Override
