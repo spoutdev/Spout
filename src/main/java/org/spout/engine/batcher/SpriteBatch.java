@@ -210,6 +210,10 @@ public class SpriteBatch {
 	public void draw(RenderMaterial material, float x, float y, float w, float h) {
 		draw(material, new Rectangle(0, 0, 1, 1), new Rectangle(x, y, w, h * aspectRatio), Color.white);
 	}
+	
+	public void draw(RenderMaterial material, float uvx, float uvy, float uvw, float uvh, float x, float y, float w, float h) {
+		draw(material, new Rectangle(uvx, uvy, uvw, uvh), new Rectangle(x, y, w, h * aspectRatio), Color.white);
+	}
 
 	public void draw(RenderMaterial material, Rectangle source, Rectangle destination, Color color) {
 		RenderPart part = new RenderPart();
