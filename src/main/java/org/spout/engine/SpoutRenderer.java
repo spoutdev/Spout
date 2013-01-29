@@ -152,13 +152,11 @@ public class SpoutRenderer {
 		font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
 		
 		t = new ClientRenderTexture(true, false, true);
-		if(t.isEnable()){
-			t.writeGPU();
-			Shader s = (Shader)Spout.getFilesystem().getResource("shader://Spout/shaders/diffuse.ssf");
-			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put("Diffuse", t);
-			mat = new ClientRenderMaterial(s, map);
-		}
+		t.writeGPU();
+		Shader s = (Shader)Spout.getFilesystem().getResource("shader://Spout/shaders/diffuse.ssf");
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("Diffuse", t);
+		mat = new ClientRenderMaterial(s, map);
 		
 	}
 
@@ -175,8 +173,7 @@ public class SpoutRenderer {
 		SpoutClient client = (SpoutClient) Spout.getEngine();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		if(t.isEnable())
-			t.activate();
+		t.activate();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		Model skydome = (Model) client.getActiveWorld().getDataMap().get("Skydome");
@@ -226,14 +223,12 @@ public class SpoutRenderer {
 
 		start = System.nanoTime();
 
-		if(t.isEnable())
-			t.release();
+		t.release();
 
 
 		gui.begin();
 
-		if(t.isEnable())
-			gui.draw(mat, -1, -1, 2, 2);
+		gui.draw(mat, -1, -1, 2, 2);
 
 		if (showDebugInfos) {
 			Point position = client.getActivePlayer().getTransform().getPosition();

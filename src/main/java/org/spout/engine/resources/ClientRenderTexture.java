@@ -63,12 +63,6 @@ public class ClientRenderTexture extends ClientTexture {
 	ClientTextureHandle normalTexture = null;
 
 	boolean useEXT = false;
-
-	boolean disable = false;
-	
-	public boolean isEnable(){
-		return !disable;
-	}
 	
 	public ClientRenderTexture() {
 		super(null, (int)((SpoutClient)Spout.getEngine()).getResolution().getX(), (int)((SpoutClient)Spout.getEngine()).getResolution().getY());
@@ -76,27 +70,17 @@ public class ClientRenderTexture extends ClientTexture {
 		//Detect which path we should use to create framebuffers.  
 		//if all 3 are false, we cannot use framebuffers so throw an exception
 		boolean gl30 = GLContext.getCapabilities().OpenGL30;		
-		boolean gl32 = GLContext.getCapabilities().OpenGL32;		
 		boolean arb = GLContext.getCapabilities().GL_ARB_framebuffer_object;
 		boolean ext = GLContext.getCapabilities().GL_EXT_framebuffer_object;	
 		//We can use ARB style if gl30 or arb is supported. 
 		if((!gl30 || !arb) && !ext) throw new ComputerIsPotatoException("Does not support Framebuffers");	
-		
-		/*
-		 * EXT require EXT and GL30 (GL30.glGenRenderbuffers() used line 214)
-		 * No EXT require GL30 & GL32
-		 * ARB ? I don't know, ask to RoyAwesome
-		 */
-		
-		if(ext && gl30) useEXT = true;
-		else if(!gl30 || !gl32) disable = true;
-		
-		//if arb and gl30 is false, use ext
-		//if((!arb && !gl30) || !gl32) useEXT = true;
-		//else if(!gl32) disable = true;
 
+		//if arb and gl30 is false, use ext
+		if(!arb && !gl30) useEXT = true;
+
+		
 		Spout.log("Using EXT: " + useEXT);
-		Spout.log("Using FrameBuffer: " + !disable);
+		
 	}
 
 	public ClientRenderTexture(boolean depth){
@@ -118,7 +102,6 @@ public class ClientRenderTexture extends ClientTexture {
 	}
 
 	public void activate() {
-		if(disable) return;
 		
 		if(framebuffer == INVALID_BUFFER) return; //Can't set this to active if it's not created yet
 
@@ -131,8 +114,7 @@ public class ClientRenderTexture extends ClientTexture {
 	}
 
 	public void release() {
-		if(disable) return;
-		
+			
 		if(framebuffer != INVALID_BUFFER) {
 			if(useEXT)  EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, SCREEN_BUFFER);
 			else GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, SCREEN_BUFFER);
@@ -147,8 +129,6 @@ public class ClientRenderTexture extends ClientTexture {
 
 	@Override
 	public void writeGPU() {
-		if(disable) return;
-		
 		if(framebuffer != INVALID_BUFFER) throw new IllegalStateException("Framebuffer already created!");
 
 		int buffers = 1;	
