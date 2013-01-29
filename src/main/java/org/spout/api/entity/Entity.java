@@ -169,4 +169,8 @@ public interface Entity extends Tickable, WorldSource, ComponentHolder {
 	 * @return The network component
 	 */
 	public NetworkComponent getNetwork();
+
+	public boolean isRendered();
+	
+	public void setRendered(boolean rendered);
 }
