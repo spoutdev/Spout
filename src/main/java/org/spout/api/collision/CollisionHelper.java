@@ -196,7 +196,7 @@ public class CollisionHelper {
 		}
 
 		//Check that the intersection is not past the segment
-		return -e - GenericMath.sqrt(discr) <= lnorm;
+		return -e - Math.sqrt(discr) <= lnorm;
 	}
 
 	/**
@@ -466,7 +466,7 @@ public class CollisionHelper {
 		}
 
 		// Ray now found to intersect sphere, compute smallest t value of intersection
-		float t = (float) (-e - GenericMath.sqrt(discr));
+		float t = (float) (-e - Math.sqrt(discr));
 
 		// If t is negative, ray started inside sphere so clamp t to zero
 		if (t < 0.0f) {
@@ -499,7 +499,7 @@ public class CollisionHelper {
 		}
 
 		// Ray now found to intersect sphere, compute smallest t value of intersection
-		float t = (float) (-e - GenericMath.sqrt(discr));
+		float t = (float) (-e - Math.sqrt(discr));
 
 		// If t is negative, ray started inside sphere so clamp t to zero
 		if (t < 0.0f) {

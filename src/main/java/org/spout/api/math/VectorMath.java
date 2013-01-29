@@ -57,8 +57,9 @@ public class VectorMath {
 	 * @param a The vector
 	 * @return The fast approximate length of the vector
 	 */
+	@Deprecated
 	public static float fastLength(Vector3 a) {
-		return (float) GenericMath.sqrt(lengthSquared(a));
+		return length(a);
 	}
 
 	/**

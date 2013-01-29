@@ -491,16 +491,6 @@ public class GenericMath {
 	}
 
 	/**
-	 * Returns a fast estimate of the square root of the value
-	 *
-	 * @param x The value
-	 * @return The estimate of the square root
-	 */
-	public static double sqrt(double x) {
-		return x * inverseSqrt(x);
-	}
-
-	/**
 	 * Rounds x down to the closest integer
 	 *
 	 * @param x The value to floor

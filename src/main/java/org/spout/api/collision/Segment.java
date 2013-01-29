@@ -26,7 +26,6 @@
  */
 package org.spout.api.collision;
 
-import org.spout.api.math.GenericMath;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.VectorMath;
 
@@ -50,7 +49,7 @@ public class Segment extends CollisionVolume {
 		origin = start;
 		endpoint = end;
 		direction = end.subtract(start).normalize();
-		length = (float) GenericMath.sqrt(endpoint.dot(origin));
+		length = (float) Math.sqrt(endpoint.dot(origin));
 	}
 
 	public Segment(Vector3 start, Vector3 direction, float distance) {
