@@ -1,0 +1,6 @@
+GL30:
+    Vertex: file://Spout/shaders/bones2b2aInstanced/bones.330.vert
+    Fragment: file://Spout/shaders/diffuse.330.frag
+GL20:
+    Vertex: file://Spout/shaders/bones2b2aInstanced/bones.120.vert
+    Fragment: file://Spout/shaders/diffuse.120.frag

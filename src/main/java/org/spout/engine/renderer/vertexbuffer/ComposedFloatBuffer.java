@@ -33,6 +33,7 @@ import java.util.List;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL33;
 import org.spout.engine.SpoutRenderer;
 
 public class ComposedFloatBuffer {
@@ -140,6 +141,10 @@ public class ComposedFloatBuffer {
 	}
 
 	public void bind(){
+		bind(false);
+	}
+	
+	public void bind(boolean instanced){
 		if(vboId == -1) throw new IllegalStateException("Cannot bind a vertex buffer without data!");
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
 		SpoutRenderer.checkGLError();
@@ -147,7 +152,13 @@ public class ComposedFloatBuffer {
 		for(int i = 0; i < elements.length; i++){
 			GL20.glVertexAttribPointer(layout[i], elements[i], GL11.GL_FLOAT, false, stride, offset[i]);
 			SpoutRenderer.checkGLError();
+			
+			if(instanced){
+				GL33.glVertexAttribDivisor(layout[i], 1);
+				SpoutRenderer.checkGLError();
+			}
 		}
+		
 	}
 
 	public void unbind() {

@@ -137,6 +137,30 @@ public class BaseMesh extends Resource implements Mesh{
 		batched = true;
 	}
 
+	public void preDraw(){
+		if (!batched)
+			throw new IllegalStateException("Cannot render without batching first!");
+
+		renderer.preDraw();
+	}
+	
+	public void draw(RenderMaterial material){
+		if (!batched)
+			throw new IllegalStateException("Cannot render without batching first!");
+
+		SnapshotRender snapshotRender = new SnapshotRender(material);
+		material.preRender(snapshotRender);
+		renderer.draw(material);
+		material.postRender(snapshotRender);
+	}
+	
+	public void postDraw(){
+		if (!batched)
+			throw new IllegalStateException("Cannot render without batching first!");
+
+		renderer.postDraw();
+	}
+	
 	public void render(RenderMaterial material){
 		if (!batched)
 			throw new IllegalStateException("Cannot render without batching first!");

@@ -88,6 +88,10 @@ public class EntityRendererComponent extends EntityComponent {
 			animationComponent.updateAnimation(dt);
 	}
 
+	public BaseMesh getMesh(){
+		return mesh;
+	}
+	
 	public void render() {
 		Camera camera = ((Client)Spout.getEngine()).getActiveCamera();
 
