@@ -311,7 +311,8 @@ public class ClientRenderTexture extends ClientTexture {
 	}
 	
 	protected boolean isGL30() {
-		return ((SpoutClient)Spout.getEngine()).getRenderMode() == RenderMode.GL30;
+		return ((SpoutClient)Spout.getEngine()).getRenderMode() == RenderMode.GL30 ||
+				((SpoutClient)Spout.getEngine()).getRenderMode() == RenderMode.GL40;
 	}
 
 	@Override

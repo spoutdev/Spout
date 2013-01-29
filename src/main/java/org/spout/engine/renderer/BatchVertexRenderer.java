@@ -71,6 +71,10 @@ public abstract class BatchVertexRenderer implements Renderer {
 				for(int i = 0; i < number; i++)
 					list.add(new GL30BatchVertexRenderer(renderMode));
 				return;
+			case GL40:
+				for(int i = 0; i < number; i++)
+					list.add(new GL30BatchVertexRenderer(renderMode));
+				return;
 			case GLES20:
 				for(int i = 0; i < number; i++)
 					list.add(new GLES20BatchVertexRenderer(renderMode));
@@ -96,6 +100,8 @@ public abstract class BatchVertexRenderer implements Renderer {
 			case GL20:
 				return new GL20BatchVertexRenderer(renderMode);
 			case GL30:
+				return new GL30BatchVertexRenderer(renderMode);
+			case GL40:
 				return new GL30BatchVertexRenderer(renderMode);
 			case GLES20:
 				return new GLES20BatchVertexRenderer(renderMode);

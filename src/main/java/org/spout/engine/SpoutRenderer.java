@@ -119,7 +119,7 @@ public class SpoutRenderer {
 		client.getLogger().info("GLSL Version: " + GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
 		client.getLogger().info("Max Textures: " + GL11.glGetString(GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS));
 			String extensions = "Extensions Supported: ";
-		if (client.getRenderMode() == RenderMode.GL30) {
+		if (client.getRenderMode() == RenderMode.GL30 || client.getRenderMode() == RenderMode.GL40) {
 			for (int i = 0; i < GL11.glGetInteger(GL30.GL_NUM_EXTENSIONS); i++) {
 				extensions += GL30.glGetStringi(GL11.GL_EXTENSIONS, i) + " ";
 			}
@@ -303,6 +303,9 @@ public class SpoutRenderer {
 					Display.create(new PixelFormat(8, 24, 0), ca);
 				} else if (client.getRenderMode() == RenderMode.GL30) {
 					ContextAttribs ca = new ContextAttribs(3, 2).withForwardCompatible(false);
+					Display.create(new PixelFormat(8, 24, 0), ca);
+				} else if (client.getRenderMode() == RenderMode.GL40) {
+					ContextAttribs ca = new ContextAttribs(4, 0).withForwardCompatible(false);
 					Display.create(new PixelFormat(8, 24, 0), ca);
 				}
 			}

@@ -65,7 +65,8 @@ public class TextureSamplerShaderVariable extends ShaderVariable {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 		SpoutRenderer.checkGLError();
 		
-		if (((Client) Spout.getEngine()).getRenderMode() != RenderMode.GL30) {
+		if (((Client) Spout.getEngine()).getRenderMode() != RenderMode.GL30 &&
+				((Client) Spout.getEngine()).getRenderMode() != RenderMode.GL40) {
 			GL20.glUniform1i(location, unit);
 		} else {
 			//GL30.glUniform1ui(location, textureID);

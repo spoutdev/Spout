@@ -58,7 +58,7 @@ public class ShaderLoader extends BasicResourceLoader<ClientShader> {
 
 		ClientShader shader = null;
 		final Map<? extends String, ?> shaderfiles;
-		if (client.getRenderMode() == RenderMode.GL30) {
+		if (client.getRenderMode() == RenderMode.GL30 || client.getRenderMode() == RenderMode.GL40) {
 			shaderfiles = checkerMapStringObject.check(resource.get("GL30"));
 		} else {
 			shaderfiles = checkerMapStringObject.check(resource.get("GL20"));
