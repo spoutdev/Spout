@@ -220,15 +220,13 @@ public class SpoutRenderer {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 		}
 
-
 		start = System.nanoTime();
 
 		t.release();
 
-
 		gui.begin();
 
-		gui.draw(mat, -1, -1, 2, 2);
+		gui.draw(mat, 0, 1, 1, -1, -1, -1, 2, 2);
 
 		if (showDebugInfos) {
 			Point position = client.getActivePlayer().getTransform().getPosition();
