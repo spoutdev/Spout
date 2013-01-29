@@ -33,6 +33,7 @@ package org.spout.api.render;
  * GL20 - OpenGL 2.0 Client Profile
  * 
  * GL30 - OpenGL 3.2 Client Profile (Default)
+ * GL40 - OpenGL 4.0 Client Profile
  * 
  *
  */
@@ -40,6 +41,7 @@ public enum RenderMode {
 	GL11,
 	GL20,
 	GL30,
+	GL40,
 	GLES20,
 
 }
