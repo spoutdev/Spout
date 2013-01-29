@@ -26,6 +26,8 @@
  */
 package org.spout.engine.entity.component;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import javax.vecmath.Vector3f;
 
 import com.bulletphysics.collision.dispatch.CollisionObject;
@@ -55,6 +57,7 @@ public class SpoutSceneComponent extends SceneComponent {
 	private final Transform snapshot = new Transform();
 	private final Transform live = new Transform();
 	private final Transform render = new Transform();
+	private final AtomicReference<SpoutRegion> simulationRegion = new AtomicReference<SpoutRegion>(null);
 	private RigidBody body;
 
 	@Override
@@ -62,18 +65,6 @@ public class SpoutSceneComponent extends SceneComponent {
 //TODO Player Physics
 //		if (getOwner() instanceof Player) {
 //			throw new IllegalStateException("This component is not designed for Players.");
-//		}
-
-		//TODO Afforess, this will NPE every time as Players that are logging in don't have a region when
-		//onAttached is called. This will be a problem once the player version of this component is made.
-//		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
-//		if (region != null && body != null) {
-//			try {
-//				region.getPhysicsLock().writeLock().lock();
-//				updatePhysicsSpace();
-//			} finally {
-//				region.getPhysicsLock().writeLock().unlock();
-//			}
 //		}
 	}
 
@@ -180,7 +171,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public SceneComponent impulse(Vector3 impulse, Vector3 offset) {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
@@ -193,7 +184,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public SceneComponent impulse(Vector3 impulse) {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
@@ -206,7 +197,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public SceneComponent force(Vector3 force, Vector3 offset) {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
@@ -219,7 +210,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public SceneComponent force(Vector3 force) {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
@@ -232,7 +223,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public SceneComponent torque(Vector3 torque) {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
@@ -245,7 +236,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public SceneComponent impulseTorque(Vector3 torque) {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
@@ -258,7 +249,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public SceneComponent dampenMovement(float damp) {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
@@ -271,7 +262,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public SceneComponent dampenRotation(float damp) {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
@@ -284,7 +275,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public CollisionShape getShape() {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().readLock().lock();
@@ -305,7 +296,7 @@ public class SpoutSceneComponent extends SceneComponent {
 		final RigidBodyConstructionInfo blueprint = new RigidBodyConstructionInfo(mass, new SpoutMotionState(getOwner()), shape, inertia);
 		body = new RigidBody(blueprint);
 		body.activate();
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		if (region != null) {
 			try {
 				region.getPhysicsLock().writeLock().lock();
@@ -322,7 +313,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public float getFriction() {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().readLock().lock();
@@ -334,7 +325,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public SceneComponent setFriction(float friction) {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
@@ -348,7 +339,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public float getMass() {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().readLock().lock();
@@ -360,7 +351,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public float getRestitution() {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().readLock().lock();
@@ -372,7 +363,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public SceneComponent setRestitution(float restitution) {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
@@ -386,7 +377,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public Vector3 getMovementVelocity() {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().readLock().lock();
@@ -399,7 +390,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public SceneComponent setMovementVelocity(Vector3 velocity) {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
@@ -413,7 +404,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public Vector3 getRotationVelocity() {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().readLock().lock();
@@ -426,7 +417,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public SceneComponent setRotationVelocity(Vector3 velocity) {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
@@ -440,7 +431,7 @@ public class SpoutSceneComponent extends SceneComponent {
 
 	@Override
 	public SceneComponent setActivated(boolean activate) {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();
@@ -449,6 +440,11 @@ public class SpoutSceneComponent extends SceneComponent {
 		} finally {
 			region.getPhysicsLock().writeLock().unlock();
 		}
+	}
+
+	@Override
+	public boolean isActivated() {
+		return body != null && body.getActivationState() == CollisionObject.ACTIVE_TAG;
 	}
 
 	/**
@@ -501,10 +497,22 @@ public class SpoutSceneComponent extends SceneComponent {
 	 * TODO See if clearing cache pairs solves this without hotswapping?
 	 */
 	private void updatePhysicsSpace() {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		//swap
 		region.getSimulation().removeRigidBody(body);
 		region.getSimulation().addRigidBody(body);
+	}
+
+	public void simulate(SpoutRegion region) {
+		SpoutRegion previous = simulationRegion.getAndSet(region);
+		if (previous != region && body != null) {
+			try {
+				region.getPhysicsLock().writeLock().lock();
+				region.getSimulation().addRigidBody(body);
+			} finally {
+				region.getPhysicsLock().writeLock().unlock();
+			}
+		}
 	}
 
 	/**
@@ -523,7 +531,7 @@ public class SpoutSceneComponent extends SceneComponent {
 	 * Forces a physics body translation without forces or any physics corrections.
 	 */
 	private void forcePhysicsUpdate() {
-		final SpoutRegion region = (SpoutRegion) getOwner().getRegion();
+		final SpoutRegion region = simulationRegion.get();
 		validateBody(region);
 		try {
 			region.getPhysicsLock().writeLock().lock();

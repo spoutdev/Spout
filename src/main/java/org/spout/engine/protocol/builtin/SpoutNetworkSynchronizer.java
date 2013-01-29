@@ -88,7 +88,8 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 	}
 
 	@Override
-	public void syncEntity(Entity e, boolean spawn, boolean destroy, boolean update) {
+	public void syncEntity(Entity e, Transform liveTransform, boolean spawn, boolean destroy, boolean update) {
+		super.syncEntity(e, liveTransform, spawn, destroy, update);
 		EntityProtocol protocol = getEntityProtocol(e);
 		List<Message> messages = new ArrayList<Message>(3);
 		if (destroy) {
@@ -99,7 +100,7 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 		}
 		if (update) {
 			// TODO - might be worth adding force support
-			messages.addAll(protocol.getUpdateMessages(e, getRepositionManager(), false));
+			messages.addAll(protocol.getUpdateMessages(e, liveTransform, getRepositionManager(), false));
 		}
 		for (Message message : messages) {
 			this.session.send(false, message);
