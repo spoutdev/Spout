@@ -71,13 +71,21 @@ public class ClientRenderTexture extends ClientTexture {
 		//if all 3 are false, we cannot use framebuffers so throw an exception
 		boolean gl30 = GLContext.getCapabilities().OpenGL30;		
 		boolean arb = GLContext.getCapabilities().GL_ARB_framebuffer_object;
-		boolean ext = GLContext.getCapabilities().GL_EXT_framebuffer_object;	
-		//We can use ARB style if gl30 or arb is supported. 
-		if((!gl30 || !arb) && !ext) throw new ComputerIsPotatoException("Does not support Framebuffers");	
-
-		//if arb and gl30 is false, use ext
-		if(!arb && !gl30) useEXT = true;
-
+		boolean ext = GLContext.getCapabilities().GL_EXT_framebuffer_object;
+		
+		if(gl30) {
+			useEXT = false;
+		}
+		else if(arb) {
+			useEXT = false;
+		}
+		else if( ext) {
+			useEXT = true;
+		} 
+		else {
+			throw new ComputerIsPotatoException("Does not support Framebuffers");
+		}
+		
 		
 		Spout.log("Using EXT: " + useEXT);
 		
