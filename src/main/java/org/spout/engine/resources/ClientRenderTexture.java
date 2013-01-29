@@ -235,6 +235,7 @@ public class ClientRenderTexture extends ClientTexture {
 			if(useNormalBuffer) drawBuffers.put(GL30.GL_COLOR_ATTACHMENT1);
 			drawBuffers.flip();
 			GL20.glDrawBuffers(drawBuffers);
+			SpoutRenderer.checkGLError();
 			
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 			SpoutRenderer.checkGLError();
