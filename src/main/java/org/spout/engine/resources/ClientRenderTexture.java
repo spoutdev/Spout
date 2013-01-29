@@ -230,8 +230,6 @@ public class ClientRenderTexture extends ClientTexture {
 			
 			IntBuffer drawBuffers = BufferUtils.createIntBuffer(buffers);
 			drawBuffers.put(GL30.GL_COLOR_ATTACHMENT0);
-			if(useDepthBuffer) drawBuffers.put(GL30.GL_DEPTH_ATTACHMENT);
-			if(useStencilBuffer) drawBuffers.put(GL30.GL_STENCIL_ATTACHMENT);
 			if(useNormalBuffer) drawBuffers.put(GL30.GL_COLOR_ATTACHMENT1);
 			drawBuffers.flip();
 			GL20.glDrawBuffers(drawBuffers);
