@@ -32,6 +32,7 @@ import org.spout.api.component.impl.ModelComponent;
 import org.spout.api.component.impl.PredictableTransformComponent;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.math.Matrix;
+import org.spout.api.model.Model;
 import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotEntity;
@@ -45,8 +46,6 @@ public class EntityRendererComponent extends EntityComponent {
 	
 	private RenderMaterial renderMaterial;
 	private BaseMesh mesh;
-	
-	private boolean initialized = false;
 	
 	public void init(){
 		modelComponent = getOwner().get(ModelComponent.class);
@@ -67,23 +66,16 @@ public class EntityRendererComponent extends EntityComponent {
 		
 		renderMaterial = modelComponent.getModel().getRenderMaterial();
 		mesh = (BaseMesh) modelComponent.getModel().getMesh();
-		
-		batch();
-		initialized = true;
-	}
-	
-	private void batch(){
+
 		if(animationComponent != null){
 			animationComponent.batchSkeleton(mesh);
 		}
 
-		mesh.batch();
+		if(!mesh.isBatched())
+			mesh.batch();
 	}
 
 	public void update(float dt) {
-		if(!initialized)
-			init();
-		
 		if(animationComponent != null)
 			animationComponent.updateAnimation(dt);
 	}
@@ -92,13 +84,9 @@ public class EntityRendererComponent extends EntityComponent {
 		return mesh;
 	}
 	
-	public void render() {
-		Camera camera = ((Client)Spout.getEngine()).getActiveCamera();
-
+	public void draw() {
 		Matrix modelMatrix = ((PredictableTransformComponent) getOwner().getTransform()).getRenderTransform().toMatrix();
 
-		renderMaterial.getShader().setUniform("View", camera.getView());
-		renderMaterial.getShader().setUniform("Projection", camera.getProjection());
 		renderMaterial.getShader().setUniform("Model", modelMatrix);
 
 		if(animationComponent != null){
@@ -110,9 +98,9 @@ public class EntityRendererComponent extends EntityComponent {
 		renderMaterial.preRenderEntity(snapshot);
 		mesh.render(renderMaterial);
 		renderMaterial.postRenderEntity(snapshot);
+	}
 
-		if (textModelComponent != null) {
-			textModelComponent.render(camera);
-		}
+	public Model getModel() {
+		return modelComponent.getModel();
 	}
 }

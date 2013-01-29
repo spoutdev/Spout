@@ -424,4 +424,17 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 			}
 		}
 	}
+
+	private boolean rendered = false;
+
+	@Override
+	public boolean isRendered() {
+		return rendered;
+	}
+
+	@Override
+	public void setRendered(boolean rendered) {
+		this.rendered = rendered;
+	}
+	
 }

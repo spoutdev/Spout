@@ -30,21 +30,28 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.component.impl.ModelComponent;
 import org.spout.api.entity.Entity;
-import org.spout.api.render.RenderMaterial;
+import org.spout.api.event.EventHandler;
+import org.spout.api.event.Listener;
+import org.spout.api.event.Order;
+import org.spout.api.event.entity.EntityDespawnEvent;
+import org.spout.api.model.Model;
+import org.spout.api.render.Camera;
 import org.spout.engine.SpoutClient;
+import org.spout.engine.entity.component.ClientTextModelComponent;
 import org.spout.engine.entity.component.EntityRendererComponent;
-import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
+import org.spout.engine.mesh.BaseMesh;
 
-public class EntityRenderer {
+public class EntityRenderer implements Listener{
 	
 	//TODO send entity here to render it (enter/spawn chunk in viewdistance)
 	
-	private Map<RenderMaterial, List<Entity>> entities = new HashMap<RenderMaterial, List<Entity>>();
+	private Map<Model, List<Entity>> entities = new HashMap<Model, List<Entity>>();
 	
 	public void addEntity(Entity entity){
 		EntityRendererComponent render = entity.get(EntityRendererComponent.class);
@@ -53,68 +60,113 @@ public class EntityRenderer {
 			return;
 		}
 		
-		ModelComponent model = entity.get(ModelComponent.class);
+		ModelComponent modelComponent = entity.get(ModelComponent.class);
 
-		if (model == null || model.getModel() == null) {
+		if (modelComponent == null || modelComponent.getModel() == null) {
 			return;
 		}
 		
-		RenderMaterial mat = model.getModel().getRenderMaterial();
+		Model model = modelComponent.getModel();
 		
-		List<Entity> list = entities.get(mat);
+		List<Entity> list = entities.get(model);
 		
 		if(list == null){
 			list = new ArrayList<Entity>();
-			entities.put(mat, list);
+			entities.put(model, list);
 		}
 		
-		if(!list.contains(entity))
-			list.add(entity);
+		list.add(entity);
+		render.init();
+		entity.setRendered(true);
 	}
 	
 	public void removeEntity(Entity entity){
-		ModelComponent model = entity.get(ModelComponent.class);
+		ModelComponent modelComponent = entity.get(ModelComponent.class);
 
-		if (model == null || model.getModel() == null) {
+		if (modelComponent == null || modelComponent.getModel() == null) {
 			return;
 		}
+
+		Model model = modelComponent.getModel();
 		
-		RenderMaterial mat = model.getModel().getRenderMaterial();
-		
-		List<Entity> list = entities.get(mat);
+		List<Entity> list = entities.get(model);
 		
 		list.remove(entity);
+		entity.setRendered(false);
 		
 		if(list.isEmpty()){
-			entities.remove(mat);
+			entities.remove(model);
+		}
+	}
+	
+	@EventHandler(order = Order.MONITOR)
+	public void onEntityDespawnEvent(EntityDespawnEvent event){
+		if(event.getEntity().isRendered()){
+			removeEntity(event.getEntity());
 		}
 	}
 	
 	public void render(float dt){
-		/*if(((Client)Spout.getEngine()).getActivePlayer().getWorld() == null)
-			return;
+		for (Entity e : ((SpoutClient)Spout.getEngine()).getActiveWorld().getAll()) {
+			if(!e.isRendered())
+				addEntity(e);
+			
+			/*EntityRendererComponent r = e.get(EntityRendererComponent.class);
+			if (r != null) {
+				r.update(dt);
+				r.render();
+			}*/
+		}
+		Camera camera = ((Client)Spout.getEngine()).getActiveCamera();
 		
-		for (List<Entity> list : entities.values()) {
-			for (Entity e : list) {
+		for(Entry<Model, List<Entity>> entry : entities.entrySet()){
+			Model model = entry.getKey();
+			List<Entity> list = entry.getValue();
+			BaseMesh mesh = (BaseMesh) model.getMesh();
+			
+			EntityRendererComponent first = list.get(0).get(EntityRendererComponent.class);
+			
+			if(!mesh.isBatched()){
+				//TODO Put mesh in model not in BaseMesh, because BaseMesh can be shared between model
+				// and different can use different skeleton, so that can produce a conflict in the mesh
+				first.init();
+			}			
+			
+			//Render model
+			mesh.preDraw();
+			
+			first.getModel().getRenderMaterial().getShader().setUniform("View", camera.getView());
+			first.getModel().getRenderMaterial().getShader().setUniform("Projection", camera.getProjection());
+			
+			for(Entity e : list){
 				EntityRendererComponent r = e.get(EntityRendererComponent.class);
-				if (r != null) {
-					r.update(dt);
-					r.render();
-				}
+				r.update(dt);
+				r.draw();
 			}
-		}*/
+			
+			mesh.postDraw();
+			
+			//Render text component
+			for(Entity e : list){
+				ClientTextModelComponent r = e.get(ClientTextModelComponent.class);
+				if(r != null)
+					r.render(camera);
+			}
+		}
+		
 
 		//TODO Remove this when we use SpoutClientWorld
 		//SpoutSnapshotLock lock = (SpoutSnapshotLock) ((Client)Spout.getEngine()).getScheduler().getSnapshotLock();
 		//lock.coreReadLock("Render Thread - Render Entities");
-		for (Entity e : ((SpoutClient)Spout.getEngine()).getActiveWorld().getAll()) {
+		/*for (Entity e : ((SpoutClient)Spout.getEngine()).getActiveWorld().getAll()) {
 			EntityRendererComponent r = e.get(EntityRendererComponent.class);
 			if (r != null) {
 				r.update(dt);
 				r.render();
 			}
-		}
+		}*/
 		//lock.coreReadUnlock("Render Thread - Render Entities");
 	}
+	
 	
 }
