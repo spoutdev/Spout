@@ -39,7 +39,6 @@ import com.bulletphysics.linearmath.DefaultMotionState;
 import org.spout.api.ClientOnly;
 import org.spout.api.component.impl.SceneComponent;
 import org.spout.api.entity.Entity;
-import org.spout.api.entity.Player;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
@@ -291,7 +290,7 @@ public class SpoutSceneComponent extends SceneComponent {
 		final RigidBody previous = body;
 		//Calculate inertia
 		final Vector3f inertia = new Vector3f();
-		shape.calculateLocalInertia(getMass(), inertia);
+		shape.calculateLocalInertia(mass, inertia);
 		//Construct body blueprint
 		final RigidBodyConstructionInfo blueprint = new RigidBodyConstructionInfo(mass, new SpoutMotionState(getOwner()), shape, inertia);
 		body = new RigidBody(blueprint);
@@ -305,7 +304,7 @@ public class SpoutSceneComponent extends SceneComponent {
 				}
 				region.getSimulation().addRigidBody(body);
 			} finally {
-				region.getPhysicsLock().writeLock().lock();
+				region.getPhysicsLock().writeLock().unlock();
 			}
 		}
 		return this;

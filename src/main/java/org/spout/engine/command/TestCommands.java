@@ -54,6 +54,7 @@ import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
@@ -252,7 +253,7 @@ public class TestCommands {
 
 		if(e == null)
 			return;
-		e.getScene().getTransform().getRotation().rotate(0, pitch, yaw, roll);
+		e.getScene().setRotation(e.getScene().getTransform().getRotation().rotate(0, pitch, yaw, roll));
 
 		Spout.log("Entity " + id + " rotate to " + pitch + " " + yaw + " " +roll);
 	}
@@ -281,7 +282,9 @@ public class TestCommands {
 		if(e == null)
 			return;
 
-		e.getScene().getTransform().scale(new Vector3(x, y, z));
+		Transform transform = e.getScene().getTransform();
+		transform.scale(new Vector3(x, y, z));
+		e.getScene().setTransform(transform);
 
 		Spout.log("Entity " + id + " scale to " + x + " " + y + " " +z);
 	}

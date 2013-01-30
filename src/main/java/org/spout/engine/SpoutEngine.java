@@ -752,7 +752,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 			reclamation.addPlayer();
 		}
 
-		if (oldPlayer != null) {
+		if (oldPlayer != null && oldPlayer.getSession() != null) {
 			oldPlayer.kick("Login occured from another client");
 		}
 		final SpoutSceneComponent scene = (SpoutSceneComponent) player.getScene();
