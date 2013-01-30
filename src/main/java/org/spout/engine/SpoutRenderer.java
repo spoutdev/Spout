@@ -238,6 +238,7 @@ public class SpoutRenderer {
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Chunks Drawn: ", ((int) ((float) worldRenderer.getRenderedChunks() / (float) (worldRenderer.getTotalChunks()) * 100)) + "%" + " (" + worldRenderer.getRenderedChunks() + ")"), font, -0.95f, 0.4f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Occluded Chunks: ", (int) ((float) worldRenderer.getOccludedChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getOccludedChunks() + ")"), font, -0.95f, 0.3f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Cull Chunks: ", (int) ((float) worldRenderer.getCulledChunks() / worldRenderer.getTotalChunks() * 100), "% (" + worldRenderer.getCulledChunks() + ")"), font, -0.95f, 0.2f, 8f);
+			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Entities: ", entityRenderer.getEntitiesRended()), font, -0.95f, 0.1f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Buffer: ", worldRenderer.addedBatch + " / " + worldRenderer.updatedBatch), font, -0.95f, 0.0f, 8f);
 			//gui.drawText(new ChatArguments(ChatStyle.BLUE, "Time: ", worldTime / 1000000.0 + " / " + entityTime / 1000000.0 + " / " + guiTime / 1000000.0), font, -0.95f, -0.1f, 8f);
 		}

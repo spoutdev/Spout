@@ -52,6 +52,7 @@ public class EntityRenderer implements Listener{
 	//TODO send entity here to render it (enter/spawn chunk in viewdistance)
 	
 	private Map<Model, List<Entity>> entities = new HashMap<Model, List<Entity>>();
+	private int count = 0;
 	
 	public void addEntity(Entity entity){
 		EntityRendererComponent render = entity.get(EntityRendererComponent.class);
@@ -78,6 +79,7 @@ public class EntityRenderer implements Listener{
 		list.add(entity);
 		render.init();
 		entity.setRendered(true);
+		count++;
 	}
 	
 	public void removeEntity(Entity entity){
@@ -93,6 +95,7 @@ public class EntityRenderer implements Listener{
 		
 		list.remove(entity);
 		entity.setRendered(false);
+		count--;
 		
 		if(list.isEmpty()){
 			entities.remove(model);
@@ -104,6 +107,10 @@ public class EntityRenderer implements Listener{
 		if(event.getEntity().isRendered()){
 			removeEntity(event.getEntity());
 		}
+	}
+	
+	public int getEntitiesRended(){
+		return count;
 	}
 	
 	public void render(float dt){
