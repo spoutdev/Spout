@@ -343,10 +343,9 @@ public abstract class NetworkSynchronizer {
 				if (!priorityChunkSendQueue.isEmpty()) {
 					return;
 				}
-				
+
 				if (teleported && !player.getScene().isTransformDirty()) {
-					//TODO Afforess this method needs to go into Spout or adjusted somehow for snapshot values.
-					//sendPosition(player.getTransform().getTransformLive().getPosition(), player.getTransform().getTransformLive().getRotation());
+					sendPosition(player.getScene().getPosition(), player.getScene().getRotation());
 					teleported = false;
 				}
 
