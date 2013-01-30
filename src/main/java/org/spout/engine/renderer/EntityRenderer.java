@@ -78,11 +78,12 @@ public class EntityRenderer implements Listener{
 		
 		list.add(entity);
 		render.init();
-		entity.setRendered(true);
+		render.setRendered(true);//entity.setRendered(true);
 		count++;
 	}
 	
 	public void removeEntity(Entity entity){
+		EntityRendererComponent render = entity.get(EntityRendererComponent.class);
 		ModelComponent modelComponent = entity.get(ModelComponent.class);
 
 		if (modelComponent == null || modelComponent.getModel() == null) {
@@ -94,7 +95,7 @@ public class EntityRenderer implements Listener{
 		List<Entity> list = entities.get(model);
 		
 		list.remove(entity);
-		entity.setRendered(false);
+		render.setRendered(false);//entity.setRendered(false);
 		count--;
 		
 		if(list.isEmpty()){
@@ -102,12 +103,12 @@ public class EntityRenderer implements Listener{
 		}
 	}
 	
-	@EventHandler(order = Order.MONITOR)
+	/*@EventHandler(order = Order.MONITOR)
 	public void onEntityDespawnEvent(EntityDespawnEvent event){
 		if(event.getEntity().isRendered()){
 			removeEntity(event.getEntity());
 		}
-	}
+	}*/
 	
 	public int getEntitiesRended(){
 		return count;
@@ -115,7 +116,9 @@ public class EntityRenderer implements Listener{
 	
 	public void render(float dt){
 		for (Entity e : ((SpoutClient)Spout.getEngine()).getActiveWorld().getAll()) {
-			if(!e.isRendered())
+			EntityRendererComponent render = e.get(EntityRendererComponent.class);
+			
+			if(render != null && !render.isRendered())//if(!e.isRendered())
 				addEntity(e);
 			
 			/*EntityRendererComponent r = e.get(EntityRendererComponent.class);

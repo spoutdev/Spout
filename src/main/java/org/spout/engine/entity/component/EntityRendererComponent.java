@@ -47,6 +47,16 @@ public class EntityRendererComponent extends EntityComponent {
 	private RenderMaterial renderMaterial;
 	private BaseMesh mesh;
 	
+	private boolean rendered = false;
+	
+	public boolean isRendered(){
+		return rendered;
+	}
+	
+	public void setRendered(boolean rendered){
+		this.rendered = rendered;
+	}
+	
 	public void init(){
 		modelComponent = getOwner().get(ModelComponent.class);
 		animationComponent = getOwner().get(SpoutAnimationComponent.class);
