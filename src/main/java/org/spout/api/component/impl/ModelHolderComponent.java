@@ -26,6 +26,9 @@
  */
 package org.spout.api.component.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.spout.api.Spout;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.model.Model;
@@ -33,29 +36,30 @@ import org.spout.api.model.Model;
 /**
  * A Component that adds a model to an entity.
  */
-public class ModelComponent extends EntityComponent {
-	private Model model;
+public abstract class ModelHolderComponent extends EntityComponent {
 
-	public ModelComponent() {
-	}
+	private List<Model> models = new ArrayList<Model>();
 
 	@Override
 	public boolean canTick() {
 		return false;
 	}
 
-	public Model getModel() {
-		return model;
+	public List<Model> getModels() {
+		return models;
 	}
 
-	public void setModel(String resourcePath) {
-		model = (Model) Spout.getFilesystem().getResource(resourcePath);
+	public void removeModel(Model model){
+		models.remove(model);
 	}
-        
-        public void setModel(Model temp)
-        {
-            if(temp == null)
-                return;
-            model = temp;
-        }
+
+	public void addModel(String resourcePath) {
+		models.add((Model) Spout.getFilesystem().getResource(resourcePath));
+	}
+
+	public void addModel(Model model){
+		if(model == null)
+			throw new IllegalStateException("You can't add a null model");
+		models.add(model);
+	}
 }

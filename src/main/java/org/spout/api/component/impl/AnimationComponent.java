@@ -27,6 +27,7 @@
 package org.spout.api.component.impl;
 
 import org.spout.api.component.type.EntityComponent;
+import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.AnimationPlayed;
 
@@ -37,7 +38,7 @@ public abstract class AnimationComponent extends EntityComponent {
 	 * @param animation
 	 * @return
 	 */
-	public abstract AnimationPlayed playAnimation(Animation animation);
+	public abstract AnimationPlayed playAnimation(Model model, Animation animation);
 	
 	/**
 	 * Send a animation to play
@@ -45,7 +46,7 @@ public abstract class AnimationComponent extends EntityComponent {
 	 * @param loop true to loop the animation
 	 * @return
 	 */
-	public abstract AnimationPlayed playAnimation(Animation animation, boolean loop);
+	public abstract AnimationPlayed playAnimation(Model model, Animation animation, boolean loop);
 
 	/**
 	 * Stop the animation
