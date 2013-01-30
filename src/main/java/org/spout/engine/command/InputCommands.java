@@ -67,9 +67,6 @@ public class InputCommands {
 	public static class InputDebugInfosHandler implements CommandExecutor {
 		@Override
 		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
-			if (!(source instanceof Player)) {
-				throw new CommandException("Source must be a player!");
-			}
 			if(Spout.getPlatform() != Platform.CLIENT) throw new CommandException("Must be on the client");
 			
 			SpoutClient c = (SpoutClient)Spout.getEngine();
