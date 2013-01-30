@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.spout.api.component.impl.ModelComponent;
+import org.spout.api.component.impl.ModelHolderComponent;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntityPrefab;
@@ -71,12 +71,12 @@ public class ClientEntityPrefab extends Resource implements EntityPrefab {
 		}
 
 		if (datas.containsKey("Model")) {
-			ModelComponent mc = entity.get(ModelComponent.class);
+			ModelHolderComponent mc = entity.get(ModelHolderComponent.class);
 			if (mc == null) {
-				mc = entity.add(ModelComponent.class);
+				mc = entity.add(ModelHolderComponent.class);
 			}
 
-			mc.setModel((String) datas.get("Model"));
+			mc.addModel((String) datas.get("Model"));
 		}
 
 		return entity;
@@ -89,12 +89,12 @@ public class ClientEntityPrefab extends Resource implements EntityPrefab {
 		}
 
 		if (datas.containsKey("Model")) {
-			ModelComponent mc = entity.get(ModelComponent.class);
+			ModelHolderComponent mc = entity.get(ModelHolderComponent.class);
 			if (mc == null) {
-				mc = entity.add(ModelComponent.class);
+				mc = entity.add(ModelHolderComponent.class);
 			}
 
-			mc.setModel((String) datas.get("Model"));
+			mc.addModel((String) datas.get("Model"));
 		}
 
 		return entity;

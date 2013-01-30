@@ -26,26 +26,18 @@
  */
 package org.spout.engine.entity.component;
 
-import org.spout.api.Client;
-import org.spout.api.Spout;
-import org.spout.api.component.impl.ModelComponent;
+import org.spout.api.component.impl.ModelHolderComponent;
 import org.spout.api.component.impl.PredictableTransformComponent;
-import org.spout.api.component.type.EntityComponent;
 import org.spout.api.math.Matrix;
 import org.spout.api.model.Model;
-import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotEntity;
 import org.spout.engine.mesh.BaseMesh;
 
-public class EntityRendererComponent extends EntityComponent {
+public class EntityRendererComponent extends ModelHolderComponent {
 	
-	private ModelComponent modelComponent;
 	private SpoutAnimationComponent animationComponent;
 	private ClientTextModelComponent textModelComponent;
-	
-	private RenderMaterial renderMaterial;
-	private BaseMesh mesh;
 	
 	private boolean rendered = false;
 	
@@ -58,59 +50,44 @@ public class EntityRendererComponent extends EntityComponent {
 	}
 	
 	public void init(){
-		modelComponent = getOwner().get(ModelComponent.class);
 		animationComponent = getOwner().get(SpoutAnimationComponent.class);
 		textModelComponent = getOwner().get(ClientTextModelComponent.class);
 
-		if (modelComponent == null) {
-			throw new IllegalStateException("Entity must have a ModelComponent to use EntityRendererComponent");
+		if (getModels().isEmpty()) {
+			throw new IllegalStateException("EntityRendererComponent don't contains model");
 		}
 		
-		if (modelComponent.getModel() == null) {
-			throw new IllegalStateException("Entity must have a model to use EntityRendererComponent");
-		}
-		
-		if (modelComponent.getModel().getMesh() == null) {
-			throw new IllegalStateException("Entity must have a mesh to use EntityRendererComponent");
-		}
-		
-		renderMaterial = modelComponent.getModel().getRenderMaterial();
-		mesh = (BaseMesh) modelComponent.getModel().getMesh();
+		for(Model model : getModels()){
+			RenderMaterial renderMaterial = model.getRenderMaterial();
+			BaseMesh mesh = (BaseMesh) model.getMesh();
 
-		if(animationComponent != null){
-			animationComponent.batchSkeleton(mesh);
-		}
+			if(animationComponent != null){
+				animationComponent.batchSkeleton();
+			}
 
-		if(!mesh.isBatched())
-			mesh.batch();
+			if(!mesh.isBatched())
+				mesh.batch();
+		}
 	}
 
-	public void update(float dt) {
+	public void update(Model model, float dt) {
 		if(animationComponent != null)
-			animationComponent.updateAnimation(dt);
-	}
-
-	public BaseMesh getMesh(){
-		return mesh;
+			animationComponent.updateAnimation(model, dt);
 	}
 	
-	public void draw() {
+	public void draw(Model model) {
 		Matrix modelMatrix = ((PredictableTransformComponent) getOwner().getTransform()).getRenderTransform().toMatrix();
 
-		renderMaterial.getShader().setUniform("Model", modelMatrix);
+		model.getRenderMaterial().getShader().setUniform("Model", modelMatrix);
 
 		if(animationComponent != null){
-			animationComponent.render();
+			animationComponent.render(model);
 		}
 
-		SnapshotEntity snapshot = new SnapshotEntity(renderMaterial, getOwner());
+		SnapshotEntity snapshot = new SnapshotEntity(model.getRenderMaterial(), getOwner());
 
-		renderMaterial.preRenderEntity(snapshot);
-		mesh.render(renderMaterial);
-		renderMaterial.postRenderEntity(snapshot);
-	}
-
-	public Model getModel() {
-		return modelComponent.getModel();
+		model.getRenderMaterial().preRenderEntity(snapshot);
+		((BaseMesh)model.getMesh()).render(model.getRenderMaterial());
+		model.getRenderMaterial().postRenderEntity(snapshot);
 	}
 }

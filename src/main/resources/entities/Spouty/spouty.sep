@@ -1,6 +1,5 @@
 Name: "Spouty"
 Components:
-    -  org.spout.api.component.impl.ModelComponent
     - org.spout.engine.entity.component.SpoutAnimationComponent
     - org.spout.engine.entity.component.EntityRendererComponent
 Data:

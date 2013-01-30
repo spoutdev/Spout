@@ -47,7 +47,6 @@ import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.component.impl.AnimationComponent;
 import org.spout.api.component.impl.HitBlockComponent;
-import org.spout.api.component.impl.ModelComponent;
 import org.spout.api.component.impl.PhysicsComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
@@ -56,6 +55,7 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
 import org.spout.api.plugin.Platform;
@@ -64,6 +64,7 @@ import org.spout.api.plugin.Plugin;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutPlayer;
+import org.spout.engine.entity.component.EntityRendererComponent;
 import org.spout.engine.entity.component.SpoutPhysicsComponent;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
 import org.spout.engine.world.SpoutRegion;
@@ -350,25 +351,27 @@ public class TestCommands {
 			return;
 		}
 		
-		ModelComponent model = e.get(ModelComponent.class);
+		EntityRendererComponent rendererComponent = e.get(EntityRendererComponent.class);
 		
-		if(model == null){
+		if(rendererComponent.getModels().isEmpty()){
 			Spout.log("No model on this entity");
 			return;
 		}
 
-		Skeleton skeleton = model.getModel().getSkeleton();
+		Model model = rendererComponent.getModels().get(0);
+		
+		Skeleton skeleton = model.getSkeleton();
 
 		if(skeleton == null){
 			Spout.log("No skeleton on this entity");
 			return;
 		}
 
-		Animation animation = model.getModel().getAnimations().get(args.getString(1));
+		Animation animation = model.getAnimations().get(args.getString(1));
 		
 		if(animation == null){
 			Spout.log("No animation with " + args.getString(1) + ", see the list :");
-			for(String a : model.getModel().getAnimations().keySet()){
+			for(String a : model.getAnimations().keySet()){
 				Spout.log(a);
 			}
 			return;
@@ -376,7 +379,7 @@ public class TestCommands {
 		
 		AnimationComponent ac = e.get(AnimationComponent.class);
 
-		ac.playAnimation(animation, args.length() > 2 ? args.getString(2).equalsIgnoreCase("on") : false);
+		ac.playAnimation(model, animation, args.length() > 2 ? args.getString(2).equalsIgnoreCase("on") : false);
 		
 		Spout.log("Entity " + id + " play " + animation.getName());
 	}

@@ -28,15 +28,18 @@ package org.spout.engine.entity.component;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.lwjgl.BufferUtils;
 import org.spout.api.Spout;
 import org.spout.api.component.impl.AnimationComponent;
-import org.spout.api.component.impl.ModelComponent;
+import org.spout.api.component.impl.ModelHolderComponent;
 import org.spout.api.event.entity.AnimationEndEvent;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.MatrixMath;
+import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.AnimationPlayed;
 import org.spout.api.model.animation.Skeleton;
@@ -51,11 +54,11 @@ public class SpoutAnimationComponent extends AnimationComponent {
 	public final static int ALLOWED_BONE_PER_VERTEX = 2;
 	public final static int ALLOWED_ANIMATION_PER_MESH = 2;
 	public final static int ALLOWED_BONE_PER_MESH = 10;
-	
+
 	public final static int LAYOUT_WEIGHT = 4;
 	public final static int LAYOUT_ID = 5;
 
-	private List<AnimationPlayed> animations = new ArrayList<AnimationPlayed>();
+	private Map<Model,List<AnimationPlayed>> animations = new HashMap<Model,List<AnimationPlayed>>();
 
 	//Keep a matrices array at the size of managed skeleton
 	private RenderMaterial renderMaterial;
@@ -63,12 +66,12 @@ public class SpoutAnimationComponent extends AnimationComponent {
 	private Matrix[] matrices = null;
 
 	@Override
-	public AnimationPlayed playAnimation(Animation animation){
-		return playAnimation(animation,false);
+	public AnimationPlayed playAnimation(Model model, Animation animation){
+		return playAnimation(model, animation, false);
 	}
 
 	@Override
-	public AnimationPlayed playAnimation(Animation animation, boolean loop){
+	public AnimationPlayed playAnimation(Model model, Animation animation, boolean loop){
 		//TODO : Maybe check if the animation is compatible with the skeletin of this model
 		//TODO : Maybe make real sync to avoid error with render
 
@@ -77,8 +80,16 @@ public class SpoutAnimationComponent extends AnimationComponent {
 		//Allocate matrices
 		ac.setMatrices(new Matrix[ALLOWED_BONE_PER_MESH]);
 
-		animations.add(ac);
+		
+		List<AnimationPlayed> list = animations.get(model);
 
+		if(list == null){
+			list = new ArrayList<AnimationPlayed>();
+			animations.put(model, list);
+		}
+		
+		list.add(ac);
+		
 		return ac;
 	}
 
@@ -92,78 +103,84 @@ public class SpoutAnimationComponent extends AnimationComponent {
 		animations.clear();
 	}
 
-	public void batchSkeleton(BaseMesh mesh) {
-		ModelComponent model = getOwner().get(ModelComponent.class);
+	//TODO move this in model
+	public void batchSkeleton() {
+		ModelHolderComponent models = getOwner().get(ModelHolderComponent.class);
 
-		if( model.getModel().getSkeleton() == null)
-			throw new IllegalStateException("AnimationComponent require a entity with a skeleton");
+		for(Model model : models.getModels()){
 
-		Skeleton skeleton = model.getModel().getSkeleton();
+			if(model.getSkeleton() == null)
+				continue;
 
-		if (skeleton != null) {
+			Skeleton skeleton = model.getSkeleton();
 
-			renderMaterial = model.getModel().getRenderMaterial();
+			if (skeleton != null) {
 
-			//Register matrices identity to fill when no animation
-			matrices = new Matrix[ALLOWED_BONE_PER_MESH];
-			for (int i = 0; i < matrices.length; i++) {
-				matrices[i] = identity;
+				BaseMesh mesh = (BaseMesh) model.getMesh();
+				renderMaterial = model.getRenderMaterial();
+
+				//Register matrices identity to fill when no animation
+				matrices = new Matrix[ALLOWED_BONE_PER_MESH];
+				for (int i = 0; i < matrices.length; i++) {
+					matrices[i] = identity;
+				}
+
+				bonesInMesh = skeleton.getBoneSize();
+
+				if(mesh.getContainer().getBuffers().containsKey(LAYOUT_ID))
+					return;
+
+				System.out.println("Buffering skeleton");
+				FloatBuffer boneIdBuffer = BufferUtils.createFloatBuffer(mesh.getContainer().element * ALLOWED_BONE_PER_VERTEX);
+				FloatBuffer weightBuffer = BufferUtils.createFloatBuffer(mesh.getContainer().element * ALLOWED_BONE_PER_VERTEX);
+
+				boneIdBuffer.clear();
+				weightBuffer.clear();
+
+				//For each vertice
+				for (int i = 0; i < mesh.getContainer().element; i++) {
+
+					//Get the vertice id in the .obj/.ske referential
+					int vertexId = mesh.getContainer().getVerticeIndex()[i] - 1;
+
+					if (vertexId >= skeleton.getVerticeArray().size()) {
+						throw new IllegalStateException("Mesh don't match skeleton");
+					}
+
+					int j = 0;
+					//For each registred bone associated with this vertice, add it in buffer
+					for (; j < skeleton.getVerticeArray().get(vertexId).size(); j++) {
+						int bone_id = skeleton.getVerticeArray().get(vertexId).get(j);
+						boneIdBuffer.put(bone_id);
+						float weight = skeleton.getWeightArray().get(vertexId).get(j);
+						weightBuffer.put(weight);
+					}
+					//Full the buffer for the number of vertice
+					for (; j < ALLOWED_BONE_PER_VERTEX; j++) {
+						boneIdBuffer.put(0);
+						weightBuffer.put(0);
+					}
+				}
+
+				boneIdBuffer.flip();
+				weightBuffer.flip();
+				System.out.println(mesh.getContainer().element + " -> " + boneIdBuffer.limit());
+
+				mesh.getContainer().setBuffers(LAYOUT_WEIGHT, weightBuffer);
+				mesh.getContainer().setBuffers(LAYOUT_ID, boneIdBuffer);
+				render(model);//Render one time to send the required uniform
+				System.out.println("Buffering skeleton SUCCESS");
 			}
-
-			bonesInMesh = skeleton.getBoneSize();
-
-			if(mesh.getContainer().getBuffers().containsKey(LAYOUT_ID))
-				return;
-
-			System.out.println("Buffering skeleton");
-			FloatBuffer boneIdBuffer = BufferUtils.createFloatBuffer(mesh.getContainer().element * ALLOWED_BONE_PER_VERTEX);
-			FloatBuffer weightBuffer = BufferUtils.createFloatBuffer(mesh.getContainer().element * ALLOWED_BONE_PER_VERTEX);
-
-			boneIdBuffer.clear();
-			weightBuffer.clear();
-
-			//For each vertice
-			for (int i = 0; i < mesh.getContainer().element; i++) {
-
-				//Get the vertice id in the .obj/.ske referential
-				int vertexId = mesh.getContainer().getVerticeIndex()[i] - 1;
-
-				if (vertexId >= skeleton.getVerticeArray().size()) {
-					throw new IllegalStateException("Mesh don't match skeleton");
-				}
-
-				int j = 0;
-				//For each registred bone associated with this vertice, add it in buffer
-				for (; j < skeleton.getVerticeArray().get(vertexId).size(); j++) {
-					int bone_id = skeleton.getVerticeArray().get(vertexId).get(j);
-					boneIdBuffer.put(bone_id);
-					float weight = skeleton.getWeightArray().get(vertexId).get(j);
-					weightBuffer.put(weight);
-				}
-				//Full the buffer for the number of vertice
-				for (; j < ALLOWED_BONE_PER_VERTEX; j++) {
-					boneIdBuffer.put(0);
-					weightBuffer.put(0);
-				}
-			}
-
-			boneIdBuffer.flip();
-			weightBuffer.flip();
-			System.out.println(mesh.getContainer().element + " -> " + boneIdBuffer.limit());
-
-			mesh.getContainer().setBuffers(LAYOUT_WEIGHT, weightBuffer);
-			mesh.getContainer().setBuffers(LAYOUT_ID, boneIdBuffer);
-			render();//Render one time to send the required uniform
-			System.out.println("Buffering skeleton SUCCESS");
 		}
 	}
 
-	public void updateAnimation(float dt){
+	public void updateAnimation(Model model, float dt){
 		if (animations.isEmpty())
 			return;
 
-		for(int i = 0; i < animations.size(); i++){
-			AnimationPlayed ac = animations.get(i);
+		List<AnimationPlayed> list = animations.get(model);
+		for(int i = 0; i < list.size(); i++){
+			AnimationPlayed ac = list.get(i);
 
 			ac.setCurrentTime(ac.getCurrentTime() + dt * ac.getSpeed());
 
@@ -187,9 +204,9 @@ public class SpoutAnimationComponent extends AnimationComponent {
 		}
 	}
 
-	public void render(){
+	public void render(Model model){
 		int count = 0;
-		for(AnimationPlayed ac : animations){
+		for(AnimationPlayed ac : animations.get(model)){
 			int i;
 
 			for (i = 0; i < bonesInMesh; i++) {

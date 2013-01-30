@@ -38,8 +38,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
-import net.royawesome.jlibnoise.MathHelper;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.jboss.netty.bootstrap.ClientBootstrap;
@@ -60,20 +58,17 @@ import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.component.impl.AnimationComponent;
 import org.spout.api.component.impl.CameraComponent;
 import org.spout.api.component.impl.HitBlockComponent;
-import org.spout.api.component.impl.ModelComponent;
+import org.spout.api.component.impl.ModelHolderComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
-import org.spout.api.event.EventHandler;
-import org.spout.api.event.Listener;
 import org.spout.api.event.engine.EngineStartEvent;
 import org.spout.api.event.engine.EngineStopEvent;
-import org.spout.api.event.entity.AnimationEndEvent;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.gui.ScreenStack;
-import org.spout.api.math.GenericMath;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
+import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.AnimationPlayed;
 import org.spout.api.plugin.Platform;
@@ -90,7 +85,6 @@ import org.spout.engine.command.InputManagementCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.entity.component.ClientTextModelComponent;
-import org.spout.engine.entity.component.EntityRendererComponent;
 import org.spout.engine.filesystem.ClientFileSystem;
 import org.spout.engine.input.SpoutInputManager;
 import org.spout.engine.listener.SpoutClientListener;
@@ -194,15 +188,17 @@ public class SpoutClient extends SpoutEngine implements Client {
 						e.setSavable(false); // To prevent entity duplication
 
 						//Animation part
-						ModelComponent model = e.get(ModelComponent.class);
+						ModelHolderComponent modelHolderComponent = e.get(ModelHolderComponent.class);
 						//EntityRendererComponent renderComponent = e.get(EntityRendererComponent.class);
 						AnimationComponent animationComponent = e.get(AnimationComponent.class);
 						
-						Animation a1 = model.getModel().getAnimations().get("animatest1");
-						Animation a2 = model.getModel().getAnimations().get("animatest2");
+						Model model = modelHolderComponent.getModels().get(0);
+						
+						Animation a1 = model.getAnimations().get("animatest1");
+						Animation a2 = model.getAnimations().get("animatest2");
 
 						//Launch first animation
-						AnimationPlayed ac = animationComponent.playAnimation(a1, true);
+						AnimationPlayed ac = animationComponent.playAnimation(model, a1, true);
 						ac.setCurrentTime(j * 0.5f);
 						ac.setSpeed(j * 0.5f);
 

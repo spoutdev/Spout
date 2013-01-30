@@ -34,12 +34,8 @@ import java.util.Map.Entry;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
-import org.spout.api.component.impl.ModelComponent;
 import org.spout.api.entity.Entity;
-import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
-import org.spout.api.event.Order;
-import org.spout.api.event.entity.EntityDespawnEvent;
 import org.spout.api.model.Model;
 import org.spout.api.render.Camera;
 import org.spout.engine.SpoutClient;
@@ -57,26 +53,21 @@ public class EntityRenderer implements Listener{
 	public void addEntity(Entity entity){
 		EntityRendererComponent render = entity.get(EntityRendererComponent.class);
 		
-		if(render == null){
+		if(render == null || render.getModels().isEmpty()){
 			return;
 		}
 		
-		ModelComponent modelComponent = entity.get(ModelComponent.class);
-
-		if (modelComponent == null || modelComponent.getModel() == null) {
-			return;
+		for(Model model : render.getModels()){
+			List<Entity> list = entities.get(model);
+			
+			if(list == null){
+				list = new ArrayList<Entity>();
+				entities.put(model, list);
+			}
+			
+			list.add(entity);
 		}
 		
-		Model model = modelComponent.getModel();
-		
-		List<Entity> list = entities.get(model);
-		
-		if(list == null){
-			list = new ArrayList<Entity>();
-			entities.put(model, list);
-		}
-		
-		list.add(entity);
 		render.init();
 		render.setRendered(true);//entity.setRendered(true);
 		count++;
@@ -84,23 +75,23 @@ public class EntityRenderer implements Listener{
 	
 	public void removeEntity(Entity entity){
 		EntityRendererComponent render = entity.get(EntityRendererComponent.class);
-		ModelComponent modelComponent = entity.get(ModelComponent.class);
 
-		if (modelComponent == null || modelComponent.getModel() == null) {
+		if(render == null || render.getModels().isEmpty()){
 			return;
 		}
+		
+		for(Model model : render.getModels()){
+			List<Entity> list = entities.get(model);
 
-		Model model = modelComponent.getModel();
+			list.remove(entity);
+			
+			if(list.isEmpty()){
+				entities.remove(model);
+			}
+		}
 		
-		List<Entity> list = entities.get(model);
-		
-		list.remove(entity);
 		render.setRendered(false);//entity.setRendered(false);
 		count--;
-		
-		if(list.isEmpty()){
-			entities.remove(model);
-		}
 	}
 	
 	/*@EventHandler(order = Order.MONITOR)
@@ -145,13 +136,13 @@ public class EntityRenderer implements Listener{
 			//Render model
 			mesh.preDraw();
 			
-			first.getModel().getRenderMaterial().getShader().setUniform("View", camera.getView());
-			first.getModel().getRenderMaterial().getShader().setUniform("Projection", camera.getProjection());
+			model.getRenderMaterial().getShader().setUniform("View", camera.getView());
+			model.getRenderMaterial().getShader().setUniform("Projection", camera.getProjection());
 			
 			for(Entity e : list){
 				EntityRendererComponent r = e.get(EntityRendererComponent.class);
-				r.update(dt);
-				r.draw();
+				r.update(model, dt);
+				r.draw(model);
 			}
 			
 			mesh.postDraw();
