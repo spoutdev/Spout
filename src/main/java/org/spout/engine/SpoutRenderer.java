@@ -47,6 +47,7 @@ import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
+import org.spout.api.entity.Entity;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.gui.FullScreen;
 import org.spout.api.gui.Screen;
@@ -61,6 +62,7 @@ import org.spout.api.render.RenderMode;
 import org.spout.api.render.Shader;
 
 import org.spout.engine.batcher.SpriteBatch;
+import org.spout.engine.entity.component.SpoutSceneComponent;
 import org.spout.engine.input.SpoutInputManager;
 import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
@@ -183,7 +185,10 @@ public class SpoutRenderer {
 			}
 			skydomeMesh.render(skydome.getRenderMaterial());
 		}
-
+		//Interpolate entity transform if Physics is not currently applied to the entity
+		for (Entity e : client.getActiveWorld().getAll()) {
+			((SpoutSceneComponent)e.getScene()).updateRender(dt);
+		}
 		client.getActiveCamera().updateView();
 
 		//Pull input each frame

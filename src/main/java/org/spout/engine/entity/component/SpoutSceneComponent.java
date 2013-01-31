@@ -54,9 +54,14 @@ import org.spout.engine.world.SpoutRegion;
 public class SpoutSceneComponent extends SceneComponent {
 	private final Transform snapshot = new Transform();
 	private final Transform live = new Transform();
-	private final Transform render = new Transform();
 	private final AtomicReference<SpoutRegion> simulationRegion = new AtomicReference<SpoutRegion>(null);
 	private RigidBody body;
+
+	//Client/Rendering
+	private final Transform render = new Transform();
+	private Vector3 speed = Vector3.ONE;
+	private Quaternion rotate = Quaternion.IDENTITY;
+	private Vector3 scale = Vector3.ONE;
 
 	@Override
 	public void onAttached() {
@@ -64,6 +69,7 @@ public class SpoutSceneComponent extends SceneComponent {
 		//		if (getOwner() instanceof Player) {
 		//			throw new IllegalStateException("This component is not designed for Players.");
 		//		}
+		render.set(live);
 	}
 
 	@Override
@@ -481,6 +487,21 @@ public class SpoutSceneComponent extends SceneComponent {
 	 */
 	public void copySnapshot() {
 		snapshot.set(live);
+		
+		float ratio = 80f / 20f;
+		speed = snapshot.getPosition().subtract(render.getPosition()).multiply(ratio);
+		rotate = snapshot.getRotation();
+		scale = snapshot.getScale().subtract(render.getScale()).multiply(ratio);
+	}
+
+	public void updateRender(float dt) {
+		render.translate(speed.multiply(dt));
+		Quaternion q = render.getRotation();
+		render.setRotation(new Quaternion(	q.getX()*(1-dt) + rotate.getX()*dt,
+													q.getY()*(1-dt) + rotate.getY()*dt,
+													q.getZ()*(1-dt) + rotate.getZ()*dt,
+													q.getW()*(1-dt) + rotate.getW()*dt,false));
+		render.setScale(render.getScale().add(scale.multiply(dt)));
 	}
 
 	/**
