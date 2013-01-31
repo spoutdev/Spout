@@ -66,10 +66,10 @@ public interface Command extends Completor {
 	 *
 	 * @param owner The owner of these commands
 	 * @param object The {@link T} used by the CommandRegistrationFactory to
-	 *            register commands.
+	 *			register commands.
 	 * @param factory The {@link CommandRegistrationsFactory} used to convert
-	 *            {@code object} into a {@link java.util.List} of
-	 *            {@link Command}s
+	 *			{@code object} into a {@link java.util.List} of
+	 *			{@link Command}s
 	 * @param <T> The type that {@code factory} accepts
 	 * @return
 	 */
@@ -97,7 +97,7 @@ public interface Command extends Completor {
 	 * @param args the command arguments
 	 * @param baseIndex the arguments that have already been processed by
 	 * @param fuzzyLookup Whether to use levenschtein distance while looking up
-	 *            commands.
+	 *			commands.
 	 * @throws org.spout.api.exception.CommandException when invalid arguments were passed to the command or an error occurred
 	 */
 	public void execute(CommandSource source, String name, List<ChatSection> args, int baseIndex, boolean fuzzyLookup) throws CommandException;
@@ -108,7 +108,7 @@ public interface Command extends Completor {
 	 * @param name The alias used to look this command up
 	 * @param args The arguments provided
 	 * @param fuzzyLookup Whether to use levenschtein distance while looking up
-	 *            commands.
+	 *			commands.
 	 * @return Whether execution was successful.
 	 */
 	public boolean process(CommandSource source, String name, ChatArguments args, boolean fuzzyLookup);
@@ -169,6 +169,18 @@ public interface Command extends Completor {
 	 * @return the active Command
 	 */
 	public Command setExecutor(Platform platform, CommandExecutor executor);
+	
+	/**
+	 * Gets the executor for the active Command if found, null otherwise.
+	 * @return the executor
+	 */
+	public CommandExecutor getExecutor();
+	
+	/**
+	 * Gets the executor for the active Command for the specified platform if found, null otherwise.
+	 * @return the executor for the speficied platform
+	 */
+	public CommandExecutor getExecutor(Platform platform);
 
 	/**
 	 * Adds flags to this Command's list of allowed flags. Flags are given in
@@ -331,7 +343,7 @@ public interface Command extends Completor {
 	 * Sets the permissions required to use this command.
 	 *
 	 * @param requireAll Whether to require all of the listed permissions to
-	 *            execute the command.
+	 *			execute the command.
 	 * @param permissions The permissions required
 	 * @return The active command
 	 */
@@ -345,6 +357,20 @@ public interface Command extends Completor {
 	 * @return The active command
 	 */
 	public Command setArgBounds(int min, int max);
+	
+	/**
+	 * Gets the minimal the arg limit for a command.
+	 *
+	 * @return The minimal arg limit
+	 */
+	public int getMinArgBounds();
+	
+	/**
+	 * Gets the maximal the arg limit for a command.
+	 *
+	 * @return The maximal arg limit
+	 */
+	public int getMaxArgBounds();
 
 	/**
 	 * Return a child of this command registered with {@code name}
