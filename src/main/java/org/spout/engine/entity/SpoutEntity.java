@@ -352,7 +352,6 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	 * Prevents stack overflow when creating an entity during chunk loading due to circle of calls
 	 */
 	public void setupInitialChunk(Transform transform) {
-		System.out.println(scene.getTransformLive().getPosition());
 		SpoutRegion region = (SpoutRegion) scene.getTransformLive().getPosition().getChunk(LoadOption.LOAD_GEN).getRegion();
 		entityManager.set(region.getEntityManager());
 		scene.simulate(region);

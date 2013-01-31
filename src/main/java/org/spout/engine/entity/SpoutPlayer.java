@@ -124,10 +124,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	@SnapshotRead
 	public SpoutSession<?> getSession() {
-		SpoutSession<?> session = this.session;
-		if (session == null) {
-			throw new IllegalArgumentException("Session cannot be null!");
-		}
 		return session;
 	}
 
