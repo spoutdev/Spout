@@ -39,9 +39,7 @@ import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
 import org.spout.api.component.impl.NetworkComponent;
-import org.spout.api.component.impl.PhysicsComponent;
-import org.spout.api.component.impl.PredictableTransformComponent;
-import org.spout.api.component.impl.TransformComponent;
+import org.spout.api.component.impl.SceneComponent;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
@@ -54,12 +52,11 @@ import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
-import org.spout.api.plugin.Platform;
 import org.spout.api.util.OutwardIterator;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.SnapshotRead;
 import org.spout.engine.SpoutConfiguration;
-import org.spout.engine.entity.component.SpoutPhysicsComponent;
+import org.spout.engine.entity.component.SpoutSceneComponent;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.Snapshotable;
 import org.spout.engine.util.thread.snapshotable.SnapshotableBoolean;
@@ -87,7 +84,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	protected boolean justSpawned = true;
 	//For faster access
 	private final NetworkComponent network;
-	private final TransformComponent transform;
+	private final SpoutSceneComponent scene;
 	private Class<? extends Component>[] initialComponents = null;
 
 	public SpoutEntity(Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
@@ -95,12 +92,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		
 		observer = new SnapshotableReference<Iterator<IntVector3>>(snapshotManager, INITIAL_TICK);
 		observer.set(NOT_OBSERVING);
-
-		if (Spout.getPlatform() == Platform.CLIENT) {
-			this.transform = add(PredictableTransformComponent.class);
-		} else {
-			this.transform = add(TransformComponent.class);
-		}
+		scene = (SpoutSceneComponent) add(SceneComponent.class);
 
 		network = add(NetworkComponent.class);
 
@@ -111,8 +103,8 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		}
 
 		if (transform != null) {
-			getTransform().setTransform(transform);
-			getTransform().copySnapshot();
+			scene.setTransform(transform);
+			scene.copySnapshot();
 		}
 		
 		if (components != null && components.length > 0) {
@@ -148,8 +140,8 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	protected <T extends Component> T add(Class<T> type, boolean attach) {
-		if (type.equals(PhysicsComponent.class)) {
-			return super.add(type, SpoutPhysicsComponent.class, attach);
+		if (type.equals(SceneComponent.class)) {
+			return super.add(type, SpoutSceneComponent.class, attach);
 		}
 		return super.add(type, attach);
 	}
@@ -264,7 +256,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		
 		final int viewDistance = getViewDistance() >> Chunk.BLOCKS.BITS;
 		World w = getWorld();
-		Transform t = getTransform().getTransform();
+		Transform t = scene.getTransform();
 		Chunk c = w.getChunkFromBlock(t.getPosition(), LoadOption.LOAD_GEN);
 		int cx = c.getX();
 		int cy = c.getY();
@@ -296,11 +288,11 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	public Chunk getChunk() {
-		return getTransform().getPosition().getChunk(LoadOption.NO_LOAD);
+		return scene.getPosition().getChunk(LoadOption.NO_LOAD);
 	}
 
 	public Chunk getChunkLive() {
-		return getTransform().getTransformLive().getPosition().getChunk(LoadOption.NO_LOAD);
+		return scene.getTransformLive().getPosition().getChunk(LoadOption.NO_LOAD);
 	}
 
 	@Override
@@ -348,7 +340,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	public String toString() {
-		return "SpoutEntity - ID: " + this.getId() + " Position: " + getTransform().getPosition();
+		return "SpoutEntity - ID: " + this.getId() + " Position: " + scene.getPosition();
 	}
 
 	@Override
@@ -360,8 +352,10 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	 * Prevents stack overflow when creating an entity during chunk loading due to circle of calls
 	 */
 	public void setupInitialChunk(Transform transform) {
-		SpoutRegion region = (SpoutRegion) getTransform().getTransformLive().getPosition().getChunk(LoadOption.LOAD_GEN).getRegion();
+		System.out.println(scene.getTransformLive().getPosition());
+		SpoutRegion region = (SpoutRegion) scene.getTransformLive().getPosition().getChunk(LoadOption.LOAD_GEN).getRegion();
 		entityManager.set(region.getEntityManager());
+		scene.simulate(region);
 
 		snapshotManager.copyAllSnapshots();
 
@@ -373,13 +367,8 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 
 	@Override
 	public void copySnapshot() {
-		getTransform().copySnapshot();
+		scene.copySnapshot();
 		snapshotManager.copyAllSnapshots();
-
-		PhysicsComponent physics = get(PhysicsComponent.class);
-		if (physics != null) {
-			((SpoutPhysicsComponent) physics).copySnapshot();
-		}
 
 		justSpawned = false;
 	}
@@ -412,8 +401,8 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	}
 
 	@Override
-	public TransformComponent getTransform() {
-		return transform;
+	public SceneComponent getScene() {
+		return scene;
 	}
 
 	@Override

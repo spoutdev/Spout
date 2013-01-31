@@ -45,6 +45,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
+
 import org.spout.api.Client;
 import org.spout.api.FileSystem;
 import org.spout.api.Spout;
@@ -57,7 +58,7 @@ import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
 import org.spout.api.component.impl.AnimationComponent;
 import org.spout.api.component.impl.CameraComponent;
-import org.spout.api.component.impl.HitBlockComponent;
+import org.spout.api.component.impl.InteractComponent;
 import org.spout.api.component.impl.ModelHolderComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
@@ -80,6 +81,7 @@ import org.spout.api.protocol.Session;
 import org.spout.api.render.Camera;
 import org.spout.api.render.Font;
 import org.spout.api.render.RenderMode;
+
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.command.InputManagementCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
@@ -150,7 +152,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public void start() {
 		start(true);
 	}
-	
+
 	@Override
 	public void start(boolean checkWorlds) {
 		super.start(checkWorlds);
@@ -169,17 +171,17 @@ public class SpoutClient extends SpoutEngine implements Client {
 			}
 			// TODO : Wait until the world is fully loaded
 		}
-		
+
 		((SpoutScheduler) Spout.getScheduler()).coreSafeRun("Client setup task", new Runnable() {
 			public void run() {
 				activePlayer = new SpoutClientPlayer("Spouty", getDefaultWorld().getSpawnPoint(), SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 				activeCamera = activePlayer.add(CameraComponent.class);
-				activePlayer.add(HitBlockComponent.class);
+				activePlayer.add(InteractComponent.class);
 				getActiveWorld().spawnEntity(activePlayer);
 				Font font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
 
-				for(int i = 0; i < 10; i ++){
-					for(int j = 0; j < 10; j ++){
+				for (int i = 0; i < 10; i++) {
+					for (int j = 0; j < 10; j++) {
 
 						// Test
 						ClientEntityPrefab spoutyType = (ClientEntityPrefab) Spout.getFilesystem().getResource("entity://Spout/entities/Spouty/spouty.sep");
@@ -191,9 +193,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 						ModelHolderComponent modelHolderComponent = e.get(ModelHolderComponent.class);
 						//EntityRendererComponent renderComponent = e.get(EntityRendererComponent.class);
 						AnimationComponent animationComponent = e.get(AnimationComponent.class);
-						
+
 						Model model = modelHolderComponent.getModels().get(0);
-						
+
 						Animation a1 = model.getAnimations().get("animatest1");
 						Animation a2 = model.getAnimations().get("animatest2");
 
@@ -216,9 +218,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 				renderer = getScheduler().startRenderThread(new Vector2(1204, 796), ccoverride, null);
 			}
 		});
-		
+
 		getScheduler().startGuiThread();
-		
+
 		//TODO Maybe a better way of alerting plugins the client is done?
 		if (EngineStartEvent.getHandlerList().getRegisteredListeners().length != 0) {
 			Spout.getEventManager().callEvent(new EngineStartEvent());
@@ -404,7 +406,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public void setSession(SpoutClientSession session) {
 		this.session.set(session);
 		getSessionRegistry().add(session);
-		activePlayer.connect(session, activePlayer.getTransform().getTransform());
+		activePlayer.connect(session, activePlayer.getScene().getTransform());
 		session.setPlayer(activePlayer);
 		players.putIfAbsent(activePlayer.getName(), activePlayer);
 	}

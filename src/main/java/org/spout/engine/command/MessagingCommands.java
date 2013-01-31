@@ -26,7 +26,6 @@
  */
 package org.spout.engine.command;
 
-import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.channel.ChatChannel;
@@ -37,7 +36,6 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.command.annotated.Executor;
-import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.event.player.PlayerChatEvent;
 import org.spout.api.exception.CommandException;

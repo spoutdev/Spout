@@ -34,6 +34,7 @@ import org.spout.api.command.annotated.Executor;
 import org.spout.api.exception.CommandException;
 import org.spout.api.input.Keyboard;
 import org.spout.api.plugin.Platform;
+
 import org.spout.engine.SpoutEngine;
 
 public class InputManagementCommands {

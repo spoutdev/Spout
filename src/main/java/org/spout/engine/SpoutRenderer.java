@@ -47,8 +47,6 @@ import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
-import org.spout.api.component.impl.PredictableTransformComponent;
-import org.spout.api.entity.Entity;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.gui.FullScreen;
 import org.spout.api.gui.Screen;
@@ -100,7 +98,7 @@ public class SpoutRenderer {
 		screenStack = new ScreenStack(mainScreen);
 
 		entityRenderer = new EntityRenderer();
-		
+
 		this.ccoverride = ccoverride;
 	}
 
@@ -112,13 +110,13 @@ public class SpoutRenderer {
 		client.getLogger().info("SpoutClient Information");
 		client.getLogger().info("Operating System: " + System.getProperty("os.name"));
 		client.getLogger().info("Renderer Mode: " + client.getRenderMode().toString());
-		client.getLogger().info("GL21: " + GLContext.getCapabilities().OpenGL21 + " GL32: " + GLContext.getCapabilities().OpenGL32);		
+		client.getLogger().info("GL21: " + GLContext.getCapabilities().OpenGL21 + " GL32: " + GLContext.getCapabilities().OpenGL32);
 		client.getLogger().info("OpenGL Information");
 		client.getLogger().info("Vendor: " + GL11.glGetString(GL11.GL_VENDOR));
 		client.getLogger().info("OpenGL Version: " + GL11.glGetString(GL11.GL_VERSION));
 		client.getLogger().info("GLSL Version: " + GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
 		client.getLogger().info("Max Textures: " + GL11.glGetInteger(GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS));
-			String extensions = "Extensions Supported: ";
+		String extensions = "Extensions Supported: ";
 		if (client.getRenderMode() == RenderMode.GL30 || client.getRenderMode() == RenderMode.GL40) {
 			for (int i = 0; i < GL11.glGetInteger(GL30.GL_NUM_EXTENSIONS); i++) {
 				extensions += GL30.glGetStringi(GL11.GL_EXTENSIONS, i) + " ";
@@ -150,14 +148,13 @@ public class SpoutRenderer {
 		gui = SpriteBatch.createSpriteBatch(client.getRenderMode(), resolution.getX(), resolution.getY());
 
 		font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
-		
+
 		t = new ClientRenderTexture(true, false, true);
 		t.writeGPU();
-		Shader s = (Shader)Spout.getFilesystem().getResource("shader://Spout/shaders/diffuse.ssf");
+		Shader s = (Shader) Spout.getFilesystem().getResource("shader://Spout/shaders/diffuse.ssf");
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("Diffuse", t);
 		mat = new ClientRenderMaterial(s, map);
-		
 	}
 
 	public void updateRender(long limit) {
@@ -165,17 +162,16 @@ public class SpoutRenderer {
 	}
 
 	Matrix ident = MatrixMath.createIdentity();
-	
 	ClientRenderTexture t;
 	ClientRenderMaterial mat;
 
 	public void render(float dt) {
 		SpoutClient client = (SpoutClient) Spout.getEngine();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
+
 		t.activate();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
+
 		Model skydome = (Model) client.getActiveWorld().getDataMap().get("Skydome");
 		if (skydome != null) {
 			skydome.getRenderMaterial().getShader().setUniform("View", client.getActiveCamera().getRotation());
@@ -187,34 +183,24 @@ public class SpoutRenderer {
 			}
 			skydomeMesh.render(skydome.getRenderMaterial());
 		}
-		
-		
-
-		//Interpolate entity transform if Physics is not currently applied to the entity
-		for (Entity e : client.getActiveWorld().getAll()) {
-			((PredictableTransformComponent) e.getTransform()).updateRender(dt);
-		}
 
 		client.getActiveCamera().updateView();
 
 		//Pull input each frame
-		((SpoutInputManager)((Client)Spout.getEngine()).getInputManager()).pollInput(client.getActivePlayer());
-		
+		((SpoutInputManager) ((Client) Spout.getEngine()).getInputManager()).pollInput(client.getActivePlayer());
+
 		//Call InputExecutor registred by plugin
-		((SpoutInputManager)((Client)Spout.getEngine()).getInputManager()).execute(dt);
-		
+		((SpoutInputManager) ((Client) Spout.getEngine()).getInputManager()).execute(dt);
+
 		Mouse.setGrabbed(screenStack.getVisibleScreens().getLast().grabsMouse());
 
 		long start = System.nanoTime();
 
 		worldRenderer.render();
 
-		long worldTime = System.nanoTime() - start;
 		start = System.nanoTime();
 
 		entityRenderer.render(dt);
-
-		long entityTime = System.nanoTime() - start;
 
 		if (wireframe) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
@@ -229,7 +215,7 @@ public class SpoutRenderer {
 		gui.draw(mat, 0, 1, 1, -1, -1, -1, 2, 2);
 
 		if (showDebugInfos) {
-			Point position = client.getActivePlayer().getTransform().getPosition();
+			Point position = client.getActivePlayer().getScene().getPosition();
 			gui.drawText(new ChatArguments("Spout client! Logged as ", ChatStyle.RED, client.getActivePlayer().getDisplayName(), ChatStyle.RESET, " in world: ", ChatStyle.RED, client.getActiveWorld().getName()), font, -0.95f, 0.9f, 10f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "x: ", position.getX()), font, -0.95f, 0.8f, 8f);
 			gui.drawText(new ChatArguments(ChatStyle.BLUE, "y: ", position.getY()), font, -0.95f, 0.7f, 8f);
@@ -247,7 +233,7 @@ public class SpoutRenderer {
 				gui.draw(widget.getRenderParts());
 			}
 		}
-		gui.render();	
+		gui.render();
 
 		guiTime = System.nanoTime() - start;
 
@@ -255,7 +241,7 @@ public class SpoutRenderer {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 		}
 	}
-	
+
 	long guiTime;
 
 	public void toggleDebugInfos() {
@@ -340,11 +326,11 @@ public class SpoutRenderer {
 			wireframe = true;
 		}
 	}
-	
-	public static void checkGLError(){
-		try{
+
+	public static void checkGLError() {
+		try {
 			Util.checkGLError();
-		}catch(OpenGLException e){
+		} catch (OpenGLException e) {
 			e.printStackTrace();
 		}
 	}

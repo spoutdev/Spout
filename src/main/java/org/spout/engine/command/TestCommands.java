@@ -35,10 +35,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import com.bulletphysics.collision.dispatch.CollisionFlags;
-import com.bulletphysics.collision.dispatch.CollisionObject;
-import com.bulletphysics.collision.shapes.BoxShape;
-
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandContext;
@@ -46,15 +42,16 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.component.impl.AnimationComponent;
-import org.spout.api.component.impl.HitBlockComponent;
-import org.spout.api.component.impl.PhysicsComponent;
+import org.spout.api.component.impl.InteractComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
@@ -65,9 +62,7 @@ import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.entity.component.EntityRendererComponent;
-import org.spout.engine.entity.component.SpoutPhysicsComponent;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
-import org.spout.engine.world.SpoutRegion;
 
 public class TestCommands {
 	private final SpoutEngine engine;
@@ -82,7 +77,7 @@ public class TestCommands {
 			throw new CommandException("You must be a client to perform this command.");
 		}
 		Player player = ((Client) Spout.getEngine()).getActivePlayer();
-		Block block = player.get(HitBlockComponent.class).getTargetBlock();
+		Block block = player.get(InteractComponent.class).getTargetBlock();
 
 		if (block == null || block.getMaterial().equals(BlockMaterial.AIR)) {
 			source.sendMessage("No blocks in range.");
@@ -203,45 +198,6 @@ public class TestCommands {
 		source.sendMessage("Plugins-report successfully created! " + linesep + "Stored in: " + standpath);
 	}
 
-	@Command(aliases = {"noclip"}, desc = "Toggles noclip on the client", min = 0, max = 1)
-	public void toggleNoClip(CommandContext args, CommandSource source) throws CommandException {
-		SpoutPlayer player;
-		if (!(source instanceof Player)) {
-			if (Spout.getPlatform() == Platform.CLIENT) {
-				player = ((SpoutClient) engine).getActivePlayer();
-			} else {
-				player = (SpoutPlayer) source;
-			}
-		} else {
-			throw new CommandException("Can only run this as a player!");
-		}
-		Spout.log("Toggling Physics...");
-		PhysicsComponent physics = player.get(PhysicsComponent.class);
-		if (physics != null) {
-			if (args.length() > 0) {
-				Spout.log("Specified a collision flag setting but physics is being turned off...");
-			}
-			player.detach(PhysicsComponent.class);
-		} else {
-			physics = player.add(PhysicsComponent.class);
-			physics.setMass(10f);
-			physics.setCollisionShape(new BoxShape(1f, 3f, 1f));
-			physics.setRestitution(0f);
-			boolean dynamic = true;
-			if (args.length() > 0) {
-				String arg = args.getString(0);
-				if (arg.equalsIgnoreCase("kinematic")) {
-					dynamic = false;
-				}
-			}
-			if (!dynamic) {
-				CollisionObject object = ((SpoutPhysicsComponent) physics).getCollisionObject();
-				object.setCollisionFlags(object.getCollisionFlags() | CollisionFlags.KINEMATIC_OBJECT);
-			}
-			((SpoutRegion) player.getRegion()).addPhysics(player);
-		}
-	}
-
 	@Command(aliases = {"move"}, desc = "Move a entity with his Id", min = 4, max = 4)
 	public void moveEntity(CommandContext args, CommandSource source) throws CommandException {
 		SpoutPlayer player;
@@ -262,12 +218,13 @@ public class TestCommands {
 
 		Entity e = player.getWorld().getEntity(id);
 
-		if(e == null)
+		if (e == null) {
 			return;
+		}
 
-		e.getTransform().setPosition(new Point(e.getWorld(), x, y, z));
+		e.getScene().setPosition(new Point(e.getWorld(), x, y, z));
 
-		Spout.log("Entity " + id + " move to " + x + " " + y + " " +z);
+		Spout.log("Entity " + id + " move to " + x + " " + y + " " + z);
 	}
 
 	@Command(aliases = {"rotate"}, desc = "Rotate a entity with his Id", min = 4, max = 4)
@@ -290,16 +247,13 @@ public class TestCommands {
 
 		Entity e = player.getWorld().getEntity(id);
 
-		if(e == null)
+		if (e == null) {
 			return;
+		}
+		e.getScene().setRotation(e.getScene().getTransform().getRotation().rotate(0, pitch, yaw, roll));
 
-		e.getTransform().setPitch(pitch);
-		e.getTransform().setYaw(yaw);
-		e.getTransform().setRoll(roll);
-
-		Spout.log("Entity " + id + " rotate to " + pitch + " " + yaw + " " +roll);
+		Spout.log("Entity " + id + " rotate to " + pitch + " " + yaw + " " + roll);
 	}
-
 
 	@Command(aliases = {"scale"}, desc = "Scale a entity with his Id", min = 4, max = 4)
 	public void scaleEntity(CommandContext args, CommandSource source) throws CommandException {
@@ -321,12 +275,15 @@ public class TestCommands {
 
 		Entity e = player.getWorld().getEntity(id);
 
-		if(e == null)
+		if (e == null) {
 			return;
+		}
 
-		e.getTransform().scale(x, y, z);
+		Transform transform = e.getScene().getTransform();
+		transform.scale(new Vector3(x, y, z));
+		e.getScene().setTransform(transform);
 
-		Spout.log("Entity " + id + " scale to " + x + " " + y + " " +z);
+		Spout.log("Entity " + id + " scale to " + x + " " + y + " " + z);
 	}
 
 	@Command(aliases = {"animstart"}, desc = "Launch a animation his Id", min = 2, max = 3)
@@ -345,45 +302,45 @@ public class TestCommands {
 		int id = args.getInteger(0);
 
 		Entity e = player.getWorld().getEntity(id);
-		
-		if(e == null){
+
+		if (e == null) {
 			Spout.log("Entity not found");
 			return;
 		}
-		
+
 		EntityRendererComponent rendererComponent = e.get(EntityRendererComponent.class);
-		
-		if(rendererComponent.getModels().isEmpty()){
+
+		if (rendererComponent.getModels().isEmpty()) {
 			Spout.log("No model on this entity");
 			return;
 		}
 
 		Model model = rendererComponent.getModels().get(0);
-		
+
 		Skeleton skeleton = model.getSkeleton();
 
-		if(skeleton == null){
+		if (skeleton == null) {
 			Spout.log("No skeleton on this entity");
 			return;
 		}
 
 		Animation animation = model.getAnimations().get(args.getString(1));
-		
-		if(animation == null){
+
+		if (animation == null) {
 			Spout.log("No animation with " + args.getString(1) + ", see the list :");
-			for(String a : model.getAnimations().keySet()){
+			for (String a : model.getAnimations().keySet()) {
 				Spout.log(a);
 			}
 			return;
 		}
-		
+
 		AnimationComponent ac = e.get(AnimationComponent.class);
 
 		ac.playAnimation(model, animation, args.length() > 2 ? args.getString(2).equalsIgnoreCase("on") : false);
-		
+
 		Spout.log("Entity " + id + " play " + animation.getName());
 	}
-	
+
 	@Command(aliases = {"animstop"}, desc = "Stop all animation on a entity", min = 1, max = 1)
 	public void stopAnimation(CommandContext args, CommandSource source) throws CommandException {
 		SpoutPlayer player;
@@ -400,24 +357,24 @@ public class TestCommands {
 		int id = args.getInteger(0);
 
 		Entity e = player.getWorld().getEntity(id);
-		
-		if(e == null){
+
+		if (e == null) {
 			Spout.log("Entity not found");
 			return;
 		}
-		
+
 		AnimationComponent ac = e.get(AnimationComponent.class);
-		
-		if(ac == null){
+
+		if (ac == null) {
 			Spout.log("No AnimationComponent on this entity");
 			return;
 		}
 
 		ac.stopAnimations();
-		
+
 		Spout.log("Entity " + id + " animation stopped ");
 	}
-	
+
 	/**
 	 * Replaces chars which are not allowed in filenames on windows with "-".
 	 */

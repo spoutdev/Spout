@@ -39,14 +39,14 @@ import org.spout.api.math.Vector3;
 import org.spout.api.protocol.reposition.RepositionManager;
 import org.spout.api.util.SpoutToStringStyle;
 
-public class EntityPositionMessage extends SpoutMessage {
+public class EntityTransformMessage extends SpoutMessage {
 	private final int entityId;
 	private final UUID worldUid;
 	private final Vector3 pos;
 	private final Quaternion rotation;
 	private final Vector3 scale;
 
-	public EntityPositionMessage(int entityId, Transform transform, RepositionManager rm) {
+	public EntityTransformMessage(int entityId, Transform transform, RepositionManager rm) {
 		this.entityId = entityId;
 		this.worldUid = transform.getPosition().getWorld().getUID();
 		this.pos = rm.convert(transform.getPosition());
@@ -54,7 +54,7 @@ public class EntityPositionMessage extends SpoutMessage {
 		this.scale = transform.getScale();
 	}
 
-	public EntityPositionMessage(int entityId, UUID worldUid, Vector3 pos, Quaternion rotation, Vector3 scale, RepositionManager rm) {
+	public EntityTransformMessage(int entityId, UUID worldUid, Vector3 pos, Quaternion rotation, Vector3 scale, RepositionManager rm) {
 		this.entityId = entityId;
 		this.worldUid = worldUid;
 		this.pos = rm.convert(pos);
@@ -110,8 +110,8 @@ public class EntityPositionMessage extends SpoutMessage {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof EntityPositionMessage) {
-			final EntityPositionMessage other = (EntityPositionMessage) obj;
+		if (obj instanceof EntityTransformMessage) {
+			final EntityTransformMessage other = (EntityTransformMessage) obj;
 			return new EqualsBuilder()
 					.append(entityId, other.entityId)
 					.append(worldUid, other.worldUid)

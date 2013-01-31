@@ -106,7 +106,7 @@ public class ClientTextModelComponent extends TextModelComponent {
 			updateMesh();
 		}
 
-		Transform mt = getOwner().getTransform().getTransform();
+		Transform mt = getOwner().getScene().getTransform();
 		mt.setPosition(mt.getPosition().add(translation));
 
 		//TODO: Implements lookCamera, basicaly its the inverse of the camera's rotation

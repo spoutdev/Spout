@@ -64,10 +64,10 @@ public class SyncedRootCommand extends RootCommand {
 		return new HashSet<String>(commandNameRegistration.getKeys());
 	}
 
-    @Override
-    protected IdSimpleCommand createSub(Named owner, String... aliases) {
-        return new IdSimpleCommand(owner, aliases);
-    }
+	@Override
+	protected IdSimpleCommand createSub(Named owner, String... aliases) {
+		return new IdSimpleCommand(owner, aliases);
+	}
 
 	@Override
 	public IdSimpleCommand addSubCommand(Named owner, String name) {

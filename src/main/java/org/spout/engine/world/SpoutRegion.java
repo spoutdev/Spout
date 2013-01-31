@@ -45,6 +45,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 
 import javax.vecmath.Matrix3f;
@@ -53,7 +54,6 @@ import javax.vecmath.Vector3f;
 
 import org.spout.api.Spout;
 import org.spout.api.component.Component;
-import org.spout.api.component.impl.PhysicsComponent;
 import org.spout.api.component.type.BlockComponent;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.datatable.ManagedHashMap;
@@ -109,7 +109,6 @@ import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutPlayer;
-import org.spout.engine.entity.component.SpoutPhysicsComponent;
 import org.spout.engine.filesystem.ChunkDataForRegion;
 import org.spout.engine.filesystem.versioned.ChunkFiles;
 import org.spout.engine.mesh.ChunkMesh;
@@ -218,6 +217,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 	private final AtomicReference<SpoutRegion>[][][] neighbours;
 
 	//Physics
+	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	private final DiscreteDynamicsWorld simulation;
 	private final CollisionDispatcher dispatcher;
 	private final BroadphaseInterface broadphase;
@@ -305,46 +305,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 		return simulation;
 	}
 
-	public void addPhysics(Entity e) {
-		PhysicsComponent physics = e.get(PhysicsComponent.class);
-		if (physics != null) {
-			addPhysics(physics);
-		}
-	}
-
-	public void removePhysics(Entity e) {
-		PhysicsComponent physics = e.get(PhysicsComponent.class);
-		if (physics != null) {
-			removePhysics(physics);
-		}
-	}
-
-	public void addPhysics(PhysicsComponent physics) {
-		CollisionObject object = ((SpoutPhysicsComponent) physics).getCollisionObject();
-		if (object == null || object.getCollisionShape() == null) {
-			return;
-		}
-		synchronized(simulation) {
-			if (object instanceof RigidBody) {
-				simulation.addRigidBody((RigidBody) object);
-			} else {
-				simulation.addCollisionObject(object);
-			}
-		}
-	}
-
-	public void removePhysics(PhysicsComponent physics) {
-		CollisionObject object = ((SpoutPhysicsComponent) physics).getCollisionObject();
-		if (object == null || object.getCollisionShape() == null) {
-			return;
-		}
-		synchronized(simulation) {
-			if (object instanceof RigidBody) {
-				simulation.removeRigidBody((RigidBody) object);
-			} else {
-				simulation.removeCollisionObject(object);
-			}
-		}
+	public ReentrantReadWriteLock getPhysicsLock() {
+		return lock;
 	}
 
 	public void startMeshGeneratorThread() {
@@ -564,7 +526,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 				numberActiveChunks.incrementAndGet();
 				if (dataForRegion != null) {
 					for (SpoutEntity entity : dataForRegion.loadedEntities) {
-						entity.setupInitialChunk(entity.getTransform().getTransform());
+						entity.setupInitialChunk(entity.getScene().getTransform());
 						entityManager.addEntity(entity);
 					}
 					dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);
@@ -1003,85 +965,84 @@ public class SpoutRegion extends Region implements AsyncManager {
 	 */
 	private void updateDynamics(float dt) {
 		try {
-			synchronized(simulation) {
-				//Simulate physics
-				simulation.stepSimulation(dt, 2);
-				final Dispatcher dispatcher = simulation.getDispatcher();
-				int manifolds = dispatcher.getNumManifolds();
-				for (int i = 0; i < manifolds; i++) {
-					PersistentManifold contact = dispatcher.getManifoldByIndexInternal(i);
-					Object colliderRawA = contact.getBody0();
-					Object colliderRawB = contact.getBody1();
-					if (!(colliderRawA instanceof CollisionObject) || !(colliderRawB instanceof CollisionObject)) {
+			lock.writeLock().lock();
+			//Simulate physics
+			simulation.stepSimulation(dt, 2);
+			final Dispatcher dispatcher = simulation.getDispatcher();
+			int manifolds = dispatcher.getNumManifolds();
+			for (int i = 0; i < manifolds; i++) {
+				PersistentManifold contact = dispatcher.getManifoldByIndexInternal(i);
+				Object colliderRawA = contact.getBody0();
+				Object colliderRawB = contact.getBody1();
+				if (!(colliderRawA instanceof CollisionObject) || !(colliderRawB instanceof CollisionObject)) {
+					continue;
+				}
+				Object holderA = ((CollisionObject) colliderRawA).getUserPointer();
+				Object holderB = ((CollisionObject) colliderRawB).getUserPointer();
+				int contacts = contact.getNumContacts();
+
+				//Loop through the contact points
+				for (int j = 0; j < contacts; j++) {
+					//Grab a contact point
+					final ManifoldPoint bulletPoint = contact.getContactPoint(j);
+					//Contact point is no longer valid as negative values = still within contact so lets not resolve that to the API
+					if (bulletPoint.getDistance() > 0f) {
 						continue;
 					}
-					Object holderA = ((CollisionObject) colliderRawA).getUserPointer();
-					Object holderB = ((CollisionObject) colliderRawB).getUserPointer();
-					int contacts = contact.getNumContacts();
+					//3D position where colliderA contacted colliderB
+					Point contactPointA = new Point(VectorMath.toVector3(bulletPoint.getPositionWorldOnA(new Vector3f())), getWorld());
+					//3D position where colliderB contacted colliderA
+					Point contactPointB = new Point(VectorMath.toVector3(bulletPoint.getPositionWorldOnB(new Vector3f())), getWorld());
 
-					//Loop through the contact points
-					for (int j = 0; j < contacts; j++) {
-						//Grab a contact point
-						final ManifoldPoint bulletPoint = contact.getContactPoint(j);
-						//Contact point is no longer valid as negative values = still within contact so lets not resolve that to the API
-						if (bulletPoint.getDistance() > 0f) {
-							continue;
+					//Resolve Entity -> Entity Collisions
+					if (holderA instanceof Entity) {
+						//Entity was removed before the contact point could be resolved, break
+						if (((Entity) holderA).isRemoved()) {
+							break;
 						}
-						//3D position where colliderA contacted colliderB
-						Point contactPointA = new Point(VectorMath.toVector3(bulletPoint.getPositionWorldOnA(new Vector3f())), getWorld());
-						//3D position where colliderB contacted colliderA
-						Point contactPointB = new Point(VectorMath.toVector3(bulletPoint.getPositionWorldOnB(new Vector3f())), getWorld());
-
-						//Resolve Entity -> Entity Collisions
-						if (holderA instanceof Entity) {
+						//HolderA: Entity
+						//HolderB: Entity
+						if (holderB instanceof Entity) {
 							//Entity was removed before the contact point could be resolved, break
-							if (((Entity) holderA).isRemoved()) {
+							if (((Entity) holderB).isRemoved()) {
 								break;
 							}
-							//HolderA: Entity
-							//HolderB: Entity
-							if (holderB instanceof Entity) {
-								//Entity was removed before the contact point could be resolved, break
-								if (((Entity) holderB).isRemoved()) {
-									break;
+							//Call onCollide for colliderA's EntityComponents
+							for (Component component : ((Entity) holderA).values()) {
+								if (component instanceof EntityComponent) {
+									((EntityComponent) component).onCollided(contactPointA, contactPointB, (Entity) holderB);
 								}
-								//Call onCollide for colliderA's EntityComponents
-								for (Component component : ((Entity) holderA).values()) {
-									if (component instanceof EntityComponent) {
-										((EntityComponent) component).onCollided(contactPointA, contactPointB, (Entity) holderB);
-									}
-								}
-								//Call onCollide for colliderB's EntityComponents
-								for (Component component : ((Entity) holderB).values()) {
-									if (component instanceof EntityComponent) {
-										((EntityComponent) component).onCollided(contactPointB, contactPointA, (Entity) holderA);
-									}
-								}
-							//HolderA: Entity
-							//HolderB: Block
-							} else if (holderB instanceof Block) {
-								//Call onCollide for colliderA's EntityComponents
-								for (Component component : ((Entity) holderA).values()) {
-									if (component instanceof EntityComponent) {
-										((EntityComponent) component).onCollided(contactPointA, contactPointB, (Block) holderB);
-									}
-								}
-								((Block) holderB).getMaterial().onCollided(contactPointB, contactPointA, (Entity) holderA);
 							}
-						//HolderA: Block
-						//HolderB: Entity
-						} else if (holderA instanceof Block) {
-							if (holderB instanceof Entity) {
-								//Entity was removed before the contact point could be resolved, break
-								if (((Entity) holderB).isRemoved()) {
-									break;
+							//Call onCollide for colliderB's EntityComponents
+							for (Component component : ((Entity) holderB).values()) {
+								if (component instanceof EntityComponent) {
+									((EntityComponent) component).onCollided(contactPointB, contactPointA, (Entity) holderA);
 								}
-								((Block) holderA).getMaterial().onCollided(contactPointA, contactPointB, (Entity) holderB);
-								//Call onCollide for colliderB's EntityComponents
-								for (Component component : ((Entity) holderB).values()) {
-									if (component instanceof EntityComponent) {
-										((EntityComponent) component).onCollided(contactPointB, contactPointA, (Block) holderA);
-									}
+							}
+						//HolderA: Entity
+						//HolderB: Block
+						} else if (holderB instanceof Block) {
+							//Call onCollide for colliderA's EntityComponents
+							for (Component component : ((Entity) holderA).values()) {
+								if (component instanceof EntityComponent) {
+									((EntityComponent) component).onCollided(contactPointA, contactPointB, (Block) holderB);
+								}
+							}
+							((Block) holderB).getMaterial().onCollided(contactPointB, contactPointA, (Entity) holderA);
+						}
+					//HolderA: Block
+					//HolderB: Entity
+					} else if (holderA instanceof Block) {
+						if (holderB instanceof Entity) {
+							//Entity was removed before the contact point could be resolved, break
+							if (((Entity) holderB).isRemoved()) {
+								break;
+							}
+							((Block) holderA).getMaterial().onCollided(contactPointA, contactPointB, (Entity) holderB);
+							//Call onCollide for colliderB's EntityComponents
+							for (Component component : ((Entity) holderB).values()) {
+								if (component instanceof EntityComponent) {
+									((EntityComponent) component).onCollided(contactPointB, contactPointA, (Block) holderA);
 								}
 							}
 						}
@@ -1092,6 +1053,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 			synchronized(logLock) {
 				Spout.getLogger().log(Level.SEVERE, "Exception while executing physics in region " + getBase().toBlockString(), e);
 			}
+		} finally {
+			lock.writeLock().unlock();
 		}
 	}
 	
@@ -1237,7 +1200,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 			if (player == null) {
 				playerPosition = null;
 			} else {
-				playerPosition = player.getTransform().getPosition();
+				playerPosition = player.getScene().getPosition();
 			}
 
 			if (firstRenderQueueTick && player != null) {

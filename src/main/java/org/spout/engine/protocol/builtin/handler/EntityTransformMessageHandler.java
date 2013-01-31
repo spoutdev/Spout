@@ -32,11 +32,11 @@ import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.reposition.RepositionManager;
 import org.spout.engine.protocol.builtin.SpoutProtocol;
-import org.spout.engine.protocol.builtin.message.EntityPositionMessage;
+import org.spout.engine.protocol.builtin.message.EntityTransformMessage;
 
-public class EntityPositionMessageHandler extends MessageHandler<EntityPositionMessage> {
+public class EntityTransformMessageHandler extends MessageHandler<EntityTransformMessage> {
 	@Override
-	public void handleClient(Session session, EntityPositionMessage message) {
+	public void handleClient(Session session, EntityTransformMessage message) {
 		if(!session.hasPlayer()) {
 			return;
 		}
@@ -52,7 +52,7 @@ public class EntityPositionMessageHandler extends MessageHandler<EntityPositionM
 		}
 
 		if (entity != null) {
-			entity.getTransform().setTransform(rmInverse.convert(message.getTransform()));
+			entity.getScene().setTransform(rmInverse.convert(message.getTransform()));
 		}
 	}
 }

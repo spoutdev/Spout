@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.lwjgl.BufferUtils;
+
 import org.spout.api.Spout;
 import org.spout.api.component.impl.AnimationComponent;
 import org.spout.api.component.impl.ModelHolderComponent;
@@ -44,34 +45,30 @@ import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.AnimationPlayed;
 import org.spout.api.model.animation.Skeleton;
 import org.spout.api.render.RenderMaterial;
+
 import org.spout.engine.mesh.BaseMesh;
 
 public class SpoutAnimationComponent extends AnimationComponent {
-
 	private final static Matrix identity = MatrixMath.createIdentity();
-
 	//Depend of the shader
 	public final static int ALLOWED_BONE_PER_VERTEX = 2;
 	public final static int ALLOWED_ANIMATION_PER_MESH = 2;
 	public final static int ALLOWED_BONE_PER_MESH = 10;
-
 	public final static int LAYOUT_WEIGHT = 4;
 	public final static int LAYOUT_ID = 5;
-
-	private Map<Model,List<AnimationPlayed>> animations = new HashMap<Model,List<AnimationPlayed>>();
-
+	private Map<Model, List<AnimationPlayed>> animations = new HashMap<Model, List<AnimationPlayed>>();
 	//Keep a matrices array at the size of managed skeleton
 	private RenderMaterial renderMaterial;
 	private int bonesInMesh = 0;
 	private Matrix[] matrices = null;
 
 	@Override
-	public AnimationPlayed playAnimation(Model model, Animation animation){
+	public AnimationPlayed playAnimation(Model model, Animation animation) {
 		return playAnimation(model, animation, false);
 	}
 
 	@Override
-	public AnimationPlayed playAnimation(Model model, Animation animation, boolean loop){
+	public AnimationPlayed playAnimation(Model model, Animation animation, boolean loop) {
 		//TODO : Maybe check if the animation is compatible with the skeletin of this model
 		//TODO : Maybe make real sync to avoid error with render
 
@@ -80,21 +77,20 @@ public class SpoutAnimationComponent extends AnimationComponent {
 		//Allocate matrices
 		ac.setMatrices(new Matrix[ALLOWED_BONE_PER_MESH]);
 
-		
 		List<AnimationPlayed> list = animations.get(model);
 
-		if(list == null){
+		if (list == null) {
 			list = new ArrayList<AnimationPlayed>();
 			animations.put(model, list);
 		}
-		
+
 		list.add(ac);
-		
+
 		return ac;
 	}
 
 	@Override
-	public void stopAnimation(AnimationPlayed animation){
+	public void stopAnimation(AnimationPlayed animation) {
 		animations.remove(animation);
 	}
 
@@ -107,10 +103,11 @@ public class SpoutAnimationComponent extends AnimationComponent {
 	public void batchSkeleton() {
 		ModelHolderComponent models = getOwner().get(ModelHolderComponent.class);
 
-		for(Model model : models.getModels()){
+		for (Model model : models.getModels()) {
 
-			if(model.getSkeleton() == null)
+			if (model.getSkeleton() == null) {
 				continue;
+			}
 
 			Skeleton skeleton = model.getSkeleton();
 
@@ -127,8 +124,9 @@ public class SpoutAnimationComponent extends AnimationComponent {
 
 				bonesInMesh = skeleton.getBoneSize();
 
-				if(mesh.getContainer().getBuffers().containsKey(LAYOUT_ID))
+				if (mesh.getContainer().getBuffers().containsKey(LAYOUT_ID)) {
 					return;
+				}
 
 				System.out.println("Buffering skeleton");
 				FloatBuffer boneIdBuffer = BufferUtils.createFloatBuffer(mesh.getContainer().element * ALLOWED_BONE_PER_VERTEX);
@@ -174,20 +172,21 @@ public class SpoutAnimationComponent extends AnimationComponent {
 		}
 	}
 
-	public void updateAnimation(Model model, float dt){
-		if (animations.isEmpty())
+	public void updateAnimation(Model model, float dt) {
+		if (animations.isEmpty()) {
 			return;
+		}
 
 		List<AnimationPlayed> list = animations.get(model);
-		for(int i = 0; i < list.size(); i++){
+		for (int i = 0; i < list.size(); i++) {
 			AnimationPlayed ac = list.get(i);
 
 			ac.setCurrentTime(ac.getCurrentTime() + dt * ac.getSpeed());
 
 			ac.setCurrentFrame((int) (ac.getCurrentTime() / ac.getAnimation().getDelay()));
 
-			if(ac.getCurrentFrame() >= ac.getAnimation().getFrame()){ //Loop
-				if(!ac.isLoop()){
+			if (ac.getCurrentFrame() >= ac.getAnimation().getFrame()) { //Loop
+				if (!ac.isLoop()) {
 
 					//TODO : Send a AnimationEndEvent is the loop is enabled ?
 
@@ -195,7 +194,7 @@ public class SpoutAnimationComponent extends AnimationComponent {
 					i--;
 
 					if (AnimationEndEvent.getHandlerList().getRegisteredListeners().length != 0) {
-						Spout.getEventManager().callEvent(new AnimationEndEvent(getOwner(),ac.getAnimation()));
+						Spout.getEventManager().callEvent(new AnimationEndEvent(getOwner(), ac.getAnimation()));
 					}
 				}
 				ac.setCurrentTime(0);
@@ -204,9 +203,9 @@ public class SpoutAnimationComponent extends AnimationComponent {
 		}
 	}
 
-	public void render(Model model){
+	public void render(Model model) {
 		int count = 0;
-		for(AnimationPlayed ac : animations.get(model)){
+		for (AnimationPlayed ac : animations.get(model)) {
 			int i;
 
 			for (i = 0; i < bonesInMesh; i++) {
@@ -220,11 +219,12 @@ public class SpoutAnimationComponent extends AnimationComponent {
 			renderMaterial.getShader().setUniform("bone_matrix" + (count + 1), ac.getMatrices());
 
 			count++;
-			if(count >= ALLOWED_ANIMATION_PER_MESH)
+			if (count >= ALLOWED_ANIMATION_PER_MESH) {
 				break;
+			}
 		}
 
-		while(count < ALLOWED_ANIMATION_PER_MESH){
+		while (count < ALLOWED_ANIMATION_PER_MESH) {
 			renderMaterial.getShader().setUniform("bone_matrix" + (count + 1), matrices);
 			count++;
 		}

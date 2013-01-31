@@ -54,7 +54,6 @@ import org.spout.api.plugin.Plugin;
 import org.spout.api.util.access.AccessManager;
 import org.spout.api.util.access.BanType;
 
-import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
 
@@ -369,7 +368,7 @@ public class AdministrationCommands {
 		Point point;
 		//Source is a player and didn't provide world, x, y, z so instead set the spawn point of their current world at their current position.
 		if (args.length() != 4) {
-			point = ((Player) source).getTransform().getPosition();
+			point = ((Player) source).getScene().getPosition();
 			//Either Source is the console or the player specified world, x, y, z so set those values
 		} else {
 			if (args.getWorld(0) == null) {
@@ -394,7 +393,7 @@ public class AdministrationCommands {
 		}
 		Point point;
 		if (args.length() != 1) {
-			point = ((Player) source).getTransform().getPosition();
+			point = ((Player) source).getScene().getPosition();
 		} else {
 			final World world = args.getWorld(0);
 			if (world == null) {
@@ -447,10 +446,10 @@ public class AdministrationCommands {
 			if (player == null || !player.isOnline()) {
 				throw new CommandException(args.getString(0) + " is not online.");
 			}
-			point = player.getTransform().getPosition();
+			point = player.getScene().getPosition();
 		} else {
 			player = engine.getPlayer(args.getString(0), true);
-			if (player == null || !player.isOnline())  {
+			if (player == null || !player.isOnline()) {
 				throw new CommandException(args.getString(0) + " is not online.");
 			}
 
@@ -468,8 +467,8 @@ public class AdministrationCommands {
 						throw new CommandException("Please supply an existing world.");
 					}
 				}
-				
-				float x = player.getTransform().getPosition().getX();
+
+				float x = player.getScene().getPosition().getX();
 				if (args.isInteger(1)) {
 					x = args.getInteger(1);
 				} else if (args.getString(1).startsWith("~")) {
@@ -477,8 +476,8 @@ public class AdministrationCommands {
 				} else {
 					throw new CommandException("Invalid coordinates");
 				}
-				
-				float y = player.getTransform().getPosition().getY();
+
+				float y = player.getScene().getPosition().getY();
 				if (args.isInteger(2)) {
 					y = args.getInteger(2);
 				} else if (args.getString(2).startsWith("~")) {
@@ -486,8 +485,8 @@ public class AdministrationCommands {
 				} else {
 					throw new CommandException("Invalid coordinates");
 				}
-				
-				float z = player.getTransform().getPosition().getZ();
+
+				float z = player.getScene().getPosition().getZ();
 				if (args.isInteger(3)) {
 					z = args.getInteger(3);
 				} else if (args.getString(3).startsWith("~")) {
@@ -504,7 +503,7 @@ public class AdministrationCommands {
 					throw new CommandException(args.getString(1) + " is not online.");
 				}
 
-				point = target.getTransform().getPosition();
+				point = target.getScene().getPosition();
 			}
 		}
 		point.getWorld().getChunkFromBlock(point);

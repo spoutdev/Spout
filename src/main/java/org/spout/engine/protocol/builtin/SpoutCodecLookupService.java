@@ -34,7 +34,7 @@ import org.spout.engine.protocol.builtin.codec.ClickCodec;
 import org.spout.engine.protocol.builtin.codec.CommandCodec;
 import org.spout.engine.protocol.builtin.codec.CuboidBlockUpdateCodec;
 import org.spout.engine.protocol.builtin.codec.EntityDatatableCodec;
-import org.spout.engine.protocol.builtin.codec.EntityPositionCodec;
+import org.spout.engine.protocol.builtin.codec.EntityTransformCodec;
 import org.spout.engine.protocol.builtin.codec.LoginCodec;
 import org.spout.engine.protocol.builtin.codec.PlayerInputCodec;
 import org.spout.engine.protocol.builtin.codec.RemoveEntityCodec;
@@ -55,7 +55,7 @@ public class SpoutCodecLookupService extends CodecLookupService {
 			/* 0x04 */ bind(AddEntityCodec.class);
 			/* 0x05 */ bind(RemoveEntityCodec.class);
 			/* 0x06 */ bind(EntityDatatableCodec.class);
-			/* 0x07 */ bind(EntityPositionCodec.class);
+			/* 0x07 */ bind(EntityTransformCodec.class);
 			/* 0x08 */ bind(ChunkDataCodec.class);
 			/* 0x09 */ bind(BlockUpdateCodec.class);
 			/* 0x0A */ bind(CuboidBlockUpdateCodec.class);

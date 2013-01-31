@@ -44,7 +44,7 @@ import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.protocol.Session;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
 import org.spout.engine.protocol.builtin.message.ChunkDataMessage;
-import org.spout.engine.protocol.builtin.message.EntityPositionMessage;
+import org.spout.engine.protocol.builtin.message.EntityTransformMessage;
 import org.spout.engine.protocol.builtin.message.WorldChangeMessage;
 
 public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
@@ -55,7 +55,7 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 	@Override
 	public Collection<Chunk> sendChunk(Chunk c) {
 		session.send(false, new ChunkDataMessage(c.getSnapshot()));
-		return null;
+		return null; //TODO Why does this return null?
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 
 	@Override
 	protected void sendPosition(Point p, Quaternion rot) {
-		session.send(false, new EntityPositionMessage(player.getId(), new Transform(p, rot, Vector3.ONE), getRepositionManager()));
+		session.send(false, new EntityTransformMessage(player.getId(), new Transform(p, rot, Vector3.ONE), getRepositionManager()));
 	}
 
 	@Override
@@ -88,7 +88,8 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 	}
 
 	@Override
-	public void syncEntity(Entity e, boolean spawn, boolean destroy, boolean update) {
+	public void syncEntity(Entity e, Transform liveTransform, boolean spawn, boolean destroy, boolean update) {
+		super.syncEntity(e, liveTransform, spawn, destroy, update);
 		EntityProtocol protocol = getEntityProtocol(e);
 		List<Message> messages = new ArrayList<Message>(3);
 		if (destroy) {
@@ -99,7 +100,7 @@ public class SpoutNetworkSynchronizer extends NetworkSynchronizer {
 		}
 		if (update) {
 			// TODO - might be worth adding force support
-			messages.addAll(protocol.getUpdateMessages(e, getRepositionManager(), false));
+			messages.addAll(protocol.getUpdateMessages(e, liveTransform, getRepositionManager(), false));
 		}
 		for (Message message : messages) {
 			this.session.send(false, message);

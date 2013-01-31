@@ -27,67 +27,67 @@
 package org.spout.engine.entity.component;
 
 import org.spout.api.component.impl.ModelHolderComponent;
-import org.spout.api.component.impl.PredictableTransformComponent;
 import org.spout.api.math.Matrix;
 import org.spout.api.model.Model;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotEntity;
+
 import org.spout.engine.mesh.BaseMesh;
 
 public class EntityRendererComponent extends ModelHolderComponent {
-	
 	private SpoutAnimationComponent animationComponent;
 	private ClientTextModelComponent textModelComponent;
-	
 	private boolean rendered = false;
-	
-	public boolean isRendered(){
+
+	public boolean isRendered() {
 		return rendered;
 	}
-	
-	public void setRendered(boolean rendered){
+
+	public void setRendered(boolean rendered) {
 		this.rendered = rendered;
 	}
-	
-	public void init(){
+
+	public void init() {
 		animationComponent = getOwner().get(SpoutAnimationComponent.class);
 		textModelComponent = getOwner().get(ClientTextModelComponent.class);
 
 		if (getModels().isEmpty()) {
 			throw new IllegalStateException("EntityRendererComponent don't contains model");
 		}
-		
-		for(Model model : getModels()){
+
+		for (Model model : getModels()) {
 			RenderMaterial renderMaterial = model.getRenderMaterial();
 			BaseMesh mesh = (BaseMesh) model.getMesh();
 
-			if(animationComponent != null){
+			if (animationComponent != null) {
 				animationComponent.batchSkeleton();
 			}
 
-			if(!mesh.isBatched())
+			if (!mesh.isBatched()) {
 				mesh.batch();
+			}
 		}
 	}
 
 	public void update(Model model, float dt) {
-		if(animationComponent != null)
+		if (animationComponent != null) {
 			animationComponent.updateAnimation(model, dt);
+		}
 	}
-	
+
 	public void draw(Model model) {
-		Matrix modelMatrix = ((PredictableTransformComponent) getOwner().getTransform()).getRenderTransform().toMatrix();
+		Matrix modelMatrix = getOwner().getScene().getRenderTransform().toMatrix();
 
 		model.getRenderMaterial().getShader().setUniform("Model", modelMatrix);
 
-		if(animationComponent != null){
+		if (animationComponent != null) {
 			animationComponent.render(model);
 		}
 
 		SnapshotEntity snapshot = new SnapshotEntity(model.getRenderMaterial(), getOwner());
 
 		model.getRenderMaterial().preRenderEntity(snapshot);
-		((BaseMesh)model.getMesh()).render(model.getRenderMaterial());
+		((BaseMesh) model.getMesh()).render(model.getRenderMaterial());
 		model.getRenderMaterial().postRenderEntity(snapshot);
 	}
 }

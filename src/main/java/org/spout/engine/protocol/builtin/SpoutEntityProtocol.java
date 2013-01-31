@@ -31,11 +31,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.spout.api.entity.Entity;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.EntityProtocol;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.reposition.RepositionManager;
 import org.spout.engine.protocol.builtin.message.AddEntityMessage;
-import org.spout.engine.protocol.builtin.message.EntityPositionMessage;
+import org.spout.engine.protocol.builtin.message.EntityTransformMessage;
 import org.spout.engine.protocol.builtin.message.RemoveEntityMessage;
 
 /**
@@ -49,7 +50,7 @@ public class SpoutEntityProtocol implements EntityProtocol {
 
 	@Override
 	public List<Message> getSpawnMessages(Entity entity, RepositionManager rm) {
-		return Arrays.<Message>asList(new AddEntityMessage(entity.getId(), entity.getTransform().getTransform(), rm));
+		return Arrays.<Message>asList(new AddEntityMessage(entity.getId(), entity.getScene().getTransform(), rm));
 	}
 
 	@Override
@@ -58,11 +59,12 @@ public class SpoutEntityProtocol implements EntityProtocol {
 	}
 
 	@Override
-	public List<Message> getUpdateMessages(Entity entity, RepositionManager rm, boolean force) {
+	public List<Message> getUpdateMessages(Entity entity, Transform liveTransform, RepositionManager rm, boolean force) {
 		List<Message> messages = new ArrayList<Message>(2);
-		if (force || entity.getTransform().isDirty()) {
-			messages.add(new EntityPositionMessage(entity.getId(), entity.getTransform().getTransform(), rm));
+		if (force || entity.getScene().isTransformDirty()) {
+			messages.add(new EntityTransformMessage(entity.getId(), liveTransform, rm));
 		}
+		//TODO Need to send datatable here if dirty...I believe
 		return messages;
 	}
 }
