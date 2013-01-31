@@ -37,7 +37,6 @@ import org.spout.api.model.Model;
  * A Component that adds a model to an entity.
  */
 public abstract class ModelHolderComponent extends EntityComponent {
-
 	private List<Model> models = new ArrayList<Model>();
 
 	@Override
@@ -49,7 +48,7 @@ public abstract class ModelHolderComponent extends EntityComponent {
 		return models;
 	}
 
-	public void removeModel(Model model){
+	public void removeModel(Model model) {
 		models.remove(model);
 	}
 
@@ -57,9 +56,10 @@ public abstract class ModelHolderComponent extends EntityComponent {
 		models.add((Model) Spout.getFilesystem().getResource(resourcePath));
 	}
 
-	public void addModel(Model model){
-		if(model == null)
+	public void addModel(Model model) {
+		if (model == null) {
 			throw new IllegalStateException("You can't add a null model");
+		}
 		models.add(model);
 	}
 }

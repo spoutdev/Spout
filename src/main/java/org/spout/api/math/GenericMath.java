@@ -26,9 +26,15 @@
  */
 package org.spout.api.math;
 
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Quat4f;
+import javax.vecmath.Vector3f;
 import java.awt.Color;
 import java.security.SecureRandom;
 import java.util.Random;
+
+import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
 
 /**
  * Class containing generic mathematical functions.
@@ -58,7 +64,6 @@ public class GenericMath {
 
 	/**
 	 * Calculates the squared length of all axis offsets given
-	 *
 	 * @param values of the axis to get the squared length of
 	 * @return the squared length
 	 */
@@ -72,7 +77,6 @@ public class GenericMath {
 
 	/**
 	 * Calculates the length of all axis offsets given
-	 *
 	 * @param values of the axis to get the length of
 	 * @return the length
 	 */
@@ -82,7 +86,6 @@ public class GenericMath {
 
 	/**
 	 * Calculates the squared length of all axis offsets given
-	 *
 	 * @param values of the axis to get the squared length of
 	 * @return the squared length
 	 */
@@ -96,7 +99,6 @@ public class GenericMath {
 
 	/**
 	 * Calculates the length of all axis offsets given
-	 *
 	 * @param values of the axis to get the length of
 	 * @return the length
 	 */
@@ -107,7 +109,6 @@ public class GenericMath {
 	/**
 	 * Gets the difference between two angles This value is always positive (0 -
 	 * 180)
-	 *
 	 * @param angle1 The first angle
 	 * @param angle2 The second angle
 	 * @return the positive angle difference
@@ -119,7 +120,6 @@ public class GenericMath {
 	/**
 	 * Gets the difference between two radians This value is always positive (0
 	 * - PI)
-	 *
 	 * @param radian1 The first angle
 	 * @param radian2 The second angle
 	 * @return the positive radian difference
@@ -130,7 +130,6 @@ public class GenericMath {
 
 	/**
 	 * Wraps the angle between -180 and 180 degrees
-	 *
 	 * @param angle to wrap
 	 * @return -180 < angle <= 180
 	 */
@@ -147,7 +146,6 @@ public class GenericMath {
 
 	/**
 	 * Wraps the pitch angle between -90 and 90 degrees
-	 *
 	 * @param angle to wrap
 	 * @return -90 < angle < 90
 	 */
@@ -165,7 +163,6 @@ public class GenericMath {
 
 	/**
 	 * Wraps a byte between 0 and 256
-	 *
 	 * @param value to wrap
 	 * @return 0 < byte < 256
 	 */
@@ -179,7 +176,6 @@ public class GenericMath {
 
 	/**
 	 * Wraps the radian between -PI and PI
-	 *
 	 * @param radian to wrap
 	 * @return -PI < radian <= PI
 	 */
@@ -196,7 +192,6 @@ public class GenericMath {
 
 	/**
 	 * Rounds a number to the amount of decimals specified
-	 *
 	 * @param input to round
 	 * @param decimals to round to
 	 * @return the rounded number
@@ -209,7 +204,6 @@ public class GenericMath {
 	/**
 	 * Calculates the linear interpolation between a and b with the given
 	 * percent
-	 *
 	 * @param a The first know value
 	 * @param b The second know value
 	 * @param percent The percent
@@ -222,7 +216,6 @@ public class GenericMath {
 	/**
 	 * Calculates the linear interpolation between a and b with the given
 	 * percent
-	 *
 	 * @param a The first know value
 	 * @param b The second know value
 	 * @param percent The percent
@@ -235,7 +228,6 @@ public class GenericMath {
 	/**
 	 * Calculates the linear interpolation between a and b with the given
 	 * percent
-	 *
 	 * @param a The first know value
 	 * @param b The second know value
 	 * @param percent The percent
@@ -248,7 +240,6 @@ public class GenericMath {
 	/**
 	 * Calculates the linear interpolation between a and b with the given
 	 * percent
-	 *
 	 * @param a The first know value
 	 * @param b The second know value
 	 * @param percent The percent
@@ -261,7 +252,6 @@ public class GenericMath {
 	/**
 	 * Calculates the linear interpolation between a and b with the given
 	 * percent
-	 *
 	 * @param a The first know value
 	 * @param b The second know value
 	 * @param percent The percent
@@ -273,7 +263,6 @@ public class GenericMath {
 
 	/**
 	 * Calculates the value at x using linear interpolation
-	 *
 	 * @param x the X coord of the value to interpolate
 	 * @param x1 the X coord of q0
 	 * @param x2 the X coord of q1
@@ -288,7 +277,6 @@ public class GenericMath {
 	/**
 	 * Calculates the linear interpolation between a and b with the given
 	 * percent
-	 *
 	 * @param a The first know value
 	 * @param b The second know value
 	 * @param percent The percent
@@ -305,7 +293,6 @@ public class GenericMath {
 	/**
 	 * Calculates the linear interpolation between a and b with the given
 	 * percent
-	 *
 	 * @param a The first know value
 	 * @param b The second know value
 	 * @param percent The percent
@@ -321,7 +308,6 @@ public class GenericMath {
 
 	/**
 	 * Calculates the value at x,y using bilinear interpolation
-	 *
 	 * @param x the X coord of the value to interpolate
 	 * @param y the Y coord of the value to interpolate
 	 * @param q00 the first known value (x1, y1)
@@ -335,7 +321,7 @@ public class GenericMath {
 	 * @return the interpolated value
 	 */
 	public static double biLerp(double x, double y, double q00, double q01,
-			double q10, double q11, double x1, double x2, double y1, double y2) {
+								double q10, double q11, double x1, double x2, double y1, double y2) {
 		double q0 = lerp(x, x1, x2, q00, q10);
 		double q1 = lerp(x, x1, x2, q01, q11);
 		return lerp(y, y1, y2, q0, q1);
@@ -343,7 +329,6 @@ public class GenericMath {
 
 	/**
 	 * Calculates the value at a target using bilinear interpolation
-	 *
 	 * @param target the vector of the value to interpolate
 	 * @param q00 the first known value (known1.x, known1.y)
 	 * @param q01 the second known value (known1.x, known2.y)
@@ -354,14 +339,13 @@ public class GenericMath {
 	 * @return the interpolated value
 	 */
 	public static double biLerp(Vector2 target, double q00, double q01,
-			double q10, double q11, Vector2 known1, Vector2 known2) {
+								double q10, double q11, Vector2 known1, Vector2 known2) {
 		return biLerp(target.getX(), target.getY(), q00, q01, q10, q11,
 				known1.getX(), known2.getX(), known1.getY(), known2.getY());
 	}
 
 	/**
 	 * Calculates the value at x,y,z using trilinear interpolation
-	 *
 	 * @param x the X coord of the value to interpolate
 	 * @param y the Y coord of the value to interpolate
 	 * @param z the Z coord of the value to interpolate
@@ -382,8 +366,8 @@ public class GenericMath {
 	 * @return the interpolated value
 	 */
 	public static double triLerp(double x, double y, double z, double q000, double q001,
-			double q010, double q011, double q100, double q101, double q110, double q111,
-			double x1, double x2, double y1, double y2, double z1, double z2) {
+								 double q010, double q011, double q100, double q101, double q110, double q111,
+								 double x1, double x2, double y1, double y2, double z1, double z2) {
 		double q00 = lerp(x, x1, x2, q000, q100);
 		double q01 = lerp(x, x1, x2, q010, q110);
 		double q10 = lerp(x, x1, x2, q001, q101);
@@ -395,7 +379,6 @@ public class GenericMath {
 
 	/**
 	 * Calculates the value at target using trilinear interpolation
-	 *
 	 * @param target the vector of the value to interpolate
 	 * @param q000 the first known value (known1.x, known1.y, known1.z)
 	 * @param q001 the second known value (known1.x, known2.y, known1.z)
@@ -412,14 +395,13 @@ public class GenericMath {
 	 * @return the interpolated value
 	 */
 	public static double triLerp(Vector3 target, double q000, double q001, double q010,
-			double q011, double q100, double q101, double q110, double q111, Vector3 known1, Vector3 known2) {
+								 double q011, double q100, double q101, double q110, double q111, Vector3 known1, Vector3 known2) {
 		return triLerp(target.getX(), target.getY(), target.getZ(), q000, q001, q010, q011, q100, q101, q110, q111,
 				known1.getX(), known2.getX(), known1.getY(), known2.getY(), known1.getZ(), known2.getZ());
 	}
 
 	/**
 	 * Blends two colors into one.
-	 *
 	 * @param a The first color
 	 * @param b The second color
 	 * @return The blended color
@@ -434,7 +416,6 @@ public class GenericMath {
 
 	/**
 	 * Generates a random color
-	 *
 	 * @return Random color
 	 */
 	public static Color randomColor() {
@@ -444,7 +425,6 @@ public class GenericMath {
 
 	/**
 	 * Clamps the value between the low and high boundaries
-	 *
 	 * @param value The value to clamp
 	 * @param low The low bound of the clamp
 	 * @param high The high bound of the clamp
@@ -462,7 +442,6 @@ public class GenericMath {
 
 	/**
 	 * Clamps the value between the low and high boundaries
-	 *
 	 * @param value The value to clamp
 	 * @param low The low bound of the clamp
 	 * @param high The high bound of the clamp
@@ -480,7 +459,6 @@ public class GenericMath {
 
 	/**
 	 * Returns a fast estimate of the inverse square root of the value
-	 *
 	 * @param x The value
 	 * @return The estimate of the inverse square root
 	 */
@@ -491,8 +469,19 @@ public class GenericMath {
 	}
 
 	/**
+	 * <<<<<<< HEAD
+	 * =======
+	 * Returns a fast estimate of the square root of the value
+	 * @param x The value
+	 * @return The estimate of the square root
+	 */
+	public static double sqrt(double x) {
+		return x * inverseSqrt(x);
+	}
+
+	/**
+	 * >>>>>>> scene
 	 * Rounds x down to the closest integer
-	 *
 	 * @param x The value to floor
 	 * @return The closest integer
 	 */
@@ -506,7 +495,6 @@ public class GenericMath {
 
 	/**
 	 * Rounds x down to the closest integer
-	 *
 	 * @param x The value to floor
 	 * @return The closest integer
 	 */
@@ -520,7 +508,6 @@ public class GenericMath {
 
 	/**
 	 * Gets the maximum byte value from two values
-	 *
 	 * @param value1 The first value
 	 * @param value2 The second value
 	 * @return the maximum of value1 and value2
@@ -531,7 +518,6 @@ public class GenericMath {
 
 	/**
 	 * Rounds an integer up to the next power of 2.
-	 *
 	 * @param x The integer to round
 	 * @return the lowest power of 2 greater or equal to x
 	 */
@@ -554,7 +540,6 @@ public class GenericMath {
 
 	/**
 	 * Rounds an integer up to the next power of 2.
-	 *
 	 * @param x The long to round
 	 * @return the lowest power of 2 greater or equal to x
 	 */
@@ -578,7 +563,6 @@ public class GenericMath {
 
 	/**
 	 * Casts a value to a float. May return null.
-	 *
 	 * @param o The object to attempt to cast
 	 * @return The object as a float
 	 */
@@ -600,7 +584,6 @@ public class GenericMath {
 
 	/**
 	 * Casts a value to a byte. May return null.
-	 *
 	 * @param o The object to attempt to cast
 	 * @return The object as a byte
 	 */
@@ -622,7 +605,6 @@ public class GenericMath {
 
 	/**
 	 * Casts a value to a short. May return null.
-	 *
 	 * @param o The object to attempt to cast
 	 * @return The object as a short
 	 */
@@ -644,7 +626,6 @@ public class GenericMath {
 
 	/**
 	 * Casts a value to an integer. May return null.
-	 *
 	 * @param o The object to attempt to cast
 	 * @return The object as an int
 	 */
@@ -666,7 +647,6 @@ public class GenericMath {
 
 	/**
 	 * Casts a value to a double. May return null.
-	 *
 	 * @param o The object to attempt to cast
 	 * @return The object as a double
 	 */
@@ -688,7 +668,6 @@ public class GenericMath {
 
 	/**
 	 * Casts a value to a long. May return null.
-	 *
 	 * @param o The object to attempt to cast
 	 * @return The object as a long
 	 */
@@ -710,7 +689,6 @@ public class GenericMath {
 
 	/**
 	 * Casts a value to a boolean. May return null.
-	 *
 	 * @param o The object to attempt to cast
 	 * @return The object as a boolean
 	 */
@@ -734,7 +712,6 @@ public class GenericMath {
 
 	/**
 	 * Calculates the mean of a set of values
-	 *
 	 * @param values to calculate the mean of
 	 * @return the mean of the values
 	 */
@@ -748,7 +725,6 @@ public class GenericMath {
 
 	/**
 	 * Calculates the mean of a set of values.
-	 *
 	 * @param values to calculate the mean of
 	 * @return the mean of the values
 	 */
@@ -763,7 +739,6 @@ public class GenericMath {
 	/**
 	 * Converts an integer to hexadecimal form with at least the minimum of
 	 * digits specified (by adding leading zeros).
-	 *
 	 * @param dec The integer to convert
 	 * @param minDigits The minimum of digits in the hexadecimal form
 	 * @return The integer in hexadecimal form
@@ -778,7 +753,6 @@ public class GenericMath {
 
 	/**
 	 * Returns the modulo of x by div with corrections for negative numbers.
-	 *
 	 * @param x The number as an int
 	 * @param div The div as an int
 	 * @return The corrected modulo
@@ -789,7 +763,6 @@ public class GenericMath {
 
 	/**
 	 * Returns the modulo of x by div with corrections for negative numbers.
-	 *
 	 * @param x The number as an float
 	 * @param div The div as an float
 	 * @return The corrected modulo
@@ -800,7 +773,6 @@ public class GenericMath {
 
 	/**
 	 * Returns the modulo of x by div with corrections for negative numbers.
-	 *
 	 * @param x The number as an double
 	 * @param div The div as an double
 	 * @return The corrected modulo
@@ -812,10 +784,30 @@ public class GenericMath {
 	/**
 	 * Gets a thread local Random object that is seeded using SecureRandom. Only
 	 * one Random is created per thread.
-	 *
 	 * @return The random for the thread
 	 */
 	public static Random getRandom() {
 		return THREAD_LOCAL_RANDOM.get();
+	}
+
+	public static com.bulletphysics.linearmath.Transform toPhysicsTransform(Transform transform) {
+		final com.bulletphysics.linearmath.Transform physicsTransform = new com.bulletphysics.linearmath.Transform();
+		final Vector3f worldSpace = VectorMath.toVector3f(transform.getPosition());
+		final Quat4f worldRotation = QuaternionMath.toQuaternionf(transform.getRotation());
+		physicsTransform.set(new Matrix4f(worldRotation, worldSpace, 1));
+		return physicsTransform;
+	}
+
+	public static Transform toSceneTransform(Transform liveState, com.bulletphysics.linearmath.Transform transform) {
+		final Matrix4f physicsMatrix = transform.getMatrix(new Matrix4f());
+		final Vector3f physicsSpace = new Vector3f();
+		physicsMatrix.get(physicsSpace);
+		final Quat4f physicsRotation = new Quat4f();
+		physicsMatrix.get(physicsRotation);
+		final Vector3 sceneSpace = VectorMath.toVector3(physicsSpace);
+		final Quaternion sceneRotation = QuaternionMath.toQuaternion(physicsRotation);
+		liveState.setPosition(new Point(sceneSpace, liveState.getPosition().getWorld()));
+		liveState.setRotation(sceneRotation);
+		return liveState;
 	}
 }

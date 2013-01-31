@@ -26,9 +26,8 @@
  */
 package org.spout.api.math;
 
-import java.util.Random;
-
 import javax.vecmath.Vector3f;
+import java.util.Random;
 
 /**
  * Class containing vector mathematical functions.
@@ -39,11 +38,10 @@ public class VectorMath {
 
 	/**
 	 * Returns the length of the given vector.
-	 *
+	 * <p/>
 	 * Note: Makes use of Math.sqrt and is not cached, so can be slow
-	 *
+	 * <p/>
 	 * Also known as norm. ||a||
-	 *
 	 * @param a The vector
 	 * @return The length of the vector
 	 */
@@ -53,7 +51,6 @@ public class VectorMath {
 
 	/**
 	 * Returns an approximate length of the given vector.
-	 *
 	 * @param a The vector
 	 * @return The fast approximate length of the vector
 	 */
@@ -64,7 +61,6 @@ public class VectorMath {
 
 	/**
 	 * returns the length squared to the given vector
-	 *
 	 * @param a The vector
 	 * @return The squared length of the vector
 	 */
@@ -74,7 +70,6 @@ public class VectorMath {
 
 	/**
 	 * Returns a new vector that is the given vector but length 1
-	 *
 	 * @param a The vector
 	 * @return The vector with the same direction but length one
 	 */
@@ -84,7 +79,6 @@ public class VectorMath {
 
 	/**
 	 * Creates a new Vector that is A + B
-	 *
 	 * @param a The left vector
 	 * @param b The right vector
 	 * @return The sum vector of left plus right
@@ -95,7 +89,6 @@ public class VectorMath {
 
 	/**
 	 * Creates a new vector that is A - B
-	 *
 	 * @param a The left vector
 	 * @param b The right vector
 	 * @return The sum vector of left minus right
@@ -106,7 +99,6 @@ public class VectorMath {
 
 	/**
 	 * Multiplies one Vector3 by the other Vector3
-	 *
 	 * @param a The left vector
 	 * @param b The right vector
 	 * @return The product vector of left times right
@@ -117,7 +109,6 @@ public class VectorMath {
 
 	/**
 	 * Divides one Vector3 by the other Vector3
-	 *
 	 * @param a The left vector
 	 * @param b The right vector
 	 * @return The quotient vector of left divided by right
@@ -128,7 +119,6 @@ public class VectorMath {
 
 	/**
 	 * Returns the dot product of A and B
-	 *
 	 * @param a The left vector
 	 * @param b The right vector
 	 * @return The dot product vector of left dot right
@@ -140,7 +130,6 @@ public class VectorMath {
 	/**
 	 * Creates a new Vector that is the A x B The Cross Product is the vector
 	 * orthogonal to both A and B
-	 *
 	 * @param a The left vector
 	 * @param b The right vector
 	 * @return The cross product vector of left cross right
@@ -152,7 +141,6 @@ public class VectorMath {
 	/**
 	 * Rounds the X, Y, and Z values of the given Vector3 up to the nearest
 	 * integer value.
-	 *
 	 * @param o Vector3 to use
 	 * @return The ceiling vector
 	 */
@@ -163,7 +151,6 @@ public class VectorMath {
 	/**
 	 * Rounds the X, Y, and Z values of the given Vector3 down to the nearest
 	 * integer value.
-	 *
 	 * @param o Vector3 to use
 	 * @return The floor vector
 	 */
@@ -174,7 +161,6 @@ public class VectorMath {
 	/**
 	 * Rounds the X, Y, and Z values of the given Vector3 to the nearest integer
 	 * value.
-	 *
 	 * @param o Vector3 to use
 	 * @return The rounded vector
 	 */
@@ -184,7 +170,6 @@ public class VectorMath {
 
 	/**
 	 * Sets the X, Y, and Z values of the given Vector3 to their absolute value.
-	 *
 	 * @param o Vector3 to use
 	 * @return The absolute vector
 	 */
@@ -194,7 +179,6 @@ public class VectorMath {
 
 	/**
 	 * Returns a Vector3 containing the smallest X, Y, and Z values.
-	 *
 	 * @param o1 The first vector
 	 * @param o2 The second vector
 	 * @return The minimum of both vectors combined
@@ -205,7 +189,6 @@ public class VectorMath {
 
 	/**
 	 * Returns a Vector3 containing the largest X, Y, and Z values.
-	 *
 	 * @param o1 The first vector
 	 * @param o2 The second vector
 	 * @return The maximum of both vectors combined
@@ -216,7 +199,6 @@ public class VectorMath {
 
 	/**
 	 * Returns a Vector3 with random X, Y, and Z values (between 0 and 1)
-	 *
 	 * @return a random vector
 	 */
 	public static Vector3 random() {
@@ -225,7 +207,6 @@ public class VectorMath {
 
 	/**
 	 * Gets the distance between two Vector3.
-	 *
 	 * @param a The first vector
 	 * @param b The second vector
 	 * @return The distance between the two
@@ -236,7 +217,6 @@ public class VectorMath {
 
 	/**
 	 * Gets the squared distance between two Vector3.
-	 *
 	 * @param a The first vector
 	 * @param b The second vector
 	 * @return The square of the distance between the two
@@ -247,7 +227,6 @@ public class VectorMath {
 
 	/**
 	 * Raises the X, Y, and Z values of a Vector3 to the given power.
-	 *
 	 * @param o The vector
 	 * @param power The power
 	 * @return The vector to the specified power
@@ -260,7 +239,6 @@ public class VectorMath {
 	 * Returns a Vector2 object using the X and Z values of the given Vector3.
 	 * The x of the Vector3 becomes the x of the Vector2, and the z of this
 	 * Vector3 becomes the y of the Vector2.
-	 *
 	 * @param o Vector3 object to use
 	 * @return The vector2 form
 	 */
@@ -270,7 +248,6 @@ public class VectorMath {
 
 	/**
 	 * Returns a new float array that is {x, y, z}
-	 *
 	 * @param a The vector
 	 * @return An array of length 3 with x, y and z
 	 */
@@ -281,7 +258,6 @@ public class VectorMath {
 	/**
 	 * Gets the direction vector of a random pitch and yaw using the random
 	 * specified.
-	 *
 	 * @param random to use
 	 * @return the random direction vector
 	 */
@@ -292,7 +268,6 @@ public class VectorMath {
 
 	/**
 	 * Gets the direction vector of a certain yaw and pitch.
-	 *
 	 * @param azimuth in radians
 	 * @param inclination in radians
 	 * @return the random direction vector
@@ -304,7 +279,6 @@ public class VectorMath {
 
 	/**
 	 * Gets the direction vector of a random angle using the random specified.
-	 *
 	 * @param random to use
 	 * @return the random direction vector
 	 */
@@ -314,7 +288,6 @@ public class VectorMath {
 
 	/**
 	 * Gets the direction vector of a certain angle.
-	 *
 	 * @param azimuth in radians
 	 * @return the direction vector
 	 */
@@ -324,7 +297,6 @@ public class VectorMath {
 
 	/**
 	 * Returns the forward vector transformed by the provided quaternion
-	 *
 	 * @param rot The rotation
 	 * @return The forward vector for the rotation
 	 */
@@ -334,7 +306,6 @@ public class VectorMath {
 
 	/**
 	 * Calculates and returns a new Vector3 transformed by the given quaternion
-	 *
 	 * @param vector The vector to transform
 	 * @param rot The rotation to apply
 	 * @return The rotated vector
@@ -346,7 +317,6 @@ public class VectorMath {
 	/**
 	 * Calculates and returns a new Vector3 transformed by the transformation
 	 * matrix.
-	 *
 	 * @param v the vector to transform
 	 * @param m the transformation matrix
 	 * @return The transformed vector
@@ -360,7 +330,6 @@ public class VectorMath {
 			for (int k = 0; k < dimension; k++) {
 				float n = m.get(i, k) * vector[k];
 				vres[i] += n;
-
 			}
 		}
 
@@ -369,7 +338,6 @@ public class VectorMath {
 
 	/**
 	 * Compares two vectors.
-	 *
 	 * @param a the first vector
 	 * @param b the second vector
 	 * @return the result of the comparison
@@ -381,7 +349,6 @@ public class VectorMath {
 
 	/**
 	 * Transforms a vecmath 3D vector to a Spout 3D vector.
-	 *
 	 * @param vector The vecmath 3D vector
 	 * @return The vector as a Spout 3D vector
 	 */
@@ -391,7 +358,6 @@ public class VectorMath {
 
 	/**
 	 * Transforms a Spout 3D vector to a vecmath 3D vector.
-	 *
 	 * @param vector The Spout 3D vector
 	 * @return The vector as a vecmath 3D vector
 	 */

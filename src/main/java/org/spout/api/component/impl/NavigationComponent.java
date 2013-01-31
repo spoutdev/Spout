@@ -55,7 +55,7 @@ public class NavigationComponent extends EntityComponent {
 	public void setDestination(Point dest) {
 		lock.lock();
 		try {
-			Point current = getOwner().getTransform().getPosition();
+			Point current = getOwner().getScene().getPosition();
 			plan = astar.runFully(new VectorGoal(dest), new VectorNode(current, new SpoutBlockSource(current),
 					defaultExaminers), 10000);
 			if (plan == null || plan.isComplete()) {
@@ -81,19 +81,21 @@ public class NavigationComponent extends EntityComponent {
 				plan = null;
 				return;
 			}
-			Transform transform = getOwner().getTransform().getTransform();
+			Transform transform = getOwner().getScene().getTransform();
 			Point root = transform.getPosition();
 			if (root.distanceSquared(vector) <= 12) {
 				plan.update(getOwner());
-				if (plan.isComplete())
+				if (plan.isComplete()) {
 					return;
+				}
 				vector = plan.getCurrentVector();
 			}
 			float dX = (vector.getX() - root.getX()) / 20;
 			float dY = (vector.getY() - root.getY()) / 20;
 			float dZ = (vector.getZ() - root.getZ()) / 20;
 			transform.translate(dX, dY, dZ);
-			getOwner().getTransform().setTransform(transform);
+			//TODO Rotation
+			getOwner().getScene().setTransform(transform);
 		} finally {
 			lock.unlock();
 		}

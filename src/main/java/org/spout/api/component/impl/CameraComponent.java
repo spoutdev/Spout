@@ -49,7 +49,7 @@ public class CameraComponent extends EntityComponent implements Camera {
 		projection = createPerspective;
 		view = createLookAt;
 	}
-	
+
 	public void setScale(float scale) { //1/2
 		projection = MatrixMath.createPerspective(fieldOfView * scale, 4.0f / 3.0f, .001f * scale, 1000f * scale);
 		updateView();
@@ -74,40 +74,33 @@ public class CameraComponent extends EntityComponent implements Camera {
 
 	@Override
 	public void updateView() {
-		Transform transform = ((PredictableTransformComponent) getOwner().getTransform()).getRenderTransform();
-		if (transform != null) {
-			Matrix pos = MatrixMath.translate(transform.getPosition().multiply(-1));
-			Matrix rot = MatrixMath.rotate(transform.getRotation());
-			view = pos.multiply(rot);
-			frustum.update(projection, view, transform.getPosition());
-		}
+		Transform transform = getOwner().getScene().getRenderTransform();
+		Matrix pos = MatrixMath.translate(transform.getPosition().multiply(-1));
+		Matrix rot = MatrixMath.rotate(transform.getRotation());
+		view = pos.multiply(rot);
+		frustum.update(projection, view, transform.getPosition());
 	}
 
 	@Override
 	public boolean canTick() {
-		return false; // It's not the job of engine, if you want fluid movement, it's render job.
+		return false;
 	}
-
-	/*@Override
-		 public void onTick(float dt) {
-			 updateView();
-		 }*/
 
 	@Override
 	public ViewFrustum getFrustum() {
 		return frustum;
 	}
-	
+
 	@Override
 	public void setSpeed(Vector3 speed) {
 		this.speed = speed;
 	}
-	
+
 	@Override
 	public void setSpeed(float speed) {
 		this.speed = new Vector3(speed, speed, speed);
 	}
-	
+
 	@Override
 	public Vector3 getSpeed() {
 		return speed;
@@ -115,7 +108,7 @@ public class CameraComponent extends EntityComponent implements Camera {
 
 	@Override
 	public Matrix getRotation() {
-		Transform transform = ((PredictableTransformComponent) getOwner().getTransform()).getRenderTransform();
+		Transform transform = getOwner().getScene().getRenderTransform();
 		return MatrixMath.rotate(transform.getRotation());
 	}
 }

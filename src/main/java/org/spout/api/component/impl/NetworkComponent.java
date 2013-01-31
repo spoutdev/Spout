@@ -114,10 +114,10 @@ public class NetworkComponent extends EntityComponent {
 		} catch (NullPointerException npe) {
 			//NPE logging to diagnose VANILLA-338
 			Spout.getLogger().info("Exception handling protocol event: " + npe.getClass().getSimpleName() + "\n" +
-				"    Owner: " + getOwner() + "\n" +
-				"    Chunk: " + (getOwner() != null ? getOwner().getChunk() : null) + "\n" + 
-				"    Position: " + (getOwner() != null ? getOwner().getTransform().getPosition() : null) + "\n" +
-				"    Is Owner Alive: " + (getOwner() != null ? getOwner().isRemoved() : "owner is null") + "\n");
+					"    Owner: " + getOwner() + "\n" +
+					"    Chunk: " + (getOwner() != null ? getOwner().getChunk() : null) + "\n" +
+					"    Position: " + (getOwner() != null ? getOwner().getScene().getPosition() : null) + "\n" +
+					"    Is Owner Alive: " + (getOwner() != null ? getOwner().isRemoved() : "owner is null") + "\n");
 			npe.printStackTrace();
 		}
 	}

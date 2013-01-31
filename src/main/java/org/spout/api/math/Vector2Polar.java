@@ -34,15 +34,14 @@ import org.spout.api.util.StringUtil;
 
 /**
  * A 2-dimensional vector represented by float-precision r,theta coordinates
- *
+ * <p/>
  * Theta is in Radians!
- *
+ * <p/>
  * Note, this is the Immutable form of Vector2Polar. All operations will
  * construct a new Vector2Polar.
  */
 public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Represents the Zero vector (0 at 0 degrees)
 	 */
@@ -51,10 +50,8 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 	 * Represents the unit vector (1 at 0 degrees)
 	 */
 	public final static Vector2Polar UNIT = new Vector2Polar(1, 0);
-	
 	protected final float r;
 	protected final float theta;
-	
 	/**
 	 * Hashcode caching
 	 */
@@ -63,7 +60,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Constructs and initializes a Vector2Polar from the given r, theta
-	 *
 	 * @param r the r coordinate
 	 * @param theta the theta coordinate
 	 */
@@ -74,7 +70,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Constructs and initializes a Vector2Polar from the given r, theta
-	 *
 	 * @param r the r coordinate
 	 * @param theta the theta coordinate
 	 */
@@ -84,7 +79,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Constructs and initializes a Vector2Polar from the given r, theta
-	 *
 	 * @param r the r coordinate
 	 * @param theta the theta coordinate
 	 */
@@ -94,7 +88,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Constructs and initializes a Vector2Polar from an old Vector2Polar
-	 *
 	 * @param o
 	 */
 	public Vector2Polar(Vector2Polar o) {
@@ -110,7 +103,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Gets the length of the vector from 0, 0
-	 *
 	 * @return
 	 */
 	public float getR() {
@@ -120,7 +112,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 	/**
 	 * Gets the angle of the vector from the positive X axis Vector2(1, 0) ==
 	 * Vector2Polar(1, 0)
-	 *
 	 * @return
 	 */
 	public float getTheta() {
@@ -145,7 +136,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Adds this Vector2Polar to the value of the Vector2Polar argument
-	 *
 	 * @param that The Vector2Polar to add
 	 * @return the new Vector2Polar
 	 */
@@ -155,7 +145,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Adds a Vector2Polar comprised of the given r, theta values
-	 *
 	 * @param r
 	 * @param theta
 	 * @return
@@ -166,7 +155,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Adds a Vector2Polar comprised of the given r, theta values
-	 *
 	 * @param r
 	 * @param theta
 	 * @return
@@ -177,7 +165,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Adds a Vector2Polar comprised of the given r, theta values
-	 *
 	 * @param r
 	 * @param theta
 	 * @return
@@ -188,7 +175,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Subtracts this Vector2Polar to the value of the Vector2Polar argument
-	 *
 	 * @param that The Vector2Polar to subtract
 	 * @return the new Vector2Polar
 	 */
@@ -198,7 +184,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Subtracts a Vector2Polar comprised of the given r, theta values
-	 *
 	 * @param r
 	 * @param theta
 	 * @return
@@ -209,7 +194,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Subtracts a Vector2Polar comprised of the given r, theta values
-	 *
 	 * @param r
 	 * @param theta
 	 * @return
@@ -220,7 +204,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Subtracts a Vector2Polar comprised of the given r, theta values
-	 *
 	 * @param r
 	 * @param theta
 	 * @return
@@ -231,7 +214,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Multiplies this Vector2Polar to the value of the Vector2Polar argument
-	 *
 	 * @param that The Vector2Polar to multiply
 	 * @return the new Vector2Polar
 	 */
@@ -241,7 +223,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Multiplies a Vector2Polar comprised of the given r, theta values
-	 *
 	 * @param r
 	 * @param theta
 	 * @return
@@ -252,7 +233,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Multiplies a Vector2Polar comprised of the given r, theta values
-	 *
 	 * @param r
 	 * @param theta
 	 * @return
@@ -263,7 +243,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Multiplies a Vector2Polar comprised of the given r, theta values
-	 *
 	 * @param r
 	 * @param theta
 	 * @return
@@ -274,7 +253,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Multiplies a Vector2Polar by the given value
-	 *
 	 * @param val
 	 * @return
 	 */
@@ -284,7 +262,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Multiplies a Vector2Polar by the given value
-	 *
 	 * @param val
 	 * @return
 	 */
@@ -294,7 +271,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Multiplies a Vector2Polar by the given value
-	 *
 	 * @param val
 	 * @return
 	 */
@@ -304,7 +280,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Divides the given Vector2Polar from this Vector2Polar
-	 *
 	 * @param that The Vector2Polar to divide
 	 * @return the new Vector2Polar
 	 */
@@ -314,7 +289,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Divides a Vector2Polar comprised of the given r, theta values
-	 *
 	 * @param x
 	 * @param theta
 	 * @return
@@ -325,7 +299,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Divides a Vector2Polar comprised of the given r, theta values
-	 *
 	 * @param r
 	 * @param theta
 	 * @return
@@ -336,7 +309,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Divides a Vector2Polar comprised of the given r, theta values
-	 *
 	 * @param r
 	 * @param theta
 	 * @return
@@ -347,7 +319,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Divides a Vector2Polar by the given value
-	 *
 	 * @param val
 	 * @return
 	 */
@@ -357,7 +328,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Divides a Vector2Polar by the given value
-	 *
 	 * @param val
 	 * @return
 	 */
@@ -367,7 +337,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Divides a Vector2Polar by the given value
-	 *
 	 * @param val
 	 * @return
 	 */
@@ -377,7 +346,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Returns this Vector2Polar dot the Vector2Polar argument.
-	 *
 	 * @param that The Vector2Polar to dot with this.
 	 * @return The dot product
 	 */
@@ -387,7 +355,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Returns a Vector2 with the same x, y coordinates as this vector
-	 *
 	 * @return
 	 */
 	public Vector2 toVector2() {
@@ -397,7 +364,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 	/**
 	 * Returns the Cross Product of this Vector2Polar Note: Cross Product is
 	 * undefined in 2d space. This returns the orthogonal vector to this vector
-	 *
 	 * @return The orthogonal vector to this vector.
 	 */
 	public Vector2Polar cross() {
@@ -406,7 +372,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Rounds the values of this Vector2Polar up to the nearest integer value.
-	 *
 	 * @return
 	 */
 	public Vector2Polar ceil() {
@@ -415,7 +380,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Rounds the values of this Vector2Polar down to the nearest integer value.
-	 *
 	 * @return
 	 */
 	public Vector2Polar floor() {
@@ -424,7 +388,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Rounds the values of this Vector2Polar to the nearest integer value.
-	 *
 	 * @return
 	 */
 	public Vector2Polar round() {
@@ -433,7 +396,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Gets the distance between this Vector2Polar and a given Vector2Polar.
-	 *
 	 * @param a
 	 * @return
 	 */
@@ -444,7 +406,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 	/**
 	 * Returns this Vector2Polar in an array. Element 0 contains r Element 1
 	 * contains theta
-	 *
 	 * @return The array containing this Vector2Polar
 	 */
 	public float[] toArray() {
@@ -493,7 +454,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Adds one Vector2Polar to the other Vector2Polar
-	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -504,7 +464,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Subtracts one Vector2Polar from the other Vector2Polar
-	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -515,7 +474,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Multiplies one Vector2Polar by the other Vector2Polar
-	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -526,7 +484,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Divides one Vector2Polar by the other Vector2Polar
-	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -537,7 +494,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Calculates the Dot Product of two Vector2Polars
-	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -548,7 +504,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Returns a Vector2m object at the same coordinate.
-	 *
 	 * @param o Vector2Polar to use as the x/z values
 	 * @return
 	 */
@@ -559,7 +514,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 	/**
 	 * Returns the Cross Product of this Vector2Polar Note: Cross Product is
 	 * undefined in 2d space. This returns the orthogonal vector to this vector
-	 *
 	 * @return The orthogonal vector to this vector.
 	 */
 	public static Vector2Polar cross(Vector2Polar o) {
@@ -569,7 +523,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 	/**
 	 * Rounds the values of the given Vector2Polar up to the nearest integer
 	 * value.
-	 *
 	 * @param o Vector2Polar to use
 	 * @return
 	 */
@@ -580,7 +533,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 	/**
 	 * Rounds the values of the given Vector2Polar down to the nearest integer
 	 * value.
-	 *
 	 * @param o Vector2Polar to use
 	 * @return
 	 */
@@ -590,7 +542,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Rounds the values of the given Vector2Polar to the nearest integer value.
-	 *
 	 * @param o Vector2Polar to use
 	 * @return
 	 */
@@ -600,7 +551,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Returns a Vector2Polar containing the smallest X and Y values.
-	 *
 	 * @param o1
 	 * @param o2
 	 * @return
@@ -611,7 +561,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Returns a Vector2Polar containing the largest X and Y values.
-	 *
 	 * @param o1
 	 * @param o2
 	 * @return
@@ -622,7 +571,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Returns a Vector2Polar with random values (between 0 and twoPi)
-	 *
 	 * @param o
 	 * @return
 	 */
@@ -633,11 +581,10 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 	/**
 	 * Returns the provided Vector2Polar in an array. Element 0 contains r
 	 * Element 1 contains theta
-	 *
 	 * @return The array containing the Vector2Polar
 	 */
 	public static float[] toArray(Vector2Polar a) {
-		return new float[] {a.r, a.theta};
+		return new float[]{a.r, a.theta};
 	}
 
 	/**
@@ -649,7 +596,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 
 	/**
 	 * Gets the distance between two Vector2Polar.
-	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -671,7 +617,6 @@ public class Vector2Polar implements Comparable<Vector2Polar>, Serializable {
 	/**
 	 * Gets the smallest angle possible from 0. Converts stuff like 7pi/4, etc
 	 * to the minimum angle with the same position.
-	 *
 	 * @param theta
 	 * @return
 	 */

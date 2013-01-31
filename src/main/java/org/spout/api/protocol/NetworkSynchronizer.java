@@ -46,6 +46,7 @@ import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Quaternion;
@@ -237,7 +238,7 @@ public abstract class NetworkSynchronizer {
 			viewDistance = currentViewDistance;
 		}
 
-		Point currentPosition = player.getTransform().getPosition();
+		Point currentPosition = player.getScene().getPosition();
 		if (currentPosition != null) {
 			if (prevViewDistance != currentViewDistance || worldChanged || (!currentPosition.equals(lastChunkCheck) &&	currentPosition.getManhattanDistance(lastChunkCheck) > Chunk.BLOCKS.SIZE >> 1)) {
 				checkChunkUpdates(currentPosition);
@@ -303,7 +304,7 @@ public abstract class NetworkSynchronizer {
 		} else {
 			if (worldChanged) {
 				first = false;
-				Point ep = player.getTransform().getPosition();
+				Point ep = player.getScene().getPosition();
 				resetChunks();
 				worldChanged(ep.getWorld());
 			} else if (!worldChanged) {
@@ -342,9 +343,9 @@ public abstract class NetworkSynchronizer {
 				if (!priorityChunkSendQueue.isEmpty()) {
 					return;
 				}
-				
-				if (teleported && player.getTransform().getTransformLive().equals(player.getTransform().getTransform())) {
-					sendPosition(player.getTransform().getTransformLive().getPosition(), player.getTransform().getTransformLive().getRotation());
+
+				if (teleported && !player.getScene().isTransformDirty()) {
+					sendPosition(player.getScene().getPosition(), player.getScene().getRotation());
 					teleported = false;
 				}
 
@@ -505,7 +506,6 @@ public abstract class NetworkSynchronizer {
 	 * 
 	 * @param playerChunkBase
 	 * @param testChunkBase
-	 * @param blockViewDistance view distance in chunks
 	 * @return true if in the view volume
 	 */
 	public boolean isInViewVolume(Point playerChunkBase, Point testChunkBase, int viewDistance) {
@@ -671,11 +671,12 @@ public abstract class NetworkSynchronizer {
 	 * Instructs the client to update the entities state and position<br><br>
 	 *
 	 * @param e the entity
+	 * @param the live transform (latest) for the entity
 	 * @param spawn is True when the entity just spawned
 	 * @param destroy is True when the entity just got destroyed
 	 * @param update is True when the entity is being updated
 	 */
-	public void syncEntity(Entity e, boolean spawn, boolean destroy, boolean update) {
+	public void syncEntity(Entity e, Transform liveTransform, boolean spawn, boolean destroy, boolean update) {
 		if (spawn) {
 			synchronizedEntities.add(e.getId());
 		} else if (destroy) {

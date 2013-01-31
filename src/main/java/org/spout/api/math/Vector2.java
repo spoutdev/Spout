@@ -34,13 +34,12 @@ import org.spout.api.util.StringUtil;
 
 /**
  * A 2-dimensional vector represented by float-precision x,y coordinates
- *
+ * <p/>
  * Note, this is the Immutable form of Vector2. All operations will construct a
  * new Vector2.
  */
-public class Vector2 implements Comparable<Vector2>, Serializable{
+public class Vector2 implements Comparable<Vector2>, Serializable {
 	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Represents the Zero vector (0,0)
 	 */
@@ -57,20 +56,16 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	 * Represents a unit vector (1,1)
 	 */
 	public final static Vector2 ONE = new Vector2(1, 1);
-	
 	/**
 	 * Hashcode caching
 	 */
 	private transient volatile boolean hashed = false;
 	private transient volatile int hashcode = 0;
-	
-	
 	protected final float x;
 	protected final float y;
 
 	/**
 	 * Constructs and initializes a Vector2 from the given x, y
-	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 */
@@ -81,7 +76,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Constructs and initializes a Vector2 from the given x, y
-	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 */
@@ -91,7 +85,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Constructs and initializes a Vector2 from the given x, y
-	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 */
@@ -101,7 +94,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Constructs and initializes a Vector2 from an old Vector2
-	 *
 	 * @param o
 	 */
 	public Vector2(Vector2 o) {
@@ -117,7 +109,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Gets the X coordinate
-	 *
 	 * @return The X coordinate
 	 */
 	public float getX() {
@@ -126,7 +117,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Gets the Y coordinate
-	 *
 	 * @return The Y coordinate
 	 */
 	public float getY() {
@@ -143,7 +133,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Adds this Vector2 to the value of the Vector2 argument
-	 *
 	 * @param that The Vector2 to add
 	 * @return the new Vector2
 	 */
@@ -153,7 +142,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Adds a Vector2 comprised of the given x, y values
-	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -164,7 +152,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Adds a Vector2 comprised of the given x, y values
-	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -175,7 +162,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Adds a Vector2 comprised of the given x, y values
-	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -186,7 +172,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Subtracts this Vector2 to the value of the Vector2 argument
-	 *
 	 * @param that The Vector2 to subtract
 	 * @return the new Vector2
 	 */
@@ -196,7 +181,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Subtracts a Vector2 comprised of the given x, y values
-	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -207,7 +191,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Subtracts a Vector2 comprised of the given x, y values
-	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -218,7 +201,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Subtracts a Vector2 comprised of the given x, y values
-	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -229,7 +211,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Multiplies this Vector2 to the value of the Vector2 argument
-	 *
 	 * @param that The Vector2 to multiply
 	 * @return the new Vector2
 	 */
@@ -239,7 +220,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Multiplies a Vector2 comprised of the given x, y values
-	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -250,7 +230,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Multiplies a Vector2 comprised of the given x, y values
-	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -261,7 +240,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Multiplies a Vector2 comprised of the given x, y values
-	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -272,7 +250,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Multiplies a Vector2 by the given value
-	 *
 	 * @param val
 	 * @return
 	 */
@@ -282,7 +259,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Multiplies a Vector2 by the given value
-	 *
 	 * @param val
 	 * @return
 	 */
@@ -292,7 +268,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Multiplies a Vector2 by the given value
-	 *
 	 * @param val
 	 * @return
 	 */
@@ -302,7 +277,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Divides the given Vector2 from this Vector2
-	 *
 	 * @param that The Vector2 to divide
 	 * @return the new Vector2
 	 */
@@ -312,7 +286,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Divides a Vector2 comprised of the given x, y values
-	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -323,7 +296,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Divides a Vector2 comprised of the given x, y values
-	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -334,7 +306,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Divides a Vector2 comprised of the given x, y values
-	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -345,7 +316,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Divides a Vector2 by the given value
-	 *
 	 * @param val
 	 * @return
 	 */
@@ -355,7 +325,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Divides a Vector2 by the given value
-	 *
 	 * @param val
 	 * @return
 	 */
@@ -365,7 +334,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Divides a Vector2 by the given value
-	 *
 	 * @param val
 	 * @return
 	 */
@@ -376,7 +344,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	/**
 	 * Returns this Vector2 dot the Vector2 argument. Dot Product is defined as
 	 * a.x*b.x + a.y*b.y
-	 *
 	 * @param that The Vector2 to dot with this.
 	 * @return The dot product
 	 */
@@ -388,7 +355,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	 * Returns a Vector3 object with a y-value of 0. The x of this Vector2
 	 * becomes the x of the Vector3, the y of this Vector2 becomes the z of the
 	 * Vector3.
-	 *
 	 * @return
 	 */
 	public Vector3 toVector3() {
@@ -397,7 +363,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Returns a Vector2Polar object with the same value as this Vector2
-	 *
 	 * @return
 	 */
 	public Vector2Polar toVector2Polar() {
@@ -408,7 +373,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	 * Returns a Vector3 object with the given y value. The x of this Vector2
 	 * becomes the x of the Vector3, the y of this Vector2 becomes the z of the
 	 * Vector3.
-	 *
 	 * @param y Y value to use in the new Vector3.
 	 * @return
 	 */
@@ -419,7 +383,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	/**
 	 * Returns the Cross Product of this Vector2 Note: Cross Product is
 	 * undefined in 2d space. This returns the orthogonal vector to this vector
-	 *
 	 * @return The orthogonal vector to this vector.
 	 */
 	public Vector2 cross() {
@@ -429,7 +392,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	/**
 	 * Rounds the X and Y values of this Vector2 up to the nearest integer
 	 * value.
-	 *
 	 * @return
 	 */
 	public Vector2 ceil() {
@@ -439,7 +401,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	/**
 	 * Rounds the X and Y values of this Vector2 down to the nearest integer
 	 * value.
-	 *
 	 * @return
 	 */
 	public Vector2 floor() {
@@ -448,7 +409,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Rounds the X and Y values of this Vector2 to the nearest integer value.
-	 *
 	 * @return
 	 */
 	public Vector2 round() {
@@ -457,7 +417,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Sets the X and Y values of this Vector2 to their absolute value.
-	 *
 	 * @return
 	 */
 	public Vector2 abs() {
@@ -466,7 +425,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Gets the distance between this Vector2 and a given Vector2.
-	 *
 	 * @param a
 	 * @return
 	 */
@@ -476,7 +434,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Gets the squared distance between this Vector2 and a given Vector2.
-	 *
 	 * @param a
 	 * @return
 	 */
@@ -486,7 +443,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Raises the X and Y values of this Vector2 to the given power.
-	 *
 	 * @param power
 	 * @return
 	 */
@@ -496,7 +452,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Calculates the length of this Vector2 squared.
-	 *
 	 * @return the squared length
 	 */
 	public float lengthSquared() {
@@ -506,7 +461,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	/**
 	 * Calculates the length of this Vector2 Note: This makes use of the sqrt
 	 * function, and is not cached. That could affect performance
-	 *
 	 * @return the length of this vector2
 	 */
 	public float length() {
@@ -515,7 +469,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Returns this Vector2 where the length is equal to 1
-	 *
 	 * @return This Vector2 with length 1
 	 */
 	public Vector2 normalize() {
@@ -525,7 +478,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	/**
 	 * Returns this Vector2 in an array. Element 0 contains x Element 1 contains
 	 * y
-	 *
 	 * @return The array containing this Vector2
 	 */
 	public float[] toArray() {
@@ -553,7 +505,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Generates a hashCode for these two values
-	 *
 	 * @return
 	 */
 	@Override
@@ -573,7 +524,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	/**
 	 * Returns the length of the provided Vector2 Note: This makes use of the
 	 * sqrt function, and is not cached. This could affect performance.
-	 *
 	 * @param a The Vector2 to calculate the length of
 	 * @return The length of the Vector2
 	 */
@@ -583,7 +533,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Returns the length squared of the provided Vector2
-	 *
 	 * @param a the Vector2 to calculate the length squared
 	 * @return the length squared of the Vector2
 	 */
@@ -593,7 +542,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Returns a Vector2 that is the unit form of the provided Vector2
-	 *
 	 * @param a
 	 * @return
 	 */
@@ -603,7 +551,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Adds one Vector2 to the other Vector2
-	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -614,7 +561,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Subtracts one Vector2 from the other Vector2
-	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -625,7 +571,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Multiplies one Vector2 by the other Vector2
-	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -636,7 +581,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Divides one Vector2 by the other Vector2
-	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -647,7 +591,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Scales the Vector2 by the ammount
-	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -661,7 +604,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	/**
 	 * Calculates the Dot Product of two Vector2s Dot Product is defined as
 	 * a.x*b.x + a.y*b.y
-	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -674,7 +616,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	 * Returns a Vector3 object with a y-value of 0. The x of the Vector2
 	 * becomes the x of the Vector3, the y of the Vector2 becomes the z of the
 	 * Vector3.
-	 *
 	 * @param o Vector2 to use as the x/z values
 	 * @return
 	 */
@@ -684,7 +625,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Returns a Vector2Polar object with the same value as the given Vector2
-	 *
 	 * @param o Vector2 to use
 	 * @return
 	 */
@@ -696,7 +636,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	 * Returns a Vector3 object with the given y-value. The x of the Vector2
 	 * becomes the x of the Vector3, the y of the Vector2 becomes the z of the
 	 * Vector3.
-	 *
 	 * @param o Vector2 to use as the x/z values
 	 * @param y Y value of the new Vector3
 	 * @return
@@ -708,7 +647,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	/**
 	 * Returns the Cross Product of this Vector2 Note: Cross Product is
 	 * undefined in 2d space. This returns the orthogonal vector to this vector
-	 *
 	 * @return The orthogonal vector to this vector.
 	 */
 	public static Vector2 cross(Vector2 o) {
@@ -718,7 +656,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	/**
 	 * Rounds the X and Y values of the given Vector2 up to the nearest integer
 	 * value.
-	 *
 	 * @param o Vector2 to use
 	 * @return
 	 */
@@ -729,7 +666,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	/**
 	 * Rounds the X and Y values of the given Vector2 down to the nearest
 	 * integer value.
-	 *
 	 * @param o Vector2 to use
 	 * @return
 	 */
@@ -740,7 +676,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	/**
 	 * Rounds the X and Y values of the given Vector2 to the nearest integer
 	 * value.
-	 *
 	 * @param o Vector2 to use
 	 * @return
 	 */
@@ -750,7 +685,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Sets the X and Y values of the given Vector2 to their absolute value.
-	 *
 	 * @param o Vector2 to use
 	 * @return
 	 */
@@ -760,7 +694,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Returns a Vector2 containing the smallest X and Y values.
-	 *
 	 * @param o1
 	 * @param o2
 	 * @return
@@ -771,7 +704,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Returns a Vector2 containing the largest X and Y values.
-	 *
 	 * @param o1
 	 * @param o2
 	 * @return
@@ -782,7 +714,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Returns a Vector2 with random X and Y values (between 0 and 1)
-	 *
 	 * @param o
 	 * @return
 	 */
@@ -797,11 +728,10 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 	/**
 	 * Returns the provided Vector2 in an array. Element 0 contains x Element 1
 	 * contains y
-	 *
 	 * @return The array containing the Vector2
 	 */
 	public static float[] toArray(Vector2 a) {
-		return new float[] {a.getX(), a.getY()};
+		return new float[]{a.getX(), a.getY()};
 	}
 
 	/**
@@ -813,7 +743,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Gets the distance between two Vector2.
-	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -824,7 +753,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Gets the squared distance between two Vector2.
-	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -835,7 +763,6 @@ public class Vector2 implements Comparable<Vector2>, Serializable{
 
 	/**
 	 * Raises the X and Y values of a Vector2 to the given power.
-	 *
 	 * @param o
 	 * @param power
 	 * @return

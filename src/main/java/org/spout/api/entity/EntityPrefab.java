@@ -35,12 +35,12 @@ import org.spout.api.geo.discrete.Transform;
 
 public interface EntityPrefab {
 	public String getName();
-	
+
 	public List<Class<? extends EntityComponent>> getComponents();
-	
+
 	public Map<String, Object> getDatas();
-	
+
 	public Entity createEntity(Point point);
-	
+
 	public Entity createEntity(Transform transform);
 }

@@ -119,17 +119,15 @@ public interface Player extends CommandSource, Entity {
 	 * @return current input state
 	 */
 	public PlayerInputState input();
-	
+
 	/**
 	 * Teleports the player to the given location and inform's the player's client
-	 * 
 	 * @param loc the new location
 	 */
 	public void teleport(Point loc);
-	
+
 	/**
 	 * Teleports the player to the given position and direction and inform's the player's client
-	 * 
 	 * @param loc the new location
 	 */
 	public void teleport(Transform transform);
@@ -139,16 +137,16 @@ public interface Player extends CommandSource, Entity {
 	 * @return true if successful
 	 */
 	public boolean save();
-	
+
 	/**
 	 * If an entity is set as invisible, it will not be sent to the client.
 	 * @param entity
 	 * @param visible
 	 */
 	public void setVisible(Entity entity, boolean visible);
-		
+
 	public List<Entity> getInvisibleEntities();
-	
+
 	public boolean isInvisible(Entity entity);
 
 	public void processInput(PlayerInputState state);
