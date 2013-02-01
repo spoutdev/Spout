@@ -34,6 +34,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 import org.jboss.netty.channel.Channel;
+import org.spout.api.Spout;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.protocol.Message;
@@ -186,14 +187,35 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 			throw new IllegalStateException();
 		}
 	}
+	
+	private final static long spikeLatency = SpoutConfiguration.RECV_SPIKE_LATENCY.getLong();
+	private final static float spikeChance = SpoutConfiguration.RECV_SPIKE_CHANCE.getFloat() / 20.0F;
+	private final boolean fakeLatency = spikeChance > 0F;
+	
+	private long spikeEnd = 0;
+	private final Random r = new Random();
 
 	public void pulse() {
+		
 		Message message;
 
 		if (state == State.GAME) {
 			while ((message = sendQueue.poll()) != null) {
 				send(false, true, message);
 			}
+		}
+		
+		if (fakeLatency) {
+			long currentTime = System.currentTimeMillis();
+			if (currentTime < spikeEnd) {
+				return;
+			}
+			if (r.nextFloat() < spikeChance) {
+				long spike = (long) (spikeLatency * r.nextFloat());
+				Spout.getLogger().info("Receive latency spike added, " + spike + "ms");
+				spikeEnd = currentTime + spike;
+			}
+
 		}
 
 		while ((message = fromDownMessageQueue.poll()) != null) {

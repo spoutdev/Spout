@@ -26,23 +26,29 @@
  */
 package org.spout.engine.protocol;
 
+import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.jboss.netty.channel.Channel;
 import org.spout.api.Spout;
 import org.spout.api.protocol.Message;
+import org.spout.engine.SpoutConfiguration;
 
 public class NetworkSendThread {
 
 	private final static int QUEUE_ID_MASK = 7;
+	
+	private final static long minimumLatency = SpoutConfiguration.SEND_LATENCY.getLong();
+	private final static long spikeLatency = SpoutConfiguration.SEND_SPIKE_LATENCY.getLong();
+	private final static float spikeChance = SpoutConfiguration.SEND_SPIKE_CHANCE.getFloat() / 10.0F;
 
 	private final int poolIndex;
 
 	private final AtomicReference<ChannelQueueThread[]> channelQueues = new  AtomicReference<ChannelQueueThread[]>();
 
 	private final AtomicReference<ChannelQueueThread[]> interruptedQueues = new AtomicReference<ChannelQueueThread[]>();
-
+	
 	public NetworkSendThread(int poolIndex) {
 		this.poolIndex = poolIndex;
 		channelQueues.set(new ChannelQueueThread[0]);
@@ -106,6 +112,8 @@ public class NetworkSendThread {
 	}
 
 	private static class ChannelQueueThread extends Thread {
+		
+		private long nextSpikeCheck = 0L;
 
 		private final LinkedBlockingQueue<QueueNode> queue = new LinkedBlockingQueue<QueueNode>();
 
@@ -118,14 +126,44 @@ public class NetworkSendThread {
 		}
 
 		public void run() {
+			Random r = new Random();
 			QueueNode node;
 			while (!isInterrupted()) {
+				if (spikeChance > 0) {
+					long currentTime = System.currentTimeMillis();
+					if (currentTime > nextSpikeCheck) {
+						nextSpikeCheck = currentTime + 100L;
+						if (r.nextFloat() < spikeChance) {
+							try {
+								long spike = (long) (spikeLatency * r.nextFloat());
+								Spout.getLogger().info("Send lag spike added, " + spike + "ms");
+								Thread.sleep(spike);
+							} catch (InterruptedException ie) {
+								break;
+							}
+						}
+					}
+				}
 				try {
 					node = queue.take();
 				} catch (InterruptedException ie) {
 					break;
 				}
-				handle(node);
+				try {
+					if (minimumLatency > 0) {
+						long currentTime = System.currentTimeMillis();
+						long w = minimumLatency + node.getCreationTime() - currentTime;
+						if (w > 0) {
+							try {
+								Thread.sleep(w);
+							} catch (InterruptedException ie) {
+								break;
+							}
+						}
+					}
+				} finally {
+					handle(node);
+				}
 			}
 			flushQueue();
 		}
@@ -162,11 +200,13 @@ public class NetworkSendThread {
 		private final SpoutSession<?> session;
 		private final Channel channel;
 		private final Message message;
+		private final long creation;
 
 		public QueueNode(SpoutSession<?> session, Channel channel, Message message) {
 			this.channel = channel;
 			this.message = message;
 			this.session = session;
+			this.creation = System.currentTimeMillis();
 		}
 
 		public Channel getChannel() {
@@ -179,6 +219,10 @@ public class NetworkSendThread {
 
 		public Message getMessage() {
 			return message;
+		}
+		
+		public long getCreationTime() {
+			return creation;
 		}
 
 	}
