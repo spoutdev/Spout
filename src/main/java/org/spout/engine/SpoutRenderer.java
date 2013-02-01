@@ -189,7 +189,7 @@ public class SpoutRenderer {
 		for (Entity e : client.getActiveWorld().getAll()) {
 			final SpoutSceneComponent scene = (SpoutSceneComponent) e.getScene();
 			if (scene.getBody() == null) {
-				((SpoutSceneComponent)e.getScene()).updateRender(dt);
+				scene.interpolateRender(dt);
 			}
 		}
 		client.getActiveCamera().updateView();

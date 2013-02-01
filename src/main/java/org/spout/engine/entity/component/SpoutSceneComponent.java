@@ -497,7 +497,11 @@ public class SpoutSceneComponent extends SceneComponent {
 		}
 	}
 
-	public void updateRender(float dt) {
+	/**
+	 * Interpolates the render transform for Spout rendering. This only kicks in when the entity has no body.
+	 * @param dt time since last interpolation.
+	 */
+	public void interpolateRender(float dt) {
 		render.translate(speed.multiply(dt));
 		Quaternion q = render.getRotation();
 		render.setRotation(new Quaternion(	q.getX()*(1-dt) + rotate.getX()*dt,
