@@ -487,11 +487,14 @@ public class SpoutSceneComponent extends SceneComponent {
 	 */
 	public void copySnapshot() {
 		snapshot.set(live);
-		
-		float ratio = 80f / 20f;
-		speed = snapshot.getPosition().subtract(render.getPosition()).multiply(ratio);
-		rotate = snapshot.getRotation();
-		scale = snapshot.getScale().subtract(render.getScale()).multiply(ratio);
+
+		//Have Spout interpolate if this Entity has no valid body.
+		if (body == null) {
+			float ratio = 80f / 20f;
+			speed = snapshot.getPosition().subtract(render.getPosition()).multiply(ratio);
+			rotate = snapshot.getRotation();
+			scale = snapshot.getScale().subtract(render.getScale()).multiply(ratio);
+		}
 	}
 
 	public void updateRender(float dt) {
