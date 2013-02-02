@@ -283,8 +283,8 @@ public final class Transform implements Serializable {
 	 * @return
 	 */
 	public Matrix toMatrix(){
-		Matrix translate = MatrixMath.translate(getPosition());
-		Matrix rotate = MatrixMath.rotate(getRotation());
+		Matrix translate = MatrixMath.createTranslated(getPosition());
+		Matrix rotate = MatrixMath.createRotated(getRotation());
 		Matrix scale = MatrixMath.createScaled(getScale());
 		return scale.multiply(rotate).multiply(translate);
 	}

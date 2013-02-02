@@ -135,7 +135,7 @@ public class MatrixMath {
 	 * @param vector The translation vector
 	 * @return The matrix form of the translation vector
 	 */
-	public static Matrix translate(Vector3 vector) {
+	public static Matrix createTranslated(Vector3 vector) {
 		Matrix res = createIdentity();
 		res.set(3, 0, vector.getX());
 		res.set(3, 1, vector.getY());
@@ -148,7 +148,7 @@ public class MatrixMath {
 	 * @param rot The rotation around x in degrees
 	 * @return The matrix corresponding to the rotation
 	 */
-	public static Matrix rotateX(float rot) {
+	public static Matrix createRotatedX(float rot) {
 		Matrix res = createIdentity();
 
 		double rotRad = Math.toRadians(rot);
@@ -169,7 +169,7 @@ public class MatrixMath {
 	 * @param rot The rotation around y in degrees
 	 * @return The matrix corresponding to the rotation
 	 */
-	public static Matrix rotateY(float rot) {
+	public static Matrix createRotatedY(float rot) {
 		Matrix res = createIdentity();
 
 		double rotRad = Math.toRadians(rot);
@@ -190,7 +190,7 @@ public class MatrixMath {
 	 * @param rot The rotation around z in degrees
 	 * @return The matrix corresponding to the rotation
 	 */
-	public static Matrix rotateZ(float rot) {
+	public static Matrix createRotatedZ(float rot) {
 		Matrix res = createIdentity();
 
 		double rotRad = Math.toRadians(rot);
@@ -212,7 +212,7 @@ public class MatrixMath {
 	 * @param rot The rotation
 	 * @return The rotation matrix for the quaternion
 	 */
-	public static Matrix rotate(Quaternion rot) {
+	public static Matrix createRotated(Quaternion rot) {
 		Matrix res = createIdentity();
 		//Confirm that we are dealing with a unit quaternion
 		Quaternion r = rot.normalize();
@@ -277,7 +277,7 @@ public class MatrixMath {
 		mat.set(1, 2, -f.getY());
 		mat.set(2, 2, -f.getZ());
 
-		Matrix trans = translate(eye.multiply(-1));
+		Matrix trans = createTranslated(eye.multiply(-1));
 		mat = multiply(trans, mat);
 		return mat;
 	}

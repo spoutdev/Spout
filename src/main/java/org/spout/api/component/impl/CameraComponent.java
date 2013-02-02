@@ -75,8 +75,8 @@ public class CameraComponent extends EntityComponent implements Camera {
 	@Override
 	public void updateView() {
 		Transform transform = getOwner().getScene().getRenderTransform();
-		Matrix pos = MatrixMath.translate(transform.getPosition().multiply(-1));
-		Matrix rot = MatrixMath.rotate(transform.getRotation());
+		Matrix pos = MatrixMath.createTranslated(transform.getPosition().multiply(-1));
+		Matrix rot = MatrixMath.createRotated(transform.getRotation());
 		view = pos.multiply(rot);
 		frustum.update(projection, view, transform.getPosition());
 	}
@@ -109,6 +109,6 @@ public class CameraComponent extends EntityComponent implements Camera {
 	@Override
 	public Matrix getRotation() {
 		Transform transform = getOwner().getScene().getRenderTransform();
-		return MatrixMath.rotate(transform.getRotation());
+		return MatrixMath.createRotated(transform.getRotation());
 	}
 }

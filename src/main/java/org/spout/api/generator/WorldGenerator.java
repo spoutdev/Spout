@@ -78,13 +78,6 @@ public interface WorldGenerator extends Named {
 	 * @return the Populator array
 	 */
 	public Populator[] getPopulators();
-	
-	/**
-	 * Gets an array of GeneratorPopulators for the world generator
-	 *
-	 * @return the GeneratorPopulator array
-	 */
-	public GeneratorPopulator[] getGeneratorPopulators();
 
 	/**
 	 * Gets the name of the generator. This name should be unique to prevent two

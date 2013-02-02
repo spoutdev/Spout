@@ -422,11 +422,11 @@ public class Vector3Test {
 	@Test
 	public void testTransformVector3Matrix() {
 		Vector3 x = new Vector3(1, 0, 0);
-		Vector3 u = x.transform(MatrixMath.rotateY(90));
+		Vector3 u = x.transform(MatrixMath.createRotatedY(90));
 		testValue(u, 0, 0, -1);
 
 		Vector3 y = new Vector3(2, 4, 5);
-		Vector3 v = y.transform(MatrixMath.rotateX(30));
+		Vector3 v = y.transform(MatrixMath.createRotatedX(30));
 		testValue(v, 2, .9666f, 6.333f);
 	}
 

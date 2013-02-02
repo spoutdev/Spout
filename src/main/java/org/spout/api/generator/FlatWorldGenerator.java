@@ -46,11 +46,6 @@ public class FlatWorldGenerator implements WorldGenerator {
 	public Populator[] getPopulators() {
 		return new Populator[0];
 	}
-	
-	@Override
-	public GeneratorPopulator[] getGeneratorPopulators() {
-		return new GeneratorPopulator[0];
-	}
 
 	@Override
 	public String getName() {

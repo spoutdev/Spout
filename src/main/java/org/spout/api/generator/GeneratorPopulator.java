@@ -30,7 +30,10 @@ import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 
 /**
- * Represents a populator for a generator
+ * Represents a populator for a generator which should operate on a material
+ * buffer. These are internal to the world generator implementations. The
+ * {@link BiomeGenerator} implementation makes use of them, but they're not
+ * mandatory.
  */
 public interface GeneratorPopulator {
 	public void populate(CuboidBlockMaterialBuffer blockData, int x, int y, int z, BiomeManager biomes, long seed);

@@ -45,9 +45,9 @@ public class CircleSpawnArrangement extends GenericSpawnArrangement {
 	protected Point[] generatePoints(Point center, int number) {
 		Vector3 offset = Point.FORWARD.multiply(radius);
 		int angle = number == 0 ? 0 : (360 / number);
-		Matrix rotate = MatrixMath.rotateY(angle);
+		Matrix rotate = MatrixMath.createRotatedY(angle);
 		if (halfRotate) {
-			offset = offset.transform(MatrixMath.rotateY(angle / 2));
+			offset = offset.transform(MatrixMath.createRotatedY(angle / 2));
 		}
 		Point[] points = new Point[number];
 		for (int i = 0; i < number; i++) {
