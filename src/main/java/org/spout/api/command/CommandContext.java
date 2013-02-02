@@ -108,7 +108,7 @@ public class CommandContext {
 							if (endIndex == i && arg2.length() < 2) {
 								continue;
 							}
-							build.append(arg2.subSection(endIndex == i ? 1 : 0,arg2.length() - 2));
+							build.append(arg2.subSection(endIndex == i ? 1 : 0, arg2.length() - 2));
 							break;
 						} else if (endIndex == i) {
 							build.append(arg2.subSection(1, arg2.length() - 1));
