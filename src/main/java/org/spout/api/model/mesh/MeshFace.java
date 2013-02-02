@@ -33,7 +33,6 @@ import org.apache.commons.collections.iterators.ArrayIterator;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.StringUtil;
-import org.spout.api.math.VectorMath;
 
 /**
  * Represents a Triangle for a model face
@@ -53,7 +52,7 @@ public class MeshFace implements Iterable<Vertex> {
 	 * this.
 	 */
 	protected void doRecalculateNormals() {
-		Vector3 trinormal = VectorMath.cross(verts[0].position.subtract(verts[1].position), verts[1].position.subtract(verts[2].position)).normalize();
+		Vector3 trinormal = verts[0].position.subtract(verts[1].position).cross(verts[1].position.subtract(verts[2].position)).normalize();
 		verts[0].normal = verts[0].normal.add(trinormal).normalize();
 		verts[1].normal = verts[1].normal.add(trinormal).normalize();
 		verts[2].normal = verts[2].normal.add(trinormal).normalize();

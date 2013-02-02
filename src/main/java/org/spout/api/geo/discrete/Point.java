@@ -37,7 +37,6 @@ import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.math.Vector3;
-import org.spout.api.math.VectorMath;
 import org.spout.api.util.StringUtil;
 
 /**
@@ -144,7 +143,7 @@ public class Point extends Vector3 implements WorldSource {
 		if (world != other.world) {
 			throw new IllegalArgumentException("Cannot add two points in seperate worlds");
 		}
-		return new Point(VectorMath.add(this, other), world);
+		return new Point(Vector3.add(this, other), world);
 	}
 
 	@Override

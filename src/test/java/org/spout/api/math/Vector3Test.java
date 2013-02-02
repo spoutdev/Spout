@@ -396,20 +396,20 @@ public class Vector3Test {
 	public void testMin() {
 		Vector3 x = new Vector3(5, -15, 4);
 		Vector3 y = new Vector3(3, 2, 6);
-		assertEquals(new Vector3(3, -15, 4), VectorMath.min(x, y));
+		assertEquals(new Vector3(3, -15, 4), Vector3.min(x, y));
 	}
 
 	@Test
 	public void testMax() {
 		Vector3 x = new Vector3(5, -15, 4);
 		Vector3 y = new Vector3(3, 2, 6);
-		assertEquals(new Vector3(5, 2, 6), VectorMath.max(x, y));
+		assertEquals(new Vector3(5, 2, 6), Vector3.max(x, y));
 	}
 
 	@Test
 	public void testRand() {
 		for (int i = 0; i < 100; ++i) {
-			Vector3 x = VectorMath.random();
+			Vector3 x = Vector3.rand();
 			assertTrue(x.x >= -1);
 			assertTrue(x.x <= 1);
 			assertTrue(x.y >= -1);
