@@ -98,11 +98,17 @@ public class CommandContext {
 					int endIndex;
 					for (endIndex = i; endIndex < args.size(); ++endIndex) {
 						final ChatSection arg2 = args.get(endIndex);
+						if (arg2.length() == 0) {
+							continue;
+						}
 						if (arg2.getPlainString().charAt(arg2.length() - 1) == quotedChar) {
 							if (endIndex != i) {
 								build.append(' ');
 							}
-							build.append(arg2.subSection(endIndex == i ? 1 : 0, arg2.length() - 2));
+							if (endIndex == i && arg2.length() < 2) {
+								continue;
+							}
+							build.append(arg2.subSection(endIndex == i ? 1 : 0,arg2.length() - 2));
 							break;
 						} else if (endIndex == i) {
 							build.append(arg2.subSection(1, arg2.length() - 1));
