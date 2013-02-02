@@ -27,7 +27,6 @@
 package org.spout.api.render;
 
 import org.spout.api.math.Matrix;
-import org.spout.api.math.Vector3;
 
 /**
  * Represents a Camera to be used for rendering.
@@ -57,12 +56,6 @@ public interface Camera {
 	 * @return
 	 */
 	public ViewFrustum getFrustum();
-	
-	public void setSpeed(float speed);
-	
-	public void setSpeed(Vector3 speed);
-	
-	public Vector3 getSpeed();
 	
 	public Matrix getRotation();
 }
