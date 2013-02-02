@@ -136,7 +136,6 @@ public class NetworkSendThread {
 						if (r.nextFloat() < spikeChance) {
 							try {
 								long spike = (long) (spikeLatency * r.nextFloat());
-								Spout.getLogger().info("Send lag spike added, " + spike + "ms");
 								Thread.sleep(spike);
 							} catch (InterruptedException ie) {
 								break;

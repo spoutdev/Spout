@@ -212,7 +212,6 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 			}
 			if (r.nextFloat() < spikeChance) {
 				long spike = (long) (spikeLatency * r.nextFloat());
-				Spout.getLogger().info("Receive latency spike added, " + spike + "ms");
 				spikeEnd = currentTime + spike;
 			}
 

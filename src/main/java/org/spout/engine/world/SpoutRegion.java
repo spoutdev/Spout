@@ -854,29 +854,10 @@ public class SpoutRegion extends Region implements AsyncManager {
 		}
 	}
 
-	private boolean isVisibleToPlayers() {
-		if (this.entityManager.getPlayers().size() > 0) {
-			return true;
-		}
-		//Search for players near to the center of the region
-		int bx = getBlockX();
-		int by = getBlockY();
-		int bz = getBlockZ();
-		int half = BLOCKS.SIZE / 2;
-		Point center = new Point(getWorld(), bx + half, by + half, bz + half);
-		return getWorld().getNearbyPlayers(center, BLOCKS.SIZE).size() > 0;
-	}
-
 	private void updateEntities(float dt) {
-		boolean visible = isVisibleToPlayers();
 		for (SpoutEntity ent : entityManager.getAll()) {
 			try {
-				//Try and determine if we should tick this entity
-				//If the entity is not important (not an observer)
-				//And the entity is not visible to players, don't tick it
-				if (visible) { //TODO: Replace isImportant
-					ent.tick(dt);
-				}
+				ent.tick(dt);
 			} catch (Exception e) {
 				Spout.getEngine().getLogger().severe("Unhandled exception during tick for " + ent.toString());
 				e.printStackTrace();
