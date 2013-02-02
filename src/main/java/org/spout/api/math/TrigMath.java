@@ -127,7 +127,7 @@ public class TrigMath {
 	 * @param angle the angle in radians
 	 * @return the cosecant of the angle
 	 */
-	public static float cosec(float angle) {
+	public static float csc(float angle) {
 		return 1 / sin(angle);
 	}
 
@@ -280,7 +280,7 @@ public class TrigMath {
 	 * @param value of the cosecant
 	 * @return cosecant arc in radians
 	 */
-	public static double acosec(double value) {
+	public static double acsc(double value) {
 		if (value == 0) {
 			return Double.NaN;
 		}

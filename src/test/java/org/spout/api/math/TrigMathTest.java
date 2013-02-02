@@ -113,7 +113,7 @@ public class TrigMathTest {
 	}
 
 	private void testAcosec(double value) {
-		testValue(value, TrigMath.acosec(value), Math.asin(1 / value));
+		testValue(value, TrigMath.acsc(value), Math.asin(1 / value));
 	}
 
 	private void testAtan(double value) {

@@ -80,6 +80,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Constructs and initializes a Vector3 from the given x, y, z
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -92,6 +93,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Constructs and initializes a Vector3 from the given x, y, z
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -102,6 +104,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Constructs and initializes a Vector3 from the given x, y, z
+	 *
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param z the z coordinate
@@ -112,6 +115,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Constructs and initializes a Vector3 from an old Vector3
+	 *
 	 * @param o
 	 */
 	public Vector3(Vector3 o) {
@@ -171,15 +175,17 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Adds this Vector3 to the value of the Vector3 argument
+	 *
 	 * @param that The Vector3 to add
 	 * @return the new Vector3
 	 */
 	public Vector3 add(Vector3 that) {
-		return VectorMath.add(this, that);
+		return Vector3.add(this, that);
 	}
 
 	/**
 	 * Adds a Vector3 comprised of the given x, y, z values
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -191,6 +197,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Adds a Vector3 comprised of the given x, y, z values
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -202,6 +209,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Adds a Vector3 comprised of the given x, y, z values
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -213,15 +221,17 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Subtracts the given Vector3 from this Vector3
+	 *
 	 * @param that The Vector3 to subtract
 	 * @return the new Vector3
 	 */
 	public Vector3 subtract(Vector3 that) {
-		return VectorMath.subtract(this, that);
+		return Vector3.subtract(this, that);
 	}
 
 	/**
 	 * Subtracts a Vector3 comprised of the given x, y, z values
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -233,6 +243,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Subtracts a Vector3 comprised of the given x, y, z values
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -244,6 +255,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Subtracts a Vector3 comprised of the given x, y, z values
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -255,15 +267,17 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Multiplies this Vector3 by the value of the Vector3 argument
+	 *
 	 * @param that The Vector3 to multiply
 	 * @return the new Vector3
 	 */
 	public Vector3 multiply(Vector3 that) {
-		return VectorMath.multiply(this, that);
+		return Vector3.multiply(this, that);
 	}
 
 	/**
 	 * Multiplies a Vector3 comprised of the given x, y, z values
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -275,6 +289,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Multiplies a Vector3 comprised of the given x, y, z values
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -286,6 +301,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Multiplies a Vector3 comprised of the given x, y, z values
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -297,6 +313,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Multiplies a Vector3 by the given value
+	 *
 	 * @param val
 	 * @return
 	 */
@@ -306,6 +323,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Multiplies a Vector3 by the given value
+	 *
 	 * @param val
 	 * @return
 	 */
@@ -315,6 +333,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Multiplies a Vector3 by the given value
+	 *
 	 * @param val
 	 * @return
 	 */
@@ -324,15 +343,17 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Divides the given Vector3 from this Vector3
+	 *
 	 * @param that The Vector3 to divide
 	 * @return the new Vector3
 	 */
 	public Vector3 divide(Vector3 that) {
-		return VectorMath.divide(this, that);
+		return Vector3.divide(this, that);
 	}
 
 	/**
 	 * Divides a Vector3 comprised of the given x, y, z values
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -344,6 +365,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Divides a Vector3 comprised of the given x, y, z values
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -355,6 +377,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Divides a Vector3 comprised of the given x, y, z values
+	 *
 	 * @param x
 	 * @param y
 	 * @param z
@@ -366,6 +389,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Divides a Vector3 by the given value
+	 *
 	 * @param val
 	 * @return
 	 */
@@ -375,6 +399,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Divides a Vector3 by the given value
+	 *
 	 * @param val
 	 * @return
 	 */
@@ -384,6 +409,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Divides a Vector3 by the given value
+	 *
 	 * @param val
 	 * @return
 	 */
@@ -393,35 +419,39 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Takes the dot product of two vectors
+	 *
 	 * @param that
 	 * @return
 	 */
 	public float dot(Vector3 that) {
-		return VectorMath.dot(this, that);
+		return Vector3.dot(this, that);
 	}
 
 	/**
 	 * Returns a Vector2 object using the X and Z values of this Vector3. The x
 	 * of this Vector3 becomes the x of the Vector2, and the z of this Vector3
 	 * becomes the y of the Vector2.
+	 *
 	 * @return
 	 */
 	public Vector2 toVector2() {
-		return VectorMath.toVector2(this);
+		return Vector3.toVector2(this);
 	}
 
 	/**
 	 * Takes the cross product of two vectors
+	 *
 	 * @param that
 	 * @return
 	 */
 	public Vector3 cross(Vector3 that) {
-		return VectorMath.cross(this, that);
+		return Vector3.cross(this, that);
 	}
 
 	/**
 	 * Rounds the X, Y, and Z values of this Vector3 up to the nearest integer
 	 * value.
+	 *
 	 * @return
 	 */
 	public Vector3 ceil() {
@@ -431,6 +461,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	/**
 	 * Rounds the X, Y, and Z values of this Vector3 down to the nearest integer
 	 * value.
+	 *
 	 * @return
 	 */
 	public Vector3 floor() {
@@ -440,6 +471,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	/**
 	 * Rounds the X, Y, and Z values of this Vector3 to the nearest integer
 	 * value.
+	 *
 	 * @return
 	 */
 	public Vector3 round() {
@@ -448,6 +480,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Sets the X, Y, and Z values of this Vector3 to their absolute value.
+	 *
 	 * @return
 	 */
 	public Vector3 abs() {
@@ -456,75 +489,84 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Gets the distance between this Vector3 and a given Vector3.
+	 *
 	 * @param a
 	 * @return
 	 */
 	public double distance(Vector3 a) {
-		return VectorMath.distance(a, this);
+		return Vector3.distance(a, this);
 	}
 
 	/**
 	 * Gets the squared distance between this Vector3 and a given Vector3.
+	 *
 	 * @param a
 	 * @return
 	 */
 	public double distanceSquared(Vector3 a) {
-		return VectorMath.distanceSquared(a, this);
+		return Vector3.distanceSquared(a, this);
 	}
 
 	/**
 	 * Raises the X, Y, and Z values of this Vector3 to the given power.
+	 *
 	 * @param power
 	 * @return
 	 */
 	public Vector3 pow(double power) {
-		return VectorMath.pow(this, power);
+		return Vector3.pow(this, power);
 	}
 
 	/**
 	 * returns the squared length of the vector
+	 *
 	 * @return
 	 */
 	public float lengthSquared() {
-		return VectorMath.lengthSquared(this);
+		return Vector3.lengthSquared(this);
 	}
 
 	/**
 	 * returns the length of this vector. Note: makes use of Math.sqrt and is
 	 * not cached.
+	 *
 	 * @return
 	 */
 	public float length() {
-		return VectorMath.length(this);
+		return Vector3.length(this);
 	}
 
 	/**
 	 * Returns a fast approximation of this vector's length.
+	 *
 	 * @return
 	 */
 	public float fastLength() {
-		return VectorMath.fastLength(this);
+		return Vector3.fastLength(this);
 	}
 
 	/**
 	 * returns the vector with a length of 1
+	 *
 	 * @return
 	 */
 	public Vector3 normalize() {
-		return VectorMath.normalize(this);
+		return Vector3.normalize(this);
 	}
 
 	/**
 	 * returns the vector as [x,y,z]
+	 *
 	 * @return
 	 */
 	public float[] toArray() {
-		return VectorMath.toArray(this);
+		return Vector3.toArray(this);
 	}
 
 	/**
 	 * Returns a new vector that is a transformation of this vector around the
 	 * given transformation
+	 *
 	 * @param transformation
 	 * @return
 	 */
@@ -535,6 +577,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	/**
 	 * Returns a new vector that is a transformation of this vector around the
 	 * given transformation
+	 *
 	 * @param transformation
 	 * @return
 	 */
@@ -544,20 +587,22 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 
 	/**
 	 * Gets the Vector3 composed of the smallest components of the two vectors.
+	 *
 	 * @param other The other Vector3 to compare this Vector3 with.
 	 * @return
 	 */
 	public Vector3 min(Vector3 other) {
-		return VectorMath.min(this, other);
+		return Vector3.min(this, other);
 	}
 
 	/**
 	 * Gets the Vector3 composed of the largest components of the two vectors.
+	 *
 	 * @param other The other Vector3 to compare this Vector3 with.
 	 * @return
 	 */
 	public Vector3 max(Vector3 other) {
-		return VectorMath.max(this, other);
+		return Vector3.max(this, other);
 	}
 
 	/**
@@ -565,7 +610,7 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 */
 	@Override
 	public int compareTo(Vector3 o) {
-		return VectorMath.compareTo(this, o);
+		return Vector3.compareTo(this, o);
 	}
 
 	/**
@@ -584,14 +629,10 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 		return xT.x == yT.x && xT.y == yT.y && xT.z == yT.z;
 	}
 
-	public Quaternion rotationTo(Vector3 other) {
-		return QuaternionMath.rotationTo(this, other);
-	}
-
 	// All of the below methods use .x, .y, .z instead of .getX() on purpose. Changing them will break AtomicPoint!
-
 	/**
 	 * Generates a unique hash code for this set of values
+	 *
 	 * @return
 	 */
 	@Override
@@ -606,5 +647,258 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	@Override
 	public String toString() {
 		return StringUtil.toString(this.x, this.y, this.z);
+	}
+
+	/**
+	 * Returns the length of the given vector.
+	 * <p/>
+	 * Note: Makes use of Math.sqrt and is not cached, so can be slow
+	 * <p/>
+	 * Also known as norm. ||a||
+	 *
+	 * @param a The vector
+	 * @return The length of the vector
+	 */
+	public static float length(Vector3 a) {
+		return (float) Math.sqrt(lengthSquared(a));
+	}
+
+	/**
+	 * Returns an approximate length of the given vector.
+	 *
+	 * @param a The vector
+	 * @return The fast approximate length of the vector
+	 */
+	@Deprecated
+	public static float fastLength(Vector3 a) {
+		return length(a);
+	}
+
+	/**
+	 * returns the length squared to the given vector
+	 *
+	 * @param a The vector
+	 * @return The squared length of the vector
+	 */
+	public static float lengthSquared(Vector3 a) {
+		return dot(a, a);
+	}
+
+	/**
+	 * Returns a new vector that is the given vector but length 1
+	 *
+	 * @param a The vector
+	 * @return The vector with the same direction but length one
+	 */
+	public static Vector3 normalize(Vector3 a) {
+		return a.multiply(1.f / a.length());
+	}
+
+	/**
+	 * Creates a new Vector that is A + B
+	 *
+	 * @param a The left vector
+	 * @param b The right vector
+	 * @return The sum vector of left plus right
+	 */
+	public static Vector3 add(Vector3 a, Vector3 b) {
+		return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
+	}
+
+	/**
+	 * Creates a new vector that is A - B
+	 *
+	 * @param a The left vector
+	 * @param b The right vector
+	 * @return The sum vector of left minus right
+	 */
+	public static Vector3 subtract(Vector3 a, Vector3 b) {
+		return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
+	}
+
+	/**
+	 * Multiplies one Vector3 by the other Vector3
+	 *
+	 * @param a The left vector
+	 * @param b The right vector
+	 * @return The product vector of left times right
+	 */
+	public static Vector3 multiply(Vector3 a, Vector3 b) {
+		return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
+	}
+
+	/**
+	 * Divides one Vector3 by the other Vector3
+	 *
+	 * @param a The left vector
+	 * @param b The right vector
+	 * @return The quotient vector of left divided by right
+	 */
+	public static Vector3 divide(Vector3 a, Vector3 b) {
+		return new Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
+	}
+
+	/**
+	 * Returns the dot product of A and B
+	 *
+	 * @param a The left vector
+	 * @param b The right vector
+	 * @return The dot product vector of left dot right
+	 */
+	public static float dot(Vector3 a, Vector3 b) {
+		return a.x * b.x + a.y * b.y + a.z * b.z;
+	}
+
+	/**
+	 * Creates a new Vector that is the A x B The Cross Product is the vector
+	 * orthogonal to both A and B
+	 *
+	 * @param a The left vector
+	 * @param b The right vector
+	 * @return The cross product vector of left cross right
+	 */
+	public static Vector3 cross(Vector3 a, Vector3 b) {
+		return new Vector3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+	}
+
+	/**
+	 * Rounds the X, Y, and Z values of the given Vector3 up to the nearest
+	 * integer value.
+	 *
+	 * @param o Vector3 to use
+	 * @return The ceiling vector
+	 */
+	public static Vector3 ceil(Vector3 o) {
+		return new Vector3(Math.ceil(o.x), Math.ceil(o.y), Math.ceil(o.z));
+	}
+
+	/**
+	 * Rounds the X, Y, and Z values of the given Vector3 down to the nearest
+	 * integer value.
+	 *
+	 * @param o Vector3 to use
+	 * @return The floor vector
+	 */
+	public static Vector3 floor(Vector3 o) {
+		return new Vector3(Math.floor(o.x), Math.floor(o.y), Math.floor(o.z));
+	}
+
+	/**
+	 * Rounds the X, Y, and Z values of the given Vector3 to the nearest integer
+	 * value.
+	 *
+	 * @param o Vector3 to use
+	 * @return The rounded vector
+	 */
+	public static Vector3 round(Vector3 o) {
+		return new Vector3(Math.round(o.x), Math.round(o.y), Math.round(o.z));
+	}
+
+	/**
+	 * Sets the X, Y, and Z values of the given Vector3 to their absolute value.
+	 *
+	 * @param o Vector3 to use
+	 * @return The absolute vector
+	 */
+	public static Vector3 abs(Vector3 o) {
+		return new Vector3(Math.abs(o.x), Math.abs(o.y), Math.abs(o.z));
+	}
+
+	/**
+	 * Returns a Vector3 containing the smallest X, Y, and Z values.
+	 *
+	 * @param o1 The first vector
+	 * @param o2 The second vector
+	 * @return The minimum of both vectors combined
+	 */
+	public static Vector3 min(Vector3 o1, Vector3 o2) {
+		return new Vector3(Math.min(o1.x, o2.x), Math.min(o1.y, o2.y), Math.min(o1.z, o2.z));
+	}
+
+	/**
+	 * Returns a Vector3 containing the largest X, Y, and Z values.
+	 *
+	 * @param o1 The first vector
+	 * @param o2 The second vector
+	 * @return The maximum of both vectors combined
+	 */
+	public static Vector3 max(Vector3 o1, Vector3 o2) {
+		return new Vector3(Math.max(o1.x, o2.x), Math.max(o1.y, o2.y), Math.max(o1.z, o2.z));
+	}
+
+	/**
+	 * Returns a Vector3 with random X, Y, and Z values (between 0 and 1)
+	 *
+	 * @return a random vector
+	 */
+	public static Vector3 rand() {
+		return new Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
+	}
+
+	/**
+	 * Gets the distance between two Vector3.
+	 *
+	 * @param a The first vector
+	 * @param b The second vector
+	 * @return The distance between the two
+	 */
+	public static double distance(Vector3 a, Vector3 b) {
+		return GenericMath.length(a.x - b.x, a.y - b.y, a.z - b.z);
+	}
+
+	/**
+	 * Gets the squared distance between two Vector3.
+	 *
+	 * @param a The first vector
+	 * @param b The second vector
+	 * @return The square of the distance between the two
+	 */
+	public static double distanceSquared(Vector3 a, Vector3 b) {
+		return GenericMath.lengthSquared(a.x - b.x, a.y - b.y, a.z - b.z);
+	}
+
+	/**
+	 * Raises the X, Y, and Z values of a Vector3 to the given power.
+	 *
+	 * @param o The vector
+	 * @param power The power
+	 * @return The vector to the specified power
+	 */
+	public static Vector3 pow(Vector3 o, double power) {
+		return new Vector3(Math.pow(o.x, power), Math.pow(o.y, power), Math.pow(o.z, power));
+	}
+
+	/**
+	 * Returns a Vector2 object using the X and Z values of the given Vector3.
+	 * The x of the Vector3 becomes the x of the Vector2, and the z of this
+	 * Vector3 becomes the y of the Vector2.
+	 *
+	 * @param o Vector3 object to use
+	 * @return The vector2 form
+	 */
+	public static Vector2 toVector2(Vector3 o) {
+		return new Vector2(o.x, o.z);
+	}
+
+	/**
+	 * Returns a new float array that is {x, y, z}
+	 *
+	 * @param a The vector
+	 * @return An array of length 3 with x, y and z
+	 */
+	public static float[] toArray(Vector3 a) {
+		return new float[]{a.x, a.y, a.z};
+	}
+
+	/**
+	 * Compares two vectors.
+	 *
+	 * @param a the first vector
+	 * @param b the second vector
+	 * @return the result of the comparison
+	 * @see {@link java.lang.Comparable}.
+	 */
+	public static int compareTo(Vector3 a, Vector3 b) {
+		return (int) a.lengthSquared() - (int) b.lengthSquared();
 	}
 }
