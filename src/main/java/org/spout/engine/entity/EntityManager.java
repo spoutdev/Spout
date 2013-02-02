@@ -250,7 +250,7 @@ public class EntityManager {
 			spawn = sync = destroy = false;
 			//Entity is out of range of the player's view distance, destroy
 			final SpoutSceneComponent scene = (SpoutSceneComponent) ent.getScene();
-			if (forceDestroy || ent.isRemoved() || VectorMath.distance(scene.getTransformLive().getPosition(), scene.getPosition()) > view || player.isInvisible(ent)) {
+			if (forceDestroy || ent.isRemoved() || scene.getTransformLive().getPosition().distanceSquared(scene.getPosition()) > view * view || player.isInvisible(ent)) {
 				destroy = true;
 			} else if (network.hasSpawned(ent)) {
 				sync = true;
