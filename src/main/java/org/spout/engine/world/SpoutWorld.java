@@ -781,7 +781,7 @@ public class SpoutWorld implements AsyncManager, World {
 
 		for (Entity entity : getEntitiesNearRegion(position, range)) {
 			if (entity != null && entity != ignore) {
-				double distance = VectorMath.distanceSquared(position, entity.getScene().getPosition());
+				double distance = position.distanceSquared(entity.getScene().getPosition());
 				if (distance < RANGE_SQUARED) {
 					foundEntities.add(entity);
 				}
@@ -808,7 +808,7 @@ public class SpoutWorld implements AsyncManager, World {
 
 		for (Entity entity : getEntitiesNearRegion(position, range)) {
 			if (entity != null && entity != ignore) {
-				double distance = VectorMath.distanceSquared(position, entity.getScene().getPosition());
+				double distance = position.distanceSquared(entity.getScene().getPosition());
 				if (distance < bestDistance) {
 					bestDistance = distance;
 					best = entity;
@@ -891,7 +891,7 @@ public class SpoutWorld implements AsyncManager, World {
 
 		for (Entity entity : getEntitiesNearRegion(position, range)) {
 			if (entity != null && entity instanceof Player && entity != ignore) {
-				double distance = VectorMath.distanceSquared(position, entity.getScene().getPosition());
+				double distance = position.distanceSquared(entity.getScene().getPosition());
 				if (distance < bestDistance) {
 					bestDistance = distance;
 					best = entity;
