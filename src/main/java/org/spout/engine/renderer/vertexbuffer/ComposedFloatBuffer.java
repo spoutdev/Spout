@@ -186,6 +186,7 @@ public class ComposedFloatBuffer {
 		
 		BUFFER_POOL.add(vboId);
 		vboId = -1;
+		allocated = 0;
 	}
 
 }
