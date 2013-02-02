@@ -137,7 +137,7 @@ public class MatrixTest {
 		mat.set(2, 1, -f.getY());
 		mat.set(2, 2, -f.getZ());
 
-		Matrix trans = MatrixMath.translate(center.multiply(-1));
+		Matrix trans = MatrixMath.createTranslated(center.multiply(-1));
 		mat = MatrixMath.multiply(mat, trans);
 		id = new double[][] { {-0.7071068f, 0.0f, 0.7071068f, 0.0f}, {0.0f, 1.0000001f, 0.0f, 0.0f}, {-0.7071068f, 0.0f, -0.7071068f, 0.0f}, {-5.0f, 0.0f, -5.0f, 1.0f}};
 		compareMatrixToArray(mat, id);
@@ -172,7 +172,7 @@ public class MatrixTest {
 	public void testTranslate() {
 		Vector3 a = new Vector3(-1, 2, 4);
 		double[][] id = { {1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {-1, 2, 4, 1}};
-		Matrix m = MatrixMath.translate(a);
+		Matrix m = MatrixMath.createTranslated(a);
 		compareMatrixToArray(m, id);
 	}
 
@@ -195,7 +195,7 @@ public class MatrixTest {
 	public void testRotateX() {
 		float theta = 30;
 		double[][] id = { {1, 0, 0, 0}, {0, Math.cos(Math.toRadians(theta)), -Math.sin(Math.toRadians(theta)), 0}, {0, Math.sin(Math.toRadians(theta)), Math.cos(Math.toRadians(theta)), 0}, {0, 0, 0, 1}};
-		Matrix m = MatrixMath.rotateX(theta);
+		Matrix m = MatrixMath.createRotatedX(theta);
 		compareMatrixToArray(m, id);
 	}
 
@@ -203,7 +203,7 @@ public class MatrixTest {
 	public void testRotateY() {
 		float theta = 10;
 		double[][] id = { {Math.cos(Math.toRadians(theta)), 0, Math.sin(Math.toRadians(theta)), 0}, {0, 1, 0, 0}, {-Math.sin(Math.toRadians(theta)), 0, Math.cos(Math.toRadians(theta)), 0}, {0, 0, 0, 1}};
-		Matrix m = MatrixMath.rotateY(theta);
+		Matrix m = MatrixMath.createRotatedY(theta);
 		compareMatrixToArray(m, id);
 	}
 
@@ -211,7 +211,7 @@ public class MatrixTest {
 	public void testRotateZ() {
 		float theta = 40;
 		double[][] id = { {Math.cos(Math.toRadians(theta)), -Math.sin(Math.toRadians(theta)), 0, 0}, {Math.sin(Math.toRadians(theta)), Math.cos(Math.toRadians(theta)), 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
-		compareMatrixToArray(MatrixMath.rotateZ(theta), id);
+		compareMatrixToArray(MatrixMath.createRotatedZ(theta), id);
 	}
 
 	@Test
@@ -220,21 +220,21 @@ public class MatrixTest {
 		Quaternion rot;
 
 		rot = Quaternion.IDENTITY;
-		m = MatrixMath.rotate(rot);
+		m = MatrixMath.createRotated(rot);
 
 		double[][] id = { {1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
 
 		compareMatrixToArray(m, id);
 
 		rot = new Quaternion(4, 3, 2, 0, true);
-		m = MatrixMath.rotate(rot);
+		m = MatrixMath.createRotated(rot);
 
 		id = new double[][] { {0.103448, 0.827586, 0.551724, 0}, {0.827586, -0.37931, 0.413793, 0}, {0.551724, 0.413793, -0.724138, 0}, {0, 0, 0, 1}};
 
 		compareMatrixToArray(m, id);
 
 		rot = new Quaternion(90, new Vector3(0, 1, 0));
-		m = MatrixMath.rotate(rot);
+		m = MatrixMath.createRotated(rot);
 		id = new double[][] { {0, 0, 1, 0}, {0, 1, 0, 0}, {-1, 0, 0, 0}, {0, 0, 0, 1}};
 
 		compareMatrixToArray(m, id);

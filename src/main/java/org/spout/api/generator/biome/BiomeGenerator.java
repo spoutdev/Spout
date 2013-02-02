@@ -31,11 +31,11 @@ import java.util.Set;
 
 import com.google.common.collect.Lists;
 
-import org.spout.api.generator.GeneratorPopulator;
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.generator.GeneratorPopulator;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.math.Vector3;
 
@@ -129,11 +129,6 @@ public abstract class BiomeGenerator implements WorldGenerator {
 	@Override
 	public final Populator[] getPopulators() {
 		return populators.toArray(new Populator[populators.size()]);
-	}
-
-	@Override
-	public final GeneratorPopulator[] getGeneratorPopulators() {
-		return generatorPopulators.toArray(new GeneratorPopulator[generatorPopulators.size()]);
 	}
 
 	public void addPopulators(Populator... p) {

@@ -98,7 +98,7 @@ public class VectorMath {
 	 * @return The rotated vector
 	 */
 	public static Vector3 transform(Vector3 vector, Quaternion rot) {
-		return transform(vector, MatrixMath.rotate(rot));
+		return transform(vector, MatrixMath.createRotated(rot));
 	}
 
 	/**
