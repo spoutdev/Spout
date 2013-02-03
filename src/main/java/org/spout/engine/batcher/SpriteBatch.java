@@ -46,6 +46,7 @@ import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.effect.SnapshotRender;
 
+import org.spout.engine.gui.SpoutWidget;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.vertexformat.vertexattributes.VertexAttributes;
 import org.spout.engine.resources.ClientFont;
@@ -188,7 +189,7 @@ public class SpriteBatch {
 	}
 
 	public void drawText(ChatArguments text, ClientFont font, float x, float y, float size) {
-		Widget tmp = new Widget();
+		Widget tmp = new SpoutWidget();
 		tmp.setGeometry(new Rectangle(x, y, 0, 0));
 		LabelComponent txt = tmp.add(LabelComponent.class);
 
