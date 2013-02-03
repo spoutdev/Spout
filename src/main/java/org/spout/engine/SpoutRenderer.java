@@ -63,6 +63,7 @@ import org.spout.api.render.Shader;
 
 import org.spout.engine.batcher.SpriteBatch;
 import org.spout.engine.entity.component.SpoutSceneComponent;
+import org.spout.engine.gui.SpoutScreenStack;
 import org.spout.engine.input.SpoutInputManager;
 import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
@@ -97,7 +98,7 @@ public class SpoutRenderer {
 		// Building the screenStack
 		FullScreen mainScreen = new FullScreen();
 		mainScreen.setTakesInput(false);
-		screenStack = new ScreenStack(mainScreen);
+		screenStack = new SpoutScreenStack(mainScreen);
 
 		entityRenderer = new EntityRenderer();
 
