@@ -26,43 +26,107 @@
  */
 package org.spout.engine.gui;
 
+import java.awt.Color;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
+import org.spout.api.chat.console.Console;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.gui.component.LabelComponent;
+import org.spout.api.gui.component.RenderPartsHolderComponent;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.math.Rectangle;
+import org.spout.api.meta.SpoutMetaPlugin;
+import org.spout.api.plugin.CommonPluginManager;
 import org.spout.api.render.Font;
+import org.spout.api.render.SpoutRenderMaterials;
 
-public class DevConsole extends Screen {
-	private float scroll = 0;
-	private Font font;
+public class DevConsole extends Screen implements Console {
+	// The Internal Spout-dummy plugin
+	private final SpoutMetaPlugin plugin;
+	private final Font font;
+	private final Widget background = new SpoutWidget();
+	
+	private DateFormat dateFormat;
 	private List<Widget> lines = new ArrayList<Widget>();
+	private float scroll = 0;
 
 	public DevConsole(Font font) {
+		this.plugin = ((CommonPluginManager) Spout.getPluginManager()).getMetaPlugin();
 		this.font = font;
+		init();
+	}
+	
+	public void clearConsole() {
+		this.removeWidgets();
+		init();
+		scroll = 0;
 	}
 
-	public void appendMessage(ChatArguments msg) {
+	@Override
+	public void init() {
+		setGrabsMouse(true);
+		setTakesInput(false);
+		final RenderPartsHolderComponent bg = background.add(RenderPartsHolderComponent.class);
+
+		// The display messages background
+		final RenderPart text_bg = new RenderPart();
+		text_bg.setRenderMaterial(SpoutRenderMaterials.GUI_COLOR);
+		text_bg.setColor(new Color(0f, 0f, 0f, 0.6f)); //Black with opacity of 40%
+		text_bg.setSprite(new Rectangle(-0.95f, -0.05f, 1.9f, 1f));
+		text_bg.setSource(new Rectangle(0f, 0f, 0f, 0f));
+		bg.add(text_bg, 0);
+
+		// The textfield background
+		final RenderPart textfield_bg = new RenderPart();
+		textfield_bg.setRenderMaterial(SpoutRenderMaterials.GUI_COLOR);
+		textfield_bg.setColor(new Color(0f, 0f, 0f, 0.6f)); //Black with opacity of 40%
+		textfield_bg.setSprite(new Rectangle(-0.95f, -0.15f, 1.9f, 0.08f));
+		textfield_bg.setSource(new Rectangle(0f, 0f, 0f, 0f));
+		bg.add(textfield_bg, 1);
+
+		//Finally attach widget so we can draw
+		attachWidget(plugin, background);
+	}
+
+	@Override
+	public boolean isInitialized() {
+		return true;
+	}
+
+	@Override
+	public void close() {
+		
+	}
+
+	@Override
+	public void setDateFormat(DateFormat format) {
+		this.dateFormat = format;
+	}
+
+	@Override
+	public void addMessage(ChatArguments message) {
 		Widget wid = new SpoutWidget();
-		wid.setGeometry(new Rectangle(0, scroll, 0, 0));
+		wid.setGeometry(new Rectangle(-0.95f, 0.9f - scroll, 0, 0));
 		LabelComponent txt = wid.add(LabelComponent.class);
 
+		txt.setColor(Color.WHITE);
 		txt.setFont(font);
-		txt.setText(msg);
-
-		scroll -= font.getCharHeight();
-		lines.add(wid);
-	}
-
-	public List<RenderPart> getRenderParts() {
-		List<RenderPart> ret = new ArrayList<RenderPart>();
-		for (Widget line : lines) {
-			ret.addAll(line.getRenderParts());
+		ChatArguments outputText = new ChatArguments();
+		if (dateFormat != null) {
+			outputText.append("[").append(dateFormat.format(new Date())).append("] ");
 		}
-		return ret;
+		outputText.append(message.getExpandedPlaceholders());
+		txt.setText(outputText);
+
+		scroll += 0.05f;//font.getCharHeight();
+		lines.add(wid);
+		
+		attachWidget(plugin, wid);
 	}
 }

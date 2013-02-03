@@ -26,6 +26,7 @@
  */
 package org.spout.engine.entity;
 
+import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
@@ -55,7 +56,11 @@ public class SpoutClientPlayer extends SpoutPlayer {
 			Spout.getEngine().getConsoles().addMessage(message);
 			return true;
 		}
-		session.getEngine().getConsoles().addMessage(message);
+		if (session==null) {
+			((Client)Spout.getEngine()).getScreenStack().getConsole().addMessage(message);
+		} else {
+			session.getEngine().getConsoles().addMessage(message);
+		}
 		return true;
 	}
 

@@ -35,6 +35,7 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.exception.CommandException;
+import org.spout.api.gui.Screen;
 import org.spout.api.plugin.Platform;
 
 import org.spout.engine.SpoutClient;
@@ -60,11 +61,35 @@ public class InputCommands {
 		parent.addSubCommand(engine, "+dy")
 				.setHelp("Adds the y distance traveled to the calling player's input state.")
 				.setExecutor(Platform.CLIENT, new InputMousePitchHandler());
-		parent.addSubCommand(engine, "debug_infos")
+		parent.addSubCommand(engine, "+debug_infos")
 				.setHelp("Toggle display of debugging infos.")
 				.setExecutor(Platform.CLIENT, new InputDebugInfosHandler());
+		parent.addSubCommand(engine, "+dev_console")
+				.setHelp("Toggle display of debugging infos.")
+				.setExecutor(Platform.CLIENT, new InputDevConsoleHandler());
 	}
 
+	public static class InputDevConsoleHandler implements CommandExecutor {
+		@Override
+		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
+			if (Spout.getPlatform() != Platform.CLIENT) {
+				throw new CommandException("Must be on the client");
+			}
+
+			final SpoutClient c = (SpoutClient) Spout.getEngine();
+			final Screen consoleScreen = (Screen) c.getScreenStack().getConsole();
+			c.getScheduler().enqueueRenderTask(new Runnable() {
+				public void run() {
+					if (c.getScreenStack().isOpen(consoleScreen)) {
+						c.getScreenStack().closeScreen(consoleScreen);
+					} else {
+						c.getScreenStack().openScreen(consoleScreen);
+					}
+				}
+			});
+		}
+	}
+	
 	public static class InputDebugInfosHandler implements CommandExecutor {
 		@Override
 		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
@@ -72,10 +97,15 @@ public class InputCommands {
 				throw new CommandException("Must be on the client");
 			}
 
-			SpoutClient c = (SpoutClient) Spout.getEngine();
+			final SpoutClient c = (SpoutClient) Spout.getEngine();
+			final Screen debugScreen = (Screen) c.getScreenStack().getDebug();
 			c.getScheduler().enqueueRenderTask(new Runnable() {
 				public void run() {
-					((SpoutClient) Spout.getEngine()).getRenderer().toggleDebugInfos();
+					if (c.getScreenStack().isOpen(debugScreen)) {
+						c.getScreenStack().closeScreen(debugScreen);
+					} else {
+						c.getScreenStack().openScreen(debugScreen);
+					}
 				}
 			});
 		}
