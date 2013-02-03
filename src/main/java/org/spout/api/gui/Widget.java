@@ -26,22 +26,11 @@
  */
 package org.spout.api.gui;
 
-
-import java.util.List;
-
 import org.spout.api.component.ComponentHolder;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.gui.render.RenderPart;
 import org.spout.api.tickable.Tickable;
 
-public interface Widget extends Tickable, ComponentHolder {
-	
-	/**
-	 * Returns a sorted list of render parts that consists of all render parts of the components
-	 * @return a list of render parts
-	 */
-	public abstract List<RenderPart> getRenderParts();
-
+public interface Widget extends Tickable, ComponentHolder, Focusable, RenderPartContainer {
 	/**
 	 * Invokes a render update in the next frame
 	 */
@@ -50,14 +39,6 @@ public interface Widget extends Tickable, ComponentHolder {
 	public abstract void setScreen(Screen screen);
 
 	public abstract Screen getScreen();
-
-	public abstract boolean canFocus();
-	
-	public abstract boolean isFocused();
-
-	public abstract void onFocusLost();
-
-	public abstract void onFocus(FocusReason reason);
 
 	public abstract Transform getTransform();
 }

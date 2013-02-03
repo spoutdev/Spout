@@ -34,6 +34,8 @@ import org.spout.api.component.Component;
 import org.spout.api.component.ComponentOwner;
 import org.spout.api.event.player.PlayerKeyEvent;
 import org.spout.api.gui.FocusReason;
+import org.spout.api.gui.Focusable;
+import org.spout.api.gui.RenderPartContainer;
 import org.spout.api.gui.Widget;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.math.IntVector2;
@@ -42,7 +44,7 @@ import org.spout.api.signal.SignalInterface;
 import org.spout.api.signal.SignalObjectDelegate;
 import org.spout.api.signal.SubscriberInterface;
 
-public class WidgetComponent extends Component implements SignalInterface, SubscriberInterface {
+public class WidgetComponent extends Component implements SignalInterface, SubscriberInterface, Focusable, RenderPartContainer {
 	private SignalInterface sender = null;
 	private SignalObjectDelegate signalDelegate = new SignalObjectDelegate();
 
@@ -51,54 +53,39 @@ public class WidgetComponent extends Component implements SignalInterface, Subsc
 		return (Widget) super.getOwner();
 	}
 
-	/**
-	 * Returns a list of RenderParts that are to be rendered for this widget <br/>
-	 * Only called when the widget's internal cache isn't clean, that means,
-	 * you must call getOwner().update() to invoke a render update
-	 * @return a list of RenderParts
-	 */
+	@Override
 	public List<RenderPart> getRenderParts() {
 		return Collections.emptyList(); // Components which decide how this widget is rendered need to reimplement this method
 	}
 
-	/**
-	 * Called when this widget was clicked on
-	 * @param position the position on the widget (in pixels)
-	 * @param mouseDown if the mouse is pressed
-	 */
+	@Override
 	public void onClicked(IntVector2 position, boolean mouseDown) {
-
 	}
 
-	/**
-	 * Called when this widget is focussed and a key was typed
-	 * @param event the key event
-	 */
+	@Override
 	public void onKey(PlayerKeyEvent event) {
-
 	}
 
-	/**
-	 * Called when this widget gains focus
-	 * @param reason the reason why this focus was set
-	 */
+	@Override
+	public boolean canFocus() {
+		return true;
+	}
+
+	@Override
+	public boolean isFocused() {
+		return getOwner().isFocused();
+	}
+
+	@Override
 	public void onFocus(FocusReason reason) {
-
 	}
 
-	/**
-	 * Called when this widget loses focus
-	 */
+	@Override
 	public void onFocusLost() {
-
 	}
 
-	/**
-	 * Called when the mouse moved
-	 * @param position the cursor position translated to the widgets geometry (0,0 is top,left of the widget)
-	 */
+	@Override
 	public void onMouseMove(IntVector2 position) {
-
 	}
 
 	@Override
