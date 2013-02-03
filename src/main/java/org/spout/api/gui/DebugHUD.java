@@ -26,10 +26,15 @@
  */
 package org.spout.api.gui;
 
+import org.spout.api.chat.ChatArguments;
+import org.spout.api.plugin.Plugin;
+
 public interface DebugHUD {
 	public abstract void open();
 
 	public abstract void close();
 	
 	public abstract void reset();
+	
+	public abstract void updateParameter(Plugin plugin, ChatArguments arg);
 }
