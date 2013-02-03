@@ -26,15 +26,11 @@
  */
 package org.spout.api.render.effect;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import org.spout.api.render.RenderMaterial;
-import org.spout.api.render.shader.VertexBuffer;
 
 public class SnapshotRender {
 
 	private final RenderMaterial material;
-	private TIntObjectHashMap<VertexBuffer> vertexBuffers = new TIntObjectHashMap<VertexBuffer>();
 
 	public SnapshotRender(RenderMaterial material){
 		this.material = material;
@@ -42,14 +38,6 @@ public class SnapshotRender {
 
 	public RenderMaterial getMaterial() {
 		return material;
-	}
-
-	public TIntObjectHashMap<VertexBuffer> getVertexBuffers() {
-		return vertexBuffers;
-	}
-
-	public void addVertexBuffers(VertexBuffer vertexBuffer) {
-		vertexBuffers.put(vertexBuffer.getLayout(),vertexBuffer);
 	}
 
 }
