@@ -27,17 +27,22 @@
 package org.spout.engine.gui;
 
 import java.awt.Color;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
+import org.spout.api.chat.ChatArguments;
 import org.spout.api.gui.DebugHUD;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
+import org.spout.api.gui.component.LabelComponent;
 import org.spout.api.gui.component.RenderPartsHolderComponent;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.math.Rectangle;
 import org.spout.api.meta.SpoutMetaPlugin;
 import org.spout.api.plugin.CommonPluginManager;
+import org.spout.api.plugin.Plugin;
 import org.spout.api.render.SpoutRenderMaterials;
 
 /**
@@ -90,10 +95,15 @@ public class DebugScreen extends Screen implements DebugHUD {
 		private final SpoutMetaPlugin plugin;
 		// The widget attachment that will hold the pop-out display
 		private final Widget debug;
+		// Spout's debug messages
+		private final Map<Integer, Widget> spoutMessages = new HashMap<Integer, Widget>();
+		// The hashmap that contains the plugin's debug messages
+		private final Map<Plugin, Widget> messages = new HashMap<Plugin, Widget>();
 
 		public DebugScreen() {
 			plugin = ((CommonPluginManager) Spout.getPluginManager()).getMetaPlugin();
 			debug = new SpoutWidget();
+			init();
 		}
 
 		public void open() {
@@ -107,6 +117,46 @@ public class DebugScreen extends Screen implements DebugHUD {
 		public void reset() {
 			removeWidgets();
 			init();
+			spoutMessages.clear();
+			messages.clear();
+		}
+		
+		/**
+		 * Spout can display more than one line
+		 * @param id, arg
+		 */
+		public void spoutUpdate(int id, ChatArguments arg) {
+			if (spoutMessages.containsKey(id)) {
+				LabelComponent lbl = spoutMessages.get(id).get(LabelComponent.class);
+				if (!arg.toFormatString().equals(lbl.getText().toFormatString())) {
+					lbl.setText(arg);
+				}
+			} else {
+				Widget w = new SpoutWidget();
+				w.setGeometry(new Rectangle(-0.95f, 0.9f-id*0.1f, 0, 0));
+				LabelComponent lbl = w.add(LabelComponent.class);
+				lbl.setFont(SpoutRenderMaterials.DEFAULT_FONT);
+				lbl.setText(arg);
+				spoutMessages.put(id, w);
+				attachWidget(plugin, w);
+			}
+		}
+		
+		public void updateParameter(Plugin plug, ChatArguments arg) {
+			if (messages.containsKey(plug)) {
+				LabelComponent lbl = messages.get(plug).get(LabelComponent.class);
+				if (!arg.toFormatString().equals(lbl.getText().toFormatString())) {
+					lbl.setText(arg);
+				}
+			} else {
+				Widget w = new SpoutWidget();
+				w.setGeometry(new Rectangle(0, 0.9f-messages.size()*0.1f, 0, 0));
+				LabelComponent lbl = w.add(LabelComponent.class);
+				lbl.setFont(SpoutRenderMaterials.DEFAULT_FONT);
+				lbl.setText(arg);
+				messages.put(plug, w);
+				attachWidget(plug, w);
+			}
 		}
 
 		/**

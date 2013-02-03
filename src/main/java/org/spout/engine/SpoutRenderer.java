@@ -29,6 +29,7 @@ package org.spout.engine;
 import java.awt.Canvas;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Mouse;
@@ -63,7 +64,9 @@ import org.spout.api.render.Shader;
 
 import org.spout.engine.batcher.SpriteBatch;
 import org.spout.engine.entity.component.SpoutSceneComponent;
+import org.spout.engine.gui.DebugScreen;
 import org.spout.engine.gui.SpoutScreenStack;
+import org.spout.engine.gui.SpoutWidget;
 import org.spout.engine.input.SpoutInputManager;
 import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
@@ -81,7 +84,7 @@ import static org.lwjgl.opengl.GL11.glClear;
 public class SpoutRenderer {
 	private SpriteBatch gui;
 	private ScreenStack screenStack;
-	private ClientFont font;
+	private DebugScreen debugScreen;
 	private boolean showDebugInfos = true;
 	private ArrayList<RenderMaterial> postProcessMaterials = new ArrayList<RenderMaterial>();
 	private boolean ccoverride = false;
@@ -90,6 +93,9 @@ public class SpoutRenderer {
 	private EntityRenderer entityRenderer;
 	private WorldRenderer worldRenderer;
 	private boolean wireframe = false;
+	private Matrix ident = MatrixMath.createIdentity();
+	private ClientRenderTexture t;
+	private ClientRenderMaterial mat;
 
 	public SpoutRenderer(Vector2 resolution, boolean ccoverride) {
 		this.resolution = resolution;
@@ -99,6 +105,10 @@ public class SpoutRenderer {
 		FullScreen mainScreen = new FullScreen();
 		mainScreen.setTakesInput(false);
 		screenStack = new SpoutScreenStack(mainScreen);
+		
+		// Add the debug screen
+		debugScreen = new DebugScreen();
+		screenStack.openScreen(debugScreen);
 
 		entityRenderer = new EntityRenderer();
 
@@ -150,8 +160,6 @@ public class SpoutRenderer {
 
 		gui = SpriteBatch.createSpriteBatch(client.getRenderMode(), resolution.getX(), resolution.getY());
 
-		font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
-
 		t = new ClientRenderTexture(true, false, true);
 		t.writeGPU();
 		Shader s = (Shader) Spout.getFilesystem().getResource("shader://Spout/shaders/diffuse.ssf");
@@ -163,10 +171,6 @@ public class SpoutRenderer {
 	public void updateRender(long limit) {
 		worldRenderer.update(limit);
 	}
-
-	Matrix ident = MatrixMath.createIdentity();
-	ClientRenderTexture t;
-	ClientRenderMaterial mat;
 
 	public void render(float dt) {
 		SpoutClient client = (SpoutClient) Spout.getEngine();
@@ -225,18 +229,17 @@ public class SpoutRenderer {
 
 		if (showDebugInfos) {
 			Point position = client.getActivePlayer().getScene().getPosition();
-			gui.drawText(new ChatArguments("Spout client! Logged as ", ChatStyle.RED, client.getActivePlayer().getDisplayName(), ChatStyle.RESET, " in world: ", ChatStyle.RED, client.getActiveWorld().getName()), font, -0.95f, 0.9f, 10f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "x: ", position.getX()), font, -0.95f, 0.8f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "y: ", position.getY()), font, -0.95f, 0.7f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "z: ", position.getZ()), font, -0.95f, 0.6f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "fps: ", client.getScheduler().getFps(), " (", client.getScheduler().isRendererOverloaded() ? "Overloaded" : "Normal", ")"), font, -0.95f, 0.5f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Chunks Drawn: ", ((int) ((float) worldRenderer.getRenderedChunks() / (float) (worldRenderer.getTotalChunks()) * 100)) + "%" + " (" + worldRenderer.getRenderedChunks() + ")"), font, -0.95f, 0.4f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Occluded Chunks: ", (int) ((float) worldRenderer.getOccludedChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getOccludedChunks() + ")"), font, -0.95f, 0.3f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Cull Chunks: ", (int) ((float) worldRenderer.getCulledChunks() / worldRenderer.getTotalChunks() * 100), "% (" + worldRenderer.getCulledChunks() + ")"), font, -0.95f, 0.2f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Entities: ", entityRenderer.getEntitiesRended()), font, -0.95f, 0.1f, 8f);
-			gui.drawText(new ChatArguments(ChatStyle.BLUE, "Buffer: ", worldRenderer.addedBatch + " / " + worldRenderer.updatedBatch), font, -0.95f, 0.0f, 8f);
-			//gui.drawText(new ChatArguments(ChatStyle.BLUE, "Time: ", worldTime / 1000000.0 + " / " + entityTime / 1000000.0 + " / " + guiTime / 1000000.0), font, -0.95f, -0.1f, 8f);
+			debugScreen.spoutUpdate(0, new ChatArguments("Spout client! Logged as ", ChatStyle.RED, client.getActivePlayer().getDisplayName(), ChatStyle.RESET, " in world: ", ChatStyle.RED, client.getActiveWorld().getName()));
+			debugScreen.spoutUpdate(1, new ChatArguments(ChatStyle.BLUE, "x: ", position.getX(), "y: ", position.getY(), "z: ", position.getZ()));
+			debugScreen.spoutUpdate(2, new ChatArguments(ChatStyle.BLUE, "fps: ", client.getScheduler().getFps(), " (", client.getScheduler().isRendererOverloaded() ? "Overloaded" : "Normal", ")"));
+			debugScreen.spoutUpdate(3, new ChatArguments(ChatStyle.BLUE, "Chunks Drawn: ", ((int) ((float) worldRenderer.getRenderedChunks() / (float) (worldRenderer.getTotalChunks()) * 100)) + "%" + " (" + worldRenderer.getRenderedChunks() + ")"));
+			debugScreen.spoutUpdate(4, new ChatArguments(ChatStyle.BLUE, "Occluded Chunks: ", (int) ((float) worldRenderer.getOccludedChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getOccludedChunks() + ")"));
+			debugScreen.spoutUpdate(5, new ChatArguments(ChatStyle.BLUE, "Cull Chunks: ", (int) ((float) worldRenderer.getCulledChunks() / worldRenderer.getTotalChunks() * 100), "% (" + worldRenderer.getCulledChunks() + ")"));
+			debugScreen.spoutUpdate(6, new ChatArguments(ChatStyle.BLUE, "Entities: ", entityRenderer.getEntitiesRended()));
+			debugScreen.spoutUpdate(7, new ChatArguments(ChatStyle.BLUE, "Buffer: ", worldRenderer.addedBatch + " / " + worldRenderer.updatedBatch));
+			//debugScreen.spoutUpdate(8, new ChatArguments(ChatStyle.BLUE, "Time: ", worldTime / 1000000.0 + " / " + entityTime / 1000000.0 + " / " + guiTime / 1000000.0));
 		}
+		
 		for (Screen screen : screenStack.getVisibleScreens()) {
 			for (Widget widget : screen.getWidgets()) {
 				gui.draw(widget.getRenderParts());
