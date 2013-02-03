@@ -26,7 +26,6 @@
  */
 package org.spout.engine.gui;
 
-import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,8 +36,6 @@ import org.spout.api.gui.DebugHUD;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.gui.component.LabelComponent;
-import org.spout.api.gui.component.RenderPartsHolderComponent;
-import org.spout.api.gui.render.RenderPart;
 import org.spout.api.math.Rectangle;
 import org.spout.api.meta.SpoutMetaPlugin;
 import org.spout.api.plugin.CommonPluginManager;
@@ -93,8 +90,6 @@ import org.spout.api.render.SpoutRenderMaterials;
 public class DebugScreen extends Screen implements DebugHUD {
 		// The Internal Spout-dummy plugin
 		private final SpoutMetaPlugin plugin;
-		// The widget attachment that will hold the pop-out display
-		private final Widget debug;
 		// Spout's debug messages
 		private final Map<Integer, Widget> spoutMessages = new HashMap<Integer, Widget>();
 		// The hashmap that contains the plugin's debug messages
@@ -102,7 +97,6 @@ public class DebugScreen extends Screen implements DebugHUD {
 
 		public DebugScreen() {
 			plugin = ((CommonPluginManager) Spout.getPluginManager()).getMetaPlugin();
-			debug = new SpoutWidget();
 			init();
 		}
 
@@ -163,27 +157,7 @@ public class DebugScreen extends Screen implements DebugHUD {
 		 * Constructs the default Spout debug HUD
 		 */
 		private void init() {
-			setGrabsMouse(false);
+			setGrabsMouse(true);
 			setTakesInput(false);
-			final RenderPartsHolderComponent debugBar = debug.add(RenderPartsHolderComponent.class);
-
-			//The pop-out bar
-			final RenderPart bar = new RenderPart();
-			bar.setRenderMaterial(SpoutRenderMaterials.GUI_COLOR);
-			bar.setColor(new Color(0f, 0f, 0f, 0.6f)); //Black with opacity of 40%
-			bar.setSprite(new Rectangle(-1f, 1f, 2f, -0.06f));
-			bar.setSource(new Rectangle(0f, 0f, 0f, 0f));
-			debugBar.add(bar, 0);
-
-			//The pop-out extension for coordinate display
-			final RenderPart barExt = new RenderPart();
-			barExt.setRenderMaterial(SpoutRenderMaterials.GUI_COLOR);
-			barExt.setColor(new Color(0f, 0f, 0f, 0.6f)); //Black with opacity of 40%
-			barExt.setSprite(new Rectangle(-1f, 0.94f, 0.25f, -0.06f));
-			barExt.setSource(new Rectangle(0f, 0f, 0f, 0f));
-			debugBar.add(barExt, 1);
-
-			//Finally attach widget so we can draw
-			attachWidget(plugin, debug);
 		}
 }

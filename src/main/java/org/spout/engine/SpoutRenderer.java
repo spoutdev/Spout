@@ -29,7 +29,6 @@ package org.spout.engine;
 import java.awt.Canvas;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Mouse;
@@ -83,8 +82,8 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 
 public class SpoutRenderer {
-	private ScreenStack screenStack;
 	private DebugScreen debugScreen;
+	private ScreenStack screenStack;
 	private boolean showDebugInfos = true;
 	private ArrayList<RenderMaterial> postProcessMaterials = new ArrayList<RenderMaterial>();
 	private boolean ccoverride = false;
@@ -108,10 +107,7 @@ public class SpoutRenderer {
 		FullScreen mainScreen = new FullScreen();
 		mainScreen.setTakesInput(false);
 		screenStack = new SpoutScreenStack(mainScreen);
-		
-		// Add the debug screen
-		debugScreen = new DebugScreen();
-		screenStack.openScreen(debugScreen);
+		debugScreen = (DebugScreen) screenStack.getDebug();
 
 		entityRenderer = new EntityRenderer();
 
@@ -259,10 +255,6 @@ public class SpoutRenderer {
 	}
 
 	long guiTime;
-
-	public void toggleDebugInfos() {
-		showDebugInfos = !showDebugInfos;
-	}
 
 	public WorldRenderer getWorldRenderer() {
 		return worldRenderer;
