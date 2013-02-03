@@ -32,8 +32,9 @@ import java.util.List;
 
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
-import org.spout.api.component.type.WidgetComponent;
-import org.spout.api.event.player.PlayerKeyEvent;
+import org.spout.api.event.player.input.PlayerClickEvent;
+import org.spout.api.event.player.input.PlayerKeyEvent;
+import org.spout.api.event.player.input.PlayerMouseMoveEvent;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Focusable;
@@ -138,10 +139,10 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 	}
 
 	@Override
-	public void onClicked(IntVector2 pos, boolean mouseDown) {
+	public void onClicked(PlayerClickEvent event) {
 		for (Component c : values()) {
 			if (c instanceof Focusable) {
-				((Focusable) c).onClicked(pos, mouseDown);
+				((Focusable) c).onClicked(event);
 			}
 		}
 	}
@@ -156,10 +157,10 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 	}
 
 	@Override
-	public void onMouseMove(IntVector2 position) {
+	public void onMouseMove(PlayerMouseMoveEvent event) {
 		for (Component c : values()) {
 			if (c instanceof Focusable) {
-				((Focusable) c).onMouseMove(position);
+				((Focusable) c).onMouseMove(event);
 			}
 		}
 	}

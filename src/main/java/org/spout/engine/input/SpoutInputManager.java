@@ -28,20 +28,20 @@ package org.spout.engine.input;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
-import org.spout.api.component.Component;
 import org.spout.api.component.type.WidgetComponent;
-import org.spout.api.event.player.PlayerKeyEvent;
+import org.spout.api.event.player.input.PlayerClickEvent;
+import org.spout.api.event.player.input.PlayerKeyEvent;
+import org.spout.api.event.player.input.PlayerMouseMoveEvent;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Screen;
+import org.spout.api.gui.Widget;
 import org.spout.api.input.InputExecutor;
 import org.spout.api.input.InputManager;
 import org.spout.api.input.Keyboard;
@@ -81,14 +81,19 @@ public class SpoutInputManager implements InputManager {
 			return;
 		}
 
-		doCommand(player, cmd, pressed);
-
 		if (Spout.debugMode()) {
 			Spout.log("Key " + key + " was " + (pressed ? "pressed" : "released"));
 		}
 
+		Screen in = getInputScreen();
+		if (in != null) {
+			Widget w = in.getFocusedWidget();
+			if (w != null) {
+				w.onKey(event);
+			}
+		}
+
 		if (key == FOCUS_KEY && pressed) {
-			Screen in = getInputScreen();
 			if (in != null) {
 				if (org.lwjgl.input.Keyboard.isKeyDown(Keyboard.KEY_LSHIFT.getId()) || org.lwjgl.input.Keyboard.isKeyDown(Keyboard.KEY_RSHIFT.getId())) {
 					in.previousFocus(FocusReason.KEYBOARD_TAB);
@@ -98,20 +103,34 @@ public class SpoutInputManager implements InputManager {
 			}
 		}
 
-		for (WidgetComponent c : getWidgetComponents()) {
-			c.onKey(event);
-		}
+		doCommand(player, cmd, pressed);
 	}
 
 	private void onMouseClicked(SpoutPlayer player, Mouse button, boolean pressed, int x, int y) {
-		for (WidgetComponent c : getWidgetComponents()) {
-			c.onClicked(new IntVector2(x, y), pressed);
-		}
 		String cmd = mouseCommands.get(button);
+		PlayerClickEvent event = Spout.getEventManager().callEvent(new PlayerClickEvent(player, cmd, button, pressed, new IntVector2(x, y)));
+		if (event.isCancelled()) {
+			return;
+		}
+
+		Screen in = getInputScreen();
+		if (in != null) {
+			Widget w = in.getFocusedWidget();
+			if (w != null) {
+				w.onClicked(event);
+			}
+		}
+
 		doCommand(player, cmd, pressed);
 	}
 
 	private void onMouseMove(SpoutPlayer player, int dx, int dy, int x, int y) {
+		String cmdX = "+dx", cmdY = "+dy";
+		PlayerMouseMoveEvent event = Spout.getEventManager().callEvent(new PlayerMouseMoveEvent(player, cmdX, cmdY, new IntVector2(x - dx, y - dy), new IntVector2(x, y)));
+		if (event.isCancelled()) {
+			return;
+		}
+
 		// Mouse hasn't moved
 		if (dx == 0 && dy == 0) {
 			return;
@@ -129,8 +148,12 @@ public class SpoutInputManager implements InputManager {
 			}
 		}
 
-		for (WidgetComponent c : getWidgetComponents()) {
-			c.onMouseMove(new IntVector2(x, y));
+		Screen in = getInputScreen();
+		if (in != null) {
+			Widget w = in.getFocusedWidget();
+			if (w != null) {
+				w.onMouseMove(event);
+			}
 		}
 	}
 
@@ -154,22 +177,6 @@ public class SpoutInputManager implements InputManager {
 			throw new IllegalStateException("Cannot access ScreenStack in server mode.");
 		}
 		return ((Client) engine).getScreenStack().getInputScreen();
-	}
-
-	private Set<WidgetComponent> getWidgetComponents() {
-		Set<WidgetComponent> components = new HashSet<WidgetComponent>();
-		Screen inputScreen = getInputScreen();
-		if (inputScreen == null || inputScreen.getFocusedWidget() == null) { //TODO Fix this narrowtux/W1ndwaker as I think this shouldn't be null
-			return components;
-		}
-
-		for (Component c : inputScreen.getFocusedWidget().values()) {
-			if (c instanceof WidgetComponent) {
-				components.add((WidgetComponent) c);
-			}
-		}
-
-		return components;
 	}
 
 	public void pollInput(SpoutPlayer player) {
