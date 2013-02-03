@@ -32,8 +32,7 @@ import java.util.List;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
-import org.spout.api.event.player.PlayerKeyEvent;
-import org.spout.api.geo.cuboid.UpdateOption;
+import org.spout.api.event.player.input.PlayerKeyEvent;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.math.Rectangle;
 import org.spout.api.render.Font;

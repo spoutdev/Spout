@@ -24,18 +24,47 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.gui;
+package org.spout.api.event.player.input;
 
-import java.util.List;
+import org.spout.api.entity.Player;
+import org.spout.api.event.Cancellable;
+import org.spout.api.event.HandlerList;
+import org.spout.api.math.IntVector2;
 
-import org.spout.api.gui.render.RenderPart;
+public class PlayerMouseMoveEvent extends PlayerInputEvent implements Cancellable {
+	private static final HandlerList handlers = new HandlerList();
+	private final String rawCmdY;
+	private final IntVector2 prevPos, pos;
 
-public interface RenderPartContainer {
-	/**
-	 * Returns a list of RenderParts that are to be rendered for this widget <br/>
-	 * Only called when the widget's internal cache isn't clean, that means,
-	 * you must call getOwner().update() to invoke a render update
-	 * @return a list of RenderParts
-	 */
-	public List<RenderPart> getRenderParts();
+	public PlayerMouseMoveEvent(Player p, String rawCmdX, String rawCmdY, IntVector2 prevPos, IntVector2 pos) {
+		super(p, rawCmdX);
+		this.rawCmdY = rawCmdY;
+		this.prevPos = prevPos;
+		this.pos = pos;
+	}
+
+	public String getRawCommandY() {
+		return rawCmdY;
+	}
+
+	public IntVector2 getPreviousPosition() {
+		return prevPos;
+	}
+
+	public IntVector2 getPosition() {
+		return pos;
+	}
+
+	public void setCancelled(boolean cancelled) {
+		super.setCancelled(cancelled);
+	}
+
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 }

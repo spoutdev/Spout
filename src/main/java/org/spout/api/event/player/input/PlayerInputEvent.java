@@ -24,18 +24,20 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.gui;
+package org.spout.api.event.player.input;
 
-import java.util.List;
+import org.spout.api.entity.Player;
+import org.spout.api.event.player.PlayerEvent;
 
-import org.spout.api.gui.render.RenderPart;
+public abstract class PlayerInputEvent extends PlayerEvent {
+	private final String rawCmd;
 
-public interface RenderPartContainer {
-	/**
-	 * Returns a list of RenderParts that are to be rendered for this widget <br/>
-	 * Only called when the widget's internal cache isn't clean, that means,
-	 * you must call getOwner().update() to invoke a render update
-	 * @return a list of RenderParts
-	 */
-	public List<RenderPart> getRenderParts();
+	public PlayerInputEvent(Player p, String rawCmd) {
+		super(p);
+		this.rawCmd = rawCmd;
+	}
+
+	public String getRawCommand() {
+		return rawCmd;
+	}
 }

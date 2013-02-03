@@ -24,7 +24,7 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.event.player;
+package org.spout.api.event.player.input;
 
 import org.spout.api.entity.Player;
 import org.spout.api.event.Cancellable;
@@ -34,18 +34,16 @@ import org.spout.api.input.Keyboard;
 /**
  * Event is called when a key is pressed/held/or released from the client
  */
-public class PlayerKeyEvent extends PlayerEvent implements Cancellable {
+public class PlayerKeyEvent extends PlayerInputEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
 	private final Keyboard key;
-	private final String rawCommand;
 	private final boolean pressed;
 	private final char c;
 
 	public PlayerKeyEvent(Player p, Keyboard key, boolean pressed, String rawCommand, char c) {
-		super(p);
+		super(p, rawCommand);
 		this.key = key;
 		this.pressed = pressed;
-		this.rawCommand = rawCommand;
 		this.c = c;
 	}
 
@@ -72,14 +70,6 @@ public class PlayerKeyEvent extends PlayerEvent implements Cancellable {
 	 */
 	public boolean isPressed() {
 		return pressed;
-	}
-
-	/**
-	 * Gets the raw command bound to this key.
-	 * @return The raw command bound to the key
-	 */
-	public String getRawCommand() {
-		return rawCommand;
 	}
 
 	@Override

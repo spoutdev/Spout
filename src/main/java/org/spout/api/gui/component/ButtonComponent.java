@@ -30,7 +30,8 @@ import java.awt.Color;
 import java.util.List;
 
 import org.spout.api.Spout;
-import org.spout.api.event.player.PlayerKeyEvent;
+import org.spout.api.event.player.input.PlayerClickEvent;
+import org.spout.api.event.player.input.PlayerKeyEvent;
 import org.spout.api.gui.render.RectanglePart;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.input.Keyboard;
@@ -67,8 +68,8 @@ public class ButtonComponent extends LabelComponent {
 	}
 
 	@Override
-	public void onClicked(IntVector2 position, boolean mouseDown) {
-		if (mouseDown) {
+	public void onClicked(PlayerClickEvent event) {
+		if (event.isPressed()) {
 			down = true;
 		} else {
 			// TODO detect if mouse button was released outside of the button

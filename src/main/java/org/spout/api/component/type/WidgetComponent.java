@@ -32,7 +32,9 @@ import java.util.List;
 
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentOwner;
-import org.spout.api.event.player.PlayerKeyEvent;
+import org.spout.api.event.player.input.PlayerClickEvent;
+import org.spout.api.event.player.input.PlayerKeyEvent;
+import org.spout.api.event.player.input.PlayerMouseMoveEvent;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Focusable;
 import org.spout.api.gui.RenderPartContainer;
@@ -59,7 +61,7 @@ public class WidgetComponent extends Component implements SignalInterface, Subsc
 	}
 
 	@Override
-	public void onClicked(IntVector2 position, boolean mouseDown) {
+	public void onClicked(PlayerClickEvent event) {
 	}
 
 	@Override
@@ -85,7 +87,7 @@ public class WidgetComponent extends Component implements SignalInterface, Subsc
 	}
 
 	@Override
-	public void onMouseMove(IntVector2 position) {
+	public void onMouseMove(PlayerMouseMoveEvent event) {
 	}
 
 	@Override
