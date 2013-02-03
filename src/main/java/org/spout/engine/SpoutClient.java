@@ -180,39 +180,34 @@ public class SpoutClient extends SpoutEngine implements Client {
 				getActiveWorld().spawnEntity(activePlayer);
 				Font font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
 
-				for (int i = 0; i < 10; i++) {
-					for (int j = 0; j < 10; j++) {
+				// Test
+				ClientEntityPrefab spoutyType = (ClientEntityPrefab) Spout.getFilesystem().getResource("entity://Spout/entities/Spouty/spouty.sep");
 
-						// Test
-						ClientEntityPrefab spoutyType = (ClientEntityPrefab) Spout.getFilesystem().getResource("entity://Spout/entities/Spouty/spouty.sep");
+				Entity e = spoutyType.createEntity(getDefaultWorld().getSpawnPoint().getPosition().add(0, 0, 0));
+				e.setSavable(false); // To prevent entity duplication
 
-						Entity e = spoutyType.createEntity(getDefaultWorld().getSpawnPoint().getPosition().add(i * 5, 0, j * 5));
-						e.setSavable(false); // To prevent entity duplication
+				//Animation part
+				ModelHolderComponent modelHolderComponent = e.get(ModelHolderComponent.class);
+				//EntityRendererComponent renderComponent = e.get(EntityRendererComponent.class);
+				AnimationComponent animationComponent = e.get(AnimationComponent.class);
 
-						//Animation part
-						ModelHolderComponent modelHolderComponent = e.get(ModelHolderComponent.class);
-						//EntityRendererComponent renderComponent = e.get(EntityRendererComponent.class);
-						AnimationComponent animationComponent = e.get(AnimationComponent.class);
+				Model model = modelHolderComponent.getModels().get(0);
 
-						Model model = modelHolderComponent.getModels().get(0);
+				Animation a1 = model.getAnimations().get("animatest1");
+				Animation a2 = model.getAnimations().get("animatest2");
 
-						Animation a1 = model.getAnimations().get("animatest1");
-						Animation a2 = model.getAnimations().get("animatest2");
+				//Launch first animation
+				AnimationPlayed ac = animationComponent.playAnimation(model, a1, true);
+				ac.setCurrentTime(0);
+				ac.setSpeed(1);
 
-						//Launch first animation
-						AnimationPlayed ac = animationComponent.playAnimation(model, a1, true);
-						ac.setCurrentTime(j * 0.5f);
-						ac.setSpeed(j * 0.5f);
+				ClientTextModelComponent tmc = e.add(ClientTextModelComponent.class);
+				tmc.setText(new ChatArguments(ChatStyle.BLUE, "Sp", ChatStyle.WHITE, "ou", ChatStyle.RED, "ty"));
+				tmc.setSize(0.5f);
+				tmc.setTranslation(new Vector3(0, 3f, 0));
+				tmc.setFont(font);
 
-						ClientTextModelComponent tmc = e.add(ClientTextModelComponent.class);
-						tmc.setText(new ChatArguments(ChatStyle.BLUE, "Sp", ChatStyle.WHITE, "ou", ChatStyle.RED, "ty"));
-						tmc.setSize(0.5f);
-						tmc.setTranslation(new Vector3(0, 3f, 0));
-						tmc.setFont(font);
-
-						getActiveWorld().spawnEntity(e);
-					}
-				}
+				getActiveWorld().spawnEntity(e);
 
 				//The render need the active player to find the world to draw, so we start it after initialize player
 				renderer = getScheduler().startRenderThread(new Vector2(1204, 796), ccoverride, null);

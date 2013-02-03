@@ -54,8 +54,10 @@ import org.spout.api.gui.FullScreen;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.ScreenStack;
 import org.spout.api.gui.Widget;
+import org.spout.api.gui.render.RenderPart;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.MatrixMath;
+import org.spout.api.math.Rectangle;
 import org.spout.api.math.Vector2;
 import org.spout.api.model.Model;
 import org.spout.api.render.RenderMaterial;
@@ -72,7 +74,6 @@ import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.EntityRenderer;
 import org.spout.engine.renderer.WorldRenderer;
-import org.spout.engine.resources.ClientFont;
 import org.spout.engine.resources.ClientRenderMaterial;
 import org.spout.engine.resources.ClientRenderTexture;
 import org.spout.engine.util.MacOSXUtils;
@@ -82,7 +83,6 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 
 public class SpoutRenderer {
-	private SpriteBatch gui;
 	private ScreenStack screenStack;
 	private DebugScreen debugScreen;
 	private boolean showDebugInfos = true;
@@ -94,6 +94,9 @@ public class SpoutRenderer {
 	private WorldRenderer worldRenderer;
 	private boolean wireframe = false;
 	private Matrix ident = MatrixMath.createIdentity();
+	
+	// Screen texture
+	private SpriteBatch screenBatcher;
 	private ClientRenderTexture t;
 	private ClientRenderMaterial mat;
 
@@ -157,15 +160,19 @@ public class SpoutRenderer {
 		BatchVertexRenderer.initPool(GL11.GL_TRIANGLES, 10000);
 
 		worldRenderer = new WorldRenderer();
-
-		gui = SpriteBatch.createSpriteBatch(client.getRenderMode(), resolution.getX(), resolution.getY());
-
+		
+		screenBatcher = new SpriteBatch();
 		t = new ClientRenderTexture(true, false, true);
 		t.writeGPU();
 		Shader s = (Shader) Spout.getFilesystem().getResource("shader://Spout/shaders/diffuse.ssf");
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("Diffuse", t);
 		mat = new ClientRenderMaterial(s, map);
+		RenderPart screenPart =  new RenderPart();
+		screenPart.setRenderMaterial(mat);
+		screenPart.setSprite(new Rectangle(-1, -1, 2, 2));
+		screenPart.setSource(new Rectangle(0, 1, 1, -1));
+		screenBatcher.flush(screenPart);
 	}
 
 	public void updateRender(long limit) {
@@ -222,10 +229,8 @@ public class SpoutRenderer {
 		start = System.nanoTime();
 
 		t.release();
-
-		gui.begin();
-
-		gui.draw(mat, 0, 1, 1, -1, -1, -1, 2, 2);
+		
+		screenBatcher.render();
 
 		if (showDebugInfos) {
 			Point position = client.getActivePlayer().getScene().getPosition();
@@ -242,10 +247,9 @@ public class SpoutRenderer {
 		
 		for (Screen screen : screenStack.getVisibleScreens()) {
 			for (Widget widget : screen.getWidgets()) {
-				gui.draw(widget.getRenderParts());
+				((SpoutWidget) widget).render();
 			}
 		}
-		gui.render();
 
 		guiTime = System.nanoTime() - start;
 
