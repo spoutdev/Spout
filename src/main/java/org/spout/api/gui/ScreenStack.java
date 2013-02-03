@@ -26,118 +26,36 @@
  */
 package org.spout.api.gui;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 
-import org.spout.api.Client;
-import org.spout.api.Spout;
-import org.spout.api.input.InputManager;
-import org.spout.api.signal.SignalSubscriberObject;
+import org.spout.api.signal.SignalInterface;
+import org.spout.api.signal.SubscriberInterface;
 import org.spout.api.tickable.Tickable;
 
-public class ScreenStack extends SignalSubscriberObject implements Tickable {
-	private LinkedList<Screen> screens = new LinkedList<Screen>();
-	private LinkedList<Screen> visibleScreens = new LinkedList<Screen>();
-	/**
-	 * The screen that gets input, can be null
-	 */
-	private Screen inputScreen = null;
+public interface ScreenStack extends Tickable, SubscriberInterface, SignalInterface {
 
-	public ScreenStack(FullScreen root) {
-		screens.add(root);
-		update();
-	}
+	public void openScreen(Screen screen);
 
-	public void openScreen(Screen screen) {
-		synchronized (screens) {
-			screens.add(screen);
-		}
-		update();
-	}
+	public void closeTopScreen();
 
-	/**
-	 * Updates all internal caches
-	 */
-	private void update() {
-		synchronized (visibleScreens) {
-			visibleScreens.clear();
-
-			synchronized (screens) {
-				Iterator<Screen> iter = screens.descendingIterator();
-
-				Screen next = null;
-
-				while (iter.hasNext()) {
-					next = iter.next();
-					visibleScreens.addFirst(next);
-					if (next instanceof FullScreen) {
-						break;
-					}
-				}
-			}
-		}
-		if (Spout.getEngine() instanceof Client) {
-			Client engine = (Client) Spout.getEngine();
-			InputManager input = engine.getInputManager();
-			Iterator<Screen> iter = getVisibleScreens().descendingIterator();
-			Screen next;
-			inputScreen = null;
-			while (iter.hasNext()) {
-				next = iter.next();
-				if (next.takesInput()) {
-					inputScreen = next;
-					break;
-				}
-			}
-			if (input != null) {
-				input.setRedirected(inputScreen != null);
-			}
-		}
-	}
-
-	public void closeTopScreen() {
-		synchronized (screens) {
-			screens.removeLast();
-		}
-		update();
-	}
-
-	public void closeScreen(Screen screen) {
-		synchronized (screens) {
-			if (screen == screens.getFirst()) {
-				Screen second = screens.get(1);
-				if (!(second instanceof FullScreen)) {
-					throw new IllegalStateException("The lowest screen must be instance of FullScreen!");
-				}
-			}
-			screens.remove(screen);
-		}
-		update();
-	}
+	public void closeScreen(Screen screen);
 
 	/**
 	 * Gets an ordered list of visible screens
 	 * The first item in the list is the bottom-most fullscreen, the last item in the list is the top-most fullscreen/popupscreen.
 	 * @return
 	 */
-	public LinkedList<Screen> getVisibleScreens() {
-		synchronized (visibleScreens) {
-			return visibleScreens;
-		}
-	}
-
-	@Override
-	public void onTick(float dt) {
-		for (Screen screen : getVisibleScreens()) {
-			screen.tick(dt);
-		}
-	}
+	public LinkedList<Screen> getVisibleScreens();
 
 	/**
 	 * Gets which screen takes input
-	 * @return
+	 * @return Screen
 	 */
-	public Screen getInputScreen() {
-		return inputScreen;
-	}
+	public Screen getInputScreen();
+	
+	/**
+	 * Return a new widget instance
+	 * @return Widget
+	 */
+	public abstract Widget makeWidget();
 }
