@@ -29,7 +29,10 @@ package org.spout.api.component.impl;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.entity.Player;
 import org.spout.api.geo.cuboid.Block;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.material.block.BlockFace;
+import org.spout.api.math.QuaternionMath;
+import org.spout.api.math.Vector3;
 import org.spout.api.util.BlockIterator;
 
 /**
@@ -92,7 +95,11 @@ public class InteractComponent extends EntityComponent {
 	 * @return blocks
 	 */
 	public BlockIterator getAlignedBlocks() {
-		return new BlockIterator(player.getWorld(), player.getScene().getTransform(), range);
+		Transform ptr = player.getScene().getTransform();
+		Transform tr = new Transform();
+		tr.setRotation(QuaternionMath.rotationTo(Vector3.FORWARD, ptr.getRotation().getDirection().multiply(-1)));
+		tr.setPosition(ptr.getPosition());
+		return new BlockIterator(player.getWorld(), tr, range);
 	}
 
 	/**
