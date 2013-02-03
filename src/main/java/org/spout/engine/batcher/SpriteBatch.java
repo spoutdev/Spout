@@ -47,6 +47,7 @@ import org.spout.api.render.RenderMode;
 import org.spout.api.render.effect.SnapshotRender;
 
 import org.spout.engine.renderer.BatchVertexRenderer;
+import org.spout.engine.renderer.vertexformat.vertexattributes.VertexAttributes;
 import org.spout.engine.resources.ClientFont;
 
 public class SpriteBatch {
@@ -86,23 +87,23 @@ public class SpriteBatch {
 
 		container.element = sprites.size() * 3 * 2;
 
-		TFloatArrayList vertexBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.VERTEX_LAYER);
-		TFloatArrayList colorBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.COLOR_LAYER);
-		TFloatArrayList textureBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.TEXTURE0_LAYER);
+		TFloatArrayList vertexBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Position.getLayout());
+		TFloatArrayList colorBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Color.getLayout());
+		TFloatArrayList textureBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Texture0.getLayout());
 
 		if (vertexBuffer == null) {
 			vertexBuffer = new TFloatArrayList(sprites.size() * 4 * 4);
-			container.setBuffers(BatchVertexRenderer.VERTEX_LAYER, vertexBuffer);
+			container.setBuffers(VertexAttributes.Position.getLayout(), vertexBuffer);
 		}
 
 		if (colorBuffer == null) {
 			colorBuffer = new TFloatArrayList(sprites.size() * 4 * 4);
-			container.setBuffers(BatchVertexRenderer.COLOR_LAYER, colorBuffer);
+			container.setBuffers(VertexAttributes.Color.getLayout(), colorBuffer);
 		}
 
 		if (textureBuffer == null) {
 			textureBuffer = new TFloatArrayList(sprites.size() * 4 * 2);
-			container.setBuffers(BatchVertexRenderer.TEXTURE0_LAYER, textureBuffer);
+			container.setBuffers(VertexAttributes.Texture0.getLayout(), textureBuffer);
 		}
 
 		for (int i = 0; i < sprites.size(); i++) {

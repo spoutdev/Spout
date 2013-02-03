@@ -38,7 +38,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.spout.api.render.RenderMaterial;
 import org.spout.engine.SpoutRenderer;
-import org.spout.engine.renderer.vertexbuffer.ComposedFloatBuffer;
+import org.spout.engine.renderer.vertexbuffer.SpoutFloatBuffer;
 
 public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 	final int SIZE_FLOAT = 4;
@@ -47,7 +47,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 
 	ArrayList<Integer> assigned = new ArrayList<Integer>();
 	
-	ComposedFloatBuffer buffer = null;
+	SpoutFloatBuffer buffer = null;
 	//TIntObjectHashMap<GLFloatBuffer > vertexBuffers = new TIntObjectHashMap<GLFloatBuffer>();
 
 	/**
@@ -93,7 +93,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 		buffer.flip();
 		
 		if(flushingBuffer == null)
-			flushingBuffer = ComposedFloatBuffer.getBuffer();
+			flushingBuffer = SpoutFloatBuffer.getBuffer();
 		
 		flushingBuffer.setData(elements, layouts, buffer);
 	}

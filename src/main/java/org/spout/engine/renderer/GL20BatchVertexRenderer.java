@@ -36,7 +36,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.spout.api.render.RenderMaterial;
 import org.spout.engine.SpoutRenderer;
-import org.spout.engine.renderer.vertexbuffer.ComposedFloatBuffer;
+import org.spout.engine.renderer.vertexbuffer.SpoutFloatBuffer;
 
 public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 	//final int SIZE_FLOAT = 4;
@@ -79,7 +79,7 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 		buffer.flip();
 		
 		if(flushingBuffer == null)
-			flushingBuffer = ComposedFloatBuffer.getBuffer();
+			flushingBuffer = SpoutFloatBuffer.getBuffer();
 		
 		flushingBuffer.setData(elements, layouts, buffer);
 	}

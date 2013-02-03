@@ -42,7 +42,7 @@ import org.spout.api.Spout;
 import org.spout.api.render.BufferContainer;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
-import org.spout.engine.renderer.vertexbuffer.ComposedFloatBuffer;
+import org.spout.engine.renderer.vertexbuffer.SpoutFloatBuffer;
 
 public abstract class BatchVertexRenderer implements Renderer {
 
@@ -110,16 +110,10 @@ public abstract class BatchVertexRenderer implements Renderer {
 		}
 	}
 
-	public static final int VERTEX_LAYER = 0;
-	public static final int COLOR_LAYER = 1;
-	public static final int NORMAL_LAYER = 2;
-	public static final int TEXTURE0_LAYER = 3;
-	public static final int TEXTURE1_LAYER = 4;
-
 	final int renderMode;
 
-	ComposedFloatBuffer currentBuffer = null;
-	ComposedFloatBuffer flushingBuffer = null;
+	SpoutFloatBuffer currentBuffer = null;
+	SpoutFloatBuffer flushingBuffer = null;
 	int currentNumVertices = 0;
 	int flushingNumVertices = 0;
 	

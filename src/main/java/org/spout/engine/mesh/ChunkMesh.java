@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
@@ -54,7 +53,7 @@ import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.BufferEffect;
 import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.util.bytebit.ByteBitSet;
-import org.spout.engine.renderer.BatchVertexRenderer;
+import org.spout.engine.renderer.vertexformat.vertexattributes.VertexAttributes;
 import org.spout.engine.world.SpoutChunkSnapshotModel;
 
 /**
@@ -233,19 +232,19 @@ public class ChunkMesh{
 				container = new BufferContainer();
 				
 				vertexBuffer = new TFloatArrayList();
-				container.setBuffers(BatchVertexRenderer.VERTEX_LAYER, vertexBuffer);
+				container.setBuffers(VertexAttributes.Position.getLayout(), vertexBuffer);
 				
 				normalBuffer = new TFloatArrayList();
-				container.setBuffers(BatchVertexRenderer.NORMAL_LAYER, normalBuffer);
+				container.setBuffers(VertexAttributes.Normal.getLayout(), normalBuffer);
 				
 				textureBuffer = new TFloatArrayList();
-				container.setBuffers(BatchVertexRenderer.TEXTURE0_LAYER, textureBuffer);
+				container.setBuffers(VertexAttributes.Texture0.getLayout(), textureBuffer);
 				
 				meshs.put(renderMaterial, container);
 			}else{
-				 vertexBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.VERTEX_LAYER);
-				 normalBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.NORMAL_LAYER);
-				 textureBuffer = (TFloatArrayList) container.getBuffers().get(BatchVertexRenderer.TEXTURE0_LAYER);
+				 vertexBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Position.getLayout());
+				 normalBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Normal.getLayout());
+				 textureBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Texture0.getLayout());
 			}
 
 			for (MeshFace meshFace : faces) {

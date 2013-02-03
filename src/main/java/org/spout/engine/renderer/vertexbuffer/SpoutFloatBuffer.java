@@ -36,7 +36,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL33;
 import org.spout.engine.SpoutRenderer;
 
-public class ComposedFloatBuffer {
+public class SpoutFloatBuffer {
 	
 	private static List<Integer> BUFFER_POOL = new LinkedList<Integer>();
 	
@@ -53,11 +53,11 @@ public class ComposedFloatBuffer {
 		}
 	}
 	
-	public static ComposedFloatBuffer getBuffer(){
+	public static SpoutFloatBuffer getBuffer(){
 		if(BUFFER_POOL.isEmpty()){
-			return new ComposedFloatBuffer(GL15.glGenBuffers());
+			return new SpoutFloatBuffer(GL15.glGenBuffers());
 		}else{
-			return new ComposedFloatBuffer(BUFFER_POOL.remove(0));
+			return new SpoutFloatBuffer(BUFFER_POOL.remove(0));
 		}
 	}
 	
@@ -79,10 +79,22 @@ public class ComposedFloatBuffer {
 
 	public static final int FLOAT_SIZE = Float.SIZE / Byte.SIZE;
 
-	private ComposedFloatBuffer(int vboId){
+	private SpoutFloatBuffer(int vboId){
 		this.vboId = vboId;
 	}
 
+	public void setData(int element, int layout, FloatBuffer buffer){
+		this.elements = new int[]{element};
+		this.layout = new int[]{layout};
+		offset = new int[elements.length];
+
+		offset[0] = 0;
+		stride = elements[0] * FLOAT_SIZE;
+		
+		this.buffer = buffer;
+		current = 0;
+	}
+	
 	public void setData(int []elements, int[] layouts, FloatBuffer buffer){
 		if(elements.length != layouts.length)
 			throw new IllegalStateException("Number of elements and layout must be same");

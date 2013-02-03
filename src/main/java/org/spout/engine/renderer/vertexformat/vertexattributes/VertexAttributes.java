@@ -27,8 +27,19 @@
 package org.spout.engine.renderer.vertexformat.vertexattributes;
 
 public enum VertexAttributes {
-	Position,
-	Color,
-	Normal,
-	Texture,
+	Position(0),
+	Color(1),
+	Normal(2),
+	Texture0(3),
+	Texture1(4);
+	
+	private final int layout;
+	
+	VertexAttributes(int layout){
+		this.layout = layout;
+	}
+
+	public int getLayout() {
+		return layout;
+	}
 }

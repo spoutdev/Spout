@@ -39,6 +39,7 @@ import org.spout.api.render.effect.SnapshotRender;
 import org.spout.api.resource.Resource;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.GLBufferContainer;
+import org.spout.engine.renderer.vertexformat.vertexattributes.VertexAttributes;
 
 
 public class BaseMesh extends Resource implements Mesh{
@@ -110,13 +111,13 @@ public class BaseMesh extends Resource implements Mesh{
 			texture0Buffer.flip();
 
 		container.element = numVerticies;
-		container.setBuffers(BatchVertexRenderer.VERTEX_LAYER, vertexBuffer);
+		container.setBuffers(VertexAttributes.Position.getLayout(), vertexBuffer);
 		if(normal)
-			container.setBuffers(BatchVertexRenderer.NORMAL_LAYER, normalBuffer);
+			container.setBuffers(VertexAttributes.Normal.getLayout(), normalBuffer);
 		if(color)
-			container.setBuffers(BatchVertexRenderer.COLOR_LAYER, colorBuffer);
+			container.setBuffers(VertexAttributes.Color.getLayout(), colorBuffer);
 		if(texture0)
-			container.setBuffers(BatchVertexRenderer.TEXTURE0_LAYER, texture0Buffer);
+			container.setBuffers(VertexAttributes.Texture0.getLayout(), texture0Buffer);
 		
 		container.setVerticeIndex(verticeIndex);
 	}
