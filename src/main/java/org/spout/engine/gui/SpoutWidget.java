@@ -42,10 +42,13 @@ import org.spout.api.gui.component.ControlComponent;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.math.Rectangle;
+import org.spout.engine.batcher.SpriteBatch;
 
 public class SpoutWidget extends BaseComponentHolder implements Widget {
 	private List<RenderPart> renderPartCache = new LinkedList<RenderPart>();
 	private boolean renderCacheClean = false;
+	private boolean dirty = true;
+	private SpriteBatch batcher = new SpriteBatch();
 	private Screen screen = null;
 	private static DefaultedKey<Rectangle> KEY_GEOMETRY = new DefaultedKey<Rectangle>() {
 		@Override
@@ -82,11 +85,21 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 			return renderPartCache;
 		}
 	}
+	
+	public void render() {
+		if (dirty) {
+			batcher.flush(getRenderParts());
+			dirty = false;
+		}
+		
+		batcher.render();
+	}
 
 	/**
 	 * Invokes a render update in the next frame
 	 */
 	public void update() {
+		dirty = true;
 		synchronized (renderPartCache) {
 			renderCacheClean = false;
 		}

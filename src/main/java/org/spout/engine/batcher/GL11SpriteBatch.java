@@ -30,13 +30,9 @@ import org.lwjgl.opengl.GL11;
 import org.spout.api.gui.render.RenderPart;
 
 public class GL11SpriteBatch extends SpriteBatch {
-
-	public GL11SpriteBatch(float screenW, float screenH) {
-		super(screenW, screenH);
-	}
 	
 	public void render() {
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		/*GL11.glDisable(GL11.GL_DEPTH_TEST);
 		
 		for(int i = 0; i < sprites.size(); i++) {
 			RenderPart rect = sprites.get(i);
@@ -81,6 +77,6 @@ public class GL11SpriteBatch extends SpriteBatch {
 			
 			GL11.glEnd();
 		}
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);*/
 	}
 }
