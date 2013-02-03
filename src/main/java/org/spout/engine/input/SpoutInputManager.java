@@ -67,7 +67,8 @@ public class SpoutInputManager implements InputManager {
 		bind(Keyboard.get(SpoutInputConfiguration.RIGHT.getString()), "right");
 		bind(Keyboard.get(SpoutInputConfiguration.UP.getString()), "jump");
 		bind(Keyboard.get(SpoutInputConfiguration.DOWN.getString()), "crouch");
-		bind(Keyboard.KEY_F3, "debug_info");
+		bind(Keyboard.KEY_F2, "dev_console");
+		bind(Keyboard.KEY_F3, "debug_infos");
 		bind(org.spout.api.input.Mouse.MOUSE_SCROLLDOWN, "select_down");
 		bind(org.spout.api.input.Mouse.MOUSE_SCROLLUP, "select_up");
 		bind(org.spout.api.input.Mouse.MOUSE_BUTTON0, "left_click");

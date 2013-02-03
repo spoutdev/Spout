@@ -33,8 +33,6 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
-import org.spout.api.Client;
-import org.spout.api.Spout;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.MatrixMath;
@@ -175,7 +173,8 @@ public class SpriteBatch {
 		}
 
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
-
+		renderer.preDraw();
+		
 		for (int i = 0; i < sprites.size(); i++) {
 			RenderPart rect = sprites.get(i);
 
@@ -185,10 +184,11 @@ public class SpriteBatch {
 
 			SnapshotRender snapshotRender = new SnapshotRender(rect.getRenderMaterial());
 			rect.getRenderMaterial().preRender(snapshotRender);
-			renderer.render(rect.getRenderMaterial(), (i * 6), 6);
+			renderer.draw(rect.getRenderMaterial(), (i * 6), 6);
 			rect.getRenderMaterial().postRender(snapshotRender);
 		}
 		
+		renderer.postDraw();
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 	}
 }
