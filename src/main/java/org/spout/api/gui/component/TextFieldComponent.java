@@ -181,9 +181,8 @@ public class TextFieldComponent extends LabelComponent {
 
 		clear();
 
-		Rectangle geo = getOwner().getGeometry();
-		float fieldX = geo.getX() - toScreenX(4);
-		float fieldY = geo.getY() - toScreenY(4);
+		float fieldX = - toScreenX(4);
+		float fieldY =  - toScreenY(4);
 		float fieldWidth = 0.25f;
 
 		field.setZIndex(2);

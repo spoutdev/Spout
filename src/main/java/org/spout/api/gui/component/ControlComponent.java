@@ -50,7 +50,7 @@ public class ControlComponent extends WidgetComponent {
 			part.setRenderMaterial(SpoutRenderMaterials.GUI_COLOR);
 			part.setColor(Color.BLUE);
 			part.setSource(new Rectangle(0, 0, 0, 0));
-			part.setSprite(getOwner().getGeometry());
+			part.setSprite(new Rectangle(0,0,0.1f,0.1f));
 			part.setZIndex(-100);
 			ret.add(part);
 		}

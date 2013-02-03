@@ -92,8 +92,8 @@ public class LabelComponent extends WidgetComponent {
 		float w = font.getWidth();
 		float h = font.getHeight();
 
-		float xCursor = getOwner().getGeometry().getX();
-		float yCursor = getOwner().getGeometry().getY();
+		float xCursor = 0;
+		float yCursor = 0;
 
 		float screenWidth = ((Client) Spout.getEngine()).getResolution().getX();
 		float screenHeight = ((Client) Spout.getEngine()).getResolution().getY();
@@ -106,7 +106,7 @@ public class LabelComponent extends WidgetComponent {
 					if (c == ' ') {
 						xCursor += font.getSpaceWidth() / screenWidth;
 					} else if (c == '\n') {
-						xCursor = getOwner().getGeometry().getX();
+						xCursor = 0;
 						yCursor -= font.getCharHeight() / screenHeight;
 					} else {
 						java.awt.Rectangle r = font.getPixelBounds(c);

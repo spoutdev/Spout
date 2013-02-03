@@ -30,8 +30,8 @@ package org.spout.api.gui;
 import java.util.List;
 
 import org.spout.api.component.ComponentHolder;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.render.RenderPart;
-import org.spout.api.math.Rectangle;
 import org.spout.api.tickable.Tickable;
 
 public interface Widget extends Tickable, ComponentHolder {
@@ -59,9 +59,5 @@ public interface Widget extends Tickable, ComponentHolder {
 
 	public abstract void onFocus(FocusReason reason);
 
-	public abstract Rectangle getTranslatedGeometry();
-
-	public abstract Rectangle getGeometry();
-
-	public abstract void setGeometry(Rectangle geometry);
+	public abstract Transform getTransform();
 }

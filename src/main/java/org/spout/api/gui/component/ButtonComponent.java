@@ -56,9 +56,8 @@ public class ButtonComponent extends LabelComponent {
 	public List<RenderPart> getRenderParts() {
 		List<RenderPart> ret = super.getRenderParts();
 		RectanglePart part = new RectanglePart();
-		Rectangle geo = getOwner().getTranslatedGeometry();
-		part.setSource(geo);
-		part.setSprite(geo);
+		part.setSource(new Rectangle(0,0,0.1f,0.1f));
+		part.setSprite(new Rectangle(0,0,1f,1f));
 		part.setColor(isDown() ? Color.blue : Color.red);
 		part.setRenderMaterial((RenderMaterial) Spout.getFilesystem().getResource("material://Spout/materials/GUIColorMaterial.smt"));
 		part.setZIndex(5);
