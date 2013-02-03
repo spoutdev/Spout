@@ -33,12 +33,18 @@ import java.util.List;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
 import org.spout.api.component.type.WidgetComponent;
+import org.spout.api.event.player.PlayerKeyEvent;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.FocusReason;
+import org.spout.api.gui.Focusable;
+import org.spout.api.gui.RenderPartContainer;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.gui.component.ControlComponent;
 import org.spout.api.gui.render.RenderPart;
+import org.spout.api.math.IntVector2;
+import org.spout.api.math.Rectangle;
+
 import org.spout.engine.batcher.SpriteBatch;
 
 public class SpoutWidget extends BaseComponentHolder implements Widget {
@@ -47,7 +53,7 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 	private boolean dirty = true;
 	private SpriteBatch batcher = new SpriteBatch();
 	private Screen screen = null;
-	
+	private Rectangle hitBox = Rectangle.ZERO;
 	private Transform transform = new Transform();
 
 	/**
@@ -60,9 +66,9 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 				renderPartCache = new LinkedList<RenderPart>();
 
 				for (Component component : values()) {
-					if (component instanceof WidgetComponent) {
-						WidgetComponent wc = (WidgetComponent) component;
-						renderPartCache.addAll(wc.getRenderParts());
+					if (component instanceof RenderPartContainer) {
+						RenderPartContainer c = (RenderPartContainer) component;
+						renderPartCache.addAll(c.getRenderParts());
 					}
 				}
 
@@ -117,16 +123,51 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 
 	public void onFocusLost() {
 		for (Component c : values()) {
-			if (c instanceof WidgetComponent) {
-				((WidgetComponent) c).onFocusLost();
+			if (c instanceof Focusable) {
+				((Focusable) c).onFocusLost();
+			}
+		}
+	}
+
+	public void setHitBox(Rectangle hitBox) {
+		this.hitBox = hitBox;
+	}
+
+	public Rectangle getHitBox() {
+		return hitBox;
+	}
+
+	@Override
+	public void onClicked(IntVector2 pos, boolean mouseDown) {
+		for (Component c : values()) {
+			if (c instanceof Focusable) {
+				((Focusable) c).onClicked(pos, mouseDown);
+			}
+		}
+	}
+
+	@Override
+	public void onKey(PlayerKeyEvent event) {
+		for (Component c : values()) {
+			if (c instanceof Focusable) {
+				((Focusable) c).onKey(event);
+			}
+		}
+	}
+
+	@Override
+	public void onMouseMove(IntVector2 position) {
+		for (Component c : values()) {
+			if (c instanceof Focusable) {
+				((Focusable) c).onMouseMove(position);
 			}
 		}
 	}
 
 	public void onFocus(FocusReason reason) {
 		for (Component c : values()) {
-			if (c instanceof WidgetComponent) {
-				((WidgetComponent) c).onFocus(reason);
+			if (c instanceof Focusable && ((Focusable) c).canFocus()) {
+				((Focusable) c).onFocus(reason);
 			}
 		}
 	}
