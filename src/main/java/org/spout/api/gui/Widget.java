@@ -26,130 +26,41 @@
  */
 package org.spout.api.gui;
 
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
-import org.spout.api.Client;
-import org.spout.api.Spout;
-import org.spout.api.component.BaseComponentHolder;
-import org.spout.api.component.Component;
-import org.spout.api.component.type.WidgetComponent;
-import org.spout.api.gui.component.ControlComponent;
+import org.spout.api.component.ComponentHolder;
 import org.spout.api.gui.render.RenderPart;
-import org.spout.api.map.DefaultedKey;
 import org.spout.api.math.Rectangle;
 import org.spout.api.tickable.Tickable;
 
-public final class Widget extends BaseComponentHolder implements Tickable {
-	private List<RenderPart> renderPartCache = new LinkedList<RenderPart>();
-	private boolean renderCacheClean = false;
-	private Screen screen = null;
-	private static DefaultedKey<Rectangle> KEY_GEOMETRY = new DefaultedKey<Rectangle>() {
-		@Override
-		public Rectangle getDefaultValue() {
-			return new Rectangle(0, 0, 1, 1);
-		}
-
-		@Override
-		public String getKeyString() {
-			return "geometry";
-		}
-	};
-
+public interface Widget extends Tickable, ComponentHolder {
+	
 	/**
 	 * Returns a sorted list of render parts that consists of all render parts of the components
 	 * @return a list of render parts
 	 */
-	public List<RenderPart> getRenderParts() {
-		synchronized (renderPartCache) {
-			if (!renderCacheClean) {
-				renderPartCache = new LinkedList<RenderPart>();
-
-				for (Component component : values()) {
-					if (component instanceof WidgetComponent) {
-						WidgetComponent wc = (WidgetComponent) component;
-						renderPartCache.addAll(wc.getRenderParts());
-					}
-				}
-
-				Collections.sort(renderPartCache);
-
-				renderCacheClean = true;
-			}
-			return renderPartCache;
-		}
-	}
+	public abstract List<RenderPart> getRenderParts();
 
 	/**
 	 * Invokes a render update in the next frame
 	 */
-	public void update() {
-		synchronized (renderPartCache) {
-			renderCacheClean = false;
-		}
-	}
+	public abstract void update();
 
-	protected void setScreen(Screen screen) {
-		this.screen = screen;
-	}
+	public abstract void setScreen(Screen screen);
 
-	public Screen getScreen() {
-		return screen;
-	}
+	public abstract Screen getScreen();
 
-	public boolean canFocus() {
-		return get(ControlComponent.class) != null;
-	}
+	public abstract boolean canFocus();
+	
+	public abstract boolean isFocused();
 
-	public boolean isFocused() {
-		return screen.getFocusedWidget().equals(this);
-	}
+	public abstract void onFocusLost();
 
-	protected void onFocusLost() {
-		for (Component c : values()) {
-			if (c instanceof WidgetComponent) {
-				((WidgetComponent) c).onFocusLost();
-			}
-		}
-	}
+	public abstract void onFocus(FocusReason reason);
 
-	protected void onFocus(FocusReason reason) {
-		for (Component c : values()) {
-			if (c instanceof WidgetComponent) {
-				((WidgetComponent) c).onFocus(reason);
-			}
-		}
-	}
+	public abstract Rectangle getTranslatedGeometry();
 
-	public Rectangle getTranslatedGeometry() {
-		return getGeometry().divide(((Client) Spout.getEngine()).getResolution());
-	}
+	public abstract Rectangle getGeometry();
 
-	public Rectangle getGeometry() {
-		return getData().get(KEY_GEOMETRY);
-	}
-
-	public void setGeometry(Rectangle geometry) {
-		getData().put(KEY_GEOMETRY, geometry);
-	}
-
-	@Override
-	public void onTick(float dt) {
-		for (Component c : values()) {
-			c.onTick(dt);
-		}
-	}
-
-	@Override
-	public boolean canTick() {
-		return true;
-	}
-
-	@Override
-	public void tick(float dt) {
-		if (canTick()) {
-			onTick(dt);
-		}
-	}
+	public abstract void setGeometry(Rectangle geometry);
 }
