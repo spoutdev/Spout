@@ -30,18 +30,15 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.spout.api.Client;
-import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
 import org.spout.api.component.type.WidgetComponent;
+import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.gui.component.ControlComponent;
 import org.spout.api.gui.render.RenderPart;
-import org.spout.api.map.DefaultedKey;
-import org.spout.api.math.Rectangle;
 import org.spout.engine.batcher.SpriteBatch;
 
 public class SpoutWidget extends BaseComponentHolder implements Widget {
@@ -50,17 +47,8 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 	private boolean dirty = true;
 	private SpriteBatch batcher = new SpriteBatch();
 	private Screen screen = null;
-	private static DefaultedKey<Rectangle> KEY_GEOMETRY = new DefaultedKey<Rectangle>() {
-		@Override
-		public Rectangle getDefaultValue() {
-			return new Rectangle(0, 0, 1, 1);
-		}
-
-		@Override
-		public String getKeyString() {
-			return "geometry";
-		}
-	};
+	
+	private Transform transform = new Transform();
 
 	/**
 	 * Returns a sorted list of render parts that consists of all render parts of the components
@@ -92,7 +80,7 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 			dirty = false;
 		}
 		
-		batcher.render();
+		batcher.render(transform.toMatrix());
 	}
 
 	/**
@@ -113,6 +101,12 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 		return screen;
 	}
 
+
+	@Override
+	public Transform getTransform() {
+		return transform;
+	}
+	
 	public boolean canFocus() {
 		return get(ControlComponent.class) != null;
 	}
@@ -135,18 +129,6 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 				((WidgetComponent) c).onFocus(reason);
 			}
 		}
-	}
-
-	public Rectangle getTranslatedGeometry() {
-		return getGeometry().divide(((Client) Spout.getEngine()).getResolution());
-	}
-
-	public Rectangle getGeometry() {
-		return getData().get(KEY_GEOMETRY);
-	}
-
-	public void setGeometry(Rectangle geometry) {
-		getData().put(KEY_GEOMETRY, geometry);
 	}
 
 	@Override
