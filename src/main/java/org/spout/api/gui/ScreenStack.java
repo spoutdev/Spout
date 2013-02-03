@@ -28,12 +28,15 @@ package org.spout.api.gui;
 
 import java.util.LinkedList;
 
+import org.spout.api.chat.console.Console;
 import org.spout.api.signal.SignalInterface;
 import org.spout.api.signal.SubscriberInterface;
 import org.spout.api.tickable.Tickable;
 
 public interface ScreenStack extends Tickable, SubscriberInterface, SignalInterface {
-
+	
+	public boolean isOpen(Screen screen);
+	
 	public void openScreen(Screen screen);
 
 	public void closeTopScreen();
@@ -54,8 +57,18 @@ public interface ScreenStack extends Tickable, SubscriberInterface, SignalInterf
 	public Screen getInputScreen();
 	
 	/**
+	 * Get the debug screen
+	 */
+	public abstract DebugHUD getDebug();
+	
+	/**
+	 * Get the ingame developper's console
+	 */
+	public abstract Console getConsole();
+	
+	/**
 	 * Return a new widget instance
 	 * @return Widget
 	 */
-	public abstract Widget makeWidget();
+	public abstract Widget createWidget();
 }
