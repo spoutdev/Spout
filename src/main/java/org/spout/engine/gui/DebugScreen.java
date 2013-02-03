@@ -36,7 +36,6 @@ import org.spout.api.gui.DebugHUD;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.gui.component.LabelComponent;
-import org.spout.api.math.Rectangle;
 import org.spout.api.meta.SpoutMetaPlugin;
 import org.spout.api.plugin.CommonPluginManager;
 import org.spout.api.plugin.Plugin;
@@ -127,7 +126,7 @@ public class DebugScreen extends Screen implements DebugHUD {
 				}
 			} else {
 				Widget w = new SpoutWidget();
-				w.setGeometry(new Rectangle(-0.95f, 0.9f-id*0.1f, 0, 0));
+				w.getTransform().translate(-0.95f, 0.9f-id*0.1f, 0f);
 				LabelComponent lbl = w.add(LabelComponent.class);
 				lbl.setFont(SpoutRenderMaterials.DEFAULT_FONT);
 				lbl.setText(arg);
@@ -144,7 +143,7 @@ public class DebugScreen extends Screen implements DebugHUD {
 				}
 			} else {
 				Widget w = new SpoutWidget();
-				w.setGeometry(new Rectangle(0, 0.9f-messages.size()*0.1f, 0, 0));
+				w.getTransform().translate(0, 0.9f-messages.size()*0.1f, 0f);
 				LabelComponent lbl = w.add(LabelComponent.class);
 				lbl.setFont(SpoutRenderMaterials.DEFAULT_FONT);
 				lbl.setText(arg);

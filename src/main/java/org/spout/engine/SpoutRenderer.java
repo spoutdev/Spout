@@ -58,6 +58,7 @@ import org.spout.api.math.Matrix;
 import org.spout.api.math.MatrixMath;
 import org.spout.api.math.Rectangle;
 import org.spout.api.math.Vector2;
+import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
@@ -226,7 +227,7 @@ public class SpoutRenderer {
 
 		t.release();
 		
-		screenBatcher.render();
+		screenBatcher.render(ident);
 
 		if (showDebugInfos) {
 			Point position = client.getActivePlayer().getScene().getPosition();

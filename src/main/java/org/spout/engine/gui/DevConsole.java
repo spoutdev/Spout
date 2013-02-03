@@ -51,6 +51,7 @@ public class DevConsole extends Screen implements Console {
 	private final SpoutMetaPlugin plugin;
 	private final Font font;
 	private final Widget background = new SpoutWidget();
+	private final Widget textfield = new SpoutWidget();
 	
 	private DateFormat dateFormat;
 	private List<Widget> lines = new ArrayList<Widget>();
@@ -92,6 +93,14 @@ public class DevConsole extends Screen implements Console {
 
 		//Finally attach widget so we can draw
 		attachWidget(plugin, background);
+		
+		// Create the textfield
+		textfield.getTransform().translate(-0.95f, -0.15f, 0f);
+		LabelComponent lbl = textfield.add(LabelComponent.class);
+		lbl.setFont(font);
+		lbl.setColor(Color.WHITE);
+		lbl.setText(new ChatArguments("_"));
+		attachWidget(plugin, textfield);
 	}
 
 	@Override
@@ -112,7 +121,7 @@ public class DevConsole extends Screen implements Console {
 	@Override
 	public void addMessage(ChatArguments message) {
 		Widget wid = new SpoutWidget();
-		wid.setGeometry(new Rectangle(-0.95f, 0.9f - scroll, 0, 0));
+		wid.getTransform().translate(-0.95f, 0.9f - scroll, 0f);
 		LabelComponent txt = wid.add(LabelComponent.class);
 
 		txt.setColor(Color.WHITE);
