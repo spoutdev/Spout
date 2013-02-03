@@ -28,62 +28,58 @@ package org.spout.engine.batcher;
 
 import gnu.trove.list.array.TFloatArrayList;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
-import org.spout.api.chat.ChatArguments;
-import org.spout.api.gui.Widget;
-import org.spout.api.gui.component.LabelComponent;
+import org.spout.api.Client;
+import org.spout.api.Spout;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.MatrixMath;
-import org.spout.api.math.Rectangle;
 import org.spout.api.render.BufferContainer;
-import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.effect.SnapshotRender;
 
-import org.spout.engine.gui.SpoutWidget;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.vertexformat.vertexattributes.VertexAttributes;
-import org.spout.engine.resources.ClientFont;
 
 public class SpriteBatch {
-	BatchVertexRenderer renderer;
-	ArrayList<RenderPart> sprites = new ArrayList<RenderPart>();
-	Matrix view;
-	Matrix projection;
-	float screenWidth;
-	float screenHeight;
-	float aspectRatio;
+	private BatchVertexRenderer renderer;
+	private final ArrayList<RenderPart> sprites = new ArrayList<RenderPart>();
+	private final Matrix view;
+	private final Matrix projection;
 
-	public static SpriteBatch createSpriteBatch(RenderMode renderMode, float screenW, float screenH) {
+	public static SpriteBatch createSpriteBatch(RenderMode renderMode) {
 		if (renderMode == RenderMode.GL11) {
-			return new GL11SpriteBatch(screenW, screenH);
+			return new GL11SpriteBatch();
 		}
-		return new SpriteBatch(screenW, screenH);
+		return new SpriteBatch();
 	}
 
-	public SpriteBatch(float screenW, float screenH) {
+	public SpriteBatch() {
 		this.projection = MatrixMath.createIdentity();
 		this.view = MatrixMath.createIdentity();
-		this.screenWidth = screenW;
-		this.screenHeight = screenH;
-		this.aspectRatio = screenW / screenH;
 	}
 
 	public void begin() {
 		sprites.clear();
 	}
+	
+	public void flush(RenderPart part) {
+		List<RenderPart> list = new ArrayList<RenderPart>();
+		list.add(part);
+		flush(list);
+	}
 
-	public void render() {
-		if (sprites.isEmpty()) {
+	public void flush(List<RenderPart> parts) {
+		if (parts.isEmpty()) {
 			return;
 		}
-
+		sprites.clear();
+		sprites.addAll(parts);
+		
 		BufferContainer container = new BufferContainer();
 
 		container.element = sprites.size() * 3 * 2;
@@ -164,10 +160,19 @@ public class SpriteBatch {
 			textureBuffer.add(rect.getSource().getY());
 		}
 
+		if (renderer!=null) {
+			((BatchVertexRenderer) renderer).release();
+		}
 		renderer = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 
 		renderer.setBufferContainer(container);
 		renderer.flush(true);
+	}
+	
+	public void render() {
+		if (renderer==null) {
+			return;
+		}
 
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 
@@ -182,47 +187,8 @@ public class SpriteBatch {
 			rect.getRenderMaterial().preRender(snapshotRender);
 			renderer.render(rect.getRenderMaterial(), (i * 6), 6);
 			rect.getRenderMaterial().postRender(snapshotRender);
-
 		}
+		
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		((BatchVertexRenderer) renderer).release();
-	}
-
-	public void drawText(ChatArguments text, ClientFont font, float x, float y, float size) {
-		Widget tmp = new SpoutWidget();
-		tmp.setGeometry(new Rectangle(x, y, 0, 0));
-		LabelComponent txt = tmp.add(LabelComponent.class);
-
-		txt.setFont(font);
-		txt.setText(text);
-
-		draw(tmp.getRenderParts());
-	}
-
-	public void draw(RenderPart part) {
-		sprites.add(part);
-	}
-
-	public void draw(List<RenderPart> parts) {
-		for (RenderPart part : parts) {
-			draw(part);
-		}
-	}
-
-	public void draw(RenderMaterial material, float x, float y, float w, float h) {
-		draw(material, new Rectangle(0, 0, 1, 1), new Rectangle(x, y, w, h * aspectRatio), Color.white);
-	}
-	
-	public void draw(RenderMaterial material, float uvx, float uvy, float uvw, float uvh, float x, float y, float w, float h) {
-		draw(material, new Rectangle(uvx, uvy, uvw, uvh), new Rectangle(x, y, w, h * aspectRatio), Color.white);
-	}
-
-	public void draw(RenderMaterial material, Rectangle source, Rectangle destination, Color color) {
-		RenderPart part = new RenderPart();
-		part.setRenderMaterial(material);
-		part.setSource(source);
-		part.setSprite(destination);
-		part.setColor(color);
-		draw(part);
 	}
 }
