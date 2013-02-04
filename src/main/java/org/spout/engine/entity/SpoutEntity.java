@@ -38,6 +38,7 @@ import java.util.logging.Level;
 import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
+import org.spout.api.component.impl.ModelHolderComponent;
 import org.spout.api.component.impl.NetworkComponent;
 import org.spout.api.component.impl.SceneComponent;
 import org.spout.api.component.type.EntityComponent;
@@ -56,6 +57,7 @@ import org.spout.api.util.OutwardIterator;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.SnapshotRead;
 import org.spout.engine.SpoutConfiguration;
+import org.spout.engine.entity.component.EntityRendererComponent;
 import org.spout.engine.entity.component.SpoutSceneComponent;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.Snapshotable;
@@ -142,6 +144,8 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	protected <T extends Component> T add(Class<T> type, boolean attach) {
 		if (type.equals(SceneComponent.class)) {
 			return super.add(type, SpoutSceneComponent.class, attach);
+		} else if (type.equals(ModelHolderComponent.class)) {
+			return super.add(type, EntityRendererComponent.class, attach);
 		}
 		return super.add(type, attach);
 	}
