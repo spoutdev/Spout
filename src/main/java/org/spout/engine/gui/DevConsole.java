@@ -95,7 +95,7 @@ public class DevConsole extends Screen implements Console {
 		attachWidget(plugin, background);
 		
 		// Create the textfield
-		textfield.getTransform().translate(-0.95f, -0.15f, 0f);
+		textfield.getTransform().setPosition(-0.95f, -0.15f);
 		LabelComponent lbl = textfield.add(LabelComponent.class);
 		lbl.setFont(font);
 		lbl.setColor(Color.WHITE);
@@ -121,7 +121,7 @@ public class DevConsole extends Screen implements Console {
 	@Override
 	public void addMessage(ChatArguments message) {
 		Widget wid = new SpoutWidget();
-		wid.getTransform().translate(-0.95f, 0.9f - scroll, 0f);
+		wid.getTransform().setPosition(-0.95f, 0.9f - scroll);
 		LabelComponent txt = wid.add(LabelComponent.class);
 
 		txt.setColor(Color.WHITE);

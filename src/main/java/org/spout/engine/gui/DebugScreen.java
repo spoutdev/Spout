@@ -126,7 +126,7 @@ public class DebugScreen extends Screen implements DebugHUD {
 				}
 			} else {
 				Widget w = new SpoutWidget();
-				w.getTransform().translate(-0.95f, 0.9f-id*0.1f, 0f);
+				w.getTransform().setPosition(-0.95f, 0.9f-id*0.1f);
 				LabelComponent lbl = w.add(LabelComponent.class);
 				lbl.setFont(SpoutRenderMaterials.DEFAULT_FONT);
 				lbl.setText(arg);
@@ -143,7 +143,7 @@ public class DebugScreen extends Screen implements DebugHUD {
 				}
 			} else {
 				Widget w = new SpoutWidget();
-				w.getTransform().translate(0, 0.9f-messages.size()*0.1f, 0f);
+				w.getTransform().setPosition(0, 0.9f-messages.size()*0.1f);
 				LabelComponent lbl = w.add(LabelComponent.class);
 				lbl.setFont(SpoutRenderMaterials.DEFAULT_FONT);
 				lbl.setText(arg);

@@ -35,6 +35,7 @@ import org.spout.api.chat.style.ResetChatStyle;
 import org.spout.api.component.impl.TextModelComponent;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.render.RenderPart;
+import org.spout.api.math.Matrix;
 import org.spout.api.math.Rectangle;
 import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.Vertex;
@@ -45,6 +46,7 @@ import org.spout.engine.mesh.BaseMesh;
 
 public class ClientTextModelComponent extends TextModelComponent {
 	private BaseMesh mesh;
+	private static Matrix id3 = new Matrix(3);// TODO: ClientTextModelComponent shouldn't use gui shader
 
 	public void updateMesh() {
 		ArrayList<MeshFace> faces = new ArrayList<MeshFace>();
@@ -113,7 +115,7 @@ public class ClientTextModelComponent extends TextModelComponent {
 
 		getFont().getMaterial().getShader().setUniform("View", camera.getView());
 		getFont().getMaterial().getShader().setUniform("Projection", camera.getProjection());
-		getFont().getMaterial().getShader().setUniform("Model", mt.toMatrix());
+		getFont().getMaterial().getShader().setUniform("Model", id3);
 
 		mesh.render(getFont().getMaterial());
 	}

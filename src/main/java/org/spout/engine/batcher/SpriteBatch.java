@@ -180,7 +180,7 @@ public class SpriteBatch {
 
 			rect.getRenderMaterial().getShader().setUniform("View", this.view);
 			rect.getRenderMaterial().getShader().setUniform("Projection", this.projection);
-			rect.getRenderMaterial().getShader().setUniform("Model", model); //View is always an identity matrix.
+			rect.getRenderMaterial().getShader().setUniform("Model", model);
 
 			SnapshotRender snapshotRender = new SnapshotRender(rect.getRenderMaterial());
 			rect.getRenderMaterial().preRender(snapshotRender);

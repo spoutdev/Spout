@@ -28,18 +28,23 @@ package org.spout.engine.renderer.shader.variables;
 
 import java.nio.FloatBuffer;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 
 import org.spout.api.math.Matrix;
 import org.spout.engine.SpoutRenderer;
 
 public class Mat3ShaderVariable extends ShaderVariable {
-	public static final FloatBuffer buffer = FloatBuffer.allocate(9);
+	public static final FloatBuffer buffer = BufferUtils.createFloatBuffer(9);
 	Matrix value;
 
 	public Mat3ShaderVariable(int program, String name, Matrix value) {
 		super(program, name);
 		this.value = value;
+	}
+	
+	public Matrix get() {
+		return value;
 	}
 
 	@Override
