@@ -15,7 +15,7 @@
  *
  * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
  * more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
@@ -24,21 +24,66 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.gui;
+package org.spout.api.math;
 
-import org.spout.api.component.ComponentHolder;
-import org.spout.api.geo.discrete.Transform2D;
-import org.spout.api.tickable.Tickable;
+/**
+ * Represents a 2D rotation
+ */
+public class Complex {
+	protected final float x, y;
 
-public interface Widget extends Tickable, ComponentHolder, Focusable, RenderPartContainer {
 	/**
-	 * Invokes a render update in the next frame
+	 * Represents no rotation
 	 */
-	public abstract void update();
+	public static final Complex IDENTITY = new Complex(1, 0);
 
-	public abstract void setScreen(Screen screen);
+	/**
+	 * Represents 90 degrees rotation
+	 */
+	public static final Complex UNIT = new Complex(0, 1);
 
-	public abstract Screen getScreen();
+	public Complex(float x, float y) {
+		this.x = x;
+		this.y = y;
+	}
 
-	public abstract Transform2D getTransform();
+	public Complex(float angle) {
+		this.x = (float) Math.cos(Math.toRadians(angle));
+		this.y = (float) Math.sin(Math.toRadians(angle));
+	}
+
+	public float getReal() {
+		return x;
+	}
+
+	public float getImaginary() {
+		return y;
+	}
+
+	public Vector2 getDirection() {
+		return new Vector2(x, y);
+	}
+
+	public float getAngle() {
+		return (float) Math.toDegrees(Math.atan2(x, y));
+	}
+
+	/**
+	 * Return a 3x3 rotation matrix
+	 * @return
+	 */
+	public Matrix toMatrix() {
+		/*
+		 * [x, -y, 0]
+		 * [y, x, 0]
+		 * [0, 0, 1]
+		 */
+		Matrix res = new Matrix(3);
+		res.set(0, 0, x);
+		res.set(0, 1, -y);
+		res.set(1, 0, y);
+		res.set(1, 1, x);
+
+		return res;
+	}
 }

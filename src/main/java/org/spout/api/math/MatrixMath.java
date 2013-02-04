@@ -15,7 +15,7 @@
  *
  * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
  * more details.
  *
  * You should have received a copy of the GNU Lesser General Public License,
@@ -130,6 +130,18 @@ public class MatrixMath {
 	}
 
 	/**
+	 * Creates and returns a 3x3 uniform scalar matrix
+	 * @param scale The scale to apply to the identity matrix
+	 * @return The scaled matrix
+	 */
+	public static Matrix createScaledMat3(Vector2 scale) {
+		Matrix res = new Matrix(3);
+		res.set(0, 0, scale.getX());
+		res.set(1, 1, scale.getY());
+		return res;
+	}
+
+	/**
 	 * Creates and returns a 4x4 matrix that represents the translation provided
 	 * by the given Vector3
 	 * @param vector The translation vector
@@ -140,6 +152,19 @@ public class MatrixMath {
 		res.set(3, 0, vector.getX());
 		res.set(3, 1, vector.getY());
 		res.set(3, 2, vector.getZ());
+		return res;
+	}
+
+	/**
+	 * Creates and returns a 3x3 matrix that represents the translation provided
+	 * by the given Vector2
+	 * @param vector The translation vector
+	 * @return The matrix form of the translation vector
+	 */
+	public static Matrix createTranslatedMat3(Vector2 vector) {
+		Matrix res = new Matrix(3);
+		res.set(2, 0, vector.getX());
+		res.set(2, 1, vector.getY());
 		return res;
 	}
 
@@ -254,7 +279,7 @@ public class MatrixMath {
 	 * @param at The location that the camera is looking at
 	 * @param up The direction that corrisponds to Up
 	 * @return A rotational transform that corrisponds to a camera looking at
-	 *         the given values
+	 * the given values
 	 */
 	public static Matrix createLookAt(Vector3 eye, Vector3 at, Vector3 up) {
 		Vector3 f = at.subtract(eye).normalize();
