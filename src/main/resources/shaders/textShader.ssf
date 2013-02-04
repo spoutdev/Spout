@@ -1,6 +1,6 @@
 GL30:
-    Vertex: file://Spout/shaders/basic.330.vert
+    Vertex: file://Spout/shaders/gui.basic.330.vert
     Fragment: file://Spout/shaders/textShader.330.frag
 GL20:
-    Vertex: file://Spout/shaders/basic.120.vert
+    Vertex: file://Spout/shaders/gui.basic.120.vert
     Fragment: file://Spout/shaders/textShader.120.frag

@@ -35,7 +35,7 @@ import org.spout.api.component.Component;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
 import org.spout.api.event.player.input.PlayerMouseMoveEvent;
-import org.spout.api.geo.discrete.Transform;
+import org.spout.api.geo.discrete.Transform2D;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Focusable;
 import org.spout.api.gui.RenderPartContainer;
@@ -43,7 +43,6 @@ import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.gui.component.ControlComponent;
 import org.spout.api.gui.render.RenderPart;
-import org.spout.api.math.IntVector2;
 import org.spout.api.math.Rectangle;
 
 import org.spout.engine.batcher.SpriteBatch;
@@ -55,7 +54,7 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 	private SpriteBatch batcher = new SpriteBatch();
 	private Screen screen = null;
 	private Rectangle hitBox = Rectangle.ZERO;
-	private Transform transform = new Transform();
+	private Transform2D transform = new Transform2D();
 
 	/**
 	 * Returns a sorted list of render parts that consists of all render parts of the components
@@ -110,7 +109,7 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 
 
 	@Override
-	public Transform getTransform() {
+	public Transform2D getTransform() {
 		return transform;
 	}
 	
