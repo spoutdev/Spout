@@ -34,7 +34,6 @@ import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
-import org.spout.api.event.player.input.PlayerMouseMoveEvent;
 import org.spout.api.geo.discrete.Transform2D;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Focusable;
@@ -56,10 +55,7 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 	private Rectangle hitBox = Rectangle.ZERO;
 	private Transform2D transform = new Transform2D();
 
-	/**
-	 * Returns a sorted list of render parts that consists of all render parts of the components
-	 * @return a list of render parts
-	 */
+	@Override
 	public List<RenderPart> getRenderParts() {
 		synchronized (renderPartCache) {
 			if (!renderCacheClean) {
@@ -89,9 +85,7 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 		batcher.render(transform.toMatrix());
 	}
 
-	/**
-	 * Invokes a render update in the next frame
-	 */
+	@Override
 	public void update() {
 		dirty = true;
 		synchronized (renderPartCache) {
@@ -99,10 +93,12 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 		}
 	}
 
+	@Override
 	public void setScreen(Screen screen) {
 		this.screen = screen;
 	}
 
+	@Override
 	public Screen getScreen() {
 		return screen;
 	}
@@ -112,15 +108,18 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 	public Transform2D getTransform() {
 		return transform;
 	}
-	
+
+	@Override
 	public boolean canFocus() {
 		return get(ControlComponent.class) != null;
 	}
 
+	@Override
 	public boolean isFocused() {
 		return screen.getFocusedWidget().equals(this);
 	}
 
+	@Override
 	public void onFocusLost() {
 		for (Component c : values()) {
 			if (c instanceof Focusable) {
@@ -129,10 +128,12 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 		}
 	}
 
+	@Override
 	public void setHitBox(Rectangle hitBox) {
 		this.hitBox = hitBox;
 	}
 
+	@Override
 	public Rectangle getHitBox() {
 		return hitBox;
 	}
@@ -156,14 +157,15 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 	}
 
 	@Override
-	public void onMouseMove(PlayerMouseMoveEvent event) {
+	public void onHover() {
 		for (Component c : values()) {
 			if (c instanceof Focusable) {
-				((Focusable) c).onMouseMove(event);
+				((Focusable) c).onHover();
 			}
 		}
 	}
 
+	@Override
 	public void onFocus(FocusReason reason) {
 		for (Component c : values()) {
 			if (c instanceof Focusable && ((Focusable) c).canFocus()) {

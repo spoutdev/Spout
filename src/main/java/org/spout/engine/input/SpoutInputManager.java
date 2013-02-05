@@ -35,10 +35,8 @@ import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
-import org.spout.api.component.type.WidgetComponent;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
-import org.spout.api.event.player.input.PlayerMouseMoveEvent;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
@@ -47,6 +45,8 @@ import org.spout.api.input.InputManager;
 import org.spout.api.input.Keyboard;
 import org.spout.api.input.Mouse;
 import org.spout.api.math.IntVector2;
+import org.spout.api.math.Rectangle;
+import org.spout.api.math.Vector2;
 
 import org.spout.engine.entity.SpoutPlayer;
 
@@ -85,14 +85,8 @@ public class SpoutInputManager implements InputManager {
 			Spout.log("Key " + key + " was " + (pressed ? "pressed" : "released"));
 		}
 
+		// SHIFT + TAB changes the focus index
 		Screen in = getInputScreen();
-		if (in != null) {
-			Widget w = in.getFocusedWidget();
-			if (w != null) {
-				w.onKey(event);
-			}
-		}
-
 		if (key == FOCUS_KEY && pressed) {
 			if (in != null) {
 				if (org.lwjgl.input.Keyboard.isKeyDown(Keyboard.KEY_LSHIFT.getId()) || org.lwjgl.input.Keyboard.isKeyDown(Keyboard.KEY_RSHIFT.getId())) {
@@ -100,6 +94,14 @@ public class SpoutInputManager implements InputManager {
 				} else {
 					in.nextFocus(FocusReason.KEYBOARD_TAB);
 				}
+			}
+		}
+
+		// send event to the focused widget
+		if (in != null) {
+			Widget w = in.getFocusedWidget();
+			if (w != null) {
+				w.onKey(event);
 			}
 		}
 
@@ -113,28 +115,29 @@ public class SpoutInputManager implements InputManager {
 			return;
 		}
 
-		Screen in = getInputScreen();
-		if (in != null) {
-			Widget w = in.getFocusedWidget();
-			if (w != null) {
-				w.onClicked(event);
+		Widget w = getWidgetAt(x, y);
+		if (w != null) {
+			Screen in = getInputScreen();
+			Widget fw = in.getFocusedWidget();
+			if (fw != null && fw != w) {
+				in.setFocus(w, FocusReason.CLICKED);
 			}
+			w.onClicked(event);
 		}
 
 		doCommand(player, cmd, pressed);
 	}
 
 	private void onMouseMove(SpoutPlayer player, int dx, int dy, int x, int y) {
-		String cmdX = "+dx", cmdY = "+dy";
-		PlayerMouseMoveEvent event = Spout.getEventManager().callEvent(new PlayerMouseMoveEvent(player, cmdX, cmdY, new IntVector2(x - dx, y - dy), new IntVector2(x, y)));
-		if (event.isCancelled()) {
-			return;
-		}
-
 		// Mouse hasn't moved
 		if (dx == 0 && dy == 0) {
 			return;
 		}
+
+		//Widget w = getWidgetAt(x, y);
+		//if (w != null) {
+			//w.onHover();
+		//}
 
 		// Mouse moved on x-axis
 		if (!redirected) {
@@ -145,14 +148,6 @@ public class SpoutInputManager implements InputManager {
 			// Mouse moved on y-axis
 			if (dy != 0) {
 				player.processCommand("+dy", new ChatArguments(dy));
-			}
-		}
-
-		Screen in = getInputScreen();
-		if (in != null) {
-			Widget w = in.getFocusedWidget();
-			if (w != null) {
-				w.onMouseMove(event);
 			}
 		}
 	}
@@ -177,6 +172,36 @@ public class SpoutInputManager implements InputManager {
 			throw new IllegalStateException("Cannot access ScreenStack in server mode.");
 		}
 		return ((Client) engine).getScreenStack().getInputScreen();
+	}
+
+	private Widget getWidgetAt(int x, int y) {
+		Screen in = getInputScreen();
+		if (in == null) {
+			return null;
+		}
+		System.out.println("Getting widget at {" + x + "," + y + "}");
+		for (Widget w : in.getWidgets()) {
+			Rectangle hitBox = w.getHitBox();
+			Vector2 res = ((Client) Spout.getEngine()).getResolution();
+			int startX = (int) (res.getX() / 2) + (toPixelsX(hitBox.getX()) / 2);
+			int startY = (int) (res.getY() / 2) + (toPixelsY(hitBox.getY()) / 2);
+			int endX = startX + toPixelsX(hitBox.getWidth());
+			int endY = startY + toPixelsY(hitBox.getHeight());
+			System.out.println("Widget at {" + startX + "," + startY + "} to {" + endX + "," + endY + "}");
+			if (x >= startX && x <= endX && y >= startY && y <= endY) {
+				System.out.println("Found widget!");
+				return w;
+			}
+		}
+		return null;
+	}
+
+	private int toPixelsX(float pcent) {
+		return (int) (pcent * ((Client) Spout.getEngine()).getResolution().getX());
+	}
+
+	private int toPixelsY(float pcent) {
+		return (int) (pcent * ((Client) Spout.getEngine()).getResolution().getY());
 	}
 
 	public void pollInput(SpoutPlayer player) {
