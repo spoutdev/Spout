@@ -28,7 +28,6 @@ package org.spout.api.gui;
 
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
-import org.spout.api.event.player.input.PlayerMouseMoveEvent;
 
 public interface Focusable {
 	public boolean canFocus();
@@ -43,5 +42,5 @@ public interface Focusable {
 
 	public void onKey(PlayerKeyEvent event);
 
-	public void onMouseMove(PlayerMouseMoveEvent event);
+	public void onHover();
 }

@@ -28,6 +28,7 @@ package org.spout.api.gui;
 
 import org.spout.api.component.ComponentHolder;
 import org.spout.api.geo.discrete.Transform2D;
+import org.spout.api.math.Rectangle;
 import org.spout.api.tickable.Tickable;
 
 public interface Widget extends Tickable, ComponentHolder, Focusable, RenderPartContainer {
@@ -41,4 +42,8 @@ public interface Widget extends Tickable, ComponentHolder, Focusable, RenderPart
 	public abstract Screen getScreen();
 
 	public abstract Transform2D getTransform();
+
+	public abstract Rectangle getHitBox();
+
+	public abstract void setHitBox(Rectangle hitBox);
 }

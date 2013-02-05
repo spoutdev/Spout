@@ -34,7 +34,6 @@ import org.spout.api.component.Component;
 import org.spout.api.component.ComponentOwner;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
-import org.spout.api.event.player.input.PlayerMouseMoveEvent;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Focusable;
 import org.spout.api.gui.RenderPartContainer;
@@ -87,7 +86,7 @@ public class WidgetComponent extends Component implements SignalInterface, Subsc
 	}
 
 	@Override
-	public void onMouseMove(PlayerMouseMoveEvent event) {
+	public void onHover() {
 	}
 
 	@Override
