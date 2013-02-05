@@ -39,9 +39,11 @@ import org.spout.api.Spout;
 import org.spout.api.component.type.BlockComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.geo.cuboid.ChunkSnapshot.BlockComponentSnapshot;
+import org.spout.api.lighting.FakeLightingManager;
+import org.spout.api.lighting.LightingManager;
+import org.spout.api.lighting.LightingRegistry;
 import org.spout.api.material.ComplexMaterial;
 import org.spout.api.material.block.BlockFullState;
-import org.spout.api.math.Vector3;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.hashing.ByteTripleHashed;
@@ -66,6 +68,7 @@ import org.spout.nbt.IntTag;
 import org.spout.nbt.ListTag;
 import org.spout.nbt.LongTag;
 import org.spout.nbt.ShortTag;
+import org.spout.nbt.Tag;
 import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 import org.spout.nbt.util.NBTMapper;
@@ -177,6 +180,14 @@ public class ChunkFiles {
 		loadDynamicUpdates(updateList, dataForRegion.loadedUpdates);
 
 		List<? extends CompoundTag> componentsList = checkerListCompoundTag.checkTag(map.get("block_components"), null);
+		
+		CompoundMap lightingMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("light_buffers")), (CompoundMap) null, CompoundMap.class);
+		StringMap worldMap = r.getWorld().getLightingMap();
+		List<LightingManager<?>> lightingManagers = new ArrayList<LightingManager<?>>();
+		List<byte[]> lightingData = new ArrayList<byte[]>();
+		loadLightingBuffers(lightingManagers, lightingData, lightingMap, worldMap);
+		
+		chunk.addLightingBufferData(lightingManagers, lightingData);
 
 		//Load Block components
 		//This is a three-part process
@@ -378,10 +389,10 @@ public class ChunkFiles {
 	}
 	
 	private static CompoundTag saveLightingBuffers(StringMap worldLighting, CuboidLightBuffer[] buffers) {
-		CompoundMap map = new CompoundMap();
-
 		StringMap globalLighting = ((SpoutEngine) Spout.getEngine()).getEngineLightingMap();
 		
+		CompoundMap map = new CompoundMap();
+
 		for (int i = 0; i < buffers.length; i++) {
 			CuboidLightBuffer buffer = buffers[i];
 			int worldId = globalLighting.convertTo(worldLighting, buffer.getManagerId());
@@ -396,6 +407,44 @@ public class ChunkFiles {
 		map.put(new IntTag("manager_id", worldId));
 		map.put(new ByteArrayTag("light_data", buffer.serialize()));
 		return new CompoundTag("lighting_" + worldId, map);
+	}
+	
+	private static void loadLightingBuffers(List<LightingManager<?>> managers, List<byte[]> lightData, CompoundMap map, StringMap worldLighting) {
+		if (map == null) {
+			return;
+		}
+		
+		StringMap globalLighting = ((SpoutEngine) Spout.getEngine()).getEngineLightingMap();
+		
+		for (Tag<?> t : map) {
+			if (t instanceof CompoundTag) {
+				CompoundTag compoundTag = (CompoundTag) t;
+				loadLightingBuffer(managers, lightData, compoundTag, globalLighting, worldLighting);
+			}
+		}
+	}
+	
+	private static void loadLightingBuffer(List<LightingManager<?>> managers, List<byte[]> lightData, CompoundTag tag, StringMap globalLighting, StringMap worldLighting) {
+		final CompoundMap map = tag.getValue();
+		int worldId = SafeCast.toInt(NBTMapper.toTagValue(map.get("manager_id")), -1);
+		if (worldId == -1) {
+			return;
+		}
+		byte[] data = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("light_data")), null);
+		if (data == null) {
+			return;
+		}
+		int globalId = globalLighting.convertFrom(worldLighting, worldId);
+		if (globalId == 0) {
+			Spout.getLogger().info("Unknown manager world id " + worldId);
+			return;
+		}
+		LightingManager<?> manager = LightingRegistry.get((short) globalId);
+		if (manager == null) {
+			manager = new FakeLightingManager(globalId);
+		}
+		managers.add(manager);
+		lightData.add(data);
 	}
 
 	/**

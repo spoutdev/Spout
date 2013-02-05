@@ -46,7 +46,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.logging.Level;
 
 import org.spout.api.Engine;
@@ -76,6 +75,7 @@ import org.spout.api.geo.cuboid.ContainerFillOrder;
 import org.spout.api.geo.cuboid.Cube;
 import org.spout.api.geo.cuboid.LightContainer;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.lighting.ByteArrayCuboidLightBuffer;
 import org.spout.api.lighting.LightingManager;
 import org.spout.api.lighting.LightingRegistry;
 import org.spout.api.lighting.Modifiable;
@@ -1178,6 +1178,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 				System.arraycopy(blockLight, 0, blockLightCopy, 0, blockLight.length);
 				skyLightCopy = new byte[skyLight.length];
 				System.arraycopy(skyLight, 0, skyLightCopy, 0, skyLight.length);
+				lightBuffersCopy = copyLightBuffers();
 				break;
 		}
 
@@ -2427,10 +2428,26 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		return rendered;
 	}
 	
+	public void addLightingBufferData(List<LightingManager<?>> lightManagers, List<byte[]> lightData) {
+		for (int i = 0; i < lightData.size(); i++) {
+			LightingManager<?> manager = lightManagers.get(i);
+			byte[] data = lightData.get(i);
+			CuboidLightBuffer buffer;
+			buffer = manager.deserialize(this, getBlockX(), getBlockY(), getBlockZ(), Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, data);
+			setIfAbsentLightBuffer(manager.getId(), buffer);
+		}
+	}
+	
 	@Override
 	public CuboidLightBuffer getLightBuffer(short id) {
+		return setIfAbsentLightBuffer(id, null);
+	}
+		
+	public CuboidLightBuffer setIfAbsentLightBuffer(short id, CuboidLightBuffer buffer) {
 		if (id < 0) {
 			throw new IllegalArgumentException("Id must be positive");
+		} else if (buffer != null && buffer.getManagerId() != id) {
+			throw new IllegalArgumentException("Manager Id does not match buffer id");
 		}
 		TickStage.checkStage(TickStage.LIGHTING);
 		
@@ -2443,12 +2460,16 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			}
 		}
 	
-		LightingManager<?> manager = LightingRegistry.get(id);
-		if (manager == null) {
-			return null;
+		CuboidLightBuffer newBuf;
+		if (buffer == null) {
+			LightingManager<?> manager = LightingRegistry.get(id);
+			if (manager == null) {
+				return null;
+			}
+			newBuf = manager.newLightBuffer(this, getBlockX(), getBlockY(), getBlockZ(), BLOCKS.SIZE, BLOCKS.SIZE, BLOCKS.SIZE);
+		} else {
+			newBuf = buffer;
 		}
-		
-		CuboidLightBuffer newBuf = manager.newLightBuffer(this, getBlockX(), getBlockY(), getBlockZ(), BLOCKS.SIZE, BLOCKS.SIZE, BLOCKS.SIZE);
 		
 		boolean success = false;
 		
@@ -2464,6 +2485,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			for (int i = 0; i < array.length; i++) {
 				newArray[i] = array[i];
 			}
+			newArray[id] = newBuf;
 			success = lightBuffers.compareAndSet(array, newArray);
 		}
 		
