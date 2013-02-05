@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.spout.api.Spout;
 import org.spout.api.entity.Player;
+import org.spout.api.event.server.service.economy.AccountChangeEvent;
 
 /**
  * The economy service is a basic service that can be extended and registered as a service provider.<br/>
@@ -41,7 +42,7 @@ import org.spout.api.entity.Player;
  * For plugins that wish to get the current economy provider, they will need to:
  * {@link EconomyService#getEconomy()} this method can possibly return null, if an economy service has not been registered yet with the ServiceManager.
  * <p/>
- * Another option is to hook the {@link ServiceRegisterEvent} and get the service provider that is being registered in the event.
+ * Another option is to hook the {@link org.spout.api.event.server.service.ServiceRegisterEvent} and get the service provider that is being registered in the event.
  */
 public abstract class EconomyService {
 	/**
@@ -81,7 +82,7 @@ public abstract class EconomyService {
 	 * @param player of the account to check existence of.
 	 * @return true if the account exists, otherwise false
 	 */
-	public boolean exists(Player player) {
+	public final boolean exists(Player player) {
 		return exists(player.getName());
 	}
 
@@ -108,7 +109,7 @@ public abstract class EconomyService {
 	 * @param player of the account to check
 	 * @return double balance of the account
 	 */
-	public double get(Player player) {
+	public final double get(Player player) {
 		return get(player.getName());
 	}
 
@@ -129,7 +130,7 @@ public abstract class EconomyService {
 	 * @param currency name
 	 * @return double balance of the account
 	 */
-	public double get(Player player, String currency) throws UnknownCurrencyException {
+	public final double get(Player player, String currency) throws UnknownCurrencyException {
 		return get(player.getName(), currency);
 	}
 
@@ -151,7 +152,7 @@ public abstract class EconomyService {
 	 * @param amount to check if the account has
 	 * @return true if the account has the given amount
 	 */
-	public boolean has(Player player, double amount) {
+	public final boolean has(Player player, double amount) {
 		return has(player.getName(), amount);
 	}
 
@@ -174,7 +175,7 @@ public abstract class EconomyService {
 	 * @param currency name
 	 * @return true if the account has the given amount
 	 */
-	public boolean has(Player player, double amount, String currency) throws UnknownCurrencyException {
+	public final boolean has(Player player, double amount, String currency) throws UnknownCurrencyException {
 		return has(player.getName(), amount, currency);
 	}
 
@@ -199,7 +200,7 @@ public abstract class EconomyService {
 	 * @param amount to check
 	 * @return true if the account can have the given amount withdrawn
 	 */
-	public boolean canWithdraw(Player player, double amount) {
+	public final boolean canWithdraw(Player player, double amount) {
 		return canWithdraw(player.getName(), amount);
 	}
 
@@ -224,7 +225,7 @@ public abstract class EconomyService {
 	 * @param amount to check
 	 * @return true if the account can have the given amount withdrawn
 	 */
-	public boolean canWithdraw(Player player, double amount, String currency) throws UnknownCurrencyException {
+	public final boolean canWithdraw(Player player, double amount, String currency) throws UnknownCurrencyException {
 		return canWithdraw(player.getName(), amount, currency);
 	}
 
@@ -249,7 +250,7 @@ public abstract class EconomyService {
 	 * @param amount to check for deposit
 	 * @return true if the account can hold the given amount
 	 */
-	public boolean canHold(Player player, double amount) {
+	public final boolean canHold(Player player, double amount) {
 		return canHold(player.getName(), amount);
 	}
 
@@ -276,7 +277,7 @@ public abstract class EconomyService {
 	 * @param currency name
 	 * @return true if the account can hold the given amount
 	 */
-	public boolean canHold(Player player, double amount, String currency) throws UnknownCurrencyException {
+	public final boolean canHold(Player player, double amount, String currency) throws UnknownCurrencyException {
 		return canHold(player.getName(), amount, currency);
 	}
 
@@ -288,8 +289,16 @@ public abstract class EconomyService {
 	 * @param amount to withdraw from the account
 	 * @return true if the withdrawal was successful
 	 */
-	public abstract boolean withdraw(String name, double amount);
-
+	public final boolean withdraw(String name, double amount) {
+		try {
+			if (onWithdraw(name, amount, null)) {
+				Spout.getEventManager().callEvent(new AccountChangeEvent(this, name, -amount, null));
+				return true;
+			}
+		} catch (UnknownCurrencyException e) {
+		}
+		return false;
+	}
 
 	/**
 	 * This is a copied-method that assumes the player's name is their account name and<br/>
@@ -299,7 +308,7 @@ public abstract class EconomyService {
 	 * @param amount to withdraw from the account
 	 * @return true if the withdrawal was successful
 	 */
-	public boolean withdraw(Player player, double amount) {
+	public final boolean withdraw(Player player, double amount) {
 		return withdraw(player.getName(), amount);
 	}
 
@@ -312,7 +321,25 @@ public abstract class EconomyService {
 	 * @param currency name
 	 * @return true if the withdrawal was successful
 	 */
-	public abstract boolean withdraw(String name, double amount, String currency) throws UnknownCurrencyException;
+	public final boolean withdraw(String name, double amount, String currency) throws UnknownCurrencyException {
+		if (onWithdraw(name, amount, currency)) {
+			Spout.getEventManager().callEvent(new AccountChangeEvent(this, name, -amount, currency));
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Initiates a withdrawal in the economy. This method must perform the logic for the withdrawal.<br/>
+	 * A failed withdrawal assumes no account changes were made.<br/>
+	 * Currency will be null for a withdrawal with no currency defined.
+	 *
+	 * @param name of the account
+	 * @param amount to withdraw
+	 * @param currency being used in the withdrawal
+	 * @return true if withdrawal was successful
+	 */
+	protected abstract boolean onWithdraw(String name, double amount, String currency) throws UnknownCurrencyException;
 
 	/**
 	 * MULTICURRENCY ONLY: This is a copied-method that assumes the player's name is their account name and<br/>
@@ -323,7 +350,7 @@ public abstract class EconomyService {
 	 * @param currency name
 	 * @return true if the withdrawal was successful
 	 */
-	public boolean withdraw(Player player, double amount, String currency) throws UnknownCurrencyException {
+	public final boolean withdraw(Player player, double amount, String currency) throws UnknownCurrencyException {
 		return withdraw(player.getName(), amount, currency);
 	}
 
@@ -335,7 +362,17 @@ public abstract class EconomyService {
 	 * @param amount to deposit into the account
 	 * @return true if the deposit was successful
 	 */
-	public abstract boolean deposit(String name, double amount);
+	public final boolean deposit(String name, double amount) {
+		try {
+			if (onDeposit(name, amount, null)) {
+				Spout.getEventManager().callEvent(new AccountChangeEvent(this, name, amount, null));
+				return true;
+			}
+		} catch (UnknownCurrencyException e) {
+
+		}
+		return false;
+	}
 
 	/**
 	 * This is a copied-method that assumes the player's name is their account name and<br/>
@@ -345,7 +382,7 @@ public abstract class EconomyService {
 	 * @param amount to deposit into the account
 	 * @return true if the deposit was successful
 	 */
-	public boolean deposit(Player player, double amount) {
+	public final boolean deposit(Player player, double amount) {
 		return deposit(player.getName(), amount);
 	}
 
@@ -358,7 +395,25 @@ public abstract class EconomyService {
 	 * @param currency name
 	 * @return true if the deposit was successful
 	 */
-	public abstract boolean deposit(String name, double amount, String currency) throws UnknownCurrencyException;
+	public final boolean deposit(String name, double amount, String currency) throws UnknownCurrencyException {
+		if (onDeposit(name, amount, currency)) {
+			Spout.getEventManager().callEvent(new AccountChangeEvent(this, name, amount, currency));
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Initiates a deposit in the economy.<br/>
+	 * A failed deposit assumes no account changes were made.<br/>
+	 * Currency will be null for a deposit with no currency defined.
+	 *
+	 * @param name of the account
+	 * @param amount to withdraw
+	 * @param currency being used in the deposit
+	 * @return true if deposit was successful
+	 */
+	protected abstract boolean onDeposit(String name, double amount, String currency) throws UnknownCurrencyException;
 
 	/**
 	 * MULTICURRENCY ONLY: This is a copied-method that assumes the player's name is their account name and deposits the given amount into the account specific.<br/>
@@ -369,7 +424,7 @@ public abstract class EconomyService {
 	 * @param currency name
 	 * @return true if the deposit was successful
 	 */
-	public boolean deposit(Player player, double amount, String currency) throws UnknownCurrencyException {
+	public final boolean deposit(Player player, double amount, String currency) throws UnknownCurrencyException {
 		return deposit(player.getName(), amount, currency);
 	}
 
@@ -386,7 +441,7 @@ public abstract class EconomyService {
 	 * @param amount to transfer
 	 * @return if the transfer was successful
 	 */
-	public boolean transfer(String from, String to, double amount) {
+	public final boolean transfer(String from, String to, double amount) {
 		if (canWithdraw(from, amount) && canHold(to, amount)) {
 			deposit(to, amount);
 			withdraw(from, amount);
@@ -409,7 +464,7 @@ public abstract class EconomyService {
 	 * @param currency name
 	 * @return if the transfer was successful
 	 */
-	public boolean transfer(String from, String to, double amount, String currency) throws UnknownCurrencyException {
+	public final boolean transfer(String from, String to, double amount, String currency) throws UnknownCurrencyException {
 		if (canWithdraw(from, amount, currency) && canHold(to, amount, currency)) {
 			withdraw(from, amount, currency);
 			deposit(to, amount, currency);
@@ -533,7 +588,7 @@ public abstract class EconomyService {
 	 * @param end   number, must be greater than the start.
 	 * @return ordered list of top player accounts within the range
 	 */
-	public List<String> getTopPlayerAccounts(int start, int end) {
+	public final List<String> getTopPlayerAccounts(int start, int end) {
 		return getTopAccounts(start, end, true);
 	}
 
@@ -545,7 +600,7 @@ public abstract class EconomyService {
 	 * @param end   number, must be greater than the start.
 	 * @return ordered list of player accounts
 	 */
-	public List<String> getTopPlayerAccounts(int start, int end, String currency) throws UnknownCurrencyException {
+	public final List<String> getTopPlayerAccounts(int start, int end, String currency) throws UnknownCurrencyException {
 		return getTopAccounts(start, end, currency, true);
 	}
 
