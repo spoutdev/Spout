@@ -134,10 +134,10 @@ public class SpoutInputManager implements InputManager {
 			return;
 		}
 
-		//Widget w = getWidgetAt(x, y);
-		//if (w != null) {
-			//w.onHover();
-		//}
+		Widget w = getWidgetAt(x, y);
+		if (w != null) {
+			w.onHover();
+		}
 
 		// Mouse moved on x-axis
 		if (!redirected) {
@@ -179,7 +179,6 @@ public class SpoutInputManager implements InputManager {
 		if (in == null) {
 			return null;
 		}
-		System.out.println("Getting widget at {" + x + "," + y + "}");
 		for (Widget w : in.getWidgets()) {
 			Rectangle hitBox = w.getHitBox();
 			Vector2 res = ((Client) Spout.getEngine()).getResolution();
@@ -187,9 +186,7 @@ public class SpoutInputManager implements InputManager {
 			int startY = (int) (res.getY() / 2) + (toPixelsY(hitBox.getY()) / 2);
 			int endX = startX + toPixelsX(hitBox.getWidth());
 			int endY = startY + toPixelsY(hitBox.getHeight());
-			System.out.println("Widget at {" + startX + "," + startY + "} to {" + endX + "," + endY + "}");
 			if (x >= startX && x <= endX && y >= startY && y <= endY) {
-				System.out.println("Found widget!");
 				return w;
 			}
 		}
