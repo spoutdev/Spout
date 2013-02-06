@@ -38,6 +38,7 @@ import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.event.player.PlayerChatEvent;
+import org.spout.api.event.server.PreCommandEvent;
 import org.spout.api.geo.World;
 import org.spout.api.lang.Locale;
 
@@ -74,11 +75,18 @@ public class ConsoleCommandSource implements CommandSource {
 
 	@Override
 	public void processCommand(String commandName, ChatArguments arguments) {
+		PreCommandEvent event = Spout.getEventManager().callEvent(new PreCommandEvent(this, commandName, arguments));
+		if (event.isCancelled()) {
+			return;
+		}
+		commandName = event.getCommand();
+		arguments = event.getArguments();
+
 		Command command = engine.getRootCommand().getChild(commandName);
-		if (command == null) {
-			sendMessage(ChatStyle.RED, "Unknown command: " + commandName);
-		} else {
+		if (command != null) {
 			command.process(this, commandName, arguments, false);
+		} else {
+			sendMessage(ChatStyle.RED, "Unknown command: ", commandName);
 		}
 	}
 
