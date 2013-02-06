@@ -357,12 +357,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	@Override
-	public List<String> getAllPlayers() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public SpoutPlayer[] getOnlinePlayers() {
 		Map<String, SpoutPlayer> playerList = players.get();
 		ArrayList<SpoutPlayer> onlinePlayers = new ArrayList<SpoutPlayer>(playerList.size());
