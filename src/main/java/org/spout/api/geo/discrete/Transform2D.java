@@ -95,6 +95,6 @@ public class Transform2D {
 		Matrix tra = MatrixMath.createTranslatedMat3(this.position);
 		Matrix sca = MatrixMath.createScaledMat3(this.scale);
 
-		return tra.multiply(rot).multiply(sca);
+		return sca.multiply(rot).multiply(tra);
 	}
 }
