@@ -115,6 +115,10 @@ public class SpoutInputManager implements InputManager {
 			return;
 		}
 
+		if (Spout.debugMode()) {
+			Spout.log("Mouse clicked at {" + x + "," + y + "} was " + (pressed ? "pressed" : "released"));
+		}
+
 		Widget w = getWidgetAt(x, y);
 		if (w != null) {
 			Screen in = getInputScreen();
@@ -134,9 +138,13 @@ public class SpoutInputManager implements InputManager {
 			return;
 		}
 
-		Widget w = getWidgetAt(x, y);
-		if (w != null) {
-			w.onHover();
+		Screen screen = getInputScreen();
+		if (screen != null) {
+			IntVector2 prev = new IntVector2(x - dx, y - dy);
+			IntVector2 pos = new IntVector2(x, y);
+			for (Widget w : screen.getWidgets()) {
+				w.onMouseMoved(prev, pos, w == getWidgetAt(x, y));
+			}
 		}
 
 		// Mouse moved on x-axis
@@ -180,7 +188,7 @@ public class SpoutInputManager implements InputManager {
 			return null;
 		}
 		for (Widget w : in.getWidgets()) {
-			Rectangle hitBox = w.getHitBox();
+			Rectangle hitBox = w.getBounds();
 			Vector2 res = ((Client) Spout.getEngine()).getResolution();
 			int startX = (int) (res.getX() / 2) + (toPixelsX(hitBox.getX()) / 2);
 			int startY = (int) (res.getY() / 2) + (toPixelsY(hitBox.getY()) / 2);

@@ -42,6 +42,7 @@ import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.gui.component.ControlComponent;
 import org.spout.api.gui.render.RenderPart;
+import org.spout.api.math.IntVector2;
 import org.spout.api.math.Rectangle;
 
 import org.spout.engine.batcher.SpriteBatch;
@@ -129,12 +130,12 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 	}
 
 	@Override
-	public void setHitBox(Rectangle hitBox) {
+	public void setBounds(Rectangle hitBox) {
 		this.hitBox = hitBox;
 	}
 
 	@Override
-	public Rectangle getHitBox() {
+	public Rectangle getBounds() {
 		return hitBox;
 	}
 
@@ -157,10 +158,10 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 	}
 
 	@Override
-	public void onHover() {
+	public void onMouseMoved(IntVector2 prev, IntVector2 pos, boolean hovered) {
 		for (Component c : values()) {
 			if (c instanceof Focusable) {
-				((Focusable) c).onHover();
+				((Focusable) c).onMouseMoved(prev, pos, hovered);
 			}
 		}
 	}
