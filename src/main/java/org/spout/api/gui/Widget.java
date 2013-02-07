@@ -43,7 +43,7 @@ public interface Widget extends Tickable, ComponentHolder, Focusable, RenderPart
 
 	public abstract Transform2D getTransform();
 
-	public abstract Rectangle getHitBox();
+	public abstract Rectangle getBounds();
 
-	public abstract void setHitBox(Rectangle hitBox);
+	public abstract void setBounds(Rectangle hitBox);
 }

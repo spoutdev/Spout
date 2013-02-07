@@ -86,7 +86,7 @@ public class WidgetComponent extends Component implements SignalInterface, Subsc
 	}
 
 	@Override
-	public void onHover() {
+	public void onMouseMoved(IntVector2 prev, IntVector2 pos, boolean hovered) {
 	}
 
 	@Override
