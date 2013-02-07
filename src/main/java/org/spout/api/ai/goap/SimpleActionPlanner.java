@@ -112,15 +112,18 @@ public class SimpleActionPlanner implements ActionPlanner {
 
 	private void updatePlan() {
 		replan();
-		if (currentPlan == null)
+		if (currentPlan == null) {
 			return;
+		}
 		if (!currentGoal.shouldContinue()) {
 			resetPlan();
+			return;
 		}
 		currentPlan.update(agent);
 		if (currentPlan.isComplete()) {
-			if (currentPlan instanceof ActionPlan)
+			if (currentPlan instanceof ActionPlan) {
 				agent.apply(((ActionPlan) currentPlan).getWorldStateChanges());
+			}
 			resetPlan();
 		}
 	}
