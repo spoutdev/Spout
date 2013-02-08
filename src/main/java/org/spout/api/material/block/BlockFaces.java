@@ -380,6 +380,10 @@ public class BlockFaces implements Iterable<BlockFace>, ByteBitMask {
 		return this.faces[index];
 	}
 	
+	public BlockFace[] toArray() {
+		return Arrays.copyOf(this.faces, this.faces.length);
+	}
+	
 	private static byte getOffsetHash(Vector3 offset) {
 		offset = offset.normalize();
 		offset = offset.round();
