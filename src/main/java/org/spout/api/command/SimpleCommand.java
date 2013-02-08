@@ -48,7 +48,6 @@ import org.spout.api.chat.ChatSection;
 import org.spout.api.chat.completion.CompletionRequest;
 import org.spout.api.chat.completion.CompletionResponse;
 import org.spout.api.chat.style.ChatStyle;
-import org.spout.api.event.server.PreCommandEvent;
 import org.spout.api.exception.CommandException;
 import org.spout.api.exception.CommandUsageException;
 import org.spout.api.exception.MissingCommandException;
@@ -93,7 +92,7 @@ public class SimpleCommand implements Command {
 				return this;
 			}
 		}
-        primaryName = primaryName.toLowerCase();
+		primaryName = primaryName.toLowerCase();
 		SimpleCommand sub = createSub(owner, primaryName);
 		while (children.containsKey(primaryName)) {
 			primaryName = owner.getName().toLowerCase() + ":" + primaryName;
@@ -107,9 +106,9 @@ public class SimpleCommand implements Command {
 		return sub;
 	}
 
-    protected SimpleCommand createSub(Named owner, String... aliases) {
-        return new SimpleCommand(owner, aliases);
-    }
+	protected SimpleCommand createSub(Named owner, String... aliases) {
+		return new SimpleCommand(owner, aliases);
+	}
 
 	@Override
 	public <T> Command addSubCommands(Named owner, T object, CommandRegistrationsFactory<T> factory) {
@@ -177,6 +176,17 @@ public class SimpleCommand implements Command {
 			this.executors.put(platform, executor);
 		}
 		return this;
+	}
+	
+	@Override
+	public CommandExecutor getExecutor() {
+		return getExecutor(Platform.ALL);
+	}
+	
+	@Override
+	public CommandExecutor getExecutor(Platform platform) {
+		Validate.notNull(platform);
+		return this.executors.get(platform);
 	}
 
 	@Override
@@ -337,8 +347,8 @@ public class SimpleCommand implements Command {
 		// appends every parent's preferred name after the slash
 		Command parent = this.parent;
 		while ( !(parent instanceof RootCommand) && this.parent != null ) {
-		    name = parent.getPreferredName() + " " + name;
-		    parent = parent.getParent();
+			name = parent.getPreferredName() + " " + name;
+			parent = parent.getParent();
 		}
 		usage.append(name);
 		
@@ -596,6 +606,16 @@ public class SimpleCommand implements Command {
 		maxArgLength = max;
 		return this;
 	}
+	
+	@Override
+	public int getMaxArgBounds() {
+		return this.maxArgLength;
+	}
+	
+	@Override
+	public int getMinArgBounds() {
+		return this.maxArgLength;
+	}
 
 	@Override
 	public CompletionResponse getCompletion(CompletionRequest input) {
@@ -639,8 +659,8 @@ public class SimpleCommand implements Command {
 		return responses;
 	}
 
-    @Override
-    public Command getParent() {
-        return this.parent;
-    }
+	@Override
+	public Command getParent() {
+		return this.parent;
+	}
 }
