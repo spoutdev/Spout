@@ -24,34 +24,72 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.gui.component;
+package org.spout.api.gui.render;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
-import org.spout.api.component.type.WidgetComponent;
-import org.spout.api.gui.render.RenderPartPack;
+import org.spout.api.render.RenderMaterial;
+import org.spout.api.render.SpoutRenderMaterials;
 
-public class RenderPartsHolderComponent extends WidgetComponent {
-	private final List<RenderPartPack> parts = new ArrayList<RenderPartPack>();
-
-	@Override
-	public List<RenderPartPack> getRenderPartPacks() {
-		return parts;
+/**
+ * A group of render parts that share the same RenderMaterial
+ */
+public class RenderPartPack implements Comparable<RenderPartPack> {
+	private final List<RenderPart> parts = new ArrayList<RenderPart>();
+	
+	private RenderMaterial material;
+	private int zIndex = 0;
+	
+	public RenderPartPack() {
+		this(SpoutRenderMaterials.GUI_COLOR);
+	}
+	
+	public RenderPartPack(RenderMaterial material) {
+		this.material = material;
+	}
+	
+	public void setZIndex(int zIndex) {
+		this.zIndex = zIndex;
 	}
 
-	public int add(RenderPartPack part) {
+	public int getZIndex() {
+		return zIndex;
+	}
+	
+	public RenderMaterial getRenderMaterial() {
+		return material;
+	}
+
+	public void setRenderMaterial(RenderMaterial material) {
+		this.material = material;
+	}
+	
+	public int add(RenderPart part) {
 		// Last added on top
 		return add(part, parts.size());
 	}
 
-	public int add(RenderPartPack part, int zIndex) {
+	public int add(RenderPart part, int zIndex) {
 		part.setZIndex(zIndex);
 		parts.add(part);
 		return parts.size() - 1;
 	}
 
-	public RenderPartPack get(int index) {
+	public RenderPart get(int index) {
 		return parts.get(index);
+	}
+	
+	public List<RenderPart> getRenderParts() {
+		return parts;
+	}
+	
+	public int getSize() {
+		return parts.size();
+	}
+	
+	@Override
+	public int compareTo(RenderPartPack arg0) {
+		return arg0.getZIndex() - getZIndex();
 	}
 }

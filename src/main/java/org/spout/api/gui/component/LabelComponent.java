@@ -37,6 +37,7 @@ import org.spout.api.chat.style.ColorChatStyle;
 import org.spout.api.chat.style.ResetChatStyle;
 import org.spout.api.component.type.WidgetComponent;
 import org.spout.api.gui.render.RenderPart;
+import org.spout.api.gui.render.RenderPartPack;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.math.Rectangle;
 import org.spout.api.render.Font;
@@ -79,8 +80,8 @@ public class LabelComponent extends WidgetComponent {
 	};
 
 	@Override
-	public List<RenderPart> getRenderParts() {
-		List<RenderPart> ret = new LinkedList<RenderPart>();
+	public List<RenderPartPack> getRenderPartPacks() {
+		List<RenderPartPack> ret = new LinkedList<RenderPartPack>();
 
 		if (getFont() == null) {
 			return ret;
@@ -88,6 +89,7 @@ public class LabelComponent extends WidgetComponent {
 
 		Color color = getColor();
 		Font font = getFont();
+		RenderPartPack textPack = new RenderPartPack(font.getMaterial());
 
 		float w = font.getWidth();
 		float h = font.getHeight();
@@ -112,7 +114,6 @@ public class LabelComponent extends WidgetComponent {
 						java.awt.Rectangle r = font.getPixelBounds(c);
 
 						RenderPart part = new RenderPart();
-						part.setRenderMaterial(font.getMaterial());
 						part.setColor(color);
 						part.setSprite(new Rectangle(xCursor, yCursor, (float) r.width / screenWidth, h / screenHeight));
 						part.setSource(new Rectangle(r.x / w, 0f, r.width / w, 1f));
@@ -120,7 +121,7 @@ public class LabelComponent extends WidgetComponent {
 
 						xCursor += (float) font.getAdvance(c) / screenWidth;
 
-						ret.add(part);
+						textPack.add(part);
 					}
 				}
 			} else if (arg instanceof ColorChatStyle) {
@@ -130,6 +131,7 @@ public class LabelComponent extends WidgetComponent {
 			}
 		}
 
+		ret.add(textPack);
 		return ret;
 	}
 
