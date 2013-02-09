@@ -100,6 +100,14 @@ public class SpoutRenderer {
 	private SpriteBatch screenBatcher;
 	private ClientRenderTexture t;
 	private ClientRenderMaterial mat;
+	
+	// Reflected world FBO
+	// This will need the stencil buffer
+	private boolean useReflexion = false; // Set this to true to experiment
+	private ClientRenderTexture reflected;
+	private SpriteBatch reflectedDebugBatch; // Debug
+	private ClientRenderMaterial reflectedDebugMat; //Debug
+	
 
 	public SpoutRenderer(Vector2 resolution, boolean ccoverride) {
 		this.resolution = resolution;
@@ -159,6 +167,24 @@ public class SpoutRenderer {
 
 		worldRenderer = new WorldRenderer();
 		
+		if (useReflexion) {
+			reflected = new ClientRenderTexture(true, false, true);
+			reflected.writeGPU();
+			// Test
+			reflectedDebugBatch = new SpriteBatch();
+			Shader s1 = (Shader) Spout.getFilesystem().getResource("shader://Spout/shaders/diffuse.ssf");
+			HashMap<String, Object> map1 = new HashMap<String, Object>();
+			map1.put("Diffuse", reflected);
+			reflectedDebugMat = new ClientRenderMaterial(s1, map1);
+			RenderPart screenPart1 =  new RenderPart();
+			screenPart1.setSprite(new Rectangle(-1, -1, 0.5f, 0.5f));
+			screenPart1.setSource(new Rectangle(0, 1, 1, -1));
+			RenderPartPack pack1 = new RenderPartPack(reflectedDebugMat);
+			pack1.add(screenPart1);
+			reflectedDebugBatch.flush(pack1);
+			// Test end
+		}
+		
 		screenBatcher = new SpriteBatch();
 		t = new ClientRenderTexture(true, false, true);
 		t.writeGPU();
@@ -178,13 +204,59 @@ public class SpoutRenderer {
 		worldRenderer.update(limit);
 	}
 
+	long guiTime, worldTime, entityTime;
 	public void render(float dt) {
 		SpoutClient client = (SpoutClient) Spout.getEngine();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// Update world
+		//Interpolate entity transform if Physics is not currently applied to the entity
+		for (Entity e : client.getActiveWorld().getAll()) {
+			final SpoutSceneComponent scene = (SpoutSceneComponent) e.getScene();
+			if (scene.getBody() == null) {
+				scene.interpolateRender(dt);
+			}
+		}
+
+		//Pull input each frame
+		((SpoutInputManager) ((Client) Spout.getEngine()).getInputManager()).pollInput(client.getActivePlayer());
+		//Call InputExecutor registred by plugin
+		((SpoutInputManager) ((Client) Spout.getEngine()).getInputManager()).execute(dt);
+
+		Mouse.setGrabbed(screenStack.getVisibleScreens().getLast().grabsMouse());
+		
+		// Render reflected world
+		if (useReflexion) {
+			reflected.activate();
+			GL11.glCullFace(GL11.GL_FRONT);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+			client.getActiveCamera().updateReflectedView();
+			
+			Model reflectedSkydome = (Model) client.getActiveWorld().getDataMap().get("Skydome");
+			if (reflectedSkydome != null) {
+				reflectedSkydome.getRenderMaterial().getShader().setUniform("View", client.getActiveCamera().getRotation());
+				reflectedSkydome.getRenderMaterial().getShader().setUniform("Projection", client.getActiveCamera().getProjection());
+				reflectedSkydome.getRenderMaterial().getShader().setUniform("Model", ident);
+				BaseMesh reflectedSkydomeMesh = (BaseMesh) reflectedSkydome.getMesh();
+				if (!reflectedSkydomeMesh.isBatched()) {
+					reflectedSkydomeMesh.batch();
+				}
+				reflectedSkydomeMesh.render(reflectedSkydome.getRenderMaterial());
+			}
+	
+			worldRenderer.render();
+			entityRenderer.render(dt);
+			
+			GL11.glCullFace(GL11.GL_BACK);
+			reflected.release();
+		}
+		
+		// Render normal world
 		t.activate();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		client.getActiveCamera().updateView();
 		Model skydome = (Model) client.getActiveWorld().getDataMap().get("Skydome");
 		if (skydome != null) {
 			skydome.getRenderMaterial().getShader().setUniform("View", client.getActiveCamera().getRotation());
@@ -196,40 +268,26 @@ public class SpoutRenderer {
 			}
 			skydomeMesh.render(skydome.getRenderMaterial());
 		}
-		//Interpolate entity transform if Physics is not currently applied to the entity
-		for (Entity e : client.getActiveWorld().getAll()) {
-			final SpoutSceneComponent scene = (SpoutSceneComponent) e.getScene();
-			if (scene.getBody() == null) {
-				scene.interpolateRender(dt);
-			}
-		}
-		client.getActiveCamera().updateView();
-
-		//Pull input each frame
-		((SpoutInputManager) ((Client) Spout.getEngine()).getInputManager()).pollInput(client.getActivePlayer());
-
-		//Call InputExecutor registred by plugin
-		((SpoutInputManager) ((Client) Spout.getEngine()).getInputManager()).execute(dt);
-
-		Mouse.setGrabbed(screenStack.getVisibleScreens().getLast().grabsMouse());
 
 		long start = System.nanoTime();
-
 		worldRenderer.render();
-
+		worldTime = System.nanoTime() - start;
 		start = System.nanoTime();
-
 		entityRenderer.render(dt);
-
-		if (wireframe) {
-			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
-		}
-
+		entityTime = System.nanoTime() - start;
 		start = System.nanoTime();
 
 		t.release();
 		
+		// Render gui
+		if (wireframe) {
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+		}
+		
 		screenBatcher.render(ident);
+		if (useReflexion) {
+			reflectedDebugBatch.render(ident);
+		}
 
 		if (showDebugInfos) {
 			Point position = client.getActivePlayer().getScene().getPosition();
@@ -256,8 +314,6 @@ public class SpoutRenderer {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 		}
 	}
-
-	long guiTime;
 
 	public WorldRenderer getWorldRenderer() {
 		return worldRenderer;
