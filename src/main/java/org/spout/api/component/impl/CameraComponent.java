@@ -30,6 +30,7 @@ import org.spout.api.component.type.EntityComponent;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.MatrixMath;
+import org.spout.api.math.Vector3;
 import org.spout.api.render.Camera;
 import org.spout.api.render.ViewFrustum;
 
@@ -79,6 +80,15 @@ public class CameraComponent extends EntityComponent implements Camera {
 		frustum.update(projection, view, transform.getPosition());
 	}
 
+	@Override
+	public void updateReflectedView() {
+		Transform transform = getOwner().getScene().getRenderTransform();
+		Matrix pos = MatrixMath.createTranslated(transform.getPosition().multiply(-1, 1, -1));
+		Matrix rot = MatrixMath.createRotated(transform.getRotation());
+		view = MatrixMath.createScaled(new Vector3(1,-1,1)).multiply(pos).multiply(rot);
+		frustum.update(projection, view, transform.getPosition());
+	}
+	
 	@Override
 	public boolean canTick() {
 		return false;

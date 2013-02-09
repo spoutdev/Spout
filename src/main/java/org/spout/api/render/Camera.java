@@ -51,6 +51,11 @@ public interface Camera {
 	public void updateView();
 	
 	/**
+	 * Update the view matrix for the reflected render
+	 */
+	public void updateReflectedView();
+	
+	/**
 	 * Gets the view frustum of this Camera.
 	 * 
 	 * @return
