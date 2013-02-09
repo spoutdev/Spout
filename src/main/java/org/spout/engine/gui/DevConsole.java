@@ -40,6 +40,7 @@ import org.spout.api.gui.Widget;
 import org.spout.api.gui.component.LabelComponent;
 import org.spout.api.gui.component.RenderPartsHolderComponent;
 import org.spout.api.gui.render.RenderPart;
+import org.spout.api.gui.render.RenderPartPack;
 import org.spout.api.math.Rectangle;
 import org.spout.api.meta.SpoutMetaPlugin;
 import org.spout.api.plugin.CommonPluginManager;
@@ -74,23 +75,24 @@ public class DevConsole extends Screen implements Console {
 		setGrabsMouse(true);
 		setTakesInput(false);
 		final RenderPartsHolderComponent bg = background.add(RenderPartsHolderComponent.class);
-
+		final RenderPartPack bg_pack = new RenderPartPack(SpoutRenderMaterials.GUI_COLOR);
+		
 		// The display messages background
 		final RenderPart text_bg = new RenderPart();
-		text_bg.setRenderMaterial(SpoutRenderMaterials.GUI_COLOR);
 		text_bg.setColor(new Color(0f, 0f, 0f, 0.6f)); //Black with opacity of 40%
 		text_bg.setSprite(new Rectangle(-0.95f, -0.05f, 1.9f, 1f));
 		text_bg.setSource(new Rectangle(0f, 0f, 0f, 0f));
-		bg.add(text_bg, 0);
+		bg_pack.add(text_bg, 0);
 
 		// The textfield background
 		final RenderPart textfield_bg = new RenderPart();
-		textfield_bg.setRenderMaterial(SpoutRenderMaterials.GUI_COLOR);
 		textfield_bg.setColor(new Color(0f, 0f, 0f, 0.6f)); //Black with opacity of 40%
 		textfield_bg.setSprite(new Rectangle(-0.95f, -0.15f, 1.9f, 0.08f));
 		textfield_bg.setSource(new Rectangle(0f, 0f, 0f, 0f));
-		bg.add(textfield_bg, 1);
+		bg_pack.add(textfield_bg, 1);
 
+		bg.add(bg_pack);
+		
 		//Finally attach widget so we can draw
 		attachWidget(plugin, background);
 		

@@ -54,6 +54,7 @@ import org.spout.api.gui.Screen;
 import org.spout.api.gui.ScreenStack;
 import org.spout.api.gui.Widget;
 import org.spout.api.gui.render.RenderPart;
+import org.spout.api.gui.render.RenderPartPack;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.MatrixMath;
 import org.spout.api.math.Rectangle;
@@ -166,10 +167,11 @@ public class SpoutRenderer {
 		map.put("Diffuse", t);
 		mat = new ClientRenderMaterial(s, map);
 		RenderPart screenPart =  new RenderPart();
-		screenPart.setRenderMaterial(mat);
 		screenPart.setSprite(new Rectangle(-1, -1, 2, 2));
 		screenPart.setSource(new Rectangle(0, 1, 1, -1));
-		screenBatcher.flush(screenPart);
+		RenderPartPack pack = new RenderPartPack(mat);
+		pack.add(screenPart);
+		screenBatcher.flush(pack);
 	}
 
 	public void updateRender(long limit) {

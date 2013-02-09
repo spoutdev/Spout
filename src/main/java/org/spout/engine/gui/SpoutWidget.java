@@ -41,14 +41,14 @@ import org.spout.api.gui.RenderPartContainer;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.gui.component.ControlComponent;
-import org.spout.api.gui.render.RenderPart;
+import org.spout.api.gui.render.RenderPartPack;
 import org.spout.api.math.IntVector2;
 import org.spout.api.math.Rectangle;
 
 import org.spout.engine.batcher.SpriteBatch;
 
 public class SpoutWidget extends BaseComponentHolder implements Widget {
-	private List<RenderPart> renderPartCache = new LinkedList<RenderPart>();
+	private List<RenderPartPack> renderPartCache = new LinkedList<RenderPartPack>();
 	private boolean renderCacheClean = false;
 	private boolean dirty = true;
 	private SpriteBatch batcher = new SpriteBatch();
@@ -57,15 +57,15 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 	private Transform2D transform = new Transform2D();
 
 	@Override
-	public List<RenderPart> getRenderParts() {
+	public List<RenderPartPack> getRenderPartPacks() {
 		synchronized (renderPartCache) {
 			if (!renderCacheClean) {
-				renderPartCache = new LinkedList<RenderPart>();
+				renderPartCache = new LinkedList<RenderPartPack>();
 
 				for (Component component : values()) {
 					if (component instanceof RenderPartContainer) {
 						RenderPartContainer c = (RenderPartContainer) component;
-						renderPartCache.addAll(c.getRenderParts());
+						renderPartCache.addAll(c.getRenderPartPacks());
 					}
 				}
 
@@ -79,7 +79,7 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 	
 	public void render() {
 		if (dirty) {
-			batcher.flush(getRenderParts());
+			batcher.flush(getRenderPartPacks());
 			dirty = false;
 		}
 		
