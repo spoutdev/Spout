@@ -76,7 +76,6 @@ public class ClientTextModelComponent extends TextModelComponent {
 						java.awt.Rectangle r = font.getPixelBounds(c);
 
 						RenderPart part = new RenderPart();
-						part.setRenderMaterial(font.getMaterial());
 						part.setColor(color);
 						part.setSprite(new Rectangle(xCursor, yCursor, (float) r.width / ratio, h / ratio));
 						part.setSource(new Rectangle(r.x / w, 0f, r.width / w, 1f));
