@@ -34,6 +34,7 @@ import java.util.List;
 import org.lwjgl.opengl.GL11;
 
 import org.spout.api.gui.render.RenderPart;
+import org.spout.api.gui.render.RenderPartPack;
 import org.spout.api.math.Matrix;
 import org.spout.api.math.MatrixMath;
 import org.spout.api.render.BufferContainer;
@@ -45,7 +46,7 @@ import org.spout.engine.renderer.vertexformat.vertexattributes.VertexAttributes;
 
 public class SpriteBatch {
 	private BatchVertexRenderer renderer;
-	private final ArrayList<RenderPart> sprites = new ArrayList<RenderPart>();
+	private final ArrayList<RenderPartPack> sprites = new ArrayList<RenderPartPack>();
 	private final Matrix view;
 	private final Matrix projection;
 
@@ -65,97 +66,102 @@ public class SpriteBatch {
 		sprites.clear();
 	}
 	
-	public void flush(RenderPart part) {
-		List<RenderPart> list = new ArrayList<RenderPart>();
+	public void flush(RenderPartPack part) {
+		List<RenderPartPack> list = new ArrayList<RenderPartPack>();
 		list.add(part);
 		flush(list);
 	}
 
-	public void flush(List<RenderPart> parts) {
+	public void flush(List<RenderPartPack> parts) {
 		if (parts.isEmpty()) {
 			return;
 		}
 		sprites.clear();
 		sprites.addAll(parts);
 		
+		int totalSize = 0;
+		for (RenderPartPack pack : sprites) {
+			totalSize += pack.getSize();
+		}
+		
 		BufferContainer container = new BufferContainer();
 
-		container.element = sprites.size() * 3 * 2;
+		container.element = totalSize * 3 * 2;
 
 		TFloatArrayList vertexBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Position.getLayout());
 		TFloatArrayList colorBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Color.getLayout());
 		TFloatArrayList textureBuffer = (TFloatArrayList) container.getBuffers().get(VertexAttributes.Texture0.getLayout());
 
 		if (vertexBuffer == null) {
-			vertexBuffer = new TFloatArrayList(sprites.size() * 4 * 4);
+			vertexBuffer = new TFloatArrayList(totalSize * 4 * 4);
 			container.setBuffers(VertexAttributes.Position.getLayout(), vertexBuffer);
 		}
 
 		if (colorBuffer == null) {
-			colorBuffer = new TFloatArrayList(sprites.size() * 4 * 4);
+			colorBuffer = new TFloatArrayList(totalSize * 4 * 4);
 			container.setBuffers(VertexAttributes.Color.getLayout(), colorBuffer);
 		}
 
 		if (textureBuffer == null) {
-			textureBuffer = new TFloatArrayList(sprites.size() * 4 * 2);
+			textureBuffer = new TFloatArrayList(totalSize * 4 * 2);
 			container.setBuffers(VertexAttributes.Texture0.getLayout(), textureBuffer);
 		}
 
-		for (int i = 0; i < sprites.size(); i++) {
-			RenderPart rect = sprites.get(i);
-
-			for (int j = 0; j < 6; j++) {
-				colorBuffer.add(rect.getColor().getRed() / 255f);
-				colorBuffer.add(rect.getColor().getGreen() / 255f);
-				colorBuffer.add(rect.getColor().getBlue() / 255f);
-				colorBuffer.add(rect.getColor().getAlpha() / 255f);
+		for (RenderPartPack pack : sprites) {
+			for (RenderPart rect : pack.getRenderParts()) {
+				for (int j = 0; j < 6; j++) {
+					colorBuffer.add(rect.getColor().getRed() / 255f);
+					colorBuffer.add(rect.getColor().getGreen() / 255f);
+					colorBuffer.add(rect.getColor().getBlue() / 255f);
+					colorBuffer.add(rect.getColor().getAlpha() / 255f);
+				}
+	
+				//Triangle 1
+	
+				vertexBuffer.add(rect.getSprite().getX() + rect.getSprite().getWidth());
+				vertexBuffer.add(rect.getSprite().getY());
+				vertexBuffer.add(0f);
+				vertexBuffer.add(1f);
+				textureBuffer.add(rect.getSource().getX() + rect.getSource().getWidth());
+				textureBuffer.add(rect.getSource().getY() + rect.getSource().getHeight());
+	
+				vertexBuffer.add(rect.getSprite().getX());
+				vertexBuffer.add(rect.getSprite().getY());
+				vertexBuffer.add(0f);
+				vertexBuffer.add(1f);
+				textureBuffer.add(rect.getSource().getX());
+				textureBuffer.add(rect.getSource().getY() + rect.getSource().getHeight());
+	
+				vertexBuffer.add(rect.getSprite().getX());
+				vertexBuffer.add(rect.getSprite().getY() + rect.getSprite().getHeight());
+				vertexBuffer.add(0f);
+				vertexBuffer.add(1f);
+				textureBuffer.add(rect.getSource().getX());
+				textureBuffer.add(rect.getSource().getY());
+	
+				//Triangle 2
+	
+				vertexBuffer.add(rect.getSprite().getX() + rect.getSprite().getWidth());
+				vertexBuffer.add(rect.getSprite().getY() + rect.getSprite().getHeight());
+				vertexBuffer.add(0f);
+				vertexBuffer.add(1f);
+				textureBuffer.add(rect.getSource().getX() + rect.getSource().getWidth());
+				textureBuffer.add(rect.getSource().getY());
+	
+				vertexBuffer.add(rect.getSprite().getX() + rect.getSprite().getWidth());
+				vertexBuffer.add(rect.getSprite().getY());
+				vertexBuffer.add(0f);
+				vertexBuffer.add(1f);
+				textureBuffer.add(rect.getSource().getX() + rect.getSource().getWidth());
+				textureBuffer.add(rect.getSource().getY() + rect.getSource().getHeight());
+	
+				vertexBuffer.add(rect.getSprite().getX());
+				vertexBuffer.add(rect.getSprite().getY() + rect.getSprite().getHeight());
+				vertexBuffer.add(0f);
+				vertexBuffer.add(1f);
+				textureBuffer.add(rect.getSource().getX());
+				textureBuffer.add(rect.getSource().getY());
 			}
-
-			//Triangle 1
-
-			vertexBuffer.add(rect.getSprite().getX() + rect.getSprite().getWidth());
-			vertexBuffer.add(rect.getSprite().getY());
-			vertexBuffer.add(0f);
-			vertexBuffer.add(1f);
-			textureBuffer.add(rect.getSource().getX() + rect.getSource().getWidth());
-			textureBuffer.add(rect.getSource().getY() + rect.getSource().getHeight());
-
-			vertexBuffer.add(rect.getSprite().getX());
-			vertexBuffer.add(rect.getSprite().getY());
-			vertexBuffer.add(0f);
-			vertexBuffer.add(1f);
-			textureBuffer.add(rect.getSource().getX());
-			textureBuffer.add(rect.getSource().getY() + rect.getSource().getHeight());
-
-			vertexBuffer.add(rect.getSprite().getX());
-			vertexBuffer.add(rect.getSprite().getY() + rect.getSprite().getHeight());
-			vertexBuffer.add(0f);
-			vertexBuffer.add(1f);
-			textureBuffer.add(rect.getSource().getX());
-			textureBuffer.add(rect.getSource().getY());
-
-			//Triangle 2
-
-			vertexBuffer.add(rect.getSprite().getX() + rect.getSprite().getWidth());
-			vertexBuffer.add(rect.getSprite().getY() + rect.getSprite().getHeight());
-			vertexBuffer.add(0f);
-			vertexBuffer.add(1f);
-			textureBuffer.add(rect.getSource().getX() + rect.getSource().getWidth());
-			textureBuffer.add(rect.getSource().getY());
-
-			vertexBuffer.add(rect.getSprite().getX() + rect.getSprite().getWidth());
-			vertexBuffer.add(rect.getSprite().getY());
-			vertexBuffer.add(0f);
-			vertexBuffer.add(1f);
-			textureBuffer.add(rect.getSource().getX() + rect.getSource().getWidth());
-			textureBuffer.add(rect.getSource().getY() + rect.getSource().getHeight());
-
-			vertexBuffer.add(rect.getSprite().getX());
-			vertexBuffer.add(rect.getSprite().getY() + rect.getSprite().getHeight());
-			vertexBuffer.add(0f);
-			vertexBuffer.add(1f);
-			textureBuffer.add(rect.getSource().getX());
-			textureBuffer.add(rect.getSource().getY());
 		}
 
 		if (renderer!=null) {
@@ -175,17 +181,18 @@ public class SpriteBatch {
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		renderer.preDraw();
 		
-		for (int i = 0; i < sprites.size(); i++) {
-			RenderPart rect = sprites.get(i);
+		int position = 0;
+		for (RenderPartPack pack : sprites) {
+			pack.getRenderMaterial().getShader().setUniform("View", this.view);
+			pack.getRenderMaterial().getShader().setUniform("Projection", this.projection);
+			pack.getRenderMaterial().getShader().setUniform("Model", model);
 
-			rect.getRenderMaterial().getShader().setUniform("View", this.view);
-			rect.getRenderMaterial().getShader().setUniform("Projection", this.projection);
-			rect.getRenderMaterial().getShader().setUniform("Model", model);
-
-			SnapshotRender snapshotRender = new SnapshotRender(rect.getRenderMaterial());
-			rect.getRenderMaterial().preRender(snapshotRender);
-			renderer.draw(rect.getRenderMaterial(), (i * 6), 6);
-			rect.getRenderMaterial().postRender(snapshotRender);
+			SnapshotRender snapshotRender = new SnapshotRender(pack.getRenderMaterial());
+			pack.getRenderMaterial().preRender(snapshotRender);
+			renderer.draw(pack.getRenderMaterial(), position, pack.getSize() * 6);
+			pack.getRenderMaterial().postRender(snapshotRender);
+			
+			position += pack.getSize() * 6;
 		}
 		
 		renderer.postDraw();
