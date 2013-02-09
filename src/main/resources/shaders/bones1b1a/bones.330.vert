@@ -18,7 +18,7 @@ uniform mat4[6] bone_matrix1;
 void main() {
 	int boneId = int(bone_ids);
 	gl_Position = Projection * View * Model * bone_matrix1[boneId] * vPosition;
-
+	color = vColor;
 	uvcoord = vTexCoord;
 	normal = vNormal;
 }

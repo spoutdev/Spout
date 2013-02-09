@@ -9,6 +9,7 @@ layout(location=5) in vec2 bone_ids;
 layout(location=6) in float index;
 
 out vec4 color;
+out vec4 normal;
 out vec2 uvcoord;
 
 uniform mat4[2] Projection;
@@ -29,5 +30,6 @@ void main() {
 	gl_Position = Projection[instance] * View[instance] * Model[instance] * bone_transform;
 
 	uvcoord = vTexCoord;
+	normal = vNormal;
 	color = vColor;
 }
