@@ -232,20 +232,22 @@ public class SimpleCommand implements Command {
 			return;
 		}
 
+		CommandExecutor executor = getActiveExecutor();
+		
 		if (args.size() > baseIndex && children.size() > 0) {
 			Command sub = null;
 			if (args.size() > baseIndex) {
 				sub = getChild(args.get(baseIndex).getPlainString(), fuzzyLookup);
 			}
 
-			if (sub == null) {
+			if (sub != null) {
+				sub.execute(source, name, args, ++baseIndex, fuzzyLookup);
+				return;
+			} else if (executor == null) {
 				throw getMissingChildException(getUsage(name, args, baseIndex));
 			}
-			sub.execute(source, name, args, ++baseIndex, fuzzyLookup);
-			return;
 		}
-
-		CommandExecutor executor = getActiveExecutor();
+		
 		if (executor == null || baseIndex > args.size()) {
 			throw new MissingCommandException("No command found!", getUsage(name, args, baseIndex));
 		}
