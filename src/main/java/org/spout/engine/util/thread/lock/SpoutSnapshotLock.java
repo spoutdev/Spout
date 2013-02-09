@@ -139,7 +139,11 @@ public class SpoutSnapshotLock implements SnapshotLock {
 			} else {
 				newLockInfo = new LockInfo(oldLockInfo.oldestLock, oldLockInfo.locks + 1);
 			}
-			success = locks.replace(plugin, oldLockInfo, newLockInfo);
+			if (oldLockInfo == null) {
+				success = locks.putIfAbsent(plugin, newLockInfo) == null;
+			} else {
+				success = locks.replace(plugin, oldLockInfo, newLockInfo);
+			}
 		}
 	}
 
