@@ -29,15 +29,13 @@ package org.spout.api.gui.component;
 import java.awt.Color;
 import java.util.List;
 
-import org.spout.api.Spout;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
-import org.spout.api.gui.render.RectanglePart;
 import org.spout.api.gui.render.RenderPart;
+import org.spout.api.gui.render.RenderPartPack;
 import org.spout.api.input.Keyboard;
-import org.spout.api.math.IntVector2;
 import org.spout.api.math.Rectangle;
-import org.spout.api.render.RenderMaterial;
+import org.spout.api.render.SpoutRenderMaterials;
 import org.spout.api.signal.Signal;
 
 public class ButtonComponent extends LabelComponent {
@@ -54,16 +52,19 @@ public class ButtonComponent extends LabelComponent {
 	}
 
 	@Override
-	public List<RenderPart> getRenderParts() {
-		List<RenderPart> ret = super.getRenderParts();
-		RectanglePart part = new RectanglePart();
+	public List<RenderPartPack> getRenderPartPacks() {
+		List<RenderPartPack> ret = super.getRenderPartPacks();
+		
+		RenderPartPack bgPack = new RenderPartPack(SpoutRenderMaterials.GUI_COLOR);
+		
+		RenderPart part = new RenderPart();
 		part.setSource(new Rectangle(0,0,0.1f,0.1f));
 		part.setSprite(new Rectangle(0,0,1f,1f));
 		part.setColor(isDown() ? Color.blue : Color.red);
-		part.setRenderMaterial((RenderMaterial) Spout.getFilesystem().getResource("material://Spout/materials/GUIColorMaterial.smt"));
 		part.setZIndex(5);
-		ret.add(part);
-
+		bgPack.add(part);
+		
+		ret.add(bgPack);
 		return ret;
 	}
 

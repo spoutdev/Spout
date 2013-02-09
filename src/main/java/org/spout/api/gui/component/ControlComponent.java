@@ -32,8 +32,8 @@ import java.util.List;
 
 import org.spout.api.component.type.WidgetComponent;
 import org.spout.api.gui.FocusReason;
-import org.spout.api.gui.render.RectanglePart;
 import org.spout.api.gui.render.RenderPart;
+import org.spout.api.gui.render.RenderPartPack;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.math.Rectangle;
@@ -43,16 +43,18 @@ public class ControlComponent extends WidgetComponent {
 	private static final DefaultedKey<Integer> KEY_TAB_INDEX = new DefaultedKeyImpl<Integer>("tabIndex", 0);
 	
 	@Override
-	public List<RenderPart> getRenderParts() {
-		LinkedList<RenderPart> ret = new LinkedList<RenderPart>();
+	public List<RenderPartPack> getRenderPartPacks() {
+		LinkedList<RenderPartPack> ret = new LinkedList<RenderPartPack>();
 		if (getOwner().isFocused()) {
-			RectanglePart part = new RectanglePart();
-			part.setRenderMaterial(SpoutRenderMaterials.GUI_COLOR);
+			RenderPartPack pack = new RenderPartPack(SpoutRenderMaterials.GUI_COLOR);
+			RenderPart part = new RenderPart();
 			part.setColor(Color.BLUE);
 			part.setSource(new Rectangle(0, 0, 0, 0));
 			part.setSprite(new Rectangle(0,0,0.1f,0.1f));
 			part.setZIndex(-100);
-			ret.add(part);
+			
+			pack.add(part);
+			ret.add(pack);
 		}
 		return ret;
 	}

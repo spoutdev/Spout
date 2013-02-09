@@ -27,15 +27,16 @@
 package org.spout.api.gui.component;
 
 import java.awt.Color;
-import java.util.Arrays;
 import java.util.List;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.event.player.input.PlayerKeyEvent;
 import org.spout.api.gui.render.RenderPart;
+import org.spout.api.gui.render.RenderPartPack;
 import org.spout.api.math.Rectangle;
 import org.spout.api.render.Font;
+import org.spout.api.render.SpoutRenderMaterials;
 import org.spout.api.signal.Signal;
 
 public class TextFieldComponent extends LabelComponent {
@@ -101,9 +102,13 @@ public class TextFieldComponent extends LabelComponent {
 	}
 
 	@Override
-	public List<RenderPart> getRenderParts() {
-		List<RenderPart> parts = super.getRenderParts();
-		parts.addAll(Arrays.asList(cursor, field, border));
+	public List<RenderPartPack> getRenderPartPacks() {
+		List<RenderPartPack> parts = super.getRenderPartPacks();
+		RenderPartPack pack = new RenderPartPack(SpoutRenderMaterials.GUI_COLOR);
+		pack.add(cursor);
+		pack.add(field);
+		pack.add(border);
+		parts.add(pack);
 		return parts;
 	}
 

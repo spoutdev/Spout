@@ -34,16 +34,13 @@ import org.spout.api.math.Rectangle;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.mesh.Vertex;
-import org.spout.api.render.RenderMaterial;
-import org.spout.api.render.SpoutRenderMaterials;
 
 public class RenderPart implements Comparable<RenderPart> {
 	private Rectangle source = Rectangle.ZERO;
-	private Rectangle sprite;
+	private Rectangle sprite = Rectangle.ZERO;
 	private int zIndex = 0;
 	private Color color = Color.WHITE;
-	private RenderMaterial material = SpoutRenderMaterials.GUI_COLOR;
-
+	
 	public void setSource(Rectangle source) {
 		this.source = source;
 	}
@@ -103,13 +100,5 @@ public class RenderPart implements Comparable<RenderPart> {
 	@Override
 	public int compareTo(RenderPart arg0) {
 		return arg0.getZIndex() - getZIndex();
-	}
-
-	public RenderMaterial getRenderMaterial() {
-		return material;
-	}
-
-	public void setRenderMaterial(RenderMaterial material) {
-		this.material = material;
 	}
 }

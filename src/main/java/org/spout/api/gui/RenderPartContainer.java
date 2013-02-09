@@ -28,7 +28,7 @@ package org.spout.api.gui;
 
 import java.util.List;
 
-import org.spout.api.gui.render.RenderPart;
+import org.spout.api.gui.render.RenderPartPack;
 
 public interface RenderPartContainer {
 	/**
@@ -37,5 +37,5 @@ public interface RenderPartContainer {
 	 * you must call getOwner().update() to invoke a render update
 	 * @return a list of RenderParts
 	 */
-	public List<RenderPart> getRenderParts();
+	public List<RenderPartPack> getRenderPartPacks();
 }

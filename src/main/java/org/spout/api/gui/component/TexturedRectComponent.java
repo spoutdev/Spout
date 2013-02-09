@@ -32,16 +32,22 @@ import java.util.List;
 
 import org.spout.api.component.type.WidgetComponent;
 import org.spout.api.gui.render.RenderPart;
+import org.spout.api.gui.render.RenderPartPack;
 import org.spout.api.math.Rectangle;
 import org.spout.api.render.RenderMaterial;
 
 public class TexturedRectComponent extends WidgetComponent {
+	private RenderPartPack pack = new RenderPartPack();
 	private RenderPart rect = new RenderPart();
+	
+	public TexturedRectComponent() {
+		pack.add(rect);
+	}
 
 	@Override
-	public List<RenderPart> getRenderParts() {
-		List<RenderPart> parts = new ArrayList<RenderPart>();
-		parts.add(rect);
+	public List<RenderPartPack> getRenderPartPacks() {
+		List<RenderPartPack> parts = new ArrayList<RenderPartPack>();
+		parts.add(pack);
 		return parts;
 	}
 
@@ -70,10 +76,10 @@ public class TexturedRectComponent extends WidgetComponent {
 	}
 
 	public RenderMaterial getRenderMaterial() {
-		return rect.getRenderMaterial();
+		return pack.getRenderMaterial();
 	}
 
 	public void setRenderMaterial(RenderMaterial material) {
-		rect.setRenderMaterial(material);
+		pack.setRenderMaterial(material);
 	}
 }

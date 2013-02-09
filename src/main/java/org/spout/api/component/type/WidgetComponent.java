@@ -38,7 +38,7 @@ import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Focusable;
 import org.spout.api.gui.RenderPartContainer;
 import org.spout.api.gui.Widget;
-import org.spout.api.gui.render.RenderPart;
+import org.spout.api.gui.render.RenderPartPack;
 import org.spout.api.math.IntVector2;
 import org.spout.api.signal.Signal;
 import org.spout.api.signal.SignalInterface;
@@ -55,7 +55,7 @@ public class WidgetComponent extends Component implements SignalInterface, Subsc
 	}
 
 	@Override
-	public List<RenderPart> getRenderParts() {
+	public List<RenderPartPack> getRenderPartPacks() {
 		return Collections.emptyList(); // Components which decide how this widget is rendered need to reimplement this method
 	}
 
