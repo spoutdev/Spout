@@ -88,6 +88,11 @@ public class ClientShader extends Resource implements Shader {
 			doCompileShader(vsource,fsource);
 		}
 
+		@Override
+		public String toString() {
+			return "ClientShader {ID=" + program + ", Frag=" + this.fsourceUrl + ", Vert=" + this.vsourceUrl + "}";
+		}
+
 		private void doCompileShader(String vsource, String fsource){
 			if (((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
 				return;
@@ -96,7 +101,7 @@ public class ClientShader extends Resource implements Shader {
 			//Create a new Shader object on the GPU
 			program = GL20.glCreateProgram();
 
-			System.out.println("Compiling ClientShader {ID=" + program + ", Frag=" + this.fsourceUrl + ", Vert=" + this.vsourceUrl + "}");
+			System.out.println("Compiling " + this.toString());
 
 			int vShader = ShaderHelper.compileShader(vsource, vsourceUrl, GL20.GL_VERTEX_SHADER);
 			GL20.glAttachShader(program, vShader);

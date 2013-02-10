@@ -29,7 +29,6 @@ package org.spout.engine.renderer.shader.variables;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
@@ -64,7 +63,7 @@ public class TextureSamplerShaderVariable extends ShaderVariable {
 		SpoutRenderer.checkGLError();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 		SpoutRenderer.checkGLError();
-		
+
 		if (((Client) Spout.getEngine()).getRenderMode() != RenderMode.GL30 &&
 				((Client) Spout.getEngine()).getRenderMode() != RenderMode.GL40) {
 			GL20.glUniform1i(location, unit);
@@ -73,7 +72,7 @@ public class TextureSamplerShaderVariable extends ShaderVariable {
 		}
 		SpoutRenderer.checkGLError();
 	}
-	
+
 	@Override
 	public void assign() {
 		
