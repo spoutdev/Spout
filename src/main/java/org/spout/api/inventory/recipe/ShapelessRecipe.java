@@ -42,7 +42,7 @@ public class ShapelessRecipe extends Recipe {
 	}
 
 	@Override
-	public Set<Material> getIngredients() {
+	public Set<Material> getRegents() {
 		return ingredients;
 	}
 }

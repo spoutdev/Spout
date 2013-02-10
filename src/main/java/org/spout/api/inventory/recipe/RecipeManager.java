@@ -28,6 +28,7 @@ package org.spout.api.inventory.recipe;
 
 import java.util.Set;
 
+import org.spout.api.inventory.ItemStack;
 import org.spout.api.plugin.Plugin;
 
 /**
@@ -99,4 +100,23 @@ public interface RecipeManager {
 	 * @return true if the recipe has a match
 	 */
 	public boolean contains(Recipe recipe);
+
+	/**
+	 * Returns a product for the specified regents among the registered
+	 * recipes bound to the specified plugin.
+	 *
+	 * @param plugin to get recipes from
+	 * @param regents for recipe
+	 * @return product of recipe
+	 */
+	public ItemStack getProduct(Plugin plugin, Object regents);
+
+	/**
+	 * Returns a product for the specified regents among the registered
+	 * recipes.
+	 *
+	 * @param regents for recipe
+	 * @return product of recipe
+	 */
+	public ItemStack getProduct(Object regents);
 }

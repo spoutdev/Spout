@@ -54,13 +54,13 @@ public abstract class Recipe {
 	 *
 	 * @return ingredients for recipe
 	 */
-	public abstract Object getIngredients();
+	public abstract Object getRegents();
 
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Recipe) {
 			Recipe recipe = (Recipe) obj;
-			return recipe.product.equals(product) && recipe.getIngredients().equals(getIngredients());
+			return recipe.product.equals(product) && recipe.getRegents().equals(getRegents());
 		}
 		return false;
 	}

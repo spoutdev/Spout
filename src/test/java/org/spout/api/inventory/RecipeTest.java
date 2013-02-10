@@ -70,6 +70,8 @@ public class RecipeTest {
 		assertTrue(recipe2.equals(recipe1));
 		assertTrue(manager.contains(recipe2));
 		assertTrue(manager.contains(plugin, recipe2));
+		assertTrue(manager.getProduct(recipe2.getRegents()).equals(recipe1.getProduct()));
+		assertTrue(manager.getProduct(plugin, recipe2.getRegents()).equals(recipe1.getProduct()));
 
 		builder.setShape("ZZZ", "Y Y", "XXX");
 		ShapedRecipe recipe3 = builder.build();
@@ -92,6 +94,7 @@ public class RecipeTest {
 
 		assertTrue(recipe2.equals(recipe1));
 		assertTrue(manager.contains(recipe2));
+		assertTrue(manager.getProduct(recipe2.getRegents()).equals(recipe1.getProduct()));
 		recipe2 = new ShapelessRecipe(product.clone(), BlockMaterial.SOLID);
 		assertFalse(recipe2.equals(recipe1));
 		assertFalse(manager.contains(recipe2));

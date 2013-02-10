@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.spout.api.inventory.ItemStack;
 import org.spout.api.plugin.Plugin;
 
 public class SimpleRecipeManager implements RecipeManager {
@@ -101,5 +102,29 @@ public class SimpleRecipeManager implements RecipeManager {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public ItemStack getProduct(Plugin plugin, Object regents) {
+		Set<Recipe> recipes = getRecipes(plugin);
+		if (recipes == null) {
+			return null;
+		}
+		for (Recipe r : recipes) {
+			if (r.getRegents().equals(regents)) {
+				return r.getProduct();
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public ItemStack getProduct(Object regents) {
+		for (Recipe recipe : getRecipes()) {
+			if (recipe.getRegents().equals(regents)) {
+				return recipe.getProduct();
+			}
+		}
+		return null;
 	}
 }

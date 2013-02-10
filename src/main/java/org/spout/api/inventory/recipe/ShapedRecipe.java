@@ -41,7 +41,7 @@ public class ShapedRecipe extends Recipe {
 	}
 
 	@Override
-	public List<List<Material>> getIngredients() {
+	public List<List<Material>> getRegents() {
 		return Collections.unmodifiableList(ingredients);
 	}
 }
