@@ -66,9 +66,9 @@ public abstract class ShaderVariable {
 		//If we want to have a debug mode, switch the final bool to true to throw an exception if the variable doesn't exist.
 		//This is the same as treating warnings as errors, and could be useful for debugging shaders.
 		if (this.location == -1 && variableError == 1) {
-			System.out.println("[Warning] Shader Variable: " + name + " not found! (Was it optimized out?)");
+			Spout.getLogger().warning("Variable: " + name + " Not Found for shader ID=" + program + " (was it optimized out?)");
 		} else if (this.location == -1 && variableError == 2) {
-			throw new ShaderVariableNotFoundException(name);
+			throw new ShaderVariableNotFoundException(name, program);
 		}
 	}
 

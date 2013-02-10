@@ -28,7 +28,7 @@ package org.spout.engine.renderer.shader;
 
 @SuppressWarnings("serial")
 public class ShaderVariableNotFoundException extends RuntimeException {
-	public ShaderVariableNotFoundException(String variableName) {
-		super("Variable: " + variableName + " Not Found (was it optimized out?");
+	public ShaderVariableNotFoundException(String variableName, int shaderProgram) {
+		super("Variable: " + variableName + " Not Found for shader ID=" + shaderProgram + " (was it optimized out?)");
 	}
 }
