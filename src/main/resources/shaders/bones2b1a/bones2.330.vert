@@ -8,6 +8,7 @@ layout(location=4) in vec2 bone_weights;
 layout(location=5) in vec2 bone_ids;
 
 out vec4 color;
+out vec4 normal;
 out vec2 uvcoord;
 
 uniform mat4 Projection;
@@ -25,5 +26,6 @@ void main() {
 	gl_Position = Projection * View * Model * bone_transform;
 
 	uvcoord = vTexCoord;
+	normal = vNormal;
 	color = vColor;
 }

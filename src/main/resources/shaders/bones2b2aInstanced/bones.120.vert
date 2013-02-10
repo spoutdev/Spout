@@ -30,5 +30,6 @@ void main() {
 	gl_Position = Projection[instance] * View[instance] * Model[instance] * bone_transform;
 
 	uvcoord = vTexCoord;
+	normal = vNormal;
 	color = vColor;
 }

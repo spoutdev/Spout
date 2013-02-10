@@ -20,5 +20,6 @@ void main() {
 	gl_Position = Projection * View * Model * bone_matrix1[boneId] * vPosition;
 
 	uvcoord = vTexCoord;
+	color = vColor;
 	normal = vNormal;
 }
