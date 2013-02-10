@@ -86,19 +86,19 @@ public class ClientShader extends Resource implements Shader {
 		public void run() {
 			doCompileShader(vsource,fsource);
 		}
-		
+
 		private void doCompileShader(String vsource, String fsource){
 			if (((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
 				return;
 			}
 
-
 			//Create a new Shader object on the GPU
 			program = GL20.glCreateProgram();
 
+			System.out.println("Compiling ClientShader {ID=" + program + ", Frag=" + this.fsourceUrl + ", Vert=" + this.vsourceUrl + "}");
+
 			int vShader = ShaderHelper.compileShader(vsource, vsourceUrl, GL20.GL_VERTEX_SHADER);
 			GL20.glAttachShader(program, vShader);
-
 
 			int fShader = ShaderHelper.compileShader(fsource, fsourceUrl, GL20.GL_FRAGMENT_SHADER);
 			GL20.glAttachShader(program, fShader);
@@ -111,12 +111,6 @@ public class ClientShader extends Resource implements Shader {
 				throw new ShaderCompileException("Link Error in " + vsourceUrl + ", " + fsourceUrl +": " + error);
 			}
 			if (validateShader) {
-				GL20.glValidateProgram(shader.program);
-				if (GL20.glGetProgram(program, GL20.GL_VALIDATE_STATUS) != GL11.GL_TRUE) {
-					String info = GL20.glGetProgramInfoLog(program, 255);
-					System.out.println("Validate Log: \n" + info);
-				}
-
 				System.out.println("Attached Shaders: " + GL20.glGetProgram(program, GL20.GL_ATTACHED_SHADERS));
 				int activeAttributes = GL20.glGetProgram(program, GL20.GL_ACTIVE_ATTRIBUTES);
 				System.out.println("Active Attributes: " + activeAttributes);
@@ -131,9 +125,22 @@ public class ClientShader extends Resource implements Shader {
 				for (int i = 0; i < activeUniforms; i++) {
 					System.out.println("\t" + GL20.glGetActiveUniform(program, i, maxUniformLength));
 				}
+
+				// Show the log, info/warning based on whether validation was successful
+				// Print line by line to avoid botched time stamps
+				GL20.glValidateProgram(shader.program);
+				String[] logLines  = GL20.glGetProgramInfoLog(program, 255).split("\n");
+				if (GL20.glGetProgram(program, GL20.GL_VALIDATE_STATUS) == GL11.GL_TRUE) {
+					for (String line : logLines) {
+						Spout.getLogger().info(line.trim());
+					}
+				} else {
+					for (String line : logLines) {
+						Spout.getLogger().warning(line.trim());
+					}
+				}
 			}
 			SpoutRenderer.checkGLError();
-			System.out.println("Compiled Shader with id: " + program);
 		}
 	}
 	
