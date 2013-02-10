@@ -205,22 +205,27 @@ public class SpoutAnimationComponent extends AnimationComponent {
 
 	public void render(Model model) {
 		int count = 0;
-		for (AnimationPlayed ac : animations.get(model)) {
-			int i;
+		
+		List<AnimationPlayed> list = animations.get(model);
 
-			for (i = 0; i < bonesInMesh; i++) {
-				ac.getMatrices()[i] = ac.getAnimation().getBoneTransform(i, ac.getCurrentFrame()).getMatrix();
-			}
+		if(list != null){
+			for (AnimationPlayed ac : list) {
+				int i;
 
-			for (; i < ALLOWED_BONE_PER_MESH; i++) {
-				ac.getMatrices()[i] = identity.transpose();
-			}
+				for (i = 0; i < bonesInMesh; i++) {
+					ac.getMatrices()[i] = ac.getAnimation().getBoneTransform(i, ac.getCurrentFrame()).getMatrix();
+				}
 
-			renderMaterial.getShader().setUniform("bone_matrix" + (count + 1), ac.getMatrices());
+				for (; i < ALLOWED_BONE_PER_MESH; i++) {
+					ac.getMatrices()[i] = identity.transpose();
+				}
 
-			count++;
-			if (count >= ALLOWED_ANIMATION_PER_MESH) {
-				break;
+				renderMaterial.getShader().setUniform("bone_matrix" + (count + 1), ac.getMatrices());
+
+				count++;
+				if (count >= ALLOWED_ANIMATION_PER_MESH) {
+					break;
+				}
 			}
 		}
 
