@@ -39,7 +39,7 @@ public class ShapedRecipeBuilder extends RecipeBuilder {
 	protected final Map<Character, Material> ingredientMap = new HashMap<Character, Material>();
 	protected List<String> rows = new ArrayList<String>();
 
-	private List<List<Material>> getRows() {
+	public List<List<Material>> getRows() {
 		List<List<Material>> rows = new ArrayList<List<Material>>();
 		for (String row : this.rows) {
 			List<Material> r = new ArrayList<Material>();
