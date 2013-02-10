@@ -51,12 +51,16 @@ public class Screen extends BasicTickable implements Container {
 	@Override
 	public void attachWidget(Plugin plugin, Widget widget) {
 		widget.setScreen(this);
-		widgets.put(widget, plugin);
+		synchronized (widgets) {
+			widgets.put(widget, plugin);
+		}
 	}
 
 	@Override
 	public void removeWidget(Widget widget) {
-		widgets.remove(widget);
+		synchronized (widgets) {
+			widgets.remove(widget);
+		}
 		cleanupWidget(widget);
 	}
 
@@ -69,13 +73,15 @@ public class Screen extends BasicTickable implements Container {
 
 	@Override
 	public void removeWidgets() {
-		Iterator<Widget> i = getWidgets().iterator();
-		while (i.hasNext()) {
-			cleanupWidget(i.next());
-			i.remove();
+		synchronized (widgets) {
+			Iterator<Widget> i = widgets.keySet().iterator();
+			while (i.hasNext()) {
+				cleanupWidget(i.next());
+				i.remove();
+			}
 		}
 	}
-	
+
 	private void cleanupWidget(Widget widget) {
 		widget.setScreen(null);
 		if (widget == focussedWidget) {
@@ -89,17 +95,21 @@ public class Screen extends BasicTickable implements Container {
 		Iterator<Widget> i = getWidgets().iterator();
 		while (i.hasNext()) {
 			Widget widget = i.next();
-			if (widgets.get(widget).equals(plugin)) {
-				i.remove();
-				cleanupWidget(widget);
+			synchronized (widgets) {
+				if (widgets.get(widget).equals(plugin)) {
+					i.remove();
+					cleanupWidget(widget);
+				}
 			}
 		}
 	}
 
 	@Override
 	public void onTick(float dt) {
-		for (Widget w : widgets.keySet()) {
-			w.tick(dt);
+		synchronized (widgets) {
+			for (Widget w : widgets.keySet()) {
+				w.tick(dt);
+			}
 		}
 	}
 
@@ -117,7 +127,11 @@ public class Screen extends BasicTickable implements Container {
 	}
 	
 	public void setFocus(Widget newFocus, FocusReason reason) {
-		if (widgets.containsKey(newFocus) && newFocus.get(ControlComponent.class) != null) {			
+		final boolean containsFocussedWidget;
+		synchronized (widgets) {
+			containsFocussedWidget = widgets.containsKey(newFocus);
+		}
+		if (containsFocussedWidget && newFocus.get(ControlComponent.class) != null) {			
 			if (focussedWidget != newFocus) {
 				Widget oldFocus = focussedWidget;
 				focussedWidget = newFocus;
@@ -130,7 +144,7 @@ public class Screen extends BasicTickable implements Container {
 			}
 		}
 	}
-	
+
 	public void nextFocus(FocusReason reason) {
 		int current = 0;
 		if (getFocusedWidget() != null) {
@@ -139,12 +153,14 @@ public class Screen extends BasicTickable implements Container {
 		
 		Widget lowest = null;
 		int lowestTab = Integer.MAX_VALUE;
-		for (Widget w:getWidgets()) {
-			if (w.get(ControlComponent.class) != null) {
-				int ti = w.get(ControlComponent.class).getTabIndex();
-				if (ti < lowestTab && ti > current) {
-					lowest = w;
-					lowestTab = ti;
+		synchronized (widgets) {
+			for (Widget w : widgets.keySet()) {
+				if (w.get(ControlComponent.class) != null) {
+					int ti = w.get(ControlComponent.class).getTabIndex();
+					if (ti < lowestTab && ti > current) {
+						lowest = w;
+						lowestTab = ti;
+					}
 				}
 			}
 		}
@@ -159,12 +175,14 @@ public class Screen extends BasicTickable implements Container {
 		
 		Widget highest = null;
 		int highestTab = Integer.MIN_VALUE;
-		for (Widget w:getWidgets()) {
-			if (w.get(ControlComponent.class) != null) {
-				int ti = w.get(ControlComponent.class).getTabIndex();
-				if (ti > highestTab && ti < current) {
-					highest = w;
-					highestTab = ti;
+		synchronized (widgets) {
+			for (Widget w : widgets.keySet()) {
+				if (w.get(ControlComponent.class) != null) {
+					int ti = w.get(ControlComponent.class).getTabIndex();
+					if (ti > highestTab && ti < current) {
+						highest = w;
+						highestTab = ti;
+					}
 				}
 			}
 		}
