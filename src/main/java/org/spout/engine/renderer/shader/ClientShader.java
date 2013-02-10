@@ -62,18 +62,19 @@ import org.spout.engine.renderer.shader.variables.Vec2ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec3ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec4ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vector3ArrayShaderVariable;
+import org.spout.engine.world.SpoutChunkSnapshotModel;
 
 /**
  * Represents a Shader Object in OpenGL
  */
 public class ClientShader extends Resource implements Shader {
-	
+
 	public class ShaderCompilationTask implements Runnable{
 
 		private final ClientShader shader;
 		private final String vsource,fsource;
 		private final String vsourceUrl,fsourceUrl;
-		
+
 		public ShaderCompilationTask(ClientShader shader,String vsource, String vsourceUrl, String fsource, String fsourceUrl){
 			this.shader = shader;
 			this.vsource = vsource;
@@ -81,7 +82,7 @@ public class ClientShader extends Resource implements Shader {
 			this.fsource = fsource;
 			this.fsourceUrl = fsourceUrl;
 		}
-		
+
 		@Override
 		public void run() {
 			doCompileShader(vsource,fsource);
@@ -105,32 +106,49 @@ public class ClientShader extends Resource implements Shader {
 
 			GL20.glLinkProgram(program);
 
-			int status = GL20.glGetProgram(program, GL20.GL_LINK_STATUS);
+			int status = GL20.glGetProgrami(program, GL20.GL_LINK_STATUS);
 			if (status != GL11.GL_TRUE) {
 				String error = GL20.glGetProgramInfoLog(program, 255);
 				throw new ShaderCompileException("Link Error in " + vsourceUrl + ", " + fsourceUrl +": " + error);
 			}
 			if (validateShader) {
-				System.out.println("Attached Shaders: " + GL20.glGetProgram(program, GL20.GL_ATTACHED_SHADERS));
-				int activeAttributes = GL20.glGetProgram(program, GL20.GL_ACTIVE_ATTRIBUTES);
-				System.out.println("Active Attributes: " + activeAttributes);
-				int maxAttributeLength = GL20.glGetProgram(program, GL20.GL_ACTIVE_ATTRIBUTE_MAX_LENGTH);
+				//Shaders
+				shader.attachedShaders = GL20.glGetProgrami(program, GL20.GL_ATTACHED_SHADERS);
+
+				//Attributes
+				int activeAttributes = GL20.glGetProgrami(program, GL20.GL_ACTIVE_ATTRIBUTES);
+				int maxAttributeLength = GL20.glGetProgrami(program, GL20.GL_ACTIVE_ATTRIBUTE_MAX_LENGTH);
 				for (int i = 0; i < activeAttributes; i++) {
-					System.out.println("\t" + GL20.glGetActiveAttrib(program, i, maxAttributeLength));
+					String name = GL20.glGetActiveAttrib(program, i, maxAttributeLength);
+					int type = GL20.glGetActiveAttribType(program, i);
+					int size = GL20.glGetActiveAttribSize(program, i);
+
+					AttrUniInfo info = new AttrUniInfo(name, type, size, i, false);
+
+					shader.attributes.add(info);
 				}
 
-				int activeUniforms = GL20.glGetProgram(program, GL20.GL_ACTIVE_UNIFORMS);
-				System.out.println("Active Uniforms: " + activeUniforms);
-				int maxUniformLength = GL20.glGetProgram(program, GL20.GL_ACTIVE_UNIFORM_MAX_LENGTH);
+				//Uniforms
+				int activeUniforms = GL20.glGetProgrami(program, GL20.GL_ACTIVE_UNIFORMS);
+				int maxUniformLength = GL20.glGetProgrami(program, GL20.GL_ACTIVE_UNIFORM_MAX_LENGTH);
 				for (int i = 0; i < activeUniforms; i++) {
-					System.out.println("\t" + GL20.glGetActiveUniform(program, i, maxUniformLength));
+					String name = GL20.glGetActiveUniform(program, i, maxUniformLength);
+					int type = GL20.glGetActiveUniformType(program, i);
+					int size = GL20.glGetActiveUniformSize(program, i);
+
+					AttrUniInfo info = new AttrUniInfo(name, type, size, i, true);
+
+					shader.uniforms.add(info);
 				}
+
+				//Dump
+				shader.dump();
 
 				// Show the log, info/warning based on whether validation was successful
 				// Print line by line to avoid botched time stamps
 				GL20.glValidateProgram(shader.program);
 				String[] logLines  = GL20.glGetProgramInfoLog(program, 255).split("\n");
-				if (GL20.glGetProgram(program, GL20.GL_VALIDATE_STATUS) == GL11.GL_TRUE) {
+				if (GL20.glGetProgrami(program, GL20.GL_VALIDATE_STATUS) == GL11.GL_TRUE) {
 					for (String line : logLines) {
 						Spout.getLogger().info(line.trim());
 					}
@@ -143,14 +161,124 @@ public class ClientShader extends Resource implements Shader {
 			SpoutRenderer.checkGLError();
 		}
 	}
-	
+
+	public class AttrUniInfo{
+
+		private final String name;
+		private final int type, size, location;
+		private final boolean isUniform;
+
+		public AttrUniInfo(String name, int type, int size, int location, boolean isUniform){
+			this.name = name;
+			this.type = type;
+			this.size = size;
+			this.location = location;
+			this.isUniform = isUniform;
+		}
+
+		public String getName(){
+			return name;
+		}
+
+		public int getType(){
+			return type;
+		}
+
+		public int getSize(){
+			return size;
+		}
+
+		public int getLocation(){
+			return location;
+		}
+
+		public boolean isUniform(){
+			return isUniform;
+		}
+
+		@Override
+		public String toString(){
+			String stype;
+
+			//Todo : Replace this swith by a magical OpenGLConstantToString() ?
+			switch (type) {
+			case GL20.GL_BOOL:
+				stype = "GL_BOOL";
+				break;
+			case GL20.GL_BOOL_VEC2:
+				stype = "GL_BOOL_VEC2";
+				break;
+			case GL20.GL_BOOL_VEC3:
+				stype = "GL_BOOL_VEC3";
+				break;
+			case GL20.GL_BOOL_VEC4:
+				stype = "GL_BOOL_VEC4";
+				break;
+			case GL20.GL_FLOAT_VEC2:
+				stype = "GL_FLOAT_VEC2";
+				break;
+			case GL20.GL_FLOAT_VEC3:
+				stype = "GL_FLOAT_VEC3";
+				break;
+			case GL20.GL_FLOAT_VEC4:
+				stype = "GL_FLOAT_VEC4";
+				break;
+			case GL20.GL_FLOAT_MAT2:
+				stype = "GL_FLOAT_MAT2";
+				break;
+			case GL20.GL_FLOAT_MAT3:
+				stype = "GL_FLOAT_MAT3";
+				break;
+			case GL20.GL_FLOAT_MAT4:
+				stype = "GL_FLOAT_MAT4";
+				break;
+			case GL20.GL_INT_VEC2:
+				stype = "GL_INT_VEC2";
+				break;
+			case GL20.GL_INT_VEC3:
+				stype = "GL_INT_VEC3";
+				break;
+			case GL20.GL_INT_VEC4:
+				stype = "GL_INT_VEC4";
+				break;
+			case GL20.GL_SAMPLER_1D:
+				stype = "GL_SAMPLER_1D";
+				break;
+			case GL20.GL_SAMPLER_1D_SHADOW:
+				stype = "GL_SAMPLER_1D_SHADOW";
+				break;
+			case GL20.GL_SAMPLER_2D:
+				stype = "GL_SAMPLER_2D";
+				break;
+			case GL20.GL_SAMPLER_2D_SHADOW:
+				stype = "GL_SAMPLER_2D_SHADOW";
+				break;
+			case GL20.GL_SAMPLER_3D:
+				stype = "GL_SAMPLER_3D";
+				break;
+			case GL20.GL_SAMPLER_CUBE:
+				stype = "GL_SAMPLER_CUBE";
+				break;
+			default:
+				stype = "unknow";
+				break;
+			}
+
+			return name + " type:" + stype + (size == 1 ? "" : "[" + size + "]");
+		}
+	}
+
 	int program;
+
+	int attachedShaders;
+	List<AttrUniInfo> attributes = new ArrayList<ClientShader.AttrUniInfo>();
+	List<AttrUniInfo> uniforms = new ArrayList<ClientShader.AttrUniInfo>();
 
 	HashMap<String, ShaderVariable> variables = new HashMap<String, ShaderVariable>();
 	HashMap<String, TextureSamplerShaderVariable> textures = new HashMap<String, TextureSamplerShaderVariable>();
 	List<String> dirtyVariables = new ArrayList<String>();
 	List<String> dirtyTextures = new ArrayList<String>();
-	
+
 	int maxTextures;
 
 	public static boolean validateShader = true;
@@ -162,7 +290,6 @@ public class ClientShader extends Resource implements Shader {
 	public ClientShader(String vshaderSource, String vshaderUrl, String fshaderSource, String fshaderUrl, boolean override){
 		doCompileShader(vshaderSource, vshaderUrl, fshaderSource, fshaderUrl);
 	}
-
 
 	public ClientShader(String vertexShader, String fragmentShader) {
 
@@ -284,14 +411,14 @@ public class ClientShader extends Resource implements Shader {
 	}
 
 	private static ClientShader assigned = null;
-	
+
 	@Override
 	public void assign() {
 		if (((Client)Spout.getEngine()).getRenderMode()==RenderMode.GL11) {
 			assign(true);
 			return;
 		}
-		
+
 		if(assigned != this){
 			GL20.glUseProgram(program);
 			SpoutRenderer.checkGLError();
@@ -311,7 +438,7 @@ public class ClientShader extends Resource implements Shader {
 				variables.get(key).assign();
 			}
 			dirtyVariables.clear();
-			
+
 			if(!dirtyTextures.isEmpty()){ // MUST all reassign it, because keep texture number
 				int i = 0;
 				for(TextureSamplerShaderVariable v : textures.values()){
@@ -320,10 +447,10 @@ public class ClientShader extends Resource implements Shader {
 				}
 				dirtyTextures.clear();
 			}
-			
+
 		}
 	}
-	
+
 	public void assign(boolean compatibilityMode) {
 		// Overriden by basic shader
 	}
@@ -347,17 +474,17 @@ public class ClientShader extends Resource implements Shader {
 			"uniform sampler2D texture; \n" +
 			"void main()\n{\n" +
 			"gl_FragColor =  color; \n} \n";
-	
+
 	private void dispose() {
 		if(program != -1 ) GL20.glDeleteProgram(program);
 	}
-	
+
 	public void finalize() {
 		dispose();
 	}
 
 	private RenderMaterial renderMaterial = null;
-	
+
 	@Override
 	public RenderMaterial getMaterialAssigned() {
 		return renderMaterial;
@@ -366,5 +493,19 @@ public class ClientShader extends Resource implements Shader {
 	@Override
 	public void setMaterialAssigned(RenderMaterial material) {
 		this.renderMaterial = material;
+	}
+
+	public void dump(){
+		System.out.println("Attached Shaders: " + attachedShaders);
+
+		System.out.println("Active Attributes: " + attributes.size());
+		for (AttrUniInfo i : attributes) {
+			System.out.println("\t" + i);
+		}
+
+		System.out.println("Active Uniforms: " + uniforms.size());
+		for (AttrUniInfo i : uniforms) {
+			System.out.println("\t" + i);
+		}
 	}
 }
