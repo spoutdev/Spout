@@ -26,62 +26,42 @@
  */
 package org.spout.api.inventory.recipe;
 
-import java.io.Serializable;
-import java.util.List;
-
 import org.spout.api.inventory.ItemStack;
-import org.spout.api.material.Material;
-import org.spout.api.plugin.Plugin;
 
 /**
- * Represents an arrangement of {@link ItemStack} with an outcome
+ * Represents an immutable recipe for a specified {@link ItemStack} product.
+ * Useful for crafting implementations.
  */
-public abstract class Recipe implements Serializable, Cloneable {
-	protected final ItemStack result;
-	protected final Plugin plugin;
-	protected final boolean includeData;
+public abstract class Recipe {
+	protected final ItemStack product;
 
-	public Recipe(ItemStack result) {
-		this(result, null);
-	}
-
-	public Recipe(ItemStack result, Plugin plugin) {
-		this(result, plugin, false);
-	}
-
-	public Recipe(ItemStack result, Plugin plugin, boolean includeData) {
-		this.result = result;
-		this.plugin = plugin;
-		this.includeData = includeData;
+	protected Recipe(ItemStack product) {
+		this.product = product;
 	}
 
 	/**
-	 * Returns the result of the Recipe if successful.
+	 * Returns the {@link ItemStack} product of this Recipe.
 	 *
-	 * @return result of recipe
+	 * @return product of recipe
 	 */
-	public ItemStack getResult() {
-		return result;
-	}
-
-	public Plugin getPlugin() {
-		return plugin;
-	}
-	
-	public boolean getIncludeData() {
-		return includeData;
+	public ItemStack getProduct() {
+		return product.clone();
 	}
 
 	/**
-	 * Returns the required ingredients to meet the requirements of the recipe.
+	 * Returns the ingredients specified by the implementation that is required
+	 * to produce the product.
 	 *
-	 * @return List of ingredients to craft the recipe
+	 * @return ingredients for recipe
 	 */
-	public abstract List<Material> getIngredients();
-	
-	public abstract RecipeBuilder toBuilder();
+	public abstract Object getIngredients();
 
 	@Override
-	public abstract Recipe clone();
-
+	public boolean equals(Object obj) {
+		if (obj instanceof Recipe) {
+			Recipe recipe = (Recipe) obj;
+			return recipe.product.equals(product) && recipe.getIngredients().equals(getIngredients());
+		}
+		return false;
+	}
 }

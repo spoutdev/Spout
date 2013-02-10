@@ -26,34 +26,53 @@
  */
 package org.spout.api.inventory.recipe;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import java.util.Map;
 
-import org.spout.api.inventory.ItemStack;
-import org.spout.api.material.BlockMaterial;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import org.spout.api.material.Material;
 
-public class ShapelessRecipeTest {
-	@Before
-	public void setupMaterials() {
-		EngineFaker.setupEngine();
+public class ShapedRecipeBuilder extends RecipeBuilder {
+	protected final Map<Character, Material> ingredientMap = new HashMap<Character, Material>();
+	protected List<String> rows = new ArrayList<String>();
+
+	private List<List<Material>> getRows() {
+		List<List<Material>> rows = new ArrayList<List<Material>>();
+		for (String row : this.rows) {
+			List<Material> r = new ArrayList<Material>();
+			for (char c : row.toCharArray()) {
+				r.add(ingredientMap.get(c));
+			}
+			rows.add(r);
+		}
+		return Collections.unmodifiableList(rows);
 	}
 
-	@Test
-	public void testShapelessRecipe() {
-		ItemStack solid = new ItemStack(BlockMaterial.SOLID, 1);
-		RecipeBuilder builder = new RecipeBuilder().setResult(solid).addIngredient(BlockMaterial.UNBREAKABLE);
-		ShapelessRecipe recipe = builder.buildShapelessRecipe();
-		List<Material> single = Arrays.asList((Material) BlockMaterial.UNBREAKABLE);
-		List<Material> multiple = Arrays.asList((Material) BlockMaterial.UNBREAKABLE, (Material) BlockMaterial.UNBREAKABLE);
-		SimpleRecipeManager manager = new SimpleRecipeManager();
-		manager.register(recipe);
-		assertNotNull(manager.matchShapelessRecipe(single));
-		assertNull(manager.matchShapelessRecipe(multiple));
+	public List<String> getShape() {
+		return Collections.unmodifiableList(rows);
+	}
+
+	public void setShape(String... rows) {
+		this.rows = Arrays.asList(rows);
+	}
+
+	public Map<Character, Material> getIngredientMap() {
+		return Collections.unmodifiableMap(ingredientMap);
+	}
+
+	public Material getIngredient(char c) {
+		return ingredientMap.get(c);
+	}
+
+	public Material setIngredient(char c, Material ingredient) {
+		return ingredientMap.put(c, ingredient);
+	}
+
+	@Override
+	public ShapedRecipe build() {
+		return new ShapedRecipe(product, getRows());
 	}
 }

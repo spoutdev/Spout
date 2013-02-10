@@ -33,7 +33,7 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.spout.api.inventory.recipe.EngineFaker;
+import org.spout.api.EngineFaker;
 import org.spout.api.inventory.util.InventoryIterator;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
@@ -41,14 +41,17 @@ import org.spout.api.material.Material;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class InventoryTest extends EngineFaker {
+public class InventoryTest {
 	private final Material[] mats = {BlockMaterial.AIR, BlockMaterial.SOLID, BlockMaterial.UNBREAKABLE};
 	private final Random random = new Random();
 	private List<ItemStack> items = new ArrayList<ItemStack>(3);
 	private Inventory inventory = new Inventory(20);
+
+	static {
+		EngineFaker.setupEngine();
+	}
 
 	@Before
 	public void constructRandomInventory() {

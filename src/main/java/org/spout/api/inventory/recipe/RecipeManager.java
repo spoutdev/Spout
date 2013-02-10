@@ -26,101 +26,77 @@
  */
 package org.spout.api.inventory.recipe;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
-import org.spout.api.material.Material;
 import org.spout.api.plugin.Plugin;
 
+/**
+ * Interface for registering {@link Recipe} implementations.
+ */
 public interface RecipeManager {
-
 	/**
-	 * Registers a recipe to be stored.
+	 * Registers a new {@link Recipe} to the specified {@link Plugin}.
 	 *
 	 * @param recipe to register
-	 * @return true if recipe already existed
-	 */
-	public boolean register(Recipe recipe);
-
-	/**
-	 * Registers all the specified recipes to the specified plugin.
-	 *
-	 * @param plugin to register recipes to
-	 * @param recipes to register
-	 * @return true if the set of recipes was changed
-	 */
-	public boolean registerAll(Set<Recipe> recipes);
-
-	/**
-	 * Removes a recipe.
-	 *
-	 * @param recipe to remove
+	 * @param plugin to bind recipe to
 	 * @return whether the recipe existed
 	 */
-	public boolean remove(Recipe recipe);
-	
-	/**
-	 * Replaces an old recipe with a new one.
-	 * @param oldRecipe
-	 * @param newRecipe
-	 * @return true if fully successful
-	 */
-	public boolean replaceRecipe(Recipe oldRecipe, Recipe newRecipe);
+	public boolean register(Recipe recipe, Plugin plugin);
 
 	/**
-	 * Clears all recipes.
+	 * Removes all recipes that are the same for every plugin. Note that there
+	 * can be multiple recipes that are the same in the manager bound to
+	 * different plugins.
+	 *
+	 * @param recipe to remove
+	 */
+	public void remove(Recipe recipe);
+
+	/**
+	 * Clears all recipes bound to the specified plugin.
+	 *
+	 * @param plugin to clear all recipes from
+	 */
+	public void clear(Plugin plugin);
+
+	/**
+	 * Removes every recipe.
 	 */
 	public void clear();
 
 	/**
-	 * Returns all recipes of all registered {@link Plugin}s
+	 * Returns all the {@link Recipe}s bound to the specified {@link Plugin}.
+	 *
+	 * @param plugin to get recipes for
+	 * @return recipes bound to the specified plugin
+	 */
+	public Set<Recipe> getRecipes(Plugin plugin);
+
+	/**
+	 * Returns all recipes.
 	 *
 	 * @return all recipes
 	 */
-	public Set<Recipe> getAllRecipes();
+	public Set<Recipe> getRecipes();
 
 	/**
-	 * Gets all the shaped recipes registered for a plugin.
-	 * @param plugin that the recipes belongs to
-	 * @return the recipes if they're found, otherwise an empty set
+	 * Whether the manager contains a {@link Recipe} that matches the specified
+	 * recipe that is also bound to the specified {@link Plugin}.
+	 *
+	 * @see Recipe#equals(Object)
+	 * @param plugin to get recipes from
+	 * @param recipe to look for
+	 * @return true if the recipe has a match that's bound to the plugin
 	 */
-	public Set<Recipe> getShapedRecipes(Plugin plugin);
+	public boolean contains(Plugin plugin, Recipe recipe);
 
 	/**
-	 * Gets all the shapeless recipes registered for a plugin.
-	 * @param plugin that the recipes belongs to
-	 * @return the recipes if they're found, otherwise an empty set
+	 * Whether the manager contains a {@link Recipe} that matches the specified
+	 * recipe.
+	 *
+	 * @see Recipe#equals(Object)
+	 * @param recipe to look for
+	 * @return true if the recipe has a match
 	 */
-	public Set<Recipe> getShapelessRecipes(Plugin plugin);
-
-	/**
-	 * Match the materials to any ShapedRecipe
-	 * @param materials by rows
-	 * @return ShapedRecipe
-	 */
-	public ShapedRecipe matchShapedRecipe(List<List<Material>> materials);
-
-	/**
-	 * Match the materials to any ShapelessRecipe
-	 * @param materials
-	 * @return ShapelesRecipe
-	 */
-	public ShapelessRecipe matchShapelessRecipe(List<Material> materials);
-
-	/**
-	 * Match the materials to any ShapedRecipe for a given plugin
-	 * @param plugin
-	 * @param materials by rows
-	 * @return ShapedRecipe
-	 */
-	public ShapedRecipe matchShapedRecipe(Plugin plugin, List<List<Material>> materials);
-
-	/**
-	 * Match the materials to any ShapelessRecipe for a given plugin
-	 * @param plugin
-	 * @param materials
-	 * @return ShapelesRecipe
-	 */
-	public ShapelessRecipe matchShapelessRecipe(Plugin plugin, List<Material> materials);
+	public boolean contains(Recipe recipe);
 }

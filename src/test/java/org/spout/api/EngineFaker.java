@@ -24,7 +24,7 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.inventory.recipe;
+package org.spout.api;
 
 import org.powermock.api.mockito.PowerMockito;
 import org.spout.api.Engine;
