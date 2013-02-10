@@ -65,12 +65,15 @@ public class AnimationLoader extends BasicResourceLoader<Animation> {
 			
 			Map<? extends Integer, String> value = (Map<? extends Integer, String>)entry.getValue();
 			
+			int i = 0;
 			for(Entry<? extends Integer, String> entryBone : value.entrySet()){
 				int frame = (Integer)entryBone.getKey() - 1; //Start at 1
 
 				BoneTransform boneTransform = new BoneTransform(loadFloatList((String)entryBone.getValue()));
 				
-				animation.setBoneTransform(bone.getId(), frame, boneTransform);
+				animation.setBoneTransform(bone.getId(), i/*frame*/, boneTransform);
+				
+				i++;
 			}
 		}
 
