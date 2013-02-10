@@ -152,7 +152,6 @@ public class ClientTexture extends Texture {
 			//	GL30.glGenerateMipmap(textureID);
 			//}
 
-
 			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
 			SpoutRenderer.checkGLError();
 
