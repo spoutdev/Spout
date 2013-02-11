@@ -27,6 +27,7 @@
 package org.spout.api.render;
 
 import java.awt.Color;
+import java.util.List;
 
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
@@ -64,5 +65,7 @@ public interface Shader {
 	public abstract void setUniform(String name, Matrix[] matricies);
 
 	public abstract void checkUniform();
+
+	public abstract void checkAttributes(List<Integer> attributesUsed);
 
 }
