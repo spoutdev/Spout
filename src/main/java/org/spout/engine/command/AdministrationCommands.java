@@ -298,7 +298,7 @@ public class AdministrationCommands {
 
 			source.sendMessage(ChatStyle.BRIGHT_GREEN, "Reloaded.");
 		} else {
-			String pluginName = args.getString(0);
+			String pluginName = args.getString(0).toLowerCase();
 			if (Spout.getEngine().getPluginManager().getPlugin(pluginName) == null) {
 				throw new CommandException("'" + pluginName + "' is not a valid plugin name.");
 			}
