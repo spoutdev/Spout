@@ -26,6 +26,8 @@
  */
 package org.spout.engine;
 
+import gnu.trove.map.hash.TIntObjectHashMap;
+
 import java.awt.Canvas;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -391,6 +393,49 @@ public class SpoutRenderer {
 		} else {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 			wireframe = true;
+		}
+	}
+
+	private static final TIntObjectHashMap<String> glTypeNames = new TIntObjectHashMap<String>();
+
+	private static void setGLTypeName(int typeId, String typeName) {
+		glTypeNames.put(typeId, typeName);
+	}
+
+	static {
+		setGLTypeName(GL20.GL_BOOL, "GL_BOOL");
+		setGLTypeName(GL20.GL_BOOL_VEC2, "GL_BOOL_VEC2");
+		setGLTypeName(GL20.GL_BOOL_VEC3, "GL_BOOL_VEC3");
+		setGLTypeName(GL20.GL_BOOL_VEC4, "GL_BOOL_VEC4");
+		setGLTypeName(GL20.GL_FLOAT_VEC2, "GL_FLOAT_VEC2");
+		setGLTypeName(GL20.GL_FLOAT_VEC3, "GL_FLOAT_VEC3");
+		setGLTypeName(GL20.GL_FLOAT_VEC4, "GL_FLOAT_VEC4");
+		setGLTypeName(GL20.GL_FLOAT_MAT2, "GL_FLOAT_MAT2");
+		setGLTypeName(GL20.GL_FLOAT_MAT3, "GL_FLOAT_MAT3");
+		setGLTypeName(GL20.GL_FLOAT_MAT4, "GL_FLOAT_MAT4");
+		setGLTypeName(GL20.GL_INT_VEC2, "GL_INT_VEC2");
+		setGLTypeName(GL20.GL_INT_VEC3, "GL_INT_VEC3");
+		setGLTypeName(GL20.GL_INT_VEC4, "GL_INT_VEC4");
+		setGLTypeName(GL20.GL_SAMPLER_1D, "GL_SAMPLER_1D");
+		setGLTypeName(GL20.GL_SAMPLER_1D_SHADOW, "GL_SAMPLER_1D_SHADOW");
+		setGLTypeName(GL20.GL_SAMPLER_2D, "GL_SAMPLER_2D");
+		setGLTypeName(GL20.GL_SAMPLER_2D_SHADOW, "GL_SAMPLER_2D_SHADOW");
+		setGLTypeName(GL20.GL_SAMPLER_3D, "GL_SAMPLER_3D");
+		setGLTypeName(GL20.GL_SAMPLER_CUBE, "GL_SAMPLER_CUBE");
+	}
+
+	/**
+	 * Gets the GL type name from a GL type identifier
+	 * 
+	 * @param glType to get the name of
+	 * @return The GL type name
+	 */
+	public static String getGLTypeName(int glType) {
+		String name = glTypeNames.get(glType);
+		if (name == null) {
+			return "UNKNOWN(" + glType + ")";
+		} else {
+			return name;
 		}
 	}
 
