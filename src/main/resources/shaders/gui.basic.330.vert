@@ -18,9 +18,9 @@ void main() {
 	model[3][0] = model[2][0];
 	model[3][1] = model[2][1];
 	model[3][2] = model[2][2];
-	model[2][0] = 0;
-	model[2][1] = 0;
-	model[2][2] = 1;
+	model[2][0] = 0.0;
+	model[2][1] = 0.0;
+	model[2][2] = 1.0;
 	gl_Position = Projection * View * mat4(model) * vPosition;
 	
 	uvcoord = vTexCoord;

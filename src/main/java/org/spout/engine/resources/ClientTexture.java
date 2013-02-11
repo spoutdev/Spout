@@ -58,7 +58,7 @@ public class ClientTexture extends Texture {
 	}
 
 	public int getTextureID() {
-		if (textureID == -1) {
+		if (!isLoaded()) {
 			throw new IllegalStateException("Cannot use an unloaded texture");
 		}
 		return textureID;
@@ -66,7 +66,7 @@ public class ClientTexture extends Texture {
 
 	@Override
 	public void bind() {
-		if (isLoaded()) {
+		if (!isLoaded()) {
 			throw new IllegalStateException("Cannot bind an unloaded texture!");
 		}
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -76,8 +76,7 @@ public class ClientTexture extends Texture {
 	}
 
 	public void unload() {
-		
-		if (textureID == -1) {
+		if (!isLoaded()) {
 			throw new IllegalStateException("Cannot delete an unloaded texture!");
 		}
 
@@ -162,7 +161,7 @@ public class ClientTexture extends Texture {
 
 	@Override
 	public void writeGPU() {
-		if (textureID != -1) {
+		if (isLoaded()) {
 			throw new IllegalStateException("Cannot load an already loaded texture!");
 		}
 		((SpoutClient) Spout.getEngine()).getScheduler().enqueueRenderTask(new WriteGPUTask(getWidth(),getHeight(),this.image));
