@@ -28,7 +28,6 @@ package org.spout.engine.renderer;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -45,8 +44,6 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 	int vao;
 	int vbos = -1;
 
-	ArrayList<Integer> assigned = new ArrayList<Integer>();
-	
 	SpoutFloatBuffer buffer = null;
 	//TIntObjectHashMap<GLFloatBuffer > vertexBuffers = new TIntObjectHashMap<GLFloatBuffer>();
 
@@ -78,7 +75,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 			size += floatBuffers[i].limit();
 			i++;
 		}
-		
+
 		FloatBuffer buffer = BufferUtils.createFloatBuffer(size);
 		buffer.clear();
 
@@ -89,15 +86,15 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 				}
 			}
 		}
-		
+
 		buffer.flip();
-		
+
 		if(flushingBuffer == null)
 			flushingBuffer = SpoutFloatBuffer.getBuffer();
-		
+
 		flushingBuffer.setData(elements, layouts, buffer);
 	}
-	
+
 	@Override
 	protected boolean doFlush(boolean force) {
 		if(flushingBuffer.flush(force)){
@@ -107,6 +104,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 			if(currentBuffer != null){
 				currentBuffer.unbind();
 				for(int layout : currentBuffer.getLayout()){
+					attributesUsed.remove(new Integer(layout));
 					GL20.glDisableVertexAttribArray(layout);
 					SpoutRenderer.checkGLError();
 				}
@@ -115,6 +113,7 @@ public class GL30BatchVertexRenderer extends BatchVertexRenderer {
 			flushingBuffer.bind();
 
 			for(int layout : flushingBuffer.getLayout()){
+				attributesUsed.add(layout);
 				GL20.glEnableVertexAttribArray(layout);
 				SpoutRenderer.checkGLError();
 			}

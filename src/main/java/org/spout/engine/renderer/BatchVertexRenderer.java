@@ -30,6 +30,7 @@ import gnu.trove.list.array.TFloatArrayList;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -111,6 +112,8 @@ public abstract class BatchVertexRenderer implements Renderer {
 	}
 
 	final int renderMode;
+	
+	List<Integer> attributesUsed = new ArrayList<Integer>();
 
 	SpoutFloatBuffer currentBuffer = null;
 	SpoutFloatBuffer flushingBuffer = null;
@@ -158,6 +161,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	@Override
 	public void draw(RenderMaterial material, int startVert, int endVert){
 		if(getVertexCount() <= 0) throw new IllegalStateException("Cannot render 0 verticies");
+		material.getShader().checkAttributes(attributesUsed);
 		doDraw(material, startVert, endVert);
 	}
 
@@ -169,6 +173,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	public final void render(RenderMaterial material, int startVert, int endVert) {
 		if(getVertexCount() <= 0) throw new IllegalStateException("Cannot render 0 verticies");
 		preDraw();
+		material.getShader().checkAttributes(attributesUsed);
 		doDraw(material, startVert, endVert);
 		postDraw();
 	}

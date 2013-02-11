@@ -92,6 +92,7 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 	@Override
 	public void preDraw() {
 		for(int layout : currentBuffer.getLayout()){
+			attributesUsed.add(layout);
 			GL20.glEnableVertexAttribArray(layout);
 			SpoutRenderer.checkGLError();
 		}
@@ -115,6 +116,7 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 	@Override
 	public void postDraw() {
 		for(int layout : currentBuffer.getLayout()){
+			attributesUsed.remove(new Integer(layout));
 			GL20.glDisableVertexAttribArray(layout);
 			SpoutRenderer.checkGLError();
 		}

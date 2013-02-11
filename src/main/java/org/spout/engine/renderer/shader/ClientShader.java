@@ -129,7 +129,7 @@ public class ClientShader extends Resource implements Shader {
 					String name = GL20.glGetActiveAttrib(program, i, maxAttributeLength);
 					int type = GL20.glGetActiveAttribType(program, i);
 					int size = GL20.glGetActiveAttribSize(program, i);
-
+					
 					AttrUniInfo info = new AttrUniInfo(name, type, size, i, false);
 
 					shader.attributes.put(info.getLocation(), info);
@@ -142,6 +142,10 @@ public class ClientShader extends Resource implements Shader {
 					String name = GL20.glGetActiveUniform(program, i, maxUniformLength);
 					int type = GL20.glGetActiveUniformType(program, i);
 					int size = GL20.glGetActiveUniformSize(program, i);
+
+					//Fix to avoid [0] at the end of uniform name
+					if(size != 1)
+						name = name.substring(0, name.length() - 3);
 
 					AttrUniInfo info = new AttrUniInfo(name, type, size, i, true);
 
@@ -503,6 +507,20 @@ public class ClientShader extends Resource implements Shader {
 		this.renderMaterial = material;
 	}
 	
+	public void checkAttributes(List<Integer> used){
+		/*Map<Integer,AttrUniInfo> map = new HashMap<Integer, ClientShader.AttrUniInfo>(attributes);
+		
+		for(Integer layout : used){
+			if(map.remove(layout) == null){
+				Spout.getLogger().warning( "In " + shaderName + " Attribut " + layout + " don't exist");
+			}
+		}
+		
+		for(Entry<Integer, AttrUniInfo> var : map.entrySet()){
+			Spout.getLogger().warning( "In " + shaderName + " Attribut " + var.getValue().getName() + " not assigned");
+		}*/
+	}
+	
 	public void checkUniform(){
 		if(!dirtyTextures.isEmpty() || !dirtyVariables.isEmpty()){
 			throw new IllegalStateException("You must check uniform after assign the shader");
@@ -516,7 +534,13 @@ public class ClientShader extends Resource implements Shader {
 			}
 		}
 		
-		for(Entry<String, ShaderVariable> var : variables.entrySet()){
+		for(Entry<String, TextureSamplerShaderVariable> var : textures.entrySet()){
+			if(map.remove(var.getKey()) == null){
+				Spout.getLogger().warning( "In " + shaderName + " Uniform " + var.getKey() + " don't exist");
+			}
+		}
+		
+		for(Entry<String, AttrUniInfo> var : map.entrySet()){
 			Spout.getLogger().warning( "In " + shaderName + " Uniform " + var.getKey() + " not assigned");
 		}
 	}
