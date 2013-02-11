@@ -207,7 +207,7 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 
 		//TODO: Parse matricies 
 
-		ClientRenderMaterial material = new ClientRenderMaterial(shader, paramsNew, null, null, depthTesting, layer);
+		ClientRenderMaterial material = new ClientRenderMaterial(shader, paramsNew, depthTesting, layer);
 		Object re = resourceProperties.get("RenderEffects");
 		if(re != null && re instanceof String[]) {
 			String[] renderEffects = (String[])re;

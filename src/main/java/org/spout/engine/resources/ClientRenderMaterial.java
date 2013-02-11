@@ -41,12 +41,10 @@ import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Shader;
-import org.spout.api.render.effect.BatchEffect;
 import org.spout.api.render.effect.BufferEffect;
 import org.spout.api.render.effect.EntityEffect;
 import org.spout.api.render.effect.MeshEffect;
 import org.spout.api.render.effect.RenderEffect;
-import org.spout.api.render.effect.SnapshotBatch;
 import org.spout.api.render.effect.SnapshotEntity;
 import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.render.effect.SnapshotRender;
@@ -58,27 +56,22 @@ public class ClientRenderMaterial extends RenderMaterial {
 	Map<String, Object> materialParameters;
 
 	boolean depthTesting;
-	Matrix view;
-	Matrix projection;
 	int layer;
-	private List<BatchEffect> batchEffects = new ArrayList<BatchEffect>();
 	private List<RenderEffect> renderEffects = new ArrayList<RenderEffect>();
 	private List<EntityEffect> entityEffects = new ArrayList<EntityEffect>();
 	private List<BufferEffect> bufferEffects = new ArrayList<BufferEffect>();
 
 	public ClientRenderMaterial(Shader s, Map<String, Object> params){
-		this(s, params, null, null, true, 0);
+		this(s, params, true, 0);
 	}
 
 	public ClientRenderMaterial(Shader s, Map<String, Object> params, int layer){
-		this(s, params, null, null, true, layer);
+		this(s, params, true, layer);
 	}
 
-	public ClientRenderMaterial(Shader s, Map<String, Object> params, Matrix projection, Matrix view, boolean depth, int layer){
+	public ClientRenderMaterial(Shader s, Map<String, Object> params, boolean depth, int layer){
 		this.shader = s;
 		this.materialParameters = params;
-		this.projection = projection;
-		this.view = view;
 		this.depthTesting = depth;
 		this.layer = layer;
 	}
@@ -139,18 +132,6 @@ public class ClientRenderMaterial extends RenderMaterial {
 	}
 
 	@Override
-	public void preBatch(SnapshotBatch snapshotBatch) {
-		for(BatchEffect batchEffect : getBatchEffects())
-			batchEffect.preBatch(snapshotBatch);
-	}
-
-	@Override
-	public void postBatch(SnapshotBatch snapshotBatch) {
-		for(BatchEffect batchEffect : getBatchEffects())
-			batchEffect.postBatch(snapshotBatch);
-	}
-
-	@Override
 	public void preRender(SnapshotRender snapshotRender) {
 		for(RenderEffect renderEffect : getRenderEffects())
 			renderEffect.preRender(snapshotRender);
@@ -202,16 +183,6 @@ public class ClientRenderMaterial extends RenderMaterial {
 	@Override
 	public Collection<RenderEffect> getRenderEffects() {
 		return Collections.unmodifiableCollection(renderEffects);
-	}
-
-	@Override
-	public Collection<BatchEffect> getBatchEffects() {
-		return Collections.unmodifiableCollection(batchEffects);
-	}
-
-	@Override
-	public void addRenderEffect(BatchEffect batchEffect) {
-		batchEffects.add(batchEffect);
 	}
 
 	@Override
