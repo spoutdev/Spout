@@ -209,73 +209,7 @@ public class ClientShader extends Resource implements Shader {
 
 		@Override
 		public String toString(){
-			String stype;
-
-			//Todo : Replace this swith by a magical OpenGLConstantToString() ?
-			switch (type) {
-			case GL20.GL_BOOL:
-				stype = "GL_BOOL";
-				break;
-			case GL20.GL_BOOL_VEC2:
-				stype = "GL_BOOL_VEC2";
-				break;
-			case GL20.GL_BOOL_VEC3:
-				stype = "GL_BOOL_VEC3";
-				break;
-			case GL20.GL_BOOL_VEC4:
-				stype = "GL_BOOL_VEC4";
-				break;
-			case GL20.GL_FLOAT_VEC2:
-				stype = "GL_FLOAT_VEC2";
-				break;
-			case GL20.GL_FLOAT_VEC3:
-				stype = "GL_FLOAT_VEC3";
-				break;
-			case GL20.GL_FLOAT_VEC4:
-				stype = "GL_FLOAT_VEC4";
-				break;
-			case GL20.GL_FLOAT_MAT2:
-				stype = "GL_FLOAT_MAT2";
-				break;
-			case GL20.GL_FLOAT_MAT3:
-				stype = "GL_FLOAT_MAT3";
-				break;
-			case GL20.GL_FLOAT_MAT4:
-				stype = "GL_FLOAT_MAT4";
-				break;
-			case GL20.GL_INT_VEC2:
-				stype = "GL_INT_VEC2";
-				break;
-			case GL20.GL_INT_VEC3:
-				stype = "GL_INT_VEC3";
-				break;
-			case GL20.GL_INT_VEC4:
-				stype = "GL_INT_VEC4";
-				break;
-			case GL20.GL_SAMPLER_1D:
-				stype = "GL_SAMPLER_1D";
-				break;
-			case GL20.GL_SAMPLER_1D_SHADOW:
-				stype = "GL_SAMPLER_1D_SHADOW";
-				break;
-			case GL20.GL_SAMPLER_2D:
-				stype = "GL_SAMPLER_2D";
-				break;
-			case GL20.GL_SAMPLER_2D_SHADOW:
-				stype = "GL_SAMPLER_2D_SHADOW";
-				break;
-			case GL20.GL_SAMPLER_3D:
-				stype = "GL_SAMPLER_3D";
-				break;
-			case GL20.GL_SAMPLER_CUBE:
-				stype = "GL_SAMPLER_CUBE";
-				break;
-			default:
-				stype = "unknow";
-				break;
-			}
-
-			return name + " type:" + stype + (size == 1 ? "" : "[" + size + "]");
+			return name + " type:" + SpoutRenderer.getGLTypeName(type) + (size == 1 ? "" : "[" + size + "]");
 		}
 	}
 
