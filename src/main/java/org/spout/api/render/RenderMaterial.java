@@ -30,11 +30,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.spout.api.render.effect.BatchEffect;
 import org.spout.api.render.effect.BufferEffect;
 import org.spout.api.render.effect.EntityEffect;
 import org.spout.api.render.effect.RenderEffect;
-import org.spout.api.render.effect.SnapshotBatch;
 import org.spout.api.render.effect.SnapshotEntity;
 import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.render.effect.SnapshotRender;
@@ -78,18 +76,6 @@ public abstract class RenderMaterial extends Resource implements Comparable<Rend
 	 * @param snapshotRender 
 	 */
 	public abstract void postMesh(SnapshotMesh snapshotMesh);
-	
-	/**
-	 * Called right before batch
-	 * @param snapshotRender 
-	 */
-	public abstract void preBatch(SnapshotBatch snapshotBatch);
-
-	/**
-	 * Called right after batch
-	 * @param snapshotRender 
-	 */
-	public abstract void postBatch(SnapshotBatch snapshotBatch);
 
 	/**
 	 * Called right before rendering
@@ -120,18 +106,6 @@ public abstract class RenderMaterial extends Resource implements Comparable<Rend
 	 * @return
 	 */
 	public abstract int getLayer();
-	
-	/**
-	 * Return the BatchEffects
-	 * @return
-	 */
-	public abstract Collection<BatchEffect> getBatchEffects();
-
-	/**
-	 * Add BatchEffect
-	 * @param BatchEffect
-	 */
-	public abstract void addRenderEffect(BatchEffect renderEffect);
 	
 	/**
 	 * Return the renderEffects
