@@ -63,23 +63,4 @@ public interface ComponentHolder extends ComponentOwner {
 	 * @return the component, or null if one was not found.
 	 */
 	public <T extends Component> T getExact(Class<T> type);
-
-	/**
-	 * Returns true if the holder contains a component of the specified type.
-	 * Will always return true if the specified type is used, and will return
-	 * true for a super type if the super type was mapped to the component using
-	 * the special put.
-	 * @param type whose component is to be checked for in the holder
-	 * @return true if the component exists in the holder
-	 */
-	public boolean has(Class<? extends Component> type);
-
-	/**
-	 * Returns true if the holder contains a component of the specified type.
-	 * Will always return true if the specified type is used but will return false
-	 * for any child implementations of the type (think an exact match to the type).
-	 * @param type whose component is to be checked for in the holder
-	 * @return true if the component exists in the holder
-	 */
-	public boolean hasExact(Class<? extends Component> type);
 }
