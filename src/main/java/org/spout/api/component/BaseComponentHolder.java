@@ -178,18 +178,6 @@ public class BaseComponentHolder implements ComponentHolder {
 	}
 
 	@Override
-	@Deprecated
-	public boolean has(Class<? extends Component> type) {
-		return get(type) != null;
-	}
-
-	@Override
-	@Deprecated
-	public boolean hasExact(Class<? extends Component> type) {
-		return getExact(type) != null;
-	}
-
-	@Override
 	public Collection<Component> values() {
 		synchronized (components) {
 			return new ArrayList<Component>(components.values());
