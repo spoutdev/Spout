@@ -216,7 +216,7 @@ public class CommonPluginLoader implements PluginLoader {
 			if (loaders == null) {
 				throw new UnknownDependencyException(depend);
 			}
-			if (!loaders.containsKey(depend)) {
+			if (!loaders.containsKey(depend.toLowerCase())) {
 				throw new UnknownDependencyException(depend);
 			}
 		}
@@ -284,7 +284,7 @@ public class CommonPluginLoader implements PluginLoader {
 				}
 			} catch (ClassNotFoundException ignored) {
 			}
-			ignore.add(dependency);
+			ignore.add(dependency.toLowerCase());
 		}
 
 		for (String softDependency : commonLoader.getSoftDepends()) {
@@ -295,7 +295,7 @@ public class CommonPluginLoader implements PluginLoader {
 				}
 			} catch (ClassNotFoundException ignored) {
 			}
-			ignore.add(softDependency);
+			ignore.add(softDependency.toLowerCase());
 		}
 
 		for (String current : loaders.keySet()) {

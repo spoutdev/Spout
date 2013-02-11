@@ -88,7 +88,7 @@ public class CommonPluginManager implements PluginManager {
 
 	@Override
 	public Plugin getPlugin(String plugin) {
-		return names.get(plugin);
+		return names.get(plugin.toLowerCase());
 	}
 
 	@Override
@@ -136,7 +136,7 @@ public class CommonPluginManager implements PluginManager {
 
 		if (result != null) {
 			plugins.add(result);
-			names.put(result.getDescription().getName(), result);
+			names.put(result.getDescription().getName().toLowerCase(), result);
 		}
 
 		if (locked) {
@@ -283,7 +283,7 @@ public class CommonPluginManager implements PluginManager {
 
 	public void loadMetaPlugin() {
 		plugins.add(metaPlugin);
-		names.put("Spout", metaPlugin);
+		names.put("spout", metaPlugin);
 	}
 
 	public SpoutMetaPlugin getMetaPlugin() {
