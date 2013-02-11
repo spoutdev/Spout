@@ -63,4 +63,6 @@ public interface Shader {
 
 	public abstract void setUniform(String name, Matrix[] matricies);
 
+	public abstract void checkUniform();
+
 }
