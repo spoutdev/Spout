@@ -31,6 +31,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -62,7 +64,6 @@ import org.spout.engine.renderer.shader.variables.Vec2ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec3ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec4ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vector3ArrayShaderVariable;
-import org.spout.engine.world.SpoutChunkSnapshotModel;
 
 /**
  * Represents a Shader Object in OpenGL
@@ -118,6 +119,7 @@ public class ClientShader extends Resource implements Shader {
 			}
 			if (validateShader) {
 				//Shaders
+				shader.shaderName = "Shader " + this.fsourceUrl + " " + this.vsourceUrl;
 				shader.attachedShaders = GL20.glGetProgrami(program, GL20.GL_ATTACHED_SHADERS);
 
 				//Attributes
@@ -130,7 +132,7 @@ public class ClientShader extends Resource implements Shader {
 
 					AttrUniInfo info = new AttrUniInfo(name, type, size, i, false);
 
-					shader.attributes.add(info);
+					shader.attributes.put(info.getLocation(), info);
 				}
 
 				//Uniforms
@@ -143,7 +145,7 @@ public class ClientShader extends Resource implements Shader {
 
 					AttrUniInfo info = new AttrUniInfo(name, type, size, i, true);
 
-					shader.uniforms.add(info);
+					shader.uniforms.put(info.getName(), info);
 				}
 
 				//Dump
@@ -275,9 +277,10 @@ public class ClientShader extends Resource implements Shader {
 
 	int program;
 
+	String shaderName;
 	int attachedShaders;
-	List<AttrUniInfo> attributes = new ArrayList<ClientShader.AttrUniInfo>();
-	List<AttrUniInfo> uniforms = new ArrayList<ClientShader.AttrUniInfo>();
+	Map<Integer, AttrUniInfo> attributes = new HashMap<Integer, ClientShader.AttrUniInfo>();
+	Map<String, AttrUniInfo> uniforms = new HashMap<String, ClientShader.AttrUniInfo>();
 
 	HashMap<String, ShaderVariable> variables = new HashMap<String, ShaderVariable>();
 	HashMap<String, TextureSamplerShaderVariable> textures = new HashMap<String, TextureSamplerShaderVariable>();
@@ -499,17 +502,35 @@ public class ClientShader extends Resource implements Shader {
 	public void setMaterialAssigned(RenderMaterial material) {
 		this.renderMaterial = material;
 	}
+	
+	public void checkUniform(){
+		if(!dirtyTextures.isEmpty() || !dirtyVariables.isEmpty()){
+			throw new IllegalStateException("You must check uniform after assign the shader");
+		}
+		
+		Map<String,AttrUniInfo> map = new HashMap<String, ClientShader.AttrUniInfo>(uniforms);
+		
+		for(Entry<String, ShaderVariable> var : variables.entrySet()){
+			if(map.remove(var.getKey()) == null){
+				Spout.getLogger().warning( "In " + shaderName + " Uniform " + var.getKey() + " don't exist");
+			}
+		}
+		
+		for(Entry<String, ShaderVariable> var : variables.entrySet()){
+			Spout.getLogger().warning( "In " + shaderName + " Uniform " + var.getKey() + " not assigned");
+		}
+	}
 
 	public void dump(){
 		System.out.println("Attached Shaders: " + attachedShaders);
 
 		System.out.println("Active Attributes: " + attributes.size());
-		for (AttrUniInfo i : attributes) {
+		for (AttrUniInfo i : attributes.values()) {
 			System.out.println("\t" + i);
 		}
 
 		System.out.println("Active Uniforms: " + uniforms.size());
-		for (AttrUniInfo i : uniforms) {
+		for (AttrUniInfo i : uniforms.values()) {
 			System.out.println("\t" + i);
 		}
 	}

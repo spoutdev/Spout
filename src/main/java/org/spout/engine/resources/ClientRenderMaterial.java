@@ -113,6 +113,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 		}
 
 		shader.assign();
+		shader.checkUniform();
 	}
 
 	@Override
