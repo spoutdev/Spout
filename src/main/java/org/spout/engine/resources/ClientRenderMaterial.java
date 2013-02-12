@@ -49,10 +49,11 @@ import org.spout.api.render.effect.SnapshotEntity;
 import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.render.effect.SnapshotRender;
 import org.spout.engine.SpoutRenderer;
+import org.spout.engine.renderer.shader.SpoutShader;
 
 public class ClientRenderMaterial extends RenderMaterial {
 
-	Shader shader;
+	SpoutShader shader;
 	Map<String, Object> materialParameters;
 
 	boolean depthTesting;
@@ -70,7 +71,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 	}
 
 	public ClientRenderMaterial(Shader s, Map<String, Object> params, boolean depth, int layer){
-		this.shader = s;
+		this.shader = (SpoutShader)s;
 		this.materialParameters = params;
 		this.depthTesting = depth;
 		this.layer = layer;
@@ -78,7 +79,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 
 	@Override
 	public void assign(){
-		if(materialParameters != null && getShader().getMaterialAssigned() != this){
+		if(materialParameters != null && shader.getMaterialAssigned() != this){
 			Set<Map.Entry<String, Object>> s = materialParameters.entrySet();
 
 			for(Map.Entry<String, Object> entry : s){
@@ -102,7 +103,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 					shader.setUniform(entry.getKey(), (Matrix)entry.getValue());
 				}
 			}
-			getShader().setMaterialAssigned(this);
+			shader.setMaterialAssigned(this);
 		}
 
 		shader.assign();

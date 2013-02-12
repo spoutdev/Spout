@@ -43,6 +43,7 @@ import org.spout.api.Spout;
 import org.spout.api.render.BufferContainer;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.Renderer;
+import org.spout.engine.renderer.shader.SpoutShader;
 import org.spout.engine.renderer.vertexbuffer.SpoutFloatBuffer;
 
 public abstract class BatchVertexRenderer implements Renderer {
@@ -161,7 +162,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	@Override
 	public void draw(RenderMaterial material, int startVert, int endVert){
 		if(getVertexCount() <= 0) throw new IllegalStateException("Cannot render 0 verticies");
-		material.getShader().checkAttributes(attributesUsed);
+		((SpoutShader)material.getShader()).checkAttributes(attributesUsed);
 		doDraw(material, startVert, endVert);
 	}
 
@@ -173,7 +174,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 	public final void render(RenderMaterial material, int startVert, int endVert) {
 		if(getVertexCount() <= 0) throw new IllegalStateException("Cannot render 0 verticies");
 		preDraw();
-		material.getShader().checkAttributes(attributesUsed);
+		((SpoutShader)material.getShader()).checkAttributes(attributesUsed);
 		doDraw(material, startVert, endVert);
 		postDraw();
 	}

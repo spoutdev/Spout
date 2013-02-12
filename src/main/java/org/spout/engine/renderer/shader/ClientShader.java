@@ -69,7 +69,7 @@ import org.spout.engine.renderer.shader.variables.Vector3ArrayShaderVariable;
 /**
  * Represents a Shader Object in OpenGL
  */
-public class ClientShader extends Resource implements Shader {
+public class ClientShader extends Resource implements SpoutShader {
 
 	public class ShaderCompilationTask implements Runnable{
 
@@ -309,6 +309,7 @@ public class ClientShader extends Resource implements Shader {
 		if(assigned == this) dirtyVariables.add(name);
 	}
 
+	@Override
 	public void setUniform(String name, Vector3[] value) {
 		variables.put(name, new Vector3ArrayShaderVariable(program, name, value));
 		if(assigned == this) dirtyVariables.add(name);
