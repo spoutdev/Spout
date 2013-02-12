@@ -50,6 +50,7 @@ import org.spout.api.render.Texture;
 import org.spout.api.resource.Resource;
 
 import org.spout.engine.SpoutClient;
+import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutRenderer;
 import org.spout.engine.renderer.shader.variables.ColorShaderVariable;
 import org.spout.engine.renderer.shader.variables.FloatShaderVariable;
@@ -117,7 +118,7 @@ public class ClientShader extends Resource implements Shader {
 				String error = GL20.glGetProgramInfoLog(program, 255);
 				throw new ShaderCompileException("Link Error in " + vsourceUrl + ", " + fsourceUrl +": " + error);
 			}
-			if (validateShader) {
+			if (SpoutConfiguration.DBG_SHADERS.getBoolean()) {
 				//Shaders
 				shader.shaderName = "Shader " + this.fsourceUrl + " " + this.vsourceUrl;
 				shader.attachedShaders = GL20.glGetProgrami(program, GL20.GL_ATTACHED_SHADERS);
@@ -226,8 +227,6 @@ public class ClientShader extends Resource implements Shader {
 	List<String> dirtyTextures = new ArrayList<String>();
 
 	int maxTextures;
-
-	public static boolean validateShader = true;
 
 	public ClientShader(){
 
@@ -440,22 +439,28 @@ public class ClientShader extends Resource implements Shader {
 	public void setMaterialAssigned(RenderMaterial material) {
 		this.renderMaterial = material;
 	}
-	
+
 	public void checkAttributes(List<Integer> used){
+		if (!SpoutConfiguration.DBG_SHADERS.getBoolean())
+			return;
+
 		/*Map<Integer,AttrUniInfo> map = new HashMap<Integer, ClientShader.AttrUniInfo>(attributes);
-		
+
 		for(Integer layout : used){
 			if(map.remove(layout) == null){
 				Spout.getLogger().warning( "In " + shaderName + " Attribut " + layout + " don't exist");
 			}
 		}
-		
+
 		for(Entry<Integer, AttrUniInfo> var : map.entrySet()){
 			Spout.getLogger().warning( "In " + shaderName + " Attribut " + var.getValue().getName() + " not assigned");
 		}*/
 	}
-	
+
 	public void checkUniform(){
+		if (!SpoutConfiguration.DBG_SHADERS.getBoolean())
+			return;
+
 		if(!dirtyTextures.isEmpty() || !dirtyVariables.isEmpty()){
 			throw new IllegalStateException("You must check uniform after assign the shader");
 		}

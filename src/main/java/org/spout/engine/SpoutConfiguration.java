@@ -64,6 +64,8 @@ public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder SEND_SPIKE_CHANCE = new ConfigurationHolder(0F, "network", "send_spikes_per_second");
 	public static final ConfigurationHolder RECV_SPIKE_LATENCY = new ConfigurationHolder(0L, "network", "recv_spike_latency");
 	public static final ConfigurationHolder RECV_SPIKE_CHANCE = new ConfigurationHolder(0F, "network", "recv_spikes_per_second");
+	//Debug Graphic
+	public static final ConfigurationHolder DBG_SHADERS = new ConfigurationHolder(false, "debug", "dbg_shaders");
 
 	public SpoutConfiguration() {
 		super(new YamlConfiguration(new File(SharedFileSystem.getConfigDirectory(), "spout.yml")));
