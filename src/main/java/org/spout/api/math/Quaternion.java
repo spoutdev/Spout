@@ -93,7 +93,7 @@ public class Quaternion implements Serializable {
 
 	/**
 	 * Constructs a new Quaternion that represents a given rotation around an
-	 * arbatrary axis
+	 * arbitrary axis
 	 * @param angle Angle, in Degrees, to rotate the axis about by
 	 * @param axis
 	 */

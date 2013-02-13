@@ -125,19 +125,22 @@ public class QuaternionMath {
 
 	/**
 	 * Returns the rotation between two vectors.
-	 * @param a The first vector
-	 * @param b The second vector
+	 * @param from The first vector
+	 * @param to The second vector
 	 * @return the rotation between both vectors
 	 */
-	public static Quaternion rotationTo(Vector3 a, Vector3 b) {
-		if (a == b || a.equals(b)) {
+	public static Quaternion rotationTo(Vector3 from, Vector3 to) {
+		if (from == to || from.equals(to)) {
 			return Quaternion.IDENTITY;
 		}
-		// Normally the dot product must be divided by the product of the lengths,
-		// but if they are both 1, we can skip that.
-		a = a.normalize();
-		b = b.normalize();
-		return new Quaternion((float) Math.toDegrees(Math.acos(a.dot(b))), a.cross(b));
+		final Vector3 axis = from.cross(to).normalize();
+		final float x = axis.getX();
+		final float y = axis.getY();
+		final float z = axis.getZ();
+		final double halfAngle = TrigMath.acos(from.dot(to) / (from.length() * to.length())) / 2;
+		final double q = Math.sin(halfAngle);
+		// This doesn't use the axis-angle constructor because of loss of precision in a rad -> deg -> rad conversion.
+		return new Quaternion((float) (x * q), (float) (y * q), (float) (z * q), (float) Math.cos(halfAngle), false);
 	}
 
 	/**
