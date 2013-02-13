@@ -34,6 +34,7 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bouncycastle.asn1.ASN1EncodableVector;
@@ -71,6 +72,8 @@ public class SecurityHandler {
 	private static final Provider provider;
 	private static final SecurityHandler instance;
 	
+	private byte[] sharedSecret;
+	
 	static {
 		Provider p = Security.getProvider("BC");
 		if (p == null) {
@@ -86,6 +89,17 @@ public class SecurityHandler {
 	
 	public static SecurityHandler getInstance() {
 		return instance;
+	}
+	
+	public byte[] getSymetricKey() {
+		if (sharedSecret != null) {
+			return sharedSecret;
+		}
+		
+		sharedSecret = new byte[16];
+		final Random rand = new Random();
+		rand.nextBytes(sharedSecret);
+		return sharedSecret;
 	}
 	
 	public byte[] encodeKey(CipherParameters key) {
