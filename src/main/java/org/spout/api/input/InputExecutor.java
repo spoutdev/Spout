@@ -26,8 +26,10 @@
  */
 package org.spout.api.input;
 
+import org.spout.api.geo.discrete.Transform;
+
 public interface InputExecutor {
 
-	public void execute(float dt);
+	public void execute(float dt, Transform playerTransform);
 	
 }
