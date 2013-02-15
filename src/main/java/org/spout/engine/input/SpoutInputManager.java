@@ -49,6 +49,7 @@ import org.spout.api.math.Rectangle;
 import org.spout.api.math.Vector2;
 
 import org.spout.engine.entity.SpoutPlayer;
+import org.spout.engine.entity.component.SpoutSceneComponent;
 
 public class SpoutInputManager implements InputManager {
 	private static final Keyboard FOCUS_KEY = Keyboard.KEY_TAB;
@@ -249,7 +250,8 @@ public class SpoutInputManager implements InputManager {
 
 	public void execute(float dt){
 		for(InputExecutor executor : inputExecutors){
-			executor.execute(dt);
+			SpoutSceneComponent sc = (SpoutSceneComponent) ((Client)Spout.getEngine()).getActivePlayer().getScene(); 
+			executor.execute(dt, sc.getLiveTransform());
 		}
 	}
 	

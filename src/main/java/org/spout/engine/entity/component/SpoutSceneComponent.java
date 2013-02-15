@@ -76,6 +76,10 @@ public class SpoutSceneComponent extends SceneComponent {
 	public Transform getTransform() {
 		return snapshot.copy();
 	}
+	
+	public Transform getLiveTransform() {
+		return live.copy();
+	}
 
 	@Override
 	public SceneComponent setTransform(Transform transform) {
