@@ -29,6 +29,7 @@ package org.spout.engine.batcher;
 import gnu.trove.list.array.TFloatArrayList;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
@@ -108,7 +109,9 @@ public class SpriteBatch {
 		}
 
 		for (RenderPartPack pack : sprites) {
-			for (RenderPart rect : pack.getRenderParts()) {
+			List<RenderPart> renderparts = pack.getRenderParts();
+			Collections.sort(renderparts);
+			for (RenderPart rect : renderparts) {
 				for (int j = 0; j < 6; j++) {
 					colorBuffer.add(rect.getColor().getRed() / 255f);
 					colorBuffer.add(rect.getColor().getGreen() / 255f);
