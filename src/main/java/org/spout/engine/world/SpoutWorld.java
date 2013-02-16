@@ -79,7 +79,6 @@ import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.GenericMath;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
-import org.spout.api.math.VectorMath;
 import org.spout.api.model.Model;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.StringMap;
@@ -597,6 +596,36 @@ public class SpoutWorld implements AsyncManager, World {
 		}
 	}
 
+	/**
+	 * Spawns an entity into the world. Fires off a cancellable EntitySpawnEvent
+	 */
+	@Override
+	public void spawnEntity(Entity e, int entityID) {
+		if (e.isSpawned()) {
+			throw new IllegalArgumentException("Cannot spawn an entity that is already spawned!");
+		}
+		
+		((SpoutEntity)e).setId(entityID);
+		
+		SpoutRegion region = (SpoutRegion) e.getRegion();
+		if (region == null) {
+			throw new IllegalStateException("Cannot spawn an entity that has a null region!");
+		}
+		if (region.getEntityManager().isSpawnable((SpoutEntity) e)) {
+			EntitySpawnEvent event = Spout.getEventManager().callEvent(new EntitySpawnEvent(e, e.getScene().getPosition()));
+			if (event.isCancelled()) {
+				return;
+			}
+			region.getEntityManager().addEntity((SpoutEntity) e);
+			for (Component component : e.values()) {
+				if (component instanceof EntityComponent) {
+					((EntityComponent) component).onSpawned();
+				}
+			}
+		} else {
+			throw new IllegalStateException("Cannot spawn an entity that already has an id!");
+		}
+	}
 	@Override
 	public Entity createAndSpawnEntity(Point point, EntityPrefab prefab, LoadOption option) {
 		getRegionFromBlock(point, option);
