@@ -185,6 +185,13 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 	public void spawnEntity(Entity e);
 
 	/**
+	 * Add a created entity to the world for simulation and syncing to clients
+	 * @param e The entity to spawn
+	 * @param id The id required for the entity
+	 */
+	public void spawnEntity(Entity entity, int entityID);
+
+	/**
 	 * Creates and Spawns an entity at the given point and with the given
 	 * Controller This is the same as {@link #createEntity(Point, org.spout.api.entity.EntityPrefab)} and
 	 * {@link #spawnEntity(Entity)} together.
