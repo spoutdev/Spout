@@ -40,11 +40,55 @@ import org.spout.api.geo.cuboid.Chunk;
 public abstract class Biome implements LayeredBiomeSelectorElement {
 	private int id;
 	private boolean registered = false;
-	List<Decorator> decorators = new ArrayList<Decorator>();
+	private final List<Decorator> decorators = new ArrayList<Decorator>();
 
-	public Biome(Decorator... decorators) {
-		this.decorators.addAll(Arrays.asList(decorators));
+	public Biome() {
 		BiomeRegistry.register(this);
+	}
+
+	/**
+	 * Remove all the decorators.
+	 */
+	public final void clearDecorators() {
+		decorators.clear();
+	}
+
+	/**
+	 * Remove all the decorators and add the passed ones.
+	 *
+	 * @param decorators The decorators to set.
+	 */
+	public final void setDecorators(Decorator... decorators) {
+		clearDecorators();
+		addDecorators(decorators);
+	}
+
+	/**
+	 * Adds the decorators.
+	 *
+	 * @param decorators The decorators to add.
+	 */
+	public final void addDecorators(Decorator... decorators) {
+		this.decorators.addAll(Arrays.asList(decorators));
+	}
+
+	/**
+	 * Removes the decorators.
+	 *
+	 * @param decorators The decorators to remove.
+	 */
+	public final void removeDecorators(Decorator... decorators) {
+		this.decorators.removeAll(Arrays.asList(decorators));
+	}
+
+	/**
+	 * Gets the unprotected list of decorators. Use this to get more control
+	 * over editing of the list.
+	 *
+	 * @return The list of decorator.
+	 */
+	public final List<Decorator> getDecorators() {
+		return decorators;
 	}
 
 	public final void decorate(Chunk chunk, Random random) {
