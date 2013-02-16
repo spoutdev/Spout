@@ -55,10 +55,8 @@ public abstract class EntityComponent extends Component {
 	}
 
 	/**
-	 * <<<<<<< HEAD
 	 * Returns a deterministic random number generator
 	 * @return random
-	 *         >>>>>>> scene
 	 */
 	public final Random getRandom() {
 		return GenericMath.getRandom();
