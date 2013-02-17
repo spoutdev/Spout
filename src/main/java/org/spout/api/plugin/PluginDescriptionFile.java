@@ -271,7 +271,7 @@ public class PluginDescriptionFile {
 	 * @return true if an official plugin
 	 */
 	private boolean isOfficialPlugin(String namespace) {
-		return (namespace.equalsIgnoreCase("org.spout.vanilla.plugin.VanillaPlugin")
+		return (namespace.equalsIgnoreCase("org.spout.vanilla.VanillaPlugin")
 				|| namespace.equalsIgnoreCase("org.spout.bridge.VanillaBridgePlugin")
 				|| namespace.equalsIgnoreCase("org.spout.infobjects.InfObjectsPlugin")
 				|| namespace.startsWith("org.spout.droplet"));
