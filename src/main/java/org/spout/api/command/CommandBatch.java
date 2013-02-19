@@ -24,38 +24,35 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.resource;
+package org.spout.api.command;
 
-import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import org.spout.api.Spout;
-import org.spout.api.util.config.serialization.GenericType;
-import org.spout.api.util.config.serialization.Serializer;
+import org.spout.api.chat.ChatArguments;
+import org.spout.api.resource.Resource;
 
-public class Resource extends Serializer {
-	protected URI path; //TODO set this
+public class CommandBatch extends Resource {
+	public List<String> cmds = new ArrayList<String>();
 
-	public URI getPath() {
-		return path;
-	}
-	
-	@Override
-	protected Object handleSerialize(GenericType type, Object value) {
-		return path.toString();
+	public void add(String cmd) {
+		cmds.add(cmd);
 	}
 
-	@Override
-	protected Object handleDeserialize(GenericType type, Object value) {
-		return Spout.getFilesystem().getResource((String)value);
+	public void remove(String cmd) {
+		cmds.remove(cmd);
 	}
 
-	@Override
-	public boolean isApplicable(GenericType type) {
-		return Resource.class.isAssignableFrom(type.getMainType());
+	public List<String> getCommands() {
+		return Collections.unmodifiableList(cmds);
 	}
 
-	@Override
-	protected int getParametersRequired() {
-		return 0;
+	public void execute(CommandSource executor) {
+		for (String cmd : cmds) {
+			String root = cmd.split(" ")[0];
+			String args = cmd.indexOf(' ') + 1 > 0 ? cmd.substring(cmd.indexOf(' ') + 1) : "";
+			executor.processCommand(root, new ChatArguments(args));
+		}
 	}
 }
