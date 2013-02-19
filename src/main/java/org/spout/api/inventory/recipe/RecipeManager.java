@@ -26,97 +26,100 @@
  */
 package org.spout.api.inventory.recipe;
 
+import java.util.List;
 import java.util.Set;
 
-import org.spout.api.inventory.ItemStack;
+import org.spout.api.material.Material;
 import org.spout.api.plugin.Plugin;
 
-/**
- * Interface for registering {@link Recipe} implementations.
- */
 public interface RecipeManager {
+
 	/**
-	 * Registers a new {@link Recipe} to the specified {@link Plugin}.
+	 * Registers a recipe to be stored.
 	 *
 	 * @param recipe to register
-	 * @param plugin to bind recipe to
-	 * @return whether the recipe existed
+	 * @return true if recipe already existed
 	 */
-	public boolean register(Recipe recipe, Plugin plugin);
+	public boolean register(Recipe recipe);
 
 	/**
-	 * Removes all recipes that are the same for every plugin. Note that there
-	 * can be multiple recipes that are the same in the manager bound to
-	 * different plugins.
+	 * Registers all the specified recipes to the specified plugin.
+	 *
+	 * @param plugin to register recipes to
+	 * @param recipes to register
+	 * @return true if the set of recipes was changed
+	 */
+	public boolean registerAll(Set<Recipe> recipes);
+
+	/**
+	 * Removes a recipe.
 	 *
 	 * @param recipe to remove
+	 * @return whether the recipe existed
 	 */
-	public void remove(Recipe recipe);
+	public boolean remove(Recipe recipe);
+	
+	/**
+	 * Replaces an old recipe with a new one.
+	 * @param oldRecipe
+	 * @param newRecipe
+	 * @return true if fully successful
+	 */
+	public boolean replaceRecipe(Recipe oldRecipe, Recipe newRecipe);
 
 	/**
-	 * Clears all recipes bound to the specified plugin.
-	 *
-	 * @param plugin to clear all recipes from
-	 */
-	public void clear(Plugin plugin);
-
-	/**
-	 * Removes every recipe.
+	 * Clears all recipes.
 	 */
 	public void clear();
 
 	/**
-	 * Returns all the {@link Recipe}s bound to the specified {@link Plugin}.
-	 *
-	 * @param plugin to get recipes for
-	 * @return recipes bound to the specified plugin
-	 */
-	public Set<Recipe> getRecipes(Plugin plugin);
-
-	/**
-	 * Returns all recipes.
+	 * Returns all recipes of all registered {@link Plugin}s
 	 *
 	 * @return all recipes
 	 */
-	public Set<Recipe> getRecipes();
+	public Set<Recipe> getAllRecipes();
 
 	/**
-	 * Whether the manager contains a {@link Recipe} that matches the specified
-	 * recipe that is also bound to the specified {@link Plugin}.
-	 *
-	 * @see Recipe#equals(Object)
-	 * @param plugin to get recipes from
-	 * @param recipe to look for
-	 * @return true if the recipe has a match that's bound to the plugin
+	 * Gets all the shaped recipes registered for a plugin.
+	 * @param plugin that the recipes belongs to
+	 * @return the recipes if they're found, otherwise an empty set
 	 */
-	public boolean contains(Plugin plugin, Recipe recipe);
+	public Set<Recipe> getShapedRecipes(Plugin plugin);
 
 	/**
-	 * Whether the manager contains a {@link Recipe} that matches the specified
-	 * recipe.
-	 *
-	 * @see Recipe#equals(Object)
-	 * @param recipe to look for
-	 * @return true if the recipe has a match
+	 * Gets all the shapeless recipes registered for a plugin.
+	 * @param plugin that the recipes belongs to
+	 * @return the recipes if they're found, otherwise an empty set
 	 */
-	public boolean contains(Recipe recipe);
+	public Set<Recipe> getShapelessRecipes(Plugin plugin);
 
 	/**
-	 * Returns a product for the specified regents among the registered
-	 * recipes bound to the specified plugin.
-	 *
-	 * @param plugin to get recipes from
-	 * @param regents for recipe
-	 * @return product of recipe
+	 * Match the materials to any ShapedRecipe
+	 * @param materials by rows
+	 * @return ShapedRecipe
 	 */
-	public ItemStack getProduct(Plugin plugin, Object regents);
+	public ShapedRecipe matchShapedRecipe(List<List<Material>> materials);
 
 	/**
-	 * Returns a product for the specified regents among the registered
-	 * recipes.
-	 *
-	 * @param regents for recipe
-	 * @return product of recipe
+	 * Match the materials to any ShapelessRecipe
+	 * @param materials
+	 * @return ShapelesRecipe
 	 */
-	public ItemStack getProduct(Object regents);
+	public ShapelessRecipe matchShapelessRecipe(List<Material> materials);
+
+	/**
+	 * Match the materials to any ShapedRecipe for a given plugin
+	 * @param plugin
+	 * @param materials by rows
+	 * @return ShapedRecipe
+	 */
+	public ShapedRecipe matchShapedRecipe(Plugin plugin, List<List<Material>> materials);
+
+	/**
+	 * Match the materials to any ShapelessRecipe for a given plugin
+	 * @param plugin
+	 * @param materials
+	 * @return ShapelesRecipe
+	 */
+	public ShapelessRecipe matchShapelessRecipe(Plugin plugin, List<Material> materials);
 }

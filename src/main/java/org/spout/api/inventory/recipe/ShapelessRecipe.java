@@ -26,23 +26,60 @@
  */
 package org.spout.api.inventory.recipe;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import org.spout.api.inventory.ItemStack;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.spout.api.material.Material;
 
 public class ShapelessRecipe extends Recipe {
-	protected final Set<Material> ingredients;
+	private static final long serialVersionUID = 1L;
+	private final List<Material> ingredients;
 
-	public ShapelessRecipe(ItemStack product, Material... ingredients) {
-		super(product);
-		this.ingredients = new HashSet<Material>(Arrays.asList(ingredients));
+	public ShapelessRecipe(RecipeBuilder builder) {
+		super(builder.result, builder.plugin, builder.includeData);
+		this.ingredients = builder.ingredients;
 	}
 
 	@Override
-	public Set<Material> getRegents() {
-		return ingredients;
+	public List<Material> getIngredients() {
+		return Collections.unmodifiableList(ingredients);
+	}
+
+	@Override
+	public Recipe clone() {
+		return new RecipeBuilder().clone(this).buildShapelessRecipe();
+	}
+
+	@Override
+	public RecipeBuilder toBuilder() {
+		return new RecipeBuilder().clone(this);
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || !(obj instanceof ShapelessRecipe)) {
+			return false;
+		}
+		final ShapelessRecipe other = (ShapelessRecipe) obj;
+		if (this.result != other.result && (this.result == null || !this.result.equals(other.result))) {
+			return false;
+		}
+		List<Material> materials = new ArrayList<Material>();
+		List<Material> materials2 = new ArrayList<Material>();
+		materials.addAll(ingredients);
+		materials2.addAll(other.ingredients);
+		materials.removeAll(other.ingredients);
+		materials2.removeAll(ingredients);
+		if (!materials.isEmpty() || !materials2.isEmpty()) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		return (new HashCodeBuilder()).append(plugin).append(result).append(ingredients).build();
 	}
 }

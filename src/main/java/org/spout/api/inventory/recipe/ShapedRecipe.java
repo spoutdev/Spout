@@ -26,22 +26,138 @@
  */
 package org.spout.api.inventory.recipe;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.spout.api.inventory.ItemStack;
 import org.spout.api.material.Material;
 
+/**
+ * Represents a {@link Recipe} with a definite shape.
+ */
 public class ShapedRecipe extends Recipe {
-	protected final List<List<Material>> ingredients;
+	private static final long serialVersionUID = 1L;
+	private final List<List<Character>> rows;
+	private final Map<Character, Material> ingredientsMap;
 
-	protected ShapedRecipe(ItemStack product, List<List<Material>> ingredients) {
-		super(product);
-		this.ingredients = ingredients;
+	public ShapedRecipe(RecipeBuilder builder) {
+		super(builder.result, builder.plugin, builder.includeData);
+		this.rows = builder.rows;
+		this.ingredientsMap = builder.ingredientsMap;
+	}
+
+	/**
+	 * Returns a {@link List} of a list of {@link Character}s that represent
+	 * the rows of the recipe.
+	 *
+	 * @return rows of the recipe
+	 */
+	public List<List<Character>> getRows() {
+		return Collections.unmodifiableList(rows);
+	}
+
+	/**
+	 * Removes a row from the recipe at the given index. <code>0</code> being the last row
+	 * and <code>{@link java.util.List#size()} - 1</code> being the last row.
+	 *
+	 * @param index of row
+	 * @return row at specified index
+	 */
+	public List<Character> removeRow(int index) {
+		return Collections.unmodifiableList(rows.remove(index));
+	}
+
+	/**
+	 * Returns the length of the rows of the recipe or <code>-1</code> if there
+	 * are no rows. In addition, this method verifies that all rows have the
+	 * same length.
+	 *
+	 * @return length of each row
+	 * @throws IllegalStateException if the length of the rows is inconsistent.
+	 */
+	public int getRowLength() {
+		if (rows.isEmpty()) {
+			return -1;
+		}
+
+		int length = rows.get(0).size();
+		for (int i = 0; i < rows.size(); i++) {
+			List<Character> row = rows.get(i);
+			if (row.size() != length) {
+				throw new IllegalStateException("Row " + (i + 1) + "'s length is incosistent with the rest.");
+			}
+		}
+
+		return length;
+	}
+
+	// Ingredient management
+
+	/**
+	 * Returns a {@link Map} with {@link ItemStack}s mapped to the
+	 * {@link Character} they are represented by.
+	 *
+	 * @return character item mapping
+	 */
+	public Map<Character, Material> getIngredientsMap() {
+		return Collections.unmodifiableMap(ingredientsMap);
+	}
+
+	/**
+	 * Returns the recipe's rows with {@link ItemStack} in place of the
+	 * characters which represent them.
+	 *
+	 * @return rows of the recipe
+	 */
+	public List<List<Material>> getIngredientRows() {
+		List<List<Material>> ingredientRows = new ArrayList<List<Material>>();
+		for (List<Character> row : rows) {
+			List<Material> ingredientRow = new ArrayList<Material>();
+			for (char c : row) {
+				ingredientRow.add(ingredientsMap.get(c));
+			}
+			ingredientRows.add(ingredientRow);
+		}
+		return Collections.unmodifiableList(ingredientRows);
+	}
+
+	// Overridden methods
+
+	@Override
+	public List<Material> getIngredients() {
+		return Collections.unmodifiableList(new ArrayList<Material>(ingredientsMap.values()));
 	}
 
 	@Override
-	public List<List<Material>> getRegents() {
-		return Collections.unmodifiableList(ingredients);
+	public ShapedRecipe clone() {
+		return new RecipeBuilder().clone(this).buildShapedRecipe();
+	}
+	
+	@Override
+	public RecipeBuilder toBuilder() {
+		return new RecipeBuilder().clone(this);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || !(obj instanceof ShapedRecipe)) {
+			return false;
+		}
+		final ShapedRecipe other = (ShapedRecipe) obj;
+		if (this.result != other.result && (this.result == null || !this.result.equals(other.result))) {
+			return false;
+		}
+		if (getIngredientsMap().equals(other.getIngredientsMap())) {
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		return (new HashCodeBuilder()).append(plugin).append(result).append(ingredientsMap).append(rows).build();
 	}
 }

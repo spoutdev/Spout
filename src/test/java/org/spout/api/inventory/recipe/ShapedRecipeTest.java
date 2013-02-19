@@ -26,62 +26,52 @@
  */
 package org.spout.api.inventory.recipe;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import org.spout.api.inventory.ItemStack;
+import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.Material;
-import org.spout.api.plugin.Plugin;
 
-/**
- * Represents an arrangement of {@link ItemStack} with an outcome
- */
-public abstract class Recipe implements Serializable, Cloneable {
-	protected final ItemStack result;
-	protected final Plugin plugin;
-	protected final boolean includeData;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-	public Recipe(ItemStack result) {
-		this(result, null);
+public class ShapedRecipeTest {
+	@Before
+	public void setupMaterials() {
+		EngineFaker.setupEngine();
 	}
 
-	public Recipe(ItemStack result, Plugin plugin) {
-		this(result, plugin, false);
+	@Test
+	public void testShapedRecipe() {
+		RecipeBuilder builder = new RecipeBuilder();
+
+		// Add rows
+		builder.addRow(' ', 'X', ' ');
+		builder.addRow('X', 'X', 'X');
+		builder.addRow(' ', 'X', ' ');
+		builder.setIngredient('X', BlockMaterial.SOLID);
+		builder.setResult(new ItemStack(BlockMaterial.AIR, 1));
+
+		final ShapedRecipe recipe = builder.buildShapedRecipe();
+		SimpleRecipeManager manager = new SimpleRecipeManager();
+		manager.register(recipe);
+
+		List<List<Material>> materials = new ArrayList<List<Material>>();
+
+		// Make sure we can't craft yet
+		assertFalse(manager.matchShapedRecipe(materials) != null);
+
+		// Add ingredients
+		materials.add(Arrays.asList(new Material[] {null, BlockMaterial.SOLID, null}));
+		materials.add(Arrays.asList(new Material[] {BlockMaterial.SOLID, BlockMaterial.SOLID, BlockMaterial.SOLID}));
+		materials.add(Arrays.asList(new Material[] {null, BlockMaterial.SOLID, null}));
+
+		// Try to craft
+		assertTrue(manager.matchShapedRecipe(materials) != null);
 	}
-
-	public Recipe(ItemStack result, Plugin plugin, boolean includeData) {
-		this.result = result;
-		this.plugin = plugin;
-		this.includeData = includeData;
-	}
-
-	/**
-	 * Returns the result of the Recipe if successful.
-	 *
-	 * @return result of recipe
-	 */
-	public ItemStack getResult() {
-		return result;
-	}
-
-	public Plugin getPlugin() {
-		return plugin;
-	}
-	
-	public boolean getIncludeData() {
-		return includeData;
-	}
-
-	/**
-	 * Returns the required ingredients to meet the requirements of the recipe.
-	 *
-	 * @return List of ingredients to craft the recipe
-	 */
-	public abstract List<Material> getIngredients();
-	
-	public abstract RecipeBuilder toBuilder();
-
-	@Override
-	public abstract Recipe clone();
-
 }

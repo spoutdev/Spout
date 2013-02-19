@@ -26,41 +26,262 @@
  */
 package org.spout.api.inventory.recipe;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.spout.api.inventory.ItemStack;
+import org.spout.api.material.Material;
+import org.spout.api.plugin.Plugin;
 
-/**
- * Helper class for creating complex {@link Recipe} implementations because
- * Recipes should always be immutable.
- */
-public abstract class RecipeBuilder {
-	protected ItemStack product;
+public class RecipeBuilder {
+	public Plugin plugin = null;
+	public ItemStack result = null;
+	public Map<Character, Material> ingredientsMap = new HashMap<Character, Material>();
+	public List<List<Character>> rows = new ArrayList<List<Character>>();
+	public List<Material> ingredients = new ArrayList<Material>();
+	public boolean includeData = false;
 
-	/**
-	 * Returns the {@link ItemStack} product that the {@link Recipe} to be
-	 * built would have.
-	 *
-	 * @see org.spout.api.inventory.recipe.Recipe#getProduct()
-	 * @return product of recipe to build
-	 */
-	public ItemStack getProduct() {
-		return product;
+	public ShapedRecipe buildShapedRecipe() throws IllegalStateException {
+		if (result == null) {
+			throw new IllegalStateException("Result must be set.");
+		}
+		if (rows.isEmpty()) {
+			throw new IllegalStateException("Must add rows.");
+		}
+		ArrayList<Material> nullCheck = new ArrayList<Material>(ingredientsMap.values());
+		nullCheck.removeAll(Collections.singletonList(null));
+		if (nullCheck.isEmpty()) { // Make sure there is at least one ingredient
+			throw new IllegalStateException("Must specify the ingredients.");
+		}
+		if (!includeData) {
+			for (Entry<Character, Material> entry : ingredientsMap.entrySet()) {
+				Material mat = entry.getValue();
+				if (mat != null && mat.isSubMaterial()) {
+					entry.setValue(mat.getParentMaterial());
+				}
+			}
+		}
+		return new ShapedRecipe(this);
+	}
+
+	public ShapelessRecipe buildShapelessRecipe() {
+		shapelessCheck();
+		return new ShapelessRecipe(this);
+	}
+
+	public SmeltedRecipe buildSmeltedRecipe() {
+		shapelessCheck();
+		return new SmeltedRecipe(this);
+	}
+	
+	private void shapelessCheck() {
+		if (result == null) {
+			throw new IllegalStateException("Result must be set.");
+		}
+		ArrayList<Material> nullCheck = new ArrayList<Material>(ingredients);
+		nullCheck.removeAll(Collections.singletonList(null));
+		if (nullCheck.isEmpty()) {
+			throw new IllegalStateException("Must add materials.");
+		}
+		if (!includeData) {
+			for (int i = 0; i < ingredients.size(); i++) {
+				Material mat = ingredients.get(i).getMaterial();
+				while (mat != null && mat.isSubMaterial()) {
+					mat = mat.getParentMaterial();
+					ingredients.set(i, mat);
+				}
+			}
+		}
+	}
+
+	public RecipeBuilder setPlugin(Plugin plugin) {
+		this.plugin = plugin;
+		return this;
+	}
+
+	public RecipeBuilder setResult(ItemStack result) {
+		this.result = result;
+		return this;
+	}
+
+	public RecipeBuilder setResult(Material material, int amount) {
+		setResult(new ItemStack(material, amount));
+		return this;
 	}
 
 	/**
-	 * Sets the {@link ItemStack} product that the {@link Recipe} to be built
-	 * would have.
+	 * Sets the {@link Character} that the {@link ItemStack} ingredient is
+	 * represented by. Used only by shaped recipes.
 	 *
-	 * @see org.spout.api.inventory.recipe.Recipe#getProduct()
-	 * @param product of recipe to build
+	 * @param c to represent specified ingredient
+	 * @param ingredient to be represented by specified character
+	 * @return  
 	 */
-	public void setProduct(ItemStack product) {
-		this.product = product;
+	public RecipeBuilder setIngredient(Character c, Material ingredient) {
+		if (ingredient == null) {
+			return this;
+		}
+		ingredientsMap.put(c, ingredient);
+		return this;
 	}
 
 	/**
-	 * Builds the recipe specified by this builder.
+	 * Sets all {@link Character} in the map to represent all {@link ItemStack}
+	 * in the map.
 	 *
-	 * @return recipe built
+	 * @param chars character map to represent values
+	 * @return  
 	 */
-	public abstract Recipe build();
+	public RecipeBuilder setIngredients(Map<Character, Material> chars) {
+		ingredientsMap.putAll(chars);
+		return this;
+	}
+
+	/**
+	 * Adds an ingredient required to craft this recipe. Used for shapeless recipes.
+	 *
+	 * @param ingredient to add
+	 * @return  
+	 */
+	public RecipeBuilder addIngredient(Material ingredient) {
+		if (ingredient == null) {
+			return this;
+		}
+		ingredients.add(ingredient);
+		return this;
+	}
+
+	
+	/**
+	 * Adds an ingredient required to craft this recipe.
+	 *
+	 * @param material to add
+	 * @param amount of material to add
+	 * @return  
+	 */
+	public RecipeBuilder addIngredient(Material material, int amount) {
+		for (int i = 0; i < amount; i++) {
+			addIngredient(material);
+		}
+		return this;
+	}
+
+	/**
+	 * Adds all specified ingredients.
+	 *
+	 * @param ingredient
+	 * @return true if all ingredients were added.
+	 */
+	public RecipeBuilder addIngredients(Collection<Material> ingredient) {
+		ingredients.addAll(ingredient);
+		return this;
+	}
+
+	/**
+	 * Adds all specified ingredients.
+	 *
+	 * @param i
+	 * @return  
+	 */
+	public RecipeBuilder addIngredients(Material... i) {
+		ingredients.addAll(Arrays.asList(i));
+		return this;
+	}
+
+	/**
+	 * Removes all occurrences of the material
+	 *
+	 * @param material
+	 * @return  
+	 */
+	public RecipeBuilder removeIngredient(Material material) {
+		ingredients.remove(material);
+		return this;
+	}
+
+	/**
+	 * Adds a row to the recipe.
+	 *
+	 * @param chars characters to represent {@link ItemStack}s
+	 * @return  
+	 */
+	public RecipeBuilder addRow(Character... chars) {
+		rows.add(Arrays.asList(chars));
+		return this;
+	}
+
+	public RecipeBuilder addRow(List<Character> row) {
+		rows.add(row);
+		return this;
+	}
+
+	public RecipeBuilder addRow(String str) {
+		char[] chars = str.toCharArray();
+		ArrayList<Character> row = new ArrayList<Character>();
+		for (char c : chars) {
+			row.add(c);
+		}
+		if (!row.isEmpty()) {
+			addRow(row);
+		}
+		return this;
+	}
+
+	public RecipeBuilder removeRow(int rowNumber) {
+		if (rows.size() < rowNumber) {
+			return this;
+		}
+		rows.remove(rowNumber);
+		return this;
+	}
+
+	public RecipeBuilder replaceRow(int rowNumber, List<Character> newRow) {
+		if (rows.size() < rowNumber || newRow == null) {
+			return this;
+		}
+		rows.remove(rowNumber);
+		rows.add(rowNumber, newRow);
+		return this;
+	}
+
+	public RecipeBuilder replaceRow(int rowNumber, String str) {
+		if (rows.size() < rowNumber || str == null) {
+			return this;
+		}
+		rows.remove(rowNumber);
+		char[] chars = str.toCharArray();
+		ArrayList<Character> row = new ArrayList<Character>();
+		for (char c : chars) {
+			row.add(c);
+		}
+		if (!row.isEmpty()) {
+			rows.add(rowNumber, row);
+		}
+		return this;
+	}
+
+	public RecipeBuilder clone(Recipe recipe) {
+		plugin = recipe.getPlugin();
+		result = recipe.getResult();
+		ingredients = recipe.getIngredients();
+		if (recipe instanceof ShapedRecipe) {
+			ShapedRecipe shaped = (ShapedRecipe) recipe;
+			this.ingredientsMap = shaped.getIngredientsMap();
+			rows.addAll(shaped.getRows());
+		} else if (recipe instanceof ShapelessRecipe) {
+			// if needed
+		}
+		return this;
+	}
+
+	public RecipeBuilder setIncludeData(boolean includeData) {
+		this.includeData = includeData;
+		return this;
+	}
 }
