@@ -37,6 +37,7 @@ import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
+import org.spout.api.command.CommandBatch;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
@@ -62,6 +63,17 @@ public class AdministrationCommands {
 
 	public AdministrationCommands(SpoutEngine engine) {
 		this.engine = engine;
+	}
+
+	@Command(aliases = {"bat", "batch"}, usage = "batch <file>", desc = "Executes a Spout batch file.", min = 1, max = 1)
+	public void batch(CommandContext args, CommandSource source) throws CommandException {
+		String fileName = args.getString(0);
+		if (!(source.hasPermission("spout.command.batch." + fileName))) {
+			throw new CommandException("You do not have permission to execute " + fileName);
+		}
+		CommandBatch bat = (CommandBatch) Spout.getFilesystem().getResource("batch://Spout/batches/" + fileName);
+		bat.execute(source);
+		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Executed " + fileName + ".");
 	}
 
 	@Command(aliases = "stop", usage = "[message]", desc = "Stop the server!", max = -1)

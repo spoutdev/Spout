@@ -46,6 +46,8 @@ import org.spout.engine.SpoutEngine;
 import org.spout.engine.filesystem.path.FilePathResolver;
 import org.spout.engine.filesystem.path.JarFilePathResolver;
 import org.spout.engine.filesystem.path.ZipFilePathResolver;
+import org.spout.engine.resources.loader.CommandBatchLoader;
+import org.spout.engine.resources.loader.TextureLoader;
 
 /**
  * The basic filesystem of Spout.
@@ -116,6 +118,9 @@ public class SharedFileSystem implements FileSystem {
 			getWorldsDirectory().mkdirs();
 		}
 
+		registerLoader(new TextureLoader());
+		registerLoader(new CommandBatchLoader());
+
 		searchPaths = new ResourcePathResolver[]{new FilePathResolver("cache"), new ZipFilePathResolver(), new JarFilePathResolver()};
 	}
 
@@ -127,7 +132,10 @@ public class SharedFileSystem implements FileSystem {
 	private void loadFallbacks() {
 		for (Map<String, ResourceLoader<?>> protocolLoaders : loaders.values()) {
 			for (ResourceLoader<?> loader : protocolLoaders.values()) {
-				loadResource(loader.getFallbackResourceName());
+				String fallback = loader.getFallbackResourceName();
+				if (fallback != null) {
+					loadResource(fallback);
+				}
 			}
 		}
 	}
@@ -217,6 +225,11 @@ public class SharedFileSystem implements FileSystem {
 				}
 
 				String name = loader.getFallbackResourceName();
+				if (name == null) {
+					Spout.getLogger().info("Resource not found for path '" + path + "' and does not have fallback.");
+					return null;
+				}
+
 				try {
 					URI fallbackName = new URI(name);
 					return loadedResources.get(fallbackName);

@@ -26,13 +26,5 @@
  */
 package org.spout.engine.filesystem;
 
-import org.spout.engine.resources.loader.TextureLoader;
-
 public class ServerFileSystem extends SharedFileSystem {
-	@Override
-	public void init(){
-		super.init();
-
-		registerLoader(new TextureLoader());
-	}
 }

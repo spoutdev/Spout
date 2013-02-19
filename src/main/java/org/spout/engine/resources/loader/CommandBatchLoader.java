@@ -24,38 +24,45 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.filesystem;
+package org.spout.engine.resources.loader;
 
-import org.spout.engine.resources.loader.AnimationLoader;
-import org.spout.engine.resources.loader.BlockMeshLoader;
-import org.spout.engine.resources.loader.SkeletonLoader;
-import org.spout.engine.resources.loader.CubeMeshLoader;
-import org.spout.engine.resources.loader.EntityPrefabLoader;
-import org.spout.engine.resources.loader.FontLoader;
-import org.spout.engine.resources.loader.MeshLoader;
-import org.spout.engine.resources.loader.ModelLoader;
-import org.spout.engine.resources.loader.RenderMaterialLoader;
-import org.spout.engine.resources.loader.ShaderLoader;
-import org.spout.engine.resources.loader.TextureLoader;
+import java.io.BufferedReader;
 
-public class ClientFileSystem extends SharedFileSystem {
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import org.spout.api.command.CommandBatch;
+import org.spout.api.resource.BasicResourceLoader;
+
+public class CommandBatchLoader extends BasicResourceLoader {
 	@Override
-	public void init() {
-		super.init();
+	public String getFallbackResourceName() {
+		return null;
+	}
 
-		registerLoader(new ShaderLoader());
+	@Override
+	public String getProtocol() {
+		return "batch";
+	}
 
-		registerLoader(new ModelLoader());
-		registerLoader(new SkeletonLoader());
-		registerLoader(new AnimationLoader());
-		
-		registerLoader(new MeshLoader());
-		registerLoader(new CubeMeshLoader());
-		registerLoader(new BlockMeshLoader());
-		registerLoader(new RenderMaterialLoader());
+	@Override
+	public String[] getExtensions() {
+		return new String[] {"sbat", "sbatch"};
+	}
 
-		//registerLoader(new SoundLoader());
-		registerLoader(new FontLoader());
-		registerLoader(new EntityPrefabLoader());
+	@Override
+	public CommandBatch getResource(InputStream stream) {
+		CommandBatch bat = new CommandBatch();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+		try {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				bat.add(line.trim());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return bat;
 	}
 }
