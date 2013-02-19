@@ -40,17 +40,19 @@ public class CommonClassLoader extends URLClassLoader {
 	private final Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
 	private final CommonPluginLoader loader;
 	private CommonPlugin plugin;
+	private final Map<String, String> componentRemapping;
 	private final List<String> depends;
 	private final List<String> softDepends;
 	private static HashMap<String, CommonPlugin> pluginsForClassNames = new HashMap<String, CommonPlugin>(500);
 	private static Set<CommonClassLoader> loaders = new HashSet<CommonClassLoader>();
 
-	public CommonClassLoader(final CommonPluginLoader loader, final ClassLoader parent, List<String> depends, List<String> softDepends) {
+	public CommonClassLoader(final CommonPluginLoader loader, final ClassLoader parent, PluginDescriptionFile desc) {
 		super(new URL[0], parent);
 		this.loader = loader;
 		loaders.add(this);
-		this.depends = depends == null ? Collections.<String>emptyList() : Collections.unmodifiableList(depends);
-		this.softDepends = softDepends == null ? Collections.<String>emptyList() : Collections.unmodifiableList(softDepends);
+		this.componentRemapping = desc.getComponentRemapping();
+		this.depends = Collections.unmodifiableList(desc.getDepends());
+		this.softDepends = Collections.unmodifiableList(desc.getSoftDepends());
 	}
 
 	@Override
@@ -124,8 +126,15 @@ public class CommonClassLoader extends URLClassLoader {
 		return pluginsForClassNames.get(className);
 	}
 
-	public static Class<?> findPluginClass(String name) throws ClassNotFoundException {
+	public static Class<?> findPluginClass(final String name) throws ClassNotFoundException {
 		for (CommonClassLoader loader : loaders) {
+			if (loader.componentRemapping.containsKey(name)) {
+				//Research all plugins, allows plugins to replace old component with one in different plugin
+				Class<?> clazz = findPluginClass(loader.componentRemapping.get(name));
+				if (clazz != null) {
+					return clazz;
+				}
+			}
 			Class<?> clazz = loader.findClass(name);
 			if (clazz != null) {
 				return clazz;

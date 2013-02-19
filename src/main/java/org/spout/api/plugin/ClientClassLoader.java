@@ -26,11 +26,9 @@
  */
 package org.spout.api.plugin;
 
-import java.util.List;
-
 public class ClientClassLoader extends CommonClassLoader {
-	public ClientClassLoader(CommonPluginLoader loader, ClassLoader parent, List<String> depends, List<String> softDepends) {
-		super(loader, parent, depends, softDepends);
+	public ClientClassLoader(CommonPluginLoader loader, ClassLoader parent, PluginDescriptionFile desc) {
+		super(loader, parent, desc);
 	}
 
 	@Override

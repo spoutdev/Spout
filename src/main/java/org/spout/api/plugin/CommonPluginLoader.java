@@ -148,9 +148,9 @@ public class CommonPluginLoader implements PluginLoader {
 
 		try {
 			if (engine.getPlatform() == Platform.CLIENT) {
-				loader = new ClientClassLoader(this, this.getClass().getClassLoader(), desc.getDepends(), desc.getSoftDepends());
+				loader = new ClientClassLoader(this, this.getClass().getClassLoader(), desc);
 			} else {
-				loader = new CommonClassLoader(this, this.getClass().getClassLoader(), desc.getDepends(), desc.getSoftDepends());
+				loader = new CommonClassLoader(this, this.getClass().getClassLoader(), desc);
 			}
 			loader.addURL(paramFile.toURI().toURL());
 			Class<?> main = Class.forName(desc.getMain(), true, loader);

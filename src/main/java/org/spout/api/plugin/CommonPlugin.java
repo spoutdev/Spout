@@ -118,17 +118,19 @@ public abstract class CommonPlugin implements Plugin {
 	@Override
 	public InputStream getResource(String path) {
 		Validate.notNull(path);
-		JarFile jar;
+		JarFile jar = null;
 		try {
 			jar = new JarFile(getFile());
-		} catch (IOException e) {
-			return null;
-		}
-		JarEntry entry = jar.getJarEntry(path);
-		try {
+			JarEntry entry = jar.getJarEntry(path);
 			return entry == null ? null : jar.getInputStream(entry);
 		} catch (IOException e) {
 			return null;
+		} finally {
+			if (jar != null) {
+				try {
+					jar.close();
+				} catch (IOException e) { }
+			}
 		}
 	}
 
