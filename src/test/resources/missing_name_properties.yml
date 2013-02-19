@@ -1,0 +1,5 @@
+name: TestProperties
+version: 2.0
+description: Dummy Description
+website: www.example.com
+main: com.example

@@ -1,0 +1,16 @@
+codedlocale: de
+softdepends: [baz, foo, bar]
+depend: [foo, bar]
+main: com.example.main.Main
+load: postworld
+platform: SERVER
+reload: true
+website: www.example.com?param=test
+author: [JaneDoe, JohnDoe, Foo, Bar, Baz]
+description: This is a really long description...
+version: 9999.9999
+name: TestProperties12
+data:
+    test_key: testData
+    other_key: 1234
+    false: true

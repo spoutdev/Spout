@@ -28,20 +28,25 @@ package org.spout.api.plugin;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
+import org.spout.api.Spout;
 import org.spout.api.exception.ConfigurationException;
 import org.spout.api.exception.InvalidDescriptionFileException;
 import org.spout.api.util.config.ConfigurationNode;
-import org.spout.api.util.config.ConfigurationNodeSource;
-import org.spout.api.util.config.serialization.Serialization;
 import org.spout.api.util.config.yaml.YamlConfiguration;
+import org.spout.api.util.string.DamerauLevenshteinAlgorithm;
 
 public class PluginDescriptionFile {
 	public static final List<String> RESTRICTED_NAMES = Collections.unmodifiableList(Arrays.asList(
@@ -49,51 +54,41 @@ public class PluginDescriptionFile {
 			"org.getspout",
 			"org.spoutcraft",
 			"in.spout"));
-	private final HashMap<String, String> data = new HashMap<String, String>();
-	private String name;
-	private String version;
-	private String description;
-	private List<String> authors = new ArrayList<String>();
-	private String website;
-	private boolean reload;
-	private Platform platform;
-	private LoadOrder load;
-	private String main;
-	private List<String> depends;
-	private List<String> softdepends;
-	private String fullname;
-	private Locale codedLocale = Locale.ENGLISH;
+	private static final DamerauLevenshteinAlgorithm dla = new DamerauLevenshteinAlgorithm(1, 1, 1, 1);
+	private final ConfigurationProperty<Map<String, String>> data = new DataProperty("data");
+	private final ConfigurationProperty<String> name = new BasicProperty<String>("name", String.class);
+	private final ConfigurationProperty<String> version = new BasicProperty<String>("version", String.class);
+	private final ConfigurationProperty<String> description = new BasicProperty<String>("description", String.class);
+	private final ConfigurationProperty<List<String>> authors = new RegexListProperty("author", "author(s)?", true);
+	private final ConfigurationProperty<String> website = new BasicProperty<String>("website", null, String.class);
+	private final ConfigurationProperty<Boolean> reload = new BasicProperty<Boolean>("reload", false, Boolean.class);
+	private final ConfigurationProperty<Platform> platform = new BasicProperty<Platform>("platform", Platform.class);
+	private final ConfigurationProperty<LoadOrder> load = new BasicProperty<LoadOrder>("load", LoadOrder.POSTWORLD, LoadOrder.class);
+	private final ConfigurationProperty<String> main = new BasicProperty<String>("main", String.class);
+	private final ConfigurationProperty<List<String>> depends = new RegexListProperty("depends", "depend(s)?", false);
+	private final ConfigurationProperty<List<String>> softdepends = new RegexListProperty("softdepends", "softdepend(s)?", false);
+	private final ConfigurationProperty<Locale> codedLocale = new LocaleProperty("codedlocale", Locale.ENGLISH);
 
 	public PluginDescriptionFile(String name, String version, String main, Platform platform) {
-		this.name = name;
-		this.version = version;
-		this.main = main;
-		this.platform = platform;
-		fullname = name + " v" + version;
+		this.name.setValue(name);
+		this.version.setValue(version);
+		this.main.setValue(main);
+		this.platform.setValue(platform);
 	}
 
 	public PluginDescriptionFile(InputStream stream) throws InvalidDescriptionFileException {
-		YamlConfiguration yaml = new YamlConfiguration(stream);
-		try {
-			yaml.load();
-		} catch (ConfigurationException e) {
-			throw new InvalidDescriptionFileException(e);
-		}
-		load(yaml);
+		this(new YamlConfiguration(stream));
 	}
 
 	public PluginDescriptionFile(Reader reader) throws InvalidDescriptionFileException {
-		YamlConfiguration yaml = new YamlConfiguration(reader);
-		try {
-			yaml.load();
-		} catch (ConfigurationException e) {
-			throw new InvalidDescriptionFileException(e);
-		}
-		load(yaml);
+		this(new YamlConfiguration(reader));
 	}
 
 	public PluginDescriptionFile(String raw) throws InvalidDescriptionFileException {
-		YamlConfiguration yaml = new YamlConfiguration(raw);
+		this(new YamlConfiguration(raw));
+	}
+
+	private PluginDescriptionFile(YamlConfiguration yaml) throws InvalidDescriptionFileException {
 		try {
 			yaml.load();
 		} catch (ConfigurationException e) {
@@ -102,167 +97,85 @@ public class PluginDescriptionFile {
 		load(yaml);
 	}
 
-	@SuppressWarnings("unchecked")
-	private void load(Map<?, ?> map) throws InvalidDescriptionFileException {
-		name = getEntry("name", String.class, map);
-		if (!name.matches("^[A-Za-z0-9 _.-]+$")) {
-			throw new InvalidDescriptionFileException("The field 'name' in properties.yml contains invalid characters.");
-		}
-		if (name.toLowerCase().contains("spout")) {
-			throw new InvalidDescriptionFileException("The plugin '" + name + "' has Spout in the name. This is not allowed.");
-		}
-
-		main = getEntry("main", String.class, map);
-		if (!isOfficialPlugin(main)) {
-			for (String namespace : RESTRICTED_NAMES) {
-				if (main.startsWith(namespace)) {
-					throw new InvalidDescriptionFileException("The use of the namespace '" + namespace + "' is not permitted.");
+	private List<ConfigurationProperty<?>> getConfigurationProperties() {
+		Field[] fields = PluginDescriptionFile.class.getDeclaredFields();
+		List<ConfigurationProperty<?>> properties = new ArrayList<ConfigurationProperty<?>>();
+		for (Field f : fields) {
+			if (!Modifier.isStatic(f.getModifiers())) {
+				if (f.getType().isAssignableFrom(ConfigurationProperty.class)) {
+					f.setAccessible(true);
+					try {
+						properties.add((ConfigurationProperty<?>) f.get(this));
+					} catch (IllegalArgumentException e) {
+						throw new RuntimeException(e);
+					} catch (IllegalAccessException e) {
+						throw new RuntimeException(e);
+					}
 				}
 			}
 		}
-
-		version = getEntry("version", String.class, map);
-		platform = getEntry("platform", Platform.class, map);
-		fullname = name + " v" + version;
-
-		if (map.containsKey("author")) {
-			authors.add(getEntry("author", String.class, map));
-		}
-
-		if (map.containsKey("authors")) {
-			authors.addAll(getEntry("authors", List.class, map));
-		}
-
-		if (map.containsKey("depends")) {
-			depends = getEntry("depends", List.class, map);
-		}
-
-		if (map.containsKey("softdepends")) {
-			softdepends = getEntry("softdepends", List.class, map);
-		}
-
-		if (map.containsKey("description")) {
-			description = getEntry("description", String.class, map);
-		}
-
-		if (map.containsKey("load")) {
-			load = getEntry("load", LoadOrder.class, map);
-		}
-
-		if (map.containsKey("reload")) {
-			reload = getEntry("reload", Boolean.class, map);
-		}
-
-		if (map.containsKey("website")) {
-			website = getEntry("website", String.class, map);
-		}
-
-		if (map.containsKey("codedlocale")) {
-			Locale[] locales = Locale.getAvailableLocales();
-			for (Locale l : locales) {
-				if (l.getLanguage().equals((new Locale((String) map.get("codedlocale"))).getLanguage())) {
-					codedLocale = l;
-				}
-			}
-		}
-		if (map.containsKey("data")) {
-			Map<?, ?> data = getEntry("data", Map.class, map);
-			for (Map.Entry<?, ?> entry : data.entrySet()) {
-				String key = entry.getKey().toString();
-				String value = entry.getValue().toString();
-				this.data.put(key, value);
-			}
-		}
+		return Collections.unmodifiableList(properties);
 	}
 
 	private void load(YamlConfiguration yaml) throws InvalidDescriptionFileException {
-		name = getEntry("name", String.class, yaml);
-		if (!name.matches("^[A-Za-z0-9 _.-]+$")) {
+		Map<String, ConfigurationNode> children = yaml.getChildren();
+		List<ConfigurationProperty<?>> properties = getConfigurationProperties();
+		List<String> unmatchedProperties = new LinkedList<String>();
+		for (Entry<String, ConfigurationNode> e : children.entrySet()) {
+			final String entry = e.getKey();
+			
+			boolean success = false;
+			for (ConfigurationProperty<?> property : properties) {
+				if (property.matches(entry)) {
+					property.setValue(entry, e.getValue());
+					success = true;
+					break;
+				}
+			}
+			
+			if (!success) {
+				unmatchedProperties.add(entry);
+			}
+		}
+
+		//Check for required properties
+		for (ConfigurationProperty<?> property : properties) {
+			if (property.isRequired()) {
+				if (property.getValue() == null) {
+					throw new InvalidDescriptionFileException("The field '" + property.name() + "' is not present in the properties.yml!");
+				}
+			}
+		}
+
+		//Validate name
+		if (!name.getValue().matches("^[A-Za-z0-9 _.-]+$")) {
 			throw new InvalidDescriptionFileException("The field 'name' in properties.yml contains invalid characters.");
 		}
-		if (name.toLowerCase().contains("spout")) {
+		if (name.getValue().toLowerCase().contains("spout")) {
 			throw new InvalidDescriptionFileException("The plugin '" + name + "' has Spout in the name. This is not allowed.");
 		}
 
-		main = getEntry("main", String.class, yaml);
-		if (!isOfficialPlugin(main)) {
+		//Validate main
+		if (!isOfficialPlugin(main.getValue())) {
 			for (String namespace : RESTRICTED_NAMES) {
-				if (main.startsWith(namespace)) {
+				if (main.getValue().startsWith(namespace)) {
 					throw new InvalidDescriptionFileException("The use of the namespace '" + namespace + "' is not permitted.");
 				}
 			}
 		}
 
-		version = getEntry("version", String.class, yaml);
-		platform = getEntry("platform", Platform.class, yaml);
-		fullname = name + " v" + version;
-
-		if (yaml.hasChild("author")) {
-			authors.add(getEntry("author", String.class, yaml));
-		}
-
-		if (yaml.hasChild("authors")) {
-			authors.addAll(getEntry("authors", List.class, yaml));
-		}
-
-		if (yaml.hasChild("depends")) {
-			depends = getEntry("depends", List.class, yaml);
-		}
-
-		if (yaml.hasChild("softdepends")) {
-			softdepends = getEntry("softdepends", List.class, yaml);
-		}
-
-		if (yaml.hasChild("description")) {
-			description = getEntry("description", String.class, yaml);
-		}
-
-		if (yaml.hasChild("load")) {
-			load = getEntry("load", LoadOrder.class, yaml);
-		}
-
-		if (yaml.hasChild("reload")) {
-			reload = getEntry("reload", Boolean.class, yaml);
-		}
-
-		if (yaml.hasChild("website")) {
-			website = getEntry("website", String.class, yaml);
-		}
-
-		if (yaml.hasChild("codedlocale")) {
-			Locale[] locales = Locale.getAvailableLocales();
-			for (Locale l : locales) {
-				if (l.getLanguage().equals((new Locale(yaml.getChild("codedlocale").getString())).getLanguage())) {
-					codedLocale = l;
+		//Try and be helpful, check if they misspelled an unmatched property
+		if (Spout.getLogger() != null) {
+			for (String key : unmatchedProperties) {
+				for (ConfigurationProperty<?> property : properties) {
+					if (!property.beenUpdated()) {
+						if (dla.execute(key, property.name()) < 4) {
+							Spout.getLogger().info("Unused plugin.yml for " + name.getValue() + ", property [" + key + "]. Did you mean [" + property.name() + "]?");
+						}
+					}
 				}
 			}
 		}
-		if (yaml.hasChild("data")) {
-			Map<String, ConfigurationNode> data = yaml.getChild("data").getChildren();
-			for (Map.Entry<String, ConfigurationNode> entry : data.entrySet()) {
-				String key = entry.getKey();
-				String value = entry.getValue().getString();
-				this.data.put(key, value);
-			}
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> T getEntry(Object key, Class<T> type, Map<?, ?> values) throws InvalidDescriptionFileException {
-		Object value = values.get(key);
-		if (value == null) {
-			throw new InvalidDescriptionFileException("The field '" + key + "' is not present in the properties.yml!");
-		}
-
-		return (T) Serialization.deserialize(type, value);
-	}
-
-	private <T> T getEntry(String key, Class<T> type, ConfigurationNodeSource src) throws InvalidDescriptionFileException {
-		T value = src.getChild(key).getTypedValue(type);
-		if (value == null) {
-			throw new InvalidDescriptionFileException("The field '" + key + "' is not present in the properties.yml!");
-		}
-		return value;
 	}
 
 	/**
@@ -282,7 +195,7 @@ public class PluginDescriptionFile {
 	 * @return name
 	 */
 	public String getName() {
-		return name;
+		return name.getValue();
 	}
 
 	/**
@@ -290,7 +203,7 @@ public class PluginDescriptionFile {
 	 * @return version
 	 */
 	public String getVersion() {
-		return version;
+		return version.getValue();
 	}
 
 	/**
@@ -298,7 +211,7 @@ public class PluginDescriptionFile {
 	 * @return description
 	 */
 	public String getDescription() {
-		return description;
+		return description.getValue();
 	}
 
 	/**
@@ -306,7 +219,7 @@ public class PluginDescriptionFile {
 	 * @return authors
 	 */
 	public List<String> getAuthors() {
-		return authors;
+		return authors.getValue();
 	}
 
 	/**
@@ -314,7 +227,7 @@ public class PluginDescriptionFile {
 	 * @return website
 	 */
 	public String getWebsite() {
-		return website;
+		return website.getValue();
 	}
 
 	/**
@@ -322,7 +235,7 @@ public class PluginDescriptionFile {
 	 * @return reload
 	 */
 	public boolean allowsReload() {
-		return reload;
+		return reload.getValue();
 	}
 
 	/**
@@ -330,7 +243,7 @@ public class PluginDescriptionFile {
 	 * @return platform
 	 */
 	public Platform getPlatform() {
-		return platform;
+		return platform.getValue();
 	}
 
 	/**
@@ -338,7 +251,7 @@ public class PluginDescriptionFile {
 	 * @return load
 	 */
 	public LoadOrder getLoad() {
-		return load;
+		return load.getValue();
 	}
 
 	/**
@@ -346,7 +259,7 @@ public class PluginDescriptionFile {
 	 * @return main
 	 */
 	public String getMain() {
-		return main;
+		return main.getValue();
 	}
 
 	/**
@@ -354,7 +267,7 @@ public class PluginDescriptionFile {
 	 * @return depends
 	 */
 	public List<String> getDepends() {
-		return depends;
+		return depends.getValue();
 	}
 
 	/**
@@ -362,7 +275,7 @@ public class PluginDescriptionFile {
 	 * @return softdepends
 	 */
 	public List<String> getSoftDepends() {
-		return softdepends;
+		return softdepends.getValue();
 	}
 
 	/**
@@ -371,7 +284,7 @@ public class PluginDescriptionFile {
 	 * @return The full name of the plugin
 	 */
 	public String getFullName() {
-		return fullname;
+		return getName() + " v" + getVersion();
 	}
 
 	/**
@@ -380,10 +293,152 @@ public class PluginDescriptionFile {
 	 * @return the locale the plugin is coded in
 	 */
 	public Locale getCodedLocale() {
-		return codedLocale;
+		return codedLocale.getValue();
 	}
 
 	public String getData(String key) {
-		return data.get(key);
+		return data.getValue().get(key);
+	}
+
+	private static interface ConfigurationProperty<T> {
+		public String name();
+		public boolean matches(String key);
+		public T getValue();
+		public void setValue(T value);
+		public void setValue(String key, ConfigurationNode node);
+		public boolean isRequired();
+		public boolean beenUpdated();
+	}
+
+	private static abstract class AbstractProperty<T> implements ConfigurationProperty<T>{
+		private final String name;
+		private T value;
+		private boolean updated = false;
+
+		public AbstractProperty(String name, T def) {
+			this.name = name;
+			this.value = def;
+		}
+
+		@Override
+		public String name() {
+			return name;
+		}
+	
+		@Override
+		public boolean matches(String key) {
+			return name.equals(key);
+		}
+
+		@Override
+		public T getValue() {
+			return value;
+		}
+
+		@Override
+		public void setValue(T value) {
+			this.value = value;
+			this.updated = true;
+		}
+
+		@Override
+		public boolean isRequired() {
+			return false;
+		}
+
+		@Override
+		public boolean beenUpdated() {
+			return updated;
+		}
+	}
+
+	private static class BasicProperty<T> extends AbstractProperty<T> implements ConfigurationProperty<T>{
+		private final Class<T> clazz;
+		private final boolean required;
+		public BasicProperty(String name, Class<T> clazz) {
+			super(name, null);
+			this.clazz = clazz;
+			this.required = true;
+		}
+
+		public BasicProperty(String name, T def, Class<T> clazz) {
+			super(name, def);
+			this.clazz = clazz;
+			this.required = false;
+		}
+
+		@Override
+		public void setValue(String key, ConfigurationNode node) {
+			super.setValue((T) node.getTypedValue(clazz));
+		}
+
+		@Override
+		public boolean isRequired() {
+			return required;
+		}
+	}
+
+	private static class RegexListProperty extends AbstractProperty<List<String>>{
+		private final boolean required;
+		private final Pattern pattern;
+		public RegexListProperty(String name, String regex, boolean required) {
+			super(name, new ArrayList<String>());
+			this.pattern = Pattern.compile(regex);
+			this.required = required;
+		}
+
+		@Override
+		public boolean matches(String key) {
+			return pattern.matcher(key).matches();
+		}
+
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		@Override
+		public void setValue(String key, ConfigurationNode node) {
+			List list = node.getTypedValue(List.class);
+			if (list != null) {
+				((List)this.getValue()).addAll(list);
+			} else {
+				((List)this.getValue()).add(node.getTypedValue(String.class));
+			}
+		}
+
+		@Override
+		public boolean isRequired() {
+			return required;
+		}
+	}
+
+	private static class LocaleProperty extends AbstractProperty<Locale>{
+		public LocaleProperty(String name, Locale def) {
+			super(name, def);
+		}
+
+		@Override
+		public void setValue(String key, ConfigurationNode node) {
+			Locale[] locales = Locale.getAvailableLocales();
+			final Locale locale = new Locale(node.getString());
+			for (Locale l : locales) {
+				if (l.getLanguage().equals(locale.getLanguage())) {
+					setValue(l);
+				}
+			}
+		}
+	}
+
+	private static class DataProperty extends AbstractProperty<Map<String, String>>{
+		public DataProperty(String name) {
+			super(name, new HashMap<String, String>());
+		}
+
+		@Override
+		public void setValue(String k, ConfigurationNode node) {
+			Map<String, ConfigurationNode> data = node.getChildren();
+			for (Map.Entry<String, ConfigurationNode> entry : data.entrySet()) {
+				String key = entry.getKey();
+				String value = entry.getValue().getString();
+				this.getValue().put(key, value);
+			}
+		}
 	}
 }
