@@ -120,14 +120,16 @@ public class SpoutInputManager implements InputManager {
 			Spout.log("Mouse clicked at {" + x + "," + y + "} was " + (pressed ? "pressed" : "released"));
 		}
 
-		Widget w = getWidgetAt(x, y);
-		if (w != null) {
-			Screen in = getInputScreen();
-			Widget fw = in.getFocusedWidget();
-			if (fw != null && fw != w) {
-				in.setFocus(w, FocusReason.CLICKED);
+		Screen s = getInputScreen();
+		if (s != null) {
+			Widget w = s.getWidgetAt(x, y);
+			if (w != null) {
+				Widget fw = s.getFocusedWidget();
+				if (fw != null && !fw.equals(w)) {
+					s.setFocus(w, FocusReason.CLICKED);
+				}
+				w.onClicked(event);
 			}
-			w.onClicked(event);
 		}
 
 		doCommand(player, cmd, pressed);
@@ -144,7 +146,7 @@ public class SpoutInputManager implements InputManager {
 			IntVector2 prev = new IntVector2(x - dx, y - dy);
 			IntVector2 pos = new IntVector2(x, y);
 			for (Widget w : screen.getWidgets()) {
-				w.onMouseMoved(prev, pos, w == getWidgetAt(x, y));
+				w.onMouseMoved(prev, pos, w == screen.getWidgetAt(x, y));
 			}
 		}
 
@@ -181,33 +183,6 @@ public class SpoutInputManager implements InputManager {
 			throw new IllegalStateException("Cannot access ScreenStack in server mode.");
 		}
 		return ((Client) engine).getScreenStack().getInputScreen();
-	}
-
-	private Widget getWidgetAt(int x, int y) {
-		Screen in = getInputScreen();
-		if (in == null) {
-			return null;
-		}
-		for (Widget w : in.getWidgets()) {
-			Rectangle hitBox = w.getBounds();
-			Vector2 res = ((Client) Spout.getEngine()).getResolution();
-			int startX = (int) (res.getX() / 2) + (toPixelsX(hitBox.getX()) / 2);
-			int startY = (int) (res.getY() / 2) + (toPixelsY(hitBox.getY()) / 2);
-			int endX = startX + toPixelsX(hitBox.getWidth());
-			int endY = startY + toPixelsY(hitBox.getHeight());
-			if (x >= startX && x <= endX && y >= startY && y <= endY) {
-				return w;
-			}
-		}
-		return null;
-	}
-
-	private int toPixelsX(float pcent) {
-		return (int) (pcent * ((Client) Spout.getEngine()).getResolution().getX());
-	}
-
-	private int toPixelsY(float pcent) {
-		return (int) (pcent * ((Client) Spout.getEngine()).getResolution().getY());
 	}
 
 	public void pollInput(SpoutPlayer player) {
