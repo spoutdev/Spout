@@ -152,7 +152,7 @@ public interface SoundSource {
 	public void setPosition(Vector3 position);
 
 	/**
-	 * Gets the velocity of the SoundSource.
+	 * Gets the velocity of the SoundSource. Used for doppler effects.
 	 * 
 	 * @return the Vector3 velocity of the SoundSource
 	 */
@@ -160,6 +160,7 @@ public interface SoundSource {
 
 	/**
 	 * Sets the velocity of the SoundSource to the given vector.
+	 * Used for doppler effects.
 	 * 
 	 * @param velocity
 	 */

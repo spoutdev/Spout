@@ -49,14 +49,14 @@ public interface SoundListener {
 	public Point getPosition();
 
 	/**
-	 * Sets the velocity of the listener.
+	 * Sets the velocity of the listener. Used for doppler effects.
 	 *
 	 * @param vec velocity of listener
 	 */
 	public void setVelocity(Vector3 vec);
 
 	/**
-	 * Returns velocity of this listener.
+	 * Returns velocity of this listener. Used for doppler effects.
 	 *
 	 * @return velocity
 	 */
