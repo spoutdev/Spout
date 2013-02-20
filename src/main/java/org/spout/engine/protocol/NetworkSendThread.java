@@ -51,7 +51,7 @@ public class NetworkSendThread {
 	
 	public NetworkSendThread(int poolIndex) {
 		this.poolIndex = poolIndex;
-		channelQueues.set(new ChannelQueueThread[16]);
+		channelQueues.set(new ChannelQueueThread[0]);
 	}
 
 	public void send(SpoutSession<?> session, Channel channel, Message message) {
@@ -70,9 +70,7 @@ public class NetworkSendThread {
 		}
 		while (queueId >= queues.length || queues[queueId] == null) {
 			ChannelQueueThread[] newQueues = new ChannelQueueThread[queueId + 1];
-			for (int i = 0; i < queues.length; i++) {
-				newQueues[i] = queues[i];
-			}
+			System.arraycopy(queues, 0, newQueues, 0, queues.length);
 			ChannelQueueThread newQueue = new ChannelQueueThread(poolIndex, queueId);
 			newQueues[queueId] = newQueue;
 			if (channelQueues.compareAndSet(queues, newQueues)) {
