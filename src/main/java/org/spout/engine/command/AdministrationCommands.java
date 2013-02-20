@@ -91,8 +91,6 @@ public class AdministrationCommands {
 			case SERVER:
 				message = "Server halting";
 				break;
-			default:
-				message = "Engine halting";
 		}
 		if (args.length() > 0) {
 			message = args.getJoinedString(0).getPlainString();
@@ -120,8 +118,7 @@ public class AdministrationCommands {
 	@Command(aliases = "kick", usage = "<player> [message]", desc = "Kick a player", min = 1, max = -1)
 	@CommandPermissions("spout.command.kick")
 	public void kick(CommandContext args, CommandSource source) throws CommandException {
-		Platform p = Spout.getPlatform();
-		if (p != Platform.SERVER && p != Platform.PROXY) {
+		if (Spout.getPlatform() == Platform.CLIENT) {
 			throw new CommandException("Kick is only available in server mode.");
 		}
 		String playerName = args.getString(0);
@@ -132,7 +129,7 @@ public class AdministrationCommands {
 			message = new ChatArguments("You have been kicked from the server.");
 		}
 
-		Player player = ((Server) Spout.getEngine()).getPlayer(playerName, true);
+		Player player = Spout.getEngine().getPlayer(playerName, true);
 		if (player == null) {
 			throw new CommandException("Unknown player: " + player);
 		}
@@ -150,8 +147,7 @@ public class AdministrationCommands {
 	@Command(aliases = "whitelist", desc = "Add, remove, list, or toggle players on the whitelist.", usage = "<add|remove|list|on|off> [player] [reason]", min = 1, max = 3)
 	@CommandPermissions("spout.command.whitelist")
 	public void whitelist(CommandContext args, CommandSource source) throws CommandException {
-		Platform p = Spout.getPlatform();
-		if (p != Platform.SERVER && p != Platform.PROXY) {
+		if (Spout.getPlatform() == Platform.CLIENT) {
 			throw new CommandException("Whitelisting is only available in server mode.");
 		}
 
@@ -207,8 +203,7 @@ public class AdministrationCommands {
 	@Command(aliases = "banlist", usage = "[ips]", desc = "Shows banned players or ips.", min = 0, max = 1)
 	@CommandPermissions("spout.command.banlist")
 	public void banList(CommandContext args, CommandSource source) throws CommandException {
-		Platform p = Spout.getPlatform();
-		if (p != Platform.SERVER && p != Platform.PROXY) {
+		if (Spout.getPlatform() == Platform.CLIENT) {
 			throw new CommandException("Banning is only available in server mode.");
 		}
 
@@ -235,8 +230,7 @@ public class AdministrationCommands {
 	@Command(aliases = "ban", usage = "<player> [reason]", desc = "Ban a player", min = 1, max = -1)
 	@CommandPermissions("spout.command.ban")
 	public void ban(CommandContext args, CommandSource source) throws CommandException {
-		Platform p = Spout.getPlatform();
-		if (p != Platform.SERVER && p != Platform.PROXY) {
+		if (Spout.getPlatform() == Platform.CLIENT) {
 			throw new CommandException("Banning is only available in server mode.");
 		}
 
@@ -253,8 +247,7 @@ public class AdministrationCommands {
 	@Command(aliases = "unban", usage = "<player>", desc = "Unban a player", min = 1, max = 1)
 	@CommandPermissions("spout.command.unban")
 	public void unban(CommandContext args, CommandSource source) throws CommandException {
-		Platform p = Spout.getPlatform();
-		if (p != Platform.SERVER && p != Platform.PROXY) {
+		if (Spout.getPlatform() == Platform.CLIENT) {
 			throw new CommandException("Banning is only available in server mode.");
 		}
 		String player = args.getString(0);
@@ -265,14 +258,13 @@ public class AdministrationCommands {
 	@Command(aliases = "ban-ip", usage = "<address> [reason]", desc = "Ban an IP address", min = 1, max = -1)
 	@CommandPermissions("spout.command.banip")
 	public void banIp(CommandContext args, CommandSource source) throws CommandException {
-		Platform p = Spout.getPlatform();
-		if (p != Platform.SERVER && p != Platform.PROXY) {
+		if (Spout.getPlatform() == Platform.CLIENT) {
 			throw new CommandException("Banning is only available in server mode.");
 		}
 
 		if (source instanceof Player) {
-			System.out.println(((Player) source).getAddress().getHostAddress());
-			System.out.println("Args: " + args.length());
+			Spout.log(((Player) source).getAddress().getHostAddress());
+			Spout.log("Args: " + args.length());
 		}
 
 		Server server = (Server) Spout.getEngine();
@@ -288,8 +280,7 @@ public class AdministrationCommands {
 	@Command(aliases = "unban-ip", usage = "<address>", desc = "Unban an IP address", min = 1, max = 1)
 	@CommandPermissions("spout.command.unbanip")
 	public void unbanIp(CommandContext args, CommandSource source) throws CommandException {
-		Platform p = Spout.getPlatform();
-		if (p != Platform.SERVER && p != Platform.PROXY) {
+		if (Spout.getPlatform() == Platform.CLIENT) {
 			throw new CommandException("Banning is only available in server mode.");
 		}
 		String address = args.getString(0);
@@ -328,7 +319,7 @@ public class AdministrationCommands {
 	@Command(aliases = {"plugins", "pl"}, desc = "List all plugins on the engine")
 	@CommandPermissions("spout.command.plugins")
 	public void plugins(CommandContext args, CommandSource source) {
-		List<Plugin> plugins = Spout.getEngine().getPluginManager().getPlugins();
+		List<Plugin> plugins = Spout.getPluginManager().getPlugins();
 		ChatArguments pluginListString = new ChatArguments();
 		pluginListString.append(Arrays.<Object>asList("Plugins (", plugins.size() - 1, "): "));
 
@@ -351,7 +342,7 @@ public class AdministrationCommands {
 	@Command(aliases = {"players", "who", "list"}, desc = "List all online players")
 	@CommandPermissions("spout.command.players")
 	public void list(CommandContext args, CommandSource source) throws CommandException {
-		if (Spout.getPlatform() != Platform.SERVER && Spout.getPlatform() != Platform.PROXY) {
+		if (Spout.getPlatform() == Platform.CLIENT) {
 			throw new CommandException("You may only list online players in server mode.");
 		}
 
