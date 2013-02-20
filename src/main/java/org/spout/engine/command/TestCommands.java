@@ -85,11 +85,20 @@ public class TestCommands {
 		Client client = (Client) Spout.getEngine();
 		Point pos = client.getActivePlayer().getScene().getPosition();
 		SoundManager sm = client.getSoundManager();
-		SoundSource s = sm.createSource((Sound) Spout.getFilesystem().getResource("sound://Spout/fallbacks/dw.wav"));
+		String action = args.getString(0);
+		SoundSource s = sm.getSource("dw");
+
+		if (s == null) {
+			if (action.equalsIgnoreCase("play")) {
+				s = sm.createSource((Sound) Spout.getFilesystem().getResource("sound://Spout/fallbacks/dw.wav"), "dw");
+			} else {
+				throw new CommandException("Nothing to " + action + ".");
+			}
+		}
+
 		sm.getListener().setPosition(pos);
 		s.setPosition(pos);
 
-		String action = args.getString(0);
 		if (action.equalsIgnoreCase("play")) {
 			s.play();
 			source.sendMessage(ChatStyle.BRIGHT_GREEN, "Playing...");

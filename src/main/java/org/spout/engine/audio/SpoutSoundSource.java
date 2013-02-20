@@ -45,10 +45,12 @@ import org.spout.engine.resources.ClientSound;
 public class SpoutSoundSource implements SoundSource {
 	private final int sourceId;
 	private Sound sound = null;
+	private final String name;
 
-	protected SpoutSoundSource() {
+	protected SpoutSoundSource(String name) {
 		this.sourceId = AL10.alGenSources();
 		reset();
+		this.name = name;
 	}
 
 	@Override
@@ -211,5 +213,15 @@ public class SpoutSoundSource implements SoundSource {
 	private void setVector3(int property, Vector3 value) {
 		AL10.alSource3f(sourceId, property, value.getX(), value.getY(), value.getZ());
 		checkErrors();
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof SoundSource && ((SoundSource) obj).getName().equalsIgnoreCase(name);
 	}
 }

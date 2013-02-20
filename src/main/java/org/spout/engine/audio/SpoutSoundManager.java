@@ -26,9 +26,10 @@
  */
 package org.spout.engine.audio;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.lwjgl.LWJGLException;
@@ -45,7 +46,7 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Vector3;
 
 public class SpoutSoundManager implements SoundManager {
-	private final List<SoundSource> sources = new ArrayList<SoundSource>();
+	private final Set<SoundSource> sources = new HashSet<SoundSource>();
 	private final SoundListener listener = new SpoutSoundListener();
 
 	@Override
@@ -65,8 +66,8 @@ public class SpoutSoundManager implements SoundManager {
 	}
 
 	@Override
-	public SoundSource createSource(Sound sound) {
-		SoundSource source = new SpoutSoundSource();
+	public SoundSource createSource(Sound sound, String name) {
+		SoundSource source = new SpoutSoundSource(name);
 		source.setSound(sound);
 		sources.add(source);
 		return source;
@@ -83,8 +84,18 @@ public class SpoutSoundManager implements SoundManager {
 	}
 
 	@Override
-	public List<SoundSource> getSources() {
-		return Collections.unmodifiableList(sources);
+	public Set<SoundSource> getSources() {
+		return Collections.unmodifiableSet(sources);
+	}
+
+	@Override
+	public SoundSource getSource(String name) {
+		for (SoundSource source : sources) {
+			if (source.getName().equalsIgnoreCase(name)) {
+				return source;
+			}
+		}
+		return null;
 	}
 
 	@Override
