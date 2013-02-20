@@ -45,6 +45,7 @@ import org.spout.api.command.annotated.CommandPermissions;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.Quaternion;
@@ -441,6 +442,25 @@ public class AdministrationCommands {
 			source.sendMessage("UUID: ", world.getUID());
 			source.sendMessage("Seed: ", world.getSeed());
 		}
+	}
+
+	@Command(aliases = {"regioninfo"}, desc = "Provides info about regions", usage = "[world]", min = 1, max = 1)
+	@CommandPermissions("spout.command.regioninfo")
+	public void chunkInfo(CommandContext args, CommandSource source) throws CommandException {
+		World world = engine.getWorld(args.getString(0));
+		if (world == null) {
+			throw new CommandException("Unknown world: " + world);
+		}
+		source.sendMessage("World: ", world.getName());
+		source.sendMessage("==========================");
+		int chunks = 0;
+		int regions = 0;
+		for (Region r : world.getRegions()) {
+			regions++;
+			chunks += r.getNumLoadedChunks();
+		}
+		source.sendMessage("Regions:", regions);
+		source.sendMessage("chunks: ", chunks);
 	}
 
 	@Command(aliases = {"tp", "teleport"}, usage = "[player] [player|x] [y] [z] [-w <world>]", flags = "w:", desc = "Teleport to a location", min = 1, max = 4)

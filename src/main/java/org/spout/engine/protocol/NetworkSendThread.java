@@ -51,7 +51,7 @@ public class NetworkSendThread {
 	
 	public NetworkSendThread(int poolIndex) {
 		this.poolIndex = poolIndex;
-		channelQueues.set(new ChannelQueueThread[0]);
+		channelQueues.set(new ChannelQueueThread[16]);
 	}
 
 	public void send(SpoutSession<?> session, Channel channel, Message message) {
