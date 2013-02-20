@@ -43,7 +43,7 @@ public class SoundLoader extends BasicResourceLoader<ClientSound> {
 
 	@Override
 	public String getFallbackResourceName() {
-		return "sound://Spout/fallbacks/silence.wav";
+		return "sound://Spout/fallbacks/dw.wav";
 	}
 
 	@Override

@@ -95,24 +95,17 @@ public class SpoutSoundSource implements SoundSource {
 
 	@Override
 	public void play() {
-		if (!getState().equals(SoundState.PLAYING)) {
-			AL10.alSourcePlay(sourceId);
-		}
+		AL10.alSourcePlay(sourceId);
 	}
 
 	@Override
 	public void pause() {
-		if (getState().equals(SoundState.PLAYING)) {
-			AL10.alSourcePause(sourceId);
-		}
+		AL10.alSourcePause(sourceId);
 	}
 
 	@Override
 	public void stop() {
-		// People should just use rewind.
-		if (getState().equals(SoundState.PLAYING)) {
-			AL10.alSourceStop(sourceId);
-		}
+		AL10.alSourceStop(sourceId);
 	}
 
 	@Override

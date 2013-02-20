@@ -146,6 +146,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		this.ccoverride = args.ccoverride;
 
 		inputManager = new SpoutInputManager();
+		soundManager.init();
 	}
 
 	@Override

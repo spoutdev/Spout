@@ -37,6 +37,11 @@ import java.util.List;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
+import org.spout.api.audio.Sound;
+import org.spout.api.audio.SoundManager;
+import org.spout.api.audio.SoundSource;
+import org.spout.api.audio.SoundState;
+import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
@@ -69,6 +74,34 @@ public class TestCommands {
 
 	public TestCommands(SpoutEngine engine) {
 		this.engine = engine;
+	}
+
+	@Command(aliases = "dw", usage = "<play|stop|pause>", desc = "Plays a tune at your position.", min = 1, max = 1)
+	public void dw(CommandContext args, CommandSource source) throws CommandException {
+		if (Spout.getPlatform() != Platform.CLIENT) {
+			throw new CommandException("You must be in client mode to do that.");
+		}
+
+		Client client = (Client) Spout.getEngine();
+		Point pos = client.getActivePlayer().getScene().getPosition();
+		SoundManager sm = client.getSoundManager();
+		SoundSource s = sm.createSource((Sound) Spout.getFilesystem().getResource("sound://Spout/fallbacks/dw.wav"));
+		sm.getListener().setPosition(pos);
+		s.setPosition(pos);
+
+		String action = args.getString(0);
+		if (action.equalsIgnoreCase("play")) {
+			s.play();
+			source.sendMessage(ChatStyle.BRIGHT_GREEN, "Playing...");
+		} else if (action.equalsIgnoreCase("stop")) {
+			s.stop();
+			source.sendMessage(ChatStyle.BRIGHT_GREEN, "Stopping...");
+		} else if (action.equalsIgnoreCase("pause")) {
+			s.pause();
+			source.sendMessage(ChatStyle.BRIGHT_GREEN, "Pausing...");
+		} else {
+			throw new CommandException("Unknown action: " + action);
+		}
 	}
 
 	@Command(aliases = "break", desc = "Debug command to break a block")

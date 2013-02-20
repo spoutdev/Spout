@@ -36,6 +36,7 @@ import org.spout.engine.resources.loader.MeshLoader;
 import org.spout.engine.resources.loader.ModelLoader;
 import org.spout.engine.resources.loader.RenderMaterialLoader;
 import org.spout.engine.resources.loader.ShaderLoader;
+import org.spout.engine.resources.loader.SoundLoader;
 import org.spout.engine.resources.loader.TextureLoader;
 
 public class ClientFileSystem extends SharedFileSystem {
@@ -54,7 +55,7 @@ public class ClientFileSystem extends SharedFileSystem {
 		registerLoader(new BlockMeshLoader());
 		registerLoader(new RenderMaterialLoader());
 
-		//registerLoader(new SoundLoader());
+		registerLoader(new SoundLoader());
 		registerLoader(new FontLoader());
 		registerLoader(new EntityPrefabLoader());
 	}
