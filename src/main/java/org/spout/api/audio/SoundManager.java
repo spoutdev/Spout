@@ -27,6 +27,7 @@
 package org.spout.api.audio;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Manages Sounds.
@@ -38,11 +39,13 @@ public interface SoundManager {
 	public void init();
 	
 	/**
-	 * Creates a new {@link SoundSource}
+	 * Creates a new {@link SoundSource} with the specified name
 	 *
+	 * @param sound of source
+	 * @param name of source
 	 * @return the creates SoundSource
 	 */
-	public SoundSource createSource(Sound sound);
+	public SoundSource createSource(Sound sound, String name);
 
 	/**
 	 * Removes a {@link SoundSource} from the manager.
@@ -61,7 +64,15 @@ public interface SoundManager {
 	 *
 	 * @return sources
 	 */
-	public List<SoundSource> getSources();
+	public Set<SoundSource> getSources();
+
+	/**
+	 * Returns a source with the specified name.
+	 *
+	 * @param name of source
+	 * @return source
+	 */
+	public SoundSource getSource(String name);
 
 	/**
 	 * Returns the active {@link SoundListener}

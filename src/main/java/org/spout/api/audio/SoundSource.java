@@ -27,11 +27,12 @@
 package org.spout.api.audio;
 
 import org.spout.api.math.Vector3;
+import org.spout.api.util.Named;
 
 /**
  * Represents a source of sound in the game.
  */
-public interface SoundSource {
+public interface SoundSource extends Named {
 	/**
 	 * Gets the current state of the SoundSource.
 	 * 
