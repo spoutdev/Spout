@@ -52,21 +52,21 @@ public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder REAP_CHUNKS_PER_TICK = new ConfigurationHolder(50, "chunks", "reap-per-tick");
 	public static final ConfigurationHolder UNLOAD_CHUNKS_PER_TICK = new ConfigurationHolder(50, "chunks", "unload-per-tick");
 	public static final ConfigurationHolder DYNAMIC_BLOCKS = new ConfigurationHolder(true, "chunks", "dynamic-blocks");
-	public static final ConfigurationHolder BLOCK_PHYSICS = new ConfigurationHolder(true, "chunks", "block-physics");	
+	public static final ConfigurationHolder BLOCK_PHYSICS = new ConfigurationHolder(true, "chunks", "block-physics");
 	// Messages
 	public static final ConfigurationHolder DEFAULT_LANGUAGE = new ConfigurationHolder("EN_US", "messages", "default-language");
 	// Network
 	public static final ConfigurationHolder UPNP = new ConfigurationHolder(true, "network", "upnp");
 	public static final ConfigurationHolder BONJOUR = new ConfigurationHolder(false, "network", "bonjour");
 	public static final ConfigurationHolder SHOW_CONNECTIONS = new ConfigurationHolder(false, "network", "show-connections");
-	public static final ConfigurationHolder SEND_LATENCY = new ConfigurationHolder(0L, "network", "send_latency");
-	public static final ConfigurationHolder SEND_SPIKE_LATENCY = new ConfigurationHolder(0L, "network", "send_spike_latency");
-	public static final ConfigurationHolder SEND_SPIKE_CHANCE = new ConfigurationHolder(0F, "network", "send_spikes_per_second");
-	public static final ConfigurationHolder RECV_SPIKE_LATENCY = new ConfigurationHolder(0L, "network", "recv_spike_latency");
-	public static final ConfigurationHolder RECV_SPIKE_CHANCE = new ConfigurationHolder(0F, "network", "recv_spikes_per_second");
-	//Debug Graphic
-	public static final ConfigurationHolder DBG_SHADERS = new ConfigurationHolder(false, "debug", "dbg_shaders");
-	
+	// Debug
+	public static final ConfigurationHolder SEND_LATENCY = new ConfigurationHolder(0L, "debug", "send-latency");
+	public static final ConfigurationHolder SEND_SPIKE_LATENCY = new ConfigurationHolder(0L, "debug", "send-spike-latency");
+	public static final ConfigurationHolder SEND_SPIKE_CHANCE = new ConfigurationHolder(0F, "debug", "send-spikes-per-second");
+	public static final ConfigurationHolder RECV_SPIKE_LATENCY = new ConfigurationHolder(0L, "debug", "recv-spike-latency");
+	public static final ConfigurationHolder RECV_SPIKE_CHANCE = new ConfigurationHolder(0F, "debug", "recv-spikes-per-second");
+	public static final ConfigurationHolder DEBUG_SHADERS = new ConfigurationHolder(false, "debug", "debug-shaders");
+
 	public SpoutConfiguration() {
 		super(new YamlConfiguration(new File(SharedFileSystem.getConfigDirectory(), "spout.yml")));
 	}
