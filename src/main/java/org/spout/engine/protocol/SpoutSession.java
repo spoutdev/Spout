@@ -260,6 +260,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 				sendQueue.add(message);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			disconnect(false, new Object[] {"Socket Error!"});
 		}
 	}
