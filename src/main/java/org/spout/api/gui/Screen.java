@@ -33,7 +33,12 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.spout.api.Client;
+import org.spout.api.Spout;
 import org.spout.api.gui.component.ControlComponent;
+import org.spout.api.math.IntVector2;
+import org.spout.api.math.Rectangle;
+import org.spout.api.math.Vector2;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.tickable.BasicTickable;
 
@@ -46,6 +51,35 @@ public class Screen extends BasicTickable implements Container {
 	@Override
 	public List<Widget> getWidgets() {
 		return Collections.unmodifiableList(new ArrayList<Widget>(widgets.keySet()));
+	}
+
+	@Override
+	public Widget getWidgetAt(int x, int y) {
+		for (Widget w : getWidgets()) {
+			Rectangle hitBox = w.getBounds();
+			Vector2 res = ((Client) Spout.getEngine()).getResolution();
+			int startX = (int) (res.getX() / 2) + (toPixelsX(hitBox.getX()) / 2);
+			int startY = (int) (res.getY() / 2) + (toPixelsY(hitBox.getY()) / 2);
+			int endX = startX + toPixelsX(hitBox.getWidth());
+			int endY = startY + toPixelsY(hitBox.getHeight());
+			if (x >= startX && x <= endX && y >= startY && y <= endY) {
+				return w;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Widget getWidgetAt(IntVector2 pos) {
+		return getWidgetAt(pos.getX(), pos.getY());
+	}
+
+	private int toPixelsX(float pcent) {
+		return (int) (pcent * ((Client) Spout.getEngine()).getResolution().getX());
+	}
+
+	private int toPixelsY(float pcent) {
+		return (int) (pcent * ((Client) Spout.getEngine()).getResolution().getY());
 	}
 
 	@Override

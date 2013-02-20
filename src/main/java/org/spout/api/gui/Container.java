@@ -29,6 +29,7 @@ package org.spout.api.gui;
 import java.util.Collection;
 import java.util.Set;
 
+import org.spout.api.math.IntVector2;
 import org.spout.api.plugin.Plugin;
 
 public interface Container {
@@ -43,4 +44,8 @@ public interface Container {
 	public abstract void attachWidget(Plugin plugin, Widget widget);
 
 	public abstract Collection<Widget> getWidgets();
+
+	public abstract Widget getWidgetAt(int x, int y);
+
+	public abstract Widget getWidgetAt(IntVector2 pos);
 }
