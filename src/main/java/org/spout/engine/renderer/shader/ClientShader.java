@@ -118,7 +118,7 @@ public class ClientShader extends Resource implements SpoutShader {
 				String error = GL20.glGetProgramInfoLog(program, 255);
 				throw new ShaderCompileException("Link Error in " + vsourceUrl + ", " + fsourceUrl +": " + error);
 			}
-			if (SpoutConfiguration.DBG_SHADERS.getBoolean()) {
+			if (SpoutConfiguration.DEBUG_SHADERS.getBoolean()) {
 				//Shaders
 				shader.shaderName = "Shader " + this.fsourceUrl + " " + this.vsourceUrl;
 				shader.attachedShaders = GL20.glGetProgrami(program, GL20.GL_ATTACHED_SHADERS);
@@ -442,7 +442,7 @@ public class ClientShader extends Resource implements SpoutShader {
 	}
 
 	public void checkAttributes(List<Integer> used){
-		if (!SpoutConfiguration.DBG_SHADERS.getBoolean())
+		if (!SpoutConfiguration.DEBUG_SHADERS.getBoolean())
 			return;
 
 		/*Map<Integer,AttrUniInfo> map = new HashMap<Integer, ClientShader.AttrUniInfo>(attributes);
@@ -459,7 +459,7 @@ public class ClientShader extends Resource implements SpoutShader {
 	}
 
 	public void checkUniform(){
-		if (!SpoutConfiguration.DBG_SHADERS.getBoolean())
+		if (!SpoutConfiguration.DEBUG_SHADERS.getBoolean())
 			return;
 
 		if(!dirtyTextures.isEmpty() || !dirtyVariables.isEmpty()){
