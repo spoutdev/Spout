@@ -100,6 +100,7 @@ import org.spout.api.util.list.concurrent.setqueue.SetQueue;
 import org.spout.api.util.list.concurrent.setqueue.SetQueueElement;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 import org.spout.api.util.map.concurrent.palette.AtomicPaletteBlockStore;
+import org.spout.api.util.set.TNibbleQuadHashSet;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.SpoutEntity;
@@ -196,19 +197,19 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	/**
 	 * Contains the pending block light operations of blocks in this chunk
 	 */
-	protected final TNibbleQuadList blockLightOperations = new TNibbleQuadList();
+	protected final TNibbleQuadHashSet blockLightOperations = new TNibbleQuadHashSet();
 	/**
 	 * Contains the pending sky light operations of blocks in this chunk
 	 */
-	protected final TNibbleQuadList skyLightOperations = new TNibbleQuadList();
+	protected final TNibbleQuadHashSet skyLightOperations = new TNibbleQuadHashSet();
 	/**
 	 * Contains the pending block light updates of blocks in this chunk
 	 */
-	protected final TNibbleQuadList blockLightUpdates = new TNibbleQuadList();
+	protected final TNibbleQuadHashSet blockLightUpdates = new TNibbleQuadHashSet();
 	/**
 	 * Contains the pending sky light updates of blocks in this chunk
 	 */
-	protected final TNibbleQuadList skyLightUpdates = new TNibbleQuadList();
+	protected final TNibbleQuadHashSet skyLightUpdates = new TNibbleQuadHashSet();
 	/**
 	 * Data map and Datatable associated with it
 	 */
@@ -604,7 +605,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		}
 		registerWithLightingManager();
 	}
-	
+
 	@Override
 	public boolean commitCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
 		blockStore.writeLock();
