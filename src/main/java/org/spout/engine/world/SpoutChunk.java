@@ -75,7 +75,6 @@ import org.spout.api.geo.cuboid.ContainerFillOrder;
 import org.spout.api.geo.cuboid.Cube;
 import org.spout.api.geo.cuboid.LightContainer;
 import org.spout.api.geo.cuboid.Region;
-import org.spout.api.lighting.ByteArrayCuboidLightBuffer;
 import org.spout.api.lighting.LightingManager;
 import org.spout.api.lighting.LightingRegistry;
 import org.spout.api.lighting.Modifiable;
@@ -451,43 +450,8 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			} while (!success);
 		}
 
-		short oldData = BlockFullState.getData(oldState);
-
-		int oldheight = column.getSurfaceHeight(bx, bz);
-		int wy = by + this.getBlockY();
-		column.notifyBlockChange(bx, wy, bz);
-		int wx = bx + this.getBlockX();
-		int wz = bz + this.getBlockZ();
-		int newheight = column.getSurfaceHeight(bx, bz);
-
-		if (this.isPopulated()) {
-			SpoutWorld world = this.getWorld();
-
-			// Update block lighting
-			if (!this.setBlockLight(wx, wy, wz, material.getLightLevel(data), cause)) {
-				// if the light level is left unchanged, refresh lighting from
-				// neighbors
-				addBlockLightOperation(wx, wy, wz, SpoutWorldLighting.REFRESH);
-			}
-
-			// Update sky lighting
-			if (newheight > oldheight) {
-				// set sky light of blocks below to 0
-				for (y = oldheight; y < newheight; y++) {
-					world.setBlockSkyLight(wx, y + 1, wz, (byte) 0, cause);
-				}
-			} else if (newheight < oldheight) {
-				// set sky light of blocks above to 15
-				for (y = newheight; y < oldheight; y++) {
-					world.setBlockSkyLight(wx, y + 1, wz, (byte) 15, cause);
-				}
-			} else {
-				this.addSkyLightUpdates(x, y, z, 0);
-				addSkyLightOperation(wx, wy, wz, SpoutWorldLighting.REFRESH);
-			}
-		}
-
 		if (newState != oldState) {
+			short oldData = BlockFullState.getData(oldState);
 			blockChanged(bx, by, bz, material, newData, oldMaterial, oldData, cause);
 			return true;
 		}
@@ -1821,12 +1785,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		for (x = 0; x < BLOCKS.SIZE; x++) {
 			for (y = 0; y < BLOCKS.SIZE; y++) {
 				for (z = 0; z < BLOCKS.SIZE; z++) {
-					if (!this.setBlockLight(x, y, z, this.lightBlockSource.getBlockMaterial(x, y, z).getLightLevel(this.lightBlockSource.getBlockData(x, y, z)), null)) {
-						// Refresh the block if at an edge to update from surrounding chunks
-						if (x == 0 || x == 15 || y == 0 || y == 15 || z == 0 || z == 15) {
-							this.addBlockLightOperation(x, y, z, SpoutWorldLighting.REFRESH);
-						}
-					}
+					this.setBlockLight(x, y, z, this.lightBlockSource.getBlockMaterial(x, y, z).getLightLevel(this.lightBlockSource.getBlockData(x, y, z)), null);
 				}
 			}
 		}
@@ -2291,8 +2250,35 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			}
 		}
 
-		// Update block lighting
-		this.setBlockLight(x, y, z, newMaterial.getLightLevel(newData), cause);
+		if (this.isPopulated()) {
+			SpoutWorld world = this.getWorld();
+
+			int oldheight = column.getSurfaceHeight(x, z);
+			int wy = x + this.getBlockY();
+			column.notifyBlockChange(x, wy, z);
+			int wx = x + this.getBlockX();
+			int wz = z + this.getBlockZ();
+			int newheight = column.getSurfaceHeight(x, z);
+
+			// Update sky lighting
+			if (newheight > oldheight) {
+				// set sky light of blocks below to 0
+				for (y = oldheight; y < newheight; y++) {
+					world.setBlockSkyLight(wx, y + 1, wz, (byte) 0, cause);
+				}
+			} else if (newheight < oldheight) {
+				// set sky light of blocks above to 15
+				for (y = newheight; y < oldheight; y++) {
+					world.setBlockSkyLight(wx, y + 1, wz, (byte) 15, cause);
+				}
+			} else {
+				this.addSkyLightUpdates(x, y, z, 0);
+				addSkyLightOperation(wx, wy, wz, SpoutWorldLighting.REFRESH);
+			}
+
+			// Update block lighting
+			this.setBlockLight(x, y, z, newMaterial.getLightLevel(newData), cause);
+		}
 
 		setModified();
 	}
