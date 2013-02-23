@@ -74,7 +74,7 @@ public class BlockMaterial extends Material implements Placeable {
 	public static final BlockMaterial ERROR = new BlockMaterial("Missing Plugin").setHardness((100.f));
 
 	private final CollisionObject collisionObject = new CollisionObject();
-	private final BoxShape BLOCK_BOX_DEFAULT = new BoxShape(0.5f, 0.5f, 0.5f);
+	private final BoxShape BLOCK_BOX_DEFAULT = new BoxShape(1f, 1f, 1f);
 
 	public BlockMaterial(short dataMask, String name, String model){
 		super(dataMask, name, model);
