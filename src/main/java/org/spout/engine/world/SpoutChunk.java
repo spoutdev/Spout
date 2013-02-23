@@ -94,7 +94,6 @@ import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.hashing.NibbleQuadHashed;
-import org.spout.api.util.list.TNibbleQuadList;
 import org.spout.api.util.list.concurrent.setqueue.SetQueue;
 import org.spout.api.util.list.concurrent.setqueue.SetQueueElement;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
@@ -299,26 +298,20 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, int[] palette, int blockArrayWidth, int[] variableWidthBlockArray, byte[] skyLight, byte[] blockLight, ManagedHashMap extraData, boolean lightStable) {
-		this(world, region, x, y, z, popState, extraData, lightStable);
-		blockStore = new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, 10, palette, blockArrayWidth, variableWidthBlockArray);
-
-		if (skyLight == null) {
-			this.skyLight = new byte[BLOCKS.HALF_VOLUME];
-		} else {
-			this.skyLight = skyLight;
-		}
-		if (blockLight == null) {
-			this.blockLight = new byte[BLOCKS.HALF_VOLUME];
-		} else {
-			this.blockLight = blockLight;
-		}
-
-		blockStore.resetDirtyArrays();
+		this(world, region, x, y, z, popState, extraData, lightStable, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, 10, palette, blockArrayWidth, variableWidthBlockArray), skyLight, blockLight);
 	}
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, ManagedHashMap extraData, boolean lightStable) {
-		this(world, region, x, y, z, popState, extraData, lightStable);
-		blockStore = new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, 10, blocks, data);
+		this(world, region, x, y, z, popState, extraData, lightStable, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, 10, blocks, data), skyLight, blockLight);
+	}
+
+	private SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, ManagedHashMap extraData, boolean lightStable, AtomicBlockStore blockStore, byte[] skyLight, byte[] blockLight) {
+		super(world, x * BLOCKS.SIZE, y * BLOCKS.SIZE, z * BLOCKS.SIZE);
+		parentRegion = region;
+		this.populationState = new AtomicReference<PopulationState>(popState);
+		
+		this.blockStore = blockStore;
+		blockStore.resetDirtyArrays();
 
 		if (skyLight == null) {
 			this.skyLight = new byte[BLOCKS.HALF_VOLUME];
@@ -330,14 +323,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		} else {
 			this.blockLight = blockLight;
 		}
-
-		blockStore.resetDirtyArrays();
-	}
-
-	private SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, ManagedHashMap extraData, boolean lightStable) {
-		super(world, x * BLOCKS.SIZE, y * BLOCKS.SIZE, z * BLOCKS.SIZE);
-		parentRegion = region;
-		this.populationState = new AtomicReference<PopulationState>(popState);
 
 		if (extraData != null) {
 			this.dataMap = extraData;
@@ -2277,7 +2262,9 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			}
 
 			// Update block lighting
-			this.setBlockLight(x, y, z, newMaterial.getLightLevel(newData), cause);
+			if (newMaterial.getOpacity() != oldMaterial.getOpacity() || newMaterial.getLightLevel(newData) != oldMaterial.getLightLevel(oldData)) {
+				this.setBlockLight(x, y, z, newMaterial.getLightLevel(newData), cause);
+			}
 		}
 
 		setModified();
