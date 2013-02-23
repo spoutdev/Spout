@@ -34,7 +34,6 @@ import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.source.MaterialSource;
 import org.spout.api.math.Vector3;
-import org.spout.api.render.RenderMaterial;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 
 public class AtomicPaletteBlockStore implements AtomicBlockStore {

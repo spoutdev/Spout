@@ -112,24 +112,28 @@ public class BaseComponentHolder implements ComponentHolder {
 
 			if (component != null) {
 				try {
-					if (component.attachTo(this)) {
-						components.put(key, component);
-						if (attach) {
-							try {
-								component.onAttached();
-							} catch (Exception e) {
-								// Remove the component from the component map if onAttached can't be
-								// called, pass exception to next catch block.
-								components.remove(key);
-								throw e;
-							}
-						}
-					}
+					attachComponent(key, component, attach);
 				} catch (Exception e) {
 					Spout.getEngine().getLogger().log(Level.SEVERE, "Error while attaching component " + type + ": ", e);
 				}
 			}
 			return component;
+		}
+	}
+
+	protected void attachComponent(Class<? extends Component> key, Component component, boolean attach) throws Exception{
+		if (component.attachTo(this)) {
+			components.put(key, component);
+			if (attach) {
+				try {
+					component.onAttached();
+				} catch (Exception e) {
+					// Remove the component from the component map if onAttached can't be
+					// called, pass exception to next catch block.
+					components.remove(key);
+					throw e;
+				}
+			}
 		}
 	}
 
