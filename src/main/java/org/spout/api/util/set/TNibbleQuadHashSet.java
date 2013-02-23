@@ -37,10 +37,10 @@ import gnu.trove.set.hash.TShortHashSet;
  * short hashset in the backend.
  */
 public class TNibbleQuadHashSet extends NibbleQuadHashed {
-	protected final TShortSet set;
+	protected TShortSet set;
 
 	public TNibbleQuadHashSet() {
-		set = new TShortHashSet(100);
+		this(17);
 	}
 
 	public TNibbleQuadHashSet(int capacity) {
@@ -60,7 +60,7 @@ public class TNibbleQuadHashSet extends NibbleQuadHashed {
 	}
 
 	public void clear() {
-		set.clear();
+		set = new TShortHashSet(17);
 	}
 
 	public boolean isEmpty() {
