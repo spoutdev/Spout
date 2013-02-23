@@ -42,8 +42,8 @@ public class BaseComponentHolder implements ComponentHolder {
 	/**
 	 * Map of class name, component
 	 */
-	private final BiMap<Class<? extends Component>, Component> components = HashBiMap.create();
-	private final DatatableComponent data;
+	protected final BiMap<Class<? extends Component>, Component> components = HashBiMap.create();
+	protected final DatatableComponent data;
 
 	public BaseComponentHolder() {
 		data = add(DatatableComponent.class);
