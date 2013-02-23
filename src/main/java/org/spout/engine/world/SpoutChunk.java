@@ -171,10 +171,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	 */
 	protected final AtomicBoolean isInitializingLighting = new AtomicBoolean(false);
 	/**
-	 * This is the number of light operations and updates pending
-	 */
-	protected final AtomicInteger lightOperationsPending = new AtomicInteger(0);
-	/**
 	 * This indicates that light for this chunk was stable when loaded from disk
 	 */
 	protected final boolean lightStableOnLoad;
@@ -192,6 +188,15 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	 * committed the value is set to 0. The region will increment it as well.
 	 */
 	protected final AtomicInteger lightingCounter = new AtomicInteger(-1);
+
+	protected static final int BLOCK_UPDATES = 1 << 0;
+	protected static final int SKY_UPDATES = 1 << 1;
+	protected static final int BLOCK_OPERATIONS = 1 << 2;
+	protected static final int SKY_OPERATIONS = 1 << 3;
+	/**
+	 * If there are pending light operations for this chunk, marked with any combination of the 4 above flags
+	 */
+	protected final AtomicInteger lightOperationsPending = new AtomicInteger(0);
 	/**
 	 * Contains the pending block light operations of blocks in this chunk
 	 */
@@ -461,46 +466,18 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		registeredWithLightingManager.set(false);
 	}
 
-	public boolean isLightStable() {
-		return lightOperationsPending.get() == 0;
+	private void submitPendingLightOperation(int bitflag) {
+		int old;
+		do {
+			old = lightOperationsPending.get();
+		} while(!lightOperationsPending.compareAndSet(old, old | bitflag));
 	}
 
-	public void notifyLightOperationComplete() {
-		int remaining = lightOperationsPending.decrementAndGet();
-		if (remaining < 0) {
-			Spout.getLogger().info("Warning: Light operations counter decremented below zero");
-		} if (remaining <= 0) {
-			synchronized (lightOperationsPending) {
-				lightOperationsPending.notifyAll();
-			}
-		}
-	}
-	
-	private void notifyLightOperationSubmission() {
-		this.lightOperationsPending.incrementAndGet();
-	}
-	
-	public boolean waitUntilLightingStable() {
-		if (isLightStable()) {
-			return false;
-		}
-		boolean interrupted = false;
-		try {
-			synchronized (lightOperationsPending) {
-				while (!isLightStable()) {
-					try {
-						lightOperationsPending.wait();
-					} catch (InterruptedException e) {
-						interrupted = true;
-					}
-				}
-			}
-		} finally {
-			if (interrupted) {
-				Thread.currentThread().interrupt();
-			}
-		}
-		return true;
+	protected void clearPendingLightOperation(int bitflag) {
+		int old;
+		do {
+			old = lightOperationsPending.get();
+		} while(!lightOperationsPending.compareAndSet(old, old & ~bitflag));
 	}
 
 	protected void addSkyLightOperation(int x, int y, int z, int operation) {
@@ -514,9 +491,10 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 				return;
 			}
 		}
-		notifyLightOperationSubmission();
+
 		synchronized (this.skyLightOperations) {
 			this.skyLightOperations.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, operation);
+			submitPendingLightOperation(SKY_OPERATIONS);
 		}
 		registerWithLightingManager();
 	}
@@ -532,25 +510,26 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 				return;
 			}
 		}
-		notifyLightOperationSubmission();
+
 		synchronized (this.blockLightOperations) {
 			this.blockLightOperations.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, operation);
+			submitPendingLightOperation(BLOCK_OPERATIONS);
 		}
 		registerWithLightingManager();
 	}
 
 	protected void addSkyLightUpdates(int x, int y, int z, int level) {
-		notifyLightOperationSubmission();
 		synchronized (this.skyLightUpdates) {
 			this.skyLightUpdates.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, level);
+			submitPendingLightOperation(SKY_UPDATES);
 		}
 		registerWithLightingManager();
 	}
 
 	protected void addBlockLightUpdates(int x, int y, int z, int level) {
-		notifyLightOperationSubmission();
 		synchronized (this.blockLightUpdates) {
 			this.blockLightUpdates.add(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, level);
+			submitPendingLightOperation(BLOCK_UPDATES);
 		}
 		registerWithLightingManager();
 	}
@@ -1334,7 +1313,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	public boolean isCalculatingLighting() {
-		return lightOperationsPending.get() > 0;
+		return lightOperationsPending.get() != 0;
 	}
 
 	public boolean isDirtyOverflow() {

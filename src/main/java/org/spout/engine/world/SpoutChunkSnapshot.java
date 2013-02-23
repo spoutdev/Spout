@@ -139,7 +139,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		}
 		this.populationState = chunk.getPopulationState();
 		renderDirty = chunk.isDirty();
-		lightStable = chunk.isLightStable();
+		lightStable = !chunk.isCalculatingLighting();
 	}
 
 	//Maybe we can use that in ChunkMesh generation in SpoutRegion

@@ -128,9 +128,9 @@ public class SpoutWorldLightingModel {
 						y = NibbleQuadHashed.key2(key) + chunk.getBlockY();
 						z = NibbleQuadHashed.key3(key) + chunk.getBlockZ();
 						chunk.setBlockSkyLightSync(x, y, z, NibbleQuadHashed.key4(key), null);
-						chunk.notifyLightOperationComplete();
 					}
 					chunk.skyLightUpdates.clear();
+					chunk.clearPendingLightOperation(SpoutChunk.SKY_UPDATES);
 				}
 				synchronized (chunk.skyLightOperations) {
 					this.updateCount = chunk.skyLightOperations.size();
@@ -147,6 +147,7 @@ public class SpoutWorldLightingModel {
 							Spout.getLogger().info("Warning: Copy of light updates to world lighting thread failed");
 						}
 						chunk.skyLightOperations.clear();
+						chunk.clearPendingLightOperation(SpoutChunk.SKY_OPERATIONS);
 					} else {
 						return update;
 					}
@@ -164,9 +165,9 @@ public class SpoutWorldLightingModel {
 						y = NibbleQuadHashed.key2(key) + chunk.getBlockY();
 						z = NibbleQuadHashed.key3(key) + chunk.getBlockZ();
 						chunk.setBlockLightSync(x, y, z, NibbleQuadHashed.key4(key), null);
-						chunk.notifyLightOperationComplete();
 					}
 					chunk.blockLightUpdates.clear();
+					chunk.clearPendingLightOperation(SpoutChunk.BLOCK_UPDATES);
 				}
 				synchronized (chunk.blockLightOperations) {
 					this.updateCount = chunk.blockLightOperations.size();
@@ -183,6 +184,7 @@ public class SpoutWorldLightingModel {
 							Spout.getLogger().info("Warning: Copy of light updates to world lighting thread failed");
 						}
 						chunk.blockLightOperations.clear();
+						chunk.clearPendingLightOperation(SpoutChunk.BLOCK_OPERATIONS);
 					} else {
 						return update;
 					}
@@ -214,7 +216,6 @@ public class SpoutWorldLightingModel {
 						this.resolveRefresh(x, y, z);
 						break;
 				}
-				chunk.notifyLightOperationComplete();
 			}
 		} catch (Throwable t) {
 			String type = sky ? "sky" : "block";
