@@ -73,6 +73,7 @@ import org.spout.api.math.GenericMath;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
+import org.spout.api.plugin.Platform;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
@@ -557,27 +558,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	 */
 	@Override
 	public void spawnEntity(Entity e) {
-		if (e.isSpawned()) {
-			throw new IllegalArgumentException("Cannot spawn an entity that is already spawned!");
-		}
-		SpoutRegion region = (SpoutRegion) e.getRegion();
-		if (region == null) {
-			throw new IllegalStateException("Cannot spawn an entity that has a null region!");
-		}
-		if (region.getEntityManager().isSpawnable((SpoutEntity) e)) {
-			EntitySpawnEvent event = Spout.getEventManager().callEvent(new EntitySpawnEvent(e, e.getScene().getPosition()));
-			if (event.isCancelled()) {
-				return;
-			}
-			region.getEntityManager().addEntity((SpoutEntity) e);
-			for (Component component : e.values()) {
-				if (component instanceof EntityComponent) {
-					((EntityComponent) component).onSpawned();
-				}
-			}
-		} else {
-			throw new IllegalStateException("Cannot spawn an entity that already has an id!");
-		}
+		spawnEntity(e, -1);
 	}
 
 	/**
@@ -593,7 +574,13 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 			throw new IllegalStateException("Cannot spawn an entity that has a null region!");
 		}
 		if (region.getEntityManager().isSpawnable((SpoutEntity) e)) {
-			((SpoutEntity)e).setId(entityID);
+			if (entityID > -1) {
+				if (Spout.getPlatform() == Platform.CLIENT) {
+					((SpoutEntity)e).setId(entityID);
+				} else {
+					throw new IllegalArgumentException("Can not set entity id's manually");
+				}
+			}
 			EntitySpawnEvent event = Spout.getEventManager().callEvent(new EntitySpawnEvent(e, e.getScene().getPosition()));
 			if (event.isCancelled()) {
 				return;
