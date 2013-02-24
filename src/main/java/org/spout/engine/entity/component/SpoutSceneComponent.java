@@ -303,6 +303,7 @@ public class SpoutSceneComponent extends SceneComponent {
 		//Construct body blueprint
 		final RigidBodyConstructionInfo blueprint = new RigidBodyConstructionInfo(mass, new SpoutMotionState(getOwner()), shape, inertia);
 		body = new RigidBody(blueprint);
+		body.setUserPointer(getOwner());
 		body.activate();
 		final SpoutRegion region = simulationRegion.get();
 		if (region != null) {
