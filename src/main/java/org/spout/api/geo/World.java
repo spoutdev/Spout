@@ -34,6 +34,7 @@ import java.util.UUID;
 import org.spout.api.Engine;
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentHolder;
+import org.spout.api.component.type.EntityComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntityPrefab;
 import org.spout.api.entity.Player;
@@ -57,7 +58,7 @@ import org.spout.api.util.thread.annotation.Threadsafe;
 /**
  * Represents a World.
  */
-public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
+public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, ComponentHolder {
 	/**
 	 * Gets the name of the world
 	 * @return the name of the world
@@ -126,7 +127,6 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 
 	/**
 	 * Gets the biome manager in the given (x, z) column.<br>
-	 *
 	 * @param x the block x coordinate of the column
 	 * @param z the block z coordinate of the column
 	 * @return the biome manager
@@ -136,7 +136,6 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 
 	/**
 	 * Gets the biome manager in the given (x, z) column.<br>
-	 *
 	 * @param x the block x coordinate of the column
 	 * @param z the block z coordinate of the column
 	 * @param load height map is loaded if necessary
@@ -147,7 +146,7 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 
 	/**
 	 * Gets the entity with the matching unique id
-	 * <br/> <br/>
+	 * <p/>
 	 * Performs a search on each region for the entity, stopping when it
 	 * is found, or after all the worlds have been searched upon failure.
 	 * @param uid to search and match
@@ -157,77 +156,75 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 	public Entity getEntity(UUID uid);
 
 	/**
-	 * Create a new Entity for initialization
-	 * <p/>
-	 * This does not add the Entity to the server. You must call
-	 * {@link #spawnEntity(Entity)} to simulate the Entity in the world
-	 * @param point The point to spawn the Entity
-	 * @param component The component to give the Entity.
-	 * @return The created entity
+	 * Creates a new {@link Entity} at the {@link Point} with the {@link Component} classes attached.
+	 * @param point The area in space where spawn will occur
+	 * @param classes The classes to attach
+	 * @return The entity set to spawn at the point provided with components attached
 	 */
-	public Entity createEntity(Point point, Class<? extends Component> type);
+	public Entity createEntity(Point point, Class<? extends Component>... classes);
 
 	/**
-	 * Create a new Entity for initialization
-	 * <p/>
-	 * This does not add the Entity to the server. You must call
-	 * {@link #spawnEntity(Entity)} to simulate the Entity in the world
-	 * @param point The point to spawn the Entity
-	 * @param prefab The entity prefab.
-	 * @return The created entity
+	 * Creates a new {@link Entity} at the {@link Point} blueprinted with the {@link EntityPrefab} provided.
+	 * @param point The area in space where spawn will occur
+	 * @param prefab The blueprint
+	 * @return The entity set to spawn at the point provided with the prefab applied
 	 */
 	public Entity createEntity(Point point, EntityPrefab prefab);
 
 	/**
-	 * Add a created entity to the world for simulation and syncing to clients
-	 * @param e The entity to spawn
+	 * Spawns the {@link Entity}.
+	 * @param e Entity to spawn
 	 */
 	public void spawnEntity(Entity e);
 
 	/**
-	 * Add a created entity to the world for simulation and syncing to clients
-	 * @param e The entity to spawn
-	 * @param id The id required for the entity
+	 * Creates and spawns an {@link Entity} at the {@link Point} blueprinted with the {@link EntityPrefab} provided.
+	 * <p/>
+	 * The {@link LoadOption} parameter is used to tell Spout if it should load, create and load, or not load the chunk
+	 * for the point provided. Great caution should be used; only load (and more so create) if absolutely necessary.
+	 * @param point The area in space to spawn
+	 * @param option Whether to not load, load, or load and create the chunk
+	 * @param prefab The blueprint
+	 * @return The spawned entity at the point with the prefab applied
 	 */
-	public void spawnEntity(Entity entity, int entityID);
+	public Entity createAndSpawnEntity(Point point, LoadOption option, EntityPrefab prefab);
 
 	/**
-	 * Creates and Spawns an entity at the given point and with the given
-	 * Controller This is the same as {@link #createEntity(Point, org.spout.api.entity.EntityPrefab)} and
-	 * {@link #spawnEntity(Entity)} together.
-	 * @param point The point to spawn the Entity
-	 * @param prefab The entity prefab.
-	 * @return The Entity that has been created and spawned
+	 * Creates and spawns an {@link Entity} at the {@link Point} with the {@link Component} classes attached.
+	 * <p/>
+	 * The {@link LoadOption} parameter is used to tell Spout if it should load, create and load, or not load the chunk
+	 * for the point provided. Great caution should be used; only load (and more so create) if absolutely necessary.
+	 * @param point The area in space to spawn
+	 * @param option Whether to not load, load, or load and create the chunk
+	 * @param classes The classes to attach
+	 * @return The spawned entity at the point with the components attached
 	 */
-	public Entity createAndSpawnEntity(Point point, EntityPrefab prefab, LoadOption option);
+	public Entity createAndSpawnEntity(Point point, LoadOption option, Class<? extends Component>... classes);
 
 	/**
-	 * Creates and Spawns an entity at the given point and with the given
-	 * Controller This is the same as {@link #createEntity(Point, org.spout.api.entity.Controller)} and
-	 * {@link #spawnEntity(Entity)} together.
-	 * @param point The point to spawn the Entity
-	 * @param component The component to give the Entity.
-	 * @return The Entity that has been created and spawned
+	 * Creates and spawns multiple {@link Entity} at the {@link Point}s with the {@link Component} classes attached.
+	 * <p/>
+	 * The {@link LoadOption} parameter is used to tell Spout if it should load, create and load, or not load the chunk
+	 * for the points provided. Great caution should be used; only load (and more so create) if absolutely necessary.
+	 * @param points The areas in space to spawn
+	 * @param option Whether to not load, load, or load and create the chunk
+	 * @param classes The classes to attach
+	 * @return The spawned entities at the points with the components attached
 	 */
-	public Entity createAndSpawnEntity(Point point, Class<? extends Component> type, LoadOption option);
+	public Entity[] createAndSpawnEntity(Point[] points, LoadOption option, Class<? extends Component>... classes);
 
 	/**
-	 * Creates and Spawns entities at the given points.  This is the same as calling
-	 * {@link #createAndSpawnEntity(point, type)} for each element in the array.
-	 * @param points The points to use for spawning the entities
-	 * @param component The component to give the Entity.
-	 * @return The Entities that has been created and spawned
+	 * Creates and spawns multiple {@link Entity} with the {@link Component} classes attached. The {@link SpawnArrangement}
+	 * is a template for how to spawn (i.e. spawn entities around a point in a circle).
+	 * <p/>
+	 * The {@link LoadOption} parameter is used to tell Spout if it should load, create and load, or not load the chunk
+	 * for the points provided. Great caution should be used; only load (and more so create) if absolutely necessary.
+	 * @param arrangement The template for the spawn
+	 * @param option Whether to not load, load, or load and create the chunk
+	 * @param classes The classes to attach
+	 * @return The spawned entities at the points with the components attached
 	 */
-	public Entity[] createAndSpawnEntity(Point[] points, Class<? extends Component> type, LoadOption option);
-
-	/**
-	 * Creates and Spawns entities for the given arrangement.  This is the same as calling
-	 * {@link #createAndSpawnEntity(point, component)} for each Point, entity pair in
-	 * the arrangement
-	 * @param type The component to give the Entity.
-	 * @return The Entities that has been created and spawned
-	 */
-	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, Class<? extends Component> type, LoadOption option);
+	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, LoadOption option, Class<? extends Component>... classes);
 
 	/**
 	 * Gets the world's spawn point
@@ -260,12 +257,6 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 	 * @return the engine
 	 */
 	public Engine getEngine();
-
-	/**
-	 * Gets the height of this world in blocks.
-	 * @return The height of this world in blocks
-	 */
-	public int getHeight();
 
 	/**
 	 * Gets the light level the sky emits<br>
@@ -306,22 +297,6 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 	 * Gets the directory where world data is stored
 	 */
 	public File getDirectory();
-
-	/**
-	 * Gets the component holder for this world.
-	 *
-	 * @return component holder
-	 */
-	public ComponentHolder getComponentHolder();
-
-	/**
-	 * Gets the data map for this world, persisted between saves.
-	 *
-	 * A convenience method that is identical to getComponentHolder().getData()
-	 *
-	 * @return world data
-	 */
-	public DefaultedMap<Serializable> getDataMap();
 
 	/**
 	 * Gets the task manager responsible for parallel region tasks.<br>
@@ -513,18 +488,15 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 
 	/**
 	 * Atomically gets the cuboid volume contained within the given buffer
-	 *
 	 * @param buffer the buffer
 	 */
 	@Threadsafe
 	public void getCuboid(CuboidBlockMaterialBuffer buffer);
 
-
 	/**
 	 * Unloads the world from the server. Undefined behavior will occur
 	 * if any players are currently alive on the world while it is being
 	 * unloaded.
-	 *
 	 * @param save
 	 */
 	public void unload(boolean save);
@@ -532,10 +504,9 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named {
 	public Model getSkydomeModel();
 
 	public void setSkydomeModel(Model model);
-	
+
 	/**
 	 * Adds a lighting manager to the world
-	 * 
 	 * @param manager the lighting manager
 	 * @return true, if the lighting manager was added
 	 */

@@ -29,16 +29,16 @@ package org.spout.api.entity;
 import java.util.List;
 import java.util.Map;
 
+import org.spout.api.component.Component;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.util.Named;
 
-public interface EntityPrefab {
-	public String getName();
+public interface EntityPrefab extends Named {
+	public List<Class<? extends Component>> getComponents();
 
-	public List<Class<? extends EntityComponent>> getComponents();
-
-	public Map<String, Object> getDatas();
+	public Map<String, Object> getData();
 
 	public Entity createEntity(Point point);
 
