@@ -28,26 +28,10 @@ package org.spout.api.entity;
 
 import org.spout.api.util.Named;
 
-public class PlayerSnapshot extends EntitySnapshot implements Named {
-	private final String name;
-
-	public PlayerSnapshot(Player p) {
-		super(p);
-		name = p.getName();
-	}
-
+/**
+ * Represents a snapshot of player state at a UTC timestamp, with immutable values
+ */
+public interface PlayerSnapshot extends EntitySnapshot, Named {
 	@Override
-	public boolean isSavable() {
-		return true;
-	}
-
-	@Override
-	public Player getReference() {
-		return (Player) super.getReference();
-	}
-
-	@Override
-	public String getName() {
-		return name;
-	}
+	public Player getReference();
 }

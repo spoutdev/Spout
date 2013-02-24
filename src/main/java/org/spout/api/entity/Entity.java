@@ -170,4 +170,11 @@ public interface Entity extends Tickable, WorldSource, ComponentHolder {
 	 * @return The network component
 	 */
 	public NetworkComponent getNetwork();
+
+	/**
+	 * Creates an immutable snapshot of the entity state at the time the method is called
+	 * 
+	 * @return immutable snapshot
+	 */
+	public EntitySnapshot snapshot();
 }

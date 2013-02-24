@@ -26,103 +26,109 @@
  */
 package org.spout.api.entity;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import org.spout.api.component.Component;
-import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.geo.discrete.Transform;
 
-public class EntitySnapshot {
-	private final WeakReference<Entity> entity;
-	private final int entityId;
-	private final UUID uniqueId;
-	private final Transform location;
-	private final String worldName;
-	private final UUID worldId;
-	private final SerializableMap dataMap;
-	private final int viewDistance;
-	private final boolean observer;
-	private final boolean savable;
-	private final List<Class<? extends Component>> components;
+/**
+ * Represents a snapshot of an entity state at a specific UTC timestamp, with immutable values
+ */
+public interface EntitySnapshot {
 
-	public EntitySnapshot(Entity e) {
-		if (e.isRemoved()) {
-			throw new IllegalArgumentException("Can not take a snapshot of a removed entity");
-		}
-		this.entity = new WeakReference<Entity>(e);
-		this.entityId = e.getId();
-		this.uniqueId = e.getUID();
-		this.location = e.getScene().getTransform();
-		this.worldName = e.getWorld().getName();
-		this.worldId = e.getWorld().getUID();
-		this.viewDistance = e.getViewDistance();
-		this.observer = e.isObserver();
-		this.savable = e.isSavable();
-		if (e.getData().size() > 0) {
-			this.dataMap = e.getData().deepCopy();
-		} else {
-			this.dataMap = new ManagedHashMap();
-		}
-		components = new ArrayList<Class<? extends Component>>();
-		for (Component c : e.values()) {
-			if (c.isDetachable()) {
-				this.components.add(c.getClass());
-			}
-		}
-	}
+	/**
+	 * Returns the entity reference, if the entity still exists
+	 * 
+	 * @return entity reference if it exists, else null
+	 */
+	public Entity getReference();
 
-	public Entity getReference() {
-		return entity.get();
-	}
+	/**
+	 * Gets the id of the entity. 
+	 * <p>
+	 * Entity ids' may become invalid if the server has stopped and started.
+	 * They do not persist across server instances. For persistent ids, use {@link #getUID()}.
+	 * </p>
+	 * @return id
+	 */
+	public int getId();
 
-	public final int getId() {
-		return entityId;
-	}
+	/**
+	 * Gets the UID for the entity.
+	 * <p>
+	 * This id is persistent across server instances, unique to this entity
+	 * </p>
+	 * @return uid
+	 */
+	public UUID getUID();
 
-	public final UUID getUID() {
-		return uniqueId;
-	}
+	/**
+	 * Gets the transform for the entity.
+	 * <p>
+	 * Note: if the world that the entity was in has been unloaded, the world in the transform will be null.
+	 * </p>
+	 * 
+	 * @return transform
+	 */
+	public Transform getTransform();
 
-	public final Transform getTransform() {
-		return location;
-	}
+	/**
+	 * Gets the UUID of the world that the entity was in at the time of this snapshot
+	 * 
+	 * @return uid
+	 */
+	public UUID getWorldUID();
 
-	public final UUID getWorldUID() {
-		return worldId;
-	}
+	/**
+	 * Gets the name of the world that the entity was in at the time of this snapshot
+	 * 
+	 * @return world name
+	 */
+	public String getWorldName();
 
-	public String getWorldName() {
-		return worldName;
-	}
+	/**
+	 * Gets a copy of the data map for the entity, created at the time of this snapshot
+	 * 
+	 * @return data map
+	 */
+	public SerializableMap getDataMap();
 
-	public final SerializableMap getDataMap() {
-		return dataMap;
-	}
+	/**
+	 * Get the view distance of the entity at the time of this snapshot
+	 * 
+	 * @return view distance
+	 */
+	public int getViewDistance();
 
-	public int getViewDistance() {
-		return viewDistance;
-	}
+	/**
+	 * Gets the observer state of the entity at the time of this snapshot
+	 * 
+	 * @return observer
+	 */
+	public boolean isObserver();
 
-	public boolean isObserver() {
-		return observer;
-	}
+	/**
+	 * Gets the savable flag for the entity at the time of the snapshot
+	 * 
+	 * @return savable
+	 */
+	public boolean isSavable();
 
-	public boolean isSavable() {
-		return savable;
-	}
+	/**
+	 * Gets a list of the classes of components attached to this entity
+	 * 
+	 * @return entity
+	 */
+	public List<Class<? extends Component>> getComponents();
 
-	public List<Class<? extends Component>> getComponents() {
-		return components;
-	}
-
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
+	/**
+	 * Gets the UTC system clock time at the time this snapshot was created
+	 * <p>
+	 * Equivalent to the output of System.currentTimeMillis()
+	 * </p>
+	 * @return UTC system time
+	 */
+	public long getSnapshotTime();
 }

@@ -150,4 +150,12 @@ public interface Player extends CommandSource, Entity {
 	public boolean isInvisible(Entity entity);
 
 	public void processInput(PlayerInputState state);
+
+	/**
+	 * Creates an immutable snapshot of the player state at the time the method is called
+	 * 
+	 * @return immutable snapshot
+	 */
+	@Override
+	public PlayerSnapshot snapshot();
 }
