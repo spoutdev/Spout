@@ -40,6 +40,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
@@ -233,7 +234,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 		taskManager = new SpoutTaskManager(getEngine().getScheduler(), null, this, age);
 		spawnLocation.set(new Transform(new Point(this, 1, 100, 1), Quaternion.IDENTITY, Vector3.ONE));
 		selfReference = new WeakReference<World>(this);
-		
+
 		((SpoutScheduler) Spout.getEngine().getScheduler()).addAsyncManager(this);
 	}
 
@@ -486,7 +487,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	public StringMap getItemMap() {
 		return itemMap;
 	}
-	
+
 	public StringMap getLightingMap() {
 		return lightingMap;
 	}
@@ -498,7 +499,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof SpoutWorld)) {
+		if (!(obj instanceof SpoutWorld)) {
 			return false;
 		}
 		SpoutWorld world = (SpoutWorld) obj;
@@ -568,7 +569,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 		if (e.isSpawned()) {
 			throw new IllegalArgumentException("Cannot spawn an entity that is already spawned!");
 		}
-		
+
 		SpoutRegion region = (SpoutRegion) e.getRegion();
 		if (region == null) {
 			throw new IllegalStateException("Cannot spawn an entity that has a null region!");
@@ -576,7 +577,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 		if (region.getEntityManager().isSpawnable((SpoutEntity) e)) {
 			if (entityID > -1) {
 				if (Spout.getPlatform() == Platform.CLIENT) {
-					((SpoutEntity)e).setId(entityID);
+					((SpoutEntity) e).setId(entityID);
 				} else {
 					throw new IllegalArgumentException("Can not set entity id's manually");
 				}
@@ -595,6 +596,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 			throw new IllegalStateException("Cannot spawn an entity that already has an id!");
 		}
 	}
+
 	@Override
 	public Entity createAndSpawnEntity(Point point, LoadOption option, EntityPrefab prefab) {
 		getRegionFromBlock(point, option);
@@ -646,7 +648,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 			}
 		}
 	}
-	
+
 	@Override
 	public int getMaxStage() {
 		return 0;
@@ -654,13 +656,11 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 
 	@Override
 	public boolean containsBlock(int x, int y, int z) {
-		//TODO What...is the point of this?
 		return true;
 	}
 
 	@Override
 	public boolean containsChunk(int x, int y, int z) {
-		//TODO What...is the point of this?
 		return true;
 	}
 
@@ -1285,7 +1285,6 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 		} finally {
 			unlockChunks(chunks);
 		}
-
 	}
 
 	protected void setCuboid(SpoutChunk[][][] chunks, int x, int y, int z, CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
@@ -1306,7 +1305,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 			unlockChunks(chunks);
 		}
 	}
-	
+
 	@Override
 	public CuboidLightBuffer getLightBuffer(short id) {
 		throw new UnsupportedOperationException("Unable to get a light buffer corresponding to an entire world");
@@ -1316,7 +1315,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	public CuboidBlockMaterialBuffer getCuboid(boolean backBuffer) {
 		throw new UnsupportedOperationException("Unable to create a cuboid corresponding to an entire world");
 	}
-	
+
 	@Override
 	public CuboidBlockMaterialBuffer getCuboid(int x, int y, int z, int sx, int sy, int sz) {
 		return getCuboid(x, y, z, sx, sy, sz, true);
@@ -1420,14 +1419,13 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	public boolean addLightingManager(LightingManager<?> manager) {
 		return this.lightingManagers.add(manager);
 	}
-	
+
 	protected LightingManager<?>[] getLightingManagers() {
 		return this.lightingManagers.toArray();
 	}
 
 	@Override
 	public int getSequence() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -1435,7 +1433,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	public Thread getExecutionThread() {
 		return executionThread;
 	}
-	
+
 	@Override
 	public void setExecutionThread(Thread t) {
 		this.executionThread = t;
