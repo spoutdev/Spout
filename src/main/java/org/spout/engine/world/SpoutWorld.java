@@ -26,18 +26,14 @@
  */
 package org.spout.engine.world;
 
-import java.awt.peer.ComponentPeer;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -45,13 +41,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.Spout;
-import org.spout.api.collision.BoundingBox;
-import org.spout.api.collision.CollisionModel;
-import org.spout.api.collision.CollisionVolume;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
-import org.spout.api.component.ComponentHolder;
-import org.spout.api.component.WorldComponentHolder;
 import org.spout.api.component.type.BlockComponent;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.entity.Entity;
@@ -75,7 +66,6 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.io.bytearrayarray.BAAWrapper;
 import org.spout.api.lighting.LightingManager;
-import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
@@ -96,6 +86,7 @@ import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
 import org.spout.api.util.sanitation.StringSanitizer;
 import org.spout.api.util.thread.annotation.LiveRead;
 import org.spout.api.util.thread.annotation.Threadsafe;
+
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.versioned.WorldFiles;
