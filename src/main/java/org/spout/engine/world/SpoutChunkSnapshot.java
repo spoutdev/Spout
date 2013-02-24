@@ -37,8 +37,6 @@ import org.spout.api.component.type.BlockComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntitySnapshot;
-import org.spout.api.entity.Player;
-import org.spout.api.entity.PlayerSnapshot;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.cuboid.Chunk;
@@ -166,11 +164,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	private static List<EntitySnapshot> getEntities(SpoutChunk chunk) {
 		ArrayList<EntitySnapshot> entities = new ArrayList<EntitySnapshot>();
 		for (Entity e : chunk.getLiveEntities()) {
-			if (e instanceof Player) {
-				entities.add(new PlayerSnapshot((Player) e));
-			} else {
-				entities.add(new EntitySnapshot(e));
-			}
+			entities.add(e.snapshot());
 		}
 		return entities;
 	}

@@ -43,6 +43,7 @@ import org.spout.api.component.impl.NetworkComponent;
 import org.spout.api.component.impl.SceneComponent;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
@@ -417,4 +418,8 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		}
 	}
 
+	@Override
+	public EntitySnapshot snapshot() {
+		return new SpoutEntitySnapshot(this);
+	}
 }

@@ -34,7 +34,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.common.base.Preconditions;
-import org.spout.api.Engine;
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
@@ -46,10 +45,10 @@ import org.spout.api.component.Component;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
+import org.spout.api.entity.PlayerSnapshot;
 import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.event.entity.EntityHiddenEvent;
 import org.spout.api.event.entity.EntityShownEvent;
-import org.spout.api.event.player.PlayerChatEvent;
 import org.spout.api.event.server.PreCommandEvent;
 import org.spout.api.event.server.RetrieveDataEvent;
 import org.spout.api.event.server.permissions.PermissionGroupsEvent;
@@ -421,5 +420,10 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	public boolean isInvisible(Entity entity) {
 		return hiddenEntities.contains(entity);
+	}
+
+	@Override
+	public PlayerSnapshot snapshot() {
+		return new SpoutPlayerSnapshot(this);
 	}
 }

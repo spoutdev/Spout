@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
-import org.spout.api.math.VectorMath;
 import org.spout.api.protocol.NetworkSynchronizer;
 
 import org.spout.engine.entity.component.SpoutSceneComponent;

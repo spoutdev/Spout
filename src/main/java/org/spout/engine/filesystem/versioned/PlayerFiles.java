@@ -66,7 +66,7 @@ public class PlayerFiles {
 				Spout.getLogger().log(Level.SEVERE, "Error creating player data for " + player.getName(), e);
 			}
 		}
-		PlayerSnapshot snapshot = new PlayerSnapshot(player);
+		PlayerSnapshot snapshot = player.snapshot();
 		CompoundTag playerTag = EntityFiles.saveEntity(snapshot);
 		NBTOutputStream os = null;
 		try {
