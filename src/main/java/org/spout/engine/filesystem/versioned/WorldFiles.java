@@ -145,7 +145,7 @@ public class WorldFiles {
 		
 		world.setSpawnPoint(t);
 		
-		ManagedHashMap dataMap = world.getComponentHolder().getData().getBaseMap();
+		ManagedHashMap dataMap = world.getData().getBaseMap();
 		dataMap.clear();
 		try {
 			dataMap.deserialize(extraData);
@@ -183,10 +183,10 @@ public class WorldFiles {
 		
 		CompoundMap map = new CompoundMap();
 		
-		map.put(new ByteTag("version", (byte) WORLD_VERSION));
+		map.put(new ByteTag("version", WORLD_VERSION));
 		map.put(new StringTag("generator", world.getGenerator().getName()));
 		map.put(new LongTag("seed", world.getSeed()));
-		map.put(new ByteArrayTag("extra_data", world.getComponentHolder().getData().serialize()));
+		map.put(new ByteArrayTag("extra_data", world.getData().serialize()));
 		map.put(new LongTag("age", world.getAge()));
 		map.put(new UUIDTag("uuid", world.getUID()));
 		map.put(new TransformTag("spawn_position", world.getSpawnPoint()));

@@ -356,7 +356,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] data) {
 		SpoutClientWorld world = new SpoutClientWorld(name, uuid, this, getEngineItemMap(), getEngineItemMap());
 
-		SerializableMap map = world.getComponentHolder().getData();
+		SerializableMap map = world.getData();
 		try {
 			map.deserialize(data);
 		} catch (IOException e) {
@@ -430,7 +430,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			files = new String[]{"liblwjgl.so", "liblwjgl64.so", "libopenal.so", "libopenal64.so", "libjinput-linux.so", "libjinput-linux64.so"};
 			osPath = "linux/";
 		} else {
-			Spout.getEngine().getLogger().log(Level.SEVERE, "Error loading natives of operating system type: " + SystemUtils.OS_NAME);
+			Spout.getLogger().severe("Error loading natives of operating system type: " + SystemUtils.OS_NAME);
 			return;
 		}
 

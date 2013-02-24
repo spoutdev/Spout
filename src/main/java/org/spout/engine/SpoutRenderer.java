@@ -235,7 +235,7 @@ public class SpoutRenderer {
 	
 			client.getActiveCamera().updateReflectedView();
 			
-			Model reflectedSkydome = (Model) client.getActiveWorld().getDataMap().get("Skydome");
+			Model reflectedSkydome = (Model) client.getActiveWorld().getData().get("skydome");
 			if (reflectedSkydome != null) {
 				reflectedSkydome.getRenderMaterial().getShader().setUniform("View", client.getActiveCamera().getRotation());
 				reflectedSkydome.getRenderMaterial().getShader().setUniform("Projection", client.getActiveCamera().getProjection());
@@ -259,7 +259,7 @@ public class SpoutRenderer {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		client.getActiveCamera().updateView();
-		Model skydome = (Model) client.getActiveWorld().getDataMap().get("Skydome");
+		Model skydome = (Model) client.getActiveWorld().getData().get("skydome");
 		if (skydome != null) {
 			skydome.getRenderMaterial().getShader().setUniform("View", client.getActiveCamera().getRotation());
 			skydome.getRenderMaterial().getShader().setUniform("Projection", client.getActiveCamera().getProjection());

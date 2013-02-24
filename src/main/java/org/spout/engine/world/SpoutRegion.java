@@ -287,7 +287,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 		solver = new SequentialImpulseConstraintSolver();
 		simulation = new DiscreteDynamicsWorld(dispatcher, broadphase, solver, configuration);
 		simulation.setGravity(new Vector3f(0, -9.81F, 0));
-		simulation.getDispatchInfo().allowedCcdPenetration = 10f;
 		simulation.getSolverInfo().splitImpulse = true;
 		final SpoutPhysicsWorld physicsInfo = new SpoutPhysicsWorld(this);
 		final VoxelWorldShape simulationShape = new RegionShape(physicsInfo, this);

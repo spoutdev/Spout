@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.spout.api.component.Component;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.plugin.CommonClassLoader;
 import org.spout.api.resource.BasicResourceLoader;
@@ -60,7 +61,7 @@ public class EntityPrefabLoader extends BasicResourceLoader<ClientEntityPrefab> 
 		}
 		
 		final List<? extends String> componentsPath = checkerListString.check(resourceProperties.get("Components"));
-		final List<Class<? extends EntityComponent>> components = new ArrayList<Class<? extends EntityComponent>>();
+		final List<Class<? extends Component>> components = new ArrayList<Class<? extends Component>>();
 		for (String path : componentsPath) {
 			Class<?> componentClass;
 			try {

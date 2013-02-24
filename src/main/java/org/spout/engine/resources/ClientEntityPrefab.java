@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.spout.api.component.Component;
 import org.spout.api.component.impl.ModelHolderComponent;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.entity.Entity;
@@ -43,40 +44,35 @@ import org.spout.engine.entity.SpoutEntity;
 
 public class ClientEntityPrefab extends Resource implements EntityPrefab {
 	private String name;
-	private List<Class<? extends EntityComponent>> components = new ArrayList<Class<? extends EntityComponent>>();
-	private Map<String, Object> datas = new HashMap<String, Object>();
+	private List<Class<? extends Component>> components = new ArrayList<Class<? extends Component>>();
+	private Map<String, Object> data = new HashMap<String, Object>();
 
-	public ClientEntityPrefab(String name, List<Class<? extends EntityComponent>> components, Map<String, Object> datas) {
+	public ClientEntityPrefab(String name, List<Class<? extends Component>> components, Map<String, Object> data) {
 		this.name = name;
 		this.components.addAll(components);
-		this.datas.putAll(datas);
+		this.data.putAll(data);
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public List<Class<? extends EntityComponent>> getComponents() {
+	public List<Class<? extends Component>> getComponents() {
 		return components;
 	}
 
-	public Map<String, Object> getDatas() {
-		return datas;
+	public Map<String, Object> getData() {
+		return data;
 	}
 
 	public Entity createEntity(Point point) {
 		SpoutEntity entity = new SpoutEntity(point);
-		for (Class<? extends EntityComponent> c : components) {
+		for (Class<? extends Component> c : components) {
 			entity.add(c);
 		}
 
-		if (datas.containsKey("Model")) {
-			ModelHolderComponent mc = entity.get(ModelHolderComponent.class);
-			if (mc == null) {
-				mc = entity.add(ModelHolderComponent.class);
-			}
-
-			mc.addModel((String) datas.get("Model"));
+		if (data.containsKey("Model")) {
+			entity.add(ModelHolderComponent.class).addModel((String) data.get("Model"));
 		}
 
 		return entity;
@@ -84,17 +80,12 @@ public class ClientEntityPrefab extends Resource implements EntityPrefab {
 
 	public Entity createEntity(Transform transform) {
 		SpoutEntity entity = new SpoutEntity(transform);
-		for (Class<? extends EntityComponent> c : components) {
+		for (Class<? extends Component> c : components) {
 			entity.add(c);
 		}
 
-		if (datas.containsKey("Model")) {
-			ModelHolderComponent mc = entity.get(ModelHolderComponent.class);
-			if (mc == null) {
-				mc = entity.add(ModelHolderComponent.class);
-			}
-
-			mc.addModel((String) datas.get("Model"));
+		if (data.containsKey("Model")) {
+			entity.add(ModelHolderComponent.class).addModel((String) data.get("Model"));
 		}
 
 		return entity;

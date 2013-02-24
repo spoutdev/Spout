@@ -26,11 +26,13 @@
  */
 package org.spout.engine.world;
 
+import java.awt.peer.ComponentPeer;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,6 +48,7 @@ import org.spout.api.Spout;
 import org.spout.api.collision.BoundingBox;
 import org.spout.api.collision.CollisionModel;
 import org.spout.api.collision.CollisionVolume;
+import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentHolder;
 import org.spout.api.component.WorldComponentHolder;
@@ -103,7 +106,7 @@ import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableLong;
 
-public class SpoutWorld implements AsyncManager, World {
+public class SpoutWorld extends BaseComponentHolder implements AsyncManager, World {
 	private SnapshotManager snapshotManager = new SnapshotManager();
 	/**
 	 * The server of this world.
@@ -201,10 +204,6 @@ public class SpoutWorld implements AsyncManager, World {
 	private final WeakReference<World> selfReference;
 	public static final WeakReference<World> NULL_WEAK_REFERENCE = new WeakReference<World>(null);
 	Model skydome;
-	/*
-	 * Components
-	 */
-	private final WorldComponentHolder componentHolder;
 
 	// TODO set up number of stages ?
 	public SpoutWorld(String name, SpoutEngine engine, long seed, long age, WorldGenerator generator, UUID uid, StringMap itemMap, StringMap lightingMap) {
@@ -242,7 +241,6 @@ public class SpoutWorld implements AsyncManager, World {
 		taskManager = new SpoutTaskManager(getEngine().getScheduler(), null, this, age);
 		spawnLocation.set(new Transform(new Point(this, 1, 100, 1), Quaternion.IDENTITY, Vector3.ONE));
 		selfReference = new WeakReference<World>(this);
-		componentHolder = new WorldComponentHolder(this);
 		
 		((SpoutScheduler) Spout.getEngine().getScheduler()).addAsyncManager(this);
 	}
@@ -295,9 +293,6 @@ public class SpoutWorld implements AsyncManager, World {
 
 	@Override
 	public Biome getBiome(int x, int y, int z) {
-		if (y < 0 || y > getHeight()) {
-			return null;
-		}
 		if (!(generator instanceof BiomeGenerator)) {
 			return null;
 		}
@@ -511,15 +506,11 @@ public class SpoutWorld implements AsyncManager, World {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null) {
+		if (obj == null || !(obj instanceof SpoutWorld)) {
 			return false;
-		} else if (!(obj instanceof SpoutWorld)) {
-			return false;
-		} else {
-			SpoutWorld world = (SpoutWorld) obj;
-
-			return world.getUID().equals(getUID());
 		}
+		SpoutWorld world = (SpoutWorld) obj;
+		return world.getUID().equals(getUID());
 	}
 
 	@Override
@@ -553,17 +544,19 @@ public class SpoutWorld implements AsyncManager, World {
 	}
 
 	@Override
-	public Entity createEntity(Point point, Class<? extends Component> type) {
+	public Entity createEntity(Point point, Class<? extends Component>... classes) {
 		SpoutEntity entity = new SpoutEntity(point);
-		entity.add(type);
+		for (Class<? extends Component> clazz : classes) {
+			entity.add(clazz);
+		}
 		return entity;
 	}
 
 	@Override
 	public Entity createEntity(Point point, EntityPrefab prefab) {
 		SpoutEntity entity = new SpoutEntity(point);
-		for (Class<? extends EntityComponent> c : prefab.getComponents()) {
-			entity.add(c);
+		for (Class<? extends Component> clazz : prefab.getComponents()) {
+			entity.add(clazz);
 		}
 		return entity;
 	}
@@ -599,7 +592,6 @@ public class SpoutWorld implements AsyncManager, World {
 	/**
 	 * Spawns an entity into the world. Fires off a cancellable EntitySpawnEvent
 	 */
-	@Override
 	public void spawnEntity(Entity e, int entityID) {
 		if (e.isSpawned()) {
 			throw new IllegalArgumentException("Cannot spawn an entity that is already spawned!");
@@ -626,32 +618,32 @@ public class SpoutWorld implements AsyncManager, World {
 		}
 	}
 	@Override
-	public Entity createAndSpawnEntity(Point point, EntityPrefab prefab, LoadOption option) {
+	public Entity createAndSpawnEntity(Point point, LoadOption option, EntityPrefab prefab) {
 		getRegionFromBlock(point, option);
 		Entity e = createEntity(point, prefab);
 		return e;
 	}
 
 	@Override
-	public Entity createAndSpawnEntity(Point point, Class<? extends Component> type, LoadOption option) {
+	public Entity createAndSpawnEntity(Point point, LoadOption option, Class<? extends Component>... classes) {
 		getRegionFromBlock(point, option);
-		Entity e = createEntity(point, type);
+		Entity e = createEntity(point, classes);
 		spawnEntity(e);
 		return e;
 	}
 
 	@Override
-	public Entity[] createAndSpawnEntity(Point[] points, Class<? extends Component> type, LoadOption option) {
+	public Entity[] createAndSpawnEntity(Point[] points, LoadOption option, Class<? extends Component>... classes) {
 		Entity[] entities = new Entity[points.length];
 		for (int i = 0; i < points.length; i++) {
-			entities[i] = createAndSpawnEntity(points[i], type, option);
+			entities[i] = createAndSpawnEntity(points[i], option, classes);
 		}
 		return entities;
 	}
 
 	@Override
-	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, Class<? extends Component> type, LoadOption option) {
-		return createAndSpawnEntity(arrangement.getArrangement(), type, option);
+	public Entity[] createAndSpawnEntity(SpawnArrangement arrangement, LoadOption option, Class<? extends Component>... classes) {
+		return createAndSpawnEntity(arrangement.getArrangement(), option, classes);
 	}
 
 	@Override
@@ -666,7 +658,7 @@ public class SpoutWorld implements AsyncManager, World {
 				age.set(age.get() + delta);
 				parallelTaskManager.heartbeat(delta);
 				taskManager.heartbeat(delta);
-				for (Component component : componentHolder.values()) {
+				for (Component component : values()) {
 					component.tick(delta);
 				}
 				break;
@@ -684,11 +676,13 @@ public class SpoutWorld implements AsyncManager, World {
 
 	@Override
 	public boolean containsBlock(int x, int y, int z) {
+		//TODO What...is the point of this?
 		return true;
 	}
 
 	@Override
 	public boolean containsChunk(int x, int y, int z) {
+		//TODO What...is the point of this?
 		return true;
 	}
 
@@ -708,12 +702,6 @@ public class SpoutWorld implements AsyncManager, World {
 	 */
 	public SpoutWorldLighting getLightingManager() {
 		return this.lightingManager;
-	}
-
-	@Override
-	public int getHeight() {
-		// TODO: Variable world height
-		return 256;
 	}
 
 	@Override
@@ -980,36 +968,6 @@ public class SpoutWorld implements AsyncManager, World {
 		return entities;
 	}
 
-	public List<CollisionVolume> getCollidingObject(CollisionModel model) {
-		//TODO Make this more general
-		final int minX = GenericMath.floor(model.getVolume().getPosition().getX());
-		final int minY = GenericMath.floor(model.getVolume().getPosition().getY());
-		final int minZ = GenericMath.floor(model.getVolume().getPosition().getZ());
-		final int maxX = minX + 1;
-		final int maxY = minY + 1;
-		final int maxZ = minZ + 1;
-
-		final LinkedList<CollisionVolume> colliding = new LinkedList<CollisionVolume>();
-
-		final BoundingBox mutable = new BoundingBox(0, 0, 0, 0, 0, 0);
-
-		for (int dx = minX; dx < maxX; dx++) {
-			for (int dy = minY; dy < maxY; dy++) {
-				for (int dz = minZ; dz < maxZ; dz++) {
-					BlockMaterial material = this.getBlockMaterial(dx, dy, dz);
-					mutable.set((BoundingBox) material.getBoundingArea());
-					BoundingBox box = mutable.offset(dx, dy, dz);
-					if (box.intersects(model.getVolume())) {
-						colliding.add(mutable.clone());
-					}
-				}
-			}
-		}
-
-		//TODO: colliding entities
-		return colliding;
-	}
-
 	/**
 	 * Removes a column corresponding to the given Column coordinates
 	 * @param x the x coordinate
@@ -1125,7 +1083,7 @@ public class SpoutWorld implements AsyncManager, World {
 
 	@Override
 	public void unload(boolean save) {
-		for (Component component : componentHolder.values()) {
+		for (Component component : values()) {
 			component.onDetached();
 		}
 		this.getLightingManager().abort();
@@ -1458,16 +1416,6 @@ public class SpoutWorld implements AsyncManager, World {
 
 	public WeakReference<World> getWeakReference() {
 		return selfReference;
-	}
-
-	@Override
-	public ComponentHolder getComponentHolder() {
-		return componentHolder;
-	}
-
-	@Override
-	public DefaultedMap<Serializable> getDataMap() {
-		return componentHolder.getData();
 	}
 
 	public RegionFileManager getRegionFileManager() {
