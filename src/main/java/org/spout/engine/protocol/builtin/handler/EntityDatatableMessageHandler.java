@@ -26,14 +26,15 @@
  */
 package org.spout.engine.protocol.builtin.handler;
 
+import java.io.IOException;
+import java.util.logging.Level;
+
+import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
 import org.spout.api.protocol.MessageHandler;
 import org.spout.api.protocol.Session;
 import org.spout.engine.protocol.builtin.message.EntityDatatableMessage;
 
-/**
- *
- */
 public class EntityDatatableMessageHandler extends MessageHandler<EntityDatatableMessage> {
 	@Override
 	public void handleClient(Session session, EntityDatatableMessage message) {
@@ -43,6 +44,10 @@ public class EntityDatatableMessageHandler extends MessageHandler<EntityDatatabl
 
 		Entity entity = session.getPlayer().getWorld().getEntity(message.getEntityId());
 		// TODO: Give datatable access to packet
-		//entity.getController().data().decompress(message.getCompressedData());
+		try {
+			entity.getData().deserialize(message.getCompressedData(), true);
+		} catch (IOException e) {
+			Spout.getLogger().log(Level.SEVERE, "Exception deserializing compressed datatable", e);
+		}
 	}
 }

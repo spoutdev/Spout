@@ -26,7 +26,6 @@
  */
 package org.spout.engine.protocol.builtin.handler;
 
-import org.spout.api.Client;
 import org.spout.api.component.Component;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
@@ -37,6 +36,7 @@ import org.spout.engine.protocol.builtin.SpoutProtocol;
 import org.spout.engine.protocol.builtin.message.AddEntityMessage;
 
 public class AddEntityMessageHandler extends MessageHandler<AddEntityMessage> {
+	@SuppressWarnings("unchecked")
 	@Override
 	public void handleClient(Session session, AddEntityMessage message) {
 		if(!session.hasPlayer()) {
