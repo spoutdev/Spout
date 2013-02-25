@@ -41,7 +41,6 @@ import org.spout.api.event.player.PlayerJoinEvent;
 import org.spout.api.event.player.PlayerLoginEvent;
 import org.spout.api.event.player.PlayerWhitelistKickEvent;
 import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
-import org.spout.api.event.storage.PlayerLoadEvent;
 import org.spout.api.util.access.BanType;
 
 import org.spout.engine.SpoutServer;
@@ -65,8 +64,6 @@ public class SpoutServerListener implements Listener {
 		final SpoutPlayer player = (SpoutPlayer) server.addPlayer(event.getPlayerName(), (SpoutSession<?>) event.getSession(), event.getViewDistance());
 
 		if (player != null) {
-			//load players
-			server.getEventManager().callEvent(new PlayerLoadEvent(player));
 			//Call PlayerJoinEvent
 			PlayerLoginEvent loginEvent = server.getEventManager().callEvent(new PlayerLoginEvent(player));
 			if (!loginEvent.isAllowed()) {

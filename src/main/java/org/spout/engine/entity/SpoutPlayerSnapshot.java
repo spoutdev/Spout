@@ -1,10 +1,10 @@
 /*
- * This file is part of SpoutAPI.
+ * This file is part of Spout.
  *
  * Copyright (c) 2011-2012, Spout LLC <http://www.spout.org/>
- * SpoutAPI is licensed under the Spout License Version 1.
+ * Spout is licensed under the Spout License Version 1.
  *
- * SpoutAPI is free software: you can redistribute it and/or modify it under
+ * Spout is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option)
  * any later version.
@@ -13,7 +13,7 @@
  * software, incorporating those changes, under the terms of the MIT license,
  * as described in the Spout License Version 1.
  *
- * SpoutAPI is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Spout is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
  * more details.
@@ -26,8 +26,13 @@
  */
 package org.spout.engine.entity;
 
+import java.util.List;
+import java.util.UUID;
+
+import org.spout.api.component.Component;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.PlayerSnapshot;
+import org.spout.api.geo.discrete.Transform;
 
 public class SpoutPlayerSnapshot extends SpoutEntitySnapshot implements PlayerSnapshot {
 	private final String name;
@@ -35,6 +40,16 @@ public class SpoutPlayerSnapshot extends SpoutEntitySnapshot implements PlayerSn
 	public SpoutPlayerSnapshot(Player p) {
 		super(p);
 		name = p.getName();
+	}
+
+	public SpoutPlayerSnapshot(PlayerSnapshot snapshot) {
+		this(snapshot.getUID(), snapshot.getTransform(), snapshot.getWorldUID(), snapshot.getViewDistance(), snapshot.isObserver(), null, snapshot.getComponents(), snapshot.getName());
+		this.getDataMap().putAll(snapshot.getDataMap());
+	}
+
+	public SpoutPlayerSnapshot(UUID id, Transform t, UUID worldId, int view, boolean observer, byte[] dataMap, List<Class<? extends Component>> types, String name) {
+		super(id, t, worldId, view, observer, dataMap, types);
+		this.name = name;
 	}
 
 	@Override
@@ -50,5 +65,11 @@ public class SpoutPlayerSnapshot extends SpoutEntitySnapshot implements PlayerSn
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public SpoutPlayer toEntity() {
+		return new SpoutPlayer(name, getTransform(), getViewDistance(), getUID(), false, getDataMap(), getComponents().toArray(new Class[0]));
 	}
 }

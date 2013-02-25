@@ -66,7 +66,7 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> {
 		activeWorld.set(null);
 		SpoutPlayer player;
 		if ((player = this.player.getAndSet(null)) != null) {
-			player.disconnect();
+			player.disconnect(false);
 		}
 		getEngine().disconnected();
 	}
@@ -82,6 +82,11 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> {
 
 	@Override
 	public boolean disconnect(boolean kick, Object... reason) {
+		return disconnect(kick, false, reason);
+	}
+
+	@Override
+	public boolean disconnect(boolean kick, boolean stop, Object... reason) {
 		SpoutPlayer player = getPlayer();
 		if (player != null) {
 			player.sendCommand("disconnect", new ChatArguments(reason));

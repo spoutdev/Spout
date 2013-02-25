@@ -45,7 +45,8 @@ import org.spout.api.io.nbt.UUIDTag;
 import org.spout.api.plugin.CommonClassLoader;
 import org.spout.api.util.sanitation.SafeCast;
 import org.spout.engine.entity.SpoutEntity;
-import org.spout.engine.entity.SpoutPlayer;
+import org.spout.engine.entity.SpoutEntitySnapshot;
+import org.spout.engine.entity.SpoutPlayerSnapshot;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.nbt.ByteArrayTag;
 import org.spout.nbt.ByteTag;
@@ -95,7 +96,10 @@ public class EntityFiles {
 
 	protected static SpoutEntity loadEntity(World w, CompoundTag tag) {
 		try {
-			return loadEntityImpl(w, tag, null);
+			SpoutEntitySnapshot snapshot = loadEntityImpl(w, tag, null);
+			if (snapshot != null) {
+				return snapshot.toEntity();
+			}
 		} catch (Exception e) {
 			Spout.getLogger().log(Level.SEVERE, "Unable to load entity", e);
 		}
@@ -103,11 +107,15 @@ public class EntityFiles {
 	}
 
 	protected static SpoutEntity loadPlayerEntity(CompoundTag tag, String name) {
-		return loadEntityImpl(null, tag, name);
+		SpoutEntitySnapshot snapshot = loadEntityImpl(null, tag, name);
+		if (snapshot != null) {
+			return snapshot.toEntity();
+		}
+		return null;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private static SpoutEntity loadEntityImpl(World w, CompoundTag tag, String name) {
+	private static SpoutEntitySnapshot loadEntityImpl(World w, CompoundTag tag, String name) {
 		CompoundMap map = tag.getValue();
 
 		byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), (byte) -1);
@@ -212,19 +220,17 @@ public class EntityFiles {
 					types.add(clazz);
 				}
 			} catch (ClassNotFoundException e) {
-				Spout.getLogger().log(Level.SEVERE, "Unable to find component class " + component.getValue(), e);
+				if (Spout.debugMode()) {
+					Spout.getLogger().log(Level.WARNING, "Unable to find component class " + component.getValue());
+				}
 			}
 		}
 
-		SpoutEntity e;
 		if (!player) {
-			e = new SpoutEntity(t, view, uid, false, dataMap, types.toArray(new Class[types.size()]));
-			e.setObserver(observer);
+			return new SpoutEntitySnapshot(uid, t, worldUUID, view, observer, dataMap, types);
 		} else {
-			e = new SpoutPlayer(name, t, view, uid, false, dataMap, types.toArray(new Class[types.size()]));
+			return new SpoutPlayerSnapshot(uid, t, worldUUID, view, observer, dataMap, types, name);
 		}
-
-		return e;
 	}
 
 	protected static CompoundTag saveEntity(EntitySnapshot e) {

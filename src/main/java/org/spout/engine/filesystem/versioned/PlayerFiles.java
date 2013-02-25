@@ -34,69 +34,82 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
 import org.spout.api.Spout;
 import org.spout.api.entity.PlayerSnapshot;
+import org.spout.api.event.storage.PlayerLoadEvent;
+import org.spout.api.event.storage.PlayerSaveEvent;
+import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutPlayer;
+import org.spout.engine.entity.SpoutPlayerSnapshot;
 import org.spout.nbt.CompoundTag;
 import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 
 public class PlayerFiles {
-	
-	public static void savePlayerData(List<SpoutPlayer> Players) {
-		for (SpoutPlayer player : Players) {
-			savePlayerData(player);
+	public static void savePlayerData(SpoutPlayer player, boolean async) {
+		Runnable saveTask = new SaveTask(player.snapshot());
+		if (async) {
+			Spout.getEngine().getScheduler().scheduleAsyncTask(Spout.getEngine(), saveTask);
+		} else {
+			saveTask.run();
 		}
 	}
 
-	public static boolean savePlayerData(SpoutPlayer player) {
-		File playerDir = new File(Spout.getEngine().getDataFolder().toString(), "players");
-		//Save data to temp file first
-		String fileName = player.getName() + ".dat";
-		String tempName = fileName + ".temp";
-		File playerData = new File(playerDir, tempName);
-		if (!playerData.exists()) {
-			try {
-				playerData.createNewFile();
-			} catch (Exception e) {
-				Spout.getLogger().log(Level.SEVERE, "Error creating player data for " + player.getName(), e);
-			}
+	private static class SaveTask implements Runnable {
+		private final PlayerSnapshot snapshot;
+		public SaveTask(PlayerSnapshot snapshot) {
+			this.snapshot = snapshot;
 		}
-		PlayerSnapshot snapshot = player.snapshot();
-		CompoundTag playerTag = EntityFiles.saveEntity(snapshot);
-		NBTOutputStream os = null;
-		try {
-			os = new NBTOutputStream(new DataOutputStream(new FileOutputStream(playerData)), false);
-			os.writeTag(playerTag);
-			os.flush();
-		} catch (IOException e) {
-			Spout.getLogger().log(Level.SEVERE, "Error saving player data for " + player.getName(), e);
-			playerData.delete();
-			return false;
-		} finally {
-			if (os != null) {
+
+		@Override
+		public void run() {
+			PlayerSaveEvent event = new PlayerSaveEvent(snapshot);
+			Spout.getEngine().getEventManager().callEvent(event);
+			if (!event.isSaved()) {
+				File playerDir = new File(Spout.getEngine().getDataFolder().toString(), "players");
+				//Save data to temp file first
+				String fileName = snapshot.getName() + ".dat";
+				String tempName = fileName + ".temp";
+				File playerData = new File(playerDir, tempName);
+				if (!playerData.exists()) {
+					try {
+						playerData.createNewFile();
+					} catch (Exception e) {
+						Spout.getLogger().log(Level.SEVERE, "Error creating player data for " + snapshot.getName(), e);
+					}
+				}
+				CompoundTag playerTag = EntityFiles.saveEntity(snapshot);
+				NBTOutputStream os = null;
 				try {
-					os.close();
-				} catch (IOException ignore) {
+					os = new NBTOutputStream(new DataOutputStream(new FileOutputStream(playerData)), false);
+					os.writeTag(playerTag);
+					os.flush();
+				} catch (IOException e) {
+					Spout.getLogger().log(Level.SEVERE, "Error saving player data for " + snapshot.getName(), e);
+					playerData.delete();
+					return;
+				} finally {
+					if (os != null) {
+						try {
+							os.close();
+						} catch (IOException ignore) { }
+					}
+				}
+				try {
+					//Move the temp data to final location
+					File finalData = new File(playerDir, fileName);
+					if (finalData.exists()) {
+						finalData.delete();
+					}
+					FileUtils.moveFile(playerData, finalData);
+				} catch (IOException e) {
+					Spout.getLogger().log(Level.SEVERE, "Error saving player data for " + snapshot.getName(), e);
+					playerData.delete();
 				}
 			}
-		}
-		try {
-			//Move the temp data to final location
-			File finalData = new File(playerDir, fileName);
-			if (finalData.exists()) {
-				finalData.delete();
-			}
-			FileUtils.moveFile(playerData, finalData);
-			return true;
-		} catch (IOException e) {
-			Spout.getLogger().log(Level.SEVERE, "Error saving player data for " + player.getName(), e);
-			playerData.delete();
-			return false;
 		}
 	}
 
@@ -110,6 +123,12 @@ public class PlayerFiles {
 	 * @return player, or null if it could not be loaded
 	 */
 	public static SpoutPlayer loadPlayerData(String name) {
+		PlayerLoadEvent event = new PlayerLoadEvent(name);
+		Spout.getEngine().getEventManager().callEvent(event);
+		if (event.getSnapshot() != null) {
+			return new SpoutPlayerSnapshot(event.getSnapshot()).toEntity();
+		}
+		
 		File playerDir = new File(Spout.getEngine().getDataFolder().toString(), "players");
 		String fileName = name + ".dat";
 		File playerData = new File(playerDir, fileName);
@@ -141,5 +160,5 @@ public class PlayerFiles {
 		}
 		return null;
 	}
-
+	
 }

@@ -397,4 +397,6 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 			throw new IllegalArgumentException("Null uncaught exception handlers are not permitted");
 		}
 	}
+
+	public abstract boolean disconnect(boolean kick, boolean stop, Object... reason);
 }

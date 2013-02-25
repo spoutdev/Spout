@@ -199,7 +199,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 				EngineStopEvent stopEvent = new EngineStopEvent(message);
 				getEventManager().callEvent(stopEvent);
 				for (Player player : getOnlinePlayers()) {
-					player.kick(stopEvent.getMessage());
+					((SpoutPlayer)player).kick(true, new Object[] {stopEvent.getMessage()});
 				}
 				if (upnpService != null) {
 					upnpService.shutdown();

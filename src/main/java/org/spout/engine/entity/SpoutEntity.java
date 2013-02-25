@@ -42,6 +42,7 @@ import org.spout.api.component.impl.ModelHolderComponent;
 import org.spout.api.component.impl.NetworkComponent;
 import org.spout.api.component.impl.SceneComponent;
 import org.spout.api.component.type.EntityComponent;
+import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
@@ -90,6 +91,19 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	private final SpoutSceneComponent scene;
 	private Class<? extends Component>[] initialComponents = null;
 
+	public SpoutEntity(Transform transform) {
+		this(transform, -1, null, true, (byte[])null, (Class<? extends Component>[]) null);
+	}
+
+	public SpoutEntity(Point point) {
+		this(new Transform(point, Quaternion.IDENTITY, Vector3.ONE));
+	}
+
+	protected SpoutEntity(Transform transform, int viewDistance, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
+		this(transform, viewDistance, uid, load, (byte[])null, components);
+		this.getData().putAll(dataMap);
+	}
+
 	public SpoutEntity(Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
 		id.set(NOTSPAWNEDID);
 		
@@ -109,7 +123,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 			scene.setTransform(transform);
 			scene.copySnapshot();
 		}
-		
+
 		if (components != null && components.length > 0) {
 			initialComponents = components;
 		}
@@ -149,18 +163,6 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 			return super.add(type, EntityRendererComponent.class, attach);
 		}
 		return super.add(type, attach);
-	}
-
-	public SpoutEntity(Transform transform, int viewDistance) {
-		this(transform, viewDistance, null, true, null, (Class<? extends Component>[]) null);
-	}
-
-	public SpoutEntity(Transform transform) {
-		this(transform, -1);
-	}
-
-	public SpoutEntity(Point point) {
-		this(new Transform(point, Quaternion.IDENTITY, Vector3.ONE));
 	}
 
 	@Override

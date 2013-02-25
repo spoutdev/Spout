@@ -60,11 +60,6 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 		super.send(upstream, force, message);
 	}
 
-	@Override
-	public boolean disconnect(Object... reason) {
-		return disconnect(true, reason);
-	}
-
 	public Object[] getDefaultLeaveMessage() {
 		if (getPlayer() == null) {
 			return new Object[]{ChatStyle.WHITE, "Unknown", ChatStyle.CYAN, " has left the game"};
@@ -74,7 +69,17 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 	}
 
 	@Override
+	public boolean disconnect(Object... reason) {
+		return disconnect(true, reason);
+	}
+
+	@Override
 	public boolean disconnect(boolean kick, Object... reason) {
+		return disconnect(kick, false, reason);
+	}
+
+	@Override
+	public boolean disconnect(boolean kick, boolean stop, Object... reason) {
 		if (getPlayer() != null) {
 			PlayerLeaveEvent event;
 			if (kick) {
@@ -88,7 +93,7 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 			} else {
 				event = new PlayerLeaveEvent(getPlayer(), getDefaultLeaveMessage());
 			}
-			dispose(event);
+			dispose(event, stop);
 		}
 		Protocol protocol = getProtocol();
 		Message kickMessage = null;
@@ -106,10 +111,10 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 	@Override
 	public void dispose() {
 		super.dispose();
-		dispose(new PlayerLeaveEvent(getPlayer(), getDefaultLeaveMessage()));
+		dispose(new PlayerLeaveEvent(getPlayer(), getDefaultLeaveMessage()), false);
 	}
 
-	public void dispose(PlayerLeaveEvent leaveEvent) {
+	public void dispose(PlayerLeaveEvent leaveEvent, boolean stop) {
 		SpoutPlayer player;
 		if ((player = this.player.getAndSet(null)) != null) {
 			if (!leaveEvent.hasBeenCalled()) {
@@ -120,9 +125,8 @@ public class SpoutServerSession<T extends SpoutServer> extends SpoutSession<T> {
 			if (text != null && text.getArguments().size() > 0) {
 				getEngine().broadcastMessage(text);
 			}
-			player.save();
 			try {
-				player.disconnect();
+				player.disconnect(!stop); //can not save async if the engine is stopping
 			} catch (Exception e) {
 				Spout.getLogger().log(Level.WARNING, "Did not disconnect " + player.getName() + " cleanly", e);
 			}

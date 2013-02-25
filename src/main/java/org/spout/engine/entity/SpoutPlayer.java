@@ -43,6 +43,7 @@ import org.spout.api.command.Command;
 import org.spout.api.command.RootCommand;
 import org.spout.api.component.Component;
 import org.spout.api.data.ValueHolder;
+import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.PlayerSnapshot;
@@ -90,7 +91,12 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	}
 
 	public SpoutPlayer(String name, Transform transform, int viewDistance) {
-		this(name, transform, viewDistance, null, true, null, (Class<? extends Component>[]) null);
+		this(name, transform, viewDistance, null, true, (byte[])null, (Class<? extends Component>[]) null);
+	}
+
+	protected SpoutPlayer(String name, Transform transform, int viewDistance, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
+		this(name, transform, viewDistance, uid, load, (byte[])null, components);
+		this.getData().putAll(dataMap);
 	}
 
 	public SpoutPlayer(String name, Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
@@ -146,11 +152,11 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	}
 
 	@DelayedWrite
-	public boolean disconnect() {
+	public boolean disconnect(boolean async) {
 		((SpoutWorld) getWorld()).removePlayer(this);
 		onlineLive.set(false);
 		//save player data on disconnect, probably should do this periodically as well...
-		PlayerFiles.savePlayerData(this);
+		PlayerFiles.savePlayerData(this, async);
 		return true;
 	}
 
@@ -300,10 +306,16 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void kick(Object... reason) {
+		kick(false, reason);
+	}
+
+	public void kick(boolean stop, Object...reason) {
 		if (reason == null) {
 			reason = new Object[]{ChatStyle.RED, "Kicked from server."};
 		}
-		session.disconnect(reason);
+		//If we are stopping, it's not really a kick (it's a friendly disconnect)
+		//If we aren't stopping, it really is a kick
+		session.disconnect(!stop, stop, reason);
 	}
 
 	@Override
@@ -362,7 +374,8 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public boolean save() {
-		return false;
+		PlayerFiles.savePlayerData(this, true);
+		return true;
 	}
 
 	@Override
