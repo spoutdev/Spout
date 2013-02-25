@@ -190,13 +190,20 @@ public class ColumnFiles {
 	}
 
 	public static void writeColumn(OutputStream out, SpoutColumn column, AtomicInteger lowestY, AtomicInteger highestY, BlockMaterial[][] topmostBlocks) {
+		NBTOutputStream NBTStream = null;
 		try {
-			NBTOutputStream NBTStream = new NBTOutputStream(out, false);
+			NBTStream = new NBTOutputStream(out, false);
 			CompoundMap map = saveColumn(column, lowestY, highestY, topmostBlocks);
 			NBTStream.writeTag(new CompoundTag("column", map));
 			NBTStream.flush();
 		} catch (IOException ioe) {
 			Spout.getLogger().log(Level.SEVERE, "Error saving column {" + column.getX() + ", " + column.getZ() + "}", ioe);
+		} finally {
+			if (NBTStream != null) {
+				try {
+					NBTStream.close();
+				} catch (IOException ignore) { }
+			}
 		}
 	}
 	

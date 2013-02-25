@@ -37,16 +37,17 @@ import org.spout.api.render.RenderMaterial;
 import org.spout.api.resource.Resource;
 
 public class ClientModel extends Resource implements Model {
-
+	private static final long serialVersionUID = 1L;
 	public Mesh mesh;
 	public Skeleton skeleton;
 	public RenderMaterial material;
 	public Map<String, Animation> animations;
 
+	@SuppressWarnings("unchecked")
 	public ClientModel(Mesh mesh,RenderMaterial material) {
 		this(mesh, null, material, Collections.EMPTY_MAP);
 	}
-	
+
 	public ClientModel(Mesh mesh, Skeleton skeleton, RenderMaterial material, Map<String, Animation> animations) {
 		this.mesh = mesh;
 		this.skeleton = skeleton;

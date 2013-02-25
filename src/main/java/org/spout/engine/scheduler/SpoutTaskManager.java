@@ -48,38 +48,36 @@ import org.spout.engine.util.thread.AsyncManager;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 
 public class SpoutTaskManager implements TaskManager {
-	
+
 	private final ConcurrentHashMap<SpoutTask, SpoutWorker> activeWorkers = new ConcurrentHashMap<SpoutTask, SpoutWorker>();
-	
+
 	private final ConcurrentHashMap<Integer, SpoutTask> activeTasks = new ConcurrentHashMap<Integer, SpoutTask>();
 
 	private final TaskPriorityQueue taskQueue;
-	
+
 	private final boolean mainThread;
-	private final Thread t;
-	
+
 	private final AtomicBoolean alive;
-	
+
 	private final AtomicLong upTime;
-	
+
 	private final Object scheduleLock = new Object();
-	
+
 	private final Scheduler scheduler;
-	
+
 	private final ExecutorService pool = Executors.newFixedThreadPool(20, new NamedThreadFactory("Scheduler Thread Pool Thread"));
-	
+
 	public SpoutTaskManager(Scheduler scheduler, Thread mainThread) {
 		this(scheduler, mainThread, null, 0L);
 	}
-	
+
 	public SpoutTaskManager(Scheduler scheduler, AsyncManager manager) {
 		this(scheduler, null, manager, 0L);
 	}
-	
+
 	public SpoutTaskManager(Scheduler scheduler, Thread mainThread, AsyncManager manager, long age) {
 		this.taskQueue = new TaskPriorityQueue(manager, SpoutScheduler.PULSE_EVERY / 4);
 		this.mainThread = mainThread != null;
-		this.t = mainThread;
 		this.alive = new AtomicBoolean(true);
 		this.upTime = new AtomicLong(age);
 		this.scheduler = scheduler;
@@ -89,12 +87,12 @@ public class SpoutTaskManager implements TaskManager {
 	public Task scheduleSyncDelayedTask(Object plugin, Runnable task) {
 		return scheduleSyncDelayedTask(plugin, task, 0, TaskPriority.CRITICAL);
 	}
-	
+
 	@Override
 	public Task scheduleSyncDelayedTask(Object plugin, Runnable task, TaskPriority priority) {
 		return scheduleSyncDelayedTask(plugin, task, 0, priority);
 	}
-	
+
 	@Override
 	public Task scheduleSyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
 		return scheduleSyncRepeatingTask(plugin, task, delay, -1, priority);
@@ -109,17 +107,17 @@ public class SpoutTaskManager implements TaskManager {
 	public Task scheduleAsyncTask(Object plugin, Runnable task) {
 		return scheduleAsyncTask(plugin, task, false);
 	}
-	
+
 	@Override
 	public Task scheduleAsyncTask(Object plugin, Runnable task, boolean longLife) {
 		return scheduleAsyncDelayedTask(plugin, task, 0, TaskPriority.CRITICAL, longLife);
 	}
-	
+
 	@Override
 	public Task scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
 		return scheduleAsyncDelayedTask(plugin, task, delay, priority, true);
 	}
-	
+
 	@Override
 	public Task scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority, boolean longLife) {
 		if (!alive.get()) {
@@ -130,12 +128,12 @@ public class SpoutTaskManager implements TaskManager {
 			return schedule(new SpoutTask(this, scheduler, plugin, task, false, delay, -1, priority, longLife));
 		}
 	}
-	
+
 	@Override
 	public <T> Future<T> callSyncMethod(Object plugin, Callable<T> task, TaskPriority priority) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
-	
+
 	public void heartbeat(long delta) {
 		long upTime = this.upTime.addAndGet(delta);
 		
@@ -185,7 +183,7 @@ public class SpoutTaskManager implements TaskManager {
 			}
 		}
 	}
-	
+
 	public Task schedule(SpoutTask task) {
 		synchronized (scheduleLock) {
 			if (!addTask(task)) {
@@ -201,7 +199,7 @@ public class SpoutTaskManager implements TaskManager {
 			return task;
 		}
 	}
-	
+
 	protected Task repeatSchedule(SpoutTask task) {
 		synchronized (scheduleLock) {
 			if (task.isAlive()) {
@@ -212,15 +210,15 @@ public class SpoutTaskManager implements TaskManager {
 		}
 		return task;
 	}
-	
+
 	public void addWorker(SpoutWorker worker, SpoutTask task) {
 		activeWorkers.put(task, worker);
 	}
-	
+
 	public boolean removeWorker(SpoutWorker worker, SpoutTask task) {
 		return activeWorkers.remove(task, worker);
 	}
-	
+
 	public boolean addTask(SpoutTask task) {
 		activeTasks.put(task.getTaskId(), task);
 		if (!alive.get()) {
@@ -260,7 +258,7 @@ public class SpoutTaskManager implements TaskManager {
 			}
 		}
 	}
-	
+
 	@Override
 	public void cancelAllTasks() {
 		ArrayList<SpoutTask> tasks = new ArrayList<SpoutTask>(activeTasks.values());
@@ -273,7 +271,7 @@ public class SpoutTaskManager implements TaskManager {
 	public List<Worker> getActiveWorkers() {
 		return new ArrayList<Worker>(activeWorkers.values());
 	}
-	
+
 	public boolean waitForAsyncTasks(long timeout) {
 		long startTime = System.currentTimeMillis();
 		while (System.currentTimeMillis() < startTime + timeout) {
@@ -298,11 +296,11 @@ public class SpoutTaskManager implements TaskManager {
 		}
 		return list;
 	}
-	
+
 	public boolean shutdown() {
 		return shutdown(1);
 	}
-	
+
 	public boolean shutdown(long timeout) {
 		if (!mainThread) {
 			throw new IllegalStateException("Only the task manager for the main thread should be shutdown, since the other task managers do not support async tasks");
@@ -312,7 +310,7 @@ public class SpoutTaskManager implements TaskManager {
 		cancelAllTasks();
 		return true;
 	}
-	
+
 	@Override
 	public long getUpTime() {
 		return upTime.get();

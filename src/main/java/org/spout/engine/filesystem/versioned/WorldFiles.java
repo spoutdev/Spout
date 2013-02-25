@@ -61,7 +61,6 @@ import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 import org.spout.nbt.util.NBTMapper;
 
-
 public class WorldFiles {
 
 	public static final byte WORLD_VERSION = 2;
@@ -170,12 +169,19 @@ public class WorldFiles {
 		
 		CompoundMap map = saveWorldImpl(world);
 		
+		NBTOutputStream ns = null;
 		try {
 			OutputStream is = new FileOutputStream(worldFile);
-			NBTOutputStream ns = new NBTOutputStream(is, false);
+			ns = new NBTOutputStream(is, false);
 			ns.writeTag(new CompoundTag("world_" + world.getName(), map));
 		} catch (IOException ioe) {
 			log("Error writing file for world " + world.getName());
+		} finally {
+			if (ns != null) {
+				try {
+					ns.close();
+				} catch (IOException ignore) { }
+			}
 		}
 	}
 	

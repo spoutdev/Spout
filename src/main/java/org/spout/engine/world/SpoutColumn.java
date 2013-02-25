@@ -32,7 +32,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.spout.api.Spout;
 import org.spout.api.generator.biome.BiomeGenerator;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.LoadOption;
@@ -43,7 +42,6 @@ import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.BitSize;
 import org.spout.api.scheduler.TickStage;
 import org.spout.engine.filesystem.versioned.ColumnFiles;
-import org.spout.engine.filesystem.versioned.WorldFiles;
 
 public class SpoutColumn {
 	/**

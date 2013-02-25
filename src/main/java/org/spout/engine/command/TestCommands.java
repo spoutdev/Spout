@@ -40,7 +40,6 @@ import org.spout.api.Spout;
 import org.spout.api.audio.Sound;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.audio.SoundSource;
-import org.spout.api.audio.SoundState;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;

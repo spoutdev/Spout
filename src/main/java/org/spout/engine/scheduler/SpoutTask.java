@@ -366,6 +366,7 @@ public class SpoutTask implements Task, LongPrioritized {
 		return nextCallTime.get();
 	}
 
+	@SuppressWarnings("unused")
 	private static enum QueueState {
 		QUEUED, UNQUEUED, DEAD;
 

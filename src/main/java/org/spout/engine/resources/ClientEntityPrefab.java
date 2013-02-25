@@ -33,7 +33,6 @@ import java.util.Map;
 
 import org.spout.api.component.Component;
 import org.spout.api.component.impl.ModelHolderComponent;
-import org.spout.api.component.type.EntityComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntityPrefab;
 import org.spout.api.geo.discrete.Point;

@@ -29,7 +29,6 @@ package org.spout.engine.chat.console;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.common.base.Preconditions;
-import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.channel.ChatChannel;
@@ -37,7 +36,6 @@ import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
 import org.spout.api.data.ValueHolder;
-import org.spout.api.event.player.PlayerChatEvent;
 import org.spout.api.event.server.PreCommandEvent;
 import org.spout.api.geo.World;
 import org.spout.api.lang.Locale;

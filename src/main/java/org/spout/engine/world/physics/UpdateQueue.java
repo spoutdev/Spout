@@ -33,7 +33,6 @@ import gnu.trove.list.array.TByteArrayList;
 
 import java.util.ArrayList;
 
-import org.spout.api.Spout;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.util.map.TByteShortByteKeyedObjectHashMap;
 

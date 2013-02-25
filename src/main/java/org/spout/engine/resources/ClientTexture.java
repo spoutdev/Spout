@@ -39,7 +39,6 @@ import org.spout.api.render.RenderMode;
 import org.spout.api.render.Texture;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutRenderer;
-import org.spout.engine.renderer.shader.ClientShader.ShaderCompilationTask;
 
 public class ClientTexture extends Texture {
 	int textureID = -1;

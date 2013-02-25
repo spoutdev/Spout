@@ -77,6 +77,7 @@ public class AdministrationCommands {
 		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Executed " + fileName + ".");
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	@Command(aliases = "stop", usage = "[message]", desc = "Stop the server!", max = -1)
 	@CommandPermissions("spout.command.stop")
 	public void stop(CommandContext args, CommandSource source) {
