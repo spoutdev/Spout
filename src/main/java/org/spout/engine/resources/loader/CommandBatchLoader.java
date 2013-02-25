@@ -35,7 +35,7 @@ import java.io.InputStreamReader;
 import org.spout.api.command.CommandBatch;
 import org.spout.api.resource.BasicResourceLoader;
 
-public class CommandBatchLoader extends BasicResourceLoader {
+public class CommandBatchLoader extends BasicResourceLoader<CommandBatch> {
 	@Override
 	public String getFallbackResourceName() {
 		return null;

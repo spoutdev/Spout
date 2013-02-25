@@ -37,7 +37,6 @@ import org.spout.engine.resources.loader.ModelLoader;
 import org.spout.engine.resources.loader.RenderMaterialLoader;
 import org.spout.engine.resources.loader.ShaderLoader;
 import org.spout.engine.resources.loader.SoundLoader;
-import org.spout.engine.resources.loader.TextureLoader;
 
 public class ClientFileSystem extends SharedFileSystem {
 	@Override
