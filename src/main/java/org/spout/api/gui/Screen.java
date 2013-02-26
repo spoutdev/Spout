@@ -60,8 +60,8 @@ public class Screen extends BasicTickable implements Container {
 			Vector2 res = ((Client) Spout.getEngine()).getResolution();
 			int startX = (int) (res.getX() / 2) + (toPixelsX(hitBox.getX()) / 2);
 			int startY = (int) (res.getY() / 2) + (toPixelsY(hitBox.getY()) / 2);
-			int endX = startX + toPixelsX(hitBox.getWidth());
-			int endY = startY + toPixelsY(hitBox.getHeight());
+			int endX = startX + toPixelsX(hitBox.getWidth() / 2);
+			int endY = startY + toPixelsY(hitBox.getHeight() / 2);
 			if (x >= startX && x <= endX && y >= startY && y <= endY) {
 				return w;
 			}
