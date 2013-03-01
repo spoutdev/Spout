@@ -370,6 +370,7 @@ public class ItemStack extends GenericMaterialAccess implements Serializable, Cl
 		int auxDataSize = in.readInt();
 		if (auxDataSize > 0) {
 			byte[] auxData = new byte[auxDataSize];
+			in.read(auxData);
 			ManagedHashMap map = new ManagedHashMap();
 			map.deserialize(auxData);
 			this.auxData = map;
