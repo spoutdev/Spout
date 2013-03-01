@@ -2393,16 +2393,16 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	
 	@Override
 	public CuboidLightBuffer getLightBuffer(short id) {
+		TickStage.checkStage(TickStage.LIGHTING);
 		return setIfAbsentLightBuffer(id, null);
 	}
 		
-	public CuboidLightBuffer setIfAbsentLightBuffer(short id, CuboidLightBuffer buffer) {
+	private CuboidLightBuffer setIfAbsentLightBuffer(short id, CuboidLightBuffer buffer) {
 		if (id < 0) {
 			throw new IllegalArgumentException("Id must be positive");
 		} else if (buffer != null && buffer.getManagerId() != id) {
 			throw new IllegalArgumentException("Manager Id does not match buffer id");
 		}
-		TickStage.checkStage(TickStage.LIGHTING);
 		
 		CuboidLightBuffer[] array = lightBuffers.get();
 		CuboidLightBuffer buf;
