@@ -71,52 +71,51 @@ public final class Transform implements Serializable {
 		}
 	}
 
-	public void setPosition(Point position) {
+	public Transform setPosition(Point position) {
 		try {
 			lock.lock();
 			this.position = position;
 		} finally {
 			lock.unlock();
 		}
+		return this;
 	}
-	
-	public void translate(Vector3 offset) {
+
+	public Transform translate(float x, float y, float z) {
+		return translate(new Vector3(x, y, z));
+	}
+
+	public Transform translate(Vector3 offset) {
 		try {
 			lock.lock();
 			this.position = this.position.add(offset);
 		} finally {
 			lock.unlock();
 		}
-	}
-	
-	public void translate(float x, float y, float z) {
-		try {
-			lock.lock();
-			this.position = this.position.add(x, y, z);
-		} finally {
-			lock.unlock();
-		}
+		return this;
 	}
 
-	public void rotate(Quaternion offset) {
+	public Transform rotate(Quaternion offset) {
 		try {
 			lock.lock();
 			this.rotation = rotation.rotate(offset.getW(), offset.getX(), offset.getY(), offset.getZ());
 		} finally {
 			lock.unlock();
 		}
+		return this;
 	}
 
-	public void scale(Vector3 offset) {
+	public Transform scale(Vector3 offset) {
 		try {
 			lock.lock();
 			this.scale = this.scale.add(offset);
 		} finally {
 			lock.unlock();
 		}
+		return this;
 	}
 
-	public void translateAndSetRotation(Vector3 offset, Quaternion rotation) {
+	public Transform translateAndSetRotation(Vector3 offset, Quaternion rotation) {
 		try {
 			lock.lock();
 			this.position = this.position.add(offset);
@@ -124,6 +123,7 @@ public final class Transform implements Serializable {
 		} finally {
 			lock.unlock();
 		}
+		return this;
 	}
 
 	public Quaternion getRotation() {
@@ -135,13 +135,14 @@ public final class Transform implements Serializable {
 		}
 	}
 
-	public void setRotation(Quaternion rotation) {
+	public Transform setRotation(Quaternion rotation) {
 		try {
 			lock.lock();
 			this.rotation = rotation;
 		} finally {
 			lock.unlock();
 		}
+		return this;
 	}
 
 	public Vector3 getScale() {
@@ -153,13 +154,14 @@ public final class Transform implements Serializable {
 		}
 	}
 
-	public void setScale(Vector3 scale) {
+	public Transform setScale(Vector3 scale) {
 		try {
 			lock.lock();
 			this.scale = scale;
 		} finally {
 			lock.unlock();
 		}
+		return this;
 	}
 
 	/**
@@ -167,10 +169,10 @@ public final class Transform implements Serializable {
 	 * transform
 	 *
 	 * @param transform the other transform
-	 * @return true if successful
+	 * @return this transform
 	 */
 	@Threadsafe
-	public void set(Transform transform) {
+	public Transform set(Transform transform) {
 		if (transform == null) {
 			throw new NullPointerException("Transform can not be a null argument!");
 		}
@@ -181,6 +183,7 @@ public final class Transform implements Serializable {
 		} finally {
 			SpinLock.dualUnlock(lock, transform.lock);
 		}
+		return this;
 	}
 
 	/**
@@ -197,10 +200,11 @@ public final class Transform implements Serializable {
 	 * @param sx the x coordinate of the scale
 	 * @param sy the y coordinate of the scale
 	 * @param sz the z coordinate of the scale
+	 * @return this transform
 	 */
 	@Threadsafe
-	public void set(World world, float px, float py, float pz, float rx, float ry, float rz, float rw, float sx, float sy, float sz) {
-		this.set(new Point(world, px, py, pz), new Quaternion(rx, ry, rz, rw), new Vector3(sx, sy, sz));
+	public Transform set(World world, float px, float py, float pz, float rx, float ry, float rz, float rw, float sx, float sy, float sz) {
+		return this.set(new Point(world, px, py, pz), new Quaternion(rx, ry, rz, rw), new Vector3(sx, sy, sz));
 	}
 
 	/**
@@ -209,22 +213,25 @@ public final class Transform implements Serializable {
 	 * @param p
 	 * @param r
 	 * @param s
+	 * @return this transform
 	 */
 	@Threadsafe
-	public void set(Point p, Quaternion r, Vector3 s) {
+	public Transform set(Point p, Quaternion r, Vector3 s) {
 		try {
 			lock.lock();
 			setUnsafe(p, r, s);
 		} finally {
 			lock.unlock();
 		}
+		return this;
 	}
-	
+
 	private void setUnsafe(Point p, Quaternion r, Vector3 s) {
 		this.position = p;
 		this.rotation = r;
 		this.scale = s;
 	}
+
 	/**
 	 * Creates a Transform that is a copy of this transform
 	 *
