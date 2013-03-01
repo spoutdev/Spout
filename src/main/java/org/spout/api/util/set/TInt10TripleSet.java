@@ -64,6 +64,10 @@ public class TInt10TripleSet {
 		return set.forEach(procedure.asTIntProcedure(hash));
 	}
 	
+	public int size() {
+		return set.size();
+	}
+	
 	protected Int10TripleHashed getHash() {
 		return hash;
 	}

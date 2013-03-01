@@ -26,6 +26,7 @@
  */
 package org.spout.api.util.cuboid;
 
+import org.spout.api.Spout;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
@@ -55,16 +56,18 @@ public class LocalRegionChunkCuboidLightBufferWrapper<T extends CuboidLightBuffe
 	}
 	
 	protected T getLightBufferRaw(int x, int y, int z) {
-		int cx = (x - baseX) >> Chunk.BLOCKS.BITS;
-		int cy = (y - baseY) >> Chunk.BLOCKS.BITS;
-		int cz = (z - baseZ) >> Chunk.BLOCKS.BITS;
+		int cx = (x - baseX - Region.BLOCKS.SIZE) >> Chunk.BLOCKS.BITS;
+		int cy = (y - baseY - Region.BLOCKS.SIZE) >> Chunk.BLOCKS.BITS;
+		int cz = (z - baseZ - Region.BLOCKS.SIZE) >> Chunk.BLOCKS.BITS;
 		Chunk c = r.getLocalChunk(cx, cy, cz, loadOpt);
 		if (c == null) {
+			Spout.getLogger().info("No local chunk, " + cx + ", " + cy + ", " + cz);
 			return null;
 		}
 		@SuppressWarnings("unchecked")
 		T buf = (T) c.getLightBuffer(id);
 		if (buf == null) {
+			Spout.getLogger().info("Chunk has no buffer");
 			return null;
 		}
 		return buf;

@@ -49,9 +49,11 @@ import org.spout.api.math.Vector3;
  * TODO is this the best package to put this?
  */
 public abstract class CuboidBuffer {
+	protected final Vector3 size;
 	protected final int sizeX;
 	protected final int sizeY;
 	protected final int sizeZ;
+	protected final Vector3 base;
 	protected final int baseX;
 	protected final int baseY;
 	protected final int baseZ;
@@ -70,10 +72,14 @@ public abstract class CuboidBuffer {
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
 		this.sizeZ = sizeZ;
+		
+		this.size = new Vector3(sizeX, sizeY, sizeZ);
 
 		this.baseX = baseX;
 		this.baseY = baseY;
 		this.baseZ = baseZ;
+		
+		this.base = new Vector3(baseX, baseY, baseZ);
 
 		topX = baseX + sizeX;
 		topY = baseY + sizeY;
@@ -94,14 +100,14 @@ public abstract class CuboidBuffer {
 	 * Gets a Point representing the base of this CuboidBuffer
 	 */
 	public Vector3 getBase() {
-		return new Vector3(baseX, baseY, baseZ);
+		return base;
 	}
 
 	/**
 	 * Gets the size of the CuboidBuffer
 	 */
 	public Vector3 getSize() {
-		return new Vector3(sizeX, sizeY, sizeZ);
+		return size;
 	}
 	
 	/**
