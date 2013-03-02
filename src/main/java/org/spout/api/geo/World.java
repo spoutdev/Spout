@@ -35,6 +35,7 @@ import org.spout.api.Engine;
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentHolder;
 import org.spout.api.component.type.EntityComponent;
+import org.spout.api.data.DataSubject;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntityPrefab;
 import org.spout.api.entity.Player;
@@ -58,7 +59,7 @@ import org.spout.api.util.thread.annotation.Threadsafe;
 /**
  * Represents a World.
  */
-public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, ComponentHolder {
+public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, ComponentHolder, DataSubject {
 	/**
 	 * Gets the name of the world
 	 * @return the name of the world

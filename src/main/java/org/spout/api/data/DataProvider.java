@@ -52,6 +52,12 @@ public class DataProvider implements Listener {
 		set(subject, key, new DataValue(value));
 	}
 
+	public void remove(DataSubject subject, String key) {
+		if (!queue.containsKey(subject)) {
+			queue.get(subject).remove(key);
+		}
+	}
+
 	@EventHandler
 	public void sendData(RetrieveDataEvent event) {
 		// find a matching subject
