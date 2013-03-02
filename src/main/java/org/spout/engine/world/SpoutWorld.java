@@ -46,6 +46,7 @@ import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
 import org.spout.api.component.type.BlockComponent;
 import org.spout.api.component.type.EntityComponent;
+import org.spout.api.data.ValueHolder;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntityPrefab;
 import org.spout.api.entity.Player;
@@ -53,6 +54,7 @@ import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.event.Cause;
 import org.spout.api.event.block.CuboidChangeEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
+import org.spout.api.event.server.RetrieveDataEvent;
 import org.spout.api.event.world.WorldSaveEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
@@ -1437,5 +1439,25 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	@Override
 	public void setExecutionThread(Thread t) {
 		this.executionThread = t;
+	}
+
+	@Override
+	public ValueHolder getData(String node) {
+		return Spout.getEventManager().callEvent(new RetrieveDataEvent(this, this, node)).getResult();
+	}
+
+	@Override
+	public ValueHolder getData(World world, String node) {
+		return getData(node);
+	}
+
+	@Override
+	public boolean hasData(String node) {
+		return getData(node) != null;
+	}
+
+	@Override
+	public boolean hasData(World world, String node) {
+		return hasData(node);
 	}
 }
