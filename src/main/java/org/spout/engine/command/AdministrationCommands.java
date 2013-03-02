@@ -116,12 +116,9 @@ public class AdministrationCommands {
 		engine.getLogger().info("[---------------End Stack Dump---------------]");
 	}
 
-	@Command(aliases = "kick", usage = "<player> [message]", desc = "Kick a player", min = 1, max = -1)
+	@Command(platform = Platform.SERVER, aliases = "kick", usage = "<player> [message]", desc = "Kick a player", min = 1, max = -1)
 	@CommandPermissions("spout.command.kick")
 	public void kick(CommandContext args, CommandSource source) throws CommandException {
-		if (Spout.getPlatform() == Platform.CLIENT) {
-			throw new CommandException("Kick is only available in server mode.");
-		}
 		String playerName = args.getString(0);
 		ChatArguments message;
 		if (args.length() >= 2) {
@@ -145,13 +142,9 @@ public class AdministrationCommands {
 		}
 	}
 
-	@Command(aliases = "whitelist", desc = "Add, remove, list, or toggle players on the whitelist.", usage = "<add|remove|list|on|off> [player] [reason]", min = 1, max = 3)
+	@Command(platform = Platform.SERVER, aliases = "whitelist", desc = "Add, remove, list, or toggle players on the whitelist.", usage = "<add|remove|list|on|off> [player] [reason]", min = 1, max = 3)
 	@CommandPermissions("spout.command.whitelist")
 	public void whitelist(CommandContext args, CommandSource source) throws CommandException {
-		if (Spout.getPlatform() == Platform.CLIENT) {
-			throw new CommandException("Whitelisting is only available in server mode.");
-		}
-
 		String arg1 = args.getString(0);
 		AccessManager accessManager = ((Server) Spout.getEngine()).getAccessManager();
 		if (args.length() == 1) {
@@ -201,13 +194,9 @@ public class AdministrationCommands {
 		}
 	}
 
-	@Command(aliases = "banlist", usage = "[ips]", desc = "Shows banned players or ips.", min = 0, max = 1)
+	@Command(platform = Platform.SERVER, aliases = "banlist", usage = "[ips]", desc = "Shows banned players or ips.", min = 0, max = 1)
 	@CommandPermissions("spout.command.banlist")
 	public void banList(CommandContext args, CommandSource source) throws CommandException {
-		if (Spout.getPlatform() == Platform.CLIENT) {
-			throw new CommandException("Banning is only available in server mode.");
-		}
-
 		BanType type;
 		if (args.length() > 0 && args.getString(0).equalsIgnoreCase("ips")) {
 			type = BanType.IP;
@@ -228,13 +217,9 @@ public class AdministrationCommands {
 		source.sendMessage(message);
 	}
 
-	@Command(aliases = "ban", usage = "<player> [reason]", desc = "Ban a player", min = 1, max = -1)
+	@Command(platform = Platform.SERVER, aliases = "ban", usage = "<player> [reason]", desc = "Ban a player", min = 1, max = -1)
 	@CommandPermissions("spout.command.ban")
 	public void ban(CommandContext args, CommandSource source) throws CommandException {
-		if (Spout.getPlatform() == Platform.CLIENT) {
-			throw new CommandException("Banning is only available in server mode.");
-		}
-
 		Server server = (Server) Spout.getEngine();
 		String player = args.getString(0);
 		if (args.length() < 2) {
@@ -245,24 +230,17 @@ public class AdministrationCommands {
 		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Banned player '", player, "' from the server.");
 	}
 
-	@Command(aliases = "unban", usage = "<player>", desc = "Unban a player", min = 1, max = 1)
+	@Command(platform = Platform.SERVER, aliases = "unban", usage = "<player>", desc = "Unban a player", min = 1, max = 1)
 	@CommandPermissions("spout.command.unban")
 	public void unban(CommandContext args, CommandSource source) throws CommandException {
-		if (Spout.getPlatform() == Platform.CLIENT) {
-			throw new CommandException("Banning is only available in server mode.");
-		}
 		String player = args.getString(0);
 		((Server) Spout.getEngine()).getAccessManager().unban(BanType.PLAYER, player);
 		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Unbanned player '", player, "' from the server.");
 	}
 
-	@Command(aliases = "ban-ip", usage = "<address> [reason]", desc = "Ban an IP address", min = 1, max = -1)
+	@Command(platform = Platform.SERVER, aliases = "ban-ip", usage = "<address> [reason]", desc = "Ban an IP address", min = 1, max = -1)
 	@CommandPermissions("spout.command.banip")
 	public void banIp(CommandContext args, CommandSource source) throws CommandException {
-		if (Spout.getPlatform() == Platform.CLIENT) {
-			throw new CommandException("Banning is only available in server mode.");
-		}
-
 		if (source instanceof Player) {
 			Spout.log(((Player) source).getAddress().getHostAddress());
 			Spout.log("Args: " + args.length());
@@ -278,12 +256,9 @@ public class AdministrationCommands {
 		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Banned IP address '", address, "' from the server.");
 	}
 
-	@Command(aliases = "unban-ip", usage = "<address>", desc = "Unban an IP address", min = 1, max = 1)
+	@Command(platform = Platform.SERVER, aliases = "unban-ip", usage = "<address>", desc = "Unban an IP address", min = 1, max = 1)
 	@CommandPermissions("spout.command.unbanip")
 	public void unbanIp(CommandContext args, CommandSource source) throws CommandException {
-		if (Spout.getPlatform() == Platform.CLIENT) {
-			throw new CommandException("Banning is only available in server mode.");
-		}
 		String address = args.getString(0);
 		((Server) Spout.getEngine()).getAccessManager().unban(BanType.IP, address);
 		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Unbanned IP address '", address, "' from the server");
@@ -340,13 +315,9 @@ public class AdministrationCommands {
 		source.sendMessage(pluginListString);
 	}
 
-	@Command(aliases = {"players", "who", "list"}, desc = "List all online players")
+	@Command(platform = Platform.SERVER, aliases = {"players", "who", "list"}, desc = "List all online players")
 	@CommandPermissions("spout.command.players")
 	public void list(CommandContext args, CommandSource source) throws CommandException {
-		if (Spout.getPlatform() == Platform.CLIENT) {
-			throw new CommandException("You may only list online players in server mode.");
-		}
-
 		Player[] players = ((Server) Spout.getEngine()).getOnlinePlayers();
 		ChatArguments onlineMsg = new ChatArguments(Arrays.asList("Online (", (players.length <= 0 ? ChatStyle.RED : ChatStyle.BRIGHT_GREEN), players.length, ChatStyle.RESET, "): "));
 		for (int i = 0; i < players.length; i++) {

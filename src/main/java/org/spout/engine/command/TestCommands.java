@@ -75,12 +75,8 @@ public class TestCommands {
 		this.engine = engine;
 	}
 
-	@Command(aliases = "dw", usage = "<play|stop|pause>", desc = "Plays a tune at your position.", min = 1, max = 1)
+	@Command(platform = Platform.CLIENT, aliases = "dw", usage = "<play|stop|pause>", desc = "Plays a tune at your position.", min = 1, max = 1)
 	public void dw(CommandContext args, CommandSource source) throws CommandException {
-		if (Spout.getPlatform() != Platform.CLIENT) {
-			throw new CommandException("You must be in client mode to do that.");
-		}
-
 		Client client = (Client) Spout.getEngine();
 		Point pos = client.getActivePlayer().getScene().getPosition();
 		SoundManager sm = client.getSoundManager();
@@ -112,11 +108,8 @@ public class TestCommands {
 		}
 	}
 
-	@Command(aliases = "break", desc = "Debug command to break a block")
+	@Command(platform = Platform.CLIENT, aliases = "break", desc = "Debug command to break a block")
 	public void debugBreak(CommandContext args, CommandSource source) throws CommandException {
-		if (Spout.getPlatform() != Platform.CLIENT) {
-			throw new CommandException("You must be a client to perform this command.");
-		}
 		Player player = ((Client) Spout.getEngine()).getActivePlayer();
 		Block block = player.get(InteractComponent.class).getTargetBlock();
 
