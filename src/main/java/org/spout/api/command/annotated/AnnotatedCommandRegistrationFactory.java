@@ -33,6 +33,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import org.spout.api.Client;
+import org.spout.api.Engine;
+import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.input.Keyboard;
@@ -88,6 +90,21 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 		}
 
 		Command command = obj.getAnnotation(Command.class);
+		Engine engine = Spout.getEngine();
+		switch (command.platform()) {
+			case CLIENT:
+				if (!(engine instanceof Client)) {
+					return null;
+				}
+				break;
+			case SERVER:
+			case PROXY:
+				if (!(engine instanceof Server)) {
+					return null;
+				}
+				break;
+		}
+
 		if (command.aliases().length < 1) {
 			throw new IllegalArgumentException("Command must have at least one alias");
 		}
