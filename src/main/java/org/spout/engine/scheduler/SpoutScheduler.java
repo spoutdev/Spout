@@ -504,14 +504,11 @@ public final class SpoutScheduler implements Scheduler {
 		mainThread.start();
 	}
 
-	public SpoutRenderer startRenderThread(Vector2 resolution, boolean ccoverride, Canvas parent) {
-		if (!(Spout.getEngine() instanceof SpoutClient)) {
-			throw new IllegalStateException("Cannot start the rendering thread unless on the client");
-		}
+	public SpoutRenderer startRenderThread(SpoutClient client, Vector2 resolution, boolean ccoverride, Canvas parent) {
 		if (renderThread.isAlive()) {
 			throw new IllegalStateException("Attempt was made to start the render thread twice");
 		}
-		SpoutRenderer renderer = new SpoutRenderer(resolution, ccoverride);
+		SpoutRenderer renderer = new SpoutRenderer(client, resolution, ccoverride);
 		renderThread.setRenderer(renderer);
 		renderThread.setParent(parent);
 		renderThread.start();

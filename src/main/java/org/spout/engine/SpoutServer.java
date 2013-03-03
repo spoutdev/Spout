@@ -51,10 +51,8 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.spout.api.Engine;
 import org.spout.api.FileSystem;
 import org.spout.api.Server;
-import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.channel.ChatChannel;
 import org.spout.api.command.CommandSource;
@@ -150,7 +148,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 		//UPnP
 		if (SpoutConfiguration.UPNP.getBoolean()) {
-			for (PortBinding binding : ((Server) getEngine()).getBoundAddresses()) {
+			for (PortBinding binding : getBoundAddresses()) {
 				if (binding.getAddress() instanceof InetSocketAddress) {
 					mapUPnPPort(((InetSocketAddress) binding.getAddress()).getPort(), "Spout Server");
 				}
@@ -245,12 +243,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 	@Override
 	public int getMaxPlayers() {
 		return SpoutConfiguration.MAXIMUM_PLAYERS.getInt();
-	}
-
-	@Override
-	public void save(boolean worlds, boolean players) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -419,23 +411,23 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	private void setupBonjour() {
-		if (getEngine() instanceof Server && SpoutConfiguration.BONJOUR.getBoolean()) {
-			getEngine().getScheduler().scheduleAsyncTask(this, new Runnable() {
+		if (SpoutConfiguration.BONJOUR.getBoolean()) {
+			getScheduler().scheduleAsyncTask(this, new Runnable() {
 				public void run() {
 					synchronized (jmdnsSync) {
 						try {
-							getEngine().getLogger().info("Starting Bonjour Service Discovery");
+							getLogger().info("Starting Bonjour Service Discovery");
 							jmdns = JmDNS.create();
-							for (PortBinding binding : ((Server) getEngine()).getBoundAddresses()) {
+							for (PortBinding binding : getBoundAddresses()) {
 								if (binding.getAddress() instanceof InetSocketAddress) {
 									int port = ((InetSocketAddress) binding.getAddress()).getPort();
 									ServiceInfo info = ServiceInfo.create("pipework._tcp.local.", "Spout Server", port, "");
 									jmdns.registerService(info);
-									getEngine().getLogger().info("Started Bonjour Service Discovery on port: " + port);
+									getLogger().info("Started Bonjour Service Discovery on port: " + port);
 								}
 							}
 						} catch (IOException e) {
-							getEngine().getLogger().log(Level.WARNING, "Failed to start Bonjour Service Discovery Library", e);
+							getLogger().log(Level.WARNING, "Failed to start Bonjour Service Discovery Library", e);
 						}
 					}
 				}
@@ -444,20 +436,15 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	private void closeBonjour() {
-
 		if (jmdns != null) {
-			getEngine().getLogger().info(">>> Shutting down Bonjour service...");
+			getLogger().info(">>> Shutting down Bonjour service...");
 			final JmDNS jmdns = this.jmdns;
 			try {
 				jmdns.close();
 			} catch (IOException e) {
-				getEngine().getLogger().log(Level.WARNING, "Failed to stop Bonjour Service Discovery Library", e);
+				getLogger().log(Level.WARNING, "Failed to stop Bonjour Service Discovery Library", e);
 			}
-			getEngine().getLogger().info("<<< Bonjour service shutdown completed.");
+			getLogger().info("<<< Bonjour service shutdown completed.");
 		}
-	}
-	
-	public Engine getEngine() {
-		return Spout.getEngine();
 	}
 }

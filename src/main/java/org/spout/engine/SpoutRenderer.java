@@ -45,8 +45,6 @@ import org.lwjgl.opengl.OpenGLException;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.opengl.Util;
 
-import org.spout.api.Client;
-import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.entity.Entity;
@@ -85,6 +83,7 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 
 public class SpoutRenderer {
+	private final SpoutClient client;
 	private DebugScreen debugScreen;
 	private ScreenStack screenStack;
 	private boolean showDebugInfos = true;
@@ -96,7 +95,7 @@ public class SpoutRenderer {
 	private WorldRenderer worldRenderer;
 	private boolean wireframe = false;
 	private Matrix ident = MatrixMath.createIdentity();
-	
+
 	// Screen texture
 	private SpriteBatch screenBatcher;
 	private ClientRenderTexture t;
@@ -108,9 +107,9 @@ public class SpoutRenderer {
 	private ClientRenderTexture reflected;
 	private SpriteBatch reflectedDebugBatch; // Debug
 	private ClientRenderMaterial reflectedDebugMat; //Debug
-	
 
-	public SpoutRenderer(Vector2 resolution, boolean ccoverride) {
+	public SpoutRenderer(SpoutClient client, Vector2 resolution, boolean ccoverride) {
+		this.client = client;
 		this.resolution = resolution;
 		aspectRatio = resolution.getX() / resolution.getY();
 
@@ -127,8 +126,6 @@ public class SpoutRenderer {
 
 	public void initRenderer(Canvas parent) {
 		createWindow(parent);
-
-		SpoutClient client = (SpoutClient) Spout.getEngine();
 
 		client.getLogger().info("SpoutClient Information");
 		client.getLogger().info("Operating System: " + System.getProperty("os.name"));
@@ -150,7 +147,7 @@ public class SpoutRenderer {
 		SpoutRenderer.checkGLError();
 		client.getLogger().info(extensions);
 		//soundManager.init();
-		Spout.getFilesystem().postStartup();
+		client.getFilesystem().postStartup();
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -173,7 +170,7 @@ public class SpoutRenderer {
 			reflected.writeGPU();
 			// Test
 			reflectedDebugBatch = new SpriteBatch();
-			Shader s1 = (Shader) Spout.getFilesystem().getResource("shader://Spout/shaders/diffuse.ssf");
+			Shader s1 = (Shader) client.getFilesystem().getResource("shader://Spout/shaders/diffuse.ssf");
 			HashMap<String, Object> map1 = new HashMap<String, Object>();
 			map1.put("Diffuse", reflected);
 			reflectedDebugMat = new ClientRenderMaterial(s1, map1);
@@ -189,7 +186,7 @@ public class SpoutRenderer {
 		screenBatcher = new SpriteBatch();
 		t = new ClientRenderTexture(true, false, true);
 		t.writeGPU();
-		Shader s = (Shader) Spout.getFilesystem().getResource("shader://Spout/shaders/diffuse.ssf");
+		Shader s = (Shader) client.getFilesystem().getResource("shader://Spout/shaders/diffuse.ssf");
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("Diffuse", t);
 		mat = new ClientRenderMaterial(s, map);
@@ -207,7 +204,6 @@ public class SpoutRenderer {
 
 	long guiTime, worldTime, entityTime;
 	public void render(float dt) {
-		SpoutClient client = (SpoutClient) Spout.getEngine();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Update world
@@ -220,9 +216,9 @@ public class SpoutRenderer {
 		}
 
 		//Pull input each frame
-		((SpoutInputManager) ((Client) Spout.getEngine()).getInputManager()).pollInput(client.getActivePlayer());
+		((SpoutInputManager) client.getInputManager()).pollInput(client.getActivePlayer());
 		//Call InputExecutor registred by plugin
-		((SpoutInputManager) ((Client) Spout.getEngine()).getInputManager()).execute(dt);
+		((SpoutInputManager) client.getInputManager()).execute(dt);
 
 		Mouse.setGrabbed(screenStack.getVisibleScreens().getLast().grabsMouse());
 		
@@ -333,8 +329,6 @@ public class SpoutRenderer {
 	}
 
 	private void createWindow(Canvas parent) {
-		SpoutClient client = (SpoutClient) Spout.getEngine();
-
 		try {
 			Display.setDisplayMode(new DisplayMode((int) resolution.getX(), (int) resolution.getY()));
 			Display.setParent(parent);
@@ -370,9 +364,6 @@ public class SpoutRenderer {
 	}
 
 	private void createMacWindow() throws LWJGLException {
-
-		SpoutClient client = (SpoutClient) Spout.getEngine();
-
 		if (client.getRenderMode() == RenderMode.GL30) {
 			if (MacOSXUtils.getOSXVersion() >= 7) {
 				ContextAttribs ca = new ContextAttribs(3, 2).withProfileCore(true);

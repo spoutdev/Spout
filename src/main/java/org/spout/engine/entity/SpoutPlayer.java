@@ -34,8 +34,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.common.base.Preconditions;
+
+import org.spout.api.Engine;
 import org.spout.api.Server;
-import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.channel.ChatChannel;
 import org.spout.api.chat.style.ChatStyle;
@@ -86,26 +87,26 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	private List<Entity> hiddenEntities = new ConcurrentList<Entity>();
 	private final AtomicReference<ChatChannel> activeChannel = new AtomicReference<ChatChannel>();
 
-	public SpoutPlayer(String name) {
-		this(name, null, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
+	public SpoutPlayer(Engine engine, String name) {
+		this(engine, name, null, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 	}
 
-	public SpoutPlayer(String name, Transform transform, int viewDistance) {
-		this(name, transform, viewDistance, null, true, (byte[])null, (Class<? extends Component>[]) null);
+	public SpoutPlayer(Engine engine, String name, Transform transform, int viewDistance) {
+		this(engine, name, transform, viewDistance, null, true, (byte[])null, (Class<? extends Component>[]) null);
 	}
 
-	protected SpoutPlayer(String name, Transform transform, int viewDistance, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
-		this(name, transform, viewDistance, uid, load, (byte[])null, components);
+	protected SpoutPlayer(Engine engine, String name, Transform transform, int viewDistance, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
+		this(engine, name, transform, viewDistance, uid, load, (byte[])null, components);
 		this.getData().putAll(dataMap);
 	}
 
-	public SpoutPlayer(String name, Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
-		super(transform, viewDistance, uid, load, dataMap, components);
+	public SpoutPlayer(Engine engine, String name, Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
+		super(engine, transform, viewDistance, uid, load, dataMap, components);
 		this.name = name;
 		displayName.set(name);
 		hashcode = name.hashCode();
 		this.setObserver(true);
-		activeChannel.set(Spout.getEngine().getChatChannelFactory().create(this));
+		activeChannel.set(engine.getChatChannelFactory().create(this));
 	}
 
 	@Override
@@ -171,7 +172,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 			return false;
 		}
 		getScene().setTransform(newTransform);
-		if (Spout.getPlatform() == Platform.SERVER) {
+		if (getEngine().getPlatform() == Platform.SERVER) {
 			setupInitialChunk(newTransform);
 		}
 		sessionLive.set(session);
@@ -186,7 +187,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void sendCommand(String commandName, ChatArguments arguments) {
-		Command command = Spout.getEngine().getRootCommand().getChild(commandName);
+		Command command = getEngine().getRootCommand().getChild(commandName);
 		Message cmdMessage = getSession().getProtocol().getCommandMessage(command, arguments);
 		if (cmdMessage == null) {
 			return;
@@ -197,14 +198,14 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void processCommand(String command, ChatArguments arguments) {
-		PreCommandEvent event = Spout.getEventManager().callEvent(new PreCommandEvent(this, command, arguments));
+		PreCommandEvent event = getEngine().getEventManager().callEvent(new PreCommandEvent(this, command, arguments));
 		if (event.isCancelled()) {
 			return;
 		}
 		command = event.getCommand();
 		arguments = event.getArguments();
 
-		final RootCommand rootCmd = Spout.getEngine().getRootCommand();
+		final RootCommand rootCmd = getEngine().getRootCommand();
 		Command cmd = rootCmd.getChild(command);
 		if (cmd != null) {
 			cmd.process(this, command, arguments, false);
@@ -248,7 +249,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public boolean hasPermission(World world, String node) {
-		PermissionNodeEvent event = Spout.getEventManager().callEvent(new PermissionNodeEvent(world, this, node));
+		PermissionNodeEvent event = getEngine().getEventManager().callEvent(new PermissionNodeEvent(world, this, node));
 		return event.getResult().getResult();
 	}
 
@@ -274,7 +275,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public String[] getGroups(World world) {
-		PermissionGroupsEvent event = Spout.getEventManager().callEvent(new PermissionGroupsEvent(world, this));
+		PermissionGroupsEvent event = getEngine().getEventManager().callEvent(new PermissionGroupsEvent(world, this));
 		return event.getGroups();
 	}
 
@@ -285,7 +286,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public ValueHolder getData(World world, String node) {
-		RetrieveDataEvent event = Spout.getEngine().getEventManager().callEvent(new RetrieveDataEvent(world, this, node));
+		RetrieveDataEvent event = getEngine().getEventManager().callEvent(new RetrieveDataEvent(world, this, node));
 		return event.getResult();
 	}
 
@@ -330,10 +331,10 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void ban(boolean kick, Object... reason) {
-		if (Spout.getPlatform() != Platform.SERVER) {
+		if (getEngine().getPlatform() != Platform.SERVER) {
 			throw new IllegalStateException("Banning is only available in server mode.");
 		}
-		((Server) Spout.getEngine()).getAccessManager().ban(BanType.PLAYER, name, kick, reason);
+		((Server) getEngine()).getAccessManager().ban(BanType.PLAYER, name, kick, reason);
 	}
 
 	@Override
@@ -392,7 +393,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void finalizeRun() {
-		if (Spout.getEngine().getPlatform() != Platform.CLIENT && !this.isOnlineLive()) {
+		if (getEngine().getPlatform() != Platform.CLIENT && !this.isOnlineLive()) {
 			remove();
 		}
 		super.finalizeRun();
@@ -401,7 +402,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		}
 		if (isRemoved()) {
 			getNetworkSynchronizer().onRemoved();
-			((SpoutEngine) Spout.getEngine()).removePlayer(this);
+			((SpoutEngine) getEngine()).removePlayer(this);
 			sessionLive.set(null);
 		}
 	}
@@ -418,10 +419,10 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	public void setVisible(Entity entity, boolean visible) {
 		if (visible) {
 			hiddenEntities.remove(entity);
-			Spout.getEventManager().callEvent(new EntityShownEvent(entity, this));
+			getEngine().getEventManager().callEvent(new EntityShownEvent(entity, this));
 		} else {
 			hiddenEntities.add(entity);
-			Spout.getEventManager().callEvent(new EntityHiddenEvent(entity, this));
+			getEngine().getEventManager().callEvent(new EntityHiddenEvent(entity, this));
 		}
 	}
 

@@ -46,7 +46,6 @@ import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 
 import org.spout.api.Client;
 import org.spout.api.FileSystem;
-import org.spout.api.Spout;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
@@ -173,16 +172,17 @@ public class SpoutClient extends SpoutEngine implements Client {
 			// TODO : Wait until the world is fully loaded
 		}
 
-		((SpoutScheduler) Spout.getScheduler()).coreSafeRun("Client setup task", new Runnable() {
+		final SpoutClient parent = this;
+		((SpoutScheduler) getScheduler()).coreSafeRun("Client setup task", new Runnable() {
 			public void run() {
-				activePlayer = new SpoutClientPlayer("Spouty", getDefaultWorld().getSpawnPoint(), SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
+				activePlayer = new SpoutClientPlayer(parent, "Spouty", getDefaultWorld().getSpawnPoint(), SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 				activeCamera = activePlayer.add(CameraComponent.class);
 				activePlayer.add(InteractComponent.class);
 				getActiveWorld().spawnEntity(activePlayer);
-				Font font = (ClientFont) Spout.getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
+				Font font = (ClientFont) getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
 
 				// Test
-				ClientEntityPrefab spoutyType = (ClientEntityPrefab) Spout.getFilesystem().getResource("entity://Spout/entities/Spouty/spouty.sep");
+				ClientEntityPrefab spoutyType = (ClientEntityPrefab) parent.getFilesystem().getResource("entity://Spout/entities/Spouty/spouty.sep");
 
 				Entity e = spoutyType.createEntity(getDefaultWorld().getSpawnPoint().getPosition().add(0, 0, 0));
 				e.setSavable(false); // To prevent entity duplication
@@ -211,7 +211,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 				getActiveWorld().spawnEntity(e);
 
 				//The render need the active player to find the world to draw, so we start it after initialize player
-				renderer = getScheduler().startRenderThread(new Vector2(1204, 796), ccoverride, null);
+				renderer = getScheduler().startRenderThread(parent, new Vector2(1204, 796), ccoverride, null);
 			}
 		});
 
@@ -219,7 +219,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		//TODO Maybe a better way of alerting plugins the client is done?
 		if (EngineStartEvent.getHandlerList().getRegisteredListeners().length != 0) {
-			Spout.getEventManager().callEvent(new EngineStartEvent());
+			getEventManager().callEvent(new EngineStartEvent());
 		}
 	}
 
@@ -416,7 +416,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return getActivePlayer().getWorld();
 	}
 
-	private static void unpackLwjgl(String path) {
+	private void unpackLwjgl(String path) {
 		String[] files;
 		String osPath;
 
@@ -430,7 +430,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			files = new String[]{"liblwjgl.so", "liblwjgl64.so", "libopenal.so", "libopenal64.so", "libjinput-linux.so", "libjinput-linux64.so"};
 			osPath = "linux/";
 		} else {
-			Spout.getLogger().severe("Error loading natives of operating system type: " + SystemUtils.OS_NAME);
+			getLogger().severe("Error loading natives of operating system type: " + SystemUtils.OS_NAME);
 			return;
 		}
 

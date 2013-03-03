@@ -44,6 +44,7 @@ import org.spout.api.io.nbt.TransformTag;
 import org.spout.api.io.nbt.UUIDTag;
 import org.spout.api.plugin.CommonClassLoader;
 import org.spout.api.util.sanitation.SafeCast;
+import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutEntitySnapshot;
 import org.spout.engine.entity.SpoutPlayerSnapshot;
@@ -98,7 +99,7 @@ public class EntityFiles {
 		try {
 			SpoutEntitySnapshot snapshot = loadEntityImpl(w, tag, null);
 			if (snapshot != null) {
-				return snapshot.toEntity();
+				return snapshot.toEntity((SpoutEngine) Spout.getEngine());
 			}
 		} catch (Exception e) {
 			Spout.getLogger().log(Level.SEVERE, "Unable to load entity", e);
@@ -109,7 +110,7 @@ public class EntityFiles {
 	protected static SpoutEntity loadPlayerEntity(CompoundTag tag, String name) {
 		SpoutEntitySnapshot snapshot = loadEntityImpl(null, tag, name);
 		if (snapshot != null) {
-			return snapshot.toEntity();
+			return snapshot.toEntity((SpoutEngine) Spout.getEngine());
 		}
 		return null;
 	}

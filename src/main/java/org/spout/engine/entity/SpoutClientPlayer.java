@@ -27,7 +27,7 @@
 package org.spout.engine.entity;
 
 import org.spout.api.Client;
-import org.spout.api.Spout;
+import org.spout.api.Engine;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.Command;
@@ -39,12 +39,9 @@ import org.spout.engine.protocol.SpoutSession;
  * A subclass of SpoutPlayer with modifications for the client
  */
 public class SpoutClientPlayer extends SpoutPlayer {
-	public SpoutClientPlayer(String name) {
-		super(name);
-	}
 
-	public SpoutClientPlayer(String name, Transform transform, int viewDistance) {
-		super(name, transform, viewDistance);
+	public SpoutClientPlayer(Engine engine, String name, Transform transform, int viewDistance) {
+		super(engine, name, transform, viewDistance);
 	}
 
 	@Override
@@ -53,11 +50,11 @@ public class SpoutClientPlayer extends SpoutPlayer {
 		try {
 			session = getSession();
 		} catch (IllegalArgumentException iae) {
-			Spout.getEngine().getConsoles().addMessage(message);
+			getEngine().getConsoles().addMessage(message);
 			return true;
 		}
 		if (session==null) {
-			((Client)Spout.getEngine()).getScreenStack().getConsole().addMessage(message);
+			((Client)getEngine()).getScreenStack().getConsole().addMessage(message);
 		} else {
 			session.getEngine().getConsoles().addMessage(message);
 		}
@@ -66,7 +63,7 @@ public class SpoutClientPlayer extends SpoutPlayer {
 
 	@Override
 	public void sendCommand(String commandName, ChatArguments arguments) {
-		Command command = Spout.getEngine().getRootCommand().getChild(commandName);
+		Command command = getEngine().getRootCommand().getChild(commandName);
 		if (command == null) {
 			sendMessage(ChatStyle.RED, "Unknown command: ", commandName);
 			return;

@@ -35,7 +35,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
-import org.spout.api.Spout;
+import org.spout.api.Engine;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
 import org.spout.api.component.impl.ModelHolderComponent;
@@ -83,6 +83,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	private final SnapshotableInt viewDistance = new SnapshotableInt(snapshotManager, 10);
 	private volatile boolean remove = false;
 	//Other
+	private final Engine engine;
 	private final Set<SpoutChunk> observingChunks = new HashSet<SpoutChunk>();
 	private final UUID uid;
 	protected boolean justSpawned = true;
@@ -91,21 +92,22 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	private final SpoutSceneComponent scene;
 	private Class<? extends Component>[] initialComponents = null;
 
-	public SpoutEntity(Transform transform) {
-		this(transform, -1, null, true, (byte[])null, (Class<? extends Component>[]) null);
+	public SpoutEntity(Engine engine, Transform transform) {
+		this(engine, transform, -1, null, true, (byte[])null, (Class<? extends Component>[]) null);
 	}
 
-	public SpoutEntity(Point point) {
-		this(new Transform(point, Quaternion.IDENTITY, Vector3.ONE));
+	public SpoutEntity(Engine engine, Point point) {
+		this(engine, new Transform(point, Quaternion.IDENTITY, Vector3.ONE));
 	}
 
-	protected SpoutEntity(Transform transform, int viewDistance, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
-		this(transform, viewDistance, uid, load, (byte[])null, components);
+	protected SpoutEntity(Engine engine, Transform transform, int viewDistance, UUID uid, boolean load, SerializableMap dataMap, Class<? extends Component>... components) {
+		this(engine, transform, viewDistance, uid, load, (byte[])null, components);
 		this.getData().putAll(dataMap);
 	}
 
-	public SpoutEntity(Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
+	public SpoutEntity(Engine engine, Transform transform, int viewDistance, UUID uid, boolean load, byte[] dataMap, Class<? extends Component>... components) {
 		id.set(NOTSPAWNEDID);
+		this.engine = engine;
 		
 		observer = new SnapshotableReference<Iterator<IntVector3>>(snapshotManager, INITIAL_TICK);
 		observer.set(NOT_OBSERVING);
@@ -142,7 +144,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 			try {
 				this.getData().deserialize(dataMap);
 			} catch (IOException e) {
-				Spout.getLogger().log(Level.SEVERE, "Unable to deserialize entity data", e);
+				engine.getLogger().log(Level.SEVERE, "Unable to deserialize entity data", e);
 			}
 		}
 
@@ -153,6 +155,11 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		if (transform != null && load) {
 			setupInitialChunk(transform);
 		}
+	}
+
+	@Override
+	public Engine getEngine() {
+		return engine;
 	}
 
 	@Override

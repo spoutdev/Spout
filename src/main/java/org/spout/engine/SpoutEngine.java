@@ -54,7 +54,6 @@ import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.ChannelGroupFuture;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.spout.api.Engine;
-import org.spout.api.Spout;
 import org.spout.api.chat.channel.ChatChannelFactory;
 import org.spout.api.chat.completion.CompletionManager;
 import org.spout.api.chat.completion.CompletionManagerImpl;
@@ -205,7 +204,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 	public void start(boolean checkWorlds) {
 		log("Spout is starting in %0-only mode.", getPlatform().name().toLowerCase());
-		log("Current version is %0 (Implementing SpoutAPI %1).", Spout.getEngine().getVersion(), Spout.getAPIVersion());
+		log("Current version is %0 (Implementing SpoutAPI %1).", getVersion(), getAPIVersion());
 		log("This software is currently in alpha status so components may");
 		log("have bugs or not work at all. Please report any issues to");
 		log("http://issues.spout.org");
@@ -486,7 +485,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 				try {
 					f.await();
 				} catch (InterruptedException ie) {
-					Spout.getLogger().info("Thread interrupted when waiting for network shutdown");
+					getLogger().info("Thread interrupted when waiting for network shutdown");
 				}
 				WorldSavingThread.finish();
 				WorldGeneratorThread.finish();
@@ -745,8 +744,8 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		SpoutPlayer player = PlayerFiles.loadPlayerData(playerName);
 		boolean created = false;
 		if (player == null) {
-			Spout.getLogger().info("First login for " + playerName + ", creating new player data");
-			player = new SpoutPlayer(playerName, null, viewDistance);
+			getLogger().info("First login for " + playerName + ", creating new player data");
+			player = new SpoutPlayer(this, playerName, null, viewDistance);
 			created = true;
 		}
 		SpoutPlayer oldPlayer = players.put(playerName, player);

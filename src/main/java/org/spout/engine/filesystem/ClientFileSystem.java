@@ -26,6 +26,8 @@
  */
 package org.spout.engine.filesystem;
 
+import org.spout.api.Client;
+import org.spout.api.Engine;
 import org.spout.engine.resources.loader.AnimationLoader;
 import org.spout.engine.resources.loader.BlockMeshLoader;
 import org.spout.engine.resources.loader.SkeletonLoader;
@@ -40,8 +42,8 @@ import org.spout.engine.resources.loader.SoundLoader;
 
 public class ClientFileSystem extends SharedFileSystem {
 	@Override
-	public void init() {
-		super.init();
+	public void init(Engine engine) {
+		super.init(engine);
 
 		registerLoader(new ShaderLoader());
 
@@ -56,6 +58,6 @@ public class ClientFileSystem extends SharedFileSystem {
 
 		registerLoader(new SoundLoader());
 		registerLoader(new FontLoader());
-		registerLoader(new EntityPrefabLoader());
+		registerLoader(new EntityPrefabLoader((Client) engine));
 	}
 }

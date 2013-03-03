@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.spout.api.Client;
 import org.spout.api.component.Component;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.plugin.CommonClassLoader;
@@ -44,7 +45,11 @@ public class EntityPrefabLoader extends BasicResourceLoader<ClientEntityPrefab> 
 
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
 	private static final TypeChecker<List<? extends String>> checkerListString =  TypeChecker.tList(String.class);
-	
+	private final Client client;
+	public EntityPrefabLoader(Client client) {
+		this.client = client;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public ClientEntityPrefab getResource(InputStream stream) {
@@ -84,7 +89,7 @@ public class EntityPrefabLoader extends BasicResourceLoader<ClientEntityPrefab> 
 		final Map<String, Object> datas = new HashMap<String, Object>();
 		datas.putAll(datasOld);
 		
-		return new ClientEntityPrefab((String)name, components, datas);
+		return new ClientEntityPrefab(client, (String)name, components, datas);
 	}
 	
 	@Override

@@ -35,8 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.spout.api.Engine;
 import org.spout.api.FileSystem;
-import org.spout.api.Spout;
 import org.spout.api.resource.Resource;
 import org.spout.api.resource.ResourceLoader;
 import org.spout.api.resource.ResourceNotFoundException;
@@ -57,6 +57,7 @@ public class SharedFileSystem implements FileSystem {
 	private ResourcePathResolver[] searchPaths;
 	private final Map<String, Map<String, ResourceLoader<?>>> loaders = new HashMap<String, Map<String, ResourceLoader<?>>>();
 	private final HashMap<URI, Resource> loadedResources = new HashMap<URI, Resource>();
+	private Engine engine;
 
 	public synchronized static File getParentDirectory() {
 		return parentDir;
@@ -94,8 +95,13 @@ public class SharedFileSystem implements FileSystem {
 		return new File(parentDir, "worlds");
 	}
 
+	public Engine getEngine() {
+		return engine;
+	}
+
 	@Override
-	public void init() {
+	public void init(Engine engine) {
+		this.engine = engine;
 		if (!getPluginDirectory().exists()) {
 			getPluginDirectory().mkdirs();
 		}
@@ -149,7 +155,7 @@ public class SharedFileSystem implements FileSystem {
 		}
 
 		// No path found? Open our jar and grab the fallback 'file' scheme
-		Spout.getEngine().getLogger().warning("Tried to load " + path + " it isn't found!  Using system fallback");
+		getEngine().getLogger().warning("Tried to load " + path + " it isn't found!  Using system fallback");
 		String scheme = path.getScheme();
 		if (!scheme.equals("file")) {
 			throw new ResourceNotFoundException(path.toString());
@@ -211,8 +217,8 @@ public class SharedFileSystem implements FileSystem {
 	@Override
 	public Resource getResource(URI path) {
 		if (!loadedResources.containsKey(path)) {
-			if (Spout.debugMode() && ((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
-				Spout.getLogger().warning("Late Precache of resource: " + path.toString());
+			if (getEngine().debugMode() && ((SpoutEngine)getEngine()).isSetupComplete()) {
+				getEngine().getLogger().warning("Late Precache of resource: " + path.toString());
 			}
 			try {
 				loadResource(path);
@@ -226,7 +232,7 @@ public class SharedFileSystem implements FileSystem {
 
 				String name = loader.getFallbackResourceName();
 				if (name == null) {
-					Spout.getLogger().info("Resource not found for path '" + path + "' and does not have fallback.");
+					getEngine().getLogger().info("Resource not found for path '" + path + "' and does not have fallback.");
 					return null;
 				}
 

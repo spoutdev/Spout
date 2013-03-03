@@ -41,6 +41,7 @@ import org.spout.api.Spout;
 import org.spout.api.entity.PlayerSnapshot;
 import org.spout.api.event.storage.PlayerLoadEvent;
 import org.spout.api.event.storage.PlayerSaveEvent;
+import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.entity.SpoutPlayerSnapshot;
@@ -126,7 +127,7 @@ public class PlayerFiles {
 		PlayerLoadEvent event = new PlayerLoadEvent(name);
 		Spout.getEngine().getEventManager().callEvent(event);
 		if (event.getSnapshot() != null) {
-			return new SpoutPlayerSnapshot(event.getSnapshot()).toEntity();
+			return new SpoutPlayerSnapshot(event.getSnapshot()).toEntity((SpoutEngine) Spout.getEngine());
 		}
 		
 		File playerDir = new File(Spout.getEngine().getDataFolder().toString(), "players");

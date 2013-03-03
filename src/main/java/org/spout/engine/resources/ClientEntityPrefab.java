@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.spout.api.Client;
 import org.spout.api.component.Component;
 import org.spout.api.component.impl.ModelHolderComponent;
 import org.spout.api.entity.Entity;
@@ -45,27 +46,33 @@ public class ClientEntityPrefab extends Resource implements EntityPrefab {
 	private String name;
 	private List<Class<? extends Component>> components = new ArrayList<Class<? extends Component>>();
 	private Map<String, Object> data = new HashMap<String, Object>();
+	private final Client client;
 
-	public ClientEntityPrefab(String name, List<Class<? extends Component>> components, Map<String, Object> data) {
+	public ClientEntityPrefab(Client client, String name, List<Class<? extends Component>> components, Map<String, Object> data) {
+		this.client = client;
 		this.name = name;
 		this.components.addAll(components);
 		this.data.putAll(data);
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public List<Class<? extends Component>> getComponents() {
 		return components;
 	}
 
+	@Override
 	public Map<String, Object> getData() {
 		return data;
 	}
 
+	@Override
 	public Entity createEntity(Point point) {
-		SpoutEntity entity = new SpoutEntity(point);
+		SpoutEntity entity = new SpoutEntity(client, point);
 		for (Class<? extends Component> c : components) {
 			entity.add(c);
 		}
@@ -77,8 +84,9 @@ public class ClientEntityPrefab extends Resource implements EntityPrefab {
 		return entity;
 	}
 
+	@Override
 	public Entity createEntity(Transform transform) {
-		SpoutEntity entity = new SpoutEntity(transform);
+		SpoutEntity entity = new SpoutEntity(client, transform);
 		for (Class<? extends Component> c : components) {
 			entity.add(c);
 		}

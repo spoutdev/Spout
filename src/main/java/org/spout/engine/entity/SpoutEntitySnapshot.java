@@ -40,6 +40,7 @@ import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.engine.SpoutEngine;
 
 public class SpoutEntitySnapshot implements EntitySnapshot{
 	private final WeakReference<Entity> entity;
@@ -148,8 +149,8 @@ public class SpoutEntitySnapshot implements EntitySnapshot{
 	}
 
 	@SuppressWarnings("unchecked")
-	public SpoutEntity toEntity() {
-		return new SpoutEntity(location, viewDistance, uniqueId, false, dataMap, components.toArray(new Class[0]));
+	public SpoutEntity toEntity(SpoutEngine engine) {
+		return new SpoutEntity(engine, location, viewDistance, uniqueId, false, dataMap, components.toArray(new Class[0]));
 	}
 
 	@Override

@@ -41,7 +41,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
 import org.spout.api.component.type.BlockComponent;
@@ -205,7 +204,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 		this.engine = engine;
 		if (!StringSanitizer.isAlphaNumericUnderscore(name)) {
 			name = Long.toHexString(System.currentTimeMillis());
-			Spout.getEngine().getLogger().severe("World name " + name + " is not valid, using " + name + " instead");
+			getEngine().getLogger().severe("World name " + name + " is not valid, using " + name + " instead");
 		}
 		this.name = name;
 		this.uid = uid;
@@ -237,7 +236,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 		spawnLocation.set(new Transform(new Point(this, 1, 100, 1), Quaternion.IDENTITY, Vector3.ONE));
 		selfReference = new WeakReference<World>(this);
 
-		((SpoutScheduler) Spout.getEngine().getScheduler()).addAsyncManager(this);
+		((SpoutScheduler) getEngine().getScheduler()).addAsyncManager(this);
 	}
 
 	@Override
@@ -281,7 +280,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 		if (region != null) {
 			return region.getChunk(x, y, z, loadopt);
 		} else if (loadopt.loadIfNeeded() && loadopt.generateIfNeeded()) {
-			Spout.getLogger().info("Warning unable to load region: " + x + ", " + y + ", " + z + ":" + loadopt);
+			getEngine().getLogger().info("Warning unable to load region: " + x + ", " + y + ", " + z + ":" + loadopt);
 		}
 		return null;
 	}
@@ -540,7 +539,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 
 	@Override
 	public Entity createEntity(Point point, Class<? extends Component>... classes) {
-		SpoutEntity entity = new SpoutEntity(point);
+		SpoutEntity entity = new SpoutEntity(getEngine(), point);
 		for (Class<? extends Component> clazz : classes) {
 			entity.add(clazz);
 		}
@@ -549,7 +548,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 
 	@Override
 	public Entity createEntity(Point point, EntityPrefab prefab) {
-		SpoutEntity entity = new SpoutEntity(point);
+		SpoutEntity entity = new SpoutEntity(getEngine(), point);
 		for (Class<? extends Component> clazz : prefab.getComponents()) {
 			entity.add(clazz);
 		}
@@ -578,13 +577,13 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 		}
 		if (region.getEntityManager().isSpawnable((SpoutEntity) e)) {
 			if (entityID > -1) {
-				if (Spout.getPlatform() == Platform.CLIENT) {
+				if (getEngine().getPlatform() == Platform.CLIENT) {
 					((SpoutEntity) e).setId(entityID);
 				} else {
 					throw new IllegalArgumentException("Can not set entity id's manually");
 				}
 			}
-			EntitySpawnEvent event = Spout.getEventManager().callEvent(new EntitySpawnEvent(e, e.getScene().getPosition()));
+			EntitySpawnEvent event = getEngine().getEventManager().callEvent(new EntitySpawnEvent(e, e.getScene().getPosition()));
 			if (event.isCancelled()) {
 				return;
 			}
@@ -1077,7 +1076,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 			r.unload(save);
 			progress++;
 			if (save && progress % 4 == 0) {
-				Spout.getLogger().info("Saving world [" + getName() + "], " + (int) (progress * 100F / total) + "% Complete");
+				getEngine().getLogger().info("Saving world [" + getName() + "], " + (int) (progress * 100F / total) + "% Complete");
 			}
 		}
 	}
@@ -1085,7 +1084,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	@Override
 	public void save() {
 		WorldFiles.saveWorld(this);
-		Spout.getEventManager().callDelayedEvent(new WorldSaveEvent(this));
+		getEngine().getEventManager().callDelayedEvent(new WorldSaveEvent(this));
 	}
 
 	@Override
@@ -1230,7 +1229,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 			throw new NullPointerException("Cause can not be null");
 		}
 		CuboidChangeEvent event = new CuboidChangeEvent(buffer, cause);
-		Spout.getEngine().getEventManager().callEvent(event);
+		getEngine().getEventManager().callEvent(event);
 		if (event.isCancelled()) {
 			return;
 		}
@@ -1443,7 +1442,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 
 	@Override
 	public ValueHolder getData(String node) {
-		return Spout.getEventManager().callEvent(new RetrieveDataEvent(this, this, node)).getResult();
+		return getEngine().getEventManager().callEvent(new RetrieveDataEvent(this, this, node)).getResult();
 	}
 
 	@Override
