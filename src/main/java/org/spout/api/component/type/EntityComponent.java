@@ -28,6 +28,7 @@ package org.spout.api.component.type;
 
 import java.util.Random;
 
+import org.spout.api.Engine;
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentOwner;
 import org.spout.api.entity.Entity;
@@ -60,6 +61,13 @@ public abstract class EntityComponent extends Component {
 	 */
 	public final Random getRandom() {
 		return GenericMath.getRandom();
+	}
+
+	public final Engine getEngine() {
+		if (getOwner() == null) {
+			throw new IllegalStateException("Can not access the engine w/o an owner");
+		}
+		return getOwner().getWorld().getEngine();
 	}
 
 	/**

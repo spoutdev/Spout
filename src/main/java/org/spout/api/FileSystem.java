@@ -47,7 +47,7 @@ public interface FileSystem {
 	 * 
 	 * This includes making the proper directory structure for the server or client.
 	 */
-	public abstract void init();
+	public abstract void init(Engine engine);
 
 	/**
 	 * Called after startup

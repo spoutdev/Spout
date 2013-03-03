@@ -29,6 +29,7 @@ package org.spout.api.entity;
 import java.util.Iterator;
 import java.util.UUID;
 
+import org.spout.api.Engine;
 import org.spout.api.component.ComponentHolder;
 import org.spout.api.component.impl.NetworkComponent;
 import org.spout.api.component.impl.SceneComponent;
@@ -61,6 +62,13 @@ public interface Entity extends Tickable, WorldSource, ComponentHolder {
 	 * @return persistent uuid
 	 */
 	public UUID getUID();
+
+	/**
+	 * Gets the engine that spawned and is managing this entity
+	 * 
+	 * @return engine
+	 */
+	public Engine getEngine();
 
 	/**
 	 * Removes the entity. This takes effect at the next snapshot.

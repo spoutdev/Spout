@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.spout.api.component.Component;
-import org.spout.api.component.type.EntityComponent;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.util.Named;
