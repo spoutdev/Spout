@@ -56,6 +56,10 @@ public class TInt10TripleSet {
 		return set.remove(key);
 	}
 	
+	public void clear() {
+		set.clear();
+	}
+	
 	public TIntIterator iterator() {
 		return set.iterator();
 	}
