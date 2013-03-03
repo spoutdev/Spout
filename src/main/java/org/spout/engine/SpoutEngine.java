@@ -196,6 +196,11 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		}
 	}
 
+	@Override
+	public String getAPIVersion() {
+		return SpoutEngine.class.getPackage().getImplementationVersion();
+	}
+
 	public abstract void start();
 
 	public void start(boolean checkWorlds) {
