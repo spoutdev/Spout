@@ -67,7 +67,7 @@ public abstract class EntityComponent extends Component {
 		if (getOwner() == null) {
 			throw new IllegalStateException("Can not access the engine w/o an owner");
 		}
-		return getOwner().getWorld().getEngine();
+		return getOwner().getEngine();
 	}
 
 	/**
