@@ -81,6 +81,7 @@ import org.spout.api.render.Font;
 import org.spout.api.render.RenderMode;
 
 import org.spout.engine.audio.SpoutSoundManager;
+import org.spout.engine.command.InputCommands;
 import org.spout.engine.command.InputManagementCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
@@ -161,6 +162,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		// Register commands
 		getRootCommand().addSubCommands(this, InputManagementCommands.class, commandRegFactory);
+		getRootCommand().addSubCommands(this, InputCommands.class, commandRegFactory);
 
 		while (super.getDefaultWorld() == null) {
 			try {

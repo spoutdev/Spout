@@ -32,18 +32,62 @@ import org.spout.api.command.Command;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandExecutor;
 import org.spout.api.command.CommandSource;
+import org.spout.api.command.annotated.Binding;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.state.PlayerInputState;
 import org.spout.api.exception.CommandException;
 import org.spout.api.gui.Screen;
+import org.spout.api.input.Keyboard;
 import org.spout.api.plugin.Platform;
 
 import org.spout.engine.SpoutClient;
+import org.spout.engine.SpoutEngine;
 
 /**
  * Class to create the input command structure that modifies {@link org.spout.api.entity.state.PlayerInputState}
  */
 public class InputCommands {
+	public InputCommands(SpoutEngine engine) {
+	}
+
+	@org.spout.api.command.annotated.Command(platform = Platform.CLIENT, aliases = "dev_console", desc = "Toggle display of debugging info.", min = 1, max = 1)
+	@Binding(keys = Keyboard.KEY_F2)
+	public void devConsole(CommandContext args, CommandSource source) {
+		if (!args.getString(0).equalsIgnoreCase("+")) {
+			return;
+		}
+		final SpoutClient c = (SpoutClient) Spout.getEngine();
+		final Screen consoleScreen = (Screen) c.getScreenStack().getConsole();
+		c.getScheduler().enqueueRenderTask(new Runnable() {
+			public void run() {
+				if (c.getScreenStack().isOpen(consoleScreen)) {
+					c.getScreenStack().closeScreen(consoleScreen);
+				} else {
+					c.getScreenStack().openScreen(consoleScreen);
+				}
+			}
+		});
+	}
+
+	@org.spout.api.command.annotated.Command(platform = Platform.CLIENT, aliases = "debug_info", desc = "Toggle display of debugging info.", min = 1, max = 1)
+	@Binding(keys = Keyboard.KEY_F3)
+	public void debugInfo(CommandContext args, CommandSource source) {
+		if (!args.getString(0).equalsIgnoreCase("+")) {
+			return;
+		}
+		final SpoutClient c = (SpoutClient) Spout.getEngine();
+		final Screen debugScreen = (Screen) c.getScreenStack().getDebug();
+		c.getScheduler().enqueueRenderTask(new Runnable() {
+			public void run() {
+				if (c.getScreenStack().isOpen(debugScreen)) {
+					c.getScreenStack().closeScreen(debugScreen);
+				} else {
+					c.getScreenStack().openScreen(debugScreen);
+				}
+			}
+		});
+	}
+
 	public static void setupInputCommands(Engine engine, Command parent) {
 		for (PlayerInputState.Flags flag : PlayerInputState.Flags.values()) {
 			parent.addSubCommand(engine, flag.name())
@@ -59,56 +103,6 @@ public class InputCommands {
 				.setHelp("Adds the y distance traveled to the calling player's input state.")
 				.setExecutor(Platform.CLIENT, new InputMousePitchHandler())
 				.setArgBounds(1, 1);
-		parent.addSubCommand(engine, "debug_infos")
-				.setHelp("Toggle display of debugging infos.")
-				.setExecutor(Platform.CLIENT, new InputDebugInfosHandler())
-				.setArgBounds(1, 1);
-		parent.addSubCommand(engine, "dev_console")
-				.setHelp("Toggle display of debugging infos.")
-				.setExecutor(Platform.CLIENT, new InputDevConsoleHandler())
-				.setArgBounds(1, 1);
-	}
-
-	public static class InputDevConsoleHandler implements CommandExecutor {
-		@Override
-		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
-			if (!args.getString(0).equalsIgnoreCase("+")) {
-				return;
-			}
-
-			final SpoutClient c = (SpoutClient) Spout.getEngine();
-			final Screen consoleScreen = (Screen) c.getScreenStack().getConsole();
-			c.getScheduler().enqueueRenderTask(new Runnable() {
-				public void run() {
-					if (c.getScreenStack().isOpen(consoleScreen)) {
-						c.getScreenStack().closeScreen(consoleScreen);
-					} else {
-						c.getScreenStack().openScreen(consoleScreen);
-					}
-				}
-			});
-		}
-	}
-	
-	public static class InputDebugInfosHandler implements CommandExecutor {
-		@Override
-		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
-			if (!args.getString(0).equalsIgnoreCase("+")) {
-				return;
-			}
-
-			final SpoutClient c = (SpoutClient) Spout.getEngine();
-			final Screen debugScreen = (Screen) c.getScreenStack().getDebug();
-			c.getScheduler().enqueueRenderTask(new Runnable() {
-				public void run() {
-					if (c.getScreenStack().isOpen(debugScreen)) {
-						c.getScreenStack().closeScreen(debugScreen);
-					} else {
-						c.getScreenStack().openScreen(debugScreen);
-					}
-				}
-			});
-		}
 	}
 
 	public static class InputFlagHandler implements CommandExecutor {
