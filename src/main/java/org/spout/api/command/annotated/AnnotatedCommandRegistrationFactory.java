@@ -37,6 +37,7 @@ import org.spout.api.Engine;
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandRegistrationsFactory;
+import org.spout.api.input.InputManager;
 import org.spout.api.input.Keyboard;
 import org.spout.api.input.Mouse;
 import org.spout.api.plugin.Platform;
@@ -113,6 +114,24 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 		if (obj.isAnnotationPresent(CommandPermissions.class)) {
 			CommandPermissions perms = obj.getAnnotation(CommandPermissions.class);
 			child.setPermissions(perms.requireAll(), perms.value());
+		}
+
+		if (obj.isAnnotationPresent(Binding.class) && engine instanceof Client) {
+			if (command.min() < 1) {
+				throw new IllegalArgumentException("Command binding must have a minimum of 1.");
+			}
+			Binding binding = obj.getAnnotation(Binding.class);
+			InputManager input = ((Client) engine).getInputManager();
+			for (Keyboard key : binding.keys()) {
+				for (String alias : command.aliases()) {
+					input.bind(key, alias);
+				}
+			}
+			for (Mouse mouse : binding.mouse()) {
+				for (String alias : command.aliases()) {
+					input.bind(mouse, alias);
+				}
+			}
 		}
 
 		return child;
