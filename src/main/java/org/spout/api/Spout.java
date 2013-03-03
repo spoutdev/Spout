@@ -37,6 +37,7 @@ import org.spout.api.plugin.PluginManager;
  * Represents the Spout core, to get singleton {@link Engine} instance
  *
  */
+@Deprecated
 public final class Spout {
 	private static Engine instance = null;
 
@@ -57,6 +58,7 @@ public final class Spout {
 	 * 
 	 * @return engine
 	 */
+	@Deprecated
 	public static Engine getEngine() {
 		return instance;
 	}
@@ -66,6 +68,7 @@ public final class Spout {
 	 *
 	 * @return logger
 	 */
+	@Deprecated
 	public static Logger getLogger() {
 		if (instance == null) {
 			return Logger.getLogger("");
@@ -78,7 +81,11 @@ public final class Spout {
 	 * data is saved, and all threads are ended cleanly.<br/>
 	 * <br/>
 	 * Players will be sent a default disconnect message.
+	 * <p>
+	 * Deprecated 3-3-2013: Use Engine.stop() instead
+	 * </p>
 	 */
+	@Deprecated
 	public static void stop() {
 		instance.stop();
 	}
@@ -88,7 +95,11 @@ public final class Spout {
 	 * calling is handled through this.
 	 *
 	 * @return Our EventManager instance
+	 * <p>
+	 * Deprecated 3-3-2013: Use Engine.getEventManager() instead
+	 * </p>
 	 */
+	@Deprecated
 	public static EventManager getEventManager() {
 		return instance.getEventManager();
 	}
@@ -97,7 +108,11 @@ public final class Spout {
 	 * Returns the game's {@link PluginManager}
 	 * 
 	 * @return Our PluginManager instance
+	 * <p>
+	 * Deprecated 3-3-2013: Use Engine.getPluginManager() instead
+	 * </p>
 	 */
+	@Deprecated
 	 public static PluginManager getPluginManager() {
 	 	return instance.getPluginManager();
 	 }
@@ -106,7 +121,11 @@ public final class Spout {
 	 * Returns the {@link Platform} that the game is currently running on.
 	 *
 	 * @return current platform type
+	 * <p>
+	 * Deprecated 3-3-2013: Use Engine.getPlatform() instead
+	 * </p>
 	 */
+	@Deprecated
 	public static Platform getPlatform() {
 		return instance.getPlatform();
 	}
@@ -115,7 +134,11 @@ public final class Spout {
 	 * Gets the scheduler
 	 *
 	 * @return the scheduler
+	 * <p>
+	 * Deprecated 3-3-2013: Use Engine.getScheduler() instead
+	 * </p>
 	 */
+	@Deprecated
 	public static Scheduler getScheduler() {
 		return instance.getScheduler();
 	}
@@ -126,7 +149,11 @@ public final class Spout {
 	 * To start debug mode, start Spout with -debug
 	 * 
 	 * @return true if server is started with the -debug flag, false if not
+	 * <p>
+	 * Deprecated 3-3-2013: Use Engine.debugMode() instead
+	 * </p>
 	 */
+	@Deprecated
 	public static boolean debugMode() {
 		return instance.debugMode();
 	}
@@ -135,7 +162,11 @@ public final class Spout {
 	 * Logs the given string using {@Link Logger#info(String)} to the default logger instance.
 	 * 
 	 * @param arg to log
+	 * <p>
+	 * Deprecated 3-3-2013: Use Engine.log() instead
+	 * </p>
 	 */
+	@Deprecated
 	public static void log(String arg) {
 		getLogger().info(arg);
 	}
@@ -144,7 +175,11 @@ public final class Spout {
 	 * Returns the String version of the API.
 	 * 
 	 * @return version
+	 * <p>
+	 * Deprecated 3-3-2013: Use Engine.getAPIVersion() instead
+	 * </p>
 	 */
+	@Deprecated
 	public static String getAPIVersion() {
 		return instance.getClass().getPackage().getImplementationVersion();
 	}
@@ -158,26 +193,12 @@ public final class Spout {
 	 * On the server, it will notify all clients to load the resource, as well as provide a representation of that resource.
 	 * 
 	 * @return filesystem from the engine.
+	 * <p>
+	 * Deprecated 3-3-2013: Use Engine.getFilesystem() instead
+	 * </p>
 	 */
+	@Deprecated
 	public static FileSystem getFilesystem() {
 		return instance.getFilesystem();
-	}
-
-
-	/**
-	 * Outputs multiple lines to the logger using '\n' as the line-ending character.
-	 * This will use {@Link Logger#info(String)} to dump each line.
-	 * 
-	 * @param multiline
-	 */
-	public void multilineLog(String multiline) {
-		String[] split = multiline.split("\n");
-		for (String line : split) {
-			while (line.length() > 40) {
-				getLogger().info(line.substring(0, 40));
-				line = line.substring(40);
-			}
-			getLogger().info(line);
-		}
 	}
 }

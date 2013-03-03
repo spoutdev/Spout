@@ -78,6 +78,13 @@ public interface Engine extends Named {
 	public static final ChatChannel STANDARD_BROADCAST_CHANNEL = new PermissionChatChannel("Standard Broadcasts", STANDARD_BROADCAST_PERMISSION);
 
 	/**
+	 * Returns the String version of the API.
+	 * 
+	 * @return version
+	 */
+	public String getAPIVersion();
+
+	/**
 	 * Gets the name of this game's implementation
 	 * @return name of the implementation
 	 */
