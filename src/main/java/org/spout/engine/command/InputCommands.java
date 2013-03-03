@@ -46,34 +46,34 @@ import org.spout.engine.SpoutClient;
 public class InputCommands {
 	public static void setupInputCommands(Engine engine, Command parent) {
 		for (PlayerInputState.Flags flag : PlayerInputState.Flags.values()) {
-			parent.addSubCommand(engine, "+" + flag.name())
-					.setArgBounds(0, 0)
+			parent.addSubCommand(engine, flag.name())
+					.setArgBounds(1, 1)
 					.setHelp("Adds the " + flag.name() + " flag to the calling player's input state")
-					.setExecutor(Platform.CLIENT, new InputFlagHandler(flag, true));
-			parent.addSubCommand(engine, "-" + flag.name())
-					.setArgBounds(0, 0)
-					.setHelp("Removes the " + flag.name() + " flag from the calling player's input state")
-					.setExecutor(Platform.CLIENT, new InputFlagHandler(flag, false));
+					.setExecutor(Platform.CLIENT, new InputFlagHandler(flag));
 		}
-		parent.addSubCommand(engine, "+dx")
+		parent.addSubCommand(engine, "dx")
 				.setHelp("Adds the x distance traveled to the calling player's input state.")
-				.setExecutor(Platform.CLIENT, new InputMouseYawHandler());
-		parent.addSubCommand(engine, "+dy")
+				.setExecutor(Platform.CLIENT, new InputMouseYawHandler())
+				.setArgBounds(1, 1);
+		parent.addSubCommand(engine, "dy")
 				.setHelp("Adds the y distance traveled to the calling player's input state.")
-				.setExecutor(Platform.CLIENT, new InputMousePitchHandler());
-		parent.addSubCommand(engine, "+debug_infos")
+				.setExecutor(Platform.CLIENT, new InputMousePitchHandler())
+				.setArgBounds(1, 1);
+		parent.addSubCommand(engine, "debug_infos")
 				.setHelp("Toggle display of debugging infos.")
-				.setExecutor(Platform.CLIENT, new InputDebugInfosHandler());
-		parent.addSubCommand(engine, "+dev_console")
+				.setExecutor(Platform.CLIENT, new InputDebugInfosHandler())
+				.setArgBounds(1, 1);
+		parent.addSubCommand(engine, "dev_console")
 				.setHelp("Toggle display of debugging infos.")
-				.setExecutor(Platform.CLIENT, new InputDevConsoleHandler());
+				.setExecutor(Platform.CLIENT, new InputDevConsoleHandler())
+				.setArgBounds(1, 1);
 	}
 
 	public static class InputDevConsoleHandler implements CommandExecutor {
 		@Override
 		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
-			if (Spout.getPlatform() != Platform.CLIENT) {
-				throw new CommandException("Must be on the client");
+			if (!args.getString(0).equalsIgnoreCase("+")) {
+				return;
 			}
 
 			final SpoutClient c = (SpoutClient) Spout.getEngine();
@@ -93,8 +93,8 @@ public class InputCommands {
 	public static class InputDebugInfosHandler implements CommandExecutor {
 		@Override
 		public void processCommand(CommandSource source, Command command, CommandContext args) throws CommandException {
-			if (Spout.getPlatform() != Platform.CLIENT) {
-				throw new CommandException("Must be on the client");
+			if (!args.getString(0).equalsIgnoreCase("+")) {
+				return;
 			}
 
 			final SpoutClient c = (SpoutClient) Spout.getEngine();
@@ -113,11 +113,9 @@ public class InputCommands {
 
 	public static class InputFlagHandler implements CommandExecutor {
 		private final PlayerInputState.Flags flag;
-		private final boolean add;
 
-		public InputFlagHandler(PlayerInputState.Flags flag, boolean add) {
+		public InputFlagHandler(PlayerInputState.Flags flag) {
 			this.flag = flag;
-			this.add = add;
 		}
 
 		@Override
@@ -126,7 +124,7 @@ public class InputCommands {
 				throw new CommandException("Source must be a player!");
 			}
 			Player player = (Player) source;
-			if (add) {
+			if (args.getString(0).equalsIgnoreCase("+")) {
 				player.processInput(player.input().withAddedFlag(flag));
 			} else {
 				player.processInput(player.input().withRemovedFlag(flag));

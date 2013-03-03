@@ -153,12 +153,12 @@ public class SpoutInputManager implements InputManager {
 		// Mouse moved on x-axis
 		if (!redirected) {
 			if (dx != 0) {
-				player.processCommand("+dx", new ChatArguments(dx));
+				player.processCommand("dx", new ChatArguments(dx));
 			}
 
 			// Mouse moved on y-axis
 			if (dy != 0) {
-				player.processCommand("+dy", new ChatArguments(dy));
+				player.processCommand("dy", new ChatArguments(dy));
 			}
 		}
 	}
@@ -167,14 +167,7 @@ public class SpoutInputManager implements InputManager {
 		if (command == null) {
 			return;
 		}
-
-		if (pressed) {
-			command = "+" + command;
-		} else {
-			command = "-" + command;
-		}
-
-		player.processCommand(command, new ChatArguments());
+		player.processCommand(command, new ChatArguments(pressed ? "+" : "-"));
 	}
 
 	private Screen getInputScreen() {
