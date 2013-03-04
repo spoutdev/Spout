@@ -26,10 +26,77 @@
  */
 package org.spout.api.input;
 
+import java.util.Set;
+
 /**
  * Represents the input of Spout.
  */
 public interface InputManager {
+	/**
+	 * Binds an input action to a command.
+	 *
+	 * @param binding to bind
+	 */
+	public void bind(Binding binding);
+
+	/**
+	 * Unbinds an input binding.
+	 *
+	 * @param cmd to unbind
+	 */
+	public void unbind(String cmd);
+
+	/**
+	 * Unbinds an input binding.
+	 *
+	 * @param binding to unbind.
+	 */
+	public void unbind(Binding binding);
+
+	/**
+	 * Returns a set of all the {@link Binding}s.
+	 *
+	 * @return all bound bindings
+	 */
+	public Set<Binding> getBindings();
+
+	/**
+	 * Returns the bindings that are bound to the specified key.
+	 *
+	 * @param key that key is bound to
+	 * @return all bindings bound to specified key
+	 */
+	public Set<Binding> getKeyBindingsFor(Keyboard key);
+
+	/**
+	 * Returns the bindings that are bound to the specified mouse button.
+	 *
+	 * @param mouse button bound
+	 * @return bindings bound to specified button
+	 */
+	public Set<Binding> getMouseBindingsFor(Mouse mouse);
+
+	/**
+	 * Returns a set of {@link InputExecutor} that are added.
+	 *
+	 * @return input executors
+	 */
+	public Set<InputExecutor> getInputExecutors();
+
+	/**
+	 * Register a input executor called each frame.
+	 *
+	 * @param executor
+	 */
+	public void addInputExecutor(InputExecutor executor);
+
+	/**
+	 * Removes an input executor called each frame.
+	 *
+	 * @param executor
+	 */
+	public void removeInputExecutor(InputExecutor executor);
+
 	/**
 	 * Returns true if the input is redirected from this.
 	 *
@@ -43,27 +110,4 @@ public interface InputManager {
 	 * @param redirect
 	 */
 	public void setRedirected(boolean redirect);
-
-	/**
-	 * Binds an input action to a command.
-	 *
-	 * @param key
-	 * @param command
-	 */
-	public void bind(Keyboard key, String command);
-
-	/**
-	 * Binds an input action to a command.
-	 *
-	 * @param button
-	 * @param command
-	 */
-	public void bind(Mouse button, String command);
-	
-	/**
-	 * Register a input executor called each frame.
-	 * 
-	 * @param executor
-	 */
-	public void addInputExecutors(InputExecutor executor);
 }

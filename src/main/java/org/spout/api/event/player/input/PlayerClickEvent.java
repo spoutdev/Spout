@@ -38,8 +38,8 @@ public class PlayerClickEvent extends PlayerInputEvent implements Cancellable {
 	private final boolean pressed;
 	private final IntVector2 pos;
 
-	public PlayerClickEvent(Player p, String rawCmd, Mouse button, boolean pressed, IntVector2 pos) {
-		super(p, rawCmd);
+	public PlayerClickEvent(Player p, Mouse button, boolean pressed, IntVector2 pos) {
+		super(p);
 		this.button = button;
 		this.pressed = pressed;
 		this.pos = pos;

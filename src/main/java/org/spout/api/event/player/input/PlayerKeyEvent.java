@@ -40,8 +40,8 @@ public class PlayerKeyEvent extends PlayerInputEvent implements Cancellable {
 	private final boolean pressed;
 	private final char c;
 
-	public PlayerKeyEvent(Player p, Keyboard key, boolean pressed, String rawCommand, char c) {
-		super(p, rawCommand);
+	public PlayerKeyEvent(Player p, Keyboard key, boolean pressed, char c) {
+		super(p);
 		this.key = key;
 		this.pressed = pressed;
 		this.c = c;

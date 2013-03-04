@@ -121,17 +121,8 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 				throw new IllegalArgumentException("Command binding must have a minimum of 1.");
 			}
 			Binding binding = obj.getAnnotation(Binding.class);
-			InputManager input = ((Client) engine).getInputManager();
-			for (Keyboard key : binding.keys()) {
-				for (String alias : command.aliases()) {
-					input.bind(key, alias);
-				}
-			}
-			for (Mouse mouse : binding.mouse()) {
-				for (String alias : command.aliases()) {
-					input.bind(mouse, alias);
-				}
-			}
+			org.spout.api.input.Binding b = new org.spout.api.input.Binding(child.getPreferredName(), binding.keys(), binding.mouse());
+			((Client) engine).getInputManager().bind(b);
 		}
 
 		return child;

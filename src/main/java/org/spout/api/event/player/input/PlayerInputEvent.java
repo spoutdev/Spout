@@ -30,14 +30,7 @@ import org.spout.api.entity.Player;
 import org.spout.api.event.player.PlayerEvent;
 
 public abstract class PlayerInputEvent extends PlayerEvent {
-	private final String rawCmd;
-
-	public PlayerInputEvent(Player p, String rawCmd) {
+	public PlayerInputEvent(Player p) {
 		super(p);
-		this.rawCmd = rawCmd;
-	}
-
-	public String getRawCommand() {
-		return rawCmd;
 	}
 }
