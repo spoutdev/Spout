@@ -117,8 +117,9 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 		}
 
 		if (obj.isAnnotationPresent(Binding.class) && engine instanceof Client) {
-			if (command.min() < 1) {
-				throw new IllegalArgumentException("Command binding must have a minimum of 1.");
+			int max = command.max();
+			if (max < 1 && max != -1) {
+				throw new IllegalArgumentException("Command binding must allow at least 1 argument.");
 			}
 			Binding binding = obj.getAnnotation(Binding.class);
 			org.spout.api.input.Binding b = new org.spout.api.input.Binding(child.getPreferredName(), binding.keys(), binding.mouse());
