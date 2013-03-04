@@ -26,56 +26,158 @@
  */
 package org.spout.engine.input;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.spout.api.Client;
 import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
+import org.spout.api.entity.Player;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
 import org.spout.api.gui.FocusReason;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
+import org.spout.api.input.Binding;
 import org.spout.api.input.InputExecutor;
 import org.spout.api.input.InputManager;
 import org.spout.api.input.Keyboard;
 import org.spout.api.input.Mouse;
 import org.spout.api.math.IntVector2;
-import org.spout.api.math.Rectangle;
-import org.spout.api.math.Vector2;
 
-import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.entity.component.SpoutSceneComponent;
 
 public class SpoutInputManager implements InputManager {
 	private static final Keyboard FOCUS_KEY = Keyboard.KEY_TAB;
-	private final Map<Keyboard, String> keyCommands = new HashMap<Keyboard, String>();
-	private final Map<Mouse, String> mouseCommands = new HashMap<Mouse, String>();
-	private final List<InputExecutor> inputExecutors = new ArrayList<InputExecutor>();
+	private final Set<Binding> bindings = new HashSet<Binding>();
+	private final Set<InputExecutor> inputExecutors = new HashSet<InputExecutor>();
 	
 	private boolean redirected = false;
 
 	public SpoutInputManager() {
-		bind(Keyboard.get(SpoutInputConfiguration.FORWARD.getString()), "forward");
-		bind(Keyboard.get(SpoutInputConfiguration.BACKWARD.getString()), "backward");
-		bind(Keyboard.get(SpoutInputConfiguration.LEFT.getString()), "left");
-		bind(Keyboard.get(SpoutInputConfiguration.RIGHT.getString()), "right");
-		bind(Keyboard.get(SpoutInputConfiguration.UP.getString()), "jump");
-		bind(Keyboard.get(SpoutInputConfiguration.DOWN.getString()), "crouch");
-		bind(org.spout.api.input.Mouse.MOUSE_SCROLLDOWN, "select_down");
-		bind(org.spout.api.input.Mouse.MOUSE_SCROLLUP, "select_up");
-		bind(org.spout.api.input.Mouse.MOUSE_BUTTON0, "left_click");
-		bind(org.spout.api.input.Mouse.MOUSE_BUTTON1, "interact");
-		bind(org.spout.api.input.Mouse.MOUSE_BUTTON2, "fire_2");
+		bind(new Binding("forward", Keyboard.get(SpoutInputConfiguration.FORWARD.getString())));
+		bind(new Binding("backward", Keyboard.get(SpoutInputConfiguration.BACKWARD.getString())));
+		bind(new Binding("left", Keyboard.get(SpoutInputConfiguration.LEFT.getString())));
+		bind(new Binding("right", Keyboard.get(SpoutInputConfiguration.RIGHT.getString())));
+		bind(new Binding("jump", Keyboard.get(SpoutInputConfiguration.UP.getString())));
+		bind(new Binding("crouch", Keyboard.get(SpoutInputConfiguration.DOWN.getString())));
+		bind(new Binding("select_down", org.spout.api.input.Mouse.MOUSE_SCROLLDOWN));
+		bind(new Binding("select_up", org.spout.api.input.Mouse.MOUSE_SCROLLUP));
+		bind(new Binding("left_click", org.spout.api.input.Mouse.MOUSE_BUTTON0));
+		bind(new Binding("interact", org.spout.api.input.Mouse.MOUSE_BUTTON1));
+		bind(new Binding("fire_2", org.spout.api.input.Mouse.MOUSE_BUTTON2));
+	}
+
+	@Override
+	public void bind(Binding binding) {
+		bindings.add(binding);
+	}
+
+	@Override
+	public void unbind(String cmd) {
+		for (Binding binding : bindings) {
+			if (binding.getCommand().equalsIgnoreCase(cmd)) {
+				bindings.remove(binding);
+				return;
+			}
+		}
+	}
+
+	@Override
+	public void unbind(Binding binding) {
+		bindings.remove(binding);
+	}
+
+	@Override
+	public Set<Binding> getBindings() {
+		return Collections.unmodifiableSet(bindings);
+	}
+
+	@Override
+	public Set<Binding> getKeyBindingsFor(Keyboard key) {
+		Set<Binding> bound = new HashSet<Binding>();
+		for (Binding binding : bindings) {
+			for (Keyboard k : binding.getKeyBindings()) {
+				if (k == key) {
+					bound.add(binding);
+					break;
+				}
+			}
+		}
+		return bound;
+	}
+
+	@Override
+	public Set<Binding> getMouseBindingsFor(Mouse mouse) {
+		Set<Binding> bound = new HashSet<Binding>();
+		for (Binding binding : bindings) {
+			for (Mouse button : binding.getMouseBindings()) {
+				if (button == mouse) {
+					bound.add(binding);
+					break;
+				}
+			}
+		}
+		return bound;
+	}
+
+	@Override
+	public Set<InputExecutor> getInputExecutors() {
+		return Collections.unmodifiableSet(inputExecutors);
+	}
+
+	@Override
+	public void addInputExecutor(InputExecutor executor) {
+		inputExecutors.add(executor);
+	}
+
+	@Override
+	public void removeInputExecutor(InputExecutor executor) {
+		inputExecutors.remove(executor);
+	}
+
+	public void pollInput(Player player) {
+		if (org.lwjgl.input.Keyboard.isCreated()) {
+			while (org.lwjgl.input.Keyboard.next()) {
+				Keyboard key = Keyboard.get(org.lwjgl.input.Keyboard.getEventKey());
+				if (key != null) {
+					onKeyPressed(player, key, org.lwjgl.input.Keyboard.getEventKeyState(), org.lwjgl.input.Keyboard.getEventCharacter());
+				}
+			}
+		}
+
+		// Handle mouse
+		if (org.lwjgl.input.Mouse.isCreated()) {
+			int x, y;
+			while (org.lwjgl.input.Mouse.next()) {
+
+				// Calculate dx/dy since last event polling
+				x = org.lwjgl.input.Mouse.getEventX();
+				y = org.lwjgl.input.Mouse.getEventY();
+
+				Mouse button = Mouse.get(org.lwjgl.input.Mouse.getEventButton());
+				if (button != null) {
+					onMouseClicked(player, button, org.lwjgl.input.Mouse.getEventButtonState(), x, y);
+					continue;
+				}
+
+				// Handle scrolls
+				int scroll = org.lwjgl.input.Mouse.getEventDWheel();
+				if (scroll < 0) {
+					onMouseClicked(player, Mouse.MOUSE_SCROLLUP, true, x, y);
+				} else if (scroll > 0) {
+					onMouseClicked(player, Mouse.MOUSE_SCROLLDOWN, true, x, y);
+				}
+
+				onMouseMove(player, org.lwjgl.input.Mouse.getEventDX(), org.lwjgl.input.Mouse.getEventDY(), org.lwjgl.input.Mouse.getEventX(), org.lwjgl.input.Mouse.getEventY());
+			}
+		}
 	}
 	
-	private void onKeyPressed(SpoutPlayer player, Keyboard key, boolean pressed, char ch) {
-		String cmd = keyCommands.get(key);
-		final PlayerKeyEvent event = Spout.getEventManager().callEvent(new PlayerKeyEvent(player, key, pressed, cmd, ch));
+	private void onKeyPressed(Player player, Keyboard key, boolean pressed, char ch) {
+		final PlayerKeyEvent event = Spout.getEventManager().callEvent(new PlayerKeyEvent(player, key, pressed, ch));
 		if (event.isCancelled()) {
 			return;
 		}
@@ -104,12 +206,11 @@ public class SpoutInputManager implements InputManager {
 			}
 		}
 
-		doCommand(player, cmd, pressed);
+		executeBindings(getKeyBindingsFor(key), player, pressed);
 	}
 
-	private void onMouseClicked(SpoutPlayer player, Mouse button, boolean pressed, int x, int y) {
-		String cmd = mouseCommands.get(button);
-		PlayerClickEvent event = Spout.getEventManager().callEvent(new PlayerClickEvent(player, cmd, button, pressed, new IntVector2(x, y)));
+	private void onMouseClicked(Player player, Mouse button, boolean pressed, int x, int y) {
+		PlayerClickEvent event = Spout.getEventManager().callEvent(new PlayerClickEvent(player, button, pressed, new IntVector2(x, y)));
 		if (event.isCancelled()) {
 			return;
 		}
@@ -130,10 +231,10 @@ public class SpoutInputManager implements InputManager {
 			}
 		}
 
-		doCommand(player, cmd, pressed);
+		executeBindings(getMouseBindingsFor(button), player, pressed);
 	}
 
-	private void onMouseMove(SpoutPlayer player, int dx, int dy, int x, int y) {
+	private void onMouseMove(Player player, int dx, int dy, int x, int y) {
 		// Mouse hasn't moved
 		if (dx == 0 && dy == 0) {
 			return;
@@ -161,11 +262,11 @@ public class SpoutInputManager implements InputManager {
 		}
 	}
 
-	private void doCommand(SpoutPlayer player, String command, boolean pressed) {
-		if (command == null) {
-			return;
+	private void executeBindings(Set<Binding> bindings, Player player, boolean pressed) {
+		ChatArguments args = new ChatArguments(pressed ? "+" : "-");
+		for (Binding binding : bindings) {
+			player.processCommand(binding.getCommand(), args);
 		}
-		player.processCommand(command, new ChatArguments(pressed ? "+" : "-"));
 	}
 
 	private Screen getInputScreen() {
@@ -176,59 +277,11 @@ public class SpoutInputManager implements InputManager {
 		return ((Client) engine).getScreenStack().getInputScreen();
 	}
 
-	public void pollInput(SpoutPlayer player) {
-		if (org.lwjgl.input.Keyboard.isCreated()) {
-			while (org.lwjgl.input.Keyboard.next()) {
-				Keyboard key = Keyboard.get(org.lwjgl.input.Keyboard.getEventKey());
-				if (key != null) {
-					onKeyPressed(player, key, org.lwjgl.input.Keyboard.getEventKeyState(), org.lwjgl.input.Keyboard.getEventCharacter());
-				}
-			}
-		}
-
-		// Handle mouse
-		if (org.lwjgl.input.Mouse.isCreated()) {
-			int x, y;
-			while (org.lwjgl.input.Mouse.next()) {
-
-				// Calculate dx/dy since last event polling
-				x = org.lwjgl.input.Mouse.getEventX();
-				y = org.lwjgl.input.Mouse.getEventY();
-				
-				Mouse button = Mouse.get(org.lwjgl.input.Mouse.getEventButton());
-				if (button != null) {
-					onMouseClicked(player, button, org.lwjgl.input.Mouse.getEventButtonState(), x, y);
-					continue;
-				}
-
-				// Handle scrolls
-				int scroll = org.lwjgl.input.Mouse.getEventDWheel();
-				if (scroll < 0) {
-					onMouseClicked(player, Mouse.MOUSE_SCROLLUP, true, x, y);
-				} else if (scroll > 0) {
-					onMouseClicked(player, Mouse.MOUSE_SCROLLDOWN, true, x, y);
-				}
-
-				onMouseMove(player, org.lwjgl.input.Mouse.getEventDX(), org.lwjgl.input.Mouse.getEventDY(), org.lwjgl.input.Mouse.getEventX(), org.lwjgl.input.Mouse.getEventY());
-			}
-		}
-	}
-
 	public void execute(float dt){
 		for(InputExecutor executor : inputExecutors){
 			SpoutSceneComponent sc = (SpoutSceneComponent) ((Client)Spout.getEngine()).getActivePlayer().getScene(); 
 			executor.execute(dt, sc.getLiveTransform());
 		}
-	}
-	
-	@Override
-	public void bind(Keyboard key, String command) {
-		keyCommands.put(key, command);
-	}
-
-	@Override
-	public void bind(Mouse button, String command) {
-		mouseCommands.put(button, command);
 	}
 
 	@Override
@@ -239,9 +292,5 @@ public class SpoutInputManager implements InputManager {
 	@Override
 	public void setRedirected(boolean redirect) {
 		redirected = redirect;
-	}
-
-	public void addInputExecutors(InputExecutor executor) {
-		inputExecutors.add(executor);
 	}
 }
