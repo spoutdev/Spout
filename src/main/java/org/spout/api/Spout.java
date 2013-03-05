@@ -29,8 +29,9 @@ package org.spout.api;
 import java.util.logging.Logger;
 
 import org.spout.api.event.EventManager;
-import org.spout.api.scheduler.Scheduler;
+import org.spout.api.plugin.CommonPlugin;
 import org.spout.api.plugin.PluginManager;
+import org.spout.api.scheduler.Scheduler;
 
 /**
  * Represents the Spout core, to get singleton {@link Engine} instance
@@ -54,6 +55,8 @@ public final class Spout {
 
 	/**
 	 * Gets the currently running engine instance.
+	 * 
+	 * @deprecated 3-3-2013: Use {@link CommonPlugin#getEngine()} instead.
 	 * 
 	 * @return engine
 	 */
@@ -80,9 +83,7 @@ public final class Spout {
 	 * data is saved, and all threads are ended cleanly.<br/>
 	 * <br/>
 	 * Players will be sent a default disconnect message.
-	 * <p>
-	 * Deprecated 3-3-2013: Use Engine.stop() instead
-	 * </p>
+	 * @deprecated 3-3-2013: Use {@link Engine#stop()} instead
 	 */
 	@Deprecated
 	public static void stop() {
@@ -94,35 +95,29 @@ public final class Spout {
 	 * calling is handled through this.
 	 *
 	 * @return Our EventManager instance
-	 * <p>
-	 * Deprecated 3-3-2013: Use Engine.getEventManager() instead
-	 * </p>
+	 * @deprecated 3-3-2013: Use {@link Engine#getEventManager()} instead
 	 */
 	@Deprecated
 	public static EventManager getEventManager() {
 		return instance.getEventManager();
 	}
-	
+
 	/**
 	 * Returns the game's {@link PluginManager}
 	 * 
 	 * @return Our PluginManager instance
-	 * <p>
-	 * Deprecated 3-3-2013: Use Engine.getPluginManager() instead
-	 * </p>
+	 * @deprecated 3-3-2013: Use {@link Engine#getPluginManager()} instead
 	 */
 	@Deprecated
-	 public static PluginManager getPluginManager() {
-	 	return instance.getPluginManager();
-	 }
-	
+	public static PluginManager getPluginManager() {
+		return instance.getPluginManager();
+	}
+
 	/**
 	 * Returns the {@link Platform} that the game is currently running on.
 	 *
 	 * @return current platform type
-	 * <p>
-	 * Deprecated 3-3-2013: Use Engine.getPlatform() instead
-	 * </p>
+	 * @deprecated 3-3-2013: Use {@link Engine#getPlatform()} instead
 	 */
 	@Deprecated
 	public static Platform getPlatform() {
@@ -133,9 +128,7 @@ public final class Spout {
 	 * Gets the scheduler
 	 *
 	 * @return the scheduler
-	 * <p>
-	 * Deprecated 3-3-2013: Use Engine.getScheduler() instead
-	 * </p>
+	 * @deprecated 3-3-2013: Use {@link Engine#getScheduler()} instead
 	 */
 	@Deprecated
 	public static Scheduler getScheduler() {
@@ -148,9 +141,7 @@ public final class Spout {
 	 * To start debug mode, start Spout with -debug
 	 * 
 	 * @return true if server is started with the -debug flag, false if not
-	 * <p>
-	 * Deprecated 3-3-2013: Use Engine.debugMode() instead
-	 * </p>
+	 * @deprecated 3-3-2013: Use {@link Engine#debugMode()} instead
 	 */
 	@Deprecated
 	public static boolean debugMode() {
@@ -161,9 +152,7 @@ public final class Spout {
 	 * Logs the given string using {@Link Logger#info(String)} to the default logger instance.
 	 * 
 	 * @param arg to log
-	 * <p>
-	 * Deprecated 3-3-2013: Use Engine.log() instead
-	 * </p>
+	 * @deprecated 3-3-2013: Use {@link Engine#log()} instead
 	 */
 	@Deprecated
 	public static void log(String arg) {
@@ -174,9 +163,7 @@ public final class Spout {
 	 * Returns the String version of the API.
 	 * 
 	 * @return version
-	 * <p>
-	 * Deprecated 3-3-2013: Use Engine.getAPIVersion() instead
-	 * </p>
+	 * @deprecated 3-3-2013: Use {@link Engine#getAPIVersion()} instead
 	 */
 	@Deprecated
 	public static String getAPIVersion() {
@@ -192,9 +179,7 @@ public final class Spout {
 	 * On the server, it will notify all clients to load the resource, as well as provide a representation of that resource.
 	 * 
 	 * @return filesystem from the engine.
-	 * <p>
-	 * Deprecated 3-3-2013: Use Engine.getFilesystem() instead
-	 * </p>
+	 * @deprecated 3-3-2013: Use {@link Engine#getFilesystem()} instead
 	 */
 	@Deprecated
 	public static FileSystem getFilesystem() {
