@@ -34,8 +34,8 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
+import org.spout.api.Platform;
 import org.spout.api.Spout;
-import org.spout.api.plugin.Platform;
 import org.spout.api.render.Texture;
 import org.spout.api.resource.BasicResourceLoader;
 import org.spout.engine.resources.ClientTexture;

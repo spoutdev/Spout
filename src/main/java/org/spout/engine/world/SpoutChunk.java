@@ -49,6 +49,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 import org.spout.api.Engine;
+import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.component.ChunkComponentOwner;
 import org.spout.api.component.type.BlockComponent;
@@ -88,7 +89,6 @@ import org.spout.api.material.block.BlockSnapshot;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.GenericMath;
 import org.spout.api.math.Vector3;
-import org.spout.api.plugin.Platform;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.cuboid.CuboidLightBuffer;

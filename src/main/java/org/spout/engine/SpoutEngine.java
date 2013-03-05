@@ -54,6 +54,7 @@ import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.ChannelGroupFuture;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.spout.api.Engine;
+import org.spout.api.Platform;
 import org.spout.api.chat.channel.ChatChannelFactory;
 import org.spout.api.chat.completion.CompletionManager;
 import org.spout.api.chat.completion.CompletionManagerImpl;
@@ -86,7 +87,6 @@ import org.spout.api.permissions.PermissionsSubject;
 import org.spout.api.plugin.CommonPluginLoader;
 import org.spout.api.plugin.CommonPluginManager;
 import org.spout.api.plugin.CommonServiceManager;
-import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginManager;
 import org.spout.api.plugin.ServiceManager;
@@ -101,11 +101,12 @@ import org.spout.engine.chat.SpoutChatChannelFactory;
 import org.spout.engine.chat.console.ConsoleManager;
 import org.spout.engine.chat.console.JLineConsole;
 import org.spout.engine.chat.console.NonClosingFileConsole;
-import org.spout.engine.command.AdministrationCommands;
-import org.spout.engine.command.ConnectionCommands;
+import org.spout.engine.command.ClientCommands;
+import org.spout.engine.command.CommonCommands;
 import org.spout.engine.command.InputCommands;
 import org.spout.engine.command.MessagingCommands;
 import org.spout.engine.command.RendererCommands;
+import org.spout.engine.command.ServerCommands;
 import org.spout.engine.command.SyncedRootCommand;
 import org.spout.engine.command.TestCommands;
 import org.spout.engine.entity.EntityManager;
@@ -215,12 +216,21 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 		scheduler.scheduleSyncRepeatingTask(this, new SessionTask(sessions), 50, 50, TaskPriority.CRITICAL);
 
-		final CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this));
+		final CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(this, new SimpleInjector(this));
 
 		// Register commands
-		getRootCommand().addSubCommands(this, AdministrationCommands.class, commandRegFactory);
+		switch(getPlatform()) {
+			case CLIENT:
+				getRootCommand().addSubCommands(this, ClientCommands.class, commandRegFactory);
+				break;
+			case SERVER:
+				getRootCommand().addSubCommands(this, ServerCommands.class, commandRegFactory);
+				break;
+			default:
+				getRootCommand().addSubCommands(this, CommonCommands.class, commandRegFactory);
+		}
+
 		getRootCommand().addSubCommands(this, MessagingCommands.class, commandRegFactory);
-		getRootCommand().addSubCommands(this, ConnectionCommands.class, commandRegFactory);
 		InputCommands.setupInputCommands(this, getRootCommand());
 
 		if (debugMode()) {

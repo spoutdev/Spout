@@ -31,8 +31,8 @@ import java.io.File;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
+import org.spout.api.Platform;
 import org.spout.api.Spout;
-import org.spout.api.plugin.Platform;
 import org.spout.api.render.RenderMode;
 
 import org.spout.engine.filesystem.SharedFileSystem;

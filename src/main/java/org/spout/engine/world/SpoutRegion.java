@@ -52,6 +52,7 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 
+import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.component.Component;
 import org.spout.api.component.type.BlockComponent;
@@ -85,7 +86,6 @@ import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.Vector3;
-import org.spout.api.plugin.Platform;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.scheduler.TaskManager;

@@ -46,6 +46,7 @@ import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 
 import org.spout.api.Client;
 import org.spout.api.FileSystem;
+import org.spout.api.Platform;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
@@ -69,7 +70,6 @@ import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.AnimationPlayed;
-import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.PortBinding;
@@ -81,7 +81,6 @@ import org.spout.api.render.RenderMode;
 
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.command.InputCommands;
-import org.spout.engine.command.InputManagementCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.entity.component.ClientTextModelComponent;
@@ -157,10 +156,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		super.start(checkWorlds);
 
 		getEventManager().registerEvents(new SpoutClientListener(this), this);
-		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(new SimpleInjector(this));
+		CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(this, new SimpleInjector(this));
 
 		// Register commands
-		getRootCommand().addSubCommands(this, InputManagementCommands.class, commandRegFactory);
 		getRootCommand().addSubCommands(this, InputCommands.class, commandRegFactory);
 
 		while (super.getDefaultWorld() == null) {

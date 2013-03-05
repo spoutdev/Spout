@@ -26,7 +26,6 @@
  */
 package org.spout.engine.command;
 
-import org.spout.api.Spout;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
@@ -45,7 +44,7 @@ public class RendererCommands {
 
 		client.getScheduler().enqueueRenderTask(new Runnable() {
 			public void run() {
-				Spout.log("Toggling Wireframe");
+				client.getLogger().info("Toggling Wireframe");
 				client.getRenderer().toggleWireframe();
 			}
 		});

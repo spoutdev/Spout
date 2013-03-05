@@ -26,7 +26,6 @@
  */
 package org.spout.engine.command;
 
-import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.channel.ChatChannel;
 import org.spout.api.chat.conversation.Conversation;
@@ -35,11 +34,8 @@ import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
 import org.spout.api.command.annotated.CommandPermissions;
-import org.spout.api.command.annotated.Executor;
 import org.spout.api.entity.Player;
-import org.spout.api.event.player.PlayerChatEvent;
 import org.spout.api.exception.CommandException;
-import org.spout.api.plugin.Platform;
 
 import org.spout.engine.SpoutEngine;
 
@@ -51,50 +47,6 @@ public class MessagingCommands {
 
 	public MessagingCommands(SpoutEngine engine) {
 		this.engine = engine;
-	}
-
-	@Command(aliases = {"say", "chat"}, usage = "[message]", desc = "Say something!", min = 1, max = -1)
-	public class SayCommand {
-		public SayCommand() {
-			engine.getDefaultPermissions().addDefaultPermission("spout.chat.send");
-			engine.getDefaultPermissions().addDefaultPermission("spout.chat.receive.*");
-		}
-
-		@Executor(Platform.SERVER)
-		public void server(CommandContext args, CommandSource source) throws CommandException {
-			ChatArguments message = args.getJoinedString(0);
-			if (!message.getPlainString().isEmpty()) {
-				if (!source.hasPermission("spout.chat.send")) {
-					throw new CommandException("You do not have permission to send chat messages");
-				}
-
-				ChatArguments template;
-				String name;
-				if (source instanceof Player) {
-					Player player = (Player) source;
-					PlayerChatEvent event = Spout.getEngine().getEventManager().callEvent(new PlayerChatEvent(player, message));
-					if (event.isCancelled()) {
-						return;
-					}
-					name = player.getDisplayName();
-					template = event.getFormat().getArguments();
-					message = event.getMessage();
-				} else {
-					name = source.getName();
-					template = new ChatArguments("<", PlayerChatEvent.NAME, "> ", PlayerChatEvent.MESSAGE);
-				}
-
-				template.setPlaceHolder(PlayerChatEvent.NAME, new ChatArguments(name));
-				template.setPlaceHolder(PlayerChatEvent.MESSAGE, message);
-
-				source.getActiveChannel().broadcastToReceivers(source, template);
-			}
-		}
-
-		@Executor(Platform.CLIENT)
-		public void client(CommandContext args, CommandSource source) {
-			engine.getCommandSource().sendMessage(args.getJoinedString(0));
-		}
 	}
 
 	@Command(aliases = {"tell", "msg"}, usage = "<target> <message>", desc = "Tell a message to a specific user", min = 2)

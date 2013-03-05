@@ -26,7 +26,7 @@
  */
 package org.spout.engine.util.argument;
 
-import org.spout.api.plugin.Platform;
+import org.spout.api.Platform;
 
 public class PlatformConverter extends EnumConverter<Platform> {
 	public PlatformConverter() {

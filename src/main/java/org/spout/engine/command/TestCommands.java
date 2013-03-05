@@ -36,7 +36,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.spout.api.Client;
-import org.spout.api.Spout;
+import org.spout.api.Platform;
 import org.spout.api.audio.Sound;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.audio.SoundSource;
@@ -59,7 +59,6 @@ import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
-import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 
 import org.spout.engine.SpoutClient;
@@ -75,9 +74,12 @@ public class TestCommands {
 		this.engine = engine;
 	}
 
-	@Command(platform = Platform.CLIENT, aliases = "dw", usage = "<play|stop|pause>", desc = "Plays a tune at your position.", min = 1, max = 1)
+	@Command(aliases = "dw", usage = "<play|stop|pause>", desc = "Plays a tune at your position.", min = 1, max = 1)
 	public void dw(CommandContext args, CommandSource source) throws CommandException {
-		Client client = (Client) Spout.getEngine();
+		if (!(engine instanceof Client)) {
+			return;
+		}
+		Client client = (Client) engine;
 		Point pos = client.getActivePlayer().getScene().getPosition();
 		SoundManager sm = client.getSoundManager();
 		String action = args.getString(0);
@@ -85,7 +87,7 @@ public class TestCommands {
 
 		if (s == null) {
 			if (action.equalsIgnoreCase("play")) {
-				s = sm.createSource((Sound) Spout.getFilesystem().getResource("sound://Spout/fallbacks/dw.wav"), "dw");
+				s = sm.createSource((Sound) client.getFilesystem().getResource("sound://Spout/fallbacks/dw.wav"), "dw");
 			} else {
 				throw new CommandException("Nothing to " + action + ".");
 			}
@@ -108,9 +110,13 @@ public class TestCommands {
 		}
 	}
 
-	@Command(platform = Platform.CLIENT, aliases = "break", desc = "Debug command to break a block")
+	@Command(aliases = "break", desc = "Debug command to break a block")
 	public void debugBreak(CommandContext args, CommandSource source) throws CommandException {
-		Player player = ((Client) Spout.getEngine()).getActivePlayer();
+		if (!(engine instanceof Client)) {
+			return;
+		}
+		Client client = (Client) engine;
+		Player player = client.getActivePlayer();
 		Block block = player.get(InteractComponent.class).getTargetBlock();
 
 		if (block == null || block.getMaterial().equals(BlockMaterial.AIR)) {
@@ -180,7 +186,7 @@ public class TestCommands {
 		sbuild.append("# Plugin Name | Version | Authors".concat(linesep));
 
 		// Plugins to write down
-		List<Plugin> plugins = Spout.getEngine().getPluginManager().getPlugins();
+		List<Plugin> plugins = engine.getPluginManager().getPlugins();
 
 		// Getting plugin informations
 		for (Plugin plugin : plugins) {
@@ -236,7 +242,7 @@ public class TestCommands {
 	public void moveEntity(CommandContext args, CommandSource source) throws CommandException {
 		SpoutPlayer player;
 		if (!(source instanceof Player)) {
-			if (Spout.getPlatform() == Platform.CLIENT) {
+			if (engine.getPlatform() == Platform.CLIENT) {
 				player = ((SpoutClient) engine).getActivePlayer();
 			} else {
 				player = (SpoutPlayer) source;
@@ -258,14 +264,14 @@ public class TestCommands {
 
 		e.getScene().setPosition(new Point(e.getWorld(), x, y, z));
 
-		Spout.log("Entity " + id + " move to " + x + " " + y + " " + z);
+		engine.getLogger().info("Entity " + id + " move to " + x + " " + y + " " + z);
 	}
 
 	@Command(aliases = {"rotate"}, desc = "Rotate a entity with his Id", min = 4, max = 4)
 	public void rotateEntity(CommandContext args, CommandSource source) throws CommandException {
 		SpoutPlayer player;
 		if (!(source instanceof Player)) {
-			if (Spout.getPlatform() == Platform.CLIENT) {
+			if (engine.getPlatform() == Platform.CLIENT) {
 				player = ((SpoutClient) engine).getActivePlayer();
 			} else {
 				player = (SpoutPlayer) source;
@@ -286,14 +292,14 @@ public class TestCommands {
 		}
 		e.getScene().setRotation(e.getScene().getTransform().getRotation().rotate(0, pitch, yaw, roll));
 
-		Spout.log("Entity " + id + " rotate to " + pitch + " " + yaw + " " + roll);
+		engine.getLogger().info("Entity " + id + " rotate to " + pitch + " " + yaw + " " + roll);
 	}
 
 	@Command(aliases = {"scale"}, desc = "Scale a entity with his Id", min = 4, max = 4)
 	public void scaleEntity(CommandContext args, CommandSource source) throws CommandException {
 		SpoutPlayer player;
 		if (!(source instanceof Player)) {
-			if (Spout.getPlatform() == Platform.CLIENT) {
+			if (engine.getPlatform() == Platform.CLIENT) {
 				player = ((SpoutClient) engine).getActivePlayer();
 			} else {
 				player = (SpoutPlayer) source;
@@ -317,14 +323,14 @@ public class TestCommands {
 		transform.scale(new Vector3(x, y, z));
 		e.getScene().setTransform(transform);
 
-		Spout.log("Entity " + id + " scale to " + x + " " + y + " " + z);
+		engine.getLogger().info("Entity " + id + " scale to " + x + " " + y + " " + z);
 	}
 
 	@Command(aliases = {"animstart"}, desc = "Launch a animation his Id", min = 2, max = 3)
 	public void playAnimation(CommandContext args, CommandSource source) throws CommandException {
 		SpoutPlayer player;
 		if (!(source instanceof Player)) {
-			if (Spout.getPlatform() == Platform.CLIENT) {
+			if (engine.getPlatform() == Platform.CLIENT) {
 				player = ((SpoutClient) engine).getActivePlayer();
 			} else {
 				player = (SpoutPlayer) source;
@@ -338,14 +344,14 @@ public class TestCommands {
 		Entity e = player.getWorld().getEntity(id);
 
 		if (e == null) {
-			Spout.log("Entity not found");
+			source.sendMessage("Entity not found");
 			return;
 		}
 
 		EntityRendererComponent rendererComponent = e.get(EntityRendererComponent.class);
 
 		if (rendererComponent.getModels().isEmpty()) {
-			Spout.log("No model on this entity");
+			source.sendMessage("No model on this entity");
 			return;
 		}
 
@@ -354,16 +360,16 @@ public class TestCommands {
 		Skeleton skeleton = model.getSkeleton();
 
 		if (skeleton == null) {
-			Spout.log("No skeleton on this entity");
+			source.sendMessage("No skeleton on this entity");
 			return;
 		}
 
 		Animation animation = model.getAnimations().get(args.getString(1));
 
 		if (animation == null) {
-			Spout.log("No animation with " + args.getString(1) + ", see the list :");
+			source.sendMessage("No animation with " + args.getString(1) + ", see the list :");
 			for (String a : model.getAnimations().keySet()) {
-				Spout.log(a);
+				source.sendMessage(a);
 			}
 			return;
 		}
@@ -372,14 +378,14 @@ public class TestCommands {
 
 		ac.playAnimation(model, animation, args.length() > 2 ? args.getString(2).equalsIgnoreCase("on") : false);
 
-		Spout.log("Entity " + id + " play " + animation.getName());
+		source.sendMessage("Entity " + id + " play " + animation.getName());
 	}
 
 	@Command(aliases = {"animstop"}, desc = "Stop all animation on a entity", min = 1, max = 1)
 	public void stopAnimation(CommandContext args, CommandSource source) throws CommandException {
 		SpoutPlayer player;
 		if (!(source instanceof Player)) {
-			if (Spout.getPlatform() == Platform.CLIENT) {
+			if (engine.getPlatform() == Platform.CLIENT) {
 				player = ((SpoutClient) engine).getActivePlayer();
 			} else {
 				player = (SpoutPlayer) source;
@@ -393,20 +399,20 @@ public class TestCommands {
 		Entity e = player.getWorld().getEntity(id);
 
 		if (e == null) {
-			Spout.log("Entity not found");
+			source.sendMessage("Entity not found");
 			return;
 		}
 
 		AnimationComponent ac = e.get(AnimationComponent.class);
 
 		if (ac == null) {
-			Spout.log("No AnimationComponent on this entity");
+			source.sendMessage("No AnimationComponent on this entity");
 			return;
 		}
 
 		ac.stopAnimations();
 
-		Spout.log("Entity " + id + " animation stopped ");
+		source.sendMessage("Entity " + id + " animation stopped ");
 	}
 
 	/**

@@ -29,8 +29,8 @@ package org.spout.engine.resources.loader;
 import java.awt.Font;
 import java.io.InputStream;
 
+import org.spout.api.Platform;
 import org.spout.api.Spout;
-import org.spout.api.plugin.Platform;
 import org.spout.api.resource.BasicResourceLoader;
 
 import org.spout.engine.resources.ClientFont;

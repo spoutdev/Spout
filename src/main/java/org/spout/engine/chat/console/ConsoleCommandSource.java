@@ -73,7 +73,7 @@ public class ConsoleCommandSource implements CommandSource {
 
 	@Override
 	public void processCommand(String commandName, ChatArguments arguments) {
-		PreCommandEvent event = Spout.getEventManager().callEvent(new PreCommandEvent(this, commandName, arguments));
+		PreCommandEvent event = engine.getEventManager().callEvent(new PreCommandEvent(this, commandName, arguments));
 		if (event.isCancelled()) {
 			return;
 		}

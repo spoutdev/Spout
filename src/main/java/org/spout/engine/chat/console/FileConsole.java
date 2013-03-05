@@ -36,7 +36,6 @@ import java.util.Date;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 
-import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 
 import org.spout.engine.SpoutEngine;
@@ -141,7 +140,7 @@ public class FileConsole extends AbstractConsole {
 			writerLock.unlock();
 		}
 
-		if (Spout.debugMode()) {
+		if (engine.debugMode()) {
 			flush();
 		}
 	}
