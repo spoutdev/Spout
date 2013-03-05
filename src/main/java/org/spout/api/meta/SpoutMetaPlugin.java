@@ -34,7 +34,6 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.Validate;
 import org.spout.api.Engine;
-import org.spout.api.Platform;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.lang.PluginDictionary;
 import org.spout.api.plugin.Plugin;

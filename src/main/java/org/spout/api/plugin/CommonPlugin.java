@@ -65,7 +65,9 @@ public abstract class CommonPlugin implements Plugin {
 
 		this.logger = new PluginLogger(this);
 
-		this.dictionary = new JavaPluginDictionary(this);
+		if (file != null) {
+			this.dictionary = new JavaPluginDictionary(this);
+		}
 	}
 
 	@Override
