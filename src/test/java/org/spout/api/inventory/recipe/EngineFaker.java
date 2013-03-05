@@ -29,8 +29,8 @@ package org.spout.api.inventory.recipe;
 import org.powermock.api.mockito.PowerMockito;
 import org.spout.api.Engine;
 import org.spout.api.FileSystem;
+import org.spout.api.Platform;
 import org.spout.api.Spout;
-import org.spout.api.plugin.Platform;
 
 @SuppressWarnings("deprecation")
 public class EngineFaker {

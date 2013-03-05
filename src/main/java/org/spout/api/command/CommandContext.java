@@ -27,19 +27,12 @@
 package org.spout.api.command;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.spout.api.Server;
-import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.ChatSection;
 import org.spout.api.exception.CommandException;
-import org.spout.api.geo.World;
-import org.spout.api.entity.Player;
-import org.spout.api.plugin.Platform;
-
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TCharObjectMap;
@@ -200,34 +193,6 @@ public class CommandContext {
 		} catch (NumberFormatException e) {
 			return false;
 		}
-	}
-
-	public World getWorld(int index) {
-		return Spout.getEngine().getWorld(getString(index));
-	}
-
-	public World getWorld(int index, boolean exact) {
-		return Spout.getEngine().getWorld(getString(index), exact);
-	}
-
-	public Player getPlayer(int index, boolean exact) {
-		Platform p = Spout.getPlatform();
-		if (p != Platform.SERVER && p != Platform.PROXY) {
-			throw new IllegalStateException("You can only match players in server mode.");
-		}
-		return ((Server) Spout.getEngine()).getPlayer(getString(index), exact);
-	}
-
-	public Collection<World> matchWorld(int index) {
-		return Spout.getEngine().matchWorld(getString(index));
-	}
-
-	public Collection<Player> matchPlayer(int index) {
-		Platform p = Spout.getPlatform();
-		if (p != Platform.SERVER && p != Platform.PROXY) {
-			throw new IllegalStateException("You can only match players in server mode.");
-		}
-		return ((Server) Spout.getEngine()).matchPlayer(getString(index));
 	}
 
 	public double getDouble(int index) throws NumberFormatException {

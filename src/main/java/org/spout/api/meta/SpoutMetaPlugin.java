@@ -34,9 +34,9 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.Validate;
 import org.spout.api.Engine;
+import org.spout.api.Platform;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.lang.PluginDictionary;
-import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.plugin.PluginDescriptionFile;
 import org.spout.api.plugin.PluginLoader;
@@ -48,7 +48,7 @@ public final class SpoutMetaPlugin implements Plugin {
 
 	public SpoutMetaPlugin(Engine engine) {
 		this.engine = engine;
-		pdf = new PluginDescriptionFile("Spout", engine.getVersion(), "", Platform.ALL);
+		pdf = new PluginDescriptionFile("Spout", engine.getVersion(), "", "ALL");
 		dictionary = new SpoutMetaPluginDictionary(this);
 	}
 

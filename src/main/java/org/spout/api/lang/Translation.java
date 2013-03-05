@@ -28,13 +28,13 @@ package org.spout.api.lang;
 
 import java.util.logging.Level;
 
+import org.spout.api.Platform;
 import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.command.CommandSource;
 import org.spout.api.plugin.CommonClassLoader;
 import org.spout.api.plugin.CommonPlugin;
 import org.spout.api.plugin.CommonPluginManager;
-import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.Plugin;
 
 /**

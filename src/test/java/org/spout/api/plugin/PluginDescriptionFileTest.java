@@ -58,7 +58,6 @@ public class PluginDescriptionFileTest {
 		assertEquals("Author does not match", "JohnDoe", desc.getAuthors().get(0));
 		assertEquals("Main does not match", "com.example", desc.getMain());
 		assertEquals("LoadOrder does not match", LoadOrder.STARTUP, desc.getLoad());
-		assertEquals("Platform does not match", Platform.ALL, desc.getPlatform());
 		assertEquals("Data does not match", "testData", desc.getData("test_key"));
 		stream.close();
 	}
@@ -79,7 +78,6 @@ public class PluginDescriptionFileTest {
 		assertEquals("Author does not match", "Baz", desc.getAuthors().get(4));
 		assertEquals("Website does not match", "www.example.com?param=test", desc.getWebsite());
 		assertEquals("Reload does not match", true, desc.allowsReload());
-		assertEquals("Platform does not match", Platform.SERVER, desc.getPlatform());
 		assertEquals("LoadOrder does not match", LoadOrder.POSTWORLD, desc.getLoad());
 		assertEquals("Main does not match", "com.example.main.Main", desc.getMain());
 		assertEquals("Depends does not match", "foo", desc.getDepends().get(0));
@@ -109,7 +107,6 @@ public class PluginDescriptionFileTest {
 		assertEquals("Author does not match", "Bar", desc.getAuthors().get(3));
 		assertEquals("Author does not match", "Baz", desc.getAuthors().get(4));
 		assertEquals("Reload does not match", true, desc.allowsReload());
-		assertEquals("Platform does not match", Platform.SERVER, desc.getPlatform());
 		assertEquals("Main does not match", "com.example.main.Main", desc.getMain());
 		assertEquals("Data does not match", "testData", desc.getData("test_key"));
 		assertEquals("Data does not match", "1234", desc.getData("other_key"));

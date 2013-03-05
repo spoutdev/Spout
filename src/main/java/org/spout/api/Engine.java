@@ -53,7 +53,6 @@ import org.spout.api.geo.World;
 import org.spout.api.inventory.recipe.RecipeManager;
 import org.spout.api.permissions.DefaultPermissions;
 import org.spout.api.permissions.PermissionsSubject;
-import org.spout.api.plugin.Platform;
 import org.spout.api.plugin.PluginManager;
 import org.spout.api.plugin.ServiceManager;
 import org.spout.api.protocol.Protocol;

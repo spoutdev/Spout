@@ -35,7 +35,6 @@ import org.spout.api.chat.completion.CompletionRequest;
 import org.spout.api.chat.completion.CompletionResponse;
 import org.spout.api.chat.completion.Completor;
 import org.spout.api.exception.CommandException;
-import org.spout.api.plugin.Platform;
 import org.spout.api.util.Named;
 
 /**
@@ -160,27 +159,10 @@ public interface Command extends Completor {
 	public Command setExecutor(CommandExecutor executor);
 
 	/**
-	 * Sets the Executor for the active Command for the specified platform.
-	 *
-	 * If this is called more than once for a Command, subsequent calls will
-	 * overwrite previous calls.
-	 *
-	 * @param executor the help string
-	 * @return the active Command
-	 */
-	public Command setExecutor(Platform platform, CommandExecutor executor);
-	
-	/**
 	 * Gets the executor for the active Command if found, null otherwise.
 	 * @return the executor
 	 */
 	public CommandExecutor getExecutor();
-	
-	/**
-	 * Gets the executor for the active Command for the specified platform if found, null otherwise.
-	 * @return the executor for the speficied platform
-	 */
-	public CommandExecutor getExecutor(Platform platform);
 
 	/**
 	 * Adds flags to this Command's list of allowed flags. Flags are given in

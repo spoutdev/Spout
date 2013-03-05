@@ -27,7 +27,6 @@
 package org.spout.api.command.annotated;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 public class SimpleInjector implements Injector {
 	private Object[] args;

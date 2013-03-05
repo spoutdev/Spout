@@ -24,19 +24,14 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.plugin;
+package org.spout.api;
 
 /**
- * Platform describes whether the Plugin was written for the client, the server,
+ * Platform describes whether the plugin was written for the client, the server,
  * or for both.
  */
 public enum Platform {
 	SERVER,
 	CLIENT,
-	PROXY,
-	/**
-	 * Use {@link #ALL} instead
-	 */
-	@Deprecated BOTH,
-	ALL
+	PROXY;
 }

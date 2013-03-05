@@ -29,7 +29,6 @@ package org.spout.api;
 import java.util.logging.Logger;
 
 import org.spout.api.event.EventManager;
-import org.spout.api.plugin.Platform;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.api.plugin.PluginManager;
 

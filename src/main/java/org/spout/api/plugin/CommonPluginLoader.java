@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.collections.map.CaseInsensitiveMap;
 
 import org.spout.api.Engine;
-import org.spout.api.Spout;
+import org.spout.api.Platform;
 import org.spout.api.UnsafeMethod;
 import org.spout.api.event.server.plugin.PluginDisableEvent;
 import org.spout.api.event.server.plugin.PluginEnableEvent;
@@ -132,52 +132,54 @@ public class CommonPluginLoader implements PluginLoader {
 
 	@Override
 	public synchronized Plugin loadPlugin(File paramFile, boolean ignoresoftdepends) throws InvalidPluginException, UnknownDependencyException, InvalidDescriptionFileException {
-		CommonPlugin result;
+		CommonPlugin result = null;
 		PluginDescriptionFile desc;
 		CommonClassLoader loader;
 
 		desc = getDescription(paramFile);
-
-		File dataFolder = new File(paramFile.getParentFile(), desc.getName());
-
-		processDependencies(desc);
-
-		if (!ignoresoftdepends) {
-			processSoftDependencies(desc);
-		}
-
-		try {
-			if (engine.getPlatform() == Platform.CLIENT) {
-				loader = new ClientClassLoader(this, this.getClass().getClassLoader(), desc);
-			} else {
-				loader = new CommonClassLoader(this, this.getClass().getClassLoader(), desc);
+		if (desc.isValidPlatform(engine.getPlatform())) {
+	
+			File dataFolder = new File(paramFile.getParentFile(), desc.getName());
+	
+			processDependencies(desc);
+	
+			if (!ignoresoftdepends) {
+				processSoftDependencies(desc);
 			}
-			loader.addURL(paramFile.toURI().toURL());
-			Class<?> main = Class.forName(desc.getMain(), true, loader);
-			Class<? extends CommonPlugin> plugin = main.asSubclass(CommonPlugin.class);
-
-			boolean locked = manager.lock(key);
-
-			Constructor<? extends CommonPlugin> constructor = plugin.getConstructor();
-
-			result = constructor.newInstance();
-
-			result.initialize(this, engine, desc, dataFolder, paramFile, loader);
-
-			if (!locked) {
-				manager.unlock(key);
+	
+			try {
+				if (engine.getPlatform() == Platform.CLIENT) {
+					loader = new ClientClassLoader(this, this.getClass().getClassLoader(), desc);
+				} else {
+					loader = new CommonClassLoader(this, this.getClass().getClassLoader(), desc);
+				}
+				loader.addURL(paramFile.toURI().toURL());
+				Class<?> main = Class.forName(desc.getMain(), true, loader);
+				Class<? extends CommonPlugin> plugin = main.asSubclass(CommonPlugin.class);
+	
+				boolean locked = manager.lock(key);
+	
+				Constructor<? extends CommonPlugin> constructor = plugin.getConstructor();
+	
+				result = constructor.newInstance();
+	
+				result.initialize(this, engine, desc, dataFolder, paramFile, loader);
+	
+				if (!locked) {
+					manager.unlock(key);
+				}
+			} catch (Exception e) {
+				throw new InvalidPluginException(e);
+			} catch (UnsupportedClassVersionError e) {
+				String version = e.getMessage().replaceFirst("Unsupported major.minor version ", "").split(" ")[0];
+				engine.getLogger().severe("Plugin " + desc.getName() + " is built for a newer Java version than your current installation, and cannot be loaded!");
+				engine.getLogger().severe("To run " + desc.getName() + ", you need Java version " + version + " or higher!");
+				throw new InvalidPluginException(e);
 			}
-		} catch (Exception e) {
-			throw new InvalidPluginException(e);
-		} catch (UnsupportedClassVersionError e) {
-			String version = e.getMessage().replaceFirst("Unsupported major.minor version ", "").split(" ")[0];
-			Spout.getLogger().severe("Plugin " + desc.getName() + " is built for a newer Java version than your current installation, and cannot be loaded!");
-			Spout.getLogger().severe("To run " + desc.getName() + ", you need Java version " + version + " or higher!");
-			throw new InvalidPluginException(e);
+	
+			loader.setPlugin(result);
+			loaders.put(desc.getName(), loader);
 		}
-
-		loader.setPlugin(result);
-		loaders.put(desc.getName(), loader);
 
 		return result;
 	}

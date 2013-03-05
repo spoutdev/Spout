@@ -31,16 +31,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.spout.api.plugin.Platform;
-
 /**
  * This allows for annotation-based command registration.
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Command {
-	public Platform platform() default Platform.ALL;
-
 	public String[] aliases();
 
 	public String usage() default "";

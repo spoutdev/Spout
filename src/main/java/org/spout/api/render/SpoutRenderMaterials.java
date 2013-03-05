@@ -27,8 +27,8 @@
 package org.spout.api.render;
 
 import org.spout.api.FileSystem;
+import org.spout.api.Platform;
 import org.spout.api.Spout;
-import org.spout.api.plugin.Platform;
 
 public class SpoutRenderMaterials {
 	public static final FileSystem FILE_SYSTEM = Spout.getFilesystem();

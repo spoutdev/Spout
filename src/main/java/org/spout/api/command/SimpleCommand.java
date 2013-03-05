@@ -41,8 +41,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import org.apache.commons.lang3.Validate;
-import org.spout.api.Engine;
-import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.ChatSection;
 import org.spout.api.chat.completion.CompletionRequest;
@@ -52,7 +50,6 @@ import org.spout.api.exception.CommandException;
 import org.spout.api.exception.CommandUsageException;
 import org.spout.api.exception.MissingCommandException;
 import org.spout.api.exception.WrappedCommandException;
-import org.spout.api.plugin.Platform;
 import org.spout.api.util.Named;
 import org.spout.api.util.StringUtil;
 
@@ -61,11 +58,11 @@ import gnu.trove.set.hash.TCharHashSet;
 
 public class SimpleCommand implements Command {
 	protected final Map<String, Command> children = new HashMap<String, Command>();
+	private CommandExecutor executor;
 	protected Command parent;
 	private final Named owner;
 	private boolean locked;
 	protected List<String> aliases = new ArrayList<String>();
-	protected Map<Platform, CommandExecutor> executors = new HashMap<Platform, CommandExecutor>();
 	protected RawCommandExecutor rawExecutor;
 	protected String help;
 	protected String usage;
@@ -164,29 +161,13 @@ public class SimpleCommand implements Command {
 
 	@Override
 	public Command setExecutor(CommandExecutor executor) {
-		return setExecutor(Platform.ALL, executor);
-	}
-
-	@Override
-	public Command setExecutor(Platform platform, CommandExecutor executor) {
-		Validate.notNull(platform);
-		Validate.notNull(executor);
-
-		if (!isLocked()) {
-			this.executors.put(platform, executor);
-		}
+		this.executor = executor;
 		return this;
 	}
-	
+
 	@Override
 	public CommandExecutor getExecutor() {
-		return getExecutor(Platform.ALL);
-	}
-	
-	@Override
-	public CommandExecutor getExecutor(Platform platform) {
-		Validate.notNull(platform);
-		return this.executors.get(platform);
+		return executor;
 	}
 
 	@Override
@@ -206,21 +187,6 @@ public class SimpleCommand implements Command {
 		return this;
 	}
 
-	public CommandExecutor getActiveExecutor() {
-		final Engine engine = Spout.getEngine();
-		final Platform platform;
-		if (engine == null) {
-			platform = Platform.ALL;
-		} else {
-			platform = engine.getPlatform();
-		}
-		CommandExecutor exec = executors.get(platform);
-		if (exec == null) {
-			exec = executors.get(Platform.ALL);
-		}
-		return exec;
-	}
-
 	@Override
 	public void execute(CommandSource source, String name, List<ChatSection> args, int baseIndex, boolean fuzzyLookup) throws CommandException {
 		Validate.notNull(source);
@@ -232,8 +198,6 @@ public class SimpleCommand implements Command {
 			return;
 		}
 
-		CommandExecutor executor = getActiveExecutor();
-		
 		if (args.size() > baseIndex && children.size() > 0) {
 			Command sub = null;
 			if (args.size() > baseIndex) {
@@ -247,7 +211,7 @@ public class SimpleCommand implements Command {
 				throw getMissingChildException(getUsage(name, args, baseIndex));
 			}
 		}
-		
+
 		if (executor == null || baseIndex > args.size()) {
 			throw new MissingCommandException("No command found!", getUsage(name, args, baseIndex));
 		}

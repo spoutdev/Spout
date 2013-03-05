@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
+import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.exception.ConfigurationException;
 import org.spout.api.exception.InvalidDescriptionFileException;
@@ -62,7 +63,7 @@ public class PluginDescriptionFile {
 	private final ConfigurationProperty<List<String>> authors = new RegexListProperty("author", "author(s)?", true);
 	private final ConfigurationProperty<String> website = new BasicProperty<String>("website", null, String.class);
 	private final ConfigurationProperty<Boolean> reload = new BasicProperty<Boolean>("reload", false, Boolean.class);
-	private final ConfigurationProperty<Platform> platform = new BasicProperty<Platform>("platform", Platform.class);
+	private final ConfigurationProperty<String> platform = new BasicProperty<String>("platform", String.class);
 	private final ConfigurationProperty<LoadOrder> load = new BasicProperty<LoadOrder>("load", LoadOrder.POSTWORLD, LoadOrder.class);
 	private final ConfigurationProperty<String> main = new BasicProperty<String>("main", String.class);
 	private final ConfigurationProperty<List<String>> depends = new RegexListProperty("depends", "depend(s)?", false);
@@ -70,7 +71,7 @@ public class PluginDescriptionFile {
 	private final ConfigurationProperty<Locale> codedLocale = new LocaleProperty("codedlocale", Locale.ENGLISH);
 	private final ConfigurationProperty<Map<String, String>> components = new DataProperty("components");
 
-	public PluginDescriptionFile(String name, String version, String main, Platform platform) {
+	public PluginDescriptionFile(String name, String version, String main, String platform) {
 		this.name.setValue(name);
 		this.version.setValue(version);
 		this.main.setValue(main);
@@ -243,8 +244,14 @@ public class PluginDescriptionFile {
 	 * Returns the plugin's platform
 	 * @return platform
 	 */
-	public Platform getPlatform() {
-		return platform.getValue();
+	public boolean isValidPlatform(Platform platform) {
+		if (platform.name().equalsIgnoreCase(this.platform.getValue())) {
+			return true;
+		}
+		if (this.platform.getValue().equalsIgnoreCase("all") || this.platform.getValue().equalsIgnoreCase("both")) {
+			return true;
+		}
+		return false;
 	}
 
 	/**

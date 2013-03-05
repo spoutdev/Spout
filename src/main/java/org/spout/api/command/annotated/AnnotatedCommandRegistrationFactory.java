@@ -34,13 +34,7 @@ import java.lang.reflect.Modifier;
 
 import org.spout.api.Client;
 import org.spout.api.Engine;
-import org.spout.api.Server;
-import org.spout.api.Spout;
 import org.spout.api.command.CommandRegistrationsFactory;
-import org.spout.api.input.InputManager;
-import org.spout.api.input.Keyboard;
-import org.spout.api.input.Mouse;
-import org.spout.api.plugin.Platform;
 import org.spout.api.util.Named;
 
 public class AnnotatedCommandRegistrationFactory implements CommandRegistrationsFactory<Class<?>> {
@@ -52,19 +46,22 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 
 	private final AnnotatedCommandExecutorFactory executorFactory;
 
-	public AnnotatedCommandRegistrationFactory() {
-		this(null, new SimpleAnnotatedCommandExecutorFactory());
+	private final Engine engine;
+
+	public AnnotatedCommandRegistrationFactory(Engine engine) {
+		this(engine, null, new SimpleAnnotatedCommandExecutorFactory());
 	}
 
-	public AnnotatedCommandRegistrationFactory(Injector injector) {
-		this(injector, new SimpleAnnotatedCommandExecutorFactory());
+	public AnnotatedCommandRegistrationFactory(Engine engine, Injector injector) {
+		this(engine, injector, new SimpleAnnotatedCommandExecutorFactory());
 	}
 
-	public AnnotatedCommandRegistrationFactory(AnnotatedCommandExecutorFactory executorFactory) {
-		this(null, executorFactory);
+	public AnnotatedCommandRegistrationFactory(Engine engine, AnnotatedCommandExecutorFactory executorFactory) {
+		this(engine, null, executorFactory);
 	}
 
-	public AnnotatedCommandRegistrationFactory(Injector injector, AnnotatedCommandExecutorFactory executorFactory) {
+	public AnnotatedCommandRegistrationFactory(Engine engine, Injector injector, AnnotatedCommandExecutorFactory executorFactory) {
+		this.engine = engine;
 		this.injector = injector;
 		this.executorFactory = executorFactory;
 	}
@@ -91,21 +88,6 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 		}
 
 		Command command = obj.getAnnotation(Command.class);
-		Engine engine = Spout.getEngine();
-		switch (command.platform()) {
-			case CLIENT:
-				if (!(engine instanceof Client)) {
-					return null;
-				}
-				break;
-			case SERVER:
-			case PROXY:
-				if (!(engine instanceof Server)) {
-					return null;
-				}
-				break;
-		}
-
 		if (command.aliases().length < 1) {
 			throw new IllegalArgumentException("Command must have at least one alias");
 		}
@@ -205,15 +187,9 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 			}
 			anyRegistered = true;
 
-			if (!nestedClassRegistration(owner, clazz, subInstance, child)
-					&& !methodRegistration(owner, clazz, subInstance, child)) {
+			if (!nestedClassRegistration(owner, clazz, subInstance, child) && !methodRegistration(owner, clazz, subInstance, child)) {
 				for (Method method : clazz.getDeclaredMethods()) {
-					if (!method.isAnnotationPresent(Executor.class)) {
-						continue;
-					}
-
-					Platform platform = method.getAnnotation(Executor.class).value();
-					child.setExecutor(platform, executorFactory.getAnnotatedCommandExecutor(subInstance, method));
+					child.setExecutor(executorFactory.getAnnotatedCommandExecutor(subInstance, method));
 				}
 			}
 		}
