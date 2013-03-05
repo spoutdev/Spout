@@ -27,6 +27,8 @@
 package org.spout.api.lighting;
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -111,6 +113,24 @@ public class LightingRegistry {
 	 */
 	public static LightingManager<?> get(String name) {
 		return nameLookup.get(formatName(name));
+	}
+	
+	/**
+	 * Gets the LightingManager by a portion of its name. Case-insensitive.
+	 *
+	 * @param name to lookup
+	 * @return LightingManager, or null if none found
+	 */
+	public static LightingManager<?> getContains(String name) {
+		String formatName = formatName(name);
+		Iterator<Entry<String, LightingManager<?>>> itr = nameLookup.entrySet().iterator();
+		while (itr.hasNext()) {
+			Entry<String, LightingManager<?>> entry = itr.next();
+			if (entry.getKey() != null && entry.getKey().contains(formatName)) {
+				return entry.getValue();
+			}
+		}
+		return null;
 	}
 	
 	/**
