@@ -1,6 +1,6 @@
 This file is part of ${name}.
 
-${copyright} <${url}/>
+Copyright (c) ${inceptionYear} ${organization} <${url}/>
 ${name} is licensed under the Spout License Version 1.
 
 ${name} is free software: you can redistribute it and/or modify it under

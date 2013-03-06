@@ -1,7 +1,7 @@
 /*
  * This file is part of Math.
  *
- * Copyright (c) 2011-2013, Spout LLC <http://www.spout.org/>
+ * Copyright (c) 2011 Spout LLC <http://www.spout.org/>
  * Math is licensed under the Spout License Version 1.
  *
  * Math is free software: you can redistribute it and/or modify it under
