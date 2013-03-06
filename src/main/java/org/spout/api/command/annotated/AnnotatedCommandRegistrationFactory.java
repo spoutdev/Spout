@@ -113,29 +113,32 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 
 	protected final boolean methodRegistration(Named owner, Class<?> commands, Object instance, org.spout.api.command.Command parent) {
 		boolean success = true, anyRegistered = false;
-		for (Method method : commands.getDeclaredMethods()) {
-			// Basic checks
-			method.setAccessible(true);
-			if (!Modifier.isStatic(method.getModifiers()) && instance == null) {
-				continue;
-			}
-			org.spout.api.command.Command child = createCommand(owner, parent, method);
-			if (child == null) {
-				continue;
-			}
-			anyRegistered = true;
-
-			if (method.isAnnotationPresent(NestedCommand.class)) {
-				for (Class<?> clazz : method.getAnnotation(NestedCommand.class).value()) {
-					success &= create(owner, clazz, child);
+		while(commands != null) {
+			for (Method method : commands.getDeclaredMethods()) {
+				// Basic checks
+				method.setAccessible(true);
+				if (!Modifier.isStatic(method.getModifiers()) && instance == null) {
+					continue;
 				}
-				if ( !method.getAnnotation(NestedCommand.class).ignoreBody() ) {
-				    child.setExecutor(executorFactory.getAnnotatedCommandExecutor(instance, method));
+				org.spout.api.command.Command child = createCommand(owner, parent, method);
+				if (child == null) {
+					continue;
 				}
-			} else {
-				child.setExecutor(executorFactory.getAnnotatedCommandExecutor(instance, method));
+				anyRegistered = true;
+	
+				if (method.isAnnotationPresent(NestedCommand.class)) {
+					for (Class<?> clazz : method.getAnnotation(NestedCommand.class).value()) {
+						success &= create(owner, clazz, child);
+					}
+					if ( !method.getAnnotation(NestedCommand.class).ignoreBody() ) {
+					    child.setExecutor(executorFactory.getAnnotatedCommandExecutor(instance, method));
+					}
+				} else {
+					child.setExecutor(executorFactory.getAnnotatedCommandExecutor(instance, method));
+				}
+				child.closeSubCommand();
 			}
-			child.closeSubCommand();
+			commands = commands.getSuperclass();
 		}
 		return success && anyRegistered;
 	}
