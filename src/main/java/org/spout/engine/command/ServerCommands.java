@@ -51,7 +51,7 @@ public class ServerCommands extends CommonCommands{
 
 	@Override
 	public SpoutServer getEngine() {
-		return (SpoutServer) getEngine();
+		return (SpoutServer) super.getEngine();
 	}
 
 	@Command(aliases = "whitelist", desc = "Add, remove, list, or toggle players on the whitelist.", usage = "<add|remove|list|on|off> [player] [reason]", min = 1, max = 3)
