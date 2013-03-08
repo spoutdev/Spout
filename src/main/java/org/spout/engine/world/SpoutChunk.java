@@ -2393,7 +2393,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	
 	@Override
 	public CuboidLightBuffer getLightBuffer(short id) {
-		TickStage.checkStage(TickStage.LIGHTING);
+		//TickStage.checkStage(TickStage.LIGHTING);
 		return setIfAbsentLightBuffer(id, null);
 	}
 		
