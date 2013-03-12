@@ -30,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 public class FormattedLogRecord extends LogRecord {
+	private static final long serialVersionUID = 1L;
 	/**
 	 * Construct a LogRecord with the given level and message values.
 	 * <p/>

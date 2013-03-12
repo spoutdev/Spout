@@ -41,7 +41,6 @@ import org.spout.api.chat.channel.ChatChannel;
 import org.spout.api.chat.channel.ChatChannelFactory;
 import org.spout.api.chat.channel.PermissionChatChannel;
 import org.spout.api.chat.completion.CompletionManager;
-import org.spout.api.chat.console.MultiConsole;
 import org.spout.api.command.Command;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.RootCommand;
@@ -504,13 +503,6 @@ public interface Engine extends Named {
 	 * @return the console command source
 	 */
 	public CommandSource getCommandSource();
-
-	/**
-	 * Gets the console collection that the engine is currently using.
-	 * This can be used to modify console output and print raw text to the console
-	 * @return The engine's console collection
-	 */
-	public MultiConsole getConsoles();
 
 	/**
 	 * Get the manager responsible for completions
