@@ -123,6 +123,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.spout</groupId>
+			<artifactId>logging</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.lwjgl.lwjgl</groupId>
 			<artifactId>lwjgl</artifactId>
 			<version>${lwjglVersion}</version>
@@ -138,12 +144,6 @@
 			<groupId>org.spout</groupId>
 			<artifactId>spoutapi</artifactId>
 			<version>${apiVersion}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.spout</groupId>
-			<artifactId>logging</artifactId>
-			<version>dev-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<!-- Testing only -->
