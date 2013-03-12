@@ -51,7 +51,6 @@ import org.spout.api.entity.Entity;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.gui.FullScreen;
 import org.spout.api.gui.Screen;
-import org.spout.api.gui.ScreenStack;
 import org.spout.api.gui.Widget;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.gui.render.RenderPartPack;
@@ -85,7 +84,7 @@ import static org.lwjgl.opengl.GL11.glClear;
 public class SpoutRenderer {
 	private final SpoutClient client;
 	private DebugScreen debugScreen;
-	private ScreenStack screenStack;
+	private SpoutScreenStack screenStack;
 	private boolean showDebugInfos = true;
 	private ArrayList<RenderMaterial> postProcessMaterials = new ArrayList<RenderMaterial>();
 	private boolean ccoverride = false;
@@ -316,7 +315,7 @@ public class SpoutRenderer {
 		return worldRenderer;
 	}
 
-	public ScreenStack getScreenStack() {
+	public SpoutScreenStack getScreenStack() {
 		return screenStack;
 	}
 

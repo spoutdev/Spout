@@ -34,7 +34,6 @@ import java.util.List;
 
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
-import org.spout.api.chat.console.Console;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.gui.component.LabelComponent;
@@ -47,7 +46,7 @@ import org.spout.api.plugin.CommonPluginManager;
 import org.spout.api.render.Font;
 import org.spout.api.render.SpoutRenderMaterials;
 
-public class DevConsole extends Screen implements Console {
+public class DevConsole extends Screen{
 	// The Internal Spout-dummy plugin
 	private final SpoutMetaPlugin plugin;
 	private final Font font;
@@ -70,7 +69,6 @@ public class DevConsole extends Screen implements Console {
 		scroll = 0;
 	}
 
-	@Override
 	public void init() {
 		setGrabsMouse(true);
 		setTakesInput(false);
@@ -105,22 +103,14 @@ public class DevConsole extends Screen implements Console {
 		attachWidget(plugin, textfield);
 	}
 
-	@Override
 	public boolean isInitialized() {
 		return true;
 	}
 
-	@Override
-	public void close() {
-		
-	}
-
-	@Override
 	public void setDateFormat(DateFormat format) {
 		this.dateFormat = format;
 	}
 
-	@Override
 	public void addMessage(ChatArguments message) {
 		Widget wid = new SpoutWidget();
 		wid.getTransform().setPosition(-0.95f, 0.9f - scroll);

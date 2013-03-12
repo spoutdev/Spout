@@ -27,10 +27,11 @@
 package org.spout.engine.chat.console;
 
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
 
 import com.google.common.base.Preconditions;
-import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
+import org.spout.api.chat.FormattedLogRecord;
 import org.spout.api.chat.channel.ChatChannel;
 import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.Command;
@@ -100,7 +101,7 @@ public class ConsoleCommandSource implements CommandSource {
 
 	@Override
 	public boolean sendRawMessage(ChatArguments message) {
-		engine.getConsoles().addMessage(message);
+		engine.getLogger().log(new FormattedLogRecord(Level.INFO, message));
 		return true;
 	}
 

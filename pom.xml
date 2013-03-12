@@ -140,6 +140,12 @@
 			<version>${apiVersion}</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.spout</groupId>
+			<artifactId>logging</artifactId>
+			<version>dev-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
 		<!-- Testing only -->
 		<dependency>
 			<groupId>junit</groupId>

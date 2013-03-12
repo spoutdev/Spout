@@ -58,7 +58,6 @@ import org.spout.api.Platform;
 import org.spout.api.chat.channel.ChatChannelFactory;
 import org.spout.api.chat.completion.CompletionManager;
 import org.spout.api.chat.completion.CompletionManagerImpl;
-import org.spout.api.chat.console.MultiConsole;
 import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
@@ -99,8 +98,6 @@ import org.spout.api.util.StringMap;
 import org.spout.api.util.StringUtil;
 import org.spout.engine.chat.SpoutChatChannelFactory;
 import org.spout.engine.chat.console.ConsoleManager;
-import org.spout.engine.chat.console.JLineConsole;
-import org.spout.engine.chat.console.NonClosingFileConsole;
 import org.spout.engine.command.ClientCommands;
 import org.spout.engine.command.CommonCommands;
 import org.spout.engine.command.InputCommands;
@@ -162,7 +159,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	private StringMap engineItemMap = null;
 	private StringMap engineBiomeMap = null;
 	private StringMap engineLightingMap = null;
-	private MultiConsole console;
 	private SpoutApplication arguments;
 	private MemoryReclamationThread reclamation = null;
 	private DefaultPermissions defaultPerms;
@@ -182,8 +178,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 			log("Error loading config: %0", Level.SEVERE, e.getMessage(), e);
 		}
 
-		console = new MultiConsole(new NonClosingFileConsole(this), new JLineConsole(this));
-		consoleManager.setupConsole(console);
+		consoleManager.setupConsole();
 
 		scheduler.addAsyncManager(this);
 
@@ -484,7 +479,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 				for (SpoutWorld world : engine.getLiveWorlds()) {
 					world.unload(true);
 				}
-				console.close();
 			}
 		};
 
@@ -830,11 +824,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 	public boolean isSetupComplete() {
 		return setupComplete.get();
-	}
-
-	@Override
-	public MultiConsole getConsoles() {
-		return console;
 	}
 
 	// The engine doesn't do any of these

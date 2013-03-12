@@ -26,27 +26,24 @@
  */
 package org.spout.engine.chat.console;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.File;
 import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-
+import jline.Completor;
 import org.spout.api.Engine;
 import org.spout.api.chat.ChatArguments;
-import org.spout.api.chat.ChatTemplate;
-import org.spout.api.chat.FormattedLogRecord;
-import org.spout.api.chat.Placeholder;
-import org.spout.api.chat.console.Console;
-import org.spout.api.chat.style.ChatStyle;
-
+import org.spout.api.chat.ChatLogFormatter;
 import org.spout.engine.SpoutEngine;
+import org.spout.engine.chat.style.JansiStyleHandler;
+import org.spout.engine.filesystem.SharedFileSystem;
+import org.spout.logging.LoggerOutputStream;
+import org.spout.logging.file.RotatingFileHandler;
+import org.spout.logging.jline.CommandCallback;
+import org.spout.logging.jline.JLineHandler;
 
 /**
  * A meta-class to handle all logging and input-related console improvements.
@@ -54,7 +51,6 @@ import org.spout.engine.SpoutEngine;
 public final class ConsoleManager {
 	private final Engine engine;
 	private final ConsoleCommandSource source;
-	private SpoutHandler handler;
 
 	public ConsoleManager(SpoutEngine engine) {
 		this.engine = engine;
@@ -67,21 +63,22 @@ public final class ConsoleManager {
 		return source;
 	}
 
-	public void stop() {
-		handler.close();
-	}
-
-	public void setupConsole(Console console) {
-		handler = new SpoutHandler(console);
-
+	public void setupConsole() {
 		Logger logger = Logger.getLogger("");
 		for (Handler h : logger.getHandlers()) {
 			logger.removeHandler(h);
 		}
-		console.init();
-		logger.addHandler(handler);
-		System.setOut(new PrintStream(new LoggerOutputStream(Level.INFO), true));
-		System.setErr(new PrintStream(new LoggerOutputStream(Level.SEVERE), true));
+
+		Handler jLineHandler = new JLineHandler(new CommandTask(), Arrays.asList(new Completor[]{new SpoutCommandCompletor(engine)}));
+		jLineHandler.setFormatter(new ChatLogFormatter(JansiStyleHandler.ID));
+		logger.addHandler(jLineHandler);
+
+		Handler fileHandler = new RotatingFileHandler(new File(SharedFileSystem.getParentDirectory(), "logs"), engine.getLogFile(), engine.debugMode());
+		fileHandler.setFormatter(new ChatLogFormatter());
+		logger.addHandler(fileHandler);
+
+		System.setOut(new PrintStream(new LoggerOutputStream(logger, Level.INFO), true));
+		System.setErr(new PrintStream(new LoggerOutputStream(logger, Level.SEVERE), true));
 	}
 
 	private static class ServerShutdownThread extends Thread {
@@ -99,80 +96,34 @@ public final class ConsoleManager {
 		}
 	}
 
-	private class LoggerOutputStream extends ByteArrayOutputStream {
-		private final String separator = System.getProperty("line.separator");
-		private final Level level;
+	private class CommandTask implements Runnable, CommandCallback {
+		private final String command;
+		private final ChatArguments arguments;
 
-		public LoggerOutputStream(Level level) {
-			super();
-			this.level = level;
+		public CommandTask() {
+			command = null;
+			arguments = null;
 		}
 
-		@Override
-		public synchronized void flush() throws IOException {
-			super.flush();
-			String record = this.toString();
-			super.reset();
-
-			if (record.length() > 0 && !record.equals(separator)) {
-				engine.getLogger().logp(level, "LoggerOutputStream", "log" + level, record);
-			}
-		}
-	}
-
-	private static class SpoutHandler extends Handler {
-		private static final Placeholder LEVEL = new Placeholder("level"), MESSAGE = new Placeholder("message");
-		private static final ChatTemplate LOG_TEMPLATE = new ChatTemplate(new ChatArguments("[", LEVEL, "] ", MESSAGE));
-		private final Console console;
-
-		public SpoutHandler(Console console) {
-			this.console = console;
-			setFormatter(new SimpleFormatter());
-		}
-
-		@Override
-		public void publish(LogRecord record) {
-			ChatArguments args = LOG_TEMPLATE.getArguments();
-			ChatArguments level = colorizeLevel(record.getLevel());
-			args.setPlaceHolder(LEVEL, level);
-			if (record instanceof FormattedLogRecord) {
-				args.setPlaceHolder(MESSAGE, ((FormattedLogRecord) record).getFormattedMessage());
+		public CommandTask(String commandLine) {
+			int spaceIndex = commandLine.indexOf(" ");
+			if (spaceIndex != -1) {
+				command = commandLine.substring(0, spaceIndex);
+				arguments = new ChatArguments(commandLine.substring(spaceIndex + 1));
 			} else {
-				args.setPlaceHolder(MESSAGE, new ChatArguments(getFormatter().formatMessage(record)));
+				command = commandLine;
+				arguments = new ChatArguments();
 			}
-			console.addMessage(args);
-
-			if (record.getThrown() != null) {
-				StringWriter writer = new StringWriter();
-				record.getThrown().printStackTrace(new PrintWriter(writer));
-				String[] lines = writer.getBuffer().toString().split("\n");
-				for (String line : lines) {
-					console.addMessage(LOG_TEMPLATE.getArguments().setPlaceHolder(LEVEL, level).setPlaceHolder(MESSAGE, new ChatArguments(line)));
-				}
-			}
-		}
-
-		public ChatArguments colorizeLevel(Level level) {
-			ChatStyle color;
-			if (level.intValue() >= Level.SEVERE.intValue()) {
-				color = ChatStyle.RED;
-			} else if (level.intValue() >= Level.WARNING.intValue()) {
-				color = ChatStyle.YELLOW;
-			} else if (level.intValue() >= Level.INFO.intValue()) {
-				color = ChatStyle.DARK_GREEN;
-			} else {
-				color = ChatStyle.GRAY;
-			}
-			return new ChatArguments(color, level, ChatStyle.RESET);
 		}
 
 		@Override
-		public void flush() {
+		public void run() {
+			engine.getCommandSource().sendCommand(command, arguments);
 		}
 
 		@Override
-		public void close() {
-			console.close();
+		public void handleCommand(String command) {
+			engine.getScheduler().scheduleSyncDelayedTask(null, new CommandTask(command.trim()));
 		}
 	}
 }

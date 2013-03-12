@@ -33,6 +33,7 @@ import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.Command;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.Message;
+import org.spout.engine.gui.SpoutScreenStack;
 import org.spout.engine.protocol.SpoutSession;
 
 /**
@@ -46,19 +47,13 @@ public class SpoutClientPlayer extends SpoutPlayer {
 
 	@Override
 	public boolean sendRawMessage(ChatArguments message) {
-		SpoutSession<?> session;
-		try {
-			session = getSession();
-		} catch (IllegalArgumentException iae) {
-			getEngine().getConsoles().addMessage(message);
+		SpoutSession<?> session = getSession();
+		if (session == null) {
+			((SpoutScreenStack)((Client)getEngine()).getScreenStack()).getConsole().addMessage(message);
 			return true;
-		}
-		if (session==null) {
-			((Client)getEngine()).getScreenStack().getConsole().addMessage(message);
 		} else {
-			session.getEngine().getConsoles().addMessage(message);
+			return super.sendRawMessage(message);
 		}
-		return true;
 	}
 
 	@Override

@@ -32,7 +32,6 @@ import java.util.LinkedList;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
-import org.spout.api.chat.console.Console;
 import org.spout.api.gui.DebugHUD;
 import org.spout.api.gui.FullScreen;
 import org.spout.api.gui.Screen;
@@ -174,7 +173,7 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 	/**
 	 * Get the ingame developper's console
 	 */
-	public Console getConsole() {
+	public DevConsole getConsole() {
 		return console;
 	}
 	

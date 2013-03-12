@@ -85,6 +85,7 @@ import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.entity.component.ClientTextModelComponent;
 import org.spout.engine.filesystem.ClientFileSystem;
+import org.spout.engine.gui.SpoutScreenStack;
 import org.spout.engine.input.SpoutInputManager;
 import org.spout.engine.listener.SpoutClientListener;
 import org.spout.engine.listener.channel.SpoutClientConnectListener;
@@ -109,7 +110,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	private String stopMessage = null;
 	private final ClientBootstrap bootstrap = new ClientBootstrap();
 	private boolean ccoverride = false;
-	SpoutRenderer renderer;
+	private SpoutRenderer renderer;
 	private SpoutInputManager inputManager;
 
 	public SpoutClient() {
@@ -461,7 +462,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	@Override
-	public ScreenStack getScreenStack() {
+	public SpoutScreenStack getScreenStack() {
 		return renderer.getScreenStack();
 	}
 
