@@ -235,10 +235,6 @@ public class ServerCommands extends CommonCommands{
 	public void serverSay(CommandContext args, CommandSource source) throws CommandException {
 		ChatArguments message = args.getJoinedString(0);
 		if (!message.getPlainString().isEmpty()) {
-			if (!source.hasPermission("spout.chat.send")) {
-				throw new CommandException("You do not have permission to send chat messages");
-			}
-
 			ChatArguments template;
 			String name;
 			if (source instanceof Player) {
