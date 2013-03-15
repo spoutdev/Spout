@@ -104,7 +104,7 @@ public class AnnotatedCommandRegistrationFactory implements CommandRegistrations
 				throw new IllegalArgumentException("Command binding must allow at least 1 argument.");
 			}
 			Binding binding = obj.getAnnotation(Binding.class);
-			org.spout.api.input.Binding b = new org.spout.api.input.Binding(child.getPreferredName(), binding.keys(), binding.mouse());
+			org.spout.api.input.Binding b = new org.spout.api.input.Binding(child.getPreferredName(), binding.keys(), binding.mouse()).setAsync(binding.async());
 			((Client) engine).getInputManager().bind(b);
 		}
 

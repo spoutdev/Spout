@@ -26,6 +26,8 @@
  */
 package org.spout.api.input;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * Represents a binding between an input action and a command.
  */
@@ -33,6 +35,7 @@ public class Binding {
 	private final String cmd;
 	private final Keyboard[] keys;
 	private final Mouse[] mouse;
+	private final AtomicBoolean async = new AtomicBoolean(false);
 
 	public Binding(String cmd, Keyboard[] keys, Mouse[] mouse) {
 		this.cmd = cmd;
@@ -78,6 +81,25 @@ public class Binding {
 	 */
 	public Mouse[] getMouseBindings() {
 		return mouse;
+	}
+
+	/**
+	 * Whether this binding can be executed asynchronously
+	 * 
+	 * @return async
+	 */
+	public boolean isAsync() {
+		return async.get();
+	}
+
+	/**
+	 * Sets whether the binding can be executed asynchronously
+	 * 
+	 * @param async
+	 */
+	public Binding setAsync(boolean async) {
+		this.async.set(async);
+		return this;
 	}
 
 	@Override

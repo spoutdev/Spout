@@ -40,4 +40,6 @@ public @interface Binding {
 	public Keyboard[] keys() default {};
 
 	public Mouse[] mouse() default {};
+	
+	public boolean async() default false;
 }
