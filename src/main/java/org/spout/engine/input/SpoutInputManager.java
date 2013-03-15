@@ -57,17 +57,17 @@ public class SpoutInputManager implements InputManager {
 	private boolean redirected = false;
 
 	public SpoutInputManager() {
-		bind(new Binding("forward", Keyboard.get(SpoutInputConfiguration.FORWARD.getString())));
-		bind(new Binding("backward", Keyboard.get(SpoutInputConfiguration.BACKWARD.getString())));
-		bind(new Binding("left", Keyboard.get(SpoutInputConfiguration.LEFT.getString())));
-		bind(new Binding("right", Keyboard.get(SpoutInputConfiguration.RIGHT.getString())));
-		bind(new Binding("jump", Keyboard.get(SpoutInputConfiguration.UP.getString())));
-		bind(new Binding("crouch", Keyboard.get(SpoutInputConfiguration.DOWN.getString())));
-		bind(new Binding("select_down", org.spout.api.input.Mouse.MOUSE_SCROLLDOWN));
-		bind(new Binding("select_up", org.spout.api.input.Mouse.MOUSE_SCROLLUP));
-		bind(new Binding("left_click", org.spout.api.input.Mouse.MOUSE_BUTTON0));
-		bind(new Binding("interact", org.spout.api.input.Mouse.MOUSE_BUTTON1));
-		bind(new Binding("fire_2", org.spout.api.input.Mouse.MOUSE_BUTTON2));
+		bind(new Binding("forward", Keyboard.get(SpoutInputConfiguration.FORWARD.getString())).setAsync(true));
+		bind(new Binding("backward", Keyboard.get(SpoutInputConfiguration.BACKWARD.getString())).setAsync(true));
+		bind(new Binding("left", Keyboard.get(SpoutInputConfiguration.LEFT.getString())).setAsync(true));
+		bind(new Binding("right", Keyboard.get(SpoutInputConfiguration.RIGHT.getString())).setAsync(true));
+		bind(new Binding("jump", Keyboard.get(SpoutInputConfiguration.UP.getString())).setAsync(true));
+		bind(new Binding("crouch", Keyboard.get(SpoutInputConfiguration.DOWN.getString())).setAsync(true));
+		bind(new Binding("select_down", org.spout.api.input.Mouse.MOUSE_SCROLLDOWN).setAsync(true));
+		bind(new Binding("select_up", org.spout.api.input.Mouse.MOUSE_SCROLLUP).setAsync(true));
+		bind(new Binding("left_click", org.spout.api.input.Mouse.MOUSE_BUTTON0).setAsync(true));
+		bind(new Binding("interact", org.spout.api.input.Mouse.MOUSE_BUTTON1).setAsync(true));
+		bind(new Binding("fire_2", org.spout.api.input.Mouse.MOUSE_BUTTON2).setAsync(true));
 	}
 
 	@Override
@@ -264,8 +264,33 @@ public class SpoutInputManager implements InputManager {
 
 	private void executeBindings(Set<Binding> bindings, Player player, boolean pressed) {
 		ChatArguments args = new ChatArguments(pressed ? "+" : "-");
+		//Queue up sync bindings first
 		for (Binding binding : bindings) {
-			player.processCommand(binding.getCommand(), args);
+			if (!binding.isAsync()) {
+				player.getEngine().getScheduler().scheduleSyncDelayedTask(null, new BindingTask(player, binding.getCommand(), args));
+			}
+		}
+		//Execute async bindings
+		for (Binding binding : bindings) {
+			if (binding.isAsync()) {
+				player.processCommand(binding.getCommand(), args);
+			}
+		}
+	}
+
+	private static class BindingTask implements Runnable {
+		private final Player player;
+		private final String command;
+		private final ChatArguments arguments;
+		BindingTask(Player player, String command, ChatArguments arguments) {
+			this.player = player;
+			this.command = command;
+			this.arguments = arguments;
+		}
+
+		@Override
+		public void run() {
+			player.processCommand(command, arguments);
 		}
 	}
 

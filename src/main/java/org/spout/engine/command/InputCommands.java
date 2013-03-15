@@ -50,7 +50,7 @@ public class InputCommands {
 	}
 
 	@org.spout.api.command.annotated.Command(aliases = "dev_console", desc = "Toggle display of debugging info.", min = 1, max = 1)
-	@Binding(keys = Keyboard.KEY_F2)
+	@Binding(keys = Keyboard.KEY_F2, async = true)
 	public void devConsole(CommandContext args, CommandSource source) {
 		if (!args.getString(0).equalsIgnoreCase("+")) {
 			return;
@@ -68,7 +68,7 @@ public class InputCommands {
 	}
 
 	@org.spout.api.command.annotated.Command(aliases = "debug_info", desc = "Toggle display of debugging info.", min = 1, max = 1)
-	@Binding(keys = Keyboard.KEY_F3)
+	@Binding(keys = Keyboard.KEY_F3, async = true)
 	public void debugInfo(CommandContext args, CommandSource source) {
 		if (!args.getString(0).equalsIgnoreCase("+")) {
 			return;
