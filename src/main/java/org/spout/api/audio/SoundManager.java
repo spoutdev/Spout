@@ -26,8 +26,9 @@
  */
 package org.spout.api.audio;
 
-import java.util.List;
 import java.util.Set;
+
+import org.spout.api.Client;
 
 /**
  * Manages Sounds.
@@ -36,8 +37,8 @@ public interface SoundManager {
 	/**
 	 * Initializes the sound manager.
 	 */
-	public void init();
-	
+	public void init(Client client);
+
 	/**
 	 * Creates a new {@link SoundSource} with the specified name
 	 *

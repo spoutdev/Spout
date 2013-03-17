@@ -26,6 +26,7 @@
  */
 package org.spout.api;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.spout.api.event.EventManager;
@@ -35,14 +36,70 @@ import org.spout.api.scheduler.Scheduler;
 
 /**
  * Represents the Spout core, to get singleton {@link Engine} instance
- *
  */
-@Deprecated
 public final class Spout {
+	private final static Logger logger = Logger.getLogger("Spout");
 	private static Engine instance = null;
 
 	private Spout() {
 		throw new IllegalStateException("Can not construct Spout instance");
+	}
+
+	/**
+	 * Gets the {@link Logger} instance that is used to write to the console.
+	 *
+	 * @return logger
+	 */
+	public static Logger getLogger() {
+		return logger;
+	}
+
+	public static void finest(String log, Throwable t) {
+		logger.log(Level.FINEST, log, t);
+	}
+
+	public static void finest(String log, Object ...params) {
+		logger.log(Level.FINEST, log, params);
+	}
+
+	public static void finer(String log, Throwable t) {
+		logger.log(Level.FINER, log, t);
+	}
+
+	public static void finer(String log, Object ...params) {
+		logger.log(Level.FINER, log, params);
+	}
+
+	public static void fine(String log, Throwable t) {
+		logger.log(Level.FINE, log, t);
+	}
+
+	public static void fine(String log, Object ...params) {
+		logger.log(Level.FINE, log, params);
+	}
+
+	public static void info(String log, Throwable t) {
+		logger.log(Level.INFO, log, t);
+	}
+
+	public static void info(String log, Object ...params) {
+		logger.log(Level.INFO, log, params);
+	}
+
+	public static void warn(String log, Throwable t) {
+		logger.log(Level.WARNING, log, t);
+	}
+
+	public static void warn(String log, Object ...params) {
+		logger.log(Level.WARNING, log, params);
+	}
+
+	public static void severe(String log, Throwable t) {
+		logger.log(Level.SEVERE, log, t);
+	}
+
+	public static void severe(String log, Object ...params) {
+		logger.log(Level.SEVERE, log, params);
 	}
 
 	public static void setEngine(Engine game) {
@@ -63,19 +120,6 @@ public final class Spout {
 	@Deprecated
 	public static Engine getEngine() {
 		return instance;
-	}
-
-	/**
-	 * Gets the {@link Logger} instance that is used to write to the console.
-	 *
-	 * @return logger
-	 */
-	@Deprecated
-	public static Logger getLogger() {
-		if (instance == null) {
-			return Logger.getLogger("");
-		}
-		return instance.getLogger();
 	}
 
 	/**
