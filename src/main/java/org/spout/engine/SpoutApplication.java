@@ -54,7 +54,6 @@ public class SpoutApplication {
 	@Parameter(names = {"--path"}, description = "Override path for the client")
 	public String path = null;
 
-	@SuppressWarnings("deprecation")
 	public static void main(String[] args) {
 		try {
 			SpoutApplication main = new SpoutApplication();

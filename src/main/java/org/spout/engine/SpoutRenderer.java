@@ -86,6 +86,7 @@ public class SpoutRenderer {
 	private DebugScreen debugScreen;
 	private SpoutScreenStack screenStack;
 	private boolean showDebugInfos = true;
+	@SuppressWarnings("unused")
 	private ArrayList<RenderMaterial> postProcessMaterials = new ArrayList<RenderMaterial>();
 	private boolean ccoverride = false;
 	private Vector2 resolution = new Vector2(1024, 768);

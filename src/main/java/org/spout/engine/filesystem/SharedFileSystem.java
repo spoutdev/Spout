@@ -127,7 +127,7 @@ public class SharedFileSystem implements FileSystem {
 		registerLoader(new TextureLoader());
 		registerLoader(new CommandBatchLoader());
 
-		searchPaths = new ResourcePathResolver[]{new FilePathResolver("cache"), new ZipFilePathResolver(), new JarFilePathResolver()};
+		searchPaths = new ResourcePathResolver[]{new FilePathResolver("cache"), new ZipFilePathResolver(), new JarFilePathResolver(engine)};
 	}
 
 	@Override

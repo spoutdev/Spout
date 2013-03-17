@@ -36,6 +36,7 @@ import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.OpenALException;
 
+import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.audio.Sound;
 import org.spout.api.audio.SoundListener;
@@ -49,7 +50,7 @@ public class SpoutSoundManager implements SoundManager {
 	private final SoundListener listener = new SpoutSoundListener();
 
 	@Override
-	public void init() {
+	public void init(Client client) {
 		try {
 			AL.create();
 		} catch (LWJGLException le) {
@@ -59,7 +60,7 @@ public class SpoutSoundManager implements SoundManager {
 		checkErrors();
 
 		// Initialize the listener
-		listener.setPosition(new Point(Spout.getEngine().getDefaultWorld(), 0, 0, 0));
+		listener.setPosition(new Point(client.getDefaultWorld(), 0, 0, 0));
 		listener.setVelocity(Vector3.ZERO);
 		listener.setOrientation(Vector3.ZERO, Vector3.ZERO);
 	}

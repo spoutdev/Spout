@@ -35,13 +35,19 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.resource.ResourcePathResolver;
 
 public class JarFilePathResolver implements ResourcePathResolver {
+	private final Engine engine;
+	public JarFilePathResolver(Engine engine) {
+		this.engine = engine;
+	}
+
 	public JarFile getJar(String host) throws IOException {
-		Plugin p = Spout.getEngine().getPluginManager().getPlugin(host);
+		Plugin p = engine.getPluginManager().getPlugin(host);
 		if (p == null) {
 			return null;
 		}
@@ -55,7 +61,7 @@ public class JarFilePathResolver implements ResourcePathResolver {
 		try {
 			f = getJar(host);
 			if (f == null) {
-				Spout.log("Tried to get file " + path + " from plugin " + host + " but it isn't loaded!");
+				Spout.info("Tried to get file " + path + " from plugin " + host + " but it isn't loaded!");
 				return false; //If the plugin doesn't exist, we don't have the file
 			}
 			b = f.getJarEntry(path.substring(1)) != null;

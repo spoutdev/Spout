@@ -64,7 +64,6 @@ import org.spout.api.event.engine.EngineStartEvent;
 import org.spout.api.event.engine.EngineStopEvent;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.gui.ScreenStack;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
@@ -144,7 +143,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		this.ccoverride = args.ccoverride;
 
 		inputManager = new SpoutInputManager();
-		soundManager.init();
+		soundManager.init(this);
 	}
 
 	@Override
@@ -194,6 +193,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 				Model model = modelHolderComponent.getModels().get(0);
 
 				Animation a1 = model.getAnimations().get("animatest1");
+				@SuppressWarnings("unused")
 				Animation a2 = model.getAnimations().get("animatest2");
 
 				//Launch first animation

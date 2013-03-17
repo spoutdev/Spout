@@ -26,9 +26,6 @@
  */
 package org.spout.engine.batcher;
 
-import org.lwjgl.opengl.GL11;
-import org.spout.api.gui.render.RenderPart;
-
 public class GL11SpriteBatch extends SpriteBatch {
 	
 	public void render() {
