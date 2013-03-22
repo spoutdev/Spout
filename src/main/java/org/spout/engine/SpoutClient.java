@@ -207,7 +207,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 				getActiveWorld().spawnEntity(e);
 
 				//The render need the active player to find the world to draw, so we start it after initialize player
-				renderer = getScheduler().startRenderThread(parent, new Vector2(1204, 796), ccoverride, null);
+				renderer = getScheduler().startRenderThread(new Vector2(1204, 796), ccoverride, null);
 			}
 		});
 
