@@ -97,7 +97,6 @@ import org.spout.engine.world.SpoutClientWorld;
 
 public class SpoutClient extends SpoutEngine implements Client {
 	private final SoundManager soundManager = new SpoutSoundManager();
-	private final String name = "Spout Client";
 	private final FileSystem filesystem;
 	private Camera activeCamera;
 	private final AtomicReference<SpoutClientSession> session = new AtomicReference<SpoutClientSession>();
@@ -171,13 +170,13 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 
 		final SpoutClient parent = this;
-		((SpoutScheduler) getScheduler()).coreSafeRun("Client setup task", new Runnable() {
+		getScheduler().coreSafeRun("Client setup task", new Runnable() {
 			public void run() {
 				activePlayer = new SpoutClientPlayer(parent, "Spouty", getDefaultWorld().getSpawnPoint(), SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
 				activeCamera = activePlayer.add(CameraComponent.class);
 				activePlayer.add(InteractComponent.class);
 				getActiveWorld().spawnEntity(activePlayer);
-				Font font = (ClientFont) getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
+				Font font = (ClientFont) getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-R.ttf");
 
 				// Test
 				ClientEntityPrefab spoutyType = (ClientEntityPrefab) parent.getFilesystem().getResource("entity://Spout/entities/Spouty/spouty.sep");
@@ -193,8 +192,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 				Model model = modelHolderComponent.getModels().get(0);
 
 				Animation a1 = model.getAnimations().get("animatest1");
-				@SuppressWarnings("unused")
-				Animation a2 = model.getAnimations().get("animatest2");
 
 				//Launch first animation
 				AnimationPlayed ac = animationComponent.playAnimation(model, a1, true);
@@ -264,7 +261,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public String getName() {
-		return name;
+		return "Spout Client";
 	}
 
 	@Override

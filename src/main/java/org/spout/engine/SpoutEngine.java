@@ -132,7 +132,6 @@ import org.spout.engine.world.WorldSavingThread;
 
 public abstract class SpoutEngine implements AsyncManager, Engine {
 	private static final Logger logger = Logger.getLogger("Spout");
-	private final String name = "Spout Engine";
 	private final CommonSecurityManager securityManager = new CommonSecurityManager(0); //TODO Need to integrate this/evaluate security in the engine.
 	private final CommonPluginManager pluginManager = new CommonPluginManager(this, securityManager, 0.0);
 	private final ConsoleManager consoleManager;
@@ -316,7 +315,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 	@Override
 	public String getName() {
-		return name;
+		return "Spout Engine";
 	}
 
 	@Override

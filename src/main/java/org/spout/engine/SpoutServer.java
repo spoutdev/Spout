@@ -87,10 +87,6 @@ import org.teleal.cling.transport.spi.InitializationException;
 
 public class SpoutServer extends SpoutEngine implements Server {
 	/**
-	 * The name of the server
-	 */
-	private final String name = "Spout Server";
-	/**
 	 * The {@link FileSystem} for the server
 	 */
 	private final FileSystem filesystem;
@@ -275,7 +271,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 
 	@Override
 	public String getName() {
-		return name;
+		return "Spout Server";
 	}
 
 	private UpnpService getUPnPService() {

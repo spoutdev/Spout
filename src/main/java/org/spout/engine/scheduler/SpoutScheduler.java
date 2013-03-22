@@ -41,11 +41,10 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Level;
 
 import org.lwjgl.opengl.Display;
-import org.spout.api.Client;
 import org.spout.api.Engine;
+import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.gui.ScreenStack;
 import org.spout.api.math.Vector2;
@@ -131,7 +130,7 @@ public final class SpoutScheduler implements Scheduler {
 	/**
 	 * Target Frames per Second for the renderer
 	 */
-	private static final int TARGET_FPS = 80;
+	private static final int TARGET_FPS = 60;
 	/**
 	 * Used to detect if the render is under heavy load
 	 */
@@ -198,8 +197,13 @@ public final class SpoutScheduler implements Scheduler {
 		this.engine = engine;
 
 		mainThread = new MainThread();
-		renderThread = new RenderThread();
-		guiThread = new GUIThread();
+		if (engine.getPlatform() == Platform.CLIENT) {
+			renderThread = new RenderThread((SpoutClient) engine);
+			guiThread = new GUIThread((SpoutClient) engine);
+		} else {
+			renderThread = null;
+			guiThread = null;
+		}
 		
 		executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2 + 1, new NamedThreadFactory("SpoutScheduler - async manager executor service", true));
 		
@@ -211,23 +215,29 @@ public final class SpoutScheduler implements Scheduler {
 	private class RenderThread extends Thread {
 		private int fps = 0;
 		boolean tooLongFrame = false;
-		SpoutRenderer renderer;
+		private SpoutRenderer renderer;
+		private final SpoutClient client;
 		private ConcurrentLinkedQueue<Runnable> renderTaskQueue = new ConcurrentLinkedQueue<Runnable>();
 		Canvas parent = null;
 		
 
-		public RenderThread() {
+		public RenderThread(SpoutClient client) {
 			super("Render Thread");
+			this.client = client;
 		}
+
 		public void setRenderer(SpoutRenderer renderer) {			
 			this.renderer = renderer;
 		}
+
 		public void enqueueRenderTask(Runnable task){
 			renderTaskQueue.add(task);
 		}
+
 		public void setParent(Canvas parent){
 			this.parent = parent;			
 		}
+
 		public int getFps() {
 			return fps;
 		}
@@ -238,7 +248,6 @@ public final class SpoutScheduler implements Scheduler {
 
 		@Override
 		public void run() {
-			SpoutClient c = (SpoutClient) Spout.getEngine();
 			renderer.initRenderer(parent);
 			int frames = 0;
 			long lastFrameTime = System.currentTimeMillis();
@@ -251,8 +260,8 @@ public final class SpoutScheduler implements Scheduler {
 			long maxError = rate >> 2; // time error total limited to 0.25 seconds 
 
 		while (!shutdown) {
-			if (Display.isCloseRequested() || !c.isRendering()) {
-				c.stop();
+			if (Display.isCloseRequested() || !client.isRendering()) {
+				client.stop();
 				break;
 			}
 			long currentTime = System.nanoTime();
@@ -308,7 +317,7 @@ public final class SpoutScheduler implements Scheduler {
 					try {
 						Thread.sleep(delay);
 					} catch (InterruptedException e) {
-						Spout.log("[Severe] Interrupted while sleeping!");
+						Spout.severe("Interrupted while sleeping!");
 					}
 				}
 				tooLongFrame = false;
@@ -327,7 +336,7 @@ public final class SpoutScheduler implements Scheduler {
 			frames++;
 		}
 		Display.destroy();
-		c.stopEngine();
+		client.stopEngine();
 		}
 	}
 
@@ -352,7 +361,7 @@ public final class SpoutScheduler implements Scheduler {
 					}
 					lastTick = startTime;
 				} catch (Exception ex) {
-					Spout.getLogger().log(Level.SEVERE, "Error while pulsing: {0}", ex.getMessage());
+					Spout.severe("Error while pulsing: {0}", ex.getMessage());
 					ex.printStackTrace();
 				}
 				long finishTime = System.currentTimeMillis();
@@ -379,7 +388,7 @@ public final class SpoutScheduler implements Scheduler {
 					renderThread.join();
 				}
 			} catch (InterruptedException ie) {
-				Spout.getLogger().info("Interrupted when waiting for render thread to end");
+				Spout.info("Interrupted when waiting for render thread to end");
 			}
 
 			try {
@@ -387,7 +396,7 @@ public final class SpoutScheduler implements Scheduler {
 					guiThread.join();
 				}
 			} catch (InterruptedException ie) {
-				Spout.getLogger().info("Interrupted when waiting for gui thread to end");
+				Spout.info("Interrupted when waiting for gui thread to end");
 			}
 
 			heavyLoad.set(false);
@@ -396,7 +405,7 @@ public final class SpoutScheduler implements Scheduler {
 			try {
 				copySnapshotWithLock(asyncManagers.get());
 			} catch (InterruptedException ex) {
-				Spout.getLogger().log(Level.SEVERE, "Interrupt while running final snapshot copy: {0}", ex.getMessage());
+				Spout.severe("Interrupt while running final snapshot copy: {0}", ex.getMessage());
 			}
 
 			taskManager.heartbeat(PULSE_EVERY << 2);
@@ -408,14 +417,14 @@ public final class SpoutScheduler implements Scheduler {
 				if (workers.size() == 0) {
 					break;
 				}
-				Spout.getLogger().info("Unable to shutdown due to async tasks still running");
+				Spout.info("Unable to shutdown due to async tasks still running");
 				for (Worker w : workers) {
 					Object owner = w.getOwner();
 					if (owner instanceof CommonPlugin) {
 						CommonPlugin p = (CommonPlugin) owner;
-						Spout.getLogger().info("Task with id of " + w.getTaskId() + " owned by " + p.getName() + " is still running");
+						Spout.info("Task with id of " + w.getTaskId() + " owned by " + p.getName() + " is still running");
 					} else {
-						Spout.getLogger().info("Task with id of " + w.getTaskId() + " owned by " + w.getOwner() + " is still running");
+						Spout.info("Task with id of " + w.getTaskId() + " owned by " + w.getOwner() + " is still running");
 					}
 				}
 				if (delay < 8000) {
@@ -429,7 +438,7 @@ public final class SpoutScheduler implements Scheduler {
 			try {
 				copySnapshotWithLock(asyncManagers.get());
 			} catch (InterruptedException ex) {
-				Spout.getLogger().log(Level.SEVERE, "Interrupt while running final snapshot copy: {0}", ex.getMessage());
+				Spout.severe("Interrupt while running final snapshot copy: {0}", ex.getMessage());
 			}
 
 			asyncManagers.copySnapshot();
@@ -437,7 +446,7 @@ public final class SpoutScheduler implements Scheduler {
 			try {
 				copySnapshotWithLock(asyncManagers.get());
 			} catch (InterruptedException ex) {
-				Spout.getLogger().log(Level.SEVERE, "Error while halting all executors: {0}", ex.getMessage());
+				Spout.severe("Error while halting all executors: {0}", ex.getMessage());
 			}
 
 			asyncManagers.copySnapshot();
@@ -445,7 +454,7 @@ public final class SpoutScheduler implements Scheduler {
 			try {
 				copySnapshotWithLock(asyncManagers.get());
 			} catch (InterruptedException ex) {
-				engine.getLogger().log(Level.SEVERE, "Error while shutting down engine: {0}", ex.getMessage());
+				Spout.severe("Error while shutting down engine: {0}", ex.getMessage());
 			}
 			
 			// Shutdown manager thread pool
@@ -458,8 +467,11 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	private class GUIThread extends Thread {
-		public GUIThread() {
+		private final SpoutClient client;
+
+		public GUIThread(SpoutClient client) {
 			super("GUI Thread");
+			this.client = client;
 		}
 
 		@Override
@@ -469,14 +481,14 @@ public final class SpoutScheduler implements Scheduler {
 			long nextTick = lastTick + targetPeriod;
 			float dt = (float) targetPeriod;
 
-			ScreenStack stack = null;
-			stack = ((Client) Spout.getEngine()).getScreenStack();
+			ScreenStack stack;
+			stack = client.getScreenStack();
 
 			while (!shutdown) {
 				try {
 					stack.tick(dt);
 				} catch (Exception ex) {
-					Spout.getLogger().log(Level.SEVERE, "[GUI] Error while pulsing: {0}", ex.getMessage());
+					Spout.severe("Error while pulsing: {0}", ex.getMessage());
 					ex.printStackTrace();
 				}
 				long now = System.currentTimeMillis();
@@ -520,9 +532,6 @@ public final class SpoutScheduler implements Scheduler {
 	}
 	
 	public void startGuiThread() {
-		if (!(Spout.getEngine() instanceof SpoutClient)) {
-			throw new IllegalStateException("Cannot start the rendering thread unless on the client");
-		}
 		if (guiThread.isAlive()) {
 			throw new IllegalStateException("Attempt was made to start the GUI thread twice");
 		}
@@ -550,10 +559,6 @@ public final class SpoutScheduler implements Scheduler {
 	 */
 	public void stop() {
 		shutdown = true;
-	}
-
-	public void submitFinalTask(Runnable task) {
-		submitFinalTask(task, false);
 	}
 
 	public void submitFinalTask(Runnable task, boolean addToStart) {
