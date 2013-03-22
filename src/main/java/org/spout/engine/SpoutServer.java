@@ -26,8 +26,8 @@
  */
 package org.spout.engine;
 
-import static org.spout.api.lang.Translation.log;
-
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -43,14 +43,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceInfo;
-
 import org.apache.commons.lang3.Validate;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.teleal.cling.UpnpService;
+import org.teleal.cling.UpnpServiceImpl;
+import org.teleal.cling.controlpoint.ControlPoint;
+import org.teleal.cling.support.igd.PortMappingListener;
+import org.teleal.cling.support.model.PortMapping;
+import org.teleal.cling.transport.spi.InitializationException;
+
 import org.spout.api.FileSystem;
 import org.spout.api.Platform;
 import org.spout.api.Server;
@@ -69,6 +73,7 @@ import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.util.StringUtil;
 import org.spout.api.util.access.AccessManager;
+
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.filesystem.ServerFileSystem;
 import org.spout.engine.listener.SpoutServerListener;
@@ -78,12 +83,8 @@ import org.spout.engine.protocol.SpoutNioServerSocketChannel;
 import org.spout.engine.protocol.SpoutServerSession;
 import org.spout.engine.util.access.SpoutAccessManager;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
-import org.teleal.cling.UpnpService;
-import org.teleal.cling.UpnpServiceImpl;
-import org.teleal.cling.controlpoint.ControlPoint;
-import org.teleal.cling.support.igd.PortMappingListener;
-import org.teleal.cling.support.model.PortMapping;
-import org.teleal.cling.transport.spi.InitializationException;
+
+import static org.spout.api.lang.Translation.log;
 
 public class SpoutServer extends SpoutEngine implements Server {
 	/**
@@ -181,7 +182,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	public boolean stop(final String message) {
 		return stop(message, true);
 	}
-		
+
 	@Override
 	public boolean stop(final String message, boolean stopScheduler) {
 		if (!super.stop(message, false)) {
@@ -193,7 +194,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 				EngineStopEvent stopEvent = new EngineStopEvent(message);
 				getEventManager().callEvent(stopEvent);
 				for (Player player : getOnlinePlayers()) {
-					((SpoutPlayer)player).kick(true, new Object[] {stopEvent.getMessage()});
+					((SpoutPlayer) player).kick(true, new Object[]{stopEvent.getMessage()});
 				}
 				if (upnpService != null) {
 					upnpService.shutdown();

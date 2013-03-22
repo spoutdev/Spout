@@ -43,6 +43,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.lwjgl.opengl.Display;
+
 import org.spout.api.Engine;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
@@ -56,6 +57,7 @@ import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.scheduler.Worker;
 import org.spout.api.util.thread.annotation.DelayedWrite;
+
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
@@ -151,7 +153,6 @@ public final class SpoutScheduler implements Scheduler {
 	 * Update count for physics and dynamic updates
 	 */
 	private final AtomicInteger updates = new AtomicInteger(0);
-
 	private final AtomicLong tickStartTime = new AtomicLong();
 	private volatile boolean shutdown = false;
 	private final SpoutSnapshotLock snapshotLock = new SpoutSnapshotLock();
@@ -164,9 +165,8 @@ public final class SpoutScheduler implements Scheduler {
 	private final ConcurrentLinkedQueue<Runnable> coreTaskQueue = new ConcurrentLinkedQueue<Runnable>();
 	private final LinkedBlockingDeque<Runnable> finalTaskQueue = new LinkedBlockingDeque<Runnable>();
 	private final ConcurrentLinkedQueue<Runnable> lastTickTaskQueue = new ConcurrentLinkedQueue<Runnable>();
-	
 	// Scheduler tasks
-	private final StartTickTask[] startTickTask = new StartTickTask[] {
+	private final StartTickTask[] startTickTask = new StartTickTask[]{
 			new StartTickTask(0),
 			new StartTickTask(1),
 			new StartTickTask(2)
@@ -177,15 +177,14 @@ public final class SpoutScheduler implements Scheduler {
 	private final FinalizeTask finalizeTask = new FinalizeTask();
 	private final PreSnapshotTask preSnapshotTask = new PreSnapshotTask();
 	private final CopySnapshotTask copySnapshotTask = new CopySnapshotTask();
-	
 	// scheduler executor service
 	private final ExecutorService executorService;
 
-	public long getFps(){
+	public long getFps() {
 		return renderThread.getFps();
 	}
 
-	public boolean isRendererOverloaded(){
+	public boolean isRendererOverloaded() {
 		return renderThread != null && (renderThread.getFrameOverhead() || renderThread.getFps() < OVERHEAD_FPS);
 	}
 
@@ -204,13 +203,11 @@ public final class SpoutScheduler implements Scheduler {
 			renderThread = null;
 			guiThread = null;
 		}
-		
+
 		executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2 + 1, new NamedThreadFactory("SpoutScheduler - async manager executor service", true));
-		
+
 		taskManager = new SpoutTaskManager(this, mainThread);
 	}
-	
-	
 
 	private class RenderThread extends Thread {
 		private int fps = 0;
@@ -219,23 +216,22 @@ public final class SpoutScheduler implements Scheduler {
 		private final SpoutClient client;
 		private ConcurrentLinkedQueue<Runnable> renderTaskQueue = new ConcurrentLinkedQueue<Runnable>();
 		Canvas parent = null;
-		
 
 		public RenderThread(SpoutClient client) {
 			super("Render Thread");
 			this.client = client;
 		}
 
-		public void setRenderer(SpoutRenderer renderer) {			
+		public void setRenderer(SpoutRenderer renderer) {
 			this.renderer = renderer;
 		}
 
-		public void enqueueRenderTask(Runnable task){
+		public void enqueueRenderTask(Runnable task) {
 			renderTaskQueue.add(task);
 		}
 
-		public void setParent(Canvas parent){
-			this.parent = parent;			
+		public void setParent(Canvas parent) {
+			this.parent = parent;
 		}
 
 		public int getFps() {
@@ -251,7 +247,7 @@ public final class SpoutScheduler implements Scheduler {
 			renderer.initRenderer(parent);
 			int frames = 0;
 			long lastFrameTime = System.currentTimeMillis();
-			int targetFrame = (int)(1f / TARGET_FPS * 1000);
+			int targetFrame = (int) (1f / TARGET_FPS * 1000);
 			int rate = (int) ((1f / TARGET_FPS) * 1000000000);
 
 			long lastTick = System.nanoTime();
@@ -259,51 +255,37 @@ public final class SpoutScheduler implements Scheduler {
 			long timeError = 0;
 			long maxError = rate >> 2; // time error total limited to 0.25 seconds 
 
-		while (!shutdown) {
-			if (Display.isCloseRequested() || !client.isRendering()) {
-				client.stop();
-				break;
-			}
-			long currentTime = System.nanoTime();
-			long delta = currentTime - lastTick;
-			lastTick = currentTime;
+			while (!shutdown) {
+				if (Display.isCloseRequested() || !client.isRendering()) {
+					client.stop();
+					break;
+				}
+				long currentTime = System.nanoTime();
+				long delta = currentTime - lastTick;
+				lastTick = currentTime;
 
-			// Calculate error in frame time
-			timeError += delta - rate;
-			if (timeError > maxError) {
-				timeError = maxError;
-			} else if (timeError < -maxError) {
-				timeError = -maxError;
-			}
-			
-			while (renderTaskQueue.peek() != null) {
-				Runnable task = renderTaskQueue.poll();
-				task.run();
-			}
+				// Calculate error in frame time
+				timeError += delta - rate;
+				if (timeError > maxError) {
+					timeError = maxError;
+				} else if (timeError < -maxError) {
+					timeError = -maxError;
+				}
 
-			renderer.render(delta / 1000000000f);
+				while (renderTaskQueue.peek() != null) {
+					Runnable task = renderTaskQueue.poll();
+					task.run();
+				}
 
-			Display.update(true);
+				renderer.render(delta / 1000000000f);
 
-			currentTime = System.nanoTime();
-			delta = currentTime - lastTick; // Time for render
+				Display.update(true);
 
-			// Round delay to the nearest ms value (from ns)
-			long delay = (rate - delta + 500000) / 1000000;
+				currentTime = System.nanoTime();
+				delta = currentTime - lastTick; // Time for render
 
-			// Adjust delay by 1ms depending on current time error
-			// Forces average to the target rate
-			if (timeError > 0) {
-				delay--;
-			} else if (timeError < 0) {
-				delay++;
-			}
-
-			if (delay > 0) {
-
-				renderer.updateRender(delay);//Use free time to make update
-
-				delay = (rate - delta + 500000) / 1000000;
+				// Round delay to the nearest ms value (from ns)
+				long delay = (rate - delta + 500000) / 1000000;
 
 				// Adjust delay by 1ms depending on current time error
 				// Forces average to the target rate
@@ -314,29 +296,42 @@ public final class SpoutScheduler implements Scheduler {
 				}
 
 				if (delay > 0) {
-					try {
-						Thread.sleep(delay);
-					} catch (InterruptedException e) {
-						Spout.severe("Interrupted while sleeping!");
+
+					renderer.updateRender(delay);//Use free time to make update
+
+					delay = (rate - delta + 500000) / 1000000;
+
+					// Adjust delay by 1ms depending on current time error
+					// Forces average to the target rate
+					if (timeError > 0) {
+						delay--;
+					} else if (timeError < 0) {
+						delay++;
 					}
+
+					if (delay > 0) {
+						try {
+							Thread.sleep(delay);
+						} catch (InterruptedException e) {
+							Spout.severe("Interrupted while sleeping!");
+						}
+					}
+					tooLongFrame = false;
+				} else if (delay < -targetFrame) {
+					tooLongFrame = true;
+				} else {
+					tooLongFrame = false;
 				}
-				tooLongFrame = false;
-			}else if(delay < - targetFrame){
-				tooLongFrame = true;
-			}else{
-				tooLongFrame = false;
-			}
 
-
-			if (System.currentTimeMillis() - lastFrameTime > 1000) {
-				lastFrameTime = System.currentTimeMillis();
-				fps = frames;
-				frames = 0;
+				if (System.currentTimeMillis() - lastFrameTime > 1000) {
+					lastFrameTime = System.currentTimeMillis();
+					fps = frames;
+					frames = 0;
+				}
+				frames++;
 			}
-			frames++;
-		}
-		Display.destroy();
-		client.stopEngine();
+			Display.destroy();
+			client.stopEngine();
 		}
 	}
 
@@ -456,13 +451,12 @@ public final class SpoutScheduler implements Scheduler {
 			} catch (InterruptedException ex) {
 				Spout.severe("Error while shutting down engine: {0}", ex.getMessage());
 			}
-			
+
 			// Shutdown manager thread pool
 
 			NetworkSendThreadPool.shutdown();
 
 			runFinalTasks();
-
 		}
 	}
 
@@ -476,7 +470,7 @@ public final class SpoutScheduler implements Scheduler {
 
 		@Override
 		public void run() {
-			long targetPeriod = 1000/40;
+			long targetPeriod = 1000 / 40;
 			long lastTick = System.currentTimeMillis();
 			long nextTick = lastTick + targetPeriod;
 			float dt = (float) targetPeriod;
@@ -526,11 +520,11 @@ public final class SpoutScheduler implements Scheduler {
 		renderThread.start();
 		return renderer;
 	}
-	
-	public void enqueueRenderTask(Runnable task){
-		renderThread.enqueueRenderTask(task);		
+
+	public void enqueueRenderTask(Runnable task) {
+		renderThread.enqueueRenderTask(task);
 	}
-	
+
 	public void startGuiThread() {
 		if (guiThread.isAlive()) {
 			throw new IllegalStateException("Attempt was made to start the GUI thread twice");
@@ -607,7 +601,7 @@ public final class SpoutScheduler implements Scheduler {
 		taskManager.heartbeat(delta);
 
 		if (parallelTaskManager == null) {
-			parallelTaskManager = ((SpoutParallelTaskManager)engine.getParallelTaskManager());
+			parallelTaskManager = ((SpoutParallelTaskManager) engine.getParallelTaskManager());
 		}
 		parallelTaskManager.heartbeat(delta);
 
@@ -621,11 +615,11 @@ public final class SpoutScheduler implements Scheduler {
 			} else {
 				TickStage.setStage(TickStage.STAGE2P);
 			}
-			
+
 			startTickTask[stage].setDelta(delta);
-			
+
 			int tickStage = stage == 0 ? TickStage.STAGE1 : TickStage.STAGE2P;
-			
+
 			runTasks(managers, startTickTask[stage], "Stage " + stage, tickStage);
 		}
 
@@ -651,7 +645,7 @@ public final class SpoutScheduler implements Scheduler {
 				if (SpoutConfiguration.BLOCK_PHYSICS.getBoolean()) {
 					doPhysics(managers);
 				}
-				
+
 				uP = updates.getAndSet(0);
 				totalUpdates += uP;
 				physicsUpdates += uP;
@@ -706,7 +700,7 @@ public final class SpoutScheduler implements Scheduler {
 			passStartUpdates = updates.get();
 
 			long threshold = earliestTime + PULSE_EVERY - 1;
-				
+
 			dynamicUpdatesTask.setThreshold(threshold);
 
 			this.runTasks(managers, dynamicUpdatesTask, "Dynamic Blocks", TickStage.GLOBAL_DYNAMIC_BLOCKS, TickStage.DYNAMIC_BLOCKS);
@@ -791,11 +785,11 @@ public final class SpoutScheduler implements Scheduler {
 	private void unlockSnapshotLock() {
 		snapshotLock.writeUnlock();
 	}
-	
+
 	private void runTasks(List<AsyncManager> managers, ManagerRunnableFactory taskFactory, String stageString, int tickStage) {
 		runTasks(managers, taskFactory, stageString, tickStage, tickStage);
 	}
-	
+
 	private void runTasks(List<AsyncManager> managers, ManagerRunnableFactory taskFactory, String stageString, int globalStage, int localStage) {
 		int maxSequence = taskFactory.getMaxSequence();
 		for (int s = taskFactory.getMinSequence(); s <= maxSequence; s++) {
@@ -831,7 +825,7 @@ public final class SpoutScheduler implements Scheduler {
 						e.printStackTrace();
 						done = true;
 					} catch (TimeoutException e) {
-						if (((SpoutEngine)Spout.getEngine()).isSetupComplete()) {
+						if (((SpoutEngine) Spout.getEngine()).isSetupComplete()) {
 							logLongDurationTick(stageString, managers);
 						}
 					}
@@ -864,7 +858,6 @@ public final class SpoutScheduler implements Scheduler {
 	public Task scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority) {
 		return taskManager.scheduleAsyncDelayedTask(plugin, task, delay, priority);
 	}
-
 
 	@Override
 	public Task scheduleAsyncDelayedTask(Object plugin, Runnable task, long delay, TaskPriority priority, boolean longLife) {
@@ -958,7 +951,7 @@ public final class SpoutScheduler implements Scheduler {
 		heavyLoad.set(true);
 		return true;
 	}
-	
+
 	@Override
 	public void safeRun(final Plugin plugin, final Runnable task) {
 		SpoutSnapshotLock lock = getSnapshotLock();
@@ -973,7 +966,7 @@ public final class SpoutScheduler implements Scheduler {
 			lock.readUnlock(plugin);
 		}
 	}
-	
+
 	public void coreSafeRun(final String taskName, final Runnable task) {
 		SpoutSnapshotLock lock = getSnapshotLock();
 		lock.coreReadLock(taskName);
@@ -987,7 +980,7 @@ public final class SpoutScheduler implements Scheduler {
 			lock.coreReadUnlock(taskName);
 		}
 	}
-	
+
 	@Override
 	public <T> T safeCall(final Plugin plugin, final Callable<T> task) {
 		SpoutSnapshotLock lock = getSnapshotLock();
@@ -1003,7 +996,7 @@ public final class SpoutScheduler implements Scheduler {
 			lock.readUnlock(plugin);
 		}
 	}
-	
+
 	public <T> T coreSafeCall(final String taskName, final Callable<T> task) {
 		SpoutSnapshotLock lock = getSnapshotLock();
 		lock.coreReadLock(taskName);
@@ -1025,7 +1018,6 @@ public final class SpoutScheduler implements Scheduler {
 	 * Tasks are executed in the order that they are received.<br>
 	 * <br>
 	 * It is used for region unloading and multi-region dynamic block updates
-	 *
 	 * @param r
 	 */
 	public void scheduleCoreTask(Runnable r) {
@@ -1059,5 +1051,4 @@ public final class SpoutScheduler implements Scheduler {
 		}
 		 */
 	}
-
 }

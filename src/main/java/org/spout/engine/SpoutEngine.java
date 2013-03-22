@@ -26,9 +26,6 @@
  */
 package org.spout.engine;
 
-import static org.spout.api.lang.Translation.log;
-import static org.spout.api.lang.Translation.tr;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.Inet4Address;
@@ -53,6 +50,7 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.ChannelGroupFuture;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
+
 import org.spout.api.Engine;
 import org.spout.api.Platform;
 import org.spout.api.chat.channel.ChatChannelFactory;
@@ -96,6 +94,7 @@ import org.spout.api.scheduler.TaskManager;
 import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.StringUtil;
+
 import org.spout.engine.chat.SpoutChatChannelFactory;
 import org.spout.engine.chat.console.ConsoleManager;
 import org.spout.engine.command.ClientCommands;
@@ -129,6 +128,9 @@ import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldGeneratorThread;
 import org.spout.engine.world.WorldSavingThread;
+
+import static org.spout.api.lang.Translation.log;
+import static org.spout.api.lang.Translation.tr;
 
 public abstract class SpoutEngine implements AsyncManager, Engine {
 	private static final Logger logger = Logger.getLogger("Spout");
@@ -213,7 +215,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		final CommandRegistrationsFactory<Class<?>> commandRegFactory = new AnnotatedCommandRegistrationFactory(this, new SimpleInjector(this));
 
 		// Register commands
-		switch(getPlatform()) {
+		switch (getPlatform()) {
 			case CLIENT:
 				getRootCommand().addSubCommands(this, ClientCommands.class, commandRegFactory);
 				break;
@@ -631,7 +633,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 				break;
 		}
 	}
-	
+
 	@Override
 	public int getMaxStage() {
 		return 0;
@@ -875,17 +877,17 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 			registry.pulse();
 		}
 	}
-	
+
 	private Thread executionThread;
-	
+
 	public Thread getExecutionThread() {
 		return executionThread;
 	}
-	
+
 	public void setExecutionThread(Thread t) {
 		this.executionThread = t;
 	}
-	
+
 	public int getSequence() {
 		return 0;
 	}
