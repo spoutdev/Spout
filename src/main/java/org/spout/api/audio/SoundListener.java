@@ -29,73 +29,86 @@ package org.spout.api.audio;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Vector3;
 
+/**
+ * Listens for Sounds.
+ */
 public interface SoundListener {
 	/**
-	 * Sets the position of the SoundListener. The specified location will
+	 * Sets the position of this SoundListener. The specified location will
 	 * affect how this listener will hear sound relative to the existing
 	 * sources.
 	 *
-	 * @param pos position of listener
+	 * @param pos  position of listener
+	 * @see #getPosition
 	 */
 	public void setPosition(Point pos);
 
 	/**
-	 * Returns the position of the SoundListener. The specified location will
+	 * Returns the position of this SoundListener. The specified location will
 	 * affect how this listener will hear sound relative to the existing
 	 * sources.
 	 *
 	 * @return position of listener
+	 * @see #setPosition
 	 */
 	public Point getPosition();
 
 	/**
-	 * Sets the velocity of the listener. Used for doppler effects.
+	 * Sets the velocity of this SoundListener. Used for doppler effects.
 	 *
-	 * @param vec velocity of listener
+	 * @param vec  velocity of listener
+	 * @see #getVelocity
 	 */
 	public void setVelocity(Vector3 vec);
 
 	/**
-	 * Returns velocity of this listener. Used for doppler effects.
+	 * Returns velocity of this SoundListener. Used for doppler effects.
 	 *
 	 * @return velocity
+	 * @see #setVelocity
 	 */
 	public Vector3 getVelocity();
 
 	/**
-	 * Returns the orientation of this listener.
+	 * Sets the orientation of this SoundListener.
 	 *
-	 * @param at the position of listening point relative to
-	 * {@link #getPosition()}
-	 * @param up
+	 * @param at  position of the listening point relative to
+	 *            {@link #getPosition()}
+	 * @param up  up value
 	 */
 	public void setOrientation(Vector3 at, Vector3 up);
 
 	/**
-	 * Sets the at value of the listeners orientation.
+	 * Sets the at value of this SoundListener's orientation.
 	 *
-	 * @param at value
+	 * @param at  position of the listening point relative to
+	 *            {@link #getPosition()}
+	 * @see #getOrientationAt
 	 */
 	public void setOrientationAt(Vector3 at);
 
 	/**
-	 * Sets the up value of the listener orientation
+	 * Sets the up value of this SoundListener's orientation.
 	 *
-	 * @param up value
+	 * @param up  up value
+	 * @see #getOrientationUp
 	 */
 	public void setOrientationUp(Vector3 up);
 
 	/**
-	 * Returns the 'at' value of the listener's orientation
+	 * Returns the at value of this SoundListener's orientation.
 	 *
-	 * @return at value
+	 * @return position of the listening point relative to
+	 *         {@link #getPosition()}
+	 * @see #setOrientationAt
 	 */
 	public Vector3 getOrientationAt();
 
 	/**
-	 * Returns the 'up' value of the listener's orientation.
+	 * Returns the up value of the SoundListener's orientation.
 	 *
 	 * @return up value
+	 * @see #setOrientationUp
 	 */
 	public Vector3 getOrientationUp();
 }

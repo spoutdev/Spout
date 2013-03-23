@@ -33,24 +33,27 @@ import org.spout.api.util.Named;
  * Represents a source of sound in the game.
  */
 public interface SoundSource extends Named {
+	
 	/**
 	 * Gets the current state of the SoundSource.
 	 * 
-	 * @return
+	 * @return the sound state
 	 */
 	public SoundState getState();
 
 	/**
 	 * Gets the Sound associated with this SoundSource.
 	 * 
-	 * @return
+	 * @return the Sound object
+	 * @see #setSound
 	 */
 	public Sound getSound();
 
 	/**
 	 * Sets the sound of this SoundSource.
 	 * 
-	 * @param sound
+	 * @param sound  a Sound object to be set
+	 * @see #getSound
 	 */
 	public void setSound(Sound sound);
 
@@ -83,7 +86,8 @@ public interface SoundSource extends Named {
 	/**
 	 * Gets the current pitch of the SoundSource. This is a multiplier.
 	 * 
-	 * @return the current pitch of the SoundSource
+	 * @return a float specifying the current pitch of the SoundSource
+	 * @see #setPitch
 	 */
 	public float getPitch();
 
@@ -91,50 +95,55 @@ public interface SoundSource extends Named {
 	 * Sets the pitch of the SoundSource to the given number. This should always
 	 * be positive.
 	 * 
-	 * @param pitch
+	 * @param pitch  a float specifying the pitch value
+	 * @see #getPitch
 	 */
 	public void setPitch(float pitch);
 
 	/**
 	 * Gets the gain of the SoundSource.
 	 * 
-	 * @return the gain of the SoundSource
+	 * @return a float specifying the gain of the SoundSource
+	 * @see #setGain
 	 */
 	public float getGain();
 
 	/**
 	 * Sets the gain of the SoundSource. This should always be positive.
 	 * 
-	 * @param gain
+	 * @param gain  a float specifying the gain value
+	 * @see #getGain
 	 */
 	public void setGain(float gain);
 
 	/**
-	 * Gets if this sound source is looping.
+	 * Gets if this SoundSource is looping.
 	 * 
 	 * @return whether the SoundSource is looping
 	 */
 	public boolean isLooping();
 
 	/**
-	 * Sets if this sound source should be looping.
+	 * Sets if this SoundSource should be looping.
 	 * 
-	 * @param looping
+	 * @param looping  a boolean value for if the SoundSource should be looping
 	 */
 	public void setLooping(boolean looping);
 
 	/**
-	 * Gets the playback position of the sound source in seconds.
+	 * Gets the playback position of the SoundSource in seconds.
 	 * 
 	 * @return the playback position of the SoundSource in seconds
+	 * @see #setPlaybackPosition
 	 */
 	public float getPlaybackPosition();
 
 	/**
-	 * Sets the playback position of the sound source to the given time in
+	 * Sets the playback position of the SoundSource to the given time in
 	 * seconds.
 	 * 
-	 * @param seconds
+	 * @param seconds  time in seconds
+	 * @see #getPlaybackPosition
 	 */
 	public void setPlaybackPosition(float seconds);
 
@@ -142,13 +151,15 @@ public interface SoundSource extends Named {
 	 * Gets the current position of the SoundSource.
 	 * 
 	 * @return the Vector3 position of the SoundSource
+	 * @see #setPosition
 	 */
 	public Vector3 getPosition();
 
 	/**
 	 * Sets the position of the SoundSource to the given location.
 	 * 
-	 * @param position
+	 * @param position  position value
+	 * @see #getPosition
 	 */
 	public void setPosition(Vector3 position);
 
@@ -156,6 +167,7 @@ public interface SoundSource extends Named {
 	 * Gets the velocity of the SoundSource. Used for doppler effects.
 	 * 
 	 * @return the Vector3 velocity of the SoundSource
+	 * @see #setVelocity
 	 */
 	public Vector3 getVelocity();
 
@@ -163,7 +175,8 @@ public interface SoundSource extends Named {
 	 * Sets the velocity of the SoundSource to the given vector.
 	 * Used for doppler effects.
 	 * 
-	 * @param velocity
+	 * @param velocity  velocity value
+	 * @see #getVelocity
 	 */
 	public void setVelocity(Vector3 velocity);
 
@@ -171,13 +184,15 @@ public interface SoundSource extends Named {
 	 * Gets the direction of the SoundSource.
 	 * 
 	 * @return the Vector3 direction of the SoundSource
+	 * @see #setDirection
 	 */
 	public Vector3 getDirection();
 
 	/**
 	 * Sets the direction of the SoundSource to the given vector.
 	 * 
-	 * @param direction
+	 * @param direction  direction value
+	 * @see #getDirection
 	 */
 	public void setDirection(Vector3 direction);
 }
