@@ -30,7 +30,7 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 /**
- * Represents the state of a sound source.
+ * Represents the state of a SoundSource.
  */
 public enum SoundState {
 	/**
@@ -58,7 +58,13 @@ public enum SoundState {
 			idMap.put(state.getId(), state);
 		}
 	}
-
+	
+	/**
+	 *Returns a SoundState object.
+	 *
+	 *@param id  an int representing the id of the SoundState object
+	 *@return a SoundState object
+	 */
 	public static SoundState get(int id) {
 		return idMap.get(id);
 	}
@@ -66,7 +72,12 @@ public enum SoundState {
 	private SoundState(int id) {
 		this.id = id;
 	}
-
+	
+	/**
+	 * Returns the id value.
+	 * 
+	 * @return an int representing the id value
+	 */
 	public int getId() {
 		return id;
 	}

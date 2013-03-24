@@ -29,11 +29,20 @@ package org.spout.api.audio;
 import org.spout.api.resource.Resource;
 
 /**
- * Represents a sound.
+ * Represents a Sound.
  */
 public abstract class Sound extends Resource {
+	
+	/** 
+	 * Unique Identifier. 
+	 */
 	protected final int id;
-
+	
+	/**
+	 * Constructs a Sound object.
+	 *
+	 * @param id  unique identifier
+	 */
 	public Sound(int id) {
 		this.id = id;
 	}
@@ -41,53 +50,53 @@ public abstract class Sound extends Resource {
 	/**
 	 * Returns the unique identifier of this Sound.
 	 *
-	 * @return id of sound
+	 * @return an int specifying the id of this Sound object
 	 */
 	public int getId() {
 		return id;
 	}
 
 	/**
-	 * Gets the sampling rate (sampling frequency) of the sound.
+	 * Gets the sampling rate (sampling frequency) of this Sound.
 	 * 
-	 * @return the sampling rate
+	 * @return an int representing the sampling rate of this Sound
 	 */
 	public abstract int getSamplingRate();
 
 	/**
 	 * Gets the bit depth of the buffer.
 	 * 
-	 * @return the buffer's bit depth
+	 * @return an int representing the buffer's bit depth
 	 */
 	public abstract int getBitDepth();
 
 	/**
-	 * Gets the number of channels of the sound.
+	 * Gets the number of channels of this Sound.
 	 * 
-	 * @return the number of sound channels
+	 * @return an int representing the number of sound channels
 	 */
 	public abstract int getChannels();
 
 	/**
 	 * Gets the size of the buffer.
 	 * 
-	 * @return the buffer size
+	 * @return an int representing the buffer size
 	 */
 	public abstract int getBufferSize();
 
 	/**
 	 * Gets the bit rate of the sample in bits per second.
 	 * 
-	 * @return the bit rate in bits/second
+	 * @return an int representing the bit rate in bits per second
 	 */
 	public int getBitRate() {
 		return getSamplingRate() * getBitDepth() * getChannels();
 	}
 
 	/**
-	 * Returns the length of the sound sample in seconds.
+	 * Returns the length of the Sound sample in seconds.
 	 * 
-	 * @return the length of the sound in seconds
+	 * @return a float representing the length of the sound in seconds
 	 */
 	public float getLength() {
 		return getBufferSize() / (float) (getBitRate() / 8);
