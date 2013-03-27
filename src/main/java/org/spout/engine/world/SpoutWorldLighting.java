@@ -36,6 +36,7 @@ import org.spout.api.util.set.TInt21TripleHashSet;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.util.ChunkModel;
 import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
+import org.spout.engine.world.light.ServerLightStore;
 
 public class SpoutWorldLighting extends Thread {
 	private static String taskName = "Lighting Thread";
@@ -158,8 +159,8 @@ public class SpoutWorldLighting extends Thread {
 						cz = Int21TripleHashed.key3(chunkBuffer[i]);
 						if (this.tmpChunks.load(cx, cy, cz, LoadOption.LOAD_ONLY).isLoaded()) {
 							SpoutChunk center = this.tmpChunks.getCenter();
-							center.clearRegisteredWithLightingManager();
-							if (center.isInitializingLighting.get()) {
+							((ServerLightStore)center.getLightStore()).clearRegisteredWithLightingManager();
+							if (((ServerLightStore)center.getLightStore()).isInitializingLighting.get()) {
 								// Schedule the chunk for a later check-up
 								this.addChunk(cx, cy, cz);
 							} else {

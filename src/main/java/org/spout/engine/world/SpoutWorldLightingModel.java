@@ -37,6 +37,7 @@ import org.spout.api.material.block.BlockFullState;
 import org.spout.api.util.NanoStopWatch;
 import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.api.util.hashing.NibbleQuadHashed;
+import org.spout.engine.world.light.ServerLightStore;
 
 /**
  * This model can store a diamond-shaped model of blocks to perform lighting on.<br>
@@ -114,31 +115,32 @@ public class SpoutWorldLightingModel {
 	public boolean resolve(SpoutChunk chunk) {
 		int x = 0, y = 0, z = 0;
 		boolean update = false;
+		final ServerLightStore store = (ServerLightStore)chunk.getLightStore();
 		try {
 			// Load chunk information
 			if (this.sky) {
-				synchronized (chunk.skyLightUpdates) {
-					if (chunk.skyLightUpdates.size() > 0) {
+				synchronized (store.skyLightUpdates) {
+					if (store.skyLightUpdates.size() > 0) {
 						update = true;
 					}
-					this.iter = chunk.skyLightUpdates.iterator();
+					this.iter = store.skyLightUpdates.iterator();
 					while (iter.hasNext()) {
 						int key = iter.next();
 						x = NibbleQuadHashed.key1(key);
 						y = NibbleQuadHashed.key2(key) + chunk.getBlockY();
 						z = NibbleQuadHashed.key3(key) + chunk.getBlockZ();
-						chunk.setBlockSkyLightSync(x, y, z, NibbleQuadHashed.key4(key), null);
+						store.setSkyLightSync(x, y, z, NibbleQuadHashed.key4(key), null);
 					}
-					chunk.skyLightUpdates.clear();
-					chunk.clearPendingLightOperation(SpoutChunk.SKY_UPDATES);
+					store.skyLightUpdates.clear();
+					store.clearPendingLightOperation(ServerLightStore.SKY_UPDATES);
 				}
-				synchronized (chunk.skyLightOperations) {
-					this.updateCount = chunk.skyLightOperations.size();
+				synchronized (store.skyLightOperations) {
+					this.updateCount = store.skyLightOperations.size();
 					if (this.updateCount > 0) {
 						if (this.updateCount > this.updates.length) {
 							this.updates = new short[this.updateCount + 100];
 						}
-						this.iter = chunk.skyLightOperations.iterator();
+						this.iter = store.skyLightOperations.iterator();
 						int i;
 						for (i = 0; i < this.updateCount && this.iter.hasNext(); i++) {
 							this.updates[i] = iter.next();
@@ -146,36 +148,36 @@ public class SpoutWorldLightingModel {
 						if (i != this.updateCount || this.iter.hasNext()) {
 							Spout.getLogger().info("Warning: Copy of light updates to world lighting thread failed");
 						}
-						chunk.skyLightOperations.clear();
-						chunk.clearPendingLightOperation(SpoutChunk.SKY_OPERATIONS);
+						store.skyLightOperations.clear();
+						store.clearPendingLightOperation(ServerLightStore.SKY_OPERATIONS);
 					} else {
 						return update;
 					}
 				}
 			} else {
-				synchronized (chunk.blockLightUpdates) {
-					if (chunk.blockLightUpdates.size() > 0) {
+				synchronized (store.blockLightUpdates) {
+					if (store.blockLightUpdates.size() > 0) {
 						update = true;
 					}
-					int length = chunk.blockLightUpdates.size();
-					this.iter = chunk.blockLightUpdates.iterator();
+					int length = store.blockLightUpdates.size();
+					this.iter = store.blockLightUpdates.iterator();
 					for (int i = 0; i < length && this.iter.hasNext(); i++) {
 						int key = iter.next();
 						x = NibbleQuadHashed.key1(key);
 						y = NibbleQuadHashed.key2(key) + chunk.getBlockY();
 						z = NibbleQuadHashed.key3(key) + chunk.getBlockZ();
-						chunk.setBlockLightSync(x, y, z, NibbleQuadHashed.key4(key), null);
+						store.setBlockLightSync(x, y, z, NibbleQuadHashed.key4(key), null);
 					}
-					chunk.blockLightUpdates.clear();
-					chunk.clearPendingLightOperation(SpoutChunk.BLOCK_UPDATES);
+					store.blockLightUpdates.clear();
+					store.clearPendingLightOperation(ServerLightStore.BLOCK_UPDATES);
 				}
-				synchronized (chunk.blockLightOperations) {
-					this.updateCount = chunk.blockLightOperations.size();
+				synchronized (store.blockLightOperations) {
+					this.updateCount = store.blockLightOperations.size();
 					if (this.updateCount > 0) {
 						if (this.updateCount > this.updates.length) {
 							this.updates = new short[this.updateCount + 100];
 						}
-						this.iter = chunk.blockLightOperations.iterator();
+						this.iter = store.blockLightOperations.iterator();
 						int i;
 						for (i = 0; i < this.updateCount && this.iter.hasNext(); i++) {
 							this.updates[i] = iter.next();
@@ -183,8 +185,8 @@ public class SpoutWorldLightingModel {
 						if (i != this.updateCount || this.iter.hasNext()) {
 							Spout.getLogger().info("Warning: Copy of light updates to world lighting thread failed");
 						}
-						chunk.blockLightOperations.clear();
-						chunk.clearPendingLightOperation(SpoutChunk.BLOCK_OPERATIONS);
+						store.blockLightOperations.clear();
+						store.clearPendingLightOperation(ServerLightStore.BLOCK_OPERATIONS);
 					} else {
 						return update;
 					}
@@ -369,12 +371,12 @@ public class SpoutWorldLightingModel {
 			if (this.light < this.blockLight) {
 				this.light = this.blockLight;
 			}
-			this.chunk.setBlockLightSync(this.x, this.y, this.z, this.light, null);
+			((ServerLightStore)chunk.getLightStore()).setBlockLightSync(this.x, this.y, this.z, this.light, null);
 		}
 
 		@Override
 		public void addOperation(int operation) {
-			this.chunk.addBlockLightOperation(this.x, this.y, this.z, operation);
+			((ServerLightStore)chunk.getLightStore()).addBlockLightOperation(this.x, this.y, this.z, operation);
 		}
 	}
 
@@ -393,13 +395,13 @@ public class SpoutWorldLightingModel {
 		public void setLight(byte light) {
 			if (this.light != 15) {
 				this.light = light;
-				this.chunk.setBlockSkyLightSync(this.x, this.y, this.z, light, null);
+				this.chunk.getLightStore().setSkyLightSync(this.x, this.y, this.z, light, null);
 			}
 		}
 
 		@Override
 		public void addOperation(int operation) {
-			this.chunk.addSkyLightOperation(this.x, this.y, this.z, operation);
+			((ServerLightStore)chunk.getLightStore()).addSkyLightOperation(this.x, this.y, this.z, operation);
 		}
 	}
 

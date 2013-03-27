@@ -126,7 +126,6 @@ import org.spout.engine.util.thread.snapshotable.SnapshotableReference;
 import org.spout.engine.world.MemoryReclamationThread;
 import org.spout.engine.world.SpoutRegion;
 import org.spout.engine.world.SpoutWorld;
-import org.spout.engine.world.WorldGeneratorThread;
 import org.spout.engine.world.WorldSavingThread;
 
 import static org.spout.api.lang.Translation.log;
@@ -273,7 +272,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 		scheduler.startMainThread();
 		WorldSavingThread.startThread();
-		WorldGeneratorThread.startThread();
 		setupComplete.set(true);
 	}
 
@@ -493,9 +491,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 					getLogger().info("Thread interrupted when waiting for network shutdown");
 				}
 				WorldSavingThread.finish();
-				WorldGeneratorThread.finish();
 				WorldSavingThread.staticJoin();
-				WorldGeneratorThread.staticJoin();
 			}
 		};
 		scheduler.submitLastTickTask(lastTickTask);

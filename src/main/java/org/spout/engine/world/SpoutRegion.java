@@ -121,6 +121,7 @@ import org.spout.engine.world.collision.RegionShape;
 import org.spout.engine.world.collision.SpoutPhysicsWorld;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 import org.spout.engine.world.dynamic.DynamicBlockUpdateTree;
+import org.spout.engine.world.light.ServerLightStore;
 
 import com.bulletphysics.collision.broadphase.BroadphaseInterface;
 import com.bulletphysics.collision.broadphase.DbvtBroadphase;
@@ -420,7 +421,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 			if (generated.get()) {
 				return;
 			}
-			WorldGeneratorThread.submitRegion(this);
 			int cx = getChunkX();
 			int cy = getChunkY();
 			int cz = getChunkZ();
@@ -880,8 +880,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 						iter.remove();
 						continue;
 					}
-					if (chunk.lightingCounter.incrementAndGet() > LIGHT_SEND_TICK_DELAY) {
-						chunk.lightingCounter.set(-1);
+					if (((ServerLightStore)chunk.getLightStore()).lightingCounter.incrementAndGet() > LIGHT_SEND_TICK_DELAY) {
+						((ServerLightStore)chunk.getLightStore()).lightingCounter.set(-1);
 						if (SpoutConfiguration.LIVE_LIGHTING.getBoolean()) {
 							chunk.setLightDirty(true);
 						}
@@ -1037,30 +1037,30 @@ public class SpoutRegion extends Region implements AsyncManager {
 			lock.writeLock().unlock();
 		}
 	}
-	
+
 	public void startTickRun(int stage, long delta) {
 		final float dt = delta / 1000f;
 		switch (stage) {
-		case 0: {
-			taskManager.heartbeat(delta);
-			updateAutosave();
-			updateBlockComponents(dt);
-			updateEntities(dt);
-			updateLighting();
-			updatePopulation();
-			unloadChunks();
-			break;
-		}
-		case 1: {
-			updateDynamics(dt);
-			break;
-		}
-		case 2: {
-			break;
-		}
-		default: {
-			throw new IllegalStateException("Number of states exceeded limit for SpoutRegion");
-		}
+			case 0: {
+				taskManager.heartbeat(delta);
+				updateAutosave();
+				updateBlockComponents(dt);
+				updateEntities(dt);
+				updateLighting();
+				updatePopulation();
+				unloadChunks();
+				break;
+			}
+			case 1: {
+				updateDynamics(dt);
+				break;
+			}
+			case 2: {
+				break;
+			}
+			default: {
+				throw new IllegalStateException("Number of states exceeded limit for SpoutRegion");
+			}
 		}
 	}
 	
@@ -1746,7 +1746,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		}
 	}
 
-	protected void reportChunkLightDirty(int x, int y, int z) {
+	public void reportChunkLightDirty(int x, int y, int z) {
 		synchronized (lightDirtyChunks) {
 			lightDirtyChunks.add(x & CHUNKS.MASK, y & CHUNKS.MASK, z & CHUNKS.MASK);
 		}
