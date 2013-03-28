@@ -677,6 +677,32 @@ public class Inventory implements Serializable, Cloneable, List<ItemStack> {
 	}
 
 	/**
+	 * Returns the first empty {@link Slot}. If all inventory slots are filled, null is returned instead.
+	 * @return first empty slot
+	 */
+	public Slot getFirstEmptySlot() {
+		for (int i = 0; i < this.size(); i++) {
+			if (this.get(i) == null) {
+				return new Slot(this, i);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the first non-empty {@link Slot}.  If all inventory slots are empty, null is returned instead.
+	 * @return first non-empty slot
+	 */
+	public Slot getFirstUsedSlot() {
+		for(int i = 0; i < this.size(); i++) {
+			if (this.get(i) != null) {
+				return new Slot(this, i);
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Returns the slot of the first occurrence of the specified element, or -1
 	 * if this inventory does not contain the element.
 	 * 
