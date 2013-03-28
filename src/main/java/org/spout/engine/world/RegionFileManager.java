@@ -118,6 +118,7 @@ public class RegionFileManager {
 		
 		public TimeoutThread(File worldDirectory) {
 			super("Region File Manager Timeout Thread - " + worldDirectory.getPath());
+			setDaemon(true);
 		}
 		
 		public void run() {
