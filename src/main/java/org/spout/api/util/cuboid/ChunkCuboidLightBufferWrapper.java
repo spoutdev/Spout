@@ -95,7 +95,7 @@ public abstract class ChunkCuboidLightBufferWrapper<T extends CuboidLightBuffer>
 	public void clear() {
 		for (int x = 0; x < cSx; x++) {
 			for (int y = 0; y < cSy; y++) {
-				for (int z = 0; z < cSy; z++) {
+				for (int z = 0; z < cSz; z++) {
 					cache[x][y][z] = null;
 				}
 			}

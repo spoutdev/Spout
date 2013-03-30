@@ -29,6 +29,7 @@ package org.spout.api.geo;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.block.BlockFace;
+import org.spout.api.util.cuboid.ImmutableHeightMapBuffer;
 
 public interface LocalAreaAccess {
 	
@@ -116,5 +117,20 @@ public interface LocalAreaAccess {
 	 * @return
 	 */
 	public Chunk getLocalChunk(int x, int y, int z, LoadOption loadopt);
+	
+	/**
+	 * Gets a heightmap in the 3x3 cube of regions centered on this region.<br>
+	 * <br>
+	 * The valid range for the (x, z) coordinates is -16 to 31.<br>
+	 * <br>
+	 * To request a heightmap in this region, both coordinates must be in the range of 0 to 15.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param loadopt
+	 * @return
+	 */
+	public ImmutableHeightMapBuffer getLocalHeightMap(int x, int z, LoadOption loadopt);
 
 }

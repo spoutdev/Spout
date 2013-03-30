@@ -29,6 +29,7 @@ package org.spout.api.lighting;
 import org.spout.api.util.cuboid.ChunkCuboidLightBufferWrapper;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.cuboid.ImmutableCuboidBlockMaterialBuffer;
+import org.spout.api.util.cuboid.ImmutableHeightMapBuffer;
 
 /**
  * A class for updating block 
@@ -66,11 +67,11 @@ public abstract class LightingManager<T extends CuboidLightBuffer> {
 	 * @param z the z coordinates of the changed blocks
 	 * @param changedBlocks the number of changed blocks
 	 */
-	protected abstract void resolve(ChunkCuboidLightBufferWrapper<T> light, ImmutableCuboidBlockMaterialBuffer material, int[] x, int[] y, int[] z, int changedBlocks);
+	protected abstract void resolve(ChunkCuboidLightBufferWrapper<T> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] x, int[] y, int[] z, int changedBlocks);
 	
 	@SuppressWarnings("unchecked")
-	public void resolveUnchecked(ChunkCuboidLightBufferWrapper<?> light, ImmutableCuboidBlockMaterialBuffer material, int[] x, int[] y, int[] z, int changedBlocks) {
-		resolve((ChunkCuboidLightBufferWrapper<T>) light, material, x, y, z, changedBlocks);
+	public void resolveUnchecked(ChunkCuboidLightBufferWrapper<?> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] x, int[] y, int[] z, int changedBlocks) {
+		resolve((ChunkCuboidLightBufferWrapper<T>) light, material, height, x, y, z, changedBlocks);
 	}
 	
 	/**
@@ -88,11 +89,11 @@ public abstract class LightingManager<T extends CuboidLightBuffer> {
 	 * @param tz the top z coordinates of the cuboid
 	 * @param changedCuboids the number of cuboids
 	 */
-	protected abstract void resolve(ChunkCuboidLightBufferWrapper<T> light, ImmutableCuboidBlockMaterialBuffer material, int[] bx, int[] by, int[] bz, int[] tx, int[] ty, int[] tz, int changedCuboids);
+	protected abstract void resolve(ChunkCuboidLightBufferWrapper<T> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int[] tx, int[] ty, int[] tz, int changedCuboids);
 	
 	@SuppressWarnings("unchecked")
-	public void resolveUnchecked(ChunkCuboidLightBufferWrapper<?> light, ImmutableCuboidBlockMaterialBuffer material, int[] bx, int[] by, int[] bz, int[] tx, int[] ty, int[] tz, int changedCuboids) {
-		resolve((ChunkCuboidLightBufferWrapper<T>) light, material, bx, by, bz, tx, ty, tz, changedCuboids);
+	public void resolveUnchecked(ChunkCuboidLightBufferWrapper<?> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int[] tx, int[] ty, int[] tz, int changedCuboids) {
+		resolve((ChunkCuboidLightBufferWrapper<T>) light, material, height, bx, by, bz, tx, ty, tz, changedCuboids);
 	}
 	
 	/**
@@ -104,11 +105,11 @@ public abstract class LightingManager<T extends CuboidLightBuffer> {
 	 * @param newHy the new height for this column
 	 * @param changedColumns the number of changed columns
 	 */
-	protected abstract void resolve(ChunkCuboidLightBufferWrapper<T> light, ImmutableCuboidBlockMaterialBuffer material, int[] hx, int[] hz, int[] oldHy, int[] newHy, int changedColumns);
+	protected abstract void resolve(ChunkCuboidLightBufferWrapper<T> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] hx, int[] hz, int[] oldHy, int[] newHy, int changedColumns);
 
 	@SuppressWarnings("unchecked")
-	public void resolveUnchecked(ChunkCuboidLightBufferWrapper<?> light, ImmutableCuboidBlockMaterialBuffer material, int[] hx, int[] hz, int[] oldHy, int[] newHy, int changedColumns) {
-		resolve((ChunkCuboidLightBufferWrapper<T>) light, material, hx, hz, oldHy, newHy, changedColumns);
+	public void resolveUnchecked(ChunkCuboidLightBufferWrapper<?> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] hx, int[] hz, int[] oldHy, int[] newHy, int changedColumns) {
+		resolve((ChunkCuboidLightBufferWrapper<T>) light, material, height, hx, hz, oldHy, newHy, changedColumns);
 	}
 
 	/**
