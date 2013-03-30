@@ -41,6 +41,7 @@ import org.spout.api.material.block.BlockFaces;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.BitSize;
 import org.spout.api.scheduler.TickStage;
+import org.spout.api.util.cuboid.ImmutableHeightMapBuffer;
 import org.spout.engine.filesystem.versioned.ColumnFiles;
 
 public class SpoutColumn {
@@ -317,5 +318,9 @@ public class SpoutColumn {
 			return true;
 		}
 		return false;
+	}
+	
+	public ImmutableHeightMapBuffer getHeightMapBuffer() {
+		return new ImmutableHeightMapBuffer(getX(), getZ(), SpoutColumn.BLOCKS.SIZE, SpoutColumn.BLOCKS.SIZE, heightMap);
 	}
 }

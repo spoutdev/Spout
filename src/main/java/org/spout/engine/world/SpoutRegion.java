@@ -85,7 +85,9 @@ import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.range.EffectRange;
+import org.spout.api.math.GenericMath;
 import org.spout.api.math.Vector3;
+import org.spout.api.math.VectorMath;
 import org.spout.api.protocol.NetworkSynchronizer;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.scheduler.TaskManager;
@@ -95,8 +97,10 @@ import org.spout.api.util.cuboid.ChunkCuboidLightBufferWrapper;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.cuboid.ImmutableCuboidBlockMaterialBuffer;
+import org.spout.api.util.cuboid.ImmutableHeightMapBuffer;
 import org.spout.api.util.cuboid.LocalRegionChunkCuboidBlockMaterialBufferWrapper;
 import org.spout.api.util.cuboid.LocalRegionChunkCuboidLightBufferWrapper;
+import org.spout.api.util.cuboid.LocalRegionChunkHeightMapBufferWrapper;
 import org.spout.api.util.list.concurrent.setqueue.SetQueue;
 import org.spout.api.util.list.concurrent.setqueue.SetQueueElement;
 import org.spout.api.util.map.TByteTripleObjectHashMap;
@@ -141,8 +145,6 @@ import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
-import org.spout.api.math.GenericMath;
-import org.spout.api.math.VectorMath;
 
 public class SpoutRegion extends Region implements AsyncManager {
 	private AtomicInteger numberActiveChunks = new AtomicInteger();
@@ -1464,6 +1466,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	private int lightingUpdates = 0;
 
+	private ImmutableHeightMapBuffer heightMapBuffer = null;
 	private ImmutableCuboidBlockMaterialBuffer blockMaterialBuffer = null;
 	private ChunkCuboidLightBufferWrapper<?>[] lightBuffers = null;
 	
@@ -1481,6 +1484,10 @@ public class SpoutRegion extends Region implements AsyncManager {
 		
 		if (lightBuffers == null || lightBuffers.length != managers.length) {
 			lightBuffers = new ChunkCuboidLightBufferWrapper[managers.length];
+		}
+		
+		if (heightMapBuffer == null) {
+			heightMapBuffer = new LocalRegionChunkHeightMapBufferWrapper(this, LoadOption.LOAD_ONLY);
 		}
 		
 		for (int i = 0; i < lightBuffers.length; i++) {
@@ -1557,6 +1564,10 @@ public class SpoutRegion extends Region implements AsyncManager {
 				}
 			}
 		}
+		
+		if (heightMapBuffer != null) {
+			((LocalRegionChunkHeightMapBufferWrapper) heightMapBuffer).clear();
+		}
 	}
 	
 	private void resolveCuboids(SpoutChunk[] chunks, LightingManager<?>[] managers) {
@@ -1578,13 +1589,13 @@ public class SpoutRegion extends Region implements AsyncManager {
 			tz[i] = bz[i] + size;
 		}
 		for (int i = 0; i < managers.length; i++) {
-			managers[i].resolveUnchecked(lightBuffers[i], blockMaterialBuffer, bx, by, bz, tx, ty, tz, cuboids);
+			managers[i].resolveUnchecked(lightBuffers[i], blockMaterialBuffer, heightMapBuffer, bx, by, bz, tx, ty, tz, cuboids);
 		}
 	}
 	
 	private void resolveBlocks(int[] x, int[] y, int[] z, LightingManager<?>[] managers) {
 		for (int i = 0; i < managers.length; i++) {
-			managers[i].resolveUnchecked(lightBuffers[i], blockMaterialBuffer, x, y, z, x.length);
+			managers[i].resolveUnchecked(lightBuffers[i], blockMaterialBuffer, heightMapBuffer, x, y, z, x.length);
 		}
 	}
 
@@ -2180,6 +2191,15 @@ public class SpoutRegion extends Region implements AsyncManager {
 	@Override
 	public void setExecutionThread(Thread t) {
 		this.executionThread = t;
+	}
+
+	@Override
+	public ImmutableHeightMapBuffer getLocalHeightMap(int x, int z, LoadOption loadopt) {
+		SpoutColumn col = getWorld().getColumn(x << Chunk.BLOCKS.BITS, z << Chunk.BLOCKS.BITS, true);
+		if (col == null) {
+			return null;
+		}
+		return col.getHeightMapBuffer();
 	}
 
 }
