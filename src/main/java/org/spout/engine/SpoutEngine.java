@@ -184,6 +184,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 		defaultPerms = new DefaultPermissions(this, new File(SharedFileSystem.getConfigDirectory(), "permissions.yml"));
 		getDefaultPermissions().addDefaultPermission(STANDARD_BROADCAST_PERMISSION);
+		getDefaultPermissions().addDefaultPermission(SpoutChatChannelFactory.SPOUT_CHAT_PREFIX + "*");
 
 		if (debugMode()) {
 			new TicklockMonitor().start();
