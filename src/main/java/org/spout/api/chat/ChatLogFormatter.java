@@ -71,17 +71,17 @@ public class ChatLogFormatter extends SimpleFormatter  {
 		} else {
 			args.setPlaceHolder(MESSAGE, new ChatArguments(super.formatMessage(record)));
 		}
-		StringBuilder format = new StringBuilder(args.asString(handlerId));
-
+		
 		if (record.getThrown() != null) {
 			StringWriter writer = new StringWriter();
 			record.getThrown().printStackTrace(new PrintWriter(writer));
 			String[] lines = writer.getBuffer().toString().split("\n");
 			for (String line : lines) {
-				format.append(LOG_TEMPLATE.getArguments().setPlaceHolder(LEVEL, level).setPlaceHolder(MESSAGE, new ChatArguments(line)).asString(handlerId));
-				format.append('\n');
+				args.append(LOG_TEMPLATE.getArguments().setPlaceHolder(LEVEL, level).setPlaceHolder(MESSAGE, new ChatArguments(line)).asString(handlerId));
+				args.append('\n');
 			}
 		}
-		return format.toString();
+		args.append(ChatStyle.RESET);
+		return args.asString(handlerId);
 	}
 }
