@@ -73,6 +73,7 @@ public interface Engine extends Named {
 	 * this permissions with {@link org.spout.api.permissions.DefaultPermissions}
 	 */
 	public static final String STANDARD_BROADCAST_PERMISSION = "spout.broadcast.standard";
+	public static final String STANDARD_CHAT_PREFIX = "spout.chat.receive.";
 	public static final ChatChannel STANDARD_BROADCAST_CHANNEL = new PermissionChatChannel("Standard Broadcasts", STANDARD_BROADCAST_PERMISSION);
 
 	/**
