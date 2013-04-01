@@ -26,6 +26,7 @@
  */
 package org.spout.engine.chat;
 
+import org.spout.api.Engine;
 import org.spout.api.chat.channel.ChatChannel;
 import org.spout.api.chat.channel.ChatChannelFactory;
 import org.spout.api.chat.channel.PermissionChatChannel;
@@ -36,9 +37,8 @@ import org.spout.api.command.CommandSource;
  * <pre>spout.chat.receive.&lt;player name></pre>
  */
 public class SpoutChatChannelFactory implements ChatChannelFactory {
-	private static final String SPOUT_CHAT_PREFIX = "spout.chat.receive.";
 	@Override
 	public ChatChannel create(CommandSource source) {
-		return new PermissionChatChannel(source.getName() + " Chat", SPOUT_CHAT_PREFIX + source.getName().toLowerCase());
+		return new PermissionChatChannel(source.getName() + " Chat", Engine.STANDARD_CHAT_PREFIX + source.getName().toLowerCase());
 	}
 }
