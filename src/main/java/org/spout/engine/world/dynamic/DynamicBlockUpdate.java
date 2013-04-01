@@ -34,6 +34,9 @@ import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.util.hashing.SignedTenBitTripleHashed;
 
+/**
+ * Represents a linked list entry value that contains location, next block update time, and data for the dynamic update
+ */
 public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate>, DynamicUpdateEntry {
 	
 	private final static AtomicInteger idCounter = new AtomicInteger(0);
@@ -201,11 +204,11 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate>, Dynam
 				" pos: (" + getX() + ", " + getY() + ", " + getZ() + ")" +
 				" data: " + data + "}";
 	}
-	
+
 	public static int getPointPacked(Point p) {
 		return getBlockPacked(p.getBlockX(), p.getBlockY(), p.getBlockZ());
 	}
-		
+
 	public static int getBlockPacked(int x, int y, int z) {
 		return SignedTenBitTripleHashed.key(x & Region.BLOCKS.MASK, y & Region.BLOCKS.MASK, z & Region.BLOCKS.MASK);
 	}

@@ -27,8 +27,6 @@
 package org.spout.engine.world.dynamic;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.set.hash.TIntHashSet;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +39,7 @@ import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.DynamicMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.Material;
@@ -63,27 +62,38 @@ public class DynamicBlockUpdateTree {
 	private final SpoutRegion region;
 	private final SpoutWorld world;
 	
-	private TreeSet<DynamicBlockUpdate> queuedUpdates = new TreeSet<DynamicBlockUpdate>();
-	private TIntObjectHashMap<DynamicBlockUpdate> blockToUpdateMap = new TIntObjectHashMap<DynamicBlockUpdate>();
-	private TIntObjectHashMap<HashSet<DynamicBlockUpdate>> chunkToUpdateMap = new TIntObjectHashMap<HashSet<DynamicBlockUpdate>>();
-	private ConcurrentLinkedQueue<PointAlone> resetPending = new ConcurrentLinkedQueue<PointAlone>();
-	private ConcurrentHashMap<PointAlone, Boolean> resetPendingMap = new ConcurrentHashMap<PointAlone, Boolean>();
-	private ConcurrentLinkedQueue<List<DynamicBlockUpdate>> pendingLists = new ConcurrentLinkedQueue<List<DynamicBlockUpdate>>();
-	private TIntHashSet processed = new TIntHashSet();
+	private final TreeSet<DynamicBlockUpdate> queuedUpdates = new TreeSet<DynamicBlockUpdate>();
+	private final TIntObjectHashMap<DynamicBlockUpdate> blockToUpdateMap = new TIntObjectHashMap<DynamicBlockUpdate>();
+	private final TIntObjectHashMap<HashSet<DynamicBlockUpdate>> chunkToUpdateMap = new TIntObjectHashMap<HashSet<DynamicBlockUpdate>>();
+
+	/**
+	 * Keeps a queue of a lists of DynamicBlockUpdates. Lists are only added when previously saved chunks are loaded, and added to the queue
+	 */
+	private final ConcurrentLinkedQueue<List<DynamicBlockUpdate>> pendingLists = new ConcurrentLinkedQueue<List<DynamicBlockUpdate>>();
+
+	/**
+	 * A queue of the reset block update requests (which triggers the firstUpdate of DynamicBlockMaterials)
+	 */
+	private final ConcurrentLinkedQueue<Point> resetPending = new ConcurrentLinkedQueue<Point>();
+
+	/**
+	 * A map of reset block update requests, which prevents duplicate reset requests at a single x, y, z location
+	 */
+	private final ConcurrentHashMap<Point, Boolean> resetPendingMap = new ConcurrentHashMap<Point, Boolean>();
+
 	private Thread regionThread;
 	@SuppressWarnings("unused")
 	private final Thread mainThread;
 	private final static int localStages = TickStage.DYNAMIC_BLOCKS | TickStage.PHYSICS;
 	private final static int globalStages = TickStage.GLOBAL_DYNAMIC_BLOCKS | TickStage.GLOBAL_PHYSICS;
-	private final static List<DynamicBlockUpdate> emptyList = new ArrayList<DynamicBlockUpdate>(0);
 	private int lastUpdates;
-	
+
 	public DynamicBlockUpdateTree(SpoutRegion region) {
 		this.region = region;
 		this.mainThread = ((SpoutScheduler)Spout.getScheduler()).getMainThread();
 		this.world = region.getWorld();
 	}
-	
+
 	public void setRegionThread(Thread t) {
 		this.regionThread = t;
 	}
@@ -92,12 +102,12 @@ public class DynamicBlockUpdateTree {
 		x &= Region.BLOCKS.MASK;
 		y &= Region.BLOCKS.MASK;
 		z &= Region.BLOCKS.MASK;
-		PointAlone p = new PointAlone(this.world, x, y, z);
+		Point p = new Point(this.world, x, y, z);
 		if (resetPendingMap.putIfAbsent(p, Boolean.TRUE) == null) {
 			resetPending.add(p);
 		}
 	}
-	
+
 	public void syncResetBlockUpdates(int x, int y, int z) {
 		checkStages();
 		syncResetBlockUpdates(x, y, z, world.getAge(), false);
@@ -123,38 +133,50 @@ public class DynamicBlockUpdateTree {
 
 		if (m instanceof DynamicMaterial) {
 			Block b = c.getBlock(x, y, z);
-			DynamicMaterial dm = (DynamicMaterial)m;
 			try {
-				dm.onFirstUpdate(b, currentTime);
+				((DynamicMaterial)m).onFirstUpdate(b, currentTime);
 			} catch (RuntimeException e) {
-				Spout.getLogger().severe("Unable to execute dynamic update for " + dm.getClass().getSimpleName());
+				Spout.getLogger().severe("Unable to execute dynamic update for " + m.getClass().getSimpleName());
 				throw e;
 			}
 		}
 	}
 
+	/**
+	 * Queues an immediate block update for the x, y, z location
+	 * @param x coordinate
+	 * @param y coordinate
+	 * @param z coordinate
+	 * @param exclusive resets any queued block updates for the location and triggers a first update for the block
+	 * @return the dynamic update entry for the location
+	 */
 	public DynamicUpdateEntry queueBlockUpdates(int x, int y, int z, boolean exclusive) {
-		checkStages();
-		if (exclusive) {
-			syncResetBlockUpdates(x, y, z, 0, false);
-		}
-		x &= Region.BLOCKS.MASK;
-		y &= Region.BLOCKS.MASK;
-		z &= Region.BLOCKS.MASK;
-		return add(new DynamicBlockUpdate(x, y, z, 0, 0));
+		return queueBlockUpdates(x, y, z, 0L, exclusive);
 	}
-	
+
+	/**
+	 * Queues a block update for the x, y, z location at the given updateTime
+	 * @param x coordinate
+	 * @param y coordinate
+	 * @param z coordinate
+	 * @param updateTime the time at which the update should occur, in terms of worldAge
+	 * @param exclusive resets any queued block updates for the location and triggers a first update for the block
+	 * @return the dynamic update entry for the location
+	 */
 	public DynamicUpdateEntry queueBlockUpdates(int x, int y, int z, long updateTime, boolean exclusive) {
-		checkStages();
-		if (exclusive) {
-			syncResetBlockUpdates(x, y, z, 0, false);
-		}
-		x &= Region.BLOCKS.MASK;
-		y &= Region.BLOCKS.MASK;
-		z &= Region.BLOCKS.MASK;
-		return add(new DynamicBlockUpdate(x, y, z, updateTime, 0));
+		return queueBlockUpdates(x, y, z, updateTime, 0, exclusive);
 	}
-	
+
+	/**
+	 * Queues a block update for the x, y, z location at the given updateTime
+	 * @param x coordinate
+	 * @param y coordinate
+	 * @param z coordinate
+	 * @param updateTime the time at which the update should occur, in terms of worldAge
+	 * @param data for the update, optional.
+	 * @param exclusive resets any queued block updates for the location and triggers a first update for the block
+	 * @return the dynamic update entry for the location
+	 */
 	public DynamicUpdateEntry queueBlockUpdates(int x, int y, int z, long updateTime, int data, boolean exclusive) {
 		checkStages();
 		if (exclusive) {
@@ -165,17 +187,20 @@ public class DynamicBlockUpdateTree {
 		z &= Region.BLOCKS.MASK;
 		return add(new DynamicBlockUpdate(x, y, z, updateTime, data));
 	}
-	
+
 	private void checkStages() {
 		// Note: This is a weaker check that before
 		//       Access is open during the global update stages, but access should be 
-		//       restricted to neighbour in the sequence
+		//       restricted to neighbor in the sequence
 		TickStage.checkStage(globalStages, localStages, regionThread);
 	}
-	
+
 	public void addDynamicBlockUpdates(List<DynamicBlockUpdate> list) {
-		pendingLists.add(list);
+		if (list.size() > 0) {
+			pendingLists.add(list);
+		}
 	}
+
 	/**
 	 * NOTE: Do NOT modify the returned set
 	 */
@@ -204,7 +229,7 @@ public class DynamicBlockUpdateTree {
 		}
 		return false;
 	}
-	
+
 	public void commitAsyncPending(long currentTime) {
 		TickStage.checkStage(TickStage.DYNAMIC_BLOCKS, regionThread);
 		List<DynamicBlockUpdate> l;
@@ -213,15 +238,10 @@ public class DynamicBlockUpdateTree {
 				add(update);
 			}
 		}
-		processed.clear();
-		PointAlone p;
+		Point p;
 		while ((p = resetPending.poll()) != null) {
 			if (!resetPendingMap.remove(p)) {
 				throw new IllegalStateException("Dynamic block reset pending map and queue mismatch");
-			}
-			int packed = DynamicBlockUpdate.getPointPacked(p);
-			if (!processed.add(packed)) {
-				continue;
 			}
 			int bx = p.getBlockX();
 			int by = p.getBlockY();
@@ -229,17 +249,23 @@ public class DynamicBlockUpdateTree {
 			
 			syncResetBlockUpdates(bx, by, bz, currentTime, true);
 		}
-		processed.clear();
 	}
-	
+
 	public int getLastUpdates() {
 		return lastUpdates;
 	}
-	
+
 	public void resetLastUpdates() {
 		lastUpdates = 0;
 	}
-	
+
+	/**
+	 * Updates all region dynamic updates, and returns a list of all multi-region updates that could not be executed
+	 * 
+	 * @param currentTime the current world time
+	 * @param thresholdTime the threshold time for updates (updates before this time should be executed)
+	 * @return list of multi-region updates that could not be executed
+	 */
 	public List<DynamicBlockUpdate> updateDynamicBlocks(long currentTime, long thresholdTime) {
 		DynamicBlockUpdate first;
 		
@@ -253,13 +279,16 @@ public class DynamicBlockUpdateTree {
 				multiRegionUpdates.add(first);
 			}
 		}
-		if (thresholdTime < currentTime && multiRegionUpdates == null) {
-			return emptyList;
-		} else {
-			return multiRegionUpdates;
-		}
+		return multiRegionUpdates;
 	}
 
+	/**
+	 * Executes a dynamic block update. The update may not execute if not forced, and it spans multiple regions
+	 * @param currentTime the current world time
+	 * @param update the dynamic block update to execute
+	 * @param force this update to execute even when the update spans multiple regions
+	 * @return the result of the update
+	 */
 	public UpdateResult updateDynamicBlock(long currentTime, DynamicBlockUpdate update, boolean force) {
 		checkStages();
 		int bx = update.getX();
@@ -275,9 +304,7 @@ public class DynamicBlockUpdateTree {
 		if (!c.isPopulated()) {
 			return UpdateResult.NOT_POPULATED;
 		}
-		
-		c.setModified();
-		
+
 		Material m = c.getBlockMaterial(bx, by, bz);
 		
 		if (!(m instanceof DynamicMaterial)) {
@@ -289,6 +316,7 @@ public class DynamicBlockUpdateTree {
 		if (!force && !range.isRegionLocal(bx, by, bz)) {
 			return UpdateResult.NON_LOCAL;
 		} else {
+			c.setModified();
 			Block b =  c.getBlock(bx, by, bz);
 			try {
 				dm.onDynamicUpdate(b, update.getNextUpdate(), update.getData());
@@ -300,7 +328,12 @@ public class DynamicBlockUpdateTree {
 			return UpdateResult.DONE;
 		}
 	}
-	
+
+	/**
+	 * The next dynamic block update time in the queue
+	 * 
+	 * @return update time
+	 */
 	public long getFirstDynamicUpdateTime() {
 		checkStages();
 		if (queuedUpdates.isEmpty()) {
@@ -308,7 +341,13 @@ public class DynamicBlockUpdateTree {
 		}
 		return queuedUpdates.first().getNextUpdate();
 	}
-	
+
+	/**
+	 * Gets the next dynamic block update valid for the threshold time, if any exist
+	 * 
+	 * @param thresholdTime in terms of world age
+	 * @return next dynamic block update, or null if no valid updates exist
+	 */
 	public DynamicBlockUpdate getNextUpdate(long thresholdTime) {
 		checkStages();
 		if (queuedUpdates.isEmpty()) {
@@ -330,14 +369,14 @@ public class DynamicBlockUpdateTree {
 
 		return first;
 	}
-	
+
 	/**
-	 * Adds an update
+	 * Adds a dynamic block update to the queue
 	 * 
 	 * @param update the update to add
 	 * @return the previous update
 	 */
-	private DynamicBlockUpdate add(DynamicBlockUpdate update) {
+	private DynamicBlockUpdate add(final DynamicBlockUpdate update) {
 		int key = update.getPacked();
 		DynamicBlockUpdate oldRoot = blockToUpdateMap.get(key);
 		DynamicBlockUpdate previous = null;
@@ -377,7 +416,7 @@ public class DynamicBlockUpdateTree {
 
 		return previous;
 	}
-	
+
 	/**
 	 * Removes a specific update
 	 * 
@@ -435,7 +474,7 @@ public class DynamicBlockUpdateTree {
 		}
 		return removed ? update : null;
 	}
-		
+
 	/**
 	 * Removes all updates at the given block location
 	 * 
@@ -468,7 +507,7 @@ public class DynamicBlockUpdateTree {
 		}
 		return oldRoot;
 	}
-	
+
 	public static enum UpdateResult {
 		NON_LOCAL, DONE, NOT_DYNAMIC, NOT_LOADED, NOT_POPULATED;
 		
