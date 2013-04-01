@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.spout.api.Spout;
 import org.spout.api.generator.biome.BiomeGenerator;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.LoadOption;
@@ -321,6 +322,6 @@ public class SpoutColumn {
 	}
 	
 	public ImmutableHeightMapBuffer getHeightMapBuffer() {
-		return new ImmutableHeightMapBuffer(getX(), getZ(), SpoutColumn.BLOCKS.SIZE, SpoutColumn.BLOCKS.SIZE, heightMap);
+		return new ImmutableHeightMapBuffer(getX() << BLOCKS.BITS, getZ() << BLOCKS.BITS, SpoutColumn.BLOCKS.SIZE, SpoutColumn.BLOCKS.SIZE, heightMap);
 	}
 }

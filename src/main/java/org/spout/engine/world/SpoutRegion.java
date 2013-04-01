@@ -2195,7 +2195,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	@Override
 	public ImmutableHeightMapBuffer getLocalHeightMap(int x, int z, LoadOption loadopt) {
-		SpoutColumn col = getWorld().getColumn(x << Chunk.BLOCKS.BITS, z << Chunk.BLOCKS.BITS, true);
+		SpoutColumn col = getWorld().getColumn((getChunkX() + x) << Chunk.BLOCKS.BITS, (getChunkZ() + z) << Chunk.BLOCKS.BITS, true);
 		if (col == null) {
 			return null;
 		}
