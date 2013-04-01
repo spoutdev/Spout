@@ -26,6 +26,7 @@
  */
 package org.spout.api.util.cuboid;
 
+import org.spout.api.Spout;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;

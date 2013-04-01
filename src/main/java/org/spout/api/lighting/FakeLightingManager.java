@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.spout.api.util.cuboid.ChunkCuboidLightBufferWrapper;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.cuboid.ImmutableCuboidBlockMaterialBuffer;
+import org.spout.api.util.cuboid.ImmutableHeightMapBuffer;
 
 @SuppressWarnings("rawtypes")
 public class FakeLightingManager extends LightingManager {
@@ -45,17 +46,17 @@ public class FakeLightingManager extends LightingManager {
 	}
 
 	@Override
-	protected void resolve(ChunkCuboidLightBufferWrapper light, ImmutableCuboidBlockMaterialBuffer material, int[] x, int[] y, int[] z, int changedBlocks) {
+	protected void resolve(ChunkCuboidLightBufferWrapper light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] x, int[] y, int[] z, int changedBlocks) {
 		throw new UnsupportedOperationException("Attempt to use resolve() method on a FakeLightingManager");
 	}
 
 	@Override
-	protected void resolve(ChunkCuboidLightBufferWrapper light, ImmutableCuboidBlockMaterialBuffer material, int[] bx, int[] by, int[] bz, int[] tx, int[] ty, int[] tz, int changedCuboids) {
+	protected void resolve(ChunkCuboidLightBufferWrapper light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int[] tx, int[] ty, int[] tz, int changedCuboids) {
 		throw new UnsupportedOperationException("Attempt to use resolve() method on a FakeLightingManager");
 	}
 
 	@Override
-	protected void resolve(ChunkCuboidLightBufferWrapper light, ImmutableCuboidBlockMaterialBuffer material, int[] hx, int[] hz, int[] oldHy, int[] newHy, int changedColumns) {
+	protected void resolve(ChunkCuboidLightBufferWrapper light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] hx, int[] hz, int[] oldHy, int[] newHy, int changedColumns) {
 		throw new UnsupportedOperationException("Attempt to use resolve() method on a FakeLightingManager");
 	}
 

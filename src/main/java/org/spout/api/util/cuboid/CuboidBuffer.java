@@ -26,6 +26,7 @@
  */
 package org.spout.api.util.cuboid;
 
+import org.spout.api.Spout;
 import org.spout.api.math.Vector3;
 
 /**

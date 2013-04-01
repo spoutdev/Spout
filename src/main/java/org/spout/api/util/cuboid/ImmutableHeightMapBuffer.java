@@ -46,7 +46,7 @@ public class ImmutableHeightMapBuffer extends CuboidBuffer {
 	
 	public ImmutableHeightMapBuffer(int baseX, int baseZ, int sizeX, int sizeZ, AtomicInteger[][] heightMap) {
 		super(baseX, 0, baseZ, sizeX, 1, sizeZ);
-		this.heightMap = new int[sizeX * sizeY];
+		this.heightMap = new int[sizeX * sizeZ];
 		int i = 0;
 		for (int z = 0; z < sizeZ; z++) {
 			for (int x = 0; x < sizeX; x++) {
