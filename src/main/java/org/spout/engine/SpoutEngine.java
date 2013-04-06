@@ -759,7 +759,12 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		if (oldPlayer != null && oldPlayer.getSession() != null) {
 			oldPlayer.kick("Login occured from another client");
 		}
+
 		final SpoutSceneComponent scene = (SpoutSceneComponent) player.getScene();
+		
+		//Test for valid old position
+		created |= scene.getTransformLive().getPosition().getWorld() == null;
+		
 		//Connect the player and set their transform to the default world's spawn.
 		player.connect(session, created ? getDefaultWorld().getSpawnPoint() : scene.getTransformLive());
 
