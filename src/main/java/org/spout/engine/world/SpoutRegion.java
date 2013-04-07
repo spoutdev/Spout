@@ -1479,7 +1479,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		LightingManager<?>[] managers = getWorld().getLightingManagers();
 		
 		if (blockMaterialBuffer == null) {
-			blockMaterialBuffer = new LocalRegionChunkCuboidBlockMaterialBufferWrapper(this, LoadOption.LOAD_ONLY, BlockMaterial.UNGENENERATED);
+			blockMaterialBuffer = new LocalRegionChunkCuboidBlockMaterialBufferWrapper(this, LoadOption.LOAD_ONLY, BlockMaterial.UNGENERATED);
 		}
 		
 		if (lightBuffers == null || lightBuffers.length != managers.length) {
