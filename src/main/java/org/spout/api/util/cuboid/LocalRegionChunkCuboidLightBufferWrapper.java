@@ -61,7 +61,7 @@ public class LocalRegionChunkCuboidLightBufferWrapper<T extends CuboidLightBuffe
 		int cz = (z - baseZ - Region.BLOCKS.SIZE) >> Chunk.BLOCKS.BITS;
 		Chunk c = r.getLocalChunk(cx, cy, cz, loadOpt);
 		if (c == null) {
-			Spout.getLogger().info("No local chunk, " + cx + ", " + cy + ", " + cz);
+			Spout.getLogger().info("No local chunk, " + cx + ", " + cy + ", " + cz + " block: " + x + ", " + y + ", " + z);
 			return null;
 		}
 		@SuppressWarnings("unchecked")
