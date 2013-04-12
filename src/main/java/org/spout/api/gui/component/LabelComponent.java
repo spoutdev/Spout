@@ -39,45 +39,14 @@ import org.spout.api.component.type.WidgetComponent;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.gui.render.RenderPartPack;
 import org.spout.api.map.DefaultedKey;
+import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.math.Rectangle;
 import org.spout.api.render.Font;
 
 public class LabelComponent extends WidgetComponent {
-	private static final DefaultedKey<ChatArguments> KEY_TEXT = new DefaultedKey<ChatArguments>() {
-		private final ChatArguments DEFAULT_VALUE = new ChatArguments("(your text here)");
-
-		@Override
-		public ChatArguments getDefaultValue() {
-			return DEFAULT_VALUE;
-		}
-
-		@Override
-		public String getKeyString() {
-			return "text";
-		}
-	};
-	private static final DefaultedKey<Color> KEY_COLOR = new DefaultedKey<Color>() {
-		@Override
-		public Color getDefaultValue() {
-			return Color.black;
-		}
-
-		@Override
-		public String getKeyString() {
-			return "text-color";
-		}
-	};
-	private static final DefaultedKey<Font> KEY_FONT = new DefaultedKey<Font>() {
-		@Override
-		public Font getDefaultValue() {
-			return (Font) Spout.getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf");
-		}
-
-		@Override
-		public String getKeyString() {
-			return "font";
-		}
-	};
+	private static final DefaultedKey<ChatArguments> KEY_TEXT = new DefaultedKeyImpl<ChatArguments>("text", new ChatArguments("(your text here)"));
+	private static final DefaultedKey<Color> KEY_COLOR = new DefaultedKeyImpl<Color>("text-color", Color.black);
+	private static final DefaultedKey<Font> KEY_FONT = new DefaultedKeyImpl<Font>("font", (Font) Spout.getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf"));
 
 	@Override
 	public List<RenderPartPack> getRenderPartPacks() {

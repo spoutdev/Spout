@@ -24,13 +24,15 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.gui.component;
+package org.spout.api.gui.component.button;
 
 import java.awt.Color;
 import java.util.List;
 
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
+import org.spout.api.gui.component.ControlComponent;
+import org.spout.api.gui.component.LabelComponent;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.gui.render.RenderPartPack;
 import org.spout.api.input.Keyboard;

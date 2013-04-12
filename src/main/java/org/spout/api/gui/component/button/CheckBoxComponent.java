@@ -24,26 +24,15 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.gui.component;
+package org.spout.api.gui.component.button;
 
 import org.spout.api.map.DefaultedKey;
+import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.signal.Signal;
 
 public class CheckBoxComponent extends ButtonComponent {
 	public static final Signal SIGNAL_CHECKED = new Signal("checked", Boolean.class);
-	private static final DefaultedKey<Boolean> KEY_CHECKED = new DefaultedKey<Boolean>() {
-		public Boolean getDefaultValue() {
-			return false;
-		}
-
-		;
-
-		public String getKeyString() {
-			return "checked";
-		}
-
-		;
-	};
+	private static final DefaultedKey<Boolean> KEY_CHECKED = new DefaultedKeyImpl<Boolean>("checked", false);
 
 	public CheckBoxComponent() {
 		super();
@@ -58,10 +47,7 @@ public class CheckBoxComponent extends ButtonComponent {
 	}
 
 	public void onClicked() {
-		boolean checked = isChecked();
-		checked = !checked;
-		setChecked(checked);
-
+		setChecked(!isChecked());
 		getOwner().update();
 	}
 

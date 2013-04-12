@@ -24,25 +24,16 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.gui.component;
+package org.spout.api.gui.component.button;
 
 import org.spout.api.gui.Widget;
 import org.spout.api.map.DefaultedKey;
+import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.signal.Signal;
 
 public class RadioComponent extends ButtonComponent {
 	public static final Signal SIGNAL_SELECTED = new Signal("selected", Boolean.class);
-	private static final DefaultedKey<Boolean> KEY_SELECTED = new DefaultedKey<Boolean>() {
-		@Override
-		public Boolean getDefaultValue() {
-			return false;
-		}
-
-		@Override
-		public String getKeyString() {
-			return "selected";
-		}
-	};
+	private static final DefaultedKey<Boolean> KEY_SELECTED = new DefaultedKeyImpl<Boolean>("selected", false);
 
 	public RadioComponent() {
 		super();
@@ -74,9 +65,6 @@ public class RadioComponent extends ButtonComponent {
 	}
 
 	public void onClicked() {
-		boolean selected = isSelected();
-		if (!selected) {
-			setSelected(true);
-		}
+		setSelected(!isSelected());
 	}
 }

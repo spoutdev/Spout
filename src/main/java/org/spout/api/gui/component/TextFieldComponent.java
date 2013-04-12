@@ -34,29 +34,30 @@ import org.spout.api.Spout;
 import org.spout.api.event.player.input.PlayerKeyEvent;
 import org.spout.api.gui.render.RenderPart;
 import org.spout.api.gui.render.RenderPartPack;
+import org.spout.api.map.DefaultedKey;
+import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.math.Rectangle;
 import org.spout.api.render.Font;
 import org.spout.api.render.SpoutRenderMaterials;
 import org.spout.api.signal.Signal;
 
 public class TextFieldComponent extends LabelComponent {
+	private static final DefaultedKey<Character> KEY_PASSWORD_CHAR = new DefaultedKeyImpl<Character>("password_char", '*');
+	private static final DefaultedKey<Boolean> KEY_PASSWORD_FIELD = new DefaultedKeyImpl<Boolean>("password_field", false);
+	private static final DefaultedKey<Boolean> KEY_SCROLLABLE = new DefaultedKeyImpl<Boolean>("scrollable", false);
+	private static final DefaultedKey<String> KEY_CACHED_TEXT = new DefaultedKeyImpl<String>("cached_text", "");
+	private static final DefaultedKey<Integer> KEY_MAX_CHARS = new DefaultedKeyImpl<Integer>("max_chars", 100);
+	private static final DefaultedKey<Integer> KEY_MAX_ROWS = new DefaultedKeyImpl<Integer>("max_rows", 20);
+	private static final DefaultedKey<Integer> KEY_ROWS = new DefaultedKeyImpl<Integer>("rows", 1);
+	private static final DefaultedKey<Integer> KEY_CURSOR_INDEX = new DefaultedKeyImpl<Integer>("cursor_index", 0);
+	private static final DefaultedKey<Integer> KEY_CURSOR_ROW = new DefaultedKeyImpl<Integer>("cursor_row", 0);
 	private final RenderPart cursor = new RenderPart();
 	private final RenderPart field = new RenderPart();
 	private final RenderPart border = new RenderPart();
 	private Client client;
-	private int cursorIndex = 0;
-	private int cursorRow = 0;
-	private int rows = 1;
-	private int maxRows = 20;
-	private int maxChars = 100;
-	// we need to cache the inputted text because not all the text is necessarily visible
-	private String cachedText = "";
 	private int typingTimer = 80;
 	private int blinkingTimer = 20;
-	private boolean scrollable = false;
-	private boolean passwordField = false;
-	private char passwordChar = '*';
-	
+
 	/**
 	 * Emitted whenever the text changes
 	 */
@@ -70,115 +71,6 @@ public class TextFieldComponent extends LabelComponent {
 	public TextFieldComponent() {
 		registerSignal(SIGNAL_TEXT_CHANGED);
 		registerSignal(SIGNAL_RETURN_PRESSED);
-	}
-
-	@Override
-	public void onAttached() {
-		super.onAttached();
-		if (!(Spout.getEngine() instanceof Client)) {
-			throw new IllegalStateException("Cannot attach TextField in server mode.");
-		}
-		client = (Client) Spout.getEngine();
-		init();
-	}
-
-	@Override
-	public void onTick(float dt) {
-		if (typingTimer > 0) {
-			typingTimer--;
-		}
-
-		if (!isTyping()) {
-			if (blinkingTimer > 0) {
-				blinkingTimer--;
-			} else {
-				// toggle cursor
-				setCursorVisible(!isCursorVisible());
-				blinkingTimer = 20;
-			}
-		} else {
-			setCursorVisible(true);
-		}
-	}
-
-	@Override
-	public List<RenderPartPack> getRenderPartPacks() {
-		List<RenderPartPack> parts = super.getRenderPartPacks();
-		RenderPartPack pack = new RenderPartPack(SpoutRenderMaterials.GUI_COLOR);
-		pack.add(cursor);
-		pack.add(field);
-		pack.add(border);
-		parts.add(pack);
-		return parts;
-	}
-
-	@Override
-	public void onKey(PlayerKeyEvent event) {
-		if (!event.isPressed()) {
-			return;
-		}
-
-		typingTimer = 80;
-		boolean whitespace = false;
-		switch (event.getKey()) {
-			case KEY_BACK:
-				backspace();
-				whitespace = true;
-				break;
-			case KEY_RETURN:
-				if (getRows() < maxRows) {
-					newLine();
-				}
-				whitespace = true;
-				emit(SIGNAL_RETURN_PRESSED);
-				break;
-			default:
-				break;
-		}
-
-		/*
-		 * If the char can't fit on the current row and we have room for
-		 * another line, make a new line, set the cursor index to zero, and
-		 * increment the cursor row. If we don't have room for another line,
-		 * start to scroll to the right.
-		 */
-
-		if (!whitespace) {
-			char c = event.getChar();
-			if (cachedText.length() >= maxChars || !isValidChar(c)) {
-				return;
-			}
-			if (!canFitOnRow(cursorRow, c)) {
-				if (getRows() < maxRows) {
-					newLine();
-				} else {
-					// TODO: scroll to right
-				}
-			}
-			append(isPasswordField() ? passwordChar : c);
-			cachedText += c;
-			setCursorIndex(getCursorIndex() + 1);
-		}
-		
-		emit(SIGNAL_TEXT_CHANGED, getText());
-		getOwner().update();
-	}
-
-	@Override
-	public void backspace() {
-		super.backspace();
-		if (!cachedText.isEmpty()) {
-			cachedText = cachedText.substring(0, cachedText.length() - 1);
-			setCursorIndex(getCursorIndex() - 1);
-		}
-	}
-
-	@Override
-	public void newLine() {
-		super.newLine();
-		setRows(getRows() + 1);
-		setCursorIndex(0);
-		setCursorRow(getCursorRow() + 1);
 	}
 
 	private void init() {
@@ -251,17 +143,18 @@ public class TextFieldComponent extends LabelComponent {
 
 	/**
 	 * Returns the text on the specified row. Note that this method uses the
-	 * {@link #cachedText} field which means not all returned text is
+	 * cached text field which means not all returned text is
 	 * necessarily visible.
 	 *
 	 * @param row to get text from
 	 * @return text on specified row
 	 */
 	public String getText(int row) {
+		int maxRows = getMaxRows();
 		if (row < 0 || row > maxRows) {
 			throw new IllegalArgumentException("Specified row must be between 0 and " + maxRows);
 		}
-		String str = cachedText;
+		String str = getCachedText();
 		int start = 0;
 		int end = indexOf(str, 0);
 		for (int i = 0; i < row; i++) {
@@ -308,7 +201,7 @@ public class TextFieldComponent extends LabelComponent {
 		if (rows < 1 || rows > getMaxRows()) {
 			throw new IllegalArgumentException("Specified rows exceeds the limit for this text field or is less than one.");
 		}
-		this.rows = rows;
+		getData().put(KEY_ROWS, rows);
 		Rectangle rect = field.getSprite();
 		float height = getRowHeight() * rows;
 		// shift y down, multiply row height by specified rows
@@ -321,7 +214,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @return rows of TextField
 	 */
 	public int getRows() {
-		return rows;
+		return getData().get(KEY_ROWS);
 	}
 
 	/**
@@ -341,7 +234,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @return maximum amount of rows
 	 */
 	public int getMaxRows() {
-		return maxRows;
+		return getData().get(KEY_MAX_ROWS);
 	}
 
 	/**
@@ -352,7 +245,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @param maxRows maximum amount of rows
 	 */
 	public void setMaxRows(int maxRows) {
-		this.maxRows = maxRows;
+		getData().put(KEY_MAX_ROWS, maxRows);
 	}
 
 	/**
@@ -382,7 +275,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @return maximum amount of characters permitted on a row
 	 */
 	public int getMaxChars() {
-		return maxChars;
+		return getData().get(KEY_MAX_CHARS);
 	}
 
 	/**
@@ -393,7 +286,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @param maxChars maximum amount of characters permitted on a row
 	 */
 	public void setMaxChars(int maxChars) {
-		this.maxChars = maxChars;
+		getData().put(KEY_MAX_CHARS, maxChars);
 	}
 
 	/**
@@ -403,7 +296,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @return whether this text field is scrollable
 	 */
 	public boolean isScrollable() {
-		return scrollable;
+		return getData().get(KEY_SCROLLABLE);
 	}
 
 	/**
@@ -413,7 +306,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @param scrollable whether this text field should attach a scroll bar.
 	 */
 	public void setScrollable(boolean scrollable) {
-		this.scrollable = scrollable;
+		getData().put(KEY_SCROLLABLE, scrollable);
 	}
 
 	/**
@@ -424,7 +317,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @return true if this is a password field
 	 */
 	public boolean isPasswordField() {
-		return passwordField;
+		return getData().get(KEY_PASSWORD_FIELD);
 	}
 
 	/**
@@ -435,14 +328,14 @@ public class TextFieldComponent extends LabelComponent {
 	 * @param passwordField
 	 */
 	public void setPasswordField(boolean passwordField) {
-		this.passwordField = passwordField;
+		getData().get(KEY_PASSWORD_FIELD, passwordField);
 	}
 
 	/**
 	 * Gets the character used when {@link #isPasswordField()} returns true.
 	 */
 	public char getPasswordChar() {
-		return passwordChar;
+		return getData().get(KEY_PASSWORD_CHAR);
 	}
 
 	/**
@@ -454,7 +347,7 @@ public class TextFieldComponent extends LabelComponent {
 		if (!isValidChar(passwordChar)) {
 			throw new IllegalArgumentException("Specified character must be a valid character as designated by LabelComponent#isValidChar(char)");
 		}
-		this.passwordChar = passwordChar;
+		getData().put(KEY_PASSWORD_CHAR, passwordChar);
 	}
 
 	/**
@@ -475,7 +368,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @return index of the cursor among the text
 	 */
 	public int getCursorIndex() {
-		return cursorIndex;
+		return getData().get(KEY_CURSOR_INDEX);
 	}
 
 	/**
@@ -487,12 +380,12 @@ public class TextFieldComponent extends LabelComponent {
 	 * @param cursorIndex index of cursor
 	 */
 	public void setCursorIndex(int cursorIndex) {
-		String row = getText(cursorRow);
+		String row = getText(getCursorRow());
 		if (cursorIndex < 0 || cursorIndex > row.length()) {
 			throw new IllegalArgumentException("Specified index must be between 0 and " + row.length());
 		}
 
-		this.cursorIndex = cursorIndex;
+		getData().put(KEY_CURSOR_INDEX, cursorIndex);
 		Rectangle rect = cursor.getSprite();
 		float x = getInitialCursorBounds().getX();
 		int textIndex = cursorIndex - 1;
@@ -515,7 +408,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @return row that cursor is on
 	 */
 	public int getCursorRow() {
-		return cursorRow;
+		return getData().get(KEY_CURSOR_ROW);
 	}
 
 	/**
@@ -524,6 +417,7 @@ public class TextFieldComponent extends LabelComponent {
 	 * @param cursorRow row that cursor is on
 	 */
 	public void setCursorRow(int cursorRow) {
+		int rows = getRows();
 		if (cursorRow < 0 || cursorRow > rows - 1) {
 			throw new IllegalArgumentException("Specified row must be between 0 and " + (rows - 1));
 		}
@@ -531,7 +425,7 @@ public class TextFieldComponent extends LabelComponent {
 		float y = getInitialCursorBounds().getY() + rows * rowHeight - cursorRow * rowHeight;
 		Rectangle rect = cursor.getSprite();
 		cursor.setSprite(new Rectangle(rect.getX(), y, rect.getWidth(), rect.getHeight()));
-		this.cursorRow = cursorRow;
+		getData().put(KEY_CURSOR_ROW, cursorRow);
 	}
 
 	/**
@@ -600,6 +494,121 @@ public class TextFieldComponent extends LabelComponent {
 	 * @return all of the text
 	 */
 	public String getCachedText() {
-		return cachedText;
+		return getData().get(KEY_CACHED_TEXT);
+	}
+
+	private void setCachedText(String cachedText) {
+		getData().put(KEY_CACHED_TEXT, cachedText);
+	}
+
+	@Override
+	public void onAttached() {
+		super.onAttached();
+		if (!(Spout.getEngine() instanceof Client)) {
+			throw new IllegalStateException("Cannot attach TextField in server mode.");
+		}
+		client = (Client) Spout.getEngine();
+		init();
+	}
+
+	@Override
+	public void onTick(float dt) {
+		if (typingTimer > 0) {
+			typingTimer--;
+		}
+
+		if (!isTyping()) {
+			if (blinkingTimer > 0) {
+				blinkingTimer--;
+			} else {
+				// toggle cursor
+				setCursorVisible(!isCursorVisible());
+				blinkingTimer = 20;
+			}
+		} else {
+			setCursorVisible(true);
+		}
+	}
+
+	@Override
+	public List<RenderPartPack> getRenderPartPacks() {
+		List<RenderPartPack> parts = super.getRenderPartPacks();
+		RenderPartPack pack = new RenderPartPack(SpoutRenderMaterials.GUI_COLOR);
+		pack.add(cursor);
+		pack.add(field);
+		pack.add(border);
+		parts.add(pack);
+		return parts;
+	}
+
+	@Override
+	public void onKey(PlayerKeyEvent event) {
+		if (!event.isPressed()) {
+			return;
+		}
+
+		typingTimer = 80;
+		boolean whitespace = false;
+		switch (event.getKey()) {
+			case KEY_BACK:
+				backspace();
+				whitespace = true;
+				break;
+			case KEY_RETURN:
+				if (getRows() < getMaxRows()) {
+					newLine();
+				}
+				whitespace = true;
+				emit(SIGNAL_RETURN_PRESSED);
+				break;
+			default:
+				break;
+		}
+
+		/*
+		 * If the char can't fit on the current row and we have room for
+		 * another line, make a new line, set the cursor index to zero, and
+		 * increment the cursor row. If we don't have room for another line,
+		 * start to scroll to the right.
+		 */
+
+		if (!whitespace) {
+			char c = event.getChar();
+			String cachedText = getCachedText();
+			if (cachedText.length() >= getMaxChars() || !isValidChar(c)) {
+				return;
+			}
+			if (!canFitOnRow(getCursorRow(), c)) {
+				if (getRows() < getMaxRows()) {
+					newLine();
+				} else {
+					// TODO: scroll to right
+				}
+			}
+			append(isPasswordField() ? getPasswordChar() : c);
+			setCachedText(cachedText + c);
+			setCursorIndex(getCursorIndex() + 1);
+		}
+
+		emit(SIGNAL_TEXT_CHANGED, getText());
+		getOwner().update();
+	}
+
+	@Override
+	public void backspace() {
+		super.backspace();
+		String cachedText = getCachedText();
+		if (!cachedText.isEmpty()) {
+			setCachedText(cachedText.substring(0, cachedText.length() - 1));
+			setCursorIndex(getCursorIndex() - 1);
+		}
+	}
+
+	@Override
+	public void newLine() {
+		super.newLine();
+		setRows(getRows() + 1);
+		setCursorIndex(0);
+		setCursorRow(getCursorRow() + 1);
 	}
 }
