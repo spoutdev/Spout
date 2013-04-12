@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.spout.api.Client;
 import org.spout.api.Platform;
+import org.spout.api.Spout;
 import org.spout.api.audio.Sound;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.audio.SoundSource;
@@ -54,11 +55,23 @@ import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
+import org.spout.api.gui.Screen;
+import org.spout.api.gui.Widget;
+import org.spout.api.gui.component.SliderComponent;
+import org.spout.api.gui.component.SpinnerComponent;
+import org.spout.api.gui.component.TextFieldComponent;
+import org.spout.api.gui.component.TexturedRectComponent;
+import org.spout.api.gui.component.button.ButtonComponent;
+import org.spout.api.gui.component.button.CheckBoxComponent;
+import org.spout.api.gui.component.button.RadioComponent;
+import org.spout.api.gui.component.list.ComboBoxComponent;
+import org.spout.api.gui.component.list.ItemListComponent;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
+import org.spout.api.plugin.CommonPluginManager;
 import org.spout.api.plugin.Plugin;
 
 import org.spout.engine.SpoutClient;
@@ -72,6 +85,42 @@ public class TestCommands {
 
 	public TestCommands(SpoutEngine engine) {
 		this.engine = engine;
+	}
+
+	@Command(aliases = "widget", usage = "<button|checkbox|radio|combo|list|label|slider|spinner|textfield|rect>",
+			desc = "Renders a widget on your screen.", min = 1, max = 1)
+	public void widget(CommandContext args, CommandSource source) throws CommandException {
+		if (!(engine instanceof Client)) {
+			throw new CommandException("This command is only available on the client.");
+		}
+
+		Client client = (Client) engine;
+		Screen screen = new Screen();
+		Widget widget = client.getScreenStack().createWidget();
+		String flag = args.getString(0);
+		if (flag.equalsIgnoreCase("button")) {
+			widget.add(ButtonComponent.class);
+		} else if (flag.equalsIgnoreCase("checkbox")) {
+			widget.add(CheckBoxComponent.class);
+		} else if (flag.equalsIgnoreCase("radio")) {
+			widget.add(RadioComponent.class);
+		} else if (flag.equalsIgnoreCase("combo")) {
+			widget.add(ComboBoxComponent.class);
+		} else if (flag.equalsIgnoreCase("list")) {
+			widget.add(ItemListComponent.class);
+		} else if (flag.equalsIgnoreCase("slider")) {
+			widget.add(SliderComponent.class);
+		} else if (flag.equalsIgnoreCase("spinner")) {
+			widget.add(SpinnerComponent.class);
+		} else if (flag.equalsIgnoreCase("textfield")) {
+			widget.add(TextFieldComponent.class);
+		} else if (flag.equalsIgnoreCase("rect")) {
+			widget.add(TexturedRectComponent.class);
+		} else {
+			throw new CommandException("Component not found.");
+		}
+		screen.attachWidget(((CommonPluginManager) Spout.getPluginManager()).getMetaPlugin(), widget);
+		client.getScreenStack().openScreen(screen);
 	}
 
 	@Command(aliases = "dw", usage = "<play|stop|pause>", desc = "Plays a tune at your position.", min = 1, max = 1)

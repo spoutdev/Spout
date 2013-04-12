@@ -117,7 +117,7 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 
 	@Override
 	public boolean isFocused() {
-		return screen.getFocusedWidget().equals(this);
+		return equals(screen.getFocusedWidget());
 	}
 
 	@Override
