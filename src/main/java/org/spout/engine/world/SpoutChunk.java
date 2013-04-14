@@ -567,7 +567,16 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public void resetDynamicBlock(int x, int y, int z) {
 		parentRegion.resetDynamicBlock(getBlockX(x), getBlockY(y), getBlockZ(z));
 	}
-
+	
+	@Override
+	public void resetDynamicBlocks(Chunk c) {
+		parentRegion.resetDynamicBlocks(c);
+	}
+	
+	public void resetDynamicBlocks() {
+		resetDynamicBlocks(this);
+	}
+	
 	@Override
 	public void syncResetDynamicBlock(int x, int y, int z) {
 		parentRegion.syncResetDynamicBlock(getBlockX(x), getBlockY(y), getBlockZ(z));
@@ -1418,21 +1427,11 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			this.initLighting();
 		}
 		parentRegion.onChunkPopulated(this);
-		resetAllDynamicBlocks();
+		resetDynamicBlocks();
 		setModified();
 		return true;
 	}
 	
-	private void resetAllDynamicBlocks() {
-		for (int x = 0; x < Chunk.BLOCKS.SIZE; x++) {
-			for (int y = 0; y < Chunk.BLOCKS.SIZE; y++) {
-				for (int z = 0; z < Chunk.BLOCKS.SIZE; z++) {
-					this.resetDynamicBlock(x, y, z);
-				}
-			}
-		}
-	}
-
 	public void populate(Populator populator) {
 		try {
 			populator.populate(this, new Random(WorldGeneratorUtils.getSeed(getWorld(), getX(), getY(), getZ(), 42)));

@@ -40,7 +40,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.spout.api.Platform;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
@@ -89,7 +88,6 @@ import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
 import org.spout.api.util.sanitation.StringSanitizer;
 import org.spout.api.util.thread.annotation.LiveRead;
 import org.spout.api.util.thread.annotation.Threadsafe;
-
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.filesystem.versioned.WorldFiles;
@@ -463,6 +461,11 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	@Override
 	public void resetDynamicBlock(int x, int y, int z) {
 		this.getRegionFromBlock(x, y, z).resetDynamicBlock(x, y, z);
+	}
+	
+	@Override
+	public void resetDynamicBlocks(Chunk c) {
+		c.resetDynamicBlocks(c);
 	}
 
 	@Override

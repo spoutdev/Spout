@@ -1848,6 +1848,12 @@ public class SpoutRegion extends Region implements AsyncManager {
 		setChunkModified(x, y, z);
 		dynamicBlockTree.resetBlockUpdates(x, y, z);
 	}
+	
+	@Override
+	public void resetDynamicBlocks(Chunk c) {
+		((SpoutChunk) c).setModified();
+		dynamicBlockTree.resetBlockUpdates(c);
+	}
 
 	@Override
 	public void syncResetDynamicBlock(int x, int y, int z) {

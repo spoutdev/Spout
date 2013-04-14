@@ -97,6 +97,28 @@ public class DynamicBlockUpdateTree {
 	public void setRegionThread(Thread t) {
 		this.regionThread = t;
 	}
+	
+	public void resetBlockUpdates(Chunk c) {
+		int x = c.getBlockX() & Region.BLOCKS.MASK;
+		int y = c.getBlockY() & Region.BLOCKS.MASK;
+		int z = c.getBlockZ() & Region.BLOCKS.MASK;
+		Point p = new ChunkPoint(this.world, x, y, z);
+		boolean success = false;
+		while (!success) {
+			Boolean b = resetPendingMap.putIfAbsent(p, Boolean.FALSE);
+			if (b == null) {
+				success = true;
+			} else if (b.equals(Boolean.FALSE)) { // Chunk set already sent
+				return;
+			} else {
+				success = resetPendingMap.replace(p, b, Boolean.FALSE);
+				if (!resetPending.remove(p)) {
+					throw new IllegalStateException("Unable to remove old Point from reset pending queue when replacing with ChunkPoint");
+				}
+			}
+		}
+		resetPending.add(p);
+	}
 
 	public void resetBlockUpdates(int x, int y, int z) {
 		x &= Region.BLOCKS.MASK;
@@ -238,6 +260,7 @@ public class DynamicBlockUpdateTree {
 				add(update);
 			}
 		}
+
 		Point p;
 		while ((p = resetPending.poll()) != null) {
 			if (!resetPendingMap.remove(p)) {
@@ -246,8 +269,18 @@ public class DynamicBlockUpdateTree {
 			int bx = p.getBlockX();
 			int by = p.getBlockY();
 			int bz = p.getBlockZ();
-			
-			syncResetBlockUpdates(bx, by, bz, currentTime, true);
+
+			if (p instanceof ChunkPoint) {
+				for (int x = 0; x < Chunk.BLOCKS.SIZE; x++) {
+					for (int y = 0; y < Chunk.BLOCKS.SIZE; y++) {
+						for (int z = 0; z < Chunk.BLOCKS.SIZE; z++) {
+							syncResetBlockUpdates(bx + x, by + y, bz + z, currentTime, true);
+						}
+					}
+				}
+			} else {
+				syncResetBlockUpdates(bx, by, bz, currentTime, true);
+			}
 		}
 	}
 
