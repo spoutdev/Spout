@@ -26,6 +26,7 @@
  */
 package org.spout.api.geo;
 
+import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.util.thread.annotation.DelayedWrite;
@@ -41,6 +42,14 @@ public interface AreaPhysicsAccess {
 	 */
 	@DelayedWrite
 	public void resetDynamicBlock(int x, int y, int z);
+	
+	/**
+	 * Resets all dynamic material updates queued for the given Chunk. This list is checked during the finalize part of the tick, and will cause the onPlacement method to be called.<br>
+	 *
+	 * @param c 
+	 */
+	@DelayedWrite
+	public void resetDynamicBlocks(Chunk c);
 	
 	/**
 	 * Immediately clears all dynamic material updates for the given location.  This does not trigger the onFirstUpdate() call.<br>
