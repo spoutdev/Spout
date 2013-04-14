@@ -349,8 +349,8 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Gets the Block x-coordinate in the world
-	 * @param x-coordinate within this Chunk
-	 * @return x-coordinate within the World
+	 * @param y-coordinate within this Chunk
+	 * @return y-coordinate within the World
 	 */
 	public int getBlockY(int y) {
 		return this.blockY + (y & BLOCKS.MASK);
@@ -358,8 +358,8 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 
 	/**
 	 * Gets the Block x-coordinate in the world
-	 * @param x-coordinate within this Chunk
-	 * @return x-coordinate within the World
+	 * @param z-coordinate within this Chunk
+	 * @return z-coordinate within the World
 	 */
 	public int getBlockZ(int z) {
 		return this.blockZ + (z & BLOCKS.MASK);
@@ -395,7 +395,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	/**
 	 * Gets a chunk relative to this chunk
 	 * @param offset of the chunk relative to this chunk
-	 * @param load True to load the chunk if it is not yet loaded
+	 * @param opt True to load the chunk if it is not yet loaded
 	 * @return The Chunk, or null if not loaded and load is False
 	 */
 	public Chunk getRelative(Vector3 offset, LoadOption opt) {
@@ -414,7 +414,7 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	/**
 	 * Gets a chunk relative to this chunk
 	 * @param offset of the chunk relative to this chunk
-	 * @param load True to load the chunk if it is not yet loaded
+	 * @param opt True to load the chunk if it is not yet loaded
 	 * @return The Chunk, or null if not loaded and load is False
 	 */
 	public Chunk getRelative(BlockFace offset, LoadOption opt) {
