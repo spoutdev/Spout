@@ -64,8 +64,20 @@ public abstract class ChunkCuboidLightBufferWrapper<T extends CuboidLightBuffer>
 	 * @param z
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public T getLightBuffer(int x, int y, int z) {
+		return getLightBuffer(x, y, z, false);
+	}
+	
+	/**
+	 * Gets the sub-buffer corresponding to the given block location.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public T getLightBuffer(int x, int y, int z, boolean allowNull) {
 		int cx = (x - baseX) >> Chunk.BLOCKS.BITS;
 		int cy = (y - baseY) >> Chunk.BLOCKS.BITS;
 		int cz = (z - baseZ) >> Chunk.BLOCKS.BITS;
@@ -80,7 +92,7 @@ public abstract class ChunkCuboidLightBufferWrapper<T extends CuboidLightBuffer>
 				return (T) o;
 			}
 		}
-		o = getLightBufferRaw(x, y, z);
+		o = getLightBufferRaw(x, y, z, allowNull);
 		if (o == null) {
 			cache[cx][cy][cz] = NULL_BUFFER;
 		} else {
@@ -104,7 +116,7 @@ public abstract class ChunkCuboidLightBufferWrapper<T extends CuboidLightBuffer>
 
 
 	
-	protected abstract T getLightBufferRaw(int x, int y, int z);
+	protected abstract T getLightBufferRaw(int x, int y, int z, boolean allowNull);
 
 	@Override
 	public CuboidLightBuffer copy() {

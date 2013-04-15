@@ -28,6 +28,7 @@ package org.spout.api.material.block;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 
+import org.spout.api.math.IntVector3;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.bytebit.ByteBitMask;
@@ -45,6 +46,7 @@ public enum BlockFace implements ByteBitMask {
 	THIS(0x40, 0, 0, 0, Quaternion.IDENTITY);
 	private final byte mask;
 	private final Vector3 offset;
+	private final IntVector3 intOffset;
 	private final Quaternion direction;
 	private BlockFace opposite = this;
 	private static final TIntObjectHashMap<BlockFace> OFFSET_MAP = new TIntObjectHashMap<BlockFace>(7);
@@ -63,6 +65,7 @@ public enum BlockFace implements ByteBitMask {
 
 	private BlockFace(int mask, int dx, int dy, int dz, Quaternion direction) {
 		this.offset = new Vector3(dx, dy, dz);
+		this.intOffset = new IntVector3(dx, dy, dz);
 		this.direction = direction;
 		this.mask = (byte) mask;
 	}
@@ -94,6 +97,15 @@ public enum BlockFace implements ByteBitMask {
 	 */
 	public Vector3 getOffset() {
 		return this.offset;
+	}
+	
+	/**
+	 * Represents the directional offset of this Blockface as an IntVector3.
+	 *
+	 * @return the offset of this directional.
+	 */
+	public IntVector3 getIntOffset() {
+		return this.intOffset;
 	}
 
 	/**
