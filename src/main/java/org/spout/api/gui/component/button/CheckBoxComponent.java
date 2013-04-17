@@ -38,7 +38,7 @@ public class CheckBoxComponent extends ButtonComponent {
 		super();
 		registerSignal(SIGNAL_CHECKED);
 		try {
-			subscribe(SIGNAL_CLICKED, this, "onClicked");
+			subscribe(SIGNAL_CLICKED, this, "onClick");
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {

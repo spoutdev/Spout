@@ -32,14 +32,35 @@ import org.spout.api.signal.SignalInterface;
 import org.spout.api.signal.SubscriberInterface;
 import org.spout.api.tickable.Tickable;
 
+/**
+ * Returns the collection of screens on the client.
+ */
 public interface ScreenStack extends Tickable, SubscriberInterface, SignalInterface {
-	
-	public boolean isOpen(Screen screen);
-	
+	/**
+	 * Returns true if the specified screen is opened.
+	 *
+	 * @param screen
+	 * @return
+	 */
+	public boolean isOpened(Screen screen);
+
+	/**
+	 * Opens the specified screen on the client.
+	 *
+	 * @param screen to open
+	 */
 	public void openScreen(Screen screen);
 
+	/**
+	 * Closes the screen on the top of this screen stack.
+	 */
 	public void closeTopScreen();
 
+	/**
+	 * Closes the specified screen.
+	 *
+	 * @param screen to open
+	 */
 	public void closeScreen(Screen screen);
 
 	/**
@@ -58,7 +79,7 @@ public interface ScreenStack extends Tickable, SubscriberInterface, SignalInterf
 	/**
 	 * Get the debug screen
 	 */
-	public abstract DebugHUD getDebug();
+	public abstract DebugHud getDebugHud();
 
 	/**
 	 * Return a new widget instance

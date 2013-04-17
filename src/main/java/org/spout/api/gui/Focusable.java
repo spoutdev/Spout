@@ -30,18 +30,57 @@ import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
 import org.spout.api.math.IntVector2;
 
+/**
+ * Represents something that can be focused on.
+ */
 public interface Focusable {
+	/**
+	 * Returns false if this element should be skipped over when changing the
+	 * focus.
+	 *
+	 * @return false if this element should be skipped over
+	 */
 	public boolean canFocus();
 
+	/**
+	 * Returns true if the widget has focus.
+	 *
+	 * @return true if widget has focus
+	 */
 	public boolean isFocused();
 
+	/**
+	 * Called when this element gains focus on a screen.
+	 *
+	 * @param reason for focus
+	 */
 	public void onFocus(FocusReason reason);
 
-	public void onFocusLost();
+	/**
+	 * Called when this loses focus.
+	 */
+	public void onBlur();
 
-	public void onClicked(PlayerClickEvent event);
+	/**
+	 * Called when this element is clicked with a mouse button.
+	 *
+	 * @param event of click
+	 */
+	public void onClick(PlayerClickEvent event);
 
+	/**
+	 * Called when this is focused and a key is pressed or released
+	 *
+	 * @param event of key
+	 */
 	public void onKey(PlayerKeyEvent event);
 
+	/**
+	 * Called when this is focused and the mouse is moved.
+	 *
+	 * @param prev previous location of cursor in pixels
+	 * @param pos new location of cursor in pixels
+	 * @param hovered true if the cursor is hovering over this element
+	 */
 	public void onMouseMoved(IntVector2 prev, IntVector2 pos, boolean hovered);
 }

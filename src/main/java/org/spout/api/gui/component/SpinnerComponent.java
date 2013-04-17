@@ -28,5 +28,8 @@ package org.spout.api.gui.component;
 
 import org.spout.api.component.type.WidgetComponent;
 
+/**
+ * Represents an element that has multiple values that are set with arrows.
+ */
 public class SpinnerComponent extends WidgetComponent {
 }

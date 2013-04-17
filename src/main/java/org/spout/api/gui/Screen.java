@@ -43,8 +43,8 @@ import org.spout.api.plugin.Plugin;
 import org.spout.api.tickable.BasicTickable;
 
 public class Screen extends BasicTickable implements Container {
-	private HashMap<Widget, Plugin> widgets = new LinkedHashMap<Widget, Plugin>();
-	private Widget focussedWidget = null;
+	private final HashMap<Widget, Plugin> widgets = new LinkedHashMap<Widget, Plugin>();
+	private Widget focusedWidget = null;
 	private boolean takesInput = true;
 	private boolean grabsMouse = true;
 
@@ -56,12 +56,12 @@ public class Screen extends BasicTickable implements Container {
 	@Override
 	public Widget getWidgetAt(int x, int y) {
 		for (Widget w : getWidgets()) {
-			Rectangle hitBox = w.getBounds();
+			Rectangle bounds = w.getBounds();
 			Vector2 res = ((Client) Spout.getEngine()).getResolution();
-			int startX = (int) (res.getX() / 2) + (toPixelsX(hitBox.getX()) / 2);
-			int startY = (int) (res.getY() / 2) + (toPixelsY(hitBox.getY()) / 2);
-			int endX = startX + toPixelsX(hitBox.getWidth() / 2);
-			int endY = startY + toPixelsY(hitBox.getHeight() / 2);
+			int startX = (int) (res.getX() / 2) + (toPixelsX(bounds.getX()) / 2);
+			int startY = (int) (res.getY() / 2) + (toPixelsY(bounds.getY()) / 2);
+			int endX = startX + toPixelsX(bounds.getWidth() / 2);
+			int endY = startY + toPixelsY(bounds.getHeight() / 2);
 			if (x >= startX && x <= endX && y >= startY && y <= endY) {
 				return w;
 			}
@@ -86,6 +86,7 @@ public class Screen extends BasicTickable implements Container {
 	public void attachWidget(Plugin plugin, Widget widget) {
 		widget.setScreen(this);
 		synchronized (widgets) {
+			focusedWidget = widget; // newly attached widgets gets the focus
 			widgets.put(widget, plugin);
 		}
 	}
@@ -118,9 +119,9 @@ public class Screen extends BasicTickable implements Container {
 
 	private void cleanupWidget(Widget widget) {
 		widget.setScreen(null);
-		if (widget == focussedWidget) {
-			focussedWidget = null;
-			widget.onFocusLost();
+		if (widget == focusedWidget) {
+			focusedWidget = null;
+			widget.onBlur();
 		}
 	}
 
@@ -152,33 +153,57 @@ public class Screen extends BasicTickable implements Container {
 		return true;
 	}
 
+	/**
+	 * Returns the current widget that has focus.
+	 *
+	 * @return widget with focus
+	 */
 	public Widget getFocusedWidget() {
-		return focussedWidget;
+		return focusedWidget;
 	}
-	
+
+	/**
+	 * Sets the focus of the screen.
+	 *
+	 * @param newFocus widget to focus
+	 */
 	public void setFocus(Widget newFocus) {
 		setFocus(newFocus, FocusReason.PROGRAMMED);
 	}
-	
+
+	/**
+	 * Sets the focus of the screen.
+	 *
+	 * @param newFocus focus to set
+	 * @param reason for focusing
+	 */
 	public void setFocus(Widget newFocus, FocusReason reason) {
+		if (newFocus == null) {
+			throw new IllegalArgumentException("You cannot set the focus to null.");
+		}
+
 		final boolean containsFocussedWidget;
 		synchronized (widgets) {
 			containsFocussedWidget = widgets.containsKey(newFocus);
 		}
-		if (containsFocussedWidget && newFocus.get(ControlComponent.class) != null) {			
-			if (focussedWidget != newFocus) {
-				Widget oldFocus = focussedWidget;
-				focussedWidget = newFocus;
+
+		if (containsFocussedWidget && newFocus.canFocus()) {
+			if (focusedWidget != newFocus) {
+				Widget oldFocus = focusedWidget;
+				focusedWidget = newFocus;
 				if (oldFocus != null) {
-					oldFocus.onFocusLost();
+					oldFocus.onBlur();
 				}
-				if (newFocus != null) {
-					newFocus.onFocus(reason);
-				}
+				newFocus.onFocus(reason);
 			}
 		}
 	}
 
+	/**
+	 * Shifts the focus to the next element.
+	 *
+	 * @param reason for shift
+	 */
 	public void nextFocus(FocusReason reason) {
 		int current = 0;
 		if (getFocusedWidget() != null) {
@@ -200,7 +225,12 @@ public class Screen extends BasicTickable implements Container {
 		}
 		setFocus(lowest, reason);
 	}
-	
+
+	/**
+	 * Shifts the focus to the previous element.
+	 *
+	 * @param reason for shift
+	 */
 	public void previousFocus(FocusReason reason) {
 		int current = 0;
 		if (getFocusedWidget() != null) {
@@ -223,21 +253,38 @@ public class Screen extends BasicTickable implements Container {
 		setFocus(highest, reason);
 	}
 
+	/**
+	 * Returns true if this screen grabs the mouse when it's on the top.
+	 *
+	 * @return if screen should grab the mouse
+	 */
 	public boolean grabsMouse() {
 		return grabsMouse;
 	}
 
+	/**
+	 * Sets if the mouse should be grabbed when this screen is on top.
+	 *
+	 * @param grabsMouse true if should grab mouse.
+	 */
 	public void setGrabsMouse(boolean grabsMouse) {
 		this.grabsMouse = grabsMouse;
 	}
 
 	/**
-	 * @returns if this screen should receive mouse and keyboard input. Default is true
+	 * Returns true if this screen receives input.
+	 *
+	 * @return if this screen should receive mouse and keyboard input. Default is true
 	 */
 	public boolean takesInput() {
 		return takesInput;
 	}
 
+	/**
+	 * Sets if this screen should receive input.
+	 *
+	 * @param takesInput receives input
+	 */
 	public void setTakesInput(boolean takesInput) {
 		this.takesInput = takesInput;
 	}

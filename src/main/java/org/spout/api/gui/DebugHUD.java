@@ -29,12 +29,30 @@ package org.spout.api.gui;
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.plugin.Plugin;
 
-public interface DebugHUD {
+/**
+ * Represents a interface for displaying debug information.
+ */
+public interface DebugHud {
+	/**
+	 * Opens this HUD
+	 */
 	public abstract void open();
 
+	/**
+	 * Closes this HUD
+	 */
 	public abstract void close();
-	
+
+	/**
+	 * Resets this HUD to it's original state.
+	 */
 	public abstract void reset();
-	
+
+	/**
+	 * Updates the param for the specified plugin.
+	 *
+	 * @param plugin to update
+	 * @param arg to set
+	 */
 	public abstract void updateParameter(Plugin plugin, ChatArguments arg);
 }

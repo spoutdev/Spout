@@ -30,6 +30,9 @@ import java.util.List;
 
 import org.spout.api.gui.render.RenderPartPack;
 
+/**
+ * Represents something that contains render parts.
+ */
 public interface RenderPartContainer {
 	/**
 	 * Returns a list of RenderParts that are to be rendered for this widget <br/>

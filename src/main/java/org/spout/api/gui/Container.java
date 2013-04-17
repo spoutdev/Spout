@@ -32,20 +32,66 @@ import java.util.Set;
 import org.spout.api.math.IntVector2;
 import org.spout.api.plugin.Plugin;
 
+/**
+ * Represents something that contains {@link Widget}s.
+ */
 public interface Container {
+	/**
+	 * Removes all widgets on the screen.
+	 */
 	public abstract void removeWidgets();
 
+	/**
+	 * Removes all widgets registered under the specified plugin.
+	 *
+	 * @param plugin to remove widgets from
+	 */
 	public abstract void removeWidgets(Plugin plugin);
 
+	/**
+	 * Removes the specified widgets from this screen.
+	 *
+	 * @param widgets to remove
+	 */
 	public abstract void removeWidgets(Widget... widgets);
 
+	/**
+	 * Removes the specified widget.
+	 *
+	 * @param widget to remove
+	 */
 	public abstract void removeWidget(Widget widget);
 
+	/**
+	 * Attaches the specified widget to the screen registered under the
+	 * specified plugin.
+	 *
+	 * @param plugin to register widget under
+	 * @param widget to attach
+	 */
 	public abstract void attachWidget(Plugin plugin, Widget widget);
 
+	/**
+	 * Returns a collection of all widgets.
+	 *
+	 * @return all widgets
+	 */
 	public abstract Collection<Widget> getWidgets();
 
+	/**
+	 * Returns a widget at the specified location.
+	 *
+	 * @param x position of widget
+	 * @param y position of widget
+	 * @return widget at x, y
+	 */
 	public abstract Widget getWidgetAt(int x, int y);
 
+	/**
+	 * Returns a widget at the specified location.
+	 *
+	 * @param pos position of widget
+	 * @return widget at specified position
+	 */
 	public abstract Widget getWidgetAt(IntVector2 pos);
 }

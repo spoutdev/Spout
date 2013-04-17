@@ -36,11 +36,14 @@ import org.spout.api.gui.render.RenderPartPack;
 import org.spout.api.math.Rectangle;
 import org.spout.api.render.RenderMaterial;
 
-public class TexturedRectComponent extends WidgetComponent {
+/**
+ * Represents a {@link WidgetComponent} with one render part.
+ */
+public class TextureComponent extends WidgetComponent {
 	private RenderPartPack pack = new RenderPartPack();
 	private RenderPart rect = new RenderPart();
 	
-	public TexturedRectComponent() {
+	public TextureComponent() {
 		pack.add(rect);
 	}
 
@@ -51,26 +54,62 @@ public class TexturedRectComponent extends WidgetComponent {
 		return parts;
 	}
 
+	/**
+	 * Sets the bounds of the source of the render part. This is commonly used
+	 * for sprite sheets and should be left at zero for simple colored
+	 * rectangles.
+	 *
+	 * @param source of part
+	 */
 	public void setSource(Rectangle source) {
 		rect.setSource(source);
 	}
 
+	/**
+	 * Returns the bounds of the source of the render part. This is commonly
+	 * used for sprite sheets and should be left at zero for simple colored
+	 * rectangles.
+	 *
+	 * @return source of part
+	 */
 	public Rectangle getSource() {
 		return rect.getSprite();
 	}
 
+	/**
+	 * Sets the bounds of the actual sprite of the render material. This is
+	 * used for specifying the actual visible size of the render part.
+	 *
+	 * @param sprite of render part
+	 */
 	public void setSprite(Rectangle sprite) {
 		rect.setSprite(sprite);
 	}
 
+	/**
+	 * Returns the bounds of the actual sprite of the render material. This is
+	 * used for specifying the actual visible size of the render part.
+	 *
+	 * @return sprite of render part
+	 */
 	public Rectangle getSprite() {
 		return rect.getSprite();
 	}
 
+	/**
+	 * Sets the color of this part.
+	 *
+	 * @param color of part
+	 */
 	public void setColor(Color color) {
 		rect.setColor(color);
 	}
 
+	/**
+	 * Returns the color of this part.
+	 *
+	 * @return color of part
+	 */
 	public Color getColor() {
 		return rect.getColor();
 	}

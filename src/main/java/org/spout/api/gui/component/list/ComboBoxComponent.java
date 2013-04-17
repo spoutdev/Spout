@@ -28,5 +28,8 @@ package org.spout.api.gui.component.list;
 
 import org.spout.api.component.type.WidgetComponent;
 
+/**
+ * Represents an element with a drop down menu.
+ */
 public class ComboBoxComponent extends WidgetComponent {
 }

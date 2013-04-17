@@ -31,19 +31,47 @@ import org.spout.api.geo.discrete.Transform2D;
 import org.spout.api.math.Rectangle;
 import org.spout.api.tickable.Tickable;
 
+/**
+ * Represents an element on a {@link Screen}.
+ */
 public interface Widget extends Tickable, ComponentHolder, Focusable, RenderPartContainer {
 	/**
 	 * Invokes a render update in the next frame
 	 */
 	public abstract void update();
 
-	public abstract void setScreen(Screen screen);
-
+	/**
+	 * Returns the screen the widget is on.
+	 *
+	 * @return screen widget is on
+	 */
 	public abstract Screen getScreen();
 
+	/**
+	 * Sets the screen
+	 *
+	 * @param screen to set
+	 */
+	public abstract void setScreen(Screen screen);
+
+	/**
+	 * Returns the geometry of this widget.
+	 *
+	 * @return transform of widget
+	 */
 	public abstract Transform2D getTransform();
 
+	/**
+	 * Returns the bounding box of this widget.
+	 *
+	 * @return bounding box
+	 */
 	public abstract Rectangle getBounds();
 
-	public abstract void setBounds(Rectangle hitBox);
+	/**
+	 * Sets the bounding box of this widget
+	 *
+	 * @param bounds of widget
+	 */
+	public abstract void setBounds(Rectangle bounds);
 }

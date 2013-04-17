@@ -45,6 +45,9 @@ import org.spout.api.signal.SignalInterface;
 import org.spout.api.signal.SignalObjectDelegate;
 import org.spout.api.signal.SubscriberInterface;
 
+/**
+ * Represents a component that decides how to render a widget.
+ */
 public class WidgetComponent extends Component implements SignalInterface, SubscriberInterface, Focusable, RenderPartContainer {
 	private SignalInterface sender = null;
 	private SignalObjectDelegate signalDelegate = new SignalObjectDelegate();
@@ -60,7 +63,7 @@ public class WidgetComponent extends Component implements SignalInterface, Subsc
 	}
 
 	@Override
-	public void onClicked(PlayerClickEvent event) {
+	public void onClick(PlayerClickEvent event) {
 	}
 
 	@Override
@@ -82,7 +85,7 @@ public class WidgetComponent extends Component implements SignalInterface, Subsc
 	}
 
 	@Override
-	public void onFocusLost() {
+	public void onBlur() {
 	}
 
 	@Override

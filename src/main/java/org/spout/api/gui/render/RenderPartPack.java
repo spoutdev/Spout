@@ -37,7 +37,6 @@ import org.spout.api.render.SpoutRenderMaterials;
  */
 public class RenderPartPack implements Comparable<RenderPartPack> {
 	private final List<RenderPart> parts = new ArrayList<RenderPart>();
-	
 	private RenderMaterial material;
 	private int zIndex = 0;
 	

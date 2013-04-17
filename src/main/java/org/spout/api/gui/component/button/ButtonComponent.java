@@ -40,6 +40,9 @@ import org.spout.api.math.Rectangle;
 import org.spout.api.render.SpoutRenderMaterials;
 import org.spout.api.signal.Signal;
 
+/**
+ * Represents a button.
+ */
 public class ButtonComponent extends LabelComponent {
 	public static final Signal SIGNAL_CLICKED = new Signal("clicked");
 	private boolean down = false;
@@ -71,7 +74,7 @@ public class ButtonComponent extends LabelComponent {
 	}
 
 	@Override
-	public void onClicked(PlayerClickEvent event) {
+	public void onClick(PlayerClickEvent event) {
 		if (event.isPressed()) {
 			down = true;
 		} else {

@@ -26,6 +26,9 @@
  */
 package org.spout.api.gui;
 
+/**
+ * Represents a reason for a {@link Widget} gaining focus.
+ */
 public enum FocusReason {
 	/**
 	 * Invoked focus when the user presses the TAB-key on the keyboard and it switches to the next control

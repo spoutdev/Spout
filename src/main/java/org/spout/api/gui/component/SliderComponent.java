@@ -28,5 +28,9 @@ package org.spout.api.gui.component;
 
 import org.spout.api.component.type.WidgetComponent;
 
+/**
+ * Represents an element that has a sliding mechanism between zero and one
+ * float values.
+ */
 public class SliderComponent extends WidgetComponent {
 }

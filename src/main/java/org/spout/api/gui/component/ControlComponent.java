@@ -65,7 +65,7 @@ public class ControlComponent extends WidgetComponent {
 	}
 
 	@Override
-	public void onFocusLost() {
+	public void onBlur() {
 		getOwner().update();
 	}
 	

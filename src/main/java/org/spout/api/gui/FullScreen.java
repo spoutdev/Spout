@@ -26,5 +26,8 @@
  */
 package org.spout.api.gui;
 
+/**
+ * Represents a screen the takes up the entire window.
+ */
 public class FullScreen extends Screen {
 }

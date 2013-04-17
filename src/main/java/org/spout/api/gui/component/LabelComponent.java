@@ -43,6 +43,9 @@ import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.math.Rectangle;
 import org.spout.api.render.Font;
 
+/**
+ * Represents an element that contains characters.
+ */
 public class LabelComponent extends WidgetComponent {
 	private static final DefaultedKey<ChatArguments> KEY_TEXT = new DefaultedKeyImpl<ChatArguments>("text", new ChatArguments("(your text here)"));
 	private static final DefaultedKey<Color> KEY_COLOR = new DefaultedKeyImpl<Color>("text-color", Color.black);
@@ -104,28 +107,54 @@ public class LabelComponent extends WidgetComponent {
 		return ret;
 	}
 
+	/**
+	 * Sets the font of the label.
+	 *
+	 * @param font of label
+	 */
 	public void setFont(Font font) {
 		getData().put(KEY_FONT, font);
 		getOwner().update();
 	}
 
+	/**
+	 * Returns the font of the label
+	 *
+	 * @return font of label
+	 */
 	public Font getFont() {
 		return getData().get(KEY_FONT);
 	}
 
+	/**
+	 * Returns the text on the label.
+	 *
+	 * @return text on label
+	 */
 	public ChatArguments getText() {
 		return getData().get(KEY_TEXT);
 	}
 
+	/**
+	 * Sets the text on the label
+	 *
+	 * @param text on label
+	 */
 	public void setText(ChatArguments text) {
 		getData().put(KEY_TEXT, text);
 		getOwner().update();
 	}
 
+	/**
+	 * Clears all text on the label.
+	 */
 	public void clear() {
 		setText(new ChatArguments(""));
 	}
 
+	/**
+	 * Removes the last character.
+	 */
 	public void backspace() {
 		String str = getText().getPlainString();
 		if (!str.isEmpty()) {
@@ -133,22 +162,45 @@ public class LabelComponent extends WidgetComponent {
 		}
 	}
 
+	/**
+	 * Adds a character.
+	 *
+	 * @param c character to add
+	 */
 	public void append(char c) {
 		setText(new ChatArguments(getText().append(c)));
 	}
 
+	/**
+	 * Adds a string to the end of this label.
+	 *
+	 * @param str string to add
+	 */
 	public void append(String str) {
 		setText(new ChatArguments(getText().append(str)));
 	}
 
+	/**
+	 * Creates a new line on this label.
+	 */
 	public void newLine() {
 		append('\n');
 	}
 
+	/**
+	 * Returns the color of the text.
+	 *
+	 * @return text of color
+	 */
 	public Color getColor() {
 		return getData().get(KEY_COLOR);
 	}
 
+	/**
+	 * Sets the color of the text
+	 *
+	 * @param color of text
+	 */
 	public void setColor(Color color) {
 		getData().put(KEY_COLOR, color);
 		getOwner().update();

@@ -26,11 +26,15 @@
  */
 package org.spout.api.gui.component.button;
 
+import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.gui.Widget;
 import org.spout.api.map.DefaultedKey;
 import org.spout.api.map.DefaultedKeyImpl;
 import org.spout.api.signal.Signal;
 
+/**
+ * Represents a radio button.
+ */
 public class RadioComponent extends ButtonComponent {
 	public static final Signal SIGNAL_SELECTED = new Signal("selected", Boolean.class);
 	private static final DefaultedKey<Boolean> KEY_SELECTED = new DefaultedKeyImpl<Boolean>("selected", false);
@@ -39,7 +43,7 @@ public class RadioComponent extends ButtonComponent {
 		super();
 		registerSignal(SIGNAL_SELECTED);
 		try {
-			subscribe(SIGNAL_CLICKED, this, "onClicked");
+			subscribe(SIGNAL_CLICKED, this, "onClick");
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
@@ -47,10 +51,21 @@ public class RadioComponent extends ButtonComponent {
 		}
 	}
 
+	/**
+	 * Returns true if this radio is selected.
+	 *
+	 * @return true if this is selected.
+	 */
 	public boolean isSelected() {
 		return getData().get(KEY_SELECTED);
 	}
 
+	/**
+	 * Sets if this button is selected and deselects the other radio buttons
+	 * on the screen.
+	 *
+	 * @param selected true if select
+	 */
 	public void setSelected(boolean selected) {
 		getData().put(KEY_SELECTED, selected);
 		emit(SIGNAL_SELECTED, selected);
@@ -64,7 +79,8 @@ public class RadioComponent extends ButtonComponent {
 		}
 	}
 
-	public void onClicked() {
-		setSelected(!isSelected());
+	@Override
+	public void onClick(PlayerClickEvent event) {
+		setSelected(!event.isPressed() && !isSelected());
 	}
 }

@@ -32,6 +32,9 @@ import java.util.List;
 import org.spout.api.component.type.WidgetComponent;
 import org.spout.api.gui.render.RenderPartPack;
 
+/**
+ * A generic {@link WidgetComponent} that can contain multiple render parts.
+ */
 public class RenderPartsHolderComponent extends WidgetComponent {
 	private final List<RenderPartPack> parts = new ArrayList<RenderPartPack>();
 
@@ -40,17 +43,36 @@ public class RenderPartsHolderComponent extends WidgetComponent {
 		return parts;
 	}
 
+	/**
+	 * Adds a render part to the component.
+	 *
+	 * @param part
+	 * @return size
+	 */
 	public int add(RenderPartPack part) {
 		// Last added on top
 		return add(part, parts.size());
 	}
 
+	/**
+	 * Adds a render part to the component.
+	 *
+	 * @param part to add
+	 * @param zIndex index of part
+	 * @return size
+	 */
 	public int add(RenderPartPack part, int zIndex) {
 		part.setZIndex(zIndex);
 		parts.add(part);
 		return parts.size() - 1;
 	}
 
+	/**
+	 * Returns a part at the specified index
+	 *
+	 * @param index to get part from
+	 * @return part at specified index
+	 */
 	public RenderPartPack get(int index) {
 		return parts.get(index);
 	}

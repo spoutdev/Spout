@@ -28,5 +28,8 @@ package org.spout.api.gui.component.list;
 
 import org.spout.api.component.type.WidgetComponent;
 
+/**
+ * Represents a element that has multiple "items" in it.
+ */
 public class ItemListComponent extends WidgetComponent {
 }
