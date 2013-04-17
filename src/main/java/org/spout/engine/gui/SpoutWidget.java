@@ -121,10 +121,10 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 	}
 
 	@Override
-	public void onFocusLost() {
+	public void onBlur() {
 		for (Component c : values()) {
 			if (c instanceof Focusable) {
-				((Focusable) c).onFocusLost();
+				((Focusable) c).onBlur();
 			}
 		}
 	}
@@ -140,10 +140,10 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 	}
 
 	@Override
-	public void onClicked(PlayerClickEvent event) {
+	public void onClick(PlayerClickEvent event) {
 		for (Component c : values()) {
 			if (c instanceof Focusable) {
-				((Focusable) c).onClicked(event);
+				((Focusable) c).onClick(event);
 			}
 		}
 	}

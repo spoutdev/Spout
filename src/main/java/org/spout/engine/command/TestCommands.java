@@ -60,7 +60,7 @@ import org.spout.api.gui.Widget;
 import org.spout.api.gui.component.SliderComponent;
 import org.spout.api.gui.component.SpinnerComponent;
 import org.spout.api.gui.component.TextFieldComponent;
-import org.spout.api.gui.component.TexturedRectComponent;
+import org.spout.api.gui.component.TextureComponent;
 import org.spout.api.gui.component.button.ButtonComponent;
 import org.spout.api.gui.component.button.CheckBoxComponent;
 import org.spout.api.gui.component.button.RadioComponent;
@@ -115,7 +115,7 @@ public class TestCommands {
 		} else if (flag.equalsIgnoreCase("textfield")) {
 			widget.add(TextFieldComponent.class);
 		} else if (flag.equalsIgnoreCase("rect")) {
-			widget.add(TexturedRectComponent.class);
+			widget.add(TextureComponent.class);
 		} else {
 			throw new CommandException("Component not found.");
 		}

@@ -32,7 +32,7 @@ import java.util.LinkedList;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
-import org.spout.api.gui.DebugHUD;
+import org.spout.api.gui.DebugHud;
 import org.spout.api.gui.FullScreen;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.ScreenStack;
@@ -66,11 +66,15 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 		update();
 	}
 
-	public boolean isOpen(Screen screen) {
+	public boolean isOpened(Screen screen) {
 		return screens.contains(screen);
 	}
 	
 	public void openScreen(Screen screen) {
+		if (screen.getWidgets().isEmpty()) {
+			throw new IllegalArgumentException("The specified screen doesn't have any widgets attached.");
+		}
+
 		synchronized (screens) {
 			screens.add(screen);
 		}
@@ -166,7 +170,7 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 	/**
 	 * Get the debug screen
 	 */
-	public DebugHUD getDebug() {
+	public DebugHud getDebugHud() {
 		return debugScreen;
 	}
 	

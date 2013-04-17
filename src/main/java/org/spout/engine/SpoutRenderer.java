@@ -117,7 +117,7 @@ public class SpoutRenderer {
 		FullScreen mainScreen = new FullScreen();
 		mainScreen.setTakesInput(false);
 		screenStack = new SpoutScreenStack(mainScreen);
-		debugScreen = (DebugScreen) screenStack.getDebug();
+		debugScreen = (DebugScreen) screenStack.getDebugHud();
 
 		entityRenderer = new EntityRenderer();
 

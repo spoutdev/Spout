@@ -58,7 +58,7 @@ public class InputCommands {
 		final Screen consoleScreen = (Screen) client.getScreenStack().getConsole();
 		client.getScheduler().enqueueRenderTask(new Runnable() {
 			public void run() {
-				if (client.getScreenStack().isOpen(consoleScreen)) {
+				if (client.getScreenStack().isOpened(consoleScreen)) {
 					client.getScreenStack().closeScreen(consoleScreen);
 				} else {
 					client.getScreenStack().openScreen(consoleScreen);
@@ -73,10 +73,10 @@ public class InputCommands {
 		if (!args.getString(0).equalsIgnoreCase("+")) {
 			return;
 		}
-		final Screen debugScreen = (Screen) client.getScreenStack().getDebug();
+		final Screen debugScreen = (Screen) client.getScreenStack().getDebugHud();
 		client.getScheduler().enqueueRenderTask(new Runnable() {
 			public void run() {
-				if (client.getScreenStack().isOpen(debugScreen)) {
+				if (client.getScreenStack().isOpened(debugScreen)) {
 					client.getScreenStack().closeScreen(debugScreen);
 				} else {
 					client.getScreenStack().openScreen(debugScreen);

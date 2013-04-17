@@ -32,7 +32,7 @@ import java.util.Map;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.chat.ChatArguments;
-import org.spout.api.gui.DebugHUD;
+import org.spout.api.gui.DebugHud;
 import org.spout.api.gui.Screen;
 import org.spout.api.gui.Widget;
 import org.spout.api.gui.component.LabelComponent;
@@ -42,7 +42,7 @@ import org.spout.api.plugin.Plugin;
 import org.spout.api.render.SpoutRenderMaterials;
 
 /**
- * DebugHUD for Spout (client). Its purpose, by default, is to render debug developer info when a client player
+ * DebugHud for Spout (client). Its purpose, by default, is to render debug developer info when a client player
  * presses F3. The internal debug screen is exposed so plugins can add their own widgets to this.
  * <p/>
  * I'll take a moment to briefly explain some of the more confusing methods found in this class (namely
@@ -86,7 +86,7 @@ import org.spout.api.render.SpoutRenderMaterials;
  * setSource(new Rectangle(0f, 0f, 0f, 0f)). This will render your entire sprite with the color you chose!
  */
 
-public class DebugScreen extends Screen implements DebugHUD {
+public class DebugScreen extends Screen implements DebugHud {
 		// The Internal Spout-dummy plugin
 		private final SpoutMetaPlugin plugin;
 		// Spout's debug messages

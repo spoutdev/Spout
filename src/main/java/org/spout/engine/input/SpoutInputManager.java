@@ -227,7 +227,7 @@ public class SpoutInputManager implements InputManager {
 				if (fw != null && !fw.equals(w)) {
 					s.setFocus(w, FocusReason.CLICKED);
 				}
-				w.onClicked(event);
+				w.onClick(event);
 			}
 		}
 
