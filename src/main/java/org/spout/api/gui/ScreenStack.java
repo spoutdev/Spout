@@ -79,7 +79,7 @@ public interface ScreenStack extends Tickable, SubscriberInterface, SignalInterf
 	/**
 	 * Get the debug screen
 	 */
-	public abstract DebugHud getDebugHud();
+	public abstract Derp getDebugHud();
 
 	/**
 	 * Return a new widget instance

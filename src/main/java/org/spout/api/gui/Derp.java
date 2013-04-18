@@ -32,7 +32,7 @@ import org.spout.api.plugin.Plugin;
 /**
  * Represents a interface for displaying debug information.
  */
-public interface DebugHud {
+public interface Derp {
 	/**
 	 * Opens this HUD
 	 */
