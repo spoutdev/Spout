@@ -1497,11 +1497,13 @@ public class SpoutRegion extends Region implements AsyncManager {
 			}
 		}
 		
-		ArrayList<SpoutChunk> newChunks = new ArrayList<SpoutChunk>();
+		List<SpoutChunk> newChunksList = new LinkedList<SpoutChunk>();
 		
+		int newChunksCount = 0;
 		SpoutChunk newChunk;
 		while ((newChunk = newChunkQueue.poll()) != null) {
-			newChunks.add(newChunk);
+			newChunksList.add(newChunk);
+			newChunksCount++;
 		}
 		
 		int cuboids = 0;
@@ -1514,9 +1516,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 			}
 		}
 		
-		cuboids += newChunks.size();
-
-		SpoutChunk[] chunks = new SpoutChunk[cuboids];
+		SpoutChunk[] newChunksArray = new SpoutChunk[newChunksCount];
+		SpoutChunk[] dirtyChunks = new SpoutChunk[cuboids];
 		int[] x = new int[blocks];
 		int[] y = new int[blocks];
 		int[] z = new int[blocks];
@@ -1526,7 +1527,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		
 		for (SpoutChunk c : this.dirtyChunkQueue) {
 			if (c.isDirtyOverflow()) {
-				chunks[cuboids++] = c;
+				dirtyChunks[cuboids++] = c;
 			} else {
 				int dirtyBlocks = c.getDirtyBlocks();
 				for (int i = 0; i < dirtyBlocks; i++) {
@@ -1539,12 +1540,17 @@ public class SpoutRegion extends Region implements AsyncManager {
 			}
 		}
 		
-		for (SpoutChunk c : newChunks) {
-			chunks[cuboids++] = c;
+		int i = 0;
+		for (SpoutChunk c : newChunksList) {
+			newChunksArray[i++] = c;
 		}
 		
-		if (chunks.length > 0) {
-			resolveCuboids(chunks, managers);
+		if (newChunksArray.length > 0) {
+			resolveCuboids(newChunksArray, managers, true);
+		}
+		
+		if (dirtyChunks.length > 0) {
+			resolveCuboids(dirtyChunks, managers, false);
 		}
 		if (x.length > 0) {
 			resolveBlocks(x, y, z, managers);
@@ -1558,7 +1564,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		}
 		
 		if (lightBuffers != null) {
-			for (int i = 0; i < lightBuffers.length; i++) {
+			for (i = 0; i < lightBuffers.length; i++) {
 				if (lightBuffers[i] != null) {
 					lightBuffers[i].clear();
 				}
@@ -1570,26 +1576,25 @@ public class SpoutRegion extends Region implements AsyncManager {
 		}
 	}
 	
-	private void resolveCuboids(SpoutChunk[] chunks, LightingManager<?>[] managers) {
+	private void resolveCuboids(SpoutChunk[] chunks, LightingManager<?>[] managers, boolean init) {
 		int cuboids = chunks.length;
 		int[] bx = new int[cuboids];
 		int[] by = new int[cuboids];
 		int[] bz = new int[cuboids];
-		int[] tx = new int[cuboids];
-		int[] ty = new int[cuboids];
-		int[] tz = new int[cuboids];
-		int size = Chunk.BLOCKS.SIZE;
 		for (int i = 0; i < cuboids; i++) {
 			SpoutChunk chunk = chunks[i];
 			bx[i] = chunk.getBlockX();
 			by[i] = chunk.getBlockY();
 			bz[i] = chunk.getBlockZ();
-			tx[i] = bx[i] + size;
-			ty[i] = by[i] + size;
-			tz[i] = bz[i] + size;
 		}
-		for (int i = 0; i < managers.length; i++) {
-			managers[i].resolveUnchecked(lightBuffers[i], blockMaterialBuffer, heightMapBuffer, bx, by, bz, tx, ty, tz, cuboids);
+		if (init) {
+			for (int i = 0; i < managers.length; i++) {
+				managers[i].initChunksUnchecked(lightBuffers[i], blockMaterialBuffer, heightMapBuffer, bx, by, bz, cuboids);
+			}
+		} else {
+			for (int i = 0; i < managers.length; i++) {
+				managers[i].resolveChunksUnchecked(lightBuffers[i], blockMaterialBuffer, heightMapBuffer, bx, by, bz, cuboids);
+			}
 		}
 	}
 	
