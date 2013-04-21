@@ -75,25 +75,41 @@ public abstract class LightingManager<T extends CuboidLightBuffer> {
 	}
 	
 	/**
+	 * Calculates lighting after chunks have been generated.<br>
+	 * 
+	 * @param light the light buffer to update
+	 * @param material the updated block materials
+	 * @param bx an array of the bottom x block coordinates of the Chunks
+	 * @param by an array of the bottom y block coordinates of the Chunks
+	 * @param bz an array of the bottom z block coordinates of the Chunks
+	 * @param initializedChunks the number of cuboids
+	 */
+	protected void initChunks(ChunkCuboidLightBufferWrapper<T> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int initializedChunks) {
+		resolveChunks(light, material, height, bx, by, bz, initializedChunks);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void initChunksUnchecked(ChunkCuboidLightBufferWrapper<?> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int initializedChunks) {
+		initChunks((ChunkCuboidLightBufferWrapper<T>) light, material, height, bx, by, bz, initializedChunks);
+	}
+	
+	/**
 	 * Recalculates lighting after a change to the block materials at a given set of cuboid regions.<br>
 	 * <br>
 	 * The coordinate given by (tx[i], ty[i], tz[i]) is not considered part of the ith cuboid, but (bx[i], by[i], bz[i]) 
 	 * 
 	 * @param light the light buffer to update
 	 * @param material the updated block materials
-	 * @param bx the bottom x coordinates of the cuboid
-	 * @param by the bottom y coordinates of the cuboid
-	 * @param bz the bottom z coordinates of the cuboid
-	 * @param tx the top x coordinates of the cuboid
-	 * @param ty the top y coordinates of the cuboid
-	 * @param tz the top z coordinates of the cuboid
+	 * @param bx an array of the bottom x block coordinates of the Chunks
+	 * @param by an array of the bottom y block coordinates of the Chunks
+	 * @param bz an array of the bottom z block coordinates of the Chunks
 	 * @param changedCuboids the number of cuboids
 	 */
-	protected abstract void resolve(ChunkCuboidLightBufferWrapper<T> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int[] tx, int[] ty, int[] tz, int changedCuboids);
+	protected abstract void resolveChunks(ChunkCuboidLightBufferWrapper<T> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int changedCuboids);
 	
 	@SuppressWarnings("unchecked")
-	public void resolveUnchecked(ChunkCuboidLightBufferWrapper<?> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int[] tx, int[] ty, int[] tz, int changedCuboids) {
-		resolve((ChunkCuboidLightBufferWrapper<T>) light, material, height, bx, by, bz, tx, ty, tz, changedCuboids);
+	public void resolveChunksUnchecked(ChunkCuboidLightBufferWrapper<?> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int changedCuboids) {
+		resolveChunks((ChunkCuboidLightBufferWrapper<T>) light, material, height, bx, by, bz, changedCuboids);
 	}
 	
 	/**

@@ -51,7 +51,11 @@ public class FakeLightingManager extends LightingManager {
 	}
 
 	@Override
-	protected void resolve(ChunkCuboidLightBufferWrapper light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int[] tx, int[] ty, int[] tz, int changedCuboids) {
+	protected void initChunks(ChunkCuboidLightBufferWrapper light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int changedCuboids) {
+		throw new UnsupportedOperationException("Attempt to use resolve() method on a FakeLightingManager");
+	}
+	
+	protected void resolveChunks(ChunkCuboidLightBufferWrapper light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int changedCuboids) {
 		throw new UnsupportedOperationException("Attempt to use resolve() method on a FakeLightingManager");
 	}
 
