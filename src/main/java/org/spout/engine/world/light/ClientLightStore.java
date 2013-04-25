@@ -26,6 +26,8 @@
  */
 package org.spout.engine.world.light;
 
+import java.util.Arrays;
+
 import org.spout.api.event.Cause;
 import org.spout.engine.world.SpoutChunk;
 import org.spout.engine.world.SpoutColumn;
@@ -34,6 +36,12 @@ public final class ClientLightStore extends LightStore{
 
 	public ClientLightStore(SpoutChunk chunk, SpoutColumn column, byte[] skyLight, byte[] blockLight) {
 		super(chunk, column, skyLight, blockLight);
+	}
+	
+	@Override
+	public void initLighting() {
+		Arrays.fill(this.blockLight, (byte) 5);
+		Arrays.fill(this.skyLight, (byte) 5);
 	}
 
 	@Override
@@ -51,9 +59,5 @@ public final class ClientLightStore extends LightStore{
 	@Override
 	public boolean isCalculatingLighting() {
 		return false;
-	}
-
-	@Override
-	public void initLighting() {
 	}
 }

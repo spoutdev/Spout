@@ -128,7 +128,7 @@ public abstract class LightStore {
 		return oldLight;
 	}
 
-	public final byte geSkyLight(int x, int y, int z) {
+	public final byte getSkyLight(int x, int y, int z) {
 		int light = this.getSkyLightRaw(x, y, z) - (15 - chunk.getWorld().getSkyLight());
 		return light < 0 ? (byte) 0 : (byte) light;
 	}
