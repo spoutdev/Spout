@@ -56,6 +56,11 @@ public class TInt10TripleSet {
 		return set.remove(key);
 	}
 	
+	public boolean contains(int x, int y, int z) {
+		int key = hash.key(x, y, z);
+		return set.contains(key);
+	}
+	
 	public void clear() {
 		set.clear();
 	}
