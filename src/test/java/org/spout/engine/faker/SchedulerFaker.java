@@ -28,17 +28,13 @@ package org.spout.engine.faker;
 
 import org.powermock.api.mockito.PowerMockito;
 import org.spout.api.geo.cuboid.Chunk;
+import org.spout.engine.scheduler.SpoutScheduler;
 
-public class ChunkFaker {
+public class SchedulerFaker {
 
-	        public static Chunk getChunk(int x, int y, int z) throws Exception {
-	        	Chunk chunk = PowerMockito.mock(Chunk.class);
-	        	PowerMockito.when(chunk, Chunk.class.getMethod("getX", (Class[])null)).withNoArguments().thenReturn(x);
-	        	PowerMockito.when(chunk, Chunk.class.getMethod("getY", (Class[])null)).withNoArguments().thenReturn(y);
-	        	PowerMockito.when(chunk, Chunk.class.getMethod("getZ", (Class[])null)).withNoArguments().thenReturn(z);
-	        	PowerMockito.when(chunk, Chunk.class.getMethod("getBlockX", (Class[])null)).withNoArguments().thenReturn(x << Chunk.BLOCKS.BITS);
-	        	PowerMockito.when(chunk, Chunk.class.getMethod("getBlockY", (Class[])null)).withNoArguments().thenReturn(y << Chunk.BLOCKS.BITS);
-	        	PowerMockito.when(chunk, Chunk.class.getMethod("getBlockZ", (Class[])null)).withNoArguments().thenReturn(z << Chunk.BLOCKS.BITS);
-	        	return chunk;
+	        public static SpoutScheduler getSpoutScheduler() throws Exception {
+	        	SpoutScheduler scheduler = PowerMockito.mock(SpoutScheduler.class);
+	        	PowerMockito.when(scheduler, Chunk.class.getMethod("getX", (Class[])null)).withNoArguments().thenReturn(Thread.currentThread());
+	        	return scheduler;
 	        }
 }

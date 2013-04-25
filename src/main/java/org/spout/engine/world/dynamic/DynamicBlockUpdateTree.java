@@ -87,11 +87,15 @@ public class DynamicBlockUpdateTree {
 	private final static int localStages = TickStage.DYNAMIC_BLOCKS | TickStage.PHYSICS;
 	private final static int globalStages = TickStage.GLOBAL_DYNAMIC_BLOCKS | TickStage.GLOBAL_PHYSICS;
 	private int lastUpdates;
+	
+	protected DynamicBlockUpdateTree(Thread thread, SpoutRegion region) {
+		this.region = region;
+		this.mainThread = thread;
+		this.world = region.getWorld();
+	}
 
 	public DynamicBlockUpdateTree(SpoutRegion region) {
-		this.region = region;
-		this.mainThread = ((SpoutScheduler)Spout.getScheduler()).getMainThread();
-		this.world = region.getWorld();
+		this(((SpoutScheduler)Spout.getScheduler()).getMainThread(), region);
 	}
 
 	public void setRegionThread(Thread t) {
@@ -263,7 +267,7 @@ public class DynamicBlockUpdateTree {
 
 		Point p;
 		while ((p = resetPending.poll()) != null) {
-			if (!resetPendingMap.remove(p)) {
+			if (resetPendingMap.remove(p) == null) {
 				throw new IllegalStateException("Dynamic block reset pending map and queue mismatch");
 			}
 			int bx = p.getBlockX();
