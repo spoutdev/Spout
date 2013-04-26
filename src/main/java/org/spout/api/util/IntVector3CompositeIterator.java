@@ -38,8 +38,20 @@ public class IntVector3CompositeIterator implements Iterable<IntVector3>, Iterat
 	
 	@SuppressWarnings("unchecked")
 	public IntVector3CompositeIterator(Iterable<IntVector3>[] iterables) {
-		this.iterables = iterables;
-		this.iterators = new Iterator[iterables.length];
+		int nonNull = 0;
+		for (int i = 0; i < iterables.length; i++) {
+			if (iterables[i] != null) {
+				nonNull++;
+			}
+		}
+		this.iterables = new Iterable[nonNull];
+		int j = 0;
+		for (int i = 0; i < iterables.length; i++) {
+			if (iterables[i] != null) {
+				this.iterables[j++] = iterables[i];
+			}
+		}
+		this.iterators = new Iterator[nonNull];
 		iterator();
 		this.count = 0;
 	}

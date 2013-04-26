@@ -51,7 +51,7 @@ public class IntVector3CompositeIteratorTest {
 		int[][] y = new int[3][];
 		int[][] z = new int[3][];
 		
-		IntVector3Array[] arr = new IntVector3Array[3];
+		IntVector3Array[] arr = new IntVector3Array[5];
 		
 		int length = LENGTH;
 		
@@ -67,6 +67,9 @@ public class IntVector3CompositeIteratorTest {
 
 			length = length >> 1;
 		}
+		
+		arr[3] = arr[2];
+		arr[2] = null;
 
 		Iterator<IntVector3> itr = new IntVector3CompositeIterator(arr);
 		
