@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class WeakHashMapTest {
+public class WeakValueHashMapTest {
 	
 	private final static boolean RUN_TEST = true;
 	private final static int ARRAY_SIZE = 10 * 1024 * 1024;
@@ -18,9 +18,9 @@ public class WeakHashMapTest {
 			return;
 		}
 		
-		WeakHashMap<Integer, byte[]> map = new WeakHashMap<Integer, byte[]>();
+		WeakValueHashMap<Integer, byte[]> map = new WeakValueHashMap<Integer, byte[]>();
 		
-		HashMap<Integer, WeakHashMap<Integer, byte[]>.KeyReference> internalMap = map.map;
+		HashMap<Integer, WeakValueHashMap<Integer, byte[]>.KeyReference> internalMap = map.map;
 		
 		byte[][] hardArray = new byte[10][];
 		

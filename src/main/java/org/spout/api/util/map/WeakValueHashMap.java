@@ -11,7 +11,7 @@ import java.util.HashMap;
  * <br>
  * The queue is polled whenever an entry is added or removed from the map
  */
-public class WeakHashMap<K, V> {
+public class WeakValueHashMap<K, V> {
 	
 	private final ReferenceQueue<V> referenceQueue = new ReferenceQueue<V>();
 	
