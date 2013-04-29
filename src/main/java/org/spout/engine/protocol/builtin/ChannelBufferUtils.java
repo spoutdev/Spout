@@ -27,13 +27,10 @@
 package org.spout.engine.protocol.builtin;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.spout.api.Spout;
-import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
@@ -141,34 +138,19 @@ public class ChannelBufferUtils {
 		buffer.writeFloat(quaternion.getW());
 	}
 
-	private static final byte ARGUMENT_TYPE_STYLE = 0x0, ARGUMENT_TYPE_STRING = 0x1;
-
-	public static List<Object> readCommandArguments(ChannelBuffer buffer) {
-		final int length = buffer.readShort();
-		List<Object> arguments = new ArrayList<Object>(length);
-		for (int i = 0; i < length; ++i) {
-			switch (buffer.readByte()) {
-				case ARGUMENT_TYPE_STYLE:
-					short id = buffer.readShort();
-					arguments.add(ChatStyle.byId(id));
-					break;
-				case ARGUMENT_TYPE_STRING:
-					arguments.add(readString(buffer));
-			}
+	public static String[] readStringArray(ChannelBuffer buffer) {
+		int len = buffer.readShort();
+		String[] args = new String[len];
+		for (int i = 0; i < args.length; i++) {
+			args[i] = readString(buffer);
 		}
-		return arguments;
+		return args;
 	}
 
-	public static void writeCommandArguments(ChannelBuffer buffer, List<Object> arguments) {
-		buffer.writeShort(arguments.size());
-		for (Object obj : arguments) {
-			if (obj instanceof ChatStyle) {
-				buffer.writeByte(ARGUMENT_TYPE_STYLE);
-				buffer.writeShort(((ChatStyle) obj).getId());
-			} else {
-				buffer.writeByte(ARGUMENT_TYPE_STRING);
-				writeString(buffer, String.valueOf(obj));
-			}
+	public static void writeStringArray(ChannelBuffer buffer, String... arguments) {
+		buffer.writeShort(arguments.length);
+		for (String arg : arguments) {
+			writeString(buffer, arg);
 		}
 	}
 }

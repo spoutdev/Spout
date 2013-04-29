@@ -24,20 +24,14 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.chat.console;
+package org.spout.engine.console;
 
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
-
-import com.google.common.base.Preconditions;
-import org.spout.api.chat.ChatArguments;
-import org.spout.api.chat.FormattedLogRecord;
-import org.spout.api.chat.channel.ChatChannel;
-import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.Command;
+import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandSource;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.event.server.PreCommandEvent;
+import org.spout.api.exception.CommandException;
 import org.spout.api.geo.World;
 import org.spout.api.lang.Locale;
 
@@ -48,61 +42,58 @@ import org.spout.engine.SpoutEngine;
  * An implementation of CommandSource that sends to and receives from various consoles.
  */
 public class ConsoleCommandSource implements CommandSource {
-	private final AtomicReference<ChatChannel> activeChannel = new AtomicReference<ChatChannel>();
 	private final SpoutEngine engine;
 	private Locale preferredLocale = null;
 
 	public ConsoleCommandSource(SpoutEngine engine) {
 		this.engine = engine;
-		activeChannel.set(engine.getChatChannelFactory().create(this));
+	}
+
+	@Override
+	public void sendMessage(String msg) {
+		engine.getLogger().info(msg);
+	}
+
+	@Override
+	public void sendCommand(String cmd, String... args) {
+	}
+
+	@Override
+	public void processCommand(String cmd, String... args) {
+		// call the event
+		PreCommandEvent event = engine.getEventManager().callEvent(new PreCommandEvent(this, cmd, args));
+		if (event.isCancelled()) {
+			return;
+		}
+		cmd = event.getCommand();
+		CommandArguments arguments = event.getArguments();
+
+		// get the command
+		Command command = engine.getCommandManager().getCommand(cmd, false);
+		if (command == null) {
+			sendMessage("Unknown command: " + cmd);
+			return;
+		}
+
+		// execute and send any exceptions
+		try {
+			command.execute(this, args);
+		} catch (CommandException e) {
+			sendMessage(e.getMessage());
+		}
+	}
+
+	@Override
+	public Locale getPreferredLocale() {
+		if (preferredLocale == null) {
+			preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
+		}
+		return preferredLocale;
 	}
 
 	@Override
 	public String getName() {
 		return "Console";
-	}
-
-	@Override
-	public boolean sendMessage(Object... text) {
-		return sendMessage(new ChatArguments(text));
-	}
-
-	@Override
-	public void sendCommand(String command, ChatArguments arguments) {
-		processCommand(command, arguments);
-	}
-
-	@Override
-	public void processCommand(String commandName, ChatArguments arguments) {
-		PreCommandEvent event = engine.getEventManager().callEvent(new PreCommandEvent(this, commandName, arguments));
-		if (event.isCancelled()) {
-			return;
-		}
-		commandName = event.getCommand();
-		arguments = event.getArguments();
-
-		Command command = engine.getRootCommand().getChild(commandName);
-		if (command != null) {
-			command.process(this, commandName, arguments, false);
-		} else {
-			sendMessage(ChatStyle.RED, "Unknown command: ", commandName);
-		}
-	}
-
-	@Override
-	public boolean sendMessage(ChatArguments message) {
-		return sendRawMessage(message);
-	}
-
-	@Override
-	public boolean sendRawMessage(Object... text) {
-		return sendRawMessage(new ChatArguments(text));
-	}
-
-	@Override
-	public boolean sendRawMessage(ChatArguments message) {
-		engine.getLogger().log(new FormattedLogRecord(Level.INFO, message));
-		return true;
 	}
 
 	@Override
@@ -153,26 +144,5 @@ public class ConsoleCommandSource implements CommandSource {
 	@Override
 	public boolean hasData(World world, String node) {
 		return false;
-	}
-
-	@Override
-	public Locale getPreferredLocale() {
-		if (preferredLocale == null) {
-			preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
-		}
-		return preferredLocale;
-	}
-
-	@Override
-	public ChatChannel getActiveChannel() {
-		return activeChannel.get();
-	}
-
-	@Override
-	public void setActiveChannel(ChatChannel chan) {
-		Preconditions.checkNotNull(chan);
-		chan.onAttachTo(this);
-		this.activeChannel.getAndSet(chan).onDetachedFrom(this);
-
 	}
 }

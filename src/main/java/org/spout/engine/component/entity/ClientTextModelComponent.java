@@ -30,8 +30,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.spout.api.chat.style.ColorChatStyle;
-import org.spout.api.chat.style.ResetChatStyle;
 import org.spout.api.component.entity.TextModelComponent;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.gui.render.RenderPart;
@@ -62,36 +60,26 @@ public class ClientTextModelComponent extends TextModelComponent {
 		float xCursor = 0;
 		float yCursor = 0;
 
-		for (Object arg : getText().getArguments()) {
-			if (arg instanceof String) {
-				String txt = (String) arg;
-				for (int i = 0; i < txt.length(); i++) {
-					char c = txt.charAt(i);
-					if (c == ' ') {
-						xCursor += font.getSpaceWidth() / ratio;
-					} else if (c == '\n') {
-						xCursor = 0;
-						yCursor -= font.getCharHeight() / ratio;
-					} else {
-						java.awt.Rectangle r = font.getPixelBounds(c);
+		for (char c : getText().toCharArray()) {
+			if (c == ' ') {
+				xCursor += font.getSpaceWidth() / ratio;
+			} else if (c == '\n') {
+				xCursor = 0;
+				yCursor -= font.getCharHeight() / ratio;
+			} else {
+				java.awt.Rectangle r = font.getPixelBounds(c);
 
-						RenderPart part = new RenderPart();
-						part.setColor(color);
-						part.setSprite(new Rectangle(xCursor, yCursor, (float) r.width / ratio, h / ratio));
-						part.setSource(new Rectangle(r.x / w, 0f, r.width / w, 1f));
+				RenderPart part = new RenderPart();
+				part.setColor(color);
+				part.setSprite(new Rectangle(xCursor, yCursor, (float) r.width / ratio, h / ratio));
+				part.setSource(new Rectangle(r.x / w, 0f, r.width / w, 1f));
 
-						xCursor += font.getAdvance(c) / ratio;
+				xCursor += (float) font.getAdvance(c) / ratio;
 
-						List<Vertex> v = part.getVertices();
+				List<Vertex> v = part.getVertices();
 
-						faces.add(new MeshFace(v.get(0), v.get(1), v.get(3)));
-						faces.add(new MeshFace(v.get(2), v.get(3), v.get(1)));
-					}
-				}
-			} else if (arg instanceof ColorChatStyle) {
-				color = ((ColorChatStyle) arg).getColor();
-			} else if (arg instanceof ResetChatStyle) {
-				color = Color.black;
+				faces.add(new MeshFace(v.get(0), v.get(1), v.get(3)));
+				faces.add(new MeshFace(v.get(2), v.get(3), v.get(1)));
 			}
 		}
 

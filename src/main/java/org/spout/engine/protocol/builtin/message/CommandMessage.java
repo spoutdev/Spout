@@ -26,25 +26,22 @@
  */
 package org.spout.engine.protocol.builtin.message;
 
-import java.util.List;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.spout.api.command.Command;
 import org.spout.api.util.SpoutToStringStyle;
-import org.spout.engine.command.IdSimpleCommand;
 
 public class CommandMessage extends SpoutMessage {
 	private final int command;
-	private final List<Object> arguments;
+	private final String[] arguments;
 
-	public CommandMessage(Command command, List<Object> arguments) {
-		this.command = command instanceof IdSimpleCommand ? ((IdSimpleCommand) command).getId() : -1;
+	public CommandMessage(Command command, String... arguments) {
+		this.command = command.getId();
 		this.arguments = arguments;
 	}
 
-	public CommandMessage(int command, List<Object> arguments) {
+	public CommandMessage(int command, String... arguments) {
 		this.command = command;
 		this.arguments = arguments;
 	}
@@ -53,7 +50,7 @@ public class CommandMessage extends SpoutMessage {
 		return command;
 	}
 
-	public List<Object> getArguments() {
+	public String[] getArguments() {
 		return arguments;
 	}
 

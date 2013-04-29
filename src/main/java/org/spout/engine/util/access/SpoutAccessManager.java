@@ -33,8 +33,6 @@ import java.util.HashSet;
 
 import org.spout.api.Server;
 import org.spout.api.Spout;
-import org.spout.api.chat.ChatArguments;
-import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.entity.Player;
 import org.spout.api.event.server.access.BanChangeEvent;
 import org.spout.api.util.access.BanType;
@@ -50,9 +48,9 @@ public class SpoutAccessManager implements AccessManager {
 	private final ListFile bannedIps = new ListFile(new File("config/banned_ips.txt"));
 	private final ListFile whitelist = new ListFile(new File("config/whitelist.txt"));
 	private boolean whitelistEnabled = false;
-	private ChatArguments banMessage = new ChatArguments(ChatStyle.RED, "You are banned from this server!");
-	private ChatArguments ipBanMessage = new ChatArguments(ChatStyle.RED, "You are banned from this server!");
-	private ChatArguments whitelistMessage = new ChatArguments(ChatStyle.RED, "You are not on the whitelist!");
+	private String banMessage ="You are banned from this server!";
+	private String ipBanMessage = "You are banned from this server!";
+	private String whitelistMessage = "You are not on the whitelist!";
 
 	@Override
 	public void load() {
@@ -93,15 +91,15 @@ public class SpoutAccessManager implements AccessManager {
 
 	@Override
 	public void unwhitelist(String player, boolean kick) {
-		unwhitelist(player, kick, (Object[])null);
+		unwhitelist(player, kick, null);
 	}
 
 	@Override
-	public void unwhitelist(String player, boolean kick, Object... reason) {
+	public void unwhitelist(String player, boolean kick, String reason) {
 		Server server = (Server) Spout.getEngine();
 		if (kick) {
 			if (reason == null) {
-				reason = new Object[] {ChatStyle.RED, "Unwhitelisted from server."};
+				reason = "Unwhitelisted from server.";
 			}
 			Player p = server.getPlayer(player, true);
 			if (p != null) {
@@ -123,13 +121,13 @@ public class SpoutAccessManager implements AccessManager {
 	}
 
 	@Override
-	public ChatArguments getWhitelistMessage() {
+	public String getWhitelistMessage() {
 		return whitelistMessage;
 	}
 
 	@Override
-	public void setWhitelistMessage(Object... message) {
-		whitelistMessage = new ChatArguments(message);
+	public void setWhitelistMessage(String message) {
+		whitelistMessage = message;
 	}
 
 	@Override
@@ -139,15 +137,15 @@ public class SpoutAccessManager implements AccessManager {
 
 	@Override
 	public void ban(BanType type, String s, boolean kick) {
-		ban(type, s, kick, (Object[])null);
+		ban(type, s, kick, null);
 	}
 
 	@Override
-	public void ban(BanType type, String s, boolean kick, Object... reason) {
+	public void ban(BanType type, String s, boolean kick, String reason) {
 		Server server = (Server) Spout.getEngine();
 		if (kick) {
 			if (reason == null) {
-				reason = new Object[] {ChatStyle.RED, "Banned from server."};
+				reason = "Banned from server.";
 			}
 			if (type == BanType.PLAYER) {
 				Player player = server.getPlayer(s, true);
@@ -181,17 +179,16 @@ public class SpoutAccessManager implements AccessManager {
 	}
 
 	@Override
-	public ChatArguments getBanMessage(BanType type) {
+	public String getBanMessage(BanType type) {
 		return type == BanType.PLAYER ? banMessage : ipBanMessage;
 	}
 
 	@Override
-	public void setBanMessage(BanType type, Object... message) {
-		ChatArguments args = new ChatArguments(message);
+	public void setBanMessage(BanType type, String message) {
 		if (type == BanType.PLAYER) {
-			banMessage = args;
+			banMessage = message;
 		} else {
-			ipBanMessage = args;
+			ipBanMessage = message;
 		}
 	}
 

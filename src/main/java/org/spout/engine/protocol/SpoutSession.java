@@ -261,7 +261,7 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			disconnect(false, new Object[] {"Socket Error!"});
+			disconnect(false, "Socket Error!");
 		}
 	}
 
@@ -398,5 +398,5 @@ public abstract class SpoutSession<T extends SpoutEngine> implements Session {
 		}
 	}
 
-	public abstract boolean disconnect(boolean kick, boolean stop, Object... reason);
+	public abstract boolean disconnect(boolean kick, boolean stop, String reason);
 }

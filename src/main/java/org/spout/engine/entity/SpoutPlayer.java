@@ -33,16 +33,12 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.google.common.base.Preconditions;
-
 import org.spout.api.Engine;
 import org.spout.api.Platform;
 import org.spout.api.Server;
-import org.spout.api.chat.ChatArguments;
-import org.spout.api.chat.channel.ChatChannel;
-import org.spout.api.chat.style.ChatStyle;
+import org.spout.api.Spout;
 import org.spout.api.command.Command;
-import org.spout.api.command.RootCommand;
+import org.spout.api.command.CommandArguments;
 import org.spout.api.component.Component;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.datatable.SerializableMap;
@@ -56,6 +52,7 @@ import org.spout.api.event.server.PreCommandEvent;
 import org.spout.api.event.server.RetrieveDataEvent;
 import org.spout.api.event.server.permissions.PermissionGroupsEvent;
 import org.spout.api.event.server.permissions.PermissionNodeEvent;
+import org.spout.api.exception.CommandException;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
@@ -86,7 +83,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	private PlayerInputState inputState = PlayerInputState.DEFAULT_STATE;
 	private Locale preferredLocale = Locale.getByCode(SpoutConfiguration.DEFAULT_LANGUAGE.getString());
 	private List<Entity> hiddenEntities = new ConcurrentList<Entity>();
-	private final AtomicReference<ChatChannel> activeChannel = new AtomicReference<ChatChannel>();
 
 	public SpoutPlayer(Engine engine, String name) {
 		this(engine, name, null, SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
@@ -107,7 +103,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		displayName.set(name);
 		hashcode = name.hashCode();
 		this.setObserver(true);
-		activeChannel.set(engine.getChatChannelFactory().create(this));
 	}
 
 	@Override
@@ -182,53 +177,43 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	}
 
 	@Override
-	public boolean sendMessage(Object... message) {
-		return sendRawMessage(message);
+	public void sendMessage(String message) {
+		sendCommand("say", message.split(" "));
 	}
 
 	@Override
-	public void sendCommand(String commandName, ChatArguments arguments) {
-		Command command = getEngine().getRootCommand().getChild(commandName);
-		Message cmdMessage = getSession().getProtocol().getCommandMessage(command, arguments);
-		if (cmdMessage == null) {
+	public void sendCommand(String command, String... args) {
+		Command cmd = Spout.getCommandManager().getCommand(command, false);
+		Message msg = session.getProtocol().getCommandMessage(cmd, new CommandArguments(args));
+		if (msg == null) {
 			return;
 		}
-
-		session.send(false, cmdMessage);
+		session.send(false, msg);
 	}
 
 	@Override
-	public void processCommand(String command, ChatArguments arguments) {
-		PreCommandEvent event = getEngine().getEventManager().callEvent(new PreCommandEvent(this, command, arguments));
+	public void processCommand(String command, String... args) {
+		// call the event
+		PreCommandEvent event = getEngine().getEventManager().callEvent(new PreCommandEvent(this, command, args));
 		if (event.isCancelled()) {
 			return;
 		}
 		command = event.getCommand();
-		arguments = event.getArguments();
+		CommandArguments arguments = event.getArguments();
 
-		final RootCommand rootCmd = getEngine().getRootCommand();
-		Command cmd = rootCmd.getChild(command);
-		if (cmd != null) {
-			cmd.process(this, command, arguments, false);
-		} else {
-			sendMessage(ChatStyle.RED, "Unknown command: ", command);
+		// get the command
+		Command cmd = getEngine().getCommandManager().getCommand(command, false);
+		if (cmd == null) {
+			sendMessage("Unknown command: " + command);
+			return;
 		}
-	}
 
-	@Override
-	public boolean sendMessage(ChatArguments message) {
-		return sendRawMessage(message);
-	}
-
-	@Override
-	public boolean sendRawMessage(Object... message) {
-		return sendRawMessage(new ChatArguments(message));
-	}
-
-	@Override
-	public boolean sendRawMessage(ChatArguments message) {
-		sendCommand("say", message);
-		return true;
+		// try to execute and send any exceptions to the player
+		try {
+			cmd.execute(this, arguments);
+		} catch (CommandException e) {
+			sendMessage(e.getMessage());
+		}
 	}
 
 	@Override
@@ -303,17 +288,17 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void kick() {
-		kick((Object[]) null);
+		kick(null);
 	}
 
 	@Override
-	public void kick(Object... reason) {
+	public void kick(String reason) {
 		kick(false, reason);
 	}
 
-	public void kick(boolean stop, Object...reason) {
+	public void kick(boolean stop, String reason) {
 		if (reason == null) {
-			reason = new Object[]{ChatStyle.RED, "Kicked from server."};
+			reason = "Kicked from server.";
 		}
 		//If we are stopping, it's not really a kick (it's a friendly disconnect)
 		//If we aren't stopping, it really is a kick
@@ -327,11 +312,11 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 
 	@Override
 	public void ban(boolean kick) {
-		ban(kick, (Object[]) null);
+		ban(kick, null);
 	}
 
 	@Override
-	public void ban(boolean kick, Object... reason) {
+	public void ban(boolean kick, String reason) {
 		if (getEngine().getPlatform() != Platform.SERVER) {
 			throw new IllegalStateException("Banning is only available in server mode.");
 		}
@@ -360,18 +345,6 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 	@Override
 	public Locale getPreferredLocale() {
 		return preferredLocale;
-	}
-
-	@Override
-	public ChatChannel getActiveChannel() {
-		return activeChannel.get();
-	}
-
-	@Override
-	public void setActiveChannel(ChatChannel chan) {
-		Preconditions.checkNotNull(chan);
-		chan.onAttachTo(this);
-		this.activeChannel.getAndSet(chan).onDetachedFrom(this);
 	}
 
 	@Override

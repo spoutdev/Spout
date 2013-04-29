@@ -28,9 +28,8 @@ package org.spout.engine.entity;
 
 import org.spout.api.Client;
 import org.spout.api.Engine;
-import org.spout.api.chat.ChatArguments;
-import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.Command;
+import org.spout.api.command.CommandArguments;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.protocol.Message;
 import org.spout.engine.gui.SpoutScreenStack;
@@ -46,29 +45,12 @@ public class SpoutClientPlayer extends SpoutPlayer {
 	}
 
 	@Override
-	public boolean sendRawMessage(ChatArguments message) {
+	public void sendMessage(String message) {
 		SpoutSession<?> session = getSession();
 		if (session == null) {
 			((SpoutScreenStack)((Client)getEngine()).getScreenStack()).getConsole().addMessage(message);
-			return true;
 		} else {
-			return super.sendRawMessage(message);
+			super.sendMessage(message);
 		}
 	}
-
-	@Override
-	public void sendCommand(String commandName, ChatArguments arguments) {
-		Command command = getEngine().getRootCommand().getChild(commandName);
-		if (command == null) {
-			sendMessage(ChatStyle.RED, "Unknown command: ", commandName);
-			return;
-		}
-		Message cmdMessage = getSession().getProtocol().getCommandMessage(command, arguments);
-		if (cmdMessage == null) {
-			return;
-		}
-
-		getSession().send(true, cmdMessage);
-	}
-
 }

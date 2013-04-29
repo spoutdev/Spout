@@ -26,14 +26,12 @@
  */
 package org.spout.engine.command;
 
-import org.spout.api.chat.ChatArguments;
-import org.spout.api.chat.channel.ChatChannel;
-import org.spout.api.chat.conversation.Conversation;
-import org.spout.api.chat.style.ChatStyle;
-import org.spout.api.command.CommandContext;
+import org.spout.api.Server;
+import org.spout.api.command.CommandArguments;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
-import org.spout.api.command.annotated.CommandPermissions;
+import org.spout.api.command.annotated.Permissible;
+import org.spout.api.command.annotated.Platform;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
 
@@ -42,7 +40,7 @@ import org.spout.engine.SpoutEngine;
 /**
  * Commands relating to messaging
  */
-public class MessagingCommands {
+public class MessagingCommands  {
 	private final SpoutEngine engine;
 
 	public MessagingCommands(SpoutEngine engine) {
@@ -50,39 +48,25 @@ public class MessagingCommands {
 	}
 
 	@Command(aliases = {"tell", "msg"}, usage = "<target> <message>", desc = "Tell a message to a specific user", min = 2)
-	@CommandPermissions("spout.command.tell")
-	public void tell(CommandContext args, CommandSource source) throws CommandException {
+	@Permissible("spout.command.tell")
+	public void tell(CommandSource source, CommandArguments args) throws CommandException {
 		String playerName = args.getString(0);
-		ChatArguments message = args.getJoinedString(1);
+		String message = args.getJoinedString(1);
 		Player player = engine.getPlayer(playerName, false);
 		if (player == source) {
 			source.sendMessage("Forever alone.");
 		} else if (player != null) {
-			source.sendMessage("To ", ChatStyle.BRIGHT_GREEN, player.getName(), ChatStyle.RESET, ": ", message);
-			player.sendMessage("From ", ChatStyle.BRIGHT_GREEN, source.getName(), ChatStyle.RESET, ": ", message);
+			source.sendMessage("To " + player.getName() + ": " + message);
+			player.sendMessage("From " + source.getName() + ": " + message);
 		} else {
 			throw new CommandException("Player '" + playerName + "' not found.");
 		}
 	}
 
 	@Command(aliases = {"emote", "me", "action"}, usage = "<action>", desc = "Emote in the third person", min = 1)
-	@CommandPermissions("spout.command.emote")
-	public void emote(CommandContext args, CommandSource source) {
-		source.getActiveChannel().broadcastToReceivers(new ChatArguments(ChatStyle.YELLOW, ChatStyle.ITALIC, source.getName(), " ", args.getJoinedString(0)));
-	}
-
-	@Command(aliases = {"endconvo"}, desc = "Removes the conversation you are currently in", min = 0, max = 0)
-	@CommandPermissions("spout.command.endconversation")
-	public void endconvo(CommandContext args, CommandSource source) throws CommandException {
-		ChatChannel current = source.getActiveChannel();
-		if (!(current instanceof Conversation)) {
-			throw new CommandException("You are not currently in a conversation!");
-		}
-
-		if (((Conversation) current).finish()) {
-			source.sendMessage(ChatStyle.CYAN, "Conversation exited!");
-		} else {
-			throw new CommandException("Unable to exit conversation! There's some sort of state issue!");
-		}
+	@Permissible("spout.command.emote")
+	@Platform({org.spout.api.Platform.SERVER, org.spout.api.Platform.PROXY})
+	public void emote(CommandSource source, CommandArguments args) {
+		((Server) engine).broadcastMessage(source.getName() + " " + args.getJoinedString(0));
 	}
 }

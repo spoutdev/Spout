@@ -33,7 +33,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.spout.api.Spout;
-import org.spout.api.chat.ChatArguments;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.proxy.ConnectionInfo;
@@ -93,7 +92,7 @@ public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
 				super.send(upstream, force, message);
 			}
 		} catch (Exception e) {
-			disconnect(false, new Object[] {"Socket Error!"});
+			disconnect(false, "Socket Error!");
 		}
 	}
 
@@ -130,7 +129,7 @@ public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
 	}
 
 	@Override
-	public boolean disconnect(boolean kick, Object... reason) {
+	public boolean disconnect(boolean kick, String reason) {
 		boolean result = super.disconnect(kick, reason);
 		closeAuxChannel(false, reason);
 		return result;
@@ -157,13 +156,13 @@ public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
 		closeAuxChannel(openedExpected, "Closing aux channel");
 	}
 
-	private void closeAuxChannel(boolean openedExpected, Object... message) {
+	private void closeAuxChannel(boolean openedExpected, String message) {
 		Channel c = auxChannel.getAndSet(null);
 		if (c != null) {
 			Message kickMessage = null;
 			Protocol p = getProtocol();
 			if (p != null) {
-				kickMessage = p.getKickMessage(new ChatArguments(message));
+				kickMessage = p.getKickMessage(message);
 			}
 			if (kickMessage != null) {
 				c.write(kickMessage).addListener(ChannelFutureListener.CLOSE);

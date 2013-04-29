@@ -29,7 +29,6 @@ package org.spout.engine.protocol;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.jboss.netty.channel.Channel;
-import org.spout.api.chat.ChatArguments;
 import org.spout.api.geo.World;
 import org.spout.api.protocol.Message;
 import org.spout.api.protocol.PortBinding;
@@ -76,20 +75,20 @@ public class SpoutClientSession extends SpoutSession<SpoutClient> {
 	}
 
 	@Override
-	public boolean disconnect(Object... reason) {
+	public boolean disconnect(String reason) {
 		return disconnect(true, reason);
 	}
 
 	@Override
-	public boolean disconnect(boolean kick, Object... reason) {
+	public boolean disconnect(boolean kick, String reason) {
 		return disconnect(kick, false, reason);
 	}
 
 	@Override
-	public boolean disconnect(boolean kick, boolean stop, Object... reason) {
+	public boolean disconnect(boolean kick, boolean stop, String reason) {
 		SpoutPlayer player = getPlayer();
 		if (player != null) {
-			player.sendCommand("disconnect", new ChatArguments(reason));
+			player.sendCommand("disconnect", reason);
 			return true;
 		}
 		return false;
