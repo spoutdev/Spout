@@ -37,12 +37,15 @@ import org.spout.api.generator.biome.BiomeGenerator;
 import org.spout.api.generator.biome.BiomeManager;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFaces;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.BitSize;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.ImmutableHeightMapBuffer;
+import org.spout.api.util.list.concurrent.setqueue.SetQueue;
+import org.spout.api.util.list.concurrent.setqueue.SetQueueElement;
 import org.spout.engine.filesystem.versioned.ColumnFiles;
 
 public class SpoutColumn {
@@ -56,6 +59,8 @@ public class SpoutColumn {
 	private final int z;
 	private final AtomicInteger activeChunks = new AtomicInteger(0);
 	private final AtomicInteger[][] heightMap;
+	private final int[][] heightMapSnapshot = new int[BLOCKS.SIZE][BLOCKS.SIZE];
+	private final AtomicInteger dirtyColumns = new AtomicInteger(0);
 	private final AtomicInteger lowestY = new AtomicInteger();
 	private final AtomicInteger highestY = new AtomicInteger();
 	private final AtomicReference<int[][]> heights = new AtomicReference<int[][]>();
@@ -63,6 +68,7 @@ public class SpoutColumn {
 	private final AtomicBoolean dirtyArray[][];
 	private final BlockMaterial[][] topmostBlocks;
 	private final AtomicReference<BiomeManager> biomes = new AtomicReference<BiomeManager>();
+	private final SetQueueElement<SpoutColumn> heightDirtyQueue;
 
 	public SpoutColumn(SpoutWorld world, int x, int z) {
 		this.world = world;
@@ -71,6 +77,8 @@ public class SpoutColumn {
 		this.heightMap = new AtomicInteger[BLOCKS.SIZE][BLOCKS.SIZE];
 		this.dirtyArray = new AtomicBoolean[BLOCKS.SIZE][BLOCKS.SIZE];
 		this.topmostBlocks = new BlockMaterial[BLOCKS.SIZE][BLOCKS.SIZE];
+		
+		this.heightDirtyQueue = new ColumnSetQueueElement(world.getColumnDirtyQueue(x >> Region.CHUNKS.BITS, z >> Region.CHUNKS.BITS), this);
 
 		for (int xx = 0; xx < BLOCKS.SIZE; xx++) {
 			for (int zz = 0; zz < BLOCKS.SIZE; zz++) {
@@ -87,6 +95,15 @@ public class SpoutColumn {
 			if (world.getGenerator() instanceof BiomeGenerator) {
 				BiomeGenerator generator = (BiomeGenerator)world.getGenerator();
 				setBiomeManager(generator.generateBiomes(x, z, world));
+			}
+		}
+		copySnapshot();
+	}
+	
+	public void copySnapshot() {
+		for (int xx = 0; xx < BLOCKS.SIZE; xx++) {
+			for (int zz = 0; zz < BLOCKS.SIZE; zz++) {
+				heightMapSnapshot[xx][zz] = heightMap[xx][zz].get();
 			}
 		}
 	}
@@ -249,7 +266,7 @@ public class SpoutColumn {
 			falling(x, v, z);
 		} else {
 			if (!isAir(x, y, z)) {
-				v.set(y);
+				v.set(y); // TODO - compare and set?
 				setDirty(x, z);
 				falling(x, v, z);
 			}
@@ -257,13 +274,20 @@ public class SpoutColumn {
 	}
 
 	private void falling(int x, AtomicInteger v, int z) {
-		while (true) {
-			int value = v.get();
-			if (!isAir(x, value, z)) {
-				return;
-			}
+		boolean dirty = false;
+		try {
+			while (true) {
+				int value = v.get();
+				if (!isAir(x, value, z)) {
+					return;
+				}
 
-			if (v.compareAndSet(value, value - 1)) {
+				if (v.compareAndSet(value, value - 1)) {
+					dirty = true;
+				}
+			}
+		} finally {
+			if (dirty) {
 				setDirty(x, z);
 			}
 		}
@@ -300,8 +324,32 @@ public class SpoutColumn {
 	private AtomicBoolean getDirtyFlag(int x, int z) {
 		return dirtyArray[x & BLOCKS.MASK][z & BLOCKS.MASK];
 	}
+	
+	public int fillDirty(int pos, int x[], int[] newHeight, int[] oldHeight, int[] z) {
+		int bx = getX() << BLOCKS.BITS;
+		int bz = getZ() << BLOCKS.BITS;
+
+		for (int xx = 0; xx < BLOCKS.SIZE; xx++) {
+			for (int zz = 0; zz < BLOCKS.SIZE; zz++) {
+				if (getDirtyFlag(xx, zz).get()) {
+					x[pos] = bx + xx;
+					z[pos] = bz + zz;
+					newHeight[pos] = heightMap[xx][zz].get();
+					oldHeight[pos] = heightMapSnapshot[xx][zz];
+					pos++;
+				}
+			}
+		}
+		return pos;
+	}
+	
+	public int getDirtyColumns() {
+		return Math.min(256, dirtyColumns.get());
+	}
 
 	public void setDirty(int x, int z) {
+		dirtyColumns.incrementAndGet();
+		heightDirtyQueue.add();
 		getDirtyFlag(x, z).set(true);
 		setDirty();
 	}
@@ -324,4 +372,22 @@ public class SpoutColumn {
 	public ImmutableHeightMapBuffer getHeightMapBuffer() {
 		return new ImmutableHeightMapBuffer(getX() << BLOCKS.BITS, getZ() << BLOCKS.BITS, SpoutColumn.BLOCKS.SIZE, SpoutColumn.BLOCKS.SIZE, heightMap);
 	}
+	
+	public String toString() {
+		return "SpoutColumn{ " + getX() + ", " + getZ() + "}";
+	}
+	
+	private class ColumnSetQueueElement extends SetQueueElement<SpoutColumn> {
+		
+		public ColumnSetQueueElement(SetQueue<SpoutColumn> queue, SpoutColumn value) {
+			super(queue, value);
+		}
+
+		@Override
+		protected boolean isValid() {
+			return true;
+		}
+		
+	}
+	
 }

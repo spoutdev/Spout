@@ -41,6 +41,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.Platform;
+import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
 import org.spout.api.component.type.BlockComponent;
@@ -83,6 +84,8 @@ import org.spout.api.util.hashing.IntPairHashed;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.list.concurrent.ConcurrentList;
 import org.spout.api.util.list.concurrent.UnprotectedCopyOnUpdateArray;
+import org.spout.api.util.list.concurrent.setqueue.SetQueue;
+import org.spout.api.util.map.WeakValueHashMap;
 import org.spout.api.util.map.concurrent.TSyncIntPairObjectHashMap;
 import org.spout.api.util.map.concurrent.TSyncLongObjectHashMap;
 import org.spout.api.util.sanitation.StringSanitizer;
@@ -195,6 +198,8 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	 */
 	private final WeakReference<World> selfReference;
 	public static final WeakReference<World> NULL_WEAK_REFERENCE = new WeakReference<World>(null);
+	
+	private final WeakValueHashMap<Long, SetQueue<SpoutColumn>> regionColumnDirtyQueueMap = new WeakValueHashMap<Long, SetQueue<SpoutColumn>>();
 	Model skydome;
 
 	// TODO set up number of stages ?
@@ -632,6 +637,19 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 
 	@Override
 	public void copySnapshotRun() {
+		synchronized (regionColumnDirtyQueueMap) {
+			// This performs copy snapshot and also clears the column dirty queues
+			Set<Long> keys = regionColumnDirtyQueueMap.keySet();
+			for (Long key : keys) {
+				SetQueue<SpoutColumn> queue = regionColumnDirtyQueueMap.get(key);
+				if (queue != null) {
+					SpoutColumn col;
+					while ((col = queue.poll()) != null) {
+						col.copySnapshot();
+					}
+				}
+			}
+		}
 		snapshotManager.copyAllSnapshots();
 	}
 
@@ -1461,5 +1479,19 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	@Override
 	public boolean hasData(World world, String node) {
 		return hasData(node);
+	}
+	
+	public SetQueue<SpoutColumn> getColumnDirtyQueue(int x, int z) {
+		long key = (((long) x) << 32) | ((long) z);
+		SetQueue<SpoutColumn> setQueue;
+		synchronized (regionColumnDirtyQueueMap) {
+			setQueue = (SetQueue<SpoutColumn>) regionColumnDirtyQueueMap.get(key);
+			
+			if (setQueue == null) {
+				setQueue = new SetQueue<SpoutColumn>(Region.CHUNKS.SIZE * Region.CHUNKS.SIZE);
+				regionColumnDirtyQueueMap.put(key, setQueue);
+			}
+		}
+		return setQueue;
 	}
 }

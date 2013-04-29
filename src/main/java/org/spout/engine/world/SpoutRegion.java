@@ -210,6 +210,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 	protected final SetQueue<SpoutChunk> globalPhysicsChunkQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
 	protected final SetQueue<SpoutChunk> dirtyChunkQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
 	protected final SetQueue<SpoutChunk> newChunkQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
+	protected final SetQueue<SpoutColumn> dirtyColumnQueue;
 	private final DynamicBlockUpdateTree dynamicBlockTree;
 	private List<DynamicBlockUpdate> multiRegionUpdates = null;
 	private boolean renderQueueEnabled = false;
@@ -232,6 +233,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 		super(world, x * Region.BLOCKS.SIZE, y * Region.BLOCKS.SIZE, z * Region.BLOCKS.SIZE);
 		this.source = source;
 
+		this.dirtyColumnQueue = world.getColumnDirtyQueue(getX(), getZ());
+		
 		int xx = GenericMath.mod(getX(), 3);
 		int yy = GenericMath.mod(getY(), 3);
 		int zz = GenericMath.mod(getZ(), 3);
@@ -1508,6 +1511,26 @@ public class SpoutRegion extends Region implements AsyncManager {
 		
 		int cuboids = 0;
 		int blocks = 0;
+		int columns = 0;
+		
+		for (SpoutColumn col : this.dirtyColumnQueue) {
+			columns += col.getDirtyColumns();
+		}
+		
+		if (columns > 0) {
+			int[] colX = new int[columns];
+			int[] colZ = new int[columns];
+			int[] oldH = new int[columns];
+			int[] newH = new int[columns];
+
+			int pos = 0;
+
+			for (SpoutColumn col : this.dirtyColumnQueue) {
+				pos = col.fillDirty(pos, colX, newH, oldH, colZ);
+			}
+
+			resolveColumns(colX, colZ, oldH, newH, managers, pos);
+		}
 		for (SpoutChunk c : this.dirtyChunkQueue) {
 			if (c.isDirtyOverflow()) {
 				cuboids++;
@@ -1515,7 +1538,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 				blocks += c.getDirtyBlocks();
 			}
 		}
-		
+	
 		SpoutChunk[] newChunksArray = new SpoutChunk[newChunksCount];
 		SpoutChunk[] dirtyChunks = new SpoutChunk[cuboids];
 		int[] x = new int[blocks];
@@ -1603,7 +1626,13 @@ public class SpoutRegion extends Region implements AsyncManager {
 			managers[i].resolveUnchecked(lightBuffers[i], blockMaterialBuffer, heightMapBuffer, x, y, z, x.length);
 		}
 	}
-
+	
+	private void resolveColumns(int[] hx, int[] hz, int[] oldHy, int[] newHy, LightingManager<?>[] managers, int changedColumns) {
+		for (int i = 0; i < managers.length; i++) {
+			managers[i].resolveUnchecked(lightBuffers[i], blockMaterialBuffer, heightMapBuffer, hx, hz, oldHy, newHy, changedColumns);
+		}
+	}
+	
 	public int getSequence() {
 		return updateSequence;
 	}
