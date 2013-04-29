@@ -24,11 +24,41 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.chat.style;
+package org.spout.api.command;
 
-/**
- * Represents a formatter that will automatically insert {@link ChatStyle}'s into a String.
- */
-public interface StyleFormatter {
-	public String format(String text);
+import org.junit.Test;
+
+import org.spout.api.exception.CommandException;
+
+import static org.junit.Assert.*;
+
+public class CommandArgumentsTest {
+	@Test
+	public void testArguments() {
+		CommandArguments args = new CommandArguments("foo", "1", "2.5", "true", "false", "here", "is", "a", "joined", "string");
+
+		try {
+			assertEquals("foo", args.getString(0));
+			assertEquals(1, args.getInteger(1));
+			assertEquals(2.5, args.getDouble(2), 0);
+			assertTrue(args.getBoolean(3));
+			assertFalse(args.getBoolean(4));
+			assertEquals("here is a joined string", args.getJoinedString(5));
+		} catch (CommandException e) {
+			CommandTest.unexpectedException(e);
+		}
+
+		try {
+			args.getString(10);
+			CommandTest.expectedException();
+			args.getInteger(0);
+			CommandTest.expectedException();
+			args.getDouble(0);
+			CommandTest.expectedException();
+			args.getBoolean(0);
+			CommandTest.expectedException();
+		} catch (CommandException ignored) {
+		}
+
+	}
 }

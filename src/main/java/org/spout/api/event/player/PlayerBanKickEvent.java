@@ -26,7 +26,6 @@
  */
 package org.spout.api.event.player;
 
-import org.spout.api.chat.ChatArguments;
 import org.spout.api.entity.Player;
 import org.spout.api.event.HandlerList;
 import org.spout.api.util.access.BanType;
@@ -37,12 +36,12 @@ import org.spout.api.util.access.BanType;
 public class PlayerBanKickEvent extends PlayerEvent {
 	private static HandlerList handlers = new HandlerList();
 	private BanType type;
-	private ChatArguments message;
+	private String message;
 
-	public PlayerBanKickEvent(Player player, BanType type, Object... message) {
+	public PlayerBanKickEvent(Player player, BanType type, String message) {
 		super(player);
 		this.type = type;
-		this.message = new ChatArguments(message);
+		this.message = message;
 	}
 
 	/**
@@ -57,7 +56,7 @@ public class PlayerBanKickEvent extends PlayerEvent {
 	 * Gets the ban's kick message
 	 * @return the kick message
 	 */
-	public ChatArguments getMessage() {
+	public String getMessage() {
 		return message;
 	}
 
@@ -65,8 +64,8 @@ public class PlayerBanKickEvent extends PlayerEvent {
 	 * Sets the ban's kick message
 	 * @return the kick message
 	 */
-	public void setMessage(Object... message) {
-		this.message = new ChatArguments(message);
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
 	@Override

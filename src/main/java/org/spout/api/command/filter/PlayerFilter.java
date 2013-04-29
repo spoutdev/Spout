@@ -24,25 +24,12 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.chat.style.fallback;
+package org.spout.api.command.filter;
 
-import java.util.Random;
+import org.spout.api.entity.Player;
 
-import org.spout.api.chat.style.StyleFormatter;
-
-/**
- * Replaces every character in the provided string with one of {@link #CONCEAL_CHARS}
- */
-public class ConcealStyleFormatter implements StyleFormatter {
-	public static final String CONCEAL_CHARS = "#*%!$";
-	private static final Random RANDOM = new Random();
-
-	@Override
-	public String format(String text) {
-		StringBuilder builder = new StringBuilder(text.length());
-		for (int i = 0; i < text.length(); ++i) {
-			builder.append(CONCEAL_CHARS.charAt(RANDOM.nextInt(CONCEAL_CHARS.length())));
-		}
-		return builder.toString();
+public class PlayerFilter extends CommandSourceFilter<Player> {
+	public PlayerFilter() {
+		super(Player.class);
 	}
 }

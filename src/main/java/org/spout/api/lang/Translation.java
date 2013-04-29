@@ -88,10 +88,9 @@ public class Translation {
 	 * Broadcasts the source string to all players on the server.<br/>
 	 * Will translate the source string into each players respective target language.
 	 * @param source the string to translate
-	 * @param onlinePlayers
 	 * @param args any object given will be inserted into the target string for each %0, %1 asf
 	 */
-	public static void broadcast(String source, Server onlinePlayers, Object... args) {
+	public static void broadcast(String source, String... args) {
 		Platform p = Spout.getPlatform();
 		if (p != Platform.SERVER && p != Platform.PROXY) {
 			throw new IllegalStateException("You can only broadcast a message in server mode.");
@@ -106,7 +105,7 @@ public class Translation {
 	 * @param receivers the receivers to send the message to
 	 * @param args any object given will be inserted into the target string for each %0, %1 asf
 	 */
-	public static void broadcast(String source, CommandSource receivers[], Object ...args) {
+	public static void broadcast(String source, CommandSource receivers[], String... args) {
 		Plugin plugin = getPluginForStacktrace();
 		PluginDictionary pldict = plugin.getDictionary();
 		pldict.broadcast(source, receivers, foundClass, args);

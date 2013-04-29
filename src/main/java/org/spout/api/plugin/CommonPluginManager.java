@@ -258,7 +258,6 @@ public class CommonPluginManager implements PluginManager {
 				plugin.getPluginLoader().disablePlugin(plugin);
 				HandlerList.unregisterAll(plugin);
 				engine.getServiceManager().unregisterAll(plugin);
-				engine.getRootCommand().removeChildren(plugin);
 			} catch (Exception e) {
 				safelyLog(Level.SEVERE, "An error occurred in the Plugin Loader while disabling plugin '" + plugin.getDescription().getFullName() + "': " + e.getMessage(), e);
 			}

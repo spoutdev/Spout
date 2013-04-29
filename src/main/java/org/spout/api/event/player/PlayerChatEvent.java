@@ -26,11 +26,6 @@
  */
 package org.spout.api.event.player;
 
-import org.spout.api.chat.ChatArguments;
-import org.spout.api.chat.ChatTemplate;
-import org.spout.api.chat.Placeholder;
-import org.spout.api.chat.channel.ChatChannel;
-import org.spout.api.chat.channel.PermissionChatChannel;
 import org.spout.api.entity.Player;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
@@ -40,22 +35,19 @@ import org.spout.api.event.HandlerList;
  * Implements {@link Cancellable}. Canceling this event will prevent the message from being sent to other players.
  */
 public class PlayerChatEvent extends PlayerEvent implements Cancellable {
-	public static final Placeholder NAME = new Placeholder("name"), MESSAGE = new Placeholder("message");
-
 	private static final HandlerList handlers = new HandlerList();
-	private ChatArguments message;
-	private ChatTemplate format = new ChatTemplate(new ChatArguments("<", NAME, "> ", MESSAGE));
+	private String message;
 
-	public PlayerChatEvent(Player p, Object... message) {
+	public PlayerChatEvent(Player p, String message) {
 		super(p);
-		this.message = new ChatArguments(message);
+		this.message = message;
 	}
 
 	/**
 	 * Gets the message that the player will send.
 	 * @return The message of the player.
 	 */
-	public ChatArguments getMessage() {
+	public String getMessage() {
 		return message;
 	}
 
@@ -63,33 +55,8 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	 * Overrides the sent message.
 	 * @param message The message to set
 	 */
-	public void setMessage(ChatArguments message) {
+	public void setMessage(String message) {
 		this.message = message;
-	}
-
-	/**
-	 * Gets the message format that will parse out the message text for broadcasting.
-	 * @return The message format
-	 */
-	public ChatTemplate getFormat() {
-		return format;
-	}
-
-	/**
-	 * Sets the message's format to {@code format}. <br/>
-	 * Verification is performed to make sure that the ChatArguments has both the
-	 * {@link #NAME name} and {@link #MESSAGE message} placeholders <br/>
-	 * <p/>
-	 * If verification of the format fails the format will not change.
-	 * @param format The format to set.
-	 * @return true if the format was valid, otherwise false.
-	 */
-	public boolean setFormat(ChatArguments format) {
-		if (!(format.hasPlaceholder(NAME) && format.hasPlaceholder(MESSAGE))) {
-			return false;
-		}
-		this.format = new ChatTemplate(format);
-		return true;
 	}
 
 	@Override

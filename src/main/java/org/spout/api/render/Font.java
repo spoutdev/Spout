@@ -52,4 +52,6 @@ public interface Font extends Serializable {
 	public RenderMaterial getMaterial();
 	
 	public float getAdvance(char c);
+
+	public boolean isValidChar(char c);
 }

@@ -113,7 +113,7 @@ public interface Session {
 	 * @param reason The reason for disconnection
 	 * @return Whether the player was actually disconnected
 	 */
-	public boolean disconnect(Object... reason);
+	public boolean disconnect(String reason);
 
 	/**
 	 * Disconnects the session with the specified reason. When the kick packet has been delivered,
@@ -124,7 +124,7 @@ public interface Session {
 	 *             Disconnects are only cancellable when the disconnection is a kick
 	 * @return Whether the player was actually disconnected. This can be false if the kick event is cancelled or errors occur
 	 */
-	public boolean disconnect(boolean kick, Object... reason);
+	public boolean disconnect(boolean kick, String reason);
 	/**
 	 * Returns the address of this session.
 	 *
@@ -233,8 +233,8 @@ public interface Session {
 		/**
 		 * Called when an exception occurs during session handling
 		 * 
-		 * @param the message the message handler threw an exception on
-		 * @param the message handler that threw the an exception handling the message
+		 * @param message the message handler threw an exception on
+		 * @param message handler that threw the an exception handling the message
 		 * @param ex the exception
 		 */
 		public void uncaughtException(Message message, MessageHandler<?> handle, Exception ex);
@@ -268,7 +268,7 @@ public interface Session {
 		public void uncaughtException(Message message, MessageHandler<?> handle, Exception ex) {
 			Spout.getEngine().getLogger().log(Level.SEVERE, "Message handler for " + message.getClass().getSimpleName() + " threw exception for player " + (session.getPlayer() != null ? session.getPlayer().getName() : "null"));
 			ex.printStackTrace();
-			session.disconnect(false, new Object[] {"Message handler exception for ", message.getClass().getSimpleName()});
+			session.disconnect(false, "Message handler exception for " + message.getClass().getSimpleName());
 		}
 	}
 }

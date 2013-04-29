@@ -136,4 +136,9 @@ public interface SoundManager {
 	 * Removes and disposes all sounds and sources.
 	 */
 	public void clear();
+
+	/**
+	 * De-initializes the sound system and clears all sounds and sources.
+	 */
+	public void destroy();
 }

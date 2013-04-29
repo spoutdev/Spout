@@ -24,50 +24,33 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.command;
+package org.spout.api.command.filter;
 
-import java.util.List;
-
-import org.spout.api.chat.ChatSection;
-import org.spout.api.chat.completion.CompletionRequest;
-import org.spout.api.chat.completion.CompletionResponse;
+import org.spout.api.command.Command;
+import org.spout.api.command.CommandArguments;
+import org.spout.api.command.CommandSource;
 import org.spout.api.exception.CommandException;
-import org.spout.api.exception.SpoutRuntimeException;
-import org.spout.api.util.Named;
 
-public class RootCommand extends SimpleCommand {
+/**
+ * Filters a command execution
+ *
+ * @param <T> type of command source to check for
+ */
+public abstract class CommandSourceFilter<T extends CommandSource> implements CommandFilter {
+	private final Class<T> type;
 
+	public CommandSourceFilter(Class<T> type) {
+		this.type = type;
+	}
 
-	public RootCommand(Named owner) {
-		super(owner, "root" + owner.getName());
+	public Class<T> getType() {
+		return type;
 	}
 
 	@Override
-	public String getUsage(String name, List<ChatSection> args, int baseIndex) {
-		return "Command '" + name + "' could not be found!";
-	}
-
-	public void execute(CommandSource source, String name, List<ChatSection> args, boolean fuzzyLookup) throws CommandException {
-		execute(source, name, args, -1, fuzzyLookup);
-	}
-
-	@Override
-	public Command closeSubCommand() {
-		throw new SpoutRuntimeException("The root command has no parent.");
-	}
-
-	@Override
-	public boolean isLocked() {
-		return false;
-	}
-
-	@Override
-	public CommandException getMissingChildException(String usage) {
-		return new CommandException(usage);
-	}
-
-	@Override
-	public CompletionResponse getCompletion(CompletionRequest input) {
-		return getCompletion(input, -1);
+	public void validate(Command command, CommandSource source, CommandArguments args) throws CommandException {
+		if (!type.isAssignableFrom(source.getClass())) {
+			throw new CommandException("You must be a " + type.getSimpleName() + " to execute this command.");
+		}
 	}
 }

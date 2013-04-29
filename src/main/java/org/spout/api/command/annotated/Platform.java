@@ -24,11 +24,24 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.chat.completion;
+package org.spout.api.command.annotated;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Represents whether a regex match should be checked for in the current word or the whole line.
+ * Designates a command method as only to be registered on the specified
+ * platforms.
  */
-public enum MatchLocation {
-	WORD, LINE;
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Platform {
+	/**
+	 * Returns the platforms to register the plugin.
+	 *
+	 * @return platforms
+	 */
+	public org.spout.api.Platform[] value();
 }

@@ -24,29 +24,57 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.command.annotated;
+package org.spout.api.event.server;
 
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.List;
+import org.spout.api.event.Event;
+import org.spout.api.event.HandlerList;
 
-import org.spout.api.command.CommandSource;
+/**
+ * This event is fired when a player requests for a string to be completed in
+ * chat commonly denoted by a press of the TAB button.
+ */
+public class CompletionRequestEvent extends Event {
+	private static final HandlerList handlers = new HandlerList();
+	private final String text;
+	private String completion = "";
 
-public class SimpleAnnotatedCommandExecutorFactory implements AnnotatedCommandExecutorFactory {
-	@Override
-	public AnnotatedCommandExecutor getAnnotatedCommandExecutor(Object instance, Method method) {
-		return new SimpleAnnotatedCommandExecutor(instance, method);
+	public CompletionRequestEvent(String text) {
+		this.text = text;
 	}
 
-	public static class SimpleAnnotatedCommandExecutor extends AnnotatedCommandExecutor {
+	/**
+	 * Returns the text before the cursor when the completion is requested.
+	 *
+	 * @return text behind cursor
+	 */
+	public String getText() {
+		return text;
+	}
 
-		public SimpleAnnotatedCommandExecutor(Object instance, Method method) {
-			super(instance, method);
-		}
+	/**
+	 * Returns the text to be appended to the text before the cursor.
+	 *
+	 * @return text to append
+	 */
+	public String getCompletion() {
+		return completion;
+	}
 
-		@Override
-		public List<Object> getAdditionalArgs(CommandSource source, org.spout.api.command.Command command) {
-			return Collections.emptyList();
-		}
+	/**
+	 * Sets the text to be appended to the text before the cursor.
+	 *
+	 * @param completion text to append
+	 */
+	public void setCompletion(String completion) {
+		this.completion = completion;
+	}
+
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
 	}
 }

@@ -26,79 +26,41 @@
  */
 package org.spout.api.command;
 
-import org.spout.api.chat.ChatArguments;
-import org.spout.api.chat.channel.ChatChannel;
 import org.spout.api.lang.Locale;
 import org.spout.api.permissions.PermissionsSubject;
 
-public interface CommandSource extends PermissionsSubject{
+/**
+ * Represents something that sends commands.
+ */
+public interface CommandSource extends PermissionsSubject {
 	/**
-	 * Sends a text message to the source of the command.
+	 * Sends a message to the client.
 	 *
-	 * @param message the message to send
-	 * @return whether the message was sent correctly
+	 * @param message to send to the client.
 	 */
-	public boolean sendMessage(Object... message);
+	public void sendMessage(String message);
 
 	/**
-	 * Send a command to the other side (if server, send to client, and vice versa)
+	 * Sends a command to be processed on the client.
 	 *
-	 * @param command The command to send
-	 * @param arguments The arguments to send with the command
+	 * @param command to send
+	 * @param args to send
 	 */
-	public void sendCommand(String command, ChatArguments arguments);
+	public void sendCommand(String command, String... args);
 
 	/**
-	 * Handle a command locally
+	 * Executes the specified command on the current platform. This does not
+	 * require a connection.
 	 *
-	 * @param command The command to handle
-	 * @param arguments The command's arguments
+	 * @param command to execute
+	 * @param args to execute
 	 */
-	public void processCommand(String command, ChatArguments arguments);
+	public void processCommand(String command, String... args);
 
 	/**
-	 * Sends a text message to the source of the command.
+	 * Returns the {@link Locale} preferred by this source.
 	 *
-	 * @param message the message to send
-	 * @return whether the message was sent correctly
-	 */
-	public boolean sendMessage(ChatArguments message);
-
-	/**
-	 * Sends a message to the client without any processing by the server,
-	 * except to prevent exploits.
-	 *
-	 * @param message The message to send
-	 * @return whether the message was sent correctly
-	 */
-	public boolean sendRawMessage(Object... message);
-
-	/**
-	 * Sends a message to the client without any processing by the server,
-	 * except to prevent exploits.
-	 *
-	 * @param message The message to send
-	 * @return whether the message was sent correctly
-	 */
-	public boolean sendRawMessage(ChatArguments message);
-
-	/**
-	 * @return the preferred locale of the sender
+	 * @return preferred locale.
 	 */
 	public Locale getPreferredLocale();
-
-	/**
-	 * Returns the channel that all messages sent as this CommandSource should be passed to
-	 *
-	 * @see {@link ChatChannel#broadcastToReceivers(org.spout.api.chat.ChatArguments)}
-	 * @return The channel sent messages should be sent to
-	 */
-	public ChatChannel getActiveChannel();
-
-	/**
-	 * Change the channel sent messages should be sent to.
-	 *
-	 * @param chan The channel to set
-	 */
-	public void setActiveChannel(ChatChannel chan);
 }

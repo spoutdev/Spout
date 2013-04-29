@@ -26,7 +26,6 @@
  */
 package org.spout.api.gui;
 
-import org.spout.api.chat.ChatArguments;
 import org.spout.api.plugin.Plugin;
 
 /**
@@ -54,5 +53,5 @@ public interface DebugHud {
 	 * @param plugin to update
 	 * @param arg to set
 	 */
-	public abstract void updateParameter(Plugin plugin, ChatArguments arg);
+	public abstract void updateParameter(Plugin plugin, String arg);
 }

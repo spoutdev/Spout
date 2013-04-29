@@ -209,24 +209,8 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 				}
 			}
 		}
-	
-		use = replacePlaceholders(use, args);
+
 		return use;
-	}
-
-	protected String replacePlaceholders(String source, Object... args) {
-		//Check for null
-		if (source == null) {
-			return "null";
-		}
-
-		// Replace placeholders
-		int i = 0;
-		for (Object arg : args) {
-			source = source.replaceAll("%" + i, (arg != null ? arg.toString() : "null"));
-			i++;
-		}
-		return source;
 	}
 
 	public Plugin getPlugin() {
@@ -280,7 +264,6 @@ public abstract class CommonPluginDictionary implements PluginDictionary {
 					use = translation;
 				}
 			}
-			use = replacePlaceholders(use, args);
 			receiver.sendMessage(use);
 		}
 	}

@@ -30,28 +30,50 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.spout.api.chat.ChatArguments;
-
+/**
+ * Represents a collection of commands to be executed in a 'batch'.
+ */
 public class CommandBatch {
-	public List<String> cmds = new ArrayList<String>();
+	private final List<String> cmds = new ArrayList<String>();
 
+	/**
+	 * Returns the command in the batch.
+	 *
+	 * @return commands in the batch
+	 */
+	public List<String> get() {
+		return Collections.unmodifiableList(cmds);
+	}
+
+	/**
+	 * Adds a command to the batch.
+	 *
+	 * @param cmd to add
+	 */
 	public void add(String cmd) {
 		cmds.add(cmd);
 	}
 
+	/**
+	 * Removes a command from the batch.
+	 *
+	 * @param cmd to remove
+	 */
 	public void remove(String cmd) {
 		cmds.remove(cmd);
 	}
 
-	public List<String> getCommands() {
-		return Collections.unmodifiableList(cmds);
-	}
-
-	public void execute(CommandSource executor) {
+	/**
+	 * Executes all the commands in the batch.
+	 *
+	 * @param source command sender
+	 */
+	public void execute(CommandSource source) {
 		for (String cmd : cmds) {
 			String root = cmd.split(" ")[0];
-			String args = cmd.indexOf(' ') + 1 > 0 ? cmd.substring(cmd.indexOf(' ') + 1) : "";
-			executor.processCommand(root, new ChatArguments(args));
+			int argsIndex = cmd.indexOf(' ') + 1;
+			String[] args = argsIndex > 0 ? root.substring(argsIndex).split(" ") : new String[0];
+			source.processCommand(root, args);
 		}
 	}
 }
