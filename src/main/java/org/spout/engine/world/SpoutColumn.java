@@ -326,12 +326,13 @@ public class SpoutColumn {
 	}
 	
 	public int fillDirty(int pos, int x[], int[] newHeight, int[] oldHeight, int[] z) {
+		TickStage.checkStage(TickStage.LIGHTING);
 		int bx = getX() << BLOCKS.BITS;
 		int bz = getZ() << BLOCKS.BITS;
 
 		for (int xx = 0; xx < BLOCKS.SIZE; xx++) {
 			for (int zz = 0; zz < BLOCKS.SIZE; zz++) {
-				if (getDirtyFlag(xx, zz).get()) {
+				if (getDirtyFlag(xx, zz).get() && heightMapSnapshot[xx][zz] != Integer.MIN_VALUE) {
 					x[pos] = bx + xx;
 					z[pos] = bz + zz;
 					newHeight[pos] = heightMap[xx][zz].get();
@@ -344,10 +345,12 @@ public class SpoutColumn {
 	}
 	
 	public int getDirtyColumns() {
+		TickStage.checkStage(TickStage.LIGHTING);
 		return Math.min(256, dirtyColumns.get());
 	}
 
 	public void setDirty(int x, int z) {
+		TickStage.checkStage(~TickStage.LIGHTING);
 		dirtyColumns.incrementAndGet();
 		heightDirtyQueue.add();
 		getDirtyFlag(x, z).set(true);
