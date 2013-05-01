@@ -1631,7 +1631,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 	
 	private void resolveColumns(int[] hx, int[] hz, int[] oldHy, int[] newHy, LightingManager<?>[] managers, int changedColumns) {
 		for (int i = 0; i < managers.length; i++) {
-			managers[i].resolveUnchecked(lightBuffers[i], blockMaterialBuffer, heightMapBuffer, hx, hz, oldHy, newHy, changedColumns);
+			managers[i].resolveColumnsUnchecked(lightBuffers[i], blockMaterialBuffer, heightMapBuffer, hx, hz, oldHy, newHy, changedColumns);
 		}
 	}
 	
