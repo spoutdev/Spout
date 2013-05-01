@@ -523,7 +523,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 		final AtomicReference<SpoutChunk> chunkReference = chunks[x][y][z];
 		while (true) {
 			if (chunkReference.compareAndSet(null, newChunk)) {
-				newChunk.notifyColumn();
+				if (generated) {
+					newChunk.notifyColumn();
+				}
 				if (Spout.getEngine().getPlatform() == Platform.CLIENT) { 
 					newChunk.setNeighbourRenderDirty(true);
 				}

@@ -641,7 +641,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 			// This performs copy snapshot and also clears the column dirty queues
 			Set<Long> keys = regionColumnDirtyQueueMap.keySet();
 			for (Long key : keys) {
-				SetQueue<SpoutColumn> queue = regionColumnDirtyQueueMap.get(key);
+				SetQueue<SpoutColumn> queue = regionColumnDirtyQueueMap.safeGet(key);
 				if (queue != null) {
 					SpoutColumn col;
 					while ((col = queue.poll()) != null) {
@@ -649,6 +649,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 					}
 				}
 			}
+			regionColumnDirtyQueueMap.flushKeys();
 		}
 		snapshotManager.copyAllSnapshots();
 	}
