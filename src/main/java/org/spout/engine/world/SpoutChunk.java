@@ -219,6 +219,8 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	private boolean isInViewDistance = false;
 
 	private LightStore lightStore;
+	
+	private boolean lightingInitialized = true;
 
 	protected void setIsInViewDistance(boolean value) {
 		if (value && isBlockUniform() && getBlockMaterial(0, 0, 0) == BlockMaterial.AIR) {
@@ -1035,11 +1037,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	@Override
 	public boolean canSend() {
-		boolean canSend = isPopulated() && !lightStore.isCalculatingLighting();
-		if (!canSend && !isPopulated() && isObserved()) {
-			queueForPopulation(false);
-		}
-		return canSend;
+		return lightingInitialized;
 	}
 
 	public void lockStore() {
@@ -1934,6 +1932,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 	
 	protected void queueNew() {
+		this.lightingInitialized = false;
 		newChunkQueueElement.add();
 	}
 
@@ -2194,4 +2193,9 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public boolean isCalculatingLighting() {
 		return lightStore.isCalculatingLighting();
 	}
+	
+	public void setLightingInitialized(boolean init) {
+		this.lightingInitialized = init;
+	}
+	
 }

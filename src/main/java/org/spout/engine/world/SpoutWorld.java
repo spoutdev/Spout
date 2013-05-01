@@ -228,7 +228,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 		this.hashcode = new HashCodeBuilder(27, 971).append(uid).toHashCode();
 
 		this.lightingManager = new SpoutWorldLighting(this);
-		this.lightingManager.start();
+		//this.lightingManager.start();
 
 		parallelTaskManager = new SpoutParallelTaskManager(engine.getScheduler(), this);
 

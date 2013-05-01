@@ -1508,6 +1508,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		SpoutChunk newChunk;
 		while ((newChunk = newChunkQueue.poll()) != null) {
 			newChunksList.add(newChunk);
+			newChunk.setLightingInitialized(true);
 			newChunksCount++;
 		}
 		
