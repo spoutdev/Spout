@@ -130,6 +130,10 @@ public class CuboidNibbleLightBuffer extends CuboidLightBuffer {
 		return new CuboidNibbleLightBuffer(this);
 	}
 	
+	public void copyToArray(byte[] target, int start) {
+		System.arraycopy(lightData, 0, target, start, lightData.length);
+	}
+	
 	public byte[] serialize() {
 		return Arrays.copyOf(lightData, lightData.length);
 	}
