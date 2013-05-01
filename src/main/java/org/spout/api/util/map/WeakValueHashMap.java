@@ -44,8 +44,16 @@ public class WeakValueHashMap<K, V> {
 	
 	protected final HashMap<K, KeyReference> map = new HashMap<K, KeyReference>();
 
+	/**
+	 * Puts the given key, value pair into the map.  Any expired keys are 
+	 * automatically flushed.
+	 * 
+	 * @param key
+	 * @param value
+	 * @return the old value, or null if the key didn't map to a value
+	 */
 	public V put(K key, V value) {
-		pollQueue();
+		flushKeys();
 		Reference<V> ref = map.put(key, new KeyReference(key, value, referenceQueue));
 		if (ref != null) {
 			return ref.get();
@@ -53,9 +61,37 @@ public class WeakValueHashMap<K, V> {
 			return null;
 		}
 	}
+
+	/**
+	 * Gets the value associated with the given key.<br>
+	 * 
+	 * This method does not cause keys to be flushed.  It is intended for use when 
+	 * iterating over the keyset.  Removing a key while iterating would cause a 
+	 * ConcurrentModificationException.  It is recommended that a manual call is 
+	 * made to flushKeys once the iteration is completed.
+	 * 
+	 * @param key
+	 * @return the value associated with the value, or null
+	 */
+	public V safeGet(K key) {
+		return get(key, false);
+	}
 	
+	/**
+	 * Gets the value associated with the given key.Any expired keys are 
+	 * automatically flushed.
+	 * 
+	 * @param key
+	 * @return the value associated with the value, or null
+	 */
 	public V get(K key) {
-		pollQueue();
+		return get(key, true);
+	}
+	
+	private V get(K key, boolean flushKeys) {
+		if (flushKeys) {
+			flushKeys();
+		}
 		Reference<V> ref = map.get(key);
 		if (ref != null) {
 			return ref.get();
@@ -64,12 +100,23 @@ public class WeakValueHashMap<K, V> {
 		}
 	}
 	
+	/**
+	 * Gets the set of all keys in the map.  Some keys in the set may be expired
+	 * 
+	 * @return
+	 */
 	public Set<K> keySet() {
 		return map.keySet();
 	}
 	
+	/**
+	 * Flushes all expired keys.  Keys associated with values that have been garbage
+	 * collected are considered expired.<br>
+	 * <br>
+	 * This method is automatically called by the get and put methods.
+	 */
 	@SuppressWarnings("unchecked")
-	protected void pollQueue() {
+	public void flushKeys() {
 		KeyReference ref;
 		while ((ref = (KeyReference) referenceQueue.poll()) != null) {
 			K key = ref.getKey();

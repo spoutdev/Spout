@@ -57,7 +57,7 @@ public abstract class SetQueueElement<T> {
 		queued.set(false);
 	}
 	
-	public void add() {
+	public boolean add() {
 		if (queued.compareAndSet(false, true)) {
 			try {
 				queue.add(this);
@@ -65,7 +65,9 @@ public abstract class SetQueueElement<T> {
 				removed(); // not thread safe, could cause the element to be added to the queue twice
 				throw e;
 			}
+			return true;
 		}
+		return false;
 	}
 	
 	protected abstract boolean isValid();

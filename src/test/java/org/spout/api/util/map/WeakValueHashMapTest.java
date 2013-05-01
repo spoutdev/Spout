@@ -60,7 +60,7 @@ public class WeakValueHashMapTest {
 		
 		for (int i = 0; i < 20; i++) {
 			System.gc();
-			map.pollQueue();
+			map.flushKeys();
 		}
 		
 		for (int i = 0; i < 10; i++) {

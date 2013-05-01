@@ -44,6 +44,31 @@ public class IntVector3CuboidArray extends IntVector3 implements Iterable<IntVec
 	private int y;
 	private int z;
 	
+	public IntVector3CuboidArray(int[] bx, int[] by, int[] bz, int[] ty, int length, boolean inclusive) {
+		this(bx, by, bz, new int[length], ty, new int[length], length);
+		for (int i = 0; i < length; i++) {
+			this.tx[i] = bx[i];
+			this.tz[i] = bz[i];
+			if (this.by[i] > this.ty[i]) {
+				int temp = by[i];
+				by[i] = ty[i];
+				ty[i] = temp;
+			}
+			if (inclusive) {
+				ty[i]++;
+			}
+		}
+	}
+	
+	public IntVector3CuboidArray(int[] bx, int[] by, int[] bz, int sx, int sy, int sz, int length) {
+		this(bx, by, bz, new int[length], new int[length], new int[length], length);
+		for (int i = 0; i < bx.length; i++) {
+			this.tx[i] = bx[i] + sx;
+			this.ty[i] = by[i] + sy;
+			this.tz[i] = bz[i] + sz;
+		}
+	}
+	
 	public IntVector3CuboidArray(int[] bx, int[] by, int[] bz, int[] tx, int[] ty, int[] tz, int length) {
 		super(0, 0, 0);
 		this.bx = bx;

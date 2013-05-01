@@ -121,11 +121,11 @@ public abstract class LightingManager<T extends CuboidLightBuffer> {
 	 * @param newHy the new height for this column
 	 * @param changedColumns the number of changed columns
 	 */
-	protected abstract void resolve(ChunkCuboidLightBufferWrapper<T> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] hx, int[] hz, int[] oldHy, int[] newHy, int changedColumns);
+	protected abstract void resolveColumns(ChunkCuboidLightBufferWrapper<T> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] hx, int[] hz, int[] oldHy, int[] newHy, int changedColumns);
 
 	@SuppressWarnings("unchecked")
-	public void resolveUnchecked(ChunkCuboidLightBufferWrapper<?> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] hx, int[] hz, int[] oldHy, int[] newHy, int changedColumns) {
-		resolve((ChunkCuboidLightBufferWrapper<T>) light, material, height, hx, hz, oldHy, newHy, changedColumns);
+	public void resolveColumnsUnchecked(ChunkCuboidLightBufferWrapper<?> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] hx, int[] hz, int[] oldHy, int[] newHy, int changedColumns) {
+		resolveColumns((ChunkCuboidLightBufferWrapper<T>) light, material, height, hx, hz, oldHy, newHy, changedColumns);
 	}
 
 	/**
