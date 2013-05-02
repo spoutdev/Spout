@@ -86,6 +86,7 @@ import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.GenericMath;
+import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
 import org.spout.api.math.VectorMath;
 import org.spout.api.protocol.NetworkSynchronizer;
@@ -1607,19 +1608,33 @@ public class SpoutRegion extends Region implements AsyncManager {
 		int[] bx = new int[cuboids];
 		int[] by = new int[cuboids];
 		int[] bz = new int[cuboids];
-		for (int i = 0; i < cuboids; i++) {
-			SpoutChunk chunk = chunks[i];
-			bx[i] = chunk.getBlockX();
-			by[i] = chunk.getBlockY();
-			bz[i] = chunk.getBlockZ();
-		}
 		if (init) {
+			for (int i = 0; i < cuboids; i++) {
+				SpoutChunk chunk = chunks[i];
+				bx[i] = chunk.getBlockX();
+				by[i] = chunk.getBlockY();
+				bz[i] = chunk.getBlockZ();
+			}
 			for (int i = 0; i < managers.length; i++) {
 				managers[i].initChunksUnchecked(lightBuffers[i], blockMaterialBuffer, heightMapBuffer, bx, by, bz, cuboids);
 			}
 		} else {
+			int[] tx = new int[cuboids];
+			int[] ty = new int[cuboids];
+			int[] tz = new int[cuboids];
+			for (int i = 0; i < cuboids; i++) {
+				SpoutChunk chunk = chunks[i];
+				IntVector3 min = chunk.getMinDirty();
+				IntVector3 max = chunk.getMaxDirty();
+				bx[i] = chunk.getBlockX() + min.getX();
+				by[i] = chunk.getBlockY() + min.getY();
+				bz[i] = chunk.getBlockZ() + min.getZ();
+				tx[i] = chunk.getBlockX() + max.getX() + 1;
+				ty[i] = chunk.getBlockY() + max.getY() + 1;
+				tz[i] = chunk.getBlockZ() + max.getZ() + 1;
+			}
 			for (int i = 0; i < managers.length; i++) {
-				managers[i].resolveChunksUnchecked(lightBuffers[i], blockMaterialBuffer, heightMapBuffer, bx, by, bz, cuboids);
+				managers[i].resolveChunksUnchecked(lightBuffers[i], blockMaterialBuffer, heightMapBuffer, bx, by, bz, tx, ty, tz, cuboids);
 			}
 		}
 	}

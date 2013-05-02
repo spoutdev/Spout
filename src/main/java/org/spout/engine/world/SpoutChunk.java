@@ -86,6 +86,7 @@ import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.block.BlockSnapshot;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.GenericMath;
+import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
@@ -1054,6 +1055,14 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	public boolean isDirtyOverflow() {
 		return blockStore.isDirtyOverflow();
+	}
+	
+	protected IntVector3 getMaxDirty() {
+		return blockStore.getMaxDirty();
+	}
+	
+	protected IntVector3 getMinDirty() {
+		return blockStore.getMinDirty();
 	}
 
 	protected Vector3 getDirtyBlock(int i) {
