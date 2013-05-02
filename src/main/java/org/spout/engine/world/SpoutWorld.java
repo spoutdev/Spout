@@ -1483,7 +1483,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	}
 	
 	public SetQueue<SpoutColumn> getColumnDirtyQueue(int x, int z) {
-		long key = (((long) x) << 32) | ((long) z);
+		long key = IntPairHashed.key(x, z);
 		SetQueue<SpoutColumn> setQueue;
 		synchronized (regionColumnDirtyQueueMap) {
 			setQueue = (SetQueue<SpoutColumn>) regionColumnDirtyQueueMap.get(key);
