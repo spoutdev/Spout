@@ -84,9 +84,7 @@ public abstract class LightingManager<T extends CuboidLightBuffer> {
 	 * @param bz an array of the bottom z block coordinates of the Chunks
 	 * @param initializedChunks the number of cuboids
 	 */
-	protected void initChunks(ChunkCuboidLightBufferWrapper<T> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int initializedChunks) {
-		resolveChunks(light, material, height, bx, by, bz, initializedChunks);
-	}
+	protected abstract void initChunks(ChunkCuboidLightBufferWrapper<T> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int initializedChunks);
 	
 	@SuppressWarnings("unchecked")
 	public void initChunksUnchecked(ChunkCuboidLightBufferWrapper<?> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int initializedChunks) {
@@ -105,11 +103,11 @@ public abstract class LightingManager<T extends CuboidLightBuffer> {
 	 * @param bz an array of the bottom z block coordinates of the Chunks
 	 * @param changedCuboids the number of cuboids
 	 */
-	protected abstract void resolveChunks(ChunkCuboidLightBufferWrapper<T> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int changedCuboids);
+	protected abstract void resolveChunks(ChunkCuboidLightBufferWrapper<T> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int[] tx, int[] ty, int[] tz, int changedCuboids);
 	
 	@SuppressWarnings("unchecked")
-	public void resolveChunksUnchecked(ChunkCuboidLightBufferWrapper<?> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int changedCuboids) {
-		resolveChunks((ChunkCuboidLightBufferWrapper<T>) light, material, height, bx, by, bz, changedCuboids);
+	public void resolveChunksUnchecked(ChunkCuboidLightBufferWrapper<?> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int[] tx, int[] ty, int[] tz, int changedCuboids) {
+		resolveChunks((ChunkCuboidLightBufferWrapper<T>) light, material, height, bx, by, bz, tx, ty, tz, changedCuboids);
 	}
 	
 	/**

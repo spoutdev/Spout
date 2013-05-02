@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.spout.api.material.Material;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.material.source.MaterialSource;
+import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 
@@ -49,6 +50,14 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	private final byte[] dirtyZ;
 	private final int[] newState;
 	private final int[] oldState;
+	private final AtomicInteger maxX = new AtomicInteger();
+	private final AtomicInteger maxY = new AtomicInteger();
+	private final AtomicInteger maxZ = new AtomicInteger();
+	
+	private final AtomicInteger minX = new AtomicInteger();
+	private final AtomicInteger minY = new AtomicInteger();
+	private final AtomicInteger minZ = new AtomicInteger();
+	
 	private final AtomicInteger dirtyBlocks = new AtomicInteger(0);
 	
 	public AtomicPaletteBlockStore(int shift, boolean storeState) {
@@ -225,12 +234,28 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 
 	@Override
 	public boolean resetDirtyArrays() {
+		minX.set(Integer.MAX_VALUE);
+		minY.set(Integer.MAX_VALUE);
+		minZ.set(Integer.MAX_VALUE);
+		maxX.set(Integer.MIN_VALUE);
+		maxY.set(Integer.MIN_VALUE);
+		maxZ.set(Integer.MIN_VALUE);
 		return dirtyBlocks.getAndSet(0) > 0;
 	}
 	
 	@Override
 	public int getDirtyBlocks() {
 		return dirtyBlocks.get();
+	}
+	
+	@Override
+	public IntVector3 getMaxDirty() {
+		return new IntVector3(maxX.get(), maxY.get(), maxZ.get());
+	}
+	
+	@Override
+	public IntVector3 getMinDirty() {
+		return new IntVector3(minX.get(), minY.get(), minZ.get());
 	}
 
 	@Override
@@ -261,6 +286,15 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	}
 
 	public void markDirty(int x, int y, int z, int oldState, int newState) {
+		setAsMax(maxX, x);
+		setAsMin(minX, x);
+		
+		setAsMax(maxY, y);
+		setAsMin(minY, y);
+		
+		setAsMax(maxZ, z);
+		setAsMin(minZ, z);
+		
 		int index = incrementDirtyIndex();
 		if (index < dirtyX.length) {
 			dirtyX[index] = (byte) x;
@@ -324,5 +358,23 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	@Override
 	public boolean isBlockUniform() {
 		return store.isUniform();
+	}
+	
+	private void setAsMin(AtomicInteger i, int x) {
+		int old;
+		while ((old = i.get()) > x) {
+			if (i.compareAndSet(old, x)) {
+				return;
+			}
+		}
+	}
+	
+	private void setAsMax(AtomicInteger i, int x) {
+		int old;
+		while ((old = i.get()) < x) {
+			if (i.compareAndSet(old, x)) {
+				return;
+			}
+		}
 	}
 }

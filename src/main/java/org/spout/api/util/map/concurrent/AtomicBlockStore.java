@@ -29,8 +29,8 @@ package org.spout.api.util.map.concurrent;
 import gnu.trove.set.hash.TIntHashSet;
 
 import org.spout.api.material.source.MaterialSource;
+import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
-import org.spout.api.render.RenderMaterial;
 
 /**
  * This store stores block data for each chunk. Each block can either store a
@@ -272,6 +272,16 @@ public interface AtomicBlockStore {
 	 * @return
 	 */
 	public int getDirtyBlocks();
+	
+	/**
+	 * Gets the coordinate of the lowest dirty block
+	 */
+	public IntVector3 getMinDirty();
+	
+	/**
+	 * Gets the coordinate of the maximum dirty block
+	 */
+	public IntVector3 getMaxDirty();
 
 	/**
 	 * Gets the position of the dirty block at a given index.<br>
