@@ -293,7 +293,7 @@ public abstract class NetworkSynchronizer {
 	}
 	
 	private int chunksSent = 0;
-	private Set<Chunk> unsendable = new HashSet<Chunk>();
+	private Set<Point> unsendable = new HashSet<Point>();
 
 	public void preSnapshot() {
 		if (removed) {
@@ -336,8 +336,7 @@ public abstract class NetworkSynchronizer {
 				i = priorityChunkSendQueue.iterator();
 				while (i.hasNext() && chunksSent < CHUNKS_PER_TICK) {
 					Point p = i.next();
-					Chunk c = p.getWorld().getChunkFromBlock(p);
-					i = attemptSendChunk(i, priorityChunkSendQueue, c, unsendable);
+					i = attemptSendChunk(i, priorityChunkSendQueue, p, unsendable);
 				}
 				
 				if (!priorityChunkSendQueue.isEmpty()) {
@@ -354,8 +353,7 @@ public abstract class NetworkSynchronizer {
 				i = chunkSendQueue.iterator();
 				while (i.hasNext() && chunksSent < CHUNKS_PER_TICK && tickTimeRemaining) {
 					Point p = i.next();
-					Chunk c = p.getWorld().getChunkFromBlock(p);
-					i = attemptSendChunk(i, chunkSendQueue, c, unsendable);
+					i = attemptSendChunk(i, chunkSendQueue, p, unsendable);
 					tickTimeRemaining = Spout.getScheduler().getRemainingTickTime() > 0;
 				}
 			}
@@ -363,12 +361,20 @@ public abstract class NetworkSynchronizer {
 
 	}
 	
-	protected boolean canSendChunk(Chunk c, Set<Chunk> unsendable) {
+	protected boolean canSendChunk(Chunk c) {
 		return c.canSend();
 	}
-	
-	private Iterator<Point> attemptSendChunk(Iterator<Point> i, Iterable<Point> queue, Chunk c, Set<Chunk> unsendable) {
-		if (!unsendable.contains(c) && canSendChunk(c, unsendable)) {
+
+	private Iterator<Point> attemptSendChunk(Iterator<Point> i, Iterable<Point> queue, Point p, Set<Point> unsendable) {
+		Chunk c = p.getWorld().getChunkFromBlock(p, LoadOption.LOAD_ONLY);
+		if (c == null) {
+			unsendable.add(p);
+			return i;
+		}
+		if (unsendable.contains(p)) {
+			return i;
+		}
+		if (canSendChunk(c)) {
 			Collection<Chunk> sent = sendChunk(c, true);
 			activeChunks.add(c.getBase());
 			i.remove();
@@ -391,6 +397,9 @@ public abstract class NetworkSynchronizer {
 				}
 			}
 			chunksSent++;
+
+		} else {
+			unsendable.add(p);
 		}
 		return i;
 	}
@@ -549,8 +558,8 @@ public abstract class NetworkSynchronizer {
 	 * @return the chunks that were sent, or null if no chunk was sent
 	 */
 	public Collection<Chunk> sendChunk(Chunk c) {
-		if (canSendChunk(c, null)) {
-			return sendChunk(c, false);
+		if (canSendChunk(c)) {
+			return sendChunk(c, true);
 		} else {
 			return null;
 		}
