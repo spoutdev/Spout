@@ -56,6 +56,7 @@ import org.spout.api.event.server.PreCommandEvent;
 import org.spout.api.event.server.RetrieveDataEvent;
 import org.spout.api.event.server.permissions.PermissionGroupsEvent;
 import org.spout.api.event.server.permissions.PermissionNodeEvent;
+import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
@@ -173,7 +174,7 @@ public class SpoutPlayer extends SpoutEntity implements Player {
 		}
 		getScene().setTransform(newTransform);
 		if (getEngine().getPlatform() == Platform.SERVER) {
-			setupInitialChunk(newTransform);
+			setupInitialChunk(newTransform, LoadOption.LOAD_GEN);
 		}
 		sessionLive.set(session);
 		copySnapshot();

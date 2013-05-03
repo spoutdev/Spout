@@ -534,7 +534,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 				numberActiveChunks.incrementAndGet();
 				if (dataForRegion != null) {
 					for (SpoutEntity entity : dataForRegion.loadedEntities) {
-						entity.setupInitialChunk(entity.getScene().getTransform());
+						entity.setupInitialChunk(entity.getScene().getTransform(), LoadOption.NO_LOAD);
 						entityManager.addEntity(entity);
 					}
 					dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);

@@ -153,7 +153,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		snapshotManager.copyAllSnapshots();
 		
 		if (transform != null && load) {
-			setupInitialChunk(transform);
+			setupInitialChunk(transform, LoadOption.LOAD_GEN);
 		}
 	}
 
@@ -365,8 +365,8 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	/**
 	 * Prevents stack overflow when creating an entity during chunk loading due to circle of calls
 	 */
-	public void setupInitialChunk(Transform transform) {
-		SpoutRegion region = (SpoutRegion) scene.getTransformLive().getPosition().getChunk(LoadOption.LOAD_GEN).getRegion();
+	public void setupInitialChunk(Transform transform, LoadOption loadopt) {
+		SpoutRegion region = (SpoutRegion) scene.getTransformLive().getPosition().getChunk(loadopt).getRegion();
 		entityManager.set(region.getEntityManager());
 		scene.simulate(region);
 
