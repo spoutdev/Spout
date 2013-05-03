@@ -345,8 +345,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 	@Override
 	@LiveRead
 	public SpoutChunk getChunk(int x, int y, int z, LoadOption loadopt) {
-		if (loadopt != LoadOption.NO_LOAD) {
-			TickStage.checkStage(~TickStage.SNAPSHOT);
+		switch (loadopt) {
+			case LOAD_ONLY: TickStage.checkStage(~TickStage.SNAPSHOT); break;
+			case LOAD_GEN: TickStage.checkStage(~(TickStage.SNAPSHOT | TickStage.PRESNAPSHOT | TickStage.LIGHTING));
 		}
 
 		x &= CHUNKS.MASK;
@@ -1509,7 +1510,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 		SpoutChunk newChunk;
 		while ((newChunk = newChunkQueue.poll()) != null) {
 			newChunksList.add(newChunk);
-			newChunk.setLightingInitialized(true);
 			newChunksCount++;
 		}
 		
