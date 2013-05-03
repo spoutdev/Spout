@@ -32,7 +32,23 @@ public class Int10TripleHashed {
 	private int by;
 	private int bz;
 	
+	public Int10TripleHashed() {
+	}
+	
 	public Int10TripleHashed(int bx, int by, int bz) {
+		this.bx = bx;
+		this.by = by;
+		this.bz = bz;
+	}
+	
+	/**
+	 * Sets the base of the hash to the given values
+	 * 
+	 * @param bx
+	 * @param by
+	 * @param bz
+	 */
+	public final void setBase(int bx, int by, int bz) {
 		this.bx = bx;
 		this.by = by;
 		this.bz = bz;
