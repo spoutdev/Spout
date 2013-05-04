@@ -172,7 +172,7 @@ public class LocalRegionChunkCuboidBlockMaterialBufferWrapper extends ImmutableC
 		}
 		
 		public ImmutableCuboidBlockMaterialBuffer get(int x, int y, int z) {
-			if ((!chunkMatch(x, this.x)) || (!chunkMatch(y, this.y)) || (!chunkMatch(z, this.z))){
+			if ((!chunkMatch(x, this.x)) || (!chunkMatch(y, this.y)) || (!chunkMatch(z, this.z)) || buffer == null){
 				this.x = x;
 				this.y = y;
 				this.z = z;
