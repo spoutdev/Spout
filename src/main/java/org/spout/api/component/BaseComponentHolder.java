@@ -180,6 +180,21 @@ public class BaseComponentHolder implements ComponentHolder {
 			return (T) components.get(type);
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends Component> Collection<T> getAll(Class<T> type) {
+		Preconditions.checkNotNull(type);
+		synchronized (components) {
+			ArrayList<T> matches = new ArrayList<T>();
+			for (Component component : components.values()) {
+				if (type.isAssignableFrom(component.getClass())) {
+					matches.add((T) component);
+				}
+			}
+			return matches;
+		}
+	}
 
 	@Override
 	public Collection<Component> values() {
