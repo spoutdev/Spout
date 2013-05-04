@@ -63,7 +63,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	private String displayName;
 	private int maxStackSize = 64;
 	private short maxData = Short.MAX_VALUE;
-	private Material[] submaterials = null;
+	private Material[] submaterials = new Material[] {this};
 	private Material[] submaterialsContiguous = null;
 	private volatile boolean submaterialsDirty = true;
 	private final short dataMask;
@@ -221,7 +221,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * @return true if this material has sub materials
 	 */
 	public final boolean hasSubMaterials() {
-		return this.submaterials != null;
+		return this.submaterials.length > 1;
 	}
 
 	/**
@@ -262,14 +262,12 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * @return the sub material, or this material if not found
 	 */
 	public Material getSubMaterial(short data) {
-		if (this.hasSubMaterials()) {
-			short maskedData = (short)(data & dataMask);
-			Material material = this.submaterials[maskedData];
-			if (material != null) {
-				return material.getSubMaterial(maskedData);
-			}
+		short maskedData = (short)(data & dataMask);
+		if (parent != null) {
+			return parent.submaterials[maskedData];
+		} else {
+			return submaterials[maskedData];
 		}
-		return this;
 	}
 
 	/**
@@ -286,11 +284,8 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 			}
 			if (material.isSubMaterial) {
 				if (material.getParentMaterial() == this) {
-					if (this.submaterials == null) {
-						this.submaterials = new Material[16];
-					}
 					if (data >= this.submaterials.length) {
-						int newSize = GenericMath.roundUpPow2(data + (data >> 1));
+						int newSize = GenericMath.roundUpPow2(data + (data >> 1) + 1);
 						Material[] newSubmaterials = new Material[newSize];
 						for (int i = 0; i < submaterials.length; i++) {
 							newSubmaterials[i] = submaterials[i];
