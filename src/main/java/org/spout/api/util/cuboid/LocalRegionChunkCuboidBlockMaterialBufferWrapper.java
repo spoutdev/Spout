@@ -26,7 +26,6 @@
  */
 package org.spout.api.util.cuboid;
 
-import org.spout.api.Spout;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
@@ -37,6 +36,13 @@ import org.spout.api.material.BlockMaterial;
  * chunk in size.
  */
 public class LocalRegionChunkCuboidBlockMaterialBufferWrapper extends ImmutableCuboidBlockMaterialBuffer {
+	
+	private final ThreadLocal<LastBufferEntry> lastBufferCache = new ThreadLocal<LastBufferEntry>() {
+		@Override
+		public LastBufferEntry initialValue() {
+			return new LastBufferEntry(LocalRegionChunkCuboidBlockMaterialBufferWrapper.this);
+		}
+	};
 	
 	private static final int SINGLE = Region.BLOCKS.SIZE;
 	private static final int TRIPLE = SINGLE * 3;
@@ -134,15 +140,15 @@ public class LocalRegionChunkCuboidBlockMaterialBufferWrapper extends ImmutableC
 	
 	@Override
 	public BlockMaterial get(int x, int y, int z) {
-		return getBlockMaterialBuffer(x, y, z).get(x, y, z);
+		return lastBufferCache.get().get(x, y, z).get(x, y, z);
 	}
 
 	public short getId(int x, int y, int z) {
-		return getBlockMaterialBuffer(x, y, z).getId(x, y, z);
+		return lastBufferCache.get().get(x, y, z).getId(x, y, z);
 	}
 	
 	public short getData(int x, int y, int z) {
-		return getBlockMaterialBuffer(x, y, z).getData(x, y, z);
+		return lastBufferCache.get().get(x, y, z).getData(x, y, z);
 	}
 
 	public short[] getRawId() {
@@ -151,6 +157,34 @@ public class LocalRegionChunkCuboidBlockMaterialBufferWrapper extends ImmutableC
 
 	public short[] getRawData() {
 		throw new UnsupportedOperationException("Buffer is a buffer wrapper, there is no data array");
+	}
+	
+	private static class LastBufferEntry {	
+		private final LocalRegionChunkCuboidBlockMaterialBufferWrapper parent;
+		
+		private int x;
+		private int y;
+		private int z;
+		private ImmutableCuboidBlockMaterialBuffer buffer;
+		
+		public LastBufferEntry(LocalRegionChunkCuboidBlockMaterialBufferWrapper parent) {
+			this.parent = parent;
+		}
+		
+		public ImmutableCuboidBlockMaterialBuffer get(int x, int y, int z) {
+			if ((!chunkMatch(x, this.x)) || (!chunkMatch(y, this.y)) || (!chunkMatch(z, this.z))){
+				this.x = x;
+				this.y = y;
+				this.z = z;
+				buffer = parent.getBlockMaterialBuffer(x, y, z);
+			}
+			return buffer;
+		}
+		
+		private static boolean chunkMatch(int a, int b) {
+			return ((a ^ b) & (~Chunk.BLOCKS.MASK)) == 0;
+		}
+		
 	}
 	
 }
