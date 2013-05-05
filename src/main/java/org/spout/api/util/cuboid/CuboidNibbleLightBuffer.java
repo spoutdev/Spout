@@ -32,7 +32,7 @@ import org.spout.api.lighting.Modifiable;
 
 
 public class CuboidNibbleLightBuffer extends CuboidLightBuffer {
-	private final byte[] lightData;
+	protected final byte[] lightData;
 	private CuboidNibbleLightBuffer source = null;
 	
 	protected CuboidNibbleLightBuffer(CuboidNibbleLightBuffer buffer) {
