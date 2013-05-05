@@ -123,42 +123,6 @@ public class TestCommands {
 		client.getScreenStack().openScreen(screen);
 	}
 
-	@Command(aliases = "dw", usage = "<play|stop|pause>", desc = "Plays a tune at your position.", min = 1, max = 1)
-	public void dw(CommandContext args, CommandSource source) throws CommandException {
-		if (!(engine instanceof Client)) {
-			return;
-		}
-		Client client = (Client) engine;
-		Point pos = client.getActivePlayer().getScene().getPosition();
-		SoundManager sm = client.getSoundManager();
-		String action = args.getString(0);
-		SoundSource s = sm.getSource("dw");
-
-		if (s == null) {
-			if (action.equalsIgnoreCase("play")) {
-				s = sm.createSource((Sound) client.getFilesystem().getResource("sound://Spout/fallbacks/dw.wav"), "dw");
-			} else {
-				throw new CommandException("Nothing to " + action + ".");
-			}
-		}
-
-		sm.getListener().setPosition(pos);
-		s.setPosition(pos);
-
-		if (action.equalsIgnoreCase("play")) {
-			s.play();
-			source.sendMessage(ChatStyle.BRIGHT_GREEN, "Playing...");
-		} else if (action.equalsIgnoreCase("stop")) {
-			s.stop();
-			source.sendMessage(ChatStyle.BRIGHT_GREEN, "Stopping...");
-		} else if (action.equalsIgnoreCase("pause")) {
-			s.pause();
-			source.sendMessage(ChatStyle.BRIGHT_GREEN, "Pausing...");
-		} else {
-			throw new CommandException("Unknown action: " + action);
-		}
-	}
-
 	@Command(aliases = "break", desc = "Debug command to break a block")
 	public void debugBreak(CommandContext args, CommandSource source) throws CommandException {
 		if (!(engine instanceof Client)) {

@@ -40,10 +40,9 @@ import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.resources.ClientSound;
 
 public class SoundLoader extends BasicResourceLoader<ClientSound> {
-
 	@Override
 	public String getFallbackResourceName() {
-		return "sound://Spout/fallbacks/dw.wav";
+		return null;
 	}
 
 	@Override
