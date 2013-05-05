@@ -57,6 +57,10 @@ public abstract class SetQueueElement<T> {
 		queued.set(false);
 	}
 	
+	public SetQueue<T> getQueue() {
+		return queue;
+	}
+	
 	public boolean add() {
 		if (queued.compareAndSet(false, true)) {
 			try {
