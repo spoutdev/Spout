@@ -128,7 +128,10 @@ public class LocalRegionChunkCuboidBlockMaterialBufferWrapper extends ImmutableC
 			int bz = cz << Chunk.BLOCKS.BITS;
 			return new UniformImmutableCuboidBlockMaterialBuffer(bx, by, bz, nullMaterial);
 		}
-		return c.getCuboid(false);
+		int size = Chunk.BLOCKS.SIZE;
+		CuboidBlockMaterialBuffer buffer = new AlignedCuboidBlockMaterialBuffer(c.getBlockX(), c.getBlockY(), c.getBlockZ(), size, size, size);
+		c.getCuboid(buffer);
+		return buffer;
 	}
 	
 	@Override
