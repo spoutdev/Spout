@@ -758,7 +758,7 @@ public class GenericMath {
 	 * @return The corrected modulo
 	 */
 	public static int mod(int x, int div) {
-		return x < 0 ? (x % div) + div : x % div;
+		return x < 0 ? ((x + 1) % div) + (div - 1) : x % div;
 	}
 
 	/**
@@ -768,7 +768,11 @@ public class GenericMath {
 	 * @return The corrected modulo
 	 */
 	public static float mod(float x, float div) {
-		return x < 0 ? (x % div) + div : x % div;
+		float m = x % div;
+		while (m < 0) {
+			m += div;
+		}
+		return m;
 	}
 
 	/**
@@ -778,7 +782,11 @@ public class GenericMath {
 	 * @return The corrected modulo
 	 */
 	public static double mod(double x, double div) {
-		return x < 0 ? (x % div) + div : x % div;
+		double m = x % div;
+		while (m < 0) {
+			m += div;
+		}
+		return m;
 	}
 
 	/**
