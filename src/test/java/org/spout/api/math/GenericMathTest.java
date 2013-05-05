@@ -24,60 +24,38 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.util.list.concurrent.setqueue;
+package org.spout.api.math;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import static org.junit.Assert.assertEquals;
 
-/**
- * An element for a SetQueue.<br>
- * <br>
- * Calls to the add() method have no effect if the element is already in the queue.
- * 
- * @param <T>
- */
-public abstract class SetQueueElement<T> {
+import static org.spout.api.math.GenericMath.*;
+
+import org.junit.Test;
+
+public final class GenericMathTest {
 	
-	private final SetQueue<T> queue;
-	private final T value;
-	private final AtomicBoolean queued = new AtomicBoolean(false);
-	
-	public SetQueueElement(SetQueue<T> queue, T value) {
-		this.queue = queue;
-		if (value == null) {
-			throw new IllegalArgumentException("The value may not be set to null");
+	@Test
+	public void testMod() {
+		
+		for (int i = -15; i <= 15; i++) {
+			modCheck(i, 5);
 		}
-		this.value = value;
+		
 	}
 	
-	protected T getValue() {
-		return value;
-	}
-	
-	protected void removed() {
-		queued.set(false);
-	}
-	
-	public SetQueue<T> getQueue() {
-		return queue;
-	}
-	
-	public boolean add() {
-		if (queued.compareAndSet(false, true)) {
-			try {
-				queue.add(this);
-			} catch (SetQueueFullException e) {
-				removed(); // not thread safe, could cause the element to be added to the queue twice
-				throw e;
-			}
-			return true;
+	private final void modCheck(final int a, final int d) {
+		
+		int newA = a;
+		
+		while (newA <= 0) {
+			newA += d;
 		}
-		return false;
-	}
-	
-	protected abstract boolean isValid();
+		
+		assertEquals("Mod check failed for " + a + " mod " + d, (newA % d), mod(a, d));
+		
+		assertEquals("Mod check failed for " + a + " mod " + d, (newA % d), mod((float) a, (float) d), 0.001F);
 
-	public String toString() {
-		return "DirtyQueueElement{" + value + "}";
+		assertEquals("Mod check failed for " + a + " mod " + d, (newA % d), mod((double) a, (double) d), 0.001D);
 	}
-	
+
 }
