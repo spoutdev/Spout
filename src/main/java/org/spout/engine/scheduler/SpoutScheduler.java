@@ -819,6 +819,8 @@ public final class SpoutScheduler implements Scheduler {
 					} catch (ExecutionException e) {
 						Spout.info("Exception thrown when executing task, " + taskFactory.getClass().getName() + ", " + e.getMessage());
 						e.printStackTrace();
+						Spout.info("Caused by");
+						e.getCause().printStackTrace();
 						done = true;
 					} catch (TimeoutException e) {
 						if (((SpoutEngine) engine).isSetupComplete()) {
