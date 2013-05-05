@@ -26,8 +26,8 @@
  */
 package org.spout.api.util.set;
 
-import gnu.trove.iterator.TIntIterator;
-import gnu.trove.set.hash.TIntHashSet;
+import gnu.trove.iterator.hash.TObjectHashIterator;
+import gnu.trove.set.hash.TLinkedHashSet;
 
 import org.spout.api.math.Vector3;
 import org.spout.api.util.hashing.Int10TripleHashed;
@@ -35,7 +35,7 @@ import org.spout.api.util.hashing.Int10TripleHashed;
 
 public class TInt10TripleSet {
 	
-	private final TIntHashSet set;
+	private final TLinkedHashSet<Integer> set;
 	private final Int10TripleHashed hash;
 	
 	public TInt10TripleSet() {
@@ -53,7 +53,7 @@ public class TInt10TripleSet {
 	
 	public TInt10TripleSet(int bx, int by, int bz, int initialCapacity) {
 		hash = new Int10TripleHashed(bx, by, bz);
-		set = new TIntHashSet(initialCapacity);
+		set = new TLinkedHashSet<Integer>(initialCapacity);
 	}
 	
 	public boolean add(int x, int y, int z) {
@@ -84,7 +84,7 @@ public class TInt10TripleSet {
 		set.clear();
 	}
 	
-	public TIntIterator iterator() {
+	public TObjectHashIterator<Integer> iterator() {
 		return set.iterator();
 	}
 	

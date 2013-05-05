@@ -26,23 +26,23 @@
  */
 package org.spout.api.util.set;
 
-import gnu.trove.procedure.TIntProcedure;
+import gnu.trove.procedure.TObjectProcedure;
 
 import org.spout.api.util.hashing.Int10TripleHashed;
 
 public abstract class TInt10Procedure {
 	
-	public TIntProcedure asTIntProcedure(TInt10TripleSet set) {
+	public TObjectProcedure<Integer> asTIntProcedure(TInt10TripleSet set) {
 		return asTIntProcedure(set.getHash());
 	}
 	
-	public TIntProcedure asTIntProcedure(Int10TripleHashed hash) {
+	public TObjectProcedure<Integer> asTIntProcedure(Int10TripleHashed hash) {
 		return new TIntProcedureWrapper(hash);
 	}
 	
 	public abstract boolean execute(int x, int y, int z);
 	
-	private class TIntProcedureWrapper implements TIntProcedure {
+	private class TIntProcedureWrapper implements TObjectProcedure<Integer> {
 
 		private Int10TripleHashed hash;
 		
@@ -51,7 +51,7 @@ public abstract class TInt10Procedure {
 		}
 		
 		@Override
-		public boolean execute(int value) {
+		public boolean execute(Integer value) {
 			int x = hash.keyX(value);
 			int y = hash.keyY(value);
 			int z = hash.keyZ(value);
