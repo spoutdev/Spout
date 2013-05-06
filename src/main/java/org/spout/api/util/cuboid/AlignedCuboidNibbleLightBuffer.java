@@ -69,5 +69,10 @@ public class AlignedCuboidNibbleLightBuffer extends CuboidNibbleLightBuffer {
 		z <<= zShift;
 		return x | y | z;
 	}
+	
+	@Override
+	public AlignedCuboidNibbleLightBuffer copy() {
+		return new AlignedCuboidNibbleLightBuffer(this);
+	}
 
 }
