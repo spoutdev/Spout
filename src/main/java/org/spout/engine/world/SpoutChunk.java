@@ -1431,6 +1431,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		if (SpoutConfiguration.LIGHTING_ENABLED.getBoolean()) {
 			this.initLighting();
 		}
+		notifyColumn();
 		parentRegion.onChunkPopulated(this);
 		resetDynamicBlocks();
 		setModified();

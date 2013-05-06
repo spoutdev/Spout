@@ -180,14 +180,13 @@ public class SpoutColumn {
 	public boolean activeChunks() {
 		return activeChunks.get() > 0;
 	}
-
+	
 	public int getSurfaceHeight(int x, int z) {
 		final int height = getAtomicInteger(x, z).get();
 		if (height != Integer.MIN_VALUE) {
 			// height known
 			return height;
 		}
-
 		return getGeneratorHeight(x, z);
 
 	}
@@ -240,10 +239,8 @@ public class SpoutColumn {
 	}
 
 	public void notifyBlockChange(int x, int y, int z) {
-		//System.out.println("Notify block change:       " + x + ", " + y + ", " + z);
 		AtomicInteger v = getAtomicInteger(x, z);
 		notifyBlockChange(v, x, y, z);
-		//System.out.println("Notify block change ended: " + x + ", " + y + ", " + z);
 	}
 
 	public int getX() {
@@ -259,16 +256,24 @@ public class SpoutColumn {
 	}
 
 	private void notifyBlockChange(AtomicInteger v, int x, int y, int z) {
-		int value = v.get();
-		if (y < value) {
-			return;
-		} else if (y == value) {
-			falling(x, v, z);
-		} else {
-			if (!isAir(x, y, z)) {
-				v.set(y); // TODO - compare and set?
-				setDirty(x, z);
+		while (true) {
+			int value = v.get();
+			if (y < value) {
+				return;
+			} else if (y == value) {
 				falling(x, v, z);
+				return;
+			} else {
+				if (!isAir(x, y, z)) {
+					if (!v.compareAndSet(value, y)) {
+						continue;
+					}
+					setDirty(x, z);
+					falling(x, v, z);
+					return;
+				} else {
+					return;
+				}
 			}
 		}
 	}
