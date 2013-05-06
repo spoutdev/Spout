@@ -96,7 +96,7 @@ public class TInt10TripleSet {
 		return set.size();
 	}
 	
-	protected Int10TripleHashed getHash() {
+	public Int10TripleHashed getHash() {
 		return hash;
 	}
 
