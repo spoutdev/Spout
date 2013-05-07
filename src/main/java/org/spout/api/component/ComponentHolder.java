@@ -26,6 +26,8 @@
  */
 package org.spout.api.component;
 
+import java.util.Collection;
+
 /**
  * Represents an abstract holder, which contains components that may be added
  * and removed from it.
@@ -63,4 +65,12 @@ public interface ComponentHolder extends ComponentOwner {
 	 * @return the component, or null if one was not found.
 	 */
 	public <T extends Component> T getExact(Class<T> type);
+	
+	/**
+	 * Returns all components of the specified type (or a child implementation).
+	 * 
+	 * @param type whose components are to be returned from the holder
+	 * @return the component list.
+	 */
+	public <T extends Component> Collection<T> getAll(Class<T> type);
 }
