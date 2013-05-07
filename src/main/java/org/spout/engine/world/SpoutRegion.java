@@ -527,6 +527,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 			if (chunkReference.compareAndSet(null, newChunk)) {
 				if (generated) {
 					newChunk.notifyColumn();
+					newChunk.queueNew();
 				}
 				if (Spout.getEngine().getPlatform() == Platform.CLIENT) { 
 					newChunk.setNeighbourRenderDirty(true);
@@ -543,9 +544,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 					newChunk.initLighting();
 				}
 				Spout.getEventManager().callDelayedEvent(new ChunkLoadEvent(newChunk, generated));
-				if (generated) {
-					newChunk.queueNew();
-				}
 				return newChunk;
 			}
 
@@ -1529,11 +1527,16 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 			int pos = 0;
 
+			int minY = getBlockY();
+			int maxY = minY + BLOCKS.SIZE;
+			
 			for (SpoutColumn col : this.dirtyColumnQueue) {
-				pos = col.fillDirty(pos, colX, newH, oldH, colZ);
+				pos = col.fillDirty(pos, colX, newH, oldH, colZ, minY, maxY);
 			}
 
-			resolveColumns(colX, colZ, oldH, newH, managers, pos);
+			if (pos > 0) {
+				resolveColumns(colX, colZ, oldH, newH, managers, pos);
+			}
 		}
 		for (SpoutChunk c : this.dirtyChunkQueue) {
 			if (c.isDirtyOverflow()) {
@@ -1644,7 +1647,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 			managers[i].resolveUnchecked(lightBuffers[i], blockMaterialBuffer, heightMapBuffer, x, y, z, x.length);
 		}
 	}
-	
+
 	private void resolveColumns(int[] hx, int[] hz, int[] oldHy, int[] newHy, LightingManager<?>[] managers, int changedColumns) {
 		for (int i = 0; i < managers.length; i++) {
 			managers[i].resolveColumnsUnchecked(lightBuffers[i], blockMaterialBuffer, heightMapBuffer, hx, hz, oldHy, newHy, changedColumns);

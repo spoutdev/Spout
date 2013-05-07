@@ -32,6 +32,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import net.royawesome.jlibnoise.MathHelper;
+
 import org.spout.api.Spout;
 import org.spout.api.generator.biome.BiomeGenerator;
 import org.spout.api.generator.biome.BiomeManager;
@@ -330,7 +332,7 @@ public class SpoutColumn {
 		return dirtyArray[x & BLOCKS.MASK][z & BLOCKS.MASK];
 	}
 	
-	public int fillDirty(int pos, int x[], int[] newHeight, int[] oldHeight, int[] z) {
+	public int fillDirty(int pos, int x[], int[] newHeight, int[] oldHeight, int[] z, int minY, int maxY) {
 		TickStage.checkStage(TickStage.LIGHTING);
 		int bx = getX() << BLOCKS.BITS;
 		int bz = getZ() << BLOCKS.BITS;
@@ -340,8 +342,13 @@ public class SpoutColumn {
 				if (getDirtyFlag(xx, zz).get() && heightMapSnapshot[xx][zz] != Integer.MIN_VALUE) {
 					x[pos] = bx + xx;
 					z[pos] = bz + zz;
-					newHeight[pos] = heightMap[xx][zz].get();
-					oldHeight[pos] = heightMapSnapshot[xx][zz];
+					int nh = heightMap[xx][zz].get();
+					int oh = heightMapSnapshot[xx][zz];
+					if ((nh >= maxY && oh >= maxY) || (nh < minY && oh < minY)) {
+						continue;
+					}
+					newHeight[pos] = nh;
+					oldHeight[pos] = oh;
 					pos++;
 				}
 			}

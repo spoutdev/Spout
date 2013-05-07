@@ -1891,12 +1891,13 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			}
 		}
 
-		if (this.isPopulated()) {
-			SpoutWorld world = this.getWorld();
+		SpoutWorld world = this.getWorld();
 
-			int oldheight = column.getSurfaceHeight(x, z);
-			int wy = y + this.getBlockY();
-			column.notifyBlockChange(x, wy, z);
+		int oldheight = column.getSurfaceHeight(x, z);
+		int wy = y + this.getBlockY();
+		column.notifyBlockChange(x, wy, z);
+		
+		if (this.isPopulated()) {
 			int wx = x + this.getBlockX();
 			int wz = z + this.getBlockZ();
 			int newheight = column.getSurfaceHeight(x, z);
