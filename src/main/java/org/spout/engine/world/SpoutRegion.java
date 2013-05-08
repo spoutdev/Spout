@@ -442,7 +442,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 			final CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(cxx << Chunk.BLOCKS.BITS, cy << Chunk.BLOCKS.BITS, czz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Region.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
 			getWorld().getGenerator().generate(buffer, cxx, cy, czz, world);
 
-			for (int yy = 0; yy < Region.CHUNKS.SIZE; yy++) {
+			for (int yy = Region.CHUNKS.SIZE - 1; yy >= 0; yy--) {
 				int cyy = cy + yy;
 				final CuboidBlockMaterialBuffer chunk = new CuboidBlockMaterialBuffer(cxx << Chunk.BLOCKS.BITS, cyy << Chunk.BLOCKS.BITS, czz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
 				chunk.write(buffer);
