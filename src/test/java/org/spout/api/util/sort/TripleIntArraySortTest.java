@@ -26,6 +26,7 @@
  */
 package org.spout.api.util.sort;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Random;
@@ -35,12 +36,49 @@ import org.junit.Test;
 public class TripleIntArraySortTest {
 	
 	@Test
-	public void test() {
+	public void testRandom() {
 		
 		Random r = new Random();
 		for (int i = 0; i < 10; i++) {
 			test(r.nextInt(100) + 10);
 		}
+		
+	}
+	
+	@Test
+	public void testSorted() {
+		
+		Random r = new Random();
+		
+		int[] first = new int[50 + r.nextInt(20)];
+		int[] second = new int[50 + r.nextInt(20)];
+		int[] third = new int[50 + r.nextInt(20)];
+		
+		addRun(first, second, third, 0, 50);
+		
+		int levels = TripleIntArraySort.tripleIntArraySort(first, second, third, 50);
+
+		assertEquals("Sort has unexpected depth", levels, 0);
+	}
+	
+	@Test
+	public void testSortedRuns() {
+		
+		Random r = new Random();
+		
+		int[] first = new int[50 + r.nextInt(20)];
+		int[] second = new int[50 + r.nextInt(20)];
+		int[] third = new int[50 + r.nextInt(20)];
+		
+		testRun(first, second, third, 1, 0, 20, 50);
+		
+		testRun(first, second, third, 1, 0, 30, 50);
+		
+		testRun(first, second, third, 2, 0, 10, 50);
+		
+		testRun(first, second, third, 1, 0, 40, 50);
+		
+		testRun(first, second, third, 3, 0, 10, 20, 35, 50);
 		
 	}
 	
@@ -93,6 +131,43 @@ public class TripleIntArraySortTest {
 			}
 		}
 		
+	}
+	
+	private void addRun(int[] first, int[] second, int[] third, int start, int end) {
+		Random r = new Random();
+		
+		int f = 0;
+		int s = 0;
+		int t = 0;
+		for (int i = start; i < end; i++) {
+			if (r.nextBoolean()) {
+				t++;
+			} else if (r.nextBoolean()) {
+				s++;
+				t = 0;
+			} else if (r.nextBoolean()) {
+				f++;
+				s = 0;
+				t = 0;
+			}
+			
+			first[i] = f;
+			second[i] = s;
+			third[i] = t;
+		}
+	}
+
+	private void testRun(int[] first, int[] second, int[] third, int depth, int ... points) {
+
+		for (int i = 0; i < points.length - 1; i++) {	
+			addRun(first, second, third, points[i], points[i + 1]);
+		}
+
+		int levels = TripleIntArraySort.tripleIntArraySort(first, second, third, 50);
+
+		assertEquals("Sort has unexpected depth", depth, levels);
+
+		testSorted(first, second, third, 50);
 	}
 	
 	private String getString(int[] first, int[] second, int[] third, int i) {

@@ -26,7 +26,6 @@
  */
 package org.spout.api.util.sort;
 
-import org.spout.api.Spout;
 
 public class TripleIntArraySort {
 	
@@ -46,8 +45,9 @@ public class TripleIntArraySort {
 	 * @param second the secondary array
 	 * @param third the tertiary array 
 	 * @param length the length of the arrays to sort
+	 * @return the depth of the sort
 	 */
-	public static void tripleIntArraySort(int[] first, int[] second, int[] third, int length) {
+	public static int tripleIntArraySort(int[] first, int[] second, int[] third, int length) {
 	
 		int[] first2 = new int[length];
 		int[] second2 = new int[length];
@@ -56,7 +56,7 @@ public class TripleIntArraySort {
 		TripleArray source = new TripleArray(first, second, third);
 		TripleArray dest = new TripleArray(first2, second2, third2);
 		
-		tripleIntArraySort(source, dest, 0, length);
+		return tripleIntArraySort(source, dest, 0, length);
 	}
 	
 	/**
@@ -67,18 +67,32 @@ public class TripleIntArraySort {
 	 * @param start the first index inclusive to sort
 	 * @param end the last index exclusive to sort
 	 */
-	private static void tripleIntArraySort(TripleArray source, TripleArray dest, int start, int end) {
+	private static int tripleIntArraySort(TripleArray source, TripleArray dest, int start, int end) {
 		
 		if (start == end - 1) {
-			return;
+			return 0;
 		} else if (end <= start) {
 			throw new IllegalStateException("End pointer cannot be less than or equal to start");
 		}
 		
-		int mid = (start + end) >> 1;
+		int sorted = -1;
+		for (int i = start + 1; i < end; i++) {
+			if (source.compare(i - 1, i) > 0) {
+				sorted = i;
+			}
+		}
 		
-		tripleIntArraySort(source, dest, start, mid);
-		tripleIntArraySort(source, dest, mid, end);
+		if (sorted == -1) {
+			return 0;
+		}
+		
+		int quarter = (start + (start << 1) + end) >> 2;
+		int mid = (sorted > quarter) ? sorted : ((start + end) >> 1);
+		
+		int level;
+		
+		level = tripleIntArraySort(source, dest, start, mid) + 1;
+		level = Math.max(tripleIntArraySort(source, dest, mid, end) + 1, level);
 
 		int d = start;
 		int s1 = start;
@@ -109,6 +123,7 @@ public class TripleIntArraySort {
 		
 		source.copyRange(dest, start, end);
 		
+		return level;
 	}
 	
 	private static class TripleArray {
