@@ -138,7 +138,7 @@ public class CuboidNibbleLightBuffer extends CuboidLightBuffer {
 		return Arrays.copyOf(lightData, lightData.length);
 	}
 	
-	private static boolean isEven(int i) {
+	protected static boolean isEven(int i) {
 		return (i | 1) != i;
 	}
 

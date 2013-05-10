@@ -27,6 +27,7 @@
 package org.spout.api.util.cuboid;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Random;
 
@@ -127,5 +128,59 @@ public class CuboidNibbleLightBufferTest {
 
 		}
 		
+	}
+	
+	@Test
+	public void rowZTest() {
+		
+		AlignedCuboidNibbleLightBuffer buffer = new AlignedCuboidNibbleLightBuffer(null, 0, 128, -1024, 256, 64, 32, 16);
+
+		Random r = new Random();
+		
+		for (int x = buffer.baseX; x < buffer.topX; x++) {
+			for (int y = buffer.baseX; y < buffer.topX; y++) {
+				for (int z = buffer.baseX; z < buffer.topX; z++) {
+					buffer.set(x, y, z, (byte) r.nextInt());
+				}
+			}
+		}
+		
+		for (int i = 0; i < 100; i++) {
+			int relStartX = r.nextInt(buffer.sizeX);
+			int relStartY = r.nextInt(buffer.sizeY);
+			int relStartZ = r.nextInt(buffer.sizeZ);
+			
+			int startX = relStartX + buffer.baseX;
+			int startY = relStartY + buffer.baseY;
+			int startZ = relStartZ + buffer.baseZ;
+			
+			int length = r.nextInt(buffer.topZ - startZ);
+			
+			int arrayStart = r.nextInt(20);
+			int arrayEnd = arrayStart + length;
+			
+			int[] array = new int[arrayStart + length + r.nextInt(20)];
+			
+			int[] oldRow = new int[buffer.sizeZ];
+			
+			for (int j = 0; j < buffer.sizeZ; j++) {
+				oldRow[j] = buffer.get(startX, startY, j + buffer.baseZ);
+			}
+			
+			for (int j = 0; j < array.length; j++) {
+				array[j] = r.nextInt() & 0xF;
+			}
+			
+			buffer.copyZRow(startX, startY, startZ, arrayStart, arrayEnd, array);
+			
+			for (int j = 0; j < buffer.sizeZ; j++) {
+				int absZ = j + buffer.baseZ;
+				if (absZ >= startZ && absZ < (startZ + length)) {
+					assertEquals("Data was not successfully copied at index " + j, array[absZ - startZ + arrayStart], buffer.get(startX, startY, absZ));
+				} else {
+					assertEquals("Data was overwriten at index " + j, oldRow[j], buffer.get(startX, startY, absZ));
+				}
+			}
+		}
 	}
 }

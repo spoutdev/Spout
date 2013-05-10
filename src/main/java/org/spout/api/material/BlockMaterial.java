@@ -551,6 +551,16 @@ public class BlockMaterial extends Material implements Placeable {
 	 */
 	public void onCollided(Point colliderPoint, Point collidedPoint, Entity entity) {
 	}
+	
+	/**
+	 * Returns true if the material is a surface material.  The world's surface height is
+	 * defined as the y coordinate of the highest surface material in each column.
+	 * 
+	 * @return
+	 */
+	public boolean isSurface() {
+		return (!isTransparent()) || getOcclusion(getData()).getAny(BlockFaces.BT);
+	}
 
 	/**
 	 * Returns true if the block is completely invisible

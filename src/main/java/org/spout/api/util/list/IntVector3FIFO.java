@@ -24,59 +24,78 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.util.cuboid;
+package org.spout.api.util.list;
 
-import org.spout.api.lighting.Modifiable;
+import org.spout.api.math.IntVector3;
 
-
-public abstract class CuboidLightBuffer extends CuboidBuffer implements Modifiable {
+public class IntVector3FIFO {
 	
-	private final int id;
-	protected Modifiable holder;
+	protected int[] array;
+	protected int write;
+	protected int read;
 	
-	protected CuboidLightBuffer(Modifiable holder, int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
-		super(baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
-		this.id = id;
-		if (holder == null) {
-			this.holder = this;
+	public IntVector3FIFO(int size) {
+		this(size, false);
+	}
+	
+	public IntVector3FIFO(int size, boolean fifo) {
+		this.array = new int[size * 3];
+		this.read = 0;
+		this.write = 0;
+	}
+	
+	/**
+	 * Writes the 3 coordinates to the FIFO
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @return true if the FIFO is full
+	 */
+	public boolean write(int x, int y, int z) {
+		int size = array.length;
+		array[(write++) % size] = x;
+		array[(write++) % size] = y;
+		array[(write++) % size] = z;
+		int maxWrite = read + array.length;
+		if (write > maxWrite) {
+			throw new IllegalStateException("FIFO is full");
+		}
+		return write == maxWrite;
+	}
+	
+	/**
+	 * Writes the integer vector to the FIFO
+	 * 
+	 * @param v
+	 */
+	public void write(IntVector3 v) {
+		write(v.getX(), v.getY(), v.getZ());
+	}
+	
+	/**
+	 * Reads a triple integer from the FIFO
+	 * 
+	 * @return
+	 */
+	public IntVector3 read() {
+		if (write > read) {
+			int size = array.length;
+			int x = array[(read++) % size];
+			int y = array[(read++) % size];
+			int z = array[(read++) % size];
+			return new IntVector3(x, y, z);
 		} else {
-			this.holder = holder;
+			return null;
 		}
 	}
 	
 	/**
-	 * Sets the buffer's holder
+	 * Clears the FIFO
 	 */
-	public void setHolder(Modifiable holder) {
-		this.holder = holder;
+	public void clear() {
+		read = 0;
+		write = 0;
 	}
-	
-	/**
-	 * Gets the engine id for the manager associated with this light buffer
-	 * 
-	 * @return id
-	 */
-	public int getManagerId() {
-		return id;
-	}
-	
-	/**
-	 * Gets a copy of the buffer
-	 * 
-	 * @param buffer
-	 */
-	public abstract CuboidLightBuffer copy();
-	
-	/**
-	 * Serialized the buffer.  The position and id of the buffer should not be serialized
-	 * 
-	 * @return
-	 */
-	public abstract byte[] serialize();
-	
-	/**
-	 * Used to dispose of calls to setModified for wrapped buffers
-	 */
-	public final void setModified() {
-	}
+
 }

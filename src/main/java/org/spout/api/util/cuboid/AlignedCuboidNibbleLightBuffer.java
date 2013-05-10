@@ -32,7 +32,9 @@ import org.spout.api.math.GenericMath;
 
 public class AlignedCuboidNibbleLightBuffer extends CuboidNibbleLightBuffer {
 	
-	private final int mask;
+	private final int xMask;
+	private final int yMask;
+	private final int zMask;
 	private final int xShift;
 	private final int yShift;
 	private final int zShift;
@@ -47,11 +49,19 @@ public class AlignedCuboidNibbleLightBuffer extends CuboidNibbleLightBuffer {
 	
 	protected AlignedCuboidNibbleLightBuffer(Modifiable holder, int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ, byte[] data) {
 		super(holder, id, baseX, baseY, baseZ, sizeX, sizeY, sizeZ, data);
-		this.mask = GenericMath.roundUpPow2(sizeX) - 1;
-		if (this.mask != sizeX - 1) {
-			throw new IllegalArgumentException("Aligned buffers must have a power of 2 size, " + sizeX + ", expected " + this.mask);
+		this.xMask = GenericMath.roundUpPow2(sizeX) - 1;
+		this.yMask = GenericMath.roundUpPow2(sizeY) - 1;
+		this.zMask = GenericMath.roundUpPow2(sizeZ) - 1;
+		if (this.xMask != sizeX - 1) {
+			throw new IllegalArgumentException("Aligned buffers must have a power of 2 size, got a size x of " + sizeX + ", expected " + this.xMask);
 		}
-		if ((baseX & (~mask)) != baseX || (baseY & (~mask)) != baseY || (baseZ & (~mask)) != baseZ) {
+		if (this.yMask != sizeY - 1) {
+			throw new IllegalArgumentException("Aligned buffers must have a power of 2 size, got a size y of " + sizeY + ", expected " + this.yMask);
+		}
+		if (this.zMask != sizeZ - 1) {
+			throw new IllegalArgumentException("Aligned buffers must have a power of 2 size, got a size z of " + sizeZ + ", expected " + this.zMask);
+		}
+		if ((baseX & (~xMask)) != baseX || (baseY & (~yMask)) != baseY || (baseZ & (~zMask)) != baseZ) {
 			throw new IllegalArgumentException("Aligned buffers must have aligned base coords");
 		}
 		xShift = GenericMath.multiplyToShift(super.Xinc);
@@ -61,9 +71,9 @@ public class AlignedCuboidNibbleLightBuffer extends CuboidNibbleLightBuffer {
 	
 	@Override
 	public int getIndex(int x, int y, int z) {
-		x &= mask;
-		y &= mask;
-		z &= mask;
+		x &= xMask;
+		y &= yMask;
+		z &= zMask;
 		x <<= xShift;
 		y <<= yShift;
 		z <<= zShift;
@@ -73,6 +83,39 @@ public class AlignedCuboidNibbleLightBuffer extends CuboidNibbleLightBuffer {
 	@Override
 	public AlignedCuboidNibbleLightBuffer copy() {
 		return new AlignedCuboidNibbleLightBuffer(this);
+	}
+	
+	/**
+	 * Copies data from an array into a Z row.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param start the first element to copy
+	 * @param end the last element to copy (exclusive)
+	 */
+	public void copyZRow(int x, int y, int z, int start, int end, int[] values) {
+		int index = getIndex(x, y, z);
+		
+		int inc = (Zinc >> 1);
+
+		if (isEven(index)) {
+			index >>= 1;
+			
+			while (start < end) {
+				lightData[index] = (byte) ((lightData[index] & 0xF0) | (values[start] & 0xF));
+				start++;
+				index += inc;
+			}
+		} else {
+			index >>= 1;
+			
+			while (start < end) {
+				lightData[index] = (byte) ((lightData[index] & 0x0F) | (values[start] << 4));
+				start++;
+				index += inc;
+			}
+		}
 	}
 
 }

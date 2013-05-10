@@ -28,6 +28,7 @@ package org.spout.api.util.cuboid;
 
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.math.Vector3;
+import org.spout.api.util.cuboid.procedure.CuboidBlockMaterialProcedure;
 
 public class ImmutableCuboidBlockMaterialBuffer extends CuboidBuffer {
 	protected final short[] id;
@@ -92,6 +93,20 @@ public class ImmutableCuboidBlockMaterialBuffer extends CuboidBuffer {
 		}
 
 		return data[index];
+	}
+
+	public void forEach(CuboidBlockMaterialProcedure procedure) {
+		int index = 0;
+		for (int y = baseY; y < topY; y++) {
+			for (int z = baseZ; z < topZ; z++) {
+				for (int x = baseX; x < topX; x++) {
+					if (!procedure.execute(x, y, z, id[index], data[index])) {
+						return;
+					}
+					index++;
+				}
+			}
+		}
 	}
 
 	public short[] getRawId() {

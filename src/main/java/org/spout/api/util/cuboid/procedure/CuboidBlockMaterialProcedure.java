@@ -24,59 +24,21 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.util.cuboid;
-
-import org.spout.api.lighting.Modifiable;
+package org.spout.api.util.cuboid.procedure;
 
 
-public abstract class CuboidLightBuffer extends CuboidBuffer implements Modifiable {
-	
-	private final int id;
-	protected Modifiable holder;
-	
-	protected CuboidLightBuffer(Modifiable holder, int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
-		super(baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
-		this.id = id;
-		if (holder == null) {
-			this.holder = this;
-		} else {
-			this.holder = holder;
-		}
-	}
+public interface CuboidBlockMaterialProcedure {
 	
 	/**
-	 * Sets the buffer's holder
-	 */
-	public void setHolder(Modifiable holder) {
-		this.holder = holder;
-	}
-	
-	/**
-	 * Gets the engine id for the manager associated with this light buffer
+	 * Procedure for iterating over a CuboidBlockMaterialBuffer
 	 * 
-	 * @return id
-	 */
-	public int getManagerId() {
-		return id;
-	}
-	
-	/**
-	 * Gets a copy of the buffer
-	 * 
-	 * @param buffer
-	 */
-	public abstract CuboidLightBuffer copy();
-	
-	/**
-	 * Serialized the buffer.  The position and id of the buffer should not be serialized
-	 * 
+	 * @param x the x coordinate
+	 * @param y the y coordinate 
+	 * @param z the z coordinate
+	 * @param id the id
+	 * @param data the data
 	 * @return
 	 */
-	public abstract byte[] serialize();
-	
-	/**
-	 * Used to dispose of calls to setModified for wrapped buffers
-	 */
-	public final void setModified() {
-	}
+	public boolean execute(int x, int y, int z, short id, short data);
+
 }

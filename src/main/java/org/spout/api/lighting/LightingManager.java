@@ -92,6 +92,21 @@ public abstract class LightingManager<T extends CuboidLightBuffer> {
 	}
 	
 	/**
+	 * Initializes lighting based on the block materials in the given buffer.  
+	 * 
+	 * The cuboid must contain entire chunks.
+	 * 
+	 * @param buffer
+	 * @param height surface heights
+	 * @return a 3d array of light buffers for the region
+	 */
+	public abstract T[][][] bulkInitialize(ImmutableCuboidBlockMaterialBuffer buffer, int[][] height);
+	
+	public CuboidLightBuffer[][][] bulkInitializeUnchecked(ImmutableCuboidBlockMaterialBuffer buffer, int[][] height) {
+		return bulkInitialize(buffer, height);
+	}
+	
+	/**
 	 * Recalculates lighting after a change to the block materials at a given set of cuboid regions.<br>
 	 * <br>
 	 * The coordinate given by (tx[i], ty[i], tz[i]) is not considered part of the ith cuboid, but (bx[i], by[i], bz[i]) 

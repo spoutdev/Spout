@@ -31,7 +31,9 @@ import org.spout.api.math.Vector3;
 
 public class AlignedCuboidBlockMaterialBuffer extends CuboidBlockMaterialBuffer {
 	
-	private final int mask;
+	private final int xMask;
+	private final int yMask;
+	private final int zMask;
 	private final int xShift;
 	private final int yShift;
 	private final int zShift;
@@ -59,11 +61,19 @@ public class AlignedCuboidBlockMaterialBuffer extends CuboidBlockMaterialBuffer 
 		if (sizeX != sizeY || sizeX != sizeZ) {
 			throw new IllegalArgumentException("Aligned buffers must be cubic");
 		}
-		this.mask = GenericMath.roundUpPow2(sizeX) - 1;
-		if (this.mask != sizeX - 1) {
-			throw new IllegalArgumentException("Aligned buffers must have a power of 2 size, " + sizeX + ", expected " + this.mask);
+		this.xMask = GenericMath.roundUpPow2(sizeX) - 1;
+		this.yMask = GenericMath.roundUpPow2(sizeY) - 1;
+		this.zMask = GenericMath.roundUpPow2(sizeZ) - 1;
+		if (this.xMask != sizeX - 1) {
+			throw new IllegalArgumentException("Aligned buffers must have a power of 2 size, got a size x of " + sizeX + ", expected " + this.xMask);
 		}
-		if ((baseX & (~mask)) != baseX || (baseY & (~mask)) != baseY || (baseZ & (~mask)) != baseZ) {
+		if (this.yMask != sizeY - 1) {
+			throw new IllegalArgumentException("Aligned buffers must have a power of 2 size, got a size y of " + sizeY + ", expected " + this.yMask);
+		}
+		if (this.zMask != sizeZ - 1) {
+			throw new IllegalArgumentException("Aligned buffers must have a power of 2 size, got a size z of " + sizeZ + ", expected " + this.zMask);
+		}
+		if ((baseX & (~xMask)) != baseX || (baseY & (~yMask)) != baseY || (baseZ & (~zMask)) != baseZ) {
 			throw new IllegalArgumentException("Aligned buffers must have aligned base coords");
 		}
 		xShift = GenericMath.multiplyToShift(super.Xinc);
@@ -71,11 +81,15 @@ public class AlignedCuboidBlockMaterialBuffer extends CuboidBlockMaterialBuffer 
 		zShift = GenericMath.multiplyToShift(super.Zinc);
 	}
 	
+	/**
+	 * Gets the index for the given coords.  Unlike a normal cuboid buffer, no 
+	 * bounds checking is performed
+	 */
 	@Override
 	public int getIndex(int x, int y, int z) {
-		x &= mask;
-		y &= mask;
-		z &= mask;
+		x &= xMask;
+		y &= yMask;
+		z &= zMask;
 		x <<= xShift;
 		y <<= yShift;
 		z <<= zShift;

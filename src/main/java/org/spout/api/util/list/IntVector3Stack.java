@@ -24,59 +24,76 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.util.cuboid;
+package org.spout.api.util.list;
 
-import org.spout.api.lighting.Modifiable;
+import org.spout.api.math.IntVector3;
 
-
-public abstract class CuboidLightBuffer extends CuboidBuffer implements Modifiable {
+public class IntVector3Stack {
 	
-	private final int id;
-	protected Modifiable holder;
+	protected int[] array;
+	protected int stackPointer;
 	
-	protected CuboidLightBuffer(Modifiable holder, int id, int baseX, int baseY, int baseZ, int sizeX, int sizeY, int sizeZ) {
-		super(baseX, baseY, baseZ, sizeX, sizeY, sizeZ);
-		this.id = id;
-		if (holder == null) {
-			this.holder = this;
+	public IntVector3Stack(int size) {
+		this(size, false);
+	}
+	
+	public IntVector3Stack(int size, boolean fifo) {
+		this.array = new int[size * 3];
+		this.stackPointer = 0;
+	}
+	
+	/**
+	 * Pushes the 3 coordinates onto the stack
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @return true if the stack is full
+	 */
+	public boolean push(int x, int y, int z) {
+		array[stackPointer++] = z;
+		array[stackPointer++] = y;
+		array[stackPointer++] = x;
+		return stackPointer == array.length;
+	}
+	
+	/**
+	 * Pushes the integer vector onto the stack
+	 * 
+	 * @param v
+	 */
+	public void push(IntVector3 v) {
+		push(v.getX(), v.getY(), v.getZ());
+	}
+	
+	/**
+	 * Pops a triple integer from the stack
+	 * 
+	 * @return
+	 */
+	public IntVector3 pop() {
+		if (stackPointer > 0) {
+			return new IntVector3(array[--stackPointer], array[--stackPointer], array[--stackPointer]);
 		} else {
-			this.holder = holder;
+			return null;
 		}
 	}
 	
 	/**
-	 * Sets the buffer's holder
-	 */
-	public void setHolder(Modifiable holder) {
-		this.holder = holder;
-	}
-	
-	/**
-	 * Gets the engine id for the manager associated with this light buffer
-	 * 
-	 * @return id
-	 */
-	public int getManagerId() {
-		return id;
-	}
-	
-	/**
-	 * Gets a copy of the buffer
-	 * 
-	 * @param buffer
-	 */
-	public abstract CuboidLightBuffer copy();
-	
-	/**
-	 * Serialized the buffer.  The position and id of the buffer should not be serialized
+	 * Pops a single integer from the stack.  The order that the coords are pushed onto
+	 * the stack is z, y and then x.
 	 * 
 	 * @return
 	 */
-	public abstract byte[] serialize();
+	public int popSingle() {
+		return array[--stackPointer];
+	}
 	
 	/**
-	 * Used to dispose of calls to setModified for wrapped buffers
+	 * Clears the stack
 	 */
-	public final void setModified() {
+	public void clear() {
+		stackPointer = 0;
 	}
+
 }

@@ -30,6 +30,7 @@ import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
+import org.spout.api.util.cuboid.procedure.CuboidBlockMaterialProcedure;
 
 /**
  * This class implements a Cuboid buffer wrapper.  Each sub-buffer must be exactly one
@@ -134,23 +135,31 @@ public class LocalRegionChunkCuboidBlockMaterialBufferWrapper extends ImmutableC
 		return buffer;
 	}
 	
+	public void forEach(CuboidBlockMaterialProcedure procedure) {
+		throw new UnsupportedOperationException("Buffer is a buffer wrapper, there is no id array for fast iteration");
+	}
+	
 	@Override
 	public BlockMaterial get(int x, int y, int z) {
 		return getBlockMaterialBuffer(x, y, z).get(x, y, z);
 	}
 
+	@Override
 	public short getId(int x, int y, int z) {
 		return getBlockMaterialBuffer(x, y, z).getId(x, y, z);
 	}
 	
+	@Override
 	public short getData(int x, int y, int z) {
 		return getBlockMaterialBuffer(x, y, z).getData(x, y, z);
 	}
 
+	@Override
 	public short[] getRawId() {
 		throw new UnsupportedOperationException("Buffer is a buffer wrapper, there is no id array");
 	}
 
+	@Override
 	public short[] getRawData() {
 		throw new UnsupportedOperationException("Buffer is a buffer wrapper, there is no data array");
 	}

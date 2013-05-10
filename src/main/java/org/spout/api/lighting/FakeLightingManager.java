@@ -73,5 +73,10 @@ public class FakeLightingManager extends LightingManager {
 	public short getId() {
 		return (short) id;
 	}
+
+	@Override
+	public CuboidLightBuffer[][][] bulkInitialize(ImmutableCuboidBlockMaterialBuffer buffer, int[][] height) {
+		throw new UnsupportedOperationException("Attempt to use resolve() method on a FakeLightingManager");
+	}
 	
 }
