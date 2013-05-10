@@ -320,8 +320,7 @@ public class SpoutColumn {
 
 	private boolean isAir(int fullData) {
 		BlockMaterial material = BlockFullState.getMaterial(fullData);
-		short data = BlockFullState.getData(fullData);
-		return material.isTransparent() && !material.getOcclusion(data).getAny(BlockFaces.BT);
+		return !material.isSurface();
 	}
 
 	public AtomicInteger getAtomicInteger(int x, int z) {
