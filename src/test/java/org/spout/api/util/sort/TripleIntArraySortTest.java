@@ -139,7 +139,12 @@ public class TripleIntArraySortTest {
 		int f = 0;
 		int s = 0;
 		int t = 0;
-		for (int i = start; i < end; i++) {
+		
+		first[start] = 0;
+		second[start] = 0;
+		third[start] = 0;
+		
+		for (int i = start + 1; i < end; i++) {
 			if (r.nextBoolean()) {
 				t++;
 			} else if (r.nextBoolean()) {
