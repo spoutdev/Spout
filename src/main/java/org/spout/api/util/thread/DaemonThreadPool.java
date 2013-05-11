@@ -43,6 +43,10 @@ public class DaemonThreadPool {
 	
 	private final Thread[] threads;
 	
+	public DaemonThreadPool(String type) {
+		this(type, Runtime.getRuntime().availableProcessors() * 2, 32);
+	}
+	
 	public DaemonThreadPool(String type, int threads, int queueSize) {
 		this.queue = new ArrayBlockingQueue<RunnableFuture<?>>(queueSize);
 		this.threads = new Thread[threads];
@@ -52,10 +56,20 @@ public class DaemonThreadPool {
 	}
 	
 	public Future<?> add(Runnable r) {
+		return add(r, true);
+	}
+	
+	public Future<?> add(Runnable r, boolean cancelOld) {
 		@SuppressWarnings("rawtypes")
 		RunnableFuture<?> future = new RunnableFutureImpl(r);
-		if (!queue.offer(future)) {
-			future.run();
+		if (cancelOld) {
+			while (!queue.offer(future)) {
+				queue.poll();
+			}
+		} else {
+			if (!queue.offer(future)) {
+				future.run();
+			}
 		}
 		return future;
 	}
