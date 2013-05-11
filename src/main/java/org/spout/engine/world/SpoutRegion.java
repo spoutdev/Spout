@@ -419,6 +419,10 @@ public class SpoutRegion extends Region implements AsyncManager {
 	
 	
 	private void generateColumn(int x, int z) {
+		
+		x &= 0xFFFFFFFC;
+		z &= 0xFFFFFFFC;
+		
 		AtomicBoolean generated = generatedColumns[x][z];
 		if (generated.get()) {
 			return;
@@ -428,18 +432,17 @@ public class SpoutRegion extends Region implements AsyncManager {
 			if (generated.get()) {
 				return;
 			}
+			
 			int cx = getChunkX();
 			int cy = getChunkY();
 			int cz = getChunkZ();
 			
-			int xx = x;
-			int cxx = cx + xx;
-			int zz = z;
-			int czz = cz + zz;
+			int cxx = cx + x;
+			int czz = cz + z;
 
 			final SpoutWorld world = getWorld();
 
-			final CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(cxx << Chunk.BLOCKS.BITS, cy << Chunk.BLOCKS.BITS, czz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Region.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
+			final CuboidBlockMaterialBuffer buffer = new CuboidBlockMaterialBuffer(cxx << Chunk.BLOCKS.BITS, cy << Chunk.BLOCKS.BITS, czz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE << 2, Region.BLOCKS.SIZE, Chunk.BLOCKS.SIZE << 2);
 			getWorld().getGenerator().generate(buffer, cxx, cy, czz, world);
 			
 			LightingManager<?>[] managers = getWorld().getLightingManagers();
@@ -447,33 +450,52 @@ public class SpoutRegion extends Region implements AsyncManager {
 			CuboidLightBuffer[][][][] buffers = new CuboidLightBuffer[managers.length][][][];
 			
 			// TODO - probably need to harden this
-			int[][] heights = getWorld().getGenerator().getSurfaceHeight(getWorld(), cx, cz);
+			int[][] heights = new int[Chunk.BLOCKS.SIZE << 2][Chunk.BLOCKS.SIZE << 2];
+			
+			for (int xx = 0; xx < 4; xx++) {
+				for (int zz = 0; zz < 4; zz++) {
+					int[][] colHeights = getWorld().getGenerator().getSurfaceHeight(getWorld(), cx, cz);
+					int offX = xx << Chunk.BLOCKS.BITS;
+					int offZ = zz << Chunk.BLOCKS.BITS;
+					for (int colX = 0; colX < Chunk.BLOCKS.SIZE; colX++) {
+						for (int colZ = 0; colZ < Chunk.BLOCKS.SIZE; colZ++) {
+							heights[offX + colX][offZ + colZ] = colHeights[colX][colZ];
+						}
+					}
+				}
+			}
 			
 			for (int i = 0; i < managers.length; i++) {
 				buffers[i] = managers[i].bulkInitializeUnchecked(buffer, heights);
 			}
 
-			for (int yy = Region.CHUNKS.SIZE - 1; yy >= 0; yy--) {
-				int cyy = cy + yy;
-				final CuboidBlockMaterialBuffer chunk = new CuboidBlockMaterialBuffer(cxx << Chunk.BLOCKS.BITS, cyy << Chunk.BLOCKS.BITS, czz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
-				chunk.write(buffer);
-				SpoutChunk newChunk = new SpoutChunk(world, this, cxx, cyy, czz, chunk.getRawId(), chunk.getRawData(), null);
-				
-				for (int i = 0; i < managers.length; i++) {
-					CuboidLightBuffer lightBuffer = buffers[i][0][yy][0];
-					if (newChunk.setIfAbsentLightBuffer((short) lightBuffer.getManagerId(), lightBuffer) != lightBuffer) {
-						Spout.getLogger().info("Unable to set light buffer for new chunk " + newChunk + " as the id is already in use, " + lightBuffer.getManagerId());
+			for (int xx = 0; xx < 4; xx++) {
+				cxx = cx + x + xx;
+				for (int zz = 0; zz < 4; zz++) {
+					czz = cz + z + zz;
+					for (int yy = Region.CHUNKS.SIZE - 1; yy >= 0; yy--) {
+						int cyy = cy + yy;
+						final CuboidBlockMaterialBuffer chunk = new CuboidBlockMaterialBuffer(cxx << Chunk.BLOCKS.BITS, cyy << Chunk.BLOCKS.BITS, czz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
+						chunk.write(buffer);
+						SpoutChunk newChunk = new SpoutChunk(world, this, cxx, cyy, czz, chunk.getRawId(), chunk.getRawData(), null);
+
+						for (int i = 0; i < managers.length; i++) {
+							CuboidLightBuffer lightBuffer = buffers[i][xx][yy][zz];
+							if (newChunk.setIfAbsentLightBuffer((short) lightBuffer.getManagerId(), lightBuffer) != lightBuffer) {
+								Spout.getLogger().info("Unable to set light buffer for new chunk " + newChunk + " as the id is already in use, " + lightBuffer.getManagerId());
+							}
+						}
+
+						SpoutChunk currentChunk = setChunkIfNotGenerated(newChunk, x + xx, yy, z + zz, null, true);
+						if (currentChunk != newChunk) {
+							if (currentChunk == null) {
+								Spout.getLogger().info("Warning: Unable to set generated chunk, new Chunk " + newChunk + " chunk in memory " + currentChunk);
+							}
+						} else {
+							newChunk.compressRaw();
+							newChunk.setModified();
+						}
 					}
-				}
-				
-				SpoutChunk currentChunk = setChunkIfNotGenerated(newChunk, xx, yy, zz, null, true);
-				if (currentChunk != newChunk) {
-					if (currentChunk == null) {
-						Spout.getLogger().info("Warning: Unable to set generated chunk, new Chunk " + newChunk + " chunk in memory " + currentChunk);
-					}
-				} else {
-					newChunk.compressRaw();
-					newChunk.setModified();
 				}
 			}
 			if (!generated.compareAndSet(false, true)) {
