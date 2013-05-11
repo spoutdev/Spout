@@ -47,14 +47,16 @@ public abstract class MaterialRegistry {
 	private final static ConcurrentHashMap<String, Material> nameLookup = new ConcurrentHashMap<String, Material>(1000);
 	private final static int MAX_SIZE = 1 << 16;
 	@SuppressWarnings("unchecked")
-	private final static AtomicReference<Material>[] materialLookup = new AtomicReference[MAX_SIZE];
+	private final static AtomicReference<Material[]>[] materialLookup = new AtomicReference[MAX_SIZE];
 	private static boolean setup = false;
 	private final static BinaryFileStore store = new BinaryFileStore();
 	private final static StringMap materialRegistry = new StringMap(null, store, 1, Short.MAX_VALUE, Material.class.getName());
+	private final static Material[] NULL_MATERIAL_ARRAY = new Material[] {null};
 
 	static {
 		for (int i = 0; i < materialLookup.length; i++) {
-			materialLookup[i] = new AtomicReference<Material>();
+			materialLookup[i] = new AtomicReference<Material[]>();
+			materialLookup[i].set(NULL_MATERIAL_ARRAY);
 		}
 	}
 
@@ -94,13 +96,18 @@ public abstract class MaterialRegistry {
 			return material.getParentMaterial().getId();
 		} else {
 			int id = materialRegistry.register(material.getName());
-			if (!materialLookup[id].compareAndSet(null, material)) {
+			Material[] subArray = new Material[] {material};
+			if (!materialLookup[id].compareAndSet(NULL_MATERIAL_ARRAY, subArray)) {
 				throw new IllegalArgumentException(materialLookup[id].get() + " is already mapped to id: " + material.getId() + "!");
 			}
 
 			nameLookup.put(formatName(material.getDisplayName()), material);
 			return id;
 		}
+	}
+	
+	protected static AtomicReference<Material[]> getSubMaterialReference(short id) {
+		return materialLookup[id];
 	}
 
 	/**
@@ -111,8 +118,9 @@ public abstract class MaterialRegistry {
 	 */
 	protected static int register(Material material, int id) {
 		materialRegistry.register(material.getName(), id);
-		if (!materialLookup[id].compareAndSet(null, material)) {
-			throw new IllegalArgumentException(materialLookup[id].get() + " is already mapped to id: " + material.getId() + "!");
+		Material[] subArray = new Material[] {material};
+		if (!materialLookup[id].compareAndSet(NULL_MATERIAL_ARRAY, subArray)) {
+			throw new IllegalArgumentException(materialLookup[id].get()[0] + " is already mapped to id: " + material.getId() + "!");
 		}
 
 		nameLookup.put(formatName(material.getName()), material);
@@ -129,7 +137,27 @@ public abstract class MaterialRegistry {
 		if (id < 0 || id >= materialLookup.length) {
 			return null;
 		}
-		return materialLookup[id].get();
+		return materialLookup[id].get()[0];
+	}
+	
+	/**
+	 * Gets the material from the given id and data
+	 *
+	 * @param id to get
+	 * @param data to get
+	 * @return material or null if none found
+	 */
+	public static Material get(short id, short data) {
+		if (id < 0 || id >= materialLookup.length) {
+			return null;
+		}
+		Material[] parent = materialLookup[id].get();
+		if (parent[0] == null) {
+			return null;
+		}
+		
+		data &= parent[0].getDataMask();
+		return materialLookup[id].get()[data];
 	}
 
 	/**
@@ -153,12 +181,11 @@ public abstract class MaterialRegistry {
 		if (id < 0 || id >= materialLookup.length) {
 			return null;
 		}
-		Material material = materialLookup[id].get();
-		if (material == null) {
+		Material[] material = materialLookup[id].get();
+		if (material[0] == null) {
 			return null;
 		}
-
-		return material.getSubMaterial(BlockFullState.getData(packedState));
+		return material[BlockFullState.getData(packedState) & (material[0].getDataMask())];
 	}
 
 	/**
@@ -171,7 +198,7 @@ public abstract class MaterialRegistry {
 		HashSet<Material> set = new HashSet<Material>(1000);
 		for (int i = 0; i < materialLookup.length; i++) {
 			if (materialLookup[i].get() != null) {
-				set.add(materialLookup[i].get());
+				set.add(materialLookup[i].get()[0]);
 			}
 		}
 		return set.toArray(new Material[0]);

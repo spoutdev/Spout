@@ -127,19 +127,11 @@ public class BlockMaterial extends Material implements Placeable {
 	 * @return block, or null if none found
 	 */
 	public static BlockMaterial get(short id, short data) {
-		Material mat = Material.get(id);
-		if (!(mat instanceof BlockMaterial)) {
-			return null;
+		Material m = Material.get(id, data);
+		if (m instanceof BlockMaterial) {
+			return (BlockMaterial) m;
 		}
-		mat = mat.getSubMaterial(data);
-		if (!(mat instanceof BlockMaterial)) {
-			return null;
-		}
-		if (((short) (mat.getDataMask() & data)) != mat.getData()) {
-			return null;
-		}
-		return (BlockMaterial) mat;
-
+		return null;
 	}
 
 	/**

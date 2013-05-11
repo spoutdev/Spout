@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.spout.api.Platform;
 import org.spout.api.Spout;
@@ -63,7 +64,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	private String displayName;
 	private int maxStackSize = 64;
 	private short maxData = Short.MAX_VALUE;
-	private Material[] submaterials = new Material[] {this};
+	private final AtomicReference<Material[]> subMaterials;
 	private Material[] submaterialsContiguous = null;
 	private volatile boolean submaterialsDirty = true;
 	private final short dataMask;
@@ -83,6 +84,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.parent = this;
 		this.data = 0;
 		this.id = (short) MaterialRegistry.register(this);
+		this.subMaterials = MaterialRegistry.getSubMaterialReference(this.id);
 		this.dataMask = dataMask;
 		this.root = this;
 		if (model == null) {
@@ -140,6 +142,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.parent = parent;
 		this.data = (short) data;
 		this.id = (short) MaterialRegistry.register(this);
+		this.subMaterials = MaterialRegistry.getSubMaterialReference(this.id);
 		this.dataMask = parent.getDataMask();
 		this.root = parent.getRoot();
 		if (model == null) {
@@ -165,6 +168,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.parent = this;
 		this.data = 0;
 		this.id = (short) MaterialRegistry.register(this, id);
+		this.subMaterials = MaterialRegistry.getSubMaterialReference(this.id);
 		this.dataMask = 0;
 		this.root = this;
 		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
@@ -221,7 +225,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * @return true if this material has sub materials
 	 */
 	public final boolean hasSubMaterials() {
-		return this.submaterials.length > 1;
+		return this.subMaterials.get().length > 1;
 	}
 
 	/**
@@ -230,22 +234,19 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 * @return an array of sub materials
 	 */
 	public final Material[] getSubMaterials() {
-		if (this.submaterials == null) {
-			return new Material[0];
-		}
-
 		if (submaterialsDirty) {
 			int materialCount = 0;
-			for (int i = 0; i < this.submaterials.length; i++) {
-				if (this.submaterials[i] != null) {
+			Material[] sm = subMaterials.get();
+			for (int i = 0; i < sm.length; i++) {
+				if (sm[i] != null) {
 					materialCount++;
 				}
 			}
 			Material[] newSubmaterials = new Material[materialCount];
 			materialCount = 0;
-			for (int i = 0; i < this.submaterials.length; i++) {
-				if (this.submaterials[i] != null) {
-					newSubmaterials[materialCount++] = this.submaterials[i];
+			for (int i = 0; i < sm.length; i++) {
+				if (sm[i] != null) {
+					newSubmaterials[materialCount++] = sm[i];
 				}
 			}
 			this.submaterialsContiguous = newSubmaterials;
@@ -263,11 +264,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 	 */
 	public Material getSubMaterial(short data) {
 		short maskedData = (short)(data & dataMask);
-		if (parent != null) {
-			return parent.submaterials[maskedData];
-		} else {
-			return submaterials[maskedData];
-		}
+		return subMaterials.get()[maskedData];
 	}
 
 	/**
@@ -284,16 +281,23 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 			}
 			if (material.isSubMaterial) {
 				if (material.getParentMaterial() == this) {
-					if (data >= this.submaterials.length) {
-						int newSize = GenericMath.roundUpPow2(data + (data >> 1) + 1);
-						Material[] newSubmaterials = new Material[newSize];
-						for (int i = 0; i < submaterials.length; i++) {
-							newSubmaterials[i] = submaterials[i];
+					boolean success = false;
+					while (!success) {
+						Material[] sm = subMaterials.get();
+						if (data >= sm.length) {
+							int newSize = GenericMath.roundUpPow2(data + (data >> 1) + 1);
+							Material[] newSubmaterials = new Material[newSize];
+							for (int i = 0; i < sm.length; i++) {
+								newSubmaterials[i] = sm[i];
+							}
+							success = subMaterials.compareAndSet(sm, newSubmaterials);
+						} else {
+							success = true;
 						}
-						this.submaterials = newSubmaterials;
 					}
-					if (this.submaterials[data] == null) {
-						this.submaterials[data] = material;
+					Material[] sm = subMaterials.get();
+					if (sm[data] == null) {
+						sm[data] = material;
 					} else {
 						throw new IllegalArgumentException("Two sub material registered for the same data value");
 					}
