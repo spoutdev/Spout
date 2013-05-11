@@ -221,6 +221,8 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	private LightStore lightStore;
 	
+	private int generationIndex = -1;
+	
 	protected void setIsInViewDistance(boolean value) {
 		if (value && isBlockUniform() && getBlockMaterial(0, 0, 0) == BlockMaterial.AIR) {
 			return;
@@ -262,11 +264,11 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, int[] palette, int blockArrayWidth, int[] variableWidthBlockArray, byte[] skyLight, byte[] blockLight, ManagedHashMap extraData, boolean lightStable) {
-		this(world, region, x, y, z, popState, extraData, lightStable, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, 10, palette, blockArrayWidth, variableWidthBlockArray), skyLight, blockLight);
+		this(world, region, x, y, z, popState, extraData, lightStable, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, true, 10, palette, blockArrayWidth, variableWidthBlockArray), skyLight, blockLight);
 	}
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, ManagedHashMap extraData, boolean lightStable) {
-		this(world, region, x, y, z, popState, extraData, lightStable, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, 10, blocks, data), skyLight, blockLight);
+		this(world, region, x, y, z, popState, extraData, lightStable, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, false, 10, blocks, data), skyLight, blockLight);
 	}
 
 	private SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, ManagedHashMap extraData, boolean lightStable, AtomicBlockStore blockStore, byte[] skyLight, byte[] blockLight) {
@@ -2200,5 +2202,14 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	public boolean isCalculatingLighting() {
 		return lightStore.isCalculatingLighting();
+	}
+
+	@Override
+	public int getGenerationIndex() {
+		return generationIndex;
+	}
+	
+	protected void setGenerationIndex(int index) {
+		this.generationIndex = index;
 	}
 }

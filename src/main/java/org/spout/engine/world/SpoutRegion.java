@@ -202,6 +202,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 	private final Object generateSync = new Object();
 	private final AtomicBoolean generated = new AtomicBoolean(false);
 	private final AtomicBoolean[][] generatedColumns = new AtomicBoolean[CHUNKS.SIZE][CHUNKS.SIZE];
+	private final static AtomicInteger generationCounter = new AtomicInteger(1);
 	private final SpoutTaskManager taskManager;
 	private final List<Thread> meshThread;
 	private final SpoutScheduler scheduler;
@@ -428,6 +429,13 @@ public class SpoutRegion extends Region implements AsyncManager {
 			return;
 		}
 		
+		int generationIndex = generationCounter.getAndIncrement();
+		
+		while (generationIndex == -1) {
+			Spout.getLogger().info("Ran out of generation index ids, starting again");
+			generationIndex = generationCounter.getAndIncrement();
+		}
+		
 		synchronized(generated) {
 			if (generated.get()) {
 				return;
@@ -478,6 +486,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 						final CuboidBlockMaterialBuffer chunk = new CuboidBlockMaterialBuffer(cxx << Chunk.BLOCKS.BITS, cyy << Chunk.BLOCKS.BITS, czz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
 						chunk.write(buffer);
 						SpoutChunk newChunk = new SpoutChunk(world, this, cxx, cyy, czz, chunk.getRawId(), chunk.getRawData(), null);
+						newChunk.setGenerationIndex(generationIndex);
 
 						for (int i = 0; i < managers.length; i++) {
 							CuboidLightBuffer lightBuffer = buffers[i][xx][yy][zz];
@@ -1660,7 +1669,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 				bz[i] = chunk.getBlockZ();
 			}
 			for (int i = 0; i < managers.length; i++) {
-				managers[i].initChunksUnchecked(lightBuffers[i], blockMaterialBuffer, heightMapBuffer, bx, by, bz, cuboids);
+				managers[i].initChunksUnchecked(lightBuffers[i], blockMaterialBuffer, heightMapBuffer, chunks);
 			}
 		} else {
 			int[] tx = new int[cuboids];
