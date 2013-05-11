@@ -340,13 +340,22 @@ public final class SpoutScheduler implements Scheduler {
 
 		@Override
 		public void run() {
-			long targetPeriod = PULSE_EVERY;
 			long lastTick = System.currentTimeMillis();
-			boolean lastTickOverloaded = false;
+			long expectedTime = lastTick;
 
 			while (!shutdown) {
 				long startTime = System.currentTimeMillis();
-				tickStartTime.set(startTime);
+				tickStartTime.set(System.currentTimeMillis());
+				
+				boolean underLoad = expectedTime < startTime - PULSE_EVERY;
+				
+				if (expectedTime < startTime - 10000) {
+					expectedTime = startTime;
+					Spout.getLogger().info("Server has falled more than 10 seconds behind schedule");
+				}
+				
+				heavyLoad.set(underLoad);
+
 				long delta = startTime - lastTick;
 				try {
 					if (!tick(delta)) {
@@ -357,22 +366,17 @@ public final class SpoutScheduler implements Scheduler {
 					Spout.severe("Error while pulsing: {0}", ex.getMessage());
 					ex.printStackTrace();
 				}
-				long finishTime = System.currentTimeMillis();
-				long freeTime = targetPeriod - (finishTime - startTime);
-
-				if (freeTime > 0) {
-					if (!lastTickOverloaded) {
-						heavyLoad.set(false);
-					}
-					lastTickOverloaded = false;
+				
+				expectedTime += PULSE_EVERY;
+				
+				long currentTime = System.currentTimeMillis();
+				
+				if (currentTime < expectedTime) {
 					try {
-						Thread.sleep(freeTime);
+						Thread.sleep(expectedTime - currentTime);
 					} catch (InterruptedException e) {
 						shutdown = true;
 					}
-				} else {
-					lastTickOverloaded = true;
-					heavyLoad.set(true);
 				}
 			}
 			if (engine.getPlatform() == Platform.CLIENT) {
@@ -942,7 +946,7 @@ public final class SpoutScheduler implements Scheduler {
 			return true;
 		}
 
-		if (getRemainingTickTime() >= 0) {
+		if (getRemainingTickTime() >= -10) {
 			return false;
 		}
 
