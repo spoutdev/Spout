@@ -176,7 +176,7 @@ public abstract class MaterialRegistry {
 	 * @param state the full state of the block
 	 * @return Material of the id
 	 */
-	public static Material get(int packedState) {
+	public static BlockMaterial get(int packedState) {
 		short id = BlockFullState.getId(packedState);
 		if (id < 0 || id >= materialLookup.length) {
 			return null;
@@ -185,7 +185,7 @@ public abstract class MaterialRegistry {
 		if (material[0] == null) {
 			return null;
 		}
-		return material[BlockFullState.getData(packedState) & (material[0].getDataMask())];
+		return (BlockMaterial) material[BlockFullState.getData(packedState) & (material[0].getDataMask())];
 	}
 
 	/**

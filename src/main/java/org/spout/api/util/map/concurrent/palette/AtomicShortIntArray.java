@@ -173,6 +173,24 @@ public class AtomicShortIntArray {
 	}
 	
 	/**
+	 * Sets the array equal to the given array without automatically compressing the data.  
+	 * The array should be the same length as this array
+	 * 
+	 * @param initial the array containing the new values
+	 */
+	public void uncompressedSet(int[] initial) {
+		resizeLock.lock();
+		try {
+			if (initial.length != length) {
+				throw new IllegalArgumentException("Array length mismatch, expected " + length + ", got " + initial.length);
+			}
+			store.set(new AtomicShortIntDirectBackingArray(length, initial));
+		} finally {
+			resizeLock.unlock();
+		}
+	}
+	
+	/**
 	 * Sets the array equal to the given palette based array.  The main array should be the same length as this array
 	 * 
 	 * @param palette the palette, if the palette is of length 0, variableWidthBlockArray contains the data, in flat format

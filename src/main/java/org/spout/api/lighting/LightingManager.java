@@ -26,6 +26,7 @@
  */
 package org.spout.api.lighting;
 
+import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.util.cuboid.ChunkCuboidLightBufferWrapper;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.cuboid.ImmutableCuboidBlockMaterialBuffer;
@@ -84,11 +85,11 @@ public abstract class LightingManager<T extends CuboidLightBuffer> {
 	 * @param bz an array of the bottom z block coordinates of the Chunks
 	 * @param initializedChunks the number of cuboids
 	 */
-	protected abstract void initChunks(ChunkCuboidLightBufferWrapper<T> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int initializedChunks);
+	protected abstract void initChunks(ChunkCuboidLightBufferWrapper<T> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, Chunk[] chunks);
 	
 	@SuppressWarnings("unchecked")
-	public void initChunksUnchecked(ChunkCuboidLightBufferWrapper<?> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int initializedChunks) {
-		initChunks((ChunkCuboidLightBufferWrapper<T>) light, material, height, bx, by, bz, initializedChunks);
+	public void initChunksUnchecked(ChunkCuboidLightBufferWrapper<?> light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, Chunk[] chunks) {
+		initChunks((ChunkCuboidLightBufferWrapper<T>) light, material, height, chunks);
 	}
 	
 	/**

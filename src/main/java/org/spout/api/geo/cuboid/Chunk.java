@@ -429,6 +429,14 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	public Chunk getRelative(BlockFace offset) {
 		return this.getRelative(offset.getOffset());
 	}
+	
+	/**
+	 * Gets the generation index for this chunk.  Only chunks generated as part of the same
+	 * bulk initialize have the same index.
+	 * 
+	 * @return a unique generation id, or -1 if the chunk was loaded from disk
+	 */
+	public abstract int getGenerationIndex();
 
 	/**
 	 * Converts a point in such a way that it points to the first block (the base block) of the chunk<br>

@@ -60,15 +60,15 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	
 	private final AtomicInteger dirtyBlocks = new AtomicInteger(0);
 	
-	public AtomicPaletteBlockStore(int shift, boolean storeState) {
-		this(shift, storeState, 10);
+	public AtomicPaletteBlockStore(int shift, boolean storeState, boolean compress) {
+		this(shift, storeState, compress, 10);
 	}
 	
-	public AtomicPaletteBlockStore(int shift, boolean storeState, short[] initial) {
-		this(shift, storeState, 10, initial);
+	public AtomicPaletteBlockStore(int shift, boolean storeState, boolean compress, short[] initial) {
+		this(shift, storeState, compress, 10, initial);
 	}
 	
-	public AtomicPaletteBlockStore(int shift, boolean storeState, int dirtySize) {
+	public AtomicPaletteBlockStore(int shift, boolean storeState, boolean compress, int dirtySize) {
 		this.side = 1 << shift;
 		this.shift = shift;
 		this.doubleShift = shift << 1;
@@ -88,24 +88,31 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 		}
 	}
 
-	public AtomicPaletteBlockStore(int shift, boolean storeState, int dirtySize, short[] initial) {
-		this(shift, storeState, dirtySize, initial, null);
+	public AtomicPaletteBlockStore(int shift, boolean storeState, boolean compress, int dirtySize, short[] initial) {
+		this(shift, storeState, compress, dirtySize, initial, null);
 	}
 	
-	public AtomicPaletteBlockStore(int shift, boolean storeState, int dirtySize, short[] blocks, short[] data) {
-		this(shift, storeState, dirtySize);
+	public AtomicPaletteBlockStore(int shift, boolean storeState, boolean compress, int dirtySize, short[] blocks, short[] data) {
+		this(shift, storeState, compress, dirtySize);
 		if (blocks != null) {
 			int[] initial = new int[Math.min(blocks.length, this.length)];
 			for (int i = 0; i < blocks.length; i++) {
 				short d = data != null ? data[i] : 0;
 				initial[i] = BlockFullState.getPacked(blocks[i], d);
 			}
-			store.set(initial);
+			if (compress) {
+				store.set(initial);
+			} else {
+				store.uncompressedSet(initial);
+			}
 		}
 	}
 	
-	public AtomicPaletteBlockStore(int shift, boolean storeState, int dirtySize, int[] palette, int blockArrayWidth, int[] variableWidthBlockArray) {
-		this(shift, storeState, dirtySize);
+	public AtomicPaletteBlockStore(int shift, boolean storeState, boolean compress, int dirtySize, int[] palette, int blockArrayWidth, int[] variableWidthBlockArray) {
+		this(shift, storeState, compress, dirtySize);
+		if (!compress) {
+			throw new IllegalArgumentException("Cannot disable compression when loading from palette");
+		}
 		store.set(palette, blockArrayWidth, variableWidthBlockArray);
 	}
 	

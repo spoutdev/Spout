@@ -28,6 +28,7 @@ package org.spout.api.lighting;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.util.cuboid.ChunkCuboidLightBufferWrapper;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.cuboid.ImmutableCuboidBlockMaterialBuffer;
@@ -51,7 +52,7 @@ public class FakeLightingManager extends LightingManager {
 	}
 
 	@Override
-	protected void initChunks(ChunkCuboidLightBufferWrapper light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, int[] bx, int[] by, int[] bz, int changedCuboids) {
+	protected void initChunks(ChunkCuboidLightBufferWrapper light, ImmutableCuboidBlockMaterialBuffer material, ImmutableHeightMapBuffer height, Chunk[] chunks) {
 		throw new UnsupportedOperationException("Attempt to use resolve() method on a FakeLightingManager");
 	}
 	
