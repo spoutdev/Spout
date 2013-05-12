@@ -26,10 +26,16 @@
  */
 package org.spout.api.generator.biome;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.spout.api.generator.biome.selector.LayeredBiomeSelectorElement;
 import org.spout.api.geo.cuboid.Chunk;
@@ -90,10 +96,53 @@ public abstract class Biome implements LayeredBiomeSelectorElement {
 	public final List<Decorator> getDecorators() {
 		return decorators;
 	}
+	
+	private final static ConcurrentHashMap<Class<? extends Decorator>, AtomicLong> populatorProfilerMap = new ConcurrentHashMap<Class<? extends Decorator>, AtomicLong>();
+	
+	private final void populatorAdd(Decorator populator, long delta) {
+		AtomicLong i = populatorProfilerMap.get(populator.getClass());
+		if (i == null) {
+			i = new AtomicLong();
+			AtomicLong oldCounter = populatorProfilerMap.putIfAbsent(populator.getClass(), i);
+			if (oldCounter != null) {
+				i = oldCounter;
+			}
+		}
+		i.addAndGet(delta);
+	}
+	
+	private final static Comparator<Entry<Class<? extends Decorator>, Long>> comp = new Comparator<Entry<Class<? extends Decorator>, Long>>() {
+		@Override
+		public int compare(Entry<Class<? extends Decorator>, Long> o1, Entry<Class<? extends Decorator>, Long> o2) {
+			if (o1.getValue() > o2.getValue()) {
+				return 1;
+			} else if (o1.getValue() < o2.getValue()) {
+				return -1;
+			} else {
+				return 0;
+			}
+		}
+	};
+	
+	public static List<Entry<Class<? extends Decorator>, Long>> getProfileResults() {
+		
+		List<Entry<Class<? extends Decorator>, Long>> list = new ArrayList<Entry<Class<? extends Decorator>, Long>>(populatorProfilerMap.size());
+		
+		for (Entry<Class<? extends Decorator>, AtomicLong> e : populatorProfilerMap.entrySet()) {
+			list.add(new AbstractMap.SimpleEntry<Class<? extends Decorator>, Long>(e.getKey(), e.getValue().get()));
+		}
+		
+		Collections.sort(list, comp);
+		
+		return list;
+	}
 
 	public final void decorate(Chunk chunk, Random random) {
 		for (Decorator b : decorators) {
+			long time = -System.nanoTime();
 			b.populate(chunk, random);
+			time += System.nanoTime();
+			populatorAdd(b, time);
 		}
 	}
 
