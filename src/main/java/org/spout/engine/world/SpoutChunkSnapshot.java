@@ -66,6 +66,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	private final byte[] blockLight;
 	private final byte[] skyLight;
 	private final CuboidLightBuffer[] lightBuffers;
+	private final CuboidLightBuffer[] idLightBufferMap;
 	private final BiomeManager biomes;
 	private final SerializableMap dataMap;
 	private final PopulationState populationState;
@@ -115,6 +116,23 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		this.blockLight = blockLight;
 		this.skyLight = skyLight;
 		this.lightBuffers = lightBuffers;
+		if (this.lightBuffers == null) {
+			this.idLightBufferMap = new CuboidLightBuffer[0];
+		} else {
+			int mx = 0;
+			for (int i = 0; i < lightBuffers.length; i++) {
+				int id = lightBuffers[i].getManagerId() & 0xFFFF;
+				if (id > mx) {
+					mx = id;
+				}
+			}
+			this.idLightBufferMap = new CuboidLightBuffer[mx + 1];
+			for (int i = 0; i < lightBuffers.length; i++) {
+				CuboidLightBuffer buffer = lightBuffers[i];
+				int id = buffer.getManagerId() & 0xFFFF;
+				this.idLightBufferMap[id] =  buffer;
+			}
+		}
 
 		// Cache palette based block data
 		this.palette = palette;
@@ -393,5 +411,14 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	@Override
 	public CuboidLightBuffer[] getLightBuffers() {
 		return lightBuffers;
+	}
+
+	@Override
+	public CuboidLightBuffer getLightBuffer(short id) {
+		int index = id & 0xFFFF;
+		if (index < 0 || index >= idLightBufferMap.length) {
+			return null;
+		}
+		return idLightBufferMap[index];
 	}
 }
