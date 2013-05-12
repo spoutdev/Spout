@@ -85,9 +85,12 @@ public abstract class BiomeGenerator implements WorldGenerator {
 		final int y = chunkY << Chunk.BLOCKS.BITS;
 		final int z = chunkZ << Chunk.BLOCKS.BITS;
 		final BiomeManager manager;
-		if (blockData.getSize().getFloorX() <= Chunk.BLOCKS.SIZE
-				&& blockData.getSize().getFloorZ() <= Chunk.BLOCKS.SIZE) {
-			manager = world.getBiomeManager(x, z, true);
+		if (blockData.getSize().getFloorX() <= Chunk.BLOCKS.SIZE && blockData.getSize().getFloorZ() <= Chunk.BLOCKS.SIZE) {
+			BiomeManager temp = world.getBiomeManager(x, z, false);
+			if (temp == null) {
+				temp = generateBiomes(chunkX, chunkZ, world);
+			}
+			manager = temp;
 		} else {
 			final Vector3 size = blockData.getSize();
 			final int xSize = size.getFloorX();
@@ -100,7 +103,7 @@ public abstract class BiomeGenerator implements WorldGenerator {
 			if (zSize % Chunk.BLOCKS.SIZE > 0) {
 				zChunkSize++;
 			}
-			manager = new WrappedBiomeManager(world, chunkX, chunkZ, xChunkSize, zChunkSize, true);
+			manager = new WrappedBiomeManager(this, world, chunkX, chunkZ, xChunkSize, zChunkSize, false);
 		}
 		final long seed = world.getSeed();
 		generateTerrain(blockData, x, y, z, manager, seed);

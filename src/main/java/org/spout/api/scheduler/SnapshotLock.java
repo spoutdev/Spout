@@ -26,7 +26,6 @@
  */
 package org.spout.api.scheduler;
 
-import org.spout.api.plugin.Plugin;
 
 /**
  * A class to allow non-pulsed threads to synchronize with the pulsed thread
@@ -41,7 +40,7 @@ public interface SnapshotLock {
 	 *
 	 * @param plugin the plugin
 	 */
-	public void readLock(Plugin plugin);
+	public void readLock(Object plugin);
 
 	/**
 	 * Attempts to readlock the stable snapshot and returns immediately
@@ -51,12 +50,19 @@ public interface SnapshotLock {
 	 *
 	 * @param plugin the plugin
 	 */
-	public boolean readTryLock(Plugin plugin);
+	public boolean readTryLock(Object plugin);
 
 	/**
 	 * Releases a previous readlock
 	 *
 	 * @param plugin the plugin
 	 */
-	public void readUnlock(Plugin plugin);
+	public void readUnlock(Object plugin);
+	
+	/**
+	 * Gets if the lock is read locked
+	 * 
+	 * @return true if locked
+	 */
+	public boolean isReadLocked();
 }

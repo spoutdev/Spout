@@ -40,7 +40,7 @@ public interface Scheduler extends TaskManager {
 	 * @return the snapshot lock
 	 */
 	public SnapshotLock getSnapshotLock();
-
+	
 	/**
 	 * Gets the amount of time since the beginning of the current tick.
 	 *
