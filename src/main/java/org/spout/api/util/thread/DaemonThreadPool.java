@@ -56,7 +56,7 @@ public class DaemonThreadPool {
 	}
 	
 	public Future<?> add(Runnable r) {
-		return add(r, true);
+		return add(r, false);
 	}
 	
 	public Future<?> add(Runnable r, boolean cancelOld) {
