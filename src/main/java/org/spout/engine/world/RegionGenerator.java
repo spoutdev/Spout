@@ -299,7 +299,7 @@ public class RegionGenerator {
 		}
 	}
 	
-	public void touchChunk(SpoutChunk c) {
+	public void touchChunkNeighbors(SpoutChunk c) {
 		
 		if (!c.isObserved()) {
 			Spout.getLogger().info("Touched chunk is not observed, " + c);
@@ -310,11 +310,11 @@ public class RegionGenerator {
 		int z = c.getZ() & Region.CHUNKS.MASK;
 		int y = c.getZ() & Region.CHUNKS.MASK;
 		
-		touchChunk(x, y, z);
+		touchChunkNeighbors(x, y, z);
 		
 	}
 	
-	private void touchChunk(int x, int y, int z) {
+	private void touchChunkNeighbors(int x, int y, int z) {
 		
 		x &= Region.CHUNKS.MASK;
 		z &= Region.CHUNKS.MASK;
@@ -324,28 +324,55 @@ public class RegionGenerator {
 		
 		for (BlockFace face : faces) {
 			IntVector3 v = face.getIntOffset();
-			final int ox = x + (v.getX() << shift);
-			if (ox < 0 || ox >= Region.CHUNKS.SIZE) {
-				continue;
-			}
-			final int oz = z + (v.getZ() << shift);
-			if (oz < 0 || oz >= Region.CHUNKS.SIZE) {
-				continue;
-			}
-			Chunk neighbor = region.getChunk(ox, y, oz, LoadOption.NO_LOAD);
-			
-			if (neighbor != null) {
-				continue;
-			}
 
-			if (!region.inputStreamExists(ox, y, oz)) {
-				pool.add(new Runnable() {
-					@Override
-					public void run() {
-						generateColumn(ox, oz, false);
-					}
-				}, true);
+			final int ox = x + (v.getX() << shift);
+
+			final int oz = z + (v.getZ() << shift);
+			
+			if (ox < 0 || ox >= Region.CHUNKS.SIZE || oz < 0 || oz >= Region.CHUNKS.SIZE) {
+				SpoutRegion newRegion = region.getLocalRegion(face, LoadOption.NO_LOAD);
+				if (newRegion != null) {
+					newRegion.getRegionGenerator().touchChunk(ox, y, oz);
+				} else {
+					final BlockFace finalFace = face;
+					
+					pool.add(new Runnable() {
+						@Override
+						public void run() {
+							SnapshotLock lock = Spout.getScheduler().getSnapshotLock();
+							lock.readLock(RegionGenerator.this);
+							try {
+								SpoutRegion newRegion = region.getLocalRegion(finalFace, LoadOption.LOAD_GEN);
+								newRegion.getRegionGenerator().touchChunk(ox, 0, oz);
+							} finally {
+								lock.readUnlock(RegionGenerator.this);
+							}
+						}
+					}, true);
+				}
+			} else {
+				touchChunk(ox, y, oz);
 			}
+		}
+	}
+	
+	private void touchChunk(final int x, final int y, final int z) {
+
+		final int mask = Region.CHUNKS.MASK;
+
+		Chunk c = region.getChunk(x, y, z, LoadOption.NO_LOAD);
+
+		if (c != null) {
+			return;
+		}
+
+		if (!region.inputStreamExists(x, y, z)) {
+			pool.add(new Runnable() {
+				@Override
+				public void run() {
+					generateColumn(x & mask, z & mask, false);
+				}
+			}, true);
 		}
 	}
 	
