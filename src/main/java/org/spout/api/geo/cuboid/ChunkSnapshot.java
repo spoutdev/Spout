@@ -94,6 +94,14 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	 * @return
 	 */
 	public abstract CuboidLightBuffer[] getLightBuffers();
+	
+	/**
+	 * Gets an array containing a copy of a light data arrays
+	 * 
+	 * @param id the id of the corresponding light manager
+	 * @return
+	 */
+	public abstract CuboidLightBuffer getLightBuffer(short id);
 
 	/**
 	 * Gets the region that this chunk is located in.
