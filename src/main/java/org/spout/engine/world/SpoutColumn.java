@@ -304,13 +304,12 @@ public class SpoutColumn {
 		int xx = (this.x << BLOCKS.BITS) + (x & BLOCKS.MASK);
 		int yy = y;
 		int zz = (this.z << BLOCKS.BITS) + (z & BLOCKS.MASK);
-		LoadOption opt = y < getGeneratorHeight(x, y) - Chunk.BLOCKS.DOUBLE_SIZE ?
-				LoadOption.LOAD_ONLY : LoadOption.LOAD_GEN;
+		LoadOption opt = LoadOption.LOAD_ONLY;
 		Chunk c = world.getChunkFromBlock(xx, yy, zz, opt);
 		if (c == null) {
 			return false;
 		} else {
-			return isAir(world.getBlockFullState(xx, yy, zz));
+			return isAir(c.getBlockFullState(xx, yy, zz));
 		}
 	}
 

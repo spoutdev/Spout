@@ -894,11 +894,15 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		if (!isPopulated()) {
 			queueForPopulation(false);
 		}
+		boolean wasEmpty = observers.isEmpty();
 		if (observers.add((SpoutEntity) entity) && (entity instanceof SpoutPlayer)) {
 			observingPlayers.add((SpoutPlayer) entity);
 			Engine engine = Spout.getEngine();
 			if (engine.getPlatform() == Platform.CLIENT && ((SpoutClient) engine).getActivePlayer() == entity) {
 				setIsInViewDistance(true);
+			}
+			if (wasEmpty) {
+				getRegion().getRegionGenerator().touchChunk(this);
 			}
 		}
 		SaveState.resetPostSaving(saveState);

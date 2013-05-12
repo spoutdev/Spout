@@ -24,29 +24,10 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.util.thread.threadfactory;
+package org.spout.engine.scheduler;
 
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
-
-public class NamedThreadFactory implements ThreadFactory {
-	protected final String namePrefix;
-	protected final boolean daemon;
-	protected static final AtomicInteger idCounter = new AtomicInteger();
-
-	public NamedThreadFactory(String namePrefix) {
-		this(namePrefix, false);
-	}
-
-	public NamedThreadFactory(String namePrefix, boolean daemon) {
-		this.namePrefix = namePrefix;
-		this.daemon = daemon;
-	}
-
-	@Override
-	public Thread newThread(Runnable runnable) {
-		Thread thread = new Thread(runnable, "Executor{" + namePrefix + "-" + idCounter.getAndIncrement() + "}");
-		thread.setDaemon(daemon);
-		return thread;
+public class SchedulerSyncExecutorThread extends Thread {
+	public SchedulerSyncExecutorThread(Runnable r, String name) {
+		super(r, name);
 	}
 }

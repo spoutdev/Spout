@@ -2188,5 +2188,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 		}
 		return col.getHeightMapBuffer();
 	}
+	
+	public RegionGenerator getRegionGenerator() {
+		return generator;
+	}
 
 }

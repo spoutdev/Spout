@@ -36,6 +36,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -43,7 +44,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.lwjgl.opengl.Display;
-
 import org.spout.api.Engine;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
@@ -57,7 +57,6 @@ import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.scheduler.Worker;
 import org.spout.api.util.thread.annotation.DelayedWrite;
-
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.SpoutEngine;
@@ -76,7 +75,6 @@ import org.spout.engine.util.thread.coretasks.StartTickTask;
 import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
-import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 
 /**
  * A class which handles scheduling for the engine {@link SpoutTask}s.<br>
@@ -204,7 +202,7 @@ public final class SpoutScheduler implements Scheduler {
 			guiThread = null;
 		}
 
-		executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2 + 1, new NamedThreadFactory("SpoutScheduler - async manager executor service", true));
+		executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2 + 1, new MarkedNamedThreadFactory("SpoutScheduler - async manager executor service", true));
 
 		taskManager = new SpoutTaskManager(this, mainThread);
 	}
@@ -351,7 +349,7 @@ public final class SpoutScheduler implements Scheduler {
 				
 				if (expectedTime < startTime - 10000) {
 					expectedTime = startTime;
-					Spout.getLogger().info("Server has falled more than 10 seconds behind schedule");
+					Spout.getLogger().info("Server has fallen more than 10 seconds behind schedule");
 				}
 				
 				heavyLoad.set(underLoad);
@@ -623,7 +621,7 @@ public final class SpoutScheduler implements Scheduler {
 			runTasks(managers, startTickTask[stage], "Stage " + stage, tickStage);
 		}
 
-		lockSnapshotLock();
+		lockSnapshotLock("Primary Snapshot Lock", snapshotLock);
 
 		try {
 			int totalUpdates = -1;
@@ -667,7 +665,7 @@ public final class SpoutScheduler implements Scheduler {
 
 			TickStage.setStage(TickStage.TICKSTART);
 		} finally {
-			unlockSnapshotLock();
+			unlockSnapshotLock("Primary Snapshot Lock", snapshotLock);
 		}
 		return true;
 	}
@@ -732,13 +730,13 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	private void copySnapshotWithLock(List<AsyncManager> managers) throws InterruptedException {
-		lockSnapshotLock();
+		lockSnapshotLock("Primary Snapshot Lock", snapshotLock);
 		try {
 			copySnapshot(managers);
 
 			TickStage.setStage(TickStage.TICKSTART);
 		} finally {
-			unlockSnapshotLock();
+			unlockSnapshotLock("Primary Snapshot Lock", snapshotLock);
 		}
 	}
 
@@ -749,7 +747,7 @@ public final class SpoutScheduler implements Scheduler {
 		this.runTasks(managers, copySnapshotTask, "Copy-snapshot", TickStage.SNAPSHOT);
 	}
 
-	private void lockSnapshotLock() {
+	private void lockSnapshotLock(String name, SpoutSnapshotLock lock) {
 
 		int delay = 500;
 		int threshold = 50;
@@ -759,20 +757,24 @@ public final class SpoutScheduler implements Scheduler {
 		boolean success = false;
 
 		while (!success) {
-			success = snapshotLock.writeLock(delay);
+			success = lock.writeLock(delay);
 			if (!success) {
 				delay *= 1.5;
-				List<Plugin> violatingPlugins = snapshotLock.getLockingPlugins(threshold);
+				List<Object> violatingPlugins = lock.getLockingPlugins(threshold);
 				long stallTime = System.currentTimeMillis() - startTime;
 				Spout.info("Unable to lock snapshot after " + stallTime + "ms");
-				for (Plugin p : violatingPlugins) {
-					Spout.info(p.getDescription().getName() + " has locked the snapshot lock for more than " + threshold + "ms");
+				for (Object p : violatingPlugins) {
+					if (p instanceof Plugin) {
+						Spout.info(((Plugin) p).getDescription().getName() + " has locked the " + name + " for more than " + threshold + "ms");
+					} else {
+						Spout.info(p.getClass().getSimpleName() + " has locked the " + name + " for more than " + threshold + "ms");
+					}
 				}
-				for (String s : snapshotLock.getLockingTasks()) {
-					Spout.info("Core task " + s + " is holding the lock");
+				for (String s : lock.getLockingTasks()) {
+					Spout.info("Core task " + s + " is holding the " + name);
 				}
 				if (stallTime > 2000) {
-					Spout.info("--- Stack dump of core Threads holding lock ---");
+					Spout.info("--- Stack dump of core Threads holding lock --- " + name);
 					for (Thread t : snapshotLock.getCoreLockingThreads()) {
 						AsyncExecutorUtils.dumpStackTrace(t);
 					}
@@ -782,8 +784,8 @@ public final class SpoutScheduler implements Scheduler {
 		}
 	}
 
-	private void unlockSnapshotLock() {
-		snapshotLock.writeUnlock();
+	private void unlockSnapshotLock(String name, SpoutSnapshotLock lock) {
+		lock.writeUnlock();
 	}
 
 	private void runTasks(List<AsyncManager> managers, ManagerRunnableFactory taskFactory, String stageString, int tickStage) {
@@ -1019,7 +1021,7 @@ public final class SpoutScheduler implements Scheduler {
 	 * <br>
 	 * Tasks are executed in the order that they are received.<br>
 	 * <br>
-	 * It is used for region unloading and multi-region dynamic block updates
+	 * It is used for region unloading
 	 * @param r
 	 */
 	public void scheduleCoreTask(Runnable r) {
@@ -1052,5 +1054,24 @@ public final class SpoutScheduler implements Scheduler {
 			}
 		}
 		 */
+	}
+	
+	private static class MarkedNamedThreadFactory extends Thread implements ThreadFactory {
+		
+		private final AtomicInteger idCounter = new AtomicInteger();
+		private final String namePrefix;
+		private final boolean daemon;
+
+		public MarkedNamedThreadFactory(String namePrefix, boolean daemon) {
+			this.namePrefix = namePrefix;
+			this.daemon = daemon;
+		}
+		
+		public Thread newThread(Runnable runnable) {
+			Thread thread = new SchedulerSyncExecutorThread(runnable, "Executor{" + namePrefix + "-" + idCounter.getAndIncrement() + "}");
+			thread.setDaemon(daemon);
+			return thread;
+		}
+		
 	}
 }

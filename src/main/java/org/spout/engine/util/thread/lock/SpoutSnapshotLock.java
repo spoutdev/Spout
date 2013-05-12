@@ -36,20 +36,27 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.SnapshotLock;
+import org.spout.engine.scheduler.SchedulerSyncExecutorThread;
 
 public class SpoutSnapshotLock implements SnapshotLock {
-	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-	private final ConcurrentHashMap<Plugin, LockInfo> locks = new ConcurrentHashMap<Plugin, LockInfo>();
+	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
+	private final ConcurrentHashMap<Object, LockInfo> locks = new ConcurrentHashMap<Object, LockInfo>();
 	private final ConcurrentHashMap<String, Integer> coreTasks = new ConcurrentHashMap<String, Integer>();
 	private final ConcurrentHashMap<Thread, Integer> coreLockingThreads = new ConcurrentHashMap<Thread, Integer>();
 
  	@Override
-	public void readLock(Plugin plugin) {
+	public void readLock(Object plugin) {
+ 		if (Thread.currentThread() instanceof SchedulerSyncExecutorThread) {
+ 			return;
+ 		}
 		lock.readLock().lock();
 		addLock(plugin);
 	}
 	
 	public void coreReadLock(String taskName) {
+ 		if (Thread.currentThread() instanceof SchedulerSyncExecutorThread) {
+ 			return;
+ 		}
 		if (taskName == null) {
 			throw new IllegalArgumentException("Taskname may not be null");
 		}
@@ -58,7 +65,10 @@ public class SpoutSnapshotLock implements SnapshotLock {
 	}
 
 	@Override
-	public boolean readTryLock(Plugin plugin) {
+	public boolean readTryLock(Object plugin) {
+ 		if (Thread.currentThread() instanceof SchedulerSyncExecutorThread) {
+ 			return true;
+ 		}
 		boolean success = lock.readLock().tryLock();
 		if (success) {
 			addLock(plugin);
@@ -67,6 +77,9 @@ public class SpoutSnapshotLock implements SnapshotLock {
 	}
 	
 	public boolean coreReadTryLock(String taskName) {
+ 		if (Thread.currentThread() instanceof SchedulerSyncExecutorThread) {
+ 			return true;
+ 		}
 		if (taskName == null) {
 			throw new IllegalArgumentException("Taskname may not be null");
 		}
@@ -76,14 +89,33 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		}
 		return success;
 	}
+	
+	@Override
+	public boolean isReadLocked() {
+		if (!lock.readLock().tryLock()) {
+			return true;
+		}
+
+		try {
+			return false;
+		} finally {
+			lock.readLock().unlock();
+		}
+	}
 
 	@Override
-	public void readUnlock(Plugin plugin) {
+	public void readUnlock(Object plugin) {
+ 		if (Thread.currentThread() instanceof SchedulerSyncExecutorThread) {
+ 			return;
+ 		}
 		lock.readLock().unlock();
 		removeLock(plugin);
 	}
 	
 	public void coreReadUnlock(String taskName) {
+ 		if (Thread.currentThread() instanceof SchedulerSyncExecutorThread) {
+ 			return;
+ 		}
 		lock.readLock().unlock();
 		decrementCoreCounter(taskName);
 	}
@@ -98,13 +130,13 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		return success;
 	}
 
-	public List<Plugin> getLockingPlugins(int threshold) {
-		ArrayList<Plugin> plugins = new ArrayList<Plugin>();
-		Set<Entry<Plugin, LockInfo>> entries = locks.entrySet();
+	public List<Object> getLockingPlugins(int threshold) {
+		ArrayList<Object> plugins = new ArrayList<Object>();
+		Set<Entry<Object, LockInfo>> entries = locks.entrySet();
 
 		long currentTime = System.currentTimeMillis();
 
-		for (Entry<Plugin, LockInfo> e : entries) {
+		for (Entry<Object, LockInfo> e : entries) {
 			LockInfo info = e.getValue();
 			if (info.locks > 0 && currentTime - info.oldestLock > threshold) {
 				plugins.add(e.getKey());
@@ -125,7 +157,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		lock.writeLock().unlock();
 	}
 
-	public void addLock(Plugin plugin) {
+	private void addLock(Object plugin) {
 		boolean success = false;
 
 		long currentTime = System.currentTimeMillis();
@@ -147,13 +179,18 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		}
 	}
 
-	public void removeLock(Plugin plugin) {
+	private void removeLock(Object plugin) {
 		boolean success = false;
 
 		while (!success) {
 			final LockInfo oldLockInfo = locks.get(plugin);
 			if (oldLockInfo == null) {
-				throw new IllegalArgumentException("Attempted to remove a lock for a plugin with no previously added lock, " + plugin.getName());
+				if (plugin instanceof Plugin) {
+					Plugin p = (Plugin) plugin;
+					throw new IllegalArgumentException("Attempted to remove a lock for a plugin with no previously added lock, " + p.getName());
+				} else {
+					throw new IllegalArgumentException("Attempted to remove a lock for a plugin with no previously added lock, " + plugin);
+				}
 			}
 
 			final LockInfo newLockInfo = new LockInfo(oldLockInfo.oldestLock, oldLockInfo.locks - 1);
