@@ -32,10 +32,13 @@ import gnu.trove.procedure.TObjectProcedure;
 import gnu.trove.procedure.TShortObjectProcedure;
 
 import java.lang.ref.WeakReference;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -1426,7 +1429,10 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		final Random random = new Random(WorldGeneratorUtils.getSeed(getWorld(), x, y, z, 42));
 		for (Populator populator : populators) {
 			try {
+				long time = -System.nanoTime();
 				populator.populate(this, random);
+				time += System.nanoTime();
+				populatorAdd(populator, time);
 			} catch (Exception e) {
 				Spout.getEngine().getLogger().log(Level.SEVERE, "Could not populate Chunk with " + populator.toString());
 				e.printStackTrace();
@@ -1446,11 +1452,54 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	
 	public void populate(Populator populator) {
 		try {
+			long time = -System.nanoTime();
 			populator.populate(this, new Random(WorldGeneratorUtils.getSeed(getWorld(), getX(), getY(), getZ(), 42)));
+			time += System.nanoTime();
+			populatorAdd(populator, time);
 		} catch (Exception e) {
 			Spout.getEngine().getLogger().log(Level.SEVERE, "Could not populate Chunk with " + populator.toString());
 			e.printStackTrace();
 		}
+	}
+
+	private final static ConcurrentHashMap<Class<? extends Populator>, AtomicLong> populatorProfilerMap = new ConcurrentHashMap<Class<? extends Populator>, AtomicLong>();
+	
+	private final void populatorAdd(Populator populator, long delta) {
+		AtomicLong i = populatorProfilerMap.get(populator.getClass());
+		if (i == null) {
+			i = new AtomicLong();
+			AtomicLong oldCounter = populatorProfilerMap.putIfAbsent(populator.getClass(), i);
+			if (oldCounter != null) {
+				i = oldCounter;
+			}
+		}
+		i.addAndGet(delta);
+	}
+	
+	private final static Comparator<Entry<Class<? extends Populator>, Long>> comp = new Comparator<Entry<Class<? extends Populator>, Long>>() {
+		@Override
+		public int compare(Entry<Class<? extends Populator>, Long> o1, Entry<Class<? extends Populator>, Long> o2) {
+			if (o1.getValue() > o2.getValue()) {
+				return 1;
+			} else if (o1.getValue() < o2.getValue()) {
+				return -1;
+			} else {
+				return 0;
+			}
+		}
+	};
+	
+	public static List<Entry<Class<? extends Populator>, Long>> getProfileResults() {
+		
+		List<Entry<Class<? extends Populator>, Long>> list = new ArrayList<Entry<Class<? extends Populator>, Long>>(populatorProfilerMap.size());
+		
+		for (Entry<Class<? extends Populator>, AtomicLong> e : populatorProfilerMap.entrySet()) {
+			list.add(new AbstractMap.SimpleEntry<Class<? extends Populator>, Long>(e.getKey(), e.getValue().get()));
+		}
+		
+		Collections.sort(list, comp);
+		
+		return list;
 	}
 
 	@Override

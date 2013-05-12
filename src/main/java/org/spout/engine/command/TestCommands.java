@@ -34,14 +34,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.spout.api.Client;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
-import org.spout.api.audio.Sound;
-import org.spout.api.audio.SoundManager;
-import org.spout.api.audio.SoundSource;
-import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.CommandContext;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.Command;
@@ -51,6 +48,9 @@ import org.spout.api.component.impl.InteractComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.exception.CommandException;
+import org.spout.api.generator.Populator;
+import org.spout.api.generator.biome.Biome;
+import org.spout.api.generator.biome.Decorator;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.discrete.Point;
@@ -73,12 +73,12 @@ import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
 import org.spout.api.plugin.CommonPluginManager;
 import org.spout.api.plugin.Plugin;
-
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.entity.component.EntityRendererComponent;
 import org.spout.engine.util.thread.AsyncExecutorUtils;
+import org.spout.engine.world.SpoutChunk;
 
 public class TestCommands {
 	private final SpoutEngine engine;
@@ -426,6 +426,30 @@ public class TestCommands {
 		ac.stopAnimations();
 
 		source.sendMessage("Entity " + id + " animation stopped ");
+	}
+	
+	@Command(aliases = {"profpop"}, desc = "Prints the populator profiler results to console", min = 0, max = 0)
+	public void profilePopulator(CommandContext args, CommandSource source) throws CommandException {
+		Spout.getLogger().info("");
+		Spout.getLogger().info("Populator profiler results");
+		long totalPopulator = 0;
+		for (Entry<Class<? extends Populator>, Long> e : SpoutChunk.getProfileResults()) {
+			totalPopulator += e.getValue();
+		}
+		for (Entry<Class<? extends Populator>, Long> e : SpoutChunk.getProfileResults()) {
+			Spout.getLogger().info(e.getKey().getSimpleName() + " " + e.getValue() + " (" + (0.10 * ((e.getValue() * 1000) / totalPopulator)) + ")");
+		}
+		Spout.getLogger().info("Total " + totalPopulator);
+		Spout.getLogger().info("");
+		Spout.getLogger().info("Decorator profiler results");
+		long totalDecorator = 0;
+		for (Entry<Class<? extends Decorator>, Long> e : Biome.getProfileResults()) {
+			totalDecorator += e.getValue();
+		}
+		for (Entry<Class<? extends Decorator>, Long> e : Biome.getProfileResults()) {
+			Spout.getLogger().info(e.getKey().getSimpleName() + " " + e.getValue() + " (" + (0.10 * ((e.getValue() * 1000) / totalDecorator)) + ")");
+		}
+		Spout.getLogger().info("Total " + totalDecorator);
 	}
 
 	/**
