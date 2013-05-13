@@ -26,20 +26,22 @@
  */
 package org.spout.engine.world;
 
+import gnu.trove.map.TShortObjectMap;
 import java.lang.ref.WeakReference;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.spout.api.Spout;
-import org.spout.api.component.type.BlockComponent;
+import org.spout.api.component.BlockComponentHolder;
+import org.spout.api.component.Component;
 import org.spout.api.event.Cause;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.LoadOption;
-import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Block;
 import org.spout.api.geo.cuboid.Chunk;
-import org.spout.api.geo.cuboid.Region;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
@@ -51,22 +53,23 @@ import org.spout.api.math.GenericMath;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.StringUtil;
+import org.spout.api.util.hashing.NibbleQuadHashed;
 
 public class SpoutBlock implements Block {
 	private final int x, y, z;
-	private final WeakReference<World> world;
-	private final AtomicReference<WeakReference<Chunk>> chunk;
+	private final WeakReference<SpoutWorld> world;
+	private final AtomicReference<WeakReference<SpoutChunk>> chunk;
 
-	public SpoutBlock(World world, int x, int y, int z) {
+	public SpoutBlock(SpoutWorld world, int x, int y, int z) {
 		this(world, x, y, z, null);
 	}
 
-	protected SpoutBlock(World world, int x, int y, int z, Chunk chunk) {
+	protected SpoutBlock(SpoutWorld world, int x, int y, int z, SpoutChunk chunk) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		if (world != null) {
-			this.world = ((SpoutWorld) world).getWeakReference();
+			this.world = world.getWeakReference();
 		} else {
 			this.world = SpoutWorld.NULL_WEAK_REFERENCE;
 		}
@@ -78,13 +81,13 @@ public class SpoutBlock implements Block {
 			}
 		}
 		if (chunk != null) {
-			this.chunk = new AtomicReference<WeakReference<Chunk>>(((SpoutChunk) chunk).getWeakReference());
+			this.chunk = new AtomicReference<WeakReference<SpoutChunk>>(chunk.getWeakReference());
 		} else {
-			this.chunk = new AtomicReference<WeakReference<Chunk>>(SpoutChunk.NULL_WEAK_REFERENCE);
+			this.chunk = new AtomicReference<WeakReference<SpoutChunk>>(SpoutChunk.NULL_WEAK_REFERENCE);
 		}
 	}
 
-	private final Chunk loadChunk() {
+	private final SpoutChunk loadChunk() {
 		return getWorld().getChunkFromBlock(x, y, z, LoadOption.LOAD_GEN);
 	}
 
@@ -94,9 +97,9 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public Chunk getChunk() {
-		WeakReference<Chunk> chunkRef = this.chunk.get();
-		Chunk chunk = chunkRef.get();
+	public SpoutChunk getChunk() {
+		WeakReference<SpoutChunk> chunkRef = this.chunk.get();
+		SpoutChunk chunk = chunkRef.get();
 		if (chunk == null || !chunk.isLoaded()) {
 			chunk = loadChunk();
 			if (chunk == null) {
@@ -110,8 +113,8 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public World getWorld() {
-		World world = this.world.get();
+	public SpoutWorld getWorld() {
+		SpoutWorld world = this.world.get();
 		if (world == null) {
 			throw new IllegalStateException("The world has been unloaded!");
 		}
@@ -271,7 +274,7 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public Region getRegion() {
+	public SpoutRegion getRegion() {
 		return this.getChunk().getRegion();
 	}
 
@@ -368,8 +371,88 @@ public class SpoutBlock implements Block {
 		return getMaterial().isMaterial(materials);
 	}
 
+	private NibbleQuadHashed getPacked() {
+		Point position = getPosition();
+		int chunkX = position.getBlockX() % Chunk.BLOCKS.SIZE;
+		int chunkY = position.getBlockY() % Chunk.BLOCKS.SIZE;
+		int chunkZ = position.getBlockZ() % Chunk.BLOCKS.SIZE;
+		return new NibbleQuadHashed(chunkX, chunkY, chunkZ, 0);
+	}
 	@Override
-	public BlockComponent getComponent() {
-		return this.getRegion().getBlockComponent(x, y, z);
+	public <T extends Component> T add(Class<T> type) {
+		synchronized(getChunk().getBlockComponentHolder()) {
+			TShortObjectMap<BlockComponentHolder> blockComponents = getChunk().getBlockComponentHolder();
+			NibbleQuadHashed packed = getPacked();
+			BlockComponentHolder get = blockComponents.get(packed.key());
+			if (get == null) {
+				get = getChunk().createAndGetComponentHolder(packed);
+			}
+			return get.add(type);
+		}
+	}
+
+	@Override
+	public <T extends Component> T detach(Class<? extends Component> type) {
+		synchronized(getChunk().getBlockComponentHolder()) {
+			TShortObjectMap<BlockComponentHolder> blockComponents = getChunk().getBlockComponentHolder();
+			NibbleQuadHashed packed = getPacked();
+			BlockComponentHolder get = blockComponents.get(packed.key());
+			if (get == null) {
+				return null; 
+			}
+			return get.detach(type);
+		}
+	}
+
+	@Override
+	public Collection<Component> values() {
+		synchronized(getChunk().getBlockComponentHolder()) {
+			TShortObjectMap<BlockComponentHolder> blockComponents = getChunk().getBlockComponentHolder();
+			NibbleQuadHashed packed = getPacked();
+			BlockComponentHolder get = blockComponents.get(packed.key());
+			if (get == null) {
+				return Collections.emptySet();
+			}
+			return get.values();
+		}
+	}
+
+	@Override
+	public <T extends Component> T get(Class<T> type) {
+		synchronized(getChunk().getBlockComponentHolder()) {
+			TShortObjectMap<BlockComponentHolder> blockComponents = getChunk().getBlockComponentHolder();
+			NibbleQuadHashed packed = getPacked();
+			BlockComponentHolder get = blockComponents.get(packed.key());
+			if (get == null) {
+				return null;
+			}
+			return get.get(type);
+		}
+	}
+
+	@Override
+	public <T extends Component> T getExact(Class<T> type) {
+		synchronized(getChunk().getBlockComponentHolder()) {
+			TShortObjectMap<BlockComponentHolder> blockComponents = getChunk().getBlockComponentHolder();
+			NibbleQuadHashed packed = getPacked();
+			BlockComponentHolder get = blockComponents.get(packed.key());
+			if (get == null) {
+				return null;
+			}
+			return get.getExact(type);
+		}
+	}
+
+	@Override
+	public <T extends Component> Collection<T> getAll(Class<T> type) {
+		synchronized(getChunk().getBlockComponentHolder()) {
+			TShortObjectMap<BlockComponentHolder> blockComponents = getChunk().getBlockComponentHolder();
+			NibbleQuadHashed packed = getPacked();
+			BlockComponentHolder get = blockComponents.get(packed.key());
+			if (get == null) {
+				return Collections.emptySet();
+			}
+			return get.getAll(type);
+		}
 	}
 }

@@ -55,7 +55,6 @@ import javax.vecmath.Vector3f;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.component.Component;
-import org.spout.api.component.type.BlockComponent;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.entity.Entity;
@@ -1707,11 +1706,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 	@Override
 	public int addBlockDataField(int x, int y, int z, int bits, int value, Cause<?> cause) {
 		return this.getChunkFromBlock(x, y, z).addBlockDataField(x, y, z, bits, value, cause);
-	}
-
-	@Override
-	public BlockComponent getBlockComponent(int x, int y, int z) {
-		return this.getChunkFromBlock(x, y, z).getBlockComponent(x, y, z);
 	}
 
 	@Override
