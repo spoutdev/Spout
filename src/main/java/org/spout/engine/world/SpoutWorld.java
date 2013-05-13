@@ -73,6 +73,7 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.GenericMath;
+import org.spout.api.math.IntVector3;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
@@ -1494,5 +1495,28 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 			}
 		}
 		return setQueue;
+	}
+
+	@Override
+	public void queueChunksForGeneration(List<Vector3> chunks) {
+		for (Vector3 v : chunks) {
+			queueChunkForGeneration(v);
+		}
+	}
+
+	@Override
+	public void queueChunkForGeneration(final Vector3 chunk) {
+		SpoutRegion region = getRegion(chunk.getFloorX(), chunk.getFloorY(), chunk.getFloorZ(), LoadOption.NO_LOAD);
+		if (region != null) {
+			region.queueChunkForGeneration(chunk);
+		} else {
+			((SpoutScheduler) Spout.getScheduler()).scheduleSyncDelayedTask(this, new Runnable() {
+				@Override
+				public void run() {
+					SpoutRegion region = getRegion(chunk.getFloorX(), chunk.getFloorY(), chunk.getFloorZ(), LoadOption.LOAD_GEN);
+					region.queueChunkForGeneration(chunk);
+				}
+			});
+		}
 	}
 }

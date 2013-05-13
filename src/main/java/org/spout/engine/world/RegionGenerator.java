@@ -40,14 +40,13 @@ import org.spout.api.material.block.BlockFaces;
 import org.spout.api.math.GenericMath;
 import org.spout.api.math.IntVector3;
 import org.spout.api.scheduler.SnapshotLock;
-import org.spout.api.scheduler.TickStage;
 import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.thread.DaemonThreadPool;
 
 public class RegionGenerator {
 	
-	private final static DaemonThreadPool pool = new DaemonThreadPool("Region generator");
+	private final static DaemonThreadPool pool = new DaemonThreadPool("Region generator", -1);
 	
 	private final SpoutRegion region;
 	private final SpoutWorld world;
@@ -114,7 +113,12 @@ public class RegionGenerator {
 
 		if (sync) {
 			if (Spout.getScheduler().getSnapshotLock().isReadLocked()) {
-				generated.compareAndSet(GenerateState.IN_PROGRESS_ASYNC, GenerateState.IN_PROGRESS_SYNC);
+				throw new IllegalStateException("Attempt to sync generate a chunk during snapshot lock");
+				// This code allows the sync thread to cancel an async generation.
+				// However, sync generations should not happen during snapshot lock
+				//
+				// TODO - simplify this method, assuming no thread can hold a snapshot lock before it is called
+				// generated.compareAndSet(GenerateState.IN_PROGRESS_ASYNC, GenerateState.IN_PROGRESS_SYNC);
 			}
 			colLock.lock();
 		} else {
@@ -122,8 +126,6 @@ public class RegionGenerator {
 				return;
 			}
 		}
-
-		SpoutChunk[][][] newChunks;
 
 		short[][][][] rawIdArrays;
 		short[][][][] rawDataArrays;
@@ -143,8 +145,6 @@ public class RegionGenerator {
 				return;
 			}
 			
-			newChunks = new SpoutChunk[width][Region.CHUNKS.SIZE][width];
-
 			rawIdArrays = new short[width][Region.CHUNKS.SIZE][width][];
 			rawDataArrays = new short[width][Region.CHUNKS.SIZE][width][];
 
@@ -254,14 +254,13 @@ public class RegionGenerator {
 							int cyy = cy + yy;
 							SpoutChunk newChunk = new SpoutChunk(world, region, cxx, cyy, czz, rawIdArrays[xx][yy][zz], rawDataArrays[xx][yy][zz], null);
 							newChunk.setGenerationIndex(generationIndex);
-
+	
 							for (int i = 0; i < managers.length; i++) {
 								CuboidLightBuffer lightBuffer = buffers[i][xx][yy][zz];
 								if (newChunk.setIfAbsentLightBuffer((short) lightBuffer.getManagerId(), lightBuffer) != lightBuffer) {
 									Spout.getLogger().info("Unable to set light buffer for new chunk " + newChunk + " as the id is already in use, " + lightBuffer.getManagerId());
 								}
 							}
-							newChunks[xx][yy][zz] = newChunk;
 							SpoutChunk currentChunk = region.setChunkIfNotGenerated(newChunk, x + xx, yy, z + zz, null, true);
 							if (currentChunk != newChunk) {
 								if (currentChunk == null) {
@@ -356,7 +355,7 @@ public class RegionGenerator {
 		}
 	}
 	
-	private void touchChunk(final int x, final int y, final int z) {
+	protected void touchChunk(final int x, final int y, final int z) {
 
 		final int mask = Region.CHUNKS.MASK;
 

@@ -2193,4 +2193,16 @@ public class SpoutRegion extends Region implements AsyncManager {
 		return generator;
 	}
 
+	@Override
+	public void queueChunksForGeneration(List<Vector3> chunks) {
+		for (Vector3 v : chunks) {
+			queueChunkForGeneration(v);
+		}
+	}
+
+	@Override
+	public void queueChunkForGeneration(Vector3 chunk) {
+		getRegionGenerator().touchChunk(chunk.getFloorX(), chunk.getFloorY(), chunk.getFloorZ());
+	}
+
 }
