@@ -29,7 +29,6 @@ package org.spout.api.math;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.spout.api.util.StringUtil;
 
 /**
@@ -111,6 +110,15 @@ public class Vector3 implements Comparable<Vector3>, Serializable {
 	 */
 	public Vector3(int x, int y, int z) {
 		this((float) x, (float) y, (float) z);
+	}
+	
+	/**
+	 * Constructs and initializes a Vector3 from the given IntVector3
+	 *
+	 * @param v the vector
+	 */
+	public Vector3(IntVector3 v) {
+		this((float) v.getX(), (float) v.getY(), (float) v.getZ());
 	}
 
 	/**

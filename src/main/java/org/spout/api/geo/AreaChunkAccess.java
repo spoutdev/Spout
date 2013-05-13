@@ -26,7 +26,10 @@
  */
 package org.spout.api.geo;
 
+import java.util.List;
+
 import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.LiveRead;
@@ -158,4 +161,20 @@ public interface AreaChunkAccess extends AreaBlockAccess {
 	 */
 	@SnapshotRead
 	public int getNumLoadedChunks();
+	
+	/**
+	 * Queues a list of chunks for generation.  The Vector3 values
+	 * are in chunk coords.
+	 * 
+	 * @param chunks a list of chunk coordinates
+	 */
+	public void queueChunksForGeneration(List<Vector3> chunks);
+	
+	/**
+	 * Queues a chunk for generation.  The Vector3 value
+	 * is in chunk coords.
+	 * 
+	 * @param chunks a list of chunk coordinates
+	 */
+	public void queueChunkForGeneration(Vector3 chunk);
 }

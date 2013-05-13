@@ -27,8 +27,10 @@
 package org.spout.api.util.thread;
 
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RunnableFuture;
 
 import org.spout.api.util.future.SimpleFuture;
@@ -39,16 +41,24 @@ import org.spout.api.util.future.SimpleFuture;
  */
 public class DaemonThreadPool {
 	
-	private final ArrayBlockingQueue<RunnableFuture<?>> queue;
+	private final BlockingQueue<RunnableFuture<?>> queue;
 	
 	private final Thread[] threads;
 	
 	public DaemonThreadPool(String type) {
-		this(type, Runtime.getRuntime().availableProcessors() * 2, 32);
+		this(type, 32);
+	}
+	
+	public DaemonThreadPool(String type, int queueSize) {
+		this(type, Runtime.getRuntime().availableProcessors() * 2, queueSize);
 	}
 	
 	public DaemonThreadPool(String type, int threads, int queueSize) {
-		this.queue = new ArrayBlockingQueue<RunnableFuture<?>>(queueSize);
+		this(type, threads, getQueue(queueSize));
+	}
+	
+	public DaemonThreadPool(String type, int threads, BlockingQueue<RunnableFuture<?>> queue) {
+		this.queue = queue;
 		this.threads = new Thread[threads];
 		for (int i = 0; i < threads; i++) {
 			this.threads[i] = new DaemonThread(type, i);
@@ -138,6 +148,14 @@ public class DaemonThreadPool {
 					break;
 				}
 			}
+		}
+	}
+	
+	private static BlockingQueue<RunnableFuture<?>> getQueue(int queueSize) {
+		if (queueSize == -1) {
+			return new LinkedBlockingQueue<RunnableFuture<?>>();
+		} else {
+			return new ArrayBlockingQueue<RunnableFuture<?>>(queueSize);
 		}
 	}
 
