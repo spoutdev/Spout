@@ -31,7 +31,11 @@ import gnu.trove.procedure.TShortObjectProcedure;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import org.spout.api.component.BlockComponentHolder;
+import org.spout.api.component.Component;
 
 import org.spout.api.component.type.BlockComponent;
 import org.spout.api.datatable.SerializableMap;
@@ -89,8 +93,8 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		if (type == EntityType.BOTH) {
 			this.entities = Collections.unmodifiableList(getEntities(chunk));
 			BlockSnapshotProcedure procedure = new BlockSnapshotProcedure(chunk);
-			synchronized (chunk.getBlockComponents()) {
-				chunk.getBlockComponents().forEachEntry(procedure);
+			synchronized (chunk.getBlockComponentHolder()) {
+				chunk.getBlockComponentHolder().forEachEntry(procedure);
 			}
 			this.blockComponents = Collections.unmodifiableList(procedure.snapshots);
 		} else if (type == EntityType.ENTITIES) {
@@ -99,8 +103,8 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		} else if (type == EntityType.BLOCK_COMPONENTS) {
 			this.entities = null;
 			BlockSnapshotProcedure procedure = new BlockSnapshotProcedure(chunk);
-			synchronized (chunk.getBlockComponents()) {
-				chunk.getBlockComponents().forEachEntry(procedure);
+			synchronized (chunk.getBlockComponentHolder()) {
+				chunk.getBlockComponentHolder().forEachEntry(procedure);
 			}
 			this.blockComponents = Collections.unmodifiableList(procedure.snapshots);
 		} else {
@@ -327,13 +331,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	@Override
 	public List<BlockComponentSnapshot> getBlockComponents() {
 		return blockComponents;
-	}
-
-	@Override
-	@SnapshotRead
-	public BlockComponent getBlockComponent(int x, int y, int z) {
-		throw new UnsupportedOperationException("Use getBlockComponents instead");
-	}
+    }
 
 	public int[] getPalette() {
 		return palette;
@@ -353,14 +351,18 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 	private static class SpoutBlockComponentSnapshot implements BlockComponentSnapshot {
 		private final int x, y, z;
-		private final Class<? extends BlockComponent> clazz;
+		private final Set<Class<? extends BlockComponent>> clazz;
 		private final SerializableMap data;
 
-		private SpoutBlockComponentSnapshot(int x, int y, int z, Class<? extends BlockComponent> clazz, SerializableMap data) {
+		private SpoutBlockComponentSnapshot(int x, int y, int z, BlockComponentHolder holder, SerializableMap data) {
 			this.x = x;
 			this.y = y;
 			this.z = z;
-			this.clazz = clazz;
+			Set<Class<? extends BlockComponent>> temp = new HashSet<Class<? extends BlockComponent>>();
+			for (Component c : holder.values()) {
+				temp.add((Class<? extends BlockComponent>) c.getClass());
+			}
+			this.clazz = Collections.unmodifiableSet(temp);
 			this.data = data;
 		}
 
@@ -380,7 +382,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		}
 
 		@Override
-		public Class<? extends BlockComponent> getComponent() {
+		public Set<Class<? extends BlockComponent>> getComponents() {
 			return clazz;
 		}
 
@@ -390,7 +392,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		}
 	}
 
-	private static class BlockSnapshotProcedure implements TShortObjectProcedure<BlockComponent> {
+	private static class BlockSnapshotProcedure implements TShortObjectProcedure<BlockComponentHolder> {
 		private final SpoutChunk chunk;
 		private final ArrayList<BlockComponentSnapshot> snapshots = new ArrayList<BlockComponentSnapshot>();
 
@@ -399,11 +401,11 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		}
 
 		@Override
-		public boolean execute(short index, BlockComponent component) {
+		public boolean execute(short index, BlockComponentHolder component) {
 			int x = NibbleQuadHashed.key1(index) + chunk.getBlockX();
 			int y = NibbleQuadHashed.key2(index) + chunk.getBlockY();
 			int z = NibbleQuadHashed.key3(index) + chunk.getBlockZ();
-			snapshots.add(new SpoutBlockComponentSnapshot(x, y, z, component.getClass(), component.getOwner().getData()));
+			snapshots.add(new SpoutBlockComponentSnapshot(x, y, z, component, component.getData()));
 			return true;
 		}
 	}
