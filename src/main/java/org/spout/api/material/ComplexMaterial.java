@@ -37,5 +37,5 @@ public interface ComplexMaterial {
 	 * 
 	 * @return block component
 	 */
-	public BlockComponent createBlockComponent();
+	public Class<? extends BlockComponent> getBlockComponent();
 }

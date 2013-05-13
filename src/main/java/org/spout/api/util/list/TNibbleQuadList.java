@@ -36,7 +36,7 @@ import org.spout.api.util.hashing.NibbleQuadHashed;
  * A simplistic map that supports a 4 nibbles (4 bits) for keys, using a trove
  * short hashset in the backend.
  */
-public class TNibbleQuadList extends NibbleQuadHashed {
+public class TNibbleQuadList {
 	protected final TShortList list;
 
 	public TNibbleQuadList() {
@@ -52,7 +52,7 @@ public class TNibbleQuadList extends NibbleQuadHashed {
 	}
 
 	public boolean add(int key1, int key2, int key3, int key4) {
-		return list.add(key(key1, key2, key3, key4));
+		return list.add(NibbleQuadHashed.key(key1, key2, key3, key4));
 	}
 	
 	public boolean addRaw(short value) {
@@ -60,7 +60,7 @@ public class TNibbleQuadList extends NibbleQuadHashed {
 	}
 
 	public boolean contains(int key1, int key2, int key3, int key4) {
-		return list.contains(key(key1, key2, key3, key4));
+		return list.contains(NibbleQuadHashed.key(key1, key2, key3, key4));
 	}
 
 	public void clear() {
@@ -76,7 +76,7 @@ public class TNibbleQuadList extends NibbleQuadHashed {
 	}
 
 	public boolean remove(int key1, int key2, int key3, int key4) {
-		return list.remove(key(key1, key2, key3, key4));
+		return list.remove(NibbleQuadHashed.key(key1, key2, key3, key4));
 	}
 
 	public void trimToSize() {

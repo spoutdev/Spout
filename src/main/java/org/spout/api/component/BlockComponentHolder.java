@@ -26,25 +26,39 @@
  */
 package org.spout.api.component;
 
-/**
- * Represents an abstract holder, which contains components that may be added
- * and removed from it.
- */
-public interface ComponentHolder extends ComponentOwner {
-	/**
-	 * Adds the component of the specified type to the holder and returns it if it is not present.
-	 * <p/>
-	 * Otherwise, it returns the component of the specified type if there was one present.
-	 * @param type whose component is to be added to the holder
-	 * @return the new component that was added, or the existing one if it had one
-	 */
-	public <T extends Component> T add(Class<T> type);
+import java.util.Collection;
+import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Block;
 
-	/**
-	 * Removes the component of the specified type from the holder if it is
-	 * present.
-	 * @param type whose component is to be removed from the holder
-	 * @return the removed component, or null if there was not one
-	 */
-	public <T extends Component> T detach(Class<? extends Component> type);
+public class BlockComponentHolder extends BaseComponentHolder {
+	/** Stored as world, not chunk, coords */
+	private final int x, y, z;
+	private final World world;
+
+	public BlockComponentHolder(int x, int y, int z, World world) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.world = world;
+	}
+
+	public Block getBlock() {
+		return world.getBlock(x, y, z);
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public int getZ() {
+		return z;
+	}
+
+	public World getWorld() {
+		return world;
+	}
 }

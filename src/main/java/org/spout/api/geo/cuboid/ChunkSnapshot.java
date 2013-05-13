@@ -27,6 +27,7 @@
 package org.spout.api.geo.cuboid;
 
 import java.util.List;
+import java.util.Set;
 
 import org.spout.api.component.type.BlockComponent;
 import org.spout.api.datatable.SerializableMap;
@@ -236,7 +237,7 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 		 * 
 		 * @return block component class
 		 */
-		public Class<? extends BlockComponent> getComponent();
+		public Set<Class<? extends BlockComponent>> getComponents();
 
 		/**
 		 * Gets a copy of the block component data

@@ -38,7 +38,7 @@ import gnu.trove.set.TShortSet;
  * A simplistic map that supports a 4 nibbles (4 bits) for keys, using a trove
  * short short hashmap in the backend.
  */
-public class TNibbleQuadShortHashMap extends NibbleQuadHashed {
+public class TNibbleQuadShortHashMap {
 	protected final TShortShortMap map;
 
 	public TNibbleQuadShortHashMap() {
@@ -54,15 +54,15 @@ public class TNibbleQuadShortHashMap extends NibbleQuadHashed {
 	}
 
 	public short put(int key1, int key2, int key3, int key4, short value) {
-		return map.put(key(key1, key2, key3, key4), value);
+		return map.put(NibbleQuadHashed.key(key1, key2, key3, key4), value);
 	}
 
 	public short get(int key1, int key2, int key3, int key4) {
-		return map.get(key(key1, key2, key3, key4));
+		return map.get(NibbleQuadHashed.key(key1, key2, key3, key4));
 	}
 
 	public boolean containsKey(int key1, int key2, int key3, int key4) {
-		return map.containsKey(key(key1, key2, key3, key4));
+		return map.containsKey(NibbleQuadHashed.key(key1, key2, key3, key4));
 	}
 
 	public void clear() {
@@ -90,7 +90,7 @@ public class TNibbleQuadShortHashMap extends NibbleQuadHashed {
 	}
 
 	public short remove(int key1, int key2, int key3, int key4) {
-		return map.remove(key(key1, key2, key3, key4));
+		return map.remove(NibbleQuadHashed.key(key1, key2, key3, key4));
 	}
 
 	public int size() {

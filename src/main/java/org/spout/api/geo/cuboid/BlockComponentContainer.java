@@ -26,7 +26,7 @@
  */
 package org.spout.api.geo.cuboid;
 
-import org.spout.api.component.type.BlockComponent;
+import org.spout.api.component.BlockComponentHolder;
 
 public interface BlockComponentContainer extends CubicContainer {
 	
@@ -35,10 +35,10 @@ public interface BlockComponentContainer extends CubicContainer {
 	 * 
 	 * @param x
 	 * @param y
-	 * @param z
-	 * @param component
+     * @param z
+     * @param snapshot  
 	 */
-	public void setBlockComponent(int x, int y, int z, BlockComponent snapshot);
+	public void setBlockComponent(int x, int y, int z, BlockComponentHolder snapshot);
 	
 	/**
 	 * Sets the number of block components.  This method is called before the first call to setBlockComponent();

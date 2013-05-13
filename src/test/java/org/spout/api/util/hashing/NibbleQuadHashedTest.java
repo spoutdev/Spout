@@ -38,6 +38,12 @@ public class NibbleQuadHashedTest {
 		assertEquals(key2, NibbleQuadHashed.key2(key));
 		assertEquals(key3, NibbleQuadHashed.key3(key));
 		assertEquals(key4, NibbleQuadHashed.key4(key));
+
+		NibbleQuadHashed hashed = new NibbleQuadHashed(key1, key2, key3, key4);
+		assertEquals(key1, hashed.key1());
+		assertEquals(key2, hashed.key2());
+		assertEquals(key3, hashed.key3());
+		assertEquals(key4, hashed.key4());
 	}
 
 	@Test

@@ -53,6 +53,32 @@ package org.spout.api.util.hashing;
  */
 
 public class NibbleQuadHashed {
+	private final short key;
+
+	public NibbleQuadHashed(int key1, int key2, int key3, int key4) {
+		this.key = key(key1, key2, key3, key4);
+	}
+
+	public final short key() {
+		return key;
+	}
+
+	public final byte key1() {
+		return (byte) ((key >> 12) & 0xF);
+	}
+
+	public final byte key2() {
+		return (byte) ((key >> 8) & 0xF);
+	}
+
+	public final byte key3() {
+		return (byte) ((key >> 4) & 0xF);
+	}
+
+	public final byte key4() {
+		return (byte) (key & 0xF);
+	}
+
 	/**
 	 * Packs the first 4 least significant bits of each byte into a <code>short</code>
 	 *

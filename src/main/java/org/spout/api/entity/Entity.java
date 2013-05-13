@@ -33,6 +33,7 @@ import org.spout.api.Engine;
 import org.spout.api.component.ComponentHolder;
 import org.spout.api.component.impl.NetworkComponent;
 import org.spout.api.component.impl.SceneComponent;
+import org.spout.api.data.DataOwner;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
@@ -48,7 +49,7 @@ import org.spout.api.util.thread.annotation.SnapshotRead;
 /**
  * Represents an entity, which may or may not be spawned into the world.
  */
-public interface Entity extends Tickable, WorldSource, ComponentHolder {
+public interface Entity extends Tickable, WorldSource, ComponentHolder, DataOwner {
 	/**
 	 * Gets the current ID of this entity within the current game session
 	 * @return The entities' id.

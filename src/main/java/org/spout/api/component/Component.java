@@ -27,6 +27,7 @@
 package org.spout.api.component;
 
 import org.spout.api.component.impl.DatatableComponent;
+import org.spout.api.data.DataOwner;
 import org.spout.api.tickable.Tickable;
 
 public abstract class Component implements Tickable {
@@ -104,6 +105,10 @@ public abstract class Component implements Tickable {
 	 * @return the datatable component
 	 */
 	public final DatatableComponent getData() {
-		return getOwner().getData();
+		if (getOwner() instanceof DataOwner) {
+			return ((DataOwner)getOwner()).getData();
+		} else {
+			return getOwner().get(DatatableComponent.class);
+		}
 	}
 }

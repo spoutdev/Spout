@@ -26,7 +26,7 @@
  */
 package org.spout.api.component.type;
 
-import org.spout.api.component.ChunkComponentOwner;
+import org.spout.api.component.BlockComponentHolder;
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentOwner;
 import org.spout.api.entity.Entity;
@@ -38,22 +38,17 @@ public class BlockComponent extends Component {
 	}
 
 	@Override
-	public final ChunkComponentOwner getOwner() {
-		return (ChunkComponentOwner) super.getOwner();
+	public final BlockComponentHolder getOwner() {
+		return (BlockComponentHolder) super.getOwner();
 	}
 
 	@Override
 	public final boolean attachTo(ComponentOwner owner) {
-		if (owner instanceof ChunkComponentOwner) {
+		if (owner instanceof BlockComponentHolder) {
 			return super.attachTo(owner);
 		} else {
 			return false;
 		}
-	}
-
-	@Override
-	public final void onDetached() {
-		//Kept to prevent overriding
 	}
 
 	/**
@@ -64,12 +59,7 @@ public class BlockComponent extends Component {
 		if (getOwner() == null) {
 			throw new IllegalStateException("Must have an attached owner!");
 		}
-		return new Point(getOwner().getChunk().getWorld(), getOwner().getX(), getOwner().getY(), getOwner().getZ());
-	}
-
-	@Override
-	public final boolean isDetachable() {
-		return false;
+		return new Point(getOwner().getWorld(), getOwner().getX(), getOwner().getY(), getOwner().getZ());
 	}
 
 	/**

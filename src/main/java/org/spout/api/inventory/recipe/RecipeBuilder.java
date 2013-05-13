@@ -91,7 +91,7 @@ public class RecipeBuilder {
 		}
 		if (!includeData) {
 			for (int i = 0; i < ingredients.size(); i++) {
-				Material mat = ingredients.get(i).getMaterial();
+				Material mat = ingredients.get(i);
 				while (mat != null && mat.isSubMaterial()) {
 					mat = mat.getParentMaterial();
 					ingredients.set(i, mat);

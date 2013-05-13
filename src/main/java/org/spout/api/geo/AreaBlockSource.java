@@ -104,17 +104,6 @@ public interface AreaBlockSource {
 	public byte getBlockSkyLightRaw(int x, int y, int z);
 
 	/**
-	 * Gets the {@link BlockComponent} for the block at (x, y, z)
-	 *
-	 * @param x coordinate of the block
-	 * @param y coordinate of the block
-	 * @param z coordinate of the block
-	 * @return the block component
-	 */
-	@SnapshotRead
-	public BlockComponent getBlockComponent(int x, int y, int z);
-	
-	/**
 	 * Gets the biome type at the coordinates.
 	 * Returns {@code null} if no biomes are present.
 	 *

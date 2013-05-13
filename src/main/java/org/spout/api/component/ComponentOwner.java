@@ -28,8 +28,6 @@ package org.spout.api.component;
 
 import java.util.Collection;
 
-import org.spout.api.component.impl.DatatableComponent;
-
 /**
  * Represents an object which may own components.
  */
@@ -41,8 +39,26 @@ public interface ComponentOwner {
 	public Collection<Component> values();
 
 	/**
-	 * Gets the datatable component held by this component owner.
-	 * @return Gets the datatable held by this owner
+	 * Returns the component of the specified type (or a child implementation) from the holder if it is
+	 * present.
+	 * @param type whose component is to be returned from the holder
+	 * @return the component, or null if one was not found
 	 */
-	public DatatableComponent getData();
+	public <T extends Component> T get(Class<T> type);
+
+	/**
+	 * Returns the component of the specified type (not a child implementation) from the holder if it is
+	 * present.
+	 * @param type whose component is to be returned from the holder
+	 * @return the component, or null if one was not found.
+	 */
+	public <T extends Component> T getExact(Class<T> type);
+	
+	/**
+	 * Returns all components of the specified type (or a child implementation).
+	 * 
+	 * @param type whose components are to be returned from the holder
+	 * @return the component list.
+	 */
+	public <T extends Component> Collection<T> getAll(Class<T> type);
 }

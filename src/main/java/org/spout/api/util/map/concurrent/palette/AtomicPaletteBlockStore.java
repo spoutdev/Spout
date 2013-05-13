@@ -128,10 +128,10 @@ public class AtomicPaletteBlockStore implements AtomicBlockStore {
 	
 	@Override
 	public int getAndSetBlock(int x, int y, int z, short id, short data) {
-		int oldState = BlockFullState.getPacked(id, data);
-		int newState = 0;
+		int newState = BlockFullState.getPacked(id, data);
+		int oldState = 0;
 		try {
-			return newState = store.set(getIndex(x, y, z), oldState);
+			return oldState = store.set(getIndex(x, y, z), newState);
 		} finally {
 			markDirty(x, y, z, oldState, newState);
 		}

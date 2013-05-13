@@ -24,65 +24,18 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.component;
-
-import java.util.Collection;
-import java.util.Collections;
+package org.spout.api.data;
 
 import org.spout.api.component.impl.DatatableComponent;
-import org.spout.api.geo.cuboid.Chunk;
 
-public class ChunkComponentOwner implements ComponentOwner {
-	private final DatatableComponent data = new DatatableComponent();
-	private final Chunk chunk;
-	private final int x, y, z;
-
-	public ChunkComponentOwner(Chunk chunk, int x, int y, int z) {
-		this.chunk = chunk;
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
-
-	@Override
-	public Collection<Component> values() {
-		return Collections.emptyList();
-	}
-
-	@Override
-	public DatatableComponent getData() {
-		return data;
-	}
+/**
+ * This interface represents an object that has a {@link  DatatableComponent}
+ */
+public interface DataOwner {
 
 	/**
-	 * Gets the chunk this component is in
-	 * @return chunk
+	 * Gets the datatable component held.
+	 * @return Gets the datatable held
 	 */
-	public Chunk getChunk() {
-		return chunk;
-	}
-
-	/**
-	 * Gets the world block x-coordinate
-	 * @return world x-coordinate
-	 */
-	public int getX() {
-		return x;
-	}
-
-	/**
-	 * Gets the world block y-coordinate
-	 * @return world y-coordinate
-	 */
-	public int getY() {
-		return y;
-	}
-
-	/**
-	 * Gets the world block z-coordinate
-	 * @return world z-coordinate
-	 */
-	public int getZ() {
-		return z;
-	}
+	public DatatableComponent getData();
 }
