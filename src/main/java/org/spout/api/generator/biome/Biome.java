@@ -26,6 +26,8 @@
  */
 package org.spout.api.generator.biome;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -98,6 +100,7 @@ public abstract class Biome implements LayeredBiomeSelectorElement {
 	}
 	
 	private final static ConcurrentHashMap<Class<? extends Decorator>, AtomicLong> populatorProfilerMap = new ConcurrentHashMap<Class<? extends Decorator>, AtomicLong>();
+	private final static ThreadMXBean bean = ManagementFactory.getThreadMXBean();
 	
 	private final void populatorAdd(Decorator populator, long delta) {
 		AtomicLong i = populatorProfilerMap.get(populator.getClass());
@@ -139,9 +142,9 @@ public abstract class Biome implements LayeredBiomeSelectorElement {
 
 	public final void decorate(Chunk chunk, Random random) {
 		for (Decorator b : decorators) {
-			long time = -System.nanoTime();
+			long time = -bean.getCurrentThreadCpuTime();
 			b.populate(chunk, random);
-			time += System.nanoTime();
+			time += bean.getCurrentThreadCpuTime();
 			populatorAdd(b, time);
 		}
 	}
