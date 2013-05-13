@@ -31,6 +31,8 @@ import gnu.trove.map.hash.TShortObjectHashMap;
 import gnu.trove.procedure.TObjectProcedure;
 import gnu.trove.procedure.TShortObjectProcedure;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.lang.ref.WeakReference;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -1429,9 +1431,9 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		final Random random = new Random(WorldGeneratorUtils.getSeed(getWorld(), x, y, z, 42));
 		for (Populator populator : populators) {
 			try {
-				long time = -System.nanoTime();
+				long time = -bean.getCurrentThreadCpuTime();
 				populator.populate(this, random);
-				time += System.nanoTime();
+				time += bean.getCurrentThreadCpuTime();
 				populatorAdd(populator, time);
 			} catch (Exception e) {
 				Spout.getEngine().getLogger().log(Level.SEVERE, "Could not populate Chunk with " + populator.toString());
@@ -1452,9 +1454,9 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	
 	public void populate(Populator populator) {
 		try {
-			long time = -System.nanoTime();
+			long time = -bean.getCurrentThreadCpuTime();
 			populator.populate(this, new Random(WorldGeneratorUtils.getSeed(getWorld(), getX(), getY(), getZ(), 42)));
-			time += System.nanoTime();
+			time += bean.getCurrentThreadCpuTime();
 			populatorAdd(populator, time);
 		} catch (Exception e) {
 			Spout.getEngine().getLogger().log(Level.SEVERE, "Could not populate Chunk with " + populator.toString());
@@ -1463,6 +1465,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	private final static ConcurrentHashMap<Class<? extends Populator>, AtomicLong> populatorProfilerMap = new ConcurrentHashMap<Class<? extends Populator>, AtomicLong>();
+	private final static ThreadMXBean bean = ManagementFactory.getThreadMXBean();
 	
 	private final void populatorAdd(Populator populator, long delta) {
 		AtomicLong i = populatorProfilerMap.get(populator.getClass());
