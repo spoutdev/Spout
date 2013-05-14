@@ -55,7 +55,7 @@ import java.util.logging.Level;
 import org.spout.api.Engine;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
-import org.spout.api.component.ChunkComponentOwner;
+import org.spout.api.component.BlockComponentHolder;
 import org.spout.api.component.type.BlockComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
@@ -114,9 +114,10 @@ import org.spout.engine.world.physics.PhysicsQueue;
 import org.spout.engine.world.physics.UpdateQueue;
 
 import com.google.common.collect.Sets;
+import org.spout.api.component.Component;
 
 public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
-	public static final WeakReference<Chunk> NULL_WEAK_REFERENCE = new WeakReference<Chunk>(null);
+	public static final WeakReference<SpoutChunk> NULL_WEAK_REFERENCE = new WeakReference<SpoutChunk>(null);
 	//Not static to allow the engine to parse values first
 	private final int autosaveInterval = SpoutConfiguration.AUTOSAVE_INTERVAL.getInt(60000);
 	private final Set<SpoutEntity> observers = Sets.newSetFromMap(new ConcurrentHashMap<SpoutEntity, Boolean>());
@@ -129,7 +130,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	/**
 	 * Not thread safe, synchronize on access
 	 */
-	private final TShortObjectHashMap<BlockComponent> blockComponents = new TShortObjectHashMap<BlockComponent>();
+	private final TShortObjectHashMap<BlockComponentHolder> blockComponents = new TShortObjectHashMap<BlockComponentHolder>();
 	/**
 	 * Multi-thread write access to the block store is only allowed during the
 	 * allowed stages. During the restricted stages, only the region thread may
@@ -202,7 +203,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	/**
 	 * A WeakReference to this chunk
 	 */
-	private final WeakReference<Chunk> selfReference;
+	private final WeakReference<SpoutChunk> selfReference;
 	
 	/**
 	 * An array of light buffers associated with this Chunk
@@ -303,7 +304,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		}
 
 		// loaded chunk
-		selfReference = new WeakReference<Chunk>(this);
+		selfReference = new WeakReference<SpoutChunk>(this);
 		this.scheduler = (SpoutScheduler) Spout.getScheduler();
 		this.lightStableOnLoad = lightStable;
 		this.saveMarkedElement = new ChunkSetQueueElement<Cube>(getRegion().saveMarkedQueue, this);
@@ -353,9 +354,9 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	private boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Cause<?> cause, boolean event) {
-		int bx = x & BLOCKS.MASK;
-		int by = y & BLOCKS.MASK;
-		int bz = z & BLOCKS.MASK;
+		x &= BLOCKS.MASK;
+		y &= BLOCKS.MASK;
+		z &= BLOCKS.MASK;
 
 		checkChunkLoaded();
 		checkBlockStoreUpdateAllowed();
@@ -366,7 +367,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 		if (event) {
 			// TODO - move to block change method?
-			Block block = getBlock(bx, by, bz);
+			Block block = getBlock(x, y, z);
 			BlockChangeEvent blockEvent = new BlockChangeEvent(block, new BlockSnapshot(block, material, data), cause);
 			Spout.getEngine().getEventManager().callEvent(blockEvent);
 			if (blockEvent.isCancelled()) {
@@ -380,30 +381,12 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		short newData = data;
 		int newState = BlockFullState.getPacked(newId, newData);
 
-		int oldState;
-		BlockMaterial oldMaterial;
-		if (material instanceof ComplexMaterial) {
-			oldState = getAndSetBlockLocked(bx, by, bz, newId, newData);
-			oldMaterial = (BlockMaterial) MaterialRegistry.get(oldState);
-		} else {
-			boolean success = false;
-			do {
-				oldState = blockStore.getFullData(bx, by, bz);
-				oldMaterial = (BlockMaterial) MaterialRegistry.get(oldState);
-				if (oldMaterial instanceof ComplexMaterial) {
-					oldState = getAndSetBlockLocked(bx, by, bz, newId, newData);
-					success = true;
-				} else {
-					short oldId = BlockFullState.getId(oldState);
-					short oldData = BlockFullState.getData(oldState);
-					success = blockStore.compareAndSetBlock(bx, by, bz, oldId, oldData, newId, newData);
-				}
-			} while (!success);
-		}
+		int oldState = getAndSetBlock(x, y, z, newId, newData);
+		BlockMaterial oldMaterial = MaterialRegistry.get(oldState);
 
 		if (newState != oldState) {
 			short oldData = BlockFullState.getData(oldState);
-			blockChanged(bx, by, bz, material, newData, oldMaterial, oldData, cause);
+			blockChanged(x, y, z, material, newData, oldMaterial, oldData, cause);
 			return true;
 		}
 		return false;
@@ -815,17 +798,14 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	@Override
 	public void fillBlockComponentContainer(final BlockComponentContainer container) {
-		synchronized (getBlockComponents()) {
-			final int bx = getBlockX();
-			final int by = getBlockY();
-			final int bz = getBlockZ();
-			container.setBlockComponentCount(getBlockComponents().size());
-			getBlockComponents().forEachEntry(new TShortObjectProcedure<BlockComponent>() {
+		synchronized (getBlockComponentHolder()) {
+			container.setBlockComponentCount(getBlockComponentHolder().size());
+			getBlockComponentHolder().forEachEntry(new TShortObjectProcedure<BlockComponentHolder>() {
 				@Override
-				public boolean execute(short index, BlockComponent component) {
-					int x = NibbleQuadHashed.key1(index) + bx;
-					int y = NibbleQuadHashed.key2(index) + by;
-					int z = NibbleQuadHashed.key3(index) + bz;
+				public boolean execute(short index, BlockComponentHolder component) {
+					int x = NibbleQuadHashed.key1(index);
+					int y = NibbleQuadHashed.key2(index);
+					int z = NibbleQuadHashed.key3(index);
 					container.setBlockComponent(x, y, z, component);
 					return true;
 				}
@@ -1609,7 +1589,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	 * Not thread-safe, must synchronize on access
 	 * @return block components
 	 */
-	public TShortObjectMap<BlockComponent> getBlockComponents() {
+	public TShortObjectMap<BlockComponentHolder> getBlockComponentHolder() {
 		return blockComponents;
 	}
 
@@ -1621,48 +1601,63 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			for (int dy = 0; dy < Chunk.BLOCKS.SIZE; dy++) {
 				for (int dz = 0; dz < Chunk.BLOCKS.SIZE; dz++) {
 					BlockMaterial bm = getBlockMaterial(dx, dy, dz);
-					if (bm instanceof ComplexMaterial) {
-						BlockComponent component = ((ComplexMaterial) bm).createBlockComponent();
+					if (bm instanceof ComplexMaterial) {//TODO remove ComplexMaterial
 						short packed = NibbleQuadHashed.key(dx, dy, dz, 0);
 						//Does not need synchronized, the chunk is not yet accessible outside this thread
-						getBlockComponents().put(packed, component);
-						ChunkComponentOwner owner = new ChunkComponentOwner(this, getBlockX() + dx, getBlockY() + dy, getBlockZ() + dz);
-						component.attachTo(owner);
+						BlockComponentHolder get = getBlockComponentHolder().get(packed);
+						if (get == null) {
+							get = new BlockComponentHolder(dx + getBlockX(), dy + getBlockY(), dz + getBlockZ(), getWorld());
+							getBlockComponentHolder().put(packed, get);
+						}
+						get.add(((ComplexMaterial) bm).getBlockComponent());
 					}
 				}
 			}
 		}
 	}
 
-	private int getAndSetBlockLocked(int x, int y, int z, short newId, short newData) {
+	private int getAndSetBlock(int x, int y, int z, short newId, short newData) {
 		x &= BLOCKS.MASK;
 		y &= BLOCKS.MASK;
 		z &= BLOCKS.MASK;
 
 		synchronized (blockComponents) {
 			int oldState = blockStore.getAndSetBlock(x, y, z, newId, newData);
-			short oldId = BlockFullState.getId(oldState);
-			BlockMaterial newMaterial = (BlockMaterial) MaterialRegistry.get(BlockFullState.getPacked(newId, newData));
-			if (newId != oldId) {
-				if (newMaterial instanceof ComplexMaterial) {
-					BlockComponent component = ((ComplexMaterial) newMaterial).createBlockComponent();
-					blockComponents.put(NibbleQuadHashed.key(x, y, z, 0), component);
-					component.attachTo(new ChunkComponentOwner(this, x + getBlockX(), y + getBlockY(), z + getBlockZ()));
-					component.onAttached();
-				} else {
-					blockComponents.remove(NibbleQuadHashed.key(x, y, z, 0));
+			if (newId != BlockFullState.getId(oldState)) {//Only try to change if they aren't the same id
+				BlockMaterial newMaterial = MaterialRegistry.get(BlockFullState.getPacked(newId, newData));
+				short packed = NibbleQuadHashed.key(x, y, z, 0);
+				BlockComponentHolder oldHolder = blockComponents.remove(packed);//All components get reset, always
+				if (oldHolder != null) {
+					for (Component c : oldHolder.values()) {
+						oldHolder.detach(c.getClass());//Detach if possible
+					}
+				}
+				if (newMaterial instanceof ComplexMaterial) {//TODO remove ComplexMaterial
+					BlockComponentHolder newHolder = new BlockComponentHolder(x + getBlockX(), y + getBlockY(), z + getBlockZ(), getWorld());
+					blockComponents.put(packed, newHolder);
+					newHolder.add(((ComplexMaterial) newMaterial).getBlockComponent());
 				}
 			}
 			return oldState;
 		}
 	}
 
-	@Override
-	public BlockComponent getBlockComponent(int x, int y, int z) {
+	public BlockComponentHolder getBlockComponentHolder(NibbleQuadHashed packed) {
 		synchronized (blockComponents) {
-			return blockComponents.get(NibbleQuadHashed.key(x & BLOCKS.MASK, y & BLOCKS.MASK, z & BLOCKS.MASK, 0));
+			return blockComponents.get(packed.key());
 		}
 	}
+
+	public BlockComponentHolder createAndGetComponentHolder(NibbleQuadHashed packed) {
+		synchronized (blockComponents) {
+			BlockComponentHolder get = blockComponents.get(packed.key());
+			if (get == null) {
+				get = new BlockComponentHolder(packed.key1(), packed.key2(), packed.key3(), getWorld());
+				blockComponents.put(packed.key(), get);
+			}
+			return get;
+		}
+    } 
 
 	protected void tickBlockComponents(float dt) {
 		synchronized (blockComponents) {
@@ -1672,16 +1667,18 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	private final BlockComponentTickProcedure procedure = new BlockComponentTickProcedure();
-	private static class BlockComponentTickProcedure implements TObjectProcedure<BlockComponent> {
+	private static class BlockComponentTickProcedure implements TObjectProcedure<BlockComponentHolder> {
 		private float dt;
 		@Override
-		public boolean execute(BlockComponent component) {
-			try {
-				if (component.canTick()) {
-					component.tick(dt);
+		public boolean execute(BlockComponentHolder component) {
+			for (Component c : component.values()) {
+				try {
+					if (c.canTick()) {
+						c.tick(dt);
+					}
+				} catch (Exception e) {
+					Spout.getLogger().log(Level.SEVERE, "Unhandled exception while ticking block component", e);
 				}
-			} catch (Exception e) {
-				Spout.getLogger().log(Level.SEVERE, "Unhandled exception while ticking block component", e);
 			}
 			return true;
 		}
@@ -1990,7 +1987,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		return dataMap;
 	}
 
-	public WeakReference<Chunk> getWeakReference() {
+	public WeakReference<SpoutChunk> getWeakReference() {
 		return selfReference;
 	}
 

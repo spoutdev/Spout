@@ -36,7 +36,8 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.spout.api.Spout;
-import org.spout.api.component.type.BlockComponent;
+import org.spout.api.component.BlockComponentHolder;
+import org.spout.api.component.Component;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.geo.cuboid.ChunkSnapshot.BlockComponentSnapshot;
 import org.spout.api.lighting.FakeLightingManager;
@@ -200,7 +201,7 @@ public class ChunkFiles {
 		//Load data associated with block components
 		loadBlockComponents(chunk, componentsList);
 		//Attach block components
-		chunk.getBlockComponents().forEachEntry(new AttachComponentProcedure());
+		chunk.getBlockComponentHolder().forEachEntry(new AttachComponentProcedure());
 		return chunk;
 	}
 	
@@ -300,10 +301,10 @@ public class ChunkFiles {
 			short packed = (Short) map.get("packed").getValue();
 			ByteArrayTag data = (ByteArrayTag) map.get("data");
 
-			BlockComponent component = chunk.getBlockComponents().get(packed);
+			BlockComponentHolder component = chunk.getBlockComponentHolder().get(packed);
 			if (component != null) {
 				try {
-					component.getOwner().getData().deserialize(data.getValue());
+					component.getData().deserialize(data.getValue());
 				} catch (IOException e) {
 					Spout.getLogger().log(Level.SEVERE, "Unhandled exception deserializing block component data", e);
 				}
@@ -376,13 +377,15 @@ public class ChunkFiles {
 		return new DynamicBlockUpdate(packed, nextUpdate, data);
 	}
 	
-	private static class AttachComponentProcedure implements TShortObjectProcedure<BlockComponent> {
+	private static class AttachComponentProcedure implements TShortObjectProcedure<BlockComponentHolder> {
 		@Override
-		public boolean execute(short a, BlockComponent b) {
-			try {
-				b.onAttached();
-			} catch (Exception e) {
-				Spout.getLogger().log(Level.SEVERE, "Unhandled exception attaching block component", e);
+		public boolean execute(short a, BlockComponentHolder b) {
+			for (Component c : b.values()) {
+				try {
+					c.onAttached();
+				} catch (Exception e) {
+					Spout.getLogger().log(Level.SEVERE, "Unhandled exception attaching block component", e);
+				}
 			}
 			return true;
 		}

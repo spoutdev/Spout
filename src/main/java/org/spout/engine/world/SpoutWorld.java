@@ -197,8 +197,8 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	/*
 	 * A WeakReference to this world
 	 */
-	private final WeakReference<World> selfReference;
-	public static final WeakReference<World> NULL_WEAK_REFERENCE = new WeakReference<World>(null);
+	private final WeakReference<SpoutWorld> selfReference;
+	public static final WeakReference<SpoutWorld> NULL_WEAK_REFERENCE = new WeakReference<SpoutWorld>(null);
 	
 	private final WeakValueHashMap<Long, SetQueue<SpoutColumn>> regionColumnDirtyQueueMap = new WeakValueHashMap<Long, SetQueue<SpoutColumn>>();
 	Model skydome;
@@ -238,7 +238,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 		this.age = new SnapshotableLong(snapshotManager, age);
 		taskManager = new SpoutTaskManager(getEngine().getScheduler(), null, this, age);
 		spawnLocation.set(new Transform(new Point(this, 1, 100, 1), Quaternion.IDENTITY, Vector3.ONE));
-		selfReference = new WeakReference<World>(this);
+		selfReference = new WeakReference<SpoutWorld>(this);
 
 		((SpoutScheduler) getEngine().getScheduler()).addAsyncManager(this);
 	}
@@ -1161,11 +1161,6 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	}
 
 	@Override
-	public BlockComponent getBlockComponent(int x, int y, int z) {
-		return this.getRegionFromBlock(x, y, z).getBlockComponent(x, y, z);
-	}
-
-	@Override
 	public TaskManager getParallelTaskManager() {
 		return parallelTaskManager;
 	}
@@ -1415,7 +1410,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	public void runDynamicUpdates(long time, int sequence) {
 	}
 
-	public WeakReference<World> getWeakReference() {
+	public WeakReference<SpoutWorld> getWeakReference() {
 		return selfReference;
 	}
 
