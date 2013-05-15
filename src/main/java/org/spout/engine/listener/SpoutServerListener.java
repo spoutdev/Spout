@@ -29,6 +29,8 @@ package org.spout.engine.listener;
 import java.net.InetAddress;
 
 import org.spout.api.chat.style.ChatStyle;
+import org.spout.api.component.Component;
+import org.spout.api.component.type.WorldComponent;
 import org.spout.api.entity.Player;
 import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
@@ -41,6 +43,8 @@ import org.spout.api.event.player.PlayerJoinEvent;
 import org.spout.api.event.player.PlayerLoginEvent;
 import org.spout.api.event.player.PlayerWhitelistKickEvent;
 import org.spout.api.event.server.permissions.PermissionGetAllWithNodeEvent;
+import org.spout.api.event.world.PlayerEnterWorldEvent;
+import org.spout.api.event.world.PlayerExitWorldEvent;
 import org.spout.api.util.access.BanType;
 
 import org.spout.engine.SpoutServer;
@@ -136,5 +140,31 @@ public class SpoutServerListener implements Listener {
 		}
 		((SpoutWorld) event.getPrevious()).removePlayer((Player) event.getEntity());
 		((SpoutWorld) event.getTarget()).addPlayer((Player) event.getEntity());
+	}
+	
+	@EventHandler(order = Order.EARLIEST)
+	public void onPlayerEnterWorld(PlayerEnterWorldEvent event) {
+		for (Component component : event.getWorld().values()) {
+			if (component instanceof WorldComponent) {
+				try {
+					((WorldComponent) component).onPlayerEnter(event.getPlayer());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	@EventHandler(order = Order.EARLIEST)
+	public void onPlayerExitWorld(PlayerExitWorldEvent event) {
+		for (Component component : event.getWorld().values()) {
+			if (component instanceof WorldComponent) {
+				try {
+					((WorldComponent) component).onPlayerExit(event.getPlayer());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 }
