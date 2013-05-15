@@ -58,6 +58,14 @@ public final class ComponentTest {
 		Collection<Component> components = holder.values();
 		assertTrue(components.size() == 4);
 		assertThat(components, hasItems(c1, c2, c3, data));
+
+		GenericComponentWithInterface cwi = holder.add(GenericComponentWithInterface.class);
+		Interface type = holder.getType(Interface.class);
+		assertNotNull(type);
+		Collection<Interface> allOfType = holder.getAllOfType(Interface.class);
+		assertTrue(allOfType.size() == 1);
+		assertEquals(cwi, type);
+		
 	}
 	
 	public static class ComponentHolderTest extends BaseComponentHolder {
@@ -86,5 +94,11 @@ public final class ComponentTest {
 	public static class OtherGenericComponent extends Component {
 		public OtherGenericComponent() {
 		}
+	}
+	
+	public static interface Interface {	
+	}
+
+	public static class GenericComponentWithInterface extends GenericComponent implements Interface {
 	}
 }
