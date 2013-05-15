@@ -46,6 +46,7 @@ import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
 import org.spout.api.component.type.BlockComponent;
 import org.spout.api.component.type.EntityComponent;
+import org.spout.api.component.type.WorldComponent;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntityPrefab;
@@ -55,6 +56,8 @@ import org.spout.api.event.Cause;
 import org.spout.api.event.block.CuboidChangeEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.event.server.RetrieveDataEvent;
+import org.spout.api.event.world.PlayerEnterWorldEvent;
+import org.spout.api.event.world.PlayerExitWorldEvent;
 import org.spout.api.event.world.WorldSaveEvent;
 import org.spout.api.generator.WorldGenerator;
 import org.spout.api.generator.biome.Biome;
@@ -781,10 +784,12 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 
 	public void addPlayer(Player player) {
 		players.add(player);
+		engine.getEventManager().callDelayedEvent(new PlayerEnterWorldEvent(this, player));
 	}
 
 	public void removePlayer(Player player) {
 		players.remove(player);
+		engine.getEventManager().callDelayedEvent(new PlayerExitWorldEvent(this, player));
 	}
 
 	@Override
