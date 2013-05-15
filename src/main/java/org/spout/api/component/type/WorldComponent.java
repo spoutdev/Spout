@@ -28,6 +28,7 @@ package org.spout.api.component.type;
 
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentOwner;
+import org.spout.api.entity.Player;
 import org.spout.api.geo.World;
 
 public class WorldComponent extends Component {
@@ -46,5 +47,19 @@ public class WorldComponent extends Component {
 	@Override
 	public World getOwner() {
 		return (World) super.getOwner();
+	}
+	
+	/**
+	 * Called when a player enters the world.
+	 * @param player
+	 */
+	public void onPlayerEnter(Player player) {
+	}
+	
+	/**
+	 * Called when a player exits the world.
+	 * @param player
+	 */
+	public void onPlayerExit(Player player) {
 	}
 }
