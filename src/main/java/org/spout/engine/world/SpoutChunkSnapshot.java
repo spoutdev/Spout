@@ -51,7 +51,6 @@ import org.spout.api.material.block.BlockFullState;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.hashing.NibbleQuadHashed;
-import org.spout.api.util.thread.annotation.SnapshotRead;
 import org.spout.engine.world.SpoutChunk.PopulationState;
 
 public class SpoutChunkSnapshot extends ChunkSnapshot {

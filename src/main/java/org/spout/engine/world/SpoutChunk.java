@@ -56,7 +56,6 @@ import org.spout.api.Engine;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.component.BlockComponentHolder;
-import org.spout.api.component.type.BlockComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
@@ -1642,22 +1641,17 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		}
 	}
 
-	public BlockComponentHolder getBlockComponentHolder(NibbleQuadHashed packed) {
+	public BlockComponentHolder getBlockComponentHolder(int x, int y, int z, boolean create) {
 		synchronized (blockComponents) {
-			return blockComponents.get(packed.key());
+			short packed = NibbleQuadHashed.key(x, y, z, 0);
+			BlockComponentHolder value = blockComponents.get(packed);
+			if (value == null && create) {
+				value = new BlockComponentHolder(NibbleQuadHashed.key1(packed), NibbleQuadHashed.key2(packed), NibbleQuadHashed.key3(packed), getWorld());
+				blockComponents.put(packed, value);
+			}
+			return value;
 		}
 	}
-
-	public BlockComponentHolder createAndGetComponentHolder(NibbleQuadHashed packed) {
-		synchronized (blockComponents) {
-			BlockComponentHolder get = blockComponents.get(packed.key());
-			if (get == null) {
-				get = new BlockComponentHolder(packed.key1(), packed.key2(), packed.key3(), getWorld());
-				blockComponents.put(packed.key(), get);
-			}
-			return get;
-		}
-    } 
 
 	protected void tickBlockComponents(float dt) {
 		synchronized (blockComponents) {

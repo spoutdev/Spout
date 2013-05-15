@@ -26,10 +26,8 @@
  */
 package org.spout.engine.world;
 
-import gnu.trove.map.TShortObjectMap;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -41,7 +39,6 @@ import org.spout.api.event.Cause;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Block;
-import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
@@ -53,7 +50,6 @@ import org.spout.api.math.GenericMath;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.StringUtil;
-import org.spout.api.util.hashing.NibbleQuadHashed;
 
 public class SpoutBlock implements Block {
 	private final int x, y, z;
@@ -371,88 +367,37 @@ public class SpoutBlock implements Block {
 		return getMaterial().isMaterial(materials);
 	}
 
-	private NibbleQuadHashed getPacked() {
-		Point position = getPosition();
-		int chunkX = position.getBlockX() % Chunk.BLOCKS.SIZE;
-		int chunkY = position.getBlockY() % Chunk.BLOCKS.SIZE;
-		int chunkZ = position.getBlockZ() % Chunk.BLOCKS.SIZE;
-		return new NibbleQuadHashed(chunkX, chunkY, chunkZ, 0);
-	}
 	@Override
 	public <T extends Component> T add(Class<T> type) {
-		synchronized(getChunk().getBlockComponentHolder()) {
-			TShortObjectMap<BlockComponentHolder> blockComponents = getChunk().getBlockComponentHolder();
-			NibbleQuadHashed packed = getPacked();
-			BlockComponentHolder get = blockComponents.get(packed.key());
-			if (get == null) {
-				get = getChunk().createAndGetComponentHolder(packed);
-			}
-			return get.add(type);
-		}
+		return getChunk().getBlockComponentHolder(x, y, z, true).add(type);
 	}
 
 	@Override
 	public <T extends Component> T detach(Class<? extends Component> type) {
-		synchronized(getChunk().getBlockComponentHolder()) {
-			TShortObjectMap<BlockComponentHolder> blockComponents = getChunk().getBlockComponentHolder();
-			NibbleQuadHashed packed = getPacked();
-			BlockComponentHolder get = blockComponents.get(packed.key());
-			if (get == null) {
-				return null; 
-			}
-			return get.detach(type);
+		BlockComponentHolder holder = getChunk().getBlockComponentHolder(x, y, z, false);
+		if (holder != null) {
+			return holder.detach(type);
 		}
+		return null;
 	}
 
 	@Override
 	public Collection<Component> values() {
-		synchronized(getChunk().getBlockComponentHolder()) {
-			TShortObjectMap<BlockComponentHolder> blockComponents = getChunk().getBlockComponentHolder();
-			NibbleQuadHashed packed = getPacked();
-			BlockComponentHolder get = blockComponents.get(packed.key());
-			if (get == null) {
-				return Collections.emptySet();
-			}
-			return get.values();
-		}
+		return getChunk().getBlockComponentHolder(x, y, z, true).values();
 	}
 
 	@Override
 	public <T extends Component> T get(Class<T> type) {
-		synchronized(getChunk().getBlockComponentHolder()) {
-			TShortObjectMap<BlockComponentHolder> blockComponents = getChunk().getBlockComponentHolder();
-			NibbleQuadHashed packed = getPacked();
-			BlockComponentHolder get = blockComponents.get(packed.key());
-			if (get == null) {
-				return null;
-			}
-			return get.get(type);
-		}
+		return getChunk().getBlockComponentHolder(x, y, z, true).get(type);
 	}
 
 	@Override
 	public <T extends Component> T getExact(Class<T> type) {
-		synchronized(getChunk().getBlockComponentHolder()) {
-			TShortObjectMap<BlockComponentHolder> blockComponents = getChunk().getBlockComponentHolder();
-			NibbleQuadHashed packed = getPacked();
-			BlockComponentHolder get = blockComponents.get(packed.key());
-			if (get == null) {
-				return null;
-			}
-			return get.getExact(type);
-		}
+		return getChunk().getBlockComponentHolder(x, y, z, true).getExact(type);
 	}
 
 	@Override
 	public <T extends Component> Collection<T> getAll(Class<T> type) {
-		synchronized(getChunk().getBlockComponentHolder()) {
-			TShortObjectMap<BlockComponentHolder> blockComponents = getChunk().getBlockComponentHolder();
-			NibbleQuadHashed packed = getPacked();
-			BlockComponentHolder get = blockComponents.get(packed.key());
-			if (get == null) {
-				return Collections.emptySet();
-			}
-			return get.getAll(type);
-		}
+		return getChunk().getBlockComponentHolder(x, y, z, true).getAll(type);
 	}
 }
