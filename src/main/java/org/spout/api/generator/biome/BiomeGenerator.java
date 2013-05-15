@@ -33,6 +33,7 @@ import com.google.common.collect.Lists;
 
 import org.spout.api.generator.Populator;
 import org.spout.api.generator.WorldGenerator;
+import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.generator.GeneratorPopulator;
@@ -86,7 +87,7 @@ public abstract class BiomeGenerator implements WorldGenerator {
 		final int z = chunkZ << Chunk.BLOCKS.BITS;
 		final BiomeManager manager;
 		if (blockData.getSize().getFloorX() <= Chunk.BLOCKS.SIZE && blockData.getSize().getFloorZ() <= Chunk.BLOCKS.SIZE) {
-			BiomeManager temp = world.getBiomeManager(x, z, false);
+			BiomeManager temp = world.getBiomeManager(x, z, LoadOption.NO_LOAD);
 			if (temp == null) {
 				temp = generateBiomes(chunkX, chunkZ, world);
 			}
@@ -103,7 +104,7 @@ public abstract class BiomeGenerator implements WorldGenerator {
 			if (zSize % Chunk.BLOCKS.SIZE > 0) {
 				zChunkSize++;
 			}
-			manager = new WrappedBiomeManager(this, world, chunkX, chunkZ, xChunkSize, zChunkSize, false);
+			manager = new WrappedBiomeManager(this, world, chunkX, chunkZ, xChunkSize, zChunkSize);
 		}
 		final long seed = world.getSeed();
 		generateTerrain(blockData, x, y, z, manager, seed);

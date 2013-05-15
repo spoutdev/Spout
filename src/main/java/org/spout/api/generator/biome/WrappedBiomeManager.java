@@ -26,7 +26,7 @@
  */
 package org.spout.api.generator.biome;
 
-import org.spout.api.generator.WorldGenerator;
+import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.math.Vector2;
@@ -47,14 +47,13 @@ public class WrappedBiomeManager extends BiomeManager {
 	 * @param z The starting z coordinate in chunks.
 	 * @param sizeX The size on x in chunks.
 	 * @param sizeZ The size on z in chunks.
-	 * @param load Allow or disallow necessary loading.
 	 */
-	public WrappedBiomeManager(BiomeGenerator generator, World world, int x, int z, int sizeX, int sizeZ, boolean load) {
+	public WrappedBiomeManager(BiomeGenerator generator, World world, int x, int z, int sizeX, int sizeZ) {
 		super(x, z);
 		subManagers = new BiomeManager[sizeX][sizeZ];
 		for (int xx = 0; xx < sizeX; xx++) {
 			for (int zz = 0; zz < sizeZ; zz++) {
-				subManagers[xx][zz] = world.getBiomeManager(x + xx << Chunk.BLOCKS.BITS, z + zz << Chunk.BLOCKS.BITS, load);
+				subManagers[xx][zz] = world.getBiomeManager(x + xx << Chunk.BLOCKS.BITS, z + zz << Chunk.BLOCKS.BITS, LoadOption.NO_LOAD);
 				if (subManagers[xx][zz] == null) {
 					subManagers[xx][zz] = generator.generateBiomes(x + xx, z + zz, world);
 				}

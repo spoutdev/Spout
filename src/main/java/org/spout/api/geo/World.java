@@ -88,22 +88,22 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 	 * Blocks which are completely transparent are ignored.
 	 * @param x the block x coordinate of the column
 	 * @param z the block z coordinate of the column
+	 * @param load load option
 	 * @return the highest of the highest block
 	 */
 	@LiveRead
-	public int getSurfaceHeight(int x, int z);
-
+	public int getSurfaceHeight(int x, int z, LoadOption loadopt);
+	
 	/**
 	 * Gets the height of the highest block in the given (x, z) column.<br>
 	 * <br>
 	 * Blocks which are completely transparent are ignored.
 	 * @param x the block x coordinate of the column
 	 * @param z the block z coordinate of the column
-	 * @param load height map is loaded if necessary
 	 * @return the highest of the highest block
 	 */
 	@LiveRead
-	public int getSurfaceHeight(int x, int z, boolean load);
+	public int getSurfaceHeight(int x, int z);
 
 	/**
 	 * Gets the BlockMaterial of the highest block in the given (x, z) column.<br>
@@ -118,30 +118,21 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 	 * Gets the BlockMaterial of the highest block in the given (x, z) column.<br>
 	 * @param x the block x coordinate of the column
 	 * @param z the block z coordinate of the column
-	 * @param load height map is loaded if necessary
+	 * @param load load option
 	 * @return the BlockMaterial
 	 */
 	@LiveRead
-	public BlockMaterial getTopmostBlock(int x, int z, boolean load);
+	public BlockMaterial getTopmostBlock(int x, int z, LoadOption loadopt);
 
 	/**
 	 * Gets the biome manager in the given (x, z) column.<br>
 	 * @param x the block x coordinate of the column
 	 * @param z the block z coordinate of the column
+	 * @param loadopt load option
 	 * @return the biome manager
 	 */
 	@LiveRead
-	public BiomeManager getBiomeManager(int x, int z);
-
-	/**
-	 * Gets the biome manager in the given (x, z) column.<br>
-	 * @param x the block x coordinate of the column
-	 * @param z the block z coordinate of the column
-	 * @param load height map is loaded if necessary
-	 * @return the biome manager
-	 */
-	@LiveRead
-	public BiomeManager getBiomeManager(int x, int z, boolean load);
+	public BiomeManager getBiomeManager(int x, int z, LoadOption loadopt);
 
 	/**
 	 * Gets the entity with the matching unique id
