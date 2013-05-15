@@ -392,6 +392,11 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
+	public <T> T getType(Class<T> type) {
+		return getChunk().getBlockComponentHolder(x, y, z, true).getType(type);
+	}
+
+	@Override
 	public <T extends Component> T getExact(Class<T> type) {
 		return getChunk().getBlockComponentHolder(x, y, z, true).getExact(type);
 	}
@@ -399,5 +404,10 @@ public class SpoutBlock implements Block {
 	@Override
 	public <T extends Component> Collection<T> getAll(Class<T> type) {
 		return getChunk().getBlockComponentHolder(x, y, z, true).getAll(type);
+	}
+
+	@Override
+	public <T> Collection<T> getAllOfType(Class<T> type) {
+		return getChunk().getBlockComponentHolder(x, y, z, true).getAllOfType(type);
 	}
 }
