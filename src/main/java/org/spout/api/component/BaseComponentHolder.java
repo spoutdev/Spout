@@ -162,15 +162,21 @@ public class BaseComponentHolder implements ComponentHolder, DataOwner {
 	@Override
 	public <T extends Component> T get(Class<T> type) {
 		Preconditions.checkNotNull(type);
-		if (type == null) {
-			return null;
-		}
 		Component component = components.get(type);
 
 		if (component == null) {
 			component = findComponent(type);
 		}
 		return (T) component;
+	}
+	
+	@Override
+	public <T> T getType(Class<T> type) {
+		Preconditions.checkNotNull(type);
+
+		T component = findComponent(type);
+
+		return component;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -196,6 +202,21 @@ public class BaseComponentHolder implements ComponentHolder, DataOwner {
 			return matches;
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends Object> Collection<T> getAllOfType(Class<T> type) {
+		Preconditions.checkNotNull(type);
+		synchronized (components) {
+			ArrayList<T> matches = new ArrayList<T>();
+			for (Component component : components.values()) {
+				if (type.isAssignableFrom(component.getClass())) {
+					matches.add((T) component);
+				}
+			}
+			return matches;
+		}
+	}
 
 	@Override
 	public Collection<Component> values() {
@@ -210,7 +231,7 @@ public class BaseComponentHolder implements ComponentHolder, DataOwner {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends Component> T findComponent(Class<T> type) {
+	private <T> T findComponent(Class<T> type) {
 		Preconditions.checkNotNull(type);
 		synchronized (components) {
 			for (Component component : values()) {

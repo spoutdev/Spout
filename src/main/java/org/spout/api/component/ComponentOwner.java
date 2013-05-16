@@ -47,6 +47,15 @@ public interface ComponentOwner {
 	public <T extends Component> T get(Class<T> type);
 
 	/**
+	 * Returns an instance of the specified type from the holder if it is present.
+	 * Guaranteed internally to be a Component.
+	 * 
+	 * @param type whose component is to be returned from the holder
+	 * @return the component, or null if one was not found
+	 */
+	public <T> T getType(Class<T> type);
+
+	/**
 	 * Returns the component of the specified type (not a child implementation) from the holder if it is
 	 * present.
 	 * @param type whose component is to be returned from the holder
@@ -61,4 +70,13 @@ public interface ComponentOwner {
 	 * @return the component list.
 	 */
 	public <T extends Component> Collection<T> getAll(Class<T> type);
+	
+	/**
+	 * Returns all instances of the specified type from the holder if they are present.
+	 * Guaranteed internally to be a Components.
+	 * 
+	 * @param type whose components are to be returned from the holder
+	 * @return the component list.
+	 */
+	public <T> Collection<T> getAllOfType(Class<T> type);
 }
