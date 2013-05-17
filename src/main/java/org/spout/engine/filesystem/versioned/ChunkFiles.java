@@ -43,7 +43,6 @@ import org.spout.api.geo.cuboid.ChunkSnapshot.BlockComponentSnapshot;
 import org.spout.api.lighting.FakeLightingManager;
 import org.spout.api.lighting.LightingManager;
 import org.spout.api.lighting.LightingRegistry;
-import org.spout.api.material.ComplexMaterial;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
@@ -267,7 +266,7 @@ public class ChunkFiles {
 
 	private static boolean componentSkipCheck(int[] fullState) {
 		for (int i = 0; i < fullState.length; i++) {
-			if (BlockFullState.getMaterial(fullState[i]) instanceof ComplexMaterial) {
+			if (!BlockFullState.getMaterial(fullState[i]).getComponents().isEmpty()) {
 				return false;
 			}
 		}
