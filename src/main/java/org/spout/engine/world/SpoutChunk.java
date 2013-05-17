@@ -82,7 +82,6 @@ import org.spout.api.lighting.LightingManager;
 import org.spout.api.lighting.LightingRegistry;
 import org.spout.api.lighting.Modifiable;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.material.ComplexMaterial;
 import org.spout.api.material.DynamicMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.MaterialRegistry;
@@ -114,6 +113,7 @@ import org.spout.engine.world.physics.UpdateQueue;
 
 import com.google.common.collect.Sets;
 import org.spout.api.component.Component;
+import org.spout.api.component.type.BlockComponent;
 
 public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public static final WeakReference<SpoutChunk> NULL_WEAK_REFERENCE = new WeakReference<SpoutChunk>(null);
@@ -1600,15 +1600,15 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			for (int dy = 0; dy < Chunk.BLOCKS.SIZE; dy++) {
 				for (int dz = 0; dz < Chunk.BLOCKS.SIZE; dz++) {
 					BlockMaterial bm = getBlockMaterial(dx, dy, dz);
-					if (bm instanceof ComplexMaterial) {//TODO remove ComplexMaterial
-						short packed = NibbleQuadHashed.key(dx, dy, dz, 0);
-						//Does not need synchronized, the chunk is not yet accessible outside this thread
-						BlockComponentHolder get = getBlockComponentHolder().get(packed);
-						if (get == null) {
-							get = new BlockComponentHolder(dx + getBlockX(), dy + getBlockY(), dz + getBlockZ(), getWorld());
-							getBlockComponentHolder().put(packed, get);
-						}
-						get.add(((ComplexMaterial) bm).getBlockComponent());
+					short packed = NibbleQuadHashed.key(dx, dy, dz, 0);
+					//Does not need synchronized, the chunk is not yet accessible outside this thread
+					BlockComponentHolder get = getBlockComponentHolder().get(packed);
+					if (get == null) {
+						get = new BlockComponentHolder(dx + getBlockX(), dy + getBlockY(), dz + getBlockZ(), getWorld());
+						getBlockComponentHolder().put(packed, get);
+					}
+					for (Class<? extends BlockComponent> c : bm.getComponents()) {
+						get.add(c);
 					}
 				}
 			}
@@ -1631,10 +1631,12 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 						oldHolder.detach(c.getClass());//Detach if possible
 					}
 				}
-				if (newMaterial instanceof ComplexMaterial) {//TODO remove ComplexMaterial
+				if (!newMaterial.getComponents().isEmpty()) {
 					BlockComponentHolder newHolder = new BlockComponentHolder(x + getBlockX(), y + getBlockY(), z + getBlockZ(), getWorld());
 					blockComponents.put(packed, newHolder);
-					newHolder.add(((ComplexMaterial) newMaterial).getBlockComponent());
+					for (Class<? extends BlockComponent> c : newMaterial.getComponents()) {
+						newHolder.add(c);
+					}
 				}
 			}
 			return oldState;
