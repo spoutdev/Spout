@@ -2131,4 +2131,13 @@ public class SpoutRegion extends Region implements AsyncManager {
 		getRegionGenerator().touchChunk(chunk.getFloorX(), chunk.getFloorY(), chunk.getFloorZ());
 	}
 
+	@Override
+	public <T extends CuboidLightBuffer> T getLightBuffer(LightingManager<T> manager, int x, int y, int z, LoadOption loadopt) {
+		Chunk c = getChunk(x, y, z, loadopt);
+		if (c == null) {
+			return null;
+		}
+		return c.getLightBuffer(manager);
+	}
+
 }

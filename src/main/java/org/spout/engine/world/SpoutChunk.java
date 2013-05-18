@@ -2127,4 +2127,11 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	protected void setGenerationIndex(int index) {
 		this.generationIndex = index;
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends CuboidLightBuffer> T getLightBuffer(LightingManager<T> manager) {
+		return (T) getLightBuffer(manager.getId());
+		
+	}
 }
