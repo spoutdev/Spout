@@ -171,10 +171,6 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	 */
 	private final File worldDirectory;
 	/**
-	 * The async thread which handles the calculation of block and sky lighting in the world
-	 */
-	private final SpoutWorldLighting lightingManager;
-	/**
 	 * The parallel task manager.  This is used for submitting tasks to all regions in the world.
 	 */
 	protected final SpoutParallelTaskManager parallelTaskManager;
@@ -232,9 +228,6 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 		heightMapBAAs = new TSyncIntPairObjectHashMap<BAAWrapper>();
 
 		this.hashcode = new HashCodeBuilder(27, 971).append(uid).toHashCode();
-
-		this.lightingManager = new SpoutWorldLighting(this);
-		//this.lightingManager.start();
 		
 		for (int i = 0; i < columnLockMap.length; i++) {
 			columnLockMap[i] = new ReentrantLock();
@@ -418,21 +411,6 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	@Override
 	public short getBlockData(int x, int y, int z) {
 		return getChunkFromBlock(x, y, z).getBlockData(x, y, z);
-	}
-
-	@Override
-	public byte getBlockSkyLight(int x, int y, int z) {
-		return getChunkFromBlock(x, y, z).getBlockSkyLight(x, y, z);
-	}
-
-	@Override
-	public byte getBlockSkyLightRaw(int x, int y, int z) {
-		return getChunkFromBlock(x, y, z).getBlockSkyLightRaw(x, y, z);
-	}
-
-	@Override
-	public byte getBlockLight(int x, int y, int z) {
-		return getChunkFromBlock(x, y, z).getBlockLight(x, y, z);
 	}
 
 	@Override
@@ -711,14 +689,6 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	@Override
 	public SpoutEngine getEngine() {
 		return engine;
-	}
-
-	/**
-	 * Gets the lighting manager that calculates the light for this world
-	 * @return world lighting manager
-	 */
-	public SpoutWorldLighting getLightingManager() {
-		return this.lightingManager;
 	}
 
 	@Override
@@ -1160,7 +1130,6 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 		for (Component component : values()) {
 			component.onDetached();
 		}
-		this.getLightingManager().abort();
 		if (save) {
 			save();
 		}
@@ -1220,16 +1189,6 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 			total += region.getNumLoadedChunks();
 		}
 		return total;
-	}
-
-	@Override
-	public boolean setBlockLight(int x, int y, int z, byte light, Cause<?> cause) {
-		return this.getChunkFromBlock(x, y, z).setBlockLight(x, y, z, light, cause);
-	}
-
-	@Override
-	public boolean setBlockSkyLight(int x, int y, int z, byte light, Cause<?> cause) {
-		return this.getChunkFromBlock(x, y, z).setBlockSkyLight(x, y, z, light, cause);
 	}
 
 	@Override

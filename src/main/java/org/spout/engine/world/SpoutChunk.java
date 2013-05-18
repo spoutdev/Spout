@@ -56,6 +56,8 @@ import org.spout.api.Engine;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.component.BlockComponentHolder;
+import org.spout.api.component.Component;
+import org.spout.api.component.type.BlockComponent;
 import org.spout.api.datatable.ManagedHashMap;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.Entity;
@@ -76,7 +78,6 @@ import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
 import org.spout.api.geo.cuboid.ContainerFillOrder;
 import org.spout.api.geo.cuboid.Cube;
-import org.spout.api.geo.cuboid.LightContainer;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.lighting.LightingManager;
 import org.spout.api.lighting.LightingRegistry;
@@ -105,15 +106,10 @@ import org.spout.engine.entity.SpoutEntity;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.scheduler.SpoutScheduler;
 import org.spout.engine.util.thread.snapshotable.Snapshotable;
-import org.spout.engine.world.light.ClientLightStore;
-import org.spout.engine.world.light.LightStore;
-import org.spout.engine.world.light.ServerLightStore;
 import org.spout.engine.world.physics.PhysicsQueue;
 import org.spout.engine.world.physics.UpdateQueue;
 
 import com.google.common.collect.Sets;
-import org.spout.api.component.Component;
-import org.spout.api.component.type.BlockComponent;
 
 public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public static final WeakReference<SpoutChunk> NULL_WEAK_REFERENCE = new WeakReference<SpoutChunk>(null);
@@ -224,8 +220,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	private boolean wasInViewDistance = false;
 	private boolean isInViewDistance = false;
 
-	private LightStore lightStore;
-	
 	private int generationIndex = -1;
 	
 	protected void setIsInViewDistance(boolean value) {
@@ -265,18 +259,18 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] block, short[] data, ManagedHashMap map) {
-		this(world, region, x, y, z, PopulationState.UNTOUCHED, block, data, null, null, map, false);
+		this(world, region, x, y, z, PopulationState.UNTOUCHED, block, data, map, false);
 	}
 
-	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, int[] palette, int blockArrayWidth, int[] variableWidthBlockArray, byte[] skyLight, byte[] blockLight, ManagedHashMap extraData, boolean lightStable) {
-		this(world, region, x, y, z, popState, extraData, lightStable, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, true, 10, palette, blockArrayWidth, variableWidthBlockArray), skyLight, blockLight);
+	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, int[] palette, int blockArrayWidth, int[] variableWidthBlockArray, ManagedHashMap extraData, boolean lightStable) {
+		this(world, region, x, y, z, popState, extraData, lightStable, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, true, 10, palette, blockArrayWidth, variableWidthBlockArray));
 	}
 
-	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, byte[] skyLight, byte[] blockLight, ManagedHashMap extraData, boolean lightStable) {
-		this(world, region, x, y, z, popState, extraData, lightStable, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, false, 10, blocks, data), skyLight, blockLight);
+	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, short[] blocks, short[] data, ManagedHashMap extraData, boolean lightStable) {
+		this(world, region, x, y, z, popState, extraData, lightStable, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, false, 10, blocks, data));
 	}
 
-	private SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, ManagedHashMap extraData, boolean lightStable, AtomicBlockStore blockStore, byte[] skyLight, byte[] blockLight) {
+	private SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, ManagedHashMap extraData, boolean lightStable, AtomicBlockStore blockStore) {
 		super(world, x * BLOCKS.SIZE, y * BLOCKS.SIZE, z * BLOCKS.SIZE);
 		parentRegion = region;
 		this.populationState = new AtomicReference<PopulationState>(popState);
@@ -295,12 +289,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		column.registerCuboid(getBlockY(), getBlockY() + Chunk.BLOCKS.SIZE - 1);
 		columnRegistered.set(true);
 		lastUnloadCheck.set(world.getAge());
-
-		if (Spout.getPlatform() == Platform.SERVER) {
-			this.lightStore = new ServerLightStore(this, column, skyLight, blockLight);
-		} else {
-			this.lightStore = new ClientLightStore(this, column, skyLight, blockLight);
-		}
 
 		// loaded chunk
 		selfReference = new WeakReference<SpoutChunk>(this);
@@ -752,50 +740,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	}
 
 	@Override
-	public void fillSkyLightContainer(LightContainer container) {
-		fillLightContainerRaw(container, false);
-	}
-
-	@Override
-	public void fillBlockLightContainer(LightContainer container) {
-		fillLightContainerRaw(container, true);
-	}
-
-	public void fillLightContainerRaw(LightContainer container, boolean blockLight) {
-		ContainerFillOrder sourceOrder = SpoutChunk.STORE_FILL_ORDER;
-		ContainerFillOrder destOrder = container.getOrder();
-
-		int size = BLOCKS.SIZE;
-
-		int sourceIndex = 0;
-
-		int thirdStep = destOrder.thirdStep(sourceOrder, size, size, size);
-		int secondStep = destOrder.secondStep(sourceOrder, size, size, size);
-		int firstStep = destOrder.firstStep(sourceOrder, size, size, size);
-
-		int thirdMax = destOrder.getThirdSize(size, size, size);
-		int secondMax = destOrder.getSecondSize(size, size, size);
-		int firstMax = destOrder.getFirstSize(size, size, size);
-
-		for (int third = 0; third < thirdMax; third++) {
-			int secondStart = sourceIndex;
-			for (int second = 0; second < secondMax; second++) {
-				int firstStart = sourceIndex;
-				for (int first = 0; first < firstMax; first++) {
-					if (blockLight) {
-						container.setLightLevel(lightStore.getBlockLightRaw(sourceIndex));
-					} else {
-						container.setLightLevel(lightStore.getSkyLightRaw(sourceIndex));
-					}
-					sourceIndex += firstStep;
-				}
-				sourceIndex = firstStart + secondStep;
-			}
-			sourceIndex = secondStart + thirdStep;
-		}
-	}
-
-	@Override
 	public void fillBlockComponentContainer(final BlockComponentContainer container) {
 		synchronized (getBlockComponentHolder()) {
 			container.setBlockComponentCount(getBlockComponentHolder().size());
@@ -819,7 +763,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	public SpoutChunkSnapshot getSnapshot(SnapshotType type, EntityType entities, ExtraData data, boolean palette) {
 		checkChunkLoaded();
-		byte[] blockLightCopy = null, skyLightCopy = null;
 		short[] blockIds = null, blockData = null;
 		CuboidLightBuffer[] lightBuffersCopy = null;
 		switch (type) {
@@ -833,23 +776,19 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 				blockData = blockStore.getDataArray();
 				break;
 			case LIGHT_ONLY:
-				blockLightCopy = lightStore.copyBlockLight();
-				skyLightCopy = lightStore.copySkyLight();
 				lightBuffersCopy = copyLightBuffers();
 				break;
 			case BOTH:
 				blockIds = blockStore.getBlockIdArray();
 				blockData = blockStore.getDataArray();
-				blockLightCopy = lightStore.copyBlockLight();
-				skyLightCopy = lightStore.copySkyLight();
 				lightBuffersCopy = copyLightBuffers();
 				break;
 		}
 
 		if (palette) {
-			return new SpoutChunkSnapshot(this, blockStore.getPalette(), blockStore.getPackedWidth(), blockStore.getPackedArray(), blockLightCopy, skyLightCopy, lightBuffersCopy, entities, data);
+			return new SpoutChunkSnapshot(this, blockStore.getPalette(), blockStore.getPackedWidth(), blockStore.getPackedArray(), lightBuffersCopy, entities, data);
 		} else {
-			return new SpoutChunkSnapshot(this, blockIds, blockData, blockLightCopy, skyLightCopy, lightBuffersCopy, entities, data);
+			return new SpoutChunkSnapshot(this, blockIds, blockData, lightBuffersCopy, entities, data);
 		}
 	}
 
@@ -1089,7 +1028,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		SaveState oldState = saveState.getAndSet(SaveState.UNLOADED);
 		//Clear as much as possible to limit the damage of a potential leak
 		this.blockStore = null;
-		this.lightStore = null;
 		this.dataMap.clear();
 		if (!oldState.isUnloaded()) {
 			deregisterFromColumn(saveColumn);
@@ -1416,9 +1354,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		}
 
 		populationState.set(PopulationState.POPULATED);
-		if (SpoutConfiguration.LIGHTING_ENABLED.getBoolean()) {
-			this.initLighting();
-		}
+
 		notifyColumn();
 		parentRegion.onChunkPopulated(this);
 		resetDynamicBlocks();
@@ -1943,33 +1879,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		int wy = y + this.getBlockY();
 		column.notifyBlockChange(x, wy, z);
 		
-		if (this.isPopulated()) {
-			int wx = x + this.getBlockX();
-			int wz = z + this.getBlockZ();
-			int newheight = column.getSurfaceHeight(x, z);
-
-			// Update sky lighting
-			if (newheight > oldheight) {
-				// set sky light of blocks below to 0
-				for (y = oldheight; y < newheight; y++) {
-					world.setBlockSkyLight(wx, y + 1, wz, (byte) 0, cause);
-				}
-			} else if (newheight < oldheight) {
-				// set sky light of blocks above to 15
-				for (y = newheight; y < oldheight; y++) {
-					world.setBlockSkyLight(wx, y + 1, wz, (byte) 15, cause);
-				}
-			} else if (lightStore instanceof ServerLightStore){
-				((ServerLightStore)lightStore).addSkyLightUpdates(x, y, z, 0);
-				((ServerLightStore)lightStore).addSkyLightOperation(wx, wy, wz, SpoutWorldLighting.REFRESH);
-			}
-
-			// Update block lighting
-			if (newMaterial.getOpacity() != oldMaterial.getOpacity() || newMaterial.getLightLevel(newData) != oldMaterial.getLightLevel(oldData)) {
-				this.setBlockLight(x, y, z, newMaterial.getLightLevel(newData), cause);
-			}
-		}
-
 		setModified();
 	}
 
@@ -2208,44 +2117,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			return validIfUnloaded || isLoaded();
 		}
 		
-	}
-
-	@Override
-	public boolean setBlockLight(int x, int y, int z, byte light, Cause<?> source) {
-		return lightStore.setBlockLight(x, y, z, light, source);
-	}
-
-	@Override
-	public boolean setBlockSkyLight(int x, int y, int z, byte light, Cause<?> source) {
-		return lightStore.setSkyLight(x, y, z, light, source);
-	}
-
-	@Override
-	public byte getBlockLight(int x, int y, int z) {
-		return lightStore.getBlockLightRaw(x, y, z);
-	}
-
-	@Override
-	public byte getBlockSkyLight(int x, int y, int z) {
-		return lightStore.getSkyLightRaw(x, y, z);
-	}
-
-	@Override
-	public byte getBlockSkyLightRaw(int x, int y, int z) {
-		return lightStore.getSkyLightRaw(x, y, z);
-	}
-
-	@Override
-	public void initLighting() {
-		lightStore.initLighting();
-	}
-
-	public LightStore getLightStore() {
-		return lightStore;
-	}
-
-	public boolean isCalculatingLighting() {
-		return lightStore.isCalculatingLighting();
 	}
 
 	@Override

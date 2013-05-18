@@ -295,38 +295,6 @@ public class SpoutBlock implements Block {
 	}
 
 	@Override
-	public byte getLight() {
-		return GenericMath.max(this.getSkyLight(), this.getBlockLight());
-	}
-
-	@Override
-	public Block setSkyLight(byte level) {
-		this.getChunk().setBlockSkyLight(this.x, this.y, this.z, level, null);
-		return this;
-	}
-
-	@Override
-	public Block setBlockLight(byte level) {
-		this.getChunk().setBlockLight(this.x, this.y, this.z, level, null);
-		return this;
-	}
-
-	@Override
-	public byte getBlockLight() {
-		return this.getChunk().getBlockLight(this.x, this.y, this.z);
-	}
-
-	@Override
-	public byte getSkyLight() {
-		return this.getChunk().getBlockSkyLight(this.x, this.y, this.z);
-	}
-
-	@Override
-	public byte getSkyLightRaw() {
-		return this.getChunk().getBlockSkyLightRaw(this.x, this.y, this.z);
-	}
-
-	@Override
 	public Block queueUpdate(EffectRange range) {
 		getWorld().queueBlockPhysics(this.x, this.y, this.z, range);
 		return this;

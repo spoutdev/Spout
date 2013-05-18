@@ -71,6 +71,6 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 			throw new RuntimeException(e);
 		}
 		manager.deserialize(message.getBiomeData());
-		world.addChunk(message.getX(), message.getY(), message.getZ(), message.getBlockIds(), message.getBlockData(), message.getBlockLight(), message.getSkyLight(), manager);
+		world.addChunk(message.getX(), message.getY(), message.getZ(), message.getBlockIds(), message.getBlockData(), manager);
 	}
 }

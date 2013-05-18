@@ -67,25 +67,22 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	private final int[] packedBlockArray;
 	private final short[] blockIds;
 	private final short[] blockData;
-	private final byte[] blockLight;
-	private final byte[] skyLight;
 	private final CuboidLightBuffer[] lightBuffers;
 	private final CuboidLightBuffer[] idLightBufferMap;
 	private final BiomeManager biomes;
 	private final SerializableMap dataMap;
 	private final PopulationState populationState;
-	private final boolean lightStable;
 	private boolean renderDirty = false;
 
-	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, CuboidLightBuffer[] lightBuffers, EntityType type, ExtraData data) {
-		this(chunk, blockIds, blockData, null, 0, null, blockLight, skyLight, lightBuffers, type, data);
+	public SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, CuboidLightBuffer[] lightBuffers, EntityType type, ExtraData data) {
+		this(chunk, blockIds, blockData, null, 0, null, lightBuffers, type, data);
 	}
 
-	public SpoutChunkSnapshot(SpoutChunk chunk, int[] palette, int packedWidth, int[] packedBlockArray, byte[] blockLight, byte[] skyLight, CuboidLightBuffer[] lightBuffers, EntityType type, ExtraData data) {
-		this(chunk, null, null, palette, packedWidth, packedBlockArray, blockLight, skyLight, lightBuffers, type, data);
+	public SpoutChunkSnapshot(SpoutChunk chunk, int[] palette, int packedWidth, int[] packedBlockArray, CuboidLightBuffer[] lightBuffers, EntityType type, ExtraData data) {
+		this(chunk, null, null, palette, packedWidth, packedBlockArray, lightBuffers, type, data);
 	}
 
-	private SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, int[] palette, int packedWidth, int[] packedBlockArray, byte[] blockLight, byte[] skyLight, CuboidLightBuffer[] lightBuffers, EntityType type, ExtraData data) {
+	private SpoutChunkSnapshot(SpoutChunk chunk, short[] blockIds, short[] blockData, int[] palette, int packedWidth, int[] packedBlockArray, CuboidLightBuffer[] lightBuffers, EntityType type, ExtraData data) {
 		super(chunk.getWorld(), chunk.getX() * CHUNK_SIZE, chunk.getY() * CHUNK_SIZE, chunk.getZ() * CHUNK_SIZE);
 		parentRegion = new WeakReference<Region>(chunk.getRegion());
 
@@ -117,8 +114,6 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		// Cache blocks
 		this.blockIds = blockIds;
 		this.blockData = blockData;
-		this.blockLight = blockLight;
-		this.skyLight = skyLight;
 		this.lightBuffers = lightBuffers;
 		if (this.lightBuffers == null) {
 			this.idLightBufferMap = new CuboidLightBuffer[0];
@@ -159,12 +154,11 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		}
 		this.populationState = chunk.getPopulationState();
 		renderDirty = chunk.isDirty();
-		lightStable = !chunk.isCalculatingLighting();
 	}
 
 	//Maybe we can use that in ChunkMesh generation in SpoutRegion
 	public SnapshotType getSnapshotType() {
-		if (blockIds != null && blockData != null && blockLight != null && skyLight != null) {
+		if (blockIds != null && blockData != null && lightBuffers != null) {
 			return SnapshotType.BOTH;
 		}
 
@@ -174,10 +168,6 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 		if (blockIds != null) {
 			return SnapshotType.BLOCK_IDS_ONLY;
-		}
-
-		if (blockLight != null && skyLight != null) {
-			return SnapshotType.LIGHT_ONLY;
 		}
 
 		return SnapshotType.NO_BLOCK_DATA;
@@ -225,44 +215,6 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	}
 
 	@Override
-	public byte getBlockSkyLight(int x, int y, int z) {
-		byte level = this.getBlockSkyLightRaw(x, y, z);
-		if (level > this.worldSkyLightLoss) {
-			return (byte) (level - this.worldSkyLightLoss);
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public byte getBlockSkyLightRaw(int x, int y, int z) {
-		if (skyLight == null) {
-			throw new UnsupportedOperationException("This chunk snapshot does not contain sky light");
-		}
-		int index = getBlockIndex(x, y, z);
-		byte light = skyLight[index >> 1];
-		if ((index & 1) == 1) {
-			return NibblePairHashed.key1(light);
-		} else {
-			return NibblePairHashed.key2(light);
-		}
-	}
-
-	@Override
-	public byte getBlockLight(int x, int y, int z) {
-		if (blockLight == null) {
-			throw new UnsupportedOperationException("This chunk snapshot does not contain block light");
-		}
-		int index = getBlockIndex(x, y, z);
-		byte light = blockLight[index >> 1];
-		if ((index & 1) == 1) {
-			return NibblePairHashed.key1(light);
-		} else {
-			return NibblePairHashed.key2(light);
-		}
-	}
-
-	@Override
 	public Region getRegion() {
 		return parentRegion.get();
 	}
@@ -284,16 +236,6 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 	@Override
 	public short[] getBlockData() {
 		return blockData;
-	}
-
-	@Override
-	public byte[] getBlockLight() {
-		return blockLight;
-	}
-
-	@Override
-	public byte[] getSkyLight() {
-		return skyLight;
 	}
 
 	public boolean isRenderDirty() {
@@ -343,10 +285,6 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 	public int[] getPackedBlockArray() {
 		return packedBlockArray;
-	}
-
-	public boolean isLightStable() {
-		return lightStable;
 	}
 
 	private static class SpoutBlockComponentSnapshot implements BlockComponentSnapshot {

@@ -48,7 +48,6 @@ public class BlockUpdateCodec extends MessageCodec<BlockUpdateMessage> {
 		buffer.writeInt(message.getZ());
 		buffer.writeShort(message.getType());
 		buffer.writeShort(message.getData());
-		buffer.writeByte(NibblePairHashed.key(message.getBlockLight(), message.getSkyLight()));
 		return buffer;
 	}
 
@@ -59,9 +58,6 @@ public class BlockUpdateCodec extends MessageCodec<BlockUpdateMessage> {
 		final int z = buffer.readInt();
 		final short type = buffer.readShort();
 		final short data = buffer.readShort();
-		final byte blockSkyLight = buffer.readByte();
-		final byte blockLight = NibblePairHashed.key1(blockSkyLight);
-		final byte skyLight = NibblePairHashed.key2(blockSkyLight);
-		return new BlockUpdateMessage(x, y, z, type, data, blockLight, skyLight);
+		return new BlockUpdateMessage(x, y, z, type, data);
 	}
 }

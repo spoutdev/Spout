@@ -35,7 +35,6 @@ import org.spout.api.util.SpoutToStringStyle;
 public class BlockUpdateMessage extends SpoutMessage {
 	private final int x, y, z;
 	private final short type, data;
-	private final byte blockLight, skyLight;
 
 	public BlockUpdateMessage(Block block) {
 		this.x = block.getX();
@@ -43,18 +42,14 @@ public class BlockUpdateMessage extends SpoutMessage {
 		this.z = block.getZ();
 		this.type = block.getMaterial().getId();
 		this.data = block.getData();
-		this.blockLight = block.getBlockLight();
-		this.skyLight = block.getSkyLightRaw();
 	}
 
-	public BlockUpdateMessage(int x, int y, int z, short type, short data, byte blockLight, byte skyLight) {
+	public BlockUpdateMessage(int x, int y, int z, short type, short data) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.type = type;
 		this.data = data;
-		this.blockLight = blockLight;
-		this.skyLight = skyLight;
 	}
 
 	public int getX() {
@@ -77,14 +72,6 @@ public class BlockUpdateMessage extends SpoutMessage {
 		return data;
 	}
 
-	public byte getBlockLight() {
-		return blockLight;
-	}
-
-	public byte getSkyLight() {
-		return skyLight;
-	}
-
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this, SpoutToStringStyle.INSTANCE)
@@ -93,8 +80,6 @@ public class BlockUpdateMessage extends SpoutMessage {
 				.append("z", z)
 				.append("type", type)
 				.append("data", data)
-				.append("blockLight", blockLight)
-				.append("skyLight", skyLight)
 				.toString();
 	}
 
@@ -106,8 +91,6 @@ public class BlockUpdateMessage extends SpoutMessage {
 				.append(z)
 				.append(type)
 				.append(data)
-				.append(blockLight)
-				.append(skyLight)
 				.toHashCode();
 	}
 
@@ -121,8 +104,6 @@ public class BlockUpdateMessage extends SpoutMessage {
 					.append(z, other.z)
 					.append(type, other.type)
 					.append(data, other.data)
-					.append(blockLight, other.blockLight)
-					.append(skyLight, other.skyLight)
 					.isEquals();
 		} else {
 			return false;

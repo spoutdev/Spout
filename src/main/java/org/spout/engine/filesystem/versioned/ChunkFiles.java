@@ -77,7 +77,7 @@ public class ChunkFiles {
 	
 	private static final TypeChecker<List<? extends CompoundTag>> checkerListCompoundTag = TypeChecker.tList(CompoundTag.class);
 	
-	public static final byte CHUNK_VERSION = 4;
+	public static final byte CHUNK_VERSION = 5;
 	
 	public static SpoutChunk loadChunk(SpoutRegion r, int x, int y, int z, InputStream dis, ChunkDataForRegion dataForRegion) {
 		SpoutChunk chunk = null;
@@ -115,6 +115,9 @@ public class ChunkFiles {
 				if (version <= 3) {
 					map = convertV3V4(map);
 				}
+				if (version <= 4) {
+					map = convertV4V5(map);
+				}
 			}
 			
 			chunk = loadChunk(r, x, y, z, dataForRegion, map, version);
@@ -148,8 +151,6 @@ public class ChunkFiles {
 		StringMap global = ((SpoutEngine) Spout.getEngine()).getEngineItemMap();
 		StringMap itemMap = world.getItemMap();
 
-		byte[] skyLight = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("skyLight")), null);
-		byte[] blockLight = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("blockLight")), null);
 		byte[] extraData = SafeCast.toByteArray(NBTMapper.toTagValue(map.get("extraData")), null);
 
 		ManagedHashMap extraDataMap = new ManagedHashMap();
@@ -171,7 +172,7 @@ public class ChunkFiles {
 			convertArray(variableWidthBlockArray, itemMap, global);
 			skipScan = componentSkipCheck(variableWidthBlockArray);
 		}
-		chunk = new SpoutChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), palette, blockArrayWidth, variableWidthBlockArray, skyLight, blockLight, extraDataMap, lightStable);
+		chunk = new SpoutChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), palette, blockArrayWidth, variableWidthBlockArray, extraDataMap, lightStable);
 
 		CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("entities")), (CompoundMap) null, CompoundMap.class);
 		EntityFiles.loadEntities(r, entityMap, dataForRegion.loadedEntities);
@@ -229,12 +230,9 @@ public class ChunkFiles {
 		chunkTags.put(new IntTag("y", snapshot.getY()));
 		chunkTags.put(new IntTag("z", snapshot.getZ()));
 		chunkTags.put(new ByteTag("populationState", snapshot.getPopulationState().getId()));
-		chunkTags.put(new ByteTag("lightStable", snapshot.isLightStable()));
 		chunkTags.put(new IntArrayTag("palette", palette));
 		chunkTags.put(new IntTag("packedWidth", packedWidth));
 		chunkTags.put(new IntArrayTag("packedBlockArray", packetBlockArray));
-		chunkTags.put(new ByteArrayTag("skyLight", snapshot.getSkyLight()));
-		chunkTags.put(new ByteArrayTag("blockLight", snapshot.getBlockLight()));
 		chunkTags.put(new CompoundTag("entities", EntityFiles.saveEntities(snapshot.getEntities())));
 		chunkTags.put(saveDynamicUpdates(blockUpdates));
 		chunkTags.put(saveBlockComponents(snapshot.getBlockComponents()));
@@ -602,6 +600,15 @@ public class ChunkFiles {
 	 */
 	
 	private static CompoundMap convertV3V4(CompoundMap map) {
+		return map;
+	}
+	
+	/**
+	 * Version 3 to version 4 conversion
+	 * 
+	 * Old lighting fields depreciated, so no conversion needed.
+	 */
+	private static CompoundMap convertV4V5(CompoundMap map) {
 		return map;
 	}
 	

@@ -73,10 +73,6 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 				uncompressedData[index++] = (byte) s;
 				uncompressedData[index++] = (byte) (s >> 8);
 			}
-			System.arraycopy(message.getBlockLight(), 0, uncompressedData, index, message.getBlockLight().length);
-			index += message.getBlockLight().length;
-			System.arraycopy(message.getSkyLight(), 0, uncompressedData, index, message.getSkyLight().length);
-			index += message.getSkyLight().length;
 			if (message.getBiomeData() != null) {
 				System.arraycopy(message.getBiomeData(), 0, uncompressedData, index, message.getBiomeData().length);
 				index += message.getBiomeData().length;
@@ -159,7 +155,7 @@ public class ChunkDataCodec extends MessageCodec<ChunkDataMessage> {
 				System.arraycopy(uncompressedData, index, biomeData, 0, biomeData.length);
 			}
 
-			return new ChunkDataMessage(x, y, z, blockIds, blockData, blockLight, skyLight, biomeData, biomeManagerClass);
+			return new ChunkDataMessage(x, y, z, blockIds, blockData, biomeData, biomeManagerClass);
 		}
 	}
 }

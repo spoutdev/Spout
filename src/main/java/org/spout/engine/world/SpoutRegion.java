@@ -42,7 +42,6 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -125,7 +124,6 @@ import org.spout.engine.world.collision.RegionShape;
 import org.spout.engine.world.collision.SpoutPhysicsWorld;
 import org.spout.engine.world.dynamic.DynamicBlockUpdate;
 import org.spout.engine.world.dynamic.DynamicBlockUpdateTree;
-import org.spout.engine.world.light.ServerLightStore;
 
 import com.bulletphysics.collision.broadphase.BroadphaseInterface;
 import com.bulletphysics.collision.broadphase.DbvtBroadphase;
@@ -463,9 +461,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 					}
 					dynamicBlockTree.addDynamicBlockUpdates(dataForRegion.loadedUpdates);
 				}
-				if (!newChunk.wasLightStableOnLoad() && newChunk.isPopulated()) {
-					newChunk.initLighting();
-				}
+
 				Spout.getEventManager().callDelayedEvent(new ChunkLoadEvent(newChunk, generated));
 				return newChunk;
 			}
@@ -794,34 +790,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 		}
 	}
 
-	private void updateLighting() {
-		synchronized (lightDirtyChunks) {
-			if (!lightDirtyChunks.isEmpty()) {
-				int key;
-				int x, y, z;
-				TIntIterator iter = lightDirtyChunks.iterator();
-				while (iter.hasNext()) {
-					key = iter.next();
-					x = TByteTripleHashSet.key1(key);
-					y = TByteTripleHashSet.key2(key);
-					z = TByteTripleHashSet.key3(key);
-					SpoutChunk chunk = this.getChunk(x, y, z, LoadOption.NO_LOAD);
-					if (chunk == null || !chunk.isLoaded()) {
-						iter.remove();
-						continue;
-					}
-					if (((ServerLightStore)chunk.getLightStore()).lightingCounter.incrementAndGet() > LIGHT_SEND_TICK_DELAY) {
-						((ServerLightStore)chunk.getLightStore()).lightingCounter.set(-1);
-						if (SpoutConfiguration.LIVE_LIGHTING.getBoolean()) {
-							chunk.setLightDirty(true);
-						}
-						iter.remove();
-					}
-				}
-			}
-		}
-	}
-
 	private void updatePopulation() {
 		for (int i = 0; i < POPULATE_PER_TICK && !scheduler.isServerOverloaded(); i++) {
 			SpoutChunk toPopulate = populationPriorityQueue.poll();
@@ -976,7 +944,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 				updateAutosave();
 				updateBlockComponents(dt);
 				updateEntities(dt);
-				updateLighting();
 				updatePopulation();
 				unloadChunks();
 				break;
@@ -1654,16 +1621,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 	}
 
 	@Override
-	public boolean setBlockLight(int x, int y, int z, byte light, Cause<?> cause) {
-		return this.getChunkFromBlock(x, y, z).setBlockLight(x, y, z, light, cause);
-	}
-
-	@Override
-	public boolean setBlockSkyLight(int x, int y, int z, byte light, Cause<?> cause) {
-		return this.getChunkFromBlock(x, y, z).setBlockSkyLight(x, y, z, light, cause);
-	}
-
-	@Override
 	public short setBlockDataBits(int x, int y, int z, int bits, boolean set, Cause<?> cause) {
 		return this.getChunkFromBlock(x, y, z).setBlockDataBits(x, y, z, bits, set, cause);
 	}
@@ -1761,21 +1718,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 	@Override
 	public short getBlockData(int x, int y, int z) {
 		return this.getChunkFromBlock(x, y, z).getBlockData(x, y, z);
-	}
-
-	@Override
-	public byte getBlockLight(int x, int y, int z) {
-		return this.getChunkFromBlock(x, y, z).getBlockLight(x, y, z);
-	}
-
-	@Override
-	public byte getBlockSkyLight(int x, int y, int z) {
-		return this.getChunkFromBlock(x, y, z).getBlockSkyLight(x, y, z);
-	}
-
-	@Override
-	public byte getBlockSkyLightRaw(int x, int y, int z) {
-		return getChunkFromBlock(x, y, z).getBlockSkyLightRaw(x, y, z);
 	}
 
 	@Override
@@ -1966,7 +1908,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		return region.getChunk(x, y, z, loadopt);
 	}
 
-	public void addChunk(int x, int y, int z, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, BiomeManager biomes) {
+	public void addChunk(int x, int y, int z, short[] blockIds, short[] blockData, BiomeManager biomes) {
 		x &= BLOCKS.MASK;
 		y &= BLOCKS.MASK;
 		z &= BLOCKS.MASK;
@@ -1974,7 +1916,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		if (chunk != null) {
 			chunk.unload(false);
 		}
-		SpoutChunk newChunk = new SpoutChunk(getWorld(), this, getBlockX() | x, getBlockY() | y, getBlockZ() | z, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, skyLight, blockLight, new ManagedHashMap(), true);
+		SpoutChunk newChunk = new SpoutChunk(getWorld(), this, getBlockX() | x, getBlockY() | y, getBlockZ() | z, SpoutChunk.PopulationState.POPULATED, blockIds, blockData, new ManagedHashMap(), true);
 		setChunk(newChunk, x, y, z, null, true);
 		checkChunkLoaded(newChunk, LoadOption.LOAD_GEN);
 	}
