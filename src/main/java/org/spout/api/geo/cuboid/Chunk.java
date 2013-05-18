@@ -212,13 +212,6 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	public abstract void initLighting();
 
 	/**
-	 * Gets whether this chunk is ready to be sent to a player<br>
-	 * It will return False when sending it could cause incomplete chunk information
-	 * @return True if it can be sent, False if not
-	 */
-	public abstract boolean canSend();
-
-	/**
 	 * Populates the chunk with all the Populators attached to the
 	 * WorldGenerator of its world.
 	 *

@@ -362,7 +362,7 @@ public abstract class NetworkSynchronizer {
 	}
 	
 	protected boolean canSendChunk(Chunk c) {
-		return c.canSend();
+		return true;
 	}
 
 	private Iterator<Point> attemptSendChunk(Iterator<Point> i, Iterable<Point> queue, Point p, Set<Point> unsendable) {
