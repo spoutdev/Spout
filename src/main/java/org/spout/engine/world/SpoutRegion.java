@@ -1149,7 +1149,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 				}
 			}
 
-			if (spoutChunk.isPopulated() && spoutChunk.isDirty()) {
+			if (spoutChunk.isDirty()) {
 				if (!spoutChunk.canSend()) {
 					couldNotSend.add(spoutChunk);
 				} else {
