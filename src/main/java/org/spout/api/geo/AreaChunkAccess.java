@@ -29,8 +29,10 @@ package org.spout.api.geo;
 import java.util.List;
 
 import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.lighting.LightingManager;
 import org.spout.api.math.IntVector3;
 import org.spout.api.math.Vector3;
+import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.LiveRead;
 import org.spout.api.util.thread.annotation.SnapshotRead;
@@ -177,4 +179,16 @@ public interface AreaChunkAccess extends AreaBlockAccess {
 	 * @param chunks a list of chunk coordinates
 	 */
 	public void queueChunkForGeneration(Vector3 chunk);
+	
+	/**
+	 * Gets the lighting buffer associated with the given manager
+	 * 
+	 * @param manager the corresponding lighting manager
+	 * @param x coordinate of the chunk
+	 * @param y coordinate of the chunk
+	 * @param z coordinate of the chunk
+	 * @param loadopt load option
+	 * @return
+	 */
+	public <T extends CuboidLightBuffer> T getLightBuffer(LightingManager<T> manager, int x, int y, int z, LoadOption loadopt);
 }

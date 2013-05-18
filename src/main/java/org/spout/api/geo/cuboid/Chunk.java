@@ -31,8 +31,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Future;
-import org.spout.api.component.ComponentOwner;
-import org.spout.api.data.DataOwner;
 
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
@@ -44,10 +42,12 @@ import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
 import org.spout.api.geo.cuboid.ChunkSnapshot.ExtraData;
 import org.spout.api.geo.cuboid.ChunkSnapshot.SnapshotType;
 import org.spout.api.geo.discrete.Point;
+import org.spout.api.lighting.LightingManager;
 import org.spout.api.map.DefaultedMap;
 import org.spout.api.material.block.BlockFace;
 import org.spout.api.math.BitSize;
 import org.spout.api.math.Vector3;
+import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.LiveRead;
 import org.spout.api.util.thread.annotation.LiveWrite;
@@ -273,6 +273,14 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 * @return Set containing the observing players
 	 */
 	public abstract Set<? extends Entity> getObservers();
+	
+	/**
+	 * Gets the lighting buffer associated with the given manager
+	 * 
+	 * @param manager the corresponding lighting manager
+	 * @return
+	 */
+	public abstract <T extends CuboidLightBuffer> T getLightBuffer(LightingManager<T> manager);
 
 	/**
 	 * A thread-safe map of data attached to the chunk, which will be persisted between saves.
