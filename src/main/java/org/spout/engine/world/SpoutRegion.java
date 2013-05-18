@@ -949,7 +949,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 				break;
 			}
 			case 1: {
-				updateDynamics(dt);
+				if (SpoutConfiguration.SIMULATE_DYNAMICS.getBoolean(true)) {
+					updateDynamics(dt);
+				}
 				break;
 			}
 			case 2: {

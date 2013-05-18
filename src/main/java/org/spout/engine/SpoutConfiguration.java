@@ -43,10 +43,6 @@ public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder VIEW_DISTANCE = new ConfigurationHolder(10, "general", "view-distance");
 	public static final ConfigurationHolder RECLAIM_MEMORY = new ConfigurationHolder(true, "general", "reclaim-memory");
 	public static final ConfigurationHolder AUTOSAVE_INTERVAL = new ConfigurationHolder(60000, "general", "autosave-interval");
-	public static final ConfigurationHolder CONSOLE_TYPE = new ConfigurationHolder("jline", "general", "console");
-	// Lightning
-	public static final ConfigurationHolder LIGHTING_ENABLED = new ConfigurationHolder(true, "lightning", "enabled");
-	public static final ConfigurationHolder LIVE_LIGHTING = new ConfigurationHolder(false, "lightning", "live-lighting");
 	// Chunks
 	public static final ConfigurationHolder CHUNK_REAP_DELAY = new ConfigurationHolder(1, "chunks", "reap-delay");
 	public static final ConfigurationHolder REAP_CHUNKS_PER_TICK = new ConfigurationHolder(50, "chunks", "reap-per-tick");
@@ -66,6 +62,7 @@ public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder RECV_SPIKE_LATENCY = new ConfigurationHolder(0L, "debug", "recv-spike-latency");
 	public static final ConfigurationHolder RECV_SPIKE_CHANCE = new ConfigurationHolder(0F, "debug", "recv-spikes-per-second");
 	public static final ConfigurationHolder DEBUG_SHADERS = new ConfigurationHolder(false, "debug", "debug-shaders");
+	public static final ConfigurationHolder SIMULATE_DYNAMICS = new ConfigurationHolder(true, "debug", "simulate-dynamics");
 
 	public SpoutConfiguration() {
 		super(new YamlConfiguration(new File(SharedFileSystem.getConfigDirectory(), "spout.yml")));
