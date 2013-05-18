@@ -43,6 +43,7 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.generator.biome.BiomeManager;
+import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.geo.cuboid.Region;
@@ -144,13 +145,13 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 		// Cache extra data
 		if (data == ExtraData.BIOME_DATA) {
-			this.biomes = chunk.getWorld().getBiomeManager(chunk.getBlockX(), chunk.getBlockZ()).clone();
+			this.biomes = chunk.getWorld().getBiomeManager(chunk.getBlockX(), chunk.getBlockZ(), LoadOption.LOAD_ONLY).clone();
 			this.dataMap = null;
 		} else if (data == ExtraData.DATATABLE) {
 			this.dataMap = chunk.getDataMap().deepCopy();
 			this.biomes = null;
 		} else if (data == ExtraData.BOTH) {
-			this.biomes = chunk.getWorld().getBiomeManager(chunk.getBlockX(), chunk.getBlockZ()).clone();
+			this.biomes = chunk.getWorld().getBiomeManager(chunk.getBlockX(), chunk.getBlockZ(), LoadOption.LOAD_ONLY).clone();
 			this.dataMap = chunk.getDataMap().deepCopy();
 		} else {
 			this.biomes = null;

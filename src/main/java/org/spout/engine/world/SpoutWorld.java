@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.Platform;
@@ -76,7 +78,6 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.GenericMath;
-import org.spout.api.math.IntVector3;
 import org.spout.api.math.Quaternion;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
@@ -160,6 +161,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	 */
 	private final TSyncLongObjectHashMap<SpoutColumn> columns = new TSyncLongObjectHashMap<SpoutColumn>();
 	private final Set<SpoutColumn> columnSet = new LinkedHashSet<SpoutColumn>();
+	private final ReentrantLock[] columnLockMap = new ReentrantLock[16];
 	/**
 	 * A map of column height map files
 	 */
@@ -233,6 +235,10 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 
 		this.lightingManager = new SpoutWorldLighting(this);
 		//this.lightingManager.start();
+		
+		for (int i = 0; i < columnLockMap.length; i++) {
+			columnLockMap[i] = new ReentrantLock();
+		}
 
 		parallelTaskManager = new SpoutParallelTaskManager(engine.getScheduler(), this);
 
@@ -297,25 +303,27 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 		if (!(generator instanceof BiomeGenerator)) {
 			return null;
 		}
-		final SpoutColumn column = getColumn(x, z, true);
-		final BiomeManager manager = column.getBiomeManager();
-		if (manager != null) {
-			final Biome biome = column.getBiomeManager().getBiome(x & SpoutColumn.BLOCKS.MASK, y & SpoutColumn.BLOCKS.MASK, z & SpoutColumn.BLOCKS.MASK);
-			if (biome != null) {
-				return biome;
+		int cx = x >> SpoutColumn.BLOCKS.BITS;
+		int cz = z >> SpoutColumn.BLOCKS.BITS;
+		
+		final SpoutColumn column = getColumn(cx, cz, LoadOption.LOAD_ONLY);
+		if (column != null) {
+			final BiomeManager manager = column.getBiomeManager();
+			if (manager != null) {
+				final Biome biome = column.getBiomeManager().getBiome(x & SpoutColumn.BLOCKS.MASK, y & SpoutColumn.BLOCKS.MASK, z & SpoutColumn.BLOCKS.MASK);
+				if (biome != null) {
+					return biome;
+				}
 			}
 		}
 		return ((BiomeGenerator) generator).getBiome(x, y, z, seed);
 	}
 
 	@Override
-	public BiomeManager getBiomeManager(int x, int z) {
-		return getBiomeManager(x, z, false);
-	}
-
-	@Override
-	public BiomeManager getBiomeManager(int x, int z, boolean load) {
-		final SpoutColumn column = getColumn(x, z, load);
+	public BiomeManager getBiomeManager(int x, int z, LoadOption loadopt) {
+		int cx = x >> SpoutColumn.BLOCKS.BITS;
+		int cz = z >> SpoutColumn.BLOCKS.BITS;
+		final SpoutColumn column = getColumn(cx, cz, loadopt);
 		if (column != null) {
 			return column.getBiomeManager();
 		}
@@ -518,10 +526,17 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 		SpoutWorld world = (SpoutWorld) obj;
 		return world.getUID().equals(getUID());
 	}
+	
+	@Override
+	public int getSurfaceHeight(int x, int z) {
+		return getSurfaceHeight(x, z, LoadOption.LOAD_GEN);
+	}
 
 	@Override
-	public int getSurfaceHeight(int x, int z, boolean load) {
-		SpoutColumn column = getColumn(x, z, load);
+	public int getSurfaceHeight(int x, int z, LoadOption loadopt) {
+		int cx = x >> SpoutColumn.BLOCKS.BITS;
+		int cz = z >> SpoutColumn.BLOCKS.BITS;
+		SpoutColumn column = getColumn(cx, cz, loadopt);
 		if (column == null) {
 			return Integer.MIN_VALUE;
 		}
@@ -530,13 +545,10 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	}
 
 	@Override
-	public int getSurfaceHeight(int x, int z) {
-		return getSurfaceHeight(x, z, false);
-	}
-
-	@Override
-	public BlockMaterial getTopmostBlock(int x, int z, boolean load) {
-		SpoutColumn column = getColumn(x, z, load);
+	public BlockMaterial getTopmostBlock(int x, int z, LoadOption loadopt) {
+		int cx = x >> SpoutColumn.BLOCKS.BITS;
+		int cz = z >> SpoutColumn.BLOCKS.BITS;
+		SpoutColumn column = getColumn(cx, cz, loadopt);
 		if (column == null) {
 			return null;
 		}
@@ -546,7 +558,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 
 	@Override
 	public BlockMaterial getTopmostBlock(int x, int z) {
-		return getTopmostBlock(x, z, false);
+		return getTopmostBlock(x, z, LoadOption.LOAD_GEN);
 	}
 
 	@Override
@@ -991,31 +1003,86 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 
 	/**
 	 * Gets the column corresponding to the given Block coordinates
-	 * @param x the x block coordinate
-	 * @param z the z block coordinate
-	 * @param create true to create the column if it doesn't exist
+	 * @param x the x coordinate
+	 * @param z the z coordinate
+	 * @param loadopt load option
 	 * @return the column or null if it doesn't exist
 	 */
-	public SpoutColumn getColumn(int x, int z, boolean create) {
-		int colX = x >> SpoutColumn.BLOCKS.BITS;
-		int colZ = z >> SpoutColumn.BLOCKS.BITS;
-		long key = IntPairHashed.key(colX, colZ);
+	public SpoutColumn getColumn(int x, int z, LoadOption loadopt) {
+		
+		long key = IntPairHashed.key(x, z);
 		SpoutColumn column = columns.get(key);
-		if (create && column == null) {
-			SpoutColumn newColumn = new SpoutColumn(this, colX, colZ);
-			column = columns.putIfAbsent(key, newColumn);
-			if (column == null) {
-				column = newColumn;
-				synchronized (columnSet) {
-					columnSet.add(column);
-				}
-			}
+		if (column != null || !loadopt.loadIfNeeded()) {
+			return column;
 		}
+
+		column = loadColumn(x, z);
+		if (column != null || !loadopt.generateIfNeeded()) {
+			return column;
+		}
+		
+		int[][] height = this.getGenerator().getSurfaceHeight(this, x, z);
+		
+		int h = (height[7][7] >> Chunk.BLOCKS.BITS);
+		
+		SpoutRegion r = getRegionFromChunk(x, h, z, loadopt);
+		
+		if (r == null) {
+			throw new IllegalStateException("Unable to generate region for new column and load option " + loadopt);
+		}
+		
+		r.getRegionGenerator().generateColumn(x, z);
+
+		column = getColumn(x, z, LoadOption.LOAD_ONLY);
+		
+		if (column == null) {
+			throw new IllegalStateException("Unable to generate column " + x + ", " + z);
+		}
+		
 		return column;
+		
+	}
+	
+	public SpoutColumn setIfNotGenerated(int x, int z, int[][] heightMap) {
+		long key = (((long) x) << 32) | (z & 0xFFFFFFFFL);
+		key = (key % 7919);
+		key &= columnLockMap.length - 1;
+		
+		Lock lock = columnLockMap[(int) key];
+		lock.lock();
+		try {
+			SpoutColumn col = getColumn(x, z, LoadOption.NO_LOAD);
+			if (col != null) {
+				return col;
+			}
+			col = loadColumn(x, z);
+			if (col != null) {
+				return col;
+			}
+			return setColumn(x, z, new SpoutColumn(heightMap, this, x, z));
+		} finally {
+			lock.unlock();
+		}
+	}
+	
+	public SpoutColumn loadColumn(int x, int z) {
+		InputStream in = getHeightMapInputStream(x, z);
+		if (in == null) {
+			return null;
+		}
+		return setColumn(x, z, new SpoutColumn(in, this, x, z));
 	}
 
-	public SpoutColumn getColumn(int x, int z) {
-		return getColumn(x, z, false);
+	public SpoutColumn setColumn(int x, int z, SpoutColumn col) {
+		long key = IntPairHashed.key(x, z);
+		SpoutColumn old = columns.putIfAbsent(key, col);
+		if (old != null) {
+			return old;
+		}
+		synchronized (columnSet) {
+			columnSet.add(col);
+		}
+		return col;
 	}
 
 	public SpoutColumn[] getColumns() {
@@ -1506,14 +1573,17 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 
 	@Override
 	public void queueChunkForGeneration(final Vector3 chunk) {
-		SpoutRegion region = getRegion(chunk.getFloorX(), chunk.getFloorY(), chunk.getFloorZ(), LoadOption.NO_LOAD);
+		final int rx = (chunk.getFloorX() >> Region.CHUNKS.BITS);
+		final int ry = (chunk.getFloorY() >> Region.CHUNKS.BITS);
+		final int rz = (chunk.getFloorZ() >> Region.CHUNKS.BITS);
+		SpoutRegion region = getRegion(rx, ry, rz, LoadOption.NO_LOAD);
 		if (region != null) {
 			region.queueChunkForGeneration(chunk);
 		} else {
 			((SpoutScheduler) Spout.getScheduler()).scheduleSyncDelayedTask(this, new Runnable() {
 				@Override
 				public void run() {
-					SpoutRegion region = getRegion(chunk.getFloorX(), chunk.getFloorY(), chunk.getFloorZ(), LoadOption.LOAD_GEN);
+					SpoutRegion region = getRegion(rx, ry, rz, LoadOption.LOAD_GEN);
 					region.queueChunkForGeneration(chunk);
 				}
 			});

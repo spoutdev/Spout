@@ -156,9 +156,10 @@ public class RegionSource implements Iterable<Region> {
 		SpoutRegion current = (SpoutRegion) loadedRegions.putIfAbsent(x, y, z, region);
 
 		if (current != null) {
-			((SpoutScheduler)Spout.getScheduler()).removeAsyncManager(region);
 			return current;
 		}
+		
+		((SpoutScheduler)Spout.getScheduler()).addAsyncManager(region);
 		
 		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
 			region.startMeshGeneratorThread();

@@ -162,7 +162,7 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public Block getSurface() {
-		int height = getWorld().getSurfaceHeight(this.x, this.z, true);
+		int height = getWorld().getSurfaceHeight(this.x, this.z, LoadOption.LOAD_GEN);
 		if (height == this.y) {
 			return this;
 		} else {
@@ -189,7 +189,7 @@ public class SpoutBlock implements Block {
 
 	@Override
 	public boolean isAtSurface() {
-		return this.y >= getWorld().getSurfaceHeight(this.x, this.z, true);
+		return this.y >= getWorld().getSurfaceHeight(this.x, this.z, LoadOption.LOAD_GEN);
 	}
 
 	@Override

@@ -291,7 +291,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 		physicsQueue = new PhysicsQueue(this);
 
-		column = world.getColumn(this.getBlockX(), this.getBlockZ(), true);
+		column = world.getColumn(this.getX(), this.getZ(), LoadOption.LOAD_GEN);
 		column.registerCuboid(getBlockY(), getBlockY() + Chunk.BLOCKS.SIZE - 1);
 		columnRegistered.set(true);
 		lastUnloadCheck.set(world.getAge());

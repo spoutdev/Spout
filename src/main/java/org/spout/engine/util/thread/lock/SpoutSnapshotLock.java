@@ -91,7 +91,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 	}
 	
 	@Override
-	public boolean isReadLocked() {
+	public boolean isWriteLocked() {
 		if (!lock.readLock().tryLock()) {
 			return true;
 		}

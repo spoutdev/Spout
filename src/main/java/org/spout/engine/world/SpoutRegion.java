@@ -276,8 +276,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 		this.chunkStore = world.getRegionFile(getX(), getY(), getZ());
 		taskManager = new SpoutTaskManager(world.getEngine().getScheduler(), null, this, world.getAge());
 		scheduler = (SpoutScheduler) (Spout.getEngine().getScheduler());
-		
-		scheduler.addAsyncManager(this);
 
 		//Physics
 		broadphase = new DbvtBroadphase();
@@ -2176,7 +2174,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 	@Override
 	public ImmutableHeightMapBuffer getLocalHeightMap(int x, int z, LoadOption loadopt) {
-		SpoutColumn col = getWorld().getColumn((getChunkX() + x) << Chunk.BLOCKS.BITS, (getChunkZ() + z) << Chunk.BLOCKS.BITS, true);
+		SpoutColumn col = getWorld().getColumn(getChunkX() + x, getChunkZ() + z, loadopt);
 		if (col == null) {
 			return null;
 		}

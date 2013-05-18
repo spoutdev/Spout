@@ -27,12 +27,11 @@
 package org.spout.engine.world;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-
-import net.royawesome.jlibnoise.MathHelper;
 
 import org.spout.api.Spout;
 import org.spout.api.generator.biome.BiomeGenerator;
@@ -41,7 +40,6 @@ import org.spout.api.geo.LoadOption;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
-import org.spout.api.material.block.BlockFaces;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.math.BitSize;
 import org.spout.api.scheduler.TickStage;
@@ -72,7 +70,20 @@ public class SpoutColumn {
 	private final AtomicReference<BiomeManager> biomes = new AtomicReference<BiomeManager>();
 	private final SetQueueElement<SpoutColumn> heightDirtyQueue;
 
-	public SpoutColumn(SpoutWorld world, int x, int z) {
+	public SpoutColumn(InputStream in, SpoutWorld world, int x, int z) {
+		this(in, null, world, x, z);
+	}
+	
+	public 	SpoutColumn(int[][] heights, SpoutWorld world, int x, int z) {
+		this(null, heights, world, x, z);
+	}
+	
+	private SpoutColumn(InputStream in, int[][] heights, SpoutWorld world, int x, int z) {
+		
+		if (heights != null && in != null) {
+			throw new IllegalArgumentException("Both heights and input stream were non-null");
+		}
+		
 		this.world = world;
 		this.x = x;
 		this.z = z;
@@ -84,14 +95,16 @@ public class SpoutColumn {
 
 		for (int xx = 0; xx < BLOCKS.SIZE; xx++) {
 			for (int zz = 0; zz < BLOCKS.SIZE; zz++) {
-				heightMap[xx][zz] = new AtomicInteger(0);
+				heightMap[xx][zz] = new AtomicInteger(heights == null ? 0 : heights[xx][zz]);
 				dirtyArray[xx][zz] = new AtomicBoolean(false);
 			}
 		}
 
 		lowestY.set(Integer.MAX_VALUE);
 
-		ColumnFiles.readColumn(((SpoutWorld) world).getHeightMapInputStream(x, z), this, this.lowestY, this.highestY, topmostBlocks);
+		if (heights == null) {
+			ColumnFiles.readColumn(in, this, this.lowestY, this.highestY, topmostBlocks);
+		}
 		//Could not load biomes from column, so calculate them
 		if (biomes.get() == null) {
 			if (world.getGenerator() instanceof BiomeGenerator) {
