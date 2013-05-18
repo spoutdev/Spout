@@ -336,11 +336,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 	@Override
 	@LiveRead
 	public SpoutChunk getChunk(int x, int y, int z, LoadOption loadopt) {
-		switch (loadopt) {
-			case LOAD_ONLY: TickStage.checkStage(~TickStage.SNAPSHOT); break;
-			case LOAD_GEN: TickStage.checkStage(~(TickStage.SNAPSHOT | TickStage.PRESNAPSHOT | TickStage.LIGHTING));
-		}
-
 		x &= CHUNKS.MASK;
 		y &= CHUNKS.MASK;
 		z &= CHUNKS.MASK;
@@ -357,6 +352,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		boolean fileExists = this.inputStreamExists(x, y, z);
 
 		if (loadopt.loadIfNeeded() && fileExists) {
+			TickStage.checkStage(~TickStage.SNAPSHOT);
 			dataForRegion = new ChunkDataForRegion();
 			newChunk = ChunkFiles.loadChunk(this, x, y, z, this.getChunkInputStream(x, y, z), dataForRegion);
 			if (newChunk == null) {
@@ -366,6 +362,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 		}
 
 		if (loadopt.generateIfNeeded() && !fileExists && newChunk == null) {
+			TickStage.checkStage(~(TickStage.PRESNAPSHOT | TickStage.LIGHTING));
 			generateColumn(x, z);
 			final SpoutChunk generatedChunk = chunks[x][y][z].get();
 			if (generatedChunk != null) {
