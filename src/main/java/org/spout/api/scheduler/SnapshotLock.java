@@ -64,5 +64,5 @@ public interface SnapshotLock {
 	 * 
 	 * @return true if locked
 	 */
-	public boolean isReadLocked();
+	public boolean isWriteLocked();
 }
