@@ -1024,11 +1024,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		}
 	}
 
-	@Override
-	public boolean canSend() {
-		return true;
-	}
-
 	public void lockStore() {
 		blockStore.writeLock();
 	}

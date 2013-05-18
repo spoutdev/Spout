@@ -1131,7 +1131,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 		SpoutChunk spoutChunk;
 
 		List<SpoutChunk> renderLater = new LinkedList<SpoutChunk>();
-		List<SpoutChunk> couldNotSend = new LinkedList<SpoutChunk>();
 
 		while ((spoutChunk = dirtyChunkQueue.poll()) != null) {
 
@@ -1150,22 +1149,15 @@ public class SpoutRegion extends Region implements AsyncManager {
 			}
 
 			if (spoutChunk.isDirty()) {
-				if (!spoutChunk.canSend()) {
-					couldNotSend.add(spoutChunk);
-				} else {
-					for (Player entity : spoutChunk.getObservingPlayers()) {
-						syncChunkToPlayer(spoutChunk, entity);
-					}
-					processChunkUpdatedEvent(spoutChunk);
-
-					spoutChunk.resetDirtyArrays();
-					spoutChunk.setLightDirty(false);
+				for (Player entity : spoutChunk.getObservingPlayers()) {
+					syncChunkToPlayer(spoutChunk, entity);
 				}
+				processChunkUpdatedEvent(spoutChunk);
+
+				spoutChunk.resetDirtyArrays();
+				spoutChunk.setLightDirty(false);
+
 			}
-		}
-		
-		for (SpoutChunk c : couldNotSend) {
-			c.queueDirty();
 		}
 
 		for(SpoutChunk c : renderLater){
