@@ -34,8 +34,6 @@ public interface BlockSource {
 
 	int getBlockTypeIdAt(Vector3 pos);
 
-	int getLightLevel(Vector3 pos);
-
 	Material getMaterialAt(int x, int y, int z);
 
 	Material getMaterialAt(Vector3 pos);

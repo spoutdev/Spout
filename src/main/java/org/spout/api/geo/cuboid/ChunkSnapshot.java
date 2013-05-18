@@ -74,22 +74,6 @@ public abstract class ChunkSnapshot extends Cube implements AreaBlockSource {
 	public abstract short[] getBlockData();
 
 	/**
-	 * Gets a copy of the raw block light data. <br/><br/> 
-	 * 
-	 * Light is stored in nibbles, with the first index even, the second odd.
-	 * @return raw block light data
-	 */
-	public abstract byte[] getBlockLight();
-
-	/**
-	 * Gets a copy of the raw sky light data. <br/><br/> 
-	 * 
-	 * Light is stored in nibbles, with the first index even, the second odd.
-	 * @return raw skylight data
-	 */
-	public abstract byte[] getSkyLight();
-	
-	/**
 	 * Gets an array containing a copy of the light data arrays
 	 * 
 	 * @return

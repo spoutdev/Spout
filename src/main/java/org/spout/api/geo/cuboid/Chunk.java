@@ -124,20 +124,6 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	public abstract void fillBlockContainer(BlockContainer container);
 
 	/**
-	 * Fills the given light container with the sky light data for this chunk
-	 *
-	 * @param container
-	 */
-	public abstract void fillSkyLightContainer(LightContainer container);
-
-	/**
-	 * Fills the given light container with the block light data for this chunk
-	 *
-	 * @param container
-	 */
-	public abstract void fillBlockLightContainer(LightContainer container);
-
-	/**
 	 * Fills the given block component container with the block components for this chunk
 	 *
 	 * @param container
@@ -205,11 +191,6 @@ public abstract class Chunk extends Cube implements AreaBlockAccess, AreaPhysics
 	 * @return
 	 */
 	public abstract boolean populate();
-
-	/**
-	 * Initializes the lighting in this chunk
-	 */
-	public abstract void initLighting();
 
 	/**
 	 * Populates the chunk with all the Populators attached to the

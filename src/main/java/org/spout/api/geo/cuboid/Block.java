@@ -318,57 +318,6 @@ public interface Block extends MaterialSource, WorldSource, ComponentHolder {
 	public int addDataField(int bits, int value);
 
 	/**
-	 * Gets the current light level of the block<br>
-	 * This is both sky and block light<br>
-	 * Sky light is affected by the sky light level emitted by the world
-	 * 
-	 * @return the light level
-	 */
-	public byte getLight();
-
-	/**
-	 * Sets the sky light level to the given light level<br><br>
-	 * <b>Note: For persistence, alter block material light levels instead</b>
-	 * 
-	 * @param light level to set to
-	 * @return this Block
-	 */
-	public Block setSkyLight(byte level);
-
-	/**
-	 * Sets the block light level to the given light level<br><br>
-	 * <b>Note: For persistence, alter block material light levels instead</b>
-	 *
-	 * @param light level to set to
-	 * @return this Block
-	 */
-	public Block setBlockLight(byte level);
-
-	/**
-	 * Gets the block light level
-	 *
-	 * @return the block light level
-	 */
-	public byte getBlockLight();
-
-	/**
-	 * Gets the sky light level<br>
-	 * The returned value is <b>not</b> affected by the world sky light that is emitted<br>
-	 * It is the light level that is actually stored
-	 *
-	 * @return the sky light level
-	 */
-	public byte getSkyLightRaw();
-
-	/**
-	 * Gets the sky light level<br>
-	 * The returned value is affected by the world sky light that is emitted
-	 *
-	 * @return the sky light level
-	 */
-	public byte getSkyLight();
-
-	/**
 	 * Gets the biome type for this block,
 	 * if the world generator used uses biomes.
 	 *

@@ -74,31 +74,6 @@ public interface AreaBlockAccess extends AreaBlockSource {
 	public boolean setBlockMaterial(int x, int y, int z, BlockMaterial material, short data, Cause<?> source);
 
 	/**
-	 * Sets the block light level for the block at (x, y, z) to the given light level
-	 *
-	 * @param x coordinate of the block
-	 * @param y coordinate of the block
-	 * @param z coordinate of the block
-	 * @param light level to set to
-	 * @param cause of the change, or null if non-specific cause
-	 */
-	@LiveWrite
-	public boolean setBlockLight(int x, int y, int z, byte light, Cause<?> source);
-
-	/**
-	 * Sets the block sky light level for the block at (x, y, z) to the given light level
-	 *
-	 * @param x coordinate of the block
-	 * @param y coordinate of the block
-	 * @param z coordinate of the block
-	 * @param light level to set to
-	 * @param cause of the change, or null if non-specific cause
-	 * @return whether setting was successful
-	 */
-	@LiveWrite
-	public boolean setBlockSkyLight(int x, int y, int z, byte light, Cause<?> source);
-
-	/**
 	 * Sets the data of the block at (x, y, z) if the expected state matches
 	 *
 	 * @param x coordinate of the block

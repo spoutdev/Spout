@@ -44,11 +44,6 @@ public class SpoutBlockSource extends AbstractBlockSource {
 	}
 
 	@Override
-	public int getLightLevel(Vector3 pos) {
-		return world.getBlock(pos).getLight();
-	}
-
-	@Override
 	public int getBlockTypeIdAt(Vector3 pos) {
 		return getMaterialAt(pos).getId();
 	}

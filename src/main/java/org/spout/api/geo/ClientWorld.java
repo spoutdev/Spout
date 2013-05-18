@@ -47,9 +47,7 @@ public interface ClientWorld extends World {
 	 * @param z The chunk's z coordinate
 	 * @param blockIds The block ids for the chunk
 	 * @param blockData The block data for the chunk
-	 * @param blockLight The block lighting data
-	 * @param skyLight The sky lighting data
 	 * @param biomes The biome data
 	 */
-	public void addChunk(int x, int y, int z, short[] blockIds, short[] blockData, byte[] blockLight, byte[] skyLight, BiomeManager biomes);
+	public void addChunk(int x, int y, int z, short[] blockIds, short[] blockData, BiomeManager biomes);
 }
