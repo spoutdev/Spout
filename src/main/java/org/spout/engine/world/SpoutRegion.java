@@ -82,6 +82,7 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFace;
+import org.spout.api.material.block.BlockFaces;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.GenericMath;
 import org.spout.api.math.IntVector3;
@@ -417,8 +418,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 		cx &= CHUNKS.MASK;
 		cy &= CHUNKS.MASK;
 		cz &= CHUNKS.MASK;
-		SpoutChunk currentChunk = setChunkIfNotGenerated(newChunk, cx, cy, cz, null, true);
-		if (currentChunk != newChunk) {
+		boolean success = setChunkIfNotGenerated(newChunk, cx, cy, cz, null, true);
+		if (!success) {
 			//Spout.getLogger().info("Warning: Unable to set generated chunk, new Chunk " + newChunk + " chunk in memory " + currentChunk);
 		} else {
 			newChunk.compressRaw();
@@ -426,18 +427,18 @@ public class SpoutRegion extends Region implements AsyncManager {
 		}
 	}
 	
-	protected SpoutChunk setChunkIfNotGenerated(SpoutChunk newChunk, int x, int y, int z, ChunkDataForRegion dataForRegion, boolean generated) {
+	protected boolean setChunkIfNotGenerated(SpoutChunk newChunk, int x, int y, int z, ChunkDataForRegion dataForRegion, boolean generated) {
 		
 		synchronized (this.generateSync) {
 			int cx = newChunk.getX();
 			int cy = newChunk.getY();
 			int cz = newChunk.getZ();
-			SpoutChunk current = getChunk(cx, cy, cz, LoadOption.LOAD_ONLY);
-			if (current != null) {
-				return current;
+			boolean exists = this.inputStreamExists(cx, cy, cz);
+			if (exists) {
+				return false;
 			}
 			// chunk has not been generated
-			return setChunk(newChunk, x, y, z, dataForRegion, generated);
+			return setChunk(newChunk, x, y, z, dataForRegion, generated) == newChunk;
 		}
 		
 	}
@@ -800,7 +801,22 @@ public class SpoutRegion extends Region implements AsyncManager {
 				}
 			}
 			if (toPopulate.isLoaded()) {
-				if (toPopulate.populate()) {
+				boolean surrounded = true;
+				for (int nx = -1; nx <= 1; nx++) {
+					int nxx = nx + toPopulate.getX();
+					for (int ny = -1; ny <= 1; ny++) {
+						int nyy = ny + toPopulate.getY();
+						for (int nz = -1; nz <= 1; nz++) {
+							int nzz = nz + toPopulate.getZ();
+							Chunk c = getWorld().getChunk(nxx, nyy, nzz, LoadOption.LOAD_ONLY);
+							if (c == null) {
+								surrounded = false;
+								getWorld().queueChunkForGeneration(new Vector3(nxx, nyy, nzz));
+							}
+						}
+					}
+				}
+				if (surrounded && toPopulate.populate()) {
 					if (scheduler.isServerOverloaded()) {
 						break;
 					}

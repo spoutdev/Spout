@@ -970,7 +970,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 			}
 		}
 	}
-
+	
 	/**
 	 * Gets the column corresponding to the given Block coordinates
 	 * @param x the x coordinate
@@ -978,7 +978,12 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 	 * @param loadopt load option
 	 * @return the column or null if it doesn't exist
 	 */
-	public SpoutColumn getColumn(int x, int z, LoadOption loadopt) {
+	protected SpoutColumn getColumn(int x, int z, LoadOption loadopt) {
+		return getColumn(x, z, loadopt, true);
+	}
+	
+	
+	protected SpoutColumn getColumn(int x, int z, LoadOption loadopt, boolean sync) {
 		
 		long key = IntPairHashed.key(x, z);
 		SpoutColumn column = columns.get(key);
@@ -1001,7 +1006,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 			throw new IllegalStateException("Unable to generate region for new column and load option " + loadopt);
 		}
 		
-		r.getRegionGenerator().generateColumn(x, z);
+		r.getRegionGenerator().generateColumn(x, z, sync, true);
 
 		column = getColumn(x, z, LoadOption.LOAD_ONLY);
 		

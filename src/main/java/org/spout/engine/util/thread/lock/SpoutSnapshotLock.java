@@ -34,9 +34,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.spout.api.Spout;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.SnapshotLock;
+import org.spout.api.util.Named;
 import org.spout.engine.scheduler.SchedulerSyncExecutorThread;
+import org.spout.engine.scheduler.SpoutScheduler;
 
 public class SpoutSnapshotLock implements SnapshotLock {
 	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
@@ -185,11 +188,17 @@ public class SpoutSnapshotLock implements SnapshotLock {
 		while (!success) {
 			final LockInfo oldLockInfo = locks.get(plugin);
 			if (oldLockInfo == null) {
-				if (plugin instanceof Plugin) {
-					Plugin p = (Plugin) plugin;
+				if (plugin instanceof Named) {
+					Named p = (Named) plugin;
 					throw new IllegalArgumentException("Attempted to remove a lock for a plugin with no previously added lock, " + p.getName());
 				} else {
 					throw new IllegalArgumentException("Attempted to remove a lock for a plugin with no previously added lock, " + plugin);
+				}
+			} else {
+				int target = Spout.debugMode() ? (SpoutScheduler.PULSE_EVERY / 2) : (SpoutScheduler.PULSE_EVERY * 2);
+				long held = System.currentTimeMillis() - oldLockInfo.oldestLock;
+				if (held > target) {
+					Spout.getLogger().info("Snapshot lock held for " + held + "ms by " + plugin.getClass().getSimpleName());
 				}
 			}
 

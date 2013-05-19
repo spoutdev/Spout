@@ -49,13 +49,13 @@ import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.gui.ScreenStack;
 import org.spout.api.math.Vector2;
-import org.spout.api.plugin.CommonPlugin;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.api.scheduler.Task;
 import org.spout.api.scheduler.TaskPriority;
 import org.spout.api.scheduler.TickStage;
 import org.spout.api.scheduler.Worker;
+import org.spout.api.util.Named;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
@@ -415,8 +415,8 @@ public final class SpoutScheduler implements Scheduler {
 				Spout.info("Unable to shutdown due to async tasks still running");
 				for (Worker w : workers) {
 					Object owner = w.getOwner();
-					if (owner instanceof CommonPlugin) {
-						CommonPlugin p = (CommonPlugin) owner;
+					if (owner instanceof Named) {
+						Named p = (Named) owner;
 						Spout.info("Task with id of " + w.getTaskId() + " owned by " + p.getName() + " is still running");
 					} else {
 						Spout.info("Task with id of " + w.getTaskId() + " owned by " + w.getOwner() + " is still running");
@@ -766,6 +766,8 @@ public final class SpoutScheduler implements Scheduler {
 				for (Object p : violatingPlugins) {
 					if (p instanceof Plugin) {
 						Spout.info(((Plugin) p).getDescription().getName() + " has locked the " + name + " for more than " + threshold + "ms");
+					} else if (p instanceof Named) {
+						Spout.info(((Named) p).getName() + " has locked the " + name + " for more than " + threshold + "ms");
 					} else {
 						Spout.info(p.getClass().getSimpleName() + " has locked the " + name + " for more than " + threshold + "ms");
 					}

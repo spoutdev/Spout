@@ -261,6 +261,10 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, short[] block, short[] data, ManagedHashMap map) {
 		this(world, region, x, y, z, PopulationState.UNTOUCHED, block, data, map, false);
 	}
+	
+	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, AtomicBlockStore blockStore, ManagedHashMap extraData) {
+		this(world, region, x, y, z, PopulationState.UNTOUCHED, extraData, false, blockStore);
+	}
 
 	public SpoutChunk(SpoutWorld world, SpoutRegion region, float x, float y, float z, PopulationState popState, int[] palette, int blockArrayWidth, int[] variableWidthBlockArray, ManagedHashMap extraData, boolean lightStable) {
 		this(world, region, x, y, z, popState, extraData, lightStable, new AtomicPaletteBlockStore(BLOCKS.BITS, Spout.getEngine().getPlatform() == Platform.CLIENT, true, 10, palette, blockArrayWidth, variableWidthBlockArray));
@@ -2029,14 +2033,14 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		//TickStage.checkStage(TickStage.LIGHTING);
 		return setIfAbsentLightBuffer(id, null);
 	}
-	
+
 	protected CuboidLightBuffer setIfAbsentLightBuffer(short id, CuboidLightBuffer buffer) {
 		if (id < 0) {
 			throw new IllegalArgumentException("Id must be positive");
 		} else if (buffer != null && buffer.getManagerId() != id) {
 			throw new IllegalArgumentException("Manager Id does not match buffer id");
 		}
-		
+
 		CuboidLightBuffer[] array = lightBuffers.get();
 		CuboidLightBuffer buf;
 		if (id < array.length) {
@@ -2045,7 +2049,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 				return buf;
 			}
 		}
-	
+
 		CuboidLightBuffer newBuf;
 		if (buffer == null) {
 			LightingManager<?> manager = LightingRegistry.get(id);
@@ -2056,9 +2060,9 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		} else {
 			newBuf = buffer;
 		}
-		
+
 		boolean success = false;
-		
+
 		while (!success) {
 			array = lightBuffers.get();
 			if (id < array.length) {
@@ -2074,7 +2078,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			newArray[id] = newBuf;
 			success = lightBuffers.compareAndSet(array, newArray);
 		}
-		
+
 		return newBuf;
 	}
 	
