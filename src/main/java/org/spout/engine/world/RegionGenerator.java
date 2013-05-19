@@ -26,6 +26,9 @@
  */
 package org.spout.engine.world;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
@@ -48,11 +51,15 @@ import org.spout.api.util.cuboid.CuboidBlockMaterialBuffer;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
 import org.spout.api.util.map.concurrent.AtomicBlockStore;
 import org.spout.api.util.map.concurrent.palette.AtomicPaletteBlockStore;
-import org.spout.api.util.thread.DaemonThreadPool;
+import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 
 public class RegionGenerator implements Named {
 	
-	private final static DaemonThreadPool pool = new DaemonThreadPool("Region generator", -1);
+	private final static ExecutorService pool = 
+			Executors.newFixedThreadPool(
+					Runtime.getRuntime().availableProcessors() * 2 + 1, 
+					new NamedThreadFactory("RegionGenerator - async pool", 
+					true));
 	
 	private final SpoutRegion region;
 	private final SpoutWorld world;
@@ -299,6 +306,33 @@ public class RegionGenerator implements Named {
 		}
 	}
 	
+	public static void shutdownExecutorService() {
+		pool.shutdown();
+	}
+	
+	public static void awaitExecutorServiceTermination() {
+		boolean interrupted = false;
+		try {
+			boolean done = false;
+			while (!done) {
+				try {
+					if (pool.awaitTermination(10, TimeUnit.SECONDS)) {
+						done = true;
+						break;
+					}
+					Spout.getLogger().info("Waited 10 seconds for region generator pool to shutdown");
+				} catch (InterruptedException e) {
+					interrupted = true;
+				}
+			}
+		} finally {
+			if (interrupted) {
+				Thread.currentThread().interrupt();
+			}
+		}
+
+	}
+	
 	public void touchChunkNeighbors(SpoutChunk c) {
 		
 		if (!c.isObserved()) {
@@ -336,7 +370,7 @@ public class RegionGenerator implements Named {
 				} else {
 					final BlockFace finalFace = face;
 					
-					pool.add(new Runnable() {
+					pool.submit(new Runnable() {
 						@Override
 						public void run() {
 							SnapshotLock lock = Spout.getScheduler().getSnapshotLock();
@@ -367,7 +401,7 @@ public class RegionGenerator implements Named {
 		}
 
 		if (!region.inputStreamExists(x, y, z)) {
-			pool.add(new Runnable() {
+			pool.submit(new Runnable() {
 				@Override
 				public void run() {
 					generateColumn(x & mask, z & mask, false, false);

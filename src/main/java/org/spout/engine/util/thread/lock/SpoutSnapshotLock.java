@@ -198,7 +198,11 @@ public class SpoutSnapshotLock implements SnapshotLock {
 				int target = Spout.debugMode() ? (SpoutScheduler.PULSE_EVERY / 2) : (SpoutScheduler.PULSE_EVERY * 2);
 				long held = System.currentTimeMillis() - oldLockInfo.oldestLock;
 				if (held > target) {
-					Spout.getLogger().info("Snapshot lock held for " + held + "ms by " + plugin.getClass().getSimpleName());
+					if (plugin instanceof Named) {
+						Spout.getLogger().info("Snapshot lock held for " + held + "ms by " + ((Named) plugin).getName());
+					} else {
+						Spout.getLogger().info("Snapshot lock held for " + held + "ms by " + plugin.getClass().getSimpleName());
+					}
 				}
 			}
 

@@ -75,6 +75,7 @@ import org.spout.engine.util.thread.coretasks.StartTickTask;
 import org.spout.engine.util.thread.lock.SpoutSnapshotLock;
 import org.spout.engine.util.thread.snapshotable.SnapshotManager;
 import org.spout.engine.util.thread.snapshotable.SnapshotableArrayList;
+import org.spout.engine.world.RegionGenerator;
 
 /**
  * A class which handles scheduling for the engine {@link SpoutTask}s.<br>
@@ -377,6 +378,9 @@ public final class SpoutScheduler implements Scheduler {
 					}
 				}
 			}
+			
+			RegionGenerator.shutdownExecutorService();
+			
 			if (engine.getPlatform() == Platform.CLIENT) {
 				try {
 					if (renderThread.isAlive()) {
@@ -394,6 +398,9 @@ public final class SpoutScheduler implements Scheduler {
 					Spout.info("Interrupted when waiting for gui thread to end");
 				}
 			}
+			
+			RegionGenerator.awaitExecutorServiceTermination();
+			
 			heavyLoad.set(false);
 
 			asyncManagers.copySnapshot();
