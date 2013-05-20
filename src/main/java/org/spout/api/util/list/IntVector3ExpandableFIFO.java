@@ -26,18 +26,11 @@
  */
 package org.spout.api.util.list;
 
-import org.spout.api.math.IntVector3;
 
-public class IntVector3FIFO {
+public class IntVector3ExpandableFIFO extends IntVector3FIFO {
 	
-	protected int[] array;
-	protected int write;
-	protected int read;
-	
-	public IntVector3FIFO(int size) {
-		this.array = new int[size * 3];
-		this.read = 0;
-		this.write = 0;
+	public IntVector3ExpandableFIFO(int size) {
+		super(size);
 	}
 	
 	/**
@@ -49,16 +42,13 @@ public class IntVector3FIFO {
 	 * @return true if the FIFO is full
 	 */
 	public boolean write(int x, int y, int z) {
-		int size = array.length;
-		array[(write++) % size] = x;
-		array[(write++) % size] = y;
-		array[(write++) % size] = z;
-		int maxWrite = read + array.length;
-		if (write > maxWrite) {
-			throw new IllegalStateException("FIFO is full");
+		if (write + 3 > read + array.length) {
+			resize(array.length + (array.length >> 1) + 1);
 		}
-		return write == maxWrite;
+		super.write(x, y, z);
+		return false;
 	}
+
 	
 	/**
 	 * Gets if the FIFO is full
@@ -66,42 +56,27 @@ public class IntVector3FIFO {
 	 * @return true if the fifo is full
 	 */
 	public boolean isFull() {
-		int maxWrite = read + array.length;
-		return write == maxWrite;
+		return false;
 	}
 	
-	/**
-	 * Writes the integer vector to the FIFO
-	 * 
-	 * @param v
-	 */
-	public void write(IntVector3 v) {
-		write(v.getX(), v.getY(), v.getZ());
-	}
-	
-	/**
-	 * Reads a triple integer from the FIFO
-	 * 
-	 * @return
-	 */
-	public IntVector3 read() {
-		if (write > read) {
+	private void resize(int newSize) {
+		int[] newArray = new int[newSize];
+
+		if (read != write) {
 			int size = array.length;
-			int x = array[(read++) % size];
-			int y = array[(read++) % size];
-			int z = array[(read++) % size];
-			return new IntVector3(x, y, z);
-		} else {
-			return null;
+			int start = read % size;
+			int end = write % size;
+
+			if (start < end) {
+				System.arraycopy(array, start, newArray, 0, end - start);
+			} else {
+				System.arraycopy(array, start, newArray, 0, size - start);
+				System.arraycopy(array, 0, newArray, size - start, end);
+			}
 		}
-	}
-	
-	/**
-	 * Clears the FIFO
-	 */
-	public void clear() {
+		write -= read;
 		read = 0;
-		write = 0;
+		array = newArray;
 	}
 
 }

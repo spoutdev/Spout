@@ -109,6 +109,18 @@ public class IntVector3 extends IntVector2 {
 	public IntVector3 copy() {
 		return new IntVector3(getX(), getY(), getZ());
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		} else if (!(o instanceof IntVector3)) {
+			return false;
+		} else {
+			IntVector3 other = (IntVector3) o;
+			return other.getX() == getX() && other.getY() == getY() && other.getZ() == getZ();
+		}
+	}
 
 	public static List<IntVector3> createList(int... coords) {
 		if (coords.length % 3 != 0) {

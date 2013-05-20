@@ -27,7 +27,7 @@
 package org.spout.api.util.list;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.Queue;
 import java.util.Random;
@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.junit.Test;
 import org.spout.api.math.IntVector3;
 
-public class IntVector3FIFOTest {
+public class IntVector3ExpandableFIFOTest {
 
 	@Test
 	public void test() {
@@ -46,44 +46,45 @@ public class IntVector3FIFOTest {
 	}
 	
 	private void testTriple() {
-		int size = 1024;
+		int initialSize = 16;
+		int totalRecords = 1024;
 		
-		IntVector3FIFO fifo = new IntVector3FIFO(size);
+		IntVector3FIFO fifo = new IntVector3ExpandableFIFO(initialSize);
 		
-		int[] x = new int[size];
-		int[] y = new int[size];
-		int[] z = new int[size];
+		int[] x = new int[totalRecords];
+		int[] y = new int[totalRecords];
+		int[] z = new int[totalRecords];
 		
 		Random r = new Random();
 		
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < totalRecords; i++) {
 			x[i] = r.nextInt();
 			y[i] = r.nextInt();
 			z[i] = r.nextInt();
 		}
 
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < totalRecords; i++) {
 			fifo.write(x[i], y[i], z[i]);
 		}
 
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < totalRecords; i++) {
 			IntVector3 v = fifo.read();
 			assertEquals("X coord mismatch", x[i], v.getX());
 			assertEquals("Y coord mismatch", y[i], v.getY());
 			assertEquals("Z coord mismatch", z[i], v.getZ());
 		}
 		
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < totalRecords; i++) {
 			x[i] = r.nextInt();
 			y[i] = r.nextInt();
 			z[i] = r.nextInt();
 		}
 
-		for (int i = 0; i < size / 2; i++) {
+		for (int i = 0; i < totalRecords / 2; i++) {
 			fifo.write(x[i], y[i], z[i]);
 		}
 
-		for (int i = 0; i < size / 2; i++) {
+		for (int i = 0; i < totalRecords / 2; i++) {
 			IntVector3 v = fifo.read();
 			assertEquals("X coord mismatch", x[i], v.getX());
 			assertEquals("Y coord mismatch", y[i], v.getY());
@@ -91,19 +92,6 @@ public class IntVector3FIFOTest {
 		}
 		
 		assertEquals("Non null when reading empty FIFO", null, fifo.read());
-		
-		for (int i = 0; i < size; i++) {
-			fifo.write(x[i], y[i], z[i]);
-		}
-		
-		boolean thrown = false;
-		try {
-			fifo.write(0, 0, 0);
-		} catch (IllegalStateException e) {
-			thrown = true;
-		}
-
-		assertTrue("Exception not thrown when FIFO full", thrown);
 		
 	}
 	
@@ -113,7 +101,7 @@ public class IntVector3FIFOTest {
 		Queue<IntVector3> input = new ConcurrentLinkedQueue<IntVector3>();
 		Queue<IntVector3> output = new ConcurrentLinkedQueue<IntVector3>();
 		
-		IntVector3FIFO fifo = new IntVector3FIFO(128);
+		IntVector3FIFO fifo = new IntVector3ExpandableFIFO(16);
 		
 		Random r = new Random();
 		
@@ -150,9 +138,9 @@ public class IntVector3FIFOTest {
 	}
 	
 	private void addRandom(Queue<IntVector3> input, IntVector3FIFO fifo, Random r) {
-		if (fifo.isFull()) {
-			return;
-		}
+		
+		assertFalse("Fifo should never be full", fifo.isFull());
+		
 		IntVector3 v = new IntVector3(r.nextInt(), r.nextInt(), r.nextInt());
 		
 		input.add(v);
