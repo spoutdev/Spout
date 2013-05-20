@@ -802,6 +802,7 @@ public final class SpoutScheduler implements Scheduler {
 	}
 
 	private void runTasks(List<AsyncManager> managers, ManagerRunnableFactory taskFactory, String stageString, int globalStage, int localStage) {
+		long time = -System.currentTimeMillis();
 		int maxSequence = taskFactory.getMaxSequence();
 		for (int s = taskFactory.getMinSequence(); s <= maxSequence; s++) {
 			if (s == -1) {
@@ -844,6 +845,10 @@ public final class SpoutScheduler implements Scheduler {
 					}
 				}
 			}
+		}
+		time += System.currentTimeMillis();
+		if (Spout.debugMode() && time > PULSE_EVERY) {
+			Spout.getLogger().info("Task " + TickStage.getStage(TickStage.getStageInt()) + " took " + time + "ms");
 		}
 	}
 
