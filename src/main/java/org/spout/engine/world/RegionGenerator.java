@@ -105,6 +105,14 @@ public class RegionGenerator implements Named {
 		generateColumn(chunkX, chunkZ, true, true);
 	}
 	
+	public Lock getColumnLock(int chunkX, int chunkZ) {
+		final int x = (chunkX & (~mask)) & Region.CHUNKS.MASK;
+		final int z = (chunkZ & (~mask)) & Region.CHUNKS.MASK;
+		
+		return columnLocks[x >> shift][z >> shift];
+		
+	}
+	
 	public void generateColumn(final int chunkX, final int chunkZ, boolean sync, boolean wait) {
 		
 		if (sync && !wait) {
@@ -126,7 +134,7 @@ public class RegionGenerator implements Named {
 			generationIndex = generationCounter.getAndIncrement();
 		}
 
-		Lock colLock = columnLocks[x >> shift][z >> shift];
+		Lock colLock = getColumnLock(chunkX, chunkZ);
 
 		if (sync) {
 			if (Spout.getScheduler().getSnapshotLock().isWriteLocked()) {
@@ -276,7 +284,7 @@ public class RegionGenerator implements Named {
 								}
 							}
 
-							boolean chunkSet = region.setChunkIfNotGenerated(newChunk, x + xx, yy, z + zz, null, true);
+							boolean chunkSet = region.setChunkIfNotGeneratedWithoutLock(newChunk, x + xx, yy, z + zz);
 							
 							if (chunkSet) {
 								newChunk.setModified();

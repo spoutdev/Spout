@@ -26,8 +26,6 @@
  */
 package org.spout.engine.world;
 
-import gnu.trove.iterator.TIntIterator;
-
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -44,6 +42,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 
@@ -82,7 +82,6 @@ import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.DynamicUpdateEntry;
 import org.spout.api.material.MaterialRegistry;
 import org.spout.api.material.block.BlockFace;
-import org.spout.api.material.block.BlockFaces;
 import org.spout.api.material.range.EffectRange;
 import org.spout.api.math.GenericMath;
 import org.spout.api.math.IntVector3;
@@ -197,7 +196,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 	 */
 	protected final SetQueue<SpoutChunk> populationQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
 	protected final SetQueue<SpoutChunk> populationPriorityQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
-	private final Object generateSync = new Object();
 	private final RegionGenerator generator;
 	private final SpoutTaskManager taskManager;
 	private final List<Thread> meshThread;
@@ -411,36 +409,17 @@ public class SpoutRegion extends Region implements AsyncManager {
 		generator.generateColumn(x, z);
 	}
 	
-	protected void copyChunksFromBufferIfNotGenerated(SpoutWorld world, CuboidBlockMaterialBuffer buffer, int cx, int cy, int cz) {
-		final CuboidBlockMaterialBuffer chunk = new CuboidBlockMaterialBuffer(cx << Chunk.BLOCKS.BITS, cy << Chunk.BLOCKS.BITS, cz << Chunk.BLOCKS.BITS, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE, Chunk.BLOCKS.SIZE);
-		chunk.write(buffer);
-		SpoutChunk newChunk = new SpoutChunk(world, this, cx, cy, cz, chunk.getRawId(), chunk.getRawData(), null);
-		cx &= CHUNKS.MASK;
-		cy &= CHUNKS.MASK;
-		cz &= CHUNKS.MASK;
-		boolean success = setChunkIfNotGenerated(newChunk, cx, cy, cz, null, true);
-		if (!success) {
-			//Spout.getLogger().info("Warning: Unable to set generated chunk, new Chunk " + newChunk + " chunk in memory " + currentChunk);
-		} else {
-			newChunk.compressRaw();
-			newChunk.setModified();
+	// Method should only be called from the region generator
+	protected boolean setChunkIfNotGeneratedWithoutLock(SpoutChunk newChunk, int x, int y, int z) {
+		int cx = newChunk.getX();
+		int cy = newChunk.getY();
+		int cz = newChunk.getZ();
+		boolean exists = this.inputStreamExists(cx, cy, cz);
+		if (exists) {
+			return false;
 		}
-	}
-	
-	protected boolean setChunkIfNotGenerated(SpoutChunk newChunk, int x, int y, int z, ChunkDataForRegion dataForRegion, boolean generated) {
-		
-		synchronized (this.generateSync) {
-			int cx = newChunk.getX();
-			int cy = newChunk.getY();
-			int cz = newChunk.getZ();
-			boolean exists = this.inputStreamExists(cx, cy, cz);
-			if (exists) {
-				return false;
-			}
-			// chunk has not been generated
-			return setChunk(newChunk, x, y, z, dataForRegion, generated) == newChunk;
-		}
-		
+		// chunk has not been generated
+		return setChunk(newChunk, x, y, z, null, true) == newChunk;
 	}
 	
 	private SpoutChunk setChunk(SpoutChunk newChunk, int x, int y, int z, ChunkDataForRegion dataForRegion, boolean generated) {
