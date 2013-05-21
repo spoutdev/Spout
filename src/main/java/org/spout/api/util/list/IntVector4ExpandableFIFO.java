@@ -26,57 +26,54 @@
  */
 package org.spout.api.util.list;
 
+import org.spout.api.math.IntVector3;
+import org.spout.api.math.IntVector4;
 
-public class IntVector3ExpandableFIFO extends IntVector3FIFO {
+
+public class IntVector4ExpandableFIFO extends IntVector3ExpandableFIFO {
 	
-	public IntVector3ExpandableFIFO(int size) {
+	public IntVector4ExpandableFIFO(int size) {
 		super(size);
 	}
 	
-	/**
-	 * Writes the 3 coordinates to the FIFO
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return true if the FIFO is full
-	 */
+	@Override
 	public boolean write(int x, int y, int z) {
-		if (write + 3 > read + array.length) {
+		return write(0, x, y, z);
+	}
+	
+	public boolean write(int w, int x, int y, int z) {
+		if (write + 4 > read + array.length) {
 			resize(array.length + (array.length >> 1) + 1);
 		}
-		super.write(x, y, z);
-		return false;
+		int size = array.length;
+		array[(write++) % size] = w;
+		return super.write(x, y, z);
 	}
-
+	
+	@Override
+	public void write(IntVector3 v) {
+		write(0, v.getX(), v.getY(), v.getZ());
+	}
+	
+	public void write(IntVector4 v) {
+		write(v.getW(), v.getX(), v.getY(), v.getZ());
+	}
 	
 	/**
-	 * Gets if the FIFO is full
+	 * Reads a triple integer from the FIFO
 	 * 
-	 * @return true if the fifo is full
+	 * @return
 	 */
-	public boolean isFull() {
-		return false;
-	}
-	
-	protected void resize(int newSize) {
-		int[] newArray = new int[newSize];
-
-		if (read != write) {
+	public IntVector4 read() {
+		if (write > read) {
 			int size = array.length;
-			int start = read % size;
-			int end = write % size;
-
-			if (start < end) {
-				System.arraycopy(array, start, newArray, 0, end - start);
-			} else {
-				System.arraycopy(array, start, newArray, 0, size - start);
-				System.arraycopy(array, 0, newArray, size - start, end);
-			}
+			int w = array[(read++) % size];
+			int x = array[(read++) % size];
+			int y = array[(read++) % size];
+			int z = array[(read++) % size];
+			return new IntVector4(w, x, y, z);
+		} else {
+			return null;
 		}
-		write -= read;
-		read = 0;
-		array = newArray;
 	}
-
 }
