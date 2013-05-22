@@ -780,6 +780,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 				}
 			}
 			if (toPopulate.isLoaded()) {
+				if (!toPopulate.isObserved()) {
+					continue;
+				}
 				boolean surrounded = true;
 				for (int nx = -1; nx <= 1; nx++) {
 					int nxx = nx + toPopulate.getX();
