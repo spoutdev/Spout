@@ -28,84 +28,76 @@ package org.spout.engine.renderer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.lwjgl.Sys;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.BufferContainer;
+import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotRender;
 import org.spout.api.util.map.TInt21TripleObjectHashMap;
+
 import org.spout.engine.batcher.ChunkMeshBatchAggregator;
 import org.spout.engine.mesh.ChunkMesh;
 import org.spout.engine.world.SpoutWorld;
 
 public class WorldRenderer {
 	public static final long TIME_LIMIT = 2;
-
-	private TreeMap<RenderMaterial,List<ChunkMeshBatchAggregator>> chunkRenderers = new TreeMap<RenderMaterial,List<ChunkMeshBatchAggregator>>();
-
+	private TreeMap<RenderMaterial, List<ChunkMeshBatchAggregator>> chunkRenderers = new TreeMap<RenderMaterial, List<ChunkMeshBatchAggregator>>();
 	/**
 	 * Store ChunkMeshBatchAggregator by BlockFace, RenderMaterial and ChunkMeshBatchAggregator position
 	 */
-	private TInt21TripleObjectHashMap<Map<RenderMaterial,ChunkMeshBatchAggregator>> chunkRenderersByPosition = new TInt21TripleObjectHashMap<Map<RenderMaterial,ChunkMeshBatchAggregator>>();
-
+	private TInt21TripleObjectHashMap<Map<RenderMaterial, ChunkMeshBatchAggregator>> chunkRenderersByPosition = new TInt21TripleObjectHashMap<Map<RenderMaterial, ChunkMeshBatchAggregator>>();
 	private SpoutWorld currentWorld = null;
 	private final BatchGeneratorTask batchGenerator = new BatchGeneratorTask();
-
 	//Benchmark
-	public int addedBatch,updatedBatch;
+	public int addedBatch, updatedBatch;
 
 	public void render() {
 		long start = System.currentTimeMillis();
-		
+
 		update(start + TIME_LIMIT);
-		
+
 		renderChunks();
 
 		//System.out.println("WorldRenderer take : " + (System.currentTimeMillis() - start) + " ms");;
 	}
 
 	private final ConcurrentLinkedQueue<ChunkMesh> renderChunkMeshBatchQueue = new ConcurrentLinkedQueue<ChunkMesh>();
-
 	private final Queue<ChunkMeshBatchAggregator> toUpdate = new LinkedList<ChunkMeshBatchAggregator>();
-	
-	private class BatchGeneratorTask{
 
+	private class BatchGeneratorTask {
 		private ChunkMesh chunkMesh = null;
 		private World world = null;
-
 		private Iterator<Entry<RenderMaterial, BufferContainer>> it = null;
-
 		private Entry<RenderMaterial, BufferContainer> data;
 		private RenderMaterial material;
 
 		public void run(final long limit) {
 			addedBatch = 0;
 			updatedBatch = 0;
-			
-			if(it != null){
 
-				while(it.hasNext()){
+			if (it != null) {
+
+				while (it.hasNext()) {
 					data = it.next();
 					material = data.getKey();
 
-					handle( data.getValue(), limit);
+					handle(data.getValue(), limit);
 
-					if( System.currentTimeMillis() > limit)
+					if (System.currentTimeMillis() > limit) {
 						return;
+					}
 
 					material = null;
 					data = null;
@@ -115,31 +107,35 @@ public class WorldRenderer {
 			}
 
 			//Step 2 : Add ChunkMesh to ChunkMeshBatch
-			while( (chunkMesh = renderChunkMeshBatchQueue.poll()) != null){
+			while ((chunkMesh = renderChunkMeshBatchQueue.poll()) != null) {
 				world = chunkMesh.getWorld();
 
-				if(world != currentWorld) //Some meshs can be keeped in the queue when you change of world
+				if (world != currentWorld) //Some meshs can be keeped in the queue when you change of world
+				{
 					continue;
+				}
 
-				if(chunkMesh.isUnloaded()){
-					cleanBatchAggregator(world,chunkMesh);
+				if (chunkMesh.isUnloaded()) {
+					cleanBatchAggregator(world, chunkMesh);
 					chunkMesh = null;
 
-					if( System.currentTimeMillis() > limit)
+					if (System.currentTimeMillis() > limit) {
 						return;
+					}
 
 					continue;
 				}
 
 				it = chunkMesh.getMaterialsFaces().entrySet().iterator();
-				while(it.hasNext()){
+				while (it.hasNext()) {
 					data = it.next();
 					material = data.getKey();
 
-					handle( data.getValue(), limit);
+					handle(data.getValue(), limit);
 
-					if( System.currentTimeMillis() > limit)
+					if (System.currentTimeMillis() > limit) {
 						return;
+					}
 
 					material = null;
 					data = null;
@@ -147,12 +143,12 @@ public class WorldRenderer {
 				it = null;
 				chunkMesh = null;
 			}
-			
-			while(!toUpdate.isEmpty()){
+
+			while (!toUpdate.isEmpty()) {
 
 				ChunkMeshBatchAggregator batch = toUpdate.peek();
 
-				if(batch.update()){
+				if (batch.update()) {
 					toUpdate.poll();
 					batch.setQueued(false);
 				}
@@ -160,40 +156,42 @@ public class WorldRenderer {
 				updatedBatch++;
 				//System.out.println("Update batch take " + (System.currentTimeMillis() - batch.getTime()) + " (" + toUpdate.size() + " in queue)");
 
-				if( System.currentTimeMillis() > limit)
+				if (System.currentTimeMillis() > limit) {
 					return;
+				}
 			}
 		}
 
-		private void handle(BufferContainer batchVertex, long limit){
+		private void handle(BufferContainer batchVertex, long limit) {
 			ChunkMeshBatchAggregator chunkMeshBatch = getBatchAggregator(chunkMesh, material);
 
-			if(chunkMeshBatch==null){
+			if (chunkMeshBatch == null) {
 				Vector3 base = ChunkMeshBatchAggregator.getBaseFromChunkMesh(chunkMesh);
 				chunkMeshBatch = new ChunkMeshBatchAggregator(world, base.getFloorX(), base.getFloorY(), base.getFloorZ(), material);
 				addBatchAggregator(chunkMeshBatch);
 			}
 
-			chunkMeshBatch.setSubBatch(batchVertex,chunkMesh.getChunkX(), chunkMesh.getChunkY(), chunkMesh.getChunkZ());
+			chunkMeshBatch.setSubBatch(batchVertex, chunkMesh.getChunkX(), chunkMesh.getChunkY(), chunkMesh.getChunkZ());
 			chunkMeshBatch.setTime(chunkMesh.getTime());
-			
-			if(!chunkMeshBatch.isQueued()){
+
+			if (!chunkMeshBatch.isQueued()) {
 				addedBatch++;
 				toUpdate.add(chunkMeshBatch);
 				chunkMeshBatch.setQueued(true);
 			}
 		}
-
 	}
 
-	public void update(long limit){
-		SpoutWorld world = (SpoutWorld) ((Client)Spout.getEngine()).getActivePlayer().getWorld();
+	public void update(long limit) {
+		SpoutWorld world = (SpoutWorld) ((Client) Spout.getEngine()).getPlayer().getWorld();
 
-		if(currentWorld != world){
-			if(currentWorld != null)
+		if (currentWorld != world) {
+			if (currentWorld != null) {
 				currentWorld.disableRenderQueue();
-			if(world != null)
+			}
+			if (world != null) {
 				world.enableRenderQueue();
+			}
 			currentWorld = world;
 		}
 
@@ -207,59 +205,60 @@ public class WorldRenderer {
 	private void addBatchAggregator(ChunkMeshBatchAggregator batch) {
 		// Add in chunkRenderers
 		List<ChunkMeshBatchAggregator> list = chunkRenderers.get(batch.getMaterial());
-		if(list == null){
+		if (list == null) {
 			list = new ArrayList<ChunkMeshBatchAggregator>();
-			chunkRenderers.put(batch.getMaterial(),list);
+			chunkRenderers.put(batch.getMaterial(), list);
 		}
 
 		list.add(batch);
 
 		//Add in chunkRenderersByPosition
-		
+
 		Map<RenderMaterial, ChunkMeshBatchAggregator> map = chunkRenderersByPosition.get(batch.getX(), batch.getY(), batch.getZ());
-		if(map == null){
+		if (map == null) {
 			map = new HashMap<RenderMaterial, ChunkMeshBatchAggregator>();
 			chunkRenderersByPosition.put(batch.getX(), batch.getY(), batch.getZ(), map);
 		}
 
-		map.put(batch.getMaterial(),batch);
+		map.put(batch.getMaterial(), batch);
 	}
 
 	/**
 	 * Remove all batch at the specified position
-	 * @param world 
-	 * @param x
-	 * @param y
-	 * @param z
+	 * @param world
+	 * @param chunkMesh
 	 */
 	private void cleanBatchAggregator(World world, ChunkMesh chunkMesh) {
 		Vector3 position = ChunkMeshBatchAggregator.getCoordFromChunkMesh(chunkMesh);
-		Map<RenderMaterial, ChunkMeshBatchAggregator> aggregatorPerMaterial = chunkRenderersByPosition.get(position.getFloorX(),position.getFloorY(),position.getFloorZ());
+		Map<RenderMaterial, ChunkMeshBatchAggregator> aggregatorPerMaterial = chunkRenderersByPosition.get(position.getFloorX(), position.getFloorY(), position.getFloorZ());
 
 		//Can be null if the thread receive a unload model of a model wich has been send previously to load be not done
-		if(aggregatorPerMaterial != null){
+		if (aggregatorPerMaterial != null) {
 
 			LinkedList<RenderMaterial> materialToRemove = new LinkedList<RenderMaterial>();
 
-			for(Entry<RenderMaterial, ChunkMeshBatchAggregator> entry : aggregatorPerMaterial.entrySet()){
+			for (Entry<RenderMaterial, ChunkMeshBatchAggregator> entry : aggregatorPerMaterial.entrySet()) {
 
 				RenderMaterial material = entry.getKey();
 				ChunkMeshBatchAggregator batch = entry.getValue();
 
-				if(batch.getWorld() != world)
+				if (batch.getWorld() != world) {
 					continue;
+				}
 
 				List<ChunkMeshBatchAggregator> chunkRenderer = chunkRenderers.get(material);
 
 				batch.setSubBatch(null, chunkMesh.getChunkX(), chunkMesh.getChunkY(), chunkMesh.getChunkZ());
-				
-				if(!batch.isEmpty())
+
+				if (!batch.isEmpty()) {
 					continue;
-				
+				}
+
 				batch.finalize();
-				
-				if(batch.isQueued())
+
+				if (batch.isQueued()) {
 					toUpdate.remove(batch);
+				}
 
 				//Clean chunkRenderers
 				chunkRenderer.remove(batch);
@@ -268,20 +267,22 @@ public class WorldRenderer {
 				materialToRemove.add(material);
 
 				//Clean chunkRenderers
-				if(chunkRenderer.isEmpty())
+				if (chunkRenderer.isEmpty()) {
 					chunkRenderers.remove(material);
+				}
 			}
 
 			//Clean chunkRenderersByPosition
-			for(RenderMaterial material : materialToRemove)
+			for (RenderMaterial material : materialToRemove) {
 				aggregatorPerMaterial.remove(material);
+			}
 
-			if(aggregatorPerMaterial.isEmpty())
-				chunkRenderersByPosition.remove(position.getFloorX(),position.getFloorY(),position.getFloorZ());
-
+			if (aggregatorPerMaterial.isEmpty()) {
+				chunkRenderersByPosition.remove(position.getFloorX(), position.getFloorY(), position.getFloorZ());
+			}
 		}
 	}
-	
+
 	/**
 	 * Gets the batch aggregator corresponding wuth the given mesh and material.
 	 * @param mesh
@@ -296,13 +297,13 @@ public class WorldRenderer {
 			return null;
 		return map.get(material);
 	}*/
-
 	private ChunkMeshBatchAggregator getBatchAggregator(
 			ChunkMesh mesh, RenderMaterial material) {
 		Vector3 position = ChunkMeshBatchAggregator.getCoordFromChunkMesh(mesh);
 		Map<RenderMaterial, ChunkMeshBatchAggregator> map = chunkRenderersByPosition.get(position.getFloorX(), position.getFloorY(), position.getFloorZ());
-		if( map == null )
+		if (map == null) {
 			return null;
+		}
 		return map.get(material);
 	}
 
@@ -322,58 +323,59 @@ public class WorldRenderer {
 		 * Example : while we test batch with same x coord, we don't need to test 
 		 */
 
-		for(Entry<RenderMaterial, List<ChunkMeshBatchAggregator>> entry : chunkRenderers.entrySet()){
+		for (Entry<RenderMaterial, List<ChunkMeshBatchAggregator>> entry : chunkRenderers.entrySet()) {
 			RenderMaterial material = entry.getKey();
 
 			SnapshotRender snapshotRender = new SnapshotRender(material);
 			material.preRender(snapshotRender);
-			Client client = (Client)Spout.getEngine();
-			material.getShader().setUniform("View", client.getActiveCamera().getView());
-			material.getShader().setUniform("Projection", client.getActiveCamera().getProjection());
+			final Client client = (Client) Spout.getEngine();
+			final Camera camera = client.getPlayer().getType(Camera.class);
+			material.getShader().setUniform("View", camera.getView());
+			material.getShader().setUniform("Projection", camera.getProjection());
 			material.getShader().setUniform("Model", ChunkMeshBatchAggregator.model);
 			chunksToRender += entry.getValue().size();
-			
+
 			Iterator<ChunkMeshBatchAggregator> it = entry.getValue().iterator();
 			ChunkMeshBatchAggregator firstBatch = null;
-			
-			while(it.hasNext()){
+
+			while (it.hasNext()) {
 				firstBatch = it.next();
-				
-				if(!firstBatch.isReady())
+
+				if (!firstBatch.isReady()) {
 					continue;
-				
+				}
+
 				firstBatch.preRender();
-				
-				if (client.getActiveCamera().getFrustum().intersects(firstBatch)) {
+
+				if (camera.getFrustum().intersects(firstBatch)) {
 					firstBatch.render(material);
-					renderedChunks ++;
+					renderedChunks++;
 				} else {
 					culledChunks++;
 				}
 			}
-			
-			while(it.hasNext()){
+
+			while (it.hasNext()) {
 				ChunkMeshBatchAggregator renderer = it.next();
 
-				if(!renderer.isReady())
+				if (!renderer.isReady()) {
 					continue;
-				
+				}
+
 				// It's hard to look right
 				// at the world baby
 				// But here's my frustrum
 				// so cull me maybe?
-				//System.out.println( renderer.getX() + "/" + renderer.getY() + "/" + renderer.getZ() + " : " + renderer.getBase() +  " : " + renderer.getSize());
 
-				
-				if (client.getActiveCamera().getFrustum().intersects(renderer)) {
+				if (camera.getFrustum().intersects(renderer)) {
 					renderer.render(material);
-					renderedChunks ++;
+					renderedChunks++;
 				} else {
 					culledChunks++;
 				}
 			}
-			
-			if(firstBatch != null && firstBatch.isReady()){
+
+			if (firstBatch != null && firstBatch.isReady()) {
 				firstBatch.postRender();
 			}
 
@@ -392,7 +394,7 @@ public class WorldRenderer {
 	public int getRenderedChunks() {
 		return renderedChunks;
 	}
-	
+
 	public int getTotalChunks() {
 		return chunksToRender;
 	}

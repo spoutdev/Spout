@@ -101,7 +101,7 @@ public class SpoutAnimationComponent extends AnimationComponent {
 
 	//TODO move this in model
 	public void batchSkeleton() {
-		ModelHolderComponent models = getOwner().get(ModelHolderComponent.class);
+		final ModelHolderComponent models = getOwner().get(ModelHolderComponent.class);
 
 		for (Model model : models.getModels()) {
 
@@ -142,7 +142,7 @@ public class SpoutAnimationComponent extends AnimationComponent {
 					int vertexId = mesh.getContainer().getVerticeIndex()[i] - 1;
 
 					if (vertexId >= skeleton.getVerticeArray().size()) {
-						throw new IllegalStateException("Mesh don't match skeleton");
+						throw new IllegalStateException("Mesh doesn't match skeleton");
 					}
 
 					int j = 0;

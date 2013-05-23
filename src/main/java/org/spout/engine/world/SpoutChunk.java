@@ -825,7 +825,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		if (observers.add((SpoutEntity) entity) && (entity instanceof SpoutPlayer)) {
 			observingPlayers.add((SpoutPlayer) entity);
 			Engine engine = Spout.getEngine();
-			if (engine.getPlatform() == Platform.CLIENT && ((SpoutClient) engine).getActivePlayer() == entity) {
+			if (engine.getPlatform() == Platform.CLIENT && ((SpoutClient) engine).getPlayer() == entity) {
 				setIsInViewDistance(true);
 			}
 			if (wasEmpty) {
@@ -847,11 +847,11 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			return false;
 		}
 
-		if (observers.remove((SpoutEntity) entity) && (entity instanceof SpoutPlayer)) {
-			observingPlayers.remove((SpoutPlayer) entity);
+		if (observers.remove(entity) && (entity instanceof SpoutPlayer)) {
+			observingPlayers.remove(entity);
 
 			Engine engine = Spout.getEngine();
-			if (engine.getPlatform() == Platform.CLIENT && ((SpoutClient) engine).getActivePlayer() == entity) {
+			if (engine.getPlatform() == Platform.CLIENT && ((SpoutClient) engine).getPlayer() == entity) {
 				setIsInViewDistance(false);
 			}
 		}

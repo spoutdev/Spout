@@ -129,7 +129,7 @@ public class TestCommands {
 			return;
 		}
 		Client client = (Client) engine;
-		Player player = client.getActivePlayer();
+		Player player = client.getPlayer();
 		Block block = player.get(InteractComponent.class).getTargetBlock();
 
 		if (block == null || block.getMaterial().equals(BlockMaterial.AIR)) {
@@ -256,7 +256,7 @@ public class TestCommands {
 		SpoutPlayer player;
 		if (!(source instanceof Player)) {
 			if (engine.getPlatform() == Platform.CLIENT) {
-				player = ((SpoutClient) engine).getActivePlayer();
+				player = ((SpoutClient) engine).getPlayer();
 			} else {
 				player = (SpoutPlayer) source;
 			}
@@ -285,7 +285,7 @@ public class TestCommands {
 		SpoutPlayer player;
 		if (!(source instanceof Player)) {
 			if (engine.getPlatform() == Platform.CLIENT) {
-				player = ((SpoutClient) engine).getActivePlayer();
+				player = ((SpoutClient) engine).getPlayer();
 			} else {
 				player = (SpoutPlayer) source;
 			}
@@ -313,7 +313,7 @@ public class TestCommands {
 		SpoutPlayer player;
 		if (!(source instanceof Player)) {
 			if (engine.getPlatform() == Platform.CLIENT) {
-				player = ((SpoutClient) engine).getActivePlayer();
+				player = ((SpoutClient) engine).getPlayer();
 			} else {
 				player = (SpoutPlayer) source;
 			}
@@ -344,7 +344,7 @@ public class TestCommands {
 		SpoutPlayer player;
 		if (!(source instanceof Player)) {
 			if (engine.getPlatform() == Platform.CLIENT) {
-				player = ((SpoutClient) engine).getActivePlayer();
+				player = ((SpoutClient) engine).getPlayer();
 			} else {
 				player = (SpoutPlayer) source;
 			}
@@ -399,7 +399,7 @@ public class TestCommands {
 		SpoutPlayer player;
 		if (!(source instanceof Player)) {
 			if (engine.getPlatform() == Platform.CLIENT) {
-				player = ((SpoutClient) engine).getActivePlayer();
+				player = ((SpoutClient) engine).getPlayer();
 			} else {
 				player = (SpoutPlayer) source;
 			}

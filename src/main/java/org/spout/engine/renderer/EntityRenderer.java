@@ -35,139 +35,96 @@ import java.util.Map.Entry;
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.entity.Entity;
+import org.spout.api.event.EventHandler;
 import org.spout.api.event.Listener;
+import org.spout.api.event.Order;
+import org.spout.api.event.entity.EntityDespawnEvent;
+import org.spout.api.event.entity.EntitySpawnEvent;
+import org.spout.api.geo.World;
 import org.spout.api.model.Model;
 import org.spout.api.render.Camera;
+
 import org.spout.engine.SpoutClient;
 import org.spout.engine.entity.component.ClientTextModelComponent;
 import org.spout.engine.entity.component.EntityRendererComponent;
 import org.spout.engine.mesh.BaseMesh;
 
-public class EntityRenderer implements Listener{
-	
-	//TODO send entity here to render it (enter/spawn chunk in viewdistance)
-	
-	private Map<Model, List<Entity>> entities = new HashMap<Model, List<Entity>>();
+/**
+ * The Renderer of all EntityRendererComponents
+ *
+ * This class has several objectives...
+ * -- Keep a cache of all EntityRendererComponents who share a model. This cuts down on all rendering.
+ * -- Listen for sync events and remove from cache
+ */
+public class EntityRenderer implements Listener {
+	private final Map<Model, List<EntityRendererComponent>> RENDERERS_PER_MODEL = new HashMap<Model, List<EntityRendererComponent>>();
 	private int count = 0;
-	
-	public void addEntity(Entity entity){
-		EntityRendererComponent render = entity.get(EntityRendererComponent.class);
-		
-		if(render == null || render.getModels().isEmpty()){
+
+	public void addRenderer(EntityRendererComponent renderer) {
+		//No point in rendering an EntityRendererComponent with no models
+		if (renderer.getModels().isEmpty()) {
 			return;
 		}
-		
-		for(Model model : render.getModels()){
-			List<Entity> list = entities.get(model);
-			
-			if(list == null){
-				list = new ArrayList<Entity>();
-				entities.put(model, list);
+
+		for (Model model : renderer.getModels()) {
+			List<EntityRendererComponent> list = RENDERERS_PER_MODEL.get(model);
+
+			if (list == null) {
+				list = new ArrayList<EntityRendererComponent>();
+				RENDERERS_PER_MODEL.put(model, list);
 			}
-			
-			list.add(entity);
+
+			list.add(renderer);
 		}
-		
-		render.init();
-		render.setRendered(true);//entity.setRendered(true);
+
+		renderer.init();
+		renderer.setRendered(true);
 		count++;
 	}
-	
-	public void removeEntity(Entity entity){
-		EntityRendererComponent render = entity.get(EntityRendererComponent.class);
 
-		if(render == null || render.getModels().isEmpty()){
-			return;
-		}
-		
-		for(Model model : render.getModels()){
-			List<Entity> list = entities.get(model);
+	public void removeRenderer(EntityRendererComponent renderer) {
+		for (Model model : renderer.getModels()) {
+			final List<EntityRendererComponent> renderers = RENDERERS_PER_MODEL.get(model);
 
-			list.remove(entity);
-			
-			if(list.isEmpty()){
-				entities.remove(model);
+			renderers.remove(renderer);
+
+			//No more renderers on this model? Remove cache entry
+			if (renderers.isEmpty()) {
+				RENDERERS_PER_MODEL.remove(model);
 			}
 		}
-		
-		render.setRendered(false);//entity.setRendered(false);
+
+		renderer.setRendered(false);
 		count--;
 	}
-	
-	/*@EventHandler(order = Order.MONITOR)
-	public void onEntityDespawnEvent(EntityDespawnEvent event){
-		if(event.getEntity().isRendered()){
-			removeEntity(event.getEntity());
-		}
-	}*/
-	
-	public int getEntitiesRended(){
-		return count;
-	}
-	
-	public void render(float dt){
-		for (Entity e : ((SpoutClient)Spout.getEngine()).getActiveWorld().getAll()) {
-			EntityRendererComponent render = e.get(EntityRendererComponent.class);
-			
-			if(render != null && !render.isRendered())//if(!e.isRendered())
-				addEntity(e);
-			
-			/*EntityRendererComponent r = e.get(EntityRendererComponent.class);
-			if (r != null) {
-				r.update(dt);
-				r.render();
-			}*/
-		}
-		Camera camera = ((Client)Spout.getEngine()).getActiveCamera();
-		
-		for(Entry<Model, List<Entity>> entry : entities.entrySet()){
-			Model model = entry.getKey();
-			List<Entity> list = entry.getValue();
-			BaseMesh mesh = (BaseMesh) model.getMesh();
-			
-			EntityRendererComponent first = list.get(0).get(EntityRendererComponent.class);
-			
-			if(!mesh.isBatched()){
-				//TODO Put mesh in model not in BaseMesh, because BaseMesh can be shared between model
-				// and different can use different skeleton, so that can produce a conflict in the mesh
-				first.init();
-			}			
-			
-			//Render model
+
+	public void render(float dt) {
+		final Camera camera = ((Client) Spout.getEngine()).getPlayer().getType(Camera.class);
+
+		for (Entry<Model, List<EntityRendererComponent>> entry : RENDERERS_PER_MODEL.entrySet()) {
+			final Model model = entry.getKey();
+			final List<EntityRendererComponent> renderers = entry.getValue();
+			final BaseMesh mesh = (BaseMesh) model.getMesh();
+
+			//Prep mesh for rendering
 			mesh.preDraw();
-			
+
+			//Set uniforms
 			model.getRenderMaterial().getShader().setUniform("View", camera.getView());
 			model.getRenderMaterial().getShader().setUniform("Projection", camera.getProjection());
-			
-			for(Entity e : list){
-				EntityRendererComponent r = e.get(EntityRendererComponent.class);
-				r.update(model, dt);
-				r.draw(model);
-			}
-			
-			mesh.postDraw();
-			
-			//Render text component
-			for(Entity e : list){
-				ClientTextModelComponent r = e.get(ClientTextModelComponent.class);
-				if(r != null)
-					r.render(camera);
-			}
-		}
-		
 
-		//TODO Remove this when we use SpoutClientWorld
-		//SpoutSnapshotLock lock = (SpoutSnapshotLock) ((Client)Spout.getEngine()).getScheduler().getSnapshotLock();
-		//lock.coreReadLock("Render Thread - Render Entities");
-		/*for (Entity e : ((SpoutClient)Spout.getEngine()).getActiveWorld().getAll()) {
-			EntityRendererComponent r = e.get(EntityRendererComponent.class);
-			if (r != null) {
-				r.update(dt);
-				r.render();
+			//Render
+			for (EntityRendererComponent renderer : renderers) {
+				renderer.update(model, dt);
+				renderer.draw(model);
 			}
-		}*/
-		//lock.coreReadUnlock("Render Thread - Render Entities");
+
+			//Callback after rendering
+			mesh.postDraw();
+		}
 	}
-	
-	
+
+	public int getRenderedEntities() {
+		return count;
+	}
 }

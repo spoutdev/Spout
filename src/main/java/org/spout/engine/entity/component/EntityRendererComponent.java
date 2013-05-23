@@ -36,30 +36,24 @@ import org.spout.engine.mesh.BaseMesh;
 
 public class EntityRendererComponent extends ModelHolderComponent {
 	private SpoutAnimationComponent animationComponent;
-	private ClientTextModelComponent textModelComponent;
 	private boolean rendered = false;
-
-	public boolean isRendered() {
-		return rendered;
-	}
 
 	public void setRendered(boolean rendered) {
 		this.rendered = rendered;
 	}
 
 	public void init() {
-		animationComponent = getOwner().get(SpoutAnimationComponent.class);
-		textModelComponent = getOwner().get(ClientTextModelComponent.class);
-
 		if (getModels().isEmpty()) {
-			throw new IllegalStateException("EntityRendererComponent don't contains model");
+			return;
 		}
 
+		animationComponent = getOwner().get(SpoutAnimationComponent.class);
+
 		for (Model model : getModels()) {
-			RenderMaterial renderMaterial = model.getRenderMaterial();
 			BaseMesh mesh = (BaseMesh) model.getMesh();
 
 			if (animationComponent != null) {
+
 				animationComponent.batchSkeleton();
 			}
 
@@ -89,5 +83,9 @@ public class EntityRendererComponent extends ModelHolderComponent {
 		model.getRenderMaterial().preRenderEntity(snapshot);
 		((BaseMesh) model.getMesh()).render(model.getRenderMaterial());
 		model.getRenderMaterial().postRenderEntity(snapshot);
+	}
+
+	public boolean isRendered() {
+		return rendered;
 	}
 }

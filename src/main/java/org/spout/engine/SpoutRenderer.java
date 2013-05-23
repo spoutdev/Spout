@@ -59,6 +59,7 @@ import org.spout.api.math.MatrixMath;
 import org.spout.api.math.Rectangle;
 import org.spout.api.math.Vector2;
 import org.spout.api.model.Model;
+import org.spout.api.render.Camera;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.Shader;
@@ -91,6 +92,7 @@ public class SpoutRenderer {
 	private boolean ccoverride = false;
 	private Vector2 resolution = new Vector2(1024, 768);
 	private float aspectRatio = resolution.getX() / resolution.getY();
+
 	private EntityRenderer entityRenderer;
 	private WorldRenderer worldRenderer;
 	private boolean wireframe = false;
@@ -208,7 +210,7 @@ public class SpoutRenderer {
 
 		// Update world
 		//Interpolate entity transform if Physics is not currently applied to the entity
-		for (Entity e : client.getActiveWorld().getAll()) {
+		for (Entity e : client.getWorld().getAll()) {
 			final SpoutSceneComponent scene = (SpoutSceneComponent) e.getScene();
 			if (scene.getBody() == null) {
 				scene.interpolateRender(dt);
@@ -216,30 +218,35 @@ public class SpoutRenderer {
 		}
 
 		//Pull input each frame
-		((SpoutInputManager) client.getInputManager()).pollInput(client.getActivePlayer());
+		client.getInputManager().pollInput(client.getPlayer());
 		//Call InputExecutor registred by plugin
-		((SpoutInputManager) client.getInputManager()).execute(dt);
+		client.getInputManager().execute(dt);
 
 		Mouse.setGrabbed(screenStack.getVisibleScreens().getLast().grabsMouse());
-		
+
+		final Camera camera = client.getPlayer().getType(Camera.class);
+		final Model skydome = (Model) client.getWorld().getData().get("skydome");
+
 		// Render reflected world
 		if (useReflexion) {
 			reflected.activate();
 			GL11.glCullFace(GL11.GL_FRONT);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-			client.getActiveCamera().updateReflectedView();
-			
-			Model reflectedSkydome = (Model) client.getActiveWorld().getData().get("skydome");
-			if (reflectedSkydome != null) {
-				reflectedSkydome.getRenderMaterial().getShader().setUniform("View", client.getActiveCamera().getRotation());
-				reflectedSkydome.getRenderMaterial().getShader().setUniform("Projection", client.getActiveCamera().getProjection());
-				reflectedSkydome.getRenderMaterial().getShader().setUniform("Model", ident);
-				BaseMesh reflectedSkydomeMesh = (BaseMesh) reflectedSkydome.getMesh();
-				if (!reflectedSkydomeMesh.isBatched()) {
-					reflectedSkydomeMesh.batch();
+
+			if (camera != null) {
+				camera.updateReflectedView();
+
+
+				if (skydome != null) {
+					skydome.getRenderMaterial().getShader().setUniform("View", camera.getRotation());
+					skydome.getRenderMaterial().getShader().setUniform("Projection", camera.getProjection());
+					skydome.getRenderMaterial().getShader().setUniform("Model", ident);
+					BaseMesh reflectedSkydomeMesh = (BaseMesh) skydome.getMesh();
+					if (!reflectedSkydomeMesh.isBatched()) {
+						reflectedSkydomeMesh.batch();
+					}
+					reflectedSkydomeMesh.render(skydome.getRenderMaterial());
 				}
-				reflectedSkydomeMesh.render(reflectedSkydome.getRenderMaterial());
 			}
 	
 			worldRenderer.render();
@@ -253,17 +260,19 @@ public class SpoutRenderer {
 		t.activate();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		client.getActiveCamera().updateView();
-		Model skydome = (Model) client.getActiveWorld().getData().get("skydome");
-		if (skydome != null) {
-			skydome.getRenderMaterial().getShader().setUniform("View", client.getActiveCamera().getRotation());
-			skydome.getRenderMaterial().getShader().setUniform("Projection", client.getActiveCamera().getProjection());
-			skydome.getRenderMaterial().getShader().setUniform("Model", ident);
-			BaseMesh skydomeMesh = (BaseMesh) skydome.getMesh();
-			if (!skydomeMesh.isBatched()) {
-				skydomeMesh.batch();
+		if (camera != null) {
+			camera.updateView();
+
+			if (skydome != null) {
+				skydome.getRenderMaterial().getShader().setUniform("View", camera.getRotation());
+				skydome.getRenderMaterial().getShader().setUniform("Projection", camera.getProjection());
+				skydome.getRenderMaterial().getShader().setUniform("Model", ident);
+				BaseMesh skydomeMesh = (BaseMesh) skydome.getMesh();
+				if (!skydomeMesh.isBatched()) {
+					skydomeMesh.batch();
+				}
+				skydomeMesh.render(skydome.getRenderMaterial());
 			}
-			skydomeMesh.render(skydome.getRenderMaterial());
 		}
 
 		long start = System.nanoTime();
@@ -287,14 +296,14 @@ public class SpoutRenderer {
 		}
 
 		if (showDebugInfos) {
-			Point position = client.getActivePlayer().getScene().getPosition();
-			debugScreen.spoutUpdate(0, new ChatArguments("Spout client! Logged as ", ChatStyle.RED, client.getActivePlayer().getDisplayName(), ChatStyle.RESET, " in world: ", ChatStyle.RED, client.getActiveWorld().getName()));
+			Point position = client.getPlayer().getScene().getPosition();
+			debugScreen.spoutUpdate(0, new ChatArguments("Spout client! Logged as ", ChatStyle.RED, client.getPlayer().getDisplayName(), ChatStyle.RESET, " in world: ", ChatStyle.RED, client.getWorld().getName()));
 			debugScreen.spoutUpdate(1, new ChatArguments(ChatStyle.BLUE, "x: ", position.getX(), "y: ", position.getY(), "z: ", position.getZ()));
 			debugScreen.spoutUpdate(2, new ChatArguments(ChatStyle.BLUE, "fps: ", client.getScheduler().getFps(), " (", client.getScheduler().isRendererOverloaded() ? "Overloaded" : "Normal", ")"));
 			debugScreen.spoutUpdate(3, new ChatArguments(ChatStyle.BLUE, "Chunks Drawn: ", ((int) ((float) worldRenderer.getRenderedChunks() / (float) (worldRenderer.getTotalChunks()) * 100)) + "%" + " (" + worldRenderer.getRenderedChunks() + ")"));
 			debugScreen.spoutUpdate(4, new ChatArguments(ChatStyle.BLUE, "Occluded Chunks: ", (int) ((float) worldRenderer.getOccludedChunks() / worldRenderer.getTotalChunks() * 100) + "% (" + worldRenderer.getOccludedChunks() + ")"));
 			debugScreen.spoutUpdate(5, new ChatArguments(ChatStyle.BLUE, "Cull Chunks: ", (int) ((float) worldRenderer.getCulledChunks() / worldRenderer.getTotalChunks() * 100), "% (" + worldRenderer.getCulledChunks() + ")"));
-			debugScreen.spoutUpdate(6, new ChatArguments(ChatStyle.BLUE, "Entities: ", entityRenderer.getEntitiesRended()));
+			debugScreen.spoutUpdate(6, new ChatArguments(ChatStyle.BLUE, "Entities: ", entityRenderer.getRenderedEntities()));
 			debugScreen.spoutUpdate(7, new ChatArguments(ChatStyle.BLUE, "Buffer: ", worldRenderer.addedBatch + " / " + worldRenderer.updatedBatch));
 			//debugScreen.spoutUpdate(8, new ChatArguments(ChatStyle.BLUE, "Time: ", worldTime / 1000000.0 + " / " + entityTime / 1000000.0 + " / " + guiTime / 1000000.0));
 		}
@@ -314,6 +323,10 @@ public class SpoutRenderer {
 
 	public WorldRenderer getWorldRenderer() {
 		return worldRenderer;
+	}
+
+	public EntityRenderer getEntityRenderer() {
+		return entityRenderer;
 	}
 
 	public SpoutScreenStack getScreenStack() {

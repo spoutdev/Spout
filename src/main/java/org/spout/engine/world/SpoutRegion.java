@@ -1073,7 +1073,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 			boolean firstRenderQueueTick = (!renderQueueEnabled) && worldRenderQueueEnabled;
 			boolean unloadRenderQueue = !worldRenderQueueEnabled && renderQueueEnabled;
 
-			SpoutPlayer player = ((SpoutClient) Spout.getEngine()).getActivePlayer();
+			SpoutPlayer player = ((SpoutClient) Spout.getEngine()).getPlayer();
 			if (player == null) {
 				playerPosition = null;
 			} else {

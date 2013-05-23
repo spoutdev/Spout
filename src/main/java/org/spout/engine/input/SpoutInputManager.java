@@ -304,7 +304,7 @@ public class SpoutInputManager implements InputManager {
 
 	public void execute(float dt){
 		for(InputExecutor executor : inputExecutors){
-			SpoutSceneComponent sc = (SpoutSceneComponent) ((Client)Spout.getEngine()).getActivePlayer().getScene(); 
+			SpoutSceneComponent sc = (SpoutSceneComponent) ((Client)Spout.getEngine()).getPlayer().getScene();
 			executor.execute(dt, sc.getLiveTransform());
 		}
 	}

@@ -98,7 +98,6 @@ import org.spout.engine.world.SpoutClientWorld;
 public class SpoutClient extends SpoutEngine implements Client {
 	private final SoundManager soundManager = new SpoutSoundManager();
 	private final FileSystem filesystem;
-	private Camera activeCamera;
 	private final AtomicReference<SpoutClientSession> session = new AtomicReference<SpoutClientSession>();
 	private SpoutPlayer activePlayer;
 	private final AtomicReference<SpoutClientWorld> activeWorld = new AtomicReference<SpoutClientWorld>();
@@ -173,41 +172,12 @@ public class SpoutClient extends SpoutEngine implements Client {
 		getScheduler().coreSafeRun("Client setup task", new Runnable() {
 			public void run() {
 				activePlayer = new SpoutClientPlayer(parent, "Spouty", getDefaultWorld().getSpawnPoint(), SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
-				activeCamera = activePlayer.add(CameraComponent.class);
+				activePlayer.add(CameraComponent.class);
 				activePlayer.add(InteractComponent.class);
-				getActiveWorld().spawnEntity(activePlayer);
-				Font font = (ClientFont) getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-R.ttf");
-
-				// Test
-				ClientEntityPrefab spoutyType = (ClientEntityPrefab) parent.getFilesystem().getResource("entity://Spout/entities/Spouty/spouty.sep");
-
-				Entity e = spoutyType.createEntity(getDefaultWorld().getSpawnPoint().getPosition().add(0, 0, 0));
-				e.setSavable(false); // To prevent entity duplication
-
-				//Animation part
-				ModelHolderComponent modelHolderComponent = e.get(ModelHolderComponent.class);
-				//EntityRendererComponent renderComponent = e.get(EntityRendererComponent.class);
-				AnimationComponent animationComponent = e.get(AnimationComponent.class);
-
-				Model model = modelHolderComponent.getModels().get(0);
-
-				Animation a1 = model.getAnimations().get("animatest1");
-
-				//Launch first animation
-				AnimationPlayed ac = animationComponent.playAnimation(model, a1, true);
-				ac.setCurrentTime(0);
-				ac.setSpeed(1);
-
-				ClientTextModelComponent tmc = e.add(ClientTextModelComponent.class);
-				tmc.setText(new ChatArguments(ChatStyle.BLUE, "Sp", ChatStyle.WHITE, "ou", ChatStyle.RED, "ty"));
-				tmc.setSize(0.5f);
-				tmc.setTranslation(new Vector3(0, 3f, 0));
-				tmc.setFont(font);
-
-				getActiveWorld().spawnEntity(e);
+				getWorld().spawnEntity(activePlayer);
 
 				//The render need the active player to find the world to draw, so we start it after initialize player
-				renderer = getScheduler().startRenderThread(new Vector2(1204, 796), ccoverride, null);
+				renderer = getScheduler().startRenderThread(new Vector2(1024, 768), ccoverride, null);
 			}
 		});
 
@@ -220,7 +190,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	@Override
-	public SpoutPlayer getActivePlayer() {
+	public SpoutPlayer getPlayer() {
 		return activePlayer;
 	}
 
@@ -231,16 +201,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		} else {
 			return super.getCommandSource();
 		}
-	}
-
-	@Override
-	public Camera getActiveCamera() {
-		return activeCamera;
-	}
-
-	@Override
-	public void setActiveCamera(Camera activeCamera) {
-		this.activeCamera = activeCamera;
 	}
 
 	@Override
@@ -348,7 +308,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return activeWorld.get();
 	}*/
 
-	@Override
 	public SpoutClientWorld worldChanged(String name, UUID uuid, byte[] data) {
 		SpoutClientWorld world = new SpoutClientWorld(name, uuid, this, getEngineItemMap(), getEngineItemMap());
 
@@ -408,8 +367,9 @@ public class SpoutClient extends SpoutEngine implements Client {
 		return filesystem;
 	}
 
-	public World getActiveWorld() {
-		return getActivePlayer().getWorld();
+	@Override
+	public World getWorld() {
+		return activePlayer.getWorld();
 	}
 
 	private void unpackLwjgl(String path) {
