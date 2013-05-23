@@ -49,18 +49,24 @@ public class SpoutClientListener implements Listener {
 	@EventHandler(order = Order.MONITOR)
 	public void onEntitySpawn(EntitySpawnEvent event) {
 		final Entity entity = event.getEntity();
+		if (client.getPlayer().equals(entity)) {
+			return;
+		}
 		final EntityRendererComponent renderer = entity.get(EntityRendererComponent.class);
 		if (renderer != null) {
-			client.getRenderer().getEntityRenderer().addRenderer(renderer);
+			client.getRenderer().getEntityRenderer().add(renderer);
 		}
 	}
 
 	@EventHandler(order = Order.MONITOR)
 	public void onEntityDespawn(EntityDespawnEvent event){
 		final Entity entity = event.getEntity();
+		if (client.getPlayer().equals(entity)) {
+			return;
+		}
 		final EntityRendererComponent renderer = entity.get(EntityRendererComponent.class);
 		if (renderer != null) {
-			client.getRenderer().getEntityRenderer().removeRenderer(renderer);
+			client.getRenderer().getEntityRenderer().remove(renderer);
 		}
 	}
 

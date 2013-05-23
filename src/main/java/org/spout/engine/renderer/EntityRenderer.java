@@ -47,6 +47,7 @@ import org.spout.api.render.Camera;
 import org.spout.engine.SpoutClient;
 import org.spout.engine.entity.component.ClientTextModelComponent;
 import org.spout.engine.entity.component.EntityRendererComponent;
+import org.spout.engine.entity.component.SpoutSceneComponent;
 import org.spout.engine.mesh.BaseMesh;
 
 /**
@@ -54,46 +55,28 @@ import org.spout.engine.mesh.BaseMesh;
  *
  * This class has several objectives...
  * -- Keep a cache of all EntityRendererComponents who share a model. This cuts down on all rendering.
- * -- Listen for sync events and remove from cache
  */
-public class EntityRenderer implements Listener {
+public class EntityRenderer {
+	private final List<EntityRendererComponent> RENDERERS = new ArrayList<EntityRendererComponent>();
 	private final Map<Model, List<EntityRendererComponent>> RENDERERS_PER_MODEL = new HashMap<Model, List<EntityRendererComponent>>();
 	private int count = 0;
 
-	public void addRenderer(EntityRendererComponent renderer) {
-		//No point in rendering an EntityRendererComponent with no models
-		if (renderer.getModels().isEmpty()) {
-			return;
-		}
-
-		for (Model model : renderer.getModels()) {
-			List<EntityRendererComponent> list = RENDERERS_PER_MODEL.get(model);
-
-			if (list == null) {
-				list = new ArrayList<EntityRendererComponent>();
-				RENDERERS_PER_MODEL.put(model, list);
-			}
-
-			list.add(renderer);
-		}
-
-		renderer.init();
-		renderer.setRendered(true);
+	public void add(EntityRendererComponent renderer) {
+		RENDERERS.add(renderer);
 		count++;
 	}
 
-	public void removeRenderer(EntityRendererComponent renderer) {
-		for (Model model : renderer.getModels()) {
-			final List<EntityRendererComponent> renderers = RENDERERS_PER_MODEL.get(model);
-
-			renderers.remove(renderer);
-
-			//No more renderers on this model? Remove cache entry
-			if (renderers.isEmpty()) {
+	public void remove(EntityRendererComponent renderer) {
+		RENDERERS.remove(renderer);
+		//Cleanup models
+		//TODO Keep the model (not the renderer) cached always?
+		for (final Model model : renderer.getModels()) {
+			final List<EntityRendererComponent> modelRenderers = RENDERERS_PER_MODEL.get(model);
+			modelRenderers.remove(renderer);
+			if (modelRenderers.isEmpty()) {
 				RENDERERS_PER_MODEL.remove(model);
 			}
 		}
-
 		renderer.setRendered(false);
 		count--;
 	}
@@ -101,6 +84,24 @@ public class EntityRenderer implements Listener {
 	public void render(float dt) {
 		final Camera camera = ((Client) Spout.getEngine()).getPlayer().getType(Camera.class);
 
+		//Loop through all renderers and add models as needed.
+		for (final EntityRendererComponent renderer : RENDERERS) {
+			final List<Model> models = renderer.getModels();
+			if (models.isEmpty()) {
+				continue;
+			}
+			for (final Model model : models) {
+				List<EntityRendererComponent> modelRenderers = RENDERERS_PER_MODEL.get(model);
+				if (modelRenderers == null) {
+					modelRenderers = new ArrayList<EntityRendererComponent>();
+					RENDERERS_PER_MODEL.put(model, modelRenderers);
+				}
+				modelRenderers.add(renderer);
+				renderer.init();
+			}
+		}
+
+		//Call renderers based on models
 		for (Entry<Model, List<EntityRendererComponent>> entry : RENDERERS_PER_MODEL.entrySet()) {
 			final Model model = entry.getKey();
 			final List<EntityRendererComponent> renderers = entry.getValue();
@@ -115,6 +116,16 @@ public class EntityRenderer implements Listener {
 
 			//Render
 			for (EntityRendererComponent renderer : renderers) {
+				//TODO Render the player but with different views
+				//Don't render the player
+				if (renderer.getOwner().equals(((Client) Spout.getEngine()).getPlayer())) {
+					continue;
+				}
+				//TODO Remove when entities have proper physics in AABB Branch
+				final SpoutSceneComponent scene = (SpoutSceneComponent) renderer.getOwner().getScene();
+				if (scene.getBody() == null) {
+					scene.interpolateRender(dt);
+				}
 				renderer.update(model, dt);
 				renderer.draw(model);
 			}

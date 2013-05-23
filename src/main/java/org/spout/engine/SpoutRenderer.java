@@ -47,6 +47,7 @@ import org.lwjgl.opengl.Util;
 
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
+import org.spout.api.component.impl.SceneComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.gui.FullScreen;
@@ -208,13 +209,10 @@ public class SpoutRenderer {
 	public void render(float dt) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Update world
-		//Interpolate entity transform if Physics is not currently applied to the entity
-		for (Entity e : client.getWorld().getAll()) {
-			final SpoutSceneComponent scene = (SpoutSceneComponent) e.getScene();
-			if (scene.getBody() == null) {
-				scene.interpolateRender(dt);
-			}
+		//TODO Proper Player physics in AABB Branch
+		final SpoutSceneComponent scene = (SpoutSceneComponent) client.getPlayer().getScene();
+		if (scene.getBody() == null) {
+			scene.interpolateRender(dt);
 		}
 
 		//Pull input each frame

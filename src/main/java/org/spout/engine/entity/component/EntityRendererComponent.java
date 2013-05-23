@@ -38,22 +38,13 @@ public class EntityRendererComponent extends ModelHolderComponent {
 	private SpoutAnimationComponent animationComponent;
 	private boolean rendered = false;
 
-	public void setRendered(boolean rendered) {
-		this.rendered = rendered;
-	}
-
 	public void init() {
-		if (getModels().isEmpty()) {
-			return;
-		}
-
 		animationComponent = getOwner().get(SpoutAnimationComponent.class);
 
 		for (Model model : getModels()) {
 			BaseMesh mesh = (BaseMesh) model.getMesh();
 
 			if (animationComponent != null) {
-
 				animationComponent.batchSkeleton();
 			}
 
@@ -87,5 +78,9 @@ public class EntityRendererComponent extends ModelHolderComponent {
 
 	public boolean isRendered() {
 		return rendered;
+	}
+
+	public void setRendered(boolean rendered) {
+		this.rendered = rendered;
 	}
 }
