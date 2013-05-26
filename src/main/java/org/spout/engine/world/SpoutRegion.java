@@ -899,7 +899,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 					if (!totalOffset.equals(Vector3.ZERO)) {
 						scene.setMovementVelocity(Vector3.ZERO).setRawForces(Vector3.ZERO);
 						scene.setPosition(newPosition.add(totalOffset));
-						Spout.info("Moving entity [" + entity.getId() + "] to " + newPosition.add(totalOffset)) ;
+						//Spout.info("Moving entity [" + entity.getId() + "] to " + newPosition.add(totalOffset)) ;
 					} else {
 						/* Calculate the new velocity */
 						scene.setPosition(newPosition);
