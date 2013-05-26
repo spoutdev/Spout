@@ -122,7 +122,6 @@ public class EntityManager {
 		if (entity instanceof Player) {
 			players.put((Player) entity, new ArrayList<SpoutEntity>());
 		}
-		((SpoutSceneComponent) entity.getScene()).simulate(region);
 	}
 
 	private static int getNextId() {
@@ -148,15 +147,6 @@ public class EntityManager {
 		entities.remove(entity.getId());
 		if (entity instanceof Player) {
 			players.remove((Player) entity);
-		}
-		final SpoutSceneComponent scene = (SpoutSceneComponent) entity.getScene();
-		if (scene.getBody() != null) {
-			try {
-				region.getPhysicsLock().writeLock().lock();
-				region.getSimulation().removeRigidBody(scene.getBody());
-			} finally {
-				region.getPhysicsLock().writeLock().unlock();
-			}
 		}
 	}
 

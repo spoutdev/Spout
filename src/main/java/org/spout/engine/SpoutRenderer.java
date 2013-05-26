@@ -211,9 +211,7 @@ public class SpoutRenderer {
 
 		//TODO Proper Player physics in AABB Branch
 		final SpoutSceneComponent scene = (SpoutSceneComponent) client.getPlayer().getScene();
-		if (scene.getBody() == null) {
-			scene.interpolateRender(dt);
-		}
+		scene.interpolateRender(dt);
 
 		//Pull input each frame
 		client.getInputManager().pollInput(client.getPlayer());

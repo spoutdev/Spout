@@ -123,9 +123,7 @@ public class EntityRenderer {
 				}
 				//TODO Remove when entities have proper physics in AABB Branch
 				final SpoutSceneComponent scene = (SpoutSceneComponent) renderer.getOwner().getScene();
-				if (scene.getBody() == null) {
-					scene.interpolateRender(dt);
-				}
+				scene.interpolateRender(dt);
 				renderer.update(model, dt);
 				renderer.draw(model);
 			}
