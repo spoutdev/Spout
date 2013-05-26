@@ -33,25 +33,45 @@ import org.spout.api.math.Vector3;
  * Represents the amount of volume an object takes up in the {@link World} for purposes of providing collision detection.
  * A bounding box is made of 2 {@link Vector3}s which represent its minimum x,y,z and maximum x,y,z.
  */
-public class BoundingBox extends CollisionVolume implements Cloneable {
+public final class BoundingBox extends CollisionVolume implements Cloneable {
 	protected Vector3 min;
 	protected Vector3 max;
 
-	public BoundingBox(Vector3 min, Vector3 max) {
-		this.min = new Vector3(min);
-		this.max = new Vector3(max);
-	}
-
+	/**
+	 * Constructs a bounding box with the minimum and maximum x, y, z values
+	 * @param minX
+	 * @param minY
+	 * @param minZ
+	 * @param maxX
+	 * @param maxY
+	 * @param maxZ
+	 */
 	public BoundingBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
-		this.min = new Vector3(minX, minY, minZ);
-		this.max = new Vector3(maxX, maxY, maxZ);
+		this(new Vector3(minX, minY, minZ), new Vector3(maxX, maxY, maxZ));
 	}
 
-	public BoundingBox(Vector3 pos) {
-		min = new Vector3(pos);
-		max = new Vector3(pos.add(Vector3.ONE));
+	/**
+	 * Constructs a bounding box with a center of 0, 0, 0 and half-extents of the x, y, z values
+	 * 
+	 * @param hx half extent in x
+	 * @param hy half extent in y
+	 * @param hz half extent in z
+	 */
+	public BoundingBox(float hx, float hy, float hz) {
+		this(new Vector3(hx, hy, hz));
+	}
+	/**
+	 * Constructs a bounding box with a center of 0, 0, 0 and half-extents of the given vector
+	 * 
+	 * @param halfExtents
+	 */
+	public BoundingBox(Vector3 halfExtents) {
+		this(halfExtents.multiply(-0.5F), halfExtents.multiply(0.5F));
 	}
 
+	/**
+	 * Constructs a bounding box from 0, 0, 0 to 1, 1, 1.
+	 */
 	public BoundingBox() {
 		this(Vector3.ZERO, Vector3.ONE);
 	}
@@ -63,6 +83,16 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 	 */
 	public BoundingBox(BoundingBox box) {
 		this(box.min, box.max);
+	}
+
+	/**
+	 * Constructs a bounding box with the given minimum and maximum vectors
+	 * 
+	 * @param min
+	 * @param max
+	 */
+	public BoundingBox(Vector3 min, Vector3 max) {
+		order(min, max);
 	}
 
 	/**
@@ -144,8 +174,7 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 	 * @return this bounding box
 	 */
 	public BoundingBox set(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
-		min = new Vector3(minX, minY, minZ);
-		max = new Vector3(maxX, maxY, maxZ);
+		order(new Vector3(minX, minY, minZ), new Vector3(maxX, maxY, maxZ));
 		return this;
 	}
 
@@ -157,8 +186,7 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 	 * @return this bounding box
 	 */
 	public BoundingBox set(Vector3 min, Vector3 max) {
-		this.min = min;
-		this.max = max;
+		order(min, max);
 		return this;
 	}
 
@@ -394,7 +422,7 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 	 * @return true if it is contained, otherwise false.
 	 */
 	public boolean containsBoundingBox(BoundingBox b) {
-		return CollisionHelper.contains(b, this);
+		return CollisionHelper.contains(this, b);
 	}
 
 	/**
@@ -467,6 +495,23 @@ public class BoundingBox extends CollisionVolume implements Cloneable {
 		}
 
 		return null;
+	}
+
+	public Vector3 resolveStatic(BoundingBox other) {
+		return CollisionHelper.getCollisionStatic(this, other);
+	}
+
+	private void order(Vector3 min, Vector3 max) {
+		Vector3 newMin = new Vector3(min.getX() > max.getX() ? max.getX() : min.getX(),
+						min.getY() > max.getY() ? max.getY() : min.getY(),
+						min.getZ() > max.getZ() ? max.getZ() : min.getZ());
+
+		Vector3 newMax = new Vector3(min.getX() > max.getX() ? min.getX() : max.getX(),
+				min.getY() > max.getY() ? min.getY() : max.getY(),
+				min.getZ() > max.getZ() ? min.getZ() : max.getZ());
+
+		this.min = newMin;
+		this.max = newMax;
 	}
 
 	@Override

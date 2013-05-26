@@ -38,7 +38,12 @@ public class CollisionHelper {
 	 * @return
 	 */
 	public static boolean checkCollision(BoundingBox a, BoundingBox b) {
-		return a.min.compareTo(b.max) <= 0 && a.max.compareTo(b.min) >= 0;
+		return a.min.getX() < b.max.getX() &&
+				a.min.getY() < b.max.getY() &&
+				a.min.getZ() < b.max.getZ() &&
+				a.max.getX() > b.min.getX() &&
+				a.max.getY() > b.min.getY() &&
+				a.max.getZ() > b.min.getZ();
 	}
 
 	/**
@@ -352,10 +357,30 @@ public class CollisionHelper {
 		if (intersection == null) {
 			return null;
 		}
+
 		Vector3 ret = new Vector3(intersection.min);
-		ret.add(intersection.max);
-		ret.multiply(0.5f);
+		ret = ret.add(intersection.max);
+		ret = ret.multiply(0.5f);
 		return ret;
+	}
+
+	/**
+	 * Calculates the minimum vector to translate bounding box a so that
+	 *  it is no longer colliding with bounding box b.
+	 *  
+	 * @param a movable bounding box
+	 * @param b static bounding box
+	 * @return minimum vector to translate bounding box a
+	 */
+	public static Vector3 getCollisionStatic(BoundingBox a, BoundingBox b) {
+		Vector3 min = Vector3.max(b.max, a.min);
+		Vector3 max = Vector3.min(b.min, a.max);
+		min = min.subtract(a.min);
+		max = max.subtract(a.max);
+		float x = min.getX() * min.getX() > max.getX() * max.getX() ? max.getX() : min.getX();
+		float y = min.getY() * min.getY() > max.getY() * max.getY() ? max.getY() : min.getY();
+		float z = min.getZ() * min.getZ() > max.getZ() * max.getZ() ? max.getZ() : min.getZ();
+		return new Vector3(x, y, z);
 	}
 
 	public static Vector3 getCollision(Segment a, Segment b) {
@@ -516,7 +541,12 @@ public class CollisionHelper {
 	 * @return
 	 */
 	public static boolean contains(BoundingBox a, BoundingBox b) {
-		return a.min.compareTo(b.min) >= 0 && a.max.compareTo(b.max) >= 0;
+		return a.min.getX() < b.min.getX() && 
+				a.max.getX() > b.max.getX() &&
+				a.min.getY() < b.min.getY() &&
+				a.max.getY() > b.max.getY() &&
+				a.min.getZ() < b.max.getZ() &&
+				a.max.getZ() > b.max.getZ();
 	}
 
 	/**

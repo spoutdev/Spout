@@ -52,10 +52,6 @@ import org.spout.api.resource.SpoutModels;
 import org.spout.api.util.bytebit.ByteBitSet;
 import org.spout.api.util.flag.Flag;
 
-import com.bulletphysics.collision.dispatch.CollisionObject;
-import com.bulletphysics.collision.shapes.BoxShape;
-import com.bulletphysics.collision.shapes.CollisionShape;
-
 import com.google.common.collect.ImmutableSet;
 
 /**
@@ -75,39 +71,25 @@ public class BlockMaterial extends Material implements Placeable {
 	public static final BlockMaterial SKYBOX = new BasicSkyBox();
 	public static final BlockMaterial ERROR = new BlockMaterial("Missing Plugin").setHardness((100.f));
 
-	private final CollisionObject collisionObject = new CollisionObject();
-	private final BoxShape BLOCK_BOX_DEFAULT = new BoxShape(1f, 1f, 1f);
 	private final Set<Class<? extends BlockComponent>> components;
 
 	public BlockMaterial(short dataMask, String name, String model, Class<? extends BlockComponent>... components){
 		super(dataMask, name, model);
-		collisionObject.setCollisionShape(BLOCK_BOX_DEFAULT);
-		collisionObject.setRestitution(0f);
-		collisionObject.setFriction(1f);
 		this.components = ImmutableSet.copyOf(components);
 	}
 
 	public BlockMaterial(String name, int data, Material parent, String model, Class<? extends BlockComponent>... components) {
 		super(name, data, parent, model);
-		collisionObject.setCollisionShape(BLOCK_BOX_DEFAULT);
-		collisionObject.setRestitution(0f);
-		collisionObject.setFriction(1f);
 		this.components = ImmutableSet.copyOf(components);
 	}
 
 	protected BlockMaterial(String name, short id, Class<? extends BlockComponent>... components) {
 		super(name, id);
-		collisionObject.setCollisionShape(BLOCK_BOX_DEFAULT);
-		collisionObject.setRestitution(0f);
-		collisionObject.setFriction(1f);
 		this.components = ImmutableSet.copyOf(components);
 	}
 
 	protected BlockMaterial(String name, Class<? extends BlockComponent>... components) {
 		super(name);
-		collisionObject.setCollisionShape(BLOCK_BOX_DEFAULT);
-		collisionObject.setRestitution(0f);
-		collisionObject.setFriction(1f);
 		this.components = ImmutableSet.copyOf(components);
 	}
 
@@ -656,28 +638,6 @@ public class BlockMaterial extends Material implements Placeable {
 	 */
 	public Cause<BlockMaterial> toCause(Point p) {
 		return new MaterialCause<BlockMaterial>(this, p.getWorld().getBlock(p));
-	}
-
-	/**
-	 * Gets the collision shape this block material has.
-	 * @return CollisionShape
-	 */
-	public CollisionShape getCollisionShape() {
-		return collisionObject.getCollisionShape();
-	}
-
-	/**
-	 * Sets the CollisionShape of this block material<br>
-	 * If null is specified, it is assumed that this block has no collision
-	 * 
-	 * @param shape The new collision shape of this block material
-	 */
-	public BlockMaterial setCollisionShape(CollisionShape shape) {
-		collisionObject.setCollisionShape(shape);
-		if (shape == null) {
-			collision.setStrategy(CollisionStrategy.NOCOLLIDE);
-		}
-		return this;
 	}
 
 	public Set<Class<? extends BlockComponent>> getComponents() {

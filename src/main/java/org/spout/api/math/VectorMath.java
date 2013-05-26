@@ -26,7 +26,6 @@
  */
 package org.spout.api.math;
 
-import javax.vecmath.Vector3f;
 import java.util.Random;
 
 /**
@@ -122,25 +121,5 @@ public class VectorMath {
 		}
 
 		return new Vector3(vres[0], vres[1], vres[2]);
-	}
-
-	/**
-	 * Transforms a vecmath 3D vector to a Spout 3D vector.
-	 *
-	 * @param vector The vecmath 3D vector
-	 * @return The vector as a Spout 3D vector
-	 */
-	public static Vector3 toVector3(Vector3f vector) {
-		return new Vector3(vector.x, vector.y, vector.z);
-	}
-
-	/**
-	 * Transforms a Spout 3D vector to a vecmath 3D vector.
-	 *
-	 * @param vector The Spout 3D vector
-	 * @return The vector as a vecmath 3D vector
-	 */
-	public static Vector3f toVector3f(Vector3 vector) {
-		return new Vector3f(vector.x, vector.y, vector.z);
 	}
 }

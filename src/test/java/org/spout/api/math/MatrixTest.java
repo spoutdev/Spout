@@ -26,9 +26,6 @@
  */
 package org.spout.api.math;
 
-import javax.vecmath.Matrix4f;
-
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
@@ -238,13 +235,5 @@ public class MatrixTest {
 		id = new double[][] { {0, 0, 1, 0}, {0, 1, 0, 0}, {-1, 0, 0, 0}, {0, 0, 0, 1}};
 
 		compareMatrixToArray(m, id);
-	}
-
-	@Test
-	public void testBulletMatrixConvert() {
-		Matrix4f bullet = new Matrix4f();
-		bullet.setElement(0, 0, 10f);
-		Matrix spout = MatrixMath.toMatrix(bullet);
-		assertTrue(spout.get(0, 0) == 10f);
 	}
 }

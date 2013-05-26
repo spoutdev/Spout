@@ -35,6 +35,7 @@ import org.junit.Test;
 
 public final class BasicMathTest {
 	
+	@SuppressWarnings("unused")
 	private static final double fastError = 0.0015;
 	
 	@Test

@@ -26,9 +26,8 @@
  */
 package org.spout.api.component.impl;
 
-import com.bulletphysics.collision.shapes.CollisionShape;
-
 import org.spout.api.ClientOnly;
+import org.spout.api.collision.BoundingBox;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
@@ -326,23 +325,6 @@ public abstract class SceneComponent extends EntityComponent {
 	// Physics characteristics
 
 	/**
-	 * Gets the {@link CollisionShape} this {@link org.spout.api.entity.Entity} currently has applied to it.
-	 * <p/>
-	 * If no shape is available currently, a null will be returned.
-	 * @return The current CollisionShape applied.
-	 */
-	public abstract CollisionShape getShape();
-
-	/**
-	 * Sets the {@link CollisionShape} for {@link org.spout.api.entity.Entity}.
-	 * <p/>
-	 * @param mass
-	 * @param shape
-	 * @return This component, so you can chain.
-	 */
-	public abstract SceneComponent setShape(float mass, CollisionShape shape);
-
-	/**
 	 * Gets the friction (slipperiness) of this {@link org.spout.api.entity.Entity}.
 	 * <p/>
 	 * 0.0f = no slipperiness, 1.0f = full slipperiness.
@@ -410,21 +392,31 @@ public abstract class SceneComponent extends EntityComponent {
 	 */
 	public abstract SceneComponent setRotationVelocity(Vector3 velocity);
 
+	/**
+	 * Activates the physics for this scene by giving it a shape and a mass.
+	 * May be called more than once to change the shape or mass of the scene.
+	 * 
+	 * @param area
+	 * @param mass
+	 * @return this component
+	 */
+	public abstract SceneComponent activate(BoundingBox area, float mass);
+
+	/**
+	 * Gets the bounding box volume for this scene, or null if not activated.
+	 * 
+	 * @return bounding box volume, or null.
+	 */
+	public abstract BoundingBox getVolume();
+
 	// Other
 
 	/**
-	 * De-activates/activates this {@link org.spout.api.entity.Entity} for physics.
-	 * @param activate True to activate the entity, false to deactivate
-	 * @return This component, so you can chain.
-	 */
-	public abstract SceneComponent setActivated(boolean activate);
-
-	/**
-	 * Returns whether the physics for this scene has been actived or not.
+	 * Returns whether the physics for this scene is active.
 	 * <p>
-	 * See: {@link #setActivated(boolean)}
+	 * Physics is considered activated when given a nonzero mass.
 	 * </p>
-	 * @return
+	 * @return activated
 	 */
 	public abstract boolean isActivated();
 

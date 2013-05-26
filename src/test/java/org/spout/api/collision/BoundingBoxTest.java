@@ -46,6 +46,19 @@ public class BoundingBoxTest {
 		testValue("Min", b1.min, b2.min);
 		testValue("Max", b1.max, b2.max);
 	}
+	
+	@Test
+	public void testOrdering() {
+		BoundingBox a = new BoundingBox(-1.5f, 5f, -3f, 1.544f, 1.111111f, -4f);
+		BoundingBox b = new BoundingBox(-1.5f, 1.111111f, -4f, 1.544f, 5f, -3f);
+
+		assertTrue(a.equals(b));
+		
+		BoundingBox c = new BoundingBox(9, 10, 11, 1, 2, 3);
+		BoundingBox d = new BoundingBox(1, 2, 3, 9, 10, 11);
+		
+		assertTrue(c.equals(d));
+	}
 
 	/**
 	 * Test of equals method, of class BoundingBox.
@@ -56,6 +69,8 @@ public class BoundingBoxTest {
 		BoundingBox b = new BoundingBox(-1.5f, -1.44f, -0.002f, 1.544f, 1.111111f, 1.662f);
 
 		assertTrue(a.equals(b));
+		assertTrue(b.equals(a));
+		assertTrue(a.hashCode() == b.hashCode());
 	}
 
 	/**
@@ -93,10 +108,65 @@ public class BoundingBoxTest {
 		BoundingBox a = new BoundingBox(-2f, -3f, -4f, 6f, 8f, 4f);
 		BoundingBox b = new BoundingBox(-2f, -3f, -4f, 6f, 10f, 4f);
 		assertTrue(a.intersects(b));
+		assertTrue(b.intersects(a));
 
-		BoundingBox c = new BoundingBox(1, 1, 1, 1, 1, 1);
-		BoundingBox d = new BoundingBox(-10, -10, -10, -10, -10, -10);
+		BoundingBox c = new BoundingBox(1, 1, 1, 2, 2, 2);
+		BoundingBox d = new BoundingBox(-10, -10, -10, -8.5F, -8.5F, -8.5F);
 		d.offset(11, 11, 11);
 		assertTrue(c.intersects(d));
+		assertTrue(d.intersects(c));
+		
+		BoundingBox e = new BoundingBox(1, 1, 1, 2, 2, 2);
+		BoundingBox f = new BoundingBox(-10, -10, -10, 0.5F, 0.5F, 0.5F);
+		assertFalse(e.intersects(f));
+		assertFalse(f.intersects(e));
+		
+		BoundingBox g = new BoundingBox(-29.0F, 63.0F, 46.0F, -28.9F, 63.1F, 46.1F);
+		BoundingBox h = new BoundingBox(-30.0F, 62.0F, 45.0F, -29.0F, 63.0F, 46.0F);
+		assertFalse(g.intersects(h));
+		assertFalse(h.intersects(g));
+		
+		BoundingBox i = new BoundingBox(-34.0F, 62.0F, 41.0F, -33.0F, 63.0F, 42.0F);
+		BoundingBox j = new BoundingBox(-33.0F, 63.0F, 42.0F, -32.9F, 63.1F, 42.1F);
+		assertFalse(i.intersects(j));
+		assertFalse(j.intersects(i));
+	}
+	
+	@Test
+	public void testContains() {
+		BoundingBox a = new BoundingBox(-2F, -2F, -2F, 2F, 2F, 2F);
+		BoundingBox b = new BoundingBox(0.5F, 0.5F, 0.5F, 1.5F, 1.5F, 1.5F);
+		assertTrue(a.containsBoundingBox(b));
+		assertFalse(b.containsBoundingBox(a));
+		
+		BoundingBox c = new BoundingBox(-2F, -2F, -2F, 2F, 2F, 2F);
+		BoundingBox d = new BoundingBox(2.5F, 2.5F, 2.5F, 3.5F, 3.5F, 3.5F);
+		assertFalse(c.containsBoundingBox(d));
+		assertFalse(d.containsBoundingBox(c));
+		
+		BoundingBox g = new BoundingBox(-29.0F, 63.0F, 46.0F, -28.9F, 63.1F, 46.1F);
+		BoundingBox h = new BoundingBox(-30.0F, 62.0F, 45.0F, -29.0F, 63.0F, 46.0F);
+		assertFalse(g.containsBoundingBox(h));
+		assertFalse(h.containsBoundingBox(g));
+		
+		BoundingBox i = new BoundingBox(-34.0F, 62.0F, 41.0F, -33.0F, 63.0F, 42.0F);
+		BoundingBox j = new BoundingBox(-33.0F, 63.0F, 42.0F, -32.9F, 63.1F, 42.1F);
+		assertFalse(i.containsBoundingBox(j));
+		assertFalse(j.containsBoundingBox(i));
+	}
+
+	@Test
+	public void testResolve() {
+		BoundingBox a = new BoundingBox(-2F, -2F, -2F, 2F, 2F, 2F);
+		BoundingBox b = new BoundingBox(1.5F, 1.5F, 1.5F, 2.5F, 2.5F, 2.5F);
+
+		assertEquals(new Vector3(-0.5F, -0.5F, -0.5F), a.resolveStatic(b));
+		assertEquals(new Vector3(0.5F, 0.5F, 0.5F), b.resolveStatic(a));
+		
+		BoundingBox c = new BoundingBox(-2F, -2F, -2F, 2F, 2F, 2F);
+		BoundingBox d = new BoundingBox(4.5F, 4.5F, 4.5F, 5.5F, 5.5F, 5.5F);
+		
+		assertEquals(Vector3.ZERO, c.resolveStatic(d));
+		assertEquals(Vector3.ZERO, d.resolveStatic(c));
 	}
 }
