@@ -160,6 +160,7 @@ public class BlockMaterial extends Material implements Placeable {
 	private float hardness = 0F;
 	private float friction = 0F;
 	private byte opacity = 0xF;
+	private boolean surface = true;
 	private boolean invisible = false;
 	private final CollisionModel collision = new CollisionModel(new BoundingBox(0F, 0F, 0F, 1F, 1F, 1F));
 
@@ -216,6 +217,15 @@ public class BlockMaterial extends Material implements Placeable {
 	public byte getLightLevel(short data) {
 		return 0;
 	}
+	
+	/**
+	 * Gets the amount of light this block emits
+	 * 
+	 * @return light level
+	 */
+	public byte getLightLevel() {
+		return getLightLevel(getData());
+	}
 
 	/**
 	 * Gets the amount of light blocked by this block.
@@ -246,6 +256,11 @@ public class BlockMaterial extends Material implements Placeable {
 	 */
 	public BlockMaterial setOpacity(int level) {
 		this.opacity = (byte) GenericMath.clamp(level, 0, 15);
+		if (level == 15) {
+			surface = true;
+		} else if (level == 0) {
+			surface = false;
+		}
 		return this;
 	}
 
@@ -269,6 +284,27 @@ public class BlockMaterial extends Material implements Placeable {
 	public BlockMaterial setTransparent() {
 		this.occlusion.set(BlockFaces.NONE);
 		return this.setOpacity(0);
+	}
+	
+	/**
+	 * Sets this Block Material as a surface material.  The height of the highest 
+	 * surface material is considered the surface height.
+	 * 
+	 * @return this Block Material
+	 */
+	public BlockMaterial setSurface() {
+		this.surface = true;
+		return this;
+	}
+
+	/**
+	 * Sets this Block Material as a non-surface material
+	 * 
+	 * @return this Block Material
+	 */
+	public BlockMaterial setSky() {
+		this.surface = false;
+		return this;
 	}
 
 	/**
@@ -558,7 +594,7 @@ public class BlockMaterial extends Material implements Placeable {
 	 * @return
 	 */
 	public boolean isSurface() {
-		return (!isTransparent()) || getOcclusion(getData()).getAny(BlockFaces.BT);
+		return surface;
 	}
 
 	/**
