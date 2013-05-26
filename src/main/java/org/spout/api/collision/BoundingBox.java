@@ -34,8 +34,8 @@ import org.spout.api.math.Vector3;
  * A bounding box is made of 2 {@link Vector3}s which represent its minimum x,y,z and maximum x,y,z.
  */
 public final class BoundingBox extends CollisionVolume implements Cloneable {
-	protected Vector3 min;
-	protected Vector3 max;
+	protected final Vector3 min;
+	protected final Vector3 max;
 
 	/**
 	 * Constructs a bounding box with the minimum and maximum x, y, z values
@@ -92,7 +92,8 @@ public final class BoundingBox extends CollisionVolume implements Cloneable {
 	 * @param max
 	 */
 	public BoundingBox(Vector3 min, Vector3 max) {
-		order(min, max);
+		this.min = Vector3.min(min, max);
+		this.max = Vector3.max(min, max);
 	}
 
 	/**
@@ -124,14 +125,13 @@ public final class BoundingBox extends CollisionVolume implements Cloneable {
 
 	/**
 	 * Scales this bounding box
+	 * Multiplies both the minimum and maximum vectors by the given float
 	 * 
 	 * @param scale
-	 * @return this bounding box
+	 * @return new {@link BoundingBox} scaled
 	 */
 	public BoundingBox scale(float scale) {
-		min = min.multiply(scale);
-		max = max.multiply(scale);
-		return this;
+		return new BoundingBox(min.multiply(scale), max.multiply(scale));
 	}
 
 	/**
@@ -139,12 +139,10 @@ public final class BoundingBox extends CollisionVolume implements Cloneable {
 	 * Multiplies both the minimum and maximum vectors by the given {@link Vector3} 
 	 * 
 	 * @param scale
-	 * @return this bounding box
+	 * @return new {@link BoundingBox} scaled
 	 */
 	public BoundingBox scale(Vector3 scale) {
-		min = min.multiply(scale);
-		max = max.multiply(scale);
-		return this;
+		return new BoundingBox(min.multiply(scale), max.multiply(scale));
 	}
 
 	/**
@@ -154,80 +152,42 @@ public final class BoundingBox extends CollisionVolume implements Cloneable {
 	 * @param scaleX
 	 * @param scaleY
 	 * @param scaleZ
-	 * @return this bounding box
+	 * @return new {@link BoundingBox} scaled
 	 */
 	public BoundingBox scale(float scaleX, float scaleY, float scaleZ) {
-		min = min.multiply(scaleX, scaleY, scaleZ);
-		max = max.multiply(scaleX, scaleY, scaleZ);
-		return this;
-	}
-
-	/**
-	 * Sets the location of the bounding box edges
-	 * 
-	 * @param minX
-	 * @param minY
-	 * @param minZ
-	 * @param maxX
-	 * @param maxY
-	 * @param maxZ
-	 * @return this bounding box
-	 */
-	public BoundingBox set(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
-		order(new Vector3(minX, minY, minZ), new Vector3(maxX, maxY, maxZ));
-		return this;
-	}
-
-	/**
-	 * Sets the location of the bounding box edges
-	 * 
-	 * @param min
-	 * @param max
-	 * @return this bounding box
-	 */
-	public BoundingBox set(Vector3 min, Vector3 max) {
-		order(min, max);
-		return this;
-	}
-
-	/**
-	 * Sets this bounding box to the same maximum and minimum edges as the given bounding box
-	 * 
-	 * @param box
-	 * @return this bounding box
-	 */
-	public BoundingBox set(BoundingBox box) {
-		return set(box.min, box.max);
+		return new BoundingBox(min.multiply(scaleX, scaleY, scaleZ), max.multiply(scaleX, scaleY, scaleZ));
 	}
 
 	/**
 	 * Adds the vector components to this bounding box
 	 * 
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return this bounding box
+	 * @param x to add
+	 * @param y to add
+	 * @param z to add
+	 * @return new {@link BoundingBox} with the new values
 	 */
 	public BoundingBox add(float x, float y, float z) {
+		Vector3 newMin = min;
+		Vector3 newMax = max;
 		if (x < 0.0D) {
-			this.min = min.add(x, 0, 0);
+			newMin = min.add(x, 0, 0);
 		}
 		else {
-			this.max = max.add(x, 0, 0);
+			newMax = max.add(x, 0, 0);
 		}
 		if (y < 0.0D) {
-			this.min = min.add(0, y, 0);
+			newMin = min.add(0, y, 0);
 		}
 		else {
-			this.max = max.add(0, y, 0);
+			newMax = max.add(0, y, 0);
 		}
 		if (z < 0.0D) {
-			this.min = min.add(0, 0, z);
+			newMin = min.add(0, 0, z);
 		}
 		else {
-			this.max = max.add(0, 0, z);
+			newMax = max.add(0, 0, z);
 		}
-		return this;
+		return new BoundingBox(newMin, newMax);
 	}
 
 	/**
@@ -249,9 +209,7 @@ public final class BoundingBox extends CollisionVolume implements Cloneable {
 	 * @return this bounding box
 	 */
 	public BoundingBox expand(float x, float y, float z) {
-		this.min = min.add(-x, -y, -z);
-		this.max = max.add(x, y, z);
-		return this;
+		return new BoundingBox(min.add(-x, -y, -z), max.add(x, y, z));
 	}
 
 	/**
@@ -295,9 +253,7 @@ public final class BoundingBox extends CollisionVolume implements Cloneable {
 	 * @return this bounding box
 	 */
 	public BoundingBox offset(float x, float y, float z) {
-		this.min = min.add(x, y, z);
-		this.max = max.add(x, y, z);
-		return this;
+		return offset(new Vector3(x, y, z));
 	}
 
 	/**
@@ -308,7 +264,7 @@ public final class BoundingBox extends CollisionVolume implements Cloneable {
 	 */
 	@Override
 	public BoundingBox offset(Vector3 vec) {
-		return offset(vec.getX(), vec.getY(), vec.getZ());
+		return new BoundingBox(min.add(vec), max.add(vec));
 	}
 
 	@Override
@@ -499,19 +455,6 @@ public final class BoundingBox extends CollisionVolume implements Cloneable {
 
 	public Vector3 resolveStatic(BoundingBox other) {
 		return CollisionHelper.getCollisionStatic(this, other);
-	}
-
-	private void order(Vector3 min, Vector3 max) {
-		Vector3 newMin = new Vector3(min.getX() > max.getX() ? max.getX() : min.getX(),
-						min.getY() > max.getY() ? max.getY() : min.getY(),
-						min.getZ() > max.getZ() ? max.getZ() : min.getZ());
-
-		Vector3 newMax = new Vector3(min.getX() > max.getX() ? min.getX() : max.getX(),
-				min.getY() > max.getY() ? min.getY() : max.getY(),
-				min.getZ() > max.getZ() ? min.getZ() : max.getZ());
-
-		this.min = newMin;
-		this.max = newMax;
 	}
 
 	@Override

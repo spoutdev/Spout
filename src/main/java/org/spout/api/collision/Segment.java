@@ -37,11 +37,11 @@ public class Segment extends CollisionVolume {
 	//MaxChunks (10) can be modified as we need
 	static final int MAXLENGTH = 10 * 16 * 16;
 
-	Vector3 origin;
+	private final Vector3 origin;
 
-	Vector3 endpoint;
+	private final Vector3 endpoint;
 
-	Vector3 direction;
+	private final Vector3 direction;
 
 	final float length;
 
@@ -50,6 +50,22 @@ public class Segment extends CollisionVolume {
 		endpoint = end;
 		direction = end.subtract(start).normalize();
 		length = (float) Math.sqrt(endpoint.dot(origin));
+	}
+
+	public Vector3 getOrigin() {
+		return origin;
+	}
+
+	public Vector3 getEndpoint() {
+		return endpoint;
+	}
+
+	public Vector3 getDirection() {
+		return direction;
+	}
+
+	public float getLength() {
+		return length;
 	}
 
 	public Segment(Vector3 start, Vector3 direction, float distance) {
@@ -138,9 +154,8 @@ public class Segment extends CollisionVolume {
 	}
 
 	@Override
-	public CollisionVolume offset(Vector3 ammount) {
-		// TODO Auto-generated method stub
-		return null;
+	public CollisionVolume offset(Vector3 amount) {
+		return new Segment(origin.add(amount), endpoint.add(amount));
 	}
 
 	@Override

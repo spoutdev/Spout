@@ -31,61 +31,88 @@ import java.util.ArrayList;
 import org.spout.api.math.Vector3;
 
 /**
- * Defines a Heirachial Collision Volume
+ * Represents a tree of {@link CollisionVolume}.
+ * Has a CollisionVolume as a root of the node, 
+ * and any children added are automatically converted to CollisionModel to represent the node.
  *
  */
 public class CollisionModel extends CollisionVolume {
-	CollisionVolume area;
+	private final CollisionVolume root;
 	
-	ArrayList<CollisionModel> children = new ArrayList<CollisionModel>();
-	
-	Vector3 origin;
+	private final ArrayList<CollisionModel> nodes;
 	
 	public CollisionModel() {
-		area = new BoundingBox();
-		
+		this(new BoundingBox());
 	}
 	
 	public CollisionModel(CollisionVolume base) {
-		if (base instanceof CollisionModel) throw new IllegalArgumentException("Cannot create a collision model with a collision model as an area");
-		area = base;
+		this(base, new ArrayList<CollisionModel>());
 	}
-		
-	
-	public void addChild(CollisionVolume child) {
+
+	private CollisionModel(CollisionVolume base, ArrayList<CollisionModel> nodes) {
+		if (base instanceof CollisionModel) {
+			throw new IllegalArgumentException("Cannot create a collision model with a collision model as an area");
+		}
+		root = base;
+		this.nodes = nodes;
+	}
+
+	/**
+	 * Adds a child to this tree of {@link CollisionVolume}.
+	 * Returns a new instance of the tree with the child in it,
+	 * or null if the child was null.
+	 * 
+	 * TODO: We may want to offset the children added by the same amount this tree is offset from origin.
+	 * 
+	 * @param child {@link CollisionVolume} to add
+	 * @return new {@link CollisionModel} representing the tree including the new child, or null if the child was null
+	 */
+	public CollisionModel addChild(CollisionVolume child) {
+		if (child == null) {
+			return null;
+		}
+
+		ArrayList<CollisionModel> children = new ArrayList<CollisionModel>(nodes);
+
 		if (child instanceof CollisionModel) {
-			area.offset(origin);
-			children.add((CollisionModel)child);
+			children.add((CollisionModel) child);
 		} else {
-			CollisionModel c = new CollisionModel(child);
-			addChild(c); 
-			//recursive calls ftw
+			CollisionModel node = new CollisionModel(child);
+			children.add(node);
 		}
+		return new CollisionModel(root, nodes);
 	}
-	
+
 	public CollisionVolume getVolume() {
-		return area;
+		return root;
 	}
-	
-	
+
 	@Override
-	public CollisionVolume offset(Vector3 ammount) {
-		origin = origin.add(ammount);
-		for (CollisionModel m : children) {
-			m.offset(ammount);
+	public CollisionModel offset(Vector3 amount) {
+		CollisionVolume base = root.offset(amount);
+		ArrayList<CollisionModel> children = new ArrayList<CollisionModel>(nodes.size());
+
+		for (CollisionModel child : nodes) {
+			children.add(child.offset(amount));
 		}
-		return this;
+
+		return new CollisionModel(base, children);
 	}
 
 	@Override
 	public boolean intersects(CollisionVolume other) {
 		if (other instanceof CollisionModel) {
-			if (!area.intersects(((CollisionModel)other).getVolume())) return false;
+			if (!root.intersects(((CollisionModel) other).getVolume()))
+				return false;
 		}
-		if (!area.intersects(other)) return false; //Check us
-		if (children.size() > 0) return true; //We intersect and have no children, it intersects.
-		for (CollisionModel m : children) {
-			if (m.intersects(other)) return true;
+		if (!root.intersects(other)) {
+			return false; // Return false if this volume doesn't intersect at all
+		}
+		if (nodes.size() == 0) {
+			return true; // Return true if we have no children, and we intersected above
+		}
+		for (CollisionModel m : nodes) {
+			if (m.intersects(other)) return true; // Return true if any children intersect
 		}
 		return false;
 	}
@@ -93,24 +120,36 @@ public class CollisionModel extends CollisionVolume {
 	@Override
 	public boolean contains(CollisionVolume other) {
 		if (other instanceof CollisionModel) {
-			if (!area.contains(((CollisionModel)other).getVolume())) return false;
+			if (!root.contains(((CollisionModel)other).getVolume())) return false;
 		}
-		if (!area.contains(other)) return false; //Check us
-		if (children.size() > 0) return true; //We intersect and have no children, it intersects.
+		if (!root.contains(other)) {
+			return false; // Return false if this volume doesn't contain the other at all
+		}
+		if (nodes.size() == 0) {
+			return true; // Return true if we have no children, and we contained the other above
+		}
 		//TODO: Make this a breadth first search.  Right now it's depth first and it will be slow.
-		for (CollisionModel m : children) {
-			if (m.contains(other)) return true;
+		for (CollisionModel m : nodes) {
+			if (m.contains(other)) {
+				return true; // Return true if any children contain the other
+			}
 		}
 		return false;
 	}
 
 	@Override
 	public boolean containsPoint(Vector3 b) {
-		if (!area.containsPoint(b)) return false; //Check us
-		if (children.size() > 0) return true; //We intersect and have no children, it intersects.
+		if (!root.containsPoint(b)) {
+			return false; // Return false if this volume doesn't contain the point at all
+		}
+		if (nodes.size() == 0) {
+			return true; // Return true if we have no children, and we contained the point above
+		}
 		//TODO: Make this a breadth first search.  Right now it's depth first and it will be slow.
-		for (CollisionModel m : children) {
-			if (m.containsPoint(b)) return true;
+		for (CollisionModel m : nodes) {
+			if (m.containsPoint(b)) {
+				return true; // Return true if any children contain the point
+			}
 		}
 		return false;
 	}
@@ -119,17 +158,15 @@ public class CollisionModel extends CollisionVolume {
 	public Vector3 resolve(CollisionVolume other) {
 		
 		//TODO make this resolve with children
-		if (other instanceof CollisionModel) return area.resolve(((CollisionModel)other).getVolume());
-		return area.resolve(other);
+		if (other instanceof CollisionModel) {
+			return root.resolve(((CollisionModel)other).getVolume());
+		}
+
+		return root.resolve(other);
 	}
 
 	@Override
 	public Vector3 getPosition() {
-		return origin;
+		return root.getPosition();
 	}
-
-	public void setPosition(Vector3 position) {
-		this.origin = position;
-	}
-	
 }

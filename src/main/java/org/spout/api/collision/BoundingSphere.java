@@ -29,21 +29,51 @@ package org.spout.api.collision;
 import org.spout.api.math.Vector3;
 
 public class BoundingSphere extends CollisionVolume {
-	Vector3 center;
 
-	double radius;
+	private final Vector3 center;
+	// TODO: Is there any particular reason this is a double when the rest of the engine uses floats?
+	private final double radius;
 
+	/**
+	 * Creates a {@link BoundingSphere} at the given center {@link Vector3} with the given radius.
+	 * 
+	 * @param center
+	 * @param radius
+	 */
 	public BoundingSphere(Vector3 center, double radius) {
 		this.center = center;
 		this.radius = radius;
 	}
 
+	/**
+	 * Creates a {@link BoundingSphere} at the given center {@link Vector3} with a radius of one.
+	 * 
+	 * @param center position
+	 */
 	public BoundingSphere(Vector3 center) {
 		this(center, 1.0);
 	}
 
+	/**
+	 * Creates a {@link BoundingSphere} at the position {0, 0, 0} as the center with a radius of one.
+	 */
 	public BoundingSphere() {
 		this(Vector3.ZERO, 1);
+	}
+
+	/**
+	 * Returns a vector for the center of this sphere.
+	 * Same as {@link #getPosition()} for a sphere.
+	 * Method exists to make it clear that the center location is the same as the position.
+	 * 
+	 * @return {@link Vector3} center point of this sphere
+	 */
+	public Vector3 getCenter() {
+		return center;
+	}
+
+	public double getRadius() {
+		return radius;
 	}
 
 	public boolean intersects(BoundingBox b) {
@@ -129,9 +159,8 @@ public class BoundingSphere extends CollisionVolume {
 	}
 
 	@Override
-	public CollisionVolume offset(Vector3 ammount) {
-		// TODO Auto-generated method stub
-		return null;
+	public CollisionVolume offset(Vector3 amount) {
+		return new BoundingSphere(center.add(amount));
 	}
 
 	@Override

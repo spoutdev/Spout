@@ -47,9 +47,8 @@ public abstract class CollisionVolume {
 	
 	
 	public abstract Vector3 getPosition();
-	
-	
-	public abstract CollisionVolume offset(Vector3 ammount);
+
+	public abstract CollisionVolume offset(Vector3 amount);
 	
 	
 	/**

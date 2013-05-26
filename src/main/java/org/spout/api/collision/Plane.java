@@ -29,9 +29,9 @@ package org.spout.api.collision;
 import org.spout.api.math.Vector3;
 
 public class Plane extends CollisionVolume {
-	Vector3 point;
+	private final Vector3 point;
 
-	Vector3 normal;
+	private final Vector3 normal;
 
 	public Plane(Vector3 point, Vector3 normal) {
 		this.point = point;
@@ -44,6 +44,10 @@ public class Plane extends CollisionVolume {
 
 	public Plane() {
 		this(Vector3.ZERO, Vector3.UP);
+	}
+
+	public Vector3 getNormal() {
+		return normal;
 	}
 
 	public float distance(Vector3 b) {

@@ -37,9 +37,9 @@ public class Ray extends CollisionVolume {
 	//MaxChunks (10) can be modified as we need
 	static final int MAXLENGTH = 10 * 16 * 16;
 
-	Vector3 origin;
+	private final Vector3 origin;
 
-	Vector3 direction;
+	private final Vector3 direction;
 
 	public Ray(Vector3 start, Vector3 direction) {
 		origin = start;
@@ -48,6 +48,14 @@ public class Ray extends CollisionVolume {
 
 	public Ray(Vector3 start, float pitch, float yaw) {
 		this(start, VectorMath.getDirection3D(pitch, yaw));
+	}
+
+	public Vector3 getOrigin() {
+		return origin;
+	}
+
+	public Vector3 getDirection() {
+		return direction;
 	}
 
 	//	public boolean intersects(BoundingBox b) {
@@ -132,9 +140,8 @@ public class Ray extends CollisionVolume {
 	}
 
 	@Override
-	public CollisionVolume offset(Vector3 ammount) {
-		// TODO Auto-generated method stub
-		return null;
+	public CollisionVolume offset(Vector3 amount) {
+		return new Ray(origin.add(amount), direction);
 	}
 
 	@Override
