@@ -131,7 +131,7 @@ public final class SpoutScheduler implements Scheduler {
 	/**
 	 * Target Frames per Second for the renderer
 	 */
-	private static final int TARGET_FPS = 500;
+	private static final int TARGET_FPS = 60;
 	/**
 	 * Used to detect if the render is under heavy load
 	 */
@@ -157,7 +157,7 @@ public final class SpoutScheduler implements Scheduler {
 	private final SpoutSnapshotLock snapshotLock = new SpoutSnapshotLock();
 	private final Thread mainThread;
 	private final RenderThread renderThread;
-	private final Thread guiThread;
+	private final GUIThread guiThread;
 	private final SpoutTaskManager taskManager;
 	private SpoutParallelTaskManager parallelTaskManager = null;
 	private final AtomicBoolean heavyLoad = new AtomicBoolean(false);
@@ -179,14 +179,6 @@ public final class SpoutScheduler implements Scheduler {
 	// scheduler executor service
 	private final ExecutorService executorService;
 
-	public long getFps() {
-		return renderThread.getFps();
-	}
-
-	public boolean isRendererOverloaded() {
-		return renderThread != null && (renderThread.getFrameOverhead() || renderThread.getFps() < OVERHEAD_FPS);
-	}
-
 	/**
 	 * Creates a new task scheduler.
 	 */
@@ -195,7 +187,7 @@ public final class SpoutScheduler implements Scheduler {
 		this.engine = engine;
 
 		mainThread = new MainThread();
-		if (engine.getPlatform() == Platform.CLIENT) {
+		if (engine instanceof SpoutClient) {
 			renderThread = new RenderThread();
 			guiThread = new GUIThread();
 		} else {
@@ -254,7 +246,7 @@ public final class SpoutScheduler implements Scheduler {
 
 			while (!shutdown) {
 				if (Display.isCloseRequested() || !((SpoutClient) engine).isRendering()) {
-					((SpoutClient) engine).stop();
+					engine.stop();
 					break;
 				}
 				long currentTime = System.nanoTime();
@@ -850,6 +842,14 @@ public final class SpoutScheduler implements Scheduler {
 		if (Spout.debugMode() && time > PULSE_EVERY) {
 			Spout.getLogger().info("Task " + TickStage.getStage(TickStage.getStageInt()) + " took " + time + "ms");
 		}
+	}
+
+	public long getFps() {
+		return renderThread.getFps();
+	}
+
+	public boolean isRendererOverloaded() {
+		return renderThread != null && (renderThread.getFrameOverhead() || renderThread.getFps() < OVERHEAD_FPS);
 	}
 
 	@Override

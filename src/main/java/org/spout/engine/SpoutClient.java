@@ -65,6 +65,7 @@ import org.spout.api.event.engine.EngineStartEvent;
 import org.spout.api.event.engine.EngineStopEvent;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.Chunk;
+import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.model.Model;
@@ -94,25 +95,23 @@ import org.spout.engine.resources.ClientEntityPrefab;
 import org.spout.engine.resources.ClientFont;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutClientWorld;
+import org.spout.engine.world.SpoutWorld;
 
 public class SpoutClient extends SpoutEngine implements Client {
-	private final SoundManager soundManager = new SpoutSoundManager();
-	private final FileSystem filesystem;
-	private final AtomicReference<SpoutClientSession> session = new AtomicReference<SpoutClientSession>();
-	private SpoutPlayer activePlayer;
-	private final AtomicReference<SpoutClientWorld> activeWorld = new AtomicReference<SpoutClientWorld>();
+	private final AtomicReference<SpoutClientPlayer> player = new AtomicReference<SpoutClientPlayer>();
 	private final AtomicReference<PortBinding> potentialBinding = new AtomicReference<PortBinding>();
+	private final AtomicReference<SpoutClientSession> session = new AtomicReference<SpoutClientSession>();
+	//TODO Client needs to have the SpoutClientWorld dummy and recieve the world from the server
+	private final AtomicReference<SpoutWorld> world = new AtomicReference<SpoutWorld>();
+	private final ClientBootstrap bootstrap = new ClientBootstrap();
+	private final FileSystem filesystem = new ClientFileSystem();
 	// Handle stopping
 	private volatile boolean rendering = true;
-	private String stopMessage = null;
-	private final ClientBootstrap bootstrap = new ClientBootstrap();
 	private boolean ccoverride = false;
+	private String stopMessage = null;
 	private SpoutRenderer renderer;
+	private SoundManager soundManager;
 	private SpoutInputManager inputManager;
-
-	public SpoutClient() {
-		this.filesystem = new ClientFileSystem();
-	}
 
 	@Override
 	public void init(SpoutApplication args) {
@@ -129,8 +128,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 			unpackLwjgl(args.path);
 		}
 
-		ExecutorService executorBoss = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Boss", true));
-		ExecutorService executorWorker = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutServer - Worker", true));
+		ExecutorService executorBoss = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutClient - Boss", true));
+		ExecutorService executorWorker = Executors.newCachedThreadPool(new NamedThreadFactory("SpoutClient - Worker", true));
 		ChannelFactory factory = new NioClientSocketChannelFactory(executorBoss, executorWorker);
 		bootstrap.setFactory(factory);
 
@@ -141,6 +140,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 		this.ccoverride = args.ccoverride;
 
 		inputManager = new SpoutInputManager();
+		soundManager = new SpoutSoundManager();
 		soundManager.init(this);
 	}
 
@@ -167,20 +167,14 @@ public class SpoutClient extends SpoutEngine implements Client {
 			}
 			// TODO : Wait until the world is fully loaded
 		}
+		world.set((SpoutWorld) getDefaultWorld());
+		final SpoutWorld w = world.get();
+		player.set(new SpoutClientPlayer(this, "Spouty", w.getSpawnPoint(), SpoutConfiguration.VIEW_DISTANCE.getInt() * ChunkSnapshot.CHUNK_SIZE));
+		final SpoutClientPlayer p = player.get();
+		p.add(CameraComponent.class);
+		w.spawnEntity(p);
 
-		final SpoutClient parent = this;
-		getScheduler().coreSafeRun("Client setup task", new Runnable() {
-			public void run() {
-				activePlayer = new SpoutClientPlayer(parent, "Spouty", getDefaultWorld().getSpawnPoint(), SpoutConfiguration.VIEW_DISTANCE.getInt() * Chunk.BLOCKS.SIZE);
-				activePlayer.add(CameraComponent.class);
-				activePlayer.add(InteractComponent.class);
-				getWorld().spawnEntity(activePlayer);
-
-				//The render need the active player to find the world to draw, so we start it after initialize player
-				renderer = getScheduler().startRenderThread(new Vector2(1024, 768), ccoverride, null);
-			}
-		});
-
+		renderer = getScheduler().startRenderThread(new Vector2(1024, 768), ccoverride, null);
 		getScheduler().startGuiThread();
 
 		//TODO Maybe a better way of alerting plugins the client is done?
@@ -191,13 +185,13 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public SpoutPlayer getPlayer() {
-		return activePlayer;
+		return player.get();
 	}
 
 	@Override
 	public CommandSource getCommandSource() {
 		if (session.get() != null) {
-			return activePlayer;
+			return player.get();
 		} else {
 			return super.getCommandSource();
 		}
@@ -205,7 +199,6 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public PluginStore getPluginStore() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -289,8 +282,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}*/
 
 	@Override
-	public SpoutClientWorld getWorld(UUID uid) {
-		SpoutClientWorld world = activeWorld.get();
+	public SpoutWorld getWorld(UUID uid) {
+		SpoutWorld world = this.world.get();
 		if (world != null && world.getUID().equals(uid)) {
 			return world;
 		} else {
@@ -300,7 +293,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public Collection<World> getWorlds() {
-		return Collections.<World>singletonList(activeWorld.get());
+		return Collections.<World>singletonList(world.get());
 	}
 
 	/*@Override
@@ -318,7 +311,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			throw new RuntimeException("Unable to deserialize data", e);
 		}
 
-		SpoutClientWorld oldWorld = activeWorld.getAndSet(world);
+		SpoutWorld oldWorld = this.world.getAndSet(world);
 		if (oldWorld != null) {
 			if (!scheduler.removeAsyncManager(oldWorld)) {
 				throw new IllegalStateException("Unable to remove old world from scheduler");
@@ -326,7 +319,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			oldWorld.unload(false);
 		}
 		if (!scheduler.addAsyncManager(world)) {
-			activeWorld.compareAndSet(world, null);
+			this.world.compareAndSet(world, null);
 			throw new IllegalStateException("Unable to add new world to the scheduler");
 		}
 		return world;
@@ -357,9 +350,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 	public void setSession(SpoutClientSession session) {
 		this.session.set(session);
 		getSessionRegistry().add(session);
-		activePlayer.connect(session, activePlayer.getScene().getTransform());
-		session.setPlayer(activePlayer);
-		players.putIfAbsent(activePlayer.getName(), activePlayer);
+		final SpoutClientPlayer p = player.get();
+		p.connect(session, p.getScene().getTransform());
+		session.setPlayer(p);
+		players.putIfAbsent(p.getName(), p);
 	}
 
 	@Override
@@ -369,7 +363,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 	@Override
 	public World getWorld() {
-		return activePlayer.getWorld();
+		return world.get();
 	}
 
 	private void unpackLwjgl(String path) {
