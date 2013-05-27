@@ -75,7 +75,9 @@ public interface ScreenStack extends Tickable, SubscriberInterface, SignalInterf
 	 * @return Screen
 	 */
 	public Screen getInputScreen();
-	
+
+	public Screen getMainScreen();
+
 	/**
 	 * Get the debug screen
 	 */
