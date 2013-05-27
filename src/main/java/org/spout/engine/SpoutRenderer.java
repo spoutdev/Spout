@@ -218,7 +218,7 @@ public class SpoutRenderer {
 		//Call InputExecutor registred by plugin
 		client.getInputManager().execute(dt);
 
-		Mouse.setGrabbed(screenStack.getVisibleScreens().getLast().grabsMouse());
+		Mouse.setGrabbed(screenStack.getInputScreen().grabsMouse());
 
 		final Camera camera = client.getPlayer().getType(Camera.class);
 		final Model skydome = (Model) client.getWorld().getData().get("skydome");

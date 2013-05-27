@@ -67,9 +67,11 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 	}
 
 	public boolean isOpened(Screen screen) {
-		return screens.contains(screen);
+		synchronized (screens) {
+			return screens.contains(screen);
+		}
 	}
-	
+
 	public void openScreen(Screen screen) {
 		if (screen.getWidgets().isEmpty()) {
 			throw new IllegalArgumentException("The specified screen doesn't have any widgets attached.");
@@ -85,14 +87,12 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 	 * Updates all internal caches
 	 */
 	private void update() {
+		Client engine = (Client) Spout.getEngine();
 		synchronized (visibleScreens) {
 			visibleScreens.clear();
-
 			synchronized (screens) {
 				Iterator<Screen> iter = screens.descendingIterator();
-
 				Screen next = null;
-
 				while (iter.hasNext()) {
 					next = iter.next();
 					visibleScreens.addFirst(next);
@@ -101,11 +101,9 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 					}
 				}
 			}
-		}
-		if (Spout.getEngine() instanceof Client) {
-			Client engine = (Client) Spout.getEngine();
+
 			InputManager input = engine.getInputManager();
-			Iterator<Screen> iter = getVisibleScreens().descendingIterator();
+			Iterator<Screen> iter = visibleScreens.descendingIterator();
 			Screen next;
 			inputScreen = null;
 			while (iter.hasNext()) {
@@ -142,20 +140,22 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 	}
 
 	/**
-	 * Gets an ordered list of visible screens
+	 * Gets a copy of the ordered list of visible screens
 	 * The first item in the list is the bottom-most fullscreen, the last item in the list is the top-most fullscreen/popupscreen.
-	 * @return
+	 * @return copy of the visible screens, in order
 	 */
 	public LinkedList<Screen> getVisibleScreens() {
 		synchronized (visibleScreens) {
-			return visibleScreens;
+			return new LinkedList<Screen>(visibleScreens);
 		}
 	}
 
 	@Override
 	public void onTick(float dt) {
-		for (Screen screen : getVisibleScreens()) {
-			screen.tick(dt);
+		synchronized (visibleScreens) {
+			for (Screen screen : visibleScreens) {
+				screen.tick(dt);
+			}
 		}
 	}
 
@@ -164,23 +164,25 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 	 * @return
 	 */
 	public Screen getInputScreen() {
-		return inputScreen;
+		synchronized (visibleScreens) {
+			return inputScreen;
+		}
 	}
-	
+
 	/**
 	 * Get the debug screen
 	 */
 	public DebugHud getDebugHud() {
 		return debugScreen;
 	}
-	
+
 	/**
 	 * Get the ingame developper's console
 	 */
 	public DevConsole getConsole() {
 		return console;
 	}
-	
+
 	public Widget createWidget() {
 		return new SpoutWidget();
 	}
