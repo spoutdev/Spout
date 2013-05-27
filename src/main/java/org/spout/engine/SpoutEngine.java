@@ -252,8 +252,9 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 		if (checkWorlds) {
 			//At least one plugin should have registered atleast one world
-			if (loadedWorlds.getLive().size() == 0) {
-				throw new IllegalStateException("There are no loaded worlds! You must install a plugin that creates a world (Did you forget Vanilla?)");
+			if (loadedWorlds.getLive().isEmpty()) {
+				getLogger().severe("There are no loaded worlds! You must install a plugin that creates a world (Did you forget Vanilla?)");
+				System.exit(1);
 			}
 
 			//Pick the default world from the configuration
@@ -853,6 +854,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		return completions;
 	}
 
+	@Override
 	public DefaultPermissions getDefaultPermissions() {
 		return defaultPerms;
 	}
@@ -882,14 +884,17 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 	private Thread executionThread;
 
+	@Override
 	public Thread getExecutionThread() {
 		return executionThread;
 	}
 
+	@Override
 	public void setExecutionThread(Thread t) {
 		this.executionThread = t;
 	}
 
+	@Override
 	public int getSequence() {
 		return 0;
 	}
