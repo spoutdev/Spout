@@ -169,10 +169,16 @@ public class SpoutClient extends SpoutEngine implements Client {
 		}
 		final SpoutWorld w = (SpoutWorld) getDefaultWorld();
 		world.set(w);
-		final SpoutClientPlayer p = new SpoutClientPlayer(this, "Spouty", w.getSpawnPoint(), SpoutConfiguration.VIEW_DISTANCE.getInt() * ChunkSnapshot.CHUNK_SIZE);
-		p.add(CameraComponent.class);
-		player.set(p);
-		w.spawnEntity(p);
+		String lockString = "Initial player spawn";
+		getScheduler().getSnapshotLock().coreReadLock(lockString);
+		try {
+			final SpoutClientPlayer p = new SpoutClientPlayer(this, "Spouty", w.getSpawnPoint(), SpoutConfiguration.VIEW_DISTANCE.getInt() * ChunkSnapshot.CHUNK_SIZE);
+			p.add(CameraComponent.class);
+			player.set(p);
+			w.spawnEntity(p);
+		} finally {
+			getScheduler().getSnapshotLock().coreReadUnlock(lockString);
+		}
 
 		renderer = getScheduler().startRenderThread(new Vector2(1024, 768), ccoverride, null);
 		getScheduler().startGuiThread();
