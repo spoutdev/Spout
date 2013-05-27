@@ -44,6 +44,7 @@ import org.spout.api.signal.SignalSubscriberObject;
 public class SpoutScreenStack extends SignalSubscriberObject implements ScreenStack {
 	private LinkedList<Screen> screens = new LinkedList<Screen>();
 	private LinkedList<Screen> visibleScreens = new LinkedList<Screen>();
+	private final Screen main;
 	private final DevConsole console;
 	private final DebugScreen debugScreen;
 	/**
@@ -52,6 +53,7 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 	private Screen inputScreen = null;
 
 	public SpoutScreenStack(FullScreen root) {
+		main = root;
 		screens.add(root);
 
 		// Add the debug screen
@@ -181,6 +183,11 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 	 */
 	public DevConsole getConsole() {
 		return console;
+	}
+
+	@Override
+	public Screen getMainScreen() {
+		return main;
 	}
 
 	public Widget createWidget() {

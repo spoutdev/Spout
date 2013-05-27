@@ -47,8 +47,6 @@ import org.lwjgl.opengl.Util;
 
 import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.style.ChatStyle;
-import org.spout.api.component.impl.SceneComponent;
-import org.spout.api.entity.Entity;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.gui.FullScreen;
 import org.spout.api.gui.Screen;
@@ -70,7 +68,6 @@ import org.spout.engine.entity.component.SpoutSceneComponent;
 import org.spout.engine.gui.DebugScreen;
 import org.spout.engine.gui.SpoutScreenStack;
 import org.spout.engine.gui.SpoutWidget;
-import org.spout.engine.input.SpoutInputManager;
 import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.EntityRenderer;
@@ -218,8 +215,6 @@ public class SpoutRenderer {
 		//Call InputExecutor registred by plugin
 		client.getInputManager().execute(dt);
 
-		Mouse.setGrabbed(screenStack.getInputScreen().grabsMouse());
-
 		final Camera camera = client.getPlayer().getType(Camera.class);
 		final Model skydome = (Model) client.getWorld().getData().get("skydome");
 
@@ -291,6 +286,22 @@ public class SpoutRenderer {
 			reflectedDebugBatch.render(ident);
 		}
 
+		//GUI -> Render all widgets
+		for (Screen screen : screenStack.getVisibleScreens()) {
+			for (Widget widget : screen.getWidgets()) {
+				((SpoutWidget) widget).render();
+			}
+		}
+
+		//GUI -> Give the main screen the mouse if no input screen is set
+		final Screen input = screenStack.getInputScreen();
+		if (input == null) {
+			Mouse.setGrabbed(true);
+		} else {
+			Mouse.setGrabbed(input.grabsMouse());
+		}
+
+		//GUI -> Update debug info
 		if (showDebugInfos) {
 			Point position = client.getPlayer().getScene().getPosition();
 			debugScreen.spoutUpdate(0, new ChatArguments("Spout client! Logged as ", ChatStyle.RED, client.getPlayer().getDisplayName(), ChatStyle.RESET, " in world: ", ChatStyle.RED, client.getWorld().getName()));
@@ -301,13 +312,7 @@ public class SpoutRenderer {
 			debugScreen.spoutUpdate(5, new ChatArguments(ChatStyle.BLUE, "Cull Chunks: ", (int) ((float) worldRenderer.getCulledChunks() / worldRenderer.getTotalChunks() * 100), "% (" + worldRenderer.getCulledChunks() + ")"));
 			debugScreen.spoutUpdate(6, new ChatArguments(ChatStyle.BLUE, "Entities: ", entityRenderer.getRenderedEntities()));
 			debugScreen.spoutUpdate(7, new ChatArguments(ChatStyle.BLUE, "Buffer: ", worldRenderer.addedBatch + " / " + worldRenderer.updatedBatch));
-			//debugScreen.spoutUpdate(8, new ChatArguments(ChatStyle.BLUE, "Time: ", worldTime / 1000000.0 + " / " + entityTime / 1000000.0 + " / " + guiTime / 1000000.0));
-		}
-		
-		for (Screen screen : screenStack.getVisibleScreens()) {
-			for (Widget widget : screen.getWidgets()) {
-				((SpoutWidget) widget).render();
-			}
+			debugScreen.spoutUpdate(8, new ChatArguments(ChatStyle.BLUE, "Time: ", worldTime / 1000000.0 + " / " + entityTime / 1000000.0 + " / " + guiTime / 1000000.0));
 		}
 
 		guiTime = System.nanoTime() - start;
