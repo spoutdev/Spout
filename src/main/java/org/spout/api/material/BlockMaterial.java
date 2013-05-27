@@ -238,9 +238,9 @@ public class BlockMaterial extends Material implements Placeable {
 	 */
 	public BlockMaterial setOpacity(int level) {
 		this.opacity = (byte) GenericMath.clamp(level, 0, 15);
-		if (level == 15) {
+		if (level > 0) {
 			surface = true;
-		} else if (level == 0) {
+		} else {
 			surface = false;
 		}
 		return this;
