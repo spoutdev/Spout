@@ -155,7 +155,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		//Bonjour
 		setupBonjour();
 
-		if (boundProtocols.size() == 0) {
+		if (boundProtocols.isEmpty()) {
 			log("No port bindings registered! Clients will not be able to connect to the server.", Level.WARNING);
 		}
 	}

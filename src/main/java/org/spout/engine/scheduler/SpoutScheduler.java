@@ -416,7 +416,7 @@ public final class SpoutScheduler implements Scheduler {
 			long delay = 2000;
 			while (!taskManager.waitForAsyncTasks(delay)) {
 				List<Worker> workers = taskManager.getActiveWorkers();
-				if (workers.size() == 0) {
+				if (workers.isEmpty()) {
 					break;
 				}
 				Spout.info("Unable to shutdown due to async tasks still running");

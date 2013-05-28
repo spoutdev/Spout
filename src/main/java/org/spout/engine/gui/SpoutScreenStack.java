@@ -42,8 +42,8 @@ import org.spout.api.render.SpoutRenderMaterials;
 import org.spout.api.signal.SignalSubscriberObject;
 
 public class SpoutScreenStack extends SignalSubscriberObject implements ScreenStack {
-	private LinkedList<Screen> screens = new LinkedList<Screen>();
-	private LinkedList<Screen> visibleScreens = new LinkedList<Screen>();
+	private final LinkedList<Screen> screens = new LinkedList<Screen>();
+	private final LinkedList<Screen> visibleScreens = new LinkedList<Screen>();
 	private final DevConsole console;
 	private final DebugScreen debugScreen;
 	/**
@@ -61,15 +61,17 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 		// Add the dev console
 		console = new DevConsole(SpoutRenderMaterials.DEFAULT_FONT);
 		console.setDateFormat(new SimpleDateFormat("E HH:mm:ss"));
-		screens.add(console);
+		//screens.add(console);
 		
 		update();
 	}
 
+	@Override
 	public boolean isOpened(Screen screen) {
 		return screens.contains(screen);
 	}
 	
+	@Override
 	public void openScreen(Screen screen) {
 		if (screen.getWidgets().isEmpty()) {
 			throw new IllegalArgumentException("The specified screen doesn't have any widgets attached.");
@@ -91,8 +93,7 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 			synchronized (screens) {
 				Iterator<Screen> iter = screens.descendingIterator();
 
-				Screen next = null;
-
+				Screen next;
 				while (iter.hasNext()) {
 					next = iter.next();
 					visibleScreens.addFirst(next);
@@ -121,6 +122,7 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 		}
 	}
 
+	@Override
 	public void closeTopScreen() {
 		synchronized (screens) {
 			screens.removeLast();
@@ -128,6 +130,7 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 		update();
 	}
 
+	@Override
 	public void closeScreen(Screen screen) {
 		synchronized (screens) {
 			if (screen == screens.getFirst()) {
@@ -146,6 +149,7 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 	 * The first item in the list is the bottom-most fullscreen, the last item in the list is the top-most fullscreen/popupscreen.
 	 * @return
 	 */
+	@Override
 	public LinkedList<Screen> getVisibleScreens() {
 		synchronized (visibleScreens) {
 			return visibleScreens;
@@ -163,6 +167,7 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 	 * Gets which screen takes input
 	 * @return
 	 */
+	@Override
 	public Screen getInputScreen() {
 		return inputScreen;
 	}
@@ -170,6 +175,7 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 	/**
 	 * Get the debug screen
 	 */
+	@Override
 	public DebugHud getDebugHud() {
 		return debugScreen;
 	}
@@ -181,7 +187,13 @@ public class SpoutScreenStack extends SignalSubscriberObject implements ScreenSt
 		return console;
 	}
 	
+	@Override
 	public Widget createWidget() {
 		return new SpoutWidget();
+	}
+
+	@Override
+	public Screen getMainScreen() {
+		return null;
 	}
 }

@@ -111,7 +111,7 @@ public class UpdateQueue {
 		if (list == null || !list.remove(index)) {
 			throw new IllegalStateException("Index was not in list, or list was null");
 		}
-		if (list.size() == 0) {
+		if (list.isEmpty()) {
 			if (map.remove(x, y & 0xFF, z) == null) {
 				throw new IllegalStateException("Removed update location was not in HashSet");
 			}

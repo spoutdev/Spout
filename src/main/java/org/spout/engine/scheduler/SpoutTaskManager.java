@@ -276,7 +276,7 @@ public class SpoutTaskManager implements TaskManager {
 		long startTime = System.currentTimeMillis();
 		while (System.currentTimeMillis() < startTime + timeout) {
 			try {
-				if (activeWorkers.size() == 0) {
+				if (activeWorkers.isEmpty()) {
 					return true;
 				}
 				Thread.sleep(10);
