@@ -104,46 +104,57 @@ public class SpoutEntitySnapshot implements EntitySnapshot{
 		this.components = new ArrayList<Class<? extends Component>>(types);
 	}
 
+	@Override
 	public Entity getReference() {
 		return entity.get();
 	}
 
+	@Override
 	public final int getId() {
 		return entityId;
 	}
 
+	@Override
 	public final UUID getUID() {
 		return uniqueId;
 	}
 
+	@Override
 	public final Transform getTransform() {
 		return location;
 	}
 
+	@Override
 	public final UUID getWorldUID() {
 		return worldId;
 	}
 
+	@Override
 	public String getWorldName() {
 		return worldName;
 	}
 
+	@Override
 	public final SerializableMap getDataMap() {
 		return dataMap;
 	}
 
+	@Override
 	public int getViewDistance() {
 		return viewDistance;
 	}
 
+	@Override
 	public boolean isObserver() {
 		return observer;
 	}
 
+	@Override
 	public boolean isSavable() {
 		return savable;
 	}
 
+	@Override
 	public List<Class<? extends Component>> getComponents() {
 		return components;
 	}

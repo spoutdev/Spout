@@ -42,6 +42,7 @@ public interface SpoutShader extends Shader{
 
 	public abstract void setMaterialAssigned(RenderMaterial material);
 
+	@Override
 	public abstract void setUniform(String name, Matrix[] matricies);
 
 	public abstract void checkUniform();

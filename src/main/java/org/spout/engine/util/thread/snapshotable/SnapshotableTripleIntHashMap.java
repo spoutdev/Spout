@@ -26,6 +26,7 @@
  */
 package org.spout.engine.util.thread.snapshotable;
 
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -223,13 +224,9 @@ public class SnapshotableTripleIntHashMap<V> implements Snapshotable {
 	public Iterable<V> getValues() {
 		LinkedHashSet<V> values = new LinkedHashSet<V>(snapshot.size());
 		synchronized (live) {
-			for (V value : live.values()) {
-				values.add(value);
-			}
+			values.addAll(Arrays.asList(live.values()));
 		}
-		for (V value : snapshot.values()) {
-			values.add(value);
-		}
+		values.addAll(Arrays.asList(snapshot.values()));
 		return values;
 	}
 

@@ -195,7 +195,7 @@ public class TestCommands {
 
 		// Content Builder
 		StringBuilder sbuild = new StringBuilder();
-		sbuild.append("# This file was created on the " + dateFormat.format(date).concat(linesep));
+		sbuild.append("# This file was created on the ").append(dateFormat.format(date).concat(linesep));
 		sbuild.append("# Plugin Name | Version | Authors".concat(linesep));
 
 		// Plugins to write down
@@ -217,7 +217,7 @@ public class TestCommands {
 				for (String s : authors) {
 					count++;
 					if (count != size) {
-						authbuilder.append(s + ", ");
+						authbuilder.append(s).append(", ");
 					} else {
 						authbuilder.append(s);
 					}

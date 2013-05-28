@@ -34,18 +34,9 @@ import java.util.Map.Entry;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
-import org.spout.api.entity.Entity;
-import org.spout.api.event.EventHandler;
-import org.spout.api.event.Listener;
-import org.spout.api.event.Order;
-import org.spout.api.event.entity.EntityDespawnEvent;
-import org.spout.api.event.entity.EntitySpawnEvent;
-import org.spout.api.geo.World;
 import org.spout.api.model.Model;
 import org.spout.api.render.Camera;
 
-import org.spout.engine.SpoutClient;
-import org.spout.engine.entity.component.ClientTextModelComponent;
 import org.spout.engine.entity.component.EntityRendererComponent;
 import org.spout.engine.entity.component.SpoutSceneComponent;
 import org.spout.engine.mesh.BaseMesh;

@@ -43,6 +43,7 @@ public class RendererCommands {
 	public void toggleWireframe(CommandContext args, CommandSource source) {
 
 		client.getScheduler().enqueueRenderTask(new Runnable() {
+			@Override
 			public void run() {
 				client.getLogger().info("Toggling Wireframe");
 				client.getRenderer().toggleWireframe();

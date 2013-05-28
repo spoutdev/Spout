@@ -62,7 +62,7 @@ public class NetworkSendThread {
 	}
 
 	private ChannelQueueThread getChannelQueue(int queueId) {
-		queueId = queueId & QUEUE_ID_MASK;
+		queueId &= QUEUE_ID_MASK;
 
 		ChannelQueueThread[] queues = channelQueues.get();
 		if (queues == null) {
@@ -123,6 +123,7 @@ public class NetworkSendThread {
 			queue.add(new QueueNode(session, channel, message));
 		}
 
+		@Override
 		public void run() {
 			Random r = new Random();
 			QueueNode node;

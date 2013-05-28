@@ -37,7 +37,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 import org.spout.api.Engine;
-import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
 import org.spout.api.component.impl.ModelHolderComponent;

@@ -57,6 +57,7 @@ public class InputCommands {
 		}
 		final Screen consoleScreen = (Screen) client.getScreenStack().getConsole();
 		client.getScheduler().enqueueRenderTask(new Runnable() {
+			@Override
 			public void run() {
 				if (client.getScreenStack().isOpened(consoleScreen)) {
 					client.getScreenStack().closeScreen(consoleScreen);
@@ -75,6 +76,7 @@ public class InputCommands {
 		}
 		final Screen debugScreen = (Screen) client.getScreenStack().getDebugHud();
 		client.getScheduler().enqueueRenderTask(new Runnable() {
+			@Override
 			public void run() {
 				if (client.getScreenStack().isOpened(debugScreen)) {
 					client.getScreenStack().closeScreen(debugScreen);

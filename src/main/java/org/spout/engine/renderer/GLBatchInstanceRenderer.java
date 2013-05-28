@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL31;
@@ -167,6 +166,7 @@ public class GLBatchInstanceRenderer extends BatchVertexRenderer {
 		}
 	}
 
+	@Override
 	public void finalize() {
 		if(currentBuffer != null){
 			currentBuffer.release();

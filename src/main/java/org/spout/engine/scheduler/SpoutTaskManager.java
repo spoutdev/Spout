@@ -232,6 +232,7 @@ public class SpoutTaskManager implements TaskManager {
 		return activeTasks.remove(task.getTaskId(), task);
 	}
 
+	@Override
 	public boolean isQueued(int taskId) {
 		return activeTasks.containsKey(taskId);
 	}
@@ -276,7 +277,7 @@ public class SpoutTaskManager implements TaskManager {
 		long startTime = System.currentTimeMillis();
 		while (System.currentTimeMillis() < startTime + timeout) {
 			try {
-				if (activeWorkers.size() == 0) {
+				if (activeWorkers.isEmpty()) {
 					return true;
 				}
 				Thread.sleep(10);
