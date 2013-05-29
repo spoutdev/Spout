@@ -30,7 +30,6 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.spout.api.protocol.MessageCodec;
 import org.spout.engine.protocol.builtin.message.BlockUpdateMessage;
-import org.spout.api.util.hashing.NibblePairHashed;
 
 /**
  *

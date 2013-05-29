@@ -35,7 +35,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.spout.api.Spout;
-import org.spout.api.plugin.Plugin;
 import org.spout.api.scheduler.SnapshotLock;
 import org.spout.api.util.Named;
 import org.spout.engine.scheduler.SchedulerSyncExecutorThread;

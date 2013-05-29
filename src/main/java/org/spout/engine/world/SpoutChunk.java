@@ -1381,7 +1381,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	private final static ConcurrentHashMap<Class<? extends Populator>, AtomicLong> populatorProfilerMap = new ConcurrentHashMap<Class<? extends Populator>, AtomicLong>();
 	private final static ThreadMXBean bean = ManagementFactory.getThreadMXBean();
 	
-	private final void populatorAdd(Populator populator, long delta) {
+	private void populatorAdd(Populator populator, long delta) {
 		AtomicLong i = populatorProfilerMap.get(populator.getClass());
 		if (i == null) {
 			i = new AtomicLong();
@@ -1998,6 +1998,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		entitiesModified.compareAndSet(false, true);
 	}
 
+	@Override
 	public void setModified() {
 		if (chunkModified.compareAndSet(false, true)) {
 			setAutosaveTicks(new Random().nextInt(autosaveInterval * 2));
@@ -2072,9 +2073,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 				}
 			}
 			CuboidLightBuffer[] newArray = new CuboidLightBuffer[Math.max(id + 1, array.length)];
-			for (int i = 0; i < array.length; i++) {
-				newArray[i] = array[i];
-			}
+			System.arraycopy(array, 0, newArray, 0, array.length);
 			newArray[id] = newBuf;
 			success = lightBuffers.compareAndSet(array, newArray);
 		}

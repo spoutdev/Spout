@@ -99,14 +99,17 @@ public class DebugScreen extends Screen implements DebugHud {
 			init();
 		}
 
+		@Override
 		public void open() {
 			((Client) Spout.getEngine()).getScreenStack().openScreen(this);
 		}
 
+		@Override
 		public void close() {
 			((Client) Spout.getEngine()).getScreenStack().closeScreen(this);
 		}
 
+		@Override
 		public void reset() {
 			removeWidgets();
 			init();
@@ -126,7 +129,7 @@ public class DebugScreen extends Screen implements DebugHud {
 				}
 			} else {
 				Widget w = new SpoutWidget();
-				w.getTransform().setPosition(-0.95f, 0.9f-id*0.1f);
+				w.getTransform().setPosition(-0.95f, 0.9f - (id * 0.05f));
 				LabelComponent lbl = w.add(LabelComponent.class);
 				lbl.setFont(SpoutRenderMaterials.DEFAULT_FONT);
 				lbl.setText(arg);
@@ -135,6 +138,7 @@ public class DebugScreen extends Screen implements DebugHud {
 			}
 		}
 		
+		@Override
 		public void updateParameter(Plugin plug, ChatArguments arg) {
 			if (messages.containsKey(plug)) {
 				LabelComponent lbl = messages.get(plug).get(LabelComponent.class);
@@ -143,7 +147,7 @@ public class DebugScreen extends Screen implements DebugHud {
 				}
 			} else {
 				Widget w = new SpoutWidget();
-				w.getTransform().setPosition(0, 0.9f-messages.size()*0.1f);
+				w.getTransform().setPosition(0, 0.9f - (messages.size() * 0.05f));
 				LabelComponent lbl = w.add(LabelComponent.class);
 				lbl.setFont(SpoutRenderMaterials.DEFAULT_FONT);
 				lbl.setText(arg);

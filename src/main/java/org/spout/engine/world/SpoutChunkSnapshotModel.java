@@ -117,14 +117,17 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 		this.first = first;
 	}
 	
+	@Override
 	public int getX() {
 		return cx;
 	}
 
+	@Override
 	public int getY() {
 		return cy;
 	}
 
+	@Override
 	public int getZ() {
 		return cz;
 	}
@@ -136,6 +139,7 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	/**
 	 * Gets if the chunk was unloaded.  Unload models only indicate an unload occurred and contain no data.
 	 */
+	@Override
 	public boolean isUnload() {
 		return unload;
 	}
@@ -145,6 +149,7 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	 * 
 	 * @return
 	 */
+	@Override
 	public ChunkSnapshot getCenter() {
 		return this.center;
 	}
@@ -152,6 +157,7 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	/**
 	 * Clears all references to live chunks and regions
 	 */
+	@Override
 	public void cleanUp() {
 		for (int x = 0; x < 3; x++) {
 			for (int y = 0; y < 3; y++) {
@@ -176,6 +182,7 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	 *            coordinate of the chunk
 	 * @return The chunk, or null if not available
 	 */
+	@Override
 	public ChunkSnapshot getChunk(int cx, int cy, int cz) {
 		return this.chunks[cx - this.cx + 1][cy - this.cy + 1][cz - this.cz + 1];
 	}
@@ -193,6 +200,7 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	 *            coordinate of the block
 	 * @return The chunk, or null if not available
 	 */
+	@Override
 	public ChunkSnapshot getChunkFromBlock(int bx, int by, int bz) {
 		return getChunk(bx >> Chunk.BLOCKS.BITS, by >> Chunk.BLOCKS.BITS, bz >> Chunk.BLOCKS.BITS);
 	}

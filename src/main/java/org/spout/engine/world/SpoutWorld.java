@@ -46,9 +46,7 @@ import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentHolder;
 import org.spout.api.component.Component;
-import org.spout.api.component.type.BlockComponent;
 import org.spout.api.component.type.EntityComponent;
-import org.spout.api.component.type.WorldComponent;
 import org.spout.api.data.ValueHolder;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntityPrefab;
@@ -1293,6 +1291,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 		setCuboid(chunks, x, y, z, buffer, cause);
 	}
 
+	@Override
 	public boolean commitCuboid(CuboidBlockMaterialBuffer buffer, Cause<?> cause) {
 		Vector3 base = buffer.getBase();
 		int x = base.getFloorX();
@@ -1462,10 +1461,12 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 		return regionFileManager.getChunkOutputStream(c);
 	}
 
+	@Override
 	public Model getSkydomeModel() {
 		return skydome;
 	}
 
+	@Override
 	public void setSkydomeModel(Model model) {
 		this.skydome = model;
 	}

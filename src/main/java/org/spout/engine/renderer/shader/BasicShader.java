@@ -41,6 +41,7 @@ public class BasicShader extends ClientShader {
 	 
 	}
 
+	@Override
 	public void assign(boolean compatabilityMode) {
 		if (!variables.containsKey("Projection")) {
 			throw new IllegalStateException("Basic Shader must have a projection matrix assigned");

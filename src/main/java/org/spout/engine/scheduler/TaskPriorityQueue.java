@@ -97,7 +97,7 @@ public class TaskPriorityQueue extends ConcurrentLongPriorityQueue<SpoutTask> {
 			} else {
 				sb.append(", ");
 			}
-			sb.append("{" + t.getTaskId() + ":" + t.getNextCallTime() + "}");
+			sb.append("{").append(t.getTaskId()).append(":").append(t.getNextCallTime()).append("}");
 		}
 		return sb.append("}").toString();
 	}

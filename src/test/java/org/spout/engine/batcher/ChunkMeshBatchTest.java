@@ -26,11 +26,9 @@
  */
 package org.spout.engine.batcher;
 
-import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import org.spout.api.math.Vector3;
 
 /**
  * Testing of the ChunkMeshBatch.

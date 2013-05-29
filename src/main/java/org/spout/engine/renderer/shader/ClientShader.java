@@ -45,7 +45,6 @@ import org.spout.api.math.Vector3;
 import org.spout.api.math.Vector4;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
-import org.spout.api.render.Shader;
 import org.spout.api.render.Texture;
 import org.spout.api.resource.Resource;
 
@@ -425,6 +424,7 @@ public class ClientShader extends Resource implements SpoutShader {
 		if(program != -1 ) GL20.glDeleteProgram(program);
 	}
 
+	@Override
 	public void finalize() {
 		dispose();
 	}
@@ -441,9 +441,10 @@ public class ClientShader extends Resource implements SpoutShader {
 		this.renderMaterial = material;
 	}
 
+	@Override
 	public void checkAttributes(List<Integer> used){
-		if (!SpoutConfiguration.DEBUG_SHADERS.getBoolean())
-			return;
+		if (!SpoutConfiguration.DEBUG_SHADERS.getBoolean()) {
+		}
 
 		/*Map<Integer,AttrUniInfo> map = new HashMap<Integer, ClientShader.AttrUniInfo>(attributes);
 
@@ -458,6 +459,7 @@ public class ClientShader extends Resource implements SpoutShader {
 		}*/
 	}
 
+	@Override
 	public void checkUniform(){
 		if (!SpoutConfiguration.DEBUG_SHADERS.getBoolean())
 			return;

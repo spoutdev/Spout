@@ -33,6 +33,7 @@ public class PreSnapshotTask extends GlobalManagerRunnableFactory {
 	@Override
 	public ManagerRunnable getTask(final AsyncManager manager, final int sequence) {
 		return new ManagerRunnable(manager) {
+			@Override
 			public void runTask() {
 				manager.preSnapshotRun();
 			}

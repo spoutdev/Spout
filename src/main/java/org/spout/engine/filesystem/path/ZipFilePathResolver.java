@@ -92,6 +92,7 @@ public class ZipFilePathResolver extends FilePathResolver {
 		}
 	}
 
+	@Override
 	public String[] list(String host, String path) {
 		ZipFile zip = null;
 		try {
