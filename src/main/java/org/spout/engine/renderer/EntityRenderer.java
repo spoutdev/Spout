@@ -49,6 +49,8 @@ import org.spout.engine.entity.component.ClientTextModelComponent;
 import org.spout.engine.entity.component.EntityRendererComponent;
 import org.spout.engine.entity.component.SpoutSceneComponent;
 import org.spout.engine.mesh.BaseMesh;
+import org.spout.engine.resources.ClientRenderMaterial;
+import org.spout.engine.resources.ClientTexture;
 
 /**
  * The Renderer of all EntityRendererComponents
@@ -96,8 +98,10 @@ public class EntityRenderer {
 					modelRenderers = new ArrayList<EntityRendererComponent>();
 					RENDERERS_PER_MODEL.put(model, modelRenderers);
 				}
-				modelRenderers.add(renderer);
-				renderer.init();
+				if (((ClientTexture) model.getRenderMaterial().getValue("Diffuse")).isLoaded()) {
+					modelRenderers.add(renderer);
+					renderer.init();
+				}
 			}
 		}
 
@@ -106,7 +110,6 @@ public class EntityRenderer {
 			final Model model = entry.getKey();
 			final List<EntityRendererComponent> renderers = entry.getValue();
 			final BaseMesh mesh = (BaseMesh) model.getMesh();
-
 			//Prep mesh for rendering
 			mesh.preDraw();
 
@@ -116,14 +119,6 @@ public class EntityRenderer {
 
 			//Render
 			for (EntityRendererComponent renderer : renderers) {
-				//TODO Render the player but with different views
-				//Don't render the player
-				if (renderer.getOwner().equals(((Client) Spout.getEngine()).getPlayer())) {
-					continue;
-				}
-				//TODO Remove when entities have proper physics in AABB Branch
-				final SpoutSceneComponent scene = (SpoutSceneComponent) renderer.getOwner().getScene();
-				scene.interpolateRender(dt);
 				renderer.update(model, dt);
 				renderer.draw(model);
 			}
