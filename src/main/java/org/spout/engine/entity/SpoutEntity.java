@@ -59,6 +59,8 @@ import org.spout.api.math.Vector3;
 import org.spout.api.util.OutwardIterator;
 import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.SnapshotRead;
+
+import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
 import org.spout.engine.entity.component.EntityRendererComponent;
 import org.spout.engine.entity.component.SpoutSceneComponent;
@@ -169,9 +171,25 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 		if (type.equals(SceneComponent.class)) {
 			return super.add(type, SpoutSceneComponent.class, attach);
 		} else if (type.equals(ModelHolderComponent.class)) {
-			return super.add(type, EntityRendererComponent.class, attach);
+			T component = super.add(type, EntityRendererComponent.class, attach);
+			if (getEngine() instanceof SpoutClient) {
+				((SpoutClient) getEngine()).getRenderer().getEntityRenderer().add((EntityRendererComponent) component);
+			}
+			return component;
 		}
 		return super.add(type, attach);
+	}
+
+	@Override
+	public  <T extends Component> T detach(Class<? extends Component> type) {
+		if (type.equals(ModelHolderComponent.class)) {
+			T component = super.detach(type);
+			if (getEngine() instanceof SpoutClient) {
+				((SpoutClient) getEngine()).getRenderer().getEntityRenderer().remove((EntityRendererComponent) component);
+			}
+			return component;
+		}
+		return super.detach(type);
 	}
 
 	@Override

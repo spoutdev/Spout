@@ -33,17 +33,19 @@ import java.nio.ByteBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.Texture;
+
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutRenderer;
 
 public class ClientTexture extends Texture {
 	int textureID = -1;
 
-	public ClientTexture(int[] colors, int width, int height){
+	public ClientTexture(int[] colors, int width, int height) {
 		super(colors, width, height);
 	}
 
@@ -84,11 +86,11 @@ public class ClientTexture extends Texture {
 		textureID = -1;
 	}
 
-	class WriteGPUTask implements Runnable{
+	class WriteGPUTask implements Runnable {
 		int width, height;
 		int[] image;
 
-		public WriteGPUTask(int width, int height, int[] image){
+		public WriteGPUTask(int width, int height, int[] image) {
 			this.width = width;
 			this.height = height;
 			this.image = image;
@@ -96,7 +98,7 @@ public class ClientTexture extends Texture {
 
 		@Override
 		public void run() {
-			if( ((Client)Spout.getEngine()).getRenderMode() == RenderMode.GL11){
+			if (((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
 				GL11.glEnable(GL11.GL_TEXTURE_2D);
 				SpoutRenderer.checkGLError();
 			}
@@ -105,7 +107,7 @@ public class ClientTexture extends Texture {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 			SpoutRenderer.checkGLError();
 
-			if( ((Client)Spout.getEngine()).getRenderMode() == RenderMode.GL11){
+			if (((Client) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
 				GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
 				SpoutRenderer.checkGLError();
 			}
@@ -155,7 +157,6 @@ public class ClientTexture extends Texture {
 
 			//EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D); //Not sure if this extension is supported on most cards. 
 		}
-
 	}
 
 	@Override
@@ -163,7 +164,7 @@ public class ClientTexture extends Texture {
 		if (isLoaded()) {
 			throw new IllegalStateException("Cannot load an already loaded texture!");
 		}
-		((SpoutClient) Spout.getEngine()).getScheduler().enqueueRenderTask(new WriteGPUTask(getWidth(),getHeight(),this.image));
+		((SpoutClient) Spout.getEngine()).getScheduler().enqueueRenderTask(new WriteGPUTask(getWidth(), getHeight(), this.image));
 	}
 
 	@Override
