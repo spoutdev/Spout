@@ -129,7 +129,7 @@ public class DebugScreen extends Screen implements DebugHud {
 				}
 			} else {
 				Widget w = new SpoutWidget();
-				w.getTransform().setPosition(-0.95f, 0.9f - (id * 0.05f));
+				w.getTransform().setPosition(-0.975f, 0.9f - (id * 0.075f));
 				LabelComponent lbl = w.add(LabelComponent.class);
 				lbl.setFont(SpoutRenderMaterials.DEFAULT_FONT);
 				lbl.setText(arg);
