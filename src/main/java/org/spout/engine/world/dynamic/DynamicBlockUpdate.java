@@ -133,7 +133,7 @@ public class DynamicBlockUpdate implements Comparable<DynamicBlockUpdate>, Dynam
 		return ((int) nextUpdate) + id;
 	}
 	
-	private final int subToInt(long a, long b) {
+	private int subToInt(long a, long b) {
 		long result = a - b;
 		int msbs = (int) (result >> 32);
 		if (msbs == 0 || msbs == -1) {

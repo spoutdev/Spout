@@ -106,7 +106,7 @@ public final class ConsoleManager {
 		}
 
 		public CommandTask(String commandLine) {
-			int spaceIndex = commandLine.indexOf(" ");
+			int spaceIndex = commandLine.indexOf(' ');
 			if (spaceIndex != -1) {
 				command = commandLine.substring(0, spaceIndex);
 				arguments = new ChatArguments(commandLine.substring(spaceIndex + 1));

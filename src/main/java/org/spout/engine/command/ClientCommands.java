@@ -78,4 +78,9 @@ public class ClientCommands extends CommonCommands{
 	public void clientSay(CommandContext args, CommandSource source) {
 		getEngine().getCommandSource().sendMessage(args.getJoinedString(0));
 	}
+
+	@Command(aliases = {"clear"}, usage = "[message]", desc = "Console Cleared", min = 0, max = 0)
+	public void consoleClear(CommandContext args, CommandSource source) {
+		getEngine().getScreenStack().getConsole().clearConsole();
+	}
 }

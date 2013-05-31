@@ -163,10 +163,12 @@ public class ConsoleCommandSource implements CommandSource {
 		return preferredLocale;
 	}
 
+	@Override
 	public ChatChannel getActiveChannel() {
 		return activeChannel.get();
 	}
 
+	@Override
 	public void setActiveChannel(ChatChannel chan) {
 		Preconditions.checkNotNull(chan);
 		chan.onAttachTo(this);

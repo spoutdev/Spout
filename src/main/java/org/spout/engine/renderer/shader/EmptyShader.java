@@ -36,6 +36,5 @@ public class EmptyShader extends ClientShader {
 
 	@Override
 	public void assign() {
-		return;
 	}
 }

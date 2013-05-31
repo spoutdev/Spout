@@ -36,6 +36,7 @@ public class DynamicUpdatesTask extends SequencedManagerRunnableFactory {
 	@Override
 	public ManagerRunnable getTask(final AsyncManager manager, final int sequence) {
 		return new ManagerRunnable(manager) {
+			@Override
 			public void runTask() {
 				manager.runDynamicUpdates(threshold, sequence);
 			}

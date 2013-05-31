@@ -134,6 +134,7 @@ public class GL20BatchVertexRenderer extends BatchVertexRenderer {
 		}
 	}
 
+	@Override
 	public void finalize() {
 		if(currentBuffer != null){
 			currentBuffer.release();

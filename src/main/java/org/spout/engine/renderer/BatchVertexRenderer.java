@@ -171,6 +171,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 		render(material, 0, getVertexCount());
 	}
 
+	@Override
 	public final void render(RenderMaterial material, int startVert, int endVert) {
 		if(getVertexCount() <= 0) throw new IllegalStateException("Cannot render 0 verticies");
 		preDraw();
@@ -192,6 +193,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 		list.add(this);
 	}
 
+	@Override
 	public void finalize() { }
 
 	protected abstract void initFlush(Map<Integer,Buffer> buffers);

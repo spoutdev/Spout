@@ -26,6 +26,8 @@
  */
 package org.spout.engine;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -49,50 +51,34 @@ import org.spout.api.Client;
 import org.spout.api.FileSystem;
 import org.spout.api.Platform;
 import org.spout.api.audio.SoundManager;
-import org.spout.api.chat.ChatArguments;
-import org.spout.api.chat.style.ChatStyle;
 import org.spout.api.command.CommandRegistrationsFactory;
 import org.spout.api.command.CommandSource;
 import org.spout.api.command.annotated.AnnotatedCommandRegistrationFactory;
 import org.spout.api.command.annotated.SimpleInjector;
-import org.spout.api.component.impl.AnimationComponent;
 import org.spout.api.component.impl.CameraComponent;
-import org.spout.api.component.impl.InteractComponent;
-import org.spout.api.component.impl.ModelHolderComponent;
 import org.spout.api.datatable.SerializableMap;
-import org.spout.api.entity.Entity;
 import org.spout.api.event.engine.EngineStartEvent;
 import org.spout.api.event.engine.EngineStopEvent;
 import org.spout.api.geo.World;
-import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.ChunkSnapshot;
 import org.spout.api.math.Vector2;
-import org.spout.api.math.Vector3;
-import org.spout.api.model.Model;
-import org.spout.api.model.animation.Animation;
-import org.spout.api.model.animation.AnimationPlayed;
 import org.spout.api.plugin.PluginStore;
 import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
-import org.spout.api.render.Camera;
-import org.spout.api.render.Font;
 import org.spout.api.render.RenderMode;
 
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.command.InputCommands;
 import org.spout.engine.entity.SpoutClientPlayer;
 import org.spout.engine.entity.SpoutPlayer;
-import org.spout.engine.entity.component.ClientTextModelComponent;
 import org.spout.engine.filesystem.ClientFileSystem;
 import org.spout.engine.gui.SpoutScreenStack;
 import org.spout.engine.input.SpoutInputManager;
 import org.spout.engine.listener.SpoutClientListener;
 import org.spout.engine.listener.channel.SpoutClientConnectListener;
 import org.spout.engine.protocol.SpoutClientSession;
-import org.spout.engine.resources.ClientEntityPrefab;
-import org.spout.engine.resources.ClientFont;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
 import org.spout.engine.world.SpoutClientWorld;
 import org.spout.engine.world.SpoutWorld;
@@ -168,7 +154,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			// TODO : Wait until the world is fully loaded
 		}
 		final SpoutWorld w = (SpoutWorld) getDefaultWorld();
-		world.set(w);
+		this.world.set(w);
 		String lockString = "Initial player spawn";
 		getScheduler().getSnapshotLock().coreReadLock(lockString);
 		try {
@@ -180,7 +166,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 			getScheduler().getSnapshotLock().coreReadUnlock(lockString);
 		}
 
-		renderer = getScheduler().startRenderThread(new Vector2(1024, 768), ccoverride, null);
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		this.renderer = getScheduler().startRenderThread(new Vector2(dim.getWidth() * 0.75f, dim.getHeight() * 0.75f), ccoverride, null);
 		getScheduler().startGuiThread();
 
 		//TODO Maybe a better way of alerting plugins the client is done?

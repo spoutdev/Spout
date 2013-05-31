@@ -106,9 +106,7 @@ public class SnapshotableByteArray implements Snapshotable {
 				snapshot[index] = live[index];
 			}
 		} else {
-			for (int i = 0; i < live.length; i++) {
-				snapshot[i] = live[i];
-			}
+			System.arraycopy(live, 0, snapshot, 0, live.length);
 		}
 	}
 }
