@@ -38,9 +38,7 @@ import org.spout.api.model.Model;
 import org.spout.api.render.Camera;
 
 import org.spout.engine.entity.component.EntityRendererComponent;
-import org.spout.engine.entity.component.SpoutSceneComponent;
 import org.spout.engine.mesh.BaseMesh;
-import org.spout.engine.resources.ClientRenderMaterial;
 import org.spout.engine.resources.ClientTexture;
 
 /**
