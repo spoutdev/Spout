@@ -101,12 +101,12 @@ public class SpoutServerListener implements Listener {
 		}
 
 		if (banEvent != null && !banEvent.isCancelled()) {
-			event.disallow(!banEvent.getMessage().getPlainString().equals("") ? banEvent.getMessage() : server.getAccessManager().getBanMessage(banEvent.getBanType()));
+			event.disallow(!banEvent.getMessage().getPlainString().isEmpty() ? banEvent.getMessage() : server.getAccessManager().getBanMessage(banEvent.getBanType()));
 			return;
 		}
 
 		if (whitelistEvent != null && !whitelistEvent.isCancelled()) {
-			event.disallow(!whitelistEvent.getMessage().getPlainString().equals("") ? whitelistEvent.getMessage() : server.getAccessManager().getWhitelistMessage());
+			event.disallow(!whitelistEvent.getMessage().getPlainString().isEmpty() ? whitelistEvent.getMessage() : server.getAccessManager().getWhitelistMessage());
 			return;
 		}
 

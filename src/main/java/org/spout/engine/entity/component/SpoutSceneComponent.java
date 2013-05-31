@@ -327,6 +327,7 @@ public class SpoutSceneComponent extends SceneComponent {
 	 * @return The Transform, interpolated, as of the last game tick.
 	 */
 	@ClientOnly
+	@Override
 	public Transform getRenderTransform() {
 		return render;
 	}

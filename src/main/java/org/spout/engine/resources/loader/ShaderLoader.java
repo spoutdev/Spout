@@ -82,7 +82,7 @@ public class ShaderLoader extends BasicResourceLoader<ClientShader> {
 		StringBuilder src = new StringBuilder();
 
 		while (scan.hasNextLine()) {
-			src.append(scan.nextLine() + "\n");
+			src.append(scan.nextLine()).append("\n");
 		}
 		try {
 			stream.close();

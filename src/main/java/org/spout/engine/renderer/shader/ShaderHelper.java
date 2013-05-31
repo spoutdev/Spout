@@ -58,7 +58,7 @@ public class ShaderHelper {
 		StringBuilder src = new StringBuilder();
 
 		while (scan.hasNextLine()) {
-			src.append(scan.nextLine() + "\n");
+			src.append(scan.nextLine()).append("\n");
 		}
 
 		return src.toString();

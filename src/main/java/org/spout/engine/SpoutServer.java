@@ -410,6 +410,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	private void setupBonjour() {
 		if (SpoutConfiguration.BONJOUR.getBoolean()) {
 			getScheduler().scheduleAsyncTask(this, new Runnable() {
+				@Override
 				public void run() {
 					synchronized (jmdnsSync) {
 						try {

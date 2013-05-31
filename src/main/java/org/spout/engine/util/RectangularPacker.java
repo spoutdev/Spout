@@ -73,7 +73,7 @@ public class RectangularPacker {
 		this.texture = new ClientTexture(image);
 	}
 
-	private final void fit() {
+	private void fit() {
 		int len = textures.length;
 
 		// Get initial size

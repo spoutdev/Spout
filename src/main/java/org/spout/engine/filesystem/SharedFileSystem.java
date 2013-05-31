@@ -193,7 +193,7 @@ public class SharedFileSystem implements FileSystem {
 		}
 
 		String fileName = new File(path.getPath()).getName();
-		String ext = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
+		String ext = fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length());
 
 		ResourceLoader<?> loader = getLoader(protocol, ext);
 		if (loader == null) {
@@ -338,6 +338,6 @@ public class SharedFileSystem implements FileSystem {
 
 	private String getExtension(URI path) {
 		String fileName = new File(path.getPath()).getName();
-		return fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
+		return fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length());
 	}
 }

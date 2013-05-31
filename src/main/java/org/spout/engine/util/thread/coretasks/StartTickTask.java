@@ -45,6 +45,7 @@ public class StartTickTask extends GlobalManagerRunnableFactory {
 			return null;
 		}
 		return new ManagerRunnable(manager) {
+			@Override
 			public void runTask() {
 				manager.startTickRun(stage, delta);
 			}

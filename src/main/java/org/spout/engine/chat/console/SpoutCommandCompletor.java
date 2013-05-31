@@ -79,6 +79,6 @@ public class SpoutCommandCompletor implements Completor {
 
 		// the index of the completion is always from the beginning of
 		// the buffer.
-		return (candidates.size() == 0) ? (-1) : 0;
+		return (candidates.isEmpty()) ? (-1) : 0;
 	}
 }

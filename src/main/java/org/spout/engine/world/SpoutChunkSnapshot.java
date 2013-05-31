@@ -50,7 +50,6 @@ import org.spout.api.geo.cuboid.Region;
 import org.spout.api.material.BlockMaterial;
 import org.spout.api.material.block.BlockFullState;
 import org.spout.api.util.cuboid.CuboidLightBuffer;
-import org.spout.api.util.hashing.NibblePairHashed;
 import org.spout.api.util.hashing.NibbleQuadHashed;
 import org.spout.engine.world.SpoutChunk.PopulationState;
 

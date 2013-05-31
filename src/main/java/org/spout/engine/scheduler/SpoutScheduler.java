@@ -408,7 +408,7 @@ public final class SpoutScheduler implements Scheduler {
 			long delay = 2000;
 			while (!taskManager.waitForAsyncTasks(delay)) {
 				List<Worker> workers = taskManager.getActiveWorkers();
-				if (workers.size() == 0) {
+				if (workers.isEmpty()) {
 					break;
 				}
 				Spout.info("Unable to shutdown due to async tasks still running");
@@ -422,7 +422,7 @@ public final class SpoutScheduler implements Scheduler {
 					}
 				}
 				if (delay < 8000) {
-					delay = delay << 1;
+					delay <<= 1;
 				}
 			}
 
@@ -942,7 +942,7 @@ public final class SpoutScheduler implements Scheduler {
 		return snapshotLock;
 	}
 
-	public final Thread getMainThread() {
+	public Thread getMainThread() {
 		return mainThread;
 	}
 
@@ -1081,6 +1081,7 @@ public final class SpoutScheduler implements Scheduler {
 			this.daemon = daemon;
 		}
 		
+		@Override
 		public Thread newThread(Runnable runnable) {
 			Thread thread = new SchedulerSyncExecutorThread(runnable, "Executor{" + namePrefix + "-" + idCounter.getAndIncrement() + "}");
 			thread.setDaemon(daemon);

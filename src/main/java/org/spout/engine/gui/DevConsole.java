@@ -46,12 +46,13 @@ import org.spout.api.plugin.CommonPluginManager;
 import org.spout.api.render.Font;
 import org.spout.api.render.SpoutRenderMaterials;
 
-public class DevConsole extends Screen{
+public class DevConsole extends Screen {
 	// The Internal Spout-dummy plugin
 	private final SpoutMetaPlugin plugin;
-	private final Font font;
+
 	private final Widget background = new SpoutWidget();
 	private final Widget textfield = new SpoutWidget();
+	private final Font font;
 	
 	private DateFormat dateFormat;
 	private List<Widget> lines = new ArrayList<Widget>();
@@ -65,6 +66,7 @@ public class DevConsole extends Screen{
 	
 	public void clearConsole() {
 		this.removeWidgets();
+		this.lines.clear();
 		init();
 		scroll = 0;
 	}
@@ -77,15 +79,15 @@ public class DevConsole extends Screen{
 		
 		// The display messages background
 		final RenderPart text_bg = new RenderPart();
-		text_bg.setColor(new Color(0f, 0f, 0f, 0.6f)); //Black with opacity of 40%
-		text_bg.setSprite(new Rectangle(-0.95f, -0.05f, 1.9f, 1f));
+		text_bg.setColor(new Color(0f, 0f, 0f, 0.5f)); //Black with opacity of 50%
+		text_bg.setSprite(new Rectangle(-0.975f, -0.825f, 0.9f, 0.6f));
 		text_bg.setSource(new Rectangle(0f, 0f, 0f, 0f));
 		bg_pack.add(text_bg, 0);
 
 		// The textfield background
 		final RenderPart textfield_bg = new RenderPart();
-		textfield_bg.setColor(new Color(0f, 0f, 0f, 0.6f)); //Black with opacity of 40%
-		textfield_bg.setSprite(new Rectangle(-0.95f, -0.15f, 1.9f, 0.08f));
+		textfield_bg.setColor(new Color(0f, 0f, 0f, 0.5f)); //Black with opacity of 50%
+		textfield_bg.setSprite(new Rectangle(-0.975f, -0.95f, 0.9f, 0.075f));
 		textfield_bg.setSource(new Rectangle(0f, 0f, 0f, 0f));
 		bg_pack.add(textfield_bg, 1);
 
@@ -95,7 +97,7 @@ public class DevConsole extends Screen{
 		attachWidget(plugin, background);
 		
 		// Create the textfield
-		textfield.getTransform().setPosition(-0.95f, -0.15f);
+		textfield.getTransform().setPosition(-0.965f, -0.945f);
 		LabelComponent lbl = textfield.add(LabelComponent.class);
 		lbl.setFont(font);
 		lbl.setColor(Color.WHITE);
@@ -113,7 +115,7 @@ public class DevConsole extends Screen{
 
 	public void addMessage(ChatArguments message) {
 		Widget wid = new SpoutWidget();
-		wid.getTransform().setPosition(-0.95f, 0.9f - scroll);
+		wid.getTransform().setPosition(-0.965f, -0.3f - scroll);
 		LabelComponent txt = wid.add(LabelComponent.class);
 
 		txt.setColor(Color.WHITE);
@@ -125,9 +127,8 @@ public class DevConsole extends Screen{
 		outputText.append(message.getExpandedPlaceholders());
 		txt.setText(outputText);
 
-		scroll += 0.05f;//font.getCharHeight();
+		scroll += 0.06f;
 		lines.add(wid);
-		
 		attachWidget(plugin, wid);
 	}
 }

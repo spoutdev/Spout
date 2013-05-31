@@ -34,6 +34,7 @@ public class CopySnapshotTask extends GlobalManagerRunnableFactory {
 	@Override
 	public ManagerRunnable getTask(final AsyncManager manager, final int sequence) {
 		return new ManagerRunnable(manager) {
+			@Override
 			public void runTask() {
 				manager.copySnapshotRun();
 			}

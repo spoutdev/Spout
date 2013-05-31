@@ -486,7 +486,7 @@ public class DynamicBlockUpdateTree {
 				throw new IllegalStateException("Dynamic block update missing from chunk when removed");
 			}
 	
-			if (chunkSet.size() == 0) {
+			if (chunkSet.isEmpty()) {
 				if (chunkToUpdateMap.remove(currentPacked) == null) {
 					throw new IllegalStateException("Removing updates for dynamic block updates violated threading rules");
 				}
@@ -535,7 +535,7 @@ public class DynamicBlockUpdateTree {
 				throw new IllegalStateException("Dynamic block update missing from chunk when removed");
 			}
 
-			if (chunkSet.size() == 0) {
+			if (chunkSet.isEmpty()) {
 				if (chunkToUpdateMap.remove(previousPacked) == null) {
 					throw new IllegalStateException("Removing updates for dynamic block updates violated threading rules");
 				}

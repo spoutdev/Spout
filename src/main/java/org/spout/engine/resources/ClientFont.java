@@ -138,6 +138,7 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		}
 	}
 
+	@Override
 	public RenderMaterial getMaterial() {
 		/*if (material==null) {
 			writeGPU();
@@ -172,6 +173,7 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		return (float)ts.getTranslateY();
 	}
 	
+	@Override
 	public float getAdvance(char c) {//
 		return glyphMetrics[indexOf(c)].getAdvanceX();
 	}

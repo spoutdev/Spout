@@ -150,6 +150,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 		return closed;
 	}
 
+	@Override
 	public void finalize() {
 		if (closed) {
 			throw new IllegalStateException("Already closed");
