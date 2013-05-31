@@ -26,6 +26,8 @@
  */
 package org.spout.engine;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -152,7 +154,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 			// TODO : Wait until the world is fully loaded
 		}
 		final SpoutWorld w = (SpoutWorld) getDefaultWorld();
-		world.set(w);
+		this.world.set(w);
 		String lockString = "Initial player spawn";
 		getScheduler().getSnapshotLock().coreReadLock(lockString);
 		try {
@@ -164,7 +166,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 			getScheduler().getSnapshotLock().coreReadUnlock(lockString);
 		}
 
-		renderer = getScheduler().startRenderThread(new Vector2(1024, 768), ccoverride, null);
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		this.renderer = getScheduler().startRenderThread(new Vector2(dim.getWidth() * 0.75f, dim.getHeight() * 0.75f), ccoverride, null);
 		getScheduler().startGuiThread();
 
 		//TODO Maybe a better way of alerting plugins the client is done?

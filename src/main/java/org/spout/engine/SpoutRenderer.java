@@ -79,8 +79,10 @@ import org.spout.engine.util.MacOSXUtils;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
+import org.spout.api.Spout;
 
 public class SpoutRenderer {
+
 	private final SpoutClient client;
 	private DebugScreen debugScreen;
 	private SpoutScreenStack screenStack;
@@ -88,9 +90,8 @@ public class SpoutRenderer {
 	@SuppressWarnings("unused")
 	private ArrayList<RenderMaterial> postProcessMaterials = new ArrayList<RenderMaterial>();
 	private boolean ccoverride = false;
-	private Vector2 resolution = new Vector2(1024, 768);
-	private float aspectRatio = resolution.getX() / resolution.getY();
-
+	private Vector2 resolution;
+	private float aspectRatio;
 	private EntityRenderer entityRenderer;
 	private WorldRenderer worldRenderer;
 	private boolean wireframe = false;
@@ -100,7 +101,7 @@ public class SpoutRenderer {
 	private SpriteBatch screenBatcher;
 	private ClientRenderTexture t;
 	private ClientRenderMaterial mat;
-	
+
 	// Reflected world FBO
 	// This will need the stencil buffer
 	private boolean useReflexion = false; // Set this to true to experiment
@@ -111,15 +112,15 @@ public class SpoutRenderer {
 	public SpoutRenderer(SpoutClient client, Vector2 resolution, boolean ccoverride) {
 		this.client = client;
 		this.resolution = resolution;
-		aspectRatio = resolution.getX() / resolution.getY();
+		this.aspectRatio = resolution.getX() / resolution.getY();
 
 		// Building the screenStack
 		FullScreen mainScreen = new FullScreen();
 		mainScreen.setTakesInput(false);
-		screenStack = new SpoutScreenStack(mainScreen);
-		debugScreen = (DebugScreen) screenStack.getDebugHud();
+		this.screenStack = new SpoutScreenStack(mainScreen);
+		this.debugScreen = (DebugScreen) screenStack.getDebugHud();
 
-		entityRenderer = new EntityRenderer();
+		this.entityRenderer = new EntityRenderer();
 
 		this.ccoverride = ccoverride;
 	}
@@ -127,25 +128,28 @@ public class SpoutRenderer {
 	public void initRenderer(Canvas parent) {
 		createWindow(parent);
 
-		client.getLogger().info("SpoutClient Information");
-		client.getLogger().info("Operating System: " + System.getProperty("os.name"));
-		client.getLogger().info("Renderer Mode: " + client.getRenderMode().toString());
-		client.getLogger().info("GL21: " + GLContext.getCapabilities().OpenGL21 + " GL32: " + GLContext.getCapabilities().OpenGL32);
-		client.getLogger().info("OpenGL Information");
-		client.getLogger().info("Vendor: " + GL11.glGetString(GL11.GL_VENDOR));
-		client.getLogger().info("OpenGL Version: " + GL11.glGetString(GL11.GL_VERSION));
-		client.getLogger().info("GLSL Version: " + GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
-		client.getLogger().info("Max Textures: " + GL11.glGetInteger(GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS));
-		String extensions = "Extensions Supported: ";
-		if (client.getRenderMode() == RenderMode.GL30 || client.getRenderMode() == RenderMode.GL40) {
-			for (int i = 0; i < GL11.glGetInteger(GL30.GL_NUM_EXTENSIONS); i++) {
-				extensions += GL30.glGetStringi(GL11.GL_EXTENSIONS, i) + " ";
+		if (Spout.debugMode()) {
+			client.getLogger().info("SpoutClient Information");
+			client.getLogger().info("Operating System: " + System.getProperty("os.name"));
+			client.getLogger().info("Renderer Mode: " + client.getRenderMode().toString());
+			client.getLogger().info("GL21: " + GLContext.getCapabilities().OpenGL21 + " GL32: " + GLContext.getCapabilities().OpenGL32);
+			client.getLogger().info("Resolution: " + Display.getWidth() + "x" + Display.getHeight());
+			client.getLogger().info("OpenGL Information");
+			client.getLogger().info("Vendor: " + GL11.glGetString(GL11.GL_VENDOR));
+			client.getLogger().info("OpenGL Version: " + GL11.glGetString(GL11.GL_VERSION));
+			client.getLogger().info("GLSL Version: " + GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
+			client.getLogger().info("Max Textures: " + GL11.glGetInteger(GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS));
+			String extensions = "Extensions Supported: ";
+			if (client.getRenderMode() == RenderMode.GL30 || client.getRenderMode() == RenderMode.GL40) {
+				for (int i = 0; i < GL11.glGetInteger(GL30.GL_NUM_EXTENSIONS); i++) {
+					extensions += GL30.glGetStringi(GL11.GL_EXTENSIONS, i) + " ";
+				}
+			} else {
+				extensions += GL11.glGetString(GL11.GL_EXTENSIONS);
 			}
-		} else {
-			extensions += GL11.glGetString(GL11.GL_EXTENSIONS);
+			client.getLogger().info(extensions);
 		}
 		SpoutRenderer.checkGLError();
-		client.getLogger().info(extensions);
 		//soundManager.init();
 		client.getFilesystem().postStartup();
 
@@ -164,7 +168,7 @@ public class SpoutRenderer {
 		BatchVertexRenderer.initPool(GL11.GL_TRIANGLES, 10000);
 
 		worldRenderer = new WorldRenderer();
-		
+
 		if (useReflexion) {
 			reflected = new ClientRenderTexture(true, false, true);
 			reflected.writeGPU();
@@ -174,7 +178,7 @@ public class SpoutRenderer {
 			HashMap<String, Object> map1 = new HashMap<String, Object>();
 			map1.put("Diffuse", reflected);
 			reflectedDebugMat = new ClientRenderMaterial(s1, map1);
-			RenderPart screenPart1 =  new RenderPart();
+			RenderPart screenPart1 = new RenderPart();
 			screenPart1.setSprite(new Rectangle(-1, -1, 0.5f, 0.5f));
 			screenPart1.setSource(new Rectangle(0, 1, 1, -1));
 			RenderPartPack pack1 = new RenderPartPack(reflectedDebugMat);
@@ -182,7 +186,7 @@ public class SpoutRenderer {
 			reflectedDebugBatch.flush(pack1);
 			// Test end
 		}
-		
+
 		screenBatcher = new SpriteBatch();
 		t = new ClientRenderTexture(true, false, true);
 		t.writeGPU();
@@ -190,7 +194,7 @@ public class SpoutRenderer {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("Diffuse", t);
 		mat = new ClientRenderMaterial(s, map);
-		RenderPart screenPart =  new RenderPart();
+		RenderPart screenPart = new RenderPart();
 		screenPart.setSprite(new Rectangle(-1, -1, 2, 2));
 		screenPart.setSource(new Rectangle(0, 1, 1, -1));
 		RenderPartPack pack = new RenderPartPack(mat);
@@ -201,8 +205,8 @@ public class SpoutRenderer {
 	public void updateRender(long limit) {
 		worldRenderer.update(limit);
 	}
-
 	long guiTime, worldTime, entityTime;
+
 	public void render(float dt) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -239,14 +243,14 @@ public class SpoutRenderer {
 					reflectedSkydomeMesh.render(skydome.getRenderMaterial());
 				}
 			}
-	
+
 			worldRenderer.render();
 			entityRenderer.render(dt);
-			
+
 			GL11.glCullFace(GL11.GL_BACK);
 			reflected.release();
 		}
-		
+
 		// Render normal world
 		t.activate();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -275,12 +279,12 @@ public class SpoutRenderer {
 		start = System.nanoTime();
 
 		t.release();
-		
+
 		// Render gui
 		if (wireframe) {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 		}
-		
+
 		screenBatcher.render(ident);
 		if (useReflexion) {
 			reflectedDebugBatch.render(ident);
@@ -399,7 +403,6 @@ public class SpoutRenderer {
 			wireframe = true;
 		}
 	}
-
 	private static final TIntObjectHashMap<String> glTypeNames = new TIntObjectHashMap<String>();
 
 	private static void setGLTypeName(int typeId, String typeName) {
@@ -430,7 +433,7 @@ public class SpoutRenderer {
 
 	/**
 	 * Gets the GL type name from a GL type identifier
-	 * 
+	 *
 	 * @param glType to get the name of
 	 * @return The GL type name
 	 */
