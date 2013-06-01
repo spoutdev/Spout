@@ -91,7 +91,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 			model = SpoutModels.DEFAULT_MODEL;
 		}
 		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-			this.model = (Model)Spout.getFilesystem().getResource(model);
+			this.model = (Model)Spout.getFileSystem().getResource(model);
 		} else {
 			this.model = null;
 		}
@@ -149,7 +149,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 			model = SpoutModels.DEFAULT_MODEL;
 		}
 		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-			this.model = (Model)Spout.getFilesystem().getResource(model);
+			this.model = (Model)Spout.getFileSystem().getResource(model);
 		} else {
 			this.model = null;
 		}
@@ -172,7 +172,7 @@ public abstract class Material extends MaterialRegistry implements MaterialSourc
 		this.dataMask = 0;
 		this.root = this;
 		if (Spout.getEngine().getPlatform() == Platform.CLIENT) {
-			this.model = (Model)Spout.getFilesystem().getResource(SpoutModels.DEFAULT_MODEL);
+			this.model = (Model)Spout.getFileSystem().getResource(SpoutModels.DEFAULT_MODEL);
 		} else {
 			this.model = null;
 		}

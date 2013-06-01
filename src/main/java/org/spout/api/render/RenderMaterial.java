@@ -36,9 +36,8 @@ import org.spout.api.render.effect.RenderEffect;
 import org.spout.api.render.effect.SnapshotEntity;
 import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.render.effect.SnapshotRender;
-import org.spout.api.resource.Resource;
 
-public abstract class RenderMaterial extends Resource implements Comparable<RenderMaterial> {
+public abstract class RenderMaterial implements Comparable<RenderMaterial> {
 	
 	private static final AtomicInteger idCounter = new AtomicInteger();
 	

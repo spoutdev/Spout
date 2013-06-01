@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 
 import org.spout.api.event.EventManager;
 import org.spout.api.plugin.PluginManager;
+import org.spout.api.resource.FileSystem;
 import org.spout.api.scheduler.Scheduler;
 
 /**
@@ -195,7 +196,7 @@ public final class Spout {
 	}
 
 	/**
-	 * Gets an abstract representation of the engine's {@link Filesystem}.<br/>
+	 * Gets an abstract representation of the engine's {@link FileSystem}.<br/>
 	 * <br/>
 	 * The Filesystem handles the loading of all resources.<br/>
 	 * <br/>
@@ -204,7 +205,7 @@ public final class Spout {
 	 * 
 	 * @return filesystem from the engine.
 	 */
-	public static FileSystem getFilesystem() {
-		return instance.getFilesystem();
+	public static FileSystem getFileSystem() {
+		return instance.getFileSystem();
 	}
 }

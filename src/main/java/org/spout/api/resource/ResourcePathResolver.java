@@ -48,7 +48,7 @@ public interface ResourcePathResolver {
 	public boolean existsInPath(URI uri);
 
 	/**
-	 * Returns an {@link InputStream} at the given host and path to be resolved
+	 * Returns an {@link java.io.InputStream} at the given host and path to be resolved
 	 * by the implementing class.
 	 *
 	 * @param host of stream
@@ -58,7 +58,7 @@ public interface ResourcePathResolver {
 	public InputStream getStream(String host, String path);
 
 	/**
-	 * Returns an {@link InputStream} at the given host and path to be resolved
+	 * Returns an {@link java.io.InputStream} at the given host and path to be resolved
 	 * by the implementing class.
 	 *
 	 * @param uri including the host and path of the resource

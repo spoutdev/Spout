@@ -26,8 +26,6 @@
  */
 package org.spout.api.resource;
 
-import org.spout.api.model.Model;
-
 public class SpoutModels {
 	public static final String DEFAULT_MODEL = "model://Spout/models/unknownblock.spm";
 	public static final String SOLID_BLUE = "model://Spout/models/solidBlue.spm";

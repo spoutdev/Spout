@@ -29,9 +29,7 @@ package org.spout.api.model.animation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.spout.api.resource.Resource;
-
-public class Bone extends Resource{
+public class Bone {
 
 	private String name; //Debug
 	private int id;

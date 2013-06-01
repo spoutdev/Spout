@@ -26,62 +26,92 @@
  */
 package org.spout.api.audio;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import org.spout.api.Client;
+import org.spout.api.Spout;
+import org.spout.api.geo.World;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Vector3;
 import org.spout.api.util.Named;
 
 /**
  * Represents a source of sound in the game.
  */
-public interface SoundSource extends Named {
-	
+public abstract class SoundSource implements Named {
+	protected final int id;
+	protected final String name;
+	protected Sound sound;
+	protected World world;
+
+	protected SoundSource(int id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+
+	public int getId() {
+		return id;
+	}
+
 	/**
-	 * Gets the current state of the SoundSource.
-	 * 
-	 * @return the sound state
+	 * Initializes the sound to it's initial state.
 	 */
-	public SoundState getState();
+	public abstract void init();
 
 	/**
 	 * Gets the Sound associated with this SoundSource.
-	 * 
+	 *
 	 * @return the Sound object
-	 * @see #setSound
 	 */
-	public Sound getSound();
+	public Sound getSound() {
+		return sound;
+	}
 
 	/**
-	 * Sets the sound of this SoundSource.
-	 * 
-	 * @param sound  a Sound object to be set
-	 * @see #getSound
+	 * Binds the specified sound to this source.
+	 *
+	 * @param sound to bind
 	 */
-	public void setSound(Sound sound);
+	public final void setSound(Sound sound) {
+		this.sound = sound;
+		bind();
+	}
 
-	/**
-	 * Resets this SoundSource to the default state.
-	 */
-	public void reset();
+	protected abstract void bind();
 
 	/**
 	 * Plays this SoundSource.
 	 */
-	public void play();
+	public final void play() {
+		// make sure the client's listener is in the same world as the source
+		if (!((Client) Spout.getEngine()).getSoundManager().getListener().getPosition().getWorld().equals(world)) {
+			return;
+		}
+		doPlay();
+	}
+
+	protected abstract void doPlay();
 
 	/**
 	 * Pauses this SoundSource.
 	 */
-	public void pause();
+	public abstract void pause();
 
 	/**
 	 * Stops this SoundSource.
 	 */
-	public void stop();
+	public abstract void stop();
 
 	/**
 	 * Rewinds this SoundSource back to the beginning. This stops the
 	 * SoundSource if it is playing.
 	 */
-	public void rewind();
+	public abstract void rewind();
+
+	/**
+	 * Disposes the sound and does cleanup.
+	 */
+	public abstract void dispose();
 
 	/**
 	 * Gets the current pitch of the SoundSource. This is a multiplier.
@@ -89,7 +119,7 @@ public interface SoundSource extends Named {
 	 * @return a float specifying the current pitch of the SoundSource
 	 * @see #setPitch
 	 */
-	public float getPitch();
+	public abstract float getPitch();
 
 	/**
 	 * Sets the pitch of the SoundSource to the given number. This should always
@@ -98,7 +128,7 @@ public interface SoundSource extends Named {
 	 * @param pitch  a float specifying the pitch value
 	 * @see #getPitch
 	 */
-	public void setPitch(float pitch);
+	public abstract void setPitch(float pitch);
 
 	/**
 	 * Gets the gain of the SoundSource.
@@ -106,7 +136,7 @@ public interface SoundSource extends Named {
 	 * @return a float specifying the gain of the SoundSource
 	 * @see #setGain
 	 */
-	public float getGain();
+	public abstract float getGain();
 
 	/**
 	 * Sets the gain of the SoundSource. This should always be positive.
@@ -114,21 +144,21 @@ public interface SoundSource extends Named {
 	 * @param gain  a float specifying the gain value
 	 * @see #getGain
 	 */
-	public void setGain(float gain);
+	public abstract void setGain(float gain);
 
 	/**
 	 * Gets if this SoundSource is looping.
 	 * 
 	 * @return whether the SoundSource is looping
 	 */
-	public boolean isLooping();
+	public abstract boolean isLooping();
 
 	/**
 	 * Sets if this SoundSource should be looping.
 	 * 
 	 * @param looping  a boolean value for if the SoundSource should be looping
 	 */
-	public void setLooping(boolean looping);
+	public abstract void setLooping(boolean looping);
 
 	/**
 	 * Gets the playback position of the SoundSource in seconds.
@@ -136,7 +166,7 @@ public interface SoundSource extends Named {
 	 * @return the playback position of the SoundSource in seconds
 	 * @see #setPlaybackPosition
 	 */
-	public float getPlaybackPosition();
+	public abstract float getPlaybackPosition();
 
 	/**
 	 * Sets the playback position of the SoundSource to the given time in
@@ -145,7 +175,7 @@ public interface SoundSource extends Named {
 	 * @param seconds  time in seconds
 	 * @see #getPlaybackPosition
 	 */
-	public void setPlaybackPosition(float seconds);
+	public abstract void setPlaybackPosition(float seconds);
 
 	/**
 	 * Gets the current position of the SoundSource.
@@ -153,15 +183,15 @@ public interface SoundSource extends Named {
 	 * @return the Vector3 position of the SoundSource
 	 * @see #setPosition
 	 */
-	public Vector3 getPosition();
+	public abstract Point getPosition();
 
 	/**
 	 * Sets the position of the SoundSource to the given location.
 	 * 
-	 * @param position  position value
+	 * @param position position value
 	 * @see #getPosition
 	 */
-	public void setPosition(Vector3 position);
+	public abstract void setPosition(Point position);
 
 	/**
 	 * Gets the velocity of the SoundSource. Used for doppler effects.
@@ -169,7 +199,7 @@ public interface SoundSource extends Named {
 	 * @return the Vector3 velocity of the SoundSource
 	 * @see #setVelocity
 	 */
-	public Vector3 getVelocity();
+	public abstract Vector3 getVelocity();
 
 	/**
 	 * Sets the velocity of the SoundSource to the given vector.
@@ -178,7 +208,7 @@ public interface SoundSource extends Named {
 	 * @param velocity  velocity value
 	 * @see #getVelocity
 	 */
-	public void setVelocity(Vector3 velocity);
+	public abstract void setVelocity(Vector3 velocity);
 
 	/**
 	 * Gets the direction of the SoundSource.
@@ -186,7 +216,7 @@ public interface SoundSource extends Named {
 	 * @return the Vector3 direction of the SoundSource
 	 * @see #setDirection
 	 */
-	public Vector3 getDirection();
+	public abstract Vector3 getDirection();
 
 	/**
 	 * Sets the direction of the SoundSource to the given vector.
@@ -194,5 +224,27 @@ public interface SoundSource extends Named {
 	 * @param direction  direction value
 	 * @see #getDirection
 	 */
-	public void setDirection(Vector3 direction);
+	public abstract void setDirection(Vector3 direction);
+
+	/**
+	 * Gets the current state of the SoundSource.
+	 *
+	 * @return the sound state
+	 */
+	public abstract SoundState getState();
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof SoundSource && ((SoundSource) obj).id == id;
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder().append(id).build();
+	}
 }

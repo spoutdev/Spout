@@ -26,22 +26,18 @@
  */
 package org.spout.api.audio;
 
-import org.spout.api.resource.Resource;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * Represents a Sound.
  */
-public abstract class Sound extends Resource {
-	
-	/** 
-	 * Unique Identifier. 
-	 */
+public abstract class Sound {
 	protected final int id;
 	
 	/**
 	 * Constructs a Sound object.
 	 *
-	 * @param id  unique identifier
+	 * @param id unique identifier
 	 */
 	public Sound(int id) {
 		this.id = id;
@@ -55,6 +51,11 @@ public abstract class Sound extends Resource {
 	public int getId() {
 		return id;
 	}
+
+	/**
+	 * Cleans up and deletes the sound from the system.
+	 */
+	public abstract void dispose();
 
 	/**
 	 * Gets the sampling rate (sampling frequency) of this Sound.
@@ -100,5 +101,15 @@ public abstract class Sound extends Resource {
 	 */
 	public float getLength() {
 		return getBufferSize() / (float) (getBitRate() / 8);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof Sound && ((Sound) obj).id == id;
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder().append(id).build();
 	}
 }

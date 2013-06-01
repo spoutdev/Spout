@@ -27,51 +27,65 @@
 package org.spout.api.resource;
 
 import java.io.InputStream;
-import java.net.URI;
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
- * An interface to load resources.
- * 
- * @param <E>
+ * Represents something that loads a resource.
  */
-public interface ResourceLoader<E extends Resource> {
-	/**
-	 * Loads a resource from the given input stream.
-	 * 
-	 * @param stream
-	 * @return
-	 */
-	public E getResource(InputStream stream);
+public abstract class ResourceLoader {
+	private final String scheme;
+	private final String fallback;
+
+	public ResourceLoader(String scheme, String fallback) {
+		this.scheme = scheme;
+		this.fallback = fallback;
+	}
+
+	public ResourceLoader(String scheme) {
+		this(scheme, null);
+	}
 
 	/**
-	 * Gets the resource that corresponds with the given URI.
-	 * 
-	 * @param resource
-	 * @return
+	 * Returns an {@link Object} loaded from a specified {@link InputStream}.
+	 *
+	 * @param in input stream to load object from
+	 * @return loaded object
 	 */
-	public E getResource(URI resource) throws ResourceNotFoundException;
+	public abstract Object load(InputStream in);
 
 	/**
-	 * Returns the fallback name for this resource.
-	 * 
-	 * @return
+	 * Returns the scheme that this loader represents. This scheme will allow
+	 * developers to choose to load an object from the loader by specifying
+	 * this scheme in their specified {@link java.net.URI}.
+	 *
+	 * @return scheme
 	 */
-	public String getFallbackResourceName();
+	public String getScheme() {
+		return scheme;
+	}
 
 	/**
-	 * Returns the protocol that this loader should load. For example,
-	 * <code>sound://</code> would have the protocol <code>sound</code>.
-	 * 
-	 * @return
+	 * Returns the fallback resource to load if the resource is not found.
+	 *
+	 * @return fallback resource
 	 */
-	public String getProtocol();
+	public String getFallback() {
+		return fallback;
+	}
 
-	/**
-	 * Returns the file extensions that resources loaded with this loader should
-	 * have. This excludes the preceding period; for example, a file named
-	 * "sound.wav" has the extension "wav".
-	 * 
-	 * @return
-	 */
-	public String[] getExtensions();
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof ResourceLoader && ((ResourceLoader) obj).scheme.equalsIgnoreCase(scheme);
+	}
+
+	@Override
+	public String toString() {
+		return "ResourceLoader(" + scheme + ")";
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder().append(scheme).build();
+	}
 }

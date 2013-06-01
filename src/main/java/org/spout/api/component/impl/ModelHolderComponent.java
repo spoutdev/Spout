@@ -53,7 +53,7 @@ public abstract class ModelHolderComponent extends EntityComponent {
 	}
 
 	public void addModel(String resourcePath) {
-		models.add((Model) Spout.getFilesystem().getResource(resourcePath));
+		models.add((Model) Spout.getFileSystem().getResource(resourcePath));
 	}
 
 	public void addModel(Model model) {

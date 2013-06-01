@@ -29,9 +29,7 @@ package org.spout.api.model.mesh;
 import java.util.Iterator;
 import java.util.List;
 
-import org.spout.api.resource.Resource;
-
-public class OrientedMesh extends Resource implements Mesh, Iterable<OrientedMeshFace> {
+public class OrientedMesh implements Mesh, Iterable<OrientedMeshFace> {
 
 	protected List<OrientedMeshFace> meshFace;
 

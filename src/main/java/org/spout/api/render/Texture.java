@@ -27,12 +27,10 @@
 package org.spout.api.render;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
 
 import org.spout.api.ClientOnly;
-import org.spout.api.resource.Resource;
 
-public abstract class Texture extends Resource {
+public abstract class Texture {
 
 	protected int[] image;
 	protected int width;

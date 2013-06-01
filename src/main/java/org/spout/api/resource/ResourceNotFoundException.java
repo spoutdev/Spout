@@ -26,6 +26,9 @@
  */
 package org.spout.api.resource;
 
+/**
+ * Called when a resource is non-existant in a specified location.
+ */
 public class ResourceNotFoundException extends Exception {
 	private static final long serialVersionUID = 1L;
 	

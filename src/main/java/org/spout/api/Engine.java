@@ -57,6 +57,7 @@ import org.spout.api.plugin.ServiceManager;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.protocol.SessionRegistry;
+import org.spout.api.resource.FileSystem;
 import org.spout.api.scheduler.Scheduler;
 import org.spout.api.scheduler.TaskManager;
 import org.spout.api.util.Named;
@@ -496,7 +497,7 @@ public interface Engine extends Named {
 	 * On the client, loading a resource will load the resource from the harddrive.
 	 * On the server, it will notify all clients to load the resource, as well as provide a representation of that resource.
 	 */
-	public FileSystem getFilesystem();
+	public FileSystem getFileSystem();
 
 	/**
 	 * Gets the command source that prints to the console<br/>

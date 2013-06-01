@@ -49,7 +49,7 @@ import org.spout.api.render.Font;
 public class LabelComponent extends WidgetComponent {
 	private static final DefaultedKey<ChatArguments> KEY_TEXT = new DefaultedKeyImpl<ChatArguments>("text", new ChatArguments("(your text here)"));
 	private static final DefaultedKey<Color> KEY_COLOR = new DefaultedKeyImpl<Color>("text-color", Color.black);
-	private static final DefaultedKey<Font> KEY_FONT = new DefaultedKeyImpl<Font>("font", (Font) Spout.getFilesystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf"));
+	private static final DefaultedKey<Font> KEY_FONT = new DefaultedKeyImpl<Font>("font", (Font) Spout.getFileSystem().getResource("font://Spout/fonts/ubuntu/Ubuntu-M.ttf"));
 
 	@Override
 	public List<RenderPartPack> getRenderPartPacks() {

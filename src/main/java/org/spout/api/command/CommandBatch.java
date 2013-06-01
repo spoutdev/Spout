@@ -31,9 +31,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.spout.api.chat.ChatArguments;
-import org.spout.api.resource.Resource;
 
-public class CommandBatch extends Resource {
+public class CommandBatch {
 	public List<String> cmds = new ArrayList<String>();
 
 	public void add(String cmd) {

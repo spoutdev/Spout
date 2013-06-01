@@ -30,9 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.spout.api.resource.Resource;
-
-public class Skeleton extends Resource{
+public class Skeleton {
 
 	private Bone root;
 	private ArrayList<Bone> bones = new ArrayList<Bone>();

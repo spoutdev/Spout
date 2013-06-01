@@ -34,19 +34,15 @@ import org.spout.api.Client;
  * Manages Sounds.
  */
 public interface SoundManager {
-	
 	/**
 	 * Initializes the SoundManager.
-	 * 
-	 * @param client  a Client object
 	 */
-	public void init(Client client);
+	public void init();
 
 	/**
 	 * Creates a new {@link SoundSource} with the specified name.
 	 *
 	 * @param sound a Sound object for the new SoundSource
-	 * @param name  a String representing the name of the new SoundSource
 	 * @return the created SoundSource
 	 */
 	public SoundSource createSource(Sound sound, String name);
@@ -71,10 +67,10 @@ public interface SoundManager {
 	public Set<SoundSource> getSources();
 
 	/**
-	 * Returns a {@link SoundSource} with the specified name.
+	 * Returns the source with the specified name.
 	 *
-	 * @param name  a String containing the name of a SoundSource
-	 * @return source
+	 * @param name to get
+	 * @return source with name
 	 */
 	public SoundSource getSource(String name);
 

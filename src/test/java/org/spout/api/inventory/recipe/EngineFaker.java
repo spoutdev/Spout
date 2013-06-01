@@ -28,9 +28,9 @@ package org.spout.api.inventory.recipe;
 
 import org.powermock.api.mockito.PowerMockito;
 import org.spout.api.Engine;
-import org.spout.api.FileSystem;
 import org.spout.api.Platform;
 import org.spout.api.Spout;
+import org.spout.api.resource.FileSystem;
 
 @SuppressWarnings("deprecation")
 public class EngineFaker {
@@ -42,7 +42,7 @@ public class EngineFaker {
 		FileSystem filesystem = PowerMockito.mock(FileSystem.class);
 		try {
 			PowerMockito.when(engine, Engine.class.getMethod("getPlatform", (Class[])null)).withNoArguments().thenReturn(Platform.SERVER);
-			PowerMockito.stub(Engine.class.getMethod("getFilesystem", (Class[])null)).andReturn(filesystem);
+			PowerMockito.stub(Engine.class.getMethod("getFileSystem", (Class[])null)).andReturn(filesystem);
 			PowerMockito.stub(FileSystem.class.getMethod("getResource", new Class[] {String.class})).andReturn(null);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
