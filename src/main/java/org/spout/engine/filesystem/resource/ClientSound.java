@@ -34,13 +34,22 @@ import static org.lwjgl.openal.AL10.*;
  * An OpenAL-based implementation of the Sound class.
  */
 public class ClientSound extends Sound {
+	private boolean disposed;
+
 	public ClientSound(int id) {
 		super(id);
 	}
 
 	@Override
 	public void dispose() {
+		assertNotDisposed();
 		alDeleteBuffers(id);
+		disposed = true;
+	}
+
+	@Override
+	public boolean isDisposed() {
+		return disposed;
 	}
 
 	@Override
@@ -64,6 +73,13 @@ public class ClientSound extends Sound {
 	}
 
 	private int getInt(int property) {
+		assertNotDisposed();
 		return alGetBufferi(id, property);
+	}
+
+	private void assertNotDisposed() {
+		if (disposed) {
+			throw new IllegalStateException("This sound has already been disposed and cannot be used.");
+		}
 	}
 }

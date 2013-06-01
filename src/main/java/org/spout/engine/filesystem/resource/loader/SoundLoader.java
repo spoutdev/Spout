@@ -30,6 +30,9 @@ import java.io.InputStream;
 
 import org.lwjgl.util.*;
 
+import org.spout.api.Client;
+import org.spout.api.Engine;
+import org.spout.api.Spout;
 import org.spout.api.resource.ResourceLoader;
 
 import org.spout.engine.audio.SpoutSoundManager;
@@ -44,7 +47,13 @@ public class SoundLoader extends ResourceLoader {
 
 	@Override
 	public ClientSound load(InputStream in) {
-		int id = alGenBuffers(); // generate a new buffer
+		Engine engine = Spout.getEngine();
+		if (!(engine instanceof Client)) {
+			throw new IllegalStateException("Sounds can only be loaded on the client.");
+		}
+
+		// generate a new buffer
+		int id = alGenBuffers();
 		SpoutSoundManager.checkErrors();
 
 		// create the sound's metadata and bind it to the new buffer
@@ -52,6 +61,9 @@ public class SoundLoader extends ResourceLoader {
 		alBufferData(id, data.format, data.data, data.samplerate);
 		data.dispose();
 
-		return new ClientSound(id);
+		// create the sound encapsulation and keep a ref in the sound manager
+		ClientSound sound = new ClientSound(id);
+		((Client) engine).getSoundManager().addSound(sound);
+		return sound;
 	}
 }

@@ -41,8 +41,10 @@ import static org.lwjgl.openal.AL11.*;
 import static org.lwjgl.BufferUtils.*;
 
 public class SpoutSoundSource extends SoundSource {
-	protected SpoutSoundSource(String name) {
-		super(alGenSources(), name);
+	private boolean disposed;
+
+	protected SpoutSoundSource(int id) {
+		super(id);
 	}
 
 	@Override
@@ -61,27 +63,38 @@ public class SpoutSoundSource extends SoundSource {
 
 	@Override
 	public void doPlay() {
+		assertNotDisposed();
 		alSourcePlay(id);
 	}
 
 	@Override
 	public void pause() {
+		assertNotDisposed();
 		alSourcePause(id);
 	}
 
 	@Override
 	public void stop() {
+		assertNotDisposed();
 		alSourceStop(id);
 	}
 
 	@Override
 	public void rewind() {
+		assertNotDisposed();
 		alSourceRewind(id);
 	}
 
 	@Override
+	public boolean isDisposed() {
+		return disposed;
+	}
+
+	@Override
 	public void dispose() {
+		assertNotDisposed();
 		alDeleteSources(id);
+		disposed = true;
 	}
 
 	@Override
@@ -161,18 +174,22 @@ public class SpoutSoundSource extends SoundSource {
 	}
 
 	private void setInteger(int k, int v) {
+		assertNotDisposed();
 		alSourcei(id, k, v);
 	}
 
 	private int getInteger(int k) {
+		assertNotDisposed();
 		return alGetSourcei(id, k);
 	}
 
 	private float getFloat(int k) {
+		assertNotDisposed();
 		return alGetSourcef(id, k);
 	}
 
 	private void setFloat(int k, float v) {
+		assertNotDisposed();
 		alSourcef(id, k, v);
 	}
 
@@ -185,12 +202,20 @@ public class SpoutSoundSource extends SoundSource {
 	}
 
 	private Vector3 getVector3(int k) {
+		assertNotDisposed();
 		FloatBuffer buff = createFloatBuffer(3);
 		alGetSource(id, k, buff);
 		return new Vector3(buff.get(0), buff.get(1), buff.get(2));
 	}
 
 	private void setVector3(int k, Vector3 v) {
+		assertNotDisposed();
 		alSource(id, k, (FloatBuffer) createFloatBuffer(3).put(v.toArray()).flip());
+	}
+
+	private void assertNotDisposed() {
+		if (disposed) {
+			throw new IllegalStateException("This source has already been disposed and cannot be used.");
+		}
 	}
 }

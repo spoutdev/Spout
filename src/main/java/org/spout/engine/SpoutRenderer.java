@@ -149,9 +149,8 @@ public class SpoutRenderer {
 			}
 			client.getLogger().info(extensions);
 		}
-		SpoutRenderer.checkGLError();
-		//soundManager.init();
 
+		SpoutRenderer.checkGLError();
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_CULL_FACE);

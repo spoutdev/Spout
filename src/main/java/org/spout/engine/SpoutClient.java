@@ -232,6 +232,10 @@ public class SpoutClient extends SpoutEngine implements Client {
 		if (!super.stop(message, false)) {
 			return false;
 		}
+
+		// dispose buffers and sources in open al
+		soundManager.clear();
+
 		rendering = false;
 		stopMessage = message;
 		Runnable finalTask = new Runnable() {

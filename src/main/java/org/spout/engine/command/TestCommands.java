@@ -90,6 +90,69 @@ public class TestCommands {
 		this.engine = engine;
 	}
 
+	private SoundSource getSoundSource(int id) throws CommandException {
+		SoundSource source = ((Client) engine).getSoundManager().getSource(id);
+		if (source == null) {
+			throw new CommandException("Source with id " + id + " does not exist.");
+		}
+		return source;
+	}
+
+	@Command(aliases = "sound", usage = "<load|play|pause|stop|rewind|dispose|pitch|gain|loop> <path|id> [value]",
+			desc = "Test command for sound management.", min = 2, max = 3)
+	public void sound(CommandContext args, CommandSource source) throws CommandException {
+		if (!(engine instanceof Client)) {
+			throw new CommandException("Sounds can only be managed on the client.");
+		}
+
+		SoundManager sm = ((Client) engine).getSoundManager();
+		String action = args.getString(0);
+		if (action.equalsIgnoreCase("load")) {
+			String path = args.getString(1);
+			Sound sound = engine.getFileSystem().getResource("sound://" + path);
+			if (sound == null) {
+				throw new CommandException("Could not get sound at path " + path);
+			}
+			int sourceId = sm.createSource(sound).getId();
+			source.sendMessage("Created new source at your position with id: " + sourceId);
+		} else if (action.equalsIgnoreCase("play")) {
+			SoundSource soundSource = getSoundSource(args.getInteger(1));
+			soundSource.play();
+			source.sendMessage("Playing...");
+		} else if (action.equalsIgnoreCase("pause")) {
+			SoundSource soundSource = getSoundSource(args.getInteger(1));
+			soundSource.pause();
+			source.sendMessage("Paused.");
+		} else if (action.equalsIgnoreCase("stop")) {
+			SoundSource soundSource = getSoundSource(args.getInteger(1));
+			soundSource.stop();
+			source.sendMessage("Stopped.");
+		} else if (action.equalsIgnoreCase("rewind")) {
+			SoundSource soundSource = getSoundSource(args.getInteger(1));
+			soundSource.rewind();
+			source.sendMessage("Rewinding...");
+		} else if (action.equalsIgnoreCase("dispose")) {
+			sm.removeSource(getSoundSource(args.getInteger(1)));
+			source.sendMessage("Source dispoed.");
+		} else if (action.equalsIgnoreCase("pitch")) {
+			SoundSource soundSource = getSoundSource(args.getInteger(1));
+			float pitch = args.getFloat(2);
+			soundSource.setPitch(pitch);
+			source.sendMessage("Set pitch to " + pitch);
+		} else if (action.equalsIgnoreCase("gain")) {
+			SoundSource soundSource = getSoundSource(args.getInteger(1));
+			float gain = args.getFloat(2);
+			soundSource.setGain(gain);
+			source.sendMessage("Set gain to " + gain);
+		} else if (action.equalsIgnoreCase("loop")) {
+			SoundSource soundSource = getSoundSource(args.getInteger(1));
+			boolean loop = Boolean.valueOf(args.getString(2));
+			source.sendMessage("Set to loop: " + loop);
+		} else {
+			throw new CommandException("Unknown action: " + action);
+		}
+	}
+
 	@Command(aliases = "widget", usage = "<button|checkbox|radio|combo|list|label|slider|spinner|textfield|rect>",
 			desc = "Renders a widget on your screen.", min = 1, max = 1)
 	public void widget(CommandContext args, CommandSource source) throws CommandException {

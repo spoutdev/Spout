@@ -36,7 +36,6 @@ import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.OpenALException;
 
-import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.audio.Sound;
 import org.spout.api.audio.SoundListener;
@@ -45,8 +44,11 @@ import org.spout.api.audio.SoundSource;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Vector3;
 
+import static org.lwjgl.openal.AL10.*;
+
 public class SpoutSoundManager implements SoundManager {
 	private final Set<SoundSource> sources = new HashSet<SoundSource>();
+	private final Set<Sound> sounds = new HashSet<Sound>();
 	private final SoundListener listener = new SpoutSoundListener();
 
 	@Override
@@ -67,8 +69,8 @@ public class SpoutSoundManager implements SoundManager {
 	}
 
 	@Override
-	public SoundSource createSource(Sound sound, String name) {
-		SoundSource source = new SpoutSoundSource(name);
+	public SoundSource createSource(Sound sound) {
+		SoundSource source = new SpoutSoundSource(alGenSources());
 		source.init();
 		source.setSound(sound);
 		sources.add(source);
@@ -95,9 +97,9 @@ public class SpoutSoundManager implements SoundManager {
 	}
 
 	@Override
-	public SoundSource getSource(String name) {
+	public SoundSource getSource(int id) {
 		for (SoundSource source : sources) {
-			if (source.getName().equalsIgnoreCase(name)) {
+			if (source.getId() == id) {
 				return source;
 			}
 		}
@@ -105,8 +107,58 @@ public class SpoutSoundManager implements SoundManager {
 	}
 
 	@Override
+	public boolean isSource(int id) {
+		return alIsSource(id);
+	}
+
+	@Override
+	public Set<Sound> getSounds() {
+		return Collections.unmodifiableSet(sounds);
+	}
+
+	@Override
+	public void addSound(Sound sound) {
+		sounds.add(sound);
+	}
+
+	@Override
+	public void removeSound(Sound sound) {
+		sound.dispose();
+		sounds.remove(sound);
+	}
+
+	@Override
+	public void clearSounds() {
+		for (Sound sound : sounds) {
+			sound.dispose();
+		}
+		sounds.clear();
+	}
+
+	@Override
+	public Sound getSound(int id) {
+		for (Sound sound : sounds) {
+			if (sound.getId() == id) {
+				return sound;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public boolean isSound(int id) {
+		return alIsBuffer(id);
+	}
+
+	@Override
 	public SoundListener getListener() {
 		return listener;
+	}
+
+	@Override
+	public void clear() {
+		clearSources();
+		clearSounds();
 	}
 
 	/**
