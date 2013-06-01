@@ -45,7 +45,7 @@ public interface SoundManager {
 	 * @param sound a Sound object for the new SoundSource
 	 * @return the created SoundSource
 	 */
-	public SoundSource createSource(Sound sound, String name);
+	public SoundSource createSource(Sound sound);
 
 	/**
 	 * Removes a {@link SoundSource} from the manager.
@@ -67,12 +67,63 @@ public interface SoundManager {
 	public Set<SoundSource> getSources();
 
 	/**
-	 * Returns the source with the specified name.
+	 * Returns the source with the specified id.
 	 *
-	 * @param name to get
-	 * @return source with name
+	 * @param id to get
+	 * @return source with id
 	 */
-	public SoundSource getSource(String name);
+	public SoundSource getSource(int id);
+
+	/**
+	 * Returns true if the specified id has an associated source.
+	 *
+	 * @param id to get
+	 * @return true if has source
+	 */
+	public boolean isSource(int id);
+
+	/**
+	 * Returns a set of all loaded sounds.
+	 *
+	 * @return loaded sounds
+	 */
+	public Set<Sound> getSounds();
+
+	/**
+	 * Adds a new pre-loaded sound to the manager
+	 *
+	 * @param sound to add
+	 */
+	public void addSound(Sound sound);
+
+	/**
+	 * Removes and disposes the specified {@link Sound}.
+	 *
+	 * @param sound to remove and dispose
+	 * @see org.spout.api.audio.Sound#dispose()
+	 */
+	public void removeSound(Sound sound);
+
+	/**
+	 * Removes and disposes all registered sounds.
+	 */
+	public void clearSounds();
+
+	/**
+	 * Returns the sound with the specified id.
+	 *
+	 * @param id to get
+	 * @return sound with id
+	 */
+	public Sound getSound(int id);
+
+	/**
+	 * Returns true if there is a sound with the specified id.
+	 *
+	 * @param id to check
+	 * @return true if has associated sound
+	 */
+	public boolean isSound(int id);
 
 	/**
 	 * Returns the active {@link SoundListener}.
@@ -80,4 +131,9 @@ public interface SoundManager {
 	 * @return active SoundListener
 	 */
 	public SoundListener getListener();
+
+	/**
+	 * Removes and disposes all sounds and sources.
+	 */
+	public void clear();
 }

@@ -38,15 +38,13 @@ import org.spout.api.util.Named;
 /**
  * Represents a source of sound in the game.
  */
-public abstract class SoundSource implements Named {
+public abstract class SoundSource {
 	protected final int id;
-	protected final String name;
 	protected Sound sound;
 	protected World world;
 
-	protected SoundSource(int id, String name) {
+	protected SoundSource(int id) {
 		this.id = id;
-		this.name = name;
 	}
 
 	public int getId() {
@@ -84,9 +82,10 @@ public abstract class SoundSource implements Named {
 	 */
 	public final void play() {
 		// make sure the client's listener is in the same world as the source
-		if (!((Client) Spout.getEngine()).getSoundManager().getListener().getPosition().getWorld().equals(world)) {
-			return;
-		}
+		// TODO: Needs further world handling on client
+		//if (!((Client) Spout.getEngine()).getSoundManager().getListener().getPosition().getWorld().equals(world)) {
+			//return;
+		//}
 		doPlay();
 	}
 
@@ -107,6 +106,13 @@ public abstract class SoundSource implements Named {
 	 * SoundSource if it is playing.
 	 */
 	public abstract void rewind();
+
+	/**
+	 * Returns true if the source has been disposed and cannot be used anymore.
+	 *
+	 * @return true if disposed
+	 */
+	public abstract boolean isDisposed();
 
 	/**
 	 * Disposes the sound and does cleanup.
@@ -232,11 +238,6 @@ public abstract class SoundSource implements Named {
 	 * @return the sound state
 	 */
 	public abstract SoundState getState();
-
-	@Override
-	public String getName() {
-		return name;
-	}
 
 	@Override
 	public boolean equals(Object obj) {

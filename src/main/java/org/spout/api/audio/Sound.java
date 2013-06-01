@@ -58,6 +58,13 @@ public abstract class Sound {
 	public abstract void dispose();
 
 	/**
+	 * Returns true if the sound has been disposed and can no longer be used.
+	 *
+	 * @return true if disposed
+	 */
+	public abstract boolean isDisposed();
+
+	/**
 	 * Gets the sampling rate (sampling frequency) of this Sound.
 	 * 
 	 * @return an int representing the sampling rate of this Sound
