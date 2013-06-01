@@ -52,7 +52,7 @@ public class AnimationLoader extends ResourceLoader {
 		final Yaml yaml = new Yaml();
 		final Map<? extends String, ?> resourceProperties = checkerMapStringObject.check(yaml.load(stream));
 
-		Skeleton skeleton = (Skeleton)Spout.getFileSystem().getResource((String)resourceProperties.get("Skeleton"));
+		Skeleton skeleton = Spout.getFileSystem().getResource((String)resourceProperties.get("Skeleton"));
 		
 		int frames = (Integer)resourceProperties.get("frames");
 		float delay = ((Double)resourceProperties.get("delay")).floatValue();
@@ -71,9 +71,9 @@ public class AnimationLoader extends ResourceLoader {
 			
 			int i = 0;
 			for(Entry<? extends Integer, String> entryBone : value.entrySet()){
-				int frame = (Integer)entryBone.getKey() - 1; //Start at 1
+				int frame = entryBone.getKey() - 1; //Start at 1
 
-				BoneTransform boneTransform = new BoneTransform(loadFloatList((String)entryBone.getValue()));
+				BoneTransform boneTransform = new BoneTransform(loadFloatList(entryBone.getValue()));
 				
 				animation.setBoneTransform(bone.getId(), i/*frame*/, boneTransform);
 				

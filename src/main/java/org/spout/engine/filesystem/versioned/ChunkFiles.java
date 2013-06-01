@@ -175,7 +175,7 @@ public class ChunkFiles {
 		}
 		chunk = new SpoutChunk(r.getWorld(), r, cx, cy, cz, PopulationState.byID(populationState), palette, blockArrayWidth, variableWidthBlockArray, extraDataMap, lightStable);
 
-		CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("entities")), (CompoundMap) null, CompoundMap.class);
+		CompoundMap entityMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("entities")), null, CompoundMap.class);
 		EntityFiles.loadEntities(r, entityMap, dataForRegion.loadedEntities);
 
 		List<? extends CompoundTag> updateList = checkerListCompoundTag.checkTag(map.get("dynamic_updates"));
@@ -183,7 +183,7 @@ public class ChunkFiles {
 
 		List<? extends CompoundTag> componentsList = checkerListCompoundTag.checkTag(map.get("block_components"), null);
 		
-		CompoundMap lightingMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("light_buffers")), (CompoundMap) null, CompoundMap.class);
+		CompoundMap lightingMap = SafeCast.toGeneric(NBTMapper.toTagValue(map.get("light_buffers")), null, CompoundMap.class);
 		StringMap worldMap = r.getWorld().getLightingMap();
 		List<LightingManager<?>> lightingManagers = new ArrayList<LightingManager<?>>();
 		List<byte[]> lightingData = new ArrayList<byte[]>();

@@ -67,7 +67,7 @@ public class MessagingCommands {
 
 	@Command(aliases = {"emote", "me", "action"}, usage = "<action>", desc = "Emote in the third person", min = 1)
 	@CommandPermissions("spout.command.emote")
-	public void emote(CommandContext args, CommandSource source) throws CommandException {
+	public void emote(CommandContext args, CommandSource source) {
 		source.getActiveChannel().broadcastToReceivers(new ChatArguments(ChatStyle.YELLOW, ChatStyle.ITALIC, source.getName(), " ", args.getJoinedString(0)));
 	}
 

@@ -240,7 +240,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 		spawnLocation.set(new Transform(new Point(this, 1, 100, 1), Quaternion.IDENTITY, Vector3.ONE));
 		selfReference = new WeakReference<SpoutWorld>(this);
 
-		((SpoutScheduler) getEngine().getScheduler()).addAsyncManager(this);
+		getEngine().getScheduler().addAsyncManager(this);
 	}
 
 	@Override
@@ -1519,7 +1519,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 		long key = IntPairHashed.key(x, z);
 		SetQueue<SpoutColumn> setQueue;
 		synchronized (regionColumnDirtyQueueMap) {
-			setQueue = (SetQueue<SpoutColumn>) regionColumnDirtyQueueMap.get(key);
+			setQueue = regionColumnDirtyQueueMap.get(key);
 			
 			if (setQueue == null) {
 				setQueue = new SetQueue<SpoutColumn>(Region.CHUNKS.SIZE * Region.CHUNKS.SIZE);
@@ -1545,7 +1545,7 @@ public class SpoutWorld extends BaseComponentHolder implements AsyncManager, Wor
 		if (region != null) {
 			region.queueChunkForGeneration(chunk);
 		} else {
-			((SpoutScheduler) Spout.getScheduler()).scheduleSyncDelayedTask(this, new Runnable() {
+			Spout.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 				@Override
 				public void run() {
 					SpoutRegion region = getRegion(rx, ry, rz, LoadOption.LOAD_GEN);

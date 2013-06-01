@@ -127,7 +127,7 @@ public class TestCommands {
 	}
 
 	@Command(aliases = "break", desc = "Debug command to break a block")
-	public void debugBreak(CommandContext args, CommandSource source) throws CommandException {
+	public void debugBreak(CommandContext args, CommandSource source) {
 		if (!(engine instanceof Client)) {
 			return;
 		}
@@ -150,12 +150,12 @@ public class TestCommands {
 	}
 
 	@Command(aliases = "dumpthreads", desc = "Dumps a listing of all thread stacks to the console")
-	public void dumpThreads(CommandContext args, CommandSource source) throws CommandException {
+	public void dumpThreads(CommandContext args, CommandSource source) {
 		AsyncExecutorUtils.dumpAllStacks();
 	}
 
 	@Command(aliases = "testmsg", desc = "Test extracting chat styles from a message and printing them")
-	public void testMsg(CommandContext args, CommandSource source) throws CommandException {
+	public void testMsg(CommandContext args, CommandSource source) {
 		source.sendMessage(args.getJoinedString(0));
 	}
 
@@ -432,7 +432,7 @@ public class TestCommands {
 	}
 	
 	@Command(aliases = {"profpop"}, desc = "Prints the populator profiler results to console", min = 0, max = 0)
-	public void profilePopulator(CommandContext args, CommandSource source) throws CommandException {
+	public void profilePopulator(CommandContext args, CommandSource source) {
 		Spout.getLogger().info("");
 		Spout.getLogger().info("Populator profiler results");
 		long totalPopulator = 0;

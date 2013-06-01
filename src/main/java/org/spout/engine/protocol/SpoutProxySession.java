@@ -113,7 +113,7 @@ public class SpoutProxySession extends SpoutServerSession<SpoutProxy> {
 					ConnectionInfo info = channelInfo.get();
 					if (info != null) {
 						passthrough.set(false);
-						((SpoutProxy) getEngine()).connect(redirect.getHostname(), redirect.getPort(), info.getIdentifier(), this);
+						getEngine().connect(redirect.getHostname(), redirect.getPort(), info.getIdentifier(), this);
 						return;
 					}
 				}

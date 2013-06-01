@@ -669,7 +669,7 @@ public final class SpoutScheduler implements Scheduler {
 		return true;
 	}
 
-	private void doPhysics(List<AsyncManager> managers) throws InterruptedException {
+	private void doPhysics(List<AsyncManager> managers) {
 		int passStartUpdates = updates.get() - 1;
 		int startUpdates = updates.get();
 		while (passStartUpdates < updates.get() && updates.get() < startUpdates + UPDATE_THRESHOLD) {
@@ -678,7 +678,7 @@ public final class SpoutScheduler implements Scheduler {
 		}
 	}
 
-	private void doDynamicUpdates(List<AsyncManager> managers) throws InterruptedException {
+	private void doDynamicUpdates(List<AsyncManager> managers) {
 		int passStartUpdates = updates.get() - 1;
 		int startUpdates = updates.get();
 
@@ -704,7 +704,7 @@ public final class SpoutScheduler implements Scheduler {
 		}
 	}
 
-	private void doLighting(List<AsyncManager> managers) throws InterruptedException {
+	private void doLighting(List<AsyncManager> managers) {
 		this.runTasks(managers, lightingTask, "Lighting", TickStage.LIGHTING);
 	}
 
@@ -724,7 +724,7 @@ public final class SpoutScheduler implements Scheduler {
 		}
 	}
 
-	private void finalizeTick(List<AsyncManager> managers) throws InterruptedException {
+	private void finalizeTick(List<AsyncManager> managers) {
 		this.runTasks(managers, finalizeTask, "Finalize", TickStage.FINALIZE);
 	}
 
@@ -739,7 +739,7 @@ public final class SpoutScheduler implements Scheduler {
 		}
 	}
 
-	private void copySnapshot(List<AsyncManager> managers) throws InterruptedException {
+	private void copySnapshot(List<AsyncManager> managers) {
 
 		this.runTasks(managers, preSnapshotTask, "Pre-snapshot", TickStage.PRESNAPSHOT);
 

@@ -63,14 +63,14 @@ public class ClientCommands extends CommonCommands{
 	}
 
 	@Command(aliases = "disconnect", desc = "Disconnect the client from the server", usage = "[message]", min = 0, max = -1)
-	public void executeClient(CommandContext args, CommandSource source) throws CommandException {
+	public void executeClient(CommandContext args, CommandSource source) {
 		if (source instanceof Player) {
 			((Player) source).getSession().dispose();
 		}
 	}
 
 	@Command(aliases = {"bind"}, usage = "bind <key> <command>", desc = "Binds a command to a key", min = 2)
-	public void bind(CommandContext args, CommandSource source) throws CommandException {
+	public void bind(CommandContext args, CommandSource source) {
 		getEngine().getInputManager().bind(new Binding(args.getJoinedString(1).getPlainString(), Keyboard.get(args.getString(0))));
 	}
 

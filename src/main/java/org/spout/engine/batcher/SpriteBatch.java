@@ -168,7 +168,7 @@ public class SpriteBatch {
 		}
 
 		if (renderer!=null) {
-			((BatchVertexRenderer) renderer).release();
+			renderer.release();
 		}
 		renderer = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
 

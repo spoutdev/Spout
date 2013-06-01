@@ -79,7 +79,7 @@ public class SkeletonLoader extends ResourceLoader {
 
 	private static void loadChild(Skeleton skeleton, String parentName, Map<? extends String, Map<? extends String, ?>> keymap){
 		for(Entry<? extends String, Map<? extends String, ?>> entry : keymap.entrySet()){
-			loadBone(skeleton, entry.getKey(), parentName, (Map<? extends String, Map<? extends String, ?>>)entry.getValue());
+			loadBone(skeleton, entry.getKey(), parentName, entry.getValue());
 		}
 	}
 

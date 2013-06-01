@@ -80,7 +80,7 @@ public class ClientTextModelComponent extends TextModelComponent {
 						part.setSprite(new Rectangle(xCursor, yCursor, (float) r.width / ratio, h / ratio));
 						part.setSource(new Rectangle(r.x / w, 0f, r.width / w, 1f));
 
-						xCursor += (float) font.getAdvance(c) / ratio;
+						xCursor += font.getAdvance(c) / ratio;
 
 						List<Vertex> v = part.getVertices();
 

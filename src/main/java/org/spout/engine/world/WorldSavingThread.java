@@ -148,7 +148,7 @@ public class WorldSavingThread extends Thread{
 		final List<DynamicBlockUpdate> blockUpdates;
 		final SpoutChunk chunk;
 		ChunkSaveTask(SpoutChunk chunk) {
-			this.snapshot = (SpoutChunkSnapshot) chunk.getSnapshot(SnapshotType.LIGHT_ONLY, EntityType.BOTH, ExtraData.DATATABLE, true);
+			this.snapshot = chunk.getSnapshot(SnapshotType.LIGHT_ONLY, EntityType.BOTH, ExtraData.DATATABLE, true);
 			this.blockUpdates = chunk.getRegion().getDynamicBlockUpdates(chunk);
 			this.chunk = chunk;
 		}

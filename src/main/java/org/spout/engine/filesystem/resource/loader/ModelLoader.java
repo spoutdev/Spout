@@ -55,7 +55,7 @@ public class ModelLoader extends ResourceLoader {
 		final Yaml yaml = new Yaml();
 		final Map<? extends String, ?> resourceProperties = checkerMapStringObject.check(yaml.load(in));
 
-		Mesh mesh = (Mesh)Spout.getFileSystem().getResource((String)resourceProperties.get("Mesh"));
+		Mesh mesh = Spout.getFileSystem().getResource((String)resourceProperties.get("Mesh"));
 		RenderMaterial material = Spout.getFileSystem().getResource((String)resourceProperties.get("Material"));
 		
 		Skeleton skeleton = null;

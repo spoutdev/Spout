@@ -172,7 +172,7 @@ public class SpoutColumn {
 			TickStage.checkStage(TickStage.SNAPSHOT);
 			if (activeChunks.decrementAndGet() == 0) {
 				syncSave();
-				((SpoutWorld) world).removeColumn(x, z, this);
+				world.removeColumn(x, z, this);
 			}
 		} else {
 			activeChunks.decrementAndGet();
@@ -180,7 +180,7 @@ public class SpoutColumn {
 	}
 	
 	public synchronized void syncSave() {
-		OutputStream out = ((SpoutWorld) world).getHeightMapOutputStream(x, z);
+		OutputStream out = world.getHeightMapOutputStream(x, z);
 		try {
 			ColumnFiles.writeColumn(out, this, lowestY, highestY, topmostBlocks);
 		} finally {

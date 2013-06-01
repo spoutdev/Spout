@@ -1238,7 +1238,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 	}
 
 	private static void addMaterialToSet(Set<RenderMaterial> set, int blockState) {
-		BlockMaterial material = (BlockMaterial) MaterialRegistry.get(blockState);
+		BlockMaterial material = MaterialRegistry.get(blockState);
 		set.add(material.getModel().getRenderMaterial());
 	}
 

@@ -56,7 +56,7 @@ public class ServerCommands extends CommonCommands{
 
 	@Command(aliases = "whitelist", desc = "Add, remove, list, or toggle players on the whitelist.", usage = "<add|remove|list|on|off> [player] [reason]", min = 1, max = 3)
 	@CommandPermissions("spout.command.whitelist")
-	public void whitelist(CommandContext args, CommandSource source) throws CommandException {
+	public void whitelist(CommandContext args, CommandSource source) {
 		String arg1 = args.getString(0);
 		AccessManager accessManager = getEngine().getAccessManager();
 		if (args.length() == 1) {
@@ -108,7 +108,7 @@ public class ServerCommands extends CommonCommands{
 
 	@Command(aliases = "banlist", usage = "[ips]", desc = "Shows banned players or ips.", min = 0, max = 1)
 	@CommandPermissions("spout.command.banlist")
-	public void banList(CommandContext args, CommandSource source) throws CommandException {
+	public void banList(CommandContext args, CommandSource source) {
 		BanType type;
 		if (args.length() > 0 && args.getString(0).equalsIgnoreCase("ips")) {
 			type = BanType.IP;
@@ -131,7 +131,7 @@ public class ServerCommands extends CommonCommands{
 
 	@Command(aliases = "ban", usage = "<player> [reason]", desc = "Ban a player", min = 1, max = -1)
 	@CommandPermissions("spout.command.ban")
-	public void ban(CommandContext args, CommandSource source) throws CommandException {
+	public void ban(CommandContext args, CommandSource source) {
 		String player = args.getString(0);
 		if (args.length() < 2) {
 			getEngine().getAccessManager().ban(BanType.PLAYER, player);
@@ -143,7 +143,7 @@ public class ServerCommands extends CommonCommands{
 
 	@Command(aliases = "unban", usage = "<player>", desc = "Unban a player", min = 1, max = 1)
 	@CommandPermissions("spout.command.unban")
-	public void unban(CommandContext args, CommandSource source) throws CommandException {
+	public void unban(CommandContext args, CommandSource source) {
 		String player = args.getString(0);
 		getEngine().getAccessManager().unban(BanType.PLAYER, player);
 		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Unbanned player '", player, "' from the server.");
@@ -151,7 +151,7 @@ public class ServerCommands extends CommonCommands{
 
 	@Command(aliases = "ban-ip", usage = "<address> [reason]", desc = "Ban an IP address", min = 1, max = -1)
 	@CommandPermissions("spout.command.banip")
-	public void banIp(CommandContext args, CommandSource source) throws CommandException {
+	public void banIp(CommandContext args, CommandSource source) {
 		if (source instanceof Player) {
 			getEngine().getLogger().info(((Player) source).getAddress().getHostAddress());
 			getEngine().getLogger().info("Args: " + args.length());
@@ -168,7 +168,7 @@ public class ServerCommands extends CommonCommands{
 
 	@Command(aliases = "unban-ip", usage = "<address>", desc = "Unban an IP address", min = 1, max = 1)
 	@CommandPermissions("spout.command.unbanip")
-	public void unbanIp(CommandContext args, CommandSource source) throws CommandException {
+	public void unbanIp(CommandContext args, CommandSource source) {
 		String address = args.getString(0);
 		getEngine().getAccessManager().unban(BanType.IP, address);
 		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Unbanned IP address '", address, "' from the server");
@@ -202,7 +202,7 @@ public class ServerCommands extends CommonCommands{
 
 	@Command(aliases = {"players", "who", "list"}, desc = "List all online players")
 	@CommandPermissions("spout.command.players")
-	public void list(CommandContext args, CommandSource source) throws CommandException {
+	public void list(CommandContext args, CommandSource source) {
 		Player[] players = getEngine().getOnlinePlayers();
 		ChatArguments onlineMsg = new ChatArguments(Arrays.asList("Online (", (players.length <= 0 ? ChatStyle.RED : ChatStyle.BRIGHT_GREEN), players.length, ChatStyle.RESET, "): "));
 		for (int i = 0; i < players.length; i++) {
@@ -218,7 +218,7 @@ public class ServerCommands extends CommonCommands{
 	}
 
 	@Command(aliases = "disconnect", desc = "Disconnect the client from the server", usage = "[message]", min = 0, max = -1)
-	public void disconnectClient(CommandContext args, CommandSource source) throws CommandException {
+	public void disconnectClient(CommandContext args, CommandSource source) {
 		ChatArguments message;
 		if (args.length() == 0) {
 			message = new ChatArguments("Ciao!");

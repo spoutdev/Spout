@@ -114,7 +114,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 
 		//Send data
 		if(!dataSended){
-			((BatchVertexRenderer)renderer).setBufferContainers(bufferContainer);
+			renderer.setBufferContainers(bufferContainer);
 			dataSended = true;
 		}
 
@@ -159,7 +159,7 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 		for(int i = 0; i < bufferContainer.length; i++)
 			bufferContainer[i] = null;
 
-		((BatchVertexRenderer)renderer).release();
+		renderer.release();
 
 		closed = true;
 	}

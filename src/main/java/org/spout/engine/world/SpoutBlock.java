@@ -101,7 +101,7 @@ public class SpoutBlock implements Block {
 				Spout.getLogger().info("Warning: unable to load chunk for block " + this);
 				this.chunk.set(SpoutChunk.NULL_WEAK_REFERENCE);
 			} else {
-				this.chunk.set(((SpoutChunk) chunk).getWeakReference());
+				this.chunk.set(chunk.getWeakReference());
 			}
 		}
 		return chunk;

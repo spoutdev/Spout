@@ -55,7 +55,7 @@ public class InputCommands {
 		if (!args.getString(0).equalsIgnoreCase("+")) {
 			return;
 		}
-		final Screen consoleScreen = (Screen) client.getScreenStack().getConsole();
+		final Screen consoleScreen = client.getScreenStack().getConsole();
 		client.getScheduler().enqueueRenderTask(new Runnable() {
 			@Override
 			public void run() {

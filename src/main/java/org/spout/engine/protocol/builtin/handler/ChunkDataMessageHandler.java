@@ -44,7 +44,7 @@ public class ChunkDataMessageHandler extends MessageHandler<ChunkDataMessage> {
 			return;
 		}
 
-		ClientWorld world = (ClientWorld) ((Client) session.getEngine()).getDefaultWorld();
+		ClientWorld world = (ClientWorld) session.getEngine().getDefaultWorld();
 		Class<? extends BiomeManager> managerClass;
 		try {
 			Class<?> testClass = Class.forName(message.getBiomeManagerClass());

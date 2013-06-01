@@ -133,7 +133,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 	 */
 	private static final int restrictedStages = TickStage.PHYSICS | TickStage.DYNAMIC_BLOCKS;
 	private static final int allowedStages = TickStage.STAGE1 | TickStage.STAGE2P | TickStage.TICKSTART | TickStage.GLOBAL_PHYSICS | TickStage.GLOBAL_DYNAMIC_BLOCKS;
-	;
 	/**
 	 * Storage for block ids, data and auxiliary data. For blocks with data = 0
 	 * and auxiliary data = null, the block is stored as a short.
@@ -1730,7 +1729,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			oldData = BlockFullState.getData(state);
 			oldId = BlockFullState.getId(state);
 			newData = (short) (((value << shift) & bits) | (oldData & ~bits));
-			BlockMaterial bm = (BlockMaterial) BlockMaterial.get(state);
+			BlockMaterial bm = BlockMaterial.get(state);
 			newId = bm.getId();
 
 			Block block = getBlock(bx, by, bz);
@@ -1775,7 +1774,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			oldData = BlockFullState.getData(state);
 			oldId = BlockFullState.getId(state);
 			newData = (short) (((oldData + (value << shift)) & bits) | (oldData & ~bits));
-			BlockMaterial bm = (BlockMaterial) BlockMaterial.get(state);
+			BlockMaterial bm = BlockMaterial.get(state);
 			newId = bm.getId();
 
 			Block block = getBlock(bx, by, bz);

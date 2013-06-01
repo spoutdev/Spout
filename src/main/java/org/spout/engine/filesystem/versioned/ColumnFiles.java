@@ -142,7 +142,7 @@ public class ColumnFiles {
 				blockState = BlockFullState.getPacked(blockId, blockData);
 				BlockMaterial m;
 				try {
-					m = (BlockMaterial) MaterialRegistry.get(blockState);
+					m = MaterialRegistry.get(blockState);
 				} catch (ClassCastException e) {
 					m = null;
 					if (!warning) {
