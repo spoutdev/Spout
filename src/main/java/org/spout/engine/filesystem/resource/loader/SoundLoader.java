@@ -24,7 +24,34 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.filesystem;
+package org.spout.engine.filesystem.resource.loader;
 
-public class ServerFileSystem extends SharedFileSystem {
+import java.io.InputStream;
+
+import org.lwjgl.util.*;
+
+import org.spout.api.resource.ResourceLoader;
+
+import org.spout.engine.audio.SpoutSoundManager;
+import org.spout.engine.filesystem.resource.ClientSound;
+
+import static org.lwjgl.openal.AL10.*;
+
+public class SoundLoader extends ResourceLoader {
+	public SoundLoader() {
+		super("sound", null);
+	}
+
+	@Override
+	public ClientSound load(InputStream in) {
+		int id = alGenBuffers(); // generate a new buffer
+		SpoutSoundManager.checkErrors();
+
+		// create the sound's metadata and bind it to the new buffer
+		WaveData data = WaveData.create(in);
+		alBufferData(id, data.format, data.data, data.samplerate);
+		data.dispose();
+
+		return new ClientSound(id);
+	}
 }

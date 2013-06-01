@@ -33,7 +33,7 @@ import org.spout.api.util.config.ConfigurationHolder;
 import org.spout.api.util.config.ConfigurationHolderConfiguration;
 import org.spout.api.util.config.yaml.YamlConfiguration;
 
-import org.spout.engine.filesystem.SharedFileSystem;
+import org.spout.engine.filesystem.CommonFileSystem;
 
 public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	// General
@@ -65,7 +65,7 @@ public class SpoutConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder SIMULATE_DYNAMICS = new ConfigurationHolder(true, "debug", "simulate-dynamics");
 
 	public SpoutConfiguration() {
-		super(new YamlConfiguration(new File(SharedFileSystem.getConfigDirectory(), "spout.yml")));
+		super(new YamlConfiguration(new File(CommonFileSystem.CONFIG_DIRECTORY, "spout.yml")));
 	}
 
 	@Override

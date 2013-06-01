@@ -24,7 +24,7 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.resources;
+package org.spout.engine.filesystem.resource;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -52,7 +52,7 @@ import org.spout.engine.renderer.shader.ClientShader;
 
 public class ClientFont extends ClientTexture implements org.spout.api.render.Font {
 	private static final long serialVersionUID = 1L;
-	
+
 	private static final String asciiset;
 	private static final FontRenderContext DEFAULT_CONTEXT = new FontRenderContext(null, true, true);
 	private ClientRenderMaterial material;
@@ -79,7 +79,7 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	public static String getCharset() {
 		return asciiset;
 	}
-	
+
 	private static int indexOf(char c) {
 		return (((int)c) - 32);
 	}
@@ -88,7 +88,7 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		super(null, 0, 0);
 		this.ttfFont = f;
 		init();
-		
+
 	}
 
 	private void init() {
@@ -97,7 +97,7 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 
 		vec = ttfFont.createGlyphVector(DEFAULT_CONTEXT, asciiset);
 		Rectangle2D bounds = ttfFont.getStringBounds(asciiset, DEFAULT_CONTEXT);
-		
+
 		for (int i = 0; i < 127 - 32 ; i++) {
 			glyphBounds[i] = vec.getGlyphPixelBounds(i*2, DEFAULT_CONTEXT, 0, ttfFont.getSize());
 			glyphMetrics[i] = vec.getGlyphMetrics(i*2);
@@ -134,7 +134,7 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 		if (((SpoutClient) Spout.getEngine()).getRenderMode() == RenderMode.GL11) {
 			material = new ClientRenderMaterial(new BasicShader(), params);
 		} else {
-			material = new ClientRenderMaterial((ClientShader)Spout.getFilesystem().getResource("shader://Spout/shaders/textShader.ssf"), params);
+			material = new ClientRenderMaterial((ClientShader)Spout.getFileSystem().getResource("shader://Spout/shaders/textShader.ssf"), params);
 		}
 	}
 

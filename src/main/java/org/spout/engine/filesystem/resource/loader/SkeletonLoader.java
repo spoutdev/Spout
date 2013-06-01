@@ -24,22 +24,26 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.resources.loader;
+package org.spout.engine.filesystem.resource.loader;
 
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.spout.api.model.animation.Bone;
-import org.spout.api.model.animation.Skeleton;
-import org.spout.api.resource.BasicResourceLoader;
-import org.spout.api.util.typechecker.TypeChecker;
 import org.yaml.snakeyaml.Yaml;
 
-@SuppressWarnings("unchecked")
-public class SkeletonLoader extends BasicResourceLoader<Skeleton> {
+import org.spout.api.model.animation.Bone;
+import org.spout.api.model.animation.Skeleton;
+import org.spout.api.resource.ResourceLoader;
+import org.spout.api.util.typechecker.TypeChecker;
 
+@SuppressWarnings("unchecked")
+public class SkeletonLoader extends ResourceLoader {
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
+
+	public SkeletonLoader() {
+		super("skeleton", "skeleton://Spout/entities/Spouty/spouty.ske");
+	}
 
 	private static Skeleton loadObj(InputStream stream) {
 		System.out.println("Loadind skeleton");
@@ -102,23 +106,7 @@ public class SkeletonLoader extends BasicResourceLoader<Skeleton> {
 	}
 
 	@Override
-	public String getFallbackResourceName() {
-		return "skeleton://Spout/entities/Spouty/spouty.ske";
+	public Skeleton load(InputStream in) {
+		return SkeletonLoader.loadObj(in);
 	}
-
-	@Override
-	public Skeleton getResource(InputStream stream) {
-		return SkeletonLoader.loadObj(stream);
-	}
-
-	@Override
-	public String getProtocol() {
-		return "skeleton";
-	}
-
-	@Override
-	public String[] getExtensions() {
-		return new String[] { "ske" };
-	}
-
 }

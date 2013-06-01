@@ -26,8 +26,6 @@
  */
 package org.spout.engine.filesystem.versioned;
 
-import static org.spout.api.lang.Translation.log;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -48,8 +46,9 @@ import org.spout.api.io.nbt.UUIDTag;
 import org.spout.api.io.store.simple.BinaryFileStore;
 import org.spout.api.util.StringMap;
 import org.spout.api.util.sanitation.SafeCast;
+
 import org.spout.engine.SpoutEngine;
-import org.spout.engine.filesystem.SharedFileSystem;
+import org.spout.engine.filesystem.CommonFileSystem;
 import org.spout.engine.world.SpoutWorld;
 import org.spout.nbt.ByteArrayTag;
 import org.spout.nbt.ByteTag;
@@ -61,13 +60,15 @@ import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 import org.spout.nbt.util.NBTMapper;
 
+import static org.spout.api.lang.Translation.log;
+
 public class WorldFiles {
 
 	public static final byte WORLD_VERSION = 2;
 	
 	public static SpoutWorld loadWorld(SpoutEngine engine, WorldGenerator generator, String name) {
 		
-		File worldDir = new File(SharedFileSystem.getWorldsDirectory(), name);
+		File worldDir = new File(CommonFileSystem.WORLDS_DIRECTORY, name);
 		
 		worldDir.mkdirs();
 		
@@ -157,7 +158,7 @@ public class WorldFiles {
 	
 	public static void saveWorld(SpoutWorld world) {
 		
-		File worldDir = new File(SharedFileSystem.getWorldsDirectory(), world.getName());
+		File worldDir = new File(CommonFileSystem.WORLDS_DIRECTORY, world.getName());
 		
 		worldDir.mkdirs();
 		

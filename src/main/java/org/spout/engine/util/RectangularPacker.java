@@ -36,7 +36,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.spout.api.render.Texture;
-import org.spout.engine.resources.ClientTexture;
+
+import org.spout.engine.filesystem.resource.ClientTexture;
 
 /**
  * A bin packing algorithm useful for merging multiple textures into one.

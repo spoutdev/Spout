@@ -36,13 +36,12 @@ import org.spout.api.model.mesh.MeshFace;
 import org.spout.api.model.mesh.Vertex;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.effect.SnapshotRender;
-import org.spout.api.resource.Resource;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.GLBufferContainer;
 import org.spout.engine.renderer.vertexformat.vertexattributes.VertexAttributes;
 
 
-public class BaseMesh extends Resource implements Mesh{
+public class BaseMesh implements Mesh {
 	GLBufferContainer container = new GLBufferContainer();
 	boolean batched = false;
 

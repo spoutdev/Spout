@@ -48,7 +48,6 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 
 import org.spout.api.Client;
-import org.spout.api.FileSystem;
 import org.spout.api.Platform;
 import org.spout.api.audio.SoundManager;
 import org.spout.api.command.CommandRegistrationsFactory;
@@ -68,6 +67,7 @@ import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
 import org.spout.api.render.RenderMode;
+import org.spout.api.resource.FileSystem;
 
 import org.spout.engine.audio.SpoutSoundManager;
 import org.spout.engine.command.InputCommands;
@@ -127,7 +127,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 
 		inputManager = new SpoutInputManager();
 		soundManager = new SpoutSoundManager();
-		soundManager.init(this);
+		soundManager.init();
 	}
 
 	@Override
@@ -174,6 +174,8 @@ public class SpoutClient extends SpoutEngine implements Client {
 		if (EngineStartEvent.getHandlerList().getRegisteredListeners().length != 0) {
 			getEventManager().callEvent(new EngineStartEvent());
 		}
+
+		filesystem.postStartup();
 	}
 
 	@Override
@@ -350,7 +352,7 @@ public class SpoutClient extends SpoutEngine implements Client {
 	}
 
 	@Override
-	public FileSystem getFilesystem() {
+	public FileSystem getFileSystem() {
 		return filesystem;
 	}
 

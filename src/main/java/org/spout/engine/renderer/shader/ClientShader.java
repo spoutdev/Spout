@@ -34,8 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.*;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
@@ -46,7 +45,6 @@ import org.spout.api.math.Vector4;
 import org.spout.api.render.RenderMaterial;
 import org.spout.api.render.RenderMode;
 import org.spout.api.render.Texture;
-import org.spout.api.resource.Resource;
 
 import org.spout.engine.SpoutClient;
 import org.spout.engine.SpoutConfiguration;
@@ -56,8 +54,8 @@ import org.spout.engine.renderer.shader.variables.FloatShaderVariable;
 import org.spout.engine.renderer.shader.variables.IntShaderVariable;
 import org.spout.engine.renderer.shader.variables.Mat2ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Mat3ShaderVariable;
-import org.spout.engine.renderer.shader.variables.Mat4ShaderVariable;
 import org.spout.engine.renderer.shader.variables.Mat4ArrayShaderVariable;
+import org.spout.engine.renderer.shader.variables.Mat4ShaderVariable;
 import org.spout.engine.renderer.shader.variables.ShaderVariable;
 import org.spout.engine.renderer.shader.variables.TextureSamplerShaderVariable;
 import org.spout.engine.renderer.shader.variables.Vec2ShaderVariable;
@@ -68,7 +66,7 @@ import org.spout.engine.renderer.shader.variables.Vector3ArrayShaderVariable;
 /**
  * Represents a Shader Object in OpenGL
  */
-public class ClientShader extends Resource implements SpoutShader {
+public class ClientShader implements SpoutShader {
 
 	public class ShaderCompilationTask implements Runnable{
 

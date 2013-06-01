@@ -24,7 +24,7 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.resources;
+package org.spout.engine.filesystem.resource;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -34,7 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.*;
+
 import org.spout.api.math.Matrix;
 import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
@@ -48,6 +49,7 @@ import org.spout.api.render.effect.RenderEffect;
 import org.spout.api.render.effect.SnapshotEntity;
 import org.spout.api.render.effect.SnapshotMesh;
 import org.spout.api.render.effect.SnapshotRender;
+
 import org.spout.engine.SpoutRenderer;
 import org.spout.engine.renderer.shader.SpoutShader;
 

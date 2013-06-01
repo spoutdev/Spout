@@ -24,34 +24,31 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.resources.loader;
+package org.spout.engine.filesystem.resource.loader;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.imageio.ImageIO;
 
 import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.render.Texture;
-import org.spout.api.resource.BasicResourceLoader;
-import org.spout.engine.resources.ClientTexture;
-import org.spout.engine.resources.server.ServerTexture;
+import org.spout.api.resource.ResourceLoader;
 
-public class TextureLoader extends BasicResourceLoader<Texture> {
-	/**
-	 * An array of strings of the supported extensions in this TextureLoader.
-	 */
-	public static final String[] EXTENSIONS = unique(ImageIO.getReaderFormatNames());
+import org.spout.engine.filesystem.resource.ClientTexture;
+import org.spout.engine.filesystem.resource.ServerTexture;
+
+public class TextureLoader extends ResourceLoader {
+	public TextureLoader() {
+		super("texture", "texture://Spout/fallbacks/fallback.png");
+	}
 
 	@Override
-	public Texture getResource(InputStream stream) {
+	public Texture load(InputStream in) {
 		Texture t = null;
 		try {
-			BufferedImage image = ImageIO.read(stream);
+			BufferedImage image = ImageIO.read(in);
 			if (Spout.getPlatform() == Platform.SERVER) {
 				t = new ServerTexture(image);
 			} else {
@@ -62,36 +59,11 @@ public class TextureLoader extends BasicResourceLoader<Texture> {
 			e.printStackTrace();
 		} finally {
 			try {
-				stream.close();
+				in.close();
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 		}
 		return t;
 	}
-
-	@Override
-	public String getFallbackResourceName() {
-		return "texture://Spout/fallbacks/fallback.png";
-	}
-
-	@Override
-	public String getProtocol() {
-		return "texture";
-	}
-
-	@Override
-	public String[] getExtensions() {
-		return EXTENSIONS;
-	}
-
-	public static String[] unique(String[] strings) {
-		Set<String> set = new HashSet<String>();
-		for (int i = 0; i < strings.length; i++) {
-			String name = strings[i].toLowerCase();
-			set.add(name);
-		}
-		return (String[]) set.toArray(new String[0]);
-	}
-
 }

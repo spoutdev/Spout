@@ -108,7 +108,7 @@ import org.spout.engine.command.TestCommands;
 import org.spout.engine.entity.EntityManager;
 import org.spout.engine.entity.SpoutPlayer;
 import org.spout.engine.entity.component.SpoutSceneComponent;
-import org.spout.engine.filesystem.SharedFileSystem;
+import org.spout.engine.filesystem.CommonFileSystem;
 import org.spout.engine.filesystem.versioned.PlayerFiles;
 import org.spout.engine.filesystem.versioned.WorldFiles;
 import org.spout.engine.input.SpoutInputConfiguration;
@@ -182,7 +182,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 		scheduler.addAsyncManager(this);
 
-		defaultPerms = new DefaultPermissions(this, new File(SharedFileSystem.getConfigDirectory(), "permissions.yml"));
+		defaultPerms = new DefaultPermissions(this, new File(CommonFileSystem.CONFIG_DIRECTORY, "permissions.yml"));
 		getDefaultPermissions().addDefaultPermission(STANDARD_BROADCAST_PERMISSION);
 		getDefaultPermissions().addDefaultPermission(STANDARD_CHAT_PREFIX + "*");
 
@@ -286,7 +286,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		pluginManager.registerPluginLoader(CommonPluginLoader.class);
 		pluginManager.clearPlugins();
 
-		List<Plugin> plugins = pluginManager.loadPlugins(SharedFileSystem.getPluginDirectory());
+		List<Plugin> plugins = pluginManager.loadPlugins(CommonFileSystem.PLUGINS_DIRECTORY);
 
 		for (Plugin plugin : plugins) {
 			try {
@@ -341,17 +341,17 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 	@Override
 	public File getUpdateFolder() {
-		return SharedFileSystem.getUpdateDirectory();
+		return CommonFileSystem.UPDATES_DIRECTORY;
 	}
 
 	@Override
 	public File getConfigFolder() {
-		return SharedFileSystem.getConfigDirectory();
+		return CommonFileSystem.CONFIG_DIRECTORY;
 	}
 
 	@Override
 	public File getDataFolder() {
-		File dataDir = SharedFileSystem.getDataDirectory();
+		File dataDir = CommonFileSystem.DATA_DIRECTORY;
 		File playerDirectory = new File(dataDir, "players");
 		if (!playerDirectory.exists()) {
 			playerDirectory.mkdirs();
@@ -361,7 +361,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 	@Override
 	public File getPluginFolder() {
-		return SharedFileSystem.getPluginDirectory();
+		return CommonFileSystem.PLUGINS_DIRECTORY;
 	}
 
 	@Override
@@ -521,7 +521,7 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 
 	@Override
 	public File getWorldFolder() {
-		return SharedFileSystem.getWorldsDirectory();
+		return CommonFileSystem.WORLDS_DIRECTORY;
 	}
 
 	@Override

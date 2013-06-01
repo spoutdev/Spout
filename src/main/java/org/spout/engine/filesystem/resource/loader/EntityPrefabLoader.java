@@ -24,7 +24,7 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.resources.loader;
+package org.spout.engine.filesystem.resource.loader;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -32,29 +32,38 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.yaml.snakeyaml.Yaml;
+
 import org.spout.api.Client;
+import org.spout.api.Engine;
+import org.spout.api.Spout;
 import org.spout.api.component.Component;
 import org.spout.api.component.type.EntityComponent;
 import org.spout.api.plugin.CommonClassLoader;
-import org.spout.api.resource.BasicResourceLoader;
+import org.spout.api.resource.ResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
-import org.spout.engine.resources.ClientEntityPrefab;
-import org.yaml.snakeyaml.Yaml;
 
-public class EntityPrefabLoader extends BasicResourceLoader<ClientEntityPrefab> {
+import org.spout.engine.filesystem.resource.ClientEntityPrefab;
+
+public class EntityPrefabLoader extends ResourceLoader {
 
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
 	private static final TypeChecker<List<? extends String>> checkerListString =  TypeChecker.tList(String.class);
-	private final Client client;
-	public EntityPrefabLoader(Client client) {
-		this.client = client;
+
+	public EntityPrefabLoader() {
+		super("entity", "entity://Spout/fallbacks/entity.sep");
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public ClientEntityPrefab getResource(InputStream stream) {
+	public ClientEntityPrefab load(InputStream in) {
+		Engine engine = Spout.getEngine();
+		if (!(engine instanceof Client)) {
+			throw new IllegalStateException("Prefabs can only be loaded on the client.");
+		}
+
 		final Yaml yaml = new Yaml();
-		final Map<? extends String, ?> resourceProperties = checkerMapStringObject.check(yaml.load(stream));
+		final Map<? extends String, ?> resourceProperties = checkerMapStringObject.check(yaml.load(in));
 		
 		if (!(resourceProperties.containsKey("Name")) || !(resourceProperties.containsKey("Components")) || !(resourceProperties.containsKey("Data"))) {
 			throw new IllegalStateException("A property is missing (Name, Components or Data)");
@@ -89,22 +98,6 @@ public class EntityPrefabLoader extends BasicResourceLoader<ClientEntityPrefab> 
 		final Map<String, Object> datas = new HashMap<String, Object>();
 		datas.putAll(datasOld);
 		
-		return new ClientEntityPrefab(client, (String)name, components, datas);
+		return new ClientEntityPrefab((Client) engine, (String)name, components, datas);
 	}
-	
-	@Override
-	public String getProtocol() {
-		return "entity";
-	}
-
-	@Override
-	public String[] getExtensions() {
-		return new String[] { "sep" }; //Spout Entity Prefab
-	}
-
-	@Override
-	public String getFallbackResourceName() {
-		return "entity://Spout/fallbacks/entity.sep";
-	}
-
 }

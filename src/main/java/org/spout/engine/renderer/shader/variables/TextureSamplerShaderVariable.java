@@ -36,7 +36,7 @@ import org.spout.api.render.RenderMode;
 import org.spout.api.render.Texture;
 
 import org.spout.engine.SpoutRenderer;
-import org.spout.engine.resources.ClientTexture;
+import org.spout.engine.filesystem.resource.ClientTexture;
 
 public class TextureSamplerShaderVariable extends ShaderVariable {
 	int textureID;

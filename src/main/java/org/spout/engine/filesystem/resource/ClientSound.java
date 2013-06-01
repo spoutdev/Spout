@@ -24,55 +24,46 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.resources;
+package org.spout.engine.filesystem.resource;
 
-import java.util.Collections;
-import java.util.Map;
+import org.spout.api.audio.Sound;
 
-import org.spout.api.model.Model;
-import org.spout.api.model.animation.Animation;
-import org.spout.api.model.animation.Skeleton;
-import org.spout.api.model.mesh.Mesh;
-import org.spout.api.render.RenderMaterial;
-import org.spout.api.resource.Resource;
+import static org.lwjgl.openal.AL10.*;
 
-public class ClientModel extends Resource implements Model {
-	private static final long serialVersionUID = 1L;
-	public Mesh mesh;
-	public Skeleton skeleton;
-	public RenderMaterial material;
-	public Map<String, Animation> animations;
-
-	@SuppressWarnings("unchecked")
-	public ClientModel(Mesh mesh,RenderMaterial material) {
-		this(mesh, null, material, Collections.EMPTY_MAP);
-	}
-
-	public ClientModel(Mesh mesh, Skeleton skeleton, RenderMaterial material, Map<String, Animation> animations) {
-		this.mesh = mesh;
-		this.skeleton = skeleton;
-		this.material = material;
-		this.animations = animations;
-	}
-	
-	@Override
-	public Mesh getMesh() {
-		return mesh;
-	}
-	
-	@Override
-	public Skeleton getSkeleton() {
-		return skeleton;
-	}
-	
-	@Override
-	public RenderMaterial getRenderMaterial() {
-		return material;
+/**
+ * An OpenAL-based implementation of the Sound class.
+ */
+public class ClientSound extends Sound {
+	public ClientSound(int id) {
+		super(id);
 	}
 
 	@Override
-	public Map<String, Animation> getAnimations() {
-		return animations;
+	public void dispose() {
+		alDeleteBuffers(id);
 	}
 
+	@Override
+	public int getSamplingRate() {
+		return getInt(AL_FREQUENCY);
+	}
+
+	@Override
+	public int getBitDepth() {
+		return getInt(AL_BITS);
+	}
+
+	@Override
+	public int getChannels() {
+		return getInt(AL_CHANNELS);
+	}
+
+	@Override
+	public int getBufferSize() {
+		return getInt(AL_SIZE);
+	}
+
+	private int getInt(int property) {
+		return alGetBufferi(id, property);
+	}
 }

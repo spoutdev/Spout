@@ -26,38 +26,35 @@
  */
 package org.spout.engine.filesystem;
 
-import org.spout.api.Client;
-import org.spout.api.Engine;
-import org.spout.engine.resources.loader.AnimationLoader;
-import org.spout.engine.resources.loader.BlockMeshLoader;
-import org.spout.engine.resources.loader.SkeletonLoader;
-import org.spout.engine.resources.loader.CubeMeshLoader;
-import org.spout.engine.resources.loader.EntityPrefabLoader;
-import org.spout.engine.resources.loader.FontLoader;
-import org.spout.engine.resources.loader.MeshLoader;
-import org.spout.engine.resources.loader.ModelLoader;
-import org.spout.engine.resources.loader.RenderMaterialLoader;
-import org.spout.engine.resources.loader.ShaderLoader;
-import org.spout.engine.resources.loader.SoundLoader;
+import org.spout.engine.filesystem.resource.loader.AnimationLoader;
+import org.spout.engine.filesystem.resource.loader.BlockMeshLoader;
+import org.spout.engine.filesystem.resource.loader.CubeMeshLoader;
+import org.spout.engine.filesystem.resource.loader.EntityPrefabLoader;
+import org.spout.engine.filesystem.resource.loader.FontLoader;
+import org.spout.engine.filesystem.resource.loader.MeshLoader;
+import org.spout.engine.filesystem.resource.loader.ModelLoader;
+import org.spout.engine.filesystem.resource.loader.RenderMaterialLoader;
+import org.spout.engine.filesystem.resource.loader.ShaderLoader;
+import org.spout.engine.filesystem.resource.loader.SkeletonLoader;
+import org.spout.engine.filesystem.resource.loader.SoundLoader;
+import org.spout.engine.filesystem.resource.loader.TextureLoader;
 
-public class ClientFileSystem extends SharedFileSystem {
+public class ClientFileSystem extends CommonFileSystem {
 	@Override
-	public void init(Engine engine) {
-		super.init(engine);
-
-		registerLoader(new ShaderLoader());
-
-		registerLoader(new ModelLoader());
-		registerLoader(new SkeletonLoader());
+	public void init() {
+		System.out.println("Registering loaders...");
 		registerLoader(new AnimationLoader());
-		
-		registerLoader(new MeshLoader());
-		registerLoader(new CubeMeshLoader());
 		registerLoader(new BlockMeshLoader());
-		registerLoader(new RenderMaterialLoader());
-
-		registerLoader(new SoundLoader());
+		registerLoader(new CubeMeshLoader());
+		registerLoader(new EntityPrefabLoader());
 		registerLoader(new FontLoader());
-		registerLoader(new EntityPrefabLoader((Client) engine));
+		registerLoader(new MeshLoader());
+		registerLoader(new ModelLoader());
+		registerLoader(new RenderMaterialLoader());
+		registerLoader(new ShaderLoader());
+		registerLoader(new SkeletonLoader());
+		registerLoader(new SoundLoader());
+		registerLoader(new TextureLoader());
+		super.init();
 	}
 }

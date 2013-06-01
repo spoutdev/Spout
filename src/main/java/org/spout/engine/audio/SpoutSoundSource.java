@@ -26,201 +26,171 @@
  */
 package org.spout.engine.audio;
 
-import static org.spout.engine.audio.SpoutSoundManager.checkErrors;
-
 import java.nio.FloatBuffer;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.openal.AL10;
-import org.lwjgl.openal.AL11;
+import org.spout.api.Client;
+import org.spout.api.Spout;
 import org.spout.api.audio.Sound;
 import org.spout.api.audio.SoundSource;
 import org.spout.api.audio.SoundState;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Vector3;
 
-/**
- * Represents a source of sound in the game backed by OpenAL.
- */
-public class SpoutSoundSource implements SoundSource {
-	private final int sourceId;
-	private Sound sound = null;
-	private final String name;
+import static org.lwjgl.openal.AL10.*;
+import static org.lwjgl.openal.AL11.*;
+import static org.lwjgl.BufferUtils.*;
 
+public class SpoutSoundSource extends SoundSource {
 	protected SpoutSoundSource(String name) {
-		this.sourceId = AL10.alGenSources();
-		reset();
-		this.name = name;
+		super(alGenSources(), name);
 	}
 
 	@Override
-	public Sound getSound() {
-		return sound;
-	}
-
-	@Override
-	public void setSound(Sound sound) {
-		if (sound == null) {
-			throw new IllegalArgumentException("Sound cannot be null!");
-		}
-		this.sound = sound;
-		bindSound();
-	}
-
-	@Override
-	public void reset() {
-		setPitch(1f);
-		setGain(1f);
-		setLooping(false);
-		setPlaybackPosition(0f);
-
-		setPosition(Vector3.ZERO);
+	public void init() {
+		// cast is safe because of protected constructor and sound manager is only available on client
+		setPosition(((Client) Spout.getEngine()).getPlayer().getScene().getPosition());
 		setVelocity(Vector3.ZERO);
-		setDirection(Vector3.ZERO);
-
-		setFloat(AL10.AL_MAX_DISTANCE, 50f); // Should be in a config
-		setFloat(AL10.AL_REFERENCE_DISTANCE, 10f);
-	}
-
-	/**
-	 * Binds the current sound to the SoundSource.
-	 */
-	private void bindSound() {
-		stop(); // Ensure that the sound has come to a complete stop.
-		setInt(AL10.AL_BUFFER, sound.getId());
+		setPitch(1);
+		setGain(1);
 	}
 
 	@Override
-	public SoundState getState() {
-		return SoundState.get(getInt(AL10.AL_SOURCE_STATE) - 4113);
+	public void bind() {
+		setInteger(AL_BUFFER, sound.getId());
 	}
 
 	@Override
-	public void play() {
-		AL10.alSourcePlay(sourceId);
+	public void doPlay() {
+		alSourcePlay(id);
 	}
 
 	@Override
 	public void pause() {
-		AL10.alSourcePause(sourceId);
+		alSourcePause(id);
 	}
 
 	@Override
 	public void stop() {
-		AL10.alSourceStop(sourceId);
+		alSourceStop(id);
 	}
 
 	@Override
 	public void rewind() {
-		AL10.alSourceRewind(sourceId);
+		alSourceRewind(id);
+	}
+
+	@Override
+	public void dispose() {
+		alDeleteSources(id);
 	}
 
 	@Override
 	public float getPitch() {
-		return getFloat(AL10.AL_PITCH);
+		return getFloat(AL_PITCH);
 	}
 
 	@Override
 	public void setPitch(float pitch) {
-		setFloat(AL10.AL_PITCH, Math.max(pitch, 0f));
+		setFloat(AL_PITCH, pitch);
 	}
 
 	@Override
 	public float getGain() {
-		return getFloat(AL10.AL_GAIN);
+		return getFloat(AL_GAIN);
 	}
 
 	@Override
 	public void setGain(float gain) {
-		setFloat(AL10.AL_GAIN, Math.max(gain, 0f));
+		setFloat(AL_GAIN, gain);
 	}
 
 	@Override
 	public boolean isLooping() {
-		return getInt(AL10.AL_LOOPING) == AL10.AL_TRUE;
+		return getBoolean(AL_LOOPING);
 	}
 
 	@Override
 	public void setLooping(boolean looping) {
-		setInt(AL10.AL_LOOPING, looping ? AL10.AL_TRUE : AL10.AL_FALSE);
+		setBoolean(AL_LOOPING, looping);
 	}
 
 	@Override
 	public float getPlaybackPosition() {
-		return getFloat(AL11.AL_SEC_OFFSET);
+		return getFloat(AL_SEC_OFFSET);
 	}
 
 	@Override
 	public void setPlaybackPosition(float seconds) {
-		setFloat(AL11.AL_SEC_OFFSET, seconds);
-		rewind();
+		setFloat(AL_SEC_OFFSET, seconds);
 	}
 
 	@Override
-	public Vector3 getPosition() {
-		return getVector3(AL10.AL_POSITION);
+	public Point getPosition() {
+		return new Point(getVector3(AL_POSITION), world);
 	}
 
 	@Override
-	public void setPosition(Vector3 position) {
-		setVector3(AL10.AL_POSITION, position);
+	public void setPosition(Point position) {
+		world = position.getWorld();
+		setVector3(AL_POSITION, position);
 	}
 
 	@Override
 	public Vector3 getVelocity() {
-		return getVector3(AL10.AL_VELOCITY);
+		return getVector3(AL_VELOCITY);
 	}
 
 	@Override
 	public void setVelocity(Vector3 velocity) {
-		setVector3(AL10.AL_VELOCITY, velocity);
+		setVector3(AL_VELOCITY, velocity);
 	}
 
 	@Override
 	public Vector3 getDirection() {
-		return getVector3(AL10.AL_DIRECTION);
+		return getVector3(AL_DIRECTION);
 	}
 
 	@Override
 	public void setDirection(Vector3 direction) {
-		setVector3(AL10.AL_DIRECTION, direction);
-	}
-
-	private float getFloat(int property) {
-		return AL10.alGetSourcef(sourceId, property);
-	}
-
-	private void setFloat(int property, float value) {
-		AL10.alSourcef(sourceId, property, value);
-		checkErrors();
-	}
-
-	private int getInt(int property) {
-		return AL10.alGetSourcei(sourceId, property);
-	}
-
-	private void setInt(int property, int value) {
-		AL10.alSourcei(sourceId, property, value);
-		checkErrors();
-	}
-
-	private Vector3 getVector3(int property) {
-		FloatBuffer buffer = BufferUtils.createFloatBuffer(3);
-		AL10.alGetSource(sourceId, property, buffer);
-		return new Vector3(buffer.get(0), buffer.get(1), buffer.get(2));
-	}
-
-	private void setVector3(int property, Vector3 value) {
-		AL10.alSource3f(sourceId, property, value.getX(), value.getY(), value.getZ());
-		checkErrors();
+		setVector3(AL_DIRECTION, direction);
 	}
 
 	@Override
-	public String getName() {
-		return name;
+	public SoundState getState() {
+		return SoundState.get(getInteger(AL_SOURCE_STATE));
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		return obj instanceof SoundSource && ((SoundSource) obj).getName().equalsIgnoreCase(name);
+	private void setInteger(int k, int v) {
+		alSourcei(id, k, v);
+	}
+
+	private int getInteger(int k) {
+		return alGetSourcei(id, k);
+	}
+
+	private float getFloat(int k) {
+		return alGetSourcef(id, k);
+	}
+
+	private void setFloat(int k, float v) {
+		alSourcef(id, k, v);
+	}
+
+	private boolean getBoolean(int k) {
+		return getInteger(k) == AL_TRUE;
+	}
+
+	private void setBoolean(int k, boolean v) {
+		setInteger(k, v ? AL_TRUE : AL_FALSE);
+	}
+
+	private Vector3 getVector3(int k) {
+		FloatBuffer buff = createFloatBuffer(3);
+		alGetSource(id, k, buff);
+		return new Vector3(buff.get(0), buff.get(1), buff.get(2));
+	}
+
+	private void setVector3(int k, Vector3 v) {
+		alSource(id, k, (FloatBuffer) createFloatBuffer(3).put(v.toArray()).flip());
 	}
 }

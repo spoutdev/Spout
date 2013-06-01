@@ -24,31 +24,35 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.resources.loader;
+package org.spout.engine.filesystem.resource.loader;
 
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.yaml.snakeyaml.Yaml;
 
 import org.spout.api.Spout;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Bone;
 import org.spout.api.model.animation.BoneTransform;
 import org.spout.api.model.animation.Skeleton;
-import org.spout.api.resource.BasicResourceLoader;
+import org.spout.api.resource.ResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
-import org.yaml.snakeyaml.Yaml;
 
 @SuppressWarnings("unchecked")
-public class AnimationLoader extends BasicResourceLoader<Animation> {
-
+public class AnimationLoader extends ResourceLoader {
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
+
+	public AnimationLoader() {
+		super("animation", "animation://Spout/entities/Spouty/spouty.sam");
+	}
 
 	private static Animation loadObj(InputStream stream) {
 		final Yaml yaml = new Yaml();
 		final Map<? extends String, ?> resourceProperties = checkerMapStringObject.check(yaml.load(stream));
 
-		Skeleton skeleton = (Skeleton)Spout.getFilesystem().getResource((String)resourceProperties.get("Skeleton"));
+		Skeleton skeleton = (Skeleton)Spout.getFileSystem().getResource((String)resourceProperties.get("Skeleton"));
 		
 		int frames = (Integer)resourceProperties.get("frames");
 		float delay = ((Double)resourceProperties.get("delay")).floatValue();
@@ -95,23 +99,7 @@ public class AnimationLoader extends BasicResourceLoader<Animation> {
 	}
 
 	@Override
-	public String getFallbackResourceName() {
-		return "animation://Spout/entities/Spouty/spouty.sam";
+	public Animation load(InputStream in) {
+		return AnimationLoader.loadObj(in);
 	}
-
-	@Override
-	public Animation getResource(InputStream stream) {
-		return AnimationLoader.loadObj(stream);
-	}
-
-	@Override
-	public String getProtocol() {
-		return "animation";
-	}
-
-	@Override
-	public String[] getExtensions() {
-		return new String[] { "sam" };
-	}
-
 }

@@ -28,13 +28,13 @@ package org.spout.engine.audio;
 
 import java.nio.FloatBuffer;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.openal.AL10;
-
 import org.spout.api.audio.SoundListener;
 import org.spout.api.geo.World;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.math.Vector3;
+
+import static org.lwjgl.openal.AL10.*;
+import static org.lwjgl.BufferUtils.*;
 
 public class SpoutSoundListener implements SoundListener {
 	private World world;
@@ -42,79 +42,78 @@ public class SpoutSoundListener implements SoundListener {
 	@Override
 	public void setPosition(Point pos) {
 		world = pos.getWorld();
-		setVector3(AL10.AL_POSITION, pos);
+		setVector3(AL_POSITION, pos);
 	}
 
 	@Override
 	public Point getPosition() {
-		Vector3 v = getVector3(AL10.AL_POSITION);
-		return new Point(world, v.getX(), v.getY(), v.getZ());
+		return new Point(getVector3(AL_POSITION), world);
 	}
 
 	@Override
 	public void setVelocity(Vector3 vec) {
-		setVector3(AL10.AL_VELOCITY, vec);
+		setVector3(AL_VELOCITY, vec);
 	}
 
 	@Override
 	public Vector3 getVelocity() {
-		return getVector3(AL10.AL_VELOCITY);
+		return getVector3(AL_VELOCITY);
 	}
 
 	@Override
 	public void setOrientation(Vector3 at, Vector3 up) {
-		setFloatArray(AL10.AL_ORIENTATION, getOrientationArray(at, up));
+		setFloatArray(AL_ORIENTATION, new float[] {
+				at.getX(), at.getY(), at.getZ(), up.getX(), up.getY(), up.getZ()
+		});
 	}
 
 	@Override
 	public void setOrientationAt(Vector3 at) {
-		Vector3 up = getOrientationUp();
-		setFloatArray(AL10.AL_ORIENTATION, getOrientationArray(at, up));
+		float[] o = getFloatArray(AL_ORIENTATION, 6);
+		o[0] = at.getX();
+		o[1] = at.getY();
+		o[2] = at.getZ();
+		setFloatArray(AL_ORIENTATION, o);
 	}
 
 	@Override
 	public void setOrientationUp(Vector3 up) {
-		Vector3 at = getOrientationAt();
-		setFloatArray(AL10.AL_ORIENTATION, getOrientationArray(at, up));
+		float[] o = getFloatArray(AL_ORIENTATION, 6);
+		o[3] = up.getX();
+		o[4] = up.getY();
+		o[5] = up.getZ();
+		setFloatArray(AL_ORIENTATION, o);
 	}
 
 	@Override
 	public Vector3 getOrientationAt() {
-		FloatBuffer buffer = getFloatBuffer(AL10.AL_ORIENTATION, 6);
-		return new Vector3(buffer.get(0), buffer.get(1), buffer.get(2));
+		float[] o = getFloatArray(AL_ORIENTATION, 6);
+		return new Vector3(o[0], o[1], o[2]);
 	}
 
 	@Override
 	public Vector3 getOrientationUp() {
-		FloatBuffer buffer = getFloatBuffer(AL10.AL_ORIENTATION, 6);
-		return new Vector3(buffer.get(3), buffer.get(4), buffer.get(5));
+		float[] o = getFloatArray(AL_ORIENTATION, 6);
+		return new Vector3(o[3], o[4], o[5]);
 	}
 
-	private float[] getOrientationArray(Vector3 at, Vector3 up) {
-		return new float[] {at.getX(), at.getY(), at.getZ(), up.getX(), up.getY(), up.getZ()};
+	private void setVector3(int k, Vector3 v) {
+		alListener(k, (FloatBuffer) createFloatBuffer(3).put(v.toArray()).flip());
 	}
 
-	private void setVector3(int prop, Vector3 vec) {
-		FloatBuffer buffer = BufferUtils.createFloatBuffer(3).put(vec.toArray());
-		buffer.flip();
-		AL10.alListener(prop, buffer);
+	private Vector3 getVector3(int k) {
+		FloatBuffer buff = createFloatBuffer(3);
+		alGetListener(k, buff);
+		return new Vector3(buff.get(0), buff.get(1), buff.get(2));
 	}
 
-	private Vector3 getVector3(int prop) {
-		FloatBuffer buffer = BufferUtils.createFloatBuffer(3);
-		AL10.alGetListener(prop, buffer);
-		return new Vector3(buffer.get(0), buffer.get(1), buffer.get(2));
+	private void setFloatArray(int k, float[] v) {
+		alListener(k, (FloatBuffer) createFloatBuffer(v.length).put(v).flip());
 	}
 
-	private void setFloatArray(int prop, float[] a) {
-		FloatBuffer buffer = BufferUtils.createFloatBuffer(a.length).put(a);
-		buffer.flip();
-		AL10.alListener(prop, buffer);
-	}
-
-	private FloatBuffer getFloatBuffer(int prop, int size) {
-		FloatBuffer buffer = BufferUtils.createFloatBuffer(size);
-		AL10.alGetListener(prop, buffer);
-		return buffer;
+	private float[] getFloatArray(int k, int bufferSize) {
+		FloatBuffer buff = createFloatBuffer(bufferSize);
+		alGetListener(k, buff);
+		return buff.array();
 	}
 }

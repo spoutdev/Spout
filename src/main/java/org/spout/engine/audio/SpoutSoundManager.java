@@ -50,7 +50,8 @@ public class SpoutSoundManager implements SoundManager {
 	private final SoundListener listener = new SpoutSoundListener();
 
 	@Override
-	public void init(Client client) {
+	public void init() {
+		// create the AL context
 		try {
 			AL.create();
 		} catch (LWJGLException le) {
@@ -60,7 +61,7 @@ public class SpoutSoundManager implements SoundManager {
 		checkErrors();
 
 		// Initialize the listener
-		listener.setPosition(new Point(client.getDefaultWorld(), 0, 0, 0));
+		listener.setPosition(new Point(Spout.getEngine().getDefaultWorld(), 0, 0, 0));
 		listener.setVelocity(Vector3.ZERO);
 		listener.setOrientation(Vector3.ZERO, Vector3.ZERO);
 	}
@@ -68,6 +69,7 @@ public class SpoutSoundManager implements SoundManager {
 	@Override
 	public SoundSource createSource(Sound sound, String name) {
 		SoundSource source = new SpoutSoundSource(name);
+		source.init();
 		source.setSound(sound);
 		sources.add(source);
 		return source;
@@ -75,11 +77,15 @@ public class SpoutSoundManager implements SoundManager {
 
 	@Override
 	public void removeSource(SoundSource source) {
+		source.dispose();
 		sources.remove(source);
 	}
 
 	@Override
 	public void clearSources() {
+		for (SoundSource source : sources) {
+			source.dispose();
+		}
 		sources.clear();
 	}
 

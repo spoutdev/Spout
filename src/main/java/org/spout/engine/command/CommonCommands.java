@@ -69,7 +69,7 @@ public class CommonCommands {
 		if (!(source.hasPermission("spout.command.batch." + fileName))) {
 			throw new CommandException("You do not have permission to execute " + fileName);
 		}
-		CommandBatch bat = (CommandBatch) engine.getFilesystem().getResource("batch://Spout/batches/" + fileName);
+		CommandBatch bat = engine.getFileSystem().getResource("batch://Spout/batches/" + fileName);
 		bat.execute(source);
 		source.sendMessage(ChatStyle.BRIGHT_GREEN, "Executed " + fileName + ".");
 	}

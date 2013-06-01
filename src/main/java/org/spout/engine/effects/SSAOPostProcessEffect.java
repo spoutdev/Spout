@@ -36,7 +36,8 @@ import org.spout.api.math.Vector2;
 import org.spout.api.math.Vector3;
 import org.spout.api.render.effect.RenderEffect;
 import org.spout.api.render.effect.SnapshotRender;
-import org.spout.engine.resources.ClientTexture;
+
+import org.spout.engine.filesystem.resource.ClientTexture;
 
 //Crysis method of SSAO
 //Following the excellent John-chapman tutorial here: http://www.john-chapman.net/content.php?id=8

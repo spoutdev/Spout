@@ -35,19 +35,13 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.spout.api.Engine;
 import org.spout.api.Spout;
 import org.spout.api.plugin.Plugin;
 import org.spout.api.resource.ResourcePathResolver;
 
 public class JarFilePathResolver implements ResourcePathResolver {
-	private final Engine engine;
-	public JarFilePathResolver(Engine engine) {
-		this.engine = engine;
-	}
-
 	public JarFile getJar(String host) throws IOException {
-		Plugin p = engine.getPluginManager().getPlugin(host);
+		Plugin p = Spout.getPluginManager().getPlugin(host);
 		if (p == null) {
 			return null;
 		}

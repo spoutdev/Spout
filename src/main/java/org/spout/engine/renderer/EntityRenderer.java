@@ -38,8 +38,13 @@ import org.spout.api.model.Model;
 import org.spout.api.render.Camera;
 
 import org.spout.engine.entity.component.EntityRendererComponent;
+<<<<<<< HEAD
 import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.resources.ClientTexture;
+=======
+import org.spout.engine.filesystem.resource.ClientTexture;
+import org.spout.engine.mesh.BaseMesh;
+>>>>>>> Update for FileSystem changes
 
 /**
  * The Renderer of all EntityRendererComponents

@@ -24,7 +24,7 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.resources.loader;
+package org.spout.engine.filesystem.resource.loader;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -33,9 +33,12 @@ import java.util.Scanner;
 import org.spout.api.math.Vector2;
 import org.spout.api.model.mesh.CubeMeshFactory;
 import org.spout.api.model.mesh.OrientedMesh;
-import org.spout.api.resource.BasicResourceLoader;
+import org.spout.api.resource.ResourceLoader;
 
-public class CubeMeshLoader extends BasicResourceLoader<OrientedMesh> {
+public class CubeMeshLoader extends ResourceLoader {
+	public CubeMeshLoader() {
+		super("cubemesh", "cubemesh://Spout/fallbacks/cube.uvs");
+	}
 
 	private static OrientedMesh loadObj(InputStream stream) {
 		Scanner scan = new Scanner(stream);
@@ -122,23 +125,7 @@ public class CubeMeshLoader extends BasicResourceLoader<OrientedMesh> {
 	}
 
 	@Override
-	public String getFallbackResourceName() {
-		return "cubemesh://Spout/fallbacks/cube.uvs";
-	}
-
-	@Override
-	public OrientedMesh getResource(InputStream stream) {
+	public OrientedMesh load(InputStream stream) {
 		return CubeMeshLoader.loadObj(stream);
 	}
-
-	@Override
-	public String getProtocol() {
-		return "cubemesh";
-	}
-
-	@Override
-	public String[] getExtensions() {
-		return new String[] { "uvs", "scm" };
-	}
-
 }

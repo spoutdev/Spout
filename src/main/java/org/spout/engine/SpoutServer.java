@@ -55,7 +55,6 @@ import org.teleal.cling.support.igd.PortMappingListener;
 import org.teleal.cling.support.model.PortMapping;
 import org.teleal.cling.transport.spi.InitializationException;
 
-import org.spout.api.FileSystem;
 import org.spout.api.Platform;
 import org.spout.api.Server;
 import org.spout.api.chat.ChatArguments;
@@ -71,11 +70,12 @@ import org.spout.api.protocol.CommonPipelineFactory;
 import org.spout.api.protocol.PortBinding;
 import org.spout.api.protocol.Protocol;
 import org.spout.api.protocol.Session;
+import org.spout.api.resource.FileSystem;
 import org.spout.api.util.StringUtil;
 import org.spout.api.util.access.AccessManager;
 
 import org.spout.engine.entity.SpoutPlayer;
-import org.spout.engine.filesystem.ServerFileSystem;
+import org.spout.engine.filesystem.CommonFileSystem;
 import org.spout.engine.listener.SpoutServerListener;
 import org.spout.engine.protocol.PortBindingImpl;
 import org.spout.engine.protocol.PortBindings;
@@ -111,7 +111,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	private JmDNS jmdns = null;
 
 	public SpoutServer() {
-		this.filesystem = new ServerFileSystem();
+		this.filesystem = new CommonFileSystem();
 	}
 
 	@Override
@@ -127,8 +127,8 @@ public class SpoutServer extends SpoutEngine implements Server {
 	public void start(boolean checkWorlds, Listener listener) {
 		super.start(checkWorlds);
 		getEventManager().registerEvents(listener, this);
-		getFilesystem().postStartup();
 		getEventManager().callEvent(new EngineStartEvent());
+		filesystem.postStartup();
 		log("Done Loading, ready for players.");
 	}
 
@@ -403,7 +403,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 	}
 
 	@Override
-	public FileSystem getFilesystem() {
+	public FileSystem getFileSystem() {
 		return filesystem;
 	}
 

@@ -35,7 +35,6 @@ import org.spout.api.Platform;
 import org.spout.api.Spout;
 import org.spout.api.render.RenderMode;
 
-import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.engine.util.argument.PlatformConverter;
 import org.spout.engine.util.argument.RenderModeConverter;
 
@@ -64,7 +63,6 @@ public class SpoutApplication {
 				if (!dir.exists()) {
 					dir.mkdirs();
 				}
-				SharedFileSystem.setParentDirectory(dir);
 			}
 
 			SpoutEngine engine;
@@ -83,7 +81,7 @@ public class SpoutApplication {
 			}
 
 			Spout.setEngine(engine);
-			engine.getFilesystem().init(engine);
+			engine.getFileSystem().init();
 			engine.init(main);
 			engine.start();
 		} catch (Throwable t) {

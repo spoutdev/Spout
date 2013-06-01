@@ -24,49 +24,33 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.resources.loader;
+package org.spout.engine.filesystem.resource.loader;
 
-import java.awt.Font;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
-import org.spout.api.Platform;
-import org.spout.api.Spout;
-import org.spout.api.resource.BasicResourceLoader;
+import org.spout.api.command.CommandBatch;
+import org.spout.api.resource.ResourceLoader;
 
-import org.spout.engine.resources.ClientFont;
-
-public class FontLoader extends BasicResourceLoader<ClientFont> {
-	@Override
-	public final String getFallbackResourceName() {
-		return "font://Spout/fonts/ubuntu/Ubuntu-R.ttf";
+public class CommandBatchLoader extends ResourceLoader {
+	public CommandBatchLoader() {
+		super("batch", null);
 	}
 
 	@Override
-	public ClientFont getResource(InputStream stream) {
-		if (stream == null) {
-			throw new IllegalArgumentException("Stream passed into font loader is null!");
-		}
-		ClientFont fontFromResource = null;
+	public CommandBatch load(InputStream in) {
+		CommandBatch bat = new CommandBatch();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		try {
-			final Font raw = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(Font.BOLD, 30f);
-			fontFromResource = new ClientFont(raw);
-			
-			if(Spout.getPlatform() == Platform.CLIENT)
-				fontFromResource.writeGPU();
-		} catch (Exception e) {
-			Spout.getLogger().severe("Exception caught when reading in a font.");
+			String line;
+			while ((line = reader.readLine()) != null) {
+				bat.add(line.trim());
+			}
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return fontFromResource;
-	}
-
-	@Override
-	public final String getProtocol() {
-		return "font";
-	}
-
-	@Override
-	public final String[] getExtensions() {
-		return new String[]{"ttf"};
+		return bat;
 	}
 }

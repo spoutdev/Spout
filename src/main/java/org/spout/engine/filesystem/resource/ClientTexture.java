@@ -24,15 +24,14 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.resources;
+package org.spout.engine.filesystem.resource;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
+import org.lwjgl.*;
+import org.lwjgl.opengl.*;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;

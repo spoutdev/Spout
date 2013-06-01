@@ -65,6 +65,8 @@ import org.spout.api.render.Shader;
 
 import org.spout.engine.batcher.SpriteBatch;
 import org.spout.engine.entity.component.SpoutSceneComponent;
+import org.spout.engine.filesystem.resource.ClientRenderMaterial;
+import org.spout.engine.filesystem.resource.ClientRenderTexture;
 import org.spout.engine.gui.DebugScreen;
 import org.spout.engine.gui.SpoutScreenStack;
 import org.spout.engine.gui.SpoutWidget;
@@ -72,8 +74,6 @@ import org.spout.engine.mesh.BaseMesh;
 import org.spout.engine.renderer.BatchVertexRenderer;
 import org.spout.engine.renderer.EntityRenderer;
 import org.spout.engine.renderer.WorldRenderer;
-import org.spout.engine.resources.ClientRenderMaterial;
-import org.spout.engine.resources.ClientRenderTexture;
 import org.spout.engine.util.MacOSXUtils;
 
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
@@ -151,7 +151,6 @@ public class SpoutRenderer {
 		}
 		SpoutRenderer.checkGLError();
 		//soundManager.init();
-		client.getFilesystem().postStartup();
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -174,7 +173,7 @@ public class SpoutRenderer {
 			reflected.writeGPU();
 			// Test
 			reflectedDebugBatch = new SpriteBatch();
-			Shader s1 = (Shader) client.getFilesystem().getResource("shader://Spout/shaders/diffuse.ssf");
+			Shader s1 = client.getFileSystem().getResource("shader://Spout/shaders/diffuse.ssf");
 			HashMap<String, Object> map1 = new HashMap<String, Object>();
 			map1.put("Diffuse", reflected);
 			reflectedDebugMat = new ClientRenderMaterial(s1, map1);
@@ -190,7 +189,7 @@ public class SpoutRenderer {
 		screenBatcher = new SpriteBatch();
 		t = new ClientRenderTexture(true, false, true);
 		t.writeGPU();
-		Shader s = (Shader) client.getFilesystem().getResource("shader://Spout/shaders/diffuse.ssf");
+		Shader s = client.getFileSystem().getResource("shader://Spout/shaders/diffuse.ssf");
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("Diffuse", t);
 		mat = new ClientRenderMaterial(s, map);

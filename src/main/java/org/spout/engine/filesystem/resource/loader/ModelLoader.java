@@ -24,54 +24,44 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.resources.loader;
+package org.spout.engine.filesystem.resource.loader;
 
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.yaml.snakeyaml.Yaml;
+
 import org.spout.api.Spout;
 import org.spout.api.model.animation.Animation;
 import org.spout.api.model.animation.Skeleton;
 import org.spout.api.model.mesh.Mesh;
 import org.spout.api.render.RenderMaterial;
-import org.spout.api.resource.BasicResourceLoader;
+import org.spout.api.resource.ResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
-import org.spout.engine.resources.ClientModel;
-import org.yaml.snakeyaml.Yaml;
 
-public class ModelLoader extends BasicResourceLoader<ClientModel> {
-	private static final String[] extensions = new String[]{ "spm" };
+import org.spout.engine.filesystem.resource.ClientModel;
+
+public class ModelLoader extends ResourceLoader {
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
 
-	@Override
-	public String getProtocol() {
-		return "model";
+	public ModelLoader() {
+		super("model", "model://Spout/fallbacks/fallback.spm");
 	}
 
 	@Override
-	public String[] getExtensions() {
-		return extensions;
-	}
-
-	@Override
-	public String getFallbackResourceName() {
-		return "model://Spout/fallbacks/fallback.spm";
-	}
-
-	@Override
-	public ClientModel getResource(InputStream stream) {
+	public ClientModel load(InputStream in) {
 		final Yaml yaml = new Yaml();
-		final Map<? extends String, ?> resourceProperties = checkerMapStringObject.check(yaml.load(stream));
+		final Map<? extends String, ?> resourceProperties = checkerMapStringObject.check(yaml.load(in));
 
-		Mesh mesh = (Mesh)Spout.getFilesystem().getResource((String)resourceProperties.get("Mesh"));
-		RenderMaterial material = (RenderMaterial)Spout.getFilesystem().getResource((String)resourceProperties.get("Material"));
+		Mesh mesh = (Mesh)Spout.getFileSystem().getResource((String)resourceProperties.get("Mesh"));
+		RenderMaterial material = Spout.getFileSystem().getResource((String)resourceProperties.get("Material"));
 		
 		Skeleton skeleton = null;
 		
 		if(resourceProperties.containsKey("Skeleton")){
-			skeleton = (Skeleton)Spout.getFilesystem().getResource((String)resourceProperties.get("Skeleton"));
+			skeleton = Spout.getFileSystem().getResource((String)resourceProperties.get("Skeleton"));
 		}
 		
 		Map<String, Animation> animations = new HashMap<String, Animation>();
@@ -81,7 +71,7 @@ public class ModelLoader extends BasicResourceLoader<ClientModel> {
 			Map<? extends String, ?> map = checkerMapStringObject.check(resourceProperties.get("Animation"));
 			
 			for(Entry<? extends String, ?> entry : map.entrySet()){
-				Animation animation = (Animation) Spout.getFilesystem().getResource( (String) entry.getValue() );
+				Animation animation = Spout.getFileSystem().getResource( (String) entry.getValue() );
 				
 				animations.put(entry.getKey(), animation);
 			}

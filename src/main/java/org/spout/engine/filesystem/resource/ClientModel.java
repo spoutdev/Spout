@@ -24,47 +24,54 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.resources.loader;
+package org.spout.engine.filesystem.resource;
 
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.nio.IntBuffer;
+import java.util.Collections;
+import java.util.Map;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.openal.AL10;
-import org.lwjgl.util.WaveData;
+import org.spout.api.model.Model;
+import org.spout.api.model.animation.Animation;
+import org.spout.api.model.animation.Skeleton;
+import org.spout.api.model.mesh.Mesh;
+import org.spout.api.render.RenderMaterial;
 
-import org.spout.api.resource.BasicResourceLoader;
+public class ClientModel implements Model {
+	private static final long serialVersionUID = 1L;
+	public Mesh mesh;
+	public Skeleton skeleton;
+	public RenderMaterial material;
+	public Map<String, Animation> animations;
 
-import org.spout.engine.audio.SpoutSoundManager;
-import org.spout.engine.resources.ClientSound;
+	@SuppressWarnings("unchecked")
+	public ClientModel(Mesh mesh,RenderMaterial material) {
+		this(mesh, null, material, Collections.EMPTY_MAP);
+	}
 
-public class SoundLoader extends BasicResourceLoader<ClientSound> {
+	public ClientModel(Mesh mesh, Skeleton skeleton, RenderMaterial material, Map<String, Animation> animations) {
+		this.mesh = mesh;
+		this.skeleton = skeleton;
+		this.material = material;
+		this.animations = animations;
+	}
+	
 	@Override
-	public String getFallbackResourceName() {
-		return null;
+	public Mesh getMesh() {
+		return mesh;
+	}
+	
+	@Override
+	public Skeleton getSkeleton() {
+		return skeleton;
+	}
+	
+	@Override
+	public RenderMaterial getRenderMaterial() {
+		return material;
 	}
 
 	@Override
-	public ClientSound getResource(InputStream stream) {
-		IntBuffer buffer = BufferUtils.createIntBuffer(1);
-		AL10.alGenBuffers(buffer);
-		SpoutSoundManager.checkErrors();
-
-		WaveData waveFile = WaveData.create(new BufferedInputStream(stream));
-		AL10.alBufferData(buffer.get(0), waveFile.format, waveFile.data, waveFile.samplerate);
-		waveFile.dispose();
-
-		return new ClientSound(buffer.get(0));
+	public Map<String, Animation> getAnimations() {
+		return animations;
 	}
 
-	@Override
-	public String getProtocol() {
-		return "sound";
-	}
-
-	@Override
-	public String[] getExtensions() {
-		return new String[] {"wav"};
-	}
 }

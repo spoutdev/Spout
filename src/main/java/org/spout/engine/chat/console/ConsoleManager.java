@@ -39,7 +39,6 @@ import org.spout.api.chat.ChatArguments;
 import org.spout.api.chat.ChatLogFormatter;
 import org.spout.engine.SpoutEngine;
 import org.spout.engine.chat.style.JansiStyleHandler;
-import org.spout.engine.filesystem.SharedFileSystem;
 import org.spout.logging.LoggerOutputStream;
 import org.spout.logging.file.RotatingFileHandler;
 import org.spout.logging.jline.CommandCallback;
@@ -73,7 +72,7 @@ public final class ConsoleManager {
 		jLineHandler.setFormatter(new ChatLogFormatter(JansiStyleHandler.ID));
 		logger.addHandler(jLineHandler);
 
-		Handler fileHandler = new RotatingFileHandler(new File(SharedFileSystem.getParentDirectory(), "logs"), engine.getLogFile(), engine.debugMode());
+		Handler fileHandler = new RotatingFileHandler(new File("logs"), engine.getLogFile(), engine.debugMode());
 		fileHandler.setFormatter(new ChatLogFormatter());
 		logger.addHandler(fileHandler);
 

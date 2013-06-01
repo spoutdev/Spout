@@ -24,7 +24,7 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.resources;
+package org.spout.engine.filesystem.resource;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,11 +38,10 @@ import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntityPrefab;
 import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
-import org.spout.api.resource.Resource;
 
 import org.spout.engine.entity.SpoutEntity;
 
-public class ClientEntityPrefab extends Resource implements EntityPrefab {
+public class ClientEntityPrefab implements EntityPrefab {
 	private String name;
 	private List<Class<? extends Component>> components = new ArrayList<Class<? extends Component>>();
 	private Map<String, Object> data = new HashMap<String, Object>();

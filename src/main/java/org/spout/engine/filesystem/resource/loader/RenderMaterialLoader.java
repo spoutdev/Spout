@@ -24,7 +24,7 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.resources.loader;
+package org.spout.engine.filesystem.resource.loader;
 
 import java.awt.Color;
 import java.io.InputStream;
@@ -44,24 +44,23 @@ import org.spout.api.plugin.CommonClassLoader;
 import org.spout.api.render.Shader;
 import org.spout.api.render.Texture;
 import org.spout.api.render.effect.RenderEffect;
-import org.spout.api.resource.BasicResourceLoader;
-import org.spout.api.resource.Resource;
+import org.spout.api.resource.ResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
 
-import org.spout.engine.resources.ClientRenderMaterial;
+import org.spout.engine.filesystem.resource.ClientRenderMaterial;
 
-public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMaterial> {
-	@Override
-	public String getFallbackResourceName() {
-		return "material://Spout/fallbacks/generic.smt";
-	}
-
+public class RenderMaterialLoader extends ResourceLoader {
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
 	private static final Pattern vectorPattern = Pattern.compile("(vector[234]|color)\\((.*)\\)");
+
+	public RenderMaterialLoader() {
+		super("material", "material://Spout/fallbacks/generic.smt");
+	}
+
 	@Override
-	public ClientRenderMaterial getResource(InputStream stream) {
+	public ClientRenderMaterial load(InputStream in) {
 		final Yaml yaml = new Yaml();
-		final Map<? extends String, ?> resourceProperties = checkerMapStringObject.check(yaml.load(stream));
+		final Map<? extends String, ?> resourceProperties = checkerMapStringObject.check(yaml.load(in));
 
 		final Object shaderPathObject = resourceProperties.get("Shader");
 		if (!(shaderPathObject instanceof String)) {
@@ -71,12 +70,7 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 		String shaderPath = (String) shaderPathObject;
 		Spout.log(shaderPath);
 
-		final Resource shaderObject = Spout.getFilesystem().getResource(shaderPath);
-		if (!(shaderObject instanceof Shader)) {
-			throw new IllegalStateException("Tried to load a shader but was given the path to a different kind of resource");
-		}
-
-		final Shader shader = (Shader) shaderObject;
+		final Shader shader = Spout.getFileSystem().getResource(shaderPath);
 		int layer = 0;
 		boolean depthTesting = true;
 		if(resourceProperties.containsKey("RenderState"))
@@ -111,11 +105,7 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 
 				if (val.contains("://")) {
 					// It's a resource!
-					Resource resource = Spout.getFilesystem().getResource(val);
-					if (resource instanceof Texture && !((Texture)resource).isLoaded()) {
-						//((Texture)resource).load();//TODO : Control if GL ready
-					}
-
+					Texture resource = Spout.getFileSystem().getResource(val);
 					paramsNew.put(key, resource);
 					continue;
 				}
@@ -237,13 +227,5 @@ public class RenderMaterialLoader extends BasicResourceLoader<ClientRenderMateri
 
 
 		return  material;
-	}
-	@Override
-	public String getProtocol() {
-		return "material";
-	}
-	@Override
-	public String[] getExtensions() {
-		return new String[] { "smt" };
 	}
 }

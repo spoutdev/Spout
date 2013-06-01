@@ -24,27 +24,33 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.resources.loader;
+package org.spout.engine.filesystem.resource.loader;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.yaml.snakeyaml.Yaml;
+
 import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.render.RenderMode;
-import org.spout.api.resource.BasicResourceLoader;
+import org.spout.api.resource.ResourceLoader;
 import org.spout.api.util.typechecker.TypeChecker;
+
 import org.spout.engine.renderer.shader.BasicShader;
 import org.spout.engine.renderer.shader.ClientShader;
-import org.yaml.snakeyaml.Yaml;
 
-public class ShaderLoader extends BasicResourceLoader<ClientShader> {
+public class ShaderLoader extends ResourceLoader {
 	private static final TypeChecker<Map<? extends String, ?>> checkerMapStringObject = TypeChecker.tMap(String.class, Object.class);
 
+	public ShaderLoader() {
+		super("shader", "shader://Spout/fallbacks/fallback.ssf");
+	}
+
 	@Override
-	public ClientShader getResource(InputStream stream) {
+	public ClientShader load(InputStream in) {
 		final Client client = (Client) Spout.getEngine();
 
 		if (client.getRenderMode() == RenderMode.GL11) {
@@ -54,7 +60,7 @@ public class ShaderLoader extends BasicResourceLoader<ClientShader> {
 		// Get the paths for the Vertex and Fragment shaders
 		Yaml yaml = new Yaml();
 
-		Map<? extends String, ?> resource = checkerMapStringObject.check(yaml.load(stream));
+		Map<? extends String, ?> resource = checkerMapStringObject.check(yaml.load(in));
 
 		ClientShader shader = null;
 		final Map<? extends String, ?> shaderfiles;
@@ -67,8 +73,8 @@ public class ShaderLoader extends BasicResourceLoader<ClientShader> {
 		String fragShader = shaderfiles.get("Fragment").toString();
 		String vertShader = shaderfiles.get("Vertex").toString();
 
-		String fragSrc = readShaderSource(Spout.getFilesystem().getResourceStream(fragShader));
-		String vertSrc = readShaderSource(Spout.getFilesystem().getResourceStream(vertShader));
+		String fragSrc = readShaderSource(Spout.getFileSystem().getResourceStream(fragShader));
+		String vertSrc = readShaderSource(Spout.getFileSystem().getResourceStream(vertShader));
 
 		shader = new ClientShader(vertSrc, vertShader, fragSrc, fragShader, true);
 		// TODO: Read Values in the shader to file
@@ -92,20 +98,4 @@ public class ShaderLoader extends BasicResourceLoader<ClientShader> {
 		}
 		return src.toString();
 	}
-
-	@Override
-	public String getFallbackResourceName() {
-		return "shader://Spout/fallbacks/fallback.ssf";
-	}
-
-	@Override
-	public String getProtocol() {
-		return "shader";
-	}
-
-	@Override
-	public String[] getExtensions() {
-		return new String[] { "ssf" };
-	}
-
 }

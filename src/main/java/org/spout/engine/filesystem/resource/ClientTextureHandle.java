@@ -24,45 +24,26 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.resources.loader;
+package org.spout.engine.filesystem.resource;
 
-import java.io.BufferedReader;
+public class ClientTextureHandle extends ClientTexture {
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import org.spout.api.command.CommandBatch;
-import org.spout.api.resource.BasicResourceLoader;
-
-public class CommandBatchLoader extends BasicResourceLoader<CommandBatch> {
-	@Override
-	public String getFallbackResourceName() {
-		return null;
+	public ClientTextureHandle(int handle, int width, int height) {
+		super(null, width, height);
+		textureID = handle;
+		
 	}
 
+	
 	@Override
-	public String getProtocol() {
-		return "batch";
+	public void writeGPU() {
+		
 	}
+	
 
 	@Override
-	public String[] getExtensions() {
-		return new String[] {"sbat", "sbatch"};
+	public boolean isLoaded() {		
+		return true;
 	}
 
-	@Override
-	public CommandBatch getResource(InputStream stream) {
-		CommandBatch bat = new CommandBatch();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-		try {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				bat.add(line.trim());
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return bat;
-	}
 }

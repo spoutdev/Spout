@@ -32,7 +32,8 @@ import org.spout.api.exception.ConfigurationException;
 import org.spout.api.util.config.ConfigurationHolder;
 import org.spout.api.util.config.ConfigurationHolderConfiguration;
 import org.spout.api.util.config.yaml.YamlConfiguration;
-import org.spout.engine.filesystem.SharedFileSystem;
+
+import org.spout.engine.filesystem.CommonFileSystem;
 
 public class SpoutInputConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder FORWARD = new ConfigurationHolder("KEY_W", "forward");
@@ -43,7 +44,7 @@ public class SpoutInputConfiguration extends ConfigurationHolderConfiguration {
 	public static final ConfigurationHolder DOWN = new ConfigurationHolder("KEY_LSHIFT", "down");
 
 	public SpoutInputConfiguration() {
-		super(new YamlConfiguration(new File(SharedFileSystem.getConfigDirectory(), "controls.yml")));
+		super(new YamlConfiguration(new File(CommonFileSystem.CONFIG_DIRECTORY, "controls.yml")));
 	}
 
 	@Override

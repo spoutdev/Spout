@@ -24,41 +24,38 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.engine.resources;
+package org.spout.engine.filesystem.resource.loader;
 
-import org.lwjgl.openal.AL10;
-import org.spout.api.audio.Sound;
+import java.awt.Font;
+import java.io.InputStream;
 
-/**
- * An OpenAL-based implementation of the Sound class.
- */
-public class ClientSound extends Sound {
-	public ClientSound(int id) {
-		super(id);
+import org.spout.api.Platform;
+import org.spout.api.Spout;
+import org.spout.api.resource.ResourceLoader;
+
+import org.spout.engine.filesystem.resource.ClientFont;
+
+public class FontLoader extends ResourceLoader {
+	public FontLoader() {
+		super("font", "font://Spout/fonts/ubuntu/Ubuntu-R.ttf");
 	}
 
 	@Override
-	public int getSamplingRate() {
-		return getInt(AL10.AL_FREQUENCY);
+	public ClientFont load(InputStream stream) {
+		if (stream == null) {
+			throw new IllegalArgumentException("Stream passed into font loader is null!");
+		}
+		ClientFont fontFromResource = null;
+		try {
+			final Font raw = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(Font.BOLD, 30f);
+			fontFromResource = new ClientFont(raw);
+			
+			if(Spout.getPlatform() == Platform.CLIENT)
+				fontFromResource.writeGPU();
+		} catch (Exception e) {
+			Spout.getLogger().severe("Exception caught when reading in a font.");
+			e.printStackTrace();
+		}
+		return fontFromResource;
 	}
-
-	@Override
-	public int getBitDepth() {
-		return getInt(AL10.AL_BITS);
-	}
-
-	@Override
-	public int getChannels() {
-		return getInt(AL10.AL_CHANNELS);
-	}
-
-	@Override
-	public int getBufferSize() {
-		return getInt(AL10.AL_SIZE);
-	}
-
-	private int getInt(int property) {
-		return AL10.alGetBufferi(id, property);
-	}
-
 }
