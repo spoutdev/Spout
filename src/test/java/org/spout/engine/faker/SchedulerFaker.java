@@ -27,14 +27,15 @@
 package org.spout.engine.faker;
 
 import org.powermock.api.mockito.PowerMockito;
+
 import org.spout.api.geo.cuboid.Chunk;
+
 import org.spout.engine.scheduler.SpoutScheduler;
 
 public class SchedulerFaker {
-
-	        public static SpoutScheduler getSpoutScheduler() throws Exception {
-	        	SpoutScheduler scheduler = PowerMockito.mock(SpoutScheduler.class);
-	        	PowerMockito.when(scheduler, Chunk.class.getMethod("getX", (Class[])null)).withNoArguments().thenReturn(Thread.currentThread());
-	        	return scheduler;
-	        }
+	public static SpoutScheduler getSpoutScheduler() throws Exception {
+		SpoutScheduler scheduler = PowerMockito.mock(SpoutScheduler.class);
+		PowerMockito.when(scheduler, Chunk.class.getMethod("getX", (Class[]) null)).withNoArguments().thenReturn(Thread.currentThread());
+		return scheduler;
+	}
 }
