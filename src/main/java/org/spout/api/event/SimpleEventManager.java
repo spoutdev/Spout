@@ -140,6 +140,11 @@ public class SimpleEventManager implements EventManager {
 			if (eh == null) {
 				continue;
 			}
+			
+			if (method.getParameterTypes().length < 1) {
+				LOGGER.severe("No method arguments used for event type registered");
+				continue;
+			}
 			final Class<?> checkClass = method.getParameterTypes()[0];
 			Class<? extends Event> eventClass;
 			if (!Event.class.isAssignableFrom(checkClass) || method.getParameterTypes().length != 1) {
