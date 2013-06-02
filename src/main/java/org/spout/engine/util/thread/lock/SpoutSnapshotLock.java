@@ -262,7 +262,7 @@ public class SpoutSnapshotLock implements SnapshotLock {
 	}
 
 	private class LockInfo {
-		LockInfo(long oldestLock, int locks) {
+		public LockInfo(long oldestLock, int locks) {
 			this.oldestLock = oldestLock;
 			this.locks = locks;
 		}

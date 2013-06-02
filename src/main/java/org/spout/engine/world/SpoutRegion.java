@@ -1900,7 +1900,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 		private WorldRenderer renderer = null;
 
-		MeshGeneratorThread() {
+		public MeshGeneratorThread() {
 			super(SpoutRegion.this.toString() + " Mesh Generation Thread");
 			this.setDaemon(true);
 		}
@@ -2061,7 +2061,7 @@ public class SpoutRegion extends Region implements AsyncManager {
 	
 	private class RegionSetQueueElement extends SetQueueElement<Cube> {
 
-		RegionSetQueueElement(SetQueue<Cube> queue, SpoutRegion value) {
+		public RegionSetQueueElement(SetQueue<Cube> queue, SpoutRegion value) {
 			super(queue, value);
 		}
 

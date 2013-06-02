@@ -444,7 +444,7 @@ public class RegionGenerator implements Named {
 		private final int x;
 		private final int z;
 		
-		NamedReentrantLock(int x, int z) {
+		public NamedReentrantLock(int x, int z) {
 			this.x = x;
 			this.z = z;
 		}

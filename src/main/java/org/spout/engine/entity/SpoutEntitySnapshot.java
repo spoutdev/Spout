@@ -111,22 +111,22 @@ public class SpoutEntitySnapshot implements EntitySnapshot{
 	}
 
 	@Override
-	public int getId() {
+	public final int getId() {
 		return entityId;
 	}
 
 	@Override
-	public UUID getUID() {
+	public final UUID getUID() {
 		return uniqueId;
 	}
 
 	@Override
-	public Transform getTransform() {
+	public final Transform getTransform() {
 		return location;
 	}
 
 	@Override
-	public UUID getWorldUID() {
+	public final UUID getWorldUID() {
 		return worldId;
 	}
 
@@ -136,7 +136,7 @@ public class SpoutEntitySnapshot implements EntitySnapshot{
 	}
 
 	@Override
-	public SerializableMap getDataMap() {
+	public final SerializableMap getDataMap() {
 		return dataMap;
 	}
 

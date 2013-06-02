@@ -208,7 +208,7 @@ public class SpoutScheduler implements Scheduler {
 		private ConcurrentLinkedQueue<Runnable> renderTaskQueue = new ConcurrentLinkedQueue<Runnable>();
 		Canvas parent = null;
 
-		RenderThread() {
+		public RenderThread() {
 			super("Render Thread");
 		}
 
@@ -326,7 +326,7 @@ public class SpoutScheduler implements Scheduler {
 	}
 
 	private class MainThread extends Thread {
-		MainThread() {
+		public MainThread() {
 			super("MainThread");
 		}
 
@@ -462,7 +462,7 @@ public class SpoutScheduler implements Scheduler {
 
 	private class GUIThread extends Thread {
 
-		GUIThread() {
+		public GUIThread() {
 			super("GUI Thread");
 		}
 
@@ -1077,7 +1077,7 @@ public class SpoutScheduler implements Scheduler {
 		private final String namePrefix;
 		private final boolean daemon;
 
-		MarkedNamedThreadFactory(String namePrefix, boolean daemon) {
+		public MarkedNamedThreadFactory(String namePrefix, boolean daemon) {
 			this.namePrefix = namePrefix;
 			this.daemon = daemon;
 		}

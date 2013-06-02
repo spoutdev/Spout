@@ -2105,11 +2105,11 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		
 		private final boolean validIfUnloaded;
 
-		ChunkSetQueueElement(SetQueue<T> queue, T value) {
+		public ChunkSetQueueElement(SetQueue<T> queue, T value) {
 			this(queue, value, false);
 		}
 		
-		ChunkSetQueueElement(SetQueue<T> queue, T value, boolean validIfUnloaded) {
+		public ChunkSetQueueElement(SetQueue<T> queue, T value, boolean validIfUnloaded) {
 			super(queue, value);
 			this.validIfUnloaded = validIfUnloaded;
 		}

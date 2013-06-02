@@ -62,7 +62,7 @@ public class PlayerFiles {
 
 	private static class SaveTask implements Runnable {
 		private final PlayerSnapshot snapshot;
-		SaveTask(PlayerSnapshot snapshot) {
+		public SaveTask(PlayerSnapshot snapshot) {
 			this.snapshot = snapshot;
 		}
 

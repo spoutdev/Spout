@@ -84,7 +84,7 @@ public class ConsoleManager {
 		private static final AtomicInteger COUNT = new AtomicInteger(1);
 		private final SpoutEngine engine;
 
-		ServerShutdownThread(SpoutEngine engine) {
+		public ServerShutdownThread(SpoutEngine engine) {
 			super("ServerShutdownThread-" + COUNT.getAndIncrement());
 			this.engine = engine;
 		}
@@ -99,12 +99,12 @@ public class ConsoleManager {
 		private final String command;
 		private final ChatArguments arguments;
 
-		CommandTask() {
+		public CommandTask() {
 			command = null;
 			arguments = null;
 		}
 
-		CommandTask(String commandLine) {
+		public CommandTask(String commandLine) {
 			int spaceIndex = commandLine.indexOf(' ');
 			if (spaceIndex != -1) {
 				command = commandLine.substring(0, spaceIndex);

@@ -461,7 +461,7 @@ public class ChunkFiles {
 		private final long nextUpdate;
 		private final int data;
 		
-		DynamicBlockUpdateV1(int packed, long nextUpdate, int data) {
+		public DynamicBlockUpdateV1(int packed, long nextUpdate, int data) {
 			this.packed = packed;
 			this.nextUpdate = nextUpdate;
 			this.data = data;

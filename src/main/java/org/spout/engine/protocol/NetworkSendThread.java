@@ -116,7 +116,7 @@ public class NetworkSendThread {
 
 		private final LinkedBlockingQueue<QueueNode> queue = new LinkedBlockingQueue<QueueNode>();
 
-		ChannelQueueThread(int poolIndex, int channelId) {
+		public ChannelQueueThread(int poolIndex, int channelId) {
 			super("Channel queue thread, pool index " + poolIndex + " channel id " + channelId);
 		}
 
@@ -201,7 +201,7 @@ public class NetworkSendThread {
 		private final Message message;
 		private final long creation;
 
-		QueueNode(SpoutSession<?> session, Channel channel, Message message) {
+		public QueueNode(SpoutSession<?> session, Channel channel, Message message) {
 			this.channel = channel;
 			this.message = message;
 			this.session = session;

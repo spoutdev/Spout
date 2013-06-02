@@ -117,7 +117,7 @@ public class RegionFileManager {
 	
 	private class TimeoutThread extends Thread {
 		
-		TimeoutThread(File worldDirectory) {
+		public TimeoutThread(File worldDirectory) {
 			super("Region File Manager Timeout Thread - " + worldDirectory.getPath());
 			setDaemon(true);
 		}

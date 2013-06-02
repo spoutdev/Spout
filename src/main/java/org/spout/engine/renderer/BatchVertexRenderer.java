@@ -138,7 +138,7 @@ public abstract class BatchVertexRenderer implements Renderer {
 
 	protected abstract boolean doFlush(boolean force);
 
-	public boolean flush(boolean force) {
+	public final boolean flush(boolean force) {
 		if(doFlush(force)){
 			if(currentBuffer != null) {
 				currentBuffer.release();
@@ -175,12 +175,12 @@ public abstract class BatchVertexRenderer implements Renderer {
 	}
 
 	@Override	
-	public void render(RenderMaterial material) {
+	public final void render(RenderMaterial material) {
 		render(material, 0, getVertexCount());
 	}
 
 	@Override
-	public void render(RenderMaterial material, int startVert, int endVert) {
+	public final void render(RenderMaterial material, int startVert, int endVert) {
 		if(getVertexCount() <= 0) {
 			throw new IllegalStateException("Cannot render 0 verticies");
 		}

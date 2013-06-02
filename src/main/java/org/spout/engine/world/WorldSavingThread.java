@@ -179,7 +179,7 @@ public class WorldSavingThread extends Thread{
 	
 	private class BackupThread extends Thread {
 		
-		BackupThread() {
+		public BackupThread() {
 			Spout.getLogger().info("Backup world save thread started due to late submission of chunk for saving");
 			Thread.dumpStack();
 		}
