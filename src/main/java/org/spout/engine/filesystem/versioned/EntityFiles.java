@@ -128,11 +128,11 @@ public class EntityFiles {
 		}
 		
 		if (version > ENTITY_VERSION) {
-			Spout.getLogger().log(Level.SEVERE, "Entity version " + version + " exceeds maximum allowed value of " + ENTITY_VERSION);
+			Spout.getLogger().log(Level.SEVERE, "Entity version {0} exceeds maximum allowed value of {1}", new Object[]{version, ENTITY_VERSION});
 			return null;
 		} else if (version < ENTITY_VERSION) {
 			if (version < 1) {
-				Spout.getLogger().log(Level.SEVERE, "Unknown entity version " + version);
+				Spout.getLogger().log(Level.SEVERE, "Unknown entity version {0}", version);
 				return null;
 			}
 			
@@ -173,7 +173,7 @@ public class EntityFiles {
 				return null;
 			}
 		} else {
-			Spout.getLogger().info("Unable to find world with UUID of " + worldUUID + ", using the default spawn point as position for " + name);
+			Spout.getLogger().log(Level.INFO, "Unable to find world with UUID of {0}, using the default spawn point as position for {1}", new Object[]{worldUUID, name});
 			w = Spout.getEngine().getDefaultWorld();
 			t = w.getSpawnPoint();
 		}
@@ -223,7 +223,7 @@ public class EntityFiles {
 				}
 			} catch (ClassNotFoundException e) {
 				if (Spout.debugMode()) {
-					Spout.getLogger().log(Level.WARNING, "Unable to find component class " + component.getValue());
+					Spout.getLogger().log(Level.WARNING, "Unable to find component class {0}", component.getValue());
 				}
 			}
 		}
@@ -338,6 +338,9 @@ public class EntityFiles {
 		
 		return map;
 		
+	}
+
+	private EntityFiles() {
 	}
 		
 

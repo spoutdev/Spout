@@ -50,8 +50,9 @@ public class FontLoader extends ResourceLoader {
 			final Font raw = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(Font.BOLD, 30f);
 			fontFromResource = new ClientFont(raw);
 			
-			if(Spout.getPlatform() == Platform.CLIENT)
+			if(Spout.getPlatform() == Platform.CLIENT) {
 				fontFromResource.writeGPU();
+			}
 		} catch (Exception e) {
 			Spout.getLogger().severe("Exception caught when reading in a font.");
 			e.printStackTrace();

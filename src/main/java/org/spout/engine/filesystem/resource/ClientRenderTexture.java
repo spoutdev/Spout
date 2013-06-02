@@ -107,10 +107,16 @@ public class ClientRenderTexture extends ClientTexture {
 
 	public void activate() {
 
-		if(framebuffer == INVALID_BUFFER) return; //Can't set this to active if it's not created yet
+		if(framebuffer == INVALID_BUFFER) {
+			return;
+		} //Can't set this to active if it's not created yet
 
-		if(useEXT)  EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, framebuffer);
-		else GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, framebuffer);
+		if(useEXT) {
+			EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, framebuffer);
+		}
+		else {
+			GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, framebuffer);
+		}
 		SpoutRenderer.checkGLError();
 
 		GL11.glViewport(0, 0, width, height);
@@ -120,8 +126,12 @@ public class ClientRenderTexture extends ClientTexture {
 	public void release() {
 
 		if(framebuffer != INVALID_BUFFER) {
-			if(useEXT)  EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, SCREEN_BUFFER);
-			else GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, SCREEN_BUFFER);
+			if(useEXT) {
+				EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, SCREEN_BUFFER);
+			}
+			else {
+				GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, SCREEN_BUFFER);
+			}
 			SpoutRenderer.checkGLError();
 
 			GL11.glViewport(0, 0, width, height);
@@ -133,7 +143,9 @@ public class ClientRenderTexture extends ClientTexture {
 
 	@Override
 	public void writeGPU() {
-		if(framebuffer != INVALID_BUFFER) throw new IllegalStateException("Framebuffer already created!");
+		if(framebuffer != INVALID_BUFFER) {
+			throw new IllegalStateException("Framebuffer already created!");
+		}
 
 		int buffers = 1;
 
@@ -234,7 +246,9 @@ public class ClientRenderTexture extends ClientTexture {
 			
 			IntBuffer drawBuffers = BufferUtils.createIntBuffer(buffers);
 			drawBuffers.put(GL30.GL_COLOR_ATTACHMENT0);
-			if(useNormalBuffer) drawBuffers.put(GL30.GL_COLOR_ATTACHMENT1);
+			if(useNormalBuffer) {
+				drawBuffers.put(GL30.GL_COLOR_ATTACHMENT1);
+			}
 			drawBuffers.flip();
 			GL20.glDrawBuffers(drawBuffers);
 			SpoutRenderer.checkGLError();

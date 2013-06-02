@@ -27,6 +27,7 @@
 package org.spout.engine.listener.channel;
 
 import java.net.InetSocketAddress;
+import java.util.logging.Level;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
@@ -66,7 +67,7 @@ public class SpoutProxyConnectListener implements ChannelFutureListener {
 		} else {
 			Channel c = future.getChannel();
 			if (future.isSuccess()) {
-				Spout.getLogger().info("Connect to server successful " + c.getRemoteAddress() + ", " + playerName);
+				Spout.getLogger().log(Level.INFO, "Connect to server successful {0}, {1}", new Object[]{c.getRemoteAddress(), playerName});
 				session.bindAuxChannel(c);
 				ChannelPipeline pipeline = c.getPipeline();
 				if (pipeline != null) {
@@ -83,7 +84,7 @@ public class SpoutProxyConnectListener implements ChannelFutureListener {
 				}
 				session.disconnect("Login failed for backend server");
 			} else {
-				Spout.getLogger().info("Failed to connect to server " + c.getRemoteAddress() + ", " + playerName);
+				Spout.getLogger().log(Level.INFO, "Failed to connect to server {0}, {1}", new Object[]{c.getRemoteAddress(), playerName});
 				session.disconnect("Unable to connect to backend server");
 			}
 		}

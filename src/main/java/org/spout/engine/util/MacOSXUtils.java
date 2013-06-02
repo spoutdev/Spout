@@ -106,5 +106,8 @@ public class MacOSXUtils {
 		return application;
 	}
 
+	private MacOSXUtils() {
+	}
+
 
 }

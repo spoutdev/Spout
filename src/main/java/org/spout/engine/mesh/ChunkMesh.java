@@ -28,11 +28,7 @@ package org.spout.engine.mesh;
 
 import gnu.trove.list.array.TFloatArrayList;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import org.spout.api.geo.World;
@@ -143,8 +139,9 @@ public class ChunkMesh{
 		Vector3 model = new Vector3(position.getX(), position.getY(), position.getZ());
 		for(OrientedMeshFace meshFace : mesh){
 
-			if(!meshFace.canRender(toRender))
+			if(!meshFace.canRender(toRender)) {
 				continue;
+			}
 
 			Iterator<Vertex> it = meshFace.iterator();
 			Vertex v1 = new Vertex(it.next());
@@ -212,8 +209,9 @@ public class ChunkMesh{
 			}
 		}
 
-		if(fullyOccluded)
+		if(fullyOccluded) {
 			return;
+		}
 
 		SnapshotMesh snapshotMesh = new SnapshotMesh(material, chunkSnapshotModel, new Point(position, world), toRender);
 
@@ -292,7 +290,7 @@ public class ChunkMesh{
 	}
 
 	public Map<RenderMaterial, BufferContainer> getMaterialsFaces() {
-		return meshs;
+		return Collections.unmodifiableMap(meshs);
 	}
 
 	public boolean isFirst() {

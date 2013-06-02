@@ -73,8 +73,9 @@ public class SkeletonLoader extends ResourceLoader {
 
 		skeleton.addBone(name, parentName, bone);
 
-		if(keymap.containsKey("children"))
+		if(keymap.containsKey("children")) {
 			loadChild(skeleton, name, (Map<? extends String, Map<? extends String, ?>>) keymap.get("children"));
+		}
 	}
 
 	private static void loadChild(Skeleton skeleton, String parentName, Map<? extends String, Map<? extends String, ?>> keymap){

@@ -42,6 +42,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Level;
 
 import org.lwjgl.opengl.Display;
 import org.spout.api.Engine;
@@ -115,7 +116,7 @@ import org.spout.engine.world.RegionGenerator;
  * </ul>
  * </ul>
  */
-public final class SpoutScheduler implements Scheduler {
+public class SpoutScheduler implements Scheduler {
 	/**
 	 * The threshold before physics and dynamic updates are aborted
 	 */
@@ -840,7 +841,7 @@ public final class SpoutScheduler implements Scheduler {
 		}
 		time += System.currentTimeMillis();
 		if (Spout.debugMode() && time > PULSE_EVERY) {
-			Spout.getLogger().info("Task " + TickStage.getStage(TickStage.getStageInt()) + " took " + time + "ms");
+			Spout.getLogger().log(Level.INFO, "Task {0} took {1}ms", new Object[]{TickStage.getStage(TickStage.getStageInt()), time});
 		}
 	}
 

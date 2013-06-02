@@ -96,8 +96,9 @@ public class SpoutFloatBuffer {
 	}
 	
 	public void setData(int []elements, int[] layouts, FloatBuffer buffer){
-		if(elements.length != layouts.length)
+		if(elements.length != layouts.length) {
 			throw new IllegalStateException("Number of elements and layout must be same");
+		}
 
 		this.elements = elements;
 		this.layout = layouts;
@@ -128,10 +129,12 @@ public class SpoutFloatBuffer {
 		//SpoutRenderer.checkGLError();
 		int end;
 		
-		if(force)
+		if(force) {
 			end = buffer.capacity();
-		else
+		}
+		else {
 			end = Math.min(current + STEP, buffer.capacity());
+		}
 
 		buffer.position(current);
 		buffer.limit(end);
@@ -157,7 +160,9 @@ public class SpoutFloatBuffer {
 	}
 	
 	public void bind(boolean instanced){
-		if(vboId == -1) throw new IllegalStateException("Cannot bind a vertex buffer without data!");
+		if(vboId == -1) {
+			throw new IllegalStateException("Cannot bind a vertex buffer without data!");
+		}
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
 		SpoutRenderer.checkGLError();
 

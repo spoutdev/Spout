@@ -54,8 +54,9 @@ public class MeshLoader extends ResourceLoader {
 
 		while (scan.hasNext()) {
 			String s = scan.nextLine();
-			if (s.startsWith("#"))
-				continue; // it's a comment, skip it
+			if (s.startsWith("#")) {
+				continue;
+			} // it's a comment, skip it
 			if (s.startsWith("v ")) { // Space is important !!
 				String[] sp = s.split(" ");
 				verticies.add(new Vector3(Float.parseFloat(sp[1]), Float.parseFloat(sp[2]), Float.parseFloat(sp[3])));

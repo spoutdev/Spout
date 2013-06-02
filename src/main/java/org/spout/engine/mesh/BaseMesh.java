@@ -93,30 +93,37 @@ public class BaseMesh implements Mesh {
 					texture0Buffer.put(v.texCoord0.getY());
 				}
 				
-				if(indexate)
+				if(indexate) {
 					verticeIndex[i++] = v.id;
+				}
 			}
 		}
 
 		vertexBuffer.flip();
 
-		if(normal)
+		if(normal) {
 			normalBuffer.flip();
+		}
 
-		if(color)
+		if(color) {
 			colorBuffer.flip();
+		}
 
-		if(texture0)
+		if(texture0) {
 			texture0Buffer.flip();
+		}
 
 		container.element = numVerticies;
 		container.setBuffers(VertexAttributes.Position.getLayout(), vertexBuffer);
-		if(normal)
+		if(normal) {
 			container.setBuffers(VertexAttributes.Normal.getLayout(), normalBuffer);
-		if(color)
+		}
+		if(color) {
 			container.setBuffers(VertexAttributes.Color.getLayout(), colorBuffer);
-		if(texture0)
+		}
+		if(texture0) {
 			container.setBuffers(VertexAttributes.Texture0.getLayout(), texture0Buffer);
+		}
 		
 		container.setVerticeIndex(verticeIndex);
 	}
@@ -126,11 +133,13 @@ public class BaseMesh implements Mesh {
 	}
 	
 	public void batch(){
-		if (renderer == null)
+		if (renderer == null) {
 			renderer = (BatchVertexRenderer) BatchVertexRenderer.constructNewBatch(GL11.GL_TRIANGLES);
+		}
 
-		if(batched)
+		if(batched) {
 			return;
+		}
 
 		renderer.setGLBufferContainer(container);
 		renderer.flush(true);
@@ -138,15 +147,17 @@ public class BaseMesh implements Mesh {
 	}
 
 	public void preDraw(){
-		if (!batched)
+		if (!batched) {
 			throw new IllegalStateException("Cannot render without batching first!");
+		}
 
 		renderer.preDraw();
 	}
 	
 	public void draw(RenderMaterial material){
-		if (!batched)
+		if (!batched) {
 			throw new IllegalStateException("Cannot render without batching first!");
+		}
 
 		SnapshotRender snapshotRender = new SnapshotRender(material);
 		material.preRender(snapshotRender);
@@ -155,15 +166,17 @@ public class BaseMesh implements Mesh {
 	}
 	
 	public void postDraw(){
-		if (!batched)
+		if (!batched) {
 			throw new IllegalStateException("Cannot render without batching first!");
+		}
 
 		renderer.postDraw();
 	}
 	
 	public void render(RenderMaterial material){
-		if (!batched)
+		if (!batched) {
 			throw new IllegalStateException("Cannot render without batching first!");
+		}
 
 		SnapshotRender snapshotRender = new SnapshotRender(material);
 		material.preRender(snapshotRender);

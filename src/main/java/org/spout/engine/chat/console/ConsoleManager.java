@@ -47,7 +47,7 @@ import org.spout.logging.jline.JLineHandler;
 /**
  * A meta-class to handle all logging and input-related console improvements.
  */
-public final class ConsoleManager {
+public class ConsoleManager {
 	private final Engine engine;
 	private final ConsoleCommandSource source;
 

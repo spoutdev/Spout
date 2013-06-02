@@ -41,4 +41,7 @@ public class ChunkFaker {
 		PowerMockito.when(chunk, Chunk.class.getMethod("getBlockZ", (Class[]) null)).withNoArguments().thenReturn(z << Chunk.BLOCKS.BITS);
 		return chunk;
 	}
+
+	private ChunkFaker() {
+	}
 }

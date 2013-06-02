@@ -27,12 +27,7 @@
 package org.spout.engine.entity;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
@@ -327,7 +322,7 @@ public class SpoutEntity extends BaseComponentHolder implements Entity, Snapshot
 	}
 
 	public Set<SpoutChunk> getObservingChunks() {
-		return observingChunks;
+		return Collections.unmodifiableSet(observingChunks);
 	}
 
 	@Override

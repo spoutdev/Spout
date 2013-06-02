@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import org.lwjgl.opengl.*;
 
@@ -142,8 +143,9 @@ public class ClientShader implements SpoutShader {
 					int size = GL20.glGetActiveUniformSize(program, i);
 
 					//Fix to avoid [0] at the end of uniform name
-					if(size != 1)
+					if(size != 1) {
 						name = name.substring(0, name.length() - 3);
+					}
 
 					AttrUniInfo info = new AttrUniInfo(name, type, size, i, true);
 
@@ -278,44 +280,58 @@ public class ClientShader implements SpoutShader {
 	@Override
 	public void setUniform(String name, int value) {
 		variables.put(name, new IntShaderVariable(program, name, value));
-		if(assigned == this) dirtyVariables.add(name);
+		if(assigned == this) {
+			dirtyVariables.add(name);
+		}
 	}
 
 
 	@Override
 	public void setUniform(String name, float value) {
 		variables.put(name, new FloatShaderVariable(program, name, value));
-		if(assigned == this) dirtyVariables.add(name);
+		if(assigned == this) {
+			dirtyVariables.add(name);
+		}
 	}
 
 	@Override
 	public void setUniform(String name, Vector2 value) {
 		variables.put(name, new Vec2ShaderVariable(program, name, value));
-		if(assigned == this) dirtyVariables.add(name);
+		if(assigned == this) {
+			dirtyVariables.add(name);
+		}
 	}
 
 	@Override
 	public void setUniform(String name, Matrix[] value) {
 		variables.put(name, new Mat4ArrayShaderVariable(program, name, value));
-		if(assigned == this) dirtyVariables.add(name);
+		if(assigned == this) {
+			dirtyVariables.add(name);
+		}
 	}
 
 	@Override
 	public void setUniform(String name, Vector3 value) {
 		variables.put(name, new Vec3ShaderVariable(program, name, value));
-		if(assigned == this) dirtyVariables.add(name);
+		if(assigned == this) {
+			dirtyVariables.add(name);
+		}
 	}
 
 	@Override
 	public void setUniform(String name, Vector3[] value) {
 		variables.put(name, new Vector3ArrayShaderVariable(program, name, value));
-		if(assigned == this) dirtyVariables.add(name);
+		if(assigned == this) {
+			dirtyVariables.add(name);
+		}
 	}
 
 	@Override
 	public void setUniform(String name, Vector4 value) {
 		variables.put(name, new Vec4ShaderVariable(program, name, value));
-		if(assigned == this) dirtyVariables.add(name);
+		if(assigned == this) {
+			dirtyVariables.add(name);
+		}
 	}
 
 
@@ -328,20 +344,26 @@ public class ClientShader implements SpoutShader {
 		} else if (value.getDimension() == 4) {
 			variables.put(name, new Mat4ShaderVariable(program, name, value));
 		}
-		if(assigned == this) dirtyVariables.add(name);
+		if(assigned == this) {
+			dirtyVariables.add(name);
+		}
 	}
 
 	@Override
 	public void setUniform(String name, Color value) {
 		variables.put(name, new ColorShaderVariable(program, name, value));
-		if(assigned == this) dirtyVariables.add(name);
+		if(assigned == this) {
+			dirtyVariables.add(name);
+		}
 	}
 
 
 	@Override
 	public void setUniform(String name, Texture value) {
 		textures.put(name, new TextureSamplerShaderVariable(program, name, value));
-		if(assigned == this) dirtyTextures.add(name);
+		if(assigned == this) {
+			dirtyTextures.add(name);
+		}
 	}
 
 
@@ -419,7 +441,9 @@ public class ClientShader implements SpoutShader {
 			"gl_FragColor =  color; \n} \n";
 
 	private void dispose() {
-		if(program != -1 ) GL20.glDeleteProgram(program);
+		if(program != -1 ) {
+			GL20.glDeleteProgram(program);
+		}
 	}
 
 	@Override
@@ -459,8 +483,9 @@ public class ClientShader implements SpoutShader {
 
 	@Override
 	public void checkUniform(){
-		if (!SpoutConfiguration.DEBUG_SHADERS.getBoolean())
+		if (!SpoutConfiguration.DEBUG_SHADERS.getBoolean()) {
 			return;
+		}
 
 		if(!dirtyTextures.isEmpty() || !dirtyVariables.isEmpty()){
 			throw new IllegalStateException("You must check uniform after assign the shader");
@@ -470,18 +495,18 @@ public class ClientShader implements SpoutShader {
 		
 		for(Entry<String, ShaderVariable> var : variables.entrySet()){
 			if(map.remove(var.getKey()) == null){
-				Spout.getLogger().warning( "In " + shaderName + " Uniform " + var.getKey() + " don't exist");
+				Spout.getLogger().log( Level.WARNING, "In {0} Uniform {1} don''t exist", new Object[]{shaderName, var.getKey()});
 			}
 		}
 		
 		for(Entry<String, TextureSamplerShaderVariable> var : textures.entrySet()){
 			if(map.remove(var.getKey()) == null){
-				Spout.getLogger().warning( "In " + shaderName + " Uniform " + var.getKey() + " don't exist");
+				Spout.getLogger().log( Level.WARNING, "In {0} Uniform {1} don''t exist", new Object[]{shaderName, var.getKey()});
 			}
 		}
 		
 		for(Entry<String, AttrUniInfo> var : map.entrySet()){
-			Spout.getLogger().warning( "In " + shaderName + " Uniform " + var.getKey() + " not assigned");
+			Spout.getLogger().log( Level.WARNING, "In {0} Uniform {1} not assigned", new Object[]{shaderName, var.getKey()});
 		}
 	}
 

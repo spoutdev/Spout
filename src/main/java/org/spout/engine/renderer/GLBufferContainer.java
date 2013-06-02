@@ -27,6 +27,7 @@
 package org.spout.engine.renderer;
 
 import java.nio.Buffer;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ public class GLBufferContainer {
 	final Map<Integer,Buffer> buffers = new HashMap<Integer,Buffer>();
 
 	public Map<Integer,Buffer> getBuffers(){
-		return buffers;
+		return Collections.unmodifiableMap(buffers);
 	}
 
 	public void setBuffers(int layout, Buffer buffer){

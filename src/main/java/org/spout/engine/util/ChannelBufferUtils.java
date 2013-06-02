@@ -51,7 +51,7 @@ import org.spout.nbt.stream.NBTOutputStream;
 /**
  * Contains several {@link ChannelBuffer}-related utility methods.
  */
-public final class ChannelBufferUtils {
+public class ChannelBufferUtils {
 	/**
 	 * The UTF-8 character set.
 	 */

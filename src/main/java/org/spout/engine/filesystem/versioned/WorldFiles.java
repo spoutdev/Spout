@@ -121,11 +121,11 @@ public class WorldFiles {
 		byte version = SafeCast.toByte(NBTMapper.toTagValue(map.get("version")), (byte) -1);
 
 		if (version > WORLD_VERSION) {
-			Spout.getLogger().log(Level.SEVERE, "World version " + version + " exceeds maximum allowed value of " + WORLD_VERSION);
+			Spout.getLogger().log(Level.SEVERE, "World version {0} exceeds maximum allowed value of {1}", new Object[]{version, WORLD_VERSION});
 			return null;
 		} else if (version < WORLD_VERSION) {
 			// TODO - Add conversion code here
-			Spout.getLogger().log(Level.SEVERE, "Outdated World version " + version);
+			Spout.getLogger().log(Level.SEVERE, "Outdated World version {0}", version);
 			return null;
 		}
 		
@@ -136,7 +136,7 @@ public class WorldFiles {
 		UUID uuid = UUIDTag.getValue(map.get("uuid"));
 		
 		if (!generatorName.equals(generator.getName())) {
-			Spout.getLogger().severe("World was saved last with the generator: " + generatorName + " but is being loaded with: " + generator.getName() + " THIS MAY CAUSE WORLD CORRUPTION!");
+			Spout.getLogger().log(Level.SEVERE, "World was saved last with the generator: {0} but is being loaded with: {1} THIS MAY CAUSE WORLD CORRUPTION!", new Object[]{generatorName, generator.getName()});
 		}
 		
 		SpoutWorld world = new SpoutWorld(name, (SpoutEngine) Spout.getEngine(), seed, age, generator, uuid, itemMap, lightingMap);
@@ -150,7 +150,7 @@ public class WorldFiles {
 		try {
 			dataMap.deserialize(extraData);
 		} catch (IOException e) {
-			Spout.getLogger().severe("Could not deserialize datatable for world: " + name);
+			Spout.getLogger().log(Level.SEVERE, "Could not deserialize datatable for world: {0}", name);
 		}
 		
 		return world;
@@ -200,6 +200,9 @@ public class WorldFiles {
 		
 		return map;
 		
+	}
+
+	private WorldFiles() {
 	}
 	
 }

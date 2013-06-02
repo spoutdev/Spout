@@ -26,6 +26,7 @@
  */
 package org.spout.engine.renderer.shader.variables;
 
+import java.util.logging.Level;
 import org.lwjgl.opengl.GL20;
 
 import org.spout.api.Client;
@@ -66,7 +67,7 @@ public abstract class ShaderVariable {
 		//If we want to have a debug mode, switch the final bool to true to throw an exception if the variable doesn't exist.
 		//This is the same as treating warnings as errors, and could be useful for debugging shaders.
 		if (this.location == -1 && variableError == 1) {
-			Spout.getLogger().warning("Variable: " + name + " Not Found for shader ID=" + program + " (was it optimized out?)");
+			Spout.getLogger().log(Level.WARNING, "Variable: {0} Not Found for shader ID={1} (was it optimized out?)", new Object[]{name, program});
 		} else if (this.location == -1 && variableError == 2) {
 			throw new ShaderVariableNotFoundException(name, program);
 		}

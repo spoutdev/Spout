@@ -29,6 +29,7 @@ package org.spout.engine.entity;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -156,12 +157,12 @@ public class SpoutEntitySnapshot implements EntitySnapshot{
 
 	@Override
 	public List<Class<? extends Component>> getComponents() {
-		return components;
+		return Collections.unmodifiableList(components);
 	}
 
 	@SuppressWarnings("unchecked")
 	public SpoutEntity toEntity(SpoutEngine engine) {
-		return new SpoutEntity(engine, location, viewDistance, uniqueId, false, dataMap, components.toArray(new Class[0]));
+		return new SpoutEntity(engine, location, viewDistance, uniqueId, false, dataMap, components.toArray(new Class[components.size()]));
 	}
 
 	@Override

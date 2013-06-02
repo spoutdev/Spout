@@ -168,8 +168,9 @@ public class ClientFont extends ClientTexture implements org.spout.api.render.Fo
 	
 	public float getBearingY(char c) {
 		AffineTransform ts = vec.getGlyphTransform(asciiset.indexOf(c));
-		if (ts==null)
+		if (ts==null) {
 			return 0;
+		}
 		return (float)ts.getTranslateY();
 	}
 	

@@ -52,6 +52,7 @@ package org.spout.engine.world;
  * License and see <http://www.spout.org/SpoutDevLicenseV1.txt> for the full license,
  * including the MIT license.
  */
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -243,10 +244,12 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	 * @param renderMaterials
 	 */
 	private void addRenderMaterials(Set<RenderMaterial> renderMaterials) {
-		if( this.renderMaterials == null || renderMaterials == null)
+		if( this.renderMaterials == null || renderMaterials == null) {
 			this.renderMaterials = null;
-		else
+		}
+		else {
 			this.renderMaterials.addAll(renderMaterials);
+		}
 	}
 	
 	/**
@@ -255,7 +258,7 @@ public class SpoutChunkSnapshotModel implements ChunkSnapshotModel, Comparable<S
 	 * @return
 	 */
 	public Set<RenderMaterial> getRenderMaterials() {
-		return this.renderMaterials;
+		return Collections.unmodifiableSet(this.renderMaterials);
 	}
 
 	/**

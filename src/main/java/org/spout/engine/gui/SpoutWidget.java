@@ -73,7 +73,7 @@ public class SpoutWidget extends BaseComponentHolder implements Widget {
 
 				renderCacheClean = true;
 			}
-			return renderPartCache;
+			return Collections.unmodifiableList(renderPartCache);
 		}
 	}
 	

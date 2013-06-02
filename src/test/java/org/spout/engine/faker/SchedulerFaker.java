@@ -38,4 +38,7 @@ public class SchedulerFaker {
 		PowerMockito.when(scheduler, Chunk.class.getMethod("getX", (Class[]) null)).withNoArguments().thenReturn(Thread.currentThread());
 		return scheduler;
 	}
+
+	private SchedulerFaker() {
+	}
 }

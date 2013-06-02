@@ -69,4 +69,7 @@ public class NetworkSendThreadPool {
 		return h ^ (h >>> 7) ^ (h >>> 4);
 	}
 
+	private NetworkSendThreadPool() {
+	}
+
 }
