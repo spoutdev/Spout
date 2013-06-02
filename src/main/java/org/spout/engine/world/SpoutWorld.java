@@ -43,6 +43,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.spout.api.Platform;
+import org.spout.api.Server;
 import org.spout.api.Spout;
 import org.spout.api.component.BaseComponentOwner;
 import org.spout.api.component.Component;
@@ -217,10 +218,12 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 		this.generator = generator;
 		regions = new RegionSource(this, snapshotManager);
 
-		worldDirectory = new File(engine.getWorldFolder(), name);
-		worldDirectory.mkdirs();
+		if (engine instanceof Server) {
+			worldDirectory = new File(engine.getWorldFolder(), name);
+			worldDirectory.mkdirs();
 
-		regionFileManager = new RegionFileManager(worldDirectory);
+			regionFileManager = new RegionFileManager(worldDirectory);
+		}
 
 		heightMapBAAs = new TSyncIntPairObjectHashMap<BAAWrapper>();
 
