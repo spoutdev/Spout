@@ -81,6 +81,7 @@ import org.spout.engine.protocol.SpoutNioServerSocketChannel;
 import org.spout.engine.protocol.SpoutServerSession;
 import org.spout.engine.util.access.SpoutAccessManager;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
+import org.spout.engine.world.WorldSavingThread;
 
 import static org.spout.api.lang.Translation.log;
 
@@ -127,6 +128,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		getEventManager().registerEvents(listener, this);
 		getEventManager().callEvent(new EngineStartEvent());
 		filesystem.postStartup();
+		WorldSavingThread.startThread();
 		log("Done Loading, ready for players.");
 	}
 
