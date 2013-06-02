@@ -168,7 +168,7 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 	/**
 	 * The directory where the world data is stored
 	 */
-	private final File worldDirectory;
+	private File worldDirectory;
 	/**
 	 * The parallel task manager.  This is used for submitting tasks to all regions in the world.
 	 */
@@ -193,7 +193,7 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 	/**
 	 * RegionFile manager for the world
 	 */
-	private final RegionFileManager regionFileManager;
+	private RegionFileManager regionFileManager;
 	/*
 	 * A WeakReference to this world
 	 */
