@@ -265,7 +265,6 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 		}
 
 		scheduler.startMainThread();
-		WorldSavingThread.startThread();
 		setupComplete.set(true);
 	}
 
