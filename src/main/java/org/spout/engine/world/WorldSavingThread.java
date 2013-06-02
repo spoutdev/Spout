@@ -34,6 +34,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.spout.api.Client;
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
 import org.spout.api.geo.cuboid.ChunkSnapshot.EntityType;
@@ -54,20 +55,32 @@ public class WorldSavingThread extends Thread{
 	}
 
 	public static void startThread() {
+		if (Spout.getEngine() instanceof Client) {
+			throw new IllegalStateException("Client mode is not allowed to save the world");
+		}
 		instance.start();
 	}
 
 	public static void saveChunk(SpoutChunk chunk) {
+		if (Spout.getEngine() instanceof Client) {
+			throw new IllegalStateException("Client mode is not allowed to save chunks");
+		}
 		instance.addChunk(chunk);
 	}
 	
 	public void addChunk(SpoutChunk chunk) {
+		if (Spout.getEngine() instanceof Client) {
+			throw new IllegalStateException("Client mode is not allowed to add chunks for saving");
+		}
 		ChunkSaveTask task = new ChunkSaveTask(chunk);
 		instance.queue.add(task);
 		pingBackup();
 	}
 	
 	private void pingBackup() {
+		if (Spout.getEngine() instanceof Client) {
+			throw new IllegalStateException("Client mode is not allowed to poll backup of chunks");
+		}
 		if (instance.queueRunning.compareAndSet(false, true)) {
 			new BackupThread().start();
 		}

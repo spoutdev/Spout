@@ -698,9 +698,6 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 
 	// Saves the chunk data - this occurs directly after a snapshot update
 	public void syncSave() {
-		if (Spout.getEngine() instanceof Client) {
-			throw new IllegalStateException("Client mode is not allowed to save chunks");
-		}
 		if (this.chunkModified.get() || entitiesModified.get() || this.hasEntities()) {
 			chunkModified.set(false);
 			entitiesModified.set(false);
