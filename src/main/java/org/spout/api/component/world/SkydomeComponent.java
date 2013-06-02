@@ -24,34 +24,27 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.geo.cuboid;
+package org.spout.api.component.world;
 
-import org.spout.api.component.BlockComponentOwner;
+import org.spout.api.map.DefaultedKeyImpl;
+import org.spout.api.model.Model;
 
-public interface BlockComponentContainer extends CubicContainer {
-	
+public class SkydomeComponent extends WorldComponent {
+	private final DefaultedKeyImpl<Model> SKYDOME_MODEL = new DefaultedKeyImpl<Model>("skydome", null);
+
 	/**
-	 * Sets the next BlockComponentSnapshot in the sequence
-	 * 
-	 * @param x
-	 * @param y
-     * @param z
-     * @param snapshot  
+	 * Gets the {@link Model} applied to this skydome.
+	 * @return The model or null if no model is currently set
 	 */
-	public void setBlockComponent(int x, int y, int z, BlockComponentOwner snapshot);
-	
+	public Model getModel() {
+		return getDatatable().get(SKYDOME_MODEL);
+	}
+
 	/**
-	 * Sets the number of block components.  This method is called before the first call to setBlockComponent();
-	 * 
-	 * @param count
+	 * Sets the {@link Model} for this skydome.
+	 * @param model the new model of the skydome.
 	 */
-	public void setBlockComponentCount(int count);
-	
-	/**
-	 * Sets the number of block components.  This method is called before the first call to setBlockComponent();
-	 * 
-	 * @return
-	 */
-	public int getBlockComponentCount();
-	
+	public void setModel(final Model model) {
+		getDatatable().put(SKYDOME_MODEL, model);
+	}
 }

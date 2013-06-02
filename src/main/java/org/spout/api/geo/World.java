@@ -33,7 +33,7 @@ import java.util.UUID;
 import org.spout.api.Engine;
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentOwner;
-import org.spout.api.data.DataOwner;
+import org.spout.api.component.DatatableComponent;
 import org.spout.api.data.DataSubject;
 import org.spout.api.entity.Entity;
 import org.spout.api.entity.EntityPrefab;
@@ -57,7 +57,7 @@ import org.spout.api.util.thread.annotation.Threadsafe;
 /**
  * Represents a World.
  */
-public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, ComponentOwner, DataOwner, DataSubject {
+public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, ComponentOwner, DataSubject {
 	/**
 	 * Gets the name of the world
 	 * @return the name of the world
@@ -491,10 +491,6 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 	 */
 	public void unload(boolean save);
 
-	public Model getSkydomeModel();
-
-	public void setSkydomeModel(Model model);
-
 	/**
 	 * Adds a lighting manager to the world
 	 * @param manager the lighting manager
@@ -510,4 +506,12 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 	 * </p>
 	 */
 	public void save();
+
+	/**
+	 * Gets the {@link DatatableComponent} which is always attached to each world.
+	 * <p/>
+	 * This is merely a convenience method.
+	 * @return datatable component
+	 */
+	public DatatableComponent getDatatable();
 }

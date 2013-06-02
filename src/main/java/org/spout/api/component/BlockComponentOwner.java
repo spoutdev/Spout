@@ -24,34 +24,42 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.geo.cuboid;
+package org.spout.api.component;
 
-import org.spout.api.component.BlockComponentOwner;
+import org.spout.api.geo.World;
+import org.spout.api.geo.cuboid.Block;
 
-public interface BlockComponentContainer extends CubicContainer {
-	
+public class BlockComponentOwner extends BaseComponentOwner {
 	/**
-	 * Sets the next BlockComponentSnapshot in the sequence
-	 * 
-	 * @param x
-	 * @param y
-     * @param z
-     * @param snapshot  
+	 * Stored as world, not chunk, coords
 	 */
-	public void setBlockComponent(int x, int y, int z, BlockComponentOwner snapshot);
-	
-	/**
-	 * Sets the number of block components.  This method is called before the first call to setBlockComponent();
-	 * 
-	 * @param count
-	 */
-	public void setBlockComponentCount(int count);
-	
-	/**
-	 * Sets the number of block components.  This method is called before the first call to setBlockComponent();
-	 * 
-	 * @return
-	 */
-	public int getBlockComponentCount();
-	
+	private final int x, y, z;
+	private final World world;
+
+	public BlockComponentOwner(int x, int y, int z, World world) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.world = world;
+	}
+
+	public Block getBlock() {
+		return world.getBlock(x, y, z);
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public int getZ() {
+		return z;
+	}
+
+	public World getWorld() {
+		return world;
+	}
 }

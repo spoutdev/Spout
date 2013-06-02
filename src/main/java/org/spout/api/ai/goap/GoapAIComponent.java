@@ -33,7 +33,7 @@ import org.spout.api.ai.AStarMachine;
 import org.spout.api.ai.Agent;
 import org.spout.api.ai.Plan;
 import org.spout.api.ai.Sensor;
-import org.spout.api.component.impl.AIComponent;
+import org.spout.api.component.entity.AIComponent;
 import org.spout.api.entity.Entity;
 
 import com.google.common.collect.Maps;

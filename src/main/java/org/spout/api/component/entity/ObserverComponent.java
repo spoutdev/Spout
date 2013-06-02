@@ -24,34 +24,26 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.geo.cuboid;
+package org.spout.api.component.entity;
 
-import org.spout.api.component.BlockComponentOwner;
+/**
+ * Component that represents the an entity that observes a radius of chunks
+ */
+public class ObserverComponent extends EntityComponent {
+	public static final int CHUNK_VIEW_DISTANCE = 4;
 
-public interface BlockComponentContainer extends CubicContainer {
-	
-	/**
-	 * Sets the next BlockComponentSnapshot in the sequence
-	 * 
-	 * @param x
-	 * @param y
-     * @param z
-     * @param snapshot  
-	 */
-	public void setBlockComponent(int x, int y, int z, BlockComponentOwner snapshot);
-	
-	/**
-	 * Sets the number of block components.  This method is called before the first call to setBlockComponent();
-	 * 
-	 * @param count
-	 */
-	public void setBlockComponentCount(int count);
-	
-	/**
-	 * Sets the number of block components.  This method is called before the first call to setBlockComponent();
-	 * 
-	 * @return
-	 */
-	public int getBlockComponentCount();
-	
+	public ObserverComponent() {
+	}
+
+	@Override
+	public void onAttached() {
+		getOwner().setObserver(true);
+		getOwner().setSavable(false);
+		getOwner().setViewDistance(CHUNK_VIEW_DISTANCE);
+	}
+
+	@Override
+	public boolean canTick() {
+		return false;
+	}
 }

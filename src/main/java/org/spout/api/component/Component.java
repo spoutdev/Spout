@@ -26,61 +26,12 @@
  */
 package org.spout.api.component;
 
-import org.spout.api.component.impl.DatatableComponent;
-import org.spout.api.data.DataOwner;
 import org.spout.api.tickable.Tickable;
 
 public abstract class Component implements Tickable {
 	private ComponentOwner owner;
 
 	public Component() {
-	}
-
-	/**
-	 * Attaches to a component owner.
-	 * @param owner the component owner to attach to
-	 * @return true if successful
-	 */
-	public boolean attachTo(ComponentOwner owner) {
-		this.owner = owner;
-		return true;
-	}
-
-	/**
-	 * Gets the component holder that is holding this component.
-	 * @return the component holder
-	 */
-	public ComponentOwner getOwner() {
-		return owner;
-	}
-
-	/**
-	 * Called when this component is attached to a owner.
-	 */
-	public void onAttached() {
-	}
-
-	/**
-	 * Called when this component is detached from a owner.
-	 */
-	public void onDetached() {
-	}
-
-	/**
-	 * Specifies whether or not this component can be detached,
-	 * after it has already been attached to a holder.
-	 * @return true if it can be detached
-	 */
-	public boolean isDetachable() {
-		return true;
-	}
-
-	/**
-	 * Called when the holder is set to be synchronized.
-	 * <p/>
-	 * This method is READ ONLY. You cannot update in this method.
-	 */
-	public void onSync() {
 	}
 
 	@Override
@@ -100,15 +51,58 @@ public abstract class Component implements Tickable {
 	}
 
 	/**
-	 * Gets the datatable component attached to the holder.
-	 * This component exists in every holder.
-	 * @return the datatable component
+	 * Attaches to a component owner.
+	 * @param owner the component owner to attach to
+	 * @return true if successful
 	 */
-	public final DatatableComponent getData() {
-		if (getOwner() instanceof DataOwner) {
-			return ((DataOwner)getOwner()).getData();
-		} else {
-			return getOwner().get(DatatableComponent.class);
-		}
+	public boolean attachTo(ComponentOwner owner) {
+		this.owner = owner;
+		return true;
+	}
+
+	/**
+	 * Gets the component owner that owns this component.
+	 * @return the component owner
+	 */
+	public ComponentOwner getOwner() {
+		return owner;
+	}
+
+	/**
+	 * Called when this component is attached to a owner.
+	 */
+	public void onAttached() {
+	}
+
+	/**
+	 * Called when this component is detached from a owner.
+	 */
+	public void onDetached() {
+	}
+
+	/**
+	 * Specifies whether or not this component can be detached, after it has already been attached to an owner..
+	 * @return true if it can be detached
+	 */
+	public boolean isDetachable() {
+		return true;
+	}
+
+	/**
+	 * Called when the owner is set to be synchronized.
+	 * <p/>
+	 * This method is READ ONLY. You cannot update in this method.
+	 */
+	public void onSync() {
+	}
+
+	/**
+	 * Gets the {@link DatatableComponent} which is always attached to each owner.
+	 * <p/>
+	 * This is merely a convenience method.
+	 * @return datatable component
+	 */
+	public final DatatableComponent getDatatable() {
+		return getOwner().getDatatable();
 	}
 }

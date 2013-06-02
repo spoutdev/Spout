@@ -31,9 +31,9 @@ import java.util.UUID;
 
 import org.spout.api.Engine;
 import org.spout.api.component.ComponentOwner;
-import org.spout.api.component.impl.NetworkComponent;
-import org.spout.api.component.impl.SceneComponent;
-import org.spout.api.data.DataOwner;
+import org.spout.api.component.DatatableComponent;
+import org.spout.api.component.entity.NetworkComponent;
+import org.spout.api.component.entity.SceneComponent;
 import org.spout.api.event.player.PlayerInteractEvent.Action;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
@@ -49,7 +49,7 @@ import org.spout.api.util.thread.annotation.SnapshotRead;
 /**
  * Represents an entity, which may or may not be spawned into the world.
  */
-public interface Entity extends Tickable, WorldSource, ComponentOwner, DataOwner {
+public interface Entity extends Tickable, WorldSource, ComponentOwner {
 	/**
 	 * Gets the current ID of this entity within the current game session
 	 * @return The entities' id.
@@ -186,4 +186,12 @@ public interface Entity extends Tickable, WorldSource, ComponentOwner, DataOwner
 	 * @return immutable snapshot
 	 */
 	public EntitySnapshot snapshot();
+
+	/**
+	 * Gets the {@link org.spout.api.component.DatatableComponent} which is always attached to each entity.
+	 * <p/>
+	 * This is merely a convenience method.
+	 * @return datatable component
+	 */
+	public DatatableComponent getDatatable();
 }

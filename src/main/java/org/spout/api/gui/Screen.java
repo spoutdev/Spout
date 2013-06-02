@@ -35,7 +35,7 @@ import java.util.List;
 
 import org.spout.api.Client;
 import org.spout.api.Spout;
-import org.spout.api.gui.component.ControlComponent;
+import org.spout.api.component.widget.ControlComponent;
 import org.spout.api.math.IntVector2;
 import org.spout.api.math.Rectangle;
 import org.spout.api.math.Vector2;

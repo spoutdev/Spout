@@ -156,6 +156,5 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
 	public static enum Action {
 		LEFT_CLICK,
 		RIGHT_CLICK,
-		COLLISION
 	}
 }

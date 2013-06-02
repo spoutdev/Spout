@@ -24,34 +24,41 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.geo.cuboid;
+package org.spout.api.component.entity;
 
-import org.spout.api.component.BlockComponentOwner;
+import java.util.ArrayList;
+import java.util.List;
 
-public interface BlockComponentContainer extends CubicContainer {
-	
-	/**
-	 * Sets the next BlockComponentSnapshot in the sequence
-	 * 
-	 * @param x
-	 * @param y
-     * @param z
-     * @param snapshot  
-	 */
-	public void setBlockComponent(int x, int y, int z, BlockComponentOwner snapshot);
-	
-	/**
-	 * Sets the number of block components.  This method is called before the first call to setBlockComponent();
-	 * 
-	 * @param count
-	 */
-	public void setBlockComponentCount(int count);
-	
-	/**
-	 * Sets the number of block components.  This method is called before the first call to setBlockComponent();
-	 * 
-	 * @return
-	 */
-	public int getBlockComponentCount();
-	
+import org.spout.api.Spout;
+import org.spout.api.model.Model;
+
+/**
+ * A Component that adds a model to an entity.
+ */
+public abstract class ModelComponent extends EntityComponent {
+	private List<Model> models = new ArrayList<Model>();
+
+	@Override
+	public boolean canTick() {
+		return false;
+	}
+
+	public List<Model> getModels() {
+		return models;
+	}
+
+	public void removeModel(Model model) {
+		models.remove(model);
+	}
+
+	public void addModel(String resourcePath) {
+		models.add((Model) Spout.getFileSystem().getResource(resourcePath));
+	}
+
+	public void addModel(Model model) {
+		if (model == null) {
+			throw new IllegalStateException("You can't add a null model");
+		}
+		models.add(model);
+	}
 }

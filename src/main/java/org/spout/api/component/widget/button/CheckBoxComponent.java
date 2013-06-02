@@ -24,34 +24,39 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.geo.cuboid;
+package org.spout.api.component.widget.button;
 
-import org.spout.api.component.BlockComponentOwner;
+import org.spout.api.map.DefaultedKey;
+import org.spout.api.map.DefaultedKeyImpl;
+import org.spout.api.signal.Signal;
 
-public interface BlockComponentContainer extends CubicContainer {
-	
-	/**
-	 * Sets the next BlockComponentSnapshot in the sequence
-	 * 
-	 * @param x
-	 * @param y
-     * @param z
-     * @param snapshot  
-	 */
-	public void setBlockComponent(int x, int y, int z, BlockComponentOwner snapshot);
-	
-	/**
-	 * Sets the number of block components.  This method is called before the first call to setBlockComponent();
-	 * 
-	 * @param count
-	 */
-	public void setBlockComponentCount(int count);
-	
-	/**
-	 * Sets the number of block components.  This method is called before the first call to setBlockComponent();
-	 * 
-	 * @return
-	 */
-	public int getBlockComponentCount();
-	
+public class CheckBoxComponent extends ButtonComponent {
+	public static final Signal SIGNAL_CHECKED = new Signal("checked", Boolean.class);
+	private static final DefaultedKey<Boolean> KEY_CHECKED = new DefaultedKeyImpl<Boolean>("checked", false);
+
+	public CheckBoxComponent() {
+		super();
+		registerSignal(SIGNAL_CHECKED);
+		try {
+			subscribe(SIGNAL_CLICKED, this, "onClick");
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void onClicked() {
+		setChecked(!isChecked());
+		getOwner().update();
+	}
+
+	public boolean isChecked() {
+		return getDatatable().get(KEY_CHECKED);
+	}
+
+	public void setChecked(boolean checked) {
+		getDatatable().put(KEY_CHECKED, checked);
+		emit(SIGNAL_CHECKED, checked);
+	}
 }

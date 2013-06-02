@@ -33,67 +33,65 @@ import java.util.Collection;
  */
 public interface ComponentOwner {
 	/**
-	 * Adds the component of the specified type to the holder and returns it if it is not present.
+	 * Adds the component of the specified type to the owner and returns it if it is not present.
 	 * <p/>
 	 * Otherwise, it returns the component of the specified type if there was one present.
-	 * @param type whose component is to be added to the holder
+	 * @param type whose component is to be added to the owner
 	 * @return the new component that was added, or the existing one if it had one
 	 */
 	public <T extends Component> T add(Class<T> type);
 
 	/**
-	 * Removes the component of the specified type from the holder if it is
-	 * present.
-	 * @param type whose component is to be removed from the holder
-	 * @return the removed component, or null if there was not one
-	 */
-	public <T extends Component> T detach(Class<? extends Component> type);
-
-	/**
-	 * Gets all components held by this component owner.
-	 * @return The components held by this owner
-	 */
-	public Collection<Component> values();
-
-	/**
-	 * Returns the component of the specified type (or a child implementation) from the holder if it is
-	 * present.
+	 * Returns the component of the specified type (or a child implementation) from the owner if it is present.
 	 * @param type whose component is to be returned from the holder
 	 * @return the component, or null if one was not found
 	 */
 	public <T extends Component> T get(Class<T> type);
 
 	/**
-	 * Returns an instance of the specified type from the holder if it is present.
-	 * Guaranteed internally to be a Component.
-	 * 
-	 * @param type whose component is to be returned from the holder
+	 * Returns all components of the specified type (or a child implementation).
+	 * @param type whose components are to be returned from the owner
+	 * @return the component list.
+	 */
+	public <T extends Component> Collection<T> getAll(Class<T> type);
+
+	/**
+	 * Returns all instances of the specified type from the owner if they are present.
+	 * @param type whose components are to be returned from the owner
+	 * @return the component list.
+	 */
+	public <T> Collection<T> getAllOfType(Class<T> type);
+
+	/**
+	 * Returns the component of the specified type (not a child implementation) from the holder if it is present.
+	 * @param type whose component is to be returned from the owner
+	 * @return the component, or null if one was not found.
+	 */
+	public <T extends Component> T getExact(Class<T> type);
+
+	/**
+	 * Returns an instance of the specified type from the owner if it is present.
+	 * @param type whose component is to be returned from the owner
 	 * @return the component, or null if one was not found
 	 */
 	public <T> T getType(Class<T> type);
 
 	/**
-	 * Returns the component of the specified type (not a child implementation) from the holder if it is
-	 * present.
-	 * @param type whose component is to be returned from the holder
-	 * @return the component, or null if one was not found.
+	 * Removes the component of the specified type from the owner if it is present.
+	 * @param type whose component is to be removed from the owner
+	 * @return the removed component, or null if there was not one
 	 */
-	public <T extends Component> T getExact(Class<T> type);
-	
+	public <T extends Component> T detach(Class<? extends Component> type);
+
 	/**
-	 * Returns all components of the specified type (or a child implementation).
-	 * 
-	 * @param type whose components are to be returned from the holder
-	 * @return the component list.
+	 * Gets all components held by the owner.
+	 * @return A collection of held components
 	 */
-	public <T extends Component> Collection<T> getAll(Class<T> type);
-	
+	public Collection<Component> values();
+
 	/**
-	 * Returns all instances of the specified type from the holder if they are present.
-	 * Guaranteed internally to be a Components.
-	 * 
-	 * @param type whose components are to be returned from the holder
-	 * @return the component list.
+	 * Gets the {@link DatatableComponent} which is always attached to each owner.
+	 * @return datatable component
 	 */
-	public <T> Collection<T> getAllOfType(Class<T> type);
+	public DatatableComponent getDatatable();
 }

@@ -32,7 +32,7 @@ import java.util.Set;
 import org.spout.api.collision.BoundingBox;
 import org.spout.api.collision.CollisionStrategy;
 import org.spout.api.collision.CollisionVolume;
-import org.spout.api.component.type.BlockComponent;
+import org.spout.api.component.block.BlockComponent;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.Cause;
 import org.spout.api.event.cause.MaterialCause;

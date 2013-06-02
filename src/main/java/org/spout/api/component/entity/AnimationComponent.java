@@ -24,34 +24,36 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.geo.cuboid;
+package org.spout.api.component.entity;
 
-import org.spout.api.component.BlockComponentOwner;
+import org.spout.api.model.Model;
+import org.spout.api.model.animation.Animation;
+import org.spout.api.model.animation.AnimationPlayed;
 
-public interface BlockComponentContainer extends CubicContainer {
-	
+public abstract class AnimationComponent extends EntityComponent {
 	/**
-	 * Sets the next BlockComponentSnapshot in the sequence
-	 * 
-	 * @param x
-	 * @param y
-     * @param z
-     * @param snapshot  
-	 */
-	public void setBlockComponent(int x, int y, int z, BlockComponentOwner snapshot);
-	
-	/**
-	 * Sets the number of block components.  This method is called before the first call to setBlockComponent();
-	 * 
-	 * @param count
-	 */
-	public void setBlockComponentCount(int count);
-	
-	/**
-	 * Sets the number of block components.  This method is called before the first call to setBlockComponent();
-	 * 
+	 * Send a animation to play once time
+	 * @param animation
 	 * @return
 	 */
-	public int getBlockComponentCount();
-	
+	public abstract AnimationPlayed playAnimation(Model model, Animation animation);
+
+	/**
+	 * Send a animation to play
+	 * @param animation
+	 * @param loop true to loop the animation
+	 * @return
+	 */
+	public abstract AnimationPlayed playAnimation(Model model, Animation animation, boolean loop);
+
+	/**
+	 * Stop the animation
+	 * @param animation (Require to send the AnimationPlayed returned when send to play)
+	 */
+	public abstract void stopAnimation(AnimationPlayed animation);
+
+	/**
+	 * Stop all animations
+	 */
+	public abstract void stopAnimations();
 }

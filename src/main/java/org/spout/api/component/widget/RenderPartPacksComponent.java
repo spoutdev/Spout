@@ -24,34 +24,52 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.geo.cuboid;
+package org.spout.api.component.widget;
 
-import org.spout.api.component.BlockComponentOwner;
+import java.util.ArrayList;
+import java.util.List;
 
-public interface BlockComponentContainer extends CubicContainer {
-	
+import org.spout.api.gui.render.RenderPartPack;
+
+/**
+ * Represents a {@link WidgetComponent} with multiple {@link RenderPartPack}s.
+ */
+public class RenderPartPacksComponent extends WidgetComponent {
+	private final List<RenderPartPack> parts = new ArrayList<RenderPartPack>();
+
+	@Override
+	public List<RenderPartPack> getRenderPartPacks() {
+		return parts;
+	}
+
 	/**
-	 * Sets the next BlockComponentSnapshot in the sequence
-	 * 
-	 * @param x
-	 * @param y
-     * @param z
-     * @param snapshot  
+	 * Adds a render part to the component.
+	 * @param part
+	 * @return size
 	 */
-	public void setBlockComponent(int x, int y, int z, BlockComponentOwner snapshot);
-	
+	public int add(RenderPartPack part) {
+		// Last added on top
+		return add(part, parts.size());
+	}
+
 	/**
-	 * Sets the number of block components.  This method is called before the first call to setBlockComponent();
-	 * 
-	 * @param count
+	 * Adds a render part to the component.
+	 * @param part to add
+	 * @param zIndex index of part
+	 * @return size
 	 */
-	public void setBlockComponentCount(int count);
-	
+	public int add(RenderPartPack part, int zIndex) {
+		part.setZIndex(zIndex);
+		parts.add(part);
+		return parts.size() - 1;
+	}
+
 	/**
-	 * Sets the number of block components.  This method is called before the first call to setBlockComponent();
-	 * 
-	 * @return
+	 * Returns a part at the specified index
+	 * @param index to get part from
+	 * @return part at specified index
 	 */
-	public int getBlockComponentCount();
-	
+	public RenderPartPack get(int index) {
+		return parts.get(index);
+	}
 }

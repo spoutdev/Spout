@@ -29,7 +29,7 @@ package org.spout.api.geo.cuboid;
 import java.util.List;
 import java.util.Set;
 
-import org.spout.api.component.type.BlockComponent;
+import org.spout.api.component.block.BlockComponent;
 import org.spout.api.datatable.SerializableMap;
 import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.generator.biome.BiomeManager;

@@ -24,34 +24,12 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.geo.cuboid;
+package org.spout.api.component.widget.list;
 
-import org.spout.api.component.BlockComponentOwner;
+import org.spout.api.component.widget.WidgetComponent;
 
-public interface BlockComponentContainer extends CubicContainer {
-	
-	/**
-	 * Sets the next BlockComponentSnapshot in the sequence
-	 * 
-	 * @param x
-	 * @param y
-     * @param z
-     * @param snapshot  
-	 */
-	public void setBlockComponent(int x, int y, int z, BlockComponentOwner snapshot);
-	
-	/**
-	 * Sets the number of block components.  This method is called before the first call to setBlockComponent();
-	 * 
-	 * @param count
-	 */
-	public void setBlockComponentCount(int count);
-	
-	/**
-	 * Sets the number of block components.  This method is called before the first call to setBlockComponent();
-	 * 
-	 * @return
-	 */
-	public int getBlockComponentCount();
-	
+/**
+ * Represents a element that has multiple "items" in it.
+ */
+public class ItemListComponent extends WidgetComponent {
 }

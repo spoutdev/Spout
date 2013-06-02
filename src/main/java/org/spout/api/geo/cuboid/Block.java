@@ -27,6 +27,7 @@
 package org.spout.api.geo.cuboid;
 
 import org.spout.api.component.ComponentOwner;
+import org.spout.api.component.DatatableComponent;
 import org.spout.api.event.Cause;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.World;

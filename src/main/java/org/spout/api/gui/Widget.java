@@ -27,6 +27,7 @@
 package org.spout.api.gui;
 
 import org.spout.api.component.ComponentOwner;
+import org.spout.api.component.DatatableComponent;
 import org.spout.api.geo.discrete.Transform2D;
 import org.spout.api.math.Rectangle;
 import org.spout.api.tickable.Tickable;
@@ -74,4 +75,12 @@ public interface Widget extends Tickable, ComponentOwner, Focusable, RenderPartC
 	 * @param bounds of widget
 	 */
 	public abstract void setBounds(Rectangle bounds);
+
+	/**
+	 * Gets the {@link org.spout.api.component.DatatableComponent} which is always attached to each widget.
+	 * <p/>
+	 * This is merely a convenience method.
+	 * @return datatable component
+	 */
+	public DatatableComponent getDatatable();
 }
