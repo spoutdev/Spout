@@ -32,6 +32,7 @@ import org.spout.api.Engine;
 import org.spout.api.component.Component;
 import org.spout.api.component.ComponentOwner;
 import org.spout.api.entity.Entity;
+import org.spout.api.event.entity.EntityInteractEvent;
 import org.spout.api.event.entity.EntitySpawnEvent;
 import org.spout.api.event.player.PlayerInteractEvent;
 import org.spout.api.geo.cuboid.Block;
@@ -120,8 +121,8 @@ public abstract class EntityComponent extends Component {
 
 	/**
 	 * Called when the owner is interacted.
-	 * @param event {@see org.spout.api.event.player.PlayerInteractEvent}
+	 * @param event {@see org.spout.api.event.entity.EntityInteractEvent}
 	 */
-	public void onInteract(final PlayerInteractEvent event) {
+	public void onInteract(final EntityInteractEvent event) {
 	}
 }

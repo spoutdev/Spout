@@ -34,10 +34,12 @@ import org.spout.api.component.ComponentOwner;
 import org.spout.api.component.DatatableComponent;
 import org.spout.api.component.entity.NetworkComponent;
 import org.spout.api.component.entity.SceneComponent;
-import org.spout.api.event.player.PlayerInteractEvent.Action;
+import org.spout.api.event.entity.EntityInteractEvent;
+import org.spout.api.event.player.Action;
 import org.spout.api.geo.WorldSource;
 import org.spout.api.geo.cuboid.Chunk;
 import org.spout.api.geo.cuboid.Region;
+import org.spout.api.geo.discrete.Point;
 import org.spout.api.geo.discrete.Transform;
 import org.spout.api.math.IntVector3;
 import org.spout.api.tickable.Tickable;
@@ -161,9 +163,12 @@ public interface Entity extends Tickable, WorldSource, ComponentOwner {
 	public Region getRegion();
 
 	/**
-	 * Interact with this entity.
+	 * Interacts this Entity.
+	 *
+	 * This will trigger all owned {@link org.spout.api.component.entity.EntityComponent #onInteract(EntityInteractEvent)}.
+	 * @param event {@see org.spout.api.event.entity.EntityInteractEvent}
 	 */
-	public void interact(Action action, Entity source);
+	public void interact(final EntityInteractEvent event);
 
 	/**
 	 * Gets the {@link SceneComponent} which is the representation of this Entity within space.

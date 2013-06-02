@@ -26,28 +26,29 @@
  */
 package org.spout.api.event.world;
 
+import org.spout.api.entity.Entity;
 import org.spout.api.entity.Player;
 import org.spout.api.event.HandlerList;
 import org.spout.api.geo.World;
 
 /**
- * Called when a {@link Player} exits a world.
+ * Called when a {@link org.spout.api.entity.Entity} enters a {@link World}.
  */
-public class PlayerExitWorldEvent extends WorldEvent {
+public class EntityEnterWorldEvent extends WorldEvent {
 	private static final HandlerList handlers = new HandlerList();
-	private final Player player;
+	private final Entity entity;
 	
-	public PlayerExitWorldEvent(World world, Player player) {
+	public EntityEnterWorldEvent(World world, Entity entity) {
 		super(world);
-		this.player = player;
+		this.entity = entity;
 	}
 	
 	/**
-	 * Returns the player exiting the world.
-	 * @return player
+	 * Returns the entity entering the world.
+	 * @return entity
 	 */
-	public Player getPlayer() {
-		return player;
+	public Entity getEntity() {
+		return entity;
 	}
 
 	@Override

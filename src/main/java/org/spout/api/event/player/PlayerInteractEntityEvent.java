@@ -24,32 +24,32 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.event.entity;
+package org.spout.api.event.player;
 
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
 import org.spout.api.event.HandlerList;
-import org.spout.api.geo.cuboid.Block;
+import org.spout.api.event.entity.EntityInteractEntityEvent;
 import org.spout.api.geo.discrete.Point;
-import org.spout.api.material.block.BlockFace;
 
 /**
- * Called when one {@link Entity} interacts with a {@link Block}.
+ * Called when a {@link Player} interacts with a {@link Entity}.
  */
-public class EntityInteractBlockEvent extends EntityInteractEvent<Block> {
+public class PlayerInteractEntityEvent extends EntityInteractEntityEvent {
 	private static HandlerList handlers = new HandlerList();
-	private final BlockFace face;
+	private final Action action;
 
-	public EntityInteractBlockEvent(Entity e, Block interacted, Point point, BlockFace face) {
-		super(e, interacted, point);
-		this.face = face;
+	public PlayerInteractEntityEvent(Player p, Entity interacted, Point point, Action action) {
+		super(p, interacted, point);
+		this.action = action;
 	}
 
 	/**
-	 * Returns the {@link BlockFace} of the {@link Block} where interaction occurred.
-	 * @return the interacted BlockFace
+	 * Gets the action by the {@link Player} that caused the interaction.
+	 * @return the action
 	 */
-	public BlockFace getFace() {
-		return face;
+	public Action getAction() {
+		return action;
 	}
 
 	@Override

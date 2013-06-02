@@ -51,6 +51,8 @@ import org.spout.api.entity.EntitySnapshot;
 import org.spout.api.entity.Player;
 import org.spout.api.entity.spawn.SpawnArrangement;
 import org.spout.api.event.Cause;
+import org.spout.api.event.entity.EntityInteractEvent;
+import org.spout.api.event.player.Action;
 import org.spout.api.event.player.PlayerInteractEvent;
 import org.spout.api.event.player.input.PlayerClickEvent;
 import org.spout.api.event.player.input.PlayerKeyEvent;
@@ -257,7 +259,7 @@ public final class ComponentTest {
 		}
 
 		@Override
-		public void interact(PlayerInteractEvent.Action action, Entity source) {
+		public void interact(EntityInteractEvent event) {
 			//To change body of implemented methods use File | Settings | File Templates.
 		}
 

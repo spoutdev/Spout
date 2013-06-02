@@ -29,36 +29,36 @@ package org.spout.api.event.entity;
 import org.spout.api.entity.Entity;
 import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
+import org.spout.api.geo.discrete.Point;
 
 /**
- * Called when an Entity interacts with something else.
- * Implements {@link Cancellable}, which allows this event's normal outcome to be prevented.
- * 
- * @param <T> the type of object being interacted with.
+ * Called when an Entity interacts with the specified generic type.
  */
 public class EntityInteractEvent<T> extends EntityEvent implements Cancellable {
 	private static HandlerList handlers = new HandlerList();
-	private T interacted;
+	private final T interacted;
+	private final Point point;
 
-	public EntityInteractEvent(Entity e, T interacted) {
+	public EntityInteractEvent(Entity e, T interacted, Point point) {
 		super(e);
 		this.interacted = interacted;
+		this.point = point;
 	}
 
 	/**
-	 * Get the object being interacted with.
-	 * @return The object interacted with.
+	 * Get the object being interacted.
+	 * @return the object interacted.
 	 */
-	public T getInteractedWith() {
+	public T getInteracted() {
 		return interacted;
 	}
 
 	/**
-	 * Set the object being interacted with.
-	 * @param t The object that will be interacted with.
+	 * Gets the {@link Point} where interaction occurred.
+	 * @return point where interaction occurred
 	 */
-	public void setInteractedWith(T t) {
-		interacted = t;
+	public Point getPoint() {
+		return point;
 	}
 
 	@Override

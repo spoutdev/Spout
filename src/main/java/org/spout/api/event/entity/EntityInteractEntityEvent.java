@@ -27,18 +27,17 @@
 package org.spout.api.event.entity;
 
 import org.spout.api.entity.Entity;
-import org.spout.api.event.Cancellable;
 import org.spout.api.event.HandlerList;
+import org.spout.api.geo.discrete.Point;
 
 /**
  * Called when one {@link Entity} interacts with another {@link Entity}.
- * Implements {@link Cancellable}, which allows this event's normal outcome to be prevented.
  */
 public class EntityInteractEntityEvent extends EntityInteractEvent<Entity> {
 	private static HandlerList handlers = new HandlerList();
 
-	public EntityInteractEntityEvent(Entity e, Entity interacted) {
-		super(e, interacted);
+	public EntityInteractEntityEvent(Entity e, Entity interacted, Point point) {
+		super(e, interacted, point);
 	}
 
 	@Override

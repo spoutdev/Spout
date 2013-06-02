@@ -24,32 +24,31 @@
  * License and see <http://spout.in/licensev1> for the full license, including
  * the MIT license.
  */
-package org.spout.api.event.entity;
+package org.spout.api.event.world;
 
 import org.spout.api.entity.Entity;
+import org.spout.api.entity.Player;
 import org.spout.api.event.HandlerList;
-import org.spout.api.geo.cuboid.Block;
-import org.spout.api.geo.discrete.Point;
-import org.spout.api.material.block.BlockFace;
+import org.spout.api.geo.World;
 
 /**
- * Called when one {@link Entity} interacts with a {@link Block}.
+ * Called when a {@link org.spout.api.entity.Entity} exits a {@link World}.
  */
-public class EntityInteractBlockEvent extends EntityInteractEvent<Block> {
-	private static HandlerList handlers = new HandlerList();
-	private final BlockFace face;
+public class EntityExitWorldEvent extends WorldEvent {
+	private static final HandlerList handlers = new HandlerList();
+	private final Entity entity;
 
-	public EntityInteractBlockEvent(Entity e, Block interacted, Point point, BlockFace face) {
-		super(e, interacted, point);
-		this.face = face;
+	public EntityExitWorldEvent(World world, Entity entity) {
+		super(world);
+		this.entity = entity;
 	}
 
 	/**
-	 * Returns the {@link BlockFace} of the {@link Block} where interaction occurred.
-	 * @return the interacted BlockFace
+	 * Returns the entity entering the world.
+	 * @return entity
 	 */
-	public BlockFace getFace() {
-		return face;
+	public Entity getEntity() {
+		return entity;
 	}
 
 	@Override

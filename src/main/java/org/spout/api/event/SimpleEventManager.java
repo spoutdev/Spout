@@ -43,7 +43,7 @@ import org.spout.api.exception.EventException;
 import org.spout.api.exception.IllegalPluginAccessException;
 
 /**
- * A simple implementation of the {@link EventManager} that handles all {@link Event}s for the server.
+ * A simple implementation of the {@link EventManager} that handles all {@link Event}s for the engine.
  */
 public class SimpleEventManager implements EventManager {
 	private static final Logger LOGGER = Logger.getLogger(SimpleEventManager.class.getCanonicalName());
