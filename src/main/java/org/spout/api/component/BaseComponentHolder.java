@@ -39,7 +39,7 @@ import org.spout.api.Spout;
 import org.spout.api.component.impl.DatatableComponent;
 import org.spout.api.data.DataOwner;
 
-public class BaseComponentHolder implements ComponentHolder, DataOwner {
+public class BaseComponentHolder implements ComponentOwner, DataOwner {
 	/**
 	 * Map of class name, component
 	 */

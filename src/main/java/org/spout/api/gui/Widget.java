@@ -26,7 +26,7 @@
  */
 package org.spout.api.gui;
 
-import org.spout.api.component.ComponentHolder;
+import org.spout.api.component.ComponentOwner;
 import org.spout.api.geo.discrete.Transform2D;
 import org.spout.api.math.Rectangle;
 import org.spout.api.tickable.Tickable;
@@ -34,7 +34,7 @@ import org.spout.api.tickable.Tickable;
 /**
  * Represents an element on a {@link Screen}.
  */
-public interface Widget extends Tickable, ComponentHolder, Focusable, RenderPartContainer {
+public interface Widget extends Tickable, ComponentOwner, Focusable, RenderPartContainer {
 	/**
 	 * Invokes a render update in the next frame
 	 */

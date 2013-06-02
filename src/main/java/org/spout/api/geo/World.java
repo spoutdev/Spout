@@ -32,7 +32,7 @@ import java.util.UUID;
 
 import org.spout.api.Engine;
 import org.spout.api.component.Component;
-import org.spout.api.component.ComponentHolder;
+import org.spout.api.component.ComponentOwner;
 import org.spout.api.data.DataOwner;
 import org.spout.api.data.DataSubject;
 import org.spout.api.entity.Entity;
@@ -57,7 +57,7 @@ import org.spout.api.util.thread.annotation.Threadsafe;
 /**
  * Represents a World.
  */
-public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, ComponentHolder, DataOwner, DataSubject {
+public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, ComponentOwner, DataOwner, DataSubject {
 	/**
 	 * Gets the name of the world
 	 * @return the name of the world
@@ -88,7 +88,7 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 	 * Blocks which are completely transparent are ignored.
 	 * @param x the block x coordinate of the column
 	 * @param z the block z coordinate of the column
-	 * @param load load option
+	 * @param loadopt load option
 	 * @return the highest of the highest block
 	 */
 	@LiveRead
@@ -118,7 +118,7 @@ public interface World extends AreaRegionAccess, AreaPhysicsAccess, Named, Compo
 	 * Gets the BlockMaterial of the highest block in the given (x, z) column.<br>
 	 * @param x the block x coordinate of the column
 	 * @param z the block z coordinate of the column
-	 * @param load load option
+	 * @param loadopt load option
 	 * @return the BlockMaterial
 	 */
 	@LiveRead

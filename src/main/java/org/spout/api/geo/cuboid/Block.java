@@ -26,8 +26,7 @@
  */
 package org.spout.api.geo.cuboid;
 
-import org.spout.api.component.ComponentHolder;
-import org.spout.api.component.type.BlockComponent;
+import org.spout.api.component.ComponentOwner;
 import org.spout.api.event.Cause;
 import org.spout.api.generator.biome.Biome;
 import org.spout.api.geo.World;
@@ -45,7 +44,7 @@ import org.spout.api.util.thread.annotation.DelayedWrite;
 import org.spout.api.util.thread.annotation.LiveWrite;
 import org.spout.api.util.thread.annotation.Threadsafe;
 
-public interface Block extends MaterialSource, WorldSource, ComponentHolder {
+public interface Block extends MaterialSource, WorldSource, ComponentOwner {
 
 	/**
 	 * Gets the {@link Point} position of this block in the world

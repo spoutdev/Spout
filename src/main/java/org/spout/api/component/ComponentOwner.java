@@ -33,6 +33,23 @@ import java.util.Collection;
  */
 public interface ComponentOwner {
 	/**
+	 * Adds the component of the specified type to the holder and returns it if it is not present.
+	 * <p/>
+	 * Otherwise, it returns the component of the specified type if there was one present.
+	 * @param type whose component is to be added to the holder
+	 * @return the new component that was added, or the existing one if it had one
+	 */
+	public <T extends Component> T add(Class<T> type);
+
+	/**
+	 * Removes the component of the specified type from the holder if it is
+	 * present.
+	 * @param type whose component is to be removed from the holder
+	 * @return the removed component, or null if there was not one
+	 */
+	public <T extends Component> T detach(Class<? extends Component> type);
+
+	/**
 	 * Gets all components held by this component owner.
 	 * @return The components held by this owner
 	 */

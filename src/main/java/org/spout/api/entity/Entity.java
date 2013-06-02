@@ -30,7 +30,7 @@ import java.util.Iterator;
 import java.util.UUID;
 
 import org.spout.api.Engine;
-import org.spout.api.component.ComponentHolder;
+import org.spout.api.component.ComponentOwner;
 import org.spout.api.component.impl.NetworkComponent;
 import org.spout.api.component.impl.SceneComponent;
 import org.spout.api.data.DataOwner;
@@ -49,7 +49,7 @@ import org.spout.api.util.thread.annotation.SnapshotRead;
 /**
  * Represents an entity, which may or may not be spawned into the world.
  */
-public interface Entity extends Tickable, WorldSource, ComponentHolder, DataOwner {
+public interface Entity extends Tickable, WorldSource, ComponentOwner, DataOwner {
 	/**
 	 * Gets the current ID of this entity within the current game session
 	 * @return The entities' id.
