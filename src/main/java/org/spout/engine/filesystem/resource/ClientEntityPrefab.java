@@ -26,10 +26,7 @@
  */
 package org.spout.engine.filesystem.resource;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.spout.api.Client;
 import org.spout.api.component.Component;
@@ -61,12 +58,12 @@ public class ClientEntityPrefab implements EntityPrefab {
 
 	@Override
 	public List<Class<? extends Component>> getComponents() {
-		return components;
+		return Collections.unmodifiableList(components);
 	}
 
 	@Override
 	public Map<String, Object> getData() {
-		return data;
+		return Collections.unmodifiableMap(data);
 	}
 
 	@Override

@@ -71,7 +71,7 @@ public class ClientModel implements Model {
 
 	@Override
 	public Map<String, Animation> getAnimations() {
-		return animations;
+		return Collections.unmodifiableMap(animations);
 	}
 
 }

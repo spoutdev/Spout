@@ -92,8 +92,9 @@ public class GLBatchInstanceRenderer extends BatchVertexRenderer {
 		
 		buffer.flip();
 		
-		if(flushingBuffer == null)
+		if(flushingBuffer == null) {
 			flushingBuffer = SpoutFloatBuffer.getBuffer();
+		}
 		
 		flushingBuffer.setData(elements, layouts, buffer);
 	}

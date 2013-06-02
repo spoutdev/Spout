@@ -89,7 +89,7 @@ public class ClientTexture extends Texture {
 		int width, height;
 		int[] image;
 
-		public WriteGPUTask(int width, int height, int[] image) {
+		WriteGPUTask(int width, int height, int[] image) {
 			this.width = width;
 			this.height = height;
 			this.image = image;

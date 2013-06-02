@@ -40,4 +40,7 @@ public class RegionFaker {
 		PowerMockito.when(region, Chunk.class.getMethod("getZ", (Class[]) null)).withNoArguments().thenReturn(z);
 		return region;
 	}
+
+	private RegionFaker() {
+	}
 }

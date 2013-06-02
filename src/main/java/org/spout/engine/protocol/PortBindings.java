@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
@@ -93,7 +94,7 @@ public class PortBindings extends AnnotatedSubclassConfiguration {
 			if (binding.protocol == null) {
 				Protocol protocol = Protocol.getProtocol(binding.protocolName);
 				if (protocol == null) {
-					server.getLogger().warning("Could not bind to port, unknown protocol '" + binding.protocolName + "'");
+					server.getLogger().log(Level.WARNING, "Could not bind to port, unknown protocol ''{0}''", binding.protocolName);
 					continue;
 				}
 				binding.protocol = protocol;

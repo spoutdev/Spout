@@ -55,8 +55,9 @@ public class BlockMeshLoader extends ResourceLoader {
 
 		while (scan.hasNext()) {
 			String s = scan.nextLine();
-			if (s.startsWith("#"))
-				continue; // it's a comment, skip it
+			if (s.startsWith("#")) {
+				continue;
+			} // it's a comment, skip it
 			if (s.startsWith("v ")) { // Space is important !!
 				String[] sp = s.split(" ");
 				verticies.add(new Vector3(Float.parseFloat(sp[1]), Float.parseFloat(sp[2]), Float.parseFloat(sp[3])));
@@ -100,8 +101,9 @@ public class BlockMeshLoader extends ResourceLoader {
 						default : break;
 						}
 					}
-					if(requiredFace.isEmpty())
+					if(requiredFace.isEmpty()) {
 						requiredFace = null;
+					}
 				}
 
 				if (sp[1].contains("//")) {
@@ -114,10 +116,12 @@ public class BlockMeshLoader extends ResourceLoader {
 						ar.add(Vertex.createVertexPositionNormal(verticies.get(pos - 1), normals.get(norm - 1)));
 					}
 
-					if(requiredFace == null)
+					if(requiredFace == null) {
 						faces.add(new OrientedMeshFace(ar.get(2), ar.get(1), ar.get(0)));
-					else
+					}
+					else {
 						faces.add(new OrientedMeshFace(ar.get(2), ar.get(1), ar.get(0), requiredFace));
+					}
 
 					ar.clear();
 
@@ -137,10 +141,12 @@ public class BlockMeshLoader extends ResourceLoader {
 
 					}
 
-					if(requiredFace == null)
+					if(requiredFace == null) {
 						faces.add(new OrientedMeshFace(ar.get(2), ar.get(1), ar.get(0)));
-					else
+					}
+					else {
 						faces.add(new OrientedMeshFace(ar.get(2), ar.get(1), ar.get(0), requiredFace));
+					}
 
 					ar.clear();
 
@@ -153,10 +159,12 @@ public class BlockMeshLoader extends ResourceLoader {
 					Vertex p2 = Vertex.createVertexPosition(verticies.get(face2));
 					Vertex p3 = Vertex.createVertexPosition(verticies.get(face3));
 
-					if(requiredFace == null)
+					if(requiredFace == null) {
 						faces.add(new OrientedMeshFace(p3, p2, p1));
-					else
+					}
+					else {
 						faces.add(new OrientedMeshFace(p3, p2, p1, requiredFace));
+					}
 
 				}
 

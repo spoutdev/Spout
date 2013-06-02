@@ -94,4 +94,7 @@ public class StringUtil {
 		// actually has the most recent cost counts
 		return p[n];
 	}
+
+	private StringUtil() {
+	}
 }

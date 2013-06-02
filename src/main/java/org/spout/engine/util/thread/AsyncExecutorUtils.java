@@ -32,6 +32,7 @@ import java.lang.management.ThreadMXBean;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.spout.api.Spout;
@@ -51,12 +52,12 @@ public class AsyncExecutorUtils {
 			Thread thread = entry.getKey();
 			log.info(LINE);
 
-			log.info("Current Thread: " + thread.getName());
-			log.info("    PID: " + thread.getId() + " | Alive: " + thread.isAlive() + " | State: " + thread.getState());
+			log.log(Level.INFO, "Current Thread: {0}", thread.getName());
+			log.log(Level.INFO, "    PID: {0} | Alive: {1} | State: {2}", new Object[]{thread.getId(), thread.isAlive(), thread.getState()});
 			log.info("    Stack:");
 			StackTraceElement[] stack = entry.getValue();
 			for (int line = 0; line < stack.length; line++) {
-				log.info("        " + stack[line].toString());
+				log.log(Level.INFO, "        {0}", stack[line].toString());
 			}
 		}
 		log.info(LINE);
@@ -86,10 +87,13 @@ public class AsyncExecutorUtils {
 	 */
 	public static void dumpStackTrace(Thread t) {
 		StackTraceElement[] stackTrace = t.getStackTrace();
-		Spout.getEngine().getLogger().info("Stack trace for Thread " + t.getName());
+		Spout.getEngine().getLogger().log(Level.INFO, "Stack trace for Thread {0}", t.getName());
 		for (StackTraceElement e : stackTrace) {
-			Spout.getEngine().getLogger().info("\tat " + e);
+			Spout.getEngine().getLogger().log(Level.INFO, "\tat {0}", e);
 		}
+	}
+
+	private AsyncExecutorUtils() {
 	}
 	
 }

@@ -77,9 +77,13 @@ public class RenderMaterialLoader extends ResourceLoader {
 		{
 			final Map<? extends String, ?> renderState = checkerMapStringObject.check(resourceProperties.get("RenderState"));
 			Object s = renderState.get("Depth");
-			if(s instanceof Boolean) depthTesting = (Boolean)s;
+			if(s instanceof Boolean) {
+				depthTesting = (Boolean)s;
+			}
 			Object s2 = renderState.get("Layer");
-			if(s2 != null && s2 instanceof Integer) layer = (Integer)s2;
+			if(s2 != null && s2 instanceof Integer) {
+				layer = (Integer)s2;
+			}
 		}
 
 		// Better make a new HashMap, who knows whether we can even write to it...

@@ -99,11 +99,11 @@ public class ChunkFiles {
 			boolean converted = false;
 			
 			if (version > CHUNK_VERSION) {
-				Spout.getLogger().log(Level.SEVERE, "Chunk version " + version + " exceeds maximum allowed value of " + CHUNK_VERSION);
+				Spout.getLogger().log(Level.SEVERE, "Chunk version {0} exceeds maximum allowed value of {1}", new Object[]{version, CHUNK_VERSION});
 				return null;
 			} else if (version < CHUNK_VERSION) {
 				if (version <= 0) {
-					Spout.getLogger().log(Level.SEVERE, "Unable to parse chunk version " + version);
+					Spout.getLogger().log(Level.SEVERE, "Unable to parse chunk version {0}", version);
 					return null;
 				}
 				converted = true;
@@ -437,7 +437,7 @@ public class ChunkFiles {
 		}
 		int globalId = globalLighting.convertFrom(worldLighting, worldId);
 		if (globalId == 0) {
-			Spout.getLogger().info("Unknown manager world id " + worldId);
+			Spout.getLogger().log(Level.INFO, "Unknown manager world id {0}", worldId);
 			return;
 		}
 		LightingManager<?> manager = LightingRegistry.get((short) globalId);
@@ -461,7 +461,7 @@ public class ChunkFiles {
 		private final long nextUpdate;
 		private final int data;
 		
-		public DynamicBlockUpdateV1(int packed, long nextUpdate, int data) {
+		DynamicBlockUpdateV1(int packed, long nextUpdate, int data) {
 			this.packed = packed;
 			this.nextUpdate = nextUpdate;
 			this.data = data;
@@ -611,6 +611,9 @@ public class ChunkFiles {
 	 */
 	private static CompoundMap convertV4V5(CompoundMap map) {
 		return map;
+	}
+
+	private ChunkFiles() {
 	}
 	
 }

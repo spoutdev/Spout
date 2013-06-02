@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
 
 import org.spout.api.Platform;
 import org.spout.api.Spout;
@@ -280,7 +281,7 @@ public class RegionGenerator implements Named {
 							for (int i = 0; i < managers.length; i++) {
 								CuboidLightBuffer lightBuffer = buffers[i][xx][yy][zz];
 								if (newChunk.setIfAbsentLightBuffer((short) lightBuffer.getManagerId(), lightBuffer) != lightBuffer) {
-									Spout.getLogger().info("Unable to set light buffer for new chunk " + newChunk + " as the id is already in use, " + lightBuffer.getManagerId());
+									Spout.getLogger().log(Level.INFO, "Unable to set light buffer for new chunk {0} as the id is already in use, {1}", new Object[]{newChunk, lightBuffer.getManagerId()});
 								}
 							}
 
@@ -344,7 +345,7 @@ public class RegionGenerator implements Named {
 	public void touchChunkNeighbors(SpoutChunk c) {
 		
 		if (!c.isObserved()) {
-			Spout.getLogger().info("Touched chunk is not observed, " + c);
+			Spout.getLogger().log(Level.INFO, "Touched chunk is not observed, {0}", c);
 			return;
 		}
 		
@@ -443,7 +444,7 @@ public class RegionGenerator implements Named {
 		private final int x;
 		private final int z;
 		
-		public NamedReentrantLock(int x, int z) {
+		NamedReentrantLock(int x, int z) {
 			this.x = x;
 			this.z = z;
 		}

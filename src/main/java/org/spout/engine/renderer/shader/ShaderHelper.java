@@ -64,4 +64,7 @@ public class ShaderHelper {
 		return src.toString();
 	}
 
+	private ShaderHelper() {
+	}
+
 }

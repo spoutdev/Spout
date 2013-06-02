@@ -102,7 +102,7 @@ public class RectangularPacker {
 	}
 
 	public Map<Texture, Node> getFits() {
-		return fits; // Don't bother cloning the hashmap; this is a single-use
+		return Collections.unmodifiableMap(fits); // Don't bother cloning the hashmap; this is a single-use
 						// class since we can't do multiple returns
 	}
 

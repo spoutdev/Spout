@@ -64,8 +64,9 @@ public class AnimationLoader extends ResourceLoader {
 		for(Entry<? extends String, ?> entry : bones_data.entrySet()){
 			
 			Bone bone = skeleton.getBoneByName(entry.getKey());
-			if(bone == null)
+			if(bone == null) {
 				throw new IllegalStateException("Animation file mapped with the bad Skeleton file");
+			}
 			
 			Map<? extends Integer, String> value = (Map<? extends Integer, String>)entry.getValue();
 			

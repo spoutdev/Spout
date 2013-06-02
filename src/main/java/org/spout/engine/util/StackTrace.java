@@ -34,4 +34,7 @@ public class StackTrace {
 			e.printStackTrace();
 		}
 	}
+
+	private StackTrace() {
+	}
 }

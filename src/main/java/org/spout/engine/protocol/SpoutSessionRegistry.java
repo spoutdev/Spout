@@ -36,7 +36,7 @@ import org.spout.api.protocol.SessionRegistry;
  * A list of all the sessions which provides a convenient {@link #pulse()}
  * method to pulse every session in one operation.
  */
-public final class SpoutSessionRegistry implements SessionRegistry {
+public class SpoutSessionRegistry implements SessionRegistry {
 	/**
 	 * A list of the sessions.
 	 */

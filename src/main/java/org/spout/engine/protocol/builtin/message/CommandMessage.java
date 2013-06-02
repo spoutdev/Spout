@@ -26,6 +26,7 @@
  */
 package org.spout.engine.protocol.builtin.message;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -54,7 +55,7 @@ public class CommandMessage extends SpoutMessage {
 	}
 
 	public List<Object> getArguments() {
-		return arguments;
+		return Collections.unmodifiableList(arguments);
 	}
 
 	@Override

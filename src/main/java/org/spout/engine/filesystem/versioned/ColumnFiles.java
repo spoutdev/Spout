@@ -78,12 +78,12 @@ public class ColumnFiles {
 			boolean converted = false;
 
 			if (version > COLUMN_VERSION) {
-				Spout.getLogger().log(Level.SEVERE, "Chunk version " + version + " exceeds maximum allowed value of " + COLUMN_VERSION);
+				Spout.getLogger().log(Level.SEVERE, "Chunk version {0} exceeds maximum allowed value of {1}", new Object[]{version, COLUMN_VERSION});
 				initColumn(column, lowestY, highestY, topmostBlocks);
 				return;
 			} else if (version < COLUMN_VERSION) {
 				if (version <= 0) {
-					Spout.getLogger().log(Level.SEVERE, "Invalid column version " + version);
+					Spout.getLogger().log(Level.SEVERE, "Invalid column version {0}", version);
 					initColumn(column, lowestY, highestY, topmostBlocks);
 					return;
 				}
@@ -100,7 +100,7 @@ public class ColumnFiles {
 				column.setDirty();
 			}
 		} catch (IOException e) {
-			Spout.getLogger().severe("Error reading column height-map for column" + column.getX() + ", " + column.getZ());
+			Spout.getLogger().log(Level.SEVERE, "Error reading column height-map for column{0}, {1}", new Object[]{column.getX(), column.getZ()});
 		}
 	}
 	
@@ -171,7 +171,7 @@ public class ColumnFiles {
 				manager.deserialize(biomes);
 				column.setBiomeManager(manager);
 			} catch (Exception e) {
-				Spout.getLogger().severe("Unable to find biome manager class " + biomeManagerClass + ", this may cause world corruption");
+				Spout.getLogger().log(Level.SEVERE, "Unable to find biome manager class {0}, this may cause world corruption", biomeManagerClass);
 				e.printStackTrace();
 			}
 		}
@@ -272,6 +272,9 @@ public class ColumnFiles {
 	private static CompoundMap convertV1V2(CompoundMap map) {
 		map.put(new IntTag("highest_y", Integer.MIN_VALUE));
 		return map;
+	}
+
+	private ColumnFiles() {
 	}
 }
 

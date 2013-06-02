@@ -223,7 +223,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 		if (this.entities == null) {
 			throw new UnsupportedOperationException("This chunk snapshot does not contain entities");
 		} else {
-			return this.entities;
+			return Collections.unmodifiableList(this.entities);
 		}
 	}
 
@@ -271,7 +271,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 	@Override
 	public List<BlockComponentSnapshot> getBlockComponents() {
-		return blockComponents;
+		return Collections.unmodifiableList(blockComponents);
     }
 
 	public int[] getPalette() {
@@ -320,7 +320,7 @@ public class SpoutChunkSnapshot extends ChunkSnapshot {
 
 		@Override
 		public Set<Class<? extends BlockComponent>> getComponents() {
-			return clazz;
+			return Collections.unmodifiableSet(clazz);
 		}
 
 		@Override

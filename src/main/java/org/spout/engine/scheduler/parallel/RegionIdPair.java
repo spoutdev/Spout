@@ -37,11 +37,11 @@ public class RegionIdPair {
 		this.region = r;
 	}
 	
-	public final SpoutRegion getRegion() {
+	public SpoutRegion getRegion() {
 		return region;
 	}
 	
-	public final int getTaskId() {
+	public int getTaskId() {
 		return taskId;
 	}
 }

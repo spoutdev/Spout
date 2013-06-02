@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.spout.api.Spout;
 import org.spout.api.geo.cuboid.Region;
@@ -67,7 +68,7 @@ public class ParallelTaskInfo {
 
 		SpoutTask newTask = task.getRegionTask(region);
 		if (newTask == null) {
-			Spout.getLogger().info("Unable to create parallel task for " + task);
+			Spout.getLogger().log(Level.INFO, "Unable to create parallel task for {0}", task);
 		}
 
 		int newId = ((SpoutTaskManager) region.getTaskManager()).schedule(newTask).getTaskId();

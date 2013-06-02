@@ -37,7 +37,7 @@ public abstract class ManagerRunnable implements Runnable {
 	}
 
 	@Override
-	public final void run() {
+	public void run() {
 		manager.setExecutionThread(Thread.currentThread());
 		runTask();
 	}

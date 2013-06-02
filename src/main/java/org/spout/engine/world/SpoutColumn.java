@@ -405,7 +405,7 @@ public class SpoutColumn {
 	
 	private class ColumnSetQueueElement extends SetQueueElement<SpoutColumn> {
 		
-		public ColumnSetQueueElement(SetQueue<SpoutColumn> queue, SpoutColumn value) {
+		ColumnSetQueueElement(SetQueue<SpoutColumn> queue, SpoutColumn value) {
 			super(queue, value);
 		}
 

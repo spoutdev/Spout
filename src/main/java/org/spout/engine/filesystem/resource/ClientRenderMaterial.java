@@ -124,20 +124,23 @@ public class ClientRenderMaterial extends RenderMaterial {
 
 	@Override
 	public void preMesh(SnapshotMesh snapshotMesh) {
-		for(MeshEffect meshEffect : snapshotMesh.getMaterial().getMeshEffects())
+		for(MeshEffect meshEffect : snapshotMesh.getMaterial().getMeshEffects()) {
 			meshEffect.preMesh(snapshotMesh);
+		}
 	}
 
 	@Override
 	public void postMesh(SnapshotMesh snapshotMesh) {
-		for(MeshEffect meshEffect : snapshotMesh.getMaterial().getMeshEffects())
+		for(MeshEffect meshEffect : snapshotMesh.getMaterial().getMeshEffects()) {
 			meshEffect.postMesh(snapshotMesh);
+		}
 	}
 
 	@Override
 	public void preRender(SnapshotRender snapshotRender) {
-		for(RenderEffect renderEffect : getRenderEffects())
+		for(RenderEffect renderEffect : getRenderEffects()) {
 			renderEffect.preRender(snapshotRender);
+		}
 
 		if(!depthTesting){
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -148,8 +151,9 @@ public class ClientRenderMaterial extends RenderMaterial {
 
 	@Override
 	public void postRender(SnapshotRender snapshotRender) {
-		for(RenderEffect renderEffect : getRenderEffects())
+		for(RenderEffect renderEffect : getRenderEffects()) {
 			renderEffect.postRender(snapshotRender);
+		}
 
 		if(!depthTesting){
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -205,7 +209,7 @@ public class ClientRenderMaterial extends RenderMaterial {
 
 	@Override
 	public List<BufferEffect> getBufferEffects() {
-		return bufferEffects;
+		return Collections.unmodifiableList(bufferEffects);
 	}
 
 }

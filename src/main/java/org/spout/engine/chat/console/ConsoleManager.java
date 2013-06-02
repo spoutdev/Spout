@@ -47,7 +47,7 @@ import org.spout.logging.jline.JLineHandler;
 /**
  * A meta-class to handle all logging and input-related console improvements.
  */
-public final class ConsoleManager {
+public class ConsoleManager {
 	private final Engine engine;
 	private final ConsoleCommandSource source;
 
@@ -84,7 +84,7 @@ public final class ConsoleManager {
 		private static final AtomicInteger COUNT = new AtomicInteger(1);
 		private final SpoutEngine engine;
 
-		public ServerShutdownThread(SpoutEngine engine) {
+		ServerShutdownThread(SpoutEngine engine) {
 			super("ServerShutdownThread-" + COUNT.getAndIncrement());
 			this.engine = engine;
 		}
@@ -99,12 +99,12 @@ public final class ConsoleManager {
 		private final String command;
 		private final ChatArguments arguments;
 
-		public CommandTask() {
+		CommandTask() {
 			command = null;
 			arguments = null;
 		}
 
-		public CommandTask(String commandLine) {
+		CommandTask(String commandLine) {
 			int spaceIndex = commandLine.indexOf(' ');
 			if (spaceIndex != -1) {
 				command = commandLine.substring(0, spaceIndex);

@@ -1331,7 +1331,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 						}
 					}
 				} catch (Exception e) {
-					Spout.getEngine().getLogger().log(Level.SEVERE, "Could not populate Chunk with " + populator.toString());
+					Spout.getEngine().getLogger().log(Level.SEVERE, "Could not populate Chunk with {0}", populator.toString());
 					e.printStackTrace();
 				}
 			}
@@ -1351,7 +1351,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 				time += bean.getCurrentThreadCpuTime();
 				populatorAdd(populator, time);
 			} catch (Exception e) {
-				Spout.getEngine().getLogger().log(Level.SEVERE, "Could not populate Chunk with " + populator.toString());
+				Spout.getEngine().getLogger().log(Level.SEVERE, "Could not populate Chunk with {0}", populator.toString());
 				e.printStackTrace();
 			}
 		}
@@ -1372,7 +1372,7 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 			time += bean.getCurrentThreadCpuTime();
 			populatorAdd(populator, time);
 		} catch (Exception e) {
-			Spout.getEngine().getLogger().log(Level.SEVERE, "Could not populate Chunk with " + populator.toString());
+			Spout.getEngine().getLogger().log(Level.SEVERE, "Could not populate Chunk with {0}", populator.toString());
 			e.printStackTrace();
 		}
 	}
@@ -2105,11 +2105,11 @@ public class SpoutChunk extends Chunk implements Snapshotable, Modifiable {
 		
 		private final boolean validIfUnloaded;
 
-		public ChunkSetQueueElement(SetQueue<T> queue, T value) {
+		ChunkSetQueueElement(SetQueue<T> queue, T value) {
 			this(queue, value, false);
 		}
 		
-		public ChunkSetQueueElement(SetQueue<T> queue, T value, boolean validIfUnloaded) {
+		ChunkSetQueueElement(SetQueue<T> queue, T value, boolean validIfUnloaded) {
 			super(queue, value);
 			this.validIfUnloaded = validIfUnloaded;
 		}

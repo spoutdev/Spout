@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 
 import org.spout.api.Spout;
 import org.spout.api.geo.World;
@@ -116,7 +117,7 @@ public class WorldSavingThread extends Thread{
 			int tenth = ((++saved) * 10) / toSave;
 			if (tenth != lastTenth) {
 				lastTenth = tenth;
-				Spout.getLogger().info("Saved " + tenth + "0% of queued chunks");
+				Spout.getLogger().log(Level.INFO, "Saved {0}0% of queued chunks", tenth);
 			}
 		}
 		Collection<World> worlds = Spout.getEngine().getWorlds();
@@ -134,7 +135,7 @@ public class WorldSavingThread extends Thread{
 		}
 		
 		if (!queueRunning.compareAndSet(true, false)) {
-			Spout.getLogger().severe("queueRunning was already false when " + threadType + " world saving thread finished");
+			Spout.getLogger().log(Level.SEVERE, "queueRunning was already false when {0} world saving thread finished", threadType);
 		}
 		
 		if (!queue.isEmpty()) {
@@ -164,13 +165,13 @@ public class WorldSavingThread extends Thread{
 					try {
 						out.close();
 					} catch (IOException ioe) {
-						Spout.getLogger().info("Failed to commit chunk " + chunk);
+						Spout.getLogger().log(Level.INFO, "Failed to commit chunk {0}", chunk);
 						ioe.printStackTrace();
 					}
 				}
 				chunk.saveComplete();
 			} else {
-				Spout.getLogger().severe("World saving thread unable to open file for chunk " + chunk);
+				Spout.getLogger().log(Level.SEVERE, "World saving thread unable to open file for chunk {0}", chunk);
 			}
 			return world;
 		}
@@ -178,7 +179,7 @@ public class WorldSavingThread extends Thread{
 	
 	private class BackupThread extends Thread {
 		
-		public BackupThread() {
+		BackupThread() {
 			Spout.getLogger().info("Backup world save thread started due to late submission of chunk for saving");
 			Thread.dumpStack();
 		}

@@ -156,8 +156,9 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 			throw new IllegalStateException("Already closed");
 		}
 
-		for(int i = 0; i < bufferContainer.length; i++)
+		for(int i = 0; i < bufferContainer.length; i++) {
 			bufferContainer[i] = null;
+		}
 
 		renderer.release();
 
@@ -172,10 +173,12 @@ public class ChunkMeshBatchAggregator extends Cuboid {
 	public void setSubBatch(BufferContainer bufferContainer, int x, int y, int z) {
 		int index = getIndex(x, y, z);
 		
-		if(bufferContainer == null && this.bufferContainer[index] != null)
+		if(bufferContainer == null && this.bufferContainer[index] != null) {
 			count--;
-		else if(bufferContainer != null && this.bufferContainer[index] == null)
+		}
+		else if(bufferContainer != null && this.bufferContainer[index] == null) {
 			count++;
+		}
 		
 		this.bufferContainer[getIndex(x, y, z)] = bufferContainer;
 		dataSended = false;

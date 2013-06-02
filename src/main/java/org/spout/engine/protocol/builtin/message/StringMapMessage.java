@@ -65,7 +65,7 @@ public class StringMapMessage extends SpoutMessage {
 	}
 
 	public List<Pair<Integer, String>> getElements() {
-		return elements;
+		return Collections.unmodifiableList(elements);
 	}
 
 	@Override
