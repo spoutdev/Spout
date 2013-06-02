@@ -1462,14 +1462,23 @@ public class SpoutWorld extends BaseComponentOwner implements AsyncManager, Worl
 	}
 
 	public RegionFileManager getRegionFileManager() {
+		if (regionFileManager == null) {
+			throw new IllegalStateException("Client does not have file manager");
+		}
 		return regionFileManager;
 	}
 
 	public BAAWrapper getRegionFile(int rx, int ry, int rz) {
+		if (regionFileManager == null) {
+			throw new IllegalStateException("Client does not have file manager");
+		}
 		return regionFileManager.getBAAWrapper(rx, ry, rz);
 	}
 
 	public OutputStream getChunkOutputStream(ChunkSnapshot c) {
+		if (regionFileManager == null) {
+			throw new IllegalStateException("Client does not have file manager");
+		}
 		return regionFileManager.getChunkOutputStream(c);
 	}
 
