@@ -233,7 +233,11 @@ public class SpoutRegion extends Region implements AsyncManager {
 
 		generator = new RegionGenerator(this, 4);
 
-		this.chunkStore = world.getRegionFile(getX(), getY(), getZ());
+		if (Spout.getPlatform() == Platform.CLIENT) {
+			this.chunkStore = null;
+		} else {
+			this.chunkStore = world.getRegionFile(getX(), getY(), getZ());
+		}
 		taskManager = new SpoutTaskManager(world.getEngine().getScheduler(), null, this, world.getAge());
 		scheduler = (SpoutScheduler) (Spout.getEngine().getScheduler());
 	}
@@ -286,7 +290,8 @@ public class SpoutRegion extends Region implements AsyncManager {
 		SpoutChunk newChunk = null;
 		ChunkDataForRegion dataForRegion = null;
 
-		boolean fileExists = this.inputStreamExists(x, y, z);
+		//Files never exist on the client
+		boolean fileExists = Spout.getPlatform() == Platform.CLIENT ? false : this.inputStreamExists(x, y, z);
 
 		if (loadopt.loadIfNeeded() && fileExists) {
 			dataForRegion = new ChunkDataForRegion();
@@ -338,25 +343,25 @@ public class SpoutRegion extends Region implements AsyncManager {
 	public SpoutChunk getChunkFromBlock(int x, int y, int z, LoadOption loadopt) {
 		return this.getChunk(x >> Chunk.BLOCKS.BITS, y >> Chunk.BLOCKS.BITS, z >> Chunk.BLOCKS.BITS, loadopt);
 	}
-	
-	
+
 	private void generateColumn(int x, int z) {
 		generator.generateColumn(x, z);
 	}
-	
+
 	// Method should only be called from the region generator
 	protected boolean setChunkIfNotGeneratedWithoutLock(SpoutChunk newChunk, int x, int y, int z) {
 		int cx = newChunk.getX();
 		int cy = newChunk.getY();
 		int cz = newChunk.getZ();
-		boolean exists = this.inputStreamExists(cx, cy, cz);
+		//Files never exist on the client
+		boolean exists = Spout.getPlatform() == Platform.CLIENT ? false : this.inputStreamExists(cx, cy, cz);
 		if (exists) {
 			return false;
 		}
 		// chunk has not been generated
 		return setChunk(newChunk, x, y, z, null, true) == newChunk;
 	}
-	
+
 	private SpoutChunk setChunk(SpoutChunk newChunk, int x, int y, int z, ChunkDataForRegion dataForRegion, boolean generated) {
 		final AtomicReference<SpoutChunk> chunkReference = chunks[x][y][z];
 		while (true) {
@@ -1556,10 +1561,16 @@ public class SpoutRegion extends Region implements AsyncManager {
 	}
 
 	public boolean inputStreamExists(int x, int y, int z) {
+		if (chunkStore == null) {
+			throw new IllegalStateException("Client does not have chunk store");
+		}
 		return chunkStore.inputStreamExists(getChunkKey(x, y, z));
 	}
 
 	public boolean attemptClose() {
+		if (chunkStore == null) {
+			return true;
+		}
 		return chunkStore.attemptClose();
 	}
 
@@ -1571,6 +1582,9 @@ public class SpoutRegion extends Region implements AsyncManager {
 	 * @return the DataInputStream
 	 */
 	public InputStream getChunkInputStream(int x, int y, int z) {
+		if (chunkStore == null) {
+			throw new IllegalStateException("Client does not have chunk store");
+		}
 		return chunkStore.getBlockInputStream(getChunkKey(x, y, z));
 	}
 
