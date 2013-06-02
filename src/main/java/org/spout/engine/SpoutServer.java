@@ -48,6 +48,7 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.group.ChannelGroupFuture;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
 import org.teleal.cling.controlpoint.ControlPoint;
@@ -81,6 +82,7 @@ import org.spout.engine.protocol.SpoutNioServerSocketChannel;
 import org.spout.engine.protocol.SpoutServerSession;
 import org.spout.engine.util.access.SpoutAccessManager;
 import org.spout.engine.util.thread.threadfactory.NamedThreadFactory;
+import org.spout.engine.world.SpoutWorld;
 import org.spout.engine.world.WorldSavingThread;
 
 import static org.spout.api.lang.Translation.log;
@@ -188,6 +190,7 @@ public class SpoutServer extends SpoutEngine implements Server {
 		if (!super.stop(message, false)) {
 			return false;
 		}
+		final SpoutServer engine = this;
 		Runnable lastTickTask = new Runnable() {
 			@Override
 			public void run() {
@@ -200,15 +203,32 @@ public class SpoutServer extends SpoutEngine implements Server {
 					upnpService.shutdown();
 				}
 				closeBonjour();
+				for (SpoutWorld world : engine.getLiveWorlds()) {
+					world.unload(true);
+				}
 			}
 		};
+
 		Runnable finalTask = new Runnable() {
 			@Override
 			public void run() {
+				ChannelGroupFuture f = group.close();
+				try {
+					f.await();
+				} catch (InterruptedException ie) {
+					getLogger().info("Thread interrupted when waiting for network shutdown");
+				}
+				WorldSavingThread.finish();
+				WorldSavingThread.staticJoin();
+
 				bootstrap.getFactory().releaseExternalResources();
 				boundProtocols.clear();
 			}
 		};
+
+		scheduler.submitLastTickTask(lastTickTask);
+		scheduler.submitFinalTask(finalTask, true);
+
 		getScheduler().submitLastTickTask(lastTickTask);
 		getScheduler().submitFinalTask(finalTask, false);
 		getScheduler().stop();

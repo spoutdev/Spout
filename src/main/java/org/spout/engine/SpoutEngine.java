@@ -456,39 +456,14 @@ public abstract class SpoutEngine implements AsyncManager, Engine {
 	 * @return
 	 */
 	protected boolean stop(final String message, boolean stopScheduler) {
-		final SpoutEngine engine = this;
-
 		if (!stopping.compareAndSet(false, true)) {
 			return false;
 		}
 
 		getPluginManager().clearPlugins();
 
-		Runnable lastTickTask = new Runnable() {
-			@Override
-			public void run() {
-				setupComplete.set(false);
-				for (SpoutWorld world : engine.getLiveWorlds()) {
-					world.unload(true);
-				}
-			}
-		};
+		setupComplete.set(false);
 
-		Runnable finalTask = new Runnable() {
-			@Override
-			public void run() {
-				ChannelGroupFuture f = group.close();
-				try {
-					f.await();
-				} catch (InterruptedException ie) {
-					getLogger().info("Thread interrupted when waiting for network shutdown");
-				}
-				WorldSavingThread.finish();
-				WorldSavingThread.staticJoin();
-			}
-		};
-		scheduler.submitLastTickTask(lastTickTask);
-		scheduler.submitFinalTask(finalTask, true);
 		if (stopScheduler) {
 			scheduler.stop();
 		}
