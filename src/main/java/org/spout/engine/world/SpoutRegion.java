@@ -154,7 +154,6 @@ public class SpoutRegion extends Region implements AsyncManager {
 	private final Queue<SpoutChunkSnapshotFuture> snapshotQueue = new ConcurrentLinkedQueue<SpoutChunkSnapshotFuture>();
 	
 	protected SetQueue<SpoutChunk> unloadQueue = new SetQueue<SpoutChunk>(CHUNKS.VOLUME);
-	public static final byte POPULATE_CHUNK_MARGIN = 1;
 	/**
 	 * The sequence number for executing inter-region physics and dynamic updates
 	 */
