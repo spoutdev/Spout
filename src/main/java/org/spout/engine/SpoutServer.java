@@ -226,9 +226,6 @@ public class SpoutServer extends SpoutEngine implements Server {
 			}
 		};
 
-		scheduler.submitLastTickTask(lastTickTask);
-		scheduler.submitFinalTask(finalTask, true);
-
 		getScheduler().submitLastTickTask(lastTickTask);
 		getScheduler().submitFinalTask(finalTask, false);
 		getScheduler().stop();
